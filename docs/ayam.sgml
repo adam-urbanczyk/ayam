@@ -460,7 +460,7 @@ to an instant apply.
 <p>
 You can undo all changes to the arguments of a property that have been
 made after the last <tt/"Apply"/ operation with the <tt/"Reset"/-button.
-This does, however, not use the undo mechanism of Ayam!
+This does, however, not use the undo mechanism of Ayam.
 <p>
 Note also that property GUIs of custom objects may offer interactive
 elements that do an instant "Apply" operation. Most GUIs of the core
@@ -485,7 +485,7 @@ of material objects, without going the long way of setting a new
 shader and entering parameters for it for every object.
 <p>
 Since you may not want to copy and paste whole properties all the time,
-you may mark single parameters with a double click on the
+you may even mark single parameters with a double click on the
 labels of the parameters. The marked parameters will then be preceded
 by an exclamation mark (!) in the property GUI.
 <p>
@@ -533,16 +533,16 @@ normally cause a Tcl error dialog window to appear, to the console using the
 preference setting <tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
-You can also enter commands, even new Tcl procedures and so on in the
-console. However, this is a feature for the advanced user that
-studied section <ref id="script" name="Scripting Interface">.
+You can also enter commands or even complete new Tcl procedures
+into the console. However, this is a feature for an advanced
+user that studied section <ref id="script" name="Scripting Interface">.
 You need to explicitly click into the console to give it the input
 focus and thus enable input.
 <p>
 An important thing to know is that the keyboard shortcuts for the
 various main menu entries do not work if the console has the input
 focus! Instead, other keyboard shortcuts (related to the console)
-are in effect!
+are in effect.
 How do you get out of this? Simply press <tt/&lt;Shift+Tab&gt;/ to move
 the focus away from the console and enable the main menu shortcuts again.
 <p>
@@ -557,7 +557,7 @@ The console automagically completes <tt/tip/ to <tt/tipoftheDay/
 <p>
 Another simple demonstration of the consoles capabilities:
 <itemize>
-<item>Create ten boxes by clicking on the box icon ten times.
+<item>Create ten box objects by clicking on the box icon ten times.
 <item>Select all ten boxes.
 <item>Go to the console by clicking into it.
 <item>Enter the following:
@@ -1990,7 +1990,8 @@ Note that you can set many renderer related preferences at once using the
 select renderer tool via the main menu <tt>Special/Select Renderer</tt>
 (see also section <ref id="mmspecial" name="Special Menu">). In fact,
 using <tt>Special/Select Renderer</tt> first, then fine tuning your
-renderer setup using the preferences editor is the suggested way.
+renderer setup using the preferences editor is the suggested way to
+switch to a certain RenderMan renderer.
 
 <sect2>Miscellaneous Preferences<label id="prefmisc">
 <p>
@@ -2082,6 +2083,7 @@ points (as given via <tt/"SParamU"/ and <tt/"SParamV"/) for any
 knot vector and <tt/"AdaptiveDomainDistance"/ additionally adds
 sample points dependend on the number of control points (width or
 height of the patch) to provide a better adaptation to complex patches.
+
 <item><tt/"SParamU"/; is a parameter for the sampling method above.
 The default value for the sampling method <tt/"DomainDistance"/ is 10. Higher
 values lead to better quality and more tesselated polygons.
@@ -2089,6 +2091,7 @@ The default value for the sampling method <tt/"PathLength"/ is 30.
 Smaller values lead to better quality and more tesselated polygons.
 The default value for the sampling method <tt/"ParametricError"/ is 0.5.
 Smaller values lead to better quality and more tesselated polygons.
+
 <item><tt/"SParamV"/; is just available for the tesselation modes
 <tt/"DomainDistance"/, <tt/"NormalizedDomainDistance"/, and
 <tt/"AdaptiveDomainDistance"/.
@@ -8461,7 +8464,7 @@ e.g. also descend into NURBS patches (if they have trim curves) and apply
 the command to the trim curves, which might not exactly be what you
 want. Use <tt>"forAllT"</tt> in this case.
   <item>The command will not have access to global arrays unless
-e.g. one of the following construct is in use:<p>
+e.g. one of the following constructs is in use:<p>
 
 <tt>"forAll 0 &lcub; uplevel &num;0 &lcub; commands &rcub; &rcub;"</tt><p>
 <tt>"forAll 0 &lcub; global arrayname; commands &rcub;"</tt><p>
@@ -9522,9 +9525,8 @@ Unsupported statements will be silently ignored.
 <p>
 Wavefront OBJ import expects the file to be syntactically correct.
 The plugin is not very good in detecting and reporting errors. If the
-import fails, use third party tools first (e.g. a demo version of Okino
-Graphics PolyTrans(R)), to check whether the Wavefront OBJ file is
-valid at all.
+import fails, you might want to use a third party tool first to check
+whether the Wavefront OBJ file is valid at all.
 <p>
 Furthermore, note that the objio plugin supports Wavefront version 3.0
 syntax only, files that use older syntax will not be imported correctly.
@@ -9558,7 +9560,9 @@ for the t component of the texture coordinates (see also section
 <ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 100 percent, the objio plugin is reading lines from the
-Wavefront OBJ file and creating Ayam objects.
+Wavefront OBJ file and creating Ayam objects. The number may be a
+bit off occasionally, as the progress meter just counts lines and
+assumes a fixed medium line length of 28 characters.
 </itemize>
 
 <sect1>Wavefront OBJ Export<label id="expwav">
@@ -9596,6 +9600,7 @@ Since the Wavefront OBJ format does not support separate transformation
 attributes, all transformation attributes will be used to transform the
 coordinate values (the control points) of the exported objects.
 The hierarchy of the Ayam scene will be squashed.
+<p>
 CSG operations are fully ignored, all objects will be written
 as if combined by the union operator.
 <p>
@@ -9603,8 +9608,13 @@ The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
 Since Ayam 1.8.3, however, texture coordinates from primitive variable
 tags can be exported.
+<p>
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
+<p>
+Light sources, as well as Cameras, and Views will not be exported.
+<p>
+Object names will be exported as <tt>o</tt> statements.
 
 <sect2>Wavefront OBJ Export Options<label id="expwavopt">
 <p>
