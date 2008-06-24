@@ -3732,8 +3732,8 @@ objio_readscene(char *filename)
     fsize = LONG_MAX;
   rewind(fileptr);
 
-  /* estimate number of lines (the average Wavefront OBJ line has 34 bytes) */
-  lines = fsize/34;
+  /* estimate number of lines (the average Wavefront OBJ line has 28 bytes) */
+  lines = fsize/28;
 
   while(!feof(fileptr))
     {
