@@ -11,30 +11,6 @@
 
 global ay ayprefs
 
-# addToProc:
-#  add code in <addition> to the code of procedure <procedure>
-#  replacing the last "return;"-statement in that procedure
-#  (which has to be present in order to make this work)
-proc addToProc { procedure addition } {
-    # get old proc code
-    set oldprocbody [info body $procedure]
-    # find last "return;"-statement
-    set index [string last "return;\n" $oldprocbody]
-    # remove last "return;"-statement
-    set newprocbody [string range $oldprocbody 0 [expr $index - 1]]
-    # add new code
-    append newprocbody "\n"
-    append newprocbody $addition
-    # add new trailing "return;"-statement
-    append newprocbody "\nreturn;\n"
-    # overwrite procedure
-    if { [info args $procedure] != "" } {
-	set newargs [list [info args $procedure]] } else { set newargs { } }
-    proc $procedure $newargs $newprocbody
- return;
-}
-# addToProc
-
 # the aycsg icon
 set imgdata {\
 R0lGODlhGQAZAOcAAGZiVqKahuLWttbKrsbCsoJ6Zsa2nrqulpKKdtra2q6ijvLiwraqkm5qWpqa
