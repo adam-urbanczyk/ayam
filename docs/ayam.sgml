@@ -1156,7 +1156,7 @@ OpenGL-widget, where interaction and drawing takes place.
 The title of the view window gives information about
 name, current type, and the currently active modelling
 action of the view.
-
+<p>
 Since Ayam 1.14 the current modelling action is also displayed in
 the view menu bar as an icon.
 
@@ -7404,7 +7404,7 @@ See also the documentation of the corresponding scripting interface commands
 <itemize>
 <item>Arguments: The Extract Curve tool takes the selected objects from
 the selection.
-<item>Operation: The tool creates a ExtrNC object, and moves
+<item>Operation: The tool creates an ExtrNC object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="extrncobj" name="ExtrNC Object">
 for more information regarding the ExtrNC object.
@@ -7441,8 +7441,8 @@ See also the documentation of the corresponding
 <sect1>The Build from Curves Tool<label id="bfct">
 <p>
 <itemize>
-<item>Arguments: The build from curves tool takes a number of NURBS curves from
-the selection.
+<item>Arguments: The build from curves tool takes a number of NURBS
+curves from the selection.
 <item>Operation: The selected NURBS curves will be parsed, all curves
 that are of equal length or longer than the first selected curve
 will be used to form a new NURBS patch of the following dimensions:
@@ -7655,6 +7655,18 @@ scripting interface.
 This section provides documentation on the most important
 scripting interface commands and procedures of Ayam sorted
 by category.
+<p>
+All commands are documented in the following scheme:
+<itemize>
+ <item>Synopsis: <tt/"command parameters"/ (how are the command and its
+parameters actually called),
+ <item>Background: does the command run in the background,
+Undo: is the result of the command undoable,
+ <item>Description: Detailed description of the command and its
+parameters,
+ <item>Notes: Additional information completing the detailed description,
+ <item>Example: <tt/"command 1"/ (example application of the command).
+</itemize>
 
 <sect2>Getting Help on Scripting Interface Commands<label id="schelp">
 <p>
@@ -7663,6 +7675,7 @@ that displays the help of scripting interface commands using a web
 browser (similar to the <tt/"Help on Object"/ feature):
 <itemize>
  <item>Synopsis: <tt/"help command"/
+ <item>Background: N/A, Undo: No
  <item>Description: Fire up a web browser and display the help for
 the designated Ayam scripting interface command.
  <item>Example: <tt/"help help"/ displays the help of the help command.
@@ -7673,6 +7686,7 @@ the designated Ayam scripting interface command.
 To create new objects the <tt/"crtOb"/ command can be used.
 <itemize>
  <item>Synopsis: <tt/"crtOb type [args]"/
+ <item>Background: Yes, Undo: No
  <item>Description: New objects may be created with the command <tt/"crtOb"/,
 type may be derived from the type name, as displayed in the tree view.<p>
 
@@ -7707,6 +7721,7 @@ scripting interface commands operate on selected objects only:
 selOb - select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
+ <item>Background: Yes, Undo: No
  <item>Description: Use this command to set or clear the current
 selection, index may be an ordered list of indizes, a single index or empty.
 If no index is given, the current selection will be cleared.
@@ -7719,6 +7734,7 @@ the first two objects in the current level.
 withOb - execute a command on certain selected object(s):
 <itemize>
  <item>Synopsis: <tt/"withOb index [do] command"/
+ <item>Background: depends on command, Undo: depends on command
  <item>Description: Use this command to execute command on a
 single object (designated by index) from a multiple selection
 without changing the selection state of any objects.
@@ -7730,6 +7746,7 @@ object from multiple selected objects. All objects stay selected.
 sL - select last object:
 <itemize>
  <item>Synopsis: <tt/"sL"/
+ <item>Background: No, Undo: No
  <item>Description: Select the last object in the current level
 and update the GUI. This command is often called in a sequence
 after creating a new object like this:
@@ -7747,6 +7764,7 @@ sL
 hSL - hidden select last object:
 <itemize>
  <item>Synopsis: <tt/"hSL"/
+ <item>Background: Yes, Undo: No
  <item>Description: Select the last object in the current level
 but do not update the GUI. This command is mainly for use in script
 objects script code.
@@ -7761,6 +7779,7 @@ the manipulation of property values from the scripting interface:
 getProperty - get single property value
 <itemize>
  <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
+ <item>Background: Yes, Undo: No
  <item>Description: This command gets a single property element
 named elemname from the property named propname of the currently
 selected object and writes the result into the variable named varname.
@@ -7779,6 +7798,7 @@ radius may be retrieved in the variable <tt/"r"/ easily using the command
 setProperty - set single property value
 <itemize>
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: This command sets a single property element
 named elemname of the property named propname for the currently
 selected object to the new value given in value.
@@ -7808,18 +7828,21 @@ These commands operate the object clipboard:
 copOb - copy object:
 <itemize>
  <item>Synopsis: <tt/"copOb"/
+ <item>Background: Yes, Undo: No
  <item>Description: Copy the selected object(s) to the object clipboard.
 </itemize>
 <p><label id="sccutob">
 cutOb - cut object:
 <itemize>
  <item>Synopsis: <tt/"cutOb"/
+ <item>Background: Yes, Undo: No
  <item>Description: Move the selected object(s) into the object clipboard.
 </itemize>
 <p><label id="scpasob">
 pasOb - paste object:
 <itemize>
  <item>Synopsis: <tt/"pasOb"/
+ <item>Background: Yes, Undo: No
  <item>Description: Copy the selected object(s) from the object
 clipboard to the current level.
 </itemize>
@@ -7827,12 +7850,14 @@ clipboard to the current level.
 delOb - delete object:
 <itemize>
  <item>Synopsis: <tt/"delOb"/
+ <item>Background: Yes, Undo: No
  <item>Description: Delete the selected object(s) from the scene.
 </itemize>
 <p><label id="sccmovob">
 cmovOb - paste (move) object:
 <itemize>
  <item>Synopsis: <tt/"cmovOb"/
+ <item>Background: Yes, Undo: No
  <item>Description: Move the objects from the object
 clipboard to the current level.
 </itemize>
@@ -7844,6 +7869,7 @@ which is totally independent from the object clipboard.
 pclip_copy/copyProp - copy a property to the property clipboard
 <itemize>
  <item>Synopsis: <tt/"pclip_copy mode"/ or <tt/"copyProp mode"/
+ <item>Background: Yes, Undo: No
  <item>Description: Copy the currently selected
 property from the currently selected
 object to the property clipboard.
@@ -7857,6 +7883,7 @@ Note that you may call this procedure also using the shortcut
 pclip_paste/pasteProp - paste a property
 <itemize>
  <item>Synopsis: <tt/"pclip_paste"/ or <tt/"pasteProp"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Copy the property from the property clipboard
 to the currently selected object.
 Note that you may call this procedure also using the shortcut
@@ -7870,6 +7897,7 @@ These commands manipulate the current level of Ayam:
 goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
+ <item>Background: Yes, Undo: No
  <item>Description: Enter the object determined by index. If index is 0
 and the current level is inside some other object (not the root)
 the parent level will be entered instead.
@@ -7879,6 +7907,7 @@ the parent level will be entered instead.
 goUp:
 <itemize>
  <item>Synopsis: <tt/"goUp"/
+ <item>Background: Yes, Undo: No
  <item>Description: Go one level up in the object hierarchy.
 </itemize>
 
@@ -7886,6 +7915,7 @@ goUp:
 goTop:
 <itemize>
  <item>Synopsis: <tt/"goTop"/
+ <item>Background: Yes, Undo: No
  <item>Description: Go to the top level of the object hierarchy.
 </itemize>
 
@@ -7896,6 +7926,7 @@ These commands transform objects or selected points of objects:
 movOb - move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Move the selected object(s) by dx in direction of the
 objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
@@ -7905,6 +7936,7 @@ direction of the objects Z axis.
 rotOb - rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Rotate the selected object(s) by dx degrees around the
 objects X axis, then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
@@ -7914,6 +7946,7 @@ around the objects Z axis. Note the order of the rotations!
 scalOb - scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Scale the selected object(s) by a factor of dx in
 direction of the objects X axis, by a factor of dy in
 direction of the objects Y axis and by a factor of dz in
@@ -7926,6 +7959,7 @@ be changed to 1.0 silently!
 movSel - move selected points:
 <itemize>
  <item>Synopsis: <tt/"movSel dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Move the selected points by dx in direction of the
 objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
@@ -7935,6 +7969,7 @@ direction of the objects Z axis.
 rotSel - rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotSel dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Rotate the selected points by dx degrees around the
 objects X axis then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
@@ -7944,6 +7979,7 @@ around the objects Z axis. Note the order of the rotations!
 scalSel - scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalSel dx dy dz"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Scale the selected points by a factor of dx in
 direction of the objects X axis, by a factor of dy in
 direction of the objects Y axis and by a factor of dz in
@@ -7956,6 +7992,7 @@ be changed to 1.0 silently!
 delegTrafo - delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: delegates the transformations associated
 with the selected objects to their child objects. Additionally,
 the transformations of the selected objects will be reset to the
@@ -7966,6 +8003,7 @@ default values.
 applyTrafo - apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: applies the transformations encoded in the
 transformation attributes of the selected objects to the points
 (either all points, or just the selected ones if there are any)
@@ -7981,6 +8019,7 @@ These commands operate the shader properties:
 shaderSet:
 <itemize>
  <item>Synopsis: <tt/"shaderSet shadertype [varname]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Set the shader of type shadertype for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
@@ -7992,6 +8031,7 @@ is deleted from the object instead.
 shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
+ <item>Background: Yes, Undo: No
  <item>Description: Get the shader of type shadertype for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
@@ -8006,6 +8046,7 @@ These commands may be used to modify the tags of an object:
 addTag:
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Add a tag with type-string type and value-string
 value to the currently selected objects(s).
 It is legal to deliver <tt>""</tt> as value parameter. This is e.g.
@@ -8016,6 +8057,7 @@ needed for the <tt/"NoExport"/ tag.
 delTags:
 <itemize>
  <item>Synopsis: <tt/"delTags type"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Delete all tags of type-string type from
 the currently selected objects(s).
 If type is <tt/"all"/, all tags are deleted from the
@@ -8026,6 +8068,7 @@ currently selected objects(s).
 getTags:
 <itemize>
  <item>Synopsis: <tt/"getTags tvname vvname"/
+ <item>Background: Yes, Undo: No
  <item>Description: Get all tags from
 the currently selected objects and put them as lists into two
 variables named tvname for the tag type-strings and vvname for the tag
@@ -8036,6 +8079,7 @@ value-strings.
 setTags:
 <itemize>
  <item>Synopsis: <tt/"setTags tags"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Clear all tags from the currently selected object
 and set new tags. The tag type-strings are taken from the list elements
 with even index numbers
@@ -8050,6 +8094,7 @@ properties:
 clampNC - clamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"clampNC"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
@@ -8062,6 +8107,7 @@ See also section <ref id="clat" name="The Clamp Tool">.
 elevateNC - elevate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC n"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Elevate the order of the selected NURBS curves
 without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
@@ -8072,6 +8118,7 @@ See also section <ref id="elevt" name="The Elevate Tool">.
 insknNC - insert knot into NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Insert a new knot at the position
 specified by u (u must be in the valid range of the knot vector
 of the selected curves) r times. The valid range is determined by
@@ -8086,6 +8133,7 @@ See also section <ref id="insknt" name="The Insert Knot Tool">.
 remknNC - remove knot from NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"remknNC u r [tol]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
 of the selected curve) r times from the curve. Note that the
@@ -8101,6 +8149,7 @@ See also section <ref id="remknt" name="The Remove Knot Tool">.
 refineNC - refine NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Refine the knot vector of the selected NURBS curve
 without changing the shape of the curve with n new knots {u1 u2 un}.
 Or, if no list of new knots is given: add a new knot into each interval
@@ -8113,6 +8162,7 @@ See also section <ref id="refit" name="The Refine Tool">.
 coarsenNC - coarsen NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"coarsenNC"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Remove every second control point from the
 selected NURBS curves.
 See also section <ref id="coart" name="The Coarsen Tool">.
@@ -8122,6 +8172,7 @@ See also section <ref id="coart" name="The Coarsen Tool">.
 revert - revert curves:
 <itemize>
  <item>Synopsis: <tt/"revert"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Revert the direction of the selected NURBS curves
 and interpolating curves.
 See also section <ref id="revertt" name="The Revert Tool">.
@@ -8131,6 +8182,7 @@ See also section <ref id="revertt" name="The Revert Tool">.
 revertU - revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertU"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Revert the direction of the selected NURBS patches.
 See also section <ref id="revertut" name="The Revert U Tool">.
 </itemize>
@@ -8139,6 +8191,7 @@ See also section <ref id="revertut" name="The Revert U Tool">.
 revertV - revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertV"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Revert the direction of the selected NURBS patches.
 See also section <ref id="revertvt" name="The Revert V Tool">.
 </itemize>
@@ -8147,6 +8200,7 @@ See also section <ref id="revertvt" name="The Revert V Tool">.
 rescaleKnNC - rescale knots of NURBS curves:
 <itemize>
  <item>Synopsis: <tt/"rescaleKnNC [-r rmin rmax|-d mindist]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
 <tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
@@ -8162,6 +8216,7 @@ See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 splitNC - split NURBS curve
 <itemize>
  <item>Synopsis: <tt/"splitNC u"/
+ <item>Background: Yes, Undo: No
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and modifying the original
 selected curve.
@@ -8172,6 +8227,7 @@ See also section <ref id="splitt" name="The Split Tool">.
 toXYNC - move NURBS curve to XY plane
 <itemize>
  <item>Synopsis: <tt/"toXYNC"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: moves the control points of the selected NURBS curve
 objects to its XY plane.
 See also section <ref id="toxyt" name="The To XY Tool">.
@@ -8181,6 +8237,7 @@ See also section <ref id="toxyt" name="The To XY Tool">.
 trimNC - trim NURBS curve
 <itemize>
  <item>Synopsis: <tt/"trimNC umin umax"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
 See also section <ref id="trimt" name="The Trim Tool">.
@@ -8190,6 +8247,7 @@ See also section <ref id="trimt" name="The Trim Tool">.
 clampNPU - clamp NURBS patch in u-direction:
 <itemize>
  <item>Synopsis: <tt/"clampNPU"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Clamp the u-direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
@@ -8202,6 +8260,7 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 clampNPV - clamp NURBS patch in v-direction:
 <itemize>
  <item>Synopsis: <tt/"clampNPV"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Clamp the v-direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
@@ -8214,6 +8273,7 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 rescaleKnNP - rescale knots of NURBS patches:
 <itemize>
  <item>Synopsis: <tt/"rescaleKnNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
 <tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
@@ -8236,6 +8296,7 @@ of the selected NURBS patch objects to the new range (0.2, 0.3).
 insknNPU - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknNPU u r"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Insert a new knot in u-direction at the position
 specified by u, r times. u must be in the valid range of the corresponding
 knot vector of the selected patches. The valid range is determined by
@@ -8251,6 +8312,7 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 insknNPV - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknNPV v r"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Insert a new knot in v-direction at the position
 specified by v, r times. v must be in the valid range of the corresponding
 knot vector of the selected patches. The valid range is determined by
@@ -8266,6 +8328,7 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 splitNPU - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNPU u"/
+ <item>Background: Yes, Undo: No
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value u.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
@@ -8275,6 +8338,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 splitNPV - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNPV v"/
+ <item>Background: Yes, Undo: No
  <item>Description: Splits the selected NURBPatch objects into two patches
 at parametric value v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
@@ -8284,6 +8348,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 extrNP - extract NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
+ <item>Background: Yes, Undo: No
  <item>Description: Extracts a sub-patch from the selected NURBPatch
 objects. The sub-patch is specified by the parametric values umin, umax,
 vmin, and vmax which have to be in the respective valid knot range.
@@ -8294,6 +8359,7 @@ See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 splitNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
+ <item>Background: Yes, Undo: No
  <item>Description: Splits the selected NURBPatch into NURBS curves,
 along parametric dimension u or v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
@@ -8303,6 +8369,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 buildNP - build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
+ <item>Background: Yes, Undo: No
  <item>Description: Builds a NURBPatch from the selected NURBS curves.
 See also section <ref id="bfct" name="The Build from Curves Tool">.
 </itemize>
@@ -8320,6 +8387,7 @@ whereas a NURBS patch requires two index parameters (indexu and indexv).
 getPnt:
 <itemize>
  <item>Synopsis: <tt/"getPnt [-trafo|-p] indexu [indexv] varx vary varz [varw]"/
+ <item>Background: Yes, Undo: No
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables varx, vary, varz, and
 varw.
@@ -8341,6 +8409,7 @@ the values to the variables <tt/"x y z w"/.
 setPnt:
 <itemize>
  <item>Synopsis: <tt/"setPnt indexu [indexv] x y z [w]"/
+ <item>Background: Yes, Undo: Yes
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w.
  <item>Example: <tt/"setPnt 1 0.0 0.2 0.3 1.0"/ sets the coordinate
@@ -8356,6 +8425,7 @@ These commands update various parts of the Ayam user interface:
 rV - redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
+ <item>Background: No, Undo: No
  <item>Description: Redraws all currently open views, except for
 iconified views and views where automatic redraw has been turned off.
 </itemize>
@@ -8364,17 +8434,18 @@ iconified views and views where automatic redraw has been turned off.
 uS - update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
+ <item>Background: No, Undo: No
  <item>Description: Update the object listbox or tree view after a change
-to the object hierarchy.<p>
-
+to the object hierarchy.
+<p>
 If update_prop is 0 no update of the property GUIs will take place.
 If maintain_selection is 1 the old selection will be established again.
 If both arguments are omitted update_prop defaults
 to 1 and maintain_selection to 0.
  <item>Deficiencies: uS completely removes the object tree from
-the tree widget and rebuilds
-it, which can be a very time consuming operation (depending on the complexity
-of the scene). There are some options to speed this process up:
+the tree widget and rebuilds it, which can be a very time consuming
+operation (depending on the complexity of the scene). There are some
+options to speed this process up:
  <itemize>
  <item>If there were just changes to the current level (and below)
 the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
@@ -8394,6 +8465,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 uCL - update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
+ <item>Background: No, Undo: No
  <item>Description: Update only the current level of the object listbox
 or tree view after changes. See also the discussion of <tt/"uS"/ above.
 The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
@@ -8404,6 +8476,7 @@ operation mode, and "cs" just clears the selection.
 uCR - update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
+ <item>Background: No, Undo: No
  <item>Description: Update only the current level of the object listbox
 or tree view after objects have been created and need to be added to
 the current level. See also the discussion of <tt/"uS"/ above.
@@ -8413,6 +8486,7 @@ the current level. See also the discussion of <tt/"uS"/ above.
 plb_update - property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
+ <item>Background: No, Undo: No
  <item>Description: Clear the current property GUI, ask the currently
 selected object for a list of properties and insert them in the
 property listbox, then rebuild the property GUI of the property
@@ -8437,6 +8511,7 @@ This command manages custom objects (plugins):
 io_lc - load custom:
 <itemize>
  <item>Synopsis: <tt/"io_lc filename"/
+ <item>Background: No, Undo: No
  <item>Description: Load the custom object (plugin) from file filename.
 Note that it is currently not possible to unload a custom object from
 Ayam.
@@ -8450,6 +8525,7 @@ to a number of objects, forAll and forAllT:
 forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll recursive command"</tt>
+ <item>Background: depends, Undo: depends
  <item>Description: The forAll command executes command for all
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
@@ -8479,6 +8555,7 @@ correctly maintains the current selection.
 forAllT:
 <itemize>
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
+ <item>Background: depends, Undo: depends
  <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
 current object does not match the argument type. Note that forAllT will run
@@ -8509,6 +8586,7 @@ files:
 newScene:
 <itemize>
  <item>Synopsis: <tt>"newScene"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: clears the current scene.
 </itemize>
 
@@ -8516,6 +8594,7 @@ newScene:
 replaceScene:
 <itemize>
  <item>Synopsis: <tt>"replaceScene filename"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: clears the current scene, then loads a new scene
 from filename.
 </itemize>
@@ -8524,6 +8603,7 @@ from filename.
 insertScene:
 <itemize>
  <item>Synopsis: <tt>"insertScene filename"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: inserts a scene from filename.
 </itemize>
 
@@ -8531,6 +8611,7 @@ insertScene:
 saveScene:
 <itemize>
  <item>Synopsis: <tt>"saveScene filename"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: saves the current scene to filename.
 </itemize>
 
@@ -8544,6 +8625,7 @@ wrib - RIB export:
 <itemize>
  <item>Synopsis:
 <tt>"wrib filename [-image imagename] [-smonly|-selonly|-objonly]"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: exports the current scene to a RIB file designated
 by <tt/"filename"/. If the argument <tt/"-image"/ is given, the RIB file
 will create an image file named <tt/"imagename"/ upon rendering. The export
@@ -8579,6 +8661,7 @@ This command is for error reporting from scripts:
 ayError:
 <itemize>
  <item>Synopsis: <tt>"ayError code place detail"</tt>
+ <item>Background: No, Undo: No
  <item>Description: This command reports errors or warnings.
 You should always use ayError instead of puts because the error
 reporting mechanism of Ayam features compression of repeated
@@ -8598,6 +8681,7 @@ Miscellaneous commands:
 getType:
 <itemize>
  <item>Synopsis: <tt>"getType varname"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: This command writes the type of the
 selected object into the variable varname. The types are
 the well known strings that are displayed in the hierarchy list box
@@ -8608,6 +8692,7 @@ if the objects are not named (NPatch, NCurve, Sphere, etc.).
 tmpGet:
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: This command calculates a name for a temporary
 file in tmpdir and puts the complete name into varname.
 </itemize>
@@ -8616,6 +8701,7 @@ file in tmpdir and puts the complete name into varname.
 hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: This command returns 1 if the selected object
 has child objects, otherwise it returns 0.
 </itemize>
@@ -8624,6 +8710,7 @@ has child objects, otherwise it returns 0.
 undo:
 <itemize>
  <item>Synopsis: <tt>"undo [redo|save opname [0|1]|clear|rewind]"</tt>
+ <item>Background: Yes, Undo: Yes
  <item>Description:
  <itemize>
   <item>If called without arguments, this command performs the undo
@@ -8666,6 +8753,7 @@ if { $ay_error > 1 } {
 convOb:
 <itemize>
  <item>Synopsis: <tt>"convOb [-inplace]"</tt>
+ <item>Background: Yes, Undo: depends (if -inplace: Yes)
  <item>Description: This command calls the registered converter
 for the selected object(s). If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
@@ -8675,6 +8763,7 @@ used, the new object(s) will replace the old object(s).
 forceNot:
 <itemize>
  <item>Synopsis: <tt>"forceNot [mod|all]"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or, if no object
 is selected, for all objects of the scene.
@@ -8688,6 +8777,7 @@ will be notified regardless of the selection.
 addToProc:
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
+ <item>Background: Yes, Undo: No
  <item>Description: This command adds the code from addition to
 the procedure procedure.
  <item>Note: This command uses the introspection facilities of
