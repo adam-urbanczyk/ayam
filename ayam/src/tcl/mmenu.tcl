@@ -20,7 +20,8 @@ if { ! $AYWITHAQUA } {
     frame $w.fMenu -bd 2 -relief raised
     pack $w.fMenu -side top -fill both -expand no
     # File
-    menubutton $w.fMenu.fil -text "File" -menu $w.fMenu.fil.m -padx 3
+    menubutton $w.fMenu.fil -text "File" -menu $w.fMenu.fil.m -padx 3\
+	-underline 0
 
     menu $w.fMenu.fil.m -tearoff 0
     set m $w.fMenu.fil.m
@@ -35,7 +36,7 @@ if { ! $AYWITHAQUA } {
 
     # File
     set m [menu $mb.mfil -tearoff 0]
-    $mb add cascade -label "File" -menu $m
+    $mb add cascade -label "File" -menu $m -underline 0
 }
 # if
 
@@ -114,13 +115,14 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.fil -in $w.fMenu -side left
 
     # Edit
-    menubutton $w.fMenu.ed -text "Edit" -menu $w.fMenu.ed.m -padx 3
+    menubutton $w.fMenu.ed -text "Edit" -menu $w.fMenu.ed.m -padx 3\
+	-underline 0
     menu $w.fMenu.ed.m  -tearoff 0
     set m $w.fMenu.ed.m
 } else {
     # Edit
     set m [menu $mb.medi -tearoff 0]
-    $mb add cascade -label "Edit" -menu $m
+    $mb add cascade -label "Edit" -menu $m -underline 0
 
 }
 set ay(editmenu) $m
@@ -179,13 +181,14 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.ed -in $w.fMenu -side left
 
     # Create
-    menubutton $w.fMenu.cr -text "Create" -menu $w.fMenu.cr.m -padx 3
+    menubutton $w.fMenu.cr -text "Create" -menu $w.fMenu.cr.m -padx 3\
+	-underline 0
     menu $w.fMenu.cr.m -tearoff 0
     set m $w.fMenu.cr.m
 } else {
     # Create
     set m [menu $mb.mcrt -tearoff 0]
-    $mb add cascade -label "Create" -menu $m
+    $mb add cascade -label "Create" -menu $m -underline 0
 }
 
 set ay(createmenu) $m
@@ -287,12 +290,13 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.cr -in $w.fMenu -side left
 
     # Tools
-    menubutton $w.fMenu.tool -text "Tools" -menu $w.fMenu.tool.m -padx 3
+    menubutton $w.fMenu.tool -text "Tools" -menu $w.fMenu.tool.m -padx 3\
+	-underline 0
     set m [menu $w.fMenu.tool.m -tearoff 0]
 } else {
     # Tools
     set m [menu $mb.mtools -tearoff 0]
-    $mb add cascade -label "Tools" -menu $m
+    $mb add cascade -label "Tools" -menu $m -underline 0
 }
 
 set ay(toolsmenu) $m
@@ -593,23 +597,25 @@ if { ! $AYWITHAQUA } {
     pack $w.fMenu.tool -in $w.fMenu -side left
 
     # Custom
-    menubutton $w.fMenu.cust -text "Custom" -menu $w.fMenu.cust.m -padx 3
+    menubutton $w.fMenu.cust -text "Custom" -menu $w.fMenu.cust.m -padx 3\
+	-underline 1
     menu $w.fMenu.cust.m -tearoff 0
     pack $w.fMenu.cust -in $w.fMenu -side left
     set ay(cm) $w.fMenu.cust.m
     # Special
-    menubutton $w.fMenu.spec -text "Special" -menu $w.fMenu.spec.m -padx 3
+    menubutton $w.fMenu.spec -text "Special" -menu $w.fMenu.spec.m -padx 3\
+	-underline 0
     set m [menu $w.fMenu.spec.m -tearoff 0]
     pack $w.fMenu.spec -in $w.fMenu -side left
 
 } else {
     # Custom
     set m [menu $mb.mcust -tearoff 0]
-    $mb add cascade -label "Custom" -menu $m
+    $mb add cascade -label "Custom" -menu $m -underline 1
     set ay(cm) $m
     # Special
     set m [menu $mb.mspecial -tearoff 0]
-    $mb add cascade -label "Special" -menu $m
+    $mb add cascade -label "Special" -menu $m -underline 0
 }
 set ay(specialmenu) $m
 
@@ -658,14 +664,15 @@ $m add command -label "Zap Ayam" -command "zap"
 
 if { ! $AYWITHAQUA } {
     # Help
-    menubutton $w.fMenu.hlp -text "Help" -menu $w.fMenu.hlp.m -padx 3
+    menubutton $w.fMenu.hlp -text "Help" -menu $w.fMenu.hlp.m -padx 3\
+	-underline 0
     set m [menu $w.fMenu.hlp.m -tearoff 0]
     pack $w.fMenu.hlp -in $w.fMenu -side right
 
 } else {
     # Help
     set m [menu $mb.help -tearoff 0]
-    $mb add cascade -label "Help" -menu $m
+    $mb add cascade -label "Help" -menu $m -underline 0
 }
 set ay(helpmenu) $m
 
