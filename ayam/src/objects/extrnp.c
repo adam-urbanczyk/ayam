@@ -374,6 +374,15 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
 int
 ay_extrnp_wribcb(char *file, ay_object *o)
 {
+ ay_extrnp_object *extrnp = NULL;
+
+  if(!o)
+   return AY_ENULL;
+
+  extrnp = (ay_extrnp_object*)o->refine;
+
+  if(extrnp->npatch)
+    ay_wrib_object(file, extrnp->npatch);
 
  return AY_OK;
 } /* ay_extrnp_wribcb */
