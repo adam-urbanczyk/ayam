@@ -587,11 +587,13 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
       tag = o->tags;
       while(tag)
 	{
-	  Tcl_SetVar(interp,argv[1],tag->name, TCL_APPEND_VALUE |\
-		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	  Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
-		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-
+	  if(tag->name && tag->val)
+	    {
+	      Tcl_SetVar(interp,argv[1],tag->name, TCL_APPEND_VALUE |\
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	      Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	    }
 	  tag = tag->next;
 	} /* while */
     } /* if */
