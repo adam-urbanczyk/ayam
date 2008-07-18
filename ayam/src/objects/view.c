@@ -985,7 +985,6 @@ int
 ay_view_notifycb(ay_object *o)
 {
  ay_view_object *view = NULL;
- unsigned int bo = 1;  /* test byte order */
  unsigned char *r, b;
  uint32 *image = NULL, w, h, c;
  TIFF *tif;
@@ -1056,8 +1055,7 @@ ay_view_notifycb(ay_object *o)
 	  else
             {
               /* check/correct byte order */
-              r = (unsigned char *)&bo;
-              if(r[0] == 0)
+              if(TIFFIsMSB2LSB(tif))
                 {
                   /* byte order must be corrected: we need intel format */
                   for(c = 0; c < w*h; c++)
