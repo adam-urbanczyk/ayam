@@ -73,6 +73,9 @@ ay_tags_copy(ay_tag *source,
  int ay_status = AY_OK;
  ay_tag *new = NULL;
 
+  if(!source->name || !source->val)
+    return AY_ERROR;
+
   if(!(new = calloc(1,sizeof(ay_tag))))
     return AY_EOMEM;
 
@@ -111,8 +114,11 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
   while(tag)
     {
       ay_status = ay_tags_copy(tag, newtagptr);
-      newtagptr = &((*newtagptr)->next);
-      *newtagptr = NULL;
+      if(ay_status == AY_OK)
+	{
+	  newtagptr = &((*newtagptr)->next);
+	  *newtagptr = NULL;
+	}
       tag = tag->next;
     }
 
@@ -634,16 +640,19 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(!strcmp(argv[1], tag->name))
+	      if(tag->name)
 		{
-		  *last = tag->next;
-		  ay_tags_free(tag);
-		  tag = *last;
-		}
-	      else
-		{
-		  last = &(tag->next);
-		  tag = tag->next;
+		  if(!strcmp(argv[1], tag->name))
+		    {
+		      *last = tag->next;
+		      ay_tags_free(tag);
+		      tag = *last;
+		    }
+		  else
+		    {
+		      last = &(tag->next);
+		      tag = tag->next;
+		    } /* if */
 		} /* if */
 	    } /* while */
 	}

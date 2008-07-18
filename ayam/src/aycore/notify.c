@@ -28,7 +28,7 @@
 */
 static char *ay_nc_tagtype = NULL;
 
-static char* ay_nc_tagname = "NC";
+static char *ay_nc_tagname = "NC";
 
 /* functions: */
 
@@ -422,18 +422,25 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	    {
 	      return 0;
 	    }
-	  if(!(newt = calloc(1, sizeof(ay_tag))))
-	    {
-	      return 0;
-	    }
+
 	  newl->object = o;
 	  o->modified = AY_FALSE;
 	  newl->next = *parents;
 	  *parents = newl;
-
-	  newt->next = o->tags;
-	  newt->type = ay_nc_tagtype;
-	  o->tags = newt;
+	  if(o->tags && o->tags->type == ay_nc_tagtype)
+	    {
+	      o->tags->val = 0;
+	    }
+	  else
+	    {
+	      if(!(newt = calloc(1, sizeof(ay_tag))))
+		{
+		  return 0;
+		}
+	      newt->next = o->tags;
+	      newt->type = ay_nc_tagtype;
+	      o->tags = newt;
+	    }
 
 	} /* if */
     } /* if */
