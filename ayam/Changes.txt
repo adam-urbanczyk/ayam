@@ -1,4 +1,4 @@
-[21. Jun 2008] CVS-Head:
+[19. Jul 2008] CVS-Head:
 =======================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -9,8 +9,10 @@ o Hide/Show keyboard shortcuts in view windows (SF 1964807)
 o reset of property GUIs when opened via keyboard (SF 1988972)
 o view mode icons when settings are changed via property GUI (SF 1989149)
 o using compressed TIFF image files as view background (SF 1991716)
-o <Shift-Home> Tcl error if first object is selected
-o <Shift-Home> omitting the first object in sub-levels
+o <Shift-Home> Tcl error if first object is selected (SF 2022397)
+o <Shift-Home> omitting the first object in sub-levels (SF 2022398)
+o ExtrNP objects missing in exported RIB files (SF 2021241)
+o crash when complete notify is enabled (SF 2022393)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
