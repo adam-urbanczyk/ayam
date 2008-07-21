@@ -630,7 +630,7 @@ proc plb_showprop { prop } {
 
     set len [$l size ]
 
-    if { $len < 1 } {
+    if { ($len < 1) || ($prop > $len) } {
 	return;
     }
 
