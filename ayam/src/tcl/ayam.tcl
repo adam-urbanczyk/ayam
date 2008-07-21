@@ -312,6 +312,7 @@ array set aymainshortcuts {
     SProp99 "Key-KP_Prior"
 
     IApplyMod "Shift"
+    MenuMod "Alt"
 }
 # array aymainshortcuts
 
@@ -1849,6 +1850,13 @@ if { $ayprefs(FixX11Menu) } {
     }
 }
 # if
+
+# allow customized keyboard menu traversal
+if { $tcl_version > 8.3 } {
+    bind all <${aymainshortcuts(MenuMod)}-Key> { ::tk::TraverseToMenu %W %A }
+} else {
+    bind all <${aymainshortcuts(MenuMod)}-Key> { tkTraverseToMenu %W %A }
+}
 
 # if no view is open (first start ever, no ayamrc file, or no working
 # environment file), open a first view now
