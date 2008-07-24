@@ -80,6 +80,11 @@ if { ! \[info exists \"${outplugin}Write\"\] } { \
 "
 append cscript "newScene; cd [pwd];"
 append cscript "${inplugin}Read [lindex $argv 0];"
+
+# this is the right place to append some scene processing,
+# like conversion to polygons:
+#append cscript "toPoly;"
+
 append cscript "${outplugin}Write [lindex $argv 1];"
 
 # do we run in wish?
