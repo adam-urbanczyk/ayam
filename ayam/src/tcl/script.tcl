@@ -107,18 +107,13 @@ proc getScriptp { } {
     getProp
     $t delete 1.0 end
     $t insert 1.0 $ScriptAttrData(Script)
+    if { $ScriptAttrData(Script) != "" } {
+	$t delete "end - 1 chars"
+    }
 
  return;
 }
 # getScriptp
-global SCRIPTPLUGIN
-if { [info exists SCRIPTPLUGIN] } {
-# add menu entry to Create/Custom sub-menu
-mmenu_addcustom Script "crtOb Script;uS;sL;"
-
-# tell the rest of Ayam (or other custom objects), that we are loaded
-lappend ay(co) Script
-}
 
 # script_disable:
 #  ask user for permission to disable all script objects loaded
