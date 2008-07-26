@@ -6,10 +6,10 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>10. Apr 2008
+<date>5. Jul 2008
 
 <abstract>
-This is the documentation of Ayam 1.14 - a free 3D modelling environment
+This is the documentation of Ayam 1.15 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -7516,25 +7516,40 @@ and their parameter(s).
 
 <sect>Scripting Interface<label id="script">
 <p>
-The scripting interface is mainly a bunch of Tcl procedures
-and Tcl commands that a big part of Ayam uses internally.
+The Ayam scripting interface is mainly a number of Tcl procedures
+and Tcl commands that are also used internally by the application, e.g.
+the main menu entry <tt>"File/New"</tt> calls the
+scripting interface command <tt/"newScene"/ (among other commands).
+Using the scripting interface means to call these commands on
+your own possibly in a mix with standard Tcl script code.
 <p>
-Using Tcl, you could directly modify the code Ayam consists
-of. This is, however, not recommended for good reasons.
+Furthermore, using Tcl and its introspection facilities, you could
+easily modify the code Ayam consists of. This is, however, not
+recommended for good reasons (unless you read the Ayam source code
+and really know, what you are doing).
 So watch out for already existing procedures and commands when
 implementing your own!
 Using procedures and commands not listed in this documentation
-is dangerous too. Implementation and interfaces of that
-commands may change unnoticed in future versions.
+is dangerous too. Implementation and interfaces of those
+procedures and commands may change in future versions without
+notice.
+<p>
+In Tcl, all variables, procedures, and commands are case sensitive,
+it really is <tt/"sL"/ and <em>not</em> <tt/"sl"/ and <em>not</em>
+<tt/"SL"/.
 <p>
 The scripting interface may be used directly from the console
-of Ayam. You can, of course, also write procedures in your own
+of Ayam. You can, of course, also write scripts in your own
 Tcl script files, that may be loaded at any time into Ayam using
 the console and the Tcl command <tt/"source"/.
-You can also arrange for a script to be executed automatically
-on startup using the preference setting <tt>"Main/Scripts"</tt>.
-In contrast to other modelling environments, in Ayam there is a
-third way to run scripts. In Ayam, scripts may also be attached
+You can also arrange for a script file to be executed automatically
+on every application startup using the preference setting
+<tt>"Main/Scripts"</tt>.
+Moreover, on the X11 and Aqua window systems, Ayam is able to execute
+script code sent via the Tk <tt/"send"/ command or the AppleScript
+<tt/"tell"/ command from external applications.
+In contrast to other modelling environments, in Ayam there is
+another way to run scripts. In Ayam, scripts may also be attached
 to script objects and run when the notification mechanism updates
 the scene. See also section
 <ref id="scriptobj" name="Script object">.
@@ -7545,9 +7560,9 @@ the Ayam GUI and Ayam view windows, for the sake of execution speed.
 If you want your changes to become visible you have to update the
 various parts of the GUI (property GUIs, view windows) explicitly
 (see also section <ref id="sciupd" name="Updating the GUI">).
-Since Ayam 1.13 it is also possible to automatically run GUI updating
-commands in the console by using <tt/&lt;Shift+Return&gt;/ instead
-of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
+However, since Ayam 1.13 it is also possible to automatically run GUI
+updating commands in the console by using <tt/&lt;Shift+Return&gt;/
+instead of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
 <p>
 If you want your changes to be undoable, you have to arrange for
 this manually too
@@ -7556,11 +7571,11 @@ this manually too
 <p>
 From scripts it may be necessary to check wether an error occured
 during the execution of a command. All commands return
-TCL_OK in any case so checking their return value avails to nothing,
-but they set the global Tcl variable <tt>"ay_error"</tt> to a value
-higher than 1 if an error occured. You need to set it to zero before
-and check it after the operation in question to see whether the
-operation performed successfully:
+TCL_OK in <em>any</em> case, so checking their return value avails
+to nothing, but they set the global Tcl variable <tt>"ay_error"</tt>
+to a value higher than 1 if an error occured. You need to set it to
+zero before and check it after the operation in question to see whether
+the operation performed successfully:
 <code>
 proc myProc { } {
   set ::ay_error 0
