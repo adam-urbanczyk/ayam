@@ -988,7 +988,7 @@ proc sL { } {
 	$lb selection clear 0 end
 	selOb
 	$lb selection set end
-	selOb -lb [expr [$lb index end] - 1]
+	selOb -lb [expr {[$lb index end] - 1}]
 	plb_update
 	$lb see end
     } else {

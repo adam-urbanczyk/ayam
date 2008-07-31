@@ -67,7 +67,7 @@ proc actionRotView { w } {
     }
 
     bind $w <B1-Motion> {
-	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
+	%W setconf -drotx [expr {$oldx - %x}] -droty [expr {$oldy - %y}]
 	set oldx %x
 	set oldy %y
 	update
@@ -730,7 +730,6 @@ proc editPointDp { } {
 
     # auto raise window, when obscured
     bind $w <Visibility> {
-	global ay
 	# are we obscured?
 	if { "%s" == "VisibilityPartiallyObscured" ||\
 		"%s" == "VisibilityFullyObscured" } {
