@@ -6377,6 +6377,57 @@ cleanup:
 } /* ay_npt_extractboundary */
 
 
+/* ay_npt_extractmiddleaxis:
+
+ */
+int
+ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
+			 int index, int side,
+			 double *result)
+{
+ int ay_status = AY_OK;
+ int a, i;
+
+  if(side == 0)
+    {
+      a = index*height*stride;
+      for(i = 0; i < height; i++)
+	{
+	  result[0] += cv[a];
+	  result[1] += cv[a+1];
+	  result[2] += cv[a+2];
+	  result[3] += cv[a+3];
+	  a += stride;
+	}
+
+      result[0] /= height;
+      result[1] /= height;
+      result[2] /= height;
+      result[3] /= height;
+
+    }
+  else
+    {
+      a = index*stride;
+      for(i = 0; i < width; i++)
+	{
+	  result[0] += cv[a];
+	  result[1] += cv[a+1];
+	  result[2] += cv[a+2];
+	  result[3] += cv[a+3];
+	  a += height*stride;
+	}
+
+      result[0] /= width;
+      result[1] /= width;
+      result[2] /= width;
+      result[3] /= width;
+    }
+
+ return ay_status;
+} /* ay_npt_extractmiddleaxis */
+
+
 /* ay_npt_extractnc:
  *  extract a NURBS curve from the NURBS patch <o>
  *  side: specifies extraction of a boundary curve (0-3), of a curve at a
@@ -6437,6 +6488,16 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       nc->length = np->width;
       break;
     case 5:
+      nc->order = np->vorder;
+      nc->knot_type = np->vknot_type;
+      nc->length = np->height;
+      break;
+    case 7:
+      nc->order =  np->uorder;
+      nc->knot_type = np->uknot_type;
+      nc->length = np->width;
+      break;
+    case 8:
       nc->order = np->vorder;
       nc->knot_type = np->vknot_type;
       nc->length = np->height;
@@ -6596,6 +6657,24 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       if(r < 1)
 	Qw = NULL;
 
+      memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 7:
+      /* middle u */
+      for(i = 0; i < nc->length; i++)
+	{
+	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
+				   stride, i, 0, &cv[i*stride]);
+	}
+      memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
+      break;
+    case 8:
+      /* middle v */
+      for(i = 0; i < nc->length; i++)
+	{
+	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
+				   stride, i, 1, &cv[i*stride]);
+	}
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
     default:

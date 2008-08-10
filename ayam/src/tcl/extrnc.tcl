@@ -30,7 +30,8 @@ set w [frame $ay(pca).$ExtrNCAttr(w)]
 
 
 
-addMenu $w ExtrNCAttrData Side [list U0 Un V0 Vn U V Boundary]
+addMenu $w ExtrNCAttrData Side\
+    [list U0 Un V0 Vn U V Boundary Middle_U Middle_V]
 addParam $w ExtrNCAttrData Parameter
 addCheck $w ExtrNCAttrData Relative
 addParam $w ExtrNCAttrData PatchNum
