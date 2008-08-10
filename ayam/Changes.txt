@@ -1,5 +1,5 @@
-[19. Jul 2008] CVS-Head:
-=======================
+[10. Aug 2008] CVS-Head:
+========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
 o RIB export of Instances in CSG hierarchies (SF 1953633)
@@ -13,6 +13,9 @@ o <Shift-Home> Tcl error if first object is selected (SF 2022397)
 o <Shift-Home> omitting the first object in sub-levels (SF 2022398)
 o ExtrNP objects missing in exported RIB files (SF 2021241)
 o crash when complete notify is enabled (SF 2022393)
+o Tcl errors when keyboard shortcuts are used to display unavailable
+  properties (SF 2023854)
+o Script objects adding newline characters upon apply (SF 2027027)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
@@ -22,7 +25,6 @@ o using the "Esc" key (break action) in view windows now also resets
   or pressed twice
 o pressing <Esc> twice in the tree view clears the object selection (and
   property GUI) and switches the current level to the top level
-
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -35,6 +37,7 @@ o improved robustness of curve splitting (also essential for Gordon caps)
 o view type cycling (via PageUp/Down) now keeps the camera aim point
 o the GLU NURBS tesselation now preserves texture coordinates and vertex
   colors delivered by PV tags
+o ExtrNC objects can now also extract a middle axis curve
 
 Import/Export:
 o added support for true instances (via USE/DEF) to X3D export
