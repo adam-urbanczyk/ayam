@@ -57,7 +57,7 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 } /* ay_clevel_find */
 
 
-/* ay_clevel_del:
+/* ay_clevel_add:
  *  put list object pointing to <o> to top of current level stack
  */
 int
@@ -478,3 +478,142 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_clevel_gettcmd */
+
+
+/* ay_clevel_dup:
+ *  _recursively_ duplicates a current level list (<src>) in <ay_currentlevel>
+ */
+int
+ay_clevel_dup(ay_list_object *src)
+{
+ int ay_status = AY_OK;
+
+  if(src->next)
+    ay_status = ay_clevel_dup(src->next);
+
+  ay_status = ay_clevel_add(src->object);
+
+ return ay_status;
+} /* ay_clevel_dup */
+
+
+/* ay_clevel_cltcmd:
+ *  Tcl command to set the current level (cl - change level)
+ */
+int
+ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "cl";
+ static ay_list_object *ocl = NULL;
+ ay_list_object *tcl;
+ ay_object *o = ay_root;
+ int i, lindex = 0;
+ char *lc = NULL; /* level component */
+
+  /* check args */
+  if(argc != 2)
+    {
+      ay_error(AY_EARGS, fname, "(-|level)");
+      return TCL_OK;
+    }
+
+  if(*argv[1] == '-')
+    {
+      /* change back to last saved level */
+      if(ocl)
+	{
+	  tcl = ay_currentlevel;
+	  ay_currentlevel = ocl;
+	  ocl = tcl;
+	}
+      else
+	{
+	  /* report error */
+	  ay_error(AY_ERROR, fname, "no level saved");
+	  return TCL_OK;
+	}
+    }
+  else
+    {
+      /* first, save current level, for a potential "cl -" */
+      ocl = ay_currentlevel;
+      ay_currentlevel = NULL;
+      ay_status = ay_clevel_dup(ocl);
+
+      /* now, change to new level */
+      lc = argv[1];
+
+      /* is the new level expressed in a relative way? */
+      if(*argv[1] == '.')
+	{
+	  /* yes, relative level */
+	  while(lc && (strlen(lc) > 2) && !(strcmp("..", lc)))
+	    {
+	      ay_clevel_del();
+	      ay_clevel_del();
+
+	      o = ay_currentlevel->object;
+
+	      lc += 3;
+	    } /* while */
+	}
+      else
+	{
+	  /* no, absolute level */
+	  ay_clevel_delall();
+	} /* if */
+
+      /* get first number */
+      while(*lc != '\0' && !isdigit(*lc))
+	{
+	  lc++;
+	}
+      while(*lc != '\0')
+	{
+	  lindex = 0;
+	  sscanf(lc, "%d", &lindex);
+
+	  /* find and add object */
+	  i = 0;
+	  while(o && o->next && (i < lindex))
+	    {
+	      i++;
+	      o = o->next;
+	    }
+	  if(o->next && o->parent)
+	    {
+	      /* all is well => descend for next level index */
+	      ay_clevel_add(o);
+	      o = o->down;
+	      ay_clevel_add(o);
+	    }
+	  else
+	    {
+	      /* error, we run over end of level => index is wrong */
+	      /* cleanup */
+	      ay_clevel_delall();
+	      free(ay_currentlevel);
+	      ay_currentlevel = ocl;
+	      ocl = NULL;
+	      /* report error */
+	      ay_error(AY_ERROR, fname, "could not find level");
+	      return TCL_OK;
+	    } /* if */
+	  /* jump over the index number that we just processed */
+	  while(*lc != '\0' && isdigit(*lc))
+	    {
+	      lc++;
+	    }
+	  /* jump over separator */
+	  if(*lc != '\0')
+	    {
+	      lc++;
+	    }
+	} /* while */
+
+    } /* if */
+
+ return TCL_OK;
+} /* ay_clevel_cltcmd */
