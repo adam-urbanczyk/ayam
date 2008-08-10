@@ -15,7 +15,7 @@
 /* object.c - general object management*/
 
 /* ay_object_defaults:
- *  reset object attributes of ay_object *o to default settings
+ *  reset object attributes of ay_object *o to save default settings
  */
 int
 ay_object_defaults(ay_object *o)
@@ -35,6 +35,9 @@ ay_object_defaults(ay_object *o)
 } /* ay_object_defaults */
 
 
+/* ay_object_create:
+ *  create an object by calling the object type specific create callback
+ */
 int
 ay_object_create(unsigned int index, ay_object **o)
 {
@@ -43,7 +46,6 @@ ay_object_create(unsigned int index, ay_object **o)
  void **arr = NULL;
  ay_createcb *cb = NULL;
  ay_object *new = NULL;
-
 
   arr = ay_createcbt.arr;
 
@@ -74,6 +76,10 @@ ay_object_create(unsigned int index, ay_object **o)
 } /* ay_object_create */
 
 
+/* ay_object_createargs:
+ *  create an object by calling the object type specific create callback
+ *  with user provided arguments
+ */
 int
 ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
 {
@@ -82,7 +88,6 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
  void **arr = NULL;
  ay_createcb *cb = NULL;
  ay_object *new = NULL;
-
 
   arr = ay_createcbt.arr;
 
@@ -162,7 +167,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* for objects that may have childs that do not have
+  /* for objects that may have children that do not have
      a child already create an EndLevel object */
   if(o->parent && (!o->down))
     {
@@ -174,7 +179,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
     }
 
-
+  /* link object to scene structure */
   ay_object_link(o);
 
   /* set scene changed flag */
@@ -194,11 +199,11 @@ ay_object_delete(ay_object *o)
  ay_mat_object *mat = NULL;
  unsigned int *refcountptr;
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
- if(o->refcount > 0)
-   return AY_EREF;
+  if(o->refcount > 0)
+    return AY_EREF;
 
   /* delete children first */
   if(o->down)
@@ -364,7 +369,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_object_link:
- *  link object o into scene
+ *  link object <o> to scene structure
  */
 int
 ay_object_link(ay_object *o)
@@ -380,6 +385,9 @@ ay_object_link(ay_object *o)
       ay_next = &(o->next);
     }
 
+  /* just in case that we are linking the very first object to
+     an empty sub-level (ay_currentlevel points to the end-level object)
+     we need to correct ay_currentlevel to point to the new object instead */
   if(ay_currentlevel->object != ay_root)
     {
       ay_clevel_del();
