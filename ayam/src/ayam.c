@@ -598,6 +598,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getLevel", ay_clevel_gettcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "cl", ay_clevel_cltcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* clipb.c */
   Tcl_CreateCommand(interp, "copOb", ay_clipb_copytcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

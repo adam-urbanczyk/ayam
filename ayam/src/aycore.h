@@ -69,6 +69,11 @@ int ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/*! \brief Tcl command to change the current level
+ */
+int ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
+
 
 /* clipb.c */
 
