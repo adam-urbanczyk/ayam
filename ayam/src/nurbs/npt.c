@@ -6378,7 +6378,10 @@ cleanup:
 
 
 /* ay_npt_extractmiddleaxis:
-
+ *  helper to extract one point of the middle axis curve from a NURBS patch
+ *  control matrix with control points: <cv>, <width>, <height>, <stride>
+ *  along dimension <side> (0 - u, 1 - v) at control mesh position <index>,
+ *  outputs resulting point in <result>
  */
 int
 ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
@@ -6422,7 +6425,7 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
       result[1] /= width;
       result[2] /= width;
       result[3] /= width;
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_npt_extractmiddleaxis */
@@ -6432,7 +6435,7 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
  *  extract a NURBS curve from the NURBS patch <o>
  *  side: specifies extraction of a boundary curve (0-3), of a curve at a
  *   specific parametric value (4 - along u dimension, 5 - along v dimension),
- *   or the complete boundary curve (6)
+ *   the complete boundary curve (6), or the middle axis (7,8)
  *  param: parametric value at which curve is extracted; this parameter is
  *   ignored for the extraction of boundary curves
  *  relative: should param be interpreted in a relative way wrt. the knot
