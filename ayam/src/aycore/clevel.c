@@ -12,6 +12,8 @@
 
 #include "ayam.h"
 
+#include <ctype.h>
+
 /* clevel.c - functions for current level management */
 
 /* ay_clevel_find:
