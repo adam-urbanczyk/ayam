@@ -526,9 +526,12 @@ ay_notify_complete(ay_object *r)
 	  if(o->tags->val == 0)
 	    {
 	      ay_notify_force(o);
-	      tag = o->tags;
-	      o->tags = tag->next;
-	      free(tag);
+	      if(o->tags)
+		{
+		  tag = o->tags;
+		  o->tags = tag->next;
+		  free(tag);
+		}
 	    }
 	}
       t = s->next;
