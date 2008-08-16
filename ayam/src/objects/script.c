@@ -336,9 +336,6 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(arrnameend)
 	*arrnameend = '\0';
 
-      Tcl_SetStringObj(toa, arrname, -1);
-      Tcl_SetStringObj(ton, ay_script_sp, -1);
-
       if(sc->params)
 	{
 	  /* remove old saved parameters */
@@ -350,6 +347,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  sc->params = NULL;
 	  sc->paramslen = 0;
 	}
+
+      Tcl_SetStringObj(toa, arrname, -1);
+      Tcl_SetStringObj(ton, ay_script_sp, -1);
+
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
       if(arrmemberlist)
@@ -381,17 +382,22 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       if(arrnameend)
 	*arrnameend = '\n';
-    } /* if */
 
-  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+      sc->modified = AY_TRUE;
+
+      ay_status = ay_notify_force(o);
+    } /* if */
 
   sc->modified = AY_TRUE;
 
   ay_status = ay_notify_force(o);
 
   o->modified = AY_TRUE;
+
   ay_status = ay_notify_parent();
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return AY_OK;
 } /* ay_script_setpropcb */
@@ -532,20 +538,21 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version >= 8)
     {
       if(strstr(sc->script, "# Ayam, save array:"))
-	{
-	  arrname = strchr(sc->script, ':')+1;
-	  while(arrname[0] == ' ')
-	    arrname++;
-
-	  eolarrname = strchr(sc->script, '\n');
-	  if(eolarrname)
-	    {
-	      *eolarrname = '\0';
-	    }
-
+	{	 
 	  fscanf(fileptr, "%d\n", &arrmembers);
+
 	  if(arrmembers > 0)
 	    {
+	      arrname = strchr(sc->script, ':')+1;
+	      while(arrname[0] == ' ')
+		arrname++;
+
+	      eolarrname = strchr(sc->script, '\n');
+	      if(eolarrname)
+		{
+		  *eolarrname = '\0';
+		}
+
 	      if(!(sc->params = calloc(arrmembers-1, sizeof(Tcl_Obj*))))
 		{
 		  ay_status = AY_EOMEM;
@@ -564,8 +571,8 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  Tcl_SetVar2(interp, arrname, membername, memberval,
 			      TCL_GLOBAL_ONLY);
 
-		  /* do not put the IP list into the object! */
-		  if(i > 0)
+		  /* do not put the SP list into the object! */
+		  if(strcmp(membername, ay_script_sp) != 0)
 		    {
 		      Tcl_SetStringObj(ton, membername, -1);
 		      sc->params[i-1] =
@@ -625,7 +632,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
  char *arrname = NULL, *membername = NULL;
- char *arrnameend = NULL;
+ char *arrnameend = NULL, *memberval = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen, tlen;
  unsigned int len = 0;
@@ -670,7 +677,6 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
       fprintf(fileptr, "%d\n", arrmembers+1);
-
       fprintf(fileptr, "%s\n%s\n", ay_script_sp,
 	      Tcl_GetStringFromObj(arrmemberlist, &tlen));
 
@@ -683,10 +689,12 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 	      membername = Tcl_GetStringFromObj(arrmember, &slen);
 	      if(membername)
 		{
-		
-		  fprintf(fileptr, "%s\n%s\n", membername,
-			  Tcl_GetStringFromObj(sc->params[i], &tlen));
-		 
+		  if(sc->params && sc->params[i])
+		    memberval = Tcl_GetStringFromObj(sc->params[i], &tlen);
+		  else
+		    memberval = NULL;
+		  if(memberval)
+		    fprintf(fileptr, "%s\n%s\n", membername, memberval);
 		} /* if */
 	    } /* if */
 	} /* for */
