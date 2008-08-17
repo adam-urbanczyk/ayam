@@ -526,7 +526,7 @@ ay_notify_complete(ay_object *r)
 	  if(o->tags->val == 0)
 	    {
 	      ay_notify_force(o);
-	      if(o->tags)
+	      if(o->tags && (o->tags->type == ay_nc_tagtype))
 		{
 		  tag = o->tags;
 		  o->tags = tag->next;
