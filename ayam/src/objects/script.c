@@ -239,6 +239,89 @@ ay_script_getpntcb(int mode, ay_object *o, double *p)
 } /* ay_script_getpntcb */
 
 
+/* ay_script_getsp:
+ *  helper for setpropcb; manages the saved parameters
+ */
+int
+ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
+{
+ int ay_status = AY_OK;
+ char *arrname = NULL;
+ char *arrnameend = NULL;
+ Tcl_Obj *arrmemberlist = NULL, *arrmember;
+ int arrmembers = 0, i;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *string;
+ int stringlen;
+
+  /* handle script parameters */
+  if(sc->script && strstr(sc->script, "# Ayam, save array:"))
+    {
+      arrname = strchr(sc->script, ':');
+      arrname++;
+      while(arrname[0] == ' ')
+	arrname++;
+
+      arrnameend = strchr(arrname, '\n');
+
+      if(arrnameend)
+	*arrnameend = '\0';
+
+      if(sc->params)
+	{
+	  /* remove old saved parameters */
+	  for(i = 0; i < sc->paramslen; i++)
+	    {
+	      Tcl_DecrRefCount(sc->params[i]);
+	    }
+	  free(sc->params);
+	  sc->params = NULL;
+	  sc->paramslen = 0;
+	}
+
+      toa = Tcl_NewStringObj(arrname, -1);
+      ton = Tcl_NewStringObj(ay_script_sp, -1);
+
+      arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
+
+      if(arrmemberlist)
+	{
+
+	  Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
+
+	  if(arrmembers > 0)
+	    {
+	      if(!(sc->params = calloc(arrmembers, sizeof(Tcl_Obj*))))
+		{
+		  ay_status = AY_EOMEM;
+		}
+	      sc->paramslen = arrmembers;
+	      for(i = 0; i < arrmembers; i++)
+		{
+		  arrmember = NULL;
+		  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+		  if(arrmember)
+		    {
+		      sc->params[i] =
+			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, arrmember,
+						    TCL_GLOBAL_ONLY));
+		      Tcl_IncrRefCount(sc->params[i]);
+		    } /* if */
+		} /* for */
+	    } /* if */
+	} /* if */
+
+      if(arrnameend)
+	*arrnameend = '\n';
+
+      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    } /* if */
+
+  return ay_status;
+} /* ay_script_getsp */
+
+
 /* ay_script_setpropcb:
  *  set property (from Tcl to C context) callback function of script object
  */
@@ -255,7 +338,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *string;
- int stringlen;
+ int stringlen, newscript = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -301,6 +384,10 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_error(AY_ENULL, fname, NULL);
       return TCL_OK;
     }
+  if(!sc->script)
+    {
+      newscript = AY_TRUE;
+    }
   if(stringlen > 0)
     {
       if(!sc->script || (sc->script && strcmp(sc->script, string)))
@@ -323,70 +410,8 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       sc->script = NULL;
     } /* if */
 
-  /* handle script parameters */
-  if(strstr(sc->script, "# Ayam, save array:"))
-    {
-      arrname = strchr(sc->script, ':');
-      arrname++;
-      while(arrname[0] == ' ')
-	arrname++;
-
-      arrnameend = strchr(arrname, '\n');
-
-      if(arrnameend)
-	*arrnameend = '\0';
-
-      if(sc->params)
-	{
-	  /* remove old saved parameters */
-	  for(i = 0; i < sc->paramslen; i++)
-	    {
-	      Tcl_DecrRefCount(sc->params[i]);
-	    }
-	  free(sc->params);
-	  sc->params = NULL;
-	  sc->paramslen = 0;
-	}
-
-      Tcl_SetStringObj(toa, arrname, -1);
-      Tcl_SetStringObj(ton, ay_script_sp, -1);
-
-      arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
-
-      if(arrmemberlist)
-	{
-	  Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
-
-	  if(arrmembers > 0)
-	    {
-	      if(!(sc->params = calloc(arrmembers, sizeof(Tcl_Obj*))))
-		{
-		  ay_status = AY_EOMEM;
-		}
-	      sc->paramslen = arrmembers;
-	      for(i = 0; i < arrmembers; i++)
-		{
-		  arrmember = NULL;
-		  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
-		  if(arrmember)
-		    {
-
-		      sc->params[i] =
-			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, arrmember,
-						    TCL_GLOBAL_ONLY));
-		      Tcl_IncrRefCount(sc->params[i]);
-		    } /* if */
-		} /* for */
-	    } /* if */
-	} /* if */
-
-      if(arrnameend)
-	*arrnameend = '\n';
-
-      sc->modified = AY_TRUE;
-
-      ay_status = ay_notify_force(o);
-    } /* if */
+  if(!newscript)
+    ay_status = ay_script_getsp(interp, sc);
 
   sc->modified = AY_TRUE;
 
@@ -395,6 +420,9 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   o->modified = AY_TRUE;
 
   ay_status = ay_notify_parent();
+
+  if(newscript)
+    ay_status = ay_script_getsp(interp, sc);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -891,6 +919,12 @@ ay_script_notifycb(ay_object *o)
       return AY_OK;
     } /* if */
 
+  /* copy cached/saved individual parameters to global Tcl array */
+  if(/*!sc->modified && */sc->params)
+    {
+      ay_script_getpropcb(ay_interp, 0, NULL, o);
+    }
+
   /* prepare compiling the script? */
   if(sc->modified || (!sc->cscript))
     {
@@ -902,12 +936,6 @@ ay_script_notifycb(ay_object *o)
       sc->cscript = Tcl_NewStringObj(sc->script, -1);
       Tcl_IncrRefCount(sc->cscript);
       sc->modified = AY_FALSE;
-    }
-
-  /**/
-  if(sc->params)
-    {
-      ay_script_getpropcb(ay_interp, 0, NULL, o);
     }
 
   if(sc->type == 0)
