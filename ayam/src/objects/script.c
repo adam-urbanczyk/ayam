@@ -23,6 +23,8 @@ static char *ay_script_name = "Script";
 
 static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
 
+static char *ay_script_sa = "Ayam, save array:"; /* Save Array */
+
 /* functions: */
 
 /* ay_script_createcb:
@@ -250,12 +252,11 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
  char *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char *string;
- int stringlen;
+ Tcl_Obj *toa = NULL, *ton = NULL;
+
 
   /* handle script parameters */
-  if(sc->script && strstr(sc->script, "# Ayam, save array:"))
+  if(sc->script && strstr(sc->script, ay_script_sa))
     {
       arrname = strchr(sc->script, ':');
       arrname++;
@@ -331,10 +332,6 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ScriptAttrData";
  char fname[] = "script_setpropcb";
- char *arrname = NULL;
- char *arrnameend = NULL;
- Tcl_Obj *arrmemberlist = NULL, *arrmember;
- int arrmembers = 0, i;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *string;
@@ -473,7 +470,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   /* handle script parameters */
-  if(sc->params && strstr(sc->script, "# Ayam, save array:"))
+  if(sc->params && strstr(sc->script, ay_script_sa))
     {
       arrname = strchr(sc->script, ':');
       arrname++;
@@ -565,8 +562,8 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 8)
     {
-      if(strstr(sc->script, "# Ayam, save array:"))
-	{	 
+      if(sc->script && strstr(sc->script, ay_script_sa))
+	{
 	  fscanf(fileptr, "%d\n", &arrmembers);
 
 	  if(arrmembers > 0)
@@ -685,7 +682,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr, "0\n");
     } /* if */
 
-  if(strstr(sc->script, "# Ayam, save array:"))
+  if(strstr(sc->script, ay_script_sa))
     {
       arrname = strchr(sc->script, ':');
       arrname++;
