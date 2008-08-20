@@ -105,6 +105,7 @@ int
 ay_script_copycb(void *src, void **dst)
 {
  ay_script_object *scdst = NULL, *scsrc = NULL;
+ int i = 0;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -116,15 +117,29 @@ ay_script_copycb(void *src, void **dst)
 
   memcpy(scdst, scsrc, sizeof(ay_script_object));
 
-  /* new object starts without saved parameters */
+  /* copy saved parameters */
   scdst->params = NULL;
-  scdst->paramslen = 0;
+  if(scdst->paramslen)
+    {
+      if(!(scdst->params = calloc(scdst->paramslen, sizeof(Tcl_Obj*))))
+	{
+	  free(scdst);
+	  return AY_EOMEM;
+	}
+      for(i=0;i<scdst->paramslen;i++)
+	{
+	  scdst->params[i] = Tcl_DuplicateObj(scsrc->params[i]);
+	  Tcl_IncrRefCount(scdst->params[i]);
+	}
+    }
 
   /* copy script string */
   if(scsrc->script)
     {
       if(!(scdst->script = calloc(strlen(scsrc->script)+1, sizeof(char))))
 	{
+	  if(scdst->params)
+	    free(scdst->params);
 	  free(scdst);
 	  return AY_EOMEM;
 	}
