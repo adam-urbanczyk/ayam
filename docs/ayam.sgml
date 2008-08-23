@@ -5246,8 +5246,16 @@ height; <tt/"U"/, <tt/"V"/ extract curve along width and height
 respectively at specified parametric value (see below).
 
 The options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
+
 Since Ayam 1.13 it is also possible to extract the complete boundary
-curve of the patch (<tt/"Boundary"/).
+curve of the patch (<tt/"Boundary"/). Note that extracting the boundary
+currently ignores potential trimming information.
+
+Since Ayam 1.15 it is also possible to create a curve from the patch
+data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
+(simply the medium of all control points of a patch in the designated
+dimension). This option is useful to re-engineer swept surfaces, delivered
+as simple patches.
 
 <item><tt/"Parameter"/ controls the parametric value in u or v
 direction in the parameter space of the NURBS patch object where the
@@ -6601,15 +6609,20 @@ and values may still be set using the scripting interface.
 <bf/Example/
 <p>
 <code>RP Script</code>
+removes direct access to the Script property of a Script object.
+Ideally, the Script object also has a <tt/"NP"/ tag, to allow
+direct control of script parameters. This way, the user does not
+see the script (code), just a clean parameter GUI.
 
 <sect2>NS (Notify Script) Tag<label id="nstag">
 <p>
 <bf/Description/
 <p>
 The tag type <tt/"NS"/ (notify script) may be used to add scripts
-to an object, that will be run after the notification callback of
-that object fired (because e.g. one of the children of the object
-changed).
+to an object, that will be run <em/before/ the notification callback of
+that object completed.
+Notification, in turn, will be executed because e.g. one of the children
+of the object changed.
 <p>
 <bf/Example/
 <p>
@@ -6624,6 +6637,7 @@ changes its type from <tt/"NS"/ to <tt/"DNS"/ (disabled notify script).
 It will not be executed then.
 Disabled notify scripts may be enabled after careful inspection using
 the main menu entry <tt>"Special/Enable Scripts"</tt>.
+
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
@@ -6704,7 +6718,9 @@ Documentation on all those tags can be found in the sections above.
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
 This section describes NURBS curve and surface related modelling
-tools, which you can find in the <tt/"Tools"/ menu of the main window.
+tools. All tools are accessible via the <tt/"Tools"/ menu of the
+main window. In addition, there are also corresponding scripting
+interface commands.
 
 <sect1>The Closed BSpline Tool<label id="cbspt">
 <p>
@@ -6718,18 +6734,18 @@ tools, which you can find in the <tt/"Tools"/ menu of the main window.
 <item>Operation: This tool creates a closed cubic B-Spline curve with
 i+3 control points in the XY plane. The control points are arranged
 in a circle of radius 1 centered around the origin. This gives the curve
-a circular appearance (see image above) but it is not a true circle:
+a circular appearance (see image above) but it is <em>not</em> a true circle:
 If few control points are used, the radius of the circular curve
-is clearly smaller than 1. Furthermore, the parameterisation and
-curvature of the closed B-Spline are not exactly as one would
-expect from a circle.
+is clearly smaller than 1. Furthermore, shape, parameterisation, and
+curvature of the closed B-Spline are not exactly as one would expect
+from a circle.
 However, you can use the NURBCircle tool (see below) to create a true
 circle instead.
-<item>Note: i must be atleast 3. The first three control
-points of the new curve will be identical to the last three.
-Additionally, the curve will be marked as periodic and the generation
-of multiple points will be enabled, so that point
-edit actions know that they may need to move two points.
+<item>Note: i must be atleast 3. The first three control points of the
+new curve will be identical to the last three. Additionally, the curve
+will be marked as periodic and the generation of multiple points will
+be enabled, so that point edit actions know that they may need to move
+two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
 </itemize>
 
@@ -6790,9 +6806,9 @@ Additionally, the created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
-See section <ref id="trim" name="Trim Curves"> for a more
-detailed discussion of trim curves and how to use the rectangular
-curve created by the TrimRect tool.
+See section <ref id="trim" name="Trim Curves"> for a more detailed
+discussion of trim curves and how to use the rectangular curve created
+by the TrimRect tool.
 </itemize>
 
 <sect1>The NURBSphere Tool<label id="nspt">
@@ -7183,8 +7199,8 @@ See also the image above, where the left curve, planar but not defined
 in the XY plane will be changed, so that it is defined in the XY plane
 (mind the two different object coordinate systems in conjunction with
 the world coordinate system in the middle).
-<item>Note: A reverse operation, apart from undo, would be to apply the current
-transformation attributes to the control points of the curves.
+<item>Note: A reverse operation, apart from undo, would be to apply the
+current transformation attributes to the control points of the curves.
 </itemize>
 
 <sect1>The Make Compatible Tool<label id="makecompt">
@@ -7548,11 +7564,15 @@ on every application startup using the preference setting
 Moreover, on the X11 and Aqua window systems, Ayam is able to execute
 script code sent via the Tk <tt/"send"/ command or the AppleScript
 <tt/"tell"/ command from external applications.
+<p>
 In contrast to other modelling environments, in Ayam there is
 another way to run scripts. In Ayam, scripts may also be attached
 to script objects and run when the notification mechanism updates
 the scene. See also section
 <ref id="scriptobj" name="Script object">.
+Even normal objects can trigger scripts upon notification using
+NS tags. See also section
+<ref id="nstag" name="Notify Script tag">.
 <p>
 Note that most of the scripting interface commands listed in this
 documentation work in the background, without changing anything to
@@ -7565,8 +7585,7 @@ updating commands in the console by using <tt/&lt;Shift+Return&gt;/
 instead of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
 <p>
 If you want your changes to be undoable, you have to arrange for
-this manually too
-(see the documentation of the undo command:
+this manually too (see the documentation of the undo command:
 <ref id="scundo" name="Undo">).
 <p>
 From scripts it may be necessary to check wether an error occured
@@ -7588,8 +7607,8 @@ proc myProc { } {
 
 <sect1>Global Variables and Arrays
 <p>
-Several global variables exist in the Ayam Tcl context, that may be useful
-for scripts.
+Several global variables and arrays exist in the Ayam Tcl context, that
+may be useful for scripts.
 
 <sect2>Global Variables
 <p>
@@ -7641,11 +7660,16 @@ gproc getTagsp
 w     fTagsAttr
 }
 </code>
-The entry arr designates the name of the global property data array.
+The entry arr designates the name of the global property data array
+(thus, tags data is stored in an array called <tt/"tagsPropData"/).
 If sproc or gproc are empty (<tt/""/), a standard callback
 named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
 or set the property values. Otherwise sproc and gproc designate
 the set-property and get-property callbacks respectively.
+But for the tags property, the procedures <tt/"setTagsp"/ and
+<tt/"getTagsp"/ should be used.
+The last entry, <tt/"w"/, is the path and name of the main property
+GUI window.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
@@ -7659,7 +7683,10 @@ Tags|tagsPropData|getTagsp|setTagsp@<hline>
 </tabular>
 <caption>Property Arrays and Callbacks</caption>
 </table>
-
+Note that this list is pretty much incomplete, however you can always
+infer such information using commands like <tt/"parray Tags"/ in the Ayam
+console!
+<p>
 See also section
 <ref id="sciprop" name="Manipulating Properties">
 for more information on how to edit property values from the
@@ -7680,7 +7707,8 @@ Undo: is the result of the command undoable,
  <item>Description: Detailed description of the command and its
 parameters,
  <item>Notes: Additional information completing the detailed description,
- <item>Example: <tt/"command 1"/ (example application of the command).
+ <item>Example: <tt/"command 1"/ (example application of the command
+with explanation).
 </itemize>
 
 <sect2>Getting Help on Scripting Interface Commands<label id="schelp">
