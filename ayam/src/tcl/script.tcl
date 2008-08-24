@@ -92,10 +92,15 @@ proc setScriptp { } {
  global ay ScriptAttr ScriptAttrData
 
     set t $ay(pca).$ScriptAttr(w).tScript
+
+    set tags [$t tag names]
+    if { [lsearch $tags errtag] != -1 } {
+	$t tag delete errtag
+    }
+
     set ScriptAttrData(Script) [$t get 1.0 end]
     setProp
 
- return;
 }
 # setScriptp
 
@@ -105,10 +110,19 @@ proc getScriptp { } {
 
     set t $ay(pca).$ScriptAttr(w).tScript
     getProp
+    set errrange ""
+    set tags [$t tag names]
+    if { [lsearch $tags errtag] != -1 } {
+	set errrange [$t tag range errtag]
+    }
     $t delete 1.0 end
     $t insert 1.0 $ScriptAttrData(Script)
     if { $ScriptAttrData(Script) != "" } {
 	$t delete "end - 1 chars"
+    }
+
+    if { $errrange != "" } {
+	eval [subst "$t tag add errtag $errrange"]
     }
 
  return;
