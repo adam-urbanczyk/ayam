@@ -896,12 +896,15 @@ ay_script_notifycb(ay_object *o)
 {
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
+ char buf[256]/*, *l1 = NULL, *l2 = NULL*/;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
  ay_list_object *l = NULL, *old_sel = NULL;
  ay_script_object *sc = NULL, *csc = NULL;
  static int sema = 0;
+ int i = 0;
  int old_rdmode = 0;
  ClientData old_restrictcd;
+ Tcl_DString ds;
 
   /* this semaphor protects ourselves from running in an endless
      recursive loop should the script modify our child objects */
@@ -1083,8 +1086,50 @@ ay_script_notifycb(ay_object *o)
 
   if(result == TCL_ERROR)
     {
-      ay_error(AY_ERROR, fname, "Script failed!");
-    }
+      i = ay_interp->errorLine;
+      sprintf(buf, "Script failed in line: %d", i);
+      ay_error(AY_ERROR, fname, buf);
+
+      /* paint the error line red */
+      Tcl_DStringInit(&ds);
+      Tcl_DStringAppend(&ds, "set _w $ay(pca).fScriptAttr.tScript;", -1);
+      Tcl_DStringAppend(&ds, "$_w tag add errtag ", -1);
+      sprintf(buf, "%d", i);
+      Tcl_DStringAppend(&ds, buf, -1);
+      Tcl_DStringAppend(&ds, ".0 ", -1);
+      Tcl_DStringAppend(&ds, buf, -1);
+      Tcl_DStringAppend(&ds, ".end;", -1);
+      Tcl_DStringAppend(&ds, "$_w tag configure errtag -background red;", -1);
+      Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
+      Tcl_DStringFree(&ds);
+
+      /* the following does not work in too many cases, because we
+	 would need to properly escape script code elements for
+	 error printing */
+      /*
+      l1 = sc->script;
+      i--;
+      while(l1 && i)
+	{
+	  l1 = strchr(l1,'\n')+1;
+	  i--;
+	}
+      if(l1)
+	{
+	  l2 = strchr(l1,'\n');
+	  if(l2)
+	    {
+	      *l2 = '\0';
+	      ay_error(AY_ERROR, fname, l1);
+	      *l2 = '\n';
+	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname, l1);
+	    }
+	}
+      */
+    } /* if */
 
   sema = 0;
 
