@@ -514,7 +514,7 @@ proc toolbox_open { {w .tbw} } {
 	    lappend ay(toolbuttons) bextrnc bswpuv brevu brevv
 
 	    button $f.bextrnc -image ay_NPExtrNC_img -padx 0 -pady 0 -command {
-		level_crt ExtrNC;
+		level_crt ExtrNC "" -1;
 	    }
 	    balloon_set $f.bextrnc "extract NURBCurve"
 	    bind $f.bextrnc <Control-ButtonPress-1> {

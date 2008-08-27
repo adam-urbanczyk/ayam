@@ -40,6 +40,11 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     # the next command sorts the selected objects
     eval "selOb $selected"
 
+    # create an instance first (for ExtrNC/ExtrNP)?
+    if { $keepsel < 0 } {
+	crtOb Instance; uCR; sL
+    }
+
     set ay_error 0
     if { $crtargs != "" } {
 	eval [subst "crtOb $objtype $crtargs"]
