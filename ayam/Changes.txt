@@ -1,4 +1,4 @@
-[10. Aug 2008] CVS-Head:
+[27. Aug 2008] CVS-Head:
 ========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -38,6 +38,8 @@ o view type cycling (via PageUp/Down) now keeps the camera aim point
 o the GLU NURBS tesselation now preserves texture coordinates and vertex
   colors delivered by PV tags
 o ExtrNC objects can now also extract a middle axis curve
+o the creation of ExtrNC, ExtrNP, and OffsetNC objects now automatically
+  creates an instance of the currently selected object first
 
 Import/Export:
 o added support for true instances (via USE/DEF) to X3D export
