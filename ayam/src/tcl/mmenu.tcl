@@ -318,12 +318,12 @@ $m.nc add command -label "TrimRect" -command {
 $m.nc add separator
 
 $m.nc add command -label "ConcatNC" -command "level_crt ConcatNC;"
-$m.nc add command -label "OffsetNC" -command "level_crt OffsetNC;"
-$m.nc add command -label "ExtrNC" -command "level_crt ExtrNC;"
+$m.nc add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;"
+$m.nc add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;"
 
 $m.nc add separator
 
-$m.nc add command -label "ExtrNP" -command "level_crt ExtrNP;"
+$m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
 $m.nc add command -label "NURBSphere" -command {
     runTool ay(nsphereradius) "Radius:" \
 	"crtNSphere -r %0; uCR; sL; forceNot; rV;"
@@ -465,9 +465,9 @@ $m.npt add command -label "Elevate UV" -command {
 	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
 }
 
-$m.npt add command -label "Extract Curve" -command "level_crt ExtrNC;"
+$m.npt add command -label "Extract Curve" -command "level_crt ExtrNC \"\" -1;"
 
-$m.npt add command -label "Extract Patch" -command "level_crt ExtrNP;"
+$m.npt add command -label "Extract Patch" -command "level_crt ExtrNP \"\" -1;"
 
 #    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
 #	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
