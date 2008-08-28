@@ -4681,7 +4681,9 @@ ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
   /* find a good point after P[a] */
   if((ctype == AY_CTOPEN) && (a == (n-1)))
     {
-      after = a;
+      return(ay_npt_getnormalfromcontrol3D(ctype, n, p,
+					   stride, P, a-1, N));
+      /*after = a;*/
     }
   else
     {
@@ -4713,7 +4715,9 @@ ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
   /* find a good point before P[a] */
   if((ctype == AY_CTOPEN) && (a == 0))
     {
-      before = a;
+      return(ay_npt_getnormalfromcontrol3D(ctype, n, p,
+					   stride, P, 1, N));
+      /*before = a;*/
     }
   else
     {
