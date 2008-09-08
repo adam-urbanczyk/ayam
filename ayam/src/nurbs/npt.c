@@ -6393,42 +6393,103 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
 			 double *result)
 {
  int ay_status = AY_OK;
- int a, i;
+ int a, i, j;
+ double *tcv = NULL;
 
   if(side == 0)
     {
+      if(!(tcv = calloc(height*stride, sizeof(double))))
+	return AY_EOMEM;
       a = index*height*stride;
       for(i = 0; i < height; i++)
 	{
-	  result[0] += cv[a];
-	  result[1] += cv[a+1];
-	  result[2] += cv[a+2];
-	  result[3] += cv[a+3];
+	  memcpy(&(tcv[i*stride]), &(cv[a]), stride*sizeof(double));
 	  a += stride;
 	}
 
-      result[0] /= height;
-      result[1] /= height;
-      result[2] /= height;
-      result[3] /= height;
+      qsort(tcv, height, stride*sizeof(double), ay_nct_cmppnt);
 
+      a = 0;
+      i = 0;
+      j = height;
+      while(i < height)
+	{
+	  result[0] += tcv[a];
+	  result[1] += tcv[a+1];
+	  result[2] += tcv[a+2];
+	  result[3] += tcv[a+3];
+
+	  if(!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	    {
+	      while((i < height) &&
+		  !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+		{
+		  i++;
+		  a += stride;
+		  j--;
+		}
+	    }
+	  else
+	    {
+	      i++;
+	      a += stride;
+	    }
+	} /* while */
+
+      result[0] /= j;
+      result[1] /= j;
+      result[2] /= j;
+      result[3] /= j;
+
+      free(tcv);
     }
   else
     {
+      if(!(tcv = calloc(width*stride, sizeof(double))))
+	return AY_EOMEM;
+
       a = index*stride;
       for(i = 0; i < width; i++)
 	{
-	  result[0] += cv[a];
-	  result[1] += cv[a+1];
-	  result[2] += cv[a+2];
-	  result[3] += cv[a+3];
+	  memcpy(&(tcv[i*stride]), &(cv[a]), stride*sizeof(double));
 	  a += height*stride;
 	}
 
-      result[0] /= width;
-      result[1] /= width;
-      result[2] /= width;
-      result[3] /= width;
+      qsort(tcv, width, stride*sizeof(double), ay_nct_cmppnt);
+
+      a = 0;
+      i = 0;
+      j = width;
+      while(i < width)
+	{
+	  result[0] += tcv[a];
+	  result[1] += tcv[a+1];
+	  result[2] += tcv[a+2];
+	  result[3] += tcv[a+3];
+
+	  if(!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	    {
+	      while((i < width) &&
+		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+		{
+		  i++;
+		  a += stride;
+		  j--;
+		}
+	    }
+	  else
+	    {
+	      i++;
+	      a += stride;
+	    }
+	} /* while */
+      /*printf("uniq points w %d\n",j);*/
+      result[0] /= j;
+      result[1] /= j;
+      result[2] /= j;
+      result[3] /= j;
+
+      free(tcv);
     } /* if */
 
  return ay_status;
@@ -6672,6 +6733,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	{
 	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
 				   stride, i, 0, &cv[i*stride]);
+	  if(!np->is_rat)
+	    cv[i*stride+3] = 1.0;
 	}
       memcpy(nc->knotv, np->uknotv, (nc->length+nc->order)*sizeof(double));
       break;
@@ -6681,6 +6744,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	{
 	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
 				   stride, i, 1, &cv[i*stride]);
+	  if(!np->is_rat)
+	    cv[i*stride+3] = 1.0;
 	}
       memcpy(nc->knotv, np->vknotv, (nc->length+nc->order)*sizeof(double));
       break;
