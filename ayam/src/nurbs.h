@@ -343,6 +343,8 @@ int ay_nct_isdegen(ay_nurbcurve_object *curve);
 int ay_nct_offset(ay_object *o, int mode, double offset,
 		  ay_nurbcurve_object **nc);
 
+int ay_nct_cmppnt(const void *p1, const void *p2);
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
