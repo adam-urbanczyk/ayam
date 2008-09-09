@@ -6429,11 +6429,9 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
 		  j--;
 		}
 	    }
-	  else
-	    {
-	      i++;
-	      a += stride;
-	    }
+
+	  i++;
+	  a += stride;
 	} /* while */
 
       result[0] /= j;
@@ -6477,13 +6475,11 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
 		  j--;
 		}
 	    }
-	  else
-	    {
-	      i++;
-	      a += stride;
-	    }
+	  
+	  i++;
+	  a += stride;
 	} /* while */
-      /*printf("uniq points w %d\n",j);*/
+
       result[0] /= j;
       result[1] /= j;
       result[2] /= j;
