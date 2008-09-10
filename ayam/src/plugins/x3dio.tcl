@@ -208,7 +208,7 @@ proc x3dio_export { } {
 
     addParam $f x3dio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
 
-    addParam $f x3dio_options Accuracy
+    #addParam $f x3dio_options Accuracy
     addCheck $f x3dio_options WriteSelected
     addCheck $f x3dio_options ObeyNoExport
     addCheck $f x3dio_options IgnoreHidden
