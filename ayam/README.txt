@@ -29,7 +29,7 @@ Ayam home page:
 http://www.ayam3d.org/
 
 or the mirror at:
-http://www.core.de/~randi/ayam/ayam.html
+http://www.marsrakete.de/~randi/ayam/ayam.html
 
 
 MacOSX/Aqua specific information
@@ -57,7 +57,7 @@ Ayam home page:
 http://www.ayam3d.org/
 
 or the mirror at:
-http://www.core.de/~randi/ayam/ayam.html
+http://www.marsrakete.de/~randi/ayam/ayam.html
 
 -- 
 http://www.ayam3d.org/    Reconstruct the World!
