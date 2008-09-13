@@ -3323,7 +3323,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 {
  int m = n+p+1;
  int a = p, b = p+1, mult, r, save;
- int i, j, k, s, i1, i2;
+ int i, j, k, s, i1, i2, Qwlen;
  double numer, alpha, *alphas = NULL, *lQw = *Qw, *nQw = NULL;
 
 
@@ -3334,6 +3334,8 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
   if(!(alphas = calloc(p+2, sizeof(double))))
     return AY_EOMEM;
 
+  Qwlen = p+1;
+
   /* for(i = 0; i <= p; i++)
     Qw[nb][i] = Pw[i]; */
   memcpy(lQw, Pw, (p+1) * stride * sizeof(double));
@@ -3342,13 +3344,14 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
   while(b < m)
     {
       /* allocate next segment */
-      if(!(lQw = realloc(lQw, (p+1) * stride * sizeof(double))))
+      if(!(lQw = realloc(lQw, (Qwlen+(p+1)) * stride * sizeof(double))))
 	{
 	  *Qw = lQw;
 	  return AY_EOMEM;
 	}
       *Qw = lQw;
       nQw = lQw+((p+1) * stride);
+      Qwlen += (p+1);
 
       i = b;
       while((b < m) && (U[b+1] == U[b]))

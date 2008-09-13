@@ -345,6 +345,12 @@ int ay_nct_offset(ay_object *o, int mode, double offset,
 
 int ay_nct_cmppnt(const void *p1, const void *p2);
 
+int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
+
+int ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
