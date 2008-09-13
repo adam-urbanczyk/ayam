@@ -5709,6 +5709,142 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 } /* ay_nct_cmppnt */
 
 
+/* ay_nct_estlen:
+ *
+ */
+int
+ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
+{
+ int ay_status = AY_OK;
+ double v[3], slen, tlen, *Qw = NULL;
+ int a, i, j, nb = 0;
+ int stride = 4;
+
+  if(!nc || !len)
+    return AY_ENULL;
+
+  if(!(Qw = calloc(nc->length*stride,sizeof(double))))
+    return AY_EOMEM;
+
+  ay_status = ay_nb_DecomposeCurve(stride, nc->length-1, nc->order-1,
+				   nc->knotv, nc->controlv,
+				   &nb, &Qw);
+
+  *len = 0.0;
+  a = 0;
+  for(i = 0; i < nb; i++)
+    {
+      v[0] = Qw[a+(nc->order*stride)] - Qw[a];
+      v[1] = Qw[a+(nc->order*stride)+1] - Qw[a+1];
+      v[2] = Qw[a+(nc->order*stride)+2] - Qw[a+2];
+
+      if(fabs(v[0]) > AY_EPSILON ||
+	 fabs(v[1]) > AY_EPSILON ||
+	 fabs(v[2]) > AY_EPSILON)
+	{
+	  tlen = AY_V3LEN(v);
+	}
+      else
+	{
+	  tlen = 0.0;
+	}
+
+      slen = 0.0;
+      for(j = 0; j < nc->order; j++)
+	{
+	  v[0] = Qw[a+stride] - Qw[a];
+	  v[1] = Qw[a+stride+1] - Qw[a+1];
+	  v[2] = Qw[a+stride+2] - Qw[a+2];
+
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
+	    {
+	      slen += AY_V3LEN(v);
+	    }
+
+	  a += stride;
+	} /* for */
+
+      *len += tlen+((slen-tlen)/2.0);
+
+      /* next segment */
+      a += stride;
+    } /* for */
+
+  free(Qw);
+
+ return ay_status;
+} /* ay_nct_estlen */
+
+
+/* ay_nct_estlennctcmd:
+ *
+ */
+int
+ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "estlenNC";
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *po = NULL;
+ double len;
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+  /* parse args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "vname");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  /* get curve to work on */
+  o = sel->object;
+  if(o->type != AY_IDNCURVE)
+    {
+      ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
+      if(po)
+	{
+	  curve = (ay_nurbcurve_object *)po->refine;
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "provide failed");
+	}
+    }
+  else
+    {
+      curve = (ay_nurbcurve_object *)o->refine;
+    }
+
+  /* get len */
+  ay_status = ay_nct_estlen(curve, &len);
+
+  /* put len into Tcl context */
+  ton = Tcl_NewStringObj(argv[1], -1);
+  to = Tcl_NewDoubleObj(len);
+  Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  /* cleanup */
+  if(po)
+    {
+      ay_object_deletemulti(po);
+    }
+
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return TCL_OK;
+} /* ay_nct_estlennctcmd */
+
+
 /* templates */
 #if 0
 
