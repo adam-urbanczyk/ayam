@@ -5710,7 +5710,8 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 
 
 /* ay_nct_estlen:
- *
+ *  estimate length of NURBS curve <nc>,
+ *  outputs result in <len>
  */
 int
 ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
@@ -5718,25 +5719,57 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
  int ay_status = AY_OK;
  double v[3], slen, tlen, *Qw = NULL;
  int a, i, j, nb = 0;
- int stride = 4;
+ int stride = 4, freeQw = AY_FALSE;
 
   if(!nc || !len)
     return AY_ENULL;
 
-  if(!(Qw = calloc(nc->length*stride,sizeof(double))))
-    return AY_EOMEM;
-
-  ay_status = ay_nb_DecomposeCurve(stride, nc->length-1, nc->order-1,
-				   nc->knotv, nc->controlv,
-				   &nb, &Qw);
-
   *len = 0.0;
+
+  /* special case for polygons */
+  if(nc->order == 2)
+    {
+      a = 0;
+      for(j = 0; j < (nc->length-1); j++)
+	{
+	  v[0] = Qw[a+stride] - Qw[a];
+	  v[1] = Qw[a+stride+1] - Qw[a+1];
+	  v[2] = Qw[a+stride+2] - Qw[a+2];
+
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
+	    {
+	      *len += AY_V3LEN(v);
+	    }
+	  a += stride;
+	} /* for */
+
+      return ay_status;
+    } /* if */
+
+  if(nc->length != nc->order)
+    {
+      if(!(Qw = calloc(nc->order*stride,sizeof(double))))
+	return AY_EOMEM;
+
+      freeQw = AY_TRUE;
+
+      ay_status = ay_nb_DecomposeCurve(stride, nc->length-1, nc->order-1,
+				       nc->knotv, nc->controlv, &nb, &Qw);
+    }
+  else
+    {
+      nb = 1;
+      Qw = nc->controlv;
+    }
+
   a = 0;
   for(i = 0; i < nb; i++)
     {
-      v[0] = Qw[a+(nc->order*stride)] - Qw[a];
-      v[1] = Qw[a+(nc->order*stride)+1] - Qw[a+1];
-      v[2] = Qw[a+(nc->order*stride)+2] - Qw[a+2];
+      v[0] = Qw[a+((nc->order-1)*stride)] - Qw[a];
+      v[1] = Qw[a+((nc->order-1)*stride)+1] - Qw[a+1];
+      v[2] = Qw[a+((nc->order-1)*stride)+2] - Qw[a+2];
 
       if(fabs(v[0]) > AY_EPSILON ||
 	 fabs(v[1]) > AY_EPSILON ||
@@ -5750,7 +5783,7 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 	}
 
       slen = 0.0;
-      for(j = 0; j < nc->order; j++)
+      for(j = 0; j < (nc->order-1); j++)
 	{
 	  v[0] = Qw[a+stride] - Qw[a];
 	  v[1] = Qw[a+stride+1] - Qw[a+1];
@@ -5766,20 +5799,30 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 	  a += stride;
 	} /* for */
 
-      *len += tlen+((slen-tlen)/2.0);
+      if(tlen > AY_EPSILON && fabs(slen-tlen) > AY_EPSILON)
+	{
+	  *len += tlen+((slen-tlen)/2.0);
+	}
+      else
+	{
+	  *len += slen;
+	}
 
       /* next segment */
       a += stride;
     } /* for */
 
-  free(Qw);
+  if(freeQw)
+    {
+      free(Qw);
+    }
 
  return ay_status;
 } /* ay_nct_estlen */
 
 
 /* ay_nct_estlennctcmd:
- *
+ *  Tcl interface for NURBS curve length estimation tool
  */
 int
 ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,

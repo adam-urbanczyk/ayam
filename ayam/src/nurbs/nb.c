@@ -3315,7 +3315,9 @@ ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
 /*
  * ay_nb_DecomposeCurve:
  * decompose curve (stride, n, p, U, Pw) into Bezier segments
- * result: nb number of Bezier segments, Qw the Bezier segments
+ * result: nb number of Bezier segments, Qw the Bezier segments;
+ * Qw[p+1] has to be allocated outside but may be reallocated
+ * inside this function!
  */
 int
 ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
@@ -3324,8 +3326,8 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
  int m = n+p+1;
  int a = p, b = p+1, mult, r, save;
  int i, j, k, s, i1, i2, Qwlen;
- double numer, alpha, *alphas = NULL, *lQw = *Qw, *nQw = NULL;
-
+ double numer, alpha, *alphas = NULL, *lQw = *Qw;
+ double *Qwnb, *Qwnb1, *temp;
 
   if(!nb || !Pw || !Qw)
     return AY_ENULL;
@@ -3340,18 +3342,18 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
     Qw[nb][i] = Pw[i]; */
   memcpy(lQw, Pw, (p+1) * stride * sizeof(double));
 
-
   while(b < m)
     {
       /* allocate next segment */
-      if(!(lQw = realloc(lQw, (Qwlen+(p+1)) * stride * sizeof(double))))
+      if(!(temp = realloc(lQw, (Qwlen+(p+1)) * stride * sizeof(double))))
 	{
-	  *Qw = lQw;
 	  return AY_EOMEM;
 	}
+      lQw = temp;
       *Qw = lQw;
-      nQw = lQw+((p+1) * stride);
       Qwlen += (p+1);
+      Qwnb = lQw+(*nb*(p+1)*stride);
+      Qwnb1 = Qwnb+((p+1)*stride);
 
       i = b;
       while((b < m) && (U[b+1] == U[b]))
@@ -3376,23 +3378,26 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 		  /*Qw[nb][k] = alpha*Qw[nb][k] + (1.0-alpha)*Qw[nb][k-1];*/
 		  i1 = k*stride;
 		  i2 = (k-1)*stride;
-		  lQw[i1]   = alpha*lQw[i1]   + (1.0-alpha)*lQw[i2];
-		  lQw[i1+1] = alpha*lQw[i1+1] + (1.0-alpha)*lQw[i2+1];
-		  lQw[i1+2] = alpha*lQw[i1+2] + (1.0-alpha)*lQw[i2+2];
+		  Qwnb[i1]   = alpha*Qwnb[i1]   + (1.0-alpha)*Qwnb[i2];
+		  Qwnb[i1+1] = alpha*Qwnb[i1+1] + (1.0-alpha)*Qwnb[i2+1];
+		  Qwnb[i1+2] = alpha*Qwnb[i1+2] + (1.0-alpha)*Qwnb[i2+2];
 		  if(stride > 3)
-		    lQw[i1+3] = alpha*lQw[i1+3] + (1.0-alpha)*lQw[i2+3];
+		    Qwnb[i1+3] = alpha*Qwnb[i1+3] + (1.0-alpha)*Qwnb[i2+3];
 		}
 	      if(b < m) /* control point of next segment */
 		{
 		  /*Qw[nb+1][save] = Qw[nb][p];*/
 		  i1 = save*stride;
 		  i2 = p*stride;
-		  memcpy(&(nQw[i1]), &(lQw[i2]), stride*sizeof(double));
+		  memcpy(&(Qwnb1[i1]), &(Qwnb[i2]), stride*sizeof(double));
 		}
 	    } /* for */
 	}
 
-      *nb = *nb+1; /* Bezier segment completed */
+      /* Bezier segment completed */
+      *nb = *nb+1;
+      Qwnb += stride*(p+1);
+
       /* initialize for next segment */
       if(b < m)
 	{
@@ -3401,12 +3406,11 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 	      /*Qw[nb][i] = Pw[b-p+i];*/
 	      i1 = i*stride;
 	      i2 = (b-p+i)*stride;
-	      memcpy(&(nQw[i1]), &(Pw[i2]), stride*sizeof(double));
+	      memcpy(&(Qwnb[i1]), &(Pw[i2]), stride*sizeof(double));
 	    }
 	  a = b;
 	  b = b+1;
 	}
-
     } /* while */
 
  return AY_OK;
