@@ -1,4 +1,4 @@
-[27. Aug 2008] CVS-Head:
+[15. Sep 2008] CVS-Head:
 ========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -53,6 +53,7 @@ o added example script "kdialog.tcl" that switches all internal file dialogs
 o added script "bgconvert.tcl" that allows to use Ayam as a background
   3D file format converter from a UNIX shell
 o script objects now support saving of individual sets of parameters
+o add helper command to estimate the length of NURBS curves "estlenNC"
 
 Documentation/Example Files:
 o added example scene "multicolcsg.ay" that demonstrates how "Primitive"
