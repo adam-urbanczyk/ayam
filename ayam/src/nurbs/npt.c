@@ -4806,7 +4806,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
  double tangent[3] = {0}, normal[3] = {0}, zaxis[3] = {0.0, 0.0, -1.0};
  double ww = sqrt(2.0)/2.0, displacex, displacey;
  int i = 0, j = 0, a = 0, b = 0, k = 0;
- double m[16], point[4] = {0};
+ double m[16], point[4] = {0}, middle[4] = {0};
 
   if(!o || !bevel)
     return AY_ENULL;
@@ -5077,25 +5077,14 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
     } /* for */
 
   /* transform cap loops */
-  if(type>2)
+  if(type > 2)
     {
       /* calculate middle point, curve->type tells how many control
 	 points should be considered */
-      i = curve->length;
-      if(curve->type == AY_CTCLOSED)
-	i--;
-      if(curve->type == AY_CTPERIODIC)
-	i -= (curve->order-1);
-      x = controlv[0]/i;
-      y = controlv[1]/i;
-      z = controlv[b-2];
-      a = 4;
-      for(k = 1; k < i; k++)
-	{
-	  x += (controlv[a]/i);
-	  y += (controlv[a+1]/i);
-	  a += 4;
-	}
+      ay_status = ay_npt_extractmiddleaxis(curve->controlv, curve->length,
+					   1, 4, 0, 1, middle);
+
+      middle[2] = controlv[b-2];
     } /* if */
 
   if(type == 3)
@@ -5107,9 +5096,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       /* now set complete last loop to middle point */
       for(k = 0; k < curve->length; k++)
 	{
-	  controlv[b]   = x;
-	  controlv[b+1] = y;
-	  controlv[b+2] = z;
+	  memcpy(&(controlv[b]), middle, 3*sizeof(double));
 	  controlv[b+3] = 1.0;
 	  b += 4;
 	}
@@ -5120,9 +5107,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
       /* now set complete last loop to middle point */
       for(k = 0; k < curve->length; k++)
 	{
-	  controlv[b]   = x;
-	  controlv[b+1] = y;
-	  controlv[b+2] = z;
+	  memcpy(&(controlv[b]), middle, 3*sizeof(double));
 	  controlv[b+3] = 1.0;
 	  b += 4;
 	}
@@ -7978,7 +7963,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_clampvtcmd:
- *  Tcl interface for ay_npt_clampu above
+ *  Tcl interface for ay_npt_clampv above
  */
 int
 ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
