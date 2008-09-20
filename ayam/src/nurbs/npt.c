@@ -5081,8 +5081,8 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
     {
       /* calculate middle point, curve->type tells how many control
 	 points should be considered */
-      ay_status = ay_npt_extractmiddleaxis(curve->controlv, curve->length,
-					   1, 4, 0, 1, middle);
+      ay_status = ay_npt_extractmiddlepoint(curve->controlv, curve->length,
+					    1, 4, 0, 1, middle);
 
       middle[2] = controlv[b-2];
     } /* if */
@@ -6366,14 +6366,14 @@ cleanup:
 } /* ay_npt_extractboundary */
 
 
-/* ay_npt_extractmiddleaxis:
+/* ay_npt_extractmiddlepoint:
  *  helper to extract one point of the middle axis curve from a NURBS patch
  *  control matrix with control points: <cv>, <width>, <height>, <stride>
  *  along dimension <side> (0 - u, 1 - v) at control mesh position <index>,
  *  outputs resulting point in <result>
  */
 int
-ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
+ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 			 int index, int side,
 			 double *result)
 {
@@ -6460,7 +6460,7 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
 		  j--;
 		}
 	    }
-	  
+
 	  i++;
 	  a += stride;
 	} /* while */
@@ -6474,7 +6474,7 @@ ay_npt_extractmiddleaxis(double *cv, int width, int height, int stride,
     } /* if */
 
  return ay_status;
-} /* ay_npt_extractmiddleaxis */
+} /* ay_npt_extractmiddlepoint */
 
 
 /* ay_npt_extractnc:
@@ -6712,8 +6712,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       /* middle u */
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
-				   stride, i, 0, &cv[i*stride]);
+	  ay_npt_extractmiddlepoint(np->controlv, np->width, np->height,
+				    stride, i, 0, &cv[i*stride]);
 	  if(!np->is_rat)
 	    cv[i*stride+3] = 1.0;
 	}
@@ -6723,8 +6723,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       /* middle v */
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_npt_extractmiddleaxis(np->controlv, np->width, np->height,
-				   stride, i, 1, &cv[i*stride]);
+	  ay_npt_extractmiddlepoint(np->controlv, np->width, np->height,
+				    stride, i, 1, &cv[i*stride]);
 	  if(!np->is_rat)
 	    cv[i*stride+3] = 1.0;
 	}
@@ -6850,7 +6850,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
   ay_trafo_creatematrix(o, m);
 
   tcv = calloc(ncurve->length*stride, sizeof(double));
-  
+
   if(!tcv)
     {
       ay_status = AY_EOMEM;
@@ -6926,7 +6926,7 @@ cleanup:
     free(tcv);
 
  return ay_status;
-} /* ay_npt_isboundcurve */ 
+} /* ay_npt_isboundcurve */
 
 
 /* ay_npt_istrimmed:
@@ -7006,7 +7006,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
     default:
       break;
     } /* switch */
-    
+
  return AY_FALSE;
 } /* ay_npt_istrimmed */
 
