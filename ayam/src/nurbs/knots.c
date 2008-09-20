@@ -916,9 +916,9 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      lens[i] = AY_VLEN((Q[j+3] - Q[j]),
-			(Q[j+4] - Q[j+1]),
-			(Q[j+5] - Q[j+2]));
+      lens[i] = AY_VLEN((Q[j+stride] - Q[j]),
+			(Q[j+stride+1] - Q[j+1]),
+			(Q[j+stride+2] - Q[j+2]));
 
       totallen += lens[i];
 
@@ -933,6 +933,9 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
     {
       t += lens[j]/totallen;
       vk[i] = t;
+
+      /*printf("vk[%d]:%f\n",i,t);*/
+
       j++;
     }
   vk[Qlen-1] = 1.0;
@@ -945,6 +948,68 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
 
  return AY_OK;
 } /* ay_knots_chordparam */
+
+
+/* ay_knots_centriparam:
+ *  create centripetal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+ */
+int
+ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
+{
+ double t, *vk = NULL, totallen = 0.0, *lens = NULL;
+ int i, j;
+
+  if(!Q || !U)
+    return AY_ENULL;
+
+  /* get some memory */
+  if(!(vk = calloc(Qlen, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(!(lens = calloc(Qlen-1, sizeof(double))))
+    {
+      free(vk);
+      return AY_EOMEM;
+    }
+
+  /* compute total length and partial lengths */
+  j = 0;
+  for(i = 0; i < (Qlen-1); i++)
+    {
+      lens[i] = sqrt(AY_VLEN((Q[j+stride] - Q[j]),
+			     (Q[j+stride+1] - Q[j+1]),
+			     (Q[j+stride+2] - Q[j+2])));
+
+      totallen += lens[i];
+
+      j += stride;
+    }
+
+  /* compute the centripetal parameterization */
+  vk[0] = 0.0;
+  j = 0;
+  t = 0.0;
+  for(i = 1; i < (Qlen-1); i++)
+    {
+      t += lens[j]/totallen;
+      vk[i] = t;
+
+      /*printf("vk[%d]:%f\n",i,t);*/
+
+      j++;
+    }
+  vk[Qlen-1] = 1.0;
+
+  /* return result */
+  *U = vk;
+
+  /* clean up */
+  free(lens);
+
+ return AY_OK;
+} /* ay_knots_centriparam */
 
 
 /* ay_knots_init:

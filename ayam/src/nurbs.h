@@ -79,6 +79,8 @@ int ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 
 int ay_knots_chordparam(double *Q, int Qlen, int stride, double **U);
 
+int ay_knots_centriparam(double *Q, int Qlen, int stride, double **U);
+
 int ay_knots_init(Tcl_Interp *interp);
 
 /* nb.c */
@@ -286,8 +288,8 @@ int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
 int ay_nct_addinternalcps(ay_object *curve, int where);
 
-int ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
+			  int argc, char *argv[]);
 
 double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 
@@ -347,9 +349,11 @@ int ay_nct_cmppnt(const void *p1, const void *p2);
 
 int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
 
-int ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
+int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /* npt.c */
 int ay_npt_create(int uorder, int vorder, int width, int height,
