@@ -961,7 +961,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "rescaleKnNC", ay_nct_rescaleknvnctcmd,
+  Tcl_CreateCommand(interp, "rescaleKnNC", ay_nct_rescaleknvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "curvPlot", ay_nct_curvplottcmd,
@@ -982,7 +982,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "trimNC", ay_nct_trimtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "estlenNC", ay_nct_estlennctcmd,
+  Tcl_CreateCommand(interp, "estlenNC", ay_nct_estlentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "reparamNC", ay_nct_reparamtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* nurbs/npt.c */

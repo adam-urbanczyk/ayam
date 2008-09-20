@@ -3571,14 +3571,14 @@ ay_nct_addinternalcps(ay_object *curve, int where)
 } /* ay_nct_addinternalcps */
 
 
-/* ay_nct_rescaleknvnctcmd:
+/* ay_nct_rescaleknvtcmd:
  *  rescale the knot vectors of the selected NURBS curves
  *  - to the range 0.0 - 1.0 (no arguments)
  *  - to a specific range (-r min max)
  *  - so that all knots have a minimum guaranteed distance (-d mindist)
  */
 int
-ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
+ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -3661,7 +3661,7 @@ ay_nct_rescaleknvnctcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_nct_rescaleknvnctcmd */
+} /* ay_nct_rescaleknvtcmd */
 
 
 /* ay_nct_getcurvature:
@@ -5821,11 +5821,11 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 } /* ay_nct_estlen */
 
 
-/* ay_nct_estlennctcmd:
+/* ay_nct_estlentcmd:
  *  Tcl interface for NURBS curve length estimation tool
  */
 int
-ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,
+ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -5885,7 +5885,108 @@ ay_nct_estlennctcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
  return TCL_OK;
-} /* ay_nct_estlennctcmd */
+} /* ay_nct_estlentcmd */
+
+
+/* ay_nct_reparamtcmd:
+ *
+ */
+int
+ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "reparamNC";
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ int i, stride = 4, type = 0;
+ double *vtemp = NULL;
+
+  /* parse args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "t");
+      return TCL_OK;
+    }
+
+  Tcl_GetInt(interp, argv[1], &type);
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  switch(type)
+	    {
+	    case 0:
+	      /* chordal */
+	      ay_status = ay_knots_chordparam(curve->controlv, curve->length,
+					      stride, &vtemp);
+	      if(ay_status)
+		{
+		  return(TCL_OK);
+		}
+	      for(i=0; i<curve->order-1; i++)
+		(curve->knotv)[i] = 0.0;
+	      memcpy(&(curve->knotv[curve->order-2]), vtemp,
+		       curve->length*sizeof(double));
+	      for(i=curve->length+2; i<curve->length+curve->order-1; i++)
+		(curve->knotv)[i] = 1.0;
+	      curve->knot_type = AY_KTCUSTOM;
+	      free(vtemp);
+	      break;
+	    case 1:
+	      /* centripetal */
+	      ay_status = ay_knots_centriparam(curve->controlv, curve->length,
+					       stride, &vtemp);
+	      if(ay_status)
+		{
+		  return(TCL_OK);
+		}
+	      for(i=0; i<curve->order-1; i++)
+		(curve->knotv)[i] = 0.0;
+	      memcpy(&(curve->knotv[curve->order-2]), vtemp,
+		       curve->length*sizeof(double));
+	      for(i=curve->length+2; i<curve->length+curve->order-1; i++)
+		(curve->knotv)[i] = 1.0;
+	      curve->knot_type = AY_KTCUSTOM;
+	      free(vtemp);
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  /* clean up */
+	  ay_status = ay_nct_recreatemp(curve);
+	  /* update pointers to controlv */
+	  ay_status = ay_object_ccp(o);
+	  ay_selp_clear(o);
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_reparamtcmd */
 
 
 /* templates */
@@ -5939,7 +6040,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_recreatemp(curve);
 	  /* update pointers to controlv */
 	  ay_status = ay_object_ccp(o);
-	  ay_status = ay_selp_clear(o);
+	  ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
