@@ -865,6 +865,9 @@ ay_comp_cap(ay_object *o1, ay_object *o2)
   p1 = (ay_cap_object *)o1->refine;
   p2 = (ay_cap_object *)o2->refine;
 
+  if(p1->type != p2->type)
+    return AY_FALSE;
+
  return AY_TRUE;
 } /* ay_comp_cap */
 
@@ -1280,7 +1283,8 @@ ay_comp_offnc(ay_object *o1, ay_object *o2)
   s1 = (ay_offnc_object *)o1->refine;
   s2 = (ay_offnc_object *)o2->refine;
 
-  if((s1->revert != s2->revert) ||
+  if((s1->mode != s2->mode) ||
+     (s1->revert != s2->revert) ||
      (s1->offset != s2->offset))
     return AY_FALSE;
 
