@@ -35,7 +35,7 @@ int ay_bpatch_init(Tcl_Interp *interp);
 /* camera.c */
 int ay_camera_init(Tcl_Interp *interp);
 
-/* camera.c */
+/* cap.c */
 int ay_cap_init(Tcl_Interp *interp);
 
 /* clone.c */
