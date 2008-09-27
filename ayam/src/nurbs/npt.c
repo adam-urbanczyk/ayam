@@ -9025,8 +9025,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 		 ay_object **result)
 {
  int ay_status = AY_OK;
- ay_object *copy = NULL, *new = NULL;
- ay_object *np1 = NULL, *np2 = NULL;
+ ay_object *copy = NULL, *np1 = NULL, *np2 = NULL;
  ay_nurbpatch_object *patch = NULL;
  char fname[] = "npt_extractnp", split_errmsg[] = "Split failed!";
  double uv, uvmin, uvmax;
@@ -9086,7 +9085,9 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	      ay_error(AY_ERROR, fname, split_errmsg);
 	      return AY_ERROR;
 	    }
-	  /* np1 is the sub surface we want */
+	  /* <np1> is the sub surface we want
+	     => remove <copy>; then move <np1> to <copy> */
+
 	  if(np1)
 	    {
 	      np2 = copy;
@@ -9104,7 +9105,8 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	      ay_error(AY_ERROR, fname, split_errmsg);
 	      return AY_ERROR;
 	    }
-	  /* copy is the sub surface we want */
+	  /* <copy> is the sub surface we want
+	     => remove <np1> */
 	  if(np1)
 	    {
 	      ay_object_delete(np1);
@@ -9119,7 +9121,8 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	      ay_error(AY_ERROR, fname, split_errmsg);
 	      return AY_ERROR;
 	    }
-	  /* np1 is the sub surface we want */
+	  /* <np1> is the sub surface we want
+	     => remove <copy>; then move <np1> to <copy> */
 	  if(np1)
 	    {
 	      np2 = copy;
@@ -9137,7 +9140,8 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	      ay_error(AY_ERROR, fname, split_errmsg);
 	      return AY_ERROR;
 	    }
-	  /* copy is the sub surface we want */
+	  /* <copy> is the sub surface we want
+	     => remove <np1> */
 	  if(np1)
 	    {
 	      ay_object_delete(np1);
@@ -9146,14 +9150,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	}
 
       /* return result */
-      ay_status = ay_npt_createnpatchobject(&new);
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname, "Error creating object.");
-	  return AY_ERROR;
-	}
-      new->refine = patch;
-      *result = new;
+      *result = copy;
     } /* if */
 
  return AY_OK;
