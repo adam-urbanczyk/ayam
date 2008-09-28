@@ -2036,6 +2036,7 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
+	      c->modified = AY_TRUE;
 	      ay_notify_force(c);
 	    }
 
