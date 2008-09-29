@@ -1839,8 +1839,6 @@ int height = Togl_Height(togl);
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-      ay_status = ay_notify_parent();
-
       fvalid = AY_TRUE;
       fX = winX;
       fY = winY;
@@ -4873,7 +4871,7 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	  c->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_force(sel->object);
+	  ay_notify_force(c);
 	} /* if */
 
       sel = sel->next;
@@ -5382,7 +5380,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  int ay_status = AY_OK;
  int i, j, stride = 4;
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
- double zaxis[3] = {0.0,0.0,1.0}; 
+ double zaxis[3] = {0.0,0.0,1.0};
  ay_nurbcurve_object *curve = NULL;
  int p1len, p2len, p3len;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
@@ -5418,7 +5416,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
       /* offset the line */
       newcv[0] = p1[0] + n[0];
       newcv[1] = p1[1] + n[1];
-      
+
       newcv[stride]   = p2[0] + n[0];
       newcv[stride+1] = p2[1] + n[1];
     }
@@ -5448,7 +5446,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 
 	    } /* for */
 	} /* if */
-      
+
       if(mode == 1)
 	{
 	  /*
@@ -5500,7 +5498,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  /* offset the first control polygon segment */
 	  p1s1[0] = p1[0] + n[0];
 	  p1s1[1] = p1[1] + n[1];
-      
+
 	  p2s1[0] = p2[0] + n[0];
 	  p2s1[1] = p2[1] + n[1];
 
@@ -5587,7 +5585,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		  /* prepare next iteration */
 		  p1 = p2;
 		  p2 = p3;
-	      
+
 		  memcpy(t1, t2, 2*sizeof(double));
 		  memcpy(p1s1, p1s2, 2*sizeof(double));
 		  memcpy(p2s1, p2s2, 2*sizeof(double));

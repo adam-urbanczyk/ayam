@@ -666,6 +666,7 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
 	  o->movx += dx;
 	  o->movy += dy;
 	  o->movz += dz;
+	  o->modified = AY_TRUE;
 	}
 
       sel = sel->next;
@@ -721,7 +722,8 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
 
 	      point = point->next;
 	    }
-
+	  if(o->selp)
+	    o->modified = AY_TRUE;
 	}
 
       sel = sel->next;
@@ -770,6 +772,7 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
 	  o->scalx *= dx;
 	  o->scaly *= dy;
 	  o->scalz *= dz;
+	  o->modified = AY_TRUE;
 	}
 
       sel = sel->next;
@@ -832,7 +835,8 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 
 	      point = point->next;
 	    }
-
+	  if(o->selp)
+	    o->modified = AY_TRUE;
 	}
 
       sel = sel->next;
@@ -894,6 +898,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 	      ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
 	      ay_quat_add(quat, o->quat, o->quat);
 	    }
+	  o->modified = AY_TRUE;
 	}
 
       sel = sel->next;
@@ -952,8 +957,8 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 
 	      point = point->next;
 	    }
-
-	  o->modified = AY_TRUE;
+	  if(o->selp)
+	    o->modified = AY_TRUE;
 
 	}
 
