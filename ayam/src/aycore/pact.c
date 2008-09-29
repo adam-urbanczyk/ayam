@@ -1063,8 +1063,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 
   ay_status = ay_nct_recreatemp(curve);
 
-  ay_status = ay_notify_parent();
-
  return ay_status;
 } /* ay_pact_insertnc */
 
@@ -1253,6 +1251,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  if(ay_status)
 	    ay_error(ay_status, fname, "Error while inserting point!");
+	  ay_status = ay_notify_force(ay_selection->object);
 	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
@@ -1402,8 +1401,6 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 
   ay_status = ay_nct_recreatemp(curve);
 
-  ay_status = ay_notify_parent();
-
  return AY_OK;
 } /* ay_pact_deletenc */
 
@@ -1477,7 +1474,6 @@ ay_pact_deleteic(ay_icurve_object *icurve,
 
       free(icurve->controlv);
       icurve->controlv = newcontrolv;
-
    } /* if */
 
  return AY_OK;
@@ -1515,6 +1511,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  if(ay_status)
 	    ay_error(ay_status, fname, "Error while deleting point!");
+	  ay_status = ay_notify_force(ay_selection->object);
 	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
@@ -1988,7 +1985,7 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
  char fname[] = "centerPnts";
  ay_list_object *sel = ay_selection;
  ay_point *oldpointsel = NULL;
- ay_object *c = NULL;
+ ay_object *o = NULL;
  int mode = 0;
 
   if(!sel)
@@ -2004,31 +2001,31 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      c = sel->object;
-      if(c)
+      o = sel->object;
+      if(o)
 	{
 	  /* save old point selection */
-	  oldpointsel = c->selp;
-	  c->selp = NULL;
+	  oldpointsel = o->selp;
+	  o->selp = NULL;
 
 	  /* center all points */
-	  switch(c->type)
+	  switch(o->type)
 	    {
 	    case AY_IDNCURVE:
-	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)c->refine);
+	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
 	      break;
 	    default:
-	      ay_status = ay_selp_selall(c);
+	      ay_status = ay_selp_selall(o);
 	      if(!ay_status)
 		{
-		  ay_status = ay_selp_center(c, mode);
+		  ay_status = ay_selp_center(o, mode);
 		}
 	      break;
 	    } /* switch */
 
 	  /* recover point selection */
-	  ay_selp_clear(c);
-	  c->selp = oldpointsel;
+	  ay_selp_clear(o);
+	  o->selp = oldpointsel;
 
 	  if(ay_status)
 	    {
@@ -2036,8 +2033,8 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      c->modified = AY_TRUE;
-	      ay_notify_force(c);
+	      o->modified = AY_TRUE;
+	      ay_notify_force(o);
 	    }
 
 	} /* if */

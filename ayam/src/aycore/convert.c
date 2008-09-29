@@ -93,6 +93,10 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	{
 	  ay_error(AY_ERROR, fname, NULL);
 	}
+      else
+	{
+	  o->modified = AY_TRUE;
+	}
       sel = sel->next;
     }
 

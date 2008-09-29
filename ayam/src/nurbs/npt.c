@@ -9017,7 +9017,8 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_extractnp:
- *  extract subpatch from patch <src>, returns patch in <result>.
+ *  extract subpatch from patch <src>, returns patch in <result>;
+ *  XXXX leaks memory in error condition
  */
 int
 ay_npt_extractnp(ay_object *src, double umin, double umax,
@@ -9292,7 +9293,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* update pointers to controlv */
 	  ay_status = ay_object_ccp(o);
-	  ay_status = ay_selp_clear(o);
+	  ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
