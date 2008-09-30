@@ -1316,7 +1316,7 @@ ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere)
   if(!(newc = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_ERROR;
+      return AY_EOMEM;
     }
 
   newc->type = AY_IDNCURVE;
@@ -1443,7 +1443,8 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_object_delete(new);
-	  return TCL_ERROR;
+	  ay_error(AY_ERROR, fname, NULL);
+	  return TCL_OK;
 	}
 
       new->rotx = rot[i*3];
@@ -1468,6 +1469,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_object_delete(new);
+	  ay_error(AY_ERROR, fname, NULL);
 	  return TCL_OK;
 	}
 
@@ -5288,18 +5290,18 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
   if(indexu >= patch->width || indexu < 0)
     {
       ay_error(AY_ERROR, fname, "index u out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   if(indexv >= patch->height || indexv < 0)
     {
       ay_error(AY_ERROR, fname, "index v out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   *p = &(patch->controlv[(indexu*patch->height+indexv)*stride]);
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_npt_getpntfromindex */
 
 
@@ -7067,7 +7069,10 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       if(!sel->object)
-	return TCL_OK;
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  return TCL_OK;
+	}
 
       switch(sel->object->type)
 	{
@@ -7979,7 +7984,10 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       if(!sel->object)
-	return TCL_OK;
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  return TCL_OK;
+	}
 
       if(sel->object->type == AY_IDNPATCH)
 	{
