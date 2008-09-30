@@ -140,7 +140,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
   if(argc < 5)
     {
       ay_error(AY_EARGS, fname, "smethod sparamu sparamv usetexcoords!");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   sscanf(argv[1], "%d", &smethod);
