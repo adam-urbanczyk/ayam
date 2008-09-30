@@ -205,7 +205,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(text->fontname = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(text->fontname, result);
 
@@ -230,7 +230,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				sizeof(Tcl_UniChar))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   memcpy(text->unistring, unistr, Tcl_UniCharLen(unistr)*sizeof(Tcl_UniChar));
 

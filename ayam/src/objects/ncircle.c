@@ -423,7 +423,7 @@ ay_ncircle_notifycb(ay_object *o)
     {
       ay_nct_destroy(nc);
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   ncurve->type = AY_IDNCURVE;
