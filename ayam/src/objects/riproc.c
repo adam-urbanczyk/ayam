@@ -218,7 +218,7 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riproc->file = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riproc->file, result);
 
@@ -228,7 +228,7 @@ ay_riproc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riproc->data = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riproc->data, result);
 
@@ -413,7 +413,7 @@ ay_riproc_wribcb(char *file, ay_object *o)
       if(!(data = calloc(1, sizeof(RtString))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
       *data = riproc->file;
 
@@ -423,7 +423,7 @@ ay_riproc_wribcb(char *file, ay_object *o)
       if(!(data = calloc(2, sizeof(RtString))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
       data[0] = riproc->file;
       data[1] = riproc->data;
@@ -434,7 +434,7 @@ ay_riproc_wribcb(char *file, ay_object *o)
       if(!(data = calloc(2, sizeof(RtString))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
       data[0] = riproc->file;
       data[1] = riproc->data;

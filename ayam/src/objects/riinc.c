@@ -205,7 +205,7 @@ ay_riinc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riinc->file = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   strcpy(riinc->file, result);

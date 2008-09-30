@@ -320,7 +320,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riopt->textures = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riopt->textures, result);
 
@@ -335,7 +335,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riopt->shaders = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riopt->shaders, result);
 
@@ -350,7 +350,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riopt->archives = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riopt->archives, result);
 
@@ -365,7 +365,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!(riopt->procedurals = calloc(strlen(result)+1, sizeof(char))))
     {
       ay_error(AY_EOMEM, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
   strcpy(riopt->procedurals, result);
 

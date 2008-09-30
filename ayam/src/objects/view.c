@@ -314,7 +314,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  if(!(view->bgimage = calloc(strlen(result)+1, sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      return AY_ERROR;
 	    } /* if */
 	  strcpy(view->bgimage, result);
 	} /* if */
@@ -340,7 +340,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ay_toglcb_reshape(view->togl);
   ay_toglcb_display(view->togl);
 
-  return TCL_OK;
+  return AY_OK;
 } /* ay_view_setpropcb */
 
 
@@ -1042,7 +1042,7 @@ ay_view_notifycb(ay_object *o)
 	  if(!(image = (uint32*)_TIFFmalloc(w*h*sizeof(uint32))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      return AY_ERROR;
 	    }
 	  if(TIFFReadRGBAImage(tif, w, h, image, 0) == 0)
 	    {
@@ -1050,7 +1050,7 @@ ay_view_notifycb(ay_object *o)
 	      ay_error(AY_ERROR, fname, "TIFFReadRGBAImage() failed for:");
 	      ay_error(AY_ERROR, fname, view->bgimage);
 	      TIFFClose(tif);
-	      return AY_FALSE;
+	      return AY_ERROR;
 	    }
 	  else
             {

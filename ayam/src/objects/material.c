@@ -355,7 +355,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(!string)
     {
       ay_error(AY_ENULL, fname, NULL);
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   if(stringlen > 0)
@@ -363,7 +363,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(!(newname = calloc(stringlen+1, sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
       strcpy(newname, string);
     }
