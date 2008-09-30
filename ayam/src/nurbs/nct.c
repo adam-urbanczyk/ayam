@@ -722,7 +722,7 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	  if(!(X = calloc(count, sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      return AY_ERROR;
 	    }
 	} /* if */
 
@@ -731,13 +731,13 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	{
 	  free(X);
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
       if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
 	{
 	  free(X); free(Ubar);
 	  ay_error(AY_EOMEM, fname, NULL);
-	  return TCL_OK;
+	  return AY_ERROR;
 	}
 
       if(newknotv == NULL)
@@ -762,13 +762,13 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 			     sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      return AY_ERROR;
 	    }
 	  if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
 	    {
 	      free(Ubar);
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      return AY_ERROR;
 	    }
 	} /* if */
 
@@ -1681,7 +1681,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   /* get guess */
   stride = 4;
   if(!(cp = calloc(samples*stride, sizeof(double))))
-    return TCL_OK;
+    return AY_EOMEM;
 
   startu = c->knotv[c->order-1];
   endu = c->knotv[c->length];
@@ -1760,7 +1760,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   *winX = winx;
   *winY = winy;
 
- free(cp);
+  free(cp);
 
  return ay_status;
 } /* ay_nct_findu */
@@ -1776,7 +1776,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
-int height = Togl_Height(togl);
+ int height = Togl_Height(togl);
  double winX = 0.0, winY = 0.0;
  static int fvalid = AY_FALSE;
  static double fX = 0.0, fY = 0.0;
@@ -1866,7 +1866,6 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
  double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, r = 0, s = 0, nq = 0, nc1len = 0;
  char fname[] = "split";
-
 
   if(!src || !result)
     return AY_ENULL;
@@ -1977,7 +1976,6 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       /* return result */
       *result = new;
-
     } /* if */
 
  return AY_OK;
@@ -1997,7 +1995,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
  double u = 0.0;
  char fname[] = "split";
 
-  if(argc<2)
+  if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "u");
       return TCL_OK;
@@ -2080,11 +2078,13 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, fname, NULL);
       return TCL_OK;
     }
+
   if(!sel->next)
     {
       ay_error(AY_ERROR, fname, "select two NURB curves!");
       return TCL_OK;
     }
+
   if((sel->object->type != AY_IDNCURVE) ||
      (sel->next->object->type != AY_IDNCURVE))
     {
@@ -3577,7 +3577,7 @@ ay_nct_addinternalcps(ay_object *curve, int where)
  */
 int
 ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		      int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -4500,7 +4500,12 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(ay_status, fname,
 		       "Could not align object to XY plane!");
 	    }
-	  src->modified = AY_TRUE;
+	  else
+	    {
+	      src->modified = AY_TRUE;
+	      /* re-create tesselation of curve */
+	      ay_notify_force(src);
+	    } /* if */
 	} /* if */
 
       sel = sel->next;
