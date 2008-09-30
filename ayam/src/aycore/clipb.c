@@ -235,7 +235,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_error(ay_status, fname, NULL);
-	  return TCL_ERROR;
+	  return TCL_OK;
 	}
 
       ay_status = ay_object_link(ins);
