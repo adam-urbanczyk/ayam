@@ -1,4 +1,4 @@
-[15. Sep 2008] CVS-Head:
+[3. Oct 2008] CVS-Head:
 ========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -16,6 +16,9 @@ o crash when complete notify is enabled (SF 2022393)
 o Tcl errors when keyboard shortcuts are used to display unavailable
   properties (SF 2023854)
 o Script objects adding newline characters upon apply (SF 2027027)
+o Memory leak in ExtrNP notification (SF 2135504)
+o broken complete notification for center points action (SF 2135494)
+o menus with images do not open on certain X11 servers (SF 2144110)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
@@ -25,6 +28,7 @@ o using the "Esc" key (break action) in view windows now also resets
   or pressed twice
 o pressing <Esc> twice in the tree view clears the object selection (and
   property GUI) and switches the current level to the top level
+o improved key bindings for property GUI elements used in dialogs
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -53,6 +57,7 @@ o added example script "kdialog.tcl" that switches all internal file dialogs
 o added script "bgconvert.tcl" that allows to use Ayam as a background
   3D file format converter from a UNIX shell
 o script objects now support saving of individual sets of parameters
+o improved error reporting for Script objects
 o add helper command to estimate the length of NURBS curves "estlenNC"
 
 Documentation/Example Files:
