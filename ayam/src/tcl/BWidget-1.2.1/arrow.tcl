@@ -21,13 +21,13 @@
 #     - ArrowButton::_release
 #     - ArrowButton::_repeat
 # ------------------------------------------------------------------------------
-
+# XXXX RS removed -takefocus option
 namespace eval ArrowButton {
 
     Widget::tkinclude ArrowButton button :cmd \
         include {
             -borderwidth -bd  -background -bg -relief
-            -highlightbackground -highlightcolor -highlightthickness -takefocus}
+            -highlightbackground -highlightcolor -highlightthickness}
 
     Widget::declare ArrowButton {
         {-type                Enum button 0 {arrow button}}
