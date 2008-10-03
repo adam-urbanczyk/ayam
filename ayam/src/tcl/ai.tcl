@@ -34,9 +34,15 @@ proc ai_open { } {
     }
     set f [frame $w.fu -bd 2 -relief sunken]
 
+    set ay(cancelb) $w.fl.bca
+    set oldappb $ay(appb)
+    set ay(appb) $w.fl.bok
+
     addText $f e1 "AI Options:"
     addCheck $f aiprefs IgnoreTags
     addCheck $f aiprefs IgnoreMat
+
+    set ay(appb) $oldappb
 
     pack $f -in $w -side top -fill x
     set f [frame $w.fl]

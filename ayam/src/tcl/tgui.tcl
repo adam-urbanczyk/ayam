@@ -473,6 +473,10 @@ proc tgui_open { } {
     }
     wm withdraw $w
 
+    set ay(cancelb) $w.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) $w.f2.bok
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -484,6 +488,8 @@ proc tgui_open { } {
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
+
+    set ay(appb) $oldappb
 
     # SParamU
     set f [frame $f.fSParamU -relief sunken -borderwidth 1]

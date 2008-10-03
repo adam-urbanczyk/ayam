@@ -58,7 +58,6 @@ proc render_select { } {
     label $f.l -text "Select Renderer:"
     pack $f.l -in $f -side top
 
-
     # scrollbar
     scrollbar $f.sc -command "$f.li yview" -takefocus 0
     pack $f.sc -in $f -side right -fill y -expand no
@@ -80,10 +79,17 @@ proc render_select { } {
 	$f.li selection set $ay(srr)
     }
 
+
+    set ay(cancelb) $w.fb1.bca
+    set oldappb $ay(appb)
+    set ay(appb) $w.fb1.bok
+
     # checkbutton
     set f [frame $w.fch]
     addCheck $f ay ScanShaders
     pack $f -in $w -side top -fill x
+
+    set ay(appb) $oldappb
 
     # ok/cancel buttons
     set f [frame $w.fb1]

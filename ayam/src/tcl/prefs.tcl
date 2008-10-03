@@ -130,9 +130,12 @@ proc prefs_open {} {
     pack $f -in $w -fill both -expand yes -pady 2
     set nb [NoteBook $w.f2.nb -height 0]
 
+    set ay(cancelb) .prefsw.f3.bca
+    set oldappb $ay(appb)
+    set ay(appb) .prefsw.f3.bap
+
     # PrefsGUIs
     # Main
-    set ay(iapplydisable) 1
     set fw [$nb insert end Main -text Main\
 	    -raisecmd "prefs_rsnb $nb Main"]
     addText $fw e0 "Shaders:"
@@ -290,7 +293,8 @@ proc prefs_open {} {
     addParamB $fw ayprefse SParamV [ms ayprefse_SParam] { 10 0.5 1 30 }
 
     # end of PrefsGUIs
-    set ay(iapplydisable) 0
+
+    set ay(appb) $oldappb
 
     # select last selected preference section
     pack $nb -fill both -expand yes
@@ -408,6 +412,8 @@ proc prefs_open {} {
 
     # bind function keys
     shortcut_fkeys $w
+
+    bind $w <Control-Tab> "prefs_nextpage $nb;break"
 
     if { ($ayprefs(SavePrefsGeom) > 0) && ($ay(prefsgeom) != "") } {
 	winMoveOrResize $w $ay(prefsgeom)
@@ -714,4 +720,32 @@ proc prefs_reset {} {
  return;
 }
 # prefs_reset
+
+
+# prefs_nextpage:
+#  show next page (bound to <Control-Tab>)
+proc prefs_nextpage { nb } {
+    global ay ayprefs
+
+    set allpages [$nb pages]
+    set allpageslen [llength $allpages]
+
+    set index [$nb index $ay(prefssection)]
+
+    if { $index == [expr {$allpageslen - 1}] } {
+	set index 0
+    } else {
+	incr index
+    }
+    set page [lindex $allpages $index]
+    set ay(prefssection) $page
+    $nb raise $page
+    $nb see $page
+    prefs_rsnb $nb $ay(prefssection)
+    #focus -force [winfo toplevel $nb]
+    focus -force $nb
+
+ return;
+}
+# prefs_nextpage
 

@@ -97,75 +97,86 @@ proc addParamB { w prop name help {def {}} } {
 #
 #
 proc addParam { w prop name {def {}} } {
-global $prop ayprefs ay
+    global $prop ay ayprefs
 
-set bw 1
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
-set f [frame $w.f${name} -relief sunken -bd $bw]
+    set bw 1
 
-label $f.l -width 14 -text ${name}:
+    set f [frame $w.f${name} -relief sunken -bd $bw]
 
-if {[string length ${name}] > 12} {
-    balloon_set $f.l ${name}
-}
+    label $f.l -width 14 -text ${name}:
 
-bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
+    if {[string length ${name}] > 12} {
+	balloon_set $f.l ${name}
+    }
 
-button $f.b1 -pady 1 -bd $bw -text "/2" -command "updateParam $w $prop $name /2" -takefocus 0 -highlightthickness 0
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
-eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-bind $f.e <Key-Escape> {resetFocus}
+    button $f.b1 -pady 1 -bd $bw -text "/2"\
+	-command "updateParam $w $prop $name /2"\
+	-takefocus 0 -highlightthickness 0
 
-button $f.b2 -pady 1 -bd $bw -text "*2"  -command "updateParam $w $prop $name *2" -takefocus 0 -highlightthickness 0
-set mb ""
-if { $def != {} } {
-    set mb [menubutton $f.b3 -pady 2 -bd $bw -text "Def" -takefocus 0\
-	    -highlightthickness 0 -relief raised -menu $f.b3.m]
-    set m [menu $mb.m -tearoff 0]
-    foreach val $def {
-	$m add command -label $val\
+    set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
+    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    bind $f.e <Key-Escape> $escapecmd
+
+    button $f.b2 -pady 1 -bd $bw -text "*2"\
+	-command "updateParam $w $prop $name *2"\
+	-takefocus 0 -highlightthickness 0
+    set mb ""
+    if { $def != {} } {
+	set mb [menubutton $f.b3 -pady 2 -bd $bw -text "Def" -takefocus 0\
+		    -highlightthickness 0 -relief raised -menu $f.b3.m]
+	set m [menu $mb.m -tearoff 0]
+	foreach val $def {
+	    $m add command -label $val\
 		-command "global $prop; $e delete 0 end; $e insert end $val;"
+	}
     }
-}
 
-bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
-bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
+    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
+    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
 
-if { ! $ay(iapplydisable) } {
-    global aymainshortcuts
-    bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	    \$ay(appb) invoke}"
-    bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	    \$ay(appb) invoke}"
-    bind $f.e <Key-Return> "+after idle {\
-	    \$ay(appb) invoke}"
-    catch {bind $f.e <Key-KP_Enter> "+after idle {\
-           \$ay(appb) invoke}"}
-    if { $mb != "" } {
-	bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-	    "after idle {\$ay(appb) invoke}"
+    if { ! $ay(iapplydisable) } {
+	global aymainshortcuts
+	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+	    "after idle {$ay(appb) invoke}"
+	bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+	    "after idle {$ay(appb) invoke}"
+	bind $f.e <Key-Return> "+after idle {\
+	    $::ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {\
+           $::ay(appb) invoke}"}
+	if { $mb != "" } {
+	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
+		"after idle {$ay(appb) invoke}"
+	}
     }
-}
 
-global tcl_platform
-if { $tcl_platform(platform) == "windows" } {
-    pack $f.l -in $f -side left
-    pack $f.b1 -in $f -side left -pady 0 -fill x -expand no
-    pack $f.e -in $f -side left -pady 0 -fill both -expand yes
-    pack $f.b2 -in $f -side left -pady 0 -fill x -expand no
-    if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand no}
-} else {
-    $f.b1 configure -highlightthickness 1
-    $f.b2 configure -highlightthickness 1
-    if { $def != {} } { $mb configure -highlightthickness 1 }
-    pack $f.l $f.b1 -in $f -side left -fill x -expand no
-    pack $f.e -in $f -side left -fill x -expand yes
-    pack $f.b2 -in $f -side left -fill x -expand no
-    if { $mb != "" } { pack $mb -side left -fill x -expand no}
-}
-pack $f -in $w -side top -fill x
-return;
+    global tcl_platform
+    if { $tcl_platform(platform) == "windows" } {
+	pack $f.l -in $f -side left
+	pack $f.b1 -in $f -side left -pady 0 -fill x -expand no
+	pack $f.e -in $f -side left -pady 0 -fill both -expand yes
+	pack $f.b2 -in $f -side left -pady 0 -fill x -expand no
+	if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand no}
+    } else {
+	$f.b1 configure -highlightthickness 1
+	$f.b2 configure -highlightthickness 1
+	if { $def != {} } { $mb configure -highlightthickness 1 }
+	pack $f.l $f.b1 -in $f -side left -fill x -expand no
+	pack $f.e -in $f -side left -fill x -expand yes
+	pack $f.b2 -in $f -side left -fill x -expand no
+	if { $mb != "" } { pack $mb -side left -fill x -expand no}
+    }
+    pack $f -in $w -side top -fill x
+
+ return;
 }
 # addParam
 
@@ -202,51 +213,58 @@ proc addMatrixB { w prop name help } {
 #
 #
 proc addMatrix { w prop name } {
-global $prop ayprefs
+    global $prop ay ayprefs
 
-set bw 1
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
-set f [frame $w.f${name} -relief sunken -bd $bw]
+    set bw 1
 
-label $f.l -text ${name}:
+    set f [frame $w.f${name} -relief sunken -bd $bw]
 
-for { set i 0 } { $i < 16 } { incr i } {
-    lappend omitl ${name}_$i
-}
+    label $f.l -text ${name}:
 
-bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l { $omitl }"
-pack $f.l -in $f
-set f1 [frame $w.f${name}1 -relief sunken -bd $bw]
-for { set i 0 } { $i < 4 } { incr i } {
-    entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-    eval [subst "bindtags $f1.e$i \{$f1.e$i Entry all\}"]
-    bind $f1.e$i <Key-Escape> {resetFocus}
-    pack $f1.e$i -in $f1 -side left -fill both -expand yes
-}
-set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
-for { set i 4 } { $i < 8 } { incr i } {
-    entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-    eval [subst "bindtags $f2.e$i \{$f2.e$i Entry all\}"]
-    bind $f2.e$i <Key-Escape> {resetFocus}
-    pack $f2.e$i -in $f2 -side left -fill both -expand yes
-}
-set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
-for { set i 8 } { $i < 12 } { incr i } {
-    entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-    eval [subst "bindtags $f3.e$i \{$f3.e$i Entry all\}"]
-    bind $f3.e$i <Key-Escape> {resetFocus}
-    pack $f3.e$i -in $f3 -side left -fill both -expand yes
-}
-set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
-for { set i 12 } { $i < 16 } { incr i } {
-    entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-    eval [subst "bindtags $f4.e$i \{$f4.e$i Entry all\}"]
-    bind $f4.e$i <Key-Escape> {resetFocus}
-    pack $f4.e$i -in $f4 -side left -fill both -expand yes
-}
+    for { set i 0 } { $i < 16 } { incr i } {
+	lappend omitl ${name}_$i
+    }
 
-pack $f $f1 $f2 $f3 $f4 -in $w -side top -fill x -expand yes
-return;
+    bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l { $omitl }"
+    pack $f.l -in $f
+    set f1 [frame $w.f${name}1 -relief sunken -bd $bw]
+    for { set i 0 } { $i < 4 } { incr i } {
+	entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+	eval [subst "bindtags $f1.e$i \{$f1.e$i Entry all\}"]
+	bind $f1.e$i <Key-Escape> $escapecmd
+	pack $f1.e$i -in $f1 -side left -fill both -expand yes
+    }
+    set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
+    for { set i 4 } { $i < 8 } { incr i } {
+	entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+	eval [subst "bindtags $f2.e$i \{$f2.e$i Entry all\}"]
+	bind $f2.e$i <Key-Escape> $escapecmd
+	pack $f2.e$i -in $f2 -side left -fill both -expand yes
+    }
+    set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
+    for { set i 8 } { $i < 12 } { incr i } {
+	entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+	eval [subst "bindtags $f3.e$i \{$f3.e$i Entry all\}"]
+	bind $f3.e$i <Key-Escape> $escapecmd
+	pack $f3.e$i -in $f3 -side left -fill both -expand yes
+    }
+    set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
+    for { set i 12 } { $i < 16 } { incr i } {
+	entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
+	eval [subst "bindtags $f4.e$i \{$f4.e$i Entry all\}"]
+	bind $f4.e$i <Key-Escape> $escapecmd
+	pack $f4.e$i -in $f4 -side left -fill both -expand yes
+    }
+
+    pack $f $f1 $f2 $f3 $f4 -in $w -side top -fill x -expand yes
+
+ return;
 }
 # addMatrix
 
@@ -339,7 +357,13 @@ proc addColorB { w prop name help {def {}}} {
 #
 #
 proc addColor { w prop name {def {}}} {
-    global $prop ayprefs ay
+    global $prop ay ayprefs
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -357,13 +381,13 @@ proc addColor { w prop name {def {}}} {
 
     set e1 [entry $f.er -width 4 -textvariable ${prop}(${name}_R) -bd $bw]
     eval [subst "bindtags $f.er \{$f.er Entry all\}"]
-    bind $e1 <Key-Escape> {resetFocus}
+    bind $e1 <Key-Escape> $escapecmd
     set e2 [entry $f.eg -width 4 -textvariable ${prop}(${name}_G) -bd $bw]
     eval [subst "bindtags $f.eg \{$f.eg Entry all\}"]
-    bind $e2 <Key-Escape> {resetFocus}
+    bind $e2 <Key-Escape> $escapecmd
     set e3 [entry $f.eb -width 4 -textvariable ${prop}(${name}_B) -bd $bw]
     eval [subst "bindtags $f.eb \{$f.eb Entry all\}"]
-    bind $e3 <Key-Escape> {resetFocus}
+    bind $e3 <Key-Escape> $escapecmd
 
     bind $e1 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
     bind $e2 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
@@ -400,7 +424,7 @@ proc addColor { w prop name {def {}}} {
     # if
 
     eval [subst "bindtags $f.b1 \{$f.b1 Button all\}"]
-    bind $f.b1 <Key-Escape> {resetFocus}
+    bind $f.b1 <Key-Escape> $escapecmd
 
     bind $f.b1 <Visibility> "updateColorFromE $w $prop $name $f.b1"
 
@@ -430,27 +454,27 @@ proc addColor { w prop name {def {}}} {
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
-	bind $e1 <Key-Return> "+after idle {\$ay(appb) invoke;\
+	bind $e1 <Key-Return> "+after idle {$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e1 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+	catch {bind $e1 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
-	bind $e2 <Key-Return> "+after idle {\$ay(appb) invoke;\
+	bind $e2 <Key-Return> "+after idle {$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e2 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+	catch {bind $e2 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
-	bind $e3 <Key-Return> "+after idle {\$ay(appb) invoke;
+	bind $e3 <Key-Return> "+after idle {$ay(appb) invoke;
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e3 <Key-KP_Enter> "+after idle {\$ay(appb) invoke;\
+	catch {bind $e3 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
 
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {\$ay(appb) invoke}"
+		"after idle {$ay(appb) invoke}"
 	}
 
 	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonPress-1>\
 		"updateColor $w $prop $name $f.b1;\
-		 after idle {\$ay(appb) invoke};break;"
+		 after idle {$ay(appb) invoke};break;"
     }
 
     if { [winfo exists $f.l2] } {
@@ -486,7 +510,13 @@ proc addCheckB { w prop name help } {
 #
 #
 proc addCheck { w prop name } {
-    global $prop ayprefs ay
+    global $prop ay ayprefs
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
     set ws ""
@@ -517,7 +547,7 @@ proc addCheck { w prop name } {
 	pack $ff.cb -in $ff -side top -padx 30 -pady 3
 
 	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
-	bind $ff.cb <Key-Escape> {resetFocus}
+	bind $ff.cb <Key-Escape> $escapecmd
     } else {
 	if { $ay(ws) == "Aqua" } {
 	    # also Aqua gets its "Extrawurst"
@@ -529,7 +559,7 @@ proc addCheck { w prop name } {
 	    pack $ff.cb -in $ff -side top -padx 30 -pady 0
 
 	    eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
-	    bind $ff.cb <Key-Escape> {resetFocus}
+	    bind $ff.cb <Key-Escape> $escapecmd
 	} else {
 	    # generic (X11) implementation
 	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
@@ -538,21 +568,21 @@ proc addCheck { w prop name } {
 	    pack $f.cb -in $f -side left -fill x -expand yes
 
 	    eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
-	    bind $f.cb <Key-Escape> {resetFocus}
+	    bind $f.cb <Key-Escape> $escapecmd
 	}
     }
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	    \$ay(appb) invoke}"
+	    $ay(appb) invoke}"
 	bind $cb <Key-Return> "$ay(appb) invoke;break"
 	catch {bind $cb <Key-KP_Enter> "$ay(appb) invoke;break"}
 
 	if { $tcl_platform(platform) == "windows" ||
              $ay(ws) == "Aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {\$ay(appb) invoke}"
+		"after idle {$ay(appb) invoke}"
 	}
     }
 
@@ -589,7 +619,13 @@ proc addMenuB { w prop name help elist } {
 #
 #
 proc addMenu { w prop name elist } {
-    global $prop ayprefs ay tcl_platform
+    global $prop ay ayprefs tcl_platform
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -606,12 +642,12 @@ proc addMenu { w prop name elist } {
 	    -padx 0 -pady 1 -takefocus 1 -highlightthickness 1
 
     eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
-    bind $f.mb <Key-Escape> {resetFocus}
+    bind $f.mb <Key-Escape> $escapecmd
 
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
     }
-    
+
     if {$ay(ws) == "Aqua" } {
 	$f.mb configure -pady 2 -width 12
     }
@@ -640,7 +676,7 @@ proc addMenu { w prop name elist } {
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $f.mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-	    "after idle {\$ay(appb) invoke}"
+	    "after idle {$ay(appb) invoke}"
     }
 
  return;
@@ -664,7 +700,13 @@ proc addStringB { w prop name help {def {}} } {
 #
 #
 proc addString { w prop name  {def {}}} {
-    global $prop ayprefs ay tcl_platform
+    global $prop ay ayprefs tcl_platform
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -679,7 +721,11 @@ proc addString { w prop name  {def {}}} {
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-    bind $f.e <Key-Escape> {resetFocus}
+    bind $f.e <Key-Escape> $escapecmd
+    if { ! $ay(iapplydisable) } {
+	bind $f.e <Key-Return> "+after idle {$ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$ay(appb) invoke}"}
+    }
 
     set mb ""
     if { $def != {} } {
@@ -697,14 +743,8 @@ proc addString { w prop name  {def {}}} {
 	if { ! $ay(iapplydisable) } {
 	    global aymainshortcuts
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {\$ay(appb) invoke}"
+		"after idle {$ay(appb) invoke}"
 	}
-    }
-
-    if { ! $ay(iapplydisable) } {
-	global aymainshortcuts
-	bind $f.e <Key-Return> "+after idle {\$ay(appb) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {\$ay(appb) invoke}"}
     }
 
     pack $f.l -in $f -side left -fill x
@@ -816,7 +856,13 @@ proc addFileB { w prop name help {def {}} } {
 #
 #
 proc addFile { w prop name {def {}} } {
-    global $prop ayprefs tcl_platform AYWITHAQUA
+    global $prop ay ayprefs tcl_platform AYWITHAQUA
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -831,8 +877,11 @@ proc addFile { w prop name {def {}} } {
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-    bind $f.e <Key-Escape> {resetFocus}
-
+    bind $f.e <Key-Escape> $escapecmd
+    if { ! $ay(iapplydisable) } {
+	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+    }
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
 	global $prop;
@@ -906,7 +955,13 @@ proc addMDirB { w prop name help } {
 #
 #
 proc addMDir { w prop name } {
-    global $prop ayprefs AYWITHAQUA
+    global $prop ay ayprefs AYWITHAQUA
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -921,8 +976,11 @@ proc addMDir { w prop name } {
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-    bind $f.e <Key-Escape> {resetFocus}
-
+    bind $f.e <Key-Escape> $escapecmd
+    if { ! $ay(iapplydisable) } {
+	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+    }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
 
@@ -976,7 +1034,13 @@ proc addMFileB { w prop name help } {
 #
 #
 proc addMFile { w prop name } {
-    global $prop ayprefs AYWITHAQUA
+    global $prop ay ayprefs AYWITHAQUA
+
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
 
     set bw 1
 
@@ -991,8 +1055,11 @@ proc addMFile { w prop name } {
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-    bind $f.e <Key-Escape> {resetFocus}
-
+    bind $f.e <Key-Escape> $escapecmd
+    if { ! $ay(iapplydisable) } {
+	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+    }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
 
@@ -1048,18 +1115,24 @@ proc addCommandB { w name text command help } {
 proc addCommand { w name text command } {
     global ay ayprefs
 
+    if { [winfo toplevel $w] == "." } {
+	set escapecmd resetFocus
+    } else {
+	set escapecmd "after idle {$ay(cancelb) invoke}"
+    }
+
     set bw 1
 
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
     button $f.b -text $text -bd $bw -command $command -pady 0
     eval [subst "bindtags $f.b \{$f.b Button all\}"]
-    bind $f.b <Key-Escape> {resetFocus}
+    bind $f.b <Key-Escape> $escapecmd
 
     if { ! $ay(iapplydisable) } {
 	bind $f.b <Shift-1> "global ay; set ay(shiftcommand) 1;"
     }
-    
+
     pack $f.b -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -fill x
 

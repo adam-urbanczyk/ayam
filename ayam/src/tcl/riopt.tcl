@@ -74,14 +74,15 @@ proc riopt_addp { } {
 	global ay riopt
 	set lb .addRiOptw.f1.li
 
+	set ay(cancelb) .addRiAttrw.f3.bca
+	set oldappb $ay(appb)
+	set ay(appb) .addRiAttrw.f3.bok
+
 	# get matching attribute list entry
 	set opt [$lb get [$lb curselection]]
 
 	set optname [lindex $opt 0]
 	set optpara [lindex $opt 1]
-
-
-	set ay(iapplydisable) 1
 
 	set list $riopt($optname)
 
@@ -191,7 +192,7 @@ proc riopt_addp { } {
 	}
 	# foreach
 
-	set ay(iapplydisable) 0
+	set ay(appb) $oldappb
 
     }
     # bind
