@@ -67,11 +67,13 @@ ay_tags_delall(ay_object *o)
  *  copy a tag from <source> to <dest>
  */
 int
-ay_tags_copy(ay_tag *source,
-	     ay_tag **dest)
+ay_tags_copy(ay_tag *source, ay_tag **dest)
 {
  int ay_status = AY_OK;
  ay_tag *new = NULL;
+
+  if(!source || !dest)
+    return AY_ENULL;
 
   if(!source->name || !source->val)
     return AY_ERROR;
@@ -109,6 +111,9 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
  int ay_status = AY_OK;
  ay_tag *tag = NULL, **newtagptr = NULL;
 
+  if(!src || !dst)
+    return AY_ENULL;
+
   tag = src->tags;
   newtagptr = &(dst->tags);
   while(tag)
@@ -131,7 +136,8 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
  *  this routine keeps a pointer to the last tag of
  *  object o and is therefore fast for subsequent calls;
  *  the caller has to make sure, that the tags of <o> do not change
- *  between calls, or has to call ay_tags_append(NULL, NULL).
+ *  between calls, or has to call ay_tags_append(NULL, NULL); to
+ *  reset the cache.
  */
 int
 ay_tags_append(ay_object *o, ay_tag *tag)
@@ -239,7 +245,7 @@ ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
  *  query for tagname in first argument, whether it is temporary or not
  */
 int
-ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  char fname[] = "tagIsTemp";
@@ -271,7 +277,7 @@ ay_tags_istemptcmd(ClientData clientData, Tcl_Interp * interp,
  *  set new tags of selected object(s), after removing all old tags
  */
 int
-ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
@@ -478,7 +484,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp * interp,
  *  add a tag to the selected object(s)
  */
 int
-ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
@@ -558,8 +564,8 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp * interp,
  *  return all tags of the (first) selected object
  */
 int
-ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
-		   int argc, char *argv[])
+ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -606,7 +612,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp * interp,
  *  delete all tags of the selected object(s)
  */
 int
-ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -636,32 +642,37 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp * interp,
   while(sel)
     {
       o = sel->object;
-      last = &(o->tags);
-      if(mode)
+
+      if(o)
 	{
-	  tag = o->tags;
-	  while(tag)
+	  last = &(o->tags);
+	  if(mode)
 	    {
-	      if(tag->name)
+	      tag = o->tags;
+	      while(tag)
 		{
-		  if(!strcmp(argv[1], tag->name))
+		  if(tag->name)
 		    {
-		      *last = tag->next;
-		      ay_tags_free(tag);
-		      tag = *last;
-		    }
-		  else
-		    {
-		      last = &(tag->next);
-		      tag = tag->next;
+		      if(!strcmp(argv[1], tag->name))
+			{
+			  *last = tag->next;
+			  ay_tags_free(tag);
+			  tag = *last;
+			}
+		      else
+			{
+			  last = &(tag->next);
+			  tag = tag->next;
+			} /* if */
 		    } /* if */
-		} /* if */
-	    } /* while */
-	}
-      else
-	{
-	  ay_status = ay_tags_delall(o);
+		} /* while */
+	    }
+	  else
+	    {
+	      ay_status = ay_tags_delall(o);
+	    } /* if */
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
