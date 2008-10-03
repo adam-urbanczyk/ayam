@@ -74,9 +74,9 @@ proc riopt_addp { } {
 	global ay riopt
 	set lb .addRiOptw.f1.li
 
-	set ay(cancelb) .addRiAttrw.f3.bca
+	set ay(cancelb) .addRiOptw.f3.bca
 	set oldappb $ay(appb)
-	set ay(appb) .addRiAttrw.f3.bok
+	set ay(appb) .addRiOptw.f3.bok
 
 	# get matching attribute list entry
 	set opt [$lb get [$lb curselection]]
