@@ -73,7 +73,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "selpac";
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  /*  ay_view_object *view = Togl_GetClientData(togl);*/
  double height = Togl_Height(togl);
  int i, have_it = AY_FALSE, multiple = AY_FALSE;
@@ -99,7 +99,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
       multiple = AY_TRUE;
       Tcl_GetDouble(interp, argv[4], &winX2);
       Tcl_GetDouble(interp, argv[5], &winY2);
-
     }
   else
     {
@@ -124,6 +123,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
       /* sanity check */
       if(!o)
 	return TCL_OK;
@@ -139,7 +139,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-
 	  ay_status = ay_viewt_winrecttoobj(togl, o, winX, winY, winX2, winY2,
 					    obj);
 
@@ -237,6 +236,9 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 
   while(sel)
     {
+      if(!sel->object)
+	return TCL_OK;
+
       ay_selp_clear(sel->object);
 
       sel = sel->next;
@@ -338,7 +340,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "pointEdit";
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
@@ -390,6 +392,9 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   while(sel)
     {
+      if(!sel->object)
+	return TCL_OK;
+
       mins = fabs(sel->object->scalx);
 
       if(fabs(sel->object->scaly) < mins)
@@ -504,6 +509,9 @@ ay_pact_pedclear(ay_object *o)
  int argc = 3;
  char *argv[3], a2[] = "-clear";
 
+  if(!o)
+    return;
+
   ay_pact_pedclearobject = o;
   argv[2] = a2;
   ay_pact_pedtcb(NULL, argc, argv);
@@ -562,7 +570,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
   if(!strcmp(argv[2], "-start"))
     {
-
       sel = ay_selection;
       if(!sel)
 	{
@@ -571,6 +578,9 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	}
 
       o = sel->object;
+
+      if(!o)
+	return TCL_OK;
 
       if(sel->next)
 	{
@@ -683,7 +693,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
   if(!strcmp(argv[2], "-apply"))
     {
-
       toa = Tcl_NewStringObj(n1, -1);
       ton = Tcl_NewStringObj(n1, -1);
       Tcl_SetStringObj(ton,"changed",-1);
@@ -1021,7 +1030,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 	  k = 0; i = 0;
 	  for(j = 0; j < curve->length+curve->order-2; j++)
 	    {
-
 	      if((j >= curve->order-1) &&
 		 (curve->knotv[j] != curve->knotv[j+1]))
 		{
@@ -1234,6 +1242,9 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_selection)
     {
+      if(!ay_selection->object)
+	return TCL_OK;
+
       ay_selp_clear(ay_selection->object);
 
       Tcl_GetDouble(interp, argv[2], &winX);
@@ -1291,12 +1302,13 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
  int ay_status = AY_OK;
  char fname[] = "delete_point";
  double *cv = NULL;
- int i=0, j=0, k=0, index = -1;
+ int i = 0, j = 0, k = 0, index = -1;
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
   if(!curve)
     return AY_ENULL;
+
   cv = curve->controlv;
 
   if(min_distance == 0.0)
@@ -1494,6 +1506,9 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_selection)
     {
+      if(!ay_selection->object)
+	return TCL_OK;
+
       ay_selp_clear(ay_selection->object);
 
       Tcl_GetDouble(interp, argv[2], &winX);
@@ -1931,6 +1946,9 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
+      if(!o)
+	return TCL_OK;
+
       ay_status = ay_pact_getpoint(0, o, p);
 
       if(ay_status)
@@ -2036,7 +2054,6 @@ ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->modified = AY_TRUE;
 	      ay_notify_force(o);
 	    }
-
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -2078,6 +2095,9 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      if(!o)
+	return TCL_OK;
 
       if(!o->selp)
 	{
