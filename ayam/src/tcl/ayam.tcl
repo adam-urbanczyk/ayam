@@ -611,6 +611,12 @@ array set ay {
 }
 # array ay
 
+# miscellaneous dialog data
+array set aydd {
+    Name ""
+}
+#array aydd
+
 # (re)set global variable that holds the error number
 set ay_error 0
 

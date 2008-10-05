@@ -83,16 +83,24 @@ proc material_createp { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    label $f.l -text "Name:"
-    entry $f.e -width 20
-    pack $f.l $f.e -side left -fill x
+    set oldappb $ay(appb)
+    set ay(appb) $w.f2.bok
+    set ay(cancelb) $w.f2.bca
+
+    addText $w.f1 e0 "Create Material:"
+    addString $w.f1 aydd Name
+
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command { 
-	global ay ayprefs ay_error
+	global ay aydd ayprefs ay_error
+
+	# replace all whitespace by underscores
+	regsub -all " " $aydd(Name) "_" temp
+
 	set ay_error 0
 
-	regsub -all " " [.createMw.f1.e get] "_" temp
 	crtOb Material $temp
 
 	if { $ay_error == 0 } {
@@ -108,15 +116,13 @@ proc material_createp { } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    set ay_error 1
-
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
     winCenter $w
     grab $w
-    focus $w.f1.e
+    focus $w.f1.fName.e
     tkwait window $w
 
     winAutoFocusOn
@@ -128,7 +134,7 @@ proc material_createp { } {
 
 # material_edit:
 #  creates or edits material object of currently selected
-#  normal object (bound to main menu entry Edit/Material)
+#  normal object (bound to main menu entry Edit/Material, shortcut <Ctrl-m>)
 proc material_edit { } {
     global ay ay_error matPropData sel matlevel matobject
 
