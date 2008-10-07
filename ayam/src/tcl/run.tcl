@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2008 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -24,66 +24,71 @@
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command } {
-global ay
+ global ay
 
-winAutoFocusOff
-set w .rtw
-catch {destroy $w}
-toplevel $w -class ayam
-wm title $w "Ayam"
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient $w .
-}
-set f [frame $w.f1]
-pack $f -in $w -side top -fill x
+    winAutoFocusOff
+    set w .rtw
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Ayam"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w .
+    }
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
 
+    set okscript ""
+    append okscript "set command \"$command\";"
 
-set okscript ""
-append okscript "set command \"$command\";"
+    set index 0
+    foreach i $argvars {
+	global $i
+	# check variable
+	if { ![info exists $i] } { set $i 0}
 
-set index 0
-foreach i $argvars {
-    global $i
-    # check variable
-    if { ![info exists $i] } { set $i 0}
+	# create GUI
+	set f2 [frame $f.f$index]
 
-    # create GUI
-    set f2 [frame $f.f$index]
+	label $f2.l -text [lindex $argstrings $index ] -width 14
+	entry $f2.e -width 14
+	eval [subst "bindtags $f2.e \{$f2.e Entry all\}"]
+	bind $f2.e <Key-Escape> "after idle {.rtw.f2.bca invoke}"
+	bind $f2.e <Key-Return> "after idle {.rtw.f2.bok invoke}"
+	catch {bind $f2.e <Key-KP_Enter> "after idle {.rtw.f2.bok invoke}"}
+	eval [subst "$f2.e insert @0 \$$i"]
 
-    label $f2.l -text [lindex $argstrings $index ] -width 14
-    entry $f2.e -width 14
+	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
+	pack $f2 -in $w.f1 -side top -expand yes -fill x
+	# and simultaneously create a script
+	append okscript "global $i ay; set $i \[$f2.e get\];update;"
+	append okscript \
+	    "regsub -all \"%$index\" \$command \[$f2.e get\] command;"
+	incr index
+    }
+    # foreach
 
-    eval [subst "$f2.e insert @0 \$$i"]
+    append okscript "eval \"\$command\";"
+    append okscript "grab release .rtw; focus .; destroy .rtw"
 
-    pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
-    pack $f2 -in $w.f1 -side top -expand yes -fill x
-    # and simultaneously create a script
-    append okscript "global $i ay; set $i \[$f2.e get\];update;"
-    append okscript "regsub -all \"%$index\" \$command \[$f2.e get\] command;"
-    incr index
-}
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command $okscript
 
-append okscript "eval \"\$command\";"
-append okscript "grab release .rtw; focus .; destroy .rtw"
-
-set f [frame $w.f2]
-button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command $okscript
-
-button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	focus . ; destroy $w"
 
-pack $f.bok $f.bca -in $f -side left -fill x -expand yes
-pack $f -in $w -side top -anchor n -fill x -expand yes
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side top -anchor n -fill x -expand yes
 
-winCenter $w
-grab $w
-focus $f.bok
-tkwait window $w
-winAutoFocusOn
-return;
+    winCenter $w
+    grab $w
+    focus $f.bok
+    tkwait window $w
+    winAutoFocusOn
+
+ return;
 }
 # runTool
 
