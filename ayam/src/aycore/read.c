@@ -384,7 +384,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 last->next = tag;
        }
 
-     if(tag->type == ay_ns_tagtype)
+     if(tag->type == ay_bns_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
 	 toa = Tcl_NewStringObj(a1, -1);
@@ -395,13 +395,37 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 	 if(deactivate)
 	   {
-	     tag->type = ay_dns_tagtype;
+	     tag->type = ay_dbns_tagtype;
 	     tc = NULL;
-	     tc = realloc(tag->name, strlen(ay_dns_tagname)+1*sizeof(char));
+	     tc = realloc(tag->name, strlen(ay_dbns_tagname)+1*sizeof(char));
 	     if(tc)
 	       {
 		 tag->name = tc;
-		 strcpy(tag->name,ay_dns_tagname );
+		 strcpy(tag->name,ay_dbns_tagname );
+	       }
+	   }
+
+	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+       }
+     if(tag->type == ay_ans_tagtype)
+       {
+	 Tcl_Eval(ay_interp, script_disable_cmd);
+	 toa = Tcl_NewStringObj(a1, -1);
+	 ton = Tcl_NewStringObj(n1, -1);
+	 to = Tcl_ObjGetVar2(ay_interp, toa, ton,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	 Tcl_GetIntFromObj(ay_interp, to, &(deactivate));
+
+	 if(deactivate)
+	   {
+	     tag->type = ay_dans_tagtype;
+	     tc = NULL;
+	     tc = realloc(tag->name, strlen(ay_dans_tagname)+1*sizeof(char));
+	     if(tc)
+	       {
+		 tag->name = tc;
+		 strcpy(tag->name,ay_dans_tagname );
 	       }
 	   }
 
