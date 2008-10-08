@@ -101,7 +101,7 @@ uplevel #0 {
 # aycsgPreferences:
 #  AyCSG preferences dialog
 proc aycsgPreferences { } {
-    global aycsg_options aycsg_options_save
+    global ay aycsg_options aycsg_options_save
 
     winAutoFocusOff
 
@@ -117,10 +117,17 @@ proc aycsgPreferences { } {
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
+
+    set ay(cancelb) .aycsgprefs.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .aycsgprefs.f2.bok
+
     addMenu $f aycsg_options_save Algorithm [list Automatic Goldfeather SCS]
     addMenu $f aycsg_options_save DCSampling \
 	[list NoDCSampling OcclusionQuery DCSampling]
     addCheck $f aycsg_options_save CalcBBS
+
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
