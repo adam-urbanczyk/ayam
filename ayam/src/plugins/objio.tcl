@@ -58,6 +58,11 @@ proc objio_export { } {
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
+
+    set ay(cancelb) .objE.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .objE.f2.bok
+
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
     addSFileT $f objio_options FileName $types
     addCheckB $f objio_options WriteSelected [ms objio_options_Selected]
@@ -68,6 +73,8 @@ proc objio_export { } {
     addString $f objio_options TTagName
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
+
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -164,6 +171,11 @@ proc objio_import { } {
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
+
+    set ay(cancelb) .objI.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .objI.f2.bok
+
     set types {{"Wavefront OBJ" ".obj"} {"All files" *}}
     addFileT $f objio_options FileName $types
     addCheck $f objio_options MergeFaces
@@ -177,6 +189,8 @@ proc objio_import { } {
     addString $f objio_options TTagName
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
+
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

@@ -28,7 +28,7 @@ proc mopsi_import { } {
 	set mopsi_options(FileName) "unnamed.mop"
     }
 
-    set w .mopI
+    set w .mopi
     catch {destroy $w}
     toplevel $w -class ayam
     wm title $w "Import Options"
@@ -43,9 +43,15 @@ proc mopsi_import { } {
 
     set types {{"Mops Scene" ".mop"} {"All files" *}}
 
+    set ay(cancelb) .mopi.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .mopi.f2.bok
+
     addFileT $f mopsi_options FileName $types
     addCheckB $f mopsi_options ResetDM [ms mopsi_options_ResetDM]
     addCheckB $f mopsi_options ResetST [ms mopsi_options_ResetST]
+
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -81,7 +87,7 @@ proc mopsi_import { } {
 	rV
 	set ay(sc) 1
 
-	destroy .mopI
+	destroy .mopi
 	foreach view $ay(views) { viewBind $view }
 	update
 
@@ -93,7 +99,7 @@ proc mopsi_import { } {
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		focus .;\
-		destroy .mopI"
+		destroy .mopi"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x

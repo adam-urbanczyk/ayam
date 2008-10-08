@@ -60,7 +60,10 @@ proc mfio_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(iapplydisable) 1
+
+    set ay(cancelb) .mfio.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .mfio.f2.bok
 
     set types {{"3DMF Files" ".3dmf"} {"All files" *}}
     addFileT $f mfio_options FileName $types
@@ -72,7 +75,7 @@ proc mfio_import { } {
 #    addString $f mfio_options TTagName
 #    addProgress $f mfio_options Progress
 
-    set ay(iapplydisable) 0
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -175,7 +178,9 @@ proc mfio_export { } {
 	}
     }
 
-    set ay(iapplydisable) 1
+    set ay(cancelb) .mfio.f2.bca
+    set oldappb $ay(appb)
+    set ay(appb) .mfio.f2.bok
 
     set types {{"3DMF Files" ".3dmf"} {"All files" *}}
     addSFileT $f mfio_options FileName $types
@@ -191,7 +196,7 @@ proc mfio_export { } {
 #    addString $f mfio_options TTagName
 #    addProgress $f mfio_options Progress
 
-    set ay(iapplydisable) 0
+    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -221,8 +226,8 @@ proc mfio_export { } {
 	}
 	# if
 
-	grab release .mfio;
-	focus .;
+	grab release .mfio
+	focus .
 	destroy .mfio
     }
     # button
