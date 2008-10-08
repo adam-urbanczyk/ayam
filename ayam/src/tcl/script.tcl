@@ -172,15 +172,18 @@ forAllT script 1 {
     setScriptp
 }
 
-# activate script tags by renaming all DNS tags to NS tags
+# activate script tags by renaming all DBNS/DANS tags to BNS/ANS tags
 forAll 1 {
     set tagnames ""; set tagvals ""
     getTags tagnames tagvals
     if { $tagnames != "" } {
 	set tagindex 0
 	foreach tagname $tagnames {
-	    if { $tagname == "DNS" } {
-		setTags -index $tagindex "NS" [lindex $tagvals $tagindex]
+	    if { $tagname == "DBNS" } {
+		setTags -index $tagindex "BNS" [lindex $tagvals $tagindex]
+	    }
+	    if { $tagname == "DANS" } {
+		setTags -index $tagindex "ANS" [lindex $tagvals $tagindex]
 	    }
 	    incr tagindex
 	}
