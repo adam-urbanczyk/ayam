@@ -151,13 +151,21 @@ char *ay_tp_tagtype;
 
 char *ay_tp_tagname = "TP";
 
-char *ay_ns_tagtype;
+char *ay_bns_tagtype;
 
-char *ay_ns_tagname = "NS";
+char *ay_bns_tagname = "BNS";
 
-char *ay_dns_tagtype;
+char *ay_ans_tagtype;
 
-char *ay_dns_tagname = "DNS";
+char *ay_ans_tagname = "ANS";
+
+char *ay_dbns_tagtype;
+
+char *ay_dbns_tagname = "DBNS";
+
+char *ay_dans_tagtype;
+
+char *ay_dans_tagname = "DANS";
 
 char *ay_umm_tagtype;
 

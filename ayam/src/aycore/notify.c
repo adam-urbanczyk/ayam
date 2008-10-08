@@ -115,11 +115,11 @@ ay_notify_parent(void)
 
       if(o)
 	{
-	  /* search for and execute all NS tag(s) */
+	  /* search for and execute all BNS (before notify) tag(s) */
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(tag->type == ay_ns_tagtype)
+	      if(tag->type == ay_bns_tagtype)
 		ay_ns_execute(o, tag->val);
 	      tag = tag->next;
 	    }
@@ -135,6 +135,16 @@ ay_notify_parent(void)
 	      ay_error(AY_ERROR, fname, "notify callback failed");
 	      return AY_ERROR;
 	    } /* if */
+
+	  /* search for and execute all ANS (after notify) tag(s) */
+	  tag = o->tags;
+	  while(tag)
+	    {
+	      if(tag->type == ay_ans_tagtype)
+		ay_ns_execute(o, tag->val);
+	      tag = tag->next;
+	    }
+
 	} /* if */
 
       lev = lev->next;
@@ -172,11 +182,11 @@ ay_notify_force(ay_object *o)
 	}
     }
 
-  /* search for and execute all NS tag(s) */
+  /* search for and execute all BNS (before notify) tag(s) */
   tag = o->tags;
   while(tag)
     {
-      if(tag->type == ay_ns_tagtype)
+      if(tag->type == ay_bns_tagtype)
 	ay_ns_execute(o, tag->val);
       tag = tag->next;
     }
@@ -191,6 +201,15 @@ ay_notify_force(ay_object *o)
     {
       ay_error(AY_ERROR, fname, "notify callback failed");
       return AY_ERROR;
+    }
+
+  /* search for and execute all ANS (after notify) tag(s) */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_ans_tagtype)
+	ay_ns_execute(o, tag->val);
+      tag = tag->next;
     }
 
  return AY_OK;

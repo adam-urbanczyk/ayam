@@ -159,8 +159,12 @@ void
 ay_ns_init(Tcl_Interp *interp)
 {
 
-  /* register NS tag type */
-  ay_tags_register(interp, ay_ns_tagname, &ay_ns_tagtype);
+  /* register NS tag types */
+  ay_tags_register(interp, ay_bns_tagname, &ay_bns_tagtype);
+  ay_tags_register(interp, ay_ans_tagname, &ay_ans_tagtype);
+
+  ay_tags_register(interp, ay_dbns_tagname, &ay_dbns_tagtype);
+  ay_tags_register(interp, ay_dans_tagname, &ay_dans_tagtype);
 
  return;
 } /* ay_ns_init */
