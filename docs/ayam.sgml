@@ -6617,11 +6617,11 @@ Ideally, the Script object also has a <tt/"NP"/ tag, to allow
 direct control of script parameters. This way, the user does not
 see the script (code), just a clean parameter GUI.
 
-<sect2>NS (Notify Script) Tag<label id="nstag">
+<sect2>BNS (Before Notify Script) Tag<label id="bnstag">
 <p>
 <bf/Description/
 <p>
-The tag type <tt/"NS"/ (notify script) may be used to add scripts
+The tag type <tt/"BNS"/ (notify script) may be used to add scripts
 to an object, that will be run <em/before/ the notification callback of
 that object completed.
 Notification, in turn, will be executed because e.g. one of the children
@@ -6629,18 +6629,43 @@ of the object changed.
 <p>
 <bf/Example/
 <p>
-A simple NS tag could look like this:
-<code>NS puts "notify callback fired"</code>
+A simple BNS tag could look like this:
+<code>BNS puts "notify callback about to fire"</code>
 <p>
 <bf/Notes/
 <p>
 For security reasons, Ayam offers to disable all script tags when they
 are found upon reading of scene files. To disable a tag, Ayam simply
-changes its type from <tt/"NS"/ to <tt/"DNS"/ (disabled notify script).
+changes its type from <tt/"BNS"/ to <tt/"DBNS"/ (disabled before notify
+script).
 It will not be executed then.
 Disabled notify scripts may be enabled after careful inspection using
 the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
+<sect2>ANS (After Notify Script) Tag<label id="anstag">
+<p>
+<bf/Description/
+<p>
+The tag type <tt/"ANS"/ (notify script) may be used to add scripts
+to an object, that will be run <em/after/ the notification callback of
+that object completed.
+Notification, in turn, will be executed because e.g. one of the children
+of the object changed.
+<p>
+<bf/Example/
+<p>
+A simple ANS tag could look like this:
+<code>ANS puts "notify callback completed"</code>
+<p>
+<bf/Notes/
+<p>
+For security reasons, Ayam offers to disable all script tags when they
+are found upon reading of scene files. To disable a tag, Ayam simply
+changes its type from <tt/"ANS"/ to <tt/"DANS"/ (disabled after notify
+script).
+It will not be executed then.
+Disabled notify scripts may be enabled after careful inspection using
+the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
@@ -6708,7 +6733,7 @@ known since Ayam 1.10 and in all accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
 "PV", "SaveMainGeom", "SavePaneLayout", "TP", "MI", "OI", "DC", "TM", "NP",
-"RP", "NS", "DNS",
+"RP", "BNS", "DBNS", "ANS", "DANS",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 The following tags are temporary (they will not be displayed in the
@@ -7574,8 +7599,9 @@ to script objects and run when the notification mechanism updates
 the scene. See also section
 <ref id="scriptobj" name="Script object">.
 Even normal objects can trigger scripts upon notification using
-NS tags. See also section
-<ref id="nstag" name="Notify Script tag">.
+BNS or ANS tags. See also sections
+<ref id="bnstag" name="Before Notify Script"> and
+<ref id="anstag" name="After Notify Script">.
 <p>
 Note that most of the scripting interface commands listed in this
 documentation work in the background, without changing anything to
@@ -8287,6 +8313,24 @@ trimNC - trim NURBS curve
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
 See also section <ref id="trimt" name="The Trim Tool">.
+</itemize>
+
+<p><label id="scestlennc">
+estlenNC - estimate length of NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"estlenNC varname"/
+ <item>Background: Yes, Undo: No
+ <item>Description: estimate the length of the currently selected curve
+and put the result into the designated variable.
+</itemize>
+
+<p><label id="screparamnc">
+reparamNC - reparameterize a NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"reparamNC type"/
+ <item>Background: Yes, Undo: Yes
+ <item>Description: reparameterize all selected NURBS curves to have
+chordal knots (type: 0), or centripetal knots (type: 1).
 </itemize>
 
 <p><label id="scclampnpu">
@@ -11436,6 +11480,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
+<item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
@@ -11478,6 +11523,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="patchmeshobj" name="PatchMesh object">
 <item>Birail1: <ref id="birail1obj" name="Birail1 object">
 <item>Birail2: <ref id="birail2obj" name="Birail2 object">
+<item>BNS: <ref id="bnstag" name="tag type">
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Box: <ref id="boxobj" name="Box object">
@@ -11555,6 +11601,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <label id="indexd">D
 <itemize>
+<item>DANS: <ref id="anstag" name="tag type">
 <item>Data: <ref id="riprocp" name="riproc attribute">
 <item>DC: <ref id="dctag" name="tag type">
 <item>DCSampling: <ref id="aycsg" name="AyCSG plugin option">
@@ -11573,7 +11620,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>DisplayMode: <ref id="npattr" name="NURBPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
-<item>DNS: <ref id="nstag" name="tag type">
+<item>DBNS: <ref id="bnstag" name="tag type">
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>Double Size: <ref id="vmconf" name="view menu entry">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG:
@@ -11609,6 +11656,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Environment Variables: <ref id="envvars" name="Environment Variables">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
+<item>estlenNC: <ref id="scestlennc" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
@@ -11838,7 +11886,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
 <ref id="npattr" name="NURBPatch attribute">
-<item>NS: <ref id="nstag" name="tag type">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -11963,6 +12010,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
 <item>Repair Ayam: <ref id="repayam" name="Tcl helper script">
+<item>Reparameterize: <ref id="screparamnc" name="scripting interface command">
 <item>Replace: <ref id="mmspecial" name="main menu entry">
 <item>replaceScene: <ref id="screplacescene" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
