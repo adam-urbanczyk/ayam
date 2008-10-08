@@ -807,7 +807,7 @@ if { [llength [info commands winfo]] != 0 } {
 
 # if envvar AYAMRC is set, use it
 if { [string length [array names env AYAMRC]] != 0 } {
-    set ay(ayamrc) $env(AYAMRC)
+    set ay(ayamrc) "$env(AYAMRC)"
 } else {
     if { $tcl_platform(platform) == "windows" } {
 # if envvar HOME is not set (Win95?), use TEMP
@@ -1881,7 +1881,7 @@ if { !$ayprefs(SingleWindow) } {
 # correct current directory
 if { $ay(ws) == "Aqua" } {
     # when started via Finder/Dock we end up with cd /, correct this
-    cd $env(HOME)/Documents
+    cd "$env(HOME)/Documents"
 }
 
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
