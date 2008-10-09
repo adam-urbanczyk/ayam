@@ -24,6 +24,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 addMenu $w SweepAttrData Type [list Open Closed Periodic]
 addCheck $w SweepAttrData Rotate
 addCheck $w SweepAttrData Interpolate

@@ -24,6 +24,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 addFile $w TextAttrData FontName
 addString $w TextAttrData String
 addParam $w TextAttrData Height

@@ -130,9 +130,8 @@ proc prefs_open {} {
     pack $f -in $w -fill both -expand yes -pady 2
     set nb [NoteBook $w.f2.nb -height 0]
 
-    set ay(cancelb) .prefsw.f3.bca
-    set oldappb $ay(appb)
-    set ay(appb) .prefsw.f3.bap
+    set ay(bca) .prefsw.f3.bca
+    set ay(bok) .prefsw.f3.bap
 
     # PrefsGUIs
     # Main
@@ -293,8 +292,6 @@ proc prefs_open {} {
     addParamB $fw ayprefse SParamV [ms ayprefse_SParam] { 10 0.5 1 30 }
 
     # end of PrefsGUIs
-
-    set ay(appb) $oldappb
 
     # select last selected preference section
     pack $nb -fill both -expand yes

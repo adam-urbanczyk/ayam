@@ -76,9 +76,8 @@ proc riattr_addp { } {
 	global ay riattr
 	set lb .addRiAttrw.f1.li
 
-	set ay(cancelb) .addRiAttrw.f3.bca
-	set oldappb $ay(appb)
-	set ay(appb) .addRiAttrw.f3.bok
+	set ay(bca) .addRiAttrw.f3.bca
+	set ay(bok) .addRiAttrw.f3.bok
 
 	# get matching attribute list entry
 	set attr [$lb get [$lb curselection]]
@@ -189,8 +188,6 @@ proc riattr_addp { } {
 
 	}
 	# foreach
-
-	set ay(appb) $oldappb
 
     }
     # bind

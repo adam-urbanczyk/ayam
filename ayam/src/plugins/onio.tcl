@@ -61,9 +61,8 @@ proc onio_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) .onio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .onio.f2.bok
+    set ay(bca) .onio.f2.bca
+    set ay(bok) .onio.f2.bok
 
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addFileT $f onio_options FileName $types
@@ -78,8 +77,6 @@ proc onio_import { } {
     addString $f onio_options STagName
     addString $f onio_options TTagName
     addProgress $f onio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -186,9 +183,8 @@ proc onio_export { } {
 	}
     }
 
-    set ay(cancelb) .onio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .onio.f2.bok
+    set ay(bca) .onio.f2.bca
+    set ay(bok) .onio.f2.bok
 
     set types {{"3DM (Rhino) Files" ".3dm"} {"All files" *}}
     addSFileT $f onio_options FileName $types
@@ -205,8 +201,6 @@ proc onio_export { } {
     addString $f onio_options STagName
     addString $f onio_options TTagName
     addProgress $f onio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

@@ -57,9 +57,8 @@ proc rrib_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) .ribI.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .ribI.f2.bok
+    set ay(bca) .ribI.f2.bca
+    set ay(bok) .ribI.f2.bok
 
     set types {{"RIB Files" ".rib"} {"All files" *}}
     addFileT $f rrib_options FileName $types
@@ -75,8 +74,6 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadSTrim
     addParam $f rrib_options RescaleKnots [list 0.0 1.0e-4]
     addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

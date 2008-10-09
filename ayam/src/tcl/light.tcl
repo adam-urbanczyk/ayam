@@ -19,6 +19,8 @@ catch {destroy $ay(pca).$LightAttr(w)}
 set w [frame $ay(pca).$LightAttr(w)]
 getProp
 
+set ay(bok) $ay(appb)
+
 # create new UI
 addMenu $w LightAttrData Type {Custom Point Distant Spot}
 addCheck $w LightAttrData IsOn

@@ -44,6 +44,8 @@ catch {destroy $ay(pca).$PatchMeshAttr(w)}
 set w [frame $ay(pca).$PatchMeshAttr(w)]
 getProp
 
+set ay(bok) $ay(appb)
+
 # create new PatchMeshAttr-UI
 addMenu $w PatchMeshAttrData Type [list Bilinear Bicubic] 
 addParam $w PatchMeshAttrData Width

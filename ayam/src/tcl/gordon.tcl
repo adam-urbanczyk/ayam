@@ -25,6 +25,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 # create GordonAttr-UI
 addCheck $w GordonAttrData WatchCurves
 addParam $w GordonAttrData Order_U

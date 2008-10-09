@@ -351,13 +351,10 @@ proc viewSetFOV { view } {
 
     set ay(FOV) $ay(cVFOV)
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addParam $f ay FOV
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "global ay;\
@@ -413,13 +410,10 @@ proc viewSetGrid { view } {
 
     set ay(GridSize) $ay(cVGridSize)
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command "\
@@ -1137,14 +1131,11 @@ proc viewSetBGImage { view } {
     set ay(ImageFile) $ay(cVBGImage)
     update
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addFileT $f ay ImageFile \
 	{ {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 15 -command "\

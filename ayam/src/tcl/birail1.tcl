@@ -25,6 +25,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 #addCheck $w Birail1AttrData Close
 addParam $w Birail1AttrData Sections
 addCheck $w Birail1AttrData StartCap

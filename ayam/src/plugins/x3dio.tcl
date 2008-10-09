@@ -67,9 +67,8 @@ proc x3dio_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) .x3dio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .x3dio.f2.bok
+    set ay(bca) .x3dio.f2.bca
+    set ay(bok) .x3dio.f2.bok
 
     set types {{"X3D (Web3D) Files" ".x3d"} {"All files" *}}
     addFileT $f x3dio_options FileName $types
@@ -87,8 +86,6 @@ proc x3dio_import { } {
     addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -203,9 +200,8 @@ proc x3dio_export { } {
 	}
     }
 
-    set ay(cancelb) .x3dio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .x3dio.f2.bok
+    set ay(bca) .x3dio.f2.bca
+    set ay(bok) .x3dio.f2.bok
 
     set types {{"X3D (Web3D) Files" ".x3d"} {"All files" *}}
     addSFileT $f x3dio_options FileName $types
@@ -225,8 +221,6 @@ proc x3dio_export { } {
     addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
