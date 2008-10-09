@@ -129,6 +129,8 @@ getTags names values
 set tagsPropData(names) $names
 set tagsPropData(values) $values
 
+set ay(bok) $ay(appb)
+
 # create Tags-UI
 catch {destroy $ay(pca).$Tags(w)}
 set w [frame $ay(pca).$Tags(w)]
@@ -248,6 +250,11 @@ if { $ay(ws) == "Aqua" } {
 set f [frame $w.fu]
 label $f.lt -text "Type:" -width 6
 entry $f.e -width 30
+eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+bind $f.e <Key-Escape> "after idle {.addTag.fd.bca invoke}"
+bind $f.e <Key-Return> "after idle {.addTag.fd.bok invoke}"
+catch {bind $f.e <Key-KP_Enter> "after idle {.addTag.fd.bok invoke}"}
+
 pack $f.lt -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w -side top -fill x -expand yes
@@ -259,6 +266,11 @@ if { $edit >= 0 } {
 set f [frame $w.fm]
 label $f.lv -text "Value:" -width 6
 entry $f.e -width 30
+eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+bind $f.e <Key-Escape> "after idle {.addTag.fd.bca invoke}"
+bind $f.e <Key-Return> "after idle {.addTag.fd.bok invoke}"
+catch {bind $f.e <Key-KP_Enter> "after idle {.addTag.fd.bok invoke}"}
+
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
 pack $f -in $w -side top -fill x -expand yes

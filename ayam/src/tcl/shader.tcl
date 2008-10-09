@@ -519,6 +519,8 @@ if { $type == "atmosphere" } { set stype "volume" }
 if { $type == "interior" } { set stype "volume" }
 if { $type == "exterior" } { set stype "volume" }
 
+set ay(bok) $ay(appb)
+
 addCommand $w c1 "Set new shader!" "shader_setNew $w $type $stype"
 
 addCommand $w c2 "Delete shader!" "undo save DelShader; shaderSet $type;\

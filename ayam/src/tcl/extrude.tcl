@@ -25,6 +25,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 addParam $w ExtrudeAttrData Height
 addCheck $w ExtrudeAttrData StartCap
 addCheck $w ExtrudeAttrData EndCap

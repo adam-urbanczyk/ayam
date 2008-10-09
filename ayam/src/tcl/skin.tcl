@@ -28,6 +28,8 @@ set tagvalues ""
 getTags tagnames tagvalues
 bevel_parseTags $tagnames $tagvalues
 
+set ay(bok) $ay(appb)
+
 addCheck $w SkinAttrData Interpolate
 addParam $w SkinAttrData Order_U
 addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]

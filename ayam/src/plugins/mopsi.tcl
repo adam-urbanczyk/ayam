@@ -43,15 +43,12 @@ proc mopsi_import { } {
 
     set types {{"Mops Scene" ".mop"} {"All files" *}}
 
-    set ay(cancelb) .mopi.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .mopi.f2.bok
+    set ay(bca) .mopi.f2.bca
+    set ay(bok) .mopi.f2.bok
 
     addFileT $f mopsi_options FileName $types
     addCheckB $f mopsi_options ResetDM [ms mopsi_options_ResetDM]
     addCheckB $f mopsi_options ResetST [ms mopsi_options_ResetST]
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

@@ -69,7 +69,8 @@ proc idr_open {} {
     set f [frame $w.fu.fr -relief ridge -bd 2]
     pack $f -side right -fill y -expand yes
 
-    set ay(iapplydisable) 1
+    set ay(bca) .idrw.fl.bca
+    set ay(bok) .idrw.fl.bok
 
     # select view
     set f $w.fu.fl
@@ -108,8 +109,6 @@ proc idr_open {} {
     pack $f.sc -in $f -side right -fill y
     pack $l -side top
     pack $f -side top -fill x -expand yes
-    #
-
 
     set f $w.fu.fr
     set bboptimize_entries {None Combine Optimize}
@@ -187,7 +186,6 @@ proc idr_open {} {
 
     pack $f1 -side top -fill x -expand yes
 
-
     set f [frame $w.fl]
     button $f.bgo -text "Render!" -width 6 -command {
 	set selection ""
@@ -208,8 +206,6 @@ proc idr_open {} {
     winCenter $w
 
     focus $f.bca
-
-    set ay(iapplydisable) 0
 
  return;
 }

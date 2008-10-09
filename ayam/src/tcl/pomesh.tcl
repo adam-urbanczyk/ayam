@@ -55,15 +55,12 @@ proc pomesh_merge { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addCheck $f pomeshmerge_options RemoveMerged
     addCheck $f pomeshmerge_options OptimizeNew
     addCheck $f pomeshmerge_options MergePVTags
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -157,15 +154,12 @@ proc pomesh_optimize { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addCheck $f pomeshopt_options OptimizeCoords
     addCheck $f pomeshopt_options IgnoreNormals
     addCheck $f pomeshopt_options OptimizeFaces
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {

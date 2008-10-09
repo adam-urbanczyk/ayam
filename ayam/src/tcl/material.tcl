@@ -83,14 +83,11 @@ proc material_createp { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
-    set ay(cancelb) $w.f2.bca
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     addText $w.f1 e0 "Create Material:"
     addString $w.f1 aydd Name
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command { 

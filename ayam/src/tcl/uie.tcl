@@ -102,7 +102,7 @@ proc addParam { w prop name {def {}} } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -145,16 +145,16 @@ proc addParam { w prop name {def {}} } {
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-	    "after idle {$ay(appb) invoke}"
+	    "after idle {$ay(bok) invoke}"
 	bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-	    "after idle {$ay(appb) invoke}"
+	    "after idle {$ay(bok) invoke}"
 	bind $f.e <Key-Return> "+after idle {\
-	    $::ay(appb) invoke}"
+	    $::ay(bok) invoke}"
 	catch {bind $f.e <Key-KP_Enter> "+after idle {\
-           $::ay(appb) invoke}"}
+           $::ay(bok) invoke}"}
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {$ay(appb) invoke}"
+		"after idle {$ay(bok) invoke}"
 	}
     }
 
@@ -218,7 +218,7 @@ proc addMatrix { w prop name } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -362,7 +362,7 @@ proc addColor { w prop name {def {}}} {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -454,27 +454,27 @@ proc addColor { w prop name {def {}}} {
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
-	bind $e1 <Key-Return> "+after idle {$ay(appb) invoke;\
+	bind $e1 <Key-Return> "+after idle {$ay(bok) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e1 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
+	catch {bind $e1 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
-	bind $e2 <Key-Return> "+after idle {$ay(appb) invoke;\
+	bind $e2 <Key-Return> "+after idle {$ay(bok) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e2 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
+	catch {bind $e2 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
-	bind $e3 <Key-Return> "+after idle {$ay(appb) invoke;
+	bind $e3 <Key-Return> "+after idle {$ay(bok) invoke;
                                updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e3 <Key-KP_Enter> "+after idle {$ay(appb) invoke;\
+	catch {bind $e3 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
                                updateColorFromE $w $prop $name $f.b1}"}
 
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {$ay(appb) invoke}"
+		"after idle {$ay(bok) invoke}"
 	}
 
 	bind $f.b1 <${aymainshortcuts(IApplyMod)}-ButtonPress-1>\
 		"updateColor $w $prop $name $f.b1;\
-		 after idle {$ay(appb) invoke};break;"
+		 after idle {$ay(bok) invoke};break;"
     }
 
     if { [winfo exists $f.l2] } {
@@ -515,7 +515,7 @@ proc addCheck { w prop name } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -575,14 +575,14 @@ proc addCheck { w prop name } {
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $cb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1> "after idle {\
-	    $ay(appb) invoke}"
-	bind $cb <Key-Return> "$ay(appb) invoke;break"
-	catch {bind $cb <Key-KP_Enter> "$ay(appb) invoke;break"}
+	    $ay(bok) invoke}"
+	bind $cb <Key-Return> "$ay(bok) invoke;break"
+	catch {bind $cb <Key-KP_Enter> "$ay(bok) invoke;break"}
 
 	if { $tcl_platform(platform) == "windows" ||
              $ay(ws) == "Aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {$ay(appb) invoke}"
+		"after idle {$ay(bok) invoke}"
 	}
     }
 
@@ -624,7 +624,7 @@ proc addMenu { w prop name elist } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -676,7 +676,7 @@ proc addMenu { w prop name elist } {
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
 	bind $f.mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-	    "after idle {$ay(appb) invoke}"
+	    "after idle {$ay(bok) invoke}"
     }
 
  return;
@@ -705,7 +705,7 @@ proc addString { w prop name  {def {}}} {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -723,8 +723,8 @@ proc addString { w prop name  {def {}}} {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$ay(appb) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$ay(appb) invoke}"}
+	bind $f.e <Key-Return> "+after idle {$ay(bok) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$ay(bok) invoke}"}
     }
 
     set mb ""
@@ -743,7 +743,7 @@ proc addString { w prop name  {def {}}} {
 	if { ! $ay(iapplydisable) } {
 	    global aymainshortcuts
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
-		"after idle {$ay(appb) invoke}"
+		"after idle {$ay(bok) invoke}"
 	}
     }
 
@@ -861,7 +861,7 @@ proc addFile { w prop name {def {}} } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -879,8 +879,8 @@ proc addFile { w prop name {def {}} } {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
     }
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
@@ -960,7 +960,7 @@ proc addMDir { w prop name } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -978,8 +978,8 @@ proc addMDir { w prop name } {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
     }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
@@ -1039,7 +1039,7 @@ proc addMFile { w prop name } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1
@@ -1057,8 +1057,8 @@ proc addMFile { w prop name } {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(appb) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(appb) invoke}"}
+	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
+	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
     }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
@@ -1118,7 +1118,7 @@ proc addCommand { w name text command } {
     if { [winfo toplevel $w] == "." } {
 	set escapecmd resetFocus
     } else {
-	set escapecmd "after idle {$ay(cancelb) invoke}"
+	set escapecmd "after idle {$ay(bca) invoke}"
     }
 
     set bw 1

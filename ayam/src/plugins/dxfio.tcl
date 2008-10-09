@@ -60,9 +60,8 @@ proc dxfio_import { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) .dxfio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .dxfio.f2.bok
+    set ay(bca) .dxfio.f2.bca
+    set ay(bok) .dxfio.f2.bok
 
     set types {{"DXF (AutoCAD) Files" ".dxf"} {"All files" *}}
     addFileT $f dxfio_options FileName $types
@@ -72,8 +71,6 @@ proc dxfio_import { } {
     addParam $f dxfio_options RescaleKnots [list 0.0 1.0e-4]
     addMenu $f dxfio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f dxfio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -180,9 +177,8 @@ proc dxfio_export { } {
 	}
     }
 
-    set ay(cancelb) .dxfio.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) .dxfio.f2.bok
+    set ay(bca) .dxfio.f2.bca
+    set ay(bok) .dxfio.f2.bok
 
     set types {{"DXF (AutoCAD) Files" ".dxf"} {"All files" *}}
     addSFileT $f dxfio_options FileName $types
@@ -193,8 +189,6 @@ proc dxfio_export { } {
     addCheck $f dxfio_options WriteCurves
     addCheck $f dxfio_options TopLevelLayers
     addProgress $f dxfio_options Progress
-
-    set ay(appb) $oldappb
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
