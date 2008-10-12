@@ -82,6 +82,10 @@ proc runTool { argvars argstrings command } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -anchor n -fill x -expand yes
 
+    bind $w <Key-Return> "$f.bok invoke"
+    catch {bind $w <Key-KP_Enter> "$f.bok invoke"}
+    bind $w <Escape> "$f.bca invoke"
+
     winCenter $w
     grab $w
     focus $f.bok
