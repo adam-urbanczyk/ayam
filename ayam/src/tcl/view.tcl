@@ -12,6 +12,7 @@
 
 ##############################
 # viewSetType:
+#  set the type of the view <w>
 proc viewSetType { w type {redraw 1} } {
  global ay ayprefs tcl_platform
 
@@ -139,10 +140,10 @@ proc viewCycleType { w dir {recover 1} } {
 		    -tox $oldtox -toy $oldtoy -toz $oldtoz \
 		    -grid 0.0 -redraw 0
 	    }
-
 	}
-
+	# if
     }
+    # if
 
     $togl redraw
 
@@ -541,8 +542,8 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     if { $internal_view == 0 } {
 	viewTitle $w Front Pick
 
-	wm protocol $w WM_DELETE_WINDOW "viewClose $w;\
-	    global ay; set ay(ul) root:0; uS"
+	wm protocol $w WM_DELETE_WINDOW \
+      "after 100 \{viewUnBind $w;viewClose $w;global ay;set ay(ul) root:0;uS\}"
     }
     # if
 
@@ -564,12 +565,14 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     }
     # bind
 
-    # XXXX do this only for internal views
-    bind $w.f3D.togl <FocusIn> {
-	focus -force [winfo parent [winfo parent %W]]
+    if { $internal_view == 1 } {
+	bind $w.f3D.togl <FocusIn> {
+	    focus -force [winfo parent [winfo parent %W]]
+	}
+	# bind
     }
-    # bind
 
+    # accept objects from the tree view to be dropped into the view window
     DropSite::register $w.f3D.togl -dropcmd viewDrop\
 	    -droptypes {TREE_NODE {copy {}} IMAGE { copy {}}}
 
@@ -662,6 +665,8 @@ proc viewBind { w } {
 	     ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
+
+	break;
     }
     #bind
 
@@ -687,16 +692,12 @@ proc viewBind { w } {
 	}
 	#if
 
-	# save old bindings
-	set i $ayviewshortcuts(ZoomRButton)
-	set ay(oldbinding) [bind $w.f3D.togl <B${i}-Motion>]
-	set ay(oldb1binding) [bind $w.f3D.togl <ButtonPress-${i}>]
-	set ay(oldb1rbinding) [bind $w.f3D.togl <ButtonRelease-${i}>]
-
 	if { ($ayprefs(AutoFocus) == 1) && \
 	     ([string first ".view" %W] == 0) } {
 	    focus [winfo toplevel %W].f3D.togl
 	}
+
+	break;
     }
     #bind
 
@@ -750,44 +751,45 @@ proc viewCloseAll { } {
 ##############################
 # viewClose:
 proc viewClose { w } {
-  global ay
+  global ay ayviewshortcuts
 
-  if { [string first ".view" $w] != 0 } {
-      # $w does not start with ".view" => view is internal, can not close
-      return;
-  }
-
-  set ay(draw) 0
-  update
-
-  # first remove bindings that could accidentally fire while closing
-  bind $w <Enter> ""
-  bind $w <Motion> ""
-  global ayviewshortcuts
-  bind $w <$ayviewshortcuts(RotMod)-Motion> ""
-
-  # now delete the view from the view list
-  set temp ""
-  set ay(currentView) ""
-  foreach view $ay(views) {
-    if { $view != $w } {
-	set temp [concat $temp $view]
-	set ay(currentView) ${view}.f3D.togl
+    if { [string first ".view" $w] != 0 } {
+	# $w does not start with ".view" => view is internal, can not close
+	return;
     }
-  }
 
-  set ay(views) $temp
+    set ay(draw) 0
+    update
 
-  catch {$ay(currentView) mc}
+    # first remove bindings that could accidentally fire while closing
+    bind $w <Enter> ""
+    bind $w <Motion> ""
+    bind $w <$ayviewshortcuts(RotMod)-Motion> ""
+    bind $w <$ayviewshortcuts(ZoomRMod)-Motion> ""
 
-  # finally delete the window
-  destroy $w.f3D.togl
-  destroy $w
+    # now delete the view from the view list
+    set ay(currentView) ""
+    foreach view $ay(views) {
+	if { $view != $w } {
+	    lappend temp $view
+	    set ay(currentView) ${view}.f3D.togl
+	}
+    }
 
-  # clear undo buffer
-  undo clear
+    set ay(views) $temp
 
-  set ay(draw) 1
+    # make a different view current
+    catch {$ay(currentView) mc}
+
+    # finally delete the window
+    destroy ${w}.f3D.togl
+    destroy $w
+
+    # clear undo buffer
+    undo clear
+
+    set ay(draw) 1
+    update
 
  return;
 }
@@ -839,8 +841,9 @@ proc setViewAttr { } {
 	    update
 	}
 
-
     }
+    # if
+
     if { $ViewAttribData(Type) != $pclip_reset(Type) } {
 	#    setupActionKeys $w clear
 	set typename [lindex $ay(viewtypenames) $ViewAttribData(Type)]
@@ -857,6 +860,7 @@ proc setViewAttr { } {
     setProp
 
     $ay(currentView) mc
+
  return;
 }
 # setViewAttr
@@ -872,6 +876,7 @@ proc viewRepairTitle { w type } {
 
     viewTitle .${w} $typename ""
 
+ return;
 }
 # viewRepairTitle
 
@@ -1039,7 +1044,6 @@ proc viewMouseToCurrent { } {
     set focused [focus -displayof .]
 
     if { $focused != "" } {
-
  	foreach view $ay(views) {
  	    if { [string compare $view $focused] == 0 } {
  		${view}.f3D.togl mc
