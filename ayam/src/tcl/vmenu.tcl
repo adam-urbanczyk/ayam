@@ -87,8 +87,8 @@ if { [string first ".view" $w] == 0 } {
 
     # "after 100" because on Win32 the <Enter>-binding fires when the menu
     # is closed and runs parallel to "viewClose" resulting in an error
-    $m add command -label "Close" -command "after 100 \{viewClose $w;\
-	global ay; set ay(ul) root:0; uS\}"
+    $m add command -label "Close" -command \
+    "after 100 \{viewUnBind $w;viewClose $w;global ay;set ay(ul) root:0;uS\}"
 }
 
 # Type Menu
