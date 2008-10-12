@@ -594,9 +594,6 @@ array set ay {
  elevnpu 1
  elevnpv 1
  soext "so"
- oldbinding ""
- oldb1binding ""
- oldb1rbinding ""
  shiftcbsp 1
  zoomr 0
  askedscriptdisable 0

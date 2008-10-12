@@ -489,36 +489,6 @@ proc shortcut_viewactions { w } {
 
     set i $ayviewshortcuts(RotButton)
 
-    # this binding allows to rotate any view regardless
-    # of any active action; the old active action will
-    # be re established again once the mouse button is released
-    bind $w.f3D.togl <$ayviewshortcuts(RotMod)-ButtonPress-${i}> {
-	global ayviewshortcuts
-
-	set i $ayviewshortcuts(RotButton)
-
-	undo save RotView
-
-	set oldx %x
-	set oldy %y
-	# save old bindings
-	set ay(oldbinding) [bind %W <B${i}-Motion>]
-	set ay(oldb1binding) [bind %W <ButtonPress-${i}>]
-	set ay(oldb1rbinding) [bind %W <ButtonRelease-${i}>]
-	bind %W <ButtonPress-${i}> { #nothing }
-	bind %W <ButtonRelease-${i}> { #nothing }
-	shortcut_modrotatebinding %W
-
-	bind %W <ButtonRelease-${i}> {
-	    # restore old bindings
-	    bind %W <ButtonRelease-${i}> { #nothing }
-	    bind %W <B${i}-Motion> $ay(oldbinding)
-	    bind %W <ButtonPress-${i}> $ay(oldb1binding)
-	    bind %W <ButtonRelease-${i}> $ay(oldb1rbinding)
-	}
-	break;
-    }
-
     bind $w <KeyPress-$ayviewshortcuts(RotModKey)> {
 	if { [string first ".view" %W] != 0 } {
 	    set w %W.f3D.togl
@@ -534,82 +504,51 @@ proc shortcut_viewactions { w } {
 	} else {
 	    set w [winfo toplevel %W].f3D.togl
 	}
-	$w configure -cursor left_ptr
+	$w configure -cursor {}
+    }
+
+    bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-B${i}-Motion> {
+	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
+	set oldx %x
+	set oldy %y
+	update
+	break
     }
 
     set i $ayviewshortcuts(ZoomRButton)
 
-    # this binding allows to zoom into a region of any
-    # view regardless of any active action
-    bind $w.f3D.togl <$ayviewshortcuts(ZoomRMod)-ButtonPress-${i}> {
-	set oldx %x
-	set oldy %y
-	shortcut_modzoomrbinding %W
-	break;
-    }
     bind $w <KeyPress-$ayviewshortcuts(ZoomRModKey)> {
-	global ay ayviewshortcuts
-	set i $ayviewshortcuts(ZoomRButton)
-	if { $ay(zoomr) == 0 } {
-	    set ay(zoomr) 1
-	    update
-	    if { [string first ".view" %W] != 0 } {
-		set w %W.f3D.togl
-	    } else {
-		set w [winfo toplevel %W].f3D.togl
-	    }
-	    $w configure -cursor sizing
-	    # save old bindings
-	    set ay(oldbinding) [bind $w <B${i}-Motion>]
-	    set ay(oldb1binding) [bind $w <ButtonPress-${i}>]
-	    set ay(oldb1rbinding) [bind $w <ButtonRelease-${i}>]
-	    set oldx -1
-	    set oldy -1
-	    # the following binding allows to start actions with
-	    # the shift key held down (e.g. scale-3D using shift+s)
-	    if { [string first ".view" %W] != 0 } {
-		set w %W
-	    } else {
-		set w [winfo toplevel %W]
-	    }
-	    bind $w <KeyRelease> {
-		if { [string first ".view" %W] != 0 } {
-		    set w %W.f3D.togl
-		} else {
-		    set w [winfo toplevel %W].f3D.togl
-		}
-		# save old bindings
-		set ay(oldbinding) [bind $w <B${i}-Motion>]
-		set ay(oldb1binding) [bind $w <ButtonPress-${i}>]
-		set ay(oldb1rbinding) [bind $w <ButtonRelease-${i}>]
-	    }
-	}
-    }
-    bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
-	global ay ayviewshortcuts
-	if { $ay(shifttab) } {set ay(shifttab) 0; break}
-	set i $ayviewshortcuts(ZoomRButton)
-	set ay(zoomr) 0
-	if { [string first ".view" $w] != 0 } {
+	if { [string first ".view" %W] != 0 } {
 	    set w %W.f3D.togl
 	} else {
 	    set w [winfo toplevel %W].f3D.togl
 	}
-	if { $oldx != -1 } {
-	    $w setconf -rect $oldx $oldy %x %y 0
-	}
-	# restore old bindings
-	bind $w <ButtonRelease-${i}> { #nothing }
-	bind $w <B${i}-Motion> $ay(oldbinding)
-	bind $w <ButtonPress-${i}> $ay(oldb1binding)
-	bind $w <ButtonRelease-${i}> $ay(oldb1rbinding)
-	$w configure -cursor left_ptr
+	$w configure -cursor sizing
+    }
+
+    bind $w <KeyRelease-$ayviewshortcuts(ZoomRModKey)> {
 	if { [string first ".view" %W] != 0 } {
-	    set w %W
+	    set w %W.f3D.togl
 	} else {
-	    set w [winfo toplevel %W]
+	    set w [winfo toplevel %W].f3D.togl
 	}
-	bind $w <KeyRelease> ""
+	$w configure -cursor {}
+    }
+
+    bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonPress-${i}> {
+	set oldx %x
+	set oldy %y
+    }
+
+    bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonRelease-${i}> {
+	undo save ZoomRView
+	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
+	%W redraw
+	update
+    }
+
+    bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-B${i}-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
     }
 
     set i $ayviewshortcuts(ZoomVButton)
@@ -620,6 +559,7 @@ proc shortcut_viewactions { w } {
 	%W zoomvac -start %y
 	update
     }
+
     bind $w.f3D.togl <B${i}-Motion> {
 	%W zoomvac -winy %y
 	update
@@ -633,11 +573,11 @@ proc shortcut_viewactions { w } {
 	%W movevac -start %x %y
 	update
     }
+
     bind $w.f3D.togl <B${i}-Motion> {
 	%W movevac -winxy %x %y
 	update
     }
-
     
     bind $w.f3D.togl <ButtonPress-4> {
 	undo save ZoomView
@@ -648,7 +588,6 @@ proc shortcut_viewactions { w } {
 	%W render
 	break
     }
-
 
     bind $w.f3D.togl <ButtonPress-5> {
 	undo save ZoomView
@@ -725,50 +664,6 @@ proc shortcut_viewactions { w } {
  return;
 }
 # shortcut_viewactions
-
-
-#shortcut_modrotatebinding:
-# Setup key bindings for rotation of a 3D-View while
-# a modifier key (e.g. Alt) is held down.
-proc shortcut_modrotatebinding { w } {
-    global ayviewshortcuts
-    set i $ayviewshortcuts(RotButton)
-    bind $w <B${i}-Motion> {
-	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
-	set oldx %x
-	set oldy %y
-	update
-	break;
-    }
- return;
-}
-# shortcut_modrotatebinding
-
-
-#shortcut_modzoomrbinding:
-# Setup key bindings for zooming into a region of
-# a 3D-View with a modifier key (e.g. Ctrl) held down.
-proc shortcut_modzoomrbinding { w } {
-    global ayviewshortcuts
-
-    set i $ayviewshortcuts(ZoomRButton)
-
-    bind $w <ButtonRelease-${i}> {
-
-	undo save ZoomRView
-
-	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
-	%W redraw
-
-	update
-    }
-    bind $w <B${i}-Motion> {
-	%W setconf -rect $oldx $oldy %x %y 1
-    }
-
- return;
-}
-# shortcut_modzoomrbinding
 
 
 #shortcut_show:
