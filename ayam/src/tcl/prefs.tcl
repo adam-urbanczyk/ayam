@@ -277,8 +277,10 @@ proc prefs_open {} {
     addStringB $fw ayprefse LogFile [ms ayprefse_LogFile]
     addText $fw e2 "UI:"
     addCheckB $fw ayprefse SaveAddsMRU [ms ayprefse_SaveAddsMRU]
-    addCheckB $fw ayprefse ToolBoxTrans [ms ayprefse_ToolBoxTrans]
-    addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
+    if { $ayprefs(SingleWindow) == 0 } {
+	addCheckB $fw ayprefse ToolBoxTrans [ms ayprefse_ToolBoxTrans]
+	addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
+    }
     addCheckB $fw ayprefse RGTrans [ms ayprefse_RGTrans]
     addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
     addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
