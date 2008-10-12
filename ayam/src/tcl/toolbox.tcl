@@ -1,7 +1,6 @@
-
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2008 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -608,6 +607,8 @@ proc toolbox_layout { {w ".tbw"} } {
 
     if { ! [winfo exists $w] } { return; }
 
+    # to avoid being called too often, we temporarily remove the
+    # configure binding
     bind $w <Configure> ""
 
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
@@ -618,12 +619,14 @@ proc toolbox_layout { {w ".tbw"} } {
 
     if { [expr $rows*$columns] < $numb } {
 	if { $w == ".tbw" } {
+	    # toolbox is in an extra toplevel window
 	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
 	    set height [expr ceil(double($numb)/$columns)*$size]
 	    winMoveOrResize .tbw [winfo reqwidth $w]x${height}
 	    update
 	    set rows [expr round([winfo height $w] / $size)]
 	} else {
+	    # toolbox is integrated in main window
 	    ayError 1 toolbox_layout "Can not display all buttons! Resizing..."
 	    set height [expr ceil(double($numb)/$columns)*$size]
 	    $w configure -height $height
@@ -651,6 +654,7 @@ proc toolbox_layout { {w ".tbw"} } {
     update
 
     # shrink-wrap the toplevel around buttons
+    # (if the toolbox is in a separate toplevel window)
     if { $w == ".tbw" } {
 	if { $ayprefs(ToolBoxShrink) } {
 	    winMoveOrResize $w [winfo reqwidth $w.f]x[winfo reqheight $w.f]
