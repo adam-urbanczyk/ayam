@@ -8967,7 +8967,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   /* create in-memory XML tree */
   tree = scew_tree_create();
 
-  scew_tree_set_xml_preamble(tree, "X3D PUBLIC \"ISO//Web3D//DTD X3D 3.0//EN\"   \"http://www.web3d.org/specifications/x3d-3.0.dtd\"");
+  scew_tree_set_xml_preamble(tree, "DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.0//EN\"   \"http://www.web3d.org/specifications/x3d-3.0.dtd\"");
 
   root = scew_tree_add_root(tree, "X3D");
 
