@@ -450,10 +450,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       dt2[1] = ymax;
       dt2[2] = zmax;
 
-
       ay_trafo_apply3(dt, mt);
       ay_trafo_apply3(dt2, mt);
-
 
       lx = fabs(dt[0]-dt2[0]);
       ly = fabs(dt[1]-dt2[1]);
@@ -486,7 +484,10 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       if(view->zoom < 1E-6 || view->zoom > 1E6)
 	view->zoom = 3.0;
 
+      Togl_MakeCurrent(togl);
+      
       ay_toglcb_reshape(togl);
+
       if(argc)
 	ay_toglcb_display(togl);
 
