@@ -427,12 +427,20 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     pack $w.fMenu.a -in $w.fMenu -side right
 
     # XXXX Win32 Menus are a bit to tall
-    global tcl_platform
+    global tcl_platform tcl_patchLevel
     if { $tcl_platform(platform) == "windows" } {
 	set children [winfo children $w.fMenu]
 	foreach child $children {
 	    $child configure -pady 1
 	}
+
+	# fix image menus for Tk8.4
+	if { $tcl_patchLevel > "8.3" } {
+	    $w.fMenu.dm configure -bd 2
+	    $w.fMenu.mm configure -bd 2
+	    $w.fMenu.g configure -bd 2
+	}
+
     }
 }
 # if
