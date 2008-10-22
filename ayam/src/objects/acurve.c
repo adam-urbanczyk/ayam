@@ -25,7 +25,7 @@ int
 ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 {
  char fname[] = "crtacurve";
- int order = 4, length = 4, closed = AY_FALSE, i = 0;
+ int order = 3, length = 4, closed = AY_FALSE, i = 0;
  double *cv = NULL, dx = 0.25;
  ay_acurve_object *new = NULL;
 
@@ -736,7 +736,8 @@ ay_acurve_notifycb(ay_object *o)
       return ay_status;
     }
 
-  ay_status = ay_nct_create(4, acurve->length, AY_KTCUSTOM, controlv, knotv,
+  ay_status = ay_nct_create(acurve->order, acurve->alength, AY_KTCUSTOM,
+			    controlv, knotv,
 			    (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status)
