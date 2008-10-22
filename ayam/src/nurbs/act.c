@@ -14,7 +14,290 @@
 
 /* act.c - approximating curve tools */
 
+int ay_act_svd(int m, int n, int withu, int withv,
+	       double eps, double tol,
+	       double *a, double *q, double *u, double *v);
+
 int ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R);
+
+
+/* ay_act_svd:
+ *
+ */
+int
+ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
+	   double *a, double *q, double *u, double *v)
+{
+ int i, j, k, l, l1, iter, retval;
+ double c, f, g, h, s, x, y, z;
+ double *e;
+
+  e = (double *)calloc(n, sizeof(double));
+  retval = 0;
+
+  /* Copy 'a' to 'u' */
+  for(i = 0; i < m; i++)
+    {
+      for(j = 0; j < n; j++)
+	{
+	  /*u[i][j] = a[i][j];*/
+	  u[i*m+j] = a[i*n+j];
+	}
+    }
+  /* Householder's reduction to bidiagonal form. */
+  g = x = 0.0;
+  for(i = 0; i < n; i++)
+    {
+      e[i] = g;
+      s = 0.0;
+      l = i+1;
+      for(j = i; j < m; j++)
+	{
+	  s += (u[j*m+i]*u[j*m+i]);
+	}
+      if(s < tol)
+	{
+	  g = 0.0;
+	}
+      else
+	{
+	  f = u[i*m+i];
+	  g = (f < 0) ? sqrt(s) : -sqrt(s);
+	  h = f * g - s;
+	  u[i*m+i] = f - g;
+	  for(j = l; j < n; j++)
+	    {
+	      s = 0.0;
+	      for(k = i; k < m; k++)
+		{
+		  s += (u[k*m+i] * u[k*m+j]);
+		}
+	      f = s / h;
+	      for(k = i; k < m; k++)
+		{
+		  u[k*m+j] += (f * u[k*m+i]);
+		}
+	  } /* for */
+	} /* if */
+      q[i] = g;
+      s = 0.0;
+      for(j = l; j < n; j++)
+	{
+	  s += (u[i*m+j] * u[i*m+j]);
+	}
+      if(s < tol)
+	{
+	  g = 0.0;
+	}
+      else
+	{
+	  f = u[i*m+i+1];
+	  g = (f < 0) ? sqrt(s) : -sqrt(s);
+	  h = f * g - s;
+	  u[i*m+i+1] = f - g;
+	  for(j=l;j<n;j++)
+	    {
+	    e[j] = u[i*m+j]/h;
+	    }
+	  for(j=l;j<m;j++)
+	    {
+	      s = 0.0;
+	      for(k = l; k < n; k++)
+		{
+		  s += (u[j*m+k] * u[i*m+k]);
+		}
+	      for(k=l;k<n;k++)
+		{
+		  u[j*m+k] += (s * e[k]);
+		}
+	    } /* for */
+	} /* if */
+      y = fabs(q[i]) + fabs(e[i]);
+      if(y > x)
+	x = y;
+    } /* end i */
+
+  /* accumulation of right-hand transformations */
+  if(withv)
+    {
+      for(i=n-1;i>=0;i--)
+	{
+	  if(g != 0.0)
+	    {
+	      h = u[i*m+i+1] * g;
+	      for(j=l;j<n;j++)
+		v[j*m+i] = u[i*m+j]/h;
+	      for(j=l;j<n;j++)
+		{
+		  s = 0.0;
+		  for(k=l;k<n;k++)
+		    s += (u[i*m+k] * v[k*m+j]);
+		  for(k=l;k<n;k++)
+		    v[k*m+j] += (s * v[k*m+i]);
+	      } /* for */
+	    } /* if */
+	  for(j=l;j<n;j++)
+	    {
+	      v[i*m+j] = v[j*m+i] = 0.0;
+	    }
+	  v[i*m+i] = 1.0;
+	  g = e[i];
+	  l = i;
+	} /* for */
+    } /* end withv, parens added for clarity */
+
+  /* accumulation of left-hand transformations */
+  if(withu)
+    {
+      for(i=n;i<m;i++)
+	{
+	  for(j=n;j<m;j++)
+	    u[i*m+j] = 0.0;
+	  u[i*m+i] = 1.0;
+	}
+
+      for(i=n-1;i>=0;i--) {
+	l = i + 1;
+	g = q[i];
+	for(j=l;j<m;j++)  /* upper limit was 'n' */
+	  u[i*m+j] = 0.0;
+	if(g != 0.0) {
+	  h = u[i*m+i] * g;
+	  for(j=l;j<m;j++) { /* upper limit was 'n' */
+	    s = 0.0;
+	    for(k=l;k<m;k++)
+	      s += (u[k*m+i] * u[k*m+j]);
+	    f = s / h;
+	    for(k=i;k<m;k++)
+	      u[k*m+j] += (f * u[k*m+i]);
+	  } /* end j */
+	  for(j=i;j<m;j++)
+	    u[j*m+i] /= g;
+	} /* end g */
+	else {
+	  for(j=i;j<m;j++)
+	    u[j*m+i] = 0.0;
+	}
+	u[i*m+i] += 1.0;
+      } /* end i*/
+    } /* end withu, parens added for clarity */
+
+  /* diagonalization of the bidiagonal form */
+  eps *= x;
+  for(k=n-1;k>=0;k--)
+    {
+      iter = 0;
+test_f_splitting:
+      for(l=k;l>=0;l--)
+	{
+	  if(fabs(e[l]) <= eps) goto test_f_convergence;
+	  if(fabs(q[l-1]) <= eps) goto cancellation;
+	} /* end l */
+
+      /* cancellation of e[l] if l > 0 */
+cancellation:
+      c = 0.0;
+      s = 1.0;
+      l1 = l - 1;
+      for(i=l;i<=k;i++)
+	{
+	  f = s * e[i];
+	  e[i] *= c;
+	  if(fabs(f) <= eps) goto test_f_convergence;
+	  g = q[i];
+	  h = q[i] = sqrt(f*f + g*g);
+	  c = g / h;
+	  s = -f / h;
+	  if(withu)
+	    {
+	      for(j=0;j<m;j++)
+		{
+		  y = u[j*m+l1];
+		  z = u[j*m+i];
+		  u[j*m+l1] = y * c + z * s;
+		  u[j*m+i] = -y * s + z * c;
+		} /* end j */
+	    } /* end withu, parens added for clarity */
+	} /* end i */
+test_f_convergence:
+      z = q[k];
+      if(l == k) goto convergence;
+
+    /* shift from bottom 2x2 minor */
+      iter++;
+      if(iter > 30) {
+	retval = k;
+	break;
+      }
+      x = q[l];
+      y = q[k-1];
+      g = e[k-1];
+      h = e[k];
+      f = ((y-z)*(y+z) + (g-h)*(g+h)) / (2*h*y);
+      g = sqrt(f*f + 1.0);
+      f = ((x-z)*(x+z) + h*(y/((f<0)?(f-g):(f+g))-h))/x;
+      /* next QR transformation */
+      c = s = 1.0;
+      for(i=l+1;i<=k;i++)
+	{
+	  g = e[i];
+	  y = q[i];
+	  h = s * g;
+	  g *= c;
+	  e[i-1] = z = sqrt(f*f+h*h);
+	  c = f / z;
+	  s = h / z;
+	  f = x * c + g * s;
+	  g = -x * s + g * c;
+	  h = y * s;
+	  y *= c;
+	  if(withv)
+	    {
+	      for(j=0;j<n;j++)
+		{
+		  x = v[j*m+i-1];
+		  z = v[j*m+i];
+		  v[j*m+i-1] = x * c + z * s;
+		  v[j*m+i] = -x * s + z * c;
+		} /* end j */
+	    } /* end withv, parens added for clarity */
+	  q[i-1] = z = sqrt(f*f + h*h);
+	  c = f/z;
+	  s = h/z;
+	  f = c * g + s * y;
+	  x = -s * g + c * y;
+	  if(withu)
+	    {
+	      for(j=0;j<m;j++)
+		{
+		  y = u[j*m+i-1];
+		  z = u[j*m+i];
+		  u[j*m+i-1] = y * c + z * s;
+		  u[j*m+i] = -y * s + z * c;
+		} /* end j */
+	    } /* end withu, parens added for clarity */
+	} /* end i */
+      e[l] = 0.0;
+      e[k] = f;
+      q[k] = x;
+      goto test_f_splitting;
+convergence:
+      if(z < 0.0)
+	{
+	  /* q[k] is made non-negative */
+	  q[k] = - z;
+	  if(withv)
+	    {
+	      for(j=0;j<n;j++)
+		v[j*m+k] = -v[j*m+k];
+	    } /* end withv, parens added for clarity */
+	} /* end z */
+    } /* end k */
+
+  free(e);
+
+ return retval;
+} /* ay_act_svd */
 
 
 /* ay_act_multmatrixmn:
@@ -66,9 +349,9 @@ ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
 int
 ay_act_solve(double *M1, double *M2, int m, int n, double *R)
 {
- int ay_status = AY_OK;
- int stride = 3, i, j, k;
- double t, *A = NULL;
+ int ay_status = AY_OK, svd_status = 0;
+ int stride = 3, i, j, k, l;
+ double t, *A = NULL, *q = NULL, *u = NULL, *v = NULL, *tmp = NULL;
  int *pivot = NULL;
 
   if(!M1 || !M2 || !R)
@@ -108,13 +391,51 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
 	      R[i*stride+j] = t;
 	    }
 	}
-
     }
   else
     {
       /* M1 is not square => use SV decomposition to solve */
+      if(!(q = calloc(m, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-    }
+      if(!(u = calloc(m*m, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      if(!(v = calloc(m*m, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      if(!(tmp = (double *)calloc(m*stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      svd_status = ay_act_svd(m, n, 1, 1, AY_EPSILON, AY_EPSILON, M1, q, u, v);
+
+      if(svd_status)
+	{ ay_status = AY_ERROR; goto cleanup; }
+
+      for(l = 0; l < stride; l++)
+	{
+	  for(i = 0; i < n; i++)
+	    {
+	      tmp[i] = 0.0;
+	      if(q[i])
+		{
+		  for(j = 0; j < m; j++)
+		    {
+		      tmp[i] += (u[j*m+i] * M2[j*stride+l]); /* U'.b */
+		    }
+		  tmp[i] /= q[i]; /* (1/q).U'.b */
+		}
+	    }
+	  for(i = 0; i < n; i++)
+	    {
+	      R[i*stride+l] = 0.0;
+	      for(j = 0; j < n; j++)
+		{
+		  R[i*stride+l] += (v[i*m+j] * tmp[j]); /* V.(1/q).U'.b */
+		}
+	    }
+	} /* for */
+    } /* if */
 
 cleanup:
 
@@ -123,6 +444,18 @@ cleanup:
 
   if(pivot)
     free(pivot);
+
+  if(q)
+    free(q);
+
+  if(u)
+    free(u);
+
+  if(v)
+    free(v);
+
+  if(tmp)
+    free(tmp);
 
  return ay_status;
 } /* ay_act_solve */
@@ -142,6 +475,9 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
   if(!Q || !U || !P)
     return AY_ENULL;
+
+  if(n > m)
+    return AY_ERROR;
 
   ay_knots_chordparam(Q, m/*Qlen*/, 3, &ub);
 
@@ -400,7 +736,7 @@ cleanup:
 
 
 /* ay_act_resize:
- *  resize an interpolating curve
+ *  resize an approximating curve
  */
 int
 ay_act_resize(ay_acurve_object *curve, int new_length)
