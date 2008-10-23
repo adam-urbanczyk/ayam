@@ -18,8 +18,9 @@ int ay_act_svd(int m, int n, int withu, int withv,
 	       double eps, double tol,
 	       double *a, double *q, double *u, double *v);
 
-int ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R);
+int ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R);
 
+int ay_act_solve(int m, int n, double *A, double *B, double *X);
 
 /* ay_act_svd:
  *
@@ -41,7 +42,7 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
       for(j = 0; j < n; j++)
 	{
 	  /*u[i][j] = a[i][j];*/
-	  u[i*m+j] = a[i*n+j];
+	  u[i*m+j] = a[i*m+j];
 	}
     }
   /* Householder's reduction to bidiagonal form. */
@@ -77,7 +78,7 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
 		{
 		  u[k*m+j] += (f * u[k*m+i]);
 		}
-	  } /* for */
+	    } /* for */
 	} /* if */
       q[i] = g;
       s = 0.0;
@@ -97,7 +98,7 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
 	  u[i*m+i+1] = f - g;
 	  for(j=l;j<n;j++)
 	    {
-	    e[j] = u[i*m+j]/h;
+	      e[j] = u[i*m+j]/h;
 	    }
 	  for(j=l;j<m;j++)
 	    {
@@ -106,7 +107,7 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
 		{
 		  s += (u[j*m+k] * u[i*m+k]);
 		}
-	      for(k=l;k<n;k++)
+	      for(k = l; k < n; k++)
 		{
 		  u[j*m+k] += (s * e[k]);
 		}
@@ -120,23 +121,29 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
   /* accumulation of right-hand transformations */
   if(withv)
     {
-      for(i=n-1;i>=0;i--)
+      for(i = n-1; i >= 0; i--)
 	{
 	  if(g != 0.0)
 	    {
 	      h = u[i*m+i+1] * g;
-	      for(j=l;j<n;j++)
-		v[j*m+i] = u[i*m+j]/h;
-	      for(j=l;j<n;j++)
+	      for(j = l; j < n; j++)
+		{
+		  v[j*m+i] = u[i*m+j]/h;
+		}
+	      for(j = l; j < n; j++)
 		{
 		  s = 0.0;
-		  for(k=l;k<n;k++)
-		    s += (u[i*m+k] * v[k*m+j]);
-		  for(k=l;k<n;k++)
-		    v[k*m+j] += (s * v[k*m+i]);
-	      } /* for */
+		  for(k = l; k < n; k++)
+		    {
+		      s += (u[i*m+k] * v[k*m+j]);
+		    }
+		  for(k = l; k < n; k++)
+		    {
+		      v[k*m+j] += (s * v[k*m+i]);
+		    }
+		} /* for */
 	    } /* if */
-	  for(j=l;j<n;j++)
+	  for(j = l; j < n; j++)
 	    {
 	      v[i*m+j] = v[j*m+i] = 0.0;
 	    }
@@ -149,46 +156,62 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
   /* accumulation of left-hand transformations */
   if(withu)
     {
-      for(i=n;i<m;i++)
+      for(i = n; i < m; i++)
 	{
-	  for(j=n;j<m;j++)
-	    u[i*m+j] = 0.0;
+	  for(j = n; j < m; j++)
+	    {
+	      u[i*m+j] = 0.0;
+	    }
 	  u[i*m+i] = 1.0;
 	}
 
-      for(i=n-1;i>=0;i--) {
-	l = i + 1;
-	g = q[i];
-	for(j=l;j<m;j++)  /* upper limit was 'n' */
-	  u[i*m+j] = 0.0;
-	if(g != 0.0) {
-	  h = u[i*m+i] * g;
-	  for(j=l;j<m;j++) { /* upper limit was 'n' */
-	    s = 0.0;
-	    for(k=l;k<m;k++)
-	      s += (u[k*m+i] * u[k*m+j]);
-	    f = s / h;
-	    for(k=i;k<m;k++)
-	      u[k*m+j] += (f * u[k*m+i]);
-	  } /* end j */
-	  for(j=i;j<m;j++)
-	    u[j*m+i] /= g;
-	} /* end g */
-	else {
-	  for(j=i;j<m;j++)
-	    u[j*m+i] = 0.0;
-	}
-	u[i*m+i] += 1.0;
-      } /* end i*/
+      for(i = n-1; i >= 0; i--)
+	{
+	  l = i + 1;
+	  g = q[i];
+	  for(j = l; j < m; j++)  /* upper limit was 'n' */
+	    {
+	      u[i*m+j] = 0.0;
+	    }
+	  if(g != 0.0)
+	    {
+	      h = u[i*m+i] * g;
+	      for(j = l; j < m; j++) /* upper limit was 'n' */
+		{
+		  s = 0.0;
+		  for(k = l; k < m; k++)
+		    {
+		      s += (u[k*m+i] * u[k*m+j]);
+		    }
+		  f = s / h;
+		  for(k = i; k < m; k++)
+		    {
+		      u[k*m+j] += (f * u[k*m+i]);
+		    }
+		} /* end j */
+	      for(j = i; j < m; j++)
+		{
+		  u[j*m+i] /= g;
+		}
+	    } /* end g */
+	  else
+	    {
+	      for(j = i; j < m; j++)
+		{
+		  u[j*m+i] = 0.0;
+		}
+	    }
+	  u[i*m+i] += 1.0;
+	} /* end i*/
     } /* end withu, parens added for clarity */
 
   /* diagonalization of the bidiagonal form */
   eps *= x;
-  for(k=n-1;k>=0;k--)
+  for(k = n-1; k >= 0; k--)
     {
       iter = 0;
 test_f_splitting:
-      for(l=k;l>=0;l--)
+      for(l = k; l >= 0; l--)
 	{
 	  if(fabs(e[l]) <= eps) goto test_f_convergence;
 	  if(fabs(q[l-1]) <= eps) goto cancellation;
@@ -199,7 +222,7 @@ cancellation:
       c = 0.0;
       s = 1.0;
       l1 = l - 1;
-      for(i=l;i<=k;i++)
+      for(i = l; i <= k; i++)
 	{
 	  f = s * e[i];
 	  e[i] *= c;
@@ -210,7 +233,7 @@ cancellation:
 	  s = -f / h;
 	  if(withu)
 	    {
-	      for(j=0;j<m;j++)
+	      for(j = 0; j < m; j++)
 		{
 		  y = u[j*m+l1];
 		  z = u[j*m+i];
@@ -238,7 +261,7 @@ test_f_convergence:
       f = ((x-z)*(x+z) + h*(y/((f<0)?(f-g):(f+g))-h))/x;
       /* next QR transformation */
       c = s = 1.0;
-      for(i=l+1;i<=k;i++)
+      for(i = l+1; i <= k; i++)
 	{
 	  g = e[i];
 	  y = q[i];
@@ -253,7 +276,7 @@ test_f_convergence:
 	  y *= c;
 	  if(withv)
 	    {
-	      for(j=0;j<n;j++)
+	      for(j = 0; j < n; j++)
 		{
 		  x = v[j*m+i-1];
 		  z = v[j*m+i];
@@ -268,7 +291,7 @@ test_f_convergence:
 	  x = -s * g + c * y;
 	  if(withu)
 	    {
-	      for(j=0;j<m;j++)
+	      for(j = 0; j < m; j++)
 		{
 		  y = u[j*m+i-1];
 		  z = u[j*m+i];
@@ -288,7 +311,7 @@ convergence:
 	  q[k] = - z;
 	  if(withv)
 	    {
-	      for(j=0;j<n;j++)
+	      for(j = 0; j < n; j++)
 		v[j*m+k] = -v[j*m+k];
 	    } /* end withv, parens added for clarity */
 	} /* end z */
@@ -303,7 +326,7 @@ convergence:
 /* ay_act_multmatrixmn:
  */
 int
-ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
+ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R)
 {
  int i, j, k;
  int a, b, c = 0;
@@ -312,18 +335,18 @@ ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
   if(!M1 || !M2 || !R)
     return AY_ENULL;
 
-  /* M1 is m*n, M2 is n*m; R will be n*n */
+  /* M1 is mxn, M2 is nxm; R will be nxn */
 
-  /* i shall be column number for R */
+  /* i shall be column number for R (and M1) */
   for(i = 0; i < n; i++)
     {
-      /* j shall be row number for R */
+      /* j shall be row number for R (and M2) */
       for(j = 0; j < n; j++)
 	{
 	  /* arrange to access row j in M1 */
 	  a = j;
 	  /* arrange to access column i in M2 */
-	  b = i*n;
+	  b = i*m;
 	  t = 0.0;
 	  for(k = 0; k < m; k++)
 	    {
@@ -334,6 +357,7 @@ ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
 	      b++;
 	    } /* for */
 	  R[c] = t;
+	  /* forward one row in R */
 	  c++;
 	} /* for */
     } /* for */
@@ -343,30 +367,26 @@ ay_act_multmatrixmn(double *M1, double *M2, int m, int n, double *R)
 
 
 /* ay_act_solve:
- *  solve the linear equation system: M1*R=M2
- *  (M1[m*n], M2[n], R[n])
+ *  solve the linear equation system: A*X=B
+ *  (A[m*n], X[n*stride], B[n*stride], m >= n)
+ *  will change A! X allocated outside!
  */
 int
-ay_act_solve(double *M1, double *M2, int m, int n, double *R)
+ay_act_solve(int m, int n, double *A, double *B, double *X)
 {
  int ay_status = AY_OK, svd_status = 0;
  int stride = 3, i, j, k, l;
- double t, *A = NULL, *q = NULL, *u = NULL, *v = NULL, *tmp = NULL;
+ double t, *q = NULL, *u = NULL, *v = NULL, *tmp = NULL;
  int *pivot = NULL;
 
-  if(!M1 || !M2 || !R)
+  if(!A || !B || !X)
     return AY_ENULL;
 
   if(m == n)
     {
-      /* M1 is square => use LU decomposition to solve */
-      if(!(A = calloc(n*n, sizeof(double))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-
+      /* A is square => use LU decomposition to solve */
       if(!(pivot = calloc(n, sizeof(int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
-
-      memcpy(A, M1, n*n*sizeof(double));
 
       ay_status = ay_nb_LUDecompose(n, A, pivot);
 
@@ -378,7 +398,7 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
       if(ay_status)
 	{ goto cleanup; }
 
-      /* multiply through: R = A(^-1)*M2, and store results */
+      /* multiply through: X = A(^-1)*B, and store results */
       for(i = 0; i < n; i++)
 	{
 	  for(j = 0; j < stride; j++)
@@ -386,15 +406,15 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
 	      t = 0.0;
 	      for(k = 0; k < n; k++)
 		{
-		  t += (A[i*n+k] * M2[k*stride+j]);
+		  t += (A[i*n+k] * B[k*stride+j]);
 		}
-	      R[i*stride+j] = t;
+	      X[i*stride+j] = t;
 	    }
 	}
     }
   else
     {
-      /* M1 is not square => use SV decomposition to solve */
+      /* A is not square => use SV decomposition to solve */
       if(!(q = calloc(m, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
@@ -404,10 +424,12 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
       if(!(v = calloc(m*m, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      if(!(tmp = (double *)calloc(m*stride, sizeof(double))))
+      if(!(tmp = (double *)calloc(m, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      svd_status = ay_act_svd(m, n, 1, 1, AY_EPSILON, AY_EPSILON, M1, q, u, v);
+      svd_status = ay_act_svd(m, n, 1, 1,
+			      1.5/*AY_EPSILON*/, 0.25/*AY_EPSILON*/,
+			      A, q, u, v);
 
       if(svd_status)
 	{ ay_status = AY_ERROR; goto cleanup; }
@@ -417,30 +439,34 @@ ay_act_solve(double *M1, double *M2, int m, int n, double *R)
 	  for(i = 0; i < n; i++)
 	    {
 	      tmp[i] = 0.0;
-	      if(q[i])
+	      if(q[i] > AY_EPSILON /* XXXX ?Use different constant/tol? */)
 		{
 		  for(j = 0; j < m; j++)
 		    {
-		      tmp[i] += (u[j*m+i] * M2[j*stride+l]); /* U'.b */
+		      tmp[i] += (u[j*m+i] * B[i*stride+l]); /* U'.b */
 		    }
 		  tmp[i] /= q[i]; /* (1/q).U'.b */
 		}
-	    }
+	      /* XXXX ?report error? */
+	      /*
+	      else
+		{
+		 ay_status = AY_ERROR; goto cleanup;
+		}
+	      */
+	    } /* for */
 	  for(i = 0; i < n; i++)
 	    {
-	      R[i*stride+l] = 0.0;
+	      X[i*stride+l] = 0.0;
 	      for(j = 0; j < n; j++)
 		{
-		  R[i*stride+l] += (v[i*m+j] * tmp[j]); /* V.(1/q).U'.b */
+		  X[i*stride+l] += (v[i*m+j] * tmp[j]); /* V.(1/q).U'.b */
 		}
 	    }
 	} /* for */
     } /* if */
 
 cleanup:
-
-  if(A)
-    free(A);
 
   if(pivot)
     free(pivot);
@@ -470,7 +496,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
  int a, i, i2, j, k, istride = 3, ostride = 4, span;
  double da, d, *ub = NULL;
  double *Ns = NULL, *Nt = NULL, *NN = NULL;
- double *R = NULL, *rk = NULL, *N = NULL, *X = NULL, *B = NULL;
+ double *R = NULL, *rk = NULL, *N = NULL, *X = NULL;
  double *funs = NULL;
 
   if(!Q || !U || !P)
@@ -479,7 +505,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
   if(n > m)
     return AY_ERROR;
 
-  ay_knots_chordparam(Q, m/*Qlen*/, 3, &ub);
+  ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
 
   if(!ub)
     {
@@ -498,10 +524,12 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       goto cleanup;
     }
 
+  /* create clamped knot vector */
   for(i = 0; i < p+1; i++)
     {
       (*U)[i] = 0.0;
     }
+
   /*
   d = (m+1) / (double)(n-p+1);
   for(j = 1; j < n-p; j++)
@@ -574,16 +602,18 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  N[a] = funs[j];
 	  /*
 	  if(isnan(N[a]))
-	    goto cleanup;
+	  {
+	    ay_status = AY_ERROR; goto cleanup;
+	  }
 	  */
 	}
 
       /*rk[i] = Q[i]-N(i,0)*Q[0]-N(i,n-1)*Q[m-1];*/
-      rk[i*istride]   = Q[i*istride]  - N[i*n]*Q[0] -
+      rk[i*istride]   = Q[i*istride] - N[i*n] * Q[0] -
 	N[i*n+n-1]*Q[(m-1)*istride];
-      rk[i*istride+1] = Q[i*istride+1]- N[i*n]*Q[1] -
+      rk[i*istride+1] = Q[i*istride+1] - N[i*n]*Q[1] -
 	N[i*n+n-1]*Q[(m-1)*istride+1];
-      rk[i*istride+2] = Q[i*istride+2]- N[i*n]*Q[2] -
+      rk[i*istride+2] = Q[i*istride+2] - N[i*n]*Q[2] -
 	N[i*n+n-1]*Q[(m-1)*istride+2];
     } /* for */
 
@@ -612,7 +642,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
   /* solve N^T*N*P = R */
 
-  if((n-2) > 0)
+  if(n > 2)
     {
       if(!(Ns = calloc((m-2)*(n-2), sizeof(double))))
 	{
@@ -624,17 +654,12 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(NN = calloc((m-2)*(n-2), sizeof(double))))
+      if(!(NN = calloc((m-2)*(m-2), sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
       if(!(X = calloc((n-2)*istride, sizeof(double))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      if(!(B = calloc((n-2)*istride, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -652,14 +677,11 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	    }
 	}
 
-      /* fill B */
-      memcpy(B, &(R[istride]), (n-2)*istride*sizeof(double));
-
       /* do N^T*N */
-      ay_act_multmatrixmn(Nt, Ns, m-2, n-2, NN);
+      ay_act_multmatrixmn(n-2, m-2, Nt, Ns, NN);
 
       /* solve the linear equation system NN*X=B */
-      ay_status = ay_act_solve(NN, B, m-2, n-2, X);
+      ay_status = ay_act_solve(m-2, m-2, NN, &(R[istride])/*B*/, X);
 
       if(ay_status)
 	{ goto cleanup; }
@@ -728,9 +750,6 @@ cleanup:
   if(X)
     free(X);
 
-  if(B)
-    free(B);
-
  return ay_status;
 } /* ay_act_leastSquares */
 
@@ -742,14 +761,14 @@ int
 ay_act_resize(ay_acurve_object *curve, int new_length)
 {
  int ay_status = AY_OK;
- int a, b, i, j;
+ int stride = 3, a, b, i, j;
  int *newpersec = NULL, new = 0;
  double *ncontrolv = NULL, v[3] = {0}, t = 0.0, *cv = NULL;
 
   if(new_length == curve->length)
     return ay_status;
 
-  if(!(ncontrolv = calloc(3*new_length, sizeof(double))))
+  if(!(ncontrolv = calloc(stride*new_length, sizeof(double))))
     return AY_EOMEM;
 
   if(new_length < curve->length)
@@ -757,8 +776,8 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
       a = 0;
       for(i = 0; i < new_length; i++)
 	{
-	  memcpy(&ncontrolv[a], &(curve->controlv[a]), 3*sizeof(double));
-	  a+=3;
+	  memcpy(&ncontrolv[a], &(curve->controlv[a]), stride*sizeof(double));
+	  a+=stride;
 	}
     }
   else
@@ -774,9 +793,9 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 	{
 	  for(i = 0; i < (curve->length-1); i++)
 	    {
-	      if((cv[i*3] != cv[(i+1)*3]) ||
-		 (cv[i*3+1] != cv[(i+1)*3+1]) ||
-		 (cv[i*3+2] != cv[(i+1)*3+2]))
+	      if((cv[i*stride]   != cv[(i+1)*stride]) ||
+		 (cv[i*stride+1] != cv[(i+1)*stride+1]) ||
+		 (cv[i*stride+2] != cv[(i+1)*stride+2]))
 		{
 		  if(new)
 		    {
@@ -791,19 +810,19 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
       b = 0;
       for(i = 0; i < (curve->length-1); i++)
 	{
-	  memcpy(&ncontrolv[b], &(curve->controlv[a]), 3*sizeof(double));
-	  b+=3;
+	  memcpy(&ncontrolv[b], &(curve->controlv[a]), stride*sizeof(double));
+	  b+=stride;
 
-	  if((cv[i*3] != cv[(i+1)*3]) ||
-	     (cv[i*3+1] != cv[(i+1)*3+1]) ||
-	     (cv[i*3+2] != cv[(i+1)*3+2]))
+	  if((cv[i*stride] != cv[(i+1)*stride]) ||
+	     (cv[i*stride+1] != cv[(i+1)*stride+1]) ||
+	     (cv[i*stride+2] != cv[(i+1)*stride+2]))
 	    {
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
 
-		  v[0] = curve->controlv[a+3]   - curve->controlv[a];
-		  v[1] = curve->controlv[a+3+1] - curve->controlv[a+1];
-		  v[2] = curve->controlv[a+3+2] - curve->controlv[a+2];
+		  v[0] = curve->controlv[a+stride]   - curve->controlv[a];
+		  v[1] = curve->controlv[a+stride+1] - curve->controlv[a+1];
+		  v[2] = curve->controlv[a+stride+2] - curve->controlv[a+2];
 
 		  t = j/(newpersec[i]+1.0);
 
@@ -814,15 +833,15 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 		  ncontrolv[b+2] = curve->controlv[a+2] + v[2];
 		  ncontrolv[b+3] = 1.0;
 
-		  b+=3;
+		  b+=stride;
 		} /* for */
 	    } /* if */
 
-	  a+=3;
+	  a+=stride;
 	} /* for */
-      memcpy(&ncontrolv[(new_length-1)*3],
-	     &(curve->controlv[(curve->length-1)*3]),
-	     3*sizeof(double));
+      memcpy(&ncontrolv[(new_length-1)*stride],
+	     &(curve->controlv[(curve->length-1)*stride]),
+	     stride*sizeof(double));
 
       free(newpersec);
 
@@ -843,14 +862,14 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 int
 ay_act_revert(ay_acurve_object *curve)
 {
- int i, j;
+ int stride = 3, i, j;
  double dtemp;
 
   if(!curve)
     return AY_ENULL;
 
   /* revert control */
-  j = (curve->length - 1)*3;
+  j = (curve->length - 1)*stride;
   i = 0;
   while(i < j)
     {
@@ -866,8 +885,8 @@ ay_act_revert(ay_acurve_object *curve)
       curve->controlv[j+2] = curve->controlv[i+2];
       curve->controlv[i+2] = dtemp;
 
-      i+=3;
-      j-=3;
+      i+=stride;
+      j-=stride;
     } /* while */
 
  return AY_OK;
