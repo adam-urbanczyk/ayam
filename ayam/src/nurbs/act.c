@@ -671,17 +671,17 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	{
 	  for(j = 1; j < n-1; j++)
 	    {
-	      Ns[a] = N[j*n+i];
-	      Nt[a] = N[i*n+j];
+	      Ns[a] = N[i*n+j];
+	      Nt[a] = N[j*n+i];
 	      a++;
 	    }
 	}
 
       /* do N^T*N */
-      ay_act_multmatrixmn(n-2, m-2, Nt, Ns, NN);
+      ay_act_multmatrixmn(m-2, n-2, Ns, Nt, NN);
 
       /* solve the linear equation system NN*X=B */
-      ay_status = ay_act_solve(m-2, m-2, NN, &(R[istride])/*B*/, X);
+      ay_status = ay_act_solve(n-2, n-2, NN, &(R[istride])/*B*/, X);
 
       if(ay_status)
 	{ goto cleanup; }
