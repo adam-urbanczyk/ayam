@@ -23,7 +23,7 @@ int ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R);
 int ay_act_solve(int m, int n, double *A, double *B, double *X);
 
 /* ay_act_svd:
- *
+ *  decompose a into singular
  */
 int
 ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
@@ -324,6 +324,9 @@ convergence:
 
 
 /* ay_act_multmatrixmn:
+ *  multiply two compatible rectangular matrices <M1[m][n]> and <M2[n][m]>,
+ *  write result to <R[n][n]> (allocated outside!)
+ *  compatibility will not be checked
  */
 int
 ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R)
@@ -570,8 +573,8 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       ay_status = AY_EOMEM;
       goto cleanup;
     }
-
-  if(!(N = calloc(m*n, sizeof(double))))
+  /* Note well: N is nxm */
+  if(!(N = calloc(n*m, sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -584,8 +587,6 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
     }
 
   /* set up N and rk */
-  N[0] = 1.0;
-  N[(m-1)*n+(n-1)] = 1.0;
   for(i = 0; i < m; i++)
     {
       span = ay_nb_FindSpan(n, p, ub[i], *U);
@@ -596,9 +597,10 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
       memset(funs, 0, (p+1)*sizeof(double));
       ay_nb_BasisFuns(span, ub[i], p, *U, funs);
+
       for(j = 0; j <= p; j++)
 	{
-	  a = i*n+(span-p+j);
+	  a = (span-p+j)*m+i;
 	  N[a] = funs[j];
 	  /*
 	  if(isnan(N[a]))
@@ -608,13 +610,15 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  */
 	}
 
-      /*rk[i] = Q[i]-N(i,0)*Q[0]-N(i,n-1)*Q[m-1];*/
-      rk[i*istride]   = Q[i*istride] - N[i*n] * Q[0] -
-	N[i*n+n-1]*Q[(m-1)*istride];
-      rk[i*istride+1] = Q[i*istride+1] - N[i*n]*Q[1] -
-	N[i*n+n-1]*Q[(m-1)*istride+1];
-      rk[i*istride+2] = Q[i*istride+2] - N[i*n]*Q[2] -
-	N[i*n+n-1]*Q[(m-1)*istride+2];
+      /*rk[i] = Q[i]-N(0,i)*Q[0]-N(n-1,i)*Q[m-1];*/
+      rk[i*istride]   = Q[i*istride]   - N[i] * Q[0] -
+	N[(n-1)*m+i] * Q[(m-1)*istride];
+
+      rk[i*istride+1] = Q[i*istride+1] - N[i] * Q[1] -
+	N[(n-1)*m+i] * Q[(m-1)*istride+1];
+
+      rk[i*istride+2] = Q[i*istride+2] - N[i] * Q[2] -
+	N[(n-1)*m+i] * Q[(m-1)*istride+2];
     } /* for */
 
   /* set up R */
@@ -625,15 +629,15 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
       for(j = 0; j < m; j++)
 	{
-	  /*R[i] += N(j,i)*rk[j] ;*/
-	  R[i*istride]   += N[j*n+i]*rk[j*istride];
-	  R[i*istride+1] += N[j*n+i]*rk[j*istride+1];
-	  R[i*istride+2] += N[j*n+i]*rk[j*istride+2];
+	  /*R[i] += N(i,j)*rk[j] ;*/
+	  R[i*istride]   += N[i*m+j]*rk[j*istride];
+	  R[i*istride+1] += N[i*m+j]*rk[j*istride+1];
+	  R[i*istride+2] += N[i*m+j]*rk[j*istride+2];
 	}
 
-      if(R[i*istride]*R[i*istride]     < AY_EPSILON &&
-	 R[i*istride+1]*R[i*istride+1] < AY_EPSILON &&
-	 R[i*istride+2]*R[i*istride+2] < AY_EPSILON)
+      if(R[i*istride]   * R[i*istride]   < AY_EPSILON &&
+	 R[i*istride+1] * R[i*istride+1] < AY_EPSILON &&
+	 R[i*istride+2] * R[i*istride+2] < AY_EPSILON)
 	{
 	  ay_status = AY_ERROR;
 	  goto cleanup;
@@ -644,7 +648,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
   if(n > 2)
     {
-      if(!(Ns = calloc((m-2)*(n-2), sizeof(double))))
+      if(!(Ns = calloc((n-2)*(m-2), sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -654,12 +658,12 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(NN = calloc((m-2)*(m-2), sizeof(double))))
+      if(!(NN = calloc((n-2)*(n-2), sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(X = calloc((n-2)*istride, sizeof(double))))
+      if(!(X = calloc((m-2)*istride, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -667,21 +671,29 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 
       /* fill Ns & Nt */
       a = 0;
+      for(i = 1; i < n-1; i++)
+	{
+	  for(j = 1; j < m-1; j++)
+	    {
+	      Ns[a] = N[i*m+j];
+	      a++;
+	    }
+	}
+      a = 0;
       for(i = 1; i < m-1; i++)
 	{
 	  for(j = 1; j < n-1; j++)
 	    {
-	      Ns[a] = N[i*n+j];
-	      Nt[a] = N[j*n+i];
+	      Nt[a] = N[j*m+i];
 	      a++;
 	    }
 	}
 
-      /* do N^T*N */
-      ay_act_multmatrixmn(m-2, n-2, Ns, Nt, NN);
+      /* do NN=N^T*N */
+      ay_act_multmatrixmn(m-2, n-2, Nt, Ns, NN);
 
-      /* solve the linear equation system NN*X=B */
-      ay_status = ay_act_solve(n-2, n-2, NN, &(R[istride])/*B*/, X);
+      /* solve the linear equation system NN*X=R */
+      ay_status = ay_act_solve(n-2, n-2, NN, &(R[istride]), X);
 
       if(ay_status)
 	{ goto cleanup; }
