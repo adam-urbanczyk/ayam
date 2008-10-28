@@ -22,8 +22,11 @@ int ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R);
 
 int ay_act_solve(int m, int n, double *A, double *B, double *X);
 
+
+
 /* ay_act_svd:
- *  decompose a into singular
+ *  singular value decomposition of matrix <a[m][n]> into <q>, <u> and <v>
+ *  <withu> and <withv> should be 1, <eps>, and <tol> >= AY_EPSILON
  */
 int
 ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
@@ -573,7 +576,8 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       ay_status = AY_EOMEM;
       goto cleanup;
     }
-  /* Note well: N is nxm */
+
+  /* Note well: N is nxm! (not mxn, as suggested by the NURBS book) */
   if(!(N = calloc(n*m, sizeof(double))))
     {
       ay_status = AY_EOMEM;
