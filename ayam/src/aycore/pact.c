@@ -24,10 +24,17 @@ int ay_pact_insertnc(ay_nurbcurve_object *curve,
 int ay_pact_insertic(ay_icurve_object *curve,
 		     double objX, double objY, double objZ);
 
+
+int ay_pact_insertac(ay_acurve_object *curve,
+		     double objX, double objY, double objZ);
+
 int ay_pact_deletenc(ay_nurbcurve_object *curve,
 		     double objX, double objY, double objZ);
 
 int ay_pact_deleteic(ay_icurve_object *icurve,
+		     double objX, double objY, double objZ);
+
+int ay_pact_deleteac(ay_acurve_object *acurve,
 		     double objX, double objY, double objZ);
 
 int ay_pact_flashpoint(int ignore_old);
@@ -1079,7 +1086,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
  *  insert a point into an interpolating curve (ICurve)
  */
 int
-ay_pact_insertic(ay_icurve_object *curve,
+ay_pact_insertic(ay_icurve_object *icurve,
 		 double objX, double objY, double objZ)
 {
 
@@ -1091,19 +1098,19 @@ ay_pact_insertic(ay_icurve_object *curve,
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
-  if(!curve)
+  if(!icurve)
     return AY_ENULL;
 
-  cv = curve->controlv;
+  cv = icurve->controlv;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
 
-  for(i = 0; i < curve->length; i++)
+  for(i = 0; i < icurve->length; i++)
     {
-      distance = AY_VLEN((objX - curve->controlv[j]),
-			 (objY - curve->controlv[j+1]),
-			 (objZ - curve->controlv[j+2]));
+      distance = AY_VLEN((objX - icurve->controlv[j]),
+			 (objY - icurve->controlv[j+1]),
+			 (objZ - icurve->controlv[j+2]));
 
       if(distance < min_distance)
 	{
@@ -1124,29 +1131,29 @@ ay_pact_insertic(ay_icurve_object *curve,
    * we simply insert the new point in the controlvector
    * between the picked point and the next different
    */
-  oldcontrolv = curve->controlv;
+  oldcontrolv = icurve->controlv;
 
-  if(!curve->closed)
+  if(!icurve->closed)
     {
-      if(index == curve->length-1)
+      if(index == icurve->length-1)
 	{
 	  index--;
 	}
     }
   else
     {
-      if(index == curve->length-1)
+      if(index == icurve->length-1)
 	{
-	  curve->length++;
-	  if(!(newcontrolv = calloc(curve->length*3, sizeof(double))))
+	  icurve->length++;
+	  if(!(newcontrolv = calloc(icurve->length*3, sizeof(double))))
 	    {
-	      curve->length--;
+	      icurve->length--;
 	      return AY_EOMEM;
 	    }
 	  memcpy(newcontrolv, oldcontrolv,
-		 (curve->length-1)*3*sizeof(double));
-	  j = (curve->length-1)*3;
-	  i = (curve->length-2)*3;
+		 (icurve->length-1)*3*sizeof(double));
+	  j = (icurve->length-1)*3;
+	  i = (icurve->length-2)*3;
 	  newcontrolv[j] = oldcontrolv[i] +
 	    ((oldcontrolv[0] - oldcontrolv[i])/2.0);
 
@@ -1156,22 +1163,22 @@ ay_pact_insertic(ay_icurve_object *curve,
 	  newcontrolv[j+2] = oldcontrolv[i+2] +
 	    ((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
 
-	  free(curve->controlv);
-	  curve->controlv = newcontrolv;
+	  free(icurve->controlv);
+	  icurve->controlv = newcontrolv;
 	  return ay_status; /* XXXX early exit */
 	} /* if */
     } /* if */
 
-  curve->length++;
-  if(!(newcontrolv = calloc(curve->length*3, sizeof(double))))
+  icurve->length++;
+  if(!(newcontrolv = calloc(icurve->length*3, sizeof(double))))
     {
-      curve->length--;
+      icurve->length--;
       return AY_EOMEM;
     }
 
   j = 0;
   inserted = AY_FALSE;
-  for(i = 0; i < (curve->length-1); i++)
+  for(i = 0; i < (icurve->length-1); i++)
     {
       if(i >= index && !inserted)
 	{
@@ -1207,7 +1214,7 @@ ay_pact_insertic(ay_icurve_object *curve,
       j++;
     } /* for */
 
-  if((curve->closed) && (index == curve->length-2))
+  if((icurve->closed) && (index == icurve->length-2))
     {
 
       inserted = AY_TRUE;
@@ -1216,17 +1223,171 @@ ay_pact_insertic(ay_icurve_object *curve,
   if(!inserted)
     {
       free(newcontrolv);
-      curve->length--;
+      icurve->length--;
       ay_error(AY_ERROR, fname, "Cannot insert point here!");
       return AY_ERROR;
     }
 
 
-  free(curve->controlv);
-  curve->controlv = newcontrolv;
+  free(icurve->controlv);
+  icurve->controlv = newcontrolv;
 
  return ay_status;
 } /* ay_pact_insertic */
+
+
+/* ay_pact_insertac:
+ *  insert a point into an approximating curve (ACurve)
+ */
+int
+ay_pact_insertac(ay_acurve_object *acurve,
+		 double objX, double objY, double objZ)
+{
+
+ int ay_status = AY_OK;
+ char fname[] = "insert_pointic";
+ double *cv = NULL;
+ int i = 0, j = 0, index = -1;
+ double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
+ double *newcontrolv = NULL, *oldcontrolv = NULL;
+ int inserted;
+
+  if(!acurve)
+    return AY_ENULL;
+
+  cv = acurve->controlv;
+
+  if(min_distance == 0.0)
+    min_distance = DBL_MAX;
+
+  for(i = 0; i < acurve->length; i++)
+    {
+      distance = AY_VLEN((objX - acurve->controlv[j]),
+			 (objY - acurve->controlv[j+1]),
+			 (objZ - acurve->controlv[j+2]));
+
+      if(distance < min_distance)
+	{
+	  index = i;
+	  min_distance = distance;
+	}
+
+      j += 3;
+    } /* for */
+
+  /* no point picked? */
+  if(index == -1)
+    {
+      return AY_OK;
+    }
+
+  /*
+   * we simply insert the new point in the controlvector
+   * between the picked point and the next different
+   */
+  oldcontrolv = acurve->controlv;
+
+  if(!acurve->closed)
+    {
+      if(index == acurve->length-1)
+	{
+	  index--;
+	}
+    }
+  else
+    {
+      if(index == acurve->length-1)
+	{
+	  acurve->length++;
+	  if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
+	    {
+	      acurve->length--;
+	      return AY_EOMEM;
+	    }
+	  memcpy(newcontrolv, oldcontrolv,
+		 (acurve->length-1)*3*sizeof(double));
+	  j = (acurve->length-1)*3;
+	  i = (acurve->length-2)*3;
+	  newcontrolv[j] = oldcontrolv[i] +
+	    ((oldcontrolv[0] - oldcontrolv[i])/2.0);
+
+	  newcontrolv[j+1] = oldcontrolv[i+1] +
+	    ((oldcontrolv[1] - oldcontrolv[i+1])/2.0);
+
+	  newcontrolv[j+2] = oldcontrolv[i+2] +
+	    ((oldcontrolv[2] - oldcontrolv[i+2])/2.0);
+
+	  free(acurve->controlv);
+	  acurve->controlv = newcontrolv;
+	  return ay_status; /* XXXX early exit */
+	} /* if */
+    } /* if */
+
+  acurve->length++;
+  if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
+    {
+      acurve->length--;
+      return AY_EOMEM;
+    }
+
+  j = 0;
+  inserted = AY_FALSE;
+  for(i = 0; i < (acurve->length-1); i++)
+    {
+      if(i >= index && !inserted)
+	{
+	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
+		 3*sizeof(double));
+
+	  if(oldcontrolv[i*3] != oldcontrolv[(i+1)*3] ||
+	     oldcontrolv[i*3+1] != oldcontrolv[(i+1)*3+1] ||
+	     oldcontrolv[i*3+2] != oldcontrolv[(i+1)*3+2])
+	    {
+	      newcontrolv[(j+1)*3] = oldcontrolv[i*3] +
+		((oldcontrolv[(i+1)*3] - oldcontrolv[i*3])/2.0);
+
+	      newcontrolv[(j+1)*3+1] = oldcontrolv[i*3+1] +
+		((oldcontrolv[(i+1)*3+1] - oldcontrolv[i*3+1])/2.0);
+
+	      newcontrolv[(j+1)*3+2] = oldcontrolv[i*3+2] +
+		((oldcontrolv[(i+1)*3+2] - oldcontrolv[i*3+2])/2.0);
+
+	      newcontrolv[(j+1)*3+3] = oldcontrolv[i*3+3] +
+		((oldcontrolv[(i+1)*3+3] - oldcontrolv[i*3+3])/2.0);
+
+	      j++;
+	      inserted = AY_TRUE;
+	    }
+
+	}
+      else
+	{
+	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
+		 3*sizeof(double));
+	} /* if */
+      j++;
+    } /* for */
+
+  if((acurve->closed) && (index == acurve->length-2))
+    {
+
+      inserted = AY_TRUE;
+    }
+
+  if(!inserted)
+    {
+      free(newcontrolv);
+      acurve->length--;
+      ay_error(AY_ERROR, fname, "Cannot insert point here!");
+      return AY_ERROR;
+    }
+
+
+  free(acurve->controlv);
+  acurve->controlv = newcontrolv;
+
+ return ay_status;
+} /* ay_pact_insertac */
 
 
 /* ay_pact_insertptcb:
@@ -1267,6 +1428,16 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)
+				       (ay_selection->object->refine),
+				       objX, objY, objZ);
+	  if(ay_status)
+	    ay_error(ay_status, fname, "Error while inserting point!");
+
+	  ay_status = ay_notify_force(ay_selection->object);
+	  ay_selection->object->modified = AY_TRUE;
+	  break;
+	case AY_IDACURVE:
+	  ay_status = ay_pact_insertac((ay_acurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
 	  if(ay_status)
@@ -1491,6 +1662,80 @@ ay_pact_deleteic(ay_icurve_object *icurve,
  return AY_OK;
 } /* ay_pact_deleteic */
 
+/* ay_pact_deleteac:
+ *  delete a point from an approximating curve (ACurve)
+ */
+int
+ay_pact_deleteac(ay_acurve_object *acurve,
+		 double objX, double objY, double objZ)
+{
+ char fname[] = "delete_point";
+ double *cv = NULL;
+ int i=0, j=0, k=0, index = -1;
+ double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
+ double *newcontrolv = NULL;
+
+  if(!acurve)
+    return AY_ENULL;
+
+  cv = acurve->controlv;
+
+  if(min_distance == 0.0)
+    min_distance = DBL_MAX;
+
+  index = -1;
+  for(i = 0; i < acurve->length; i++)
+    {
+      distance = AY_VLEN((objX - cv[j]),
+			 (objY - cv[j+1]),
+			 (objZ - cv[j+2]));
+
+      if(distance < min_distance)
+	{
+	  index = i;
+	  min_distance = distance;
+	}
+
+      j += 3;
+    } /* for */
+
+  if((index != -1) && (acurve->length-1 < 3))
+    {
+      ay_error(AY_ERROR, fname, "need atleast three points");
+      return TCL_OK;
+    }
+
+  /* create new acurve */
+  if(index != -1)
+    {
+      acurve->length--;
+      if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
+	return AY_EOMEM;
+
+      /* copy controlv */
+      j = 0;
+      k = 0;
+      for(i=0; i<=acurve->length; i++)
+	{
+	  if(i != index)
+	    {
+	      newcontrolv[k] = acurve->controlv[j];
+	      newcontrolv[k+1] = acurve->controlv[j+1];
+	      newcontrolv[k+2] = acurve->controlv[j+2];
+
+	      k += 3;
+	    }
+
+	  j += 3;
+	} /* for */
+
+      free(acurve->controlv);
+      acurve->controlv = newcontrolv;
+   } /* if */
+
+ return AY_OK;
+} /* ay_pact_deleteac */
+
 
 /* ay_pact_deleteptcb:
  *  delete point action callback
@@ -1531,6 +1776,16 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)
+				       (ay_selection->object->refine),
+				       objX, objY, objZ);
+	  if(ay_status)
+	    ay_error(ay_status, fname, "Error while deleting point!");
+
+	  ay_status = ay_notify_force(ay_selection->object);
+	  ay_selection->object->modified = AY_TRUE;
+	  break;
+	case AY_IDACURVE:
+	  ay_status = ay_pact_deleteac((ay_acurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
 	  if(ay_status)
