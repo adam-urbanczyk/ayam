@@ -440,14 +440,25 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(new_length > 2)
 	{
 	  ay_status = ay_act_resize(acurve, new_length);
-
-	  /* XXXX currently alength must match length */
-	  acurve->alength = new_length;
 	}
       else
 	{
 	  ay_error(AY_ERROR, fname, "Length must be > 2!");
 	}
+    }
+
+  /* check (and correct?) approximation length */
+  if(acurve->alength > acurve->length)
+    {
+      ay_error(AY_EWARN, fname, "Lowering ALength to match Length!");
+      acurve->alength = acurve->length;
+    }
+
+  /* check (and correct?) order */
+  if(acurve->alength < acurve->order)
+    {
+      ay_error(AY_EWARN, fname, "Lowering Order to match ALength!");
+      acurve->order = acurve->alength;
     }
 
   o->modified = AY_TRUE;
