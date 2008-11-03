@@ -494,6 +494,8 @@ cleanup:
 
 
 /* ay_act_leastSquares:
+ *  approximate the data points in <Q[m>] with a NURBS curve of degree <p>
+ *  with <n> control points, return results in <U> and <P>
  */
 int
 ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
@@ -530,21 +532,13 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
       goto cleanup;
     }
 
-  /* create clamped knot vector */
+  /* create clamped knot vector by averaging */
+
   for(i = 0; i < p+1; i++)
     {
       (*U)[i] = 0.0;
     }
 
-  /*
-  d = (m+1) / (double)(n-p+1);
-  for(j = 1; j < n-p; j++)
-    {
-      i = (int)(j*d);
-      a = j*d-i;
-      (*U)[p+j] = (1-a)*ub[i-1] + a*ub[i];
-    }
-  */
   /* from NURBS++ */
   d = m / (double)n;
   for(j = 1; j < n-p; j++)
@@ -667,7 +661,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      if(!(X = calloc((m-2)*istride, sizeof(double))))
+      if(!(X = calloc((n-2)*istride, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -768,6 +762,238 @@ cleanup:
 
  return ay_status;
 } /* ay_act_leastSquares */
+
+
+/* ay_act_leastSquaresClosed:
+ *  approximate the data points in <Q[m>] with a periodic NURBS curve of
+ *  degree <p> with <n> control points, return results in <U> and <P>
+ */
+int
+ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
+			  double **U, double **P)
+{
+ int ay_status = AY_OK;
+ int a, i, j, istride = 3, ostride = 4, span;
+ double d, *ub = NULL;
+ double *Nt = NULL, *NN = NULL;
+ double *R = NULL, *N = NULL, *X = NULL;
+ double *funs = NULL, alpha;
+
+  if(!Q || !U || !P)
+    return AY_ENULL;
+
+  if(n > m+p)
+    return AY_ERROR;
+
+  ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
+
+  if(!ub)
+    return AY_ERROR;
+
+  if(!(*U = calloc(n+p+1, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(*P = calloc(n*ostride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* create unclamped (periodic) knot vector by knot averaging */
+
+  /* adapted from NURBS++ */
+
+  d = m / (double)(n-p);
+  for (j = 1; j < n-p; j++)
+    {
+      i = (int)(j*d);
+      alpha = j*d-i;
+      (*U)[p+j] = (1-alpha)*ub[(i-1)%(n+p)] + alpha*ub[(i)%(n+p)];
+    }
+
+  for(i = 0; i < p; i++)
+    {
+      (*U)[i] = (*U)[i+(n-p)] - 1;
+    }
+
+  for(i = n; i < n+p+1; i++)
+    {
+      (*U)[i] = 1 + (*U)[i-(n-p)];
+    }
+
+  /* the following section operates on a reduced number of output points
+     since the last p output points will be equal to the first p output
+     points anyway */
+  n -= p;
+
+  if(!(R = calloc(n*istride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* Note well: N is nxm! (not mxn, as suggested by the NURBS book) */
+  if(!(N = calloc(n*m, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(funs = calloc(p+1, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* set up N */
+  for(i = 0; i < m; i++)
+    {
+      span = ay_nb_FindSpan(n, p, ub[i], &((*U)[p-1])/**U*/);
+
+      /* protect BasisFuns() from bad spans */
+      if(span >= n)
+	span = n-1;
+
+      memset(funs, 0, (p+1)*sizeof(double));
+      ay_nb_BasisFuns(span, ub[i], p, &((*U)[p-1])/**U*/, funs);
+
+      for(j = 0; j <= p; j++)
+	{
+	  a = (span-p+j)*m+i;
+	  N[a] = funs[j];
+	  /*
+	  if(isnan(N[a]))
+	  {
+	    ay_status = AY_ERROR; goto cleanup;
+	  }
+	  */
+	}
+    } /* for */
+
+  /* set up R */
+  for(i = 0; i < n; i++)
+    {
+      /*R[i*istride] = 0.0;*/
+      memset(&(R[i*istride]), 0, istride*sizeof(double));
+
+      for(j = 0; j < m; j++)
+	{
+	  /*R[i] += N(i,j)*Q[j] ;*/
+	  R[i*istride]   += N[i*m+j]*Q[j*istride];
+	  R[i*istride+1] += N[i*m+j]*Q[j*istride+1];
+	  R[i*istride+2] += N[i*m+j]*Q[j*istride+2];
+	}
+
+      if(R[i*istride]   * R[i*istride]   < AY_EPSILON &&
+	 R[i*istride+1] * R[i*istride+1] < AY_EPSILON &&
+	 R[i*istride+2] * R[i*istride+2] < AY_EPSILON)
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+    } /* for */
+
+  /* solve N^T*N*P = R */
+
+  if(!(Nt = calloc(m*n, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(NN = calloc(n*n, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* fill Nt */
+  a = 0;
+  for(i = 0; i < m; i++)
+    {
+      for(j = 0; j < n; j++)
+	{
+	  Nt[a] = N[j*m+i];
+	  a++;
+	}
+    }
+
+  /* do NN=N^T*N */
+  ay_act_multmatrixmn(m, n, Nt, N, NN);
+
+  if(!(X = calloc(n*istride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* solve the linear equation system NN*X=R */
+  ay_status = ay_act_solve(n, n, NN, R, X);
+
+  if(ay_status)
+    { goto cleanup; }
+
+  /* save results from X */
+  j = 0;
+  for(i = 0; i < n; i++)
+    {
+      memcpy(&((*P)[i*ostride]), &(X[j*istride]), istride*sizeof(double));
+      j++;
+    }
+
+  /* for the final operations we increase n again to the full output length */
+  n += p;
+
+  /* copy the periodic points */
+  memcpy(&((*P)[(n-p)*ostride]), *P, p*ostride*sizeof(double));
+
+  /* set weights */
+  a = 3;
+  for(i = 0; i < n; i++)
+    {
+      (*P)[a] = 1.0;
+      a += ostride;
+    }
+
+cleanup:
+
+  if(ay_status)
+    {
+      if(*U)
+	free(*U);
+      *U = NULL;
+
+      if(*P)
+	free(*P);
+      *P = NULL;
+    }
+
+  if(ub)
+    free(ub);
+
+  if(R)
+    free(R);
+
+  if(N)
+    free(N);
+
+  if(funs)
+    free(funs);
+
+  if(Nt)
+    free(Nt);
+
+  if(NN)
+    free(NN);
+
+  if(X)
+    free(X);
+
+ return ay_status;
+} /* ay_act_leastSquaresClosed */
 
 
 /* ay_act_resize:

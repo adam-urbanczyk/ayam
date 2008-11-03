@@ -448,10 +448,21 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   /* check (and correct?) approximation length */
-  if(acurve->alength > acurve->length)
+  if(!acurve->closed)
     {
-      ay_error(AY_EWARN, fname, "Lowering ALength to match Length!");
-      acurve->alength = acurve->length;
+      if(acurve->alength > acurve->length)
+	{
+	  ay_error(AY_EWARN, fname, "Lowering ALength to match Length!");
+	  acurve->alength = acurve->length;
+	}
+    }
+  else
+    {
+      if(acurve->alength > acurve->length+acurve->order-1)
+	{
+	  ay_error(AY_EWARN, fname, "Lowering ALength to match Length!");
+	  acurve->alength = acurve->length;
+	}
     }
 
   /* check (and correct?) order */
@@ -735,11 +746,21 @@ ay_acurve_notifycb(ay_object *o)
 
   ay_object_defaults(ncurve);
   ncurve->type = AY_IDNCURVE;
-
-  ay_status = ay_act_leastSquares(acurve->controlv,
-				  acurve->length, acurve->alength,
-				  acurve->order-1,
-				  &knotv, &controlv);
+  if(!acurve->closed)
+    {
+      ay_status = ay_act_leastSquares(acurve->controlv,
+				      acurve->length, acurve->alength,
+				      acurve->order-1,
+				      &knotv, &controlv);
+    }
+  else
+    {
+      ay_status = ay_act_leastSquaresClosed(acurve->controlv,
+					    acurve->length,
+					    acurve->alength+acurve->order-1,
+					    acurve->order-1,
+					    &knotv, &controlv);
+    }
 
   if(ay_status)
     {
@@ -747,9 +768,20 @@ ay_acurve_notifycb(ay_object *o)
       return ay_status;
     }
 
-  ay_status = ay_nct_create(acurve->order, acurve->alength, AY_KTCUSTOM,
-			    controlv, knotv,
-			    (ay_nurbcurve_object **)(&(ncurve->refine)));
+  if(!acurve->closed)
+    {
+      ay_status = ay_nct_create(acurve->order, acurve->alength, AY_KTCUSTOM,
+				controlv, knotv,
+				(ay_nurbcurve_object **)(&(ncurve->refine)));
+    }
+  else
+    {
+      ay_status = ay_nct_create(acurve->order,
+				acurve->alength+acurve->order-1, AY_KTCUSTOM,
+				controlv, knotv,
+				(ay_nurbcurve_object **)(&(ncurve->refine)));
+    }
+
 
   if(ay_status)
     {
@@ -792,6 +824,12 @@ ay_acurve_convertcb(ay_object *o, int in_place)
 	  /* reset display mode of new curve to "global" */
 	  nc = (ay_nurbcurve_object *)(new->refine);
 	  nc->display_mode = 0;
+
+	  if(ac->closed)
+	    {
+	      nc->createmp = AY_TRUE;
+	      ay_nct_recreatemp(nc);
+	    }
 
 	  ay_trafo_copy(o, new);
 
