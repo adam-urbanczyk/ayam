@@ -363,7 +363,7 @@ array set ayviewshortcuts {
     ScalZ "z"
     Scal2 "s"
     Scal3 "S"
-    Stretch "Alt-s"
+    Stretch "T"
 
     Edit "e"
     EditD "p"
@@ -1816,11 +1816,11 @@ io_mruUMenu
 
 # establish auto scrolling of the property canvas to the item with
 # the input focus, when the Tab key is used to move the focus
-bind all <Tab> +plb_focus
-bind all <Shift-Tab> +plb_focus
+bind all <Tab> "+plb_focus;break"
+bind all <Shift-Tab> "+plb_focus;break"
 if { ( $tcl_platform(platform) != "windows" ) &&
      ( ! $AYWITHAQUA ) } {
-    catch {bind all <ISO_Left_Tab> +plb_focus}
+    catch {bind all <ISO_Left_Tab> "+plb_focus;break"}
 }
 
 # redirect all tcl errors to the console?
