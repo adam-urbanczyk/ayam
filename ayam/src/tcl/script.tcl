@@ -36,7 +36,7 @@ addMenu $w ScriptAttrData Type [list Run Create Modify]
 pack [text $w.tScript -width 60 -height 60]
 set t $w.tScript
 eval [subst "bindtags $t \{$t Text all\}"]
-bind $t <Key-Escape> {resetFocus}
+bind $t <Key-Escape> "resetFocus;break"
 
 # create popup menu
 set m [menu $t.popup -tearoff 0]

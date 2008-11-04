@@ -331,7 +331,7 @@ if { $AYWITHAQUA } {
 
 # focus management bindings
 bind $f.ca <1> "focus %W"
-bind $f.ca <Key-Escape> {resetFocus}
+bind $f.ca <Key-Escape> "resetFocus;break"
 
 pack $f.ca -in $f -side left -fill both -expand yes
 

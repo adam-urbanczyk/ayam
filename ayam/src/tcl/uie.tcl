@@ -100,7 +100,7 @@ proc addParam { w prop name {def {}} } {
     global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -216,7 +216,7 @@ proc addMatrix { w prop name } {
     global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -360,7 +360,7 @@ proc addColor { w prop name {def {}}} {
     global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -513,7 +513,7 @@ proc addCheck { w prop name } {
     global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -622,7 +622,7 @@ proc addMenu { w prop name elist } {
     global $prop ay ayprefs tcl_platform
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -703,7 +703,7 @@ proc addString { w prop name  {def {}}} {
     global $prop ay ayprefs tcl_platform
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -859,7 +859,7 @@ proc addFile { w prop name {def {}} } {
     global $prop ay ayprefs tcl_platform AYWITHAQUA
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -958,7 +958,7 @@ proc addMDir { w prop name } {
     global $prop ay ayprefs AYWITHAQUA
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -1037,7 +1037,7 @@ proc addMFile { w prop name } {
     global $prop ay ayprefs AYWITHAQUA
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
@@ -1116,7 +1116,7 @@ proc addCommand { w name text command } {
     global ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
-	set escapecmd resetFocus
+	set escapecmd "resetFocus;break"
     } else {
 	set escapecmd "after idle {$ay(bca) invoke}"
     }
