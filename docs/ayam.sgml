@@ -5088,10 +5088,12 @@ of the created NURBS curve.
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
-<em>The ACurve did not make it completely into Ayam 1.14, do not use</em>.
-<p>
-The ACurve object creates an approximating NURBS curve with m control
-points from n 3D non-rational data points.
+The ACurve object, available since Ayam 1.15, creates an approximating
+NURBS curve with m control points from n 3D non-rational data points.
+The number of data points must be higher than or equal to the number of
+control points used. The approximation algorithm used is a least
+squares approach. If the number of control points increase undesired
+wiggles in the output curve may occur.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
@@ -5111,13 +5113,18 @@ The following parameters control the approximation process:
 <item>Using <tt/"Length"/ you determine the number of data points to
 approximate.
 
-<item>Using <tt/"ALength"/ you determine the number of control points to use
-for the approximating NURBS curve.
+<item>Using <tt/"ALength"/ you determine the number of (distinct)
+control points to use for the approximating NURBS curve.
+The total number of control points must be smaller than, or equal
+to the number of data points.
 
 <item>The curve can be closed with the parameter <tt/"Closed"/.
+For closed approximations, the total number of control points will
+be <tt/"ALength + Order - 1"/.
 
 <item>The parameter <tt/"Order"/ specifies the desired order
-of the approximating NURBS curve.
+of the approximating NURBS curve. Currently, only orders higher than
+2 are supported.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
@@ -6621,10 +6628,10 @@ see the script (code), just a clean parameter GUI.
 <p>
 <bf/Description/
 <p>
-The tag type <tt/"BNS"/ (notify script) may be used to add scripts
+The tag type <tt/"BNS"/ (before notify script) may be used to add scripts
 to an object, that will be run <em/before/ the notification callback of
 that object completed.
-Notification, in turn, will be executed because e.g. one of the children
+The notification, in turn, will be executed because e.g. one of the children
 of the object changed.
 <p>
 <bf/Example/
@@ -6639,17 +6646,18 @@ are found upon reading of scene files. To disable a tag, Ayam simply
 changes its type from <tt/"BNS"/ to <tt/"DBNS"/ (disabled before notify
 script).
 It will not be executed then.
-Disabled notify scripts may be enabled after careful inspection using
-the main menu entry <tt>"Special/Enable Scripts"</tt>.
+Disabled notify script tags may be enabled after careful inspection
+by simply changing their type back to <tt/"BNS"/
+or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>ANS (After Notify Script) Tag<label id="anstag">
 <p>
 <bf/Description/
 <p>
-The tag type <tt/"ANS"/ (notify script) may be used to add scripts
+The tag type <tt/"ANS"/ (after notify script) may be used to add scripts
 to an object, that will be run <em/after/ the notification callback of
 that object completed.
-Notification, in turn, will be executed because e.g. one of the children
+The notification, in turn, will be executed because e.g. one of the children
 of the object changed.
 <p>
 <bf/Example/
@@ -6664,8 +6672,9 @@ are found upon reading of scene files. To disable a tag, Ayam simply
 changes its type from <tt/"ANS"/ to <tt/"DANS"/ (disabled after notify
 script).
 It will not be executed then.
-Disabled notify scripts may be enabled after careful inspection using
-the main menu entry <tt>"Special/Enable Scripts"</tt>.
+Disabled notify scripts may be enabled after careful inspection
+by simply changing their type back to <tt/"ANS"/
+or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
