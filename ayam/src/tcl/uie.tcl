@@ -10,6 +10,23 @@
 # User Interface Elements for Property GUIs and Preferences
 
 
+# uie_fixEntry:
+#
+#
+proc uie_fixEntry { w } {
+    global tcl_version tcl_platform
+
+    if { ( $tcl_platform(platform) == "windows" ) && \
+	 ( $tcl_version > 8.2 ) } {
+	bind $w <Tab> {focus [tk_focusNext %W];plb_focus;break}
+	bind $w <Shift-Tab> {focus [tk_focusPrev %W];plb_focus;break}
+    }
+
+ return;
+}
+# uie_fixEntry
+
+
 #
 #
 #
@@ -125,6 +142,8 @@ proc addParam { w prop name {def {}} } {
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
 
+    uie_fixEntry $f.e
+
     button $f.b2 -pady 1 -bd $bw -text "*2"\
 	-command "updateParam $w $prop $name *2"\
 	-takefocus 0 -highlightthickness 0
@@ -238,6 +257,7 @@ proc addMatrix { w prop name } {
 	entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
 	eval [subst "bindtags $f1.e$i \{$f1.e$i Entry all\}"]
 	bind $f1.e$i <Key-Escape> $escapecmd
+	uie_fixEntry $f1.e$i
 	pack $f1.e$i -in $f1 -side left -fill both -expand yes
     }
     set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
@@ -245,6 +265,7 @@ proc addMatrix { w prop name } {
 	entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
 	eval [subst "bindtags $f2.e$i \{$f2.e$i Entry all\}"]
 	bind $f2.e$i <Key-Escape> $escapecmd
+	uie_fixEntry $f2.e$i
 	pack $f2.e$i -in $f2 -side left -fill both -expand yes
     }
     set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
@@ -252,6 +273,7 @@ proc addMatrix { w prop name } {
 	entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
 	eval [subst "bindtags $f3.e$i \{$f3.e$i Entry all\}"]
 	bind $f3.e$i <Key-Escape> $escapecmd
+	uie_fixEntry $f3.e$i
 	pack $f3.e$i -in $f3 -side left -fill both -expand yes
     }
     set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
@@ -259,6 +281,7 @@ proc addMatrix { w prop name } {
 	entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
 	eval [subst "bindtags $f4.e$i \{$f4.e$i Entry all\}"]
 	bind $f4.e$i <Key-Escape> $escapecmd
+	uie_fixEntry $f4.e$i
 	pack $f4.e$i -in $f4 -side left -fill both -expand yes
     }
 
@@ -382,12 +405,15 @@ proc addColor { w prop name {def {}}} {
     set e1 [entry $f.er -width 4 -textvariable ${prop}(${name}_R) -bd $bw]
     eval [subst "bindtags $f.er \{$f.er Entry all\}"]
     bind $e1 <Key-Escape> $escapecmd
+    uie_fixEntry $e1
     set e2 [entry $f.eg -width 4 -textvariable ${prop}(${name}_G) -bd $bw]
     eval [subst "bindtags $f.eg \{$f.eg Entry all\}"]
     bind $e2 <Key-Escape> $escapecmd
+    uie_fixEntry $e2
     set e3 [entry $f.eb -width 4 -textvariable ${prop}(${name}_B) -bd $bw]
     eval [subst "bindtags $f.eb \{$f.eb Entry all\}"]
     bind $e3 <Key-Escape> $escapecmd
+    uie_fixEntry $e3
 
     bind $e1 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
     bind $e2 <FocusOut> "updateColorFromE $w $prop $name $f.b1"
@@ -722,6 +748,7 @@ proc addString { w prop name  {def {}}} {
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
+    uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
 	bind $f.e <Key-Return> "+after idle {$ay(bok) invoke}"
 	catch {bind $f.e <Key-KP_Enter> "+after idle {$ay(bok) invoke}"}
@@ -878,6 +905,7 @@ proc addFile { w prop name {def {}} } {
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
+    uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
 	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
 	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
@@ -977,6 +1005,7 @@ proc addMDir { w prop name } {
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
+    uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
 	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
 	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
@@ -1056,6 +1085,7 @@ proc addMFile { w prop name } {
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
     eval [subst "bindtags $f.e \{$f.e Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
+    uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
 	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
 	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
