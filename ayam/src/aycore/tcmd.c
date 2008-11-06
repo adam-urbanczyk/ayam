@@ -50,6 +50,8 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	      ay_error(ay_status, fname, "Could not revert ACurve!");
 	    }
 
+	  ay_notify_force(o);
+
 	  o->modified = AY_TRUE;
 
 	  break;
@@ -67,6 +69,8 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, fname, "Could not revert ICurve!");
 	    }
+
+	  ay_notify_force(o);
 
 	  o->modified = AY_TRUE;
 
@@ -95,6 +99,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 
       sel = sel->next;
     } /* while */
+
 
   ay_notify_parent();
 
