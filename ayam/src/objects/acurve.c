@@ -412,6 +412,10 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(acurve->closed));
 
+  Tcl_SetStringObj(ton,"Symmetric",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(acurve->symmetric));
+
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(acurve->order));
@@ -514,6 +518,11 @@ ay_acurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Symmetric",-1);
+  to = Tcl_NewIntObj(acurve->symmetric);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_NewIntObj(acurve->order);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -566,6 +575,7 @@ ay_acurve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&acurve->length);
   fscanf(fileptr,"%d\n",&acurve->alength);
   fscanf(fileptr,"%d\n",&acurve->closed);
+  fscanf(fileptr,"%d\n",&acurve->symmetric);
   fscanf(fileptr,"%d\n",&acurve->order);
   /*
   fscanf(fileptr,"%d\n",&acurve->imode);
@@ -610,6 +620,7 @@ ay_acurve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", acurve->length);
   fprintf(fileptr, "%d\n", acurve->alength);
   fprintf(fileptr, "%d\n", acurve->closed);
+  fprintf(fileptr, "%d\n", acurve->symmetric);
   fprintf(fileptr, "%d\n", acurve->order);
   /*
   fprintf(fileptr, "%d\n", acurve->imode);
@@ -726,14 +737,15 @@ ay_acurve_notifycb(ay_object *o)
  ay_acurve_object *acurve = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
- int ay_status = AY_OK;
+ int ay_status = AY_OK, dlen = 0, aclen = 0, i, j;
  double *knotv = NULL, *controlv = NULL;
+ double *controlvr = NULL, *knotv2 = NULL, *controlv2 = NULL;
+ double t[3] = {0}, *p1, *p2;
 
   if(!o)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
-
 
   ay_object_delete(acurve->ncurve);
   acurve->ncurve = NULL;
@@ -748,16 +760,19 @@ ay_acurve_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
   if(!acurve->closed)
     {
+      aclen = acurve->alength;
       ay_status = ay_act_leastSquares(acurve->controlv,
-				      acurve->length, acurve->alength,
+				      acurve->length,
+				      aclen,
 				      acurve->order-1,
 				      &knotv, &controlv);
     }
   else
     {
+      aclen = acurve->alength + acurve->order - 1;
       ay_status = ay_act_leastSquaresClosed(acurve->controlv,
 					    acurve->length,
-					    acurve->alength+acurve->order-1,
+					    aclen,
 					    acurve->order-1,
 					    &knotv, &controlv);
     }
@@ -768,20 +783,84 @@ ay_acurve_notifycb(ay_object *o)
       return ay_status;
     }
 
-  if(!acurve->closed)
+  if(acurve->symmetric)
     {
-      ay_status = ay_nct_create(acurve->order, acurve->alength, AY_KTCUSTOM,
-				controlv, knotv,
-				(ay_nurbcurve_object **)(&(ncurve->refine)));
-    }
-  else
-    {
-      ay_status = ay_nct_create(acurve->order,
-				acurve->alength+acurve->order-1, AY_KTCUSTOM,
-				controlv, knotv,
-				(ay_nurbcurve_object **)(&(ncurve->refine)));
-    }
+      dlen = acurve->length;
+      if(!(controlvr = calloc(dlen*3, sizeof(double))))
+	{
+	  return AY_ERROR;
+	}
 
+      memcpy(controlvr, acurve->controlv, dlen*3*sizeof(double));
+
+      for(i = 0; i < dlen/2; i++)
+	{
+	  memcpy(t, &(controlvr[i*3]), 3*sizeof(double));
+	  memcpy(&(controlvr[i*3]), &(controlvr[(dlen-i-1)*3]),
+		 3*sizeof(double));
+	  memcpy(&(controlvr[(dlen-i-1)*3]), t, 3*sizeof(double));
+	} /* for */
+
+      if(!acurve->closed)
+	{
+	  ay_status = ay_act_leastSquares(controlvr,
+					  acurve->length,
+					  aclen,
+					  acurve->order-1,
+					  &knotv2, &controlv2);
+	}
+      else
+	{
+	  ay_status = ay_act_leastSquaresClosed(controlvr,
+						acurve->length,
+						aclen,
+						acurve->order-1,
+						&knotv2, &controlv2);
+	}
+
+      if(!ay_status)
+	{
+	  for(i = 1; i < aclen-1; i++)
+	    {
+	      p1 = &(controlv[i*4]);
+	      p2 = &(controlv2[(aclen-i-1)*4]);
+	      if(!AY_V3COMP(p1, p2))
+		{
+		 AY_V3SUB(t, p2, p1);
+		 AY_V3SCAL(t, 0.5);
+		 AY_V3ADD(p1, p1, t);
+		}
+	    }
+
+	  if(knotv2)
+	    free(knotv2);
+	  knotv2 = NULL;
+	  ay_status = ay_knots_chordparam(controlv, aclen, 4, &knotv2);
+
+	  for(j = 0; j <= aclen-(acurve->order-1)+2; j++)
+	    {
+	      for(i = j; i <= j+(acurve->order-1)-1; i++)
+		{
+		  knotv[j+acurve->order] += knotv2[i];
+		}
+	      knotv[j+acurve->order] /= (acurve->order-1);
+	    }
+	   for(i = 0; i < acurve->order; i++)
+	     knotv[i] = 0.0;
+	   for(i = aclen; i < aclen+acurve->order; i++)
+	     knotv[i] = 1.0;
+	}
+
+      free(controlvr);
+
+      if(controlv2)
+        free(controlv2);
+    } /* if(symmetric */
+
+
+  ay_status = ay_nct_create(acurve->order, aclen, AY_KTCUSTOM,
+			    controlv, knotv,
+			    (ay_nurbcurve_object **)(&(ncurve->refine)));
 
   if(ay_status)
     {

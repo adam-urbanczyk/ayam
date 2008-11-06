@@ -596,6 +596,7 @@ typedef struct ay_acurve_object_s
   int length;
   int alength;
   int closed;
+  int symmetric;
   int order;
   /*
   int imode;
