@@ -534,6 +534,11 @@ if { [llength $index] == 1 } {
 	# if
     }
     # if
+
+    if { $oldsel != "" && ( $oldsel > [$lb index end] ) } {
+	resetFocus
+    }
+
 }
 # if
 
