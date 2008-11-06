@@ -31,6 +31,7 @@ set w [frame $ay(pca).$ACurveAttr(w)]
 addParam $w ACurveAttrData Length
 addParam $w ACurveAttrData ALength
 addCheck $w ACurveAttrData Closed
+addCheck $w ACurveAttrData Symmetric
 addParam $w ACurveAttrData Order
 
 addParam $w ACurveAttrData Tolerance
