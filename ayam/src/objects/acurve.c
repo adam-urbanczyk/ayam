@@ -785,6 +785,7 @@ ay_acurve_notifycb(ay_object *o)
 
   if(acurve->symmetric)
     {
+      /* create reverted data point vector */
       dlen = acurve->length;
       if(!(controlvr = calloc(dlen*3, sizeof(double))))
 	{
@@ -801,6 +802,7 @@ ay_acurve_notifycb(ay_object *o)
 	  memcpy(&(controlvr[(dlen-i-1)*3]), t, 3*sizeof(double));
 	} /* for */
 
+      /* approximate the reverted vector */
       if(!acurve->closed)
 	{
 	  ay_status = ay_act_leastSquares(controlvr,
@@ -818,6 +820,7 @@ ay_acurve_notifycb(ay_object *o)
 						&knotv2, &controlv2);
 	}
 
+      /* merge forward and backward approximation results */
       if(!ay_status)
 	{
 	  for(i = 1; i < aclen-1; i++)
@@ -832,26 +835,23 @@ ay_acurve_notifycb(ay_object *o)
 		}
 	    }
 
-	  if(knotv2)
-	    free(knotv2);
-	  knotv2 = NULL;
-	  ay_status = ay_knots_chordparam(controlv, aclen, 4, &knotv2);
-
-	  for(j = 0; j <= aclen-(acurve->order-1)+2; j++)
+	  /* create new symmetric knot vector */
+	  j = (aclen+acurve->order)/2-1;
+	  for(i = (aclen+acurve->order)/2; i < aclen; i++)
 	    {
-	      for(i = j; i <= j+(acurve->order-1)-1; i++)
-		{
-		  knotv[j+acurve->order] += knotv2[i];
-		}
-	      knotv[j+acurve->order] /= (acurve->order-1);
+	      knotv[i] = 0.5+(0.5-knotv[j]);
+	      j--;
 	    }
-	   for(i = 0; i < acurve->order; i++)
-	     knotv[i] = 0.0;
-	   for(i = aclen; i < aclen+acurve->order; i++)
-	     knotv[i] = 1.0;
+	  if(((aclen+acurve->order)%2) != 0)
+	    {
+	      knotv[(aclen+acurve->order)/2] = 0.5;
+	    }
 	}
 
       free(controlvr);
+
+      if(knotv2)
+	free(knotv2);
 
       if(controlv2)
         free(controlv2);
