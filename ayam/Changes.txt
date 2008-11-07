@@ -1,4 +1,4 @@
-[3. Oct 2008] CVS-Head:
+[7. Nov 2008] CVS-Head:
 ========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -29,6 +29,8 @@ o using the "Esc" key (break action) in view windows now also resets
 o pressing <Esc> twice in the tree view clears the object selection (and
   property GUI) and switches the current level to the top level
 o improved key bindings for property GUI elements used in dialogs
+o improved focus management for property GUI updates
+o established keyboard menu traversal
 
 Modelling:
 o added new object type "ACurve" (for approximating curves)
@@ -59,6 +61,12 @@ o added script "bgconvert.tcl" that allows to use Ayam as a background
 o script objects now support saving of individual sets of parameters
 o improved error reporting for Script objects
 o add helper command to estimate the length of NURBS curves "estlenNC"
+o replaced "NS" tag type by "BNS" (before notify) and "ANS" (after notify)
+  tag types
+
+Platform Support:
+Win32:
+o the official build now uses Tcl/Tk in version 8.4.19
 
 Documentation/Example Files:
 o added example scene "multicolcsg.ay" that demonstrates how "Primitive"
