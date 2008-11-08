@@ -40,6 +40,7 @@ bind $w.la <Double-ButtonPress-1> {
     global ay;
     $ay(plb) selection clear 0 end;
     plb_update
+    resetFocus
 }
 balloon_set $w.la "Double click here\nto deselect property"
 
@@ -163,6 +164,7 @@ $m add command -label "Deselect Property" -command {
     global ay
     $ay(plb) selection clear 0 end
     plb_update
+    resetFocus
 }
 $m add command -label "Copy Property" -command {
     pclip_copy 0
@@ -375,10 +377,17 @@ if { $ay(PlbUpdateSema) == 1 } {
     set ay(PlbUpdateSema) 1
 }
 
+set index ""
+
 if { $ay(lb) == 1 } {
     set index [$ay(olb) curselection]
 } else {
     set index [$ay(tree) selection get]
+}
+
+# avoid leaving the focus on an empty property canvas
+if { [llength $index] == 0 } {
+    resetFocus
 }
 
 set lb $ay(plb)
@@ -535,6 +544,7 @@ if { [llength $index] == 1 } {
     }
     # if
 
+    # avoid leaving the focus on an empty property canvas
     if { $oldsel != "" && ( $oldsel > [$lb index end] ) } {
 	resetFocus
     }
