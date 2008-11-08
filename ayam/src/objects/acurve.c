@@ -823,29 +823,50 @@ ay_acurve_notifycb(ay_object *o)
       /* merge forward and backward approximation results */
       if(!ay_status)
 	{
-	  for(i = 1; i < aclen-1; i++)
+	  if(!acurve->closed)
 	    {
-	      p1 = &(controlv[i*4]);
-	      p2 = &(controlv2[(aclen-i-1)*4]);
-	      if(!AY_V3COMP(p1, p2))
+	      for(i = 1; i < aclen-1; i++)
 		{
-		 AY_V3SUB(t, p2, p1);
-		 AY_V3SCAL(t, 0.5);
-		 AY_V3ADD(p1, p1, t);
+		  p1 = &(controlv[i*4]);
+		  p2 = &(controlv2[(aclen-i-1)*4]);
+		  if(!AY_V3COMP(p1, p2))
+		    {
+		      AY_V3SUB(t, p2, p1);
+		      AY_V3SCAL(t, 0.5);
+		      AY_V3ADD(p1, p1, t);
+		    }
+		}
+
+	      /* create new symmetric knot vector */
+	      j = (aclen+acurve->order)/2-1;
+	      for(i = (aclen+acurve->order)/2; i < aclen; i++)
+		{
+		  knotv[i] = 0.5+(0.5-knotv[j]);
+		  j--;
+		}
+	      if(((aclen+acurve->order)%2) != 0)
+		{
+		  knotv[(aclen+acurve->order)/2] = 0.5;
 		}
 	    }
+	  else
+	    {
+	      for(i = 0; i < acurve->alength; i++)
+		{
+		  p1 = &(controlv[i*4]);
+		  p2 = &(controlv2[(acurve->alength-i)*4]);
+		  if(!AY_V3COMP(p1, p2))
+		    {
+		      AY_V3SUB(t, p2, p1);
+		      AY_V3SCAL(t, 0.5);
+		      AY_V3ADD(p1, p1, t);
+		    }
+		}
 
-	  /* create new symmetric knot vector */
-	  j = (aclen+acurve->order)/2-1;
-	  for(i = (aclen+acurve->order)/2; i < aclen; i++)
-	    {
-	      knotv[i] = 0.5+(0.5-knotv[j]);
-	      j--;
-	    }
-	  if(((aclen+acurve->order)%2) != 0)
-	    {
-	      knotv[(aclen+acurve->order)/2] = 0.5;
-	    }
+	      memcpy(&(controlv[(acurve->alength)*4]), controlv,
+		     (acurve->order-1)*4*sizeof(double));
+	    } /* if */
+
 	}
 
       free(controlvr);
