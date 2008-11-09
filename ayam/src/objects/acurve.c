@@ -839,14 +839,24 @@ ay_acurve_notifycb(ay_object *o)
 
 	      /* create new symmetric knot vector */
 	      j = (aclen+acurve->order)/2-1;
-	      for(i = (aclen+acurve->order)/2; i < aclen; i++)
-		{
-		  knotv[i] = 0.5+(0.5-knotv[j]);
-		  j--;
-		}
 	      if(((aclen+acurve->order)%2) != 0)
 		{
+		  /* odd number of knots */
+		  for(i = (aclen+acurve->order)/2+1; i < aclen; i++)
+		    {
+		      knotv[i] = 0.5+(0.5-knotv[j]);
+		      j--;
+		    }
 		  knotv[(aclen+acurve->order)/2] = 0.5;
+		}
+	      else
+		{
+		  /* even number of knots */
+		  for(i = (aclen+acurve->order)/2; i < aclen; i++)
+		    {
+		      knotv[i] = 0.5+(0.5-knotv[j]);
+		      j--;
+		    }
 		}
 	    }
 	  else
@@ -866,8 +876,7 @@ ay_acurve_notifycb(ay_object *o)
 	      memcpy(&(controlv[(acurve->alength)*4]), controlv,
 		     (acurve->order-1)*4*sizeof(double));
 	    } /* if */
-
-	}
+	} /* if */
 
       free(controlvr);
 
