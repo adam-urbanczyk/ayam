@@ -2310,9 +2310,9 @@ points that make up the multiple point.
 <p>
 Notice that since Ayam 1.4 the direct point editing dialog may stay
 open all the time. Furthermore, it is not necessary that the original
-object stays selected, you may select other objects to e.g. infer new
-point coordinates from their properties and apply them to the
-original object.
+object stays selected while working with the direct point edit dialog,
+you may select other objects to e.g. infer new point coordinates from
+their properties and apply them to the original object.
 However, certain actions like deleting objects, will also delete the
 reference to the selected points. In this case you will have to select
 the object and then a point to edit again. Furthermore notice that
@@ -2322,6 +2322,13 @@ action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
 values in the direct point editing dialog. This modelling action also
 only affects the points of the first of multiple selected objects.
+<p>
+Even though the dialog may display point coordinates in degraded
+accuracy (due to floating point to string conversion, see also
+the discussion of the <tt/"TclPrecision"/ preference option in
+section <ref id="prefmisc" name="Miscellaneous Preferences">),
+the original point data is unchanged and its accuracy is not affected
+as long as the new data is not applied.
 </itemize>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
@@ -5088,12 +5095,19 @@ of the created NURBS curve.
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
+<figure loc="!ht">
+<eps file="pics/acurves.ps" height="7cm">
+<img src="pics/acurves.gif">
+<caption>Different ACurves (Upper Left: ALength 3, Order 3; Upper Right: ALength 4, Order 4; Lower Left: ALength 4, Order 4; Lower Right: ALength 6, Order 3)</caption>
+</figure>
+<p>
 The ACurve object, available since Ayam 1.15, creates an approximating
-NURBS curve with m control points from n 3D non-rational data points.
+NURBS curve with m control points from n 3D non-rational data points
+(see image above).
 The number of data points must be higher than or equal to the number of
 control points used. The approximation algorithm used is a least
-squares approach. If the number of control points increase undesired
-wiggles in the output curve may occur.
+squares approach. If the number of control points approach the number
+of data points, undesired wiggles in the output curve may occur.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NURBCurve (it creates and uses NURBS curves
@@ -5115,12 +5129,35 @@ approximate.
 
 <item>Using <tt/"ALength"/ you determine the number of (distinct)
 control points to use for the approximating NURBS curve.
-The total number of control points must be smaller than, or equal
+The total number of control points must be smaller than or equal
 to the number of data points.
 
 <item>The curve can be closed with the parameter <tt/"Closed"/.
 For closed approximations, the total number of control points will
 be <tt/"ALength + Order - 1"/.
+The following table illustrates this.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Length/|<bf/ALength/|<bf/Order/|<bf/Closed/|<bf/Output Length/@<hline>
+10|5|3|No|5@<hline>
+10|5|3|Yes|8@<hline>
+10|4|4|Yes|8@<hline>
+5|4|3|No|4@<hline>
+5|4|3|Yes|Error (4+3>5)@<hline>
+</tabular>
+<caption>ACurve Parameterisation Examples</caption>
+</table>
+
+<item>For symmetric data point configurations, the approximating curve
+is not necessarily symmetric. With the parameter <tt/"Symmetric"/
+this can be enforced (see image below), albeit at the cost of about
+double runtime and a slightly worse parameterisation.
+<figure loc="!ht">
+<eps file="pics/acurve-sym.ps" height="4cm">
+<img src="pics/acurve-sym.gif">
+<caption>Left: asymmetric ACurve, Right: symmetric ACurve</caption>
+</figure>
 
 <item>The parameter <tt/"Order"/ specifies the desired order
 of the approximating NURBS curve. Currently, only orders higher than
@@ -5255,8 +5292,10 @@ respectively at specified parametric value (see below).
 The options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
 
 Since Ayam 1.13 it is also possible to extract the complete boundary
-curve of the patch (<tt/"Boundary"/). Note that extracting the boundary
-currently ignores potential trimming information.
+curve of the patch (<tt/"Boundary"/).
+
+Note that the extraction of any curves currently completely ignores
+potential trimming information.
 
 Since Ayam 1.15 it is also possible to create a curve from the patch
 data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
@@ -11485,6 +11524,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>AddExtensions: <ref id="prefgui" name="preference setting">
 <item>addToProc: <ref id="scaddtoproc" name="scripting interface command">
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
+<item>ALength: <ref id="acp" name="ACurve attribute">
 <item>ALFileTypes, ALPlugins: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Parent: <ref id="vmconf" name="view menu entry">,
@@ -11822,6 +11862,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
 <item>Length: <ref id="bxp" name="box attribute">,
 <ref id="ncattr" name="NURBCurve attribute">,
+<ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">
 <item>Level: <ref id="levelobj" name="Level object">
 <item>Light: <ref id="lightobj" name="Light object">,
@@ -11926,6 +11967,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Option: <ref id="riotag" name="RiOption tag type">
 <item>Order: <ref id="ncattr" name="NURBCurve attribute">,
 <ref id="npattr" name="NURBPatch attribute">,
+<ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">,
 <ref id="rep" name="Revolve attribute">
 <item>Order_U: <ref id="skp" name="skin attribute">
@@ -12195,6 +12237,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Sweep: <ref id="sweepobj" name="Sweep object">,
 <ref id="swpt" name="Sweep tool">
 <item>Swing: <ref id="swingobj" name="Swing object">
+<item>Symmetric: <ref id="acp" name="ACurve attribute">
 </itemize>
 
 <label id="indext">T
