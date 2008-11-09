@@ -62,6 +62,8 @@ $m add command -label "New"\
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	update
+	uS
+	update
 	set ay(sc) 0
 	update
 	foreach view $ay(views) { viewBind $view }
