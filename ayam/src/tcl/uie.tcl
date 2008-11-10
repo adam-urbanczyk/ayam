@@ -167,10 +167,8 @@ proc addParam { w prop name {def {}} } {
 	    "after idle {$ay(bok) invoke}"
 	bind $f.b2 <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 	    "after idle {$ay(bok) invoke}"
-	bind $f.e <Key-Return> "+after idle {\
-	    $::ay(bok) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {\
-           $::ay(bok) invoke}"}
+	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
@@ -480,18 +478,13 @@ proc addColor { w prop name {def {}}} {
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
-	bind $e1 <Key-Return> "+after idle {$ay(bok) invoke;\
-                               updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e1 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
-                               updateColorFromE $w $prop $name $f.b1}"}
-	bind $e2 <Key-Return> "+after idle {$ay(bok) invoke;\
-                               updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e2 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
-                               updateColorFromE $w $prop $name $f.b1}"}
-	bind $e3 <Key-Return> "+after idle {$ay(bok) invoke;
-                               updateColorFromE $w $prop $name $f.b1}"
-	catch {bind $e3 <Key-KP_Enter> "+after idle {$ay(bok) invoke;\
-                               updateColorFromE $w $prop $name $f.b1}"}
+	set okcmd "updateColorFromE $w $prop $name $f.b1;$ay(bok) invoke;break"
+	bind $e1 <Key-Return> $okcmd
+	catch {bind $e1 <Key-KP_Enter> $okcmd}
+	bind $e2 <Key-Return> $okcmd
+	catch {bind $e2 <Key-KP_Enter> $okcmd}
+	bind $e3 <Key-Return> $okcmd
+	catch {bind $e3 <Key-KP_Enter> $okcmd}
 
 	if { $mb != "" } {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
@@ -669,6 +662,8 @@ proc addMenu { w prop name elist } {
 
     eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
     bind $f.mb <Key-Escape> $escapecmd
+    bind $f.mb <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $f.mb <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     if { $tcl_platform(platform) == "windows" } {
 	$f.mb configure -pady 1
@@ -750,8 +745,8 @@ proc addString { w prop name  {def {}}} {
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$ay(bok) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$ay(bok) invoke}"}
+	bind $f.e <Key-Return> "$ay(bok) invoke;break"
+	catch {bind $f.e <Key-KP_Enter> "$ay(bok) invoke;break"}
     }
 
     set mb ""
@@ -907,8 +902,8 @@ proc addFile { w prop name {def {}} } {
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
+	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
     }
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
@@ -1007,8 +1002,8 @@ proc addMDir { w prop name } {
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
+	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
     }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e  \$${prop}(${name}) 15
@@ -1087,8 +1082,8 @@ proc addMFile { w prop name } {
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
-	bind $f.e <Key-Return> "+after idle {$::ay(bok) invoke}"
-	catch {bind $f.e <Key-KP_Enter> "+after idle {$::ay(bok) invoke}"}
+	bind $f.e <Key-Return> "$::ay(bok) invoke;break"
+	catch {bind $f.e <Key-KP_Enter> "$::ay(bok) invoke;break"}
     }
     bind $f.e <1> "+balloon_setsplit $f.e \[$f.e get\] 15"
     eval balloon_setsplit $f.e \$${prop}(${name}) 15
