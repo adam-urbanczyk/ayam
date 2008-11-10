@@ -682,7 +682,6 @@ proc editPointDp { } {
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
 
-
     set f $w.f1
     set f [frame $f.fy]
 
@@ -691,7 +690,6 @@ proc editPointDp { } {
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
-
 
     set f $w.f1
     set f [frame $f.fz]
@@ -744,7 +742,7 @@ proc editPointDp { } {
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
     bind $w <Key-Return> editPointApply
-    catch {bind $f.e <Key-KP_Enter> editPointApply}
+    catch {bind $w <Key-KP_Enter> editPointApply}
 
     focus $f.bok
 
