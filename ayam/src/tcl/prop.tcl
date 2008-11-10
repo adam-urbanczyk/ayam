@@ -251,9 +251,9 @@ set f [frame $w.fu]
 label $f.lt -text "Type:" -width 6
 entry $f.e -width 30
 eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-bind $f.e <Key-Escape> "after idle {.addTag.fd.bca invoke}"
-bind $f.e <Key-Return> "after idle {.addTag.fd.bok invoke}"
-catch {bind $f.e <Key-KP_Enter> "after idle {.addTag.fd.bok invoke}"}
+bind $f.e <Key-Escape> ".addTag.fd.bca invoke;break"
+bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
+catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
 
 pack $f.lt -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
@@ -267,9 +267,9 @@ set f [frame $w.fm]
 label $f.lv -text "Value:" -width 6
 entry $f.e -width 30
 eval [subst "bindtags $f.e \{$f.e Entry all\}"]
-bind $f.e <Key-Escape> "after idle {.addTag.fd.bca invoke}"
-bind $f.e <Key-Return> "after idle {.addTag.fd.bok invoke}"
-catch {bind $f.e <Key-KP_Enter> "after idle {.addTag.fd.bok invoke}"}
+bind $f.e <Key-Escape> ".addTag.fd.bca invoke;break"
+bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
+catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
 
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes

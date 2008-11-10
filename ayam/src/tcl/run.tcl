@@ -55,9 +55,9 @@ proc runTool { argvars argstrings command } {
 	label $f2.l -text [lindex $argstrings $index ] -width 14
 	entry $f2.e -width 14
 	eval [subst "bindtags $f2.e \{$f2.e Entry all\}"]
-	bind $f2.e <Key-Escape> "after idle {.rtw.f2.bca invoke}"
-	bind $f2.e <Key-Return> "after idle {.rtw.f2.bok invoke}"
-	catch {bind $f2.e <Key-KP_Enter> "after idle {.rtw.f2.bok invoke}"}
+	bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
+	bind $f2.e <Key-Return> ".rtw.f2.bok invoke;break"
+	catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
 	eval [subst "$f2.e insert @0 \$$i"]
 
 	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
