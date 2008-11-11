@@ -292,6 +292,9 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(SProp88)]> "plb_showprop 8"
     bind $w <[repcont $aymainshortcuts(SProp99)]> "plb_showprop 9"
 
+    bind $w <[repcont $aymainshortcuts(ContextMenu)]> \
+	"if { $ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
+
     if { $AYWITHAQUA == 1 } {
 	bind $w <Command-q> exit
     }
