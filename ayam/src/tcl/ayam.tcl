@@ -313,6 +313,8 @@ array set aymainshortcuts {
 
     IApplyMod "Shift"
     MenuMod "Alt"
+
+    ContextMenu "Shift-F10"
 }
 # array aymainshortcuts
 
@@ -752,6 +754,8 @@ if { $tcl_platform(platform) == "windows" } {
 	set aymainshortcuts(SProp77) "Key-7"
 	set aymainshortcuts(SProp88) "Key-8"
 	set aymainshortcuts(SProp99) "Key-9"
+
+	set aymainshortcuts(ContextMenu) "Command-F10"
 
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
