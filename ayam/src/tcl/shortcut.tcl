@@ -68,7 +68,7 @@ proc shortcut_fkeys { w } {
 # shortcut_main:
 #  Setup Keybindings for the Main Window
 proc shortcut_main { w } {
-    global ay aymainshortcuts AYWITHAQUA
+    global ay aymainshortcuts AYWITHAQUA tcl_platform
 
     set m $ay(filemenu)
     bind $w <[repcont $aymainshortcuts(New)]> "$m invoke 0;break"
@@ -297,6 +297,11 @@ proc shortcut_main { w } {
 
     if { $AYWITHAQUA == 1 } {
 	bind $w <Command-q> exit
+    }
+
+    if { $tcl_platform(platform) == "windows" } {
+	set m $ay(filemenu)
+	bind $w <Alt-F4> "$m invoke 21;break"
     }
 
     bind $w <KeyPress-Control_L> "+set ay(ctrldown) 1"
