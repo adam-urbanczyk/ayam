@@ -632,7 +632,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  R[i*istride+1] += N[i*m+j]*rk[j*istride+1];
 	  R[i*istride+2] += N[i*m+j]*rk[j*istride+2];
 	}
-
+      /*
       if(R[i*istride]   * R[i*istride]   < AY_EPSILON &&
 	 R[i*istride+1] * R[i*istride+1] < AY_EPSILON &&
 	 R[i*istride+2] * R[i*istride+2] < AY_EPSILON)
@@ -640,6 +640,7 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
+      */
     } /* for */
 
   /* solve N^T*N*P = R */
@@ -886,7 +887,7 @@ ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
 	  R[i*istride+1] += N[i*m+j]*Q[j*istride+1];
 	  R[i*istride+2] += N[i*m+j]*Q[j*istride+2];
 	}
-
+      /*
       if(R[i*istride]   * R[i*istride]   < AY_EPSILON &&
 	 R[i*istride+1] * R[i*istride+1] < AY_EPSILON &&
 	 R[i*istride+2] * R[i*istride+2] < AY_EPSILON)
@@ -894,6 +895,7 @@ ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
+      */
     } /* for */
 
   /* solve N^T*N*P = R */
