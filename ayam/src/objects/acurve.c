@@ -780,6 +780,7 @@ ay_acurve_notifycb(ay_object *o)
   if(ay_status)
     {
       /* XXXX free knotv? controlv? */
+      free(ncurve);
       return ay_status;
     }
 
@@ -789,6 +790,7 @@ ay_acurve_notifycb(ay_object *o)
       dlen = acurve->length;
       if(!(controlvr = calloc(dlen*3, sizeof(double))))
 	{
+	  free(ncurve);
 	  return AY_ERROR;
 	}
 
@@ -895,6 +897,7 @@ ay_acurve_notifycb(ay_object *o)
   if(ay_status)
     {
       /* XXXX free knotv? controlv? */
+      free(ncurve);
       return ay_status;
     }
 
