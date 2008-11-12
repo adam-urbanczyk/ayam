@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>5. Jul 2008
+<date>12. Nov 2008
 
 <abstract>
 This is the documentation of Ayam 1.15 - a free 3D modelling environment
@@ -788,6 +788,10 @@ also section <ref id="ncurveobj" name="NCurve Object">.
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="icurveobj" name="ICurve Object">.
+
+<item><tt/"ACurve"/, create a new approximating curve. A small dialog box will
+pop up, where you may specify the length of the new curve. See
+also section <ref id="acurveobj" name="ACurve Object">.
 
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
