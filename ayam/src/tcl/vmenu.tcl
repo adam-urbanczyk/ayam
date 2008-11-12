@@ -136,16 +136,19 @@ $m add cascade -label "Drawing Mode" -menu $cm
 $cm add radio -label "Draw" -variable ay(cVDMode) -value 0 -command "\
 	global ay;\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 0;\
 	\$ay(currentView) mc"
 
 $cm add radio -label "Shade" -variable ay(cVDMode) -value 1 -command "\
 	global ay;\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 1;\
 	\$ay(currentView) mc"
 
 $cm add radio -label "ShadeAndDraw" -variable ay(cVDMode) -value 2 -command "\
 	global ay;\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
+	viewSetDModeIcon $w 2;\
 	\$ay(currentView) mc"
 
 $m add check -label "Draw Selection only" -variable ay(cVDrawSel) -command "\
