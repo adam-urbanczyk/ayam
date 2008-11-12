@@ -351,18 +351,14 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
   extrnp = (ay_extrnp_object *)(o->refine);
 
   fprintf(fileptr, "%d\n", extrnp->pnum);
-
   fprintf(fileptr, "%g\n", extrnp->umin);
   fprintf(fileptr, "%g\n", extrnp->umax);
   fprintf(fileptr, "%g\n", extrnp->vmin);
   fprintf(fileptr, "%g\n", extrnp->vmax);
-
   fprintf(fileptr, "%d\n", extrnp->display_mode);
   fprintf(fileptr, "%g\n", extrnp->glu_sampling_tolerance);
-
-  /* XXXX enable for release 1.15
   fprintf(fileptr, "%d\n", extrnp->relative);
-  */
+
 
  return AY_OK;
 } /* ay_extrnp_writecb */
