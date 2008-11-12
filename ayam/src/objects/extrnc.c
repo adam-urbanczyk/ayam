@@ -352,14 +352,9 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", extrnc->parameter);
   fprintf(fileptr, "%d\n", extrnc->display_mode);
   fprintf(fileptr, "%g\n", extrnc->glu_sampling_tolerance);
-
   fprintf(fileptr, "%d\n", extrnc->pnum);
-
   fprintf(fileptr, "%d\n", extrnc->revert);
-
-  /* XXXX enable for release 1.15
   fprintf(fileptr, "%d\n", extrnc->relative);
-  */
 
  return AY_OK;
 } /* ay_extrnc_writecb */
