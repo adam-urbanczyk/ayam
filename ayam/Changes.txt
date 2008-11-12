@@ -1,4 +1,4 @@
-[7. Nov 2008] CVS-Head:
+[12. Nov 2008] Ayam-1.15:
 ========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
@@ -19,6 +19,7 @@ o Script objects adding newline characters upon apply (SF 2027027)
 o Memory leak in ExtrNP notification (SF 2135504)
 o broken complete notification for center points action (SF 2135494)
 o menus with images do not open on certain X11 servers (SF 2144110)
+o setting drawing mode icon when mode is changed via menu (SF 2268296)
 
 GUI:
 o added plugin "aydnd.tcl" that enables inter-application drag-and-drop
