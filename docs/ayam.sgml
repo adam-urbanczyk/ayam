@@ -5129,7 +5129,7 @@ approximate.
 
 <item>Using <tt/"ALength"/ you determine the number of (distinct)
 control points to use for the approximating NURBS curve.
-The total number of control points must be smaller than or equal
+The total number of distinct control points must be smaller than or equal
 to the number of data points.
 
 <item>The curve can be closed with the parameter <tt/"Closed"/.
@@ -5144,7 +5144,7 @@ The following table illustrates this.
 10|5|3|Yes|8@<hline>
 10|4|4|Yes|8@<hline>
 5|4|3|No|4@<hline>
-5|4|3|Yes|Error (4+3>5)@<hline>
+5|4|3|Yes|7@<hline>
 </tabular>
 <caption>ACurve Parameterisation Examples</caption>
 </table>
@@ -6265,7 +6265,12 @@ Note that extensions and plugins may define their own types.
 
 <sect1>Tags<label id="tags">
 <p>
-This section documents all available tags of Ayam.
+Tags provide an easy way to attach arbitrary information (e.g. additional
+RenderMan interface attributes, special attributes for plugins or even
+scripts) to objects. A tag consists of two strings, one defining the type
+and one defining the value of the tag.
+<p>
+This section documents all currently known tag types.
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
@@ -11312,7 +11317,8 @@ deficiencies exist:
 <itemize>
 <item>Almost all strings in Ayam (scene file names, object names,
 material names) are restricted to be 7 bit ASCII. If the scene is
-not transported to other systems 8 bit ASCII should be fine, however.
+not to be transported between platforms (e.g. between UNIX and Win32),
+using 8 bit ASCII should be fine, however.
 <item>The maximum scene depth (i.e. the maximum number of nested levels)
 depends on the maximum stack size of the operating system Ayam is
 running on (due to the use of recursion almost everywhere when traversing
@@ -11322,9 +11328,10 @@ no control over roundoff error in lengthy calculations exists.
 Saving of scene files only uses the precision dictated by the current
 standard C library. This may degrade the precision of the models.
 Using of double precision numbers via the Tcl scripting interface or
-the GUI also can reduce precision due to
-double-string-double-conversions (whose precision can be adjusted
-by the user via the <tt/"TclPrecision"/ preference setting, however).
+the GUI also can reduce model precision due to
+double-string-double-conversions (the precision of those conversion
+operations can be adjusted by the user via the <tt/"TclPrecision"/
+preference setting, however).
 <item>Ayam is currently not portable to 64-bit platforms.
 <item>Materials may only be assigned to complete objects, not to
 certain parts of objects.
@@ -11341,7 +11348,8 @@ Ayam user interface deficiencies:
 <itemize>
 <item>The application state is often communicated via window title
 strings only. But certain window systems do not display those
-titles well.
+titles well, and they are not to be seen in the single window GUI
+mode at all.
 </itemize>
 
 <sect1>How to join the fun<label id="secfun">
