@@ -514,10 +514,11 @@ proc shortcut_viewactions { w } {
 	}
 	$w configure -cursor {}
     }
-    bind $w <${ayviewshortcuts(RotMod)}-B${i}-Down> {
+    bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonPress-${i}> {
 	set oldx %x
 	set oldy %y
     }
+    bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonRelease-${i}> "break"
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-B${i}-Motion> {
 	%W setconf -drotx [expr ($oldx - %x)] -droty [expr ($oldy - %y)]
 	set oldx %x
@@ -555,7 +556,7 @@ proc shortcut_viewactions { w } {
 	undo save ZoomRView
 	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
 	%W redraw
-	update
+	break
     }
 
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-B${i}-Motion> {
