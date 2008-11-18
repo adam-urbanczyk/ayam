@@ -5629,7 +5629,8 @@ Since Ayam 1.12 there is also a tag type to remove properties
 code and block users from unintentionally changing it.
 <p>
 Since Ayam 1.15 script objects can have individual sets of parameters,
-so that multiple copies of a script object can be used.
+so that multiple copies of a script object can be used (without individual
+parameters all copies would share the parameter values).
 For this, the new variable <tt>"SP"</tt> in the script data array
 contains a list of parameter names in that array that are individual
 (not shared by all copies of the script object).
@@ -5655,8 +5656,8 @@ Three types of script objects are currently available:
 take place.
 
  <item><tt/"Create"/, the script will be run and will create and
-parameterise a single new object. After running the script, the new
-created object will automatically be copied into the internal data
+parameterise a single new object. After running the script, the newly
+created object will automatically be moved into the internal data
 structure of the script object. The script object will look like
 and act as an object of the type that the script created.
 If the script creates e.g. a NURBCurve object, the script object may
@@ -5668,8 +5669,9 @@ e.g. a Sweep:
  \ Path(NCurve)
 </code>
 The newly created object has to be selected by the script code
-for parameterisation and copying. The selection should be done
-using the new scripting interface command <tt/"hSL"/ (hidden select last).
+for parameterisation and moving. The selection should be done
+using the new scripting interface command <tt/"hSL"/ (hidden select
+last).
 Consequently, the most simple example script for a script object
 of type <tt/"Create"/ looks like this:
 <code>
@@ -5750,7 +5752,8 @@ setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 This code works, but if lines of a different length than 1 are needed,
 the user must edit the script which is not very convenient and error
 prone. A complete, easy to use, and safe GUI for the length parameter
-can be added by changing the script code to:
+can be added by changing the script code to
+(<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate added code):
 <code>
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
@@ -5808,7 +5811,29 @@ setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
 
-The complete script is available as example script file
+The complete script looks like this:
+<code>
+# Ayam, save array: LineAttrData
+if { ![info exists ::LineAttrData] } {
+    array set ::LineAttrData {
+	Length 1
+	SP {Length}
+    }
+    array set ::LineAttr {
+	arr LineAttrData
+	sproc ""
+	gproc ""
+	w fLineAttr
+    }
+    set w [frame $::ay(pca).fLineAttr]
+    addParam $w LineAttrData Length
+}
+set length $::LineAttrData(Length)
+crtOb NCurve -length 2; hSL
+setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
+setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
+</code>
+It is also available as example script file
 <tt>"scripts/crtlinegui.tcl"</tt>.
 
 <sect1>Select Object<label id="selectobj">
