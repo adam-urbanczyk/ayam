@@ -3844,13 +3844,14 @@ object has the same basic properties as a link in a Unix file system.
 A link is just a pointer to an original file, the same goes for
 an instance object: it is just a pointer to an original object (master).
 A link can be placed anywhere on the file system,
-an instance object can be placed anywhere in the hierarchy, and
+an instance object can be placed anywhere in the scene hierarchy, and
 additionally, it can be transformed (otherwise it would be pretty
 useless).<p>
-The sole purpose of instance objects is to save storage.
-The amount of saved diskspace can be very high, but this depends
-heavily on the scene. If there are no similar objects in the scene
-you can hardly use instancing. Similar means "the same except for
+The sole purpose of instance objects is to save storage space, in
+memory and on the disk.
+The amount of saved space can be very high, depending heavily on the
+actual scene. If there are no similar objects in the scene
+one can hardly use instancing. Similar means "the same except for
 the transformation property" in this context.
 <p>
 Some simple rules for instancing:
@@ -3892,17 +3893,22 @@ The RIB export of instances does not use the RiInstance facility
 of the RenderMan interface, but the ReadArchive mechanism.
 This means, every original object in the scene will be written
 in a separate archive (RIB file) on disk, and every instance will
-cause that archive file to be read. You can change that behaviour
-using the preference setting <tt/"ResInstances"/.
+cause that archive file to be read. You can change this behaviour
+using the preference setting <tt/"ResInstances"/:
 If <tt/"ResInstances"/ is enabled, all instances will be resolved
 (temporarily) before being exported to RIB.
 <p>
-Ayam can also create instances automatically (see section
-<ref id="ai" name="Automatic Instancing">).
+Ayam can also create instances for complete scenes or just parts
+of scenes automatically
+(see section <ref id="ai" name="Automatic Instancing">).
 <p>
 To easily find the master object of an instance, just select the
 instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
-
+<!--
+To find out, where in the scene instances of a master object
+exist, select the master object and use the main menu entry
+<tt>"Edit/Master"</tt>.
+-->
 <sect1>Clone Object<label id="cloneobj">
 <p>
 <figure loc="ht">
@@ -3960,12 +3966,13 @@ level object (as you can not add tags to instance objects):
  \ Trajectory(NCurve)
 </code>
 <p>
-The following attributes further control the clone process:
+The following attributes further control the cloning process:
 
 <sect2>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
 <p>
 <itemize>
-<item><tt/"NumClones"/ the number of clones to create.
+<item><tt/"NumClones"/ is the number of clones to create, it is not in use
+if the mirror mode is enabled.
 <item><tt/"Rotate"/ is only used, if a trajectory curve is present.
 If it is enabled all clones will be aligned according to the normal of
 the trajectory curve.
@@ -3981,6 +3988,11 @@ of e.g. a Skin object:
 <code>
 +-Skin
  +-Mirror(Clone)
+  \ NCurve
++-Skin
+ +-Mirror(Clone)
+  | NCurve
+  | NCurve
   \ NCurve
 </code>
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
@@ -5630,7 +5642,7 @@ code and block users from unintentionally changing it.
 <p>
 Since Ayam 1.15 script objects can have individual sets of parameters,
 so that multiple copies of a script object can be used (without individual
-parameters all copies would share the parameter values).
+parameters all copies would share the same parameter values).
 For this, the new variable <tt>"SP"</tt> in the script data array
 contains a list of parameter names in that array that are individual
 (not shared by all copies of the script object).
@@ -5753,7 +5765,8 @@ This code works, but if lines of a different length than 1 are needed,
 the user must edit the script which is not very convenient and error
 prone. A complete, easy to use, and safe GUI for the length parameter
 can be added by changing the script code to
-(<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate added code):
+(<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate changed
+or added code):
 <code>
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
@@ -5768,8 +5781,8 @@ if { ![info exists ::LineAttrData] } {
     set w [frame $::ay(pca).fLineAttr]
     addParam $w LineAttrData Length
 }
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 set length $::LineAttrData(Length)
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
