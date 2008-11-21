@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>12. Nov 2008
+<date>21. Nov 2008
 
 <abstract>
 This is the documentation of Ayam 1.15 - a free 3D modelling environment
@@ -3847,11 +3847,14 @@ A link can be placed anywhere on the file system,
 an instance object can be placed anywhere in the scene hierarchy, and
 additionally, it can be transformed (otherwise it would be pretty
 useless).<p>
-The sole purpose of instance objects is to save storage space, in
-memory and on the disk.
+Normally, the sole purpose of instance objects is to save storage space, in
+memory and on the disk. But in the tool object context, instances
+also serve as a means to transport geometric data across the scene
+hierarchy (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 The amount of saved space can be very high, depending heavily on the
-actual scene. If there are no similar objects in the scene
-one can hardly use instancing. Similar means "the same except for
+actual scene. If there are no similar objects in the scene, however,
+one can hardly utilise instancing. Similar means "the same except for
 the transformation property" in this context.
 <p>
 Some simple rules for instancing:
@@ -3878,9 +3881,26 @@ or resolve all references.
 Note that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same master object.
-However, it is possible to move instances using Drag-and-Drop in the tree
-view or using the clipboard with <tt>"Edit/Cut"</tt> and then
-<tt>"Special/Clipboard/Paste (Move)"</tt>.
+<code>
+--NCurve    -----
+                 |
+--Instance <-----
+</code>
+For example, when the above two objects are copied and pasted back,
+the following scene hierarchy results:
+<code>
+--NCurve    -------
+                 | |
+--Instance <-----  |
+                   | !
+--NCurve           |
+                   |
+--Instance <-------
+</code>
+<p>
+It is possible to move masters and instances through the scene hierarchy
+using Drag-and-Drop in the tree view or using the clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
 <p>
 You can resolve an instance object at any time using
 the converter registered for objects of type <tt>Instance</tt> (simply
@@ -3921,28 +3941,30 @@ The Clone object allows you to easily create and control a number
 of instances of a single object.
 The instances will be created internally and transformed,
 each by a certain amount. The Clone object may also be used for
-symmetric (mirrored) modelling; in this case a single clone with
-a negative scale value will be created.
+symmetric (mirrored) modelling; in this case multiple child objects
+are accepted and multiple clones with a negative scale value (and in
+reverse order!) will be created.
 <p>
 The original object, the object to be cloned, should be the first
 child object of the Clone object.
-If a second object is present as child of the Clone object
-it is treated as trajectory (or path) curve, similar to the Sweep object
+If a second object is present as child of the Clone object (and mirroring
+is not enabled) it is treated as trajectory (or path) curve,
+similar to the Sweep object
 (see section <ref id="sweepobj" name="Sweep Object">).
 <p>
-Thus, the object hierarchy of a Clone object may look like this:
+Thus, the default object hierarchy of a Clone object may look like this:
 <code>
 +-Clone
  | Cloned-Object
  \ [Trajectory(NCurve)]
 </code>
 If you use a trajectory curve to place the clones, you may want
-to hide the parameter object and add a <tt/"NoExport"/ tag to it.
+to hide the parameter object and also add a <tt/"NoExport"/ tag to it.
 Otherwise the original object will appear twice, on the trajectory and
 on its normal position. Note that the transformation attributes of
 the parameter object will be completely overwritten when placing the
 clones on the trajectory curve. If the parameter object has distinct
-scale or rotation attributes it should be placed inside a level object
+scale or rotation attributes it should be put inside a level object
 like this:
 <code>
 +-Clone
@@ -3958,7 +3980,8 @@ instances as parameter objects.
 <p>
 If an instance object is used as parameter object it should be placed
 in a level and the <tt/"NoExport"/ tag should be added to the
-level object (as you can not add tags to instance objects):
+level object (as you can not add tags to instance objects), see the
+following example:
 <code>
 +-Clone
  +-Level with NoExport tag
@@ -5287,9 +5310,15 @@ the following example hierarchy is valid:
  |\ Instance_of_NPatch(Instance)
  \ NCurve
 </code>
-Depending on the parameters of the ExtrNC object, the skin will have
-one boundary in common with a boundary or an iso-curve of the NPatch
-object.
+Depending on the parameters of the ExtrNC object, the Skin object
+above will have one boundary in common with a boundary or an iso-curve
+of the NPatch object.
+Note that using an instance object of some other surface object
+(as shown in the above example) is in fact the recommended way of using
+the ExtrNC object. Therefore, the main menu entry
+<tt>"Tools/Create/ExtrNC"</tt>
+will automatically create an instance of the currently selected object
+and move it to the newly created ExtrNC object.
 <p>
 You may convert the current ExtrNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -5311,7 +5340,7 @@ Since Ayam 1.13 it is also possible to extract the complete boundary
 curve of the patch (<tt/"Boundary"/).
 
 Note that the extraction of any curves currently completely ignores
-potential trimming information.
+potentially present trimming information.
 
 Since Ayam 1.15 it is also possible to create a curve from the patch
 data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
@@ -5435,7 +5464,14 @@ example hierarchy is valid:
 +-ExtrNP
  \ Instance_of_NPatch(Instance)
 </code>
-Note that eventually present trim curves will <em>not</em> be honored
+Note that using an instance object of some other surface object
+(as shown in the above example) is in fact the recommended way of using
+the ExtrNP object. Therefore, the main menu entry
+<tt>"Tools/Create/ExtrNP"</tt>
+will automatically create an instance of the currently selected object
+and move it to the newly created ExtrNP object.
+<p>
+Also note that eventually present trim curves will <em>not</em> be honored
 properly.
 <p>
 You may convert the current ExtrNP object to an ordinary NURBS patch
