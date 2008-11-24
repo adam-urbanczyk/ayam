@@ -42,7 +42,13 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 
     # create an instance first (for ExtrNC/ExtrNP)?
     if { $keepsel < 0 } {
+	if { [llength $selected] == 1 } {
+	    getTrafo
+	}
 	crtOb Instance; uCR; sL
+	if { [llength $selected] == 1 } {
+	    setTrafo
+	}
     }
 
     set ay_error 0
