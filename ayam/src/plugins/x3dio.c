@@ -6462,6 +6462,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
 	{
 	  memcpy(axis, o->quat, 3*sizeof(double));
+	  /* XXXX check for nan! */
 	  AY_V3NORM(axis);
 	  angle = 2 * acos(o->quat[3]);
 
@@ -7325,7 +7326,8 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_clone_object *cl;
- ay_object *clone;
+ ay_object *clone, *firstclone = NULL, *down = NULL;
+ scew_element *transform_element = NULL;
 
   if(!element || !o || !o->refine)
    return AY_ENULL;
@@ -7334,9 +7336,51 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
 
   clone = cl->clones;
 
+  if(!clone)
+    return AY_OK;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write name */
+  ay_status = x3dio_writename(transform_element, o);
+
+  /* if the first child is not an instance, write the first clone
+   * as normal object, otherwise the master to the clone instance
+   * will never appear in the output file;
+   * if the first child is an instance, its master is believed to
+   * exist outside the Clone and its appearance in the output is
+   * controlled by the user
+   */
+  down = o->down;
+  if(down && down->next)
+    {
+      if((down->type != AY_IDINSTANCE) && clone)
+	{
+	  if(!(firstclone = calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  memcpy(firstclone, down, sizeof(ay_object));
+	  firstclone->refcount++;
+	  ay_trafo_copy(clone, firstclone);
+	  ay_status = x3dio_writeobject(transform_element, firstclone,
+					AY_FALSE);
+
+	  if((firstclone->refcount == 1) && firstclone->tags &&
+	     firstclone->tags->type == x3dio_mn_tagtype)
+	    {
+	      firstclone->tags->next = down->tags;
+	      down->tags = firstclone->tags;
+	    }
+
+	  free(firstclone);
+
+	  clone = clone->next;
+	}
+    }
+
   while(clone)
     {
-      ay_status = x3dio_writeobject(element, clone, AY_FALSE);
+      ay_status = x3dio_writeobject(transform_element, clone, AY_FALSE);
 
       clone = clone->next;
     }
@@ -8840,7 +8884,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
  char pbuffer[64];
  int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
 
-  if(!o)
+  if(!element || !o)
     return AY_ENULL;
 
   if((entry = Tcl_FindHashEntry(ht, (char *)(o->type))))
