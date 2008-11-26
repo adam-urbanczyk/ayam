@@ -42,7 +42,7 @@ static Tcl_HashTable x3dio_write_ht;
 
 static Tcl_HashTable *x3dio_defs_ht = NULL;
 
-/* MN tags are used to temporarily store x3dio generated DEF names */
+/* MN tags are used to temporarily store x3dio generated Master/DEF names */
 char *x3dio_mn_tagtype = NULL;
 char *x3dio_mn_tagname = "MN";
 
@@ -264,7 +264,7 @@ int x3dio_writetransform(scew_element *element, ay_object *o,
 
 int x3dio_clearmntags(ay_object *o);
 
-int x3dio_writename(scew_element *element, ay_object *o);
+int x3dio_writename(scew_element *element, ay_object *o, int trafo);
 
 int x3dio_writeintattrib(scew_element *element, char *name, int *value);
 
@@ -6543,9 +6543,9 @@ x3dio_clearmntags(ay_object *o)
  *
  */
 int
-x3dio_writename(scew_element *element, ay_object *o)
+x3dio_writename(scew_element *element, ay_object *o, int trafo)
 {
- char buffer[64], *newname = NULL, *number = NULL;
+ char *newname = NULL, *number = NULL;
  unsigned int len, i;
  static unsigned int count = 0;
  ay_tag *tag = NULL;
@@ -6575,19 +6575,6 @@ x3dio_writename(scew_element *element, ay_object *o)
 	  while(AY_ERROR == x3dio_adddef(newname, element));
 
 	  scew_element_add_attr_pair(element, "DEF", newname);
-
-	  /* also add a tag */
-	  if(!(tag = calloc(1, sizeof(ay_tag))))
-	    return AY_EOMEM;
-
-	  if(!(tag->val = calloc(strlen(newname)+1, sizeof(char))))
-	    return AY_EOMEM;
-	  memcpy(tag->val, newname, strlen(newname)*sizeof(char));
-
-	  tag->type = x3dio_mn_tagtype;
-
-	  tag->next = o->tags;
-	  o->tags = tag;
 	}
       else
 	{
@@ -6599,36 +6586,53 @@ x3dio_writename(scew_element *element, ay_object *o)
       if(!x3dio_resolveinstances && o->refcount)
 	{
 	  count++;
-	  sprintf(buffer, "Master_%u", count);
+	  newname = calloc(65, sizeof(char));
+	  sprintf(newname, "Master_%u", count);
 
 	  /* check, whether we already use this DEF */
-	  if(AY_ERROR == x3dio_adddef(buffer, element))
+	  if(AY_ERROR == x3dio_adddef(newname, element))
 	    {
 	      /* DEF is already used, create a new name */
 	      do
 		{
 		  count++;
-		  sprintf(buffer, "Master_%u", count);
+		  sprintf(newname, "Master_%u", count);
 		}
-	      while(AY_ERROR == x3dio_adddef(buffer, element));
+	      while(AY_ERROR == x3dio_adddef(newname, element));
 	    }
 
-	  scew_element_add_attr_pair(element, "DEF", buffer);
-
-	  /* also add a tag */
-	  if(!(tag = calloc(1, sizeof(ay_tag))))
-	    return AY_EOMEM;
-
-	  if(!(tag->val = calloc(strlen(buffer)+1, sizeof(char))))
-	    return AY_EOMEM;
-	  memcpy(tag->val, buffer, strlen(buffer)*sizeof(char));
-
-	  tag->type = x3dio_mn_tagtype;
-
-	  tag->next = o->tags;
-	  o->tags = tag;
+	  scew_element_add_attr_pair(element, "DEF", newname);
 	} /* if */
     } /* if */
+
+  if(!x3dio_resolveinstances && o->refcount)
+    {
+      /*  add a MN (MasterName) tag */
+      if(!(tag = calloc(1, sizeof(ay_tag))))
+	return AY_EOMEM;
+      if(newname)
+	{
+	  if(!(tag->val = calloc(strlen(newname)+1, sizeof(char))))
+	    return AY_EOMEM;
+	  memcpy(tag->val, newname, strlen(newname)*sizeof(char));
+	}
+      else
+	{
+	  if(!(tag->val = calloc(strlen(o->name)+1, sizeof(char))))
+	    return AY_EOMEM;
+	  memcpy(tag->val, newname, strlen(o->name)*sizeof(char));
+	}
+
+      tag->type = x3dio_mn_tagtype;
+      tag->name = (char*)trafo;
+
+      /* link tag to object o */
+      tag->next = o->tags;
+      o->tags = tag;
+    }
+
+  if(newname)
+    free(newname);
 
  return AY_OK;
 } /* x3dio_writename */
@@ -6876,7 +6880,9 @@ x3dio_writencurve(scew_element *element, ay_nurbcurve_object *c)
     }
 
   coord_element = scew_element_add(curve_element, "Coordinate");
-  x3dio_writedoublepoints(coord_element, "point", 3, c->length, 4, c->controlv);
+
+  x3dio_writedoublepoints(coord_element, "point", 3, c->length,
+			  4, c->controlv);
 
  return AY_OK;
 } /* x3dio_writencurve */
@@ -6905,7 +6911,7 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   ay_status = x3dio_writencurve(shape_element, c);
 
@@ -6922,6 +6928,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
  scew_element *transform_element = NULL;
+ scew_element *ot_element = NULL;
 
   if(!x3dio_writecurves)
     return AY_OK;
@@ -6934,10 +6941,23 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
     return AY_ERROR;
 
   /* write transform */
-  ay_status = x3dio_writetransform(element, o, &transform_element);
+  if(!x3dio_resolveinstances && (o->refcount > 0))
+    {
+      /* write an extra outer transform level with our transformations
+       * so that our instances may connect to the inner transform level
+       * (without our transformations)
+       */
+      ay_status = x3dio_writetransform(element, o, &ot_element);
+      transform_element = scew_element_add(ot_element, "Transform");
+    }
+  else
+    {
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+    }
 
   /* write name */
-  ay_status = x3dio_writename(transform_element, o);
+  ay_status = x3dio_writename(transform_element, o, AY_TRUE);
 
   t = c;
   while(t)
@@ -7120,7 +7140,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* now write the patch */
   if(o->down && o->down->next)
@@ -7244,6 +7264,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
  scew_element *transform_element = NULL;
+ scew_element *ot_element = NULL;
 
   if(!o)
    return AY_ENULL;
@@ -7253,10 +7274,23 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
     return AY_ERROR;
 
   /* write transform */
-  ay_status = x3dio_writetransform(element, o, &transform_element);
+  if(!x3dio_resolveinstances && (o->refcount > 0))
+    {
+      /* write an extra outer transform level with our transformations
+       * so that our instances may connect to the inner transform level
+       * (without our transformations)
+       */
+      ay_status = x3dio_writetransform(element, o, &ot_element);
+      transform_element = scew_element_add(ot_element, "Transform");
+    }
+  else
+    {
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+    }
 
   /* write name */
-  ay_status = x3dio_writename(transform_element, o);
+  ay_status = x3dio_writename(transform_element, o, AY_TRUE);
 
   t = c;
   while(t)
@@ -7310,7 +7344,7 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
 	}
 
       /* write name */
-      ay_status = x3dio_writename(transform_element, o);
+      ay_status = x3dio_writename(transform_element, o, AY_TRUE);
 
       /* write children */
       down = o->down;
@@ -7335,6 +7369,7 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
  ay_clone_object *cl;
  ay_object *clone, *firstclone = NULL, *down = NULL;
  scew_element *transform_element = NULL;
+ scew_element *ot_element = NULL;
 
   if(!element || !o || !o->refine)
    return AY_ENULL;
@@ -7347,10 +7382,23 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
     return AY_OK;
 
   /* write transform */
-  ay_status = x3dio_writetransform(element, o, &transform_element);
+  if(!x3dio_resolveinstances && (o->refcount > 0))
+    {
+      /* write an extra outer transform level with our transformations
+       * so that our instances may connect to the inner transform level
+       * (without our transformations)
+       */
+      ay_status = x3dio_writetransform(element, o, &ot_element);
+      transform_element = scew_element_add(ot_element, "Transform");
+    }
+  else
+    {
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+    }
 
   /* write name */
-  ay_status = x3dio_writename(transform_element, o);
+  ay_status = x3dio_writename(transform_element, o, AY_TRUE);
 
   if(!x3dio_resolveinstances)
     {
@@ -7432,24 +7480,17 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
 	}
       else
 	{
-	  if(master->name && (strlen(master->name) > 1))
-	    {
-	      masterdef = master->name;
-	    }
-	  else
-	    {
-	      return AY_ERROR;
-	    }
+	  return AY_ERROR;
 	}
 
       /* write transform */
       ay_status = x3dio_writetransform(element, o, &transform_element);
 
-      if(master->type != AY_IDLEVEL)
+      if(!master->tags->name)
 	{
 	  /*
-	   * for normal objects, write USE to shape element as
-	   * the corresponding DEF is also in a shape element
+	   * write USE to shape element as the corresponding DEF
+	   * is also in a shape element
 	   */
 	  shape_element = scew_element_add(transform_element, "Shape");
 
@@ -7459,8 +7500,8 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
       else
 	{
 	  /*
-	   * for level objects, write USE to transform element as
-	   * the corresponding DEF is also in a transform element
+	   * write USE to transform element as the corresponding DEF
+	   * is also in a transform element
 	   */
 	  scew_element_add_attr_pair(transform_element, "USE", masterdef);
 	}
@@ -7524,7 +7565,7 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* now write the box */
   box_element = scew_element_add(shape_element, "Box");
@@ -7566,7 +7607,7 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
       shape_element = scew_element_add(transform_element, "Shape");
 
       /* write name to shape element */
-      ay_status = x3dio_writename(shape_element, o);
+      ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
       /* now write the sphere */
       sphere_element = scew_element_add(shape_element, "Sphere");
@@ -7637,7 +7678,7 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       shape_element = scew_element_add(itransform_element, "Shape");
 
       /* write name to shape element */
-      ay_status = x3dio_writename(shape_element, o);
+      ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
       /* now write the cylinder */
       cylinder_element = scew_element_add(shape_element, "Cylinder");
@@ -7715,7 +7756,7 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       shape_element = scew_element_add(itransform_element, "Shape");
 
       /* write name to shape element */
-      ay_status = x3dio_writename(shape_element, o);
+      ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
       /* now write the cone */
       cone_element = scew_element_add(shape_element, "Cone");
@@ -7788,7 +7829,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* now write the IndexedFaceSet element */
   ifs_element = scew_element_add(shape_element, "IndexedFaceSet");
@@ -8410,7 +8451,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* write swing element */
   swing_element = scew_element_add(shape_element, "NurbsSwungSurface");
@@ -8533,7 +8574,7 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* write sweep element */
   sweep_element = scew_element_add(shape_element, "NurbsSweptSurface");
@@ -8644,7 +8685,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   /* write swing element */
   swing_element = scew_element_add(shape_element, "NurbsSwungSurface");
@@ -8778,7 +8819,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
   shape_element = scew_element_add(transform_element, "Shape");
 
   /* write name to shape element */
-  ay_status = x3dio_writename(shape_element, o);
+  ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
   d = o->down;
   while(d->next)
@@ -9017,7 +9058,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   ay_status = x3dio_clearmntags(ay_root);
 
   /* reset object number counter */
-  ay_status = x3dio_writename(NULL, NULL);
+  ay_status = x3dio_writename(NULL, NULL, 0);
 
   /* create in-memory XML tree */
   tree = scew_tree_create();
@@ -9087,7 +9128,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 	  cadlayer_element = scew_element_add(scene_element, "CADLayer");
 
 	  /* write name to cad layer element */
-	  ay_status = x3dio_writename(cadlayer_element, o);
+	  ay_status = x3dio_writename(cadlayer_element, o, AY_FALSE);
 
 	  d = o->down;
 	  while(d->next)
