@@ -133,6 +133,9 @@ proc rrib_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    bind $w <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
     # context help
     bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imprib }
 
