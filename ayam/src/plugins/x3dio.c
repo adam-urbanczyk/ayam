@@ -6462,13 +6462,18 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
 	{
 	  memcpy(axis, o->quat, 3*sizeof(double));
-	  /* XXXX check for nan! */
-	  AY_V3NORM(axis);
-	  angle = 2 * acos(o->quat[3]);
 
-	  sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
-	  scew_element_add_attr_pair(*transform_element, "rotation",
-				     buffer);
+	  if(fabs(axis[0]) > AY_EPSILON ||
+	     fabs(axis[1]) > AY_EPSILON ||
+	     fabs(axis[2]) > AY_EPSILON)
+	    {
+	      AY_V3NORM(axis);
+	      angle = 2 * acos(o->quat[3]);
+
+	      sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
+	      scew_element_add_attr_pair(*transform_element, "rotation",
+					 buffer);
+	    }
 	}
 
       /* process scale */
@@ -6768,7 +6773,7 @@ x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
  */
 int
 x3dio_writeweights(scew_element *element, char *name,
-			unsigned int length, double *value)
+		   unsigned int length, double *value)
 {
  char buf[256];
  char *attr = NULL, *tmp;
@@ -6781,7 +6786,6 @@ x3dio_writeweights(scew_element *element, char *name,
 
   for(i = 0; i < length; i++)
     {
-
       sprintf(buf, "%g ", value[a+3]);
 
       buflen = strlen(buf);
@@ -7052,7 +7056,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *down = NULL;
  ay_nurbpatch_object *p;
- unsigned int i, j, stride = 4;
+ unsigned int i, j, stride = 4, copystride = 3;
  int have_mys = AY_FALSE, have_myt = AY_FALSE;
  unsigned int myslen = 0, mytlen = 0, mystlen = 0;
  double *v = NULL, *p1, *p2;
@@ -7136,14 +7140,12 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   x3dio_writeknots(patch_element, "uKnot", p->width+p->uorder, p->uknotv);
   x3dio_writeknots(patch_element, "vKnot", p->height+p->vorder, p->vknotv);
 
+  /* fix row/column major order */
   if(p->is_rat)
     {
-      x3dio_writeweights(patch_element, "weight", p->width*p->height,
-			 p->controlv);
+      copystride = 4;
     }
-
-  /* fix row/column major order */
-  if(!(v = calloc(p->width * p->height * 3, sizeof(double))))
+  if(!(v = calloc(p->width * p->height * copystride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   p1 = v;
   for(i = 0; i < (unsigned)p->height; i++)
@@ -7151,16 +7153,22 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
       p2 = &(p->controlv[i*stride]);
       for(j = 0; j < (unsigned)p->width; j++)
 	{
-	  memcpy(p1, p2, 3*sizeof(double));
-	  p1 += 3;
+	  memcpy(p1, p2, copystride*sizeof(double));
+	  p1 += copystride;
 	  p2 += p->height*stride;
 	} /* for */
     } /* for */
 
+  if(p->is_rat)
+    {
+      x3dio_writeweights(patch_element, "weight", p->width*p->height,
+			 v);
+    }
+
   /* write coordinates */
   coord_element = scew_element_add(patch_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
-			  3, v);
+			  copystride, v);
 
   /* write texture coordinates */
   if(have_mys)
@@ -7288,8 +7296,7 @@ x3dio_writelevelobj(scew_element *element, ay_object *o)
     {
       if(!x3dio_resolveinstances && (o->refcount > 0))
 	{
-	  /*
-	   * write an extra outer transform level with our transformations
+	  /* write an extra outer transform level with our transformations
 	   * so that our instances may connect to the inner transform level
 	   * (without our transformations)
 	   */
@@ -7345,38 +7352,42 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
   /* write name */
   ay_status = x3dio_writename(transform_element, o);
 
-  /* if the first child is not an instance, write the first clone
-   * as normal object, otherwise the master to the clone instance
-   * will never appear in the output file;
-   * if the first child is an instance, its master is believed to
-   * exist outside the Clone and its appearance in the output is
-   * controlled by the user
-   */
-  down = o->down;
-  if(down && down->next)
+  if(!x3dio_resolveinstances)
     {
-      if((down->type != AY_IDINSTANCE) && clone)
+      /* if the first child is not an instance, write the first clone
+       * as normal object, otherwise the master to the clone instance
+       * will never appear in the output file;
+       * if the first child is an instance, its master is believed to
+       * exist outside the Clone and its appearance in the output is
+       * controlled by the user
+       */
+      down = o->down;
+      if(down && down->next)
 	{
-	  if(!(firstclone = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
-	  memcpy(firstclone, down, sizeof(ay_object));
-	  firstclone->refcount++;
-	  ay_trafo_copy(clone, firstclone);
-	  ay_status = x3dio_writeobject(transform_element, firstclone,
-					AY_FALSE);
-
-	  if((firstclone->refcount == 1) && firstclone->tags &&
-	     firstclone->tags->type == x3dio_mn_tagtype)
+	  if((down->type != AY_IDINSTANCE) && clone)
 	    {
-	      firstclone->tags->next = down->tags;
-	      down->tags = firstclone->tags;
-	    }
+	      if(!(firstclone = calloc(1, sizeof(ay_object))))
+		return AY_EOMEM;
+	      memcpy(firstclone, down, sizeof(ay_object));
+	      firstclone->refcount++;
+	      ay_trafo_copy(clone, firstclone);
 
-	  free(firstclone);
+	      ay_status = x3dio_writeobject(transform_element, firstclone,
+					    AY_FALSE);
 
-	  clone = clone->next;
-	}
-    }
+	      if((firstclone->refcount == 1) && firstclone->tags &&
+		 firstclone->tags->type == x3dio_mn_tagtype)
+		{
+		  firstclone->tags->next = down->tags;
+		  down->tags = firstclone->tags;
+		}
+
+	      free(firstclone);
+
+	      clone = clone->next;
+	    } /* if */
+	} /* if */
+    } /* if */
 
   while(clone)
     {
