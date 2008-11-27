@@ -4179,6 +4179,8 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	  ay_status = ay_knots_createnc(&nc);
 	}
 
+      nc.is_rat = ay_nct_israt(&nc);
+
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDNCURVE, (void*)&nc);
     } /* if */
@@ -4640,7 +4642,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
   child = NULL;
   while((child = scew_element_next(element, child)) != NULL)
     {
-      attr = scew_attribute_by_name(element, "containerField");
+      attr = scew_attribute_by_name(child, "containerField");
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
@@ -4663,7 +4665,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
   child = NULL;
   while((child = scew_element_next(element, child)) != NULL)
     {
-      attr = scew_attribute_by_name(element, "containerField");
+      attr = scew_attribute_by_name(child, "containerField");
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
@@ -4682,6 +4684,8 @@ x3dio_readnurbssweptsurface(scew_element *element)
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
+
+  ay_notify_force(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -4739,7 +4743,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
   child = NULL;
   while((child = scew_element_next(element, child)) != NULL)
     {
-      attr = scew_attribute_by_name(element, "containerField");
+      attr = scew_attribute_by_name(child, "containerField");
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
@@ -4755,7 +4759,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
   child = NULL;
   while((child = scew_element_next(element, child)) != NULL)
     {
-      attr = scew_attribute_by_name(element, "containerField");
+      attr = scew_attribute_by_name(child, "containerField");
       if(attr)
 	{
 	  str = scew_attribute_value(attr);
@@ -4774,6 +4778,8 @@ x3dio_readnurbsswungsurface(scew_element *element)
   ay_object_crtendlevel(ay_next);
   ay_next = old_aynext;
   ay_object_link(o);
+
+  ay_notify_force(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -6514,6 +6520,7 @@ x3dio_clearmntags(ay_object *o)
 	      if(tag->type == x3dio_mn_tagtype)
 		{
 		  *last = tag->next;
+		  tag->name = NULL;
 		  ay_tags_free(tag);
 		  tag = *last;
 		}
@@ -6620,7 +6627,7 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
 	{
 	  if(!(tag->val = calloc(strlen(o->name)+1, sizeof(char))))
 	    return AY_EOMEM;
-	  memcpy(tag->val, newname, strlen(o->name)*sizeof(char));
+	  memcpy(tag->val, o->name, strlen(o->name)*sizeof(char));
 	}
 
       tag->type = x3dio_mn_tagtype;
@@ -8603,7 +8610,8 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
   curve_element = scew_element_next(sweep_element, NULL);
 
   /* and add a containerField attribute */
-  scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
+  scew_element_add_attr_pair(curve_element, "containerField",
+			     "crossSectionCurve");
 
   /* write trajectory curve */
   if(o->down->next->type != AY_IDNCURVE)
