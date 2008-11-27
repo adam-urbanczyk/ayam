@@ -3814,6 +3814,9 @@ x3dio_readcircle2d(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
+  if(ay_status == AY_OK)
+    ay_notify_force(x3dio_lrobject);
+
  return ay_status;
 } /* x3dio_readcircle2d */
 
@@ -3854,6 +3857,9 @@ x3dio_readarc2d(scew_element *element)
 
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
+
+  if(ay_status == AY_OK)
+    ay_notify_force(x3dio_lrobject);
 
  return ay_status;
 } /* x3dio_readarc2d */
