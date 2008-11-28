@@ -1,5 +1,18 @@
-[12. Nov 2008] Ayam-1.15:
+[28. Nov 2008] CVS-Head:
 ========================
+Bug Fixes:
+o tool box list can not be configured via ayamrc file (SF 2316995)
+o X3D export of Clone objects (SF 2340057)
+o converted/provided ExtrNP object transformations (SF 2340322)
+o X3D export of rational NURBS patches (SF 2351988)
+o X3D import of rational NURBS curves (SF 2354967)
+o X3D import of swept/swung surfaces (SF 2354970)
+
+GUI:
+
+
+[12. Nov 2008] Ayam-1.15:
+=========================
 Bug Fixes:
 o aycsg plugin GUI code for internal views (SF 1943164)
 o RIB export of Instances in CSG hierarchies (SF 1953633)
