@@ -254,6 +254,7 @@ eval [subst "bindtags $f.e \{$f.e Entry all\}"]
 bind $f.e <Key-Escape> ".addTag.fd.bca invoke;break"
 bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
 catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
+uie_fixEntry $f.e
 
 pack $f.lt -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
@@ -270,6 +271,7 @@ eval [subst "bindtags $f.e \{$f.e Entry all\}"]
 bind $f.e <Key-Escape> ".addTag.fd.bca invoke;break"
 bind $f.e <Key-Return> ".addTag.fd.bok invoke;break"
 catch {bind $f.e <Key-KP_Enter> ".addTag.fd.bok invoke;break"}
+uie_fixEntry $f.e
 
 pack $f.lv -in $f -padx 2 -pady 2 -side left
 pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
