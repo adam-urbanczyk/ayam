@@ -53,7 +53,7 @@ proc aycsgToggle { w } {
     if { [string first ".view" $w] == 0 } {
 	set togl [winfo toplevel $w].f3D.togl
     } else {
-	set togl $w
+	set togl ${w}.f3D.togl
     }
     $togl togglecsg
  return;
