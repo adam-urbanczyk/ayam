@@ -58,6 +58,8 @@ proc runTool { argvars argstrings command } {
 	bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
 	bind $f2.e <Key-Return> ".rtw.f2.bok invoke;break"
 	catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
+	uie_fixEntry $f2.e
+
 	eval [subst "$f2.e insert @0 \$$i"]
 
 	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
