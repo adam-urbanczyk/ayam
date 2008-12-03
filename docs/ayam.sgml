@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>21. Nov 2008
+<date>3. Dec 2008
 
 <abstract>
 This is the documentation of Ayam 1.15 - a free 3D modelling environment
@@ -5797,6 +5797,13 @@ crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
+<p>
+<figure loc="ht">
+<eps file="pics/scriptex1.ps" height="4cm">
+<img src="pics/scriptex1.gif">
+<caption>Simple Script for Parametric Line Primitive</caption>
+</figure>
+<p>
 This code works, but if lines of a different length than 1 are needed,
 the user must edit the script which is not very convenient and error
 prone. A complete, easy to use, and safe GUI for the length parameter
@@ -5824,7 +5831,14 @@ setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
 and by adding a <tt>"NP"</tt> (new property) tag to the script object
-with the value <tt>"LineAttr"</tt>.
+with the value <tt>"LineAttr"</tt>, resulting in a new clickable
+graphical user interface as can be seen in the following image:
+<p>
+<figure loc="ht">
+<eps file="pics/scriptex2.ps" height="4cm">
+<img src="pics/scriptex2.gif">
+<caption>Parametric Line Primitive with Parameter GUI</caption>
+</figure>
 <p>
 The GUI management code just runs once (for that, it checks for the presence
 of LineAttrData first) and creates two Tcl arrays essential for an Ayam
@@ -10217,7 +10231,7 @@ to Ayam objects.
 
 <sect1>3DM (Rhino) Export<label id="exprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin named onio that may export scenes
+Since version 1.8.2 Ayam contains a plugin named onio that exports scenes
 to the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio - <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
@@ -10519,7 +10533,7 @@ from 50 to 100 percent the x3dio plugin is creating Ayam objects.
 
 <sect1>X3D (Web3D) Export<label id="expx3d">
 <p>
-Since version 1.13 Ayam provides a plugin named x3dio that may export
+Since version 1.13 Ayam provides a plugin named x3dio that exports
 scenes to the XML based X3D file format published by the Web3D Consortium.
 The XML parser used in this plugin is based on Expat and SCEW.
 <p>
@@ -10583,11 +10597,17 @@ NURBS curve providing objects to the exported file (This option does
 <em>not</em> influence the export of trim curves.);
 <item><tt>"WriteViews"</tt> controls whether views should be exported as
 view points;
-<item><tt>"WriteParametrics"</tt> toggles writing of certain tool objects
-as plain NURBS surface or higher level primitive (e.g. export Sweep
-objects as NurbsSweptSurface nodes);
+<item><tt>"WriteParametrics"</tt> toggles writing of the following
+tool objects as plain NURBS surface or higher level primitives:
+Revolve as NurbsSwungSurface, Sweep as NurbsSweptSurface, Extrude as
+NurbsSweptSurface);
 <item><tt>"ResolveInstances"</tt> controls, whether instance objects should
-be resolved or exported as DEF/USE;
+be resolved to normal objects or exported as DEF/USE pairs, note that no
+attempt is made to detect whether the master objects (the DEFs) will be
+exported for all exported instances (USE); this may happen especially in
+conjunction with the X3D export options <tt>"WriteSelected"</tt> or
+<tt>"IgnoreHidden"</tt>, erroneous X3D files may result unless the
+<tt>"ResolveInstances"</tt> option is switched on;
 <item><tt>"TopLevelLayers"</tt> arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
 <item><tt>"STagName"</tt> controls the name of the PV tag to be used
