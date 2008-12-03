@@ -860,3 +860,28 @@ proc addToProc { procedure addition } {
  return;
 }
 # addToProc
+
+
+# pushSel:
+#  push the current object selection (in tree or listbox) onto the
+#  selection stack (for later re-establishing it using popSel below)
+proc pushSel { } {
+    global ay
+    set ay(cursel) ""
+    getSel ay(cursel)
+    lappend ay(selstack) {$ay(cursel)}
+    return;
+}
+# pushSel
+
+# popSel:
+#  pop the topmost selection from the selection stack and re-establish it
+#  (without changing anything to the UI!)
+proc popSel { } {
+    global ay
+    set ay(cursel) [lindex $ay(selstack) end]
+    set ay(selstack) [lreplace $ay(selstack) end end]
+    eval [subst "selOb $ay(cursel)"]
+    return;
+}
+# popSel
