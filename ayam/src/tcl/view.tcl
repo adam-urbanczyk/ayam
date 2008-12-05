@@ -769,6 +769,7 @@ proc viewClose { w } {
 
     # now delete the view from the view list
     set ay(currentView) ""
+    set temp ""
     foreach view $ay(views) {
 	if { $view != $w } {
 	    lappend temp $view
