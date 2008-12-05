@@ -589,7 +589,8 @@ proc plb_resize { } {
     wm geometry . ""
     wm geometry . $ng
     update
-    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp width x 1
+    pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp \
+	width x 1 25.0
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
 
  return;
