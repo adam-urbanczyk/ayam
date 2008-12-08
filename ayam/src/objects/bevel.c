@@ -96,6 +96,9 @@ ay_bevel_copycb(void *src, void **dst)
 
   bevel->npatch = NULL;
 
+  if(bevelsrc->npatch)
+    ay_object_copymulti(bevelsrc->npatch, &(bevel->npatch));
+
   *dst = (void *)bevel;
 
  return AY_OK;

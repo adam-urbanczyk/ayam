@@ -96,6 +96,10 @@ ay_birail1_copycb(void *src, void **dst)
 
   birail1->caps_and_bevels = NULL;
 
+  if(birail1src->caps_and_bevels)
+    ay_object_copymulti(birail1src->caps_and_bevels,
+			&(birail1->caps_and_bevels));
+
   *dst = (void *)birail1;
 
  return AY_OK;
