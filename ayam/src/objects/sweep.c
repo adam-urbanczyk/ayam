@@ -92,11 +92,14 @@ ay_sweep_copycb(void *src, void **dst)
 
   memcpy(sweep, src, sizeof(ay_sweep_object));
 
-
   /* copy npatch */
   ay_object_copy(sweepsrc->npatch, &(sweep->npatch));
 
   sweep->caps_and_bevels = NULL;
+
+  if(sweepsrc->caps_and_bevels)
+    ay_object_copymulti(sweepsrc->caps_and_bevels,
+			&(sweep->caps_and_bevels));
 
   *dst = (void *)sweep;
 

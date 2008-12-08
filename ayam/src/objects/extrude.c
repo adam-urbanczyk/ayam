@@ -95,6 +95,10 @@ ay_extrude_copycb(void *src, void **dst)
 
   extrude->caps_and_bevels = NULL;
 
+  if(extrudesrc->caps_and_bevels)
+    ay_object_copymulti(extrudesrc->caps_and_bevels,
+			&(extrude->caps_and_bevels));
+
   *dst = (void *)extrude;
 
  return AY_OK;

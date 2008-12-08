@@ -105,6 +105,9 @@ ay_clone_copycb(void *src, void **dst)
 
   clone->clones = NULL;
 
+  if(clonesrc->clones)
+    ay_object_copymulti(clonesrc->clones, &(clone->clones));
+
   *dst = (void *)clone;
 
  return AY_OK;

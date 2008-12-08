@@ -91,11 +91,13 @@ ay_skin_copycb(void *src, void **dst)
 
   memcpy(skin, src, sizeof(ay_skin_object));
 
-
   /* copy npatch */
   ay_object_copy(skinsrc->npatch, &(skin->npatch));
 
   skin->caps_and_bevels = NULL;
+
+  if(skinsrc->caps_and_bevels)
+    ay_object_copymulti(skinsrc->caps_and_bevels, &(skin->caps_and_bevels));
 
   *dst = (void *)skin;
 
