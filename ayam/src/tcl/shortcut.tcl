@@ -189,6 +189,7 @@ proc shortcut_main { w } {
 	    set ay(CurrentLevel) $newcl
 	    set ay(SelectedLevel) $newcl
 	    $tree selection set $cl
+	    $tree see $cl
 	    treeSelect $cl
 	    tree_paintLevel $newcl
 	    plb_update
@@ -229,6 +230,7 @@ proc shortcut_main { w } {
 	    set ay(SelectedLevel) $sel
 	    tree_paintLevel $cl
 	    $tree selection set ${sel}:0
+	    $tree see ${sel}:0
 	    treeSelect ${sel}:0
 	    tree_paintLevel $sel
 	    plb_update
