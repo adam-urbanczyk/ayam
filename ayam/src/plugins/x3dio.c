@@ -6480,7 +6480,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	     fabs(axis[2]) > AY_EPSILON)
 	    {
 	      AY_V3NORM(axis);
-	      angle = 2 * acos(o->quat[3]);
+	      angle = -2.0 * acos(o->quat[3]);
 
 	      sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
 	      scew_element_add_attr_pair(*transform_element, "rotation",
@@ -6941,13 +6941,12 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_object *c = NULL, *t;
  scew_element *transform_element = NULL;
- scew_element *ot_element = NULL;
 
   if(!x3dio_writecurves)
     return AY_OK;
 
   if(!o)
-   return AY_ENULL;
+    return AY_ENULL;
 
   ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
   if(!c)
@@ -6960,13 +6959,11 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
        * so that our instances may connect to the inner transform level
        * (without our transformations)
        */
-      ay_status = x3dio_writetransform(element, o, &ot_element);
-      transform_element = scew_element_add(ot_element, "Transform");
+      transform_element = scew_element_add(element, "Transform");
     }
   else
     {
-      /* write transform */
-      ay_status = x3dio_writetransform(element, o, &transform_element);
+      transform_element = element;
     }
 
   /* write name */
@@ -7293,13 +7290,11 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
        * so that our instances may connect to the inner transform level
        * (without our transformations)
        */
-      ay_status = x3dio_writetransform(element, o, &ot_element);
-      transform_element = scew_element_add(ot_element, "Transform");
+      transform_element = scew_element_add(element, "Transform");
     }
   else
     {
-      /* write transform */
-      ay_status = x3dio_writetransform(element, o, &transform_element);
+      transform_element = element;
     }
 
   /* write name */
@@ -7391,6 +7386,7 @@ x3dio_writecloneobj(scew_element *element, ay_object *o)
 
   clone = cl->clones;
 
+  /* clone object without clones? */
   if(!clone)
     return AY_OK;
 
@@ -7470,7 +7466,7 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  char *masterdef = NULL;
  ay_object *master, tmp = {0};
- scew_element *transform_element = NULL;
+ scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
 
   if(!element || !o || !o->refine)
@@ -7480,10 +7476,15 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
 
   if(x3dio_resolveinstances)
     {
-      ay_trafo_copy(master, &tmp);
-      ay_trafo_copy(o, master);
-      ay_status = x3dio_writeobject(element, master, AY_FALSE);
-      ay_trafo_copy(&tmp, master);
+      memcpy(&tmp, master, 1*sizeof(ay_object));
+      ay_trafo_defaults(&tmp);
+      tmp.refcount = 0;
+
+      /* write transform */
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+
+      /* write master object */
+      ay_status = x3dio_writeobject(transform_element, &tmp, AY_FALSE);
     }
   else
     {
@@ -7516,7 +7517,11 @@ x3dio_writeinstanceobj(scew_element *element, ay_object *o)
 	   * write USE to transform element as the corresponding DEF
 	   * is also in a transform element
 	   */
-	  scew_element_add_attr_pair(transform_element, "USE", masterdef);
+	  itransform_element = scew_element_add(transform_element,
+						"Transform");
+
+	  /* write USE to transform element */
+	  scew_element_add_attr_pair(itransform_element, "USE", masterdef);
 	}
     } /* if */
 
@@ -7602,9 +7607,10 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_sphere_object *sphere;
- scew_element *transform_element = NULL;
+ scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *sphere_element = NULL;
+ char buffer[256];
 
   if(!element || !o || !o->refine)
     return AY_ENULL;
@@ -7616,8 +7622,14 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
       /* write transform */
       ay_status = x3dio_writetransform(element, o, &transform_element);
 
+      itransform_element = scew_element_add(transform_element, "Transform");
+
+      sprintf(buffer, "1.0 0.0 0.0 %g", AY_HALFPI);
+      scew_element_add_attr_pair(itransform_element, "rotation",
+				 buffer);
+
       /* write shape */
-      shape_element = scew_element_add(transform_element, "Shape");
+      shape_element = scew_element_add(itransform_element, "Shape");
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
@@ -7647,9 +7659,8 @@ int
 x3dio_writecylinderobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *t = NULL;
  ay_cylinder_object *cylinder = NULL;
- double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0}, height = 0.0;
+ double height = 0.0;
  scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *cylinder_element = NULL;
@@ -7662,29 +7673,21 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 
   if(cylinder->is_simple)
     {
-      ay_status = ay_object_copy(o, &t);
-
-      if(!t)
-	{
-	  return AY_ERROR;
-	}
-
-      cylinder = (ay_cylinder_object *)t->refine;
-
       height = cylinder->zmax-cylinder->zmin;
 
-      /* adjust transformations */
-      ay_quat_axistoquat(xaxis, -AY_HALFPI, quat);
-
-      ay_quat_add(t->quat, quat, t->quat);
-
       /* write transform */
-      ay_status = x3dio_writetransform(element, t, &transform_element);
+      ay_status = x3dio_writetransform(element, o, &transform_element);
 
       itransform_element = scew_element_add(transform_element, "Transform");
-      sprintf(buffer, "0.0 %g 0.0",
-	      cylinder->zmin+((cylinder->zmax - cylinder->zmin)/2.0));
+
+      sprintf(buffer, "0.0 0.0 %g",
+	      cylinder->zmin+(height/2.0));
+
       scew_element_add_attr_pair(itransform_element, "translation",
+				 buffer);
+
+      sprintf(buffer, "1.0 0.0 0.0 %g", AY_HALFPI);
+      scew_element_add_attr_pair(itransform_element, "rotation",
 				 buffer);
 
       /* write shape */
@@ -7710,7 +7713,6 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 	  scew_element_add_attr_pair(cylinder_element, "top",
 				     "false");
 	}
-      ay_object_delete(t);
     }
   else
     {
@@ -7728,9 +7730,7 @@ int
 x3dio_writeconeobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
- ay_object *t = NULL;
  ay_cone_object *cone = NULL;
- double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0};
  scew_element *transform_element = NULL, *itransform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *cone_element = NULL;
@@ -7743,26 +7743,17 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 
   if(cone->is_simple)
     {
-      ay_status = ay_object_copy(o, &t);
-
-      if(!t)
-	{
-	  return AY_ERROR;
-	}
-
-      cone = (ay_cone_object *)t->refine;
-
-      /* adjust transformations */
-      ay_quat_axistoquat(xaxis, AY_HALFPI, quat);
-
-      ay_quat_add(t->quat, quat, t->quat);
-
       /* write transform */
-      ay_status = x3dio_writetransform(element, t, &transform_element);
+      ay_status = x3dio_writetransform(element, o, &transform_element);
 
       itransform_element = scew_element_add(transform_element, "Transform");
-      sprintf(buffer, "0.0 %g 0.0", cone->height/2.0);
+
+      sprintf(buffer, "0.0 0.0 %g", cone->height/2.0);
       scew_element_add_attr_pair(itransform_element, "translation",
+				 buffer);
+
+      sprintf(buffer, "1.0 0.0 0.0 %g", AY_HALFPI);
+      scew_element_add_attr_pair(itransform_element, "rotation",
 				 buffer);
 
       /* write shape */
@@ -7785,7 +7776,6 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 	  scew_element_add_attr_pair(cone_element, "bottom",
 				     "false");
 	}
-      ay_object_delete(t);
     }
   else
     {
