@@ -1,11 +1,22 @@
-[8. Dec 2008] CVS-Head:
+[11. Dec 2008] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
 o AutoResize option (multi window GUI mode) Tcl error (SF 2404523)
 o mouse wheel view zoom binding (external views/Win32) Tcl error (SF 2404503)
-o Clone object update after undo/redo (SF )
-o re-generating caps/bevels after undo/redo (SF )
+o Clone object update after undo/redo (SF 2418119)
+o re-generating caps/bevels after undo/redo (SF 2418121)
+o X3D export of instances (SF 2418150)
+o X3D export of cones and cylinders (SF 2418152)
+o X3D import of spheres, clones, and cylinders (SF 2418155)
+
+GUI:
+o switching the current level in the object tree via cursor keys now
+  scrolls the widget accordingly
+
+Import/Export:
+o X3D export of spheres is now more forgiving wrt. simple vs. non simple
+  spheres
 
 
 [4. Dec 2008] Ayam-1.15.1:
