@@ -1414,7 +1414,6 @@ x3dio_readsphere(scew_element *element)
  int ay_status = AY_OK;
  ay_sphere_object sphere = {0};
  float radius = 1.0f;
- double m[16];
 
   if(!element)
     return AY_ENULL;
@@ -1436,14 +1435,15 @@ x3dio_readsphere(scew_element *element)
   sphere.is_simple = AY_TRUE;
 
   /* add an additional rotation to fix the orientation */
-  memcpy(m, x3dio_ctrafos->m, 16*sizeof(double));
+
+  x3dio_pushtrafo();
 
   ay_trafo_rotatematrix(-90.0, 1.0, 0.0, 0.0, x3dio_ctrafos->m);
 
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDSPHERE, (void*)&sphere);
 
-  memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
+  x3dio_poptrafo();
 
  return ay_status;
 } /* x3dio_readsphere */
@@ -1461,7 +1461,6 @@ x3dio_readcylinder(scew_element *element)
  float radius = 1.0f;
  float height = 2.0f;
  int has_side = 1, has_top = 1, has_bottom = 1;
- double m[16];
 
   if(!element)
     return AY_ENULL;
@@ -1501,7 +1500,7 @@ x3dio_readcylinder(scew_element *element)
 
 
   /* add an additional rotation to fix the orientation */
-  memcpy(m, x3dio_ctrafos->m, 16*sizeof(double));
+  x3dio_pushtrafo();
 
   ay_trafo_rotatematrix(-90.0, 1.0, 0.0, 0.0, x3dio_ctrafos->m);
 
@@ -1533,7 +1532,7 @@ x3dio_readcylinder(scew_element *element)
       ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
 
-  memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
+  x3dio_poptrafo();
 
  return ay_status;
 } /* x3dio_readcylinder */
@@ -1551,7 +1550,7 @@ x3dio_readcone(scew_element *element)
  float radius = 1.0f;
  float height = 2.0f;
  int has_side = 1, has_bottom = 1;
- double translate_y = 0.0, m[16];
+ double translate_y = 0.0;
 
   if(!element)
     return AY_ENULL;
@@ -1587,13 +1586,14 @@ x3dio_readcone(scew_element *element)
 
   ay_status = x3dio_readbool(element, "bottom", &has_bottom);
 
-  /* add an additional rotation to fix the orientation */
-  memcpy(m, x3dio_ctrafos->m, 16*sizeof(double));
 
-  ay_trafo_rotatematrix(-90.0, 1.0, 0.0, 0.0, x3dio_ctrafos->m);
+  x3dio_pushtrafo();
 
   /* accomodate for height/position difference */
   ay_trafo_translatematrix(0.0, translate_y, 0.0, x3dio_ctrafos->m);
+
+  /* add an additional rotation to fix the orientation */
+  ay_trafo_rotatematrix(-90.0, 1.0, 0.0, 0.0, x3dio_ctrafos->m);
 
   if(has_side)
     {
@@ -1613,7 +1613,7 @@ x3dio_readcone(scew_element *element)
       ay_status = x3dio_linkobject(element, AY_IDDISK, (void*)&disk);
     }
 
-  memcpy(x3dio_ctrafos->m, m, 16*sizeof(double));
+  x3dio_poptrafo();
 
  return ay_status;
 } /* x3dio_readcone */
@@ -7617,7 +7617,9 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
 
   sphere = (ay_sphere_object *)o->refine;
 
-  if(sphere->is_simple)
+  if(fabs(sphere->zmin) >= sphere->radius &&
+     fabs(sphere->zmax) >= sphere->radius &&
+     sphere->thetamax == 360.0)
     {
       /* write transform */
       ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -7902,7 +7904,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  if(!(tmp = realloc(attr, (totalbuflen+4)*sizeof(char))))
 		    { ay_status = AY_EOMEM; goto cleanup; }
 		  attr = tmp;
-		  memcpy(&(attr[totalbuflen]), " -1", 3*sizeof(char));
+		  memcpy(&(attr[totalbuflen]), " -1", 4*sizeof(char));
 		  totalbuflen += 3;
 		}
 	      else
