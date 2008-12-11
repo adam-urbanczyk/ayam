@@ -23,7 +23,7 @@ uplevel #0 { array set x3dio_options {
     IgnoreHidden 1
     WriteCurves 1
     WriteViews 1
-    WriteParametrics 1
+    WriteParametrics 0
     ResolveInstances 0
     RescaleKnots 0.0
     TopLevelLayers 0
@@ -213,8 +213,8 @@ proc x3dio_export { } {
 
     #addParam $f x3dio_options Accuracy
     addCheck $f x3dio_options WriteSelected
-    addCheck $f x3dio_options ObeyNoExport
-    addCheck $f x3dio_options IgnoreHidden
+    #addCheck $f x3dio_options ObeyNoExport
+    #addCheck $f x3dio_options IgnoreHidden
     addCheck $f x3dio_options WriteCurves
     addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options WriteParametrics
