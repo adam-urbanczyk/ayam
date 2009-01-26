@@ -391,7 +391,8 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 
   while(!done)
     {
-      if(Ua[ia] == Ub[ib])
+      /* was: if(Ua[ia] == Ub[ib]) */
+      if(fabs(Ua[ia]-Ub[ib]) < AY_EPSILON)
 	{
 	  t = Ua[ia];
 	  ia++;
@@ -461,7 +462,8 @@ ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
   done = AY_FALSE;
   while(!done)
     {
-      if(Ubar[ib] == U[ia])
+      /* was: if(Ubar[ib] == U[ia]) */
+      if(fabs(Ubar[ib]-U[ia]) < AY_EPSILON)
 	{
 	  ib++;
 	  ia++;
