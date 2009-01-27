@@ -343,6 +343,11 @@ array set ayviewshortcuts {
     RotU "Up"
     RotD "Down"
 
+    PanL "Shift-Left"
+    PanR "Shift-Right"
+    PanU "Shift-Up"
+    PanD "Shift-Down"
+
     ZoomI "KP_Add"
     ZoomO "KP_Subtract"
 
