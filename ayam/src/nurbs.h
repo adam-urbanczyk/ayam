@@ -62,10 +62,10 @@ int ay_knots_rescaletomindist(int n, double *knotv, double mindist);
 int ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 		   double **Ubar, int *Ubarlen);
 
-int ay_knots_merge(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen);
+int ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen);
 
-int ay_knots_mergesurf(ay_nurbpatch_object *patch,
-		       double *Ubar, int Ubarlen, double *Vbar, int Vbarlen);
+int ay_knots_mergenp(ay_nurbpatch_object *patch,
+		     double *Ubar, int Ubarlen, double *Vbar, int Vbarlen);
 
 int ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 			double *umin, double *umax);

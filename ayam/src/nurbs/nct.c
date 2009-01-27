@@ -4171,7 +4171,7 @@ ay_nct_makecompatible(ay_object *curves)
     {
       curve = (ay_nurbcurve_object *) o->refine;
 
-      ay_status = ay_knots_merge(curve, Ubar, Ubarlen);
+      ay_status = ay_knots_mergenc(curve, Ubar, Ubarlen);
       if(ay_status)
 	{
 	  goto cleanup;
