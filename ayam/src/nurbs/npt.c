@@ -5965,11 +5965,11 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 			     interpatch->vorder,
 			     &unifiedV, &uVlen);
 
-  ay_status = ay_knots_mergesurf(skinu, unifiedU, uUlen, unifiedV, uVlen);
+  ay_status = ay_knots_mergenp(skinu, unifiedU, uUlen, unifiedV, uVlen);
 
-  ay_status = ay_knots_mergesurf(skinv, unifiedU, uUlen, unifiedV, uVlen);
+  ay_status = ay_knots_mergenp(skinv, unifiedU, uUlen, unifiedV, uVlen);
 
-  ay_status = ay_knots_mergesurf(interpatch, unifiedU, uUlen, unifiedV, uVlen);
+  ay_status = ay_knots_mergenp(interpatch, unifiedU, uUlen, unifiedV, uVlen);
 
   /* combine surfaces */
   for(i = 0; i < skinu->width; i++)
