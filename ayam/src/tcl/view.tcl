@@ -1183,6 +1183,35 @@ proc viewSetBGImage { view } {
 }
 # viewSetBGImage
 
+
+##############################
+# viewPan:
+proc viewPan { togl dir } {
+
+    $togl movevac -start 0 0
+
+    set l [$togl configure -width]
+    set w [lindex $l 4]
+    set l [$togl configure -height]
+    set h [lindex $l 4]
+
+    if { $dir == 0 } {
+	$togl movevac -winxy [expr $w/10] 0
+    }
+    if { $dir == 1 } {
+	$togl movevac -winxy [expr -$w/10] 0
+    }
+    if { $dir == 2 } {
+	$togl movevac -winxy 0 [expr $h/10]
+    }
+    if { $dir == 3 } {
+	$togl movevac -winxy 0 [expr -$h/10]
+    }
+
+ return;
+}
+# viewPan
+
 # some code, that has to be executed in global context when this
 # module is sourced the first time (on application startup):
 

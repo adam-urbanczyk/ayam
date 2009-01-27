@@ -447,6 +447,20 @@ proc shortcut_view { w } {
     bind $w <[repcont $ayviewshortcuts(ZoomO)]>\
 	    "$w.f3D.togl setconf -dzoom 1.1;break"
 
+
+    bind $w <[repcont $ayviewshortcuts(PanL)]>\
+	"viewPan $w.f3D.togl 0;break"
+
+    bind $w <[repcont $ayviewshortcuts(PanR)]>\
+	"viewPan $w.f3D.togl 1;break"
+
+    bind $w <[repcont $ayviewshortcuts(PanU)]>\
+	"viewPan $w.f3D.togl 2;break"
+
+    bind $w <[repcont $ayviewshortcuts(PanD)]>\
+	"viewPan $w.f3D.togl 3;break"
+
+
     bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
 	    "selPoints; rV;break"
     bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
