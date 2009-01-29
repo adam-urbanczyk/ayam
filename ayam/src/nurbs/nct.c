@@ -5237,6 +5237,9 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
   if(!curve || !*curve)
     return AY_ENULL;
 
+  if(umax <= umin)
+    return AY_ERROR;
+
   knotmin = (*curve)->knotv[(*curve)->order-1];
   knotmax = (*curve)->knotv[(*curve)->length];
 
@@ -5305,6 +5308,12 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_GetDouble(interp, argv[1], &umin);
   Tcl_GetDouble(interp, argv[2], &umax);
+
+  if(umax <= umin)
+    {
+      ay_error(AY_ERROR, fname, "umin must be smaller than umax");
+      return TCL_OK;
+    }
 
   while(sel)
     {
