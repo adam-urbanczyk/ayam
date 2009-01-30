@@ -949,6 +949,12 @@ typedef struct ay_select_object_s
 } ay_select_object;
 
 
+typedef struct ay_trim_object_s
+{
+  int patchnum;
+  ay_object *npatch;
+} ay_trim_object;
+
 typedef struct ay_preferences_s
 {
   int list_types;
@@ -1283,6 +1289,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDEXTRNP        41
 #define AY_IDOFFNC         42
 #define AY_IDACURVE        43
+#define AY_IDTRIM          44
 
 #define AY_IDLAST          50
 

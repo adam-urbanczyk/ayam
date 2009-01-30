@@ -143,6 +143,9 @@ int ay_text_init(Tcl_Interp *interp);
 /* torus.c */
 int ay_torus_init(Tcl_Interp *interp);
 
+/* trim.c */
+int ay_trim_init(Tcl_Interp *interp);
+
 /* view.c */
 int ay_view_init(Tcl_Interp *interp);
 

@@ -444,6 +444,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_torus_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_trim_init(interp)))
+     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   /* initialize undo system */
   if((ay_status = ay_undo_init(10)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }

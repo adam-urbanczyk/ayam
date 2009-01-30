@@ -1358,6 +1358,7 @@ ayam_loadscript sweep
 ayam_loadscript swing
 ayam_loadscript text
 ayam_loadscript torus
+ayam_loadscript trim
 ayam_loadscript pclip
 ayam_loadscript control
 ayam_loadscript tmp
