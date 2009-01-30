@@ -1188,6 +1188,7 @@ proc viewSetBGImage { view } {
 # viewPan:
 proc viewPan { togl dir } {
 
+    $togl mc
     $togl movevac -start 0 0
 
     set l [$togl configure -width]
@@ -1198,16 +1199,16 @@ proc viewPan { togl dir } {
     undo save MoveView
 
     if { $dir == 0 } {
-	$togl movevac -winxy [expr $w/10] 0
-    }
-    if { $dir == 1 } {
 	$togl movevac -winxy [expr -$w/10] 0
     }
+    if { $dir == 1 } {
+	$togl movevac -winxy [expr $w/10] 0
+    }
     if { $dir == 2 } {
-	$togl movevac -winxy 0 [expr $h/10]
+	$togl movevac -winxy 0 [expr -$h/10]
     }
     if { $dir == 3 } {
-	$togl movevac -winxy 0 [expr -$h/10]
+	$togl movevac -winxy 0 [expr $h/10]
     }
 
  return;
