@@ -1160,14 +1160,19 @@ proc actionSnapToGrid2D { w } {
 # actionSnapToGrid2D
 
 
+#actionClearB1:
+# helper procedure to clear all bindings to mouse button 1;
+# all modeling actions call this before adding their bindings 
 proc actionClearB1 { w } {
     global ayviewshortcuts
 
     bind $w <B1-Motion> ""
+    bind $w <ButtonPress-1> ""
     bind $w <ButtonRelease-1> ""
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> ""
  return;
 }
+# actionClearB1
 
 
 #actionClear:
@@ -1202,7 +1207,6 @@ proc actionClear { w } {
 	actionPick $w
     }
 
-    global ayviewshortcuts
     set p [winfo parent [winfo parent $w]]
     after 100 "bind $p <$ayviewshortcuts(Break)> \"focus -force .\""
     after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
