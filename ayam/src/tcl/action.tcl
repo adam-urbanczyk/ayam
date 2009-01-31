@@ -57,6 +57,8 @@ proc actionRotView { w } {
     viewTitle $w "" "Rotate_View"
     viewSetMAIcon $w ay_RotV_img "Rotate_View"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save RotView
@@ -90,6 +92,8 @@ proc actionMoveView { w } {
     viewTitle $w "" "Move_View"
     viewSetMAIcon $w ay_MoveV_img "Move_View"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save MovView
@@ -120,6 +124,8 @@ proc actionZoomView { w } {
     viewTitle $w "" "Zoom_View"
     viewSetMAIcon $w ay_ZoomV_img "Zoom_View"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save ZoomView
@@ -147,6 +153,8 @@ proc actionMoveZView { w } {
 
     viewTitle $w "" "MoveZ_View"
     viewSetMAIcon $w ay_MoveV_img "MoveZ_View"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -178,6 +186,8 @@ proc actionMoveOb { w } {
     viewTitle $w "" "Move"
     viewSetMAIcon $w ay_Move_img "Move"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save MoveObj
@@ -206,6 +216,8 @@ proc actionRotOb { w } {
 
     viewTitle $w "" "Rotate"
     viewSetMAIcon $w ay_Rotate_img "Rotate"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -255,6 +267,8 @@ proc actionRotObA { w } {
     viewTitle $w "" "Select_a_Point"
     viewSetMAIcon $w ay_RotateA_img "Rotate_around_Point"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	undo save RotObjA
 	%W mc
@@ -278,6 +292,8 @@ proc actionSc1DXOb { w } {
 
     viewTitle $w "" "Scale1DX"
     viewSetMAIcon $w ay_Scale1DX_img "Scale1DX"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -309,6 +325,8 @@ proc actionSc1DYOb { w } {
     viewTitle $w "" "Scale1DY"
     viewSetMAIcon $w ay_Scale1DY_img "Scale1DY"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save Sc1DYObj
@@ -338,6 +356,8 @@ proc actionSc1DZOb { w } {
 
     viewTitle $w "" "Scale1DZ"
     viewSetMAIcon $w ay_Scale1DZ_img "Scale1DZ"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -369,6 +389,8 @@ proc actionSc2DOb { w } {
     viewTitle $w "" "Scale2D"
     viewSetMAIcon $w ay_Scale2D_img "Scale2D"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save Sc2DObj
@@ -398,6 +420,8 @@ proc actionSc3DOb { w } {
 
     viewTitle $w "" "Scale3D"
     viewSetMAIcon $w ay_Scale3D_img "Scale3D"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -429,6 +453,8 @@ proc actionStr2DOb { w } {
     viewTitle $w "" "Stretch2D"
     viewSetMAIcon $w ay_Stretch2D_img "Stretch2D"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save Str2DObj
@@ -459,6 +485,8 @@ proc actionTagP { w } {
 
     viewTitle $w "" "Select_Points"
     viewSetMAIcon $w ay_Tag_img "Select_Points" 
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 #	undo save
@@ -758,6 +786,8 @@ proc actionDEditP { w } {
     viewTitle $w "" "Direct_Point_Edit"
     viewSetMAIcon $w ay_EditD_img "Direct_Point_Edit"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	%W mc
 	set editPointDarray(valid) 0
@@ -795,6 +825,8 @@ proc actionEditP { w } {
 
     viewTitle $w "" "Edit_Points"
     viewSetMAIcon $w ay_Edit_img "Edit_Points"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -848,6 +880,8 @@ proc actionEditWP { w } {
 
     viewTitle $w "" "Edit_Weights"
     viewSetMAIcon $w ay_EditW_img "Edit_Weights"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -908,6 +942,8 @@ proc actionInsertP { w } {
     viewTitle $w "" "Insert_Points"
     viewSetMAIcon $w ay_Insert_img "Insert_Points"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	undo save InsPnt
 	%W mc
@@ -944,6 +980,8 @@ proc actionDeleteP { w } {
     viewTitle $w "" "Delete_Points"
     viewSetMAIcon $w ay_Delete_img "Delete_Points"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	undo save DelPnt
 	%W mc
@@ -979,6 +1017,8 @@ proc actionFindU { w } {
     viewTitle $w "" "Find_U"
     viewSetMAIcon $w ay_FindU_img "Find_U"
 
+    actionClearB1 $w
+
     bind $w <ButtonPress-1> {
 	%W mc
 	%W finduac %x %y
@@ -1002,6 +1042,8 @@ proc actionSplitNC { w } {
 
     viewTitle $w "" "Split_Curve"
     viewSetMAIcon $w ay_Split_img "Split_Curve"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> {
 	set ay_error 0
@@ -1034,6 +1076,7 @@ proc actionSplitNC { w } {
 #actionPick:
 # establish object picking bindings
 proc actionPick { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Pick"
     viewSetMAIcon $w ay_Pick_img "Pick"
@@ -1061,7 +1104,7 @@ proc actionPick { w } {
 	focus %W
     }
 
-    bind $w <Control-ButtonRelease-1> {
+    bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
 	if { [winfo exists .reconsider] == 0} {
@@ -1082,11 +1125,13 @@ proc actionPick { w } {
     }
 
     bind $w <Motion> ""
+
     if { [string first ".view" $w] == 0 } {
 	set t [winfo toplevel $w].f3D.togl
     } else {
 	set t $w
     }
+
     $t setconf -drawh 0
     $t setconf -mark 0 0 0
 
@@ -1115,19 +1160,30 @@ proc actionSnapToGrid2D { w } {
 # actionSnapToGrid2D
 
 
+proc actionClearB1 { w } {
+    global ayviewshortcuts
+
+    bind $w <B1-Motion> ""
+    bind $w <ButtonRelease-1> ""
+    bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> ""
+ return;
+}
+
+
 #actionClear:
 # not really an action, clears all bindings, establishes picking bindings
 # when requested via preferences and is normally bound to the Esc-key
 proc actionClear { w } {
-    global ayprefs
+    global ayprefs ayviewshortcuts
 
     if { [string first ".view" $w] != 0 } {
 	bind $w <ButtonPress-1> "focus \$w"
     } else {
 	bind $w <ButtonPress-1> ""
     }
-    bind $w <B1-Motion> ""
-    bind $w <ButtonRelease-1> ""
+
+    actionClearB1 $w
+
     bind $w <Motion> ""
 
     if { $ayprefs(DefaultAction) == 0 } {

@@ -401,6 +401,8 @@ array set ayviewshortcuts {
     ZoomRButton "1"
 
     Pick "P"
+    PickMod "Control"
+    PickModKey "Control_L"
 
     SelAllP "A"
     InvSelP "I"
