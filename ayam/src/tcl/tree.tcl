@@ -958,6 +958,7 @@ proc tree_reset { } {
     set ay(SelectedLevel) "root"
     tree_selectItem 1 $ay(tree) "root:0"
     tree_paintLevel "root"
+    $ay(tree) see "root:0"
     plb_update
 }
 #tree_reset
