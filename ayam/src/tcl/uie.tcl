@@ -36,62 +36,66 @@ proc updateParam { w prop name op } {
     set f $w.f${name}
 
     set oldval [$f.e get]
-    set newval $oldval
 
-    if {$op == "*2"} {
-	set newval [expr $oldval * 2]
-    } elseif { $op == "/2"} {
-	set newval [expr $oldval / 2]
-    } elseif { $op == "+0.1" } {
+    if { [string is integer $oldval] || [string is double $oldval] } {
 
-	set ta $oldval
-	set tb 1.0
-	set done 0
-	while { ! $done } {
-	    if { [expr abs($oldval)] <= 1.0 } {
-		if { [expr abs(int($ta) - $ta)] == 0.0 } {
-		    set done 1
-		} else {
-		    set tb [expr $tb/10.0]
-		    set ta [expr $ta*10.0]
-		}
-	    } else {
-		if { [expr abs($ta)] < 100.0 } {
-		    set done 1
-		} else {
-		    set tb [expr $tb*10.0]
-		    set ta [expr $ta/10.0]
-		}
-	    }
-	}
-	set newval [expr $oldval + $tb]
+	set newval $oldval
 
-    } elseif { $op == "-0.1" } {
+	if {$op == "*2"} {
+	    set newval [expr $oldval * 2]
+	} elseif { $op == "/2"} {
+	    set newval [expr $oldval / 2]
+	} elseif { $op == "+0.1" } {
 
-	set ta $oldval
-	set tb 1.0
-	set done 0
-	while { ! $done } {
-	    if { [expr abs($oldval)] <= 1.0 } {
-		if { [expr abs(int($ta) - $ta)] == 0.0 } {
-		    set done 1
+	    set ta $oldval
+	    set tb 1.0
+	    set done 0
+	    while { ! $done } {
+		if { [expr abs($oldval)] <= 1.0 } {
+		    if { [expr abs(int($ta) - $ta)] == 0.0 } {
+			set done 1
+		    } else {
+			set tb [expr $tb/10.0]
+			set ta [expr $ta*10.0]
+		    }
 		} else {
-		    set tb [expr $tb/10.0]
-		    set ta [expr $ta*10.0]
-		}
-	    } else {
-		if { [expr abs($ta)] < 100.0 } {
-		    set done 1
-		} else {
-		    set tb [expr $tb*10.0]
-		    set ta [expr $ta/10.0]
+		    if { [expr abs($ta)] < 100.0 } {
+			set done 1
+		    } else {
+			set tb [expr $tb*10.0]
+			set ta [expr $ta/10.0]
+		    }
 		}
 	    }
+	    set newval [expr $oldval + $tb]
+
+	} elseif { $op == "-0.1" } {
+
+	    set ta $oldval
+	    set tb 1.0
+	    set done 0
+	    while { ! $done } {
+		if { [expr abs($oldval)] <= 1.0 } {
+		    if { [expr abs(int($ta) - $ta)] == 0.0 } {
+			set done 1
+		    } else {
+			set tb [expr $tb/10.0]
+			set ta [expr $ta*10.0]
+		    }
+		} else {
+		    if { [expr abs($ta)] < 100.0 } {
+			set done 1
+		    } else {
+			set tb [expr $tb*10.0]
+			set ta [expr $ta/10.0]
+		    }
+		}
+	    }
+	    set newval [expr $oldval - $tb]
 	}
-	set newval [expr $oldval - $tb]
+
+	set ${prop}(${name}) $newval
     }
-
-    set ${prop}(${name}) $newval
 
  return;
 }
