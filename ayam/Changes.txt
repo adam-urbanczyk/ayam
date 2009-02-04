@@ -1,4 +1,4 @@
-[26. Jan 2009] CVS-Head:
+[4. Feb 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -10,10 +10,19 @@ o X3D export of instances (SF 2418150)
 o X3D export of cones and cylinders (SF 2418152)
 o X3D import of spheres, clones, and cylinders (SF 2418155)
 o improved robustness of skin creation (making curves compatible)
+o pick binding fires in any modeling action when Control key
+  is held down (SF 2552310)
+o Tcl error in property GUI when text is entered in a numeric entry and
+  the "/2" "*2" buttons are used (SF 2565110)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
   scrolls the widget accordingly
+o the widget is also scrolled properly when the tree is rebuilt
+o added keyboard shortcuts to pan view windows (Shift+Cursor)
+
+Modelling:
+o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
@@ -70,7 +79,7 @@ o improved focus management for property GUI updates
 o established keyboard menu traversal
 
 Modelling:
-o added new object type "ACurve" (for approximating curves)
+o added object type "ACurve" (for approximating curves)
 o improved bevels and offset curves (in bevel mode) of open curves
 o improved offset curve fidelity (in section mode)
 o added parameter "Relative" to ExtrNP/ExtrNC objects
@@ -80,7 +89,8 @@ o improved robustness of curve splitting (also essential for Gordon caps)
 o view type cycling (via PageUp/Down) now keeps the camera aim point
 o the GLU NURBS tesselation now preserves texture coordinates and vertex
   colors delivered by PV tags
-o ExtrNC objects can now also extract a middle axis curve
+o ExtrNC objects can now also extract a middle axis curve (for re-engineering
+  purposes, e.g. extracting a spine from a former sweep)
 o the creation of ExtrNC, ExtrNP, and OffsetNC objects now automatically
   creates an instance of the currently selected object first
 
@@ -176,11 +186,11 @@ o added secondary view window keyboard shortcuts for important functions as
 o reorganized edit, create, and tools menus
 
 Modelling:
-o added new object type "Swing" (for rotational sweeps/swung surfaces)
-o added new object type "Select" to select one object from a list of provided
+o added object type "Swing" (for rotational sweeps/swung surfaces)
+o added object type "Select" to select one object from a list of provided
   objects
-o added new object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
-o added new object type "OffsetNC" to create offset curves
+o added object type "ExtrNP" (similar to "ExtrNC", but extracts patches)
+o added object type "OffsetNC" to create offset curves
 o added NCInfo balloon (that displays more info on generated curves, similar
   to NPInfo)
 o added tolerance parameter and checking for "remKnNC" (knot removal) tool
@@ -404,7 +414,7 @@ o shift closed B-Spline tool now accepts negative parameters
 o added remove knot from NURBS curve tool
 o added coarsen tool for NURBS curves
 o create trimrect now creates curves with multiple points
-o added new object type NCircle
+o added object type "NCircle"
 o Level objects now provide all child objects of requested type to a
   potential parent object
 
@@ -628,7 +638,7 @@ o added keyboard shortcut to close the toolbox window
 o added scripting interface command "repOb" and corresponding main menu
   entry "Special/Clipboard/Replace" that replaces the currently selected
   object(s) with the object clipboard content
-o added new object type "RiProc" for procedural objects (supporting
+o added object type "RiProc" for procedural objects (supporting
   DelayedReadArchive, RunProgram, and DynamicLoad)
 o added a mechanism to allow cascaded script objects
 o added proper error messages when no objects are selected upon creation
@@ -871,9 +881,9 @@ o improved TrimRect tool; it can now infer the parameter space dimensions
 o added Tesselation GUI that helps to determine the best matching tesselation
   parameters in an interactive way (new menu entry "Tools/NURBPatch/Tesselate")
 o added keyboard shortcuts to display property GUIs, using keys <0> to <9>
-o added new object type "Birail1" that sweeps a cross section curve along
+o added object type "Birail1" that sweeps a cross section curve along
   two so called rail curves
-o added new object type "Birail2" that sweeps a cross section curve along
+o added object type "Birail2" that sweeps a cross section curve along
   two so called rail curves while morphing it into a second cross section
   curve at the end of the rail curves
 o added provide mechanism capabilites to the Level object, thus it is now
@@ -887,7 +897,7 @@ o improved preferences window management
 o added "toXYNC" scripting interface command that rotates an arbitrary
   oriented planar NURBS curve back to the XY plane
 o caps may now be created of arbitrary oriented planar curves
-o added new object type "ExtrNC" that extracts a NURBS curve from a
+o added object type "ExtrNC" that extracts a NURBS curve from a
   NURBS patch object delivered as child object, as usual
 o added flashing of control points to the single point editing action
   controlled via the new preferences option "Modeling/FlashPoints"
@@ -982,7 +992,7 @@ o added support for shader parsing plugins on the Win32 platform
 o the "Select Renderer" feature is now able to automatically load shader
   parsing plugins on the Win32 platform
 o improved mouse wheel handling for property GUI scrolling on Win32
-o added new object type "Gordon" for Gordon surfaces
+o added object type "Gordon" for Gordon surfaces
 o pasting a Tag property now adds the new tags to the old ones, rather
   than completely replacing them
 o added new option to the "Clone" object that may be used to create
@@ -1373,7 +1383,7 @@ o the RenderGUI windows look a little bit nicer now on the Win32 platform
 o added an internal kill command for the Win32 platform ("w32kill") that
   may be used by the RenderGUIs to stop the rendering (set hidden preference
   option "Kill" to "w32kill" to accomplish this)
-o added new object type "SDMesh"; RIB-import now also handles
+o added object type "SDMesh"; RIB-import now also handles
   subdivision meshes
 o edited points are now immediately snapped to grid coordinates
 o direct point editing dialogue now stays open all the time
@@ -1673,7 +1683,7 @@ o Direct rendering of views creates a small GUI consisting of
   program on this platform.
 o Some User-Interface-Elements (of property GUIs) allow default
   values now.
-o Added new object type "Cap", that creates a cap from planar
+o Added object type "Cap", that creates a cap from planar
   NURBS curves.
 o Added automatic loading of custom objects when reading Ayam
   scene files.
