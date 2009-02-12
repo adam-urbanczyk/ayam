@@ -5931,6 +5931,39 @@ facility built in. Consequently, the Select object should be used in
 scenarios, where a selector facility does not exist or is hard to
 implement, as e.g. in Script object scripts.
 
+<sect1>Trim Object<label id="trimobj">
+<p>
+The trim object, available since Ayam 1.16, may be used in hierarchies
+of tool objects to trim NURBS patch providing objects otherwise
+unavailable to trimming like e.g. a Revolve object.
+The first child of the Trim object is the NURBS patch providing object
+and the second object is the trim curve (defined in the parametric
+space of the NURBS surface). More curves and loops may follow. The
+trimmed surface may already be trimmed. All curves must obey the rules
+for trimming as lined out in section <ref id="trim" name="Trim Curves">).
+<p>
+The object hierarchy of a Trim object, thus, looks like this:
+<code>
++-Trim
+ | Surface(Revolve)
+ | Trim_1(NCurve)
+ +-[Trim_2(Level)
+ | | NCurve
+ | \ NCurve
+ | ...
+ \ Trim_n(ICurve)]
+</code>
+
+The following parameters further control the trimming process:
+
+<sect2>TrimAttrib Property<label id="trimp"><label id="trimattribprop">
+<p>
+<itemize>
+<item><tt/"PatchNum"/ allows to select a patch, should the NURBS
+patch providing object deliver a list. This way, a bevel of an
+extrusion might be trimmed.
+</itemize>
+
 <sect1>Custom Objects<label id="customobj">
 <p>
 Custom objects are plugins that extend the Ayam capabilities by
@@ -12406,7 +12439,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
 <item>Tree View: <ref id="treeview" name="Tree View">
-<item>Trim: <ref id="vmtype" name="view menu entry">
+<item>Trim: <ref id="trimobj" name="Trim object">,
+<ref id="vmtype" name="view menu entry">
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
