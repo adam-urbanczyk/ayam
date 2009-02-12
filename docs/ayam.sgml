@@ -3882,21 +3882,23 @@ Note that it is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
 All copies of instance objects always point to the same master object.
 <code>
---NCurve    -----
+--NCurve   <-----
                  |
---Instance <-----
+--Instance  -----
 </code>
-For example, when the above two objects are copied and pasted back,
-the following scene hierarchy results:
+For example, when the above two objects are copied and pasted back to the
+scene, the following scene hierarchy results:
 <code>
---NCurve    -------
+--NCurve   <-------
                  | |
---Instance <-----  |
+--Instance  -----  |
                    | !
 --NCurve           |
                    |
---Instance <-------
+--Instance  -------
 </code>
+The new instance still points to the original master and <em>not</em>
+to the copy of the master.
 <p>
 It is possible to move masters and instances through the scene hierarchy
 using Drag-and-Drop in the tree view or using the clipboard with
@@ -3937,35 +3939,35 @@ exist, select the master object and use the main menu entry
 <caption>Clone Object (blue) with Trajectory Curve (white)</caption>
 </figure>
 <p>
-The Clone object allows you to easily create and control a number
-of instances of a single object.
-The instances will be created internally and transformed,
-each by a certain amount. The Clone object may also be used for
-symmetric (mirrored) modelling; in this case multiple child objects
-are accepted and multiple clones with a negative scale value (and in
-reverse order!) will be created.
+The Clone object allows you to easily create and control an arbitrary
+number of instances of a single object, hereafter called the cloned
+object.
+The instances can be transformed (each by a certain amount expressed
+as difference between two instances) or placed on a trajectory curve.
 <p>
-The original object, the object to be cloned, should be the first
-child object of the Clone object.
+The Clone object may also be used for symmetric (mirrored) modelling;
+in this case multiple child objects are accepted and multiple clones
+with a negative scale value (and in reverse order!) will be created.
+<p>
 If a second object is present as child of the Clone object (and mirroring
 is not enabled) it is treated as trajectory (or path) curve,
 similar to the Sweep object
-(see section <ref id="sweepobj" name="Sweep Object">).
+(see also section <ref id="sweepobj" name="Sweep Object">).
 <p>
-Thus, the default object hierarchy of a Clone object may look like this:
+Thus, the default object hierarchy of a Clone object looks like this:
 <code>
 +-Clone
  | Cloned-Object
  \ [Trajectory(NCurve)]
 </code>
 If you use a trajectory curve to place the clones, you may want
-to hide the parameter object and also add a <tt/"NoExport"/ tag to it.
+to hide the cloned object and also add a <tt/"NoExport"/ tag to it.
 Otherwise the original object will appear twice, on the trajectory and
-on its normal position. Note that the transformation attributes of
-the parameter object will be completely overwritten when placing the
-clones on the trajectory curve. If the parameter object has distinct
-scale or rotation attributes it should be put inside a level object
-like this:
+on its normal, untransformed, position. Note that the transformation
+attributes of the cloned object will be completely overwritten when
+placing the clones on the trajectory curve. If the cloned object has
+distinct scale or rotation attributes it should be put inside a level
+object like this:
 <code>
 +-Clone
  +-Level
@@ -3978,10 +3980,10 @@ be master objects of instance objects (e.g. light objects, or
 material objects). However, (since Ayam 1.7) it is possible to use
 instances as parameter objects.
 <p>
-If an instance object is used as parameter object it should be placed
+If an instance object is used as cloned object it should be placed
 in a level and the <tt/"NoExport"/ tag should be added to the
 level object (as you can not add tags to instance objects), see the
-following example:
+following example hierarchy:
 <code>
 +-Clone
  +-Level with NoExport tag
@@ -3995,29 +3997,38 @@ The following attributes further control the cloning process:
 <p>
 <itemize>
 <item><tt/"NumClones"/ is the number of clones to create, it is not in use
-if the mirror mode is enabled.
+when the mirror mode (see below) is enabled.
 <item><tt/"Rotate"/ is only used, if a trajectory curve is present.
 If it is enabled all clones will be aligned according to the normal of
 the trajectory curve.
 <item><tt/"Mirror"/ allows to choose between three different mirror
-modes. If mirroring is enabled, for each child of the Clone object,
-a mirrored counterpart will be created and all other parameters of
-the Clone object will be ignored. Since Ayam 1.9, the original object(s)
-and their mirrored counterparts will be provided by the Clone object,
-and, additionally, the order of the mirrored objects will be reversed
-so that it is possible to use a single Clone object in mirror mode
-(with one or multiple NURBS curves as children) as parameter object
-of e.g. a Skin object:
+modes (mirroring about the YZ-, XZ-, or XY-plane). If mirroring is
+enabled, for each child of the Clone object, a mirrored counterpart will
+be created by cloning the child object and setting a negative scale value.
+All other parameters of the Clone object will be ignored. Since Ayam 1.9,
+the original object(s) <em>and</em> their mirrored counterparts will be
+provided by the Clone object to their respective parent (normally, tool
+objects do not provide their unmodified children).
+Additionally, the order of the mirrored objects will be reversed so that
+it is possible to use a single Clone object in mirror mode (with one or
+multiple NURBS curves as children) as parameter object of e.g. a Skin object:
 <code>
 +-Skin
  +-Mirror(Clone)
   \ NCurve
 +-Skin
  +-Mirror(Clone)
-  | NCurve
-  | NCurve
-  \ NCurve
+  | NCurve_1(NCurve)
+  | NCurve_2(NCurve)
+  \ NCurve_3(NCurve)
 </code>
+The first Skin object in the above example can only work, because also
+the unmodified NCurve is provided by the Clone object. The second Skin
+object can only work properly, because the order of the provided objects
+is reversed, so that it gets to see the curves in the following sequence:
+<tt/"NCurve_1"/, <tt/"NCurve_2"/, <tt/"NCurve_3"/, <tt/"Mirrored_NCurve_3"/,
+<tt/"Mirrored_NCurve_2"/, <tt/"Mirrored_NCurve_1"/.
+
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
@@ -4027,11 +4038,11 @@ between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
 <tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous clone <tt/"n"/.
 It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
 and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
-to the previous clone. However, those attributes never affect the first
-clone.
+to the previous clone. However, the transformation attributes do not affect
+the first clone.
 <p>
 Since Ayam 1.13 the transformation attributes are also used if a trajectory
-curve is present. They are not in use when the mirror mode is activated.
+curve is present. They are never in use when the mirror mode is activated.
 </itemize>
 
 <sect1>Revolve Object<label id="revolveobj">
@@ -4057,7 +4068,7 @@ The following simple experiment should make the last
 statements more clear, during all steps watch the movements
 of the revolution:<p>
 <itemize>
-<item>Create a NURBCurve. Select it.
+<item>Create a NURBS curve object and select it.
 <item>Create a Revolve tool object using the menu entry
 (<tt>"Tools/Create/Revolve"</tt>).
 <item>Select the Revolve object, and rotate it around Z. (The axis
