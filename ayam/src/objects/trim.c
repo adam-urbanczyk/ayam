@@ -390,7 +390,7 @@ ay_trim_notifycb(ay_object *o)
       while(down->next)
 	{
 	  ncurve = NULL;
-	  ay_status = ay_provide_object(down, AY_IDNCURVE, &ncurve);
+	  ay_status = ay_object_copy(down, &ncurve);
 	  if(ncurve)
 	    {
 	      *next = ncurve;
