@@ -78,11 +78,12 @@ For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
 functionality (see also the file INSTALL).
 In this case, no parsing of slc compiled shaders will be possible.
-Since Ayam 1.6 it is also possible to completely replace BMRT shader parsing
-and RIB writing by code from the Aqsis project, thus completely
-eliminating the need for BMRT. Furthermore, shader parsing plugins are
-available for all major RenderMan compliant renderers allowing
-a tight integration of Ayam with those renderers.
+<p>
+Since Ayam 1.6 it is also possible to completely replace the BMRT shader
+parsing and RIB writing code with code from the Aqsis project, thus
+completely eliminating the need for BMRT. Furthermore, shader parsing
+plugins are available for all major RenderMan compliant renderers allowing
+a tight integration of Ayam with any of those renderers.
 
 <sect1>About this Manual
 <p>
@@ -2565,8 +2566,9 @@ In perspective views no interactive modelling actions are possible,
 but you may position the camera and pick objects.
 <p>
 Views of type <tt/"Trim"/ are very special. They are used to edit
-trim curves of NURBPatch objects only. They display that trim curves as
-normal NURBCurves when the current level is inside a NURBPatch.
+trim curves of NPatch objects only. They display <em>only</em>
+those trim curves as normal NURBS curves when the current level is
+inside a NPatch.
 The extensions of the patch in parameter-space are drawn as a rectangle.
 The trim curves should completely lie inside this rectangle.
 Note that picking of objects currently does not work in views of type
@@ -3976,7 +3978,7 @@ object like this:
 </code>
 <p>
 It is not possible to create clones from objects that may not
-be master objects of instance objects (e.g. light objects, or
+be master objects of instance objects (e.g. light objects or
 material objects). However, (since Ayam 1.7) it is possible to use
 instances as parameter objects.
 <p>
@@ -4042,8 +4044,20 @@ to the previous clone. However, the transformation attributes do not affect
 the first clone.
 <p>
 Since Ayam 1.13 the transformation attributes are also used if a trajectory
-curve is present. They are never in use when the mirror mode is activated.
+curve is present. But they are never in use when the mirror mode is activated.
 </itemize>
+The following table summarizes which transformation attributes are used
+in the respective clone modes.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|"><hline>
+<bf/Mode/|<bf/Use Child Transform/|<bf/Use CloneAttrib Transform/|<bf/Use Clone Transform/@<hline>
+Clone|No|Yes|Yes@<hline>
+Trajectory|Yes|Yes|Yes@<hline>
+Mirror|Yes|No|Yes@<hline>
+</tabular>
+<caption>Clone Parameterisation Examples</caption>
+</table>
 
 <sect1>Revolve Object<label id="revolveobj">
 <p>
@@ -4293,13 +4307,13 @@ field always displays the parameters of the created NURBS patch.
 <caption>Sweep Object (left: Curves, right: Resulting Swept Surface)</caption>
 </figure>
 <p>
-The sweep object forms a surface that results from moving a NURBS curve
+The Sweep object forms a surface that results from moving a NURBS curve
 (cross section or profile) along a second NURBS curve (trajectory or path).
 The cross section may be scaled while sweeping using a third curve, the
 scaling function. Swept surfaces may be closed in the direction of the
 trajectory and, since Ayam 1.10, they may even be periodic.
 <p>
-The sweep object has the generating NURBS curves as child objects
+The Sweep object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
 The first curve is the cross section, the second is the trajectory,
 and the third curve represents the scaling function.
@@ -4315,7 +4329,7 @@ The object hierarchy of a Sweep object, thus, looks like this:
 Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
 (of cross section and trajectory!) will be used to determine
-place, orientation, and size of the sweep object!
+place, orientation, and size of the Sweep object!
 <p>
 The cross section curve has to be defined in the YZ-plane of the
 Sweep objects coordinate system but it also has to be defined in the
@@ -4427,7 +4441,7 @@ To help in the exact configuration of the sweep, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 <p>
 The following table shows some example parameter configurations for
-the sweep object.
+the Sweep object.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5098,11 +5112,11 @@ In both interpolation modes chord length parameterisation will be used
 to determine the knot vector of the interpolating curve.
 <p>
 This object makes use of the provide mechanism. It marks itself
-as providing a NURBCurve (it creates and uses NURBS curves
+as providing a NCurve (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
-of type NURBCurve.
+of type NCurve.
 <p>
 You may convert the current ICurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -5160,11 +5174,11 @@ squares approach. If the number of control points approach the number
 of data points, undesired wiggles in the output curve may occur.
 <p>
 This object makes use of the provide mechanism. It marks itself
-as providing a NURBCurve (it creates and uses NURBS curves
+as providing a NCurve (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ACurve object instead of an object
-of type NURBCurve.
+of type NCurve.
 <p>
 You may convert the current ACurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -5719,8 +5733,8 @@ parameterise a single new object. After running the script, the newly
 created object will automatically be moved into the internal data
 structure of the script object. The script object will look like
 and act as an object of the type that the script created.
-If the script creates e.g. a NURBCurve object, the script object may
-be used as parameter object of a tool object that needs a NURBCurve,
+If the script creates e.g. a NCurve object, the script object may
+be used as parameter object of a tool object that needs a NCurve,
 e.g. a Sweep:
 <code>
 +-Sweep
@@ -5750,9 +5764,9 @@ one of the child objects of the script object, the
 <tt/"withOb"/ command may be used to accomplish this easily.
 The script object will look like and act as an object of the type
 of the first child object of the script object.
-If the script object has e.g. a NURBCurve object as first child, the
+If the script object has e.g. a NCurve object as first child, the
 script object may be used as parameter object of a tool object that
-needs a NURBCurve, e.g. a Sweep:
+needs a NCurve, e.g. a Sweep:
 <code>
 +-Sweep
  +-Cross_Section(Script)
@@ -5912,7 +5926,7 @@ It is also available as example script file
 
 <sect1>Select Object<label id="selectobj">
 <p>
-The select object, available since Ayam 1.14, may be used in hierarchies
+The Select object, available since Ayam 1.14, may be used in hierarchies
 of tool objects to select one object from a list of provided objects.
 In the following example hierarchy, a single patch from multiple provided
 patches of the Sweep object (the swept surface, a bevel, or a cap)
@@ -5931,16 +5945,24 @@ facility built in. Consequently, the Select object should be used in
 scenarios, where a selector facility does not exist or is hard to
 implement, as e.g. in Script object scripts.
 
+<sect2>SelectAttrib Property<label id="selectp"><label id="selectattribprop">
+<p>
+<itemize>
+<item><tt/"PatchNum"/ an integer value that designates the patch to select.
+</itemize>
+
 <sect1>Trim Object<label id="trimobj">
 <p>
-The trim object, available since Ayam 1.16, may be used in hierarchies
+The Trim object, available since Ayam 1.16, may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
 unavailable to trimming like e.g. a Revolve object.
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
-space of the NURBS surface). More curves and loops may follow. The
-trimmed surface may already be trimmed. All curves must obey the rules
-for trimming as lined out in section <ref id="trim" name="Trim Curves">).
+space of the NURBS surface). More curves and loops may follow.
+All curves must obey the rules for trimming as outlined in section
+<ref id="trim" name="Trim Curves">).
+The surface may already be trimmed and there may be multiple provided
+patches, however only one of them will be trimmed by the Trim object.
 <p>
 The object hierarchy of a Trim object, thus, looks like this:
 <code>
@@ -6625,7 +6647,7 @@ the respective surface shader should have a parameter
 <p>
 Not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
-are: SDMesh, PolyMesh, PatchMesh, NURBPatch, and BPatch.
+are: SDMesh, PolyMesh, PatchMesh, NPatch, and BPatch.
 <p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
@@ -7042,8 +7064,8 @@ and revolves it about the Y axis thus forming a sphere of radius 1.
 <itemize>
 <item>Arguments: None.
 <item>Operation: The NURBSphere tool creates a Cobb-NURBSphere,
-consisting of 6 NURBPatches.
-<item>Note: The NURBPatches are of high order (5).
+consisting of six NURBS patches.
+<item>Note: The NURBS patches are of high order (5).
 </itemize>
 
 <sect1>The Revolve Tool<label id="revt">
@@ -7080,7 +7102,7 @@ the selection.
 <item>Operation: The tool creates a Sweep object, and moves
 the selected objects to it.
 <item>Note: See section <ref id="sweepobj" name="Sweep Object">
-for more information regarding the sweep object.
+for more information regarding the Sweep object.
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
@@ -7651,9 +7673,9 @@ original clipboard contents are lost when this tool finishes.
 <item>Arguments: The extract patch tool takes a number of NURBS patches from
 the selection and requests four parametric values: umin, umax, vmin, and vmax.
 <item>Operation: Sub-patches will be extracted from the selected NURBS patch
-objects, defined by the specified parametric values, and new NURBPatch objects
+objects, defined by the specified parametric values, and new NPatch objects
 will be created.
-<item>Note: The original selected NURBPatch objects will not be changed.
+<item>Note: The original selected NPatch objects will not be changed.
 Trim curves will <em>not</em> be honored properly.
 See also the documentation of the corresponding
 <ref id="scextrnp" name="scripting interface command">.
@@ -8608,7 +8630,7 @@ splitNPU - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNPU u"/
  <item>Background: Yes, Undo: No
- <item>Description: Splits the selected NURBPatch objects into two patches
+ <item>Description: Splits the selected NPatch objects into two patches
 at parametric value u.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
@@ -8618,7 +8640,7 @@ splitNPV - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNPV v"/
  <item>Background: Yes, Undo: No
- <item>Description: Splits the selected NURBPatch objects into two patches
+ <item>Description: Splits the selected NPatch objects into two patches
 at parametric value v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
@@ -8628,7 +8650,7 @@ extrNP - extract NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
  <item>Background: Yes, Undo: No
- <item>Description: Extracts a sub-patch from the selected NURBPatch
+ <item>Description: Extracts a sub-patch from the selected NPatch
 objects. The sub-patch is specified by the parametric values umin, umax,
 vmin, and vmax which have to be in the respective valid knot range.
 See also section <ref id="extrnpt" name="The Extract Patch Tool">.
@@ -8639,7 +8661,7 @@ splitNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Background: Yes, Undo: No
- <item>Description: Splits the selected NURBPatch into NURBS curves,
+ <item>Description: Splits the selected NPatch objects into NURBS curves,
 along parametric dimension u or v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
@@ -8649,7 +8671,7 @@ buildNP - build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Background: Yes, Undo: No
- <item>Description: Builds a NURBPatch from the selected NURBS curves.
+ <item>Description: Builds a NURBS patch from the selected NURBS curves.
 See also section <ref id="bfct" name="The Build from Curves Tool">.
 </itemize>
 
@@ -9726,12 +9748,12 @@ and scale transformation values (for ellipses) set.
 <p>
 POLYLINE entities are completely supported:
 <itemize>
-<item>Polylines will be imported as NURBCurve objects;
+<item>Polylines will be imported as NCurve objects;
 <item>PolyMeshes and PolyFaceMeshes will be imported as PolyMesh objects;
-<item>B-Spline and Bezier surfaces will be imported as NURBPatch objects.
+<item>B-Spline and Bezier surfaces will be imported as NPatch objects.
 </itemize>
 <p>
-LINE, LWPOLYLINE, and SPLINE entities will be imported as NURBCurve objects.
+LINE, LWPOLYLINE, and SPLINE entities will be imported as NCurve objects.
 <p>
 SOLID and TRACE entities are imported as BPatch objects.
 <p>
@@ -11756,7 +11778,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="top" name="torus attribute">,
 <ref id="pap" name="paraboloid attribute">,
 <ref id="hyp" name="hyperboloid attribute">,
-<ref id="ncattr" name="NURBCurve attribute">,
+<ref id="ncattr" name="NCurve attribute">,
 <ref id="icp" name="ICurve attribute">,
 <ref id="concatncp" name="ConcatNC attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
@@ -11782,7 +11804,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
-<item>CreateMP: <ref id="ncattr" name="NURBCurve attribute">
+<item>CreateMP: <ref id="ncattr" name="NCurve attribute">
 <item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
@@ -11816,7 +11838,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Disk: <ref id="diskobj" name="Disk object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
-<item>DisplayMode: <ref id="npattr" name="NURBPatch attribute">,
+<item>DisplayMode: <ref id="npattr" name="NPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">
 <item>Distant: <ref id="pdsl" name="light type">
 <item>DBNS: <ref id="bnstag" name="tag type">
@@ -11928,7 +11950,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Height: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="Box attribute">,
 <ref id="cnp" name="Cone attribute">,
-<ref id="npattr" name="NURBPatch attribute">,
+<ref id="npattr" name="NPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="extrattr" name="Extrude attribute">,
 <ref id="vat" name="View attribute">,
@@ -11988,8 +12010,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>IsLocal: <ref id="lip" name="light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
-<item>IsRat: <ref id="ncattr" name="NURBCurve attribute">,
-<ref id="npattr" name="NURBPatch attribute">
+<item>IsRat: <ref id="ncattr" name="NCurve attribute">,
+<ref id="npattr" name="NPatch attribute">
 </itemize>
 
 <label id="indexj">J
@@ -12000,8 +12022,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexk">K
 <itemize>
 <item>kdialog: <ref id="kdialogtcl" name="example/helper script">
-<item>Knots: <ref id="ncattr" name="NURBCurve attribute">
-<item>Knot-Type: <ref id="ncattr" name="NURBCurve attribute">,
+<item>Knots: <ref id="ncattr" name="NCurve attribute">
+<item>Knot-Type: <ref id="ncattr" name="NCurve attribute">,
 <ref id="concatncp" name="ConcatNC attribute">
 <item>Knot-Type_U: <ref id="skp" name="skin attribute">
 </itemize>
@@ -12011,7 +12033,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Last (None): <ref id="mmtools" name="main menu entry">
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
 <item>Length: <ref id="bxp" name="box attribute">,
-<ref id="ncattr" name="NURBCurve attribute">,
+<ref id="ncattr" name="NCurve attribute">,
 <ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">
 <item>Level: <ref id="levelobj" name="Level object">
@@ -12038,7 +12060,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="torus attribute">
-<item>Make Compatible: <ref id="makecompt" name="NURBCurve tool">
+<item>Make Compatible: <ref id="makecompt" name="NCurve tool">
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="Material object">,
@@ -12074,8 +12096,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexn">N
 <itemize>
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="ncattr" name="NURBCurve attribute">
+<ref id="ncattr" name="NCurve attribute">
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
+<item>NCurve: <ref id="ncurveobj" name="NCurve object">
 <item>Near: <ref id="camp" name="camera property">
 <item>Negative: <ref id="mcattr" name="MetaComp attribute">
 <item>Network Surface: <ref id="gordonobj" name="Gordon object">
@@ -12084,8 +12107,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
 <item>NP: <ref id="nptag" name="tag type">
+<item>NPatch: <ref id="npatchobj" name="NPatch object">
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="npattr" name="NURBPatch attribute">
+<ref id="npattr" name="NPatch attribute">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -12115,8 +12139,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Option: <ref id="riotag" name="RiOption tag type">
-<item>Order: <ref id="ncattr" name="NURBCurve attribute">,
-<ref id="npattr" name="NURBPatch attribute">,
+<item>Order: <ref id="ncattr" name="NCurve attribute">,
+<ref id="npattr" name="NPatch attribute">,
 <ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">,
 <ref id="rep" name="Revolve attribute">
@@ -12135,7 +12159,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
-<item>PatchNum: <ref id="extrncp" name="ExtrNC attribute">
+<item>PatchNum: <ref id="extrncp" name="ExtrNC attribute">,
+<ref id="selectp" name="Select attribute">,
+<ref id="trimp" name="Trim attribute">
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="torus attribute">
@@ -12421,8 +12447,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">
 <item>Tolerance: <ref id="prefdraw" name="preference setting">,
 <ref id="pmattr" name="PatchMesh attribute">,
-<ref id="ncattr" name="NURBCurve attribute">,
-<ref id="npattr" name="NURBPatch attribute">
+<ref id="ncattr" name="NCurve attribute">,
+<ref id="npattr" name="NPatch attribute">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
 <item>ToolBoxShrink: <ref id="prefmisc" name="preference setting">
@@ -12500,7 +12526,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
 <item>Width: <ref id="rio" name="RenderMan interface option">,
 <ref id="bxp" name="box attribute">,
-<ref id="npattr" name="NURBPatch attribute">,
+<ref id="npattr" name="NPatch attribute">,
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="vat" name="view attribute">
 <item>withOb: <ref id="scwithob" name="scripting interface command">
