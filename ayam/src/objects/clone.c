@@ -635,7 +635,10 @@ ay_clone_notifycb(ay_object *o)
  ay_object *down = NULL, *newo = NULL, **next = NULL, trafo = {0};
  ay_object *tr;
  int i = 0, use_trajectory = AY_FALSE, tr_iscopy = AY_FALSE;
- double euler[3];
+ double euler[3], quat[4];
+ double xaxis[3] = {1.0,0.0,0.0};
+ double yaxis[3] = {0.0,1.0,0.0};
+ double zaxis[3] = {0.0,0.0,1.0};
 
   if(!o)
     return AY_ENULL;
@@ -832,16 +835,43 @@ ay_clone_notifycb(ay_object *o)
 		      /* mirror at YZ plane */
 		      newo->movx *= -1.0;
 		      newo->scalx *= -1.0;
+		      ay_quat_toeuler(newo->quat, euler);
+		      if((fabs(euler[0]) > AY_EPSILON) &&
+			 (fabs(euler[1]) < AY_EPSILON) &&
+			 (fabs(euler[2]) < AY_EPSILON))
+			{
+			  ay_quat_axistoquat(zaxis, -2.0*euler[0], quat);
+			  ay_quat_add(quat, newo->quat, newo->quat);
+			  newo->rotz = -euler[0];
+			}
 		      break;
 		    case 2:
 		      /* mirror at XZ plane */
 		      newo->movy *= -1.0;
 		      newo->scaly *= -1.0;
+		      ay_quat_toeuler(newo->quat, euler);
+		      if((fabs(euler[0]) < AY_EPSILON) &&
+			 (fabs(euler[1]) > AY_EPSILON) &&
+			 (fabs(euler[2]) < AY_EPSILON))
+			{
+			  ay_quat_axistoquat(yaxis, -2.0*euler[1], quat);
+			  ay_quat_add(quat, newo->quat, newo->quat);
+			  newo->rotz = -euler[1];
+			}
 		      break;
 		    case 3:
 		      /* mirror at XY plane */
 		      newo->movz *= -1.0;
 		      newo->scalz *= -1.0;
+		      ay_quat_toeuler(newo->quat, euler);
+		      if((fabs(euler[0]) < AY_EPSILON) &&
+			 (fabs(euler[1]) < AY_EPSILON) &&
+			 (fabs(euler[2]) > AY_EPSILON))
+			{
+			  ay_quat_axistoquat(xaxis, -2.0*euler[2], quat);
+			  ay_quat_add(quat, newo->quat, newo->quat);
+			  newo->rotz = -euler[2];
+			}
 		      break;
 		    default:
 		      break;
