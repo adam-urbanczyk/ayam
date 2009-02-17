@@ -381,7 +381,7 @@ ay_concatnc_notifycb(ay_object *o)
       else
 	{
 	  ay_provide_object(down, AY_IDNCURVE, next);
-	  if(*next)
+	  while(*next)
 	    {
 	      nc = (ay_nurbcurve_object *)((*next)->refine);
 	      if(nc->order > highest_order)
