@@ -546,6 +546,9 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_prop_setmattcmd */
 
 
+/* ay_prop_getnpinfo:
+ *  compile info string for NPInfo property field
+ */
 int
 ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 {
@@ -658,6 +661,9 @@ ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 } /* ay_prop_getnpinfo */
 
 
+/* ay_prop_getncinfo:
+ *  compile info string for NCInfo property field
+ */
 int
 ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o)
 {
