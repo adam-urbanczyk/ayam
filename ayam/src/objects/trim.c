@@ -59,8 +59,9 @@ ay_trim_deletecb(void *c)
   trim = (ay_trim_object *)(c);
 
   if(trim->npatch)
-    ay_object_deletemulti(trim->npatch);
-
+    {
+      ay_object_deletemulti(trim->npatch);
+    }
 
   free(trim);
 
@@ -190,7 +191,7 @@ ay_trim_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"PatchNum",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(trim->patchnum));
+  Tcl_GetIntFromObj(interp, to, &(trim->patchnum));
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -251,7 +252,7 @@ ay_trim_readcb(FILE *fileptr, ay_object *o)
   if(!(trim = calloc(1, sizeof(ay_trim_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&trim->patchnum);
+  fscanf(fileptr, "%d\n", &trim->patchnum);
 
   o->refine = trim;
 
@@ -291,7 +292,6 @@ ay_trim_wribcb(char *file, ay_object *o)
    return AY_ENULL;
 
   trim = (ay_trim_object*)o->refine;
-
 
   p = trim->npatch;
   while(trim->npatch)
@@ -384,7 +384,7 @@ ay_trim_notifycb(ay_object *o)
 	  next = &((*next)->next);
 	}
 
-      endlevel = *next;      
+      endlevel = *next;
 
       /* copy new trim curves to patch object */
       while(down->next)
