@@ -61,6 +61,8 @@ int ay_comp_ncurve(ay_object *o1, ay_object *o2);
 
 int ay_comp_icurve(ay_object *o1, ay_object *o2);
 
+int ay_comp_acurve(ay_object *o1, ay_object *o2);
+
 int ay_comp_npatch(ay_object *o1, ay_object *o2);
 
 int ay_comp_extrude(ay_object *o1, ay_object *o2);
@@ -108,6 +110,8 @@ int ay_comp_bevel(ay_object *o1, ay_object *o2);
 int ay_comp_select(ay_object *o1, ay_object *o2);
 
 int ay_comp_offnc(ay_object *o1, ay_object *o2);
+
+int ay_comp_trim(ay_object *o1, ay_object *o2);
 
 /* functions */
 
@@ -175,7 +179,7 @@ ay_comp_tag(ay_tag *t1, ay_tag *t2)
       (strcmp(t1->val, t2->val))))
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_tag */
 
 
@@ -237,7 +241,7 @@ ay_comp_sarg(ay_shader_arg *a1, ay_shader_arg *a2)
     break;
   }
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_sarg */
 
 
@@ -432,7 +436,7 @@ ay_comp_riinc(ay_object *o1, ay_object *o2)
   if(strcmp(r1->file, r2->file))
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_riinc */
 
 
@@ -469,7 +473,7 @@ ay_comp_riproc(ay_object *o1, ay_object *o2)
       return AY_FALSE;
     }
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_riproc */
 
 
@@ -516,7 +520,7 @@ ay_comp_light(ay_object *o1, ay_object *o2)
 	return AY_FALSE;
     }
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_light */
 
 
@@ -544,7 +548,7 @@ ay_comp_ncurve(ay_object *o1, ay_object *o2)
   if(memcmp(n1->controlv, n2->controlv, 4*n1->length*sizeof(double)))
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_ncurve */
 
 
@@ -570,8 +574,35 @@ ay_comp_icurve(ay_object *o1, ay_object *o2)
   if(memcmp(i1->controlv, i2->controlv, 3*i1->length*sizeof(double)))
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_icurve */
+
+
+
+/* ay_comp_acurve:
+ *
+ */
+int
+ay_comp_acurve(ay_object *o1, ay_object *o2)
+{
+ ay_acurve_object *i1, *i2;
+
+  i1 = (ay_acurve_object *)o1->refine;
+  i2 = (ay_acurve_object *)o2->refine;
+
+  if((i1->length != i2->length) ||
+     (i1->alength != i2->alength) ||
+     (i1->closed != i2->closed) ||
+     (i1->order != i2->order) ||
+     (i1->symmetric != i2->symmetric)
+     )
+    return AY_FALSE;
+
+  if(memcmp(i1->controlv, i2->controlv, 3*i1->length*sizeof(double)))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_acurve */
 
 
 /* ay_comp_npatch:
@@ -621,7 +652,7 @@ ay_comp_extrude(ay_object *o1, ay_object *o2)
      (e1->has_lower_cap != e2->has_lower_cap))
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_extrude */
 
 
@@ -646,7 +677,7 @@ ay_comp_revolve(ay_object *o1, ay_object *o2)
      )
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_revolve */
 
 
@@ -670,7 +701,7 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
      )
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_sweep */
 
 
@@ -692,7 +723,7 @@ ay_comp_swing(ay_object *o1, ay_object *o2)
      )
     return AY_FALSE;
 
-  return AY_TRUE;
+ return AY_TRUE;
 } /* ay_comp_swing */
 
 
@@ -1292,6 +1323,24 @@ ay_comp_offnc(ay_object *o1, ay_object *o2)
 } /* ay_comp_offnc */
 
 
+/* ay_comp_trim:
+ *
+ */
+int
+ay_comp_trim(ay_object *o1, ay_object *o2)
+{
+ ay_trim_object *s1, *s2;
+
+  s1 = (ay_trim_object *)o1->refine;
+  s2 = (ay_trim_object *)o2->refine;
+
+  if((s1->patchnum != s2->patchnum))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_trim */
+
+
 /* ay_comp_register:
  *  register the compare callback compcb for
  *  objects of type type_id
@@ -1324,7 +1373,6 @@ ay_comp_objects(ay_object *o1, ay_object *o2)
  /* char fname[] = "comp_objects";*/
  void **arr = NULL;
  ay_comparecb *cb = NULL;
-
 
   /* call the comp callback */
   arr = ay_comparecbt.arr;
@@ -1370,6 +1418,7 @@ ay_comp_init()
 
   ay_status = ay_comp_register(ay_comp_ncurve, AY_IDNCURVE);
   ay_status = ay_comp_register(ay_comp_icurve, AY_IDICURVE);
+  ay_status = ay_comp_register(ay_comp_acurve, AY_IDACURVE);
   ay_status = ay_comp_register(ay_comp_npatch, AY_IDNPATCH);
 
   ay_status = ay_comp_register(ay_comp_riinc, AY_IDRIINC);
@@ -1402,6 +1451,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
   ay_status = ay_comp_register(ay_comp_select, AY_IDSELECT);
   ay_status = ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
+  ay_status = ay_comp_register(ay_comp_trim, AY_IDTRIM);
 
  return ay_status;
 } /* ay_comp_init */
