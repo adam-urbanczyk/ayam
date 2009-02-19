@@ -1,7 +1,7 @@
 #
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2008 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -11,6 +11,10 @@
 #
 # useaqsisapp.tcl - arrange to run Aqsis from its app directory
 #
+
+# This script is for Mac OS X only!
+
+# Usage: just add "useaqsisapp.tcl" to your Scripts preference setting
 
 # Aqsis.app should be installed in /Applications, if you prefer a
 # different location, just change the following path
