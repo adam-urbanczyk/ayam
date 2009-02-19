@@ -1,4 +1,4 @@
-[4. Feb 2009] CVS-Head:
+[19. Feb 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -23,6 +23,7 @@ o added keyboard shortcuts to pan view windows (Shift+Cursor)
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
+o ConcatNC now accepts lists of provided curves
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
