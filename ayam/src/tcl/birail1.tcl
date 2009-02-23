@@ -12,6 +12,9 @@
 set Birail1_props { Transformations Attributes Material Tags Birail1Attr }
 
 
+# birail1_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc birail1_getAttr { } {
     global ay Birail1Attr Birail1AttrData BevelTags
 
@@ -101,5 +104,3 @@ DisplayMode 1
 NPInfoBall "n/a"
 }
 
-# create Birail1Attr-UI
-set w [frame $ay(pca).$Birail1Attr(w)]

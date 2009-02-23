@@ -11,6 +11,9 @@
 
 set Text_props { Transformations Attributes Material Tags TextAttr }
 
+# text_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc text_getAttr { } {
     global ay TextAttr TextAttrData BevelTags
 
@@ -96,6 +99,5 @@ array set TextAttr {
 array set TextAttrData {
     DisplayMode 1
 }
-# create TextAttr-UI
-set w [frame $ay(pca).$TextAttr(w)]
+
 
