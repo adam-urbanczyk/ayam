@@ -12,6 +12,9 @@
 set Extrude_props { Transformations Attributes Material Tags ExtrudeAttr }
 
 
+# extrude_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc extrude_getAttr { } {
     global ay ExtrudeAttr ExtrudeAttrData BevelTags
 

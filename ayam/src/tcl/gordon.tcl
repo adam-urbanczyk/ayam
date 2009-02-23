@@ -12,6 +12,9 @@
 set Gordon_props { Transformations Attributes Material Tags GordonAttr }
 
 
+# gordon_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc gordon_getAttr { } {
     global ay GordonAttr GordonAttrData BevelTags
 

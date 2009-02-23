@@ -200,6 +200,10 @@ proc bevel_rem { place } {
 
 set Bevel_props { Transformations Attributes Material Tags BevelAttr }
 
+
+# bevel_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc bevel_getAttr { } {
     global ay BevelAttr BevelAttrData BevelTags
 

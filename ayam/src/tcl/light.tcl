@@ -12,6 +12,9 @@
 set Light_props { Transformations Attributes Tags LightShader LightAttr }
 
 
+# light_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc light_getAttr { } {
     global ay LightAttr LightAttrData
 
@@ -71,6 +74,7 @@ proc light_getAttr { } {
 }
 # light_getAttr
 
+
 array set LightAttr {
 arr   LightAttrData
 sproc ""
@@ -80,35 +84,30 @@ w     fLightAttr
 }
 
 array set LightAttrData {
-Type 0
-
+    Type 0
 }
 
-# create LightAttr-UI
-set w [frame $ay(pca).$LightAttr(w)]
-addMenu $w LightAttrData Type {Custom Point Spot Distant}
-addCheck $w LightAttrData IsOn
-addCheck $w LightAttrData Shadows
-addParam $w LightAttrData Samples
-
-
 proc light_getShader { } {
-global ay ay_shader LightShader
+    global ay ay_shader LightShader
 
-catch {destroy $ay(pca).$LightShader(w)}
-set w [frame $ay(pca).$LightShader(w)]
-shaderGet light ay_shader
-shader_buildGUI $w light
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$LightShader(w)}
+    set w [frame $ay(pca).$LightShader(w)]
+    shaderGet light ay_shader
+    shader_buildGUI $w light
+    $ay(pca) itemconfigure 1 -window $w
+    plb_resize
+
+ return;
 }
 
 
 proc light_setShader { } {
 
-shaderSet light ay_shader
+    shaderSet light ay_shader
 
+ return;
 }
+# light_setShader
 
 array set LightShader {
 arr   ay_shader
@@ -118,5 +117,3 @@ w     fLightShader
 
 }
 
-# create UI-Stub
-set w [frame $ay(pca).$LightShader(w)]

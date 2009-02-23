@@ -11,6 +11,10 @@
 
 set Clone_props { Transformations Attributes Material Tags CloneAttr }
 
+
+# clone_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc clone_getAttr { } {
     global ay CloneAttr CloneAttrData
 

@@ -13,7 +13,7 @@ set Skin_props { Transformations Attributes Material Tags SkinAttr }
 
 
 # skin_getAttr:
-#
+#  get Attributes from C context and build new PropertyGUI
 #
 proc skin_getAttr { } {
     global ay SkinAttr SkinAttrData BevelTags
@@ -79,6 +79,7 @@ proc skin_getAttr { } {
  return;
 }
 # skin_getAttr
+
 
 # skin_setAttr:
 #

@@ -11,6 +11,10 @@
 
 set Sweep_props { Transformations Attributes Material Tags SweepAttr }
 
+
+# sweep_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
 proc sweep_getAttr { } {
     global ay SweepAttr SweepAttrData BevelTags
 
