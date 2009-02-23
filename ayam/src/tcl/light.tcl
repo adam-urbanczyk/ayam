@@ -13,57 +13,63 @@ set Light_props { Transformations Attributes Tags LightShader LightAttr }
 
 
 proc light_getAttr { } {
-global ay LightAttr LightAttrData
+    global ay LightAttr LightAttrData
 
-catch {destroy $ay(pca).$LightAttr(w)}
-set w [frame $ay(pca).$LightAttr(w)]
-getProp
+    set oldfocus [focus]
 
-set ay(bok) $ay(appb)
+    catch {destroy $ay(pca).$LightAttr(w)}
+    set w [frame $ay(pca).$LightAttr(w)]
+    getProp
 
-# create new UI
-addMenu $w LightAttrData Type {Custom Point Distant Spot}
-addCheck $w LightAttrData IsOn
-addCheck $w LightAttrData IsLocal
-addCheck $w LightAttrData Shadows
-if { $LightAttrData(Type) == 0 } {
-    addParam $w LightAttrData Samples
+    set ay(bok) $ay(appb)
+
+    # create new UI
+    addMenu $w LightAttrData Type {Custom Point Distant Spot}
+    addCheck $w LightAttrData IsOn
+    addCheck $w LightAttrData IsLocal
+    addCheck $w LightAttrData Shadows
+    if { $LightAttrData(Type) == 0 } {
+	addParam $w LightAttrData Samples
+    }
+    if { $LightAttrData(Type) != 0 } {
+
+	addParam $w LightAttrData Intensity
+	addColor $w LightAttrData Color
+    }
+
+    addCheck $w LightAttrData UseSM
+    addParam $w LightAttrData SMRes
+
+    if { $LightAttrData(Type) == 3 } {
+	addParam $w LightAttrData ConeAngle
+	addParam $w LightAttrData ConeDAngle
+	addParam $w LightAttrData BeamDistrib
+    }
+
+    if { $LightAttrData(Type) != 0 } {
+	addParam $w LightAttrData From_X
+	addParam $w LightAttrData From_Y
+	addParam $w LightAttrData From_Z
+    }
+    if { $LightAttrData(Type) >= 2 } {
+	addParam $w LightAttrData To_X
+	addParam $w LightAttrData To_Y
+	addParam $w LightAttrData To_Z
+    }
+    $ay(pca) itemconfigure 1 -window $w
+    update
+    plb_resize
+    # adapt scrollregion
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -scrollregion [list 0 5 $width $height]
+    if { [winfo exists $oldfocus] } {
+	focus -force $oldfocus
+    }
+
+ return;
 }
-if { $LightAttrData(Type) != 0 } {
-
-    addParam $w LightAttrData Intensity
-    addColor $w LightAttrData Color
-}
-
-addCheck $w LightAttrData UseSM
-addParam $w LightAttrData SMRes
-
-if { $LightAttrData(Type) == 3 } {
-    addParam $w LightAttrData ConeAngle
-    addParam $w LightAttrData ConeDAngle
-    addParam $w LightAttrData BeamDistrib
-}
-
-if { $LightAttrData(Type) != 0 } {
-    addParam $w LightAttrData From_X
-    addParam $w LightAttrData From_Y
-    addParam $w LightAttrData From_Z
-}
-if { $LightAttrData(Type) >= 2 } {
-    addParam $w LightAttrData To_X
-    addParam $w LightAttrData To_Y
-    addParam $w LightAttrData To_Z
-}
-$ay(pca) itemconfigure 1 -window $w
-update
-plb_resize
-# adapt scrollregion
-set width [expr [winfo reqwidth $w] + 10]
-set height [expr [winfo reqheight $w] + 10]
-$ay(pca) configure -scrollregion [list 0 5 $width $height]
-
-}
-
+# light_getAttr
 
 array set LightAttr {
 arr   LightAttrData

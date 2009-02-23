@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -38,47 +38,57 @@ for {set i 0} {$i < 16} {incr i} {
 #  get Attributes from C context and build new PropertyGUI
 #
 proc pamesh_getAttr { } {
-global ay PatchMeshAttr PatchMeshAttrData
+    global ay PatchMeshAttr PatchMeshAttrData
 
-catch {destroy $ay(pca).$PatchMeshAttr(w)}
-set w [frame $ay(pca).$PatchMeshAttr(w)]
-getProp
+    set oldfocus [focus]
 
-set ay(bok) $ay(appb)
+    # remove old, create new PatchMeshAttr-UI
+    catch {destroy $ay(pca).$PatchMeshAttr(w)}
+    set w [frame $ay(pca).$PatchMeshAttr(w)]
+    getProp
 
-# create new PatchMeshAttr-UI
-addMenu $w PatchMeshAttrData Type [list Bilinear Bicubic] 
-addParam $w PatchMeshAttrData Width
-addParam $w PatchMeshAttrData Height
-addCheck $w PatchMeshAttrData Close_U
-addCheck $w PatchMeshAttrData Close_V
+    set ay(bok) $ay(appb)
 
-if { $PatchMeshAttrData(Type) == 1 } {
+    addMenu $w PatchMeshAttrData Type [list Bilinear Bicubic]
+    addParam $w PatchMeshAttrData Width
+    addParam $w PatchMeshAttrData Height
+    addCheck $w PatchMeshAttrData Close_U
+    addCheck $w PatchMeshAttrData Close_V
 
-    addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]
-    addMenu $w PatchMeshAttrData BType_V [list Bezier B-Spline CatmullRom Hermite Custom]
+    if { $PatchMeshAttrData(Type) == 1 } {
 
-    if { $PatchMeshAttrData(BType_U) == 4 } {
-	addParam $w PatchMeshAttrData Step_U
-	addMatrix $w PatchMeshAttrData Basis_U
+	addMenu $w PatchMeshAttrData BType_U [list Bezier B-Spline CatmullRom Hermite Custom]
+	addMenu $w PatchMeshAttrData BType_V [list Bezier B-Spline CatmullRom Hermite Custom]
+
+	if { $PatchMeshAttrData(BType_U) == 4 } {
+	    addParam $w PatchMeshAttrData Step_U
+	    addMatrix $w PatchMeshAttrData Basis_U
+	}
+
+	if { $PatchMeshAttrData(BType_V) == 4 } {
+	    addParam $w PatchMeshAttrData Step_V
+	    addMatrix $w PatchMeshAttrData Basis_V
+	}
     }
 
-    if { $PatchMeshAttrData(BType_V) == 4 } {
-	addParam $w PatchMeshAttrData Step_V
-	addMatrix $w PatchMeshAttrData Basis_V
+    addParam $w PatchMeshAttrData Tolerance
+    addMenu $w PatchMeshAttrData DisplayMode $ay(npdisplaymodes)
+
+    # add UI to property canvas
+    $ay(pca) itemconfigure 1 -window $w
+    update
+    plb_resize
+
+    # adapt canvas scrollregion
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -scrollregion [list 0 5 $width $height]
+
+    # restore focus
+    if { [winfo exists $oldfocus] } {
+	focus -force $oldfocus
     }
-}
 
-addParam $w PatchMeshAttrData Tolerance
-addMenu $w PatchMeshAttrData DisplayMode $ay(npdisplaymodes)
-
-$ay(pca) itemconfigure 1 -window $w
-
-plb_resize
-# adapt scrollregion
-set width [expr [winfo reqwidth $w] + 10]
-set height [expr [winfo reqheight $w] + 10]
-$ay(pca) configure -scrollregion [list 0 5 $width $height]
-
+ return;
 }
 # pamesh_getAttr

@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -202,8 +202,10 @@ set Bevel_props { Transformations Attributes Material Tags BevelAttr }
 
 proc bevel_getAttr { } {
     global ay BevelAttr BevelAttrData BevelTags
- 
-    # create BevelAttr-UI
+
+    set oldfocus [focus]
+
+    # remove old, create new BevelAttr-UI
     catch {destroy $ay(pca).$BevelAttr(w)}
     set w [frame $ay(pca).$BevelAttr(w)]
     getProp
@@ -230,14 +232,20 @@ proc bevel_getAttr { } {
     addParam $w BevelAttrData Tolerance
     addMenu $w BevelAttrData DisplayMode $ay(npdisplaymodes)
 
+    # add UI to property canvas
     $ay(pca) itemconfigure 1 -window $w
     update
     plb_resize
 
-    # adapt scrollregion
+    # adapt canvas scrollregion
     set width [expr [winfo reqwidth $w] + 10]
     set height [expr [winfo reqheight $w] + 10]
     $ay(pca) configure -scrollregion [list 0 5 $width $height]
+
+    # restore focus
+    if { [winfo exists $oldfocus] } {
+	focus -force $oldfocus
+    }
 
  return;
 }

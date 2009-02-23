@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -13,54 +13,63 @@ set Extrude_props { Transformations Attributes Material Tags ExtrudeAttr }
 
 
 proc extrude_getAttr { } {
-global ay ExtrudeAttr ExtrudeAttrData BevelTags
-# create ExtrudeAttr-UI
+    global ay ExtrudeAttr ExtrudeAttrData BevelTags
 
-catch {destroy $ay(pca).$ExtrudeAttr(w)}
-set w [frame $ay(pca).$ExtrudeAttr(w)]
-getProp
+    set oldfocus [focus]
 
-set tagnames ""
-set tagvalues ""
-getTags tagnames tagvalues
-bevel_parseTags $tagnames $tagvalues
+    # remove old, create new ExtrudeAttr-UI
+    catch {destroy $ay(pca).$ExtrudeAttr(w)}
+    set w [frame $ay(pca).$ExtrudeAttr(w)]
+    getProp
 
-set ay(bok) $ay(appb)
+    set tagnames ""
+    set tagvalues ""
+    getTags tagnames tagvalues
+    bevel_parseTags $tagnames $tagvalues
 
-addParam $w ExtrudeAttrData Height
-addCheck $w ExtrudeAttrData StartCap
-addCheck $w ExtrudeAttrData EndCap
+    set ay(bok) $ay(appb)
 
-if { $BevelTags(HasStartBevel) } {
-    addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
-    addMenu $w BevelTags SBType $ay(bevelmodes)
-    addParam $w BevelTags SBRadius
-    addCheck $w BevelTags SBRevert
-} else {
-    addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
-}
+    addParam $w ExtrudeAttrData Height
+    addCheck $w ExtrudeAttrData StartCap
+    addCheck $w ExtrudeAttrData EndCap
 
-if { $BevelTags(HasEndBevel) } {
-    addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
-    addMenu $w BevelTags EBType $ay(bevelmodes)
-    addParam $w BevelTags EBRadius
-    addCheck $w BevelTags EBRevert
-} else {
-    addCommand $w c2 "Add End Bevel!" "bevel_add 1"
-}
+    if { $BevelTags(HasStartBevel) } {
+	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
+	addMenu $w BevelTags SBType $ay(bevelmodes)
+	addParam $w BevelTags SBRadius
+	addCheck $w BevelTags SBRevert
+    } else {
+	addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
+    }
 
-addParam $w ExtrudeAttrData Tolerance
-addMenu $w ExtrudeAttrData DisplayMode $ay(npdisplaymodes)
+    if { $BevelTags(HasEndBevel) } {
+	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
+	addMenu $w BevelTags EBType $ay(bevelmodes)
+	addParam $w BevelTags EBRadius
+	addCheck $w BevelTags EBRevert
+    } else {
+	addCommand $w c2 "Add End Bevel!" "bevel_add 1"
+    }
 
-$ay(pca) itemconfigure 1 -window $w
-update
-plb_resize
-# adapt scrollregion
-set width [expr [winfo reqwidth $w] + 10]
-set height [expr [winfo reqheight $w] + 10]
-$ay(pca) configure -scrollregion [list 0 5 $width $height]
+    addParam $w ExtrudeAttrData Tolerance
+    addMenu $w ExtrudeAttrData DisplayMode $ay(npdisplaymodes)
 
-return;
+    # add UI to property canvas
+    $ay(pca) itemconfigure 1 -window $w
+    update
+    plb_resize
+
+    # adapt canvas scrollregion
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -scrollregion [list 0 5 $width $height]
+
+    # restore focus
+    if { [winfo exists $oldfocus] } {
+	focus -force $oldfocus
+    }
+
+ return;
 }
 # extrude_getAttr
 
