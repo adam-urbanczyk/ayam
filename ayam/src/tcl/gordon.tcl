@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2001 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -13,76 +13,84 @@ set Gordon_props { Transformations Attributes Material Tags GordonAttr }
 
 
 proc gordon_getAttr { } {
-global ay GordonAttr GordonAttrData BevelTags
-# create GordonAttr-UI
+    global ay GordonAttr GordonAttrData BevelTags
 
-catch {destroy $ay(pca).$GordonAttr(w)}
-set w [frame $ay(pca).$GordonAttr(w)]
-getProp
+    set oldfocus [focus]
 
-set tagnames ""
-set tagvalues ""
-getTags tagnames tagvalues
-bevel_parseTags $tagnames $tagvalues
+    # remove old, create new GordonAttr-UI
+    catch {destroy $ay(pca).$GordonAttr(w)}
+    set w [frame $ay(pca).$GordonAttr(w)]
+    getProp
 
-set ay(bok) $ay(appb)
+    set tagnames ""
+    set tagvalues ""
+    getTags tagnames tagvalues
+    bevel_parseTags $tagnames $tagvalues
 
-# create GordonAttr-UI
-addCheck $w GordonAttrData WatchCurves
-addParam $w GordonAttrData Order_U
-addParam $w GordonAttrData Order_V
+    set ay(bok) $ay(appb)
 
-if { $BevelTags(HasStartBevel) } {
-    addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
-    addMenu $w BevelTags SBType $ay(bevelmodes)
-    addParam $w BevelTags SBRadius
-    addCheck $w BevelTags SBRevert
-} else {
-    addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
-}
+    addCheck $w GordonAttrData WatchCurves
+    addParam $w GordonAttrData Order_U
+    addParam $w GordonAttrData Order_V
 
-if { $BevelTags(HasEndBevel) } {
-    addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
-    addMenu $w BevelTags EBType $ay(bevelmodes)
-    addParam $w BevelTags EBRadius
-    addCheck $w BevelTags EBRevert
-} else {
-    addCommand $w c2 "Add End Bevel!" "bevel_add 1"
-}
+    if { $BevelTags(HasStartBevel) } {
+	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
+	addMenu $w BevelTags SBType $ay(bevelmodes)
+	addParam $w BevelTags SBRadius
+	addCheck $w BevelTags SBRevert
+    } else {
+	addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
+    }
 
-if { $BevelTags(HasLeftBevel) } {
-    addCommand $w c3 "Remove Left Bevel!" "bevel_rem 2"
-    addMenu $w BevelTags LBType $ay(bevelmodes)
-    addParam $w BevelTags LBRadius
-    addCheck $w BevelTags LBRevert
-} else {
-    addCommand $w c3 "Add Left Bevel!" "bevel_add 2"
-}
+    if { $BevelTags(HasEndBevel) } {
+	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
+	addMenu $w BevelTags EBType $ay(bevelmodes)
+	addParam $w BevelTags EBRadius
+	addCheck $w BevelTags EBRevert
+    } else {
+	addCommand $w c2 "Add End Bevel!" "bevel_add 1"
+    }
 
-if { $BevelTags(HasRightBevel) } {
-    addCommand $w c4 "Remove Right Bevel!" "bevel_rem 3"
-    addMenu $w BevelTags RBType $ay(bevelmodes)
-    addParam $w BevelTags RBRadius
-    addCheck $w BevelTags RBRevert
-} else {
-    addCommand $w c4 "Add Right Bevel!" "bevel_add 3"
-}
+    if { $BevelTags(HasLeftBevel) } {
+	addCommand $w c3 "Remove Left Bevel!" "bevel_rem 2"
+	addMenu $w BevelTags LBType $ay(bevelmodes)
+	addParam $w BevelTags LBRadius
+	addCheck $w BevelTags LBRevert
+    } else {
+	addCommand $w c3 "Add Left Bevel!" "bevel_add 2"
+    }
 
-addParam $w GordonAttrData Tolerance
-addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
+    if { $BevelTags(HasRightBevel) } {
+	addCommand $w c4 "Remove Right Bevel!" "bevel_rem 3"
+	addMenu $w BevelTags RBType $ay(bevelmodes)
+	addParam $w BevelTags RBRadius
+	addCheck $w BevelTags RBRevert
+    } else {
+	addCommand $w c4 "Add Right Bevel!" "bevel_add 3"
+    }
 
-addText $w GordonAttrData "Created NURBS Patch:"
-addInfo $w GordonAttrData NPInfo
+    addParam $w GordonAttrData Tolerance
+    addMenu $w GordonAttrData DisplayMode $ay(npdisplaymodes)
 
-$ay(pca) itemconfigure 1 -window $w
-update
-plb_resize
-# adapt scrollregion
-set width [expr [winfo reqwidth $w] + 10]
-set height [expr [winfo reqheight $w] + 10]
-$ay(pca) configure -scrollregion [list 0 5 $width $height]
+    addText $w GordonAttrData "Created NURBS Patch:"
+    addInfo $w GordonAttrData NPInfo
 
-return;
+    # add UI to property canvas
+    $ay(pca) itemconfigure 1 -window $w
+    update
+    plb_resize
+
+    # adapt canvas scrollregion
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -scrollregion [list 0 5 $width $height]
+
+    # restore focus
+    if { [winfo exists $oldfocus] } {
+	focus -force $oldfocus
+    }
+
+ return;
 }
 # gordon_getAttr
 
