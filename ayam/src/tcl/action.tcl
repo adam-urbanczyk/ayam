@@ -769,8 +769,8 @@ proc editPointDp { } {
     bind $w <Escape> "$w.f2.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$w.f2.bca invoke"
 
-    bind $w <Key-Return> editPointApply
-    catch {bind $w <Key-KP_Enter> editPointApply}
+    bind $w <Key-Return> "editPointApply;break"
+    catch {bind $w <Key-KP_Enter> "editPointApply;break"}
 
     focus $f.bok
 
