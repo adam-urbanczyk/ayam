@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>3. Dec 2008
+<date>17. Feb 2009
 
 <abstract>
 This is the documentation of Ayam 1.15 - a free 3D modelling environment
@@ -1717,6 +1717,7 @@ The next section of the preferences, <tt/"Modelling"/,
 contains modelling related settings:
 <itemize>
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
+(see section <ref id="editac" name="Editing Points">)
 to determine which point (vertice) of an object has been selected.
 A smaller <tt/"PickEpsilon"/ means more exact picking.
 The value of <tt/"PickEpsilon"/ should be positive. In older versions
@@ -1737,11 +1738,14 @@ to the child objects automagically
 <item><tt/"CompleteNotify"/ determines when notification of all objects
 depending on references of changed objects takes place:
 <itemize>
-<item><tt/"Never"/ for manual control of complete notification,
-<item><tt/"Always"/ complete notification is done whenever the
-normal notification would be run,
-<item><tt/"Lazy"/ complete notification runs
-only after a modelling action finished.
+<item><tt/"Never"/, for manual control of complete notification
+(manual complete notification can be carried out using the main
+menu entry <tt>"Tools/Force Notification"</tt>);
+<item><tt/"Always"/, a complete notification is done whenever the
+normal notification is carried out;
+<item><tt/"Lazy"/, the complete notification runs
+only after a modelling action finished (when the mouse button is
+released).
 </itemize>
 Note that complete notify also updates objects that implicitly depend on
 updated objects via instances.
@@ -1751,9 +1755,9 @@ should be snapped to the grid when a grid is defined and
 in use for the single point modelling actions.
 
 <item><tt/"Snap3D"/ controls, whether points that are snapped to
-grid coordinates (in single point editing actions, when grids are active)
+grid coordinates (in single point editing actions and when grids are active)
 should be influenced in all three dimensions, or just the two dimensions
-determined by the type of the view
+determined by the type of the view.
 
 <item><tt/"FlashPoints"/ controls flashing of editable points in
 the single point modelling actions when they would be modified by
@@ -2135,8 +2139,7 @@ See section
 <ref id="objsel" name="Selecting Objects within a View">
 for more information about picking objects.
 <p>
-Note that the modelling actions
-are not available in perspective views.
+Note that the modelling actions are not available in perspective views.
 <p>
 If an action is in effect for a view, the views title will be changed
 appropriately.
@@ -2186,17 +2189,18 @@ around the center of its own local coordinate system.
 <sect1>Rotating Objects or Selected Points around a Point
 <p>
 Using the modelling action <tt/"Rotate about"/ (shortcut: <tt/&lt;a&gt;/)
-you may rotate objects or the selected (tagged) points
+you may interactively rotate objects or the selected (tagged) points
 of the selected objects around a specified point in space.
 The action requires a point to be specified using a single
 click after the action has been started.
 The point will then be marked by a little red cross.
 If you want to rotate about a different point, you need to restart the
-action (press <tt/&lt;a&gt;/ again).
+action (simply press <tt/&lt;a&gt;/ again).
 <p>
 After the first click, the action works the same way as
-the Rotate action, except that it rotates around the specified point.
-This also works with multiple selected objects.
+the Rotate action, except that it rotates the selected object(s)
+around the specified point.
+This, consequently, also works with multiple selected objects.
 Note that this action does not only change the Rotate_X(_Y,_Z)
 properties of the selected objects, but also the Translate_X(_Y,_Z)
 properties.
@@ -2206,7 +2210,7 @@ it is highly suggested to use grids with this action.
 
 <sect1>Scaling Objects or Selected Points<label id="scalac">
 <p>
-There are several different actions available to scale
+There are several different actions available to interactively scale
 objects or the selected (tagged) points of the selected objects:
 <p>
 The modelling action <tt/"Scale 3D"/ (shortcut: <tt/&lt;S&gt;/, note the
@@ -2237,10 +2241,12 @@ then try it once starting on the X-axis.
 <p>
 The modelling action <tt/"Select Points"/
 (shortcut: <tt/&lt;t&gt;/; for <em>t</em>ag points)
-may be applied to a NURBS curve, NURBS patch or objects
+may be applied to a NURBS curve, NURBS patch, or objects
 that support single point editing only. Objects usually draw their
-selectable points using small white rectangular handles.
-Selected points will be drawn in dark red.
+selectable points using small white rectangular handles (when a
+modelling action is active).
+<p>
+Selected points will be drawn in dark red when a modelling action is active.
 <p>
 The selected points may be modified subsequently using the modelling actions
 Move, Rotate, and Scale as discussed above.
@@ -2251,13 +2257,14 @@ will be added to the list of selected points for the selected object.
 If the selected point is already in that list it will be removed from
 the list instead. Note that the list of selected points will not be
 deleted from the object until an explicit deselection is performed
-using the shortcut <tt/&lt;D&gt;/.
+using the shortcut <tt/&lt;D&gt;/. Unfortunately, undo, redo, and
+certain modelling actions like inserting or deleting control points
+will also destroy the list of selected points.
 <p>
-Note however that the list of selected points is not copied, if the object
+Note that the list of selected points is not copied, if the object
 is copied using the clipboard.
-Undo and redo unfortunately will also destroy the list of selected points!
 <p>
-However, it is perfectly legal to select some points, move them using
+It is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
 to the selection action, add other points to the selection or delete some
@@ -2273,7 +2280,7 @@ selection that occlude each other.
 <sect1>Editing Points<label id="editac">
 <p>
 To edit the points of an object three actions (<tt/"Edit"/,
- <tt/"Edit Weights"/, and <tt/"Direct Point Edit"/) are available.
+<tt/"Edit Weights"/, and <tt/"Direct Point Edit"/) are available.
 All those actions may be applied to objects that support single point
 editing only.
 Objects mark themselves editable by drawing the editable points using
@@ -2282,13 +2289,15 @@ is activated and the object is selected.
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
-objects. In contrast to the move action, you need to pick on the handle
-of the point you want to move. Furthermore, it is not possible to move
-points of multiple selected objects, only the first selected object is
-considered.
+objects. In contrast to the move action, you need to directly pick on
+the handle of the point you want to move. Furthermore, it is not possible
+to move points of multiple selected objects, only the first selected
+object is considered.
 <p>
-If a NURBS curve has multiple points, this action modifies all
-points that make up the multiple point.
+If a multiple point is edited, this action modifies all single
+points that make up the multiple point, i.e. you can not move
+single points apart from a multiple point using the point
+edit action.
 
 <item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
@@ -2298,7 +2307,7 @@ not possible to edit the weights of multiple selected objects, only
 the first selected object is considered.
 <p>
 If a NURBS curve has multiple points, this action modifies all
-points that make up the multiple point.
+single points that make up the multiple point.
 
 <item>The modelling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
@@ -2308,10 +2317,13 @@ Note that the w coordinate setting will be ignored if the
 picked point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
-world space.
+world space. This modelling action also only affects the points
+of the first of multiple selected objects.
 <p>
-If a NURBS curve has multiple points, this action modifies all
-points that make up the multiple point.
+If a multiple point is edited, this action modifies all single
+points that make up the multiple point, i.e. you can not move
+single points apart from a multiple point using the direct point
+edit action.
 <p>
 Notice that since Ayam 1.4 the direct point editing dialog may stay
 open all the time. Furthermore, it is not necessary that the original
@@ -2325,8 +2337,7 @@ the coordinate values displayed in the direct point editing window
 will not update when the point is modified by another modelling
 action. Simply click on the point again in a view where the
 direct point editing action is active, to update the coordinate
-values in the direct point editing dialog. This modelling action also
-only affects the points of the first of multiple selected objects.
+values in the direct point editing dialog.
 <p>
 Even though the dialog may display point coordinates in degraded
 accuracy (due to floating point to string conversion, see also
@@ -5112,7 +5123,7 @@ In both interpolation modes chord length parameterisation will be used
 to determine the knot vector of the interpolating curve.
 <p>
 This object makes use of the provide mechanism. It marks itself
-as providing a NCurve (it creates and uses NURBS curves
+as providing a NCurve object (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
@@ -5174,7 +5185,7 @@ squares approach. If the number of control points approach the number
 of data points, undesired wiggles in the output curve may occur.
 <p>
 This object makes use of the provide mechanism. It marks itself
-as providing a NCurve (it creates and uses NURBS curves
+as providing a NCurve object (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ACurve object instead of an object
@@ -5199,7 +5210,7 @@ to the number of data points.
 <item>The curve can be closed with the parameter <tt/"Closed"/.
 For closed approximations, the total number of control points will
 be <tt/"ALength + Order - 1"/.
-The following table illustrates this.
+The following table illustrates this relationship.
 
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5345,6 +5356,9 @@ the ExtrNC object. Therefore, the main menu entry
 will automatically create an instance of the currently selected object
 and move it to the newly created ExtrNC object.
 <p>
+Note that the extraction of any curves currently completely ignores
+potentially present trimming information of the NPatch object.
+<p>
 You may convert the current ExtrNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
@@ -5356,17 +5370,12 @@ The extraction process is controlled by the following attributes:
 <item><tt/"Side"/ controls, which curve should be extracted.
 Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
 width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
-height; <tt/"U"/, <tt/"V"/ extract curve along width and height
-respectively at specified parametric value (see below).
-
-The options <tt/"U"/, <tt/"V"/ are implemented since Ayam 1.8.1!
-
+height; <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1) extract curve
+along width and height respectively at specified parametric value (see below).
+<p>
 Since Ayam 1.13 it is also possible to extract the complete boundary
 curve of the patch (<tt/"Boundary"/).
-
-Note that the extraction of any curves currently completely ignores
-potentially present trimming information.
-
+<p>
 Since Ayam 1.15 it is also possible to create a curve from the patch
 data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
 (simply the medium of all control points of a patch in the designated
@@ -11576,6 +11585,9 @@ Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
 
 WWW resources:
 <itemize>
+<item>If you are reading this document from a local file system,
+maybe an updated version is available from the internet:
+<tt>http://www.ayam3d.org/docs/ayam.html</tt>
 <item>Ayam Tutorial #1:
 <tt>http://www.ayam3d.org/tut1/tutorial1.html</tt>
 <item>The Ayam FAQ: <tt>http://www.ayam3d.org/faq.html</tt>
