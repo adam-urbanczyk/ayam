@@ -2213,7 +2213,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       for(i = 0; i < sf->length; i++)
 	{
 	  ay_trafo_apply4(&(sfcv[a]), mtr);
-	  if(sfcv[a+2] > AY_EPSILON)
+	  if(fabs(sfcv[a+2]) > AY_EPSILON)
 	    sfis3d = AY_TRUE;
 	  a += stride;
 	}
@@ -2657,7 +2657,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       for(i = 0; i < sf->length; i++)
 	{
 	  ay_trafo_apply4(&(sfcv[a]), mtr);
-	  if(sfcv[a+2] > AY_EPSILON)
+	  if(fabs(sfcv[a+2]) > AY_EPSILON)
 	    sfis3d = AY_TRUE;
 	  a += stride;
 	}
