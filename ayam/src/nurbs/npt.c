@@ -1980,6 +1980,8 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 
 
 /* ay_npt_swing:
+ *  Sweep cross section <o1> around Y-axis, while placing and scaling
+ *  it according to <o2> (creating a swung surface).
  */
 int
 ay_npt_swing(ay_object *o1, ay_object *o2,
@@ -1999,7 +2001,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
-    return AY_ERROR;
+    return AY_OK;
 
   cs = (ay_nurbcurve_object *)(o1->refine);
   tr = (ay_nurbcurve_object *)(o2->refine);
@@ -2145,7 +2147,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
- int i = 0, j = 0, a = 0, stride;
+ int i = 0, j = 0, a = 0, stride, sfis3d = AY_FALSE;
  double u, p1[4], p2[4], p3[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
@@ -2211,6 +2213,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       for(i = 0; i < sf->length; i++)
 	{
 	  ay_trafo_apply4(&(sfcv[a]), mtr);
+	  if(sfcv[a+2] > AY_EPSILON)
+	    sfis3d = AY_TRUE;
 	  a += stride;
 	}
     } /* if */
@@ -2292,7 +2296,9 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
   if(o3)
-    plensf = fabs(sf->knotv[sf->length] - sf->knotv[sf->order-1]);
+    {
+      plensf = fabs(sf->knotv[sf->length] - sf->knotv[sf->order-1]);
+    }
 
   T0[0] = 1.0;
   T0[1] = 0.0;
@@ -2336,11 +2342,25 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
 			     sfcv, u, p3);
 	  p3[1] = fabs(p3[1]);
-	  if(p3[1] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
 	  p3[2] = fabs(p3[2]);
-	  if(p3[2] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
+	  if(p3[1] > AY_EPSILON)
+	    {
+	      ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
+	    }
+	  if(sfis3d)
+	    {
+	      if(p3[2] > AY_EPSILON)
+		{
+		  ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
+		}
+	    }
+	  else
+	    {
+	      if(p3[1] > AY_EPSILON)
+		{
+		  ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[1], m);
+		}
+	    }
 	}
 
       /* now, apply rotation (if requested) */
@@ -2437,11 +2457,26 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
 				     sfcv, u, p3);
 		  p3[1] = fabs(p3[1]);
+		  p3[2] = fabs(p3[2]);
 		  if(p3[1] > AY_EPSILON)
 		    {
-		      (*start_cap)->scalx *= p3[1];
-		      (*start_cap)->scaly *= p3[2];
+		      (*start_cap)->scaly *= p3[1];
 		    }
+		  if(sfis3d)
+		    {
+		      if(p3[2] > AY_EPSILON)
+			{
+			  (*start_cap)->scalx *= p3[2];
+			}
+		    }
+		  else
+		    {
+		      if(p3[1] > AY_EPSILON)
+			{
+			  (*start_cap)->scalx *= p3[1];
+			}
+		    }
+
 		} /* if */
 	      /* fix direction for aycsg */
 	      (*start_cap)->scalz *= -1.0;
@@ -2480,10 +2515,24 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
 				     sfcv, u, p3);
 		  p3[1] = fabs(p3[1]);
+		  p3[2] = fabs(p3[2]);
 		  if(p3[1] > AY_EPSILON)
 		    {
-		      (*end_cap)->scalx *= p3[1];
-		      (*end_cap)->scaly *= p3[2];
+		      (*end_cap)->scaly *= p3[1];
+		    }
+		  if(sfis3d)
+		    {
+		      if(p3[2] > AY_EPSILON)
+			{
+			  (*end_cap)->scalx *= p3[2];
+			}
+		    }
+		  else
+		    {
+		      if(p3[1] > AY_EPSILON)
+			{
+			  (*start_cap)->scalx *= p3[1];
+			}
 		    }
 		} /* if */
 	      /* rotate it */
@@ -2543,7 +2592,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
- int i = 0, j = 0, a = 0, stride = 4;
+ int i = 0, j = 0, a = 0, stride = 4, sfis3d = AY_FALSE;
  double u, p1[4], p2[4], p3[4];
  double T0[3] = {0.0,0.0,-1.0};
  double T1[3] = {0.0,0.0,0.0};
@@ -2608,6 +2657,8 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       for(i = 0; i < sf->length; i++)
 	{
 	  ay_trafo_apply4(&(sfcv[a]), mtr);
+	  if(sfcv[a+2] > AY_EPSILON)
+	    sfis3d = AY_TRUE;
 	  a += stride;
 	}
     } /* if */
@@ -2718,11 +2769,25 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
 			     sfcv, u, p3);
 	  p3[1] = fabs(p3[1]);
-	  if(p3[1] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
 	  p3[2] = fabs(p3[2]);
-	  if(p3[2] > AY_EPSILON)
-	    ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
+	  if(p3[1] > AY_EPSILON)
+	    {
+	      ay_trafo_scalematrix(1.0, 1.0/p3[1], 1.0, m);
+	    }
+	  if(sfis3d)
+	    {
+	      if(p3[2] > AY_EPSILON)
+		{
+		  ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[2], m);
+		}
+	    }
+	  else
+	    {
+	      if(p3[1] > AY_EPSILON)
+		{
+		  ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[1], m);
+		}
+	    }
 	}
 
       /* now, apply rotation (if requested) */
@@ -2801,7 +2866,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 
 /* ay_npt_birail1:
- *  sweep cross section o1 along rails o2 and o3;
+ *  sweep cross section <o1> along rails <o2> and <o3>;
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
  *  (Graphic Gems I).
  */
@@ -9302,6 +9367,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* update pointers to controlv */
 	  ay_status = ay_object_ccp(o);
 	  ay_selp_clear(o);
+	  /* notify notification about changes */
 	  o->modified = AY_TRUE;
 	} /* if */
 
