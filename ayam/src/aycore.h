@@ -1336,7 +1336,7 @@ void ay_trafo_copy(ay_object *src, ay_object *dst);
  */
 void ay_trafo_add(ay_object *src, ay_object *dst);
 
-/*! \brief 
+/*! \brief initialize transformation attributes of object o to identity 
  */
 void ay_trafo_defaults(ay_object *o);
 
@@ -1382,23 +1382,24 @@ int ay_trafo_invmatrix4(double *m, double *mi);
  */
 int ay_trafo_apply(ay_object *o, double *p, int stride, int reusem);
 
-/*! \brief 
+/*! \brief initialize transformation matrix m from transformation
+ *  attributes of o
  */
 int ay_trafo_creatematrix(ay_object *o, double *m);
 
-/*! \brief 
+/*! \brief initialize transformation matrix m to identity
  */
 void ay_trafo_identitymatrix(double *m);
 
-/*! \brief 
+/*! \brief add a translation to transformation matrix m
  */
 void ay_trafo_translatematrix(double x, double y, double z, double *m);
 
-/*! \brief 
+/*! \brief add a scale transformation to transformation matrix m
  */
 void ay_trafo_scalematrix(double x, double y, double z, double *m);
 
-/*! \brief 
+/*! \brief add a rotation to transformation matrix m
  */
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
@@ -1410,19 +1411,22 @@ void ay_trafo_pointstoplane(double x1, double y1, double z1,
 			    double x3, double y3, double z3,
 			    double *A, double *B, double *C, double *D);
 
+/*! \brief decompose transformation matrix m to transformation attributes of o
+ */
 void ay_trafo_decompose(double *m, ay_object *o);
+
 
 /* undo.c */
 
-/*! \brief 
+/*! \brief initialize undo system
  */
 int ay_undo_init(int buffer_size);
 
-/*! \brief 
+/*! \brief clear all undo states
  */
 int ay_undo_clear(void);
 
-/*! \brief 
+/*! \brief clear all undo states of object o
  */
 int ay_undo_clearobj(ay_object *o);
 
