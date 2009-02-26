@@ -894,7 +894,7 @@ ay_clone_notifycb(ay_object *o)
 			      ay_trafo_rotatematrix(euler[1],0.0,1.0,0.0,m);
 			      ay_trafo_rotatematrix(euler[2],1.0,0.0,0.0,m);
 			      ay_trafo_scalematrix(1.0, -1.0, 1.0, m);
-			      ay_trafo_translatematrix(0.0 2.0*down->movy,
+			      ay_trafo_translatematrix(0.0, 2.0*down->movy,
 						       0.0, m);
 			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
