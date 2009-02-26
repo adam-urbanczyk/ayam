@@ -1410,6 +1410,7 @@ void ay_trafo_pointstoplane(double x1, double y1, double z1,
 			    double x3, double y3, double z3,
 			    double *A, double *B, double *C, double *D);
 
+void ay_trafo_decompose(double *m, ay_object *o);
 
 /* undo.c */
 
