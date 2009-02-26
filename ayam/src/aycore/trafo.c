@@ -403,7 +403,7 @@ ay_trafo_delegate(ay_object *o)
 
 	      ay_quat_torotmatrix(o->quat, m);
 	      ay_trafo_apply3(v1, m);
-	      
+
 	      child->movx = v1[0];
 	      child->movy = v1[1];
 	      child->movz = v1[2];
@@ -1372,3 +1372,163 @@ ay_trafo_pointstoplane(double *p, double *e)
 
 } /* ay_trafo_pointstoplane */
 #endif
+
+/*
+ * Matrix Decomposition Code borrowed from Graphics Gems II unmatrix.c
+ */
+void
+ay_trafo_decompose(double *m, ay_object *o)
+{
+ double v1[3], v2[3], v3[3], v4[3];
+ double sx, sy, sz;
+ double rx, ry, rz;
+ int i;
+ double axis[3], quat[4] = {0};
+ char fname[] = "ay_trafo_decompose";
+
+  o->scalx = 1.0;
+  o->scaly = 1.0;
+  o->scalz = 1.0;
+  o->quat[0] = 0.0;
+  o->quat[1] = 0.0;
+  o->quat[2] = 0.0;
+  o->quat[3] = 1.0;
+  o->rotx = 0.0;
+  o->roty = 0.0;
+  o->rotz = 0.0;
+
+  quat[3] = 1.0;
+
+  if(fabs(m[15]) <= AY_EPSILON )
+    return;
+
+  /* normalize matrix */
+  for(i = 0; i < 16; i++)
+      m[i] /= m[15];
+
+  /* decompose matrix */
+
+  /* get translation */
+  o->movx = (double)m[12];
+  o->movy = (double)m[13];
+  o->movz = (double)m[14];
+
+  /* get row vectors containing scale&rotation */
+  v1[0] = (double)m[0];
+  v1[1] = (double)m[1];
+  v1[2] = (double)m[2];
+
+  v2[0] = (double)m[4];
+  v2[1] = (double)m[5];
+  v2[2] = (double)m[6];
+
+  v3[0] = (double)m[8];
+  v3[1] = (double)m[9];
+  v3[2] = (double)m[10];
+
+  /* get scale */
+  sx = AY_V3LEN(v1);
+  sy = AY_V3LEN(v2);
+  sz = AY_V3LEN(v3);
+
+  /* normalize row vectors */
+  if(fabs(sx) > AY_EPSILON)
+    {
+      o->scalx *= sx;
+      AY_V3SCAL(v1, 1.0/sx);
+    }
+  if(fabs(sy) > AY_EPSILON)
+    {
+      o->scaly *= sy;
+      AY_V3SCAL(v2, 1.0/sy);
+    }
+  if(fabs(sz) > AY_EPSILON)
+    {
+      o->scalz *= sz;
+      AY_V3SCAL(v3, 1.0/sz);
+    }
+
+  /*
+   * Check for a coordinate system flip.  If the determinant
+   * is -1, then negate the matrix and the scaling factors.
+   */
+  AY_V3CROSS(v4, v2, v3)
+  if(AY_V3DOT(v1, v4) < 0)
+    {
+      /*ay_error(AY_EWARN, fname, "Coordinate system flip detected!");*/
+
+      o->scalx *= -1.0;
+      o->scaly *= -1.0;
+      o->scalz *= -1.0;
+
+      for ( i = 0; i < 3; i++ )
+	{
+	  v1[i] *= -1;
+	}
+      for ( i = 0; i < 3; i++ )
+	{
+	  v2[i] *= -1;
+	}
+      for ( i = 0; i < 3; i++ )
+	{
+	  v3[i] *= -1;
+	}
+    }
+
+  /* now get rotation */
+  ry = asin(-v1[2]);
+  if(cos(ry) != 0)
+    {
+      rx = atan2(v2[2], v3[2]);
+      rz = atan2(v1[1], v1[0]);
+    }
+  else
+    {
+      rx = atan2(v2[0], v2[1]);
+      rz = 0;
+    }
+
+  if(fabs(rx) > AY_EPSILON)
+    {
+      axis[0] = 1.0;
+      axis[1] = 0.0;
+      axis[2] = 0.0;
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -rx, quat);
+      ay_quat_add(quat, o->quat, o->quat);
+      o->rotx = AY_R2D(rx);
+    }
+
+  if(fabs(ry) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 1.0;
+      axis[2] = 0.0;
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -ry, quat);
+      ay_quat_add(quat, o->quat, o->quat);
+      o->roty = AY_R2D(ry);
+    }
+
+  if(fabs(rz) > AY_EPSILON)
+    {
+      axis[0] = 0.0;
+      axis[1] = 0.0;
+      axis[2] = 1.0;
+      quat[0] = 0.0;
+      quat[1] = 0.0;
+      quat[2] = 0.0;
+      quat[3] = 1.0;
+      ay_quat_axistoquat(axis, -rz, quat);
+      ay_quat_add(quat, o->quat, o->quat);
+      o->rotz = AY_R2D(rz);
+    }
+
+ return;
+} /* ay_trafo_decompose */

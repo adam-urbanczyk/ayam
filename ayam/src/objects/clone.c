@@ -635,7 +635,7 @@ ay_clone_notifycb(ay_object *o)
  ay_object *down = NULL, *newo = NULL, **next = NULL, trafo = {0};
  ay_object *tr;
  int i = 0, use_trajectory = AY_FALSE, tr_iscopy = AY_FALSE;
- double euler[3], quat[4];
+ double euler[3], quat[4], m[16];
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
  double zaxis[3] = {0.0,0.0,1.0};
@@ -844,6 +844,28 @@ ay_clone_notifycb(ay_object *o)
 			  ay_quat_add(quat, newo->quat, newo->quat);
 			  newo->rotz = -euler[0];
 			}
+		      else
+			{
+			  if((fabs(euler[0]) > AY_EPSILON) ||
+			     (fabs(euler[1]) > AY_EPSILON) ||
+			     (fabs(euler[2]) > AY_EPSILON))
+			    {
+			      euler[0] = AY_R2D(euler[0]);
+			      euler[1] = AY_R2D(euler[1]);
+			      euler[2] = AY_R2D(euler[2]);
+			      ay_trafo_creatematrix(down, m);
+			      ay_trafo_rotatematrix(euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_rotatematrix(euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_scalematrix(-1.0, 1.0, 1.0, m);
+			      ay_trafo_translatematrix(2.0*down->movx,
+						       0.0, 0.0, m);
+			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_decompose(m, newo);
+			    }
+			}
 		      break;
 		    case 2:
 		      /* mirror at XZ plane */
@@ -858,6 +880,28 @@ ay_clone_notifycb(ay_object *o)
 			  ay_quat_add(quat, newo->quat, newo->quat);
 			  newo->rotz = -euler[1];
 			}
+		      else
+			{
+			  if((fabs(euler[0]) > AY_EPSILON) ||
+			     (fabs(euler[1]) > AY_EPSILON) ||
+			     (fabs(euler[2]) > AY_EPSILON))
+			    {
+			      euler[0] = AY_R2D(euler[0]);
+			      euler[1] = AY_R2D(euler[1]);
+			      euler[2] = AY_R2D(euler[2]);
+			      ay_trafo_creatematrix(down, m);
+			      ay_trafo_rotatematrix(euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_rotatematrix(euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_scalematrix(1.0, -1.0, 1.0, m);
+			      ay_trafo_translatematrix(0.0 2.0*down->movy,
+						       0.0, m);
+			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_decompose(m, newo);
+			    }
+			}
 		      break;
 		    case 3:
 		      /* mirror at XY plane */
@@ -871,6 +915,28 @@ ay_clone_notifycb(ay_object *o)
 			  ay_quat_axistoquat(xaxis, -2.0*euler[2], quat);
 			  ay_quat_add(quat, newo->quat, newo->quat);
 			  newo->rotz = -euler[2];
+			}
+		      else
+			{
+			  if((fabs(euler[0]) > AY_EPSILON) ||
+			     (fabs(euler[1]) > AY_EPSILON) ||
+			     (fabs(euler[2]) > AY_EPSILON))
+			    {
+			      euler[0] = AY_R2D(euler[0]);
+			      euler[1] = AY_R2D(euler[1]);
+			      euler[2] = AY_R2D(euler[2]);
+			      ay_trafo_creatematrix(down, m);
+			      ay_trafo_rotatematrix(euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_rotatematrix(euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_scalematrix(1.0, 1.0, -1.0, m);
+			      ay_trafo_translatematrix(0.0, 0.0,
+						       2.0*down->movz, m);
+			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
+			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
+			      ay_trafo_decompose(m, newo);
+			    }
 			}
 		      break;
 		    default:
