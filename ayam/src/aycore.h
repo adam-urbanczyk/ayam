@@ -827,8 +827,7 @@ int ay_pv_getst(ay_object *o, char *mys, char *myt, void **data);
 
 /*! \brief get vertex colors from PV tag
  */
-int
-ay_pv_getvc(ay_object *o, int stride, char *myc, void **data);
+int ay_pv_getvc(ay_object *o, int stride, char *myc, void **data);
 
 /*! \brief count PV tags of object o
  */
@@ -1533,8 +1532,7 @@ int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
-int
-ay_viewt_setupintview(int viewnum, ay_view_object *vtemp);
+int ay_viewt_setupintview(int viewnum, ay_view_object *vtemp);
 
 
 /* w32t.c */
