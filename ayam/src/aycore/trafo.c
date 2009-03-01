@@ -1121,7 +1121,8 @@ ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
 
 
 /* ay_trafo_creatematrix:
- *
+ *  initialize transformation matrix <m> from transformation
+ *  attributes of <o>
  */
 int
 ay_trafo_creatematrix(ay_object *o, double *m)
@@ -1174,7 +1175,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
 
 
 /* ay_trafo_identitymatrix:
- *
+ *  initialize transformation matrix <m> to identity
  */
 void
 ay_trafo_identitymatrix(double *m)
@@ -1191,7 +1192,7 @@ ay_trafo_identitymatrix(double *m)
 
 
 /* ay_trafo_translatematrix:
- *
+ *  add a translation to transformation matrix <m>
  */
 void
 ay_trafo_translatematrix(double x, double y, double z, double *m)
@@ -1207,7 +1208,7 @@ ay_trafo_translatematrix(double x, double y, double z, double *m)
 
 
 /* ay_trafo_scalematrix:
- *
+ *  add a scale transformation to transformation matrix m
  */
 void
 ay_trafo_scalematrix(double x, double y, double z, double *m)
@@ -1223,6 +1224,8 @@ ay_trafo_scalematrix(double x, double y, double z, double *m)
 
 
 /* ay_trafo_rotatematrix:
+ *  add a rotation of angle <angle> (expressed in degrees)
+ *  about axis <x>,<y>,<z> to transformation matrix <m>;
  *  code taken from Mesa (Erich Boleyn (erich@uruk.org))
  */
 void
@@ -1373,18 +1376,24 @@ ay_trafo_pointstoplane(double *p, double *e)
 } /* ay_trafo_pointstoplane */
 #endif
 
-/*
- * Matrix Decomposition Code borrowed from Graphics Gems II unmatrix.c
+
+/* ay_trafo_decomposematrix:
+ *  decompose transformation matrix <m> to transformation attributes of <o>;
+ *  Note well: shear components are completely ignored;
+ *  Matrix decomposition code borrowed from Graphics Gems II unmatrix.c.
  */
 void
-ay_trafo_decompose(double *m, ay_object *o)
+ay_trafo_decomposematrix(double *m, ay_object *o)
 {
  double v1[3], v2[3], v3[3], v4[3];
  double sx, sy, sz;
  double rx, ry, rz;
  int i;
  double axis[3], quat[4] = {0};
- char fname[] = "ay_trafo_decompose";
+ /*char fname[] = "ay_trafo_decompose";*/
+
+  if(!m || !o)
+    return;
 
   o->scalx = 1.0;
   o->scaly = 1.0;
@@ -1531,4 +1540,4 @@ ay_trafo_decompose(double *m, ay_object *o)
     }
 
  return;
-} /* ay_trafo_decompose */
+} /* ay_trafo_decomposematrix */
