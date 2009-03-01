@@ -1237,7 +1237,7 @@ int ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* tgui.c */
 
-/*! \brief 
+/*! \brief initialize tesselation GUI module
  */
 int ay_tgui_init(Tcl_Interp *interp);
 
@@ -1252,19 +1252,19 @@ int ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* toglcb.c */
 
-/*! \brief 
+/*! \brief create Togl callback
  */
 void ay_toglcb_create(struct Togl *togl);
 
-/*! \brief 
+/*! \brief destroy Togl callback
  */
 void ay_toglcb_destroy(struct Togl *togl);
 
-/*! \brief 
+/*! \brief reshape Togl callback (called e.g. when window is resized)
  */
 void ay_toglcb_reshape(struct Togl *togl);
 
-/*! \brief 
+/*! \brief display Togl callback
  */
 void ay_toglcb_display(struct Togl *togl);
 
@@ -1370,15 +1370,15 @@ int ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 int ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[]);
 
-/*! \brief 
+/*! \brief multiply two transformation matrices
  */
 int ay_trafo_multmatrix4(double *m1, double *m2);
 
-/*! \brief 
+/*! \brief invert transformation matrix
  */
 int ay_trafo_invmatrix4(double *m, double *mi);
 
-/*! \brief 
+/*! \brief apply transformations to all (editable) points of object o
  */
 int ay_trafo_apply(ay_object *o, double *p, int stride, int reusem);
 
@@ -1413,7 +1413,7 @@ void ay_trafo_pointstoplane(double x1, double y1, double z1,
 
 /*! \brief decompose transformation matrix m to transformation attributes of o
  */
-void ay_trafo_decompose(double *m, ay_object *o);
+void ay_trafo_decomposematrix(double *m, ay_object *o);
 
 
 /* undo.c */

@@ -863,7 +863,7 @@ ay_clone_notifycb(ay_object *o)
 			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
-			      ay_trafo_decompose(m, newo);
+			      ay_trafo_decomposematrix(m, newo);
 			    }
 			}
 		      break;
@@ -899,7 +899,7 @@ ay_clone_notifycb(ay_object *o)
 			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
-			      ay_trafo_decompose(m, newo);
+			      ay_trafo_decomposematrix(m, newo);
 			    }
 			}
 		      break;
@@ -935,7 +935,7 @@ ay_clone_notifycb(ay_object *o)
 			      ay_trafo_rotatematrix(-euler[2],1.0,0.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[1],0.0,1.0,0.0,m);
 			      ay_trafo_rotatematrix(-euler[0],0.0,0.0,1.0,m);
-			      ay_trafo_decompose(m, newo);
+			      ay_trafo_decomposematrix(m, newo);
 			    }
 			}
 		      break;
