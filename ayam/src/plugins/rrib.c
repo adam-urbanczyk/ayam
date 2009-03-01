@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2009 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -888,7 +888,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 	  p[2] = (double)(pp[2]);
 
 	  if(stride == 4)
-	    {	
+	    {
 	      p[3] = (double)(pp[3]);
 	    }
 	  else
@@ -986,7 +986,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 		 nc->knotv[k] = (double)*knotptr;
 		 knotptr++;
 	       }
-	
+
 	     if(!(nc->controlv = calloc((*nptr * 4), sizeof(double))))
 	       return;
 
@@ -2653,7 +2653,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	  p[2] = (double)(pp[2]);
 
 	  if(stride == 4)
-	    {	
+	    {
 	      p[3] = (double)(pp[3]);
 	    }
 	  else
@@ -3939,7 +3939,7 @@ ay_rrib_readshader(char *sname, int stype,
 		  sarg->val.color[1] = (float)((*col)[1]);
 		  sarg->val.color[2] = (float)((*col)[2]);
 		  break;
-		
+
 		case kRIB_POINTTYPE:
 		  sarg->type = AY_SAPOINT;
 		  pnt = (RtPoint *)(parms[i]);
@@ -3982,7 +3982,7 @@ ay_rrib_readshader(char *sname, int stype,
 		  link = AY_FALSE;
 		  break;
 		} /* switch */
-	
+
 
 	      /* link argument to shader */
 	      if(link)
@@ -4099,7 +4099,7 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	      sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
 		      (float)((*col)[2]));
 	      valstr = valbuf;
-	      break;		
+	      break;
 	    case kRIB_POINTTYPE:
 	      typechar = 'p';
 	      pnt = (RtPoint *)(parms[i]);
@@ -4230,7 +4230,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 	  sprintf(valbuf,"%f,%f,%f", (float)((*col)[0]),(float)((*col)[1]),
 		  (float)((*col)[2]));
 	  valstr = valbuf;
-	  break;		
+	  break;
 	case kRIB_POINTTYPE:
 	  typechar = 'p';
 	  pnt = (RtPoint *)(parms[i]);
@@ -4380,7 +4380,7 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return;
 	    }
-	
+
 	  if(!(nt->name = calloc(3, sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
@@ -5969,6 +5969,9 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_rrib_readribtcmd */
 
 
+/* Rrib_Init:
+ *  initialize rrib plugin
+ */
 #ifdef WIN32
   __declspec (dllexport)
 #endif /* WIN32 */
