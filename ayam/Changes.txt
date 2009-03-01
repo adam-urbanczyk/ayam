@@ -1,4 +1,4 @@
-[19. Feb 2009] CVS-Head:
+[1. Mar 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -14,11 +14,15 @@ o pick binding fires in any modeling action when Control key
   is held down (SF 2552310)
 o Tcl error in property GUI when text is entered in a numeric entry and
   the "/2" "*2" buttons are used (SF 2565110)
+o automatic instancing with ACurve objects (SF 2619643)
+o direct point edit dialog displaying <Enter> keys in entry (SF 2636606)
+o lost focus when <Enter> key is used in dynamic property GUI (SF 2637980)
+o caps of asymmetrically scaled sweeps (SF 2637630)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
   scrolls the widget accordingly
-o the widget is also scrolled properly when the tree is rebuilt
+o the tree widget is now also scrolled properly when the tree is rebuilt
 o added keyboard shortcuts to pan view windows (Shift+Cursor)
 
 Modelling:
