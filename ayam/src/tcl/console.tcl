@@ -1888,6 +1888,8 @@ bind Console <$META-Delete> {
     }
 }
 # XXXX
+bind Console <Escape> {resetFocus;break}
+# XXXX
 global ay ayprefs
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     set event <ButtonRelease-3>
