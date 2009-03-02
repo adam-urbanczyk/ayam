@@ -15,7 +15,7 @@
 /* trafo.c - functions for handling of linear transformations */
 
 /* ay_trafo_apply3:
- *
+ *  apply transformations in transformation matrix m[3][3] to point c[3]
  */
 void
 ay_trafo_apply3(double *c, double *m)
@@ -33,7 +33,7 @@ ay_trafo_apply3(double *c, double *m)
 
 
 /* ay_trafo_apply4:
- *
+ *  apply transformations in transformation matrix m[4][4] to point c[4]
  */
 void
 ay_trafo_apply4(double *c, double *m)
@@ -363,7 +363,7 @@ ay_trafo_getallir(ay_list_object *lo)
 
 
 /* ay_trafo_delegate:
- *  delegate all transformations to child objects of object o,
+ *  delegate all transformations to child objects of object <o>,
  *  resetting its own transformations
  */
 int
@@ -462,7 +462,7 @@ ay_trafo_delegate(ay_object *o)
  *
  */
 int
-ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -640,7 +640,7 @@ ay_trafo_defaults(ay_object *o)
  *
  */
 int
-ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -682,7 +682,7 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -739,7 +739,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -788,7 +788,7 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -818,7 +818,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 
   glMatrixMode (GL_MODELVIEW);
   glPushMatrix();
-   glScaled(dx,dy,dz);
+   glScaled(dx, dy, dz);
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
@@ -830,8 +830,8 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 	  point = o->selp;
 	  while(point)
 	    {
-	      AY_APTRAN3(tpoint,point->point,mm);
-	      memcpy(point->point,tpoint,3*sizeof(double));
+	      AY_APTRAN3(tpoint, point->point, mm);
+	      memcpy(point->point, tpoint, 3*sizeof(double));
 
 	      point = point->next;
 	    }
@@ -840,7 +840,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 
       sel = sel->next;
-    }
+    } /* while */
 
   ay_notify_parent();
 
@@ -852,7 +852,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -902,7 +902,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
 	}
 
       sel = sel->next;
-    }
+    } /* while */
 
   ay_notify_parent();
 
@@ -914,7 +914,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
+ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -937,9 +937,9 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 
   glMatrixMode (GL_MODELVIEW);
   glPushMatrix();
-   glRotated(dx,1.0,0.0,0.0);
-   glRotated(dy,0.0,1.0,0.0);
-   glRotated(dz,0.0,0.0,1.0);
+   glRotated(dx, 1.0, 0.0, 0.0);
+   glRotated(dy, 0.0, 1.0, 0.0);
+   glRotated(dz, 0.0, 0.0, 1.0);
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
@@ -948,7 +948,6 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
       o = sel->object;
       if(o)
 	{
-
 	  point = o->selp;
 	  while(point)
 	    {
@@ -958,12 +957,13 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 	      point = point->next;
 	    }
 	  if(o->selp)
-	    o->modified = AY_TRUE;
-
-	}
+	    {
+	      o->modified = AY_TRUE;
+	    }
+	} /* if */
 
       sel = sel->next;
-    }
+    } /* while */
 
   ay_notify_parent();
 
@@ -971,9 +971,9 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_trafo_rotseltcmd */
 
 
-/*
- * ay_trafo_multmatrix4:
- *
+/* ay_trafo_multmatrix4:
+ *  multiply transformation matrices <m1> and <m2> (do M1.M2),
+ *  put result into <m1>
  */
 int
 ay_trafo_multmatrix4(double *m1, double *m2)
@@ -984,19 +984,18 @@ ay_trafo_multmatrix4(double *m1, double *m2)
   if(!m1 || !m2)
     return AY_ENULL;
 
-  for (j = 0; j < 4; j++)
+  for(j = 0; j < 4; j++)
     {
-      for (i = 0; i < 4; i++)
+      for(i = 0; i < 4; i++)
 	{
 	  t = 0.0;
-	  for (k = 0; k < 4; k++)
+	  for(k = 0; k < 4; k++)
 	    {
 	      t += m1[k*4+i] * m2[j*4+k];
 	    }
 	  mt[j*4+i] = t;
 	}
     }
-
 
   memcpy(m1, mt, 16*sizeof(double));
 
@@ -1005,8 +1004,8 @@ ay_trafo_multmatrix4(double *m1, double *m2)
 
 #define MAT(m,r,c) (m)[(c)*4+(r)]
 
-/*
- * ay_trafo_invmatrix4:
+/* ay_trafo_invmatrix4:
+ *  invert transformation matrix <m>, put result into <mi>;
  *  borrowed from Mesa3.2.1/matrix.c which in turn borrowed it
  *  from Graphics Gems II
  */
@@ -1018,7 +1017,6 @@ ay_trafo_invmatrix4(double *m, double *mi)
 
   if(!m || !mi)
     return AY_ENULL;
-
 
    /* Calculate the determinant of upper left 3x3 submatrix and
     * determine if the matrix is singular.
@@ -1076,50 +1074,6 @@ ay_trafo_invmatrix4(double *m, double *mi)
 
 #undef MAT
 
-/* ay_trafo_apply:
- *
- */
-int
-ay_trafo_apply(ay_object *o, double *p, int stride, int reusem)
-{
- static double m[16];
- double rm[16];
- char fname[] = "ay_trafo_apply";
-
-  if (!o || !p)
-    return AY_ENULL;
-
-  if (!reusem)
-    {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-       glLoadIdentity();
-       glTranslated((GLdouble)o->movx, (GLdouble)o->movy, (GLdouble)o->movz);
-       ay_quat_torotmatrix(o->quat, rm);
-       glMultMatrixd((GLdouble *)rm);
-       glScaled((GLdouble)o->scalx, (GLdouble)o->scaly, (GLdouble)o->scalz);
-       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-      glPopMatrix();
-    }
-
-  switch (stride)
-    {
-    case 3:
-      ay_trafo_apply3(p, m);
-      break;
-    case 4:
-      ay_trafo_apply4(p, m);
-      break;
-    default:
-      ay_error(AY_ERROR, fname, "cannot handle this stride");
-      break;
-    }
-
- return AY_OK;
-} /* ay_trafo_apply */
-
-
-
 /* ay_trafo_creatematrix:
  *  initialize transformation matrix <m> from transformation
  *  attributes of <o>
@@ -1141,6 +1095,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
   m[14] = o->movz;
   m[15] = 1.0;
 
+  /* if(o->quat[4]!=1.0...)*/
   q = o->quat;
   memset(mr, 0, 16*sizeof(double));
   mr[0] = (1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
@@ -1408,12 +1363,16 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
 
   quat[3] = 1.0;
 
-  if(fabs(m[15]) <= AY_EPSILON )
-    return;
+  if(fabs(m[15]) <= AY_EPSILON)
+    {
+      return;
+    }
 
   /* normalize matrix */
   for(i = 0; i < 16; i++)
+    {
       m[i] /= m[15];
+    }
 
   /* decompose matrix */
 
@@ -1470,19 +1429,19 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
       o->scaly *= -1.0;
       o->scalz *= -1.0;
 
-      for ( i = 0; i < 3; i++ )
+      for(i = 0; i < 3; i++)
 	{
 	  v1[i] *= -1;
 	}
-      for ( i = 0; i < 3; i++ )
+      for(i = 0; i < 3; i++)
 	{
 	  v2[i] *= -1;
 	}
-      for ( i = 0; i < 3; i++ )
+      for(i = 0; i < 3; i++)
 	{
 	  v3[i] *= -1;
 	}
-    }
+    } /* if */
 
   /* now get rotation */
   ry = asin(-v1[2]);
