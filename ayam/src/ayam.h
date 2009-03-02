@@ -1454,6 +1454,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_COMP2DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
                             (fabs(P1[1]-P2[1]) < AY_EPSILON))
 
+#define AY_M44(m,r,c) ((m)[(c)*4+(r)])
+
 /* Version Strings and Numbers */
 #define AY_VERSIONSTR "1.15"
 #define AY_VERSIONSTRMI "0"
