@@ -368,8 +368,8 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
    nextcontrols = 0, oldpmncontrols = 0;
  int has_normals = -1, stride = 0;
- double dummy[3] = {0};
- int have_pv_tags = AY_TRUE;
+ double tm[16];
+ int have_trafo = AY_FALSE, have_pv_tags = AY_TRUE;
  ay_tag *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
  char *ct;
 
@@ -475,6 +475,24 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
       o = lo->object;
       if(o->type == AY_IDPOMESH)
 	{
+	  if((fabs(o->movx) > AY_EPSILON) ||
+	     (fabs(o->movy) > AY_EPSILON) ||
+	     (fabs(o->movz) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scalx) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scaly) > AY_EPSILON) ||
+	     (fabs(1.0 - o->scalz) > AY_EPSILON) ||
+	     (fabs(o->quat[0]) > AY_EPSILON) ||
+	     (fabs(o->quat[1]) > AY_EPSILON) ||
+	     (fabs(o->quat[2]) > AY_EPSILON) ||
+	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	    {
+	      have_trafo = AY_TRUE;
+	    }
+	  else
+	    {
+	      have_trafo = AY_TRUE;
+	    }
+
 	  i++;
 	  pm = (ay_pomesh_object*)o->refine;
 
@@ -507,29 +525,23 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
 	  /* if the object has non-default transformation attributes,
 	     we also need to transform the control points */
-	  if((fabs(o->movx) > AY_EPSILON) ||
-	     (fabs(o->movy) > AY_EPSILON) ||
-	     (fabs(o->movz) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scalx) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scaly) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scalz) > AY_EPSILON) ||
-	     (fabs(o->quat[0]) > AY_EPSILON) ||
-	     (fabs(o->quat[1]) > AY_EPSILON) ||
-	     (fabs(o->quat[2]) > AY_EPSILON) ||
-	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	  if(have_trafo)
 	    {
 	      k = 0;
-	      ay_trafo_apply(o, dummy, 3, AY_FALSE);
+	      ay_trafo_creatematrix(o, tm);
 	      for(j = 0; j < pm->ncontrols; j++)
 		{
 		  memcpy(&(npm->controlv[nextcontrols + k]),
 			 &(pm->controlv[k]),
 			 stride * sizeof(double));
-		  ay_trafo_apply(o, &(npm->controlv[nextcontrols + k]), 3,
-				 AY_TRUE);
+
+		  ay_trafo_apply3(&(npm->controlv[nextcontrols + k]), tm);
+
 		  k += stride;
 		} /* for */
-	    } else {
+	    }
+	  else
+	    {
 	      memcpy(&(npm->controlv[nextcontrols]), pm->controlv,
 		     stride * pm->ncontrols * sizeof(double));
 	    }

@@ -1377,10 +1377,6 @@ int ay_trafo_multmatrix4(double *m1, double *m2);
  */
 int ay_trafo_invmatrix4(double *m, double *mi);
 
-/*! \brief apply transformations to all (editable) points of object o
- */
-int ay_trafo_apply(ay_object *o, double *p, int stride, int reusem);
-
 /*! \brief initialize transformation matrix m from transformation
  *  attributes of o
  */
