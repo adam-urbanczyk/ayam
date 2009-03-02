@@ -770,12 +770,12 @@ int ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 /*! \brief Tcl command to get the material property
  */
 int ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+		       int argc, char *argv[]);
 
 /*! \brief Tcl command to set the material property
  */
 int ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+		       int argc, char *argv[]);
 
 /*! \brief
  */
@@ -1347,12 +1347,12 @@ int ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 /*! \brief Tcl command to move the selected points of an object
  */
 int ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
+			int argc, char *argv[]);
 
 /*! \brief Tcl command to scale an object
  */
 int ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
+			int argc, char *argv[]);
 
 /*! \brief Tcl command to scale the selected points of an object
  */
@@ -1382,6 +1382,10 @@ int ay_trafo_invmatrix4(double *m, double *mi);
  */
 int ay_trafo_creatematrix(ay_object *o, double *m);
 
+/*! \brief decompose transformation matrix m to transformation attributes of o
+ */
+void ay_trafo_decomposematrix(double *m, ay_object *o);
+
 /*! \brief initialize transformation matrix m to identity
  */
 void ay_trafo_identitymatrix(double *m);
@@ -1399,16 +1403,12 @@ void ay_trafo_scalematrix(double x, double y, double z, double *m);
 void ay_trafo_rotatematrix(double angle, double x, double y, double z,
 			   double *m);
 
-/*! \brief
+/*! \brief convert 3 points to plane equation coefficients
  */
 void ay_trafo_pointstoplane(double x1, double y1, double z1,
 			    double x2, double y2, double z2,
 			    double x3, double y3, double z3,
 			    double *A, double *B, double *C, double *D);
-
-/*! \brief decompose transformation matrix m to transformation attributes of o
- */
-void ay_trafo_decomposematrix(double *m, ay_object *o);
 
 
 /* undo.c */
