@@ -1208,7 +1208,7 @@ proc actionClear { w } {
     }
 
     set p [winfo parent [winfo parent $w]]
-    after 100 "bind $p <$ayviewshortcuts(Break)> \"focus -force .\""
+    after 100 "bind $p <$ayviewshortcuts(Break)> \"resetFocus\""
     after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
 
  return;
