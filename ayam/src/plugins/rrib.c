@@ -613,8 +613,6 @@ void ay_rrib_pushtrafos(void);
 
 void ay_rrib_poptrafos(void);
 
-void ay_rrib_trafotoobject(ay_object *o, double *transform);
-
 int ay_rrib_comptags(ay_object *o1, ay_object *o2);
 
 void ay_rrib_linkmaterial(ay_object *o);
@@ -1216,7 +1214,7 @@ ay_rrib_RiLightSource(RtToken name,
   ay_rrib_co.refine = (void *)(&l);
   ay_rrib_co.type = AY_IDLIGHT;
 
-  ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
+  ay_trafo_decomposematrix(ay_rrib_ctrafos->m, &ay_rrib_co);
 
   if(rrib_scalefactor != 1.0)
     {
@@ -2246,7 +2244,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 	      /* XXXX should we rather concatenate the current transformations
 		 to the transformations of the objects in object handle? */
 
-	      ay_rrib_trafotoobject(c, ay_rrib_ctrafos->m);
+	      ay_trafo_decomposematrix(ay_rrib_ctrafos->m, c);
 	      /*
 	      for(j = 0; j < 16; j++)
 		{
@@ -2289,7 +2287,7 @@ ay_rrib_RiObjectInstance(RtObjectHandle handle)
 		  ay_trafo_multmatrix4(m, mt);
 		}
 		ay_trafo_multmatrix4(m, ay_rrib_ctrafos->m);
-		ay_rrib_trafotoobject(c, m);
+		ay_trafo_decomposematrix(m, c);
 	      */
 	      ay_object_link(c);
 	    } /* if */
@@ -5037,167 +5035,6 @@ ay_rrib_poptrafos(void)
 } /* ay_rrib_poptrafos */
 
 
-/*
- * Matrix Decomposition Code borrowed from Graphics Gems II unmatrix.c
- */
-void
-ay_rrib_trafotoobject(ay_object *o, double *transform)
-{
- double v1[3], v2[3], v3[3], v4[3];
- double sx, sy, sz;
- double rx, ry, rz;
- int i;
- double axis[3], quat[4] = {0};
- char fname[] = "ay_rrib_trafotoobject";
-
-  o->scalx = 1.0;
-  o->scaly = 1.0;
-  o->scalz = 1.0;
-  o->quat[0] = 0.0;
-  o->quat[1] = 0.0;
-  o->quat[2] = 0.0;
-  o->quat[3] = 1.0;
-  o->rotx = 0.0;
-  o->roty = 0.0;
-  o->rotz = 0.0;
-
-  quat[3] = 1.0;
-
-  if(fabs(transform[15]) <= AY_EPSILON )
-    return;
-
-  /* normalize matrix */
-  for(i = 0; i < 16; i++)
-      transform[i] /= transform[15];
-
-  /* decompose matrix */
-
-  /* get translation */
-  o->movx = (double)transform[12];
-  o->movy = (double)transform[13];
-  o->movz = (double)transform[14];
-
-  /* get row vectors containing scale&rotation */
-  v1[0] = (double)transform[0];
-  v1[1] = (double)transform[1];
-  v1[2] = (double)transform[2];
-
-  v2[0] = (double)transform[4];
-  v2[1] = (double)transform[5];
-  v2[2] = (double)transform[6];
-
-  v3[0] = (double)transform[8];
-  v3[1] = (double)transform[9];
-  v3[2] = (double)transform[10];
-
-  /* get scale */
-  sx = AY_V3LEN(v1);
-  sy = AY_V3LEN(v2);
-  sz = AY_V3LEN(v3);
-
-  /* normalize row vectors */
-  if(fabs(sx) > AY_EPSILON)
-    {
-      o->scalx *= sx;
-      AY_V3SCAL(v1, 1.0/sx);
-    }
-  if(fabs(sy) > AY_EPSILON)
-    {
-      o->scaly *= sy;
-      AY_V3SCAL(v2, 1.0/sy);
-    }
-  if(fabs(sz) > AY_EPSILON)
-    {
-      o->scalz *= sz;
-      AY_V3SCAL(v3, 1.0/sz);
-    }
-
-  /*
-   * Check for a coordinate system flip.  If the determinant
-   * is -1, then negate the matrix and the scaling factors.
-   */
-  AY_V3CROSS(v4, v2, v3)
-  if(AY_V3DOT(v1, v4) < 0)
-    {
-      ay_error(AY_EWARN, fname, "Coordinate system flip detected!");
-
-      o->scalx *= -1.0;
-      o->scaly *= -1.0;
-      o->scalz *= -1.0;
-
-      for ( i = 0; i < 3; i++ )
-	{
-	  v1[i] *= -1;
-	}
-      for ( i = 0; i < 3; i++ )
-	{
-	  v2[i] *= -1;
-	}
-      for ( i = 0; i < 3; i++ )
-	{
-	  v3[i] *= -1;
-	}
-    }
-
-  /* now get rotation */
-  ry = asin(-v1[2]);
-  if(cos(ry) != 0)
-    {
-      rx = atan2(v2[2], v3[2]);
-      rz = atan2(v1[1], v1[0]);
-    }
-  else
-    {
-      rx = atan2(v2[0], v2[1]);
-      rz = 0;
-    }
-
-  if(fabs(rx) > AY_EPSILON)
-    {
-      axis[0] = 1.0;
-      axis[1] = 0.0;
-      axis[2] = 0.0;
-      quat[0] = 0.0;
-      quat[1] = 0.0;
-      quat[2] = 0.0;
-      quat[3] = 1.0;
-      ay_quat_axistoquat(axis, -rx, quat);
-      ay_quat_add(quat, o->quat, o->quat);
-      o->rotx = AY_R2D(rx);
-    }
-
-  if(fabs(ry) > AY_EPSILON)
-    {
-      axis[0] = 0.0;
-      axis[1] = 1.0;
-      axis[2] = 0.0;
-      quat[0] = 0.0;
-      quat[1] = 0.0;
-      quat[2] = 0.0;
-      quat[3] = 1.0;
-      ay_quat_axistoquat(axis, -ry, quat);
-      ay_quat_add(quat, o->quat, o->quat);
-      o->roty = AY_R2D(ry);
-    }
-
-  if(fabs(rz) > AY_EPSILON)
-    {
-      axis[0] = 0.0;
-      axis[1] = 0.0;
-      axis[2] = 1.0;
-      quat[0] = 0.0;
-      quat[1] = 0.0;
-      quat[2] = 0.0;
-      quat[3] = 1.0;
-      ay_quat_axistoquat(axis, -rz, quat);
-      ay_quat_add(quat, o->quat, o->quat);
-      o->rotz = AY_R2D(rz);
-    }
-
- return;
-} /* ay_rrib_trafotoobject */
-
-
 int
 ay_rrib_comptags(ay_object *o1, ay_object *o2)
 {
@@ -5516,7 +5353,7 @@ ay_rrib_linkobject(void *object, int type)
   ay_rrib_co.refine = object;
   ay_rrib_co.type = type;
 
-  ay_rrib_trafotoobject(&ay_rrib_co, ay_rrib_ctrafos->m);
+  ay_trafo_decomposematrix(ay_rrib_ctrafos->m, &ay_rrib_co);
 
   if(type == AY_IDNPATCH)
     {
