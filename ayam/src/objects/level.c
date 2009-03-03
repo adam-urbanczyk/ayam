@@ -294,6 +294,7 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  ay_object *t = NULL, *d, **last;
  ay_level_object *l = NULL;
+ double m1[16], m2[16], m3[16];
 
   if(!o)
     return AY_ENULL;
@@ -327,6 +328,8 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(!o->down || (o->down && !o->down->next))
     return AY_ERROR;
 
+  ay_trafo_creatematrix(o, m1);
+
   d = o->down;
   last = result;
   while(d->next)
@@ -338,6 +341,11 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(*last)
 	    {
 	      /*ay_trafo_add(o, *last);*/
+	      memcpy(m3, m1, 16*sizeof(double));
+	      ay_trafo_creatematrix(*last, m2);
+	      ay_trafo_multmatrix4(m3, m2);
+	      ay_trafo_decomposematrix(m3, *last);
+
 	      last = &((*last)->next);
 	    }
 	}
@@ -347,8 +355,11 @@ ay_level_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  t = *last;
 	  while(t)
 	    {
-	      if(d->type == AY_IDLEVEL)
-		ay_trafo_add(d, t);
+	      memcpy(m3, m1, 16*sizeof(double));
+	      ay_trafo_creatematrix(t, m2);
+	      ay_trafo_multmatrix4(m3,m2);
+	      ay_trafo_decomposematrix(m3, t);
+
 	      last = &(t->next);
 	      t = t->next;
 	    } /* while */
