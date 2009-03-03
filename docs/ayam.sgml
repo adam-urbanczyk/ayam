@@ -9448,6 +9448,34 @@ The script <tt>"zdialog.tcl"</tt> switches all file dialogs of
 Ayam to use the zenity application of the Gnome project instead
 of the native Tk file dialog.
 
+<sect2>Use Aqsis from Application Directory<label id="useaqsisapptcl">
+<p>
+The script <tt>"useaqsisapp.tcl"</tt> sets up Ayam to use Aqsis
+from the application directory structure (<tt>"/Applications/Aqsis.app"</tt>)
+on Mac OS X. This is the default installation location of Aqsis on Mac OS X.
+<p>
+The script adapts the executable and shader search paths.
+Furthermore, environment variables vital for Aqsis to work will
+be set up properly.
+<p>
+Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
+preferences, you still have to switch to Aqsis using the main menu
+<tt>"Special/Select Renderer"</tt> once.
+
+<sect2>Use Pixie from Library Directory<label id="usepixietcl">
+<p>
+The script <tt>"usepixie.tcl"</tt> sets up Ayam to use Pixie
+from the <tt>"/Library/pixie"</tt> directory on Mac OS X.
+This is the default installation location of Pixie on Mac OS X.
+<p>
+The script adapts the executable, shared library, and shader search paths.
+Furthermore, environment variables vital for Pixie to work will
+be set up properly.
+<p>
+Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
+preferences, you still have to switch to Pixie using the main menu
+<tt>"Special/Select Renderer"</tt> once.
+
 
 <sect>Import and Export<label id="impex">
 <p>
@@ -10853,11 +10881,14 @@ variable <tt>AYAMRC</tt> or is determined as following:
 <itemize>
 <item>On Unix it is <tt>"&tilde;/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
 denotes the home directory of the current user.
-<item>On Win32 platforms (Windows95 - XP) it is
+<item>On the Win32 platform (Windows95 - XP) it is
 <tt>"&dollar;(HOME)/ayamrc"</tt> if the environment variable
 <tt>HOME</tt> exists, else <tt>"&dollar;(TEMP)/ayamrc"</tt>.<p>
 <item>On Mac OS X Aqua (not X11!) it is
 <tt>"&tilde;/Library/Preferences/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
+denotes the home directory of the current user.
+<item>On Mac OS X X11 (not Aqua!) it is
+<tt>"&tilde;/.ayamrc"</tt>, where <tt>"&tilde;"</tt>
 denotes the home directory of the current user.
 </itemize>
 
@@ -12524,10 +12555,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="textattr" name="text attribute">
 <item>Up Vector: <ref id="camp" name="camera property">
 <item>uS: <ref id="scus" name="scripting interface command">
+<item>useaqsisapp: <ref id="useaqsisapptcl" name="example/helper script">
 <item>UseGrid: <ref id="vat" name="view attribute">,
 <ref id="vmconf" name="view menu entry">
 <item>UseInternalFD: <ref id="hidprefs" name="hidden preference setting">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
+<item>usepixie: <ref id="usepixietcl" name="example/helper script">
 <item>UseSM: <ref id="lip" name="light attribute">
 </itemize>
 
