@@ -953,13 +953,18 @@ proc tree_toggle { } {
 # Reset/Rebuild tree
 proc tree_reset { } {
     global ay
+
+    cS
+    plb_update
+    rV
+
     tree_update root
     set ay(CurrentLevel) "root"
     set ay(SelectedLevel) "root"
-    tree_selectItem 1 $ay(tree) "root:0"
+    #tree_selectItem 1 $ay(tree) "root:0"
     tree_paintLevel "root"
     $ay(tree) see "root:0"
-    plb_update
+
 }
 #tree_reset
 
