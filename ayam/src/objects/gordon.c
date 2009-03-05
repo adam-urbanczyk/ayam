@@ -535,7 +535,7 @@ ay_gordon_notifycb(ay_object *o)
 	      ay_status = ay_provide_object(down, AY_IDNCURVE, &c);
 	    } /* if */
 
-	  if(c)
+	  while(c)
 	    {
 	      /* immediately apply transformation attributes to
 		 control points */
@@ -558,7 +558,8 @@ ay_gordon_notifycb(ay_object *o)
 	      /* link curve to list */
 	      if(getvcurves)
 		{
-		  hcount++;
+		  /* get v curves */
+		  vcount++;
 		  if(last)
 		    last->next = c;
 		  else
@@ -566,15 +567,17 @@ ay_gordon_notifycb(ay_object *o)
 		}
 	      else
 		{
-		  vcount++;
+		  /* get h curves */
+		  hcount++;
 		  if(last)
 		    last->next = c;
 		  else
 		    hcurves = c;
 		}
-
+	      
 	      last = c;
-	    } /* if */
+	      c = c->next;
+	    } /* while */
 	}
       else
 	{
@@ -720,7 +723,9 @@ cleanup:
     }
 
   if(inpatch)
-    ay_object_delete(inpatch);
+    {
+      ay_object_delete(inpatch);
+    }
 
  return ay_status;
 } /* ay_gordon_notifycb */
