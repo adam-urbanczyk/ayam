@@ -8,8 +8,12 @@
 # See the file License for details.
 
 # winheader.tcl - create import/export versions of the Ayam headers
-# Usage: wish scripts/winheader.tcl
-# Note: sub-directories "imp"/"exp" have to exist
+# for compilation on Win32
+
+# Usage:
+# > cd ayam/src
+# > wish scripts/winheader.tcl
+# Note: sub-directories "imp" / "exp" have to exist!
 
 set modules [list aycore.h contrib.h nurbs.h objects.h]
 
