@@ -218,7 +218,7 @@ object called <tt/"Root"/ in the top level of the scene, even though the
 scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
-Note that you cannot delete or copy this object.
+Note that you can not delete or copy this object.
 
 <bf/Object Tree View:/<label id="treeview">
 <p>
@@ -630,8 +630,13 @@ Mind that in this case, no backup copy of the file will be made.
 See also section <ref id="impex" name="Import and Export">.
 
 <item><tt/"Insert"/, inserts the objects and views of an Ayam scene file
-into the current scene. All objects from the file will be read. The new
+into the current scene. All objects from the file will be read.
+If the file to be inserted contains a Root or View objects, the new
 objects will be created in the top level of the scene.
+Otherwise, if just geometric objects are in the scene file (i.e. the file
+was created using <tt>"Special/Save Selected"</tt>), the new objects
+will be inserted in the current level of the scene.
+<p>
 This operation is not undoable!
 <p>
 Since Ayam 1.13 also files supported by any of the import plugins
@@ -695,7 +700,7 @@ for more information.
 Wavefront OBJ file, see also section
 <ref id="expwav" name="Wavefront OBJ export">.
 
-<item><tt>"Import/Web3D X3D"</tt>, export a scene to the XML
+<item><tt>"Export/Web3D X3D"</tt>, export a scene to the XML
 based X3D format published by the Web3D Consortium, see section
 <ref id="expx3d" name="X3D (Web3D) Export">
 for more information.
@@ -2462,7 +2467,7 @@ see section <ref id="tags" name="Tags">.
 <sect1>Root Object<label id="rootobj">
 <p>
 There is always exactly one Root object in the scene.
-This object is something special in that it cannot be deleted
+This object is something special in that it can not be deleted
 or copied.
 The Root object holds options global to the scene like RiOptions,
 atmosphere and imager shaders. Furthermore, all currently open
@@ -3139,7 +3144,7 @@ interface, normal Ayam light sources are always global. This
 means, regardless of the place of a light source in the scene
 hierarchy, it will always light all other objects.
 <p>
-Note that you cannot preview the effect of a light source in
+Note that you can not preview the effect of a light source in
 shaded Ayam views, currently. However it is possible to estimate
 the effect of a spot light source by simply dropping it into
 a perspective view window, the view will then show you the objects
@@ -3861,43 +3866,52 @@ defined.
 
 <sect1>Instance Object<label id="instanceobj">
 <p>
+Instance objects help to save memory consumption in scenes with many
+similar or repeating objects.
+<p>
 The term instance is unfortunately misleading (and can be very confusing
 if you are accustomed to the terminology of object oriented programming),
 but it is the term that seems to be used and understood by most
 computer graphic artists. A better term would be link, as an instance
 object has the same basic properties as a link in a Unix file system.
 A link is just a pointer to an original file, the same goes for
-an instance object: it is just a pointer to an original object (master).
+an instance object: it is just a pointer to an original object (here
+also called master object).
 A link can be placed anywhere on the file system,
 an instance object can be placed anywhere in the scene hierarchy, and
 additionally, it can be transformed (otherwise it would be pretty
-useless).<p>
-Normally, the sole purpose of instance objects is to save storage space, in
-memory and on the disk. But in the tool object context, instances
+useless).
+<p>
+Normally, the sole purpose of instance objects is to save storage space,
+in memory and on the disk. But in the tool object context, instances
 also serve as a means to transport geometric data across the scene
-hierarchy (see also section
+hierarchy to make tool objects depend on each other (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+<p>
 The amount of saved space can be very high, depending heavily on the
-actual scene. If there are no similar objects in the scene, however,
-one can hardly utilise instancing. Similar means "the same except for
+actual scene and at what levels in the hierarchy instances are used.
+If there are no similar objects in the scene, however, one can hardly
+utilise instancing. Similar means "the same except for
 the transformation property" in this context.
 <p>
 Some simple rules for instancing:
+
 <itemize>
 <item>No instances may be created of objects of the following types:
 Root, View, Instance, Material, Light. Do not try to fool
 Ayam and create instances of levels that contain aforementioned
-types of objects, things will go awry! You may, however, put some instances
+types of objects, things will go awry!
+<item>You may, however, put some instances
 into a level object and create instances of this level
-(this is sometimes called hierarchical instancing). But you may not
-put instances of a level into the very same level (this would
-be recursive instancing, which is not supported by Ayam).
+(this is sometimes called hierarchical instancing).
+<item>But you may not put instances of a level into the very same
+level (this would be recursive instancing, which is not supported by Ayam).
 <item>The original object may not be deleted from the scene
 as long as there are instances of that object in the scene or in the
 object clipboard.
 </itemize>
 
-If you cannot delete an object, and the error message tells
+If you can not delete an object, and the error message tells
 you something about a reference counter, then you were about
 to violate the second rule. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
@@ -4246,7 +4260,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 All curves forming holes in the extruded object must be defined inside
 (geometrically) the first curve (the outline curve). Additionally,
-they may not intersect each other or themself and you cannot have hole
+they may not intersect each other or themself and you can not have hole
 curves inside hole curves. If there are bevels and caps, allow extra
 spacing between the curves (for the bevels).
 Ayam will not check whether your curves conform to these criteria!
@@ -10821,8 +10835,11 @@ by the so called <em>Notification</em> mechanism. The notification mechanism
 makes sure that whenever the parameter objects change, the tool object is
 informed so that it may adapt to the changes.
 <p>
-In the example above, a NURBS curve is the parameter object, and the
+In the example above, a NURBS curve is the parameter object and the
 tool object is creating a surface of revolution from the curve data.
+The NURBS curve and parameters of the Revolve object may change at any
+time. When saved to an Ayam scene file, no surface data will be written,
+leading to very small files that additionally contain a modelling history.
 <p>
 Tool objects may be parameter objects of other tool objects:
 <code>
@@ -10858,7 +10875,8 @@ The notification mechanism is aware of this and initiates updates
 in the scene hierarchy wherever needed and efficiently (not updating any
 objects twice) according to the <tt/"CompleteNotify"/ main preference
 setting. In the example above, due to complete notification, the second
-Revolve object will get updated automatically whenever the NCurve changes.
+Revolve object will get updated automatically whenever the original
+NCurve object changes.
 <p>
 Two other mechanisms exist, that help tool objects to get the information
 they need and to increase flexibility in hierarchy building and modelling:
