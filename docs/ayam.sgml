@@ -168,7 +168,7 @@ is called single window GUI mode, see also the image above.
 The new single window GUI mode is enabled by default. All sub windows are
 in panes, the space occupied by a sub window may be adjusted by dragging
 the mouse at the borderlines of the panes. The number of views is not
-limited to three, albeit all extra views will become top level windows.
+limited to three, albeit all extra views will become extra top level windows.
 <p>
 The next sections document the three types of windows, main, toolbar,
 and views in detail.
@@ -537,6 +537,13 @@ shader property to an object which does not already have the same shader!
 
 <sect2>The Console<label id="cons">
 <p>
+<figure loc="ht">
+<eps file="pics/console.ps" height="2cm">
+<img src="pics/console.gif">
+<caption>Console</caption>
+</figure>
+<p>
+
 The third part of the main window is the console. The console is mainly
 for text output (informative, warning, and error messages). For this,
 the console captures the stderr and stdout channels of the Tcl-interpreter
@@ -9282,45 +9289,55 @@ to the toolbox.
 myImage should be an image created e.g. from a GIF file of
 the size 25 by 25 pixels.
 <code>
-global ay
+global ay ayprefs
 
 # create an image from a GIF file:
 image create photo myImage -format gif -file /home/user/giffile
 
-set b .tbw.f.mybutton
+if { $ayprefs(SingleWindow) } {
+  set b .fv.fTools.f.mybutton
+} else {
+  set b .tbw.f.mybutton
+}
 
-# if the button not already exists:
+# if the button does not already exist:
 if { ![winfo exists $b] } {
 
   # create it:
   button $b -padx 0 -pady 0 -image myImage -command myCommand
 
   # tell Ayam about the new button:
-  # you can use linsert, to insert the button in a specific
-  # place or just append to the end of the list
+  # you can use "linsert", to insert the button in a specific
+  # place or just append to the end of the list using "lappend"
   lappend ay(toolbuttons) mybutton
 
   # display the button:
+  toolbox_layout
+
   # from now on, it will be under the
   # automatic toolbox layout management
-  toolbox_layout
 }
 </code>
 
-This example shows that a) buttons have to be created in the
-frame <tt/".tbw.f"/
-b) Ayam manages a list of all buttons in the global array ay
+This example shows that a) toolbox buttons have to be created in the
+frame <tt/".tbw.f"/ for multi-window GUI configurations or
+<tt/".fv.fTools.f"/ for single-window GUI configurations,
+b) Ayam manages a list of all toolbox buttons in the global array ay
 in <tt/"ay(toolbuttons)"/, the order in that list is the order
-in which buttons appear in the toolbox c) automatic layout
+in which the buttons appear in the toolbox, c) automatic layout
 management is carried out by the procedure <tt/"toolbox_layout"/.
 <p>
 Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
-icon button scheme with its constant button size.
+icon button scheme with its constant button size. However,
+since Ayam 1.14, the procedure <tt/"toolbox_add"/ can be of
+considerable help (see the file <tt/"scripts/topoly.tcl"/
+for an example).
 <p>
 Here is an example that adds two buttons to the bottom of the
 toolbox spanning the whole window (this works best with the
-standard toolbox layout of 4 by 12 buttons):
+standard toolbox layout of 4 by 12 buttons used in the multi-window
+GUI configuration):
 <code>
 # create a frame:
 set f [frame .tbw.f.fcollex]
