@@ -343,6 +343,7 @@ $m.nc add command -label "Birail1" -command "level_crt Birail1;"
 $m.nc add command -label "Birail2" -command "level_crt Birail2;"
 $m.nc add command -label "Gordon" -command "level_crt Gordon;"
 $m.nc add command -label "Skin" -command "level_crt Skin;"
+$m.nc add command -label "Trim" -command "level_crt Trim;"
 
 $m add separator
 
