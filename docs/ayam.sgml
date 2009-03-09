@@ -131,9 +131,10 @@ set riopt(runtime) { a b }
  | [Third_Child_Object_may_be_present_or_not(Type)]
  | Empty_Level(Level)
  +-Sub_Level(Level)
- | | First_Child_Object_of_Sub_Level(Type)
- | \ Last_Child_Object_of_Sub_Level(Type)
+ || First_Child_Object_of_Sub_Level(Type)
+ |\ Last_Child_Object_of_Sub_Level(Type)
  \ Last_Child_Object(Type)
++-Next_Parent_Object(Type)
 </code>
 </itemize>
 
@@ -543,13 +544,16 @@ shader property to an object which does not already have the same shader!
 <caption>Console</caption>
 </figure>
 <p>
-
 The third part of the main window is the console. The console is mainly
-for text output (informative, warning, and error messages). For this,
-the console captures the stderr and stdout channels of the Tcl-interpreter
-Ayam is running in. You can also redirect all Tcl error messages, that would
-normally cause a Tcl error dialog window to appear, to the console using the
-preference setting <tt>"Misc/RedirectTcl"</tt>
+for unobtrusive text output (informative, warning, and error messages).
+If something does not work as advertised, the console may be worth
+a look.
+<p>
+The console captures the stderr and stdout channels of the
+Tcl-interpreter Ayam is running in. You can also redirect all internal
+Tcl error messages, that would normally cause a Tcl error dialog window
+to appear, to the console using the preference setting
+<tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
 You can also enter commands or even complete new Tcl procedures
@@ -5915,8 +5919,8 @@ GUI element is added to the frame using <tt>"addParam"</tt>.
 Finally, to enable saving of the parameter value in the new property
 <tt>"LineAttr"</tt> to scene files, a comment may be prepended to the
 script, and to enable multiple individually parameterized copies of this
-script a <tt/"SP"/ entry needs to be added to the <tt>"LineAttrData"</tt>
-array also:
+script object, a <tt/"SP"/ entry needs to be added to the
+<tt>"LineAttrData"</tt> array as well:
 <code>
 # Ayam, save array: LineAttrData
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -10907,6 +10911,34 @@ of an NCurve as parameter object in all examples above easily.
 And with the help of the conversion mechanism, the Revolve
 tool objects could be converted to plain NPatch objects (e.g. for
 modelling operations not available to Revolve objects).
+<p>
+Even though, theoretically, every tool could be implemented as tool object,
+this has not been done in Ayam (mainly, because this would unnecessarily
+increase the code base). Only the most often used tools that convey and
+capture much design intent were implemented as tool objects (those are
+surface or curve creating tools). But also seldom used tools can be elevated
+to nearly full tool object capabilities through the employment of the concept
+of scripting objects
+(see section <ref id="scriptobj" name="Script Object">).
+<p>
+This can be done easily by e.g. creating script objects of type <tt/"Modify"/
+that call those tools from their script (after possible conversion of the
+provided object(s) to a proper type, the tool may need to operate on).
+Even property GUIs to let the user adjust tool parameters as they know it
+from the other Ayam objects can be added and different tools can be combined
+in single objects with normal script code for unmatched flexibility.
+But let us see a simple example first:
+<code>
++-Skin
+ +-Script
+  \ ExtrNC
+</code>
+In the scene hierarchy above, the script object could be simply reverting the
+extracted curve with code like this:
+<code>
+convOb -inplace; revert
+</code>
+effectively elevating the tool <tt/"revert"/ to an object.
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
