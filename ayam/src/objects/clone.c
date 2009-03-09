@@ -757,7 +757,7 @@ ay_clone_notifycb(ay_object *o)
 
 	  if(tr_iscopy)
 	    {
-	      ay_object_delete(tr);
+	      ay_object_deletemulti(tr);
 	    }
 	}
       else
