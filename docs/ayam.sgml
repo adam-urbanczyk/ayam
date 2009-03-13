@@ -2467,6 +2467,7 @@ differently in X-window and Y-window coordinates in aligned local views
 This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
+
 <p>
 Documentation on the standard properties (Transformations, Attributes,
 Material, Shader, Tags) can be found in
@@ -2474,6 +2475,24 @@ section <ref id="stdprop" name="Standard Properties">.
 <p>
 Furthermore, this section contains information about all tag types,
 see section <ref id="tags" name="Tags">.
+<p>
+
+In the next sections general object capabilities will be briefly
+documented in tables like this:
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Object Type|Yes/No|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type|Yes/No@<hline>
+</tabular>
+<caption>Object Capabilities Example</caption>
+</table>
+
+The capabilities are:
+Parent: the object can be a parent object (have child
+objects);
+Material: the object can be associated with a material;
+Converts to/Provides: type of provided objects;
+Point Edit: the object has editable points.
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -2482,7 +2501,7 @@ This object is something special in that it can not be deleted
 or copied.
 The Root object holds options global to the scene like RiOptions,
 atmosphere and imager shaders. Furthermore, all currently open
-view windows are child objects of the Root object.
+view windows are represented as child objects of the Root object.
 <p>
 If you hide the Root object, the little red/green/blue coordinate system
 will not be drawn in any view.
@@ -2498,6 +2517,7 @@ the available options will be given here.
 Please refer to the documentation of the RenderMan Interface
 and the documentation of BMRT for more detailed information about the
 options.
+<p>
 The RiOptions property consists of the following elements:
 <itemize>
 <item><tt/"Width"/, <tt/"Height"/, if greater than zero this value
@@ -2602,7 +2622,7 @@ The standard input planes are as following: Front - XY-plane,
 Side - ZY-plane, Top - XZ-plane, Trim - XY-plane.
 <p>
 In perspective views no interactive modelling actions are possible,
-but you may position the camera and pick objects.
+but you may position the camera, pick objects, and select points.
 <p>
 Views of type <tt/"Trim"/ are very special. They are used to edit
 trim curves of NPatch objects only. They display <em>only</em>
@@ -2616,23 +2636,32 @@ Note that picking of objects currently does not work in views of type
 View objects act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
-When a camera object is dropped onto a view object
-using Drag-and-Drop in the tree view
-the camera settings of the camera object will
-be copied to the views camera.
+When a camera object is dropped onto a view object using Drag-and-Drop
+in the tree view the camera settings of the camera object will be copied
+to the views camera.
 <p>
 When a light object of type <tt/"Spot"/ is dropped onto a view object
-using Drag-and-Drop in the tree view
-the views camera will be changed, so that
-the user looks along the light to see what objects of the scene
-are lighted by the light object (this works best
-with perspective views that have equal width and height).
+using Drag-and-Drop in the tree view the views camera will be changed,
+so that the user looks along the light to see what objects of the scene
+are lighted by the light object (this works best with perspective views
+that have equal width and height).
 <p>
 Since Ayam 1.8 it is possible, to directly drag objects from the
 tree view to a view window, for geometric objects, the view then
 performs a zoom to object operation, for cameras and light sources
-the views camera will be changed accordingly (see the description
-of Drag-and-Drop with view objects above).
+the views camera will be changed as if the object was dropped
+onto a view object in the tree view (see the above description).
+<p>
+The following table briefly lists some capabilities of the View object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+View|No|No|N/A|Yes@<hline>
+</tabular>
+<caption>View Object Capabilities</caption>
+</table>
+<p>
+The next sections detail the properties of the view object.
 
 <sect2>Camera Property<label id="camp"><label id="cameraprop">
 <p>
@@ -2711,6 +2740,15 @@ explained above, see sections <ref id="camp" name="Camera"> and
 When a view object is dropped onto a camera object using Drag-and-Drop
 in the tree view, the camera settings from the view will be copied
 to the camera object.
+<p>
+The following table briefly lists some capabilities of the Camera object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Camera|No|No|N/A|Yes@<hline>
+</tabular>
+<caption>Camera Object Capabilities</caption>
+</table>
 
 <sect1>Box Object<label id="boxobj">
 <p>
@@ -2720,6 +2758,15 @@ consisting of six bilinear patches.
 <p>
 Since Ayam 1.8.2, a box object may be converted to three NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Box object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Box|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Box Object Capabilities</caption>
+</table>
 <p>
 The following parameters further control the shape of a box:
 
@@ -2754,6 +2801,15 @@ Since Ayam 1.8.2, a sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.
 <p>
+The following table briefly lists some capabilities of the Sphere object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Sphere|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Sphere Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the shape of a sphere:
 
 <sect3>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
@@ -2784,6 +2840,15 @@ Since Ayam 1.8.2, a disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the disk.
 <p>
+The following table briefly lists some capabilities of the Disk object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Disk|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Disk Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the shape of a disk:
 
 <sect3>DiskAttr Property<label id="dkp"><label id="diskattrprop">
@@ -2805,6 +2870,15 @@ of the ConeAttrib property) in RIBs.
 Since Ayam 1.8.2, a cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.
+<p>
+The following table briefly lists some capabilities of the Cone object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cone|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Cone Object Capabilities</caption>
+</table>
 <p>
 The following parameters further control the shape of a cone:
 
@@ -2838,6 +2912,15 @@ Since Ayam 1.8.2, a cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cylinder.
 <p>
+The following table briefly lists some capabilities of the Cylinder object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cylinder|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Cylinder Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the shape of a cylinder:
 
 <sect3>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
@@ -2869,6 +2952,15 @@ of the RiTorusAttr property) in RIBs.
 Since Ayam 1.8.2, a torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the torus.
+<p>
+The following table briefly lists some capabilities of the Torus object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Torus|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Torus Object Capabilities</caption>
+</table>
 <p>
 The following parameters further control the shape of a torus:
 
@@ -2904,6 +2996,15 @@ Since Ayam 1.8.2, a paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the paraboloid.
 <p>
+The following table briefly lists some capabilities of the Paraboloid object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Paraboloid|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Paraboloid Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the shape of a paraboloid:
 
 <sect3>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
@@ -2936,6 +3037,15 @@ of the RiHyperbAttr property) in RIBs.
 Since Ayam 1.8.2, a hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the hyperboloid.
+<p>
+The following table briefly lists some capabilities of the Hyperboloid object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Hyperboloid|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Hyperboloid Object Capabilities</caption>
+</table>
 <p>
 The following parameters further control the shape of a hyperboloid:
 
@@ -2999,6 +3109,16 @@ All NURBS curves and objects that may be converted to NURBS curves
 Level object. Transformation attributes of the Level will be added
 to the provided objects. Objects that do not provide the wanted
 type will be silently ignored.
+<p>
+The following table briefly lists some capabilities of the Level object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Level|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+</tabular>
+<caption>Level Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
 <p>
@@ -3078,8 +3198,18 @@ When geometric objects are dropped onto a material object using
 Drag-and-Drop in the tree view they will be connected to this
 material object.
 <p>
-When geometric objects are connected to a material object this material
+While geometric objects are connected to a material object this material
 object may not be deleted.
+<p>
+The following table briefly lists some capabilities of the Material object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Material|No|No|N/A|No@<hline>
+</tabular>
+<caption>Material Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
 <p>
@@ -3183,6 +3313,16 @@ will be displayed in the <tt/"LightAttr"/ property.
 Please refer to the RenderMan documentation for more information
 about the standard light sources (see section
 <ref id="secref" name="references">).
+<p>
+The following table briefly lists some capabilities of the Light object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Light|No|No|N/A|Yes@<hline>
+</tabular>
+<caption>Light Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
 <p>
@@ -3446,6 +3586,17 @@ NURBS curves can be open or closed and used to emulate Bezier and
 B-Spline curves easily. In addition, for easier modelling, they
 support multiple points, as explained in section
 <ref id="ncurvemp" name="Multiple Points">).
+<p>
+The following table briefly lists some capabilities of the NCurve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NCurve|No|No|N/A|Yes@<hline>
+</tabular>
+<caption>NCurve Object Capabilities</caption>
+</table>
+<p>
+The next section details the NCurve object property.
 
 <sect2>NCurveAttr Property<label id="ncattr"><label id="ncurveattrprop">
 <p>
@@ -3602,6 +3753,16 @@ Since Ayam 1.10, NPatch objects also support the concept
 of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
 for more information regarding this.
+<p>
+The following table briefly lists some capabilities of the NPatch object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NPatch|Yes|Yes|PolyMesh|Yes@<hline>
+</tabular>
+<caption>NPatch Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
 <p>
@@ -3715,6 +3876,16 @@ points. BPatch objects are e.g. used to build box objects, see
 <p>
 You may convert the current BPatch object to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the BPatch object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+BPatch|No|Yes|NPatch|Yes@<hline>
+</tabular>
+<caption>BPatch Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p>
@@ -3741,6 +3912,16 @@ the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
 and when shading the patch mesh.
 Consequently, there is currently no shaded representation of patch meshes
 of basis type Catmull-Rom, Hermite or Custom.
+<p>
+The following table briefly lists some capabilities of the PatchMesh object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+PatchMesh|No|Yes|NPatch|Yes@<hline>
+</tabular>
+<caption>PatchMesh Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
 <p>
@@ -3816,6 +3997,16 @@ objects. Note that no verification of the usability of the
 mesh as base mesh for a subdivision surface is carried out.
 Usually, such meshes have to be manifold and may not contain
 T-junctions.
+<p>
+The following table briefly lists some capabilities of the PolyMesh object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+PolyMesh|No|Yes|SDMesh|Yes@<hline>
+</tabular>
+<caption>PolyMesh Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>PolyMeshAttr Property<label id="pomattr"><label id="polymeshattrprop">
 <p>
@@ -3862,6 +4053,16 @@ shaded views is the original polygonal mesh.
 Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
 objects. Note however that only the original unrefined control
 polygon will be converted.
+<p>
+The following table briefly lists some capabilities of the SDMesh object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+SDMesh|No|Yes|PolyMesh|Yes@<hline>
+</tabular>
+<caption>SDMesh Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>SDMeshAttr Property<label id="sdmattr"><label id="sdmeshattrprop">
 <p>
@@ -3981,6 +4182,18 @@ To find out, where in the scene instances of a master object
 exist, select the master object and use the main menu entry
 <tt>"Edit/Master"</tt>.
 -->
+<p>
+The following table briefly lists some capabilities of the Instance object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Instance|No|No|Children|No@<hline>
+</tabular>
+<caption>Instance Object Capabilities</caption>
+</table>
+<p>
+
+
 <sect1>Clone Object<label id="cloneobj">
 <p>
 <figure loc="ht">
@@ -4040,6 +4253,15 @@ following example hierarchy:
  |\ Instance
  \ Trajectory(NCurve)
 </code>
+<p>
+The following table briefly lists some capabilities of the Clone object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Clone|No|No|Children|No@<hline>
+</tabular>
+<caption>Clone Object Capabilities</caption>
+</table>
 <p>
 The following attributes further control the cloning process:
 
@@ -4128,7 +4350,8 @@ coordinate system. If not, it will be squashed down to this plane!
 <p>
 The following simple experiment should make the last
 statements more clear, during all steps watch the movements
-of the revolution:<p>
+of the revolution:
+
 <itemize>
 <item>Create a NURBS curve object and select it.
 <item>Create a Revolve tool object using the menu entry
@@ -4146,6 +4369,16 @@ direction only (the surface of revolution does not change).
 You may convert the current surface of revolution, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Revolve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Revolve Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
 <p>
@@ -4230,6 +4463,16 @@ how to easily achieve curves in the XY plane.
 You may convert the current surface of extrusion, the caps, and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Extrude object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Extrude|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Extrude Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>ExtrudeAttr Property<label id="extrattr"><label id="extrudeattrprop">
 <p>
@@ -4331,6 +4574,16 @@ section.
 You may convert the current swung surface and the caps, if there
 are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Swing object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Swing|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Swing Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>SwingAttr Property<label id="swingattrprop">
 <p>
@@ -4430,6 +4683,16 @@ a suitable cross section curve.
 You may convert the current sweep, the bevels, and the caps, if there
 are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Sweep object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Sweep|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Sweep Object Capabilities</caption>
+</table>
+<p>
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
@@ -4553,6 +4816,15 @@ You may convert the current birailed surface, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the Birail1 object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail1|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Birail1 Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the birailing process:
 
 <sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
@@ -4675,6 +4947,15 @@ You may convert the current birailed surface, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the Birail2 object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail2|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Birail2 Object Capabilities</caption>
+</table>
+<p>
 The following parameters control the birailing process:
 
 <sect2>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
@@ -4794,13 +5075,23 @@ You may convert the current skinned surface, the bevels, and the caps,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the Skin object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Skin|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Skin Object Capabilities</caption>
+</table>
+<p>
 The following parameters control the skinning process:
 
 <sect2>SkinAttr Property<label id="skp"><label id="skinattrprop">
 <p>
 The first parameter <tt/"Interpolation"/ controls,
 whether the inner curves should also be interpolated by the
-skinning surface.<p>
+skinning surface.
+<p>
 The second parameter <tt/"Order_U"/ determines the order
 of the resulting surface in u direction (the order in v direction is
 determined by the curves). The order may not be higher than the
@@ -4950,6 +5241,15 @@ automatically via the notification mechanism.
 You may convert the current Gordon surface to an ordinary NURBS
 patch using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the Gordon object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Gordon|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Gordon Object Capabilities</caption>
+</table>
+<p>
 The following parameters of the Gordon object further control
 the creation of the Gordon surface:
 
@@ -5018,6 +5318,15 @@ via the notification mechanism.
 <p>
 You may convert the current bevelled surface to an ordinary NURBS patch
 object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Bevel object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Bevel|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Bevel Object Capabilities</caption>
+</table>
 <p>
 The following parameters of the Bevel object further control
 the creation of the bevelled surface:
@@ -5118,6 +5427,15 @@ via the notification mechanism.
 You may convert the current cap surface to an ordinary NURBS patch object
 using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the Cap object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cap|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Cap Object Capabilities</caption>
+</table>
+<p>
 The following parameters control the cap creation process:
 
 <sect2>CapAttr Property<label id="capp"><label id="capattrprop">
@@ -5168,6 +5486,15 @@ of type NCurve.
 <p>
 You may convert the current ICurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the ICurve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ICurve|No|No|NCurve|Yes@<hline>
+</tabular>
+<caption>ICurve Object Capabilities</caption>
+</table>
 <p>
 The following parameters control the interpolation process:
 
@@ -5230,6 +5557,15 @@ of type NCurve.
 <p>
 You may convert the current ACurve to an ordinary NURBS curve
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the ACurve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ACurve|No|No|NCurve|Yes@<hline>
+</tabular>
+<caption>ACurve Object Capabilities</caption>
+</table>
 <p>
 The following parameters control the approximation process:
 
@@ -5328,6 +5664,15 @@ are simply taken from the first parameter curve.
 You may convert the current ConcatNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the ConcatNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNC|Yes|No|NCurve|No@<hline>
+</tabular>
+<caption>ConcatNC Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the concatenation process:
 
 <sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
@@ -5399,6 +5744,15 @@ potentially present trimming information of the NPatch object.
 You may convert the current ExtrNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the ExtrNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ExtrNC|Yes|No|NCurve|No@<hline>
+</tabular>
+<caption>ExtrNC Object Capabilities</caption>
+</table>
+<p>
 The extraction process is controlled by the following attributes:
 
 <sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
@@ -5460,6 +5814,15 @@ the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
 You may convert the current NCircle object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
+The following table briefly lists some capabilities of the NCircle object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NCircle|No|No|NCurve|No@<hline>
+</tabular>
+<caption>NCircle Object Capabilities</caption>
+</table>
+<p>
 The following section describes the parameters of the circle or
 arc.
 
@@ -5500,6 +5863,15 @@ offsets from non planar curves.
 <p>
 You may convert the current OffsetNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the OffsetNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+OffsetNC|Yes|No|NCurve|No@<hline>
+</tabular>
+<caption>OffsetNC Object Capabilities</caption>
+</table>
 <p>
 The following parameters further control the offsetting process:
 
@@ -5547,6 +5919,15 @@ properly.
 <p>
 You may convert the current ExtrNP object to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the ExtrNP object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ExtrNP|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>ExtrNP Object Capabilities</caption>
+</table>
 <p>
 The extraction process is controlled by the following attributes:
 
@@ -5601,6 +5982,15 @@ letter, and arrange the objects as you like.
 <p>
 You may convert the current Text object to ordinary NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the Text object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Text|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Text Object Capabilities</caption>
+</table>
 <p>
 The following attributes control the creation of the text objects.
 
@@ -5658,6 +6048,15 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as a piece of RIB.
 <p>
+The following table briefly lists some capabilities of the RiInc object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+RiInc|No|No|N/A|No@<hline>
+</tabular>
+<caption>RiInc Object Capabilities</caption>
+</table>
+<p>
 The following attributes control the inclusion:
 
 <sect2>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
@@ -5673,6 +6072,15 @@ the RIB.
 <p>
 RiProc objects may be used to include procedural objects or external
 archives into your scenes.
+<p>
+The following table briefly lists some capabilities of the RiProc object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+RiProc|No|No|N/A|No@<hline>
+</tabular>
+<caption>RiProc Object Capabilities</caption>
+</table>
 <p>
 The following attributes control the RiProc object:
 
@@ -5759,6 +6167,15 @@ scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
 <tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
 there are example scene files using script objects in the
 <tt>"ayam/scn/scripts"</tt> directory.
+<p>
+The following table briefly lists some capabilities of the Script object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Yes|No|Any|No@<hline>
+</tabular>
+<caption>Script Object Capabilities</caption>
+</table>
 <p>
 The next section discusses the available script object types and
 additional controlling parameters.
@@ -5974,9 +6391,12 @@ It is also available as example script file
 <p>
 The Select object, available since Ayam 1.14, may be used in hierarchies
 of tool objects to select one object from a list of provided objects.
+Since Ayam 1.16, also multiple objects and ranges (even decreasing
+ranges that lead to reversed orders) may be selected.
+<p>
 In the following example hierarchy, a single patch from multiple provided
 patches of the Sweep object (the swept surface, a bevel, or a cap)
-will be selected by the Select object and delivered upstream to
+could be selected by the Select object and delivered upstream to
 the ExtrNC object.
 <code>
 +-Sweep
@@ -5990,12 +6410,43 @@ presented is not exactly useful, as the ExtrNC object has a selector
 facility built in. Consequently, the Select object should be used in
 scenarios, where a selector facility does not exist or is hard to
 implement, as e.g. in Script object scripts.
+<p>
+The following table briefly lists some capabilities of the Select object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Select|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+</tabular>
+<caption>Select Object Capabilities</caption>
+</table>
 
 <sect2>SelectAttrib Property<label id="selectp"><label id="selectattribprop">
 <p>
 <itemize>
-<item><tt/"PatchNum"/ an integer value that designates the patch to select.
+<item><tt/"Indices"/ designates the object(s) to select. The index values
+are zero based. Multiple indices must be separated by <tt/","/, ranges
+can be specified like this <tt/"1-4"/, reversed ranges are allowed
+(<tt/"4-1"/) and will create an object list of reversed order. The special
+index <tt/"end"/ (or abbreviated <tt/"e"/) designates the last of all
+the provided objects.
+An index may appear multiple times, leading to multiple copies of the
+selected object to be delivered upstream.
+The index space spans over all provided objects of the desired type
+from all child objects. This means one can mix provided objects from
+multiple child objects of the Select object.
+<p>
+Examples:
+ <itemize>
+  <item><tt/"0,2"/ - delivers the first and third provided objects upstream;
+  <item><tt/"end-0"/ - delivers all provided objects in reversed order
+upstream;
+  <item><tt/"0,0,0"/ - delivers three copies of the first provided object
+upstream;
+  <item><tt/"0,4-end,1"/ - delivers the first, the fifth up to the last
+(if there are so many), and the second object upstream.
+ </itemize>
 </itemize>
+
 
 <sect1>Trim Object<label id="trimobj">
 <p>
@@ -6021,7 +6472,16 @@ The object hierarchy of a Trim object, thus, looks like this:
  | ...
  \ Trim_n(ICurve)]
 </code>
-
+<p>
+The following table briefly lists some capabilities of the Trim object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Trim|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Trim Object Capabilities</caption>
+</table>
+<p>
 The following parameters further control the trimming process:
 
 <sect2>TrimAttrib Property<label id="trimp"><label id="trimattribprop">
@@ -10823,7 +11283,7 @@ paste Sphere (from clipboard)
 
 <sect1>The Modelling Concept Tool-Objects<label id="toolobj">
 <p>
-This section briefly introduces the modelling concept <em>Tool-Objects</em>,
+This section introduces the modelling concept <em>Tool-Objects</em>,
 used in Ayam.
 <p>
 In a standard modelling application, to create a surface of revolution,
@@ -10855,12 +11315,17 @@ parameter object to the tool object. This information flow is controlled
 by the so called <em>Notification</em> mechanism. The notification mechanism
 makes sure that whenever the parameter objects change, the tool object is
 informed so that it may adapt to the changes.
+For interactive modelling actions, the notification will be carried out
+while dragging the mouse or after release of the mouse button (i.e. after
+the modelling action finished),
+depending on the main preference setting <tt/"LazyNotify"/.
 <p>
 In the example above, a NURBS curve is the parameter object and the
 tool object is creating a surface of revolution from the curve data.
 The NURBS curve and parameters of the Revolve object may change at any
 time. When saved to an Ayam scene file, no surface data will be written,
-leading to very small files that additionally contain a modelling history.
+leading to very small files that additionally contain a modelling history
+and capture design intent to a certain degree.
 <p>
 Tool objects may be parameter objects of other tool objects:
 <code>
@@ -10878,12 +11343,8 @@ and there may be more than one parameter object per tool object:
 </code>
 <p>
 Tool objects create new geometric objects from the information delivered
-by the parameter object(s) or they may modify the parameter object(s) and
+by the parameter object(s) or they modify the parameter object(s) and
 deliver them to their respective parent object.
-<p>
-For interactive modelling actions, the notification will be carried out
-while dragging the mouse or only after the modelling action finished,
-depending on the main preference setting <tt/"LazyNotify"/.
 <p>
 The pure hierarchical dependency scheme may be broken up by instance objects:
 <code>
@@ -10892,6 +11353,9 @@ The pure hierarchical dependency scheme may be broken up by instance objects:
 +-Tool_Object(Revolve)                    | !
  \ Parameter_Object(Instance_of_NCurve) <-
 </code>
+In the scene above, the second Revolve tool object depends on the shape
+of the first parameter object. The Instance object transports the data
+from one part of the hierarchy to another.
 The notification mechanism is aware of this and initiates updates
 in the scene hierarchy wherever needed and efficiently (not updating any
 objects twice) according to the <tt/"CompleteNotify"/ main preference
