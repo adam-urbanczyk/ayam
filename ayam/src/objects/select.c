@@ -424,6 +424,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       down = down->next;
     }
+
   /* no provided objects => no need to parse the indices string at all */
   if(lastindex == 0)
     return AY_OK;
@@ -451,7 +452,6 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      /* parse range */
 
 	      /* get start index of range */
-
 	      /* jump over leading white-space */
 	      while(isspace(*tok))
 		{
@@ -586,6 +586,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  for(j = 0; j < index-lastindex; j++)
 	    {
 	      down = down->next;
+	      /* sanity check, index too high? */
 	      if(!down)
 		break;
 	    }
@@ -596,10 +597,11 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  for(j = 0; j < index; j++)
 	    {
 	      down = down->next;
+	      /* sanity check, index too high? */
 	      if(!down)
 		break;
 	    }
-	}
+	} /* if */
 
       if(down)
 	{
@@ -610,7 +612,10 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
       else
 	{
-	  break;
+	  /* we run over the end of the list of provided objects for
+	     this index, maybe we have more luck with the next one... */
+	  down = allprovided;
+	  lastindex = 0;
 	}
     } /* for */
 
