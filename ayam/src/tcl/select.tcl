@@ -21,9 +21,9 @@ w     fSelectAttr
 }
 
 array set SelectAttrData {
-Index 0
+Indices 0
 }
 
 # create SelectAttr-UI
 set w [frame $ay(pca).$SelectAttr(w)]
-addParam $w SelectAttrData Index
+addString $w SelectAttrData Indices

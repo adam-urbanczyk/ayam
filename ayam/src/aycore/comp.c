@@ -1296,8 +1296,16 @@ ay_comp_select(ay_object *o1, ay_object *o2)
   s1 = (ay_select_object *)o1->refine;
   s2 = (ay_select_object *)o2->refine;
 
-  if(s1->index != s2->index)
-    return AY_FALSE;
+  if(s1->indices && s2->indices)
+    {
+      if(strcmp(s1->indices, s2->indices))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(s1->indices || s2->indices)
+	return AY_FALSE;
+    }
 
  return AY_TRUE;
 } /* ay_comp_select */

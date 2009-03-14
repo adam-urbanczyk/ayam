@@ -945,7 +945,9 @@ typedef struct ay_view_object_s
 
 typedef struct ay_select_object_s
 {
-  int index; /* index of object to be selected */
+  char *indices; /* indices of objects to be selected */
+  int length; /* length of seli array */
+  int *seli; /* cache of object indizes */
 } ay_select_object;
 
 
@@ -1457,11 +1459,11 @@ extern unsigned int ay_current_primlevel;
 #define AY_M44(m,r,c) ((m)[(c)*4+(r)])
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.15"
+#define AY_VERSIONSTR "1.16pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   15
+#define AY_VERSION   16
 #define AY_VERSIONMI 0
 
 
