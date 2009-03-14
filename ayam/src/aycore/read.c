@@ -273,6 +273,12 @@ ay_read_header(FILE *fileptr)
       version_unknown = AY_FALSE;
     }
 
+  if(!strcmp(version,"1.16"))
+    {
+      ay_read_version = 13;
+      version_unknown = AY_FALSE;
+    }
+
   if(version_unknown)
     {
       ay_error(AY_EWARN, fname, "Unknown file version, reading as V1.0!");
