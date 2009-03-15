@@ -2467,7 +2467,6 @@ differently in X-window and Y-window coordinates in aligned local views
 This section informs you about the different object types of Ayam and
 about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
-
 <p>
 Documentation on the standard properties (Transformations, Attributes,
 Material, Shader, Tags) can be found in
@@ -2476,7 +2475,6 @@ section <ref id="stdprop" name="Standard Properties">.
 Furthermore, this section contains information about all tag types,
 see section <ref id="tags" name="Tags">.
 <p>
-
 In the next sections general object capabilities will be briefly
 documented in tables like this:
 <table loc="ht">
@@ -2488,11 +2486,14 @@ Object Type|Yes/No|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Ty
 </table>
 
 The capabilities are:
-Parent: the object can be a parent object (have child
+<itemize>
+<item>Parent: the object can be a parent object (have child
 objects);
-Material: the object can be associated with a material;
-Converts to/Provides: type of provided objects;
-Point Edit: the object has editable points.
+<item>Material: the object can be associated with a material;
+<item>Converts to/Provides: type of provided objects (Children means, the
+provided objects of the children are delivered upstream);
+<item>Point Edit: the object has editable points.
+</itemize>
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -3114,7 +3115,7 @@ The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+Level|Yes|Yes|N/A&thinsp;/&thinsp;Children|No@<hline>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -3205,7 +3206,7 @@ The following table briefly lists some capabilities of the Material object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Material|No|No|N/A|No@<hline>
+Material|No|N/A|N/A|No@<hline>
 </tabular>
 <caption>Material Object Capabilities</caption>
 </table>
@@ -3318,7 +3319,7 @@ The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Light|No|No|N/A|Yes@<hline>
+Light|Yes|No|N/A|Yes@<hline>
 </tabular>
 <caption>Light Object Capabilities</caption>
 </table>
@@ -4187,7 +4188,7 @@ The following table briefly lists some capabilities of the Instance object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Instance|No|No|Children|No@<hline>
+Instance|No|No|Master|No@<hline>
 </tabular>
 <caption>Instance Object Capabilities</caption>
 </table>
@@ -4258,7 +4259,7 @@ The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|No|No|Children|No@<hline>
+Clone|Yes|No|Children|No@<hline>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -6433,7 +6434,8 @@ An index may appear multiple times, leading to multiple copies of the
 selected object to be delivered upstream.
 The index space spans over all provided objects of the desired type
 from all child objects. This means one can mix provided objects from
-multiple child objects of the Select object.
+multiple child objects of the Select object. Syntactically incorrect
+ranges and indices are silently ignored.
 <p>
 Examples:
  <itemize>
@@ -6442,8 +6444,8 @@ Examples:
 upstream;
   <item><tt/"0,0,0"/ - delivers three copies of the first provided object
 upstream;
-  <item><tt/"0,4-end,1"/ - delivers the first, the fifth up to the last
-(if there are so many), and the second object upstream.
+  <item><tt/"0,4-end,1"/ - delivers the first, the fifth (if there are so many)
+up to the last, and the second object upstream.
  </itemize>
 </itemize>
 
