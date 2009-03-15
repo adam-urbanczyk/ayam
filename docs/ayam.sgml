@@ -6546,6 +6546,17 @@ looks like this:
  \ Cn(MetaComp)]
 </code>
 <p>
+The following table briefly lists some capabilities of the MetaObj and
+MetaComp objects.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+MetaObj|Yes|Yes|PolyMesh|No@<hline>
+MetaComp|No|No|N/A|No@<hline>
+</tabular>
+<caption>MetaObj/MetaComp Object Capabilities</caption>
+</table>
+<p>
 Meta components live only in a meta world, therefore it makes no sense
 to create <tt>"MetaComp"</tt> objects in other places except as a
 child of a <tt>"MetaObj"</tt> object. Type, parameters, and
