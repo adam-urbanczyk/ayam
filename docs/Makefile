@@ -65,6 +65,13 @@ pdf5: pdf4
 	pdflatex ayam.tex 
 	rm ayam.tex ayam.toc ayam.log ayam.aux ga
 
+archive: htm
+	mkdir -p docs/pics
+	cp pics/*.gif docs/pics
+	cp html/*.html docs
+	tar czf aydocs.tgz docs
+	rm -rf docs
+
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
 	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
