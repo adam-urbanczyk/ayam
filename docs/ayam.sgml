@@ -2484,15 +2484,14 @@ Object Type|Yes/No|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Ty
 </tabular>
 <caption>Object Capabilities Example</caption>
 </table>
-
 The capabilities are:
 <itemize>
-<item>Parent: the object can be a parent object (have child
+<item><bf/Parent/: the object can be a parent object (have child
 objects);
-<item>Material: the object can be associated with a material;
-<item>Converts to/Provides: type of provided objects (Children means, the
-provided objects of the children are delivered upstream);
-<item>Point Edit: the object has editable points.
+<item><bf/Material/: the object can be associated with a material;
+<item><bf>Converts to/Provides</bf>: type of provided objects
+(Children means, the provided objects of the children are delivered upstream);
+<item><bf/Point Edit/: the object has editable points.
 </itemize>
 
 <sect1>Root Object<label id="rootobj">
@@ -11416,6 +11415,14 @@ extracted curve with code like this:
 convOb -inplace; revert
 </code>
 effectively elevating the tool <tt/"revert"/ to an object.
+<p>
+A more useful example can be found in the Marsrakete sample scene
+(as available from the Ayam home page). Here, a curve extracted
+from a patch is trimmed to the right length using a script like this:
+<code>
+convOb -inplace; trimNC 0.0 0.5
+</code>.
+
 
 <sect1>Ayamrc File<label id="ayamrc">
 <p>
