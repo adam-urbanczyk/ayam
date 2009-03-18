@@ -1,17 +1,15 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [10. Oct 2004]
+# Makefile [18. Mar 2009]
 # Makefile for the Ayam reference manual
 
 # on Debian3.0 (Woody) the pdf3 target does not work anymore,
 # use pdf5 instead
 
-all: htm pdf3
+all: html pdf5
 
-# Note to self: do not try to be smart and rename this target to html
-# as then the date-stamp comparing mechanism of make stumbles
-# over the existing "html" directory!
-htm:
+
+html:
 	rm -rf html
 	mkdir html
 	cd html; ln -sf ../pics pics;cd ..
@@ -19,6 +17,7 @@ htm:
 	cd html;sgml2html -s 1 ayam.sgml;rm ayam.sgml;cd ..
 	./fixhtml.tcsh
 	-cd html;../corrwh.pl;cd ..
+
 txt:
 	sgml2txt -f ayam.sgml
 
@@ -65,15 +64,17 @@ pdf5: pdf4
 	pdflatex ayam.tex 
 	rm ayam.tex ayam.toc ayam.log ayam.aux ga
 
-archive: htm
+archive: html
 	mkdir -p docs/pics
 	cp pics/*.gif docs/pics
 	cp html/*.html docs
 	tar czf aydocs.tgz docs
-	rm -rf docs
+
 
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
 	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
 	rm -rf ayam.aux ayam.toc ayam.out
+	rm -rf docs
 
+.PHONY: html
