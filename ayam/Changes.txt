@@ -34,6 +34,8 @@ Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
 o ConcatNC now accepts lists of provided curves
 o Gordon now accepts lists of provided curves
+o Select object now supports selection of lists and ranges of indices as
+  well as multiple parameter objects
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
