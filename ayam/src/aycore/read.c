@@ -349,11 +349,13 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
  char fname[] = "ay_read_tags";
+#ifdef AYSAFEINTERP
  int deactivate = 0;
+ char *tc = NULL;
+ char a1[] = "ay", n1[] = "scriptdisable";
  char script_disable_cmd[] = "script_disable";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char a1[] = "ay", n1[] = "scriptdisable";
- char *tc = NULL;
+#endif
 
   if(!o)
     return AY_ENULL;
@@ -396,6 +398,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 last->next = tag;
        }
 
+#ifdef AYSAFEINTERP
      if(tag->type == ay_bns_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
@@ -444,6 +447,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
        }
+#endif
      last = tag;
    } /* for */
 

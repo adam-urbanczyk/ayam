@@ -539,14 +539,18 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  ay_script_object *sc = NULL;
  int i;
  unsigned int j, len;
- int readc, deactivate = 0;
- char script_disable_cmd[] = "script_disable";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char a1[] = "ay", n1[] = "scriptdisable";
+ int readc;
+ Tcl_Obj *toa = NULL, *ton = NULL;
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *eolarrname = NULL;
  int arrmembers = 0;
  Tcl_Interp *interp = ay_interp;
+#ifdef AYSAFEINTERP
+ int deactivate = 0;
+ char script_disable_cmd[] = "script_disable";
+ char a1[] = "ay", n1[] = "scriptdisable";
+ Tcl_Obj *to = NULL;
+#endif
 
   if(!o)
     return AY_ENULL;
@@ -642,6 +646,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   ay_trafo_defaults(o);
 
+#ifdef AYSAFEINTERP
   if(sc->active)
     {
       Tcl_Eval(ay_interp, script_disable_cmd);
@@ -659,6 +664,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     } /* if */
+#endif
 
  return AY_OK;
 } /* ay_script_readcb */
