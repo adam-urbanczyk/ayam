@@ -905,6 +905,8 @@ ay_script_notifycb(ay_object *o)
  int old_rdmode = 0;
  ClientData old_restrictcd;
  Tcl_DString ds;
+ Tcl_Interp *interp = NULL;
+
 
   /* this semaphor protects ourselves from running in an endless
      recursive loop should the script modify our child objects */
@@ -922,6 +924,12 @@ ay_script_notifycb(ay_object *o)
       sema = 0;
       return AY_ENULL;
     } /* if */
+
+#ifdef AYSAFEINTERP
+      interp = ay_safeinterp;
+#else
+      interp = ay_interp;
+#endif
 
   ay_trafo_defaults(o);
 
@@ -956,8 +964,7 @@ ay_script_notifycb(ay_object *o)
   if(sc->type == 0)
     {
       /* Just Run */
-      result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
-      /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
+      result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
     } /* if */
 
   if(sc->type == 1)
@@ -985,8 +992,7 @@ ay_script_notifycb(ay_object *o)
       old_aynext = ay_next;
 
       /* evaluate (execute) script string */
-      result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
-      /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
+      result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
 
       /* move newly created objects to script object */
       if(old_aynext != ay_next)
@@ -1064,8 +1070,9 @@ ay_script_notifycb(ay_object *o)
 	    }
 
 	  Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
-	  result = Tcl_EvalObjEx(ay_interp, sc->cscript, TCL_EVAL_GLOBAL);
-	  /*result = Tcl_GlobalEval(ay_interp, sc->script);*/
+
+	  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+
 	  Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
 	  if(ay_currentview)
