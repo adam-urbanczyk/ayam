@@ -199,7 +199,7 @@ array set ayprefs {
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
 {There is a console-menu on the right mouse button.}
-{Use <Shift+TAB> to move the focus away from the console.}
+{Use <Shift+TAB> or <Esc> to move the focus away from the console.}
 {Documentation is available in the doc subdirectory.}
 {Drag the borderline above the console to adjust it's height.}
 {Point editing does not work right? Adjust PickEpsilon in Prefs!}
@@ -1382,6 +1382,12 @@ ayam_loadscript prog
 ayam_loadscript objsel
 ayam_loadscript tc
 ayam_loadscript tgui
+ayam_loadscript safe
+
+
+if { $::AYSAFEINTERP == 1 } {
+    safe_init aySafeInterp
+}
 
 if { $tcl_platform(platform) != "windows" } {
     wm deiconify .

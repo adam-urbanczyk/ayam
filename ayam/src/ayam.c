@@ -18,6 +18,7 @@
 ay_preferences ay_prefs = {0};
 
 Tcl_Interp *ay_interp;
+Tcl_Interp *ay_safeinterp;
 ay_object *ay_root;
 ay_object **ay_next;
 
@@ -1128,6 +1129,12 @@ Tcl_SetVar(interp,"AYENABLEFEXIT", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYENABLEFEXIT */
 
+#ifndef AYSAFEINTERP
+Tcl_SetVar(interp,"AYSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#else
+Tcl_SetVar(interp, "AYSAFEINTERP", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AYSAFEINTERP */
+
   if((ay_status = ay_init(interp)) != AY_OK)
     {
       Tcl_SetResult (interp,
@@ -1154,6 +1161,10 @@ Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #ifdef AYWITHAQUA
   Tcl_Eval(interp, app_init_script);
 #endif /* AYWITHAQUA */
+#endif
+
+#ifdef AYSAFEINTERP
+  ay_safeinterp = Tcl_CreateSlave(interp, "aySafeInterp", 1);
 #endif
 
  return TCL_OK;

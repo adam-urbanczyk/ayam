@@ -1117,6 +1117,7 @@ typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
 /* Globals */
 extern Tcl_Interp *ay_interp;
+extern Tcl_Interp *ay_safeinterp;
 extern ay_preferences ay_prefs;
 extern ay_object *ay_root;
 extern ay_object **ay_next;
