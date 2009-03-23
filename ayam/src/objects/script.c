@@ -544,7 +544,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *eolarrname = NULL;
  int arrmembers = 0;
- Tcl_Interp *interp = ay_interp;
+ Tcl_Interp *interp = NULL;
 #ifdef AYSAFEINTERP
  int deactivate = 0;
  char script_disable_cmd[] = "script_disable";
@@ -554,6 +554,12 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   if(!o)
     return AY_ENULL;
+
+#ifdef AYSAFEINTERP
+  interp = ay_interp;
+#else
+  interp = ay_safeinterp;
+#endif
 
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
@@ -682,11 +688,17 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i, slen, tlen;
  unsigned int len = 0;
- Tcl_Interp *interp = ay_interp;
  Tcl_Obj *toa = NULL, *ton = NULL;
+ Tcl_Interp *interp = NULL;
 
   if(!o)
     return AY_ENULL;
+
+#ifdef AYSAFEINTERP
+  interp = ay_interp;
+#else
+  interp = ay_safeinterp;
+#endif
 
   sc = (ay_script_object *)(o->refine);
 
