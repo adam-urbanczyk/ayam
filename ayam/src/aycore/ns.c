@@ -47,6 +47,13 @@ ay_ns_restrictall(ClientData clientData,
  char tmpstr[128];
 #endif /* !WIN32 */
  Tcl_Obj *to = NULL, *ton = NULL;
+ Tcl_Interp *interp = NULL;
+
+#ifndef AYSAFEINTERP
+  interp = ay_safeinterp;
+#else
+  interp = ay_interp;
+#endif
 
 #ifdef WIN32
  if((GetKeyState(VK_SHIFT) < 0) &&
@@ -55,7 +62,7 @@ ay_ns_restrictall(ClientData clientData,
    {
      ton = Tcl_NewStringObj("cancelled", -1);
      to = Tcl_NewIntObj(1);
-     Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+     Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 		    TCL_GLOBAL_ONLY);
      return TK_DISCARD_EVENT;
    }
@@ -70,8 +77,10 @@ ay_ns_restrictall(ClientData clientData,
 	    {
 	      ton = Tcl_NewStringObj("cancelled", -1);
 	      to = Tcl_NewIntObj(1);
-	      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+	      
+	      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
+
 	      return TK_DISCARD_EVENT;
 	    }
 	  else
@@ -103,6 +112,7 @@ ay_ns_execute(ay_object *o, char *script)
  static int sema = 0;
  ay_list_object *l = NULL, *old_sel = NULL;
  ClientData old_restrictcd;
+ Tcl_Interp *interp = NULL;
 
   if(!o || !script)
     return AY_ENULL;
@@ -118,13 +128,19 @@ ay_ns_execute(ay_object *o, char *script)
       sema = 1;
     } /* if */
 
+#ifndef AYSAFEINTERP
+  interp = ay_safeinterp;
+#else
+  interp = ay_interp;
+#endif
+
   old_sel = ay_selection;
   ay_selection = NULL;
 
   ay_status = ay_sel_add(o);
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
-  result = Tcl_GlobalEval(ay_interp, script);
+  result = Tcl_GlobalEval(interp, script);
   Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
   if(result == TCL_ERROR)
