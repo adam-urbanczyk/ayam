@@ -9,17 +9,26 @@
 
 # safe.tcl - manage safe interpreters
 
+# safe_init:
+#  initialize the safe interpreter <interp>
+#
 proc safe_init { interp } {
     interp share {} stdout $interp
     interp share {} stderr $interp
 
-    interp alias $interp crtOb {} crtOb
+    set safe_commands { crtOb delOb hSL withOb }
+    # property management
+    lappend safe_commands setProp getProp setProperty getProperty
+    lappend safe_commands setTrafo getTrafo setAttr getAttr setMat getMat
+    # transformations
+    lappend safe_commands movOb rotOb scalOb movSel rotSel scalSel
+    # point editing
+    lappend safe_commands setPnt getPnt
 
-    interp alias $interp setProperty {} setProperty
-    interp alias $interp getProperty {} getProperty
-
-    interp alias $interp setPoint {} setPoint
-    interp alias $interp getPoint {} getPoint
+    # make safe commands known in safe interpreter
+    foreach command $safe_commands {
+	interp alias $interp $command {} $command
+    }
 
     interp alias $interp puts {} safe_puts
 
@@ -27,6 +36,10 @@ proc safe_init { interp } {
 }
 # safe_init
 
+
+# safe_puts:
+#  a safe puts, that only writes to stdout/stderr for use in
+#  the safe interpreter
 proc safe_puts { args } {
 
     if { [llength $args] > 1 } {
