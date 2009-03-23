@@ -925,7 +925,7 @@ ay_script_notifycb(ay_object *o)
       return AY_ENULL;
     } /* if */
 
-#ifdef AYSAFEINTERP
+#ifndef AYSAFEINTERP
       interp = ay_safeinterp;
 #else
       interp = ay_interp;

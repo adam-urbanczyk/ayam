@@ -655,6 +655,8 @@ AYGLUATTRIBBUG - enable workaround for a GLU bug (no NURBS display
 
 Additional features:
 AYENABLEPPREV - enable permanent preview feature
+AYSAFEINTERP - let scripts of Script objects and NS tags run in the main
+ interpreter
 
 
 End of Compilation Instructions,

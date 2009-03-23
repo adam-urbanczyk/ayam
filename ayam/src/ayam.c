@@ -1163,7 +1163,7 @@ Tcl_SetVar(interp, "AYSAFEINTERP", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYWITHAQUA */
 #endif
 
-#ifdef AYSAFEINTERP
+#ifndef AYSAFEINTERP
   ay_safeinterp = Tcl_CreateSlave(interp, "aySafeInterp", 1);
 #endif
 
