@@ -1274,3 +1274,24 @@ proc addProgress { w prop name } {
  return;
 }
 # addProgress
+
+
+#
+#
+#
+proc addPropertyGUI { name {sproc ""} {gproc ""} } {
+    global ay $name
+
+    set w $ay(pca).f$name
+
+    if { ![info exists $name] } {
+	frame $w
+	set ${name}(arr) ${name}Data
+	set ${name}(sproc) $sproc
+	set ${name}(gproc) $gproc
+	set ${name}(w) f$name
+    }
+
+ return $w;
+}
+# addPropertyGUI
