@@ -1385,7 +1385,7 @@ ayam_loadscript tgui
 ayam_loadscript safe
 
 # initialize the safe interpreter
-if { $::AYSAFEINTERP == 0 } {
+if { $::AYNOSAFEINTERP == 0 } {
     safe_init aySafeInterp
 }
 

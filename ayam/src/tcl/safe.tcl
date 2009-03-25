@@ -13,9 +13,10 @@
 #  initialize the safe interpreter <interp>
 #
 proc safe_init { interp } {
-    interp share {} stdout $interp
-    interp share {} stderr $interp
+    catch {interp share {} stdout $interp}
+    catch {interp share {} stderr $interp}
 
+    # object management
     set safe_commands { crtOb delOb hSL withOb }
     # property management
     lappend safe_commands setProp getProp setProperty getProperty
@@ -29,6 +30,10 @@ proc safe_init { interp } {
     foreach command $safe_commands {
 	interp alias $interp $command {} $command
     }
+
+    # property GUI
+    interp alias $interp addPropertyGUI {} addPropertyGUI
+    interp alias $interp addParam {} addParam
 
     interp alias $interp puts {} safe_puts
 
