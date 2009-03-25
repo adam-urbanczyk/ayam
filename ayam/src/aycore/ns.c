@@ -49,23 +49,23 @@ ay_ns_restrictall(ClientData clientData,
  Tcl_Obj *to = NULL, *ton = NULL;
  Tcl_Interp *interp = NULL;
 
-#ifndef AYSAFEINTERP
-  interp = ay_safeinterp;
-#else
+#ifdef AYNOSAFEINTERP
   interp = ay_interp;
+#else
+  interp = ay_safeinterp;
 #endif
 
 #ifdef WIN32
- if((GetKeyState(VK_SHIFT) < 0) &&
-    (GetKeyState(VK_CONTROL) < 0) &&
-    (GetKeyState('C') < 0))
-   {
-     ton = Tcl_NewStringObj("cancelled", -1);
-     to = Tcl_NewIntObj(1);
-     Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-		    TCL_GLOBAL_ONLY);
-     return TK_DISCARD_EVENT;
-   }
+  if((GetKeyState(VK_SHIFT) < 0) &&
+     (GetKeyState(VK_CONTROL) < 0) &&
+     (GetKeyState('C') < 0))
+    {
+      ton = Tcl_NewStringObj("cancelled", -1);
+      to = Tcl_NewIntObj(1);
+      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+      return TK_DISCARD_EVENT;
+    }
 #else
   if(eventPtr->type == KeyPress)
     {
@@ -100,7 +100,6 @@ ay_ns_restrictall(ClientData clientData,
 } /* ay_ns_restrictall */
 
 
-
 /* ay_ns_execute:
  *
  */
@@ -128,10 +127,10 @@ ay_ns_execute(ay_object *o, char *script)
       sema = 1;
     } /* if */
 
-#ifndef AYSAFEINTERP
-  interp = ay_safeinterp;
-#else
+#ifdef AYNOSAFEINTERP
   interp = ay_interp;
+#else
+  interp = ay_safeinterp;
 #endif
 
   old_sel = ay_selection;
