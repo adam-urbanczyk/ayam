@@ -575,6 +575,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 #endif /* AYWRAPPED */
 {
  int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  /*char app_init_script[] = "source [file dirname $argv0]/tcl/ayam.tcl\n";*/
 
 #ifndef AYWRAPPED
@@ -1129,11 +1130,11 @@ Tcl_SetVar(interp,"AYENABLEFEXIT", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 Tcl_SetVar(interp, "AYENABLEFEXIT", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYENABLEFEXIT */
 
-#ifndef AYSAFEINTERP
-Tcl_SetVar(interp,"AYSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#ifdef AYNOSAFEINTERP
+Tcl_SetVar(interp,"AYNOSAFEINTERP", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #else
-Tcl_SetVar(interp, "AYSAFEINTERP", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-#endif /* AYSAFEINTERP */
+Tcl_SetVar(interp, "AYNOSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+#endif /* AYNOSAFEINTERP */
 
   if((ay_status = ay_init(interp)) != AY_OK)
     {
@@ -1163,8 +1164,18 @@ Tcl_SetVar(interp, "AYSAFEINTERP", "1", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 #endif /* AYWITHAQUA */
 #endif
 
-#ifndef AYSAFEINTERP
+#ifndef AYNOSAFEINTERP
   ay_safeinterp = Tcl_CreateSlave(interp, "aySafeInterp", 1);
+  /*
+  Tcl_SetVar(ay_safeinterp, "argv", "-use", TCL_GLOBAL_ONLY |
+	     TCL_LEAVE_ERR_MSG);
+  sprintf(buf,"%x",Tk_GetWindowID(".");
+  Tcl_SetVar(ay_safeinterp, "argv", buf, TCL_GLOBAL_ONLY |
+	     TCL_LEAVE_ERR_MSG|TCL_LIST_ELEMENT);
+  tcl_status = Tk_SafeInit(ay_safeinterp);
+  if(tcl_status != TCL_OK)
+    return TCL_ERROR;
+  */
 #endif
 
  return TCL_OK;

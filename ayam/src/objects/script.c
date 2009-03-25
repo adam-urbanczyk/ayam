@@ -545,7 +545,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  char *eolarrname = NULL;
  int arrmembers = 0;
  Tcl_Interp *interp = NULL;
-#ifdef AYSAFEINTERP
+#ifdef AYNOSAFEINTERP
  int deactivate = 0;
  char script_disable_cmd[] = "script_disable";
  char a1[] = "ay", n1[] = "scriptdisable";
@@ -555,7 +555,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-#ifdef AYSAFEINTERP
+#ifdef AYNOSAFEINTERP
   interp = ay_interp;
 #else
   interp = ay_safeinterp;
@@ -652,7 +652,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   ay_trafo_defaults(o);
 
-#ifdef AYSAFEINTERP
+#ifdef AYNOSAFEINTERP
   if(sc->active)
     {
       Tcl_Eval(ay_interp, script_disable_cmd);
@@ -694,7 +694,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-#ifdef AYSAFEINTERP
+#ifdef AYNOSAFEINTERP
   interp = ay_interp;
 #else
   interp = ay_safeinterp;
@@ -943,10 +943,10 @@ ay_script_notifycb(ay_object *o)
       return AY_ENULL;
     } /* if */
 
-#ifndef AYSAFEINTERP
-      interp = ay_safeinterp;
+#ifdef AYNOSAFEINTERP
+  interp = ay_interp;
 #else
-      interp = ay_interp;
+  interp = ay_safeinterp;
 #endif
 
   ay_trafo_defaults(o);

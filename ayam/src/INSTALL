@@ -1,4 +1,4 @@
-INSTALL [4. Feb 2008]
+INSTALL [25. Mar 2009]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -655,7 +655,7 @@ AYGLUATTRIBBUG - enable workaround for a GLU bug (no NURBS display
 
 Additional features:
 AYENABLEPPREV - enable permanent preview feature
-AYSAFEINTERP - let scripts of Script objects and NS tags run in the main
+AYNOSAFEINTERP - let scripts of Script objects and NS tags run in the main
  interpreter
 
 
