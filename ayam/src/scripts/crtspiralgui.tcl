@@ -12,6 +12,12 @@ if { ![info exists ::SpiralAttrData] } {
 	SP {Length AngleD Radius ZDiff}
     }
     set ::SpiralAttrData(AngleD)  [expr {90.0*3.141592654/180.0}]
+
+    set w [addPropertyGUI SpiralAttr "" ""]
+    addParam $w SpiralAttrData Length
+    addParam $w SpiralAttrData AngleD
+    addParam $w SpiralAttrData Radius
+    addParam $w SpiralAttrData ZDiff
 }
 
 set length $::SpiralAttrData(Length)
@@ -32,20 +38,5 @@ for {set i 0} {$i < $length} {incr i} {
     set z [expr {$z + $zd}]
 }
 # for
-
-if { ![info exists ::SpiralAttr] } {
-    array set ::SpiralAttr {
-	arr SpiralAttrData
-	sproc ""
-	gproc ""
-	w fSpiralAttr
-    }
-    global ay
-    set w [frame $ay(pca).fSpiralAttr]
-    addParam $w SpiralAttrData Length
-    addParam $w SpiralAttrData AngleD
-    addParam $w SpiralAttrData Radius
-    addParam $w SpiralAttrData ZDiff
-}
 
 # crtspiralgui.tcl

@@ -8,6 +8,8 @@ if { ![info exists ::LineAttrData] } {
 	Length 3
 	SP {Length}
     }
+    set w [addPropertyGUI LineAttr "" ""]
+    addParam $w LineAttrData Length
 }
 
 set length $::LineAttrData(Length)
@@ -15,17 +17,5 @@ set length $::LineAttrData(Length)
 crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
-
-if { ![info exists ::LineAttr] } {
-    array set ::LineAttr {
-	arr LineAttrData
-	sproc ""
-	gproc ""
-	w fLineAttr
-    }
-    global ay
-    set w [frame $ay(pca).fLineAttr]
-    addParam $w LineAttrData Length
-}
 
 # crtlinegui.tcl
