@@ -27,7 +27,7 @@ To actually build the documentation (HTML and nice PDF) simply enter:
 >make
 
 To build just the HTML version:
->make htm
+>make html
 
 To build the PostScript version:
 >make ps
