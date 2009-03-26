@@ -322,6 +322,12 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, arrmember,
 						    TCL_GLOBAL_ONLY));
 		      Tcl_IncrRefCount(sc->params[i]);
+		      /**/
+#ifndef AYNOSAFEINTERP
+		      Tcl_ObjSetVar2(ay_safeinterp, toa, arrmember,
+		      Tcl_ObjGetVar2(interp, toa, arrmember, TCL_GLOBAL_ONLY),
+				     TCL_GLOBAL_ONLY);
+#endif
 		    } /* if */
 		} /* for */
 	    } /* if */

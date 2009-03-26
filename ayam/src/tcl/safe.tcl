@@ -32,7 +32,7 @@ proc safe_init { interp } {
     }
 
     # property GUI
-    interp alias $interp addPropertyGUI {} addPropertyGUI
+    interp alias $interp addPropertyGUI {} addPropertyGUI_safe
     interp alias $interp addParam {} addParam
 
     interp alias $interp puts {} safe_puts
