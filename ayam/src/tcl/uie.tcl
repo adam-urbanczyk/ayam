@@ -1295,3 +1295,20 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
  return $w;
 }
 # addPropertyGUI
+
+
+#
+#
+#
+proc addPropertyGUI_safe { name {sproc ""} {gproc ""} } {
+
+    # fetch data array from safe interpreter
+    set arrayname ${name}Data
+    global $arrayname
+    array set $arrayname [aySafeInterp eval array get ::$arrayname]
+
+    set w [addPropertyGUI $name $sproc $gproc]
+
+ return $w;
+}
+# addPropertyGUI_safe
