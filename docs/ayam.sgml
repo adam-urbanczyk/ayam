@@ -6104,19 +6104,30 @@ the procedural will create or the archive contains.
 <p>
 Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
-or realise mechanisms like constraints.
+or realise mechanisms like constraints using small scripts.
 <p>
-Theoretically, the scripts can use any functionality from Tcl and
+Those scripts employ functionality from Tcl and
 the Tcl scripting interface of Ayam (see also section
-<ref id="script" name="Scripting Interface">). However,
-certain script object types impose some special constraints.
+<ref id="script" name="Scripting Interface">) to calculate
+data which is then used to create or modify objects of the scene.
+However, certain script object types impose some special constraints.
 <p>
-For security reasons, if scene files containing script objects are
-loaded, Ayam will raise a warning offering to temporarily disable all
-script objects that will be read. The script objects will be disabled
-using the <tt/"Active"/ script object property and may be enabled
-after inspection of the script code manually or using the main menu
-entry <tt>"Special/Enable Scripts"</tt>.
+In Ayam versions prior to 1.16 Script object scripts could use any
+functionality of Tcl and the Tcl scripting interface of Ayam which
+posed a huge security risk. Therefore this is no longer the case.
+Script objects scripts now run in a safe interpreter with reduced
+instruction set. They can no longer write to the file system, get
+onto the network or confuse the application state.
+Consequently, the warning dialog that appeared when files with
+Script objects or tags were loaded is also gone.
+<p>
+You can still re-enable the old functionality by recompiling Ayam.
+If you do so, for security reasons, if scene files containing script
+objects are loaded, Ayam will still raise the warning offering to
+temporarily disable all script objects that will be read. The script
+objects will be disabled using the <tt/"Active"/ script object property
+and may be enabled after inspection of the script code manually or
+using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 The script of a script object will be run each time the script is
 modified and each time the notification callback of the script object
@@ -6266,8 +6277,8 @@ parameters of the script object. Note that only parameters from this
 list will be saved to Ayam scene files.
 Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a script object must share the same set of individual vs. shared
-parameters. If objects need to store differing amounts of parameter
-data, lists can be used as individual parameters.
+parameters. If objects need to store differing/individual amounts of
+parameter data, lists can be used as individual parameters.
 </itemize>
 
 <sect2>Script Object Example
@@ -6294,26 +6305,23 @@ setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 <p>
 This code works, but if lines of a different length than 1 are needed,
 the user must edit the script which is not very convenient and error
-prone. A complete, easy to use, and safe GUI for the length parameter
-can be added by changing the script code to
+prone.
+A complete, easy to use, and safe GUI for the length parameter
+can be added by changing the script code
 (<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate changed
 or added code):
 <code>
+# Ayam, save array: LineAttrData
 if { ![info exists ::LineAttrData] } {
     array set ::LineAttrData {
 	Length 1
+	SP {Length}
     }
-    array set ::LineAttr {
-	arr LineAttrData
-	sproc ""
-	gproc ""
-	w fLineAttr
-    }
-    set w [frame $::ay(pca).fLineAttr]
+    set w [addPropertyGUI LineAttr]
     addParam $w LineAttrData Length
 }
 set length $::LineAttrData(Length)
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 crtOb NCurve -length 2; hSL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
@@ -6328,64 +6336,28 @@ graphical user interface as can be seen in the following image:
 <caption>Parametric Line Primitive with Parameter GUI</caption>
 </figure>
 <p>
-The GUI management code just runs once (for that, it checks for the presence
-of LineAttrData first) and creates two Tcl arrays essential for an Ayam
-object property, LineAttrData and LineAttr. Then, a Tk frame is created and a
-GUI element is added to the frame using <tt>"addParam"</tt>.
+The GUI setup code creates a Tcl array essential to manage the
+data of an Ayam object property (LineAttrData). Then, the LineAttr
+property GUI is created
+and a GUI element is added to the GUI using <tt>"addParam"</tt>.
+Note that the <tt>"addPropertyGUI"</tt> command expects for a property
+named <tt>"SomePropertyName"</tt> a corresponding property data array
+named <tt>"SomePropertyNameData"</tt> to exist.
+The GUI setup code should just run once, therefore it checks for the
+presence of the array LineAttrData first.
+See also section
+<ref id="ayproparr" name="Global Property Management and Data Arrays">
+for more information about property GUIs and the Ayam scripting interface.
 <p>
 Finally, to enable saving of the parameter value in the new property
-<tt>"LineAttr"</tt> to scene files, a comment may be prepended to the
-script, and to enable multiple individually parameterized copies of this
+<tt>"LineAttr"</tt> to scene files, a comment must be prepended to the
+script (<tt>"Ayam, save array: LineAttrData"</tt>), and to enable
+multiple individually parameterized copies of this
 script object, a <tt/"SP"/ entry needs to be added to the
-<tt>"LineAttrData"</tt> array as well:
-<code>
-# Ayam, save array: LineAttrData
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-if { ![info exists ::LineAttrData] } {
-    array set ::LineAttrData {
-	Length 1
-	SP {Length}
-#       ^^^^^^^^^^^
-    }
-    array set ::LineAttr {
-	arr LineAttrData
-	sproc ""
-	gproc ""
-	w fLineAttr
-    }
-    set w [frame $::ay(pca).fLineAttr]
-    addParam $w LineAttrData Length
-}
-set length $::LineAttrData(Length)
-crtOb NCurve -length 2; hSL
-setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
-setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
-</code>
-
-The complete script looks like this:
-<code>
-# Ayam, save array: LineAttrData
-if { ![info exists ::LineAttrData] } {
-    array set ::LineAttrData {
-	Length 1
-	SP {Length}
-    }
-    array set ::LineAttr {
-	arr LineAttrData
-	sproc ""
-	gproc ""
-	w fLineAttr
-    }
-    set w [frame $::ay(pca).fLineAttr]
-    addParam $w LineAttrData Length
-}
-set length $::LineAttrData(Length)
-crtOb NCurve -length 2; hSL
-setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
-setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
-</code>
-It is also available as example script file
-<tt>"scripts/crtlinegui.tcl"</tt>.
+<tt>"LineAttrData"</tt> array as well.
+<p>
+The complete script is also available as example script file
+<tt>"scripts/crtlinegui.tcl"</tt> in the Ayam distribution.
 
 <sect1>Select Object<label id="selectobj">
 <p>
