@@ -1302,12 +1302,17 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
 #
 proc addPropertyGUI_safe { name {sproc ""} {gproc ""} } {
 
-    # fetch data array from safe interpreter
+    set w ""
+
+    # first, fetch data array from safe interpreter
     set arrayname ${name}Data
     global $arrayname
-    array set $arrayname [aySafeInterp eval array get ::$arrayname]
-
-    set w [addPropertyGUI $name $sproc $gproc]
+    # never let the (evil?) script overwrite existing arrays
+    if { ! [info exists $arrayname] } {
+	array set $arrayname [aySafeInterp eval array get ::$arrayname]
+	# create the property GUI management array
+	set w [addPropertyGUI $name $sproc $gproc]
+    }
 
  return $w;
 }
