@@ -6119,15 +6119,15 @@ Script objects scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
 onto the network or confuse the application state.
 Consequently, the warning dialog that appeared when files with
-Script objects or tags were loaded is also gone.
+Script objects were loaded is also gone.
 <p>
 You can still re-enable the old functionality by recompiling Ayam.
 If you do so, for security reasons, if scene files containing script
-objects are loaded, Ayam will still raise the warning offering to
+objects are loaded, Ayam will again raise the warning offering to
 temporarily disable all script objects that will be read. The script
 objects will be disabled using the <tt/"Active"/ script object property
-and may be enabled after inspection of the script code manually or
-using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+and may be enabled after careful inspection of the script code manually
+or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 The script of a script object will be run each time the script is
 modified and each time the notification callback of the script object
@@ -7333,14 +7333,25 @@ A simple BNS tag could look like this:
 <p>
 <bf/Notes/
 <p>
-For security reasons, Ayam offers to disable all script tags when they
-are found upon reading of scene files. To disable a tag, Ayam simply
-changes its type from <tt/"BNS"/ to <tt/"DBNS"/ (disabled before notify
-script).
+In Ayam versions prior to 1.16 BNS tag scripts could use any
+functionality of Tcl and the Tcl scripting interface of Ayam which
+posed a huge security risk. Therefore this is no longer the case.
+BNS tag scripts now run in a safe interpreter with reduced
+instruction set. They can no longer write to the file system, get
+onto the network or confuse the application state.
+Consequently, the warning dialog that appeared when files with
+BNS tags were loaded is also gone.
+<p>
+You can still re-enable the old functionality by recompiling Ayam.
+If you do so, for security reasons, if scene files containing BNS
+tags are loaded, Ayam will again raise the warning offering to
+temporarily disable all such tags that will be read.
+To disable a BNS tag, Ayam simply changes its type from <tt/"BNS"/
+to <tt/"DBNS"/ (disabled before notify script).
 It will not be executed then.
 Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"BNS"/
-or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>ANS (After Notify Script) Tag<label id="anstag">
 <p>
@@ -7359,14 +7370,25 @@ A simple ANS tag could look like this:
 <p>
 <bf/Notes/
 <p>
-For security reasons, Ayam offers to disable all script tags when they
-are found upon reading of scene files. To disable a tag, Ayam simply
-changes its type from <tt/"ANS"/ to <tt/"DANS"/ (disabled after notify
-script).
+In Ayam versions prior to 1.16 ANS tag scripts could use any
+functionality of Tcl and the Tcl scripting interface of Ayam which
+posed a huge security risk. Therefore this is no longer the case.
+ANS tag scripts now run in a safe interpreter with reduced
+instruction set. They can no longer write to the file system, get
+onto the network or confuse the application state.
+Consequently, the warning dialog that appeared when files with
+ANS tags were loaded is also gone.
+<p>
+You can still re-enable the old functionality by recompiling Ayam.
+If you do so, for security reasons, if scene files containing ANS
+tags are loaded, Ayam will again raise the warning offering to
+temporarily disable all such tags that will be read.
+To disable a ANS tag, Ayam simply changes its type from <tt/"ANS"/
+to <tt/"DANS"/ (disabled before notify script).
 It will not be executed then.
-Disabled notify scripts may be enabled after careful inspection
+Disabled notify script tags may be enabled after careful inspection
 by simply changing their type back to <tt/"ANS"/
-or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>UMM/VMM (U/V Min Max) Tag<label id="ummtag">
 <p>
