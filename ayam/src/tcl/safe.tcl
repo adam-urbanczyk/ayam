@@ -35,11 +35,11 @@ proc safe_init { interp } {
     # tags management
     lappend safe_commands addTag delTags getTags setTags
     # NURBS
-    lappend safe_commands revertC revertUS revertVS
+    lappend safe_commands revertC revertuS revertvS swapuvS
     lappend safe_commands clampNC elevateNC insknNC remknNC refineNC coarsenNC
     lappend safe_commands rescaleknNC splitNC toXYNC trimNC estlenNC reparamNC
-    lappend safe_commands clampNPU clampNPV rescaleknNP insknNPU insknNPV
-    lappend safe_commands splitNPU splitNPV extrNP
+    lappend safe_commands clampuNP clampvNP rescaleknNP insknuNP insknvNP
+    lappend safe_commands splituNP splitvNP extrNP
     # point editing
     lappend safe_commands setPnt getPnt
     # enquiry

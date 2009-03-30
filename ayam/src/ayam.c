@@ -758,7 +758,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* tcmd.c */
-  Tcl_CreateCommand(interp, "revert", ay_tcmd_reverttcmd,
+  Tcl_CreateCommand(interp, "revertC", ay_tcmd_reverttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "show", ay_tcmd_showtcmd,
@@ -1017,46 +1017,46 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "topoly", ay_tess_npatchtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevateNPU", ay_npt_elevateutcmd,
+  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevateNPV", ay_npt_elevatevtcmd,
+  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevatevtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "swapUV", ay_npt_swapuvtcmd,
+  Tcl_CreateCommand(interp, "swapuvS", ay_npt_swapuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "revertU", ay_npt_revertutcmd,
+  Tcl_CreateCommand(interp, "revertuS", ay_npt_revertutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "revertV", ay_npt_revertvtcmd,
+  Tcl_CreateCommand(interp, "revertvS", ay_npt_revertvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "closeNPU", ay_npt_closeutcmd,
+  Tcl_CreateCommand(interp, "closeuNP", ay_npt_closeutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "closeNPV", ay_npt_closevtcmd,
+  Tcl_CreateCommand(interp, "closevNP", ay_npt_closevtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampNPU", ay_npt_clamputcmd,
+  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clamputcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampNPV", ay_npt_clampvtcmd,
+  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rescaleknNP", ay_npt_rescaleknvnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "insknNPU", ay_npt_insertknutcmd,
+  Tcl_CreateCommand(interp, "insknuNP", ay_npt_insertknutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "insknNPV", ay_npt_insertknvtcmd,
+  Tcl_CreateCommand(interp, "insknvNP", ay_npt_insertknvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitNPU", ay_npt_splitutcmd,
+  Tcl_CreateCommand(interp, "splituNP", ay_npt_splitutcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitNPV", ay_npt_splitvtcmd,
+  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splitvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
