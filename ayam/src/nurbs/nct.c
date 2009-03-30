@@ -3583,7 +3583,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "rescaleKnNC";
+ char fname[] = "rescaleknNC";
  int i = 1, mode = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
 

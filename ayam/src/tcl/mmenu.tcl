@@ -400,12 +400,12 @@ $m.nct add command -label "Make Compatible" -command {
 $m.nct add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleKnNC -r %0 %1; plb_update;"
+	    "rescaleknNC -r %0 %1; plb_update;"
 }
 $m.nct add command -label "Rescale Knots to Mindist" -command {
     undo save RescaleKnots;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleKnNC -d %0; plb_update;"
+	    "rescaleknNC -d %0; plb_update;"
 }
 $m.nct add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {
@@ -479,32 +479,32 @@ $m.npt add command -label "Extract Patch" -command "level_crt ExtrNP \"\" -1;"
 $m.npt add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleKnNP -ru %0 %1; plb_update;"
+	    "rescaleknNP -ru %0 %1; plb_update;"
 }
 $m.npt add command -label "Rescale Knots to Range V" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleKnNP -rv %0 %1; plb_update;"
+	    "rescaleknNP -rv %0 %1; plb_update;"
 }
 $m.npt add command -label "Rescale Knots to Range Both" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleKnNP -r %0 %1; plb_update;"
+	    "rescaleknNP -r %0 %1; plb_update;"
 }
 $m.npt add command -label "Rescale Knots to Mindist U" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleKnNP -du %0; plb_update;"
+	    "rescaleknNP -du %0; plb_update;"
 }
 $m.npt add command -label "Rescale Knots to Mindist V" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleKnNP -dv %0; plb_update;"
+	    "rescaleknNP -dv %0; plb_update;"
 }
 $m.npt add command -label "Rescale Knots to Mindist Both" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleKnNP -d %0; plb_update;"
+	    "rescaleknNP -d %0; plb_update;"
 }
 $m.npt add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {

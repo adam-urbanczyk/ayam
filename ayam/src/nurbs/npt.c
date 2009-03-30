@@ -8238,7 +8238,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
- char fname[] = "rescaleKnNP";
+ char fname[] = "rescaleknNP";
  int i = 1, mode = 0, dim = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
  double oldmin, oldmax;

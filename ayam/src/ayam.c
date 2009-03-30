@@ -974,7 +974,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "rescaleKnNC", ay_nct_rescaleknvtcmd,
+  Tcl_CreateCommand(interp, "rescaleknNC", ay_nct_rescaleknvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "curvPlot", ay_nct_curvplottcmd,
@@ -1044,7 +1044,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "clampNPV", ay_npt_clampvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "rescaleKnNP", ay_npt_rescaleknvnptcmd,
+  Tcl_CreateCommand(interp, "rescaleknNP", ay_npt_rescaleknvnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "insknNPU", ay_npt_insertknutcmd,
