@@ -377,7 +377,7 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.brev -image ay_Revert_img -padx 0 -pady 0 -command {
-		undo save Revert; revert; plb_update; rV
+		undo save Revert; revertC; plb_update; rV
 	    }
 	    balloon_set $f.brev "revert curve"
 
@@ -423,7 +423,7 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    #####
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
-		undo save Clamp; clampNC; plb_update; rV
+		undo save ClampNC; clampNC; plb_update; rV
 	    }
 	    balloon_set $f.bclamp "clamp curve"
 
@@ -620,19 +620,19 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bswpuv -image ay_NPSwapUV_img -padx 0 -pady 0 -command {
-		undo save SwapUV; swapUV; plb_update; rV
+		undo save SwapUVS; swapuvS; plb_update; rV
 	    }
 	    balloon_set $f.bswpuv "swap UV"
 
 	    #####
 	    button $f.brevu -image ay_NPRevU_img -padx 0 -pady 0 -command {
-		undo save RevertU; revertU; plb_update; rV
+		undo save RevertUS; revertuS; plb_update; rV
 	    }
 	    balloon_set $f.brevu "revert U"
 
 	    #####
 	    button $f.brevv -image ay_NPRevV_img -padx 0 -pady 0 -command {
-		undo save RevertV; revertV; plb_update; rV
+		undo save RevertVS; revertvS; plb_update; rV
 	    }
 	    balloon_set $f.brevv "revert V"
 

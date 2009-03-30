@@ -532,7 +532,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "revertU";
+ char fname[] = "revertuS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -631,7 +631,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "revertV";
+ char fname[] = "revertvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -5706,7 +5706,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "swapUV";
+ char fname[] = "swapuvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -7125,7 +7125,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "closeNPU";
+ char fname[] = "closeuNP";
  int stride = 4;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
@@ -7257,7 +7257,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "closeNPV";
+ char fname[] = "closevNP";
  int stride = 4, i;
  double *a, *b;
  double *newcontrolv = NULL, *tknotv;
@@ -7943,7 +7943,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "clampNPU";
+ char fname[] = "clampuNP";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, u;
@@ -8040,7 +8040,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "clampNPV";
+ char fname[] = "clampvNP";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, v;
@@ -8440,7 +8440,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, i, k = 0, s = 0, r = 0;
- char fname[] = "insknNPU";
+ char fname[] = "insknuNP";
 
   if(argc < 3)
     {
@@ -8552,7 +8552,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, i, k = 0, s = 0, r = 0;
- char fname[] = "insknNPV";
+ char fname[] = "insknvNP";
 
   if(argc < 3)
     {
@@ -8800,7 +8800,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
- char fname[] = "splitNPU";
+ char fname[] = "splituNP";
 
   if(argc < 2)
     {
@@ -9026,7 +9026,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double v = 0.0;
- char fname[] = "splitNPV";
+ char fname[] = "splitvNP";
 
   if(argc < 2)
     {

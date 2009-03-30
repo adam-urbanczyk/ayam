@@ -22,7 +22,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "revert";
+ char fname[] = "revertC";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_acurve_object *acurve = NULL;

@@ -350,7 +350,7 @@ $m add separator
 $m add cascade -menu $m.nct -label "NURBCurve"
 menu $m.nct -tearoff 0
 
-$m.nct add command -label "Revert" -command { undo save Revert; revert;
+$m.nct add command -label "Revert" -command { undo save RevertC; revertC;
                                               plb_update; rV }
 $m.nct add command -label "Open" -command { undo save Open;
                                             ncurve_open;
@@ -373,7 +373,7 @@ $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
                                               plb_update; rV }
 $m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "undo save Refine; refineNC \{%0\}; plb_update; rV" }
-$m.nct add command -label "Clamp" -command { undo save Clamp; clampNC;
+$m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
                                              plb_update; rV }
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
@@ -426,46 +426,46 @@ $m add separator
 $m add cascade -menu $m.npt -label "NURBPatch"
 menu $m.npt -tearoff 0
 $m.npt add command -label "Revert U" -command {
-    undo save RevertU; revertU; plb_update; rV}
+    undo save RevertU; revertuS; plb_update; rV}
 $m.npt add command -label "Revert V" -command {
-    undo save RevertV; revertV; plb_update; rV}
+    undo save RevertV; revertvS; plb_update; rV}
 $m.npt add command -label "Swap UV" -command {
-    undo save SwapUV; swapUV; plb_update; rV}
+    undo save SwapUV; swapuvS; plb_update; rV}
 
 $m.npt add command -label "Close U" -command {
-    undo save closeNPU; closeNPU; plb_update; rV}
+    undo save CloseUNP; closeuNP; plb_update; rV}
 $m.npt add command -label "Close V" -command {
-    undo save closeNPV; closeNPV; plb_update; rV}
+    undo save CloseVNP; closevNP; plb_update; rV}
 
 $m.npt add command -label "Split U" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitNPU; splitNPU %0; uCR; sL; rV"
+runTool ay(splitu) {"Split at:"} "undo save SplitUNP; splituNP %0; uCR; sL; rV"
 }
 
 $m.npt add command -label "Split V" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitNPV; splitNPV %0; uCR; sL; rV"
+runTool ay(splitu) {"Split at:"} "undo save SplitVNP; splitvNP %0; uCR; sL; rV"
 }
 
 $m.npt add command -label "Clamp U" -command {
-    undo save clampNPU; clampNPU; plb_update; rV}
+    undo save ClampUNP; clampvNP; plb_update; rV}
 $m.npt add command -label "Clamp V" -command {
-    undo save clampNPV; clampNPV; plb_update; rV}
+    undo save ClampVNP; clampuNP; plb_update; rV}
 $m.npt add command -label "Clamp Both" -command {
-    undo save clampNP; clampNPU; clampNPV; plb_update; rV}
+    undo save ClampNP; clampuNP; clampvNP; plb_update; rV}
 
 $m.npt add command -label "Insert Knot U" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnU; insknNPU %0 %1; plb_update; rV" }
+	    "undo save InsKnUNP; insknuNP %0 %1; plb_update; rV" }
 
 $m.npt add command -label "Insert Knot V" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnV; insknNPV %0 %1; plb_update; rV" }
+	    "undo save InsKnVNP; insknvNP %0 %1; plb_update; rV" }
 
 $m.npt add command -label "Elevate UV" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
 	    [list "Elevate U by:" "Elevate V by:"]\
-	    "undo save ElevateUV; elevateNPU %0; elevateNPV %1; plb_update; rV"
+	  "undo save ElevateUVNP; elevateuNP %0; elevatevNP %1; plb_update; rV"
 }
 
 $m.npt add command -label "Extract Curve" -command "level_crt ExtrNC \"\" -1;"
