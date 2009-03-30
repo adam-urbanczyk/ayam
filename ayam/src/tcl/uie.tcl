@@ -1276,8 +1276,8 @@ proc addProgress { w prop name } {
 # addProgress
 
 
-#
-#
+# addPropertyGUI:
+#  create frame and global property management array
 #
 proc addPropertyGUI { name {sproc ""} {gproc ""} } {
     global ay $name
@@ -1295,25 +1295,3 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
  return $w;
 }
 # addPropertyGUI
-
-
-#
-#
-#
-proc addPropertyGUI_safe { name {sproc ""} {gproc ""} } {
-
-    set w ""
-
-    # first, fetch data array from safe interpreter
-    set arrayname ${name}Data
-    global $arrayname
-    # never let the (evil?) script overwrite existing arrays
-    if { ! [info exists $arrayname] } {
-	array set $arrayname [aySafeInterp eval array get ::$arrayname]
-	# create the property GUI management array
-	set w [addPropertyGUI $name $sproc $gproc]
-    }
-
- return $w;
-}
-# addPropertyGUI_safe

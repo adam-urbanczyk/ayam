@@ -13,18 +13,37 @@
 #  initialize the safe interpreter <interp>
 #
 proc safe_init { interp } {
+
+    # share the standard I/O channels
     catch {interp share {} stdout $interp}
     catch {interp share {} stderr $interp}
 
+    # the safe_commands list contains all commands considered safe
+    # and thus available in the safe interpreter verbatim
+
     # object management
-    set safe_commands { crtOb delOb hSL withOb }
+    set safe_commands { crtOb delOb hSL selOb withOb convOb }
+    # clipboard
+    lappend safe_commands cutOb copOb pasOb cmovOb
+    # current level
+    lappend safe_commands goUp goDown goTop
     # property management
     lappend safe_commands setProp getProp setProperty getProperty
     lappend safe_commands setTrafo getTrafo setAttr getAttr setMat getMat
     # transformations
     lappend safe_commands movOb rotOb scalOb movSel rotSel scalSel
+    # tags management
+    lappend safe_commands addTag delTags getTags setTags
+    # NURBS
+    lappend safe_commands revertC revertUS revertVS
+    lappend safe_commands clampNC elevateNC insknNC remknNC refineNC coarsenNC
+    lappend safe_commands rescaleknNC splitNC toXYNC trimNC estlenNC reparamNC
+    lappend safe_commands clampNPU clampNPV rescaleknNP insknNPU insknNPV
+    lappend safe_commands splitNPU splitNPV extrNP
     # point editing
     lappend safe_commands setPnt getPnt
+    # enquiry
+    lappend safe_commands getType getLevel hasChild
 
     # make safe commands known in safe interpreter
     foreach command $safe_commands {
@@ -32,7 +51,7 @@ proc safe_init { interp } {
     }
 
     # property GUI
-    interp alias $interp addPropertyGUI {} addPropertyGUI_safe
+    interp alias $interp addPropertyGUI {} safe_addPropertyGUI
     interp alias $interp addParam {} addParam
 
     interp alias $interp puts {} safe_puts
@@ -54,6 +73,34 @@ proc safe_puts { args } {
 	}
     }
 
+    if { [llength $args] == 1 } {
+	puts stdout $args
+    }
+
  return;
 }
 # safe_puts
+
+
+# safe_addPropertyGUI:
+#  safe version to create a property GUI
+#  first, fetches data array from safe interpreter, then calls through
+#  to addPropertyGUI
+proc safe_addPropertyGUI { name {sproc ""} {gproc ""} } {
+
+    set w ""
+    # create the standard array name
+    set arrayname ${name}Data
+    global $arrayname
+    # never let the (evil?) script overwrite existing arrays
+    if { ! [info exists $arrayname] } {
+	# fetch the data
+	array set $arrayname [aySafeInterp eval array get ::$arrayname]
+	# now create the property GUI management array and frame
+	# by calling through to addPropertyGUI
+	set w [addPropertyGUI $name $sproc $gproc]
+    }
+
+ return $w;
+}
+# safe_addPropertyGUI
