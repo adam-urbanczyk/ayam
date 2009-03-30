@@ -101,11 +101,19 @@ proc create_makefile {} {
 	set err_str "$err_str - Tk-Path doesn't exist or is invalid!\n"
 	set err 1
     }
-
-    if { ![file exists $tiffpath] ||\
-	 ![file exists "$tiffpath/include/tiffio.h"] } {
-	set err_str "$err_str - TIFF-Path doesn't exist or is invalid!\n"
+    if { ![file exists $tiffpath] } {
+	set err_str "$err_str - \"$tiffpath\" doesn't exist!\n"
 	set err 1
+    } else {
+	if { ![file exists "$tiffpath/include/tiffio.h"] } {
+	    set err_str "$err_str - \"$tiffpath/include/tiffio.h\" doesn't exist!\n"
+	    set err 1
+	}
+	if { ((![file exists "$tiffpath/lib/libtiff.so"]) &&
+	      (![file exists "$tiffpath/lib/libtiff.a"])) } {
+	    set err_str "$err_str - \"$tiffpath/include/libtiff.so\" doesn't exist!\n"
+	    set err 1
+	}
     }
 
     if {([regexp "BMRT"  $ribval] || [regexp "BMRT"  $shaderval]) && ![file exists $bmrtpath]} {

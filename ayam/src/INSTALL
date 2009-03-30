@@ -110,7 +110,8 @@ Makefile. Just run it by typing:
 >wish ayamConf.tcl
 and select your RIB-writer, shader-parser, and operating system.
 Now you can make additional adjustments, e.g. determine where the
-Tcl/Tk sources are, and where BMRT or Aqsis are installed.
+Tcl/Tk sources are, and where the TIFF library, BMRT, or Aqsis are
+installed.
 Then press the "Create Makefile!" button.
 
 If you do not use ayamConf.tcl you will need to execute the following
