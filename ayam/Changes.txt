@@ -1,4 +1,4 @@
-[19. Mar 2009] CVS-Head:
+[30. Mar 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -48,6 +48,11 @@ o added example script "usepixie.tcl" that prepares Ayam to use Pixie
   from the /Library/pixie directory structure on Mac OS X
 o added helper script "colfocus.tcl" that switches the focus ring of
   important widgets to a more visible color (for SingleWindow GUI mode)
+o scripts in Script objects and BNS/ANS tags now run in a safe interpreter
+
+Build Support:
+o improved some error checking/messages in the "ayamConf.tcl" Makefile
+  configuration GUI
 
 
 [4. Dec 2008] Ayam-1.15.1:
