@@ -391,7 +391,7 @@ global ay curtypes ay_error
 	set i 0
 	foreach tag $tn {
 	    if { [lindex $tn $i] == "NP" } {
-		lappend props [lindex $tv $i] 
+		lappend props [lindex $tv $i]
 	    }
 	    incr i
 	}
@@ -406,7 +406,7 @@ global ay curtypes ay_error
 	ayError 2 "getProperty" "Could not find property: $arrayname."
 	return;
     }
-    
+
     # get property data
     global $arrayname
     set getprocp ""
@@ -476,7 +476,7 @@ global ay curtypes ay_error
 	set i 0
 	foreach tag $tn {
 	    if { [lindex $tn $i] == "NP" } {
-		lappend props [lindex $tv $i] 
+		lappend props [lindex $tv $i]
 	    }
 	    incr i
 	}
