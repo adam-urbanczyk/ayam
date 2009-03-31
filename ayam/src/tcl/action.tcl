@@ -710,6 +710,9 @@ proc editPointDp { } {
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
 
+    bind $f.e <Key-Return>  "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+
     set f $w.f1
     set f [frame $f.fy]
 
@@ -718,6 +721,9 @@ proc editPointDp { } {
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
+
+    bind $f.e <Key-Return>  "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
 
     set f $w.f1
     set f [frame $f.fz]
@@ -728,6 +734,9 @@ proc editPointDp { } {
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
 
+    bind $f.e <Key-Return>  "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+
     set f $w.f1
     set f [frame $f.fw]
 
@@ -736,6 +745,9 @@ proc editPointDp { } {
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
     pack $f -in $w.f1 -side top  -fill x
+
+    bind $f.e <Key-Return>  "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
 
     update
     updEditPointDarray $w
