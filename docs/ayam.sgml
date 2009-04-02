@@ -8058,7 +8058,7 @@ or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the u dimension (width).
 <item>Note: See also the documentation of the corresponding
-<ref id="screvertu" name="scripting interface command">.
+<ref id="screvertus" name="scripting interface command">.
 </itemize>
 
 <sect1>The Revert V Tool<label id="revertvt">
@@ -8069,7 +8069,7 @@ or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the v dimension (height).
 <item>Note: See also the documentation of the corresponding
-<ref id="screvertu" name="scripting interface command">.
+<ref id="screvertvs" name="scripting interface command">.
 </itemize>
 
 <sect1>The Patch Clamp Tool<label id="clanpt">
@@ -8094,8 +8094,8 @@ The point selection will be removed from the original object.
 There are also tools available that clamp a patch in u- or
 v-direction only.
 See also the documentation of the corresponding scripting interface commands
-<ref id="scclampnpu" name="clampNPU">, and
-<ref id="scclampnpv" name="clampNPV">.
+<ref id="scclampunp" name="clampuNP">, and
+<ref id="scclampvnp" name="clampvNP">.
 </itemize>
 
 <sect1>The Patch Rescale Knots to Range Tool<label id="resckrnpt">
@@ -8145,8 +8145,8 @@ shape of the patches.
 This tool does not change the geometry of the patches.
 The point selection will be removed from the original object.
 See also the documentation of the corresponding scripting interface commands
-<ref id="scinsknnpu" name="insknNPU">, and
-<ref id="scinsknnpv" name="insknNPV">.
+<ref id="scinsknunp" name="insknuNP">, and
+<ref id="scinsknvnp" name="insknvNP">.
 </itemize>
 
 <sect1>The Patch Split Tools<label id="splitnpt">
@@ -8162,33 +8162,38 @@ created.
 The point selection will be removed from the original object.
 Trim curves will not be honored properly.
 See also the documentation of the corresponding scripting interface commands
-<ref id="scsplitnpu" name="splitNPU">, and
-<ref id="scsplitnpv" name="splitNPV">.
+<ref id="scsplitunp" name="splituNP">, and
+<ref id="scsplitvnp" name="splitvNP">.
 </itemize>
 
 <sect1>The Extract Curve Tool<label id="extnct">
 <p>
 <itemize>
-<item>Arguments: The Extract Curve tool takes the selected objects from
+<item>Arguments: The extract curve tool takes the selected objects from
 the selection.
-<item>Operation: The tool creates an ExtrNC object, and moves
-the selected objects to it.
-<item>Note: See section <ref id="extrncobj" name="ExtrNC Object">
+<item>Operation: The tool creates instances from all selected objects
+then creates an ExtrNC object and moves the instances to it.
+<item>Note: This tool uses the object clipboard to move the objects
+around so that the original clipboard contents are lost when this tool
+finishes.
+Eventually present trim curves will <em>not</em> be honored properly.
+See section <ref id="extrncobj" name="ExtrNC Object">
 for more information regarding the ExtrNC object.
-This tool uses the object clipboard to move the objects so that the
-original clipboard contents are lost when this tool finishes.
 </itemize>
 
 <sect1>The Extract Patch Tool<label id="extrnpt">
 <p>
 <itemize>
-<item>Arguments: The extract patch tool takes a number of NURBS patches from
-the selection and requests four parametric values: umin, umax, vmin, and vmax.
-<item>Operation: Sub-patches will be extracted from the selected NURBS patch
-objects, defined by the specified parametric values, and new NPatch objects
-will be created.
-<item>Note: The original selected NPatch objects will not be changed.
-Trim curves will <em>not</em> be honored properly.
+<item>Arguments: The extract patch tool takes the selected objects from
+the selection.
+<item>Operation: The tool creates instances from all selected objects
+then creates an ExtrNP object and moves the instances to it.
+<item>Note: This tool uses the object clipboard to move the objects
+around so that the original clipboard contents are lost when this tool
+finishes.
+Eventually present trim curves will <em>not</em> be honored properly.
+See section <ref id="extrnpobj" name="ExtrNP object">
+for more information regarding the ExtrNP object.
 See also the documentation of the corresponding
 <ref id="scextrnp" name="scripting interface command">.
 </itemize>
@@ -8422,6 +8427,9 @@ But for the tags property, the procedures <tt/"setTagsp"/ and
 <tt/"getTagsp"/ should be used.
 The last entry, <tt/"w"/, is the path and name of the main property
 GUI window.
+<p>
+Since Ayam 1.16, the global property management array may be created
+easily using the new scripting interface command <tt/"addPropertyGUI"/.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
@@ -8963,38 +8971,40 @@ selected NURBS curves.
 See also section <ref id="coart" name="The Coarsen Tool">.
 </itemize>
 
-<p><label id="screvert">
-revert - revert curves:
+<p><label id="screvert"><label id="screvertc">
+revertC - revert curves:
 <itemize>
- <item>Synopsis: <tt/"revert"/
+ <item>Synopsis: <tt/"revertC"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Revert the direction of the selected NURBS curves
 and interpolating curves.
 See also section <ref id="revertt" name="The Revert Tool">.
 </itemize>
 
-<p><label id="screvertu">
-revertU - revert surfaces:
+<p><label id="screvertu"><label id="screvertus">
+revertuS - revert surfaces:
 <itemize>
- <item>Synopsis: <tt/"revertU"/
+ <item>Synopsis: <tt/"revertuS"/
  <item>Background: Yes, Undo: Yes
- <item>Description: Revert the direction of the selected NURBS patches.
+ <item>Description: Revert the direction of the selected surfaces in
+the u parametric dimension.
 See also section <ref id="revertut" name="The Revert U Tool">.
 </itemize>
 
-<p><label id="screvertv">
-revertV - revert surfaces:
+<p><label id="screvertv"><label id="screvertvs">
+revertvS - revert surfaces:
 <itemize>
- <item>Synopsis: <tt/"revertV"/
+ <item>Synopsis: <tt/"revertvS"/
  <item>Background: Yes, Undo: Yes
- <item>Description: Revert the direction of the selected NURBS patches.
+ <item>Description: Revert the direction of the selected surfaces in
+the v parametric dimension.
 See also section <ref id="revertvt" name="The Revert V Tool">.
 </itemize>
 
 <p><label id="screscaleknnc">
-rescaleKnNC - rescale knots of NURBS curves:
+rescaleknNC - rescale knots of NURBS curves:
 <itemize>
- <item>Synopsis: <tt/"rescaleKnNC [-r rmin rmax|-d mindist]"/
+ <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax|-d mindist]"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
@@ -9056,10 +9066,10 @@ reparamNC - reparameterize a NURBS curve:
 chordal knots (type: 0), or centripetal knots (type: 1).
 </itemize>
 
-<p><label id="scclampnpu">
-clampNPU - clamp NURBS patch in u-direction:
+<p><label id="scclampnpu"><label id="scclampunp">
+clampuNP - clamp NURBS patch in u-direction:
 <itemize>
- <item>Synopsis: <tt/"clampNPU"/
+ <item>Synopsis: <tt/"clampuNP"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Clamp the u-direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -9069,10 +9079,10 @@ u-direction).
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
-<p><label id="scclampnpv">
-clampNPV - clamp NURBS patch in v-direction:
+<p><label id="scclampnpv"><label id="scclampvnp">
+clampvNP - clamp NURBS patch in v-direction:
 <itemize>
- <item>Synopsis: <tt/"clampNPV"/
+ <item>Synopsis: <tt/"clampvNP"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Clamp the v-direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -9083,9 +9093,9 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="screscaleknnp">
-rescaleKnNP - rescale knots of NURBS patches:
+rescaleknNP - rescale knots of NURBS patches:
 <itemize>
- <item>Synopsis: <tt/"rescaleKnNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
+ <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
@@ -9101,14 +9111,14 @@ See also sections
 <ref id="resckrnpt" name="The Patch Rescale Knots to Range Tool">
 and
 <ref id="resckmnpt" name="The Patch Rescale Knots to Mindist Tool">.
- <item>Example: <tt/"rescaleKnNP -ru 0.2 0.3"/ scales the u knot vector
+ <item>Example: <tt/"rescaleknNP -ru 0.2 0.3"/ scales the u knot vector
 of the selected NURBS patch objects to the new range (0.2, 0.3).
 </itemize>
 
-<p><label id="scinsknnpu">
-insknNPU - insert knot into NURBS patch:
+<p><label id="scinsknnpu"><label id="scinsknunp">
+insknuNP - insert knot into NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"insknNPU u r"/
+ <item>Synopsis: <tt/"insknuNP u r"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Insert a new knot in u-direction at the position
 specified by u, r times. u must be in the valid range of the corresponding
@@ -9121,10 +9131,10 @@ the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 </itemize>
 
-<p><label id="scinsknnpv">
-insknNPV - insert knot into NURBS patch:
+<p><label id="scinsknnpv"><label id="scinsknvnp">
+insknvNP - insert knot into NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"insknNPV v r"/
+ <item>Synopsis: <tt/"insknvNP v r"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Insert a new knot in v-direction at the position
 specified by v, r times. v must be in the valid range of the corresponding
@@ -9137,20 +9147,20 @@ the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 </itemize>
 
-<p><label id="scsplitnpu">
-splitNPU - split NURBS patch:
+<p><label id="scsplitnpu"><label id="scsplitunp">
+splituNP - split NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"splitNPU u"/
+ <item>Synopsis: <tt/"splituNP u"/
  <item>Background: Yes, Undo: No
  <item>Description: Splits the selected NPatch objects into two patches
 at parametric value u.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
-<p><label id="scsplitnpv">
-splitNPV - split NURBS patch:
+<p><label id="scsplitnpv"><label id="scsplitvnp">
+splitvNP - split NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"splitNPV v"/
+ <item>Synopsis: <tt/"splitvNP v"/
  <item>Background: Yes, Undo: No
  <item>Description: Splits the selected NPatch objects into two patches
 at parametric value v.
@@ -12368,7 +12378,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="ncircleobj" name="NCircle object">
 <item>Clamp: <ref id="clat" name="clamp tool">
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
-<item>clampNPU, clampNPV: <ref id="scclampnpu" name="scripting interface command">
+<item>clampuNP: <ref id="scclampunp" name="scripting interface command">
+<item>clampvNP: <ref id="scclampvnp" name="scripting interface command">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone: <ref id="cloneobj" name="Clone object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
@@ -12590,9 +12601,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
 <item>Insert: <ref id="mmfile" name="main menu entry">,
 <ref id="insdelac" name="insert points">
-<item>insKnNC: <ref id="scinsknnc" name="scripting interface command">
-<item>insKnNPU: <ref id="scinsknnpu" name="scripting interface command">
-<item>insKnNPV: <ref id="scinsknnpv" name="scripting interface command">
+<item>insknNC: <ref id="scinsknnc" name="scripting interface command">
+<item>insknuNP: <ref id="scinsknunp" name="scripting interface command">
+<item>insknvNP: <ref id="scinsknvnp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
 <item>Instance: <ref id="instanceobj" name ="Instance object">
@@ -12828,7 +12839,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="refit" name="refine tool">
 <item>Relative: <ref id="extrncp" name="ExtrNC attribute">,
 <ref id="extrnpp" name="ExtrNP attribute">
-<item>remKnNC: <ref id="scremknnc" name="scripting interface command">
+<item>remknNC: <ref id="scremknnc" name="scripting interface command">
 <item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
@@ -12842,7 +12853,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>replaceScene: <ref id="screplacescene" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
-<item>rescaleKnNC: <ref id="screscaleknnc" name="scripting interface command">
+<item>rescaleknNC: <ref id="screscaleknnc" name="scripting interface command">
+<item>rescaleknNP: <ref id="screscaleknnp" name="scripting interface command">
 <item>RescaleKnots: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="imprib" name="RIB import option">,
 <ref id="impwav" name="Wavefront OBJ import option">,
@@ -12856,9 +12868,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="textattr" name="Text attribute">,
 <ref id="concatncp" name="ConcatNC attribute">,
 <ref id="offsetncp" name="OffsetNC attribute">,
-<ref id="extrncp" name="ExtrNC attribute">,
-<ref id="screvert" name="scripting interface command">,
+<ref id="extrncp" name="ExtrNC attribute">
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
+<item>revertC: <ref id="screvertc" name="scripting interface command">,
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
 <item>Revolve: <ref id="revolveobj" name="Revolve object">,
@@ -12992,6 +13004,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Split Curve: <ref id="miscac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
+<item>splituNP: <ref id="scsplitunp" name="scripting interface command">
+<item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
 <item>STagName: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="impwav" name="Wavefront OBJ import option">
