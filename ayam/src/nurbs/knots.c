@@ -159,8 +159,9 @@ int
 ay_knots_createnc(ay_nurbcurve_object *curve)
 {
  int order = 0, length = 0, knot_count = 0;
- int i = 0, j = 0, kts = 0;
+ int i = 0, j = 0, k, p, kts = 0, i2;
  double *newknotv = NULL;
+ double da, d, *ub = NULL, *U = NULL;
 
   /* sanity check */
   if(!curve)
@@ -222,6 +223,22 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
+      break;
+    case AY_KTCHORDAL:
+    case AY_KTCENTRI:
+
+      if(curve->knot_type == AY_KTCHORDAL)
+	ay_knots_chordparam(curve->controlv, curve->length, 4, &ub);
+      else
+	ay_knots_centriparam(curve->controlv, curve->length, 4, &ub);
+
+      if(!ub)
+	return AY_ERROR;
+
+      U = curve->knotv;
+
+      /* knot averaging */
+
       break;
     default:
       break;
@@ -921,13 +938,29 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      lens[i] = AY_VLEN((Q[j+stride] - Q[j]),
-			(Q[j+stride+1] - Q[j+1]),
-			(Q[j+stride+2] - Q[j+2]));
+      if(((Q[j+stride] - Q[j])>AY_EPSILON) ||
+	 ((Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
+	 ((Q[j+stride+2] - Q[j+2])>AY_EPSILON))
+	{
+	  lens[i] = AY_VLEN((Q[j+stride] - Q[j]),
+			    (Q[j+stride+1] - Q[j+1]),
+			    (Q[j+stride+2] - Q[j+2]));
+	}
+      else
+	{
+	  lens[i] = 0.0;
+	}
 
       totallen += lens[i];
 
       j += stride;
+    }
+
+  if(totallen < AY_EPSILON)
+    {
+      free(vk);
+      free(lens);
+      return AY_ERROR;
     }
 
   /* compute the chordal parameterization */
@@ -983,13 +1016,29 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      lens[i] = sqrt(AY_VLEN((Q[j+stride] - Q[j]),
-			     (Q[j+stride+1] - Q[j+1]),
-			     (Q[j+stride+2] - Q[j+2])));
+      if(((Q[j+stride] - Q[j])>AY_EPSILON) ||
+	 ((Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
+	 ((Q[j+stride+2] - Q[j+2])>AY_EPSILON))
+	{
+	  lens[i] = sqrt(AY_VLEN((Q[j+stride] - Q[j]),
+				 (Q[j+stride+1] - Q[j+1]),
+				 (Q[j+stride+2] - Q[j+2])));
+	}
+      else
+	{
+	  lens[i] = 0.0;
+	}
 
       totallen += lens[i];
 
       j += stride;
+    }
+
+  if(totallen < AY_EPSILON)
+    {
+      free(vk);
+      free(lens);
+      return AY_ERROR;
     }
 
   /* compute the centripetal parameterization */
