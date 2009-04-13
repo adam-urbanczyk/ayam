@@ -1150,10 +1150,10 @@ ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
   if(index >= curve->length || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
-      return TCL_OK;
+      return AY_OK;
     }
 
   *p = &(curve->controlv[index*stride]);
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_act_getpntfromindex */
