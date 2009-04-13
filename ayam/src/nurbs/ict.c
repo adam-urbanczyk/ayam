@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* ict.c - icurve tools */
+/* ict.c - interpolating curve tools */
 
 /* ay_ict_interpolateC2C:
  *  C2 Cubic interpolation of length points
@@ -20,69 +20,49 @@
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateC2C(double iparam, int closed, int length,
-		      double *controlv, ay_nurbcurve_object **c)
+ay_ict_interpolateC2C(int length, double iparam, int knot_type,
+		      int have_end_derivs, double *sderiv, double *ederiv,
+		      double *controlv,
+		      ay_nurbcurve_object **c)
 {
  int ay_status = AY_OK;
- int a, b, d, i, j;
+ int a = 0, b, d, i, j;
  int nlength;
  double v[3], vlen = 0.0;
- double *ncontrolv = NULL, *ccontrolv = NULL, *ncv4D = NULL;
- double *knotv, knot = 0.0, *lengths, chordlength = 0.0;
+ double *ncontrolv = NULL, *ncv4D = NULL;
+ double *knotv, knot = 0.0, *lengths, totallength = 0.0;
  ay_nurbcurve_object *new = NULL;
 
   nlength = length + 2;
 
-  if(closed)
-    {
-      nlength++;
-      if(!(ccontrolv = calloc((length+1)*3, sizeof(double))))
-	return AY_EOMEM;
-
-      memcpy(&(ccontrolv[0]), &(controlv[0]), length*3*sizeof(double));
-      memcpy(&(ccontrolv[length*3]), &(controlv[0]), 3*sizeof(double));
-    }
-
   if(!(ncontrolv = calloc(nlength*3, sizeof(double))))
     return AY_EOMEM;
 
-  /* create knotvector */
+  /* create knot vector */
   if(!(knotv = calloc(nlength+4, sizeof(double))))
     return AY_EOMEM;
 
-  a = 0;
-  if(!closed)
+  if(!(lengths = calloc(length-1, sizeof(double))))
+    return AY_EOMEM;
+
+  for(i = 0; i < (length-1); i++)
     {
-      if(!(lengths = calloc(length-1, sizeof(double))))
-	return AY_EOMEM;
+      lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
+			   (controlv[a+4] - controlv[a+1]),
+			   (controlv[a+5] - controlv[a+2]));
 
-      for(i = 0; i < (length-1); i++)
+      if(knot_type == AY_KTCENTRI)
 	{
+	  if(lengths[i] > AY_EPSILON)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+	}
 
-	  lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-				 (controlv[a+4] - controlv[a+1]),
-				 (controlv[a+5] - controlv[a+2]));
+      totallength += lengths[i];
 
-	  chordlength += lengths[i];
-	  a += 3;
-	} /* for */
-    }
-  else
-    {
-      if(!(lengths = calloc(length, sizeof(double))))
-	return AY_EOMEM;
-
-      for(i = 0; i < length; i++)
-	{
-
-	  lengths[i] = AY_VLEN((ccontrolv[a+3] - ccontrolv[a]),
-				 (ccontrolv[a+4] - ccontrolv[a+1]),
-				 (ccontrolv[a+5] - ccontrolv[a+2]));
-
-	  chordlength += lengths[i];
-	  a += 3;
-	} /* for */
-    } /* if */
+      a += 3;
+    } /* for */
 
   for(i = 0; i < 4; i++)
     knotv[i] = 0.0;
@@ -91,7 +71,7 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
   knot = 0.0;
   for(i = 4; i < nlength; i++)
     {
-      knot += lengths[j]/chordlength/*1.0/(nlength-3)*/;
+      knot += lengths[j]/totallength;
       knotv[i] = knot;
       j++;
     }
@@ -102,12 +82,10 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
   free(lengths);
 
   /* create first two and last two controls */
-  if(!closed)
-    {
-      ncontrolv[0] = controlv[0];
-      ncontrolv[1] = controlv[1];
-      ncontrolv[2] = controlv[2];
+  memcpy(ncontrolv, controlv, 3*sizeof(double));
 
+  if(!have_end_derivs)
+    {
       v[0] = controlv[3]-controlv[0];
       v[1] = controlv[4]-controlv[1];
       v[2] = controlv[5]-controlv[2];
@@ -120,10 +98,17 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
       ncontrolv[3] = controlv[0]+v[0];
       ncontrolv[4] = controlv[1]+v[1];
       ncontrolv[5] = controlv[2]+v[2];
+    }
+  else
+    {
+      memcpy(&(ncontrolv[3]), sderiv, 3*sizeof(double));
+    }
 
-      a = (nlength-2)*3;
-      b = (length-2)*3;
+  a = (nlength-2)*3;
+  b = (length-2)*3;
 
+  if(!have_end_derivs)
+    {
       v[0] = controlv[b+3]-controlv[b];
       v[1] = controlv[b+4]-controlv[b+1];
       v[2] = controlv[b+5]-controlv[b+2];
@@ -136,19 +121,127 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
       ncontrolv[a]   = controlv[b+3]-v[0];
       ncontrolv[a+1] = controlv[b+4]-v[1];
       ncontrolv[a+2] = controlv[b+5]-v[2];
-
-      a = (nlength-1)*3;
-      b = (length-1)*3;
-      ncontrolv[a]   = controlv[b];
-      ncontrolv[a+1] = controlv[b+1];
-      ncontrolv[a+2] = controlv[b+2];
     }
   else
     {
-      ncontrolv[0] = controlv[0];
-      ncontrolv[1] = controlv[1];
-      ncontrolv[2] = controlv[2];
+      memcpy(&(ncontrolv[a]), ederiv, 3*sizeof(double));
+    }
 
+  a = (nlength-1)*3;
+  b = (length-1)*3;
+  ncontrolv[a]   = controlv[b];
+  ncontrolv[a+1] = controlv[b+1];
+  ncontrolv[a+2] = controlv[b+2];
+
+  ay_status = ay_nb_SolveTridiagonal(length-1, controlv, knotv,
+				     ncontrolv);
+
+  /* copy to 4D controlv */
+  if(!(ncv4D = calloc(nlength*4, sizeof(double))))
+    return AY_EOMEM;
+  a = 3; b = 0; d = 0;
+  for(i = 0; i < nlength; i++)
+    {
+      memcpy(&(ncv4D[b]),&(ncontrolv[d]),3*sizeof(double));
+      ncv4D[a] = 1.0;
+      a += 4;
+      b += 4;
+      d += 3;
+    }
+
+  ay_status = ay_nct_create(4, nlength, AY_KTCUSTOM, ncv4D, knotv, &new);
+
+  if(!ay_status)
+    *c = new;
+
+  free(ncontrolv);
+
+ return ay_status;
+} /* ay_ict_interpolateC2C */
+
+
+/* ay_ict_interpolateC2CClosed:
+ *  Closed C2 Cubic interpolation of <length> 3D points
+ *  in <controlv>, creates a cubic NURBS curve and
+ *  saves a pointer to it to c
+ */
+int
+ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
+			    int have_end_derivs,
+			    double *sderiv, double *ederiv,
+			    double *controlv,
+			    ay_nurbcurve_object **c)
+{
+ int ay_status = AY_OK;
+ int a = 0, b, d, i, j;
+ int nlength;
+ double v[3], vlen = 0.0;
+ double *ncontrolv = NULL, *ccontrolv = NULL, *ncv4D = NULL;
+ double *knotv, knot = 0.0, *lengths, totallength = 0.0;
+ ay_nurbcurve_object *new = NULL;
+
+  nlength = length + 3;
+
+  /* extend the control vector */
+  if(!(ccontrolv = calloc((length+1)*3, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(&(ccontrolv[0]), &(controlv[0]), length*3*sizeof(double));
+  memcpy(&(ccontrolv[length*3]), &(controlv[0]), 3*sizeof(double));
+
+  if(!(ncontrolv = calloc(nlength*3, sizeof(double))))
+    return AY_EOMEM;
+
+  /* create knot vector */
+  if(!(knotv = calloc(nlength+4, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(lengths = calloc(length, sizeof(double))))
+    return AY_EOMEM;
+
+  for(i = 0; i < length; i++)
+    {
+
+      lengths[i] = AY_VLEN((ccontrolv[a+3] - ccontrolv[a]),
+			   (ccontrolv[a+4] - ccontrolv[a+1]),
+			   (ccontrolv[a+5] - ccontrolv[a+2]));
+
+      if(knot_type == AY_KTCENTRI)
+	{
+	  if(lengths[i] > AY_EPSILON)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+	}
+
+      totallength += lengths[i];
+
+      a += 3;
+    } /* for */
+
+  for(i = 0; i < 4; i++)
+    knotv[i] = 0.0;
+
+  j = 0;
+  knot = 0.0;
+  for(i = 4; i < nlength; i++)
+    {
+      knot += lengths[j]/totallength;
+      knotv[i] = knot;
+      j++;
+    }
+
+  for(i = nlength; i < nlength+4; i++)
+    knotv[i] = 1.0;
+
+  free(lengths);
+
+  /* create first two and last two controls */
+  memcpy(ncontrolv, controlv, 3*sizeof(double));
+
+  a = (nlength-2)*3;
+  if(!have_end_derivs)
+    {
       b = (length-1)*3;
       v[0] = controlv[3]-controlv[b];
       v[1] = controlv[4]-controlv[b+1];
@@ -163,31 +256,26 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
       ncontrolv[4] = controlv[1]+v[1];
       ncontrolv[5] = controlv[2]+v[2];
 
-      a = (nlength-2)*3;
       ncontrolv[a]   = controlv[0]-v[0];
       ncontrolv[a+1] = controlv[1]-v[1];
       ncontrolv[a+2] = controlv[2]-v[2];
-
-      a = (nlength-1)*3;
-      ncontrolv[a]   = controlv[0];
-      ncontrolv[a+1] = controlv[1];
-      ncontrolv[a+2] = controlv[2];
-    }
-
-  if(!closed)
-    {
-      ay_status = ay_nb_SolveTridiagonal(length-1, controlv, knotv,
-					 ncontrolv);
     }
   else
     {
-      ay_status = ay_nb_SolveTridiagonal(length, ccontrolv, knotv,
-					 ncontrolv);
-      free(ccontrolv);
+      memcpy(&(ncontrolv[3]), sderiv, 3*sizeof(double));
+      memcpy(&(ncontrolv[a]), ederiv, 3*sizeof(double));
     }
 
+  a = (nlength-1)*3;
+  ncontrolv[a]   = controlv[0];
+  ncontrolv[a+1] = controlv[1];
+  ncontrolv[a+2] = controlv[2];
+  
+  /* solve the equation system */
+  ay_status = ay_nb_SolveTridiagonal(length, ccontrolv, knotv, ncontrolv);
+  free(ccontrolv);
 
-  /* copy to 4D controlv */
+  /* copy result to 4D controlv */
   if(!(ncv4D = calloc(nlength*4, sizeof(double))))
     return AY_EOMEM;
   a = 3; b = 0; d = 0;
@@ -195,9 +283,9 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
     {
       memcpy(&(ncv4D[b]),&(ncontrolv[d]),3*sizeof(double));
       ncv4D[a] = 1.0;
-      a+=4;
-      b+=4;
-      d+=3;
+      a += 4;
+      b += 4;
+      d += 3;
     }
 
   ay_status = ay_nct_create(4, nlength, AY_KTCUSTOM, ncv4D, knotv, &new);
@@ -205,37 +293,40 @@ ay_ict_interpolateC2C(double iparam, int closed, int length,
   if(!ay_status)
     *c = new;
 
-  if(closed)
-    new->type = AY_CTCLOSED;
+  new->type = AY_CTCLOSED;
 
   free(ncontrolv);
 
  return ay_status;
-} /* ay_ict_interpolateC2C */
+} /* ay_ict_interpolateC2CClosed */
 
 
-/* ay_ict_interpolateG4D:
- *  Global 4D interpolation of length points
+/* ay_ict_interpolateG3D:
+ *  Global interpolation of length points
  *  in controlv, creates a NURBS curve and
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateG4D(int iorder, int length,
-		      double *controlv, ay_nurbcurve_object **c)
+ay_ict_interpolateG3D(int iorder, int length, int iparam,
+		      int have_end_derivs, int knot_type,
+		      double *controlv, double *sderiv, double *ederiv,
+		      ay_nurbcurve_object **c)
 {
  int ay_status = AY_OK;
- int a, i, j, k, order/*, iN, index*/;
+ int a, i, j, order, deg, index;
  int nlength;
- double *ncontrolv = NULL;
- double *knotv, knot = 0.0, *lengths, chordlength = 0.0, *vk = NULL;
+ double v1[3], v2[3], vlen, *ncontrolv = NULL;
+ double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
  ay_nurbcurve_object *new = NULL;
 
-  nlength = length;
+  nlength = length+2;
 
   if(iorder > nlength)
     order = nlength;
   else
     order = iorder;
+
+  deg = order-1;
 
   if(!(ncontrolv = calloc(nlength*4, sizeof(double))))
     return AY_EOMEM;
@@ -250,40 +341,46 @@ ay_ict_interpolateG4D(int iorder, int length,
   a = 0;
   for(i = 0; i < (length-1); i++)
     {
-
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-			     (controlv[a+4] - controlv[a+1]),
-			     (controlv[a+5] - controlv[a+2]));
-
-      chordlength += lengths[i];
+			   (controlv[a+4] - controlv[a+1]),
+			   (controlv[a+5] - controlv[a+2]));
+      if(knot_type == AY_KTCENTRI)
+	{
+	  if(lengths[i] > AY_EPSILON)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+	}
+      totallength += lengths[i];
 
       a += 3;
     }
 
-  if(!(vk = calloc(length, sizeof(double))))
+  if(!(vk = calloc(length+1, sizeof(double))))
     return AY_EOMEM;
 
   vk[0] = 0.0;
   j = 0;
   knot = 0.0;
-  for(i = 1; i < (length-1); i++)
+  for(i = 1; i < length; i++)
     {
-      knot += lengths[j]/chordlength;
+      knot += lengths[j]/totallength;
       vk[i] = knot;
       j++;
     }
-  vk[length-1] = 1.0;
+  vk[length] = 1.0;
 
-  for(i = 1; i < nlength-(order-1); i++)
+  /* knot averaging */
+  for(j = 1; j < length+2-deg; j++)
     {
-      knotv[i+(order-1)] = 0.0;
-      for(k = i; k < (i+(order-1)); k++)
+      index = j+deg;
+      knotv[index] = 0.0;
+      for(i = j; i < j+deg; i++)
 	{
-	  knotv[i+(order-1)] += vk[k];
+	  knotv[index] += vk[i];
 	}
-      knotv[i+(order-1)] /= (order-1);
+      knotv[index] /= deg;
     }
-
   for(i = 0; i < order; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+order; i++)
@@ -291,14 +388,52 @@ ay_ict_interpolateG4D(int iorder, int length,
 
   free(lengths);
 
-  for(i = 0; i < length; i++)
+  /* derivatives */
+  if(!have_end_derivs)
     {
-      memcpy(&(ncontrolv[i*4]),&(controlv[i*3]),3*sizeof(double));
-      ncontrolv[i*4+3] = 1.0;
+      v1[0] = controlv[3]-controlv[0];
+      v1[1] = controlv[4]-controlv[1];
+      v1[2] = controlv[5]-controlv[2];
+
+      vlen = AY_V3LEN(v1);
+      vlen *= iparam;
+
+      AY_V3SCAL(v1, vlen)
+
+      i = (length-2)*3;
+
+      v2[0] = (controlv[i+3]-controlv[i]);
+      v2[1] = (controlv[i+4]-controlv[i+1]);
+      v2[2] = (controlv[i+5]-controlv[i+2]);
+
+      vlen = AY_V3LEN(v2);
+      vlen *= iparam;
+
+      AY_V3SCAL(v2, vlen)
     }
 
-  ay_status = ay_nb_GlobalInterpolation4D(nlength-1, ncontrolv, vk,
-					  knotv, order-1);
+  /* first point */
+  memcpy(ncontrolv,controlv,3*sizeof(double));
+  ncontrolv[3] = 1.0;
+  /* inner points */
+  j = 1;
+  for(i = 2; i < nlength-2; i++)
+    {
+      memcpy(&(ncontrolv[i*4]),&(controlv[j*3]),3*sizeof(double));
+      ncontrolv[i*4+3] = 1.0;
+      j++;
+    }
+  /* last point */
+  memcpy(&(ncontrolv[(nlength-1)*4]), &(controlv[(length-1)*3]),
+	 3*sizeof(double));
+  ncontrolv[(nlength-1)*4+3] = 1.0;
+
+  if(!have_end_derivs)
+    ay_status = ay_nb_GlobalInterpolation4DD(length-1, ncontrolv, vk, knotv,
+					     deg, v1, v2);
+  else
+    ay_status = ay_nb_GlobalInterpolation4DD(length-1, ncontrolv, vk, knotv,
+					     deg, sderiv, ederiv);
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }
@@ -312,32 +447,34 @@ ay_ict_interpolateG4D(int iorder, int length,
   free(vk);
 
  return ay_status;
-} /* ay_ict_interpolateG4D */
+} /* ay_ict_interpolateG3D */
 
 
-/* ay_ict_interpolateG4DC:
- *  Closed Global 4D interpolation of length points
+/* ay_ict_interpolateG3DClosed:
+ *  Closed global interpolation of length points
  *  in controlv, creates a NURBS curve and
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateG4DC(int iorder, int length, double iparam,
-		       double *controlv, ay_nurbcurve_object **c)
+ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
+			    int have_end_derivs, int knot_type,
+			    double *controlv, double *sderiv, double *ederiv,
+			    ay_nurbcurve_object **c)
 {
  int ay_status = AY_OK;
  int a, i, j, order = 0, iN, index;
  int nlength;
  double *ncontrolv = NULL;
- double *knotv, knot = 0.0, *lengths, chordlength = 0.0, *vk = NULL;
+ double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
  double D[3] = {0};
  ay_nurbcurve_object *new = NULL;
 
-  if(iorder > (length+3))
-    order = length + 3;
+  nlength = length+3;
+
+  if(iorder > nlength)
+    order = nlength;
   else
     order = iorder;
-
-  nlength = length+3;
 
   if(!(ncontrolv = calloc(nlength*4, sizeof(double))))
     return AY_EOMEM;
@@ -351,12 +488,17 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   a = 0;
   for(i = 0; i < length-1; i++)
     {
-
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
-
-      chordlength += lengths[i];
+      if(knot_type == AY_KTCENTRI)
+	{
+	  if(lengths[i] > AY_EPSILON)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+	}
+      totallength += lengths[i];
 
       a += 3;
     }
@@ -366,14 +508,25 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
 			      (controlv[1] - controlv[a+1]),
 			      (controlv[2] - controlv[a+2]));
 
-  chordlength += lengths[length-1];
+  if(knot_type == AY_KTCENTRI)
+    {
+      if(lengths[length-1] > AY_EPSILON)
+	{
+	  lengths[length-1] = sqrt(lengths[length-1]);
+	}
+    }
+
+  totallength += lengths[length-1];
 
   /* derivative */
-  D[0] = controlv[3] - controlv[a];
-  D[1] = controlv[4] - controlv[a+1];
-  D[2] = controlv[5] - controlv[a+2];
+  if(!have_end_derivs)
+    {
+      D[0] = controlv[3] - controlv[a];
+      D[1] = controlv[4] - controlv[a+1];
+      D[2] = controlv[5] - controlv[a+2];
 
-  AY_V3SCAL(D,iparam)
+      AY_V3SCAL(D,iparam)
+    }
 
   /* calc parametric values */
   if(!(vk = calloc(length+2, sizeof(double))))
@@ -384,7 +537,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   knot = 0.0;
   for(i = 1; i < (length+1); i++)
     {
-      knot += lengths[j]/chordlength;
+      knot += lengths[j]/totallength;
       vk[i] = knot;
       j++;
     }
@@ -414,7 +567,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   ncontrolv[3] = 1.0;
   ncontrolv[7] = 1.0;
   /* inner points */
-  j=1;
+  j = 1;
   for(i = 2; i <= length; i++)
     {
       memcpy(&(ncontrolv[i*4]),&(controlv[j*3]),3*sizeof(double));
@@ -426,8 +579,16 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   memcpy(&(ncontrolv[(nlength-1)*4]),&(controlv[0]),3*sizeof(double));
   ncontrolv[((nlength-1)*4)+3] = 1.0;
 
-  ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
-					   knotv, order-1, D, D);
+  if(!have_end_derivs)
+    {
+      ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
+					       knotv, order-1, D, D);
+    }
+  else
+    {
+      ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
+					       knotv, order-1, sderiv, ederiv);
+    }
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }
@@ -443,7 +604,7 @@ ay_ict_interpolateG4DC(int iorder, int length, double iparam,
   free(vk);
 
  return ay_status;
-} /* ay_ict_interpolateG4DC */
+} /* ay_ict_interpolateG3DClosed */
 
 
 /* ay_ict_dumb_interpolate:
