@@ -54,18 +54,34 @@ int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
 
 /*! \brief
  */
-int ay_ict_interpolateC2C(double iparam, int closed, int length,
-			  double *controlv, ay_nurbcurve_object **c);
+int ay_ict_interpolateC2C(int length, double iparam, int knot_type,
+			  int have_end_derivs, double *sderiv, double *ederiv,
+			  double *controlv,
+			  ay_nurbcurve_object **c);
 
 /*! \brief
  */
-int ay_ict_interpolateG4D(int iorder, int length,
-			  double *controlv, ay_nurbcurve_object **c);
+int ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
+			   int have_end_derivs, double *sderiv, double *ederiv,
+			       double *controlv,
+			       ay_nurbcurve_object **c);
+
+
 
 /*! \brief
  */
-int ay_ict_interpolateG4DC(int iorder, int length, double iparam,
-			   double *controlv, ay_nurbcurve_object **c);
+int ay_ict_interpolateG3D(int iorder, int length, int iparam,
+			  int have_end_derivs, int knot_type,
+			  double *controlv, double *sderiv, double *ederiv,
+			  ay_nurbcurve_object **c);
+
+/*! \brief
+ */
+int ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
+				int have_end_derivs, int knot_type,
+				double *controlv,
+				double *sderiv, double *ederiv,
+				ay_nurbcurve_object **c);
 
 /*! \brief
  */

@@ -24,12 +24,11 @@ static char *ay_icurve_name = "ICurve";
 int
 ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  char fname[] = "crticurve";
- int order = 4, length = 4, closed = AY_FALSE, i = 0;
+ int length = 4, i = 0;
  double *cv = NULL, dx = 0.25;
  ay_icurve_object *new = NULL;
- ay_object *ncurve = NULL;
+
 
   if(!o)
     return AY_ENULL;
@@ -66,35 +65,14 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
       cv[i*3] = (double)i*dx;
     }
 
-  if(!(ncurve = calloc(1, sizeof(ay_object))))
-    {
-      free(cv); free(new);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
-
-  ay_object_defaults(ncurve);
-  ncurve->type = AY_IDNCURVE;
-
-  new->glu_sampling_tolerance = 0.0;
-  new->iparam = 1.0/8.0;
-  new->iorder = order;
-  new->closed = closed;
   new->length = length;
+  new->iorder = 4;
+  new->iparam = 0.125;
   new->controlv = cv;
 
-  ay_status = ay_ict_interpolateC2C(new->iparam, new->closed, new->length, cv,
-				  (ay_nurbcurve_object **)(&(ncurve->refine)));
-  new->ncurve = ncurve;
-
-  if(ay_status)
-    {
-      free(new->ncurve); free(cv); free(new);
-      ay_error(ay_status, fname, NULL);
-      return AY_ERROR;
-    }
-
   o->refine = new;
+
+  ay_notify_force(o);
 
  return AY_OK;
 } /* ay_icurve_createcb */
@@ -235,6 +213,21 @@ ay_icurve_drawcb(struct Togl *togl, ay_object *o)
       glEnd();
     } /* if */
 
+  /* draw derivatives */
+  if(icurve->derivs)
+    {
+      glBegin(GL_LINES);
+       if(icurve->closed)
+	 glVertex3dv((GLdouble *)&(icurve->controlv[0]));
+       else
+	 glVertex3dv((GLdouble *)&(icurve->controlv[icurve->length*3-3]));
+       glVertex3dv((GLdouble *)&(icurve->ederiv[0]));
+
+       glVertex3dv((GLdouble *)&(icurve->controlv[0]));
+       glVertex3dv((GLdouble *)&(icurve->sderiv[0]));
+      glEnd();
+    }
+
  return AY_OK;
 } /* ay_icurve_drawcb */
 
@@ -257,27 +250,41 @@ int
 ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
 {
  int length = 0, i = 0, a = 0;
- ay_icurve_object *curve = NULL;
+ ay_icurve_object *icurve = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
 
-  curve = (ay_icurve_object *) o->refine;
-  length = curve->length;
+  icurve = (ay_icurve_object *) o->refine;
+  length = icurve->length;
 
-  ver = curve->controlv;
+  ver = icurve->controlv;
 
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
+   /* draw control points */
    for(i=0; i<length; i++)
      {
        glVertex3dv((GLdouble *)&ver[a]);
        a += 3;
      }
+
+   /* draw deriv endpoints */
+   if(icurve->derivs)
+     {
+       glVertex3dv((GLdouble *)&icurve->sderiv);
+       glVertex3dv((GLdouble *)&icurve->ederiv);
+     }
   glEnd();
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*3-6]), &(ver[curve->length*3-3]));
+  if(icurve->closed)
+    ay_draw_arrow(togl, &(ver[icurve->length*3-3]), &(ver[0]));
+  else
+    ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
+		  &(ver[icurve->length*3-3]));
+
+  /* draw deriv arrows? */
 
  return AY_OK;
 } /* ay_icurve_drawhcb */
@@ -311,13 +318,28 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
   if(mode == 0)
     { /* yes */
 
-      if(!(ay_point_edit_coords = calloc(icurve->length, sizeof(double*))))
-	return AY_EOMEM;
+      if(!icurve->derivs)
+	{
+	  if(!(ay_point_edit_coords = calloc(icurve->length, sizeof(double*))))
+	    return AY_EOMEM;
+	}
+      else
+	{
+	  if(!(ay_point_edit_coords = calloc(icurve->length+2,
+					     sizeof(double*))))
+	    return AY_EOMEM;
+	}
 
       for(i = 0; i < icurve->length; i++)
 	{
 	  ay_point_edit_coords[i] = &(icurve->controlv[a]);
 	  a += 3;
+	}
+
+      if(icurve->derivs)
+	{
+	  ay_point_edit_coords[icurve->length] = icurve->sderiv;
+	  ay_point_edit_coords[icurve->length+1] = icurve->ederiv;
 	}
 
       ay_point_edit_coords_homogenous = AY_FALSE;
@@ -345,6 +367,29 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 
 	      j += 3;
 	    } /* for */
+
+	  if(icurve->derivs)
+	    {
+	      dist = AY_VLEN((p[0] - icurve->sderiv[0]),
+			     (p[1] - icurve->sderiv[1]),
+			     (p[2] - icurve->sderiv[2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = icurve->sderiv;
+		  min_dist = dist;
+		}
+
+	      dist = AY_VLEN((p[0] - icurve->ederiv[0]),
+			     (p[1] - icurve->ederiv[1]),
+			     (p[2] - icurve->ederiv[2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = icurve->ederiv;
+		  min_dist = dist;
+		}
+	    }
 
 	  if(!pecoord)
 	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
@@ -385,6 +430,39 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p)
 	      j += 3;
 	    } /* for */
 
+	  if(icurve->derivs)
+	    {
+	      c = icurve->sderiv;
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = icurve->sderiv;
+		  a++;
+		} /* if */
+
+	      c = icurve->ederiv;
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = icurve->ederiv;
+		  a++;
+		} /* if */
+	    }
+
 	  if(!pecoords)
 	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
@@ -412,7 +490,6 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_icurve_object *icurve = NULL;
 
-
   if(!o)
     return AY_ENULL;
 
@@ -429,6 +506,10 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(icurve->closed));
 
+  Tcl_SetStringObj(ton,"Derivatives",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(icurve->derivs));
+
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(icurve->iorder));
@@ -440,6 +521,10 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"IParam",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(icurve->iparam));
+
+  Tcl_SetStringObj(ton,"Knot-Type",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(icurve->knot_type));
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -503,6 +588,11 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Derivatives",-1);
+  to = Tcl_NewIntObj(icurve->derivs);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_NewIntObj(icurve->iorder);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -518,6 +608,11 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Knot-Type",-1);
+  to = Tcl_NewIntObj(icurve->knot_type);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(icurve->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -528,7 +623,8 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  ay_prop_getncinfo(interp, n1, icurve->ncurve);
+  if(icurve->ncurve)
+    ay_prop_getncinfo(interp, n1, icurve->ncurve);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -569,7 +665,20 @@ ay_icurve_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%lg %lg %lg\n",&(icurve->controlv[a]),
 	     &(icurve->controlv[a+1]),
 	     &(icurve->controlv[a+2]));
-      a+=3;
+      a += 3;
+    }
+
+  if(ay_read_version > 13)
+    {
+      fscanf(fileptr,"%d\n",&icurve->knot_type);
+      fscanf(fileptr,"%d\n", &icurve->derivs);
+
+      fscanf(fileptr,"%lg %lg %lg\n",&(icurve->sderiv[0]),
+	     &(icurve->sderiv[1]),
+	     &(icurve->sderiv[2]));
+      fscanf(fileptr,"%lg %lg %lg\n",&(icurve->ederiv[0]),
+	     &(icurve->ederiv[1]),
+	     &(icurve->ederiv[2]));
     }
 
   o->refine = icurve;
@@ -601,13 +710,22 @@ ay_icurve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", icurve->display_mode);
 
   a = 0;
-  for(i=0;i<icurve->length;i++)
+  for(i = 0; i < icurve->length; i++)
     {
       fprintf(fileptr,"%g %g %g\n", icurve->controlv[a],
 	      icurve->controlv[a+1],
 	      icurve->controlv[a+2]);
-      a+=3;
+      a += 3;
     }
+
+  fprintf(fileptr, "%d\n", icurve->knot_type);
+  fprintf(fileptr, "%d\n", icurve->derivs);
+  fprintf(fileptr,"%g %g %g\n", icurve->sderiv[0],
+	  icurve->sderiv[1],
+	  icurve->sderiv[2]);
+  fprintf(fileptr,"%g %g %g\n", icurve->ederiv[0],
+	  icurve->ederiv[1],
+	  icurve->ederiv[2]);
 
  return AY_OK;
 } /* ay_icurve_writecb */
@@ -706,6 +824,7 @@ int
 ay_icurve_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
+ int knot_type = AY_KTCHORDAL;
  ay_icurve_object *icurve = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
@@ -762,27 +881,51 @@ ay_icurve_notifycb(ay_object *o)
   ay_object_defaults(ncurve);
   ncurve->type = AY_IDNCURVE;
 
+  if(icurve->knot_type)
+    knot_type = AY_KTCENTRI;
+
   if(icurve->imode)
     {
       if(icurve->closed)
 	{
-	  ay_status = ay_ict_interpolateG4DC(icurve->iorder, icurve->length,
-					     icurve->iparam, icurve->controlv,
+	  ay_status = ay_ict_interpolateG3DClosed(icurve->iorder,
+						  icurve->length,
+					     icurve->iparam,
+					     icurve->derivs, knot_type,
+					     icurve->sderiv, icurve->ederiv,
+					     icurve->controlv,
 				 (ay_nurbcurve_object **)(&(ncurve->refine)));
 	}
       else
 	{
-	  ay_status = ay_ict_interpolateG4D(icurve->iorder, icurve->length,
-					     icurve->controlv,
+	  ay_status = ay_ict_interpolateG3D(icurve->iorder, icurve->length,
+					    icurve->iparam,
+					    icurve->derivs, knot_type,
+					    icurve->controlv,
+					    icurve->sderiv, icurve->ederiv,
 				 (ay_nurbcurve_object **)(&(ncurve->refine)));
 	}
     }
   else
     {
-      ay_status = ay_ict_interpolateC2C(icurve->iparam, icurve->closed,
-					icurve->length, icurve->controlv,
+      if(icurve->closed)
+	{
+	  ay_status = ay_ict_interpolateC2CClosed(icurve->length,
+						  icurve->iparam,
+					    icurve->knot_type, icurve->derivs,
+					    icurve->sderiv, icurve->ederiv,
+					    icurve->controlv,
 				 (ay_nurbcurve_object **)(&(ncurve->refine)));
-
+	}
+      else
+	{
+	  ay_status = ay_ict_interpolateC2C(icurve->length,
+					    icurve->iparam,
+					    icurve->knot_type, icurve->derivs,
+					    icurve->sderiv, icurve->ederiv,
+					    icurve->controlv,
+				 (ay_nurbcurve_object **)(&(ncurve->refine)));
+	}
     }
 
   if(ay_status)

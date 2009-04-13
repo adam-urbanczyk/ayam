@@ -579,10 +579,14 @@ typedef struct ay_icurve_object_s
 {
   int length;
   int closed;
+  int derivs;
   int imode;
   int iorder;
+  int knot_type;
   double iparam;
   double *controlv;
+  double sderiv[3];
+  double ederiv[3];
 
   /* cache NURBS curve representation */
   ay_object *ncurve;
@@ -1349,6 +1353,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_KTBSPLINE   1
 #define AY_KTNURB      2
 #define AY_KTCUSTOM    3
+#define AY_KTCHORDAL   4
+#define AY_KTCENTRI    5
 
 /* Patch Mesh Types */
 #define AY_PTBILINEAR  0

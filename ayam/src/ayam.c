@@ -575,7 +575,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 #endif /* AYWRAPPED */
 {
  int ay_status = AY_OK;
- int tcl_status = TCL_OK;
+ /*int tcl_status = TCL_OK;*/
  /*char app_init_script[] = "source [file dirname $argv0]/tcl/ayam.tcl\n";*/
 
 #ifndef AYWRAPPED
