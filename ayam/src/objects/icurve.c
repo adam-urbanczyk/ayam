@@ -892,8 +892,8 @@ ay_icurve_notifycb(ay_object *o)
 						  icurve->length,
 					     icurve->iparam,
 					     icurve->derivs, knot_type,
-					     icurve->sderiv, icurve->ederiv,
 					     icurve->controlv,
+					     icurve->sderiv, icurve->ederiv,
 				 (ay_nurbcurve_object **)(&(ncurve->refine)));
 	}
       else
