@@ -20,7 +20,7 @@
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateC2C(int length, double iparam, int knot_type,
+ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 		      int have_end_derivs, double *sderiv, double *ederiv,
 		      double *controlv,
 		      ay_nurbcurve_object **c)
@@ -51,7 +51,7 @@ ay_ict_interpolateC2C(int length, double iparam, int knot_type,
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
 
-      if(knot_type == AY_KTCENTRI)
+      if(param_type == AY_KTCENTRI)
 	{
 	  if(lengths[i] > AY_EPSILON)
 	    {
@@ -91,7 +91,7 @@ ay_ict_interpolateC2C(int length, double iparam, int knot_type,
       v[2] = controlv[5]-controlv[2];
 
       vlen = AY_V3LEN(v);
-      vlen *= iparam;
+      vlen *= sdlen;
 
       AY_V3SCAL(v, vlen)
 
@@ -114,7 +114,7 @@ ay_ict_interpolateC2C(int length, double iparam, int knot_type,
       v[2] = controlv[b+5]-controlv[b+2];
 
       vlen = AY_V3LEN(v);
-      vlen *= iparam;
+      vlen *= edlen;
 
       AY_V3SCAL(v, vlen)
 
@@ -166,7 +166,8 @@ ay_ict_interpolateC2C(int length, double iparam, int knot_type,
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
+ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
+			    int param_type,
 			    int have_end_derivs,
 			    double *sderiv, double *ederiv,
 			    double *controlv,
@@ -206,7 +207,7 @@ ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
 			   (ccontrolv[a+4] - ccontrolv[a+1]),
 			   (ccontrolv[a+5] - ccontrolv[a+2]));
 
-      if(knot_type == AY_KTCENTRI)
+      if(param_type == AY_KTCENTRI)
 	{
 	  if(lengths[i] > AY_EPSILON)
 	    {
@@ -248,7 +249,7 @@ ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
       v[2] = controlv[5]-controlv[b+2];
 
       vlen = AY_V3LEN(v);
-      vlen *= iparam;
+      vlen *= sdlen;
 
       AY_V3SCAL(v, vlen)
 
@@ -307,8 +308,8 @@ ay_ict_interpolateC2CClosed(int length, double iparam, int knot_type,
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateG3D(int iorder, int length, int iparam,
-		      int have_end_derivs, int knot_type,
+ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
+		      int have_end_derivs, int param_type,
 		      double *controlv, double *sderiv, double *ederiv,
 		      ay_nurbcurve_object **c)
 {
@@ -344,7 +345,7 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
-      if(knot_type == AY_KTCENTRI)
+      if(param_type == AY_KTCENTRI)
 	{
 	  if(lengths[i] > AY_EPSILON)
 	    {
@@ -396,7 +397,7 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
       v1[2] = controlv[5]-controlv[2];
 
       vlen = AY_V3LEN(v1);
-      vlen *= iparam;
+      vlen *= sdlen;
 
       AY_V3SCAL(v1, vlen)
 
@@ -407,7 +408,7 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
       v2[2] = -(controlv[i+5]-controlv[i+2]);
 
       vlen = AY_V3LEN(v2);
-      vlen *= iparam;
+      vlen *= edlen;
 
       AY_V3SCAL(v2, vlen)
     }
@@ -464,8 +465,8 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
  *  saves a pointer to it to c
  */
 int
-ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
-			    int have_end_derivs, int knot_type,
+ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
+			    int have_end_derivs, int param_type,
 			    double *controlv, double *sderiv, double *ederiv,
 			    ay_nurbcurve_object **c)
 {
@@ -474,7 +475,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
  int nlength;
  double *ncontrolv = NULL;
  double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
- double v1[3], v2[3], D[3] = {0};
+ double v1[3], v2[3];
  ay_nurbcurve_object *new = NULL;
 
   nlength = length+3;
@@ -501,7 +502,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
-      if(knot_type == AY_KTCENTRI)
+      if(param_type == AY_KTCENTRI)
 	{
 	  if(lengths[i] > AY_EPSILON)
 	    {
@@ -518,7 +519,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
 			      (controlv[1] - controlv[a+1]),
 			      (controlv[2] - controlv[a+2]));
 
-  if(knot_type == AY_KTCENTRI)
+  if(param_type == AY_KTCENTRI)
     {
       if(lengths[length-1] > AY_EPSILON)
 	{
@@ -531,11 +532,15 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
   /* derivative */
   if(!have_end_derivs)
     {
-      D[0] = controlv[3] - controlv[a];
-      D[1] = controlv[4] - controlv[a+1];
-      D[2] = controlv[5] - controlv[a+2];
+      v1[0] = controlv[3] - controlv[a];
+      v1[1] = controlv[4] - controlv[a+1];
+      v1[2] = controlv[5] - controlv[a+2];
 
-      AY_V3SCAL(D,iparam)
+      AY_V3SCAL(v1,sdlen)
+
+      memcpy(v2, v1, 3*sizeof(double));
+
+      AY_V3SCAL(v2,edlen)
     }
   else
     {
@@ -598,16 +603,8 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
   memcpy(&(ncontrolv[(nlength-1)*4]),&(controlv[0]),3*sizeof(double));
   ncontrolv[((nlength-1)*4)+3] = 1.0;
 
-  if(!have_end_derivs)
-    {
-      ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
-					       knotv, deg, D, D);
-    }
-  else
-    {
-      ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
+  ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
 					       knotv, deg, v1, v2);
-    }
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }

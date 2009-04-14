@@ -21,22 +21,21 @@ w     fICurveAttr
 }
 
 array set ICurveAttrData {
-Mode 1
+Type 0
 DisplayMode 0
-Knot-Type 0
+ParamType 0
 NCInfoBall "N/A"
 }
 # create IcurveAttr-UI
 set w [frame $ay(pca).$ICurveAttr(w)]
 
-addMenu $w ICurveAttrData Mode [list "C2-Cubic" "Global-4D" ]
-
+addMenu $w ICurveAttrData Type [list "Open" "Closed" ]
 addParam $w ICurveAttrData Length
-addCheck $w ICurveAttrData Closed
 addParam $w ICurveAttrData Order
-addMenu $w ICurveAttrData Knot-Type [list "Chordal" "Centripetal" ]
+addMenu $w ICurveAttrData ParamType [list "Chordal" "Centripetal" ]
 addCheck $w ICurveAttrData Derivatives
-addParam $w ICurveAttrData IParam
+addParam $w ICurveAttrData SDLen
+addParam $w ICurveAttrData EDLen
 
 addParam $w ICurveAttrData Tolerance
 addMenu $w ICurveAttrData DisplayMode $ay(ncdisplaymodes)

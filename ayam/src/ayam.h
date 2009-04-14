@@ -577,13 +577,12 @@ typedef struct ay_torus_object_s
 
 typedef struct ay_icurve_object_s
 {
+  int type;
   int length;
-  int closed;
+  int order;
   int derivs;
-  int imode;
-  int iorder;
-  int knot_type;
-  double iparam;
+  int param_type;
+  double sdlen, edlen;
   double *controlv;
   double sderiv[3];
   double ederiv[3];

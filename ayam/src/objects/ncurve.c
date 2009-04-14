@@ -1246,11 +1246,12 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
   new->refine = ic;
 
   ic->length = nc->length;
-  ic->closed = nc->type>0?AY_TRUE:AY_FALSE;
+  ic->type = nc->type>0?AY_TRUE:AY_FALSE;
   ic->glu_sampling_tolerance = nc->glu_sampling_tolerance;
   ic->display_mode = nc->display_mode;
-  ic->iparam = 1.0/8.0;
-  ic->iorder = nc->order; /* XXXX ? */
+  ic->sdlen = 1.0/8.0;
+  ic->edlen = 1.0/8.0;
+  ic->order = nc->order; /* XXXX ? */
 
   if(!(ic->controlv = calloc(1, ic->length*3*sizeof(double))))
     { free(new); free(ic); return AY_EOMEM; }
