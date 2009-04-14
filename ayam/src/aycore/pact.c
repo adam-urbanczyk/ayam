@@ -1133,7 +1133,7 @@ ay_pact_insertic(ay_icurve_object *icurve,
    */
   oldcontrolv = icurve->controlv;
 
-  if(!icurve->closed)
+  if(!icurve->type)
     {
       if(index == icurve->length-1)
 	{
@@ -1214,7 +1214,7 @@ ay_pact_insertic(ay_icurve_object *icurve,
       j++;
     } /* for */
 
-  if((icurve->closed) && (index == icurve->length-2))
+  if((icurve->type) && (index == icurve->length-2))
     {
 
       inserted = AY_TRUE;

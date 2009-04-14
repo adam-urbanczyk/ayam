@@ -564,14 +564,21 @@ ay_comp_icurve(ay_object *o1, ay_object *o2)
   i2 = (ay_icurve_object *)o2->refine;
 
   if((i1->length != i2->length) ||
-     (i1->closed != i2->closed) ||
-     (i1->imode != i2->imode) ||
-     (i1->iorder != i2->iorder) ||
-     (i1->iparam != i2->iparam)
+     (i1->type != i2->type) ||
+     (i1->param_type != i2->param_type) ||
+     (i1->sdlen != i2->sdlen) ||
+     (i1->edlen != i2->edlen) ||
+     (i1->order != i2->order)
      )
     return AY_FALSE;
 
   if(memcmp(i1->controlv, i2->controlv, 3*i1->length*sizeof(double)))
+    return AY_FALSE;
+
+  if(memcmp(i1->sderiv, i2->sderiv, 3*sizeof(double)))
+    return AY_FALSE;
+
+  if(memcmp(i1->ederiv, i2->ederiv, 3*sizeof(double)))
     return AY_FALSE;
 
  return AY_TRUE;
