@@ -370,10 +370,10 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
     }
   vk[length] = 1.0;
 
-  /* knot averaging */
-  for(j = 1; j < length+2-deg; j++)
+  /* knot averaging (for 2 additional knots) */
+  for(j = 0; j < length+1-deg; j++)
     {
-      index = j+deg;
+      index = j+deg+1;
       knotv[index] = 0.0;
       for(i = j; i < j+deg; i++)
 	{
@@ -402,14 +402,26 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
 
       i = (length-2)*3;
 
-      v2[0] = (controlv[i+3]-controlv[i]);
-      v2[1] = (controlv[i+4]-controlv[i+1]);
-      v2[2] = (controlv[i+5]-controlv[i+2]);
+      v2[0] = -(controlv[i+3]-controlv[i]);
+      v2[1] = -(controlv[i+4]-controlv[i+1]);
+      v2[2] = -(controlv[i+5]-controlv[i+2]);
 
       vlen = AY_V3LEN(v2);
       vlen *= iparam;
 
       AY_V3SCAL(v2, vlen)
+    }
+  else
+    {
+      v1[0] = sderiv[0]-controlv[0];
+      v1[1] = sderiv[1]-controlv[1];
+      v1[2] = sderiv[2]-controlv[2];
+
+      i = (length-2)*3;
+
+      v2[0] = (controlv[i+3]-ederiv[0]);
+      v2[1] = (controlv[i+4]-ederiv[1]);
+      v2[2] = (controlv[i+5]-ederiv[2]);
     }
 
   /* first point */
@@ -428,12 +440,8 @@ ay_ict_interpolateG3D(int iorder, int length, int iparam,
 	 3*sizeof(double));
   ncontrolv[(nlength-1)*4+3] = 1.0;
 
-  if(!have_end_derivs)
-    ay_status = ay_nb_GlobalInterpolation4DD(length-1, ncontrolv, vk, knotv,
-					     deg, v1, v2);
-  else
-    ay_status = ay_nb_GlobalInterpolation4DD(length-1, ncontrolv, vk, knotv,
-					     deg, sderiv, ederiv);
+  ay_status = ay_nb_GlobalInterpolation4DD(length-1, ncontrolv, vk, knotv,
+					   deg, v1, v2);
 
   if(ay_status)
     { free(vk); free(ncontrolv); free(knotv); return ay_status; }
@@ -462,11 +470,11 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
 			    ay_nurbcurve_object **c)
 {
  int ay_status = AY_OK;
- int a, i, j, order = 0, iN, index;
+ int a, i, j, order = 0, deg, index;
  int nlength;
  double *ncontrolv = NULL;
  double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
- double D[3] = {0};
+ double v1[3], v2[3], D[3] = {0};
  ay_nurbcurve_object *new = NULL;
 
   nlength = length+3;
@@ -475,6 +483,8 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
     order = nlength;
   else
     order = iorder;
+
+  deg = order - 1;
 
   if(!(ncontrolv = calloc(nlength*4, sizeof(double))))
     return AY_EOMEM;
@@ -527,6 +537,16 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
 
       AY_V3SCAL(D,iparam)
     }
+  else
+    {
+      v1[0] = sderiv[0]-controlv[0];
+      v1[1] = sderiv[1]-controlv[1];
+      v1[2] = sderiv[2]-controlv[2];
+
+      v2[0] = (controlv[0]-ederiv[0]);
+      v2[1] = (controlv[1]-ederiv[1]);
+      v2[2] = (controlv[2]-ederiv[2]);
+    }
 
   /* calc parametric values */
   if(!(vk = calloc(length+2, sizeof(double))))
@@ -543,18 +563,17 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
     }
   vk[length+1] = 1.0;
 
-  iN = length+1-(order-1)+1;
-  for(j = 0; j <= iN; j++)
+  /* knot averaging (for 2 additional knots) */
+  for(j = 0; j < length+2-deg; j++)
     {
-      index = j+order;
+      index = j+deg+1;
       knotv[index] = 0.0;
-	for(i = j; i <= j+(order-1)-1; i++)
-	  {
-	    knotv[index] += vk[i];
-	  }
-      knotv[index] /= (order - 1);
+      for(i = j; i < j+deg; i++)
+	{
+	  knotv[index] += vk[i];
+	}
+      knotv[index] /= deg;
     }
-
   for(i = 0; i < order; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+order; i++)
@@ -582,12 +601,12 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double iparam,
   if(!have_end_derivs)
     {
       ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
-					       knotv, order-1, D, D);
+					       knotv, deg, D, D);
     }
   else
     {
       ay_status = ay_nb_GlobalInterpolation4DD(length, ncontrolv, vk,
-					       knotv, order-1, sderiv, ederiv);
+					       knotv, deg, v1, v2);
     }
 
   if(ay_status)
