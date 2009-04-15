@@ -1799,8 +1799,9 @@ mopsi_icurve(FILE *fileptr, ay_object *o)
   if(ay_prefs.mopsiresettolerance)
     ic->glu_sampling_tolerance = 0.0;
 
-  fscanf(fileptr,"%lg\n",&ic->iparam);
-  fscanf(fileptr,"%d\n",&ic->closed);
+  fscanf(fileptr,"%lg\n",&ic->sdlen); /* was iparam */
+  ic->edlen = ic->sdlen;
+  fscanf(fileptr,"%d\n",&ic->type); /* was closed */
   if(mopsi_version < 7)
     {
       fscanf(fileptr,"%d\n",&dlen);
@@ -1835,8 +1836,8 @@ mopsi_icurve(FILE *fileptr, ay_object *o)
     }
   if(mopsi_version > 5)
     {
-      fscanf(fileptr,"%d\n",&ic->imode);
-      fscanf(fileptr,"%d\n",&ic->iorder);
+      fscanf(fileptr,"%d\n",&a); /* was imode */
+      fscanf(fileptr,"%d\n",&ic->order);
     }
 
  return ay_status;
