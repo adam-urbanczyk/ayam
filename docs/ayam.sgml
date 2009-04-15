@@ -5454,14 +5454,11 @@ field always displays the parameters of the created NURBS patch.
 
 <sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
-The ICurve object creates an interpolating NURBS curve from n
-3D non-rational data points. The created curve is either a C2 cubic curve
-(order 4) with n+2 control points or a global interpolating rational
-(Global4D) curve with n control points and with arbitrary order.
-<p>
-The global interpolation generates a bit smoother curves which look best
-with an order of 3, your mileage may vary however.
-<p>
+The ICurve object creates a global interpolating NURBS curve from n
+3D non-rational data points.
+The curve may be closed, the order of the curve may be configured,
+the parameterization may be adapted, and end derivatives may be specified.
+The open versions use n+2 NURBS control points, and the closed ones n+3.
 <figure loc="!ht">
 <eps file="pics/icurves.ps" height="7cm">
 <img src="pics/icurves.gif">
@@ -5471,11 +5468,14 @@ with an order of 3, your mileage may vary however.
 The image above shows some interpolating curves, the left ones
 are C2 cubic, the right ones Global4D, the upper open, and the lower
 closed ones. The interpolation fidelity for the closed curves
-could be increased considerably by adjusting the <tt/"IParam"/
-parameter, see below.
+could be increased considerably by adjusting the <tt/"SDLen"/ and
+<tt/"EDLen"/ parameters, see below.
 <p>
-In both interpolation modes chord length parameterisation will be used
+In all parameterisation modes, knot averaging will be used
 to determine the knot vector of the interpolating curve.
+<p>
+Note that the axis of symmetry for closed interpolating curves
+crosses the first data point.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NCurve object (it creates and uses NURBS curves
@@ -5501,28 +5501,32 @@ The following parameters control the interpolation process:
 <sect2>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
 <p>
 <itemize>
+<item>The <tt/"Type"/ parameter controls whether the interpolated
+curve should be closed.
+
 <item>Using <tt/"Length"/ you determine the number of points to interpolate.
 
-<item>The curve can be closed with the parameter <tt/"Closed"/.
+<item>The next parameter <tt/"Order"/ determines the desired order of the
+interpolating curve. If the specified order is bigger than the number of
+control points used by the interpolating NURBS curve, then the order is
+silently changed to match the number of control points.
 
-<item>The parameter <tt/"Mode"/ determines whether the curve should
-be a C2 cubic curve (with n+2 control points (n+3 if the curve is
-closed)) or a so called global interpolating curve
-(with n control points (n+3 if the curve is closed)
-and arbitrary order).
+<item>The parameter <tt/"ParamType"/ switches the parameterization
+between <tt/"Chordal"/ and <tt/"Centripetal"/, the latter generating
+a better parameterization if the input data contains sharp turns.
 
-<item>The next parameter <tt/"Order"/ is used only if the mode is
-Global4D. It determines the order of the interpolating curve. If the
-specified order is bigger than the number of control points used
-by the interpolating curve, then the order is silently changed to
-match the number of control points.
+<item>The parameters <tt/"SDLen"/ and <tt/"EDLen"/ are used to control
+the length of the first and last derivative (if automatically
+generated from the data points, i.e. <tt/"Derivatives"/ below is
+switched off).
 
-<item>The parameter <tt/"IParam"/ is used to control the position
-of the second and last-1 control point of the interpolating curve.
-It scales the vectors used to position the aforementioned points.
-You can try to change (decrease) this value, if you are not satisfied
-with the shape of the curve near the first or last interpolated point.
-This parameter has no effect on open curves when the mode is Global4D.
+<item>If the parameter <tt/"Derivatives"/ is switched on, two more
+editable points appear, that directly control the derivatives in the
+endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
+<tt/"EDLen"/ do not influence those derivatives.
+If this parameter is switched off, the direction of the derivatives
+will be derived from the first, second, second to last, and last
+data points.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
@@ -5531,6 +5535,10 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
+The parameters <tt/"Mode"/, <tt/"Closed"/, and <tt/"IParam"/ are gone
+since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
+by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
+automatically from the desired order.
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
@@ -8033,7 +8041,8 @@ they automatically collapse to a multiple point again!
 <item>Arguments: The swap uv tool takes a number of NURBS patches,
 BPatch, or PatchMesh objects from the selection.
 <item>Operation: The u and v dimension of the selected objects will
-be swapped without changing the shape of the patches.
+be swapped (width and height will be exchanged) without altering the
+shape of the patches.
 </itemize>
 
 <sect1>The Elevate UV Tool<label id="elevuvt">
@@ -8999,6 +9008,16 @@ revertvS - revert surfaces:
  <item>Description: Revert the direction of the selected surfaces in
 the v parametric dimension.
 See also section <ref id="revertvt" name="The Revert V Tool">.
+</itemize>
+
+<p><label id="scswapuvs">
+swapuvS - swap dimensions of surfaces:
+<itemize>
+ <item>Synopsis: <tt/"swapuvS"/
+ <item>Background: Yes, Undo: Yes
+ <item>Description: Swap the dimensions of the selected surfaces, thus
+exchanging width and height (without altering the shape of the surfaces).
+See also section <ref id="swapuvt" name="The Swap UV Tool">.
 </itemize>
 
 <p><label id="screscaleknnc">
@@ -12390,7 +12409,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="pap" name="paraboloid attribute">,
 <ref id="hyp" name="hyperboloid attribute">,
 <ref id="ncattr" name="NCurve attribute">,
-<ref id="icp" name="ICurve attribute">,
 <ref id="concatncp" name="ConcatNC attribute">
 <item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
@@ -12444,6 +12462,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Delete: <ref id="mmedit" name="main menu entry">,
 <ref id="insdelac" name="delete points">
 <item>delOb: <ref id="scdelob" name="scripting interface command">
+<item>Derivatives: <ref id="icp" name="ICurve attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
 <item>Disk: <ref id="diskobj" name="Disk object">
@@ -12474,6 +12493,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Edit Local: <ref id="vmconf" name="view menu entry">,
 <ref id="editlocal" name ="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
+<item>EDLen: <ref id="icp" name="icurve attribute">
 <item>Elevate: <ref id="elevt" name="elevate tool">
 <item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
@@ -12617,7 +12637,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
-<item>IParam: <ref id="icp" name="ICurve attribute">
 <item>IsLocal: <ref id="lip" name="light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="light attribute">
@@ -12694,8 +12713,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="riproc attribute">
 <item>Mirror: <ref id="cloneattr" name="Clone attribute">
-<item>Mode: <ref id="icp" name="ICurve attribute">,
-<ref id="offsetncp" name="OffsetNC attribute">
+<item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
@@ -12765,6 +12783,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
 <item>Parameter: <ref id="extrncp" name="ExtrNC attribute">
 <item>Parameter Object: <ref id="toolobj" name="modelling concept">
+<item>ParamType: <ref id="icp" name="ICurve attribute">
 <item>pasOb: <ref id="scpasob" name="scripting interface command">
 <item>Paste: <ref id="mmedit" name="main menu entry">
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
@@ -12937,6 +12956,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Script: <ref id="script" name="scripting interface">,
 <ref id="scriptobj" name="Script object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
+<item>SDLen: <ref id="icp" name="icurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>Sections: <ref id="swp" name="sweep attribute">,
 <ref id="rep" name="Revolve attribute">,
@@ -13024,6 +13044,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Surface: <ref id="matshader" name="shader">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
+<item>swapuvS <ref id="scswapuvs" name="scripting interface command">
 <item>Sweep: <ref id="sweepobj" name="Sweep object">,
 <ref id="swpt" name="Sweep tool">
 <item>Swing: <ref id="swingobj" name="Swing object">
@@ -13095,7 +13116,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="scriptattr" name="script attribute">,
 <ref id="riprocp" name="riproc attribute">,
 <ref id="capattrprop" name="cap attribute">,
-<ref id="ncurveattrprop" name="ncurve attribute">
+<ref id="ncurveattrprop" name="ncurve attribute">,
+<ref id="icp" name="icurve attribute">
 </itemize>
 
 <label id="indexu">U
