@@ -1,4 +1,4 @@
-[30. Mar 2009] CVS-Head:
+[16. Apr 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -22,6 +22,8 @@ o transformation attributes of objects provided through Level objects
   (SF 2658507)
 o transformations of mirrored clones (that are transformed themselves)
   (SF 2658523)
+o <Enter> keypresses appearing in direct point editing GUI entries
+  on Win32 (SF 2726259)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -36,6 +38,12 @@ o ConcatNC now accepts lists of provided curves
 o Gordon now accepts lists of provided curves
 o Select object now supports selection of lists and ranges of indices as
   well as multiple parameter objects
+o ICurves are completely revamped: "Mode" parameter is gone (now auto-
+  selected by "Order"), "IParam" is replaced by "SDLen" and "EDLen",
+  "Closed" is replaced by "Type"; new parameter "Derivatives" allows to
+  specify own end derivatives; new parameter "ParamType" allows to select
+  a parameterisation (chordal or centripetal), knot averaging now used
+  for all modes, robustness wrt. double data points improved
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
@@ -49,6 +57,7 @@ o added example script "usepixie.tcl" that prepares Ayam to use Pixie
 o added helper script "colfocus.tcl" that switches the focus ring of
   important widgets to a more visible color (for SingleWindow GUI mode)
 o scripts in Script objects and BNS/ANS tags now run in a safe interpreter
+o many NURBS tool scripting interface commands have been renamed
 
 Build Support:
 o improved some error checking/messages in the "ayamConf.tcl" Makefile
