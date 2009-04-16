@@ -36,9 +36,9 @@ ay_ict_sanitize(int length, double *controlv,
   /* check and copy the rest */
   for(i = 0; i < (length-1); i++)
     {
-      if(((controlv[a+3] - controlv[a])   > AY_EPSILON) ||
-	 ((controlv[a+4] - controlv[a+1]) > AY_EPSILON) ||
-	 ((controlv[a+5] - controlv[a+2]) > AY_EPSILON))
+      if((fabs(controlv[a+3] - controlv[a])   > AY_EPSILON) ||
+	 (fabs(controlv[a+4] - controlv[a+1]) > AY_EPSILON) ||
+	 (fabs(controlv[a+5] - controlv[a+2]) > AY_EPSILON))
 	{
 	  /* copy point a+3 */
 	  memcpy(&((*scontrolv)[b]), &(controlv[a+3]), 3*sizeof(double));
@@ -47,10 +47,16 @@ ay_ict_sanitize(int length, double *controlv,
       else
 	{
 	  /* discard point a+3 */
-	  slength--;
+	  (*slength)--;
 	}
       a += 3;
     } /* for */
+
+  if(*slength == length)
+    {
+      free(*scontrolv);
+      *scontrolv = NULL;
+    }
 
  return AY_OK;
 } /* ay_ict_sanitize */
@@ -68,12 +74,22 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 		      ay_nurbcurve_object **c)
 {
  int ay_status = AY_OK;
- int a = 0, b, d, i, j, index;
- int nlength;
+ int a, b, d, i, j, index;
+ int nlength, slength;
  double v[3], vlen = 0.0;
  double *ncontrolv = NULL, *ncv4D = NULL;
  double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
+ double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
+
+
+  ay_ict_sanitize(length, controlv, &slength, &scontrolv);
+
+  if(scontrolv)
+    {
+      controlv = scontrolv;
+      length = slength;
+    }
 
   nlength = length + 2;
 
@@ -87,6 +103,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   if(!(lengths = calloc(length-1, sizeof(double))))
     return AY_EOMEM;
 
+  a = 0;
   for(i = 0; i < (length-1); i++)
     {
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
@@ -243,11 +260,21 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 {
  int ay_status = AY_OK;
  int a = 0, b, d, i, j;
- int nlength, index;
+ int nlength, slength, index;
  double v[3], vlen = 0.0;
  double *ncontrolv = NULL, *ccontrolv = NULL, *ncv4D = NULL;
  double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
+ double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
+
+
+  ay_ict_sanitize(length, controlv, &slength, &scontrolv);
+
+  if(scontrolv)
+    {
+      controlv = scontrolv;
+      length = slength;
+    }
 
   nlength = length + 3;
 
@@ -415,10 +442,20 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 {
  int ay_status = AY_OK;
  int a, i, j, order, deg, index;
- int nlength;
+ int nlength, slength;
  double v1[3], v2[3], vlen, *ncontrolv = NULL;
  double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
+ double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
+
+
+  ay_ict_sanitize(length, controlv, &slength, &scontrolv);
+
+  if(scontrolv)
+    {
+      controlv = scontrolv;
+      length = slength;
+    }
 
   nlength = length+2;
 
@@ -574,11 +611,21 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 {
  int ay_status = AY_OK;
  int a, i, j, order = 0, deg, index;
- int nlength;
+ int nlength, slength;
  double *ncontrolv = NULL;
  double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
  double v1[3], v2[3];
+ double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
+
+
+  ay_ict_sanitize(length, controlv, &slength, &scontrolv);
+
+  if(scontrolv)
+    {
+      controlv = scontrolv;
+      length = slength;
+    }
 
   nlength = length+3;
 
