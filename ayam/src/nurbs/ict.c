@@ -81,7 +81,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
  int ay_status = AY_OK;
  int a, b, d, i, j, index;
  int nlength, slength;
- double v[3], vlen = 0.0;
+ double v[3];
  double *ncontrolv = NULL, *ncv4D = NULL;
  double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
  double *scontrolv = NULL;
@@ -182,10 +182,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
       v[1] = controlv[b+1] - controlv[1];
       v[2] = controlv[b+2] - controlv[2];
 
-      vlen = AY_V3LEN(v);
-      vlen *= sdlen;
-
-      AY_V3SCAL(v, vlen)
+      AY_V3SCAL(v, sdlen)
 
       ncontrolv[3] = controlv[0] + v[0];
       ncontrolv[4] = controlv[1] + v[1];
@@ -197,10 +194,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
       v[1] = controlv[b+4] - controlv[b+1];
       v[2] = controlv[b+5] - controlv[b+2];
 
-      vlen = AY_V3LEN(v);
-      vlen *= edlen;
-
-      AY_V3SCAL(v, vlen)
+      AY_V3SCAL(v, edlen)
 
       ncontrolv[a]   = controlv[b+3] - v[0];
       ncontrolv[a+1] = controlv[b+4] - v[1];
@@ -265,7 +259,7 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
  int ay_status = AY_OK;
  int a = 0, b, d, i, j;
  int nlength, slength, index;
- double v[3], vlen = 0.0;
+ double v[3];
  double *ncontrolv = NULL, *ccontrolv = NULL, *ncv4D = NULL;
  double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
  double *scontrolv = NULL;
@@ -375,10 +369,7 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
       v[1] = controlv[4] - controlv[b+1];
       v[2] = controlv[5] - controlv[b+2];
 
-      vlen = AY_V3LEN(v);
-      vlen *= sdlen;
-
-      AY_V3SCAL(v, vlen)
+      AY_V3SCAL(v, sdlen)
 
       ncontrolv[3] = controlv[0]+v[0];
       ncontrolv[4] = controlv[1]+v[1];
@@ -445,7 +436,7 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
  int ay_status = AY_OK;
  int a, i, j, order, deg, index;
  int nlength, slength;
- double v1[3], v2[3], vlen, *ncontrolv = NULL;
+ double v1[3], v2[3], *ncontrolv = NULL;
  double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
@@ -534,10 +525,7 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
       v1[1] = controlv[4] - controlv[1];
       v1[2] = controlv[5] - controlv[2];
 
-      vlen = AY_V3LEN(v1);
-      vlen *= sdlen;
-
-      AY_V3SCAL(v1, vlen)
+      AY_V3SCAL(v1, sdlen)
 
       i = (length-2)*3;
 
@@ -545,10 +533,7 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
       v2[1] = controlv[i+4] - controlv[i+1];
       v2[2] = controlv[i+5] - controlv[i+2];
 
-      vlen = AY_V3LEN(v2);
-      vlen *= edlen;
-
-      AY_V3SCAL(v2, vlen)
+      AY_V3SCAL(v2, edlen)
     }
   else
     {
@@ -680,14 +665,14 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
   /* derivative */
   if(!have_end_derivs)
     {
+      a = (length-1)*3;
       v1[0] = controlv[3] - controlv[a];
       v1[1] = controlv[4] - controlv[a+1];
       v1[2] = controlv[5] - controlv[a+2];
 
-      AY_V3SCAL(v1,sdlen)
-
       memcpy(v2, v1, 3*sizeof(double));
 
+      AY_V3SCAL(v1,sdlen)
       AY_V3SCAL(v2,edlen)
     }
   else
