@@ -16,12 +16,17 @@
 
 
 /* ay_ict_sanitize:
+ *  sanitize (remove consecutive duplicate points) from a vector
+ *  of 3D data points in <controlv[<length]>;
+ *  puts sanitized result vector into <scontrolv[<slength>]>;
+ *  if scontrolv is NULL after this function, controlv was
+ *  already clean...
  */
 int
 ay_ict_sanitize(int length, double *controlv,
 		int *slength, double **scontrolv)
 {
-  int i, a = 0, b;
+ int i, a = 0, b;
 
   *slength = length;
   *scontrolv = NULL;
@@ -112,10 +117,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 
       if(param_type == AY_KTCENTRI)
 	{
-	  if(lengths[i] > AY_EPSILON)
-	    {
-	      lengths[i] = sqrt(lengths[i]);
-	    }
+	  lengths[i] = sqrt(lengths[i]);
 	}
 
       totallength += lengths[i];
@@ -185,24 +187,24 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 
       AY_V3SCAL(v, vlen)
 
-      ncontrolv[3] = controlv[0]+v[0];
-      ncontrolv[4] = controlv[1]+v[1];
-      ncontrolv[5] = controlv[2]+v[2];
+      ncontrolv[3] = controlv[0] + v[0];
+      ncontrolv[4] = controlv[1] + v[1];
+      ncontrolv[5] = controlv[2] + v[2];
 
       b = (length-2)*3;
 
-      v[0] = controlv[b+3]-controlv[b];
-      v[1] = controlv[b+4]-controlv[b+1];
-      v[2] = controlv[b+5]-controlv[b+2];
+      v[0] = controlv[b+3] - controlv[b];
+      v[1] = controlv[b+4] - controlv[b+1];
+      v[2] = controlv[b+5] - controlv[b+2];
 
       vlen = AY_V3LEN(v);
       vlen *= edlen;
 
       AY_V3SCAL(v, vlen)
 
-      ncontrolv[a]   = controlv[b+3]-v[0];
-      ncontrolv[a+1] = controlv[b+4]-v[1];
-      ncontrolv[a+2] = controlv[b+5]-v[2];
+      ncontrolv[a]   = controlv[b+3] - v[0];
+      ncontrolv[a+1] = controlv[b+4] - v[1];
+      ncontrolv[a+2] = controlv[b+5] - v[2];
     }
   else
     {
@@ -225,7 +227,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   a = 3; b = 0; d = 0;
   for(i = 0; i < nlength; i++)
     {
-      memcpy(&(ncv4D[b]),&(ncontrolv[d]),3*sizeof(double));
+      memcpy(&(ncv4D[b]), &(ncontrolv[d]), 3*sizeof(double));
       ncv4D[a] = 1.0;
       a += 4;
       b += 4;
@@ -237,6 +239,8 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   if(!ay_status)
     *c = new;
 
+  if(scontrolv)
+    free(scontrolv);
   free(ncontrolv);
   free(lengths);
   free(vk);
@@ -297,17 +301,13 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
   for(i = 0; i < length; i++)
     {
-
       lengths[i] = AY_VLEN((ccontrolv[a+3] - ccontrolv[a]),
 			   (ccontrolv[a+4] - ccontrolv[a+1]),
 			   (ccontrolv[a+5] - ccontrolv[a+2]));
 
       if(param_type == AY_KTCENTRI)
 	{
-	  if(lengths[i] > AY_EPSILON)
-	    {
-	      lengths[i] = sqrt(lengths[i]);
-	    }
+	  lengths[i] = sqrt(lengths[i]);
 	}
 
       totallength += lengths[i];
@@ -371,9 +371,9 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
   if(!have_end_derivs)
     {
       b = (length-1)*3;
-      v[0] = controlv[3]-controlv[b];
-      v[1] = controlv[4]-controlv[b+1];
-      v[2] = controlv[5]-controlv[b+2];
+      v[0] = controlv[3] - controlv[b];
+      v[1] = controlv[4] - controlv[b+1];
+      v[2] = controlv[5] - controlv[b+2];
 
       vlen = AY_V3LEN(v);
       vlen *= sdlen;
@@ -384,9 +384,9 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
       ncontrolv[4] = controlv[1]+v[1];
       ncontrolv[5] = controlv[2]+v[2];
 
-      ncontrolv[a]   = controlv[0]-v[0];
-      ncontrolv[a+1] = controlv[1]-v[1];
-      ncontrolv[a+2] = controlv[2]-v[2];
+      ncontrolv[a]   = controlv[0] - v[0];
+      ncontrolv[a+1] = controlv[1] - v[1];
+      ncontrolv[a+2] = controlv[2] - v[2];
     }
   else
     {
@@ -423,6 +423,8 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
   new->type = AY_CTCLOSED;
 
+  if(scontrolv)
+    free(scontrolv);
   free(ncontrolv);
 
  return ay_status;
@@ -482,13 +484,12 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
+
       if(param_type == AY_KTCENTRI)
 	{
-	  if(lengths[i] > AY_EPSILON)
-	    {
-	      lengths[i] = sqrt(lengths[i]);
-	    }
+	  lengths[i] = sqrt(lengths[i]);
 	}
+
       totallength += lengths[i];
 
       a += 3;
@@ -529,9 +530,9 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
   /* derivatives */
   if(!have_end_derivs)
     {
-      v1[0] = controlv[3]-controlv[0];
-      v1[1] = controlv[4]-controlv[1];
-      v1[2] = controlv[5]-controlv[2];
+      v1[0] = controlv[3] - controlv[0];
+      v1[1] = controlv[4] - controlv[1];
+      v1[2] = controlv[5] - controlv[2];
 
       vlen = AY_V3LEN(v1);
       vlen *= sdlen;
@@ -540,9 +541,9 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 
       i = (length-2)*3;
 
-      v2[0] = -(controlv[i+3]-controlv[i]);
-      v2[1] = -(controlv[i+4]-controlv[i+1]);
-      v2[2] = -(controlv[i+5]-controlv[i+2]);
+      v2[0] = controlv[i+3] - controlv[i];
+      v2[1] = controlv[i+4] - controlv[i+1];
+      v2[2] = controlv[i+5] - controlv[i+2];
 
       vlen = AY_V3LEN(v2);
       vlen *= edlen;
@@ -551,15 +552,15 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
     }
   else
     {
-      v1[0] = sderiv[0]-controlv[0];
-      v1[1] = sderiv[1]-controlv[1];
-      v1[2] = sderiv[2]-controlv[2];
+      v1[0] = sderiv[0] - controlv[0];
+      v1[1] = sderiv[1] - controlv[1];
+      v1[2] = sderiv[2] - controlv[2];
 
       i = (length-2)*3;
 
-      v2[0] = (controlv[i+3]-ederiv[0]);
-      v2[1] = (controlv[i+4]-ederiv[1]);
-      v2[2] = (controlv[i+5]-ederiv[2]);
+      v2[0] = controlv[i+3] - ederiv[0];
+      v2[1] = controlv[i+4] - ederiv[1];
+      v2[2] = controlv[i+5] - ederiv[2];
     }
 
   /* set up a sparse control vector */
@@ -592,6 +593,8 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
   if(!ay_status)
     *c = new;
 
+  if(scontrolv)
+    free(scontrolv);
   free(vk);
 
  return ay_status;
@@ -651,13 +654,12 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
       lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
 			   (controlv[a+4] - controlv[a+1]),
 			   (controlv[a+5] - controlv[a+2]));
+
       if(param_type == AY_KTCENTRI)
 	{
-	  if(lengths[i] > AY_EPSILON)
-	    {
-	      lengths[i] = sqrt(lengths[i]);
-	    }
+	  lengths[i] = sqrt(lengths[i]);
 	}
+
       totallength += lengths[i];
 
       a += 3;
@@ -670,10 +672,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 
   if(param_type == AY_KTCENTRI)
     {
-      if(lengths[length-1] > AY_EPSILON)
-	{
-	  lengths[length-1] = sqrt(lengths[length-1]);
-	}
+      lengths[length-1] = sqrt(lengths[length-1]);
     }
 
   totallength += lengths[length-1];
@@ -693,13 +692,13 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
     }
   else
     {
-      v1[0] = sderiv[0]-controlv[0];
-      v1[1] = sderiv[1]-controlv[1];
-      v1[2] = sderiv[2]-controlv[2];
+      v1[0] = sderiv[0] - controlv[0];
+      v1[1] = sderiv[1] - controlv[1];
+      v1[2] = sderiv[2] - controlv[2];
 
-      v2[0] = (controlv[0]-ederiv[0]);
-      v2[1] = (controlv[1]-ederiv[1]);
-      v2[2] = (controlv[2]-ederiv[2]);
+      v2[0] = controlv[0] - ederiv[0];
+      v2[1] = controlv[1] - ederiv[1];
+      v2[2] = controlv[2] - ederiv[2];
     }
 
   /* calc parametric values */
@@ -768,6 +767,8 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 
   new->type = AY_CTCLOSED;
 
+  if(scontrolv)
+    free(scontrolv);
   free(vk);
 
  return ay_status;
