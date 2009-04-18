@@ -99,14 +99,14 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   nlength = length + 2;
 
   if(!(ncontrolv = calloc(nlength*3, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   /* create knot vector */
   if(!(knotv = calloc(nlength+4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(lengths = calloc(length-1, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < (length-1); i++)
@@ -142,7 +142,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
     knotv[i] = 1.0;
   */
   if(!(vk = calloc(length+1, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   vk[0] = 0.0;
   j = 0;
@@ -217,7 +217,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 
   /* copy results to 4D controlv */
   if(!(ncv4D = calloc(nlength*4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
   a = 3; b = 0; d = 0;
   for(i = 0; i < nlength; i++)
     {
@@ -231,13 +231,26 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   ay_status = ay_nct_create(4, nlength, AY_KTCUSTOM, ncv4D, knotv, &new);
 
   if(!ay_status)
-    *c = new;
+    {
+      *c = new;
+
+      /* prevent cleanup code from doing something harmful */
+      knotv = NULL;
+      ncv4D = NULL;
+    }
+
+cleanup:
 
   if(scontrolv)
     free(scontrolv);
-  free(ncontrolv);
-  free(lengths);
-  free(vk);
+  if(ncontrolv)
+    free(ncontrolv);
+  if(lengths)
+    free(lengths);
+  if(vk)
+    free(vk);
+  if(ncv4D)
+    free(ncv4D);
 
  return ay_status;
 } /* ay_ict_interpolateC2C */
@@ -278,20 +291,20 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
   /* extend the control vector */
   if(!(ccontrolv = calloc((length+1)*3, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(&(ccontrolv[0]), &(controlv[0]), length*3*sizeof(double));
   memcpy(&(ccontrolv[length*3]), &(controlv[0]), 3*sizeof(double));
 
   if(!(ncontrolv = calloc(nlength*3, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   /* create knot vector */
   if(!(knotv = calloc(nlength+4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(lengths = calloc(length, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < length; i++)
     {
@@ -326,7 +339,7 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
     knotv[i] = 1.0;
   */
   if(!(vk = calloc(length+2, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   vk[0] = 0.0;
   j = 0;
@@ -355,9 +368,6 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
   for(i = nlength; i < nlength+4; i++)
     knotv[i] = 1.0;
 
-  free(lengths);
-  free(vk);
-
   /* create first two and last two controls */
   memcpy(ncontrolv, controlv, 3*sizeof(double));
 
@@ -371,9 +381,9 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
       AY_V3SCAL(v, sdlen)
 
-      ncontrolv[3] = controlv[0]+v[0];
-      ncontrolv[4] = controlv[1]+v[1];
-      ncontrolv[5] = controlv[2]+v[2];
+      ncontrolv[3] = controlv[0] + v[0];
+      ncontrolv[4] = controlv[1] + v[1];
+      ncontrolv[5] = controlv[2] + v[2];
 
       ncontrolv[a]   = controlv[0] - v[0];
       ncontrolv[a+1] = controlv[1] - v[1];
@@ -392,11 +402,11 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
   /* solve the equation system */
   ay_status = ay_nb_SolveTridiagonal(length, ccontrolv, knotv, ncontrolv);
-  free(ccontrolv);
+
 
   /* copy results to 4D controlv */
   if(!(ncv4D = calloc(nlength*4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
   a = 3; b = 0; d = 0;
   for(i = 0; i < nlength; i++)
     {
@@ -410,13 +420,30 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
   ay_status = ay_nct_create(4, nlength, AY_KTCUSTOM, ncv4D, knotv, &new);
 
   if(!ay_status)
-    *c = new;
+    {
+      *c = new;
 
-  new->type = AY_CTCLOSED;
+      new->type = AY_CTCLOSED;
+
+      /* prevent cleanup code from doing something harmful */
+      knotv = NULL;
+      ncv4D = NULL;
+    }
+
+cleanup:
 
   if(scontrolv)
     free(scontrolv);
-  free(ncontrolv);
+  if(ncontrolv)
+    free(ncontrolv);
+  if(ccontrolv)
+    free(ccontrolv);
+  if(lengths)
+    free(lengths);
+  if(vk)
+    free(vk);
+  if(ncv4D)
+    free(ncv4D);
 
  return ay_status;
 } /* ay_ict_interpolateC2CClosed */
@@ -460,14 +487,14 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
   deg = order-1;
 
   if(!(ncontrolv = calloc(nlength*4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   /* create knotvector */
   if(!(knotv = calloc(nlength+order, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(lengths = calloc(length-1, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < (length-1); i++)
@@ -487,7 +514,7 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
     }
 
   if(!(vk = calloc(length+1, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   vk[0] = 0.0;
   j = 0;
@@ -515,8 +542,6 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+order; i++)
     knotv[i] = 1.0;
-
-  free(lengths);
 
   /* derivatives */
   if(!have_end_derivs)
@@ -570,17 +595,31 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 					   deg, v1, v2);
 
   if(ay_status)
-    { free(vk); free(ncontrolv); free(knotv); return ay_status; }
+    { goto cleanup; }
 
   ay_status = ay_nct_create(order, nlength, AY_KTCUSTOM, ncontrolv,
 			    knotv, &new);
 
   if(!ay_status)
-    *c = new;
+    {
+      *c = new;
+      /* prevent cleanup code from doing something harmful */
+      knotv = NULL;
+      ncontrolv = NULL;
+    }
+
+cleanup:
 
   if(scontrolv)
     free(scontrolv);
-  free(vk);
+  if(ncontrolv)
+    free(ncontrolv);
+  if(lengths)
+    free(lengths);
+  if(vk)
+    free(vk);
+  if(knotv)
+    free(knotv);
 
  return ay_status;
 } /* ay_ict_interpolateG3D */
@@ -625,13 +664,13 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
   deg = order - 1;
 
   if(!(ncontrolv = calloc(nlength*4, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(knotv = calloc(nlength+order, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(lengths = calloc(length, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < length-1; i++)
@@ -688,7 +727,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 
   /* calc parametric values */
   if(!(vk = calloc(length+2, sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   vk[0] = 0.0;
   j = 0;
@@ -717,8 +756,6 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
   for(i = nlength; i < nlength+order; i++)
     knotv[i] = 1.0;
 
-  free(lengths);
-
   /* set up a sparse control vector */
   /* first point */
   memcpy(ncontrolv,controlv,3*sizeof(double));
@@ -742,19 +779,34 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 					   knotv, deg, v1, v2);
 
   if(ay_status)
-    { free(vk); free(ncontrolv); free(knotv); return ay_status; }
+    { goto cleanup; }
 
   ay_status = ay_nct_create(order, nlength, AY_KTCUSTOM,
 			    ncontrolv, knotv, &new);
 
   if(!ay_status)
-    *c = new;
+    {
+      *c = new;
 
-  new->type = AY_CTCLOSED;
+      new->type = AY_CTCLOSED;
+
+      /* prevent cleanup code from doing something harmful */
+      knotv = NULL;
+      ncontrolv = NULL;
+    }
+
+cleanup:
 
   if(scontrolv)
     free(scontrolv);
-  free(vk);
+  if(ncontrolv)
+    free(ncontrolv);
+  if(lengths)
+    free(lengths);
+  if(vk)
+    free(vk);
+  if(knotv)
+    free(knotv);
 
  return ay_status;
 } /* ay_ict_interpolateG3DClosed */
