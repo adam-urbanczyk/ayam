@@ -24,7 +24,7 @@ proc safe_init { interp } {
     # object management
     set safe_commands { crtOb delOb hSL selOb withOb convOb }
     # clipboard
-    lappend safe_commands cutOb copOb pasOb cmovOb
+    lappend safe_commands cutOb copOb pasOb pasmovOb repOb
     # current level
     lappend safe_commands goUp goDown goTop
     # property management
@@ -39,6 +39,7 @@ proc safe_init { interp } {
     lappend safe_commands clampNC elevateNC insknNC remknNC refineNC coarsenNC
     lappend safe_commands rescaleknNC splitNC toXYNC trimNC estlenNC reparamNC
     lappend safe_commands clampuNP clampvNP rescaleknNP insknuNP insknvNP
+    lappend safe_commands closeuNP closevNP
     lappend safe_commands splituNP splitvNP extrNP
     # point editing
     lappend safe_commands setPnt getPnt

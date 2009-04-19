@@ -265,7 +265,7 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bhide -image ay_Show_img -padx 0 -pady 0 -command {
 		global ay
 		undo save HidSho
-		hide -toggle
+		hideOb -toggle
 		set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 	    }
 	    balloon_set $f.bhide "hide/show object"
