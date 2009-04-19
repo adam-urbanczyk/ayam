@@ -566,17 +566,17 @@ $m add separator
 $m add command -label "Hide" -command {
     global ay
     undo save Hide
-    hide
+    hideOb
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }
-$m add command -label "Hide All" -command "hide -all; uS 1 1; rV"
+$m add command -label "Hide All" -command "hideOb -all; uS 1 1; rV"
 $m add command -label "Show" -command {
     global ay
     undo save Show
-    show
+    showOb
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }
-$m add command -label "Show All" -command "show -all; uS 1 1; rV"
+$m add command -label "Show All" -command "showOb -all; uS 1 1; rV"
 $m add separator
 $m add command -label "Convert" -command {
     global ay
@@ -627,7 +627,7 @@ $m add command -label "Save Environment" -command "io_saveEnv"
 
 $m add cascade -menu $m.clp -label "Clipboard"
 set sm [menu $m.clp -tearoff 0]
-$sm add command -label "Paste (Move)" -command {cmovOb; cS;
+$sm add command -label "Paste (Move)" -command {pasmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1}

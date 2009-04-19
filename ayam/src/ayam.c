@@ -624,7 +624,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "pasOb", ay_clipb_pastetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "cmovOb", ay_clipb_movetcmd,
+  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_movetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
@@ -761,10 +761,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "revertC", ay_tcmd_reverttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "show", ay_tcmd_showtcmd,
+  Tcl_CreateCommand(interp, "showOb", ay_tcmd_showtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "hide", ay_tcmd_hidetcmd,
+  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_hidetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,
