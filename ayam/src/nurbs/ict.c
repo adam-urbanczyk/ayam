@@ -33,7 +33,7 @@ ay_ict_sanitize(int length, double *controlv,
 
   if(!(*scontrolv = calloc(length*3, sizeof(double))))
     return AY_EOMEM;
-  
+
   /* always copy the first point */
   memcpy(*scontrolv, controlv, 3*sizeof(double));
   b = 3;
@@ -1177,13 +1177,28 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
  int stride = 3;
  char fname[] = "ay_ict_getpntfromindex";
 
-  if(index >= curve->length || index < 0)
+  if(index > (curve->length+1) || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
       return TCL_OK;
     }
 
-  *p = &(curve->controlv[index*stride]);
+  if(index < curve->length)
+    {
+      *p = &(curve->controlv[index*stride]);
+    }
+  else
+    {
+      /* allow access to end derivative */
+      if(index == curve->length)
+	{
+	  *p = &(curve->sderiv[0]);
+	}
+      else
+	{
+	  *p = &(curve->ederiv[0]);
+	}
+    }
 
  return TCL_OK;
 } /* ay_ict_getpntfromindex */
