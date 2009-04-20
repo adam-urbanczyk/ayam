@@ -159,9 +159,9 @@ int
 ay_knots_createnc(ay_nurbcurve_object *curve)
 {
  int order = 0, length = 0, knot_count = 0;
- int i = 0, j = 0, k, p, kts = 0, i2;
+ int index, i = 0, j = 0, kts = 0;
  double *newknotv = NULL;
- double da, d, *ub = NULL, *U = NULL;
+ double *ub = NULL, *U = NULL;
 
   /* sanity check */
   if(!curve)
@@ -177,18 +177,21 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
     return AY_EOMEM;
 
   /* free old knot-array */
-  if(curve->knotv) free(curve->knotv);
+  if(curve->knotv)
+    free(curve->knotv);
 
   curve->knotv = newknotv;
+
+  U = curve->knotv;
 
   /* fill knot-arrays */
   switch(curve->knot_type)
     {
     case AY_KTBEZIER:
       for(i=0; i<knot_count/2; i++)
-	(curve->knotv)[i] = 0.0;
+	U[i] = 0.0;
       for(i=knot_count/2; i<knot_count; i++)
-	(curve->knotv)[i] = 1.0;
+	U[i] = 1.0;
       break;
 
     case AY_KTBSPLINE:
@@ -197,28 +200,28 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       start = floor(knot_count/2);
       for(i=-start; i<start; i++)
 	{
-	  (curve->knotv)[j] = i/fabs((double)(knot_count-(order-1)));
+	  U[j] = i/fabs((double)(knot_count-(order-1)));
 	  j++;
 	}
       if(fmod(knot_count,2.0) > 0.0)
-	(curve->knotv)[j] = i/fabs((double)(knot_count-(order-1)));
+	U[j] = i/fabs((double)(knot_count-(order-1)));
       */
-      (curve->knotv)[0] = 0.0;
+      U[0] = 0.0;
       for(i = 1; i < knot_count; i++)
 	{
-	  (curve->knotv)[i] = (double)i/(knot_count-1);
+	  U[i] = (double)i/(knot_count-1);
 	}
       break;
 
     case AY_KTNURB:
       for(i=0; i<order; i++)
-	(curve->knotv)[i] = 0.0;
+	U[i] = 0.0;
       j=1;
       kts = 1 + knot_count - (order*2);
       for(i=order; i<=knot_count-order; i++)
-	(curve->knotv)[i] = j++/((double)kts);
+	U[i] = j++/((double)kts);
       for(i=knot_count-order; i<knot_count; i++)
-	(curve->knotv)[i] = 1.0;
+	U[i] = 1.0;
       break;
 
     case AY_KTCUSTOM:
@@ -228,16 +231,30 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
     case AY_KTCENTRI:
 
       if(curve->knot_type == AY_KTCHORDAL)
-	ay_knots_chordparam(curve->controlv, curve->length, 4, &ub);
+	ay_knots_chordparam(curve->controlv, length, 4, &ub);
       else
-	ay_knots_centriparam(curve->controlv, curve->length, 4, &ub);
+	ay_knots_centriparam(curve->controlv, length, 4, &ub);
 
       if(!ub)
 	return AY_ERROR;
 
-      U = curve->knotv;
-
       /* knot averaging */
+      for(j = 1; j < length-(order-1); j++)
+	{
+	  index = j + (order - 1);
+	  U[index] = 0.0;
+	  for(i = j; i < j + (order-1); i++)
+	    {
+	      U[index] += ub[i];
+	    }
+	  U[index] /= ((double)(order-1));
+	}
+      for(i = 0; i < order; i++)
+	U[i] = 0.0;
+      for(i = length; i < knot_count; i++)
+	U[i] = 1.0;
+
+      free(ub);
 
       break;
     default:
