@@ -65,7 +65,7 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     sL
     getLevel a b
     goDown [expr [llength $a]-1]
-    cmovOb
+    pasmovOb
 
     if { $keepsel == 0 } {
 	goUp
