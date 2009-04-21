@@ -36,7 +36,8 @@ set w [frame $ay(pca).$NCurveAttr(w)]
 addMenu $w NCurveAttrData Type [list Open Closed Periodic]
 addParam $w NCurveAttrData Length
 addParam $w NCurveAttrData Order
-addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom]
+addMenu $w NCurveAttrData Knot-Type [list Bezier B-Spline NURB Custom\
+					 Chordal Centripetal]
 addString $w NCurveAttrData Knots
 
 addCheck $w NCurveAttrData CreateMP
