@@ -38,7 +38,7 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
       if(!strcmp(argv[i],"-length"))
 	{
 	  Tcl_GetInt(ay_interp, argv[i+1], &length);
-	  if(length <= 2) length = 4;
+	  if(length < 4) length = 4;
 	  i+=2;
 	}
       else
@@ -70,7 +70,7 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 
   new->closed = closed;
   new->length = length;
-  new->alength = length;
+  new->alength = length-1;
   new->controlv = cv;
 
   o->refine = new;
