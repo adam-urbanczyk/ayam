@@ -1295,6 +1295,11 @@ ay_ncurve_notifycb(ay_object *o)
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
 
+  if(ncurve->knot_type > AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_createnc(ncurve);
+    }
+
   if(ncurve->display_mode != 0)
     {
       display_mode = ncurve->display_mode-1;
