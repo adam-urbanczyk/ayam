@@ -802,15 +802,22 @@ proc viewClose { w } {
 proc setCameraAttr { } {
     global ay CameraData
     set cw $ay(currentView)
-    getName o
-    getType t
 
-    $CameraData(togl) mc
+    set t ""
+    catch {getType t}
+
+    # do not switch current view for Camera objects
+    if { $t == "View" } {
+	$CameraData(togl) mc
+    }
 
     setProp
 
-    $ay(currentView) mc
+    if { $t == "View" } {
+	$ay(currentView) mc
+    }
 
+ return;
 }
 # setCameraAttr
 
@@ -821,8 +828,7 @@ proc setViewAttr { } {
     global ay ViewAttribData pclip_reset
 
     set cw $ay(currentView)
-    getName o
-    
+   
     set togl $ViewAttribData(togl)
 
     $togl mc
