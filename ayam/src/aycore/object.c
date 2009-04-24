@@ -133,7 +133,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "typename \\[args\\]!");
+      ay_error(AY_EARGS, fname, "typename [args]!");
       return TCL_OK;
     }
 

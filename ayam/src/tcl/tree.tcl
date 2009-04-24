@@ -141,7 +141,7 @@ proc tree_update { node } {
 
     if { $ay(ExtraTreeUpdate) == 1 } {
 	set ay(ExtraTreeUpdate) 0
-	ayError 1 tree_update "Doing an extra update for node \\\"$node\\\"."
+	ayError 1 tree_update "Doing an extra update for node \"$node\"."
 	update
 	tree_update $node
     }

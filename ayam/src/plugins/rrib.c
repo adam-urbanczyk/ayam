@@ -5675,7 +5675,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename \\[-f framenumber\\]!");
+      ay_error(AY_EARGS, fname, "filename [-f framenumber]!");
       return TCL_OK;
     }
 
@@ -5850,7 +5850,7 @@ Rrib_Init(Tcl_Interp *interp)
   if((Tcl_EvalFile(interp, "rrib.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"rrib.tcl\\\"!");
+		  "Error while sourcing \"rrib.tcl\"!");
        return TCL_OK;
      }
 

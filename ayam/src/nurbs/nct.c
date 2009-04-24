@@ -50,17 +50,20 @@ ay_nct_create(int order, int length, int knot_type,
     } /* if */
 
   if(knot_type != AY_KTCUSTOM && knotv == NULL)
-    { /* we need to create knots */
+    {
+      /* we need to create knots */
       ay_status = ay_knots_createnc(curve);
       if(ay_status)
 	{
-	  if(newcontrolv) free(newcontrolv);
+	  if(newcontrolv)
+	    free(newcontrolv);
 	  free(curve);
 	  return ay_status;
 	}
     }
-  else /* user specified own knots */
+  else
     {
+      /* caller specified own knots */
       curve->knotv = knotv;
     } /* if */
 
@@ -68,6 +71,7 @@ ay_nct_create(int order, int length, int knot_type,
 
   ay_nct_settype(curve);
 
+  /* return result */
   *curveptr = curve;
 
  return AY_OK;
@@ -5115,7 +5119,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r \\[tol\\]");
+      ay_error(AY_EARGS, fname, "u r [tol]");
       return TCL_OK;
     }
 
