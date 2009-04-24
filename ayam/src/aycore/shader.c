@@ -1117,7 +1117,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "shadertype \\[varname\\]");
+      ay_error(AY_EARGS, fname, "shadertype [varname]");
       return TCL_OK;
     }
 

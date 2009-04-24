@@ -71,7 +71,7 @@ proc shader_scanAll {} {
 
     set spathstr [split "$ayprefs(Shaders)" $ay(separator)]
 
-    ayError 4 scanAllShaders "In \\\"$ayprefs(Shaders)\\\"..."
+    ayError 4 scanAllShaders "In \"$ayprefs(Shaders)\"..."
 
     foreach p $spathstr {
 	set files [glob -nocomplain "${p}/*${sext}"]

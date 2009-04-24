@@ -80,7 +80,7 @@ ay_error(int code, char *where, char *what)
  Tcl_DString ds, dsl;
  Tcl_Obj *to = NULL, *ton = NULL;
  char gentxterr[] = "Error! ", gentxtwarn[] = "Warning! ";
- char warncmd[] = "puts stdout \"", errcmd[] = "puts stderr \"";
+ char warncmd[] = "puts stdout {", errcmd[] = "puts stderr {";
  char lmsg[] = "Last message repeated ", lmsg2[] = " times.";
  char *countstr = NULL;
  static char *last_message = NULL;
@@ -123,7 +123,7 @@ ay_error(int code, char *where, char *what)
 	  len = sprintf(countstr,"%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, lmsg2, -1);
-	  Tcl_DStringAppend(&dsl, "\"", -1);
+	  Tcl_DStringAppend(&dsl, "}", -1);
 	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
 	  ay_error_wlog(Tcl_DStringValue(&dsl));
 	  Tcl_DStringFree(&dsl);
@@ -207,7 +207,7 @@ ay_error(int code, char *where, char *what)
       Tcl_DStringAppend(&ds, ".", -1);
     }
 
-  Tcl_DStringAppend(&ds, "\"", -1);
+  Tcl_DStringAppend(&ds, "}", -1);
 
   if(last_message && !strcmp(last_message, Tcl_DStringValue(&ds)))
     {
@@ -233,7 +233,7 @@ ay_error(int code, char *where, char *what)
 	  len = sprintf(countstr,"%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, lmsg2, -1);
-	  Tcl_DStringAppend(&dsl, "\"", -1);
+	  Tcl_DStringAppend(&dsl, "}", -1);
 	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
 	  ay_error_wlog(Tcl_DStringValue(&dsl));
 	  Tcl_DStringFree(&dsl);
@@ -286,7 +286,7 @@ ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "ecode \\[fname detail\\]");
+      ay_error(AY_EARGS, fname, "ecode [fname detail]");
       return TCL_OK;
     }
 

@@ -365,7 +365,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
  char fname[] = "getPnt";
- char fargs[] = "\\[-trafo|-p\\] (index | indexu indexv | u | u v) varx vary varz \\[varw\\]";
+ char fargs[] = "[-trafo|-p\\] (index | indexu indexv | u | u v) varx vary varz [varw]";
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(argc <= 1)
@@ -666,7 +666,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc <= 1)
     {
-      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z \\[w\\]");
+      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z [w]");
       return TCL_OK;
     }
 
@@ -868,7 +868,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "index \\[do\\] command");
+      ay_error(AY_EARGS, fname, "index [do] command");
       return TCL_OK;
     }
 
@@ -877,7 +877,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(commandindex >= argc)
     {
-      ay_error(AY_EARGS, fname, "index \\[do\\] command");
+      ay_error(AY_EARGS, fname, "index [do] command");
       return TCL_OK;
     }
 

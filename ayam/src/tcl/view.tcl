@@ -180,7 +180,7 @@ proc viewRender { w type } {
 	    # render to image file
 	    set ribname [io_getRIBName]
 	    set imagename [lindex $ribname 1]
-	    ayError 4 "viewRender" "Rendering to \\\"$imagename\\\"..."
+	    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
 	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
 
@@ -197,7 +197,7 @@ proc viewRender { w type } {
 	    }
 	} else {
 	    # render to image file
-	    ayError 4 "viewRender" "Rendering to \\\"$imagename\\\"..."
+	    ayError 4 "viewRender" "Rendering to \"$imagename\"..."
 	    $togl wrib -file $tmpfile -image $imagename -temp -rtf
 	}
     }
