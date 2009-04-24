@@ -17,9 +17,9 @@
 
 /* ay_ict_sanitize:
  *  sanitize (remove consecutive duplicate points) from a vector
- *  of 3D data points in <controlv[<length]>;
+ *  of 3D data points in <controlv[<length>]>;
  *  puts sanitized result vector into <scontrolv[<slength>]>;
- *  if scontrolv is NULL after this function, controlv was
+ *  if scontrolv is NULL after this function run, controlv was
  *  already clean...
  */
 int
@@ -68,9 +68,12 @@ ay_ict_sanitize(int length, double *controlv,
 
 
 /* ay_ict_interpolateC2C:
- *  C2 Cubic interpolation of <length> 3D data points
- *  in controlv, creates a NURBS curve and
- *  saves a pointer to it to c
+ *  C2 cubic interpolation of <length> 3D data points in <controlv>;
+ *  <sdlen>, <edlen>: length of automatically generated end derivatives,
+ *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
+ *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
+ *  <sderiv>, <ederiv>: user specified end derivatives,
+ *  returns result (a NURBS curve) in <c>
  */
 int
 ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
@@ -232,6 +235,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 
   if(!ay_status)
     {
+      /* return result */
       *c = new;
 
       /* prevent cleanup code from doing something harmful */
@@ -257,9 +261,12 @@ cleanup:
 
 
 /* ay_ict_interpolateC2CClosed:
- *  Closed C2 Cubic interpolation of <length> 3D data points
- *  in <controlv>, creates a cubic NURBS curve and
- *  saves a pointer to it to c
+ *  Closed C2 cubic interpolation of <length> 3D data points in <controlv>;
+ *  <sdlen>, <edlen>: length of automatically generated end derivatives,
+ *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
+ *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
+ *  <sderiv>, <ederiv>: user specified end derivatives,
+ *  returns result (a NURBS curve) in <c>
  */
 int
 ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
@@ -421,6 +428,7 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
   if(!ay_status)
     {
+      /* return result */
       *c = new;
 
       new->type = AY_CTCLOSED;
@@ -450,9 +458,14 @@ cleanup:
 
 
 /* ay_ict_interpolateG3D:
- *  Global interpolation of length points
- *  in controlv, creates a NURBS curve and
- *  saves a pointer to it to c
+ *  Global interpolation of <length> 3D data points in <controlv>;
+ *  <iorder>: desired order
+ *    (for order == 4, rather use interpolateC2C() above!),
+ *  <sdlen>, <edlen>: length of automatically generated end derivatives,
+ *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
+ *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
+ *  <sderiv>, <ederiv>: user specified end derivatives,
+ *  returns result (a NURBS curve) in <c>
  */
 int
 ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
@@ -602,7 +615,9 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 
   if(!ay_status)
     {
+      /* return result */
       *c = new;
+
       /* prevent cleanup code from doing something harmful */
       knotv = NULL;
       ncontrolv = NULL;
@@ -626,9 +641,14 @@ cleanup:
 
 
 /* ay_ict_interpolateG3DClosed:
- *  Closed global interpolation of length points
- *  in controlv, creates a NURBS curve and
- *  saves a pointer to it to c
+ *  Closed global interpolation of <length> 3D data points in <controlv>;
+ *  <iorder>: desired order
+ *    (for order == 4, rather use interpolateC2CClosed() above!),
+ *  <sdlen>, <edlen>: length of automatically generated end derivatives,
+ *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
+ *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
+ *  <sderiv>, <ederiv>: user specified end derivatives,
+ *  returns result (a NURBS curve) in <c>
  */
 int
 ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
@@ -786,6 +806,7 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 
   if(!ay_status)
     {
+      /* return result */
       *c = new;
 
       new->type = AY_CTCLOSED;
