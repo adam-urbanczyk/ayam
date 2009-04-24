@@ -1,4 +1,4 @@
-[16. Apr 2009] CVS-Head:
+[24. Apr 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -24,6 +24,7 @@ o transformations of mirrored clones (that are transformed themselves)
   (SF 2658523)
 o <Enter> keypresses appearing in direct point editing GUI entries
   on Win32 (SF 2726259)
+o Tcl error when applying Camera property of Camera object (SF 2779315)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -31,6 +32,7 @@ o switching the current level in the object tree via cursor keys now
 o the tree widget is now also scrolled properly when the tree is rebuilt
 o added keyboard shortcuts to pan view windows (<Shift>+<Cursor> keys)
 o added keyboard shortcuts to escape from console (<Esc> key)
+o improved error reporting of RenderMan renderers directly called from Ayam
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
