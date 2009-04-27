@@ -1193,13 +1193,13 @@ proc actionClearB1 { w } {
 proc actionClear { w } {
     global ayprefs ayviewshortcuts
 
+    actionClearB1 $w
+
     if { [string first ".view" $w] != 0 } {
 	bind $w <ButtonPress-1> "focus \$w"
     } else {
 	bind $w <ButtonPress-1> ""
     }
-
-    actionClearB1 $w
 
     bind $w <Motion> ""
 
