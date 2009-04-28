@@ -34,7 +34,7 @@ proc riattr_addp { } {
 
     # listbox
     pack $f -in $w -side top -fill both -expand yes
-    listbox $f.li -width 24 -height 10 -selectmode single\
+    listbox $f.li -width 24 -height 10 -selectmode browse -activestyle none\
 	-yscrollcommand "$f.sc set" -exportselection 0
     pack $f.li -in $f -side left -fill both -expand yes
 
@@ -72,7 +72,7 @@ proc riattr_addp { } {
 	}
     }
 
-    bind $f.li <ButtonRelease-1> {
+    bind $f.li <<ListboxSelect>> {
 	global ay riattr
 	set lb .addRiAttrw.f1.li
 
@@ -262,9 +262,11 @@ proc riattr_addp { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+    bind $w <Key-Return> "$f.bok invoke"
+    catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
     grab $w
-    focus $f.bok
+    focus $w.f1.li
     tkwait window $w
     winAutoFocusOn
 
