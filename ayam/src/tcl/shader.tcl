@@ -258,12 +258,12 @@ proc shader_setNew { win type stype } {
 	wm transient $w .
     }
     set f [frame $w.f1]
-    listbox $f.lb -width 20 -height 10 -selectmode single\
+    listbox $f.lb -width 20 -height 10 -selectmode browse -activestyle none\
 	    -exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}
-    # insert shaders into listbox
+    # insert shader names into listbox
     eval [subst "$f.lb insert 0 $shaders"]
 
-    # arrange for keyboard to cycle-select through shaders
+    # arrange for keyboard to cycle-select through shaders;
     # first, clear some global lists
     foreach shader $shaders {
 	set fc [string tolower [string index $shader 0]]
@@ -271,6 +271,7 @@ proc shader_setNew { win type stype } {
 	set ${fc}list {}
     }
     # foreach
+
     # now, fill the global lists with list indizes, and arrange for
     # the respective key on the keyboard to cycle-select using shader_cycsel
     set i 0
@@ -285,6 +286,7 @@ proc shader_setNew { win type stype } {
     }
     # foreach
 
+    # realize GUI
     pack $f.lb -in $f -side left -fill both -expand yes
     set f [frame $f.fsc]
     scrollbar $f.sc -command {.setShaderw.f1.lb yview} -takefocus 0
@@ -316,10 +318,12 @@ proc shader_setNew { win type stype } {
     wm protocol $w WM_DELETE_WINDOW {
 	.setShaderw.f2.bca invoke
     }
+    bind $w <Key-Return> "$f.bok invoke"
+    catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
 
     winCenter $w
     grab $w
-    focus $f.bok
+    focus $w.f1.lb
     tkwait window $w
     winAutoFocusOn
 
