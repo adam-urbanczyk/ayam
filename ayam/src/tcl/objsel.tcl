@@ -74,7 +74,8 @@ proc reconsider { Selection } {
     pack $f -in $w -side top -fill both -expand yes
     
     # Create the listbox
-    listbox $f.lo -height 5 -selectmode single -exportselection 0 \
+    listbox $f.lo -height 8 -selectmode browse -activestyle none \
+	-exportselection 0 \
 	-yscrollcommand {global rArray; $rArray(yscroll) set} \
 	-xscrollcommand {global rArray; $rArray(xscroll) set}
     
@@ -102,8 +103,7 @@ proc reconsider { Selection } {
     $f.lo configure -width ${maxlen}
     $f.lo delete 0 end
     eval [ subst "$f.lo insert end $entry"]
-    $f.lo selection set 0
-    
+
     # Create the vertical scrollbar
     scrollbar $f.sv -command {global rArray; $rArray(lb) yview} -takefocus 0
     
@@ -198,16 +198,22 @@ proc reconsider { Selection } {
     set object [split $node :]
     set item [lindex $object end]
 	
-    # Put the item in the selection then update the views
+    # Put the first item in the selection then update the views
     selOb
     selOb $item
-    rV
+    $w.f1.lo selection set 0
+    $w.f1.lo activate 0
+    $w.f1.lo see 0
+    after idle {rV}
 
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    focus $f.bok
+    bind $w <Key-Return> "$f.bok invoke"
+    catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
+
+    focus $w.f1.lo
 
     winToMouse $w
     
