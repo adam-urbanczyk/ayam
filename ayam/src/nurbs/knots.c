@@ -158,7 +158,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 int
 ay_knots_createnc(ay_nurbcurve_object *curve)
 {
- int order = 0, length = 0, knot_count = 0;
+ int order = 0, deg = 0, length = 0, knot_count = 0;
  int index, i = 0, j = 0, kts = 0;
  double *newknotv = NULL;
  double *ub = NULL, *U = NULL;
@@ -227,8 +227,11 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
     case AY_KTCUSTOM:
       /* user specified own knot vertices */
       break;
+
     case AY_KTCHORDAL:
     case AY_KTCENTRI:
+
+      deg = order-1;
 
       if(curve->knot_type == AY_KTCHORDAL)
 	ay_knots_chordparam(curve->controlv, length, 4, &ub);
@@ -239,24 +242,37 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 	return AY_ERROR;
 
       /* knot averaging */
-      for(j = 1; j < length-(order-1); j++)
+      for(j = 1; j < length-deg; j++)
 	{
 	  index = j + (order - 1);
 	  U[index] = 0.0;
-	  for(i = j; i < j + (order-1); i++)
+	  for(i = j; i < j + deg; i++)
 	    {
 	      U[index] += ub[i];
 	    }
-	  U[index] /= ((double)(order-1));
+	  U[index] /= ((double)deg);
 	}
-      for(i = 0; i < order; i++)
-	U[i] = 0.0;
-      for(i = length; i < knot_count; i++)
-	U[i] = 1.0;
+
+      if(curve->type != AY_CTPERIODIC)
+	{
+	  for(i = 0; i < order; i++)
+	    U[i] = 0.0;
+	  for(i = length; i < knot_count; i++)
+	    U[i] = 1.0;
+	}
+      else
+	{
+	  /* periodic curves get periodic knot extensions */
+	  for(i = 0; i < deg; i++)
+	    U[i] = U[i+(length-deg)] - 1.0;
+
+	  for(i = length; i < knot_count; i++)
+	    U[i] = 1.0 + U[i-(length-deg)];
+	}
 
       free(ub);
-
       break;
+
     default:
       break;
     } /* switch */
