@@ -4906,7 +4906,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
   if(!curve)
     return AY_ENULL;
 
- if(curve->type == AY_CTPERIODIC)
+  if(curve->type == AY_CTPERIODIC)
     {
       /* special case: curves marked periodic;
        * we keep the p multiple points at the ends
@@ -4924,15 +4924,16 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 
       /* coarsen (custom-) knots */
       if(curve->knot_type == AY_KTCUSTOM)
-       {
-	 ay_status = ay_knots_coarsen(curve->order, curve->length+curve->order,
-				      curve->knotv, t, &newknotv);
-	 if(ay_status)
-	   {
-	     ay_error(AY_ERROR, fname, "Could not coarsen knots!");
-	     return ay_status;
-	   }
-       }
+	{
+	  ay_status = ay_knots_coarsen(curve->order,
+				       curve->length+curve->order,
+				       curve->knotv, t, &newknotv);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Could not coarsen knots!");
+	      return ay_status;
+	    }
+	}
 
       /* coarsen control points */
 
@@ -4948,12 +4949,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
       /* omit first point after the p'th */
       b = a+stride;
       for(i = 0; i < t; i++)
-       {
-	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-		stride*sizeof(double));
-	 a += stride;
-	 b += 2*stride;
-       }
+	{
+	  memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+		 stride*sizeof(double));
+	  a += stride;
+	  b += 2*stride;
+	}
 
       /* copy last p points */
       a = (newlength-p)*stride;
@@ -4963,55 +4964,56 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 
       curve->length = newlength;
     }
- else
-   {
+  else
+    {
       /* calc number of points to remove */
-     t = (curve->length-2)/2;
-     newlength = curve->length-t;
+      t = (curve->length-2)/2;
+      newlength = curve->length-t;
 
       /* no control points to remove? */
-     if(newlength < curve->order)
-       return AY_OK;
+      if(newlength < curve->order)
+	return AY_OK;
 
       /* coarsen (custom-) knots */
-     if(curve->knot_type == AY_KTCUSTOM)
-       {
-	 ay_status = ay_knots_coarsen(curve->order, curve->length+curve->order,
-				      curve->knotv, t, &newknotv);
-	 if(ay_status)
-	   {
-	     ay_error(AY_ERROR, fname, "Could not coarsen knots!");
-	     return ay_status;
-	   }
-       }
+      if(curve->knot_type == AY_KTCUSTOM)
+	{
+	  ay_status = ay_knots_coarsen(curve->order,
+				       curve->length+curve->order,
+				       curve->knotv, t, &newknotv);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Could not coarsen knots!");
+	      return ay_status;
+	    }
+	}
 
-     /* coarsen control points */
+      /* coarsen control points */
 
-     if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
-       return AY_EOMEM;
+      if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
+	return AY_EOMEM;
 
-     /* copy first point */
-     memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
+      /* copy first point */
+      memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
 
-     /* copy middle points omitting every second */
-     a = stride;
-     b = a+stride;
-     for(i = 0; i < t; i++)
-       {
-	 memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-		stride*sizeof(double));
-	 a += stride;
-	 b += 2*stride;
-       }
+      /* copy middle points omitting every second */
+      a = stride;
+      b = a+stride;
+      for(i = 0; i < t; i++)
+	{
+	  memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+		 stride*sizeof(double));
+	  a += stride;
+	  b += 2*stride;
+	}
 
-     /* copy last point */
-     a = (newlength-1)*stride;
-     b = (curve->length-1)*stride;
-     memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
-	    stride*sizeof(double));
+      /* copy last point */
+      a = (newlength-1)*stride;
+      b = (curve->length-1)*stride;
+      memcpy(&(newcontrolv[a]), &(curve->controlv[b]),
+	     stride*sizeof(double));
 
-     curve->length = newlength;
-   } /* if */
+      curve->length = newlength;
+    } /* if */
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
@@ -5842,7 +5844,7 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
  */
 int
 ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "estlenNC";
