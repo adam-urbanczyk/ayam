@@ -970,7 +970,7 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetVar2(interp,n1,"Knots","", TCL_LEAVE_ERR_MSG |
 	      TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knots",-1);
-  for(i=0; i<ncurve->length+ncurve->order; i++)
+  for(i = 0; i < ncurve->length+ncurve->order; i++)
     {
 
       to = Tcl_NewDoubleObj((ncurve->knotv)[i]);
@@ -1020,8 +1020,8 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
  ay_nurbcurve_object *ncurve = NULL;
  int i, a;
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
     { return AY_EOMEM; }
@@ -1037,21 +1037,15 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 	   calloc((ncurve->length + ncurve->order), sizeof(double))))
 	{ free(ncurve); return AY_EOMEM; }
 
-      for(i=0; i<(ncurve->length + ncurve->order); i++)
+      for(i = 0; i<(ncurve->length + ncurve->order); i++)
 	fscanf(fileptr,"%lg\n",&(ncurve->knotv[i]));
-    }
-  else
-    {
-      ay_status = ay_knots_createnc(ncurve);
-      if(ay_status)
-	{ free(ncurve); return ay_status; }
     }
 
   if(!(ncurve->controlv = calloc(ncurve->length*4, sizeof(double))))
-    { free(ncurve->knotv); free(ncurve); return AY_EOMEM;}
+    {if(ncurve->knotv){free(ncurve->knotv);} free(ncurve); return AY_EOMEM;}
 
   a = 0;
-  for(i=0; i < ncurve->length; i++)
+  for(i = 0; i < ncurve->length; i++)
     {
       fscanf(fileptr,"%lg %lg %lg %lg\n",&(ncurve->controlv[a]),
 	     &(ncurve->controlv[a+1]),
@@ -1080,6 +1074,13 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
       ncurve->type = AY_CTPERIODIC;
 
   ncurve->is_rat = ay_nct_israt(ncurve);
+
+  if(ncurve->knot_type != AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_createnc(ncurve);
+      if(ay_status)
+	{ free(ncurve->controlv); free(ncurve); return ay_status; }
+    }
 
   o->refine = ncurve;
 
