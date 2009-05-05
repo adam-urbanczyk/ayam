@@ -17,8 +17,10 @@
 static Tcl_HashTable ay_instt_oidptr_ht;
 
 /* ay_instt_createoidht:
- *  create object id hashtable, which links
+ *  _recursively_ create object id hashtable, which links
  *  object ids to object pointers
+ *  if called with NULL, clears the object id hashtable
+ *  returns AY_OK on success, AY_ERROR on error (OID already exists)
  */
 int
 ay_instt_createoidht(ay_object *o)
@@ -30,12 +32,12 @@ ay_instt_createoidht(ay_object *o)
  ay_tag *tag = NULL;
  Tcl_HashTable *ht = &ay_instt_oidptr_ht;
 
- if(!o)
-   {
-     Tcl_DeleteHashTable(ht);
-     Tcl_InitHashTable(ht, TCL_STRING_KEYS);
-     return AY_OK;
-   }
+  if(!o)
+    {
+      Tcl_DeleteHashTable(ht);
+      Tcl_InitHashTable(ht, TCL_STRING_KEYS);
+      return AY_OK;
+    }
 
   while(o)
     {
@@ -49,38 +51,40 @@ ay_instt_createoidht(ay_object *o)
 	      if(tag->type == ay_oi_tagtype)
 		{
 		  if((entry = Tcl_FindHashEntry(ht, tag->val)))
-		    return AY_ERROR; /* OID already registered? */
+		    return AY_ERROR; /* Oops, OID already registered? */
 
-		  entry = Tcl_CreateHashEntry(ht,
-					      tag->val, &new_item);
+		  entry = Tcl_CreateHashEntry(ht, tag->val, &new_item);
 		  Tcl_SetHashValue(entry, (char*)o);
 
 		  found = AY_TRUE;
 		}
 
 	      tag = tag->next;
-	    }
+	    } /* while */
+	} /* if */
 
-
+      /* recurse into children of o */
+      if(o->down)
+	{
+	  ay_status = ay_instt_createoidht(o->down);
+	  if(ay_status)
+	    return ay_status;
 	}
 
-      if(o->down)
-	ay_status = ay_instt_createoidht(o->down);
-
-      if(ay_status)
-	return ay_status;
-
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_instt_createoidht */
 
 
 /* ay_instt_connect:
- *  connect instance objects to the appropriate
+ *  _recursively_ connect instance objects to the appropriate
  *  master objects (using OI tags and the object
- *  id hashtable)
+ *  id hashtable created by ay_instt_createoidht() above)
+ *  returns AY_OK on success, AY_ERROR on error (master not found) 
+ *  to avoid crashes, unconnected instances will be removed
+ *  immediately
  */
 int
 ay_instt_connect(ay_object *o, ay_object **last)
@@ -93,8 +97,8 @@ ay_instt_connect(ay_object *o, ay_object **last)
  ay_object *target = NULL;
  Tcl_HashTable *ht = &ay_instt_oidptr_ht;
 
- if(!o)
-   return AY_OK;
+  if(!o)
+    return AY_OK;
 
   while(o)
     {
@@ -164,11 +168,13 @@ ay_instt_createoid(char **dest)
 
   if(!dest)
     {
-      counter=0;
+      counter = 0;
       return AY_OK;
     }
   else
-    counter++;
+    {
+      counter++;
+    }
 
   /*
     TeaMan, 24.3.1999 on #AmigaGER (IRCNet):
@@ -180,15 +186,15 @@ ay_instt_createoid(char **dest)
   if(!(*dest = calloc(32, sizeof(char))))
     return AY_EOMEM;
 
-  sprintf(*dest,"%u",counter);
+  sprintf(*dest, "%u", counter);
 
  return AY_OK;
 } /* ay_instt_createoid */
 
 
 /* ay_instt_createorigids:
- *  create object id tags for all original or master or referenced
- *  objects
+ *  _recursively_ create object id tags for all original or
+ *  master or referenced objects
  */
 int
 ay_instt_createorigids(ay_object *o)
@@ -238,8 +244,7 @@ ay_instt_createorigids(ay_object *o)
 	      newtag->next = o->tags;
 	      o->tags = newtag;
 	    }
-
-	}
+	} /* if */
 
       if(o->down)
 	ay_status = ay_instt_createorigids(o->down);
@@ -248,7 +253,7 @@ ay_instt_createorigids(ay_object *o)
 	return ay_status;
 
       o = o->next;
-    }
+    } /* while */
 
  return ay_status;
 } /* ay_instt_createorigids */
