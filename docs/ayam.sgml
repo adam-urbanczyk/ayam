@@ -3579,6 +3579,12 @@ Ayam.
 
 <sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
+<figure loc="ht">
+<eps file="pics/ncurve.ps" height="5cm">
+<img src="pics/ncurve.gif">
+<caption>A simple NURBS Curve</caption>
+</figure>
+<p>
 The NCurve object is the most used basic object for NURBS modelling
 in Ayam because NURBS curves are used to build more complex smoothly
 shaped surfaces using operations like extrude, revolve, sweep or skin.
@@ -3605,8 +3611,10 @@ settings:<p>
 <itemize>
 <item><tt/"Type"/: This attribute replaces the <tt/"Closed"/
 attribute since Ayam 1.9.
+
 <p>
 The type <tt/"Open"/ is for the standard open NURBS curve.
+
 <p>
 If the type is <tt/"Closed"/, the first and last control point of
 the curve will be made identical. This will close the curve but
@@ -3615,48 +3623,105 @@ Such a closed curve will e.g. be created by the NURBS circle tool.
 It is important to know, that identical start/end control points
 alone can not guarantee that the curve is closed if the knot vector
 is not clamped. If in doubt, use the clamp tool or a knot vector
-of type NURB.
+of type <tt/"NURB"/, <tt/"Chordal"/, or <tt/"Centripetal"/.
+
 <p>
 If the type is <tt/"Periodic"/, the last p control points of the curve
 will be made identical to the first p where p is the degree of the
 curve (read order-1). This will close the curve with guaranteed continuity.
 Note that for a cubic spline (order 4) you will need atleast 6 control
 points to make it periodic. It is important to know, that the multiple control
-points alone can not guarantee that the curve is closed if the knot type
-of the curve is Custom; if you really want a closed curve switch to knot type
-B-Spline.
+points alone can not guarantee that the curve is closed if the knot vector
+has no periodic extensions. If in doubt, switch the curve to
+knot type <tt/"B-Spline"/, <tt/"Chordal"/, or <tt/"Centripetal"/.
+
 <p>
-You may want to enable the creation of multiple points using the
+You may also want to enable the creation of multiple points using the
 <tt/"CreateMP"/ attribute (see below) for closed and periodic curves so that
 single point editing actions modify all multiple control points.
+
 <item><tt/"Length"/ is the number of control points of the curve.
+
 <item><tt/"Order"/ is the order of the curve.
 <item><tt/"Knot-Type"/: Using <tt/"Knot-Type"/ you may select from
-NURB, Bezier, B-Spline and Custom knot sequences.
-If the knot type is not Custom, the next setting
-<tt/"Knots"/ will be ignored. Instead, knots of type NURB, Bezier or
-B-Spline will be generated automatically.
-<p>
-How do the different knot types affect the curve?
-<p>
-The knot type NURB will generate knot values ranging from 0.0 to 1.0, where
-the multiplicity of the knots at the ends will be of order of the curve.
-This guarantees that the curve will touch the control points at the ends
-of the curve. The curve is clamped.
-<p>
-The knot type Bezier will generate just 0.0 and 1.0 values. Note that
-the order of the curve has to be equal to the length of the curve, if
-Bezier knots are generated. Otherwise, the generated knot sequence is
-illegal. The resulting curve looks and behaves exactly like a real
-Bezier curve, interpolating it's ends and so on.
-<p>
-The knot type B-Spline will generate equidistant knot values
-(without any multiple knots). The resulting curve looks
-and behaves like a B-Spline curve.
+<tt/"NURB"/, <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Custom"/, <tt/"Chordal"/,
+and <tt/"Centripetal"/ knot types.
 
-<item><tt/"Knots"/ lets you enter your own custom knot sequences.
-Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ is of type
-NURB, B-Spline or Bezier!
+<p>
+The knot type <tt/"NURB"/ will generate uniformly distributed knot values
+ranging from 0.0 to 1.0, where the multiplicity of the knots at the
+ends will be of order of the curve (the knot vector will be clamped).
+This guarantees that the curve will touch the control points at the ends
+of the curve.
+An example <tt/"NURB"/ knot vector for a curve of length 5 and order 4
+would be:
+
+<p>
+<tt>{ 0.0 0.0 0.0 0.0 0.5 1.0 1.0 1.0 1.0 }</tt>.
+
+<p>
+The knot type <tt/"Bezier"/ will generate just 0.0 and 1.0 values. Note that
+the order of the curve has to be equal to the length of the curve if
+<tt/"Bezier"/ knots are generated. Otherwise, the generated knot sequence is
+illegal. The resulting curve looks and behaves exactly like a real
+Bezier curve, interpolating the control points at the ends and so on.
+An example <tt/"Bezier"/ knot vector for a curve of length 5 and order 5
+would be:
+
+<p>
+<tt>{ 0.0 0.0 0.0 0.0 0.0 1.0 1.0 1.0 1.0 1.0 }</tt>.
+
+<p>
+The knot type <tt/"B-Spline"/ will generate uniformly distributed knot values
+(without any multiple knots). The resulting curve looks and behaves like a
+B-Spline curve. It is <em>not</em> interpolating the control end points.
+An example <tt/"B-Spline"/ knot vector for a curve of length 5 and order 4
+would be:
+
+<p>
+<tt>{ 0.0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1.0 }</tt>.
+
+<p>
+The knot types <tt/"Chordal"/ and <tt/"Centripetal"/ will generate knot values
+whose distribution reflect the distances of the control points.
+For open curves, the generated knot vector will be clamped, for periodic
+curves, proper periodic extensions will be created.
+Those knot types are mainly useful for curves with unevenly distributed
+control points that will be sampled uniformly (in parametric space) later
+on and where it is expected, that the uniform sampling in parameter space
+results in evenly distributed sample points in coordinate space, e.g. if
+the curves are used as Sweep, Birail, or Clone trajectory, or surfaces
+are created from them that use implicit texture coordinates or a uniform
+tesselation strategy.
+The <tt/"Chordal"/ and <tt/"Centripetal"/ knots will ensure a more uniform
+distribution of the sample points on the curve in such cases (see also the
+example image below).
+An example <tt/"Chordal"/ knot vector for an open curve of length 5 and
+order 4 would be:
+
+<p>
+<tt>{ 0.0 0.0 0.0 0.0 0.388889 1.0 1.0 1.0 1.0 }</tt>.
+
+The image below illustrates the use of two curves with uniform (NURB) vs.
+chordal knot vectors as Sweep trajectories.
+The upper Sweep with the uniform knot vector has much more unevenly
+distributed/sized sections and exhibits more severe self intersection
+problems.
+Please note that the shapes of the curves differ slightly.
+
+<figure loc="ht">
+<eps file="pics/chordalex.ps" height="6cm">
+<img src="pics/chordalex.gif">
+<caption>Sweeps Created From Curves With Uniform (upper) And
+Chordal (lower) Knot Vectors</caption>
+</figure>
+
+<item><tt/"Knots"/ allows to enter own custom knot sequences.
+Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ (above)
+is of type <tt/"NURB"/, <tt/"B-Spline"/, <tt/"Bezier"/, <tt/"Chordal"/,
+or <tt/"Centripetal"/! Note also, that the content of this parameter
+will be overwritten, if the knot type is switched to any of the
+aforementioned types.
 
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this curve. See also the discussion in
@@ -3699,14 +3764,14 @@ as follows:
 <itemize>
 <item>When the type is changed from open to closed, the last control
 point is moved to be identical to the first one. In addition, if the
-current knot type of the curve is B-Spline, it will be reset to knot type
-NURB.
+current knot type of the curve is <tt/"B-Spline"/, it will be reset to
+knot type <tt/"NURB"/.
 <item>When the type is changed from open or closed to periodic, the last
 p control points will be moved to be identical to the first p, where
 p is the degree of the curve (order-1). For a cubic curve (order 4),
 consequently, the last three control points will be moved. In addition,
-if the current knot type of the curve is NURB or Bezier it will be changed
-to B-Spline automatically.
+if the current knot type of the curve is <tt/"NURB"/ or <tt/"Bezier"/
+it will be changed to <tt/"B-Spline"/ automatically.
 </itemize>
 
 <sect2>Multiple Points<label id="ncurvemp">
@@ -5480,9 +5545,9 @@ Note that the axis of symmetry for closed interpolating curves
 crosses the first data point (in contrast to open interpolating
 or closed approximating curves, where it crosses between the last
 and first data point).
-The closed interpolating curves in the above example image are indeed
-both symmetric, but the axis of symmetry is crossing the first and third
-data point and is, thus, rotated by 45 degrees.
+For example, the closed interpolating curves in the above example
+image are indeed both symmetric, but the axis of symmetry is crossing
+the first and third data point and is, thus, rotated by 45 degrees.
 <p>
 This object makes use of the provide mechanism. It marks itself
 as providing a NCurve object (it creates and uses NURBS curves
