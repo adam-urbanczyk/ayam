@@ -678,11 +678,11 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_movobtcmd */
 
 
-/* ay_trafo_movseltcmd:
+/* ay_trafo_movpntstcmd:
  *
  */
 int
-ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
+ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -690,7 +690,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "movSel";
+ char fname[] = "movPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
@@ -732,7 +732,7 @@ ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_movseltcmd */
+} /* ay_trafo_movpntstcmd */
 
 
 /* ay_trafo_scalobtcmd:
@@ -784,11 +784,11 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_scalobtcmd */
 
 
-/* ay_trafo_scalseltcmd:
+/* ay_trafo_scalpntstcmd:
  *
  */
 int
-ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp *interp,
+ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -796,7 +796,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "scalSel";
+ char fname[] = "scalPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
@@ -845,7 +845,7 @@ ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_scalseltcmd */
+} /* ay_trafo_scalpntstcmd */
 
 
 /* ay_trafo_rotobtcmd:
@@ -910,11 +910,11 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_trafo_rotobtcmd */
 
 
-/* ay_trafo_rotseltcmd:
+/* ay_trafo_rotpntstcmd:
  *
  */
 int
-ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp *interp,
+ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
@@ -922,7 +922,7 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "rotSel";
+ char fname[] = "rotPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
@@ -968,7 +968,7 @@ ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_trafo_rotseltcmd */
+} /* ay_trafo_rotpntstcmd */
 
 
 /* ay_trafo_multmatrix4:

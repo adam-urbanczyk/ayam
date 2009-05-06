@@ -800,19 +800,19 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "movOb", ay_trafo_movobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "movSel", ay_trafo_movseltcmd,
+  Tcl_CreateCommand(interp, "movPnts", ay_trafo_movpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "scalOb", ay_trafo_scalobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "scalSel", ay_trafo_scalseltcmd,
+  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scalpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rotOb", ay_trafo_rotobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "rotSel", ay_trafo_rotseltcmd,
+  Tcl_CreateCommand(interp, "rotPnts", ay_trafo_rotpntstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* oact.c */
@@ -866,13 +866,13 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* selp.c */
-  Tcl_CreateCommand(interp, "selPoints", ay_selp_selalltcmd,
+  Tcl_CreateCommand(interp, "selPnts", ay_selp_selalltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "applyTrafo", ay_selp_applytrafotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "invSelPoints", ay_selp_inverttcmd,
+  Tcl_CreateCommand(interp, "invPnts", ay_selp_inverttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* undo.c */
@@ -917,6 +917,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "wrib", ay_wrib_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /*
+    the shortcut "rribWrite" exists solely for the bgconvert script,
+    so that it may derive a command name for RIB export automatically
+   */
   Tcl_CreateCommand(interp, "rribWrite", ay_wrib_tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
