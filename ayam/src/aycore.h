@@ -1346,7 +1346,7 @@ int ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief Tcl command to move the selected points of an object
  */
-int ay_trafo_movseltcmd(ClientData clientData, Tcl_Interp *interp,
+int ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 /*! \brief Tcl command to scale an object
@@ -1356,7 +1356,7 @@ int ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief Tcl command to scale the selected points of an object
  */
-int ay_trafo_scalseltcmd(ClientData clientData, Tcl_Interp *interp,
+int ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
 /*! \brief Tcl command to rotate an object
@@ -1366,7 +1366,7 @@ int ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief Tcl command to rotate the selected points of an object
  */
-int ay_trafo_rotseltcmd(ClientData clientData, Tcl_Interp *interp,
+int ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 /*! \brief multiply two transformation matrices

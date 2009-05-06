@@ -8738,10 +8738,10 @@ delOb - delete object:
  <item>Background: Yes, Undo: No
  <item>Description: Delete the selected object(s) from the scene.
 </itemize>
-<p><label id="sccmovob">
-cmovOb - paste (move) object:
+<p><label id="sccmovob"><label id="scpasmovob">
+pasmovOb - paste (move) object:
 <itemize>
- <item>Synopsis: <tt/"cmovOb"/
+ <item>Synopsis: <tt/"pasmovOb"/
  <item>Background: Yes, Undo: No
  <item>Description: Move the objects from the object
 clipboard to the current level.
@@ -8840,30 +8840,30 @@ direction of the objects Z axis.
 be changed to 1.0 silently!
 </itemize>
 
-<p><label id="scmovsel">
-movSel - move selected points:
+<p><label id="scmovsel"><label id="scmovpnts">
+movPnts - move selected points:
 <itemize>
- <item>Synopsis: <tt/"movSel dx dy dz"/
+ <item>Synopsis: <tt/"movPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Move the selected points by dx in direction of the
 objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
 </itemize>
 
-<p><label id="scrotsel">
-rotSel - rotate selected points:
+<p><label id="scrotsel"><label id="scrotpnts">
+rotPnts - rotate selected points:
 <itemize>
- <item>Synopsis: <tt/"rotSel dx dy dz"/
+ <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Rotate the selected points by dx degrees around the
 objects X axis then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
-<p><label id="scscalsel">
-scalSel - scale selected points:
+<p><label id="scscalsel"><label id="scscalpnts">
+scalPnts - scale selected points:
 <itemize>
- <item>Synopsis: <tt/"scalSel dx dy dz"/
+ <item>Synopsis: <tt/"scalPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes
  <item>Description: Scale the selected points by a factor of dx in
 direction of the objects X axis, by a factor of dy in
@@ -9822,9 +9822,9 @@ proc easySweep { } {
  rotOb 0 90 0
  scalOb 0.25 0.25 1.0
 
- # move trajectory back (we use "cmovOb" and _not_ "pasOb", because we
+ # move trajectory back (we use "pasmovOb" and _not_ "pasOb", because we
  # really want to move (and not copy) the curve object
- cmovOb
+ pasmovOb
  # go up to where we came from
  goUp
 
@@ -12792,7 +12792,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Move: <ref id="vwsc" name="view action">,
 <ref id="iac" name="move object">
 <item>movOb: <ref id="scmovob" name="scripting interface command">
-<item>movSel: <ref id="scmovsel" name="scripting interface command">
+<item>movPnts: <ref id="scmovpnts" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
@@ -12996,7 +12996,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="gimb" name="using the transformations property">
 <item>Rotational Sweep: <ref id="swingobj" name="Swing object">
 <item>rotOb: <ref id="scrotob" name="scripting interface command">
-<item>rotSel: <ref id="scrotsel" name="scripting interface command">
+<item>rotPnts: <ref id="scrotpnts" name="scripting interface command">
 <item>RP: <ref id="rptag" name="tag type">
 <item>Ruled surface: <ref id="skinobj" name="Skin object">,
 <item>RunProgram: <ref id="riprocp" name="RiProc attribute">
@@ -13025,7 +13025,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="expwav" name="Wavefront OBJ export option">,
 <ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
-<item>scalSel <ref id="scscalsel" name="scripting interface command">
+<item>scalPnts <ref id="scscalpnts" name="scripting interface command">
 <item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
 <item>Script: <ref id="script" name="scripting interface">,
 <ref id="scriptobj" name="Script object">

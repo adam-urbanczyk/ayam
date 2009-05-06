@@ -13,6 +13,7 @@
 # lappend cmds {<oldcommand> <newcommand>}
 
 set cmds [list {revert revertC}]
+
 lappend cmds {revertU revertuS}
 lappend cmds {revertV revertvS}
 lappend cmds {swapUV swapuvS}
@@ -28,6 +29,14 @@ lappend cmds {rescaleKnNC rescaleknvNC}
 lappend cmds {rescaleKnNP rescaleknNP}
 lappend cmds {closeNPU closeuNP}
 lappend cmds {closeNPV closevNP}
+lappend cmds {cmovOb pasmovOb}
+lappend cmds {show showOb}
+lappend cmds {hide hideOb}
+lappend cmds {selPoints selPnts}
+lappend cmds {invSelPoints invPnts}
+lappend cmds {movSel movPnts}
+lappend cmds {rotSel rotPnts}
+lappend cmds {scalSel scalPnts}
 
 #lappend cmds {splitNPV splitvNP}
 
