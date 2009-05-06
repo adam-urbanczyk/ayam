@@ -985,6 +985,12 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "varname");
+      return TCL_OK;
+    }
+
   if(!(o = sel->object))
     {
       ay_error(AY_ERROR, fname, NULL);
