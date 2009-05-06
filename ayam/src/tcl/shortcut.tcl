@@ -462,9 +462,9 @@ proc shortcut_view { w } {
 
 
     bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
-	    "selPoints; rV;break"
+	    "selPnts; rV;break"
     bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
-	    "invSelPoints; rV;break"
+	    "invPnts; rV;break"
 
     bind $w <[repcont $ayviewshortcuts(CollP)]>\
 	    "collMP; rV;break"

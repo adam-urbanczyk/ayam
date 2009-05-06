@@ -21,30 +21,39 @@ proc safe_init { interp } {
     # the safe_commands list contains all commands considered safe
     # and thus available in the safe interpreter verbatim
 
-    # object management
+    # object
     set safe_commands { crtOb delOb hSL selOb withOb convOb }
     # clipboard
     lappend safe_commands cutOb copOb pasOb pasmovOb repOb
     # current level
     lappend safe_commands goUp goDown goTop
-    # property management
+    # property
     lappend safe_commands setProp getProp setProperty getProperty
     lappend safe_commands setTrafo getTrafo setAttr getAttr setMat getMat
+    lappend safe_commands nameOb shaderSet shaderGet
     # transformations
-    lappend safe_commands movOb rotOb scalOb movSel rotSel scalSel
-    # tags management
+    lappend safe_commands movOb rotOb scalOb
+    # tags
     lappend safe_commands addTag delTags getTags setTags
     # NURBS
     lappend safe_commands revertC revertuS revertvS swapuvS
     lappend safe_commands clampNC elevateNC insknNC remknNC refineNC coarsenNC
     lappend safe_commands rescaleknNC splitNC toXYNC trimNC estlenNC reparamNC
+    lappend safe_commands centerNC makeCompNC estlenNC shiftClosedBS
     lappend safe_commands clampuNP clampvNP rescaleknNP insknuNP insknvNP
-    lappend safe_commands closeuNP closevNP
+    lappend safe_commands closeuNP closevNP elevateuNP elevatevNP
     lappend safe_commands splituNP splitvNP extrNP
+    lappend safe_commands crtNCircle crtNRect crtClosedBS crtNSphere
+    lappend safe_commands crtNSphere2
+    # PolyMesh
+    lappend safe_commands mergePo optiPo splitPo
     # point editing
-    lappend safe_commands setPnt getPnt
+    lappend safe_commands setPnt getPnt selPnts invPnts centerPnts
+    lappend safe_commands movPnts rotPnts scalPnts
     # enquiry
-    lappend safe_commands getType getLevel hasChild
+    lappend safe_commands getVersion getType getName getLevel hasChild
+    # misc
+    lappend safe_commands resolveIn
 
     # make safe commands known in safe interpreter
     foreach command $safe_commands {

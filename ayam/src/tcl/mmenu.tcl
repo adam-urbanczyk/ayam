@@ -540,8 +540,8 @@ $m add separator
 
 $m add cascade -menu $m.pnt -label "Points"
 set sm [menu $m.pnt -tearoff 0]
-$sm add command -label "Select All Points" -command "selPoints;rV"
-$sm add command -label "Invert Selection" -command "invSelPoints;rV"
+$sm add command -label "Select All Points" -command "selPnts;rV"
+$sm add command -label "Invert Selection" -command "invPnts;rV"
 $sm add command -label "Apply Trafo To All Points"\
 	-command "undo save ApplyTr; applyTrafo all;\
 	plb_update; forceNot; rV"
