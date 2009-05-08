@@ -6192,6 +6192,8 @@ the Tcl scripting interface of Ayam (see also section
 <ref id="script" name="Scripting Interface">) to calculate
 data which is then used to create or modify objects of the scene.
 However, certain script object types impose some special constraints.
+
+<sect2>Safe Interpreter<label id="safeinterp">
 <p>
 In Ayam versions prior to 1.16 Script object scripts could use any
 functionality of Tcl and the Tcl scripting interface of Ayam which
@@ -6210,9 +6212,11 @@ In addition, access to the env variable is not allowed.
 Ayam scripting interface commands that directly manipulate the user
 interface are also not available (uS, rV etc.). Please refer to the
 documentation of the scripting interface commands about their availability
-in the safe interpreter.
+in the safe interpreter
+(see section
+<ref id="sccomm" name="Index of Procedures and Commands">).
 <p>
-You can still re-enable the full access from script objects to the
+You can still re-enable full access from script objects to the
 complete scripting interface by recompiling Ayam.
 If you do so, for security reasons, if scene files containing script
 objects are loaded, Ayam will raise a warning dialog, offering to
@@ -6220,6 +6224,8 @@ temporarily disable all script objects that will be read. The script
 objects will be disabled using the <tt/"Active"/ script object property
 and may be enabled after careful inspection of the script code manually
 or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+
+<sect2>Script Object Usage
 <p>
 The script of a script object will be run each time the script is
 modified and each time the notification callback of the script object
@@ -7430,7 +7436,8 @@ functionality of Tcl and the Tcl scripting interface of Ayam which
 posed a huge security risk. Therefore this is no longer the case.
 BNS tag scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
-onto the network or confuse the application state.
+onto the network or confuse the application state, see also section
+<ref id="safeinterp" name="Safe Interpreter">.
 Consequently, the warning dialog that appeared when files with
 BNS tags were loaded is also gone.
 <p>
@@ -7467,7 +7474,8 @@ functionality of Tcl and the Tcl scripting interface of Ayam which
 posed a huge security risk. Therefore this is no longer the case.
 ANS tag scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
-onto the network or confuse the application state.
+onto the network or confuse the application state, see also section
+<ref id="safeinterp" name="Safe Interpreter">.
 Consequently, the warning dialog that appeared when files with
 ANS tags were loaded is also gone.
 <p>
@@ -8545,7 +8553,7 @@ See also section
 for more information on how to edit property values from the
 scripting interface.
 
-<sect1>Index of Procedures and Commands
+<sect1>Index of Procedures and Commands<label id="sccomm">
 <p>
 This section provides documentation on the most important
 scripting interface commands and procedures of Ayam sorted
@@ -8557,7 +8565,7 @@ All commands are documented in the following scheme:
 parameters actually called),
  <item>Background: does the command run in the background,
 Undo: is the result of the command undoable, Safe: is the command available
-in the safe interpreter (for Script objects and notify script tags)
+in the safe interpreter (for Script objects and notify script tags),
  <item>Description: Detailed description of the command and its
 parameters,
  <item>Notes: Additional information completing the detailed description,
