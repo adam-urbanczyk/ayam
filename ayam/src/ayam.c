@@ -197,6 +197,8 @@ Pixmap plus_bitmap;
 
 int ay_init(Tcl_Interp *interp);
 
+int ay_safeinit(Tcl_Interp *interp);
+
 
 /* functions: */
 
@@ -1170,6 +1172,9 @@ Tcl_SetVar(interp, "AYNOSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 #ifndef AYNOSAFEINTERP
   ay_safeinterp = Tcl_CreateSlave(interp, "aySafeInterp", 1);
+
+  ay_safeinit(ay_safeinterp);
+
   /*
   Tcl_SetVar(ay_safeinterp, "argv", "-use", TCL_GLOBAL_ONLY |
 	     TCL_LEAVE_ERR_MSG);
@@ -1184,6 +1189,85 @@ Tcl_SetVar(interp, "AYNOSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* Tcl_AppInit */
+
+/* ay_safeinit:
+ *  initialize the safe interpreter by creating some commands
+ *  that are considered to be safe
+ */
+int
+ay_safeinit(Tcl_Interp *interp)
+{
+ int ay_status = AY_OK;
+
+  Tcl_CreateCommand(interp, "nameOb", ay_object_setnametcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "hasChild", ay_object_haschildtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getType", ay_object_gettypetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getName", ay_object_getnametcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setProp", ay_prop_settcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getProp", ay_prop_gettcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setTrafo", ay_prop_settrafotcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getTrafo", ay_prop_gettrafotcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setAttr", ay_prop_setattrtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getAttr", ay_prop_getattrtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setMat", ay_prop_setmattcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getMat", ay_prop_getmattcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "shaderSet", ay_shader_settcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "shaderGet", ay_shader_gettcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "tagIsTemp", ay_tags_istemptcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setTags", ay_tags_settcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "addTag", ay_tags_addtcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getTags", ay_tags_gettcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "delTags", ay_tags_deletetcmd,
+		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getPnt", ay_tcmd_getpointtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "setPnt", ay_tcmd_setpointtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "estlenNC", ay_nct_estlentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+ return ay_status;
+}
+/* ay_safeinit */
 
 
 #ifndef AYWRAPPED
