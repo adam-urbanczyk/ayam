@@ -6199,12 +6199,23 @@ posed a huge security risk. Therefore this is no longer the case.
 Script objects scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
 onto the network or confuse the application state.
-Consequently, the warning dialog that appeared when files with
-Script objects were loaded is also gone.
+In particular, the following Tcl commands are not available in the
+safe interpreter:
+cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
+source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
+auto_qualify, unknown (the missing unknown and autoloading facilities
+lead to further unavailability of commands normally available via
+autoloading, like e.g. parray, history).
+In addition, access to the env variable is not allowed.
+Ayam scripting interface commands that directly manipulate the user
+interface are also not available (uS, rV etc.). Please refer to the
+documentation of the scripting interface commands about their availability
+in the safe interpreter.
 <p>
-You can still re-enable the old functionality by recompiling Ayam.
+You can still re-enable the full access from script objects to the
+complete scripting interface by recompiling Ayam.
 If you do so, for security reasons, if scene files containing script
-objects are loaded, Ayam will again raise the warning offering to
+objects are loaded, Ayam will raise a warning dialog, offering to
 temporarily disable all script objects that will be read. The script
 objects will be disabled using the <tt/"Active"/ script object property
 and may be enabled after careful inspection of the script code manually
@@ -6332,13 +6343,13 @@ A simple example script for a script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look
 like this:
 <code>
-revert
+revertC
 </code>
 Note: In order to make this work for objects providing NURBS curves
 (interpolating curves or instances of NURBS curves) the code has to
 look like this:
 <code>
-convOb -inplace; revert
+convOb -inplace; revertC
 </code>
 </itemize>
 
