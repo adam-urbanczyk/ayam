@@ -28,18 +28,14 @@ proc safe_init { interp } {
     # current level
     lappend safe_commands goUp goDown goTop
     # property
-    lappend safe_commands setProp getProp setProperty getProperty
-    lappend safe_commands setTrafo getTrafo setAttr getAttr setMat getMat
-    lappend safe_commands nameOb shaderSet shaderGet
+    lappend safe_commands setProperty getProperty
     # transformations
     lappend safe_commands movOb rotOb scalOb
-    # tags
-    lappend safe_commands addTag delTags getTags setTags
     # NURBS
     lappend safe_commands revertC revertuS revertvS swapuvS
     lappend safe_commands clampNC elevateNC insknNC remknNC refineNC coarsenNC
     lappend safe_commands rescaleknNC splitNC toXYNC trimNC estlenNC reparamNC
-    lappend safe_commands centerNC makeCompNC estlenNC shiftClosedBS
+    lappend safe_commands centerNC makeCompNC shiftClosedBS
     lappend safe_commands clampuNP clampvNP rescaleknNP insknuNP insknvNP
     lappend safe_commands closeuNP closevNP elevateuNP elevatevNP
     lappend safe_commands splituNP splitvNP extrNP
@@ -48,12 +44,12 @@ proc safe_init { interp } {
     # PolyMesh
     lappend safe_commands mergePo optiPo splitPo
     # point editing
-    lappend safe_commands setPnt getPnt selPnts invPnts centerPnts
+    lappend safe_commands selPnts invPnts centerPnts
     lappend safe_commands movPnts rotPnts scalPnts
     # enquiry
-    lappend safe_commands getVersion getType getName getLevel hasChild
+    lappend safe_commands getVersion getLevel
     # misc
-    lappend safe_commands resolveIn
+    lappend safe_commands resolveIn applyTrafo
 
     # make safe commands known in safe interpreter
     foreach command $safe_commands {
