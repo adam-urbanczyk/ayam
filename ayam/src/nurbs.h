@@ -735,8 +735,23 @@ int ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
+int ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last);
+
+/*! \brief
+ */
+int ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last);
+
+/*! \brief
+ */
 int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
+
+
+/*! \brief
+ */
+int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
+			   ay_object **patch);
+
 
 /*! \brief
  */
