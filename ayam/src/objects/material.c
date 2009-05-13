@@ -26,19 +26,19 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 {
  ay_mat_object *material = NULL;
  char fname[] = "crtmaterial";
+ char *mname = "unnamed";
  int ay_status = AY_OK;
  size_t stringlen = 0;
 
   if(!o)
     return AY_ENULL;
 
-  if(argc < 3)
+  if(argc >= 3)
     {
-      ay_error(AY_EARGS, fname, "name");
-      return AY_ERROR;
+      mname = argv[2];
     }
 
-  stringlen = strlen(argv[2]);
+  stringlen = strlen(mname);
   if(stringlen > 0)
     {
       if(!(material = calloc(1, sizeof(ay_mat_object))))
@@ -47,15 +47,14 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 	  return AY_ERROR;
 	}
 
-      ay_status = ay_matt_registermaterial(argv[2], material);
+      ay_status = ay_matt_registermaterial(mname, material);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "Material already registered!");
+	  ay_error(AY_EWARN, fname, "Material already registered!");
 	  ay_error(AY_ERROR, fname, "Please choose another name!");
 	  free(material);
 	  return AY_ERROR;
 	}
-
 
       if(!(o->name = calloc(stringlen+1, sizeof(char))))
 	{
@@ -63,7 +62,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 	  free(material);
 	  return AY_ERROR;
 	}
-      strcpy(o->name, argv[2]);
+      strcpy(o->name, mname);
 
       material->nameptr = &(o->name);
       material->refcountptr = &(o->refcount);
