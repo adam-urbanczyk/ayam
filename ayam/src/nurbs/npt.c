@@ -6542,12 +6542,14 @@ cleanup:
  */
 int
 ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
-			 int index, int side,
-			 double *result)
+			  int index, int side,
+			  double *result)
 {
  int ay_status = AY_OK;
  int a, i, j;
  double *tcv = NULL;
+
+  memset(result, 0, 4*sizeof(double));
 
   if(side == 0)
     {
@@ -6572,15 +6574,18 @@ ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 	  result[2] += tcv[a+2];
 	  result[3] += tcv[a+3];
 
-	  if(!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	  /* skip over sequence of equal points */
+	  if((i < (height-1)) &&
+	     !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
 	    {
-	      while((i < height) &&
-		  !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	      do
 		{
 		  i++;
 		  a += stride;
 		  j--;
 		}
+	      while((i < (height-1)) &&
+		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))));
 	    }
 
 	  i++;
@@ -6618,15 +6623,18 @@ ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 	  result[2] += tcv[a+2];
 	  result[3] += tcv[a+3];
 
-	  if(!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	  /* skip over sequence of equal points */
+	  if((i < (width-1)) &&
+	     !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
 	    {
-	      while((i < width) &&
-		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	      do
 		{
+		  j--;
 		  i++;
 		  a += stride;
-		  j--;
 		}
+	      while((i < (width-1)) &&
+		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))));
 	    }
 
 	  i++;
