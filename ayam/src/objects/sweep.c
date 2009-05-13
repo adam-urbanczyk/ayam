@@ -764,7 +764,7 @@ ay_sweep_notifycb(ay_object *o)
 	}
     }
 
-
+  /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
 cleanup:
@@ -783,10 +783,11 @@ cleanup:
     {
       ay_object_delete(pobject3);
     }
-
+  /* remove patch */
   if(npatch)
     {
       ay_object_delete(npatch);
+      sweep->npatch = NULL;
     }
 
  return ay_status;
