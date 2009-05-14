@@ -2196,9 +2196,16 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
       for(i = 0; i < cs->length; i++)
 	{
 	  ay_trafo_apply4(p, m);
+	  if(fabs(1.0-trcv[j*stride+3]) > AY_EPSILON)
+	    {
+	      p[1] *= trcv[j*stride+3];
+	      p[3] *= trcv[j*stride+3];
+	    }
 	  p += 4;
 	} /* for */
     } /* for */
+
+  new->is_rat = ay_npt_israt(new);
 
   /* return result */
   *swing = new;
