@@ -815,7 +815,7 @@ proc actionDEditP { w } {
 
     bind $w <B1-Motion> ""
     bind $w <Motion> ""
-    bind $w <ButtonRelease-1> ""
+    bind $w <ButtonRelease-1> "focus %W"
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
