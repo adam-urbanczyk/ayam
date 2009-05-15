@@ -1909,6 +1909,76 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_buildfromcurvestcmd */
 
 
+/* ay_npt_concat:
+ *
+ */
+int
+ay_npt_concat(ay_object *o, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+ ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
+ ay_list_object *curvelist, **nextlist = NULL, *rem;
+ int ncurves = 0;
+
+  if(!o || !result)
+    return AY_ENULL;
+
+  nextcurve = &allcurves;
+
+  while(o)
+    {
+      ay_npt_splittocurvesu(o, nextcurve, &nextcurve);
+      o = o->next;
+    }
+
+  /* count the curves and build a list */
+  nextlist = &curvelist;
+  curve = allcurves;
+  while(curve)
+    {
+      ncurves++;
+      if(!(*nextlist = calloc(1, sizeof(ay_list_object))))
+	{ ay_status = AY_EOMEM; goto cleanup;}
+      
+      (*nextlist)->object = curve;
+
+      nextlist = &((*nextlist)->next);
+
+      curve = curve->next;
+    }
+
+  ay_status = ay_nct_makecompatible(allcurves);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* build a new patch from the compatible curves */
+  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, &new);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* return result */
+  *result = new;
+
+cleanup:
+
+  ay_object_deletemulti(allcurves);
+
+  /* XXXX delete list */
+
+  while(curvelist)
+    {
+      rem = curvelist;
+      curvelist = rem->next;
+      free(rem);
+    }
+
+ return ay_status;
+} /* ay_npt_concat */
+
+
 /* ay_npt_revolve:
  *  create a surface of revolution from the NURBS curve in <o>
  *  (that will be projected to the XY-plane for revolution)
