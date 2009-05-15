@@ -760,6 +760,11 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
+int ay_npt_concat(ay_object *o, ay_object **result);
+
+
+/*! \brief
+ */
 int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 		   ay_nurbpatch_object **revolution);
 
