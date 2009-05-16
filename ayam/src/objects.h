@@ -47,6 +47,9 @@ int ay_cone_init(Tcl_Interp *interp);
 /* concatnc.c */
 int ay_concatnc_init(Tcl_Interp *interp);
 
+/* concatnp.c */
+int ay_concatnp_init(Tcl_Interp *interp);
+
 /* cylinder.c */
 int ay_cylinder_init(Tcl_Interp *interp);
 
