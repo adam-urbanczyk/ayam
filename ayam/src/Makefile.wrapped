@@ -340,6 +340,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/clone.o\
 	objects/cone.o\
 	objects/concatnc.o\
+	objects/concatnp.o\
 	objects/cylinder.o\
 	objects/disk.o\
 	objects/extrnc.o\

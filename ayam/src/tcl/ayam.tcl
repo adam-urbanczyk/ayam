@@ -1328,6 +1328,7 @@ ayam_loadscript cap
 ayam_loadscript clone
 ayam_loadscript cone
 ayam_loadscript concatnc
+ayam_loadscript concatnp
 ayam_loadscript cylinder
 ayam_loadscript disk
 ayam_loadscript extrnc

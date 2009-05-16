@@ -1,0 +1,43 @@
+# Ayam, a free 3D modeler for the RenderMan interface.
+#
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
+# (randolf.schultz@gmail.com) and others.
+#
+# All rights reserved.
+#
+# See the file License for details.
+
+# concatnp.tcl - concatnp objects Tcl code
+
+set ConcatNP_props { Transformations Attributes Tags ConcatNPAttr }
+
+
+array set ConcatNPAttr {
+arr   ConcatNPAttrData
+sproc ""
+gproc ""
+w     fConcatNPAttr
+
+}
+
+array set ConcatNPAttrData {
+Closed 0
+FillGaps 0
+Revert 0
+Length 0
+Order 0
+Knot-Type 1
+TanLength 3.0
+NPInfoBall "N/A"
+}
+
+# create ConcatNPAttr-UI
+set w [frame $ay(pca).$ConcatNPAttr(w)]
+
+addCheck $w ConcatNPAttrData Closed
+addCheck $w ConcatNPAttrData FillGaps
+addCheck $w ConcatNPAttrData Revert
+addParam $w ConcatNPAttrData FTLength
+addMenu $w ConcatNPAttrData Knot-Type [list NURB Custom]
+addText $w  e0 "Resulting Patch:"
+addInfo $w ConcatNPAttrData NPInfo
