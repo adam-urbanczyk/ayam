@@ -1104,8 +1104,12 @@ about mis-structured RIBs).
 The main use of this feature is to let you create RIBs that may be easily
 included in other RIBs using e.g. the ReadArchive directive.
 
-<item><tt>"RIB-Export/Create ShadowMaps"</tt>, creates the shadow maps
-for the current scene.
+<item><tt>"RIB-Export/Create ShadowMap"</tt>, creates the shadow maps
+from the currently selected light source.
+See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+
+<item><tt>"RIB-Export/Create All ShadowMaps"</tt>, creates all shadow maps
+for the current scene (regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
 <item><tt/"Enable Scripts"/ enables all disabled script tags and
@@ -1242,7 +1246,12 @@ As the RIB client library usually is not able to handle multiple open
 RIB streams simultaneously, RIB-Export and direct rendering from view
 windows are not available until the permanent preview window is closed.
 
-<item><tt/"Create ShadowMaps"/: creates the shadow maps for the current scene.
+<item><tt>"Create ShadowMap"</tt>: creates the shadow maps
+for the currently selected light source.
+See also section <ref id="shadowmaps" name="Using ShadowMaps">.
+
+<item><tt/"Create All ShadowMaps"/: creates all shadow maps for the
+current scene (regardless of selection).
 See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 
 <item><tt/"Close"/: the View window will be removed. This entry is not
@@ -1935,8 +1944,8 @@ as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
 If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
 exported RIBs will automatically render and use all shadow maps;
 if it is set to <tt/"Manual"/, the shadow maps will be rendered on
-user request only (using the view menu entry:
-<tt>"View/Create ShadowMaps"</tt>). <tt/"Manual"/ should be used,
+user request only (e.g. using the view menu entry:
+<tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
 when rendering directly from view windows with shadow maps.
 
 <item><tt/"ExcludeHidden"/ causes hidden objects not to be
@@ -1995,7 +2004,8 @@ regexp -- {^.* - (\[0-9\]+)} string dummy percent
 </code>
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
-using the view menu entry <tt>"View/Create ShadowMaps"</tt>,
+(e.g. view menu entry <tt>"View/Create All ShadowMaps"</tt>),
+see also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <tt>%s</tt> denotes the name of the RIB file.
 
 <item><tt/"SMRenderUI"/, enables the Rendering GUI for the rendering
@@ -2028,7 +2038,7 @@ select renderer tool via the main menu <tt>Special/Select Renderer</tt>
 (see also section <ref id="mmspecial" name="Special Menu">). In fact,
 using <tt>Special/Select Renderer</tt> first, then fine tuning your
 renderer setup using the preferences editor is the suggested way to
-switch to a certain RenderMan renderer.
+switch Ayam to a certain RenderMan renderer.
 
 <sect2>Miscellaneous Preferences<label id="prefmisc">
 <p>
@@ -3410,11 +3420,13 @@ Furthermore, for each light source for which a shadow map should be
 created, the attributes <tt/"IsOn"/ and <tt/"UseSM"/ have to be
 switched on.
 <p>
+<bf>Automatic Creation of ShadowMaps</bf>
+<p>
 If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
 <tt>"Automatic"</tt>,
 Ayam will create a special version of the RIB on export, that creates
-all shadow maps automatically. This is done, by rendering depth images
-from the position of every light source that casts shadows.
+all shadow maps automatically upon rendering. This is done by rendering
+depth images from the position of every light source that casts shadows.
 Special light source shaders later pick up these depth images
 and calculate shadows.
 This approach implies, that the scene is rendered multiple times.
@@ -3433,18 +3445,33 @@ written as last statement to the RIB.
 Because multiple files (RIBs and shadow maps) are used, it is suggested
 to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
 <tt>"Scenefile"</tt>. This will strip the leading absolute path component
-from the filenames so that you may move the scene from one
+from the filenames so that you may move the exported scene from one
 system to another more easily.
+<p>
+Do not render directly from a view window to the display when the
+<tt/"ShadowMaps"/ <tt/"RIB-Export"/ preference option is set to
+<tt>"Automatic"</tt>.
+Your renderer may not write image files when the command line option
+to render directly to the display (-d for rendrib, or -fb for Aqsis) is
+in use. Consequently, this may also inhibit writing of the shadow maps,
+so that the resulting image will look wrong, or the renderer will render
+the shadow map to the display and simply stop.
+<p>
+<bf>Manual Creation of ShadowMaps</bf>
 <p>
 If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
 <tt>"Manual"</tt>,
 the exported scene will not render the shadow maps but rather
 expects them to be present already. You can create them manually
-(hence the name <tt>"Manual"</tt>) using the view menu entry
-<tt>"View/Create ShadowMaps"</tt> or the main menu entry
-<tt>"Special/RIB-Export/Create ShadowMaps"</tt>.
+(hence the name <tt>"Manual"</tt>) using the view menu entries
+<tt>"View/Create ShadowMap"</tt>, <tt>"View/Create All ShadowMaps"</tt>
+or the main menu entries
+<tt>"Special/RIB-Export/Create ShadowMap"</tt>,
+<tt>"Special/RIB-Export/Create All ShadowMaps"</tt>.
 The manual approach has the advantage, that the shadow maps will not
 be re-created each time you render the scene.
+<p>
+<bf>ShadowMap Types</bf>
 <p>
 Ayam supports three different methods for the creation of shadow maps
 for certain types of light sources: point, distant, and spot:
@@ -3501,6 +3528,8 @@ You have to manually switch to a shader that
 makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
 shadows.
 <p>
+<bf>ShadowMap Mini Tutorial</bf>
+<p>
 Here is a short example for a scene using a shadow map:
 <enum>
 <item>Go to the preferences (section <tt/"RIB-Export"/) and set
@@ -3533,15 +3562,6 @@ tag to your root object if shadow maps are in use. Other renderers might
 require additional tweaking using shadow bias RiOption tags.
 Please consult the documentation of your renderer on how to achieve
 the best results using shadow maps.
-<p>
-Do not render directly from a view window to the display when the
-<tt/"ShadowMaps"/ <tt/"RIB-Export"/ preference option is set to
-<tt>"Automatic"</tt>.
-Your renderer may not write image files when the command line option
-to render directly to the display (-d for rendrib, or -fb for Aqsis) is
-in use. Consequently, this may also inhibit writing of the shadow maps,
-so that the resulting image will look wrong, or the renderer will render
-the shadow map to the display and simply stop.
 
 <sect2>Using AreaLights<label id="alob">
 <p>
@@ -6899,8 +6919,8 @@ See also section <ref id="workshd" name="Working with Shaders"> below.
 <p>
 All other elements of the shader property GUI depend on the currently
 attached shader.
-
-<sect3>Shader Parsing<label id="parseshd">
+<p>
+<bf>Shader Parsing</bf><label id="parseshd">
 <p>
 If no plugin is loaded, the official Ayam binaries use libslcargs
 (from BMRT) to parse shaders that have been compiled with slc (the
@@ -6949,8 +6969,8 @@ you have to use <tt/"Set new shader."/ instead.
 From version 1.3 on, Ayam also supports shader parsing plugins to allow
 parsing of shaders compiled with different shader compilers, see also
 section <ref id="spplugins" name="Shader Parsing Plugins">.
-
-<sect3>Working with Shaders<label id="workshd">
+<p>
+<bf>Working with Shaders</bf><label id="workshd">
 <p>
 The <tt/"Default Values."/-button resets all arguments of the shader
 to the default values.
@@ -12528,7 +12548,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
 <item>CreateMP: <ref id="ncattr" name="NCurve attribute">
-<item>Create ShadowMaps: <ref id="mmspecial" name="main menu entry">,
+<item>Create ShadowMap: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
 <item>CSG: <ref id="levelobj" name="Level object">,
