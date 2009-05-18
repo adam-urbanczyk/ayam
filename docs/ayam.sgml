@@ -2092,7 +2092,7 @@ temporary (internal tag types do so) from the tag property GUI.
 point numbers with. You may want to decrease this number to about 5
 if any numbers in the entry fields are represented in an exact, but also
 too lengthy and hard to read fashion, like 0.4999999 instead of 0.5.
-Note that you may loose information in doing so. The default value used
+Note that you may lose information in doing so. The default value used
 by Tcl is 12 and results in no loss of information. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
@@ -4184,6 +4184,8 @@ in memory and on the disk. But in the tool object context, instances
 also serve as a means to transport geometric data across the scene
 hierarchy to make tool objects depend on each other (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+Note that in the tool object context, instance objects are the only
+objects, that are subject to a second round of provision.
 <p>
 The amount of saved space can be very high, depending heavily on the
 actual scene and at what levels in the hierarchy instances are used.
@@ -11433,7 +11435,7 @@ paste Sphere (from clipboard)
 <sect1>The Modelling Concept Tool-Objects<label id="toolobj">
 <p>
 This section introduces the modelling concept <em>Tool-Objects</em>,
-used in Ayam.
+as used in Ayam.
 <p>
 In a standard modelling application, to create a surface of revolution,
 one would either first create a curve then call the revolve tool to get
@@ -11525,6 +11527,10 @@ And with the help of the conversion mechanism, the Revolve
 tool objects could be converted to plain NPatch objects (e.g. for
 modelling operations not available to Revolve objects).
 <p>
+Note that instance objects are subject to a second round of provision,
+i.e. the master does not need to be of the wanted type but rather
+provide the wanted type.
+<p>
 Even though, theoretically, every tool could be implemented as tool object,
 this has not been done in Ayam (mainly, because this would unnecessarily
 increase the code base). Only the most often used tools that convey and
@@ -11549,9 +11555,9 @@ But let us see a simple example first:
 In the scene hierarchy above, the script object could be simply reverting the
 extracted curve with code like this:
 <code>
-convOb -inplace; revert
+convOb -inplace; revertC
 </code>
-effectively elevating the tool <tt/"revert"/ to an object.
+effectively elevating the tool <tt/"revertC"/ to an object.
 <p>
 A more useful example can be found in the Marsrakete sample scene
 (as available from the Ayam home page). Here, a curve extracted
@@ -13003,7 +13009,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="offsetncp" name="OffsetNC attribute">,
 <ref id="extrncp" name="ExtrNC attribute">
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
-<item>revertC: <ref id="screvertc" name="scripting interface command">,
+<item>revertC: <ref id="screvertc" name="scripting interface command">
 <item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
 <ref id="revertvt" name="Revert V tool">
 <item>Revolve: <ref id="revolveobj" name="Revolve object">,
