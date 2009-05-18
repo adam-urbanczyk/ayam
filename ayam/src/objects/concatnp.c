@@ -118,6 +118,17 @@ ay_concatnp_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
 {
+ ay_concatnp_object *cc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  cc = (ay_concatnp_object *)o->refine;
+
+  if(cc->npatch)
+    {
+      ay_shade_object(togl, cc->npatch, AY_FALSE);
+    }
 
  return AY_OK;
 } /* ay_concatnp_shadecb */
@@ -467,7 +478,7 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_replace(new, o);
 	    }
 	}
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_concatnp_convertcb */
@@ -522,7 +533,7 @@ ay_concatnp_init(Tcl_Interp *interp)
 				    ay_concatnp_copycb,
 				    ay_concatnp_drawcb,
 				    NULL, /* no handles */
-				    NULL, /* no shading */
+				    ay_concatnp_shadecb,
 				    ay_concatnp_setpropcb,
 				    ay_concatnp_getpropcb,
 				    ay_concatnp_getpntcb,
