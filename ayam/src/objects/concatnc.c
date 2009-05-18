@@ -336,7 +336,7 @@ ay_concatnc_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !flags)
     return AY_ENULL;
 
-  /* use the bounding boxes of the childs */
+  /* use the bounding boxes of the children */
   *flags = 2;
 
  return AY_OK;
@@ -369,7 +369,7 @@ ay_concatnc_notifycb(ay_object *o)
   next = &curves;
   while(down)
     {
-      /* */
+      /* copy or provide */
       if(down->type == AY_IDNCURVE)
 	{
 	  nc = (ay_nurbcurve_object *)(down->refine);
