@@ -1480,7 +1480,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_splittocurvesu:
- *
+ *  split NURBS patch object <o> into curves along u
  */
 int
 ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
@@ -1560,7 +1560,7 @@ ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
 
 
 /* ay_npt_splittocurvesv:
- *
+ *  split NURBS patch object <o> into curves along v
  */
 int
 ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last)
@@ -1644,7 +1644,7 @@ ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last)
 
 
 /* ay_npt_splittocurvestcmd:
- *
+ *  Tcl interface for splittocurvesu() and splittocurvesv() above
  *
  */
 int
@@ -1708,7 +1708,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_buildfromcurves:
- *
+ *  build a new patch from a number of (compatible) curves
  *
  */
 int
@@ -1831,7 +1831,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
 
 
 /* ay_npt_buildfromcurvestcmd:
- *
+ *  Tcl interface for ay_npt_buildfromcurves() above
  *
  */
 int
@@ -1910,7 +1910,10 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_concat:
- *
+ *  concatenate the patches in <o> by splitting them to
+ *  curves, making the curves compatible, and building a
+ *  new patch from the compatible curves
+ *  returns resulting patch object in <result>
  */
 int
 ay_npt_concat(ay_object *o, ay_object **result)
@@ -1938,8 +1941,9 @@ ay_npt_concat(ay_object *o, ay_object **result)
   while(curve)
     {
       ncurves++;
+
       if(!(*nextlist = calloc(1, sizeof(ay_list_object))))
-	{ ay_status = AY_EOMEM; goto cleanup;}
+	{ ay_status = AY_EOMEM; goto cleanup; }
       
       (*nextlist)->object = curve;
 
