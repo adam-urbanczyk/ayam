@@ -18,7 +18,7 @@
 /* prototypes of functions local to this module: */
 
 int ay_wrib_sm(char *file, char *image, int width, int height,
-	       int selonly, ay_object *selo);
+	       int selonly);
 
 void ay_wrib_getup(double *dir, double *up, double *roll);
 
@@ -1611,7 +1611,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
-		      AY_FALSE, NULL);
+		      AY_FALSE);
 
       ay_prefs.wrib_sm = AY_FALSE;
     }
@@ -1775,8 +1775,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
  *
  */
 int
-ay_wrib_sm(char *file, char *image, int width, int height, int selonly,
-	   ay_object *selo)
+ay_wrib_sm(char *file, char *image, int width, int height, int selonly)
 {
  int ay_status = AY_OK;
  ay_object *o = ay_root;
@@ -1833,7 +1832,7 @@ ay_wrib_sm(char *file, char *image, int width, int height, int selonly,
 
   /* actually write the shadow maps */
   ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
-		  selonly, selo);
+		  selonly);
 
   /* inform other code that we do not write shadow maps anymore */
   ay_prefs.wrib_sm = AY_FALSE;
@@ -1841,7 +1840,7 @@ ay_wrib_sm(char *file, char *image, int width, int height, int selonly,
   /* Cut! */
   RiEnd();
 
-  /* if shadowmaps are in use, write second RIB containing objects */
+  /* write second RIB containing objects */
   RiBegin(objfile);
 
   o = ay_root->next;
@@ -1969,7 +1968,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
  int width = 400;
  int height = 300;
  int i, selonly = AY_FALSE, smonly = AY_FALSE, objonly = AY_FALSE;
- char *file = NULL, *image = NULL;
+ char *filename = NULL, *imagename = NULL;
  char fname[] = "wrib";
  double addroll = 0.0, dir[3];
 
@@ -1982,7 +1981,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     }
  */
 
-  file = argv[1];
+  filename = argv[1];
 
   /* parse args */
   i = 2;
@@ -1990,7 +1989,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     {
       if(!strcmp(argv[i], "-image"))
 	{
-	  image = argv[i+1];
+	  imagename = argv[i+1];
 	  i++;
 	}
       else
@@ -2033,7 +2032,7 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
   if(ay_prefs.pprev_open)
     {
       ay_error(AY_ERROR, fname, "Please close the permanent preview first!");
-      return AY_ERROR;
+      return TCL_OK;
     }
 #endif
 
@@ -2048,26 +2047,26 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
     height = riopt->height;
 
   /* default */
-  if(!file)
+  if(!filename)
     {
-      file = "unnamed.rib";
+      filename = "unnamed.rib";
     }
 
-  if(!image)
+  if(!imagename)
     {
-      image = "unnamed.tif";
+      imagename = "unnamed.tif";
     }
 
   if(!(smonly || selonly || objonly))
     {
-      /* normal RIB export (no shadow maps, all files) */
+      /* normal RIB export (no shadow maps, complete scene, all objects) */
       dir[0] = (cam->to[0] - cam->from[0]);
       dir[1] = (cam->to[1] - cam->from[1]);
       dir[2] = (cam->to[2] - cam->from[2]);
 
       ay_wrib_getup(dir, cam->up, &addroll);
 
-      ay_status = ay_wrib_scene(file, image, AY_FALSE, AY_FALSE,
+      ay_status = ay_wrib_scene(filename, imagename, AY_FALSE, AY_FALSE,
 				cam->from, cam->to, cam->roll+addroll,
 				cam->zoom, cam->nearp, cam->farp,
 				width, height, AY_VTPERSP);
@@ -2077,11 +2076,11 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
       if(smonly)
 	{
 	  /* export for rendering shadow maps */
-	  ay_status = ay_wrib_sm(file, image, width, height, selonly,
-				 sel?sel->object:NULL);
+	  ay_status = ay_wrib_sm(filename, imagename, width, height, selonly);
 	}
       else
 	{
+	  /* export for normal rendering */
 	  if(selonly)
 	    {
 	      /* export selected objects only */
@@ -2089,10 +2088,10 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	      /* thus, always resolve instances */
 	      ay_prefs.resolveinstances = AY_TRUE;
 
-	      RiBegin(file);
+	      RiBegin(filename);
 	       while(sel)
 		 {
-		   ay_wrib_object(file, sel->object);
+		   ay_wrib_object(filename, sel->object);
 		   sel = sel->next;
 		 } /* while */
 	      RiEnd();
@@ -2104,10 +2103,10 @@ ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      /* export all objects only */
 	      o = ay_root->next;
-	      RiBegin(file);
+	      RiBegin(filename);
 	       while(o)
 		 {
-		   ay_wrib_object(file, o);
+		   ay_wrib_object(filename, o);
 		   o = o->next;
 		 } /* while */
 	      RiEnd();
@@ -2314,6 +2313,7 @@ ay_wrib_pprevopen(ay_view_object *view)
   view->ppreview = AY_TRUE;
 
   /* now, open the new permanent preview window */
+  /* corresponding RiEnd(); issued in pprevclose() below */
   RiBegin(pprender);
 
   /* and draw it */
@@ -2335,28 +2335,28 @@ ay_wrib_pprevclose()
  ay_view_object *v = NULL;
  char fname[] = "pprevclose";
 
- while(o)
-   {
-     if(o->type == AY_IDVIEW)
-       {
-	 v = (ay_view_object *)o->refine;
+  while(o)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  v = (ay_view_object *)o->refine;
 
-	 if(v->ppreview)
-	   {
-	     ay_error(AY_EOUTPUT, fname,
-"Please close the permanent preview window now manually,");
-	     ay_error(AY_EOUTPUT, fname,"using the Esc-key!");
+	  if(v->ppreview)
+	    {
+	      ay_error(AY_EOUTPUT, fname,
+		    "Please close the permanent preview window now manually,");
+	      ay_error(AY_EOUTPUT, fname,"using the Esc-key!");
 
-	     RiEnd();
+	      /* corresponding RiBegin(); was issued in pprevopen() above */
+	      RiEnd();
 
-	     v->ppreview = AY_FALSE;
-	     ay_prefs.pprev_open = AY_FALSE;
+	      v->ppreview = AY_FALSE;
+	      ay_prefs.pprev_open = AY_FALSE;
+	    } /* if */
 
-	   } /* if */
-
-       } /* if */
-     o = o->next;
-   } /* while */
+	} /* if */
+      o = o->next;
+    } /* while */
 
  return;
 } /* ay_wrib_pprevclose */
