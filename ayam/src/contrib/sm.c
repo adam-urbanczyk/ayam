@@ -26,7 +26,7 @@ ay_prman_data prmandata;
 
 char *resolutions = NULL;
 
-/* prototypes */
+/* prototypes of functions local to this module: */
 
 void ay_sm_dotrafos(ay_sm_trafostack *trafo, double *px, double *py,
 		    double *pz);
@@ -43,10 +43,11 @@ void ay_sm_getresolution(int index, int *width, int *height,
 void ay_sm_aimz(double *direction);
 
 void ay_sm_placecamera(double *position, double *direction, double roll);
+
 void ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 			ay_sm_trafostack *trafo,
 			int rwidth, int rheight,
-			int selonly, ay_object *selo);
+			int selonly);
 
 /* functions */
 
@@ -382,7 +383,7 @@ void
 ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
 		   ay_sm_trafostack *trafo,
 		   int rwidth, int rheight,
-		   int selonly, ay_object *selo)
+		   int selonly)
 {
  ay_object lo = {0};
  ay_light_object *light = NULL, nlight = {0};
@@ -442,7 +443,7 @@ ay_sm_wribsmcustom(char *file, char *objfile, ay_object *o,
       if(nlight.type != -1)
 	{
 	  ay_sm_wriballsm(file, objfile, &lo, trafo, rwidth, rheight,
-			  selonly, selo);
+			  selonly);
 	}
     } /* if */
 
@@ -458,7 +459,7 @@ void
 ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		ay_sm_trafostack *trafo,
 		int rwidth, int rheight,
-		int selonly, ay_object *selo)
+		int selonly)
 {
  ay_light_object *light = NULL;
  ay_sm_trafostack *newtrafo;
@@ -522,12 +523,12 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
       if(o->down)
 	{
 	  ay_sm_wriballsm(file, objfile, o->down, trafo, rwidth, rheight,
-			  selonly, selo);
+			  selonly);
 	}
 
       if((o->type == AY_IDLIGHT) && (!(ay_wrib_noexport(o))))
 	{
-	  if(selonly && (o != selo))
+	  if(selonly && (!o->selected))
 	    break;
 	  light = (ay_light_object *)o->refine;
 	  if((light->on) && /*(light->type != AY_LITCUSTOM) &&*/
@@ -797,7 +798,7 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 
 		  case AY_LITCUSTOM:
 		    ay_sm_wribsmcustom(file, objfile, o, trafo,
-				       rwidth, rheight, selonly, selo);
+				       rwidth, rheight, selonly);
 		    break;
 		  } /* switch */
 	       } /* if */

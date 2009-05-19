@@ -32,7 +32,7 @@ typedef struct ay_sm_trafostack_s
 void ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		     ay_sm_trafostack *trafo,
 		     int rwidth, int rheight,
-		     int selonly, ay_object *selo);
+		     int selonly);
 
 /* tree.c */
 void ay_tree_getclevel(char *node);
