@@ -27,8 +27,6 @@ proc safe_init { interp } {
     lappend safe_commands cutOb copOb pasOb pasmovOb repOb
     # current level
     lappend safe_commands goUp goDown goTop
-    # property
-    lappend safe_commands setProperty getProperty
     # transformations
     lappend safe_commands movOb rotOb scalOb
     # NURBS
@@ -59,12 +57,64 @@ proc safe_init { interp } {
     # property GUI
     interp alias $interp addPropertyGUI {} safe_addPropertyGUI
     interp alias $interp addParam {} addParam
+    interp alias $interp addParamB {} addParamB
+    interp alias $interp addParamPair {} addParamPair
 
+    interp alias $interp addMatrix {} addMatrix
+    interp alias $interp addMatrixB {} addMatrixB
+
+    interp alias $interp addColor {} addColor
+    interp alias $interp addColorB {} addColorB
+
+    interp alias $interp addCheck {} addCheck
+    interp alias $interp addCheckB {} addCheckB
+
+    interp alias $interp addMenu {} addMenu
+    interp alias $interp addMenuB {} addMenuB
+
+    interp alias $interp addString {} addString
+    interp alias $interp addStringB {} addStringB
+
+    interp alias $interp addCommand {} addCommand
+    interp alias $interp addCommandB {} addCommandB
+
+    interp alias $interp addText {} addText
+
+    interp alias $interp addInfo {} addInfo
+    interp alias $interp addInfoB {} addInfoB
+
+    # puts
     interp alias $interp puts {} safe_puts
+
+    # make some Tcl procedures known in the safe interpreter
+
+    # property
+    safe_transfer setProperty $interp
+    safe_transfer getProperty $interp
 
  return;
 }
 # safe_init
+
+
+# safe_transfer:
+#  transfer the Tcl procedure designated by <procname> verbatim
+#  to the target interpreter <interp>
+proc safe_transfer { procname interp } {
+
+    set args [info args $procname]
+    set body [info body $procname]
+
+    set procspec proc
+    lappend procspec $procname
+    lappend procspec $args
+    lappend procspec $body
+
+    $interp eval $procspec
+
+ return;
+}
+# safe_transfer
 
 
 # safe_puts:
