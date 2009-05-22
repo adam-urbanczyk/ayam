@@ -83,6 +83,8 @@ int ay_comp_cap(ay_object *o1, ay_object *o2);
 
 int ay_comp_concatnc(ay_object *o1, ay_object *o2);
 
+int ay_comp_concatnp(ay_object *o1, ay_object *o2);
+
 int ay_comp_clone(ay_object *o1, ay_object *o2);
 
 int ay_comp_pomesh(ay_object *o1, ay_object *o2);
@@ -940,6 +942,36 @@ ay_comp_concatnc(ay_object *o1, ay_object *o2)
 } /* ay_comp_concatnc */
 
 
+/* ay_comp_concatnp:
+ *
+ */
+int
+ay_comp_concatnp(ay_object *o1, ay_object *o2)
+{
+ ay_concatnp_object *p1, *p2;
+
+  p1 = (ay_concatnp_object *)o1->refine;
+  p2 = (ay_concatnp_object *)o2->refine;
+
+  if(p1->closed != p2->closed)
+    return AY_FALSE;
+
+  if(p1->revert != p2->revert)
+    return AY_FALSE;
+
+  if(p1->knot_type != p2->knot_type)
+    return AY_FALSE;
+  /*
+  if(p1->fillgaps != p2->fillgaps)
+    return AY_FALSE;
+
+  if(p1->ftlength != p2->ftlength)
+    return AY_FALSE;
+  */
+ return AY_TRUE;
+} /* ay_comp_concatnp */
+
+
 /* ay_comp_clone:
  *
  */
@@ -1467,6 +1499,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_select, AY_IDSELECT);
   ay_status = ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
   ay_status = ay_comp_register(ay_comp_trim, AY_IDTRIM);
+  ay_status = ay_comp_register(ay_comp_concatnp, AY_IDCONCATNP);
 
  return ay_status;
 } /* ay_comp_init */
