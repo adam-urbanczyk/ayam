@@ -1,4 +1,4 @@
-[24. Apr 2009] CVS-Head:
+[22. May 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -25,6 +25,8 @@ o transformations of mirrored clones (that are transformed themselves)
 o <Enter> keypresses appearing in direct point editing GUI entries
   on Win32 (SF 2726259)
 o Tcl error when applying Camera property of Camera object (SF 2779315)
+o crash when Sweep notification fails (SF 2793037)
+o Swung surfaces with rational trajectory curves (SF 2793039)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -33,12 +35,14 @@ o the tree widget is now also scrolled properly when the tree is rebuilt
 o added keyboard shortcuts to pan view windows (<Shift>+<Cursor> keys)
 o added keyboard shortcuts to escape from console (<Esc> key)
 o improved error reporting of RenderMan renderers directly called from Ayam
+o improved keyboard navigation in select shader, add RiOption/RiAttribute,
+  and ambiguous select dialogs
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
-o ConcatNC now accepts lists of provided curves
-o Gordon now accepts lists of provided curves
-o Select object now supports selection of lists and ranges of indices as
+o ConcatNC objects now accepts lists of provided curves
+o Gordon objects now accepts lists of provided curves
+o Select objects now support selection of lists and ranges of indices as
   well as multiple parameter objects
 o ICurves are completely revamped: "Mode" parameter is gone (now auto-
   selected by "Order"), "IParam" is replaced by "SDLen" and "EDLen",
@@ -46,6 +50,8 @@ o ICurves are completely revamped: "Mode" parameter is gone (now auto-
   specify own end derivatives; new parameter "ParamType" allows to select
   a parameterisation (chordal or centripetal), knot averaging now used
   for all modes, robustness wrt. double data points improved
+o NURBS curves now support two new knot types ("Chordal" and "Centripetal")
+o added ConcatNP object type to concatenate NURBS patches
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
@@ -59,7 +65,12 @@ o added example script "usepixie.tcl" that prepares Ayam to use Pixie
 o added helper script "colfocus.tcl" that switches the focus ring of
   important widgets to a more visible color (for SingleWindow GUI mode)
 o scripts in Script objects and BNS/ANS tags now run in a safe interpreter
-o many NURBS tool scripting interface commands have been renamed
+o many scripting interface commands have been renamed to fit in a general
+  naming scheme "verbObject", e.g. "revert" has been renamed to "revertC",
+  "swapUV" to "swapuvS" etc.; the new "oldnames.tcl" script provides an
+  exhaustive list of the renamed commands, and if run, establishes aliases
+  to make scripts using the old names work again
+o added script aytest.tcl to test some aspects of Ayam
 
 Build Support:
 o improved some error checking/messages in the "ayamConf.tcl" Makefile
