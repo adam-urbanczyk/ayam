@@ -22,7 +22,7 @@ proc safe_init { interp } {
     # and thus available in the safe interpreter verbatim
 
     # object
-    set safe_commands { crtOb delOb hSL selOb withOb convOb }
+    set safe_commands { crtOb delOb hSL selOb convOb }
     # clipboard
     lappend safe_commands cutOb copOb pasOb pasmovOb repOb
     # current level

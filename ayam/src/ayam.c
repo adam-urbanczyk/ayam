@@ -1268,6 +1268,9 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "estlenNC", ay_nct_estlentcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
  return ay_status;
 }
 /* ay_safeinit */
