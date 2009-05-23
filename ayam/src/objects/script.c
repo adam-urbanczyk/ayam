@@ -922,7 +922,7 @@ ay_script_notifycb(ay_object *o)
  char fname[] = "script_notifycb";
  char buf[256]/*, *l1 = NULL, *l2 = NULL*/;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
- ay_list_object *l = NULL, *old_sel = NULL;
+ ay_list_object *l = NULL, *old_sel = NULL, *sel = NULL;
  ay_script_object *sc = NULL, *csc = NULL;
  static int sema = 0;
  int i = 0;
@@ -1072,6 +1072,7 @@ ay_script_notifycb(ay_object *o)
 		}
 	      else
 		{
+		  /* special case for cascaded script objects */
 		  csc = down->refine;
 		  ccm_objects = csc->cm_objects;
 		  while(ccm_objects)
@@ -1102,6 +1103,14 @@ ay_script_notifycb(ay_object *o)
 	  if(ay_currentview)
 	    {
 	      ay_currentview->redraw = old_rdmode;
+	    }
+
+	  /* call notification of modified objects */
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      ay_notify_force(sel->object);
+	      sel = sel->next;
 	    }
 
 	  /* restore old selection */
