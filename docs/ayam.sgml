@@ -3855,10 +3855,16 @@ The first section of the NPatchAttr property contains patch specific
 settings:<p>
 <itemize>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
+Similar to the <tt/"Length"/ parameter of the NCurve object, changes to
+<tt/"Width"/ or <tt/"Height"/ add or remove internal control points
+(i.e. to double the resolution of a 4 by 4 NURBS patch in U direction,
+change the <tt/"Width"/ from 4 to 7; this will lead to an additional
+control point inserted into every section of the original patch).
 
 <item><tt/"Order_U"/ and <tt/"Order_V"/ set the orders of the patch.
 
-<item><tt/"Knot-Type"/ and <tt/"Knots"/: For a discussion of the
+<item><tt/"Knot-Type_U"//<tt/"Knot-Type_V"/ and
+<tt/"Knots_U"//<tt/"Knots_V"/: For a discussion of the
 <tt/"Knot-Type"/ and <tt/"Knots"/ parameters,
 please see section <ref id="ncattr" name="NCurveAttr">.
 
@@ -5795,8 +5801,8 @@ cubic Bezier curves. The direction of the tangents in the endpoints of
 the fillets and the gap enclosing curves will match, so that the
 transition should be G1 continuous.
 
-<item><tt/"Revert"/ the orientation of the concatenated curve will be
-reversed.
+<item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
+curve will be reversed.
 
 <item><tt/"FTLength"/ determines a scale factor for the tangent vectors
 of the fillets. A value of 1.0 leads to vectors that are as long as
@@ -5995,6 +6001,48 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
+</itemize>
+
+<sect1>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
+<p>
+<figure loc="ht">
+<eps file="pics/concatnc.ps" height="5cm">
+<img src="pics/concatnc.gif">
+<caption>ConcatNP Object</caption>
+</figure>
+<p>
+The ConcatNP object, available since Ayam 1.16, concatenates all child
+objects (which should be NURBS patches or provide NURBS patches) to
+a single NURBS patch. Since the ConcatNP object also provides a NURBS
+patch, it is possible to use it as child object for another ConcatNP
+object (with possibly different parameters).
+<p>
+Attributes like display mode and tolerance for the new concatenated patch
+are simply taken from the first parameter patch.
+<p>
+You may convert the current ConcatNP object to an ordinary NURBS patch
+object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the ConcatNP object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNP|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>ConcatNP Object Capabilities</caption>
+</table>
+The following parameters further control the concatenation process:
+
+<sect2>ConcatNPAttr Property<label id="concatnpp"><label id="concatnpattrprop">
+<p>
+<itemize>
+<item>Using <tt/"Closed"/ you may create a closed concatenated patch.
+
+<item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
+surface will be reversed (in U direction).
+
+<item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
+of the created NURBS patch.
 </itemize>
 
 <sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
@@ -12545,6 +12593,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="propgui" name="copying properties">
 <item>Concat: <ref id="conct" name="Concat tool">
 <item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
+<item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
 <item>Cone: <ref id="mmcreate" name="main menu entry">,
 <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
@@ -12774,8 +12823,11 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>kdialog: <ref id="kdialogtcl" name="example/helper script">
 <item>Knots: <ref id="ncattr" name="NCurve attribute">
 <item>Knot-Type: <ref id="ncattr" name="NCurve attribute">,
-<ref id="concatncp" name="ConcatNC attribute">
-<item>Knot-Type_U: <ref id="skp" name="Skin attribute">
+<ref id="concatncp" name="ConcatNC attribute">,
+<ref id="concatnpp" name="ConcatNP attribute">
+<item>Knot-Type_U: <ref id="npattr" name="NPatch attribute">,
+<ref id="skp" name="Skin attribute">
+<item>Knot-Type_V: <ref id="npattr" name="NPatch attribute">
 </itemize>
 
 <label id="indexl">L
