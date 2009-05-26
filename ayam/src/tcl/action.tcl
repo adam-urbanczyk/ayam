@@ -504,6 +504,7 @@ proc actionTagP { w } {
 	%W setconf -rect $oldx $oldy %x %y 0
 	rV
 	update
+	focus %W
     }
 
     bind $w <B1-Motion> {
@@ -1040,7 +1041,11 @@ proc actionFindU { w } {
 
     bind $w <Motion> ""
 
-    bind $w <ButtonRelease-1> { %W finduac -end %x %y; %W redraw }
+    bind $w <ButtonRelease-1> {
+	%W finduac -end %x %y
+	%W redraw
+	focus %W
+    }
 
     $w setconf -drawh 0
 
@@ -1075,7 +1080,7 @@ proc actionSplitNC { w } {
 	    splitNC $u
 	    uCR; sL; rV
 	}
-	
+	focus %W	
     }
 
     $w setconf -drawh 0
@@ -1130,6 +1135,8 @@ proc actionPick { w } {
 	    rV
 	    update
 	}
+
+	focus %W
     }
     
     bind $w <B1-Motion> {
