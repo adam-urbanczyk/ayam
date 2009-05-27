@@ -608,7 +608,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		{
 		  *eolarrname = '\0';
 		}
-
+	      /* the first m*/
 	      if(!(sc->params = calloc(arrmembers-1, sizeof(Tcl_Obj*))))
 		{
 		  ay_status = AY_EOMEM;
@@ -734,12 +734,14 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       if(arrnameend)
 	*arrnameend = '\0';
 
+      /* get "SP" array variable */
       toa = Tcl_NewStringObj(arrname, -1);
       ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
 
-      Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
+      if(arrmemberlist)
+	Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
       if(arrmembers > 0)
 	{
@@ -928,7 +930,7 @@ ay_script_notifycb(ay_object *o)
 {
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
- char buf[256]/*, *l1 = NULL, *l2 = NULL*/;
+ char buf[256], *l1 = NULL, *l2 = NULL;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
  ay_list_object *l = NULL, *old_sel = NULL, *sel = NULL;
  ay_script_object *sc = NULL, *csc = NULL;
@@ -1134,7 +1136,7 @@ ay_script_notifycb(ay_object *o)
 
   if(result == TCL_ERROR)
     {
-      i = ay_interp->errorLine;
+      i = interp->errorLine;
       sprintf(buf, "Script failed in line: %d", i);
       ay_error(AY_ERROR, fname, buf);
 
@@ -1151,10 +1153,8 @@ ay_script_notifycb(ay_object *o)
       Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
       Tcl_DStringFree(&ds);
 
-      /* the following does not work in too many cases, because we
-	 would need to properly escape script code elements for
-	 error printing */
-      /*
+      /* get and output the error line
+	 for more exact error location */
       l1 = sc->script;
       i--;
       while(l1 && i)
@@ -1175,8 +1175,7 @@ ay_script_notifycb(ay_object *o)
 	    {
 	      ay_error(AY_ERROR, fname, l1);
 	    }
-	}
-      */
+	} /* if */
     } /* if */
 
   sema = 0;
