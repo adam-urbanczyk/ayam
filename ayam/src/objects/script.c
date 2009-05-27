@@ -126,7 +126,7 @@ ay_script_copycb(void *src, void **dst)
 	  free(scdst);
 	  return AY_EOMEM;
 	}
-      for(i=0;i<scdst->paramslen;i++)
+      for(i = 0; i < scdst->paramslen; i++)
 	{
 	  scdst->params[i] = Tcl_DuplicateObj(scsrc->params[i]);
 	  Tcl_IncrRefCount(scdst->params[i]);
@@ -618,7 +618,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
 	      toa = Tcl_NewStringObj(arrname, -1);
 	      ton = Tcl_NewStringObj(arrname, -1);
-
+	      j = 0;
 	      for(i = 0; i < arrmembers; i++)
 		{
 		  ay_read_string(fileptr, &membername);
@@ -631,10 +631,11 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  if(strcmp(membername, ay_script_sp) != 0)
 		    {
 		      Tcl_SetStringObj(ton, membername, -1);
-		      sc->params[i-1] =
+		      sc->params[j] =
 			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, ton,
 							TCL_GLOBAL_ONLY));
-		      Tcl_IncrRefCount(sc->params[i-1]);
+		      Tcl_IncrRefCount(sc->params[j]);
+		      j++;
 		    }
 
 		  free(membername);
@@ -740,28 +741,35 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 
       Tcl_ListObjLength(interp, arrmemberlist, &arrmembers);
 
-      fprintf(fileptr, "%d\n", arrmembers+1);
-      fprintf(fileptr, "%s\n%s\n", ay_script_sp,
-	      Tcl_GetStringFromObj(arrmemberlist, &tlen));
-
-      for(i = 0; i < arrmembers; i++)
+      if(arrmembers > 0)
 	{
-	  arrmember = NULL;
-	  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
-	  if(arrmember)
+	  fprintf(fileptr, "%d\n", arrmembers+1);
+	  fprintf(fileptr, "%s\n%s\n", ay_script_sp,
+		  Tcl_GetStringFromObj(arrmemberlist, &tlen));
+
+	  for(i = 0; i < arrmembers; i++)
 	    {
-	      membername = Tcl_GetStringFromObj(arrmember, &slen);
-	      if(membername)
+	      arrmember = NULL;
+	      Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+	      if(arrmember)
 		{
-		  if(sc->params && sc->params[i])
-		    memberval = Tcl_GetStringFromObj(sc->params[i], &tlen);
-		  else
-		    memberval = NULL;
-		  if(memberval)
-		    fprintf(fileptr, "%s\n%s\n", membername, memberval);
+		  membername = Tcl_GetStringFromObj(arrmember, &slen);
+		  if(membername)
+		    {
+		      if(sc->params && sc->params[i])
+			memberval = Tcl_GetStringFromObj(sc->params[i], &tlen);
+		      else
+			memberval = NULL;
+		      if(memberval)
+			fprintf(fileptr, "%s\n%s\n", membername, memberval);
+		    } /* if */
 		} /* if */
-	    } /* if */
-	} /* for */
+	    } /* for */
+	}
+      else
+	{
+	  fprintf(fileptr, "0\n");
+	} /* if */
 
       if(arrnameend)
 	*arrnameend = '\n';
