@@ -1483,13 +1483,15 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
  *  split NURBS patch object <o> into curves along u
  */
 int
-ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
+ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
+		      ay_object **curves, ay_object ***last)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
  ay_object *new = NULL, **next = NULL;
  double *knotv = NULL, *controlv = NULL;
- int i, stride, dstlen, knots;
+ double m[16];
+ int i, j, k, stride, dstlen, knots;
 
   if(!o || !curves)
     return AY_ENULL;
@@ -1498,6 +1500,16 @@ ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
   dstlen = patch->height;
   knots = dstlen + patch->vorder;
   stride = 4;
+
+  if(apply_trafo && AY_ISTRAFO(o))
+    {
+      /* get patch transformation-matrix */
+      ay_trafo_creatematrix(o, m);
+    }
+  else
+    {
+      apply_trafo = AY_FALSE;
+    }
 
   for(i = 0; i < patch->width; i++)
     {
@@ -1526,6 +1538,17 @@ ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
 
       memcpy(controlv, &(patch->controlv[i*dstlen*stride]),
 	     (size_t)(stride*dstlen*sizeof(double)));
+
+      if(apply_trafo)
+	{
+	  /* apply transformation-matrix */
+	  j = 0;
+	  for(k = 0; k < dstlen; k++)
+	    {
+	      ay_trafo_apply4(&(controlv[j]), m);
+	      j += stride;
+	    } /* for */
+	}
 
       ay_status = ay_nct_create(patch->vorder, dstlen, patch->vknot_type,
 				controlv, knotv,
@@ -1563,13 +1586,15 @@ ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last)
  *  split NURBS patch object <o> into curves along v
  */
 int
-ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last)
+ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
+		      ay_object **curves, ay_object ***last)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
  ay_object *new = NULL, **next = NULL;
  double *knotv = NULL, *controlv = NULL;
- int i, j, a, stride, dstlen, knots;
+ double m[16];
+ int i, j, k, a, stride, dstlen, knots;
 
   if(!o || !curves)
     return AY_ENULL;
@@ -1578,6 +1603,16 @@ ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last)
   dstlen = patch->width;
   knots = dstlen + patch->uorder;
   stride = 4;
+
+  if(apply_trafo && AY_ISTRAFO(o))
+    {
+      /* get patch transformation-matrix */
+      ay_trafo_creatematrix(o, m);
+    }
+  else
+    {
+      apply_trafo = AY_FALSE;
+    }
 
   for(i = 0; i < patch->height; i++)
     {
@@ -1609,6 +1644,17 @@ ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last)
 	  memcpy(&(controlv[j*stride]), &(patch->controlv[a]),
 		 (size_t)(stride*sizeof(double)));
 	  a += patch->height*stride;
+	}
+
+      if(apply_trafo)
+	{
+	  /* apply transformation-matrix */
+	  k = 0;
+	  for(i = 0; i < dstlen; i++)
+	    {
+	      ay_trafo_apply4(&(controlv[k]), m);
+	      k += stride;
+	    } /* for */
 	}
 
       ay_status = ay_nct_create(patch->uorder, dstlen, patch->uknot_type,
@@ -1685,11 +1731,11 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(u)
 	{
-	  ay_status = ay_npt_splittocurvesu(src, &curves, NULL);
+	  ay_status = ay_npt_splittocurvesu(src, AY_TRUE, &curves, NULL);
 	}
       else
 	{
-   	  ay_status = ay_npt_splittocurvesv(src, &curves, NULL);
+   	  ay_status = ay_npt_splittocurvesv(src, AY_TRUE, &curves, NULL);
 	} /* if */
 
       while(curves)
@@ -1712,7 +1758,8 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
  *
  */
 int
-ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
+ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
+		       int knot_type, int apply_trafo,
 		       ay_object **patch)
 {
  int ay_status = AY_OK;
@@ -1723,7 +1770,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
  int newwidth = 0, newheight = 0;
  int newvorder = 0, newvknots = 0, newuorder = 0;
  int newuknot_type = AY_KTNURB, newvknot_type = 0;
- int i = 0, j = 0, a = 0;
+ int i = 0, j = 0, stride = 4;
  double m[16];
 
   if(!curves || !patch)
@@ -1741,7 +1788,20 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
   c = curve->object;
   nc = (ay_nurbcurve_object*)c->refine;
 
+  /* calculate patch parameters */
   newwidth = ncurves;
+  if(newwidth < 4)
+    newuorder = newwidth;
+  else
+    newuorder = 4;
+  newuknot_type = knot_type;
+
+  if(type == AY_CTCLOSED)
+    newwidth++;
+
+  if(type == AY_CTPERIODIC)
+    newwidth += newuorder-1;
+
   newheight = nc->length;
   newvorder = nc->order;
   newvknots = newheight + newvorder;
@@ -1778,30 +1838,46 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
     {
       c = curve->object;
       nc = (ay_nurbcurve_object*)c->refine;
-      /* get curves transformation-matrix */
-      ay_trafo_creatematrix(c, m);
 
-      a = 0;
-      for(j = 0; j < newheight; j++)
+      memcpy(&(newcontrolv[i]), nc->controlv, newheight*stride*sizeof(double));
+
+      if(apply_trafo && AY_ISTRAFO(c))
 	{
-	  newcontrolv[i++] = nc->controlv[a++];
-	  newcontrolv[i++] = nc->controlv[a++];
-	  newcontrolv[i++] = nc->controlv[a++];
-
-
-	  newcontrolv[i++] = nc->controlv[a++];
-
-	  ay_trafo_apply4(&(newcontrolv[i-4]), m);
-	} /* for */
+	  /* get curves transformation-matrix */
+	  ay_trafo_creatematrix(c, m);
+	  /* apply curves transformation-matrix */
+	  for(j = 0; j < newheight; j++)
+	    {
+	      ay_trafo_apply4(&(newcontrolv[i]), m);
+	      i += stride;
+	    } /* for */
+	}
+      else
+	{
+	  i += newheight*stride;
+	}
 
       curve = curve->next;
     } /* while */
 
-  if(newwidth < 4)
-    newuorder = newwidth;
-  else
-    newuorder = 4;
+  /* close patch? */
+  if(type == AY_CTCLOSED)
+    {
+      memcpy(&(newcontrolv[i]), newcontrolv,
+	     newheight*stride*sizeof(double));
+    }
 
+  if(type == AY_CTPERIODIC)
+    {
+      for(j = 0; j < newuorder; j++)
+	{
+	  memcpy(&(newcontrolv[i]), &(newcontrolv[j*newheight*stride]),
+	    newheight*stride*sizeof(double));
+	  i += newheight*stride;
+	}
+    }
+
+  /* create patch object */
   ay_status = ay_npt_create(newuorder, newvorder,
 			    newwidth, newheight,
 			    newuknot_type, newvknot_type,
@@ -1862,7 +1938,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  nc = (ay_nurbcurve_object*)o->refine;
-	  
+
 	  if(length == 0)
 	    {
 	      /* get length from first curve */
@@ -1892,7 +1968,8 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_status = ay_npt_buildfromcurves(curves, ncurves, &patch);  
+  ay_status = ay_npt_buildfromcurves(curves, ncurves, AY_CTOPEN,
+				     AY_KTNURB, AY_TRUE, &patch);
 
   if(patch)
     ay_object_link(patch);
@@ -1916,7 +1993,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  *  returns resulting patch object in <result>
  */
 int
-ay_npt_concat(ay_object *o, ay_object **result)
+ay_npt_concat(ay_object *o, int type, int knot_type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL;
@@ -1931,7 +2008,7 @@ ay_npt_concat(ay_object *o, ay_object **result)
 
   while(o)
     {
-      ay_npt_splittocurvesu(o, nextcurve, &nextcurve);
+      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
       o = o->next;
     }
 
@@ -1944,7 +2021,7 @@ ay_npt_concat(ay_object *o, ay_object **result)
 
       if(!(*nextlist = calloc(1, sizeof(ay_list_object))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
-      
+
       (*nextlist)->object = curve;
 
       nextlist = &((*nextlist)->next);
@@ -1958,7 +2035,8 @@ ay_npt_concat(ay_object *o, ay_object **result)
     goto cleanup;
 
   /* build a new patch from the compatible curves */
-  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, &new);
+  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, knot_type,
+				     AY_FALSE, &new);
 
   if(ay_status)
     goto cleanup;
