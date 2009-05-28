@@ -325,6 +325,7 @@ $m.nc add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;"
 
 $m.nc add separator
 
+$m.nc add command -label "ConcatNP" -command "level_crt ConcatNP;"
 $m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
 $m.nc add command -label "NURBSphere" -command {
     runTool ay(nsphereradius) "Radius:" \
