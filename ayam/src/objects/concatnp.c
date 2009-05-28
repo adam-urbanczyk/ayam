@@ -34,6 +34,8 @@ ay_concatnp_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  new->knot_type = AY_KTNURB;
+
   o->parent = AY_TRUE;
 
   o->refine = new;
@@ -81,7 +83,7 @@ ay_concatnp_copycb(void *src, void **dst)
 
   memcpy(concatnp, src, sizeof(ay_concatnp_object));
 
-  /* copy ncurve */
+  /* copy npatch */
   ay_object_copy(concatnpsrc->npatch, &(concatnp->npatch));
 
   *dst = (void *)concatnp;
@@ -176,13 +178,9 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"Closed",-1);
+  Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->closed));
-
-  Tcl_SetStringObj(ton,"FillGaps",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->fillgaps));
+  Tcl_GetIntFromObj(interp,to, &(concatnp->type));
 
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -191,6 +189,11 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Knot-Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnp->knot_type));
+  concatnp->knot_type++;
+
+  Tcl_SetStringObj(ton,"FillGaps",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->fillgaps));
 
   Tcl_SetStringObj(ton,"FTLength",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -228,13 +231,8 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ton = Tcl_NewStringObj(n1,-1);
 
 
-  Tcl_SetStringObj(ton,"Closed",-1);
-  to = Tcl_NewIntObj(concatnp->closed);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"FillGaps",-1);
-  to = Tcl_NewIntObj(concatnp->fillgaps);
+  Tcl_SetStringObj(ton,"Type",-1);
+  to = Tcl_NewIntObj(concatnp->type);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -244,7 +242,12 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Knot-Type",-1);
-  to = Tcl_NewIntObj(concatnp->knot_type);
+  to = Tcl_NewIntObj(concatnp->knot_type-1);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"FillGaps",-1);
+  to = Tcl_NewIntObj(concatnp->fillgaps);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -270,24 +273,21 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
 {
  ay_concatnp_object *concatnp = NULL;
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(!(concatnp = calloc(1, sizeof(ay_concatnp_object))))
     { return AY_EOMEM; }
 
   concatnp->ftlength = 0.3;
 
-  fscanf(fileptr, "%d\n", &concatnp->closed);
-  fscanf(fileptr, "%d\n", &concatnp->fillgaps);
+  fscanf(fileptr, "%d\n", &concatnp->type);
   fscanf(fileptr, "%d\n", &concatnp->revert);
+  fscanf(fileptr, "%d\n", &concatnp->knot_type);
 
-  if(ay_read_version >= 5)
-    {
-      fscanf(fileptr, "%d\n", &concatnp->knot_type);
-      fscanf(fileptr, "%lg\n", &concatnp->ftlength);
-    }
-
+  fscanf(fileptr, "%d\n", &concatnp->fillgaps);
+  fscanf(fileptr, "%lg\n", &concatnp->ftlength);
+   
   o->refine = concatnp;
 
  return AY_OK;
@@ -307,10 +307,11 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
 
   concatnp = (ay_concatnp_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", concatnp->closed);
-  fprintf(fileptr, "%d\n", concatnp->fillgaps);
+  fprintf(fileptr, "%d\n", concatnp->type);
   fprintf(fileptr, "%d\n", concatnp->revert);
   fprintf(fileptr, "%d\n", concatnp->knot_type);
+
+  fprintf(fileptr, "%d\n", concatnp->fillgaps);
   fprintf(fileptr, "%g\n", concatnp->ftlength);
 
  return AY_OK;
@@ -332,7 +333,6 @@ ay_concatnp_wribcb(char *file, ay_object *o)
 
   if(concatnp->npatch)
     ay_wrib_object(file, concatnp->npatch);
-
 
  return AY_OK;
 } /* ay_concatnp_wribcb */
@@ -405,7 +405,8 @@ ay_concatnp_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  ay_status = ay_npt_concat(patches, &concatnp->npatch);
+  ay_status = ay_npt_concat(patches, concatnp->type, concatnp->knot_type,
+			    &concatnp->npatch);
 
   if(ay_status)
     {
@@ -423,16 +424,6 @@ ay_concatnp_notifycb(ay_object *o)
 	      ay_error(ay_status, fname, "Failed to revert!");
 	    } /* if */
 	} /* if */
-#if 0
-      if(concatnp->closed)
-	{
-	  ay_status = ay_npt_close(np);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, "Failed to close!");
-	    } /* if */
-	} /* if */
-#endif  
     } /* if */
 
   /* free list of temporary curves */
