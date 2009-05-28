@@ -856,10 +856,11 @@ typedef struct ay_extrnp_object_s
 
 typedef struct ay_concatnp_object_s
 {
-  int closed;
-  int fillgaps;
+  int type;
   int revert;
   int knot_type;
+
+  int fillgaps;
   double ftlength;
 
   /* cache NURBS patch representation */
@@ -1479,6 +1480,18 @@ extern unsigned int ay_current_primlevel;
                             (fabs(P1[1]-P2[1]) < AY_EPSILON))
 
 #define AY_M44(m,r,c) ((m)[(c)*4+(r)])
+
+#define AY_ISTRAFO(o) ((fabs(o->movx) > AY_EPSILON) ||\
+		       (fabs(o->movy) > AY_EPSILON) ||\
+		       (fabs(o->movz) > AY_EPSILON) ||\
+		       (fabs(o->quat[0]) > AY_EPSILON) ||\
+		       (fabs(o->quat[1]) > AY_EPSILON) ||\
+		       (fabs(o->quat[2]) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->quat[3]) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalx) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scaly) > AY_EPSILON) ||\
+		       (fabs(1.0 - o->scalz) > AY_EPSILON))
+
 
 /* Version Strings and Numbers */
 #define AY_VERSIONSTR "1.16pre"

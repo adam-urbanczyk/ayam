@@ -21,7 +21,7 @@ w     fConcatNPAttr
 }
 
 array set ConcatNPAttrData {
-Closed 0
+Type 0
 FillGaps 0
 Revert 0
 Length 0
@@ -34,10 +34,10 @@ NPInfoBall "N/A"
 # create ConcatNPAttr-UI
 set w [frame $ay(pca).$ConcatNPAttr(w)]
 
-addCheck $w ConcatNPAttrData Closed
-addCheck $w ConcatNPAttrData FillGaps
+addMenu $w ConcatNPAttrData Type [list Open Closed Periodic]
+#addCheck $w ConcatNPAttrData FillGaps
 addCheck $w ConcatNPAttrData Revert
-addParam $w ConcatNPAttrData FTLength
-addMenu $w ConcatNPAttrData Knot-Type [list NURB Custom]
+#addParam $w ConcatNPAttrData FTLength
+addMenu $w ConcatNPAttrData Knot-Type  [list B-Spline NURB]
 addText $w  e0 "Resulting Patch:"
 addInfo $w ConcatNPAttrData NPInfo

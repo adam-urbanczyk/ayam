@@ -735,11 +735,13 @@ int ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
-int ay_npt_splittocurvesu(ay_object *o, ay_object **curves, ay_object ***last);
+int ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
+			  ay_object **curves, ay_object ***last);
 
 /*! \brief
  */
-int ay_npt_splittocurvesv(ay_object *o, ay_object **curves, ay_object ***last);
+int ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
+			  ay_object **curves, ay_object ***last);
 
 /*! \brief
  */
@@ -749,7 +751,8 @@ int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
-int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves,
+int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
+			   int knot_type, int apply_trafo,
 			   ay_object **patch);
 
 
@@ -760,7 +763,7 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
-int ay_npt_concat(ay_object *o, ay_object **result);
+int ay_npt_concat(ay_object *o, int type, int knot_type, ay_object **result);
 
 
 /*! \brief

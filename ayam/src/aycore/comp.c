@@ -953,7 +953,7 @@ ay_comp_concatnp(ay_object *o1, ay_object *o2)
   p1 = (ay_concatnp_object *)o1->refine;
   p2 = (ay_concatnp_object *)o2->refine;
 
-  if(p1->closed != p2->closed)
+  if(p1->type != p2->type)
     return AY_FALSE;
 
   if(p1->revert != p2->revert)
