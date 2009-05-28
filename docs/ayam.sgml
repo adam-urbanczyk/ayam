@@ -6006,16 +6006,16 @@ of the created NURBS curve.
 <sect1>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
 <p>
 <figure loc="ht">
-<eps file="pics/concatnc.ps" height="5cm">
-<img src="pics/concatnc.gif">
-<caption>ConcatNP Object</caption>
+<eps file="pics/concatnp.ps" height="5cm">
+<img src="pics/concatnp.gif">
+<caption>ConcatNP Object (white) From Two NURBS Patches (blue)</caption>
 </figure>
 <p>
 The ConcatNP object, available since Ayam 1.16, concatenates all child
 objects (which should be NURBS patches or provide NURBS patches) to
-a single NURBS patch. Since the ConcatNP object also provides a NURBS
-patch, it is possible to use it as child object for another ConcatNP
-object (with possibly different parameters).
+a single NURBS patch (see image abovee). Since the ConcatNP object also
+provides a NURBS patch, it is possible to use it as child object for
+another ConcatNP object (with possibly different parameters).
 <p>
 Attributes like display mode and tolerance for the new concatenated patch
 are simply taken from the first parameter patch.
@@ -6036,10 +6036,14 @@ The following parameters further control the concatenation process:
 <sect2>ConcatNPAttr Property<label id="concatnpp"><label id="concatnpattrprop">
 <p>
 <itemize>
-<item>Using <tt/"Closed"/ you may create a closed concatenated patch.
+<item>Using <tt/"Type"/, open, closed, or periodic concatenated patches may
+be created.
 
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 surface will be reversed (in U direction).
+
+<item>The <tt/"Knot-Type"/ parameter allows to choose between NURB
+and B-Spline knot vectors for the concatenated surface (in u direction).
 
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
