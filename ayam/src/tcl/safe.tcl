@@ -86,11 +86,13 @@ proc safe_init { interp } {
     # puts
     interp alias $interp puts {} safe_puts
 
+    # property
+    interp alias $interp setProperty {} setProperty
+    interp alias $interp getProperty {} safe_getProperty
+
     # make some Tcl procedures known in the safe interpreter
 
-    # property
-    safe_transfer setProperty $interp
-    safe_transfer getProperty $interp
+    #safe_transfer setProperty $interp
 
  return;
 }
@@ -160,3 +162,21 @@ proc safe_addPropertyGUI { name {sproc ""} {gproc ""} } {
  return $w;
 }
 # safe_addPropertyGUI
+
+
+# safe_getProperty:
+#  safe version of getProperty
+#  it first fetches the data, then hands it over to the
+#  safe interpreter
+#  XXXX add mechanism to prevent even attempts of
+#  accessing env, ay, ayprefs arrays (even if getProperty
+#  already checks presence of requested property)?
+proc safe_getProperty { property varName } {
+
+    getProperty $property val
+
+    aySafeInterp eval set $varName $val
+
+ return;
+}
+# safe_getProperty
