@@ -6018,7 +6018,8 @@ provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
 <p>
 Attributes like display mode and tolerance for the new concatenated patch
-are simply taken from the first parameter patch.
+are simply taken from the first parameter patch. Eventually present
+trim curves will currently <em>not</em> be honored properly.
 <p>
 You may convert the current ConcatNP object to an ordinary NURBS patch
 object using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -6261,20 +6262,22 @@ Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
 or realise mechanisms like constraints using small scripts.
 <p>
-Those scripts employ functionality from Tcl and
-the Tcl scripting interface of Ayam (see also section
-<ref id="script" name="Scripting Interface">) to calculate
-data which is then used to create or modify objects of the scene.
-However, certain script object types impose some special constraints.
+Those small scripts may employ functionality from Tcl and
+the Tcl scripting interface of Ayam to calculate data which
+is then used to create or modify objects of the scene
+(see also section <ref id="script" name="Scripting Interface">).
 
 <sect2>Safe Interpreter<label id="safeinterp">
 <p>
 In Ayam versions prior to 1.16 Script object scripts could use any
-functionality of Tcl and the Tcl scripting interface of Ayam which
-posed a huge security risk. Therefore this is no longer the case.
+functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
+posed a huge security risk. This is no longer the case.
 Script objects scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
-onto the network or confuse the application state.
+onto the network, or confuse the application state. Direct access
+to Tk is also completely blocked but Script objects still can have their
+own property GUIs (see examples below).
+<p>
 In particular, the following Tcl commands are not available in the
 safe interpreter:
 cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
@@ -6282,7 +6285,6 @@ source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
 auto_qualify, unknown (the missing unknown and autoloading facilities
 lead to further unavailability of commands normally available via
 autoloading, like e.g. parray, history).
-In addition, access to the env variable is not allowed.
 Ayam scripting interface commands that directly manipulate the user
 interface are also not available (uS, rV etc.). Please refer to the
 documentation of the scripting interface commands about their availability
@@ -6290,7 +6292,17 @@ in the safe interpreter
 (see section
 <ref id="sccomm" name="Index of Procedures and Commands">).
 <p>
-You can still re-enable full access from script objects to the
+In addition, access to global variables like env, ay, ayprefs
+is not allowed. In fact, the safe interpreter has a completely
+separate set of variables. Transfer of data between both interpreters
+must be arranged manually from the Ayam interpreter (e.g. scripts that
+run in the Ayam console).
+<p>
+With the help of scripts, that run in the Ayam interpreter, more commands
+may be transfered to or made available in the safe interpreter.
+But this may, of course, open security holes again.
+<p>
+You can also still re-enable full access from script objects to the
 complete scripting interface by recompiling Ayam.
 If you do so, for security reasons, if scene files containing script
 objects are loaded, Ayam will raise a warning dialog, offering to
@@ -7506,11 +7518,11 @@ A simple BNS tag could look like this:
 <bf/Notes/
 <p>
 In Ayam versions prior to 1.16 BNS tag scripts could use any
-functionality of Tcl and the Tcl scripting interface of Ayam which
-posed a huge security risk. Therefore this is no longer the case.
+functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
+posed a huge security risk. This is no longer the case.
 BNS tag scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
-onto the network or confuse the application state, see also section
+onto the network, or confuse the application state, see also section
 <ref id="safeinterp" name="Safe Interpreter">.
 Consequently, the warning dialog that appeared when files with
 BNS tags were loaded is also gone.
@@ -7544,11 +7556,11 @@ A simple ANS tag could look like this:
 <bf/Notes/
 <p>
 In Ayam versions prior to 1.16 ANS tag scripts could use any
-functionality of Tcl and the Tcl scripting interface of Ayam which
-posed a huge security risk. Therefore this is no longer the case.
+functionality of Tcl, Tk, and the Tcl scripting interface of Ayam which
+posed a huge security risk. This is no longer the case.
 ANS tag scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
-onto the network or confuse the application state, see also section
+onto the network, or confuse the application state, see also section
 <ref id="safeinterp" name="Safe Interpreter">.
 Consequently, the warning dialog that appeared when files with
 ANS tags were loaded is also gone.
