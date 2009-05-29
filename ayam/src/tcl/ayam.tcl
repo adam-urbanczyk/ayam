@@ -1564,11 +1564,29 @@ if { $ayprefs(Scripts) != "" } {
 	if { [file exists $script] } {
 	    puts ${script}...
 	    catch {source $script}
+	} else {
+	    set origwd [pwd]
+	    cd [file dirname [info nameofexecutable]]
+	    set paths scripts
+	    lappend paths [split "$ayprefs(Plugins)" $ay(separator)]
+	    foreach path $paths {
+		set nscript [file join $path $script]
+		if { ![file exists $nscript] } {
+		    set nscript ${nscript}.tcl
+		}
+		if { [file exists $nscript] } {
+		    puts ${nscript}...
+		    catch {source $nscript}
+		}
+	    }
+	    cd $origwd
+
+	    catch {unset origwd paths path nscript}
 	}
+	# if
     }
-
+    # foreach
     catch {unset scripts script}
-
 }
 # if
 
