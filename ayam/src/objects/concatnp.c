@@ -287,7 +287,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%d\n", &concatnp->fillgaps);
   fscanf(fileptr, "%lg\n", &concatnp->ftlength);
-   
+
   o->refine = concatnp;
 
  return AY_OK;
@@ -414,8 +414,13 @@ ay_concatnp_notifycb(ay_object *o)
     }
   else
     {
-
       np = (ay_nurbpatch_object*)concatnp->npatch->refine;
+
+      np->glu_sampling_tolerance =
+	((ay_nurbpatch_object*)patches->refine)->glu_sampling_tolerance;
+      np->display_mode =
+	((ay_nurbpatch_object*)patches->refine)->display_mode;
+
       if(concatnp->revert)
 	{
 	  ay_status = ay_npt_revertu(np);
@@ -534,7 +539,7 @@ ay_concatnp_init(Tcl_Interp *interp)
 				    ay_concatnp_getpntcb,
 				    ay_concatnp_readcb,
 				    ay_concatnp_writecb,
-				    NULL, /* no RIB export */
+				    ay_concatnp_wribcb,
 				    ay_concatnp_bbccb,
 				    AY_IDCONCATNP);
 
