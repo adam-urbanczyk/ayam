@@ -976,6 +976,10 @@ int ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
 
+/*! \brief helper to clear selected flags from object hierarchies
+ */
+void ay_sel_clearselflag(ay_object *o);
+
 
 /* selp.c */
 

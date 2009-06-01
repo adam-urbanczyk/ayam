@@ -16,7 +16,7 @@
 
 
 /* ay_sel_free:
- *  frees entire list of selected objects;
+ *  frees the entire list of selected objects;
  *  additionally clears the selected flag from
  *  previously selected objects, if clear_selflag is AY_TRUE
  */
@@ -184,6 +184,7 @@ cleanup:
     }
   ay_selection = newsel;
 
+  /* if we are going to redraw, align the local views first */
   if(need_redraw)
     {
       ay_viewt_alignlocal();
@@ -306,4 +307,26 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_sel_hsltcmd */
+
+
+/* ay_sel_clearselflag:
+ *  helper to _recursively_ clear the selected
+ *  flag from object hierarchy pointed to by <o>
+ */
+void
+ay_sel_clearselflag(ay_object *o)
+{
+
+  if(!o)
+    return;
+
+  while(o)
+    {
+      if(o->down)
+	ay_sel_clearselflag(o);
+      o->selected = AY_FALSE;
+      o = o->next;
+    }
+  return;
+} /* ay_sel_clearselflag */
 
