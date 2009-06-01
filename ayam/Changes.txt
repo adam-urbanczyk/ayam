@@ -1,4 +1,4 @@
-[22. May 2009] CVS-Head:
+[1. Jun 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -37,6 +37,7 @@ o added keyboard shortcuts to escape from console (<Esc> key)
 o improved error reporting of RenderMan renderers directly called from Ayam
 o improved keyboard navigation in select shader, add RiOption/RiAttribute,
   and ambiguous select dialogs
+o improved focus handling of view windows
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
@@ -71,6 +72,7 @@ o many scripting interface commands have been renamed to fit in a general
   exhaustive list of the renamed commands, and if run, establishes aliases
   to make scripts using the old names work again
 o added script aytest.tcl to test some aspects of Ayam
+o startup scripts may now be specified without full (absolute) path
 
 Build Support:
 o improved some error checking/messages in the "ayamConf.tcl" Makefile
