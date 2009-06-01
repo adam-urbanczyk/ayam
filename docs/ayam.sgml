@@ -6,10 +6,10 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>17. Feb 2009
+<date>1. Jun 2009
 
 <abstract>
-This is the documentation of Ayam 1.15 - a free 3D modelling environment
+This is the documentation of Ayam 1.16 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -6323,7 +6323,7 @@ escape from infinite loops in the Ayam console, is pressed.
 Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
 GUI of Ayam should be avoided. In particular, the following
-procedures and commands should <em>not</em> be used: uS, uCR, uCL, sL,
+procedures and commands should <em>not</em> be used: uS, uCR, uCL,
 selOb, plb_update, cutOb, copOb, delOb, undo!
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
@@ -8737,9 +8737,12 @@ object from multiple selected objects. All objects stay selected.
 sL - select last object:
 <itemize>
  <item>Synopsis: <tt/"sL"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No, Undo: No, Safe: Yes
  <item>Description: Select the last object in the current level
-and update the GUI. This command is often called in a sequence
+and, if run in the Ayam interpreter, update the GUI.
+If run in the safe interpreter (e.g. from a Script objects script)
+this command will create a hidden selection.
+This command is often called in a sequence
 after creating a new object like this:
 <code>
 # create object
@@ -8757,7 +8760,7 @@ hSL - hidden select last object:
  <item>Synopsis: <tt/"hSL"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Select the last object in the current level
-but do not update the GUI. This command is mainly for use in script
+but do not update the GUI. This command is mainly for use in Script
 objects script code.
 </itemize>
 
