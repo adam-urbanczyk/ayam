@@ -1201,6 +1201,9 @@ ay_script_convertcb(ay_object *o, int in_place)
 
   sc = (ay_script_object *)(o->refine);
 
+  if(sc->cm_objects)
+    ay_sel_clearselflag(sc->cm_objects);
+
   switch(sc->type)
     {
     case 1:
@@ -1297,6 +1300,9 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
     return AY_ENULL;
 
   sc = (ay_script_object *)(o->refine);
+
+  if(sc->cm_objects)
+    ay_sel_clearselflag(sc->cm_objects);
 
   switch(sc->type)
     {
