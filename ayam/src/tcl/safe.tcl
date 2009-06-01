@@ -22,7 +22,7 @@ proc safe_init { interp } {
     # and thus available in the safe interpreter verbatim
 
     # object
-    set safe_commands { crtOb delOb hSL selOb convOb }
+    lappend safe_commands crtOb delOb hSL selOb convOb
     # clipboard
     lappend safe_commands cutOb copOb pasOb pasmovOb repOb
     # current level
@@ -89,6 +89,9 @@ proc safe_init { interp } {
     # property
     interp alias $interp setProperty {} setProperty
     interp alias $interp getProperty {} safe_getProperty
+
+    # sL => hidden selection
+    interp alias $interp sL {} hSL
 
     # make some Tcl procedures known in the safe interpreter
 
