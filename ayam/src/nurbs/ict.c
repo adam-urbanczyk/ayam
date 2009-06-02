@@ -86,7 +86,8 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
  int nlength, slength;
  double v[3];
  double *ncontrolv = NULL, *ncv4D = NULL;
- double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
+ double *knotv = NULL, *vk = NULL, knot = 0.0;
+ double *lengths = NULL, totallength = 0.0;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
 
@@ -281,7 +282,8 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
  int nlength, slength, index;
  double v[3];
  double *ncontrolv = NULL, *ccontrolv = NULL, *ncv4D = NULL;
- double *knotv, *vk, knot = 0.0, *lengths, totallength = 0.0;
+ double *knotv = NULL, *vk = NULL, knot = 0.0;
+ double *lengths = NULL, totallength = 0.0;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
 
@@ -477,7 +479,8 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
  int a, i, j, order, deg, index;
  int nlength, slength;
  double v1[3], v2[3], *ncontrolv = NULL;
- double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
+ double *knotv = NULL, knot = 0.0;
+ double *lengths = NULL, totallength = 0.0, *vk = NULL;
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;
 
@@ -660,7 +663,8 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
  int a, i, j, order = 0, deg, index;
  int nlength, slength;
  double *ncontrolv = NULL;
- double *knotv, knot = 0.0, *lengths, totallength = 0.0, *vk = NULL;
+ double *knotv = NULL, knot = 0.0;
+ double *lengths = NULL, totallength = 0.0, *vk = NULL;
  double v1[3], v2[3];
  double *scontrolv = NULL;
  ay_nurbcurve_object *new = NULL;

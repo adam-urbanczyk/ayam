@@ -32,7 +32,7 @@ int
 ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
 	   double *a, double *q, double *u, double *v)
 {
- int i, j, k, l, l1, iter, retval;
+ int i, j, k, l = 0, l1, iter, retval;
  double c, f, g, h, s, x, y, z;
  double *e;
 

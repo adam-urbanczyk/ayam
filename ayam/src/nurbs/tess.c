@@ -784,8 +784,8 @@ ay_tess_tristopomesh(ay_tess_tri *tris, int has_vn, int has_vc, int has_tc,
  ay_pomesh_object *po = NULL;
  ay_tag *tag = NULL;
  ay_tess_tri *tri;
- unsigned int numtris = 0, i, stride, tcstagbuflen, tcttagbuflen;
- unsigned int vctagbuflen;
+ unsigned int numtris = 0, i, stride, tcstagbuflen = 0, tcttagbuflen = 0;
+ unsigned int vctagbuflen = 0;
  char buf[128], *tcstagbuf = NULL, *tcttagbuf = NULL, *vctagbuf = NULL;
  char *tmp = NULL;
 

@@ -5848,7 +5848,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "estlenNC";
- ay_nurbcurve_object *curve;
+ ay_nurbcurve_object *curve = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *po = NULL;
  double len;
