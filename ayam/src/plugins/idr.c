@@ -1871,7 +1871,7 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
       ay_status = ay_riopt_wrib(ay_root);
 
       ay_sm_wriballsm(file, objfile, ay_root->next, NULL, width, height,
-		      AY_FALSE, NULL);
+		      AY_FALSE);
       ay_prefs.wrib_sm = AY_FALSE;
     } /* if */
 
