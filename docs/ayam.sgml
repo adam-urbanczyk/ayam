@@ -2489,7 +2489,7 @@ In the next sections general object capabilities will be briefly
 documented in tables like this:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Object Type|Yes/No|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type|Yes/No@<hline>
 </tabular>
 <caption>Object Capabilities Example</caption>
@@ -2500,7 +2500,8 @@ The capabilities are:
 objects);
 <item><bf/Material/: the object can be associated with a material;
 <item><bf>Converts to/Provides</bf>: type of provided objects
-(Children means, the provided objects of the children are delivered upstream);
+(Children means, the provided objects of the children are delivered upstream),
++ - multiple objects may be provided, * - multiple objects will be provided;
 <item><bf/Point Edit/: the object has editable points.
 </itemize>
 
@@ -2665,7 +2666,7 @@ onto a view object in the tree view (see the above description).
 The following table briefly lists some capabilities of the View object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 View|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>View Object Capabilities</caption>
@@ -2754,7 +2755,7 @@ to the camera object.
 The following table briefly lists some capabilities of the Camera object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Camera|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>Camera Object Capabilities</caption>
@@ -2772,8 +2773,8 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Box object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Box|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Box|No|Yes|NPatch*|No@<hline>
 </tabular>
 <caption>Box Object Capabilities</caption>
 </table>
@@ -2814,8 +2815,8 @@ obeys all parameters of the sphere.
 The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sphere|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Sphere|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Sphere Object Capabilities</caption>
 </table>
@@ -2853,7 +2854,7 @@ obeys all parameters of the disk.
 The following table briefly lists some capabilities of the Disk object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Disk|No|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Disk Object Capabilities</caption>
@@ -2884,8 +2885,8 @@ obeys all parameters of the cone.
 The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cone|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cone|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Cone Object Capabilities</caption>
 </table>
@@ -2913,10 +2914,6 @@ A cylinder, centered at the origin of the object coordinate system.
 This object will be exported as solid primitive or as
 simple cylinder (depending on the <tt/"Closed"/ parameter
 of the RiCylinderAttr property) in RIBs.
-Note that the OpenGL representation of this object
-does not reflect the settings of the following parameters
-of the CylinderAttrib property: <tt/"Closed"/ and
-<tt/"ThetaMax"/.
 <p>
 Since Ayam 1.8.2, a cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
@@ -2925,8 +2922,8 @@ obeys all parameters of the cylinder.
 The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cylinder|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cylinder|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Cylinder Object Capabilities</caption>
 </table>
@@ -2966,8 +2963,8 @@ obeys all parameters of the torus.
 The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Torus|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Torus|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Torus Object Capabilities</caption>
 </table>
@@ -3009,8 +3006,8 @@ obeys all parameters of the paraboloid.
 The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Paraboloid|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Paraboloid|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Paraboloid Object Capabilities</caption>
 </table>
@@ -3051,8 +3048,8 @@ obeys all parameters of the hyperboloid.
 The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Hyperboloid|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Hyperboloid|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Hyperboloid Object Capabilities</caption>
 </table>
@@ -3123,8 +3120,8 @@ type will be silently ignored.
 The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Yes|Yes|N/A&thinsp;/&thinsp;Children|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Level|Yes|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -3214,7 +3211,7 @@ object may not be deleted.
 The following table briefly lists some capabilities of the Material object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Material|No|N/A|N/A|No@<hline>
 </tabular>
 <caption>Material Object Capabilities</caption>
@@ -3327,7 +3324,7 @@ about the standard light sources (see section
 The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Light|Yes|No|N/A|Yes@<hline>
 </tabular>
 <caption>Light Object Capabilities</caption>
@@ -3616,7 +3613,7 @@ support multiple points, as explained in section
 The following table briefly lists some capabilities of the NCurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NCurve|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>NCurve Object Capabilities</caption>
@@ -3842,7 +3839,7 @@ for more information regarding this.
 The following table briefly lists some capabilities of the NPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NPatch|Yes|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>NPatch Object Capabilities</caption>
@@ -3971,7 +3968,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the BPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>BPatch Object Capabilities</caption>
@@ -4007,7 +4004,7 @@ of basis type Catmull-Rom, Hermite or Custom.
 The following table briefly lists some capabilities of the PatchMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PatchMesh|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>PatchMesh Object Capabilities</caption>
@@ -4092,7 +4089,7 @@ T-junctions.
 The following table briefly lists some capabilities of the PolyMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PolyMesh|No|Yes|SDMesh|Yes@<hline>
 </tabular>
 <caption>PolyMesh Object Capabilities</caption>
@@ -4148,7 +4145,7 @@ polygon will be converted.
 The following table briefly lists some capabilities of the SDMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 SDMesh|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>SDMesh Object Capabilities</caption>
@@ -4279,7 +4276,7 @@ exist, select the master object and use the main menu entry
 The following table briefly lists some capabilities of the Instance object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Instance|No|No|Master|No@<hline>
 </tabular>
 <caption>Instance Object Capabilities</caption>
@@ -4350,8 +4347,8 @@ following example hierarchy:
 The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Yes|No|Children|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Clone|Yes|No|Children (+)|No@<hline>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -4466,8 +4463,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Revolve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Revolve Object Capabilities</caption>
 </table>
@@ -4560,8 +4557,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Extrude object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Extrude|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Extrude|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Extrude Object Capabilities</caption>
 </table>
@@ -4671,8 +4668,8 @@ are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Swing object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Swing|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Swing|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Swing Object Capabilities</caption>
 </table>
@@ -4780,8 +4777,8 @@ are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Sweep object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sweep|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Sweep|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Sweep Object Capabilities</caption>
 </table>
@@ -4912,8 +4909,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Birail1 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail1|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail1|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Birail1 Object Capabilities</caption>
 </table>
@@ -5043,8 +5040,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Birail2 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail2|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail2|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Birail2 Object Capabilities</caption>
 </table>
@@ -5171,8 +5168,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Skin object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Skin|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Skin|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Skin Object Capabilities</caption>
 </table>
@@ -5337,8 +5334,8 @@ patch using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Gordon object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Gordon|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Gordon|Yes|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Gordon Object Capabilities</caption>
 </table>
@@ -5415,7 +5412,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Bevel|Yes|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
@@ -5523,7 +5520,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Cap object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Cap|Yes|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Cap Object Capabilities</caption>
@@ -5590,7 +5587,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ICurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ICurve|No|No|NCurve|Yes@<hline>
 </tabular>
 <caption>ICurve Object Capabilities</caption>
@@ -5670,7 +5667,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ACurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ACurve|No|No|NCurve|Yes@<hline>
 </tabular>
 <caption>ACurve Object Capabilities</caption>
@@ -5776,7 +5773,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ConcatNC|Yes|No|NCurve|No@<hline>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
@@ -5856,7 +5853,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ExtrNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ExtrNC|Yes|No|NCurve|No@<hline>
 </tabular>
 <caption>ExtrNC Object Capabilities</caption>
@@ -5926,7 +5923,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the NCircle object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NCircle|No|No|NCurve|No@<hline>
 </tabular>
 <caption>NCircle Object Capabilities</caption>
@@ -5976,7 +5973,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the OffsetNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 OffsetNC|Yes|No|NCurve|No@<hline>
 </tabular>
 <caption>OffsetNC Object Capabilities</caption>
@@ -6027,7 +6024,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ConcatNP|Yes|Yes|NPatch|No@<hline>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
@@ -6079,7 +6076,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ExtrNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ExtrNP|Yes|Yes|NPatch|No@<hline>
 </tabular>
 <caption>ExtrNP Object Capabilities</caption>
@@ -6142,8 +6139,8 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Text object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Text|No|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Text|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Text Object Capabilities</caption>
 </table>
@@ -6207,7 +6204,7 @@ scenes that, for some reason, are just available as a piece of RIB.
 The following table briefly lists some capabilities of the RiInc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 RiInc|No|No|N/A|No@<hline>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
@@ -6232,7 +6229,7 @@ archives into your scenes.
 The following table briefly lists some capabilities of the RiProc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 RiProc|No|No|N/A|No@<hline>
 </tabular>
 <caption>RiProc Object Capabilities</caption>
@@ -6366,8 +6363,8 @@ there are example scene files using script objects in the
 The following table briefly lists some capabilities of the Script object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Yes|No|Any|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Yes|No|Any (+)|No@<hline>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
@@ -6570,8 +6567,8 @@ implement, as e.g. in Script object scripts.
 The following table briefly lists some capabilities of the Select object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Select|Yes|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 </tabular>
 <caption>Select Object Capabilities</caption>
 </table>
@@ -6633,7 +6630,7 @@ The object hierarchy of a Trim object, thus, looks like this:
 The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Trim|Yes|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Trim Object Capabilities</caption>
@@ -6705,7 +6702,7 @@ The following table briefly lists some capabilities of the MetaObj and
 MetaComp objects.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Capability/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 MetaObj|Yes|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
 </tabular>
