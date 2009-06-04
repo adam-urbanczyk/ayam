@@ -2521,10 +2521,10 @@ geometric objects:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Root|No|No|N/A|No@<hline>
-Level|Yes|Yes|N/A&thinsp;/&thinsp;Children|No@<hline>
-Clone|Yes|No|Children|No@<hline>
+Level|Yes|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Clone|Yes|No|Children (+)|No@<hline>
 Instance|No|No|Master|No@<hline>
-Select|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+Select|Yes|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 View|No|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
 Material|No|No|N/A|Yes@<hline>
@@ -2541,14 +2541,14 @@ These objects serve as geometric primitives in CSG hierarchies:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Box|No|Yes|NPatch|No@<hline>
-Sphere|No|Yes|NPatch|No@<hline>
+Box|No|Yes|NPatch*|No@<hline>
+Sphere|No|Yes|NPatch+|No@<hline>
 Disk|No|Yes|NPatch|No@<hline>
-Cone|No|Yes|NPatch|No@<hline>
-Cylinder|No|Yes|NPatch|No@<hline>
-Torus|No|Yes|NPatch|No@<hline>
-Paraboloid|No|Yes|NPatch|No@<hline>
-Hyperboloid|No|Yes|NPatch|No@<hline>
+Cone|No|Yes|NPatch+|No@<hline>
+Cylinder|No|Yes|NPatch+|No@<hline>
+Torus|No|Yes|NPatch+|No@<hline>
+Paraboloid|No|Yes|NPatch+|No@<hline>
+Hyperboloid|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>CSG/Solid Primitives</caption>
 </table>
@@ -2556,7 +2556,7 @@ Hyperboloid|No|Yes|NPatch|No@<hline>
 
 <sect2>Freeform Curves
 <p>
-These objects mainly serve as child objects for the surface
+These objects are mainly used as child objects for the surface
 generating tool objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -2605,17 +2605,17 @@ These objects mainly create freeform surfaces from curves:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|Yes|Yes|NPatch|No@<hline>
-Extrude|Yes|Yes|NPatch|No@<hline>
-Swing|Yes|Yes|NPatch|No@<hline>
-Sweep|Yes|Yes|NPatch|No@<hline>
-Birail1|Yes|Yes|NPatch|No@<hline>
-Birail2|Yes|Yes|NPatch|No@<hline>
-Skin|Yes|Yes|NPatch|No@<hline>
-Gordon|Yes|Yes|NPatch|No@<hline>
+Revolve|Yes|Yes|NPatch+|No@<hline>
+Extrude|Yes|Yes|NPatch+|No@<hline>
+Swing|Yes|Yes|NPatch+|No@<hline>
+Sweep|Yes|Yes|NPatch+|No@<hline>
+Birail1|Yes|Yes|NPatch+|No@<hline>
+Birail2|Yes|Yes|NPatch+|No@<hline>
+Skin|Yes|Yes|NPatch+|No@<hline>
+Gordon|Yes|Yes|NPatch+|No@<hline>
 Bevel|Yes|Yes|NPatch|No@<hline>
 Cap|Yes|Yes|NPatch|No@<hline>
-Text|No|Yes|NPatch|No@<hline>
+Text|No|Yes|NPatch+|No@<hline>
 Trim|Yes|Yes|NPatch|No@<hline>
 ConcatNP|Yes|Yes|NPatch|No@<hline>
 ExtrNP|Yes|Yes|NPatch|No@<hline>
@@ -2641,7 +2641,7 @@ SDMesh|No|Yes|PolyMesh|Yes@<hline>
 
 <sect2>Scripts and Plugins
 <p>
-These objects create arbitrary other objects from scripts
+These objects create/modify arbitrary other objects from scripts
 or define new object types via the custom object plugin
 mechanism.
 <table loc="!ht">
