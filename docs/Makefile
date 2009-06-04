@@ -14,12 +14,12 @@ html:
 	mkdir html
 	cd html; ln -sf ../pics pics;cd ..
 	cp ayam.sgml html
-	cd html;sgml2html -s 1 ayam.sgml;rm ayam.sgml;cd ..
+	cd html;sgml2html -D out=html -s 1 ayam.sgml;rm ayam.sgml;cd ..
 	./fixhtml.tcsh
 	-cd html;../corrwh.pl;cd ..
 
 txt:
-	sgml2txt -f ayam.sgml
+	sgml2txt -D out=txt -f ayam.sgml
 
 ps:
 	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
@@ -52,7 +52,7 @@ pdf3: pdf2
 
 pdf4:
 	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
-	sgml2latex -o tex ayaml.sgml
+	sgml2latex -p a4 -D out=latex -o tex ayaml.sgml
 	/bin/sh -c "sed -f sedsrc3 ayaml.tex > ayam.tex"
 	/bin/sh -c "sed -f sedsrc4 ayam.tex > ayaml.tex"
 	/usr/bin/tclsh fixpdftex.tcl ayaml.tex ayam.tex
