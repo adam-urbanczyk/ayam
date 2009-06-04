@@ -2505,6 +2505,155 @@ objects);
 <item><bf/Point Edit/: the object has editable points.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Object Types Overview
+<p>
+This section provides an overview on the object types available in
+Ayam (since there are so many).
+The object types are grouped by application in the following sections.
+
+<sect2>Scene Organization
+<p>
+These objects help to organize the scene apart from
+geometric objects:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Root|No|No|N/A|No@<hline>
+Level|Yes|Yes|N/A&thinsp;/&thinsp;Children|No@<hline>
+Clone|Yes|No|Children|No@<hline>
+Instance|No|No|Master|No@<hline>
+Select|Yes|No|N/A&thinsp;/&thinsp;Children|No@<hline>
+View|No|No|N/A|Yes@<hline>
+Camera|No|No|N/A|Yes@<hline>
+Material|No|No|N/A|Yes@<hline>
+Light|No|No|N/A|Yes@<hline>
+RiInc|No|No|N/A|No@<hline>
+RiProc|No|No|N/A|No@<hline>
+</tabular>
+<caption>Scene Organization</caption>
+</table>
+
+<sect2>CSG/Solid Primitives
+<p>
+These objects serve as geometric primitives in CSG hierarchies:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Box|No|Yes|NPatch|No@<hline>
+Sphere|No|Yes|NPatch|No@<hline>
+Disk|No|Yes|NPatch|No@<hline>
+Cone|No|Yes|NPatch|No@<hline>
+Cylinder|No|Yes|NPatch|No@<hline>
+Torus|No|Yes|NPatch|No@<hline>
+Paraboloid|No|Yes|NPatch|No@<hline>
+Hyperboloid|No|Yes|NPatch|No@<hline>
+</tabular>
+<caption>CSG/Solid Primitives</caption>
+</table>
+
+
+<sect2>Freeform Curves
+<p>
+These objects mainly serve as child objects for the surface
+generating tool objects:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NCurve|No|No|N/A|Yes@<hline>
+ICurve|No|No|NCurve|Yes@<hline>
+ACurve|No|No|NCurve|Yes@<hline>
+NCircle|No|No|NCurve|No@<hline>
+</tabular>
+<caption>Freeform Curves</caption>
+</table>
+
+
+<sect2>Freeform Surfaces
+<p>
+These objects enable direct manipulation of freeform surfaces:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NPatch|Yes|Yes|PolyMesh|Yes@<hline>
+BPatch|No|Yes|NPatch|Yes@<hline>
+PatchMesh|No|Yes|NPatch|Yes@<hline>
+</tabular>
+<caption>Freeform Surfaces</caption>
+</table>
+
+
+<sect2>Curve Tool Objects
+<p>
+These objects modify existing curves or create new curves:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNC|Yes|No|NCurve|No@<hline>
+ExtrNC|Yes|No|NCurve|No@<hline>
+OffsetNC|Yes|No|NCurve|No@<hline>
+</tabular>
+<caption>Curve Tool Objects</caption>
+</table>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>Surface Tool Objects
+<p>
+These objects mainly create freeform surfaces from curves:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|Yes|Yes|NPatch|No@<hline>
+Extrude|Yes|Yes|NPatch|No@<hline>
+Swing|Yes|Yes|NPatch|No@<hline>
+Sweep|Yes|Yes|NPatch|No@<hline>
+Birail1|Yes|Yes|NPatch|No@<hline>
+Birail2|Yes|Yes|NPatch|No@<hline>
+Skin|Yes|Yes|NPatch|No@<hline>
+Gordon|Yes|Yes|NPatch|No@<hline>
+Bevel|Yes|Yes|NPatch|No@<hline>
+Cap|Yes|Yes|NPatch|No@<hline>
+Text|No|Yes|NPatch|No@<hline>
+Trim|Yes|Yes|NPatch|No@<hline>
+ConcatNP|Yes|Yes|NPatch|No@<hline>
+ExtrNP|Yes|Yes|NPatch|No@<hline>
+</tabular>
+<caption>Surface Tool Objects</caption>
+</table>
+
+
+<sect2>Polygonal and Subdivision Objects
+<p>
+These objects complement the Ayam feature set and allow
+objects modelled in the polygonal or subdivision modelling
+paradigms to be included in Ayam scenes:
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+PolyMesh|No|Yes|SDMesh|Yes@<hline>
+SDMesh|No|Yes|PolyMesh|Yes@<hline>
+</tabular>
+<caption>Polygonal and Subdivision Objects</caption>
+</table>
+
+
+<sect2>Scripts and Plugins
+<p>
+These objects create arbitrary other objects from scripts
+or define new object types via the custom object plugin
+mechanism.
+<table loc="!ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Yes|No|Any|No@<hline>
+MetaObj|Yes|Yes|PolyMesh|No@<hline>
+MetaComp|No|No|N/A|No@<hline>
+</tabular>
+<caption>Scripts and Plugins</caption>
+</table>
+
 <sect1>Root Object<label id="rootobj">
 <p>
 There is always exactly one Root object in the scene.
@@ -3310,8 +3459,8 @@ Light sources of type custom use the attached light shader.
 Note that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
 The names <tt/"from"/ and <tt/"to"/ denote location and destination
-of the lightsource. You should not use these names for other things
-in your light shaders!
+of the lightsource. Those names should not be used for other things
+in the light shaders!
 <p>
 Point-, Distant-, and Spotlights:<label id="pdsl">
 <p>
@@ -6462,7 +6611,7 @@ parameters. If objects need to store differing/individual amounts of
 parameter data, lists can be used as individual parameters.
 </itemize>
 
-<sect2>Script Object Example
+<sect2>Script Object Example<label id="scriptobjex">
 <p>
 This section illustrates the development of a script object for parametric
 lines, otherwise unavailable in Ayam.
@@ -6533,7 +6682,7 @@ for more information about property GUIs and the Ayam scripting interface.
 Finally, to enable saving of the parameter value in the new property
 <tt>"LineAttr"</tt> to scene files, a comment must be prepended to the
 script (<tt>"Ayam, save array: LineAttrData"</tt>), and to enable
-multiple individually parameterised copies of this
+multiple and individually parameterised copies of this
 script object, a <tt/"SP"/ entry needs to be added to the
 <tt>"LineAttrData"</tt> array as well.
 <p>
@@ -11629,6 +11778,9 @@ from a patch is trimmed to the right length using a script like this:
 <code>
 convOb -inplace; trimNC 0.0 0.5
 </code>.
+See section <ref id="scriptobjex" name="Script Object Example"> for
+information on how this script might be expanded to support a
+GUI and more error checking.
 
 
 <sect1>Ayamrc File<label id="ayamrc">

@@ -54,7 +54,11 @@ while { ![eof $infile] } {
 			puts $outfile\
 		         "\\begin\{itemize\}\\setlength\{\\itemsep\}\{-0.5ex\}"
 		    } else {
-			puts $outfile $buf
+			if { [string first newpage $buf] > -1} {
+			    puts $outfile "\\newpage"
+			} else {
+			    puts $outfile $buf
+			}
 		    }
 		}
 	    }
