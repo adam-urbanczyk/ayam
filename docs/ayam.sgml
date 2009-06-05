@@ -2111,7 +2111,7 @@ is set.
 (tesselation) facility (based on GLU V1.3+). Five methods are available:
 <tt/"DomainDistance"/ (the default) simply tesselates the NURBS into equally
 sized pieces with regard to parametric space; <tt/"SParamU"/ and
-<tt/"SParamV"/ control the number of sampling points in u and v direction
+<tt/"SParamV"/ control the number of sampling points in U and V direction
 respectively per unit length.
 This leads to different numbers of samples for knot vectors
 of different length in parameter space!
@@ -2479,7 +2479,7 @@ about the property GUIs that appear in the properties section of the
 main window if a single object and a property have been selected.
 <p>
 Documentation on the standard properties (Transformations, Attributes,
-Material, Shader, Tags) can be found in
+Material, Shader, and Tags) can be found in
 section <ref id="stdprop" name="Standard Properties">.
 <p>
 Furthermore, this section contains information about all tag types,
@@ -2489,17 +2489,21 @@ In the next sections general object capabilities will be briefly
 documented in tables like this:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Object Type|Yes/No|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type|Yes/No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type+/*|Yes/No@<hline>
 </tabular>
 <caption>Object Capabilities Example</caption>
 </table>
 The capabilities are:
 <itemize>
-<item><bf/Parent/: the object can be a parent object (have child
-objects);
+<item><bf/Parent of/: the object is a parent object (can have child
+objects of the designated type), + - multiple child objects may be present,
+* - multiple child objects must be present, note that the type of the
+child object must not directly match, the child must rather provide an object
+of the appropriate type (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">);
 <item><bf/Material/: the object can be associated with a material;
-<item><bf>Converts to/Provides</bf>: type of provided objects
+<item><bf>Converts to/Provides</bf>: type of converted/provided objects
 (Children means, the provided objects of the children are delivered upstream),
 + - multiple objects may be provided, * - multiple objects will be provided;
 <item><bf/Point Edit/: the object has editable points.
@@ -2519,15 +2523,15 @@ These objects help to organize the scene apart from
 geometric objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Root|No|No|N/A|No@<hline>
-Level|Yes|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
-Clone|Yes|No|Children (+)|No@<hline>
+Level|Any (+)|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Clone|Any (+)|No|Children (+)|No@<hline>
 Instance|No|No|Master|No@<hline>
-Select|Yes|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Select|Any (+)|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 View|No|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
-Material|No|No|N/A|Yes@<hline>
+Material|No|N/A|N/A|No@<hline>
 Light|No|No|N/A|Yes@<hline>
 RiInc|No|No|N/A|No@<hline>
 RiProc|No|No|N/A|No@<hline>
@@ -2540,7 +2544,7 @@ RiProc|No|No|N/A|No@<hline>
 These objects serve as geometric primitives in CSG hierarchies:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Box|No|Yes|NPatch*|No@<hline>
 Sphere|No|Yes|NPatch+|No@<hline>
 Disk|No|Yes|NPatch|No@<hline>
@@ -2560,7 +2564,7 @@ These objects are mainly used as child objects for the surface
 generating tool objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NCurve|No|No|N/A|Yes@<hline>
 ICurve|No|No|NCurve|Yes@<hline>
 ACurve|No|No|NCurve|Yes@<hline>
@@ -2575,8 +2579,8 @@ NCircle|No|No|NCurve|No@<hline>
 These objects enable direct manipulation of freeform surfaces:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NPatch|Yes|Yes|PolyMesh|Yes@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
 PatchMesh|No|Yes|NPatch|Yes@<hline>
 </tabular>
@@ -2589,10 +2593,10 @@ PatchMesh|No|Yes|NPatch|Yes@<hline>
 These objects modify existing curves or create new curves:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|Yes|No|NCurve|No@<hline>
-ExtrNC|Yes|No|NCurve|No@<hline>
-OffsetNC|Yes|No|NCurve|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNC|NCurve*|No|NCurve|No@<hline>
+ExtrNC|NPatch|No|NCurve|No@<hline>
+OffsetNC|NCurve|No|NCurve|No@<hline>
 </tabular>
 <caption>Curve Tool Objects</caption>
 </table>
@@ -2604,21 +2608,21 @@ OffsetNC|Yes|No|NCurve|No@<hline>
 These objects mainly create freeform surfaces from curves:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|Yes|Yes|NPatch+|No@<hline>
-Extrude|Yes|Yes|NPatch+|No@<hline>
-Swing|Yes|Yes|NPatch+|No@<hline>
-Sweep|Yes|Yes|NPatch+|No@<hline>
-Birail1|Yes|Yes|NPatch+|No@<hline>
-Birail2|Yes|Yes|NPatch+|No@<hline>
-Skin|Yes|Yes|NPatch+|No@<hline>
-Gordon|Yes|Yes|NPatch+|No@<hline>
-Bevel|Yes|Yes|NPatch|No@<hline>
-Cap|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|NCurve|Yes|NPatch+|No@<hline>
+Extrude|NCurve+|Yes|NPatch+|No@<hline>
+Swing|NCurve*|Yes|NPatch+|No@<hline>
+Sweep|NCurve*|Yes|NPatch+|No@<hline>
+Birail1|NCurve*|Yes|NPatch+|No@<hline>
+Birail2|NCurve*|Yes|NPatch+|No@<hline>
+Skin|NCurve*|Yes|NPatch+|No@<hline>
+Gordon|NCurve*/Level|Yes|NPatch+|No@<hline>
+Bevel|NCurve|Yes|NPatch|No@<hline>
+Cap|NCurve+|Yes|NPatch|No@<hline>
 Text|No|Yes|NPatch+|No@<hline>
-Trim|Yes|Yes|NPatch|No@<hline>
-ConcatNP|Yes|Yes|NPatch|No@<hline>
-ExtrNP|Yes|Yes|NPatch|No@<hline>
+Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
+ConcatNP|NPatch*|Yes|NPatch|No@<hline>
+ExtrNP|NPatch|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Surface Tool Objects</caption>
 </table>
@@ -2631,7 +2635,7 @@ objects modelled in the polygonal or subdivision modelling
 paradigms to be included in Ayam scenes:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PolyMesh|No|Yes|SDMesh|Yes@<hline>
 SDMesh|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
@@ -2646,9 +2650,9 @@ or define new object types via the custom object plugin
 mechanism.
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Yes|No|Any|No@<hline>
-MetaObj|Yes|Yes|PolyMesh|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Any+|No|Any|No@<hline>
+MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
 </tabular>
 <caption>Scripts and Plugins</caption>
@@ -2815,7 +2819,7 @@ onto a view object in the tree view (see the above description).
 The following table briefly lists some capabilities of the View object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 View|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>View Object Capabilities</caption>
@@ -2904,7 +2908,7 @@ to the camera object.
 The following table briefly lists some capabilities of the Camera object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Camera|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>Camera Object Capabilities</caption>
@@ -2922,7 +2926,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Box object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Box|No|Yes|NPatch*|No@<hline>
 </tabular>
 <caption>Box Object Capabilities</caption>
@@ -2964,7 +2968,7 @@ obeys all parameters of the sphere.
 The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Sphere|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Sphere Object Capabilities</caption>
@@ -3003,7 +3007,7 @@ obeys all parameters of the disk.
 The following table briefly lists some capabilities of the Disk object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Disk|No|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Disk Object Capabilities</caption>
@@ -3034,7 +3038,7 @@ obeys all parameters of the cone.
 The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Cone|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Cone Object Capabilities</caption>
@@ -3071,7 +3075,7 @@ obeys all parameters of the cylinder.
 The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Cylinder|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Cylinder Object Capabilities</caption>
@@ -3112,7 +3116,7 @@ obeys all parameters of the torus.
 The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Torus|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Torus Object Capabilities</caption>
@@ -3155,7 +3159,7 @@ obeys all parameters of the paraboloid.
 The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Paraboloid|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Paraboloid Object Capabilities</caption>
@@ -3197,7 +3201,7 @@ obeys all parameters of the hyperboloid.
 The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Hyperboloid|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Hyperboloid Object Capabilities</caption>
@@ -3269,8 +3273,8 @@ type will be silently ignored.
 The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Yes|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Level|Any+|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -3360,7 +3364,7 @@ object may not be deleted.
 The following table briefly lists some capabilities of the Material object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Material|No|N/A|N/A|No@<hline>
 </tabular>
 <caption>Material Object Capabilities</caption>
@@ -3473,7 +3477,7 @@ about the standard light sources (see section
 The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Light|Yes|No|N/A|Yes@<hline>
 </tabular>
 <caption>Light Object Capabilities</caption>
@@ -3762,7 +3766,7 @@ support multiple points, as explained in section
 The following table briefly lists some capabilities of the NCurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NCurve|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>NCurve Object Capabilities</caption>
@@ -3988,8 +3992,8 @@ for more information regarding this.
 The following table briefly lists some capabilities of the NPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NPatch|Yes|Yes|PolyMesh|Yes@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>NPatch Object Capabilities</caption>
 </table>
@@ -4117,7 +4121,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the BPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>BPatch Object Capabilities</caption>
@@ -4153,7 +4157,7 @@ of basis type Catmull-Rom, Hermite or Custom.
 The following table briefly lists some capabilities of the PatchMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PatchMesh|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>PatchMesh Object Capabilities</caption>
@@ -4168,7 +4172,7 @@ settings:<p>
 <item><tt/"Type"/ may be set to <tt/"Bilinear"/ or <tt/"Bicubic"/.
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 <item><tt/"Close_U"/ and <tt/"Close_V"/ determine, whether the patch
-mesh should be closed in u- and v-direction respectively.
+mesh should be closed in U and V direction respectively.
 <item><tt/"BType_U"/ and <tt/"BType_V"/ control the basis type
 for bicubic patches. You may choose between the basis types:
 <tt/"Bezier"/, <tt/"B-Spline"/, <tt/"Catmull-Rom"/,
@@ -4238,7 +4242,7 @@ T-junctions.
 The following table briefly lists some capabilities of the PolyMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PolyMesh|No|Yes|SDMesh|Yes@<hline>
 </tabular>
 <caption>PolyMesh Object Capabilities</caption>
@@ -4294,7 +4298,7 @@ polygon will be converted.
 The following table briefly lists some capabilities of the SDMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 SDMesh|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>SDMesh Object Capabilities</caption>
@@ -4425,7 +4429,7 @@ exist, select the master object and use the main menu entry
 The following table briefly lists some capabilities of the Instance object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Instance|No|No|Master|No@<hline>
 </tabular>
 <caption>Instance Object Capabilities</caption>
@@ -4496,8 +4500,8 @@ following example hierarchy:
 The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Yes|No|Children (+)|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Clone|Any+|No|Children (+)|No@<hline>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -4612,8 +4616,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Revolve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|NCurve|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Revolve Object Capabilities</caption>
 </table>
@@ -4706,8 +4710,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Extrude object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Extrude|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Extrude|NCurve+|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Extrude Object Capabilities</caption>
 </table>
@@ -4806,8 +4810,8 @@ The base plane for the swing operation is the YZ-plane. The cross section
 curve should be defined in this plane and the trajectory should start here.
 <p>
 The dimensions and orders of the swung surface will be taken from the
-respective parameter curves as follows: width and order in u direction
-from the trajectory, height and order in v direction from the cross
+respective parameter curves as follows: width and order in U direction
+from the trajectory, height and order in V direction from the cross
 section.
 <p>
 You may convert the current swung surface and the caps, if there
@@ -4817,8 +4821,8 @@ are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Swing object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Swing|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Swing|NCurve*|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Swing Object Capabilities</caption>
 </table>
@@ -4926,8 +4930,8 @@ are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Sweep object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sweep|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Sweep|NCurve*|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Sweep Object Capabilities</caption>
 </table>
@@ -4939,29 +4943,36 @@ Since Ayam 1.10 the <tt/"Type"/ attribute controls, whether the
 swept surface should be open, closed, or periodic in the direction
 of the trajectory curve.
 <p>
-If <tt/"Interpolation"/ is enabled, all section curves
-will be interpolated by the swept surface. Instead of a
+If <tt/"Interpolation"/ is enabled, an additional interpolation
+will be run on the swept surface in U direction so that all section
+curves will be interpolated by the swept surface. Instead of a
 NURBS knot vector, the swept surface will then get a
-Custom knot vector (calculated by knot averaging) and the
-sweep will interpolate the trajectory more closely.
+Chordal knot vector (calculated by knot averaging) and the
+swept surface will follow the trajectory more closely.
+See the image below for an example.
+<figure loc="ht">
+<eps file="pics/sweepinterp.ps" height="5cm">
+<img src="pics/sweepinterp.gif">
+<caption>Sweep Along a Quarter Circle without (left) and with (right) Interpolation Enabled</caption>
+</figure>
 <p>
 The third parameter, <tt/"Sections"/, determines how many
-sections (in u direction) should be used, when generating the
+sections (in U direction) should be used, when generating the
 sweep NURBS patch. The sweep NURBS patch has sections+1 control
-points in u direction for open and closed sweep types, and sections+order
+points in U direction for open and closed sweep types, and sections+order
 control points for periodic sweep types.
 Since Ayam 1.13, also zero is a valid setting for the <tt/"Sections"/
 parameter and used as new default value. If <tt/"Sections"/ is zero
 the number of sections is directly derived from the length of the
 trajectory curve plus one (except for trajectory curves of length 2,
-where it is 1).
+where it is 1). See the table below for examples.
 <p>
 Consequently, if <tt/"Sections"/ is zero, for a standard NURBS curve of
 length 4, the number of sections used is 5 and the width of the created
 NURBS patch is 6, for a curve with just 2 control points, the number of
 sections used is 1 and the width of the resulting patch is 2.
 <p>
-If <tt/"Sections"/ is zero, the order of the sweep in u direction
+If <tt/"Sections"/ is zero, the order of the sweep in U direction
 is taken from the trajectory curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
@@ -5025,9 +5036,9 @@ The object hierarchy of a Birail1 object, thus, looks like this:
 <p>
 When the cross section touches the rail curves in their respective starting
 points, the resulting surface will interpolate the rail curves.
-The direction of the cross section curve will be parallel to the v
+The direction of the cross section curve will be parallel to the V
 parametric dimension (height) and the direction of the rail curves will be
-parallel to the u parametric dimension (width) of the resulting surface.
+parallel to the U parametric dimension (width) of the resulting surface.
 Height and width of the surface will be derived from the length of the
 cross section curve and the number of sections, respectively.
 <p>
@@ -5058,8 +5069,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Birail1 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail1|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail1|NCurve*|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Birail1 Object Capabilities</caption>
 </table>
@@ -5069,15 +5080,15 @@ The following parameters further control the birailing process:
 <sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
 <p>
 The parameter <tt/"Sections"/ determines how many
-sections (in u direction) should be used, when generating the
+sections (in U direction) should be used, when generating the
 birailed NURBS patch. The birailed NURBS patch always has sections+1 control
-points in u direction. Since Ayam 1.13, also zero is a valid setting for
+points in U direction. Since Ayam 1.13, also zero is a valid setting for
 the <tt/"Sections"/ parameter and used as new default value.
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
-where it is 1).
+where it is 1). See the table below for examples.
 <p>
-If <tt/"Sections"/ is zero, the order of the birail in u direction
+If <tt/"Sections"/ is zero, the order of the birail in U direction
 is taken from the first rail curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
@@ -5141,9 +5152,9 @@ The object hierarchy of a Birail2 object, thus, looks like this:
 <p>
 When the cross sections touch the rail curves in their respective starting
 points, the resulting surface will interpolate the rail curves.
-The direction of the cross section curves will be parallel to the v
+The direction of the cross section curves will be parallel to the V
 parametric dimension (height) and the direction of the rail curves will be
-parallel to the u parametric dimension (width) of the resulting surface.
+parallel to the U parametric dimension (width) of the resulting surface.
 Height and width of the surface will be derived from the length of the
 cross section curves and the number of sections, respectively.
 <p>
@@ -5189,8 +5200,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Birail2 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail2|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Birail2|NCurve*|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Birail2 Object Capabilities</caption>
 </table>
@@ -5199,16 +5210,16 @@ The following parameters control the birailing process:
 
 <sect2>Birail2Attr Property<label id="birail2p"><label id="birail2attrprop">
 <p>
-The parameter <tt/"Sections"/ determines how many sections (in u direction)
+The parameter <tt/"Sections"/ determines how many sections (in U direction)
 should be used, when generating the birailed NURBS patch. The birailed
-NURBS patch always has sections+1 control points in u direction.
+NURBS patch always has sections+1 control points in U direction.
 Since Ayam 1.13, also zero is a valid setting for
 the <tt/"Sections"/ parameter and used as new default value.
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
-where it is 1).
+where it is 1). See the table below for examples.
 <p>
-If <tt/"Sections"/ is zero, the order of the birail in u direction
+If <tt/"Sections"/ is zero, the order of the birail in U direction
 is taken from the first rail curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
@@ -5317,8 +5328,8 @@ if there are any, to ordinary NURBS patches using the main menu entry
 The following table briefly lists some capabilities of the Skin object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Skin|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Skin|NCurve*|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Skin Object Capabilities</caption>
 </table>
@@ -5332,7 +5343,7 @@ whether the inner curves should also be interpolated by the
 skinning surface.
 <p>
 The second parameter <tt/"Order_U"/ determines the order
-of the resulting surface in u direction (the order in v direction is
+of the resulting surface in U direction (the order in V direction is
 determined by the curves). The order may not be higher than the
 number of curves used. If the specified value is higher than the number
 of curves, the order of the generated surface will be silently
@@ -5340,7 +5351,7 @@ set to the number of curves.
 If <tt/"Order_U"/ is 0, a default value of 4 will be used.
 <p>
 Using the next parameter <tt/"Knot-Type_U"/, you can adapt the
-type of the knot vector that should be used in the u direction of the
+type of the knot vector that should be used in the U direction of the
 skinned surface. Note that this setting will have no effect if
 interpolation is switched on because then a chord length parameterisation
 will be used. If the knot type is Bezier and the specified
@@ -5399,7 +5410,7 @@ Also note that this configuration is in fact equivalent to a Coons patch.
 The curves may be of arbitrary length and order. You may e.g.
 use a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
-control points for the u parametric dimension. Note, however,
+control points for the U parametric dimension. Note, however,
 that in the general case only non-rational curves can be used
 as parameter curves for a Gordon surface.
 If the parameter curves are rational, the weight information
@@ -5414,7 +5425,7 @@ The Gordon object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 Separation of the two sets of curves has to be done using an
 empty level object. The first set of curves determines the u
-direction and the second set of curves the v direction of the
+direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
 in the Ayam object tree view:
@@ -5483,8 +5494,8 @@ patch using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Gordon object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Gordon|Yes|Yes|NPatch+|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Gordon|NCurve*/Level|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Gordon Object Capabilities</caption>
 </table>
@@ -5506,9 +5517,9 @@ If Ayam finds no information on modifications, the U curves take
 precedence (i.e. the V curves will be modified).
 <p>
 The parameters <tt/"Order_U"/ and <tt/"Order_V"/ determine the
-desired order of the resulting surface in u and v direction.
+desired order of the resulting surface in U and V direction.
 However, depending on the number and configuration of curves used
-in the u or v direction, it may not be possible to create a Gordon
+in the U or V direction, it may not be possible to create a Gordon
 surface of the desired order.
 If <tt/"Order_U"/ or <tt/"Order_V"/ are 0, a default value
 of 4 will be used.
@@ -5561,8 +5572,8 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Bevel|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Bevel|NCurve|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
 </table>
@@ -5669,8 +5680,8 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Cap object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cap|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Cap|NCurve+|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Cap Object Capabilities</caption>
 </table>
@@ -5736,7 +5747,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ICurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ICurve|No|No|NCurve|Yes@<hline>
 </tabular>
 <caption>ICurve Object Capabilities</caption>
@@ -5816,7 +5827,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ACurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ACurve|No|No|NCurve|Yes@<hline>
 </tabular>
 <caption>ACurve Object Capabilities</caption>
@@ -5922,8 +5933,8 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|Yes|No|NCurve|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNC|NCurve*|No|NCurve|No@<hline>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
 </table>
@@ -6002,8 +6013,8 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ExtrNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNC|Yes|No|NCurve|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ExtrNC|NPatch|No|NCurve|No@<hline>
 </tabular>
 <caption>ExtrNC Object Capabilities</caption>
 </table>
@@ -6028,7 +6039,7 @@ data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
 dimension). This option is useful to re-engineer swept surfaces, delivered
 as simple patches.
 
-<item><tt/"Parameter"/ controls the parametric value in u or v
+<item><tt/"Parameter"/ controls the parametric value in U or V
 direction in the parameter space of the NURBS patch object where the
 curve should be extracted. This parameter is only used when <tt/"Side"/
 is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
@@ -6072,7 +6083,7 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the NCircle object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NCircle|No|No|NCurve|No@<hline>
 </tabular>
 <caption>NCircle Object Capabilities</caption>
@@ -6122,8 +6133,8 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the OffsetNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-OffsetNC|Yes|No|NCurve|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+OffsetNC|NCurve|No|NCurve|No@<hline>
 </tabular>
 <caption>OffsetNC Object Capabilities</caption>
 </table>
@@ -6173,8 +6184,8 @@ object using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNP|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNP|NPatch*|Yes|NPatch|No@<hline>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
@@ -6190,7 +6201,7 @@ be created.
 surface will be reversed (in U direction).
 
 <item>The <tt/"Knot-Type"/ parameter allows to choose between NURB
-and B-Spline knot vectors for the concatenated surface (in u direction).
+and B-Spline knot vectors for the concatenated surface (in U direction).
 
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
@@ -6225,8 +6236,8 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the ExtrNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNP|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ExtrNP|NPatch|Yes|NPatch|No@<hline>
 </tabular>
 <caption>ExtrNP Object Capabilities</caption>
 </table>
@@ -6288,7 +6299,7 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 The following table briefly lists some capabilities of the Text object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Text|No|Yes|NPatch+|No@<hline>
 </tabular>
 <caption>Text Object Capabilities</caption>
@@ -6353,7 +6364,7 @@ scenes that, for some reason, are just available as a piece of RIB.
 The following table briefly lists some capabilities of the RiInc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 RiInc|No|No|N/A|No@<hline>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
@@ -6378,7 +6389,7 @@ archives into your scenes.
 The following table briefly lists some capabilities of the RiProc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 RiProc|No|No|N/A|No@<hline>
 </tabular>
 <caption>RiProc Object Capabilities</caption>
@@ -6512,8 +6523,8 @@ there are example scene files using script objects in the
 The following table briefly lists some capabilities of the Script object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Yes|No|Any (+)|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Script|Any (+)|No|Any (+)|No@<hline>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
@@ -6716,8 +6727,8 @@ implement, as e.g. in Script object scripts.
 The following table briefly lists some capabilities of the Select object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Yes|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Select|Any (+)|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 </tabular>
 <caption>Select Object Capabilities</caption>
 </table>
@@ -6779,8 +6790,8 @@ The object hierarchy of a Trim object, thus, looks like this:
 The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Trim|Yes|Yes|NPatch|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Trim Object Capabilities</caption>
 </table>
@@ -6851,8 +6862,8 @@ The following table briefly lists some capabilities of the MetaObj and
 MetaComp objects.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-MetaObj|Yes|Yes|PolyMesh|No@<hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
 </tabular>
 <caption>MetaObj/MetaComp Object Capabilities</caption>
@@ -8424,8 +8435,8 @@ control points will. The patch interpolates the first and the last control
 point afterwards. The knot types of the patch will be changed to type
 <tt/"Custom"/.
 The point selection will be removed from the original object.
-There are also tools available that clamp a patch in u- or
-v-direction only.
+There are also tools available that clamp a patch in U or
+V direction only.
 See also the documentation of the corresponding scripting interface commands
 <ref id="scclampunp" name="clampuNP">, and
 <ref id="scclampvnp" name="clampvNP">.
@@ -8537,7 +8548,7 @@ See also the documentation of the corresponding
 <item>Arguments: The split to curves tool takes a single NURBS patch from
 the selection.
 <item>Operation: The selected NURBS patch will be split into NURBS curves,
-along direction u or v.
+along direction U or V.
 <item>Note: The original NURBS patch object is not deleted.
 See also the documentation of the corresponding
 <ref id="scsplitnp" name="scripting interface command">.
@@ -8553,9 +8564,9 @@ that are of equal length or longer than the first selected curve
 will be used to form a new NURBS patch of the following dimensions:
 Width: length of the first selected curve,
 Height: number of used curves.
-The order in u direction (Order_U) will be equal to the number of used curves
+The order in U direction (Order_U) will be equal to the number of used curves
 for numbers of two to four and four for bigger numbers of used curves.
-The knot type in u direction (Knot-Type_U) will always be NURB.
+The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
 <item>Note: The original NURBS curves objects are not deleted.
@@ -9415,28 +9426,28 @@ of the curve will be changed to <tt/"Custom"/.
 </itemize>
 
 <p><label id="scclampnpu"><label id="scclampunp">
-clampuNP - clamp NURBS patch in u-direction:
+clampuNP - clamp NURBS patch in U direction:
 <itemize>
  <item>Synopsis: <tt/"clampuNP"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Clamp the u-direction knot vector of the selected NURBS
+ <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-u-direction).
+U direction).
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="scclampnpv"><label id="scclampvnp">
-clampvNP - clamp NURBS patch in v-direction:
+clampvNP - clamp NURBS patch in V direction:
 <itemize>
  <item>Synopsis: <tt/"clampvNP"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Clamp the v-direction knot vector of the selected NURBS
+ <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-v-direction).
+V direction).
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
@@ -9468,11 +9479,11 @@ insknuNP - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknuNP u r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Insert a new knot in u-direction at the position
+ <item>Description: Insert a new knot in U direction at the position
 specified by u, r times. u must be in the valid range of the corresponding
 knot vector of the selected patches. The valid range is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
-p is the degree (order-1) of the patch in u-direction and n is the
+p is the degree (order-1) of the patch in U direction and n is the
 width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
@@ -9484,11 +9495,11 @@ insknvNP - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknvNP v r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Insert a new knot in v-direction at the position
+ <item>Description: Insert a new knot in V direction at the position
 specified by v, r times. v must be in the valid range of the corresponding
 knot vector of the selected patches. The valid range is determined by
 the current knot vector V as follows: <tt/V[p] <= v <= V[n]/, where
-p is the degree (order-1) of the patch in v-direction and n is the
+p is the degree (order-1) of the patch in V direction and n is the
 height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
