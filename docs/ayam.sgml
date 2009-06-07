@@ -2497,15 +2497,17 @@ Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thins
 The capabilities are:
 <itemize>
 <item><bf/Parent of/: the object is a parent object (can have child
-objects of the designated type), + - multiple child objects may be present,
-* - multiple child objects must be present, note that the type of the
-child object must not directly match, the child must rather provide an object
-of the appropriate type (see also section
+objects of the designated type),
++ - multiple child objects may be present (one or many),
+* - multiple child objects must be present (many),
+note that the type of the child object must not directly match, the child
+must rather provide an object of the appropriate type (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">);
 <item><bf/Material/: the object can be associated with a material;
 <item><bf>Converts to/Provides</bf>: type of converted/provided objects
 (Children means, the provided objects of the children are delivered upstream),
-+ - multiple objects may be provided, * - multiple objects will be provided;
++ - multiple objects may be provided (one or many),
+* - multiple objects will be provided (many);
 <item><bf/Point Edit/: the object has editable points.
 </itemize>
 
@@ -6442,6 +6444,8 @@ source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
 auto_qualify, unknown (the missing unknown and autoloading facilities
 lead to further unavailability of commands normally available via
 autoloading, like e.g. parray, history).
+The puts command is available in a limited fashion: only access to
+the stdout and stderr channels is allowed.
 Ayam scripting interface commands that directly manipulate the user
 interface are also not available (uS, rV etc.). Please refer to the
 documentation of the scripting interface commands about their availability
