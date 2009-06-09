@@ -201,8 +201,14 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
+      if(!symbol->validisvalid)
+	{
+	  ay_error(AY_EWARN, fname, "Skipping invalid argument!");
+	  continue;
+	}
+
       /* XXXX temporarily discard array arguments   */
-      if(symbol->svd_arraylen < 2)
+      if(symbol->svd_arraylen < 1 && (symbol->svd_default.scalarval != 0x0))
 	{
 
       Tcl_DStringAppend(&ds, "{ ", -1);
