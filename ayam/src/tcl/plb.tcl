@@ -386,7 +386,7 @@ if { $ay(lb) == 1 } {
 }
 
 # avoid leaving the focus on an empty property canvas
-if { [llength $index] == 0 } {
+if { ( [focus] == $ay(pca) ) && ( [llength $index] == 0 ) } {
     resetFocus
 }
 
