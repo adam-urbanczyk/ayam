@@ -491,7 +491,7 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   /* handle script parameters */
-  if(sc->params && strstr(sc->script, ay_script_sa))
+  if(sc->params && sc->script && strstr(sc->script, ay_script_sa))
     {
       arrname = strchr(sc->script, ':');
       arrname++;
@@ -722,7 +722,7 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr, "0\n");
     } /* if */
 
-  if(strstr(sc->script, ay_script_sa))
+  if(sc->script && strstr(sc->script, ay_script_sa))
     {
       arrname = strchr(sc->script, ':');
       arrname++;
