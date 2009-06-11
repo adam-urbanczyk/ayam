@@ -46,10 +46,13 @@ int
 ayslo3d_scanslo3dsarg(SLO_VISSYMDEF *symbol, Tcl_DString *ds)
 {
  int ay_status = AY_OK;
+ double deffltval = 0.0;
+ const char *defstrval = NULL;
+ int i = 0, j = 0;
  char buffer[255];
- double deffltval;
- const char *defstrval;
- int i, j;
+
+  if(!symbol)
+   return AY_ENULL;
 
   switch(symbol->svd_type)
     {
@@ -200,13 +203,13 @@ ayslo3d_scanslo3dtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_DStringFree(&ds);
 	  return TCL_OK;
 	}
-
-      if(!symbol->validisvalid)
+      
+      if(!symbol->svd_valisvalid)
 	{
 	  ay_error(AY_EWARN, fname, "Skipping invalid argument!");
 	  continue;
 	}
-
+      
       /* XXXX temporarily discard array arguments   */
       if(symbol->svd_arraylen < 1 && (symbol->svd_default.scalarval != 0x0))
 	{
