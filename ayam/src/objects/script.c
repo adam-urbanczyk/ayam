@@ -1195,6 +1195,7 @@ ay_script_convertcb(ay_object *o, int in_place)
  ay_script_object *sc = NULL;
  ay_level_object *newl = NULL;
  ay_object *cmo = NULL, *new = NULL;
+ int i = 0;
 
   if(!o)
     return AY_ENULL;
@@ -1218,17 +1219,46 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  if(!(newl = calloc(1, sizeof(ay_level_object))))
 		    return AY_EOMEM;
 		  o->type = AY_IDLEVEL;
-		  o->down = sc->cm_objects;
+		  newl->type = AY_LTLEVEL;
+		  
+		  /* append current children (of the script object)
+		     to the list of created/modified objects */
 		  cmo = sc->cm_objects;
 		  while(cmo->next)
 		    {
 		      cmo = cmo->next;
 		    }
 		  cmo->next = o->down;
+
+		  /* link created/modified objects as
+		     children to the new level object */
+		  o->down = sc->cm_objects;
+
+		  /* now free the script object */
+
+		  /* free the script string */
 		  if(sc->script)
 		    free(sc->script);
+
+		  /* free compiled script */
+		  if(sc->cscript)
+		    {
+		      Tcl_DecrRefCount(sc->cscript);
+		      sc->cscript = NULL;
+		    }
+
+		  /* free saved parameters */
+		  if(sc->params)
+		    {
+		      for(i = 0; i < sc->paramslen; i++)
+			{
+			  Tcl_DecrRefCount(sc->params[i]);
+			}
+		      free(sc->params);
+		    }
+
 		  free(o->refine);
-		  newl->type = AY_LTLEVEL;
+		  
 		  o->refine = newl;
 		}
 	      else
