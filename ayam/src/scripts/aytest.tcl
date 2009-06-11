@@ -74,14 +74,20 @@ foreach type $types {
 }
 # foreach
 
-#    {SphereAttrData(Closed) {0 1}
-#    {SphereAttrData(Radius) {0.5 1.0 2.0}
-#    {SphereAttrData(ZMin) {-0.5 -1.0 -2.0 0.0 1.0 2.0}
-#    {SphereAttrData(ZMax) {2.0 1.0 0.5 0.0 -0.5 -1.0 -2.0}
-#    {SphereAttrData(ThetaMax) {360.0 -360.0 0.0 180.0 -180.0 90.0 -90.0}
 
-set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91  179 180 181 269 270 271 359 360}
+#
+# Test 2
+#
 
+puts $log "Testing object variations ...\n"
+
+
+# standard angles to test for the ThetaMax
+# parameter found in many objects
+set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 179 180 181 269 270 271 359 360}
+
+
+# Sphere Variation #1
 array set Sphere_1 {
     arr SphereAttrData
     freevars {Closed ThetaMax}
@@ -91,6 +97,10 @@ array set Sphere_1 {
 set Sphere_1(ThetaMax) $angles
 
 lappend Sphere_1(vals) { 1.0 -1.0 1.0 }
+lappend Sphere_1(vals) { 1.0 -0.1 0.1 }
+lappend Sphere_1(vals) { 1.0 -0.2 0.2 }
+lappend Sphere_1(vals) { 1.0 -0.5 0.5 }
+
 lappend Sphere_1(vals) { 1.0 -0.5 1.0 }
 lappend Sphere_1(vals) { 1.0 0.0 1.0 }
 lappend Sphere_1(vals) { 1.0 0.5 1.0 }
@@ -99,9 +109,159 @@ lappend Sphere_1(vals) { 1.0 -1.0 0.0 }
 lappend Sphere_1(vals) { 1.0 -1.0 0.5 }
 
 
-#
-#
-#
+# Sphere Variation #2
+array set Sphere_2 {
+    arr SphereAttrData
+    prereqs {scalOb 0.5 0.5 0.5}
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Sphere_2(ThetaMax) $angles
+
+# take all valsets from Sphere_1 but adapt the radius
+foreach valset $Sphere_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [expr [lindex $valset 1] * 2.0 ]
+    lappend val [expr [lindex $valset 2] * 2.0 ]
+    lappend Sphere_2(vals) $val
+}
+# foreach
+
+
+# Sphere Variation #3
+array set Sphere_3 {
+    arr SphereAttrData
+    prereqs {scalOb 2.0 2.0 2.0}
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Sphere_3(ThetaMax) $angles
+
+# take all valsets from Sphere_1 but adapt the radius
+foreach valset $Sphere_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [expr [lindex $valset 1] * 0.5 ]
+    lappend val [expr [lindex $valset 2] * 0.5 ]
+    lappend Sphere_3(vals) $val
+}
+# foreach
+
+
+#############
+# Cylinder
+#############
+
+# Cylinder Variation #1
+array set Cylinder_1 {
+    arr CylinderAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Cylinder_1(ThetaMax) $angles
+
+lappend Cylinder_1(vals) { 1.0 -1.0 1.0 }
+lappend Cylinder_1(vals) { 1.0 -0.1 0.1 }
+lappend Cylinder_1(vals) { 1.0 -0.5 0.5 }
+lappend Cylinder_1(vals) { 1.0 -2.0 2.0 }
+lappend Cylinder_1(vals) { 1.0 0.0 1.0 }
+lappend Cylinder_1(vals) { 1.0 -1.0 0.0 }
+lappend Cylinder_1(vals) { 1.0 -2.0 -1.0 }
+lappend Cylinder_1(vals) { 1.0 1.0 2.0 }
+lappend Cylinder_1(vals) { 1.0 -2.1 -0.1 }
+lappend Cylinder_1(vals) { 1.0 0.1 2.1 }
+
+
+#############
+# Cone
+#############
+
+# Cone Variation #1
+array set Cone_1 {
+    arr ConeAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Cone_1(ThetaMax) $angles
+
+
+#############
+# Disk
+#############
+
+# Disk Variation #1
+array set Disk_1 {
+    arr DiskAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Disk_1(ThetaMax) $angles
+
+
+#############
+# Hyperboloid
+#############
+
+# Hyperboloid Variation #1
+array set Hyperboloid_1 {
+    arr HyperboloidAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Hyperboloid_1(ThetaMax) $angles
+
+
+
+#############
+# Paraboloid
+#############
+
+# Paraboloid Variation #1
+array set Paraboloid_1 {
+    arr ParaboloidAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Paraboloid_1(ThetaMax) $angles
+
+
+
+#############
+# Torus
+#############
+
+# Torus Variation #1
+array set Torus_1 {
+    arr TorusAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Torus_1(ThetaMax) $angles
+
+
+# forall:
+#  taken from http://wiki.tcl.tk/2546
+#  (Cartesian product of a list of lists)
+#  original author: Eric Boudaillier;
+#  create cartesian product of a list of lists,
+#  run cmd for every combination, example:
+#  forall var1 list1 var2 list2 [varn listn] cmd
+#  forall a {1 2 3} b {3 4} {puts "$a $b"}
+#  =>
+#  1 3
+#  1 4
+#  2 3
+#  2 4
+#  3 3...
 proc forall {args} {
     if {[llength $args] < 3 || [llength $args] % 2 == 0} {
 	return -code error "wrong \# args: should be \"forall varList list ?varList list ...? body\""
@@ -121,7 +281,7 @@ proc forall {args} {
 
 # test_var:
 #  test object variations
-#
+#  ToDo: make final body command configurable
 proc test_var { type } {
 
   set i 1
@@ -179,6 +339,7 @@ proc test_var { type } {
 
  return;
 }
+# test_var
 
 set types {}
 lappend types Sphere
@@ -188,12 +349,13 @@ foreach type $types {
 }
 # foreach
 
-#
+
+# for now, we stop
 close $log
 return;
 
 #
-# Test 2
+# Test 3
 #
 
 puts $log "Testing tool objects ...\n"
@@ -218,7 +380,7 @@ foreach type $types {
 
 
 #
-# Test 3
+# Test 4
 #
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
