@@ -111,7 +111,7 @@ proc create_makefile {} {
 	}
 	if { ((![file exists "$tiffpath/lib/libtiff.so"]) &&
 	      (![file exists "$tiffpath/lib/libtiff.a"])) } {
-	    set err_str "$err_str - \"$tiffpath/include/libtiff.so\" doesn't exist!\n"
+	    set err_str "$err_str - \"$tiffpath/lib/libtiff.so\" doesn't exist!\n"
 	    set err 1
 	}
     }
