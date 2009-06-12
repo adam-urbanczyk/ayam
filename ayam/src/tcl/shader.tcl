@@ -194,6 +194,7 @@ proc shader_cycSel { w k l } {
     # make selection and scroll listbox, so that it is visible
     $w selection clear 0 end
     $w selection set $i
+    $w activate $i
     $w see $i
 
     # rotate list, so that next invocation uses next list entry
