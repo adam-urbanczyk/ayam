@@ -33,7 +33,7 @@ The following requirements _must_ be met to compile a shared
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk sources ( atleast V8.2 )
+- Tcl/Tk sources ( at least V8.2, at most V8.4.19 )
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ ) 
@@ -177,7 +177,7 @@ The following requirements _must_ be met to compile a wrapped standalone
 version of Ayam:
 
 - ANSI-C-compiler
-- Tcl/Tk sources ( V8.2.x (see also Note 1))
+- Tcl/Tk sources ( V8.2.x (see also Note 1) )
   ftp://ftp.scriptics.com/pub/tcl/
   ( May move to SourceForge in the future, see:
     http://tcl.sourceforge.net/ )
