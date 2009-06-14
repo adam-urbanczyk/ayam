@@ -21,7 +21,7 @@ selOb
 #
 # Test 1
 #
-
+if { 0 } {
 puts $log "Testing object callbacks...\n"
 
 lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
@@ -74,6 +74,7 @@ foreach type $types {
 }
 # foreach
 
+}
 
 #
 # Test 2
@@ -123,8 +124,8 @@ set Sphere_2(ThetaMax) $angles
 foreach valset $Sphere_1(vals) { 
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
-    lappend val [expr [lindex $valset 1] * 2.0 ]
-    lappend val [expr [lindex $valset 2] * 2.0 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
     lappend Sphere_2(vals) $val
 }
 # foreach
@@ -144,8 +145,8 @@ set Sphere_3(ThetaMax) $angles
 foreach valset $Sphere_1(vals) { 
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
-    lappend val [expr [lindex $valset 1] * 0.5 ]
-    lappend val [expr [lindex $valset 2] * 0.5 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
     lappend Sphere_3(vals) $val
 }
 # foreach
@@ -176,6 +177,47 @@ lappend Cylinder_1(vals) { 1.0 -2.1 -0.1 }
 lappend Cylinder_1(vals) { 1.0 0.1 2.1 }
 
 
+# Cylinder Variation #2
+array set Cylinder_2 {
+    arr CylinderAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Cylinder_2(ThetaMax) $angles
+
+# take all valsets from Cylinder_1 but adapt the radius
+foreach valset $Cylinder_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
+    lappend Cylinder_2(vals) $val
+}
+# foreach
+
+
+# Cylinder Variation #3
+array set Cylinder_3 {
+    arr CylinderAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Cylinder_3(ThetaMax) $angles
+
+# take all valsets from Cylinder_1 but adapt the radius
+foreach valset $Cylinder_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
+    lappend Cylinder_3(vals) $val
+}
+# foreach
+
+
+
 #############
 # Cone
 #############
@@ -183,11 +225,15 @@ lappend Cylinder_1(vals) { 1.0 0.1 2.1 }
 # Cone Variation #1
 array set Cone_1 {
     arr ConeAttrData
-    freevars {Closed ThetaMax}
+    freevars {Closed ThetaMax Radius Height}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    Radius {0.1 0.5 1.0 1.5 2.0}
+    Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
+    vars {}
+    vals {1}
 }
 set Cone_1(ThetaMax) $angles
+
 
 
 #############
@@ -197,9 +243,11 @@ set Cone_1(ThetaMax) $angles
 # Disk Variation #1
 array set Disk_1 {
     arr DiskAttrData
-    freevars {Closed ThetaMax}
-    Closed {0 1}
-    vars {Radius ZMin ZMax}
+    freevars {Radius Height ThetaMax}
+    Radius {0.1 0.5 1.0 1.5 2.0}
+    Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
+    vars {}
+    vals {1}
 }
 set Disk_1(ThetaMax) $angles
 
@@ -228,9 +276,28 @@ array set Paraboloid_1 {
     arr ParaboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    vars {RMax ZMin ZMax}
 }
 set Paraboloid_1(ThetaMax) $angles
+
+
+lappend Paraboloid_1(vals) { 1.0 0.0 0.5 }
+lappend Paraboloid_1(vals) { 1.0 0.0 1.0 }
+lappend Paraboloid_1(vals) { 1.0 0.0 1.5 }
+lappend Paraboloid_1(vals) { 1.0 0.0 2.0 }
+
+lappend Paraboloid_1(vals) { 1.0 0.1 0.5 }
+lappend Paraboloid_1(vals) { 1.0 0.1 1.0 }
+lappend Paraboloid_1(vals) { 1.0 0.1 1.5 }
+lappend Paraboloid_1(vals) { 1.0 0.1 2.0 }
+
+lappend Paraboloid_1(vals) { 1.0 1.0 0.1 }
+lappend Paraboloid_1(vals) { 1.0 1.0 0.5 }
+lappend Paraboloid_1(vals) { 1.0 1.0 0.9 }
+
+lappend Paraboloid_1(vals) { 1.0 2.0 0.1 }
+lappend Paraboloid_1(vals) { 1.0 2.0 0.5 }
+lappend Paraboloid_1(vals) { 1.0 2.0 0.9 }
 
 
 
@@ -342,7 +409,7 @@ proc test_var { type } {
 # test_var
 
 set types {}
-lappend types Sphere
+lappend types Sphere Cylinder Disk Cone
 
 foreach type $types {
     test_var $type
