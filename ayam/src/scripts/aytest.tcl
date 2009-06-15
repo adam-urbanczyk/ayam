@@ -88,6 +88,10 @@ puts $log "Testing object variations ...\n"
 set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 179 180 181 269 270 271 359 360}
 
 
+#############
+# Sphere
+#############
+
 # Sphere Variation #1
 array set Sphere_1 {
     arr SphereAttrData
@@ -261,9 +265,25 @@ array set Hyperboloid_1 {
     arr HyperboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    vars {P1_X P1_Y P1_Z P2_X P2_Y P2_Z}
 }
 set Hyperboloid_1(ThetaMax) $angles
+
+# a hyperboloid as you know it
+lappend Hyperboloid_1(vals) { 0.0 -1.0 -0.5  1.0 0.0 0.5 }
+lappend Hyperboloid_1(vals) { 1.0 0.0 0.5  0.0 -1.0 -0.5 }
+
+# cylinder
+lappend Hyperboloid_1(vals) { 0.0 1.0 -0.5  0.0 1.0 0.5 }
+lappend Hyperboloid_1(vals) { 0.0 1.0 0.5  0.0 1.0 -0.5 }
+lappend Hyperboloid_1(vals) { 1.0 0.0 -0.5  1.0 0.0 0.5 }
+lappend Hyperboloid_1(vals) { 1.0 0.0 0.5  1.0 0.0 -0.5 }
+
+# ring (disk with hole)
+lappend Hyperboloid_1(vals) { 0.5 0.0 0.0  1.0 0.0 0.0 }
+
+# frustum (cone without apex)
+lappend Hyperboloid_1(vals) { 0.0 1.0 -0.5  0.0 0.5 0.5 }
 
 
 
@@ -300,6 +320,46 @@ lappend Paraboloid_1(vals) { 1.0 2.0 0.5 }
 lappend Paraboloid_1(vals) { 1.0 2.0 0.9 }
 
 
+# Paraboloid Variation #2
+array set Paraboloid_2 {
+    arr ParaboloidAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {RMax ZMin ZMax}
+}
+set Paraboloid_2(ThetaMax) $angles
+
+
+# take all valsets from Paraboloid_1 but adapt RMax
+foreach valset $Paraboloid_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 0.5 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
+    lappend Paraboloid_2(vals) $val
+}
+# foreach
+
+
+# Paraboloid Variation #3
+array set Paraboloid_3 {
+    arr ParaboloidAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {RMax ZMin ZMax}
+}
+set Paraboloid_3(ThetaMax) $angles
+
+# take all valsets from Paraboloid_1 but adapt RMax
+foreach valset $Paraboloid_1(vals) { 
+    set val {}
+    lappend val [expr [lindex $valset 0] * 2.0 ]
+    lappend val [lindex $valset 1]
+    lappend val [lindex $valset 2]
+    lappend Paraboloid_3(vals) $val
+}
+# foreach
+
 
 #############
 # Torus
@@ -310,9 +370,25 @@ array set Torus_1 {
     arr TorusAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    vars {MajorRad MinorRad PhiMin PhiMax}
 }
 set Torus_1(ThetaMax) $angles
+
+lappend Torus_1(vals) { 0.25 0.25 0.0 360.0 }
+lappend Torus_1(vals) { 0.75 0.25 0.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.25 0.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.5 0.0 360.0 }
+
+lappend Torus_1(vals) { 0.25 0.25 90.0 360.0 }
+lappend Torus_1(vals) { 0.75 0.25 90.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.25 90.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.5 90.0 360.0 }
+
+lappend Torus_1(vals) { 0.25 0.25 180.0 360.0 }
+lappend Torus_1(vals) { 0.75 0.25 180.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.25 180.0 360.0 }
+lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
+
 
 
 # forall:
