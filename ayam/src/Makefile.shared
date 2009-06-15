@@ -338,6 +338,11 @@ AYCSGLIBS = $(OPENCSGOBJS) $(GLEWLIB)
 
 # onio Plugin
 OPENNURBSDIR = ../../opennurbs
+
+ONIOCFLAGS = 
+# IRIX:
+#ONIOCFLAGS = -D_WCHAR_T_DEFINED -DON_COMPILER_IRIX -D_GNU_SOURCE
+
 ONIOINCDIR = $(OPENNURBSDIR)
 ONIOLIBS = $(OPENNURBSDIR)/opennurbs_extensions.o -L$(OPENNURBSDIR) -lopenNURBS -lzlib
 
@@ -600,7 +605,7 @@ aygso.so: plugins/ayerror.o
 	$(CXX) $(SHLFLAGS) plugins/ayerror.o plugins/aygso.o -o plugins/aygso.so $(AYGSOLIBS)
 
 onio.so:
-	$(CXX) -c $(CFLAGS) plugins/onio.cpp -o plugins/onio.o $(AYINC) -I$(ONIOINCDIR)
+	$(CXX) -c $(CFLAGS) $(ONIOCFLAGS) plugins/onio.cpp -o plugins/onio.o $(AYINC) -I$(ONIOINCDIR)
 	$(CXX) $(SHLFLAGS) plugins/onio.o -o plugins/onio.so -Wl,-Bstatic $(ONIOLIBS) -Wl,-Bdynamic
 
 dxfio.so:
