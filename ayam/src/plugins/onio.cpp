@@ -16,6 +16,11 @@
 #include <iostream>
 
 #include "ayam.h"
+
+#ifdef ON_COMPILER_IRIX
+#undef BOOL
+#endif
+
 #include <opennurbs.h>
 #include <opennurbs_extensions.h>
 
