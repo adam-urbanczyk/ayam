@@ -3589,14 +3589,12 @@ Onio_Init(Tcl_Interp *interp)
   // initialize OpenNURBS
   ON::Begin();
 
-  // create new commands for all views (Togl widgets)
-  //Togl_CreateCommand("rendercsg", onio_rendertcb);
 
   // create new Tcl commands to interface with the plugin
-  Tcl_CreateCommand(interp, "onioRead", onio_readtcmd,
+  Tcl_CreateCommand(interp, "onioRead", (Tcl_CmdProc*) onio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "onioWrite", onio_writetcmd,
+  Tcl_CreateCommand(interp, "onioWrite", (Tcl_CmdProc*) onio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   // init hash table for write callbacks

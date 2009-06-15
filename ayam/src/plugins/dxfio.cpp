@@ -977,7 +977,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
 		       void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
- int w, h, uorder, vorder, uknott, vknott, numcv;
+ int w, h, uorder = 0, vorder = 0, uknott = 0, vknott = 0, numcv;
  int i, j, a, b, c;
  double *controlv = NULL;
  bool closem = false, closen = false;
@@ -2807,10 +2807,10 @@ Dxfio_Init(Tcl_Interp *interp)
     }
 
   // create new Tcl commands to interface with the plugin
-  Tcl_CreateCommand(interp, "dxfioRead", dxfio_readtcmd,
+  Tcl_CreateCommand(interp, "dxfioRead", (Tcl_CmdProc*) dxfio_readtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "dxfioWrite", dxfio_writetcmd,
+  Tcl_CreateCommand(interp, "dxfioWrite", (Tcl_CmdProc*) dxfio_writetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   // init hash table for write callbacks
