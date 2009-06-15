@@ -1489,7 +1489,8 @@ dxfio_readentitydcb(const class dimeState *state,
  static int entitynum = 0;
  char progressstr[32];
  char arrname[] = "dxfio_options", varname1[] = "Progress";
- char varname2[] = "Cancel", *val = NULL;
+ char varname2[] = "Cancel";
+ const char *val = NULL;
 
   if(!state || !entity)
     {
@@ -1602,7 +1603,8 @@ dxfio_readprogressdcb(float progress, void *clientdata)
  char progressstr[32];
  char fname[] = "dxfio_readfile";
  char arrname[] = "dxfio_options", varname1[] = "Progress";
- char varname2[] = "Cancel", *val = NULL;
+ char varname2[] = "Cancel";
+ const char *val = NULL;
 
   if(clientdata != NULL)
     {
@@ -2368,7 +2370,8 @@ dxfio_writeobject(ay_object *o, dimeModel *dm)
  ay_object *c = NULL, *to = NULL;
  int i, numconvs = 3, conversions[3] = {AY_IDNPATCH, AY_IDNCURVE, AY_IDPOMESH};
  char arrname[] = "dxfio_options";
- char varname2[] = "Cancel", *val = NULL;
+ char varname2[] = "Cancel";
+ const char *val = NULL;
 
   if(!o || !dm)
     return AY_ENULL;
@@ -2723,7 +2726,8 @@ dxfio_writeprogressdcb(float progress, void *clientdata)
  char progressstr[32];
  char fname[] = "dxfio_writefile";
  char arrname[] = "dxfio_options", varname1[] = "Progress";
- char varname2[] = "Cancel", *val = NULL;
+ char varname2[] = "Cancel";
+ const char *val = NULL;
 
   if(clientdata != NULL)
     {
