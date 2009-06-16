@@ -245,8 +245,8 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int j = 0, argvi = 0;
- ay_object *o = ay_currentlevel->object;
+ int found = AY_FALSE, j = 0, argvi = 0;
+ ay_object *o = NULL;
  char fname[] = "goDown";
  /*
  char *part1 = "ay", *part2 = "CurrentLevel";
@@ -261,95 +261,118 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  o = ay_currentlevel->object;
+
+  if(!o)
+    return TCL_OK;
+
   argvi = atoi(argv[1]);
 
-  /* sublevel? */
-  if(ay_root != o)
+  if(argvi == -1)
     {
-      /* ".." selected? -> go up instead! */
-      if(argvi == 0)
+      /* user specified "-1" => select last object */
+      while(o->next && o->next->next)
 	{
-	  return(ay_clevel_gouptcmd(clientData, interp, argc, argv));
+	  o = o->next;
 	}
-      j = 1;
+      found = AY_TRUE;
     }
-
-
-  while(o)
+  else
     {
-      if(argvi == j)
-	{ /* found the selected object */
-	  if(o->parent)
+      /* user specified an index => find and select appropriate object */
+
+      /* are we in a sublevel (not root)? */
+      if(ay_root != o)
+	{
+	  /* Yes */
+	  if(argvi == 0)
 	    {
-	      ay_status = ay_clevel_add(o);
-	      if(ay_status)
-		{
-		  ay_error(ay_status, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      ay_status = ay_clevel_add(o->down);
-	      if(ay_status)
-		{
-		  ay_error(ay_status, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      if(!o->down)
-		{
-		  ay_error(AY_ENULL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      /* if there is just a single object in this level
-		 (this is then an EndLevel object) we add the next
-		 object to the down link */
-	      if(!o->down->next)
-		{
-		  ay_next = &(o->down);
-		}
-	      else
-		{
-		  o = o->down;
-		  while(o->next)
-		    {
-		      ay_next = &(o->next);
-		      o = o->next;
-		    } /* while */
-		} /* if */
-	    } /* if */
-#if 0
-	  /* Synchronize the value of ay(CurrentLevel) */
-	  toa = Tcl_NewStringObj(part1, -1);
-	  ton = Tcl_NewStringObj(part2, -1);
-
-	  /* Get ay(CurrentLevel) value */
-	  to = Tcl_ObjGetVar2(interp, toa, ton,
-			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  no = Tcl_NewStringObj(Tcl_GetStringFromObj(to, NULL), -1);
-
-	  /* Append the new component of the level */
-	  if(strcmp(Tcl_GetStringFromObj(to, NULL), "root"))
-	    {
-	      sprintf(tmp, ":%d", argvi-1);
-	    } else {
-	      sprintf(tmp, ":%d", argvi);
+	      /* ".." selected? -> go up instead! */
+	      return(ay_clevel_gouptcmd(clientData, interp, argc, argv));
 	    }
+	  j = 1;
+	}
 
-	  Tcl_AppendStringsToObj(no, tmp, NULL);
-	  Tcl_ObjSetVar2(interp, toa, ton, no,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      while(o->next)
+	{
+	  if(argvi == j)
+	    {
+	      /* found the selected object */
+	      found = AY_TRUE;
+	      break;
+	    } /* if */
+	  j++;
+	  o = o->next;
+	} /* while */
+    } /* if */
 
-	  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-	  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
-#endif
+  if(found && o && o->parent)
+    {
+      ay_status = ay_clevel_add(o);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
 	  return TCL_OK;
+	}
+
+      ay_status = ay_clevel_add(o->down);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, NULL);
+	  return TCL_OK;
+	}
+
+      if(!o->down)
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  return TCL_OK;
+	}
+
+      /* if there is just a single object in this level
+	 (this is then an EndLevel object) we add the next
+	 object to the down link */
+      if(!o->down->next)
+	{
+	  ay_next = &(o->down);
+	}
+      else
+	{
+	  o = o->down;
+	  while(o->next)
+	    {
+	      ay_next = &(o->next);
+	      o = o->next;
+	    } /* while */
 	} /* if */
 
-      j++;
-      o = o->next;
-    } /* while */
+#if 0
+      /* Synchronize the value of ay(CurrentLevel) */
+      toa = Tcl_NewStringObj(part1, -1);
+      ton = Tcl_NewStringObj(part2, -1);
+
+      /* Get ay(CurrentLevel) value */
+      to = Tcl_ObjGetVar2(interp, toa, ton,
+			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      no = Tcl_NewStringObj(Tcl_GetStringFromObj(to, NULL), -1);
+
+      /* Append the new component of the level */
+      if(strcmp(Tcl_GetStringFromObj(to, NULL), "root"))
+	{
+	  sprintf(tmp, ":%d", argvi-1);
+	} else {
+	  sprintf(tmp, ":%d", argvi);
+	}
+
+      Tcl_AppendStringsToObj(no, tmp, NULL);
+      Tcl_ObjSetVar2(interp, toa, ton, no,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+      Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
+      Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+#endif
+
+    } /* if */
 
  return TCL_OK;
 } /* ay_clevel_godowntcmd */
