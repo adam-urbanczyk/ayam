@@ -591,6 +591,8 @@ proc tgui_open { } {
 
     # initiate update machinery
     event add <<CommitTG>> <KeyPress-Return> <FocusOut>
+    catch {event add <<CommitTG>> <Key-KP_Enter>}
+
     trace variable tgui_tessparam(SMethod) w tgui_update
 
     set f $w.f1.fSParamU
@@ -602,7 +604,11 @@ proc tgui_open { } {
 				 $f.s set \[$f.e get\]; \
 				 set tgui_tessparam(SParamU) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
-			     }"
+			     };"
+    if {::tcl_platform == "windows" } {
+	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
+	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
+    }
 
     set f $w.f1.fSParamV
     $f.s conf -variable tgui_tessparam(SParamV) -command tgui_update
@@ -613,7 +619,11 @@ proc tgui_open { } {
 				 $f.s set \[$f.e get\]; \
 				 set tgui_tessparam(SParamV) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
-			     }"
+			     };"
+    if {::tcl_platform == "windows" } {
+	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
+	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
+    }
 
     wm deiconify $w
 
