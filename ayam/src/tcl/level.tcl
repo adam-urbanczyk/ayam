@@ -60,11 +60,8 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     if { $ay_error } { return; }
 
     cutOb
-    set ay(ul) $ay(CurrentLevel)
-    uS
-    sL
     getLevel a b
-    goDown [expr [llength $a]-1]
+    goDown -1
     pasmovOb
 
     if { $keepsel == 0 } {
