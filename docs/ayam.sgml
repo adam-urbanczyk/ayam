@@ -9055,7 +9055,8 @@ goDown:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Enter the object determined by index. If index is 0
 and the current level is inside some other object (not the root)
-the parent level will be entered instead.
+the parent level will be entered instead. If index is -1, the last
+object of the current level will be entered.
 </itemize>
 
 <p><label id="scgoup">
@@ -10069,24 +10070,15 @@ proc easySweep { } {
  # the sweep and create a cross-section curve there too
  # for that, we move the currently selected curve to the clipboard
  cutOb
- uS
-
- # how does the current level look like?
- getLevel a b
 
  # enter the Sweep (the last object in the current level)
- goDown [expr [llength $a]-1]
- uS
+ goDown -1
 
  # now, we create a new curve (a closed B-Spline suitable as cross section)
  crtClosedBS 8
- uS
 
- # how does the current level look like?
- getLevel a b
-
- # select last object (the newly created curve)
- selOb [expr [llength $a]-1]
+ # select the new object
+ selOb 0
 
  # now, we rotate and scale the curve
  rotOb 0 90 0
@@ -10095,14 +10087,15 @@ proc easySweep { } {
  # move trajectory back (we use "pasmovOb" and _not_ "pasOb", because we
  # really want to move (and not copy) the curve object
  pasmovOb
+
  # go up to where we came from
  goUp
 
- # update GUI
+ # finally, update the GUI...
  uS
  sL
 
- # redraw all views
+ # ...and redraw all views
  rV
 }
 # easySweep
