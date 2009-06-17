@@ -372,12 +372,11 @@ proc tgui_addtag { } {
 	    } else {
 		# we have already a TP tag => change its value
 		set index [lsearch $tagnames "TP"]
-		set tagvals [lreplace $tagvals $index $index $val]
-		setTags $tagnames $tagvals
+		setTags -index $index "TP" $val
 	    }
 	    # if
 	}
-	# forAllT
+	# forAll
     }
     # if
 
@@ -397,13 +396,15 @@ proc tgui_remtag { } {
 	set tagvals ""
 	getTags tagnames tagvals
 	if { ($tagnames != "") } {
-	    while { ([lsearch $tagnames "TP"] != -1) } {
-		set index [lsearch $tagnames "TP"]
-		set tagnames [lreplace $tagnames $index $index]
-		set tagvals [lreplace $tagvals $index $index]
-		setTags $tagnames $tagvals
+	    set index 0
+	    foreach tag $tagnames {
+		if { $tag != "TP" } {
+		    lappend newtags $tag
+		    lappend newtags [lindex $tagvals $index]
+		}
+		incr index
 	    }
-	    # while
+	    eval setTags $newtags
 	}
 	# if
     }
