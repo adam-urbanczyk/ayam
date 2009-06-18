@@ -797,9 +797,6 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
  int stride;
  double *tmp = NULL;
 
-  if(!(new = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
-    return AY_EOMEM;
-
   /* calc total verts */
   for(i = 0; i < pomesh->npolys; i++)
     {
@@ -810,6 +807,13 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
     {
       total_verts += pomesh->nverts[i];
     } /* for */
+
+  /* can we optimize at all? */
+  if(total_verts == pomesh->ncontrols)
+     return AY_OK;
+
+  if(!(new = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
+    return AY_EOMEM;
 
   if(!(new->verts = (unsigned int *)calloc(1, sizeof(unsigned int) *
 					   total_verts)))
