@@ -291,7 +291,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 3)
     {
       ay_error(AY_EARGS, fname,
-	       "\\[type value\\]|-index index type value|-delete index");
+	       "[type value]|-index index type value|-delete index");
       return TCL_OK;
     }
 
@@ -309,7 +309,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(argc < 5)
 	{
 	  ay_error(AY_EARGS, fname,
-		   "\\[type value\\]|-index index type value|-delete index");
+		   "[type value]|-index index type value|-delete index");
 	  return TCL_OK;
 	}
 
@@ -624,7 +624,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "type\\|all");
+      ay_error(AY_EARGS, fname, "type|all");
       return TCL_OK;
     }
 
