@@ -389,24 +389,9 @@ proc tgui_addtag { } {
 #  remove TP tags from all selected NURBS patch objects
 #
 proc tgui_remtag { } {
-    global tgui_tessparam
 
     forAll 0 {
-	set tagnames ""
-	set tagvals ""
-	getTags tagnames tagvals
-	if { ($tagnames != "") } {
-	    set index 0
-	    foreach tag $tagnames {
-		if { $tag != "TP" } {
-		    lappend newtags $tag
-		    lappend newtags [lindex $tagvals $index]
-		}
-		incr index
-	    }
-	    eval setTags $newtags
-	}
-	# if
+	delTags "TP"
     }
     # forAll
 
@@ -605,7 +590,7 @@ proc tgui_open { } {
 				 set tgui_tessparam(SParamU) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
 			     };"
-    if {::tcl_platform == "windows" } {
+    if {$::tcl_platform(platform) == "windows" } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
@@ -620,10 +605,12 @@ proc tgui_open { } {
 				 set tgui_tessparam(SParamV) \[$f.e get\]; \
 				 $f.s conf -command tgui_update; \
 			     };"
-    if {::tcl_platform == "windows" } {
+    if {$::tcl_platform(platform) == "windows" } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
+    
+    set tgui_tessparam(SMethod) 3
 
     wm deiconify $w
 
