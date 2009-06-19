@@ -4783,10 +4783,9 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *curve;
- double vknots[4] = {0.0, 0.0, 1.0, 1.0}; /* uknots are taken from curve! */
+ double uknots[4] = {0.0, 0.0, 1.0, 1.0}; /* vknots are taken from curve! */
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL;
- double x, y, z, w;
- int j = 0, a = 0, b = 0;
+ int j = 0, a = 0, b = 0, c = 0;
  double m[16], point[4] = {0};
 
   if(!o || !extrusion)
@@ -4805,60 +4804,64 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
     return AY_EOMEM;
   if(!(controlv = calloc(4*4*curve->length, sizeof(double))))
     { free(new); return AY_EOMEM; }
-  if(!(vknotv = calloc(4, sizeof(double))))
+  if(!(uknotv = calloc(4, sizeof(double))))
     { free(new); free(controlv); return AY_EOMEM; }
-  if(!(uknotv = calloc(curve->length+curve->order,sizeof(double))))
-    { free(new); free(controlv); free(vknotv); return AY_EOMEM; }
+  if(!(vknotv = calloc(curve->length+curve->order,sizeof(double))))
+    { free(new); free(controlv); free(uknotv); return AY_EOMEM; }
 
-  memcpy(uknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
-  new->uknotv = uknotv;
-  memcpy(vknotv,vknots,4*sizeof(double));
+  memcpy(vknotv,curve->knotv,(curve->length+curve->order)*sizeof(double));
   new->vknotv = vknotv;
-  new->uorder = curve->order;
-  new->vorder = 2; /* linear! */
-  new->uknot_type = curve->knot_type;
-  new->vknot_type = AY_KTCUSTOM;
-  new->width = curve->length;
-  new->height = 2;
+  memcpy(uknotv,uknots,4*sizeof(double));
+  new->uknotv = uknotv;
+  new->vorder = curve->order;
+  new->uorder = 2; /* linear! */
+  new->vknot_type = curve->knot_type;
+  new->uknot_type = AY_KTCUSTOM;
+  new->width = 2;
+  new->height = curve->length;
   new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
   new->is_rat = curve->is_rat;
 
   /* fill controlv */
   a = 0;
   b = 0;
+  c = curve->length*4;
   for(j = 0; j < curve->length; j++)
     {
-
-      /*      memcpy(point, &(curve->controlv[a]), 4*sizeof(GLdouble));*/
-
       /* transform point */
-      x = curve->controlv[a];
-      y = curve->controlv[a+1];
-      z = curve->controlv[a+2];
-      w = curve->controlv[a+3];
+      point[0] = m[0]*curve->controlv[a] +
+	m[4]*curve->controlv[a+1] +
+	m[8]*curve->controlv[a+2] +
+	m[12]*curve->controlv[a+3];
 
-      point[0] = m[0]*x + m[4]*y + m[8]*z + m[12]*w;
-      point[1] = m[1]*x + m[5]*y + m[9]*z + m[13]*w;
+      point[1] = m[1]*curve->controlv[a] +
+	m[5]*curve->controlv[a+1] +
+	m[9]*curve->controlv[a+2] +
+	m[13]*curve->controlv[a+3];
+
       point[2] = 0.0;
-      point[3] = m[3]*x + m[7]*y + m[11]*z + m[15]*w;
+
+      point[3] = m[3]*curve->controlv[a] +
+	m[7]*curve->controlv[a+1] +
+	m[11]*curve->controlv[a+2] +
+	m[15]*curve->controlv[a+3];
+
+
 
       /* build a profile */
       controlv[b] = point[0];
       controlv[b+1] = point[1];
       controlv[b+2] = point[2];
-      controlv[b+3] = w;
+      controlv[b+3] = curve->controlv[a+3];
 
-      b+=4;
+      controlv[c] = point[0];
+      controlv[c+1] = point[1];
+      controlv[c+2] = point[2]+(height*curve->controlv[a+3]);
+      controlv[c+3] = curve->controlv[a+3];
 
-      controlv[b] = point[0];
-      controlv[b+1] = point[1];
-      controlv[b+2] = point[2]+(height*w);
-      controlv[b+3] = w;
-
+      c += 4;
       b += 4;
-
       a += 4;
-
     } /* for */
 
   new->controlv = controlv;
