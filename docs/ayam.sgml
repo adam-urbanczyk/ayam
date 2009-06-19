@@ -4705,6 +4705,11 @@ See section
 <ref id="toxyt" name="The To XY Tool"> for information on
 how to easily achieve curves in the XY plane.
 <p>
+The dimensions and orders of the extruded surface(s) will be taken from the
+respective parameter curves as follows: width and order in U direction
+will be 2, height and order in V direction are taken from the parameter
+curve.
+<p>
 You may convert the current surface of extrusion, the caps, and bevels,
 if there are any, to ordinary NURBS patches using the main menu entry
 <tt>"Tools/Convert"</tt>.
@@ -4735,7 +4740,7 @@ default is off (no caps). Note that this feature does only work
 properly, if the generating NURBS curves are closed and not self
 intersecting, this is because the generating curves themselves are
 used as trim curves for the caps. Warning, Ayam will not check whether
-your curves conform to this criteria. Ayam, however, automatically
+your curves conform to these criteria. Ayam, however, automatically
 detects the correct orientation of the curves (and reverts them if
 necessary).
 <p>
@@ -4793,7 +4798,7 @@ transformation attributes.
 The Swing object, available since Ayam 1.14, forms a surface that results
 from rotating a NURBS curve (cross section or profile) around an axis while
 scaling it according to a second NURBS curve (trajectory or path).
-This is sometimes called rotational sweep.
+This process is sometimes also called rotational sweep.
 <p>
 The swing object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
