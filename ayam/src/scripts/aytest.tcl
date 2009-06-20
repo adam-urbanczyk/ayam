@@ -10,18 +10,73 @@
 
 # aytest.tcl - test Ayam
 
-set scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
+#
+#
+#
+proc aytest_selectGUI { } {
+    global ay
 
-set logfile [file join $ayprefs(TmpDir) aytestlog]
-set log [open $logfile w]
+    winAutoFocusOff
 
-newScene
-selOb
+    set w .testGUI
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "Test Ayam"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w .
+    }
+    
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
+
+    addText $w.f1 e0 "Select Test:"
+
+    set lb [listbox $w.f1.l1 -selectmode multiple]
+
+    $lb insert end "Test 1 - Default Object Callbacks"
+    $lb insert end "Test 2 - Solid Object Variations"
+    $lb insert end "Test 3 - Object Variations"
+    $lb insert end "Test 4 - Tool Object Variations"
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command "\
+      aytest_runTests \[$w.f1.l1 curselection\];"
+
+    button $f.bca -text "Cancel" -width 5 -command "focus .;destroy $w"
+
+    pack $w.f1.l1 -side top -fill both -expand yes
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    winCenter $w
+    grab $w
+    focus $w.f1.l1
+    tkwait window $w
+
+    winAutoFocusOn
+
+ return;
+}
+# aytest_selectGUI
+
 
 #
 # Test 1
 #
-if { 0 } {
+proc aytest_1 { } {
+uplevel #0 {
+
 puts $log "Testing object callbacks...\n"
 
 lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
@@ -75,12 +130,27 @@ foreach type $types {
 # foreach
 
 }
+}
+# aytest_1
+
 
 #
 # Test 2
 #
+proc aytest_2 { } {
 
 puts $log "Testing object variations ...\n"
+
+# Every object variation array contains the following components:
+#  precmd - commands to run after object creation but before variation
+#  postcmd - commands to run
+#  arr - array to put all variable data into
+#  vars - list of variable names in array arr
+#  vals - list of value sets for all variables in vars
+#  freevars - list of free variables (their values will be automatically
+#             varied by a cartesian product!)
+# for every free variable, another entry (named like the variable itself)
+# exists, that contains the valid variable values
 
 
 # standard angles to test for the ThetaMax
@@ -389,6 +459,62 @@ lappend Torus_1(vals) { 0.75 0.25 180.0 360.0 }
 lappend Torus_1(vals) { 1.0 0.25 180.0 360.0 }
 lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
+set types {}
+lappend types Sphere Cylinder Disk Cone
+
+foreach type $types {
+    test_var $type
+}
+# foreach
+
+}
+# aytest_2
+
+
+#
+# Test 3
+#
+proc aytest_3 { } {
+
+puts $log "Testing tool objects ...\n"
+
+set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
+
+lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
+
+# Revolve Variation #1
+array set Revolve_1 {
+    postcmd {goDown -1;crtOb NCurve;forceNot}
+    arr RevolveAttrData
+    freevars {Closed ThetaMax}
+    Closed {0 1}
+    vars {Radius ZMin ZMax}
+}
+set Revolve_1(ThetaMax) $angles
+
+
+
+foreach type $types {
+
+    
+
+    puts $log "Creating a $type ...\n"
+    level_crt $type
+
+}
+# foreach
+}
+# aytest_3
+
+
+#
+# Test 4
+#
+proc aytest_4 { } {
+# test modelling tools
+puts $log "Testing modelling tools ...\n"
+}
+# aytest_4
 
 
 # forall:
@@ -484,46 +610,35 @@ proc test_var { type } {
 }
 # test_var
 
-set types {}
-lappend types Sphere Cylinder Disk Cone
 
-foreach type $types {
-    test_var $type
+#
+#
+#
+proc aytest_runTests { tests } {
+    global ayprefs
+
+    foreach test $tests {
+	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
+
+	set ::logfile [file join $ayprefs(TmpDir) aytestlog]
+	set ::log [open $::logfile a]
+
+	newScene
+	selOb
+
+	puts $test
+
+	incr test
+	catch [aytest_$test]
+
+	close $::log
+    }
+    # foreach
+
+ return;
 }
-# foreach
+# aytest_runTests
 
 
-# for now, we stop
-close $log
-return;
-
-#
-# Test 3
-#
-
-puts $log "Testing tool objects ...\n"
-
-set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
-
-lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
-
-
-set Revolve_prereqs { NCurve }
-
-
-foreach type $types {
-
-    
-
-    puts $log "Creating a $type ...\n"
-    level_crt $type
-
-}
-# foreach
-
-
-#
-# Test 4
-#
-# test modelling tools
-puts $log "Testing modelling tools ...\n"
+# start the GUI
+aytest_selectGUI
