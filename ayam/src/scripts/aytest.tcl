@@ -41,8 +41,8 @@ proc aytest_selectGUI { } {
 
     $lb insert end "Test 1 - Default Object Callbacks"
     $lb insert end "Test 2 - Solid Object Variations"
-    $lb insert end "Test 3 - Object Variations"
-    $lb insert end "Test 4 - Tool Object Variations"
+    $lb insert end "Test 3 - Tool Object Variations"
+    $lb insert end "Test 4 - Modelling Tools"
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command "\
@@ -77,7 +77,7 @@ proc aytest_selectGUI { } {
 proc aytest_1 { } {
 uplevel #0 {
 
-puts $log "Testing object callbacks...\n"
+puts $log "Testing default object callbacks...\n"
 
 lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 
@@ -138,20 +138,9 @@ foreach type $types {
 # Test 2
 #
 proc aytest_2 { } {
+uplevel #0 {
 
-puts $log "Testing object variations ...\n"
-
-# Every object variation array contains the following components:
-#  precmd - commands to run after object creation but before variation
-#  postcmd - commands to run
-#  arr - array to put all variable data into
-#  vars - list of variable names in array arr
-#  vals - list of value sets for all variables in vars
-#  freevars - list of free variables (their values will be automatically
-#             varied by a cartesian product!)
-# for every free variable, another entry (named like the variable itself)
-# exists, that contains the valid variable values
-
+puts $log "Testing solid object variations ...\n"
 
 # standard angles to test for the ThetaMax
 # parameter found in many objects
@@ -187,7 +176,7 @@ lappend Sphere_1(vals) { 1.0 -1.0 0.5 }
 # Sphere Variation #2
 array set Sphere_2 {
     arr SphereAttrData
-    prereqs {scalOb 0.5 0.5 0.5}
+    precmd {scalOb 0.5 0.5 0.5}
     freevars {Closed ThetaMax}
     Closed {0 1}
     vars {Radius ZMin ZMax}
@@ -208,7 +197,7 @@ foreach valset $Sphere_1(vals) {
 # Sphere Variation #3
 array set Sphere_3 {
     arr SphereAttrData
-    prereqs {scalOb 2.0 2.0 2.0}
+    precmd {scalOb 2.0 2.0 2.0}
     freevars {Closed ThetaMax}
     Closed {0 1}
     vars {Radius ZMin ZMax}
@@ -463,10 +452,12 @@ set types {}
 lappend types Sphere Cylinder Disk Cone
 
 foreach type $types {
+    puts $log "Testing $type ...\n"
     test_var $type
 }
 # foreach
 
+}
 }
 # aytest_2
 
@@ -475,34 +466,60 @@ foreach type $types {
 # Test 3
 #
 proc aytest_3 { } {
+uplevel #0 {
 
 puts $log "Testing tool objects ...\n"
+
+# standard angles to test for the ThetaMax
+# parameter found in many objects
+set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 179 180 181 269 270 271 359 360}
+
+
+# Revolve Variation #1
+array set Revolve_1 {
+    precmd {goDown -1;crtOb NCurve;forceNot;goUp}
+    arr RevolveAttrData
+    freevars {ThetaMax}
+    vars {Sections Order}
+}
+set Revolve_1(ThetaMax) $angles
+
+lappend Revolve_1(vals) { 0 0 }
+
+
+# Revolve Variation #2
+array set Revolve_2 {
+    precmd {goDown -1;crtOb NCurve;hSL;movOb 1 0 0;rotOb 0 0 90;
+	forceNot;goUp;hSL}
+    arr RevolveAttrData
+    freevars {UpperCap LowerCap StartCap EndCap ThetaMax}
+    UpperCap {0 1}
+    LowerCap {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars {Sections Order}
+}
+set Revolve_2(ThetaMax) $angles
+
+lappend Revolve_2(vals) { 0 0 }
+
+
 
 set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
 
-# Revolve Variation #1
-array set Revolve_1 {
-    postcmd {goDown -1;crtOb NCurve;forceNot}
-    arr RevolveAttrData
-    freevars {Closed ThetaMax}
-    Closed {0 1}
-    vars {Radius ZMin ZMax}
-}
-set Revolve_1(ThetaMax) $angles
-
-
+set types Revolve
 
 foreach type $types {
 
-    
-
-    puts $log "Creating a $type ...\n"
-    level_crt $type
+    puts $log "Testing $type ...\n"
+    test_var $type
 
 }
 # foreach
+
+}
 }
 # aytest_3
 
@@ -511,8 +528,12 @@ foreach type $types {
 # Test 4
 #
 proc aytest_4 { } {
+uplevel #0 {
+
 # test modelling tools
 puts $log "Testing modelling tools ...\n"
+
+}
 }
 # aytest_4
 
@@ -553,6 +574,17 @@ proc forall {args} {
 #  ToDo: make final body command configurable
 proc test_var { type } {
 
+# Every object variation array contains the following components:
+#  precmd - commands to run after object creation but before variation
+#  postcmd - commands to run
+#  arr - array to put all variable data into
+#  vars - list of variable names in array arr
+#  vals - list of value sets for all variables in vars
+#  freevars - list of free variables (their values will be automatically
+#             varied by a cartesian product!)
+# for every free variable, another entry (named like the variable itself)
+# exists, that contains the valid variable values
+
   set i 1
   while {[info exists ::${type}_$i]} {
       eval set arr \$::${type}_${i}(arr)
@@ -565,9 +597,9 @@ proc test_var { type } {
 	  hSL
 
 	  # execute prerequisites
-	  if { [info exists ::${type}_${i}(prereqs)] } {
-	      eval set prereq \$::${type}_${i}(prereqs)
-	      eval $prereq
+	  if { [info exists ::${type}_${i}(precmd)] } {
+	      eval set precmd \$::${type}_${i}(precmd)
+	      eval $precmd
 	  }
 
 	  # set un-free variables from the valset
@@ -617,6 +649,9 @@ proc test_var { type } {
 proc aytest_runTests { tests } {
     global ayprefs
 
+    . configure -cursor watch
+    update
+
     foreach test $tests {
 	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
 
@@ -626,14 +661,15 @@ proc aytest_runTests { tests } {
 	newScene
 	selOb
 
-	puts $test
-
 	incr test
 	catch [aytest_$test]
 
 	close $::log
     }
     # foreach
+
+    . configure -cursor {}
+    update
 
  return;
 }
