@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>1. Jun 2009
+<date>22. Jun 2009
 
 <abstract>
 This is the documentation of Ayam 1.16 - a free 3D modelling environment
@@ -2492,7 +2492,7 @@ documented in tables like this:
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type+/*|Yes/No@<hline>
 </tabular>
-<caption>Object Capabilities Example</caption>
+<caption>Object Capabilities Template</caption>
 </table>
 The capabilities are:
 <itemize>
@@ -2509,6 +2509,26 @@ must rather provide an object of the appropriate type (see also section
 + - multiple objects may be provided (one or many),
 * - multiple objects will be provided (many);
 <item><bf/Point Edit/: the object has editable points.
+</itemize>
+
+Example:
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Revolve|NCurve|Yes|NPatch+|No@<hline>
+</tabular>
+<caption>Object Capabilities Example</caption>
+</table>
+
+Explanation:
+<itemize>
+<item><bf/Parent of/: the Revolve object has one NCurve (or NCurve providing
+object) as child;
+<item><bf/Material/: the Revolve object can be associated with a material;
+<item><bf>Converts to/Provides</bf>: the Revolve object converts to (and
+provides) one or multiple NPatch objects;
+<item><bf/Point Edit/: the Revolve object has no editable points, it does
+not support single point modelling actions.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
