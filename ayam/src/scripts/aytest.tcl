@@ -477,13 +477,28 @@ set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 17
 
 # Revolve Variation #1
 array set Revolve_1 {
-    precmd {goDown -1;crtOb NCurve;forceNot;goUp}
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {crtOb NCurve}
+	    1 {crtOb NCurve -length 2}
+	    2 {crtOb NCurve -length 3}
+	};
+	forceNot;
+	goUp
+    }
     arr RevolveAttrData
     freevars {ThetaMax}
     vars {Sections Order}
 }
 set Revolve_1(ThetaMax) $angles
 
+# repeating the same value set leads to multiple calls
+# of the precmd, thus enabling it to check the value of
+# <l> (set by test_var) and creating a different parameter
+# curve for each iteration
+lappend Revolve_1(vals) { 0 0 }
+lappend Revolve_1(vals) { 0 0 }
 lappend Revolve_1(vals) { 0 0 }
 
 
@@ -630,7 +645,7 @@ proc test_var { type } {
 	      #
 	      movOb $j $i 0.0
 	  }
-	  incr l 2
+	  incr l
       }
       # foreach
       rV
