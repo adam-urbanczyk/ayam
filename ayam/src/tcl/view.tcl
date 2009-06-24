@@ -145,10 +145,10 @@ proc viewCycleType { w dir {recover 1} } {
     }
     # if
 
+    $togl mc
     $togl redraw
 
     # was: set ay(cVType) $type
-    $togl mc
   
  return;
 }
