@@ -772,71 +772,91 @@ scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 pack $w.ftext.sbar -in $w.ftext -side right -fill y
 pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 
+# strip KeyRelease/KeyPress elements
+foreach elem [array names ayviewshortcuts] {
+
+    eval set sc \$ayviewshortcuts(${elem})
+
+    set index [string first "KeyRelease-" $sc]
+    if { $index > -1 } {
+	set sc [string range $sc [expr $index + 11] end]
+    }
+
+    set index [string first "KeyPress-" $sc]
+    if { $index > -1 } {
+	set sc [string range $sc [expr $index + 9] end]
+    }
+
+    set svsc(${elem}) $sc
+
+}
+# foreach
+
 $w.ftext.text insert end "Modelling Actions (View Windows):
 
- Pick Objects:        $ayviewshortcuts(Pick)
+ Pick Objects:        $svsc(Pick)
 
- Move Objects:        $ayviewshortcuts(MoveO)
- Rotate Objects:      $ayviewshortcuts(RotO)
+ Move Objects:        $svsc(MoveO)
+ Rotate Objects:      $svsc(RotO)
  Rotate Objects   
- around Point:        $ayviewshortcuts(RotA)
- Scale Objects (3D)   $ayviewshortcuts(Scal3)
- Scale Objects (2D)   $ayviewshortcuts(Scal2)
- Stretch Objects (2D) $ayviewshortcuts(Stretch)
- Scale Objects (1D,X) $ayviewshortcuts(ScalX)
- Scale Objects (1D,Y) $ayviewshortcuts(ScalY)
- Scale Objects (1D,Z) $ayviewshortcuts(ScalZ)
+ around Point:        $svsc(RotA)
+ Scale Objects (3D)   $svsc(Scal3)
+ Scale Objects (2D)   $svsc(Scal2)
+ Stretch Objects (2D) $svsc(Stretch)
+ Scale Objects (1D,X) $svsc(ScalX)
+ Scale Objects (1D,Y) $svsc(ScalY)
+ Scale Objects (1D,Z) $svsc(ScalZ)
 
- Edit Points          $ayviewshortcuts(Edit)
- Edit Points (direct) $ayviewshortcuts(EditD)
- Edit Weight          $ayviewshortcuts(WeightE)
- Reset Weights        $ayviewshortcuts(WeightR)
+ Edit Points          $svsc(Edit)
+ Edit Points (direct) $svsc(EditD)
+ Edit Weight          $svsc(WeightE)
+ Reset Weights        $svsc(WeightR)
 
- Select Points        $ayviewshortcuts(Select)
- De-Select Points     $ayviewshortcuts(DeSelect)
- Insert Points        $ayviewshortcuts(InsertP)
- Delete Points        $ayviewshortcuts(DeleteP)
+ Select Points        $svsc(Select)
+ De-Select Points     $svsc(DeSelect)
+ Insert Points        $svsc(InsertP)
+ Delete Points        $svsc(DeleteP)
 
- Select All Points    $ayviewshortcuts(SelAllP)
- Invert PointSel      $ayviewshortcuts(InvSelP)
- Collapse Selected    $ayviewshortcuts(CollP)
- Explode Selected     $ayviewshortcuts(ExplP)
- Snap to Grid 2D      $ayviewshortcuts(SnapGrid2D)
- Snap to Grid 3D      $ayviewshortcuts(SnapGrid3D)
+ Select All Points    $svsc(SelAllP)
+ Invert PointSel      $svsc(InvSelP)
+ Collapse Selected    $svsc(CollP)
+ Explode Selected     $svsc(ExplP)
+ Snap to Grid 2D      $svsc(SnapGrid2D)
+ Snap to Grid 3D      $svsc(SnapGrid3D)
 
- Hide Objects         $ayviewshortcuts(Hide)
- Show Objects         $ayviewshortcuts(Show)
+ Hide Objects         $svsc(Hide)
+ Show Objects         $svsc(Show)
 
- FindU                $ayviewshortcuts(FindU)
- Split Curve          $ayviewshortcuts(SplitNC)
+ FindU                $svsc(FindU)
+ Split Curve          $svsc(SplitNC)
 
 View Actions (View Windows):
 
- Break Action        $ayviewshortcuts(Break)
+ Break Action        $svsc(Break)
 
- Move View           $ayviewshortcuts(MoveV)
+ Move View           $svsc(MoveV)
  Move View
- (along Z)           $ayviewshortcuts(MoveZV)
- MoveViewAnytime     Mouse-$ayviewshortcuts(MoveVButton)
+ (along Z)           $svsc(MoveZV)
+ MoveViewAnytime     Mouse-$svsc(MoveVButton)
 
- Rotate View         $ayviewshortcuts(RotV)
- RotateViewAnytime   $ayviewshortcuts(RotModKey)+Mouse-1
+ Rotate View         $svsc(RotV)
+ RotateViewAnytime   $svsc(RotModKey)+Mouse-1
 
- Rotate View (left)  $ayviewshortcuts(RotL)
- Rotate View (right) $ayviewshortcuts(RotR)
- Rotate View (up)    $ayviewshortcuts(RotU)
- Rotate View (down)  $ayviewshortcuts(RotD)
+ Rotate View (left)  $svsc(RotL)
+ Rotate View (right) $svsc(RotR)
+ Rotate View (up)    $svsc(RotU)
+ Rotate View (down)  $svsc(RotD)
 
- Zoom View           $ayviewshortcuts(ZoomV)
- Zoom in View        $ayviewshortcuts(ZoomI)
- Zoom out View       $ayviewshortcuts(ZoomO)
- ZoomViewAnytime     Mouse-$ayviewshortcuts(ZoomVButton)
+ Zoom View           $svsc(ZoomV)
+ Zoom in View        $svsc(ZoomI)
+ Zoom out View       $svsc(ZoomO)
+ ZoomViewAnytime     Mouse-$svsc(ZoomVButton)
 
- ZoomRegion View     $ayviewshortcuts(ZoomRModKey)+Mouse-1
+ ZoomRegion View     $svsc(ZoomRModKey)+Mouse-1
 
- ZoomToObject        $ayviewshortcuts(ZoomTO) / $ayviewshortcuts(ZoomTO2)
+ ZoomToObject        $svsc(ZoomTO) / $svsc(ZoomTO2)
 
- Cycle View Type     $ayviewshortcuts(TypeUp) / $ayviewshortcuts(TypeDown)
+ Cycle View Type     $svsc(TypeUp) / $svsc(TypeDown)
 
 Function Keys (View Windows):
 
