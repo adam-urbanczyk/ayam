@@ -491,6 +491,7 @@ int
 ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
+ char *fname = "concatnp_providecb";
  ay_concatnp_object *cc = NULL;
 
   if(!o)
@@ -511,6 +512,11 @@ ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(cc->npatch)
 	{
 	  ay_status = ay_object_copy(cc->npatch, result);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
 	  ay_trafo_copy(o, *result);
 	}
     }
