@@ -448,6 +448,10 @@ lappend Torus_1(vals) { 0.75 0.25 180.0 360.0 }
 lappend Torus_1(vals) { 1.0 0.25 180.0 360.0 }
 lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
+
+# XXXX TODO: add torus variations for phimin/phimax
+
+
 set types {}
 lappend types Sphere Cylinder Disk Cone
 
@@ -483,9 +487,17 @@ array set Revolve_1 {
 	    0 {crtOb NCurve}
 	    1 {crtOb NCurve -length 2}
 	    2 {crtOb NCurve -length 3}
+	    3 {
+		crtOb NCurve; hSL;
+		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
+	    }
+	    4 {
+		crtClosedBS 4; hSL; movOb 1.25 0 0;
+	    }
 	};
 	forceNot;
-	goUp
+	goUp;
+	hSL
     }
     arr RevolveAttrData
     freevars {ThetaMax}
@@ -497,6 +509,8 @@ set Revolve_1(ThetaMax) $angles
 # of the precmd, thus enabling it to check the value of
 # <l> (set by test_var) and creating a different parameter
 # curve for each iteration
+lappend Revolve_1(vals) { 0 0 }
+lappend Revolve_1(vals) { 0 0 }
 lappend Revolve_1(vals) { 0 0 }
 lappend Revolve_1(vals) { 0 0 }
 lappend Revolve_1(vals) { 0 0 }
@@ -517,6 +531,83 @@ array set Revolve_2 {
 set Revolve_2(ThetaMax) $angles
 
 lappend Revolve_2(vals) { 0 0 }
+
+
+# Extrude Variation #1
+array set Extrude_1 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {crtOb NCurve}
+	    1 {crtOb NCurve -length 2}
+	    2 {crtOb NCurve -length 3}
+	    3 {
+		crtOb NCurve; hSL;
+		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
+	    }
+	    4 {
+		crtClosedBS 4; hSL; movOb 1.25 0 0;
+	    }
+	    5 {	crtOb NCircle }
+	    6 {
+		crtOb NCircle; hSL; movOb 1.25 0 0;
+	    }
+	};
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr ExtrudeAttrData
+    vars {Height}
+}
+
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+lappend Extrude_1(vals) { 1.0 }
+
+
+# Extrude Variation #2
+array set Extrude_2 {
+    precmd {goDown -1;crtClosedBS 4;hSL movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    arr ExtrudeAttrData
+    freevars {StartCap EndCap}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars {Height}
+}
+
+lappend Extrude_2(vals) { 0.1 }
+lappend Extrude_2(vals) { 0.5 }
+lappend Extrude_2(vals) { 1.0 }
+lappend Extrude_2(vals) { 2.0 }
+lappend Extrude_2(vals) { 10.0 }
+
+
+# Extrude Variation #3
+array set Extrude_3 {
+    precmd {goDown -1;crtOb NCircle;hSL movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    arr ExtrudeAttrData
+    freevars {StartCap EndCap}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars {Height}
+}
+
+lappend Extrude_3(vals) { 0.1 }
+lappend Extrude_3(vals) { 0.5 }
+lappend Extrude_3(vals) { 1.0 }
+lappend Extrude_3(vals) { 2.0 }
+lappend Extrude_3(vals) { 10.0 }
+
+
+# XXXX TODO: add bevels, add holes
+
+
+
 
 
 
