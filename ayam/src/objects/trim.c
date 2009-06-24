@@ -362,10 +362,19 @@ ay_trim_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  ay_status = ay_provide_object(down, AY_IDNPATCH, &npatch);
+  if(down->type == AY_IDNPATCH)
+    ay_status = ay_object_copy(down, &npatch);
+  else
+    ay_status = ay_provide_object(down, AY_IDNPATCH, &npatch);
+
   if(npatch)
     {
       trim->npatch = npatch;
+    }
+
+  if(!npatch->down)
+    {
+      ay_object_crtendlevel(&(npatch->down));
     }
 
   while(npatch && (i < trim->patchnum))
