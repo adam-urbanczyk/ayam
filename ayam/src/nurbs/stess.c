@@ -203,7 +203,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 	  if(!(t = realloc(*V, ((*m)+1)*sizeof(double))))
 	    return AY_ENULL;
 	  *V = t;
-	  *V[(*m)] = U[i + p + 1];
+	  (*V)[(*m)] = U[i + p + 1];
 	  (*m)++;
 	  p1 += ((p-1)*stride);
 	  i  += (p-1);
