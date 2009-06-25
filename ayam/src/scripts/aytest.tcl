@@ -608,6 +608,61 @@ lappend Extrude_3(vals) { 10.0 }
 
 
 
+# Sweep Variation #1
+array set Sweep_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; hSL; rotOb 0 0 90 ;
+	crtOb NCurve; forceNot; goUp; hSL
+    }
+    arr SweepAttrData
+    freevars {Rotate Interpolate StartCap EndCap}
+    Rotate {0 1}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars { dummy }
+    vals { {0} }
+}
+
+
+# Sweep Variation #2
+array set Sweep_2 {
+    precmd {
+	goDown -1;
+	crtClosedBS 4; hSL; rotOb 0 90 0;
+	crtOb NCurve; forceNot; goUp; hSL
+    }
+    arr SweepAttrData
+    freevars {Rotate Interpolate StartCap EndCap}
+    Rotate {0 1}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars { dummy }
+    vals { {0} }
+}
+
+
+# Sweep Variation #3
+array set Sweep_3 {
+    precmd {
+	goDown -1;
+	crtOb NCircle; hSL; rotOb 0 90 0;
+	crtOb NCurve; forceNot; goUp; hSL
+    }
+    arr SweepAttrData
+    freevars {Rotate Interpolate StartCap EndCap}
+    Rotate {0 1}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars { dummy }
+    vals { {0} }
+}
+
+# XXXX TODO: add bevels
+
 
 
 
