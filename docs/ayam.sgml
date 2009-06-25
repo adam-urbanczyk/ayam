@@ -4427,6 +4427,15 @@ select the instance object and use the menu entry
 to normal objects, you may use the main menu entry:
 <tt>"Special/Instances/Resolve all Instances"</tt>.
 <p>
+Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
+in a special way:
+if the <tt>"Transformations"</tt> property is removed using a
+<tt>"RP"</tt> tag, the instance does not provide objects with
+an own set of transformation attributes (to ease hierarchy building
+with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
+pointers to already existing objects are required and where it is
+expected, that the instance reflects the master exactly).
+<p>
 The RIB export of instances does not use the RiInstance facility
 of the RenderMan interface, but the ReadArchive mechanism.
 This means, every original object in the scene will be written
