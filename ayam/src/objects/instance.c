@@ -715,6 +715,8 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *i = NULL;
+ ay_tag *t = NULL;
+ int copytrafo = AY_TRUE;
 
   if(!o)
     return AY_ENULL;
@@ -732,13 +734,30 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
     }
 
+  /* find RP tag */
+  t = o->tags;
+  while(t)
+    {
+      if(t->type == ay_rp_tagtype)
+	{
+	  if(t->val && strstr(t->val, "Transformations"))
+	    {
+	      copytrafo = AY_FALSE;
+	      break;
+	    }
+	}
+      t = t->next;
+    }
+
+
   i = (ay_object *) o->refine;
 
   if(i->type == type)
     {
 
       ay_status = ay_object_copy(i, result);
-      ay_trafo_copy(o, *result);
+      if(copytrafo)
+	ay_trafo_copy(o, *result);
 
     }
   else
@@ -757,9 +776,10 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    we got it, copy transformation from instance
 	    to result
 	  */
-	  ay_trafo_copy(o, *result);
+	  if(copytrafo)
+	    ay_trafo_copy(o, *result);
 	}
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_instance_providecb */
