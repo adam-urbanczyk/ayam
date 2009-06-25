@@ -1233,6 +1233,11 @@ extern char *ay_umm_tagname;
 extern char *ay_vmm_tagtype;
 extern char *ay_vmm_tagname;
 extern char *ay_bp_tagtype;
+extern char *ay_bp_tagname;
+extern char *ay_np_tagtype;
+extern char *ay_np_tagname;
+extern char *ay_rp_tagtype;
+extern char *ay_rp_tagname;
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;
