@@ -368,8 +368,8 @@ ay_extrude_writecb(FILE *fileptr, ay_object *o)
 {
  ay_extrude_object *extrude = NULL;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double startb_radius, endb_radius;
+ int startb_type = 0, endb_type = 0, startb_sense, endb_sense;
+ double startb_radius = 1.0, endb_radius = 1.0;
 
   if(!o)
     return AY_ENULL;
