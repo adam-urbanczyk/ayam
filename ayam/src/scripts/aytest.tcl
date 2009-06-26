@@ -10,6 +10,10 @@
 
 # aytest.tcl - test Ayam
 
+array set aytestprefs {
+    KeepObjects 0
+}
+
 #
 #
 #
@@ -35,6 +39,7 @@ proc aytest_selectGUI { } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    # listbox for test selection
     addText $w.f1 e0 "Select Test:"
 
     set lb [listbox $w.f1.l1 -selectmode multiple]
@@ -44,13 +49,21 @@ proc aytest_selectGUI { } {
     $lb insert end "Test 3 - Tool Object Variations"
     $lb insert end "Test 4 - Modelling Tools"
 
+    # preferences
+    set f [frame $w.fp]
+    addCheck $f aytestprefs KeepObjects
+
+
     set f [frame $w.f2]
+
     button $f.bok -text "Ok" -width 5 -command "\
       aytest_runTests \[$w.f1.l1 curselection\];"
 
     button $f.bca -text "Cancel" -width 5 -command "focus .;destroy $w"
 
     pack $w.f1.l1 -side top -fill both -expand yes
+
+    pack $w.fp -side top -fill x -expand yes
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -666,6 +679,114 @@ array set Sweep_3 {
 
 
 
+
+# Birail1 Variation #1
+array set Birail1_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; hSL; rotOb 0 0 -90;
+	crtOb NCurve; crtOb NCurve; hSL; movOb 0 0.75 0;
+	forceNot; goUp; hSL
+    }
+    arr Birail1AttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+
+
+
+# Birail2 Variation #1
+array set Birail2_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; hSL; rotOb 0 0 -90;
+	crtOb NCurve; crtOb NCurve; hSL; movOb 0 0.75 0;
+	crtOb NCurve; hSL; rotOb 0 0 -90; movOb 0.75 0 0;
+	forceNot; goUp; hSL
+    }
+    arr Birail2AttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+
+
+
+# Gordon Variation #1
+array set Gordon_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; hSL; rotOb 0 0 90 ;
+	crtOb NCurve; forceNot; goUp; hSL
+    }
+    arr SweepAttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+
+
+
+# Cap Variation #1
+array set Cap_1 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {	crtClosedBS 4; }
+	    1 {	crtOb NCircle }
+	    2 {
+		crtClosedBS 4; hSL; movOb 1.25 0 0;
+	    }
+	    3 {
+		crtOb NCircle; hSL; movOb 1.25 0 0;
+	    }
+	};
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr CapAttrData
+    vars {dummy}
+}
+
+lappend Cap_1(vals) { 0 }
+lappend Cap_1(vals) { 0 }
+lappend Cap_1(vals) { 0 }
+lappend Cap_1(vals) { 0 }
+
+
+# Bevel Variation #1
+array set Bevel_1 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {	crtClosedBS 4; }
+	    1 {	crtOb NCircle }
+	    2 {
+		crtClosedBS 4; hSL; movOb 1.25 0 0;
+	    }
+	    3 {
+		crtOb NCircle; hSL; movOb 1.25 0 0;
+	    }
+	};
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr BevelAttrData
+    vars {dummy}
+}
+
+lappend Bevel_1(vals) { 0 }
+lappend Bevel_1(vals) { 0 }
+lappend Bevel_1(vals) { 0 }
+lappend Bevel_1(vals) { 0 }
+
+
+
+
+
 set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
@@ -785,11 +906,24 @@ proc test_var { type } {
 		  append body " "
 	      }
 	      set k 0
-	      lappend body {pasOb;hSL;setProp;movOb $k $l $i;incr k 2}
+	      lappend body {
+		  pasOb;hSL;
+		  setProp;
+		  movOb $k $l $i;
+		  
+		  if { ! $::aytestprefs(KeepObjects) } {
+		      delOb
+		  }
+		  incr k 2
+	      }
 	      eval $body
 	  } else {
 	      #
-	      movOb $j $i 0.0
+	      movOb $j $i 0.0;
+
+	      if { ! $::aytestprefs(KeepObjects) } {
+		  delOb
+	      }
 	  }
 	  incr l
       }
@@ -822,10 +956,14 @@ proc aytest_runTests { tests } {
 	newScene
 	selOb
 
+	puts "Running Test $test..."
+
 	incr test
 	catch [aytest_$test]
 
 	close $::log
+
+	puts "Finished Test $test..."
     }
     # foreach
 
