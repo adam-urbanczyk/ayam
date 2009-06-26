@@ -62,7 +62,7 @@ $w.ftext.text insert end \
 Ayam, a free 3D Tcl/Tk/OpenGL/RenderMan modeler
 
 Ayam is
-Copyright (c) 1998-2008 by Randolf Schultz
+Copyright (c) 1998-2009 by Randolf Schultz
 (randolf.schultz@gmail.com)
 All Rights Reserved
 
@@ -71,7 +71,7 @@ See the file License for details.
 For additional information new versions etc. see:
 http://www.ayam3d.org/
 
-http://www.core.de/~randi/ayam/
+http://www.marsrakete.de/~randi/ayam/
 
 Version Information:
 }
@@ -88,7 +88,7 @@ $w.ftext.text tag configure httag3 -relief raised -borderwidth 1
 $w.ftext.text tag bind httag1 <ButtonPress-1> {
     browser_urlOpen "http://www.ayam3d.org/"}
 $w.ftext.text tag bind httag2 <ButtonPress-1> {
-    browser_urlOpen "http://www.core.de/~randi/ayam/"}
+    browser_urlOpen "http://www.marsrakete.de/~randi/ayam/"}
 $w.ftext.text insert end \
 "
 Ayam: $ay(ay_version) ($wrappedorshared) on: $platform/$tcl_platform(os)($tcl_platform(osVersion))
