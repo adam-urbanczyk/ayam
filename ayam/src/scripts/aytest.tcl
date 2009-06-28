@@ -720,7 +720,7 @@ array set Gordon_1 {
 	crtOb NCurve; hSL; rotOb 0 0 90 ;
 	crtOb NCurve; forceNot; goUp; hSL
     }
-    arr SweepAttrData
+    arr GordonAttrData
     vars { dummy }
     vals { {0} }
 }
@@ -783,6 +783,99 @@ lappend Bevel_1(vals) { 0 }
 lappend Bevel_1(vals) { 0 }
 lappend Bevel_1(vals) { 0 }
 
+
+
+# ExtrNC Variation #1
+array set ExtrNC_1 {
+    precmd {
+	goDown -1;
+	crtOb NPatch;
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr ExtrNCAttrData
+    vars {dummy}
+}
+
+lappend ExtrNC_1(vals) { 0 }
+lappend ExtrNC_1(vals) { 0 }
+lappend ExtrNC_1(vals) { 0 }
+lappend ExtrNC_1(vals) { 0 }
+
+
+
+# ExtrNP Variation #1
+array set ExtrNP_1 {
+    precmd {
+	goDown -1;
+	crtOb NPatch;
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr ExtrNPAttrData
+    vars { UMin UMax VMin VMax }
+}
+
+lappend ExtrNP_1(vals) { 0.1 0.9 0.1 0.9 }
+lappend ExtrNP_1(vals) { 0.5 1.0 0.1 0.9 }
+lappend ExtrNP_1(vals) { 0.5 1.0 0.5 1.0 }
+
+
+
+# OffsetNC Variation #1
+array set OffsetNC_1 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {crtOb NCurve}
+	    1 {crtOb NCurve -length 2}
+	    2 {crtOb NCurve -length 3}
+	    3 {
+		crtOb NCurve; hSL;
+		getProp; set ::NCurveAttrData(Knot-Type) 1; setProp
+	    }
+	    4 {
+		crtClosedBS 4; hSL; movOb 1.25 0 0;
+	    }
+	    5 {	crtOb NCircle }
+	    6 {
+		crtOb NCircle; hSL; movOb 1.25 0 0;
+	    }
+	};
+	forceNot;
+	goUp;
+	hSL
+    }
+    freevars { Mode Revert }
+    Mode { 0 1 }
+    Revert { 0 1 }
+    arr OffsetNCAttrData
+    vars {Offset}
+}
+
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+lappend OffsetNC_1(vals) { 0.1 }
+
+
+
+# ConcatNP Variation #1
+array set ConcatNP_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; crtOb NCurve; hSL; movOb 1 0 0;
+	forceNot; goUp; hSL
+    }
+    arr ConcatNPAttrData
+    vars { dummy }
+    vals { {0} }
+}
 
 
 
