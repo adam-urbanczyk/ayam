@@ -11,19 +11,24 @@
 
 
 # repcont - replace control
+#
+#
 proc repcont { string } {
-    regsub -all "Ctrl" $string "Control" dummy
-    return $dummy
+    set string [regsub -all "Ctrl" $string "Control"]
+    return $string
 }
 # repcont
 
 
 # repkp - replace "KeyPress-"
+#
+#
 proc repkp { string } {
     regsub -all "KeyPress-" $string "" dummy
     return $dummy
 }
 # repkp
+
 
 # shortcut_swapmb:
 #  swap mouse button numbers from Win32/X11 style to Aqua style
@@ -484,6 +489,9 @@ proc shortcut_view { w } {
 
     bind $w <[repcont $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
     bind $w <[repcont $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
+
+    bind $w <[repcont $ayviewshortcuts(DMUp)]> "viewCycleDrawMode $w -1;break"
+    bind $w <[repcont $ayviewshortcuts(DMDown)]> "viewCycleDrawMode $w 1;break"
 
     bind $w <[repcont $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap

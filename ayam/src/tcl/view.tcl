@@ -156,6 +156,33 @@ proc viewCycleType { w dir {recover 1} } {
 
 
 ##############################
+# viewCycleDrawMode:
+proc viewCycleDrawMode { w dir } {
+    global ay
+
+    set togl $w.f3D.togl
+
+    $togl mc
+
+    set mode [expr $ay(cVDMode) + $dir]
+
+    # wrap around
+    if { $mode < 0 } { set mode 2 }
+    if { $mode > 2 } { set mode 0 }
+    # set new drawing mode
+    $togl setconf -shade $mode
+    # set icon
+    viewSetDModeIcon $w $mode
+
+    $togl mc
+    $togl redraw
+
+ return;
+}
+# viewCycleDrawMode
+
+
+##############################
 # viewRender:
 proc viewRender { w type } {
     global env ayprefs ay tcl_platform tmpfile
