@@ -2699,53 +2699,60 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, start_cap);
-	      /* transform cap */
-	      /* move it */
-	      ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
-				 trcv, tr->knotv[tr->order-1], p2);
-	      ay_trafo_copy(o1, *start_cap);
-	      (*start_cap)->movx = p2[0];
-	      (*start_cap)->movy = p2[1];
-	      (*start_cap)->movz = p2[2];
-	      /* apply scaling function (if present) */
-	      if(o3)
+	      if(*start_cap)
 		{
-		  u = sf->knotv[sf->order-1];
-		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
-				     sfcv, u, p3);
-		  p3[1] = fabs(p3[1]);
-		  p3[2] = fabs(p3[2]);
-		  if(p3[1] > AY_EPSILON)
+		  /* transform cap */
+		  /* move it */
+		  ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
+				     trcv, tr->knotv[tr->order-1], p2);
+		  ay_trafo_copy(o1, *start_cap);
+		  (*start_cap)->movx = p2[0];
+		  (*start_cap)->movy = p2[1];
+		  (*start_cap)->movz = p2[2];
+		  /* apply scaling function (if present) */
+		  if(o3)
 		    {
-		      (*start_cap)->scaly *= p3[1];
-		    }
-		  if(sfis3d)
-		    {
-		      if(p3[2] > AY_EPSILON)
-			{
-			  (*start_cap)->scalx *= p3[2];
-			}
-		    }
-		  else
-		    {
+		      u = sf->knotv[sf->order-1];
+		      ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
+					 sfcv, u, p3);
+		      p3[1] = fabs(p3[1]);
+		      p3[2] = fabs(p3[2]);
 		      if(p3[1] > AY_EPSILON)
 			{
-			  (*start_cap)->scalx *= p3[1];
+			  (*start_cap)->scaly *= p3[1];
 			}
-		    }
-
-		} /* if */
-	      /* fix direction for aycsg */
-	      (*start_cap)->scalz *= -1.0;
-	      /* rotate it */
-	      if(rotate)
-		{
-		  if(fabs(rots[0]) > AY_EPSILON)
-		    {
-		      ay_quat_axistoquat(&(rots[1]), AY_D2R(-rots[0]), quat);
-		      ay_quat_add(quat, (*start_cap)->quat,
-				  (*start_cap)->quat);
+		      if(sfis3d)
+			{
+			  if(p3[2] > AY_EPSILON)
+			    {
+			      (*start_cap)->scalx *= p3[2];
+			    }
+			}
+		      else
+			{
+			  if(p3[1] > AY_EPSILON)
+			    {
+			      (*start_cap)->scalx *= p3[1];
+			    }
+			}
 		    } /* if */
+		  /* fix direction for aycsg */
+		  (*start_cap)->scalz *= -1.0;
+		  /* rotate it */
+		  if(rotate)
+		    {
+		      if(fabs(rots[0]) > AY_EPSILON)
+			{
+			  ay_quat_axistoquat(&(rots[1]), AY_D2R(-rots[0]),
+					     quat);
+			  ay_quat_add(quat, (*start_cap)->quat,
+				      (*start_cap)->quat);
+			} /* if */
+		    } /* if */
+		}
+	      else
+		{
+		  ay_object_delete(curve);
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -2757,54 +2764,61 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
-	      /* transform cap */
-	      /* move it */
-	      ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
-				 trcv, tr->knotv[tr->length], p2);
-	      ay_trafo_copy(o1, *end_cap);
-	      (*end_cap)->movx = p2[0];
-	      (*end_cap)->movy = p2[1];
-	      (*end_cap)->movz = p2[2];
-	      /* apply scaling function (if present) */
-	      if(o3)
+	      if(*end_cap)
 		{
-		  u = sf->knotv[sf->length];
-		  ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
-				     sfcv, u, p3);
-		  p3[1] = fabs(p3[1]);
-		  p3[2] = fabs(p3[2]);
-		  if(p3[1] > AY_EPSILON)
+		  /* transform cap */
+		  /* move it */
+		  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
+				     trcv, tr->knotv[tr->length], p2);
+		  ay_trafo_copy(o1, *end_cap);
+		  (*end_cap)->movx = p2[0];
+		  (*end_cap)->movy = p2[1];
+		  (*end_cap)->movz = p2[2];
+		  /* apply scaling function (if present) */
+		  if(o3)
 		    {
-		      (*end_cap)->scaly *= p3[1];
-		    }
-		  if(sfis3d)
-		    {
-		      if(p3[2] > AY_EPSILON)
-			{
-			  (*end_cap)->scalx *= p3[2];
-			}
-		    }
-		  else
-		    {
+		      u = sf->knotv[sf->length];
+		      ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
+					 sfcv, u, p3);
+		      p3[1] = fabs(p3[1]);
+		      p3[2] = fabs(p3[2]);
 		      if(p3[1] > AY_EPSILON)
 			{
-			  (*start_cap)->scalx *= p3[1];
+			  (*end_cap)->scaly *= p3[1];
 			}
-		    }
-		} /* if */
-	      /* rotate it */
-	      if(rotate)
-		{
-		  for(j = 0; j <= sections; j++)
-		    {
-		      if(fabs(rots[j*4]) > AY_EPSILON)
+		      if(sfis3d)
 			{
-			  ay_quat_axistoquat(&(rots[j*4+1]),
-					     AY_D2R(-rots[j*4]), quat);
-			  ay_quat_add(quat, (*end_cap)->quat,
-				      (*end_cap)->quat);
-			} /* if */
-		    } /* for */
+			  if(p3[2] > AY_EPSILON)
+			    {
+			      (*end_cap)->scalx *= p3[2];
+			    }
+			}
+		      else
+			{
+			  if(p3[1] > AY_EPSILON)
+			    {
+			      (*start_cap)->scalx *= p3[1];
+			    }
+			}
+		    } /* if */
+		  /* rotate it */
+		  if(rotate)
+		    {
+		      for(j = 0; j <= sections; j++)
+			{
+			  if(fabs(rots[j*4]) > AY_EPSILON)
+			    {
+			      ay_quat_axistoquat(&(rots[j*4+1]),
+						 AY_D2R(-rots[j*4]), quat);
+			      ay_quat_add(quat, (*end_cap)->quat,
+					  (*end_cap)->quat);
+			    } /* if */
+			} /* for */
+		    } /* if */
+		}
+	      else
+		{
+		  ay_object_delete(curve);
 		} /* if */
 	    } /* if */
 	} /* if */
