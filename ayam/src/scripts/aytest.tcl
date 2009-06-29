@@ -727,6 +727,141 @@ array set Gordon_1 {
 
 
 
+# Skin Variation #1
+array set Skin_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; hSL; movOb 0 1 0;
+	crtOb NCurve; forceNot; goUp; hSL
+    }
+    arr SkinAttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+# Skin Variation #2
+array set Skin_2 {
+    precmd {
+	goDown -1;
+	crtClosedBS 4; hSL; movOb 0 1 1;
+	crtClosedBS 4; forceNot; goUp; hSL
+    }
+    arr SkinAttrData
+    freevars {StartCap EndCap}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars { dummy }
+    vals { {0} }
+}
+
+# Skin Variation #3
+array set Skin_3 {
+    precmd {
+	goDown -1;
+	crtClosedBS 4; hSL; movOb 0 4 4;
+	crtClosedBS 4; hSL; movOb 0 3 3;
+	crtClosedBS 4; hSL; movOb 0 1 2;
+	crtClosedBS 4; hSL; movOb 0 1 0;
+	crtClosedBS 4; forceNot; goUp; hSL
+    }
+    arr SkinAttrData
+    freevars {Interpolate StartCap EndCap Knot-Type_U Order_U}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    Knot-Type_U { 1 2 3 }
+    Order_U { 2 3 4 5 }
+    vars { dummy }
+    vals { 0 }
+}
+
+# Skin Variation #4
+array set Skin_4 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {
+		crtClosedBS 4; hSL; movOb 0 4 4;
+		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtClosedBS 4; hSL; movOb 0 1 2;
+		crtClosedBS 4; hSL; movOb 0 1 0;
+		crtClosedBS 4;
+	    }
+	    1 {
+		crtClosedBS 4; hSL; movOb 0 4 4;
+		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtClosedBS 4; hSL; movOb 0 1 0;
+		crtClosedBS 4;
+	    }
+	    2 {
+		crtClosedBS 4; hSL; movOb 0 4 4;
+		crtClosedBS 4; hSL; movOb 0 1 0;
+		crtClosedBS 4;
+	    }
+	}
+	forceNot; goUp; hSL
+    }
+    arr SkinAttrData
+    freevars {StartCap EndCap}
+    StartCap {0 1}
+    EndCap {0 1}
+    vars { Knot-Type_U Order_U }
+}
+
+lappend Skin_4(vals) {0 5}
+lappend Skin_4(vals) {0 4}
+lappend Skin_4(vals) {0 3}
+
+
+# Skin Variation #5
+array set Skin_5 {
+    precmd {
+	goDown -1;
+	switch $l {
+	    0 {
+		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtClosedBS 5; hSL; movOb 0 1.5 0;
+		crtClosedBS 4;
+	    }
+	    1 {
+		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtOb NCurve; hSL; movOb 0 1.5 0;
+		crtClosedBS 4;
+	    }
+	    2 {
+		crtClosedBS 4; hSL; movOb 0 3 3;
+		crtOb NCircle; hSL; movOb 0 1.5 0;
+		crtClosedBS 4;
+	    }
+	    3 {
+		crtOb NCircle; hSL; movOb 0 3 3; rotOb 45 0 0;
+		crtOb NCircle; hSL; movOb 0 1.5 0;
+		crtClosedBS 4;hSL; rotOb -45 0 0;
+	    }
+	}
+	forceNot; goUp; hSL
+    }
+    arr SkinAttrData
+    freevars {Interpolate StartCap EndCap Knot-Type_U Order_U}
+    Interpolate {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    Knot-Type_U { 1 2 3 }
+    Order_U { 2 3 4 5 }
+    vars { dummy }
+    
+}
+
+lappend Skin_5(vals) { 0 }
+lappend Skin_5(vals) { 0 }
+lappend Skin_5(vals) { 0 }
+
+
+# XXXX TODO: add bevels
+
+
+
 
 # Cap Variation #1
 array set Cap_1 {
@@ -1049,9 +1184,10 @@ proc aytest_runTests { tests } {
 	newScene
 	selOb
 
+	incr test
+
 	puts "Running Test $test..."
 
-	incr test
 	catch [aytest_$test]
 
 	close $::log
