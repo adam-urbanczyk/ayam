@@ -42,6 +42,8 @@ ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = new;
 
+  ay_ncircle_notifycb(o);
+
  return AY_OK;
 } /* ay_ncircle_createcb */
 
