@@ -2797,7 +2797,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 			{
 			  if(p3[1] > AY_EPSILON)
 			    {
-			      (*start_cap)->scalx *= p3[1];
+			      (*end_cap)->scalx *= p3[1];
 			    }
 			}
 		    } /* if */
@@ -3459,6 +3459,11 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
 	      ay_status = ay_capt_createfromcurve(curve, end_cap);
 
+	      if(!*end_cap)
+		{
+		  ay_object_delete(curve);
+		}
+
 	    } /* if */
 
 #if 0
@@ -3515,6 +3520,10 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	    /*ay_trafo_copy(o1, *start_cap);*/
 	  /* fix direction for aycsg */
 	  (*start_cap)->scalz *= -1.0;
+	}
+      else
+	{
+	  ay_object_delete(curve);
 	} /* if */
     } /* if */
 
@@ -4128,9 +4137,13 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       /* transform cap */
       if(*start_cap)
 	{
-	    /*ay_trafo_copy(o1, *start_cap);*/
+	  /*ay_trafo_copy(o1, *start_cap);*/
 	  /* fix direction for aycsg */
 	  (*start_cap)->scalz *= -1.0;
+	}
+      else
+	{
+	  ay_object_delete(curve);
 	} /* if */
     } /* if */
 
@@ -4142,6 +4155,10 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       ay_status = ay_object_copy(o4, &curve);
       /*ay_trafo_defaults(curve);*/
       ay_status = ay_capt_createfromcurve(curve, end_cap);
+      if(!*end_cap)
+	{
+	  ay_object_delete(curve);
+	}
     } /* if */
 
 
