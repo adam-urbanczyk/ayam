@@ -3746,6 +3746,7 @@ Good looking soft shadows may be generated using area lights.
 Area lights may be created by simply placing a single object as child
 object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
 shader attached:
+<#if out=latex><x/needspace 3/</#if>
 <code>
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
@@ -4505,6 +4506,7 @@ attributes of the cloned object will be completely overwritten when
 placing the clones on the trajectory curve. If the cloned object has
 distinct scale or rotation attributes it should be put inside a level
 object like this:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 +-Clone
  +-Level
@@ -4558,6 +4560,7 @@ objects do not provide their unmodified children).
 Additionally, the order of the mirrored objects will be reversed so that
 it is possible to use a single Clone object in mirror mode (with one or
 multiple NURBS curves as children) as parameter object of e.g. a Skin object:
+<#if out=latex><x/needspace 11/</#if>
 <code>
 +-Skin
  +-Mirror(Clone)
@@ -5063,6 +5066,7 @@ the Sweep object.
 The Birail1 object forms a surface by sweeping a cross section
 (or profile) curve along two so called rail curves.
 The object hierarchy of a Birail1 object, thus, looks like this:
+<#if out=latex><x/needspace 6/</#if>
 <code>
 +-Birail1
  | Cross_Section(NCurve)
@@ -5177,6 +5181,7 @@ The Birail2 object forms a surface by sweeping a cross section
 into a second cross section (or profile) curve. The morphing process
 may be controlled by a fifth parameter curve.
 The object hierarchy of a Birail2 object, thus, looks like this:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 +-Birail2
  | Cross_Section1(NCurve)
@@ -6023,6 +6028,7 @@ The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
 Revolve. It also works with NURBS patch providing objects, so that
 the following example hierarchy is valid:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 --NPatch
 +-Skin
@@ -6251,6 +6257,7 @@ objects.
 <p>
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
+<#if out=latex><x/needspace 5/</#if>
 <code>
 --NPatch
 +-ExtrNP
@@ -6629,6 +6636,7 @@ needs a NCurve, e.g. a Sweep:
 A simple example script for a script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look
 like this:
+<#if out=latex><x/needspace 3/</#if>
 <code>
 revertC
 </code>
@@ -7708,6 +7716,7 @@ of the object changed.
 <bf/Example/
 <p>
 A simple BNS tag could look like this:
+<#if out=latex><x/needspace 3/</#if>
 <code>BNS puts "notify callback about to fire"</code>
 <p>
 <bf/Notes/
@@ -8734,6 +8743,7 @@ to nothing, but they set the global Tcl variable <tt>"ay_error"</tt>
 to a value higher than 1 if an error occured. You need to set it to
 zero before and check it after the operation in question to see whether
 the operation performed successfully:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 proc myProc { } {
   set ::ay_error 0
@@ -8791,6 +8801,7 @@ the so called set-property callback.
 The names of the array and the callbacks may be inferred from another global
 array that is always named like the property itself, e.g. for the tags
 property the following global array <tt/"Tags"/ is defined:
+<#if out=latex><x/needspace 7/</#if>
 <code>
 Tags {
 arr   tagsPropData
@@ -9959,6 +9970,7 @@ however, to <em>not</em> rewind the undo state, when a modelling
 operation only failed for some (not for all) of the selected objects.
  </itemize>
  <item>Example:
+<#if out=latex><x/needspace 6/</#if>
 <code>
 undo save "MovOb"
 set ay_error ""
@@ -10059,6 +10071,7 @@ properly and all views display the new position of the moved objects.
 <p>
 The following example script snippet shows how to move control points
 of a NURBS curve.
+<#if out=latex><x/needspace 3/</#if>
 <code>
 # first, we create a new NURBS curve with 30 control points
 set len 30
@@ -10095,6 +10108,7 @@ For instance, using the next small script.
 The following example script shows how to easily create a sweep from a
 selected path curve (avoiding the manual and lengthy creation and
 parameterisation of a suitable cross section).
+<#if out=latex><x/needspace 13/</#if>
 <code>
 proc easySweep { } {
  # first, we create a sweep object
@@ -11108,6 +11122,7 @@ terse, when it comes to trim curves. There is no clearly defined way of
 saving trim curves in 3DMF 1.0. However, the method presented here is the
 only way that works with the free provided 3DMF parser.
 Trimmed NURBS patches will be written by Ayam like this:
+<#if out=latex><x/needspace 14/</#if>
 <code>
 Container (
 	NURBPatch ( ...
@@ -11753,6 +11768,7 @@ by the parameter object(s) or they modify the parameter object(s) and
 deliver them to their respective parent object.
 <p>
 The pure hierarchical dependency scheme may be broken up by instance objects:
+<#if out=latex><x/needspace 4/</#if>
 <code>
 +-Tool_Object(Revolve)
  \ Parameter_Object(NCurve) --------------

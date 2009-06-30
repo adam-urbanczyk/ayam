@@ -47,7 +47,7 @@ while { ![eof $infile] } {
 		set index [ string first "documentclass" $buf ]
 		if { $index > -1 } {
 		    puts $outfile\
-			    "\\documentclass\[a4paper,11pt\]\{article\}"
+			"\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}"
 		} else {
 		    set index [ string first "\\begin\{itemize" $buf ]
 		    if { ($index > -1) && $rewriteItemize } {
@@ -57,7 +57,12 @@ while { ![eof $infile] } {
 			if { [string first newpage $buf] > -1} {
 			    puts $outfile "\\newpage"
 			} else {
-			    puts $outfile $buf
+			    if { [string first needspace $buf] > -1} {
+				scan $buf "needspace %d" num
+			      puts $outfile "\\needspace\{$num\\baselineskip\}"
+			    } else {
+				puts $outfile $buf
+			    }
 			}
 		    }
 		}
