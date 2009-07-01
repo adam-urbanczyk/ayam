@@ -132,6 +132,38 @@ ay_concatnc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_concatnc_object *concatnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ /*double *p1, *p2;*/
+ double *p1, *p2;
+ /*double m[16];*/
+
+  if(!o)
+    return AY_ENULL;
+
+  concatnc = (ay_concatnc_object *)o->refine;
+
+  if(concatnc && concatnc->ncurve)
+    {
+      /* get NURBS curve and its last control points */
+      nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
+      p1 = &(nc->controlv[nc->length*4-8]);
+      p2 = p1+4;
+
+      /* draw arrow */
+      /*
+      glPushMatrix();
+        c = concatnc->ncurve;
+	glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
+	ay_quat_torotmatrix(c->quat, m);
+	glMultMatrixd((GLdouble*)m);
+	glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
+      */
+        ay_draw_arrow(togl, p1, p2);
+      /*
+      glPopMatrix();
+      */
+    }
 
  return AY_OK;
 } /* ay_concatnc_drawhcb */
@@ -593,7 +625,7 @@ ay_concatnc_init(Tcl_Interp *interp)
 				    ay_concatnc_deletecb,
 				    ay_concatnc_copycb,
 				    ay_concatnc_drawcb,
-				    NULL, /* no handles */
+				    ay_concatnc_drawhcb,
 				    NULL, /* no shading */
 				    ay_concatnc_setpropcb,
 				    ay_concatnc_getpropcb,
