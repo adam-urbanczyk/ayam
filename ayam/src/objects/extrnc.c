@@ -153,15 +153,15 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
       nc = (ay_nurbcurve_object *)extrnc->ncurve->refine;
       p1 = &(nc->controlv[nc->length*4-8]);
       p2 = p1+4;
-      /* draw arrow */
 
+      /* draw arrow */
       glPushMatrix();
         c = extrnc->ncurve;
 	glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
 	ay_quat_torotmatrix(c->quat, m);
 	glMultMatrixd((GLdouble*)m);
 	glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-	
+
         ay_draw_arrow(togl, p1, p2);
 
       glPopMatrix();
