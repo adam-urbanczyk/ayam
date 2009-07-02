@@ -16,6 +16,8 @@
 
 static char *ay_instance_name = "Instance";
 
+int ay_instance_hasrptrafo(ay_object *o);
+
 /* functions: */
 
 /* ay_instance_createcb:
@@ -103,21 +105,32 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
  char fname[] = "instance_draw";
  int ay_status = AY_OK;
  void **arr = NULL;
- ay_object *t = NULL, *down = NULL;
+ ay_object *m = NULL, *down = NULL;
  ay_drawcb *cb = NULL;
+ double tm[16];
 
   if(!o)
     return AY_ENULL;
 
-  t = (ay_object *)o->refine;
+  m = (ay_object *)o->refine;
 
   glPushMatrix();
 
+   if(ay_instance_hasrptrafo(o))
+     {
+       glLoadIdentity();
+       
+       glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
+       ay_quat_torotmatrix(m->quat, tm);
+       glMultMatrixd((GLdouble*)tm);
+       glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
+     }
+
    arr = ay_drawcbt.arr;
-   cb = (ay_drawcb *)(arr[t->type]);
+   cb = (ay_drawcb *)(arr[m->type]);
 
    if(cb)
-     ay_status = cb(togl, t);
+     ay_status = cb(togl, m);
 
    if(ay_status)
      {
@@ -127,12 +140,12 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
        return AY_ERROR;
      }
 
-   if(!t->inherit_trafos)
+   if(!m->inherit_trafos)
      glLoadIdentity();
 
-   if(!t->hide_children)
+   if(!m->hide_children)
      {
-       down = t->down;
+       down = m->down;
        while(down)
 	 {
 	   ay_status = ay_draw_object(togl, down, AY_TRUE);
@@ -155,21 +168,32 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
  char fname[] = "instance_shade";
  int ay_status = AY_OK;
  void **arr = NULL;
- ay_object *t = NULL, *down = NULL;
+ ay_object *m = NULL, *down = NULL;
  ay_drawcb *cb = NULL;
+ double tm[16];
 
   if(!o)
     return AY_ENULL;
 
-  t = (ay_object *)o->refine;
+  m = (ay_object *)o->refine;
 
   glPushMatrix();
 
+   if(ay_instance_hasrptrafo(o))
+     {
+       glLoadIdentity();
+       
+       glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
+       ay_quat_torotmatrix(m->quat, tm);
+       glMultMatrixd((GLdouble*)tm);
+       glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
+     }
+
    arr = ay_shadecbt.arr;
-   cb = (ay_drawcb *)(arr[t->type]);
+   cb = (ay_drawcb *)(arr[m->type]);
 
    if(cb)
-     ay_status = cb(togl, t);
+     ay_status = cb(togl, m);
 
    if(ay_status)
      {
@@ -179,12 +203,12 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
        return AY_ERROR;
      }
 
-   if(!t->inherit_trafos)
+   if(!m->inherit_trafos)
      glLoadIdentity();
 
-   if(!t->hide_children)
+   if(!m->hide_children)
      {
-       down = t->down;
+       down = m->down;
        while(down)
 	 {
 	   ay_status = ay_shade_object(togl, down, AY_FALSE);
@@ -451,10 +475,13 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
   if(!o || !bbox || !flags)
     return AY_ENULL;
 
-  /* get transformations of o */
-  ay_trafo_creatematrix(o, m);
-
   t = (ay_object *)o->refine;
+
+  /* get transformations */
+  if(ay_instance_hasrptrafo(o))
+    ay_trafo_creatematrix(t, m);
+  else
+    ay_trafo_creatematrix(o, m);
 
   /* get bounding boxes of children of t (if any) */
   if(t->down)
@@ -672,22 +699,25 @@ ay_instance_convertcb(ay_object *i, int in_place)
 	free(temp);
 
       /* use transformation attributes from instance, not from original */
-      i->movx = movx;
-      i->movy = movy;
-      i->movz = movz;
+      if(!ay_instance_hasrptrafo(i))
+	{
+	  i->movx = movx;
+	  i->movy = movy;
+	  i->movz = movz;
+	  
+	  i->rotx = rotx;
+	  i->roty = roty;
+	  i->rotz = rotz;
 
-      i->rotx = rotx;
-      i->roty = roty;
-      i->rotz = rotz;
+	  i->scalx = scalx;
+	  i->scaly = scaly;
+	  i->scalz = scalz;
 
-      i->scalx = scalx;
-      i->scaly = scaly;
-      i->scalz = scalz;
-
-      i->quat[0] = quat[0];
-      i->quat[1] = quat[1];
-      i->quat[2] = quat[2];
-      i->quat[3] = quat[3];
+	  i->quat[0] = quat[0];
+	  i->quat[1] = quat[1];
+	  i->quat[2] = quat[2];
+	  i->quat[3] = quat[3];
+	}
 
       orig->refcount--;
     }
@@ -698,7 +728,10 @@ ay_instance_convertcb(ay_object *i, int in_place)
       ay_status = ay_object_copy(orig, &new);
       if(new)
 	{
-	  ay_trafo_copy(i, new);
+	  if(!ay_instance_hasrptrafo(i))
+	    {
+	      ay_trafo_copy(i, new);
+	    }
 	  ay_status = ay_object_link(new);
 	} /* if */
     } /* if */
@@ -715,8 +748,6 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *i = NULL;
- ay_tag *t = NULL;
- int copytrafo = AY_TRUE;
 
   if(!o)
     return AY_ENULL;
@@ -734,29 +765,13 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
     }
 
-  /* find RP tag */
-  t = o->tags;
-  while(t)
-    {
-      if(t->type == ay_rp_tagtype)
-	{
-	  if(t->val && strstr(t->val, "Transformations"))
-	    {
-	      copytrafo = AY_FALSE;
-	      break;
-	    }
-	}
-      t = t->next;
-    }
-
-
   i = (ay_object *) o->refine;
 
   if(i->type == type)
     {
 
       ay_status = ay_object_copy(i, result);
-      if(copytrafo)
+      if(!ay_instance_hasrptrafo(o))
 	ay_trafo_copy(o, *result);
 
     }
@@ -776,13 +791,42 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    we got it, copy transformation from instance
 	    to result
 	  */
-	  if(copytrafo)
+	  if(!ay_instance_hasrptrafo(o))
 	    ay_trafo_copy(o, *result);
 	}
     } /* if */
 
  return ay_status;
 } /* ay_instance_providecb */
+
+
+/* ay_instance_hasrptrafo:
+ *  has object <o> a RP tag for the transformations property
+ */
+int
+ay_instance_hasrptrafo(ay_object *o)
+{
+ ay_tag *t = NULL;
+
+  if(!o)
+    return AY_FALSE;
+
+  /* find RP tag */
+  t = o->tags;
+  while(t)
+    {
+      if(t->type == ay_rp_tagtype)
+	{
+	  if(t->val && strstr(t->val, "Transformations"))
+	    {
+	      return AY_TRUE;
+	    }
+	}
+      t = t->next;
+    }
+
+ return AY_FALSE;
+} /* ay_instance_hasrptrafo */
 
 
 /* ay_instance_init:
