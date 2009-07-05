@@ -1101,7 +1101,8 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
  ay_mat_object *material = NULL;
  ay_shader *newshader = NULL, **shader = NULL;
  ay_shader_arg *newarg = NULL, **argnext = NULL;
- char *result, *n1=NULL;
+ const char *result;
+ char *n1=NULL;
  int sargnc = 0, sargtc = 0, i, j, shadertype = 0, argtype = 0;
  double dtemp = 0.0;
  char **sargnv, **sargtv;
@@ -1265,7 +1266,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* user specified no new shader -> bail out! */
-  if(!strcmp("",result))
+  if(!strcmp("", result))
     {
       return TCL_OK;
     }
@@ -1301,7 +1302,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 
 
   argnext = &(newshader->arg);
-  for(i=0; i<sargnc; i++)
+  for(i = 0; i < sargnc; i++)
     {
       /* which argtype? */
       if(!strcmp(sargtv[i],"float"))

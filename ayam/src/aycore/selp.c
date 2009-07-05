@@ -46,8 +46,8 @@ ay_selp_clear(ay_object *o)
 int
 ay_selp_selall(ay_object *o)
 {
+ /*int ay_status = AY_OK;*/
  char fname[] = "selp_selall";
- int ay_status = AY_OK;
  double p[3] = {DBL_MIN, DBL_MIN, DBL_MIN};
  int i = 0;
  ay_point *newp = NULL;
@@ -56,7 +56,7 @@ ay_selp_selall(ay_object *o)
     return AY_ENULL;
 
   ay_selp_clear(o);
-  ay_status = ay_pact_getpoint(0, o, p);
+  ay_pact_getpoint(0, o, p);
 
   for(i = 0; i < ay_point_edit_coords_number; i++)
     {
@@ -116,8 +116,8 @@ int
 ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
+ /*int ay_status = AY_OK;*/
  char fname[] = "applyTrafo";
- int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *bak = NULL, *p = NULL;
@@ -141,7 +141,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  bak = o->selp;
 	  o->selp = NULL;
-	  ay_status = ay_selp_selall(o);
+	  ay_selp_selall(o);
 	}
 
       /* create trafo */

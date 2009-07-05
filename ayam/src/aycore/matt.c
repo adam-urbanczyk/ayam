@@ -81,7 +81,9 @@ ay_matt_isregistered(char *name)
   if(!name)
     return AY_FALSE;
 
-  if(!(entry = Tcl_FindHashEntry(ht, name)))
+  entry = Tcl_FindHashEntry(ht, name);
+
+  if(!entry)
     {
       return AY_FALSE; /* name is not registered */
     }
@@ -526,18 +528,26 @@ ay_matt_wrib(char *file, ay_mat_object *m)
   if(m->sshader)
     {
       ay_status = ay_shader_wrib(m->sshader, AY_STSURFACE, NULL);
+      if(ay_status)
+	return ay_status;
     }
   if(m->dshader)
     {
       ay_status = ay_shader_wrib(m->dshader, AY_STDISPLACEMENT, NULL);
+      if(ay_status)
+	return ay_status;
     }
   if(m->ishader)
     {
       ay_status = ay_shader_wrib(m->ishader, AY_STINTERIOR, NULL);
+      if(ay_status)
+	return ay_status;
     }
   if(m->eshader)
     {
       ay_status = ay_shader_wrib(m->eshader, AY_STEXTERIOR, NULL);
+      if(ay_status)
+	return ay_status;
     }
   /* write RiAttributes and texture coordinates from tags */
   if(m->objptr)

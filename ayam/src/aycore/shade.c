@@ -173,7 +173,7 @@ int
 ay_shade_view(struct Togl *togl)
 {
  int ay_status = AY_OK;
- /*char fname[] = "shade_view";*/
+ char fname[] = "shade_view";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
@@ -240,7 +240,7 @@ ay_shade_view(struct Togl *togl)
     {
       while(o)
 	{
-	  ay_status = ay_shade_object(togl, o, AY_FALSE);
+	  ay_shade_object(togl, o, AY_FALSE);
 	  o = o->next;
 	} /* while */
     } /* if */
@@ -258,7 +258,7 @@ ay_shade_view(struct Togl *togl)
 	{
 	  while(sel)
 	    {
-	      ay_status = ay_shade_object(togl, sel->object, AY_FALSE);
+	      ay_shade_object(togl, sel->object, AY_FALSE);
 	      sel = sel->next;
 	    } /* while */
 	} /* if */
@@ -305,6 +305,11 @@ ay_shade_view(struct Togl *togl)
 		  if(cb)
 		    {
 		      ay_status = cb(togl, o);
+		      if(ay_status)
+			{
+			  ay_error(ay_status, fname,
+				   "draw handle callback failed");
+			}
 		    }
 
 		  /* draw selected points */

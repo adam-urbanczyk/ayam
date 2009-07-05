@@ -932,6 +932,9 @@ ay_object_replace(ay_object *src, ay_object *dst)
   if(dcb)
     ay_status = dcb(dst->refine);
 
+  if(ay_status)
+    return ay_status;
+
   memcpy(dst, src, sizeof(ay_object));
 
   dst->mat = oldmat;

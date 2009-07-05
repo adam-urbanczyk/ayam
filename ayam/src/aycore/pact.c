@@ -798,7 +798,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
- double *cv = NULL;
  int i = 0, j = 0, k = 0, index = -1;
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
@@ -806,8 +805,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 
  if(!curve)
    return AY_ENULL;
-
-  cv = curve->controlv;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
@@ -1092,7 +1089,6 @@ ay_pact_insertic(ay_icurve_object *icurve,
 
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
- double *cv = NULL;
  int i = 0, j = 0, index = -1;
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
@@ -1100,8 +1096,6 @@ ay_pact_insertic(ay_icurve_object *icurve,
 
   if(!icurve)
     return AY_ENULL;
-
-  cv = icurve->controlv;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
@@ -1246,7 +1240,6 @@ ay_pact_insertac(ay_acurve_object *acurve,
 
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
- double *cv = NULL;
  int i = 0, j = 0, index = -1;
  double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
@@ -1254,8 +1247,6 @@ ay_pact_insertac(ay_acurve_object *acurve,
 
   if(!acurve)
     return AY_ENULL;
-
-  cv = acurve->controlv;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
@@ -1858,7 +1849,7 @@ ay_pact_griddify(double *n, double grid)
 int
 ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "edit_points";
  Tcl_Interp *interp = Togl_Interp (togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -2067,12 +2058,16 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
     {
       if(!ay_prefs.lazynotify)
 	{
-	  ay_status = ay_notify_parent();
-	} /* if */
+	  ay_notify_parent();
+	}
+
       ay_toglcb_display(togl);
+
       /* flash option given? */
       if(argc > 5)
-	ay_status = ay_pact_flashpoint(AY_TRUE);
+	{
+	  ay_pact_flashpoint(AY_TRUE);
+	}
     } /* if */
 
  return TCL_OK;
@@ -2085,13 +2080,12 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "weight_edit";
  Tcl_Interp *interp = Togl_Interp (togl);
  /*  ay_view_info *view = Togl_GetClientData(togl);*/
  double dx, winx = 0.0, new_weight = 0.0, *coords;
  static double oldwinx = 0.0;
- static double olddx = 0.0;
  int i = 0, j, k = 0, notifyparent = AY_FALSE;
  ay_object *o = ay_point_edit_object;
  ay_nurbcurve_object *nc = NULL;
@@ -2110,7 +2104,6 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	  {
 	    Tcl_GetDouble(interp, argv[3], &winx);
 	    oldwinx = winx;
-	    olddx = 0.0;
 	  }
     }
   else
@@ -2135,7 +2128,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	  if(ay_pe_homcpo[j])
 	    {
 	      new_weight = coords[3];
-	      if(dx>0.0)
+	      if(dx > 0.0)
 		{
 		  new_weight *= 1.1;
 		}
@@ -2176,7 +2169,9 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
   oldwinx = winx;
 
   if(!ay_prefs.lazynotify && notifyparent)
-    ay_status = ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_pact_wetcb */

@@ -1337,7 +1337,7 @@ int
 ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "splitPo";
  ay_object *o = NULL, *newo;
  ay_list_object *sel = ay_selection;
@@ -1363,9 +1363,8 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		  return TCL_OK;
 		}
 
-	      ay_status = ay_pomesht_split((ay_pomesh_object*)o->refine,
-					o->selp,
-					(ay_pomesh_object**)&(newo->refine));
+	      ay_pomesht_split((ay_pomesh_object*)o->refine, o->selp,
+			       (ay_pomesh_object**)&(newo->refine));
 
 	      if(newo->refine)
 		{
