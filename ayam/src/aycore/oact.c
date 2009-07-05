@@ -20,7 +20,7 @@
 int
 ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_point *point = NULL;
@@ -224,7 +224,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
     {
       if(!ay_prefs.lazynotify)
 	{
-	  ay_status = ay_notify_parent();
+	  ay_notify_parent();
 	}
 
       ay_toglcb_display(togl);
@@ -240,6 +240,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 {
+ /*int ay_status = AY_OK;*/
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -317,7 +318,9 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -446,7 +449,9 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -468,13 +473,14 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  static double oldwinx = 0.0, oldwiny = 0.0;
  static double oldfromx = 0.0, oldfromy = 0.0, oldfromz = 0.0;
  double height = Togl_Height(togl);
- double winx = 0.0, winy = 0.0, ax=0.0, ay=0.0, ay2=0.0, axo=0.0, ayo=0.0;
+ double winx = 0.0, winy = 0.0;
+ double ax = 0.0, ay = 0.0, ay2 = 0.0, axo = 0.0, ayo = 0.0;
  double dummy;
  double angle = 0.0, tpoint[4] = {0};
- double xaxis[3]={1.0,0.0,0.0};
- double yaxis[3]={0.0,1.0,0.0};
- double zaxis[3]={0.0,0.0,1.0};
- double dx,dy,dax,day,zangle,yangle,xangle;
+ double xaxis[3] = {1.0,0.0,0.0};
+ double yaxis[3] = {0.0,1.0,0.0};
+ double zaxis[3] = {0.0,0.0,1.0};
+ double /*dx, dy, dax, day,*/ zangle, yangle, xangle;
  double quat[4];
  double v1[3] = {0}, v2[3] = {0}, v3[3];
  double alpha, beta;
@@ -605,10 +611,12 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	  owiny = height-owiny;
 
+	  /*
 	  dx = owinx;
 	  dy = owiny;
 	  dax = dx - ax;
 	  day = dy - ay;
+	  */
 
 	  owinx -= (owinx - ax);
 	  owiny -= (owiny - ay);
@@ -893,7 +901,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
     } /* while */
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 

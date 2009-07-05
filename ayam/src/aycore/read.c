@@ -332,6 +332,9 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&o->hide);
   fscanf(fileptr,"%d",&o->hide_children);
   read = fgetc(fileptr);
+  if(read == EOF)
+    return AY_ERROR;
+
   ay_read_string(fileptr, &(o->name));
 
  return ay_status;
@@ -489,6 +492,9 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
       ay_read_string(fileptr, &(sarg->name));
       fscanf(fileptr,"%d", &(sarg->type));
       read = fgetc(fileptr);
+      if(read == EOF)
+	return AY_ERROR;
+
       switch(sarg->type)
 	{
 	case AY_SACOLOR:
@@ -566,6 +572,9 @@ ay_read_object(FILE *fileptr)
   /* get type of object */
   fscanf(fileptr,"%d", &has_name);
   read = fgetc(fileptr);
+  if(read == EOF)
+    return AY_ERROR;
+
   if(has_name)
     {
       /* get name */

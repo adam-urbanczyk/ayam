@@ -615,7 +615,7 @@ int
 ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL, **last = NULL;
@@ -669,7 +669,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_status = ay_tags_delall(o);
+	      ay_tags_delall(o);
 	    } /* if */
 	} /* if */
 
@@ -893,7 +893,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 int
 ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  ay_tag *tag;
 
   if(!tagtype || !tagname)
@@ -906,7 +906,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
     {
       if(o->down)
 	{
-	  ay_status = ay_tags_reconnect(o->down, tagtype, tagname);
+	  ay_tags_reconnect(o->down, tagtype, tagname);
 	}
 
       tag = o->tags;
