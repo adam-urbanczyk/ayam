@@ -22,7 +22,6 @@ ay_clear_scene(void)
 {
  int ay_status = AY_OK;
  char fname[] = "clear_scene";
- int result;
  ay_object *o = ay_root, *o2 = NULL;
  ay_root_object *root = NULL;
  char *ucargs[3] = {0}, ucarg1[] = "clear";
@@ -97,7 +96,7 @@ ay_clear_scene(void)
     }
 
   /* clear clevel */
-  result = ay_clevel_gotoptcmd(NULL, ay_interp, 0, NULL);
+  ay_clevel_gotoptcmd(NULL, ay_interp, 0, NULL);
 
   /* free shaders from root object */
   root = (ay_root_object *)ay_root->refine;

@@ -426,6 +426,10 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* free selection */
   ay_status = ay_sel_free(AY_TRUE);
+  if(ay_status)
+    {
+      ay_error(ay_status, fname, NULL);
+    }
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)

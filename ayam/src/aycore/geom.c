@@ -63,7 +63,7 @@ ay_geom_intersectlines2D(double *p1, double *t1,
 			 double *p2, double *t2,
 			 double *p)
 {
- double ua, ub, den, nomua, nomub;
+ double ua, /*ub,*/ den, nomua, nomub;
 
   if(!p1 || !t1 || !p2 || !t2 || !p)
    return 0;
@@ -82,7 +82,7 @@ ay_geom_intersectlines2D(double *p1, double *t1,
     return 0;
 
   ua = nomua/den;
-  ub = nomub/den;
+  /*ub = nomub/den;*/
 
   p[0] = p1[0] + ua*t1[0];
   p[1] = p1[1] + ua*t1[1];
