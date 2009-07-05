@@ -126,7 +126,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
        down = o->down;
        while(down->next)
 	 {
-	   ay_status = ay_draw_object(togl, down, selected);
+	   ay_draw_object(togl, down, selected);
 	   down = down->next;
 	 } /* while */
      }
@@ -149,7 +149,7 @@ int
 ay_draw_view(struct Togl *togl, int draw_offset)
 {
  int ay_status = AY_OK;
- /* char fname[] = "draw_view";*/
+ char fname[] = "draw_view";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
@@ -214,7 +214,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     {
       while(o->next)
 	{
-	  ay_status = ay_draw_object(togl, o, AY_FALSE);
+	  ay_draw_object(togl, o, AY_FALSE);
 	  o = o->next;
 	} /* while */
     } /* if */
@@ -240,13 +240,13 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
       else
 	{
-	  glDepthRange (0.0, 0.9999);
+	  glDepthRange(0.0, 0.9999);
 	  glDepthFunc(GL_LEQUAL);
 	} /* if */
 
        while(sel)
 	 {
-	   ay_status = ay_draw_object(togl, sel->object, AY_TRUE);
+	   ay_draw_object(togl, sel->object, AY_TRUE);
 	   sel = sel->next;
 	 } /* while */
 
@@ -256,7 +256,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
       else
 	{
-	  glDepthRange (0.0, 1.0);
+	  glDepthRange(0.0, 1.0);
 	  glDepthFunc(GL_LESS);
 	} /* if */
 
@@ -296,6 +296,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		  if(cb)
 		    {
 		      ay_status = cb(togl, o);
+		      if(ay_status)
+			{
+			  ay_error(ay_status, fname,
+				   "draw handle callback failed");
+			}
 		    }
 
 		  /* draw selected points */
@@ -339,7 +344,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     } /* if */
 
   if(draw_offset)
-    glDepthRange (0.0, 1.0);
+    glDepthRange(0.0, 1.0);
 
   if(view->drawlevel || view->type == AY_VTTRIM)
     {

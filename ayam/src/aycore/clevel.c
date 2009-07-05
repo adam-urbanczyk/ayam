@@ -33,9 +33,15 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 	{
 	  if(c->down)
 	    {
-	      ay_clevel_add(c);
-	      ay_clevel_add(c->down);
+	      ay_status = ay_clevel_add(c);
+	      if(ay_status)
+		break;
+	      ay_status = ay_clevel_add(c->down);
+	      if(ay_status)
+		break;
 	      ay_status = ay_clevel_find(c->down, o, found);
+	      if(ay_status)
+		break;
 	      if(!(*found))
 		{
 		  ay_clevel_del();
@@ -55,7 +61,7 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
       c = c->next;
     } /* while */
 
- return AY_OK;
+ return ay_status;
 } /* ay_clevel_find */
 
 
@@ -106,6 +112,7 @@ ay_clevel_del(void)
 int
 ay_clevel_delall(void)
 {
+ int ay_status = AY_OK;
  ay_list_object *lev = ay_currentlevel;
 
   if(lev)
@@ -116,9 +123,9 @@ ay_clevel_delall(void)
 	lev = ay_currentlevel;
       }
 
-  ay_clevel_add(ay_root);
+  ay_status = ay_clevel_add(ay_root);
 
- return AY_OK;
+ return ay_status;
 } /* ay_clevel_delall */
 
 
@@ -130,10 +137,16 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "goTop";
  ay_object *o = ay_root;
  /* char varName[20], newValue[10];*/
 
   ay_status = ay_clevel_delall();
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, NULL);
+    }
 
   if(o)
     {
@@ -161,7 +174,7 @@ int
 ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  ay_object *o = NULL;
  /*
  char fname[] = "goUp";
@@ -173,8 +186,8 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_currentlevel->object != ay_root)
     {
-      ay_status = ay_clevel_del();
-      ay_status = ay_clevel_del();
+      ay_clevel_del();
+      ay_clevel_del();
 
       o = ay_currentlevel->object;
       if(o)
@@ -201,7 +214,7 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
   /* Duplicate the value ay(CurrentLevel) since the original string
      must not be modified */
   tmp = malloc(length * sizeof(char));
-  if (!tmp)
+  if(!tmp)
     {
       ay_error(AY_EOMEM, fname, NULL);
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
@@ -318,6 +331,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_clevel_add(o->down);
       if(ay_status)
 	{
+	  ay_clevel_del();
 	  ay_error(ay_status, fname, NULL);
 	  return TCL_OK;
 	}
@@ -587,7 +601,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  /* no, absolute level */
-	  ay_clevel_delall();
+	  ay_status = ay_clevel_delall();
 	} /* if */
 
       /* get first number */
@@ -610,15 +624,26 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(o->next && o->parent)
 	    {
 	      /* all is well => descend for next level index */
-	      ay_clevel_add(o);
+	      ay_status = ay_clevel_add(o);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, NULL);
+		  return TCL_OK;
+		}
 	      o = o->down;
-	      ay_clevel_add(o);
+	      ay_status = ay_clevel_add(o);
+	      if(ay_status)
+		{
+		  ay_clevel_del();
+		  ay_error(AY_ERROR, fname, NULL);
+		  return TCL_OK;
+		}
 	    }
 	  else
 	    {
 	      /* error, we run over end of level => index is wrong */
 	      /* cleanup */
-	      ay_clevel_delall();
+	      ay_status = ay_clevel_delall();
 	      free(ay_currentlevel);
 	      ay_currentlevel = ocl;
 	      ocl = NULL;

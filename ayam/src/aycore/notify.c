@@ -240,8 +240,17 @@ ay_notify_forceparent(ay_object *o, int silent)
   oldclevel = ay_currentlevel;
 
   ay_currentlevel = NULL;
-  ay_clevel_add(NULL);
-  ay_clevel_add(ay_root);
+
+  ay_status = ay_clevel_add(NULL);
+  if(ay_status)
+    return ay_status;
+
+  ay_status = ay_clevel_add(ay_root);
+  if(ay_status)
+    {
+      ay_clevel_del();
+      return ay_status;
+    }
 
   ay_status = ay_clevel_find(ay_root->next, o, &found);
 

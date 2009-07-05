@@ -137,6 +137,10 @@ ay_ns_execute(ay_object *o, char *script)
   ay_selection = NULL;
 
   ay_status = ay_sel_add(o);
+  if(ay_status)
+    {
+      goto cleanup;
+    }
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
   result = Tcl_GlobalEval(interp, script);
@@ -158,6 +162,8 @@ ay_ns_execute(ay_object *o, char *script)
       free(ay_selection);
       ay_selection = l;
     } /* while */
+
+cleanup:
 
   ay_selection = old_sel;
 
