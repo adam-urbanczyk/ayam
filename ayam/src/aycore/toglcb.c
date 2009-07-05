@@ -22,7 +22,7 @@
 void
 ay_toglcb_create(struct Togl *togl)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "ay_toglcb_create";
  ay_view_object *view = NULL;
  ay_object *o = NULL, *d = NULL, **l = NULL;
@@ -39,12 +39,13 @@ ay_toglcb_create(struct Togl *togl)
       ay_error(AY_EOMEM, fname, NULL);
       return;
     }
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
   o->refine = view;
   o->type = AY_IDVIEW;
   o->hide = AY_TRUE;
 
-  /* link object (by hand) as child to ay_root */
+  /* link object (manually, not via ay_object_link())
+     as child to ay_root */
   d = ay_root->down;
   l = &(ay_root->down);
   while(d->next)

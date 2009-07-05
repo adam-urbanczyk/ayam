@@ -1200,7 +1200,7 @@ ay_wrib_lights(char *file, ay_object *o)
  size_t filenlen = 0;
  RtLightHandle light_handle;
  char arrname[] = "ayprefs", ccvarname[] = "SMChangeShaders";
- char *vstr = NULL;
+ const char *vstr = NULL;
  int changeshaders = AY_TRUE;
 
   if(!o || !file)
@@ -1522,7 +1522,7 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
  ay_object *o = ay_root;
  ay_root_object *root = NULL;
  ay_riopt *riopt = NULL;
- RtPoint f, t, d;
+ RtPoint f,/* t,*/ d;
  RtFloat aspect = (RtFloat)1.0, swleft, swright, swtop, swbot;
  RtFloat fov = (RtFloat)90.0, rinearp, rifarp;
  char *objfile = NULL, *pos = NULL, fnum[30];
@@ -1584,9 +1584,11 @@ ay_wrib_scene(char *file, char *image, int temp, int rtf,
   f[1] = (RtFloat) from[1];
   f[2] = (RtFloat) from[2];
 
+  /*
   t[0] = (RtFloat) to[0];
   t[1] = (RtFloat) to[1];
   t[2] = (RtFloat) to[2];
+  */
 
   d[0] = (RtFloat)(to[0] - from[0]);
   d[1] = (RtFloat)(to[1] - from[1]);

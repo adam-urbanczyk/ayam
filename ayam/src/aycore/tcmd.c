@@ -354,7 +354,7 @@ int
 ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
@@ -514,7 +514,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argc2 < 7)
 	    {
 	      po = NULL;
-	      ay_status = ay_provide_object(src, AY_IDNCURVE, &po);
+	      ay_provide_object(src, AY_IDNCURVE, &po);
 	      if(po)
 		{
 		  if(argc2 < 6)
@@ -548,7 +548,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argc2 == 7)
 	    {
 	      po = NULL;
-	      ay_status = ay_provide_object(src, AY_IDNPATCH, &po);
+	      ay_provide_object(src, AY_IDNPATCH, &po);
 	      if(po)
 		{
 		  if(!param)
@@ -855,7 +855,7 @@ int
 ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK, result = TCL_OK;
+ int ay_status = AY_OK;
  char fname[] = "withOb";
  ay_list_object *oldsel = ay_selection, *l = NULL;
  int i = 0, index = 0, commandindex = 3;
@@ -897,14 +897,17 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* found the object with right index =>
 	     fake a single object selection */
 	  ay_selection = NULL;
-	  ay_sel_add(l->object);
-	  /* execute the command */
-	  if(argv[commandindex])
+	  ay_status = ay_sel_add(l->object);
+	  if(!ay_status)
 	    {
-	      result = Tcl_Eval(interp, argv[commandindex]);
+	      /* execute the command */
+	      if(argv[commandindex])
+		{
+		  Tcl_Eval(interp, argv[commandindex]);
+		}
 	    }
 	  /* restore original selection */
-	  ay_status = ay_sel_free(AY_FALSE);
+	  ay_sel_free(AY_FALSE);
 	  ay_selection = oldsel;
 	  /* remember, that we found the object */
 	  index = -1;
