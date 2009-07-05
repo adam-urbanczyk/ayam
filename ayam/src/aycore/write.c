@@ -378,7 +378,7 @@ int
 ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "saveScene";
  int selected = AY_FALSE;
 
@@ -392,7 +392,7 @@ ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 2)
     selected = atoi(argv[2]);
 
-  ay_status = ay_write_scene(argv[1], selected);
+  ay_write_scene(argv[1], selected);
 
  return TCL_OK;
 } /* ay_write_scenetcmd */

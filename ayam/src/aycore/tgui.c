@@ -425,7 +425,6 @@ int
 ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
 	     int argc, char *argv[])
 {
- int ay_status = AY_OK;
  char fname[] = "tguiCmd";
 
   if(argc < 2)
@@ -437,16 +436,16 @@ ay_tgui_tcmd(ClientData clientData, Tcl_Interp *interp,
   switch(argv[1][0])
     {
     case 'o':
-      ay_status = ay_tgui_ok();
+      ay_tgui_ok();
       break;
     case 'c':
-      ay_status = ay_tgui_cancel();
+      ay_tgui_cancel();
       break;
     case 'u':
-      ay_status = ay_tgui_update(interp, argc-1, &(argv[1]));
+      ay_tgui_update(interp, argc-1, &(argv[1]));
       break;
     case 'i':
-      ay_status = ay_tgui_open();
+      ay_tgui_open();
       break;
     default:
       break;
@@ -466,7 +465,7 @@ ay_tgui_init(Tcl_Interp *interp)
 
   /* register some C-functions as Tcl-Commands */
   Tcl_CreateCommand (interp, "tguiCmd",
-		     ay_tgui_tcmd,
+		     (Tcl_CmdProc *) ay_tgui_tcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* register TP tag type */
