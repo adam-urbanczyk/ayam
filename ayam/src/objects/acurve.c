@@ -75,6 +75,8 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = new;
 
+  ay_notify_force(o);
+
  return AY_OK;
 } /* ay_acurve_createcb */
 
