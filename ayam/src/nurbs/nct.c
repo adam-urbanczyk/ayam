@@ -814,7 +814,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- int aknotc = 0, i, count = 0;
+ int aknotc = 0, i;
  char fname[] = "refine";
  double *X = NULL;
  char **aknotv;
@@ -834,8 +834,6 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  Tcl_GetDouble(interp, aknotv[i], &X[i]);
 	} /* for */
-
-      count = aknotc;
 
       Tcl_Free((char *) aknotv);
     } /* if */
@@ -919,6 +917,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
 		curve->order-1, curve->knotv, curve->controlv, u, k,
 		s, r, &nq, newknotv, newcontrolv);
 
+  if(ay_status)
+    return ay_status;
+
   free(curve->controlv);
   curve->controlv = newcontrolv;
 
@@ -944,6 +945,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
   ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
 		       curve->order-1, curve->knotv, curve->controlv, u, k,
 		       s, r, &nq, newknotv, newcontrolv);
+
+  if(ay_status)
+    return ay_status;
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
@@ -1353,7 +1357,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
- int stride = 4, i, k = 0, s = 0, r = 0, nq = 0;
+ int stride = 4, k = 0, s = 0, r = 0, nq = 0;
  char fname[] = "insknNC";
 
   if(argc < 3)
@@ -1394,7 +1398,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  i = 0; k = 0;
+	  k = 0;
 
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 				 knots, &s);
@@ -1424,6 +1428,9 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
 
 	  free(curve->controlv);
 	  curve->controlv = newcontrolv;
@@ -1914,6 +1921,12 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
 
+	  if(ay_status)
+	    {
+	      free(newcontrolv); free(newknotv);
+	      return ay_status;
+	    }
+
 	  free(curve->controlv);
 	  curve->controlv = newcontrolv;
 
@@ -1926,6 +1939,8 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc1 = curve;
       nc1->type = AY_CTOPEN;
       ay_status = ay_object_copy(src, &new);
+
+      /*XXXX check result*/
 
       if(r != 0)
 	nc1len = k - (nc1->order-1) + 1 + (curve->order-1-s+r-1)/2 + 1;
@@ -2437,7 +2452,7 @@ int
 ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status;
+ /*int ay_status = AY_OK;*/
  ay_list_object *lev = ay_currentlevel;
  ay_object *parent = NULL, **last = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -2460,7 +2475,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   if(sel && sel->object && (sel->object->type == AY_IDNPATCH))
     {
@@ -2633,7 +2648,7 @@ int
 ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
- int ay_status;
+ int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_closedbsp";
  double *controlv;
@@ -2670,7 +2685,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   if(!(controlv = calloc((num+(order-1))*4, sizeof(double))))
     {
@@ -2695,6 +2710,12 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = ay_nct_create(order, num+(order-1), AY_KTBSPLINE,
 			    controlv, NULL, &curve);
+
+  if(ay_status || !curve)
+    {
+      free(o); free(controlv);
+      return TCL_OK;
+    }
 
   curve->type = AY_CTPERIODIC;
   ay_nct_close(curve);
@@ -3785,6 +3806,16 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_status = ay_nct_create(4, samples, AY_KTNURB, controlv, NULL,
 				    &c2);
+
+	  if(!c2 || ay_status)
+	    {
+	      free(o); free(controlv);
+	      if(freepo)
+		ay_object_deletemulti(po);
+	      sel = sel->next;
+	      continue;
+	    }
+	  
 	  Tcl_DStringInit(&ds);
 	  Tcl_DStringAppend(&ds, "Curvature", -1);
 	  if(cname)
@@ -5889,12 +5920,16 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
   /* get len */
   ay_status = ay_nct_estlen(curve, &len);
 
+  if(ay_status)
+    goto cleanup;
+
   /* put len into Tcl context */
   ton = Tcl_NewStringObj(argv[1], -1);
   to = Tcl_NewDoubleObj(len);
   Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   /* cleanup */
+cleanup:
   if(po)
     {
       ay_object_deletemulti(po);
