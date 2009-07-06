@@ -45,9 +45,10 @@ proc aytest_selectGUI { } {
     set lb [listbox $w.f1.l1 -selectmode multiple]
 
     $lb insert end "Test 1 - Default Object Callbacks"
-    $lb insert end "Test 2 - Solid Object Variations"
-    $lb insert end "Test 3 - Tool Object Variations"
+    $lb insert end "Test 2 - Valid Solid Object Variations"
+    $lb insert end "Test 3 - Valid Tool Object Variations"
     $lb insert end "Test 4 - Modelling Tools"
+    $lb insert end "Test 5 - All Solid Object Variations"
 
     # preferences
     set f [frame $w.fp]
@@ -629,11 +630,9 @@ array set Sweep_1 {
 	crtOb NCurve; forceNot; goUp; hSL
     }
     arr SweepAttrData
-    freevars {Rotate Interpolate StartCap EndCap}
+    freevars {Rotate Interpolate}
     Rotate {0 1}
     Interpolate {0 1}
-    StartCap {0 1}
-    EndCap {0 1}
     vars { dummy }
     vals { {0} }
 }
@@ -856,6 +855,7 @@ array set Skin_5 {
 lappend Skin_5(vals) { 0 }
 lappend Skin_5(vals) { 0 }
 lappend Skin_5(vals) { 0 }
+lappend Skin_5(vals) { 0 }
 
 
 # XXXX TODO: add bevels
@@ -1000,11 +1000,37 @@ lappend OffsetNC_1(vals) { 0.1 }
 
 
 
+# ConcatNC Variation #1
+array set ConcatNC_1 {
+    precmd {
+	goDown -1;
+	crtOb NCurve; crtOb NCurve; hSL; movOb 1 0 0;
+	forceNot; goUp; hSL
+    }
+    arr ConcatNCAttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+
+# Trim Variation #1
+array set Trim_1 {
+    precmd {
+	goDown -1;
+	crtOb NPatch; crtOb NCircle; hSL; scalOb 0.5 0.5 1.0; movOb 0.5 0.5 0;
+	forceNot; goUp; hSL
+    }
+    arr TrimAttrData
+    vars { dummy }
+    vals { {0} }
+}
+
+
 # ConcatNP Variation #1
 array set ConcatNP_1 {
     precmd {
 	goDown -1;
-	crtOb NCurve; crtOb NCurve; hSL; movOb 1 0 0;
+	crtOb NPatch; crtOb NPatch; hSL; movOb 1 0 0;
 	forceNot; goUp; hSL
     }
     arr ConcatNPAttrData
@@ -1019,16 +1045,20 @@ set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
 
-set types Revolve
+set types {Revolve Skin Sweep Swing Skin Birail1 Birail2 Gordon}
 
+puts -nonewline "Testing "
 foreach type $types {
 
     puts $log "Testing $type ...\n"
+
+    puts -nonewline "${type}, "
+
     test_var $type
 
 }
 # foreach
-
+puts -nonewline "\n"
 }
 }
 # aytest_3
@@ -1046,6 +1076,160 @@ puts $log "Testing modelling tools ...\n"
 }
 }
 # aytest_4
+
+
+#
+# Test 5
+#
+proc aytest_5 { } {
+uplevel #0 {
+
+puts $log "Testing all Solid Variations (Errors expected!) ...\n"
+
+# XXXX add NaN, Inf?
+set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 -0.1 -0 0 0.1 1 89 90 91 179 180 181 269 270 271 359 360}
+set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 -0 0 0.1 0.9 1.0 1.5 2 2.5 20 100 1000}
+
+
+
+#############
+# Sphere
+#############
+
+array set Sphere_1 {
+    arr SphereAttrData
+    freevars {Closed ThetaMax Radius ZMin ZMax}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+set Sphere_1(ThetaMax) $angles
+set Sphere_1(Radius) $floatvals
+set Sphere_1(ZMin) $floatvals
+set Sphere_1(ZMax) $floatvals
+
+
+#############
+# Cylinder
+#############
+
+array set Cylinder_1 {
+    arr CylinderAttrData
+    freevars {Closed ThetaMax Radius ZMin ZMax}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+
+set Cylinder_1(ThetaMax) $angles
+set Cylinder_1(Radius) $floatvals
+set Cylinder_1(ZMin) $floatvals
+set Cylinder_1(ZMax) $floatvals
+
+
+#############
+# Cone
+#############
+
+# Cone Variation #1
+array set Cone_1 {
+    arr ConeAttrData
+    freevars {Closed ThetaMax Radius Height}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+set Cone_1(ThetaMax) $angles
+set Cone_1(Radius) $floatvals
+set Cone_1(Height) $floatvals
+
+
+#############
+# Disk
+#############
+
+array set Disk_1 {
+    arr DiskAttrData
+    freevars {Radius Height ThetaMax}
+
+    vars {dummy}
+    vals { {0} }
+}
+set Disk_1(ThetaMax) $angles
+set Disk_1(Radius) $floatvals
+set Disk_1(Height) $floatvals
+
+
+#############
+# Hyperboloid
+#############
+
+array set Hyperboloid_1 {
+    arr HyperboloidAttrData
+    freevars {Closed ThetaMax P1_X P1_Y P1_Z P2_X P2_Y P2_Z}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+set Hyperboloid_1(ThetaMax) $angles
+set Hyperboloid_1(P1_X) $floatvals
+set Hyperboloid_1(P1_Y) $floatvals
+set Hyperboloid_1(P1_Z) $floatvals
+set Hyperboloid_1(P2_X) $floatvals
+set Hyperboloid_1(P2_Y) $floatvals
+set Hyperboloid_1(P2_Z) $floatvals
+
+
+#############
+# Paraboloid
+#############
+
+array set Paraboloid_1 {
+    arr ParaboloidAttrData
+    freevars {Closed ThetaMax RMax ZMin ZMax}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+set Paraboloid_1(ThetaMax) $angles
+set Paraboloid_1(RMax) $floatvals
+set Paraboloid_1(ZMin) $floatvals
+set Paraboloid_1(ZMax) $floatvals
+
+
+#############
+# Torus
+#############
+
+array set Torus_1 {
+    arr TorusAttrData
+    freevars {Closed ThetaMax MajorRad MinorRad PhiMin PhiMax}
+    Closed {0 1}
+    vars {dummy}
+    vals { {0} }
+}
+set Torus_1(ThetaMax) $angles
+set Torus_1(MajorRad) $floatvals
+set Torus_1(MinorRad) $floatvals
+set Torus_1(PhiMin) $angles
+set Torus_1(PhiMax) $angles
+
+
+set types { Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus }
+
+foreach type $types {
+
+    puts $log "Testing $type ...\n"
+    puts "Testing $type ..."
+    test_var $type
+
+}
+# foreach
+
+
+}
+}
+# aytest_5
 
 
 # forall:
@@ -1173,6 +1357,7 @@ proc aytest_runTests { tests } {
     global ayprefs
 
     . configure -cursor watch
+    .testGUI configure -cursor watch
     update
 
     foreach test $tests {
@@ -1197,6 +1382,7 @@ proc aytest_runTests { tests } {
     # foreach
 
     . configure -cursor {}
+    .testGUI configure -cursor {}
     update
 
  return;
