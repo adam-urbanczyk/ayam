@@ -484,7 +484,7 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_status = ay_notify_parent();
 
- return AY_OK;
+ return ay_status;
 } /* ay_acurve_setpropcb */
 
 

@@ -399,7 +399,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
 int
 ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "SDMeshAttrData";
  /*char fname[] = "sdmesh_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -424,7 +424,7 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_sdmesh_setpropcb */

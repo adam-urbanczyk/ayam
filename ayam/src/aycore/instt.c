@@ -82,7 +82,7 @@ ay_instt_createoidht(ay_object *o)
  *  _recursively_ connect instance objects to the appropriate
  *  master objects (using OI tags and the object
  *  id hashtable created by ay_instt_createoidht() above)
- *  returns AY_OK on success, AY_ERROR on error (master not found) 
+ *  returns AY_OK on success, AY_ERROR on error (master not found)
  *  to avoid crashes, unconnected instances will be removed
  *  immediately
  */

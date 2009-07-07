@@ -204,7 +204,7 @@ ay_gordon_getpntcb(int mode, ay_object *o, double *p)
 int
 ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "GordonAttrData";
  /* char fname[] = "gordon_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -273,7 +273,7 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  /* undo save */
 	  uargv[1] = uarg1;
 	  uargv[2] = uarg2;
-	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, uargv);
+	  ay_undo_undotcmd(NULL, ay_interp, 3, uargv);
 	} /* if */
 
       /* clear faked selection */
@@ -289,10 +289,10 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
   gordon->wcc = new_wcc;
 
-  ay_status = ay_notify_force(o);
+  ay_notify_force(o);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_gordon_setpropcb */
@@ -574,7 +574,7 @@ ay_gordon_notifycb(ay_object *o)
 		  else
 		    hcurves = c;
 		}
-	      
+
 	      last = c;
 	      c = c->next;
 	    } /* while */

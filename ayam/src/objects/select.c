@@ -154,7 +154,7 @@ ay_select_getpntcb(int mode, ay_object *o, double *p)
 int
 ay_select_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "setprop";
  char *n1 = "SelectAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -205,7 +205,7 @@ cleanup:
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_status = ay_notify_parent();
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_select_setpropcb */

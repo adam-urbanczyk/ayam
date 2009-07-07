@@ -679,12 +679,14 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	pamesh->height = new_height;
     } /* if */
 
-  o->modified = AY_TRUE;
-
   if(update)
-    ay_notify_force(o);
+    {
+      ay_notify_force(o);
 
-  ay_status = ay_notify_parent();
+      o->modified = AY_TRUE;
+
+      ay_notify_parent();
+    }
 
  return AY_OK;
 } /* ay_pamesh_setpropcb */

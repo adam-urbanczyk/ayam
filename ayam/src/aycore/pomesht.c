@@ -1095,7 +1095,7 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 
   if(f > pomesh->npolys)
     return AY_ERROR;
-  
+
   if(pomesh->has_normals)
     stride = 6;
   else
@@ -1173,13 +1173,13 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 	{
 	  target->verts[oldtotalverts + n] = target->ncontrols + n;
 	  if(pomesh->verts[m + n]>pomesh->ncontrols)
-	    printf("gotcha!\n");	    
+	    printf("gotcha!\n");
 	  memcpy(&(target->controlv[(target->ncontrols + n)*stride]),
 		 &(pomesh->controlv[(pomesh->verts[m + n])*stride]),
 		 stride*sizeof(double));
 	} /* for */
       target->ncontrols += pomesh->nverts[l];
-  
+
       /* increase all index variables used */
       m += pomesh->nverts[l];
       oldtotalverts += pomesh->nverts[l];
