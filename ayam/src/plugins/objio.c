@@ -2628,10 +2628,10 @@ cleanup:
     ay_status = ay_tags_delall(&t);
 
   if(degen)
-    {    
+    {
       return AY_ERROR;
     }
-  
+
  return ay_status;
 } /* objio_readface */
 
