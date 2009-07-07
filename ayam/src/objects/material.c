@@ -262,7 +262,7 @@ ay_material_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_mat_object *material = NULL, *oldmat = NULL;
@@ -389,7 +389,7 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		  /* old name is already registered, de-register it;
 		     but only if this really is the registered material
 		     object (there can be materials with the same name) */
-		  ay_status = ay_matt_getmaterial(oldname, &oldmat);
+		  ay_matt_getmaterial(oldname, &oldmat);
 		  if(oldmat == material)
 		    {
 		      ay_matt_deregister(oldname);

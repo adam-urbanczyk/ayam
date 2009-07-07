@@ -531,7 +531,7 @@ int
 ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status;
+ /*int ay_status;*/
  char fname[] = "revertuS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
@@ -549,7 +549,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_revertu(np);
+	  ay_npt_revertu(np);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -559,7 +559,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
-	  ay_status = ay_pmt_revertu(pm);
+	  ay_pmt_revertu(pm);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -630,7 +630,7 @@ int
 ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status;
+ /*int ay_status;*/
  char fname[] = "revertvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
@@ -648,7 +648,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_revertv(np);
+	  ay_npt_revertv(np);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -658,7 +658,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
-	  ay_status = ay_pmt_revertv(pm);
+	  ay_pmt_revertv(pm);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -1738,6 +1738,11 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
    	  ay_status = ay_npt_splittocurvesv(src, AY_TRUE, &curves, NULL);
 	} /* if */
 
+      if(ay_status || !curves)
+	{
+	  ay_error(AY_ERROR, fname, "Split failed");
+	}
+
       while(curves)
 	{
 	  next = curves->next;
@@ -1971,6 +1976,11 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = ay_npt_buildfromcurves(curves, ncurves, AY_CTOPEN,
 				     AY_KTNURB, AY_TRUE, &patch);
 
+  if(ay_status || !patch)
+    {
+      ay_error(AY_ERROR, fname, "Build failed");
+    }
+
   if(patch)
     ay_object_link(patch);
 
@@ -2077,11 +2087,9 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *curve, *tmpnc = NULL;
  double *uknotv = NULL, *tcontrolv = NULL;
- double radius = 0.0, w = 0.0, ww = 0.0, x, y, z;
+ double radius = 0.0, w = 0.0, x, y/*, z*/;
  int i = 0, j = 0, a = 0, b = 0, c = 0;
  double m[16], point[4] = {0};
-
-  ww = sqrt(2.0)/2.0;
 
   if(!o)
     return AY_ENULL;
@@ -2128,7 +2136,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
       /* transform point */
       x = curve->controlv[a];
       y = curve->controlv[a+1];
-      z = curve->controlv[a+2];
+      /*z = curve->controlv[a+2];*/
       w = curve->controlv[a+3];
 
       point[0] = m[0]*x + m[4]*y + m[8]*point[2] + m[12]*w;
@@ -5797,14 +5805,23 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(sel->object);
 	    }
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
+
 	  ay_status = ay_npt_elevateu(patch, t);
-	  sel->object->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Elevate failed");
+	    }
+	  else
+	    {
+	      sel->object->modified = AY_TRUE;
 
-	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	      /* update pointers to controlv */
+	      ay_object_ccp(sel->object);
+
+	      /* re-create tesselation of patch */
+	      ay_notify_force(sel->object);
+	    }
 	}
       else
 	{
@@ -5967,13 +5984,21 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevatev(patch, t);
-	  sel->object->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Elevate failed");
+	    }
+	  else
+	    {
+	      sel->object->modified = AY_TRUE;
 
-	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	      /* update pointers to controlv */
+	      ay_object_ccp(sel->object);
+
+	      /* re-create tesselation of patch */
+	      ay_notify_force(sel->object);
+	    }
 	}
       else
 	{
@@ -5996,7 +6021,7 @@ int
 ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status;
+ /*int ay_status;*/
  char fname[] = "swapuvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
@@ -6014,7 +6039,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  ay_status = ay_npt_swapuv(np);
+	  ay_npt_swapuv(np);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -6024,7 +6049,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
-	  ay_status = ay_pmt_swapuv(pm);
+	  ay_pmt_swapuv(pm);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -6070,7 +6095,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
  int ay_status = AY_OK;
  char fname[] = "ay_npt_gordon";
  ay_object *c;
- ay_object *lcu = NULL, *lcv = NULL; /* last cu/cv curve */
+ ay_object *lcu = NULL/*, *lcv = NULL*/; /* last cu/cv curve */
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *interpatch = NULL, *skinu = NULL, *skinv = NULL;
  int uo, vo;
@@ -6097,7 +6122,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   while(c)
     {
       numcv++;
-      lcv = c;
+      /*lcv = c;*/
       c = c->next;
     }
 
@@ -7307,7 +7332,7 @@ cleanup:
 int
 ay_npt_istrimmed(ay_object *o, int mode)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  int is_bound = AY_FALSE;
  ay_object *down;
  ay_nurbpatch_object *npatch;
@@ -7345,8 +7370,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
       if(o->down->type != AY_IDLEVEL)
 	{
 	  /* process single trim curve */
-	  ay_status = ay_npt_isboundcurve(o->down, b1, b2, b3, b4,
-					  &is_bound);
+	  ay_npt_isboundcurve(o->down, b1, b2, b3, b4, &is_bound);
 	  if(!is_bound)
 	    return AY_TRUE;
 	  else
@@ -7358,8 +7382,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
 	  down = o->down->down;
 	  while(down->next)
 	    {
-	      ay_status = ay_npt_isboundcurve(down, b1, b2, b3, b4,
-					      &is_bound);
+	      ay_npt_isboundcurve(down, b1, b2, b3, b4, &is_bound);
 	      if(!is_bound)
 		return AY_TRUE;
 
@@ -7645,6 +7668,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
 {
+#if 0
  int i;
  double u;
 
@@ -7657,7 +7681,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
       u = np->uknotv[np->uorder-1];
 
     } /* for */
-
+#endif
  return AY_OK;
 } /* ay_npt_isclosedu */
 
@@ -8070,6 +8094,12 @@ ay_npt_clampu(ay_nurbpatch_object *np)
 		np->uorder-1, np->uknotv, np->controlv, u, k,
 		s, r, newuknotv, newcontrolv);
 
+  if(ay_status)
+    {
+      free(newcontrolv); free(newuknotv);
+      return ay_status;
+    }
+
   free(np->controlv);
   np->controlv = newcontrolv;
 
@@ -8095,6 +8125,12 @@ ay_npt_clampu(ay_nurbpatch_object *np)
   ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height-1,
 		       np->uorder-1, np->uknotv, np->controlv, u, k,
 		       s, r, newuknotv, newcontrolv);
+
+  if(ay_status)
+    {
+      free(newcontrolv); free(newuknotv);
+      return ay_status;
+    }
 
   free(np->controlv);
   np->controlv = newcontrolv;
@@ -8169,6 +8205,12 @@ ay_npt_clampv(ay_nurbpatch_object *np)
 		np->vorder-1, np->vknotv, np->controlv, v, k,
 		s, r, newvknotv, newcontrolv);
 
+  if(ay_status)
+    {
+      free(newcontrolv); free(newvknotv);
+      return ay_status;
+    }
+
   free(np->controlv);
   np->controlv = newcontrolv;
 
@@ -8194,6 +8236,12 @@ ay_npt_clampv(ay_nurbpatch_object *np)
   ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
 		       np->vorder-1, np->vknotv, np->controlv, v, k,
 		       s, r, newvknotv, newcontrolv);
+
+  if(ay_status)
+    {
+      free(newcontrolv); free(newvknotv);
+      return ay_status;
+    }
 
   free(np->controlv);
   np->controlv = newcontrolv;
@@ -8741,7 +8789,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
- int stride = 4, i, k = 0, s = 0, r = 0;
+ int stride = 4, k = 0, s = 0, r = 0;
  char fname[] = "insknuNP";
 
   if(argc < 3)
@@ -8782,7 +8830,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  i = 0; k = 0;
+	  k = 0;
 
 	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
 				 knots, &s);
@@ -8853,7 +8901,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
  double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
- int stride = 4, i, k = 0, s = 0, r = 0;
+ int stride = 4, k = 0, s = 0, r = 0;
  char fname[] = "insknvNP";
 
   if(argc < 3)
@@ -8894,7 +8942,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  i = 0; k = 0;
+	  k = 0;
 
 	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 				 knots, &s);

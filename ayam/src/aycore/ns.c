@@ -77,7 +77,7 @@ ay_ns_restrictall(ClientData clientData,
 	    {
 	      ton = Tcl_NewStringObj("cancelled", -1);
 	      to = Tcl_NewIntObj(1);
-	      
+
 	      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 

@@ -216,12 +216,11 @@ ay_swing_getpntcb(int mode, ay_object *o, double *p)
 int
 ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "SwingAttrData";
  /* char fname[] = "swing_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_swing_object *swing = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -258,10 +257,11 @@ ay_swing_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_status = ay_notify_force(o);
+  ay_notify_force(o);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_swing_setpropcb */
@@ -895,7 +895,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       ((ay_nurbcurve_object *)(trim->refine))->display_mode =
 	cs->display_mode;
     }
- 
+
   /* fix orientation of trim */
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
 

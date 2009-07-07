@@ -485,7 +485,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	view->zoom = 3.0;
 
       Togl_MakeCurrent(togl);
-      
+
       ay_toglcb_reshape(togl);
 
       if(argc)

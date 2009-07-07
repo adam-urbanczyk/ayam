@@ -350,7 +350,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 int
 ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "ScriptAttrData";
  char fname[] = "script_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -429,18 +429,18 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     } /* if */
 
   if(!newscript)
-    ay_status = ay_script_getsp(interp, sc);
+    ay_script_getsp(interp, sc);
 
   sc->modified = AY_TRUE;
 
-  ay_status = ay_notify_force(o);
+  ay_notify_force(o);
 
   o->modified = AY_TRUE;
 
-  ay_status = ay_notify_parent();
+  ay_notify_parent();
 
   if(newscript)
-    ay_status = ay_script_getsp(interp, sc);
+    ay_script_getsp(interp, sc);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -1220,7 +1220,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    return AY_EOMEM;
 		  o->type = AY_IDLEVEL;
 		  newl->type = AY_LTLEVEL;
-		  
+
 		  /* append current children (of the script object)
 		     to the list of created/modified objects */
 		  cmo = sc->cm_objects;
@@ -1258,7 +1258,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 		    }
 
 		  free(o->refine);
-		  
+
 		  o->refine = newl;
 		}
 	      else

@@ -785,7 +785,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   if(vtemp.isicon)
     {
       sprintf(command, "global ay;wm iconify [lindex $ay(views) end]\n");
-      
+
       Tcl_Eval(ay_interp, command);
     }
 

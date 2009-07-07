@@ -59,7 +59,7 @@ ay_stess_destroy(ay_nurbpatch_object *np)
 
   if(!np)
     return AY_ENULL;
-  
+
   if(!np->stess)
     {
       return AY_OK;
@@ -1901,9 +1901,9 @@ ay_stess_TessNP(ay_object *o, int qf)
 	  warned = AY_TRUE;
 	}
       */
-      
+
       ay_status = ay_stess_TessTrimmedNP(o, qf);
-      
+
     }
   else
     {

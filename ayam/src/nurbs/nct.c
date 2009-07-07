@@ -3815,7 +3815,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	      sel = sel->next;
 	      continue;
 	    }
-	  
+
 	  Tcl_DStringInit(&ds);
 	  Tcl_DStringAppend(&ds, "Curvature", -1);
 	  if(cname)

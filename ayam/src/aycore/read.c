@@ -372,7 +372,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	return AY_EOMEM;
 
       ay_read_string(fileptr,&(tag->name));
-      
+
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
 	{
 	  if(ay_prefs.wutag)

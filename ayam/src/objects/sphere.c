@@ -465,7 +465,7 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char *n1 = "SphereAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sphere_object *sphere = NULL;
@@ -515,7 +515,7 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_sphere_setpropcb */

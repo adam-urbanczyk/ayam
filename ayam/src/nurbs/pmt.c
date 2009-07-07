@@ -30,10 +30,13 @@ int ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result);
 int
 ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
+ int ay_status = AY_OK;
  double *cv = NULL;
  ay_object *o = NULL;
  int w, h, i, a, b;
- int ay_status = AY_OK;
+
+  if(!pamesh || !result)
+   return AY_ENULL;
 
   if(!(o = calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
@@ -91,6 +94,13 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
   ay_status = ay_npt_create(2, 2, w, h, AY_KTNURB, AY_KTNURB, cv, NULL, NULL,
 			    (ay_nurbpatch_object **)&(o->refine));
+
+  if(ay_status)
+    {
+      free(o);
+      return ay_status;
+    }
+
   *result = o;
 
  return AY_OK;
@@ -103,12 +113,15 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 int
 ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
+ int ay_status = AY_OK;
  double *cv = NULL, *ncv = NULL;
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder, wrapu = 0, wrapv = 0;
  int i = 0, j = 0, winu, winv, k, a, b, nw, nh;
  ay_object *o = NULL, **nexto = NULL;
  char fname[] = "ay_pmt_bicubiccltonpatch";
- int ay_status = AY_OK;
+
+  if(!pamesh || !result)
+   return AY_ENULL;
 
   uorder = 4;
   vorder = 4;
@@ -270,6 +283,12 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 				    ktu, ktv, cv, NULL, NULL,
 				    (ay_nurbpatch_object **)&(o->refine));
 
+	  if(ay_status)
+	    {
+	      free(o); free(cv);
+	      goto cleanup;
+	    }
+
 	  /* link new object */
 	  if(nexto)
 	    {
@@ -285,10 +304,12 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
     } /* for */
 
+cleanup:
+
   if(ncv)
     free(ncv);
 
- return AY_OK;
+ return ay_status;
 } /* ay_pmt_bicubiccltonpatch */
 
 
@@ -300,12 +321,15 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 int
 ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 {
+ int ay_status = AY_OK;
  double *cv = NULL;
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
  int i = 0, j = 0, winu, winv, k, a, b;
  ay_object *o = NULL, **nexto = NULL;
  char fname[] = "ay_pmt_tonpatch";
- int ay_status = AY_OK;
+
+  if(!pamesh || !result)
+   return AY_ENULL;
 
   if(pamesh->type == AY_PTBILINEAR)
     {

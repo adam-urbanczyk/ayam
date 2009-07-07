@@ -180,7 +180,7 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ /*int ay_status = AY_OK;*/
  char fname[] = "setProp";
  char *n1 = "TextAttrData";
  char *result;
@@ -257,10 +257,11 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_status = ay_notify_force(o);
+  ay_notify_force(o);
 
   o->modified = AY_TRUE;
-  ay_status = ay_notify_parent();
+
+  ay_notify_parent();
 
  return AY_OK;
 } /* ay_text_setpropcb */
@@ -940,7 +941,7 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_status = ay_object_copy(p, &new);
 	  if(new)
 	    {
-	      /*ay_trafo_copy(o, new);*/
+	      ay_trafo_copy(o, new);
 
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
