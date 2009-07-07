@@ -259,7 +259,7 @@ ay_ai_makeinstances(ay_object *o, ay_object *instance_root)
   if(o->type != AY_IDINSTANCE)
     {
       sel = ay_selection;
-      
+
       /* avoid working on the root */
       if(sel && (sel->object == ay_root))
 	{
