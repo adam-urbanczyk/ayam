@@ -932,8 +932,11 @@ ay_script_notifycb(ay_object *o)
  char fname[] = "script_notifycb";
  char buf[256], *l1 = NULL, *l2 = NULL;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
+ ay_object *last = NULL;
  ay_list_object *l = NULL, *old_sel = NULL, *sel = NULL;
- ay_script_object *sc = NULL, *csc = NULL;
+ ay_list_object *old_currentlevel;
+ ay_object *old_clipboard = NULL;
+ ay_script_object *sc = NULL;
  static int sema = 0;
  int i = 0;
  int old_rdmode = 0;
@@ -953,20 +956,15 @@ ay_script_notifycb(ay_object *o)
       sema = 1;
     } /* if */
 
+  /* check arguments */
   if(!o)
     {
       sema = 0;
       return AY_ENULL;
     } /* if */
 
-#ifdef AYNOSAFEINTERP
-  interp = ay_interp;
-#else
-  interp = ay_safeinterp;
-#endif
-
-  ay_trafo_defaults(o);
-
+  /* before we do anything, check whether we have a runnable script at all
+     and check, whether we are active */
   sc = (ay_script_object *)(o->refine);
 
   if((sc->active == 0) || (!sc->script) || (sc->script && !strlen(sc->script)))
@@ -975,6 +973,27 @@ ay_script_notifycb(ay_object *o)
       sema = 0;
       return AY_OK;
     } /* if */
+
+#ifdef AYNOSAFEINTERP
+  interp = ay_interp;
+#else
+  interp = ay_safeinterp;
+#endif
+
+  /* set up a clean environment */
+  old_clipboard = ay_clipboard;
+  ay_clipboard = NULL;
+
+  old_currentlevel = ay_currentlevel;
+  ay_currentlevel = NULL;
+  ay_status = ay_clevel_add(ay_root);
+  ay_status = ay_clevel_add(o);
+  ay_status = ay_clevel_add(o->down);
+  old_aynext = ay_next;
+  ay_next = &(o->down);
+
+  /**/
+  ay_trafo_defaults(o);
 
   /* copy cached/saved individual parameters to global Tcl array */
   if(/*!sc->modified && */sc->params)
@@ -995,9 +1014,19 @@ ay_script_notifycb(ay_object *o)
       sc->modified = AY_FALSE;
     }
 
+  if(ay_currentview)
+    {
+      old_rdmode = ay_currentview->redraw;
+      ay_currentview->redraw = AY_FALSE;
+    }
+
+  Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
+
   if(sc->type == 0)
     {
       /* Just Run */
+
+      /* evaluate (execute) script */
       result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
     } /* if */
 
@@ -1014,27 +1043,21 @@ ay_script_notifycb(ay_object *o)
       old_sel = ay_selection;
       ay_selection = NULL;
 
-      /* remove old children */
-      down = o->down;
-      while(down && down->next)
-	{
-	  o->down = down->next;
-	  free(down);
-	  down = o->down;
-	} /* while */
-
-      old_aynext = ay_next;
-
-      /* evaluate (execute) script string */
+      /* evaluate (execute) script */
       result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
 
       /* move newly created objects to script object */
-      if(old_aynext != ay_next)
+      if(o->down && o->down->next)
 	{
-	  sc->cm_objects = *old_aynext;
-	  *old_aynext = *ay_next;
-	  *ay_next = NULL;
-	  ay_next = old_aynext;
+	  sc->cm_objects = o->down;
+	  down = o->down;
+	  while(down && down->next)
+	    {
+	      last = down;
+	      down = down->next;
+	    }
+	  o->down = down;
+	  last->next = NULL;
 	}
 
       /* restore old selection */
@@ -1065,55 +1088,24 @@ ay_script_notifycb(ay_object *o)
       if(o->down && o->down->next)
 	{ /* Yes */
 
-	  /* copy child(ren) and fake selection */
 	  old_sel = ay_selection;
 	  ay_selection = NULL;
 	  down = o->down;
 	  nexto = &(sc->cm_objects);
-
-	  while(down && down->next)
+	  /* copy (unmodified) children into safety */
+	  while(down)
 	    {
-	      if(down->type != AY_IDSCRIPT)
-		{
-		  ay_status = ay_object_copy(down, nexto);
-		  ay_notify_force(*nexto);
-		  ay_sel_add(*nexto);
-		  nexto = &((*nexto)->next);
-		}
-	      else
-		{
-		  /* special case for cascaded script objects */
-		  csc = down->refine;
-		  ccm_objects = csc->cm_objects;
-		  while(ccm_objects)
-		    {
-		      ay_status = ay_object_copy(ccm_objects, nexto);
-		      ay_notify_force(*nexto);
-		      ay_sel_add(*nexto);
-		      nexto = &((*nexto)->next);
-		      ccm_objects = ccm_objects->next;
-		    } /* while */
-		} /* if */
+	      ay_status = ay_object_copy(down, nexto);
+	      /* create temporary selection */
+	      if(down->next)
+		ay_sel_add(down);
+	      nexto = &((*nexto)->next);
+
 	      down = down->next;
 	    } /* while */
 
-	  /* evaluate (execute) script string */
-	  if(ay_currentview)
-	    {
-	      old_rdmode = ay_currentview->redraw;
-	      ay_currentview->redraw = AY_FALSE;
-	    }
-
-	  Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
-
+	  /* evaluate (execute) script */
 	  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
-
-	  Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
-
-	  if(ay_currentview)
-	    {
-	      ay_currentview->redraw = old_rdmode;
-	    }
 
 	  /* call notification of modified objects */
 	  sel = ay_selection;
@@ -1131,8 +1123,32 @@ ay_script_notifycb(ay_object *o)
 	      ay_selection = l;
 	    } /* while */
 	  ay_selection = old_sel;
+
+	  /* exchange modified objects with originals */
+	  ccm_objects = sc->cm_objects;
+	  sc->cm_objects = o->down;
+	  o->down = ccm_objects;
 	} /* if */
     } /* if */
+
+  Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
+
+  if(ay_currentview)
+    {
+      ay_currentview->redraw = old_rdmode;
+    }
+
+  /* restore the environment */
+  ay_clevel_delall();
+  free(ay_currentlevel);
+  ay_currentlevel = old_currentlevel;
+
+  if(ay_clipboard)
+    ay_object_deletemulti(ay_clipboard);
+	      
+  ay_clipboard = old_clipboard;
+
+  ay_next = old_aynext;
 
   if(result == TCL_ERROR)
     {
