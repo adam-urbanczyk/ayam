@@ -5779,6 +5779,7 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
   if(nc->order == 2)
     {
       a = 0;
+      Qw = nc->controlv;
       for(j = 0; j < (nc->length-1); j++)
 	{
 	  v[0] = Qw[a+stride] - Qw[a];
@@ -5898,6 +5899,8 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  ton = Tcl_NewStringObj(argv[1], -1);
+
   /* get curve to work on */
   o = sel->object;
   if(o->type != AY_IDNCURVE)
@@ -5910,6 +5913,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_ERROR, fname, "provide failed");
+	  goto cleanup;
 	}
     }
   else
@@ -5924,9 +5928,9 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
     goto cleanup;
 
   /* put len into Tcl context */
-  ton = Tcl_NewStringObj(argv[1], -1);
+
   to = Tcl_NewDoubleObj(len);
-  Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
 
   /* cleanup */
 cleanup:
