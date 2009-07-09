@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>22. Jun 2009
+<date>9. Jul 2009
 
 <abstract>
 This is the documentation of Ayam 1.16 - a free 3D modelling environment
@@ -6559,6 +6559,13 @@ For this, the new variable <tt>"SP"</tt> in the script data array
 contains a list of parameter names in that array that are individual
 (not shared by all copies of the script object).
 <p>
+Starting with Ayam 1.16, the environment for running script objects scripts
+has been refined to allow more complex scripts (that traverse the scene or
+use the clipboard) to be written:
+When a script is running, the current level is the child level of the
+respective script object. Furthermore, the object clipboard is saved
+for running the script and re-established after the script finished.
+<p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
 <tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
@@ -6589,8 +6596,8 @@ Three types of script objects are currently available:
 take place.
 
  <item><tt/"Create"/, the script will be run and will create and
-parameterise a single new object. After running the script, the newly
-created object will automatically be moved into the internal data
+parameterise new objects. After running the script, the newly
+created object(s) will automatically be moved into the internal data
 structure of the script object. The script object will look like
 and act as an object of the type that the script created.
 If the script creates e.g. a NCurve object, the script object may
@@ -6601,24 +6608,29 @@ e.g. a Sweep:
  | Cross_Section(Script)
  \ Path(NCurve)
 </code>
-The newly created object has to be selected by the script code
-for parameterisation and moving. The selection should be done
+If the newly created object has to be selected by the script code
+for further parameterisation purposes, the selection should be done
 using the new scripting interface command <tt/"hSL"/ (hidden select
 last).
 Consequently, the most simple example script for a script object
 of type <tt/"Create"/ looks like this:
 <code>
 crtOb NCurve
-hSL
+</code>
+Or, with further parameterisation
+<code>
+crtOb NCurve; hSL
+setProperty NCurveAttr(Order) 2
 </code>
 
  <item><tt/"Modify"/, if the script object has child objects,
 these child objects will be copied into the internal data
-structure of the script object. A selection of the copied objects
+structure of the script object. A selection of the child objects
 will be established, then the script will be run. Usually, the
 script modifies one of the selected objects (moves control points,
-adds tags, or does something similar). Note that the original
-child objects will not be modified.
+adds tags, or does something similar). Then, the two sets of objects
+will be exchanged again and the modified objects will be provided
+upstream. Note that the original child objects will not be modified.
 If certain actions in the script shall be restricted to
 one of the child objects of the script object, the
 <tt/"withOb"/ command may be used to accomplish this easily.
@@ -6668,7 +6680,7 @@ parameters. If objects need to store differing/individual amounts of
 parameter data, lists can be used as individual parameters.
 </itemize>
 
-<sect2>Script Object Example<label id="scriptobjex">
+<sect2>Script Object Examples<label id="scriptobjex">
 <p>
 This section illustrates the development of a script object for parametric
 lines, otherwise unavailable in Ayam.
@@ -6677,6 +6689,7 @@ We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
 desired line length on the x axis. Just copy the following code to the
 Script property of a script object of type <tt/"Create"/, and activate it.
+<#if out=latex><x/needspace 5/</#if>
 <code>
 set length 1
 crtOb NCurve -length 2; hSL
@@ -6745,6 +6758,42 @@ script object, a <tt/"SP"/ entry needs to be added to the
 <p>
 The complete script is also available as example script file
 <tt>"scripts/crtlinegui.tcl"</tt> in the Ayam distribution.
+
+In addition, a second example demonstrates the scene traversal and
+hierarchy building capabilities available to script objects since
+Ayam 1.16.
+Create a script object, and add two children to it, a box and a
+NURBS curve (order 2, knot type: chordal works best). Then add the following
+script to the script object:
+<code>
+# this script needs object type "Modify" and two children:
+# a box/sphere and a curve
+withOb 1 {estlenNC len}
+cutOb
+crtOb Clone
+goDown -1
+pasmovOb
+goUp
+hSL
+getProp
+set CloneAttrData(NumClones) [expr round($len)]
+setProp
+</code>
+This little script first determines the length of the curve,
+then it creates a Clone object and moves the children to it
+(via the object clipboard),
+finally, the Clone is parameterised, so that the trajectory
+is completely filled (assuming that each copy of the first
+child needs 1 length unit on the trajectory) with objects.
+See example image below (compare the Clone configurations from
+the two different trajectory curves):
+<p>
+<figure loc="ht">
+<eps file="pics/scriptex3.ps" height="5cm">
+<img src="pics/scriptex3.gif">
+<caption>Hierarchy Building Script Object Example</caption>
+</figure>
+
 
 <sect1>Select Object<label id="selectobj">
 <p>
