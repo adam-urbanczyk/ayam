@@ -1,4 +1,4 @@
-[1. Jun 2009] CVS-Head:
+[9. Jul 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -27,6 +27,10 @@ o <Enter> keypresses appearing in direct point editing GUI entries
 o Tcl error when applying Camera property of Camera object (SF 2779315)
 o crash when Sweep notification fails (SF 2793037)
 o Swung surfaces with rational trajectory curves (SF 2793039)
+o tesselation GUI destroying tags (SF 2807895)
+o PolyMesh optimization crashing for very simple PolyMesh objects (SF 2808825)
+o "estlenNC" crashing for illegal parameters and curves (SF)
+o "estlenNC" crashing for curves of order 2 (SF )
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -52,7 +56,15 @@ o ICurves are completely revamped: "Mode" parameter is gone (now auto-
   a parameterisation (chordal or centripetal), knot averaging now used
   for all modes, robustness wrt. double data points improved
 o NURBS curves now support two new knot types ("Chordal" and "Centripetal")
-o added ConcatNP object type to concatenate NURBS patches
+o added "ConcatNP" object type to concatenate NURBS patches
+o "Extrude" objects dimensions swapped to improve tesselation quality
+  when bevels are present
+o "Instance" objects now support the "RP" tag type, and, if the
+  "Transformations" property is removed, do not provide objects with
+  an own set of transformation attributes (to ease hierarchy building
+  with e.g. "ExtrNC"/"ExtrNP" objects)
+o added hotkeys for view drawing mode cycling
+o fixed clashes of shortcuts
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
@@ -65,18 +77,25 @@ o added example script "usepixie.tcl" that prepares Ayam to use Pixie
   from the /Library/pixie directory structure on Mac OS X
 o added helper script "colfocus.tcl" that switches the focus ring of
   important widgets to a more visible color (for SingleWindow GUI mode)
-o scripts in Script objects and BNS/ANS tags now run in a safe interpreter
+o scripts in "Script" objects and BNS/ANS tags now run in a safe interpreter
+o "Script" object script execution environment has been improved to allow
+  more complex scripts (that traverse the scene or use the clipboard)
 o many scripting interface commands have been renamed to fit in a general
   naming scheme "verbObject", e.g. "revert" has been renamed to "revertC",
   "swapUV" to "swapuvS" etc.; the new "oldnames.tcl" script provides an
   exhaustive list of the renamed commands, and if run, establishes aliases
   to make scripts using the old names work again
-o added script aytest.tcl to test some aspects of Ayam
+o added script "aytest.tcl" to test some aspects of Ayam
 o startup scripts may now be specified without full (absolute) path
+  (e.g. Preferences/Scripts may now look like this "colfocus;loadayslx")
 
 Build Support:
 o improved some error checking/messages in the "ayamConf.tcl" Makefile
   configuration GUI
+
+Renderer Support:
+o updated the "ayslo3d" shader parsing plugin for incompatible changes
+  in 3Delight 8.5
 
 
 [4. Dec 2008] Ayam-1.15.1:
