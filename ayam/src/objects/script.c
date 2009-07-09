@@ -180,7 +180,7 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
-	  while(mo)
+	  while(mo && mo->next)
 	    {
 	      ay_draw_object(togl, mo, AY_TRUE);
 	      mo = mo->next;
@@ -219,7 +219,7 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
-	  while(mo)
+	  while(mo && mo->next)
 	    {
 	      ay_shade_object(togl, mo, AY_FALSE);
 	      mo = mo->next;
@@ -1057,7 +1057,8 @@ ay_script_notifycb(ay_object *o)
 	      down = down->next;
 	    }
 	  o->down = down;
-	  last->next = NULL;
+
+	  ay_object_crtendlevel(&(last->next));
 	}
 
       /* restore old selection */
@@ -1244,7 +1245,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 	{
 	  if(in_place)
 	    {
-	      if(sc->cm_objects->next)
+	      if(sc->cm_objects->next && sc->cm_objects->next->next)
 		{
 		  /* have multiple objects */
 		  if(!(newl = calloc(1, sizeof(ay_level_object))))
@@ -1252,16 +1253,14 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  o->type = AY_IDLEVEL;
 		  newl->type = AY_LTLEVEL;
 
-		  /* append current children (of the script object)
-		     to the list of created/modified objects */
 		  cmo = sc->cm_objects;
-		  while(cmo->next)
-		    {
-		      cmo = cmo->next;
-		    }
-		  cmo->next = o->down;
 
-		  /* link created/modified objects as
+		  /* remove current children (of the script object) */
+		  ay_status = ay_object_deletemulti(o->down);
+
+		  /* XXXX check and report errors? */
+
+		  /* link created/modified objects as new
 		     children to the new level object */
 		  o->down = sc->cm_objects;
 
@@ -1326,7 +1325,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 	  else
 	    {
 	      cmo = sc->cm_objects;
-	      while(cmo)
+	      while(cmo && cmo->next)
 		{
 		  new = NULL;
 		  ay_status = ay_object_copy(cmo, &new);
@@ -1373,7 +1372,7 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  npo = &po;
 	  cmo = sc->cm_objects;
-	  while(cmo)
+	  while(cmo && cmo->next)
 	    {
 	      if(cmo->type != type)
 		{
