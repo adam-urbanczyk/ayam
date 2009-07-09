@@ -49,12 +49,6 @@ ay_ns_restrictall(ClientData clientData,
  Tcl_Obj *to = NULL, *ton = NULL;
  Tcl_Interp *interp = NULL;
 
-#ifdef AYNOSAFEINTERP
-  interp = ay_interp;
-#else
-  interp = ay_safeinterp;
-#endif
-
 #ifdef WIN32
   if((GetKeyState(VK_SHIFT) < 0) &&
      (GetKeyState(VK_CONTROL) < 0) &&
@@ -62,8 +56,12 @@ ay_ns_restrictall(ClientData clientData,
     {
       ton = Tcl_NewStringObj("cancelled", -1);
       to = Tcl_NewIntObj(1);
-      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
+#ifndef AYNOSAFEINTERP
+      Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+#endif
       return TK_DISCARD_EVENT;
     }
 #else
@@ -78,9 +76,12 @@ ay_ns_restrictall(ClientData clientData,
 	      ton = Tcl_NewStringObj("cancelled", -1);
 	      to = Tcl_NewIntObj(1);
 
-	      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+	      Tcl_ObjSetVar2(ay_interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
-
+#ifndef AYNOSAFEINTERP
+	      Tcl_ObjSetVar2(ay_safeinterp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
+			     TCL_GLOBAL_ONLY);
+#endif
 	      return TK_DISCARD_EVENT;
 	    }
 	  else

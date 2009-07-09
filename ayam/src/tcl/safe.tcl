@@ -97,6 +97,11 @@ proc safe_init { interp } {
 
     #safe_transfer setProperty $interp
 
+    aySafeInterp eval {set ::cancelled 0}
+    safe_transfer cancelled $interp
+    safe_transfer renameWhileFor $interp
+    aySafeInterp eval renameWhileFor
+
  return;
 }
 # safe_init
