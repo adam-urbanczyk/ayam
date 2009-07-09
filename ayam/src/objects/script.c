@@ -1090,28 +1090,43 @@ ay_script_notifycb(ay_object *o)
 
 	  old_sel = ay_selection;
 	  ay_selection = NULL;
-	  down = o->down;
-	  nexto = &(sc->cm_objects);
-	  /* copy (unmodified) children into safety */
+
+	  /* move original children into safety;
+	     create working copies of them in o->down and
+	     select them while copying */
+	  sc->cm_objects = o->down;
+	  o->down = NULL;
+	  down = sc->cm_objects;
+	  nexto = &(o->down);
 	  while(down)
 	    {
 	      ay_status = ay_object_copy(down, nexto);
-	      /* create temporary selection */
-	      if(down->next)
-		ay_sel_add(down);
-	      nexto = &((*nexto)->next);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, "object copy failed");
+		  break;
+		}
+		 if(down->next)
+			ay_sel_add(*nexto);
 
+	      nexto = &((*nexto)->next);
+	    
 	      down = down->next;
-	    } /* while */
+	    }
+
+	  ay_clevel_del();
+	  ay_status = ay_clevel_add(o->down);
 
 	  /* evaluate (execute) script */
-	  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+	  if(!ay_status)
+	    result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
 
 	  /* call notification of modified objects */
 	  sel = ay_selection;
 	  while(sel)
 	    {
-	      ay_notify_force(sel->object);
+	      if(sel->object->modified)
+		ay_notify_force(sel->object);
 	      sel = sel->next;
 	    }
 
