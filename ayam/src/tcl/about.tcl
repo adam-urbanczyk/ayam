@@ -52,7 +52,7 @@ pack $w.ftext -in $w -side top -expand yes -fill both
 pack $w.fbutton -in $w -side bottom
 
 text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
-	-setgrid 1 -height 17 -width 65
+	-setgrid 1 -height 20 -width 65
 scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 pack $w.ftext.sbar -in $w.ftext -side right -fill y
