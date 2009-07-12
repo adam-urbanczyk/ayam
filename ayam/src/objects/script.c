@@ -550,7 +550,6 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *eolarrname = NULL;
  int arrmembers = 0;
- Tcl_Interp *interp = NULL;
 #ifdef AYNOSAFEINTERP
  int deactivate = 0;
  char script_disable_cmd[] = "script_disable";
@@ -561,14 +560,11 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-#ifdef AYNOSAFEINTERP
-  interp = ay_interp;
-#else
-  interp = ay_safeinterp;
-#endif
-
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
+
+  /* old versions may be written without parent flag set, correct */
+  o->parent = AY_TRUE;
 
   fscanf(fileptr, "%d\n", &sc->active);
   fscanf(fileptr, "%d\n", &sc->type);
@@ -624,7 +620,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		  ay_read_string(fileptr, &membername);
 		  ay_read_string(fileptr, &memberval);
 
-		  Tcl_SetVar2(interp, arrname, membername, memberval,
+		  Tcl_SetVar2(ay_interp, arrname, membername, memberval,
 			      TCL_GLOBAL_ONLY);
 
 		  /* do not put the SP list into the object! */
@@ -632,7 +628,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		    {
 		      Tcl_SetStringObj(ton, membername, -1);
 		      sc->params[j] =
-			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, ton,
+			Tcl_DuplicateObj(Tcl_ObjGetVar2(ay_interp, toa, ton,
 							TCL_GLOBAL_ONLY));
 		      Tcl_IncrRefCount(sc->params[j]);
 		      j++;
@@ -806,7 +802,7 @@ ay_script_wribcb(char *file, ay_object *o)
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
-	  while(mo)
+	  while(mo->next)
 	    {
 	      ay_wrib_object(file, mo);
 	      mo = mo->next;
@@ -847,7 +843,7 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
       if(sc->cm_objects)
 	{
 	  mo = sc->cm_objects;
-	  while(mo)
+	  while(mo->next)
 	    {
 	      ay_status = ay_bbc_get(mo, bbt);
 
@@ -946,7 +942,8 @@ ay_script_notifycb(ay_object *o)
 
 
   /* this semaphor protects ourselves from running in an endless
-     recursive loop should the script modify our child objects */
+     recursive loop should the script modify our child objects
+     (leading to another round of notification) */
   if(sema)
     {
       return AY_OK;
@@ -992,7 +989,7 @@ ay_script_notifycb(ay_object *o)
   old_aynext = ay_next;
   ay_next = &(o->down);
 
-  /**/
+  /* XXXX make this depending on NP/RP tags */
   ay_trafo_defaults(o);
 
   /* copy cached/saved individual parameters to global Tcl array */
@@ -1085,7 +1082,7 @@ ay_script_notifycb(ay_object *o)
 	  sc->cm_objects = NULL;
 	}
 
-      /* Do we have a (real) child? */
+      /* Do we have atleast one child? */
       if(o->down && o->down->next)
 	{ /* Yes */
 
@@ -1107,11 +1104,11 @@ ay_script_notifycb(ay_object *o)
 		  ay_error(AY_ERROR, fname, "object copy failed");
 		  break;
 		}
-		 if(down->next)
-			ay_sel_add(*nexto);
+	      if(down->next)
+		ay_sel_add(*nexto);
 
 	      nexto = &((*nexto)->next);
-	    
+
 	      down = down->next;
 	    }
 
@@ -1161,11 +1158,12 @@ ay_script_notifycb(ay_object *o)
 
   if(ay_clipboard)
     ay_object_deletemulti(ay_clipboard);
-	      
+
   ay_clipboard = old_clipboard;
 
   ay_next = old_aynext;
 
+  /* report failed scripts to the user */
   if(result == TCL_ERROR)
     {
       i = interp->errorLine;
