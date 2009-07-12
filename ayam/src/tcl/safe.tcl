@@ -162,10 +162,16 @@ proc safe_addPropertyGUI { name {sproc ""} {gproc ""} } {
     if { ! [info exists $arrayname] } {
 	# fetch the data
 	array set $arrayname [aySafeInterp eval array get ::$arrayname]
-	# now create the property GUI management array and frame
-	# by calling through to addPropertyGUI
-	set w [addPropertyGUI $name $sproc $gproc]
+    } else {
+	# put the data to the safe interpreter
+	# (this branch is needed for reading of script objects)
+	set a [list [array get ::$arrayname]]
+	aySafeInterp eval array set ::$arrayname $a
     }
+
+    # now create the property GUI management array and frame
+    # by calling through to addPropertyGUI
+    set w [addPropertyGUI $name $sproc $gproc]
 
  return $w;
 }

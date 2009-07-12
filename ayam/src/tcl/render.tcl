@@ -336,7 +336,7 @@ proc render_select { } {
 	    shader_scanAll
 	}
 
-	ayError 4 "Renderer_Select" "Now using \$newr to render."
+	ayError 4 "Renderer_Select" "Now using \"$newr\" to render."
 
 	set ay(srr) $sel
 
