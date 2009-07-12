@@ -62,7 +62,7 @@ bind $f.li <<ListboxSelect>> {
     if { [$lb size] < 1 } { break }
     set prop [$lb get [$lb curselection]]
     if { ! [info exists ${prop}] } {
-	ayError 2 "Ayam" "Property '\${prop}' does not exist!"
+	ayError 2 "Ayam" "Property \"${prop}\" does not exist!"
 	$lb selection clear 0 end
 	plb_update
 	break

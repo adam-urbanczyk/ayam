@@ -438,7 +438,7 @@ proc prefs_save { } {
 
     if { [file exists $ayrc ] } {
 	if { ! [file writable $ayrc ] } {
-	    ayError 1 "prefs_save" "\$ayrc is not writable! No preferences saved!"
+	    ayError 1 "prefs_save" "\"$ayrc\" is not writable! No preferences saved!"
 	    return;
 	}
 	set err [ catch {
