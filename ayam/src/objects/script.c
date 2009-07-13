@@ -928,11 +928,11 @@ ay_script_notifycb(ay_object *o)
  char fname[] = "script_notifycb";
  char buf[256], *l1 = NULL, *l2 = NULL;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
- ay_object *last = NULL;
+ ay_object *ddown = NULL, *last = NULL;
  ay_list_object *l = NULL, *old_sel = NULL, *sel = NULL;
  ay_list_object *old_currentlevel;
  ay_object *old_clipboard = NULL;
- ay_script_object *sc = NULL;
+ ay_script_object *sc = NULL, *dsc = NULL;
  static int sema = 0;
  int i = 0;
  int old_rdmode = 0;
@@ -1089,7 +1089,7 @@ ay_script_notifycb(ay_object *o)
 	  old_sel = ay_selection;
 	  ay_selection = NULL;
 
-	  /* move original children into safety;
+	  /* move original children into safety (sc->cm_objects);
 	     create working copies of them in o->down and
 	     select them while copying */
 	  sc->cm_objects = o->down;
@@ -1098,19 +1098,51 @@ ay_script_notifycb(ay_object *o)
 	  nexto = &(o->down);
 	  while(down)
 	    {
-	      ay_status = ay_object_copy(down, nexto);
-	      if(ay_status)
+	      if(down->type != AY_IDSCRIPT)
 		{
-		  ay_error(AY_ERROR, fname, "object copy failed");
-		  break;
-		}
-	      if(down->next)
-		ay_sel_add(*nexto);
+		  ay_status = ay_object_copy(down, nexto);
+		  if(ay_status)
+		    {
+		      ay_error(AY_ERROR, fname, "object copy failed");
+		      break;
+		    }
 
-	      nexto = &((*nexto)->next);
+		  ay_notify_force(*nexto);
+
+		  if(down->next)
+		    ay_sel_add(*nexto);
+
+		  nexto = &((*nexto)->next);
+		}
+	      else
+		{
+		  /* special case for script objects that are
+		     children (spare the user the convOb -inplace) */
+		  dsc = (ay_script_object*)down->refine;
+		  if(dsc->cm_objects)
+		    {
+		      ddown = dsc->cm_objects;
+		      while(ddown && ddown->next)
+			{
+			  ay_status = ay_object_copy(ddown, nexto);
+			  if(ay_status)
+			    {
+			      ay_error(AY_ERROR, fname, "object copy failed");
+			      break;
+			    }
+
+			  ay_notify_force(*nexto);
+
+			  ay_sel_add(*nexto);
+
+			  nexto = &((*nexto)->next);
+			  ddown = ddown->next;
+			} /* while */
+		    } /* if */
+		} /* if */
 
 	      down = down->next;
-	    }
+	    } /* while */
 
 	  ay_clevel_del();
 	  ay_status = ay_clevel_add(o->down);
@@ -1137,7 +1169,7 @@ ay_script_notifycb(ay_object *o)
 	    } /* while */
 	  ay_selection = old_sel;
 
-	  /* exchange modified objects with originals */
+	  /* exchange modified objects with saved originals */
 	  ccm_objects = sc->cm_objects;
 	  sc->cm_objects = o->down;
 	  o->down = ccm_objects;
