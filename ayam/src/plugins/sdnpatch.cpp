@@ -17,6 +17,7 @@
 #include "snurbs.h"
 
 using namespace std;
+using namespace std::tr1::placeholders;
 using namespace snurbs;
 
 static char *sdnpatch_name = "SDNPatch";
@@ -58,6 +59,9 @@ typedef struct sdnpatch_object_s
 #endif /* WIN32 */
 int Sdnpatch_Init(Tcl_Interp *interp);
 
+int sdnpatch_notifycb(ay_object *o);
+
+
 class AyWriter : public FlatMeshHandler
 {
 public:
@@ -90,51 +94,62 @@ private:
 
 };
 
+
 AyWriter::AyWriter(FILE *filep)
 {
   m_fp = filep;
   m_numVertices = 0;
   m_numFaces = 0;
   m_numKnots = 0;
-}
+} /* AyWriter::AyWriter */
 
-void AyWriter::addVertex(VertexPrecision x,
-			 VertexPrecision y,
-			 VertexPrecision z,
-			 VertexPrecision w)
+
+void
+AyWriter::addVertex(VertexPrecision x,
+		    VertexPrecision y,
+		    VertexPrecision z,
+		    VertexPrecision w)
 {
   m_numVertices++;
   m_vertices.push_back(x);
   m_vertices.push_back(y);
   m_vertices.push_back(z);
   m_vertices.push_back(w);
-}
+} /* AyWriter::addVertex */
 
-void AyWriter::startFace(unsigned int numEdges)
+
+void
+AyWriter::startFace(unsigned int numEdges)
 {
     m_numEdges.push_back(numEdges);
-}
+} /* AyWriter::startFace */
 
-void AyWriter::addToFace(unsigned int vertNum)
+
+void
+AyWriter::addToFace(unsigned int vertNum)
 {
   m_faces.push_back(vertNum);
-}
+} /* AyWriter::addToFace */
 
-void AyWriter::closeFace(void)
+void
+AyWriter::closeFace(void)
 {
   m_numFaces++;
-}
-void AyWriter::addKnotInterval(unsigned int vertex1,
-			       unsigned int vertex2,
-			       KnotPrecision interval)
+} /* AyWriter::closeFace */
+
+void
+AyWriter::addKnotInterval(unsigned int vertex1,
+			  unsigned int vertex2,
+			  KnotPrecision interval)
 {
   m_v1.push_back(vertex1);
   m_v2.push_back(vertex1);
   m_intervals.push_back(interval);
   m_numKnots++;
-}
+} /* AyWriter::addKnotInterval */
 
-void AyWriter::finishKnotIntervals(void)
+void
+AyWriter::finishKnotIntervals(void)
 {
   VertexPrecision x, y, z, w;
   vector<VertexPrecision>::iterator vi = m_vertices.begin();
@@ -160,7 +175,7 @@ void AyWriter::finishKnotIntervals(void)
       fprintf(m_fp, "%g %g %g %g\n", x, y, z, w);
     }
 
-  fprintf(m_fp,"%u", m_numFaces);
+  fprintf(m_fp, "%u", m_numFaces);
 
   for(i = 0; i < m_numFaces; i++)
     {
@@ -186,7 +201,7 @@ void AyWriter::finishKnotIntervals(void)
     }
 
  return;
-} /* finishKnotIntervals */
+} /* AyWriter::finishKnotIntervals */
 
 
 /* sdnpatch_createcb:
@@ -231,7 +246,6 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   meshBuilder->finishKnotIntervals();
 
-
   MeshBuilder::dispose(meshBuilder);
 
   o->refine = sdnpatch;
@@ -253,6 +267,12 @@ sdnpatch_deletecb(void *c)
 
   sdnpatch = (sdnpatch_object *)(c);
 
+  if(sdnpatch->controlMesh)
+    delete sdnpatch->controlMesh;
+
+  if(sdnpatch->subdivMesh)
+    delete sdnpatch->subdivMesh;
+
   free(sdnpatch);
 
  return AY_OK;
@@ -266,6 +286,7 @@ int
 sdnpatch_copycb(void *src, void **dst)
 {
  sdnpatch_object *sdnpatch = NULL;
+ sdnpatch_object *srcsdnpatch = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -275,10 +296,42 @@ sdnpatch_copycb(void *src, void **dst)
 
   memcpy(sdnpatch, src, sizeof(sdnpatch_object));
 
+  sdnpatch->controlMesh = NULL;
+  sdnpatch->subdivMesh = NULL;
+
+  srcsdnpatch = (sdnpatch_object*)src;
+  if(srcsdnpatch->controlMesh)
+    sdnpatch->controlMesh = new Mesh(*(srcsdnpatch->controlMesh));
+
+  if(srcsdnpatch->subdivMesh)
+    sdnpatch->subdivMesh = new Mesh(*(srcsdnpatch->subdivMesh));
+
   *dst = (void *)sdnpatch;
 
  return AY_OK;
 } /* sdnpatch_copycb */
+
+
+void
+sdnpatch_lineloopcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
+{
+ static int calls = 0;
+
+  glVertex4d(x, y, z, w);
+
+  if(calls > 3)
+    {
+      glEnd();
+      glBegin(GL_LINE_LOOP);
+      calls = 0;
+    }
+  else
+    {
+      calls++;
+    }
+
+ return;
+} /* sdnpatch_lineloopcb */
 
 
 /* sdnpatch_drawcb:
@@ -288,6 +341,7 @@ int
 sdnpatch_drawcb(struct Togl *togl, ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
+ MeshFlattener *meshFlattener = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -297,8 +351,41 @@ sdnpatch_drawcb(struct Togl *togl, ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
+  meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+
+  glBegin(GL_LINE_LOOP);
+   meshFlattener->receiveVertices(std::tr1::bind(&sdnpatch_lineloopcb,
+						 _1, _2, _3, _4));
+   meshFlattener->flattenFaces();
+  glEnd();
+
+  MeshFlattener::dispose(meshFlattener);
+
  return AY_OK;
 } /* sdnpatch_drawcb */
+
+
+void
+sdnpatch_quadcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
+{
+ static int calls = 0;
+
+  glVertex4d(x, y, z, w);
+
+  if(calls > 3)
+    {
+      glEnd();
+      glBegin(GL_QUADS);
+      calls = 0;
+    }
+  else
+    {
+      calls++;
+    }
+
+ return;
+} /* sdnpatch_quadcb */
 
 
 /* sdnpatch_shadecb:
@@ -308,6 +395,7 @@ int
 sdnpatch_shadecb(struct Togl *togl, ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
+ MeshFlattener *meshFlattener = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -317,8 +405,51 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
+  meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
+  meshFlattener->setCompatible(true);
+
+  glBegin(GL_QUADS);
+   meshFlattener->receiveVertices(std::tr1::bind(&sdnpatch_quadcb,
+						 _1, _2, _3, _4));
+   meshFlattener->receiveSmoothNormals(&glNormal3d);
+   meshFlattener->flattenFaces();
+  glEnd();
+
+  MeshFlattener::dispose(meshFlattener);
+
  return AY_OK;
 } /* sdnpatch_shadecb */
+
+
+/* sdnpatch_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of sdnpatch object
+ */
+int
+sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
+{
+ sdnpatch_object *sdnpatch = NULL;
+ MeshFlattener *meshFlattener = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sdnpatch = (sdnpatch_object *)o->refine;
+
+  if(!sdnpatch)
+    return AY_ENULL;
+
+  meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+
+  glBegin(GL_POINTS);
+   meshFlattener->receiveVertices(&glVertex4d);
+   meshFlattener->flattenFaces();
+  glEnd();
+
+  MeshFlattener::dispose(meshFlattener);
+
+ return AY_OK;
+} /* sdnpatch_drawhcb */
 
 
 /* sdnpatch_setpropcb:
@@ -403,6 +534,7 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
  unsigned int numEdges, e, v1, v2;
  VertexPrecision x, y, z, w;
  KnotPrecision k;
+ MeshBuilder *meshBuilder;
 
   if(!o)
     return AY_ENULL;
@@ -410,44 +542,44 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
   if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   sdnpatch->subdivDegree = itemp;
-  fscanf(fileptr,"%d\n",&itemp);
+  fscanf(fileptr, "%d\n", &itemp);
   sdnpatch->subdivLevel = itemp;
 
   sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
-  MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
+  meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
-  fscanf(fileptr,"%u\n",&numVerts);
+  fscanf(fileptr, "%u\n", &numVerts);
 
   for(i = 0; i < numVerts; i++)
     {
-      fscanf(fileptr,"%lg %lg %lg %lg\n",&x, &y, &z, &w);
+      fscanf(fileptr, "%lg %lg %lg %lg\n", &x, &y, &z, &w);
       meshBuilder->addVertex(x, y, z, w);
     }
   meshBuilder->finishVertices();
 
-  fscanf(fileptr,"%u\n",&numFaces);
+  fscanf(fileptr, "%u\n", &numFaces);
 
   for(i = 0; i < numFaces; i++)
     {
-      fscanf(fileptr,"%u", &numEdges);
+      fscanf(fileptr, "%u", &numEdges);
       meshBuilder->startFace(numEdges);
 
       for(j = 0; j < numEdges; j++)
 	{
-	  fscanf(fileptr,"%u", &e);
+	  fscanf(fileptr, "%u", &e);
 	  meshBuilder->addToFace(e);
 	}
       meshBuilder->closeFace();
     }
   meshBuilder->finishFaces();
 
-  fscanf(fileptr,"%u\n",&numKnots);
+  fscanf(fileptr, "%u\n", &numKnots);
 
   for(i = 0; i < numKnots; i++)
     {
-      fscanf(fileptr,"%u %u %f\n",&v1, &v2, &k);
+      fscanf(fileptr, "%u %u %f\n", &v1, &v2, &k);
 
       meshBuilder->addKnotInterval(v1, v2, k);
     }
@@ -529,6 +661,37 @@ sdnpatch_bbccb(ay_object *o, double *bbox, int *flags)
 } /* sdnpatch_bbccb */
 
 
+/* sdnpatch_notifycb:
+ *  notification callback function of sdnpatch object
+ */
+int
+sdnpatch_notifycb(ay_object *o)
+{
+ sdnpatch_object *sdnpatch = NULL;
+ int curlev = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  sdnpatch = (sdnpatch_object *)(o->refine);
+
+  if(sdnpatch->subdivMesh)
+    {
+      delete sdnpatch->subdivMesh;
+    }
+
+  sdnpatch->subdivMesh = new Mesh(*(sdnpatch->controlMesh));
+
+  while(curlev < sdnpatch->subdivLevel)
+    {
+      sdnpatch->subdivMesh->subdivide();
+      curlev++;
+    }
+
+ return AY_OK;
+} /* sdnpatch_notifycb */
+
+
 /* Sdnpatch_Init:
  * initializes the sdnpatch module/plugin by registering a new
  * object type (SDNPatch) and loading the accompanying Tcl script file.
@@ -557,7 +720,7 @@ Sdnpatch_Init(Tcl_Interp *interp)
 				sdnpatch_deletecb,
 				sdnpatch_copycb,
 				sdnpatch_drawcb,
-				NULL, /* no points to edit */
+				sdnpatch_drawhcb,
 				sdnpatch_shadecb,
 				sdnpatch_setpropcb,
 				sdnpatch_getpropcb,
@@ -573,6 +736,9 @@ Sdnpatch_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
+
+
+  ay_status = ay_notify_register(sdnpatch_notifycb, sdnpatch_id);
 
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
