@@ -53,11 +53,12 @@ typedef struct sdnpatch_object_s
   snurbs::KnotInterval  *lowDegreeKnot;
 } sdnpatch_object;
 
-
+extern "C" {
 #ifdef WIN32
   __declspec (dllexport)
 #endif /* WIN32 */
 int Sdnpatch_Init(Tcl_Interp *interp);
+}
 
 int sdnpatch_notifycb(ay_object *o);
 
@@ -66,7 +67,7 @@ class AyWriter : public FlatMeshHandler
 {
 public:
   AyWriter(FILE *filep);
-  ~AyWriter(void);
+  //~AyWriter(void);
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
@@ -174,20 +175,26 @@ AyWriter::finishKnotIntervals(void)
       vi++;
       fprintf(m_fp, "%g %g %g %g\n", x, y, z, w);
     }
-
-  fprintf(m_fp, "%u", m_numFaces);
-
-  for(i = 0; i < m_numFaces; i++)
+  if(m_numFaces > 0)
     {
-      e = *ei;
-      fprintf(m_fp, "%u", e);
-      for(j = 0; j < e; j++)
+      fprintf(m_fp, "%u", m_numFaces);
+
+      for(i = 0; i < m_numFaces; i++)
 	{
-	  f = *fi;
-	  fi++;
-	  fprintf(m_fp, " %u", f);
+	  e = *ei;
+	  fprintf(m_fp, "%u", e);
+	  for(j = 0; j < e; j++)
+	    {
+	      f = *fi;
+	      fi++;
+	      fprintf(m_fp, " %u", f);
+	    }
+	  fprintf(m_fp, "\n");
 	}
-      fprintf(m_fp, "\n");
+    }
+  else
+    {
+      fprintf(m_fp, "0\n");
     }
 
   fprintf(m_fp, "%u\n", m_numKnots);
@@ -234,6 +241,12 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
   meshBuilder->addVertex(1,0,0,1);
   meshBuilder->addVertex(1,1,0,1);
   meshBuilder->addVertex(0,1,0,1);
+
+  meshBuilder->addVertex(0,0,1,1);
+  meshBuilder->addVertex(1,0,1,1);
+  meshBuilder->addVertex(1,1,1,1);
+  meshBuilder->addVertex(0,1,1,1);
+
   meshBuilder->finishVertices();
 
   meshBuilder->startFace(4);
@@ -242,6 +255,42 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
   meshBuilder->addToFace(2);
   meshBuilder->addToFace(3);
   meshBuilder->closeFace();
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(1);
+  meshBuilder->addToFace(5);
+  meshBuilder->addToFace(6);
+  meshBuilder->addToFace(2);
+  meshBuilder->closeFace();
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(5);
+  meshBuilder->addToFace(4);
+  meshBuilder->addToFace(7);
+  meshBuilder->addToFace(6);
+  meshBuilder->closeFace();
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(4);
+  meshBuilder->addToFace(0);
+  meshBuilder->addToFace(3);
+  meshBuilder->addToFace(7);
+  meshBuilder->closeFace();
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(0);
+  meshBuilder->addToFace(1);
+  meshBuilder->addToFace(5);
+  meshBuilder->addToFace(4);
+  meshBuilder->closeFace();
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(3);
+  meshBuilder->addToFace(2);
+  meshBuilder->addToFace(6);
+  meshBuilder->addToFace(7);
+  meshBuilder->closeFace();
+
   meshBuilder->finishFaces();
 
   meshBuilder->finishKnotIntervals();
@@ -692,6 +741,8 @@ sdnpatch_notifycb(ay_object *o)
 } /* sdnpatch_notifycb */
 
 
+extern "C" {
+
 /* Sdnpatch_Init:
  * initializes the sdnpatch module/plugin by registering a new
  * object type (SDNPatch) and loading the accompanying Tcl script file.
@@ -746,13 +797,15 @@ Sdnpatch_Init(Tcl_Interp *interp)
   if((Tcl_EvalFile(interp, "sdnpatch.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"sdnpatch.tcl\\\"!");
+		  "Error while sourcing \"sdnpatch.tcl\"!");
        return TCL_OK;
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "Custom object \\\"SDNPatch\\\" successfully loaded.");
+	   "Custom object \"SDNPatch\" successfully loaded.");
 
  return TCL_OK;
 } /* Sdnpatch_Init */
 
+
+} // extern "C"
