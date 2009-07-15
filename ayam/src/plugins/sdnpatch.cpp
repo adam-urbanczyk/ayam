@@ -279,9 +279,9 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   meshBuilder->startFace(4);
   meshBuilder->addToFace(0);
-  meshBuilder->addToFace(1);
-  meshBuilder->addToFace(5);
   meshBuilder->addToFace(4);
+  meshBuilder->addToFace(5);
+  meshBuilder->addToFace(1);
   meshBuilder->closeFace();
 
   meshBuilder->startFace(4);
@@ -298,6 +298,8 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
   MeshBuilder::dispose(meshBuilder);
 
   o->refine = sdnpatch;
+
+  ay_notify_force(o);
 
  return AY_OK;
 } /* sdnpatch_createcb */
@@ -368,7 +370,7 @@ sdnpatch_lineloopcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 
   glVertex4d(x, y, z, w);
 
-  if(calls > 3)
+  if(calls == 3)
     {
       glEnd();
       glBegin(GL_LINE_LOOP);
@@ -401,7 +403,7 @@ sdnpatch_drawcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
+  //meshFlattener->setCompatible(true);
 
   glBegin(GL_LINE_LOOP);
    meshFlattener->receiveVertices(std::tr1::bind(&sdnpatch_lineloopcb,
@@ -422,7 +424,7 @@ sdnpatch_quadcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 
   glVertex4d(x, y, z, w);
 
-  if(calls > 3)
+  if(calls == 3)
     {
       glEnd();
       glBegin(GL_QUADS);
@@ -453,6 +455,9 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
 
   if(!sdnpatch)
     return AY_ENULL;
+
+  if(!sdnpatch->subdivMesh)
+    return AY_OK;
 
   meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
   meshFlattener->setCompatible(true);
@@ -532,6 +537,13 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+
+  ay_notify_force(o);
+
+  o->modified = AY_TRUE;
+
+  ay_notify_parent();
 
  return AY_OK;
 } /* sdnpatch_setpropcb */
