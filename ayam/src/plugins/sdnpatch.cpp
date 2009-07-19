@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2009 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -211,6 +211,143 @@ AyWriter::finishKnotIntervals(void)
 } /* AyWriter::finishKnotIntervals */
 
 
+
+
+class AyConvertor
+{
+public:
+  AyConvertor(MeshFlattener *flattener)
+  {
+    if(!flattener)
+      return;
+    m_flattener = flattener;
+    m_numVertices = 0;
+    m_numFaces = 0;
+  };
+
+  void vertexcb(VertexPrecision x,
+		VertexPrecision y,
+		VertexPrecision z,
+		VertexPrecision w);
+
+  void normalcb(VertexPrecision x,
+		VertexPrecision y,
+		VertexPrecision z);
+
+  void convert(ay_pomesh_object *pomesh);
+
+private:
+  MeshFlattener *m_flattener;
+  unsigned int m_numVertices;
+  unsigned int m_numFaces;
+  vector<VertexPrecision> m_vertices;
+  vector<VertexPrecision> m_normals;
+}; /* AyConvertor */
+
+
+void
+AyConvertor::vertexcb(VertexPrecision x,
+		      VertexPrecision y,
+		      VertexPrecision z,
+		      VertexPrecision w)
+{
+ static int count = 0;
+
+  if(count == 3)
+    {
+      m_numFaces++;
+      count = 0;
+    }
+  else
+    {
+      count++;
+    }
+
+  m_numVertices++;
+  m_vertices.push_back(x);
+  m_vertices.push_back(y);
+  m_vertices.push_back(z);
+  m_vertices.push_back(w);
+
+ return;
+} /* AyConvertor::vertexcb */
+
+
+void
+AyConvertor::normalcb(VertexPrecision x,
+		      VertexPrecision y,
+		      VertexPrecision z)
+{
+  m_normals.push_back(x);
+  m_normals.push_back(y);
+  m_normals.push_back(z);
+
+ return;
+} /* AyConvertor::normalcb */
+
+
+void
+AyConvertor::convert(ay_pomesh_object *pomesh)
+{
+ unsigned int i = 0, j = 0, k = 0, a = 0;
+
+  if(!pomesh)
+    return;
+
+  m_flattener->receiveVertices(std::tr1::bind(&AyConvertor::vertexcb,
+					      this, _1, _2, _3, _4));
+  m_flattener->receiveSmoothNormals(std::tr1::bind(&AyConvertor::normalcb,
+						   this, _1, _2, _3));
+  m_flattener->flattenFaces();
+
+  if(m_numFaces == 0)
+    return;
+
+  pomesh->npolys = m_numFaces;
+  pomesh->nloops = (unsigned int *)calloc(m_numFaces, sizeof(unsigned int));
+  for(i = 0; i < m_numFaces; i++)
+    {
+      pomesh->nloops[i] = 1;
+    }
+
+  pomesh->nverts = (unsigned int *)calloc(m_numFaces, sizeof(unsigned int));
+  for(i = 0; i < m_numFaces; i++)
+    {
+      pomesh->nverts[i] = 4;
+    }
+
+  pomesh->verts = (unsigned int *)calloc(m_numFaces, 4*sizeof(unsigned int));
+  j = 0;
+  for(i = 0; i < m_numFaces*4; i++)
+    {
+      pomesh->verts[i] = j;
+      j++;
+    }
+
+  pomesh->ncontrols = m_numVertices;
+  pomesh->has_normals = AY_TRUE;
+  pomesh->controlv = (double *)calloc(m_numVertices, 6*sizeof(double));
+  j = 0; k = 0;
+  for(i = 0; i < m_numVertices; i++)
+    {
+
+      pomesh->controlv[a] = m_vertices.at(k);
+      pomesh->controlv[a+1] = m_vertices.at(k+1);
+      pomesh->controlv[a+2] = m_vertices.at(k+2);
+
+      pomesh->controlv[a+3] = m_normals.at(j);
+      pomesh->controlv[a+4] = m_normals.at(j+1);
+      pomesh->controlv[a+5] = m_normals.at(j+2);
+
+      a += 6;
+      j += 3;
+      k += 4;
+    }
+
+ return;
+} /* AyConvertor::convert */
+
+
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
  */
@@ -403,7 +540,7 @@ sdnpatch_drawcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
-  //meshFlattener->setCompatible(true);
+  meshFlattener->setCompatible(true);
 
   glBegin(GL_LINE_LOOP);
    meshFlattener->receiveVertices(std::tr1::bind(&sdnpatch_lineloopcb,
@@ -753,6 +890,134 @@ sdnpatch_notifycb(ay_object *o)
 } /* sdnpatch_notifycb */
 
 
+/* sdnpatch_providecb:
+ *  provide callback function of sdnpatch object
+ */
+int
+sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ int ay_status = AY_OK;
+ sdnpatch_object *sdnpatch = NULL;
+ ay_object *newo = NULL;
+ ay_pomesh_object *pomesh = NULL;
+ MeshFlattener *meshFlattener = NULL;
+ AyConvertor *convertor = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDPOMESH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  sdnpatch = (sdnpatch_object *) o->refine;
+
+  if(type == AY_IDPOMESH)
+    {
+     
+      if(sdnpatch->subdivMesh)
+	{
+	  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+	    return AY_EOMEM;
+	  if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+	    {free(newo); return AY_EOMEM;}
+      
+	  ay_object_defaults(newo);
+	  ay_trafo_copy(o, newo);
+
+	  newo->type = AY_IDPOMESH;
+
+	  meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
+	  meshFlattener->setCompatible(true);
+
+	  convertor = new AyConvertor(meshFlattener);
+
+	  convertor->convert(pomesh);
+
+	  newo->refine = pomesh;
+
+	  delete convertor;
+
+	  MeshFlattener::dispose(meshFlattener);
+
+	} /* if */
+
+      *result = newo;
+    } /* if */
+
+ return ay_status;
+} /* sdnpatch_providecb */
+
+
+/* sdnpatch_convertcb:
+ *  convert callback function of sdnpatch object
+ */
+int
+sdnpatch_convertcb(ay_object *o, int in_place)
+{
+ int ay_status = AY_OK;
+ sdnpatch_object *sdnpatch = NULL;
+ ay_object *newo = NULL;
+ ay_pomesh_object *pomesh = NULL;
+ MeshFlattener *meshFlattener = NULL;
+ AyConvertor *convertor = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* first, create new objects */
+
+  sdnpatch = (sdnpatch_object *) o->refine;
+
+  if(sdnpatch->subdivMesh)
+    {
+      if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+	return AY_EOMEM;
+      if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+	{free(newo); return AY_EOMEM;}
+      
+      ay_object_defaults(newo);
+      ay_trafo_copy(o, newo);
+
+      newo->type = AY_IDPOMESH;
+
+      meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
+      meshFlattener->setCompatible(true);
+
+      convertor = new AyConvertor(meshFlattener);
+
+      convertor->convert(pomesh);
+
+      newo->refine = pomesh;
+
+      delete convertor;
+
+      MeshFlattener::dispose(meshFlattener);
+
+    } /* if */
+
+  /* second, link new objects, or replace old objects with them */
+
+  if(newo)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(newo);
+	}
+      else
+	{
+	  ay_object_replace(newo, o);
+	} /* if */
+    } /* if */
+
+ return ay_status;
+} /* sdnpatch_convertcb */
+
+
 extern "C" {
 
 /* Sdnpatch_Init:
@@ -760,7 +1025,7 @@ extern "C" {
  * object type (SDNPatch) and loading the accompanying Tcl script file.
  * Note: This function _must_ be capitalized exactly this way
  * (_S_dnpatch__I_nit, not sdnpatch_init!)
- * regardless of the filename of the shared object (see: man n load)!
+ * regardless of the filename of the shared object (see: man 3tcl load)!
  */
 #ifdef WIN32
   __declspec (dllexport)
@@ -800,8 +1065,11 @@ Sdnpatch_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-
   ay_status = ay_notify_register(sdnpatch_notifycb, sdnpatch_id);
+
+  ay_status = ay_convert_register(sdnpatch_convertcb, sdnpatch_id);
+
+  ay_status = ay_provide_register(sdnpatch_providecb, sdnpatch_id);
 
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
