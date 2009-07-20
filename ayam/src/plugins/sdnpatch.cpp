@@ -34,23 +34,9 @@ typedef struct sdnpatch_object_s
   Mesh *subdivMesh;
   GLuint subdivObject;
 
-  Mesh *lowDegreeMesh;
-  GLuint isoparamTexture;
-  bool texFirstFace;
-  GLfloat                firstS;
-  GLfloat                firstT;
-  float                  max[3];
-  float                  min[3];
-  float                  median[3];
-  float                  boundingCube;
-  int                    nVerts;
-  GLuint                 selectedFace;
-  GLuint                 selectedEdge;
+  double *selPoints;
+  unsigned int *selPointsI;
 
-  double                 selectCloseLoop[4];
-  bool                   selectFirstVert;
-  snurbs::KnotInterval  *selectedKnot;
-  snurbs::KnotInterval  *lowDegreeKnot;
 } sdnpatch_object;
 
 extern "C" {
@@ -67,7 +53,7 @@ class AyWriter : public FlatMeshHandler
 {
 public:
   AyWriter(FILE *filep);
-  //~AyWriter(void);
+
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
@@ -348,6 +334,146 @@ AyConvertor::convert(ay_pomesh_object *pomesh)
 } /* AyConvertor::convert */
 
 
+class AyPicker : public FlatMeshHandler
+{
+public:
+  AyPicker(int mode, double *p, sdnpatch_object *sdnpatch);
+
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w);
+
+  unsigned int m_numSelVerts;
+
+
+private:
+  int m_mode;
+  double *m_p;
+  sdnpatch_object *m_sdnpatch;
+
+  double m_minDist;
+  double m_curDist;
+  unsigned int m_curVert;
+}; /* AyPicker */
+
+
+AyPicker::AyPicker(int mode, double *p, sdnpatch_object *sdnpatch)
+{
+
+  m_mode = mode;
+  m_p = p;
+  m_sdnpatch = sdnpatch;
+
+  m_curVert = 0;
+  m_numSelVerts = 0;
+  m_minDist = ay_prefs.pick_epsilon;
+  m_curDist = 0.0;
+
+  if(m_minDist == 0.0)
+    m_minDist = DBL_MAX;
+
+} /* AyPicker::AyPicker */
+
+void
+AyPicker::addVertex(VertexPrecision x,
+		    VertexPrecision y,
+		    VertexPrecision z,
+		    VertexPrecision w)
+{
+ double *tmpd;
+ unsigned int *tmpi;
+
+  switch(m_mode)
+    {
+    case 0:
+      /* select all points */
+      tmpd = (double*)realloc(m_sdnpatch->selPoints,
+			      ((m_numSelVerts+1)*4) * sizeof(double));
+      if(tmpd)
+	m_sdnpatch->selPoints = tmpd;
+
+      tmpi = (unsigned int*)realloc(m_sdnpatch->selPointsI,
+				    (m_numSelVerts+1) * sizeof(unsigned int));
+      if(tmpi)
+	m_sdnpatch->selPointsI = tmpi;
+
+      m_sdnpatch->selPoints[m_numSelVerts*4] = x;
+      m_sdnpatch->selPoints[m_numSelVerts*4+1] = y;
+      m_sdnpatch->selPoints[m_numSelVerts*4+2] = z;
+      m_sdnpatch->selPoints[m_numSelVerts*4+3] = w;
+
+      m_sdnpatch->selPointsI[m_numSelVerts] = m_curVert;
+
+      m_numSelVerts++;
+      break;
+    case 1:
+      /* select one point */
+      m_curDist = AY_VLEN((m_p[0] - x), (m_p[1] - y), (m_p[2] - z));
+
+      if(m_curDist < m_minDist)
+	{
+	  if(!m_sdnpatch->selPoints)
+	    {
+	      if(!(m_sdnpatch->selPoints = (double*)calloc(4, sizeof(double))))
+		return;
+	    }
+	  if(!m_sdnpatch->selPointsI)
+	    {
+	      if(!(m_sdnpatch->selPointsI =
+		   (unsigned int*)calloc(1, sizeof(unsigned int))))
+		return;
+	    }
+
+	  m_sdnpatch->selPoints[0] = x;
+	  m_sdnpatch->selPoints[1] = y;
+	  m_sdnpatch->selPoints[2] = z;
+	  m_sdnpatch->selPoints[3] = w;
+
+	  m_sdnpatch->selPointsI[0] = m_curVert;
+
+	  m_minDist = m_curDist;
+
+	  m_numSelVerts = 1;
+	}
+
+      break;
+    case 2:
+      /* select all points between the planes in m_p */
+      if(((m_p[0]*x + m_p[1]*y + m_p[2]*z + m_p[3]) < 0.0) &&
+	 ((m_p[4]*x + m_p[5]*y + m_p[6]*z + m_p[7]) < 0.0) &&
+	 ((m_p[8]*x + m_p[9]*y + m_p[10]*z + m_p[11]) < 0.0) &&
+	 ((m_p[12]*x + m_p[13]*y + m_p[14]*z + m_p[15]) < 0.0))
+	{
+	  tmpd = (double*)realloc(m_sdnpatch->selPoints,
+				  ((m_numSelVerts+1)*4) * sizeof(double));
+	  if(tmpd)
+	    m_sdnpatch->selPoints = tmpd;
+	  tmpi = (unsigned int*)realloc(m_sdnpatch->selPointsI,
+				(m_numSelVerts+1) * sizeof(unsigned int));
+	  if(tmpi)
+	    m_sdnpatch->selPointsI = tmpi;
+
+	  m_sdnpatch->selPoints[m_numSelVerts*4] = x;
+	  m_sdnpatch->selPoints[m_numSelVerts*4+1] = y;
+	  m_sdnpatch->selPoints[m_numSelVerts*4+2] = z;
+	  m_sdnpatch->selPoints[m_numSelVerts*4+3] = w;
+
+	  m_sdnpatch->selPointsI[m_numSelVerts] = m_curVert;
+
+	  m_numSelVerts++;
+	} /* if */
+      break;
+    default:
+      break;
+    }
+
+  m_curVert++;
+
+ return;
+} /* AyPicker::addVertex */
+
+
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
  */
@@ -486,6 +612,9 @@ sdnpatch_copycb(void *src, void **dst)
 
   sdnpatch->controlMesh = NULL;
   sdnpatch->subdivMesh = NULL;
+
+  sdnpatch->selPoints = NULL;
+  sdnpatch->selPointsI = NULL;
 
   srcsdnpatch = (sdnpatch_object*)src;
   if(srcsdnpatch->controlMesh)
@@ -830,13 +959,21 @@ sdnpatch_writecb(FILE *fileptr, ay_object *o)
 int
 sdnpatch_wribcb(char *file, ay_object *o)
 {
- sdnpatch_object *sdnpatch = NULL;
-
+// sdnpatch_object *sdnpatch = NULL;
+ ay_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  sdnpatch = (sdnpatch_object*)o->refine;
+  //sdnpatch = (sdnpatch_object*)o->refine;
+
+  ay_provide_object(o, AY_IDPOMESH, &c);
+  if(!c)
+    return AY_ERROR;
+
+  ay_wrib_object(file, c);
+
+  ay_object_deletemulti(c);
 
  return AY_OK;
 } /* sdnpatch_wribcb */
@@ -923,7 +1060,8 @@ sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
-	  if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
+	  if(!(pomesh = (ay_pomesh_object*)calloc(1,
+						  sizeof(ay_pomesh_object))))
 	    {free(newo); return AY_EOMEM;}
       
 	  ay_object_defaults(newo);
@@ -1018,6 +1156,55 @@ sdnpatch_convertcb(ay_object *o, int in_place)
 } /* sdnpatch_convertcb */
 
 
+/* sdnpatch_getpntcb:
+ *  get point (editing and selection) callback function of sdnpatch object
+ */
+int
+sdnpatch_getpntcb(int mode, ay_object *o, double *p)
+{
+ sdnpatch_object *sdnpatch = NULL;
+ unsigned int i = 0, a = 0;
+ MeshFlattener *meshFlattener = NULL;
+ AyPicker *picker = NULL;
+
+  if(!o || !p)
+    return AY_ENULL;
+
+  sdnpatch = (sdnpatch_object *)(o->refine);
+
+  if(ay_point_edit_coords)
+    free(ay_point_edit_coords);
+
+  ay_point_edit_coords = NULL;
+
+  meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+  picker = new AyPicker(mode, p, sdnpatch);
+  meshFlattener->flatten(*picker);
+
+  if(picker->m_numSelVerts > 0)
+    {
+      if(!(ay_point_edit_coords = (double**)calloc(picker->m_numSelVerts,
+						   sizeof(double*))))
+	return AY_EOMEM;
+
+      for(i = 0; i < picker->m_numSelVerts; i++)
+	{
+	  ay_point_edit_coords[i] = &(sdnpatch->selPoints[a]);
+	  a += 4;
+	}
+
+      ay_point_edit_coords_homogenous = AY_TRUE;
+      ay_point_edit_coords_number = picker->m_numSelVerts;
+    }
+
+  delete picker;
+  MeshFlattener::dispose(meshFlattener);
+
+ return AY_OK;
+} /* sdnpatch_getpntcb */
+
+
 extern "C" {
 
 /* Sdnpatch_Init:
@@ -1052,7 +1239,7 @@ Sdnpatch_Init(Tcl_Interp *interp)
 				sdnpatch_shadecb,
 				sdnpatch_setpropcb,
 				sdnpatch_getpropcb,
-				NULL, /* No Picking! */
+				sdnpatch_getpntcb,
 				sdnpatch_readcb,
 				sdnpatch_writecb,
 				sdnpatch_wribcb,
