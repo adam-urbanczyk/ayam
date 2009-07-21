@@ -139,7 +139,7 @@ ay_select_shadecb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of select object
  */
 int
-ay_select_getpntcb(int mode, ay_object *o, double *p)
+ay_select_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
   if(!o)
     return AY_ENULL;

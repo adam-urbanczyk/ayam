@@ -203,7 +203,7 @@ ay_swing_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of swing object
  */
 int
-ay_swing_getpntcb(int mode, ay_object *o, double *p)
+ay_swing_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

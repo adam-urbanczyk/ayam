@@ -237,7 +237,7 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of instance object
  */
 int
-ay_instance_getpntcb(int mode, ay_object *o, double *p)
+ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
   if(!o)

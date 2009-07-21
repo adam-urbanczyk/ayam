@@ -469,7 +469,7 @@ ay_light_shadecb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of light object
  */
 int
-ay_light_getpntcb(int mode, ay_object *o, double *p)
+ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_light_object *light = NULL;
  ay_shader *shader = NULL;
@@ -478,7 +478,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
  double *pecoord = NULL, **pecoords = NULL, *c;
  int has_from = 0, has_to = 0, numpts = 0, a = 0;
 
-  if(!o || !p)
+  if(!o || !p || !pe)
     return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
@@ -486,10 +486,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
-
-  ay_point_edit_coords = NULL;
 
   if(light->type == AY_LITCUSTOM)
     {
@@ -537,9 +533,10 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 	} /* switch */
     } /* if */
 
-  /* select all points? */
-  if(mode == 0)
-    { /* yes */
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
       if(has_from)
 	numpts++;
 
@@ -548,115 +545,107 @@ ay_light_getpntcb(int mode, ay_object *o, double *p)
 
       if(numpts > 0)
 	{
-	  if(!(ay_point_edit_coords = calloc(numpts, sizeof(double*))))
+	  if(!(pe->coords = calloc(numpts, sizeof(double*))))
 	    return AY_EOMEM;
 
 	  if(has_from)
-	    ay_point_edit_coords[0] = light->tfrom;
+	    pe->coords[0] = light->tfrom;
 
 	  if(has_to)
 	    {
 	      if(has_from)
-		ay_point_edit_coords[1] = light->tto;
+		pe->coords[1] = light->tto;
 	      else
-		ay_point_edit_coords[0] = light->tto;
+		pe->coords[0] = light->tto;
 	    }
 
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords_number = numpts;
+	  pe->homogenous = AY_FALSE;
+	  pe->num = numpts;
 	} /* if */
-    }
-  else
-    { /* no */
+      break;
+    case 1:
+      /* selection based on a single point */
+      if(has_from)
+	{
+	  dist = AY_VLEN((p[0] - light->tfrom[0]),
+			 (p[1] - light->tfrom[1]),
+			 (p[2] - light->tfrom[2]));
 
-      /* selection based on a single point? */
-      if(mode == 1)
-	{ /* yes */
-
-	  if(has_from)
+	  if(dist < min_dist)
 	    {
-	      dist = AY_VLEN((p[0] - light->tfrom[0]),
-			     (p[1] - light->tfrom[1]),
-			     (p[2] - light->tfrom[2]));
-
-	      if(dist < min_dist)
-		{
-		  pecoord = light->tfrom;
-		  min_dist = dist;
-		}
-	    } /* if */
-
-	  if(has_to)
-	    {
-	      dist = AY_VLEN((p[0] - light->tto[0]),
-			     (p[1] - light->tto[1]),
-			     (p[2] - light->tto[2]));
-
-	      if(dist < min_dist)
-		{
-		  pecoord = light->tto;
-		  min_dist = dist;
-		}
-	    } /* if */
-
-	  if(!pecoord)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	    return AY_EOMEM;
-
-	  ay_point_edit_coords[0] = pecoord;
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords_number = 1;
-
-	}
-      else
-	{ /* no */
-
-	  /* selection based on planes */
-	  if(has_from)
-	    {
-	      c = light->tfrom;
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
-
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = c;
-		  a++;
-		} /* if */
-	    } /* if */
-
-	  if(has_to)
-	    {
-	      c = light->tto;
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
-
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = c;
-		  a++;
-		} /* if */
-	    } /* if */
-
-	  if(!pecoords)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords = pecoords;
-	  ay_point_edit_coords_number = a;
-
+	      pecoord = light->tfrom;
+	      min_dist = dist;
+	    }
 	} /* if */
-    } /* if */
+
+      if(has_to)
+	{
+	  dist = AY_VLEN((p[0] - light->tto[0]),
+			 (p[1] - light->tto[1]),
+			 (p[2] - light->tto[2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = light->tto;
+	      min_dist = dist;
+	    }
+	} /* if */
+
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      if(!(pe->coords = calloc(1, sizeof(double*))))
+	return AY_EOMEM;
+
+      pe->coords[0] = pecoord;
+      pe->homogenous = AY_FALSE;
+      pe->num = 1;
+      break;
+    case 2:
+      /* selection based on planes */
+      if(has_from)
+	{
+	  c = light->tfrom;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
+
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;
+	    } /* if */
+	} /* if */
+
+      if(has_to)
+	{
+	  c = light->tto;
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
+
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = c;
+	      a++;
+	    } /* if */
+	} /* if */
+
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      pe->homogenous = AY_FALSE;
+      pe->coords = pecoords;
+      pe->num = a;
+
+      break;
+    } /* switch */
 
  return AY_OK;
 } /* ay_light_getpntcb */
@@ -878,6 +867,7 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
  ay_light_object *light = NULL;
  int has_shader = AY_FALSE, ay_status = AY_OK;
  double p[3] = {DBL_MAX, DBL_MAX, DBL_MAX};
+ ay_pointedit pe = {0};
 
   if(!o)
    return AY_ENULL;
@@ -913,8 +903,8 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
     {
       ay_status = ay_read_shader(fileptr, &light->lshader);
       /* copy shader from/to to light.tfrom light.tto */
-      ay_status = ay_pact_getpoint(1, o, p);
-
+      ay_status = ay_pact_getpoint(1, o, p, &pe);
+      ay_pact_clearpointedit(&pe);
     }
 
   if(ay_read_version >= 5)

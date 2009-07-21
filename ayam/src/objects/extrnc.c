@@ -175,7 +175,7 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of extrnc object
  */
 int
-ay_extrnc_getpntcb(int mode, ay_object *o, double *p)
+ay_extrnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

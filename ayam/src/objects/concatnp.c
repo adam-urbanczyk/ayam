@@ -151,7 +151,7 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of concatnp object
  */
 int
-ay_concatnp_getpntcb(int mode, ay_object *o, double *p)
+ay_concatnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

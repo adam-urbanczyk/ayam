@@ -34,8 +34,10 @@ typedef struct sdnpatch_object_s
   Mesh *subdivMesh;
   GLuint subdivObject;
 
+  unsigned int numSelPoints;
   double *selPoints;
-  unsigned int *selPointsI;
+
+  vector<Vertex*> *controlVertices;
 
 } sdnpatch_object;
 
@@ -334,146 +336,6 @@ AyConvertor::convert(ay_pomesh_object *pomesh)
 } /* AyConvertor::convert */
 
 
-class AyPicker : public FlatMeshHandler
-{
-public:
-  AyPicker(int mode, double *p, sdnpatch_object *sdnpatch);
-
-  void addVertex(VertexPrecision x,
-		 VertexPrecision y,
-		 VertexPrecision z,
-		 VertexPrecision w);
-
-  unsigned int m_numSelVerts;
-
-
-private:
-  int m_mode;
-  double *m_p;
-  sdnpatch_object *m_sdnpatch;
-
-  double m_minDist;
-  double m_curDist;
-  unsigned int m_curVert;
-}; /* AyPicker */
-
-
-AyPicker::AyPicker(int mode, double *p, sdnpatch_object *sdnpatch)
-{
-
-  m_mode = mode;
-  m_p = p;
-  m_sdnpatch = sdnpatch;
-
-  m_curVert = 0;
-  m_numSelVerts = 0;
-  m_minDist = ay_prefs.pick_epsilon;
-  m_curDist = 0.0;
-
-  if(m_minDist == 0.0)
-    m_minDist = DBL_MAX;
-
-} /* AyPicker::AyPicker */
-
-void
-AyPicker::addVertex(VertexPrecision x,
-		    VertexPrecision y,
-		    VertexPrecision z,
-		    VertexPrecision w)
-{
- double *tmpd;
- unsigned int *tmpi;
-
-  switch(m_mode)
-    {
-    case 0:
-      /* select all points */
-      tmpd = (double*)realloc(m_sdnpatch->selPoints,
-			      ((m_numSelVerts+1)*4) * sizeof(double));
-      if(tmpd)
-	m_sdnpatch->selPoints = tmpd;
-
-      tmpi = (unsigned int*)realloc(m_sdnpatch->selPointsI,
-				    (m_numSelVerts+1) * sizeof(unsigned int));
-      if(tmpi)
-	m_sdnpatch->selPointsI = tmpi;
-
-      m_sdnpatch->selPoints[m_numSelVerts*4] = x;
-      m_sdnpatch->selPoints[m_numSelVerts*4+1] = y;
-      m_sdnpatch->selPoints[m_numSelVerts*4+2] = z;
-      m_sdnpatch->selPoints[m_numSelVerts*4+3] = w;
-
-      m_sdnpatch->selPointsI[m_numSelVerts] = m_curVert;
-
-      m_numSelVerts++;
-      break;
-    case 1:
-      /* select one point */
-      m_curDist = AY_VLEN((m_p[0] - x), (m_p[1] - y), (m_p[2] - z));
-
-      if(m_curDist < m_minDist)
-	{
-	  if(!m_sdnpatch->selPoints)
-	    {
-	      if(!(m_sdnpatch->selPoints = (double*)calloc(4, sizeof(double))))
-		return;
-	    }
-	  if(!m_sdnpatch->selPointsI)
-	    {
-	      if(!(m_sdnpatch->selPointsI =
-		   (unsigned int*)calloc(1, sizeof(unsigned int))))
-		return;
-	    }
-
-	  m_sdnpatch->selPoints[0] = x;
-	  m_sdnpatch->selPoints[1] = y;
-	  m_sdnpatch->selPoints[2] = z;
-	  m_sdnpatch->selPoints[3] = w;
-
-	  m_sdnpatch->selPointsI[0] = m_curVert;
-
-	  m_minDist = m_curDist;
-
-	  m_numSelVerts = 1;
-	}
-
-      break;
-    case 2:
-      /* select all points between the planes in m_p */
-      if(((m_p[0]*x + m_p[1]*y + m_p[2]*z + m_p[3]) < 0.0) &&
-	 ((m_p[4]*x + m_p[5]*y + m_p[6]*z + m_p[7]) < 0.0) &&
-	 ((m_p[8]*x + m_p[9]*y + m_p[10]*z + m_p[11]) < 0.0) &&
-	 ((m_p[12]*x + m_p[13]*y + m_p[14]*z + m_p[15]) < 0.0))
-	{
-	  tmpd = (double*)realloc(m_sdnpatch->selPoints,
-				  ((m_numSelVerts+1)*4) * sizeof(double));
-	  if(tmpd)
-	    m_sdnpatch->selPoints = tmpd;
-	  tmpi = (unsigned int*)realloc(m_sdnpatch->selPointsI,
-				(m_numSelVerts+1) * sizeof(unsigned int));
-	  if(tmpi)
-	    m_sdnpatch->selPointsI = tmpi;
-
-	  m_sdnpatch->selPoints[m_numSelVerts*4] = x;
-	  m_sdnpatch->selPoints[m_numSelVerts*4+1] = y;
-	  m_sdnpatch->selPoints[m_numSelVerts*4+2] = z;
-	  m_sdnpatch->selPoints[m_numSelVerts*4+3] = w;
-
-	  m_sdnpatch->selPointsI[m_numSelVerts] = m_curVert;
-
-	  m_numSelVerts++;
-	} /* if */
-      break;
-    default:
-      break;
-    }
-
-  m_curVert++;
-
- return;
-} /* AyPicker::addVertex */
-
-
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
  */
@@ -560,6 +422,8 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   MeshBuilder::dispose(meshBuilder);
 
+  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
+
   o->refine = sdnpatch;
 
   ay_notify_force(o);
@@ -614,7 +478,6 @@ sdnpatch_copycb(void *src, void **dst)
   sdnpatch->subdivMesh = NULL;
 
   sdnpatch->selPoints = NULL;
-  sdnpatch->selPointsI = NULL;
 
   srcsdnpatch = (sdnpatch_object*)src;
   if(srcsdnpatch->controlMesh)
@@ -985,12 +848,66 @@ sdnpatch_wribcb(char *file, ay_object *o)
 int
 sdnpatch_bbccb(ay_object *o, double *bbox, int *flags)
 {
+ double xmin, xmax, ymin, ymax, zmin, zmax;
  sdnpatch_object *sdnpatch = NULL;
+ std::vector<Vertex*> *vertices = NULL;
+ std::vector<Vertex*>::iterator it;
+ Vertex *v;
 
   if(!o || !bbox)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)o->refine;
+
+  if(!sdnpatch || !sdnpatch->controlVertices)
+    return AY_ENULL;
+
+  vertices = sdnpatch->controlVertices;
+  it = (*vertices).begin();
+  v = *it;
+  xmin = v->getX();
+  xmax = xmin;
+  ymin = v->getY();
+  ymax = ymin;
+  zmin = v->getZ();
+  zmax = zmin;
+  it++;
+  for(; it < (*vertices).end(); it++)
+    {
+      v = *it;
+      if(v->getX() < xmin)
+	xmin = v->getX();
+      if(v->getX() > xmax)
+	xmax = v->getX();
+
+      if(v->getY() < ymin)
+	ymin = v->getY();
+      if(v->getY() > ymax)
+	ymax = v->getY();
+
+      if(v->getZ() < zmin)
+	zmin = v->getZ();
+      if(v->getZ() > zmax)
+	zmax = v->getZ();
+    } /* for */
+
+  /* P1 */
+  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
+  /* P2 */
+  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
+  /* P3 */
+  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
+  /* P4 */
+  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
+
+  /* P5 */
+  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
+  /* P6 */
+  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
+  /* P7 */
+  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
+  /* P8 */
+  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
 
  return AY_OK;
 } /* sdnpatch_bbccb */
@@ -1003,6 +920,9 @@ int
 sdnpatch_notifycb(ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
+ ay_point *pnt = NULL;
+ Vertex *v = NULL;
+
  int curlev = 0;
 
   if(!o)
@@ -1010,6 +930,24 @@ sdnpatch_notifycb(ay_object *o)
 
   sdnpatch = (sdnpatch_object *)(o->refine);
 
+
+  /* manage potentially modified control points */
+  if(o->selp)
+    {
+      pnt = o->selp;
+
+      while(pnt)
+	{
+	  v = (*(sdnpatch->controlVertices))[pnt->index];
+	  v->setX(pnt->point[0]);
+	  v->setY(pnt->point[1]);
+	  v->setZ(pnt->point[2]);
+	  pnt = pnt->next;
+	}
+    }
+
+
+  /* update subdivision surface */
   if(sdnpatch->subdivMesh)
     {
       delete sdnpatch->subdivMesh;
@@ -1055,7 +993,7 @@ sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDPOMESH)
     {
-     
+
       if(sdnpatch->subdivMesh)
 	{
 	  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
@@ -1063,7 +1001,7 @@ sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(!(pomesh = (ay_pomesh_object*)calloc(1,
 						  sizeof(ay_pomesh_object))))
 	    {free(newo); return AY_EOMEM;}
-      
+
 	  ay_object_defaults(newo);
 	  ay_trafo_copy(o, newo);
 
@@ -1117,7 +1055,7 @@ sdnpatch_convertcb(ay_object *o, int in_place)
 	return AY_EOMEM;
       if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
 	{free(newo); return AY_EOMEM;}
-      
+
       ay_object_defaults(newo);
       ay_trafo_copy(o, newo);
 
@@ -1160,46 +1098,130 @@ sdnpatch_convertcb(ay_object *o, int in_place)
  *  get point (editing and selection) callback function of sdnpatch object
  */
 int
-sdnpatch_getpntcb(int mode, ay_object *o, double *p)
+sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  sdnpatch_object *sdnpatch = NULL;
  unsigned int i = 0, a = 0;
- MeshFlattener *meshFlattener = NULL;
- AyPicker *picker = NULL;
+ double minDist = ay_prefs.pick_epsilon, curDist = 0.0;
+ double *tmpd;
+ std::vector<Vertex*> *vertices = NULL;
+ std::vector<Vertex*>::iterator it;
+ Vertex *v;
 
-  if(!o || !p)
+  if(!o || !p || !pe)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)(o->refine);
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
+  if(!sdnpatch || !sdnpatch->controlVertices)
+    return AY_ENULL;
 
-  ay_point_edit_coords = NULL;
+  vertices = sdnpatch->controlVertices;
 
-  meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
-  picker = new AyPicker(mode, p, sdnpatch);
-  meshFlattener->flatten(*picker);
+  if(sdnpatch->selPoints)
+    free(sdnpatch->selPoints);
+  sdnpatch->selPoints = NULL;
+  sdnpatch->numSelPoints = 0;
 
-  if(picker->m_numSelVerts > 0)
+  switch(mode)
     {
-      if(!(ay_point_edit_coords = (double**)calloc(picker->m_numSelVerts,
-						   sizeof(double*))))
-	return AY_EOMEM;
-
-      for(i = 0; i < picker->m_numSelVerts; i++)
+    case 0:
+      /* select all points */
+      pe->coords = (double**)calloc(vertices->size(),
+				    sizeof(double*));
+      pe->indizes = (unsigned int*)calloc(vertices->size(),
+					  sizeof(unsigned int));
+      sdnpatch->selPoints = (double*)calloc(vertices->size()*4,
+					    sizeof(double));
+      for(it = (*vertices).begin(); it < (*vertices).end(); it++)
 	{
-	  ay_point_edit_coords[i] = &(sdnpatch->selPoints[a]);
+	  v = *it;
+	  pe->coords[i] = &(sdnpatch->selPoints[a]);
+	  pe->indizes[i] = i;
+	  sdnpatch->selPoints[a]   = v->getX();
+	  sdnpatch->selPoints[a+1] = v->getY();
+	  sdnpatch->selPoints[a+2] = v->getZ();
+	  sdnpatch->selPoints[a+3] = v->getW();
+	  i++;
 	  a += 4;
 	}
+      break;
+    case 1:
+      /* select one point */
 
-      ay_point_edit_coords_homogenous = AY_TRUE;
-      ay_point_edit_coords_number = picker->m_numSelVerts;
-    }
+      if(minDist <= 0.0)
+	minDist = DBL_MAX;
 
-  delete picker;
-  MeshFlattener::dispose(meshFlattener);
+      for(it = (*vertices).begin(); it < (*vertices).end(); it++)
+	{
+	  v = *it;
+	  curDist = AY_VLEN((p[0] - v->getX()),
+			    (p[1] - v->getY()),
+			    (p[2] - v->getZ()));
+	  
+	  if(curDist < minDist)
+	    {
+	      if(!(sdnpatch->selPoints = (double*)calloc(4, sizeof(double))))
+		return AY_EOMEM;
+	      pe->coords = (double**)calloc(1, sizeof(double*));
+	      pe->indizes = (unsigned int*)calloc(1, sizeof(unsigned int));
+	      sdnpatch->selPoints[0] = v->getX();
+	      sdnpatch->selPoints[1] = v->getY();
+	      sdnpatch->selPoints[2] = v->getZ();
+	      sdnpatch->selPoints[3] = v->getW();
+	      sdnpatch->numSelPoints = 1;
+
+	      pe->coords[0] = &(sdnpatch->selPoints[0]);
+	      pe->indizes[0] = i;
+	      minDist = curDist;
+	    } /* if */
+
+	  i++;
+	}
+      break;
+    case 2:
+      /* select all points between the planes in p */
+      for(it = (*vertices).begin(); it < (*vertices).end(); it++)
+	{
+	  v = *it;
+	  if(((p[0]*v->getX() + p[1]*v->getY() + p[2]*v->getZ() +
+	       p[3]) < 0.0) &&
+	     ((p[4]*v->getX() + p[5]*v->getY() + p[6]*v->getZ() +
+	       p[7]) < 0.0) &&
+	     ((p[8]*v->getX() + p[9]*v->getY() + p[10]*v->getZ() +
+	       p[11]) < 0.0) &&
+	     ((p[12]*v->getX() + p[13]*v->getY() + p[14]*v->getZ() +
+	       p[15]) < 0.0))
+	    {
+	      tmpd = (double*)realloc(sdnpatch->selPoints,
+			((sdnpatch->numSelPoints+1)*4) * sizeof(double));
+	      if(tmpd)
+		sdnpatch->selPoints = tmpd;
+	      else
+		return AY_EOMEM;
+
+	      sdnpatch->selPoints[sdnpatch->numSelPoints*4]   = v->getX();
+	      sdnpatch->selPoints[sdnpatch->numSelPoints*4+1] = v->getY();
+	      sdnpatch->selPoints[sdnpatch->numSelPoints*4+2] = v->getZ();
+	      sdnpatch->selPoints[sdnpatch->numSelPoints*4+3] = v->getW();
+
+	      pe->coords[sdnpatch->numSelPoints] =
+		&(sdnpatch->selPoints[0]);
+	      pe->indizes[sdnpatch->numSelPoints] = i;
+	      sdnpatch->numSelPoints++;
+	    } /* if */
+	  i++;
+	} /* for */
+      break;
+    case 3:
+      /* rebuild from o->selp */
+      break;
+    default:
+      break;
+    } /* switch */
+
+  pe->homogenous = AY_TRUE;
+  pe->num = sdnpatch->numSelPoints;
 
  return AY_OK;
 } /* sdnpatch_getpntcb */

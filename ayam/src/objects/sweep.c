@@ -190,7 +190,7 @@ ay_sweep_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of sweep object
  */
 int
-ay_sweep_getpntcb(int mode, ay_object *o, double *p)
+ay_sweep_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

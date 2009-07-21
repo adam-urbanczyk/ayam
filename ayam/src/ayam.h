@@ -1064,6 +1064,7 @@ typedef struct ay_point_s
   struct ay_point_s *next;
   int homogenous; /* AY_TRUE, AY_FALSE */
   double *point;
+  unsigned int index;
 } ay_point;
 
 
@@ -1074,6 +1075,13 @@ typedef struct ay_mpoint_s
   double **points;
 } ay_mpoint;
 
+typedef struct ay_pointedit_s
+{
+  unsigned int num;
+  double **coords;
+  unsigned int *indizes;
+  int homogenous;
+} ay_pointedit;
 
 typedef struct ay_tag_s
 {
@@ -1112,7 +1120,8 @@ typedef int (ay_drawcb) (struct Togl *togl,  ay_object *o);
 typedef int (ay_propcb) (Tcl_Interp *interp, int argc, char *argv[],
 			 ay_object *o);
 
-typedef int (ay_getpntcb) (int mode, ay_object *o, double *p);
+typedef int (ay_getpntcb) (int mode, ay_object *o, double *p,
+			   ay_pointedit *pe);
 
 typedef int (ay_wribcb) (char *file, ay_object *o);
 
@@ -1148,15 +1157,6 @@ extern ay_list_object *ay_selection;
 extern ay_list_object *ay_currentlevel;
 
 extern ay_object *ay_clipboard;
-
-extern int ay_point_edit_coords_homogenous;
-extern int ay_point_edit_coords_number;
-extern int *ay_pe_numcpo;
-extern int *ay_pe_homcpo;
-extern double **ay_point_edit_coords;
-extern ay_object *ay_point_edit_object;
-extern ay_object **ay_pe_objects;
-extern int ay_pe_objectslen;
 
 extern Tcl_HashTable ay_otypesht;
 

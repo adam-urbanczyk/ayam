@@ -30,20 +30,13 @@ ay_list_object *ay_currentlevel;
 
 ay_object *ay_clipboard;
 
-int ay_point_edit_coords_homogenous;
-int ay_point_edit_coords_number;
-double **ay_point_edit_coords;
-ay_object *ay_point_edit_object;
-int *ay_pe_numcpo;
-int *ay_pe_homcpo;
-ay_object **ay_pe_objects;
-int ay_pe_objectslen;
-
+/* registered object types */
 Tcl_HashTable ay_otypesht;
 
-/* function pointer tables */
+/* registered object type names */
 ay_table ay_typenamest;
 
+/* function pointer tables (object callbacks)*/
 ay_table ay_createcbt;
 
 ay_table ay_deletecbt;
@@ -79,6 +72,7 @@ ay_table ay_providecbt;
 ay_table ay_bbccbt;
 
 
+/* registered tag types */
 Tcl_HashTable ay_tagtypesht;
 
 Tcl_HashTable ay_temptagtypesht;
@@ -555,12 +549,6 @@ ay_init(Tcl_Interp *interp)
       return AY_EOMEM;
     }
   strcpy(ay_prefs.pprender, "rgl");
-
-  /* no selected points */
-  ay_point_edit_object = NULL;
-  ay_point_edit_coords = NULL;
-  ay_point_edit_coords_homogenous = AY_FALSE;
-  ay_point_edit_coords_number = 0;
 
  return ay_status;
 } /* ay_init */

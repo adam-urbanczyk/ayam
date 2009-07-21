@@ -617,7 +617,11 @@ int ay_matt_mayhavematerial(unsigned int type);
 
 /*! \brief
  */
-int ay_pact_getpoint(int mode, ay_object *o, double *obj);
+int ay_pact_cleareditpoint(ay_pointedit *pe);
+
+/*! \brief
+ */
+int ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe);
 
 /*! \brief
  */

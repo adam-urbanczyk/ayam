@@ -165,7 +165,7 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of ncircle object
  */
 int
-ay_ncircle_getpntcb(int mode, ay_object *o, double *p)
+ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

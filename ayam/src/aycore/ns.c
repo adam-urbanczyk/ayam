@@ -47,7 +47,6 @@ ay_ns_restrictall(ClientData clientData,
  char tmpstr[128];
 #endif /* !WIN32 */
  Tcl_Obj *to = NULL, *ton = NULL;
- Tcl_Interp *interp = NULL;
 
 #ifdef WIN32
   if((GetKeyState(VK_SHIFT) < 0) &&

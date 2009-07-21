@@ -375,14 +375,14 @@ ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of pamesh object
  */
 int
-ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
+ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_pamesh_object *pamesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
-  if(!o || !p)
+  if(!o || !p || !pe)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(o->refine);
@@ -390,101 +390,90 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
+  pe->homogenous = AY_TRUE;
 
-  ay_point_edit_coords = NULL;
-
-  /* select all points? */
-  if(mode == 0)
-    { /* yes */
-      if(!(ay_point_edit_coords = calloc(pamesh->width * pamesh->height,
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
+      if(!(pe->coords = calloc(pamesh->width * pamesh->height,
 					 sizeof(double*))))
 	return AY_EOMEM;
 
       for(i = 0; i < (pamesh->width*pamesh->height); i++)
 	{
-	  ay_point_edit_coords[i] = &(pamesh->controlv[a]);
+	  pe->coords[i] = &(pamesh->controlv[a]);
 	  a += 4;
 	}
 
-      ay_point_edit_coords_homogenous = AY_TRUE;
-      ay_point_edit_coords_number = pamesh->width * pamesh->height;
-    }
-  else
-    { /* no */
 
+      pe->num = pamesh->width * pamesh->height;
+
+      break;
+    case 1:
       /* selection based on a single point? */
-      if(mode == 1)
-	{ /* yes */
+      control = pamesh->controlv;
 
-	  control = pamesh->controlv;
+      for(i = 0; i < (pamesh->width * pamesh->height); i++)
+	{
+	  dist = AY_VLEN((p[0] - control[j]),
+			 (p[1] - control[j+1]),
+			 (p[2] - control[j+2]));
 
-	  for(i = 0; i < (pamesh->width * pamesh->height); i++)
+	  if(dist < min_dist)
 	    {
-	      dist = AY_VLEN((p[0] - control[j]),
-			     (p[1] - control[j+1]),
-			     (p[2] - control[j+2]));
-
-	      if(dist < min_dist)
-		{
-		  pecoord = &(control[j]);
-		  min_dist = dist;
-		}
-
-	      j += 4;
+	      pecoord = &(control[j]);
+	      min_dist = dist;
 	    }
 
-	  if(!pecoord)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  ay_point_edit_coords_homogenous = AY_TRUE;
-
-	  if(!found)
-	    {
-
-	      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-		return AY_EOMEM;
-
-	      ay_point_edit_coords[0] = pecoord;
-	      ay_point_edit_coords_number = 1;
-	    }
+	  j += 4;
 	}
-      else
-	{ /* no */
 
-	  /* selection based on planes */
-	  control = pamesh->controlv;
-	  j = 0;
-	  a = 0;
-	  for(i = 0; i < pamesh->width * pamesh->height; i++)
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      if(!found)
+	{
+
+	  if(!(pe->coords = calloc(1, sizeof(double*))))
+	    return AY_EOMEM;
+
+	  pe->coords[0] = pecoord;
+	  pe->num = 1;
+	}
+      break;
+    case 2:
+      /* selection based on planes */
+      control = pamesh->controlv;
+      j = 0;
+      a = 0;
+      for(i = 0; i < pamesh->width * pamesh->height; i++)
+	{
+	  c = &(control[j]);
+
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      c = &(control[j]);
 
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = &(control[j]);
+	      a++;
+	    } /* if */
 
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = &(control[j]);
-		  a++;
-		} /* if */
+	  j += 4;
+	} /* for */
 
-	      j += 4;
-	    } /* for */
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-	  if(!pecoords)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+      pe->coords = pecoords;
+      pe->num = a;
 
-	  ay_point_edit_coords_homogenous = AY_TRUE;
-	  ay_point_edit_coords = pecoords;
-	  ay_point_edit_coords_number = a;
-
-	} /* if */
+      break;
     } /* if */
 
  return AY_OK;

@@ -190,7 +190,7 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of extrude object
  */
 int
-ay_extrude_getpntcb(int mode, ay_object *o, double *p)
+ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

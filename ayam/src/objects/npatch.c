@@ -959,7 +959,7 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of npatch object
  */
 int
-ay_npatch_getpntcb(int mode, ay_object *o, double *p)
+ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbpatch_object *npatch = NULL;
  ay_mpoint *mp = NULL;
@@ -975,125 +975,112 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
+  pe->homogenous = AY_TRUE;
 
-  ay_point_edit_coords = NULL;
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
 
-  /* select all points? */
-  if(mode == 0)
-    { /* yes */
-      if(!(ay_point_edit_coords = calloc(npatch->width * npatch->height,
+      if(!(pe->coords = calloc(npatch->width * npatch->height,
 					 sizeof(double*))))
 	return AY_EOMEM;
 
       for(i = 0; i < (npatch->width*npatch->height); i++)
 	{
-	  ay_point_edit_coords[i] = &(npatch->controlv[a]);
+	  pe->coords[i] = &(npatch->controlv[a]);
 	  a += 4;
 	}
 
-      ay_point_edit_coords_homogenous = AY_TRUE;
-      ay_point_edit_coords_number = npatch->width * npatch->height;
-    }
-  else
-    { /* no */
+      pe->num = npatch->width * npatch->height;
+      break;
+    case 1:
+      /* selection based on a single point */
+      control = npatch->controlv;
+      for(i = 0; i < (npatch->width * npatch->height); i++)
+	{
+	  dist = AY_VLEN((p[0] - control[j]),
+			 (p[1] - control[j+1]),
+			 (p[2] - control[j+2]));
 
-      /* selection based on a single point? */
-      if(mode == 1)
-	{ /* yes */
-
-	  control = npatch->controlv;
-	  for(i = 0; i < (npatch->width * npatch->height); i++)
+	  if(dist < min_dist)
 	    {
-	      dist = AY_VLEN((p[0] - control[j]),
-			     (p[1] - control[j+1]),
-			     (p[2] - control[j+2]));
-
-	      if(dist < min_dist)
-		{
-		  pecoord = &(control[j]);
-		  min_dist = dist;
-		}
-
-	      j += 4;
+	      pecoord = &(control[j]);
+	      min_dist = dist;
 	    }
 
-	  if(!pecoord)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+	  j += 4;
+	}
 
-	  ay_point_edit_coords_homogenous = AY_TRUE;
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-	  if(npatch->mpoints)
+
+      if(npatch->mpoints)
+	{
+	  mp = npatch->mpoints;
+	  while(mp && !found)
 	    {
-	      mp = npatch->mpoints;
-	      while(mp && !found)
+	      found = AY_FALSE;
+	      for(i = 0; i < mp->multiplicity; i++)
 		{
-		  found = AY_FALSE;
-		  for(i = 0; i < mp->multiplicity; i++)
+		  if(mp->points[i] == pecoord)
 		    {
-		      if(mp->points[i] == pecoord)
-			{
-			  found = AY_TRUE;
-			  ay_point_edit_coords_number = mp->multiplicity;
-			  if(!(ay_point_edit_coords = calloc(mp->multiplicity,
-							     sizeof(double*))))
-			    return AY_EOMEM;
-			  memcpy(ay_point_edit_coords, mp->points,
-				 mp->multiplicity * sizeof(double *));
-			} /* if */
-		    } /* for */
+		      found = AY_TRUE;
+		      pe->num = mp->multiplicity;
+		      if(!(pe->coords = calloc(mp->multiplicity,
+					       sizeof(double*))))
+			return AY_EOMEM;
+		      memcpy(pe->coords, mp->points,
+			     mp->multiplicity * sizeof(double *));
+		    } /* if */
+		} /* for */
 
-		  mp = mp->next;
-		} /* while */
+	      mp = mp->next;
+	    } /* while */
+	} /* if */
+
+      if(!found)
+	{
+
+	  if(!(pe->coords = calloc(1, sizeof(double*))))
+	    return AY_EOMEM;
+
+	  pe->coords[0] = pecoord;
+	  pe->num = 1;
+	}
+      break;
+    case 2:
+      /* selection based on planes */
+      control = npatch->controlv;
+      j = 0;
+      a = 0;
+      for(i = 0; i < npatch->width * npatch->height; i++)
+	{
+	  c = &(control[j]);
+
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
+
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = &(control[j]);
+	      a++;
 	    } /* if */
 
-	  if(!found)
-	    {
+	  j += 4;
+	} /* for */
 
-	      if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-		return AY_EOMEM;
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-	      ay_point_edit_coords[0] = pecoord;
-	      ay_point_edit_coords_number = 1;
-	    }
-
-	}
-      else
-	{ /* no */
-
-	  /* selection based on planes */
-	  control = npatch->controlv;
-	  j = 0;
-	  a = 0;
-	  for(i = 0; i < npatch->width * npatch->height; i++)
-	    {
-	      c = &(control[j]);
-
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
-
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = &(control[j]);
-		  a++;
-		} /* if */
-
-	      j += 4;
-	    } /* for */
-
-	  if(!pecoords)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  ay_point_edit_coords_homogenous = AY_TRUE;
-	  ay_point_edit_coords = pecoords;
-	  ay_point_edit_coords_number = a;
-
-	} /* if */
+      pe->coords = pecoords;
+      pe->num = a;
+      break;
     } /* if */
 
  return AY_OK;

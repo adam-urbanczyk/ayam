@@ -189,7 +189,7 @@ ay_birail2_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of birail2 object
  */
 int
-ay_birail2_getpntcb(int mode, ay_object *o, double *p)
+ay_birail2_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

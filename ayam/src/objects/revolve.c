@@ -205,7 +205,7 @@ ay_revolve_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of revolve object
  */
 int
-ay_revolve_getpntcb(int mode, ay_object *o, double *p)
+ay_revolve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

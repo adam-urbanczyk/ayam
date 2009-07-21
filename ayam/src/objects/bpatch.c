@@ -267,139 +267,128 @@ ay_bpatch_shadecb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of bpatch object
  */
 int
-ay_bpatch_getpntcb(int mode, ay_object *o, double *p)
+ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_bpatch_object *bpatch = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *c = NULL;
  int i, j, a;
 
-  if(!o || !p)
+  if(!o || !p || !pe)
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)(o->refine);
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
-
-  ay_point_edit_coords = NULL;
-
-  /* select all points? */
-  if(mode == 0)
-    { /* yes */
-      if(!(ay_point_edit_coords = calloc(4, sizeof(double*))))
+      if(!(pe->coords = calloc(4, sizeof(double*))))
 	return AY_EOMEM;
 
-      ay_point_edit_coords[0] = bpatch->p1;
-      ay_point_edit_coords[1] = bpatch->p2;
-      ay_point_edit_coords[2] = bpatch->p3;
-      ay_point_edit_coords[3] = bpatch->p4;
+      pe->coords[0] = bpatch->p1;
+      pe->coords[1] = bpatch->p2;
+      pe->coords[2] = bpatch->p3;
+      pe->coords[3] = bpatch->p4;
 
-      ay_point_edit_coords_homogenous = AY_FALSE;
-      ay_point_edit_coords_number = 4;
-    }
-  else
-    { /* no */
+      pe->homogenous = AY_FALSE;
+      pe->num = 4;
+      break;
+    case 1:
+      /* selection based on a single point */
 
-      /* selection based on a single point? */
-      if(mode == 1)
-	{ /* yes */
+      dist = AY_VLEN((p[0] - bpatch->p1[0]),
+		     (p[1] - bpatch->p1[1]),
+		     (p[2] - bpatch->p1[2]));
 
-	  dist = AY_VLEN((p[0] - bpatch->p1[0]),
-			 (p[1] - bpatch->p1[1]),
-			 (p[2] - bpatch->p1[2]));
-
-	  if(dist < min_dist)
-	    {
-	      pecoord = bpatch->p1;
-	      min_dist = dist;
-	    }
-
-	  dist = AY_VLEN((p[0] - bpatch->p2[0]),
-			 (p[1] - bpatch->p2[1]),
-			 (p[2] - bpatch->p2[2]));
-
-	  if(dist < min_dist)
-	    {
-	      pecoord = bpatch->p2;
-	      min_dist = dist;
-	    }
-
-	  dist = AY_VLEN((p[0] - bpatch->p3[0]),
-			 (p[1] - bpatch->p3[1]),
-			 (p[2] - bpatch->p3[2]));
-
-	  if(dist < min_dist)
-	    {
-	      pecoord = bpatch->p3;
-	      min_dist = dist;
-	    }
-
-	  dist = AY_VLEN((p[0] - bpatch->p4[0]),
-			 (p[1] - bpatch->p4[1]),
-			 (p[2] - bpatch->p4[2]));
-
-	  if(dist < min_dist)
-	    {
-	      pecoord = bpatch->p4;
-	      min_dist = dist;
-	    }
-
-	  if(!pecoord)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  if(!(ay_point_edit_coords = calloc(1, sizeof(double*))))
-	    return AY_EOMEM;
-
-	  ay_point_edit_coords[0] = pecoord;
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords_number = 1;
+      if(dist < min_dist)
+	{
+	  pecoord = bpatch->p1;
+	  min_dist = dist;
 	}
-      else
-	{ /* no */
 
-	  /* selection based on planes */
-	  j = 0;
-	  a = 0;
-	  for(i = 0; i < 4; i++)
+      dist = AY_VLEN((p[0] - bpatch->p2[0]),
+		     (p[1] - bpatch->p2[1]),
+		     (p[2] - bpatch->p2[2]));
+
+      if(dist < min_dist)
+	{
+	  pecoord = bpatch->p2;
+	  min_dist = dist;
+	}
+
+      dist = AY_VLEN((p[0] - bpatch->p3[0]),
+		     (p[1] - bpatch->p3[1]),
+		     (p[2] - bpatch->p3[2]));
+
+      if(dist < min_dist)
+	{
+	  pecoord = bpatch->p3;
+	  min_dist = dist;
+	}
+
+      dist = AY_VLEN((p[0] - bpatch->p4[0]),
+		     (p[1] - bpatch->p4[1]),
+		     (p[2] - bpatch->p4[2]));
+
+      if(dist < min_dist)
+	{
+	  pecoord = bpatch->p4;
+	  min_dist = dist;
+	}
+
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      if(!(pe->coords = calloc(1, sizeof(double*))))
+	return AY_EOMEM;
+
+      pe->coords[0] = pecoord;
+      pe->homogenous = AY_FALSE;
+      pe->num = 1;
+      break;
+    case 2:
+      /* selection based on planes */
+      j = 0;
+      a = 0;
+      for(i = 0; i < 4; i++)
+	{
+	  if(i == 0)
+	    c = bpatch->p1;
+	  if(i == 1)
+	    c = bpatch->p2;
+	  if(i == 2)
+	    c = bpatch->p3;
+	  if(i == 3)
+	    c = bpatch->p4;
+
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      if(i == 0)
-		c = bpatch->p1;
-	      if(i == 1)
-		c = bpatch->p2;
-	      if(i == 2)
-		c = bpatch->p3;
-	      if(i == 3)
-		c = bpatch->p4;
 
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = &(c[0]);
+	      a++;
+	    } /* if */
 
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = &(c[0]);
-		  a++;
-		} /* if */
+	  j += 4;
+	} /* for */
 
-	      j += 4;
-	    } /* for */
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-	  if(!pecoords)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords = pecoords;
-	  ay_point_edit_coords_number = a;
-
-	} /* if */
-    } /* if */
+      pe->homogenous = AY_FALSE;
+      pe->coords = pecoords;
+      pe->num = a;
+      break;
+    } /* switch */
 
  return AY_OK;
 } /* ay_bpatch_getpntcb */
