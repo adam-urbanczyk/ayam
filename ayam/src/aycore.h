@@ -617,7 +617,7 @@ int ay_matt_mayhavematerial(unsigned int type);
 
 /*! \brief
  */
-int ay_pact_cleareditpoint(ay_pointedit *pe);
+int ay_pact_clearpointedit(ay_pointedit *pe);
 
 /*! \brief
  */
