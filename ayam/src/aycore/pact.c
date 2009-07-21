@@ -250,10 +250,18 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		  newp->next = o->selp;
 		  o->selp = newp;
 		  newp->point = pe.coords[i];
+
+		  if(pe.indizes)
+		    {
+		      newp->index = pe.indizes[i];
+		    }
+
 		  newp->homogenous = pe.homogenous;
 		} /* if */
 	    } /* for */
 	} /* if */
+
+      ay_pact_clearpointedit(&pe);
 
       sel = sel->next;
     } /* while */
