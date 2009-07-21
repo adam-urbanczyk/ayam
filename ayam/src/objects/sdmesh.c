@@ -262,7 +262,7 @@ ay_sdmesh_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of sdmesh object
  */
 int
-ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
+ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_sdmesh_object *sdmesh = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
@@ -277,117 +277,103 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(ay_point_edit_coords)
-    free(ay_point_edit_coords);
+  pe->homogenous = AY_FALSE;
 
-  ay_point_edit_coords = NULL;
-
-  /* select all points? */
-  if(mode == 0)
-    { /* yes */
-
-      if(!(ay_point_edit_coords = calloc(sdmesh->ncontrols, sizeof(double*))))
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
+      if(!(pe->coords = calloc(sdmesh->ncontrols, sizeof(double*))))
 	return AY_EOMEM;
 
       for(i = 0; i < sdmesh->ncontrols; i++)
 	{
-	  ay_point_edit_coords[i] = &(sdmesh->controlv[a]);
+	  pe->coords[i] = &(sdmesh->controlv[a]);
 	  a += 3;
 	} /* for */
 
-      ay_point_edit_coords_homogenous = AY_FALSE;
-      ay_point_edit_coords_number = sdmesh->ncontrols;
-    }
-  else
-    { /* no */
+      pe->num = sdmesh->ncontrols;
+      break;
+    case 1:
+      /* selection based on a single point */
+      control = sdmesh->controlv;
+      for(i = 0; i < sdmesh->ncontrols; i++)
+	{
+	  dist = AY_VLEN((p[0] - control[j]),
+			 (p[1] - control[j+1]),
+			 (p[2] - control[j+2]));
 
-      /* selection based on a single point? */
-      if(mode == 1)
-	{ /* yes */
-
-	  control = sdmesh->controlv;
-	  for(i = 0; i < sdmesh->ncontrols; i++)
+	  if(dist < min_dist)
 	    {
-	      dist = AY_VLEN((p[0] - control[j]),
-			     (p[1] - control[j+1]),
-			     (p[2] - control[j+2]));
-
-	      if(dist < min_dist)
-		{
-		  pecoord = &(control[j]);
-		  min_dist = dist;
-		  numfound = 1;
-		}
-	      else
-		{
-		  if(dist == min_dist)
-		    {
-		      numfound++;
-		    }
-		} /* if */
-
-	      j += 3;
-	    } /* for */
-
-	  if(!pecoord)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords_number = numfound;
-	  if(!(ay_point_edit_coords = calloc(numfound, sizeof(double*))))
-	    return AY_EOMEM;
-
-	  j = 0;
-	  for(i = 0; i < sdmesh->ncontrols; i++)
+	      pecoord = &(control[j]);
+	      min_dist = dist;
+	      numfound = 1;
+	    }
+	  else
 	    {
-	      dist = AY_VLEN((p[0] - control[j]),
-			     (p[1] - control[j+1]),
-			     (p[2] - control[j+2]));
-
 	      if(dist == min_dist)
 		{
-		  ay_point_edit_coords[k] = &(control[j]);
-		  k++;
-		} /* if */
-	      j += 3;
-	    } /* for */
+		  numfound++;
+		}
+	    } /* if */
 
-	}
-      else
-	{ /* no */
+	  j += 3;
+	} /* for */
 
-	  /* selection based on planes */
-	  control = sdmesh->controlv;
-	  j = 0;
-	  a = 0;
-	  for(i = 0; i < sdmesh->ncontrols; i++)
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      pe->num = numfound;
+      if(!(pe->coords = calloc(numfound, sizeof(double*))))
+	return AY_EOMEM;
+
+      j = 0;
+      for(i = 0; i < sdmesh->ncontrols; i++)
+	{
+	  dist = AY_VLEN((p[0] - control[j]),
+			 (p[1] - control[j+1]),
+			 (p[2] - control[j+2]));
+
+	  if(dist == min_dist)
 	    {
-	      c = &(control[j]);
+	      pe->coords[k] = &(control[j]);
+	      k++;
+	    } /* if */
+	  j += 3;
+	} /* for */
+      break;
+    case 2:
+      /* selection based on planes */
+      control = sdmesh->controlv;
+      j = 0;
+      a = 0;
+      for(i = 0; i < sdmesh->ncontrols; i++)
+	{
+	  c = &(control[j]);
 
-	      /* test point c against the four planes in p */
-	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-		{
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
 
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
-		  pecoords[a] = &(control[j]);
-		  a++;
-		} /* if */
-	      j += 3;
-	    } /* for */
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pecoords[a] = &(control[j]);
+	      a++;
+	    } /* if */
+	  j += 3;
+	} /* for */
 
-	  if(!pecoords)
-	    return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-	  ay_point_edit_coords_homogenous = AY_FALSE;
-	  ay_point_edit_coords = pecoords;
-	  ay_point_edit_coords_number = a;
+      pe->coords = pecoords;
+      pe->num = a;
 
-	} /* if */
-    } /* if */
+      break;
+    } /* switch */
 
  return AY_OK;
 } /* ay_sdmesh_getpntcb */

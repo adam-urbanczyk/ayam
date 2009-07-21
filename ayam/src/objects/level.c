@@ -128,7 +128,7 @@ ay_level_shadecb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of level object
  */
 int
-ay_level_getpntcb(int mode, ay_object *o, double *p)
+ay_level_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
   if(!o)
     return AY_ENULL;

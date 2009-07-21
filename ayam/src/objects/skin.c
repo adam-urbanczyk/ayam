@@ -188,7 +188,7 @@ ay_skin_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of skin object
  */
 int
-ay_skin_getpntcb(int mode, ay_object *o, double *p)
+ay_skin_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

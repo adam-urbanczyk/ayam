@@ -189,9 +189,9 @@ ay_root_shadecb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of root object
  */
 int
-ay_root_getpntcb(int mode, ay_object *o, double *p)
+ay_root_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
-  if(!o)
+  if(!o || !p || !pe)
     return AY_ENULL;
 
  return AY_OK;

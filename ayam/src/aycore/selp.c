@@ -51,14 +51,15 @@ ay_selp_selall(ay_object *o)
  double p[3] = {DBL_MIN, DBL_MIN, DBL_MIN};
  int i = 0;
  ay_point *newp = NULL;
+ ay_pointedit pe = {0};
 
   if(!o)
     return AY_ENULL;
 
   ay_selp_clear(o);
-  ay_pact_getpoint(0, o, p);
+  ay_pact_getpoint(0, o, p, &pe);
 
-  for(i = 0; i < ay_point_edit_coords_number; i++)
+  for(i = 0; i < pe.num; i++)
     {
       newp = NULL;
       if(!(newp = calloc(1, sizeof(ay_point))))
@@ -69,8 +70,12 @@ ay_selp_selall(ay_object *o)
 
       newp->next = o->selp;
       o->selp = newp;
-      newp->point = ay_point_edit_coords[i];
-      newp->homogenous = ay_point_edit_coords_homogenous;
+      newp->point = pe.coords[i];
+      if(pe.indizes)
+	{
+	  newp->index = pe.indizes[i];
+	}
+      newp->homogenous = pe.homogenous;
     } /* for */
 
  return AY_OK;

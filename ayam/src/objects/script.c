@@ -249,7 +249,7 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of script object
  */
 int
-ay_script_getpntcb(int mode, ay_object *o, double *p)
+ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;

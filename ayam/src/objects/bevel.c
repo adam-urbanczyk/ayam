@@ -166,7 +166,7 @@ ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
  *  get point (editing and selection) callback function of bevel object
  */
 int
-ay_bevel_getpntcb(int mode, ay_object *o, double *p)
+ay_bevel_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
 
  return AY_OK;
