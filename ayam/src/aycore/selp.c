@@ -78,6 +78,8 @@ ay_selp_selall(ay_object *o)
       newp->homogenous = pe.homogenous;
     } /* for */
 
+  ay_pact_clearpointedit(&pe);
+
  return AY_OK;
 } /* ay_selp_selall */
 
