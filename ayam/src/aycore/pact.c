@@ -51,6 +51,7 @@ int ay_pact_flashpoint(int ignore_old);
 /* functions: */
 
 /* ay_pact_clearpointedit:
+ *   clear a ay_pointedit structure gracefully
  */
 int
 ay_pact_clearpointedit(ay_pointedit *pe)
@@ -291,10 +292,9 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_pact_flashpoint(int ignore_old)
 {
-#if 0
- int cont, penumber = ay_point_edit_coords_number;
+ int old_is_new = AY_FALSE, penumber = 0;
  static int have_old_flashed_point = AY_FALSE;
- static double old_obj[3] = {0};
+ static double old_pnt[3] = {0};
  ay_object *o = ay_point_edit_object;
  double m[16];
 
@@ -302,17 +302,18 @@ ay_pact_flashpoint(int ignore_old)
     return AY_OK;
 
 #ifdef GL_VERSION_1_1
-  cont = AY_FALSE;
-  if(have_old_flashed_point && ay_point_edit_coords)
+  penumber = ay_pact_pe.num;
+
+  if(have_old_flashed_point && ay_pact_pe.coords)
     {
-      if((ay_point_edit_coords[penumber-1][0] == old_obj[0]) &&
-	 (ay_point_edit_coords[penumber-1][1] == old_obj[1]) &&
-	 (ay_point_edit_coords[penumber-1][2] == old_obj[2]))
+      if((ay_pact_pe.coords[penumber-1][0] == old_pnt[0]) &&
+	 (ay_pact_pe.coords[penumber-1][1] == old_pnt[1]) &&
+	 (ay_pact_pe.coords[penumber-1][2] == old_pnt[2]))
 	{
-	  cont = AY_TRUE;
+	  old_is_new = AY_TRUE;
 	}
     }
-  if(!cont || ignore_old)
+  if(!old_is_new || ignore_old)
     {
       glDrawBuffer(GL_FRONT);
       glEnable(GL_COLOR_LOGIC_OP);
@@ -332,7 +333,7 @@ ay_pact_flashpoint(int ignore_old)
        /* clear old point? */
        if(have_old_flashed_point && !ignore_old)
 	 {
-	   glVertex3d(old_obj[0], old_obj[1], old_obj[2]);
+	   glVertex3d(old_pnt[0], old_pnt[1], old_pnt[2]);
 	   have_old_flashed_point = AY_FALSE;
 	 }
        /*
@@ -341,15 +342,15 @@ ay_pact_flashpoint(int ignore_old)
 	 glBegin(GL_POINTS);
        */
        /* draw new point? */
-       if(ay_point_edit_coords)
+       if(ay_pact_pe.coords)
 	 {
-	   glVertex3d(ay_point_edit_coords[penumber-1][0],
-		      ay_point_edit_coords[penumber-1][1],
-		      ay_point_edit_coords[penumber-1][2]);
+	   glVertex3d(ay_pact_pe.coords[penumber-1][0],
+		      ay_pact_pe.coords[penumber-1][1],
+		      ay_pact_pe.coords[penumber-1][2]);
 
-	   old_obj[0] = ay_point_edit_coords[penumber-1][0];
-	   old_obj[1] = ay_point_edit_coords[penumber-1][1];
-	   old_obj[2] = ay_point_edit_coords[penumber-1][2];
+	   old_pnt[0] = ay_pact_pe.coords[penumber-1][0];
+	   old_pnt[1] = ay_pact_pe.coords[penumber-1][1];
+	   old_pnt[2] = ay_pact_pe.coords[penumber-1][2];
 	   have_old_flashed_point = AY_TRUE;
 	 }
        else
@@ -364,7 +365,7 @@ ay_pact_flashpoint(int ignore_old)
       glDrawBuffer(GL_BACK);
     } /* if */
 #endif
-#endif
+
  return AY_OK;
 } /* ay_pact_flashpoint */
 
@@ -403,6 +404,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   ay_pe_objects = NULL;
 
   ay_pe_objectslen = 0;
+
+  ay_pact_clearpointedit(&ay_pact_pe);
 
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
@@ -452,7 +455,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       if(ay_pact_pe.coords)
 	{
-	  if(!(tmp = realloc(pecoords, (ay_pact_pe.num + penumber)*sizeof(double*))))
+	  if(!(tmp = realloc(pecoords,
+			     (ay_pact_pe.num + penumber)*sizeof(double*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      free(pecoords);
@@ -510,6 +514,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  ay_pe_objectslen++;
 
 	} /* if */
+
+      ay_pact_clearpointedit(&ay_pact_pe);
 
       sel = sel->next;
     } /* while */
@@ -724,6 +730,9 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
 	  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 	} /* if */
+
+      ay_pact_clearpointedit(&pe);
+
       return TCL_OK;
     } /* if */
 
@@ -2262,6 +2271,8 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	  ay_error(AY_ERROR, fname, "No rational points found!");
 	} /* if */
 
+      ay_pact_clearpointedit(&pe);
+
       sel = sel->next;
    } /* while */
 
@@ -2424,6 +2435,9 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 		    } /* if */
 		} /* for */
 	    } /* if */
+
+	  ay_pact_clearpointedit(&pe);
+
 	}
       else
 	{
