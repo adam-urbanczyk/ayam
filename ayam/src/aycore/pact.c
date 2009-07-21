@@ -116,7 +116,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  double obj[24] = {0}, pl[16] = {0};
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  ay_point *newp = NULL, *point = NULL, *last = NULL;
- ay_pointedit pe;
+ ay_pointedit pe = {0};
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  GLfloat pixel[3] = {0.0f,0.0f,0.0f};
