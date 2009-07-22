@@ -1081,6 +1081,7 @@ typedef struct ay_pointedit_s
   double **coords;
   unsigned int *indizes;
   int homogenous;
+  int changed;
 } ay_pointedit;
 
 typedef struct ay_tag_s
@@ -1147,7 +1148,11 @@ typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 extern Tcl_Interp *ay_interp;
 extern Tcl_Interp *ay_safeinterp;
 extern ay_preferences ay_prefs;
+
+/* pointer to the root object */
 extern ay_object *ay_root;
+
+/* pointer to slot where the next object will be linked to */
 extern ay_object **ay_next;
 
 extern ay_view_object *ay_currentview;
@@ -1156,12 +1161,16 @@ extern ay_list_object *ay_selection;
 
 extern ay_list_object *ay_currentlevel;
 
+/* object clipboard */
 extern ay_object *ay_clipboard;
 
+/* registered object types */
 extern Tcl_HashTable ay_otypesht;
 
+/* registered object type names */
 extern ay_table ay_typenamest;
 
+/* function pointer tables (object callbacks)*/
 extern ay_table ay_createcbt;
 extern ay_table ay_deletecbt;
 extern ay_table ay_copycbt;
@@ -1179,8 +1188,10 @@ extern ay_table ay_bbccbt;
 
 extern ay_table ay_treedropcbt;
 
+/* registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
 
+/* temporary tag types */
 extern Tcl_HashTable ay_temptagtypesht;
 
 extern ay_table ay_tagnamest;
@@ -1202,6 +1213,7 @@ extern int ay_read_viewnum;
 extern char ay_version_ma[];
 extern char ay_version_mi[];
 
+/* internal tags */
 extern char *ay_oi_tagtype;
 extern char *ay_oi_tagname;
 extern char *ay_riattr_tagtype;

@@ -69,6 +69,7 @@ ay_pact_clearpointedit(ay_pointedit *pe)
 
   pe->num = 0;
   pe->homogenous = AY_FALSE;
+  pe->changed = AY_FALSE;
 
  return AY_OK;
 } /* ay_pact_clearpointedit */
@@ -111,7 +112,8 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  /*  ay_view_object *view = Togl_GetClientData(togl);*/
  double height = Togl_Height(togl);
- int i, have_it = AY_FALSE, multiple = AY_FALSE;
+ int have_it = AY_FALSE, multiple = AY_FALSE;
+ unsigned int i = 0;
  double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
  double obj[24] = {0}, pl[16] = {0};
  /*  double pickepsilon = ay_prefs.pick_epsilon;*/
@@ -214,7 +216,21 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	      have_it = AY_FALSE;
 	      while(point)
 		{
-		  if(point->point == pe.coords[i])
+		  if(pe.indizes)
+		    {
+		      if(point->index == pe.indizes[i])
+			{
+			  have_it = AY_TRUE;
+			}
+		    }
+		  else
+		    {
+		      if(point->point == pe.coords[i])
+			{
+			  have_it = AY_TRUE;
+			}
+		    }
+		  if(have_it)
 		    {
 		      /* we have that point already, so we delete
 			 it from the selection if we are not in
@@ -228,13 +244,13 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
 			  free(point);
 			} /* if */
-		      have_it = AY_TRUE;
-		      point = NULL; /* break loop */
+
+		      break;
 		    } /* if */
 
 		  last = point;
-		  if(point)
-		    point = point->next;
+
+		  point = point->next;
 		} /* while */
 
 	      if(!have_it)
@@ -260,6 +276,9 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		} /* if */
 	    } /* for */
 	} /* if */
+
+      if(pe.changed)
+	ay_pact_getpoint(3, o, pl, &pe);
 
       ay_pact_clearpointedit(&pe);
 
@@ -523,6 +542,9 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
 	} /* if */
 
+      if(sel->object->selp && ay_pact_pe.changed)
+	ay_pact_getpoint(3, sel->object, obj, &ay_pact_pe);
+
       ay_pact_clearpointedit(&ay_pact_pe);
 
       sel = sel->next;
@@ -537,7 +559,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   ay_pact_pe.coords = pecoords;
 
-  if(ay_selection &&(argc > 4))
+  if(ay_selection && (argc > 4))
     {
       if(argc > 5)
 	ay_status = ay_pact_flashpoint(AY_TRUE);
@@ -740,6 +762,9 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
+
+      if(o->selp)
+	ay_pact_getpoint(3, o, obj, &pe);
 
       return TCL_OK;
     } /* if */
@@ -2232,7 +2257,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "reset_weights";
  double p[3], *coords;
- int i;
+ unsigned int i;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
@@ -2280,6 +2305,9 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
+
+      if(o->selp)
+	ay_pact_getpoint(3, o, p, &pe);
 
       sel = sel->next;
    } /* while */
@@ -2375,7 +2403,8 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp (togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double p[3], *coords;
- int mode = 0, i;
+ int mode = 0;
+ unsigned int i = 0;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *pnt = NULL;
@@ -2445,6 +2474,9 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 
 	  ay_pact_clearpointedit(&pe);
+
+	  if(o->selp)
+	    ay_pact_getpoint(3, o, p, &pe);
 
 	}
       else
