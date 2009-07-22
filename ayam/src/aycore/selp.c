@@ -49,7 +49,7 @@ ay_selp_selall(ay_object *o)
  /*int ay_status = AY_OK;*/
  char fname[] = "selp_selall";
  double p[3] = {DBL_MIN, DBL_MIN, DBL_MIN};
- int i = 0;
+ unsigned int i = 0;
  ay_point *newp = NULL;
  ay_pointedit pe = {0};
 

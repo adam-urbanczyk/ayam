@@ -15,11 +15,16 @@
 /* ayam.c - the main Ayam module - initialization and global symbols */
 
 /* global symbols */
-ay_preferences ay_prefs = {0};
 
 Tcl_Interp *ay_interp;
 Tcl_Interp *ay_safeinterp;
+
+ay_preferences ay_prefs = {0};
+
+/* pointer to the root object */
 ay_object *ay_root;
+
+/* pointer to slot where the next object will be linked to */
 ay_object **ay_next;
 
 ay_view_object *ay_currentview;
@@ -28,6 +33,7 @@ ay_list_object *ay_selection;
 
 ay_list_object *ay_currentlevel;
 
+/* object clipboard */
 ay_object *ay_clipboard;
 
 /* registered object types */
@@ -75,6 +81,7 @@ ay_table ay_bbccbt;
 /* registered tag types */
 Tcl_HashTable ay_tagtypesht;
 
+/* temporary tag types */
 Tcl_HashTable ay_temptagtypesht;
 
 ay_table ay_tagnamest;
@@ -93,7 +100,7 @@ int ay_read_viewnum;
 char ay_version_ma[] = AY_VERSIONSTR;
 char ay_version_mi[] = AY_VERSIONSTRMI;
 
-
+/* internal tags */
 char *ay_oi_tagtype;
 
 char *ay_oi_tagname = "OI";
