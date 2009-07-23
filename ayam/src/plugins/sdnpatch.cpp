@@ -543,7 +543,7 @@ sdnpatch_lineloopcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 {
  static int calls = 0;
 
-  glVertex4d(x, y, z, w);
+  glVertex3d(x, y, z);
 
   if(calls == 3)
     {
@@ -597,7 +597,7 @@ sdnpatch_quadcb(GLdouble x, GLdouble y, GLdouble z, GLdouble w)
 {
  static int calls = 0;
 
-  glVertex4d(x, y, z, w);
+  glVertex3d(x, y, z);
 
   if(calls == 3)
     {
@@ -657,7 +657,8 @@ int
 sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
- MeshFlattener *meshFlattener = NULL;
+ std::vector<Vertex*> *vertices = NULL;
+ unsigned int i = 0, a = 0;
 
   if(!o)
     return AY_ENULL;
@@ -667,15 +668,15 @@ sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
+  vertices = sdnpatch->controlVertices;
 
   glBegin(GL_POINTS);
-   meshFlattener->receiveVertices(&glVertex4d);
-   meshFlattener->flattenFaces();
+   for(i = 0; i < vertices->size(); i++)
+     {
+       glVertex3dv(&(sdnpatch->controlCoords[a]));
+       a += 4;
+     }
   glEnd();
-
-  MeshFlattener::dispose(meshFlattener);
 
  return AY_OK;
 } /* sdnpatch_drawhcb */
