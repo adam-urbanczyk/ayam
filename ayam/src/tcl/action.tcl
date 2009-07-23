@@ -872,11 +872,11 @@ proc actionEditP { w } {
     if { $ayprefs(FlashPoints) == 1 } {
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -flash ;\
+          %W startpepac %x %y -flash "
 	} else {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -flash ;"
 	}
     }
 
@@ -923,11 +923,11 @@ proc actionEditWP { w } {
     if { $ayprefs(FlashPoints) == 1 } {
 	if { $ayprefs(FixFlashPoints) == 1 } {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;\
-          %W startpepac %x %y -flash -ignoreold"
+          %W startpepac %x %y -flash ;\
+          %W startpepac %x %y -flash "
 	} else {
 	    bind $w <ButtonRelease-1> "+\
-          %W startpepac %x %y -flash -ignoreold;"
+          %W startpepac %x %y -flash "
 	}
     }
 
