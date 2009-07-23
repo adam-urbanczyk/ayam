@@ -56,11 +56,13 @@ int ay_pact_deleteac(ay_acurve_object *acurve,
 
 int ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
 
+int ay_pact_notify(ay_object *o, int j, int k);
+
 /* functions: */
 
 /* ay_pact_clearpointedit:
  *   clear/reset a ay_pointedit structure
- *   (does not attempt to free pe!)
+ *   (does not attempt to free <pe> itself!)
  */
 int
 ay_pact_clearpointedit(ay_pointedit *pe)
@@ -97,7 +99,7 @@ ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe)
  void **arr = NULL;
  ay_getpntcb *cb = NULL;
 
-  if(!o)
+  if(!o || !obj || !pe)
     return AY_ENULL;
 
   arr = ay_getpntcbt.arr;
@@ -398,6 +400,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 
 /* ay_pact_startpetcb:
  *  prepares everything for the single point editing modes
+ *
  */
 int
 ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
@@ -411,6 +414,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
  int penumber = 0, *tmpi;
+ unsigned int *peindizes = NULL, *tmpu;
  double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
  ay_object **tmpo = NULL, *o = NULL;
  static ay_list_object *lastlevel = NULL;
@@ -483,6 +487,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  o = sel->object;
 
+	  /* save coords */
 	  if(!(tmp = realloc(pecoords,
 			     (pact_pe.num + penumber)*sizeof(double*))))
 	    {
@@ -495,8 +500,27 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	      pecoords = tmp;
 	      memcpy(&(pecoords[penumber]), pact_pe.coords,
 		     pact_pe.num*sizeof(double*));
-	      penumber += pact_pe.num;
 	    }
+
+	  /* save indizes */
+	  if(!(tmpu = realloc(peindizes,
+			     (pact_pe.num + penumber)*sizeof(unsigned int))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      free(pecoords); free(peindizes);
+	      return TCL_OK;
+	    }
+	  else
+	    {
+	      peindizes = tmpu;
+	      if(pact_pe.indizes)
+		{
+		  memcpy(&(peindizes[penumber]), pact_pe.indizes,
+			 pact_pe.num*sizeof(unsigned int));
+		}
+	    }
+
+	  penumber += pact_pe.num;
 
 	  /* remember number of picked points of current object */
 	  if(!(tmpi = realloc(pact_numcpo, (pact_objectslen+1)*
@@ -548,12 +572,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   ay_prefs.pick_epsilon = oldpickepsilon;
 
+  /* */
   pact_pe.num = penumber;
-
-  if(pact_pe.coords)
-    free(pact_pe.coords);
-
   pact_pe.coords = pecoords;
+  pact_pe.indizes = peindizes;
 
   if(ay_selection && (argc > 4))
     {
@@ -2051,7 +2073,8 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			     really changed by the snap to grid operation */
 			  if(o->modified)
 			    {
-			      ay_notify_force(o);
+			      ay_pact_notify(o, j, k-pact_numcpo[j]);
+			      /*ay_notify_force(o);*/
 			      ay_notify_parent();
 			      ay_toglcb_display(togl);
 			    } /* if */
@@ -2103,8 +2126,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	     (fabs(movY) > AY_EPSILON)||
 	     (fabs(movZ) > AY_EPSILON))
 	    {
-	      o->modified = AY_TRUE;
-	      ay_notify_force(o);
+	      ay_pact_notify(o, j, k-pact_numcpo[j]);
 	      redraw = AY_TRUE;
 	    } /* if */
 	} /* if */
@@ -2220,7 +2242,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 		  np->is_rat = AY_TRUE;
 		}
 	    }
-	  ay_notify_force(ay_selection->object);
+	  ay_pact_notify(o, j, k-pact_numcpo[j]);
 	  notifyparent = AY_TRUE;
 	} /* if */
     } /* for */
@@ -2510,3 +2532,36 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_pact_snaptogridcb */
+
+
+/* ay_pact_notify:
+ *
+ */
+int
+ay_pact_notify(ay_object *o, int j, int k)
+{
+ ay_point *oldselp = NULL, tmpselp = {0};
+
+ if(!o)
+   return AY_ENULL;
+
+  if(pact_numcpo[j] == 1)
+    {
+      tmpselp.point = pact_pe.coords[k];
+      tmpselp.index = pact_pe.indizes[k];
+    }
+  else
+    {
+      tmpselp.point = NULL;
+    }
+
+  oldselp = o->selp;
+  o->selp = &tmpselp;
+  o->modified = AY_TRUE;
+
+  ay_notify_force(o);
+
+  o->selp = oldselp;
+
+ return AY_OK;
+} /* ay_pact_notify */
