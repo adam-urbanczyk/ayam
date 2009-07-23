@@ -1081,7 +1081,6 @@ typedef struct ay_pointedit_s
   double **coords;
   unsigned int *indizes;
   int homogenous;
-  int changed;
 } ay_pointedit;
 
 typedef struct ay_tag_s

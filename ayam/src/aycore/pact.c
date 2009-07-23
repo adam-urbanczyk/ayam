@@ -15,15 +15,23 @@
 /* pact.c - single point related interactive actions */
 
 /* global variables for this module: */
-static ay_object *ay_pact_pedclearobject = NULL;
-static ay_pointedit ay_pact_pe = {0};
 
+static ay_object *pact_pedclearobject = NULL;
 
-static int *ay_pact_numcpo;
-static int *ay_pact_homcpo;
-static ay_object *ay_point_edit_object;
-static ay_object **ay_pe_objects;
-static int ay_pe_objectslen;
+/* selected points and indices */
+static ay_pointedit pact_pe = {0};
+
+/* number of selected points per object */
+static int *pact_numcpo;
+
+/* homogenous state of selected points per object */
+static int *pact_homcpo;
+
+/* objects that have selected points */
+static ay_object **pact_objects;
+
+/* number of objects that have selected points */
+static int pact_objectslen;
 
 
 /* prototypes of functions local to this module: */
@@ -46,12 +54,13 @@ int ay_pact_deleteic(ay_icurve_object *icurve,
 int ay_pact_deleteac(ay_acurve_object *acurve,
 		     double objX, double objY, double objZ);
 
-int ay_pact_flashpoint(int ignore_old);
+int ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
 
 /* functions: */
 
 /* ay_pact_clearpointedit:
- *   clear a ay_pointedit structure gracefully
+ *   clear/reset a ay_pointedit structure
+ *   (does not attempt to free pe!)
  */
 int
 ay_pact_clearpointedit(ay_pointedit *pe)
@@ -69,7 +78,6 @@ ay_pact_clearpointedit(ay_pointedit *pe)
 
   pe->num = 0;
   pe->homogenous = AY_FALSE;
-  pe->changed = AY_FALSE;
 
  return AY_OK;
 } /* ay_pact_clearpointedit */
@@ -216,20 +224,12 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	      have_it = AY_FALSE;
 	      while(point)
 		{
-		  if(pe.indizes)
+
+		  if(point->point == pe.coords[i])
 		    {
-		      if(point->index == pe.indizes[i])
-			{
-			  have_it = AY_TRUE;
-			}
+		      have_it = AY_TRUE;
 		    }
-		  else
-		    {
-		      if(point->point == pe.coords[i])
-			{
-			  have_it = AY_TRUE;
-			}
-		    }
+		   
 		  if(have_it)
 		    {
 		      /* we have that point already, so we delete
@@ -277,9 +277,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	    } /* for */
 	} /* if */
 
-      if(pe.changed)
-	ay_pact_getpoint(3, o, pl, &pe);
-
       ay_pact_clearpointedit(&pe);
 
       sel = sel->next;
@@ -317,29 +314,34 @@ ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
  *  Note: This function needs atleast OpenGL V1.1 to work.
  */
 int
-ay_pact_flashpoint(int ignore_old)
+ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 {
- int old_is_new = AY_FALSE, penumber = 0;
+ int old_is_new = AY_FALSE;
  static int have_old_flashed_point = AY_FALSE;
  static double old_pnt[3] = {0};
- ay_object *o = ay_point_edit_object;
+ static ay_object *old_o = NULL;
  double m[16];
 
-  if(!o)
-    return AY_OK;
-
 #ifdef GL_VERSION_1_1
-  penumber = ay_pact_pe.num;
 
-  if(have_old_flashed_point && ay_pact_pe.coords)
+  if(have_old_flashed_point && pnt)
     {
-      if((ay_pact_pe.coords[penumber-1][0] == old_pnt[0]) &&
-	 (ay_pact_pe.coords[penumber-1][1] == old_pnt[1]) &&
-	 (ay_pact_pe.coords[penumber-1][2] == old_pnt[2]))
+      if((pnt[0] == old_pnt[0]) &&
+	 (pnt[1] == old_pnt[1]) &&
+	 (pnt[2] == old_pnt[2]))
 	{
 	  old_is_new = AY_TRUE;
 	}
     }
+
+  if(!o)
+    {
+      o = old_o;
+    }
+
+  if(!o)
+    return AY_OK;
+
   if(!old_is_new || ignore_old)
     {
       glDrawBuffer(GL_FRONT);
@@ -360,8 +362,9 @@ ay_pact_flashpoint(int ignore_old)
        /* clear old point? */
        if(have_old_flashed_point && !ignore_old)
 	 {
-	   glVertex3d(old_pnt[0], old_pnt[1], old_pnt[2]);
+	   glVertex3dv(old_pnt);
 	   have_old_flashed_point = AY_FALSE;
+	   old_o = NULL;
 	 }
        /*
 	 glEnd();
@@ -369,15 +372,11 @@ ay_pact_flashpoint(int ignore_old)
 	 glBegin(GL_POINTS);
        */
        /* draw new point? */
-       if(ay_pact_pe.coords)
+       if(pnt)
 	 {
-	   glVertex3d(ay_pact_pe.coords[penumber-1][0],
-		      ay_pact_pe.coords[penumber-1][1],
-		      ay_pact_pe.coords[penumber-1][2]);
-
-	   old_pnt[0] = ay_pact_pe.coords[penumber-1][0];
-	   old_pnt[1] = ay_pact_pe.coords[penumber-1][1];
-	   old_pnt[2] = ay_pact_pe.coords[penumber-1][2];
+	   glVertex3dv(pnt);
+	   memcpy(old_pnt, pnt, 3*sizeof(double));
+	   old_o = o;
 	   have_old_flashed_point = AY_TRUE;
 	 }
        else
@@ -413,26 +412,26 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  int penumber = 0, *tmpi;
  double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
- ay_object **tmpo = NULL;
+ ay_object **tmpo = NULL, *o = NULL;
  static ay_list_object *lastlevel = NULL;
  static double lscal = 0.0;
  GLdouble m[16];
 
-  if(ay_pact_numcpo)
-    free(ay_pact_numcpo);
-  ay_pact_numcpo = NULL;
+  if(pact_numcpo)
+    free(pact_numcpo);
+  pact_numcpo = NULL;
 
-  if(ay_pact_homcpo)
-    free(ay_pact_homcpo);
-  ay_pact_homcpo = NULL;
+  if(pact_homcpo)
+    free(pact_homcpo);
+  pact_homcpo = NULL;
 
-  if(ay_pe_objects)
-    free(ay_pe_objects);
-  ay_pe_objects = NULL;
+  if(pact_objects)
+    free(pact_objects);
+  pact_objects = NULL;
 
-  ay_pe_objectslen = 0;
+  pact_objectslen = 0;
 
-  ay_pact_clearpointedit(&ay_pact_pe);
+  ay_pact_clearpointedit(&pact_pe);
 
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
@@ -478,12 +477,14 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_status = ay_pact_getpoint(1, sel->object, obj, &ay_pact_pe);
+      ay_status = ay_pact_getpoint(1, sel->object, obj, &pact_pe);
 
-      if(ay_pact_pe.coords)
+      if(pact_pe.coords)
 	{
+	  o = sel->object;
+
 	  if(!(tmp = realloc(pecoords,
-			     (ay_pact_pe.num + penumber)*sizeof(double*))))
+			     (pact_pe.num + penumber)*sizeof(double*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      free(pecoords);
@@ -492,15 +493,13 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    {
 	      pecoords = tmp;
-	      memcpy(&(pecoords[penumber]), ay_pact_pe.coords,
-		     ay_pact_pe.num*sizeof(double*));
-	      penumber += ay_pact_pe.num;
+	      memcpy(&(pecoords[penumber]), pact_pe.coords,
+		     pact_pe.num*sizeof(double*));
+	      penumber += pact_pe.num;
 	    }
 
-	  ay_point_edit_object = sel->object;
-
 	  /* remember number of picked points of current object */
-	  if(!(tmpi = realloc(ay_pact_numcpo, (ay_pe_objectslen+1)*
+	  if(!(tmpi = realloc(pact_numcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
@@ -508,12 +507,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_pact_numcpo = tmpi;
-	      ay_pact_numcpo[ay_pe_objectslen] = ay_pact_pe.num;
+	      pact_numcpo = tmpi;
+	      pact_numcpo[pact_objectslen] = pact_pe.num;
 	    }
 
 	  /* remember homogenous state of current object */
-	  if(!(tmpi = realloc(ay_pact_homcpo, (ay_pe_objectslen+1)*
+	  if(!(tmpi = realloc(pact_homcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
@@ -521,12 +520,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_pact_homcpo = tmpi;
-	      ay_pact_homcpo[ay_pe_objectslen] = ay_pact_pe.homogenous;
+	      pact_homcpo = tmpi;
+	      pact_homcpo[pact_objectslen] = pact_pe.homogenous;
 	    }
 
 	  /* remember pointer to current object */
-	  if(!(tmpo = realloc(ay_pe_objects, (ay_pe_objectslen+1)*
+	  if(!(tmpo = realloc(pact_objects, (pact_objectslen+1)*
 			      sizeof(ay_object*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
@@ -534,37 +533,34 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_pe_objects = tmpo;
-	      ay_pe_objects[ay_pe_objectslen] = sel->object;
+	      pact_objects = tmpo;
+	      pact_objects[pact_objectslen] = sel->object;
 	    }
 
-	  ay_pe_objectslen++;
+	  pact_objectslen++;
 
 	} /* if */
 
-      if(sel->object->selp && ay_pact_pe.changed)
-	ay_pact_getpoint(3, sel->object, obj, &ay_pact_pe);
-
-      ay_pact_clearpointedit(&ay_pact_pe);
+      ay_pact_clearpointedit(&pact_pe);
 
       sel = sel->next;
     } /* while */
 
   ay_prefs.pick_epsilon = oldpickepsilon;
 
-  ay_pact_pe.num = penumber;
+  pact_pe.num = penumber;
 
-  if(ay_pact_pe.coords)
-    free(ay_pact_pe.coords);
+  if(pact_pe.coords)
+    free(pact_pe.coords);
 
-  ay_pact_pe.coords = pecoords;
+  pact_pe.coords = pecoords;
 
   if(ay_selection && (argc > 4))
     {
       if(argc > 5)
-	ay_status = ay_pact_flashpoint(AY_TRUE);
+	ay_status = ay_pact_flashpoint(AY_TRUE, pecoords?*pecoords:NULL, o);
       else
-	ay_status = ay_pact_flashpoint(AY_FALSE);
+	ay_status = ay_pact_flashpoint(AY_FALSE, pecoords?*pecoords:NULL, o);
     } /* if */
 
  return TCL_OK;
@@ -584,7 +580,7 @@ ay_pact_pedclear(ay_object *o)
   if(!o)
     return;
 
-  ay_pact_pedclearobject = o;
+  pact_pedclearobject = o;
   argv[2] = a2;
   ay_pact_pedtcb(NULL, argc, argv);
 
@@ -617,7 +613,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
 
-
   if(argc < 1)
     {
       return TCL_OK;
@@ -626,7 +621,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
   if(!strcmp(argv[2], "-clear"))
     {
       /* clear cached pointers to points */
-      if(pe_object == ay_pact_pedclearobject)
+      if(pe_object == pact_pedclearobject)
 	{
 	  if(pe_coords)
 	    free(pe_coords);
@@ -669,8 +664,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 				    &(obj[0]), &(obj[1]), &(obj[2]));
 
       ay_status = ay_pact_getpoint(1, o, obj, &pe);
-
-      ay_point_edit_object = o;
 
       if(pe.coords)
 	{
@@ -762,9 +755,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
-
-      if(o->selp)
-	ay_pact_getpoint(3, o, obj, &pe);
 
       return TCL_OK;
     } /* if */
@@ -866,7 +856,6 @@ int
 ay_pact_insertnc(ay_nurbcurve_object *curve,
 		 double objX, double objY, double objZ)
 {
-
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
  int i = 0, j = 0, k = 0, index = -1;
@@ -874,8 +863,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
  int inserted, sections = 0, section;
 
- if(!curve)
-   return AY_ENULL;
+  if(!curve)
+    return AY_ENULL;
 
   if(min_distance == 0.0)
     min_distance = DBL_MAX;
@@ -1157,7 +1146,6 @@ int
 ay_pact_insertic(ay_icurve_object *icurve,
 		 double objX, double objY, double objZ)
 {
-
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
  int i = 0, j = 0, index = -1;
@@ -1932,14 +1920,14 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  int i = 0, j, k = 0, redraw = AY_FALSE;
  static GLdouble m[16] = {0};
  /*GLdouble mo[16] = {0};*/
- ay_object *o = ay_point_edit_object;
+ ay_object *o = NULL;
 
-  if(!o)
+  if(pact_objectslen == 0)
     return TCL_OK;
 
-  for(j = 0; j < ay_pe_objectslen; j++)
+  for(j = 0; j < pact_objectslen; j++)
     {
-      o = ay_pe_objects[j];
+      o = pact_objects[j];
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
@@ -1994,14 +1982,14 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  oldwiny = winy;
 
 		  /* snap selected points to grid coordinates */
-		  if(ay_pact_pe.coords)
+		  if(pact_pe.coords)
 		    {
 		      if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
 			 (view->grid != 0.0))
 			{
-			  for(i = 0; i < ay_pact_numcpo[j]; i++)
+			  for(i = 0; i < pact_numcpo[j]; i++)
 			    {
-			      coords = ay_pact_pe.coords[k];
+			      coords = pact_pe.coords[k];
 			      if(!view->local)
 				{
 				  ay_trafo_applyall(ay_currentlevel->next, o,
@@ -2100,11 +2088,11 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
       movY = m[1]*dx+m[5]*dy+m[9]*dz;
       movZ = m[2]*dx+m[6]*dy+m[10]*dz;
 
-      if(ay_pact_pe.coords)
+      if(pact_pe.coords)
 	{
-	  for(i = 0; i < ay_pact_numcpo[j]; i++)
+	  for(i = 0; i < pact_numcpo[j]; i++)
 	    {
-	      coords = ay_pact_pe.coords[k];
+	      coords = pact_pe.coords[k];
 	      k++;
 	      coords[0] += movX;
 	      coords[1] += movY;
@@ -2137,7 +2125,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
       /* flash option given? */
       if(argc > 5)
 	{
-	  ay_pact_flashpoint(AY_TRUE);
+	  ay_pact_flashpoint(AY_TRUE, coords, o);
 	}
     } /* if */
 
@@ -2158,11 +2146,11 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
  double dx, winx = 0.0, new_weight = 0.0, *coords;
  static double oldwinx = 0.0;
  int i = 0, j, k = 0, notifyparent = AY_FALSE;
- ay_object *o = ay_point_edit_object;
+ ay_object *o = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
 
-  if(!o)
+  if(pact_objectslen == 0)
     return TCL_OK;
 
   /* parse args */
@@ -2188,15 +2176,15 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 
   dx = oldwinx - winx;
 
-  for(j = 0; j < ay_pe_objectslen; j++)
+  for(j = 0; j < pact_objectslen; j++)
     {
-      o = ay_pe_objects[j];
+      o = pact_objects[j];
 
-      for(i = 0; i < ay_pact_numcpo[j]; i++)
+      for(i = 0; i < pact_numcpo[j]; i++)
 	{
-	  coords = ay_pact_pe.coords[k];
+	  coords = pact_pe.coords[k];
 	  k++;
-	  if(ay_pact_homcpo[j])
+	  if(pact_homcpo[j])
 	    {
 	      new_weight = coords[3];
 	      if(dx > 0.0)
@@ -2215,7 +2203,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* for */
 
-      if(ay_pact_homcpo[j])
+      if(pact_homcpo[j])
 	{
 	  o->modified = AY_TRUE;
 	  if((fabs(new_weight) < (1.0-AY_EPSILON)) ||
@@ -2305,9 +2293,6 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
-
-      if(o->selp)
-	ay_pact_getpoint(3, o, p, &pe);
 
       sel = sel->next;
    } /* while */
@@ -2474,9 +2459,6 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 
 	  ay_pact_clearpointedit(&pe);
-
-	  if(o->selp)
-	    ay_pact_getpoint(3, o, p, &pe);
 
 	}
       else
