@@ -312,6 +312,9 @@ proc shortcut_main { w } {
 	bind $w <Alt-F4> "$m invoke 21;break"
     }
 
+
+  $ay(treecm).tree entryconfigure 1 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
+
  return;
 }
 # shortcut_main
