@@ -841,6 +841,7 @@ mopsi_shaders(FILE *fileptr)
  ay_root_object *root = NULL;
  ay_mat_object *m = NULL;
  char buffer[128], *argv[3];
+ ay_pointedit pe = {0};
 
  if(!o)
    return AY_OK;
@@ -924,7 +925,8 @@ mopsi_shaders(FILE *fileptr)
 	 light = (ay_light_object*)o->refine;
 
 	 light->lshader = shader;
-	 ay_status = ay_pact_getpoint(1, o, p);
+	 ay_status = ay_pact_getpoint(1, o, p, &pe);
+	 ay_pact_clearpointedit(&pe);
 	 shader = NULL;
        }
 
