@@ -27,3 +27,11 @@ set w [frame $ay(pca).$SDNPatchAttr(w)]
 
 addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
+
+
+
+# add menu entry to the "Create/Custom Object" sub-menu
+mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
+
+# tell the rest of Ayam (or other custom objects), that we are loaded
+lappend ay(co) SDNPatch
