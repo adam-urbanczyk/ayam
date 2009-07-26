@@ -49,6 +49,10 @@ int Sdnpatch_Init(Tcl_Interp *interp);
 
 int sdnpatch_notifycb(ay_object *o);
 
+int sdnpatch_convnp(int mode, ay_object *p, ay_object **result);
+
+int sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 class AyWriter : public FlatMeshHandler
 {
@@ -1275,6 +1279,197 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 } /* sdnpatch_getpntcb */
 
 
+/* sdnpatch_convnp:
+ *  convert NURBS patches to SDNPatch objects
+ */
+int
+sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
+{
+ ay_object *newo = NULL;
+ ay_nurbpatch_object *np = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+ double *cv = NULL;
+ unsigned int i = 0, j = 0, a = 0, b = 0;
+ std::vector<Vertex*>::iterator it;
+ Vertex *v;
+
+  if(!p || !result)
+    return AY_ENULL;
+
+  if(p->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object *)p->refine;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    {
+      return AY_EOMEM;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = sdnpatch_id;
+  ay_trafo_copy(p, newo);
+
+  if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+    {
+      free(newo);
+      return AY_EOMEM;
+    }
+
+  newo->refine = sdnpatch;
+
+  /**/
+  sdnpatch->subdivDegree = 3;
+  sdnpatch->subdivLevel = 2;
+
+  sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
+
+  MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
+
+  cv = np->controlv;
+
+  for(i = 0; i < np->width; i++)
+    {
+      for(j = 0; j < np->height; j++)
+	{
+	  meshBuilder->addVertex(cv[a],cv[a+1],cv[a+2],cv[a+3]);
+	  a += 4;
+	}
+    }
+  meshBuilder->finishVertices();  
+
+  for(i = 0; i < np->width-1; i++)
+    {
+      a = i*np->height;
+      b = (i+1)*np->height;
+      for(j = 0; j < np->height-1; j++)
+	{
+	  meshBuilder->startFace(4);
+
+	  meshBuilder->addToFace(a);
+	  meshBuilder->addToFace(a+1);
+	  meshBuilder->addToFace(b+1);
+	  meshBuilder->addToFace(b);
+
+	  meshBuilder->closeFace();
+
+	  a++;
+	  b++;
+	}
+    }
+
+  meshBuilder->finishFaces();
+
+  meshBuilder->finishKnotIntervals();
+
+  MeshBuilder::dispose(meshBuilder);
+
+  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
+
+  if(!(sdnpatch->controlCoords = (double*)calloc(
+			sdnpatch->controlVertices->size(), 4*sizeof(double))))
+    return AY_EOMEM;
+
+  a = 0;
+  for(it = (*sdnpatch->controlVertices).begin();
+      it != (*sdnpatch->controlVertices).end();
+      it++)
+    {
+      v = *it;
+      sdnpatch->controlCoords[a]   = v->getX();
+      sdnpatch->controlCoords[a+1] = v->getY();
+      sdnpatch->controlCoords[a+2] = v->getZ();
+      sdnpatch->controlCoords[a+3] = v->getW();
+      a += 4;
+    }
+
+  newo->modified = AY_TRUE;
+  ay_notify_force(newo);
+
+  /* return result */
+  *result = newo;
+
+ return AY_OK;
+} /* sdnpatch_convnp */
+
+
+/* sdnpatch_convnptcmd:
+ *  Tcl command to convert NURBS patches to SDNPatch objects
+ */
+int
+sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "sdnconvNP";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *p = NULL, *newo = NULL;
+ int i = 0;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      /*
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	      */
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      /*
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	      */
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->type != AY_IDNPATCH)
+	{
+	  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+	}
+      else
+	{
+	  ay_status = ay_object_copy(o, &p);
+	} /* if */
+
+      if(p)
+	{
+	  ay_status = sdnpatch_convnp(0, p, &newo);
+	  if(newo)
+	    {
+	      ay_object_link(newo);
+	    }
+
+	  ay_object_deletemulti(p);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_convnptcmd */
+
+
 extern "C" {
 
 /* Sdnpatch_Init:
@@ -1327,6 +1522,11 @@ Sdnpatch_Init(Tcl_Interp *interp)
   ay_status = ay_convert_register(sdnpatch_convertcb, sdnpatch_id);
 
   ay_status = ay_provide_register(sdnpatch_providecb, sdnpatch_id);
+
+
+  // create new Tcl commands to interface with the plugin
+  Tcl_CreateCommand(interp, "sdnconvertNP", (Tcl_CmdProc*) sdnpatch_convnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
