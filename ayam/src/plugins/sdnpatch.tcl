@@ -33,5 +33,9 @@ addParam $w SDNPatchAttrData Level
 # add menu entry to the "Create/Custom Object" sub-menu
 mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
 
+global ay
+$ay(cm) add command -label "To SDNPatch" -command {
+    sdnconvertNP; uS; rV; }
+
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch
