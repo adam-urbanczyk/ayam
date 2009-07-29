@@ -1278,13 +1278,17 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  return AY_OK;
 } /* sdnpatch_getpntcb */
 
+
 /* sdnpatch_isclosednp:
- *
+ *  helper for sdnpatch_convnp() below
+ *  check, whether NURBS patch <np> is closed
+ *  outputs results for respective dimension to
+ *  <closedu> and <closedv>
  */
 int
 sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
 {
- unsigned int i, a, b;
+ int i, a, b;
  int stride = 4;
  double *cv;
 
@@ -1331,7 +1335,9 @@ sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
 
 
 /* sdnpatch_addfaces:
- * XXXX add dummy faces
+ *  helper for sdnpatch_convnp() below
+ *  add faces for an open patch
+ * XXXX ToDo: add dummy faces
  */
 void
 sdnpatch_addfaces(MeshBuilder *meshBuilder,
@@ -1371,7 +1377,8 @@ sdnpatch_addfaces(MeshBuilder *meshBuilder,
 
 
 /* sdnpatch_addfacescu:
- *
+ *  helper for sdnpatch_convnp() below
+ *  add faces for a patch which is closed in u direction
  */
 void
 sdnpatch_addfacescu(MeshBuilder *meshBuilder,
@@ -1465,7 +1472,8 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
 
 
 /* sdnpatch_addfacescv:
- *
+ *  helper for sdnpatch_convnp() below
+ *  add faces for a patch which is closed in v direction
  */
 void
 sdnpatch_addfacescv(MeshBuilder *meshBuilder,
@@ -1553,7 +1561,8 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
 
 /* sdnpatch_addfacescuv:
- *
+ *  helper for sdnpatch_convnp() below
+ *  add faces for a patch which is closed in both directions
  */
 void
 sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
