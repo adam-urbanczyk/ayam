@@ -1278,6 +1278,334 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  return AY_OK;
 } /* sdnpatch_getpntcb */
 
+/* sdnpatch_isclosednp:
+ *
+ */
+int
+sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
+{
+ unsigned int i, a, b;
+ int stride = 4;
+ double *cv;
+
+  if(!np || !closedu || !closedv)
+    return AY_ENULL;
+
+  cv = np->controlv;
+
+  a = 0;
+  b = (np->width-1)*np->height*stride;
+  *closedu = AY_TRUE;
+  for(i = 0; i < np->height; i++)
+    {
+      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
+	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
+	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
+	{
+	  *closedu = AY_FALSE;
+	  break;
+	}
+      a += stride;
+      b += stride;
+    }
+
+
+  a = 0;
+  b = (np->height-1)*stride;
+  *closedv = AY_TRUE;
+  for(i = 0; i < np->width; i++)
+    {
+      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
+	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
+	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
+	{
+	  *closedv = AY_FALSE;
+	  break;
+	}
+      a += (np->height*stride);
+      b += (np->height*stride);
+    }
+
+ return AY_OK;
+} /* sdnpatch_isclosednp */
+
+
+/* sdnpatch_addfaces:
+ * XXXX add dummy faces
+ */
+void
+sdnpatch_addfaces(MeshBuilder *meshBuilder,
+		  unsigned int width, unsigned int height)
+{
+ unsigned int i, j, a, b, d;
+
+  a = 0;
+  b = height;
+
+  for(i = 0; i < width-1; i++)
+    {
+
+      for(j = 0; j < height-1; j++)
+	{
+	  meshBuilder->startFace(4);
+
+	  meshBuilder->addToFace(a);
+	  meshBuilder->addToFace(a+1);
+	  meshBuilder->addToFace(b+1);
+	  meshBuilder->addToFace(b);
+
+	  meshBuilder->closeFace();
+
+	  a++;
+	  b++;
+	} /* for */
+
+      a++;
+      b++;
+    } /* for */
+
+  /* dummy faces */
+
+ return;
+} /* sdnpatch_addfaces */
+
+
+/* sdnpatch_addfacescu:
+ *
+ */
+void
+sdnpatch_addfacescu(MeshBuilder *meshBuilder,
+		    unsigned int width, unsigned int height)
+{
+ unsigned int i, j, a, b, d;
+
+  a = 0;
+  b = height;
+
+  for(i = 0; i < width-2; i++)
+    {
+      for(j = 0; j < height-1; j++)
+	{
+	  meshBuilder->startFace(4);
+	  meshBuilder->addToFace(a);
+	  meshBuilder->addToFace(a+1);
+	  meshBuilder->addToFace(b+1);
+	  meshBuilder->addToFace(b);
+	  meshBuilder->closeFace();
+
+	  a++;
+	  b++;
+	} /* for */
+
+      a++;
+      b++;
+    } /* for */
+
+  b = 0;
+  for(j = 0; j < height-1; j++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(b+1);
+      meshBuilder->addToFace(b);
+      meshBuilder->closeFace();
+
+      a++;
+      b++;
+    }
+
+  /* dummy faces */
+  /* upper */
+  a = 0;
+  d = (width-1)*height;
+
+  for(i = 0; i < width-2; i++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(d);
+      meshBuilder->addToFace(a);
+      a += height;
+      meshBuilder->addToFace(a);
+      d++;
+      meshBuilder->addToFace(d);
+      meshBuilder->closeFace();
+    }
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(a);
+  meshBuilder->addToFace(0);
+  meshBuilder->addToFace((width-1)*height);
+  meshBuilder->closeFace();
+  d++;
+
+  /* lower */
+  a = height-1;
+  for(i = 0; i < width-2; i++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(d);
+      d++;
+      meshBuilder->addToFace(d);
+      a += height;
+      meshBuilder->addToFace(a);
+      meshBuilder->closeFace();
+    }
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(a);
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(d-(width-2));
+  meshBuilder->addToFace(height-1);
+  meshBuilder->closeFace();
+
+ return;
+} /* sdnpatch_addfacescu */
+
+
+/* sdnpatch_addfacescv:
+ *
+ */
+void
+sdnpatch_addfacescv(MeshBuilder *meshBuilder,
+		    unsigned int width, unsigned int height)
+{
+ unsigned int i, j, a, b, d;
+
+  a = 0;
+  b = height-1;
+
+  for(i = 0; i < width-1; i++)
+    {
+      for(j = 0; j < height-2; j++)
+	{
+	  meshBuilder->startFace(4);
+	  meshBuilder->addToFace(a);
+	  meshBuilder->addToFace(a+1);
+	  meshBuilder->addToFace(b+1);
+	  meshBuilder->addToFace(b);
+	  meshBuilder->closeFace();
+
+	  a++;
+	  b++;
+	} /* for */
+
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(a-(height-2));
+      meshBuilder->addToFace(b-(height-2));
+      meshBuilder->addToFace(b);
+      meshBuilder->closeFace();
+
+      a++;
+      b++;
+    } /* for */
+
+  /* dummy faces */
+
+  /* left side */
+  d = width*(height-1);
+  a = 0;
+  for(j = 0; j < height-2; j++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(d);
+      meshBuilder->addToFace(d+1);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(a);
+      meshBuilder->closeFace();
+      d++;
+      a++;
+    }
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(d-(height-2));
+  meshBuilder->addToFace(a-(height-2));
+  meshBuilder->addToFace(a);
+  meshBuilder->closeFace();
+
+  /* right side */
+  a = (width-1)*(height-1);
+  d++;
+  for(j = 0; j < height-2; j++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(d+1);
+      meshBuilder->addToFace(d);
+      meshBuilder->closeFace();
+      d++;
+      a++;
+    }
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(a);
+  meshBuilder->addToFace(a-(height-2));
+  meshBuilder->addToFace(d-(height-2));
+  meshBuilder->addToFace(d);
+  meshBuilder->closeFace();
+
+ return;
+} /* sdnpatch_addfacescv */
+
+
+/* sdnpatch_addfacescuv:
+ *
+ */
+void
+sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
+		    unsigned int width, unsigned int height)
+{
+ unsigned int i, j, a, b;
+
+  a = 0;
+  b = height;
+
+  for(i = 0; i < width-2; i++)
+    {
+      for(j = 0; j < height-1; j++)
+	{
+	  meshBuilder->startFace(4);
+
+	  meshBuilder->addToFace(a);
+	  meshBuilder->addToFace(a+1);
+	  meshBuilder->addToFace(b+1);
+	  meshBuilder->addToFace(b);
+
+	  meshBuilder->closeFace();
+
+	  a++;
+	  b++;
+	} /* for */
+
+      a++;
+      b++;
+    } /* for */
+
+  b = 0;
+  for(j = 0; j < height-1; j++)
+    {
+      meshBuilder->startFace(4);
+
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(b+1);
+      meshBuilder->addToFace(b);
+
+      meshBuilder->closeFace();
+
+      a++;
+      b++;
+    }
+
+  /* no dummy faces needed */
+
+ return;
+} /* sdnpatch_addfacescuv */
+
 
 /* sdnpatch_convnp:
  *  convert NURBS patches to SDNPatch objects
@@ -1289,7 +1617,8 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
  ay_nurbpatch_object *np = NULL;
  sdnpatch_object *sdnpatch = NULL;
  double *cv = NULL;
- unsigned int i = 0, j = 0, a = 0, b = 0;
+ unsigned int i = 0, endi = 0, j = 0, endj = 0, a = 0;
+ int is_closed_u = AY_FALSE, is_closed_v = AY_FALSE;
  std::vector<Vertex*>::iterator it;
  Vertex *v;
 
@@ -1300,6 +1629,8 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
     return AY_ERROR;
 
   np = (ay_nurbpatch_object *)p->refine;
+
+  sdnpatch_isclosednp(np, &is_closed_u, &is_closed_v);
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     {
@@ -1326,35 +1657,40 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 
   MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
+  endi = (is_closed_u?np->width-1:np->width);
+  endj = (is_closed_v?np->height-1:np->height);
   cv = np->controlv;
-
-  for(i = 0; i < np->width; i++)
+  for(i = 0; i < endi; i++)
     {
-      for(j = 0; j < np->height; j++)
+      a = (i*np->height)*4;
+      for(j = 0; j < endj; j++)
 	{
 	  meshBuilder->addVertex(cv[a],cv[a+1],cv[a+2],cv[a+3]);
 	  a += 4;
 	}
     }
-  meshBuilder->finishVertices();  
+  meshBuilder->finishVertices();
 
-  for(i = 0; i < np->width-1; i++)
+  if(is_closed_u)
     {
-      a = i*np->height;
-      b = (i+1)*np->height;
-      for(j = 0; j < np->height-1; j++)
+      if(is_closed_v)
 	{
-	  meshBuilder->startFace(4);
-
-	  meshBuilder->addToFace(a);
-	  meshBuilder->addToFace(a+1);
-	  meshBuilder->addToFace(b+1);
-	  meshBuilder->addToFace(b);
-
-	  meshBuilder->closeFace();
-
-	  a++;
-	  b++;
+	  sdnpatch_addfacescuv(meshBuilder, np->width, np->height);
+	}
+      else
+	{
+	  sdnpatch_addfacescu(meshBuilder, np->width, np->height);
+	}
+    }
+  else
+    {
+      if(is_closed_v)
+	{
+	  sdnpatch_addfacescv(meshBuilder, np->width, np->height);
+	}
+      else
+	{
+	  sdnpatch_addfaces(meshBuilder, np->width, np->height);
 	}
     }
 
