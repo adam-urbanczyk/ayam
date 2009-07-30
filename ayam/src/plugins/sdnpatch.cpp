@@ -692,6 +692,7 @@ sdnpatch_drawhcb(struct Togl *togl, ay_object *o)
 int
 sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ char fname[] = "sdnpatch_setpropcb";
  char *n1 = "SDNPatchAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -708,12 +709,21 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Degree",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &itemp);
-  sdnpatch->subdivDegree = itemp;
+
+  if(itemp != 3 && itemp != 5 && itemp != 7)
+    {
+      ay_error(AY_EOMEM, fname, "Unsupported degree, must be 3, 5, or 7!");
+    }
+  else
+    {
+      sdnpatch->subdivDegree = itemp;
+    }
 
   Tcl_SetStringObj(ton,"Level",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &itemp);
-  sdnpatch->subdivLevel = itemp;
+  if(itemp >= 0)
+    sdnpatch->subdivLevel = itemp;
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -975,14 +985,12 @@ sdnpatch_notifycb(ay_object *o)
  sdnpatch_object *sdnpatch = NULL;
  ay_point *pnt = NULL;
  Vertex *v = NULL;
-
  int curlev = 0;
 
   if(!o)
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)(o->refine);
-
 
   /* manage potentially modified control points */
   if(o->selp)
@@ -1001,7 +1009,6 @@ sdnpatch_notifycb(ay_object *o)
 	  pnt = pnt->next;
 	}
     }
-
 
   /* update subdivision surface */
   if(sdnpatch->subdivMesh)
@@ -1313,7 +1320,6 @@ sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
       b += stride;
     }
 
-
   a = 0;
   b = (np->height-1)*stride;
   *closedv = AY_TRUE;
@@ -1336,21 +1342,31 @@ sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
 
 /* sdnpatch_addfaces:
  *  helper for sdnpatch_convnp() below
- *  add faces for an open patch
- * XXXX ToDo: add dummy faces
+ *  create the faces for an open patch
+ *
+ *  for a standard 4x4 patch this results in
+ *  the following configuration
+ *  (vertices 16-35 being so called dummy vertices):
+ *
+ *   24 25 26 27 28 29
+ *   16  0  4  8 12 20 <- ur
+ *   17  1  5  9 13 21
+ *   18  2  6 10 14 22
+ *   19  3  7 11 15 23 <- lr
+ *   30 31 32 33 34 35
  */
 void
 sdnpatch_addfaces(MeshBuilder *meshBuilder,
 		  unsigned int width, unsigned int height)
 {
  unsigned int i, j, a, b, d;
+ unsigned int ur, lr;
 
   a = 0;
   b = height;
 
   for(i = 0; i < width-1; i++)
     {
-
       for(j = 0; j < height-1; j++)
 	{
 	  meshBuilder->startFace(4);
@@ -1372,13 +1388,108 @@ sdnpatch_addfaces(MeshBuilder *meshBuilder,
 
   /* dummy faces */
 
+  /* left side */
+  d = width*height;
+  a = 0;
+  for(j = 0; j < height-1; j++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(d);
+      meshBuilder->addToFace(d+1);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(a);
+      meshBuilder->closeFace();
+      d++;
+      a++;
+    }
+
+  /* right side */
+  a = (width-1)*height;
+  d++;
+  ur = d; /* ll is ur-1 */
+  for(j = 0; j < height-1; j++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(a+1);
+      meshBuilder->addToFace(d+1);
+      meshBuilder->addToFace(d);
+      meshBuilder->closeFace();
+      d++;
+      a++;
+    }
+
+  lr = d;
+  d++;
+  /* upper side */
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(width*height);
+  meshBuilder->addToFace(0);
+  d++;
+  meshBuilder->addToFace(d);
+  meshBuilder->closeFace();
+
+  a = 0;
+  for(i = 0; i < width-1; i++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(d);
+      meshBuilder->addToFace(a);
+      a += height;
+      meshBuilder->addToFace(a);
+      d++;
+      meshBuilder->addToFace(d);
+      meshBuilder->closeFace();
+    }
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace((width-1)*height);
+  meshBuilder->addToFace(ur);
+  d++;
+  meshBuilder->addToFace(d);
+  meshBuilder->closeFace();
+
+
+  /* lower side */
+  d++;
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(ur-1);
+  meshBuilder->addToFace(d);
+  d++;
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(height-1);
+  meshBuilder->closeFace();
+
+  a = height-1;
+  for(i = 0; i < width-1; i++)
+    {
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(a);
+      meshBuilder->addToFace(d);
+      d++;
+      meshBuilder->addToFace(d);
+      a += height;
+      meshBuilder->addToFace(a);
+      meshBuilder->closeFace();
+    }
+
+  meshBuilder->startFace(4);
+  meshBuilder->addToFace(width*height-1);
+  meshBuilder->addToFace(d);
+  d++;
+  meshBuilder->addToFace(d);
+  meshBuilder->addToFace(lr);
+  meshBuilder->closeFace();
+
  return;
 } /* sdnpatch_addfaces */
 
 
 /* sdnpatch_addfacescu:
  *  helper for sdnpatch_convnp() below
- *  add faces for a patch which is closed in u direction
+ *  create the faces for a patch which is closed in u direction
  */
 void
 sdnpatch_addfacescu(MeshBuilder *meshBuilder,
@@ -1423,7 +1534,7 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
     }
 
   /* dummy faces */
-  /* upper */
+  /* upper side */
   a = 0;
   d = (width-1)*height;
 
@@ -1447,7 +1558,7 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
   meshBuilder->closeFace();
   d++;
 
-  /* lower */
+  /* lower side */
   a = height-1;
   for(i = 0; i < width-2; i++)
     {
@@ -1473,7 +1584,7 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
 
 /* sdnpatch_addfacescv:
  *  helper for sdnpatch_convnp() below
- *  add faces for a patch which is closed in v direction
+ *  create the faces for a patch which is closed in v direction
  */
 void
 sdnpatch_addfacescv(MeshBuilder *meshBuilder,
@@ -1562,7 +1673,7 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
 /* sdnpatch_addfacescuv:
  *  helper for sdnpatch_convnp() below
- *  add faces for a patch which is closed in both directions
+ *  create the faces for a patch which is closed in both directions
  */
 void
 sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
