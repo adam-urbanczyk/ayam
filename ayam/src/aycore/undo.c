@@ -526,6 +526,8 @@ ay_undo_copy(ay_undo_object *uo)
  Tcl_DString ds;
  int notify = AY_TRUE, notify_parent = AY_FALSE;
  ay_object *parent = NULL;
+ double obj;
+ ay_pointedit pe;
 
   if(!uo)
     return AY_OK;
@@ -688,9 +690,14 @@ ay_undo_copy(ay_undo_object *uo)
 	  o->mat = c->mat;
 	} /* if */
 
-      /* copy selected points? No! */
-      /*ay_status = ay_undo_copyselp(c, o);*/
-      ay_selp_clear(o);
+      /* copy selected points */
+      if(c->selp)
+	{
+	  ay_status = ay_undo_copyselp(c, o);
+	  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+	}
+
+      /*ay_selp_clear(o);*/
 
       /* clear cached pointers to this object */
       ay_object_ccp(o);
@@ -946,6 +953,9 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 
   /* copy tags */
   ay_status = ay_tags_copyall(src, new);
+
+  /* copy selected points */
+  ay_status = ay_undo_copyselp(src, new);
 
   new->modified = AY_TRUE;
 
