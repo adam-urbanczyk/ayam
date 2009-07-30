@@ -250,7 +250,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	    } /* for */
 	  glEnd();
 	} /* for */
-	  
+
       for(j = 0;  j < tessh; j++)
 	{
 	  a = j * 6;
@@ -962,10 +962,12 @@ int
 ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_nurbpatch_object *npatch = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
+ unsigned int *peindizes = NULL, peindex = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -985,10 +987,14 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(npatch->width * npatch->height,
 					 sizeof(double*))))
 	return AY_EOMEM;
+      if(!(pe->indizes = calloc(npatch->width * npatch->height,
+					 sizeof(unsigned int))))
+	return AY_EOMEM;
 
       for(i = 0; i < (npatch->width*npatch->height); i++)
 	{
 	  pe->coords[i] = &(npatch->controlv[a]);
+	  pe->indizes[i] = i;
 	  a += 4;
 	}
 
@@ -1006,6 +1012,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
+	      peindex = i;
 	      min_dist = dist;
 	    }
 
@@ -1033,6 +1040,13 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 			return AY_EOMEM;
 		      memcpy(pe->coords, mp->points,
 			     mp->multiplicity * sizeof(double *));
+
+		      if(!(pe->indizes = calloc(mp->multiplicity,
+					       sizeof(unsigned int))))
+			return AY_EOMEM;
+		      memcpy(pe->indizes, mp->indizes,
+			     mp->multiplicity * sizeof(unsigned int));
+
 		    } /* if */
 		} /* for */
 
@@ -1046,7 +1060,11 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(!(pe->coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
 
+	  if(!(pe->indizes = calloc(1, sizeof(unsigned int))))
+	    return AY_EOMEM;
+
 	  pe->coords[0] = pecoord;
+	  pe->indizes[0] = peindex;
 	  pe->num = 1;
 	}
       break;
@@ -1068,7 +1086,11 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
+	      if(!(peindizes = realloc(peindizes,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
+	      peindizes[a] = i;
 	      a++;
 	    } /* if */
 
@@ -1079,7 +1101,28 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       pe->coords = pecoords;
+      pe->indizes = peindizes;
       pe->num = a;
+      break;
+    case 3:
+      /* rebuild from o->selp */
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < npatch->width*npatch->height)
+	    {
+	      pnt->point = &(npatch->controlv[pnt->index*4]);
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	}
       break;
     } /* if */
 
