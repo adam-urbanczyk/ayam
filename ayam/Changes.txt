@@ -1,4 +1,4 @@
-[9. Jul 2009] CVS-Head:
+[30. Jul 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -29,8 +29,8 @@ o crash when Sweep notification fails (SF 2793037)
 o Swung surfaces with rational trajectory curves (SF 2793039)
 o tesselation GUI destroying tags (SF 2807895)
 o PolyMesh optimization crashing for very simple PolyMesh objects (SF 2808825)
-o "estlenNC" crashing for illegal parameters and curves (SF)
-o "estlenNC" crashing for curves of order 2 (SF )
+o "estlenNC" crashing for illegal parameters and curves (SF 2818974)
+o "estlenNC" crashing for curves of order 2 (SF 2819090)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -65,6 +65,8 @@ o "Instance" objects now support the "RP" tag type, and, if the
   with e.g. "ExtrNC"/"ExtrNP" objects)
 o added hotkeys for view drawing mode cycling
 o fixed clashes of shortcuts
+o selected points of NCurve and NPatch objects now survive undo/redo
+o added experimental support for Subdivision NURBS via SDNPatch plugin
 
 Import/Export:
 o X3D export of spheres is now more forgiving wrt. simple vs. non simple
