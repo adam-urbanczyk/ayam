@@ -1073,6 +1073,7 @@ typedef struct ay_mpoint_s
   struct ay_mpoint_s *next;
   int multiplicity;
   double **points;
+  unsigned int *indizes;
 } ay_mpoint;
 
 typedef struct ay_pointedit_s

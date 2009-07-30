@@ -121,6 +121,8 @@ ay_nct_clearmp(ay_nurbcurve_object *c)
       next = p->next;
       if(p->points)
 	free(p->points);
+      if(p->indizes)
+	free(p->indizes);
       free(p);
       p = next;
     } /* while */
@@ -139,7 +141,8 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 {
  int ay_status = AY_OK;
  ay_mpoint *p = NULL, *new = NULL;
- double *ta, **tmp = NULL;
+ double *ta, **tmpp = NULL;
+ unsigned int *tmpi = NULL;
  int found = AY_FALSE, a, b, i, j, count;
 
   if(!c)
@@ -150,7 +153,9 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
   if(!c->createmp)
     return AY_OK;
 
-  if(!(tmp = calloc(c->length, sizeof(double *))))
+  if(!(tmpp = calloc(c->length, sizeof(double *))))
+    return AY_EOMEM;
+  if(!(tmpi = calloc(c->length, sizeof(unsigned int))))
     return AY_EOMEM;
 
   a = 0;
@@ -165,7 +170,8 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	{
 	  if(!memcmp(ta, &(c->controlv[b]), 4*sizeof(double)))
 	    {
-	      tmp[count] = &(c->controlv[b]);
+	      tmpp[count] = &(c->controlv[b]);
+	      tmpi[count] = i;
 	      count++;
 	    }
 
@@ -188,11 +194,14 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  if(!found)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
-		{ free(tmp); return AY_EOMEM; }
+		{ free(tmpp); return AY_EOMEM; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
-		{ free(tmp); free(new); return AY_EOMEM; }
+		{ free(tmpp); free(new); return AY_EOMEM; }
+	      if(!(new->indizes = calloc(count, sizeof(unsigned int))))
+		{ free(new->points); free(tmpp); free(new); return AY_EOMEM; }
 	      new->multiplicity = count;
-	      memcpy(new->points, tmp, count*sizeof(double *));
+	      memcpy(new->points, tmpp, count*sizeof(double *));
+	      memcpy(new->indizes, tmpi, count*sizeof(unsigned int));
 
 	      new->next = c->mpoints;
 	      c->mpoints = new;
@@ -203,7 +212,8 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
       a += 4;
     } /* for */
 
-  free(tmp);
+  free(tmpp);
+  free(tmpi);
 
  return ay_status;
 } /* ay_nct_recreatemp */
@@ -292,6 +302,7 @@ ay_nct_collapseselp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
+	      free(p->indizes);
 	      free(p);
 	      p = t;
 	    }
@@ -365,6 +376,7 @@ ay_nct_explodemp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
+	      free(p->indizes);
 	      free(p);
 	      p = t;
 	      err = AY_FALSE;
