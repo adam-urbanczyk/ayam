@@ -7704,6 +7704,8 @@ ay_npt_clearmp(ay_nurbpatch_object *np)
       next = mp->next;
       if(mp->points)
 	free(mp->points);
+      if(mp->indizes)
+	free(mp->indizes);
       free(mp);
       mp = next;
     } /* while */
@@ -7723,7 +7725,8 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
  ay_mpoint *mp = NULL, *new = NULL;
- double *ta, **tmp = NULL;
+ double *ta, **tmpp = NULL;
+ unsigned int *tmpi = NULL;
  int found = AY_FALSE, a, b, i, j, ii, jj, count;
 
   if(!np)
@@ -7734,7 +7737,10 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
   if(!np->createmp)
     return AY_OK;
 
-  if(!(tmp = calloc(np->width*np->height, sizeof(double *))))
+  if(!(tmpp = calloc(np->width*np->height, sizeof(double *))))
+    return AY_EOMEM;
+
+  if(!(tmpi = calloc(np->width*np->height, sizeof(unsigned int))))
     return AY_EOMEM;
 
   a = 0;
@@ -7753,7 +7759,8 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 		{
 		  if(!memcmp(ta, &(np->controlv[b]), 4*sizeof(double)))
 		    {
-		      tmp[count] = &(np->controlv[b]);
+		      tmpp[count] = &(np->controlv[b]);
+		      tmpi[count] = i*j;
 		      count++;
 		    }
 
@@ -7779,11 +7786,15 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	      if(!found)
 		{
 		  if(!(new = calloc(1, sizeof(ay_mpoint))))
-		    { free(tmp); return AY_EOMEM; }
+		    { free(tmpp); return AY_EOMEM; }
 		  if(!(new->points = calloc(count, sizeof(double *))))
-		    { free(tmp); free(new); return AY_EOMEM; }
+		    { free(tmpp); free(new); return AY_EOMEM; }
+		  if(!(new->indizes = calloc(count, sizeof(unsigned int))))
+		    { free(new->points); free(tmpp); free(new);
+		      return AY_EOMEM; }
 		  new->multiplicity = count;
-		  memcpy(new->points, tmp, count*sizeof(double *));
+		  memcpy(new->points, tmpp, count*sizeof(double *));
+		  memcpy(new->indizes, tmpi, count*sizeof(unsigned int));
 
 		  new->next = np->mpoints;
 		  np->mpoints = new;
@@ -7794,7 +7805,8 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	} /* for */
     } /* for */
 
-  free(tmp);
+  free(tmpp);
+  free(tmpi);
 
  return ay_status;
 } /* ay_npt_recreatemp */
@@ -7844,6 +7856,8 @@ ay_npt_collapseselp(ay_object *o)
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
+  if(!(new->indizes = calloc(count, sizeof(double *))))
+    { free(new->points); free(new); return AY_EOMEM; }
 
   /* fill mpoint */
   selp = o->selp;
@@ -7852,6 +7866,7 @@ ay_npt_collapseselp(ay_object *o)
   while(selp)
     {
       new->points[i] = selp->point;
+      new->indizes[i] = selp->index;
       i++;
       if(selp->homogenous)
 	memcpy(selp->point, first, 4*sizeof(double));
@@ -7882,6 +7897,7 @@ ay_npt_collapseselp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
+	      free(p->indizes);
 	      free(p);
 	      p = t;
 	    }
@@ -7954,6 +7970,7 @@ ay_npt_explodemp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
+	      free(p->indizes);
 	      free(p);
 	      p = t;
 	      err = AY_FALSE;
