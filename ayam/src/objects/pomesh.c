@@ -381,6 +381,11 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       pe->coords = pecoords;
       pe->num = a;
       break;
+    case 3:
+      ay_selp_clear(o);
+      break;
+    default:
+      break;
     } /* if */
 
  return AY_OK;
