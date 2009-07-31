@@ -299,9 +299,11 @@ int
 ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_icurve_object *icurve = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
  int i = 0, j = 0, a = 0;
+ unsigned int *peindizes = NULL, peindex = 0;
 
   if(!o || !p || !pe)
     return AY_ENULL;
@@ -319,24 +321,30 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  if(!(pe->coords = calloc(icurve->length, sizeof(double*))))
 	    return AY_EOMEM;
+	  if(!(pe->indizes = calloc(icurve->length, sizeof(unsigned int))))
+	    return AY_EOMEM;
 	}
       else
 	{
-	  if(!(pe->coords = calloc(icurve->length+2,
-					     sizeof(double*))))
+	  if(!(pe->coords = calloc(icurve->length+2, sizeof(double*))))
+	    return AY_EOMEM;
+	  if(!(pe->indizes = calloc(icurve->length+2, sizeof(unsigned int))))
 	    return AY_EOMEM;
 	}
 
       for(i = 0; i < icurve->length; i++)
 	{
 	  pe->coords[i] = &(icurve->controlv[a]);
+	  pe->indizes[i] = i;
 	  a += 3;
 	}
 
       if(icurve->derivs)
 	{
 	  pe->coords[icurve->length] = icurve->sderiv;
+	  pe->indizes[icurve->length] = icurve->length;
 	  pe->coords[icurve->length+1] = icurve->ederiv;
+	  pe->indizes[icurve->length+1] = icurve->length+1;
 	}
 
       pe->homogenous = AY_FALSE;
@@ -358,6 +366,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
+	      peindex = i;
 	      min_dist = dist;
 	    }
 
@@ -373,6 +382,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(dist < min_dist)
 	    {
 	      pecoord = icurve->sderiv;
+	      peindex = icurve->length;
 	      min_dist = dist;
 	    }
 
@@ -383,6 +393,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(dist < min_dist)
 	    {
 	      pecoord = icurve->ederiv;
+	      peindex = icurve->length+1;
 	      min_dist = dist;
 	    }
 	}
@@ -394,8 +405,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!(pe->coords = calloc(1, sizeof(double*))))
 	return AY_EOMEM;
+      if(!(pe->indizes = calloc(1, sizeof(unsigned int))))
+	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
+      pe->indizes[0] = peindex;
       pe->num = 1;
       break;
     case 2:
@@ -416,7 +430,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
+	      if(!(peindizes = realloc(peindizes,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
+	      peindizes[a] = i;
 	      a++;
 	    } /* if */
 
@@ -436,7 +454,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
+	      if(!(peindizes = realloc(peindizes,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
 	      pecoords[a] = icurve->sderiv;
+	      peindizes[a] = icurve->length;
 	      a++;
 	    } /* if */
 
@@ -451,18 +473,55 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
+	      if(!(peindizes = realloc(peindizes,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
 	      pecoords[a] = icurve->ederiv;
+	      peindizes[a] = icurve->length+1;
 	      a++;
 	    } /* if */
-	}
+	} /* if */
 
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
+      pe->indizes = peindizes;
       pe->num = a;
 
+      break;
+    case 3:
+      /* rebuild from o->selp */
+      pnt = o->selp;
+      lastpnt = &(o->selp);
+      while(pnt)
+	{
+	  if(pnt->index < icurve->length)
+	    {
+	      pnt->point = &(icurve->controlv[pnt->index*3]);
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      if((pnt->index < icurve->length+2) && icurve->derivs)
+		{
+		  if(pnt->index == icurve->length)
+		    pnt->point = icurve->sderiv;
+		  else
+		    pnt->point = icurve->ederiv;
+		}
+	      else
+		{
+		  *lastpnt = pnt->next;
+		  free(pnt);
+		  pnt = *lastpnt;
+		} /* if */
+	    } /* if */
+	} /* while */
+      break;
+    default:
       break;
     } /* switch */
 

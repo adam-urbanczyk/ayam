@@ -606,6 +606,11 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       pe->coords = pecoords;
       pe->num = a;
       break;
+    case 3:
+      ay_selp_clear(o);
+      break;
+    default:
+      break;
     } /* switch */
 
  return AY_OK;

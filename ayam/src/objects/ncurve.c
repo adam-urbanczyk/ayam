@@ -664,7 +664,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      free(pnt);
 	      pnt = *lastpnt;
 	    }
-	}
+	} /* while */
       break;
     } /* switch */
 
