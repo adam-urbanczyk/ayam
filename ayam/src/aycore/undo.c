@@ -952,10 +952,12 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     }
 
   /* copy tags */
-  ay_status = ay_tags_copyall(src, new);
+  if(src->tags)
+    ay_status = ay_tags_copyall(src, new);
 
   /* copy selected points */
-  ay_status = ay_undo_copyselp(src, new);
+  if(src->selp)
+    ay_status = ay_undo_copyselp(src, new);
 
   new->modified = AY_TRUE;
 
