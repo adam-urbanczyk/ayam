@@ -1874,7 +1874,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 
   if(type == AY_CTPERIODIC)
     {
-      for(j = 0; j < newuorder; j++)
+      for(j = 0; j < (newuorder-1); j++)
 	{
 	  memcpy(&(newcontrolv[i]), &(newcontrolv[j*newheight*stride]),
 	    newheight*stride*sizeof(double));
