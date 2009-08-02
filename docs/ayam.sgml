@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>9. Jul 2009
+<date>2. Aug 2009
 
 <abstract>
 This is the documentation of Ayam 1.16 - a free 3D modelling environment
@@ -1718,8 +1718,13 @@ the scene using <tt>"File/New"</tt> (if the hidden preference option
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"Scripts"/ is a list of Tcl scripts that will
-be executed on startup. The scripts have to be specified with full
-path and filename. If non absolute paths are used they are relative
+be executed on startup. Since Ayam 1.16, the scripts do <em>not</em>
+have to be specified with full path and filename anymore. Furthermore,
+the plugins directories are automatically searched, and the tcl extension
+is automatically added, so that a setting of <tt/"colfocus;loadayslx"/
+would load the colfocus script from the scripts directory and the
+ayslx shader parsing plugin from the plugins directory.
+If non absolute paths are used they are relative
 to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
@@ -7075,6 +7080,36 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
+<sect1>SDNPatch Object<label id="sdnpatchobj">
+<p>
+The SDNPatch custom object is available since Ayam 1.16 and
+allows to model with Subdivision NURBS.
+There are currently no special modelling actions for Subdivision NURBS
+defined, but you may select and edit the control points. Furthermore,
+there is a simply conversion facility that converts NURBS patch control
+arrays to SDNPatch objects.
+<p>
+The following table briefly lists some capabilities of the SDNPatch object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+SDNPatch|No|Yes|PolyMesh|Yes@<hline>
+</tabular>
+<caption>SDNPatch Object Capabilities</caption>
+</table>
+<p>
+
+<sect2>SDNPatchAttr Property<label id=sdnpattr><label id="sdnpatchattrprop">
+<p>
+The SDNPatchAttr property allows you to set the following SDNPatch specific
+attributes:
+<p>
+<itemize>
+<item><tt/"Degree"/ is the degree of the subdivision NURBS surface,
+the only valid values are currently 3, 5, and 7.
+<item><tt/"Level"/ is the subdivision level, a high level leads to
+many polygons and a smooth surface; useful values range from 0 to 5.
+</itemize>
 <sect1>Standard Properties<label id="stdprop">
 <p>
 Most Ayam objects have standard properties. They are used
@@ -12685,6 +12720,7 @@ providing a lot of good music
 <item>Les A. Piegl and Wayne Tiller: The NURBS Book
 <item>W. T. Hewitt and D. Yip: The NURBS Procedure Library
 <item>Philippe Lavoie: The NURBS++ Library
+<item>Tom Cashman: snurbs (Subdivision NURBS) library
 <item>Everyone involved in the development of Tcl/Tk, OpenGL, The RenderMan
 Interface
 </itemize>
@@ -12901,6 +12937,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>DCSampling: <ref id="aycsg" name="AyCSG plugin option">
 <item>DefaultAction: <ref id="prefmodel" name="preference setting">
 <item>DefaultMat: <ref id="prefrib" name="preference setting">
+<item>Degree: <ref id="sdnpattr" name="SDNPatch attribute">
 <item>DelayedReadArchive: <ref id="riprocp" name="RiProc attribute">
 <item>delegTrafo: <ref id="scdelegtrafo" name="scripting interface command">
 <item>Delete: <ref id="mmedit" name="main menu entry">,
@@ -13114,6 +13151,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">
 <item>Level: <ref id="levelobj" name="Level object">
+<ref id="sdnpattr" name="SDNPatch attribute">
 <item>Light: <ref id="lightobj" name="Light object">,
 <ref id="prefdraw" name="preference setting">
 <item>LightAttr: <ref id="lip" name="property">
@@ -13405,6 +13443,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDLen: <ref id="icp" name="ICurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
+<item>SDNPatch: <ref id="sdnpatchobj" name="SDNPatch object">
 <item>Sections: <ref id="swp" name="Sweep attribute">,
 <ref id="rep" name="Revolve attribute">,
 <ref id="birail1p" name="Birail1 attribute">,
