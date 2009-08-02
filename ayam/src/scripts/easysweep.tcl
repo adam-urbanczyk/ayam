@@ -1,3 +1,18 @@
+#
+# Ayam, a free 3D modeler for the RenderMan interface.
+#
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
+# (randolf.schultz@gmail.com) and others.
+#
+# All rights reserved.
+#
+# See the file License for details.
+
+# easysweep.tcl - create sweep from just one selected curve (the trajectory)
+
+# easySweep:
+#  create sweep from just one selected curve (the trajectory)
+#
 proc easySweep { } {
  # first, we create a sweep object
  crtOb Sweep
@@ -40,14 +55,14 @@ proc easySweep { } {
 # attach to custom menu
 global ay
 $ay(cm) add command -label "EasySweep" -command {
-    easySweep; uS; rV; }
+    easySweep; }
 
 # add the frame to the toolbox
 set f [toolbox_add feasysweep 3]
 
 if { $f != "" } {
     # create a button inside the frame:
-    button $f.b1 -width 10 -text "EasySweep" -command { easySweep; uS; rV; }
+    button $f.b1 -width 10 -text "EasySweep" -command { easySweep; }
 
     # display the button
     pack $f.b1 -side left -fill x -expand yes
