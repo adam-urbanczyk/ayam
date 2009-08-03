@@ -388,6 +388,9 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        glEnd();
       glPopMatrix();
       glEnable(GL_DEPTH_TEST);
+      /* the following line fixes problems with Intel
+	 onboard graphics (i915) */
+      glLogicOp(GL_COPY);
       glDisable(GL_COLOR_LOGIC_OP);
       glFlush();
       glDrawBuffer(GL_BACK);
