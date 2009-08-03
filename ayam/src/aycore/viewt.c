@@ -1290,7 +1290,9 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		   view->rect_ymax = 0.0;
 		 } /* if */
 
-
+	      /* the following line fixes problems with Intel
+		 onboard graphics (i915) */
+	      glLogicOp(GL_COPY);
 	      glDisable(GL_COLOR_LOGIC_OP);
 	      glFlush();
 	      glDrawBuffer(GL_BACK);
