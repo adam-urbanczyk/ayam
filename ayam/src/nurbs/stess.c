@@ -853,7 +853,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	      /* XXXX fake here a new c based on tls tts...*/
 	      angle = 0.0;
 	      ay_nct_getorientation(c, &angle);
-	      if(angle > 0.0)
+	      if(angle < 0.0)
 		tds[i] = 1;
 
 	      i++;
@@ -894,7 +894,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  /* get orientation of trimloop */
 	  angle = 0.0;
 	  ay_nct_getorientation(c, &angle);
-	  if(angle > 0.0)
+	  if(angle < 0.0)
 	    tds[i] = 1;
 
 	  if(dd)
@@ -1135,7 +1135,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
  ay_stess_uvp *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
- double *fd1, *fd2, temp[3] = {0}, ders[6] = {0};
+ double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
  int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
@@ -1339,7 +1339,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   /* remove unwanted lines (all lines that contain no trimloop point) */
   if(first_loop_cw)
     {
-      for(i=0; i < Cn; i++)
+      for(i = 0; i < Cn; i++)
 	{
 	  trimloop_point = AY_FALSE;
 	  done = AY_FALSE;
@@ -1415,7 +1415,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
  ay_stess_uvp *uvpptr2, *uvpptr3;
  double *tt, ipoint[2] = {0};
  double p3[2], p4[2], *U, *V, u, v;
- double *fd1, *fd2, temp[3] = {0}, ders[6] = {0};
+ double *fd1, *fd2, temp[3] = {0}, ders[12] = {0};
  double umin, umax, vmin, vmax, ud, vd;
  int i, j, k, l, ind;
  int out = 0, first_loop = AY_TRUE, first_loop_cw = AY_FALSE;
@@ -1867,7 +1867,7 @@ cleanup:
       ay_stess_destroy(p);
     }
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_stess_TessTrimmedNP */
 
 
