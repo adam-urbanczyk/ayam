@@ -1109,6 +1109,10 @@ int ay_stess_DrawTrimmedSurface(ay_object *o);
 
 /*! \brief
  */
+int ay_stess_ShadeTrimmedSurface(ay_object *o);
+
+/*! \brief
+ */
 int ay_stess_TessNP(ay_object *o, int qf);
 
 
