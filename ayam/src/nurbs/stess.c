@@ -1253,7 +1253,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
-		       "Intersecting or misoriented Trimcurves!");
+		       "Intersecting or misoriented trimcurves!");
 
 	      if(trimuvp)
 		{
@@ -1307,8 +1307,8 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		  /* free unwanted vertices */
 		  if(uvpptr != (*olduvp))
 		    {
-		      uvpptr2 = (*olduvp)->next;
-		      (*olduvp)->next = uvpptr;
+		      uvpptr2 = *olduvp;
+		      *olduvp = uvpptr;
 		      while(uvpptr2 != uvpptr)
 			{
 			  uvpptr3 = uvpptr2->next;
@@ -1334,6 +1334,18 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	    } /* if */
 	  uvpptr = uvpptr->next;
 	} /* while */
+
+      /* free left over outer uvps */
+      if(*olduvp != uvps[i] && out)
+	{
+	  while(*olduvp)
+	    {
+	      uvpptr2 = *olduvp;
+	      *olduvp = (*olduvp)->next;
+	      free(uvpptr2);
+	    }
+	}
+
     } /* for */
 
   /* remove unwanted lines (all lines that contain no trimloop point) */
@@ -1535,7 +1547,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
-		       "Intersecting or misoriented Trimcurves!");
+		       "Intersecting or misoriented trimcurves!");
 
 	      if(trimuvp)
 		{
@@ -1558,62 +1570,74 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   /* remove unwanted uvps */
   first_loop = AY_TRUE;
   for(i = 0; i < Cm; i++)
-   {
-    olduvp = &(uvps[i]);
-    uvpptr = uvps[i];
+    {
+      olduvp = &(uvps[i]);
+      uvpptr = uvps[i];
 
-    while(uvpptr)
-      {
-	/* act only on trimloop-points */
-	if(uvpptr->type == 1)
-	  {
-	    if(first_loop)
-	      {
-		if(uvpptr->dir == 0)
-		  { /* cw */
-		    /* since this loop is cw, we came from outside */
-		    out = 1;
-		  }
-	      }
-	    first_loop = AY_FALSE;
+      while(uvpptr)
+	{
+	  /* act only on trimloop-points */
+	  if(uvpptr->type == 1)
+	    {
+	      if(first_loop)
+		{
+		  if(uvpptr->dir == 0)
+		    { /* cw */
+		      /* since this loop is cw, we came from outside */
+		      out = 1;
+		    }
+		}
+	      first_loop = AY_FALSE;
 
-	    if(out)
-	      {
-		/*
-		 * we enter the patch again, and remove all
-		 * uvps that we skipped since we left the patch
-		 */
-		/* free unwanted vertices */
-		if(uvpptr != (*olduvp))
-		  {
-		    uvpptr2 = (*olduvp)->next;
-		    (*olduvp)->next = uvpptr;
-		    while(uvpptr2 != uvpptr)
-		      {
-			uvpptr3 = uvpptr2->next;
-			free(uvpptr2);
-			uvpptr2 = uvpptr3;
-		      } /* while */
-		  }
+	      if(out)
+		{
+		  /*
+		   * we enter the patch again, and remove all
+		   * uvps that we skipped since we left the patch
+		   */
+		  /* free unwanted vertices */
+		  if(uvpptr != (*olduvp))
+		    {
+		      uvpptr2 = *olduvp;
+		      *olduvp = uvpptr;
+		      while(uvpptr2 != uvpptr)
+			{
+			  uvpptr3 = uvpptr2->next;
+			  free(uvpptr2);
+			  uvpptr2 = uvpptr3;
+			} /* while */
+		    }
 
-		/* we are now "in" */
-		out = 0;
-	      }
-	    else
-	      {
-		/*
-		 * we are about to leave the patch and remember
-		 * where we are; we will delete later from
-		 * uvpptr->next on, all intermediate uvps
-		 */
-		olduvp = &(uvpptr->next);
-		/* we are now out */
-		out = 1;
-	      }
-	  } /* if */
-	uvpptr = uvpptr->next;
-      } /* while */
-   } /* for */
+		  /* we are now "in" */
+		  out = 0;
+		}
+	      else
+		{
+		  /*
+		   * we are about to leave the patch and remember
+		   * where we are; we will delete later from
+		   * uvpptr->next on, all intermediate uvps
+		   */
+		  olduvp = &(uvpptr->next);
+		  /* we are now out */
+		  out = 1;
+		}
+	    } /* if */
+	  uvpptr = uvpptr->next;
+	} /* while */
+
+      /* free left over outer uvps */
+      if(*olduvp != uvps[i] && out)
+	{
+	  while(*olduvp)
+	    {
+	      uvpptr2 = *olduvp;
+	      *olduvp = (*olduvp)->next;
+	      free(uvpptr2);
+	    }
+	}
+
+    } /* for */
 
   /* remove unwanted lines (all lines that contain no trimloop point) */
   if(first_loop_cw)
@@ -1776,7 +1800,8 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 	    }
 	  else
 	    {
-	      glVertex3dv((GLdouble*)(uvpptr->C));
+	      if(!out)
+		glVertex3dv((GLdouble*)(uvpptr->C));
 	    } /* if */
 
 	  uvpptr = uvpptr->next;
@@ -1804,8 +1829,102 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
       glEnd();
     } /* for */
 
- return AY_OK;
+ return AY_OK; 
 } /* ay_stess_DrawTrimmedSurface */
+
+
+/* ay_stess_ShadeTrimmedSurface:
+ *
+ */
+int
+ay_stess_ShadeTrimmedSurface(ay_object *o)
+{
+ int i;
+ ay_stess *stess = NULL;
+ ay_stess_uvp *u1, *u2, *v1, *v2;
+ ay_nurbpatch_object *p = NULL;
+
+  p = (ay_nurbpatch_object *)o->refine;
+
+  stess = p->stess;
+
+  if(!stess)
+    return AY_ENULL;
+
+  for(i = 0; i < (stess->upslen-1); i++)
+    {
+      u1 = stess->ups[i];
+      u2 = stess->ups[i+1];
+
+      if(!u1 || !u2 || !u1->next || !u2->next)
+	continue;
+
+      glBegin(GL_TRIANGLE_STRIP);
+      glNormal3dv((GLdouble*)&((u1->C)[3]));
+      glVertex3dv((GLdouble*)(u1->C));
+      glNormal3dv((GLdouble*)&((u2->C)[3]));
+      glVertex3dv((GLdouble*)(u2->C));
+
+      u1 = u1->next;
+      u2 = u2->next;
+
+      while(u1 && u2)
+	{
+	  glNormal3dv((GLdouble*)&((u1->C)[3]));
+	  glVertex3dv((GLdouble*)(u1->C));
+	  glNormal3dv((GLdouble*)&((u2->C)[3]));
+	  glVertex3dv((GLdouble*)(u2->C));
+
+	  if(u1->type == 1 && u2->type == 1)
+	    {
+	      u1 = u1->next;
+	      u2 = u2->next;
+	      if(!u1 || !u2)
+		break;
+	      glEnd();
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((u1->C)[3]));
+	      glVertex3dv((GLdouble*)(u1->C));
+	      glNormal3dv((GLdouble*)&((u2->C)[3]));
+	      glVertex3dv((GLdouble*)(u2->C));
+	    } /* if */
+
+	  if(u1->type == 1 && u2->type == 0)
+	    {
+	      u1 = u1->next;
+	      if(!u1)
+		break;
+	      glEnd();
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((u1->C)[3]));
+	      glVertex3dv((GLdouble*)(u1->C));
+	      glNormal3dv((GLdouble*)&((u2->C)[3]));
+	      glVertex3dv((GLdouble*)(u2->C));
+	    } /* if */
+
+	  if(u1->type == 0 && u2->type == 1)
+	    {
+	      u2 = u2->next;
+	      if(!u2)
+		break;
+	      glEnd();
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((u1->C)[3]));
+	      glVertex3dv((GLdouble*)(u1->C));
+	      glNormal3dv((GLdouble*)&((u2->C)[3]));
+	      glVertex3dv((GLdouble*)(u2->C));
+	    } /* if */
+
+	  u1 = u1->next;
+	  u2 = u2->next;
+	} /* while */
+
+      glEnd();
+
+    } /* for */
+
+ return AY_OK;
+} /* ay_stess_ShadeTrimmedSurface */
 
 
 /* ay_stess_TessTrimmedNP:

@@ -663,9 +663,17 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
     }
   else
     {
+      if(npatch->stess)
+	{
+	  ay_status = ay_stess_ShadeTrimmedSurface(o);
+	}
+    }
+#if 0
+  else
+    {
       ay_npatch_shadeglucb(togl, o);
     } /* if */
-
+#endif
  return AY_OK;
 } /* ay_npatch_shadestesscb */
 
@@ -893,7 +901,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
       display_mode = npatch->display_mode-1;
     }
 
-  if((display_mode < 3) || (o->down && o->down->next))
+  if((display_mode < 3) /*|| (o->down && o->down->next)*/)
     {
       ay_npatch_shadeglucb(togl, o);
     }
