@@ -355,6 +355,7 @@ typedef struct ay_stess_s {
   double **tcs; /* [tcslen][tcslens[i]] */
   /* length and direction of trim curves */
   int *tcslens, *tcsdirs; /* [tcslen] */
+  double ud, vd;
 } ay_stess;
 
 
