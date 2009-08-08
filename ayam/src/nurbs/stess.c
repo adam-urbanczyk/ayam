@@ -37,7 +37,8 @@ int ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b);
 int ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			    int numtrims,
 			    double **tcs, int *tcslens, int *tcsdirs,
-			    int *flcw, int *reslen, ay_stess_uvp ***result);
+			    int *flcw, double *resud, double *resvd,
+			    int *reslen, ay_stess_uvp ***result);
 
 int ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			    int numtrims,
@@ -1127,7 +1128,8 @@ int
 ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			int numtrims,
 			double **tcs, int *tcslens, int *tcsdirs,
-			int *flcw, int *reslen, ay_stess_uvp ***result)
+			int *flcw, double *resud, double *resvd,
+			int *reslen, ay_stess_uvp ***result)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *p = NULL;
@@ -1157,11 +1159,13 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   umin = U[p->uorder-1];
   umax = U[p->width];
   ud = (umax-umin)/((Cn)-1);
+  *resud = ud;
 
   V = p->vknotv;
   vmin = V[p->vorder-1];
   vmax = V[p->height];
   vd = (umax-umin)/((Cm)-1);
+  *resvd = vd;
 
   /* fill desired uv-coords */
   u = umin;
@@ -1892,9 +1896,17 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	  if(u1->type == 1 && u2->type == 0)
 	    {
 	      u1 = u1->next;
-	      if(!u1)
-		break;
 	      glEnd();
+
+	      while(u2 && (u2->v+stess->vd < u1->v))
+		u2 = u2->next;
+
+	      if(!u1 || !u2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
 	      glBegin(GL_TRIANGLE_STRIP);
 	      glNormal3dv((GLdouble*)&((u1->C)[3]));
 	      glVertex3dv((GLdouble*)(u1->C));
@@ -1905,9 +1917,17 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	  if(u1->type == 0 && u2->type == 1)
 	    {
 	      u2 = u2->next;
-	      if(!u2)
-		break;
 	      glEnd();
+
+	      while(u1 && (u1->v+stess->vd < u2->v))
+		u1 = u1->next;
+
+	      if(!u1 || !u2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
 	      glBegin(GL_TRIANGLE_STRIP);
 	      glNormal3dv((GLdouble*)&((u1->C)[3]));
 	      glVertex3dv((GLdouble*)(u1->C));
@@ -1959,7 +1979,8 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
 
   ay_status = ay_stess_TessTrimmedNPU(o, qf, st->tcslen, st->tcs,
 				      st->tcslens, st->tcsdirs,
-				      &first_loop_cw, &st->upslen, &st->ups);
+				      &first_loop_cw, &st->ud, &st->vd,
+				      &st->upslen, &st->ups);
 
   if(ay_status)
     goto cleanup;
