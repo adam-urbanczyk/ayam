@@ -1164,7 +1164,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
   V = p->vknotv;
   vmin = V[p->vorder-1];
   vmax = V[p->height];
-  vd = (umax-umin)/((Cm)-1);
+  vd = (vmax-vmin)/((Cm)-1);
   *resvd = vd;
 
   /* fill desired uv-coords */
@@ -1458,7 +1458,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
   V = p->vknotv;
   vmin = V[p->vorder-1];
   vmax = V[p->height];
-  vd = (umax-umin)/((Cm)-1);
+  vd = (vmax-vmin)/((Cm)-1);
 
   /* fill desired uv-coords */
   u = umin;
@@ -1884,7 +1884,10 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      u1 = u1->next;
 	      u2 = u2->next;
 	      if(!u1 || !u2)
-		break;
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
 	      glEnd();
 	      glBegin(GL_TRIANGLE_STRIP);
 	      glNormal3dv((GLdouble*)&((u1->C)[3]));
@@ -1898,10 +1901,16 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      u1 = u1->next;
 	      glEnd();
 
+	      if(!u1)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
 	      while(u2 && (u2->v+stess->vd < u1->v))
 		u2 = u2->next;
 
-	      if(!u1 || !u2)
+	      if(!u2)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
 		  break;
@@ -1919,10 +1928,16 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      u2 = u2->next;
 	      glEnd();
 
+	      if(!u2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
 	      while(u1 && (u1->v+stess->vd < u2->v))
 		u1 = u1->next;
 
-	      if(!u1 || !u2)
+	      if(!u1)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
 		  break;
@@ -1937,6 +1952,110 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 
 	  u1 = u1->next;
 	  u2 = u2->next;
+	} /* while */
+
+      glEnd();
+
+    } /* for */
+
+  for(i = 0; i < (stess->vpslen-1); i++)
+    {
+      v1 = stess->vps[i+1];
+      v2 = stess->vps[i];
+
+      if(!v1 || !v2 || !v1->next || !v2->next)
+	continue;
+
+      glBegin(GL_TRIANGLE_STRIP);
+      glNormal3dv((GLdouble*)&((v1->C)[3]));
+      glVertex3dv((GLdouble*)(v1->C));
+      glNormal3dv((GLdouble*)&((v2->C)[3]));
+      glVertex3dv((GLdouble*)(v2->C));
+
+      v1 = v1->next;
+      v2 = v2->next;
+
+      while(v1 && v2)
+	{
+	  glNormal3dv((GLdouble*)&((v1->C)[3]));
+	  glVertex3dv((GLdouble*)(v1->C));
+	  glNormal3dv((GLdouble*)&((v2->C)[3]));
+	  glVertex3dv((GLdouble*)(v2->C));
+
+	  if(v1->type == 1 && v2->type == 1)
+	    {
+	      v1 = v1->next;
+	      v2 = v2->next;
+	      if(!v1 || !v2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
+	      glEnd();
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((v1->C)[3]));
+	      glVertex3dv((GLdouble*)(v1->C));
+	      glNormal3dv((GLdouble*)&((v2->C)[3]));
+	      glVertex3dv((GLdouble*)(v2->C));
+	    } /* if */
+
+	  if(v1->type == 1 && v2->type == 0)
+	    {
+	      v1 = v1->next;
+	      glEnd();
+
+	      if(!v1)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
+	      while(v2 && (v2->u+stess->ud < v1->u))
+		v2 = v2->next;
+
+	      if(!v2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((v1->C)[3]));
+	      glVertex3dv((GLdouble*)(v1->C));
+	      glNormal3dv((GLdouble*)&((v2->C)[3]));
+	      glVertex3dv((GLdouble*)(v2->C));
+	    } /* if */
+
+	  if(v1->type == 0 && v2->type == 1)
+	    {
+	      v2 = v2->next;
+	      glEnd();
+
+	      if(!v2)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
+	      while(v1 && (v1->u+stess->ud < v2->u))
+		v1 = v1->next;
+
+	      if(!v1)
+		{
+		  glBegin(GL_TRIANGLE_STRIP);
+		  break;
+		}
+
+	      glBegin(GL_TRIANGLE_STRIP);
+	      glNormal3dv((GLdouble*)&((v1->C)[3]));
+	      glVertex3dv((GLdouble*)(v1->C));
+	      glNormal3dv((GLdouble*)&((v2->C)[3]));
+	      glVertex3dv((GLdouble*)(v2->C));
+	    } /* if */
+
+	  v1 = v1->next;
+	  v2 = v2->next;
 	} /* while */
 
       glEnd();
