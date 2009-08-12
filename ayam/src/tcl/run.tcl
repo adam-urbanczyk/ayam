@@ -27,6 +27,7 @@ proc runTool { argvars argstrings command } {
  global ay
 
     winAutoFocusOff
+    set oldFocus [focus]
     set w .rtw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -73,13 +74,13 @@ proc runTool { argvars argstrings command } {
     # foreach
 
     append okscript "eval \"\$command\";"
-    append okscript "grab release .rtw; focus .; destroy .rtw"
+    append okscript "grab release .rtw; restoreFocus $oldFocus; destroy .rtw"
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command $okscript
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	focus . ; destroy $w"
+	restoreFocus $oldFocus; destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -anchor n -fill x -expand yes
@@ -224,6 +225,8 @@ proc runRenderer { cmd template } {
     set w .render$ay(rnum)
     catch {destroy $w}
 
+    set oldFocus [focus]
+
     toplevel $w -class ayam
     wm title $w "Render_$ay(rnum)"
     wm iconname $w "Ayam"
@@ -279,7 +282,7 @@ proc runRenderer { cmd template } {
 	    };
 	    catch \{ fileevent $ioPipe readable \"\" \};
 	    catch \{ fileevent $ioFid readable \"\" \};
-	    focus .;
+	    restoreFocus $oldFocus;
             winAutoFocusOn;
 	    destroy $w"
     pack $w.bca -in $w -side bottom -anchor s -fill x -expand yes

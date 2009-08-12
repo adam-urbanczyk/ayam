@@ -759,7 +759,7 @@ proc editPointDp { } {
     button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
 	    global ay;\
 	    if { [winfo exists \$ay(currentView)] } {\
-	    focus \$ay(currentView) } else { focus . };\
+	    focus \$ay(currentView) } else { resetFocus };\
 	    destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

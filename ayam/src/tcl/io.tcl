@@ -288,6 +288,8 @@ proc io_exportRIB { {expview "" } } {
 
     winAutoFocusOff
 
+    set ay(expRIBFocus) [focus]
+
     set w .exportRIBw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -375,14 +377,16 @@ proc io_exportRIB { {expview "" } } {
 	    # if
 	}
 	# if
-	focus .
 	grab release .exportRIBw
+	restoreFocus $ay(expRIBFocus)
 	destroy .exportRIBw
     }
     # button
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	    grab release .exportRIBw; focus .; destroy $w"
+	    grab release .exportRIBw;\
+            restoreFocus $ay(expRIBFocus);\
+            destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
