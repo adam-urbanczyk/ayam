@@ -69,6 +69,8 @@ proc material_createp { } {
 
     winAutoFocusOff
 
+    set ay(createMFocus) [focus]
+
     set w .createMw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -101,14 +103,17 @@ proc material_createp { } {
 	crtOb Material $temp
 
 	if { $ay_error == 0 } {
-	    focus .
 	    grab release .createMw
+	    restoreFocus $ay(createMFocus)
 	    destroy .createMw
 	    uCR; sL; rV;
 	}
     }
 
-    button $f.bca -text "Cancel" -width 5 -command "focus .;destroy $w"
+    button $f.bca -text "Cancel" -width 5 -command "\
+      grab release .createMw;\
+      restoreFocus $ay(createMFocus);\
+      destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x

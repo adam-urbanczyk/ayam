@@ -801,14 +801,34 @@ proc selNPFL { npfl } {
 #
 proc resetFocus { } {
     global ay
+
     if { $ay(lb) == 0 } {
-	focus $ay(tree)
+	catch {focus $ay(tree)}
     } else {
-	focus $ay(olb)
+	catch {focus $ay(olb)}
     }
+
  return;
 }
 # resetFocus
+
+
+#
+proc restoreFocus { w } {
+
+    if { $w == "" } {
+	resetFocus;
+    } else {
+	if { [winfo exists $w] && [winfo ismapped $w] } {
+	    catch {focus $w}
+	} else {
+	    resetFocus
+	} 
+    }
+
+ return;
+}
+# restoreFocus
 
 
 #

@@ -22,6 +22,8 @@ proc ai_open { } {
 
     winAutoFocusOff
 
+    set oldFocus [focus]
+
     set w .aiw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -43,24 +45,23 @@ proc ai_open { } {
 
     pack $f -in $w -side top -fill x
     set f [frame $w.fl]
-    button $f.bok -text "Start" -pady $ay(pady) -width 6 -command { 
-	global ay
-	focus .
-	destroy .aiw
-	ai_makeInstances
-	if { [winfo exists $ay(tree)] } {
-	    tree_reset
-	} else {
-	    goTop; cS; uS; rV
-	}
-	set ay(sc) 1
-	undo clear
-    }
+    button $f.bok -text "Start" -pady $ay(pady) -width 6 -command "\
+	global ay;\
+	restoreFocus $oldFocus;\
+	destroy .aiw;\
+	ai_makeInstances;\
+	if \{ \[winfo exists \$ay(tree)\] \} \{\
+	    tree_reset\
+	\} else \{\
+	    goTop; cS; uS; rV\
+	\};\
+	set ay(sc) 1;\
+	undo clear"
 
-    button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command { 
-	focus .
-	destroy .aiw
-    }
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 6 -command "\
+	restoreFocus $oldFocus;\
+	destroy .aiw"
+
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
