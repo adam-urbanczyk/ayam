@@ -9,12 +9,6 @@
 
 This document describes how to set up Ayam on the Win32 platform.
 <p>
-These instructions contain just general information that may be
-outdated; additional (more specific and current) information can be obtained
-from the <A HREF="http://www.ayam3d.org/download.html">download page</A>
-of the Ayam project, or the "File Release Notes" document on the
-<A HREF="http://sourceforge.net/project/showfiles.php?group_id=28460">SourceForge download page</A> of the Ayam project.
-<p>
 In addition, there are <A HREF="http://www.ayam3d.org/faq.html">frequently
 asked questions</A> that may be of some help, if something does not work as
 advertised.
@@ -159,26 +153,18 @@ ayslc.dll for BMRT2.6, aysdr.dll for Pixie, ayslb.dll for Air,
 ayslo3d.dll for 3Delight, ayslo.dll for PRMan, and ayso.dll for RenderDotC.
 <p>
 The plugins may be loaded manually (using the main menu entry:
-"File/Load Custom") or automatically on startup of Ayam.
-In order to load a plugin automatically on startup of Ayam, just add the
-complete path and filename of the corresponding Tcl script
-(e.g. loadaysdr.tcl) to the "Scripts" preference setting and restart
-Ayam. The plugins have to be present in a directory called "plugins",
-which in turn has to be present in the directory where "ayam.exe" is located,
-in order to make this work. Your directory structure should look like this:
-<p>
-<code>
-ayam/bin/<br>
-ayam/bin/ayam.exe<br>
-ayam/bin/plugins/ayslb.dll<br>
-ayam/bin/plugins/loadayslb.tcl<br>
-ayam/bin/plugins/...
-</code>
-<p>
+"File/Load Custom") or automatically (using a script).
+In order to load a plugin automatically on each start of Ayam, just add the
+name of the corresponding Tcl script (e.g. loadaysdr.tcl) to the "Scripts"
+preference setting and restart Ayam.
+An example setting setting could look like this:<br>
+<samp>
+loadayslc.tcl
+</samp><br>
 Note that some plugins require additional DLL files to be present in the
 DLL search path. Depending on the flavour of your Win32 you may need to
 adapt the PATH environment variable to include the directories with those
-DLL files. You can also just copy them to the directory where "ayam.exe"
+DLL files. You can also just copy them to the directory where the plugin
 is located. If a plugin does not find the corresponding DLL files it needs,
 you will get "invalid argument" Tcl error messages upon loading, or the
 plugin will fail to scan shaders later on.
@@ -187,29 +173,42 @@ Furthermore, all plugins have been compiled and tested against a
 specific version of the corresponding renderer (as outlined below);
 parsing shaders of other versions of those renderers possibly will not work.
 <p>
-ayslx.dll: Aqsis 1.0.1, does not depend on other DLL files
+Plugin-DLL: Renderer Compiled Version / Tested Version, DLL dependency
 <p>
-aysdr.dll: Pixie 1.7.4, depends on "sdr.dll"<br>
+ayslx.dll: Aqsis 1.0.1 / 1.4.2, does not depend on other DLL files
+<p>
+aysdr.dll: Pixie 2.0.1 / 2.6, depends on "sdr.dll"<br>
 <p>
 ayslb.dll: Air 2.6, does not depend on other DLL files
 <p>
-ayslo3d.dll: 3Delight 5.0.2, depends on "3delight.dll"
+ayslc.dll: BMRT 2.6 / 2.6, does not depend on other DLL files
 <p>
-ayso.dll: RenderDotC 3.4, depends on "soargs.dll"<br>
+ayslo3d.dll: 3Delight 8.5 / 8.5, depends on "3delight.dll"
+<p>
+ayso.dll: RenderDotC 3.4 / 3.4, depends on "soargs.dll"<br>
 Since RenderDotC compiles all shaders as shared native code (into DLL files),
 all paths of the "Shaders" preference setting should also be present in the
 DLL search path.
 <p>
 ayslo.dll: Photorealistic RenderMan 11.5, does not depend on other DLL files
 <p>
-aygso.dll: Gelato 2.0, depends on "libgelato.dll"<br>
+aygso.dll: Gelato 2.2 / 2.2, depends on "libgelato.dll"<br>
+<p>
+This version information may be outdated; current information can be obtained
+from the <A HREF="http://www.ayam3d.org/download.html">download page</A>
+of the Ayam project, or the respective "File Release Notes" document on the
+<A HREF="https://sourceforge.net/projects/ayam/files/">SourceForge download page</A> of the Ayam project.
+<p>
+Finally, mind that you can only load <em>one</em> shader parsing
+plugin at a time into Ayam.
 <p>
 Remember: NEVER use backslashes (\) in any path or filename you enter to Ayam.
 
 <H2>4. Creating and Saving a Working Environment (View Windows)</H2>
 
 The working environment is simply an almost empty Ayam scene file,
-that contains the specification of some view windows.
+that contains the specification of some view windows (and the
+pane configuration).
 This file is loaded automatically on every start of Ayam and
 presents you with a standard working environment, consisting
 of e.g. a traditional 3-view layout (Front, Side, Perspective).
@@ -251,7 +250,7 @@ and the
 asked questions (FAQ)</A>.
 
 <HR>
-<i>Randolf Schultz, 6. Mar 2008<BR>
+<i>Randolf Schultz, 5. Aug 2009<BR>
 <A HREF="http://www.ayam3d.org/">
 http://www.ayam3d.org/</A>&nbsp;&nbsp;&nbsp;&nbsp;Reconstruct the World!
 </i>
