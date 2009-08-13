@@ -40,6 +40,8 @@ typedef struct sdnpatch_object_s
 
 } sdnpatch_object;
 
+/* prototypes of functions local to this module: */
+
 extern "C" {
 #ifdef WIN32
   __declspec (dllexport)
@@ -53,6 +55,16 @@ int sdnpatch_convnp(int mode, ay_object *p, ay_object **result);
 
 int sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+int sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+int sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
+
+/* assorted helper classes: */
 
 class AyWriter : public FlatMeshHandler
 {
@@ -347,9 +359,6 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 {
  sdnpatch_object *sdnpatch = NULL;
  char fname[] = "crtsdnpatch";
- std::vector<Vertex*>::iterator it;
- Vertex *v;
- unsigned int a = 0;
 
   if(!o)
     return AY_ENULL;
@@ -428,23 +437,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   MeshBuilder::dispose(meshBuilder);
 
-  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
-
-  if(!(sdnpatch->controlCoords = (double*)calloc(
-			sdnpatch->controlVertices->size(), 4*sizeof(double))))
-    return AY_EOMEM;
-
-  for(it = (*sdnpatch->controlVertices).begin();
-      it != (*sdnpatch->controlVertices).end();
-      it++)
-    {
-      v = *it;
-      sdnpatch->controlCoords[a]   = v->getX();
-      sdnpatch->controlCoords[a+1] = v->getY();
-      sdnpatch->controlCoords[a+2] = v->getZ();
-      sdnpatch->controlCoords[a+3] = v->getW();
-      a += 4;
-    }
+  sdnpatch_getcontrolvertices(sdnpatch);
 
   o->refine = sdnpatch;
 
@@ -493,9 +486,6 @@ sdnpatch_copycb(void *src, void **dst)
 {
  sdnpatch_object *sdnpatch = NULL;
  sdnpatch_object *srcsdnpatch = NULL;
- std::vector<Vertex*>::iterator it;
- Vertex *v;
- unsigned int a = 0;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -514,24 +504,7 @@ sdnpatch_copycb(void *src, void **dst)
   if(srcsdnpatch->controlMesh)
     sdnpatch->controlMesh = new Mesh(*(srcsdnpatch->controlMesh));
 
-
-  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
-
-  if(!(sdnpatch->controlCoords = (double*)calloc(
-			 sdnpatch->controlVertices->size(), 4*sizeof(double))))
-    return AY_EOMEM;
-
-  for(it = (*sdnpatch->controlVertices).begin();
-      it != (*sdnpatch->controlVertices).end();
-      it++)
-    {
-      v = *it;
-      sdnpatch->controlCoords[a]   = v->getX();
-      sdnpatch->controlCoords[a+1] = v->getY();
-      sdnpatch->controlCoords[a+2] = v->getZ();
-      sdnpatch->controlCoords[a+3] = v->getW();
-      a += 4;
-    }
+  sdnpatch_getcontrolvertices(sdnpatch);
 
   if(srcsdnpatch->subdivMesh)
     sdnpatch->subdivMesh = new Mesh(*(srcsdnpatch->subdivMesh));
@@ -838,7 +811,7 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
 
   MeshBuilder::dispose(meshBuilder);
 
-  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
+  sdnpatch_getcontrolvertices(sdnpatch);
 
   o->refine = sdnpatch;
 
@@ -1926,6 +1899,185 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_convnptcmd */
 
 
+/* sdnpatch_impplytcmd:
+ *  Tcl command to import PLY files
+ */
+int
+sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "sdnimpPly";
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
+
+  Mesh *controlMesh = new Mesh(3);
+  MeshBuilder *meshBuilder = MeshBuilder::create(*controlMesh);
+  PlyReader *plyReader = new PlyReader(*meshBuilder);
+
+  try
+    {
+      plyReader->read(argv[1]);
+    }
+  catch (std::exception &e)
+    {
+      delete plyReader;
+      MeshBuilder::dispose(meshBuilder);
+      controlMesh->clear();
+      delete controlMesh;
+      ay_error(AY_ERROR, fname, "Error reading file!");
+      return TCL_OK;
+    }
+
+  if(!(o = (ay_object*)calloc(1, sizeof(ay_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+
+  ay_object_defaults(o);
+  o->type = sdnpatch_id;
+
+  if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+
+  sdnpatch->controlMesh = controlMesh;
+  sdnpatch->subdivLevel = 2;
+  sdnpatch->subdivDegree = controlMesh->getDegree();
+
+  ay_status = sdnpatch_getcontrolvertices(sdnpatch);
+
+  o->refine = sdnpatch;
+
+  o->modified = AY_TRUE;
+  ay_notify_force(o);
+
+  ay_status = ay_object_link(o);
+
+  ay_notify_parent();
+
+  delete plyReader;
+  MeshBuilder::dispose(meshBuilder);
+
+ return TCL_OK;
+} /* sdnpatch_impplytcmd */
+
+
+/* sdnpatch_expplytcmd:
+ *  Tcl command to export PLY files
+ */
+int
+sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "sdnexpPly";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check args */
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, fname, "filename");
+      return TCL_OK;
+    }
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  std::ofstream file(argv[1]);
+
+  MeshFlattener *meshFlattener = MeshFlattener::create(*sdnpatch->controlMesh);
+  meshFlattener->setCompatible(true);
+
+  FlatMeshHandler *handler = new PlyWriter(&file);
+
+  meshFlattener->flatten(*handler);
+  delete handler;
+
+  MeshFlattener::dispose(meshFlattener);
+  file.close();
+
+ return TCL_OK;
+} /* sdnpatch_expplytcmd */
+
+
+/* sdnpatch_getcontrolvertices:
+ *  get adress and content of all control vertices
+ *  (for selection and editing)
+ */
+int
+sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
+{
+ std::vector<Vertex*>::iterator it;
+ Vertex *v;
+ unsigned int a = 0;
+
+  if(!sdnpatch || !sdnpatch->controlMesh)
+    return AY_ENULL;
+
+  if(sdnpatch->controlVertices)
+    {
+      delete sdnpatch->controlVertices;
+      sdnpatch->controlVertices = NULL;
+    }
+
+  if(sdnpatch->controlCoords)
+    {
+      free(sdnpatch->controlCoords);
+      sdnpatch->controlCoords = NULL;
+    }
+
+  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
+
+  if(sdnpatch->controlVertices)
+    {
+      if(!(sdnpatch->controlCoords = (double*)calloc(
+		sdnpatch->controlVertices->size(), 4*sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+
+      for(it = (*sdnpatch->controlVertices).begin();
+	  it != (*sdnpatch->controlVertices).end();
+	  it++)
+	{
+	  v = *it;
+	  sdnpatch->controlCoords[a]   = v->getX();
+	  sdnpatch->controlCoords[a+1] = v->getY();
+	  sdnpatch->controlCoords[a+2] = v->getZ();
+	  sdnpatch->controlCoords[a+3] = v->getW();
+	  a += 4;
+	}
+    } /* if */
+
+ return AY_OK;
+} /* sdnpatch_getcontrolvertices */
+
 extern "C" {
 
 /* Sdnpatch_Init:
@@ -1984,6 +2136,11 @@ Sdnpatch_Init(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "sdnconvertNP", (Tcl_CmdProc*) sdnpatch_convnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "sdnimpPly", (Tcl_CmdProc*) sdnpatch_impplytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnexpPly", (Tcl_CmdProc*) sdnpatch_expplytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
      the Sdnpatch-Attributes Property GUI */
