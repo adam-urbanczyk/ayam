@@ -18,8 +18,8 @@ arr   SDNPatchAttrData
 sproc ""
 gproc ""
 w     fSDNPatchAttr
-
 }
+# SDNPatchAttr
 
 # create SDNPatchAttr-UI
 set w [frame $ay(pca).$SDNPatchAttr(w)]
@@ -29,13 +29,230 @@ addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
 
 
-
 # add menu entry to the "Create/Custom Object" sub-menu
 mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
 
 global ay
 $ay(cm) add command -label "To SDNPatch" -command {
     sdnconvertNP; uS; rV; }
+$ay(cm) add command -label "Import PLY" -command plyio_import
+$ay(cm) add command -label "Export PLY" -command plyio_export
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch
+
+
+uplevel #0 { array set plyio_options {
+    filename ""
+    FileName "unnamed.ply"
+} }
+
+
+
+# plyio_import:
+#  import PLY file
+#
+proc plyio_import { } {
+    global ay ay_error plyio_options aymainshortcuts
+
+    winAutoFocusOff
+
+    if { $plyio_options(filename) != "" } {
+	set plyio_options(FileName) $plyio_options(filename)
+    } else {
+	set plyio_options(FileName) "unnamed.ply"
+    }
+
+    cS; plb_update
+    update
+
+    set ay_error ""
+
+    set w .plyio
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "PLY Import Options"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w .
+    }
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) .plyio.f2.bca
+    set ay(bok) .plyio.f2.bok
+
+    set types {{"PLY Files" ".ply"} {"All files" *}}
+    addFileT $f plyio_options FileName $types
+    #addParam $f plyio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global plyio_options
+
+	set plyio_options(filename) $plyio_options(FileName)
+	set oldcd [pwd]
+	cd [file dirname $plyio_options(FileName)]
+	sdnimpPly [file tail $plyio_options(FileName)]
+
+	cd $oldcd
+	goTop
+	selOb
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	update
+
+	uS
+	rV
+
+	set ay(sc) 1
+
+	if { $ay_error < 2 } {
+	    ayError 4 "plyio_import" "Done importing:"
+	    ayError 4 "plyio_import" "$plyio_options(FileName)"
+	} else {
+	    ayError 2 "plyio_import" "There were errors while importing:"
+	    ayError 2 "plyio_import" "$plyio_options(FileName)"
+	}
+
+	grab release .plyio
+	focus .
+	destroy .plyio
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .plyio;\
+		focus .;\
+		destroy .plyio"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    bind $w <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
+    # context help
+    #bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impply }
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# plyio_import
+
+
+# plyio_export:
+#  export PLY file
+#
+proc plyio_export { } {
+    global ay ay_error plyio_options aymainshortcuts
+
+    winAutoFocusOff
+
+    cS; plb_update
+    update
+
+    set ay_error ""
+
+    set w .plyio
+    catch {destroy $w}
+    toplevel $w -class ayam
+    wm title $w "PLY Export Options"
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w .
+    }
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    if { $plyio_options(filename) != "" } {
+	set plyio_options(FileName) $plyio_options(filename)
+    } else {
+	if { $ay(filename) != "" &&\
+		 $plyio_options(FileName) == "unnamed.ply" } {
+	    set plyio_options(FileName) [file rootname $ay(filename)].ply
+	}
+    }
+
+    set ay(bca) .plyio.f2.bca
+    set ay(bok) .plyio.f2.bok
+
+    set types {{"PLY Files" ".ply"} {"All files" *}}
+    addSFileT $f plyio_options FileName $types
+ 
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global plyio_options;
+
+	# append extension
+	set plyio_options(FileName) [io_appext $plyio_options(FileName) ".ply"]
+
+	set plyio_options(filename) $plyio_options(FileName)
+	set oldcd [pwd]
+	cd [file dirname $plyio_options(FileName)]
+	sdnimpPly [file tail $plyio_options(FileName)]
+
+	cd $oldcd
+	update
+
+	if { $ay_error < 2 } {
+	    ayError 4 "plyio_export" "Done exporting to:"
+	    ayError 4 "plyio_export" "$plyio_options(FileName)"
+	} else {
+	    ayError 2 "plyio_export" "There were errors while exporting to:"
+	    ayError 2 "plyio_export" "$plyio_options(FileName)"
+	}
+	# if
+
+	grab release .plyio
+	focus .
+	destroy .plyio
+    }
+    # button
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+		grab release .plyio;\
+		focus .;\
+		destroy .plyio"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    bind $w <Key-Return> "$::ay(bok) invoke;break"
+    catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
+    # context help
+    #bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expply }
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# plyio_export
