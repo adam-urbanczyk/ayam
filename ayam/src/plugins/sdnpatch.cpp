@@ -351,6 +351,306 @@ AyConvertor::convert(ay_pomesh_object *pomesh)
 } /* AyConvertor::convert */
 
 
+class FaceExtruder : public FlatMeshHandler
+{
+public:
+  FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts);
+
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w);
+  void addToFace(unsigned int vertNum);
+  void closeFace(void);
+  void addKnotInterval(unsigned int vertex1,
+		       unsigned int vertex2,
+		       KnotPrecision interval);
+  void finishKnotIntervals(void);
+  Mesh *m_newMesh;
+
+private:
+
+  sdnpatch_object *m_sdnpatch;
+  ay_point *m_pnts;
+
+  unsigned int m_oldVertsNum;
+  unsigned int m_newVertsNum;
+
+  vector<unsigned int> m_faceVerts;
+
+  // collect new vertices
+  vector<VertexPrecision> m_newVerts;
+
+  // collect new faces 
+  unsigned int m_newFacesNum;
+  vector<unsigned int> m_newFaces;
+
+  // collect new dummy faces (we collect them separately, because their
+  // vertice indizes need to be increased by the number of extra
+  // vertices created by the face extrusion
+  unsigned int m_newDummyFacesNum;
+  vector<unsigned int> m_newDummyFaces;
+
+};
+
+
+FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts)
+{
+  m_sdnpatch = sdnpatch;
+  m_pnts = pnts;
+  m_oldVertsNum = sdnpatch->controlVertices->size();
+  m_newVertsNum = 0;
+  m_newFacesNum = 0;
+} /* FaceExtruder::FaceExtruder */
+
+
+void
+FaceExtruder::addVertex(VertexPrecision x,
+			VertexPrecision y,
+			VertexPrecision z,
+			VertexPrecision w)
+{
+  m_newVerts.push_back(x);
+  m_newVerts.push_back(y);
+  m_newVerts.push_back(z);
+  m_newVerts.push_back(w);
+
+ return;
+} /* FaceExtruder::addVertex */
+
+
+void
+FaceExtruder::addToFace(unsigned int vertNum)
+{
+  m_faceVerts.push_back(vertNum);
+
+ return;
+} /* FaceExtruder::addToFace */
+
+
+void
+FaceExtruder::closeFace(void)
+{
+ vector<unsigned int>::iterator fi;
+ bool found = false, isSelected = true, isDummy = false;
+ unsigned int i = 0;
+ ay_point *pnt = NULL;
+ double *cv = NULL, *p = NULL, N[3];
+ Vertex *v = NULL;
+ vector<unsigned int> newVerts;
+ vector<unsigned int>::iterator nfi;
+
+  /* is this face selected? */
+  fi = m_faceVerts.begin();
+  for(i = 0; i < m_faceVerts.size(); i++)
+    {
+      pnt = m_pnts;
+      found = false;
+      while(pnt)
+	{
+	  if(pnt->index == *fi)
+	    {
+	      found = true;
+	      break;
+	    }
+	  pnt = pnt->next;
+	}
+
+      if(!found)
+	{
+	  isSelected = false;
+	  break;
+	}
+
+      fi++;
+    }
+
+  if(isSelected)
+    {
+      /* face is selected => discard original face and create 5 new faces */
+      if(!(cv = (double*)calloc(m_faceVerts.size()*3,sizeof(double))))
+	return;
+
+      p = cv;      
+      fi = m_faceVerts.begin();
+      for(i = 0; i < m_faceVerts.size(); i++)
+	{
+	  v = m_sdnpatch->controlVertices->at(*fi);
+
+	  p[0] = v->getX();
+	  p[1] = v->getY();
+	  p[2] = v->getZ();
+
+	  p += 3;
+	  fi++;
+	}
+
+      /* XXXX ToDo fix this approach */
+      ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
+
+      newVerts.reserve(m_faceVerts.size());
+
+      p = cv;
+      fi = m_faceVerts.begin();
+      for(i = 0; i < m_faceVerts.size(); i++)
+	{
+	  v = m_sdnpatch->controlVertices->at(*fi);
+
+	  m_newVerts.push_back(p[0]-N[0]);
+	  m_newVerts.push_back(p[1]-N[1]);
+	  m_newVerts.push_back(p[2]-N[2]);
+	  m_newVerts.push_back(v->getW());
+
+	  newVerts.push_back(m_oldVertsNum+m_newVertsNum);
+	  m_newVertsNum++;
+
+	  p += 3;
+	  fi++;
+	}
+
+      /* create the faces */
+     
+      for(i = 0; i < m_faceVerts.size()-1; i++)
+	{
+	  m_newFaces.push_back(4);
+	  m_newFaces.push_back(m_faceVerts[i]);
+	  m_newFaces.push_back(m_faceVerts[i+1]);
+	  m_newFaces.push_back(newVerts[i+1]);
+	  m_newFaces.push_back(newVerts[i]);
+
+	  m_newFacesNum++;
+	}
+
+      m_newFaces.push_back(4);
+      m_newFaces.push_back(m_faceVerts.back());
+      m_newFaces.push_back(m_faceVerts.front());
+      m_newFaces.push_back(newVerts.front());
+      m_newFaces.push_back(newVerts.back());
+      m_newFacesNum++;
+
+      nfi = newVerts.begin();
+      m_newFaces.push_back(newVerts.size());
+      for(i = 0; i < newVerts.size(); i++)
+	{
+	  m_newFaces.push_back(*nfi);
+	  nfi++;
+	}
+      m_newFacesNum++;
+    }
+  else
+    {
+      /* face is not selected => just copy original face */
+
+      isDummy = false;
+      fi = m_faceVerts.begin();
+      for(i = 0; i < m_faceVerts.size(); i++)
+	{
+	  if(*fi > m_oldVertsNum)
+	    {
+	      isDummy = true;
+	      break;
+	    }
+	  fi++;
+	}
+
+      if(!isDummy)
+	{
+	  m_newFaces.push_back(m_faceVerts.size());
+	  fi = m_faceVerts.begin();
+	  for(i = 0; i < m_faceVerts.size(); i++)
+	    {
+	      m_newFaces.push_back(*fi);
+	      fi++;
+	    }
+	  m_newFacesNum++;
+	}
+      else
+	{
+	  m_newDummyFaces.push_back(m_faceVerts.size());
+	  fi = m_faceVerts.begin();
+	  for(i = 0; i < m_faceVerts.size(); i++)
+	    {
+	      m_newDummyFaces.push_back(*fi);
+	      fi++;
+	    }
+	  m_newDummyFacesNum++;
+	}
+    }
+
+  m_faceVerts.clear();
+
+ return;
+} /* FaceExtruder::closeFace */
+
+
+void
+FaceExtruder::addKnotInterval(unsigned int vertex1,
+			      unsigned int vertex2,
+			      KnotPrecision interval)
+{
+  //m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
+
+ return;
+} /* FaceExtruder::addKnotInterval */
+
+
+void
+FaceExtruder::finishKnotIntervals(void)
+{
+ MeshBuilder *meshBuilder = NULL;
+ vector<VertexPrecision>::iterator vi = m_newVerts.begin();
+ VertexPrecision x, y, z, w;
+ vector<unsigned int>::iterator fi = m_newFaces.begin();
+ unsigned int numVerts;
+ unsigned int i, j;
+
+  m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
+  meshBuilder = MeshBuilder::create(*m_newMesh);
+
+  for(i = 0; i < m_oldVertsNum+m_newVertsNum; i++)
+    {
+      x = *vi;
+      vi++;
+      y = *vi;
+      vi++;
+      z = *vi;
+      vi++;
+      w = *vi;
+      vi++;
+      meshBuilder->addVertex(x, y, z, w);
+    }
+
+  meshBuilder->finishVertices();
+
+  for(i = 0; i < m_newFacesNum; i++)
+    {
+      numVerts = *fi;
+      meshBuilder->startFace(numVerts);
+
+      fi++;
+      for(j = 0; j < numVerts; j++)
+	{
+	  meshBuilder->addToFace(*fi);
+	  fi++;
+	}
+
+      meshBuilder->closeFace();
+    }
+
+  /* XXXX ToDo: add dummy faces */
+
+  meshBuilder->finishFaces();
+
+  meshBuilder->finishKnotIntervals();
+
+  MeshBuilder::dispose(meshBuilder);
+
+ return;
+} /* FaceExtruder::finishKnotIntervals */
+
+
+
+
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
  */
@@ -2026,6 +2326,66 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_expplytcmd */
 
 
+/* sdnpatch_extrudefacetcmd:
+ *  Tcl command to export PLY files
+ */
+int
+sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "sdnextrudeface";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  if(!o->selp)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  MeshFlattener *meshFlattener =
+    MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+  FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp);
+  meshFlattener->flatten(*handler);
+
+  delete sdnpatch->controlMesh;
+  sdnpatch->controlMesh = ((FaceExtruder*)handler)->m_newMesh;
+
+  delete handler;
+  MeshFlattener::dispose(meshFlattener);
+
+  sdnpatch_getcontrolvertices(sdnpatch);
+
+  /* XXXX ToDo: re-select extruded face */
+  ay_selp_clear(o);
+
+  o->modified = AY_TRUE;
+  ay_notify_force(o);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_extrudefacetcmd */
+
+
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
@@ -2140,6 +2500,10 @@ Sdnpatch_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "sdnexpPly", (Tcl_CmdProc*) sdnpatch_expplytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnextrudeFace",
+		    (Tcl_CmdProc*) sdnpatch_extrudefacetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
