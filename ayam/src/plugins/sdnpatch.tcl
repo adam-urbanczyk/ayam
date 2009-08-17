@@ -35,8 +35,11 @@ mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
 global ay
 $ay(cm) add command -label "To SDNPatch" -command {
     sdnconvertNP; uS; rV; }
+$ay(cm) add command -label "Face Extrude" -command {
+    sdnextrudeFace; rV; }
 $ay(cm) add command -label "Import PLY" -command plyio_import
 $ay(cm) add command -label "Export PLY" -command plyio_export
+
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch
