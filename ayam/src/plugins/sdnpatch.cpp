@@ -391,6 +391,11 @@ private:
   unsigned int m_newDummyFacesNum;
   vector<unsigned int> m_newDummyFaces;
 
+  // collect knot intervals
+  unsigned int m_newKnotIntervalsNum;
+  vector<unsigned int> m_newKnotIntervals;
+  vector<KnotPrecision> m_newKnots;
+
 };
 
 
@@ -401,6 +406,8 @@ FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_oldVertsNum = sdnpatch->controlVertices->size();
   m_newVertsNum = 0;
   m_newFacesNum = 0;
+  m_newDummyFacesNum = 0;
+  m_newKnotIntervalsNum = 0;
 } /* FaceExtruder::FaceExtruder */
 
 
@@ -588,8 +595,10 @@ FaceExtruder::addKnotInterval(unsigned int vertex1,
 			      unsigned int vertex2,
 			      KnotPrecision interval)
 {
-  //m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
-
+  m_newKnotIntervals.push_back(vertex1);
+  m_newKnotIntervals.push_back(vertex2);
+  m_newKnots.push_back(interval);
+  m_newKnotIntervalsNum++;
  return;
 } /* FaceExtruder::addKnotInterval */
 
@@ -598,30 +607,26 @@ void
 FaceExtruder::finishKnotIntervals(void)
 {
  MeshBuilder *meshBuilder = NULL;
- vector<VertexPrecision>::iterator vi = m_newVerts.begin();
- VertexPrecision x, y, z, w;
- vector<unsigned int>::iterator fi = m_newFaces.begin();
+ vector<unsigned int>::iterator fi;
  unsigned int numVerts;
  unsigned int i, j;
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*m_newMesh);
 
+  j = 0;
   for(i = 0; i < m_oldVertsNum+m_newVertsNum; i++)
     {
-      x = *vi;
-      vi++;
-      y = *vi;
-      vi++;
-      z = *vi;
-      vi++;
-      w = *vi;
-      vi++;
-      meshBuilder->addVertex(x, y, z, w);
+      meshBuilder->addVertex(m_newVerts[j],
+			     m_newVerts[j+1],
+			     m_newVerts[j+2],
+			     m_newVerts[j+3]);
+      j += 4;
     }
 
   meshBuilder->finishVertices();
 
+  fi = m_newFaces.begin();
   for(i = 0; i < m_newFacesNum; i++)
     {
       numVerts = *fi;
@@ -637,9 +642,38 @@ FaceExtruder::finishKnotIntervals(void)
       meshBuilder->closeFace();
     }
 
-  /* XXXX ToDo: add dummy faces */
+  if(m_newDummyFacesNum > 0)
+    {
+      fi = m_newDummyFaces.begin();
+      for(i = 0; i < m_newDummyFacesNum; i++)
+	{
+	  numVerts = *fi;
+	  meshBuilder->startFace(numVerts);
+
+	  fi++;
+	  for(j = 0; j < numVerts; j++)
+	    {
+	      meshBuilder->addToFace(*fi);
+	      fi++;
+	    }
+
+	  meshBuilder->closeFace();
+	}
+    }
 
   meshBuilder->finishFaces();
+
+  if(m_newKnotIntervalsNum > 0)
+    {
+      j = 0;
+      for(i = 0; i < m_newKnotIntervalsNum; i++)
+	{
+	  meshBuilder->addKnotInterval(m_newKnotIntervals[j],
+				       m_newKnotIntervals[j+1],
+				       m_newKnots[i]);
+	  j += 2;
+	}
+    }
 
   meshBuilder->finishKnotIntervals();
 
@@ -2012,8 +2046,6 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
  double *cv = NULL;
  unsigned int i = 0, endi = 0, j = 0, endj = 0, a = 0;
  int is_closed_u = AY_FALSE, is_closed_v = AY_FALSE;
- std::vector<Vertex*>::iterator it;
- Vertex *v;
 
   if(!p || !result)
     return AY_ENULL;
@@ -2099,18 +2131,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 			sdnpatch->controlVertices->size(), 4*sizeof(double))))
     return AY_EOMEM;
 
-  a = 0;
-  for(it = (*sdnpatch->controlVertices).begin();
-      it != (*sdnpatch->controlVertices).end();
-      it++)
-    {
-      v = *it;
-      sdnpatch->controlCoords[a]   = v->getX();
-      sdnpatch->controlCoords[a+1] = v->getY();
-      sdnpatch->controlCoords[a+2] = v->getZ();
-      sdnpatch->controlCoords[a+3] = v->getW();
-      a += 4;
-    }
+  sdnpatch_getcontrolvertices(sdnpatch);
 
   newo->modified = AY_TRUE;
   ay_notify_force(newo);
@@ -2226,7 +2247,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
     {
       plyReader->read(argv[1]);
     }
-  catch (std::exception &e)
+  catch(std::exception &e)
     {
       delete plyReader;
       MeshBuilder::dispose(meshBuilder);
@@ -2269,6 +2290,9 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   delete plyReader;
   MeshBuilder::dispose(meshBuilder);
 
+  ay_error(AY_EOUTPUT, fname, "Done importing PLY from:");
+  ay_error(AY_EOUTPUT, fname, argv[1]);
+
  return TCL_OK;
 } /* sdnpatch_impplytcmd */
 
@@ -2300,6 +2324,8 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* XXXX we currently only work with the first object from the selection */
+  /* can PLY files hold more? */
   o = sel->object;
 
   if(o->type != sdnpatch_id)
@@ -2311,16 +2337,26 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   std::ofstream file(argv[1]);
 
-  MeshFlattener *meshFlattener = MeshFlattener::create(*sdnpatch->controlMesh);
-  meshFlattener->setCompatible(true);
+  if(file.is_open())
+    {
+      MeshFlattener *meshFlattener =
+	MeshFlattener::create(*sdnpatch->controlMesh);
+      meshFlattener->setCompatible(true);
 
-  FlatMeshHandler *handler = new PlyWriter(&file);
+      FlatMeshHandler *handler = new PlyWriter(&file);
 
-  meshFlattener->flatten(*handler);
-  delete handler;
+      meshFlattener->flatten(*handler);
+      delete handler;
 
-  MeshFlattener::dispose(meshFlattener);
-  file.close();
+      MeshFlattener::dispose(meshFlattener);
+      file.close();
+      ay_error(AY_EOUTPUT, fname, "Done exporting PLY to:");
+      ay_error(AY_EOUTPUT, fname, argv[1]);
+    }
+  else
+    {
+      ay_error(AY_EOPENFILE, fname, argv[1]);
+    }
 
  return TCL_OK;
 } /* sdnpatch_expplytcmd */
