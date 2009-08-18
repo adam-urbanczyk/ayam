@@ -71,9 +71,9 @@ ay_selp_selall(ay_object *o)
       newp->next = o->selp;
       o->selp = newp;
       newp->point = pe.coords[i];
-      if(pe.indizes)
+      if(pe.indices)
 	{
-	  newp->index = pe.indizes[i];
+	  newp->index = pe.indices[i];
 	}
       newp->homogenous = pe.homogenous;
     } /* for */

@@ -275,7 +275,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
  int i = 0, j = 0, a = 0;
- unsigned int *peindizes = NULL, peindex = 0;
+ unsigned int *peindices = NULL, peindex = 0;
 
   if(!o || !p || !pe)
     return AY_ENULL;
@@ -291,13 +291,13 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       /* select all points */
       if(!(pe->coords = calloc(acurve->length, sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indizes = calloc(acurve->length, sizeof(unsigned int))))
+      if(!(pe->indices = calloc(acurve->length, sizeof(unsigned int))))
 	return AY_EOMEM;
 
       for(i = 0; i < acurve->length; i++)
 	{
 	  pe->coords[i] = &(acurve->controlv[a]);
-	  pe->indizes[i] = i;
+	  pe->indices[i] = i;
 	  a += 3;
 	}
 
@@ -332,11 +332,11 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(1, sizeof(double*))))
 	return AY_EOMEM;
 
-      if(!(pe->indizes = calloc(1, sizeof(unsigned int))))
+      if(!(pe->indices = calloc(1, sizeof(unsigned int))))
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
-      pe->indizes[0] = peindex;
+      pe->indices[0] = peindex;
       pe->num = 1;
       break;
     case 2:
@@ -357,11 +357,11 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      if(!(peindizes = realloc(peindizes,
+	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
-	      peindizes[a] = i;
+	      peindices[a] = i;
 	      a++;
 	    } /* if */
 
@@ -373,7 +373,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
-      pe->indizes = peindizes;
+      pe->indices = peindices;
       pe->num = a;
 
       break;

@@ -406,7 +406,7 @@ ay_concatnp_notifycb(ay_object *o)
     }
 
   ay_status = ay_npt_concat(patches, concatnp->type, concatnp->knot_type,
-			    &concatnp->npatch);
+			    0, &concatnp->npatch);
 
   if(ay_status)
     {

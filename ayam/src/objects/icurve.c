@@ -303,7 +303,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
  int i = 0, j = 0, a = 0;
- unsigned int *peindizes = NULL, peindex = 0;
+ unsigned int *peindices = NULL, peindex = 0;
 
   if(!o || !p || !pe)
     return AY_ENULL;
@@ -321,30 +321,30 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  if(!(pe->coords = calloc(icurve->length, sizeof(double*))))
 	    return AY_EOMEM;
-	  if(!(pe->indizes = calloc(icurve->length, sizeof(unsigned int))))
+	  if(!(pe->indices = calloc(icurve->length, sizeof(unsigned int))))
 	    return AY_EOMEM;
 	}
       else
 	{
 	  if(!(pe->coords = calloc(icurve->length+2, sizeof(double*))))
 	    return AY_EOMEM;
-	  if(!(pe->indizes = calloc(icurve->length+2, sizeof(unsigned int))))
+	  if(!(pe->indices = calloc(icurve->length+2, sizeof(unsigned int))))
 	    return AY_EOMEM;
 	}
 
       for(i = 0; i < icurve->length; i++)
 	{
 	  pe->coords[i] = &(icurve->controlv[a]);
-	  pe->indizes[i] = i;
+	  pe->indices[i] = i;
 	  a += 3;
 	}
 
       if(icurve->derivs)
 	{
 	  pe->coords[icurve->length] = icurve->sderiv;
-	  pe->indizes[icurve->length] = icurve->length;
+	  pe->indices[icurve->length] = icurve->length;
 	  pe->coords[icurve->length+1] = icurve->ederiv;
-	  pe->indizes[icurve->length+1] = icurve->length+1;
+	  pe->indices[icurve->length+1] = icurve->length+1;
 	}
 
       pe->homogenous = AY_FALSE;
@@ -405,11 +405,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!(pe->coords = calloc(1, sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indizes = calloc(1, sizeof(unsigned int))))
+      if(!(pe->indices = calloc(1, sizeof(unsigned int))))
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
-      pe->indizes[0] = peindex;
+      pe->indices[0] = peindex;
       pe->num = 1;
       break;
     case 2:
@@ -430,11 +430,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      if(!(peindizes = realloc(peindizes,
+	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
-	      peindizes[a] = i;
+	      peindices[a] = i;
 	      a++;
 	    } /* if */
 
@@ -454,11 +454,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      if(!(peindizes = realloc(peindizes,
+	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
 	      pecoords[a] = icurve->sderiv;
-	      peindizes[a] = icurve->length;
+	      peindices[a] = icurve->length;
 	      a++;
 	    } /* if */
 
@@ -473,11 +473,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      if(!(peindizes = realloc(peindizes,
+	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
 	      pecoords[a] = icurve->ederiv;
-	      peindizes[a] = icurve->length+1;
+	      peindices[a] = icurve->length+1;
 	      a++;
 	    } /* if */
 	} /* if */
@@ -487,7 +487,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
-      pe->indizes = peindizes;
+      pe->indices = peindices;
       pe->num = a;
 
       break;
