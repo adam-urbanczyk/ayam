@@ -967,7 +967,7 @@ typedef struct ay_select_object_s
 {
   char *indices; /* indices of objects to be selected */
   int length; /* length of seli array */
-  int *seli; /* cache of object indizes */
+  int *seli; /* cache of object indices */
 } ay_select_object;
 
 
@@ -1074,14 +1074,14 @@ typedef struct ay_mpoint_s
   struct ay_mpoint_s *next;
   int multiplicity;
   double **points;
-  unsigned int *indizes;
+  unsigned int *indices;
 } ay_mpoint;
 
 typedef struct ay_pointedit_s
 {
   unsigned int num;
   double **coords;
-  unsigned int *indizes;
+  unsigned int *indices;
   int homogenous;
 } ay_pointedit;
 

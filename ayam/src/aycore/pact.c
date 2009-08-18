@@ -74,9 +74,9 @@ ay_pact_clearpointedit(ay_pointedit *pe)
     free(pe->coords);
   pe->coords = NULL;
 
-  if(pe->indizes)
-    free(pe->indizes);
-  pe->indizes = NULL;
+  if(pe->indices)
+    free(pe->indices);
+  pe->indices = NULL;
 
   pe->num = 0;
   pe->homogenous = AY_FALSE;
@@ -269,9 +269,9 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		  o->selp = newp;
 		  newp->point = pe.coords[i];
 
-		  if(pe.indizes)
+		  if(pe.indices)
 		    {
-		      newp->index = pe.indizes[i];
+		      newp->index = pe.indices[i];
 		    }
 
 		  newp->homogenous = pe.homogenous;
@@ -417,7 +417,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
  int penumber = 0, *tmpi;
- unsigned int *peindizes = NULL, *tmpu;
+ unsigned int *peindices = NULL, *tmpu;
  double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
  ay_object **tmpo = NULL, *o = NULL;
  static ay_list_object *lastlevel = NULL;
@@ -505,20 +505,20 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 		     pact_pe.num*sizeof(double*));
 	    }
 
-	  /* save indizes */
-	  if(!(tmpu = realloc(peindizes,
+	  /* save indices */
+	  if(!(tmpu = realloc(peindices,
 			     (pact_pe.num + penumber)*sizeof(unsigned int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      free(pecoords); free(peindizes);
+	      free(pecoords); free(peindices);
 	      return TCL_OK;
 	    }
 	  else
 	    {
-	      peindizes = tmpu;
-	      if(pact_pe.indizes)
+	      peindices = tmpu;
+	      if(pact_pe.indices)
 		{
-		  memcpy(&(peindizes[penumber]), pact_pe.indizes,
+		  memcpy(&(peindices[penumber]), pact_pe.indices,
 			 pact_pe.num*sizeof(unsigned int));
 		}
 	    }
@@ -578,7 +578,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   /* */
   pact_pe.num = penumber;
   pact_pe.coords = pecoords;
-  pact_pe.indizes = peindizes;
+  pact_pe.indices = peindices;
 
   if(ay_selection && (argc > 4))
     {
@@ -2551,7 +2551,7 @@ ay_pact_notify(ay_object *o, int j, int k)
   if(pact_numcpo[j] == 1)
     {
       tmpselp.point = pact_pe.coords[k];
-      tmpselp.index = pact_pe.indizes[k];
+      tmpselp.index = pact_pe.indices[k];
     }
   else
     {

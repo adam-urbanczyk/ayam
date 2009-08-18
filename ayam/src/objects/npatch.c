@@ -975,7 +975,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
- unsigned int *peindizes = NULL, peindex = 0;
+ unsigned int *peindices = NULL, peindex = 0;
 
   if(!o || !p)
     return AY_ENULL;
@@ -995,14 +995,14 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(npatch->width * npatch->height,
 					 sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indizes = calloc(npatch->width * npatch->height,
+      if(!(pe->indices = calloc(npatch->width * npatch->height,
 					 sizeof(unsigned int))))
 	return AY_EOMEM;
 
       for(i = 0; i < (npatch->width*npatch->height); i++)
 	{
 	  pe->coords[i] = &(npatch->controlv[a]);
-	  pe->indizes[i] = i;
+	  pe->indices[i] = i;
 	  a += 4;
 	}
 
@@ -1049,10 +1049,10 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		      memcpy(pe->coords, mp->points,
 			     mp->multiplicity * sizeof(double *));
 
-		      if(!(pe->indizes = calloc(mp->multiplicity,
+		      if(!(pe->indices = calloc(mp->multiplicity,
 					       sizeof(unsigned int))))
 			return AY_EOMEM;
-		      memcpy(pe->indizes, mp->indizes,
+		      memcpy(pe->indices, mp->indices,
 			     mp->multiplicity * sizeof(unsigned int));
 
 		    } /* if */
@@ -1068,11 +1068,11 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(!(pe->coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
 
-	  if(!(pe->indizes = calloc(1, sizeof(unsigned int))))
+	  if(!(pe->indices = calloc(1, sizeof(unsigned int))))
 	    return AY_EOMEM;
 
 	  pe->coords[0] = pecoord;
-	  pe->indizes[0] = peindex;
+	  pe->indices[0] = peindex;
 	  pe->num = 1;
 	}
       break;
@@ -1094,11 +1094,11 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      if(!(peindizes = realloc(peindizes,
+	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
-	      peindizes[a] = i;
+	      peindices[a] = i;
 	      a++;
 	    } /* if */
 
@@ -1109,7 +1109,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       pe->coords = pecoords;
-      pe->indizes = peindizes;
+      pe->indices = peindices;
       pe->num = a;
       break;
     case 3:

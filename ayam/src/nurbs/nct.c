@@ -121,8 +121,8 @@ ay_nct_clearmp(ay_nurbcurve_object *c)
       next = p->next;
       if(p->points)
 	free(p->points);
-      if(p->indizes)
-	free(p->indizes);
+      if(p->indices)
+	free(p->indices);
       free(p);
       p = next;
     } /* while */
@@ -197,11 +197,11 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 		{ free(tmpp); return AY_EOMEM; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
 		{ free(tmpp); free(new); return AY_EOMEM; }
-	      if(!(new->indizes = calloc(count, sizeof(unsigned int))))
+	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
 		{ free(new->points); free(tmpp); free(new); return AY_EOMEM; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));
-	      memcpy(new->indizes, tmpi, count*sizeof(unsigned int));
+	      memcpy(new->indices, tmpi, count*sizeof(unsigned int));
 
 	      new->next = c->mpoints;
 	      c->mpoints = new;
@@ -263,7 +263,7 @@ ay_nct_collapseselp(ay_object *o)
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
-  if(!(new->indizes = calloc(count, sizeof(unsigned int))))
+  if(!(new->indices = calloc(count, sizeof(unsigned int))))
     { free(new->points); free(new); return AY_EOMEM; }
 
   /* fill mpoint */
@@ -273,7 +273,7 @@ ay_nct_collapseselp(ay_object *o)
   while(selp)
     {
       new->points[i] = selp->point;
-      new->indizes[i] = selp->index;
+      new->indices[i] = selp->index;
       i++;
       if(selp->homogenous)
 	memcpy(selp->point, first, 4*sizeof(double));
@@ -305,7 +305,7 @@ ay_nct_collapseselp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
-	      free(p->indizes);
+	      free(p->indices);
 	      free(p);
 	      p = t;
 	    }
@@ -379,7 +379,7 @@ ay_nct_explodemp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
-	      free(p->indizes);
+	      free(p->indices);
 	      free(p);
 	      p = t;
 	      err = AY_FALSE;
@@ -4412,7 +4412,7 @@ ay_nct_toxy(ay_object *c)
     }
 
   /*
-    printf("first indizes %d %d %d\n",
+    printf("first indices %d %d %d\n",
     (tp1-nc->controlv)/stride,
     (tp2-nc->controlv)/stride,
     (tp3-nc->controlv)/stride);
@@ -4463,7 +4463,7 @@ ay_nct_toxy(ay_object *c)
   if(!have_good_points)
     return AY_ERROR;
   /*
-    printf("indizes after correction %d %d %d\n",
+    printf("indices after correction %d %d %d\n",
     (tp1-nc->controlv)/stride,
     (tp2-nc->controlv)/stride,
     (tp3-nc->controlv)/stride);
