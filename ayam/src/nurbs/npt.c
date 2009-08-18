@@ -2003,17 +2003,20 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  *  returns resulting patch object in <result>
  */
 int
-ay_npt_concat(ay_object *o, int type, int knot_type, ay_object **result)
+ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
+	      ay_object **result)
 {
  int ay_status = AY_OK;
- ay_object *new = NULL;
+ ay_object *patches = NULL, *new = NULL, *tmp = NULL;
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist, **nextlist = NULL, *rem;
- int ncurves = 0;
+ ay_nurbpatch_object *np = NULL;
+ int i = 0, ncurves = 0;
 
   if(!o || !result)
     return AY_ENULL;
 
+  patches = o;
   nextcurve = &allcurves;
 
   while(o)
@@ -2043,6 +2046,35 @@ ay_npt_concat(ay_object *o, int type, int knot_type, ay_object **result)
 
   if(ay_status)
     goto cleanup;
+
+
+  /* create fillets (or remove double boundary curves) */
+  o = patches;
+  if(fillet_type != 0 && o->next)
+    {
+      curve = allcurves;
+      np = (ay_nurbpatch_object *)o->refine;
+      for(i = 0; i < np->width; i++)
+	{
+	  curve = curve->next;
+	}
+      o = o->next;
+      while(o)
+	{
+	  tmp = curve->next;
+	  curve->next = tmp->next;
+	  ay_object_delete(tmp);
+
+	  np = (ay_nurbpatch_object *)o->refine;
+	  for(i = 0; i < (np->width-1); i++)
+	    {
+	      curve = curve->next;
+	    }
+
+	  o = o->next;
+	}
+    }
+
 
   /* build a new patch from the compatible curves */
   ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, knot_type,
@@ -7704,8 +7736,8 @@ ay_npt_clearmp(ay_nurbpatch_object *np)
       next = mp->next;
       if(mp->points)
 	free(mp->points);
-      if(mp->indizes)
-	free(mp->indizes);
+      if(mp->indices)
+	free(mp->indices);
       free(mp);
       mp = next;
     } /* while */
@@ -7789,12 +7821,12 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 		    { free(tmpp); return AY_EOMEM; }
 		  if(!(new->points = calloc(count, sizeof(double *))))
 		    { free(tmpp); free(new); return AY_EOMEM; }
-		  if(!(new->indizes = calloc(count, sizeof(unsigned int))))
+		  if(!(new->indices = calloc(count, sizeof(unsigned int))))
 		    { free(new->points); free(tmpp); free(new);
 		      return AY_EOMEM; }
 		  new->multiplicity = count;
 		  memcpy(new->points, tmpp, count*sizeof(double *));
-		  memcpy(new->indizes, tmpi, count*sizeof(unsigned int));
+		  memcpy(new->indices, tmpi, count*sizeof(unsigned int));
 
 		  new->next = np->mpoints;
 		  np->mpoints = new;
@@ -7856,7 +7888,7 @@ ay_npt_collapseselp(ay_object *o)
     return AY_EOMEM;
   if(!(new->points = calloc(count, sizeof(double *))))
     { free(new); return AY_EOMEM; }
-  if(!(new->indizes = calloc(count, sizeof(double *))))
+  if(!(new->indices = calloc(count, sizeof(double *))))
     { free(new->points); free(new); return AY_EOMEM; }
 
   /* fill mpoint */
@@ -7866,7 +7898,7 @@ ay_npt_collapseselp(ay_object *o)
   while(selp)
     {
       new->points[i] = selp->point;
-      new->indizes[i] = selp->index;
+      new->indices[i] = selp->index;
       i++;
       if(selp->homogenous)
 	memcpy(selp->point, first, 4*sizeof(double));
@@ -7897,7 +7929,7 @@ ay_npt_collapseselp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
-	      free(p->indizes);
+	      free(p->indices);
 	      free(p);
 	      p = t;
 	    }
@@ -7970,7 +8002,7 @@ ay_npt_explodemp(ay_object *o)
 	      *last = p->next;
 	      t = p->next;
 	      free(p->points);
-	      free(p->indizes);
+	      free(p->indices);
 	      free(p);
 	      p = t;
 	      err = AY_FALSE;
