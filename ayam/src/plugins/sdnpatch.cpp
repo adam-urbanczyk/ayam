@@ -387,12 +387,12 @@ private:
   // collect new vertices
   vector<VertexPrecision> m_newVerts;
 
-  // collect new faces 
+  // collect new faces
   unsigned int m_newFacesNum;
   vector<unsigned int> m_newFaces;
 
   // collect new dummy faces (we collect them separately, because their
-  // vertice indizes need to be increased by the number of extra
+  // vertice indices need to be increased by the number of extra
   // vertices created by the face extrusion
   unsigned int m_newDummyFacesNum;
   vector<unsigned int> m_newDummyFaces;
@@ -484,7 +484,7 @@ FaceExtruder::closeFace(void)
       if(!(cv = (double*)calloc(m_faceVerts.size()*3,sizeof(double))))
 	return;
 
-      p = cv;      
+      p = cv;
       fi = m_faceVerts.begin();
       for(i = 0; i < m_faceVerts.size(); i++)
 	{
@@ -522,7 +522,7 @@ FaceExtruder::closeFace(void)
 	}
 
       /* create the faces */
-     
+
       for(i = 0; i < m_faceVerts.size()-1; i++)
 	{
 	  m_newFaces.push_back(4);
@@ -719,7 +719,7 @@ private:
   unsigned int m_newVertsNum;
   vector<VertexPrecision> m_newVerts;
 
-  // collect new faces 
+  // collect new faces
   unsigned int m_newFacesNum;
   vector<unsigned int> m_newFaces;
 
@@ -899,6 +899,295 @@ FaceRemover::finishKnotIntervals(void)
  return;
 } /* FaceRemover::finishKnotIntervals */
 
+
+
+class FaceConnector : public FlatMeshHandler
+{
+public:
+  FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts);
+
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w);
+  void addToFace(unsigned int vertNum);
+  void closeFace(void);
+  void addKnotInterval(unsigned int vertex1,
+		       unsigned int vertex2,
+		       KnotPrecision interval);
+  void finishKnotIntervals(void);
+  Mesh *m_newMesh;
+
+private:
+
+  sdnpatch_object *m_sdnpatch;
+  ay_point *m_pnts;
+
+  vector<unsigned int> m_faceVerts;
+
+  unsigned int m_keepVertsNum;
+  vector<unsigned int> m_keepVerts;
+  unsigned int m_removeVertsNum;
+  vector<unsigned int> m_removeVerts;
+
+  // collect new vertices
+  unsigned int m_newVertsNum;
+  vector<VertexPrecision> m_newVerts;
+
+  // collect new faces
+  unsigned int m_newFacesNum;
+  vector<unsigned int> m_newFaces;
+
+  // collect knot intervals
+  unsigned int m_newKnotIntervalsNum;
+  vector<unsigned int> m_newKnotIntervals;
+  vector<KnotPrecision> m_newKnots;
+
+};
+
+
+FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
+{
+  m_sdnpatch = sdnpatch;
+  m_pnts = pnts;
+
+  m_keepVertsNum = 0;
+  m_removeVertsNum = 0;
+
+  m_newVertsNum = 0;
+  m_newFacesNum = 0;
+
+  m_newKnotIntervalsNum = 0;
+} /* FaceConnector::FaceConnector */
+
+
+void
+FaceConnector::addVertex(VertexPrecision x,
+			 VertexPrecision y,
+			 VertexPrecision z,
+			 VertexPrecision w)
+{
+  m_newVerts.push_back(x);
+  m_newVerts.push_back(y);
+  m_newVerts.push_back(z);
+  m_newVerts.push_back(w);
+  m_newVertsNum++;
+ return;
+} /* FaceConnector::addVertex */
+
+
+void
+FaceConnector::addToFace(unsigned int vertNum)
+{
+  m_faceVerts.push_back(vertNum);
+
+ return;
+} /* FaceConnector::addToFace */
+
+
+void
+FaceConnector::closeFace(void)
+{
+ vector<unsigned int>::iterator fi;
+ bool found = false, isSelected = true;
+ bool copyFace = true;
+ unsigned int i = 0;
+ ay_point *pnt = NULL;
+
+  /* is this face selected? */
+  fi = m_faceVerts.begin();
+  for(i = 0; i < m_faceVerts.size(); i++)
+    {
+      pnt = m_pnts;
+      found = false;
+      while(pnt)
+	{
+	  if(pnt->index == *fi)
+	    {
+	      found = true;
+	      break;
+	    }
+	  pnt = pnt->next;
+	}
+
+      if(!found)
+	{
+	  isSelected = false;
+	  break;
+	}
+
+      fi++;
+    }
+
+  if(isSelected)
+    {
+      /*
+	 this face is selected;
+	 if it is the first selected face that we encounter,
+	 we keep its vertices but remove the face,
+	 if it is the second selected face that we encounter,
+	 we remove the face and its vertices (and map the vertices
+	 to the vertices of the first selected face later on, for
+	 other faces of the mesh),
+	 the third and following selected faces are ignored/copied!
+      */
+      if(m_keepVertsNum == 0)
+	{
+	  m_keepVerts.reserve(m_faceVerts.size());
+	  for(i = 0; i < m_faceVerts.size(); i++)
+	    {
+	      m_keepVerts.push_back(m_faceVerts[i]);
+	    }
+	  copyFace = false;
+	}
+      else
+	{
+	  if(m_removeVertsNum == 0)
+	    {
+	      m_removeVerts.reserve(m_faceVerts.size());
+	      for(i = 0; i < m_faceVerts.size(); i++)
+		{
+		  m_removeVerts.push_back(m_faceVerts[i]);
+		}
+	      copyFace = false;
+	    }
+	}
+    }
+
+  if(copyFace)
+    {
+      m_newFaces.push_back(m_faceVerts.size());
+      fi = m_faceVerts.begin();
+      for(i = 0; i < m_faceVerts.size(); i++)
+	{
+	  m_newFaces.push_back(*fi);
+	  fi++;
+	}
+      m_newFacesNum++;
+    }
+
+  m_faceVerts.clear();
+
+ return;
+} /* FaceConnector::closeFace */
+
+
+void
+FaceConnector::addKnotInterval(unsigned int vertex1,
+			       unsigned int vertex2,
+			       KnotPrecision interval)
+{
+  m_newKnotIntervals.push_back(vertex1);
+  m_newKnotIntervals.push_back(vertex2);
+  m_newKnots.push_back(interval);
+  m_newKnotIntervalsNum++;
+ return;
+} /* FaceConnector::addKnotInterval */
+
+
+void
+FaceConnector::finishKnotIntervals(void)
+{
+ MeshBuilder *meshBuilder = NULL;
+ vector<unsigned int>::iterator fi;
+ unsigned int numVerts;
+ unsigned int i, j, k;
+ bool discard, rewrite;
+ vector<unsigned int> newIndices;
+ unsigned int sub;
+
+  m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
+  meshBuilder = MeshBuilder::create(*m_newMesh);
+
+  j = 0;
+  for(i = 0; i < m_newVertsNum; i++)
+    {
+      discard = false;
+      
+      for(k = 0; k < m_removeVertsNum; k++)
+	{
+	  if(i == m_removeVerts[k])
+	  {
+	    discard = true;
+	    break;
+	  }
+	}
+
+      if(!discard)
+	meshBuilder->addVertex(m_newVerts[j],
+			       m_newVerts[j+1],
+			       m_newVerts[j+2],
+			       m_newVerts[j+3]);
+      j += 4;
+    }
+
+  meshBuilder->finishVertices();
+
+
+  // calculate new indices
+  newIndices.reserve(m_newVertsNum);
+  for(i = 0; i < m_newVertsNum; i++)
+    {
+      newIndices.push_back(i);
+    }
+
+  sub = m_removeVertsNum;
+  for(i = m_newVertsNum; i > 0; i--)
+    {
+      rewrite = false;
+      for(k = 0; k < m_removeVertsNum; k++)
+	{
+	  if(m_removeVerts[k] == i-1)
+	    {
+	      rewrite = true;
+	      newIndices[i-1] = m_keepVerts[k];
+	      sub--;
+	      break;
+	    }
+	}
+      if(!rewrite)
+	{
+	  newIndices[i-1] -= sub;
+	}
+    }
+
+  // faces
+  fi = m_newFaces.begin();
+  for(i = 0; i < m_newFacesNum; i++)
+    {
+      numVerts = *fi;
+      meshBuilder->startFace(numVerts);
+
+      fi++;
+      for(j = 0; j < numVerts; j++)
+	{
+	  meshBuilder->addToFace(newIndices[*fi]);
+	  fi++;
+	}
+
+      meshBuilder->closeFace();
+    }
+
+  meshBuilder->finishFaces();
+
+  if(m_newKnotIntervalsNum > 0)
+    {
+      j = 0;
+      for(i = 0; i < m_newKnotIntervalsNum; i++)
+	{
+	  meshBuilder->addKnotInterval(newIndices[m_newKnotIntervals[j]],
+				       newIndices[m_newKnotIntervals[j+1]],
+				       m_newKnots[i]);
+	  j += 2;
+	}
+    }
+
+  meshBuilder->finishKnotIntervals();
+
+  MeshBuilder::dispose(meshBuilder);
+
+ return;
+} /* FaceConnector::finishKnotIntervals */
 
 
 
@@ -1710,13 +1999,13 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     case 0:
       /* select all points */
       pe->coords = (double**)calloc(vertices->size(), sizeof(double*));
-      pe->indizes = (unsigned int*)calloc(vertices->size(),
+      pe->indices = (unsigned int*)calloc(vertices->size(),
 					  sizeof(unsigned int));
 
       for(i = 0; i < vertices->size(); i++)
 	{
 	  pe->coords[i] = &(sdnpatch->controlCoords[a]);
-	  pe->indizes[i] = i;
+	  pe->indices[i] = i;
 	  a += 4;
 	}
 
@@ -1738,11 +2027,11 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      if(!pe->coords)
 		pe->coords = (double**)calloc(1, sizeof(double*));
-	      if(!pe->indizes)
-		pe->indizes = (unsigned int*)calloc(1, sizeof(unsigned int));
+	      if(!pe->indices)
+		pe->indices = (unsigned int*)calloc(1, sizeof(unsigned int));
 
 	      pe->coords[0] = &(sdnpatch->controlCoords[a]);
-	      pe->indizes[0] = i;
+	      pe->indices[0] = i;
 
 	      pe->num = 1;
 	      minDist = curDist;
@@ -1774,14 +2063,14 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      pe->coords[pe->num] = c;
 
 	      tmpi = NULL;
-	      tmpi = (unsigned int*)realloc(pe->indizes,
+	      tmpi = (unsigned int*)realloc(pe->indices,
 			(pe->num+1) * sizeof(unsigned int));
 	      if(tmpi)
-		pe->indizes = tmpi;
+		pe->indices = tmpi;
 	      else
 		return AY_EOMEM;
 
-	      pe->indizes[pe->num] = i;
+	      pe->indices[pe->num] = i;
 
 	      pe->num++;
 	    } /* if */
@@ -2707,6 +2996,65 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_removefacetcmd */
 
 
+/* sdnpatch_connectfacetcmd:
+ *  Tcl command to connect faces
+ */
+int
+sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[])
+{
+  //int ay_status = AY_OK;
+ char fname[] = "sdnconnectFace";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  if(!o->selp)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  MeshFlattener *meshFlattener =
+    MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+  FlatMeshHandler *handler = new FaceConnector(sdnpatch, o->selp);
+  meshFlattener->flatten(*handler);
+
+  delete sdnpatch->controlMesh;
+  sdnpatch->controlMesh = ((FaceConnector*)handler)->m_newMesh;
+
+  delete handler;
+  MeshFlattener::dispose(meshFlattener);
+
+  sdnpatch_getcontrolvertices(sdnpatch);
+
+  ay_selp_clear(o);
+
+  o->modified = AY_TRUE;
+  ay_notify_force(o);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_connectfacetcmd */
+
+
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
@@ -2829,6 +3177,10 @@ Sdnpatch_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "sdnremoveFace",
 		    (Tcl_CmdProc*) sdnpatch_removefacetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnconnectFace",
+		    (Tcl_CmdProc*) sdnpatch_connectfacetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
