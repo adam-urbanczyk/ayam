@@ -12,9 +12,9 @@
 
 /* sdnpatch.cpp - sdnpatch custom object (Subdivision NURBS) */
 
-#include "ayam.h"
-
 #include "snurbs.h"
+
+#include "ayam.h"
 
 using namespace std;
 using namespace std::tr1::placeholders;
@@ -63,6 +63,9 @@ int sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 int sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
+			     int argc, char *argv[]);
+
+int sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
 
 int sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -153,7 +156,7 @@ AyWriter::addKnotInterval(unsigned int vertex1,
 			  KnotPrecision interval)
 {
   m_v1.push_back(vertex1);
-  m_v2.push_back(vertex1);
+  m_v2.push_back(vertex2);
   m_intervals.push_back(interval);
   m_numKnots++;
 } /* AyWriter::addKnotInterval */
@@ -186,7 +189,7 @@ AyWriter::finishKnotIntervals(void)
     }
   if(m_numFaces > 0)
     {
-      fprintf(m_fp, "%u", m_numFaces);
+      fprintf(m_fp, "%u\n", m_numFaces);
 
       for(i = 0; i < m_numFaces; i++)
 	{
@@ -414,6 +417,11 @@ FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_newFacesNum = 0;
   m_newDummyFacesNum = 0;
   m_newKnotIntervalsNum = 0;
+
+  /*
+    XXXX ToDo: reserve memory for various vectors
+  */    
+
 } /* FaceExtruder::FaceExtruder */
 
 
@@ -738,6 +746,11 @@ FaceRemover::FaceRemover(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_newVertsNum = 0;
   m_newFacesNum = 0;
   m_newKnotIntervalsNum = 0;
+
+  /*
+    XXXX ToDo: reserve memory for various vectors
+  */    
+
 } /* FaceRemover::FaceRemover */
 
 
@@ -925,16 +938,19 @@ private:
 
   vector<unsigned int> m_faceVerts;
 
+  // collect vertices to keep (first selected face)
   unsigned int m_keepVertsNum;
   vector<unsigned int> m_keepVerts;
+
+  // collect vertices to remove (second selected face)
   unsigned int m_removeVertsNum;
   vector<unsigned int> m_removeVerts;
 
-  // collect new vertices
+  // collect all vertices
   unsigned int m_newVertsNum;
   vector<VertexPrecision> m_newVerts;
 
-  // collect new faces
+  // collect new faces (minus first and second selected face)
   unsigned int m_newFacesNum;
   vector<unsigned int> m_newFaces;
 
@@ -958,6 +974,11 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_newFacesNum = 0;
 
   m_newKnotIntervalsNum = 0;
+
+  /*
+    XXXX ToDo: reserve memory for various vectors
+  */    
+
 } /* FaceConnector::FaceConnector */
 
 
@@ -988,10 +1009,10 @@ FaceConnector::addToFace(unsigned int vertNum)
 void
 FaceConnector::closeFace(void)
 {
- vector<unsigned int>::iterator fi;
+ vector<unsigned int>::iterator fi, vi;
  bool found = false, isSelected = true;
  bool copyFace = true;
- unsigned int i = 0;
+ unsigned int i = 0, j = 0;
  ay_point *pnt = NULL;
 
   /* is this face selected? */
@@ -1037,6 +1058,7 @@ FaceConnector::closeFace(void)
 	  for(i = 0; i < m_faceVerts.size(); i++)
 	    {
 	      m_keepVerts.push_back(m_faceVerts[i]);
+	      m_keepVertsNum++;
 	    }
 	  copyFace = false;
 	}
@@ -1044,10 +1066,40 @@ FaceConnector::closeFace(void)
 	{
 	  if(m_removeVertsNum == 0)
 	    {
+	      /*
+		XXXX ToDo: add check for incompatible faces
+		m_faceVerts.size() != m_keepVertsNum
+		can only happen with dual meshes anyway?
+	      */
+
 	      m_removeVerts.reserve(m_faceVerts.size());
 	      for(i = 0; i < m_faceVerts.size(); i++)
 		{
-		  m_removeVerts.push_back(m_faceVerts[i]);
+		  /* 
+		     vertices that we already decided to keep must
+		     not be removed ...
+		     (in this case the two selected faces share an edge)
+		  */
+		  
+		  found = false;
+		  vi = m_keepVerts.begin();
+		  for(j = 0; j < m_keepVertsNum; j++)
+		    {
+		      if(m_faceVerts[i] == m_keepVerts[j])
+			{
+			  m_keepVerts.erase(vi);
+			  m_keepVertsNum--;
+			  found = true;
+			  break;
+			}
+		      vi++;
+		    }
+		  if(!found)
+		    {
+		      m_removeVerts.push_back(m_faceVerts[i]);
+		      m_removeVertsNum++;
+		    }
+
 		}
 	      copyFace = false;
 	    }
@@ -1093,12 +1145,13 @@ FaceConnector::finishKnotIntervals(void)
  unsigned int numVerts;
  unsigned int i, j, k;
  bool discard, rewrite;
- vector<unsigned int> newIndices;
+ vector<unsigned int> newKeepIndices, newIndices;
  unsigned int sub;
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*m_newMesh);
 
+  // vertices
   j = 0;
   for(i = 0; i < m_newVertsNum; i++)
     {
@@ -1125,12 +1178,35 @@ FaceConnector::finishKnotIntervals(void)
 
 
   // calculate new indices
+
+  // if any keep indices are higher than remove vertices
+  // they need to be adapted (to account for the removed vertices in-between)
+  newKeepIndices.reserve(m_keepVertsNum);
+  for(i = 0; i < m_keepVertsNum; i++)
+    {
+      newKeepIndices[i] = m_keepVerts[i];
+      for(k = 0; k < m_removeVertsNum; k++)
+	{
+	  if(m_removeVerts[k] < m_keepVerts[i])
+	    newKeepIndices[i]--;
+	}
+    }
+
+  // the newIndices vector serves as translation table between
+  // old indices (vector element adress) and
+  // new indices (vector element content)
+
+  // initialize vector with an 1:1 translation
   newIndices.reserve(m_newVertsNum);
   for(i = 0; i < m_newVertsNum; i++)
     {
       newIndices.push_back(i);
     }
 
+  // now we rewrite the indices:
+  // a) decrease all normal indices that are higher than
+  //    any of the removed vertices (account for removed vertices in-between);
+  // b) replace removed vertices with keep vertices
   sub = m_removeVertsNum;
   for(i = m_newVertsNum; i > 0; i--)
     {
@@ -1140,7 +1216,7 @@ FaceConnector::finishKnotIntervals(void)
 	  if(m_removeVerts[k] == i-1)
 	    {
 	      rewrite = true;
-	      newIndices[i-1] = m_keepVerts[k];
+	      newIndices[i-1] = newKeepIndices[m_removeVertsNum-k-1];
 	      sub--;
 	      break;
 	    }
@@ -1161,6 +1237,7 @@ FaceConnector::finishKnotIntervals(void)
       fi++;
       for(j = 0; j < numVerts; j++)
 	{
+	  // XXXX ToDo add check for dummy face indices
 	  meshBuilder->addToFace(newIndices[*fi]);
 	  fi++;
 	}
@@ -1170,14 +1247,22 @@ FaceConnector::finishKnotIntervals(void)
 
   meshBuilder->finishFaces();
 
+  // knot intervals
   if(m_newKnotIntervalsNum > 0)
     {
       j = 0;
       for(i = 0; i < m_newKnotIntervalsNum; i++)
 	{
-	  meshBuilder->addKnotInterval(newIndices[m_newKnotIntervals[j]],
-				       newIndices[m_newKnotIntervals[j+1]],
-				       m_newKnots[i]);
+	  try
+	    {
+	      meshBuilder->addKnotInterval(newIndices[m_newKnotIntervals[j]],
+					   newIndices[m_newKnotIntervals[j+1]],
+					   m_newKnots[i]);
+	    }
+	  catch(...)
+	    {
+	      // XXXX report error?
+	    }
 	  j += 2;
 	}
     }
