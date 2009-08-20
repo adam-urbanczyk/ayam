@@ -65,7 +65,7 @@ int sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 int sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
 
-int sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
+int sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
 
 int sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -420,7 +420,7 @@ FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts)
 
   /*
     XXXX ToDo: reserve memory for various vectors
-  */    
+  */
 
 } /* FaceExtruder::FaceExtruder */
 
@@ -749,7 +749,7 @@ FaceRemover::FaceRemover(sdnpatch_object *sdnpatch, ay_point *pnts)
 
   /*
     XXXX ToDo: reserve memory for various vectors
-  */    
+  */
 
 } /* FaceRemover::FaceRemover */
 
@@ -914,10 +914,10 @@ FaceRemover::finishKnotIntervals(void)
 
 
 
-class FaceConnector : public FlatMeshHandler
+class FaceMerger : public FlatMeshHandler
 {
 public:
-  FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts);
+  FaceMerger(sdnpatch_object *sdnpatch, ay_point *pnts);
 
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
@@ -962,7 +962,7 @@ private:
 };
 
 
-FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
+FaceMerger::FaceMerger(sdnpatch_object *sdnpatch, ay_point *pnts)
 {
   m_sdnpatch = sdnpatch;
   m_pnts = pnts;
@@ -977,13 +977,13 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
 
   /*
     XXXX ToDo: reserve memory for various vectors
-  */    
+  */
 
-} /* FaceConnector::FaceConnector */
+} /* FaceMerger::FaceMerger */
 
 
 void
-FaceConnector::addVertex(VertexPrecision x,
+FaceMerger::addVertex(VertexPrecision x,
 			 VertexPrecision y,
 			 VertexPrecision z,
 			 VertexPrecision w)
@@ -994,20 +994,20 @@ FaceConnector::addVertex(VertexPrecision x,
   m_newVerts.push_back(w);
   m_newVertsNum++;
  return;
-} /* FaceConnector::addVertex */
+} /* FaceMerger::addVertex */
 
 
 void
-FaceConnector::addToFace(unsigned int vertNum)
+FaceMerger::addToFace(unsigned int vertNum)
 {
   m_faceVerts.push_back(vertNum);
 
  return;
-} /* FaceConnector::addToFace */
+} /* FaceMerger::addToFace */
 
 
 void
-FaceConnector::closeFace(void)
+FaceMerger::closeFace(void)
 {
  vector<unsigned int>::iterator fi, vi;
  bool found = false, isSelected = true;
@@ -1075,12 +1075,12 @@ FaceConnector::closeFace(void)
 	      m_removeVerts.reserve(m_faceVerts.size());
 	      for(i = 0; i < m_faceVerts.size(); i++)
 		{
-		  /* 
+		  /*
 		     vertices that we already decided to keep must
 		     not be removed ...
 		     (in this case the two selected faces share an edge)
 		  */
-		  
+
 		  found = false;
 		  vi = m_keepVerts.begin();
 		  for(j = 0; j < m_keepVertsNum; j++)
@@ -1121,11 +1121,11 @@ FaceConnector::closeFace(void)
   m_faceVerts.clear();
 
  return;
-} /* FaceConnector::closeFace */
+} /* FaceMerger::closeFace */
 
 
 void
-FaceConnector::addKnotInterval(unsigned int vertex1,
+FaceMerger::addKnotInterval(unsigned int vertex1,
 			       unsigned int vertex2,
 			       KnotPrecision interval)
 {
@@ -1134,11 +1134,11 @@ FaceConnector::addKnotInterval(unsigned int vertex1,
   m_newKnots.push_back(interval);
   m_newKnotIntervalsNum++;
  return;
-} /* FaceConnector::addKnotInterval */
+} /* FaceMerger::addKnotInterval */
 
 
 void
-FaceConnector::finishKnotIntervals(void)
+FaceMerger::finishKnotIntervals(void)
 {
  MeshBuilder *meshBuilder = NULL;
  vector<unsigned int>::iterator fi;
@@ -1156,7 +1156,7 @@ FaceConnector::finishKnotIntervals(void)
   for(i = 0; i < m_newVertsNum; i++)
     {
       discard = false;
-      
+
       for(k = 0; k < m_removeVertsNum; k++)
 	{
 	  if(i == m_removeVerts[k])
@@ -1272,7 +1272,7 @@ FaceConnector::finishKnotIntervals(void)
   MeshBuilder::dispose(meshBuilder);
 
  return;
-} /* FaceConnector::finishKnotIntervals */
+} /* FaceMerger::finishKnotIntervals */
 
 
 
@@ -2221,7 +2221,7 @@ sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
   a = 0;
   b = (np->height-1)*stride;
   *closedv = AY_TRUE;
-  for(i = 0; i < np->width; i++)
+  for(i = 0; i < np->width-1; i++)
     {
       if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
 	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
@@ -2575,49 +2575,59 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
  */
 void
 sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
-		    unsigned int width, unsigned int height)
+		     unsigned int width, unsigned int height)
 {
  unsigned int i, j, a, b;
 
   a = 0;
-  b = height;
+  b = height-1;
 
   for(i = 0; i < width-2; i++)
     {
-      for(j = 0; j < height-1; j++)
+      for(j = 0; j < height-2; j++)
 	{
 	  meshBuilder->startFace(4);
-
-	  meshBuilder->addToFace(a);
-	  meshBuilder->addToFace(a+1);
-	  meshBuilder->addToFace(b+1);
-	  meshBuilder->addToFace(b);
-
+	   meshBuilder->addToFace(a);
+	   meshBuilder->addToFace(a+1);
+	   meshBuilder->addToFace(b+1);
+	   meshBuilder->addToFace(b);
 	  meshBuilder->closeFace();
 
 	  a++;
 	  b++;
 	} /* for */
 
+      meshBuilder->startFace(4);
+       meshBuilder->addToFace(a);
+       meshBuilder->addToFace(a-(height-2));
+       meshBuilder->addToFace(b-(height-2));
+       meshBuilder->addToFace(b);
+      meshBuilder->closeFace();
+
       a++;
       b++;
     } /* for */
 
   b = 0;
-  for(j = 0; j < height-1; j++)
+  for(j = 0; j < height-2; j++)
     {
       meshBuilder->startFace(4);
-
-      meshBuilder->addToFace(a);
-      meshBuilder->addToFace(a+1);
-      meshBuilder->addToFace(b+1);
-      meshBuilder->addToFace(b);
-
+       meshBuilder->addToFace(a);
+       meshBuilder->addToFace(a+1);
+       meshBuilder->addToFace(b+1);
+       meshBuilder->addToFace(b);
       meshBuilder->closeFace();
 
       a++;
       b++;
     }
+
+  meshBuilder->startFace(4);
+   meshBuilder->addToFace(a);
+   meshBuilder->addToFace(a-(height-2));
+   meshBuilder->addToFace(0);
+   meshBuilder->addToFace(b);
+  meshBuilder->closeFace();
 
   /* no dummy faces needed */
 
@@ -3081,15 +3091,15 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_removefacetcmd */
 
 
-/* sdnpatch_connectfacetcmd:
- *  Tcl command to connect faces
+/* sdnpatch_mergefacetcmd:
+ *  Tcl command to merge faces
  */
 int
-sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
+sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnconnectFace";
+ char fname[] = "sdnmergeFace";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -3118,11 +3128,11 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
   meshFlattener->setCompatible(true);
-  FlatMeshHandler *handler = new FaceConnector(sdnpatch, o->selp);
+  FlatMeshHandler *handler = new FaceMerger(sdnpatch, o->selp);
   meshFlattener->flatten(*handler);
 
   delete sdnpatch->controlMesh;
-  sdnpatch->controlMesh = ((FaceConnector*)handler)->m_newMesh;
+  sdnpatch->controlMesh = ((FaceMerger*)handler)->m_newMesh;
 
   delete handler;
   MeshFlattener::dispose(meshFlattener);
@@ -3137,7 +3147,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* sdnpatch_connectfacetcmd */
+} /* sdnpatch_mergefacetcmd */
 
 
 /* sdnpatch_getcontrolvertices:
@@ -3264,8 +3274,8 @@ Sdnpatch_Init(Tcl_Interp *interp)
 		    (Tcl_CmdProc*) sdnpatch_removefacetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "sdnconnectFace",
-		    (Tcl_CmdProc*) sdnpatch_connectfacetcmd,
+  Tcl_CreateCommand(interp, "sdnmergeFace",
+		    (Tcl_CmdProc*) sdnpatch_mergefacetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdnpatch.tcl, it contains Tcl-code to build
