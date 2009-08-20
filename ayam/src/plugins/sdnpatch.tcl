@@ -39,8 +39,8 @@ $ay(cm) add command -label "Face Extrude" -command {
     sdnextrudeFace; rV; }
 $ay(cm) add command -label "Face Remove" -command {
     sdnremoveFace; rV; }
-$ay(cm) add command -label "Face Connect" -command {
-    sdnconnectFace; rV; }
+$ay(cm) add command -label "Face Merge" -command {
+    sdnmergeFace; rV; }
 $ay(cm) add command -label "Import PLY" -command plyio_import
 $ay(cm) add command -label "Export PLY" -command plyio_export
 
