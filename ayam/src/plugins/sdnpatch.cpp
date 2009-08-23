@@ -1276,6 +1276,223 @@ FaceMerger::finishKnotIntervals(void)
 
 
 
+class FaceConnector : public FlatMeshHandler
+{
+public:
+  FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts);
+  ~FaceConnector();
+
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w);
+  void finishVertices();
+  void addToFace(unsigned int vertNum);
+  void closeFace(void);
+  void finishFaces(void);
+  void addKnotInterval(unsigned int vertex1,
+		       unsigned int vertex2,
+		       KnotPrecision interval);
+  void finishKnotIntervals(void);
+  Mesh *m_newMesh;
+
+private:
+
+
+  sdnpatch_object *m_sdnpatch;
+  ay_point *m_pnts;
+
+  MeshBuilder *m_meshBuilder;
+
+  vector<unsigned int> m_faceVerts;
+
+  unsigned int m_face1VertsNum;
+  vector<unsigned int> m_face1Verts;
+  bool m_connected;
+};
+
+
+FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
+{
+  m_sdnpatch = sdnpatch;
+  m_pnts = pnts;
+
+  m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
+  m_meshBuilder = MeshBuilder::create(*m_newMesh);
+  m_face1VertsNum = 0;
+  m_connected = false;
+
+} /* FaceConnector::FaceConnector */
+
+FaceConnector::~FaceConnector()
+{
+  MeshBuilder::dispose(m_meshBuilder);
+} /* FaceConnector::~FaceConnector */
+
+void
+FaceConnector::addVertex(VertexPrecision x,
+			 VertexPrecision y,
+			 VertexPrecision z,
+			 VertexPrecision w)
+{
+  m_meshBuilder->addVertex(x,y,z,w);
+ return;
+} /* FaceConnector::addVertex */
+
+void
+FaceConnector::finishVertices()
+{
+  m_meshBuilder->finishVertices();
+ return;
+} /* FaceConnector::finishVertices */
+
+void
+FaceConnector::addToFace(unsigned int vertNum)
+{
+  m_faceVerts.push_back(vertNum);
+ return;
+} /* FaceConnector::addToFace */
+
+void
+FaceConnector::closeFace(void)
+{
+ vector<unsigned int>::iterator fi;
+ bool found = false, isSelected = true;
+ bool copyFace = true;
+ unsigned int i = 0;
+ ay_point *pnt = NULL;
+
+  /* is this face selected? */
+  fi = m_faceVerts.begin();
+  for(i = 0; i < m_faceVerts.size(); i++)
+    {
+      pnt = m_pnts;
+      found = false;
+      while(pnt)
+	{
+	  if(pnt->index == *fi)
+	    {
+	      found = true;
+	      break;
+	    }
+	  pnt = pnt->next;
+	}
+
+      if(!found)
+	{
+	  isSelected = false;
+	  break;
+	}
+
+      fi++;
+    }
+
+  if(isSelected)
+    {
+      /*
+	 this face is selected;
+	 if it is the first selected face that we encounter,
+	 we keep its vertices but remove the face,
+	 if it is the second selected face that we encounter,
+	 we remove the face and connect the vertices to the
+	 first faces vertices via new faces;
+	 the third and following selected faces are ignored/copied!
+      */
+      if(m_face1VertsNum == 0)
+	{
+	  m_face1Verts.reserve(m_faceVerts.size());
+	  for(i = 0; i < m_faceVerts.size(); i++)
+	    {
+	      m_face1Verts[i] = m_faceVerts[i];
+	      m_face1VertsNum++;
+	    }
+	  copyFace = false;
+	}
+      else
+	{
+	  if(!m_connected)
+	    {
+	      /* m_faceVerts is m_face2Verts... */
+
+	      /*
+		XXXX ToDo: add check for incompatible faces
+		m_faceVerts.size() != m_face1VertsNum
+		can only happen with dual meshes anyway?
+	      */
+
+	      for(i = 0; i < m_faceVerts.size()-1; i++)
+		{
+		   m_meshBuilder->startFace(4);
+		   m_meshBuilder->addToFace(m_face1Verts[i]);
+		   m_meshBuilder->addToFace(m_face1Verts[i+1]);
+		   m_meshBuilder->addToFace(m_faceVerts[i+1]);
+		   m_meshBuilder->addToFace(m_faceVerts[i]);
+		   m_meshBuilder->closeFace();
+		}
+
+	      m_meshBuilder->startFace(4);
+	      m_meshBuilder->addToFace(m_face1Verts[i]);
+	      m_meshBuilder->addToFace(m_face1Verts[0]);
+	      m_meshBuilder->addToFace(m_faceVerts[0]);
+	      m_meshBuilder->addToFace(m_faceVerts[i]);
+	      m_meshBuilder->closeFace();
+
+	      m_connected = true;
+	      copyFace = false;
+	    }
+	}
+    }
+
+  if(copyFace)
+    {
+      m_meshBuilder->startFace(m_faceVerts.size());
+
+      for(i = 0; i < m_faceVerts.size(); i++)
+	{
+	  m_meshBuilder->addToFace(m_faceVerts[i]);
+	}
+
+      m_meshBuilder->closeFace();
+    }
+
+  m_faceVerts.clear();
+
+ return;
+} /* FaceConnector::closeFace */
+
+void
+FaceConnector::finishFaces(void)
+{
+  m_meshBuilder->finishFaces();
+ return;
+} /* FaceConnector::finishFaces */
+
+void
+FaceConnector::addKnotInterval(unsigned int vertex1,
+			       unsigned int vertex2,
+			       KnotPrecision interval)
+{
+  try
+    {
+      m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
+    }
+  catch(...)
+    {
+      /* XXXX */
+    }
+ return;
+} /* FaceConnector::addKnotInterval */
+
+
+void
+FaceConnector::finishKnotIntervals(void)
+{
+  m_meshBuilder->finishKnotIntervals();
+ return;
+} /* FaceConnector::finishKnotIntervals */
+
+
+
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
  */
@@ -3150,6 +3367,65 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_mergefacetcmd */
 
 
+/* sdnpatch_connectfacetcmd:
+ *  Tcl command to connect faces
+ */
+int
+sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[])
+{
+  //int ay_status = AY_OK;
+ char fname[] = "sdnconnectFace";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  if(!o->selp)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  MeshFlattener *meshFlattener =
+    MeshFlattener::create(*(sdnpatch->controlMesh));
+  meshFlattener->setCompatible(true);
+  FlatMeshHandler *handler = new FaceConnector(sdnpatch, o->selp);
+  meshFlattener->flatten(*handler);
+
+  delete sdnpatch->controlMesh;
+  sdnpatch->controlMesh = ((FaceConnector*)handler)->m_newMesh;
+
+  delete handler;
+  MeshFlattener::dispose(meshFlattener);
+
+  sdnpatch_getcontrolvertices(sdnpatch);
+
+  ay_selp_clear(o);
+
+  o->modified = AY_TRUE;
+  ay_notify_force(o);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_connectfacetcmd */
+
+
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
@@ -3276,6 +3552,10 @@ Sdnpatch_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "sdnmergeFace",
 		    (Tcl_CmdProc*) sdnpatch_mergefacetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnconnectFace",
+		    (Tcl_CmdProc*) sdnpatch_connectfacetcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* source sdnpatch.tcl, it contains Tcl-code to build

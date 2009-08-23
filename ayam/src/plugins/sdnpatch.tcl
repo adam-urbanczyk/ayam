@@ -33,17 +33,23 @@ addParam $w SDNPatchAttrData Level
 mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
 
 global ay
-$ay(cm) add command -label "To SDNPatch" -command {
+$ay(cm) add cascade -menu $ay(cm).sdn -label "SDNPatch"
+menu $ay(cm).sdn -tearoff 0
+set m $ay(cm).sdn
+$m add command -label "NPatch To SDNPatch" -command {
     sdnconvertNP; uS; rV; }
-$ay(cm) add command -label "Face Extrude" -command {
-    sdnextrudeFace; rV; }
-$ay(cm) add command -label "Face Remove" -command {
-    sdnremoveFace; rV; }
-$ay(cm) add command -label "Face Merge" -command {
-    sdnmergeFace; rV; }
-$ay(cm) add command -label "Import PLY" -command plyio_import
-$ay(cm) add command -label "Export PLY" -command plyio_export
+$m add command -label "Face Extrude" -command {
+    undo save SDNExtFace; sdnextrudeFace; rV; }
+$m add command -label "Face Remove" -command {
+    undo save SDNRemFace; sdnremoveFace; rV; }
+$m add command -label "Face Merge" -command {
+    undo save SDNMergeFace; sdnmergeFace; rV; }
+$m add command -label "Face Connect" -command {
+    undo save SDNConnFace; sdnconnectFace; rV; }
+$m add command -label "Import PLY" -command plyio_import
+$m add command -label "Export PLY" -command plyio_export
 
+# XXXX ToDo: add keyboard shortcuts for face extrude?
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch
@@ -202,7 +208,7 @@ proc plyio_export { } {
 
     set types {{"PLY Files" ".ply"} {"All files" *}}
     addSFileT $f plyio_options FileName $types
- 
+
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
 	global plyio_options;
