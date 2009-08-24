@@ -634,7 +634,8 @@ FaceExtruder::finishKnotIntervals(void)
       meshBuilder->addVertex(m_newVerts[j],
 			     m_newVerts[j+1],
 			     m_newVerts[j+2],
-			     m_newVerts[j+3]);
+			     m_newVerts[j+3],
+			     i);
       j += 4;
     }
 
@@ -859,7 +860,8 @@ FaceRemover::finishKnotIntervals(void)
       meshBuilder->addVertex(m_newVerts[j],
 			     m_newVerts[j+1],
 			     m_newVerts[j+2],
-			     m_newVerts[j+3]);
+			     m_newVerts[j+3],
+			     i);
       j += 4;
     }
 
@@ -984,9 +986,9 @@ FaceMerger::FaceMerger(sdnpatch_object *sdnpatch, ay_point *pnts)
 
 void
 FaceMerger::addVertex(VertexPrecision x,
-			 VertexPrecision y,
-			 VertexPrecision z,
-			 VertexPrecision w)
+		      VertexPrecision y,
+		      VertexPrecision z,
+		      VertexPrecision w)
 {
   m_newVerts.push_back(x);
   m_newVerts.push_back(y);
@@ -1001,7 +1003,6 @@ void
 FaceMerger::addToFace(unsigned int vertNum)
 {
   m_faceVerts.push_back(vertNum);
-
  return;
 } /* FaceMerger::addToFace */
 
@@ -1143,7 +1144,7 @@ FaceMerger::finishKnotIntervals(void)
  MeshBuilder *meshBuilder = NULL;
  vector<unsigned int>::iterator fi;
  unsigned int numVerts;
- unsigned int i, j, k;
+ unsigned int i, j, k, l;
  bool discard, rewrite;
  vector<unsigned int> newKeepIndices, newIndices;
  unsigned int sub;
@@ -1153,6 +1154,7 @@ FaceMerger::finishKnotIntervals(void)
 
   // vertices
   j = 0;
+  l = 0;
   for(i = 0; i < m_newVertsNum; i++)
     {
       discard = false;
@@ -1167,10 +1169,14 @@ FaceMerger::finishKnotIntervals(void)
 	}
 
       if(!discard)
-	meshBuilder->addVertex(m_newVerts[j],
-			       m_newVerts[j+1],
-			       m_newVerts[j+2],
-			       m_newVerts[j+3]);
+	{
+	  meshBuilder->addVertex(m_newVerts[j],
+				 m_newVerts[j+1],
+				 m_newVerts[j+2],
+				 m_newVerts[j+3],
+				 l);
+	  l++;
+	}
       j += 4;
     }
 
@@ -1304,6 +1310,7 @@ private:
 
   MeshBuilder *m_meshBuilder;
 
+  unsigned int m_verticeID;
   vector<unsigned int> m_faceVerts;
 
   unsigned int m_face1VertsNum;
@@ -1319,6 +1326,7 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   m_meshBuilder = MeshBuilder::create(*m_newMesh);
+  m_verticeID = 0;
   m_face1VertsNum = 0;
   m_connected = false;
 
@@ -1335,7 +1343,8 @@ FaceConnector::addVertex(VertexPrecision x,
 			 VertexPrecision z,
 			 VertexPrecision w)
 {
-  m_meshBuilder->addVertex(x,y,z,w);
+  m_meshBuilder->addVertex(x, y, z, w, m_verticeID);
+  m_verticeID++;
  return;
 } /* FaceConnector::addVertex */
 
@@ -1519,15 +1528,15 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
-  meshBuilder->addVertex(0,0,0,1);
-  meshBuilder->addVertex(1,0,0,1);
-  meshBuilder->addVertex(1,1,0,1);
-  meshBuilder->addVertex(0,1,0,1);
+  meshBuilder->addVertex(0,0,0,1,0);
+  meshBuilder->addVertex(1,0,0,1,1);
+  meshBuilder->addVertex(1,1,0,1,2);
+  meshBuilder->addVertex(0,1,0,1,3);
 
-  meshBuilder->addVertex(0,0,1,1);
-  meshBuilder->addVertex(1,0,1,1);
-  meshBuilder->addVertex(1,1,1,1);
-  meshBuilder->addVertex(0,1,1,1);
+  meshBuilder->addVertex(0,0,1,1,4);
+  meshBuilder->addVertex(1,0,1,1,5);
+  meshBuilder->addVertex(1,1,1,1,6);
+  meshBuilder->addVertex(0,1,1,1,7);
 
   meshBuilder->finishVertices();
 
@@ -1921,7 +1930,7 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
   for(i = 0; i < numVerts; i++)
     {
       fscanf(fileptr, "%lg %lg %lg %lg\n", &x, &y, &z, &w);
-      meshBuilder->addVertex(x, y, z, w);
+      meshBuilder->addVertex(x, y, z, w, i);
     }
   meshBuilder->finishVertices();
 
@@ -2862,7 +2871,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
  ay_nurbpatch_object *np = NULL;
  sdnpatch_object *sdnpatch = NULL;
  double *cv = NULL;
- unsigned int i = 0, endi = 0, j = 0, endj = 0, a = 0;
+ unsigned int i = 0, endi = 0, j = 0, endj = 0, k = 0, a = 0;
  int is_closed_u = AY_FALSE, is_closed_v = AY_FALSE;
 
   if(!p || !result)
@@ -2908,7 +2917,8 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
       a = (i*np->height)*4;
       for(j = 0; j < endj; j++)
 	{
-	  meshBuilder->addVertex(cv[a],cv[a+1],cv[a+2],cv[a+3]);
+	  meshBuilder->addVertex(cv[a], cv[a+1], cv[a+2], cv[a+3], k);
+	  k++;
 	  a += 4;
 	}
     }
@@ -3059,7 +3069,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   Mesh *controlMesh = new Mesh(3);
   MeshBuilder *meshBuilder = MeshBuilder::create(*controlMesh);
-  PlyReader *plyReader = new PlyReader(*meshBuilder);
+  PlyReader *plyReader = new PlyReader(*meshBuilder, true);
 
   try
     {
@@ -3434,6 +3444,7 @@ int
 sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 {
  std::vector<Vertex*>::iterator it;
+ std::vector<Vertex*> *tmp = NULL;
  Vertex *v;
  unsigned int a = 0;
 
@@ -3452,18 +3463,37 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
       sdnpatch->controlCoords = NULL;
     }
 
-  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
+  tmp = sdnpatch->controlMesh->getVertexPointers();
 
-  if(sdnpatch->controlVertices)
+  if(tmp)
     {
+      sdnpatch->controlVertices = new std::vector<Vertex *>;
+      sdnpatch->controlVertices->reserve(tmp->size());
+
+      for(it = tmp->begin();
+	  it != tmp->end();
+	  it++)
+	{
+	  sdnpatch->controlVertices->push_back(0);
+	}
+
+      // correct order for our own ID scheme
+      for(it = tmp->begin();
+	  it != tmp->end();
+	  it++)
+	{
+	  (*sdnpatch->controlVertices)[(*it)->getID()] = *it;
+	}
+
       if(!(sdnpatch->controlCoords = (double*)calloc(
 		sdnpatch->controlVertices->size(), 4*sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
 
-      for(it = (*sdnpatch->controlVertices).begin();
-	  it != (*sdnpatch->controlVertices).end();
+      a = 0;
+      for(it = sdnpatch->controlVertices->begin();
+	  it != sdnpatch->controlVertices->end();
 	  it++)
 	{
 	  v = *it;
@@ -3471,8 +3501,10 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  sdnpatch->controlCoords[a+1] = v->getY();
 	  sdnpatch->controlCoords[a+2] = v->getZ();
 	  sdnpatch->controlCoords[a+3] = v->getW();
+
 	  a += 4;
 	}
+      delete tmp;
     } /* if */
 
  return AY_OK;
