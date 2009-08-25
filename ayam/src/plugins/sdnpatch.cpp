@@ -83,7 +83,8 @@ public:
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
-		 VertexPrecision w);
+		 VertexPrecision w,
+		 unsigned int id);
   void startFace(unsigned int numEdges);
   void addToFace(unsigned int vertNum);
   void closeFace(void);
@@ -121,7 +122,8 @@ void
 AyWriter::addVertex(VertexPrecision x,
 		    VertexPrecision y,
 		    VertexPrecision z,
-		    VertexPrecision w)
+		    VertexPrecision w,
+		    unsigned int id)
 {
   m_numVertices++;
   m_vertices.push_back(x);
@@ -376,6 +378,7 @@ public:
 		       unsigned int vertex2,
 		       KnotPrecision interval);
   void finishKnotIntervals(void);
+
   Mesh *m_newMesh;
 
 private:
@@ -712,13 +715,15 @@ public:
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
-		 VertexPrecision w);
+		 VertexPrecision w,
+		 unsigned int id);
   void addToFace(unsigned int vertNum);
   void closeFace(void);
   void addKnotInterval(unsigned int vertex1,
 		       unsigned int vertex2,
 		       KnotPrecision interval);
   void finishKnotIntervals(void);
+
   Mesh *m_newMesh;
 
 private:
@@ -731,6 +736,7 @@ private:
   // collect new vertices
   unsigned int m_newVertsNum;
   vector<VertexPrecision> m_newVerts;
+  vector<unsigned int> m_newVertexIDs;
 
   // collect new faces
   unsigned int m_newFacesNum;
@@ -761,14 +767,16 @@ FaceRemover::FaceRemover(sdnpatch_object *sdnpatch, ay_point *pnts)
 
 void
 FaceRemover::addVertex(VertexPrecision x,
-			VertexPrecision y,
-			VertexPrecision z,
-			VertexPrecision w)
+		       VertexPrecision y,
+		       VertexPrecision z,
+		       VertexPrecision w,
+		       unsigned int id)
 {
   m_newVerts.push_back(x);
   m_newVerts.push_back(y);
   m_newVerts.push_back(z);
   m_newVerts.push_back(w);
+  m_newVertexIDs.push_back(id);
   m_newVertsNum++;
  return;
 } /* FaceRemover::addVertex */
@@ -799,7 +807,7 @@ FaceRemover::closeFace(void)
       found = false;
       while(pnt)
 	{
-	  if(pnt->index == *fi)
+	  if(pnt->index == m_newVertexIDs[*fi])
 	    {
 	      found = true;
 	      break;
@@ -928,13 +936,15 @@ public:
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
-		 VertexPrecision w);
+		 VertexPrecision w,
+		 unsigned int id);
   void addToFace(unsigned int vertNum);
   void closeFace(void);
   void addKnotInterval(unsigned int vertex1,
 		       unsigned int vertex2,
 		       KnotPrecision interval);
   void finishKnotIntervals(void);
+
   Mesh *m_newMesh;
 
 private:
@@ -955,6 +965,7 @@ private:
   // collect all vertices
   unsigned int m_newVertsNum;
   vector<VertexPrecision> m_newVerts;
+  vector<unsigned int> m_newVertexIDs;
 
   // collect new faces (minus first and second selected face)
   unsigned int m_newFacesNum;
@@ -992,12 +1003,14 @@ void
 FaceMerger::addVertex(VertexPrecision x,
 		      VertexPrecision y,
 		      VertexPrecision z,
-		      VertexPrecision w)
+		      VertexPrecision w,
+		      unsigned int id)
 {
   m_newVerts.push_back(x);
   m_newVerts.push_back(y);
   m_newVerts.push_back(z);
   m_newVerts.push_back(w);
+  m_newVertexIDs.push_back(id);
   m_newVertsNum++;
  return;
 } /* FaceMerger::addVertex */
@@ -1028,7 +1041,7 @@ FaceMerger::closeFace(void)
       found = false;
       while(pnt)
 	{
-	  if(pnt->index == *fi)
+	  if(pnt->index == m_newVertexIDs[*fi])
 	    {
 	      found = true;
 	      break;
@@ -1295,7 +1308,8 @@ public:
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
-		 VertexPrecision w);
+		 VertexPrecision w,
+		 unsigned int id);
   void finishVertices();
   void addToFace(unsigned int vertNum);
   void closeFace(void);
@@ -1304,6 +1318,7 @@ public:
 		       unsigned int vertex2,
 		       KnotPrecision interval);
   void finishKnotIntervals(void);
+
   Mesh *m_newMesh;
 
 private:
@@ -1314,8 +1329,9 @@ private:
 
   MeshBuilder *m_meshBuilder;
 
-  unsigned int m_verticeID;
   vector<unsigned int> m_faceVerts;
+
+  vector<unsigned int> m_newVertexIDs;
 
   unsigned int m_face1VertsNum;
   vector<unsigned int> m_face1Verts;
@@ -1330,7 +1346,6 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   m_meshBuilder = MeshBuilder::create(*m_newMesh);
-  m_verticeID = 0;
   m_face1VertsNum = 0;
   m_connected = false;
 
@@ -1345,10 +1360,11 @@ void
 FaceConnector::addVertex(VertexPrecision x,
 			 VertexPrecision y,
 			 VertexPrecision z,
-			 VertexPrecision w)
+			 VertexPrecision w,
+			 unsigned int id)
 {
-  m_meshBuilder->addVertex(x, y, z, w, m_verticeID);
-  m_verticeID++;
+  m_meshBuilder->addVertex(x, y, z, w, id);
+  m_newVertexIDs.push_back(id);
  return;
 } /* FaceConnector::addVertex */
 
@@ -1372,8 +1388,10 @@ FaceConnector::closeFace(void)
  vector<unsigned int>::iterator fi;
  bool found = false, isSelected = true;
  bool copyFace = true;
- unsigned int i = 0;
+ unsigned int i = 0, j = 0, nV = 0;
  ay_point *pnt = NULL;
+ double *p1, *p2, curdist, mindist;
+ vector<unsigned int> nearestVerts;
 
   /* is this face selected? */
   fi = m_faceVerts.begin();
@@ -1383,7 +1401,7 @@ FaceConnector::closeFace(void)
       found = false;
       while(pnt)
 	{
-	  if(pnt->index == *fi)
+	  if(pnt->index == m_newVertexIDs[*fi])
 	    {
 	      found = true;
 	      break;
@@ -1416,7 +1434,7 @@ FaceConnector::closeFace(void)
 	  m_face1Verts.reserve(m_faceVerts.size());
 	  for(i = 0; i < m_faceVerts.size(); i++)
 	    {
-	      m_face1Verts[i] = m_faceVerts[i];
+	      m_face1Verts.push_back(m_faceVerts[i]);
 	      m_face1VertsNum++;
 	    }
 	  copyFace = false;
@@ -1433,21 +1451,53 @@ FaceConnector::closeFace(void)
 		can only happen with dual meshes anyway?
 	      */
 
+	      nearestVerts.reserve(m_faceVerts.size());
+	     
+	      for(i = 0; i < m_faceVerts.size(); i++)
+		{
+		  p1 = &(m_sdnpatch->controlCoords[
+			       m_newVertexIDs[m_faceVerts[i]]*4]);
+		  mindist = DBL_MAX;
+		  for(j = 0; j < m_face1Verts.size(); j++)
+		    {
+		      p2 = &(
+              m_sdnpatch->controlCoords[m_newVertexIDs[m_face1Verts[j]]*4]);
+		      if(fabs(p1[0]-p2[0])<AY_EPSILON &&
+			 fabs(p1[1]-p2[1])<AY_EPSILON &&
+			 fabs(p1[2]-p2[2])<AY_EPSILON)
+			{
+			  nV = j;
+			  break;
+			}
+		      else
+			{
+			  curdist = sqrt(((p1[0]-p2[0])*(p1[0]-p2[0]))+
+					 ((p1[1]-p2[1])*(p1[1]-p2[1]))+
+					 ((p1[2]-p2[2])*(p1[2]-p2[2])));
+			  if(curdist < mindist)
+			    {
+			      mindist = curdist;
+			      nV = j;
+			    }
+			}
+		    }
+		  nearestVerts.push_back(m_face1Verts[nV]);
+		}
+	      
 	      for(i = 0; i < m_faceVerts.size()-1; i++)
 		{
 		   m_meshBuilder->startFace(4);
-		   m_meshBuilder->addToFace(m_face1Verts[i]);
-		   m_meshBuilder->addToFace(m_face1Verts[i+1]);
-		   m_meshBuilder->addToFace(m_faceVerts[i+1]);
 		   m_meshBuilder->addToFace(m_faceVerts[i]);
+		   m_meshBuilder->addToFace(m_faceVerts[i+1]);
+		   m_meshBuilder->addToFace(nearestVerts[i+1]);
+		   m_meshBuilder->addToFace(nearestVerts[i]);
 		   m_meshBuilder->closeFace();
 		}
-
 	      m_meshBuilder->startFace(4);
-	      m_meshBuilder->addToFace(m_face1Verts[i]);
-	      m_meshBuilder->addToFace(m_face1Verts[0]);
-	      m_meshBuilder->addToFace(m_faceVerts[0]);
 	      m_meshBuilder->addToFace(m_faceVerts[i]);
+	      m_meshBuilder->addToFace(m_faceVerts[0]);
+	      m_meshBuilder->addToFace(nearestVerts[0]);
+	      m_meshBuilder->addToFace(nearestVerts[i]);
 	      m_meshBuilder->closeFace();
 
 	      m_connected = true;
