@@ -368,7 +368,8 @@ public:
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
-		 VertexPrecision w);
+		 VertexPrecision w,
+		 unsigned int id);
   void addToFace(unsigned int vertNum);
   void closeFace(void);
   void addKnotInterval(unsigned int vertex1,
@@ -389,6 +390,8 @@ private:
 
   // collect new vertices
   vector<VertexPrecision> m_newVerts;
+  vector<unsigned int> m_newVertexIDs;
+
 
   // collect new faces
   unsigned int m_newFacesNum;
@@ -429,13 +432,14 @@ void
 FaceExtruder::addVertex(VertexPrecision x,
 			VertexPrecision y,
 			VertexPrecision z,
-			VertexPrecision w)
+			VertexPrecision w,
+			unsigned int id)
 {
   m_newVerts.push_back(x);
   m_newVerts.push_back(y);
   m_newVerts.push_back(z);
   m_newVerts.push_back(w);
-
+  m_newVertexIDs.push_back(id);
  return;
 } /* FaceExtruder::addVertex */
 
@@ -469,7 +473,7 @@ FaceExtruder::closeFace(void)
       found = false;
       while(pnt)
 	{
-	  if(pnt->index == *fi)
+	  if(pnt->index == m_newVertexIDs[*fi])
 	    {
 	      found = true;
 	      break;
