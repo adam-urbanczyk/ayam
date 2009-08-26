@@ -2501,6 +2501,8 @@ Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thins
 </table>
 The capabilities are:
 <itemize>
+<item><bf/Type/: the type name as displayed in the object tree view
+and understood by the <tt/"crtOb"/ scripting interface command;
 <item><bf/Parent of/: the object is a parent object (can have child
 objects of the designated type),
 + - multiple child objects may be present (one or many),
@@ -2681,6 +2683,7 @@ mechanism.
 Script|Any+|No|Any|No@<hline>
 MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
+SDNPatch|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
@@ -7084,9 +7087,10 @@ in the expr-statement above) to speed up the expression.
 <p>
 The SDNPatch custom object is available since Ayam 1.16 and
 allows to model with Subdivision NURBS.
-There are currently no special modelling actions for Subdivision NURBS
-defined, but you may select and edit the control points. Furthermore,
-there is a simply conversion facility that converts NURBS patch control
+<p>
+There are some special modelling actions for Subdivision NURBS
+defined (see below) and there are PLY import/export facilities. Furthermore,
+there is a simple conversion operation that converts NURBS patch control
 arrays to SDNPatch objects.
 <p>
 The following table briefly lists some capabilities of the SDNPatch object.
@@ -7110,6 +7114,34 @@ the only valid values are currently 3, 5, and 7.
 <item><tt/"Level"/ is the subdivision level, a high level leads to
 many polygons and a smooth surface; useful values range from 0 to 5.
 </itemize>
+
+
+<sect2>SDNPatch Modelling Actions
+<p>
+This section, briefly, explains the special modelling actions defined
+for the SDNPatch custom object. In order to select a face for such an
+operation, just select all the control points defining the face.
+All modelling actions can be started via the <tt>"Custom/SDNPatch"</tt>
+main menu. 
+<p>
+<itemize>
+<item><tt/"Face Extrude"/, new faces are inserted in the mesh at all
+edges of the selected face, the selected face itself is displaced along
+its normal;
+<item><tt/"Face Remove"/, the selected face is removed from the mesh;
+<item><tt/"Face Merge"/, the first two selected faces are removed
+from the mesh, the neighboring patches of the second face are connected
+to the neighboring faces of the first face;
+<item><tt/"Face Connect"/,  the first two selected faces are removed
+from the mesh, the neighboring patches of the second face are connected
+to the neighboring faces of the first face via a set of new faces.
+The decision, between which vertices of the faces the new faces are built,
+depends on the relative vertice distances: you need to move the two
+faces near each other to make clear, how the new connection shall be
+established.
+</itemize>
+
+
 <sect1>Standard Properties<label id="stdprop">
 <p>
 Most Ayam objects have standard properties. They are used
@@ -12604,7 +12636,6 @@ preference setting, however).
 <item>Materials may only be assigned to complete objects, not to
 certain parts of objects.
 <item>Undo/Redo are not possible for scene structure changes.
-<item>Selected points do not survive Undo/Redo/Saving.
 <item>There are no acceleration structures for e.g. drawing and object
 tree updates. This limits the number of objects that Ayam can handle
 simultaneously without big lags in redraws or after scene structure
