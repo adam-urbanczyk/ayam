@@ -381,6 +381,9 @@ public:
 
   Mesh *m_newMesh;
 
+  // collect new vertex selection
+  vector<unsigned int> m_newSelection;
+
 private:
 
   sdnpatch_object *m_sdnpatch;
@@ -410,7 +413,6 @@ private:
   unsigned int m_newKnotIntervalsNum;
   vector<unsigned int> m_newKnotIntervals;
   vector<KnotPrecision> m_newKnots;
-
 };
 
 
@@ -461,10 +463,9 @@ FaceExtruder::closeFace(void)
 {
  vector<unsigned int>::iterator fi;
  bool found = false, isSelected = true, isDummy = false;
- unsigned int i = 0;
+ unsigned int i = 0, j = 0;
  ay_point *pnt = NULL;
- double *cv = NULL, *p = NULL, N[3];
- Vertex *v = NULL;
+ double *cv = NULL, *p = NULL, N[3] = {1.0,0.0,0.0};
  vector<unsigned int> newVerts;
  vector<unsigned int>::iterator nfi;
 
@@ -495,26 +496,39 @@ FaceExtruder::closeFace(void)
 
   if(isSelected)
     {
-      /* face is selected => discard original face and create 5 new faces */
-      if(!(cv = (double*)calloc(m_faceVerts.size()*3,sizeof(double))))
+      /* this face is selected => discard original face and
+	 create new faces */
+
+      /* create the vertices */
+
+      if(!(cv = (double*)calloc(m_faceVerts.size()*3, sizeof(double))))
 	return;
 
       p = cv;
       fi = m_faceVerts.begin();
       for(i = 0; i < m_faceVerts.size(); i++)
 	{
-	  v = m_sdnpatch->controlVertices->at(*fi);
+	  j = (*fi)*4;
 
-	  p[0] = v->getX();
-	  p[1] = v->getY();
-	  p[2] = v->getZ();
+	  p[0] = m_newVerts[j];
+	  j++;
+	  p[1] = m_newVerts[j];
+	  j++;
+	  p[2] = m_newVerts[j];
 
 	  p += 3;
 	  fi++;
 	}
 
-      /* XXXX ToDo fix this approach */
-      ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
+      if((fabs(cv[0]-cv[3]) > AY_EPSILON||
+	  fabs(cv[1]-cv[4]) > AY_EPSILON||
+	  fabs(cv[2]-cv[5]) > AY_EPSILON) &&
+	 (fabs(cv[3]-cv[6]) > AY_EPSILON||
+	  fabs(cv[4]-cv[7]) > AY_EPSILON||
+	  fabs(cv[5]-cv[8]) > AY_EPSILON))
+	{
+	  ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
+	}
 
       newVerts.reserve(m_faceVerts.size());
 
@@ -522,14 +536,17 @@ FaceExtruder::closeFace(void)
       fi = m_faceVerts.begin();
       for(i = 0; i < m_faceVerts.size(); i++)
 	{
-	  v = m_sdnpatch->controlVertices->at(*fi);
+	  j = (*fi)*4+3;
 
 	  m_newVerts.push_back(p[0]-N[0]);
 	  m_newVerts.push_back(p[1]-N[1]);
 	  m_newVerts.push_back(p[2]-N[2]);
-	  m_newVerts.push_back(v->getW());
+	  m_newVerts.push_back(m_newVerts[j]);
 
 	  newVerts.push_back(m_oldVertsNum+m_newVertsNum);
+
+	  m_newSelection.push_back(m_oldVertsNum+m_newVertsNum);
+
 	  m_newVertsNum++;
 
 	  p += 3;
@@ -603,7 +620,7 @@ FaceExtruder::closeFace(void)
 	    }
 	  m_newDummyFacesNum++;
 	}
-    }
+    } /* if */
 
   m_faceVerts.clear();
 
@@ -1452,7 +1469,7 @@ FaceConnector::closeFace(void)
 	      */
 
 	      nearestVerts.reserve(m_faceVerts.size());
-	     
+
 	      for(i = 0; i < m_faceVerts.size(); i++)
 		{
 		  p1 = &(m_sdnpatch->controlCoords[
@@ -1483,7 +1500,7 @@ FaceConnector::closeFace(void)
 		    }
 		  nearestVerts.push_back(m_face1Verts[nV]);
 		}
-	      
+
 	      for(i = 0; i < m_faceVerts.size()-1; i++)
 		{
 		   m_meshBuilder->startFace(4);
@@ -3256,6 +3273,11 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
+ unsigned int i = 0;
+ ay_point *newp = NULL;
+ double obj;
+ ay_pointedit pe;
+ vector<unsigned int>::iterator si;
 
   /* check selection */
   if(!sel)
@@ -3287,18 +3309,35 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
   delete sdnpatch->controlMesh;
   sdnpatch->controlMesh = ((FaceExtruder*)handler)->m_newMesh;
 
-  delete handler;
-  MeshFlattener::dispose(meshFlattener);
-
   sdnpatch_getcontrolvertices(sdnpatch);
 
-  /* XXXX ToDo: re-select extruded face */
+  /* clear old selection, select extruded face(s) */
   ay_selp_clear(o);
+  si = ((FaceExtruder*)handler)->m_newSelection.begin();
+  for(i = 0; i < ((FaceExtruder*)handler)->m_newSelection.size(); i++)
+    {
+      if(!(newp = (ay_point*)calloc(1, sizeof(ay_point))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return TCL_OK;
+	}
+
+      newp->next = o->selp;
+      o->selp = newp;
+      newp->index = ((*sdnpatch->controlVertices)[*si])->getID();
+      si++;
+    }
+
+  ay_pact_getpoint(3, o, &obj, &pe);
 
   o->modified = AY_TRUE;
   ay_notify_force(o);
 
   ay_notify_parent();
+
+  /* clean up */
+  delete handler;
+  MeshFlattener::dispose(meshFlattener);
 
  return TCL_OK;
 } /* sdnpatch_extrudefacetcmd */
