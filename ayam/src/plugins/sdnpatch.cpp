@@ -2331,7 +2331,6 @@ sdnpatch_convertcb(ay_object *o, int in_place)
       delete convertor;
 
       MeshFlattener::dispose(meshFlattener);
-
     } /* if */
 
   /* second, link new objects, or replace old objects with them */
@@ -2486,6 +2485,8 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  *  check, whether NURBS patch <np> is closed
  *  outputs results for respective dimension to
  *  <closedu> and <closedv>
+ *
+ *  ToDo: move this to nurbs/npt.c
  */
 int
 sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
@@ -2549,6 +2550,8 @@ sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
  *   18  2  6 10 14 22
  *   19  3  7 11 15 23 <- lr
  *   30 31 32 33 34 35
+ *
+ * ToDo: add support for degrees other than 3
  */
 void
 sdnpatch_addfaces(MeshBuilder *meshBuilder,
@@ -2565,12 +2568,10 @@ sdnpatch_addfaces(MeshBuilder *meshBuilder,
       for(j = 0; j < height-1; j++)
 	{
 	  meshBuilder->startFace(4);
-
 	  meshBuilder->addToFace(a);
 	  meshBuilder->addToFace(a+1);
 	  meshBuilder->addToFace(b+1);
 	  meshBuilder->addToFace(b);
-
 	  meshBuilder->closeFace();
 
 	  a++;
@@ -2685,6 +2686,19 @@ sdnpatch_addfaces(MeshBuilder *meshBuilder,
 /* sdnpatch_addfacescu:
  *  helper for sdnpatch_convnp() below
  *  create the faces for a patch which is closed in u direction
+ *
+ *  for a standard 4x4 patch this results in
+ *  the following configuration
+ *  (vertices 16-23 being so called dummy vertices):
+ *
+ *  16 17 18 19
+ *   0  4  8 12
+ *   1  5  9 13
+ *   2  6 10 14
+ *   3  7 11 15
+ *  20 21 22 23
+ *
+ * ToDo: add support for degrees other than 3
  */
 void
 sdnpatch_addfacescu(MeshBuilder *meshBuilder,
@@ -2780,6 +2794,17 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
 /* sdnpatch_addfacescv:
  *  helper for sdnpatch_convnp() below
  *  create the faces for a patch which is closed in v direction
+ *
+ *  for a standard 4x4 patch this results in
+ *  the following configuration
+ *  (vertices 16-23 being so called dummy vertices):
+ *
+ *   16  0  4  8 12 20
+ *   17  1  5  9 13 21
+ *   18  2  6 10 14 22
+ *   19  3  7 11 15 23
+ *
+ * ToDo: add support for degrees other than 3
  */
 void
 sdnpatch_addfacescv(MeshBuilder *meshBuilder,
@@ -3023,12 +3048,6 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
   meshBuilder->finishKnotIntervals();
 
   MeshBuilder::dispose(meshBuilder);
-
-  sdnpatch->controlVertices = sdnpatch->controlMesh->getVertexPointers();
-
-  if(!(sdnpatch->controlCoords = (double*)calloc(
-			sdnpatch->controlVertices->size(), 4*sizeof(double))))
-    return AY_EOMEM;
 
   sdnpatch_getcontrolvertices(sdnpatch);
 
