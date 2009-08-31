@@ -42,6 +42,8 @@ proc pomesh_merge { } {
 
     winAutoFocusOff
 
+    set pomeshmerge_options(oldfocus) [focus]
+
     set w .pomeshmerge
     catch {destroy $w}
     toplevel $w -class ayam
@@ -77,7 +79,7 @@ proc pomesh_merge { } {
 	    }
 	    uS; rV
 	    grab release .pomeshmerge
-	    focus .
+	    restoreFocus $pomeshmerge_options(oldfocus)
 	    destroy .pomeshmerge
 	} else {
 
@@ -90,7 +92,7 @@ proc pomesh_merge { } {
 	   set ay(sc) 1
 
 	   grab release .pomeshmerge
-	   focus .
+	   restoreFocus $pomeshmerge_options(oldfocus)
 	   destroy .pomeshmerge
 
 	   if { $pomeshmerge_options(OptimizeNew) == 1 } {
@@ -102,7 +104,7 @@ proc pomesh_merge { } {
 
     button $f.bca -text "Cancel" -width 5 -command "\
 	    grab release .pomeshmerge;\
-	    focus .;\
+	    restoreFocus $pomeshmerge_options(oldfocus);\
 	    destroy .pomeshmerge"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -140,6 +142,8 @@ proc pomesh_optimize { } {
     global ay ay_error pomeshopt_options
 
     winAutoFocusOff
+
+    set pomeshopt_options(oldfocus) [focus]
 
     set w .pomeshopt
     catch {destroy $w}
@@ -180,13 +184,13 @@ proc pomesh_optimize { } {
 	}
 
 	grab release .pomeshopt
-	focus .
+	restoreFocus $pomeshopt_options(oldfocus)
 	destroy .pomeshopt
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
 	    grab release .pomeshopt;\
-	    focus .;\
+	    restoreFocus $pomeshopt_options(oldfocus);\
 	    destroy .pomeshopt"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -222,6 +226,8 @@ proc pomesh_split { } {
     global ay ay_error pomeshspl_options
 
     winAutoFocusOff
+
+    set pomeshspl_options(oldfocus) [focus]
 
     set w .pomeshspl
     catch {destroy $w}
@@ -263,13 +269,13 @@ proc pomesh_split { } {
 	}
 
 	grab release .pomeshspl
-	focus .
+	restoreFocus $pomeshspl_options(oldfocus)
 	destroy .pomeshspl
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
 	    grab release .pomeshspl;\
-	    focus .;\
+	    restoreFocus $pomeshspl_options(oldfocus);\
 	    destroy .pomeshspl"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
