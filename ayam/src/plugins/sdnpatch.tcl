@@ -70,6 +70,8 @@ proc plyio_import { } {
 
     winAutoFocusOff
 
+    set plyio_options(oldfocus) [focus]
+
     if { $plyio_options(filename) != "" } {
 	set plyio_options(FileName) $plyio_options(filename)
     } else {
@@ -131,14 +133,14 @@ proc plyio_import { } {
 	}
 
 	grab release .plyio
-	focus .
+	restoreFocus $plyio_options(oldfocus)
 	destroy .plyio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .plyio;\
-		focus .;\
+		restoreFocus $plyio_options(oldfocus);\
 		destroy .plyio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -175,6 +177,8 @@ proc plyio_export { } {
     global ay ay_error plyio_options aymainshortcuts
 
     winAutoFocusOff
+
+    set plyio_options(oldfocus) [focus]
 
     cS; plb_update
     update
@@ -234,14 +238,14 @@ proc plyio_export { } {
 	# if
 
 	grab release .plyio
-	focus .
+	restoreFocus $plyio_options(oldfocus)
 	destroy .plyio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .plyio;\
-		focus .;\
+		restoreFocus $plyio_options(oldfocus);\
 		destroy .plyio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
