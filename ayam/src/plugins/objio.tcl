@@ -36,6 +36,8 @@ proc objio_export { } {
 
     winAutoFocusOff
 
+    set objio_options(oldfocus) [focus]
+
     if { $objio_options(filename) != "" } {
 	set objio_options(FileName) $objio_options(filename)
     } else {
@@ -86,7 +88,6 @@ proc objio_export { } {
 
 	set filename [file tail $objio_options(FileName)]
 
-	grab .objE
 	set objio_options(Cancel) 0
 	update
 
@@ -96,7 +97,6 @@ proc objio_export { } {
 	    -f $objio_options(ScaleFactor)\
 	    -t $objio_options(STagName) $objio_options(TTagName)
 
-	grab release .objE
 	cd $oldcd
 
 	if { $ay_error < 2 } {
@@ -107,6 +107,8 @@ proc objio_export { } {
 	    ayError 2 "exportOBJ" "$objio_options(FileName)"
 	}
 
+	grab release .objE
+	restoreFocus $objio_options(oldfocus)
 	destroy .objE
     }
     # button
@@ -115,7 +117,7 @@ proc objio_export { } {
 		global objio_options;\
                 set objio_options(Cancel) 1;\
 		grab release .objE;\
-                focus .;\
+                restoreFocus $objio_options(oldfocus);\
 		destroy .objE"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -132,7 +134,9 @@ proc objio_export { } {
     bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expwav }
 
     winCenter $w
+    grab $w
     focus $w.f2.bok
+    tkwait window $w
 
     winAutoFocusOn
 
@@ -151,6 +155,8 @@ proc objio_import { } {
     set ay_error ""
 
     winAutoFocusOff
+
+    set objio_options(oldfocus) [focus]
 
     if { $objio_options(filename) != "" } {
 	set objio_options(FileName) $objio_options(filename)
@@ -196,7 +202,7 @@ proc objio_import { } {
 	set objio_options(filename) $objio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $objio_options(FileName)]
-	grab .objI
+
 	set objio_options(Cancel) 0
 	update
 	objioRead [file tail $objio_options(FileName)]\
@@ -208,7 +214,7 @@ proc objio_import { } {
 	        -d $objio_options(CheckDegen)\
 	        -s $objio_options(ReadSTrim)\
 		-t $objio_options(STagName) $objio_options(TTagName)
-	grab release .objI
+
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
 	    ayError 4 "importOBJ" "$objio_options(FileName)"
@@ -232,7 +238,7 @@ proc objio_import { } {
 	set ay(sc) 1
 
 	grab release .objI
-	focus .
+	restoreFocus $objio_options(oldfocus)
 	destroy .objI
     }
     # button
@@ -241,7 +247,7 @@ proc objio_import { } {
                 global objio_options;\
                 set objio_options(Cancel) 1;\
 		grab release .objI;\
-		focus .;\
+                restoreFocus $objio_options(oldfocus);\
 		destroy .objI"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -262,9 +268,9 @@ proc objio_import { } {
     focus $w.f2.bok
     tkwait window $w
 
-    after idle viewMouseToCurrent
-
     winAutoFocusOn
+
+    after idle viewMouseToCurrent
 
  return;
 }

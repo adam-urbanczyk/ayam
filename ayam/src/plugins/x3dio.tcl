@@ -42,6 +42,8 @@ proc x3dio_import { } {
 
     winAutoFocusOff
 
+    set x3dio_options(oldfocus) [focus]
+
     if { $x3dio_options(filename) != "" } {
 	set x3dio_options(FileName) $x3dio_options(filename)
     } else {
@@ -130,7 +132,7 @@ proc x3dio_import { } {
 	}
 
 	grab release .x3dio
-	focus .
+	restoreFocus $x3dio_options(oldfocus)
 	destroy .x3dio
     }
     # button
@@ -138,7 +140,7 @@ proc x3dio_import { } {
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::x3dio_options(Cancel) 1;\
 		grab release .x3dio;\
-		focus .;\
+		restoreFocus $x3dio_options(oldfocus);\
 		destroy .x3dio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -174,6 +176,8 @@ proc x3dio_export { } {
     global ay ay_error x3dio_options aymainshortcuts
 
     winAutoFocusOff
+
+    set x3dio_options(oldfocus) [focus]
 
     cS; plb_update
     update
@@ -262,7 +266,7 @@ proc x3dio_export { } {
 	# if
 
 	grab release .x3dio
-	focus .
+	restoreFocus $x3dio_options(oldfocus)
 	destroy .x3dio
     }
     # button
@@ -270,7 +274,7 @@ proc x3dio_export { } {
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::x3dio_options(Cancel) 1;\
 		grab release .x3dio;\
-		focus .;\
+		restoreFocus $x3dio_options(oldfocus);\
 		destroy .x3dio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

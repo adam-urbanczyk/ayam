@@ -36,6 +36,8 @@ proc dxfio_import { } {
 
     winAutoFocusOff
 
+    set dxfio_options(oldfocus) [focus]
+
     if { $dxfio_options(filename) != "" } {
 	set dxfio_options(FileName) $dxfio_options(filename)
     } else {
@@ -108,7 +110,7 @@ proc dxfio_import { } {
 	}
 
 	grab release .dxfio
-	focus .
+	restoreFocus $dxfio_options(oldfocus)
 	destroy .dxfio
     }
     # button
@@ -116,7 +118,7 @@ proc dxfio_import { } {
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::dxfio_options(Cancel) 1;\
 		grab release .dxfio;\
-		focus .;\
+		restoreFocus $dxfio_options(oldfocus);\
 		destroy .dxfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -152,6 +154,8 @@ proc dxfio_export { } {
     global ay ay_error dxfio_options aymainshortcuts
 
     winAutoFocusOff
+
+    set dxfio_options(oldfocus) [focus]
 
     cS; plb_update
     update
@@ -225,7 +229,7 @@ proc dxfio_export { } {
 	# if
 
 	grab release .dxfio
-	focus .
+	restoreFocus $dxfio_options(oldfocus)
 	destroy .dxfio
     }
     # button
@@ -233,7 +237,7 @@ proc dxfio_export { } {
     button $f.bca -text "Cancel" -width 5 -command "\
                 set ::dxfio_options(Cancel) 1;\
 		grab release .dxfio;\
-		focus .;\
+		restoreFocus $dxfio_options(oldfocus);\
 		destroy .dxfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

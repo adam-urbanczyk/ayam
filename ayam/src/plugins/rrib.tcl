@@ -32,6 +32,8 @@ proc rrib_import { } {
 
     winAutoFocusOff
 
+    set rrib_options(oldfocus) [focus]
+
     if { $rrib_options(filename) != "" } {
 	set rrib_options(FileName) $rrib_options(filename)
     } else {
@@ -116,14 +118,14 @@ proc rrib_import { } {
 	}
 
 	grab release .ribI
-	focus .
+	restoreFocus $rrib_options(oldfocus)
 	destroy .ribI
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .ribI;\
-		focus .;\
+		restoreFocus $rrib_options(oldfocus);\
 		destroy .ribI"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
