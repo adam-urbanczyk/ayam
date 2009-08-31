@@ -36,6 +36,8 @@ proc onio_import { } {
 
     winAutoFocusOff
 
+    set onio_options(oldfocus) [focus]
+
     if { $onio_options(filename) != "" } {
 	set onio_options(FileName) $onio_options(filename)
     } else {
@@ -116,14 +118,14 @@ proc onio_import { } {
 	}
 
 	grab release .onio
-	focus .
+	restoreFocus $onio_options(oldfocus)
 	destroy .onio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .onio;\
-		focus .;\
+		restoreFocus $onio_options(oldfocus);\
 		destroy .onio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -157,6 +159,8 @@ proc onio_export { } {
     global ay ay_error onio_options aymainshortcuts
 
     winAutoFocusOff
+
+    set onio_options(oldfocus) [focus]
 
     cS; plb_update
     update
@@ -239,14 +243,14 @@ proc onio_export { } {
 	# if
 
 	grab release .onio
-	focus .
+	restoreFocus $onio_options(oldfocus)
 	destroy .onio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .onio;\
-		focus .;\
+		restoreFocus $onio_options(oldfocus);\
 		destroy .onio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

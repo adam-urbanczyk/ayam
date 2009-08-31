@@ -105,6 +105,8 @@ proc aycsgPreferences { } {
 
     winAutoFocusOff
 
+    set aycsg_options(oldfocus) [focus]
+
     array set aycsg_options_save ""
     array set aycsg_options_save [array get aycsg_options]
 
@@ -159,13 +161,13 @@ proc aycsgPreferences { } {
 
 	array set aycsg_options [array get aycsg_options_save]
 	grab release .aycsgprefs
-	focus .
+	restoreFocus $aycsg_options(oldfocus)
 	destroy .aycsgprefs
     }
     # button
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .aycsgprefs;\
-		focus .;\
+		restoreFocus $aycsg_options(oldfocus);\
 		destroy .aycsgprefs"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

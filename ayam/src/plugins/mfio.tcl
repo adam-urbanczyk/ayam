@@ -36,6 +36,8 @@ proc mfio_import { } {
 
     winAutoFocusOff
 
+    set mfio_options(oldfocus) [focus]
+
     if { $mfio_options(filename) != "" } {
 	set mfio_options(FileName) $mfio_options(filename)
     } else {
@@ -108,14 +110,14 @@ proc mfio_import { } {
 	}
 
 	grab release .mfio
-	focus .
+	restoreFocus $mfio_options(oldfocus)
 	destroy .mfio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .mfio;\
-		focus .;\
+		restoreFocus $mfio_options(oldfocus);\
 		destroy .mfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -149,6 +151,8 @@ proc mfio_export { } {
     global ay ay_error mfio_options aymainshortcuts
 
     winAutoFocusOff
+
+    set mfio_options(oldfocus) [focus]
 
     cS; plb_update
     update
@@ -223,14 +227,14 @@ proc mfio_export { } {
 	# if
 
 	grab release .mfio
-	focus .
+	restoreFocus $mfio_options(oldfocus)
 	destroy .mfio
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
 		grab release .mfio;\
-		focus .;\
+		restoreFocus $mfio_options(oldfocus);\
 		destroy .mfio"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes

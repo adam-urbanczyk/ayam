@@ -22,6 +22,8 @@ proc mopsi_import { } {
 
     winAutoFocusOff
 
+    set mopsi_options(oldfocus) [focus]
+
     if { $mopsi_options(filename) != "" } {
 	set mopsi_options(FileName) $mopsi_options(filename)
     } else {
@@ -83,19 +85,22 @@ proc mopsi_import { } {
 	uS
 	rV
 	set ay(sc) 1
-
+	
+	grab release .mopi
+	restoreFocus $mopsi_options(oldfocus)
 	destroy .mopi
+
 	foreach view $ay(views) { viewBind $view }
 	update
 
 	set mopsi_options(filename) $filename
 
-	after idle viewMouseToCurrent
     }
     # button
 
     button $f.bca -text "Cancel" -width 5 -command "\
-		focus .;\
+                grab release .mopi;\
+		restoreFocus $mopsi_options(oldfocus);\
 		destroy .mopi"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -109,8 +114,13 @@ proc mopsi_import { } {
     bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impmops }
 
     winCenter $w
+    grab $w
     focus $w.f2.bok
+    tkwait window $w
+
     winAutoFocusOn
+
+    after idle viewMouseToCurrent
 
  return;
 }
