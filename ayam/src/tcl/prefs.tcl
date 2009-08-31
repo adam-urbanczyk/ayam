@@ -82,6 +82,8 @@ proc prefs_open {} {
 
     winAutoFocusOff
 
+    set ay(prefsFocus) [focus]
+
     set w .prefsw
     catch {destroy $w}
 
@@ -120,7 +122,7 @@ proc prefs_open {} {
 	    # unset removes all traces
 	    unset ayprefse($j)
 	}
-	focus .
+	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
 	winAutoFocusOn
     }
@@ -317,7 +319,7 @@ proc prefs_open {} {
 	}
 	prefs_set
 	rV
-	focus .
+	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
     }
 
@@ -358,7 +360,7 @@ proc prefs_open {} {
 	    # unset removes all traces
 	    unset ayprefse($j)
 	}
-	focus .
+	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
 	winAutoFocusOn
     }
