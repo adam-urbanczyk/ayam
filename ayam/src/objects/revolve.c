@@ -532,13 +532,13 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 
   if(upper)
     {
-      for(i=1;i<=15;i+=4)
+      for(i = 1; i <= 15; i += 4)
 	controlv[i] = -P2[1];
       cap->scaly *= -1.0;
     }
   else
     {
-      for(i=1;i<=15;i+=4)
+      for(i = 1; i <= 15; i += 4)
 	controlv[i] = P2[1];
     }
 
@@ -650,22 +650,17 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
       trim = tloop->down;
       ay_nct_revert((ay_nurbcurve_object *)trim->refine);
 
-    } /* if */
-
-  /* properly terminate level */
-  tloop = cap->down;
-  if(tloop)
-    {
-      while(tloop->next)
+      /* properly terminate level */
+      tloop = cap->down;
+      if(tloop)
 	{
-	  tloop = tloop->next;
+	  while(tloop->next)
+	    {
+	      tloop = tloop->next;
+	    }
+	  ay_status = ay_object_crtendlevel(&(tloop->next));
 	}
-      ay_status = ay_object_crtendlevel(&(tloop->next));
-    }
-  else
-    {
-      ay_status = ay_object_crtendlevel(&(trim->down));
-    }
+    } /* if */
 
   *o = cap;
 
@@ -945,10 +940,6 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	      tloop = tloop->next;
 	    }
 	  ay_status = ay_object_crtendlevel(&(tloop->next));
-	}
-      else
-	{
-	  ay_status = ay_object_crtendlevel(&(trim->down));
 	}
     } /* if !closed */
 
