@@ -134,20 +134,23 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bed -image ay_Edit_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditP
 	    }
-	    balloon_set $f.bed "edit points\n\[ $ayviewshortcuts(Edit) \]"
+	    balloon_set $f.bed\
+		"edit points\n\[ [remkpkr $ayviewshortcuts(Edit)] \]"
 
 	    ######
 	    button $f.bedw -image ay_EditW_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionEditWP
 	    }
-	    balloon_set $f.bedw "edit weights\n\[ $ayviewshortcuts(WeightE) \]"
+	    balloon_set $f.bedw\
+		"edit weights\n\[ [remkpkr $ayviewshortcuts(WeightE)] \]"
 
 	    ######
 	    button $f.bedd -image ay_EditD_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionDEditP
 	    }
 
-	    balloon_set $f.bedd "directly edit coordinates\n\[ $ayviewshortcuts(EditD) \]"
+	    balloon_set $f.bedd\
+	  "directly edit coordinates\n\[ [remkpkr $ayviewshortcuts(EditD)] \]"
 	    ######
 	    button $f.sel -image ay_Tag_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionTagP
@@ -160,7 +163,7 @@ proc toolbox_open { {w .tbw} } {
 		after 100 "%W configure -relief raised"
 		break;
 	    }
-	    balloon_set $f.sel "select (tag) points\n\[ $ayviewshortcuts(Select) \]\nShift: deselect points\n\[ $ayviewshortcuts(DeSelect) \]"
+	    balloon_set $f.sel "select (tag) points\n\[ [remkpkr $ayviewshortcuts(Select)] \]\nShift: deselect points\n\[ [remkpkr $ayviewshortcuts(DeSelect)] \]"
 
 
 	}
@@ -179,21 +182,22 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.brot -image ay_RotV_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionRotView
 	    }
-	    balloon_set $f.brot "rotate view \[ $ayviewshortcuts(RotV) \]"
+	    balloon_set $f.brot\
+		"rotate view \[ [remkpkr $ayviewshortcuts(RotV)] \]"
 
 	    ######
 	    button $f.bmov -image ay_MoveV_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionMoveView
 	    }
 	    balloon_set $f.bmov\
-		    "move view \[ $ayviewshortcuts(MoveV) \]"
+		"move view \[ [remkpkr $ayviewshortcuts(MoveV)] \]"
 
 	    #####
 	    button $f.bzom -image ay_ZoomV_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionZoomView
 	    }
 	    balloon_set $f.bzom\
-		    "zoom view \[ $ayviewshortcuts(ZoomV) \]"
+		"zoom view \[ [remkpkr $ayviewshortcuts(ZoomV)] \]"
 
 	}
 	##################
@@ -203,27 +207,29 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bmovo -image ay_Move_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionMoveOb
 	    }
-	    balloon_set $f.bmovo "move \[ $ayviewshortcuts(MoveO) \]"
+	    balloon_set $f.bmovo\
+		"move \[ [remkpkr $ayviewshortcuts(MoveO)] \]"
 
 	    ######
 	    button $f.broto -image ay_Rotate_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionRotOb
 	    }
-	    balloon_set $f.broto "rotate \[ $ayviewshortcuts(RotO) \]"
+	    balloon_set $f.broto\
+		"rotate \[ [remkpkr $ayviewshortcuts(RotO)] \]"
 
 	    ######
 	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionRotObA
 	    }
 	    balloon_set $f.brota\
-		    "rotate about \[ $ayviewshortcuts(RotA) \]"
+		"rotate about \[ [remkpkr $ayviewshortcuts(RotA)] \]"
 
 	    #####
 	    button $f.bscal -image ay_Scale3D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc3DOb
 	    }
 	    balloon_set $f.bscal\
-		    "scale 3D \[ $ayviewshortcuts(Scal3) \]"
+		"scale 3D \[ [remkpkr $ayviewshortcuts(Scal3)] \]"
 
 	}
 	##################
@@ -234,27 +240,29 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bsc2d -image ay_Scale2D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc2DOb
 	    }
-	    balloon_set $f.bsc2d "scale 2D \[ $ayviewshortcuts(Scal2) \]"
+	    balloon_set $f.bsc2d\
+		"scale 2D \[ [remkpkr $ayviewshortcuts(Scal2)] \]"
 
 	    ######
 	    button $f.bsc1dx -image ay_Scale1DX_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc1DXOb
 	    }
-	    balloon_set $f.bsc1dx "scale x \[ $ayviewshortcuts(ScalX) \]"
+	    balloon_set $f.bsc1dx\
+		"scale x \[ [remkpkr $ayviewshortcuts(ScalX)] \]"
 
 	    ######
 	    button $f.bsc1dy -image ay_Scale1DY_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc1DYOb
 	    }
 	    balloon_set $f.bsc1dy\
-		    "scale y \[ $ayviewshortcuts(ScalY) \]"
+		"scale y \[ [remkpkr $ayviewshortcuts(ScalY)] \]"
 
 	    #####
 	    button $f.bsc1dz -image ay_Scale1DZ_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc1DZOb
 	    }
 	    balloon_set $f.bsc1dz\
-		    "scale z \[ $ayviewshortcuts(ScalZ) \]"
+		"scale z \[ [remkpkr $ayviewshortcuts(ScalZ)] \]"
 
 	}
 
@@ -306,7 +314,7 @@ proc toolbox_open { {w .tbw} } {
 		set m $ay(editmenu)
 		$m invoke 12
 	    }
-	    balloon_set $f.bund "undo \[ $aymainshortcuts(Undo) \]"
+	    balloon_set $f.bund "undo \[ [remkpkr $aymainshortcuts(Undo)] \]"
 
 	}
 	##################
@@ -402,13 +410,15 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bfindu -image ay_FindU_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionFindU
 	    }
-	    balloon_set $f.bfindu "find u \[ $ayviewshortcuts(FindU) \]"
+	    balloon_set $f.bfindu\
+		"find u \[ [remkpkr $ayviewshortcuts(FindU)] \]"
 
 	    #####
 	    button $f.bspl -image ay_Split_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSplitNC
 	    }
-	    balloon_set $f.bspl "split curve \[ $ayviewshortcuts(SplitNC) \]"
+	    balloon_set $f.bspl\
+		"split curve \[ [remkpkr $ayviewshortcuts(SplitNC)] \]"
 
 	    #####
 	    button $f.bconc -image ay_Concat_img -padx 0 -pady 0 -command {
