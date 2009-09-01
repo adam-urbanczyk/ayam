@@ -14,6 +14,9 @@ proc riattr_addp { } {
     global ay
 
     winAutoFocusOff
+
+    set ay(addRiAttrFocus) [focus]
+
     set w .addRiAttrw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -247,14 +250,15 @@ proc riattr_addp { } {
 	    ayError 2 riattr_addp "No attribute selected!"
 	}
 
-	focus .
 	grab release .addRiAttrw
+	restoreFocus $ay(addRiAttrFocus)
 	destroy .addRiAttrw
-
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	grab release $w;focus . ; destroy $w "
+	grab release $w;\
+        restoreFocus $ay(addRiAttrFocus);\
+        destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x

@@ -59,8 +59,9 @@ proc splash_open { } {
 
     label $w.image -image ayam-splash
     pack $w.image  -side left
+
     bind $w <ButtonRelease-1> {
-	grab release .aysplash; after 50 destroy .aysplash;
+	after 50 destroy .aysplash
 	if { ! $AYWITHAQUA } {
 	    focus .
 	}
@@ -75,8 +76,6 @@ proc splash_open { } {
 	after idle "winCenter $w 1"
     }
 
-    grab $w
-
     # arrange automatic closing after x seconds
     after 6000 {after idle splash_close}
 
@@ -85,11 +84,7 @@ proc splash_open { } {
 
 proc splash_close { } {
     if { [winfo exists .aysplash] } {
-	grab release .aysplash
 	destroy .aysplash
-	if { [focus] != ".fl.con.console" } {
-	    focus -force .
-	}
     }
  return;
 }
