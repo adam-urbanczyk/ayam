@@ -1158,8 +1158,13 @@ if { [info exists env(AYNOSPLASH)] } {
 # show splash screen
 ayam_loadscript win
 ayam_loadscript splash
-if { $ay(showsplash) == 1 } { splash_open }
-
+if { $ay(showsplash) == 1 } {
+    splash_open
+    bind . <1> {
+	splash_close
+	bind . <1> ""
+    }
+}
 
 # create UI
 # first configure our main window

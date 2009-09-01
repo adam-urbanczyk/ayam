@@ -14,6 +14,9 @@ proc riopt_addp { } {
     global ay
 
     winAutoFocusOff
+
+    set ay(addRiOptFocus) [focus]
+
     set w .addRiOptw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -271,14 +274,16 @@ proc riopt_addp { } {
 	    ayError 2 riopt_addp "No option selected!"
 	}
 
-	focus .
 	grab release .addRiOptw
+	restoreFocus $ay(addRiOptFocus)
 	destroy .addRiOptw
 
     }
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	grab release $w; focus . ; destroy $w "
+	grab release $w;\
+	restoreFocus $ay(addRiOptFocus);\
+        destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no

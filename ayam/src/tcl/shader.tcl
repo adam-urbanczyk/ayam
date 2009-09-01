@@ -29,7 +29,6 @@
 proc shader_scanAll {} {
     global ay env ayprefs AYUSESLCARGS AYUSESLXARGS ay_error
 
-
     foreach i [list surface displacement imager light volume transformation] {
 	eval "set ay(${i}shaders) \"\" "
     }
@@ -245,9 +244,14 @@ proc shader_setNew { win type stype } {
 	}
 	return;
     }
+    # if
+
     # request a new shader
 
     winAutoFocusOff
+
+    set ay(oldSetShaderFocus) [focus]
+
     set w .setShaderw
     catch {destroy $w}
     toplevel $w -class ayam
@@ -298,15 +302,16 @@ proc shader_setNew { win type stype } {
     
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	global newshaderindex
+	global ay newshaderindex
 	set newshaderindex [.setShaderw.f1.lb curselection]
 	grab release .setShaderw
-	focus .
+	restoreFocus $ay(oldSetShaderFocus)
 	destroy .setShaderw
     }
 
     button $f.bca -text "Cancel" -width 5 -command "\
             grab release .setShaderw;\
+	    restoreFocus $ay(oldSetShaderFocus);\
 	    global newshaderindex;\
 	    set newshaderindex \"\";\
 	    destroy $w"
