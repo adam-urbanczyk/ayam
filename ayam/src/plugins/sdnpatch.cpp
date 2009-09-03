@@ -647,7 +647,7 @@ FaceExtruder::finishKnotIntervals(void)
  MeshBuilder *meshBuilder = NULL;
  vector<unsigned int>::iterator fi;
  unsigned int numVerts;
- unsigned int i, j;
+ unsigned int i, j, ki1, ki2;
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*m_newMesh);
@@ -692,10 +692,17 @@ FaceExtruder::finishKnotIntervals(void)
 	  fi++;
 	  for(j = 0; j < numVerts; j++)
 	    {
-	      meshBuilder->addToFace(*fi);
+
+	      if(*fi>= m_oldVertsNum)
+		{
+		  meshBuilder->addToFace(*fi+m_newVertsNum);
+		}
+	      else
+		{
+		  meshBuilder->addToFace(*fi);
+		}
 	      fi++;
 	    }
-
 	  meshBuilder->closeFace();
 	}
     }
@@ -707,9 +714,18 @@ FaceExtruder::finishKnotIntervals(void)
       j = 0;
       for(i = 0; i < m_newKnotIntervalsNum; i++)
 	{
-	  meshBuilder->addKnotInterval(m_newKnotIntervals[j],
-				       m_newKnotIntervals[j+1],
-				       m_newKnots[i]);
+	  ki1 = m_newKnotIntervals[j];
+
+	  if(ki1 >= m_oldVertsNum)
+	    ki1 += m_newVertsNum;
+
+	  ki2 = m_newKnotIntervals[j+1];
+
+	  if(ki2 >= m_oldVertsNum)
+	    ki2 += m_newVertsNum;
+
+	  meshBuilder->addKnotInterval(ki1, ki2, m_newKnots[i]);
+
 	  j += 2;
 	}
     }
@@ -3321,8 +3337,9 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
+
   FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp);
+
   meshFlattener->flatten(*handler);
 
   delete sdnpatch->controlMesh;
