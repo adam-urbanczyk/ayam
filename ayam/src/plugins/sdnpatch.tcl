@@ -49,7 +49,10 @@ $m add command -label "Face Connect" -command {
 $m add command -label "Import PLY" -command plyio_import
 $m add command -label "Export PLY" -command plyio_export
 
-# XXXX ToDo: add keyboard shortcuts for face extrude?
+# arrange for all tools to update the "last used" tool menu entry
+mmenu_addlume $ay(cm).sdn
+
+# XXXX ToDo: add own keyboard shortcuts for face extrude etc.?
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch
