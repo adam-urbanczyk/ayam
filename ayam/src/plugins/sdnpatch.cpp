@@ -75,6 +75,11 @@ int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
 
 /* assorted helper classes: */
 
+/**
+ * AyWriter: Helper class to write a mesh to an Ayam scene file
+ *
+ * ToDo: add support for texture coordinates
+ */
 class AyWriter : public FlatMeshHandler
 {
 public:
@@ -225,8 +230,12 @@ AyWriter::finishKnotIntervals(void)
 } /* AyWriter::finishKnotIntervals */
 
 
-
-
+/**
+ * AyConvertor: helper class to convert a Mesh to
+ * a Ayam PolyMesh (PoMesh) object
+ *
+ * ToDo: add support for texture coordinates
+ */
 class AyConvertor
 {
 public:
@@ -362,6 +371,11 @@ AyConvertor::convert(ay_pomesh_object *pomesh)
 } /* AyConvertor::convert */
 
 
+/**
+ * FaceExtruder: Helper class to extrude a face from a mesh
+ *
+ * ToDo: add support for texture coordinates
+ */
 class FaceExtruder : public FlatMeshHandler
 {
 public:
@@ -499,7 +513,7 @@ FaceExtruder::closeFace(void)
       /* this face is selected => discard original face and
 	 create new faces */
 
-      /* create the vertices */
+      /* calculate the extrusion direction (use normal of selected face) */
 
       if(!(cv = (double*)calloc(m_faceVerts.size()*3, sizeof(double))))
 	return;
@@ -529,6 +543,8 @@ FaceExtruder::closeFace(void)
 	{
 	  ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
 	}
+
+      /* create the vertices */
 
       newVerts.reserve(m_faceVerts.size());
 
@@ -878,8 +894,8 @@ FaceRemover::closeFace(void)
 
 void
 FaceRemover::addKnotInterval(unsigned int vertex1,
-			      unsigned int vertex2,
-			      KnotPrecision interval)
+			     unsigned int vertex2,
+			     KnotPrecision interval)
 {
   m_newKnotIntervals.push_back(vertex1);
   m_newKnotIntervals.push_back(vertex2);
@@ -1151,11 +1167,11 @@ FaceMerger::closeFace(void)
 		      m_removeVertsNum++;
 		    }
 
-		}
+		} /* for */
 	      copyFace = false;
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if isSelected */
 
   if(copyFace)
     {
@@ -1177,8 +1193,8 @@ FaceMerger::closeFace(void)
 
 void
 FaceMerger::addKnotInterval(unsigned int vertex1,
-			       unsigned int vertex2,
-			       KnotPrecision interval)
+			    unsigned int vertex2,
+			    KnotPrecision interval)
 {
   m_newKnotIntervals.push_back(vertex1);
   m_newKnotIntervals.push_back(vertex2);
@@ -1587,6 +1603,8 @@ FaceConnector::finishKnotIntervals(void)
  return;
 } /* FaceConnector::finishKnotIntervals */
 
+
+/****************************************************************************/
 
 
 /* sdnpatch_createcb:
@@ -2030,10 +2048,11 @@ sdnpatch_readcb(FILE *fileptr, ay_object *o)
 
       for(j = 0; j < numEdges; j++)
 	{
-	  fscanf(fileptr, "%u", &e);
+	  fscanf(fileptr, " %u", &e);
 	  meshBuilder->addToFace(e);
 	}
       meshBuilder->closeFace();
+      fscanf(fileptr, "\n");
     }
   meshBuilder->finishFaces();
 
@@ -2080,7 +2099,6 @@ sdnpatch_writecb(FILE *fileptr, ay_object *o)
   /* write the control mesh using the AyWriter MeshFlattener handler */
   mesh = sdnpatch->controlMesh;
   meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
   handler = new AyWriter(fileptr);
   meshFlattener->flatten(*handler);
   delete handler;
@@ -3415,7 +3433,6 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
   FlatMeshHandler *handler = new FaceRemover(sdnpatch, o->selp);
 
   meshFlattener->flatten(*handler);
@@ -3483,7 +3500,6 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
   FlatMeshHandler *handler = new FaceMerger(sdnpatch, o->selp);
   meshFlattener->flatten(*handler);
 
@@ -3542,7 +3558,6 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  meshFlattener->setCompatible(true);
   FlatMeshHandler *handler = new FaceConnector(sdnpatch, o->selp);
   meshFlattener->flatten(*handler);
 
