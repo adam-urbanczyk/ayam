@@ -1,4 +1,4 @@
-INSTALL [25. Mar 2009]
+INSTALL [5. Sep 2009]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -310,6 +310,9 @@ first.
 Independent from the build type of Ayam, the Makefiles contain
 additional targets to build plugins and manage the installation.
 
+Before compiling any plugins, the Makefile must be set up properly
+for the compilation of Ayam.
+
 If you get errors while compiling plugins, maybe the Ayam FAQ helps, see:
 http://www.ayam3d.org/faq.html
 
@@ -538,8 +541,25 @@ Load it via menu entry "File/Load Plugin".
 Use it via menu entry "File/Import/Web3D X3D" and "File/Export/Web3D X3D",
 respectively.
 
+3.11 SDNPatch (Subdivision NURBS) Plugin
+----------------------------------------
 
-3.11 Installing/Uninstalling Ayam
+Additional prerequisites to compile the sdnpatch plugin are:
+libsnurbs, libply (already contained in libsnurbs distribution) and,
+depending on your compiler, boost.
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+SNURBSDIR, SDNPATCHINC
+
+then type:
+>make sdnpatch.so
+
+Load it via menu entry "File/Load Plugin".
+Use it via menu entry "Create/Custom/SDNPatch" and "Custom/SDNPatch".
+
+
+3.12 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
@@ -576,7 +596,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.12 Creating an application bundle on MacOSX
+3.13 Creating an application bundle on MacOSX
 ---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
