@@ -1,6 +1,6 @@
 # Ayam, a free 3D modeler for the RenderMan interface.
 #
-# Ayam is copyrighted 1998-2005 by Randolf Schultz
+# Ayam is copyrighted 1998-2009 by Randolf Schultz
 # (randolf.schultz@gmail.com) and others.
 #
 # All rights reserved.
@@ -313,7 +313,7 @@ proc shortcut_main { w } {
     }
 
 
-  $ay(treecm).tree entryconfigure 1 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
+  $ay(treecm).tree entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
 
  return;
 }
@@ -377,7 +377,7 @@ proc shortcut_view { w } {
     $m entryconfigure 4 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
     if { [string first ".view" $w] == 0 } {
 	global AYENABLEPPREV
-	if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 } 
+	if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 }
 	bind $w <[repcont $ayviewshortcuts(Close)]> "$m invoke $tmp"
 	$m entryconfigure $tmp -accelerator [remkpkr $ayviewshortcuts(Close)]
     }
@@ -399,7 +399,7 @@ proc shortcut_view { w } {
     set m $confm
     bind $w <[repcont $ayviewshortcuts(Auto)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $ayviewshortcuts(Auto)]
-    
+
     #bind $w <[repcont $ayviewshortcuts(Shade)]> "$m invoke 1"
     #$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
     bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
@@ -427,7 +427,7 @@ proc shortcut_view { w } {
 	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(Align2)]
 	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Local2)]
     }
-    
+
     bind $w <[repcont $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
     bind $w <[repcont $ayviewshortcuts(Align2)]> "$m invoke 22;break"
 
@@ -590,7 +590,7 @@ proc shortcut_viewactions { w } {
     }
 
     set i $ayviewshortcuts(ZoomVButton)
-    
+
     bind $w.f3D.togl <ButtonPress-${i}> {
 	undo save ZoomView
 	%W mc
@@ -624,7 +624,7 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <ButtonRelease-${i}> {
 	focus %W
     }
-    
+
     bind $w.f3D.togl <ButtonPress-4> {
 	undo save ZoomView
 	%W mc
@@ -703,7 +703,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(MoveZV)> "actionMoveZView $w.f3D.togl"
     bind $w <$ayviewshortcuts(RotV)> "actionRotView $w.f3D.togl"
     bind $w <$ayviewshortcuts(ZoomV)> "actionZoomView $w.f3D.togl"
-    
+
     bind $w <$ayviewshortcuts(MoveO)> "actionMoveOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(RotO)> "actionRotOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(RotA)> "actionRotObA $w.f3D.togl"
@@ -820,7 +820,7 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
 
  Move Objects:        $svsc(MoveO)
  Rotate Objects:      $svsc(RotO)
- Rotate Objects   
+ Rotate Objects
  around Point:        $svsc(RotA)
  Scale Objects (3D)   $svsc(Scal3)
  Scale Objects (2D)   $svsc(Scal2)
@@ -884,7 +884,7 @@ Function Keys (View Windows):
 
  Adjust NURBS Sampling Rate: ${aymainshortcuts(SetSTL)} / ${aymainshortcuts(SetSTP)}
  Toggle Wire/NURBS:          ${aymainshortcuts(SwWire)} / ${aymainshortcuts(SwNURBS)}
- Toggle Lazy Notification    ${aymainshortcuts(SwLazyNotify)} 
+ Toggle Lazy Notification    ${aymainshortcuts(SwLazyNotify)}
 
 
 See the reference card in the docs
