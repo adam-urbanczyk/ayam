@@ -787,19 +787,29 @@ pack $w.ftext.text -in $w.ftext -side left -fill both -expand yes
 # strip KeyRelease/KeyPress elements
 foreach elem [array names ayviewshortcuts] {
 
-    eval set sc \$ayviewshortcuts(${elem})
+    eval set sc1 \$ayviewshortcuts(${elem})
+    set sc2 ""
+    set index1 [string first "KeyRelease-" $sc1]
+    set indexp [string first "KeyPress-" $sc1]
+    if { ($indexr > -1) || ($indexp) > 0 } {
+	if { $indexr > -1 } {
+	    if { $indexr > 0 } {
+		set sc2 [string range $sc1 0 [expr $indexr - 1]]
+	    }
+	    append sc2 [string range $sc1 [expr $indexr + 11] end]
+	}
 
-    set index [string first "KeyRelease-" $sc]
-    if { $index > -1 } {
-	set sc [string range $sc [expr $index + 11] end]
+	if { $indexp > -1 } {
+	    if { $indexp > 0 } {
+		set sc2 [string range $sc1 0 [expr $indexp - 1]]
+	    }
+	    set sc2 [string range $sc1 [expr $indexp + 9] end]
+	}
+    } else {
+	set sc2 $sc1
     }
 
-    set index [string first "KeyPress-" $sc]
-    if { $index > -1 } {
-	set sc [string range $sc [expr $index + 9] end]
-    }
-
-    set svsc(${elem}) $sc
+    set svsc(${elem}) $sc2
 
 }
 # foreach
