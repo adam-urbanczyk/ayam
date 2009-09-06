@@ -336,7 +336,7 @@ array set ayviewshortcuts {
     Double "Ctrl-KeyRelease-D"
 
     Local "Ctrl-KeyRelease-l"
-    Local2 "Alt-l"
+    Local2 "KeyRelease-l"
 
     RotL "Left"
     RotR "Right"
@@ -358,9 +358,9 @@ array set ayviewshortcuts {
     SGrid "Ctrl-KeyRelease-G"
 
     Align "Ctrl-KeyRelease-a"
-    Align2 "Alt-a"
+    Align2 "KeyRelease-L"
     ZoomTO "Ctrl-KeyRelease-o"
-    ZoomTO2 "Alt-o"
+    ZoomTO2 "KeyRelease-O"
 
     MoveO "KeyRelease-m"
     RotO "KeyRelease-r"
