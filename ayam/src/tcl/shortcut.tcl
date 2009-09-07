@@ -789,7 +789,7 @@ foreach elem [array names ayviewshortcuts] {
 
     eval set sc1 \$ayviewshortcuts(${elem})
     set sc2 ""
-    set index1 [string first "KeyRelease-" $sc1]
+    set indexr [string first "KeyRelease-" $sc1]
     set indexp [string first "KeyPress-" $sc1]
     if { ($indexr > -1) || ($indexp) > 0 } {
 	if { $indexr > -1 } {
@@ -816,75 +816,75 @@ foreach elem [array names ayviewshortcuts] {
 
 $w.ftext.text insert end "Modelling Actions (View Windows):
 
- Pick Objects:        $svsc(Pick)
+ Pick Objects:        <$svsc(Pick)>
 
- Move Objects:        $svsc(MoveO)
- Rotate Objects:      $svsc(RotO)
+ Move Objects:        <$svsc(MoveO)>
+ Rotate Objects:      <$svsc(RotO)>
  Rotate Objects
- around Point:        $svsc(RotA)
- Scale Objects (3D)   $svsc(Scal3)
- Scale Objects (2D)   $svsc(Scal2)
- Stretch Objects (2D) $svsc(Stretch)
- Scale Objects (1D,X) $svsc(ScalX)
- Scale Objects (1D,Y) $svsc(ScalY)
- Scale Objects (1D,Z) $svsc(ScalZ)
+ around Point:        <$svsc(RotA)>
+ Scale Objects (3D)   <$svsc(Scal3)>
+ Scale Objects (2D)   <$svsc(Scal2)>
+ Stretch Objects (2D) <$svsc(Stretch)>
+ Scale Objects (1D,X) <$svsc(ScalX)>
+ Scale Objects (1D,Y) <$svsc(ScalY)>
+ Scale Objects (1D,Z) <$svsc(ScalZ)>
 
- Edit Points          $svsc(Edit)
- Edit Points (direct) $svsc(EditD)
- Edit Weight          $svsc(WeightE)
- Reset Weights        $svsc(WeightR)
+ Edit Points          <$svsc(Edit)>
+ Edit Points (direct) <$svsc(EditD)>
+ Edit Weight          <$svsc(WeightE)>
+ Reset Weights        <$svsc(WeightR)>
 
- Select Points        $svsc(Select)
- De-Select Points     $svsc(DeSelect)
- Insert Points        $svsc(InsertP)
- Delete Points        $svsc(DeleteP)
+ Select Points        <$svsc(Select)>
+ De-Select Points     <$svsc(DeSelect)>
+ Insert Points        <$svsc(InsertP)>
+ Delete Points        <$svsc(DeleteP)>
 
- Select All Points    $svsc(SelAllP)
- Invert PointSel      $svsc(InvSelP)
- Collapse Selected    $svsc(CollP)
- Explode Selected     $svsc(ExplP)
- Snap to Grid 2D      $svsc(SnapGrid2D)
- Snap to Grid 3D      $svsc(SnapGrid3D)
+ Select All Points    <$svsc(SelAllP)>
+ Invert PointSel      <$svsc(InvSelP)>
+ Collapse Selected    <$svsc(CollP)>
+ Explode Selected     <$svsc(ExplP)>
+ Snap to Grid 2D      <$svsc(SnapGrid2D)>
+ Snap to Grid 3D      <$svsc(SnapGrid3D)>
 
- Hide Objects         $svsc(Hide)
- Show Objects         $svsc(Show)
+ Hide Objects         <$svsc(Hide)>
+ Show Objects         <$svsc(Show)>
 
- FindU                $svsc(FindU)
- Split Curve          $svsc(SplitNC)
+ FindU                <$svsc(FindU)>
+ Split Curve          <$svsc(SplitNC)>
 
 View Actions (View Windows):
 
- Break Action        $svsc(Break)
+ Break Action        <$svsc(Break)>
 
- Move View           $svsc(MoveV)
+ Move View           <$svsc(MoveV)>
  Move View
- (along Z)           $svsc(MoveZV)
- MoveViewAnytime     Mouse-$svsc(MoveVButton)
+ (along Z)           <$svsc(MoveZV)>
+ MoveViewAnytime     <Mouse-$svsc(MoveVButton)>
 
- Rotate View         $svsc(RotV)
- RotateViewAnytime   $svsc(RotModKey)+Mouse-1
+ Rotate View         <$svsc(RotV)>
+ RotateViewAnytime   <$svsc(RotModKey)+Mouse-1>
 
- Rotate View (left)  $svsc(RotL)
- Rotate View (right) $svsc(RotR)
- Rotate View (up)    $svsc(RotU)
- Rotate View (down)  $svsc(RotD)
+ Rotate View (left)  <$svsc(RotL)>
+ Rotate View (right) <$svsc(RotR)>
+ Rotate View (up)    <$svsc(RotU)>
+ Rotate View (down)  <$svsc(RotD)>
 
- Zoom View           $svsc(ZoomV)
- Zoom in View        $svsc(ZoomI)
- Zoom out View       $svsc(ZoomO)
- ZoomViewAnytime     Mouse-$svsc(ZoomVButton)
+ Zoom View           <$svsc(ZoomV)>
+ Zoom in View        <$svsc(ZoomI)>
+ Zoom out View       <$svsc(ZoomO)>
+ ZoomViewAnytime     <Mouse-$svsc(ZoomVButton)>
 
- ZoomRegion View     $svsc(ZoomRModKey)+Mouse-1
+ ZoomRegion View     <$svsc(ZoomRModKey)+Mouse-1
 
- ZoomToObject        $svsc(ZoomTO) / $svsc(ZoomTO2)
+ ZoomToObject        <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
 
- Cycle View Type     $svsc(TypeUp) / $svsc(TypeDown)
+ Cycle View Type     <$svsc(TypeUp)> / <$svsc(TypeDown)>
 
 Function Keys (View Windows):
 
- Adjust NURBS Sampling Rate: ${aymainshortcuts(SetSTL)} / ${aymainshortcuts(SetSTP)}
- Toggle Wire/NURBS:          ${aymainshortcuts(SwWire)} / ${aymainshortcuts(SwNURBS)}
- Toggle Lazy Notification    ${aymainshortcuts(SwLazyNotify)}
+Adjust NURBS Sampling Rate: <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
+ Toggle Wire/NURBS:          <${aymainshortcuts(SwWire)}> / <${aymainshortcuts(SwNURBS)}>
+ Toggle Lazy Notification    <${aymainshortcuts(SwLazyNotify)}>
 
 
 See the reference card in the docs
@@ -907,6 +907,43 @@ bind $w.ftext.text <ButtonPress-4>\
 
 bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
+
+set i 2
+set on 0
+while {$i < 74} {
+    set line [$w.ftext.text get ${i}.0 ${i}.end]
+    if { [string length $line] > 0 } {
+	if { $on } {
+	    lappend ranges ${i}.0
+	    lappend ranges ${i}.end
+	}
+	set first 0
+	set first [string first "<" $line ]
+	if { $first > 0 } {
+	    # only lines with "<" toggle the pattern
+	    if { $on } {
+		set on 0
+	    } else {
+		set on 1
+	    }
+	}
+    } else {
+	# empty lines reset the pinstripe pattern
+	set on 0
+    }
+    incr i
+}
+
+eval $w.ftext.text tag add graytag $ranges
+
+set oldbg [$w.ftext.text cget -background]
+scan $oldbg "\#%2x%2x%2x" r0 g0 b0
+set r0 [expr $r0 - 10]
+set g0 [expr $g0 - 10]
+set b0 [expr $b0 - 10]
+set newbg [format "\#%2x%2x%2x" $r0 $g0 $b0]
+$w.ftext.text tag configure graytag -background $newbg
+
 
  return;
 }
