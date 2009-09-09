@@ -46,6 +46,8 @@ $m add command -label "Face Merge" -command {
     undo save SDNMergeFace; sdnmergeFace; rV; }
 $m add command -label "Face Connect" -command {
     undo save SDNConnFace; sdnconnectFace; rV; }
+$m add command -label "Reset All Knots" -command {
+    undo save SDNResetKnots; sdneditKnots -r; rV; }
 $m add command -label "Import PLY" -command plyio_import
 $m add command -label "Export PLY" -command plyio_export
 
