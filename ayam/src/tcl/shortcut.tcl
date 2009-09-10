@@ -777,7 +777,7 @@ if { $ay(ws) == "Aqua"  } {
 }
 
 text $w.ftext.text -yscrollcommand "$w.ftext.sbar set" \
-	-setgrid 1 -font $font -height 20 -width 40
+	-setgrid 1 -font $font -height 20 -width 40 -wrap none
 # -tabs {32c left}
 scrollbar $w.ftext.sbar -takefocus 0 -command "$w.ftext.text yview"
 
@@ -908,12 +908,17 @@ bind $w.ftext.text <ButtonPress-4>\
 bind $w.ftext.text <ButtonPress-5>\
 "$w.ftext.text yview scroll 1 pages; break"
 
+# add a pinstripe background pattern
+set filler "                                                        "
 set i 2
 set on 0
 while {$i < 74} {
     set line [$w.ftext.text get ${i}.0 ${i}.end]
     if { [string length $line] > 0 } {
 	if { $on } {
+	    # extend dark lines
+	    $w.ftext.text insert ${i}.end $filler
+	    # add line to range list for the graytag
 	    lappend ranges ${i}.0
 	    lappend ranges ${i}.end
 	}
@@ -933,16 +938,29 @@ while {$i < 74} {
     }
     incr i
 }
+# while
 
 eval $w.ftext.text tag add graytag $ranges
 
+# calculate new (darker) color from current background color
 set oldbg [$w.ftext.text cget -background]
-scan $oldbg "\#%2x%2x%2x" r0 g0 b0
-set r0 [expr $r0 - 10]
-set g0 [expr $g0 - 10]
-set b0 [expr $b0 - 10]
-set newbg [format "\#%2x%2x%2x" $r0 $g0 $b0]
-$w.ftext.text tag configure graytag -background $newbg
+set r0 -1
+if { [string first "\#" $oldbg] > -1 } {
+    scan $oldbg "\#%2x%2x%2x" r0 g0 b0
+} else {
+    set rgb [winfo rgb . $oldbg]
+    set r0 [expr [lindex $rgb 0] / 65535 * 256]
+    set g0 [expr [lindex $rgb 1] / 65535 * 256]
+    set b0 [expr [lindex $rgb 2] / 65535 * 256]
+}
+if { $r0 != -1 } {
+    set r0 [expr $r0 - 10]
+    set g0 [expr $g0 - 10]
+    set b0 [expr $b0 - 10]
+    set newbg [format "\#%2x%2x%2x" $r0 $g0 $b0]
+    # set new color
+    $w.ftext.text tag configure graytag -background $newbg
+}
 
 
  return;
