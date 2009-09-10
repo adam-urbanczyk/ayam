@@ -155,7 +155,7 @@ proc tree_update { node } {
 # paint the current selected level black
 # paint the rest in darkgrey
 proc tree_paintLevel { node } {
- global ay
+    global ay
 
     set CurrentLevel $ay(CurrentLevel)
 
@@ -187,7 +187,7 @@ proc tree_paintLevel { node } {
 #tree_selectItem
 # select one tree item; clicking an already selected object does nothing
 proc tree_selectItem { redraw tree node } {
-  global ay
+    global ay
 
     if { $ay(treeselectsema) == 1 } {
 	bell; return;
@@ -228,7 +228,7 @@ proc tree_selectItem { redraw tree node } {
 #tree_toggleSelection
 # multiple selection via ctrl-key; only allowed within on level
 proc tree_toggleSelection { tree node } {
- global ay
+    global ay
 
     if { $ay(treeselectsema) == 1 } {
 	bell; return;
@@ -283,7 +283,7 @@ proc tree_toggleSelection { tree node } {
 #tree_multipleSelection
 # multiple selection via shift-key; only allowed within one level
 proc tree_multipleSelection { tree node } {
- global ay
+    global ay
 
     if { $ay(treeselectsema) == 1 } {
 	bell; return;
@@ -375,7 +375,7 @@ proc tree_selectLast { } {
 #tree_handleSelection:
 # do any stuff for the selected objects such as highligting the selected level
 proc tree_handleSelection { } {
-  global ay
+    global ay
 
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	tree_paintLevel $ay(SelectedLevel)
@@ -391,9 +391,9 @@ proc tree_handleSelection { } {
 #tree_drop:
 # user dropped object in the tree view
 proc tree_drop { tree from droppos currentoperation datatype data } {
-  global ay
+    global ay
 
-    # is a drop action just active?
+    # is another drop action already active?
     # this semaphor avoids being called multiple times
     # in case the user moves the mouse shortly after
     # release of the mouse button (Bug in BWidgets?)
@@ -407,7 +407,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	set selection [$ay(tree) selection get]
 
 	if { $selection == "" } {
-	 set ay(DropActive) 0
+	    set ay(DropActive) 0
 	    return;
 	}
 
@@ -421,51 +421,47 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	}
 	# reject dropping of objects onto root
 	if { $parent == "root:0" } {
-
 	    if { $selection != "root:0" } {
 		ayError 2 tree_drop "Can not place objects here!"
 	    }
 	    set ay(DropActive) 0
 	    return;
 	}
-	# reject
+	# reject dropping of objects just before root (replacing
+	# root as first object in the top level)
 	if { $parent == "root" && $position == "0" } {
-
 	    ayError 2 tree_drop "Can not place objects here!"
-
 	    set ay(DropActive) 0
 	    return;
 	}
 
 	if { $from == $tree } {
-	    # drag 'n drop within the tree
+	    # drag and drop within the tree
 	    set err 0
 	    # prevent moving of the root object
 	    if { $data == "root:0" } {
 		ayError 2 tree_drop "Can not move root!"
-
 		set ay(DropActive) 0
 		return;
 	    }
 	    # prevent moving of objects into their own childs
 	    while { $parent != "root" } {
 		if { [lsearch $selection $parent] != "-1" } {
-		    if { $selection != $parent } {
-		ayError 2 tree_drop "Can not place selected objects here!"
-		    }
+		    ayError 2 tree_drop "Can not place selected objects here!"
 		    set err 1
 		}
 		if { [$ay(tree) exists $parent] } {
 		    set parent [$ay(tree) parent $parent]
 		}
 	    }
-
 	    if { $err == "0" } {
+		# everything seems to be ok, move the node
 		set ay(DndDestination) $droppos
 		tree_move
 	    }
 	    set ay(DropActive) 0
 	} else {
+	    # XXXX unused
 	    # create object via objectbar
 	    set ay(DropActive) "1"
 	    set newnode ""
@@ -503,7 +499,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 #tree_openSub:
 # open/close subtree in tree view
 proc tree_openSub { tree newstate node } {
-global ay
+    global ay
     set ay(ts) 1;
     $tree itemconfigure $node -open $newstate
     $tree configure -redraw 1
@@ -537,7 +533,7 @@ proc tree_openPopup { tree } {
     set y [lindex $xy 1]
 
     tk_popup $tree.popup $x $y
-    return;
+ return;
 }
 # tree_openPopup
 
@@ -545,7 +541,8 @@ proc tree_openPopup { tree } {
 #tree_move:
 # move a tree node (via DnD)
 proc tree_move { } {
- global ay
+    global ay ay_error
+
     set old_selection [$ay(tree) selection get]
     set pos [lindex $ay(DndDestination) 0]
     set parent "root"
@@ -558,7 +555,7 @@ proc tree_move { } {
 	set parent [lindex $ay(DndDestination) 1]
 	set position [lindex $ay(DndDestination) 2]
     }
-    global ay_error
+
     set ay_error 0
     set newclevel ""
     treeDnd $parent $position newclevel
@@ -594,6 +591,7 @@ proc tree_move { } {
 		}
 	    }
 	    # if
+
 	    set ay(CurrentLevel) "root"
 	    set ay(SelectedLevel) "root"
 	    update
@@ -627,6 +625,7 @@ proc tree_move { } {
 	plb_update
     }
     # if
+
  return;
 }
 # tree_move
@@ -635,7 +634,7 @@ proc tree_move { } {
 #tree_expand:
 # open all nodes
 proc tree_expand { } {
- global ay
+    global ay
     set nlist [$ay(tree) nodes root]
     foreach n $nlist {
 	$ay(tree) opentree $n
@@ -648,7 +647,7 @@ proc tree_expand { } {
 #tree_collapse:
 # close all nodes
 proc tree_collapse { } {
- global ay
+    global ay
     set tree $ay(tree)
     set nlist [$tree nodes root]
     foreach n $nlist {
@@ -832,8 +831,6 @@ set m [menu $ay(tree).popup -tearoff 0]
 
 set ay(treecm) $m
 
-global aymainshortcuts
-
 $m add cascade -label "Tree" -menu $ay(tree).popup.tree
 set m [menu $ay(tree).popup.tree -tearoff 0]
 $m add command -label "Rebuild" -command "tree_reset"
@@ -863,9 +860,10 @@ $m add command -label "Cut Object" -command "\$ay(editmenu) invoke 1"
 $m add command -label "Paste Object" -command "\$ay(editmenu) invoke 2"
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
-$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"
 
+$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"
 $m add separator
+
 $m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
@@ -882,6 +880,7 @@ if { $ayprefs(SingleWindow) == 1 } {
     bind $ay(tree) <Key-Tab> "focus .fl.con.console;break"
 }
 
+# bind escape
 bind $ay(tree) <Escape> {
     shortcut_addescescbinding $ay(tree)
 }
@@ -944,12 +943,13 @@ proc tree_toggle { } {
 	set ayprefs(showtr) 1
     }
 
+ reset;
 }
 #tree_toggle
 
 
 #tree_reset:
-# Reset/Rebuild tree
+# reset/rebuild tree
 proc tree_reset { } {
     global ay
 
@@ -964,6 +964,7 @@ proc tree_reset { } {
     tree_paintLevel "root"
     $ay(tree) see "root:0"
 
+ reset;
 }
 #tree_reset
 
@@ -978,6 +979,7 @@ proc tree_gotop { } {
     goTop
     set ay(CurrentLevel) "root"
     set ay(SelectedLevel) "root"
+ reset;
 }
 #tree_gotop
 
