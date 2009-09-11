@@ -1,4 +1,4 @@
-[9. Aug 2009] CVS-Head:
+[10. Sep 2009] CVS-Head:
 =======================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
@@ -43,9 +43,10 @@ o added keyboard shortcuts to escape from console (<Esc> key)
 o improved error reporting of RenderMan renderers directly called from Ayam
 o improved keyboard navigation in select shader, add RiOption/RiAttribute,
   and ambiguous select dialogs
-o improved focus handling of view windows
-o added hotkeys for view drawing mode cycling
+o improved focus handling of view windows and various dialog windows
+o added hotkeys for view drawing mode cycling (<Ctrl+PgUp>, <Ctrl+PgDown>)
 o fixed clashes of shortcuts
+o add pinstripe background to show shortcuts dialog window
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
@@ -101,6 +102,10 @@ o improved some error checking/messages in the "ayamConf.tcl" Makefile
 Renderer Support:
 o updated the "ayslo3d" shader parsing plugin for incompatible changes
   in 3Delight 8.5
+
+Documentation/Example Files:
+o improved layout and updated the content of the reference card, in addition,
+  the document is now available as PDF
 
 
 [4. Dec 2008] Ayam-1.15.1:
