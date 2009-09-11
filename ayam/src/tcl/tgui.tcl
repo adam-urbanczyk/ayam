@@ -425,6 +425,7 @@ proc tgui_readtag { } {
 	    set tgui_tessparam(SParamU) $sparamu
 	    set tgui_tessparam(SParamV) $sparamv
 	    set tgui_tessparam(SMethod) $smethod
+	    set tgui_tessparam(SaveToTag) 1
 	}
         # if
     }
@@ -473,6 +474,8 @@ proc tgui_open { } {
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
+
+    set tgui_tessparam(SMethod) 3
 
     # SParamU
     set f [frame $f.fSParamU -relief sunken -borderwidth 1]
@@ -609,8 +612,6 @@ proc tgui_open { } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"Return\" } {break};"
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
-    
-    set tgui_tessparam(SMethod) 3
 
     wm deiconify $w
 
