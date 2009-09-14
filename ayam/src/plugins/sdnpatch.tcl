@@ -48,6 +48,8 @@ $m add command -label "Face Connect" -command {
     undo save SDNConnFace; sdnconnectFace; rV; }
 $m add command -label "Reset All Knots" -command {
     undo save SDNResetKnots; sdneditKnots -r; rV; }
+$m add command -label "Set Knot" -command sdnpatch_setknot
+$m add separator
 $m add command -label "Import PLY" -command plyio_import
 $m add command -label "Export PLY" -command plyio_export
 
@@ -278,3 +280,23 @@ proc plyio_export { } {
  return;
 }
 # plyio_export
+
+uplevel #0 { array set sdnsetkn_options {
+    Knot 1.0
+} }
+
+# sdnpatch_setknot:
+#  set knot value
+#
+proc sdnpatch_setknot { } {
+    global sdnsetkn_options
+
+    # XXXX get old knot value instead!
+    #set ::sdnsetkn_options(Knot) 1.0
+
+    runTool {sdnsetkn_options(Knot)} {"Knot:"}\
+	"undo save SDNSetKnot; sdneditKnots -i %0; rV"
+
+ return;
+}
+# sdnpatch_setknot
