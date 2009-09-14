@@ -24,7 +24,7 @@
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
 proc runTool { argvars argstrings command } {
- global ay
+    global ay
 
     winAutoFocusOff
     set oldFocus [focus]
@@ -46,9 +46,22 @@ proc runTool { argvars argstrings command } {
 
     set index 0
     foreach i $argvars {
-	global $i
+
+	# is $i an array variable?
+	set bri [string first "(" $i]
+	if { $bri > -1 } {
+	    set isarray 1
+	    set j [string range $i 0 [expr $bri - 1]]
+	    global $j
+	} else {
+	    set isarray 0
+	    global $i
+	}
+
 	# check variable
-	if { ![info exists $i] } { set $i 0}
+	if { ![info exists $i] } {
+	    set $i 0
+	}
 
 	# create GUI
 	set f2 [frame $f.f$index]
@@ -61,26 +74,33 @@ proc runTool { argvars argstrings command } {
 	catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
 	uie_fixEntry $f2.e
 
+	# fill current value of $i into the entry
 	eval [subst "$f2.e insert @0 \$$i"]
 
 	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
 	pack $f2 -in $w.f1 -side top -expand yes -fill x
-	# and simultaneously create a script
-	append okscript "global $i ay; set $i \[$f2.e get\];update;"
+
+	# and simultaneously build up a script
+	if { $isarray } {
+	    append okscript "global $j; set $i \[$f2.e get\]; update;"
+	} else {
+	    append okscript "global $i; set $i \[$f2.e get\]; update;"
+	}
 	append okscript \
 	    "regsub -all \"%$index\" \$command \[$f2.e get\] command;"
 	incr index
     }
     # foreach
 
+    # complete the script
     append okscript "eval \"\$command\";"
-    append okscript "grab release .rtw; restoreFocus $oldFocus; destroy .rtw"
+    append okscript "grab release $w; restoreFocus $oldFocus; destroy $w"
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command $okscript
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
-	restoreFocus $oldFocus; destroy $w"
+	grab release $w; restoreFocus $oldFocus; destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side top -anchor n -fill x -expand yes
