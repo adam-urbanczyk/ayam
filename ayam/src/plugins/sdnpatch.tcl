@@ -36,8 +36,7 @@ global ay
 $ay(cm) add cascade -menu $ay(cm).sdn -label "SDNPatch"
 menu $ay(cm).sdn -tearoff 0
 set m $ay(cm).sdn
-$m add command -label "NPatch To SDNPatch" -command {
-    sdnconvertNP; uS; rV; }
+
 $m add command -label "Face Extrude" -command {
     undo save SDNExtFace; sdnextrudeFace; rV; }
 $m add command -label "Face Remove" -command {
@@ -49,7 +48,16 @@ $m add command -label "Face Connect" -command {
 $m add command -label "Reset All Knots" -command {
     undo save SDNResetKnots; sdneditKnots -r; rV; }
 $m add command -label "Set Knot" -command sdnpatch_setknot
+
 $m add separator
+
+$m add command -label "NPatch To SDNPatch" -command {
+    sdnconvertNP; uS; rV; }
+$m add command -label "PoMesh To SDNPatch" -command {
+    sdnconvertPO; uS; rV; }
+
+$m add separator
+
 $m add command -label "Import PLY" -command plyio_import
 $m add command -label "Export PLY" -command plyio_export
 

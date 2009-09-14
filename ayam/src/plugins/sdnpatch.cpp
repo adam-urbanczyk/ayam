@@ -92,6 +92,10 @@ public:
 		 unsigned int id);
   void startFace(unsigned int numEdges);
   void addToFace(unsigned int vertNum);
+  /*
+  void addTexCoords(KnotPrecision u,
+		    KnotPrecision v);
+  */
   void closeFace(void);
   void addKnotInterval(unsigned int vertex1,
 		       unsigned int vertex2,
@@ -107,10 +111,14 @@ private:
   vector<unsigned int> m_numEdges;
   vector<unsigned int> m_faces;
   unsigned int m_numKnots;
+
   vector<unsigned int> m_v1;
   vector<unsigned int> m_v2;
   vector<KnotPrecision> m_intervals;
-
+  /*
+  unsigned int m_numTexCoords;
+  vector<KnotPrecision> m_texcoords;
+  */
 };
 
 
@@ -120,6 +128,9 @@ AyWriter::AyWriter(FILE *filep)
   m_numVertices = 0;
   m_numFaces = 0;
   m_numKnots = 0;
+  /*
+  m_numTexCoords = 0;
+  */
 } /* AyWriter::AyWriter */
 
 
@@ -150,6 +161,18 @@ AyWriter::addToFace(unsigned int vertNum)
 {
   m_faces.push_back(vertNum);
 } /* AyWriter::addToFace */
+
+#if 0
+void
+AyWriter::addTexCoords(KnotPrecision u,
+		       KnotPrecision v)
+{
+  m_texcoords.push_back(u);
+  m_texcoords.push_back(v);
+  m_numTexCoords++;
+  // XXXX remember current vertex index?
+} /* AyWriter::addTexCoords */
+#endif
 
 void
 AyWriter::closeFace(void)
@@ -1657,9 +1680,7 @@ KnotEditor::KnotEditor(sdnpatch_object *sdnpatch, ay_point *pnts, bool reset,
 
 KnotEditor::~KnotEditor()
 {
-
   MeshBuilder::dispose(m_meshBuilder);
-
 } /* KnotEditor::~KnotEditor */
 
 void
@@ -1793,15 +1814,15 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
-  meshBuilder->addVertex(0,0,0,1,0);
-  meshBuilder->addVertex(1,0,0,1,1);
-  meshBuilder->addVertex(1,1,0,1,2);
-  meshBuilder->addVertex(0,1,0,1,3);
+  meshBuilder->addVertex(-0.5,-0.5,-0.5,0.5,0);
+  meshBuilder->addVertex( 0.5,-0.5,-0.5,0.5,1);
+  meshBuilder->addVertex( 0.5, 0.5,-0.5,0.5,2);
+  meshBuilder->addVertex(-0.5, 0.5,-0.5,0.5,3);
 
-  meshBuilder->addVertex(0,0,1,1,4);
-  meshBuilder->addVertex(1,0,1,1,5);
-  meshBuilder->addVertex(1,1,1,1,6);
-  meshBuilder->addVertex(0,1,1,1,7);
+  meshBuilder->addVertex(-0.5,-0.5,0.5,0.5,4);
+  meshBuilder->addVertex( 0.5,-0.5,0.5,0.5,5);
+  meshBuilder->addVertex( 0.5, 0.5,0.5,0.5,6);
+  meshBuilder->addVertex(-0.5, 0.5,0.5,0.5,7);
 
   meshBuilder->finishVertices();
 
@@ -2110,10 +2131,11 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Level",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &itemp);
+  Tcl_GetIntFromObj(interp, to, &itemp);
   if(itemp >= 0)
-    sdnpatch->subdivLevel = itemp;
-
+    {
+      sdnpatch->subdivLevel = itemp;
+    }
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -3346,6 +3368,189 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_convnptcmd */
 
 
+/* sdnpatch_convpo:
+ *  convert PoMesh to SDNPatch
+ */
+int
+sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
+{
+ ay_object *newo = NULL;
+ ay_pomesh_object *po = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+ double *cv = NULL;
+ unsigned int i = 0, j = 0, k = 0, m = 0, n = 0, a = 0;
+ int stride = 3;
+
+  if(!p || !result)
+    return AY_ENULL;
+
+  if(p->type != AY_IDPOMESH)
+    return AY_ERROR;
+
+  po = (ay_pomesh_object *)p->refine;
+
+  if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
+    {
+      return AY_EOMEM;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = sdnpatch_id;
+  ay_trafo_copy(p, newo);
+
+  if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+    {
+      free(newo);
+      return AY_EOMEM;
+    }
+
+  newo->refine = sdnpatch;
+
+  /**/
+  sdnpatch->subdivDegree = 3;
+  sdnpatch->subdivLevel = 2;
+
+  sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
+
+  MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
+
+  if(po->has_normals)
+    {
+      stride = 6;
+    }
+
+  cv = po->controlv;
+  a = 0;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      meshBuilder->addVertex(cv[a], cv[a+1], cv[a+2], 1.0, k);
+      k++;
+      a += stride;
+    }
+  meshBuilder->finishVertices();
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      if((po->nloops[i] == 1) && (po->nverts[n] == 4))
+	{
+	  meshBuilder->startFace(po->nverts[n]);
+	  for(k = 0; k < po->nverts[n]; k++)
+	    {
+	      meshBuilder->addToFace(po->verts[m]);
+	      m++;
+	    }
+	  meshBuilder->closeFace();
+	  n++;
+	}
+      else
+	{
+	  /* just forward m and n */
+	  for(j = 0; j < po->nloops[i]; j++)
+	    {
+	      for(k = 0; k < po->nverts[n]; k++)
+		{
+		  m++;
+		}
+	      n++;
+	    }
+	}
+    }
+
+  meshBuilder->finishFaces();
+
+  meshBuilder->finishKnotIntervals();
+
+  MeshBuilder::dispose(meshBuilder);
+
+  sdnpatch_getcontrolvertices(sdnpatch);
+
+  newo->modified = AY_TRUE;
+  ay_notify_force(newo);
+
+  /* return result */
+  *result = newo;
+
+ return AY_OK;
+} /* sdnpatch_convpo */
+
+
+/* sdnpatch_convpotcmd:
+ *  Tcl command to convert PolyMesh objects to SDNPatch objects
+ */
+int
+sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "sdnconvPO";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *p = NULL, *newo = NULL;
+ int i = 0;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      /*
+	      mode = 0;
+	      sscanf(argv[i+1], "%lg", &rmin);
+	      sscanf(argv[i+2], "%lg", &rmax);
+	      */
+	    }
+	  if(!strcmp(argv[i], "-d"))
+	    {
+	      /*
+	      mode = 1;
+	      sscanf(argv[i+1], "%lg", &mindist);
+	      */
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->type != AY_IDPOMESH)
+	{
+	  ay_status = ay_provide_object(o, AY_IDPOMESH, &p);
+	}
+      else
+	{
+	  ay_status = ay_object_copy(o, &p);
+	} /* if */
+
+      if(p)
+	{
+	  ay_status = sdnpatch_convpo(0, p, &newo);
+	  if(newo)
+	    {
+	      ay_object_link(newo);
+	    }
+
+	  ay_object_deletemulti(p);
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_convpotcmd */
+
+
 /* sdnpatch_impplytcmd:
  *  Tcl command to import PLY files
  */
@@ -3624,7 +3829,6 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_notify_force(o);
 
       ay_notify_parent();
-
     }
   else
     {
@@ -3762,7 +3966,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdneditKnot";
+ char fname[] = "sdneditKnots";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -3966,6 +4170,9 @@ Sdnpatch_Init(Tcl_Interp *interp)
 
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "sdnconvertNP", (Tcl_CmdProc*) sdnpatch_convnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnconvertPO", (Tcl_CmdProc*) sdnpatch_convpotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "sdnimpPly", (Tcl_CmdProc*) sdnpatch_impplytcmd,
