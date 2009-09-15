@@ -943,7 +943,7 @@ proc tree_toggle { } {
 	set ayprefs(showtr) 1
     }
 
- reset;
+ return;
 }
 #tree_toggle
 
@@ -964,7 +964,7 @@ proc tree_reset { } {
     tree_paintLevel "root"
     $ay(tree) see "root:0"
 
- reset;
+ return;
 }
 #tree_reset
 
@@ -979,7 +979,8 @@ proc tree_gotop { } {
     goTop
     set ay(CurrentLevel) "root"
     set ay(SelectedLevel) "root"
- reset;
+
+ return;
 }
 #tree_gotop
 
