@@ -67,7 +67,8 @@ int ay_pomesht_inithash(ay_pomesht_hash *hash);
 
 void ay_pomesht_destroyhash(ay_pomesht_hash *hash);
 
-int ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point);
+int ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
+			       double *point);
 
 
 /* functions */
@@ -659,6 +660,10 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_pomesht_mergetcmd */
 
 
+/* ay_pomesht_inithash:
+ *  helper for ay_pomesht_optimizecoords() below
+ *  initialize the hash table
+ */
 int
 ay_pomesht_inithash(ay_pomesht_hash *hash)
 {
@@ -672,6 +677,10 @@ ay_pomesht_inithash(ay_pomesht_hash *hash)
 } /* ay_pomesht_inithash */
 
 
+/* ay_pomesht_inithash:
+ *  helper for ay_pomesht_optimizecoords() below
+ *  destroy the hash table
+ */
 void
 ay_pomesht_destroyhash(ay_pomesht_hash *hash)
 {
@@ -704,10 +713,15 @@ ay_pomesht_destroyhash(ay_pomesht_hash *hash)
 } /* ay_pomesht_destroyhash */
 
 
+/* ay_pomesht_inithash:
+ *  helper for ay_pomesht_optimizecoords() below
+ *  add point <point> to the hash table <phash>
+ *  (if it is not present already)
+ */
 int
-ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
+ay_pomesht_addvertextohash(ay_pomesht_hash *phash, int ignore_normals,
+			   double *point)
 {
- int ay_status = AY_OK;
  unsigned int index;
  ay_pomesht_htentry *entry;
  ay_pomesht_htentry *chain;
@@ -731,7 +745,7 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
       while(chain)
 	{
 	  /* ignore normals? */
-          if(ign)
+          if(ignore_normals)
 	    {
 	      if(AYVCOMP(chain->x, chain->y, chain->z, x, y, z))
 		{
@@ -760,7 +774,10 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
     {
       ay_pomesht_htentry *new;
 
-      new = (ay_pomesht_htentry *)calloc(1, sizeof(ay_pomesht_htentry));
+      if(!(new = (ay_pomesht_htentry *)calloc(1, sizeof(ay_pomesht_htentry))))
+	{
+	  return AY_EOMEM;
+	}
 
       new->index = phash->index;
       new->x = x;
@@ -768,7 +785,7 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
       new->z = z;
 
       /* use normals? */
-      if(!ign)
+      if(!ignore_normals)
 	{
 	  new->nx = point[3];
 	  new->ny = point[4];
@@ -779,11 +796,10 @@ ay_pomesht_addvertexhash(ay_pomesht_hash *phash, int ign, double *point)
 	new->next = entry;
 
       phash->table[index] = new;
-
     } /* if */
 
- return ay_status;
-} /* ay_pomesht_addvertexhash */
+ return AY_OK;
+} /* ay_pomesht_addvertextohash */
 
 
 int
@@ -808,11 +824,11 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
       total_verts += pomesh->nverts[i];
     } /* for */
 
-  /* can we optimize at all? */
-  if(total_verts == pomesh->ncontrols)
+  /* should we optimize at all? */
+  if(pomesh->npolys <= 1)
      return AY_OK;
 
-  if(!(new = (ay_pomesh_object *) calloc(1, sizeof(ay_pomesh_object))))
+  if(!(new = (ay_pomesh_object *)calloc(1, sizeof(ay_pomesh_object))))
     return AY_EOMEM;
 
   if(!(new->verts = (unsigned int *)calloc(1, sizeof(unsigned int) *
@@ -851,7 +867,14 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
       phash->found = AY_FALSE;
       phash->index = dp;
 
-      ay_pomesht_addvertexhash(phash, ignore_normals, &pomesh->controlv[p]);
+      ay_status = ay_pomesht_addvertextohash(phash, ignore_normals,
+					     &(pomesh->controlv[p]));
+
+      if(ay_status)
+	{
+	  /* XXXX early exit, potential memory leak! */
+	  return ay_status;
+	}
 
       if(phash->found)
 	{
@@ -890,7 +913,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
     }
   free(new);
 
-  return ay_status;
+ return ay_status;
 } /* ay_pomesht_optimizecoords */
 
 
