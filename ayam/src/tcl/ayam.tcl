@@ -377,7 +377,7 @@ array set ayviewshortcuts {
     WeightE "KeyRelease-w"
     WeightR "KeyRelease-W"
     Select "KeyRelease-t"
-    DeSelect "KeyRelease-D"
+    DeSelect "KeyRelease-N"
     InsertP "KeyRelease-i"
     DeleteP "KeyRelease-d"
     SplitNC "KeyRelease-c"

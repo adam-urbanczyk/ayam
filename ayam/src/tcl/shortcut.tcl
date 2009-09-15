@@ -303,6 +303,7 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(ContextMenu)]> \
 	"if { $ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
 
+    # on Aqua, <Command-q> quits the application
     if { $AYWITHAQUA == 1 } {
 	bind $w <Command-q> exit
     }
@@ -402,7 +403,9 @@ proc shortcut_view { w } {
 
     #bind $w <[repcont $ayviewshortcuts(Shade)]> "$m invoke 1"
     #$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
-    bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
+    if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
+	bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
+    }
 
     bind $w <[repcont $ayviewshortcuts(DGrid)]> "$m invoke 10;break"
     $m entryconfigure 10 -accelerator [remkpkr $ayviewshortcuts(DGrid)]
@@ -410,6 +413,7 @@ proc shortcut_view { w } {
     $m entryconfigure 11 -accelerator [remkpkr $ayviewshortcuts(UGrid)]
     bind $w <[repcont $ayviewshortcuts(SGrid)]> "$m invoke 12;break"
     $m entryconfigure 12 -accelerator [remkpkr $ayviewshortcuts(SGrid)]
+
     if { ([winfo toplevel $w] == $w) } {
 	bind $w <[repcont $ayviewshortcuts(Halve)]> "$m invoke 14;break"
 	$m entryconfigure 14 -accelerator [remkpkr $ayviewshortcuts(Halve)]
@@ -503,7 +507,8 @@ proc shortcut_view { w } {
     # bind function keys
     shortcut_fkeys $w
 
-    if { $AYWITHAQUA == 1 } {
+    # on Aqua, in external views, <Command-q> quits the application
+    if { ($AYWITHAQUA == 1) && ([winfo toplevel $w] == $w) } {
 	bind $w <Command-q> exit
     }
 
