@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>2. Aug 2009
+<date>10. Sep 2009
 
 <abstract>
 This is the documentation of Ayam 1.16 - a free 3D modelling environment
@@ -7086,12 +7086,13 @@ in the expr-statement above) to speed up the expression.
 <sect1>SDNPatch Object<label id="sdnpatchobj">
 <p>
 The SDNPatch custom object is available since Ayam 1.16 and
-allows to model with Subdivision NURBS.
+allows to model with Subdivision NURBS. The SDNPatch plugin is
+based on libsnurbs by Tom Cashman.
 <p>
 There are some special modelling actions for Subdivision NURBS
 defined (see below) and there are PLY import/export facilities. Furthermore,
-there is a simple conversion operation that converts NURBS patch control
-arrays to SDNPatch objects.
+there are two conversion operations that convert NURBS patch and
+PolyMesh objects to SDNPatch objects.
 <p>
 The following table briefly lists some capabilities of the SDNPatch object.
 <table loc="ht">
@@ -7122,7 +7123,7 @@ This section, briefly, explains the special modelling actions defined
 for the SDNPatch custom object. In order to select a face for such an
 operation, just select all the control points defining the face.
 All modelling actions can be started via the <tt>"Custom/SDNPatch"</tt>
-main menu. 
+main menu.
 <p>
 <itemize>
 <item><tt/"Face Extrude"/, new faces are inserted in the mesh at all
@@ -7132,13 +7133,18 @@ its normal;
 <item><tt/"Face Merge"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
 to the neighboring faces of the first face;
-<item><tt/"Face Connect"/,  the first two selected faces are removed
+<item><tt/"Face Connect"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
 to the neighboring faces of the first face via a set of new faces.
 The decision, between which vertices of the faces the new faces are built,
 depends on the relative vertice distances: you need to move the two
 faces near each other to make clear, how the new connection shall be
 established.
+<item><tt/"Reset All Knots"/, set all knot values to 1.0 (the default).
+<item><tt/"Set Knot"/, set the knot value of the selected edge.
+<item><tt/"Import PLY"/, import a PLY file.
+<item><tt/"Export PLY"/, export the currently selected SDNPatch object
+to a PLY file. 
 </itemize>
 
 
@@ -8751,7 +8757,8 @@ NURBS patch providing objects from the selection.
 that allows to select a tesselation method via a drop-down menu
 and to tune the corresponding tesselation parameter(s) using a slider and
 an entry widget. The initial method and parameter values will be derived
-from the TP tag of the first of the selected objects (if it has such a tag).
+from the <tt/"TP"/ tag of the first of the selected objects (if it has such
+a tag).
 <p>
 The selected or provided NURBS patches will be tesselated with the
 chosen method and parameters.
@@ -8773,16 +8780,21 @@ unchanged.
 If the check box <tt/"SaveToTag"/ is activated, closing the tesselation
 tool using <tt/"Cancel"/ will also add a <tt/"TP"/ tag containing
 the currently selected method and parameter value to all selected
-objects. This tag will be evaluated later, when the respective
-objects will be converted to PolyMesh objects. Since Ayam 1.11 the
-conversion mechanism of objects keeps the <tt/"TP"/ tags, so that you
-may e.g. save tesselation parameters for a sphere or a revolve object.
+objects. This tag can be evaluated later, when the respective
+objects are converted to PolyMesh objects. Since Ayam 1.11 also the
+conversion mechanism of objects keeps the <tt/"TP"/ tags intact, so
+that one may e.g. save tesselation parameters for a Sphere or a Revolve
+object. Upon conversion of the Sphere or Revolve object via a NURBS
+patch to a PolyMesh, the tesselation parameters will be retained.
+Mind that the <tt/"SaveToTag"/ option will be activated automatically
+if any of the objects to tesselate already have a <tt/"TP"/ tag.
+
 <item>Note: The tesselation tool will block most other parts of Ayam
 while it is running. It is, however, possible to adjust view parameters
 while the tesselation tool is open, to examine the tesselation result
 more closely or from different viewing angles. The initial values of the
 parameter slider bounds may be changed by simply entering values
-that are out of bounds into the entry widget, then pressing the
+that are out of bounds into the respective entry widget, then pressing the
 <tt/&lt;Tab&gt;/ key. The resolution of the slider is calculated
 automatically from the resolution of the value entered in the entry
 widget.
