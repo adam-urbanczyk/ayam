@@ -152,7 +152,7 @@ AyWriter::addVertex(VertexPrecision x,
 void
 AyWriter::startFace(unsigned int numEdges)
 {
-    m_numEdges.push_back(numEdges);
+  m_numEdges.push_back(numEdges);
 } /* AyWriter::startFace */
 
 
@@ -194,14 +194,14 @@ AyWriter::addKnotInterval(unsigned int vertex1,
 void
 AyWriter::finishKnotIntervals(void)
 {
-  VertexPrecision x, y, z, w;
-  vector<VertexPrecision>::iterator vi = m_vertices.begin();
-  vector<unsigned int>::iterator ei = m_numEdges.begin();
-  vector<unsigned int>::iterator fi = m_faces.begin();
-  vector<unsigned int>::iterator v1i = m_v1.begin();
-  vector<unsigned int>::iterator v2i = m_v2.begin();
-  vector<KnotPrecision>::iterator ki = m_intervals.begin();
-  unsigned int i, j, e, f;
+ VertexPrecision x, y, z, w;
+ vector<VertexPrecision>::iterator vi = m_vertices.begin();
+ vector<unsigned int>::iterator ei = m_numEdges.begin();
+ vector<unsigned int>::iterator fi = m_faces.begin();
+ vector<unsigned int>::iterator v1i = m_v1.begin();
+ vector<unsigned int>::iterator v2i = m_v2.begin();
+ vector<KnotPrecision>::iterator ki = m_intervals.begin();
+ unsigned int i, j, e, f;
 
   fprintf(m_fp, "%u\n", m_numVertices);
 
@@ -434,7 +434,6 @@ private:
   // collect new vertices
   vector<VertexPrecision> m_newVerts;
   vector<unsigned int> m_newVertexIDs;
-
 
   // collect new faces
   unsigned int m_newFacesNum;
@@ -1551,10 +1550,10 @@ FaceConnector::closeFace(void)
 			      mindist = curdist;
 			      nV = j;
 			    }
-			}
-		    }
+			} /* if */
+		    } /* for */
 		  nearestVerts.push_back(m_face1Verts[nV]);
-		}
+		} /* for */
 
 	      for(i = 0; i < m_faceVerts.size()-1; i++)
 		{
@@ -1574,9 +1573,9 @@ FaceConnector::closeFace(void)
 
 	      m_connected = true;
 	      copyFace = false;
-	    }
-	}
-    }
+	    } /* if */
+	} /* if */
+    } /* if */
 
   if(copyFace)
     {
@@ -1628,7 +1627,7 @@ FaceConnector::finishKnotIntervals(void)
 
 
 /**
- * KnotEditor: Helper class to extrude a face from a mesh
+ * KnotEditor: Helper class to edit knots.
  *
  * ToDo: add support for texture coordinates
  */
@@ -2176,6 +2175,16 @@ sdnpatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Level",-1);
   to = Tcl_NewIntObj(sdnpatch->subdivLevel);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
+  Tcl_SetStringObj(ton, "NPolys", -1);
+  if(sdnpatch->subdivMesh)
+    to = Tcl_NewIntObj(sdnpatch->subdivMesh->getNumFaces());
+  else
+    to = Tcl_NewIntObj(0);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -3987,8 +3996,10 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!strcmp(argv[i], "-i"))
 	    {
 	      reset = false;
-	      if(i+1<argc)
-		sscanf(argv[i+1], "%g", &interval);
+	      if(i+1 < argc)
+		{
+		  sscanf(argv[i+1], "%g", &interval);
+		}
 	    }
 	  i += 2;
 	} /* while */

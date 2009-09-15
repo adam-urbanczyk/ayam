@@ -27,7 +27,8 @@ set w [frame $ay(pca).$SDNPatchAttr(w)]
 
 addParam $w SDNPatchAttrData Degree
 addParam $w SDNPatchAttrData Level
-
+addText $w SDNPatchAttrData "Subdivision:"
+addInfo $w SDNPatchAttrData NPolys
 
 # add menu entry to the "Create/Custom Object" sub-menu
 mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
