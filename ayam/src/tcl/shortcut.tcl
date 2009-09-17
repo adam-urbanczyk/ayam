@@ -897,13 +897,6 @@ folder for a printable and more
 complete version.
 "
 
-# disabling the widget on Win32 prohibits selection/focus
-# and thus the mouse wheel does not work, the downside is
-# that now, the user is able to edit the text (on Win32)
-if { $tcl_platform(platform) != "windows" } {
-    $w.ftext.text configure -state disabled
-}
-
 bind $w <Next> "$w.ftext.text yview scroll 1 pages"
 bind $w <Prior> "$w.ftext.text yview scroll -1 pages"
 
@@ -923,6 +916,7 @@ while {$i < 74} {
 	if { $on } {
 	    # extend dark lines
 	    $w.ftext.text insert ${i}.end $filler
+	    update
 	    # add line to range list for the graytag
 	    lappend ranges ${i}.0
 	    lappend ranges ${i}.end
@@ -967,6 +961,13 @@ if { $r0 != -1 } {
     $w.ftext.text tag configure graytag -background $newbg
 }
 
+
+# disabling the widget on Win32 prohibits selection/focus
+# and thus the mouse wheel does not work, the downside is
+# that now, the user is able to edit the text (on Win32)
+if { $tcl_platform(platform) != "windows" } {
+    $w.ftext.text configure -state disabled
+}
 
  return;
 }
