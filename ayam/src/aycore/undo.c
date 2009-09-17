@@ -521,13 +521,15 @@ ay_undo_copy(ay_undo_object *uo)
  ay_deletecb *dcb = NULL;
  ay_copycb *ccb = NULL;
  char view_repairtitle_cmd[] = "viewRepairTitle ", buf[64];
- char view_setgridicon_cmd[] = "viewSetGridIcon .";
- char view_setdmodeicon_cmd[] = "viewSetDModeIcon .";
+ char view_setgridicon_cmd[] = "viewSetGridIcon ";
+ char view_setdmodeicon_cmd[] = "viewSetDModeIcon ";
  Tcl_DString ds;
  int notify = AY_TRUE, notify_parent = AY_FALSE;
  ay_object *parent = NULL;
  double obj;
  ay_pointedit pe;
+ Tk_Window win;
+ char *winpath = NULL;
 
   if(!uo)
     return AY_OK;
@@ -585,25 +587,36 @@ ay_undo_copy(ay_undo_object *uo)
 	  Tcl_DStringInit(&ds);
 	  Tcl_DStringAppend(&ds, view_repairtitle_cmd, -1);
 	  Tcl_DStringAppend(&ds, o->name, -1);
-	  sprintf(buf, " %d", ((ay_view_object *)(c->refine))->type);
+	  sprintf(buf, " %d", ((ay_view_object *)(o->refine))->type);
 	  Tcl_DStringAppend(&ds, buf, -1);
 	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
 	  Tcl_DStringFree(&ds);
+
+	  /* get path name of view widget associated with the view */
+	  win = Togl_TkWin(((ay_view_object *)(o->refine))->togl);
+	  /* win == .view1.f3D.togl */
+	  win = Tk_Parent(win);
+	  /* win == .view1.f3D */
+	  win = Tk_Parent(win);
+	  /* win == .view1 */
+	  winpath = Tk_PathName(win);
+
 	  /* set grid icon of view window */
 	  Tcl_DStringInit(&ds);
 	  Tcl_DStringAppend(&ds, view_setgridicon_cmd, -1);
-	  Tcl_DStringAppend(&ds, o->name, -1);
+	  Tcl_DStringAppend(&ds, winpath, -1);
 	  memset(buf, 0, sizeof(buf));
-	  sprintf(buf, " %g", ((ay_view_object *)(c->refine))->grid);
+	  sprintf(buf, " %g", ((ay_view_object *)(o->refine))->grid);
 	  Tcl_DStringAppend(&ds, buf, -1);
 	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
 	  Tcl_DStringFree(&ds);
+
 	  /* set drawing mode icon of view window */
 	  Tcl_DStringInit(&ds);
 	  Tcl_DStringAppend(&ds, view_setdmodeicon_cmd, -1);
-	  Tcl_DStringAppend(&ds, o->name, -1);
+	  Tcl_DStringAppend(&ds, winpath, -1);
 	  memset(buf, 0, sizeof(buf));
-	  sprintf(buf, " %d", ((ay_view_object *)(c->refine))->shade);
+	  sprintf(buf, " %d", ((ay_view_object *)(o->refine))->shade);
 	  Tcl_DStringAppend(&ds, buf, -1);
 	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
 	  Tcl_DStringFree(&ds);
