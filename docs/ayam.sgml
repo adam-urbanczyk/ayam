@@ -7094,6 +7094,10 @@ defined (see below) and there are PLY import/export facilities. Furthermore,
 there are two conversion operations that convert NURBS patch and
 PolyMesh objects to SDNPatch objects.
 <p>
+Please note that the plugin is still in experimental state,
+there is limited error checking and crashes may occur, if
+the special modelling actions are used.
+<p>
 The following table briefly lists some capabilities of the SDNPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -11021,6 +11025,9 @@ The following options control the Wavefront OBJ import process:
 <item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
 <item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
 faces should be merged into a single PolyMesh object for import.
+Note that the merged PolyMesh objects probably needs to be optimized if there
+are vertices used by multiple faces
+(main menu <tt>"Tools/PolyMesh/Optimize"</tt>).
 <item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
 objects should be merged as well if they are subject to automatic
 merging (see above).
