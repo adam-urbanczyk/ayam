@@ -891,9 +891,14 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  double old_rect_xmin, old_rect_ymin, old_rect_xmax, old_rect_ymax;
  double temp[3] = {0};
  int i = 2;
- int kbdrot_in_progress = AY_FALSE;
- char arg1[] = "save", arg2[] = "RotViewX", arg3[] = "RotViewY";
- char *tclargv[3] = {0};
+ int kbdact_in_progress = AY_FALSE;
+ char arg1[] = "save";
+ char arg2[] = "RotViewX", arg3[] = "RotViewY";
+ char arg4[] = "PanViewX", arg5[] = "PanViewY";
+ char arg6[] = "ZoomViewIn", arg7[] = "ZoomViewOut";
+ char arg8[] = "-start", arg9[] = "0";
+ char arg10[] = "-winxy";
+ char *tclargv[5] = {0};
 #ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
  struct tms tbuf;
@@ -910,16 +915,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     /*printf("%g\n",(double)(t_current-t_lastcalled)/(sysconf(_SC_CLK_TCK)));*/
       if((double)(t_current-t_lastcalled)/sysconf(_SC_CLK_TCK) < 0.1)
 	{
-	  kbdrot_in_progress = AY_TRUE;
+	  kbdact_in_progress = AY_TRUE;
 	}
       else
 	{
-	  kbdrot_in_progress = AY_FALSE;
+	  kbdact_in_progress = AY_FALSE;
 	}
     }
   else
     {
-      kbdrot_in_progress = AY_FALSE;
+      kbdact_in_progress = AY_FALSE;
     }
 #endif
 #ifdef WIN32
@@ -929,16 +934,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
     {
       if((t_current-t_lastcalled) < 100)
 	{
-	  kbdrot_in_progress = AY_TRUE;
+	  kbdact_in_progress = AY_TRUE;
 	}
       else
 	{
-	  kbdrot_in_progress = AY_FALSE;
+	  kbdact_in_progress = AY_FALSE;
 	}
     }
   else
     {
-      kbdrot_in_progress = AY_FALSE;
+      kbdact_in_progress = AY_FALSE;
     }
 #endif
 
@@ -1216,6 +1221,28 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  break;
 	case 'p':
+	  if(!strcmp(argv[i], "-panx"))
+	    {
+	      tclargv[2] = arg8;
+	      tclargv[3] = arg9;
+	      tclargv[4] = arg9;
+	      ay_vact_movetcb(togl, 5, tclargv);
+	      tclargv[2] = arg10;
+	      tclargv[3] = argv[i+1];
+	      tclargv[4] = arg9;
+	      ay_vact_movetcb(togl, 5, tclargv);
+	    }
+	  if(!strcmp(argv[i], "-pany"))
+	    {
+	      tclargv[2] = arg8;
+	      tclargv[3] = arg9;
+	      tclargv[4] = arg9;
+	      ay_vact_movetcb(togl, 5, tclargv);
+	      tclargv[2] = arg10;
+	      tclargv[3] = arg9;
+	      tclargv[4] = argv[i+1];
+	      ay_vact_movetcb(togl, 5, tclargv);
+	    }
 	  if(!strcmp(argv[i], "-pos"))
 	    {
 	      Tcl_GetInt(interp, argv[i+1], &view->pos_x);
@@ -1359,11 +1386,35 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 'u':
+	  if(!strcmp(argv[i], "-undpanx"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdact_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg4;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
+	  if(!strcmp(argv[i], "-undpany"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdact_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg5;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
 	  if(!strcmp(argv[i], "-undrotx"))
 	    {
 	      /* save current state of view, but only once per
 		 keypress-keyrelease-sequence */
-	      if(!kbdrot_in_progress)
+	      if(!kbdact_in_progress)
 		{
 		  /* undo save */
 		  tclargv[1] = arg1;
@@ -1375,11 +1426,35 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      /* save current state of view, but only once per
 		 keypress-keyrelease-sequence */
-	      if(!kbdrot_in_progress)
+	      if(!kbdact_in_progress)
 		{
 		  /* undo save */
 		  tclargv[1] = arg1;
 		  tclargv[2] = arg3;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
+	  if(!strcmp(argv[i], "-undzoomi"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdact_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg6;
+		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		}
+	    }
+	  if(!strcmp(argv[i], "-undzoomo"))
+	    {
+	      /* save current state of view, but only once per
+		 keypress-keyrelease-sequence */
+	      if(!kbdact_in_progress)
+		{
+		  /* undo save */
+		  tclargv[1] = arg1;
+		  tclargv[2] = arg7;
 		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
 		}
 	    }
