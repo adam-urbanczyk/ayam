@@ -1229,19 +1229,19 @@ proc viewPan { togl dir } {
     set l [$togl configure -height]
     set h [lindex $l 4]
 
-    undo save MoveView
+    #undo save MoveView
 
     if { $dir == 0 } {
-	$togl movevac -winxy [expr -$w/10] 0
+	$togl setconf -undpanx 1 -panx [expr -$w/10]
     }
     if { $dir == 1 } {
-	$togl movevac -winxy [expr $w/10] 0
+	$togl setconf -undpanx 1 -panx [expr $w/10]
     }
     if { $dir == 2 } {
-	$togl movevac -winxy 0 [expr -$h/10]
+	$togl setconf -undpany 1 -pany [expr -$h/10]
     }
     if { $dir == 3 } {
-	$togl movevac -winxy 0 [expr $h/10]
+	$togl setconf -undpany 1 -pany [expr $h/10]
     }
 
  return;

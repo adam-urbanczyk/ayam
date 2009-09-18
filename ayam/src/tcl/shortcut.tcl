@@ -455,10 +455,10 @@ proc shortcut_view { w } {
 	    "$w.f3D.togl setconf -undroty 1 -droty -5.0 -drotx 0.0;break"
 
     bind $w <[repcont $ayviewshortcuts(ZoomI)]>\
-	    "$w.f3D.togl setconf -dzoom 0.9;break"
+	    "$w.f3D.togl setconf -undzoomi 1 -dzoom 0.9;break"
 
     bind $w <[repcont $ayviewshortcuts(ZoomO)]>\
-	    "$w.f3D.togl setconf -dzoom 1.1;break"
+	    "$w.f3D.togl setconf -undzoomo 1 -dzoom 1.1;break"
 
 
     bind $w <[repcont $ayviewshortcuts(PanL)]>\
