@@ -893,11 +893,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  int i = 2;
  int kbdact_in_progress = AY_FALSE;
  char arg1[] = "save";
- char arg2[] = "RotViewX", arg3[] = "RotViewY";
- char arg4[] = "PanViewX", arg5[] = "PanViewY";
- char arg6[] = "ZoomViewIn", arg7[] = "ZoomViewOut";
- char arg8[] = "-start", arg9[] = "0";
- char arg10[] = "-winxy";
+ char arg2[] = "-start", arg3[] = "0";
+ char arg4[] = "-winxy";
  char *tclargv[5] = {0};
 #ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
@@ -1223,23 +1220,23 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'p':
 	  if(!strcmp(argv[i], "-panx"))
 	    {
-	      tclargv[2] = arg8;
-	      tclargv[3] = arg9;
-	      tclargv[4] = arg9;
+	      tclargv[2] = arg2;
+	      tclargv[3] = arg3;
+	      tclargv[4] = arg3;
 	      ay_vact_movetcb(togl, 5, tclargv);
-	      tclargv[2] = arg10;
+	      tclargv[2] = arg4;
 	      tclargv[3] = argv[i+1];
-	      tclargv[4] = arg9;
+	      tclargv[4] = arg3;
 	      ay_vact_movetcb(togl, 5, tclargv);
 	    }
 	  if(!strcmp(argv[i], "-pany"))
 	    {
-	      tclargv[2] = arg8;
-	      tclargv[3] = arg9;
-	      tclargv[4] = arg9;
+	      tclargv[2] = arg2;
+	      tclargv[3] = arg3;
+	      tclargv[4] = arg3;
 	      ay_vact_movetcb(togl, 5, tclargv);
-	      tclargv[2] = arg10;
-	      tclargv[3] = arg9;
+	      tclargv[2] = arg4;
+	      tclargv[3] = arg3;
 	      tclargv[4] = argv[i+1];
 	      ay_vact_movetcb(togl, 5, tclargv);
 	    }
@@ -1386,7 +1383,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 'u':
-	  if(!strcmp(argv[i], "-undpanx"))
+	  if(!strcmp(argv[i], "-undokb"))
 	    {
 	      /* save current state of view, but only once per
 		 keypress-keyrelease-sequence */
@@ -1394,67 +1391,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  /* undo save */
 		  tclargv[1] = arg1;
-		  tclargv[2] = arg4;
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
-		}
-	    }
-	  if(!strcmp(argv[i], "-undpany"))
-	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
-		{
-		  /* undo save */
-		  tclargv[1] = arg1;
-		  tclargv[2] = arg5;
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
-		}
-	    }
-	  if(!strcmp(argv[i], "-undrotx"))
-	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
-		{
-		  /* undo save */
-		  tclargv[1] = arg1;
-		  tclargv[2] = arg2;
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
-		}
-	    }
-	  if(!strcmp(argv[i], "-undroty"))
-	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
-		{
-		  /* undo save */
-		  tclargv[1] = arg1;
-		  tclargv[2] = arg3;
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
-		}
-	    }
-	  if(!strcmp(argv[i], "-undzoomi"))
-	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
-		{
-		  /* undo save */
-		  tclargv[1] = arg1;
-		  tclargv[2] = arg6;
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
-		}
-	    }
-	  if(!strcmp(argv[i], "-undzoomo"))
-	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
-		{
-		  /* undo save */
-		  tclargv[1] = arg1;
-		  tclargv[2] = arg7;
+		  tclargv[2] = argv[i+1];
 		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
 		}
 	    }
