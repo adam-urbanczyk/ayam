@@ -1232,16 +1232,16 @@ proc viewPan { togl dir } {
     #undo save MoveView
 
     if { $dir == 0 } {
-	$togl setconf -undpanx 1 -panx [expr -$w/10]
+	$togl setconf -undokb ViewPanX -panx [expr -$w/10]
     }
     if { $dir == 1 } {
-	$togl setconf -undpanx 1 -panx [expr $w/10]
+	$togl setconf -undokb ViewPanX -panx [expr $w/10]
     }
     if { $dir == 2 } {
-	$togl setconf -undpany 1 -pany [expr -$h/10]
+	$togl setconf -undokb ViewPanY -pany [expr -$h/10]
     }
     if { $dir == 3 } {
-	$togl setconf -undpany 1 -pany [expr $h/10]
+	$togl setconf -undokb ViewPanY -pany [expr $h/10]
     }
 
  return;
