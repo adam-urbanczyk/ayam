@@ -1,5 +1,5 @@
-[10. Sep 2009] CVS-Head:
-=======================
+[19. Sep 2009] CVS-Head:
+========================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
 o AutoResize option (multi window GUI mode) Tcl error (SF 2404523)
@@ -33,6 +33,7 @@ o "estlenNC" crashing for illegal parameters and curves (SF 2818974)
 o "estlenNC" crashing for curves of order 2 (SF 2819090)
 o preferences dialog now also warns after "ToolBoxTrans" setting changes,
   that a restart is necessary
+o undo/redo do not maintain view mode icons (SF 2860778)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -47,6 +48,8 @@ o improved focus handling of view windows and various dialog windows
 o added hotkeys for view drawing mode cycling (<Ctrl+PgUp>, <Ctrl+PgDown>)
 o fixed clashes of shortcuts
 o add pinstripe background to show shortcuts dialog window
+o zooming views (and also panning) via keyboard do not fill up the
+  undo buffer
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
