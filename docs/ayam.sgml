@@ -900,8 +900,8 @@ It allows quick access to the last used entry/tool in the <tt/"Tools"/
 menu hierarchy. The label of the entry will be changed appropriately,
 e.g. to <tt/"Last (Revert U)"/, when a tool was started.
 
-<item><tt/"Create"/, <tt/"NURBCurve"/, and
-<tt/"NURBPatch"/, are sub-menus with various NURBS based creation
+<item><tt/"Create"/, <tt/"Curve"/, and
+<tt/"Surface"/, are sub-menus with various NURBS based creation
 and modelling tools, that are explained in depth in section
 <ref id="nmtool" name="NURBS Modelling Tools">.
 
@@ -927,7 +927,7 @@ create optimized new objects, the <tt/"Optimize"/-tool (see below) may
 be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 
 <item><tt/"Optimize"/: optimizes the selected PolyMesh object(s)
-by removing all multiply used control points (if the option
+by removing all multiply used (and unused) control points (if the option
 <tt/"OptimizeCoords"/ is enabled) or multiply used faces (not implemented
 yet). If the option <tt/"IgnoreNormals"/ is enabled, the optimize-tool will
 consider points with equal coordinates but differing normals
@@ -3470,30 +3470,19 @@ connected to geometric objects, see the discussion about material names above.
 <p>
 Light objects let you bring light into your scenes.
 <p>
-In contrast to the light sources as defined in the RenderMan
-interface, normal Ayam light sources are always global. This
-means, regardless of the place of a light source in the scene
-hierarchy, it will always light all other objects.
-<p>
-Note that you can not preview the effect of a light source in
-shaded Ayam views, currently. However it is possible to estimate
-the effect of a spot light source by simply dropping it into
-a perspective view window, the view will then show you the objects
-lighted by the spot.
-<p>
 The behaviour of a light source object depends heavily on the type
 of the light source.
-There are four different light types available in Ayam:
-<tt/"custom"/, <tt/"point"/, <tt/"distant"/ and <tt/"spot"/.
+There are currently four different light types available in Ayam:
+<tt/"Custom"/, <tt/"Point"/, <tt/"Distant"/ and <tt/"Spot"/.
 <p>
 Custom Lights:<label id="cul">
 <p>
-Light sources of type custom use the attached light shader.
+Light sources of type <tt/"Custom"/ use the attached light shader.
 <p>
 Note that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
 The names <tt/"from"/ and <tt/"to"/ denote location and destination
-of the lightsource. Those names should not be used for other things
+of the light source. Those names should not be used for other things
 in the light shaders!
 <p>
 Point-, Distant-, and Spotlights:<label id="pdsl">
@@ -3503,6 +3492,18 @@ will be displayed in the <tt/"LightAttr"/ property.
 Please refer to the RenderMan documentation for more information
 about the standard light sources (see section
 <ref id="secref" name="references">).
+<p>
+In contrast to the light sources as defined in the RenderMan
+interface, Ayam light sources are always global by default. This
+means, regardless of the place of a light source in the scene
+hierarchy, it will always light all other objects (unless the
+<tt/"IsLocal"/ attribute is used).
+<p>
+Note that you can not preview the effect of a light source in
+shaded Ayam views, currently. However it is possible to estimate
+the effect of a spot light source by simply dropping it into
+a perspective view window, the view will then show you the objects
+lighted by the spot.
 <p>
 The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
@@ -3536,10 +3537,10 @@ The default is off, all objects in the scene are lighted!
 The <tt/"IsLocal"/ attribute is ignored for lights that are
 defined in the root level of the scene. Mind also that shadow maps
 will always contain shadows from all objects in the scene,
-regardless of local lights.
+regardless of the <tt/"IsLocal"/ attribute of the light source.
 <p>
 Using the light attribute <tt/"Shadows"/ you may determine
-whether the lightsource should cast shadows.
+whether the light source should cast shadows.
 The default is off, no shadows! Note that this option will not
 magically enable shadows on renderers that create shadows by
 shadow maps. It will merely be interpreted by raytracing
@@ -3759,8 +3760,8 @@ shader attached:
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
 </code>
-This child object determines the geometry, place <em>and</em> extension,
-of the lightsource.
+This child object determines the geometry, place, <em>and</em> extension
+of the light source.
 According to L. Gritz, Spheres and Cylinders work best as area light
 geometry for BMRT, because of special sampling code.
 <p>
@@ -3772,7 +3773,7 @@ An example:
 <item>Drag-and-Drop the sphere onto the Light object so that it becomes
 a child of the light object.
 <item>Transform the sphere object to your hearts content; the position
-and size of the object determines the position and size of the lightsource!
+and size of the object determines the position and size of the light source!
 </itemize>
 
 There is an example scene named <tt>"arealight.ay"</tt> distributed with
@@ -7769,7 +7770,7 @@ Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
 the old syntax only allowed one parameter.
 <p>
 TP tags may be easily created using the tesselation GUI, that can
-be started with the main menu entry <tt>"Tools/NURBPatch/Tesselate"</tt>
+be started with the main menu entry <tt>"Tools/Surface/Tesselate"</tt>
 (see also section <ref id="tesst" name="The Tesselation Tool">).
 <p>
 <bf/Example/
