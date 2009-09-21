@@ -246,48 +246,48 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 
 # standard shortcuts for main window
 array set aymainshortcuts {
-    Quit "Ctrl-KeyRelease-q"
-    New  "Ctrl-KeyRelease-N"
-    Replace "Ctrl-KeyRelease-o"
-    Insert "Ctrl-KeyRelease-i"
-    SaveAs "Ctrl-KeyRelease-S"
-    Save "Ctrl-KeyRelease-s"
-    ExportRIB "Ctrl-KeyRelease-E"
+    Quit "Ctrl-q"
+    New  "Ctrl-N"
+    Replace "Ctrl-o"
+    Insert "Ctrl-i"
+    SaveAs "Ctrl-S"
+    Save "Ctrl-s"
+    ExportRIB "Ctrl-E"
 
     MRU1 "Ctrl-KeyPress-1"
     MRU2 "Ctrl-KeyPress-2"
     MRU3 "Ctrl-KeyPress-3"
     MRU4 "Ctrl-KeyPress-4"
 
-    Apply "Ctrl-KeyRelease-A"
+    Apply "Ctrl-A"
 
-    Copy "Ctrl-KeyRelease-c"
-    Cut "Ctrl-KeyRelease-x"
-    Paste "Ctrl-KeyRelease-v"
+    Copy "Ctrl-c"
+    Cut "Ctrl-x"
+    Paste "Ctrl-v"
 
-    CopyP "Ctrl-KeyRelease-C"
-    ICopyP "Ctrl-KeyRelease-I"
-    PasteP "Ctrl-KeyRelease-V"
+    CopyP "Ctrl-C"
+    ICopyP "Ctrl-I"
+    PasteP "Ctrl-V"
 
-    Undo "Ctrl-KeyRelease-z"
-    Redo "Ctrl-KeyRelease-y"
-    Material "Ctrl-KeyRelease-m"
-    Master "Ctrl-KeyRelease-M"
-    Prefs "Ctrl-KeyRelease-p"
+    Undo "Ctrl-z"
+    Redo "Ctrl-y"
+    Material "Ctrl-m"
+    Master "Ctrl-M"
+    Prefs "Ctrl-p"
 
     Help "F1"
-    Zap "Ctrl-KeyRelease-Z"
+    Zap "Ctrl-Z"
     SwCon "Shift-Tab"
     SwLazyNotify "F6"
     SwNURBS "F5"
     SwWire "F4"
     SetSTP "F3"
     SetSTL "F2"
-    RebuildTree "Ctrl-KeyRelease-l"
-    SelAll "Ctrl-KeyRelease-a"
-    SelNone "Ctrl-KeyRelease-n"
+    RebuildTree "Ctrl-l"
+    SelAll "Ctrl-a"
+    SelNone "Ctrl-n"
 
-    LastTool "Ctrl-KeyRelease-t"
+    LastTool "Ctrl-t"
 
     SProp0 "Key-0"
     SProp1 "Key-1"
@@ -321,22 +321,22 @@ array set aymainshortcuts {
 
 # standard shortcuts for a view window
 array set ayviewshortcuts {
-    Close "Ctrl-KeyRelease-w"
-    QRender "Ctrl-KeyRelease-r"
-    Render "Ctrl-KeyRelease-R"
-    Redraw "Ctrl-KeyRelease-d"
+    Close "Ctrl-w"
+    QRender "Ctrl-r"
+    Render "Ctrl-R"
+    Redraw "Ctrl-d"
 
-    Front "Ctrl-KeyRelease-f"
-    Side "Ctrl-KeyRelease-s"
-    Top "Ctrl-KeyRelease-t"
-    Persp "Ctrl-KeyRelease-p"
-    Trim "Ctrl-KeyRelease-T"
+    Front "Ctrl-f"
+    Side "Ctrl-s"
+    Top "Ctrl-t"
+    Persp "Ctrl-p"
+    Trim "Ctrl-T"
 
-    Halve "Ctrl-KeyRelease-H"
-    Double "Ctrl-KeyRelease-D"
+    Halve "Ctrl-H"
+    Double "Ctrl-D"
 
-    Local "Ctrl-KeyRelease-l"
-    Local2 "KeyRelease-l"
+    Local "Ctrl-l"
+    Local2 "l"
 
     RotL "Left"
     RotR "Right"
@@ -351,42 +351,42 @@ array set ayviewshortcuts {
     ZoomI "KP_Add"
     ZoomO "KP_Subtract"
 
-    Auto "Ctrl-KeyRelease-A"
-    Shade "Ctrl-KeyRelease-S"
-    DGrid "Ctrl-KeyRelease-g"
-    UGrid "Ctrl-KeyRelease-u"
-    SGrid "Ctrl-KeyRelease-G"
+    Auto "Ctrl-A"
+    Shade "Ctrl-S"
+    DGrid "Ctrl-g"
+    UGrid "Ctrl-u"
+    SGrid "Ctrl-G"
 
-    Align "Ctrl-KeyRelease-a"
-    Align2 "KeyRelease-L"
-    ZoomTO "Ctrl-KeyRelease-o"
-    ZoomTO2 "KeyRelease-O"
+    Align "Ctrl-a"
+    Align2 "L"
+    ZoomTO "Ctrl-o"
+    ZoomTO2 "O"
 
-    MoveO "KeyRelease-m"
-    RotO "KeyRelease-r"
-    RotA "KeyRelease-a"
-    ScalX "KeyRelease-x"
-    ScalY "KeyRelease-y"
-    ScalZ "KeyRelease-z"
-    Scal2 "KeyRelease-s"
-    Scal3 "KeyRelease-S"
-    Stretch "KeyRelease-T"
+    MoveO "m"
+    RotO "r"
+    RotA "a"
+    ScalX "x"
+    ScalY "y"
+    ScalZ "z"
+    Scal2 "s"
+    Scal3 "S"
+    Stretch "T"
 
-    Edit "KeyRelease-e"
-    EditD "KeyRelease-p"
-    WeightE "KeyRelease-w"
-    WeightR "KeyRelease-W"
-    Select "KeyRelease-t"
-    DeSelect "KeyRelease-N"
-    InsertP "KeyRelease-i"
-    DeleteP "KeyRelease-d"
-    SplitNC "KeyRelease-c"
-    FindU "KeyRelease-u"
+    Edit "e"
+    EditD "p"
+    WeightE "w"
+    WeightR "W"
+    Select "t"
+    DeSelect "N"
+    InsertP "i"
+    DeleteP "d"
+    SplitNC "c"
+    FindU "u"
 
-    MoveV "KeyRelease-v"
-    MoveZV "KeyRelease-V"
-    RotV "KeyRelease-R"
-    ZoomV "KeyRelease-o"
+    MoveV "v"
+    MoveZV "V"
+    RotV "R"
+    ZoomV "o"
 
     Break "Escape"
     MoveVButton "3"
@@ -400,20 +400,20 @@ array set ayviewshortcuts {
     ZoomRModKey "Shift_L"
     ZoomRButton "1"
 
-    Pick "KeyRelease-P"
+    Pick "P"
     PickMod "Control"
     PickModKey "Control_L"
 
-    SelAllP "KeyRelease-A"
-    InvSelP "KeyRelease-I"
-    CollP "KeyRelease-C"
-    ExplP "KeyRelease-E"
+    SelAllP "A"
+    InvSelP "I"
+    CollP "C"
+    ExplP "E"
 
-    SnapGrid2D "KeyRelease-g"
-    SnapGrid3D "KeyRelease-G"
+    SnapGrid2D "g"
+    SnapGrid3D "G"
 
-    Hide "KeyRelease-h"
-    Show "KeyRelease-H"
+    Hide "h"
+    Show "H"
 
     TypeUp "Prior"
     TypeDown "Next"
@@ -1883,9 +1883,19 @@ if { $ayprefs(FixX11Menu) } {
 
 # allow customized keyboard menu traversal
 if { $tcl_version > 8.3 } {
-    bind all <${aymainshortcuts(MenuMod)}-Key> { ::tk::TraverseToMenu %W %A }
+    bind all <${aymainshortcuts(MenuMod)}-Key> {
+	::tk::TraverseToMenu %W %A ; break;
+    }
+    bind all <Alt-Key> {
+	::tk::TraverseToMenu %W %A ; break;
+    }
 } else {
-    bind all <${aymainshortcuts(MenuMod)}-Key> { tkTraverseToMenu %W %A }
+    bind all <${aymainshortcuts(MenuMod)}-Key> {
+	tkTraverseToMenu %W %A ; break;
+    }
+    bind all <Alt-Key> {
+	tkTraverseToMenu %W %A ; break;
+    }
 }
 
 # if no view is open (first start ever, no ayamrc file, or no working

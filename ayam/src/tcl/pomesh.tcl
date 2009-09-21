@@ -46,7 +46,7 @@ proc pomesh_merge { } {
 
     set w .pomeshmerge
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Merge PolyMeshes"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
@@ -147,7 +147,7 @@ proc pomesh_optimize { } {
 
     set w .pomeshopt
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Optimize PolyMesh"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
@@ -231,7 +231,7 @@ proc pomesh_split { } {
 
     set w .pomeshspl
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Split PolyMesh"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

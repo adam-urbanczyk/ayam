@@ -19,7 +19,7 @@ proc riopt_addp { } {
 
     set w .addRiOptw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Add RiOption"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

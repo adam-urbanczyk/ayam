@@ -40,9 +40,9 @@ proc splash_open { } {
     catch {destroy $w}
     set visuals [winfo visualsavailable .]
     if { [lsearch $visuals truecolor*] != -1 } {
-	toplevel $w -class ayam -visual truecolor
+	toplevel $w -class Ayam -visual truecolor
     } else {
-	toplevel $w -class ayam
+	toplevel $w -class Ayam
     }
 
     if { $AYWITHAQUA } {

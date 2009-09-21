@@ -30,7 +30,7 @@ proc runTool { argvars argstrings command } {
     set oldFocus [focus]
     set w .rtw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Ayam"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
@@ -247,7 +247,7 @@ proc runRenderer { cmd template } {
 
     set oldFocus [focus]
 
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Render_$ay(rnum)"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

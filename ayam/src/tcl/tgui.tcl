@@ -450,7 +450,7 @@ proc tgui_open { } {
 
     set w .tguiw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Tesselation Parameters"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

@@ -26,7 +26,7 @@ proc ai_open { } {
 
     set w .aiw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "AI Options"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

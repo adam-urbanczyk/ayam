@@ -292,7 +292,7 @@ proc io_exportRIB { {expview "" } } {
 
     set w .exportRIBw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "RIB Export"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

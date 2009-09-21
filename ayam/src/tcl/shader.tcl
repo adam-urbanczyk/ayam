@@ -254,7 +254,7 @@ proc shader_setNew { win type stype } {
 
     set w .setShaderw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Set Shader"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

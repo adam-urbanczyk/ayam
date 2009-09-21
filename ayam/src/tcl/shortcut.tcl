@@ -744,7 +744,7 @@ global ay aymainshortcuts ayviewshortcuts tcl_platform
 set w .ayscw
 
 catch {destroy $w}
-toplevel $w -class ayam
+toplevel $w -class Ayam
 wm title $w "Ayam Shortcuts"
 wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {

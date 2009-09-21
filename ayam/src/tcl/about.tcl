@@ -20,7 +20,7 @@ winAutoFocusOff
 set w .aboutw
 # there can only be one
 catch {destroy $w}
-toplevel $w -class ayam
+toplevel $w -class Ayam
 wm title $w "About Ayam"
 wm iconname $w "Ayam"
 if { $ay(ws) == "Aqua" } {

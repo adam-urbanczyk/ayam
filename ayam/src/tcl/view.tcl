@@ -366,7 +366,7 @@ proc viewSetFOV { view } {
 
     set w .setFov
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Set FOV"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
@@ -425,7 +425,7 @@ proc viewSetGrid { view } {
 
     set w .setGrid
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Set GridSize"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
@@ -519,9 +519,9 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	# toplevel
 	catch {destroy $w}
 	if { $ay(truecolor) == 1 } {
-	    toplevel $w -class ayam -visual truecolor
+	    toplevel $w -class Ayam -visual truecolor
 	} else {
-	    toplevel $w -class ayam
+	    toplevel $w -class Ayam
 	}
 
 	scan $w ".%s" name
@@ -602,6 +602,9 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     # accept objects from the tree view to be dropped into the view window
     DropSite::register $w.f3D.togl -dropcmd viewDrop\
 	    -droptypes {TREE_NODE {copy {}} IMAGE { copy {}}}
+
+    # avoid clash of normal action hot keys with menu mnemonics
+    bindtags $w {all Ayam $w}
 
     update
     set ay(cviewsema) 0
@@ -1154,7 +1157,7 @@ proc viewSetBGImage { view } {
 
     set w .setBGI
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Set BGImage"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

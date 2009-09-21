@@ -233,7 +233,7 @@ winAutoFocusOff
 
 set w .addTag
 catch {destroy $w}
-toplevel $w -class ayam
+toplevel $w -class Ayam
 
 if { $edit >= 0 } {
     wm title $w "Edit Tag"
