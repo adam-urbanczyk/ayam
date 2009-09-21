@@ -263,6 +263,18 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 	  free(tmp);
 	  tmp = NULL;
 	}
+      else
+	{
+	  /*
+	   * the tesselation failed => create an empty PolyMesh
+	   * so that we do not crash elsewhere
+	   */
+	  if(!(oref->object->refine = calloc(1, sizeof(ay_pomesh_object))))
+	    {
+	      return AY_EOMEM;
+	    }
+	}
+
       oref->object->type = AY_IDPOMESH;
 
       /* PolyMesh objects have no children (trim curves)... */
