@@ -44,7 +44,7 @@ proc render_select { } {
 
     set w .selRenw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Select Renderer"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

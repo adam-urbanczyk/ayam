@@ -665,7 +665,7 @@ proc editPointDp { } {
     }
 
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Edit_Point"
     wm iconname $w "Ayam"
     if { ! $AYWITHAQUA } {

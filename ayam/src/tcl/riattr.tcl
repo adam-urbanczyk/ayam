@@ -19,7 +19,7 @@ proc riattr_addp { } {
 
     set w .addRiAttrw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Add RiAttribute"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

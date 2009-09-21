@@ -91,7 +91,7 @@ proc prefs_open {} {
     #if { $tcl_platform(platform) == "windows" } { 
     #set width 400
     #}
-    toplevel $w -class ayam -width $width -height 400
+    toplevel $w -class Ayam -width $width -height 400
     if { $ayprefs(SingleWindow) } {
 	if { $ay(ws) == "Aqua" } {
 	    winMakeFloat $w

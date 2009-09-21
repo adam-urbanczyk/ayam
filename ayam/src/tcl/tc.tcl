@@ -226,7 +226,7 @@ proc tc_edit { } {
 
     set w .tcEditw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Edit Texture Coordinates"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

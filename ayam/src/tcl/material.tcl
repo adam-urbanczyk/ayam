@@ -73,7 +73,7 @@ proc material_createp { } {
 
     set w .createMw
     catch {destroy $w}
-    toplevel $w -class ayam
+    toplevel $w -class Ayam
     wm title $w "Create Material"
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {

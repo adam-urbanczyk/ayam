@@ -36,6 +36,9 @@ if { $menubar } {
     if { ! $AYWITHAQUA } {
 	$w.fMenu.v configure -padx 3
     }
+    if { [winfo toplevel $w] == $w } {
+	$w.fMenu.v configure -underline 0
+    }
     set m [menu $w.fMenu.v.m -tearoff 0]
 }
 
@@ -100,17 +103,19 @@ if { $menubar } {
     if { ! $AYWITHAQUA } {
 	$w.fMenu.t configure -padx 3
     }
+    if { [winfo toplevel $w] == $w } {
+	$w.fMenu.t configure -underline 0
+    }
     set m [menu $w.fMenu.t.m -tearoff 0]
 }
 
-$m add command -label "Front" -command "viewSetType $w 0"
-
-$m add command -label "Side" -command "viewSetType $w 1"
-$m add command -label "Top" -command "viewSetType $w 2"
+$m add command -label "Front" -command "viewSetType $w 0" -underline 0
+$m add command -label "Side" -command "viewSetType $w 1" -underline 0
+$m add command -label "Top" -command "viewSetType $w 2" -underline 0
 $m add separator
-$m add command -label "Perspective" -command "viewSetType $w 3"
+$m add command -label "Perspective" -command "viewSetType $w 3" -underline 0
 $m add separator
-$m add command -label "Trim" -command  "viewSetType $w 4"
+$m add command -label "Trim" -command  "viewSetType $w 4" -underline 1
 
 # Configure Menu
 if { $menubar } {
@@ -120,6 +125,9 @@ if { $menubar } {
     menubutton $w.fMenu.c -text "Configure" -menu $w.fMenu.c.m
     if { ! $AYWITHAQUA } {
 	$w.fMenu.c configure -padx 3
+    }
+    if { [winfo toplevel $w] == $w } {
+	$w.fMenu.c configure -underline 0
     }
     set m [menu $w.fMenu.c.m -tearoff 0]
 }

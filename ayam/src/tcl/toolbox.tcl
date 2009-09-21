@@ -16,9 +16,9 @@ proc toolbox_open { {w .tbw} } {
     if { $w == ".tbw" } {
 	catch {destroy $w}
 	if { $ay(truecolor) == 1 } {
-	    toplevel $w -class ayam -visual truecolor
+	    toplevel $w -class Ayam -visual truecolor
 	} else {
-	    toplevel $w -class ayam
+	    toplevel $w -class Ayam
 	}
 
 	if { $ay(ws) == "Aqua" } {
