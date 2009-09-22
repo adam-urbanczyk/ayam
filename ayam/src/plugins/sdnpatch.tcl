@@ -54,7 +54,7 @@ $m add separator
 
 $m add command -label "NPatch To SDNPatch" -command {
     sdnconvertNP; uS; rV; }
-$m add command -label "PoMesh To SDNPatch" -command {
+$m add command -label "PolyMesh To SDNPatch" -command {
     sdnconvertPO; uS; rV; }
 
 $m add separator
