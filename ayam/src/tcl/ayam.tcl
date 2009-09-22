@@ -1884,17 +1884,31 @@ if { $ayprefs(FixX11Menu) } {
 # allow customized keyboard menu traversal
 if { $tcl_version > 8.3 } {
     bind all <${aymainshortcuts(MenuMod)}-Key> {
-	::tk::TraverseToMenu %W %A ; break;
+	::tk::TraverseToMenu %W %A;
+	[winfo toplevel %W] configure -cursor {};
+	%W configure -cursor {};
+	if { [winfo exists %W.f3D.togl] } {
+	    %W.f3D.togl configure -cursor {};
+	}
+	update idletasks
+	break;
     }
     bind all <Alt-Key> {
-	::tk::TraverseToMenu %W %A ; break;
+	::tk::TraverseToMenu %W %A;
+	[winfo toplevel %W] configure -cursor {};
+	%W configure -cursor {};
+	if { [winfo exists %W.f3D.togl] } {
+	    %W.f3D.togl configure -cursor {};
+	}
+	update idletasks
+	break;
     }
 } else {
     bind all <${aymainshortcuts(MenuMod)}-Key> {
-	tkTraverseToMenu %W %A ; break;
+	tkTraverseToMenu %W %A;
     }
     bind all <Alt-Key> {
-	tkTraverseToMenu %W %A ; break;
+	tkTraverseToMenu %W %A;
     }
 }
 
