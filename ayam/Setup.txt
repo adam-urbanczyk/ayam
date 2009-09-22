@@ -1,4 +1,4 @@
-[Setup.txt, 6. Mar 2008]
+[Setup.txt, 22. Sep 2009]
 
 Setup instructions for Ayam on UNIX (e.g. Linux/IRIX/MacOSX)
 ------------------------------------------------------------
@@ -154,6 +154,7 @@ X3DIO: X3D (Web3D) Import/Export
 IDR: Importance Driven Rendering
 AyCSG: CSG preview
 MetaObj: the MetaBalls custom object
+SDNPatch: Subdivision NURBS custom object
 ayslx, ayslb, ayso, ayslo, ayslo3d, aysdr, aygso: shader parsing plugins
 
 All distributed plugins are stored in the "ayam/bin/plugins" directory
