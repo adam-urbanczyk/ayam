@@ -93,6 +93,7 @@ install:
 	-$(INSTALL) plugins/sdnpatch.so $(LIBDIR)
 	-$(INSTALL) plugins/sdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadsdnpatch.tcl $(LIBDIR)
+	-$(INSTALL) plugins/libsnurbs.so $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -128,6 +129,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/x3dio.so $(LIBDIR)/x3dio.tcl $(LIBDIR)/loadx3dio.tcl
 	-rm -rf $(LIBDIR)/sdnpatch.so $(LIBDIR)/sdnpatch.tcl
 	-rm -rf $(LIBDIR)/loadsdnpatch.tcl
+	-rm -rf $(LIBDIR)/libsnurbs.so
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
