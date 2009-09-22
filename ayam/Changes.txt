@@ -1,5 +1,5 @@
-[19. Sep 2009] CVS-Head:
-========================
+[22. Sep 2009] Ayam-1.16:
+=========================
 Bug Fixes:
 o closing all view windows (for File/New, File/Open) Tcl error (SF 2404512)
 o AutoResize option (multi window GUI mode) Tcl error (SF 2404523)
@@ -34,6 +34,7 @@ o "estlenNC" crashing for curves of order 2 (SF 2819090)
 o preferences dialog now also warns after "ToolBoxTrans" setting changes,
   that a restart is necessary
 o undo/redo do not maintain view mode icons (SF 2860778)
+o tesselation GUI crashing for empty text objects (SF )
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -46,10 +47,12 @@ o improved keyboard navigation in select shader, add RiOption/RiAttribute,
   and ambiguous select dialogs
 o improved focus handling of view windows and various dialog windows
 o added hotkeys for view drawing mode cycling (<Ctrl+PgUp>, <Ctrl+PgDown>)
-o fixed clashes of shortcuts
+o fixed many clashes of shortcuts; e.g. using <Ctrl+s> in internal views now
+  does the expected (saving the scene, not switching to scale modelling action)
 o add pinstripe background to show shortcuts dialog window
 o zooming views (and also panning) via keyboard do not fill up the
   undo buffer
+o added mnemonics for various main menu entries
 
 Modelling:
 o added object type "Trim" (to directly trim tool objects like e.g. a sweep)
