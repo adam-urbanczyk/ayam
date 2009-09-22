@@ -301,16 +301,17 @@ proc shortcut_main { w } {
     bind $w <[repcont $aymainshortcuts(SProp99)]> "plb_showprop 9"
 
     bind $w <[repcont $aymainshortcuts(ContextMenu)]> \
-	"if { $ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
+	"if { \$ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
 
     # on Aqua, <Command-q> quits the application
     if { $AYWITHAQUA == 1 } {
-	bind $w <Command-q> exit
+	bind all <Command-q> exit
     }
 
     if { $tcl_platform(platform) == "windows" } {
 	set m $ay(filemenu)
-	bind $w <Alt-F4> "$m invoke 21;break"
+	bind all <Alt-F4> "$m invoke 21;break"
+	bind . <Alt-F4> "$m invoke 21;break"
     }
 
 
@@ -351,7 +352,6 @@ proc shortcut_view { w } {
     }
 
     if { [winfo toplevel $w] != $w } {
-	eval [subst "bindtags $w \{$w Frame all\}"]
 	shortcut_main $w
     } else {
 	# some main window shortcuts
@@ -728,7 +728,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
     bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
-    bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
+    bind $w <$ayviewshortcuts(SplitNC)> "puts c_pressed;actionSplitNC $w.f3D.togl"
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
  return;

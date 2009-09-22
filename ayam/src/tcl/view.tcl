@@ -604,7 +604,13 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	    -droptypes {TREE_NODE {copy {}} IMAGE { copy {}}}
 
     # avoid clash of normal action hot keys with menu mnemonics
-    bindtags $w {all Ayam $w}
+    if { $internal_view == 1 } {
+	bindtags $w [list all Frame $w]
+    } else {
+	set ayclass [lindex [bindtags $w] 1]
+	bindtags $w [list all $ayclass $w]
+	bindtags $w.f3D.togl [list all $w.f3D.togl Togl $w]
+    }
 
     update
     set ay(cviewsema) 0

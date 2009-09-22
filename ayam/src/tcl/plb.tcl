@@ -287,7 +287,8 @@ if { ($tcl_platform(platform) == "windows") } {
 
     bind all <MouseWheel> {
 	if { ([focus] != "") && ([focus] != ".fl.con.console") &&\
-		 ([winfo toplevel [focus]] == ".") } {
+		([winfo toplevel [focus]] == ".") &&\
+		([string first "view" [focus]] == -1)} {
 	    global ay
 	    if { %D < 0.0 } {
 		$ay(pca) yview scroll 1 pages

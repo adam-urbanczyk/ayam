@@ -181,7 +181,7 @@ $m add separator
 $m add command -label "Material" -command {material_edit;} -underline 0
 $m add command -label "Master" -command {instance_edit;} -underline 1
 $m add separator
-$m add command -label "Preferences" -command {prefs_open; rV} -underline 0
+$m add command -label "Preferences" -command {prefs_open; rV} -underline 3
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.ed -in $w.fMenu -side left
