@@ -90,6 +90,9 @@ install:
 	-$(INSTALL) plugins/onio.so $(LIBDIR)
 	-$(INSTALL) plugins/onio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadonio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sdnpatch.so $(LIBDIR)
+	-$(INSTALL) plugins/sdnpatch.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadsdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -123,6 +126,8 @@ uninstall:
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl $(LIBDIR)/loaddxfio.tcl
 	-rm -rf $(LIBDIR)/x3dio.so $(LIBDIR)/x3dio.tcl $(LIBDIR)/loadx3dio.tcl
+	-rm -rf $(LIBDIR)/sdnpatch.so $(LIBDIR)/sdnpatch.tcl
+	-rm -rf $(LIBDIR)/loadsdnpatch.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.ps ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
