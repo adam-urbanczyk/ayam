@@ -314,8 +314,9 @@ proc shortcut_main { w } {
 	bind . <Alt-F4> "$m invoke 21;break"
     }
 
-
-  $ay(treecm).tree entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
+    if { [winfo exists $ay(treecm).tree] } {
+	$ay(treecm).tree entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
+    }
 
  return;
 }
