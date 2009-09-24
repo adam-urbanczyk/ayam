@@ -1388,6 +1388,9 @@ with the view window, are:
 <item><tt/&lt;Left&gt;/, <tt/&lt;Up&gt;/, <tt/&lt;Right&gt;/,
 <tt/&lt;Down&gt;/ rotate viewer around origin.
 
+<item><tt/&lt;Shift+Left&gt;/, <tt/&lt;Shift+Up&gt;/, <tt/&lt;Shift+Right&gt;/,
+<tt/&lt;Shift+Down&gt;/ pan the view.
+
 <item><tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom view.
 </itemize>
 
@@ -1403,6 +1406,7 @@ parallel views.
 
 <item><tt/&lt;R&gt;/ (note the case!) starts rotating the virtual
 camera around the point it is looking to.
+
 <item>Rotating the view is also possible in any
 modelling mode, by holding down the <tt/&lt;Alt&gt;/-key.
 
@@ -1421,18 +1425,24 @@ If you have a wheel mouse and it is configured to send
 Mouse4 and Mouse5 button events, Ayam will zoom the view
 when you turn the wheel.
 <p>
-Using the menu entry <tt/"Zoom to Object"/ or the shortcut
-<tt/&lt;Ctrl+o&gt;/ you can change the views from to and zoom
+Since Ayam1.15 one may cycle through the view types using
+<tt/&lt;PgUp&gt;/ and <tt/&lt;PgDown&gt;/ and (since Ayam1.16)
+through drawing modes using <tt/&lt;Ctrl+PgUp&gt;/ and
+<tt/&lt;Ctrl+PgDown&gt;/.
+<p>
+Using the menu entry <tt/"Zoom to Object"/ or the corresponding
+shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
+you can change the views from to and zoom
 settings so that the selected objects will be displayed centered
 in the view window. This is handy if you are e.g. searching for
 objects or if you are simply lost in space.
 <p>
 Using the menu entry <tt/"Align to Parent"/ or the shortcut
-<tt/&lt;Ctrl+a&gt;/ you can change the views camera settings so
-that it is aligned to the coordinate system of the currently
-selected object.
+<tt/&lt;Ctrl+a&gt;/  (<tt/&lt;L&gt;/ for internal views)
+you can change the views camera settings so that it is aligned
+to the coordinate system of the currently selected object.
 This is handy for modelling in local coordinate systems
-(e.g. editing the points of a 2D curve defined in the
+(e.g. when editing the control points of some planar curve defined in the
 XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Space">.
 
