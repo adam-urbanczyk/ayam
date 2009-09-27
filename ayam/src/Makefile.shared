@@ -648,7 +648,7 @@ clean: mostlyclean
 	-cd MF3D; make -f Makefile.mf3d clean
 
 DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
-../doc/refcard.ps ../doc/ayam.pdf
+../doc/refcard.pdf ../doc/ayam.pdf
 
 install:
 	$(MKDIR) $(BINDIR)
@@ -706,6 +706,9 @@ install:
 	-$(INSTALL) plugins/x3dio.so $(LIBDIR)
 	-$(INSTALL) plugins/x3dio.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadx3dio.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sdnpatch.so $(LIBDIR)
+	-$(INSTALL) plugins/sdnpatch.tcl $(LIBDIR)
+	-$(INSTALL) plugins/loadsdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -741,8 +744,10 @@ uninstall:
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl $(LIBDIR)/loaddxfio.tcl
 	-rm -rf $(LIBDIR)/x3dio.so $(LIBDIR)/x3dio.tcl $(LIBDIR)/loadx3dio.tcl
+	-rm -rf $(LIBDIR)/sdnpatch.so
+	-rm -rf $(LIBDIR)/sdnpatch.tcl $(LIBDIR)/loadsdnpatch.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
-refcard.ps ayam.pdf html;
+refcard.pdf ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
 
 .SUFFIXES: .so .o .cpp
