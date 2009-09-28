@@ -115,8 +115,8 @@ bind $f.li <<ListboxSelect>> {
 	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(olb);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
-		    "focus $ay(olb);break"
+	    catch {bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
+		       "focus $ay(olb);break"}
 	}
     } else {
 	bind $ay(tree) <Key-Tab>\
@@ -124,8 +124,8 @@ bind $f.li <<ListboxSelect>> {
 	bind [tk_focusNext $ay(pca).$ww] <Shift-Tab>\
 		"focus $ay(tree);break"
 	if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
-	    bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
-		    "focus $ay(tree);break"
+	    catch {bind [tk_focusNext $ay(pca).$ww] <ISO_Left_Tab>\
+		       "focus $ay(tree);break"}
 	}
     }
     # if
@@ -370,6 +370,7 @@ return;
 #
 proc plb_update { } {
 global ay ayprefs ay_error curtypes pclip_omit pclip_omit_label
+global tcl_platform AYWITHAQUA
 
 # protect against double updates
 if { $ay(PlbUpdateSema) == 1 } {
@@ -386,6 +387,20 @@ if { $ay(lb) == 1 } {
     set index [$ay(tree) selection get]
 }
 
+if { $index == "" } {
+    if { $ay(lb) == 1 } {
+	set w $ay(olb)
+    } else {
+	set w $ay(tree)
+    }
+    if { $ayprefs(SingleWindow) == 1 } {
+	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
+    } else {
+	bind $w <Key-Tab> "focus .fl.con.console;break"
+    }
+    $ay(pca) configure -takefocus 0
+}
+
 # avoid leaving the focus on an empty property canvas
 if { ( [focus] == $ay(pca) ) && ( [llength $index] == 0 ) } {
     resetFocus
@@ -394,21 +409,6 @@ if { ( [focus] == $ay(pca) ) && ( [llength $index] == 0 ) } {
 set lb $ay(plb)
 set oldsel ""
 set oldsel [$lb curselection]
-
-if { $oldsel == "" } {
-    if { $ay(lb) == 1 } {
-	set w $ay(olb)
-    } else {
-	set w $ay(tree)
-    }
-    if { $ayprefs(SingleWindow) == 1 } {
-	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
-	bind $w <Shift-Tab> "focus .fv.fViews.fview2;break"
-    } else {
-	bind $w <Key-Tab> "focus .fl.con.console;break"
-    }
-    $ay(pca) configure -takefocus 0
-}
 
 # delete current entries
 $lb delete 0 end
@@ -516,7 +516,6 @@ if { [llength $index] == 1 } {
 		array set pclip_omit_label { }
 	    }
 	    # improve focus traversal (speed-wise)
-	    global tcl_platform AYWITHAQUA
 	    if { $ay(lb) == 1 } {
 		bind $ay(olb) <Key-Tab>\
 			"focus [tk_focusNext $ay(pca).$w];plb_focus;break"
@@ -524,8 +523,8 @@ if { [llength $index] == 1 } {
 			"focus $ay(olb);break"
 		if { ( $tcl_platform(platform) != "windows" ) &&\
 			( ! $AYWITHAQUA ) } {
-		    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
-			    "focus $ay(olb);break"
+		    catch {bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+			       "focus $ay(olb);break"}
 		}
 	    } else {
 		bind $ay(tree) <Key-Tab>\
@@ -535,8 +534,8 @@ if { [llength $index] == 1 } {
 		    "focus $ay(tree);break"
 		if { ( $tcl_platform(platform) != "windows" ) &&\
 			 ( ! $AYWITHAQUA ) } {
-		    bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
-			"focus $ay(tree);break"
+		    catch {bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
+			       "focus $ay(tree);break"}
 		}
 	    }
 	    # if
