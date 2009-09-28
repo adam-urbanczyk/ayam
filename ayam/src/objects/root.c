@@ -75,6 +75,7 @@ ay_root_createcb(int argc, char *argv[], ay_object *o)
   riopt->use_std_display = AY_TRUE;
 
   o->parent = AY_TRUE;
+  o->inherit_trafos = AY_FALSE;
   o->refine = root;
 
  return AY_OK;
@@ -921,12 +922,31 @@ ay_root_wribcb(char *file, ay_object *o)
 int
 ay_root_bbccb(ay_object *o, double *bbox, int *flags)
 {
+ double min = -2.0, max = 2.0;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
-  /* we have no own bounding box, all that counts are the children */
-  *flags = 2;
+  /* exclusive bounding box, discard child(ren) bounding box(es) */
+  *flags = 1;
+
+  /* P1 */
+  bbox[0] = min; bbox[1] = max; bbox[2] = max;
+  /* P2 */
+  bbox[3] = min; bbox[4] = max; bbox[5] = min;
+  /* P3 */
+  bbox[6] = max; bbox[7] = max; bbox[8] = min;
+  /* P4 */
+  bbox[9] = max; bbox[10] = max; bbox[11] = max;
+
+  /* P5 */
+  bbox[12] = min; bbox[13] = min; bbox[14] = max;
+  /* P6 */
+  bbox[15] = min; bbox[16] = min; bbox[17] = min;
+  /* P7 */
+  bbox[18] = max; bbox[19] = min; bbox[20] = min;
+  /* P8 */
+  bbox[21] = max; bbox[22] = min; bbox[23] = max;
 
  return AY_OK;
 } /* ay_root_bbccb */
