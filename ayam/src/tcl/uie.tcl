@@ -143,7 +143,7 @@ proc addParam { w prop name {def {}} } {
 	-takefocus 0 -highlightthickness 0
 
     set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
-    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
 
     uie_fixEntry $f.e
@@ -257,7 +257,7 @@ proc addMatrix { w prop name } {
     set f1 [frame $w.f${name}1 -relief sunken -bd $bw]
     for { set i 0 } { $i < 4 } { incr i } {
 	entry $f1.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-	eval [subst "bindtags $f1.e$i \{$f1.e$i Entry all\}"]
+	eval [subst "bindtags $f1.e$i \{$f1.e$i pge Entry all\}"]
 	bind $f1.e$i <Key-Escape> $escapecmd
 	uie_fixEntry $f1.e$i
 	pack $f1.e$i -in $f1 -side left -fill both -expand yes
@@ -265,7 +265,7 @@ proc addMatrix { w prop name } {
     set f2 [frame $w.f${name}2 -relief sunken -bd $bw]
     for { set i 4 } { $i < 8 } { incr i } {
 	entry $f2.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-	eval [subst "bindtags $f2.e$i \{$f2.e$i Entry all\}"]
+	eval [subst "bindtags $f2.e$i \{$f2.e$i pge Entry all\}"]
 	bind $f2.e$i <Key-Escape> $escapecmd
 	uie_fixEntry $f2.e$i
 	pack $f2.e$i -in $f2 -side left -fill both -expand yes
@@ -273,7 +273,7 @@ proc addMatrix { w prop name } {
     set f3 [frame $w.f${name}3 -relief sunken -bd $bw]
     for { set i 8 } { $i < 12 } { incr i } {
 	entry $f3.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-	eval [subst "bindtags $f3.e$i \{$f3.e$i Entry all\}"]
+	eval [subst "bindtags $f3.e$i \{$f3.e$i pge Entry all\}"]
 	bind $f3.e$i <Key-Escape> $escapecmd
 	uie_fixEntry $f3.e$i
 	pack $f3.e$i -in $f3 -side left -fill both -expand yes
@@ -281,7 +281,7 @@ proc addMatrix { w prop name } {
     set f4 [frame $w.f${name}4 -relief sunken -bd $bw]
     for { set i 12 } { $i < 16 } { incr i } {
 	entry $f4.e$i -width 6 -textvariable ${prop}(${name}_${i}) -bd $bw
-	eval [subst "bindtags $f4.e$i \{$f4.e$i Entry all\}"]
+	eval [subst "bindtags $f4.e$i \{$f4.e$i pge Entry all\}"]
 	bind $f4.e$i <Key-Escape> $escapecmd
 	uie_fixEntry $f4.e$i
 	pack $f4.e$i -in $f4 -side left -fill both -expand yes
@@ -405,15 +405,15 @@ proc addColor { w prop name {def {}}} {
     set f [frame $w.f${name}]
 
     set e1 [entry $f.er -width 4 -textvariable ${prop}(${name}_R) -bd $bw]
-    eval [subst "bindtags $f.er \{$f.er Entry all\}"]
+    eval [subst "bindtags $f.er \{$f.er pge Entry all\}"]
     bind $e1 <Key-Escape> $escapecmd
     uie_fixEntry $e1
     set e2 [entry $f.eg -width 4 -textvariable ${prop}(${name}_G) -bd $bw]
-    eval [subst "bindtags $f.eg \{$f.eg Entry all\}"]
+    eval [subst "bindtags $f.eg \{$f.eg pge Entry all\}"]
     bind $e2 <Key-Escape> $escapecmd
     uie_fixEntry $e2
     set e3 [entry $f.eb -width 4 -textvariable ${prop}(${name}_B) -bd $bw]
-    eval [subst "bindtags $f.eb \{$f.eb Entry all\}"]
+    eval [subst "bindtags $f.eb \{$f.eb pge Entry all\}"]
     bind $e3 <Key-Escape> $escapecmd
     uie_fixEntry $e3
 
@@ -451,7 +451,7 @@ proc addColor { w prop name {def {}}} {
     }
     # if
 
-    eval [subst "bindtags $f.b1 \{$f.b1 Button all\}"]
+    eval [subst "bindtags $f.b1 \{$f.b1 pge Button all\}"]
     bind $f.b1 <Key-Escape> $escapecmd
 
     bind $f.b1 <Visibility> "updateColorFromE $w $prop $name $f.b1"
@@ -569,7 +569,7 @@ proc addCheck { w prop name } {
 	pack $f.fcb -in $f -side left -expand yes -fill both
 	pack $ff.cb -in $ff -side top -padx 30 -pady 3
 
-	eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
+	eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> $escapecmd
     } else {
 	if { $ay(ws) == "Aqua" } {
@@ -581,7 +581,7 @@ proc addCheck { w prop name } {
 	    pack $f.fcb -in $f -side left -expand yes -fill both
 	    pack $ff.cb -in $ff -side top -padx 30 -pady 0
 
-	    eval [subst "bindtags $ff.cb \{$ff.cb Checkbutton all\}"]
+	    eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	    bind $ff.cb <Key-Escape> $escapecmd
 	} else {
 	    # generic (X11) implementation
@@ -590,7 +590,7 @@ proc addCheck { w prop name } {
 	    pack $f.l -in $f -side left
 	    pack $f.cb -in $f -side left -fill x -expand yes
 
-	    eval [subst "bindtags $f.cb \{$f.cb Checkbutton all\}"]
+	    eval [subst "bindtags $f.cb \{$f.cb pge Checkbutton all\}"]
 	    bind $f.cb <Key-Escape> $escapecmd
 	}
     }
@@ -664,7 +664,7 @@ proc addMenu { w prop name elist } {
     menubutton $f.mb -text Eimer -menu $f.mb.m -relief raised -bd $bw\
 	    -padx 0 -pady 1 -takefocus 1 -highlightthickness 1
 
-    eval [subst "bindtags $f.mb \{$f.mb Menubutton all\}"]
+    eval [subst "bindtags $f.mb \{$f.mb pge Menubutton all\}"]
     bind $f.mb <Key-Escape> $escapecmd
     bind $f.mb <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.mb <Key-KP_Enter> "$::ay(bok) invoke;break"}
@@ -745,7 +745,7 @@ proc addString { w prop name  {def {}}} {
     }
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
-    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
@@ -902,7 +902,7 @@ proc addFile { w prop name {def {}} } {
     }
 
     set e [entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw]
-    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
@@ -1002,7 +1002,7 @@ proc addMDir { w prop name } {
     }
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
-    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
@@ -1082,7 +1082,7 @@ proc addMFile { w prop name } {
     }
 
     entry $f.e -textvariable ${prop}(${name}) -width 15 -bd $bw
-    eval [subst "bindtags $f.e \{$f.e Entry all\}"]
+    eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
     uie_fixEntry $f.e
     if { ! $ay(iapplydisable) } {
@@ -1155,7 +1155,7 @@ proc addCommand { w name text command } {
     set f [frame $w.f${name} -relief sunken -bd $bw]
 
     button $f.b -text $text -bd $bw -command $command -pady 0
-    eval [subst "bindtags $f.b \{$f.b Button all\}"]
+    eval [subst "bindtags $f.b \{$f.b pge Button all\}"]
     bind $f.b <Key-Escape> $escapecmd
 
     if { ! $ay(iapplydisable) } {

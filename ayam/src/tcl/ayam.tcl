@@ -1516,8 +1516,7 @@ if { $ayprefs(SingleWindow) } {
     # arrange for shift-tab not to display a sizing cursor and always move
     # the focus from view3 directly to the object hierarchy (not to the
     # empty property display where it would be useless)
-    bind .fu.fMain.fview3 $ayprefs(ShiftTab) "\
-      set ay(shifttab) 1;\
+    bind ff $ayprefs(ShiftTab) "\
       if \{ \$::ayprefs(showtr) == 1 \} \{\
         focus \$::ay(tree);\
       \} else \{\
@@ -1525,12 +1524,12 @@ if { $ayprefs(SingleWindow) } {
       \};\
       .fu.fMain.fview3.f3D.togl configure -cursor \{\};\
       break"
+    bindtags .fu.fMain.fview3 {ff all Frame .fu.fMain.fview3} 
+
     bind .fv.fViews.fview2 $ayprefs(ShiftTab) {+
-	set ay(shifttab) 1
 	.fv.fViews.fview2.f3D.togl configure -cursor {};
     }
     bind .fv.fViews.fview1 $ayprefs(ShiftTab) {+
-	set ay(shifttab) 1
 	.fv.fViews.fview1.f3D.togl configure -cursor {};
     }
 
@@ -1843,11 +1842,13 @@ io_mruUMenu
 
 # establish auto scrolling of the property canvas to the item with
 # the input focus, when the Tab key is used to move the focus
-bind all <Tab> "+plb_focus;break"
-bind all <Shift-Tab> "+plb_focus;break"
+bind pge <Tab> "focus \[tk_focusNext %W\]; plb_focus; break"
+bind pge <Shift-Tab> "focus \[tk_focusPrev %W\]; plb_focus; break"
 if { ( $tcl_platform(platform) != "windows" ) &&
      ( ! $AYWITHAQUA ) } {
-    catch {bind all <ISO_Left_Tab> "+plb_focus;break"}
+    catch {
+	bind pge <ISO_Left_Tab> "focus \[tk_focusPrev %W\]; plb_focus; break"
+    }
 }
 
 # redirect all tcl errors to the console?

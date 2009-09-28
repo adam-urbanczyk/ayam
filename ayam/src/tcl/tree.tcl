@@ -133,8 +133,10 @@ proc tree_update { node } {
     $ay(tree) configure -redraw 1
 
     # unblock UI
-    grab release .fl
     after cancel tree_blockUI
+    if { [grab current] == ".fl" } {
+	grab release .fl
+    }
     . configure -cursor {}
 
     set ay(TreeUpdateSema) 0
