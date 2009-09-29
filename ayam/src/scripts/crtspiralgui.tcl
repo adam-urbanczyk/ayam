@@ -12,7 +12,8 @@ if { ![info exists ::SpiralAttrData] } {
 	SP {Length AngleD Radius ZDiff}
     }
     set ::SpiralAttrData(AngleD)  [expr {90.0*3.141592654/180.0}]
-
+}
+if { ![info exists ::SpiralAttrGUI] } {
     set w [addPropertyGUI SpiralAttr "" ""]
     addParam $w SpiralAttrData Length
     addParam $w SpiralAttrData AngleD

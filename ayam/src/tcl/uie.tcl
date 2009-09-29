@@ -1290,6 +1290,8 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
 	set ${name}(sproc) $sproc
 	set ${name}(gproc) $gproc
 	set ${name}(w) f$name
+
+	set ::${name}GUI 1
     }
 
  return $w;

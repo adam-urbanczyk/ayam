@@ -8,6 +8,8 @@ if { ![info exists ::LineAttrData] } {
 	Length 3
 	SP {Length}
     }
+}
+if { ![info exists ::LineAttrGUI] } {
     set w [addPropertyGUI LineAttr "" ""]
     addParam $w LineAttrData Length
 }
