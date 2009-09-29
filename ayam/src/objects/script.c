@@ -989,13 +989,13 @@ ay_script_notifycb(ay_object *o)
   old_aynext = ay_next;
   ay_next = &(o->down);
 
-  /* XXXX make this depending on NP/RP tags */
+  /* XXXX make this depend on NP/RP tags */
   ay_trafo_defaults(o);
 
   /* copy cached/saved individual parameters to global Tcl array */
   if(/*!sc->modified && */sc->params)
     {
-      ay_script_getpropcb(ay_interp, 0, NULL, o);
+      ay_script_getpropcb(interp, 0, NULL, o);
     }
 
   /* prepare compiling the script? */
@@ -1156,7 +1156,9 @@ ay_script_notifycb(ay_object *o)
 	  while(sel)
 	    {
 	      if(sel->object->modified)
-		ay_notify_force(sel->object);
+		{
+		  ay_notify_force(sel->object);
+		}
 	      sel = sel->next;
 	    }
 
@@ -1189,7 +1191,9 @@ ay_script_notifycb(ay_object *o)
   ay_currentlevel = old_currentlevel;
 
   if(ay_clipboard)
-    ay_object_deletemulti(ay_clipboard);
+    {
+      ay_object_deletemulti(ay_clipboard);
+    }
 
   ay_clipboard = old_clipboard;
 
@@ -1414,8 +1418,9 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 		}
 
 	      if(*npo)
-		npo = &((*npo)->next);
-
+		{
+		  npo = &((*npo)->next);
+		}
 	      cmo = cmo->next;
 	    } /* while */
 	  *result = po;
