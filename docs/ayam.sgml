@@ -212,7 +212,7 @@ Both representations manage a so called <tt/"current level"/.
 This level is the level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
-may only take place in the current level!
+may take place in the current level only!
 <p>
 After the start-up of Ayam you will notice, that there is a first
 object called <tt/"Root"/ in the top level of the scene, even though the
@@ -234,7 +234,7 @@ The object tree view is quite complex and may be slow on slow machines
 (of the Pentium 90 class), especially when dealing with scenes
 that contain many objects. This should not be a problem nowadays.
 Nevertheless, Ayam tries to keep tree update delays as low as possible,
-but this only works if the scene uses the hierarchy and changes
+but this works only if the scene uses the hierarchy and changes
 happen in sub levels (not the root level).
 <p>
 In the tree view, objects may be selected using the left mouse button.
@@ -257,7 +257,7 @@ The rightmost mouse button opens a context menu with basic tree and
 clipboard operations:
 <itemize>
 <item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds
-the hierarchy, and selects the root object,
+the hierarchy, makes the top level current, and clears the object selection,
 
 <item><tt>"Tree/Expand"</tt> opens all nodes with child nodes,
 
@@ -458,7 +458,7 @@ context menu of the properties listbox to de-select the current property.
 What properties exactly will be shown, and how the GUIs look alike
 depends on the selected object and the selected property.
 This is documented comprehensively in section
-<ref id="obandprp" name="Objects, Properties and Tags">.
+<ref id="obandprp" name="Objects, Properties, and Tags">.
 <p>
 Here are some general remarks about object properties:
 <p>
@@ -613,7 +613,7 @@ mouse button).
 <p>
 This section discusses the main menu bar. Note that many menu entries
 have keyboard shortcuts that are displayed in each entry. You can adapt
-the shortcuts using the file <tt>"ayamrc"</tt>
+the shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 <label id="mmfile">
@@ -1201,7 +1201,7 @@ the view menu bar as an icon.
 <p>
 This section discusses the view menu bar. Note that many menu entries
 have keyboard shortcuts that are displayed in each entry. You can adapt
-the shortcuts using the file <tt>"ayamrc"</tt>
+the shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 Note that the view menu keyboard shortcuts only work if the view window
 has the keyboard input focus.
@@ -1706,7 +1706,7 @@ are selected.
 This option is not available on the Win32 platform and on MacOSX Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
-the preferences settings to the file ayamrc when the program quits.
+the preferences settings to the ayamrc file when the program quits.
 
 <item><tt/"BakOnReplace"/, if this is switched on, Ayam will make
 a backup copy of each scene file it loads via the main menu entry
@@ -6736,6 +6736,8 @@ if { ![info exists ::LineAttrData] } {
 	Length 1
 	SP {Length}
     }
+}
+if { ![info exists ::LineAttrGUI] } {
     set w [addPropertyGUI LineAttr]
     addParam $w LineAttrData Length
 }
@@ -6757,13 +6759,14 @@ graphical user interface as can be seen in the following image:
 <p>
 The GUI setup code creates a Tcl array essential to manage the
 data of an Ayam object property (LineAttrData). Then, the LineAttr
-property GUI is created
-and a GUI element is added to the GUI using <tt>"addParam"</tt>.
+property GUI is created and a GUI element is added to the GUI using
+<tt>"addParam"</tt>.
 Note that the <tt>"addPropertyGUI"</tt> command expects for a property
 named <tt>"SomePropertyName"</tt> a corresponding property data array
 named <tt>"SomePropertyNameData"</tt> to exist.
 The GUI setup code should just run once, therefore it checks for the
-presence of the array LineAttrData first.
+presence of the variable LineAttrGUI (which is set on the first run of
+<tt>"addPropertyGUI"</tt>) first.
 See also section
 <ref id="ayproparr" name="Global Property Management and Data Arrays">
 for more information about property GUIs and the Ayam scripting interface.
@@ -6777,7 +6780,7 @@ script object, a <tt/"SP"/ entry needs to be added to the
 <p>
 The complete script is also available as example script file
 <tt>"scripts/crtlinegui.tcl"</tt> in the Ayam distribution.
-
+<p>
 In addition, a second example demonstrates the scene traversal and
 hierarchy building capabilities available to script objects since
 Ayam 1.16.
@@ -6799,11 +6802,13 @@ set CloneAttrData(NumClones) [expr round($len)]
 setProp
 </code>
 This little script first determines the length of the curve,
-then it creates a Clone object and moves the children to it
-(via the object clipboard),
-finally, the Clone is parameterised, so that the trajectory
-is completely filled (assuming that each copy of the first
-child needs 1 length unit on the trajectory) with objects.
+then it creates a Clone object and moves the children of the Script
+object to it (via the object clipboard). Finally, the Clone object
+is parameterised, so that the trajectory is completely filled (assuming
+that each copy of the first child needs 1 length unit on the trajectory)
+with objects.
+One may now modify the curve using interactive modelling actions,
+change its length, and the trajectory is always completely filled.
 See example image below (compare the Clone configurations from
 the two different trajectory curves):
 <p>
@@ -6812,6 +6817,7 @@ the two different trajectory curves):
 <img src="pics/scriptex3.gif">
 <caption>Hierarchy Building Script Object Example</caption>
 </figure>
+
 
 
 <sect1>Select Object<label id="selectobj">
@@ -8926,8 +8932,6 @@ More documentation to come.
 The global array <tt/"ayprefs"/ holds preferences data.
 The <em>complete</em> array is saved in the <tt/"ayamrc"/ file upon exit,
 so be careful when adding new entries.
-You can reset your <tt/"ayamrc"/ file anytime using the command line
-option <tt/"-failsafe"/.
 See also section <ref id="ayamrc" name="Ayamrc File">.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
@@ -10386,9 +10390,10 @@ pack $f.b1 $f.b2 -side left -fill x -expand yes
 This sections contains the documentation of some helper scripts
 that are distributed with Ayam.
 <p>
-All helper scripts may be run via the context menu of the console, the
+The helper scripts may be run via the context menu of the console, the
 Tcl <tt>"source"</tt> command, or the <tt>"Scripts"</tt> preference
-setting of Ayam on each start.
+setting of Ayam on each start (the latter except for repairAyam.tcl and
+bgconvert.tcl).
 
 <sect2>Repair Ayam<label id="repayam">
 <p>
@@ -10420,7 +10425,7 @@ try to break potential endless loops running e.g. in the console or
 in script objects.
 <p>
 After running <tt>"repairAyam.tcl"</tt> you should immediately save
-the scene (or just the important objects you were editing, possibly using
+the scene (or just the important objects you were editing using
 <tt>"Special/Save Selected"</tt>) to a new file, not the scene file
 you were working with initially, and restart Ayam.
 
@@ -10439,9 +10444,9 @@ conversion process.
 Since the changes of the conversion are not undoable, the conversion
 will not run if the scene contains unsaved changes.
 <p>
-The conversion will use the parameters from the preference settings
-<tt/"SMethod"/, <tt/"SParamU"/, and <tt/"SParamV"/ or from <tt/"TP"/
-tags (if present).
+The conversion will use the current parameters from the preference settings
+<tt/"SMethod"/, <tt/"SParamU"/, and <tt/"SParamV"/; <tt/"TP"/
+tags (if present) will override these parameters.
 TP tags may be created easily using the tesselation tool, see also
 section <ref id="tesst" name="The Tesselation Tool">.
 
@@ -10459,16 +10464,16 @@ script.
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
 Since Ayam 1.15 there is an external Tcl script named <tt>"bgconvert.tcl"</tt>
-that converts its arguments, with the help of Ayam running in the
-background, from one 3D file format to another.
-In the most simple form, it may be used from a UNIX command line
+that converts scene files from one 3D file format to another, with the help
+of Ayam which is running in the background.
+In the most simple form, bgconvert may be used from a UNIX command line
 (or shell script) like this:
 <code>
 bgconvert.tcl infile.x3d outfile.dxf
 </code>
 The above command would load the X3D file <tt>"infile.x3d"</tt>
 into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
-
+<p>
 Ayam has to run already and the plugins required for the import and
 export processes need to be available and properly configured
 (<tt>"Plugins"</tt> preference setting).
@@ -12019,9 +12024,10 @@ editor)
 <item>RiOption and RiAttribute databases
 </enum>
 
-You may edit the file with any text editor, but keep in mind, that the
-file will be parsed by Tcl. Should you, for some reason, destroy your
-ayamrc so that Ayam does not start correctly anymore you can start Ayam
+You may edit the file with any text editor (while Ayam is <em>not</em>
+running), but keep in mind, that the file will be parsed by Tcl.
+Should you, for some reason, destroy your ayamrc file so that Ayam does
+not start correctly anymore you can always start Ayam
 with the command line option <tt>"-failsafe"</tt>.
 When the application is left the next time, or the main menu entry
 <tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
@@ -12047,12 +12053,14 @@ unset ayprefs(Tolerance)
 <sect2>Changing Keyboard Shortcuts
 <p>
 You may adapt the keyboard shortcuts used in the GUI to your special
-needs using the ayamrc file. Note that if you do that the GUI (the menu
-entries and the <tt>"Show Shortcuts"</tt> window)
-will adapt to your changes but certainly neither this documentation nor
-the tutorials!
-Ayam does not check for clashes! This means, the last set binding
-for a key will be used.
+needs using the ayamrc file. Note that if you do that, the GUI (the menu
+entries and the <tt>"Show Shortcuts"</tt> window) will adapt to your
+changes but certainly neither this documentation, nor the reference card
+(unless recreated using refcard.tcl), nor the tutorials!
+<p>
+Ayam does not check for clashes in key bindings! This means, the last set
+binding for a key will be used.
+<p>
 On Unix, the output of the program <tt/"xev"/ and the
 manual page for the <tt/"bind"/ command of Tk provide helpful
 information about which strings may be used to describe
