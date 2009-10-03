@@ -13,6 +13,7 @@
 /* sdnpatch.cpp - sdnpatch custom object (Subdivision NURBS) */
 
 #include "snurbs.h"
+#include "knotinterval.h"
 
 #include "ayam.h"
 
@@ -255,7 +256,7 @@ AyWriter::finishKnotIntervals(void)
 
 /**
  * AyConvertor: helper class to convert a Mesh to
- * a Ayam PolyMesh (PoMesh) object
+ * a Ayam PolyMesh object
  *
  * ToDo: add support for texture coordinates
  */
@@ -658,7 +659,7 @@ FaceExtruder::closeFace(void)
 	    }
 	  m_newDummyFacesNum++;
 	}
-    } /* if */
+    } // if
 
   m_faceVerts.clear();
 
@@ -1189,10 +1190,10 @@ FaceMerger::closeFace(void)
 		      m_removeVertsNum++;
 		    }
 
-		} /* for */
+		} // for
 	      copyFace = false;
-	    } /* if */
-	} /* if */
+	    } // if
+	} // if
     } /* if isSelected */
 
   if(copyFace)
@@ -1407,6 +1408,7 @@ private:
   unsigned int m_face1VertsNum;
   vector<unsigned int> m_face1Verts;
   bool m_connected;
+  bool m_error;
 };
 
 
@@ -1419,6 +1421,7 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_meshBuilder = MeshBuilder::create(*m_newMesh);
   m_face1VertsNum = 0;
   m_connected = false;
+  m_error = false;
 
 } /* FaceConnector::FaceConnector */
 
@@ -1459,7 +1462,7 @@ FaceConnector::closeFace(void)
  vector<unsigned int>::iterator fi;
  bool found = false, isSelected = true;
  bool copyFace = true;
- unsigned int i = 0, j = 0, nV = 0;
+ unsigned int i = 0, j = 0, k, l, nV = 0, nV1 = 0, nV2 = 0;
  ay_point *pnt = NULL;
  double *p1, *p2, curdist, mindist;
  vector<unsigned int> nearestVerts;
@@ -1524,6 +1527,10 @@ FaceConnector::closeFace(void)
 
 	      nearestVerts.reserve(m_faceVerts.size());
 
+#if 0
+	      // old strategy, too fragile (crash for perpendicular faces)
+
+	      // for each vertice in face1 find the nearest vertice in face2
 	      for(i = 0; i < m_faceVerts.size(); i++)
 		{
 		  p1 = &(m_sdnpatch->controlCoords[
@@ -1550,11 +1557,82 @@ FaceConnector::closeFace(void)
 			      mindist = curdist;
 			      nV = j;
 			    }
-			} /* if */
-		    } /* for */
-		  nearestVerts.push_back(m_face1Verts[nV]);
-		} /* for */
+			} // if
+		    } // for
 
+		  //
+		  for(j = 0; j < nearestVerts.size(); j++)
+		    {
+		      if(nearestVerts[j] == nV)
+			{
+			    m_error = true;
+			    m_faceVerts.clear();
+			    return;
+			}
+		    }
+
+		  nearestVerts.push_back(m_face1Verts[nV]);
+		} // for
+#endif
+
+	      // new strategy
+	      // find the pair of nearest vertices between face1 and face2,
+	      // starting from that pair, walk around the two faces in
+	      // opposite directions...
+	      mindist = DBL_MAX;
+	      for(i = 0; i < m_faceVerts.size(); i++)
+		{
+		  p1 = &(m_sdnpatch->controlCoords[
+			       m_newVertexIDs[m_faceVerts[i]]*4]);
+		  for(j = 0; j < m_face1Verts.size(); j++)
+		    {
+		      p2 = &(
+              m_sdnpatch->controlCoords[m_newVertexIDs[m_face1Verts[j]]*4]);
+
+		      if(fabs(p1[0]-p2[0])<AY_EPSILON &&
+			 fabs(p1[1]-p2[1])<AY_EPSILON &&
+			 fabs(p1[2]-p2[2])<AY_EPSILON)
+			{
+			  nV1 = i;
+			  nV2 = j;
+			  break;
+			}
+		      else
+			{
+			  curdist = sqrt(((p1[0]-p2[0])*(p1[0]-p2[0]))+
+					 ((p1[1]-p2[1])*(p1[1]-p2[1]))+
+					 ((p1[2]-p2[2])*(p1[2]-p2[2])));
+			  if(curdist < mindist)
+			    {
+			      mindist = curdist;
+			      nV1 = i;
+			      nV2 = j;
+			    }
+			} // if
+		    } // for
+		} // for
+	      k = nV1;
+	      l = nV2;
+	      for(i = 0; i < m_faceVerts.size(); i++)
+		{
+		  for(j = 0; j < m_face1Verts.size(); j++)
+		    {
+		      nearestVerts[k] = m_face1Verts[l];
+
+		      if(k == m_faceVerts.size()-1)
+			k = 0;
+		      else
+			k++;
+
+		      if(l == 0)
+			l = m_face1Verts.size()-1;
+		      else
+			l--;
+		    }
+		}
+
+	      // create new faces based on the connectivity
+	      // information from nearestVerts
 	      for(i = 0; i < m_faceVerts.size()-1; i++)
 		{
 		   m_meshBuilder->startFace(4);
@@ -1573,9 +1651,9 @@ FaceConnector::closeFace(void)
 
 	      m_connected = true;
 	      copyFace = false;
-	    } /* if */
-	} /* if */
-    } /* if */
+	    } // if
+	} // if
+    } // if
 
   if(copyFace)
     {
@@ -1624,6 +1702,148 @@ FaceConnector::finishKnotIntervals(void)
   m_meshBuilder->finishKnotIntervals();
  return;
 } /* FaceConnector::finishKnotIntervals */
+
+
+/**
+ * KnotSelector: Helper class to edit knots.
+ *
+ */
+class KnotSelector : public FlatMeshHandler
+{
+public:
+  KnotSelector(sdnpatch_object *sdnpatch, ay_point *pnts,
+	       MeshFlattener *flattener, vector<KnotInterval *> *knots);
+  ~KnotSelector();
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w,
+		 unsigned int id);
+  void startFace(unsigned int numEdges);
+  void addToFace(unsigned int vertNum);
+  void closeFace(void);
+
+private:
+
+  sdnpatch_object *m_sdnpatch;
+  ay_point *m_pnts;
+  MeshFlattener *m_meshFlattener;
+
+  unsigned int m_faceNum;
+  unsigned int m_faceVertNum;
+
+  KnotPrecision m_interval;
+
+  vector<unsigned int> m_newVertexIDs;
+  vector<KnotInterval *> *m_selectedKnots;
+
+};
+
+
+KnotSelector::KnotSelector(sdnpatch_object *sdnpatch, ay_point *pnts,
+			   MeshFlattener *flattener,
+			   vector<KnotInterval *> *knots)
+{
+  m_sdnpatch = sdnpatch;
+  m_pnts = pnts;
+  m_meshFlattener = flattener;
+  m_selectedKnots = knots;
+
+  m_faceNum = 0;
+  m_faceVertNum = 0;
+
+
+} /* KnotSelector::KnotSelector */
+
+KnotSelector::~KnotSelector()
+{
+
+} /* KnotSelector::~KnotSelector */
+
+void
+KnotSelector::addVertex(VertexPrecision x,
+			VertexPrecision y,
+			VertexPrecision z,
+			VertexPrecision w,
+			unsigned int id)
+{
+  m_newVertexIDs.push_back(id);
+ return;
+} /* KnotSelector::addVertex */
+
+
+void
+KnotSelector::startFace(unsigned int numEdges)
+{
+
+
+ return;
+} /* KnotSelector::startFace */
+
+void
+KnotSelector::addToFace(unsigned int vertNum)
+{
+ static bool found1 = false;
+ static unsigned int vertex1;
+ bool found2 = false;
+ unsigned int vertex2;
+ ay_point *pnt = NULL;
+ KnotInterval *knot = NULL;
+
+  if(m_faceVertNum == 0)
+    {
+      /* first vertex in face */
+      vertex1 = vertNum;
+      found1 = false;
+      pnt = m_pnts;
+      while(pnt)
+	{
+	  if(pnt->index == m_newVertexIDs[vertex1])
+	    {
+    	      found1 = true;
+	      break;
+	    }
+	  pnt = pnt->next;
+	}
+    }
+  else
+    {
+      vertex2 = vertNum;
+      pnt = m_pnts;
+      while(pnt)
+	{
+	  if(pnt->index == m_newVertexIDs[vertex2])
+	    {
+	      found2 = true;
+	      break;
+	    }
+	  pnt = pnt->next;
+	} // while
+
+      if(found1 && found2)
+	{
+	  /* edge is selected => select knot interval */
+	  knot = m_meshFlattener->getKnotIntervalForEdge(m_faceNum,
+							 m_faceVertNum-1);
+	  m_selectedKnots->push_back(knot);
+	}
+
+      found1 = found2;
+      vertex1 = vertex2;
+    } // if
+
+  m_faceVertNum++;
+
+ return;
+} /* KnotSelector::addToFace */
+
+void
+KnotSelector::closeFace(void)
+{
+  m_faceNum++;
+  m_faceVertNum = 0;
+ return;
+} /* KnotSelector::closeFace */
 
 
 /**
@@ -1759,7 +1979,7 @@ KnotEditor::addKnotInterval(unsigned int vertex1,
 	    break;
 	}
       pnt = pnt->next;
-    } /* while */
+    } // while
 
   if(found1 && found2)
     {
@@ -2372,7 +2592,7 @@ sdnpatch_bbccb(ay_object *o, double *bbox, int *flags)
 	zmin = v->getZ();
       if(v->getZ() > zmax)
 	zmax = v->getZ();
-    } /* for */
+    } // for
 
   /* P1 */
   bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
@@ -2502,11 +2722,10 @@ sdnpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  delete convertor;
 
 	  MeshFlattener::dispose(meshFlattener);
-
-	} /* if */
+	} // if
 
       *result = newo;
-    } /* if */
+    } // if
 
  return ay_status;
 } /* sdnpatch_providecb */
@@ -2556,7 +2775,7 @@ sdnpatch_convertcb(ay_object *o, int in_place)
       delete convertor;
 
       MeshFlattener::dispose(meshFlattener);
-    } /* if */
+    } // if
 
   /* second, link new objects, or replace old objects with them */
 
@@ -2569,8 +2788,8 @@ sdnpatch_convertcb(ay_object *o, int in_place)
       else
 	{
 	  ay_object_replace(newo, o);
-	} /* if */
-    } /* if */
+	} // if
+    } // if
 
  return ay_status;
 } /* sdnpatch_convertcb */
@@ -2641,9 +2860,9 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      pe->num = 1;
 	      minDist = curDist;
-	    } /* if */
+	    } // if
 	  a += 4;
-	} /* for */
+	} // for
 
       break;
     case 2:
@@ -2679,10 +2898,10 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      pe->indices[pe->num] = i;
 
 	      pe->num++;
-	    } /* if */
+	    } // if
 
 	  a += 4;
-	} /* for */
+	} // for
 
       break;
     case 3:
@@ -2697,7 +2916,7 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     default:
       break;
-    } /* switch */
+    } // switch
 
   pe->homogenous = AY_TRUE;
 
@@ -2801,11 +3020,11 @@ sdnpatch_addfaces(MeshBuilder *meshBuilder,
 
 	  a++;
 	  b++;
-	} /* for */
+	} // for
 
       a++;
       b++;
-    } /* for */
+    } // for
 
   /* dummy faces */
 
@@ -2947,11 +3166,11 @@ sdnpatch_addfacescu(MeshBuilder *meshBuilder,
 
 	  a++;
 	  b++;
-	} /* for */
+	} // for
 
       a++;
       b++;
-    } /* for */
+    } // for
 
   b = 0;
   for(j = 0; j < height-1; j++)
@@ -3053,7 +3272,7 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
 	  a++;
 	  b++;
-	} /* for */
+	} // for
 
       meshBuilder->startFace(4);
       meshBuilder->addToFace(a);
@@ -3064,7 +3283,7 @@ sdnpatch_addfacescv(MeshBuilder *meshBuilder,
 
       a++;
       b++;
-    } /* for */
+    } // for
 
   /* dummy faces */
 
@@ -3142,7 +3361,7 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
 
 	  a++;
 	  b++;
-	} /* for */
+	} // for
 
       meshBuilder->startFace(4);
        meshBuilder->addToFace(a);
@@ -3153,7 +3372,7 @@ sdnpatch_addfacescuv(MeshBuilder *meshBuilder,
 
       a++;
       b++;
-    } /* for */
+    } // for
 
   b = 0;
   for(j = 0; j < height-2; j++)
@@ -3308,7 +3527,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnconvNP";
+ char fname[] = "sdnconvertNP";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *p = NULL, *newo = NULL;
  int i = 0;
@@ -3334,8 +3553,8 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      */
 	    }
 	  i += 2;
-	} /* while */
-    } /* if */
+	} // while
+    } // if
 
   /* check selection */
   if(!sel)
@@ -3355,7 +3574,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_status = ay_object_copy(o, &p);
-	} /* if */
+	} // if
 
       if(p)
 	{
@@ -3369,7 +3588,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       sel = sel->next;
-    } /* while */
+    } // while
 
   ay_notify_parent();
 
@@ -3378,7 +3597,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* sdnpatch_convpo:
- *  convert PoMesh to SDNPatch
+ *  convert PolyMesh to SDNPatch
  */
 int
 sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
@@ -3491,7 +3710,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnconvPO";
+ char fname[] = "sdnconvertPO";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *p = NULL, *newo = NULL;
  int i = 0;
@@ -3517,8 +3736,8 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	      */
 	    }
 	  i += 2;
-	} /* while */
-    } /* if */
+	} // while
+    } // if
 
   /* check selection */
   if(!sel)
@@ -3538,7 +3757,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_status = ay_object_copy(o, &p);
-	} /* if */
+	} // if
 
       if(p)
 	{
@@ -3552,7 +3771,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       sel = sel->next;
-    } /* while */
+    } // while
 
   ay_notify_parent();
 
@@ -3790,7 +4009,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
-			 int argc, char *argv[])
+			int argc, char *argv[])
 {
   //int ay_status = AY_OK;
  char fname[] = "sdnremoveFace";
@@ -3966,7 +4185,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* sdnpatch_connectfacetcmd */
 
-
+#if 0
 /* sdnpatch_editknottcmd:
  *  Tcl command to edit knots
  */
@@ -4002,8 +4221,8 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	    }
 	  i += 2;
-	} /* while */
-    } /* if */
+	} // while
+    } // if
 
   /* check selection */
   if(!sel)
@@ -4041,6 +4260,124 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
   sdnpatch_getcontrolvertices(sdnpatch);
 
   ay_selp_clear(o);
+
+  o->modified = AY_TRUE;
+  ay_notify_force(o);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* sdnpatch_editknottcmd */
+#endif
+
+
+/* sdnpatch_editknottcmd:
+ *  Tcl command to edit knots
+ */
+int
+sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[])
+{
+  //int ay_status = AY_OK;
+ char fname[] = "sdneditKnots";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+ int i = 1;
+ int mode = 0;
+ char *varname = NULL;
+ Tcl_Obj *to = NULL, *ton = NULL;
+ KnotPrecision interval = 1.0;
+ static vector<KnotInterval *> selectedKnots;
+ vector<KnotInterval *>::iterator ki;
+
+  /* parse args */
+  if(argc > 1)
+    {
+      while(i < argc)
+	{
+	  if(!strcmp(argv[i], "-s"))
+	    {
+	      mode = 0; // start
+	      if(i+1 < argc)
+		{
+		  varname = argv[i+1];
+		}
+	      selectedKnots.empty();
+	      i--;
+	    }
+	  if(!strcmp(argv[i], "-r"))
+	    {
+	      mode = 2; // reset
+	      i--;
+	    }
+	  if(!strcmp(argv[i], "-i"))
+	    {
+	      mode = 1; // set new interval
+	      if(i+1 < argc)
+		{
+		  sscanf(argv[i+1], "%g", &interval);
+		}
+	    }
+	  i += 2;
+	} // while
+    } // if
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  if(!o->selp)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  MeshFlattener *meshFlattener =
+    MeshFlattener::create(*(sdnpatch->controlMesh));
+  FlatMeshHandler *handler = new KnotSelector(sdnpatch, o->selp,
+					      meshFlattener, &selectedKnots);
+  meshFlattener->flatten(*handler);
+
+  delete handler;
+  MeshFlattener::dispose(meshFlattener);
+
+  switch(mode)
+    {
+    case 0:
+      // start
+      if((selectedKnots.size() > 0) && varname)
+	{
+	  interval = selectedKnots[0]->getInterval();
+	  ton = Tcl_NewStringObj(varname, -1);
+	  to = Tcl_NewDoubleObj(interval);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	}
+      break;
+    case 1:
+      for(ki = selectedKnots.begin(); ki != selectedKnots.end(); ki++)
+	{
+	  (*ki)->setInterval(interval);
+	}
+      break;
+    case 2:
+      break;
+    default:
+      break;
+    }
 
   o->modified = AY_TRUE;
   ay_notify_force(o);
@@ -4120,7 +4457,7 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
 	  a += 4;
 	}
       delete tmp;
-    } /* if */
+    } // if
 
  return AY_OK;
 } /* sdnpatch_getcontrolvertices */
