@@ -300,9 +300,10 @@ uplevel #0 { array set sdnsetkn_options {
 proc sdnpatch_setknot { } {
     global sdnsetkn_options
 
-    # XXXX get old knot value instead!
-    #set ::sdnsetkn_options(Knot) 1.0
+    # get old knot value first
+    sdneditKnots -s sdnsetkn_options(Knot)
 
+    # open edit window
     runTool {sdnsetkn_options(Knot)} {"Knot:"}\
 	"undo save SDNSetKnot; sdneditKnots -i %0; rV"
 

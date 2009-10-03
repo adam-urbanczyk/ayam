@@ -4280,6 +4280,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 {
   //int ay_status = AY_OK;
  char fname[] = "sdneditKnots";
+ ay_point *oldselp = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4303,11 +4304,12 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  varname = argv[i+1];
 		}
-	      selectedKnots.empty();
+	      selectedKnots.clear();
 	      i--;
 	    }
 	  if(!strcmp(argv[i], "-r"))
 	    {
+
 	      mode = 2; // reset
 	      i--;
 	    }
@@ -4335,6 +4337,13 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
   if(o->type != sdnpatch_id)
     {
       return TCL_OK;
+    }
+
+  if(mode == 2)
+    {
+      oldselp = o->selp;
+
+      ay_selp_selall(o);
     }
 
   if(!o->selp)
@@ -4374,6 +4383,12 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       break;
     case 2:
+      for(ki = selectedKnots.begin(); ki != selectedKnots.end(); ki++)
+	{
+	  (*ki)->setInterval(1.0);
+	}
+      ay_selp_clear(o);
+      o->selp = oldselp;
       break;
     default:
       break;
