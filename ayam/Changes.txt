@@ -1,3 +1,22 @@
+[3. Oct 2009] CVS-Head:
+=======================
+Bug Fixes:
+o <Tab> key does not work after <Ctrl+l>
+o Tcl errors when Ayam is started with object listbox activated
+
+Modelling:
+o in the point selection action, points may now also be deselected using
+  the <Shift> key in conjunction with the mouse drag operation
+o the FaceConnect modelling operation of the SDNPatch plugin is now
+  more robust (works with perpendicular faces)
+o the KnotEditor of the SDNPatch plugin now fetches old knot values
+  and sets the new value for the correct edge
+
+GUI
+o improved speed of focus changes between internal view 3 and the tree view
+
+
+
 [22. Sep 2009] Ayam-1.16:
 =========================
 Bug Fixes:
