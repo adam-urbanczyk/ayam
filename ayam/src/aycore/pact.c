@@ -122,7 +122,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  /*  ay_view_object *view = Togl_GetClientData(togl);*/
  double height = Togl_Height(togl);
- int have_it = AY_FALSE, multiple = AY_FALSE;
+ int have_it = AY_FALSE, multiple = AY_FALSE, multipledel = AY_FALSE;
  unsigned int i = 0;
  double winX = 0.0, winY = 0.0, winX2 = 0.0, winY2 = 0.0, dtemp = 0.0;
  double obj[24] = {0}, pl[16] = {0};
@@ -147,6 +147,10 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
       multiple = AY_TRUE;
       Tcl_GetDouble(interp, argv[4], &winX2);
       Tcl_GetDouble(interp, argv[5], &winY2);
+      if(argc > 6)
+	{
+	  multipledel = AY_TRUE;
+	}
     }
   else
     {
@@ -217,16 +221,14 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
       if(pe.coords)
 	{
-	  have_it = AY_FALSE;
 	  for(i = 0; i < pe.num; i++)
 	    {
-	      /* do we have that point selected already? */
-	      point = o->selp;
 	      last = NULL;
 	      have_it = AY_FALSE;
+	      point = o->selp;
 	      while(point)
 		{
-
+		  /* do we have that point selected already? */
 		  if(point->point == pe.coords[i])
 		    {
 		      have_it = AY_TRUE;
@@ -234,10 +236,11 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		   
 		  if(have_it)
 		    {
-		      /* we have that point already, so we delete
+		      /* we have that point already, so we remove
 			 it from the selection if we are not in
-			 multiple selection mode */
-		      if(!multiple)
+			 multiple selection mode; we also remove
+			 if we are in multiple deletion mode */
+		      if(!multiple || multipledel)
 			{
 			  if(last)
 			    last->next = point->next;
@@ -246,7 +249,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
 			  free(point);
 			} /* if */
-
 		      break;
 		    } /* if */
 
@@ -255,7 +257,10 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		  point = point->next;
 		} /* while */
 
-	      if(!have_it)
+	      /* add point to selection (but not if we are in
+		 multiple deletion mode, where we only remove
+		 points from the selection) */
+	      if(!have_it && !multipledel)
 		{
 		  /* create new point object */
 		  newp = NULL;
