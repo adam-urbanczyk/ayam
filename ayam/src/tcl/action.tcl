@@ -507,6 +507,18 @@ proc actionTagP { w } {
 	focus %W
     }
 
+    bind $w <Shift-ButtonRelease-1> {
+	if { ($oldx != %x) || ($oldy != %y)} {
+	    %W selpac %x %y $oldx $oldy 1
+	} else {
+	    %W selpac %x %y
+	}
+	%W setconf -rect $oldx $oldy %x %y 0
+	rV
+	update
+	focus %W
+    }
+
     bind $w <B1-Motion> {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
@@ -521,10 +533,16 @@ proc actionTagP { w } {
 	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;\
           %W startpepac %x %y -flash -ignoreold"
+	    bind $w <Shift-ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;\
+          %W startpepac %x %y -flash -ignoreold"
 	} else {
 	    bind $w <ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;"
+	    bind $w <Shift-ButtonRelease-1> "+\
+          %W startpepac %x %y -flash -ignoreold;"
 	}
+
     }
     $w setconf -drawh 1
 
