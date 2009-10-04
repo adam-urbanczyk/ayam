@@ -2308,15 +2308,18 @@ Selected points always take precedence for those modelling actions.
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
 If the selected point is already in that list it will be removed from
-the list instead. Note that the list of selected points will not be
+the list instead, the picked point will be deselected.
+Note that the list of selected points will not be
 deleted from the object until an explicit deselection is performed
-using the shortcut <tt/&lt;D&gt;/. Unfortunately, undo, redo, and
-certain modelling actions like inserting or deleting control points
-will also destroy the list of selected points.
+using the shortcut <tt/&lt;N&gt;/.
 <p>
-Note that the list of selected points is not copied, if the object
-is copied using the clipboard.
+However, note that the list of selected points is not copied, if the object
+is copied using the clipboard. The selected points are also removed
+if certain modelling tools are used. But, since Ayam 1.16, selected
+points survive undo/redo.
 <p>
+The point selection does not interfere with single point modelling
+actions.
 It is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
@@ -2329,6 +2332,11 @@ click and drag operation. All points that are inside the rectangular
 region defined by the click and drag will be added to the selection.
 In fact, this approach is the only way to safely add points to the
 selection that occlude each other.
+<p>
+Since Ayam 1.16.1, holding down the <tt/&lt;Shift&gt;/-key while
+dragging the mouse removes all selected points within the rectangular
+region from the selection.
+
 
 <sect1>Editing Points<label id="editac">
 <p>
