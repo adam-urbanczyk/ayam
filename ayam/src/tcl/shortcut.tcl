@@ -476,7 +476,7 @@ proc shortcut_view { w } {
 
 
     bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
-	    "selPnts; rV;break"
+	    "selPnts -all; rV;break"
     bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
 	    "invPnts; rV;break"
 

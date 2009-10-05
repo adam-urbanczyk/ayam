@@ -866,7 +866,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* selp.c */
-  Tcl_CreateCommand(interp, "selPnts", ay_selp_selalltcmd,
+  Tcl_CreateCommand(interp, "selPnts", ay_selp_seltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "applyTrafo", ay_selp_applytrafotcmd,

@@ -84,38 +84,6 @@ ay_selp_selall(ay_object *o)
 } /* ay_selp_selall */
 
 
-/* ay_selp_selalltcmd:
- *  select all editable points of selected objects
- */
-int
-ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- char fname[] = "selAllPoints";
- int ay_status = AY_OK;
- ay_object *o = NULL;
- ay_list_object *sel = ay_selection;
-
-
-  while(sel)
-    {
-      o = sel->object;
-
-      ay_status = ay_selp_selall(o);
-
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname, NULL);
-	  return TCL_OK;
-	}
-
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_selp_selalltcmd */
-
-
 /* ay_selp_applytrafotcmd:
  *  apply transformation to editable points of selected objects
  */
@@ -264,7 +232,7 @@ int
 ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "invSelPoints";
+ char fname[] = "invPnts";
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -387,3 +355,141 @@ ay_selp_center(ay_object *o, int mode)
 } /* ay_selp_center */
 
 
+/* ay_selp_sel:
+ *  select points from indices
+ */
+int
+ay_selp_sel(ay_object *o, int indiceslen, int *indices)
+{
+ int ay_status = AY_OK;
+ ay_point *po = NULL, *p = NULL;
+ int i = 0, have_it = AY_FALSE;
+ double obj;
+ ay_pointedit pe;
+
+  if(!o || !indices)
+    return AY_ENULL;
+
+  for(i = 0; i < indiceslen; i++)
+    {
+      if(!(po = calloc(1, sizeof(ay_point))))
+	{
+	  return AY_EOMEM;
+	}
+      have_it = AY_FALSE;
+      p = o->selp;
+      while(p)
+	{
+	  if(indices[i] == p->index)
+	    {
+	      have_it = AY_TRUE;
+	      break;
+	    }
+	  p = p->next;
+	}
+      if(!have_it)
+	{
+	  po->index = indices[i];
+	}
+      po->next = o->selp;
+      o->selp = po;
+    }
+
+  /* update pointers */
+  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+
+ return ay_status;
+} /* ay_selp_sel */
+
+
+/* ay_selp_seltcmd:
+ *  select all editable points of selected objects
+ */
+int
+ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ char fname[] = "selPnts";
+ int ay_status = AY_OK;
+ int i = 1, indiceslen = 0, *tmp = NULL, *indices = NULL;
+ int select_all = AY_FALSE, select_none = AY_FALSE;
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc == 1)
+    {
+      select_none = AY_TRUE;
+    }
+
+  /* parse list of indices */
+  if(!select_none)
+    {
+      while(i < argc)
+	{
+	  if(!strcmp(argv[i],"-all"))
+	    {
+	      select_all = AY_TRUE;
+	      break;
+	    }
+	  if(!(tmp = realloc(tmp, i*sizeof(int))))
+	    {
+	      ay_error(AY_EOMEM, fname, NULL);
+	      goto cleanup;
+	    }
+	  indices = tmp;
+	  sscanf(argv[i], "%d", &(indices[indiceslen]));
+	  indiceslen++;
+	  i++;
+	} /* while */
+    } /* if */
+
+  if(!select_none && !select_all && (indiceslen == 0))
+    {
+      ay_error(AY_ERROR, fname, NULL);
+      goto cleanup;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(select_none)
+	{
+	  ay_selp_clear(o);
+	}
+      else
+	{
+	  if(select_all)
+	    {
+	      ay_status = ay_selp_selall(o);
+	    }
+	  else
+	    {
+	      ay_status = ay_selp_sel(o, indiceslen, indices);
+	    }
+	}
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, NULL);
+	  /*
+	  goto cleanup;
+	  */
+	}
+
+      sel = sel->next;
+    } /* while */
+
+cleanup:
+
+  if(indices)
+    free(indices);
+
+ return TCL_OK;
+} /* ay_selp_seltcmd */
