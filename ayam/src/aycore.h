@@ -615,64 +615,55 @@ int ay_matt_mayhavematerial(unsigned int type);
 
 /* pact.c */
 
-/*! \brief
+/*! \brief helper to clear a pointedit structure
  */
 int ay_pact_clearpointedit(ay_pointedit *pe);
 
-/*! \brief
+/*! \brief pick points
  */
 int ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe);
 
-/*! \brief
+/*! \brief helper to clear point cache
  */
 void ay_pact_pedclear(ay_object *o);
 
-/*! \brief
+/*! \brief tag/select point action
  */
 int ay_pact_seltcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
- */
-int ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[]);
-
-/*! \brief
+/*! \brief insert point action
  */
 int ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief delete point action
  */
 int ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief start point action helper
  */
 int ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief directly edit coordinate values of points action
  */
 int ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief helper to snap points to the grid
  */
 void ay_pact_griddify(double *n, double grid);
 
-/*! \brief
+/*! \brief point edit action
  */
 int ay_pact_petcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief edit weights action
  */
 int ay_pact_wetcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief reset all weights action
  */
 int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief Tcl command to center an object
- */
-int ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-
-/*! \brief
+/*! \brief snap selected points to the grid action
  */
 int ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[]);
 
@@ -1012,6 +1003,11 @@ int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 /*! \brief center selected points
  */
 int ay_selp_center(ay_object *o, int mode);
+
+/*! \brief Tcl command to center an object
+ */
+int ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /*! \brief add points to point selection
  */

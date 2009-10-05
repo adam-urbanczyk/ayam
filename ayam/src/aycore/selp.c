@@ -355,6 +355,79 @@ ay_selp_center(ay_object *o, int mode)
 } /* ay_selp_center */
 
 
+/* ay_sel_centertcmd:
+ *  centerPnts command that moves all points of an object so that their
+ *  center is identical to the object coordinate systems center
+ */
+int
+ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "centerPnts";
+ ay_list_object *sel = ay_selection;
+ ay_point *oldpointsel = NULL;
+ ay_object *o = NULL;
+ int mode = 0;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      Tcl_GetInt(interp, argv[1], &mode);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o)
+	{
+	  /* save old point selection */
+	  oldpointsel = o->selp;
+	  o->selp = NULL;
+
+	  /* center all points */
+	  switch(o->type)
+	    {
+	    case AY_IDNCURVE:
+	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
+	      break;
+	    default:
+	      ay_status = ay_selp_selall(o);
+	      if(!ay_status)
+		{
+		  ay_status = ay_selp_center(o, mode);
+		}
+	      break;
+	    } /* switch */
+
+	  /* recover point selection */
+	  ay_selp_clear(o);
+	  o->selp = oldpointsel;
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Could not center object!");
+	    }
+	  else
+	    {
+	      o->modified = AY_TRUE;
+	      ay_notify_force(o);
+	    }
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_sel_centertcmd */
+
+
 /* ay_selp_sel:
  *  select points from indices
  */
