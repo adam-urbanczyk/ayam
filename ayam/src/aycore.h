@@ -987,25 +987,20 @@ void ay_sel_clearselflag(ay_object *o);
 
 /* selp.c */
 
-/*! \brief
+/*! \brief clear point selection of an object
  */
 void ay_selp_clear(ay_object *o);
 
-/*! \brief
+/*! \brief select all points of an object
  */
 int ay_selp_selall(ay_object *o);
 
-/*! \brief Tcl command to select all points of an object
- */
-int ay_selp_selalltcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-
-/*! \brief Tcl command to apply the transformations to the points
+/*! \brief Tcl command to apply object transformations to points
  */
 int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/*! \brief
+/*! \brief invert point selection of an object
  */
 int ay_selp_invert(ay_object *o);
 
@@ -1014,10 +1009,18 @@ int ay_selp_invert(ay_object *o);
 int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief center selected points
  */
 int ay_selp_center(ay_object *o, int mode);
 
+/*! \brief add points to point selection
+ */
+int ay_selp_sel(ay_object *o, int indiceslen, int *indices);
+
+/*! \brief Tcl command to manipulate the point selection
+ */
+int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
 
 /* shade.c */
 
