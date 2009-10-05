@@ -233,7 +233,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      have_it = AY_TRUE;
 		    }
-		   
+
 		  if(have_it)
 		    {
 		      /* we have that point already, so we remove
@@ -291,28 +291,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_pact_seltcb */
-
-
-/* ay_pact_deseltcb
- *  deselect all currently selected (tagged) points of an object
- */
-int
-ay_pact_deseltcb(struct Togl *togl, int argc, char *argv[])
-{
- ay_list_object *sel = ay_selection;
-
-  while(sel)
-    {
-      if(!sel->object)
-	return TCL_OK;
-
-      ay_selp_clear(sel->object);
-
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_pact_deseltcb */
 
 
 /* ay_pact_flashpoint:
@@ -2331,79 +2309,6 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_pact_wrtcb */
-
-
-/* ay_pact_centertcmd:
- *  centerPnts command that moves all points of an object so that their
- *  center is identical to the object coordinate systems center
- */
-int
-ay_pact_centertcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- int ay_status = AY_OK;
- char fname[] = "centerPnts";
- ay_list_object *sel = ay_selection;
- ay_point *oldpointsel = NULL;
- ay_object *o = NULL;
- int mode = 0;
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  if(argc > 1)
-    {
-      Tcl_GetInt(interp, argv[1], &mode);
-    }
-
-  while(sel)
-    {
-      o = sel->object;
-      if(o)
-	{
-	  /* save old point selection */
-	  oldpointsel = o->selp;
-	  o->selp = NULL;
-
-	  /* center all points */
-	  switch(o->type)
-	    {
-	    case AY_IDNCURVE:
-	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
-	      break;
-	    default:
-	      ay_status = ay_selp_selall(o);
-	      if(!ay_status)
-		{
-		  ay_status = ay_selp_center(o, mode);
-		}
-	      break;
-	    } /* switch */
-
-	  /* recover point selection */
-	  ay_selp_clear(o);
-	  o->selp = oldpointsel;
-
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, "Could not center object!");
-	    }
-	  else
-	    {
-	      o->modified = AY_TRUE;
-	      ay_notify_force(o);
-	    }
-	} /* if */
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_pact_centertcmd */
 
 
 /* ay_pact_snaptogridcb:

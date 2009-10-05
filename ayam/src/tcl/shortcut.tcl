@@ -476,25 +476,27 @@ proc shortcut_view { w } {
 
 
     bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
-	    "selPnts -all; rV;break"
+	"selPnts -all; rV;break"
+    bind $w <[repcont $ayviewshortcuts(DeSelect)]>\
+	"selPnts; rV;break"
     bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
-	    "invPnts; rV;break"
+	"invPnts; rV;break"
 
     bind $w <[repcont $ayviewshortcuts(CollP)]>\
-	    "collMP; rV;break"
+	"collMP; rV;break"
     bind $w <[repcont $ayviewshortcuts(ExplP)]>\
-	    "explMP; rV;break"
+	"explMP; rV;break"
 
     bind $w <[repcont $ayviewshortcuts(SnapGrid2D)]>\
-	    "actionSnapToGrid2D $w.f3D.togl;break"
+	"actionSnapToGrid2D $w.f3D.togl;break"
     bind $w <[repcont $ayviewshortcuts(SnapGrid3D)]>\
-	    "actionSnapToGrid3D $w.f3D.togl;break"
+	"actionSnapToGrid3D $w.f3D.togl;break"
 
     set m $ay(toolsmenu)
     bind $w <[repcont $ayviewshortcuts(Hide)]>\
-	    "$m invoke 12;break"
+	"$m invoke 12;break"
     bind $w <[repcont $ayviewshortcuts(Show)]>\
-	    "$m invoke 14;break"
+	"$m invoke 14;break"
 
     bind $w <[repcont $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
     bind $w <[repcont $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
@@ -725,7 +727,6 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(WeightR)> "actionResetWP $w.f3D.togl"
 
     bind $w <$ayviewshortcuts(Select)> "actionTagP $w.f3D.togl"
-    bind $w <$ayviewshortcuts(DeSelect)> "actionDelTagP $w.f3D.togl"
     bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
     bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"

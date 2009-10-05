@@ -843,8 +843,6 @@ Tcl_AppInit(Tcl_Interp *interp)
   /* pact.c */
   Togl_CreateCommand("selpac", ay_pact_seltcb);
 
-  Togl_CreateCommand("deselpac", ay_pact_deseltcb);
-
   Togl_CreateCommand("insertpac", ay_pact_insertptcb);
 
   Togl_CreateCommand("deletepac", ay_pact_deleteptcb);
@@ -859,9 +857,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("wrpac", ay_pact_wrtcb);
 
-  Tcl_CreateCommand(interp, "centerPnts", ay_pact_centertcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Togl_CreateCommand("snapac", ay_pact_snaptogridcb);
 
 
@@ -869,10 +864,13 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "selPnts", ay_selp_seltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "invPnts", ay_selp_inverttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "applyTrafo", ay_selp_applytrafotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "invPnts", ay_selp_inverttcmd,
+  Tcl_CreateCommand(interp, "centerPnts", ay_selp_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* undo.c */
