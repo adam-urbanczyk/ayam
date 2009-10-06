@@ -268,9 +268,11 @@ int
 ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_pomesh_object *pomesh = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
- unsigned int i = 0, j = 0, k = 0, a = 0, numfound = 0;
+ unsigned int i = 0, j = 0, a = 0;
+ unsigned int *peindices = NULL, peindex = 0;
  int stride = 0;
 
   if(!o || !p)
@@ -295,9 +297,14 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(pomesh->ncontrols, sizeof(double*))))
 	return AY_EOMEM;
 
+      if(!(pe->indices = calloc(pomesh->ncontrols,
+				sizeof(unsigned int))))
+	return AY_EOMEM;
+
       for(i = 0; i < pomesh->ncontrols; i++)
 	{
 	  pe->coords[i] = &(pomesh->controlv[a]);
+	  pe->indices[i] = i;
 	  a += stride;
 	} /* for */
 
@@ -314,17 +321,10 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	  if(dist < min_dist)
 	    {
-	      pecoord = &(control[j]);
 	      min_dist = dist;
-	      numfound = 1;
+	      pecoord = &(control[j]);
+	      peindex = i;
 	    }
-	  else
-	    {
-	      if(dist == min_dist)
-		{
-		  numfound++;
-		}
-	    } /* if */
 
 	  j += stride;
 	} /* for */
@@ -332,24 +332,14 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->num = numfound;
-      if(!(pe->coords = calloc(numfound, sizeof(double*))))
+      if(!(pe->coords = calloc(1, sizeof(double*))))
+	return AY_EOMEM;
+      if(!(pe->indices = calloc(1, sizeof(unsigned int))))
 	return AY_EOMEM;
 
-      j = 0;
-      for(i = 0; i < pomesh->ncontrols; i++)
-	{
-	  dist = AY_VLEN((p[0] - control[j]),
-			 (p[1] - control[j+1]),
-			 (p[2] - control[j+2]));
-
-	  if(dist == min_dist)
-	    {
-	      pe->coords[k] = &(control[j]);
-	      k++;
-	    } /* if */
-	  j += stride;
-	} /* for */
+      pe->coords[0] = &(control[j]);
+      pe->indices[0] = peindex;
+      pe->num = 1;
       break;
     case 2:
       /* selection based on planes */
@@ -369,7 +359,13 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
+	      if(!(peindices = realloc(peindices,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+
 	      pecoords[a] = &(control[j]);
+	      peindices[a] = i;
+
 	      a++;
 	    } /* if */
 	  j += stride;
@@ -379,10 +375,28 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
       pe->coords = pecoords;
+      pe->indices = peindices;
       pe->num = a;
       break;
     case 3:
-      ay_selp_clear(o);
+      /* rebuild from o->selp */
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < pomesh->ncontrols)
+	    {
+	      pnt->point = &(pomesh->controlv[pnt->index*stride]);
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	}
       break;
     default:
       break;
