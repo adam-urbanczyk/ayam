@@ -275,6 +275,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
  int i = 0, j = 0, a = 0;
+ const int stride = 3;
  unsigned int *peindices = NULL, peindex = 0;
 
   if(!o || !p || !pe)
@@ -298,7 +299,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  pe->coords[i] = &(acurve->controlv[a]);
 	  pe->indices[i] = i;
-	  a += 3;
+	  a += stride;
 	}
 
       pe->homogenous = AY_FALSE;
@@ -321,7 +322,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      min_dist = dist;
 	    }
 
-	  j += 3;
+	  j += stride;
 	} /* for */
 
       if(!pecoord)
@@ -365,7 +366,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      a++;
 	    } /* if */
 
-	  j += 3;
+	  j += stride;
 	} /* for */
 
       if(!pecoords)
@@ -385,7 +386,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 	  if(pnt->index < acurve->length)
 	    {
-	      pnt->point = &(acurve->controlv[pnt->index*4]);
+	      pnt->point = &(acurve->controlv[pnt->index*stride]);
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
