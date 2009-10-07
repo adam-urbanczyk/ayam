@@ -339,7 +339,7 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;
-  if(cap)
+  if(cap && cap->npatch)
     {
       ay_status = ay_bbc_get(cap->npatch, bbox);
       /* exclusive bounding box (discard children bbox) */
