@@ -9125,6 +9125,28 @@ but do not update the GUI. This command is mainly for use in Script
 objects script code.
 </itemize>
 
+<sect2>Selecting Points
+<p>
+This command manipulates the point selection.
+<p><label id="scselpnts">
+selPnts - select points:
+<itemize>
+ <item>Synopsis: <tt/"selPnts [-all|index1 index2 ...]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: 
+ <itemize>
+  <item>If called without arguments, this command deselects all points.
+  <item>If the argument is <tt/"-all"/, this command selects all points.
+  <item>If the argument contains an index, the corresponding point will
+be added to the selection; already selected points will not be deselected.
+The index is zero-based and always one dimensional (even
+for surfaces). Multiple indices may be provided.
+ </itemize>
+ <item>Example: Given that a single NCurve object is selected, its
+points may be selected using the command <tt/"selPnts -all"/; the first
+and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
+</itemize>
+
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
 Since Ayam 1.9 two new commands are implemented that ease
