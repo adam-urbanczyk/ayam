@@ -32,7 +32,7 @@ proc aytest_selectGUI { } {
     } else {
 	wm transient $w .
     }
-    
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -93,6 +93,8 @@ uplevel #0 {
 
 puts $log "Testing default object callbacks...\n"
 
+set types ""
+
 lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 
 lappend types NCurve ICurve ACurve NCircle
@@ -104,6 +106,16 @@ lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim Text
 
 lappend types Camera Light Material RiInc RiProc Script Select
+
+set view1 ""
+if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
+    set view1 .fv.fViews.fview1.f3D.togl
+}
+set view2 ""
+if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
+    set view2 .fv.fViews.fview2.f3D.togl
+}
+
 
 foreach type $types {
 
@@ -129,15 +141,48 @@ foreach type $types {
     puts $log "Saving a $type ...\n"
     saveScene $scratchfile 1
 
-
     puts $log "Reading a $type ...\n"
     insertScene $scratchfile
-
-    # missing tests: drawing, shading, bounding box calc, select points,
-    # conversion/notification, RIB export
-
-    # clean up
     catch {file delete $scratchfile}
+
+    puts $log "Exporting a $type ...\n"
+    wrib $scratchfile -selonly
+    catch {file delete $scratchfile}
+
+    if { [winfo exists $view1] } {
+	puts $log "Drawing a $type ...\n"
+	$view1 mc
+	$view1 redraw
+    }
+
+    if { [winfo exists $view2] } {
+	puts $log "Shading a $type ...\n"
+	$view2 mc
+	$view2 redraw
+    }
+
+    if { [winfo exists $view1] } {
+	puts $log "Bounding box calculation of $type ...\n"
+	$view1 mc
+	$view1 zoomob
+    }
+
+    puts $log "Notifying a $type ...\n"
+    forceNot
+
+    puts $log "Selecting points of $type ...\n"
+    selPnts -all
+    selPnts
+    selPnts 0 2
+    selPnts
+
+    puts $log "Converting a $type ...\n"
+    convOb
+    convOb -inplace
+
+    # missing tests: select points via action callback,
+    # draw points/handles, (comparison - AI?)
+
     selOb
     goTop
 }
@@ -198,7 +243,7 @@ array set Sphere_2 {
 set Sphere_2(ThetaMax) $angles
 
 # take all valsets from Sphere_1 but adapt the radius
-foreach valset $Sphere_1(vals) { 
+foreach valset $Sphere_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
@@ -219,7 +264,7 @@ array set Sphere_3 {
 set Sphere_3(ThetaMax) $angles
 
 # take all valsets from Sphere_1 but adapt the radius
-foreach valset $Sphere_1(vals) { 
+foreach valset $Sphere_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
@@ -264,7 +309,7 @@ array set Cylinder_2 {
 set Cylinder_2(ThetaMax) $angles
 
 # take all valsets from Cylinder_1 but adapt the radius
-foreach valset $Cylinder_1(vals) { 
+foreach valset $Cylinder_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
@@ -284,7 +329,7 @@ array set Cylinder_3 {
 set Cylinder_3(ThetaMax) $angles
 
 # take all valsets from Cylinder_1 but adapt the radius
-foreach valset $Cylinder_1(vals) { 
+foreach valset $Cylinder_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
@@ -404,7 +449,7 @@ set Paraboloid_2(ThetaMax) $angles
 
 
 # take all valsets from Paraboloid_1 but adapt RMax
-foreach valset $Paraboloid_1(vals) { 
+foreach valset $Paraboloid_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 0.5 ]
     lappend val [lindex $valset 1]
@@ -424,7 +469,7 @@ array set Paraboloid_3 {
 set Paraboloid_3(ThetaMax) $angles
 
 # take all valsets from Paraboloid_1 but adapt RMax
-foreach valset $Paraboloid_1(vals) { 
+foreach valset $Paraboloid_1(vals) {
     set val {}
     lappend val [expr [lindex $valset 0] * 2.0 ]
     lappend val [lindex $valset 1]
@@ -849,7 +894,7 @@ array set Skin_5 {
     Knot-Type_U { 1 2 3 }
     Order_U { 2 3 4 5 }
     vars { dummy }
-    
+
 }
 
 lappend Skin_5(vals) { 0 }
@@ -1322,7 +1367,7 @@ proc test_var { type } {
 		  pasOb;hSL;
 		  setProp;
 		  movOb $k $l $i;
-		  
+
 		  if { ! $::aytestprefs(KeepObjects) } {
 		      delOb
 		  }
