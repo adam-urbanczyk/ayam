@@ -778,7 +778,10 @@ FaceExtruder::finishKnotIntervals(void)
 
 
 
-
+/**
+ * FaceRemover: Helper class to remove faces from a mesh.
+ *
+ */
 class FaceRemover : public FlatMeshHandler
 {
 public:
@@ -1000,6 +1003,10 @@ FaceRemover::finishKnotIntervals(void)
 
 
 
+/**
+ * FaceMerger: Helper class to remove two faces from a mesh.
+ *
+ */
 class FaceMerger : public FlatMeshHandler
 {
 public:
@@ -1341,7 +1348,7 @@ FaceMerger::finishKnotIntervals(void)
     }
 
   meshBuilder->finishFaces();
-
+#if 0
   // knot intervals
   if(m_newKnotIntervalsNum > 0)
     {
@@ -1361,7 +1368,7 @@ FaceMerger::finishKnotIntervals(void)
 	  j += 2;
 	}
     }
-
+#endif
   meshBuilder->finishKnotIntervals();
 
   MeshBuilder::dispose(meshBuilder);
@@ -1371,6 +1378,11 @@ FaceMerger::finishKnotIntervals(void)
 
 
 
+/**
+ * FaceConnector: Helper class to connect two faces of a mesh via
+ * a set of new faces (removing the original two faces).
+ *
+ */
 class FaceConnector : public FlatMeshHandler
 {
 public:
@@ -1462,7 +1474,7 @@ FaceConnector::closeFace(void)
  vector<unsigned int>::iterator fi;
  bool found = false, isSelected = true;
  bool copyFace = true;
- unsigned int i = 0, j = 0, k, l, nV = 0, nV1 = 0, nV2 = 0;
+ unsigned int i = 0, j = 0, k, l, /*nV = 0,*/ nV1 = 0, nV2 = 0;
  ay_point *pnt = NULL;
  double *p1, *p2, curdist, mindist;
  vector<unsigned int> nearestVerts;
@@ -1844,164 +1856,6 @@ KnotSelector::closeFace(void)
   m_faceVertNum = 0;
  return;
 } /* KnotSelector::closeFace */
-
-
-/**
- * KnotEditor: Helper class to edit knots.
- *
- * ToDo: add support for texture coordinates
- */
-class KnotEditor : public FlatMeshHandler
-{
-public:
-  KnotEditor(sdnpatch_object *sdnpatch, ay_point *pnts, bool reset,
-	     KnotPrecision interval);
-  ~KnotEditor();
-  void addVertex(VertexPrecision x,
-		 VertexPrecision y,
-		 VertexPrecision z,
-		 VertexPrecision w,
-		 unsigned int id);
-  void finishVertices(void);
-  void startFace(unsigned int numEdges);
-  void addToFace(unsigned int vertNum);
-  void closeFace(void);
-  void finishFaces(void);
-  void addKnotInterval(unsigned int vertex1,
-		       unsigned int vertex2,
-		       KnotPrecision interval);
-  void finishKnotIntervals(void);
-
-  Mesh *m_newMesh;
-
-private:
-
-  sdnpatch_object *m_sdnpatch;
-  ay_point *m_pnts;
-  bool m_reset;
-  KnotPrecision m_interval;
-  MeshBuilder *m_meshBuilder;
-  vector<unsigned int> m_newVertexIDs;
-
-};
-
-
-KnotEditor::KnotEditor(sdnpatch_object *sdnpatch, ay_point *pnts, bool reset,
-		       KnotPrecision interval)
-{
-  m_sdnpatch = sdnpatch;
-  m_pnts = pnts;
-  m_reset = reset;
-  m_interval = interval;
-  m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
-  m_meshBuilder = MeshBuilder::create(*m_newMesh);
-} /* KnotEditor::KnotEditor */
-
-KnotEditor::~KnotEditor()
-{
-  MeshBuilder::dispose(m_meshBuilder);
-} /* KnotEditor::~KnotEditor */
-
-void
-KnotEditor::addVertex(VertexPrecision x,
-		      VertexPrecision y,
-		      VertexPrecision z,
-		      VertexPrecision w,
-		      unsigned int id)
-{
-  m_meshBuilder->addVertex(x, y, z, w, id);
-  m_newVertexIDs.push_back(id);
- return;
-} /* KnotEditor::addVertex */
-
-void
-KnotEditor::finishVertices(void)
-{
-  m_meshBuilder->finishVertices();
- return;
-} /* KnotEditor::finishVertices */
-
-void
-KnotEditor::startFace(unsigned int numEdges)
-{
-  m_meshBuilder->startFace(numEdges);
- return;
-} /* KnotEditor::startFace */
-
-void
-KnotEditor::addToFace(unsigned int vertNum)
-{
-  m_meshBuilder->addToFace(vertNum);
- return;
-} /* KnotEditor::addToFace */
-
-void
-KnotEditor::closeFace(void)
-{
-  m_meshBuilder->closeFace();
- return;
-} /* KnotEditor::closeFace */
-
-void
-KnotEditor::finishFaces(void)
-{
-  m_meshBuilder->finishFaces();
- return;
-} /* KnotEditor::finishFaces */
-
-void
-KnotEditor::addKnotInterval(unsigned int vertex1,
-			    unsigned int vertex2,
-			    KnotPrecision interval)
-{
- bool found1 = false, found2 = false;
- ay_point *pnt = NULL;
-
-  /* in reset mode we simply discard all defined intervals */
-  if(m_reset)
-  {
-    return;
-  }
-
-  pnt = m_pnts;
-  while(pnt)
-    {
-      if(pnt->index == m_newVertexIDs[vertex1])
-	{
-	  found1 = true;
-	  if(found2)
-	    break;
-	}
-      if(pnt->index == m_newVertexIDs[vertex2])
-	{
-	  found2 = true;
-	  if(found1)
-	    break;
-	}
-      pnt = pnt->next;
-    } // while
-
-  if(found1 && found2)
-    {
-      /* interval is selected => set new knot */
-      m_meshBuilder->addKnotInterval(vertex1, vertex2, m_interval);
-    }
-  else
-    {
-      /* interval is not selected => pass through */
-      m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
-    }
-
- return;
-} /* KnotEditor::addKnotInterval */
-
-
-void
-KnotEditor::finishKnotIntervals(void)
-{
-  m_meshBuilder->finishKnotIntervals();
- return;
-} /* KnotEditor::finishKnotIntervals */
 
 
 /****************************************************************************/
@@ -4185,91 +4039,6 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* sdnpatch_connectfacetcmd */
 
-#if 0
-/* sdnpatch_editknottcmd:
- *  Tcl command to edit knots
- */
-int
-sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
-  //int ay_status = AY_OK;
- char fname[] = "sdneditKnots";
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
- sdnpatch_object *sdnpatch = NULL;
- int i = 1;
- bool reset = false;
- KnotPrecision interval = 1.0;
-
-  /* parse args */
-  if(argc > 1)
-    {
-      while(i < argc)
-	{
-	  if(!strcmp(argv[i], "-r"))
-	    {
-	      reset = true;
-	      i--;
-	    }
-	  if(!strcmp(argv[i], "-i"))
-	    {
-	      reset = false;
-	      if(i+1 < argc)
-		{
-		  sscanf(argv[i+1], "%g", &interval);
-		}
-	    }
-	  i += 2;
-	} // while
-    } // if
-
-  /* check selection */
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, fname, NULL);
-      return TCL_OK;
-    }
-
-  o = sel->object;
-
-  if(o->type != sdnpatch_id)
-    {
-      return TCL_OK;
-    }
-
-  if(!reset && !o->selp)
-    {
-      return TCL_OK;
-    }
-
-  sdnpatch = (sdnpatch_object*)o->refine;
-
-  MeshFlattener *meshFlattener =
-    MeshFlattener::create(*(sdnpatch->controlMesh));
-  FlatMeshHandler *handler = new KnotEditor(sdnpatch, o->selp, reset,
-					    interval);
-  meshFlattener->flatten(*handler);
-
-  delete sdnpatch->controlMesh;
-  sdnpatch->controlMesh = ((KnotEditor*)handler)->m_newMesh;
-
-  delete handler;
-  MeshFlattener::dispose(meshFlattener);
-
-  sdnpatch_getcontrolvertices(sdnpatch);
-
-  ay_selp_clear(o);
-
-  o->modified = AY_TRUE;
-  ay_notify_force(o);
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* sdnpatch_editknottcmd */
-#endif
-
 
 /* sdnpatch_editknottcmd:
  *  Tcl command to edit knots
@@ -4339,6 +4108,8 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  // in reset mode, save original point selection
+  // and select all points instead
   if(mode == 2)
     {
       oldselp = o->selp;
@@ -4377,16 +4148,19 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       break;
     case 1:
+      // set interval
       for(ki = selectedKnots.begin(); ki != selectedKnots.end(); ki++)
 	{
 	  (*ki)->setInterval(interval);
 	}
       break;
     case 2:
+      // reset all
       for(ki = selectedKnots.begin(); ki != selectedKnots.end(); ki++)
 	{
 	  (*ki)->setInterval(1.0);
 	}
+      // establish saved point selection
       ay_selp_clear(o);
       o->selp = oldselp;
       break;
