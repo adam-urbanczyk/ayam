@@ -1837,7 +1837,9 @@ KnotSelector::addToFace(unsigned int vertNum)
 	  /* edge is selected => select knot interval */
 	  knot = m_meshFlattener->getKnotIntervalForEdge(m_faceNum,
 							 m_faceVertNum-1);
-	  m_selectedKnots->push_back(knot);
+
+	  if(knot)
+	    m_selectedKnots->push_back(knot);
 	}
 
       found1 = found2;
@@ -3342,6 +3344,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
     }
 
   meshBuilder->finishFaces();
+
   /*
   ulen = np->uknotv[np->width+np->uorder]-np->uknotv[1];
   for(j = 0; j < np->width; j++)
@@ -4113,7 +4116,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
   if(mode == 2)
     {
       oldselp = o->selp;
-
+      o->selp = NULL;
       ay_selp_selall(o);
     }
 
@@ -4137,14 +4140,22 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
     {
     case 0:
       // start
-      if((selectedKnots.size() > 0) && varname)
+      if(varname)
 	{
-	  interval = selectedKnots[0]->getInterval();
-	  ton = Tcl_NewStringObj(varname, -1);
-	  to = Tcl_NewDoubleObj(interval);
-	  Tcl_ObjSetVar2(interp, ton, NULL, to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	  if(selectedKnots.size() > 0)
+	    {
+	      interval = selectedKnots[0]->getInterval();
+	      ton = Tcl_NewStringObj(varname, -1);
+	      to = Tcl_NewDoubleObj(interval);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	    }
+	}
+      else
+	{
+	  ay_error(AY_ERROR, fname,
+		   "could not find interval; invalid edge selected?");
 	}
       break;
     case 1:
