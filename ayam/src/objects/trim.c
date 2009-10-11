@@ -313,7 +313,7 @@ ay_trim_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_trim_object *trim = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   trim = (ay_trim_object *)o->refine;
@@ -371,46 +371,46 @@ ay_trim_notifycb(ay_object *o)
   if(npatch)
     {
       trim->npatch = npatch;
-    }
 
-  if(!npatch->down)
-    {
-      ay_object_crtendlevel(&(npatch->down));
-    }
-
-  while(npatch && (i < trim->patchnum))
-    {
-      npatch = npatch->next;
-    }
-
-  if(npatch)
-    {
-      down = down->next;
-
-      /* find and save endlevel object */
-      next = &(npatch->down);
-      while((*next)->next)
+      if(!npatch->down)
 	{
-	  next = &((*next)->next);
+	  ay_object_crtendlevel(&(npatch->down));
 	}
 
-      endlevel = *next;
-
-      /* copy new trim curves to patch object */
-      while(down->next)
+      while(npatch && (i < trim->patchnum))
 	{
-	  ncurve = NULL;
-	  ay_status = ay_object_copy(down, &ncurve);
-	  if(ncurve)
-	    {
-	      *next = ncurve;
-	      next = &(ncurve->next);
-	    }
-	  down = down->next;
-	} /* while */
+	  npatch = npatch->next;
+	}
 
-      /* append saved endlevel object */
-      *next = endlevel;
+      if(npatch)
+	{
+	  down = down->next;
+
+	  /* find and save endlevel object */
+	  next = &(npatch->down);
+	  while((*next)->next)
+	    {
+	      next = &((*next)->next);
+	    }
+
+	  endlevel = *next;
+
+	  /* copy new trim curves to patch object */
+	  while(down->next)
+	    {
+	      ncurve = NULL;
+	      ay_status = ay_object_copy(down, &ncurve);
+	      if(ncurve)
+		{
+		  *next = ncurve;
+		  next = &(ncurve->next);
+		}
+	      down = down->next;
+	    } /* while */
+
+	  /* append saved endlevel object */
+	  *next = endlevel;
+	} /* if */
     } /* if */
 
  return ay_status;
