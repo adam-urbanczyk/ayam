@@ -1,16 +1,21 @@
 [3. Oct 2009] CVS-Head:
 =======================
 Bug Fixes:
-o <Tab> key does not work after <Ctrl+l>
-o Tcl errors when Ayam is started with object listbox activated
+o <Tab> key does not work after <Ctrl+l> (SF 2869550)
+o Tcl errors when Ayam is started with object listbox activated (SF 2872817)
+o the FaceConnect modelling operation of the SDNPatch plugin is now
+  more robust (works with perpendicular faces) (SF 2872818)
+o the KnotEditor of the SDNPatch plugin now fetches old knot values
+  and sets the new value for the correct edge (SF )
+o Script objects with own, script controlled, property GUIs fail to load
+  properly from scene files (initial parameters are not set), and it is
+  not possible to have multiple copies of them (SF )
+o crash when first object in a Trim object hierarchy is not a NPatch
+  (and does not provide an NPatch either) (SF 2876536)
 
 Modelling:
 o in the point selection action, points may now also be deselected using
   the <Shift> key in conjunction with the mouse drag operation
-o the FaceConnect modelling operation of the SDNPatch plugin is now
-  more robust (works with perpendicular faces)
-o the KnotEditor of the SDNPatch plugin now fetches old knot values
-  and sets the new value for the correct edge
 
 GUI
 o improved speed of focus changes between internal view 3 and the tree view
@@ -53,7 +58,7 @@ o "estlenNC" crashing for curves of order 2 (SF 2819090)
 o preferences dialog now also warns after "ToolBoxTrans" setting changes,
   that a restart is necessary
 o undo/redo do not maintain view mode icons (SF 2860778)
-o tesselation GUI crashing for empty text objects (SF )
+o tesselation GUI crashing for empty text objects (SF 2876598)
 
 GUI:
 o switching the current level in the object tree via cursor keys now
@@ -131,6 +136,10 @@ o updated the "ayslo3d" shader parsing plugin for incompatible changes
 Documentation/Example Files:
 o improved layout and updated the content of the reference card, in addition,
   the document is now available as PDF
+
+Platform Support:
+IRIX:
+o there is now a official build for the IRIX platform again
 
 
 [4. Dec 2008] Ayam-1.15.1:
@@ -319,7 +328,7 @@ o reworked shader parsing (core and ayslx plugin) for incompatible changes
   in Aqsis 1.2
 
 Scripts/Scripting Interface:
-o added script "intfd.tcl" to switch all dialogs (file/color) to internal 
+o added script "intfd.tcl" to switch all dialogs (file/color) to internal
   Tk dialogs
 o added script "showwin.tcl" to de-iconify/show all application windows
 o added script "tonpatch.tcl" that, similar to "topoly.tcl", converts all
