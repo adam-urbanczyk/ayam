@@ -771,7 +771,9 @@ if { $AYWITHAQUA } {
 # if
 
 catch {bind $tree <Key-Page_Up> "$tree yview scroll -1 pages; break"}
+catch {bind $tree <Key-Prior> "$tree yview scroll -1 pages; break"}
 catch {bind $tree <Key-Page_Down> "$tree yview scroll 1 pages; break"}
+catch {bind $tree <Key-Next> "$tree yview scroll 1 pages; break"}
 
 # select last object, when clicking somewhere in the widget
 # and not on a node
