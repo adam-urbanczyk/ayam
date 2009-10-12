@@ -335,7 +335,7 @@ ay_cap_bbccb(ay_object *o, double *bbox, int *flags)
  ay_cap_object *cap = NULL;
  int ay_status = AY_OK;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   cap = (ay_cap_object *)o->refine;

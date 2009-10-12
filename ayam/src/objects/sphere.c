@@ -816,7 +816,7 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
  double r = 0.0, zmi = 0.0, zma = 0.0;
  ay_sphere_object *sphere = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   sphere = (ay_sphere_object *)o->refine;

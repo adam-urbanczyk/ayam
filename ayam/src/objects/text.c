@@ -500,7 +500,7 @@ ay_text_bbccb(ay_object *o, double *bbox, int *flags)
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   text = (ay_text_object *)o->refine;

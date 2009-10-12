@@ -439,7 +439,7 @@ ay_gordon_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_gordon_object *gordon = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   gordon = (ay_gordon_object *)o->refine;

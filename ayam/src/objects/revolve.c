@@ -452,7 +452,7 @@ ay_revolve_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_revolve_object *revolve = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   revolve = (ay_revolve_object *)o->refine;

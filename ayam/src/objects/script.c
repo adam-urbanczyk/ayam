@@ -831,7 +831,7 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
  ay_script_object *sc = NULL;
  ay_object *mo = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   sc = (ay_script_object *)(o->refine);

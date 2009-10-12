@@ -429,7 +429,7 @@ ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_sweep_object *sweep = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)o->refine;

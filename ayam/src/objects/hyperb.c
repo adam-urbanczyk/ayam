@@ -593,7 +593,7 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
  double r = 0.0, rmi = 0.0, rma = 0.0, zmi = 0.0, zma = 0.0;
  ay_hyperboloid_object *h = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   h = (ay_hyperboloid_object *)o->refine;

@@ -1123,7 +1123,7 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
  int i, a;
  ay_pamesh_object *pamesh = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)o->refine;

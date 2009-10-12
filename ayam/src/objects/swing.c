@@ -416,7 +416,7 @@ ay_swing_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_swing_object *swing = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   swing = (ay_swing_object *)o->refine;

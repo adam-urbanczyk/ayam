@@ -876,7 +876,7 @@ ay_sdmesh_bbccb(ay_object *o, double *bbox, int *flags)
  unsigned int i, a;
  ay_sdmesh_object *sdmesh = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)o->refine;

@@ -400,7 +400,7 @@ ay_birail1_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_birail1_object *birail1 = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   birail1 = (ay_birail1_object *)o->refine;

@@ -454,7 +454,7 @@ ay_riproc_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_riproc_object *riproc = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   riproc = (ay_riproc_object *)o->refine;

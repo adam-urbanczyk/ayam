@@ -881,7 +881,7 @@ ay_view_wribcb(char *file, ay_object *o)
 {
  ay_view_object *view = NULL;
 
-  if(!o)
+  if(!file || !o)
    return AY_ENULL;
 
   view = (ay_view_object*)o->refine;
@@ -905,7 +905,7 @@ ay_view_bbccb(ay_object *o, double *bbox, int *flags)
  double to[3] = {0};
  ay_view_object *view = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   view = (ay_view_object *)o->refine;

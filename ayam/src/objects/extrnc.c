@@ -391,7 +391,7 @@ ay_extrnc_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_extrnc_object *extrnc = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   extrnc = (ay_extrnc_object *)o->refine;

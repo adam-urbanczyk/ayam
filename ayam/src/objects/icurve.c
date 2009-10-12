@@ -806,7 +806,7 @@ ay_icurve_bbccb(ay_object *o, double *bbox, int *flags)
  int i, a;
  ay_icurve_object *icurve = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   icurve = (ay_icurve_object *)o->refine;

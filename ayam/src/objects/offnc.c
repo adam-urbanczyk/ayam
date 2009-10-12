@@ -357,7 +357,7 @@ ay_offnc_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_offnc_object *offnc = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   offnc = (ay_offnc_object *)o->refine;

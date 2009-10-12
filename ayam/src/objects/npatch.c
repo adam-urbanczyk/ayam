@@ -1893,7 +1893,7 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
  int i, a;
  ay_nurbpatch_object *npatch = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)o->refine;

@@ -275,7 +275,7 @@ int
 ay_level_bbccb(ay_object *o, double *bbox, int *flags)
 {
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   /* we have no own bounding box, all that counts are the children */

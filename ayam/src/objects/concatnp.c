@@ -345,7 +345,7 @@ int
 ay_concatnp_bbccb(ay_object *o, double *bbox, int *flags)
 {
 
-  if(!o || !flags)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   /* use the bounding boxes of the children */

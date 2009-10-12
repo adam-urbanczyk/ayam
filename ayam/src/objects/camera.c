@@ -533,7 +533,7 @@ ay_camera_bbccb(ay_object *o, double *bbox, int *flags)
  double to[3] = {0};
  ay_camera_object *camera = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   camera = (ay_camera_object *)o->refine;
