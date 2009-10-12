@@ -67,12 +67,7 @@ ay_bbc_get(ay_object *o, double *bbox)
 	      /* apply transformations */
 	      if(o->inherit_trafos)
 		{
-		  a = 0;
-		  for(i = 0; i < 8; i++)
-		    {
-		      ay_trafo_apply3(&(bbt[a]), m);
-		      a += 3;
-		    }
+		  ay_trafo_apply3v(bbt, 8, 3, m);
 		}
 
 	      a = 0;
@@ -138,12 +133,7 @@ ay_bbc_get(ay_object *o, double *bbox)
       if(flags != 3)
 	{
 	  /* apply transformations */
-	  a = 0;
-	  for(i = 0; i < 8; i++)
-	    {
-	      ay_trafo_apply3(&(bbt[a]), m);
-	      a += 3;
-	    }
+	  ay_trafo_apply3v(bbt, 8, 3, m);
 	}
 
       a = 0;

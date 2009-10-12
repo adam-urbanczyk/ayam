@@ -1277,13 +1277,23 @@ void ay_toglcb_display(struct Togl *togl);
 
 /* trafo.c */
 
-/*! \brief
+/*! \brief apply trafo to point (3D)
  */
 void ay_trafo_apply3(double *c, double *m);
 
-/*! \brief
+/*! \brief apply trafo to vector of points (3D)
+ */
+void ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride,
+		      double *m);
+
+/*! \brief apply trafo to point (4D)
  */
 void ay_trafo_apply4(double *c, double *m);
+
+/*! \brief apply trafo to vector of points (4D)
+ */
+void ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride,
+		      double *m);
 
 /*! \brief
  */
