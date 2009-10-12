@@ -15,7 +15,7 @@
 /* trafo.c - functions for handling of linear transformations */
 
 /* ay_trafo_apply3:
- *  apply transformations in transformation matrix m[3][3] to point c[3]
+ *  apply transformations in transformation matrix m[16] to point c[3]
  */
 void
 ay_trafo_apply3(double *c, double *m)
@@ -32,8 +32,35 @@ ay_trafo_apply3(double *c, double *m)
 } /* ay_trafo_apply3 */
 
 
+/* ay_trafo_apply3v:
+ *  apply transformations in transformation matrix m[16] to
+ *  vector c[clen*stride]
+ */
+void
+ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
+{
+ double result[3];
+ unsigned int i, j = 0;
+
+ for(i = 0; i < clen; i++)
+   {
+     result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*1.0;
+     result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*1.0;
+     result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*1.0;
+
+     c[j]   = result[0];
+     c[j+1] = result[1];
+     c[j+2] = result[2];
+
+     j += stride;
+   }
+
+ return;
+} /* ay_trafo_apply3v */
+
+
 /* ay_trafo_apply4:
- *  apply transformations in transformation matrix m[4][4] to point c[4]
+ *  apply transformations in transformation matrix m[16] to point c[4]
  */
 void
 ay_trafo_apply4(double *c, double *m)
@@ -51,6 +78,35 @@ ay_trafo_apply4(double *c, double *m)
 } /* ay_trafo_apply4 */
 
 
+/* ay_trafo_apply4v:
+ *  apply transformations in transformation matrix m[16] to
+ *  vector c[clen*stride]
+ */
+void
+ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
+{
+ double result[4];
+ unsigned int i, j = 0;
+
+ for(i = 0; i < clen; i++)
+   {
+     result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*c[j+3];
+     result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*c[j+3];
+     result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*c[j+3];
+     result[3] = m[3]*c[j] + m[7]*c[j+1] + m[11]*c[j+2] + m[15]*c[j+3];
+
+     c[j]   = result[0];
+     c[j+1] = result[1];
+     c[j+2] = result[2];
+     c[j+3] = result[3];
+
+     j += stride;
+   }
+
+ return;
+} /* ay_trafo_apply4v */
+
+
 /* ay_trafo_getall:
  *
  */
@@ -61,16 +117,20 @@ ay_trafo_getall(ay_list_object *lo)
  double m[16];
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
     {
-    return;
+      return;
     }
 
   if(lo->next)
