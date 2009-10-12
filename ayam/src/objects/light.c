@@ -999,7 +999,7 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
  ay_shader *shader = NULL;
  ay_shader_arg *sarg = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   light = (ay_light_object *)o->refine;

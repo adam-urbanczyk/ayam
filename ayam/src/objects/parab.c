@@ -624,7 +624,7 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
  double r = 0.0, zmi = 0.0, zma = 0.0;
  ay_paraboloid_object *parab = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   parab = (ay_paraboloid_object *)o->refine;

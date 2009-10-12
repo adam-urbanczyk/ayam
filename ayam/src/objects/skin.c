@@ -412,7 +412,7 @@ ay_skin_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_skin_object *skin = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   skin = (ay_skin_object *)o->refine;

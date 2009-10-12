@@ -437,7 +437,7 @@ ay_extrude_bbccb(ay_object *o, double *bbox, int *flags)
  ay_extrude_object *extrude = NULL;
  ay_object *np = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   extrude = (ay_extrude_object *)o->refine;

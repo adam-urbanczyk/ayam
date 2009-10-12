@@ -377,7 +377,7 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
  double r = 0.0, h = 0.0;
  ay_disk_object *disk = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;

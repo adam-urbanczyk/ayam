@@ -825,7 +825,7 @@ ay_pomesh_bbccb(ay_object *o, double *bbox, int *flags)
  int stride = 0;
  ay_pomesh_object *pomesh = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)o->refine;

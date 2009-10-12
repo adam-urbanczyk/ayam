@@ -320,7 +320,7 @@ ay_bevel_bbccb(ay_object *o, double *bbox, int *flags)
 {
  ay_bevel_object *bevel = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   bevel = (ay_bevel_object *)o->refine;

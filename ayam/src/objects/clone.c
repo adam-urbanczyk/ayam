@@ -551,7 +551,7 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
  ay_clone_object *cc = NULL;
  ay_object *c = NULL;
 
-  if(!o || !flags)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   cc = (ay_clone_object *)o->refine;

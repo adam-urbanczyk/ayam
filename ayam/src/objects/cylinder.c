@@ -676,7 +676,7 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
  double r = 0.0, zmi = 0.0, zma = 0.0;
  ay_cylinder_object *cylinder = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   cylinder = (ay_cylinder_object *)o->refine;

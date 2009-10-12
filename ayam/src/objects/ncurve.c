@@ -1185,7 +1185,7 @@ ay_ncurve_bbccb(ay_object *o, double *bbox, int *flags)
  int i, a;
  ay_nurbcurve_object *ncurve = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)o->refine;

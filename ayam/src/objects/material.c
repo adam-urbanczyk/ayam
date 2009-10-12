@@ -759,7 +759,7 @@ int
 ay_material_bbccb(ay_object *o, double *bbox, int *flags)
 {
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   /* we have no own bbox */

@@ -699,7 +699,7 @@ ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
  int i, a;
  ay_acurve_object *acurve = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)o->refine;

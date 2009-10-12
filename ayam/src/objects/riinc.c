@@ -357,7 +357,7 @@ ay_riinc_bbccb(ay_object *o, double *bbox, int *flags)
  double wh = 0.0, lh = 0.0, hh = 0.0;
  ay_riinc_object *riinc = NULL;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     return AY_ENULL;
 
   riinc = (ay_riinc_object *)o->refine;
