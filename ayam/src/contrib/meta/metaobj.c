@@ -744,7 +744,7 @@ metaobj_wribcb (char *file, ay_object * o)
  double *vptr, *nptr;
  int i, j;
 
-  if (!o)
+  if (!file || !o)
     return AY_ENULL;
 
   w = (meta_world *) o->refine;
@@ -785,7 +785,7 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
  double *controlv = NULL;
  int i, a, stride = 3;
 
-  if(!o || !bbox)
+  if(!o || !bbox || !flags)
     {
       return AY_ENULL;
     }
