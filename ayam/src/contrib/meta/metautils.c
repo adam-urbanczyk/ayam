@@ -36,7 +36,12 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
  ay_object *o;
  double x, y, z;
  Tcl_Obj *to = NULL;
+ Tcl_Interp *interp = ay_safeinterp;
  static Tcl_Obj *tox = NULL, *toy = NULL, *toz = NULL, *tof = NULL;
+
+#ifdef AYNOSAFEINTERP
+ interp = ay_interp;
+#endif
 
  if(!tox)
    {
@@ -192,29 +197,29 @@ meta_calcall(double x1, double y1, double z1, meta_world *w)
 	    {
 
 	      to = Tcl_NewDoubleObj(x - tmp->cp.x);
-	      Tcl_ObjSetVar2(ay_interp, tox, NULL, to, TCL_LEAVE_ERR_MSG |
+	      Tcl_ObjSetVar2(interp, tox, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 
 	      to = Tcl_NewDoubleObj(y - tmp->cp.y);
-	      Tcl_ObjSetVar2(ay_interp, toy, NULL, to, TCL_LEAVE_ERR_MSG |
+	      Tcl_ObjSetVar2(interp, toy, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 
 	      to = Tcl_NewDoubleObj(z - tmp->cp.z);
-	      Tcl_ObjSetVar2(ay_interp, toz, NULL, to, TCL_LEAVE_ERR_MSG |
+	      Tcl_ObjSetVar2(interp, toz, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 
 	      to = Tcl_NewDoubleObj(0.0);
-	      Tcl_ObjSetVar2(ay_interp, tof, NULL, to, TCL_LEAVE_ERR_MSG |
+	      Tcl_ObjSetVar2(interp, tof, NULL, to, TCL_LEAVE_ERR_MSG |
 			     TCL_GLOBAL_ONLY);
 
 	      if(tmp->expression)
 		{
-		  Tcl_GlobalEvalObj(ay_interp, tmp->expression);
+		  Tcl_GlobalEvalObj(interp, tmp->expression);
 		}
 
-	      to = Tcl_ObjGetVar2(ay_interp, tof, NULL, TCL_LEAVE_ERR_MSG |
+	      to = Tcl_ObjGetVar2(interp, tof, NULL, TCL_LEAVE_ERR_MSG |
 				  TCL_GLOBAL_ONLY);
-	      Tcl_GetDoubleFromObj(ay_interp, to, &tmpeffect);
+	      Tcl_GetDoubleFromObj(interp, to, &tmpeffect);
 
 	      if(tmp->negativ)
 		{
