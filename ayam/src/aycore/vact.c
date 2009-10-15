@@ -22,7 +22,6 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
- static double olddx = 0.0, olddy = 0.0;
  double dxw = 0.0, dyw = 0.0;
  double t[3] = {0}, t2[2] = {0};
  GLdouble mm[16]= {0}, rotx = 0.0, roty = 0.0;
@@ -48,8 +47,6 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 	    Tcl_GetDouble(interp, argv[4], &winy);
 	    oldwinx = winx;
 	    oldwiny = winy;
-	    olddx = 0.0;
-	    olddy = 0.0;
 	  }
     }
   else
@@ -212,7 +209,6 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwiny = 0.0;
  double winy = 0.0;
- static double olddy = 0.0;
  double dyw = 0.0;
  double v[3] = {0};
  char fname[] = "movez_view";
@@ -234,7 +230,6 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
 	  {
 	    Tcl_GetDouble(interp, argv[3], &winy);
 	    oldwiny = winy;
-	    olddy = 0.0;
 	  }
     }
   else
