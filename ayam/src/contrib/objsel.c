@@ -158,12 +158,13 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
       int n = 0;
       unsigned int j = 0;
       GLuint name;
-      float z1 = 0.0f, z2 = 0.0f;
-
       name = *(ptr++);
+      /*
+      float z1 = 0.0f, z2 = 0.0f;
       z1 = (float) *(ptr++) / 0x7fffffff;
       z2 = (float) *(ptr++) / 0x7fffffff;
-      /*printf("%f %f\n", z1, z2);*/
+      printf("%f %f\n", z1, z2);
+      */
       o = ay_root;
       strncat (node, "root", (size_t)size);
 
@@ -278,7 +279,6 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
  /* char fname[] = "objsel_process"; */
  ay_object *o = ay_root->next;
  ay_list_object *sel = ay_selection;
- int ay_status = AY_OK;
  int width = Togl_Width (togl);
  int height = Togl_Height (togl);
  GLdouble aspect = ((GLdouble) width) / ((GLdouble) height);
@@ -382,7 +382,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 	{
 	  while(o->next)
 	    {
-	      ay_status = ay_draw_object(togl, o, 2);
+	      ay_draw_object(togl, o, 2);
 	      o = o->next;
 	    }
 	}
@@ -390,7 +390,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 	{
 	  while(sel)
 	    {
-	      ay_status = ay_draw_object(togl, sel->object, 2);
+	      ay_draw_object(togl, sel->object, 2);
 	      sel = sel->next;
 	    }
 	}
@@ -402,7 +402,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 	{
 	  while(o->next)
 	    {
-	      ay_status = ay_shade_object(togl, o, AY_TRUE);
+	      ay_shade_object(togl, o, AY_TRUE);
 	      o = o->next;
 	    }
 	}
@@ -410,7 +410,7 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 	{
 	  while(sel)
 	    {
-	      ay_status = ay_shade_object(togl, sel->object, AY_TRUE);
+	      ay_shade_object(togl, sel->object, AY_TRUE);
 	      sel = sel->next;
 	    }
 	}

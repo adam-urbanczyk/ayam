@@ -148,7 +148,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
        down = m->down;
        while(down)
 	 {
-	   ay_status = ay_draw_object(togl, down, AY_TRUE);
+	   ay_draw_object(togl, down, AY_TRUE);
 	   down = down->next;
 	 } /* while */
      }
@@ -211,7 +211,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
        down = m->down;
        while(down)
 	 {
-	   ay_status = ay_shade_object(togl, down, AY_FALSE);
+	   ay_shade_object(togl, down, AY_FALSE);
 	   down = down->next;
 	 } /* while */
      }

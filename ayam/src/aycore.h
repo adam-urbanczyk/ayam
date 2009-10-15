@@ -157,7 +157,7 @@ void ay_draw_selp(ay_object *o);
 
 /*! \brief draw an object
  */
-int ay_draw_object(struct Togl *togl, ay_object *o, int selected);
+void ay_draw_object(struct Togl *togl, ay_object *o, int selected);
 
 /*! \brief draw a view
  */
@@ -1022,7 +1022,7 @@ int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
-int ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
+void ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
 
 /*! \brief
  */

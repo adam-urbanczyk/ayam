@@ -17,7 +17,7 @@
 /* ay_shade_object:
  *  shade a single object and children
  */
-int
+void
 ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 {
  int ay_status = AY_OK;
@@ -35,7 +35,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
   if(o->hide)
     {
       o->glname = 0;
-      return AY_OK;
+      return;
     }
 
   /* if an odd number of scale factors are negative
@@ -74,7 +74,6 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 
    if(push_name)
      {
-
        o->glname = ++ay_current_glname;
 
        glPushName(o->glname);
@@ -114,7 +113,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
      {
        ay_error(AY_ERROR, fname, "shade callback failed");
        glPopMatrix();
-       return AY_ERROR;
+       return;
      }
 
    if(!o->hide_children)
@@ -122,7 +121,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
        down = o->down;
        while(down)
 	 {
-	   ay_status = ay_shade_object(togl, down, push_name);
+	   ay_shade_object(togl, down, push_name);
 	   down = down->next;
 	 } /* while */
      } /* if */
@@ -162,7 +161,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
       glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, oldcolor);
     }
 
- return AY_OK;
+ return;
 } /* ay_shade_object */
 
 
