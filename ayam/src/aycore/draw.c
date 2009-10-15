@@ -62,7 +62,7 @@ ay_draw_selp(ay_object *o)
  *  o if selected is 2, a name will be pushed onto OpenGLs
  *    name stack additionally.
  */
-int
+void
 ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 {
  int ay_status = AY_OK;
@@ -75,12 +75,12 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 
   if(selected == AY_FALSE)
     if(o->selected)
-      return AY_OK;
+      return;
 
   if(o->hide)
     {
       o->glname = 0;
-      return AY_OK;
+      return;
     }
 
   glPushMatrix();
@@ -115,7 +115,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
        ay_error(AY_ERROR, fname, "draw callback failed");
 
        glPopMatrix();
-       return AY_ERROR;
+       return;
      }
 
    if(!o->inherit_trafos)
@@ -138,7 +138,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
 
   glPopMatrix();
 
- return AY_OK;
+ return;
 } /* ay_draw_object */
 
 
