@@ -783,13 +783,14 @@ ay_icurve_writecb(FILE *fileptr, ay_object *o)
 int
 ay_icurve_wribcb(char *file, ay_object *o)
 {
- ay_icurve_object *icurve = NULL;
+  /*
+  ay_icurve_object *icurve = NULL;
 
   if(!o)
    return AY_ENULL;
 
   icurve = (ay_icurve_object*)o->refine;
-
+  */
 
  return AY_OK;
 } /* ay_icurve_wribcb */

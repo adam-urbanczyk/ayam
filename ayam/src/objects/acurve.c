@@ -677,13 +677,14 @@ ay_acurve_writecb(FILE *fileptr, ay_object *o)
 int
 ay_acurve_wribcb(char *file, ay_object *o)
 {
+  /*
  ay_acurve_object *acurve = NULL;
 
   if(!o)
    return AY_ENULL;
 
   acurve = (ay_acurve_object*)o->refine;
-
+  */
  return AY_OK;
 } /* ay_acurve_wribcb */
 

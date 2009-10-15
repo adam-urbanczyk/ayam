@@ -581,12 +581,9 @@ ay_box_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_object *new = NULL, *t;
- ay_box_object *box = NULL;
 
   if(!o)
     return AY_ENULL;
-
-  box = (ay_box_object *) o->refine;
 
   /* first, create new objects */
 
