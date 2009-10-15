@@ -97,10 +97,10 @@ int
 ay_torus_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_torus_object *torus = NULL;
- double phi, mar, mir,thetamax, radius;
+ double phi, mar, mir, thetamax;
  double phidiff, thetadiff, angle;
  int i, j;
- double P1[18] = {0}, R[9];
+ double P1[18] = {0}/*, R[9]*/;
 
   if(!o)
     return AY_ENULL;
@@ -118,13 +118,14 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
   phi = torus->phimax - torus->phimin;
   phidiff = AY_D2R(phi/8);
 
-  radius = torus->minorrad;
   angle = AY_D2R(torus->phimin);
   for(i = 0; i <= 8; i++)
     {
-      P1[i*2] = cos(angle)*radius;
-      P1[i*2+1] = sin(angle)*radius;
+      P1[i*2] = cos(angle)*mir;
+      P1[i*2+1] = sin(angle)*mir;
+      /*
       R[i] = sqrt(radius*radius-(sin(angle)*radius)*(sin(angle)*radius));
+      */
       angle += phidiff;
     }
 
@@ -203,7 +204,7 @@ int
 ay_torus_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_torus_object *torus = NULL;
- double phi, mar, mir, thetamax, radius;
+ double phi, mar, mir, thetamax;
  double phidiff, thetadiff, angle;
  int i, j;
  double P1[18] = {0}, P2[18] = {0};
@@ -224,14 +225,13 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
   phi = torus->phimax - torus->phimin;
   phidiff = AY_D2R(phi/8);
 
-  radius = torus->minorrad;
   angle = AY_D2R(torus->phimin);
   for(i = 0; i <= 8; i++)
     {
-      P1[i*2] = cos(angle)*radius;
-      P1[i*2+1] = sin(angle)*radius;
-      P2[i*2] = cos(angle+AY_HALFPI)*radius;
-      P2[i*2+1] = sin(angle+AY_HALFPI)*radius;
+      P1[i*2] = cos(angle)*mir;
+      P1[i*2+1] = sin(angle)*mir;
+      P2[i*2] = cos(angle+AY_HALFPI)*mir;
+      P2[i*2+1] = sin(angle+AY_HALFPI)*mir;
       angle += phidiff;
     } /* for */
 

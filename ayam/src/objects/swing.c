@@ -983,7 +983,6 @@ ay_swing_notifycb(ay_object *o)
 {
  ay_swing_object *swing = NULL;
  ay_object *cs = NULL, *tr = NULL, *pobject = NULL, *npatch = NULL;
- ay_nurbcurve_object *nc = NULL;
  int ay_status = AY_OK;
  int provided_cs = AY_FALSE, provided_tr = AY_FALSE, mode = 0;
  double tolerance;
@@ -1072,8 +1071,6 @@ ay_swing_notifycb(ay_object *o)
     tolerance;
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
-
-  nc = (ay_nurbcurve_object *)cs->refine;
 
   /* create caps */
   if(swing->has_upper_cap)
