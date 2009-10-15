@@ -500,7 +500,7 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
 #define GLYFSZ 2000
  signed short xabs[GLYFSZ], yabs[GLYFSZ], xrel[GLYFSZ], yrel[GLYFSZ];
  unsigned char flags[GLYFSZ];
- signed short j, k, k1, co, lp, lsb, startx, yoffset;
+ signed short j, k, k1, co, lsb, startx, yoffset;
  double	scale_factor;
  double	tx, ty;
  int i, maxpoint;
@@ -653,7 +653,6 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
     }
 
   k = 0;
-  lp = 0;
 
   lsb = (ttfont->nglyf < ttfont->numberOfHMetrics) ?
     ntohs(ttfont->hmtx[ttfont->nglyf].lsb):0;
@@ -672,7 +671,6 @@ ay_tti_handle_simple_glyf(ay_tti_font *ttfont, ay_tti_glyf *glyf,
       vert->outlines[co].points = (ay_tti_point *)calloc(1,
 					   sizeof(ay_tti_point)*(maxpoint));
       vert->outlines[co].numpoints = 0;
-      lp = last_point+1;
 
       i = 0;
 
@@ -1223,7 +1221,6 @@ ay_tti_getchar(ay_tti_font *ttfont, int c, ay_tti_letter *vert)
 int
 ay_tti_open(ay_tti_font *ttfont, char *font)
 {
- unsigned char *dummy;
  int idummy;
  int error = 0;
  TTF_DIRECTORY *tdir;
@@ -1236,7 +1233,6 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
     {
       /* check if we have a truetype font */
       ttfont->buffer = calloc(1, 16);
-      dummy = ttfont->buffer;
 
       fread(ttfont->buffer, 1, 16, ttfont->fontptr);
 
@@ -1292,7 +1288,6 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
 	      free(hhea);
 	    }
 
-
 	  /* search hmtx table */
 	  if(!(ay_tti_searchtable(ttfont, "hmtx")))
 	    {error = AY_TTI_BADFONT; goto cleanup;}
@@ -1307,9 +1302,8 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
       else
 	{
 	  /* not a TTF font */
-	  fclose(ttfont->fontptr);
-	  free(ttfont->buffer);
-	  return AY_TTI_BADFONT;
+	  error = AY_TTI_BADFONT;
+	  goto cleanup;
 	} /* if */
     }
   else
@@ -1318,6 +1312,9 @@ ay_tti_open(ay_tti_font *ttfont, char *font)
     } /* if */
 
 cleanup:
+
+  if(ttfont->buffer)
+    free(ttfont->buffer);
   if(ttfont->fontptr)
     fclose(ttfont->fontptr);
 
@@ -1397,12 +1394,12 @@ ay_tti_getcurves(char *ttfname, int letter, ay_tti_letter *cur)
       error = ay_tti_open(font, ttfname); /* open font */
       if(error != AY_TTI_OK)
 	{
+	  free(font);
 	  return error;
 	}
     }
 
   error = ay_tti_getchar(font, letter, cur); /* get curves for letter */
-
 
  return error;
 } /* ay_tti_getcurves */
@@ -1460,11 +1457,12 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
 
   *result = new;
 
+  /* prevent cleanup code from doing something harmful */
   new = NULL;
   knotv = NULL;
   controlv = NULL;
 
- cleanup:
+cleanup:
   if(controlv)
     free(controlv);
   if(knotv)
