@@ -429,7 +429,7 @@ ay_ncircle_notifycb(ay_object *o)
     }
 
   ncurve->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(ncurve);
+  ay_object_defaults(ncurve);
   ncurve->refine = nc;
 
   if(revert)

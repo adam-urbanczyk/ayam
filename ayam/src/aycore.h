@@ -421,7 +421,7 @@ int ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
-int ay_object_defaults(ay_object *o);
+void ay_object_defaults(ay_object *o);
 
 /*! \brief
  */
@@ -617,7 +617,7 @@ int ay_matt_mayhavematerial(unsigned int type);
 
 /*! \brief helper to clear a pointedit structure
  */
-int ay_pact_clearpointedit(ay_pointedit *pe);
+void ay_pact_clearpointedit(ay_pointedit *pe);
 
 /*! \brief pick points
  */
@@ -1476,20 +1476,21 @@ void ay_viewt_rotate(ay_view_object *view, double rotx, double roty,
 
 /*! \brief
  */
-int ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
-		      double winX, double winY,
-		      double *objX, double *objY, double *objZ);
+void ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
+		       double winX, double winY,
+		       double *objX, double *objY, double *objZ);
 
 /*! \brief
  */
-int ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
-			  double winX, double winY, double winX2, double winY2,
-			  double *obj);
+void ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
+			   double winX, double winY,
+			   double winX2, double winY2,
+			   double *obj);
 
 /*! \brief
  */
-int ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
-			double *worldX, double *worldY, double *worldZ);
+void ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
+			 double *worldX, double *worldY, double *worldZ);
 
 /*! \brief
  */

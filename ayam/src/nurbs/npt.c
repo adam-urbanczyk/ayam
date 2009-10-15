@@ -1320,7 +1320,7 @@ ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere)
     }
 
   newc->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(newc);
+  ay_object_defaults(newc);
 
   /* first, we create a half circle in the XY plane */
   ay_status = ay_nct_crtnhcircle(radius,
@@ -1373,7 +1373,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = AY_IDNPATCH;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
 
@@ -1433,7 +1433,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       new->type = AY_IDNPATCH;
-      ay_status = ay_object_defaults(new);
+      ay_object_defaults(new);
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
       ay_status = ay_object_crtendlevel(&(new->down));
@@ -1559,7 +1559,7 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 	  return ay_status;
 	}
 
-      ay_status = ay_object_defaults(new);
+      ay_object_defaults(new);
 
       /* link result */
       if(next)
@@ -1666,7 +1666,7 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 	  return ay_status;
 	}
 
-      ay_status = ay_object_defaults(new);
+      ay_object_defaults(new);
 
       /* link result */
       if(next)
@@ -1826,7 +1826,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
     }
 
   new->type = AY_IDNPATCH;
-  ay_status = ay_object_defaults(new);
+  ay_object_defaults(new);
   new->parent = AY_TRUE;
   new->hide_children = AY_TRUE;
   ay_status = ay_object_crtendlevel(&(new->down));

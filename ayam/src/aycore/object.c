@@ -17,11 +17,11 @@
 /* ay_object_defaults:
  *  reset object attributes of ay_object *o to save default settings
  */
-int
+void
 ay_object_defaults(ay_object *o)
 {
   if(!o)
-    return AY_ENULL;
+    return;
 
   o->quat[3] = 1.0;
 
@@ -31,7 +31,7 @@ ay_object_defaults(ay_object *o)
 
   o->inherit_trafos = AY_TRUE;
 
- return AY_OK;
+ return;
 } /* ay_object_defaults */
 
 
@@ -55,7 +55,7 @@ ay_object_create(unsigned int index, ay_object **o)
       return AY_ERROR;
     }
 
-  ay_status = ay_object_defaults(new);
+  ay_object_defaults(new);
 
   new->type = index;
 
@@ -97,7 +97,7 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
       return AY_ERROR;
     }
 
-  ay_status = ay_object_defaults(new);
+  ay_object_defaults(new);
 
   new->type = index;
 
@@ -153,7 +153,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = index;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   arr = ay_createcbt.arr;
   cb = (ay_createcb *)(arr[index]);
@@ -816,7 +816,7 @@ ay_object_crtendlevel(ay_object **o)
       return AY_ERROR;
     }
 
-  ay_status = ay_object_defaults(new);
+  ay_object_defaults(new);
 
   new->type = AY_IDLEVEL;
 

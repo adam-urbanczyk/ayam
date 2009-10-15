@@ -2338,7 +2338,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { free(controlv); free(uknotv); free(vknotv); return AY_EOMEM; }
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNPATCH;
   newo->refine = patch;
@@ -2465,7 +2465,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { free(controlv); free(knotv); return AY_EOMEM; }
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCURVE;
   newo->refine = curve;
@@ -3016,7 +3016,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDPOMESH;
   newo->refine = po;

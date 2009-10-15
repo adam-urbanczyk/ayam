@@ -432,7 +432,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
       ay_error(AY_EOMEM, fname, NULL);
       return AY_EOMEM;
     }
-  ay_status = ay_object_defaults(no);
+  ay_object_defaults(no);
 
   no->type = AY_IDPOMESH;
 

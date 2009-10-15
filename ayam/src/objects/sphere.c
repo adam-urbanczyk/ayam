@@ -948,7 +948,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      goto cleanup;
 	    }
 	  newc->type = AY_IDNCURVE;
-	  ay_status = ay_object_defaults(newc);
+	  ay_object_defaults(newc);
 
 	  ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
 				    (ay_nurbcurve_object **)&(newc->refine));

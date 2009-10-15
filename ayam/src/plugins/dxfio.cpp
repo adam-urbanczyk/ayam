@@ -271,7 +271,7 @@ dxfio_read3dface(const class dimeState *state,
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   tdface->getVertices(v0, v1, v2, v3);
 
@@ -454,7 +454,7 @@ dxfio_readarc(const class dimeState *state,
   newc->tmin = arc->getStartAngle();
   newc->tmax = arc->getEndAngle();
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCIRCLE;
   newo->refine = newc;
@@ -491,7 +491,7 @@ dxfio_readcircle(const class dimeState *state,
 
   newc->radius = circle->getRadius();
   newc->tmax = 360.0;
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCIRCLE;
   newo->refine = newc;
@@ -534,7 +534,7 @@ dxfio_readellipse(const class dimeState *state,
   newc->tmin = AY_R2D(ellipse->getStartParam());
   newc->tmax = AY_R2D(ellipse->getEndParam());
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCIRCLE;
   newo->refine = newc;
@@ -596,7 +596,7 @@ dxfio_readinsert(const class dimeState *state,
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   // move instance
   v = insert->getInsertionPoint();
@@ -660,7 +660,7 @@ dxfio_readinsert(const class dimeState *state,
 					      sizeof(ay_level_object))))
 		{ free(newo); return AY_EOMEM; }
 
-	      //ay_status = ay_object_defaults(newo);
+	      //ay_object_defaults(newo);
 
 	      newo->type = AY_IDLEVEL;
 	      newo->refine = newl;
@@ -733,7 +733,7 @@ dxfio_readline(const class dimeState *state,
   ay_nct_create(2, 2, AY_KTNURB, newcv, NULL,
 		(ay_nurbcurve_object**)&(newo->refine));
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCURVE;
 
@@ -780,7 +780,7 @@ dxfio_readlwpolyline(const class dimeState *state,
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
 		(ay_nurbcurve_object**)&(newo->refine));
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCURVE;
 
@@ -1295,7 +1295,7 @@ dxfio_readsolid(const class dimeState *state,
   newbp->p4[1] = v3[1];
   newbp->p4[2] = v3[2];
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDBPATCH;
   newo->refine = newbp;
@@ -1383,7 +1383,7 @@ dxfio_readspline(const class dimeState *state,
   ay_nct_create(order, len, AY_KTCUSTOM, newcv, newkv,
 		(ay_nurbcurve_object**)&(newo->refine));
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDNCURVE;
 
@@ -1430,7 +1430,7 @@ dxfio_readtrace(const class dimeState *state,
   newbp->p4[1] = v3[1];
   newbp->p4[2] = v3[2];
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->type = AY_IDBPATCH;
   newo->refine = newbp;

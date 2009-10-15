@@ -4457,7 +4457,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
 
   o->refine = sweep;
 
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   o->type = AY_IDSWEEP;
 
@@ -4558,7 +4558,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
 
   o->refine = swing;
 
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   o->type = AY_IDSWING;
 
@@ -4894,7 +4894,7 @@ int x3dio_readcadelement(scew_element *element, int type)
       free(o); return AY_EOMEM;
     }
 
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   o->type = AY_IDLEVEL;
   o->parent = AY_TRUE;
@@ -5251,7 +5251,7 @@ x3dio_readtransform(scew_element *element)
 	  free(o); return AY_EOMEM;
 	}
 
-      ay_status = ay_object_defaults(o);
+      ay_object_defaults(o);
 
       o->type = AY_IDLEVEL;
       o->parent = AY_TRUE;
@@ -5312,7 +5312,7 @@ x3dio_readshape(scew_element *element)
       free(o); return AY_EOMEM;
     }
 
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   o->type = AY_IDLEVEL;
   o->parent = AY_TRUE;
