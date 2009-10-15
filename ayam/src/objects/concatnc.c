@@ -347,13 +347,14 @@ ay_concatnc_writecb(FILE *fileptr, ay_object *o)
 int
 ay_concatnc_wribcb(char *file, ay_object *o)
 {
+  /*
  ay_concatnc_object *concatnc = NULL;
 
   if(!o)
    return AY_ENULL;
 
   concatnc = (ay_concatnc_object*)o->refine;
-
+  */
  return AY_OK;
 } /* ay_concatnc_wribcb */
 

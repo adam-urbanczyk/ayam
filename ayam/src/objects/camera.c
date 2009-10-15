@@ -604,7 +604,6 @@ ay_camera_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_camera_dropcb(ay_object *o)
 {
- int ay_status = AY_OK;
  char fname[] = "camera_drop";
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;
@@ -638,7 +637,7 @@ ay_camera_dropcb(ay_object *o)
 	  /* undo save */
 	  argv[1] = arg1;
 	  argv[2] = arg2;
-	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
+	  ay_undo_undotcmd(NULL, ay_interp, 3, argv);
 
 	  memcpy(camera->from, view->from, 3*sizeof(double));
 	  memcpy(camera->to, view->to, 3*sizeof(double));

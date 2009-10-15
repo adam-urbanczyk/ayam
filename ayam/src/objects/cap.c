@@ -322,7 +322,7 @@ ay_cap_wribcb(char *file, ay_object *o)
 
   ay_status = ay_wrib_object(file, cap->npatch);
 
- return AY_OK;
+ return ay_status;
 } /* ay_cap_wribcb */
 
 

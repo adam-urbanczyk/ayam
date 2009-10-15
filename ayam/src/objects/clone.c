@@ -567,6 +567,9 @@ ay_clone_bbccb(ay_object *o, double *bbox, int *flags)
     {
       ay_status = ay_bbc_get(c, bbt);
 
+      if(ay_status)
+	continue;
+
       a = 0;
       for(i = 0; i < 8; i++)
 	{
@@ -679,7 +682,7 @@ ay_clone_notifycb(ay_object *o)
 	  if(down->next->type != AY_IDNCURVE)
 	    {
 	      ay_status = ay_provide_object(down->next, AY_IDNCURVE, &tr);
-	      if(!tr)
+	      if(ay_status || !tr)
 		{
 		  /* XXXX issue error message? */
 		  return AY_OK;
