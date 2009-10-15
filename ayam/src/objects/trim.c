@@ -75,12 +75,10 @@ ay_trim_deletecb(void *c)
 int
 ay_trim_copycb(void *src, void **dst)
 {
- ay_trim_object *trim = NULL, *trimsrc = NULL;
+ ay_trim_object *trim = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
-
-  trimsrc = (ay_trim_object *)src;
 
   if(!(trim = calloc(1, sizeof(ay_trim_object))))
     return AY_EOMEM;
