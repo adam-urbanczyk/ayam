@@ -34,7 +34,7 @@ ay_trafo_apply3(double *c, double *m)
 
 /* ay_trafo_apply3v:
  *  apply transformations in transformation matrix m[16] to
- *  vector c[clen*stride]
+ *  vector c[clen*stride] (stride >= 3)
  */
 void
 ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
@@ -42,18 +42,16 @@ ay_trafo_apply3v(double *c, unsigned int clen, unsigned int stride, double *m)
  double result[3];
  unsigned int i, j = 0;
 
- for(i = 0; i < clen; i++)
-   {
-     result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*1.0;
-     result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*1.0;
-     result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*1.0;
+  for(i = 0; i < clen; i++)
+    {
+      result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*1.0;
+      result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*1.0;
+      result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*1.0;
 
-     c[j]   = result[0];
-     c[j+1] = result[1];
-     c[j+2] = result[2];
+      memcpy(&(c[j]), result, (size_t)(3*sizeof(double)));
 
-     j += stride;
-   }
+      j += stride;
+    }
 
  return;
 } /* ay_trafo_apply3v */
@@ -80,7 +78,7 @@ ay_trafo_apply4(double *c, double *m)
 
 /* ay_trafo_apply4v:
  *  apply transformations in transformation matrix m[16] to
- *  vector c[clen*stride]
+ *  vector c[clen*stride] (stride >= 4)
  */
 void
 ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
@@ -88,20 +86,17 @@ ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride, double *m)
  double result[4];
  unsigned int i, j = 0;
 
- for(i = 0; i < clen; i++)
-   {
-     result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*c[j+3];
-     result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*c[j+3];
-     result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*c[j+3];
-     result[3] = m[3]*c[j] + m[7]*c[j+1] + m[11]*c[j+2] + m[15]*c[j+3];
+  for(i = 0; i < clen; i++)
+    {
+      result[0] = m[0]*c[j] + m[4]*c[j+1] + m[8] *c[j+2] + m[12]*c[j+3];
+      result[1] = m[1]*c[j] + m[5]*c[j+1] + m[9] *c[j+2] + m[13]*c[j+3];
+      result[2] = m[2]*c[j] + m[6]*c[j+1] + m[10]*c[j+2] + m[14]*c[j+3];
+      result[3] = m[3]*c[j] + m[7]*c[j+1] + m[11]*c[j+2] + m[15]*c[j+3];
 
-     c[j]   = result[0];
-     c[j+1] = result[1];
-     c[j+2] = result[2];
-     c[j+3] = result[3];
+      memcpy(&(c[j]), result, (size_t)(4*sizeof(double)));
 
-     j += stride;
-   }
+      j += stride;
+    }
 
  return;
 } /* ay_trafo_apply4v */
@@ -495,7 +490,7 @@ ay_trafo_delegate(ay_object *o)
       ay_quat_add(o->quat, child->quat, child->quat);
 
       child = child->next;
-    }
+    } /* while */
 
   o->movx = 0.0;
   o->movy = 0.0;
@@ -975,7 +970,7 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		     int argc, char *argv[])
 {
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
@@ -1035,14 +1030,11 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
  *  multiply transformation matrices <m1> and <m2> (do M1.M2),
  *  put result into <m1>
  */
-int
+void
 ay_trafo_multmatrix4(double *m1, double *m2)
 {
  double mt[16] = {0}, t;
  int i, j, k;
-
-  if(!m1 || !m2)
-    return AY_ENULL;
 
   for(j = 0; j < 4; j++)
     {
@@ -1059,9 +1051,8 @@ ay_trafo_multmatrix4(double *m1, double *m2)
 
   memcpy(m1, mt, 16*sizeof(double));
 
- return AY_OK;
+ return;
 } /* ay_trafo_multmatrix4 */
-
 
 
 /* ay_trafo_invmatrix4:
@@ -1424,7 +1415,7 @@ ay_trafo_rotatematrix(double angle, double x, double y, double z, double *m)
 
    mag = sqrt( x*x + y*y + z*z );
 
-   if (mag == 0.0) {
+   if (mag /*== 0.0*/ < AY_EPSILON) {
       /* do nothing */
      return;
    }

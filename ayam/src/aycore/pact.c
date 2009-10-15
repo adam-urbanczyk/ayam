@@ -338,7 +338,10 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       ay_trafo_getall(ay_currentlevel->next);
+       if(ay_currentlevel->object != ay_root)
+	 {
+	   ay_trafo_getall(ay_currentlevel->next);
+	 }
        glTranslated(o->movx, o->movy, o->movz);
        ay_quat_torotmatrix(o->quat, m);
        glMultMatrixd((GLdouble*)m);
@@ -431,8 +434,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-
-       ay_trafo_getalls(ay_currentlevel->next);
+       if(ay_currentlevel->object != ay_root)
+	 {
+	   ay_trafo_getalls(ay_currentlevel->next);
+	 }
        glGetDoublev(GL_MODELVIEW_MATRIX, m);
        lscal = fabs(m[0]);
        if(fabs(m[5]) < lscal)
@@ -1952,11 +1957,17 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
       if(!view->local)
 	{
-	  ay_trafo_getalli(ay_currentlevel->next);
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getalli(ay_currentlevel->next);
+	    }
 	}
       else
 	{
-	  ay_trafo_getallis(ay_currentlevel->next);
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getallis(ay_currentlevel->next);
+	    }
 	}
 
       glGetDoublev(GL_MODELVIEW_MATRIX, m);

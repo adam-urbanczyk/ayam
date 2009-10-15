@@ -1158,7 +1158,10 @@ ay_view_dropcb(ay_object *o)
 	      glPushMatrix();
 	       glLoadIdentity();
 
-	       ay_trafo_getall(ay_currentlevel->next);
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
 
 	       glTranslated(s->movx, s->movy, s->movz);
 

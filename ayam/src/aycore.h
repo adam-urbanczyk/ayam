@@ -1388,7 +1388,7 @@ int ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief multiply two transformation matrices
  */
-int ay_trafo_multmatrix4(double *m1, double *m2);
+void ay_trafo_multmatrix4(double *m1, double *m2);
 
 /*! \brief invert transformation matrix
  */

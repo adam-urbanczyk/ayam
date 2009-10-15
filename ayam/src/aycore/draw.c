@@ -199,7 +199,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     {
       o = ay_currentlevel->object;
       glPushMatrix();
-      ay_trafo_getall(ay_currentlevel->next);
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
     }
 
   /* set color for deselected objects */
@@ -231,8 +234,12 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
       glPushMatrix();
       if(!view->drawlevel)
-	ay_trafo_getall(ay_currentlevel->next);
-
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getall(ay_currentlevel->next);
+	    }
+	}
       /* let selected objects appear "on top" of current drawing */
       if(!draw_offset)
 	{
@@ -387,7 +394,7 @@ ay_draw_grid(struct Togl *togl)
       glGetDoublev(GL_PROJECTION_MATRIX, mp);
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-       if(ay_currentlevel && ay_currentlevel->next)
+       if(ay_currentlevel->object != ay_root)
 	 {
 	   ay_trafo_getall(ay_currentlevel->next);
 	 }
@@ -884,7 +891,7 @@ ay_draw_trimview(void)
  if(ay_currentlevel && ay_currentlevel->object != ay_root)
    {
      /* check, whether the current level is inside a NURBPatch object */
-     if(ay_currentlevel->next &&
+     if(ay_currentlevel->next && ay_currentlevel->next->object &&
 	(ay_currentlevel->next->object->type == AY_IDNPATCH))
        {
 	 /* it is; get the patch */
@@ -896,7 +903,8 @@ ay_draw_trimview(void)
 	inside a NURBPatch object (a trimloop level), are we? */
      if(!patch)
        {
-	 if(ay_currentlevel->next && ay_currentlevel->next->next &&
+	 if(ay_currentlevel->next &&
+	    ay_currentlevel->next->next &&
 	    ay_currentlevel->next->next->next &&
 	    ay_currentlevel->next->next->next->object &&
 	    (ay_currentlevel->next->next->next->object->type == AY_IDNPATCH))
