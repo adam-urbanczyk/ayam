@@ -233,7 +233,10 @@ ay_shade_view(struct Togl *togl)
     {
       o = ay_currentlevel->object;
       glPushMatrix();
-      ay_trafo_getall(ay_currentlevel->next);
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
     }
 
   if(!view->drawsel)
@@ -250,7 +253,12 @@ ay_shade_view(struct Togl *togl)
 
       glPushMatrix();
       if(!view->drawlevel)
-	ay_trafo_getall(ay_currentlevel->next);
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getall(ay_currentlevel->next);
+	    }
+	}
 
       /* all objects have been shaded already, if
          DrawSelectionOnly is _not_ enabled */

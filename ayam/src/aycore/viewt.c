@@ -200,7 +200,10 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-   ay_trafo_getall(ay_currentlevel->next);
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
 
    glTranslated(o->movx, o->movy, o->movz);
 
@@ -283,7 +286,10 @@ ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
 
-   ay_trafo_getall(ay_currentlevel->next);
+   if(ay_currentlevel->next)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
 
    glTranslated(o->movx, o->movy, o->movz);
 
@@ -399,7 +405,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 		    zmax = bb[a];
 		  a += 3;
 		}
-	    }
+	    } /* if */
 
 	  sel = sel->next;
 	} /* while */
@@ -407,7 +413,10 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       ay_trafo_getall(ay_currentlevel->next);
+       if(ay_currentlevel->next)
+	 {
+	   ay_trafo_getall(ay_currentlevel->next);
+	 }
        glGetDoublev(GL_MODELVIEW_MATRIX, mt);
       glPopMatrix();
 
@@ -1732,7 +1741,10 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 	  glGetDoublev(GL_PROJECTION_MATRIX, mp);
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
-	   ay_trafo_getall(ay_currentlevel->next);
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getall(ay_currentlevel->next);
+	     }
 
 	   if(view->aligned && ay_selection)
 	     {

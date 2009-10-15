@@ -82,14 +82,14 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	      /*	    if(view->type != AY_VTTRIM)*/
 	      if(!view->local)
 		{
-		  if(ay_currentlevel && ay_currentlevel->next)
+		  if(ay_currentlevel->object != ay_root)
 		    {
 		      ay_trafo_getallisr(ay_currentlevel->next);
 		    }
 		}
 	      else
 		{
-		  if(ay_currentlevel && ay_currentlevel->next)
+		  if(ay_currentlevel->object != ay_root)
 		    {
 		      ay_trafo_getallis(ay_currentlevel->next);
 		    }
@@ -333,7 +333,10 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
- 	   ay_trafo_getall(ay_currentlevel->next);
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getall(ay_currentlevel->next);
+	     }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   glScaled (o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
@@ -599,8 +602,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  ay = ay2;
 	  glPushMatrix();
-	  if(ay_currentlevel->next)
-	    ay_trafo_getall(ay_currentlevel->next);
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getall(ay_currentlevel->next);
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   /*ay_build_rotmatrix(m, o->quat);
 	     glMultMatrixf(&m[0][0]);*/
@@ -660,8 +665,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		xangle = 360.0-xangle;
 
 	      glPushMatrix();
-	      if(ay_currentlevel->next)
-		ay_trafo_getall(ay_currentlevel->next);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
 	      glTranslated(o->movx, o->movy, o->movz);
 
 	      glRotated(xangle, 1.0, 0.0, 0.0);
@@ -713,8 +720,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		zangle = 360.0-zangle;
 
 	      glPushMatrix();
-	      if(ay_currentlevel->next)
-		ay_trafo_getall(ay_currentlevel->next);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
 	      glTranslated(o->movx, o->movy, o->movz);
 
 	      glRotated(zangle, 0.0, 0.0, 1.0);
@@ -765,8 +774,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		yangle = 360.0-yangle;
 
 	      glPushMatrix();
-	      if(ay_currentlevel->next)
-		ay_trafo_getall(ay_currentlevel->next);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
 	      glTranslated(o->movx, o->movy, o->movz);
 
 	      glRotated(yangle, 0.0, 1.0, 0.0);
@@ -1007,7 +1018,10 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	  if(view->type != AY_VTTRIM)
 	    {
-	      ay_trafo_getall(ay_currentlevel->next);
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
 	    }
 
 	   glTranslated(o->movx, o->movy, o->movz);
@@ -1065,12 +1079,22 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	       glLoadIdentity();
 
 	       if(!view->local)
-		 ay_trafo_getallisr(ay_currentlevel->next);
+		 {
+		  if(ay_currentlevel->object != ay_root)
+		    {
+		      ay_trafo_getallisr(ay_currentlevel->next);
+		    }
+		 }
 
 	       glScaled(dscalx,1.0,1.0);
 
 	       if(!view->local)
-		 ay_trafo_getallsr(ay_currentlevel->next);
+		 {
+		  if(ay_currentlevel->object != ay_root)
+		    {
+		      ay_trafo_getallsr(ay_currentlevel->next);
+		    }
+		 }
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
@@ -1197,7 +1221,12 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -1252,12 +1281,22 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	       glLoadIdentity();
 
 	       if(!view->local)
-		 ay_trafo_getallisr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glScaled(1.0,dscaly,1.0);
 
 	       if(!view->local)
-		 ay_trafo_getallsr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
@@ -1387,7 +1426,12 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -1442,12 +1486,22 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	       glLoadIdentity();
 
 	       if(!view->local)
-		 ay_trafo_getallisr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glScaled(1.0,1.0,dscalz);
 
 	       if(!view->local)
-		 ay_trafo_getallsr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
@@ -1571,7 +1625,12 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -1601,7 +1660,10 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 	  glPushMatrix();
 	   glLoadIdentity();
 
-	   ay_trafo_getallisr(ay_currentlevel->next);
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallisr(ay_currentlevel->next);
+	     }
 
 	   ay_quat_to_euler(o->quat,euler);
 	   glRotatef(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
@@ -1611,7 +1673,11 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
 	   glRotatef(AY_R2D(-euler[2]), 1.0, 0.0, 0.0);
 	   glRotatef(AY_R2D(-euler[1]), 0.0, 1.0, 0.0);
 	   glRotatef(AY_R2D(-euler[0]), 0.0, 0.0, 1.0);
-	   ay_trafo_getallsr(ay_currentlevel->next);
+
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallsr(ay_currentlevel->next);
+	     }
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
@@ -1731,7 +1797,12 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -1762,7 +1833,10 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 	  glPushMatrix();
 	   glLoadIdentity();
 
-	   ay_trafo_getallisr(ay_currentlevel->next);
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallisr(ay_currentlevel->next);
+	     }
 
 	   ay_quat_to_euler(o->quat,euler);
 	   glRotatef(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
@@ -1772,7 +1846,11 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
 	   glRotatef(AY_R2D(-euler[2]), 1.0, 0.0, 0.0);
 	   glRotatef(AY_R2D(-euler[1]), 0.0, 1.0, 0.0);
 	   glRotatef(AY_R2D(-euler[0]), 0.0, 0.0, 1.0);
-	   ay_trafo_getallsr(ay_currentlevel->next);
+
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallsr(ay_currentlevel->next);
+	     }
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
@@ -1892,7 +1970,12 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -1936,7 +2019,10 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	  glPushMatrix();
 	   glLoadIdentity();
 
-	   ay_trafo_getallisr(ay_currentlevel->next);
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallisr(ay_currentlevel->next);
+	     }
 
 	   ay_quat_to_euler(o->quat,euler);
 	   glRotatef(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
@@ -1946,7 +2032,11 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 	   glRotatef(AY_R2D(-euler[2]), 1.0, 0.0, 0.0);
 	   glRotatef(AY_R2D(-euler[1]), 0.0, 1.0, 0.0);
 	   glRotatef(AY_R2D(-euler[0]), 0.0, 0.0, 1.0);
-	   ay_trafo_getallsr(ay_currentlevel->next);
+
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallsr(ay_currentlevel->next);
+	     }
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
@@ -2067,7 +2157,12 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -2100,7 +2195,12 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	       glLoadIdentity();
 
 	       if(!view->local)
-		 ay_trafo_getallisr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
 
 	       switch(view->type)
 		 {
@@ -2119,7 +2219,12 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 		 }
 
 	       if(!view->local)
-		 ay_trafo_getallsr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
@@ -2264,7 +2369,12 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
-	    ay_trafo_getall(ay_currentlevel->next);
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
@@ -2297,12 +2407,22 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	       glLoadIdentity();
 
 	       if(!view->local)
-		 ay_trafo_getallisr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glScaled(dscal,dscal,dscal);
 
 	       if(!view->local)
-		 ay_trafo_getallsr(ay_currentlevel->next);
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
 
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
