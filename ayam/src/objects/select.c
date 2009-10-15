@@ -261,6 +261,11 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
   if(ay_read_version >= 13)
     {
       ay_status = ay_read_string(fileptr, &(select->indices));
+      if(ay_status)
+	{
+	  free(select);
+	  return ay_status;
+	}
     }
   else
     {
@@ -301,13 +306,14 @@ ay_select_writecb(FILE *fileptr, ay_object *o)
 int
 ay_select_wribcb(char *file, ay_object *o)
 {
- ay_select_object *select = NULL;
+  /*
+  ay_select_object *select = NULL;
 
   if(!o)
    return AY_ENULL;
 
   select = (ay_select_object*)o->refine;
-
+  */
  return AY_OK;
 } /* ay_select_wribcb */
 
