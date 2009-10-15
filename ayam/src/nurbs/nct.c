@@ -2133,7 +2133,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   /* get curves transformation-matrix */
   ay_trafo_creatematrix(sel->object, m1);
@@ -2424,7 +2424,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(o);
+  ay_object_defaults(o);
 
   /* we create the nurbcurve-object */
   if(argc < 2)
@@ -3038,7 +3038,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     }
 
   newo->type = AY_IDNCURVE;
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   /* count curves; calculate length of concatenated curve */
   o = curves;

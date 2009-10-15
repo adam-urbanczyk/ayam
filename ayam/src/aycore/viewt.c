@@ -170,19 +170,18 @@ ay_viewt_rotate(ay_view_object *view, double rotx, double roty, double rotz)
  * Assumes the standard transformations are
  * in use!
  */
-int
+void
 ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 		  double winX, double winY,
 		  double *objX, double *objY, double *objZ)
 {
- int ay_status = AY_OK;
  int height = Togl_Height(togl);
  GLint viewport[4];
  GLdouble modelMatrix[16], projMatrix[16], m[16], winx, winy;
  GLfloat winz = 0.0f;
 
-  if(!o)
-    return AY_ENULL;
+  if(!togl || !o || !objX || !objY || !objZ)
+    return;
 
   winx = winX;
   winy = height - winY;
@@ -221,7 +220,7 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 
   glPopMatrix();
 
- return ay_status;
+ return;
 } /* ay_viewt_wintoobj */
 
 
@@ -232,18 +231,17 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
  * Assumes the standard transformations are
  * in use!
  */
-int
+void
 ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
 		      double winX, double winY, double winX2, double winY2,
 		      double *obj)
 {
- int ay_status = AY_OK;
  int height = Togl_Height(togl), i, j;
  GLint viewport[4];
  GLdouble modelMatrix[16], projMatrix[16], m[16], win[24];
 
   if(!togl || !o || !obj)
-    return AY_ENULL;
+    return;
 
   j = AY_TRUE;
 
@@ -309,7 +307,7 @@ ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
 
   glPopMatrix();
 
- return ay_status;
+ return;
 } /* ay_viewt_winrecttoobj */
 
 
@@ -317,15 +315,17 @@ ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
  *  transforms the window coordinates winX winY
  *  to world coordinates
  */
-int
+void
 ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
 		    double *worldX, double *worldY, double *worldZ)
 {
- int ay_status = AY_OK;
  int height = Togl_Height(togl);
  GLint viewport[4];
  GLdouble modelMatrix[16], projMatrix[16], winx, winy;
  GLfloat winz = 0.0f;
+
+  if(!togl || !worldX || !worldY || !worldZ)
+    return;
 
   winx = winX;
   winy = height - winY;
@@ -345,7 +345,7 @@ ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 	       worldX, worldY, worldZ);
 
- return ay_status;
+ return;
 } /* ay_viewt_wintoworld */
 
 

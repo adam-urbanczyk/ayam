@@ -306,7 +306,7 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->parent = AY_TRUE;
   newo->hide_children = AY_TRUE;
@@ -411,7 +411,7 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
  return ay_status;
 } /* ay_mfio_readnurbcurve */
@@ -491,7 +491,7 @@ ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
  return ay_status;
 } /* ay_mfio_readnurbcurve2d */
@@ -563,7 +563,7 @@ ay_mfio_readpolyline(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
  return ay_status;
 } /* ay_mfio_readpolyline */
@@ -964,7 +964,7 @@ ay_mfio_readbox(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   newo->movx = 0.5;
   newo->movy = 0.5;
@@ -1022,7 +1022,7 @@ ay_mfio_readellipsoid(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   if(o->ellipsoid)
     {
@@ -1076,7 +1076,7 @@ ay_mfio_readcylinder(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   if(o->cylinder)
     {
@@ -1129,7 +1129,7 @@ ay_mfio_readcone(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   if(o->cone)
     {
@@ -1181,7 +1181,7 @@ ay_mfio_readdisk(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   if(o->disk)
     {
@@ -1236,7 +1236,7 @@ ay_mfio_readtorus(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   if(o->torus)
     {
@@ -1471,7 +1471,7 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
   newo->refine = newl;
 
   newo->type = AY_IDLEVEL;
-  ay_status = ay_object_defaults(newo);
+  ay_object_defaults(newo);
 
   ay_mfio_lastreadobject = newo;
 

@@ -64,11 +64,11 @@ int ay_pact_notify(ay_object *o, int j, int k);
  *   clear/reset a ay_pointedit structure
  *   (does not attempt to free <pe> itself!)
  */
-int
+void
 ay_pact_clearpointedit(ay_pointedit *pe)
 {
   if(!pe)
-    return AY_ENULL;
+    return;
 
   if(pe->coords)
     free(pe->coords);
@@ -81,7 +81,7 @@ ay_pact_clearpointedit(ay_pointedit *pe)
   pe->num = 0;
   pe->homogenous = AY_FALSE;
 
- return AY_OK;
+ return;
 } /* ay_pact_clearpointedit */
 
 
@@ -184,15 +184,15 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glReadPixels((GLint)(winX),(GLint)(height-winY), 1, 1,
 		       GL_RGB, GL_FLOAT, &pixel);
-	  ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
-					&(obj[0]), &(obj[1]), &(obj[2]));
+
+	  ay_viewt_wintoobj(togl, o, winX, winY,
+			    &(obj[0]), &(obj[1]), &(obj[2]));
 
 	  ay_status = ay_pact_getpoint(1, o, obj, &pe);
 	}
       else
 	{
-	  ay_status = ay_viewt_winrecttoobj(togl, o, winX, winY, winX2, winY2,
-					    obj);
+	  ay_viewt_winrecttoobj(togl, o, winX, winY, winX2, winY2, obj);
 
 	  /* create plane equation coefficients */
 	  ay_trafo_pointstoplane(obj[0], obj[1], obj[2],
@@ -216,10 +216,9 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 				 &(pl[12]), &(pl[13]), &(pl[14]), &(pl[15]));
 
 	  ay_status = ay_pact_getpoint(2, o, pl, &pe);
-
 	} /* if */
 
-      if(pe.coords)
+      if(!ay_status && pe.coords)
 	{
 	  for(i = 0; i < pe.num; i++)
 	    {
@@ -469,12 +468,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       /*printf("using pickepsilon %g\n", ay_prefs.pick_epsilon);*/
 
-      ay_status = ay_viewt_wintoobj(togl, sel->object, winX, winY,
-				    &(obj[0]), &(obj[1]), &(obj[2]));
+      ay_viewt_wintoobj(togl, sel->object, winX, winY,
+			&(obj[0]), &(obj[1]), &(obj[2]));
 
       ay_status = ay_pact_getpoint(1, sel->object, obj, &pact_pe);
 
-      if(pact_pe.coords)
+      if(!ay_status && pact_pe.coords)
 	{
 	  o = sel->object;
 
@@ -673,12 +672,12 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[3], &winX);
       Tcl_GetDouble(interp, argv[4], &winY);
 
-      ay_status = ay_viewt_wintoobj(togl, o, winX, winY,
-				    &(obj[0]), &(obj[1]), &(obj[2]));
+      ay_viewt_wintoobj(togl, o, winX, winY,
+			&(obj[0]), &(obj[1]), &(obj[2]));
 
       ay_status = ay_pact_getpoint(1, o, obj, &pe);
 
-      if(pe.coords)
+      if(!ay_status && pe.coords)
 	{
 	  /* first, save the pointers to the picked point(s)*/
 	  if(!(pe_coords = calloc(pe.num, sizeof(double*))))
@@ -1474,9 +1473,9 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
-      ay_status = ay_viewt_wintoobj(togl, ay_selection->object,
-				    winX, winY,
-				    &objX, &objY, &objZ);
+      ay_viewt_wintoobj(togl, ay_selection->object,
+			winX, winY,
+			&objX, &objY, &objZ);
 
       switch(ay_selection->object->type)
 	{
@@ -1822,9 +1821,9 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
-      ay_status = ay_viewt_wintoobj(togl, ay_selection->object,
-				    winX, winY,
-				    &objX, &objY, &objZ);
+      ay_viewt_wintoobj(togl, ay_selection->object,
+			winX, winY,
+			&objX, &objY, &objZ);
 
       switch(ay_selection->object->type)
 	{
