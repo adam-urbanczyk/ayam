@@ -248,6 +248,7 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_select_object *select = NULL;
  int tmpi;
+ int read = 0;
  char *buf = NULL;
 
   if(!o)
@@ -256,10 +257,13 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
   if(!(select = calloc(1, sizeof(ay_select_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr, "%d\n", &tmpi);
-
   if(ay_read_version >= 13)
     {
+      fscanf(fileptr, "%d", &tmpi);
+
+      read = fgetc(fileptr);
+      if(read == '\r')
+	fgetc(fileptr);
       ay_status = ay_read_string(fileptr, &(select->indices));
       if(ay_status)
 	{
@@ -269,6 +273,8 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
     }
   else
     {
+      fscanf(fileptr, "%d\n", &tmpi);
+
       if(!(buf = calloc(64, sizeof(char))))
 	{ free(select); return AY_EOMEM; }
       sprintf(buf,"%d",tmpi);

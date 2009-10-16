@@ -327,6 +327,7 @@ ay_riproc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_riproc_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_riproc_object *riproc = NULL;
  int read = 0;
 
@@ -345,10 +346,18 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
   read = fgetc(fileptr);
   if(read == '\r')
     fgetc(fileptr);
-  ay_read_string(fileptr, &(riproc->file));
-
-  ay_read_string(fileptr, &(riproc->data));
-
+  ay_status = ay_read_string(fileptr, &(riproc->file));
+  if(ay_status)
+    {
+      free(riproc);
+      return ay_status;
+    }
+  ay_status = ay_read_string(fileptr, &(riproc->data));
+  if(ay_status)
+    {
+      free(riproc);
+      return ay_status;
+    }
   o->refine = riproc;
 
  return AY_OK;

@@ -682,7 +682,11 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 2)
     {
-      ay_read_string(fileptr, &(vtemp.bgimage));
+      ay_status = ay_read_string(fileptr, &(vtemp.bgimage));
+      if(ay_status)
+	{
+	  return ay_status;
+	}
       fscanf(fileptr,"%d\n", &vtemp.drawbg);
     }
 
