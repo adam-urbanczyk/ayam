@@ -64,7 +64,7 @@ char aycsg_version_mi[] = AY_VERSIONSTRMI;
 // prototypes of functions local to this module
 int aycsg_rendertcb(struct Togl *togl, int argc, char *argv[]);
 
-int aycsg_drawtoplevelprim(Togl *togl);
+void aycsg_drawtoplevelprim(Togl *togl);
 
 void aycsg_getNDCBB(ay_object *t, struct Togl *togl,
 		    double *minx, double *miny, double *minz,
@@ -342,8 +342,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
     } // while
 
   // now draw non-CSG top level primitives
-
-  ay_status = aycsg_drawtoplevelprim(togl);
+  aycsg_drawtoplevelprim(togl);
 
   if(view->drawsel || view->drawlevel)
     {
@@ -371,10 +370,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
 // aycsg_drawtoplevelprim:
 //  draw non-CSG primitives in the top level of the scene
-int
+void
 aycsg_drawtoplevelprim(Togl *togl)
 {
- int ay_status = AY_OK;
  ay_object *t = aycsg_root;
  int has_tm = AY_FALSE;
 
@@ -394,7 +392,7 @@ aycsg_drawtoplevelprim(Togl *togl)
 		  glFrontFace(GL_CW);
 		}
 	    } // if
-	  ay_status = ay_shade_object(togl, t, AY_FALSE);
+	  ay_shade_object(togl, t, AY_FALSE);
 	  if(has_tm)
 	    {
 	      if(t->tags->name)
@@ -407,7 +405,7 @@ aycsg_drawtoplevelprim(Togl *togl)
       t = t->next;
     } // while
 
- return ay_status;
+ return;
 } // aycsg_drawtoplevelprim
 
 
