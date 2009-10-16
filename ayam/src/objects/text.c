@@ -340,6 +340,7 @@ int
 ay_text_readcb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
+ int ay_status = AY_OK;
  int read = 0;
  ay_tag tag = {0}, *stag = NULL, *etag = NULL;
  char vbuf[128], nbuf[3] = "BP";
@@ -358,7 +359,12 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
   read = fgetc(fileptr);
   if(read == '\r')
     fgetc(fileptr);
-  ay_read_string(fileptr, &(text->fontname));
+  ay_status = ay_read_string(fileptr, &(text->fontname));
+  if(ay_status)
+    {
+      free(text);
+      return ay_status;
+    }
   ay_read_unistring(fileptr, &(text->unistring));
 
   fscanf(fileptr, "%d\n", &text->revert);

@@ -280,6 +280,7 @@ ay_riinc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_riinc_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_riinc_object *riinc = NULL;
  int read = 0;
 
@@ -295,8 +296,12 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
   read = fgetc(fileptr);
   if(read == '\r')
     fgetc(fileptr);
-  ay_read_string(fileptr, &(riinc->file));
-
+  ay_status = ay_read_string(fileptr, &(riinc->file));
+  if(ay_status)
+    {
+      free(riinc);
+      return ay_status;
+    }
   o->refine = riinc;
 
  return AY_OK;

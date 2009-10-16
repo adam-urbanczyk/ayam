@@ -612,22 +612,36 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   if(read == '\r')
     fgetc(fileptr);
 
-  ay_read_string(fileptr, &(riopt->textures));
-
-  ay_read_string(fileptr, &(riopt->archives));
-
-  ay_read_string(fileptr, &(riopt->shaders));
+  ay_status = ay_read_string(fileptr, &(riopt->textures));
+  if(ay_status)
+    {
+      free(riopt);
+      return ay_status;
+    }
+  ay_status = ay_read_string(fileptr, &(riopt->archives));
+  if(ay_status)
+    {
+      if(riopt->textures)
+	free(riopt->textures);
+      free(riopt);
+      return ay_status;
+    }
+  ay_status = ay_read_string(fileptr, &(riopt->shaders));
+  if(ay_status)
+    {
+      if(riopt->textures)
+	free(riopt->textures);
+      if(riopt->archives)
+	free(riopt->archives);
+      free(riopt);
+      return ay_status;
+    }
 
   fscanf(fileptr,"%d\n",&riopt->texturemem);
   fscanf(fileptr,"%d\n",&riopt->geommem);
 
   fscanf(fileptr,"%d\n",&riopt->width);
   fscanf(fileptr,"%d\n",&riopt->height);
-
-  if(root->riopt)
-    free(root->riopt);
-
-  root->riopt = riopt;
 
   /* read Atmosphere */
   fscanf(fileptr,"%d\n",&has_atmosphere);
@@ -661,13 +675,28 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       if(read == '\r')
 	fgetc(fileptr);
 
-      ay_read_string(fileptr, &(riopt->procedurals));
-
+      ay_status = ay_read_string(fileptr, &(riopt->procedurals));
+      if(ay_status)
+	{
+	  if(riopt->textures)
+	    free(riopt->textures);
+	  if(riopt->archives)
+	    free(riopt->archives);
+	  if(riopt->shaders)
+	    free(riopt->shaders);
+	  free(riopt);
+	  return ay_status;
+	}
     }
   else
     {
       riopt->use_std_display = AY_TRUE;
     }
+
+  if(root->riopt)
+    free(root->riopt);
+
+  root->riopt = riopt;
 
   if(ay_read_version >= 10)
     {
