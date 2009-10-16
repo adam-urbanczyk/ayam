@@ -355,6 +355,8 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
   ay_status = ay_read_string(fileptr, &(riproc->data));
   if(ay_status)
     {
+      if(riproc->file)
+	free(riproc->file);
       free(riproc);
       return ay_status;
     }
