@@ -103,6 +103,11 @@ ay_light_copycb(void *src, void **dst)
     {
       ay_status = ay_shader_copy(((ay_light_object*)src)->lshader,
 				 &(light->lshader));
+      if(ay_status)
+	{
+	  free(light);
+	  return ay_status;
+	}
     }
 
   *dst = (void *)light;
@@ -122,14 +127,11 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
  ay_shader_arg *sarg = NULL;
  GLdouble from[3] = {0};
  GLdouble to[3] = {0};
- GLdouble w;
  double radius = 0.0, len = 0.0, vd[3] = {0}, va[3] = {0}, vn[3] = {0};
  double quat[4] = {0}, rm[16];
  int has_from = 0, has_to = 0, i, a;
  double c1[24] = {0};
  GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f};
-
-  w = (GLdouble)(sqrt(2.0)*0.5);
 
   if(!o)
     return AY_ENULL;
@@ -875,7 +877,6 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
   if(!(light = calloc(1, sizeof(ay_light_object))))
     { return AY_EOMEM; }
 
-
   fscanf(fileptr,"%d\n",&light->shadows);
   fscanf(fileptr,"%d\n",&light->samples);
   fscanf(fileptr,"%d\n",&light->type);
@@ -902,6 +903,11 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
   if(has_shader)
     {
       ay_status = ay_read_shader(fileptr, &light->lshader);
+      if(ay_status)
+	{
+	  free(light);
+	  return ay_status;
+	}
       /* copy shader from/to to light.tfrom light.tto */
       ay_status = ay_pact_getpoint(1, o, p, &pe);
       ay_pact_clearpointedit(&pe);
@@ -963,7 +969,7 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", light->local);
 
- return AY_OK;
+ return ay_status;
 } /* ay_light_writecb */
 
 
