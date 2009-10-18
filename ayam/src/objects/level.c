@@ -212,7 +212,10 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
   if(type == AY_LTEND)
     {
       result = ay_clevel_gouptcmd(NULL, ay_interp, 0, NULL);
-      return AY_EDONOTLINK;
+      if(result != TCL_OK)
+	return AY_ERROR;
+      else
+	return AY_EDONOTLINK;
     }
 
   if(!(level = calloc(1, sizeof(ay_level_object))))
@@ -256,13 +259,14 @@ ay_level_writecb(FILE *fileptr, ay_object *o)
 int
 ay_level_wribcb(char *file, ay_object *o)
 {
- ay_level_object *level = NULL;
+  /*
+  ay_level_object *level = NULL;
 
   if(!o)
    return AY_ENULL;
 
   level = (ay_level_object*)o->refine;
-
+  */
 
  return AY_OK;
 } /* ay_level_wribcb */
