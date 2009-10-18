@@ -218,6 +218,8 @@ array set Sphere_1 {
     vars {Radius ZMin ZMax}
 }
 set Sphere_1(ThetaMax) $angles
+#set Sphere_1(ThetaMax) {-180 -1 1 90}
+#set Sphere_1(postcmd) {aytest_varcmds}
 
 lappend Sphere_1(vals) { 1.0 -1.0 1.0 }
 lappend Sphere_1(vals) { 1.0 -0.1 0.1 }
@@ -513,7 +515,7 @@ lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
 set types {}
 lappend types Sphere Cylinder Disk Cone
-
+#set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
     test_var $type
@@ -1277,6 +1279,102 @@ foreach type $types {
 # aytest_5
 
 
+#
+# what to do with the object variants
+#
+proc aytest_varcmds { } {
+uplevel #0 {
+
+# create a level and move the newly created object to it
+copOb
+crtOb Level
+goDown -1
+pasOb
+hSL
+
+
+set view1 ""
+if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
+    set view1 .fv.fViews.fview1.f3D.togl
+}
+set view2 ""
+if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
+    set view2 .fv.fViews.fview2.f3D.togl
+}
+
+
+puts $log "Copy...\n"
+copOb
+pasOb
+hSL
+
+puts $log "Delete...\n"
+delOb
+hSL
+
+puts $log "Get properties...\n"
+getProp
+
+puts $log "Set properties...\n"
+setProp
+
+puts $log "Save...\n"
+saveScene $scratchfile 1
+
+puts $log "Read...\n"
+insertScene $scratchfile
+catch {file delete $scratchfile}
+
+puts $log "Export...\n"
+wrib $scratchfile -selonly
+catch {file delete $scratchfile}
+
+if { [winfo exists $view1] } {
+    puts $log "Draw...\n"
+    $view1 mc
+    $view1 redraw
+}
+
+if { [winfo exists $view2] } {
+    puts $log "Shade...\n"
+    $view2 mc
+    $view2 redraw
+}
+
+if { [winfo exists $view1] } {
+    puts $log "Get BB...\n"
+    $view1 mc
+    $view1 zoomob
+}
+
+puts $log "Notify...\n"
+forceNot
+
+puts $log "Select Pnts...\n"
+selPnts -all
+selPnts
+selPnts 0 2
+selPnts
+
+puts $log "Convert...\n"
+convOb
+convOb -inplace
+
+# missing tests: select points via action callback,
+# draw points/handles, (comparison - AI?)
+
+# cleanup
+goUp
+hSL
+delOb
+hSL
+
+}
+}
+#aytest_varcmds
+
+
+
 # forall:
 #  taken from http://wiki.tcl.tk/2546
 #  (Cartesian product of a list of lists)
@@ -1315,7 +1413,7 @@ proc test_var { type } {
 
 # Every object variation array contains the following components:
 #  precmd - commands to run after object creation but before variation
-#  postcmd - commands to run
+#  postcmd - actual commands to test the implementation
 #  arr - array to put all variable data into
 #  vars - list of variable names in array arr
 #  vals - list of value sets for all variables in vars
@@ -1326,11 +1424,18 @@ proc test_var { type } {
 
   set i 1
   while {[info exists ::${type}_$i]} {
+
+      crtOb Level
+      goDown -1
+
       eval set arr \$::${type}_${i}(arr)
       eval set vars \$::${type}_${i}(vars)
       eval set vals \$::${type}_${i}(vals)
       set l 0
       foreach valset $vals {
+
+	  crtOb Level
+	  goDown -1
 
 	  crtOb $type
 	  hSL
@@ -1350,9 +1455,10 @@ proc test_var { type } {
 	  }
 	  setProp
 
-	  # set free variables
+	  # valset has free variables?
 	  if { [info exists ::${type}_${i}(freevars)] } {
-	      copOb
+	      # yes, set free variables
+
 	      set body "forall "
 	      eval set freevars \$::${type}_${i}(freevars)
 	      foreach freevar $freevars {
@@ -1363,30 +1469,46 @@ proc test_var { type } {
 		  append body " "
 	      }
 	      set k 0
-	      lappend body {
-		  pasOb;hSL;
+	      set cmds {
+		  selOb 0;copOb;pasOb;hSL;
 		  setProp;
 		  movOb $k $l $i;
-
-		  if { ! $::aytestprefs(KeepObjects) } {
-		      delOb
-		  }
-		  incr k 2
+		  incr k 2;
 	      }
+
+	      if { [info exists ::${type}_${i}(postcmd)] } {
+		  eval append cmds \$::${type}_${i}(postcmd)
+	      }
+
+	      if { ! $::aytestprefs(KeepObjects) } {
+		  append cmds ";delOb;"
+	      }
+
+	      lappend body $cmds
+	      # call forall with test commands 
 	      eval $body
 	  } else {
-	      #
+	      # no, there are no free variables
+
 	      movOb $j $i 0.0;
+
+	      if { [info exists ::${type}_${i}(postcmd)] } {
+		  eval \$::${type}_${i}(postcmd)
+	      }
 
 	      if { ! $::aytestprefs(KeepObjects) } {
 		  delOb
 	      }
 	  }
 	  incr l
+
+	  goUp
       }
       # foreach
       rV
       incr i
+
+      goUp
   }
   # while
 
