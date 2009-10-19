@@ -9383,7 +9383,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       for(i = 0; i < np2->width; i++)
 	{
 	  memcpy(&(np2->controlv[a]), &(np1->controlv[b]),
-		 np1->height*stride*sizeof(double));
+		 np2->height*stride*sizeof(double));
 	  a += (np2->height*stride);
 	  b += (oldnp1height*stride);
 	}
