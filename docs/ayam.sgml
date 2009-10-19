@@ -2485,7 +2485,8 @@ and make sure that the curve remains two-dimensional all the time.
 <p>
 All you need to do is to first select the curve and then press
 <tt/&lt;Ctrl+a&gt;/ to align the view and then <tt/&lt;Ctrl+l&gt;/ to
-make it local.
+make it local (use <tt/&lt;L&gt;/ and <tt/&lt;l&gt;/ in internal views
+respectively).
 In practice, this means that the input plane of an aligned local view
 will match the XY-, ZY-, or XZ-plane of the local object space,
 depending on the type of the view (<tt/"Front"/, <tt/"Side"/, or <tt/"Top"/).
@@ -6050,6 +6051,12 @@ of the created NURBS curve.
 </itemize>
 
 <sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
+<p>
+<figure loc="ht">
+<eps file="pics/extrnc.ps" height="5cm">
+<img src="pics/extrnc.gif">
+<caption>Extracted Curves (white) from Arbitrarily Shaped Surface (blue)</caption>
+</figure>
 <p>
 The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
