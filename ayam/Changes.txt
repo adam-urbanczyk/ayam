@@ -1,4 +1,4 @@
-[3. Oct 2009] CVS-Head:
+[20. Oct 2009] CVS-Head:
 =======================
 Bug Fixes:
 o <Tab> key does not work after <Ctrl+l> (SF 2869550)
@@ -12,10 +12,14 @@ o Script objects with own, script controlled, property GUIs fail to load
   not possible to have multiple copies of them (SF )
 o crash when first object in a Trim object hierarchy is not a NPatch
   (and does not provide an NPatch either) (SF 2876536)
+o reading of Select objects written on Unix using Ayam on Win32 (SF 2881570)
+o crash when ExtrNP object is used to cut in v parametric dimension
+  (SF 2882634)
 
 Modelling:
 o in the point selection action, points may now also be deselected using
   the <Shift> key in conjunction with the mouse drag operation
+o MetaObj user controlled expressions now also run in the safe interpreter
 
 GUI
 o improved speed of focus changes between internal view 3 and the tree view
