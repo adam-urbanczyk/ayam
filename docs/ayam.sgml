@@ -6060,7 +6060,8 @@ of the created NURBS curve.
 <p>
 The ExtrNC object extracts a NURBS curve from a NURBS patch object,
 for use as parameter object for other tool objects, like e.g.
-Revolve. It also works with NURBS patch providing objects, so that
+Revolve (see image above).
+It also works with NURBS patch providing objects, so that
 the following example hierarchy is valid:
 <#if out=latex><x/needspace 8/</#if>
 <code>
@@ -6145,9 +6146,16 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
 <p>
+<figure loc="ht">
+<eps file="pics/ncircles.ps" height="5cm">
+<img src="pics/ncircles.gif">
+<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax 200)</caption>
+</figure>
+<p>
 The NCircle object is available since Ayam 1.12 and creates a
 circular NURBS curve or a circular arc in the XY plane
-centered at the origin with designated radius and start/end angles.
+centered at the origin with designated radius and start/end angles
+(see image above).
 <p>
 In order to revert the created NURBS curve, since Ayam 1.15,
 the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
@@ -6285,13 +6293,19 @@ of the created NURBS patch.
 
 <sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
 <p>
+<figure loc="ht">
+<eps file="pics/extrnp.ps" height="5cm">
+<img src="pics/extrnp.gif">
+<caption>Extracted Surface (white) from Arbitrarily Shaped Surface (blue)</caption>
+</figure>
+<p>
 The ExtrNP object, available since Ayam 1.14, extracts a NURBS patch from
 another NURBS patch object, for use as parameter object for other tool
-objects.
+objects (see image above).
 <p>
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
-<#if out=latex><x/needspace 5/</#if>
+<!-- <#if out=latex><x/needspace 5/</#if> -->
 <code>
 --NPatch
 +-ExtrNP
