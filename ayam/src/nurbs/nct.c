@@ -2985,7 +2985,7 @@ int
 ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 {
  int stride = 4;
- char fname[] = "ay_nct_getpntfromindex";
+ char fname[] = "nct_getpntfromindex";
 
   if(!curve || !p)
     return AY_ENULL;
@@ -4945,7 +4945,7 @@ int
 ay_nct_coarsen(ay_nurbcurve_object *curve)
 {
  int ay_status = AY_OK;
- char fname[] = "ay_nct_coarsen";
+ char fname[] = "nct_coarsen";
  double *newcontrolv = NULL, *newknotv = NULL;
  int i, a, b, stride = 4, newlength, p, t;
 

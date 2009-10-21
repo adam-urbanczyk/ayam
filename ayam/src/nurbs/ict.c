@@ -1200,7 +1200,7 @@ int
 ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
 {
  int stride = 3;
- char fname[] = "ay_ict_getpntfromindex";
+ char fname[] = "ict_getpntfromindex";
 
   if(index > (curve->length+1) || index < 0)
     {

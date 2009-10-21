@@ -118,7 +118,7 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder, wrapu = 0, wrapv = 0;
  int i = 0, j = 0, winu, winv, k, a, b, nw, nh;
  ay_object *o = NULL, **nexto = NULL;
- char fname[] = "ay_pmt_bicubiccltonpatch";
+ char fname[] = "pmt_bicubiccltonpatch";
 
   if(!pamesh || !result)
    return AY_ENULL;
@@ -326,7 +326,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
  int evwinwidth, evwinheight, ktu, ktv, uorder, vorder;
  int i = 0, j = 0, winu, winv, k, a, b;
  ay_object *o = NULL, **nexto = NULL;
- char fname[] = "ay_pmt_tonpatch";
+ char fname[] = "pmt_tonpatch";
 
   if(!pamesh || !result)
    return AY_ENULL;
@@ -622,7 +622,7 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 		       double **p)
 {
  int stride = 4;
- char fname[] = "ay_pmt_getpntfromindex";
+ char fname[] = "pmt_getpntfromindex";
 
   if(indexu >= patch->width || indexu < 0)
     {

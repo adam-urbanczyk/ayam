@@ -1145,7 +1145,7 @@ int
 ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
 {
  int stride = 3;
- char fname[] = "ay_act_getpntfromindex";
+ char fname[] = "act_getpntfromindex";
 
   if(index >= curve->length || index < 0)
     {
