@@ -235,7 +235,7 @@ ay_write_object(FILE *fileptr, ay_object *o)
       fprintf(fileptr,"1\n%s\n", ay_object_gettypename(o->type));
     }
 
-  if(o->down)
+  if(o->down && o->down->next)
     {
       fprintf(fileptr,"1\n");
     }
@@ -272,7 +272,7 @@ ay_write_object(FILE *fileptr, ay_object *o)
     }
 
   /* write children */
-  if(o->down)
+  if(o->down && o->down->next)
     {
       down = o->down;
       while(down)

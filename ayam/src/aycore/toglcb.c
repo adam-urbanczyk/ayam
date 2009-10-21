@@ -40,9 +40,14 @@ ay_toglcb_create(struct Togl *togl)
       return;
     }
   ay_object_defaults(o);
+
   o->refine = view;
   o->type = AY_IDVIEW;
   o->hide = AY_TRUE;
+  o->parent = AY_TRUE;
+  o->hide_children = AY_TRUE;
+
+  ay_object_crtendlevel(&(o->down));
 
   /* link object (manually, not via ay_object_link())
      as child to ay_root */
