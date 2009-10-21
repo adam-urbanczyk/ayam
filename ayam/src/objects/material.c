@@ -540,7 +540,7 @@ ay_material_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Registered",-1);
   ay_status = ay_matt_getmaterial(o->name, &mat);
-  if(mat == material)
+  if(!ay_status && (mat == material))
     {
       to = Tcl_NewStringObj("Yes.", -1);
     }
@@ -659,7 +659,6 @@ int
 ay_material_writecb(FILE *fileptr, ay_object *o)
 {
  ay_mat_object *material = NULL;
- int ay_status = AY_OK;
 
   if(!o)
     return AY_ENULL;
@@ -693,7 +692,7 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
   if(material->sshader)
     {
       fprintf(fileptr, "1\n");
-      ay_status = ay_write_shader(fileptr, material->sshader);
+      ay_write_shader(fileptr, material->sshader);
     }
   else
     {
@@ -703,7 +702,7 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
   if(material->dshader)
     {
       fprintf(fileptr, "1\n");
-      ay_status = ay_write_shader(fileptr, material->dshader);
+      ay_write_shader(fileptr, material->dshader);
     }
   else
     {
@@ -713,7 +712,7 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
   if(material->ishader)
     {
       fprintf(fileptr, "1\n");
-      ay_status = ay_write_shader(fileptr, material->ishader);
+      ay_write_shader(fileptr, material->ishader);
     }
   else
     {
@@ -723,7 +722,7 @@ ay_material_writecb(FILE *fileptr, ay_object *o)
   if(material->eshader)
     {
       fprintf(fileptr, "1\n");
-      ay_status = ay_write_shader(fileptr, material->eshader);
+      ay_write_shader(fileptr, material->eshader);
     }
   else
     {
@@ -777,6 +776,7 @@ int
 ay_material_dropcb(ay_object *o)
 {
  char fname[] = "material_drop";
+ int status = TCL_OK;
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;
@@ -795,7 +795,7 @@ ay_material_dropcb(ay_object *o)
   mat = (ay_mat_object *)o->refine;
 
   ay_status = ay_matt_getmaterial(o->name, &regmat);
-  if(regmat != mat)
+  if(ay_status || (regmat != mat))
     {
       ay_error(AY_ERROR, fname, "Material is not registered!");
       ay_error(AY_ERROR, fname, "Please rename it to register!");
@@ -807,7 +807,9 @@ ay_material_dropcb(ay_object *o)
      objects are saved by each undo operation anyway */
   argv[1] = arg1;
   argv[2] = arg2;
-  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
+  status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
+  if(status != TCL_OK)
+    ay_status = AY_ERROR;
 
   while(sel)
     {

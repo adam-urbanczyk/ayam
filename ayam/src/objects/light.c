@@ -929,7 +929,6 @@ int
 ay_light_writecb(FILE *fileptr, ay_object *o)
 {
  ay_light_object *light = NULL;
- int ay_status = AY_OK;
 
   if(!o)
     return AY_ENULL;
@@ -960,7 +959,7 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
   if(light->lshader)
     {
       fprintf(fileptr, "1\n");
-      ay_status = ay_write_shader(fileptr, light->lshader);
+      ay_write_shader(fileptr, light->lshader);
     }
   else
     {
@@ -969,7 +968,7 @@ ay_light_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", light->local);
 
- return ay_status;
+ return AY_OK;
 } /* ay_light_writecb */
 
 

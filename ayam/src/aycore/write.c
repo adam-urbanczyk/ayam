@@ -141,15 +141,14 @@ ay_write_tags(FILE *fileptr, ay_object *o)
 /* ay_write_shader:
  *
  */
-int
+void
 ay_write_shader(FILE *fileptr, ay_shader *shader)
 {
- int ay_status = AY_OK;
  int argcount = 0, i;
  ay_shader_arg *sarg;
 
-  if(!shader)
-    return AY_ENULL;
+  if(!fileptr || !shader)
+    return;
 
   fprintf(fileptr,"%s\n",shader->name);
   fprintf(fileptr,"%d\n",shader->type);
@@ -205,7 +204,7 @@ ay_write_shader(FILE *fileptr, ay_shader *shader)
       sarg = sarg->next;
     }
 
- return ay_status;
+ return;
 } /* ay_write_shader */
 
 

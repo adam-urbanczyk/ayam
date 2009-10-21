@@ -219,7 +219,7 @@ ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
       ay_status = ay_pomesht_tesselate(pomesh);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_pomesh_shadecb */
 
 

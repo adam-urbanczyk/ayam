@@ -595,6 +595,10 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(new_length > 2)
 	{
 	  ay_status = ay_ict_resize(icurve, new_length);
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR,fname,"Resize failed!");
+	    }
 	}
       else
 	{
