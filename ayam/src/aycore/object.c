@@ -171,7 +171,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
      a child already create an EndLevel object */
   if(o->parent && (!o->down))
     {
-      ay_status = ay_object_create(AY_IDLEVEL, &(o->down));
+      ay_status = ay_object_crtendlevel(&(o->down));
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname,
