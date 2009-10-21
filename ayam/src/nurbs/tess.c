@@ -1113,7 +1113,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 	       ay_object **pm)
 {
 #ifndef GLU_VERSION_1_3
- char fname[] = "ay_tess_npatch";
+ char fname[] = "tess_npatch";
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.3+ !");
  return AY_ERROR;
 #else
@@ -1593,7 +1593,7 @@ ay_tess_pomeshf(ay_pomesh_object *pomesh,
 		ay_pomesh_object **trpomesh)
 {
 #ifndef GLU_VERSION_1_2
- char fname[] = "ay_tess_pomeshf";
+ char fname[] = "tess_pomeshf";
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.2+ !");
  return AY_ERROR;
 #else
@@ -1710,7 +1710,7 @@ ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
 	       ay_pomesh_object **trpomesh)
 {
 #ifndef GLU_VERSION_1_2
- char fname[] = "ay_tess_pomeshf";
+ char fname[] = "tess_pomeshf";
  ay_error(AY_ERROR, fname, "This function is just available on GLU V1.2+ !");
  return AY_ERROR;
 #else
