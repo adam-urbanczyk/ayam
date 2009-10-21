@@ -5681,7 +5681,7 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 		       double **p)
 {
  int stride = 4;
- char fname[] = "ay_npt_getpntfromindex";
+ char fname[] = "npt_getpntfromindex";
 
   if(indexu >= patch->width || indexu < 0)
     {
@@ -5710,7 +5710,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
  int ay_status = AY_OK;
  double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int i, j, a, b, clamp_me = AY_FALSE, nw = 0;
- char fname[] = "ay_npt_elevateu";
+ char fname[] = "npt_elevateu";
 
   if(patch->uknot_type == AY_KTBSPLINE)
     {
@@ -5878,7 +5878,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
  int ay_status = AY_OK;
  double v, *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
  int i, j, a, b, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
- char fname[] = "ay_npt_elevatev";
+ char fname[] = "npt_elevatev";
 
   if(patch->vknot_type == AY_KTBSPLINE)
     {
@@ -6125,7 +6125,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	      ay_nurbpatch_object **gordon)
 {
  int ay_status = AY_OK;
- char fname[] = "ay_npt_gordon";
+ char fname[] = "npt_gordon";
  ay_object *c;
  ay_object *lcu = NULL/*, *lcv = NULL*/; /* last cu/cv curve */
  ay_nurbcurve_object *nc = NULL;
@@ -9505,6 +9505,13 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 
   if(!src || !result)
     return AY_ENULL;
+
+  /**/
+  if(((umin + AY_EPSILON) > umax) || ((vmin + AY_EPSILON) > vmax))
+    {
+      ay_error(AY_ERROR, fname, "min must be smaller than max");
+      return AY_ERROR;
+    }
 
   if(src->type != AY_IDNPATCH)
     {
