@@ -1669,7 +1669,7 @@ int ay_write_tags(FILE *fileptr, ay_object *o);
 
 /*! \brief save a shader to a scene file
  */
-int ay_write_shader(FILE *fileptr, ay_shader *shader);
+void ay_write_shader(FILE *fileptr, ay_shader *shader);
 
 /*! \brief save an object to a scene file
  */

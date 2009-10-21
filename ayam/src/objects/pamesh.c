@@ -1223,7 +1223,7 @@ ay_pamesh_notifycb(ay_object *o)
       p = p->next;
     } /* while */
 
- return AY_OK;
+ return ay_status;
 } /* ay_pamesh_notifycb */
 
 

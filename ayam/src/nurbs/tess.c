@@ -1122,7 +1122,6 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
  ay_nurbpatch_object *npatch = NULL;
  int uorder = 0, vorder = 0, width = 0, height = 0;
  unsigned int uknot_count = 0, vknot_count = 0, i = 0, a = 0;
- GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  GLfloat *texcoords = NULL, *vcolors = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
@@ -1173,9 +1172,6 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
   vorder = npatch->vorder;
   width = npatch->width;
   height = npatch->height;
-
-  if(npatch->glu_sampling_tolerance > 0.0)
-    sampling_tolerance = npatch->glu_sampling_tolerance;
 
   uknot_count = width + uorder;
   vknot_count = height + vorder;
@@ -1330,7 +1326,7 @@ ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
 
       ay_status = ay_pv_getst(o, mys, myt, (void**)(&texcoords));
 
-      if(texcoords)
+      if(!ay_status && texcoords)
 	{
 	  to.has_tc = AY_TRUE;
 	  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
@@ -1819,6 +1815,6 @@ cleanup:
     } /* while */
   to.tris = NULL;
 
- return AY_OK;
+ return ay_status;
 #endif
 } /* ay_tess_pomesh */
