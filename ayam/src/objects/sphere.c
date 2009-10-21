@@ -858,13 +858,12 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  int i, j, k, height, stride = 4;
  double *cv = NULL, *cv2 = NULL, *kn = NULL;
- double phimax, phimin, phi, rmax, rmin, thetamax, zmin, zmax, radius;
+ double phimax, phimin, rmax, rmin, thetamax, zmin, zmax, radius;
  double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0};
  ay_sphere_object *sphere = NULL;
  ay_disk_object disk = {0};
  ay_nurbpatch_object *np = NULL;
  ay_object *new = NULL, *newc = NULL, *newp = NULL, d = {0}, **n = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -932,8 +931,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      rmin = 0.0;
 	      phimin = -AY_HALFPI;
 	    }
-
-	  phi = fabs(phimax) + fabs(phimin);
 
 	  ay_status = ay_nb_CreateNurbsCircleArc(sphere->radius,
 					      AY_R2D(phimin), AY_R2D(phimax),

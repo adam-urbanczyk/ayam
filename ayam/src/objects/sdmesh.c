@@ -222,7 +222,7 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 
   ay_status = ay_sdmesht_tesselate(sdmesh);
 
- return AY_OK;
+ return ay_status;
 } /* ay_sdmesh_shadecb */
 
 
