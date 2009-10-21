@@ -332,13 +332,14 @@ ay_ncircle_writecb(FILE *fileptr, ay_object *o)
 int
 ay_ncircle_wribcb(char *file, ay_object *o)
 {
- ay_ncircle_object *ncircle = NULL;
+  /*
+  ay_ncircle_object *ncircle = NULL;
 
   if(!o)
    return AY_ENULL;
 
   ncircle = (ay_ncircle_object*)o->refine;
-
+  */
  return AY_OK;
 } /* ay_ncircle_wribcb */
 
