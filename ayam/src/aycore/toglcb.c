@@ -192,6 +192,12 @@ ay_toglcb_destroy(struct Togl *togl)
       if(view->bgimage)
 	free(view->bgimage);
 
+      if(view->bgknotv)
+	free(view->bgknotv);
+
+      if(view->bgcv)
+	free(view->bgcv);
+
       free(view);
     }
 
