@@ -955,6 +955,12 @@ typedef struct ay_view_object_s
   /* background image */
   int drawbg;
   char *bgimage;
+  int bgimagedirty;
+
+  /* geometry for background image */
+  int bgwidth, bgheight;
+  int bguorder, bgvorder;
+  float *bgknotv, *bgcv;
 
   int isicon;
 
@@ -1512,11 +1518,11 @@ extern unsigned int ay_current_primlevel;
 
 
 /* Version Strings and Numbers */
-#define AY_VERSIONSTR "1.16"
+#define AY_VERSIONSTR "1.17pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   16
+#define AY_VERSION   17
 #define AY_VERSIONMI 0
 
 

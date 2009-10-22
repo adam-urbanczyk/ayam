@@ -1925,6 +1925,7 @@ ay_viewt_setupintview(int viewnum, ay_view_object *vtemp)
       if((view->bgimage = calloc(strlen(vtemp->bgimage)+1,sizeof(char))))
 	{
 	  strcpy(view->bgimage, vtemp->bgimage);
+	  view->bgimagedirty = AY_TRUE;
 	}
     }
 

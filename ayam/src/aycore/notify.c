@@ -491,7 +491,7 @@ ay_notify_complete(ay_object *r)
   if(!r)
    return AY_ENULL;
 
-  o = ay_root->next;
+  o = ay_root;
 
   while(o)
     {

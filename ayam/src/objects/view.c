@@ -317,6 +317,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      return AY_ERROR;
 	    } /* if */
 	  strcpy(view->bgimage, result);
+	  view->bgimagedirty = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -743,6 +744,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       if((v->bgimage = calloc(strlen(vtemp.bgimage)+1,sizeof(char))))
 	{
 	  strcpy(v->bgimage, vtemp.bgimage);
+	  v->bgimagedirty = AY_TRUE;
 	}
     }
 
@@ -979,12 +981,16 @@ ay_view_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_view_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
+ ay_object *p = NULL;
+ ay_nurbpatch_object *np = NULL;
  ay_view_object *view = NULL;
  unsigned char *r, b;
  uint32 *image = NULL, w, h, c;
  TIFF *tif;
  char fname[] = "view_notifycb";
  GLint result;
+ int i, j, k = 0, l = 0;
 
   if(!o)
     return AY_ENULL;
@@ -1026,9 +1032,8 @@ ay_view_notifycb(ay_object *o)
   ay_viewt_uprop(view);
 
   /* load texture */
-  if(view->bgimage && view->bgimage[0] != '\0')
+  if(view->bgimage && view->bgimage[0] != '\0' && view->bgimagedirty)
     {
-
       tif = TIFFOpen(view->bgimage, "r");
       if(tif)
 	{
@@ -1048,23 +1053,24 @@ ay_view_notifycb(ay_object *o)
 	      return AY_ERROR;
 	    }
 	  else
-            {
-              /* check/correct byte order */
-              if(TIFFIsMSB2LSB(tif))
-                {
-                  /* byte order must be corrected: we need intel format */
-                  for(c = 0; c < w*h; c++)
-                    {
-                      r = (unsigned char *)&image[c];
-                      b = r[0];
-                      r[0] = r[3];
-                      r[3] = b;
-                      b = r[1];
-                      r[1] = r[2];
-                      r[2] = b;
-                    } /* for */
-                } /* if */
-            } /* if */
+	    {
+	      /* check/correct byte order */
+	      if(TIFFIsMSB2LSB(tif))
+		{
+		  /* byte order must be corrected: we need intel format */
+		  for(c = 0; c < w*h; c++)
+		    {
+		      r = (unsigned char *)&image[c];
+		      b = r[0];
+		      r[0] = r[3];
+		      r[3] = b;
+		      b = r[1];
+		      r[1] = r[2];
+		      r[2] = b;
+		    } /* for */
+		} /* if */
+	      view->bgimagedirty = AY_FALSE;
+	    } /* if */
 	  TIFFClose(tif);
 	}
       else
@@ -1099,8 +1105,87 @@ ay_view_notifycb(ay_object *o)
 
     } /* if */
 
+  if(o->down && o->down->next)
+    {
+      o = o->down;
+      if(o->type == AY_IDNPATCH)
+	{
+	  ay_status = ay_object_copy(o, &p);
+	}
+      else
+	{
+	  ay_status = ay_provide_object(o, AY_IDNPATCH, &p);
+	}
+      if(p)
+	{
+	  np = (ay_nurbpatch_object *)(p->refine);
+	  if(AY_ISTRAFO(p))
+	    {
+	      /* XXXX ToDo! */
+	    }
+	  
+	  if(view->bgknotv)
+	    free(view->bgknotv);
 
-  return AY_OK;
+	  if(view->bgcv)
+	    free(view->bgcv);
+
+	  if(!(view->bgknotv = calloc(np->width + np->uorder +
+				      np->height + np->vorder, sizeof(float))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(i=0;i<np->width+np->uorder;i++)
+	    {
+	      view->bgknotv[i] = np->uknotv[i];
+	    }
+	  j = i;
+	  for(i=0;i<np->height+np->vorder;i++)
+	    {
+	      view->bgknotv[j] = np->vknotv[i];
+	      j++;
+	    }
+
+	  if(!(view->bgcv = calloc(np->width*np->height*6, sizeof(float))))
+	    {
+	      free(view->bgknotv);
+	      view->bgknotv = NULL;
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  
+	  for(i=0;i<np->width;i++)
+	    {
+	      for(j=0;j<np->height;j++)
+		{
+		  view->bgcv[k]   = np->controlv[l];
+		  view->bgcv[k+1] = np->controlv[l+1];
+		  view->bgcv[k+2] = np->controlv[l+2];
+		  view->bgcv[k+3] = np->controlv[l+3];
+
+		  /* generate texture coordinates */
+		  view->bgcv[k+4] = ((float)i)/np->width;
+		  view->bgcv[k+5] = ((float)j)/np->height;
+		  k += 6;
+		  l += 4;
+		}
+	    }
+	  view->bgwidth = np->width;
+	  view->bgheight = np->height;
+	  view->bguorder = np->uorder;
+	  view->bgvorder = np->vorder;
+
+	}
+
+    }
+
+cleanup:
+
+  if(p)
+    ay_object_delete(p);
+
+  return ay_status;
 } /* ay_view_notifycb */
 
 
