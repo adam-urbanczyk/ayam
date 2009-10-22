@@ -209,21 +209,24 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr,"%d\n",&type);
 
-  if(!(level = calloc(1, sizeof(ay_level_object))))
-    { return AY_EOMEM; }
-
-  level->type = type;
-
-  o->refine = level;
-
   if(type == AY_LTEND)
     {
+      /* the level terminator was already created
+	 when the parent object was read, thus, all we
+	 need to do here is to go up in the hierarchy */
       result = ay_clevel_gouptcmd(NULL, ay_interp, 0, NULL);
       if(result != TCL_OK)
 	return AY_ERROR;
       else
 	return AY_EDONOTLINK;
     }
+
+  if(!(level = calloc(1, sizeof(ay_level_object))))
+    { return AY_EOMEM; }
+
+  level->type = type;
+
+  o->refine = level;
 
  return AY_OK;
 } /* ay_level_readcb */
