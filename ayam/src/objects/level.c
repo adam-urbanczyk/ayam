@@ -209,6 +209,13 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr,"%d\n",&type);
 
+  if(!(level = calloc(1, sizeof(ay_level_object))))
+    { return AY_EOMEM; }
+
+  level->type = type;
+
+  o->refine = level;
+
   if(type == AY_LTEND)
     {
       result = ay_clevel_gouptcmd(NULL, ay_interp, 0, NULL);
@@ -217,13 +224,6 @@ ay_level_readcb(FILE *fileptr, ay_object *o)
       else
 	return AY_EDONOTLINK;
     }
-
-  if(!(level = calloc(1, sizeof(ay_level_object))))
-    { return AY_EOMEM; }
-
-  level->type = type;
-
-  o->refine = level;
 
  return AY_OK;
 } /* ay_level_readcb */
