@@ -1257,6 +1257,8 @@ extern char *ay_np_tagtype;
 extern char *ay_np_tagname;
 extern char *ay_rp_tagtype;
 extern char *ay_rp_tagname;
+extern char *ay_hc_tagtype;
+extern char *ay_hc_tagname;
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;

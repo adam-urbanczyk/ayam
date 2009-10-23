@@ -181,6 +181,11 @@ char *ay_bp_tagtype;
 
 char *ay_bp_tagname = "BP";
 
+char *ay_hc_tagtype;
+
+char *ay_hc_tagname = "HC";
+
+
 static char *ay_log = "/tmp/ay.log";
 
 int ay_wrib_framenum = 0;
@@ -478,6 +483,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register BP (Bevel Parameters) tag type */
   ay_tags_register(interp, ay_bp_tagname, &ay_bp_tagtype);
+
+  /* register HC (Has Child) tag type */
+  ay_tags_register(interp, ay_hc_tagname, &ay_hc_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
