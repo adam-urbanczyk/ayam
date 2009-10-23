@@ -187,6 +187,7 @@ array set ayprefs {
  PolyOffset1 1.0
 
  SingleWindow 1
+ LastWindowMode ""
  SavePanes 1
  PaneConfig ""
  PaneMargins { 20.0 5.0 10.0 10.0 10.0 }
@@ -1665,7 +1666,6 @@ if { $ayprefs(SingleWindow) } {
 
     # but first check for screen dimension changes
     if {[llength $ayprefs(PaneConfig)] > 0} {
-
 	if { ([winfo screenwidth .] < [lindex $ayprefs(PaneConfig) 0]) ||
 	     ([winfo screenheight .] < [lindex $ayprefs(PaneConfig) 1]) } {
 	    # the screen got smaller, better not try to apply the old config
@@ -1673,9 +1673,14 @@ if { $ayprefs(SingleWindow) } {
 	}
     }
 
+    if { $ayprefs(LastWindowMode) == "Floating" } {
+	set ayprefs(PaneConfig) ""
+    }
+
     # now configure all panes
     winRestorePaneLayout $ayprefs(PaneConfig)
 
+    set ayprefs(LastWindowMode) "Single"
 } else {
     # for FloatingWindows GUI mode
 
@@ -1694,6 +1699,7 @@ if { $ayprefs(SingleWindow) } {
 	width x 0 [lindex $ayprefs(PaneMargins) 3]
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
     unset vwidth vheight
+    set ayprefs(LastWindowMode) "Floating"
 }
 # if
 
