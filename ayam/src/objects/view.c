@@ -725,8 +725,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	  viewnum--;
 	}
 
+      /* set up the internal view */
       ay_status = ay_viewt_setupintview(ay_read_viewnum, last, &vtemp);
 
+      /* if children follow (BGImage geometry),
+	 arrange for their proper reading as children
+	 of the newly created view; _not_ _this_ object read */
       if(o->tags && o->tags->type == ay_hc_tagtype)
 	{
 	  /* go down */
@@ -804,6 +808,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       Tcl_Eval(ay_interp, command);
     }
 
+  /* set various view menu icons */
   sprintf(command,
 	  "global ay;viewSetGridIcon [lindex $ay(views) end] %g\n",
 	  vtemp.grid);
@@ -824,6 +829,9 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   Tcl_Eval(ay_interp, update_cmd);
 
+  /* if children follow (BGImage geometry),
+     arrange for their proper reading as children
+     of the newly created view; _not_ _this_ object read */
   if(o->tags && o->tags->type == ay_hc_tagtype)
     {
       /* go down */
