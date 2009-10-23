@@ -1546,7 +1546,7 @@ int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
-int ay_viewt_setupintview(int viewnum, ay_view_object *vtemp);
+int ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp);
 
 
 /* w32t.c */

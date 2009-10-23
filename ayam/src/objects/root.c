@@ -713,8 +713,16 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   ay_tags_delall(ay_root);
   if(o->tags)
     {
-      ay_root->tags = o->tags;
-      o->tags = NULL;
+      if(o->tags->type == ay_hc_tagtype)
+	{
+	  ay_root->tags = o->tags->next;
+	  o->tags->next = NULL;
+	}
+      else
+	{
+	  ay_root->tags = o->tags;
+	  o->tags = NULL;
+	}
     }
 
   /* copy important attributes from o to real ay_root,

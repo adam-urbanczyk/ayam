@@ -1885,26 +1885,17 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
  *  an object has been dropped onto a view window
  */
 int
-ay_viewt_setupintview(int viewnum, ay_view_object *vtemp)
+ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 {
  int ay_status = AY_OK;
  struct Togl *togl;
  Togl_Callback *altdispcb;
  ay_view_object *view = NULL;
- ay_object *o;
  char command[255] = {0}, update_cmd[] = "update";
  int vnum = viewnum-1;
 
-  if(!vtemp)
+  if(!o || !vtemp)
     return AY_ENULL;
-
-  /* find view object to configure */
-  o = ay_root->down;
-  while(o && (viewnum > 1))
-    {
-      o = o->next;
-      viewnum--;
-    }
 
   if(o->type == AY_IDVIEW)
     view = (ay_view_object *)o->refine;

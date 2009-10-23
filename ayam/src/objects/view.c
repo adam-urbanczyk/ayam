@@ -625,7 +625,7 @@ int
 ay_view_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- int width, height, read = 0;
+ int width, height, read = 0, viewnum;
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object vtemp = {0}, *v;
@@ -716,7 +716,25 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_prefs.single_window & (ay_read_viewnum < 4))
     {
-      ay_status = ay_viewt_setupintview(ay_read_viewnum, &vtemp);
+      /* find view object to configure */
+      viewnum = ay_read_viewnum;
+      last = ay_root->down;
+      while(last && (viewnum > 1))
+	{
+	  last = last->next;
+	  viewnum--;
+	}
+
+      ay_status = ay_viewt_setupintview(ay_read_viewnum, last, &vtemp);
+
+      if(o->tags && o->tags->type == ay_hc_tagtype)
+	{
+	  /* go down */
+	  ay_clevel_add(last);
+	  ay_clevel_add(last->down);
+	  ay_next = &(last->down);
+	}
+
       return AY_EDONOTLINK;
     }
 
@@ -805,6 +823,14 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   Tcl_Eval(ay_interp, command);
 
   Tcl_Eval(ay_interp, update_cmd);
+
+  if(o->tags && o->tags->type == ay_hc_tagtype)
+    {
+      /* go down */
+      ay_clevel_add(last);
+      ay_clevel_add(last->down);
+      ay_next = &(last->down);
+    }
 
  return AY_EDONOTLINK;
 } /* ay_view_readcb */

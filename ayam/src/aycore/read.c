@@ -550,6 +550,7 @@ ay_read_object(FILE *fileptr)
  int ay_status = AY_OK;
  int type = 0, has_name = 0, has_child = 0, read = 0;
  ay_object *o = NULL;
+ ay_tag tag;
  void **arr = NULL;
  ay_readcb *cb = NULL;
  char *type_name = NULL, err[255], autoload[] = "io_lcAuto";
@@ -570,7 +571,7 @@ ay_read_object(FILE *fileptr)
   ay_object_defaults(o);
 
   /* get type of object */
-  fscanf(fileptr,"%d", &has_name);
+  fscanf(fileptr, "%d", &has_name);
   read = fgetc(fileptr);
   if(read == EOF)
     return AY_ERROR;
@@ -580,21 +581,23 @@ ay_read_object(FILE *fileptr)
       /* get name */
       ay_read_string(fileptr, &(type_name));
 
-      /* get type_id of name */
+      /* is the type name registered? */
       if((entry = Tcl_FindHashEntry(&ay_otypesht, type_name)))
 	{
+	  /* yes */
+	  /* get type_id of name */
 	  type = (int) Tcl_GetHashValue(entry);
 	}
       else
 	{
-
-	  /* try to autoload custom object */
+	  /* no */
+	  /* autoload custom object with matching name */
 	  Tcl_SetVar2(ay_interp, "ay", "autoload", type_name,
 		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 	  Tcl_Eval(ay_interp, autoload);
 
-
+	  /* check again whether type name is registered */
 	  if((entry = Tcl_FindHashEntry(&ay_otypesht, type_name)))
 	    {
 	      type = (int) Tcl_GetHashValue(entry);
@@ -612,9 +615,8 @@ ay_read_object(FILE *fileptr)
     }
   else
     {
-      fscanf(fileptr,"%d\n", &type);
+      fscanf(fileptr, "%d\n", &type);
     } /* if */
-
 
   o->type = type;
 
@@ -627,11 +629,26 @@ ay_read_object(FILE *fileptr)
 
   ay_status = ay_read_tags(fileptr, o);
 
+  /* inform object to read that there follow children;
+     this, currently, is only interesting for views */
+  if(has_child)
+    {
+      tag.type = ay_hc_tagtype;
+      tag.next = o->tags;
+      o->tags = &tag;
+    }
 
+  /* get and execute read callback */
   arr = ay_readcbt.arr;
   cb = (ay_readcb *)(arr[type]);
   if(cb)
     ay_status = cb(fileptr, o);
+
+  /* restore tags */
+  if(has_child)
+    {
+      o->tags = tag.next;
+    }
 
   if(ay_status)
     {
@@ -641,7 +658,8 @@ ay_read_object(FILE *fileptr)
 	    free(o->name);
 	  if(o->tags)
 	    ay_tags_delall(o);
-	  free(o); o = NULL;
+	  free(o);
+	  o = NULL;
 	  return AY_OK;
 	}
       else
@@ -651,26 +669,23 @@ ay_read_object(FILE *fileptr)
 	    free(o->name);
 	  if(o->tags)
 	    ay_tags_delall(o);
-	  free(o); o = NULL;
+	  free(o);
+	  o = NULL;
 	  return ay_status;
 	} /* if */
     } /* if */
 
-  if(o)
+  if(o->parent && (!o->down))
     {
-      if(o->parent && (!o->down))
+      ay_status = ay_object_crtendlevel(&(o->down));
+      if(ay_status)
 	{
-	  ay_status = ay_object_crtendlevel(&(o->down));
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname,
-           "Could not create terminating level object, scene is corrupt now!");
-	    }
+	  ay_error(AY_ERROR, fname,
+	"Could not create terminating level object, scene is corrupt now!");
 	}
+    }
 
-      ay_status = ay_object_link(o);
-
-    } /* if */
+  ay_status = ay_object_link(o);
 
   if(ay_read_version == 0)
     {
@@ -760,7 +775,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   /* link instance objects to their originals */
   ay_instt_connect(ay_root->next, &(ay_root->next));
   /* force rebuild of all objects, that rely on children */
-  o = ay_root->next;
+  o = ay_root;
   while(o)
     {
       ay_notify_force(o);
