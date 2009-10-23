@@ -301,7 +301,7 @@ proc winRestorePaneLayout { config } {
 	set vheight [lindex $config 2]
     } else {
 	set vheight [expr [winfo rooty .] + \
-			 (([winfo height .] - [winfo height .fl])*0.5)]
+			 (([winfo height .] - [winfo height .fl])*0.62)]
     }
     pane_constrain . .__h1 .fv .fu height y 0\
      [lindex $ayprefs(PaneMargins) 1]
@@ -322,7 +322,7 @@ proc winRestorePaneLayout { config } {
     if {[llength $config] > 4} {
 	set vwidth [lindex $config 4]
     } else {
-	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.28)]
+	set vwidth [expr 5+[winfo rootx .fu]+([winfo width .fu]*0.18)]
     }
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp\
      width x 1 [lindex $ayprefs(PaneMargins) 3]
