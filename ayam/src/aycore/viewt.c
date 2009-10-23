@@ -1882,7 +1882,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_setupintview:
- *  an object has been dropped onto a view window
+ *  set up the view window <o> from data in <vtemp>
  */
 int
 ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
@@ -1923,6 +1923,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
   /* notify also includes reshape() and additionally loads the BGImage */
   ay_status = ay_notify_force(o);
 
+  /* set various view menu icons */
   sprintf(command,
 	  "global ay;viewSetGridIcon [lindex $ay(views) %d] %g\n",
 	  vnum, vtemp->grid);
