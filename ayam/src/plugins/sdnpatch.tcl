@@ -196,7 +196,6 @@ proc plyio_export { } {
 
     set plyio_options(oldfocus) [focus]
 
-    cS; plb_update
     update
 
     set ay_error ""
@@ -239,7 +238,7 @@ proc plyio_export { } {
 	set plyio_options(filename) $plyio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $plyio_options(FileName)]
-	sdnimpPly [file tail $plyio_options(FileName)]
+	sdnexpPly [file tail $plyio_options(FileName)]
 
 	cd $oldcd
 	update
