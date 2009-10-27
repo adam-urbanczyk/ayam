@@ -15,8 +15,8 @@ array set aytestprefs {
     KeepFiles 0
 }
 
-#
-#
+# aytest_selectGUI:
+#  create the aytest user interface
 #
 proc aytest_selectGUI { } {
     global ay
@@ -95,7 +95,7 @@ set ::cancelled 1;focus .;destroy $w;"
 
 
 #
-# Test 1
+# Test 1 - Default object callbacks
 #
 proc aytest_1 { } {
 uplevel #0 {
@@ -190,7 +190,7 @@ foreach type $types {
     convOb -inplace
 
     # missing tests: select points via action callback,
-    # draw points/handles, (comparison - AI?)
+    # draw points/handles, (comparison - AI?), export?
 
     selOb
     goTop
@@ -213,6 +213,26 @@ puts $log "Testing solid object variations ...\n"
 # standard angles to test for the ThetaMax
 # parameter found in many objects
 set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 179 180 181 269 270 271 359 360}
+
+# also some harmless float values
+set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 20 100 1000}
+
+
+#############
+# Box
+#############
+
+# Box Variation #1
+array set Box_1 {
+    arr BoxAttrData
+    freevars {Width Length Height}
+    fixedvars {dummy}
+    vals { {0} }
+}
+set Box_1(Width) $floatvals
+set Box_1(Length) $floatvals
+set Box_1(Height) $floatvals
+#set Box_1(postcmd) {aytest_varcmds}
 
 
 #############
@@ -523,7 +543,7 @@ lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
 
 set types {}
-lappend types Sphere Cylinder Disk Cone
+lappend types Box Sphere Cylinder Disk Cone
 #set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
@@ -1149,6 +1169,22 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 -0 0 0.1 0.9 1.0 1.5 2
 
 
 #############
+# Box
+#############
+
+array set Box_1 {
+    arr BoxAttrData
+    postcmd {aytest_varcmds}
+    freevars {Width Length Height}
+    fixedvars {dummy}
+    vals { {0} }
+}
+set Box_1(Width) $floatvals
+set Box_1(Length) $floatvals
+set Box_1(Height) $floatvals
+
+
+#############
 # Sphere
 #############
 
@@ -1189,7 +1225,6 @@ set Cylinder_1(ZMax) $floatvals
 # Cone
 #############
 
-# Cone Variation #1
 array set Cone_1 {
     arr ConeAttrData
     postcmd {aytest_varcmds}
@@ -1290,7 +1325,7 @@ set Torus_1(PhiMin) $angles
 set Torus_1(PhiMax) $angles
 
 
-set types { Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus }
+set types { Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus }
 
 foreach type $types {
     global aytest_result
@@ -1598,7 +1633,7 @@ proc aytest_runTests { tests } {
 
 	puts "Running Test $test..."
 
-	catch [aytest_$test]
+	catch {aytest_$test}
 
 	close $::log
 
