@@ -1,10 +1,11 @@
-[20. Oct 2009] CVS-Head:
+[27. Oct 2009] CVS-Head:
 =======================
 Bug Fixes:
 o <Tab> key does not work after <Ctrl+l> (SF 2869550)
 o Tcl errors when Ayam is started with object listbox activated (SF 2872817)
 o the FaceConnect modelling operation of the SDNPatch plugin is now
   more robust (works with perpendicular faces) (SF 2872818)
+o PLY export of SDNPatch objects is not working (SF 2886961)
 o the KnotEditor of the SDNPatch plugin now fetches old knot values
   and sets the new value for the correct edge (SF )
 o Script objects with own, script controlled, property GUIs fail to load
@@ -20,10 +21,16 @@ Modelling:
 o in the point selection action, points may now also be deselected using
   the <Shift> key in conjunction with the mouse drag operation
 o MetaObj user controlled expressions now also run in the safe interpreter
+o View objects now accept a NURB patch object as child and map the
+  background image on that (instead of fitting the image to the window)
 
 GUI
 o improved speed of focus changes between internal view 3 and the tree view
+o improved initial pane layout (also in use after switching from
+  (Floating Windows to Single Window GUI mode)
 
+Scripts/Scripting Interface:
+o aytest script tests can now be stopped
 
 
 [22. Sep 2009] Ayam-1.16:
