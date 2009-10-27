@@ -12,6 +12,7 @@
 
 array set aytestprefs {
     KeepObjects 0
+    KeepFiles 0
 }
 
 #
@@ -53,14 +54,15 @@ proc aytest_selectGUI { } {
     # preferences
     set f [frame $w.fp]
     addCheck $f aytestprefs KeepObjects
-
+    addCheck $f aytestprefs KeepFiles
 
     set f [frame $w.f2]
 
     button $f.bok -text "Ok" -width 5 -command "\
       aytest_runTests \[$w.f1.l1 curselection\];"
 
-    button $f.bca -text "Cancel" -width 5 -command "focus .;destroy $w"
+    button $f.bca -text "Cancel" -width 5 -command "\
+set ::cancelled 1;focus .;destroy $w;"
 
     pack $w.f1.l1 -side top -fill both -expand yes
 
@@ -73,12 +75,19 @@ proc aytest_selectGUI { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    # emergency exit
+    bind $w <Control-KeyPress-C> {set cancelled 1;break}
+
     winCenter $w
     grab $w
     focus $w.f1.l1
     tkwait window $w
 
     winAutoFocusOn
+
+    # cleanup
+    after idle {set ::cancelled 0}
+    . configure -cursor {}
 
  return;
 }
@@ -215,7 +224,7 @@ array set Sphere_1 {
     arr SphereAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Sphere_1(ThetaMax) $angles
 #set Sphere_1(ThetaMax) {-180 -1 1 90}
@@ -240,7 +249,7 @@ array set Sphere_2 {
     precmd {scalOb 0.5 0.5 0.5}
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Sphere_2(ThetaMax) $angles
 
@@ -261,7 +270,7 @@ array set Sphere_3 {
     precmd {scalOb 2.0 2.0 2.0}
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Sphere_3(ThetaMax) $angles
 
@@ -285,7 +294,7 @@ array set Cylinder_1 {
     arr CylinderAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Cylinder_1(ThetaMax) $angles
 
@@ -306,7 +315,7 @@ array set Cylinder_2 {
     arr CylinderAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Cylinder_2(ThetaMax) $angles
 
@@ -326,7 +335,7 @@ array set Cylinder_3 {
     arr CylinderAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {Radius ZMin ZMax}
+    fixedvars {Radius ZMin ZMax}
 }
 set Cylinder_3(ThetaMax) $angles
 
@@ -353,7 +362,7 @@ array set Cone_1 {
     Closed {0 1}
     Radius {0.1 0.5 1.0 1.5 2.0}
     Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
-    vars {}
+    fixedvars {}
     vals {1}
 }
 set Cone_1(ThetaMax) $angles
@@ -370,7 +379,7 @@ array set Disk_1 {
     freevars {Radius Height ThetaMax}
     Radius {0.1 0.5 1.0 1.5 2.0}
     Height {-2.0 -1.5 -1.0 -0.5 -0.1 0.1 0.5 1.0 1.5 2.0}
-    vars {}
+    fixedvars {}
     vals {1}
 }
 set Disk_1(ThetaMax) $angles
@@ -385,7 +394,7 @@ array set Hyperboloid_1 {
     arr HyperboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {P1_X P1_Y P1_Z P2_X P2_Y P2_Z}
+    fixedvars {P1_X P1_Y P1_Z P2_X P2_Y P2_Z}
 }
 set Hyperboloid_1(ThetaMax) $angles
 
@@ -416,7 +425,7 @@ array set Paraboloid_1 {
     arr ParaboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {RMax ZMin ZMax}
+    fixedvars {RMax ZMin ZMax}
 }
 set Paraboloid_1(ThetaMax) $angles
 
@@ -445,7 +454,7 @@ array set Paraboloid_2 {
     arr ParaboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {RMax ZMin ZMax}
+    fixedvars {RMax ZMin ZMax}
 }
 set Paraboloid_2(ThetaMax) $angles
 
@@ -466,7 +475,7 @@ array set Paraboloid_3 {
     arr ParaboloidAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {RMax ZMin ZMax}
+    fixedvars {RMax ZMin ZMax}
 }
 set Paraboloid_3(ThetaMax) $angles
 
@@ -490,7 +499,7 @@ array set Torus_1 {
     arr TorusAttrData
     freevars {Closed ThetaMax}
     Closed {0 1}
-    vars {MajorRad MinorRad PhiMin PhiMax}
+    fixedvars {MajorRad MinorRad PhiMin PhiMax}
 }
 set Torus_1(ThetaMax) $angles
 
@@ -518,7 +527,7 @@ lappend types Sphere Cylinder Disk Cone
 #set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
-    test_var $type
+    aytest_var $type
 }
 # foreach
 
@@ -562,13 +571,13 @@ array set Revolve_1 {
     }
     arr RevolveAttrData
     freevars {ThetaMax}
-    vars {Sections Order}
+    fixedvars {Sections Order}
 }
 set Revolve_1(ThetaMax) $angles
 
 # repeating the same value set leads to multiple calls
 # of the precmd, thus enabling it to check the value of
-# <l> (set by test_var) and creating a different parameter
+# <l> (set by aytest_var) and creating a different parameter
 # curve for each iteration
 lappend Revolve_1(vals) { 0 0 }
 lappend Revolve_1(vals) { 0 0 }
@@ -587,7 +596,7 @@ array set Revolve_2 {
     LowerCap {0 1}
     StartCap {0 1}
     EndCap {0 1}
-    vars {Sections Order}
+    fixedvars {Sections Order}
 }
 set Revolve_2(ThetaMax) $angles
 
@@ -619,7 +628,7 @@ array set Extrude_1 {
 	hSL
     }
     arr ExtrudeAttrData
-    vars {Height}
+    fixedvars {Height}
 }
 
 lappend Extrude_1(vals) { 1.0 }
@@ -638,7 +647,7 @@ array set Extrude_2 {
     freevars {StartCap EndCap}
     StartCap {0 1}
     EndCap {0 1}
-    vars {Height}
+    fixedvars {Height}
 }
 
 lappend Extrude_2(vals) { 0.1 }
@@ -655,7 +664,7 @@ array set Extrude_3 {
     freevars {StartCap EndCap}
     StartCap {0 1}
     EndCap {0 1}
-    vars {Height}
+    fixedvars {Height}
 }
 
 lappend Extrude_3(vals) { 0.1 }
@@ -680,7 +689,7 @@ array set Sweep_1 {
     freevars {Rotate Interpolate}
     Rotate {0 1}
     Interpolate {0 1}
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -698,7 +707,7 @@ array set Sweep_2 {
     Interpolate {0 1}
     StartCap {0 1}
     EndCap {0 1}
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -716,7 +725,7 @@ array set Sweep_3 {
     Interpolate {0 1}
     StartCap {0 1}
     EndCap {0 1}
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -735,7 +744,7 @@ array set Birail1_1 {
 	forceNot; goUp; hSL
     }
     arr Birail1AttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -752,7 +761,7 @@ array set Birail2_1 {
 	forceNot; goUp; hSL
     }
     arr Birail2AttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -767,7 +776,7 @@ array set Gordon_1 {
 	crtOb NCurve; forceNot; goUp; hSL
     }
     arr GordonAttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -781,7 +790,7 @@ array set Skin_1 {
 	crtOb NCurve; forceNot; goUp; hSL
     }
     arr SkinAttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -797,7 +806,7 @@ array set Skin_2 {
     Interpolate {0 1}
     StartCap {0 1}
     EndCap {0 1}
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -818,7 +827,7 @@ array set Skin_3 {
     EndCap {0 1}
     Knot-Type_U { 1 2 3 }
     Order_U { 2 3 4 5 }
-    vars { dummy }
+    fixedvars { dummy }
     vals { 0 }
 }
 
@@ -852,7 +861,7 @@ array set Skin_4 {
     freevars {StartCap EndCap}
     StartCap {0 1}
     EndCap {0 1}
-    vars { Knot-Type_U Order_U }
+    fixedvars { Knot-Type_U Order_U }
 }
 
 lappend Skin_4(vals) {0 5}
@@ -895,7 +904,7 @@ array set Skin_5 {
     EndCap {0 1}
     Knot-Type_U { 1 2 3 }
     Order_U { 2 3 4 5 }
-    vars { dummy }
+    fixedvars { dummy }
 
 }
 
@@ -929,7 +938,7 @@ array set Cap_1 {
 	hSL
     }
     arr CapAttrData
-    vars {dummy}
+    fixedvars {dummy}
 }
 
 lappend Cap_1(vals) { 0 }
@@ -957,7 +966,7 @@ array set Bevel_1 {
 	hSL
     }
     arr BevelAttrData
-    vars {dummy}
+    fixedvars {dummy}
 }
 
 lappend Bevel_1(vals) { 0 }
@@ -977,7 +986,7 @@ array set ExtrNC_1 {
 	hSL
     }
     arr ExtrNCAttrData
-    vars {dummy}
+    fixedvars {dummy}
 }
 
 lappend ExtrNC_1(vals) { 0 }
@@ -997,7 +1006,7 @@ array set ExtrNP_1 {
 	hSL
     }
     arr ExtrNPAttrData
-    vars { UMin UMax VMin VMax }
+    fixedvars { UMin UMax VMin VMax }
 }
 
 lappend ExtrNP_1(vals) { 0.1 0.9 0.1 0.9 }
@@ -1034,7 +1043,7 @@ array set OffsetNC_1 {
     Mode { 0 1 }
     Revert { 0 1 }
     arr OffsetNCAttrData
-    vars {Offset}
+    fixedvars {Offset}
 }
 
 lappend OffsetNC_1(vals) { 0.1 }
@@ -1055,7 +1064,7 @@ array set ConcatNC_1 {
 	forceNot; goUp; hSL
     }
     arr ConcatNCAttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -1068,7 +1077,7 @@ array set Trim_1 {
 	forceNot; goUp; hSL
     }
     arr TrimAttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -1081,7 +1090,7 @@ array set ConcatNP_1 {
 	forceNot; goUp; hSL
     }
     arr ConcatNPAttrData
-    vars { dummy }
+    fixedvars { dummy }
     vals { {0} }
 }
 
@@ -1101,7 +1110,7 @@ foreach type $types {
 
     puts -nonewline "${type}, "
 
-    test_var $type
+    aytest_var $type
 
 }
 # foreach
@@ -1145,9 +1154,10 @@ set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 -0 0 0.1 0.9 1.0 1.5 2
 
 array set Sphere_1 {
     arr SphereAttrData
+    postcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 set Sphere_1(ThetaMax) $angles
@@ -1162,9 +1172,10 @@ set Sphere_1(ZMax) $floatvals
 
 array set Cylinder_1 {
     arr CylinderAttrData
+    postcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius ZMin ZMax}
     Closed {0 1}
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 
@@ -1181,9 +1192,10 @@ set Cylinder_1(ZMax) $floatvals
 # Cone Variation #1
 array set Cone_1 {
     arr ConeAttrData
+    postcmd {aytest_varcmds}
     freevars {Closed ThetaMax Radius Height}
     Closed {0 1}
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 set Cone_1(ThetaMax) $angles
@@ -1197,9 +1209,9 @@ set Cone_1(Height) $floatvals
 
 array set Disk_1 {
     arr DiskAttrData
+    postcmd {aytest_varcmds}
     freevars {Radius Height ThetaMax}
-
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 set Disk_1(ThetaMax) $angles
@@ -1213,18 +1225,32 @@ set Disk_1(Height) $floatvals
 
 array set Hyperboloid_1 {
     arr HyperboloidAttrData
-    freevars {Closed ThetaMax P1_X P1_Y P1_Z P2_X P2_Y P2_Z}
+    postcmd {aytest_varcmds}
+    freevars {Closed ThetaMax P1_X P1_Y P1_Z}
     Closed {0 1}
-    vars {dummy}
-    vals { {0} }
+    fixedvars {P2_X P2_Y P2_Z}
 }
+lappend Hyperboloid_1(vals) { 0.0 0.0 0.0 }
+lappend Hyperboloid_1(vals) { 1.0 -1.0 1.0 }
 set Hyperboloid_1(ThetaMax) $angles
 set Hyperboloid_1(P1_X) $floatvals
 set Hyperboloid_1(P1_Y) $floatvals
 set Hyperboloid_1(P1_Z) $floatvals
-set Hyperboloid_1(P2_X) $floatvals
-set Hyperboloid_1(P2_Y) $floatvals
-set Hyperboloid_1(P2_Z) $floatvals
+
+
+array set Hyperboloid_2 {
+    arr HyperboloidAttrData
+    postcmd {aytest_varcmds}
+    freevars {Closed ThetaMax P2_X P2_Y P2_Z}
+    Closed {0 1}
+    fixedvars {P1_X P1_Y P1_Z}
+}
+lappend Hyperboloid_2(vals) { 0.0 0.0 0.0 }
+lappend Hyperboloid_2(vals) { 1.0 -1.0 1.0 }
+set Hyperboloid_2(ThetaMax) $angles
+set Hyperboloid_2(P2_X) $floatvals
+set Hyperboloid_2(P2_Y) $floatvals
+set Hyperboloid_2(P2_Z) $floatvals
 
 
 #############
@@ -1233,9 +1259,10 @@ set Hyperboloid_1(P2_Z) $floatvals
 
 array set Paraboloid_1 {
     arr ParaboloidAttrData
+    postcmd {aytest_varcmds}
     freevars {Closed ThetaMax RMax ZMin ZMax}
     Closed {0 1}
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 set Paraboloid_1(ThetaMax) $angles
@@ -1250,9 +1277,10 @@ set Paraboloid_1(ZMax) $floatvals
 
 array set Torus_1 {
     arr TorusAttrData
+    postcmd {aytest_varcmds}
     freevars {Closed ThetaMax MajorRad MinorRad PhiMin PhiMax}
     Closed {0 1}
-    vars {dummy}
+    fixedvars {dummy}
     vals { {0} }
 }
 set Torus_1(ThetaMax) $angles
@@ -1265,25 +1293,35 @@ set Torus_1(PhiMax) $angles
 set types { Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus }
 
 foreach type $types {
-
+    global aytest_result
     puts $log "Testing $type ...\n"
     puts "Testing $type ..."
-    test_var $type
+    aytest_var $type
 
+    if { $::cancelled } {
+	set ::cancelled 0
+	return;
+    }
+
+    update
+    if { $aytest_result == 1 } {
+	break;
+    }
 }
 # foreach
-
 
 }
 }
 # aytest_5
 
 
-#
-# what to do with the object variants
+# aytest_varcmds:
+#  what to do with the object variants
 #
 proc aytest_varcmds { } {
 uplevel #0 {
+
+cancelled
 
 # create a level and move the newly created object to it
 copOb
@@ -1330,21 +1368,20 @@ wrib $scratchfile -selonly
 catch {file delete $scratchfile}
 
 if { [winfo exists $view1] } {
+    puts $log "Get BB...\n"
+    $view1 mc
+    $view1 zoomob
     puts $log "Draw...\n"
     $view1 mc
     $view1 redraw
 }
 
 if { [winfo exists $view2] } {
+    $view2 mc
+    $view2 zoomob
     puts $log "Shade...\n"
     $view2 mc
     $view2 redraw
-}
-
-if { [winfo exists $view1] } {
-    puts $log "Get BB...\n"
-    $view1 mc
-    $view1 zoomob
 }
 
 puts $log "Notify...\n"
@@ -1371,7 +1408,7 @@ hSL
 
 }
 }
-#aytest_varcmds
+# aytest_varcmds
 
 
 
@@ -1406,34 +1443,38 @@ proc forall {args} {
 # forall
 
 
-# test_var:
+# aytest_var:
 #  test object variations
 #  ToDo: make final body command configurable
-proc test_var { type } {
+proc aytest_var { type } {
 
 # Every object variation array contains the following components:
 #  precmd - commands to run after object creation but before variation
 #  postcmd - actual commands to test the implementation
 #  arr - array to put all variable data into
-#  vars - list of variable names in array arr
-#  vals - list of value sets for all variables in vars
-#  freevars - list of free variables (their values will be automatically
-#             varied by a cartesian product!)
+#  fixedvars - list of fixed variables in array arr
+#  vals - list of value sets for all variables in fixedvars
+#  freevars - list of free variables in array arr
+#             (their values will be automatically
+#              varied by a cartesian product!)
 # for every free variable, another entry (named like the variable itself)
-# exists, that contains the valid variable values
+# exists, that contains the valid variable values, from which the cartesian
+# product is built
 
   set i 1
   while {[info exists ::${type}_$i]} {
 
+      # create a Level for each object type variation tested
       crtOb Level
       goDown -1
 
       eval set arr \$::${type}_${i}(arr)
-      eval set vars \$::${type}_${i}(vars)
+      eval set fixedvars \$::${type}_${i}(fixedvars)
       eval set vals \$::${type}_${i}(vals)
       set l 0
       foreach valset $vals {
 
+	  # create a Level for each value set tested
 	  crtOb Level
 	  goDown -1
 
@@ -1446,11 +1487,11 @@ proc test_var { type } {
 	      eval $precmd
 	  }
 
-	  # set un-free variables from the valset
+	  # set fixed variables from the valset
 	  getProp
 	  set j 0
-	  while { $j < [llength $vars] } {
-	      set ::${arr}([lindex $vars $j]) [lindex $valset $j]
+	  while { $j < [llength $fixedvars] } {
+	      set ::${arr}([lindex $fixedvars $j]) [lindex $valset $j]
 	      incr j
 	  }
 	  setProp
@@ -1485,8 +1526,15 @@ proc test_var { type } {
 	      }
 
 	      lappend body $cmds
-	      # call forall with test commands 
-	      eval $body
+
+	      # call forall with test commands
+	      catch {eval $body}
+
+	      if { $::cancelled } {
+		  set ::cancelled 0
+		  set ::aytest_result 1
+		  return;
+	      }
 	  } else {
 	      # no, there are no free variables
 
@@ -1500,6 +1548,7 @@ proc test_var { type } {
 		  delOb
 	      }
 	  }
+	  # if
 	  incr l
 
 	  goUp
@@ -1512,13 +1561,20 @@ proc test_var { type } {
   }
   # while
 
+  if { $::cancelled } {
+      set ::cancelled 0
+      set ::aytest_result 1
+      return;
+  }
+
+  set aytest_result 0
  return;
 }
-# test_var
+# aytest_var
 
 
-#
-#
+# aytest_runTests:
+#  actually run all tests selected in the GUI
 #
 proc aytest_runTests { tests } {
     global ayprefs
@@ -1526,6 +1582,8 @@ proc aytest_runTests { tests } {
     . configure -cursor watch
     .testGUI configure -cursor watch
     update
+
+    set ::aytest_result 0
 
     foreach test $tests {
 	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
@@ -1549,7 +1607,9 @@ proc aytest_runTests { tests } {
     # foreach
 
     . configure -cursor {}
-    .testGUI configure -cursor {}
+    if { [winfo exists .testGUI] } {
+	.testGUI configure -cursor {}
+    }
     update
 
  return;
