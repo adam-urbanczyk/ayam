@@ -835,7 +835,8 @@ set m [menu $ay(tree).popup -tearoff 0]
 
 set ay(treecm) $m
 
-$m add cascade -label "Tree" -menu $ay(tree).popup.tree
+$m add cascade -label "Tree" -menu $ay(tree).popup.tree\
+    -underline 1
 set m [menu $ay(tree).popup.tree -tearoff 0]
 $m add command -label "Rebuild" -command "tree_reset"
 $m add command -label "Expand" -command "tree_expand"
@@ -847,7 +848,8 @@ $m add separator
 $m add command -label "Switch to Listbox" -command "\
 	global ay ayprefs; tree_close $w; olb_open $w; cS; olb_update;\
 	if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-	set ayprefs(showtr) 0"
+	set ayprefs(showtr) 0"\
+    -underline 0
 $m add separator
 $m add command -label "Deselect Object" -command {
     global ay
@@ -856,19 +858,24 @@ $m add command -label "Deselect Object" -command {
     if { $ay(need_redraw) == 1 } {
 	rV
     }
-}
+} -underline 1
 $m add separator
 
-$m add command -label "Copy Object" -command "\$ay(editmenu) invoke 0"
-$m add command -label "Cut Object" -command "\$ay(editmenu) invoke 1"
-$m add command -label "Paste Object" -command "\$ay(editmenu) invoke 2"
+$m add command -label "Copy Object" -command "\$ay(editmenu) invoke 0"\
+    -underline 0
+$m add command -label "Cut Object" -command "\$ay(editmenu) invoke 1"\
+    -underline 2
+$m add command -label "Paste Object" -command "\$ay(editmenu) invoke 2"\
+    -underline 0
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
 
-$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"
+$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"\
+    -underline 0
 $m add separator
 
-$m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"
+$m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"\
+    -underline 0
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $ay(tree) <ButtonPress-2> "tree_openPopup $ay(tree)"

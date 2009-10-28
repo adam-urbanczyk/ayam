@@ -110,17 +110,32 @@ $m add command -label "Switch to Tree" -command "\
 	tree_paintLevel \"root\";\
 	set ay(DropActive) 0;\
 	if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-	set ayprefs(showtr) 1"
+	set ayprefs(showtr) 1"\
+    -underline 0
 $m add separator
-$m add command -label "Copy Object" -command "\$ay(editmenu) invoke 0"
-$m add command -label "Cut Object" -command "\$ay(editmenu) invoke 1"
-$m add command -label "Paste Object" -command "\$ay(editmenu) invoke 2"
+$m add command -label "Deselect Object" -command {
+    global ay
+    cS
+    plb_update
+    if { $ay(need_redraw) == 1 } {
+	rV
+    }
+} -underline 1
+$m add separator
+$m add command -label "Copy Object" -command "\$ay(editmenu) invoke 0"\
+    -underline 0
+$m add command -label "Cut Object" -command "\$ay(editmenu) invoke 1"\
+    -underline 2
+$m add command -label "Paste Object" -command "\$ay(editmenu) invoke 2"\
+    -underline 0
 #$m add command -label "Paste (Move)" -command "cmovOb;uS;rV"
 $m add separator
-$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"
+$m add command -label "Delete Object" -command "\$ay(editmenu) invoke 3"\
+    -underline 0
 
 $m add separator
-$m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"
+$m add command -label "Help on Object" -command "\$ay(helpmenu) invoke 1"\
+    -underline 0
 
 if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     bind $f.li <ButtonPress-2> "tk_popup $m %X %Y"
