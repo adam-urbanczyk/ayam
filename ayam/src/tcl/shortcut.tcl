@@ -10,22 +10,21 @@
 # shortcut.tcl - procedures to establish key bindings
 
 
-# repcont - replace control
+# repctrl - replace "Ctrl" by "Control"
 #
 #
-proc repcont { string } {
-    set string [regsub -all "Ctrl" $string "Control"]
+proc repctrl { string } {
+    regsub -all "Ctrl" $string "Control" string
     return $string
 }
-# repcont
 
 
 # remkpkr - remove "KeyPress-"/"KeyRelease-"
 #
 #
 proc remkpkr { string } {
-    set string [regsub -all "KeyPress-" $string ""]
-    set string [regsub -all "KeyRelease-" $string ""]
+    regsub -all "KeyPress-" $string "" string
+    regsub -all "KeyRelease-" $string "" string
     return $string
 }
 # remkpkr
@@ -55,15 +54,15 @@ proc shortcut_swapmb { } {
 proc shortcut_fkeys { w } {
  global aymainshortcuts
 
-    bind $w <[repcont $aymainshortcuts(SwLazyNotify)]>\
+    bind $w <[repctrl $aymainshortcuts(SwLazyNotify)]>\
 	    prefs_toggleLazyNotification
-    bind $w <[repcont $aymainshortcuts(SwNURBS)]>\
+    bind $w <[repctrl $aymainshortcuts(SwNURBS)]>\
 	    {prefs_toggleSurfaceWire 1}
-    bind $w <[repcont $aymainshortcuts(SwWire)]>\
+    bind $w <[repctrl $aymainshortcuts(SwWire)]>\
 	    {prefs_toggleSurfaceWire 0}
-    bind $w <[repcont $aymainshortcuts(SetSTP)]>\
+    bind $w <[repctrl $aymainshortcuts(SetSTP)]>\
 	    {prefs_setSamplingTolerance 1}
-    bind $w <[repcont $aymainshortcuts(SetSTL)]>\
+    bind $w <[repctrl $aymainshortcuts(SetSTL)]>\
 	    {prefs_setSamplingTolerance 0}
 
  return;
@@ -77,90 +76,90 @@ proc shortcut_main { w } {
     global ay aymainshortcuts AYWITHAQUA tcl_platform
 
     set m $ay(filemenu)
-    bind $w <[repcont $aymainshortcuts(New)]> "$m invoke 0;break"
+    bind $w <[repctrl $aymainshortcuts(New)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(New)]
-    bind $w <[repcont $aymainshortcuts(Replace)]> "$m invoke 2;break"
+    bind $w <[repctrl $aymainshortcuts(Replace)]> "$m invoke 2;break"
     $m entryconfigure 2 -accelerator [remkpkr $aymainshortcuts(Replace)]
-    bind $w <[repcont $aymainshortcuts(Insert)]> "$m invoke 3;break"
+    bind $w <[repctrl $aymainshortcuts(Insert)]> "$m invoke 3;break"
     $m entryconfigure 3 -accelerator [remkpkr $aymainshortcuts(Insert)]
-    bind $w <[repcont $aymainshortcuts(SaveAs)]> "$m invoke 5;break"
+    bind $w <[repctrl $aymainshortcuts(SaveAs)]> "$m invoke 5;break"
     $m entryconfigure 5 -accelerator [remkpkr $aymainshortcuts(SaveAs)]
-    bind $w <[repcont $aymainshortcuts(Save)]> "$m invoke 6;break"
+    bind $w <[repctrl $aymainshortcuts(Save)]> "$m invoke 6;break"
     $m entryconfigure 6 -accelerator [remkpkr $aymainshortcuts(Save)]
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$m.ex invoke 0;break"
+    bind $w <[repctrl $aymainshortcuts(ExportRIB)]> "$m.ex invoke 0;break"
     $m.ex entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
 
-    bind $w <[repcont $aymainshortcuts(MRU1)]> "$m invoke 16;break"
+    bind $w <[repctrl $aymainshortcuts(MRU1)]> "$m invoke 16;break"
     $m entryconfigure 16\
 	    -accelerator [remkpkr $aymainshortcuts(MRU1)]
-    bind $w <[repcont $aymainshortcuts(MRU2)]> "$m invoke 17;break"
+    bind $w <[repctrl $aymainshortcuts(MRU2)]> "$m invoke 17;break"
     $m entryconfigure 17\
 	    -accelerator [remkpkr $aymainshortcuts(MRU2)]
-    bind $w <[repcont $aymainshortcuts(MRU3)]> "$m invoke 18;break"
+    bind $w <[repctrl $aymainshortcuts(MRU3)]> "$m invoke 18;break"
     $m entryconfigure 18\
 	    -accelerator [remkpkr $aymainshortcuts(MRU3)]
-    bind $w <[repcont $aymainshortcuts(MRU4)]> "$m invoke 19;break"
+    bind $w <[repctrl $aymainshortcuts(MRU4)]> "$m invoke 19;break"
     $m entryconfigure 19\
 	    -accelerator [remkpkr $aymainshortcuts(MRU4)]
 
 
-    bind $w <[repcont $aymainshortcuts(Quit)]> "$m invoke 21;break"
+    bind $w <[repctrl $aymainshortcuts(Quit)]> "$m invoke 21;break"
     $m entryconfigure 21 -accelerator [remkpkr $aymainshortcuts(Quit)]
 
 
-    bind $w <[repcont $aymainshortcuts(Apply)]> "$ay(appb) invoke;break"
+    bind $w <[repctrl $aymainshortcuts(Apply)]> "$ay(appb) invoke;break"
 
     set m $ay(editmenu)
-    bind $w <[repcont $aymainshortcuts(Copy)]> "$m invoke 0;break"
+    bind $w <[repctrl $aymainshortcuts(Copy)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(Copy)]
-    bind $w <[repcont $aymainshortcuts(Cut)]> "$m invoke 1;break"
+    bind $w <[repctrl $aymainshortcuts(Cut)]> "$m invoke 1;break"
     $m entryconfigure 1 -accelerator [remkpkr $aymainshortcuts(Cut)]
-    bind $w <[repcont $aymainshortcuts(Paste)]> "$m invoke 2;break"
+    bind $w <[repctrl $aymainshortcuts(Paste)]> "$m invoke 2;break"
     $m entryconfigure 2 -accelerator [remkpkr $aymainshortcuts(Paste)]
 
-    bind $w <[repcont $aymainshortcuts(SelAll)]> "$m invoke 5;break"
+    bind $w <[repctrl $aymainshortcuts(SelAll)]> "$m invoke 5;break"
     $m entryconfigure 5 -accelerator [remkpkr $aymainshortcuts(SelAll)]
-    bind $w <[repcont $aymainshortcuts(SelNone)]> "$m invoke 6;break"
+    bind $w <[repctrl $aymainshortcuts(SelNone)]> "$m invoke 6;break"
     $m entryconfigure 6 -accelerator [remkpkr $aymainshortcuts(SelNone)]
 
-    bind $w <[repcont $aymainshortcuts(CopyP)]> "$m invoke 8;break"
+    bind $w <[repctrl $aymainshortcuts(CopyP)]> "$m invoke 8;break"
     $m entryconfigure 8 -accelerator [remkpkr $aymainshortcuts(CopyP)]
-    bind $w <[repcont $aymainshortcuts(ICopyP)]> "$m invoke 9;break"
+    bind $w <[repctrl $aymainshortcuts(ICopyP)]> "$m invoke 9;break"
     $m entryconfigure 9 -accelerator [remkpkr $aymainshortcuts(ICopyP)]
-    bind $w <[repcont $aymainshortcuts(PasteP)]> "$m invoke 10;break"
+    bind $w <[repctrl $aymainshortcuts(PasteP)]> "$m invoke 10;break"
     $m entryconfigure 10 -accelerator [remkpkr $aymainshortcuts(PasteP)]
 
-    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 12;break"
+    bind $w <[repctrl $aymainshortcuts(Undo)]> "$m invoke 12;break"
     $m entryconfigure 12 -accelerator [remkpkr $aymainshortcuts(Undo)]
-    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 13;break"
+    bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 13;break"
     $m entryconfigure 13 -accelerator [remkpkr $aymainshortcuts(Redo)]
 
-    bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 15;break"
+    bind $w <[repctrl $aymainshortcuts(Material)]> "$m invoke 15;break"
     $m entryconfigure 15 -accelerator [remkpkr $aymainshortcuts(Material)]
 
-    bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 16;break"
+    bind $w <[repctrl $aymainshortcuts(Master)]> "$m invoke 16;break"
     $m entryconfigure 16 -accelerator [remkpkr $aymainshortcuts(Master)]
 
 
-    bind $w <[repcont $aymainshortcuts(Prefs)]> "$m invoke 18;break"
+    bind $w <[repctrl $aymainshortcuts(Prefs)]> "$m invoke 18;break"
     $m entryconfigure 18 -accelerator [remkpkr $aymainshortcuts(Prefs)]
 
     set m $ay(toolsmenu)
-    bind $w <[repcont $aymainshortcuts(LastTool)]> "$m invoke 0;break"
+    bind $w <[repctrl $aymainshortcuts(LastTool)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(LastTool)]
 
 
     set m $ay(helpmenu)
-    bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0;break"
+    bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(Help)]
 
     set m $ay(specialmenu)
-    bind $w <[repcont $aymainshortcuts(Zap)]> zap
+    bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     $m entryconfigure 20 -accelerator [remkpkr $aymainshortcuts(Zap)]
 
     bind $w <Map> unzap
 
-    bind $w <[repcont $aymainshortcuts(RebuildTree)]> {
+    bind $w <[repctrl $aymainshortcuts(RebuildTree)]> {
 	global ay
 	if { $ay(lb) == 0 } { tree_reset }
     }
@@ -278,29 +277,29 @@ proc shortcut_main { w } {
     }
     # bind
 
-    bind $w <[repcont $aymainshortcuts(SProp0)]> "plb_showprop 0"
-    bind $w <[repcont $aymainshortcuts(SProp1)]> "plb_showprop 1"
-    bind $w <[repcont $aymainshortcuts(SProp2)]> "plb_showprop 2"
-    bind $w <[repcont $aymainshortcuts(SProp3)]> "plb_showprop 3"
-    bind $w <[repcont $aymainshortcuts(SProp4)]> "plb_showprop 4"
-    bind $w <[repcont $aymainshortcuts(SProp5)]> "plb_showprop 5"
-    bind $w <[repcont $aymainshortcuts(SProp6)]> "plb_showprop 6"
-    bind $w <[repcont $aymainshortcuts(SProp7)]> "plb_showprop 7"
-    bind $w <[repcont $aymainshortcuts(SProp8)]> "plb_showprop 8"
-    bind $w <[repcont $aymainshortcuts(SProp9)]> "plb_showprop 9"
+    bind $w <[repctrl $aymainshortcuts(SProp0)]> "plb_showprop 0"
+    bind $w <[repctrl $aymainshortcuts(SProp1)]> "plb_showprop 1"
+    bind $w <[repctrl $aymainshortcuts(SProp2)]> "plb_showprop 2"
+    bind $w <[repctrl $aymainshortcuts(SProp3)]> "plb_showprop 3"
+    bind $w <[repctrl $aymainshortcuts(SProp4)]> "plb_showprop 4"
+    bind $w <[repctrl $aymainshortcuts(SProp5)]> "plb_showprop 5"
+    bind $w <[repctrl $aymainshortcuts(SProp6)]> "plb_showprop 6"
+    bind $w <[repctrl $aymainshortcuts(SProp7)]> "plb_showprop 7"
+    bind $w <[repctrl $aymainshortcuts(SProp8)]> "plb_showprop 8"
+    bind $w <[repctrl $aymainshortcuts(SProp9)]> "plb_showprop 9"
 
-    bind $w <[repcont $aymainshortcuts(SProp00)]> "plb_showprop 0"
-    bind $w <[repcont $aymainshortcuts(SProp11)]> "plb_showprop 1"
-    bind $w <[repcont $aymainshortcuts(SProp22)]> "plb_showprop 2"
-    bind $w <[repcont $aymainshortcuts(SProp33)]> "plb_showprop 3"
-    bind $w <[repcont $aymainshortcuts(SProp44)]> "plb_showprop 4"
-    bind $w <[repcont $aymainshortcuts(SProp55)]> "plb_showprop 5"
-    bind $w <[repcont $aymainshortcuts(SProp66)]> "plb_showprop 6"
-    bind $w <[repcont $aymainshortcuts(SProp77)]> "plb_showprop 7"
-    bind $w <[repcont $aymainshortcuts(SProp88)]> "plb_showprop 8"
-    bind $w <[repcont $aymainshortcuts(SProp99)]> "plb_showprop 9"
+    bind $w <[repctrl $aymainshortcuts(SProp00)]> "plb_showprop 0"
+    bind $w <[repctrl $aymainshortcuts(SProp11)]> "plb_showprop 1"
+    bind $w <[repctrl $aymainshortcuts(SProp22)]> "plb_showprop 2"
+    bind $w <[repctrl $aymainshortcuts(SProp33)]> "plb_showprop 3"
+    bind $w <[repctrl $aymainshortcuts(SProp44)]> "plb_showprop 4"
+    bind $w <[repctrl $aymainshortcuts(SProp55)]> "plb_showprop 5"
+    bind $w <[repctrl $aymainshortcuts(SProp66)]> "plb_showprop 6"
+    bind $w <[repctrl $aymainshortcuts(SProp77)]> "plb_showprop 7"
+    bind $w <[repctrl $aymainshortcuts(SProp88)]> "plb_showprop 8"
+    bind $w <[repctrl $aymainshortcuts(SProp99)]> "plb_showprop 9"
 
-    bind $w <[repcont $aymainshortcuts(ContextMenu)]> \
+    bind $w <[repctrl $aymainshortcuts(ContextMenu)]> \
 	"if { \$ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
 
     # on Aqua, <Command-q> quits the application
@@ -331,8 +330,8 @@ proc shortcut_toolbox { w } {
     global ay ayviewshortcuts aymainshortcuts
 
     set m $ay(editmenu)
-    bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 9"
-    bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 10"
+    bind $w <[repctrl $aymainshortcuts(Undo)]> "$m invoke 9"
+    bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 10"
 }
 # shortcut_toolbox
 
@@ -357,154 +356,154 @@ proc shortcut_view { w } {
     } else {
 	# some main window shortcuts
 	set m $ay(helpmenu)
-	bind $w <[repcont $aymainshortcuts(Help)]> "$m invoke 0;break"
+	bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"
 
 	set m $ay(editmenu)
-	bind $w <[repcont $aymainshortcuts(Undo)]> "$m invoke 12;break"
-	bind $w <[repcont $aymainshortcuts(Redo)]> "$m invoke 13;break"
-	bind $w <[repcont $aymainshortcuts(Material)]> "$m invoke 15;break"
-	bind $w <[repcont $aymainshortcuts(Master)]> "$m invoke 16;break"
+	bind $w <[repctrl $aymainshortcuts(Undo)]> "$m invoke 12;break"
+	bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 13;break"
+	bind $w <[repctrl $aymainshortcuts(Material)]> "$m invoke 15;break"
+	bind $w <[repctrl $aymainshortcuts(Master)]> "$m invoke 16;break"
     }
 
     # view window shortcuts
     set m $viewm
-    bind $w <[repcont $ayviewshortcuts(QRender)]> "$m invoke 0;break"
+    bind $w <[repctrl $ayviewshortcuts(QRender)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $ayviewshortcuts(QRender)]
-    bind $w <[repcont $ayviewshortcuts(Render)]> "$m invoke 1;break"
+    bind $w <[repctrl $ayviewshortcuts(Render)]> "$m invoke 1;break"
     $m entryconfigure 1 -accelerator [remkpkr $ayviewshortcuts(Render)]
-    bind $w <[repcont $ayviewshortcuts(Redraw)]> "$m invoke 3;break"
+    bind $w <[repctrl $ayviewshortcuts(Redraw)]> "$m invoke 3;break"
     $m entryconfigure 3 -accelerator [remkpkr $ayviewshortcuts(Redraw)]
 
-    bind $w <[repcont $aymainshortcuts(ExportRIB)]> "$m invoke 4;break"
+    bind $w <[repctrl $aymainshortcuts(ExportRIB)]> "$m invoke 4;break"
     $m entryconfigure 4 -accelerator [remkpkr $aymainshortcuts(ExportRIB)]
     if { [string first ".view" $w] == 0 } {
 	global AYENABLEPPREV
 	if { $AYENABLEPPREV == 1 } { set tmp 12 } else { set tmp 9 }
-	bind $w <[repcont $ayviewshortcuts(Close)]> "$m invoke $tmp"
+	bind $w <[repctrl $ayviewshortcuts(Close)]> "$m invoke $tmp"
 	$m entryconfigure $tmp -accelerator [remkpkr $ayviewshortcuts(Close)]
     }
 
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	set m $typem
-	bind $w <[repcont $ayviewshortcuts(Front)]> "$m invoke 0;break"
+	bind $w <[repctrl $ayviewshortcuts(Front)]> "$m invoke 0;break"
 	$m entryconfigure 0 -accelerator [remkpkr $ayviewshortcuts(Front)]
-	bind $w <[repcont $ayviewshortcuts(Side)]> "$m invoke 1;break"
+	bind $w <[repctrl $ayviewshortcuts(Side)]> "$m invoke 1;break"
 	$m entryconfigure 1 -accelerator [remkpkr $ayviewshortcuts(Side)]
-	bind $w <[repcont $ayviewshortcuts(Top)]> "$m invoke 2;break"
+	bind $w <[repctrl $ayviewshortcuts(Top)]> "$m invoke 2;break"
 	$m entryconfigure 2 -accelerator [remkpkr $ayviewshortcuts(Top)]
-	bind $w <[repcont $ayviewshortcuts(Persp)]> "$m invoke 4;break"
+	bind $w <[repctrl $ayviewshortcuts(Persp)]> "$m invoke 4;break"
 	$m entryconfigure 4 -accelerator [remkpkr $ayviewshortcuts(Persp)]
-	bind $w <[repcont $ayviewshortcuts(Trim)]> "$m invoke 6;break"
+	bind $w <[repctrl $ayviewshortcuts(Trim)]> "$m invoke 6;break"
 	$m entryconfigure 6 -accelerator [remkpkr $ayviewshortcuts(Trim)]
     }
 
     set m $confm
-    bind $w <[repcont $ayviewshortcuts(Auto)]> "$m invoke 0;break"
+    bind $w <[repctrl $ayviewshortcuts(Auto)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $ayviewshortcuts(Auto)]
 
-    #bind $w <[repcont $ayviewshortcuts(Shade)]> "$m invoke 1"
+    #bind $w <[repctrl $ayviewshortcuts(Shade)]> "$m invoke 1"
     #$m entryconfigure 1 -accelerator $ayviewshortcuts(Shade)
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
-	bind $w <[repcont $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
+	bind $w <[repctrl $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
     }
 
-    bind $w <[repcont $ayviewshortcuts(DGrid)]> "$m invoke 10;break"
+    bind $w <[repctrl $ayviewshortcuts(DGrid)]> "$m invoke 10;break"
     $m entryconfigure 10 -accelerator [remkpkr $ayviewshortcuts(DGrid)]
-    bind $w <[repcont $ayviewshortcuts(UGrid)]> "$m invoke 11;break"
+    bind $w <[repctrl $ayviewshortcuts(UGrid)]> "$m invoke 11;break"
     $m entryconfigure 11 -accelerator [remkpkr $ayviewshortcuts(UGrid)]
-    bind $w <[repcont $ayviewshortcuts(SGrid)]> "$m invoke 12;break"
+    bind $w <[repctrl $ayviewshortcuts(SGrid)]> "$m invoke 12;break"
     $m entryconfigure 12 -accelerator [remkpkr $ayviewshortcuts(SGrid)]
 
     if { ([winfo toplevel $w] == $w) } {
-	bind $w <[repcont $ayviewshortcuts(Halve)]> "$m invoke 14;break"
+	bind $w <[repctrl $ayviewshortcuts(Halve)]> "$m invoke 14;break"
 	$m entryconfigure 14 -accelerator [remkpkr $ayviewshortcuts(Halve)]
-	bind $w <[repcont $ayviewshortcuts(Double)]> "$m invoke 15;break"
+	bind $w <[repctrl $ayviewshortcuts(Double)]> "$m invoke 15;break"
 	$m entryconfigure 15 -accelerator [remkpkr $ayviewshortcuts(Double)]
     }
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	$m entryconfigure 21 -accelerator [remkpkr $ayviewshortcuts(ZoomTO)]
-	bind $w <[repcont $ayviewshortcuts(ZoomTO)]> "$m invoke 21;break"
+	bind $w <[repctrl $ayviewshortcuts(ZoomTO)]> "$m invoke 21;break"
 
 	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(Align)]
-	bind $w <[repcont $ayviewshortcuts(Align)]> "$m invoke 22;break"
+	bind $w <[repctrl $ayviewshortcuts(Align)]> "$m invoke 22;break"
     } else {
 	$m entryconfigure 21 -accelerator [remkpkr $ayviewshortcuts(ZoomTO2)]
 	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(Align2)]
 	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Local2)]
     }
 
-    bind $w <[repcont $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
-    bind $w <[repcont $ayviewshortcuts(Align2)]> "$m invoke 22;break"
+    bind $w <[repctrl $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
+    bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 22;break"
 
     #set m $ay(mmodem)
     #$m entryconfigure 1 -accelerator [remkpkr $ayviewshortcuts(Local)]
-    #bind $w <[repcont $ayviewshortcuts(Local)]> "$m invoke 1;break"
+    #bind $w <[repctrl $ayviewshortcuts(Local)]> "$m invoke 1;break"
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
-	bind $w <[repcont $ayviewshortcuts(Local)]> "viewToggleMMode $w;break"
+	bind $w <[repctrl $ayviewshortcuts(Local)]> "viewToggleMMode $w;break"
 	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Local)]
     }
 
-    bind $w <[repcont $ayviewshortcuts(Local2)]> "viewToggleMMode $w;break"
+    bind $w <[repctrl $ayviewshortcuts(Local2)]> "viewToggleMMode $w;break"
 
-    bind $w <[repcont $ayviewshortcuts(RotL)]>\
+    bind $w <[repctrl $ayviewshortcuts(RotL)]>\
 	    "$w.f3D.togl setconf -undokb ViewRotX -drotx 5.0 -droty 0.0;break"
-    bind $w <[repcont $ayviewshortcuts(RotR)]>\
+    bind $w <[repctrl $ayviewshortcuts(RotR)]>\
 	    "$w.f3D.togl setconf -undokb ViewRotX -drotx -5.0 -droty 0.0;break"
-    bind $w <[repcont $ayviewshortcuts(RotU)]>\
+    bind $w <[repctrl $ayviewshortcuts(RotU)]>\
 	    "$w.f3D.togl setconf -undokb ViewRotY -droty 5.0 -drotx 0.0;break"
-    bind $w <[repcont $ayviewshortcuts(RotD)]>\
+    bind $w <[repctrl $ayviewshortcuts(RotD)]>\
 	    "$w.f3D.togl setconf -undokb ViewRotY -droty -5.0 -drotx 0.0;break"
 
-    bind $w <[repcont $ayviewshortcuts(ZoomI)]>\
+    bind $w <[repctrl $ayviewshortcuts(ZoomI)]>\
 	    "$w.f3D.togl setconf -undokb ViewZoomIn -dzoom 0.9;break"
 
-    bind $w <[repcont $ayviewshortcuts(ZoomO)]>\
+    bind $w <[repctrl $ayviewshortcuts(ZoomO)]>\
 	    "$w.f3D.togl setconf -undokb ViewZoomOut -dzoom 1.1;break"
 
 
-    bind $w <[repcont $ayviewshortcuts(PanL)]>\
+    bind $w <[repctrl $ayviewshortcuts(PanL)]>\
 	"viewPan $w.f3D.togl 0;break"
 
-    bind $w <[repcont $ayviewshortcuts(PanR)]>\
+    bind $w <[repctrl $ayviewshortcuts(PanR)]>\
 	"viewPan $w.f3D.togl 1;break"
 
-    bind $w <[repcont $ayviewshortcuts(PanU)]>\
+    bind $w <[repctrl $ayviewshortcuts(PanU)]>\
 	"viewPan $w.f3D.togl 2;break"
 
-    bind $w <[repcont $ayviewshortcuts(PanD)]>\
+    bind $w <[repctrl $ayviewshortcuts(PanD)]>\
 	"viewPan $w.f3D.togl 3;break"
 
 
-    bind $w <[repcont $ayviewshortcuts(SelAllP)]>\
+    bind $w <[repctrl $ayviewshortcuts(SelAllP)]>\
 	"selPnts -all; rV;break"
-    bind $w <[repcont $ayviewshortcuts(DeSelect)]>\
+    bind $w <[repctrl $ayviewshortcuts(DeSelect)]>\
 	"selPnts; rV;break"
-    bind $w <[repcont $ayviewshortcuts(InvSelP)]>\
+    bind $w <[repctrl $ayviewshortcuts(InvSelP)]>\
 	"invPnts; rV;break"
 
-    bind $w <[repcont $ayviewshortcuts(CollP)]>\
+    bind $w <[repctrl $ayviewshortcuts(CollP)]>\
 	"collMP; rV;break"
-    bind $w <[repcont $ayviewshortcuts(ExplP)]>\
+    bind $w <[repctrl $ayviewshortcuts(ExplP)]>\
 	"explMP; rV;break"
 
-    bind $w <[repcont $ayviewshortcuts(SnapGrid2D)]>\
+    bind $w <[repctrl $ayviewshortcuts(SnapGrid2D)]>\
 	"actionSnapToGrid2D $w.f3D.togl;break"
-    bind $w <[repcont $ayviewshortcuts(SnapGrid3D)]>\
+    bind $w <[repctrl $ayviewshortcuts(SnapGrid3D)]>\
 	"actionSnapToGrid3D $w.f3D.togl;break"
 
     set m $ay(toolsmenu)
-    bind $w <[repcont $ayviewshortcuts(Hide)]>\
+    bind $w <[repctrl $ayviewshortcuts(Hide)]>\
 	"$m invoke 12;break"
-    bind $w <[repcont $ayviewshortcuts(Show)]>\
+    bind $w <[repctrl $ayviewshortcuts(Show)]>\
 	"$m invoke 14;break"
 
-    bind $w <[repcont $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
-    bind $w <[repcont $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
+    bind $w <[repctrl $ayviewshortcuts(TypeUp)]> "viewCycleType $w -1;break"
+    bind $w <[repctrl $ayviewshortcuts(TypeDown)]> "viewCycleType $w 1;break"
 
-    bind $w <[repcont $ayviewshortcuts(DMUp)]> "viewCycleDrawMode $w -1;break"
-    bind $w <[repcont $ayviewshortcuts(DMDown)]> "viewCycleDrawMode $w 1;break"
+    bind $w <[repctrl $ayviewshortcuts(DMUp)]> "viewCycleDrawMode $w -1;break"
+    bind $w <[repctrl $ayviewshortcuts(DMDown)]> "viewCycleDrawMode $w 1;break"
 
-    bind $w <[repcont $aymainshortcuts(Zap)]> zap
+    bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 
     # bind function keys

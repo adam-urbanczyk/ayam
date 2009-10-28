@@ -390,7 +390,7 @@ proc prefs_open {} {
 
     # establish "Help"-binding
     global aymainshortcuts
-    bind $w <[repcont $aymainshortcuts(Help)]> {
+    bind $w <[repctrl $aymainshortcuts(Help)]> {
 	global ay ayprefs
 	set tag pref[string tolower $ay(prefssection)]
 	if { [string first "file://" $ayprefs(Docs)] != -1 } {
@@ -405,7 +405,7 @@ proc prefs_open {} {
     # bind
 
     # establish "Zap"-binding
-    bind $w <[repcont $aymainshortcuts(Zap)]> zap
+    bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
 
     # Esc-key == Cancel button
