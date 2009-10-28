@@ -671,7 +671,7 @@ proc toolbox_open { {w .tbw} } {
 	# establish main shortcuts also for toolbox
 	shortcut_main $w
 
-	bind $w <[repcont $ayviewshortcuts(Close)]> "destroy .tbw"
+	bind $w <[repctrl $ayviewshortcuts(Close)]> "destroy .tbw"
 
 	wm protocol $w WM_DELETE_WINDOW {
 	    global ayprefs
