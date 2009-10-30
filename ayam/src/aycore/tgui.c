@@ -235,6 +235,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		}
 	      else
 		{
+		  ay_npt_applytrafo(tmpnp);
+		      
 		  tmp = NULL;
 		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
 					     sparamu, sparamv,
