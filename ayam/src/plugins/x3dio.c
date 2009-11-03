@@ -135,6 +135,9 @@ int x3dio_processuse(scew_element **element);
 
 int x3dio_readcoords(scew_element *element, unsigned int *len, double **res);
 
+int x3dio_readtexcoords(scew_element *element,
+			unsigned int *len, float **res);
+
 int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
 int x3dio_readcolors(scew_element *element, unsigned int *len, double **res);
@@ -1054,8 +1057,41 @@ x3dio_readcoords(scew_element *element, unsigned int *len, double **res)
 	}
     } /* while */
 
-  return AY_OK;
+ return AY_OK;
 } /* x3dio_readcoords */
+
+
+/* x3dio_readtexcoords:
+ *  look through all children of <element> for a "TextureCoordinate"
+ *  element and read the coordinates into <len> and <res>
+ */
+int
+x3dio_readtexcoords(scew_element *element, unsigned int *len, float **res)
+{
+ int ay_status = AY_OK;
+ scew_element *child = NULL;
+ const char *element_name = NULL;
+
+  if(!element || !len || !res)
+    return AY_ENULL;
+
+  while((child = scew_element_next(element, child)) != NULL)
+    {
+      element_name = scew_element_name(child);
+      if(!strcmp(element_name, "TextureCoordinate"))
+	{
+	  /* process USE attribute */
+	  ay_status = x3dio_processuse(&child);
+
+	  /* read data */
+	  ay_status = x3dio_readfloatpoints(child, "point", 2, len, res);
+
+	  return AY_OK; /* XXXX early exit! */
+	}
+    } /* while */
+
+ return AY_OK;
+} /* x3dio_readtexcoords */
 
 
 /* x3dio_readnormals:
@@ -4093,7 +4129,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
  unsigned int i, j, len = 0, wlen = 0, uklen = 0, vklen = 0, tclen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
- int is_double = AY_FALSE, is_bound = AY_FALSE/*, tcis_double = AY_FALSE*/;
+ int is_double = AY_FALSE, is_bound = AY_FALSE;
  scew_element *child = NULL;
  const char *element_name = NULL;
  x3dio_trafostate *old_state, notrafos;
@@ -4114,17 +4150,15 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       is_double = AY_TRUE;
     }
 
-
   ay_status = x3dio_readfloatpoints(element, "texCoord", 2, &tclen, &tc);
-  /*
+
   if(tclen == 0)
     {
-      ay_status = x3dio_readtexcoords(element, &len, &dtc);
-      tcis_double = AY_TRUE;
+      ay_status = x3dio_readtexcoords(element, &tclen, &tc);
     }
-  */
 
   ay_status = x3dio_readdoublepoints(element, "weight", 1, &wlen, &w);
+
   if(wlen >= len)
     {
       has_weights = AY_TRUE;
@@ -4197,6 +4231,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 		}
 	    } /* for */
 	} /* if */
+
       if(has_uknots)
 	{
 	  np.uknot_type = AY_KTCUSTOM;
@@ -4245,16 +4280,14 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       /* add texture coordinates as PV tags */
       if(tclen > 0)
 	{
-
 	  if(!(dtemp = calloc(tclen, sizeof(double))))
 	    {
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
 	    }
-	  /*
-	  if(!tcis_double)
-	    {
-	  */
+
+	  /* S */
+
 	  /* convert float to double */
 	  j = 0;
 	  for(i = 0; i < tclen; i++)
@@ -4262,18 +4295,13 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      dtemp[i] = tc[j];
 	      j += 2;
 	    }
-	  /*
-	    else
-	    {
-	    }
-	  */
+
 	  /* now add the PV tag */
 	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_stagname, "varying", 0,
 				tclen, dtemp);
-	  /*
-	    if(!tcis_double)
-	    {
-	  */
+
+	  /* T */
+
 	  /* convert float to double */
 	  j = 1;
 	  for(i = 0; i < tclen; i++)
@@ -4281,11 +4309,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      dtemp[i] = tc[j];
 	      j += 2;
 	    }
-	  /*
-	    else
-	    {
-	    }
-	  */
+
 	  /* now add the PV tag */
 	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_ttagname, "varying", 0,
 				tclen, dtemp);
