@@ -802,7 +802,7 @@ int ay_pv_filltokpar(ay_object *o, int declare, int start,
 /*! \brief add PV tag to an object
  */
 int ay_pv_add(ay_object *o, char *name, char *detail, int type,
-	      int datalen, void *data);
+	      int datalen, int stride, void *data);
 
 /*! \brief merge two PV tags into one
  */

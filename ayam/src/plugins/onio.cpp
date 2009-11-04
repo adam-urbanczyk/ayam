@@ -3025,12 +3025,12 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   if(stexc)
     {
       ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
-			    (void*)stexc);
+			    1, (void*)stexc);
     }
   if(ttexc)
     {
       ay_status = ay_pv_add(newo, "myt", "varying", 0, p_m->m_T.Capacity(),
-			    (void*)ttexc);
+			    1, (void*)ttexc);
     }
 
   // link the new PolyMesh into the scene hierarchy
