@@ -1490,14 +1490,17 @@ x3dio_readindexedfaceset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0, coordilen = 0, normalilen = 0;
+ unsigned int coordlen = 0, normallen = 0;
+ unsigned int coordilen = 0, normalilen = 0;
  int *coordi = NULL, *normali = NULL;
  int normalPerVertex = AY_FALSE;
- double *coords = NULL, *normals = NULL;
+ double *coords = NULL, *normals = NULL, *dtemp = NULL;;
  unsigned int i, j, k, totalverts = 0;
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -1512,11 +1515,14 @@ x3dio_readindexedfaceset(scew_element *element)
     {
       /* get normals */
       ay_status = x3dio_readnormals(element, &normallen, &normals);
+      if(normallen > 0)
+	{
+	  ay_status = x3dio_readindex(element, "normalIndex", &normalilen,
+				      &normali);
 
-      ay_status = x3dio_readindex(element, "normalIndex", &normalilen,
-				  &normali);
-
-      ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
+	  ay_status = x3dio_readbool(element, "normalPerVertex",
+				     &normalPerVertex);
+	}
 
       /* get colors */
 
@@ -1570,29 +1576,90 @@ x3dio_readindexedfaceset(scew_element *element)
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
-      if(normalPerVertex)
+
+      if(normallen > 0)
 	{
-	  if(normalilen > 0)
+	  if(normalPerVertex)
 	    {
-	      pomesh.has_normals = AY_TRUE;
-	      if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
-	      for(i = 0; i < coordlen; i++)
+	      /* vertex normals */
+	      if(normalilen > 0)
 		{
-		  memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
-			 3*sizeof(double));
-		  memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
-			 3*sizeof(double));
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every vertex gets its own distinct value
+		  */
+		  if(!(pomesh.controlv = calloc(6*totalverts, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < totalverts; i++)
+		    {
+		      memcpy(&(pomesh.controlv[i*6]),
+			     &(coords[pomesh.verts[i]]),
+			     3*sizeof(double));
+		      pomesh.verts[i] = i;
+		      memcpy(&(pomesh.controlv[i*6+3]),
+			     &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+		  pomesh.ncontrols = totalverts;
 		}
+	      else
+		{
+		  /* no normal index, normal order is coord order */
+
+		  if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < coordlen; i++)
+		    {
+		      memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+			     3*sizeof(double));
+		      memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+			     3*sizeof(double));
+		    }
+		}
+	      pomesh.has_normals = AY_TRUE;
 	    }
 	  else
 	    {
+	      /* face normals */
+
 	      pomesh.controlv = coords;
 	      coords = NULL;
+
+	      /* copy object to the Ayam scene */
+	      ay_status = x3dio_linkobject(element, AY_IDPOMESH,
+					   (void*)&pomesh);
+
+	      if(normalilen > 0)
+		{
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every face gets its own distinct value
+		  */
+		  if(!(dtemp = calloc(3*pomesh.npolys, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < pomesh.npolys; i++)
+		    {
+		      memcpy(&(dtemp[i*3]), &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+
+		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
+			    pomesh.npolys, 1, normals);
+		}
+	      else
+		{
+		  /* no normal index */
+		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
+			    pomesh.npolys, 1, normals);
+		}
+	      goto cleanup;
 	    }
 	}
       else
 	{
+	  /* no normals */
 	  pomesh.controlv = coords;
 	  coords = NULL;
 	} /* if */
@@ -1639,14 +1706,18 @@ x3dio_readindexedtriangleset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0, coordilen = 0;
- int *coordi = NULL;
+ unsigned int coordlen = 0, normallen = 0;
+ unsigned int coordilen = 0, normalilen = 0;
+ int *coordi = NULL, *normali = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
+ double *dtemp = NULL;
  unsigned int i, totalverts = 0;
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -1655,14 +1726,20 @@ x3dio_readindexedtriangleset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "index", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
 
   if(coordilen > 0)
     {
       /* get normals */
       ay_status = x3dio_readnormals(element, &normallen, &normals);
+      if(normallen > 0)
+	{
+	  ay_status = x3dio_readindex(element, "normalIndex",
+				      &normalilen, &normali);
 
-      ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
+	  ay_status = x3dio_readbool(element, "normalPerVertex",
+				     &normalPerVertex);
+	}
 
       /* get colors */
 
@@ -1696,29 +1773,91 @@ x3dio_readindexedtriangleset(scew_element *element)
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
-      if(normalPerVertex)
+
+      if(normallen > 0)
 	{
-	  if(normallen > 0)
+	  if(normalPerVertex)
 	    {
-	      pomesh.has_normals = AY_TRUE;
-	      if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
-	      for(i = 0; i < coordlen; i++)
+	      /* vertex normals */
+	      if(normalilen > 0)
 		{
-		  memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
-			 3*sizeof(double));
-		  memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
-			 3*sizeof(double));
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every vertex gets its own distinct value
+		  */
+		  if(!(pomesh.controlv = calloc(6*totalverts, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < totalverts; i++)
+		    {
+		      memcpy(&(pomesh.controlv[i*6]),
+			     &(coords[pomesh.verts[i]]),
+			     3*sizeof(double));
+		      pomesh.verts[i] = i;
+		      memcpy(&(pomesh.controlv[i*6+3]),
+			     &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+		  pomesh.ncontrols = totalverts;
 		}
+	      else
+		{
+		  /* no normal index, normal order is coord order */
+
+		  pomesh.has_normals = AY_TRUE;
+		  if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < coordlen; i++)
+		    {
+		      memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
+			     3*sizeof(double));
+		      memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
+			     3*sizeof(double));
+		    }
+		}
+	      pomesh.has_normals = AY_TRUE;
 	    }
 	  else
 	    {
+	      /* face normals */
+
 	      pomesh.controlv = coords;
 	      coords = NULL;
+
+	      /* copy object to the Ayam scene */
+	      ay_status = x3dio_linkobject(element, AY_IDPOMESH,
+					   (void*)&pomesh);
+
+	      if(normalilen > 0)
+		{
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every face gets its own distinct value
+		  */
+		  if(!(dtemp = calloc(3*pomesh.npolys, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
+		  for(i = 0; i < pomesh.npolys; i++)
+		    {
+		      memcpy(&(dtemp[i*3]), &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+
+		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
+			    pomesh.npolys, 1, normals);
+		}
+	      else
+		{
+		  /* no normal index */
+		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
+			    pomesh.npolys, 1, normals);
+		}
+	      goto cleanup;
 	    }
 	}
       else
 	{
+	  /* no normals */
 	  pomesh.controlv = coords;
 	  coords = NULL;
 	} /* if */
@@ -1770,6 +1909,8 @@ x3dio_readindexedquadset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -1893,6 +2034,8 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -2044,6 +2187,8 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -2197,6 +2342,8 @@ x3dio_readindexedlineset(scew_element *element)
   if(!element)
     return AY_ENULL;
 
+  /* XXXX read coord field! */
+
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
   if(coordlen == 0)
@@ -2299,6 +2446,8 @@ x3dio_readlineset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
+
+  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
