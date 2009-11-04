@@ -323,7 +323,9 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   switch(type)
     {
     case 0:
+    case 1:
       Tcl_DStringAppend(&ds, "float", -1);
+      break;
     default:
       break;
     } /* switch */
@@ -331,20 +333,29 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   sprintf(tmp, ",%d", datalen);
   Tcl_DStringAppend(&ds, tmp, -1);
 
-  for(i = 0; i < datalen; i++)
+  switch(type)
     {
-      Tcl_DStringAppend(&ds, ",", -1);
-
-      switch(type)
+    case 0:
+      for(i = 0; i < datalen; i++)
 	{
-	case 0:
+	  Tcl_DStringAppend(&ds, ",", -1);
 	  sprintf(tmp, "%f", (float)(((double*)data)[i]));
 	  /*snprintf(tmp, 254, "%f", (float)(((double*)data)[i]));*/
 	  Tcl_DStringAppend(&ds, tmp, -1);
-	default:
-	  break;
-	} /* switch */
-    } /* for */
+	}
+      break;
+    case 1:
+      for(i = 0; i < datalen; i++)
+	{
+	  Tcl_DStringAppend(&ds, ",", -1);
+	  sprintf(tmp, "%f", ((float*)data)[i]);
+	  /*snprintf(tmp, 254, "%f", (float)(((double*)data)[i]));*/
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+      break;
+    default:
+      break;
+    } /* switch */
 
   if(!(tag->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
 			 sizeof(char))))
