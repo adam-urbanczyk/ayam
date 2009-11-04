@@ -287,7 +287,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  */
 int
 ay_pv_add(ay_object *o, char *name, char *detail, int type,
-	  int datalen, void *data)
+	  int datalen, int stride, void *data)
 {
  ay_tag *tag = NULL, **nexttag;
  Tcl_DString ds;
@@ -336,7 +336,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   switch(type)
     {
     case 0:
-      for(i = 0; i < datalen; i++)
+      for(i = 0; i < datalen; i+=stride)
 	{
 	  Tcl_DStringAppend(&ds, ",", -1);
 	  sprintf(tmp, "%f", (float)(((double*)data)[i]));
@@ -345,7 +345,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 1:
-      for(i = 0; i < datalen; i++)
+      for(i = 0; i < datalen; i+=stride)
 	{
 	  Tcl_DStringAppend(&ds, ",", -1);
 	  sprintf(tmp, "%f", ((float*)data)[i]);

@@ -2579,13 +2579,13 @@ objio_readface(char *str, int lastlinewasface)
       if(texsv)
 	{
 	  ay_status = ay_pv_add(&t, objio_stagname, "varying", 0,
-				texsvlen, texsv);
+				texsvlen, 1, texsv);
 	}
 
       if(textv)
 	{
 	  ay_status = ay_pv_add(&t, objio_ttagname, "varying", 0,
-				textvlen, textv);
+				textvlen, 1, textv);
 	}
 
       if(objio_mergecfaces)
@@ -3491,13 +3491,13 @@ objio_readend(void)
       if(objio_texturesv)
 	{
 	  ay_status = ay_pv_add(o, objio_stagname, "varying", 0,
-				objio_texturesvlen, objio_texturesv);
+				objio_texturesvlen, 1, objio_texturesv);
 	}
 
       if(objio_texturetv)
 	{
 	  ay_status = ay_pv_add(o, objio_ttagname, "varying", 0,
-				objio_texturetvlen, objio_texturetv);
+				objio_texturetvlen, 1, objio_texturetv);
 	}
 
       /* add umin/umax/vmin/vmax tags */

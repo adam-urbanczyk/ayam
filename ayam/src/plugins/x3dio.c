@@ -4124,9 +4124,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
  ay_nurbpatch_object np = {0};
  ay_object *o, **old_aynext;
  float *cv = NULL, *tc = NULL;
- double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL, *dtemp = NULL;
+ double *dcv = NULL, *w = NULL, *uknots = NULL, *vknots = NULL;
  double oldmin, oldmax;
- unsigned int i, j, len = 0, wlen = 0, uklen = 0, vklen = 0, tclen = 0;
+ unsigned int i, len = 0, wlen = 0, uklen = 0, vklen = 0, tclen = 0;
  int width = 0, height = 0, uorder = 3, vorder = 3, stride = 4;
  int has_weights = AY_FALSE, has_uknots = AY_FALSE, has_vknots = AY_FALSE;
  int is_double = AY_FALSE, is_bound = AY_FALSE;
@@ -4280,42 +4280,13 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       /* add texture coordinates as PV tags */
       if(tclen > 0)
 	{
-	  if(!(dtemp = calloc(tclen, sizeof(double))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
+	  /* add a PV tag for S */
+	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_stagname, "varying", 1,
+				tclen, 2, tc);
 
-	  /* S */
-
-	  /* convert float to double */
-	  j = 0;
-	  for(i = 0; i < tclen; i++)
-	    {
-	      dtemp[i] = tc[j];
-	      j += 2;
-	    }
-
-	  /* now add the PV tag */
-	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_stagname, "varying", 0,
-				tclen, dtemp);
-
-	  /* T */
-
-	  /* convert float to double */
-	  j = 1;
-	  for(i = 0; i < tclen; i++)
-	    {
-	      dtemp[i] = tc[j];
-	      j += 2;
-	    }
-
-	  /* now add the PV tag */
-	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_ttagname, "varying", 0,
-				tclen, dtemp);
-
-	  /* cleanup */
-	  free(dtemp);
+	  /* add a PV tag for T */
+	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_ttagname, "varying", 1,
+				tclen, 2, &(tc[1]));
 
 	} /* if */
 
