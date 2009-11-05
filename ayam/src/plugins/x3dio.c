@@ -157,6 +157,15 @@ int x3dio_readcylinder(scew_element *element);
 
 int x3dio_readcone(scew_element *element);
 
+void x3dio_readnct(ay_object *o, unsigned int totalverts,
+		   int vertnormal, int vertcolor,
+		   unsigned int normallen, double *normals,
+		   unsigned int normalilen, int *normali,
+		   unsigned int colorlen, float *colors,
+		   unsigned int colorilen, int *colori,
+		   unsigned int texcoordlen, float *texcoords,
+		   unsigned int texcoordilen, int *texcoordi);
+
 int x3dio_readindexedfaceset(scew_element *element);
 
 int x3dio_readindexedtriangleset(scew_element *element);
@@ -1482,6 +1491,275 @@ x3dio_readcone(scew_element *element)
 } /* x3dio_readcone */
 
 
+/* x3dio_readnct:
+ *
+ */
+void
+x3dio_readnct(ay_object *o, unsigned int totalverts,
+	      int vertnormal, int vertcolor,
+	      unsigned int normallen, double *normals,
+	      unsigned int normalilen, int *normali,
+	      unsigned int colorlen, float *colors,
+	      unsigned int colorilen, int *colori,
+	      unsigned int texcoordlen, float *texcoords,
+	      unsigned int texcoordilen, int *texcoordi)
+{
+ ay_pomesh_object *pomesh = NULL;
+ double *newverts = NULL;
+ double *expandedverts = NULL;
+ int expandcolors = AY_FALSE;
+ double *expandednormals = NULL;
+ float *expandedtexcoords = NULL;
+ float *expandedcolors = NULL;
+ int i, stride = 3;
+
+  if(!o || (o->type != AY_IDPOMESH))
+    return;
+
+  pomesh = (ay_pomesh_object *)(o->refine);
+
+  if((vertnormal && (normalilen > 0)) ||
+     (vertcolor && (colorilen > 0)) ||
+     (texcoordilen > 0))
+    {
+      /* colors may not need to be expanded if defined per face */
+      if(vertcolor)
+	expandcolors = AY_TRUE;
+
+      /* expand verts and auxiliary data that needs to be expanded */
+      if((normallen > 0) && vertnormal)
+	{
+	  pomesh->has_normals = AY_TRUE;
+	  stride = 6;
+	}
+      else
+	{
+	  if(normallen > 0)
+	    {
+	      /* add face normals */
+	      if(normalilen > 0)
+		{
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every face gets its own distinct value
+		  */
+		  if(!(expandednormals = calloc(3*pomesh->npolys,
+						sizeof(double))))
+		    { goto cleanup; }
+		  for(i = 0; i < pomesh->npolys; i++)
+		    {
+		      memcpy(&(expandednormals[i*3]), &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+
+		  ay_pv_add(o, "N", "uniform", 2,
+			    pomesh->npolys, 3, expandednormals);
+		}
+	      else
+		{
+		  ay_pv_add(o, "N", "uniform", 2,
+			    pomesh->npolys, 3, normals);
+		}
+	    }
+	}
+
+      if(!(expandedverts = calloc(stride*totalverts, sizeof(double))))
+	{ goto cleanup; }
+
+      for(i = 0; i < totalverts; i++)
+	{
+	  memcpy(&(expandedverts[i*stride]),
+		 &(pomesh->controlv[pomesh->verts[i]*3]),
+		 3*sizeof(double));
+	  if(pomesh->has_normals)
+	    memcpy(&(expandedverts[i*stride+3]),
+		   &(normals[normali[i]*3]),
+		   3*sizeof(double));
+	}
+
+      /* process colors */
+      if(colorlen > 0)
+	{
+	  if(expandcolors)
+	    {
+	      /* vertex colors */
+	      if(!(expandedcolors = calloc(3*totalverts, sizeof(float))))
+		{ goto cleanup; }
+	      if(colorilen > 0)
+		{
+		  for(i = 0; i < totalverts; i++)
+		    {
+		      memcpy(&(expandedcolors[i*3]),
+			     &(colors[pomesh->verts[i]*3]),
+			     3*sizeof(float));
+		    }
+		}
+	      else
+		{
+		  for(i = 0; i < totalverts; i++)
+		    {
+		      memcpy(&(expandedcolors[i*3]),
+			     &(colors[colori[i]*3]),
+			     3*sizeof(float));
+		    }
+		}
+	      ay_pv_add(o, "Cs", "varying", 3, totalverts, 3, expandedcolors);
+	    }
+	  else
+	    {
+	      /* face colors */
+	      ay_pv_add(o, "Cs", "uniform", 3, pomesh->npolys, 3, colors);
+	    }
+	} /* if */
+
+      /* process texcoords */
+      if(texcoordlen > 0)
+	{
+	  if(!(expandedtexcoords = calloc(2*totalverts, sizeof(float))))
+	    { goto cleanup; }
+	  if(texcoordilen > 0)
+	    {
+	      for(i = 0; i < totalverts; i++)
+		{
+		  memcpy(&(expandedtexcoords[i*stride]),
+			 &(texcoords[texcoordi[i]]),
+			 2*sizeof(float));
+
+		}
+	    }
+	  else
+	    {
+	      for(i = 0; i < totalverts; i++)
+		{
+		  memcpy(&(expandedtexcoords[i*stride]),
+			 &(texcoords[pomesh->verts[i]*2]),
+			 2*sizeof(float));
+
+		}
+	    }
+	  ay_pv_add(o, "st", "varying", 4,
+			totalverts, 2, expandedtexcoords);
+	} /* if */
+
+      for(i = 0; i < totalverts; i++)
+	{
+	  pomesh->verts[i] = i;
+	}
+      free(pomesh->controlv);
+      pomesh->controlv = expandedverts;
+      pomesh->ncontrols = totalverts;
+
+    }
+  else
+    {
+      if(normallen > 0)
+	{
+	  if(vertnormal)
+	    {
+	      /* vertex normals */
+	      /* no need to check for an index, we ruled that out already */
+	      if(!(newverts = calloc(6*pomesh->ncontrols,
+				     sizeof(double))))
+		{ goto cleanup; }
+	      for(i = 0; i < pomesh->npolys; i++)
+		{
+		  memcpy(&(newverts[i*6]), &(pomesh->controlv[i*3]),
+			 3*sizeof(double));
+		  memcpy(&(newverts[i*6+3]), &(normals[i*3]),
+			 3*sizeof(double));
+		}
+	      free(pomesh->controlv);
+	      pomesh->controlv = newverts;
+	      newverts = NULL;
+	    }
+	  else
+	    {
+	      /* face normals */
+	      if(normalilen > 0)
+		{
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the normals
+		    so that every face gets its own distinct value
+		  */
+		  if(!(expandednormals = calloc(3*pomesh->npolys,
+						sizeof(double))))
+		    { goto cleanup; }
+		  for(i = 0; i < pomesh->npolys; i++)
+		    {
+		      memcpy(&(expandednormals[i*3]),
+			     &(normals[normali[i]*3]),
+			     3*sizeof(double));
+		    }
+
+		  ay_pv_add(o, "N", "uniform", 2,
+			    pomesh->npolys, 3, expandednormals);
+		}
+	      else
+		{
+		  /* no normal index */
+		  ay_pv_add(o, "N", "uniform", 2,
+			    pomesh->npolys, 3, normals);
+		}
+	    }
+	} /* if */
+
+      if(colorlen > 0)
+	{
+	  if(vertcolor)
+	    {
+	      /* vertex colors */
+	      /* no need to check for an index, we ruled that out already */
+	      ay_pv_add(o, "Cs", "varying", 3,
+			pomesh->npolys, 3, colors);
+	    }
+	  else
+	    {
+	      /* face colors */
+	      if(colorilen > 0)
+		{
+		  /*
+		    we have a normal index,
+		    better rewrite/expand the colors
+		    so that every face gets its own distinct value
+		  */
+		  if(!(expandedcolors = calloc(3*pomesh->npolys,
+					       sizeof(float))))
+		    { goto cleanup; }
+		  for(i = 0; i < pomesh->npolys; i++)
+		    {
+		      memcpy(&(expandedcolors[i*3]), &(colors[colori[i]*3]),
+			     3*sizeof(float));
+		    }
+
+		  ay_pv_add(o, "Cs", "uniform", 3,
+			    pomesh->npolys, 3, expandedcolors);
+		}
+	      else
+		{
+		  /* no color index */
+		  ay_pv_add(o, "Cs", "uniform", 3,
+			    pomesh->npolys, 3, colors);
+		}
+	    }
+	} /* if */
+
+      if(texcoordlen > 0)
+	{
+	  /* no need to check for an index, we ruled that out already */
+	  ay_pv_add(o, "st", "varying", 0,
+		    pomesh->ncontrols, 1, texcoords);
+	} /* if */
+    } /* if */
+
+cleanup:
+
+
+ return;
+} /* x3dio_readnct */
+
+
 /* x3dio_readindexedfaceset:
  *
  */
@@ -1490,11 +1768,15 @@ x3dio_readindexedfaceset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0;
+ unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  unsigned int coordilen = 0, normalilen = 0;
+ unsigned int colorilen = 0, texcoordilen = 0;
  int *coordi = NULL, *normali = NULL;
+ int *colori = NULL, *texcoordi = NULL;
  int normalPerVertex = AY_FALSE;
- double *coords = NULL, *normals = NULL, *dtemp = NULL;;
+ int colorPerVertex = AY_FALSE;
+ double *coords = NULL, *normals = NULL;
+ float *colors = NULL, *texcoords = NULL;
  unsigned int i, j, k, totalverts = 0;
 
   if(!element)
@@ -1576,96 +1858,17 @@ x3dio_readindexedfaceset(scew_element *element)
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
-
-      if(normallen > 0)
-	{
-	  if(normalPerVertex)
-	    {
-	      /* vertex normals */
-	      if(normalilen > 0)
-		{
-		  /*
-		    we have a normal index,
-		    better rewrite/expand the normals
-		    so that every vertex gets its own distinct value
-		  */
-		  if(!(pomesh.controlv = calloc(6*totalverts, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < totalverts; i++)
-		    {
-		      memcpy(&(pomesh.controlv[i*6]),
-			     &(coords[pomesh.verts[i]]),
-			     3*sizeof(double));
-		      pomesh.verts[i] = i;
-		      memcpy(&(pomesh.controlv[i*6+3]),
-			     &(normals[normali[i]*3]),
-			     3*sizeof(double));
-		    }
-		  pomesh.ncontrols = totalverts;
-		}
-	      else
-		{
-		  /* no normal index, normal order is coord order */
-
-		  if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < coordlen; i++)
-		    {
-		      memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
-			     3*sizeof(double));
-		      memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
-			     3*sizeof(double));
-		    }
-		}
-	      pomesh.has_normals = AY_TRUE;
-	    }
-	  else
-	    {
-	      /* face normals */
-
-	      pomesh.controlv = coords;
-	      coords = NULL;
-
-	      /* copy object to the Ayam scene */
-	      ay_status = x3dio_linkobject(element, AY_IDPOMESH,
-					   (void*)&pomesh);
-
-	      if(normalilen > 0)
-		{
-		  /*
-		    we have a normal index,
-		    better rewrite/expand the normals
-		    so that every face gets its own distinct value
-		  */
-		  if(!(dtemp = calloc(3*pomesh.npolys, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < pomesh.npolys; i++)
-		    {
-		      memcpy(&(dtemp[i*3]), &(normals[normali[i]*3]),
-			     3*sizeof(double));
-		    }
-
-		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
-			    pomesh.npolys, 1, normals);
-		}
-	      else
-		{
-		  /* no normal index */
-		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
-			    pomesh.npolys, 1, normals);
-		}
-	      goto cleanup;
-	    }
-	}
-      else
-	{
-	  /* no normals */
-	  pomesh.controlv = coords;
-	  coords = NULL;
-	} /* if */
+      pomesh.controlv = coords;
+      coords = NULL;
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      x3dio_readnct(x3dio_lrobject, totalverts,
+		    normalPerVertex, colorPerVertex,
+		    normallen, normals, normalilen, normali,
+		    colorlen, colors, colorilen, colori,
+		    texcoordlen, texcoords, texcoordilen, texcoordi);
 
     } /* if */
 
@@ -1711,7 +1914,6 @@ x3dio_readindexedtriangleset(scew_element *element)
  int *coordi = NULL, *normali = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
- double *dtemp = NULL;
  unsigned int i, totalverts = 0;
 
   if(!element)
@@ -1773,98 +1975,18 @@ x3dio_readindexedtriangleset(scew_element *element)
 
       /* copy coordinate values and normals */
       pomesh.ncontrols = coordlen;
-
-      if(normallen > 0)
-	{
-	  if(normalPerVertex)
-	    {
-	      /* vertex normals */
-	      if(normalilen > 0)
-		{
-		  /*
-		    we have a normal index,
-		    better rewrite/expand the normals
-		    so that every vertex gets its own distinct value
-		  */
-		  if(!(pomesh.controlv = calloc(6*totalverts, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < totalverts; i++)
-		    {
-		      memcpy(&(pomesh.controlv[i*6]),
-			     &(coords[pomesh.verts[i]]),
-			     3*sizeof(double));
-		      pomesh.verts[i] = i;
-		      memcpy(&(pomesh.controlv[i*6+3]),
-			     &(normals[normali[i]*3]),
-			     3*sizeof(double));
-		    }
-		  pomesh.ncontrols = totalverts;
-		}
-	      else
-		{
-		  /* no normal index, normal order is coord order */
-
-		  pomesh.has_normals = AY_TRUE;
-		  if(!(pomesh.controlv = calloc(6*coordlen, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < coordlen; i++)
-		    {
-		      memcpy(&(pomesh.controlv[i*6]), &(coords[i*3]),
-			     3*sizeof(double));
-		      memcpy(&(pomesh.controlv[i*6+3]), &(normals[i*3]),
-			     3*sizeof(double));
-		    }
-		}
-	      pomesh.has_normals = AY_TRUE;
-	    }
-	  else
-	    {
-	      /* face normals */
-
-	      pomesh.controlv = coords;
-	      coords = NULL;
-
-	      /* copy object to the Ayam scene */
-	      ay_status = x3dio_linkobject(element, AY_IDPOMESH,
-					   (void*)&pomesh);
-
-	      if(normalilen > 0)
-		{
-		  /*
-		    we have a normal index,
-		    better rewrite/expand the normals
-		    so that every face gets its own distinct value
-		  */
-		  if(!(dtemp = calloc(3*pomesh.npolys, sizeof(double))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
-		  for(i = 0; i < pomesh.npolys; i++)
-		    {
-		      memcpy(&(dtemp[i*3]), &(normals[normali[i]*3]),
-			     3*sizeof(double));
-		    }
-
-		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
-			    pomesh.npolys, 1, normals);
-		}
-	      else
-		{
-		  /* no normal index */
-		  ay_pv_add(x3dio_lrobject, "N", "uniform", 0,
-			    pomesh.npolys, 1, normals);
-		}
-	      goto cleanup;
-	    }
-	}
-      else
-	{
-	  /* no normals */
-	  pomesh.controlv = coords;
-	  coords = NULL;
-	} /* if */
+      pomesh.controlv = coords;
+      coords = NULL;
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
-
+      /*
+      x3dio_readnct(x3dio_lrobject, totalverts,
+		    normalPerVertex, colorPerVertex,
+		    normallen, normals, normalilen, normali,
+		    colorlen, colors, colorilen, colori,
+		    texcoordlen, texcoords, texcoordilen, texcoordi);
+      */
     } /* if */
 
 cleanup:
