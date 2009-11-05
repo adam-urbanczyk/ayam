@@ -326,6 +326,13 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
     case 1:
       Tcl_DStringAppend(&ds, "float", -1);
       break;
+    case 2:
+    case 3:
+      Tcl_DStringAppend(&ds, "point", -1);
+      break;
+    case 4:
+      Tcl_DStringAppend(&ds, "float[2]", -1);
+      break;
     default:
       break;
     } /* switch */
@@ -336,20 +343,40 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   switch(type)
     {
     case 0:
-      for(i = 0; i < datalen; i+=stride)
+      for(i = 0; i < datalen*stride; i += stride)
 	{
-	  Tcl_DStringAppend(&ds, ",", -1);
-	  sprintf(tmp, "%f", (float)(((double*)data)[i]));
-	  /*snprintf(tmp, 254, "%f", (float)(((double*)data)[i]));*/
+	  sprintf(tmp, ",%f", (float)(((double*)data)[i]));
 	  Tcl_DStringAppend(&ds, tmp, -1);
 	}
       break;
     case 1:
-      for(i = 0; i < datalen; i+=stride)
+      for(i = 0; i < datalen*stride; i += stride)
 	{
-	  Tcl_DStringAppend(&ds, ",", -1);
-	  sprintf(tmp, "%f", ((float*)data)[i]);
-	  /*snprintf(tmp, 254, "%f", (float)(((double*)data)[i]));*/
+	  sprintf(tmp, ",%f", ((float*)data)[i]);
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+      break;
+    case 2:
+      for(i = 0; i < datalen*stride; i += stride)
+	{
+	  sprintf(tmp, ",%f,%f,%f", (float)(((double*)data)[i]),
+		  (float)(((double*)data)[i+1]),
+		  (float)(((double*)data)[i+2]));
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+      break;
+    case 3:
+      for(i = 0; i < datalen*stride; i += stride)
+	{
+	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
+		  ((float*)data)[i+1],
+		  ((float*)data)[i+2]);
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+    case 4:
+      for(i = 0; i < datalen*stride; i += stride)
+	{
+	  sprintf(tmp, ",%f,%f", ((float*)data)[i], ((float*)data)[i+1]);
 	  Tcl_DStringAppend(&ds, tmp, -1);
 	}
       break;
