@@ -1156,8 +1156,10 @@ x3dio_readcolors(scew_element *element, unsigned int *len, float **res)
  int ay_status = AY_OK;
  scew_element *child = NULL;
  const char *element_name = NULL;
+ /*
  float *cv = NULL;
  unsigned int i;
+ */
 
   if(!element || !len || !res)
     return AY_ENULL;
@@ -1171,7 +1173,21 @@ x3dio_readcolors(scew_element *element, unsigned int *len, float **res)
 	  ay_status = x3dio_processuse(&child);
 
 	  /* read data */
-	  ay_status = x3dio_readfloatpoints(child, "color", 3, len, &cv);
+	  ay_status = x3dio_readfloatpoints(child, "color", 3, len, res);
+
+	  return AY_OK; /* XXXX early exit! */
+	} /* if */
+
+      /* XXXX add support for ColorRGBA */
+#if 0
+      if(!strcmp(element_name, "ColorRGBA"))
+	{
+	  /* process USE attribute */
+	  ay_status = x3dio_processuse(&child);
+
+	  /* read data */
+	  ay_status = x3dio_readfloatpoints(child, "color", 4, len, cv);
+
 	  if(*len)
 	    {
 	      if(!(*res = calloc((*len)*3, sizeof(float))))
@@ -1180,19 +1196,20 @@ x3dio_readcolors(scew_element *element, unsigned int *len, float **res)
 		    free(cv);
 		  return AY_EOMEM;
 		}
-	      for(i = 0; i < *len; i++)
+	      for(i = 0; i < (*len*4); i += 4)
 		{
-		  (*res)[i] = (float)cv[i];
+		  (*res)[i]   = cv[i];
+		  (*res)[i+1] = cv[i+1];
+		  (*res)[i+2] = cv[i+2];
+		  /* XXXX what to do with alpha? */
+		  /*(*res)[i] = cv[i];*/
 		}
 
 	      if(cv)
 		free(cv);
 	    } /* if */
-	  return AY_OK; /* XXXX early exit! */
-	} /* if */
 
-      /* XXXX add support for ColorRGBA */
-
+#endif
     } /* while */
 
   return AY_OK;
@@ -1687,12 +1704,12 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(float));
 		    }
 		}
-	      ay_pv_add(o, "Cs", "varying", 3, totalverts, 3, expandedcolors);
+	      ay_pv_add(o, "Cs", "varying", 5, totalverts, 3, expandedcolors);
 	    }
 	  else
 	    {
 	      /* face colors */
-	      ay_pv_add(o, "Cs", "uniform", 3, pomesh->npolys, 3, colors);
+	      ay_pv_add(o, "Cs", "uniform", 5, pomesh->npolys, 3, colors);
 	    }
 	} /* if */
 
@@ -1795,7 +1812,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      /* vertex colors */
 	      /* no need to check for an index, we ruled that out already */
-	      ay_pv_add(o, "Cs", "varying", 3,
+	      ay_pv_add(o, "Cs", "varying", 5,
 			pomesh->npolys, 3, colors);
 	    }
 	  else
@@ -1817,14 +1834,14 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(float));
 		    }
 
-		  ay_pv_add(o, "Cs", "uniform", 3,
+		  ay_pv_add(o, "Cs", "uniform", 5,
 			    pomesh->npolys, 3, expandedcolors);
 		}
 	      else
 		{
 		  /* no color index */
-		  ay_pv_add(o, "Cs", "uniform", 3,
-			    pomesh->npolys, 3, colors);
+		  ay_pv_add(o, "Cs", "uniform", 5,
+			    colorlen, 3, colors);
 		}
 	    }
 	} /* if */
