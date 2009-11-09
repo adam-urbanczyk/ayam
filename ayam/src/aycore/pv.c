@@ -31,8 +31,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  ay_tag *tag = NULL;
  char *tagvaltmp = NULL, *pvname, *pvstorage, *pvtype, *pvvalue, *numvals;
  char tok[] = ",";
- unsigned int i, n;
- RtInt *itemp;
+ unsigned int i, j, n;
  RtFloat *ftemp;
  RtString *stemp;
  RtPoint *ptemp;
@@ -104,27 +103,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			{
 			  switch(*pvtype)
 			    {
-			    case 'i':
-			      Tcl_DStringAppend(&ds, "integer", -1);
-
-			      itemp = NULL;
-			      if(!(itemp = calloc(n, sizeof(RtInt))))
-				return AY_EOMEM;
-
-			      for(i = 0; i < n; i++)
-				{
-				  if(pvvalue)
-				    {
-				      sscanf(pvvalue, "%d", &(itemp[i]));
-				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
-				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
-				}
-			      parms[start] = (RtPointer)itemp;
-			      break;
 			    case 'f':
 			      Tcl_DStringAppend(&ds, "float", -1);
 
@@ -146,6 +124,40 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				}
 			      parms[start] = (RtPointer)ftemp;
 			      break;
+
+			    case 'g':
+			      Tcl_DStringAppend(&ds, "float[2]", -1);
+
+			      ftemp = NULL;
+			      if(!(ftemp = calloc(n, 2*sizeof(RtFloat))))
+				return AY_EOMEM;
+			      j = 0;
+			      for(i = 0; i < n; i++)
+				{
+				  if(pvvalue)
+				    {
+				      sscanf(pvvalue, "%f", &(ftemp[j]));
+				      pvvalue = strtok(NULL, tok);
+				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
+				  j++;
+				  if(pvvalue)
+				    {
+				      sscanf(pvvalue, "%f", &(ftemp[j]));
+				      pvvalue = strtok(NULL, tok);
+				    }
+				  else
+				    {
+				      ay_error(AY_EWARN, fname, e1);
+				    }
+				  j++;
+				}
+			      parms[start] = (RtPointer)ftemp;
+			      break;
+
 			    case 's':
 			      Tcl_DStringAppend(&ds, "string", -1);
 
@@ -170,6 +182,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				}
 			      parms[start] = (RtPointer)stemp;
 			      break;
+
 			    case 'p':
 			      Tcl_DStringAppend(&ds, "point", -1);
 
@@ -209,11 +222,12 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				} /* for */
 			      parms[start] = (RtPointer)ptemp;
 			      break;
+
 			    case 'c':
 			      Tcl_DStringAppend(&ds, "color", -1);
 
 			      ctemp = NULL;
-			      if(!(ctemp = calloc(n, sizeof(RtPoint))))
+			      if(!(ctemp = calloc(n, sizeof(RtColor))))
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
@@ -248,7 +262,10 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				} /* for */
 			      parms[start] = (RtPointer)ctemp;
 			      break;
+
 			    default:
+			      /* XXXX issue error message? */
+			      /* ...unsupported type encountered */
 			      break;
 			    } /* switch */
 
@@ -257,13 +274,13 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      RiDeclare(pvname, Tcl_DStringValue(&ds));
 			    }
 
-			  Tcl_DStringFree(&ds);
 			  start++;
 			  (*added)++;
 			} /* if(pvvalue */
 
 		    } /* if(n > 0 */
 
+		  Tcl_DStringFree(&ds);
 		} /* if(pvtype */
 
 	    } /* if(pvname */
@@ -324,17 +341,21 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
     {
     case 0:
     case 1:
-      Tcl_DStringAppend(&ds, "float", -1);
+      /* float */
+      Tcl_DStringAppend(&ds, "f", -1);
       break;
     case 2:
     case 3:
-      Tcl_DStringAppend(&ds, "point", -1);
+      /* point */
+      Tcl_DStringAppend(&ds, "p", -1);
       break;
     case 4:
-      Tcl_DStringAppend(&ds, "float[2]", -1);
+      /* float[2] */
+      Tcl_DStringAppend(&ds, "g", -1);
       break;
     case 5:
-      Tcl_DStringAppend(&ds, "color", -1);
+      /* color */
+      Tcl_DStringAppend(&ds, "c", -1);
       break;
 
     default:
