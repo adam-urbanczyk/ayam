@@ -333,6 +333,10 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
     case 4:
       Tcl_DStringAppend(&ds, "float[2]", -1);
       break;
+    case 5:
+      Tcl_DStringAppend(&ds, "color", -1);
+      break;
+
     default:
       break;
     } /* switch */
@@ -373,10 +377,20 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 		  ((float*)data)[i+2]);
 	  Tcl_DStringAppend(&ds, tmp, -1);
 	}
+      break;
     case 4:
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f,%f", ((float*)data)[i], ((float*)data)[i+1]);
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+      break;
+    case 5:
+      for(i = 0; i < datalen*stride; i += stride)
+	{
+	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
+		  ((float*)data)[i+1],
+		  ((float*)data)[i+2]);
 	  Tcl_DStringAppend(&ds, tmp, -1);
 	}
       break;
