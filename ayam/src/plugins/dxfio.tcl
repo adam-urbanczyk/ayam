@@ -134,7 +134,7 @@ proc dxfio_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impdxf }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impdxf }
 
     winCenter $w
     grab $w
@@ -253,7 +253,7 @@ proc dxfio_export { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expdxf }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expdxf }
 
     winCenter $w
     grab $w
