@@ -139,7 +139,7 @@ proc onio_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imprhino }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imprhino }
 
     winCenter $w
     grab $w
@@ -264,7 +264,7 @@ proc onio_export { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#exprhino }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#exprhino }
 
     winCenter $w
     grab $w

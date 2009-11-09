@@ -131,7 +131,7 @@ proc mfio_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imp3dmf }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imp3dmf }
 
     winCenter $w
     grab $w
@@ -248,7 +248,7 @@ proc mfio_export { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#exp3dmf }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#exp3dmf }
 
     winCenter $w
     grab $w

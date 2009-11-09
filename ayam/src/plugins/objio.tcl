@@ -131,7 +131,7 @@ proc objio_export { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expwav }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expwav }
 
     winCenter $w
     grab $w
@@ -261,7 +261,7 @@ proc objio_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impwav }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impwav }
 
     winCenter $w
     grab $w

@@ -139,7 +139,7 @@ proc rrib_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    bind $w <[repcont $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imprib }
+    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#imprib }
 
     winCenter $w
     grab $w
