@@ -695,6 +695,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       ay_object_defaults(new);
+      ay_trafo_copy(o, new);
       new->type = AY_IDNPATCH;
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
@@ -711,6 +712,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  /* create caps */
 	  n = &(new->next);
 	  ay_object_defaults(&d);
+	  ay_trafo_copy(o, &d);
 	  d.type = AY_IDDISK;
 	  d.refine = &disk;
 	  disk.radius = cone->radius;
@@ -725,6 +727,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(fabs(cone->thetamax) != 360.0)
 	    {
 	      ay_object_defaults(&d);
+	      ay_trafo_copy(o, &d);
 	      d.type = AY_IDBPATCH;
 	      d.refine = &bpatch;
 	      memcpy(bpatch.p1, &(controlv[0]), 3*sizeof(double));
