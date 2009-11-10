@@ -788,6 +788,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       ay_object_defaults(new);
+      ay_trafo_copy(o, new);
       new->type = AY_IDNPATCH;
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
@@ -804,6 +805,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  /* create caps */
 	  n = &(new->next);
 	  ay_object_defaults(&d);
+	  ay_trafo_copy(o, &d);
 	  d.type = AY_IDDISK;
 	  d.refine = &disk;
 	  disk.radius = cylinder->radius;
@@ -824,6 +826,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(fabs(cylinder->thetamax) != 360.0)
 	    {
 	      ay_object_defaults(&d);
+	      ay_trafo_copy(o, &d);
 	      d.type = AY_IDBPATCH;
 	      d.refine = &bpatch;
 	      memcpy(bpatch.p1, &(controlv[0]), 3*sizeof(double));
@@ -849,6 +852,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* return result */
       *result = new;
 
+      /* prevent cleanup code from doing something harmful */
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
     } /* if */
 

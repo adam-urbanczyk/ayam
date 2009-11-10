@@ -840,6 +840,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       ay_object_defaults(new);
+      ay_trafo_copy(o, new);
       new->type = AY_IDNPATCH;
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
@@ -856,6 +857,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  /* create caps */
 	  n = &(new->next);
 	  ay_object_defaults(&d);
+	  ay_trafo_copy(o, &d);
 	  d.type = AY_IDDISK;
 	  d.refine = &disk;
 	  disk.thetamax = paraboloid->thetamax;
@@ -887,6 +889,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  goto cleanup;
 		}
 	      ay_object_defaults(newp);
+	      ay_trafo_copy(o, newp);
 	      newp->type = AY_IDNPATCH;
 	      newp->inherit_trafos = AY_FALSE;
 	      newp->parent = AY_TRUE;
@@ -946,11 +949,18 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  newp = NULL;
 		  goto cleanup;
 		}
-
+	      /*
+		XXXX instead of rotating all the patch data, just
+		copy the last column from the paraboloid surface
+		instead?
+	      */
 	      ay_trafo_defaults(*n);
 	      ay_quat_axistoquat(zaxis, -AY_D2R(paraboloid->thetamax), quat);
 	      (*n)->rotz += paraboloid->thetamax;
 	      ay_quat_add((*n)->quat, quat, (*n)->quat);
+
+	      ay_npt_applytrafo(*n);
+	      ay_trafo_copy(o, *n);
 
 	      newp = NULL;
 	    } /* if */
@@ -962,6 +972,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* return result */
       *result = new;
 
+      /* prevent cleanup code from doing something harmful */
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
     } /* if */
 
