@@ -1076,6 +1076,8 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       /* return result */
       *result = new;
+
+      /* prevent cleanup code from doing something harmful */
       new = NULL;
     } /* if */
 

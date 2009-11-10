@@ -749,6 +749,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* return result */
       *result = new;
 
+      /* prevent cleanup code from doing something harmful */
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
     } /* if */
 
