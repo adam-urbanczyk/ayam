@@ -1198,6 +1198,9 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
   if(!m || !o)
     return;
 
+  o->movx = 0.0;
+  o->movy = 0.0;
+  o->movz = 0.0;
   o->scalx = 1.0;
   o->scaly = 1.0;
   o->scalz = 1.0;
