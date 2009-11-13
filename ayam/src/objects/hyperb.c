@@ -95,9 +95,9 @@ int
 ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_hyperboloid_object *h = NULL;
- double rmi, rma, ami, ama;
- int i;
+ double rmi = 0.0, rma = 0.0, ami = 0.0, ama = 0.0;
  double P1[9*2], P2[9*2];
+ int i;
  double thetadiff, angle;
 
   if(!o)
@@ -108,14 +108,18 @@ ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
   if(!h)
     return AY_ENULL;
 
-  rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
-  ami = acos(h->p1[0]/rmi);
-  if (h->p1[1] < 0.0)
+  if((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1])>AY_EPSILON)
+    rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
+  if(rmi>AY_EPSILON)
+    ami = acos(h->p1[0]/rmi);
+  if(h->p1[1] < 0.0)
     ami = -ami;
 
-  rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
-  ama = acos(h->p2[0]/rma);
-  if (h->p2[1] < 0.0)
+  if((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1])>AY_EPSILON)
+    rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
+  if(rma>AY_EPSILON)
+    ama = acos(h->p2[0]/rma);
+  if(h->p2[1] < 0.0)
     ama = -ama;
 
   thetadiff = AY_D2R(h->thetamax/8);
@@ -159,6 +163,10 @@ ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
      }
   glEnd();
 
+  /* check for disk shape */
+  if(fabs(h->p1[2] - h->p2[2]) < AY_EPSILON)
+    return AY_OK;
+
   if(h->closed)
     {
       if(fabs(h->thetamax) == 360.0)
@@ -193,7 +201,7 @@ ay_hyperb_drawcb(struct Togl *togl, ay_object *o)
 	   glVertex3dv(h->p2);
 	  glEnd();
 	}
-    }
+    } /* if */
 
 
  return AY_OK;
@@ -208,7 +216,7 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_hyperboloid_object *h = NULL;
  GLUquadricObj *qobj = NULL;
- double rmi, rma, ami, ama;
+ double rmi = 0.0, rma = 0.0, ami = 0.0, ama = 0.0;
  int i;
  double P1[9*2], P2[9*2];
  double thetadiff, angle;
@@ -221,18 +229,21 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
   if(!h)
     return AY_ENULL;
 
-
-  rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
-  ami = acos(h->p1[0]/rmi);
+  if((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1])>AY_EPSILON)
+    rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
+  if(rmi>AY_EPSILON)
+    ami = acos(h->p1[0]/rmi);
   if(h->p1[1] < 0.0)
     ami = -ami;
 
-  rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
-  ama = acos(h->p2[0]/rma);
+  if((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1])>AY_EPSILON)
+    rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
+  if(rma>AY_EPSILON)
+    ama = acos(h->p2[0]/rma);
   if(h->p2[1] < 0.0)
     ama = -ama;
 
-  thetadiff = AY_D2R(h->thetamax/8);
+  thetadiff = AY_D2R(h->thetamax/8.0);
 
   angle = ami;
   for(i = 0; i <= 8; i++)
@@ -250,7 +261,7 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
       angle += thetadiff;
     }
 
-  /* draw */
+  /* shade */
 
   /* XXXX this is just a gross approximation of the hyperboloids shape */
   glBegin(GL_QUAD_STRIP);
@@ -262,6 +273,10 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
        glVertex3d(P2[i*2], P2[i*2+1], h->p2[2]);
      }
   glEnd();
+
+  /* check for disk shape */
+  if(fabs(h->p1[2] - h->p2[2]) < AY_EPSILON)
+    return AY_OK;
 
   if(h->closed)
     {
@@ -303,7 +318,7 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
       glPopMatrix();
       gluDeleteQuadric(qobj);
 
-      /* other patches */
+      /* "side" patches */
       glBegin(GL_QUADS);
        glNormal3d(0.0, 1.0, 0.0);
        glVertex3dv(h->p1);
@@ -311,14 +326,15 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
        glVertex3d(0.0,0.0,h->p2[2]);
        glVertex3dv(h->p2);
       glEnd();
-      glRotated(h->thetamax,0.0,0.0,1.0);
-      glBegin(GL_QUADS);
-       glVertex3dv(h->p1);
-       glVertex3d(0.0,0.0,h->p1[2]);
-       glVertex3d(0.0,0.0,h->p2[2]);
-       glVertex3dv(h->p2);
-      glEnd();
-
+      glPushMatrix();
+       glRotated(h->thetamax,0.0,0.0,1.0);
+       glBegin(GL_QUADS);
+        glVertex3dv(h->p1);
+        glVertex3d(0.0,0.0,h->p1[2]);
+        glVertex3d(0.0,0.0,h->p2[2]);
+        glVertex3dv(h->p2);
+       glEnd();
+      glPopMatrix();
     }
 
  return AY_OK;
@@ -461,6 +477,7 @@ ay_hyperb_readcb(FILE *fileptr, ay_object *o)
 {
  ay_hyperboloid_object *hyperb = NULL;
  int itemp;
+
   if(!o)
    return AY_ENULL;
 
@@ -534,31 +551,47 @@ ay_hyperb_wribcb(char *file, ay_object *o)
   else
     {
        RiHyperboloid(p1, p2, (RtFloat)hyperb->thetamax, NULL);
-       if(p1[2] == p2[2])
+
+       /* check for disk shape */
+       if(fabs(p1[2] - p2[2]) < AY_EPSILON)
 	 {
 	   return AY_OK;
 	 }
 
-       radius = (RtFloat)sqrt(p1[0]*p1[0]+p1[1]*p1[1]);
-       angle = (RtFloat)(180.0/AY_PI * acos(p1[0]/radius));
-       if(p1[1] < 0.0)
-	 angle = -angle;
+       if(p1[0]*p1[0]+p1[1]*p1[1] > AY_EPSILON)
+	 radius = (RtFloat)sqrt(p1[0]*p1[0]+p1[1]*p1[1]);
+       if(radius > AY_EPSILON)
+	 {
+	   angle = (RtFloat)(180.0/AY_PI * acos(p1[0]/radius));
+	   if(p1[1] < 0.0)
+	     angle = -angle;
 
-       RiTransformBegin();
-        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
-	RiDisk(p1[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
-       RiTransformEnd();
+	   if(fabs(angle) > AY_EPSILON)
+	     {
+	       RiTransformBegin();
+	        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	        RiDisk(p1[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
+	       RiTransformEnd();
+	     }
+	 }
 
-       radius = (RtFloat)sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
-       angle = (RtFloat)(180.0/AY_PI * acos(p2[0]/radius));
-       if (p2[1] < 0.0)
-	 angle = -angle;
+       if(p2[0]*p2[0] + p2[1]*p2[1] > AY_EPSILON)
+	 radius = (RtFloat)sqrt(p2[0]*p2[0] + p2[1]*p2[1]);
+       if(radius > AY_EPSILON)
+	 {
+	   angle = (RtFloat)(180.0/AY_PI * acos(p2[0]/radius));
+	   if(p2[1] < 0.0)
+	     angle = -angle;
 
-       RiAttributeBegin();
-        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
-	RiReverseOrientation();
-	RiDisk(p2[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
-	RiAttributeEnd();
+	   if( fabs(angle)>AY_EPSILON)
+	     {
+	       RiAttributeBegin();
+	        RiRotate(angle, (RtFloat)0.0, (RtFloat)0.0, (RtFloat)1.0);
+	        RiReverseOrientation();
+	        RiDisk(p2[2], radius, (RtFloat)hyperb->thetamax, RI_NULL);
+	       RiAttributeEnd();
+	     }
+	 }
 
 	if(fabs(hyperb->thetamax) != 360.0)
 	  {
@@ -598,8 +631,10 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 
   h = (ay_hyperboloid_object *)o->refine;
 
-  rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2]));
-  rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]));
+  if((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2])>AY_EPSILON)
+    rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2]));
+  if((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]))
+    rma = sqrt((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]));
   zmi = h->p1[1];
   zma = h->p2[1];
 
@@ -663,9 +698,14 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDNPATCH)
     {
-      if(fabs((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]))>AY_EPSILON)
+      if(((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1])) > AY_EPSILON)
 	rmin = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
-      ths = AY_R2D(atan(h->p1[1]/h->p1[0]));
+
+      if(fabs(h->p1[0]) > AY_EPSILON)
+	ths = AY_R2D(atan(h->p1[1]/h->p1[0]));
+      else
+	ths = 90.0;
+
       the = ths + hyperboloid->thetamax;
 
       if(hyperboloid->thetamax < 0.0)
@@ -696,9 +736,15 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
       free(cv);
       cv = NULL;
-      if(fabs((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]))>AY_EPSILON)
+
+      if((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]) > AY_EPSILON)
 	rmax = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
-      ths = AY_R2D(atan(h->p2[1]/h->p2[0]));
+
+      if(fabs(h->p2[0]) > AY_EPSILON)
+	ths = AY_R2D(atan(h->p2[1]/h->p2[0]));
+      else
+	ths = 90.0;
+
       the = ths + hyperboloid->thetamax;
 
       if(hyperboloid->thetamax < 0.0)
@@ -737,6 +783,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       ay_object_defaults(new);
+      ay_trafo_copy(o, new);
       new->type = AY_IDNPATCH;
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
@@ -748,7 +795,8 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       new->refine = np;
 
-      if(hyperboloid->closed)
+      /* check for disk shape */
+      if((fabs(h->p1[2] - h->p2[2]) > AY_EPSILON) && hyperboloid->closed)
 	{
 	  /* create caps */
 	  n = &(new->next);
@@ -758,7 +806,10 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  disk.radius = rmin;
 	  disk.height = h->p1[2];
 	  disk.thetamax = hyperboloid->thetamax;
-	  ths = -AY_R2D(atan(h->p1[1]/h->p1[0]));
+	  if(fabs(h->p1[0]) > AY_EPSILON)
+	    ths = -AY_R2D(atan(h->p1[1]/h->p1[0]));
+	  else
+	    ths = -90.0;
 	  d.rotz = ths;
 	  ay_quat_axistoquat(zaxis, AY_D2R(ths), quat);
 	  ay_quat_add(quat, d.quat, d.quat);
@@ -766,11 +817,17 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
+	      ay_npt_applytrafo(*n);
+	      ay_trafo_copy(o, *n);
+
 	      n = &((*n)->next);
 	    }
 	  disk.radius = rmax;
 	  disk.height = h->p2[2];
-	  ths = -AY_R2D(atan(h->p2[1]/h->p2[0]));
+	  if(fabs(h->p2[0]) > AY_EPSILON)
+	    ths = -AY_R2D(atan(h->p2[1]/h->p2[0]));
+	  else
+	    ths = -90.0;
 	  d.rotz = ths;
 	  d.quat[0] = 0.0;
 	  d.quat[1] = 0.0;
@@ -782,12 +839,16 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    ay_provide_object(&d, AY_IDNPATCH, n);
 	  if(*n)
 	    {
+	      ay_npt_applytrafo(*n);
+	      ay_trafo_copy(o, *n);
+
 	      n = &((*n)->next);
 	    } /* if */
 
 	  if(fabs(hyperboloid->thetamax) != 360.0)
 	    {
 	      ay_object_defaults(&d);
+	      ay_trafo_copy(o, &d);
 	      d.type = AY_IDBPATCH;
 	      d.refine = &bpatch;
 	      memcpy(bpatch.p1, &(controlv[0]), 3*sizeof(double));
@@ -813,6 +874,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* return result */
       *result = new;
 
+      /* prevent cleanup code from doing something harmful */
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
     } /* if */
 
@@ -865,7 +927,6 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
       new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
 	{ free(new); return AY_EOMEM; }
