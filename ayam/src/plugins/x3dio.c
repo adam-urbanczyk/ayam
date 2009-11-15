@@ -1573,7 +1573,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
  int *normali, *colori, *texcoordi;;
  int expandcolors = AY_FALSE;
  int i, stride = 3;
- double *expandedverts = NULL;
+ double *expandedcontrols = NULL;
  double *expandednormals = NULL;
  float *expandedtexcoords = NULL;
  float *expandedcolors = NULL;
@@ -1664,16 +1664,16 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    }
 	}
 
-      if(!(expandedverts = calloc(stride*totalverts, sizeof(double))))
+      if(!(expandedcontrols = calloc(stride*totalverts, sizeof(double))))
 	{ goto cleanup; }
 
       for(i = 0; i < totalverts; i++)
 	{
-	  memcpy(&(expandedverts[i*stride]),
+	  memcpy(&(expandedcontrols[i*stride]),
 		 &(pomesh->controlv[pomesh->verts[i]*3]),
 		 3*sizeof(double));
 	  if(pomesh->has_normals)
-	    memcpy(&(expandedverts[i*stride+3]),
+	    memcpy(&(expandedcontrols[i*stride+3]),
 		   &(normals[normali[i]*3]),
 		   3*sizeof(double));
 	}
@@ -1747,7 +1747,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	  pomesh->verts[i] = i;
 	}
       free(pomesh->controlv);
-      pomesh->controlv = expandedverts;
+      pomesh->controlv = expandedcontrols;
       pomesh->ncontrols = totalverts;
 
     }
@@ -1759,19 +1759,19 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      /* vertex normals */
 	      /* no need to check for an index, we ruled that out already */
-	      if(!(expandedverts = calloc(6*pomesh->ncontrols,
+	      if(!(expandedcontrols = calloc(6*pomesh->ncontrols,
 				     sizeof(double))))
 		{ goto cleanup; }
 	      for(i = 0; i < pomesh->npolys; i++)
 		{
-		  memcpy(&(expandedverts[i*6]), &(pomesh->controlv[i*3]),
+		  memcpy(&(expandedcontrols[i*6]), &(pomesh->controlv[i*3]),
 			 3*sizeof(double));
-		  memcpy(&(expandedverts[i*6+3]), &(normals[i*3]),
+		  memcpy(&(expandedcontrols[i*6+3]), &(normals[i*3]),
 			 3*sizeof(double));
 		}
 	      free(pomesh->controlv);
-	      pomesh->controlv = expandedverts;
-	      expandedverts = NULL;
+	      pomesh->controlv = expandedcontrols;
+	      expandedcontrols = NULL;
 	      pomesh->has_normals = AY_TRUE;
 	    }
 	  else
@@ -1813,7 +1813,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	      /* vertex colors */
 	      /* no need to check for an index, we ruled that out already */
 	      ay_pv_add(o, "Cs", "varying", 5,
-			pomesh->npolys, 3, colors);
+			pomesh->ncontrols, 3, colors);
 	    }
 	  else
 	    {
@@ -1849,8 +1849,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
       if(texcoordlen > 0)
 	{
 	  /* no need to check for an index, we ruled that out already */
-	  ay_pv_add(o, "st", "varying", 0,
-		    pomesh->ncontrols, 1, texcoords);
+	  ay_pv_add(o, "st", "varying", 4,
+		    pomesh->ncontrols, 2, texcoords);
 	} /* if */
     } /* if */
 
@@ -2598,10 +2598,12 @@ x3dio_readtrianglefanset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0, fancountslen = 0;
+ unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
+ unsigned int fancountslen = 0;
  int *fancounts = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
+ float *texcoords = NULL, *colors = NULL;
  unsigned int i, j, k, l, totalverts = 0;
 
   if(!element)
@@ -2624,8 +2626,10 @@ x3dio_readtrianglefanset(scew_element *element)
       ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
       /* get colors */
+      ay_status = x3dio_readcolors(element, &colorlen, &colors);
 
       /* get texture coordinates */
+      ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
 
       /* count vertices and polygons */
       for(i = 0; i < fancountslen; i++)
@@ -2701,6 +2705,20 @@ x3dio_readtrianglefanset(scew_element *element)
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+      /* process colors */
+      if(colorlen > 0)
+	{
+	  ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+		    pomesh.ncontrols, 3, colors);
+	}
+
+      /* process texcoords */
+      if(texcoordlen > 0)
+	{
+	  ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+		    pomesh.ncontrols, 2, texcoords);
+	}
+
     } /* if */
 
 cleanup:
@@ -2709,6 +2727,12 @@ cleanup:
 
   if(normals)
     free(normals);
+
+  if(colors)
+    free(colors);
+
+  if(texcoords)
+    free(texcoords);
 
   if(fancounts)
     free(fancounts);
@@ -2737,10 +2761,12 @@ x3dio_readtrianglestripset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0, stripcountslen = 0;
+ unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
+ unsigned int stripcountslen = 0;
  int *stripcounts = NULL;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
+ float *texcoords = NULL, *colors = NULL;
  unsigned int i, j, k, l, totalverts = 0;
 
   if(!element)
@@ -2764,8 +2790,10 @@ x3dio_readtrianglestripset(scew_element *element)
       ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
       /* get colors */
+      ay_status = x3dio_readcolors(element, &colorlen, &colors);
 
       /* get texture coordinates */
+      ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
 
       /* count vertices and polygons */
       for(i = 0; i < stripcountslen; i++)
@@ -2840,6 +2868,19 @@ x3dio_readtrianglestripset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+      /* process colors */
+      if(colorlen > 0)
+	{
+	  ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+		    pomesh.ncontrols, 3, colors);
+	}
+
+      /* process texcoords */
+      if(texcoordlen > 0)
+	{
+	  ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+		    pomesh.ncontrols, 2, texcoords);
+	}
 
     } /* if */
 
@@ -2849,6 +2890,12 @@ cleanup:
 
   if(normals)
     free(normals);
+
+  if(colors)
+    free(colors);
+
+  if(texcoords)
+    free(texcoords);
 
   if(stripcounts)
     free(stripcounts);
@@ -2877,9 +2924,10 @@ x3dio_readtriangleset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0;
+ unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
+ float *texcoords = NULL, *colors = NULL;
  unsigned int i, totalverts = 0;
 
   if(!element)
@@ -2898,8 +2946,10 @@ x3dio_readtriangleset(scew_element *element)
   ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
   /* get colors */
+  ay_status = x3dio_readcolors(element, &colorlen, &colors);
 
   /* get texture coordinates */
+  ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
 
   pomesh.npolys = coordlen/3;
   totalverts = pomesh.npolys*3;
@@ -2958,12 +3008,33 @@ x3dio_readtriangleset(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
-cleanup:
+  /* process colors */
+  if(colorlen > 0)
+    {
+      ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+		pomesh.ncontrols, 3, colors);
+    }
+
+  /* process texcoords */
+  if(texcoordlen > 0)
+    {
+      ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+		pomesh.ncontrols, 2, texcoords);
+    }
+
+
+ cleanup:
   if(coords)
     free(coords);
 
   if(normals)
     free(normals);
+
+  if(colors)
+    free(colors);
+
+  if(texcoords)
+    free(texcoords);
 
   if(pomesh.nloops)
     free(pomesh.nloops);
@@ -2989,9 +3060,10 @@ x3dio_readquadset(scew_element *element)
 {
  int ay_status = AY_OK;
  ay_pomesh_object pomesh = {0};
- unsigned int coordlen = 0, normallen = 0;
+ unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  int normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
+ float *texcoords = NULL, *colors = NULL;
  unsigned int i, totalverts = 0;
 
   if(!element)
@@ -3010,8 +3082,10 @@ x3dio_readquadset(scew_element *element)
   ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
   /* get colors */
+  ay_status = x3dio_readcolors(element, &colorlen, &colors);
 
   /* get texture coordinates */
+  ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
 
   pomesh.npolys = coordlen/4;
   totalverts = pomesh.npolys*4;
@@ -3070,12 +3144,32 @@ x3dio_readquadset(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+  /* process colors */
+  if(colorlen > 0)
+    {
+      ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+		pomesh.ncontrols, 3, colors);
+    }
+
+  /* process texcoords */
+  if(texcoordlen > 0)
+    {
+      ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+		pomesh.ncontrols, 2, texcoords);
+    }
+
 cleanup:
   if(coords)
     free(coords);
 
   if(normals)
     free(normals);
+
+  if(colors)
+    free(colors);
+
+  if(texcoords)
+    free(texcoords);
 
   if(pomesh.nloops)
     free(pomesh.nloops);
