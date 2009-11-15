@@ -183,9 +183,23 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      parms[start] = (RtPointer)stemp;
 			      break;
 
+			    case 'n':
 			    case 'p':
-			      Tcl_DStringAppend(&ds, "point", -1);
-
+			    case 'v':
+			      switch(*pvtype)
+				{
+				case 'n':
+				  Tcl_DStringAppend(&ds, "normal", -1);
+				  break;
+				case 'p':
+				  Tcl_DStringAppend(&ds, "point", -1);
+				  break;
+				case 'v':
+				  Tcl_DStringAppend(&ds, "vector", -1);
+				  break;
+				default:
+				  break;
+				}
 			      ptemp = NULL;
 			      if(!(ptemp = calloc(n, sizeof(RtPoint))))
 				return AY_EOMEM;
@@ -368,6 +382,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   switch(type)
     {
     case 0:
+      /* float */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f", (float)(((double*)data)[i]));
@@ -375,6 +390,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 1:
+      /* float */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f", ((float*)data)[i]);
@@ -382,6 +398,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 2:
+      /* point */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f,%f,%f", (float)(((double*)data)[i]),
@@ -391,6 +408,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 3:
+      /* point */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
@@ -400,6 +418,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 4:
+      /* float[2] */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f,%f", ((float*)data)[i], ((float*)data)[i+1]);
@@ -407,6 +426,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	}
       break;
     case 5:
+      /* color */
       for(i = 0; i < datalen*stride; i += stride)
 	{
 	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
