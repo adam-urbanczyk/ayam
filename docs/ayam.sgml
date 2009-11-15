@@ -7672,16 +7672,18 @@ The syntax of the value string of a PV tag is as following:
 <p>
 where
 <tt/"&lt;name&gt;"/ is the name of the primitive variable;
-<tt/"&lt;detail&gt;"/ or storage class should be one of
+<tt/"&lt;detail&gt;"/ (or storage class) should be one of
 <tt/"uniform"/, <tt/"varying"/, <tt/"vertex"/, or <tt/"constant"/;
 <tt/"&lt;type&gt;"/ is a single character describing the type of the
-data (see also the documentation of the <tt/"RiAttribute"/ tag above);
+data (one of <tt/"c"/ (color), <tt/"f"/ (float), <tt/"g"/ (float[2]),
+<tt/"n"/ (normal), <tt/"p"/ (point), <tt/"s"/ (string), or <tt/"v"/ (vector),
+see also the documentation of the <tt/"RiAttribute"/ tag above);
 <tt/"&lt;ndata&gt;"/ is an integer number describing how many data
 elements will follow; and
 <tt/"&lt;data&gt;"/ is a comma separated list
-consisting of a <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
+consisting of <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
 <p>
-<bf/Example/
+<bf/Examples/
 <p>
 <code>PV mycolor,constant,c,1,0,1,0</code>
 adds a single color value (0,1,0), which is the same all over the primitive,
@@ -7690,9 +7692,13 @@ the respective surface shader should have a parameter <tt/"color mycolor"/;
 could be used to add a distinct float value to each corner point of a
 four point NURBS patch (of order, width, and height 2),
 the respective surface shader should have a parameter
-<tt/"varying float mys"/;.
+<tt/"varying float mys"/.
 <p>
 <bf/Notes/
+<p>
+The following data types are <em>not</em> supported: i, j.
+Support for the data types n (normal), and v (vector) was added
+in Ayam 1.17.
 <p>
 Not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
@@ -12446,14 +12452,16 @@ Additionally, those scripts may be further adapted to
 set a different <tt/"Shaders"/ preference setting or to immediately
 scan for shaders after loading of the plugin. For that, just remove
 the leading hash-marks (&num;) from the corresponding lines in the script.
-Changing the scripts for immediate shader parsing is not necessary if you
-load the shader parsing plugin automatically on startup of Ayam, as the
-loading of the scripts will happen before the Ayam startup sequence
-executes the initial shader scanning pass.
+Note that changing the scripts for immediate shader parsing is not
+necessary if you load the shader parsing plugin automatically on startup
+of Ayam, as the loading of the scripts will happen before the Ayam startup
+sequence executes the initial shader scanning pass.
+The shader search path used for the initial shader scanning pass
+is taken from the <tt/"Shaders"/ preference setting.
 <p>
-However, the standard behavior of the loading script while manually
-loading of such a plugin requires you to adapt the shaders search path
-manually and to scan manually for shaders too.
+If you load a shader parsing plugin manually or via unchanged
+load script you need to adapt the shaders search path manually and also
+initiate a shader scan manually.
 Both actions may be carried out using the preferences editor. Scanning
 for shaders may also be started using the main menu:
 <tt>"Special/Scan Shaders"</tt>.
