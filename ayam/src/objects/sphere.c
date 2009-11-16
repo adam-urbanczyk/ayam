@@ -958,6 +958,9 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  new->rotx += 90.0;
 	  ay_quat_add(new->quat, quat, new->quat);
 
+	  ay_npt_applytrafo(new);
+	  ay_trafo_copy(o, new);
+
 	  kn = NULL;
 	  cv = NULL;
 
@@ -965,6 +968,8 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(sphere->closed)
 	    {
 	      n = &(new->next);
+
+	      /* lower cap */
 	      if(fabs(zmin) < radius)
 		{
 		  ay_object_defaults(&d);
@@ -980,6 +985,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		    }
 		} /* if */
 
+	      /* upper cap */
 	      if(fabs(zmax) < radius)
 		{
 		  ay_object_defaults(&d);
@@ -997,6 +1003,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	      if(fabs(thetamax) != 360.0)
 		{
+		  /* side cap (at theta=0.0) */
 		  if(!(cv2 = calloc(2*height*stride, sizeof(double))))
 		    {
 		      ay_status = AY_EOMEM;
@@ -1004,17 +1011,22 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		    }
 		  np = (ay_nurbpatch_object *)new->refine;
 		  cv = np->controlv;
+
 		  j = 0; k = 0;
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
 		      j += stride; k += np->height*stride;
 		    }
-		  cv = NULL;
+
 		  j = height*stride+1; k = 1;
 		  for(i = 0; i < height; i++)
 		    {
+		      /*Y*/
 		      cv2[j] = cv2[k];
+		      /*Z*/
+		      cv2[j+1] = zmin;
+		      /*W*/
 		      cv2[j+2] = 1.0;
 		      j += stride; k += stride;
 		    }
@@ -1052,19 +1064,34 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  *n = newp;
 		  n = &((*n)->next);
 
+		  /* side cap (at theta=ThetaMax) */
 		  ay_object_copy(newp, n);
 
 		  np = (ay_nurbpatch_object *)((*n)->refine);
 		  cv2 = np->controlv;
 		  np = (ay_nurbpatch_object *)new->refine;
-		  cv = np->controlv;
+
 		  j = 0; k = (np->height-1)*stride;
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
-		      j += stride; k += np->height*stride;
+		      j += stride; k += (np->height*stride);
 		    }
 
+		  j = height*stride; k = 0;
+		  for(i = 0; i < height; i++)
+		    {
+		      /*X*/
+		      cv2[j] = cv2[k];
+		      /*Y*/
+		      cv2[j+1] = 0.0; 
+		      /*Z*/
+		      cv2[j+2] = zmin;
+
+		      j += stride; k += stride;
+		    }
+
+		  /* prevent cleanup code from doing something harmful */
 		  np = NULL;
 		  cv = NULL;
 		} /* if */
