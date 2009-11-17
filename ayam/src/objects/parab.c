@@ -924,7 +924,6 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 		{
 		  controlv[(i*4+j)*stride] = controlv[(i*4)*stride]/3.0;
 		  controlv[(i*4+j-1)*stride] = controlv[(i*4+j)*stride]*2.0;
-		  j += 4;
 		}
 	      /* set all weights to 1.0 */
 	      for(i = 0; i < 16; i++)
