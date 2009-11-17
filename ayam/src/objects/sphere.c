@@ -897,7 +897,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      /*ay_trafo_copy(o, new);*/
       radius = sphere->radius;
       if(sphere->is_simple)
 	{
@@ -973,6 +972,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(fabs(zmin) < radius)
 		{
 		  ay_object_defaults(&d);
+		  ay_trafo_copy(o, &d);
 		  d.type = AY_IDDISK;
 		  d.refine = &disk;
 		  disk.radius = rmin;
@@ -989,6 +989,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(fabs(zmax) < radius)
 		{
 		  ay_object_defaults(&d);
+		  ay_trafo_copy(o, &d);
 		  d.type = AY_IDDISK;
 		  d.refine = &disk;
 		  disk.radius = rmax;
@@ -1023,7 +1024,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  for(i = 0; i < height; i++)
 		    {
 		      /*Y*/
-		      cv2[j] = cv2[k];
+		      cv2[j] = 0.0/*cv2[k]*/; /* 0.0 - fan shape */
 		      /*Z*/
 		      cv2[j+1] = zmin;
 		      /*W*/
@@ -1045,6 +1046,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		    }
 
 		  ay_object_defaults(newp);
+		  ay_trafo_copy(o, newp);
 		  newp->type = AY_IDNPATCH;
 		  newp->inherit_trafos = AY_FALSE;
 		  newp->parent = AY_TRUE;
@@ -1053,8 +1055,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  ay_status = ay_object_crtendlevel(&(newp->down));
 		  if(ay_status)
 		    goto cleanup;
-
-		  ay_trafo_copy(new, newp);
 
 		  ay_npt_create(2, 3, 2, height, AY_KTNURB, AY_KTCUSTOM,
 				cv2, NULL, kn,
@@ -1082,7 +1082,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  for(i = 0; i < height; i++)
 		    {
 		      /*X*/
-		      cv2[j] = cv2[k];
+		      cv2[j] = 0.0/*cv2[k]*/; /* 0.0 - fan shape */
 		      /*Y*/
 		      cv2[j+1] = 0.0; 
 		      /*Z*/
