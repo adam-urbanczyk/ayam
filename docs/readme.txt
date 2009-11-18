@@ -1,4 +1,4 @@
-[readme.txt; 2. Nov 2004]
+[readme.txt; 18. Nov 2009]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
@@ -49,7 +49,6 @@ To build a simple and not good looking PDF version made with dvipdf:
 
 To (re)create the reference card, you need the following prerequisites:
 o LaTeX
-o dvips
 
 How do you create the reference card?
 o Start Ayam.
@@ -58,9 +57,7 @@ o Enter into the Ayam console:
   (substitute ../docs with the real path of "refcard.tcl")
   >printHotKeys myrefcard.tex
 o Now enter into a normal shell:
-  >latex myrefcard.tex
-  >dvips myrefcard.tex -o myrefcard.ps
-
+  >pdflatex myrefcard.tex
 
 -- 
 http://www.ayam3d.org/   Reconstruct the World!
