@@ -9102,7 +9102,7 @@ selOb - select object(s):
  <item>Synopsis: <tt/"selOb [index]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Use this command to set or clear the current
-selection, index may be an ordered list of indizes, a single index or empty.
+selection, index may be an ordered list of indices, a single index or empty.
 If no index is given, the current selection will be cleared.
  <item>Examples: <tt/"selOb"/ clears the current selection, <tt/"selOb 0"/
 selects the first object in the current level, <tt/"selOb 0 1"/ selects
@@ -11728,8 +11728,19 @@ Instances of objects may be easily created again using Automatic Instancing
 <p>
 Normals will currently not be generated automatically for any X3D element
 and thus the <tt>"creaseAngle"</tt> attribute will be fully ignored.
-Note however, that if normals are specified e.g. for an
+Note however, that if normals are specified, e.g. for an
 <tt>"IndexedFaceSet"</tt> element, they will be imported correctly.
+<p>
+Furthermore, since Ayam 1.17, if normals, colors, or texture coordinates
+are provided to an element that imports as a PolyMesh (IndexedFaceSet
+and the likes) proper PV (primitive variable) tags will be created.
+If there is an index provided to the normals, colors, or texture coordinates,
+the relevant affected data (e.g. the vertex coordinates) will be expanded
+properly (as RenderMan does not support multiple different indices on the
+vertex related data).
+Note that currently the mere presence of an index will lead to this expansion,
+the index is not checked, whether it is identical to the vertex coordinate
+index (and thus no expansion would be necessary).
 <p>
 The <tt>"DEF"</tt> attributes will be converted to object names
 in some cases.
@@ -12984,6 +12995,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Bound: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>BoundCoord: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Box: <ref id="boxobj" name="Box object">
+<item>BP: <ref id="bptag" name="tag type">
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
@@ -13422,8 +13434,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
 <item>Primitive: <ref id="levelobj" name="Level object">
-<item>Primitive Variable (PV): <ref id="pvtag" name="tag type">
+<item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
+<item>PV: <ref id="pvtag" name="tag type">
 </itemize>
 
 <label id="indexq">Q
