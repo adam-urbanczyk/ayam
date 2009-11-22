@@ -4331,7 +4331,7 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		int ahandlen, char **ahand, ay_tag **dest)
 {
  char fname[] = "ay_rrib_readpv";
- int i, j, already_handled, numitems;
+ int i, j, k, already_handled, numitems;
  unsigned int *ctypes, *csizes;
  RtToken token = NULL;
  RtInt *ints, cints, cnverts;
@@ -4455,6 +4455,21 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		     Tcl_DStringAppend(&ds, valbuf, -1);
 		   }
 		 break;
+	       case kRIB_FLOATPAIRTYPE:
+		 Tcl_DStringAppend(&ds, ",g", -1);
+		 floats = (RtFloat *)(parms[i]);
+		 numitems = csizes[i];
+		 sprintf(valbuf,",%d", numitems);
+		 Tcl_DStringAppend(&ds, valbuf, -1);
+		 k = 0;
+		 for(j = 0; j < numitems; j++)
+		   {
+		     sprintf(valbuf,",%f,%f", (float)(floats[k]),
+			     (float)(floats[k+1]));
+		     Tcl_DStringAppend(&ds, valbuf, -1);
+		     k += 2;
+		   }
+		 break;
 	       case kRIB_STRINGTYPE:
 		 Tcl_DStringAppend(&ds, ",s", -1);
 		 strings = (RtString *)(parms[i]);
@@ -4483,7 +4498,20 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 		   }
 		 break;
 	       case kRIB_POINTTYPE:
-		 Tcl_DStringAppend(&ds, ",p", -1);
+	       case kRIB_NORMALTYPE:
+	       case kRIB_VECTORTYPE:
+		 switch(class)
+		   {
+		   case kRIB_POINTTYPE:
+		     Tcl_DStringAppend(&ds, ",p", -1);
+		     break;
+		   case kRIB_NORMALTYPE:
+		     Tcl_DStringAppend(&ds, ",n", -1);
+		     break;
+		   case kRIB_VECTORTYPE:
+		     Tcl_DStringAppend(&ds, ",v", -1);
+		     break;
+		   }
 		 points = (RtPoint *)(parms[i]);
 		 numitems = csizes[i];
 		 sprintf(valbuf,",%d", numitems);
