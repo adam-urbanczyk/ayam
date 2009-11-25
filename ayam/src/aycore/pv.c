@@ -547,11 +547,12 @@ cleanup:
 /* ay_pv_cmpname:
  *  compare the primitive variable names of PV tags <t1> and <t2>
  *  returns AY_TRUE if they are equal, returns AY_FALSE else and on error
+ *  does not check the tag names, but does check the tag types
  */
 int
 ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
 {
-  char *c1 = NULL, *c2 = NULL;
+ char *c1 = NULL, *c2 = NULL;
 
   if(!t1 || !t2)
     return AY_FALSE;
@@ -565,15 +566,11 @@ ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
   if(!c1 || !c2)
     return AY_FALSE;
 
-  while((*c1 != '\0') && (*c2 != '\0') && (*c1 == *c2) &&
-	(*c1 != ',') && (*c2 != ','))
+  if(strstr(t1->val, t2->val))
     {
-      c1++; c2++;
+      return AY_TRUE;
     }
-
-  if((*c1 != '\0') && (*c2 != '\0') && (*c1 == *c2) && (*c1 == ','))
-    return AY_TRUE;
-
+  
  return AY_FALSE;
 } /* ay_pv_cmpname */
 
