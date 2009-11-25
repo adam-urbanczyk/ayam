@@ -125,7 +125,7 @@ int x3dio_readfloatpoints(scew_element *element, char *attrname,
 int x3dio_readdoublepoints(scew_element *element, char *attrname,
 			   unsigned int dim, unsigned int *len, double **res);
 
-int x3dio_readindex(scew_element *element, char *attrname,
+int x3dio_readindex(scew_element *element, char *attrname, int clean,
 		    unsigned int *len, int **res);
 
 int x3dio_readboolvec(scew_element *element, char *attrname,
@@ -261,6 +261,8 @@ int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 unsigned int x3dio_count(ay_object *o);
 
 int x3dio_registerwritecb(char *name, x3dio_writecb *cb);
+
+int x3dio_copypv(ay_tag *src, char **dst);
 
 int x3dio_writetransform(scew_element *element, ay_object *o,
 			 scew_element **transform_element);
@@ -806,7 +808,7 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
  */
 int
 x3dio_readindex(scew_element *element, char *attrname,
-		unsigned int *len, int **res)
+		int clean, unsigned int *len, int **res)
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
@@ -851,7 +853,14 @@ x3dio_readindex(scew_element *element, char *attrname,
 		}
 
 	      sscanf(p, "%d", ip);
-	      ip++;
+
+	      if(clean)
+		{
+		  if(*ip == -1)
+		    (*len)--;
+		}
+
+	      /*ip++;*/
 
 	      /* jump over the integer we just read */
 	      while(!isspace(*p) && (*p != '\0'))
@@ -1570,7 +1579,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
  unsigned int texcoordlen = 0, texcoordilen = 0;
  double *normals;
  float *texcoords, *colors;
- int *normali, *colori, *texcoordi;;
+ int *normali, *colori, *texcoordi;
  int expandcolors = AY_FALSE;
  int i, stride = 3;
  double *expandedcontrols = NULL;
@@ -1589,8 +1598,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
   ay_status = x3dio_readnormals(element, &normallen, &normals);
   if(normallen > 0)
     {
-      ay_status = x3dio_readindex(element, "normalIndex", &normalilen,
-				  &normali);
+      ay_status = x3dio_readindex(element, "normalIndex", AY_TRUE,
+				  &normalilen, &normali);
 
       ay_status = x3dio_readbool(element, "normalPerVertex",
 				 &vertnormal);
@@ -1600,8 +1609,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
   ay_status = x3dio_readcolors(element, &colorlen, &colors);
   if(colorlen > 0)
     {
-      ay_status = x3dio_readindex(element, "colorIndex", &colorilen,
-				  &colori);
+      ay_status = x3dio_readindex(element, "colorIndex", AY_TRUE,
+				  &colorilen, &colori);
 
       ay_status = x3dio_readbool(element, "colorPerVertex",
 				 &vertcolor);
@@ -1611,8 +1620,9 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
   ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
   if(texcoordlen > 0)
     {
-      ay_status = x3dio_readindex(element, "texcoordIndex", &texcoordilen,
-				  &texcoordi);
+      ay_status = x3dio_readindex(element, "texCoordIndex", AY_TRUE,
+				  &texcoordilen, &texcoordi);
+
     }
 
   /* process data */
@@ -1722,8 +1732,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      for(i = 0; i < totalverts; i++)
 		{
-		  memcpy(&(expandedtexcoords[i*stride]),
-			 &(texcoords[texcoordi[i]]),
+		  memcpy(&(expandedtexcoords[i*2]),
+			 &(texcoords[texcoordi[i]*2]),
 			 2*sizeof(float));
 
 		}
@@ -1732,7 +1742,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      for(i = 0; i < totalverts; i++)
 		{
-		  memcpy(&(expandedtexcoords[i*stride]),
+		  memcpy(&(expandedtexcoords[i*2]),
 			 &(texcoords[pomesh->verts[i]*2]),
 			 2*sizeof(float));
 
@@ -1886,7 +1896,8 @@ x3dio_readindexedfaceset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "coordIndex", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -1997,7 +2008,8 @@ x3dio_readindexedtriangleset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "coordIndex", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -2088,7 +2100,8 @@ x3dio_readindexedquadset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "index", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "index", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -2179,7 +2192,8 @@ x3dio_readindexedtrianglestripset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "index", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "index", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -2298,7 +2312,8 @@ x3dio_readindexedtrianglefanset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "index", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "index", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -2420,7 +2435,8 @@ x3dio_readindexedlineset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "coordIndex", &coordilen, &coordi);
+  ay_status = x3dio_readindex(element, "coordIndex", AY_FALSE,
+			      &coordilen, &coordi);
 
   if(coordilen > 0)
     {
@@ -2525,7 +2541,7 @@ x3dio_readlineset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "vertexCount",
+  ay_status = x3dio_readindex(element, "vertexCount", AY_FALSE,
 			      &vertexcountslen, &vertexcounts);
 
   if(vertexcountslen > 0)
@@ -2616,7 +2632,8 @@ x3dio_readtrianglefanset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "fanCount", &fancountslen, &fancounts);
+  ay_status = x3dio_readindex(element, "fanCount", AY_FALSE,
+			      &fancountslen, &fancounts);
 
   if(fancountslen > 0)
     {
@@ -2779,7 +2796,7 @@ x3dio_readtrianglestripset(scew_element *element)
       return AY_OK;
     }
 
-  ay_status = x3dio_readindex(element, "stripCount",
+  ay_status = x3dio_readindex(element, "stripCount", AY_FALSE,
 			      &stripcountslen, &stripcounts);
 
   if(stripcountslen > 0)
@@ -6865,7 +6882,7 @@ x3dio_writedoublevecattrib(scew_element *element, char *name, unsigned int dim,
  */
 int
 x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
-			unsigned int length, unsigned int stride, double *value)
+		      unsigned int length, unsigned int stride, double *value)
 {
  char buf[256];
  char *attr = NULL, *tmp;
@@ -7921,6 +7938,61 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 } /* x3dio_writeconeobj */
 
 
+/* x3dio_copypv:
+ *  create a copy of the string in <src>,
+ *  but replace all comma "," by space " "
+ *  caller must free the memory in *dst if no longer needed
+ */
+int
+x3dio_copypv(ay_tag *src, char **dst)
+{
+ char *tmp = NULL, *srcptr, *dstptr;
+ unsigned int len = 0, i = 0;
+
+  if(!src || !dst)
+    return AY_ENULL;
+
+  /* find the data portion of the PV tags value string */
+  srcptr = src->val;
+  for(i = 0; i < 4; i++)
+    {
+      if(!srcptr)
+	{
+	  /* probably PV format error */
+	  return AY_ERROR;
+	}
+      else
+	{
+	  srcptr = strchr(srcptr, ',');
+	  srcptr++;
+	}
+    }
+
+  len = strlen(src->val);
+  if(!(tmp = calloc(len+1, sizeof(char))))
+    {
+      return AY_EOMEM;
+    }
+
+  dstptr = tmp;
+  for(i = 0; i < len; i++)
+    {
+      /* replace comma by space, otherwise just copy the data */
+      if(*srcptr == ',')
+	*dstptr = ' ';
+      else
+	*dstptr = *srcptr;
+      srcptr++;
+      dstptr++;
+    }
+
+  /* return result */
+  *dst = tmp;
+
+ return AY_OK;
+} /* x3dio_copypv */
+
+
 /* x3dio_writepomeshobj:
  *
  */
@@ -7934,11 +8006,9 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  ay_pomesh_object *po;
  unsigned int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
+ int have_texcoords = AY_FALSE;
+ char *texcoordstring = NULL;
+ ay_tag sttag = {NULL, NULL, ay_pv_tagtype, "st"};
  ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -7953,11 +8023,6 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   if(!element || !o)
    return AY_ENULL;
 
-  mystag.type = ay_pv_tagtype;
-  mystag.name = x3dio_stagname;
-  myttag.type = ay_pv_tagtype;
-  myttag.name = x3dio_ttagname;
-
   po = (ay_pomesh_object *)o->refine;
 
   /* write transform */
@@ -7969,39 +8034,34 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
-  /* now write the IndexedFaceSet element */
+  /* write the IndexedFaceSet element */
   ifs_element = scew_element_add(shape_element, "IndexedFaceSet");
 
   /* decode potentially present PV tags */
   if(o->tags)
     {
-      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      strcpy(mystag.val, x3dio_stagname);
-      mystag.val[strlen(x3dio_stagname)] = ',';
-      strcpy(myttag.val, x3dio_ttagname);
-      myttag.val[strlen(x3dio_ttagname)] = ',';
+
       tag = o->tags;
       while(tag)
 	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	  if(ay_pv_cmpname(tag, &sttag))
 	    {
-	      have_mys = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
+	      ay_status = x3dio_copypv(tag, &texcoordstring);
+	      if(ay_status == AY_OK)
+		{
+		  have_texcoords = AY_TRUE;
+		}
+	      else
+		{
+		  /* XXXX report error (PV format error)? */
+		}
 	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
-	    }
+
 	  tag = tag->next;
 	} /* while */
-      free(mystag.val);
-      free(myttag.val);
+     
     } /* if */
 
   /* write faces */
@@ -8132,9 +8192,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
       if(po->has_normals)
 	{
-	  /* also write the normal index */
 	  scew_element_add_attr_pair(ifs_element, "normalPerVertex", "true");
-	  scew_element_add_attr_pair(ifs_element, "normalIndex", attr);
 	} /* if */
 
       /* write control points */
@@ -8154,38 +8212,24 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	  x3dio_writedoublepoints(normal_element, "point", 3, po->ncontrols,
 				  6, &(po->controlv[3]));
 	}
+      else
+	{
+	  /* face normals from PV tag */
+
+
+
+	}
 
       /* write texture coordinates */
-      if(have_mys)
-	mystlen = 2*myslen;
-      else
-	if(have_myt)
-	  mystlen = 2*mytlen;
-
-      if(mystlen > 0)
+      if(have_texcoords)
 	{
-	  if(!(mystarr = calloc(mystlen, sizeof(double))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    } /* if */
+	  texcoord_element = scew_element_add(ifs_element,
+					      "TextureCoordinate");
 
-	  j = 0;
-	  for(i = 0; i < mystlen/2; i++)
-	    {
-	      if(have_mys)
-		mystarr[j]   = mysarr[i];
-	      if(have_myt)
-		mystarr[j+1] = mytarr[i];
-	      j += 2;
-	    } /* for */
+	  scew_element_add_attr_pair(texcoord_element, "point",
+				     texcoordstring);
 
-	  scew_element_add_attr_pair(ifs_element, "texCoordIndex", attr);
-	  texcoord_element = scew_element_add(ifs_element, "TextureCoordinate");
-	  x3dio_writedoublepoints(texcoord_element, "point", 2, po->ncontrols,
-				  2, mystarr);
-
-	} /* if */
+	}
 
     } /* if */
 
@@ -8223,15 +8267,11 @@ cleanup:
       lihead = li;
     } /* while */
 
-  if(mysarr)
-    free(mysarr);
-  if(mytarr)
-    free(mytarr);
-  if(mystarr)
-    free(mystarr);
-
   if(attr)
     free(attr);
+
+  if(texcoordstring)
+    free(texcoordstring);
 
  return ay_status;
 } /* x3dio_writepomeshobj */
