@@ -544,13 +544,14 @@ cleanup:
 } /* ay_pv_merge */
 
 
-/* ay_pv_cmpname:
- *  compare the primitive variable names of PV tags <t1> and <t2>
+/* ay_pv_cmpndt:
+ *  compare the primitive variable names, details, and data types
+ *  of the PV tags <t1> and <t2>
  *  returns AY_TRUE if they are equal, returns AY_FALSE else and on error
  *  does not check the tag names, but does check the tag types
  */
 int
-ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
+ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
 {
  char *c1 = NULL, *c2 = NULL;
 
@@ -566,13 +567,62 @@ ay_pv_cmpname(ay_tag *t1, ay_tag *t2)
   if(!c1 || !c2)
     return AY_FALSE;
 
-  if(strstr(t1->val, t2->val))
+  if(strstr(t1->val, t2->val) == t1->val)
     {
       return AY_TRUE;
     }
   
  return AY_FALSE;
-} /* ay_pv_cmpname */
+} /* ay_pv_cmpndt */
+
+
+/* ay_pv_checkndt:
+ *  check, whether the tag <t> is a PV tag, and check its name,
+ *  detail, and data type
+ *  returns AY_TRUE on full match and correct PV syntax, AY_FALSE else
+ */
+int
+ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
+	       const char *type)
+{
+ char *c = NULL;
+
+  if(!t)
+    return AY_FALSE;
+
+  if((t->type != ay_pv_tagtype))
+    return AY_FALSE;
+
+  c = t->val;
+ 
+  if(!c)
+    return AY_FALSE;
+
+  if(strstr(c, name) == c)
+    {
+      c = strchr(c, ',');
+      if(!c)
+	return AY_FALSE;
+
+      c++;
+
+      if(strstr(c, detail) == c)
+	{
+	  c = strchr(c, ',');
+	  if(!c)
+	    return AY_FALSE;
+
+	  c++;
+
+	  if(strstr(c, type) == c)
+	    {
+	      return AY_TRUE;
+	    }
+	}
+    }
+  
+ return AY_FALSE;
+} /* ay_pv_checkndt */
 
 
 /* ay_pv_convert:

@@ -808,9 +808,14 @@ int ay_pv_add(ay_object *o, char *name, char *detail, int type,
  */
 int ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt);
 
-/*! \brief compare two PV tag variable names
+/*! \brief compare two PV tags name, detail, and data type
  */
-int ay_pv_cmpname(ay_tag *t1, ay_tag *t2);
+int ay_pv_cmpndt(ay_tag *t1, ay_tag *t2);
+
+/*! \brief check a PV tags name, detail, and data type
+ */
+int ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
+		   const char *type);
 
 /*! \brief convert PV tag data to value array
  */

@@ -589,7 +589,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			    {
 			      mtag = NULL;
 			      if((tag2->type == ay_pv_tagtype) &&
-				 ay_pv_cmpname(tag1, tag2))
+				 ay_pv_cmpndt(tag1, tag2))
 				ay_status = ay_pv_merge(tag1, tag2, &mtag);
 			      if(mtag)
 				{
