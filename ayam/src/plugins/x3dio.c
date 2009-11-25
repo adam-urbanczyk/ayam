@@ -7238,12 +7238,9 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  ay_object *down = NULL;
  ay_nurbpatch_object *p;
  unsigned int i, j, stride = 4, copystride = 3;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0;
+ int have_texcoords = AY_FALSE;
+ char *texcoordstring = NULL;
  double *v = NULL, *p1, *p2;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
  ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -7255,41 +7252,28 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  mystag.type = ay_pv_tagtype;
-  mystag.name = x3dio_stagname;
-  myttag.type = ay_pv_tagtype;
-  myttag.name = x3dio_ttagname;
-
   /* decode potentially present PV tags */
   if(o->tags)
     {
-      if(!(mystag.val = calloc(strlen(x3dio_stagname)+2,sizeof(char))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      if(!(myttag.val = calloc(strlen(x3dio_ttagname)+2,sizeof(char))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      strcpy(mystag.val, x3dio_stagname);
-      mystag.val[strlen(x3dio_stagname)] = ',';
-      strcpy(myttag.val, x3dio_ttagname);
-      myttag.val[strlen(x3dio_ttagname)] = ',';
+     
       tag = o->tags;
       while(tag)
 	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
 	    {
-	      have_mys = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
-	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
+	      ay_status = x3dio_copypv(tag, &texcoordstring);
+	      if(ay_status == AY_OK)
+		{
+		  have_texcoords = AY_TRUE;
+		}
+	      else
+		{
+		  /* XXXX report error (PV format error)? */
+		}
 	    }
 	  tag = tag->next;
 	} /* while */
-      free(mystag.val);
-      free(myttag.val);
     } /* if */
 
   p = (ay_nurbpatch_object *)o->refine;
@@ -7352,33 +7336,12 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 			  copystride, v);
 
   /* write texture coordinates */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
 
-  if(mystlen > 0)
+  if(have_texcoords)
     {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	} /* if */
-
-      j = 0;
-      for(i = 0; i < mystlen/2; i++)
-	{
-	  if(have_mys)
-	    mystarr[j]   = mysarr[i];
-	  if(have_myt)
-	    mystarr[j+1] = mytarr[i];
-	  j += 2;
-	} /* for */
-
+     
       texcoord_element = scew_element_add(patch_element, "TextureCoordinate");
-      x3dio_writedoublepoints(texcoord_element, "point", 2, mystlen/2,
-			      2, mystarr);
+      scew_element_add_attr_pair(texcoord_element, "point", texcoordstring);
 
     } /* if */
 
@@ -7403,14 +7366,11 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
 cleanup:
 
-  if(mysarr)
-    free(mysarr);
-  if(mytarr)
-    free(mytarr);
-  if(mystarr)
-    free(mystarr);
   if(v)
     free(v);
+
+  if(texcoordstring)
+    free(texcoordstring);
 
  return ay_status;
 } /* x3dio_writenpatchobj */
@@ -8008,7 +7968,6 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  unsigned int i, j, k, p = 0, q = 0, r = 0;
  int have_texcoords = AY_FALSE;
  char *texcoordstring = NULL;
- ay_tag sttag = {NULL, NULL, ay_pv_tagtype, "st"};
  ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -8044,7 +8003,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_cmpname(tag, &sttag))
+	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
 	    {
 
 	      ay_status = x3dio_copypv(tag, &texcoordstring);
