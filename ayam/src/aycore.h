@@ -817,6 +817,10 @@ int ay_pv_cmpndt(ay_tag *t1, ay_tag *t2);
 int ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 		   const char *type);
 
+/*! \brief return a PV tags detail
+ */
+int ay_pv_getdetail(ay_tag *t, char **detail);
+
 /*! \brief convert PV tag data to value array
  */
 int ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data);
