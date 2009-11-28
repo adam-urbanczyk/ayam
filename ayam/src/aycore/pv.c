@@ -554,6 +554,7 @@ int
 ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
 {
  char *c1 = NULL, *c2 = NULL;
+ int i;
 
   if(!t1 || !t2)
     return AY_FALSE;
@@ -567,7 +568,17 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
   if(!c1 || !c2)
     return AY_FALSE;
 
-  if(strstr(t1->val, t2->val) == t1->val)
+  for(i = 0; i < 3; i++)
+    {
+      c1 = strchr(c1, ',');
+
+      if(!c1)
+	return AY_FALSE;
+
+      c1++;
+    }
+
+  if(!strncmp(t1->val, t2->val, (c1 - t1->val)))
     {
       return AY_TRUE;
     }
@@ -623,6 +634,45 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
   
  return AY_FALSE;
 } /* ay_pv_checkndt */
+
+
+/* ay_pv_getdetail:
+ *  returns detail from the PV tag <t>
+ *  returns -1 on error
+ */
+int
+ay_pv_getdetail(ay_tag *t, char **detail)
+{
+ char *c;
+ int result = -1;
+
+  if(!t || !t->type || !t->val || (t->type != ay_pv_tagtype))
+    return result;
+
+  c = strchr(t->val, ',');
+
+  if(!c)
+    return result;
+
+  c++;
+
+  if(strcmp(c, "constant"))
+    result = 0;
+
+  if(strcmp(c, "uniform"))
+    result = 1;
+
+  if(strcmp(c, "vertex"))
+    result = 2;
+
+  if(strcmp(c, "varying"))
+    result = 3;
+
+  if(detail)
+    *detail = c;
+
+ return result;
+} /* ay_pv_getdetail */
 
 
 /* ay_pv_convert:
