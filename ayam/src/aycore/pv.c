@@ -755,6 +755,47 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	}
       *datalen = count;
       break;
+    case 'g':
+      if(type == 0)
+	{
+	  /* allocate memory */
+	  if(!(da = calloc(2*count, sizeof(double))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%lg,%lg", &(da[i]), &(da[i+1]));
+	      i+=2;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = da;
+	}
+      if(type == 1)
+	{
+	  /* allocate memory */
+	  if(!(fa = calloc(2*count, sizeof(float))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      sscanf(c3, ",%f,%f", &(fa[i]), &(fa[i+1]));
+	      i+=2;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = fa;
+	}
+      *datalen = count;
+      break;
     case 'c':
       if(type == 0)
 	{
@@ -766,6 +807,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	    {
 	      sscanf(c3, ",%lg,%lg,%lg", &(da[i]), &(da[i+1]), &(da[i+2]));
 	      i+=3;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
 	      c3++;
 	    }
 	  while((c3 = strchr(c3, ',')));
@@ -782,6 +829,12 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	    {
 	      sscanf(c3, ",%f,%f,%f", &(fa[i]), &(fa[i+1]), &(fa[i+2]));
 	      i+=3;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
 	      c3++;
 	    }
 	  while((c3 = strchr(c3, ',')));
