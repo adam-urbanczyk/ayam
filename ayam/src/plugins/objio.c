@@ -646,18 +646,13 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  double *v = NULL, *p1, *p2, pw[3];
  double umin, umax, vmin, vmax;
  int stride = 4, i, j;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0, ui, uj;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
+ unsigned int mystlen = 0;
+ int have_texcoords = AY_FALSE;
+ double *mystarr = NULL;
  ay_tag *tag;
 
   if(!o)
     return AY_ENULL;
-
-  mystag.type = ay_pv_tagtype;
-  myttag.type = ay_pv_tagtype;
 
   /* first, check for and write the trim curves */
   if(o->down && o->down->next)
@@ -700,74 +695,31 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   objio_writevertices(fileptr, (unsigned int)(np->width * np->height),
 			 (np->is_rat?4:3), v);
 
-  /* write texture coordinates from potentially present PV tags */
+  /* get texture coordinates from potentially present PV tags */
   if(o->tags)
     {
-      if(!(mystag.val = calloc(strlen(objio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      if(!(myttag.val = calloc(strlen(objio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      strcpy(mystag.val, objio_stagname);
-      mystag.val[strlen(objio_stagname)] = ',';
-      strcpy(myttag.val, objio_ttagname);
-      myttag.val[strlen(objio_ttagname)] = ',';
       tag = o->tags;
       while(tag)
 	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
 	    {
-	      have_mys = AY_TRUE;
+	      have_texcoords = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
+	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      if(ay_status)
+		goto cleanup;
+	      break;
 	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
-	    }
 	  tag = tag->next;
 	} /* while */
-      free(mystag.val);
-      free(myttag.val);
     } /* if */
 
-  /* merge and write the texture vertices */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
-
-  if(mystlen > 0)
+  /* write the texture vertices */
+  if(have_texcoords)
     {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  if(v)
-	    free(v);
-	  if(mysarr)
-	    free(mysarr);
-	  if(mytarr)
-	    free(mytarr);
-	  return AY_EOMEM;
-	} /* if */
-      /* i am C/C++ line 111111 in Ayam :) */
-      uj = 0;
-      for(ui = 0; ui < mystlen/2; ui++)
-	{
-	  if(have_mys)
-	    mystarr[uj]   = mysarr[ui];
-	  if(have_myt)
-	    mystarr[uj+1] = mytarr[ui];
-	  uj += 2;
-	} /* for */
-
       objio_writetvertices(fileptr, mystlen, 2, mystarr);
 
-      if(mysarr)
-	free(mysarr);
-      if(mytarr)
-	free(mytarr);
       free(mystarr);
       mystarr = NULL;
     } /* if */
@@ -789,7 +741,7 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 
   for(i = np->width*np->height; i > 0; i--)
     {
-      if(have_mys || have_myt)
+      if(have_texcoords)
 	{
 	  fprintf(fileptr, " -%d/-%d", i, i);
 	}
@@ -822,9 +774,11 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       objio_writetrimids(fileptr, o->down);
     } /* if */
 
+cleanup:
+
   free(v);
 
- return AY_OK;
+ return ay_status;
 } /* objio_writenpatch */
 
 
@@ -1030,20 +984,13 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
  double v[3], *p1;
  int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
- int have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0, mystlen = 0;
- double *mysarr = NULL, *mytarr = NULL, *mystarr = NULL;
- ay_tag mystag = {NULL, 0, NULL};
- ay_tag myttag = {NULL, 0, NULL};
+ int have_texcoords = AY_FALSE;
+ unsigned int mystlen = 0;
+ double *mystarr = NULL;
  ay_tag *tag;
 
   if(!o)
    return AY_ENULL;
-
-  mystag.type = ay_pv_tagtype;
-  mystag.name = objio_stagname;
-  myttag.type = ay_pv_tagtype;
-  myttag.name = objio_ttagname;
 
   po = (ay_pomesh_object *)o->refine;
 
@@ -1072,74 +1019,30 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	}
     }
 
-  /* write texture coordinates from potentially present PV tags */
+  /* get texture coordinates from potentially present PV tags */
   if(o->tags)
     {
-      if(!(mystag.val = calloc(strlen(objio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      if(!(myttag.val = calloc(strlen(objio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      strcpy(mystag.val, objio_stagname);
-      mystag.val[strlen(objio_stagname)] = ',';
-      strcpy(myttag.val, objio_ttagname);
-      myttag.val[strlen(objio_ttagname)] = ',';
       tag = o->tags;
       while(tag)
 	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
 	    {
-	      have_mys = AY_TRUE;
+	      have_texcoords = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
-	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
-	    {
-	      have_myt = AY_TRUE;
-
-	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
+	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      if(ay_status)
+		return AY_ERROR;
+	      break;
 	    }
 	  tag = tag->next;
 	} /* while */
-      free(mystag.val);
-      free(myttag.val);
     } /* if */
 
-  /* merge and write the texture vertices */
-  if(have_mys)
-    mystlen = 2*myslen;
-  else
-    if(have_myt)
-      mystlen = 2*mytlen;
-
-  if(mystlen > 0)
+  /* write the texture vertices */
+  if(have_texcoords)
     {
-      if(!(mystarr = calloc(mystlen, sizeof(double))))
-	{
-	  if(v)
-	    free(v);
-	  if(mysarr)
-	    free(mysarr);
-	  if(mytarr)
-	    free(mytarr);
-	  return AY_EOMEM;
-	} /* if */
-
-      j = 0;
-      for(i = 0; i < mystlen/2; i++)
-	{
-	  if(have_mys)
-	    mystarr[j]   = mysarr[i];
-	  if(have_myt)
-	    mystarr[j+1] = mytarr[i];
-	  j += 2;
-	} /* for */
-
       objio_writetvertices(fileptr, mystlen, 2, mystarr);
 
-      if(mysarr)
-	free(mysarr);
-      if(mytarr)
-	free(mytarr);
       free(mystarr);
       mystarr = NULL;
     } /* if */
@@ -1164,7 +1067,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		    {
 		      for(k = 0; k < po->nverts[q]; k++)
 			{
-			  if(have_mys || have_myt)
+			  if(have_texcoords)
 			    {
 			      fprintf(fileptr, " -%d/-%d/-%d",
 				      po->ncontrols-po->verts[r],
@@ -1184,7 +1087,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		    {
 		      for(k = 0; k < po->nverts[q]; k++)
 			{
-			  if(have_mys || have_myt)
+			  if(have_texcoords)
 			    {
 			      fprintf(fileptr, " -%d/-%d",
 				      po->ncontrols-po->verts[r],
@@ -1762,10 +1665,8 @@ static int objio_curvtrimsurf; /* 0 - unset, 1 - curve, 2 - trim, 3 - surface */
 static ay_nurbcurve_object objio_ncurve;
 static ay_nurbpatch_object objio_npatch;
 
-static double *objio_texturesv;
-static double *objio_texturetv;
-static int objio_texturesvlen;
-static int objio_texturetvlen;
+static double *objio_texturev;
+static int objio_texturevlen;
 
 static double objio_umin;
 static double objio_umax;
@@ -2288,8 +2189,8 @@ objio_readface(char *str, int lastlinewasface)
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0, degen = AY_FALSE;
  int last_stride = 0;
  double *gv, *nv, *tv, *oldpnt;
- double *newcontrolv = NULL, *texsv = NULL, *textv = NULL, *tmpv = NULL;
- int texsvlen = 0, textvlen = 0;
+ double *newcontrolv = NULL, *texv = NULL, *tmpv = NULL;
+ int texvlen = 0;
  ay_pomesh_object po = {0}, *temppo;
  ay_tag *temptags;
  ay_object t = {0}, *o = NULL, *m = NULL;
@@ -2411,7 +2312,7 @@ objio_readface(char *str, int lastlinewasface)
 
       if(tvindex != 0)
 	{
-	  /* get texture vertex data and cach it in texsv/textv */
+	  /* get texture vertex data and cach it in texv */
 
 	  tv = NULL;
 	  if(tvindex < 0)
@@ -2435,17 +2336,11 @@ objio_readface(char *str, int lastlinewasface)
 
 	  if(tv)
 	    {
-	      if(!(tmpv = realloc(texsv, (texsvlen + 1) * sizeof(double))))
+	      if(!(tmpv = realloc(texv, (texvlen + 1) * 2 * sizeof(double))))
 		{ ay_status = AY_EOMEM; goto cleanup; }
-	      texsv = tmpv;
-	      memcpy(&(texsv[texsvlen]), tv, sizeof(double));
-	      texsvlen++;
-
-	      if(!(tmpv = realloc(textv, (textvlen + 1) * sizeof(double))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
-	      textv = tmpv;
-	      memcpy(&(textv[textvlen]), &(tv[1]), sizeof(double));
-	      textvlen++;
+	      texv = tmpv;
+	      memcpy(&(texv[texvlen*2]), tv, 2*sizeof(double));
+	      texvlen++;
 	    } /* if */
 
 	} /* if */
@@ -2576,16 +2471,10 @@ objio_readface(char *str, int lastlinewasface)
       t.type = AY_IDPOMESH;
       t.refine = (void*)(&po);
 
-      if(texsv)
+      if(texv)
 	{
-	  ay_status = ay_pv_add(&t, objio_stagname, "varying", 0,
-				texsvlen, 1, texsv);
-	}
-
-      if(textv)
-	{
-	  ay_status = ay_pv_add(&t, objio_ttagname, "varying", 0,
-				textvlen, 1, textv);
+	  ay_status = ay_pv_add(&t, "st", "varying", 4,
+				texvlen, 2, texv);
 	}
 
       if(objio_mergecfaces)
@@ -2618,11 +2507,8 @@ cleanup:
   if(po.verts)
     free(po.verts);
 
-  if(texsv)
-    free(texsv);
-
-  if(textv)
-    free(textv);
+  if(texv)
+    free(texv);
 
   if(t.tags)
     ay_status = ay_tags_delall(&t);
@@ -2818,7 +2704,7 @@ objio_readsurf(char *str)
  char *c = str;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 4;
  int glength = 0, tlength = 0;
- double *gv, *controlv = NULL, *tv, *texturesv = NULL, *texturetv = NULL;
+ double *gv, *controlv = NULL, *tv, *texturev = NULL;
 
   if(!str)
     return AY_ENULL;
@@ -2898,16 +2784,11 @@ objio_readsurf(char *str)
 	  if(tv)
 	    {
 
-	      if(!(texturesv = realloc(objio_texturesv,
-				       (tlength + 1) * sizeof(double))))
+	      if(!(texturev = realloc(objio_texturev,
+				       (tlength + 1) * 2 * sizeof(double))))
 		{ return AY_EOMEM; }
-	      objio_texturesv = texturesv;
-	      memcpy(&(texturesv[tlength]), tv, sizeof(double));
-	      if(!(texturetv = realloc(objio_texturetv,
-				       (tlength + 1) * sizeof(double))))
-		{ return AY_EOMEM; }
-	      objio_texturetv = texturetv;
-	      memcpy(&(texturetv[tlength]), &(tv[1]), sizeof(double));
+	      objio_texturev = texturev;
+	      memcpy(&(texturev[tlength*2]), tv, 2*sizeof(double));
 	      tlength++;
 	    } /* if */
 	} /* if */
@@ -2918,8 +2799,7 @@ objio_readsurf(char *str)
 
   objio_curvtrimsurf = 3;
 
-  objio_texturesvlen = tlength;
-  objio_texturetvlen = tlength;
+  objio_texturevlen = tlength;
 
 cleanup:
 
@@ -3488,16 +3368,10 @@ objio_readend(void)
 	} /* if*/
 
       /* add texture coordinates (as PV tags) */
-      if(objio_texturesv)
+      if(objio_texturev)
 	{
-	  ay_status = ay_pv_add(o, objio_stagname, "varying", 0,
-				objio_texturesvlen, 1, objio_texturesv);
-	}
-
-      if(objio_texturetv)
-	{
-	  ay_status = ay_pv_add(o, objio_ttagname, "varying", 0,
-				objio_texturetvlen, 1, objio_texturetv);
+	  ay_status = ay_pv_add(o, "st", "varying", 4,
+				objio_texturevlen, 1, objio_texturev);
 	}
 
       /* add umin/umax/vmin/vmax tags */
@@ -3536,12 +3410,9 @@ cleanup:
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
   objio_npatch.controlv = NULL;
-  if(objio_texturesv)
-    free(objio_texturesv);
-  objio_texturesv = NULL;
-  if(objio_texturetv)
-    free(objio_texturetv);
-  objio_texturetv = NULL;
+  if(objio_texturev)
+    free(objio_texturev);
+  objio_texturev = NULL;
 
   objio_curvtrimsurf = 0;
 
@@ -3718,10 +3589,8 @@ objio_readscene(char *filename)
   objio_curvtrimsurf = 0;
   memset(&objio_ncurve, 0, sizeof(ay_nurbcurve_object));
   memset(&objio_npatch, 0, sizeof(ay_nurbpatch_object));
-  objio_texturesv = NULL;
-  objio_texturesvlen = 0;
-  objio_texturetv = NULL;
-  objio_texturetvlen = 0;
+  objio_texturev = NULL;
+  objio_texturevlen = 0;
 
   objio_trims = NULL;
   objio_nexttrim = &(objio_trims);
@@ -3796,10 +3665,9 @@ objio_readscene(char *filename)
   if(objio_npatch.controlv)
     free(objio_npatch.controlv);
 
-  if(objio_texturesv)
-    free(objio_texturesv);
-  if(objio_texturetv)
-    free(objio_texturetv);
+  if(objio_texturev)
+    free(objio_texturev);
+  objio_texturev = NULL;
 
   if(objio_trims)
     ay_object_deletemulti(objio_trims);
