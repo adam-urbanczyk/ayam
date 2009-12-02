@@ -17,6 +17,8 @@
 
 #include "ayam.h"
 
+// the following works around a clash of the OpenNURBS includes vs.
+// the X11 includes on IRIX:
 #ifdef ON_COMPILER_IRIX
 #undef BOOL
 #endif
@@ -60,12 +62,6 @@ double onio_rescaleknots = 0.0;
 double onio_accuracy = 1.0e-12;
 
 double onio_scalefactor = 1.0;
-
-char onio_stagnamedef[] = "mys";
-char *onio_stagname = onio_stagnamedef;
-char onio_ttagnamedef[] = "myt";
-char *onio_ttagname = onio_ttagnamedef;
-
 
 // prototypes of functions local to this module
 
@@ -163,8 +159,8 @@ int Onio_Init(Tcl_Interp *interp);
 // functions
 
 
-// count objects to be exported
-//
+// onio_count:
+//  _recursively_ count objects to be exported
 //
 unsigned int
 onio_count(ay_object *o)
@@ -208,8 +204,8 @@ onio_count(ay_object *o)
 
 
 // onio_transposetm:
-//  transpose 4x4 transformation matrix in <m1> from Ayam style to OpenNURBS
-//  style, return result in <m2>
+//  transpose 4x4 transformation matrix in <m1> from Ayam style
+//  to OpenNURBS style, returns result in <m2>
 int
 onio_transposetm(double *m1, double *m2)
 {
@@ -1074,62 +1070,67 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *pm;
- int stride = 3, have_mys = AY_FALSE, have_myt = AY_FALSE;
- unsigned int myslen = 0, mytlen = 0;
- double *mysarr = NULL, *mytarr = NULL;
- ay_tag mystag = {NULL, ay_pv_tagtype, onio_stagname};
- ay_tag myttag = {NULL, ay_pv_tagtype, onio_ttagname};
+ int stride = 3;
+ unsigned int mystlen = 0, fnlen = 0;
+ double *mystarr = NULL, *fnarr = NULL;
  ay_tag *tag;
  ON_Mesh *p_mesh = NULL;
+
  BOOL has_texcoords = false;
  BOOL has_vnormals = false;
- unsigned int a, f = 0, i, j, k, p = 0, q = 0, r = 0;
+ BOOL has_fnormals = false;
+ unsigned int a, b, f = 0, i, j, k, p = 0, q = 0, r = 0;
 
   if(!o || !p_m || !m)
     return AY_ENULL;
 
   pm = (ay_pomesh_object *)(o->refine);
 
+  // append to object table
+  ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
+
+
   if(pm->has_normals)
     has_vnormals = TRUE;
 
   if(o->tags)
     {
-      if(!(mystag.val = (char*)calloc(strlen(onio_stagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      if(!(myttag.val = (char*)calloc(strlen(onio_ttagname)+2,sizeof(char))))
-	return AY_EOMEM;
-      strcpy(mystag.val, onio_stagname);
-      mystag.val[strlen(onio_stagname)] = ',';
-      strcpy(myttag.val, onio_ttagname);
-      myttag.val[strlen(onio_ttagname)] = ',';
       tag = o->tags;
       while(tag)
 	{
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &mystag))
+	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
 	    {
-	      have_mys = AY_TRUE;
+	      has_texcoords = TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &myslen, (void**)&mysarr);
+	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      if(ay_status)
+		goto cleanup;
+	      break;
 	    }
-	  if((tag->type == ay_pv_tagtype) && ay_pv_cmpname(tag, &myttag))
+#if 0
+	  if(!has_vnormals &&
+	     (ay_pv_checkndt(tag, "N", "varying", "v") ||
+	      ay_pv_checkndt(tag, "N", "varying", "n") ) )
 	    {
-	      have_myt = AY_TRUE;
+	      has_fnormals = TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mytlen, (void**)&mytarr);
+	      // XXXX check
+	      ay_status = ay_pv_convert(tag, 3, &fnlen, (void**)&fnarr);
+	      if(ay_status)
+		goto cleanup;
+	      break;
 	    }
+#endif
 	  tag = tag->next;
 	} // while
-      free(mystag.val);
-      free(myttag.val);
     } // if
 
   p_mesh = new ON_Mesh(pm->npolys, pm->ncontrols, has_vnormals, has_texcoords);
 
-
-  // set vertex coordinates and normals
+  // set vertex coordinates, normals, and texture coordinates
   a = 0;
-  if(pm->has_normals)
+  b = 0;
+  if(has_vnormals)
     stride += 3;
   for(i = 0; i < pm->ncontrols; i++)
     {
@@ -1138,14 +1139,22 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       pt.y = pm->controlv[a+1];
       pt.z = pm->controlv[a+2];
       p_mesh->SetVertex(i, pt);
+
       if(pm->has_normals)
 	{
 	  ON_3dVector ve;
-	  ve.x = pm->controlv[a];
-	  ve.y = pm->controlv[a+1];
-	  ve.z = pm->controlv[a+2];
+	  ve.x = pm->controlv[a+3];
+	  ve.y = pm->controlv[a+4];
+	  ve.z = pm->controlv[a+5];
 	  p_mesh->SetVertexNormal(i, ve);
 	} // if
+
+      if(has_texcoords)
+	{
+	  p_mesh->SetTextureCoord(i, mystarr[b], mystarr[b+1]);
+	  b += 2;
+	}
+
       a += stride;
     } // for
 
@@ -1165,6 +1174,8 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 				      pm->verts[r+2]);
 		  f++;
 		  r += 3;
+
+		  // XXXX add face normal
 		} // if
 	      if(pm->nverts[q] == 4)
 		{
@@ -1173,10 +1184,14 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 				  pm->verts[r+2], pm->verts[r+3]);
 		  f++;
 		  r += 4;
+
+		  // XXXX add face normal
 		} // if
 	      if(pm->nverts[q] > 4)
 		{
-		  // this is not a triangle or quad => tesselate it
+		  // this face is neither a triangle nor a quad =>
+		  // tesselate it
+
 		  // create new object (for the tesselated face)
 		  li = NULL;
 		  if(!(li = (ay_list_object*)
@@ -1258,15 +1273,20 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       p++;
     } // for
 
+  if(p_mesh->FaceCount() > 0)
+    {
+      mo.m_object = p_mesh;
+      p_mesh = NULL;
+      mo.m_bDeleteObject = true;
 
-  // append p_mesh to object table
-  ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
-  mo.m_object = p_mesh;
-  mo.m_bDeleteObject = true;
+      mo.m_attributes.m_layer_index = onio_currentlayer;
 
-  mo.m_attributes.m_layer_index = onio_currentlayer;
-
-  onio_writename(o, mo);
+      onio_writename(o, mo);
+    }
+  else
+    {
+      p_m->m_object_table.Remove();
+    }
 
   // write tesselated face(s)
   if(lihead && lihead->next)
@@ -1290,6 +1310,14 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	onio_writepomesh(lihead->object, p_m, m);
     } // if
 
+
+cleanup:
+
+  if(p_mesh)
+    {
+      delete p_mesh;
+    }
+
   while(lihead)
     {
       ay_object_delete(lihead->object);
@@ -1297,6 +1325,12 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       free(lihead);
       lihead = li;
     } // while
+
+  if(mystarr)
+    free(mystarr);
+
+  if(fnarr)
+    free(fnarr);
 
  return ay_status;
 } // onio_writepomesh
@@ -1970,6 +2004,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
+      /*
       else
       if(!strcmp(argv[i], "-t"))
 	{
@@ -1977,6 +2012,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  onio_ttagname = argv[i+2];
 	  i++;
 	}
+      */
       i += 2;
     } // while
 
@@ -1986,10 +2022,10 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!fp)
     {
       ay_error(AY_EOPENFILE, fname, argv[1]);
-
+      /*
       onio_stagname = onio_stagnamedef;
       onio_ttagname = onio_ttagnamedef;
-
+      */
       return TCL_OK;
     }
 
@@ -2122,10 +2158,10 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-
+  /*
   onio_stagname = onio_stagnamedef;
   onio_ttagname = onio_ttagnamedef;
-
+  */
  return TCL_OK;
 } // onio_writetcmd
 
@@ -3408,6 +3444,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
+      /*
       else
       if(!strcmp(argv[i], "-t"))
 	{
@@ -3415,6 +3452,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  onio_ttagname = argv[i+2];
 	  i++;
 	}
+      */
       else
       if(!strcmp(argv[i], "-l"))
 	{
@@ -3535,10 +3573,10 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-
+  /*
   onio_stagname = onio_stagnamedef;
   onio_ttagname = onio_ttagnamedef;
-
+  */
  return TCL_OK;
 } // onio_readtcmd
 
