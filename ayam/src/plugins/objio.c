@@ -16,18 +16,6 @@
 #include <ctype.h>
 
 
-#ifdef WIN32
-  __declspec (dllexport)
-#endif /* WIN32 */
-int Objio_Init(Tcl_Interp *interp);
-
-
-/* objio.c */
-int objio_writescene(char *filename, int selected);
-
-int objio_init(Tcl_Interp *interp);
-
-
 /* types local to this module */
 
 typedef int (objio_writecb) (FILE *fileptr, ay_object *o, double *m);
@@ -73,8 +61,15 @@ int objio_writescript(FILE *fileptr, ay_object *o, double *m);
 
 int objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count);
 
+int objio_writescene(char *filename, int selected);
+
 int objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
-			    int argc, char *argv[]);
+			 int argc, char *argv[]);
+
+#ifdef WIN32
+  __declspec (dllexport)
+#endif /* WIN32 */
+int Objio_Init(Tcl_Interp *interp);
 
 
 /* global variables */
@@ -171,7 +166,7 @@ objio_registerwritecb(char *name, objio_writecb *cb)
 
 
 /* objio_writevertices:
- *  write <n> <stride>D-texturevertices from array <v[n*stride]> to
+ *  write <n> <stride>D geometric vertices from array <v[n*stride]> to
  *  file <fileptr>
  */
 int
@@ -213,7 +208,8 @@ objio_writevertices(FILE *fileptr, unsigned int n, int stride, double *v)
 
 
 /* objio_writetvertices:
- *  write <n> <stride>D-vertices from array <v[n*stride]> to file <fileptr>
+ *  write <n> <stride>D texture vertices from array <v[n*stride]>
+ *  to file <fileptr>
  */
 int
 objio_writetvertices(FILE *fileptr, unsigned int n, int stride, double *v)
@@ -285,12 +281,12 @@ objio_writencurve(FILE *fileptr, ay_object *o, double *m)
 	  AY_APTRAN3(p1,p2,m)
 	  p1 += 3;
 	} /* if */
-      p2 += 4;
+      p2 += stride;
     } /* for */
 
   /* write all vertices */
   objio_writevertices(fileptr, (unsigned int)nc->length,
-			 nc->is_rat?4:3, v);
+		      nc->is_rat?4:3, v);
 
   /* write bspline curve */
   if(nc->is_rat)
@@ -646,8 +642,8 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
  double *v = NULL, *p1, *p2, pw[3];
  double umin, umax, vmin, vmax;
  int stride = 4, i, j;
- unsigned int mystlen = 0;
  int have_texcoords = AY_FALSE;
+ unsigned int mystlen = 0;
  double *mystarr = NULL;
  ay_tag *tag;
 
@@ -1555,7 +1551,7 @@ objio_writescene(char *filename, int selected)
  */
 int
 objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[])
+		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "objio_write";
