@@ -87,11 +87,6 @@ static int objio_writecurves = AY_TRUE;
 static unsigned int objio_allobjcnt = 0;
 static unsigned int objio_curobjcnt = 0;
 
-char objio_stagnamedef[] = "mys";
-char *objio_stagname = objio_stagnamedef;
-char objio_ttagnamedef[] = "myt";
-char *objio_ttagname = objio_ttagnamedef;
-
 
 /* functions */
 
@@ -1584,13 +1579,6 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &objio_tesspomesh);
 	}
       else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  objio_stagname = argv[i+1];
-	  objio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
@@ -1599,9 +1587,6 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   ay_status = objio_writescene(argv[1], selected);
-
-  objio_stagname = objio_stagnamedef;
-  objio_ttagname = objio_ttagnamedef;
 
   objio_scalefactor = 1.0;
 
@@ -3728,13 +3713,6 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%lg", &objio_rescaleknots);
 	}
       else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  objio_stagname = argv[i+1];
-	  objio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &objio_scalefactor);
@@ -3754,9 +3732,6 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   ay_status = objio_readscene(argv[1]);
-
-  objio_stagname = objio_stagnamedef;
-  objio_ttagname = objio_ttagnamedef;
 
   objio_scalefactor = 1.0;
 
