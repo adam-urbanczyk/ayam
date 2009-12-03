@@ -25,11 +25,11 @@ uplevel #0 { array set mfio_options {
     Progress 0.0
     filename ""
     FileName "unnamed.3dmf"
-    STagName "mys"
-    TTagName "myt"
 }   }
 
 
+# mfio_import:
+#  import scene from the Apple 3DMF format
 #
 proc mfio_import { } {
     global ay ay_error mfio_options aymainshortcuts
@@ -71,8 +71,6 @@ proc mfio_import { } {
     addCheck $f mfio_options ReadCurves
     addCheck $f mfio_options ReadSTrim
     addParam $f mfio_options RescaleKnots [list 0.0 1.0e-4]
-#    addString $f mfio_options STagName
-#    addString $f mfio_options TTagName
 #    addProgress $f mfio_options Progress
 
     set f [frame $w.f2]
@@ -147,6 +145,9 @@ proc mfio_import { } {
 # mfio_import
 
 
+# mfio_export:
+#  export scene to the Apple 3DMF format
+#
 proc mfio_export { } {
     global ay ay_error mfio_options aymainshortcuts
 
@@ -194,8 +195,6 @@ proc mfio_export { } {
     addCheck $f mfio_options WriteCurves
 #    addCheck $f mfio_options QuadAsBRep
 #    addCheck $f mfio_options TopLevelLayers
-#    addString $f mfio_options STagName
-#    addString $f mfio_options TTagName
 #    addProgress $f mfio_options Progress
 
     set f [frame $w.f2]

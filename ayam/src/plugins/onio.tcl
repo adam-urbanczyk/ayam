@@ -25,11 +25,12 @@ uplevel #0 { array set onio_options {
     Progress 0.0
     filename ""
     FileName "unnamed.3dm"
-    STagName "mys"
-    TTagName "myt"
 }   }
 
 
+
+# onio_import:
+#  import scene from the Rhino 3DM format
 #
 proc onio_import { } {
     global ay ay_error onio_options aymainshortcuts
@@ -76,8 +77,6 @@ proc onio_import { } {
     addCheck $f onio_options ReadSTrim
     addParam $f onio_options ReadLayers [list -1 1 1-10]
     addParam $f onio_options RescaleKnots [list 0.0 1.0e-4]
-    addString $f onio_options STagName
-    addString $f onio_options TTagName
     addProgress $f onio_options Progress
 
     set f [frame $w.f2]
@@ -94,8 +93,7 @@ proc onio_import { } {
 	    -l $onio_options(ReadLayers)\
 	    -s $onio_options(ReadSTrim)\
 	    -r $onio_options(RescaleKnots)\
-	    -f $onio_options(ScaleFactor)\
-	    -t $onio_options(STagName) $onio_options(TTagName)
+	    -f $onio_options(ScaleFactor)
 
 	cd $oldcd
 	goTop
@@ -155,6 +153,9 @@ proc onio_import { } {
 # onio_import
 
 
+# onio_import:
+#  export scene to the Rhino 3DM format
+#
 proc onio_export { } {
     global ay ay_error onio_options aymainshortcuts
 
@@ -205,8 +206,6 @@ proc onio_export { } {
     addCheck $f onio_options WriteCurves
     addCheck $f onio_options QuadAsBRep
     addCheck $f onio_options TopLevelLayers
-    addString $f onio_options STagName
-    addString $f onio_options TTagName
     addProgress $f onio_options Progress
 
     set f [frame $w.f2]
@@ -227,8 +226,7 @@ proc onio_export { } {
 	    -o $onio_options(ObeyNoExport)\
 	    -i $onio_options(IgnoreHidden)\
 	    -l $onio_options(TopLevelLayers)\
-	    -f $onio_options(ScaleFactor)\
-	    -t $onio_options(STagName) $onio_options(TTagName)
+	    -f $onio_options(ScaleFactor)
 
 	cd $oldcd
 	update

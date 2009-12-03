@@ -25,11 +25,11 @@ uplevel #0 { array set dxfio_options {
     Progress 0.0
     filename ""
     FileName "unnamed.dxf"
-    STagName "mys"
-    TTagName "myt"
 }   }
 
 
+# dxfio_import:
+#  import scene from the Autodesk DXF format
 #
 proc dxfio_import { } {
     global ay ay_error dxfio_options aymainshortcuts
@@ -150,6 +150,9 @@ proc dxfio_import { } {
 # dxfio_import
 
 
+# dxfio_export:
+#  export scene to the Autodesk DXF format
+#
 proc dxfio_export { } {
     global ay ay_error dxfio_options aymainshortcuts
 

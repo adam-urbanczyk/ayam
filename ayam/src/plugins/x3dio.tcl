@@ -31,11 +31,11 @@ uplevel #0 { array set x3dio_options {
     Progress 0.0
     filename ""
     FileName "unnamed.x3d"
-    STagName "mys"
-    TTagName "myt"
 }   }
 
 
+# x3dio_import:
+#  import scene from the Web3D X3D format
 #
 proc x3dio_import { } {
     global ay ay_error x3dio_options aymainshortcuts
@@ -84,8 +84,6 @@ proc x3dio_import { } {
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
     addCheck $f x3dio_options MergeInlineDefs
-    addString $f x3dio_options STagName
-    addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
@@ -106,8 +104,7 @@ proc x3dio_import { } {
 	    -s $x3dio_options(ReadSTrim)\
 	    -r $x3dio_options(RescaleKnots)\
 	    -f $x3dio_options(ScaleFactor)\
-	    -m $x3dio_options(MergeInlineDefs)\
-	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
+	    -m $x3dio_options(MergeInlineDefs)
 
 	cd $oldcd
 	goTop
@@ -172,6 +169,9 @@ proc x3dio_import { } {
 # x3dio_import
 
 
+# x3dio_export:
+#  export scene to the Web3D X3D format
+#
 proc x3dio_export { } {
     global ay ay_error x3dio_options aymainshortcuts
 
@@ -224,8 +224,6 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteParametrics
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
-    addString $f x3dio_options STagName
-    addString $f x3dio_options TTagName
     addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
@@ -250,8 +248,7 @@ proc x3dio_export { } {
 	    -l $x3dio_options(TopLevelLayers)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -x $x3dio_options(WriteParametrics)\
-	    -r $x3dio_options(ResolveInstances)\
-	    -t $x3dio_options(STagName) $x3dio_options(TTagName)
+	    -r $x3dio_options(ResolveInstances)
 
 	cd $oldcd
 	update
