@@ -3060,15 +3060,6 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 	  sscanf(argv[i+1], "%lg", &mfio_rescaleknots);
 	}
       else
-	/*
-      if(!strcmp(argv[i], "-t"))
-	{
-	  mfio_stagname = argv[i+1];
-	  mfio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
-	*/
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);
@@ -3134,15 +3125,6 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &selected);
 	}
       else
-	/*
-      if(!strcmp(argv[i], "-t"))
-	{
-	  mfio_stagname = argv[i+1];
-	  mfio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
-	*/
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &mfio_scalefactor);

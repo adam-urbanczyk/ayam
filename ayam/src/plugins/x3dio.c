@@ -84,18 +84,17 @@ double x3dio_scalefactor = 1.0;
 
 /* total number of elements */
 unsigned int x3dio_totalelements = 0;
+
 /* number of read elements */
 unsigned int x3dio_handledelements = 0;
+
 /* progress counter (x3dio_handledelements/x3dio_totalelements) */
 float x3dio_progress = 0.0f;
+
 /* counter for nested USE attributes */
 unsigned int x3dio_inuse = 0;
 
-char x3dio_stagnamedef[] = "mys";
-char *x3dio_stagname = x3dio_stagnamedef;
-char x3dio_ttagnamedef[] = "myt";
-char *x3dio_ttagname = x3dio_ttagnamedef;
-
+/* pointer to last read object */
 ay_object *x3dio_lrobject = NULL;
 
 /* prototypes of functions local to this module: */
@@ -1749,7 +1748,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 		}
 	    }
 	  ay_pv_add(o, "st", "varying", 4,
-			totalverts, 2, expandedtexcoords);
+		    totalverts, 2, expandedtexcoords);
 	} /* if */
 
       for(i = 0; i < totalverts; i++)
@@ -4609,13 +4608,8 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       /* add texture coordinates as PV tags */
       if(tclen > 0)
 	{
-	  /* add a PV tag for S */
-	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_stagname, "varying", 1,
+	  ay_status = ay_pv_add(x3dio_lrobject, "st", "varying", 4,
 				tclen, 2, tc);
-
-	  /* add a PV tag for T */
-	  ay_status = ay_pv_add(x3dio_lrobject, x3dio_ttagname, "varying", 1,
-				tclen, 2, &(tc[1]));
 
 	} /* if */
 
@@ -6393,13 +6387,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_mergeinlinedefs);
 	}
       else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  x3dio_stagname = argv[i+1];
-	  x3dio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
       if(!strcmp(argv[i], "-l"))
 	{
 	  if(argv[i+1])
@@ -6505,9 +6492,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   scew_parser_free(parser);
 
   Tcl_DeleteHashTable(x3dio_defs_ht);
-
-  x3dio_stagname = x3dio_stagnamedef;
-  x3dio_ttagname = x3dio_ttagnamedef;
 
  return TCL_OK;
 } /* x3dio_readtcmd */
@@ -9398,13 +9382,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_tesspomesh);
 	}
       else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  x3dio_stagname = argv[i+1];
-	  x3dio_ttagname = argv[i+2];
-	  i++;
-	}
-      else
       if(!strcmp(argv[i], "-f"))
 	{
 	  sscanf(argv[i+1], "%lg", &x3dio_scalefactor);
@@ -9428,9 +9405,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   ay_status = x3dio_writescene(argv[1], selected, toplevellayers);
-
-  x3dio_stagname = x3dio_stagnamedef;
-  x3dio_ttagname = x3dio_ttagnamedef;
 
  return TCL_OK;
 } /* x3dio_writetcmd */
