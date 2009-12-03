@@ -581,9 +581,9 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 		  tag1 = no->tags;
 		  while(tag1)
 		    {
-		      /* only work on PV tags with vertex detail */
+		      /* only work on PV tags with varying/vertex detail */
 		      if(tag1->type == ay_pv_tagtype &&
-			 ay_pv_getdetail(tag1, NULL) == 2)
+			 ay_pv_getdetail(tag1, NULL) >= 2)
 			{
 			  /* find matching PV tag to merge it in */
 			  tag2 = o->tags;
