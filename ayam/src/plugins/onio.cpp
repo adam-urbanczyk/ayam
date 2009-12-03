@@ -2004,15 +2004,6 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
-      /*
-      else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  onio_stagname = argv[i+1];
-	  onio_ttagname = argv[i+2];
-	  i++;
-	}
-      */
       i += 2;
     } // while
 
@@ -2022,10 +2013,6 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!fp)
     {
       ay_error(AY_EOPENFILE, fname, argv[1]);
-      /*
-      onio_stagname = onio_stagnamedef;
-      onio_ttagname = onio_ttagnamedef;
-      */
       return TCL_OK;
     }
 
@@ -2158,10 +2145,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-  /*
-  onio_stagname = onio_stagnamedef;
-  onio_ttagname = onio_ttagnamedef;
-  */
+
  return TCL_OK;
 } // onio_writetcmd
 
@@ -2947,7 +2931,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
  int j;
  unsigned int i, a, stride = 3, *nloops = NULL, *nverts = NULL, *verts = NULL;
  unsigned int tnverts = 0;
- double *controlv = NULL, *stexc = NULL, *ttexc = NULL;
+ double *controlv = NULL, *texc = NULL;
  ay_pomesh_object *po = NULL;
  ay_object *newo = NULL;
 
@@ -2991,15 +2975,13 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   // copy texture coordinates (if present)
   if(p_m->m_T.Capacity() != 0)
     {
-      if(!(stexc = (double*)calloc(p_m->m_T.Capacity(), sizeof(double))))
-	{ ay_status = AY_EOMEM; goto cleanup; }
-      if(!(ttexc = (double*)calloc(p_m->m_T.Capacity(), sizeof(double))))
+      if(!(texc = (double*)calloc(p_m->m_T.Capacity(), 2*sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       for(j = 0; j < p_m->m_T.Capacity(); j++)
 	{
-	  stexc[j] = p_m->m_T[j].x;
-	  ttexc[j] = p_m->m_T[j].y;
+	  texc[j*2] = p_m->m_T[j].x;
+	  texc[j*2+1] = p_m->m_T[j].y;
 	}
     } // if
 
@@ -3058,15 +3040,10 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   newo->refine = po;
 
   // link texture coordinates as PV tags
-  if(stexc)
+  if(texc)
     {
-      ay_status = ay_pv_add(newo, "mys", "varying", 0, p_m->m_T.Capacity(),
-			    1, (void*)stexc);
-    }
-  if(ttexc)
-    {
-      ay_status = ay_pv_add(newo, "myt", "varying", 0, p_m->m_T.Capacity(),
-			    1, (void*)ttexc);
+      ay_status = ay_pv_add(newo, "st", "varying", 4,
+			    p_m->m_T.Capacity(), 2, (void*)texc);
     }
 
   // link the new PolyMesh into the scene hierarchy
@@ -3089,10 +3066,8 @@ cleanup:
     free(po);
   if(controlv)
     free(controlv);
-  if(stexc)
-    free(stexc);
-  if(ttexc)
-    free(ttexc);
+  if(texc)
+    free(texc);
   if(newo)
     free(newo);
   if(nloops)
@@ -3444,15 +3419,6 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%lg", &onio_scalefactor);
 	}
-      /*
-      else
-      if(!strcmp(argv[i], "-t"))
-	{
-	  onio_stagname = argv[i+1];
-	  onio_ttagname = argv[i+2];
-	  i++;
-	}
-      */
       else
       if(!strcmp(argv[i], "-l"))
 	{
@@ -3573,10 +3539,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetVar2(ay_interp, aname, vname1, "100",
 	      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
-  /*
-  onio_stagname = onio_stagnamedef;
-  onio_ttagname = onio_ttagnamedef;
-  */
+
  return TCL_OK;
 } // onio_readtcmd
 
