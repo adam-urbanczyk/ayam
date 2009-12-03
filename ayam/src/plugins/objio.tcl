@@ -19,8 +19,6 @@ ScaleFactor 1.0
 RescaleKnots 0.0
 filename ""
 FileName "unnamed.obj"
-STagName "mys"
-TTagName "myt"
 Progress 0
 CheckDegen 1
 ReadSTrim 1
@@ -70,8 +68,6 @@ proc objio_export { } {
     addCheckB $f objio_options WriteCurves [ms objio_options_WriteCurves]
     addCheckB $f objio_options TessPoMesh [ms objio_options_TessPoMesh]
     addParam $f objio_options ScaleFactor [list 0.01 0.1 1.0 10.0 100.0]
-    addString $f objio_options STagName
-    addString $f objio_options TTagName
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
 
@@ -94,8 +90,7 @@ proc objio_export { } {
 	objioWrite $filename -s $objio_options(WriteSelected)\
 	    -p $objio_options(TessPoMesh)\
 	    -c $objio_options(WriteCurves)\
-	    -f $objio_options(ScaleFactor)\
-	    -t $objio_options(STagName) $objio_options(TTagName)
+	    -f $objio_options(ScaleFactor)
 
 	cd $oldcd
 
@@ -190,8 +185,6 @@ proc objio_import { } {
     addParam $f objio_options RescaleKnots [list 0.0 1.0e-4]
     addParam $f objio_options ScaleFactor  [list 0.01 0.1 1.0 10.0 100.0]
     addCheck $f objio_options CheckDegen
-    addString $f objio_options STagName
-    addString $f objio_options TTagName
     set objio_options(Progress) 0
     addProgress $f objio_options Progress
 
@@ -212,8 +205,7 @@ proc objio_import { } {
 		-r $objio_options(RescaleKnots)\
 	        -f $objio_options(ScaleFactor)\
 	        -d $objio_options(CheckDegen)\
-	        -s $objio_options(ReadSTrim)\
-		-t $objio_options(STagName) $objio_options(TTagName)
+	        -s $objio_options(ReadSTrim)
 
 	if { $ay_error < 2 } {
 	    ayError 4 "importOBJ" "Done importing scene from:"
