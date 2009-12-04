@@ -90,6 +90,10 @@ static unsigned int objio_curobjcnt = 0;
 
 /* functions */
 
+/* objio_count:
+ * _recursively_ count the objects to be exported
+ *
+ */
 unsigned int
 objio_count(ay_object *o)
 {
@@ -1687,6 +1691,8 @@ int objio_readskip(char **b);
 
 int objio_readface(char *str, int lastlinewasface);
 
+int objio_readpolyline(char *str);
+
 int objio_readcstype(char *str);
 
 int objio_readdeg(char *str);
@@ -2501,6 +2507,133 @@ cleanup:
 
  return ay_status;
 } /* objio_readface */
+
+
+/* objio_readpolyline:
+ *  read a line statement (polygon)
+ */
+int
+objio_readpolyline(char *str)
+{
+ int ay_status = AY_OK;
+ char *c = NULL;
+ int gvindex = 0, tvindex = 0, dummy, length = 0, stride = 4, texvlen;
+ double *gv, *tv, *controlv = NULL, *tmp, *texv;
+ ay_object *o = NULL;
+
+  if(!str)
+    return AY_ENULL;
+
+  if((str[0] == '\0') || (str[1] == '\0') || (str[2] == '\0'))
+    return AY_ERROR;
+
+  c = &(str[1]);
+
+  while(*c != '\0')
+    {
+      gvindex = 0; tvindex = 0;
+      ay_status = objio_readvindex(c, &gvindex, &tvindex, &dummy);
+
+      /* XXXX check status */
+
+      gv = NULL;
+      tv = NULL;
+
+      /* get geometric vertex data and add it to the curve */
+      if(gvindex < 0)
+	{
+	  if(objio_gverts_tail)
+	    {
+	      ay_status = objio_getvertex(1,
+					objio_gverts_tail->index + gvindex + 1,
+					  &gv);
+	    }
+	  else
+	    {
+	      ay_status = AY_ENULL;
+	      goto cleanup;
+	    } /* if */
+	}
+      else
+	{
+	  ay_status = objio_getvertex(1, gvindex, &gv);
+	} /* if */
+      if(ay_status)
+	goto cleanup;
+
+      if(gv)
+	{
+	  if(!(tmp = realloc(controlv, (length + 1) * stride *
+			     sizeof(double))))
+	    {ay_status = AY_EOMEM; goto cleanup;}
+	  controlv = tmp;
+	  memcpy(&(controlv[length * stride]), gv, stride * sizeof(double));
+	  length++;
+	} /* if */
+
+      if(tvindex != 0)
+	{
+	  /* get texture vertex data and cache it in texv */
+
+	  tv = NULL;
+	  if(tvindex < 0)
+	    {
+	      if(objio_tverts_tail)
+		{
+		  ay_status = objio_getvertex(4,
+					objio_tverts_tail->index + tvindex + 1,
+					      &tv);
+		}
+	      else
+		{
+		  ay_status = AY_ENULL;
+		  goto cleanup;
+		} /* if */
+	    }
+	  else
+	    {
+	      ay_status = objio_getvertex(4, tvindex, &tv);
+	    } /* if */
+
+	  if(tv)
+	    {
+	      if(!(tmp = realloc(texv, (texvlen + 1) * 2 * sizeof(double))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      texv = tmp;
+	      memcpy(&(texv[texvlen*2]), tv, 2*sizeof(double));
+	      texvlen++;
+	    } /* if */
+	} /* if */
+
+      /* skip to next vindex */
+      ay_status = objio_readskip(&c);
+    } /* while */
+
+  if(length < 2)
+    goto cleanup;
+
+  /* create/link the curve object */
+  if(!(o = calloc(1, sizeof(ay_object))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+  ay_object_defaults(o);
+  o->type = AY_IDNCURVE;
+  ay_status = ay_nct_create(2, length, AY_KTNURB, controlv, NULL,
+			    ((ay_nurbcurve_object **)&(o->refine)));
+
+  ay_object_link(o);
+
+  /* prevent cleanup code from doing something harmful */
+  controlv = NULL;
+
+cleanup:
+  if(controlv)
+    free(controlv);
+
+  if(texv)
+    free(texv);
+
+ return ay_status;
+} /* objio_readpolyline */
 
 
 /* objio_readcstype:
@@ -3473,6 +3606,9 @@ objio_readline(FILE *fileptr)
       break;
     case 'h':
       ay_status = objio_readtrim(str, AY_TRUE);
+      break;
+    case 'l':
+      ay_status = objio_readpolyline(str);
       break;
     case 'p':
       ay_status = objio_readparm(str);
