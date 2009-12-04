@@ -1075,7 +1075,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
  double *mystarr = NULL, *fnarr = NULL;
  ay_tag *tag;
  ON_Mesh *p_mesh = NULL;
-
+ char *tcname = ay_prefs.texcoordname;
  BOOL has_texcoords = false;
  BOOL has_vnormals = false;
  BOOL has_fnormals = false;
@@ -1098,7 +1098,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
+	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
 	      has_texcoords = TRUE;
 
@@ -2928,6 +2928,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
 {
  int ay_status = AY_OK;
  /* char fname[] = "onio_readmesh";*/
+ char *tcname = ay_prefs.texcoordname;
  int j;
  unsigned int i, a, stride = 3, *nloops = NULL, *nverts = NULL, *verts = NULL;
  unsigned int tnverts = 0;
@@ -3042,7 +3043,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   // link texture coordinates as PV tags
   if(texc)
     {
-      ay_status = ay_pv_add(newo, "st", "varying", 4,
+      ay_status = ay_pv_add(newo, tcname, "varying", 4,
 			    p_m->m_T.Capacity(), 2, (void*)texc);
     }
 

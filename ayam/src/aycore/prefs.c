@@ -257,6 +257,17 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewDoubleObj(ay_prefs.polyoffset1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "PVTexCoordName", -1);
+  to = Tcl_NewStringObj(ay_prefs.texcoordname, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "PVNormalName", -1);
+  to = Tcl_NewStringObj(ay_prefs.normalname, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "PVColorName", -1);
+  to = Tcl_NewStringObj(ay_prefs.colorname, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -679,6 +690,54 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "PolyOffset1", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &ay_prefs.polyoffset1);
+
+  Tcl_SetStringObj(ton, "PVTexCoordName", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.texcoordname)
+	free(ay_prefs.texcoordname);
+      ay_prefs.texcoordname = NULL;
+
+      if(!(ay_prefs.texcoordname = calloc(strlen(str)+1, sizeof(char))))
+	return AY_EOMEM;
+
+      strcpy(ay_prefs.texcoordname, str);
+    } /* if */
+
+  Tcl_SetStringObj(ton, "PVNormalName", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.normalname)
+	free(ay_prefs.normalname);
+      ay_prefs.normalname = NULL;
+
+      if(!(ay_prefs.normalname = calloc(strlen(str)+1, sizeof(char))))
+	return AY_EOMEM;
+
+      strcpy(ay_prefs.normalname, str);
+    } /* if */
+
+  Tcl_SetStringObj(ton, "PVColorName", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.colorname)
+	free(ay_prefs.colorname);
+      ay_prefs.colorname = NULL;
+
+      if(!(ay_prefs.colorname = calloc(strlen(str)+1, sizeof(char))))
+	return AY_EOMEM;
+
+      strcpy(ay_prefs.colorname, str);
+    } /* if */
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
