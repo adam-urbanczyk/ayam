@@ -1063,6 +1063,12 @@ typedef struct ay_preferences_s
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
+
+  /* PV tag names */
+  char *texcoordname;
+  char *normalname;
+  char *colorname;
+
 } ay_preferences;
 
 

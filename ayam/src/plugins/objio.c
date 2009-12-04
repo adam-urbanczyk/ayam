@@ -637,6 +637,7 @@ int
 objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2, pw[3];
  double umin, umax, vmin, vmax;
@@ -696,7 +697,7 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
+	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
 	      have_texcoords = AY_TRUE;
 
@@ -973,6 +974,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  /*char fname[] = "objio_writepomesh";*/
+ char *tcname = ay_prefs.texcoordname;
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *po;
@@ -1020,7 +1022,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
+	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
 	      have_texcoords = AY_TRUE;
 
@@ -2172,6 +2174,7 @@ objio_readface(char *str, int lastlinewasface)
 {
  int ay_status = AY_OK;
  char fname[] = "objio_readface";
+ char *tcname = ay_prefs.texcoordname;
  char *c = NULL;
  int gvindex = 0, tvindex = 0, nvindex = 0, stride = 0, degen = AY_FALSE;
  int last_stride = 0;
@@ -2460,7 +2463,7 @@ objio_readface(char *str, int lastlinewasface)
 
       if(texv)
 	{
-	  ay_status = ay_pv_add(&t, "st", "varying", 4,
+	  ay_status = ay_pv_add(&t, tcname, "varying", 4,
 				texvlen, 2, texv);
 	}
 
@@ -3308,6 +3311,7 @@ int
 objio_readend(void)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
  ay_object *newo = NULL, *o = NULL;
  ay_nurbpatch_object *np = NULL;
  double oldmin, oldmax;
@@ -3484,7 +3488,7 @@ objio_readend(void)
       /* add texture coordinates (as PV tags) */
       if(objio_texturev)
 	{
-	  ay_status = ay_pv_add(o, "st", "varying", 4,
+	  ay_status = ay_pv_add(o, tcname, "varying", 4,
 				objio_texturevlen, 1, objio_texturev);
 	}
 

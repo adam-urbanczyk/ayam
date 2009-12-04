@@ -1571,6 +1571,9 @@ void
 x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
+ char *nname = ay_prefs.normalname;
+ char *cname = ay_prefs.colorname;
  ay_pomesh_object *pomesh = NULL;
  int vertnormal = AY_TRUE, vertcolor = AY_TRUE;
  unsigned int normallen = 0, normalilen = 0;
@@ -1662,12 +1665,12 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(double));
 		    }
 
-		  ay_pv_add(o, "N", "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", 2,
 			    pomesh->npolys, 3, expandednormals);
 		}
 	      else
 		{
-		  ay_pv_add(o, "N", "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", 2,
 			    pomesh->npolys, 3, normals);
 		}
 	    }
@@ -1713,12 +1716,12 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(float));
 		    }
 		}
-	      ay_pv_add(o, "Cs", "varying", 5, totalverts, 3, expandedcolors);
+	      ay_pv_add(o, cname, "varying", 5, totalverts, 3, expandedcolors);
 	    }
 	  else
 	    {
 	      /* face colors */
-	      ay_pv_add(o, "Cs", "uniform", 5, pomesh->npolys, 3, colors);
+	      ay_pv_add(o, cname, "uniform", 5, pomesh->npolys, 3, colors);
 	    }
 	} /* if */
 
@@ -1747,7 +1750,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 
 		}
 	    }
-	  ay_pv_add(o, "st", "varying", 4,
+	  ay_pv_add(o, tcname, "varying", 4,
 		    totalverts, 2, expandedtexcoords);
 	} /* if */
 
@@ -1803,13 +1806,13 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(double));
 		    }
 
-		  ay_pv_add(o, "N", "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", 2,
 			    pomesh->npolys, 3, expandednormals);
 		}
 	      else
 		{
 		  /* no normal index */
-		  ay_pv_add(o, "N", "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", 2,
 			    pomesh->npolys, 3, normals);
 		}
 	    }
@@ -1821,7 +1824,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      /* vertex colors */
 	      /* no need to check for an index, we ruled that out already */
-	      ay_pv_add(o, "Cs", "varying", 5,
+	      ay_pv_add(o, cname, "varying", 5,
 			pomesh->ncontrols, 3, colors);
 	    }
 	  else
@@ -1843,13 +1846,13 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(float));
 		    }
 
-		  ay_pv_add(o, "Cs", "uniform", 5,
+		  ay_pv_add(o, cname, "uniform", 5,
 			    pomesh->npolys, 3, expandedcolors);
 		}
 	      else
 		{
 		  /* no color index */
-		  ay_pv_add(o, "Cs", "uniform", 5,
+		  ay_pv_add(o, cname, "uniform", 5,
 			    colorlen, 3, colors);
 		}
 	    }
@@ -1858,7 +1861,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
       if(texcoordlen > 0)
 	{
 	  /* no need to check for an index, we ruled that out already */
-	  ay_pv_add(o, "st", "varying", 4,
+	  ay_pv_add(o, tcname, "varying", 4,
 		    pomesh->ncontrols, 2, texcoords);
 	} /* if */
     } /* if */
@@ -2612,6 +2615,8 @@ int
 x3dio_readtrianglefanset(scew_element *element)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
+ char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  unsigned int fancountslen = 0;
@@ -2724,14 +2729,14 @@ x3dio_readtrianglefanset(scew_element *element)
       /* process colors */
       if(colorlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
 		    pomesh.ncontrols, 3, colors);
 	}
 
       /* process texcoords */
       if(texcoordlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+	  ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
 		    pomesh.ncontrols, 2, texcoords);
 	}
 
@@ -2776,6 +2781,8 @@ int
 x3dio_readtrianglestripset(scew_element *element)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
+ char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  unsigned int stripcountslen = 0;
@@ -2887,14 +2894,14 @@ x3dio_readtrianglestripset(scew_element *element)
       /* process colors */
       if(colorlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
 		    pomesh.ncontrols, 3, colors);
 	}
 
       /* process texcoords */
       if(texcoordlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+	  ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
 		    pomesh.ncontrols, 2, texcoords);
 	}
 
@@ -2939,6 +2946,8 @@ int
 x3dio_readtriangleset(scew_element *element)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
+ char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  int normalPerVertex = AY_FALSE;
@@ -3027,14 +3036,14 @@ x3dio_readtriangleset(scew_element *element)
   /* process colors */
   if(colorlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
 		pomesh.ncontrols, 3, colors);
     }
 
   /* process texcoords */
   if(texcoordlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+      ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
 		pomesh.ncontrols, 2, texcoords);
     }
 
@@ -3075,6 +3084,8 @@ int
 x3dio_readquadset(scew_element *element)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
+ char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  int normalPerVertex = AY_FALSE;
@@ -3163,14 +3174,14 @@ x3dio_readquadset(scew_element *element)
   /* process colors */
   if(colorlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, "Cs", "varying", 5,
+      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
 		pomesh.ncontrols, 3, colors);
     }
 
   /* process texcoords */
   if(texcoordlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+      ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
 		pomesh.ncontrols, 2, texcoords);
     }
 
@@ -4449,6 +4460,7 @@ int
 x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
  ay_nurbpatch_object np = {0};
  ay_object *o, **old_aynext;
  float *cv = NULL, *tc = NULL;
@@ -4608,7 +4620,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       /* add texture coordinates as PV tags */
       if(tclen > 0)
 	{
-	  ay_status = ay_pv_add(x3dio_lrobject, "st", "varying", 4,
+	  ay_status = ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
 				tclen, 2, tc);
 
 	} /* if */
@@ -7219,6 +7231,7 @@ int
 x3dio_writenpatchobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
+ char *tcname = ay_prefs.texcoordname;
  ay_object *down = NULL;
  ay_nurbpatch_object *p;
  unsigned int i, j, stride = 4, copystride = 3;
@@ -7243,7 +7256,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
+	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
 
 	      ay_status = x3dio_copypv(tag, &texcoordstring);
@@ -7945,6 +7958,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  /*char fname[] = "x3dio_writepomesh";*/
+ char *tcname = ay_prefs.texcoordname;
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *po;
@@ -7987,7 +8001,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, "st", "varying", "g"))
+	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
 
 	      ay_status = x3dio_copypv(tag, &texcoordstring);

@@ -196,6 +196,10 @@ array set ayprefs {
 
  ShiftTab "<Shift-Tab>"
 
+ PVTexCoordName "st"
+ PVNormalName "N"
+ PVColorName "Cs"
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
