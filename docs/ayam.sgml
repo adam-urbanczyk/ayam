@@ -11064,9 +11064,9 @@ plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Wavefront OBJ Statement Support
 <p>
-Wavefront OBJ import supports reading of polygonal faces with vertex
+Wavefront OBJ import supports reading of polygonal lines and faces with vertex
 normals and texture coordinates (the latter are read as primitive variable
-tags); statements: <tt>v, vt, vn, f</tt>.
+tags); statements: <tt>v, vt, vn, l, f</tt>.
 <p>
 Furthermore, freeform curves and surfaces (NURBS) with trim curves and with
 texture coordinates (again read as primitive variable tags) are supported;
@@ -11116,11 +11116,6 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 100 percent, the objio plugin is reading lines from the
 Wavefront OBJ file and creating Ayam objects. The number may be a
@@ -11192,11 +11187,6 @@ curve providing objects to the exported Wavefront OBJ file (This option does
 <em>not</em> influence the export of trim curves.);
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 exported objects;
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 100 percent, the objio plugin is writing the Ayam objects
 to the Wavefront OBJ file.
@@ -11457,11 +11447,6 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling. Since Ayam 1.13 also eventually
 present trim curves will be scaled properly to the new knot ranges of
 NURBS patches.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, OpenNURBS is reading the 3DM file into memory;
 from 50 to 100 percent, the onio plugin is converting the 3DM objects
@@ -11557,11 +11542,6 @@ If this option is enabled, all objects in these levels will be placed on
 the respective layer. Objects that are not in one of those levels
 will be written to the default layer. Furthermore, top level object names
 will become layer names.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the onio plugin is converting the Ayam objects
 to 3DM objects; from 50 to 100 percent OpenNURBS is writing the 3DM file.
@@ -11764,11 +11744,6 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"ErrorLevel"/, this option controls how many error messages
 should be printed to the Ayam console while importing. Available
 values are: <tt/"Silence"/ no output except for severe errors,
@@ -11860,11 +11835,6 @@ conjunction with the X3D export options <tt>"WriteSelected"</tt> or
 <tt>"ResolveInstances"</tt> option is switched on;
 <item><tt>"TopLevelLayers"</tt> arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
-<item><tt>"STagName"</tt> controls the name of the PV tag to be used
-for the s component of the texture coordinates, and
-<item><tt>"TTagName"</tt> controls the name of the PV tag to be used
-for the t component of the texture coordinates (see also section
-<ref id="pvtag" name="PV (Primitive Variable) Tag">).
 <item><tt/"ErrorLevel"/ determines which messages should be output
 during export;
 <item><tt/"Progress"/ displays the progress of the export;
@@ -13654,8 +13624,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
-<item>STagName: <ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="impwav" name="Wavefront OBJ import option">
 <item>StartCap: <ref id="extrattr" name="Extrude attribute">,
 <ref id="rep" name="Revolve attribute">,
 <ref id="swp" name="Sweep attribute">,
@@ -13733,8 +13701,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
-<item>TTagName: <ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="impwav" name="Wavefront OBJ import/export option">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
 <item>Type: <ref id="levelobj" name="Level attribute">,
 <ref id="lip" name="Light attribute">,
