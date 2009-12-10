@@ -2302,7 +2302,7 @@ objio_readface(char *str, int lastlinewasface)
 
       if(tvindex != 0)
 	{
-	  /* get texture vertex data and cach it in texv */
+	  /* get texture vertex data and cache it in texv */
 
 	  tv = NULL;
 	  if(tvindex < 0)
@@ -3545,7 +3545,7 @@ int
 objio_readline(FILE *fileptr)
 {
  int ay_status = AY_OK;
- int read;
+ int read, peek, continuation = AY_FALSE;
  static int lastlinewasface = AY_FALSE;
  char readchar, *str;
  Tcl_DString ds;
@@ -3559,35 +3559,70 @@ objio_readline(FILE *fileptr)
     }
 
   Tcl_DStringInit(&ds);
+
   read = getc(fileptr);
 
   if(read == EOF)
     {Tcl_DStringFree(&ds); return AY_EUEOF;}
 
-  if((char)read == '\n')
+  if((char)read == '\n' || (char)read == '\r')
     {Tcl_DStringFree(&ds); return AY_OK;}
 
-  while((char)read != '\n')
+  /* read characters from the file until a line end is hit
+     (and no line continuation hint ('\') was encountered before
+      on that line) */
+  while(1)
     {
-      readchar = (char)read;
+      /* put read character to the buffer string
+	 (but omit line end and continuation characters) */
+      if((char)read != '\n' && (char)read != '\r' && (char)read != '\\')
+	{
+	  readchar = (char)read;
+	  Tcl_DStringAppend(&ds, &readchar, 1);
+	}
 
-      Tcl_DStringAppend(&ds, &readchar, 1);
       read = getc(fileptr);
 
       if(read == EOF)
-	{break;}
+	{
+	  break;
+	}
 
+      if((char)read == '\\')
+	{
+	  peek = getc(fileptr);
+
+	  if(peek == EOF)
+	    {
+	      break;
+	    }
+
+	  if((char)peek == '\n' || (char)peek == '\r')
+	    {
+	      continuation = AY_TRUE;
+	    }
+
+	  ungetc(peek, fileptr);
+	}
+
+      if((char)read == '\n' || (char)read == '\r')
+	{
+	  if(continuation)
+	    {
+	      continuation = AY_FALSE;
+	    }
+	  else
+	    {
+	      break;
+	    }
+	}
     } /* while */
 
-
-  Tcl_DStringAppend(&ds, "\0", 1);
+  /* add some white space to the string, just in case we
+     left the loop prematurely and the string is still empty */
+  Tcl_DStringAppend(&ds, " ", -1);
 
   str = Tcl_DStringValue(&ds);
-
-  if(str[strlen(str)-1] == '\r')
-    {
-      str[strlen(str)-1] = '\0';
-    }
 
   switch(str[0])
     {
@@ -3915,6 +3950,8 @@ Objio_Init(Tcl_Interp *interp)
   ay_status = objio_registerwritecb((char *)(AY_IDSCRIPT),
 				       objio_writescript);
 
+  ay_status = objio_registerwritecb((char *)(AY_IDACURVE),
+				       objio_writencconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDICURVE),
 				       objio_writencconvertible);
   ay_status = objio_registerwritecb((char *)(AY_IDCONCATNC),
