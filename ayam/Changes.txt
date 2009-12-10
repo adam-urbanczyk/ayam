@@ -1,5 +1,5 @@
-[17. Nov 2009] CVS-Head:
-=======================
+[10. Dec 2009] CVS-Head:
+========================
 Bug Fixes:
 o <Tab> key does not work after <Ctrl+l> (SF 2869550)
 o Tcl errors when Ayam is started with object listbox activated (SF 2872817)
@@ -26,7 +26,12 @@ o in the point selection action, points may now also be deselected using
 o MetaObj user controlled expressions now also run in the safe interpreter
 o View objects now accept a NURB patch object as child and map the
   background image on that (instead of fitting the image to the window)
-o the tesselation GUI can now work with complex levels
+o the tesselation GUI can now work with complex levels of objects,
+  e.g. the cactus from the example scenes, which is a complex hierarchy
+  of Level, Cone, Sphere objects, and a Skin, can now be tesselated easily
+  into one PolyMesh object with just one application of the tesselation GUI
+o added support for new data types (g for float[2], n for normal, and
+  p for point) to PV tags
 
 GUI:
 o improved speed of focus changes between internal view 3 and the tree view
@@ -37,6 +42,10 @@ o added mnemonics to tree and object listbox context menus
 Import/Export:
 o X3D import of IndexedFaceSet and similar elements now fully supports
   vertex and face colors, normals, and texture coordinates
+o Wavefront OBJ import now supports polyline elements (l)
+o Wavefront OBJ import now supports line continuation (using "\")
+o import and export of texture coordinates now uses one PV tag of
+  default name "st" and type g (float[2])
 
 Scripts/Scripting Interface:
 o aytest script tests can now be stopped
