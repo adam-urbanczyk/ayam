@@ -12332,6 +12332,15 @@ The default values are
 <code>
 {20.0 5.0 10.0 10.0 10.0}
 </code>
+
+<item><tt/"PVTexCoordName"/, default name for texture coordinate PV
+tags, the default value is "st".
+
+<item><tt/"PVNormalName"/, default name for vertex normal PV
+tags, the default value is "N".
+
+<item><tt/"PVColorName"/, default name for vertex color PV
+tags, the default value is "Cs".
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -13407,6 +13416,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 <item>PV: <ref id="pvtag" name="tag type">
+<item>PVTexCoordName: <ref id="hidprefs" name="hidden preference setting">
+<item>PVNormalName: <ref id="hidprefs" name="hidden preference setting">
+<item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
 </itemize>
 
 <label id="indexq">Q
