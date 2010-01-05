@@ -38,6 +38,9 @@ uplevel #0 { array set tgui_tessparam {
     SaveToTag 0
     UseTexCoords 0
     UseVertColors 0
+    UseVertNormals 0
+
+    LazyUpdate 0
 
     OldSMethod -1
     NumTriangles 0
@@ -195,6 +198,10 @@ proc tgui_update args {
     #trace vdelete tgui_tessparam(SParamU) w tgui_update
     #trace vdelete tgui_tessparam(SParamV) w tgui_update
 
+    trace vdelete tgui_tessparam(UseTexCoords) w tgui_update
+    trace vdelete tgui_tessparam(UseVertColors) w tgui_update
+    trace vdelete tgui_tessparam(UseVertNormals) w tgui_update
+
     .tguiw.f1.fSParamU.e delete 0 end
     .tguiw.f1.fSParamU.e insert 0 $tgui_tessparam(SParamU)
     .tguiw.f1.fSParamV.e delete 0 end
@@ -264,21 +271,25 @@ proc tgui_update args {
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
 
-    if { $ayprefs(LazyNotify) == 1 } {
+    if { ! $tgui_tessparam(LazyUpdate) } {
+	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
+	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
+	    $tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)
+    } else {
 	if { $tgui_tessparam(MB1Down) == 0 } {
 	    tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
 		$tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
-		$tgui_tessparam(UseVertColors)
+		$tgui_tessparam(UseVertColors) $tgui_tessparam(UseVertNormals)
 	}
-    } else {
-	tguiCmd up $tgui_tessparam(SMethod) $tgui_tessparam(SParamU)\
-	    $tgui_tessparam(SParamV) $tgui_tessparam(UseTexCoords)\
-	    $tgui_tessparam(UseVertColors)
     }
 
     trace variable tgui_tessparam(SMethod) w tgui_update
     #trace variable tgui_tessparam(SParamU) w tgui_update
     #trace variable tgui_tessparam(SParamV) w tgui_update
+
+    trace variable tgui_tessparam(UseTexCoords) w tgui_update
+    trace variable tgui_tessparam(UseVertColors) w tgui_update
+    trace variable tgui_tessparam(UseVertNormals) w tgui_update
 
  return;
 }
@@ -466,11 +477,14 @@ proc tgui_open { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    addInfo $f tgui_tessparam NumTriangles
+    set tgui_tessparam(LazyUpdate) $ayprefs(LazyNotify)
 
+    addInfo $f tgui_tessparam NumTriangles
+    addCheck $f tgui_tessparam LazyUpdate
     addCheck $f tgui_tessparam SaveToTag
     addCheck $f tgui_tessparam UseTexCoords
     addCheck $f tgui_tessparam UseVertColors
+    addCheck $f tgui_tessparam UseVertNormals
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
@@ -484,10 +498,15 @@ proc tgui_open { } {
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
 	-highlightthickness 0
-    if { $ayprefs(LazyNotify) == 1 } {
-	bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
-	bind $f.s <ButtonRelease-1> "set tgui_tessparam(MB1Down) 0;tgui_update"
+
+    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
+    bind $f.s <ButtonRelease-1> {
+	set tgui_tessparam(MB1Down) 0;
+	if { $tgui_tessparam(LazyUpdate) } {
+	    tgui_update
+	}
     }
+
 
     label $f.lr -text "100"
     entry $f.e -width 5
@@ -508,9 +527,12 @@ proc tgui_open { } {
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
 	-highlightthickness 0
-    if { $ayprefs(LazyNotify) == 1 } {
-	bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
-	bind $f.s <ButtonRelease-1> "set tgui_tessparam(MB1Down) 0;tgui_update"
+    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
+    bind $f.s <ButtonRelease-1> {
+	set tgui_tessparam(MB1Down) 0;
+	if { $tgui_tessparam(LazyUpdate) } {
+	    tgui_update
+	}
     }
 
     label $f.lr -text "100"
@@ -547,7 +569,7 @@ proc tgui_open { } {
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
-	tguiCmd op; focus .; destroy .tguiw;
+	tguiCmd ok; focus .; destroy .tguiw;
 	if { $::ay(need_undo_clear) } { undo clear }
 	set ay(ul) $ay(CurrentLevel); uS 0 1; plb_update;
     }
@@ -580,6 +602,10 @@ proc tgui_open { } {
     # initiate update machinery
     event add <<CommitTG>> <KeyPress-Return> <FocusOut>
     catch {event add <<CommitTG>> <Key-KP_Enter>}
+
+    trace variable tgui_tessparam(UseTexCoords) w tgui_update
+    trace variable tgui_tessparam(UseVertColors) w tgui_update
+    trace variable tgui_tessparam(UseVertNormals) w tgui_update
 
     trace variable tgui_tessparam(SMethod) w tgui_update
 
