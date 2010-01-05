@@ -24,27 +24,102 @@ static char *ay_ncircle_name = "NCircle";
 int
 ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 {
-  /* int ay_status = AY_OK;*/
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crtncircle";
- ay_ncircle_object *new = NULL;
+ char option_handled = AY_FALSE;
+ int optnum = 0, i = 2;
+ double radius = 1.0, tmin = 0.0, tmax = 360.0;
+ ay_ncircle_object *ncircle = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!(new = calloc(1, sizeof(ay_ncircle_object))))
+  /* parse args */
+  while(i+1 < argc)
+    {
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'r':
+	      /* -radius */
+	      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &radius);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 't':
+	      if(argv[i][2] != '\0' && argv[i][3] != '\0')
+		{
+		  switch(argv[i][3])
+		    {
+		    case 'a':
+		      /* -tmax */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &tmax);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'i':
+		      /* -tmin */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &tmin);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		} /* if */
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  if(!(ncircle = calloc(1, sizeof(ay_ncircle_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
 
-  new->radius = 1.0;
-  new->tmax = 360.0;
+  ncircle->radius = radius;
+  ncircle->tmin = tmin;
+  ncircle->tmax = tmax;
 
-  o->refine = new;
+  o->refine = ncircle;
 
   ay_notify_force(o);
 
- return AY_OK;
+cleanup:
+
+ return ay_status;
 } /* ay_ncircle_createcb */
 
 
