@@ -460,6 +460,12 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(ZoomO)]>\
 	    "$w.f3D.togl setconf -undokb ViewZoomOut -dzoom 1.1;break"
 
+    bind $w <[repctrl $ayviewshortcuts(ZoomI2)]>\
+	    "$w.f3D.togl setconf -undokb ViewZoomIn -dzoom 0.9;break"
+
+    bind $w <[repctrl $ayviewshortcuts(ZoomO2)]>\
+	    "$w.f3D.togl setconf -undokb ViewZoomOut -dzoom 1.1;break"
+
 
     bind $w <[repctrl $ayviewshortcuts(PanL)]>\
 	"viewPan $w.f3D.togl 0;break"
@@ -729,7 +735,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
     bind $w <$ayviewshortcuts(DeleteP)> "actionDeleteP $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
-    bind $w <$ayviewshortcuts(SplitNC)> "puts c_pressed;actionSplitNC $w.f3D.togl"
+    bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
  return;
