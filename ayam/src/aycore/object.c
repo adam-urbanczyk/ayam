@@ -162,7 +162,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, " Create callback failed!");
+      ay_error(ay_status, fname, "Create callback failed!");
       free(o);
       return TCL_OK;
     }
