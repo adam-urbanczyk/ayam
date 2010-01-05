@@ -684,7 +684,9 @@ ay_pv_getdetail(ay_tag *t, char **detail)
 int
 ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 {
+ int ay_status = AY_OK;
  unsigned int count = 0, i = 0;
+ int cc = 0;
  char *c1, *c2, *c3;
  double *da = NULL;
  float *fa = NULL;
@@ -716,7 +718,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
   c3 = strchr(c2, ',');
   if(!c3)
     return AY_ERROR;
-  c3++;
+  /*c3++;*/
 
   switch(*c1)
     {
@@ -729,7 +731,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%lg", &(da[i]));
+	      cc = sscanf(c3, ",%lg", &(da[i]));
+	      if(cc != 1)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i++;
 	      c3++;
 	    }
@@ -745,7 +749,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%f", &(fa[i]));
+	      cc = sscanf(c3, ",%f", &(fa[i]));
+	      if(cc != 1)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i++;
 	      c3++;
 	    }
@@ -764,7 +770,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%lg,%lg", &(da[i]), &(da[i+1]));
+	      cc = sscanf(c3, ",%lg,%lg", &(da[i]), &(da[i+1]));
+	      if(cc != 2)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i+=2;
 	      c3++;
 	      if(!(c3 = strchr(c3, ',')))
@@ -783,7 +791,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%f,%f", &(fa[i]), &(fa[i+1]));
+	      cc = sscanf(c3, ",%f,%f", &(fa[i]), &(fa[i+1]));
+	      if(cc != 2)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i+=2;
 	      c3++;
 	      if(!(c3 = strchr(c3, ',')))
@@ -805,7 +815,10 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%lg,%lg,%lg", &(da[i]), &(da[i+1]), &(da[i+2]));
+	      cc = sscanf(c3, ",%lg,%lg,%lg",
+			  &(da[i]), &(da[i+1]), &(da[i+2]));
+	      if(cc != 3)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i+=3;
 	      c3++;
 	      if(!(c3 = strchr(c3, ',')))
@@ -827,7 +840,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* parse data and fill memory */
 	  do
 	    {
-	      sscanf(c3, ",%f,%f,%f", &(fa[i]), &(fa[i+1]), &(fa[i+2]));
+	      cc = sscanf(c3, ",%f,%f,%f", &(fa[i]), &(fa[i+1]), &(fa[i+2]));
+	      if(cc != 3)
+		{ay_status = AY_ERROR; goto cleanup;}
 	      i+=3;
 	      c3++;
 	      if(!(c3 = strchr(c3, ',')))
@@ -848,7 +863,18 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       break;
     } /* switch */
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  da = NULL;
+  fa = NULL;
+
+cleanup:
+  if(fa)
+    free(fa);
+
+  if(da)
+    free(da);
+
+ return ay_status;
 } /* ay_pv_convert */
 
 

@@ -288,7 +288,6 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 
 	  m++;
 	  l++;
-
 	}
       else
 	{
