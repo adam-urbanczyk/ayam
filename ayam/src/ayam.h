@@ -16,6 +16,7 @@
 
 
 /* Includes */
+#include <assert.h>
 #include <limits.h>
 #include <float.h>
 #include <math.h>
@@ -887,7 +888,7 @@ typedef struct ay_script_object_s
 {
   char *script; /* the script text (Tcl) */
   int active; /* 0 - Inactive, 1 - Active */
-  int type; /* 0 - Run, 1 - Create, 2 -  Modify */
+  int type; /* 0 - Run, 1 - Create, 2 - Modify */
   ay_object *cm_objects; /* created or modified objects */
 
   int modified;
@@ -1290,8 +1291,10 @@ extern unsigned int ay_current_primlevel;
 #define AY_EEOF       14 /* EOF read */
 #define AY_EDONOTLINK 15 /* Do not link read object! */
 #define AY_ENOSEL     20 /* nothing selected */
-#define AY_EARGS      21 /* wrong args */
-#define AY_EWTYPE     22 /* object is of wrong type */
+#define AY_EARGS      21 /* missing or wrong args */
+#define AY_EOPT       22 /* missing or malformed option value */
+#define AY_EUOPT      23 /* unknown option */
+#define AY_EWTYPE     24 /* object is of wrong type */
 #define AY_ETYPE      30 /* type exists */
 #define AY_ENTYPE     31 /* type does not exist */
 #define AY_EREF       40 /* reference counter not zero */

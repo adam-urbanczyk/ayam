@@ -31,48 +31,293 @@ int
 ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crtncurve";
- int order = 4, length = 4, kt = AY_KTNURB, i = 0;
- double *cv = NULL, *kv = NULL, dx = 0.25;
+ char option_handled = AY_FALSE;
+ int center = AY_FALSE;
+ int stride = 4, order = 4, length = 4, kt = AY_KTNURB, optnum = 0;
+ int i = 2, j = 0;
+ int acvlen = 0, akvlen = 0;
+ char **acv = NULL, **akv = NULL;
+ double *cv = NULL, *kv = NULL, *tmp = NULL;
+ double dx = 0.25, dy = 0.0, dz = 0.0;
+ double s[3] = {0};
 
   if(!o)
     return AY_ENULL;
 
   /* parse args */
-  while(i+1 < argc)
+  while(i < argc)
     {
-      if(!strcmp(argv[i],"-length"))
+      if(i+1 >= argc)
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &length);
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
 
-	  if(length <= 1)
-	    length = 4;
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'd':
+	      switch(argv[i][2])
+		{
+		case 'x':
+		  /* -dx */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dx);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'y':
+		  /* -dy */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dy);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'z':
+		  /* -dz */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dz);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'l':
+	      /* -length */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &length);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'o':
+	      /* -order */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &order);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'c':
+	      switch(argv[i][2])
+		{
+		case 'v':
+		  /* -cv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
+		     TCL_OK)
+		    {
+		      if(cv)
+			{
+			  free(cv);
+			}
+		      if(!(cv = calloc(acvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) acv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < acvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     acv[j], &cv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) acv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 'e':
+		  /* -center */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'k':
+	      switch(argv[i][2])
+		{
+		case 't':
+		  /* -kt */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &kt);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'v':
+		  /* -kv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &akvlen, &akv) ==
+		     TCL_OK)
+		    {
+		      if(kv)
+			{
+			  free(kv);
+			}
+		      if(!(kv = calloc(akvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) akv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < akvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     akv[j], &kv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) akv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    default:
+	      break;
+	    } /* switch */
 
-	  if(length < order)
-	    order = length;
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
 
-	  i+=2;
+	  i += 2;
 	}
       else
 	{
 	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
 	}
+
     } /* while */
+
+  /* check args */
+  if(length <= 1)
+    {
+      length = 4;
+    }
+
+  if(length < order)
+    {
+      order = length;
+    }
+
+  if(cv)
+    {
+      /* check length of user provided control point array */
+      if(acvlen/stride != length)
+	{
+	  /* create proper cv, copy what we have got so far */
+	  if(!(tmp = calloc(stride*length, sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  if(acvlen/stride < length)
+	    {
+	      memcpy(tmp, cv, acvlen*sizeof(double));
+	    }
+	  else
+	    {
+	      memcpy(tmp, cv, stride*length*sizeof(double));
+	    }
+	  free(cv);
+	  cv = tmp;
+	}
+      /*
+	in case we got less control points than we
+	originally needed, extrapolate the last point
+	using dx,dy,dz;
+	this provides a way for easy specification of
+	an arbitrary starting point (just provide one
+	control point, we take care of the rest here...)
+      */
+      if(acvlen/stride < length)
+	{
+	  for(i = acvlen/stride; i < (length); i++)
+	    {
+	      cv[i*4]   = cv[(i-1)*stride]   + dx;
+	      cv[i*4+1] = cv[(i-1)*stride+1] + dy;
+	      cv[i*4+2] = cv[(i-1)*stride+2] + dz;
+	      cv[i*4+3] = cv[(i-1)*stride+3];
+	    }
+	}
+      /* check and correct the weights */
+      for(i = 0; i < length; i++)
+	{
+	  if(fabs(cv[i*4+3]) < AY_EPSILON)
+	    cv[i*4+3] = 1.0;
+	}
+    } /* if */
+
+  if(kv)
+    {
+      if(ay_knots_check(length, order, akvlen, kv))
+	{
+	  /* knot check failed,
+	     discard user delivered knots and
+	     switch back knot type to AY_KTNURB */
+	  free(kv);
+	  kv = NULL;
+	  if(kt == AY_KTCUSTOM)
+	    {
+	      kt = AY_KTNURB;
+	    }
+	}
+      else
+	{
+	  /* knot check ok,
+	     since the user delivered own knots he probably wants the
+	     knot type set to AY_KTCUSTOM in any case */
+	  kt = AY_KTCUSTOM;
+	}
+    }
+
+  if(kt < 0 || kt > 5)
+    {
+      kt = AY_KTNURB;
+    }
 
   if((ay_status = ay_nct_create(order, length, kt, cv, kv,
 				(ay_nurbcurve_object**)&(o->refine))))
     {
       ay_error(ay_status, fname, NULL);
-      return ay_status;
+      ay_status = AY_ERROR;
+      goto cleanup;
     }
 
-  cv = ((ay_nurbcurve_object*)(o->refine))->controlv;
-
-
-  for(i = 0; i < (length); i++)
+  if(!cv)
     {
-      cv[i*4] = (double)i*dx;
-      cv[i*4+3] = 1.0;
+      cv = ((ay_nurbcurve_object*)(o->refine))->controlv;
+
+      if(center)
+	{
+	  if(dx > 0.0)
+	    s[0] = -(((length-1)*dx)/2.0);
+	  if(dy > 0.0)
+	    s[1] = -(((length-1)*dy)/2.0);
+	  if(dz > 0.0)
+	    s[2] = -(((length-1)*dz)/2.0);
+	}
+
+      for(i = 0; i < (length); i++)
+	{
+	  cv[i*4]   = s[0]+(double)i*dx;
+	  cv[i*4+1] = s[1]+(double)i*dy;
+	  cv[i*4+2] = s[2]+(double)i*dz;
+	  cv[i*4+3] = 1.0;
+	}
     }
 
   ay_nct_settype((ay_nurbcurve_object*)(o->refine));
@@ -81,7 +326,26 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 
   ((ay_nurbcurve_object*)(o->refine))->is_rat = AY_FALSE;
 
- return AY_OK;
+
+  /* prevent cleanup code from doing something harmful */
+  cv = NULL;
+  kv = NULL;
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(kv)
+    free(kv);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_ncurve_createcb */
 
 
@@ -1076,7 +1340,7 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 	     &(ncurve->controlv[a+1]),
 	     &(ncurve->controlv[a+2]),
 	     &(ncurve->controlv[a+3]));
-      a+=4;
+      a += 4;
     }
 
   fscanf(fileptr,"%d\n",&(ncurve->type));
@@ -1144,7 +1408,7 @@ ay_ncurve_writecb(FILE *fileptr, ay_object *o)
 	      ncurve->controlv[a+1],
 	      ncurve->controlv[a+2],
 	      ncurve->controlv[a+3]);
-      a+=4;
+      a += 4;
     }
 
   fprintf(fileptr, "%d\n", ncurve->type);

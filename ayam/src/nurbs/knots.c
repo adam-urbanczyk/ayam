@@ -326,6 +326,38 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 } /* ay_knots_check */
 
 
+/* ay_knots_printerr:
+ *  print knot error as returned from ay_knots_check()
+ *  to the Ayam console
+ */
+void
+ay_knots_printerr(char *location, int errcode)
+{
+
+  assert(location);
+
+  switch(errcode)
+    {
+    case 1:
+      ay_error(AY_ERROR, location, "Knot sequence has too few knots!");
+      break;
+    case 2:
+      ay_error(AY_ERROR, location, "Knot sequence has too much knots!");
+      break;
+    case 3:
+      ay_error(AY_ERROR, location, "Knot multiplicity higher than order!");
+      break;
+    case 4:
+      ay_error(AY_ERROR, location, "Knot sequence has decreasing knots!");
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return;
+} /* ay_knots_printerr */
+
+
 /* ay_knots_rescaletorange:
  *  rescale knot vector knotv[n] to the new range [rmin, rmax] (rmin < rmax)
  */

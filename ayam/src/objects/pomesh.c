@@ -24,16 +24,386 @@ static char *ay_pomesh_name = "PolyMesh";
 int
 ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
+ char fname[] = "pomesh_createcb";
+ char option_handled = AY_FALSE;
+ char **av;
+ int avlen;
+ int optnum = 0, i = 2, j = 0, npolys = 0, tmpi = 0;
+ unsigned int *nloops = NULL, *nverts = NULL, *verts = NULL;
+ int nloopslen = 0, nvertslen = 0, vertslen = 0;
+ unsigned int totalverts = 0;
+ double *controlv = NULL;
+ int controlvlen = 0, vnormals = AY_FALSE, stride = 3;
  ay_pomesh_object *pomesh = NULL;
+
+ /*
+   -p 1 -cv {0 0 0  1 0 0  0 1 0}
+   -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}
+ */
+
+  /* parse args */
+  while(i < argc)
+    {
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'p':
+	      /* -polys */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &npolys);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'l':
+	      /* -loops */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(nloops)
+		    {
+		      free(nloops);
+		    }
+		  if(!(nloops = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      nloops[j] = tmpi;
+		    } /* for */
+		  nloopslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'n':
+	      /* -npolys */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(nverts)
+		    {
+		      free(nverts);
+		    }
+		  if(!(nverts = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      nverts[j] = tmpi;
+		    } /* for */
+		  nvertslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'i':
+	      /* -iverts */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(verts)
+		    {
+		      free(verts);
+		    }
+		  if(!(verts = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      verts[j] = tmpi;
+		    } /* for */
+		  vertslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'c':
+	      /* -cv */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(controlv)
+		    {
+		      free(controlv);
+		    }
+		  if(!(controlv = calloc(avlen, sizeof(double))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 av[j], &controlv[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  controlvlen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'v':
+	      /* -vnormals */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vnormals);
+	      option_handled = AY_TRUE;
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  if(vnormals)
+    {
+      stride = 6;
+    }
+
+  controlvlen /= stride;
+
+  if(npolys > 0)
+    {
+      if(!nloops)
+	{
+	  if(!(nloops = calloc(npolys, sizeof(unsigned int))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(i = 0; i < npolys; i++)
+	    {
+	      nloops[i] = 1;
+	    } /* for */
+	  nloopslen = npolys;
+	} /* if */
+
+      if(!nverts)
+	{
+	  j = 0;
+	  for(i = 0; i < npolys; i++)
+	    {
+	      j += nloops[i];
+	    }
+	  if(!(nverts = calloc(j, sizeof(unsigned int))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(i = 0; i < j; i++)
+	    {
+	      nverts[i] = 3;
+	    } /* for */
+	  nvertslen = j;
+	} /* if */
+
+      if(!verts)
+	{
+	  for(i = 0; i < npolys; i++)
+	    {
+	      for(j = 0; j < nloops[i]; j++)
+		{
+		  totalverts += nverts[j];
+		}
+	    }
+	  if(!(verts = calloc(totalverts, sizeof(unsigned int))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(i = 0; i < totalverts; i++)
+	    {
+	      verts[i] = i;
+	    } /* for */
+	  vertslen = totalverts;
+	} /* if */
+
+      if(!controlv)
+	{
+	  totalverts = 0;
+	  for(i = 0; i < npolys; i++)
+	    {
+	      for(j = 0; j < nloops[i]; j++)
+		{
+		  totalverts += nverts[j];
+		}
+	    }
+	  if(!(controlv = calloc(totalverts, stride*sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  j = 0;
+	  for(i = 0; i < totalverts; i++)
+	    {
+	      controlv[j] = i;
+	      controlv[j+1] = i;
+	      controlv[j+2] = i;
+
+	      if(vnormals)
+		{
+		  controlv[j+5] = 1.0;
+		}
+
+	      j += stride;
+	    } /* for */
+	  controlvlen = totalverts;
+	} /* if */
+
+    } /* if */
 
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
     {
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
+
+  /* check the array lengths */
+  if(npolys > 0)
+    {
+      if(nloopslen < npolys)
+	{
+	  ay_error(AY_ERROR, fname, "nloops < npolys");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      j = 0;
+      for(i = 0; i < npolys; i++)
+	{
+	  j += nloops[i];
+	}
+      if(nvertslen < j)
+	{
+	  ay_error(AY_ERROR, fname, "nverts < sum(nloops)");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      totalverts = 0;
+      for(i = 0; i < npolys; i++)
+	{
+	  for(j = 0; j < nloops[i]; j++)
+	    {
+	      totalverts += nverts[j];
+	    }
+	}
+      if(vertslen < totalverts)
+	{
+	  ay_error(AY_ERROR, fname, "verts < sum(nverts)");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      for(i = 0; i < vertslen; i++)
+	{
+	  if(verts[i] >= controlvlen)
+	    {
+	      ay_error(AY_ERROR, fname, "vertex index out of bounds");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	}
+      pomesh->npolys = npolys;
+      pomesh->nloops = nloops;
+      pomesh->nverts = nverts;
+      pomesh->verts = verts;
+      pomesh->controlv = controlv;
+      pomesh->ncontrols = controlvlen;
+      if(vnormals)
+	{
+	  pomesh->has_normals = AY_TRUE;
+	}
+    } /* if(npolys > 0) */
 
   o->refine = (void *)pomesh;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  nloops = NULL;
+  nverts = NULL;
+  verts = NULL;
+  controlv = NULL;
+  pomesh = NULL;
+
+cleanup:
+
+  if(nloops)
+    free(nloops);
+
+  if(nverts)
+    free(nverts);
+
+  if(verts)
+    free(verts);
+
+  if(controlv)
+    free(controlv);
+
+  if(pomesh)
+    free(pomesh);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_pomesh_createcb */
 
 

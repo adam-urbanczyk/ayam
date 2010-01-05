@@ -24,57 +24,356 @@ static char *ay_icurve_name = "ICurve";
 int
 ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crticurve";
- int length = 4, i = 0;
- double *cv = NULL, dx = 0.25;
- ay_icurve_object *new = NULL;
+ char option_handled = AY_FALSE;
+ int center = AY_FALSE, derivs = AY_FALSE;
+ int stride = 3, order = 4, length = 4, optnum = 0, i = 2, j = 0;
+ int acvlen = 0, derlen = 0;
+ char **acv = NULL, **der = NULL;
+ double *cv = NULL, *tmp = NULL;
+ double dx = 0.25, dy = 0.0, dz = 0.0;
+ double s[3] = {0}, sder[3] = {0}, eder[3] = {0};
+ double sdlen = 0.125, edlen = 0.125;
+ ay_icurve_object *icurve = NULL;
 
   if(!o)
     return AY_ENULL;
 
   /* parse args */
-  while(i+1 < argc)
+  while(i < argc)
     {
-      if(!strcmp(argv[i],"-length"))
+      if(i+1 >= argc)
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &length);
-	  if(length <= 2) length = 4;
-	  i+=2;
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'd':
+	      switch(argv[i][2])
+		{
+		case 'e':
+		  /* -derivs */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &derivs);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'x':
+		  /* -dx */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dx);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'y':
+		  /* -dy */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dy);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'z':
+		  /* -dz */
+		  tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &dz);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'l':
+	      /* -length */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &length);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'o':
+	      /* -order */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &order);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'c':
+	      switch(argv[i][2])
+		{
+		case 'v':
+		  /* -cv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
+		     TCL_OK)
+		    {
+		      if(cv)
+			{
+			  free(cv);
+			}
+		      if(!(cv = calloc(acvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) acv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < acvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     acv[j], &cv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *)acv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 'e':
+		  /* -center */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 's':
+	      if(argv[i][2] == 'd')
+		{
+		  switch(argv[i][3])
+		    {
+		    case 'e':
+		      /* -sderiv */
+		      derlen = 0;
+		      der = NULL;
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &derlen, &der) ==
+			 TCL_OK)
+			{
+			  memset(sder, 0, 3*sizeof(double));
+			  for(j = 0; j < derlen; j++)
+			    {
+			      if(j < 3)
+				{
+				  tcl_status = Tcl_GetDouble(ay_interp,
+							     der[j], &sder[j]);
+				  if(tcl_status != TCL_OK)
+				    {
+				      break;
+				    }
+				}
+			      else
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *)der);
+			} /* if */
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'l':
+		      /* -sdlen */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &sdlen);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		} /* if */
+	      break;
+	    case 'e':
+	      if(argv[i][2] == 'd')
+		{
+		  switch(argv[i][3])
+		    {
+		    case 'e':
+		      /* -ederiv */
+		      derlen = 0;
+		      der = NULL;
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &derlen, &der) ==
+			 TCL_OK)
+			{
+			  memset(eder, 0, 3*sizeof(double));
+			  for(j = 0; j < derlen; j++)
+			    {
+			      if(j < 3)
+				{
+				  tcl_status = Tcl_GetDouble(ay_interp,
+							     der[j], &eder[j]);
+				  if(tcl_status != TCL_OK)
+				    {
+				      break;
+				    }
+				}
+			      else
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *)der);
+			} /* if */
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'l':
+		      /* -edlen */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &edlen);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		} /* if */
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
 	}
       else
-	i++;
-    }
+	{
+	  i++;
+	} /* if */
 
-  /* get some memory */
-  if(!(new = calloc(1, sizeof(ay_icurve_object))))
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  /* check args */
+  if(length <= 1)
     {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      length = 4;
     }
 
-  if(!(cv = calloc(1, length*3*sizeof(double))))
+  if(fabs(sdlen) < AY_EPSILON)
     {
-      free(new);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      sdlen = 0.125;
     }
 
-  for(i = 0; i < length; i++)
+  if(fabs(edlen) < AY_EPSILON)
     {
-      cv[i*3] = (double)i*dx;
+      edlen = 0.125;
     }
 
-  new->length = length;
-  new->order = 4;
-  new->sdlen = 0.125;
-  new->edlen = 0.125;
-  new->controlv = cv;
+  /* if the user specified control points ... */
+  if(cv)
+    {
+      /* ... check length of user provided control point array */
+      if(acvlen/stride != length)
+	{
+	  /* create proper cv, copy what we have got so far */
+	  if(!(tmp = calloc(stride*length, sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  if(acvlen/stride < length)
+	    {
+	      memcpy(tmp, cv, acvlen*sizeof(double));
+	    }
+	  else
+	    {
+	      memcpy(tmp, cv, stride*length*sizeof(double));
+	    }
+	  free(cv);
+	  cv = tmp;
+	  /*
+	    in case we got less control points than we
+	    originally needed, extrapolate the last point
+	    using dx,dy,dz;
+	    this provides a way for easy specification of
+	    an arbitrary starting point (just provide one
+	    control point, we take care of the rest here...)
+	  */
+	  if(acvlen/stride < length)
+	    {
+	      for(i = acvlen/stride; i < (length); i++)
+		{
+		  cv[i*stride]   = cv[(i-1)*stride]   + dx;
+		  cv[i*stride+1] = cv[(i-1)*stride+1] + dy;
+		  cv[i*stride+2] = cv[(i-1)*stride+2] + dz;
+		}
+	    }
+	}
+    }
+  else
+    {
+      /* user did not specify any control points */
+      if(!(cv = calloc(length*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
-  o->refine = new;
+      if(center)
+	{
+	  if(dx > 0.0)
+	    s[0] = -(((length-1)*dx)/2.0);
+	  if(dy > 0.0)
+	    s[1] = -(((length-1)*dy)/2.0);
+	  if(dz > 0.0)
+	    s[2] = -(((length-1)*dz)/2.0);
+	}
+
+      for(i = 0; i < length; i++)
+	{
+	  cv[i*stride]   = s[0] + (double)i*dx;
+	  cv[i*stride+1] = s[1] + (double)i*dy;
+	  cv[i*stride+2] = s[2] + (double)i*dz;
+	}
+    }
+
+  /* check end derivatives */
+  if(derivs)
+    {
+      
+    }
+
+  /* create the icurve object */
+  if(!(icurve = calloc(1, sizeof(ay_icurve_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  icurve->length = length;
+  icurve->order = order;
+  icurve->sdlen = sdlen;
+  icurve->edlen = edlen;
+  icurve->derivs = derivs;
+  memcpy(icurve->sderiv, sder, 3*sizeof(double));
+  memcpy(icurve->ederiv, eder, 3*sizeof(double));
+
+  icurve->controlv = cv;
+
+  o->refine = icurve;
 
   ay_notify_force(o);
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  cv = NULL;
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_icurve_createcb */
 
 
@@ -363,7 +662,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  dist = AY_VLEN((p[0] - control[j]),
 			 (p[1] - control[j+1]),
 			 (p[2] - control[j+2]));
-	  
+
 	  if(dist < min_dist)
 	    {
 	      pecoord = &(control[j]);
@@ -671,7 +970,9 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   if(icurve->ncurve)
-    ay_prop_getncinfo(interp, n1, icurve->ncurve);
+    {
+      ay_prop_getncinfo(interp, n1, icurve->ncurve);
+    }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -705,7 +1006,7 @@ ay_icurve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &icurve->display_mode);
 
   if(!(icurve->controlv = calloc(icurve->length*3, sizeof(double))))
-    { free(icurve); return AY_EOMEM;}
+    { free(icurve); return AY_EOMEM; }
 
   a = 0;
   for(i = 0; i < icurve->length; i++)

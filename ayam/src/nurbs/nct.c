@@ -37,7 +37,6 @@ ay_nct_create(int order, int length, int knot_type,
   curve->length = length;
   curve->knot_type = knot_type;
 
-  curve->controlv = controlv;
   if(!controlv)
     {
       if(!(newcontrolv = calloc(4*length, sizeof(double))))
@@ -47,6 +46,12 @@ ay_nct_create(int order, int length, int knot_type,
 	}
 
       curve->controlv = newcontrolv;
+    }
+  else
+    {
+      curve->controlv = controlv;
+      /* XXXX check user supplied control vector? */
+      curve->is_rat = ay_nct_israt(curve);
     } /* if */
 
   if(knot_type != AY_KTCUSTOM && knotv == NULL)
@@ -66,8 +71,6 @@ ay_nct_create(int order, int length, int knot_type,
       /* caller specified own knots */
       curve->knotv = knotv;
     } /* if */
-
-  curve->is_rat = ay_nct_israt(curve);
 
   ay_nct_settype(curve);
 
