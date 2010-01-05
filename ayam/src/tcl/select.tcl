@@ -9,8 +9,12 @@
 
 # select.tcl - select objects Tcl code
 
-set Select_props { Transformations Attributes Material Tags SelectAttr }
+set Select 1
 
+proc init_Select { } {
+global ay Select_props SelectAttr SelectAttrData
+
+set Select_props { Transformations Attributes Material Tags SelectAttr }
 
 array set SelectAttr {
 arr   SelectAttrData
@@ -27,3 +31,7 @@ Indices 0
 # create SelectAttr-UI
 set w [frame $ay(pca).$SelectAttr(w)]
 addString $w SelectAttrData Indices
+
+return;
+}
+# init_Select

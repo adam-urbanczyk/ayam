@@ -9,8 +9,12 @@
 
 # disk.tcl - disk objects Tcl code
 
-set Disk_props { Transformations Attributes Material Tags DiskAttr }
+set Disk 1
 
+proc init_Disk { } {
+global ay Disk_props DiskAttr DiskAttrData
+
+set Disk_props { Transformations Attributes Material Tags DiskAttr }
 
 array set DiskAttr {
 arr   DiskAttrData
@@ -35,3 +39,7 @@ Radius 1.0
 Height 0.0
 ThetaMax 1.0
 }
+
+return;
+}
+# init_Disk

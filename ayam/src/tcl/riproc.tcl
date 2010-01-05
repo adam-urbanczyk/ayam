@@ -9,8 +9,12 @@
 
 # riproc.tcl - riproc (RiProcedural) objects Tcl code
 
-set RiProc_props { Transformations Attributes Material Tags RiProcAttr }
+set RiProc 1
 
+proc init_RiProc { } {
+global ay RiProc_props RiProcAttr RiProcAttrData
+
+set RiProc_props { Transformations Attributes Material Tags RiProcAttr }
 
 array set RiProcAttr {
 arr   RiProcAttrData
@@ -41,3 +45,6 @@ addParam $w RiProcAttrData MaxY
 addParam $w RiProcAttrData MinZ
 addParam $w RiProcAttrData MaxZ
 
+return;
+}
+# init_RiProc

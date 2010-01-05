@@ -9,8 +9,12 @@
 
 # extrnp.tcl - ExtrNP objects Tcl code
 
-set ExtrNP_props { Transformations Attributes Material Tags ExtrNPAttr }
+set ExtrNP 1
 
+proc init_ExtrNP { } {
+global ay ExtrNP_props ExtrNPAttr ExtrNPAttrData
+
+set ExtrNP_props { Transformations Attributes Material Tags ExtrNPAttr }
 
 array set ExtrNPAttr {
 arr   ExtrNPAttrData
@@ -44,3 +48,7 @@ addMenu $w ExtrNPAttrData DisplayMode $ay(npdisplaymodes)
 
 addText $w ExtrNPAttrData "Extracted NURBS Patch:"
 addInfo $w ExtrNPAttrData NPInfo
+
+return;
+}
+# init_ExtrNP

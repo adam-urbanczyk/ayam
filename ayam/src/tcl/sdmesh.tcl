@@ -9,6 +9,11 @@
 
 # sdmesh.tcl - SDMesh objects Tcl code
 
+set SDMesh 1
+
+proc init_SDMesh { } {
+global ay SDMesh_props SDMeshAttr SDMeshAttrData
+
 set SDMesh_props { Transformations Attributes Material Tags SDMeshAttr }
 
 array set SDMeshAttr {
@@ -29,3 +34,6 @@ addMenu $w SDMeshAttrData Scheme {Catmull-Clark Loop}
 addInfo $w SDMeshAttrData NFaces
 addInfo $w SDMeshAttrData NControls
 
+return;
+}
+# init_SDMesh

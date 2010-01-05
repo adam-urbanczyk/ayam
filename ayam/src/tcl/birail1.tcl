@@ -9,9 +9,6 @@
 
 # birail1.tcl - Birail1 objects Tcl code
 
-set Birail1_props { Transformations Attributes Material Tags Birail1Attr }
-
-
 # birail1_getAttr:
 #  get Attributes from C context and build new PropertyGUI
 #
@@ -90,6 +87,12 @@ proc birail1_setAttr { } {
 }
 # birail1_setAttr
 
+set Birail1 1
+
+proc init_Birail1 { } {
+global ay Birail1_props Birail1Attr Birail1AttrData
+
+set Birail1_props { Transformations Attributes Material Tags Birail1Attr }
 
 array set Birail1Attr {
 arr   Birail1AttrData
@@ -103,4 +106,6 @@ array set Birail1AttrData {
 DisplayMode 1
 NPInfoBall "n/a"
 }
-
+return;
+}
+# init_Birail1

@@ -9,8 +9,12 @@
 
 # icurve.tcl - interpolating curves objects Tcl code
 
-set ICurve_props { Transformations Attributes Tags ICurveAttr }
+set ICurve 1
 
+proc init_ICurve { } {
+global ay ICurve_props ICurveAttr ICurveAttrData
+
+set ICurve_props { Transformations Attributes Tags ICurveAttr }
 
 array set ICurveAttr {
 arr   ICurveAttrData
@@ -42,3 +46,6 @@ addMenu $w ICurveAttrData DisplayMode $ay(ncdisplaymodes)
 
 addText $w ICurveAttrData "Created NURBS Curve:"
 addInfo $w ICurveAttrData NCInfo
+
+}
+# init_ICurve

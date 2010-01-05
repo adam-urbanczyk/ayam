@@ -9,8 +9,12 @@
 
 # pamesh.tcl - PatchMesh objects Tcl code
 
-set PatchMesh_props { Transformations Attributes Material Tags PatchMeshAttr }
+set PatchMesh 1
 
+proc init_PatchMesh { } {
+global ay PatchMesh_props PatchMeshAttr PatchMeshAttrData
+
+set PatchMesh_props { Transformations Attributes Material Tags PatchMeshAttr }
 
 array set PatchMeshAttr {
 arr   PatchMeshAttrData
@@ -33,6 +37,10 @@ for {set i 0} {$i < 16} {incr i} {
     set PatchMeshAttrData(Basis_U_${i}) 0.0
     set PatchMeshAttrData(Basis_V_${i}) 0.0
 }
+
+}
+# init_PatchMesh
+
 
 # pamesh_getAttr:
 #  get Attributes from C context and build new PropertyGUI

@@ -9,6 +9,11 @@
 
 # offnc.tcl - offset curves objects Tcl code
 
+set OffsetNC 1
+
+proc init_OffsetNC { } {
+global ay OffsetNC_props OffsetNCAttr OffsetNCAttrData
+
 set OffsetNC_props { Transformations Attributes Tags OffsetNCAttr }
 
 array set OffsetNCAttr {
@@ -35,3 +40,7 @@ addMenu $w OffsetNCAttrData DisplayMode $ay(ncdisplaymodes)
 
 addText $w OffsetNCAttrData "Created NURBS Curve:"
 addInfo $w OffsetNCAttrData NCInfo
+
+return;
+}
+# init_OffsetNC

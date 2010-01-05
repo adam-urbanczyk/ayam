@@ -9,8 +9,12 @@
 
 # riinc.tcl - riinc (RIB-Include) objects Tcl code
 
-set RiInc_props { Transformations Attributes Material Tags RiIncAttr }
+set RiInc 1
 
+proc init_RiInc { } {
+global ay RiInc_props RiIncAttr RiIncAttrData
+
+set RiInc_props { Transformations Attributes Material Tags RiIncAttr }
 
 array set RiIncAttr {
 arr   RiIncAttrData
@@ -35,3 +39,7 @@ Width 1.0
 Length 1.0
 Height 1.0
 }
+
+return;
+}
+# init_RiInc

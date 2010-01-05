@@ -7,10 +7,14 @@
 #
 # See the file License for details.
 
-# ncircle.tcl - Ncircle objects Tcl code
+# ncircle.tcl - NCircle objects Tcl code
+
+set NCircle 1
+
+proc init_NCircle { } {
+global ay NCircle_props NCircleAttr NCircleAttrData
 
 set NCircle_props { Transformations Attributes Material Tags NCircleAttr }
-
 
 array set NCircleAttr {
 arr   NCircleAttrData
@@ -37,3 +41,6 @@ addMenu $w NCircleAttrData DisplayMode $ay(ncdisplaymodes)
 
 addText $w NCircleAttrData "Created NURBS Curve:"
 addInfo $w NCircleAttrData NCInfo
+
+}
+# init_NCircle

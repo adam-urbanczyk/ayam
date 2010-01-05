@@ -9,8 +9,12 @@
 
 # concatnc.tcl - concatnc objects Tcl code
 
-set ConcatNC_props { Transformations Attributes Tags ConcatNCAttr }
+set ConcatNC 1
 
+proc init_ConcatNC { } {
+global ay ConcatNC_props ConcatNCAttr ConcatNCAttrData
+
+set ConcatNC_props { Transformations Attributes Tags ConcatNCAttr }
 
 array set ConcatNCAttr {
 arr   ConcatNCAttrData
@@ -41,3 +45,7 @@ addParam $w ConcatNCAttrData FTLength
 addMenu $w ConcatNCAttrData Knot-Type [list NURB Custom]
 addText $w  e0 "Resulting Curve:"
 addInfo $w ConcatNCAttrData NCInfo
+
+return;
+}
+# init_ConcatNC

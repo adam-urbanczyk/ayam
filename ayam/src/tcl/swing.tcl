@@ -9,8 +9,12 @@
 
 # swing.tcl - Swing objects Tcl code
 
-set Swing_props { Transformations Attributes Material Tags SwingAttr }
+set Swing 1
 
+proc init_Swing { } {
+global ay Swing_props SwingAttr SwingAttrData
+
+set Swing_props { Transformations Attributes Material Tags SwingAttr }
 
 array set SwingAttr {
 arr   SwingAttrData
@@ -37,3 +41,7 @@ addMenu $w SwingAttrData DisplayMode $ay(npdisplaymodes)
 
 addText $w SwingAttrData "Created NURBS Patch:"
 addInfo $w SwingAttrData NPInfo
+
+return;
+}
+# init_Swing

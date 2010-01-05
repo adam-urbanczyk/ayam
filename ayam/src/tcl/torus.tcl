@@ -9,8 +9,12 @@
 
 # torus.tcl - torus objects Tcl code
 
-set Torus_props { Transformations Attributes Material Tags TorusAttr }
+set Torus 1
 
+proc init_Torus { } {
+global ay Torus_props  TorusAttr TorusAttrData
+
+set Torus_props { Transformations Attributes Material Tags TorusAttr }
 
 array set TorusAttr {
 arr   TorusAttrData
@@ -34,3 +38,7 @@ array set TorusAttrData {
 Closed 1
 
 }
+
+return;
+}
+# init_Torus

@@ -9,8 +9,12 @@
 
 # concatnp.tcl - concatnp objects Tcl code
 
-set ConcatNP_props { Transformations Attributes Tags ConcatNPAttr }
+set ConcatNP 1
 
+proc init_ConcatNP { } {
+global ay ConcatNP_props ConcatNPAttr ConcatNPAttrData
+
+set ConcatNP_props { Transformations Attributes Tags ConcatNPAttr }
 
 array set ConcatNPAttr {
 arr   ConcatNPAttrData
@@ -41,3 +45,7 @@ addCheck $w ConcatNPAttrData Revert
 addMenu $w ConcatNPAttrData Knot-Type  [list B-Spline NURB]
 addText $w  e0 "Resulting Patch:"
 addInfo $w ConcatNPAttrData NPInfo
+
+return;
+}
+# init_ConcatNP
