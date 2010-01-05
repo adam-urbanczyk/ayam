@@ -203,12 +203,12 @@ foreach type $types {
 
 
 #
-# Test 2
+# Test 2 - Valid Solid Object Variations
 #
 proc aytest_2 { } {
 uplevel #0 {
 
-puts $log "Testing solid object variations ...\n"
+puts $log "Testing valid solid object variations ...\n"
 
 # standard angles to test for the ThetaMax
 # parameter found in many objects
@@ -557,12 +557,12 @@ foreach type $types {
 
 
 #
-# Test 3
+# Test 3 - Valid Tool Object Variations
 #
 proc aytest_3 { } {
 uplevel #0 {
 
-puts $log "Testing tool objects ...\n"
+puts $log "Testing valid tool object variations ...\n"
 
 # standard angles to test for the ThetaMax
 # parameter found in many objects
@@ -1141,7 +1141,7 @@ puts -nonewline "\n"
 
 
 #
-# Test 4
+# Test 4 - Modelling Tools
 #
 proc aytest_4 { } {
 uplevel #0 {
@@ -1155,12 +1155,12 @@ puts $log "Testing modelling tools ...\n"
 
 
 #
-# Test 5
+# Test 5 - All Solid Object Variations
 #
 proc aytest_5 { } {
 uplevel #0 {
 
-puts $log "Testing all Solid Variations (Errors expected!) ...\n"
+puts $log "Testing all solid object variations (Errors expected!) ...\n"
 
 # XXXX add NaN, Inf?
 set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 -0.1 -0 0 0.1 1 89 90 91 179 180 181 269 270 271 359 360}
