@@ -355,6 +355,8 @@ array set ayviewshortcuts {
 
     ZoomI "KP_Add"
     ZoomO "KP_Subtract"
+    ZoomI2 "plus"
+    ZoomO2 "minus"
 
     Auto "Ctrl-A"
     Shade "Ctrl-S"
