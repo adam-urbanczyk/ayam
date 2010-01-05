@@ -101,23 +101,27 @@ int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
 /* knots.c */
 
-/*! \brief
+/*! \brief Create knots for a NURBS patch.
  */
 int ay_knots_createnp(ay_nurbpatch_object *patch);
 
-/*! \brief
+/*! \brief Create knots for a NURBS curve.
  */
 int ay_knots_createnc(ay_nurbcurve_object *curve);
 
-/*! \brief
+/*! \brief Check a knot vector for errors.
  */
 int ay_knots_check(int length, int order, int knot_count, double *knotv);
 
-/*! \brief
+/*! \brief Print knot error message received by knots_check() to Ayam console.
+ */
+void ay_knots_printerr(char *location, int errcode);
+
+/*! \brief Rescale a knot vector to new lower/upper bounds.
  */
 int ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax);
 
-/*! \brief
+/*! \brief Rescale a knot vector to a minimum knot distance.
  */
 int ay_knots_rescaletomindist(int n, double *knotv, double mindist);
 
@@ -158,15 +162,15 @@ int ay_knots_setvminmax(ay_object *o, double vmin, double vmax);
 int ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 		     double **newknotv);
 
-/*! \brief
+/*! \brief Create chordal parameterized knots.
  */
 int ay_knots_chordparam(double *Q, int Qlen, int stride, double **U);
 
-/*! \brief
+/*! \brief Create centripetal parameterized knots.
  */
 int ay_knots_centriparam(double *Q, int Qlen, int stride, double **U);
 
-/*! \brief
+/*! \brief Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);
 
@@ -1121,8 +1125,11 @@ int ay_stess_TessNP(ay_object *o, int qf);
 
 /*! \brief
  */
-int ay_tess_npatch(ay_object *o, int smethod, double sparamu, double sparamv,
-		   int use_tc, char *mys, char *myt, int use_vc, char *myc,
+int ay_tess_npatch(ay_object *o,
+		   int smethod, double sparamu, double sparamv,
+		   int use_tc, char *myst,
+		   int use_vc, char *mycs,
+		   int use_vn, char *myn,
 		   ay_object **pm);
 
 /*! \brief

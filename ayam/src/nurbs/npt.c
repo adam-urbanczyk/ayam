@@ -48,7 +48,6 @@ ay_npt_create(int uorder, int vorder, int width, int height,
   patch->uknot_type = uknot_type;
   patch->vknot_type = vknot_type;
 
-  patch->controlv = controlv;
   if(!controlv)
     {
       if(!(newcontrolv = calloc(4*width*height, sizeof(double))))
@@ -58,6 +57,12 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 	}
 
       patch->controlv = newcontrolv;
+    }
+  else
+    {
+      patch->controlv = controlv;
+      /* XXXX check user supplied control vector? */
+      patch->is_rat = ay_npt_israt(patch);
     } /* if */
 
   ay_status = ay_knots_createnp(patch);
@@ -85,8 +90,6 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 	free(patch->vknotv);
       patch->vknotv = vknotv;
     } /* if */
-
-  patch->is_rat = ay_npt_israt(patch);
 
   *patchptr = patch;
 

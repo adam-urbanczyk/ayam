@@ -120,7 +120,7 @@ ay_error(int code, char *where, char *what)
 	  Tcl_DStringAppend(&dsl, lmsg, -1);
 	  if(!(countstr = calloc(32, sizeof(char))))
 	    return; /* this should never happen */
-	  len = sprintf(countstr,"%d", count);
+	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, lmsg2, -1);
 	  Tcl_DStringAppend(&dsl, "}", -1);
@@ -169,6 +169,12 @@ ay_error(int code, char *where, char *what)
     case AY_EARGS:
       Tcl_DStringAppend(&ds, "Insufficient arguments, need: ", -1);
       break;
+    case AY_EOPT:
+      Tcl_DStringAppend(&ds, "Missing or malformed value for option: ", -1);
+      break;
+    case AY_EUOPT:
+      Tcl_DStringAppend(&ds, "Encountered unknown option: ", -1);
+      break;
     case AY_EWTYPE:
       Tcl_DStringAppend(&ds, "Object is of wrong type, need: ", -1);
       break;
@@ -200,7 +206,9 @@ ay_error(int code, char *where, char *what)
     } /* switch */
 
   if(what)
-    Tcl_DStringAppend(&ds, what, -1);
+    {
+      Tcl_DStringAppend(&ds, what, -1);
+    }
 
   if((code == AY_EARGS) || (code == AY_EWTYPE))
     {
@@ -230,7 +238,7 @@ ay_error(int code, char *where, char *what)
 	  Tcl_DStringAppend(&dsl, lmsg, -1);
 	  if(!(countstr = calloc(32, sizeof(char))))
 	    return; /* this should never happen */
-	  len = sprintf(countstr,"%d", count);
+	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
 	  Tcl_DStringAppend(&dsl, lmsg2, -1);
 	  Tcl_DStringAppend(&dsl, "}", -1);

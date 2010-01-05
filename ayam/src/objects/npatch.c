@@ -35,64 +35,436 @@ int
 ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crtnpatch";
- int uorder = 4, vorder = 4, width = 4, height = 4;
- int ukt = AY_KTNURB, vkt = AY_KTNURB, i = 0, j = 0, k = 0;
- double *cv = NULL, *ukv = NULL, *vkv = NULL, dx = 0.25;
+ char option_handled = AY_FALSE;
+ int center = AY_FALSE;
+ int stride = 4, uorder = 4, vorder = 4, width = 4, height = 4;
+ int ukt = AY_KTNURB, vkt = AY_KTNURB, optnum = 0, i = 2, j = 0, k = 0;
+ int acvlen = 0, aukvlen = 0, avkvlen = 0;
+ char **acv = NULL, **akv = NULL;
+ double *cv = NULL, *ukv = NULL, *vkv = NULL;
+ double udx = 0.25, udy = 0.0, udz = 0.0;
+ double vdx = 0.0, vdy = 0.25, vdz = 0.0;
+ double ext = 0.0, s[3] = {0};
+ ay_nurbpatch_object *npatch = NULL;
 
   if(!o)
     return AY_ENULL;
 
   /* parse args */
-  while(i+1 < argc)
+  while(i < argc)
     {
-      if(!strcmp(argv[i],"-width"))
+      if(i+1 >= argc)
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &width);
-	  if(width <= 0) width = 4;
-	  if(width < 4) uorder = width;
-	  i+=2;
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'w':
+	      /* -width */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &width);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'h':
+	      /* -height */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &height);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'u':
+	      switch(argv[i][2])
+		{
+		case 'd':
+		  switch(argv[i][3])
+		    {
+		    case 'x':
+		      /* -udx */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udx);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'y':
+		      /* -udy */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udy);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'z':
+		      /* -udz */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &udz);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 'o':
+		  /* -uorder */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &uorder);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'k':
+		  /* -uknotv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &aukvlen, &akv) ==
+		     TCL_OK)
+		    {
+		      if(ukv)
+			{
+			  free(ukv);
+			}
+		      if(!(ukv = calloc(aukvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) akv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < aukvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     akv[j], &ukv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) akv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 't':
+		  /* -uktype */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &ukt);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'v':
+	      switch(argv[i][2])
+		{
+		case 'd':
+		  switch(argv[i][3])
+		    {
+		    case 'x':
+		      /* -vdx */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdx);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'y':
+		      /* -vdy */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdy);
+		      option_handled = AY_TRUE;
+		      break;
+		    case 'z':
+		      /* -vdz */
+		      tcl_status = Tcl_GetDouble(ay_interp, argv[i+1], &vdz);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		  break;
+		case 'o':
+		  /* -vorder */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vorder);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'k':
+		  /* -vknotv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &avkvlen, &akv) ==
+		     TCL_OK)
+		    {
+		      if(vkv)
+			{
+			  free(vkv);
+			}
+		      if(!(vkv = calloc(avkvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) akv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < avkvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     akv[j], &vkv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) akv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 't':
+		  /* -vktype */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vkt);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    case 'c':
+	      switch(argv[i][2])
+		{
+		case 'v':
+		  /* -cv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
+		     TCL_OK)
+		    {
+		      if(cv)
+			{
+			  free(cv);
+			}
+		      if(!(cv = calloc(acvlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) acv);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < acvlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     acv[j], &cv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      Tcl_Free((char *) acv);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		case 'e':
+		  /* -center */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
 	}
       else
-      if(!strcmp(argv[i],"-height"))
 	{
-	  Tcl_GetInt(ay_interp, argv[i+1], &height);
-	  if(height <= 0) height = 4;
-	  if(height < 4) vorder = height;
-	  i+=2;
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  if(uorder <= 0)
+    {
+      uorder = 4;
+    }
+
+  if(vorder <= 0)
+    {
+      vorder = 4;
+    }
+
+  if(width <= 1)
+    {
+      width = 4;
+    }
+
+  if(width < uorder)
+    {
+      uorder = width;
+    }
+
+  if(height <= 1)
+    {
+      height = 4;
+    }
+
+  if(height < vorder)
+    {
+      vorder = height;
+    }
+
+  if(cv)
+    {
+      /* check length of user provided control point array */
+      if(acvlen/stride < width*height)
+	{
+	  ay_error(AY_ERROR, fname, "Control vector too small!");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      /* check and correct the weights */
+      for(i = 0; i < width*height; i++)
+	{
+	  if(fabs(cv[i*stride+3]) < AY_EPSILON)
+	    cv[i*stride+3] = 1.0;
+	}
+    } /* if */
+
+  if(ukv)
+    {
+      if(ay_knots_check(width, uorder, aukvlen, ukv))
+	{
+	  /* knot check failed,
+	     discard user delivered knots and
+	     switch back knot type to AY_KTNURB */
+	  free(ukv);
+	  ukv = NULL;
+	  if(ukt == AY_KTCUSTOM)
+	    {
+	      ukt = AY_KTNURB;
+	    }
 	}
       else
-	i++;
+	{
+	  /* knot check ok,
+	     since the user delivered own knots he probably wants the
+	     knot type set to AY_KTCUSTOM in any case */
+	  ukt = AY_KTCUSTOM;
+	}
+    }
+
+  if(vkv)
+    {
+      if(ay_knots_check(height, vorder, avkvlen, vkv))
+	{
+	  /* knot check failed,
+	     discard user delivered knots and
+	     switch back knot type to AY_KTNURB */
+	  free(vkv);
+	  vkv = NULL;
+	  if(vkt == AY_KTCUSTOM)
+	    {
+	      vkt = AY_KTNURB;
+	    }
+	}
+      else
+	{
+	  /* knot check ok,
+	     since the user delivered own knots he probably wants the
+	     knot type set to AY_KTCUSTOM in any case */
+	  vkt = AY_KTCUSTOM;
+	}
+    }
+
+  if(ukt < 0 || ukt > 5)
+    {
+      ukt = AY_KTNURB;
+    }
+
+  if(vkt < 0 || vkt > 5)
+    {
+      vkt = AY_KTNURB;
     }
 
   if((ay_status = ay_npt_create(uorder, vorder, width, height, ukt, vkt,
 				cv, ukv, vkv,
-				(ay_nurbpatch_object**)&(o->refine))))
+				&npatch)))
     {
       ay_error(ay_status, fname, NULL);
-      return ay_status;
+      ay_status = AY_ERROR;
+      goto cleanup;
     }
 
-  cv = ((ay_nurbpatch_object*)(o->refine))->controlv;
-
-  k = 0;
-  for(i=0;i<(width);i++)
-    {
-      for(j=0;j<(height);j++)
-	{
-	  cv[k]   = (double)i*dx;
-	  cv[k+1] = (double)j*dx;
-	  cv[k+3] = 1.0;
-	  k += 4;
-	}
-    }
-
-  ((ay_nurbpatch_object*)(o->refine))->is_rat = AY_FALSE;
-
+  o->refine = npatch;
+  /* allow children (trim curves) */
   o->parent = AY_TRUE;
+  /* but hide them under normal circumstances */
   o->hide_children = AY_TRUE;
 
- return AY_OK;
+  if(!cv)
+    {
+      cv = npatch->controlv;
+
+      if(center)
+	{
+	  if(fabs(udx) > AY_EPSILON)
+	    ext = (width-1)*udx;
+	  if(fabs(vdx) > AY_EPSILON)
+	    ext += (height-1)*vdx;
+	  s[0] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udy) > AY_EPSILON)
+	    ext = (width-1)*udy;
+	  if(fabs(vdy) > AY_EPSILON)
+	    ext += (height-1)*vdy;
+	  s[1] = -(ext/2.0);
+	  ext = 0.0;
+	  if(fabs(udz) > AY_EPSILON)
+	    ext = (width-1)*udz;
+	  if(fabs(vdz) > AY_EPSILON)
+	    ext += (height-1)*vdz;
+	  s[2] = -(ext/2.0);
+	}
+
+      k = 0;
+      for(i = 0; i < width; i++)
+	{
+	  for(j = 0; j < height; j++)
+	    {
+	      cv[k]   = s[0] + (double)j*vdx;
+	      cv[k+1] = s[1] + (double)j*vdy;
+	      cv[k+2] = s[2] + (double)j*vdz;
+	      cv[k+3] = 1.0;
+	      k += stride;
+	    }
+	  s[0] += udx;
+	  s[1] += udy;
+	  s[2] += udz;
+	}
+
+      npatch->is_rat = AY_FALSE;
+    } /* if */
+
+  /* prevent cleanup code from doing something harmful */
+  cv = NULL;
+  ukv = NULL;
+  vkv = NULL;
+
+cleanup:
+
+  if(cv)
+    free(cv);
+
+  if(ukv)
+    free(ukv);
+
+  if(vkv)
+    free(vkv);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_npatch_createcb */
 
 
@@ -1962,8 +2334,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
  ay_tag *tag = NULL;
- char *mys = "mys", *myt = "myt";
- int smethod = ay_prefs.smethod, use_tc = AY_FALSE;
+ int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
+ int smethod = ay_prefs.smethod;
  double sparamu = ay_prefs.sparamu, sparamv = ay_prefs.sparamv;
 
   if(!o)
@@ -1994,7 +2366,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       /* tesselate */
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
-				 use_tc, mys, myt, AY_FALSE, NULL, result);
+				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
+				 result);
 
       /* copy transformation attributes */
       if(*result)
