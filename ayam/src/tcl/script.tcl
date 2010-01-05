@@ -9,7 +9,10 @@
 
 # script.tcl - script objects Tcl code
 
-global ay Script_props ScriptAttr ScriptAttrData 
+set Script 1
+
+proc init_Script { } {
+global ay ayprefs Script_props ScriptAttr ScriptAttrData 
 
 set Script_props { Attributes Tags ScriptAttr }
 
@@ -78,14 +81,17 @@ if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     set mb 2
 }
 bind $t <$mb> {
-    set xy [winfo pointerxy .];
+    set xy [winfo pointerxy .]
     set x [lindex $xy 0]
     set y [lindex $xy 1]
     tk_popup $t.popup $x $y
 }
 # bind
 
-catch {unset mb}
+return;
+}
+# init_Script
+
 
 # Tcl -> C
 proc setScriptp { } {

@@ -61,6 +61,7 @@ bind $f.li <<ListboxSelect>> {
     set lb $ay(plb)
     if { [$lb size] < 1 } { break }
     set prop [$lb get [$lb curselection]]
+
     if { ! [info exists ${prop}] } {
 	ayError 2 "Ayam" "Property \"${prop}\" does not exist!"
 	$lb selection clear 0 end
@@ -432,6 +433,14 @@ if { [llength $index] == 1 } {
 
     if { $type != ".." } {
 	global ${type}_props
+
+	# get props of selected object
+	if { ! [info exists ${type}_props] } {
+	    # props are undefined yet, try to run the
+	    # object type specific init procedure...
+	    catch { eval init_${type} }
+	}
+
 	eval [subst "set props {\$${type}_props}"]
 	# remove properties from RP tags
 	set tn ""
@@ -457,10 +466,12 @@ if { [llength $index] == 1 } {
 	}
 	# if
 
+	# add props to listbox
 	if { [llength $props] > 0 } {
 	    eval [subst "$lb insert end $props"]
 	}
-	# insert properties from NP tags
+
+	# also insert properties from NP tags
 	if { ($tn != "") && ([ string first NP $tn ] != -1) } {
 	    set i 0
 	    foreach tag $tn {

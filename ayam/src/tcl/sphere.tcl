@@ -9,8 +9,12 @@
 
 # sphere.tcl - sphere objects Tcl code
 
-set Sphere_props { Transformations Attributes Material Tags SphereAttr }
+set Sphere 1
 
+proc init_Sphere { } {
+global ay Sphere_props SphereAttr SphereAttrData
+
+set Sphere_props { Transformations Attributes Material Tags SphereAttr }
 
 array set SphereAttr {
 arr   SphereAttrData
@@ -36,3 +40,7 @@ ZMin -1.0
 ZMax 1.0
 ThetaMax 1.0
 }
+
+return;
+}
+# init_Sphere

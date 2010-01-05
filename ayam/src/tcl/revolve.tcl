@@ -9,8 +9,12 @@
 
 # revolve.tcl - Revolve objects Tcl code
 
-set Revolve_props { Transformations Attributes Material Tags RevolveAttr }
+set Revolve 1
 
+proc init_Revolve { } {
+global ay Revolve_props RevolveAttr RevolveAttrData
+
+set Revolve_props { Transformations Attributes Material Tags RevolveAttr }
 
 array set RevolveAttr {
 arr   RevolveAttrData
@@ -40,3 +44,7 @@ addMenu $w RevolveAttrData DisplayMode $ay(npdisplaymodes)
 
 addText $w RevolveAttrData "Created NURBS Patch:"
 addInfo $w RevolveAttrData NPInfo
+
+return;
+}
+# init_Revolve

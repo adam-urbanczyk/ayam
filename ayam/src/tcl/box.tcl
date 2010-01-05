@@ -9,8 +9,12 @@
 
 # box.tcl - box objects Tcl code
 
-set Box_props { Transformations Attributes Material Tags BoxAttr }
+set Box 1
 
+proc init_Box { } {
+global ay Box_props BoxAttr BoxAttrData
+
+set Box_props { Transformations Attributes Material Tags BoxAttr }
 
 array set BoxAttr {
 arr   BoxAttrData
@@ -32,3 +36,7 @@ Width 1.0
 Length 1.0
 Height 1.0
 }
+
+return;
+}
+# init_Box

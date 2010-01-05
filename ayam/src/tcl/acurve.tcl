@@ -9,8 +9,12 @@
 
 # acurve.tcl - approximating curves objects Tcl code
 
-set ACurve_props { Transformations Attributes Tags ACurveAttr }
+set ACurve 1
 
+proc init_ACurve { } {
+global ay ACurve_props ACurveAttr ACurveAttrData
+
+set ACurve_props { Transformations Attributes Tags ACurveAttr }
 
 array set ACurveAttr {
 arr   ACurveAttrData
@@ -39,3 +43,6 @@ addMenu $w ACurveAttrData DisplayMode $ay(ncdisplaymodes)
 
 addText $w ACurveAttrData "Created NURBS Curve:"
 addInfo $w ACurveAttrData NCInfo
+
+}
+# init_ACurve

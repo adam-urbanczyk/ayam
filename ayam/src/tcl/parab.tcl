@@ -9,8 +9,12 @@
 
 # sphere.tcl - sphere objects Tcl code
 
-set Paraboloid_props { Transformations Attributes Material Tags ParaboloidAttr }
+set Paraboloid 1
 
+proc init_Paraboloid { } {
+global ay Paraboloid_props ParaboloidAttr ParabAttrData
+
+set Paraboloid_props { Transformations Attributes Material Tags ParaboloidAttr }
 
 array set ParaboloidAttr {
 arr   ParabAttrData
@@ -36,3 +40,7 @@ ZMin -1.0
 ZMax 1.0
 ThetaMax 1.0
 }
+
+return;
+}
+# init_Paraboloid

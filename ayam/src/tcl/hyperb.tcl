@@ -9,6 +9,11 @@
 
 # hyperboloid.tcl - hyperboloid objects Tcl code
 
+set Hyperboloid 1
+
+proc init_Hyperboloid { } {
+global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
+
 set Hyperboloid_props { Transformations Attributes Material Tags HyperboloidAttr }
 
 
@@ -33,7 +38,6 @@ addParam $w HyperbAttrData P2_X
 addParam $w HyperbAttrData P2_Y
 addParam $w HyperbAttrData P2_Z
 
-
-
-
-
+return;
+}
+# init_Hyperboloid

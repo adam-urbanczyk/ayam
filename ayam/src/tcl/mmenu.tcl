@@ -205,7 +205,7 @@ $m.cu add command -label "NURBCurve" -command {
     runTool ay(nclen) "Length:" \
 	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"
 } -underline 4
-#  ^^^^^^^^^^^ C
+#  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
     runTool ay(iclen) "Length:" \
 	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"
@@ -216,7 +216,8 @@ $m.cu add command -label "ACurve" -command {
 } -underline 0
 $m.cu add command -label "NCircle" -command {
     crtOb NCircle; uCR; sL; forceNot; rV;
-} -underline 1
+} -underline 3
+#  ^^^^^^^^^^^ => R
 $m add cascade -menu $m.su -label "Surface" -underline 0
 menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
@@ -277,10 +278,15 @@ $m add command -label "View" \
     -underline 0
 $m add separator
 $m add command -label "Instance" \
-    -command "crtOb Instance; uCR; sL; forceNot; rV;" -underline 0
-$m add command -label "Clone" -command "level_crt Clone;" -underline 2
+    -command "crtOb Instance; uCR; sL; forceNot; rV;" \
+    -underline 1
+#    ^^^^^^^^^^^ => N
+$m add command -label "Clone" -command "level_crt Clone;" \
+    -underline 2
+#    ^^^^^^^^^^^ => O
 $m add command -label "Mirror" -command "level_crt Clone \"-mirror 1\";" \
-     -underline 2
+    -underline 2
+#    ^^^^^^^^^^^ => R
 $m add command -label "Material" \
 	-command "material_createp;" -underline 0
 $m add command -label "Camera" \
@@ -290,11 +296,17 @@ $m add command -label "RiInc" \
 $m add command -label "RiProc" \
 	-command "crtOb RiProc; uCR; sL; forceNot; rV;"
 $m add command -label "Script" \
-	-command "crtOb Script; uCR; sL; forceNot; rV;" -underline 5
+	-command "crtOb Script; uCR; sL; forceNot; rV;" \
+    -underline 5
+#    ^^^^^^^^^^^ => T
 $m add command -label "Select" \
-	-command "crtOb Select; uCR; sL; forceNot; rV;" -underline 1
+    -command "crtOb Select; uCR; sL; forceNot; rV;" \
+    -underline 1
+#    ^^^^^^^^^^^ => E
 $m add command -label "Text" \
-	-command "crtOb Text; uCR; sL; forceNot; rV;" -underline 2
+    -command "crtOb Text; uCR; sL; forceNot; rV;" \
+    -underline 2
+#    ^^^^^^^^^^^ => X
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.cr -in $w.fMenu -side left
@@ -333,7 +345,7 @@ $m.nc add command -label "ConcatNC" -command "level_crt ConcatNC;" \
 $m.nc add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;" \
     -underline 0
 $m.nc add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;" \
-    -underline 0
+    -underline 1
 
 $m.nc add separator
 
@@ -345,7 +357,7 @@ $m.nc add command -label "NURBSphere" -command {
 } -underline 4
 $m.nc add command -label "NURBSphere2" -command {
     crtNSphere2; uCR; sL; forceNot; rV
-} -underline 10
+}
 $m.nc add separator
 $m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
 $m.nc add command -label "Extrude" -command "level_crt Extrude;" -underline 0
@@ -440,16 +452,21 @@ $m add separator
 $m add cascade -menu $m.npt -label "Surface" -underline 0
 menu $m.npt -tearoff 0
 $m.npt add command -label "Revert U" -command {
-    undo save RevertU; revertuS; plb_update; rV}
+    undo save RevertU; revertuS; plb_update; rV
+}
 $m.npt add command -label "Revert V" -command {
-    undo save RevertV; revertvS; plb_update; rV}
+    undo save RevertV; revertvS; plb_update; rV
+}
 $m.npt add command -label "Swap UV" -command {
-    undo save SwapUV; swapuvS; plb_update; rV}
+    undo save SwapUV; swapuvS; plb_update; rV
+}
 
 $m.npt add command -label "Close U" -command {
-    undo save CloseUNP; closeuNP; plb_update; rV}
+    undo save CloseUNP; closeuNP; plb_update; rV
+}
 $m.npt add command -label "Close V" -command {
-    undo save CloseVNP; closevNP; plb_update; rV}
+    undo save CloseVNP; closevNP; plb_update; rV
+}
 
 $m.npt add command -label "Split U" -command {
 runTool ay(splitu) {"Split at:"} "undo save SplitUNP; splituNP %0; uCR; sL; rV"
@@ -460,21 +477,26 @@ runTool ay(splitu) {"Split at:"} "undo save SplitVNP; splitvNP %0; uCR; sL; rV"
 }
 
 $m.npt add command -label "Clamp U" -command {
-    undo save ClampUNP; clampvNP; plb_update; rV}
+    undo save ClampUNP; clampvNP; plb_update; rV
+}
 $m.npt add command -label "Clamp V" -command {
-    undo save ClampVNP; clampuNP; plb_update; rV}
+    undo save ClampVNP; clampuNP; plb_update; rV
+}
 $m.npt add command -label "Clamp Both" -command {
-    undo save ClampNP; clampuNP; clampvNP; plb_update; rV}
+    undo save ClampNP; clampuNP; clampvNP; plb_update; rV
+}
 
 $m.npt add command -label "Insert Knot U" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnUNP; insknuNP %0 %1; plb_update; rV" }
+	    "undo save InsKnUNP; insknuNP %0 %1; plb_update; rV"
+}
 
 $m.npt add command -label "Insert Knot V" -command {
     runTool [list ay(insknu) ay(insknr)]\
 	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnVNP; insknvNP %0 %1; plb_update; rV" }
+	    "undo save InsKnVNP; insknvNP %0 %1; plb_update; rV"
+}
 
 $m.npt add command -label "Elevate UV" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
@@ -536,11 +558,14 @@ $m.npt add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
 $m.npt add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
 $m.npt add separator
 $m.npt add command -label "Split to Curves (u)" -command {
-    splitNP u; uS; sL; rV; set ay(sc) 1}
+    splitNP u; uS; sL; rV; set ay(sc) 1
+}
 $m.npt add command -label "Split to Curves (v)" -command {
-    splitNP v; uS; sL; rV; set ay(sc) 1}
+    splitNP v; uS; sL; rV; set ay(sc) 1
+}
 $m.npt add command -label "Build from Curves" -command {
-    buildNP; uCR; sL; rV; set ay(sc) 1}
+    buildNP; uCR; sL; rV; set ay(sc) 1
+}
 
 $m add separator
 
@@ -577,19 +602,19 @@ $sm add command -label "Center All Points (2D-XY)"\
 	-command "undo save CenterPntsXY; centerPnts 1;\
 	plb_update; rV" \
     -underline 22
-#    ^^^^^^^^^^^^ X
+#    ^^^^^^^^^^^^ => X
 
 $sm add command -label "Center All Points (2D-ZY)"\
 	-command "undo save CenterPntsZY; centerPnts 2;\
 	plb_update; rV" \
     -underline 23
-#    ^^^^^^^^^^^^ Y
+#    ^^^^^^^^^^^^ => Y
 
 $sm add command -label "Center All Points (2D-XZ)"\
 	-command "undo save CenterPntsXZ; centerPnts 3;\
 	plb_update; rV" \
     -underline 23
-#    ^^^^^^^^^^^^ Z
+#    ^^^^^^^^^^^^ => Z
 
 $m add separator
 
@@ -689,36 +714,36 @@ $m add cascade -menu $m.rib -label "RIB-Export" -underline 5
 set sm [menu $m.rib -tearoff 0]
 $sm add command -label "From Camera" -command "io_exportRIBfC" \
     -underline 5
-#    ^^^^^^^^^^^ C
+#    ^^^^^^^^^^^ => C
 $sm add command -label "Selected Objects" -command "io_exportRIBSO" \
     -underline 9
-#    ^^^^^^^^^^^ O
+#    ^^^^^^^^^^^ => O
 $sm add command -label "Create All ShadowMaps" -command "io_RenderSM 1" \
     -underline 7
-#    ^^^^^^^^^^^ A
+#    ^^^^^^^^^^^ => A
 $sm add command -label "Create ShadowMap" -command "io_RenderSM 0" \
     -underline 7
-#    ^^^^^^^^^^^ S
+#    ^^^^^^^^^^^ => S
 $m add separator
 $m add command -label "Enable Scripts" -command "script_enable" \
     -underline 2
-#    ^^^^^^^^^^^ A
+#    ^^^^^^^^^^^ => A
 $m add command -label "Select Renderer" -command "render_select" \
     -underline 7
-#    ^^^^^^^^^^^ R
+#    ^^^^^^^^^^^ => R
 $m add command -label "Scan Shaders" -command "shader_scanAll" \
     -underline 3
-#    ^^^^^^^^^^^ n
+#    ^^^^^^^^^^^ => N
 $m add command -label "Reset Preferences" -command "prefs_reset" \
     -underline 6
-#    ^^^^^^^^^^^ P
+#    ^^^^^^^^^^^ => P
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle" \
     -underline 11
-#    ^^^^^^^^^^^^ b
+#    ^^^^^^^^^^^^ => B
 $m add command -label "Toggle TreeView" -command "tree_toggle" \
     -underline 11
-#    ^^^^^^^^^^^^ V
+#    ^^^^^^^^^^^^ => V
 
 $m add separator
 
@@ -768,7 +793,7 @@ $m add command -label "Help on object" -command {
 	}
     }
 } -underline 8
-#  ^^^^^^^^^^^ o
+#  ^^^^^^^^^^^ => O
 
 $m add command -label "Help on property" -command {
     after idle {
@@ -803,7 +828,7 @@ $m add command -label "Help on property" -command {
 	}
     }
 } -underline 8
-#  ^^^^^^^^^^^ p
+#  ^^^^^^^^^^^ => P
 
 $m add command -label "Show Shortcuts" -command "shortcut_show" \
     -underline 0
@@ -811,7 +836,7 @@ $m add command -label "About" -command "aboutAyam" \
     -underline 0
 $m add checkbutton -label "Show Tooltips" -variable ayprefs(showtt) \
     -underline 5
-#    ^^^^^^^^^^^ T
+#    ^^^^^^^^^^^ => T
 
 # XXXX Win32 Menus are a bit to tall
 global tcl_platform

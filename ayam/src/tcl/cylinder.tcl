@@ -9,6 +9,11 @@
 
 # cylinder.tcl - cylinder objects Tcl code
 
+set Cylinder 1
+
+proc init_Cylinder { } {
+global ay Cylinder_props CylinderAttr CylinderAttrData
+
 set Cylinder_props { Transformations Attributes Material Tags CylinderAttr }
 
 
@@ -36,3 +41,7 @@ ZMin -1.0
 ZMax 1.0
 ThetaMax 1.0
 }
+
+return;
+}
+# init_Cylinder

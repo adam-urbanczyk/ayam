@@ -197,8 +197,27 @@ proc bevel_rem { place } {
 }
 # bevel_rem
 
+set Bevel 1
+
+proc init_Bevel { } {
+global ay Bevel_props BevelAttr BevelAttrData
 
 set Bevel_props { Transformations Attributes Material Tags BevelAttr }
+
+array set BevelAttr {
+    arr   BevelAttrData
+    sproc bevel_setAttr
+    gproc bevel_getAttr
+    w     fBevelAttr
+}
+
+array set BevelAttrData {
+    DisplayMode 1
+}
+
+return;
+}
+# init_Bevel
 
 
 # bevel_getAttr:
@@ -271,14 +290,3 @@ proc bevel_setAttr { } {
  return;
 }
 # bevel_setAttr
-
-array set BevelAttr {
-    arr   BevelAttrData
-    sproc bevel_setAttr
-    gproc bevel_getAttr
-    w     fBevelAttr
-}
-
-array set BevelAttrData {
-    DisplayMode 1
-}

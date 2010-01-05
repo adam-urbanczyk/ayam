@@ -9,8 +9,12 @@
 
 # cap.tcl - cap objects Tcl code
 
-set Cap_props { Transformations Attributes Material Tags CapAttr }
+set Cap 1
 
+proc init_Cap { } {
+global ay Cap_props CapAttr CapAttrData
+
+set Cap_props { Transformations Attributes Material Tags CapAttr }
 
 array set CapAttr {
 arr   CapAttrData
@@ -34,3 +38,7 @@ addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
 
 addText $w CapAttrData "Created NURBS Patch:"
 addInfo $w CapAttrData NPInfo
+
+return;
+}
+# init_Cap

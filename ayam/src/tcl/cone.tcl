@@ -9,8 +9,12 @@
 
 # cone.tcl - cone objects Tcl code
 
-set Cone_props { Transformations Attributes Material Tags ConeAttr }
+set Cone 1
 
+proc init_Cone { } {
+global ay Cone_props ConeAttr ConeAttrData
+
+set Cone_props { Transformations Attributes Material Tags ConeAttr }
 
 array set ConeAttr {
 arr   ConeAttrData
@@ -35,3 +39,7 @@ Radius 1.0
 Height 0.0
 ThetaMax 1.0
 }
+
+return;
+}
+# init_Cone

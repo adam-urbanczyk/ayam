@@ -9,8 +9,12 @@
 
 # extrnc.tcl - ExtrNC objects Tcl code
 
-set ExtrNC_props { Transformations Attributes Material Tags ExtrNCAttr }
+set ExtrNC 1
 
+proc init_ExtrNC { } {
+global ay ExtrNC_props ExtrNCAttr ExtrNCAttrData
+
+set ExtrNC_props { Transformations Attributes Material Tags ExtrNCAttr }
 
 array set ExtrNCAttr {
 arr   ExtrNCAttrData
@@ -42,3 +46,7 @@ addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)
 
 addText $w ExtrNCAttrData "Extracted NURBS Curve:"
 addInfo $w ExtrNCAttrData NCInfo
+
+return;
+}
+# init_ExtrNC

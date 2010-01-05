@@ -9,6 +9,11 @@
 
 # trim.tcl - Trim objects Tcl code
 
+set Trim 1
+
+proc init_Trim { } {
+global ay Trim_props TrimAttr TrimAttrData
+
 set Trim_props { Transformations Attributes Material Tags TrimAttr }
 
 array set TrimAttr {
@@ -28,3 +33,6 @@ set w [frame $ay(pca).$TrimAttr(w)]
 
 addParam $w TrimAttrData PatchNum
 
+return;
+}
+# init_Trim

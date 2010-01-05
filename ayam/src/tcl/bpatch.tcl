@@ -9,8 +9,12 @@
 
 # bpatch.tcl - bpatch objects Tcl code
 
-set BPatch_props { Transformations Attributes Material Tags BPatchAttr }
+set BPatch 1
 
+proc init_BPatch { } {
+global ay BPatch_props BPatchAttr BPatchAttrData
+
+set BPatch_props { Transformations Attributes Material Tags BPatchAttr }
 
 array set BPatchAttr {
 arr   BPatchAttrData
@@ -39,3 +43,5 @@ addParam $w BPatchAttrData P4_X
 addParam $w BPatchAttrData P4_Y
 addParam $w BPatchAttrData P4_Z
 
+}
+# init_BPatch

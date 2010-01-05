@@ -9,9 +9,6 @@
 
 # birail2.tcl - Birail2 objects Tcl code
 
-set Birail2_props { Transformations Attributes Material Tags Birail2Attr }
-
-
 # birail2_getAttr:
 #  get Attributes from C context and build new PropertyGUI
 #
@@ -91,6 +88,13 @@ proc birail2_setAttr { } {
 }
 # birail2_setAttr
 
+set Birail2 1
+
+proc init_Birail2 { } {
+global ay Birail2_props Birail2Attr Birail2AttrData
+
+set Birail2_props { Transformations Attributes Material Tags Birail2Attr }
+
 
 array set Birail2Attr {
 arr   Birail2AttrData
@@ -104,5 +108,6 @@ array set Birail2AttrData {
 DisplayMode 1
 NPInfoBall "n/a"
 }
-
-
+return;
+}
+# init_Birail2
