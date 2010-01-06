@@ -1172,12 +1172,12 @@ ay_view_notifycb(ay_object *o)
 	    }
 	  for(i=0;i<np->width+np->uorder;i++)
 	    {
-	      view->bgknotv[i] = np->uknotv[i];
+	      view->bgknotv[i] = (float)np->uknotv[i];
 	    }
 	  j = i;
 	  for(i=0;i<np->height+np->vorder;i++)
 	    {
-	      view->bgknotv[j] = np->vknotv[i];
+	      view->bgknotv[j] = (float)np->vknotv[i];
 	      j++;
 	    }
 
@@ -1193,10 +1193,10 @@ ay_view_notifycb(ay_object *o)
 	    {
 	      for(j=0;j<np->height;j++)
 		{
-		  view->bgcv[k]   = np->controlv[l];
-		  view->bgcv[k+1] = np->controlv[l+1];
-		  view->bgcv[k+2] = np->controlv[l+2];
-		  view->bgcv[k+3] = np->controlv[l+3];
+		  view->bgcv[k]   = (float)np->controlv[l];
+		  view->bgcv[k+1] = (float)np->controlv[l+1];
+		  view->bgcv[k+2] = (float)np->controlv[l+2];
+		  view->bgcv[k+3] = (float)np->controlv[l+3];
 
 		  /* generate texture coordinates */
 		  view->bgcv[k+4] = ((float)i)/np->width;
