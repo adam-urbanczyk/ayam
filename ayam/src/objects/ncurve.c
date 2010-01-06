@@ -408,6 +408,9 @@ ay_ncurve_copycb(void *src, void **dst)
   memcpy(ncurve, src, sizeof(ay_nurbcurve_object));
 
   ncurve->no = NULL;
+  ncurve->knotv = NULL;
+  ncurve->controlv = NULL;
+  ncurve->tessv = NULL;
 
   /* copy knots */
   kl = ncurve->order + ncurve->length;
