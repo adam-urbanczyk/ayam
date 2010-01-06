@@ -585,7 +585,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       lastpnt = &o->selp;
       while(pnt)
 	{
-	  if(pnt->index < acurve->length)
+	  if(pnt->index < (unsigned int)acurve->length)
 	    {
 	      pnt->point = &(acurve->controlv[pnt->index*stride]);
 	      lastpnt = &(pnt->next);
