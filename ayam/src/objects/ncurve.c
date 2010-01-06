@@ -951,7 +951,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       lastpnt = &o->selp;
       while(pnt)
 	{
-	  if(pnt->index < ncurve->length)
+	  if(pnt->index < (unsigned int)ncurve->length)
 	    {
 	      pnt->point = &(ncurve->controlv[pnt->index*4]);
 	      lastpnt = &(pnt->next);

@@ -335,7 +335,7 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
   /* check end derivatives */
   if(derivs)
     {
-      
+
     }
 
   /* create the icurve object */
@@ -797,7 +797,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       lastpnt = &(o->selp);
       while(pnt)
 	{
-	  if(pnt->index < icurve->length)
+	  if(pnt->index < (unsigned int)icurve->length)
 	    {
 	      pnt->point = &(icurve->controlv[pnt->index*stride]);
 	      lastpnt = &(pnt->next);
@@ -805,7 +805,8 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    }
 	  else
 	    {
-	      if((pnt->index < icurve->length+2) && icurve->derivs)
+	      if((pnt->index < (unsigned int)(icurve->length+2)) &&
+		 icurve->derivs)
 		{
 		  if(pnt->index == icurve->length)
 		    pnt->point = icurve->sderiv;

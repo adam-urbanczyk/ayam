@@ -1490,7 +1490,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       lastpnt = &o->selp;
       while(pnt)
 	{
-	  if(pnt->index < npatch->width*npatch->height)
+	  if(pnt->index < (unsigned int)(npatch->width*npatch->height))
 	    {
 	      pnt->point = &(npatch->controlv[pnt->index*4]);
 	      lastpnt = &(pnt->next);
