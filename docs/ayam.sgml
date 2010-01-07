@@ -8878,7 +8878,7 @@ So watch out for already existing procedures and commands when
 implementing your own!
 Using procedures and commands not listed in this documentation
 is dangerous too. Implementation and interfaces of those
-procedures and commands may change in future versions without
+procedures and commands may change in future versions of Ayam without
 notice.
 <p>
 In Tcl, all variables, procedures, and commands are case sensitive,
@@ -8920,13 +8920,13 @@ If you want your changes to be undoable, you have to arrange for
 this manually too (see the documentation of the undo command:
 <ref id="scundo" name="Undo">).
 <p>
-From scripts it may be necessary to check wether an error occured
+From scripts it may be necessary to check whether an error occured
 during the execution of a command. All commands return
 TCL_OK in <em>any</em> case, so checking their return value avails
 to nothing, but they set the global Tcl variable <tt>"ay_error"</tt>
-to a value higher than 1 if an error occured. You need to set it to
-zero before and check it after the operation in question to see whether
-the operation performed successfully:
+to a value higher than 1 if an error occured. You need to set
+ay_error to zero before and check it after the operation in question
+to see whether the operation performed successfully:
 <#if out=latex><x/needspace 8/</#if>
 <code>
 proc myProc { } {
@@ -8966,7 +8966,7 @@ More documentation to come.
 <p>
 The global array <tt/"ayprefs"/ holds preferences data.
 The <em>complete</em> array is saved in the <tt/"ayamrc"/ file upon exit,
-so be careful when adding new entries.
+so be careful when adding new elements to this array.
 See also section <ref id="ayamrc" name="Ayamrc File">.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
@@ -8974,7 +8974,7 @@ More documentation to come.
 <sect2>The Global Property Management and Data Arrays<label id="ayproparr">
 <p>
 For every property, a corresponding global array exists, where the data
-of the property is saved.
+of the property may be saved.
 This global array only holds useful data when the respective
 property GUI is active, or when it has been filled explicitly by
 the so called get-property callback.
@@ -8994,17 +8994,15 @@ w     fTagsAttr
 </code>
 The entry arr designates the name of the global property data array
 (thus, tags data is stored in an array called <tt/"tagsPropData"/).
+The entries sproc and gproc designate the set-property and get-property
+callbacks respectively.
 If sproc or gproc are empty (<tt/""/), a standard callback
 named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
-or set the property values. Otherwise sproc and gproc designate
-the set-property and get-property callbacks respectively.
+or set the property values.
 But for the tags property, the procedures <tt/"setTagsp"/ and
 <tt/"getTagsp"/ should be used.
 The last entry, <tt/"w"/, is the path and name of the main property
 GUI window.
-<p>
-Since Ayam 1.16, the global property management array may be created
-easily using the new scripting interface command <tt/"addPropertyGUI"/.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
@@ -9026,6 +9024,9 @@ See also section
 <ref id="sciprop" name="Manipulating Properties">
 for more information on how to edit property values from the
 scripting interface.
+<p>
+Since Ayam 1.16, the global property management array may be created
+easily using the new scripting interface command <tt/"addPropertyGUI"/.
 
 <sect1>Index of Procedures and Commands<label id="sccomm">
 <p>
@@ -9035,16 +9036,16 @@ by category.
 <p>
 All commands are documented in the following scheme:
 <itemize>
- <item>Synopsis: <tt/"command parameters"/ (how are the command and its
-parameters actually called),
- <item>Background: does the command run in the background,
-Undo: is the result of the command undoable, Safe: is the command available
+ <item><bf/Synopsis:/ <tt/"command param1 param2 [optionalparam1]"/
+(syntax of the command and its parameters),
+ <item><bf/Background:/ does the command run in the background,
+<bf/Undo:/ is the result of the command undoable, <bf/Safe:/ is the command available
 in the safe interpreter (for Script objects and notify script tags),
- <item>Description: Detailed description of the command and its
+ <item><bf/Description:/ detailed description of the command and its
 parameters,
- <item>Notes: Additional information completing the detailed description,
- <item>Example: <tt/"command 1"/ (example application of the command
-with explanation).
+ <item><bf/Notes:/ additional information completing the detailed description,
+ <item><bf/Example:/ <tt/"command 1 2"/ (example application of the command
+with explanation of expected results).
 </itemize>
 
 <sect2>Getting Help on Scripting Interface Commands<label id="schelp">
@@ -9179,6 +9180,7 @@ and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
 Since Ayam 1.9 two new commands are implemented that ease
 the manipulation of property values from the scripting interface:
 
+
 <p><label id="scgetproperty">
 getProperty - get single property value
 <itemize>
@@ -9189,14 +9191,22 @@ named elemname from the property named propname of the currently
 selected object and writes the result into the variable named varname.
  <item>Notes: In contrast to many other helper commands, the variable
 varname does not have to be global.
-This command runs more slowly than accessing the data array
-that is associated with a property and calling the appropriate get-procedure
-directly. See below for more information regarding direct access of
-property values.
+This command runs more slowly than calling the appropriate get-procedure and
+accessing the data array that is associated with a property
+directly, especially if multiple values are to be fetched.
+See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be retrieved in the variable <tt/"r"/ easily using the command
-<tt/"getProperty SphereAttr(Radius) r"/
+<tscreen><verb>getProperty SphereAttr(Radius) r</verb></tscreen>
 </itemize>
+In contrast to using <tt/"getProperty"/, here is an equivalent example for the
+direct (fast) access of property values:
+<code>
+getProp
+set r $::SphereAttrData(Radius)
+</code>
+See also section
+<ref id="ayproparr" name="Global Property Management and Data Arrays">.
 
 <p><label id="scsetproperty">
 setProperty - set single property value
@@ -9208,14 +9218,14 @@ named elemname of the property named propname for the currently
 selected object to the new value given in value.
  <item>Notes: This command runs more slowly than accessing the data array
 that is associated with a property and calling the appropriate set-procedure
-directly. See below for more information regarding direct access of
-property values.
+directly, especially if multiple values are to be set.
+See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be set to the new value <tt/"3.0"/ easily using the command
-<tt/"setProperty SphereAttr(Radius) 3.0"/
+<tscreen><verb>setProperty SphereAttr(Radius) 3.0</verb></tscreen>
 </itemize>
 <p>
-In contrast to <tt/"setProperty"/, here is an equivalent example for the
+In contrast to using <tt/"setProperty"/, here is an equivalent example for the
 direct (fast) access of property values:
 <code>
 getProp
@@ -10515,7 +10525,7 @@ used to restrict the screen space occupied by the console.
 Normally, the Ayam console is resized with the main window and
 occupies a varying amount of screen space.
 After running the script, the console will always resize to exactly
-two lines. Different values may be chosen easily by adapting the
+two lines of text. Different values may be chosen easily by adapting the
 script.
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
@@ -10533,7 +10543,7 @@ into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
 <p>
 Ayam has to run already and the plugins required for the import and
 export processes need to be available and properly configured
-(<tt>"Plugins"</tt> preference setting).
+(check the <tt>"Plugins"</tt> preference setting).
 The plugins necessary for the conversion will be loaded automatically.
 <p>
 Import and export options may also be given like this:
@@ -12594,7 +12604,7 @@ A regular sphere has a depth complexity of 1, a torus of 2, but do
 not confuse depth complexity with genus, they are different values!
 A 3D representation of the letter A e.g. has a genus of
 1 but a depth complexity of 3.
-The depth complexity of a primitive should be stored in a <tt/"DC"/ tag.
+The depth complexity of a primitive can be stored in a <tt/"DC"/ tag.
 A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
 If no <tt/"DC"/ tag is present for a primitive, a default value for
 the depth complexity of <tt/"1"/ will be used.
@@ -12647,25 +12657,53 @@ SCS algorithm. Note again that the SCS algorithm only works correctly
 for convex primitives. The <tt/"Automatic"/ setting chooses one
 of the algorithms based on whether concave primitives (depth complexity
 &gt; 1) are present or not.
+
 <item><tt/"DCSampling"/ determines a depth complexity sampling
 strategy. Quoting from the OpenCSG documentation, the following options
 are available:
+
 <p>
 <tt/"NoDCSampling"/: Does not employ the depth complexity. This essentially
 makes the algorithm O(n&sup2;), but with low constant costs.
+This is the standard Goldfeather algorithm, DC tags <em>must</em> be present
+for primitives with a depth complexity greater than one, or rendering
+errors may occur.
+
 <p>
 <tt/"OcclusionQuery"/: Uses occlusion queries to profit implicitly from
 depth complexity without calculating it. This is especially useful for the
 SCS algorithm where this strategy is applied at shape level, resulting in
 a O(n*k') algorithm (where k' <= k), without significant constant overhead.
-This strategy requires hardware occlusion queries, i.E., the OpenGL
+This strategy requires hardware occlusion queries, i.e., the OpenGL
 extension <tt>"GL_ARB_occlusion_query"</tt> or
 <tt>"GL_NV_occlusion_query"</tt>.
+If this is enabled (and the <tt/"Algorithm"/ is set to Goldfeather),
+DC tags need <em>not</em> to be present.
+
 <p>
 <tt/"DCSampling"/: Calculates the depth complexity k using the stencil
 buffer. This makes the algorithm O(n*k), but with high constant costs.
 In case of the Goldfeather algorithm, the literature denotes this as
 layered Goldfeather algorithm.
+Note that this option requires a stencil buffer which must be enabled
+on the creation of a view window using additional view parameters
+(preferences option AddViewParams, see also the section on
+<ref id="hidprefs" name="hidden preference settings">).
+If stencil buffers are not enabled, Ayam will automatically add the
+relevant option to the preferences but this only has an effect on newly
+created view windows (i.e. you might also want to restart Ayam, if you
+switch to DCSampling).
+If <tt/"DCSampling"/ is enabled (and the <tt/"Algorithm"/ is set to
+Goldfeather), DC tags need <em>not</em> to be present as the
+depth complexity of primitives is calculated internally.
+
+<item><tt/"OffscreenType"/: This option allows to switch between two
+offscreen rendering techniques, PBuffers and Frame Buffer Objects;
+depending on your graphics hardware and driver, one or the other
+might work better for you.
+
+<item><tt/"Optimization"/: Currently unused.
+
 <item><tt/"CalcBBS"/ determines whether bounding boxes should be
 calculated and used for speed up (not working at the moment).
 </itemize>
