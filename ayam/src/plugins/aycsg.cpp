@@ -26,14 +26,11 @@
 #define CSGTYPE modified
 
 // global variables
-std::vector<OpenCSG::Primitive*> primitives;
-
-OpenCSG::Algorithm algo = OpenCSG::Automatic;
-
-OpenCSG::DepthComplexityAlgorithm depthalgo =
- OpenCSG::NoDepthComplexitySampling;
+std::vector<OpenCSG::Primitive*> aycsg_primitives;
 
 ay_object *aycsg_root; // the root of the local copy of the object tree
+
+int aycsg_calcbbs = AY_FALSE; // control bounding box optimization, unused!
 
 // TM tags are used to store transformation attributes delegated from
 // parents (CSG operation objects) to their children (e.g. primitives);
@@ -105,6 +102,11 @@ void aycsg_cleartmtags();
 extern "C" {
 
 void aycsg_display(struct Togl *togl);
+
+int aycsg_toggletcb(struct Togl *togl, int argc, char *argv[]);
+
+int aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
 
 #ifdef WIN32
   __declspec (dllexport)
@@ -185,9 +187,6 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
  int orig_use_materialcolor = ay_prefs.use_materialcolor;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  int is_csg;
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- Tcl_Interp *interp = ay_interp;
- int opencsg_algorithm = 0, opencsg_dcsampling = 0, calc_bbs = AY_FALSE;
  Togl_Callback *oldaltdispcb = NULL;
 #ifdef AYCSGDBG
  ay_printcb *cbv[4];
@@ -197,53 +196,6 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   cbv[2] = &aycsg_printppohcb/*ay_ppoh_prflags*/;
   cbv[3] = NULL;
 #endif
-
-  // get global preferences
-  toa = Tcl_NewStringObj("aycsg_options", -1);
-  ton = Tcl_NewStringObj("Algorithm", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_algorithm);
-
-  switch(opencsg_algorithm)
-    {
-    case 0:
-      algo = OpenCSG::Automatic;
-      break;
-    case 1:
-      algo = OpenCSG::Goldfeather;
-      break;
-    case 2:
-      algo = OpenCSG::SCS;
-      break;
-    default:
-      algo = OpenCSG::Automatic;
-      break;
-    } // switch
-
-  Tcl_SetStringObj(ton, "DCSampling", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &opencsg_dcsampling);
-
-  switch(opencsg_dcsampling)
-    {
-    case 0:
-      depthalgo = OpenCSG::NoDepthComplexitySampling;
-      break;
-    case 1:
-      depthalgo = OpenCSG::OcclusionQuery;
-      break;
-    case 2:
-      depthalgo = OpenCSG::DepthComplexitySampling;
-      break;
-    default:
-      depthalgo = OpenCSG::NoDepthComplexitySampling;
-      break;
-    } // switch
-
-  Tcl_SetStringObj(ton, "CalcBBS", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &calc_bbs);
-
 
   view = (ay_view_object *)Togl_GetClientData(togl);
 
@@ -305,14 +257,14 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 	  // it is needed by OpenCSG...
 	  ay_prefs.use_materialcolor = AY_FALSE;
 
-	  ay_status = aycsg_flatten(o, togl, AY_LTUNION, calc_bbs);
+	  ay_status = aycsg_flatten(o, togl, AY_LTUNION, aycsg_calcbbs);
 
 	  // XXXX do we need this?
 	  glClear(GL_STENCIL_BUFFER_BIT);
 
 	  // fill depth buffer (resolve CSG operations)
 	  glDisable(GL_LIGHTING);
-	  OpenCSG::render(primitives, algo, depthalgo);
+	  OpenCSG::render(aycsg_primitives);
 
 	  // now draw again using existing depth buffer bits and
 	  // possibly with colors
@@ -332,7 +284,7 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 	  ay_prefs.use_materialcolor = orig_use_materialcolor;
 	  glDepthFunc(GL_EQUAL);
 	  for(std::vector<OpenCSG::Primitive*>::const_iterator i =
-		primitives.begin(); i != primitives.end(); ++i) {
+		aycsg_primitives.begin(); i != aycsg_primitives.end(); ++i) {
 	    (*i)->render();
 	  }
 	  glDepthFunc(GL_LESS);
@@ -537,7 +489,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
       if(t->next)
 	{
 	  // yes, this is always an intersecting primitive
-	  primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+	  aycsg_primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						 OpenCSG::Intersection, dc));
 	}
       else
@@ -545,12 +497,12 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
 	  // no, use parent_csgtype to determine CSG operation
 	  if(parent_csgtype == AY_LTDIFF)
 	    {
-	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+	      aycsg_primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						  OpenCSG::Subtraction, dc));
 	    }
 	  else
 	    {
-	      primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
+	      aycsg_primitives.push_back(new OpenCSG::ayCSGPrimitive(t, togl,
 						  OpenCSG::Intersection, dc));
 	    } // if
 	} // if
@@ -558,7 +510,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
       if(calc_bbs)
 	{
 	  double minx, miny, minz, maxx, maxy, maxz;
-	  OpenCSG::Primitive *p = primitives.back();
+	  OpenCSG::Primitive *p = aycsg_primitives.back();
 	  aycsg_getNDCBB(t, togl, &minx, &miny, &minz, &maxx, &maxy, &maxz);
 	  p->setBoundingBox((float)minx, (float)miny, (float)minz,
 			    (float)maxx, (float)maxy, (float)maxz);
@@ -586,14 +538,14 @@ aycsg_clearprimitives()
 {
 
   for(std::vector<OpenCSG::Primitive*>::const_iterator i =
-	primitives.begin(); i != primitives.end(); ++i)
+	aycsg_primitives.begin(); i != aycsg_primitives.end(); ++i)
     {
       OpenCSG::ayCSGPrimitive* p =
 	static_cast<OpenCSG::ayCSGPrimitive*>(*i);
       delete p;
     }
 
-  primitives.clear();
+  aycsg_primitives.clear();
 
  return;
 } // aycsg_clearprimitives
@@ -1551,7 +1503,7 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 	      lis_csg = AY_TRUE;
 
 	      if((*target)->down && (*target)->down->next &&
-		    (*target)->down->next->next)
+		 (*target)->down->next->next)
 		{
 		  // *target has more than 2 children
 		  // => convert to binary tree
@@ -1663,6 +1615,123 @@ aycsg_toggletcb(struct Togl *togl, int argc, char *argv[])
 } // aycsg_toggletcb
 
 
+// aycsg_setopttcmd:
+//  this Tcl command transports the AyCSG preferences
+//  from the "Special/AyCSG Preferences"-dialog to OpenCSG options
+//
+int
+aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
+{
+ OpenCSG::Algorithm algo = OpenCSG::Automatic;
+ OpenCSG::DepthComplexityAlgorithm depthalgo =
+   OpenCSG::NoDepthComplexitySampling;
+ OpenCSG::OffscreenType offscreen = OpenCSG::AutomaticOffscreenType;
+ OpenCSG::Optimization opti = OpenCSG::OptimizationDefault;
+ int opencsg_algorithm = 0, opencsg_dcsampling = 0;
+ int opencsg_offscreen = 0, opencsg_optimization = 0;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+
+  // get preferences data
+  toa = Tcl_NewStringObj("aycsg_options", -1);
+  ton = Tcl_NewStringObj("Algorithm", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_algorithm);
+
+  switch(opencsg_algorithm)
+    {
+    case 0:
+      algo = OpenCSG::Automatic;
+      break;
+    case 1:
+      algo = OpenCSG::Goldfeather;
+      break;
+    case 2:
+      algo = OpenCSG::SCS;
+      break;
+    default:
+      algo = OpenCSG::Automatic;
+      break;
+    } // switch
+
+  Tcl_SetStringObj(ton, "DCSampling", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_dcsampling);
+
+  switch(opencsg_dcsampling)
+    {
+    case 0:
+      depthalgo = OpenCSG::NoDepthComplexitySampling;
+      break;
+    case 1:
+      depthalgo = OpenCSG::OcclusionQuery;
+      break;
+    case 2:
+      depthalgo = OpenCSG::DepthComplexitySampling;
+      break;
+    default:
+      depthalgo = OpenCSG::NoDepthComplexitySampling;
+      break;
+    } // switch
+
+  Tcl_SetStringObj(ton, "CalcBBS", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &aycsg_calcbbs);
+
+
+  Tcl_SetStringObj(ton, "OffscreenType", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_offscreen);
+
+  switch(opencsg_offscreen)
+    {
+    case 0:
+      offscreen = OpenCSG::AutomaticOffscreenType;
+      break;
+    case 1:
+      offscreen = OpenCSG::FrameBufferObject;
+      break;
+    case 2:
+      offscreen = OpenCSG::PBuffer;
+      break;
+    default:
+      offscreen = OpenCSG::AutomaticOffscreenType;
+      break;
+    } // switch
+
+  Tcl_SetStringObj(ton, "Optimization", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &opencsg_optimization);
+
+  switch(opencsg_optimization)
+    {
+    case 0:
+      opti = OpenCSG::OptimizationDefault;
+      break;
+    case 1:
+      opti = OpenCSG::OptimizationForceOn;
+      break;
+    case 2:
+      opti = OpenCSG::OptimizationOn;
+      break;
+    case 3:
+      opti = OpenCSG::OptimizationOff;
+      break;
+    default:
+      opti = OpenCSG::OptimizationDefault;
+      break;
+    } // switch
+
+  // set the options
+  OpenCSG::setOption(OpenCSG::AlgorithmSetting, algo);
+  OpenCSG::setOption(OpenCSG::DepthComplexitySetting, depthalgo);
+  OpenCSG::setOption(OpenCSG::OffscreenSetting, offscreen);
+  OpenCSG::setOption(OpenCSG::DepthBoundsOptimization, opti);
+
+ return TCL_OK;
+} // aycsg_setopttcmd
+
+
 // Aycsg_Init | aycsg_inittcmd:
 //  initialize aycsg module
 //  note: this function _must_ be capitalized exactly this way
@@ -1739,6 +1808,9 @@ Aycsg_Init(Tcl_Interp *interp)
   // create new commands for all views (Togl widgets)
   Togl_CreateCommand("rendercsg", aycsg_rendertcb);
   Togl_CreateCommand("togglecsg", aycsg_toggletcb);
+
+  Tcl_CreateCommand(interp, "aycsgSetOpt", aycsg_setopttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   // reconnect potentially present DC tags
   ay_status = ay_tags_reconnect(ay_root, aycsg_dc_tagtype, "DC");
