@@ -40,15 +40,22 @@ kBhQHOqDBCMAgoAgl1Z00LDEChQQADs=
 }
 image create photo ay_aycsg_img -format GIF -data $imgdata
 
+image create photo ay_aycsg_img2 -format GIF -data $imgdata
+set color #e02020
+ay_aycsg_img2 put $color -to 0 0 24 3
+ay_aycsg_img2 put $color -to 0 0 3 24
+ay_aycsg_img2 put $color -to 22 24 24 0
+ay_aycsg_img2 put $color -to 0 22 24 24
+
 # aycsgToggle:
 #  toggle use of AyCSG as regular drawing mode
 #  also manage corresponding view menu button
 proc aycsgToggle { w } {
     set b ${w}.fMenu.baycsg
-    if { [$b cget -relief] == "sunken" } {
-	$b configure -relief raised
+    if { [$b cget -image] == "ay_aycsg_img2" } {
+	$b configure -image ay_aycsg_img
     } else {
-	$b configure -relief sunken
+	$b configure -image ay_aycsg_img2
     }
     if { [string first ".view" $w] == 0 } {
 	set togl [winfo toplevel $w].f3D.togl
@@ -62,7 +69,7 @@ proc aycsgToggle { w } {
 
 # add icon to view menus
 set a "\
-button \$w.fMenu.baycsg -padx 0 -pady 0 -borderwidth 0 -image ay_aycsg_img -command \{global ay; \$ay(currentView) rendercsg;\};pack \$w.fMenu.baycsg -in \$w.fMenu -side right;"
+button \$w.fMenu.baycsg -width 22 -height 22 -padx 0 -pady 0 -borderwidth 0 -image ay_aycsg_img -command \{global ay; \$ay(currentView) rendercsg;\};pack \$w.fMenu.baycsg -in \$w.fMenu -side right;"
 append a "bind \$w.fMenu.baycsg <Shift-1> \"aycsgToggle \$w\""
 
 addToProc vmenu_open $a
@@ -89,6 +96,8 @@ uplevel #0 {
     array set aycsg_options {
 	Algorithm 0
 	DCSampling 0
+	OffscreenType 0
+	Optimization 0
 	CalcBBS 0
     }
     # aycsg_options
@@ -126,6 +135,10 @@ proc aycsgPreferences { } {
     addMenu $f aycsg_options_save Algorithm [list Automatic Goldfeather SCS]
     addMenu $f aycsg_options_save DCSampling \
 	[list NoDCSampling OcclusionQuery DCSampling]
+    addMenu $f aycsg_options_save OffscreenType \
+	[list Automatic FBO PBuffer]
+    addMenu $f aycsg_options_save Optimization \
+	[list Default ForceOn On Off]
     addCheck $f aycsg_options_save CalcBBS
 
     set f [frame $w.f2]
@@ -140,7 +153,7 @@ proc aycsgPreferences { } {
 		set t "Adapt Preferences?"
 		set m "Ayam is not set up to use stencil buffers,\n\
 			but this is needed by the depth complexity\n\
-			sampling strategy you have choosen (DCSampling)!\n\
+			sampling strategy you have chosen (DCSampling)!\n\
 			Do you want me to adapt the preferences?"
 		set answer [tk_messageBox -title $t -type yesno \
 			-icon question -message $m]
@@ -190,6 +203,11 @@ proc aycsgPreferences { } {
     after idle viewMouseToCurrent
 
     unset aycsg_options_save
+
+    aycsgSetOpt
+
+    # XXXX loop through all views and rerender
+    # when continuous CSG drawing is enabled
 
  return;
 }
