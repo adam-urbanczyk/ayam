@@ -1,4 +1,4 @@
-[10. Dec 2009] CVS-Head:
+[9. Jan 2010] CVS-Head:
 ========================
 Bug Fixes:
 o <Tab> key does not work after <Ctrl+l> (SF 2869550)
@@ -27,28 +27,44 @@ o MetaObj user controlled expressions now also run in the safe interpreter
 o View objects now accept a NURB patch object as child and map the
   background image on that (instead of fitting the image to the window)
 o the tesselation GUI can now work with complex levels of objects,
-  e.g. the cactus from the example scenes, which is a complex hierarchy
-  of Level, Cone, Sphere objects, and a Skin, can now be tesselated easily
+  e.g. the cactus from the example scenes (which is a complex hierarchy
+  of Levels, Cones, Spheres, and a Skin) can now be tesselated easily
   into one PolyMesh object with just one application of the tesselation GUI
 o added support for new data types (g for float[2], n for normal, and
   p for point) to PV tags
+o enhanced NURBS and PolyMesh tesselation supports for PV tags (e.g. added
+  support for vertex colors and normals)
 
 GUI:
 o improved speed of focus changes between internal view 3 and the tree view
 o improved initial pane layout (also in use after switching from
   (Floating Windows to Single Window GUI mode)
 o added mnemonics to tree and object listbox context menus
+o fixed main menu mnemonics clashes
+o the property GUIs of many objects are now initialized on demand, not
+  already on application startup, to increase startup speed and decrease
+  initial memory footprint
+
+Plugins:
+o added AyCSG preference option "OffscreenType" to switch between
+  PBuffer and FBO
+o the AyCSG continuous CSG rendering state is now conveyed to the
+  user using a red colored view menu icon
 
 Import/Export:
 o X3D import of IndexedFaceSet and similar elements now fully supports
   vertex and face colors, normals, and texture coordinates
 o Wavefront OBJ import now supports polyline elements (l)
-o Wavefront OBJ import now supports line continuation (using "\")
+o Wavefront OBJ import now supports line continuation ("\" characters)
 o import and export of texture coordinates now uses one PV tag of
   default name "st" and type g (float[2])
 
 Scripts/Scripting Interface:
 o aytest script tests can now be stopped
+o the create callbacks of NCurve, NCircle, ICurve, ACurve, NPatch, and
+  PolyMesh objects now allow much more parameters to control the initially
+  created object (e.g. one may now specify control points and knot vectors
+  directly on object creation); for the first time it is
 
 
 [22. Sep 2009] Ayam-1.16:
