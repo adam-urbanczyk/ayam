@@ -1865,87 +1865,306 @@ KnotSelector::closeFace(void)
 
 /* sdnpatch_createcb:
  *  create callback function of sdnpatch object
+ * crtOb SDNPatch -v {0 0 0 1  1 0 0 1  1 1 0 1   0 1 0 1} -f {4 0 1 2 3}
  */
 int
 sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 {
- sdnpatch_object *sdnpatch = NULL;
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crtsdnpatch";
+ char option_handled = AY_FALSE;
+ char **av = NULL;
+ int avlen = 0;
+ int tmpi, optnum = 0, i = 2, j = 0;
+ unsigned int k = 0;
+ unsigned int *faces = NULL, *edges;
+ int faceslen = 0, edgeslen = 0;
+ double *verts = NULL, *knots = NULL;
+ int vertslen = 0, knotslen = 0;
+ sdnpatch_object *sdnpatch = NULL;
+ MeshBuilder *meshBuilder = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+  /* parse args */
+  while(i < argc)
     {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'f':
+	      /* -faces */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(faces)
+		    {
+		      free(faces);
+		    }
+		  if(!(faces = (unsigned int*)calloc(avlen,
+						     sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      faces[j] = tmpi;
+		    } /* for */
+		  faceslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'k':
+	      /* -knots */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(edges)
+		    {
+		      free(edges);
+		    }
+		  if(!(edges = (unsigned int*)calloc((avlen/3)*2,
+						    sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  if(knots)
+		    {
+		      free(knots);
+		    }
+		  if(!(knots = (double*)calloc(avlen/3, sizeof(double))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  k = 0;
+		  for(j = 0; j < (avlen/3)*2; j+=2)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp, av[k], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      edges[j] = tmpi;
+		      k++;
+		      tcl_status = Tcl_GetInt(ay_interp, av[k], &tmpi);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      edges[j+1] = tmpi;
+		      k += 2;
+		    } /* for */
+		  edgeslen = (avlen/3)*2;
+		  k = 2;
+		  for(j = 0; j < avlen/3; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 av[k], &knots[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		      k += 3;
+		    } /* for */
+		  knotslen = (avlen/3);
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'v':
+	      /* -vertices */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(verts)
+		    {
+		      free(verts);
+		    }
+		  if(!(verts = (double*)calloc(avlen, sizeof(double))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 av[j], &verts[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  vertslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+
+  /* XXXX check args */
 
   /*sdnpatch->lowDegreeMesh = new snurbs::Mesh;*/
+
+  if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
   sdnpatch->subdivDegree = 3;
   sdnpatch->subdivLevel = 2;
 
   sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
+  meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
 
-  MeshBuilder *meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
+  if(!verts)
+    {
+      meshBuilder->addVertex(-0.5,-0.5,-0.5,1,0);
+      meshBuilder->addVertex( 0.5,-0.5,-0.5,1,1);
+      meshBuilder->addVertex( 0.5, 0.5,-0.5,1,2);
+      meshBuilder->addVertex(-0.5, 0.5,-0.5,1,3);
 
-  meshBuilder->addVertex(-0.5,-0.5,-0.5,0.5,0);
-  meshBuilder->addVertex( 0.5,-0.5,-0.5,0.5,1);
-  meshBuilder->addVertex( 0.5, 0.5,-0.5,0.5,2);
-  meshBuilder->addVertex(-0.5, 0.5,-0.5,0.5,3);
+      meshBuilder->addVertex(-0.5,-0.5,0.5,1,4);
+      meshBuilder->addVertex( 0.5,-0.5,0.5,1,5);
+      meshBuilder->addVertex( 0.5, 0.5,0.5,1,6);
+      meshBuilder->addVertex(-0.5, 0.5,0.5,1,7);
 
-  meshBuilder->addVertex(-0.5,-0.5,0.5,0.5,4);
-  meshBuilder->addVertex( 0.5,-0.5,0.5,0.5,5);
-  meshBuilder->addVertex( 0.5, 0.5,0.5,0.5,6);
-  meshBuilder->addVertex(-0.5, 0.5,0.5,0.5,7);
+      meshBuilder->finishVertices();
 
-  meshBuilder->finishVertices();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(0);
+      meshBuilder->addToFace(1);
+      meshBuilder->addToFace(2);
+      meshBuilder->addToFace(3);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(0);
-  meshBuilder->addToFace(1);
-  meshBuilder->addToFace(2);
-  meshBuilder->addToFace(3);
-  meshBuilder->closeFace();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(1);
+      meshBuilder->addToFace(5);
+      meshBuilder->addToFace(6);
+      meshBuilder->addToFace(2);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(1);
-  meshBuilder->addToFace(5);
-  meshBuilder->addToFace(6);
-  meshBuilder->addToFace(2);
-  meshBuilder->closeFace();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(5);
+      meshBuilder->addToFace(4);
+      meshBuilder->addToFace(7);
+      meshBuilder->addToFace(6);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(5);
-  meshBuilder->addToFace(4);
-  meshBuilder->addToFace(7);
-  meshBuilder->addToFace(6);
-  meshBuilder->closeFace();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(4);
+      meshBuilder->addToFace(0);
+      meshBuilder->addToFace(3);
+      meshBuilder->addToFace(7);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(4);
-  meshBuilder->addToFace(0);
-  meshBuilder->addToFace(3);
-  meshBuilder->addToFace(7);
-  meshBuilder->closeFace();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(0);
+      meshBuilder->addToFace(4);
+      meshBuilder->addToFace(5);
+      meshBuilder->addToFace(1);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(0);
-  meshBuilder->addToFace(4);
-  meshBuilder->addToFace(5);
-  meshBuilder->addToFace(1);
-  meshBuilder->closeFace();
+      meshBuilder->startFace(4);
+      meshBuilder->addToFace(3);
+      meshBuilder->addToFace(2);
+      meshBuilder->addToFace(6);
+      meshBuilder->addToFace(7);
+      meshBuilder->closeFace();
 
-  meshBuilder->startFace(4);
-  meshBuilder->addToFace(3);
-  meshBuilder->addToFace(2);
-  meshBuilder->addToFace(6);
-  meshBuilder->addToFace(7);
-  meshBuilder->closeFace();
+      meshBuilder->finishFaces();
 
-  meshBuilder->finishFaces();
+      meshBuilder->finishKnotIntervals();
+    }
+  else
+    {
+      /* vertices */
+      i = 0;
+      for(j = 0; j < (vertslen/4); j++)
+	{
+	  meshBuilder->addVertex(verts[i], verts[i+1],
+				 verts[i+2], verts[i+3], j);
+	  i+=4;
+	} /* for */
+      meshBuilder->finishVertices();
 
-  meshBuilder->finishKnotIntervals();
+      /* faces */
+      for(j = 0; j < faceslen; j++)
+	{
+	  meshBuilder->startFace(faces[j]);
+	  for(k = 1; k <= faces[j]; k++)
+	    {
+	      meshBuilder->addToFace(faces[j+k]);
+	    } /* for */
+	  meshBuilder->closeFace();
+	  j += faces[j];
+	} /* for */
+      meshBuilder->finishFaces();
+
+      /* knot intervals */
+      if(knotslen > 0)
+	{
+	  for(j = 0; j < knotslen; j++)
+	    {
+	      meshBuilder->addKnotInterval(edges[k], edges[k+1], knots[j]);
+	      k += 2;
+	    }
+	}
+      meshBuilder->finishKnotIntervals();
+    } /* if */
 
   MeshBuilder::dispose(meshBuilder);
 
@@ -1955,7 +2174,24 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   ay_notify_force(o);
 
- return AY_OK;
+cleanup:
+
+  if(verts)
+    free(verts);
+
+  if(faces)
+    free(faces);
+
+  if(knots)
+    free(knots);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* sdnpatch_createcb */
 
 
