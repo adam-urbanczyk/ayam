@@ -1283,7 +1283,7 @@ FaceMerger::finishKnotIntervals(void)
 
   // if any keep indices are higher than remove vertices
   // they need to be adapted (to account for the removed vertices in-between)
-  newKeepIndices.reserve(m_keepVertsNum);
+  newKeepIndices.resize(m_keepVertsNum);
   for(i = 0; i < m_keepVertsNum; i++)
     {
       newKeepIndices[i] = m_keepVerts[i];
@@ -1537,7 +1537,7 @@ FaceConnector::closeFace(void)
 		can only happen with dual meshes anyway?
 	      */
 
-	      nearestVerts.reserve(m_faceVerts.size());
+	      nearestVerts.resize(m_faceVerts.size());
 
 #if 0
 	      // old strategy, too fragile (crash for perpendicular faces)
@@ -4456,14 +4456,7 @@ sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch)
   if(tmp)
     {
       sdnpatch->controlVertices = new std::vector<Vertex *>;
-      sdnpatch->controlVertices->reserve(tmp->size());
-
-      for(it = tmp->begin();
-	  it != tmp->end();
-	  it++)
-	{
-	  sdnpatch->controlVertices->push_back(0);
-	}
+      sdnpatch->controlVertices->resize(tmp->size());
 
       // correct order for our own ID scheme
       for(it = tmp->begin();
