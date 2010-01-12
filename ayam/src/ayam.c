@@ -584,7 +584,7 @@ ay_init(Tcl_Interp *interp)
     }
   strcpy(ay_prefs.normalname, "N");
 
-  if(!(ay_prefs.colorname = calloc(1+1, sizeof(char))))
+  if(!(ay_prefs.colorname = calloc(2+1, sizeof(char))))
     {
       free(ay_prefs.logfile);
       free(ay_prefs.pprender);
