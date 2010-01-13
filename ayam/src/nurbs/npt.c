@@ -9710,6 +9710,329 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_extractnptcmd */
 
 
+/* ay_npt_offset:
+ *  create offset surface from <o>
+ *  the new offset is <offset> away from the original
+ *  returns new patch in <np>
+ *  WIP
+ */
+int
+ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
+{
+ int ay_status = AY_OK;
+ int i, j, stride = 4;
+ double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL;
+ double *newukv = NULL, *newvkv = NULL;
+ double zaxis[3] = {0.0,0.0,1.0};
+ ay_nurbpatch_object *patch = NULL;
+ int p1len, p2len, p3len;
+ double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
+ double t1[2], t2[2], n[2];
+
+  /* sanity check */
+  if(!o || !np)
+    return AY_ENULL;
+
+  patch = (ay_nurbpatch_object*)o->refine;
+
+  if(!(newcv = calloc(patch->width*patch->height*stride, sizeof(double))))
+    return AY_EOMEM;
+#if 0
+  /* special case for simple lines */
+  if(patch->length == 2)
+    {
+      p1 = &(patch->controlv[0]);
+      p2 = &(patch->controlv[stride]);
+
+      /* calc tangent */
+      t1[0] = p2[0] - p1[0];
+      t1[1] = p2[1] - p1[1];
+
+      /* calc normal */
+      n[0] =  t1[1];
+      n[1] = -t1[0];
+
+      /* scale normal to be offset length */
+      AY_V2NORM(n);
+      AY_V2SCAL(n, offset);
+
+      /* offset the line */
+      newcv[0] = p1[0] + n[0];
+      newcv[1] = p1[1] + n[1];
+
+      newcv[stride]   = p2[0] + n[0];
+      newcv[stride+1] = p2[1] + n[1];
+    }
+  else
+    {
+      if(mode == 0)
+	{
+	  /*
+	    "Bevel" mode:
+	     offset corner points according to normals derived
+	     from surrounding control points
+	  */
+	  for(j = 0; j < patch->length; j++)
+	    {
+
+	      ay_npt_gettangentfromcontrol2D(patch->type, patch->length,
+				       patch->order-1, 4, patch->controlv, j,
+				       tangent);
+
+	      AY_V3CROSS(normal, tangent, zaxis);
+	      AY_V3SCAL(normal, offset);
+
+	      newcv[j*stride]   = patch->controlv[j*stride]   + normal[0];
+	      newcv[j*stride+1] = patch->controlv[j*stride+1] + normal[1];
+	      newcv[j*stride+2] = patch->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride+3] = patch->controlv[j*stride+3];
+
+	    } /* for */
+	} /* if */
+
+      if(mode == 1)
+	{
+	  /*
+	    "Section" mode:
+	    offset control polygon sections
+	  */
+	  p1 = &(patch->controlv[0]);
+	  po = &(patch->controlv[patch->length*stride]);
+	  /* get length of p1 (count multiple points) */
+	  pt = p1+stride;
+	  p1len = 1;
+	  while((pt != po) && (AY_V2COMP(p1, pt)))
+	    {
+	      p1len++;
+	      pt += stride;
+	    }
+
+	  if(pt == po)
+	    {
+	      /* this patch, apparently, has no sections
+		 (is degenerated to one point) */
+	      free(newcv);
+	      return AY_ERROR;
+	    }
+
+	  p2 = pt;
+	  pt = p2+stride;
+	  p2len = 1;
+	  while((pt != po) && (AY_V2COMP(p2, pt)))
+	    {
+	      p2len++;
+	      pt += stride;
+	    }
+
+	  /* calc tangent of first original control polygon segment */
+	  t1[0] = p2[0] - p1[0];
+	  t1[1] = p2[1] - p1[1];
+	  /*
+	    AY_V2NORM(t1);
+	  */
+	  /* calc normal of first original control polygon segment */
+	  n[0] =  t1[1];
+	  n[1] = -t1[0];
+
+	  /* scale normal to be offset length */
+	  AY_V2NORM(n);
+	  AY_V2SCAL(n, offset);
+
+	  /* offset the first control polygon segment */
+	  p1s1[0] = p1[0] + n[0];
+	  p1s1[1] = p1[1] + n[1];
+
+	  p2s1[0] = p2[0] + n[0];
+	  p2s1[1] = p2[1] + n[1];
+
+	  /* first point of offset patchs control polygon */
+	  for(i = 0; i < p1len; i++)
+	    {
+	      newcv[i*stride]   = p1s1[0];
+	      newcv[i*stride+1] = p1s1[1];
+	    }
+
+	  /* special case: patch has one section and multiple
+	     points at the beginning _and_ at the end */
+	  if((p1len+p2len) == patch->length)
+	    {
+	      for(i = p1len; i < p1len+p2len; i++)
+		{
+		  newcv[i*stride]   = p2s1[0];
+		  newcv[i*stride+1] = p2s1[1];
+		}
+	    }
+
+	  if((p1len+p2len) < patch->length)
+	    {
+	      j = p1len;
+	      while((j+p2len) < patch->length)
+		{
+		  p3 = &(patch->controlv[(j+p2len)*stride]);
+		  p3len = 1;
+		  if((j+p2len) < (patch->length-1))
+		    {
+		      pt = p3+stride;
+		      while((pt != po) && (AY_V2COMP(p3, pt)))
+			{
+			  p3len++;
+			  pt += stride;
+			}
+		    }
+
+		  /* calc tangent of next original control polygon segment */
+		  t2[0] = p3[0]-p2[0];
+		  t2[1] = p3[1]-p2[1];
+
+		  /* calc normal of next original control polygon segment */
+		  n[0] =  t2[1];
+		  n[1] = -t2[0];
+
+		  /* scale normal to be offset length */
+		  AY_V2NORM(n);
+		  AY_V2SCAL(n, offset);
+
+		  /* offset the control polygon segment */
+		  p1s2[0] = p2[0] + n[0];
+		  p1s2[1] = p2[1] + n[1];
+
+		  p2s2[0] = p3[0] + n[0];
+		  p2s2[1] = p3[1] + n[1];
+
+		  /* intersect two offset segments, intersection is new cv */
+		  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2,
+					       &(newcv[j*stride])))
+		    {
+		      /*
+		       * if the intersection failed (e.g. due to colinear
+		       * segments) we simply pick one of the inner segment
+		       * points
+		       */
+		      memcpy(&(newcv[j*stride]), p2s1, 2*sizeof(double));
+		    }
+
+		  /*
+		   * XXXX the next block is a "replacement" for the
+		   * intersection test, that is faster, but delivers
+		   * sub-optimal offset quality (collisions occur)
+		   */
+		  /*
+		  AY_V2NORM(t2);
+		  for(i = 0; i < p2len; i++)
+		    {
+		      newcv[(j+i)*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
+		      newcv[(j+i)*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
+		    }
+		  */
+
+		  /* prepare next iteration */
+		  p1 = p2;
+		  p2 = p3;
+
+		  memcpy(t1, t2, 2*sizeof(double));
+		  memcpy(p1s1, p1s2, 2*sizeof(double));
+		  memcpy(p2s1, p2s2, 2*sizeof(double));
+
+		  j += p2len;
+		  p2len = p3len;
+		} /* while */
+
+	      /* last point of offset patchs control polygon */
+	      for(i = 0; i < p3len; i++)
+		{
+		  newcv[(j+i)*stride]   = p2s2[0];
+		  newcv[(j+i)*stride+1] = p2s2[1];
+		}
+
+	    } /* if */
+
+	  /* set weights */
+	  if(patch->is_rat)
+	    {
+	      for(j = 0; j < patch->length; j++)
+		{
+		  newcv[j*stride+3] = patch->controlv[j*stride+3];
+		}
+	    }
+	  else
+	    {
+	      for(j = 0; j < patch->length; j++)
+		{
+		  newcv[j*stride+3] = 1.0;
+		}
+	    } /* if */
+
+	  /* another special case: patch is periodic */
+	  if((patch->type == AY_CTPERIODIC) && (patch->order > 2))
+	    {
+	      j = (patch->length-(patch->order-1))*stride;
+	      memcpy(&(newcv[0]), &(newcv[j]), stride*sizeof(double));
+	    }
+
+	} /* if */
+
+      if(mode == 2)
+	{
+	  /*
+	    "Bevel3D" mode:
+	     offset corner points according to normals derived
+	     from surrounding control points
+	  */
+	  for(j = 0; j < patch->length; j++)
+	    {
+
+	      ay_npt_getnormalfromcontrol3D(patch->type, patch->length,
+				       patch->order-1, 4, patch->controlv, j,
+				       normal);
+	      AY_V3SCAL(normal, offset);
+	      newcv[j*stride]   = patch->controlv[j*stride]   + normal[0];
+	      newcv[j*stride+1] = patch->controlv[j*stride+1] + normal[1];
+	      newcv[j*stride+2] = patch->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride+3] = patch->controlv[j*stride+3];
+
+	    } /* for */
+	} /* if */
+
+    } /* if */
+
+  if(patch->knot_type == AY_KTCUSTOM)
+    {
+      if(!(newukv = calloc(patch->width+patch->uorder, sizeof(double))))
+	{
+	  free(newcv);
+	  return AY_EOMEM;
+	}
+      memcpy(newukv, patch->uknotv,
+	     (patch->width+patch->vorder)*sizeof(double));
+    }
+  if(patch->vknot_type == AY_KTCUSTOM)
+    {
+      if(!(newvkv = calloc(patch->height+patch->vorder, sizeof(double))))
+	{
+	  free(newukv);
+	  free(newcv);
+	  return AY_EOMEM;
+	}
+      memcpy(newvkv, patch->vknotv,
+	     (patch->height+patch->vorder)*sizeof(double));
+    }
+
+  ay_status = ay_npt_create(patch->uorder, patch->vorder,
+			    patch->width, patch->height,
+			    patch->uknot_type, patch->vknot_type,
+			    newcv, newukv, newvkv, np);
+
+  if(ay_status || !np)
+    {
+      free(newcv);
+      free(newukv);
+      free(newvkv);
+    }
+#endif
+ return ay_status;
+} /* ay_npt_offset */
+
+
 
 /* templates */
 #if 0

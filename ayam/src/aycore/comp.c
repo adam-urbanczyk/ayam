@@ -972,6 +972,27 @@ ay_comp_concatnp(ay_object *o1, ay_object *o2)
 } /* ay_comp_concatnp */
 
 
+/* ay_comp_offnp:
+ *
+ */
+int
+ay_comp_offnp(ay_object *o1, ay_object *o2)
+{
+ ay_offnp_object *p1, *p2;
+
+  p1 = (ay_offnp_object *)o1->refine;
+  p2 = (ay_offnp_object *)o2->refine;
+
+  if(p1->mode != p2->mode)
+    return AY_FALSE;
+
+  if(p1->offset != p2->offset)
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_comp_offnp */
+
+
 /* ay_comp_clone:
  *
  */
@@ -1500,6 +1521,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
   ay_status = ay_comp_register(ay_comp_trim, AY_IDTRIM);
   ay_status = ay_comp_register(ay_comp_concatnp, AY_IDCONCATNP);
+  ay_status = ay_comp_register(ay_comp_offnp, AY_IDOFFNP);
 
  return ay_status;
 } /* ay_comp_init */

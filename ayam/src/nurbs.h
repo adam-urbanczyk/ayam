@@ -1050,6 +1050,11 @@ int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
 
+/*! \brief
+ */
+int ay_npt_offset(ay_object *o, int mode, double offset,
+		  ay_nurbpatch_object **np);
+
 /* pmt.c */
 
 /*! \brief

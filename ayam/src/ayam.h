@@ -872,6 +872,18 @@ typedef struct ay_concatnp_object_s
 } ay_concatnp_object;
 
 
+typedef struct ay_offnp_object_s
+{
+  int mode;
+  int revert;
+  double offset;
+
+  /* cache NURBS patch representation */
+  ay_object *npatch;
+  double glu_sampling_tolerance;
+  int display_mode;
+} ay_offnp_object;
+
 typedef struct ay_ncircle_object_s
 {
   double radius;
@@ -1348,6 +1360,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDACURVE        43
 #define AY_IDTRIM          44
 #define AY_IDCONCATNP      45
+#define AY_IDOFFNP         46
 
 #define AY_IDLAST          50
 
