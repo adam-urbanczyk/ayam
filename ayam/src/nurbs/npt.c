@@ -9737,7 +9737,7 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 
   if(!(newcv = calloc(patch->width*patch->height*stride, sizeof(double))))
     return AY_EOMEM;
-
+#if 0
   if(mode == 0)
     {
       /*
