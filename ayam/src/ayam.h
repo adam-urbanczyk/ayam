@@ -875,7 +875,6 @@ typedef struct ay_concatnp_object_s
 typedef struct ay_offnp_object_s
 {
   int mode;
-  int revert;
   double offset;
 
   /* cache NURBS patch representation */
