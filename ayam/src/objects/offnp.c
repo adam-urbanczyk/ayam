@@ -207,9 +207,6 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(offnp->mode));
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(offnp->revert));
 
   Tcl_SetStringObj(ton,"Offset",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -260,11 +257,6 @@ ay_offnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"Revert",-1);
-  to = Tcl_NewIntObj(offnp->revert);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"Offset",-1);
   to = Tcl_NewDoubleObj(offnp->offset);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -304,7 +296,6 @@ ay_offnp_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr, "%d\n", &offnp->mode);
-  fscanf(fileptr, "%d\n", &offnp->revert);
   fscanf(fileptr, "%lg\n", &offnp->offset);
   fscanf(fileptr, "%d\n", &offnp->display_mode);
   fscanf(fileptr, "%lg\n", &offnp->glu_sampling_tolerance);
@@ -329,7 +320,6 @@ ay_offnp_writecb(FILE *fileptr, ay_object *o)
   offnp = (ay_offnp_object *)(o->refine);
 
   fprintf(fileptr, "%d\n", offnp->mode);
-  fprintf(fileptr, "%d\n", offnp->revert);
   fprintf(fileptr, "%g\n", offnp->offset);
   fprintf(fileptr, "%d\n", offnp->display_mode);
   fprintf(fileptr, "%g\n", offnp->glu_sampling_tolerance);
@@ -442,14 +432,6 @@ ay_offnp_notifycb(ay_object *o)
 
   if(ay_status || !newo->refine)
     goto cleanup;
-
-
-  if(offnp->revert)
-    {
-      /*
-      ay_status = ay_npt_revert((ay_nurbpatch_object *)(newo->refine));
-      */
-    }
 
   /* link new object to offnp object */
   offnp->npatch = newo;

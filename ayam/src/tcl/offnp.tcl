@@ -31,8 +31,8 @@ NPInfoBall "N/A"
 # create UI
 set w [frame $ay(pca).$OffsetNPAttr(w)]
 
-addMenu $w OffsetNPAttrData Mode [list "Bevel" "Section" "Bevel3D" ]
-addCheck $w OffsetNPAttrData Revert
+addMenu $w OffsetNPAttrData Mode [list "Normal" "Section" ]
+
 addParam $w OffsetNPAttrData Offset
 
 addParam $w OffsetNPAttrData Tolerance
