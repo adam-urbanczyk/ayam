@@ -156,7 +156,10 @@ ay_pamesh_copycb(void *src, void **dst)
   /* copy controlv */
   if(!(pamesh->controlv = calloc(4 * pamesh->width * pamesh->height,
 				 sizeof(double))))
-    return AY_EOMEM;
+    {
+      free(pamesh);
+      return AY_EOMEM;
+    }
   memcpy(pamesh->controlv, pameshsrc->controlv,
 	 4 * pamesh->width * pamesh->height * sizeof(double));
 
@@ -164,7 +167,11 @@ ay_pamesh_copycb(void *src, void **dst)
   if(pameshsrc->ubasis)
     {
       if(!(pamesh->ubasis = calloc(16, sizeof(double))))
-	return AY_EOMEM;
+	{
+	  free(pamesh->controlv);
+	  free(pamesh);
+	  return AY_EOMEM;
+	}
       memcpy(pamesh->ubasis, pameshsrc->ubasis, 16 * sizeof(double));
     }
 
@@ -172,9 +179,17 @@ ay_pamesh_copycb(void *src, void **dst)
   if(pameshsrc->vbasis)
     {
       if(!(pamesh->vbasis = calloc(16, sizeof(double))))
-	return AY_EOMEM;
+
+	{
+	  if(pamesh->ubasis)
+	    free(pamesh->ubasis);
+	  free(pamesh->controlv);
+	  free(pamesh);
+	  return AY_EOMEM;
+	}
       memcpy(pamesh->vbasis, pameshsrc->vbasis, 16 * sizeof(double));
     }
+
   /* copy NURBS patch(es) */
   if(pameshsrc->npatch)
     {
@@ -811,7 +826,6 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 
   if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
     { return AY_EOMEM; }
-
 
   fscanf(fileptr,"%d\n",&pamesh->width);
   fscanf(fileptr,"%d\n",&pamesh->height);
