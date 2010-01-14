@@ -533,18 +533,27 @@ ay_npatch_copycb(void *src, void **dst)
   /* copy knots */
   kl = npatch->uorder + npatch->width;
   if(!(npatch->uknotv = calloc(kl, sizeof(double))))
-    return AY_EOMEM;
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
   memcpy(npatch->uknotv, npatchsrc->uknotv, kl * sizeof(double));
 
   kl = npatch->vorder + npatch->height;
   if(!(npatch->vknotv = calloc(kl, sizeof(double))))
-    return AY_EOMEM;
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
   memcpy(npatch->vknotv, npatchsrc->vknotv, kl * sizeof(double));
 
   /* copy controlv */
   if(!(npatch->controlv = calloc(4 * npatch->width * npatch->height,
 				 sizeof(double))))
-    return AY_EOMEM;
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
   memcpy(npatch->controlv, npatchsrc->controlv,
 	 4 * npatch->width * npatch->height * sizeof(double));
 
@@ -555,12 +564,28 @@ ay_npatch_copycb(void *src, void **dst)
       ay_status = ay_npt_recreatemp(npatch);
     }
 
-  /* manage tesselation */
+  /* XXXX manage tesselation */
   npatch->stess = NULL;
 
   *dst = (void *)npatch;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  npatch = NULL;
+
+cleanup:
+
+  if(npatch)
+    {
+      if(npatch->controlv)
+	free(npatch->controlv);
+      if(npatch->uknotv)
+	free(npatch->uknotv);
+      if(npatch->vknotv)
+	free(npatch->vknotv);
+      free(npatch);
+    }
+
+ return ay_status;
 } /* ay_npatch_copycb */
 
 

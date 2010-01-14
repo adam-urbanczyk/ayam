@@ -423,7 +423,10 @@ ay_icurve_copycb(void *src, void **dst)
 
   /* copy controlv */
   if(!(icurve->controlv = calloc(3 * icurve->length, sizeof(double))))
-    return AY_EOMEM;
+    {
+      free(icurve);
+      return AY_EOMEM;
+    }
   memcpy(icurve->controlv, icurvesrc->controlv,
 	 3 * icurve->length * sizeof(double));
 
