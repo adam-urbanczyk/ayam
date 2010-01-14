@@ -448,6 +448,7 @@ ay_pomesh_deletecb(void *c)
 int
 ay_pomesh_copycb(void *src, void **dst)
 {
+ int ay_status = AY_OK;
  ay_pomesh_object *pomesh = NULL, *pomeshsrc = NULL;
  unsigned int i, total_loops = 0, total_verts = 0;
  int stride = 0;
@@ -476,7 +477,10 @@ ay_pomesh_copycb(void *src, void **dst)
   if(pomeshsrc->nloops)
     {
       if(!(pomesh->nloops = calloc(pomeshsrc->npolys, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
       memcpy(pomesh->nloops, pomeshsrc->nloops,
 	     pomesh->npolys * sizeof(unsigned int));
     }
@@ -490,7 +494,10 @@ ay_pomesh_copycb(void *src, void **dst)
   if(pomeshsrc->nverts)
     {
       if(!(pomesh->nverts = calloc(total_loops, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
       memcpy(pomesh->nverts, pomeshsrc->nverts,
 	     total_loops * sizeof(unsigned int));
 
@@ -504,7 +511,10 @@ ay_pomesh_copycb(void *src, void **dst)
   if(pomeshsrc->verts)
     {
       if(!(pomesh->verts = calloc(total_verts, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
       memcpy(pomesh->verts, pomeshsrc->verts,
 	     total_verts * sizeof(unsigned int));
     }
@@ -514,14 +524,35 @@ ay_pomesh_copycb(void *src, void **dst)
     {
       if(!(pomesh->controlv = calloc(stride * pomeshsrc->ncontrols,
 				     sizeof(double))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
       memcpy(pomesh->controlv, pomeshsrc->controlv,
 	     stride * pomesh->ncontrols * sizeof(double));
     }
 
   *dst = (void *)pomesh;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  pomesh = NULL;
+
+cleanup:
+
+  if(pomesh)
+    {
+      if(pomesh->nloops)
+	free(pomesh->nloops);
+      if(pomesh->nverts)
+	free(pomesh->nverts);
+      if(pomesh->verts)
+	free(pomesh->verts);
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+      free(pomesh);
+    }
+
+ return ay_status;
 } /* ay_pomesh_copycb */
 
 
