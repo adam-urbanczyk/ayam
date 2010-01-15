@@ -98,6 +98,9 @@ int ay_npatch_init(Tcl_Interp *interp);
 /* offnc.c */
 int ay_offnc_init(Tcl_Interp *interp);
 
+/* offnp.c */
+int ay_offnp_init(Tcl_Interp *interp);
+
 /* pamesh.c */
 int ay_pamesh_init(Tcl_Interp *interp);
 

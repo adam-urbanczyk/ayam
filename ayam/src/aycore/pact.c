@@ -96,7 +96,7 @@ int
 ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe)
 {
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
 
   if(!o || !obj || !pe)

@@ -43,7 +43,7 @@ ay_object_create(unsigned int index, ay_object **o)
 {
  int ay_status = AY_OK;
  char fname[] = "object_create";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_createcb *cb = NULL;
  ay_object *new = NULL;
 
@@ -85,7 +85,7 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
 {
  int ay_status = AY_OK;
  char fname[] = "object_createargs";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_createcb *cb = NULL;
  ay_object *new = NULL;
 
@@ -124,7 +124,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  char fname[] = "crtOb";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  unsigned int index;
  Tcl_HashEntry *entry = NULL;
  ay_createcb *cb = NULL;
@@ -193,7 +193,7 @@ int
 ay_object_delete(ay_object *o)
 {
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_deletecb *cb = NULL;
  ay_object *down = NULL, *d = NULL;
  ay_mat_object *mat = NULL;
@@ -451,7 +451,7 @@ ay_object_unlink(ay_object *o)
 char *
 ay_object_gettypename(unsigned int index)
 {
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
   if(index > ay_typenamest.size)
     return NULL;
@@ -549,7 +549,7 @@ ay_object_copy(ay_object *src, ay_object **dst)
  int ay_status = AY_OK;
  char fname[] = "object_copy";
  ay_object *sub = NULL, *sub2 = NULL, *temp = NULL, *new = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_copycb *cb = NULL;
  ay_mat_object *mat = NULL;
  unsigned int *refcountptr;
@@ -888,7 +888,7 @@ int
 ay_object_replace(ay_object *src, ay_object *dst)
 {
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_deletecb *dcb = NULL;
  ay_mat_object *oldmat = NULL;
  ay_object *oldnext = NULL;

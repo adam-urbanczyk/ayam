@@ -24,7 +24,7 @@ ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_propcb *cb = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
   if(!sel)
     {
@@ -62,7 +62,7 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_propcb *cb = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
   if(!sel)
     {

@@ -40,11 +40,9 @@ int
 ay_notify_register(ay_notifycb  *notcb, unsigned int type_id)
 {
  int ay_status = AY_OK;
- int overload = ay_prefs.overload;
 
   /* register notify callback */
-  ay_status = ay_table_additem(&ay_notifycbt, (void*)notcb, type_id,
-			       overload);
+  ay_status = ay_table_additem(&ay_notifycbt, (ay_voidfp)notcb, type_id);
 
  return ay_status;
 } /* ay_notify_register */
@@ -61,7 +59,7 @@ ay_notify_parent(void)
  char fname[] = "notify_parent";
  ay_list_object *lev = ay_currentlevel, *sel = ay_selection;
  ay_object *o = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_notifycb *cb = NULL;
  ay_tag *tag = NULL;
  int did_notify = AY_FALSE;
@@ -167,7 +165,7 @@ ay_notify_force(ay_object *o)
  int ay_status = AY_OK;
  char fname[] = "notify_force";
  ay_object *od = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_notifycb *cb = NULL;
  ay_tag *tag = NULL;
 

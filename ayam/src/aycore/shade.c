@@ -22,7 +22,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 {
  int ay_status = AY_OK;
  char fname[] = "shade_object";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
  ay_object *down;
  double m[16];
@@ -177,7 +177,7 @@ ay_shade_view(struct Togl *togl)
  int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o = ay_root;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  double m[16];

@@ -84,11 +84,6 @@ Tcl_HashTable ay_tagtypesht;
 /* temporary tag types */
 Tcl_HashTable ay_temptagtypesht;
 
-ay_table ay_tagnamest;
-
-ay_table ay_oidptrt;
-
-
 int ay_errno;
 
 ay_object *ay_last_read_object;

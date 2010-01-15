@@ -19,7 +19,6 @@
  *  register a new object type, filling pointers
  *  to the callbacks into various tables
  *  In:
- *   overload: allow overloading?
  *   name: typename
  *   crtcb: create callback
  *  Out:
@@ -45,19 +44,12 @@ ay_otype_register(char *name,
  int ay_status = AY_OK;
  static unsigned int tc = AY_IDLAST; /* type counter and index into tables */
  int increase_tc = AY_TRUE;
- int overload = ay_prefs.overload;
  int i = 0, new_item = 0;
  Tcl_HashEntry *entry = NULL;
 
  /* check, whether type is already registered */
   if((entry = Tcl_FindHashEntry(&ay_otypesht, name)))
     { /* yes, we already registered this type */
-
-      /* check, whether we may overload the callbacks */
-      if(!overload)
-	{
-	  return AY_ETYPE;
-	}
       increase_tc = AY_FALSE;
       i = (unsigned int) Tcl_GetHashValue(entry);
     }
@@ -70,73 +62,60 @@ ay_otype_register(char *name,
     }
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, i)))
     return ay_status;
 
   /* register create callback */
-  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, i)))
     return ay_status;
 
   /* register delete callback */
-  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, i)))
     return ay_status;
 
   /* register copy callback */
-  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, i)))
     return ay_status;
 
   /* register draw callback */
-  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, i)))
     return ay_status;
 
   /* register draw points callback */
   if((ay_status = ay_table_additem(&ay_drawhcbt, (void*)drawhcb,
-				   i, overload)))
+				   i)))
     return ay_status;
 
   /* register shade callback */
-  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, i)))
     return ay_status;
 
   /* register setprop callback */
-  if((ay_status = ay_table_additem(&ay_setpropcbt, (void*)setpropcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_setpropcbt, (void*)setpropcb, i)))
     return ay_status;
 
   /* register getprop callback */
-  if((ay_status = ay_table_additem(&ay_getpropcbt, (void*)getpropcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_getpropcbt, (void*)getpropcb, i)))
     return ay_status;
 
   /* register pickpnt callback */
-  if((ay_status = ay_table_additem(&ay_getpntcbt, (void*)getpntcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_getpntcbt, (void*)getpntcb, i)))
     return ay_status;
 
   /* register read callback */
-  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, i)))
     return ay_status;
 
   /* register write callback */
-  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, i)))
     return ay_status;
 
   /* register wrib callback */
-  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, i,
-				   overload)))
+  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, i)))
     return ay_status;
 
   /* register bbc callback */
-  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, i,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, i)))
     return ay_status;
 
   *type_index = i;
@@ -190,73 +169,63 @@ ay_otype_registercore(char *name,
   Tcl_SetHashValue(entry, type_index);
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, type_index)))
     return ay_status;
 
   /* register create callback */
-  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, type_index)))
     return ay_status;
 
   /* register delete callback */
-  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, type_index)))
     return ay_status;
 
   /* register copy callback */
-  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, type_index)))
     return ay_status;
 
   /* register draw callback */
-  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, type_index)))
     return ay_status;
 
   /* register draw points callback */
   if((ay_status = ay_table_additem(&ay_drawhcbt, (void*)drawhcb,
-				   type_index, AY_TRUE)))
+				   type_index)))
     return ay_status;
 
   /* register shade callback */
-  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, type_index)))
     return ay_status;
 
   /* register setprop callback */
   if((ay_status = ay_table_additem(&ay_setpropcbt, (void*)setpropcb,
-				   type_index, AY_TRUE)))
+				   type_index)))
     return ay_status;
 
   /* register getprop callback */
   if((ay_status = ay_table_additem(&ay_getpropcbt, (void*)getpropcb,
-				   type_index, AY_TRUE)))
+				   type_index)))
     return ay_status;
 
   /* register pickpnt callback */
   if((ay_status = ay_table_additem(&ay_getpntcbt, (void*)getpntcb,
-				   type_index, AY_TRUE)))
+				   type_index)))
     return ay_status;
 
   /* register read callback */
-  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, type_index)))
     return ay_status;
 
   /* register write callback */
-  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, type_index)))
     return ay_status;
 
   /* register wrib callback */
-  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, type_index)))
     return ay_status;
 
   /* register bbc callback */
-  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, type_index,
-				   AY_TRUE)))
+  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, type_index)))
     return ay_status;
 
  return ay_status;

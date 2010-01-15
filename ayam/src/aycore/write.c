@@ -216,7 +216,7 @@ ay_write_object(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  char fname[] = "write_object";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_writecb *cb = NULL;
  ay_object *down = NULL;
 

@@ -22,11 +22,9 @@ int
 ay_provide_register(ay_providecb *provcb, unsigned int type_id)
 {
  int ay_status = AY_OK;
- int overload = ay_prefs.overload;
 
   /* register provide callback */
-  ay_status = ay_table_additem(&ay_providecbt, (void*)provcb, type_id,
-			       overload);
+  ay_status = ay_table_additem(&ay_providecbt, (ay_voidfp)provcb, type_id);
 
  return ay_status;
 } /* ay_provide_register */
@@ -40,7 +38,7 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "provide";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_providecb *cb = NULL;
 
 

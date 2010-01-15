@@ -115,7 +115,7 @@ ay_ai_instanceobject(ay_object *inst, ay_object *ref)
 {
  int ay_status = AY_OK;
  ay_object *sub = NULL, *sub2 = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_deletecb *cb = NULL;
  ay_mat_object *mat = NULL;
  unsigned int *refcountptr;

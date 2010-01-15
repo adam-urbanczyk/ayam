@@ -519,24 +519,6 @@ unsigned int ay_object_count(ay_object *o);
 
 /*! \brief
  */
-int ay_otype_register(char *name,
-		      ay_createcb  *crtcb,
-		      ay_deletecb  *delcb,
-		      ay_copycb    *copycb,
-		      ay_drawcb    *drawcb,
-		      ay_drawcb    *drawhcb,
-		      ay_drawcb    *shadecb,
-		      ay_propcb    *setpropcb,
-		      ay_propcb    *getpropcb,
-		      ay_getpntcb  *getpntcb,
-		      ay_readcb    *readcb,
-		      ay_writecb   *writecb,
-		      ay_wribcb    *wribcb,
-		      ay_bbccb     *bbccb,
-		      unsigned int *type_index);
-
-/*! \brief
- */
 int ay_otype_registercore(char *name,
 			  ay_createcb  *crtcb,
 			  ay_deletecb  *delcb,
@@ -553,6 +535,23 @@ int ay_otype_registercore(char *name,
 			  ay_bbccb     *bbccb,
 			  unsigned int type_index);
 
+/*! \brief
+ */
+int ay_otype_register(char *name,
+		      ay_createcb  *crtcb,
+		      ay_deletecb  *delcb,
+		      ay_copycb    *copycb,
+		      ay_drawcb    *drawcb,
+		      ay_drawcb    *drawhcb,
+		      ay_drawcb    *shadecb,
+		      ay_propcb    *setpropcb,
+		      ay_propcb    *getpropcb,
+		      ay_getpntcb  *getpntcb,
+		      ay_readcb    *readcb,
+		      ay_writecb   *writecb,
+		      ay_wribcb    *wribcb,
+		      ay_bbccb     *bbccb,
+		      unsigned int *type_index);
 
 /* matt.c */
 
@@ -1097,8 +1096,7 @@ int ay_table_init(ay_table *table);
 
 /*! \brief
  */
-int ay_table_additem(ay_table *table, void *newitem,
-		     unsigned int index, int policy);
+int ay_table_additem(ay_table *table, ay_voidfp newitem, unsigned int index);
 
 
 /* tags.c */

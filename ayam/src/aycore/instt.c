@@ -344,7 +344,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
  ay_object *down = NULL;
  ay_tag *tag = NULL;
  char *iafilename = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
  char *parname = "name";
