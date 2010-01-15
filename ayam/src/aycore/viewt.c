@@ -1841,7 +1841,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o, *v;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_treedropcb *cb = NULL;
 
   if(!sel)

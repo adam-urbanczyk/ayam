@@ -17,20 +17,17 @@
 int
 ay_table_init(ay_table *table)
 {
-
-  table->size = 256;
-  if(!(table->arr = calloc(256, sizeof(void *))))
+  if(!(table->arr = calloc(64, sizeof(ay_voidfp))))
     return AY_EOMEM;
+  table->size = 64;
 
  return AY_OK;
 } /* ay_table_init */
 
-
 int
-ay_table_additem(ay_table *table, void *newitem,
-		 unsigned int index, int policy)
+ay_table_additem(ay_table *table, ay_voidfp item, unsigned int index)
 {
- void **arr = NULL;
+ ay_voidfp *arr = NULL, *tmp = NULL;
 
   arr = table->arr;
   if(!arr)
@@ -38,35 +35,20 @@ ay_table_additem(ay_table *table, void *newitem,
 
   if(index > table->size)
     {
-      if(!(arr = realloc(table, sizeof(arr)+(256*sizeof(void *)))))
+      if(!(tmp = realloc(arr, table->size*sizeof(ay_voidfp) +
+			 (64*sizeof(ay_voidfp)))))
 	return AY_EOMEM;
+      arr = tmp;
 
       /* clear new mem */
-      memset(&(arr[table->size+256]), 0, 256*sizeof(void *));
+      memset(&(arr[table->size]), 0, 64*sizeof(ay_voidfp));
 
       /* update table */
-      table->size += 256;
+      table->size += 64;
       table->arr = arr;
     }
 
-  switch(policy)
-    {
-    case 0: /* do not overwrite */
-      /* XXXX Bug: if old content is NULL, it may be overwritten,
-         regardless of policy. Does not matter _that_ much,
-         because ay_object_registertype() checks with typename
-         hashtable first, whether an object is already registered. */
-      if(arr[index])
-	return AY_ERROR;
-      else
-	arr[index] = newitem;
-      break;
-    case 1: /* overwrite */
-      arr[index] = newitem;
-      break;
-    default:
-      break;
-    }
+  arr[index] = item;
 
  return AY_OK;
 } /* ay_table_additem */

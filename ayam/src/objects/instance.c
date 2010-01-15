@@ -104,7 +104,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
 {
  char fname[] = "instance_draw";
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_object *m = NULL, *down = NULL;
  ay_drawcb *cb = NULL;
  double tm[16];
@@ -167,7 +167,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
 {
  char fname[] = "instance_shade";
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_object *m = NULL, *down = NULL;
  ay_drawcb *cb = NULL;
  double tm[16];
@@ -309,7 +309,7 @@ ay_instance_wribcb(char *file, ay_object *o)
  int down_is_prim = AY_FALSE;
  ay_object *orig = NULL, *down = NULL;
  ay_tag *tag = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
 
@@ -463,7 +463,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
 {
  char fname[] = "instance_bbc";
  int ay_status = AY_OK;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_object *t = NULL, *d = NULL;
  ay_bbccb *cb = NULL;
  double m[16];

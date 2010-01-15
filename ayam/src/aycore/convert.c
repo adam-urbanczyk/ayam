@@ -22,11 +22,9 @@ int
 ay_convert_register(ay_convertcb *convcb, unsigned int type_id)
 {
  int ay_status = AY_OK;
- int overload = ay_prefs.overload;
 
   /* register convert callback */
-  ay_status = ay_table_additem(&ay_convertcbt, (void*)convcb, type_id,
-			       overload);
+  ay_status = ay_table_additem(&ay_convertcbt, (ay_voidfp)convcb, type_id);
 
  return ay_status;
 } /* ay_convert_register */
@@ -40,7 +38,7 @@ ay_convert_force(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  char fname[] = "convert";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_convertcb *cb = NULL;
 
 

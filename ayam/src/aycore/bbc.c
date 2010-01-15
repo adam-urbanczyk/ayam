@@ -33,7 +33,7 @@ ay_bbc_get(ay_object *o, double *bbox)
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double bbt[24] = {0};
  int i, a, flags = AY_FALSE;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_bbccb *cb = NULL;
  double m[16] = {0}, mr[16];
  int have_child_bb = AY_FALSE;

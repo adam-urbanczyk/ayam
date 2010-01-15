@@ -1044,9 +1044,6 @@ typedef struct ay_preferences_s
   int writelog;
   char *logfile;
 
-  /* for developers */
-  int overload; /* 0 no, 1 yes */
-
   /* state of the RIB exporter */
   int wrib_sm;
   int wrib_em;
@@ -1126,11 +1123,13 @@ typedef struct ay_trafo_s
   double quat[4]; /* quaternion */
 } ay_trafo;
 
+/* avoid the use of "void *" to store function pointers */
+typedef void (*ay_voidfp)(void);
 
 typedef struct ay_table_s
 {
   unsigned int size;
-  void **arr;
+  ay_voidfp *arr;
 } ay_table;
 
 
@@ -1177,7 +1176,8 @@ extern ay_preferences ay_prefs;
 /* pointer to the root object */
 extern ay_object *ay_root;
 
-/* pointer to slot where the next object will be linked to */
+/* pointer to slot (some objects ->next or ->down) where
+   the next object will be linked to */
 extern ay_object **ay_next;
 
 extern ay_view_object *ay_currentview;

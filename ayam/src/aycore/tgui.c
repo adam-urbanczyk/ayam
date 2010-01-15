@@ -131,7 +131,7 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
  ay_list_object *newl = NULL, **lastl = NULL, *polist = NULL;
  ay_object *o = NULL, *tmp = NULL, *tmpnp = NULL;
  ay_deletecb *cb = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  int numtriangles = 0;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = 0;
@@ -392,7 +392,7 @@ ay_tgui_cancel(void)
  ay_list_object *oref = ay_tgui_origrefs;
  ay_object *o = ay_tgui_origs;
  ay_deletecb *cb = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
   arr = ay_deletecbt.arr;
 

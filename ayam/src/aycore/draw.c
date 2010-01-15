@@ -68,7 +68,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
  int ay_status = AY_OK;
  char fname[] = "draw_object";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
  ay_object *down;
  double m[16];
@@ -154,7 +154,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
  int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o = ay_root;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
  double m[16];
 

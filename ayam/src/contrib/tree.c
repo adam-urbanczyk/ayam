@@ -44,11 +44,9 @@ int
 ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
 {
  int ay_status = AY_OK;
- int overload = ay_prefs.overload;
 
   /* register callback */
-  ay_status = ay_table_additem(&ay_treedropcbt, (void*)cb, type_id,
-			       overload);
+  ay_status = ay_table_additem(&ay_treedropcbt, (ay_voidfp)cb, type_id);
 
  return ay_status;
 } /* ay_tree_registerdrop */
@@ -715,7 +713,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection, *newlevel = NULL, *st = ay_selection;
  int i = 0, j = 0, instanceerr = AY_FALSE, has_callback = AY_FALSE;
  Tcl_DString ds;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_treedropcb *cb = NULL;
 
   if(argc < 3)

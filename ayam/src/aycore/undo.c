@@ -117,7 +117,7 @@ ay_undo_deletemulti(ay_object *o)
  ay_view_object *view = NULL;
  ay_mat_object *material = NULL;
  ay_deletecb *dcb = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -517,7 +517,7 @@ ay_undo_copy(ay_undo_object *uo)
  int ay_status = AY_OK;
  ay_object *o = NULL, *c = NULL, *m = NULL;
  ay_list_object *r = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_deletecb *dcb = NULL;
  ay_copycb *ccb = NULL;
  char view_repairtitle_cmd[] = "viewRepairTitle ", buf[64];
@@ -869,7 +869,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
  int ay_status = AY_OK;
  char fname[] = "undo_copysave";
  ay_object *new = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_copycb *cb = NULL;
  ay_view_object *srcview = NULL, *dstview = NULL;
  ay_root_object *root = NULL;

@@ -543,7 +543,7 @@ ay_wrib_object(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
  ay_light_object *light = NULL;

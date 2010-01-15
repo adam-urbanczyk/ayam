@@ -1417,11 +1417,9 @@ int
 ay_comp_register(ay_comparecb *compcb, unsigned int type_id)
 {
  int ay_status = AY_OK;
- int overload = ay_prefs.overload;
 
   /* register comp callback */
-  ay_status = ay_table_additem(&ay_comparecbt, (void*)compcb, type_id,
-			       overload);
+  ay_status = ay_table_additem(&ay_comparecbt, (ay_voidfp)compcb, type_id);
 
  return ay_status;
 } /* ay_comp_register */
@@ -1439,7 +1437,7 @@ ay_comp_objects(ay_object *o1, ay_object *o2)
 {
  int ay_status = AY_OK;
  /* char fname[] = "comp_objects";*/
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_comparecb *cb = NULL;
 
   /* call the comp callback */
