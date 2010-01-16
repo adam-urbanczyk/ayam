@@ -24,7 +24,6 @@ static char *ay_pamesh_name = "PatchMesh";
 int
 ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
  int width = 4, height = 4;
  int i = 0, j = 0, k = 0;
  double *cv = NULL, dx = 0.25;
@@ -90,7 +89,7 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
   o->refine = (void *)p;
 
   /* immediately create NURBS patch representation */
-  ay_status = ay_pmt_tonpatch(p, &(p->npatch));
+  ay_pmt_tonpatch(p, &(p->npatch));
 
  return AY_OK;
 } /* ay_pamesh_createcb */
