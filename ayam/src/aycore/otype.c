@@ -62,60 +62,59 @@ ay_otype_register(char *name,
     }
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, i)))
+  if((ay_status = ay_table_additem(&ay_typenamest, (ay_voidfp)name, i)))
     return ay_status;
 
   /* register create callback */
-  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, i)))
+  if((ay_status = ay_table_additem(&ay_createcbt, (ay_voidfp)crtcb, i)))
     return ay_status;
 
   /* register delete callback */
-  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, i)))
+  if((ay_status = ay_table_additem(&ay_deletecbt, (ay_voidfp)delcb, i)))
     return ay_status;
 
   /* register copy callback */
-  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, i)))
+  if((ay_status = ay_table_additem(&ay_copycbt, (ay_voidfp)copycb, i)))
     return ay_status;
 
   /* register draw callback */
-  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, i)))
+  if((ay_status = ay_table_additem(&ay_drawcbt, (ay_voidfp)drawcb, i)))
     return ay_status;
 
   /* register draw points callback */
-  if((ay_status = ay_table_additem(&ay_drawhcbt, (void*)drawhcb,
-				   i)))
+  if((ay_status = ay_table_additem(&ay_drawhcbt, (ay_voidfp)drawhcb, i)))
     return ay_status;
 
   /* register shade callback */
-  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, i)))
+  if((ay_status = ay_table_additem(&ay_shadecbt, (ay_voidfp)shadecb, i)))
     return ay_status;
 
   /* register setprop callback */
-  if((ay_status = ay_table_additem(&ay_setpropcbt, (void*)setpropcb, i)))
+  if((ay_status = ay_table_additem(&ay_setpropcbt, (ay_voidfp)setpropcb, i)))
     return ay_status;
 
   /* register getprop callback */
-  if((ay_status = ay_table_additem(&ay_getpropcbt, (void*)getpropcb, i)))
+  if((ay_status = ay_table_additem(&ay_getpropcbt, (ay_voidfp)getpropcb, i)))
     return ay_status;
 
   /* register pickpnt callback */
-  if((ay_status = ay_table_additem(&ay_getpntcbt, (void*)getpntcb, i)))
+  if((ay_status = ay_table_additem(&ay_getpntcbt, (ay_voidfp)getpntcb, i)))
     return ay_status;
 
   /* register read callback */
-  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, i)))
+  if((ay_status = ay_table_additem(&ay_readcbt, (ay_voidfp)readcb, i)))
     return ay_status;
 
   /* register write callback */
-  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, i)))
+  if((ay_status = ay_table_additem(&ay_writecbt, (ay_voidfp)writecb, i)))
     return ay_status;
 
   /* register wrib callback */
-  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, i)))
+  if((ay_status = ay_table_additem(&ay_wribcbt, (ay_voidfp)wribcb, i)))
     return ay_status;
 
   /* register bbc callback */
-  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, i)))
+  if((ay_status = ay_table_additem(&ay_bbccbt, (ay_voidfp)bbccb, i)))
     return ay_status;
 
   *type_index = i;
@@ -169,63 +168,72 @@ ay_otype_registercore(char *name,
   Tcl_SetHashValue(entry, type_index);
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (void*)name, type_index)))
+  if((ay_status = ay_table_additem(&ay_typenamest, (ay_voidfp)name,
+				   type_index)))
     return ay_status;
 
   /* register create callback */
-  if((ay_status = ay_table_additem(&ay_createcbt, (void*)crtcb, type_index)))
+  if((ay_status = ay_table_additem(&ay_createcbt, (ay_voidfp)crtcb,
+				   type_index)))
     return ay_status;
 
   /* register delete callback */
-  if((ay_status = ay_table_additem(&ay_deletecbt, (void*)delcb, type_index)))
+  if((ay_status = ay_table_additem(&ay_deletecbt, (ay_voidfp)delcb,
+				   type_index)))
     return ay_status;
 
   /* register copy callback */
-  if((ay_status = ay_table_additem(&ay_copycbt, (void*)copycb, type_index)))
+  if((ay_status = ay_table_additem(&ay_copycbt, (ay_voidfp)copycb,
+				   type_index)))
     return ay_status;
 
   /* register draw callback */
-  if((ay_status = ay_table_additem(&ay_drawcbt, (void*)drawcb, type_index)))
+  if((ay_status = ay_table_additem(&ay_drawcbt, (ay_voidfp)drawcb,
+				   type_index)))
     return ay_status;
 
   /* register draw points callback */
-  if((ay_status = ay_table_additem(&ay_drawhcbt, (void*)drawhcb,
+  if((ay_status = ay_table_additem(&ay_drawhcbt, (ay_voidfp)drawhcb,
 				   type_index)))
     return ay_status;
 
   /* register shade callback */
-  if((ay_status = ay_table_additem(&ay_shadecbt, (void*)shadecb, type_index)))
+  if((ay_status = ay_table_additem(&ay_shadecbt, (ay_voidfp)shadecb,
+				   type_index)))
     return ay_status;
 
   /* register setprop callback */
-  if((ay_status = ay_table_additem(&ay_setpropcbt, (void*)setpropcb,
+  if((ay_status = ay_table_additem(&ay_setpropcbt, (ay_voidfp)setpropcb,
 				   type_index)))
     return ay_status;
 
   /* register getprop callback */
-  if((ay_status = ay_table_additem(&ay_getpropcbt, (void*)getpropcb,
+  if((ay_status = ay_table_additem(&ay_getpropcbt, (ay_voidfp)getpropcb,
 				   type_index)))
     return ay_status;
 
   /* register pickpnt callback */
-  if((ay_status = ay_table_additem(&ay_getpntcbt, (void*)getpntcb,
+  if((ay_status = ay_table_additem(&ay_getpntcbt, (ay_voidfp)getpntcb,
 				   type_index)))
     return ay_status;
 
   /* register read callback */
-  if((ay_status = ay_table_additem(&ay_readcbt, (void*)readcb, type_index)))
+  if((ay_status = ay_table_additem(&ay_readcbt, (ay_voidfp)readcb,
+				   type_index)))
     return ay_status;
 
   /* register write callback */
-  if((ay_status = ay_table_additem(&ay_writecbt, (void*)writecb, type_index)))
+  if((ay_status = ay_table_additem(&ay_writecbt, (ay_voidfp)writecb,
+				   type_index)))
     return ay_status;
 
   /* register wrib callback */
-  if((ay_status = ay_table_additem(&ay_wribcbt, (void*)wribcb, type_index)))
+  if((ay_status = ay_table_additem(&ay_wribcbt, (ay_voidfp)wribcb,
+				   type_index)))
     return ay_status;
 
   /* register bbc callback */
-  if((ay_status = ay_table_additem(&ay_bbccbt, (void*)bbccb, type_index)))
+  if((ay_status = ay_table_additem(&ay_bbccbt, (ay_voidfp)bbccb, type_index)))
     return ay_status;
 
  return ay_status;
