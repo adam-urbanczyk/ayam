@@ -628,6 +628,8 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
   if(!npatch->stess)
     {
       ay_status = ay_stess_TessNP(o, qf);
+      if(ay_status)
+	return ay_status;
     }
 
   if(npatch->stess && npatch->stess->tessv)
@@ -2476,7 +2478,7 @@ ay_npatch_notifycb(ay_object *o)
 
   npatch->tessqf = qf;
 
- return AY_OK;
+ return ay_status;
 } /* ay_npatch_notifycb */
 
 

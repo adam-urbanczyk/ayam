@@ -1620,6 +1620,8 @@ ay_ncurve_notifycb(ay_object *o)
   if(ncurve->knot_type > AY_KTCUSTOM)
     {
       ay_status = ay_knots_createnc(ncurve);
+      if(ay_status)
+	return ay_status;
     }
 
   if(ncurve->display_mode != 0)
