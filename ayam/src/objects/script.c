@@ -1410,14 +1410,14 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    {
 	      if(cmo->type != type)
 		{
-		  ay_provide_object(cmo, type, npo);
+		  ay_status = ay_provide_object(cmo, type, npo);
 		}
 	      else
 		{
 		  ay_status = ay_object_copy(cmo, npo);
 		}
 
-	      if(*npo)
+	      if(!ay_status && *npo)
 		{
 		  npo = &((*npo)->next);
 		}

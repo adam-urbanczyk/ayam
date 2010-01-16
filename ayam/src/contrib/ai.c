@@ -481,7 +481,7 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   /* clear all cached pointers to scene hierarchy */
   ay_status = ay_object_ccp(NULL);
 
- return TCL_OK;
+ return ay_status;
 } /* ay_ai_makeinstancestcmd */
 
 
