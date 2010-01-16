@@ -853,7 +853,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	{
 	  new = NULL;
 	  ay_status = ay_object_copy(npatch, &new);
-	  if(new)
+	  if(!ay_status && new)
 	    {
 	      ay_trafo_copy(o, new);
 
@@ -881,7 +881,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	{
 	  new = NULL;
 	  ay_status = ay_object_copy(npatch, &new);
-	  if(new)
+	  if(!ay_status && new)
 	    {
 	      ay_trafo_copy(o, new);
 
@@ -945,7 +945,7 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  new = NULL;
 	  ay_status = ay_object_copy(p, &new);
-	  if(new)
+	  if(!ay_status && new)
 	    {
 	      ay_trafo_copy(o, new);
 
