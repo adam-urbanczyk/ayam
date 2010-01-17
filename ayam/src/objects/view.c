@@ -1024,6 +1024,7 @@ ay_view_notifycb(ay_object *o)
  TIFF *tif;
  char fname[] = "view_notifycb";
  GLint result;
+ GLdouble m[16] = {0};
  int i, j, k = 0, l = 0;
 
   if(!o)
@@ -1138,6 +1139,14 @@ ay_view_notifycb(ay_object *o)
       _TIFFfree(image);
 
     } /* if */
+	  
+  if(view->bgknotv)
+    free(view->bgknotv);
+  view->bgknotv = NULL;
+
+  if(view->bgcv)
+    free(view->bgcv);
+  view->bgcv = NULL;
 
   if(o->down && o->down->next)
     {
@@ -1155,14 +1164,15 @@ ay_view_notifycb(ay_object *o)
 	  np = (ay_nurbpatch_object *)(p->refine);
 	  if(AY_ISTRAFO(p))
 	    {
-	      /* XXXX ToDo! */
+	      /* create trafo */
+	      ay_trafo_creatematrix(p, m);
+	      j = 0;
+	      for(i = 0; i < np->width*np->height; i++)
+		{
+		  ay_trafo_apply4(&(np->controlv[j]), m);
+		  j += 4;
+		}
 	    }
-	  
-	  if(view->bgknotv)
-	    free(view->bgknotv);
-
-	  if(view->bgcv)
-	    free(view->bgcv);
 
 	  if(!(view->bgknotv = calloc(np->width + np->uorder +
 				      np->height + np->vorder, sizeof(float))))
@@ -1199,8 +1209,8 @@ ay_view_notifycb(ay_object *o)
 		  view->bgcv[k+3] = (float)np->controlv[l+3];
 
 		  /* generate texture coordinates */
-		  view->bgcv[k+4] = ((float)i)/np->width;
-		  view->bgcv[k+5] = ((float)j)/np->height;
+		  view->bgcv[k+4] = ((float)i)/(np->width-1);
+		  view->bgcv[k+5] = ((float)j)/(np->height-1);
 		  k += 6;
 		  l += 4;
 		}
@@ -1209,10 +1219,8 @@ ay_view_notifycb(ay_object *o)
 	  view->bgheight = np->height;
 	  view->bguorder = np->uorder;
 	  view->bgvorder = np->vorder;
-
-	}
-
-    }
+	} /* if */
+    } /* if */
 
 cleanup:
 
