@@ -28,8 +28,8 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
  int tcl_status = TCL_OK;
  char fname[] = "crticurve";
  char option_handled = AY_FALSE;
- int center = AY_FALSE, derivs = AY_FALSE;
- int stride = 3, order = 4, length = 4, optnum = 0, i = 2, j = 0;
+ int center = AY_FALSE, type = AY_FALSE, derivs = AY_FALSE;
+ int stride = 3, order = 4, length = 4, kt = 0, optnum = 0, i = 2, j = 0;
  int acvlen = 0, derlen = 0;
  char **acv = NULL, **der = NULL;
  double *cv = NULL, *tmp = NULL;
@@ -93,6 +93,11 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 	    case 'o':
 	      /* -order */
 	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &order);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'k':
+	      /* -kt */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &kt);
 	      option_handled = AY_TRUE;
 	      break;
 	    case 'c':
@@ -221,6 +226,11 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
 		    } /* switch */
 		} /* if */
 	      break;
+	    case 't':
+	      /* -type */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &type);
+	      option_handled = AY_TRUE;
+	      break;
 	    default:
 	      break;
 	    } /* switch */
@@ -262,6 +272,16 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
   if(fabs(edlen) < AY_EPSILON)
     {
       edlen = 0.125;
+    }
+
+  if(kt != 0 && kt != 1)
+    {
+      kt = 0;
+    }
+
+  if(type != 0 && type != 1)
+    {
+      type = 0;
     }
 
   /* if the user specified control points ... */
@@ -345,13 +365,25 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
       goto cleanup;
     }
 
+  icurve->type = type;
   icurve->length = length;
   icurve->order = order;
+  icurve->param_type = kt;
   icurve->sdlen = sdlen;
   icurve->edlen = edlen;
   icurve->derivs = derivs;
-  memcpy(icurve->sderiv, sder, 3*sizeof(double));
-  memcpy(icurve->ederiv, eder, 3*sizeof(double));
+
+  /*memcpy(icurve->sderiv, sder, 3*sizeof(double));*/
+
+  icurve->sderiv[0] = cv[0]-sder[0];
+  icurve->sderiv[1] = cv[1]-sder[1];
+  icurve->sderiv[2] = cv[2]-sder[2];
+
+  /*memcpy(icurve->ederiv, eder, 3*sizeof(double));*/
+
+  icurve->ederiv[0] = cv[(length-1)*3]  -eder[0];
+  icurve->ederiv[1] = cv[(length-1)*3+1]-sder[1];
+  icurve->ederiv[2] = cv[(length-1)*3+2]-sder[2];
 
   icurve->controlv = cv;
 
