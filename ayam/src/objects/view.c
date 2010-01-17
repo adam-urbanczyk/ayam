@@ -1345,9 +1345,17 @@ ay_view_dropcb(ay_object *o)
 	  ay_viewt_uprop(view);
 	  view->drawmarker = AY_FALSE;
 	  break;
+	case AY_IDNPATCH:
+	case AY_IDPAMESH:
+	case AY_IDBPATCH:
+	  return AY_OK;
+	  break;
 	default:
-	  ay_error(AY_ERROR,fname,
-		   "Drop Light or Camera objects onto Views only!");
+	  if(AY_OK == ay_provide_object(s, AY_IDNPATCH, NULL))
+	    return AY_OK;
+
+	  ay_error(AY_EWTYPE, fname,
+		   "Light, Camera, NPatch, PatchMesh, BPatch");
 	  break;
 	} /* switch */
       sel = sel->next;
