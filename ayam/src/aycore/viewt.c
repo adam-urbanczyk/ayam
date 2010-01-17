@@ -592,7 +592,6 @@ ay_viewt_alignlocal(void)
 {
  ay_object *o = ay_root;
  ay_view_object *view = NULL;
- int status;
 
   o = o->down;
 
@@ -606,12 +605,11 @@ ay_viewt_alignlocal(void)
 	  view = (ay_view_object *)o->refine;
 	  if(view->local)
 	    {
-	      status = ay_viewt_makecurtcb(view->togl, 0, NULL);
-	      status = ay_viewt_align(view->togl, 0, NULL);
-	      status = ay_viewt_zoomtoobj(view->togl, 0, NULL);
+	      ay_viewt_makecurtcb(view->togl, 0, NULL);
+	      ay_viewt_align(view->togl, 0, NULL);
+	      ay_viewt_zoomtoobj(view->togl, 0, NULL);
 	    }
 	}
-
       o = o->next;
     } /* while */
 
