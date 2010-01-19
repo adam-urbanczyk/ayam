@@ -428,6 +428,13 @@ array set ayviewshortcuts {
     DMUp "Control-Prior"
     DMDown "Control-Next"
 
+    OSUp "Ctrl-KP_Up"
+    OSDown "Ctrl-KP_Down"
+    OSSUp "Ctrl-Shift-KP_8"
+    OSSDown "Ctrl-Shift-KP_2"
+    OSLeft "Ctrl-KP_Left"
+    OSRight "Ctrl-KP_Right"
+
 }
 # array ayviewshortcuts
 
