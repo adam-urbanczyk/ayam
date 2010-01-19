@@ -435,6 +435,7 @@ array set ayviewshortcuts {
     OSLeft "Ctrl-KP_Left"
     OSRight "Ctrl-KP_Right"
 
+    Reset "Ctrl-KP_Begin"
 }
 # array ayviewshortcuts
 

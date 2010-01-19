@@ -535,7 +535,6 @@ proc shortcut_view { w } {
 	} else {
 	    # Listbox
 	    set widget $ay(olb)
-
 	}
 	focus $widget
 	event generate $widget <Left>
@@ -550,13 +549,23 @@ proc shortcut_view { w } {
 	} else {
 	    # Listbox
 	    set widget $ay(olb)
-
 	}
 	focus $widget
 	event generate $widget <Right>
 	focus $oldfocus
     }
 
+    # reset view camera
+    bind $w <[repctrl $ayviewshortcuts(Reset)]> {
+	if { [string first ".view" %W] != 0 } {
+	    set w %W
+	} else {
+	    set w [winfo toplevel %W]
+	}
+	%W.f3D.togl mc
+	viewSetType $w $ay(cVType) 0
+	%W.f3D.togl render
+    }
 
     # bind function keys
     shortcut_fkeys $w
