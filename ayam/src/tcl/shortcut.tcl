@@ -352,9 +352,11 @@ proc shortcut_view { w } {
     }
 
     if { [winfo toplevel $w] != $w } {
+	# internal view
 	shortcut_main $w
     } else {
-	# some main window shortcuts
+	# external view
+	# add only some main window shortcuts
 	set m $ay(helpmenu)
 	bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"
 
@@ -363,6 +365,12 @@ proc shortcut_view { w } {
 	bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 13;break"
 	bind $w <[repctrl $aymainshortcuts(Material)]> "$m invoke 15;break"
 	bind $w <[repctrl $aymainshortcuts(Master)]> "$m invoke 16;break"
+
+	# object selection
+	bind $w <Shift-Up> "selAdd 0"
+	bind $w <Shift-Home> "selAdd 3"
+	bind $w <Home> "selNPFL 2"
+	bind $w <End> "selNPFL 3"
     }
 
     # view window shortcuts
@@ -511,6 +519,44 @@ proc shortcut_view { w } {
 
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     bind $w <Map> unzap
+
+
+    # object selection
+    bind $w <[repctrl $ayviewshortcuts(OSUp)]> "selNPFL 1"
+    bind $w <[repctrl $ayviewshortcuts(OSDown)]> "selNPFL 0"
+    bind $w <[repctrl $ayviewshortcuts(OSSUp)]> "selAdd 0"
+    bind $w <[repctrl $ayviewshortcuts(OSSDown)]> "selAdd 1"
+    # scene hierarchy navigation
+    bind $w <[repctrl $ayviewshortcuts(OSLeft)]> {
+	set oldfocus [focus]
+	if { $ay(lb) == 0 } {
+	    # Tree
+	    set widget $ay(tree)
+	} else {
+	    # Listbox
+	    set widget $ay(olb)
+
+	}
+	focus $widget
+	event generate $widget <Left>
+	focus $oldfocus
+    }
+
+    bind $w <[repctrl $ayviewshortcuts(OSRight)]> {
+	set oldfocus [focus]
+	if { $ay(lb) == 0 } {
+	    # Tree
+	    set widget $ay(tree)
+	} else {
+	    # Listbox
+	    set widget $ay(olb)
+
+	}
+	focus $widget
+	event generate $widget <Right>
+	focus $oldfocus
+    }
+
 
     # bind function keys
     shortcut_fkeys $w
