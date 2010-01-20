@@ -28,7 +28,7 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
  int tcl_status = TCL_OK;
  char fname[] = "crtacurve";
  char option_handled = AY_FALSE;
- int center = AY_FALSE, closed = AY_FALSE;
+ int center = AY_FALSE, type = 0, sym = 0;
  int stride = 3, order = 3, length = 4, alength = 0, optnum = 0, i = 2, j = 0;
  int acvlen = 0;
  char **acv = NULL;
@@ -134,6 +134,16 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 		  break;
 		} /* switch */
 	      break;
+	    case 's':
+	      /* -symmetric */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &sym);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 't':
+	      /* -type */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &type);
+	      option_handled = AY_TRUE;
+	      break;
 	    default:
 	      break;
 	    } /* switch */
@@ -176,6 +186,16 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
   if(order > alength)
     {
       order = alength;
+    }
+
+  if(type != 0 && type != 1)
+    {
+      type = 0;
+    }
+
+  if(sym != 0 && sym != 1)
+    {
+      sym = 0;
     }
 
   /* if the user specified control points ... */
@@ -254,7 +274,8 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
     }
 
   acurve->order = order;
-  acurve->closed = closed;
+  acurve->closed = type;
+  acurve->symmetric = sym;
   acurve->length = length;
   acurve->alength = alength;
   acurve->controlv = cv;
