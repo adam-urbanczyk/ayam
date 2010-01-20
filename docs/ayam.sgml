@@ -8722,10 +8722,11 @@ See also the documentation of the corresponding scripting interface commands
 <p>
 <itemize>
 <item>Arguments: The patch split tools take a number of NURBS patches from
-the selection and request a parametric value t (in u or v dimension,
+the selection and request a parametric value t (in U or V parametric dimension,
 respectively).
 <item>Operation: The patches will be split at the parametric value t
-into two patches (in u or v dimension, respectively) using knot insertion.
+into two patches (in U or V parametric dimension, respectively) using
+knot insertion.
 <item>Note: The original patch will be modified and a new patch will be
 created.
 The point selection will be removed from the original object.
@@ -9068,17 +9069,271 @@ To create new objects the <tt/"crtOb"/ command can be used.
  <item>Synopsis: <tt/"crtOb type [args]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: New objects may be created with the command <tt/"crtOb"/,
-type may be derived from the type name, as displayed in the tree view.<p>
+type may be derived from the type name, as displayed in the tree view.
+<p>
 
-Depending on the type, further arguments may (or have to) be given,
-some object types expect other objects to be selected:<p>
+Depending on the type, further arguments may (or have to) be given;
+some object types expect other objects to be selected upon creation.
+
+<p>
+All arguments consist of a option name part and a value part (i.e. it is
+<tt/"-center 1"/ and not <tt/"-center"/ and also not <tt/"-center=1"/).
+The option names can be abbreviated. Useful default and fallback
+values exist (see below). The arguments can be mixed freely (their
+order is not important) and repeated. If arguments are repeated, only the
+last set value is used, even if this leads to errors and application of
+fallback values later on.
+<p>
+
+Here is a comprehensive list of available arguments sorted by
+object type:
+<p>
   <itemize>
-  <item><tt/"NCurve"/: NURBS curves accept a single integer as length of
-the new curve, the length defaults to 4. Example:
+  <item><tt/"NCurve"/: NURBS curves accept the following arguments:
+  <itemize>
+  <item><tt/"-length"/: length of the new curve, the length defaults to 4.
+  <item><tt/"-order"/: order of the new curve, the order defaults to 4.
+If a value greater than the length is specified, the order will be made
+identical to the length value.
+  <item><tt/"-kt"/: the knot type of the new curve, must be one of
+0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+A knot vector of specified type will automatically be created.
+The knot type defaults to 2 - NURB.
+If a custom knot vector is specified using the <tt/"-kv"/ option below,
+the knot type will always be set to 3 - Custom.
+
+  <item><tt/"-kv"/: the knot vector of the new curve. The value of this
+option is a list of floating point numbers of length curve length plus
+curve order, e.g. for a curve with 2 control points and order 2, specify
+4 knots: <tt/"-kv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
+an automatically created knot vector of the type specified by the
+<tt/"-kt"/ option above.
+
+  <item><tt/"-cv"/: the control vector of the new curve. The value of this
+option is a list of floating point numbers that describe the 3D homogeneous
+coordinates of the control points. This list may also only specify
+one point, which is then taken as starting point and DX/DY/DZ (see below)
+are used to create the missing control points. To specify a complete
+control vector, this list should have curve length by 4 elements,
+e.g. for a curve of length 3, specify 12 values:
+<tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0}"/.
+
+  <item><tt/"-dx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension, default is 0.25.
+
+  <item><tt/"-dy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension, default is 0.0.
+
+  <item><tt/"-dz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension, default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new curve will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+</itemize>
+Examples:
 <tt/"crtOb NCurve -length 10; uS; rV"/
-  <item><tt/"NPatch"/: NURBS patches accept two integers as width and
-height of the new patch, width and height both default to 4. Example:
+
+<p>
+In versions of Ayam prior to 1.17, NURBS curves only accepted the
+<tt/"-length"/ argument.
+
+
+
+  <item><tt/"ICurve"/: Interpolating curves accept the following arguments:
+  <itemize>
+
+  <item><tt/"-type"/: the type of the new curve, must be one of
+0 - Open, 1 - Closed; default is 0.
+
+  <item><tt/"-length"/: length of the new curve, the length defaults to 4.
+
+  <item><tt/"-order"/: order of the new curve, the order defaults to 4.
+If a value greater than the length is specified, the order will be made
+identical to the length value.
+
+  <item><tt/"-pt"/: the parameter type of the new curve, must be one of
+0 - Chordal, 1 - Centripetal; default is 0.
+
+  <item><tt/"-cv"/: the control vector of the new curve. The value of this
+option is a list of floating point numbers that describe the 3D
+(non homogeneous) coordinates of the control points. This list may also
+only specify one point, which is then taken as starting point and
+DX/DY/DZ (see below)
+are used to create the missing control points. To specify a complete
+control vector, this list should have curve length by 3 elements,
+e.g. for a curve of length 3, specify 12 values:
+<tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
+
+  <item><tt/"-dx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension, default is 0.25.
+
+  <item><tt/"-dy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension, default is 0.0.
+
+  <item><tt/"-dz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension, default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new curve will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+
+  <item><tt/"-derivs"/: the value of this option controls whether
+user defined end derivatives should be used: 0 - no, 1 - yes, default is 0.
+
+  <item><tt/"-sdlen"/: the value of this option specifies the
+relative length (in relation to the distance of the first and second
+control point) of the start derivative, default is 0.125.
+
+  <item><tt/"-sderiv"/: is the start derivative, specified as
+a list of three float values. The derivative is specified relative to the
+first control point. The start derivative defaults to an automatically created
+derivative of a direction taken from the first two control points
+and length specified by the <tt/"-sdlen"/ option.
+
+  <item><tt/"-edlen"/: the value of this option specifies the
+relative length (in relation to the distance of the second to last and last
+control point) of the end derivative, default is 0.125.
+
+  <item><tt/"-ederiv"/: is the end derivative, specified as
+a list of three float values. The derivative is specified relative to the
+last control point. The end derivative defaults to an automatically created
+derivative of a direction taken from the last two control points
+and length specified by the <tt/"-edlen"/ option.
+
+</itemize>
+Examples:
+<tt/"crtOb ICurve -length 10; uS; rV"/
+<tt/"crtOb ICurve -l 5 -sderiv {0.0 0.5 0.0} -ederiv {1.0 0.5 0.0} -derivs 1 -center 1"/
+
+
+  <item><tt/"ACurve"/: Approximating curves accept the following arguments:
+  <itemize>
+
+  <item><tt/"-type"/: the type of the new curve, must be one of
+0 - Open, 1 - Closed; default is 0.
+
+  <item><tt/"-length"/: length (number of data points to approximate)
+of the new curve, the length defaults to 4.
+
+  <item><tt/"-alength"/: number of control points to use for the
+approximating curve, the alength defaults to 3.
+
+  <item><tt/"-order"/: order of the new curve, the order defaults to 3.
+If a value greater than the length is specified, the order will be made
+identical to the length value.
+
+  <item><tt/"-symmetric"/: toggles creation of symmetric curves,
+must be one of 0 - Asymmetric, 1 - Symmetric; default is 0.
+
+  <item><tt/"-cv"/: the control vector of the new curve. The value of this
+option is a list of floating point numbers that describe the 3D
+(non homogeneous) coordinates of the control points. This list may also
+only specify one point, which is then taken as starting point and
+DX/DY/DZ (see below)
+are used to create the missing control points. To specify a complete
+control vector, this list should have curve length by 3 elements,
+e.g. for a curve of length 3, specify 12 values:
+<tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
+
+  <item><tt/"-dx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension, default is 0.25.
+
+  <item><tt/"-dy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension, default is 0.0.
+
+  <item><tt/"-dz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension, default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new curve will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+
+</itemize>
+Examples:
+<tt/"crtOb ACurve -length 10; uS; rV"/
+<tt/"crtOb ACurve -l 5 -center 1"/
+
+  <item><tt/"NPatch"/: NURBS patches accept the following arguments:
+  <itemize>
+  <item><tt/"-width"/: width of the new patch, the width defaults to 4.
+  <item><tt/"-height"/: height of the new patch, the height defaults to 4.
+  <item><tt/"-uorder"/: order of the new patch in U parametric dimension,
+the order defaults to 4. If a value greater than the width is specified,
+the order will be made identical to the width value.
+  <item><tt/"-ukt"/: the U knot type of the new patch, must be one of
+0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+A knot vector of specified type will automatically be created.
+The knot type defaults to 2 - NURB.
+If a custom knot vector is specified using the <tt/"-ukv"/ option below,
+the knot type will always be set to 3 - Custom.
+  <item><tt/"-ukv"/: the U knot vector of the new patch. The value of this
+option is a list of floating point numbers of length width plus
+patch U order, e.g. for a patch with width 2 and U order 2, specify
+4 knots: <tt/"-ukv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
+an automatically created knot vector of the type specified by the
+<tt/"-ukt"/ option above.
+
+  <item><tt/"-vorder"/: order of the new patch in V parametric dimension,
+the order defaults to 4. If a value greater than the height is specified,
+the order will be made identical to the height value.
+  <item><tt/"-vkt"/: the V knot type of the new patch, must be one of
+0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+A knot vector of specified type will automatically be created.
+The knot type defaults to 2 - NURB.
+If a custom knot vector is specified using the <tt/"-vkv"/ option below,
+the knot type will always be set to 3 - Custom.
+  <item><tt/"-vkv"/: the V knot vector of the new patch. The value of this
+option is a list of floating point numbers of length height plus
+patch V order, e.g. for a patch with height 2 and V order 2, specify
+4 knots: <tt/"-vkv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
+an automatically created knot vector of the type specified by the
+<tt/"-vkt"/ option above.
+
+  <item><tt/"-cv"/: the control vector of the new patch. The value of this
+option is a list of floating point numbers that describe the 3D homogeneous
+coordinates of the control points. This list may also only specify
+one point, which is then taken as starting point and DX/DY/DZ (see below)
+are used to create the missing control points. To specify a complete
+control vector, this list should have width by height by 4 elements,
+e.g. for a patch of width 2 and height 2, specify 16 values:
+<tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
+
+  <item><tt/"-udx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a row (U parametric dimension, along width), default is 0.25.
+
+  <item><tt/"-udy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a row (U parametric dimension, along width), default is 0.0.
+
+  <item><tt/"-udz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a row (U parametric dimension, along width), default is 0.0
+
+  <item><tt/"-vdx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a column (V parametric dimension, along height), default is 0.0.
+
+  <item><tt/"-vdy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a column (V parametric dimension, along height), default is 0.25.
+
+  <item><tt/"-vdz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a column (V parametric dimension, along height), default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new patch will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+</itemize>
+Examples:
 <tt/"crtOb NPatch -width 2 -height 2; uS; rV"/
+
+<p>
+In versions of Ayam prior to 1.17, NURBS patches only accepted the
+<tt/"-width"/ and <tt/"-height"/argument.
+
   <item><tt/"Level"/: Levels must be given an additional argument
 determining the type of the new level, this argument may be one of:
 <tt/"0"/ (level), <tt/"1"/ (union), <tt/"2"/ (intersection),
@@ -12466,7 +12721,7 @@ Both actions may be carried out using the preferences editor. Scanning
 for shaders may also be started using the main menu:
 <tt>"Special/Scan Shaders"</tt>.
 <p>
-To better accomodate the fast changing world of RenderMan renderers,
+To better accommodate the fast changing world of RenderMan renderers,
 since Ayam 1.11 all shader parsing plugins are Ayam version independent
 (but still renderer version dependent <em>and</em> Tcl version dependent).
 This allows to distribute updated shader parsing plugins without updating
