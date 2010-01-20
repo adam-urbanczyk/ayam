@@ -1003,9 +1003,9 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      if(((Q[j+stride] - Q[j])>AY_EPSILON) ||
-	 ((Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
-	 ((Q[j+stride+2] - Q[j+2])>AY_EPSILON))
+      if((fabs(Q[j+stride] - Q[j])>AY_EPSILON) ||
+	 (fabs(Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
+	 (fabs(Q[j+stride+2] - Q[j+2])>AY_EPSILON))
 	{
 	  lens[i] = AY_VLEN((Q[j+stride] - Q[j]),
 			    (Q[j+stride+1] - Q[j+1]),
@@ -1081,9 +1081,9 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
   j = 0;
   for(i = 0; i < (Qlen-1); i++)
     {
-      if(((Q[j+stride] - Q[j])>AY_EPSILON) ||
-	 ((Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
-	 ((Q[j+stride+2] - Q[j+2])>AY_EPSILON))
+      if((fabs(Q[j+stride] - Q[j])>AY_EPSILON) ||
+	 (fabs(Q[j+stride+1] - Q[j+1])>AY_EPSILON) ||
+	 (fabs(Q[j+stride+2] - Q[j+2])>AY_EPSILON))
 	{
 	  lens[i] = sqrt(AY_VLEN((Q[j+stride] - Q[j]),
 				 (Q[j+stride+1] - Q[j+1]),
