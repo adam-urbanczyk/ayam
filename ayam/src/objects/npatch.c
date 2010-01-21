@@ -315,15 +315,16 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
       /* check length of user provided control point array */
       if(acvlen/stride < width*height)
 	{
-	  ay_error(AY_ERROR, fname, "Control vector too small!");
-	  ay_status = AY_ERROR;
-	  goto cleanup;
-	}
-      /* check and correct the weights */
-      for(i = 0; i < width*height; i++)
-	{
-	  if(fabs(cv[i*stride+3]) < AY_EPSILON)
-	    cv[i*stride+3] = 1.0;
+	  if(acvlen>0)
+	    s[0] = cv[0];
+	  if(acvlen>1)
+	    s[1] = cv[1];
+	  if(acvlen>2)
+	    s[2] = cv[2];
+
+	  free(cv);
+	  cv = NULL;
+	  center = AY_FALSE;
 	}
     } /* if */
 
