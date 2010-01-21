@@ -9088,6 +9088,9 @@ fallback values later on.
 Here is a comprehensive list of available arguments sorted by
 object type:
 <p>
+
+<#if out=latex><x/newpage/</#if>
+
   <itemize>
   <item><tt/"NCurve"/: NURBS curves accept the following arguments:
   <itemize>
@@ -9130,7 +9133,7 @@ of automatically created control points in the z dimension, default is 0.0
   <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
 the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
-</itemize>
+  </itemize>
 Examples:
 <tt/"crtOb NCurve -length 10; uS; rV"/
 
@@ -9138,7 +9141,7 @@ Examples:
 In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
 
-
+<#if out=latex><x/newpage/</#if>
 
   <item><tt/"ICurve"/: Interpolating curves accept the following arguments:
   <itemize>
@@ -9162,7 +9165,7 @@ only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
 are used to create the missing control points. To specify a complete
 control vector, this list should have curve length by 3 elements,
-e.g. for a curve of length 3, specify 12 values:
+e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-dx"/: the value of this option specifies the distance
@@ -9206,6 +9209,7 @@ Examples:
 <tt/"crtOb ICurve -length 10; uS; rV"/
 <tt/"crtOb ICurve -l 5 -sderiv {0.0 0.5 0.0} -ederiv {1.0 0.5 0.0} -derivs 1 -center 1"/
 
+<#if out=latex><x/newpage/</#if>
 
   <item><tt/"ACurve"/: Approximating curves accept the following arguments:
   <itemize>
@@ -9233,7 +9237,7 @@ only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
 are used to create the missing control points. To specify a complete
 control vector, this list should have curve length by 3 elements,
-e.g. for a curve of length 3, specify 12 values:
+e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-dx"/: the value of this option specifies the distance
@@ -9253,6 +9257,8 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 Examples:
 <tt/"crtOb ACurve -length 10; uS; rV"/
 <tt/"crtOb ACurve -l 5 -center 1"/
+
+<#if out=latex><x/newpage/</#if>
 
   <item><tt/"NPatch"/: NURBS patches accept the following arguments:
   <itemize>
@@ -9293,9 +9299,10 @@ an automatically created knot vector of the type specified by the
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
 option is a list of floating point numbers that describe the 3D homogeneous
 coordinates of the control points. This list may also only specify
-one point, which is then taken as starting point and DX/DY/DZ (see below)
-are used to create the missing control points. To specify a complete
-control vector, this list should have width by height by 4 elements,
+one point, which is then taken as starting point and UDX/UDY/UDZ and
+VDX/VDY/VDZ (see below) are used to create the missing control points.
+To specify a complete control vector, this list should have width by
+height by 4 elements,
 e.g. for a patch of width 2 and height 2, specify 16 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
 
@@ -9333,6 +9340,8 @@ Examples:
 <p>
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
 <tt/"-width"/ and <tt/"-height"/argument.
+
+<#if out=latex><x/newpage/</#if>
 
   <item><tt/"Level"/: Levels must be given an additional argument
 determining the type of the new level, this argument may be one of:
@@ -11070,14 +11079,15 @@ of Ayam (which is not redirected to the Ayam console).
 </itemize>
 
 Note that for NURBS patches and bicubic patch meshes, points of type
-"P" will be promoted to "Pw". Trimming of NURBS patches by clamping
-the knot ranges is not supported (however, since Ayam 1.9 UMM/VMM
+"P" will be promoted to "Pw". Points of type "Pz" are not supported
+by the plugin. Trimming of NURBS patches by clamping
+the knot ranges is also not supported (however, since Ayam 1.9 UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values).
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
-be promoted to general polygon meshes.
+always be promoted to general polygon meshes.
 <p>
 Object-instances are resolved to normal objects while importing.
 Instances may be easily created again using Automatic Instancing
