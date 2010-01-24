@@ -127,6 +127,18 @@ ay_offnp_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_offnp_shadecb(struct Togl *togl, ay_object *o)
 {
+ ay_offnp_object *offnp = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  offnp = (ay_offnp_object *)o->refine;
+
+  if(!offnp)
+    return AY_ENULL;
+
+  if(offnp->npatch)
+    ay_shade_object(togl, offnp->npatch, AY_FALSE);
 
  return AY_OK;
 } /* ay_offnp_shadecb */
@@ -561,7 +573,7 @@ ay_offnp_init(Tcl_Interp *interp)
 				    ay_offnp_copycb,
 				    ay_offnp_drawcb,
 				    ay_offnp_drawhcb,
-				    NULL/*ay_offnp_shadecb*/,
+				    ay_offnp_shadecb,
 				    ay_offnp_setpropcb,
 				    ay_offnp_getpropcb,
 				    ay_offnp_getpntcb,
