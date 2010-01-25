@@ -702,14 +702,14 @@ if { $tcl_platform(platform) == "windows" } {
     set aymainshortcuts(SProp88) "Key-8"
     set aymainshortcuts(SProp99) "Key-9"
 
-    set ayviewshortcuts(OSUp) "M1-8"
-    set ayviewshortcuts(OSDown) "M1-2"
-    set ayviewshortcuts(OSSUp) "M1-Shift-8"
-    set ayviewshortcuts(OSSDown) "M1-Shift-2"
-    set ayviewshortcuts(OSLeft) "M1-4"
-    set ayviewshortcuts(OSRight) "M1-6"
+    set ayviewshortcuts(OSUp) "M1-Key-8"
+    set ayviewshortcuts(OSDown) "M1-Key-2"
+    set ayviewshortcuts(OSSUp) "M1-Shift-Key-8"
+    set ayviewshortcuts(OSSDown) "M1-Shift-Key-2"
+    set ayviewshortcuts(OSLeft) "M1-Key-4"
+    set ayviewshortcuts(OSRight) "M1-Key-6"
 
-    set ayviewshortcuts(Reset) "M1-5"
+    set ayviewshortcuts(Reset) "M1-Key-5"
 
     catch {unset sc scdir}
 } else {
@@ -789,14 +789,14 @@ if { $tcl_platform(platform) == "windows" } {
 
 	set aymainshortcuts(ContextMenu) "Command-F10"
 
-	set ayviewshortcuts(OSUp) "M1-8"
-	set ayviewshortcuts(OSDown) "M1-2"
-	set ayviewshortcuts(OSSUp) "M1-Shift-8"
-	set ayviewshortcuts(OSSDown) "M1-Shift-2"
-	set ayviewshortcuts(OSLeft) "M1-4"
-	set ayviewshortcuts(OSRight) "M1-6"
+	set ayviewshortcuts(OSUp) "M1-Key-8"
+	set ayviewshortcuts(OSDown) "M1-Key-2"
+	set ayviewshortcuts(OSSUp) "M1-Shift-Key-8"
+	set ayviewshortcuts(OSSDown) "M1-Shift-Key-2"
+	set ayviewshortcuts(OSLeft) "M1-Key-4"
+	set ayviewshortcuts(OSRight) "M1-Key-6"
 
-	set ayviewshortcuts(Reset) "M1-5"
+	set ayviewshortcuts(Reset) "M1-Key-5"
 
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
