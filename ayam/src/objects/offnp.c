@@ -429,14 +429,7 @@ ay_offnp_notifycb(ay_object *o)
     } /* if */
 
   /* create new object */
-  if(!(newo = calloc(1, sizeof(ay_object))))
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
-
-  ay_object_defaults(newo);
-  newo->type = AY_IDNPATCH;
+  ay_npt_createnpatchobject(&newo);
 
   /* create the offset */
   ay_status = ay_npt_offset(npatch, offnp->mode, offnp->offset,
@@ -450,6 +443,16 @@ ay_offnp_notifycb(ay_object *o)
 
   /* copy transformation attributes over to new object */
   ay_trafo_copy(npatch, newo);
+
+  /* copy trim curve(s) */
+  if(npatch->down && npatch->down->next)
+    {
+      ay_object_copymulti(npatch->down, &(newo->down));
+    }
+  else
+    {
+      ay_object_crtendlevel(&(newo->down));
+    }
 
   /* copy sampling tolerance/mode over to new object */
   ((ay_nurbpatch_object *)newo->refine)->glu_sampling_tolerance =
