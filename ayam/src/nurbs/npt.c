@@ -9712,7 +9712,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_npt_offset:
  *  create offset surface from <o>
- *  the new offset is <offset> away from the original
+ *  the new surface is <offset> away from the original surface
  *  returns new patch in <np>
  *  WIP
  */
@@ -9782,7 +9782,7 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
   newcv[a+2] = p1[2] + (normal1[2] * offset);
   newcv[a+3] = p1[3];
 
-
+  /* midle rows */
   a = patch->height*stride;
   for(i = 1; i < (patch->width-1); i++)
     {
@@ -9924,7 +9924,8 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
     {
       if(!(newvkv = calloc(patch->height+patch->vorder, sizeof(double))))
 	{
-	  free(newukv);
+	  if(newukv)
+	    free(newukv);
 	  free(newcv);
 	  return AY_EOMEM;
 	}
@@ -9940,8 +9941,10 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
   if(ay_status || !np)
     {
       free(newcv);
-      free(newukv);
-      free(newvkv);
+      if(newukv)
+	free(newukv);
+      if(newvkv)
+	free(newvkv);
     }
 
  return ay_status;
