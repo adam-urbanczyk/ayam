@@ -157,8 +157,10 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
       GLuint object_name = 0;
       int n = 0;
       unsigned int j = 0;
-      GLuint name;
-      name = *(ptr++);
+      GLuint namecnt = *ptr;
+
+      ptr += 3;
+
       /*
       float z1 = 0.0f, z2 = 0.0f;
       z1 = (float) *(ptr++) / 0x7fffffff;
@@ -168,14 +170,14 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
       o = ay_root;
       strncat (node, "root", (size_t)size);
 
-      for (j = 0; j < name; j++)
+      for (j = 0; j < namecnt; j++)
 	{
 	  n = 0;
 	  object_name = *(ptr++);
 
 	  /* Skip the root object from the list */
 	  if (object_name == ay_root->glname) {
-	    ptr += name - j - 1;
+	    ptr += namecnt - j - 1;
 	    break;
 	  }
 
@@ -202,8 +204,10 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 		}
 
 	      /* Goes down one level */
-	      if ((j != name - 1) && (o->down))
-		o = o->down;
+	      if ((j != namecnt - 1) && (o->down) && (o->down->next))
+		{
+		  o = o->down;
+		}
 
 	      /* Stores the level number */
 	      sprintf (tmp, ":%d", n);
