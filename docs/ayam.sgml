@@ -2548,6 +2548,8 @@ Revolve|NCurve|Yes|NPatch+|No@<hline>
 
 Explanation:
 <itemize>
+<item><bf/Type/: the Revolve object has the type name <tt/"Revolve"/,
+i.e. it can be created from scripts using the command <tt/"crtOb Revolve"/;
 <item><bf/Parent of/: the Revolve object has one NCurve (or NCurve providing
 object) as child;
 <item><bf/Material/: the Revolve object can be associated with a material;
@@ -2572,12 +2574,12 @@ geometric objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Root|No|No|N/A|No@<hline>
+Root|View (+)|No|N/A|No@<hline>
 Level|Any (+)|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
 Clone|Any (+)|No|Children (+)|No@<hline>
 Instance|No|No|Master|No@<hline>
 Select|Any (+)|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
-View|No|No|N/A|Yes@<hline>
+View|NPatch|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
 Material|No|N/A|N/A|No@<hline>
 Light|No|No|N/A|Yes@<hline>
@@ -2671,6 +2673,7 @@ Text|No|Yes|NPatch+|No@<hline>
 Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
 ConcatNP|NPatch*|Yes|NPatch|No@<hline>
 ExtrNP|NPatch|Yes|NPatch|No@<hline>
+OffsetNP|NPatch|Yes|NPatch|No@<hline>
 </tabular>
 <caption>Surface Tool Objects</caption>
 </table>
@@ -2869,7 +2872,7 @@ The following table briefly lists some capabilities of the View object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-View|No|No|N/A|Yes@<hline>
+View|NPatch|No|N/A|Yes@<hline>
 </tabular>
 <caption>View Object Capabilities</caption>
 </table>
@@ -6360,6 +6363,46 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the extracted NURBS surface.
+</itemize>
+
+<sect1>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
+<p>
+<figure loc="ht">
+<eps file="pics/offnc.ps" height="5cm">
+<img src="pics/offnc.gif">
+<caption>Offset Surface (white) from NURBS Surface (blue) with Offset 0.2, -0.2, and 0.3</caption>
+</figure>
+<p>
+The OffsetNP object, available since Ayam 1.17, creates offset surfaces from
+NURBS surfaces using a simple algorithm.
+The offset surface will always match the original surface in width/height,
+orders, and knots. See also the image above.
+<p>
+You may convert the current OffsetNP object to an ordinary NURBS patch
+object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the OffsetNP object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+OffsetNP|NPatch|Yes|NPatch|No@<hline>
+</tabular>
+<caption>OffsetNP Object Capabilities</caption>
+</table>
+<p>
+The following parameters further control the offsetting process:
+
+<sect2>OffsetNPAttr Property<label id="offsetnpp"><label id="offsetnpattrprop">
+<p>
+<itemize>
+<item><tt/"Offset"/ determines the distance between original surface and
+offset surface. Negative values are allowed.
+
+<item>See section <ref id="npattr" name="NPatchAttr"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
+of the created NURBS surface.
 </itemize>
 
 <sect1>Text Object<label id="textobj">
@@ -11019,11 +11062,31 @@ arbitrary primitive variables (e.g. varying or vertex), and
 (since Ayam 1.9) procedural objects and delayed read archives.
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
-(blobby models) and other calls to the RenderMan Interface that are not
+(blobby models) and calls to the RenderMan Interface that are not
 so much useful for a RIB import like e.g. RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
+Also note that for NURBS patches and bicubic patch meshes, points of type
+"P" will be promoted to "Pw". Points of type "Pz" are not supported
+by the plugin. Trimming of NURBS patches by clamping
+the knot ranges is also not supported (however, since Ayam 1.9 UMM/VMM
+tags will be created, that contain the new knot minimum and maximum
+values).
+See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
+<p>
+Furthermore, objects of type (general) polygon and polygon mesh will
+always be promoted to general polygon meshes.
+<p>
+Object-instances are resolved to normal objects while importing.
+Instances may be easily created again using Automatic Instancing
+(see section <ref id="ai" name="Automatic Instancing">).
+<p>
+Procedural objects will not be evaluated, instead, RiProc objects
+will be created, that carry all arguments and create the same
+sequence of RIB requests upon export as was read upon import.
+
+
 <sect2>RIB Import Options<label id="rribopt">
 <p>
 The RIB import may be controlled via different options:
@@ -11077,25 +11140,6 @@ Note that in the case of serious syntactic errors of the RIB file
 more informative error messages are printed to the stderr channel
 of Ayam (which is not redirected to the Ayam console).
 </itemize>
-
-Note that for NURBS patches and bicubic patch meshes, points of type
-"P" will be promoted to "Pw". Points of type "Pz" are not supported
-by the plugin. Trimming of NURBS patches by clamping
-the knot ranges is also not supported (however, since Ayam 1.9 UMM/VMM
-tags will be created, that contain the new knot minimum and maximum
-values).
-See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
-<p>
-Furthermore, objects of type (general) polygon and polygon mesh will
-always be promoted to general polygon meshes.
-<p>
-Object-instances are resolved to normal objects while importing.
-Instances may be easily created again using Automatic Instancing
-(see section <ref id="ai" name="Automatic Instancing">).
-<p>
-Procedural objects will not be evaluated, instead, RiProc objects
-will be created, that carry all arguments and create the same
-sequence of RIB requests upon export as was read upon import.
 
 <sect1>RenderMan Interface Bytestream (RIB) Export<label id="exprib">
 <p>
@@ -13665,6 +13709,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Objects: <ref id="obj" name="tree/listbox">,
 <ref id="objsel" name="selection within a view">
 <item>OffsetNC: <ref id="offsetncobj" name="OffsetNC object">
+<item>OffsetNP: <ref id="offsetnpobj" name="OffsetNP object">
 <item>OI: <ref id="oitt" name="tag type">
 <item>Open: <ref id="mmfile" name="main menu entry">,
 <ref id="treecontm" name="tree context menu entry">
