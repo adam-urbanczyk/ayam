@@ -112,7 +112,9 @@ lappend types NPatch BPatch PatchMesh
 
 lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 
-lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim Text
+lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
+
+lappend types Trim Text
 
 lappend types Camera Light Material RiInc RiProc Script Select
 
@@ -1074,6 +1076,26 @@ lappend OffsetNC_1(vals) { 0.1 }
 lappend OffsetNC_1(vals) { 0.1 }
 lappend OffsetNC_1(vals) { 0.1 }
 
+
+# OffsetNP Variation #1
+array set OffsetNP_1 {
+    precmd {
+	goDown -1;
+	crtOb NPatch;
+	forceNot;
+	goUp;
+	hSL
+    }
+    arr OffsetNPAttrData
+    fixedvars { Offset }
+}
+
+lappend OffsetNP_1(vals) { 0.1 }
+lappend OffsetNP_1(vals) { 0.5 }
+lappend OffsetNP_1(vals) { 1.0 }
+lappend OffsetNP_1(vals) { -0.1 }
+lappend OffsetNP_1(vals) { -0.5 }
+lappend OffsetNP_1(vals) { -1.0 }
 
 
 # ConcatNC Variation #1
