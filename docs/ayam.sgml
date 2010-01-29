@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>10. Sep 2009
+<date>29. Jan 2010
 
 <abstract>
 This is the documentation of Ayam 1.16 - a free 3D modelling environment
@@ -2574,11 +2574,11 @@ geometric objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Root|View (+)|No|N/A|No@<hline>
-Level|Any (+)|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
-Clone|Any (+)|No|Children (+)|No@<hline>
+Root|View+|No|N/A|No@<hline>
+Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
+Clone|Any+|No|Children+|No@<hline>
 Instance|No|No|Master|No@<hline>
-Select|Any (+)|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
 View|NPatch|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
 Material|No|N/A|N/A|No@<hline>
@@ -2655,7 +2655,7 @@ OffsetNC|NCurve|No|NCurve|No@<hline>
 
 <sect2>Surface Tool Objects
 <p>
-These objects mainly create freeform surfaces from curves:
+These objects create freeform surfaces from curves or other surfaces:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -2697,8 +2697,7 @@ SDMesh|No|Yes|PolyMesh|Yes@<hline>
 <sect2>Scripts and Plugins
 <p>
 These objects create/modify arbitrary other objects from scripts
-or define new object types via the custom object plugin
-mechanism.
+or define new object types via the custom object plugin mechanism.
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3326,7 +3325,7 @@ The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Any+|Yes|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -4565,7 +4564,7 @@ The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Any+|No|Children (+)|No@<hline>
+Clone|Any+|No|Children+|No@<hline>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -6667,7 +6666,7 @@ The following table briefly lists some capabilities of the Script object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Any (+)|No|Any (+)|No@<hline>
+Script|Any+|No|Any+|No@<hline>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
@@ -6715,13 +6714,17 @@ setProperty NCurveAttr(Order) 2
 </code>
 
  <item><tt/"Modify"/, if the script object has child objects,
-these child objects will be copied into the internal data
-structure of the script object. A selection of the child objects
-will be established, then the script will be run. Usually, the
-script modifies one of the selected objects (moves control points,
-adds tags, or does something similar). Then, the two sets of objects
-will be exchanged again and the modified objects will be provided
-upstream. Note that the original child objects will not be modified.
+these child objects will be temporarily moved into the internal data
+structure of the script object. A copy of all child objects will be
+created as new children of the script object. A selection of the
+new child objects will be established, then the script will be run.
+Usually, the script modifies one of the selected objects (moves control
+points, adds tags, or does something similar). Afterwards, the two sets
+of objects will be exchanged, the modified objects will be moved to
+the internal data structure of the script object while
+the unmodified original child objects will again be child objects of the
+script object. The modified objects will be provided upstream to
+potential parents.
 If certain actions in the script shall be restricted to
 one of the child objects of the script object, the
 <tt/"withOb"/ command may be used to accomplish this easily.
@@ -6920,7 +6923,7 @@ The following table briefly lists some capabilities of the Select object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Any (+)|No|N/A&thinsp;/&thinsp;Children (+)|No@<hline>
+Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
 </tabular>
 <caption>Select Object Capabilities</caption>
 </table>
@@ -9113,6 +9116,9 @@ To create new objects the <tt/"crtOb"/ command can be used.
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: New objects may be created with the command <tt/"crtOb"/,
 type may be derived from the type name, as displayed in the tree view.
+The new object will be created and linked to the scene as last object
+in the current level, no part of the GUI (object selection widget, property
+GUI, views) will be updated!
 <p>
 
 Depending on the type, further arguments may (or have to) be given;
@@ -9252,6 +9258,10 @@ Examples:
 <tt/"crtOb ICurve -length 10; uS; rV"/
 <tt/"crtOb ICurve -l 5 -sderiv {0.0 0.5 0.0} -ederiv {1.0 0.5 0.0} -derivs 1 -center 1"/
 
+<p>
+In versions of Ayam prior to 1.17, interpolating curves only accepted the
+<tt/"-length"/ argument.
+
 <#if out=latex><x/newpage/</#if>
 
   <item><tt/"ACurve"/: Approximating curves accept the following arguments:
@@ -9300,6 +9310,10 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 Examples:
 <tt/"crtOb ACurve -length 10; uS; rV"/
 <tt/"crtOb ACurve -l 5 -center 1"/
+
+<p>
+In versions of Ayam prior to 1.17, approximating curves only accepted the
+<tt/"-length"/ argument.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9382,7 +9396,55 @@ Examples:
 
 <p>
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
-<tt/"-width"/ and <tt/"-height"/argument.
+<tt/"-width"/ and <tt/"-height"/ argument.
+
+<#if out=latex><x/newpage/</#if>
+
+  <item><tt/"PolyMesh"/: Polymeshes accept the following arguments:
+  <itemize>
+
+  <item><tt/"-polys"/: the value of this option specifies the number of
+polygons in the mesh. The number of polygons defaults to 0!
+
+  <item><tt/"-loops"/: the value of this option specifies the number of
+loops per polygon. It is therefore a list of positive integer values of a
+length equal to the value of the <tt/"-polys"/ option. The default value
+of this option is a list of proper length with all elements set to 1
+(only normal polygons, without holes, are specified).
+
+  <item><tt/"-nverts"/: the value of this option specifies the number of
+vertices per loop. It is therefore a list of positive integer
+values of a length equal to the sum of all elements of the <tt/"-loops"/
+option.
+The default value of this option is a list of proper length with all
+elements set to 3 (only triangles are in the mesh).
+
+  <item><tt/"-iverts"/: the value of this option specifies all the (zero
+based) indices of the vertices of all loops. It is therefore a list of
+integer values of a length equal to the sum of all elements of the
+<tt/"-nverts"/ option.
+The default value of this option is a list of proper length with the
+elements set to a sequence of integers so that the control points are
+used in the same order as specified via the <tt/"-cv"/ option
+(0, 1, 2, 3, ...).
+
+  <item><tt/"-cv"/: The value of this option is a list of floating point
+numbers that describe the 3D (non homogeneous) coordinates of the control
+points. The indices specified via the <tt/"-iverts"/ option point to
+this list. If the <tt/"-vnormals"/ option is 1, also vertex normals are
+specified in this list (directly following the coordinate values of each
+control point) and stride is 6, otherwise stride is 3.
+This list must have a length of stride by the highest value in
+the list provided via the <tt/"-iverts"/ option.
+The default value of this option is an empty list.
+
+  <item><tt/"-vnormals"/: determines whether vertex normals are present.
+The default value is 0 - no vertex normals are present.
+
+  </itemize>
+Examples:
+<tt/"crtOb PolyMesh -p 1 -cv {0 0 0  1 0 0  0 1 0}"/
+<tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"/
 
 <#if out=latex><x/newpage/</#if>
 
