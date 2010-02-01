@@ -766,7 +766,7 @@ cleanup:
 
 
 /* ay_act_leastSquaresClosed:
- *  approximate the data points in <Q[m>] with a periodic NURBS curve of
+ *  approximate the data points in <Q[<m>]> with a periodic NURBS curve of
  *  degree <p> with <n> control points, return results in <U> and <P>
  */
 int
@@ -807,12 +807,13 @@ ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
 
   /* adapted from NURBS++ */
 
-  d = m / (double)(n-p);
-  for (j = 1; j < n-p; j++)
+  d = (m+1) / (double)(n-p);
+  for(j = 1; j < n-p; j++)
     {
       i = (int)(j*d);
       alpha = j*d-i;
-      (*U)[p+j] = (1-alpha)*ub[(i-1)%(n+p)] + alpha*ub[(i)%(n+p)];
+      /*      (*U)[p+j] = (1-alpha)*ub[(i-1)%(n+p)] + alpha*ub[(i)%(n+p)];*/
+      (*U)[p+j] = (1-alpha)*ub[(i-1)%(m)] + alpha*ub[(i)%(m)];
     }
 
   for(i = 0; i < p; i++)
