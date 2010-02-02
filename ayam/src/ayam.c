@@ -592,6 +592,7 @@ ay_init(Tcl_Interp *interp)
     }
   strcpy(ay_prefs.colorname, "Cs");
 
+  ay_prefs.save_rootviews = AY_TRUE;
 
  return ay_status;
 } /* ay_init */

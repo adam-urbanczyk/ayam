@@ -306,8 +306,17 @@ ay_write_scene(char *fname, int selected)
       o = ay_currentlevel->object;
     }
 
+  if(!ay_prefs.save_rootviews)
+    {
+      o = o->next;
+    }
+
   if(!o)
     return AY_ENULL;
+
+  /* avoid empty files */
+  if(!o->next)
+    return AY_OK;
 
   if(!fname)
     return AY_ENULL;
