@@ -714,6 +714,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  FILE *fileptr = NULL;
  char *fname = "read_scene";
  ay_object *o = NULL;
+ int old_save_rv = ay_prefs.save_rootviews;
 
   if(!insert)
     {
@@ -728,6 +729,9 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
     {
       ay_instt_clearoidtags(ay_root->next);
     }
+
+  /* reading a root object will set the save_rootviews state to AY_TRUE */
+  ay_prefs.save_rootviews = AY_FALSE;
 
   if(!(fileptr = fopen(filename,"rb")))
     {
@@ -787,6 +791,12 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
 
   /* clear Material ID tags from scene */
   ay_status = ay_matt_clearmaterialids(ay_root);
+
+  /* inserting files does not change the save_rootviews state */
+  if(insert)
+    {
+      ay_prefs.save_rootviews = old_save_rv;
+    }
 
  return ay_status;
 } /* ay_read_scene */

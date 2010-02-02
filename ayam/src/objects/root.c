@@ -731,6 +731,9 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   ay_root->hide = o->hide;
   /* copy name? No, it is not visible to the user anyway, currently... */
 
+  /* arrange for views to be saved */
+  ay_prefs.save_rootviews = AY_TRUE;
+
  return AY_EDONOTLINK;
 } /* ay_root_readcb */
 

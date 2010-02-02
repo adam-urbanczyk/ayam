@@ -106,6 +106,8 @@ ay_clear_scene(void)
       root->imager = NULL;
     }
 
+  ay_prefs.save_rootviews = AY_TRUE;
+
  return AY_OK;
 } /* ay_clear_scene */
 

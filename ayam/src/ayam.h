@@ -1069,6 +1069,9 @@ typedef struct ay_preferences_s
   double polyoffset0;
   double polyoffset1;
 
+  /* save root & views with the currently open scene? */
+  int save_rootviews;
+
   /* is a permanent preview window open? */
   int pprev_open;
   char *pprender;
