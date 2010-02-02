@@ -24,30 +24,141 @@ static char *ay_bpatch_name = "BPatch";
 int
 ay_bpatch_createcb(int argc, char *argv[], ay_object *o)
 {
- ay_bpatch_object *bpatch = NULL;
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
  char fname[] = "crtbpatch";
+ char option_handled = AY_FALSE;
+ int optnum = 0, i = 2, j = 0;
+ int acvlen = 0;
+ char **acv = NULL;
+ double *cv = NULL;
+ ay_bpatch_object *bpatch = NULL;
+
+  /* parse args */
+  while(i < argc)
+    {
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	      /* -cv */
+	    case 'c':
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
+		     TCL_OK)
+		{
+		  if(cv)
+		    {
+		      free(cv);
+		    }
+		  if(!(cv = calloc(acvlen, sizeof(double))))
+		    {
+		      Tcl_Free((char *) acv);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < acvlen; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 acv[j], &cv[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  Tcl_Free((char *) acv);
+		}
+	      option_handled = AY_TRUE;
+	    } /* switch */
+
+	  if(option_handled && (tcl_status != TCL_OK))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
 
   if(!(bpatch = calloc(1, sizeof(ay_bpatch_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
-  bpatch->p1[0]  = -0.5;
-  bpatch->p1[1]  = -0.5;
+  if(cv)
+    {
+      if(acvlen>2)
+	{
+	  bpatch->p1[0]  = cv[0];
+	  bpatch->p1[1]  = cv[1];
+	  bpatch->p1[2]  = cv[2];
+	}
+      if(acvlen>5)
+	{
+	  bpatch->p2[0]  = cv[3];
+	  bpatch->p2[1]  = cv[4];
+	  bpatch->p2[2]  = cv[5];
+	}
+      if(acvlen>8)
+	{
+	  bpatch->p3[0]  = cv[6];
+	  bpatch->p3[1]  = cv[7];
+	  bpatch->p3[2]  = cv[8];
+	}
+      if(acvlen>11)
+	{
+	  bpatch->p4[0]  = cv[9];
+	  bpatch->p4[1]  = cv[10];
+	  bpatch->p4[2]  = cv[11];
+	}
+    }
+  else
+    {
+      bpatch->p1[0]  = -0.5;
+      bpatch->p1[1]  = -0.5;
 
-  bpatch->p2[0]  = 0.5;
-  bpatch->p2[1]  = -0.5;
+      bpatch->p2[0]  = 0.5;
+      bpatch->p2[1]  = -0.5;
 
-  bpatch->p3[0]  = 0.5;
-  bpatch->p3[1]  = 0.5;
+      bpatch->p3[0]  = 0.5;
+      bpatch->p3[1]  = 0.5;
 
-  bpatch->p4[0]  = -0.5;
-  bpatch->p4[1]  = 0.5;
+      bpatch->p4[0]  = -0.5;
+      bpatch->p4[1]  = 0.5;
+    }
 
   o->refine = bpatch;
 
- return AY_OK;
+cleanup:
+
+  if(cv)
+    free(cv);
+
+ return ay_status;
 } /* ay_bpatch_createcb */
 
 
