@@ -1404,6 +1404,7 @@ public:
   void finishKnotIntervals(void);
 
   Mesh *m_newMesh;
+  bool m_error;
 
 private:
 
@@ -1420,7 +1421,6 @@ private:
   unsigned int m_face1VertsNum;
   vector<unsigned int> m_face1Verts;
   bool m_connected;
-  bool m_error;
 };
 
 
@@ -1434,7 +1434,6 @@ FaceConnector::FaceConnector(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_face1VertsNum = 0;
   m_connected = false;
   m_error = false;
-
 } /* FaceConnector::FaceConnector */
 
 FaceConnector::~FaceConnector()
@@ -1687,6 +1686,10 @@ FaceConnector::closeFace(void)
 void
 FaceConnector::finishFaces(void)
 {
+  if(!m_connected)
+    {
+      m_error = true;
+    }
   m_meshBuilder->finishFaces();
  return;
 } /* FaceConnector::finishFaces */
@@ -1696,13 +1699,16 @@ FaceConnector::addKnotInterval(unsigned int vertex1,
 			       unsigned int vertex2,
 			       KnotPrecision interval)
 {
-  try
+  if(!m_error)
     {
-      m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
-    }
-  catch(...)
-    {
-      /* XXXX */
+      try
+	{
+	  m_meshBuilder->addKnotInterval(vertex1, vertex2, interval);
+	}
+      catch(...)
+	{
+	  /* XXXX */
+	}
     }
  return;
 } /* FaceConnector::addKnotInterval */
@@ -4257,8 +4263,18 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  FlatMeshHandler *handler = new FaceConnector(sdnpatch, o->selp);
+  
+  FaceConnector *handler = new FaceConnector(sdnpatch, o->selp);
+
   meshFlattener->flatten(*handler);
+
+  if(handler->m_error)
+    {
+      if(handler->m_newMesh)
+	delete handler->m_newMesh;
+      ay_error(AY_ERROR, fname, "Face connect failed!");
+      goto cleanup;
+    }
 
   delete sdnpatch->controlMesh;
   sdnpatch->controlMesh = ((FaceConnector*)handler)->m_newMesh;
@@ -4274,6 +4290,8 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_force(o);
 
   ay_notify_parent();
+
+cleanup:
 
  return TCL_OK;
 } /* sdnpatch_connectfacetcmd */
