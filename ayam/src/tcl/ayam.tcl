@@ -826,6 +826,16 @@ if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
 
     # X11 on Darwin sends Shift-Tab for Shift-Tab
     set ayprefs(ShiftTab) "<Shift-Tab>"
+
+    # 
+    set ayviewshortcuts(OSUp) "Ctrl-KP_8"
+    set ayviewshortcuts(OSDown) "Ctrl-KP_2"
+    set ayviewshortcuts(OSSUp) "Ctrl-Shift-KP_8"
+    set ayviewshortcuts(OSSDown) "Ctrl-Shift-KP_2"
+    set ayviewshortcuts(OSLeft) "Ctrl-KP_4"
+    set ayviewshortcuts(OSRight) "Ctrl-KP_6"
+
+    set ayviewshortcuts(Reset) "Ctrl-KP_5"
 }
 
 # fix Shift-Tab binding
