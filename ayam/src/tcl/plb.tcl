@@ -403,7 +403,7 @@ if { $index == "" } {
 }
 
 # avoid leaving the focus on an empty property canvas
-if { ( [focus] == $ay(pca) ) && ( [llength $index] == 0 ) } {
+if { ( [string first $ay(pca) [focus]] == 0 ) && ( [llength $index] == 0 ) } {
     resetFocus
 }
 
