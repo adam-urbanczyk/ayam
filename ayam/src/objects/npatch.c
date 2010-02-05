@@ -1764,35 +1764,23 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* for */
 
       if(!(ay_status = ay_knots_check(new_width, new_uorder, knotc, nknotv)))
-	{/* the knots are ok */
+	{
+	  /* the knots are ok */
 	  free(npatch->uknotv);
 	  npatch->uknotv = nknotv;
 	}
       else
-	{/* the knots are wrong */
-	  /* first, tell the user what went wrong */
-	  switch (ay_status)
-	    {
-	    case 1:
-	      ay_error(AY_ERROR, fname, "Knot sequence has too few knots!");
-	      break;
-	    case 2:
-	      ay_error(AY_ERROR, fname, "Knot sequence has too much knots!");
-	      break;
-	    case 3:
-	      ay_error(AY_ERROR, fname,
-		       "Knot multiplicity higher than order!");
-	      break;
-	    case 4:
-	      ay_error(AY_ERROR, fname, "Knot sequence has decreasing knots!");
-	      break;
-	    } /* switch */
+	{
+	  /* the knots are wrong */
 
+	  /* first, tell the user what went wrong */
+	  ay_knots_printerr(fname, ay_status);
+
+	  /* get rid of user supplied knots */
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN,fname,
-			 "Falling back to knot type NURB!");
+	  ay_error(AY_EWARN,fname, "Falling back to knot type NURB!");
 	  npatch->uknot_type = AY_KTNURB;
 
 	  ay_status = ay_knots_createnp(npatch);
@@ -1828,35 +1816,22 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	} /* for */
 
       if(!(ay_status = ay_knots_check(new_height, new_vorder, knotc, nknotv)))
-	{/* the knots are ok */
+	{
+	  /* the knots are ok */
 	  free(npatch->vknotv);
 	  npatch->vknotv = nknotv;
 	}
       else
-	{/* the knots are wrong */
+	{
+	  /* the knots are wrong */
 	  /* first, tell the user what went wrong */
-	  switch (ay_status)
-	    {
-	    case 1:
-	      ay_error(AY_ERROR, fname, "Knot sequence has too few knots!");
-	      break;
-	    case 2:
-	      ay_error(AY_ERROR, fname, "Knot sequence has too much knots!");
-	      break;
-	    case 3:
-	      ay_error(AY_ERROR, fname,
-		       "Knot multiplicity higher than order!");
-	      break;
-	    case 4:
-	      ay_error(AY_ERROR, fname, "Knot sequence has decreasing knots!");
-	      break;
-	    } /* switch */
+	  ay_knots_printerr(fname, ay_status);
 
+	  /* get rid of user supplied knots */
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN,fname,
-			 "Falling back to knot type NURB!");
+	  ay_error(AY_EWARN,fname, "Falling back to knot type NURB!");
 	  npatch->vknot_type = AY_KTNURB;
 
 	  ay_status = ay_knots_createnp(npatch);

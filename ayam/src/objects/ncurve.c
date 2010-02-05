@@ -1127,35 +1127,24 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  */
 	}
       else
-	{/* the knots are wrong */
-	  /* first, tell the user what went wrong */
-	  switch (ay_status)
-	    {
-	    case 1:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too few knots!");
-	      break;
-	    case 2:
-	      ay_error(AY_ERROR,fname, "Knot sequence has too much knots!");
-	      break;
-	    case 3:
-	      ay_error(AY_ERROR,fname, "Knot multiplicity higher than order!");
-	      break;
-	    case 4:
-	      ay_error(AY_ERROR,fname, "Knot sequence has decreasing knots!");
-	      break;
-	    } /* switch */
+	{
+	  /* the knots are wrong */
 
+	  /* first, tell the user what went wrong */
+	  ay_knots_printerr(fname, ay_status);
+
+	  /* get rid of user supplied knots */
 	  free(nknotv);
 
 	  /* create new knots */
-	  ay_error(AY_EWARN, fname,
-			 "Falling back to knot type NURB!");
+	  ay_error(AY_EWARN, fname, "Falling back to knot type NURB!");
 	  ncurve->knot_type = AY_KTNURB;
 
 	  ay_status = ay_knots_createnc(ncurve);
 
 	  if(ay_status)
 	    ay_error(AY_ERROR, fname, "Error creating new knots!");
+
 	} /* if */
 
       /* XXXX compare old and new knots before setting this flag */
