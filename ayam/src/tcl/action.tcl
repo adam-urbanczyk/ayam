@@ -481,7 +481,7 @@ proc actionStr2DOb { w } {
 
 #
 proc actionTagP { w } {
-    global ayprefs
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Select_Points"
     viewSetMAIcon $w ay_Tag_img "Select_Points" 
@@ -507,7 +507,7 @@ proc actionTagP { w } {
 	focus %W
     }
 
-    bind $w <Shift-ButtonRelease-1> {
+    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
 	if { ($oldx != %x) || ($oldy != %y)} {
 	    %W selpac %x %y $oldx $oldy 1
 	} else {
@@ -1207,6 +1207,8 @@ proc actionClearB1 { w } {
     bind $w <ButtonPress-1> ""
     bind $w <ButtonRelease-1> ""
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> ""
+    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> ""
+
  return;
 }
 # actionClearB1
