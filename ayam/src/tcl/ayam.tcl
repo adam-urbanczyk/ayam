@@ -411,6 +411,8 @@ array set ayviewshortcuts {
     PickMod "Control"
     PickModKey "Control_L"
 
+    TagMod "Control"
+
     SelAllP "A"
     InvSelP "I"
     CollP "C"
