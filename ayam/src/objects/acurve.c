@@ -1013,7 +1013,7 @@ ay_acurve_notifycb(ay_object *o)
       return ay_status;
     }
 
-  if(acurve->symmetric)
+  if(acurve->symmetric && !acurve->closed)
     {
       /* create reverted data point vector */
       dlen = acurve->length;
@@ -1034,79 +1034,48 @@ ay_acurve_notifycb(ay_object *o)
 	} /* for */
 
       /* approximate the reverted vector */
-      if(!acurve->closed)
-	{
-	  ay_status = ay_act_leastSquares(controlvr,
-					  acurve->length,
-					  aclen,
-					  acurve->order-1,
-					  &knotv2, &controlv2);
-	}
-      else
-	{
-	  ay_status = ay_act_leastSquaresClosed(controlvr,
-						acurve->length,
-						aclen,
-						acurve->order-1,
-						&knotv2, &controlv2);
-	}
+      ay_status = ay_act_leastSquares(controlvr,
+				      acurve->length,
+				      aclen,
+				      acurve->order-1,
+				      &knotv2, &controlv2);
 
       /* merge forward and backward approximation results */
       if(!ay_status)
 	{
-	  if(!acurve->closed)
+	  for(i = 1; i < aclen-1; i++)
 	    {
-	      for(i = 1; i < aclen-1; i++)
+	      p1 = &(controlv[i*4]);
+	      p2 = &(controlv2[(aclen-i-1)*4]);
+	      if(!AY_V3COMP(p1, p2))
 		{
-		  p1 = &(controlv[i*4]);
-		  p2 = &(controlv2[(aclen-i-1)*4]);
-		  if(!AY_V3COMP(p1, p2))
-		    {
-		      AY_V3SUB(t, p2, p1);
-		      AY_V3SCAL(t, 0.5);
-		      AY_V3ADD(p1, p1, t);
-		    }
+		  AY_V3SUB(t, p2, p1);
+		  AY_V3SCAL(t, 0.5);
+		  AY_V3ADD(p1, p1, t);
 		}
+	    }
 
-	      /* create new symmetric knot vector */
-	      j = (aclen+acurve->order)/2-1;
-	      if(((aclen+acurve->order)%2) != 0)
+	  /* create new symmetric knot vector */
+	  j = (aclen+acurve->order)/2-1;
+	  if(((aclen+acurve->order)%2) != 0)
+	    {
+	      /* odd number of knots */
+	      for(i = (aclen+acurve->order)/2+1; i < aclen; i++)
 		{
-		  /* odd number of knots */
-		  for(i = (aclen+acurve->order)/2+1; i < aclen; i++)
-		    {
-		      knotv[i] = 0.5+(0.5-knotv[j]);
-		      j--;
-		    }
-		  knotv[(aclen+acurve->order)/2] = 0.5;
+		  knotv[i] = 0.5+(0.5-knotv[j]);
+		  j--;
 		}
-	      else
-		{
-		  /* even number of knots */
-		  for(i = (aclen+acurve->order)/2; i < aclen; i++)
-		    {
-		      knotv[i] = 0.5+(0.5-knotv[j]);
-		      j--;
-		    }
-		}
+	      knotv[(aclen+acurve->order)/2] = 0.5;
 	    }
 	  else
 	    {
-	      for(i = 0; i < acurve->alength; i++)
+	      /* even number of knots */
+	      for(i = (aclen+acurve->order)/2; i < aclen; i++)
 		{
-		  p1 = &(controlv[i*4]);
-		  p2 = &(controlv2[(acurve->alength-i)*4]);
-		  if(!AY_V3COMP(p1, p2))
-		    {
-		      AY_V3SUB(t, p2, p1);
-		      AY_V3SCAL(t, 0.5);
-		      AY_V3ADD(p1, p1, t);
-		    }
+		  knotv[i] = 0.5+(0.5-knotv[j]);
+		  j--;
 		}
-
-	      memcpy(&(controlv[(acurve->alength)*4]), controlv,
-		     (acurve->order-1)*4*sizeof(double));
-	    } /* if */
+	    }
 	} /* if */
 
       free(controlvr);
@@ -1135,6 +1104,14 @@ ay_acurve_notifycb(ay_object *o)
   nc->glu_sampling_tolerance = acurve->glu_sampling_tolerance;
 
   acurve->ncurve = ncurve;
+
+  if(acurve->closed && acurve->symmetric)
+    {
+      for(i = 0; i < nc->length-(nc->order); i++)
+	{
+	  ay_nct_shiftcbs(nc);
+	}
+    }
 
  return AY_OK;
 } /* ay_acurve_notifycb */
