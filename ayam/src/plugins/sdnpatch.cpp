@@ -1025,6 +1025,7 @@ public:
   void finishKnotIntervals(void);
 
   Mesh *m_newMesh;
+  bool m_error;
 
 private:
 
@@ -1055,6 +1056,7 @@ private:
   vector<unsigned int> m_newKnotIntervals;
   vector<KnotPrecision> m_newKnots;
 
+  bool m_connected;
 };
 
 
@@ -1070,6 +1072,8 @@ FaceMerger::FaceMerger(sdnpatch_object *sdnpatch, ay_point *pnts)
   m_newFacesNum = 0;
 
   m_newKnotIntervalsNum = 0;
+  m_connected = false;
+  m_error = false;
 
   /*
     XXXX ToDo: reserve memory for various vectors
@@ -1109,7 +1113,9 @@ FaceMerger::closeFace(void)
  vector<unsigned int>::iterator fi, vi;
  bool found = false, isSelected = true;
  bool copyFace = true;
- unsigned int i = 0, j = 0;
+ unsigned int i = 0, j = 0, k = 0, l = 0, nV1 = 0, nV2 = 0;
+ double *p1, *p2, curdist, mindist;
+ vector<unsigned int> nearestVerts;
  ay_point *pnt = NULL;
 
   /* is this face selected? */
@@ -1142,7 +1148,7 @@ FaceMerger::closeFace(void)
       /*
 	 this face is selected;
 	 if it is the first selected face that we encounter,
-	 we keep its vertices but remove the face,
+	 we remove the face but keep its vertices;
 	 if it is the second selected face that we encounter,
 	 we remove the face and its vertices (and map the vertices
 	 to the vertices of the first selected face later on, for
@@ -1172,20 +1178,101 @@ FaceMerger::closeFace(void)
 	      m_removeVerts.reserve(m_faceVerts.size());
 	      for(i = 0; i < m_faceVerts.size(); i++)
 		{
+		  m_removeVerts.push_back(m_faceVerts[m_faceVerts.size()-i-1]);
+		}
+
+	      /*
+	      m_removeVerts.push_back(m_faceVerts[1]);
+	      m_removeVerts.push_back(m_faceVerts[0]);
+	      m_removeVerts.push_back(m_faceVerts[3]);
+	      m_removeVerts.push_back(m_faceVerts[2]);
+	      */
+	      /*
+	      m_removeVerts.push_back(m_faceVerts[2]);
+	      m_removeVerts.push_back(m_faceVerts[1]);
+	      m_removeVerts.push_back(m_faceVerts[0]);
+	      m_removeVerts.push_back(m_faceVerts[3]);
+	      */
+
+	      // find the pair of nearest vertices between
+	      // m_keepVerts and m_removeVerts,
+	      // starting from that pair, walk around the two faces
+	      nearestVerts.resize(m_removeVerts.size());
+	      mindist = DBL_MAX;
+	      for(i = 0; i < m_removeVerts.size(); i++)
+		{
+		  p1 = &(m_sdnpatch->controlCoords[
+			  m_newVertexIDs[m_removeVerts[i]]*4]);
+		  found = false;
+		  for(j = 0; j < m_keepVerts.size(); j++)
+		    {
+		      p2 = &(m_sdnpatch->controlCoords[
+			      m_newVertexIDs[m_keepVerts[j]]*4]);
+
+		      if(fabs(p1[0]-p2[0])<AY_EPSILON &&
+			 fabs(p1[1]-p2[1])<AY_EPSILON &&
+			 fabs(p1[2]-p2[2])<AY_EPSILON)
+			{
+			  mindist = 0.0;
+			  found = true;
+			  nV1 = i;
+			  nV2 = j;
+			  break;
+			}
+		      else
+			{
+			  curdist = sqrt(((p1[0]-p2[0])*(p1[0]-p2[0]))+
+					 ((p1[1]-p2[1])*(p1[1]-p2[1]))+
+					 ((p1[2]-p2[2])*(p1[2]-p2[2])));
+			  if(curdist < mindist)
+			    {
+			      mindist = curdist;
+			      nV1 = i;
+			      nV2 = j;
+			    }
+			} // if
+		    } // for
+		  if(found)
+		    {
+		      break;
+		    }
+		} // for
+
+	      l = nV1;
+	      k = nV2;
+
+	      for(i = 0; i < m_removeVerts.size(); i++)
+		{
+		  nearestVerts[k] = m_removeVerts[l];
+
+		  if(k == nearestVerts.size()-1)
+		    k = 0;
+		  else
+		    k++;
+
+		  if(l == m_removeVerts.size()-1)
+		    l = 0;
+		  else
+		    l++;
+		      
+		}
+
+	      m_removeVerts.clear();
+	      for(i = 0; i < m_faceVerts.size(); i++)
+		{
 		  /*
 		     vertices that we already decided to keep must
-		     not be removed ...
-		     (in this case the two selected faces share an edge)
+		     not be removed (in this case the two selected
+		     faces share an edge)
+		     so we check, whether any of the vertices in m_faceVerts
+		     are already in m_keepVerts
 		  */
-
 		  found = false;
 		  vi = m_keepVerts.begin();
 		  for(j = 0; j < m_keepVertsNum; j++)
 		    {
-		      if(m_faceVerts[i] == m_keepVerts[j])
+		      if(nearestVerts[i] == m_keepVerts[j])
 			{
-			  m_keepVerts.erase(vi);
-			  m_keepVertsNum--;
 			  found = true;
 			  break;
 			}
@@ -1193,11 +1280,16 @@ FaceMerger::closeFace(void)
 		    }
 		  if(!found)
 		    {
-		      m_removeVerts.push_back(m_faceVerts[i]);
+		      m_removeVerts.push_back(nearestVerts[i]);
 		      m_removeVertsNum++;
 		    }
-
+		  else
+		    {
+		      m_keepVerts.erase(vi);
+		      m_keepVertsNum--;
+		    }
 		} // for
+
 	      copyFace = false;
 	    } // if
 	} // if
@@ -1290,7 +1382,9 @@ FaceMerger::finishKnotIntervals(void)
       for(k = 0; k < m_removeVertsNum; k++)
 	{
 	  if(m_removeVerts[k] < m_keepVerts[i])
-	    newKeepIndices[i]--;
+	    {
+	      newKeepIndices[i]--;
+	    }
 	}
     }
 
@@ -1318,7 +1412,7 @@ FaceMerger::finishKnotIntervals(void)
 	  if(m_removeVerts[k] == i-1)
 	    {
 	      rewrite = true;
-	      newIndices[i-1] = newKeepIndices[m_removeVertsNum-k-1];
+	      newIndices[i-1] = newKeepIndices[k];
 	      sub--;
 	      break;
 	    }
@@ -1347,7 +1441,10 @@ FaceMerger::finishKnotIntervals(void)
       meshBuilder->closeFace();
     }
 
-  meshBuilder->finishFaces();
+  try
+    {
+      meshBuilder->finishFaces();
+
 #if 0
   // knot intervals
   if(m_newKnotIntervalsNum > 0)
@@ -1369,8 +1466,13 @@ FaceMerger::finishKnotIntervals(void)
 	}
     }
 #endif
-  meshBuilder->finishKnotIntervals();
 
+      meshBuilder->finishKnotIntervals();
+    }
+  catch(std::runtime_error)
+    {
+      m_error = true;
+    }
   MeshBuilder::dispose(meshBuilder);
 
  return;
@@ -1884,7 +1986,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
  int avlen = 0;
  int tmpi, optnum = 0, i = 2, j = 0;
  unsigned int k = 0;
- unsigned int *faces = NULL, *edges;
+ unsigned int *faces = NULL, *edges = NULL;
  int faceslen = 0, edgeslen = 0;
  double *verts = NULL, *knots = NULL;
  int vertslen = 0, knotslen = 0;
@@ -4139,14 +4241,14 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  FlatMeshHandler *handler = new FaceRemover(sdnpatch, o->selp);
+  FaceRemover *fr_handler = new FaceRemover(sdnpatch, o->selp);
 
-  meshFlattener->flatten(*handler);
+  meshFlattener->flatten(*fr_handler);
 
-  if(((FaceRemover*)handler)->m_newMesh)
+  if(fr_handler->m_newMesh)
     {
       delete sdnpatch->controlMesh;
-      sdnpatch->controlMesh = ((FaceRemover*)handler)->m_newMesh;
+      sdnpatch->controlMesh = fr_handler->m_newMesh;
 
       sdnpatch_getcontrolvertices(sdnpatch);
 
@@ -4162,7 +4264,7 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ERROR, fname, "Could not remove face!");
     }
 
-  delete handler;
+  delete fr_handler;
   MeshFlattener::dispose(meshFlattener);
 
  return TCL_OK;
@@ -4205,13 +4307,21 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  FlatMeshHandler *handler = new FaceMerger(sdnpatch, o->selp);
-  meshFlattener->flatten(*handler);
+  FaceMerger *fm_handler = new FaceMerger(sdnpatch, o->selp);
+  meshFlattener->flatten(*fm_handler);
+
+  if(fm_handler->m_error)
+    {
+      if(fm_handler->m_newMesh)
+	delete fm_handler->m_newMesh;
+      ay_error(AY_ERROR, fname, "Face merge failed!");
+      goto cleanup;
+    }
 
   delete sdnpatch->controlMesh;
-  sdnpatch->controlMesh = ((FaceMerger*)handler)->m_newMesh;
+  sdnpatch->controlMesh = fm_handler->m_newMesh;
 
-  delete handler;
+  delete fm_handler;
   MeshFlattener::dispose(meshFlattener);
 
   sdnpatch_getcontrolvertices(sdnpatch);
@@ -4222,6 +4332,8 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_force(o);
 
   ay_notify_parent();
+
+cleanup:
 
  return TCL_OK;
 } /* sdnpatch_mergefacetcmd */
@@ -4264,22 +4376,23 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
   
-  FaceConnector *handler = new FaceConnector(sdnpatch, o->selp);
+  FaceConnector *fc_handler = new FaceConnector(sdnpatch, o->selp);
 
-  meshFlattener->flatten(*handler);
+  meshFlattener->flatten(*fc_handler);
 
-  if(handler->m_error)
+  if(fc_handler->m_error)
     {
-      if(handler->m_newMesh)
-	delete handler->m_newMesh;
+      if(fc_handler->m_newMesh)
+	delete fc_handler->m_newMesh;
       ay_error(AY_ERROR, fname, "Face connect failed!");
       goto cleanup;
     }
 
   delete sdnpatch->controlMesh;
-  sdnpatch->controlMesh = ((FaceConnector*)handler)->m_newMesh;
+  //  sdnpatch->controlMesh = ((FaceConnector*)fc_handler)->m_newMesh;
+  sdnpatch->controlMesh = fc_handler->m_newMesh;
 
-  delete handler;
+  delete fc_handler;
   MeshFlattener::dispose(meshFlattener);
 
   sdnpatch_getcontrolvertices(sdnpatch);
@@ -4383,11 +4496,11 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  FlatMeshHandler *handler = new KnotSelector(sdnpatch, o->selp,
+  KnotSelector *ks_handler = new KnotSelector(sdnpatch, o->selp,
 					      meshFlattener, &selectedKnots);
-  meshFlattener->flatten(*handler);
+  meshFlattener->flatten(*ks_handler);
 
-  delete handler;
+  delete ks_handler;
   MeshFlattener::dispose(meshFlattener);
 
   switch(mode)
