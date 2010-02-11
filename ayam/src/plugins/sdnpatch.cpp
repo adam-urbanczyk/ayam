@@ -1336,6 +1336,9 @@ FaceMerger::finishKnotIntervals(void)
  bool discard, rewrite;
  vector<unsigned int> newKeepIndices, newIndices;
  unsigned int sub;
+ set<pair<unsigned int,unsigned int> > edges;
+ set<pair<unsigned int,unsigned int> >::iterator ei;
+ vector<unsigned int>::iterator fi1, fi2;
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*m_newMesh);
@@ -1428,9 +1431,40 @@ FaceMerger::finishKnotIntervals(void)
   for(i = 0; i < m_newFacesNum; i++)
     {
       numVerts = *fi;
+      fi++;
+
+      fi1 = fi;
+      fi2 = fi+1;
+      for(j = 0; j < numVerts; j++)
+	{
+	  if(edges.size() > 0)
+	    {
+	      ei = edges.find(pair<unsigned int, unsigned int>
+			      (newIndices[*fi1], newIndices[*fi2]));
+	      if(ei != edges.end())
+		{
+		  MeshBuilder::dispose(meshBuilder);
+		  m_error = true;
+		  return;
+		}
+	    }
+
+	  edges.insert(pair<unsigned int, unsigned int>
+			  (newIndices[*fi1], newIndices[*fi2]));
+
+	  fi1++;
+	  if(j == numVerts-2)
+	    {
+	      fi2 = fi;
+	    }
+	  else
+	    {
+	      fi2++;
+	    }
+	}
+
       meshBuilder->startFace(numVerts);
 
-      fi++;
       for(j = 0; j < numVerts; j++)
 	{
 	  // XXXX ToDo add check for dummy face indices
@@ -1441,9 +1475,7 @@ FaceMerger::finishKnotIntervals(void)
       meshBuilder->closeFace();
     }
 
-  try
-    {
-      meshBuilder->finishFaces();
+  meshBuilder->finishFaces();
 
 #if 0
   // knot intervals
@@ -1466,7 +1498,8 @@ FaceMerger::finishKnotIntervals(void)
 	}
     }
 #endif
-
+  try
+    {
       meshBuilder->finishKnotIntervals();
     }
   catch(std::runtime_error)
