@@ -1395,7 +1395,7 @@ FaceMerger::finishKnotIntervals(void)
   // old indices (vector element adress) and
   // new indices (vector element content)
 
-  // initialize vector with an 1:1 translation
+  // initialize vector with a 1:1 translation
   newIndices.reserve(m_newVertsNum);
   for(i = 0; i < m_newVertsNum; i++)
     {
@@ -1433,6 +1433,15 @@ FaceMerger::finishKnotIntervals(void)
       numVerts = *fi;
       fi++;
 
+      /*
+	the only way to reliably detect a failed merge (due to
+	incompatible vertex orders in the two faces?) is via
+	checking for doubly defined edges here (as libsnurbs
+	sometimes happily accepts such data, even subdivides it
+	correctly, but bombs later, on the second generation
+	copy of the bad mesh)
+      */
+
       fi1 = fi;
       fi2 = fi+1;
       for(j = 0; j < numVerts; j++)
@@ -1443,6 +1452,7 @@ FaceMerger::finishKnotIntervals(void)
 			      (newIndices[*fi1], newIndices[*fi2]));
 	      if(ei != edges.end())
 		{
+		  // we already have this edge in the mesh => bail out
 		  MeshBuilder::dispose(meshBuilder);
 		  m_error = true;
 		  return;
@@ -1461,7 +1471,7 @@ FaceMerger::finishKnotIntervals(void)
 	    {
 	      fi2++;
 	    }
-	}
+	} // for
 
       meshBuilder->startFace(numVerts);
 
@@ -1473,7 +1483,7 @@ FaceMerger::finishKnotIntervals(void)
 	}
 
       meshBuilder->closeFace();
-    }
+    } // for
 
   meshBuilder->finishFaces();
 
