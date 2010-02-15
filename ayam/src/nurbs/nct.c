@@ -5447,7 +5447,7 @@ int
 ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 {
  int ay_status = AY_OK;
- int i, j, stride = 4;
+ int i, j, k, stride = 4;
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
  double zaxis[3] = {0.0,0.0,1.0};
  ay_nurbcurve_object *curve = NULL;
@@ -5634,7 +5634,23 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		       * segments) we simply pick one of the inner segment
 		       * points
 		       */
-		      memcpy(&(newcv[j*stride]), p2s1, 2*sizeof(double));
+		      for(k = 0; k < p2len; k++)
+			{
+			  memcpy(&(newcv[(j+k)*stride]), p2s1,
+				 2*sizeof(double));
+			}
+		    }
+		  else
+		    {
+		      if(p2len > 1)
+			{
+			  for(k = 1; k < p2len; k++)
+			    {
+			      memcpy(&(newcv[(j+k)*stride]),
+				     &(newcv[j*stride]),
+				     2*sizeof(double));
+			    }
+			}
 		    }
 
 		  /*
