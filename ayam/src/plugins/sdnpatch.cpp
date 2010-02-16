@@ -72,9 +72,135 @@ int sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 int sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
+int sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
 int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
 
 /* assorted helper classes: */
+
+/**
+ * Revertor: Helper class to revert all edges of a sdnpatch
+ *
+ * ToDo: add support for texture coordinates
+ */
+class Revertor : public FlatMeshHandler
+{
+public:
+  Revertor(sdnpatch_object *sdnpatch);
+
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w,
+		 unsigned int id);
+  void finishVertices(void);
+  void startFace(unsigned int numEdges);
+  void addToFace(unsigned int vertNum);
+  /*
+  void addTexCoords(KnotPrecision u,
+		    KnotPrecision v);
+  */
+  void closeFace(void);
+  void finishFaces(void);
+  void addKnotInterval(unsigned int vertex1,
+		       unsigned int vertex2,
+		       KnotPrecision interval);
+  void finishKnotIntervals(void);
+
+  Mesh *m_newMesh;
+
+private:
+  MeshBuilder *m_meshBuilder;
+  sdnpatch_object *m_sdnpatch;
+  unsigned int m_id;
+  vector<unsigned int> m_vertices;
+};
+
+
+Revertor::Revertor(sdnpatch_object *sdnpatch)
+{
+  m_sdnpatch = sdnpatch;
+  m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
+  m_meshBuilder = MeshBuilder::create(*m_newMesh);
+  m_id = 0;
+} /* Revertor::Revertor */
+
+
+void
+Revertor::addVertex(VertexPrecision x,
+		    VertexPrecision y,
+		    VertexPrecision z,
+		    VertexPrecision w,
+		    unsigned int id)
+{
+  m_meshBuilder->addVertex(x,y,z,w,m_id);
+  m_id++;
+} /* Revertor::addVertex */
+
+void
+Revertor::finishVertices(void)
+{
+  m_meshBuilder->finishVertices();
+} /* Revertor::finishVertices */
+
+void
+Revertor::startFace(unsigned int numEdges)
+{
+  m_meshBuilder->startFace(numEdges);
+  m_vertices.reserve(numEdges);
+} /* Revertor::startFace */
+
+
+void
+Revertor::addToFace(unsigned int vertNum)
+{
+  m_vertices.push_back(vertNum);
+} /* Revertor::addToFace */
+
+#if 0
+void
+Revertor::addTexCoords(KnotPrecision u,
+		       KnotPrecision v)
+{
+
+} /* Revertor::addTexCoords */
+#endif
+
+void
+Revertor::closeFace(void)
+{
+  unsigned int i;
+
+  for(i = m_vertices.size(); i > 0; i--)
+    {
+      m_meshBuilder->addToFace(m_vertices[i-1]);
+    }
+  m_vertices.clear();
+
+  m_meshBuilder->closeFace();
+} /* Revertor::closeFace */
+
+void
+Revertor::finishFaces(void)
+{
+  m_meshBuilder->finishFaces();
+} /* Revertor::finishFaces */
+
+void
+Revertor::addKnotInterval(unsigned int vertex1,
+			  unsigned int vertex2,
+			  KnotPrecision interval)
+{
+  m_meshBuilder->addKnotInterval(vertex2, vertex1, interval);
+} /* Revertor::addKnotInterval */
+
+void
+Revertor::finishKnotIntervals(void)
+{
+  m_meshBuilder->finishKnotIntervals();
+} /* Revertor::finishKnotIntervals */
+
 
 /**
  * AyWriter: Helper class to write a mesh to an Ayam scene file
@@ -3167,62 +3293,6 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 } /* sdnpatch_getpntcb */
 
 
-/* sdnpatch_isclosednp:
- *  helper for sdnpatch_convnp() below
- *  check, whether NURBS patch <np> is closed
- *  outputs results for respective dimension to
- *  <closedu> and <closedv>
- *
- *  ToDo: move this to nurbs/npt.c
- */
-int
-sdnpatch_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
-{
- int i, a, b;
- int stride = 4;
- double *cv;
-
-  if(!np || !closedu || !closedv)
-    return AY_ENULL;
-
-  cv = np->controlv;
-
-  a = 0;
-  b = (np->width-1)*np->height*stride;
-  *closedu = AY_TRUE;
-  for(i = 0; i < np->height; i++)
-    {
-      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
-	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
-	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
-	{
-	  *closedu = AY_FALSE;
-	  break;
-	}
-      a += stride;
-      b += stride;
-    }
-
-  a = 0;
-  b = (np->height-1)*stride;
-  *closedv = AY_TRUE;
-  for(i = 0; i < np->width-1; i++)
-    {
-      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
-	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
-	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
-	{
-	  *closedv = AY_FALSE;
-	  break;
-	}
-      a += (np->height*stride);
-      b += (np->height*stride);
-    }
-
- return AY_OK;
-} /* sdnpatch_isclosednp */
-
-
 /* sdnpatch_addfaces:
  *  helper for sdnpatch_convnp() below
  *  create the faces for an open patch
@@ -3665,7 +3735,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 
   np = (ay_nurbpatch_object *)p->refine;
 
-  sdnpatch_isclosednp(np, &is_closed_u, &is_closed_v);
+  ay_npt_isclosednp(np, &is_closed_u, &is_closed_v);
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     {
@@ -3916,6 +3986,7 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
 	}
       else
 	{
+	  printf("Gotcha!\n");
 	  /* just forward m and n */
 	  for(j = 0; j < po->nloops[i]; j++)
 	    {
@@ -4598,6 +4669,67 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_editknottcmd */
 
 
+/* sdnpatch_reverttcmd:
+ *  Tcl command to remove faces
+ */
+int
+sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+  //int ay_status = AY_OK;
+ char fname[] = "sdnrevert";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+
+  if(o->type != sdnpatch_id)
+    {
+      return TCL_OK;
+    }
+
+  sdnpatch = (sdnpatch_object*)o->refine;
+
+  MeshFlattener *meshFlattener =
+    MeshFlattener::create(*(sdnpatch->controlMesh));
+  Revertor *r_handler = new Revertor(sdnpatch);
+
+  meshFlattener->flatten(*r_handler);
+
+  if(r_handler->m_newMesh)
+    {
+      delete sdnpatch->controlMesh;
+      sdnpatch->controlMesh = r_handler->m_newMesh;
+
+      sdnpatch_getcontrolvertices(sdnpatch);
+
+      ay_selp_clear(o);
+
+      o->modified = AY_TRUE;
+      ay_notify_force(o);
+
+      ay_notify_parent();
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Could not revert!");
+    }
+
+  delete r_handler;
+  MeshFlattener::dispose(meshFlattener);
+
+ return TCL_OK;
+} /* sdnpatch_reverttcmd */
+
+
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
@@ -4738,6 +4870,10 @@ Sdnpatch_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "sdnremoveFace",
 		    (Tcl_CmdProc*) sdnpatch_removefacetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnrevert",
+		    (Tcl_CmdProc*) sdnpatch_reverttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "sdnmergeFace",
