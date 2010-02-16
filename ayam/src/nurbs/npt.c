@@ -9710,6 +9710,120 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_extractnptcmd */
 
 
+
+/* ay_npt_getnextdifferent:
+ * get next different control point in direction <dir> in a NURBS
+ * surface control point array of width <w>, height <h>, stride <stride>,
+ * where the surface has uorder <uo> and vorder <vo> and u surface type <ut>
+ * and v surface type <vt> and the current points location is <i>/<j> and
+ * its address is <p>
+ * <dir> must be one of:
+ * 0 - North
+ * 1 - East
+ * 2 - South
+ * 3 - West
+ * <ut>/vt> must be one of:
+ * 0 - Open
+ * 1 - Closed
+ * 2 - Periodic
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (if the patch is degenerated or if the surface is not closed
+ * and ends)
+ */
+void
+ay_npt_getnextdifferent(char dir, int w, int h, int uo, int vo,
+			char ut, char vt, int i, int j,
+			int stride, double *cv, double *p,
+			double **dp)
+{
+ int offset;
+ double *p2 = NULL;
+
+  switch(dir)
+    {
+    case 0:
+      /* North */
+      offset = -stride;
+      if(vt == 0)
+	{
+	  /* open in v direction */
+	  if(j == 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
+	}
+      else
+	{
+	  /* closed/periodic in v direction */
+	  if(j == 0)
+	    {
+	      p2 = &(cv[h + offset]);
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
+
+	}
+      break;
+    case 1:
+      /* East */
+      offset = stride*h;
+      if(ut == 0 && i == w)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      break;
+    case 2:
+      /* South */
+      offset = stride;
+      if(vt == 0 && j == h)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      break;
+    case 3:
+      /* West */
+      offset = -stride*h;
+      if(ut == 0 && i == 0)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      break;
+    }
+
+  while(AY_COMP4DP(p, p2))
+    {
+      
+      
+
+      p2 += offset;
+
+      /* degeneracy check */
+      if(p == p2)
+	{
+	  *dp = NULL;
+	  return;
+	}
+
+    } /* while */
+
+  *dp = p2;
+
+ return;
+} /* ay_npt_getnextdifferent */
+
+
+
 /* ay_npt_offset:
  *  create offset surface from <o>
  *  the new surface is <offset> away from the original surface
@@ -9949,6 +10063,62 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 
  return ay_status;
 } /* ay_npt_offset */
+
+
+
+/* ay_npt_isclosednp:
+ *  check, whether NURBS patch <np> is closed
+ *  outputs results for respective dimension to
+ *  <closedu> and <closedv>
+ *
+ */
+int
+ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
+{
+ int i, a, b;
+ int stride = 4;
+ double *cv;
+
+  if(!np || !closedu || !closedv)
+    return AY_ENULL;
+
+  cv = np->controlv;
+
+  a = 0;
+  b = (np->width-1)*np->height*stride;
+  *closedu = AY_TRUE;
+  for(i = 0; i < np->height; i++)
+    {
+      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
+	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
+	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
+	{
+	  *closedu = AY_FALSE;
+	  break;
+	}
+      a += stride;
+      b += stride;
+    }
+
+  a = 0;
+  b = (np->height-1)*stride;
+  *closedv = AY_TRUE;
+  for(i = 0; i < np->width-1; i++)
+    {
+      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
+	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
+	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
+	{
+	  *closedv = AY_FALSE;
+	  break;
+	}
+      a += (np->height*stride);
+      b += (np->height*stride);
+    }
+
+ return AY_OK;
+} /* ay_npt_isclosednp */
+
 
 
 
