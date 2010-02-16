@@ -1049,11 +1049,15 @@ int ay_npt_extractnp(ay_object *src, double umin, double umax,
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-
 /*! \brief
  */
 int ay_npt_offset(ay_object *o, int mode, double offset,
 		  ay_nurbpatch_object **np);
+
+/*! \brief
+ */
+int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
+
 
 /* pmt.c */
 
