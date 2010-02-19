@@ -203,6 +203,209 @@ Revertor::finishKnotIntervals(void)
 
 
 /**
+ * PatchMerger: Helper class to revert all edges of a sdnpatch
+ *
+ * ToDo: add support for texture coordinates
+ */
+class PatchMerger : public FlatMeshHandler
+{
+public:
+  PatchMerger(void);
+
+  void addPatch(void);
+  void addVertex(VertexPrecision x,
+		 VertexPrecision y,
+		 VertexPrecision z,
+		 VertexPrecision w,
+		 unsigned int id);
+  void finishVertices(void);
+  void startFace(unsigned int numEdges);
+  void addToFace(unsigned int vertNum);
+  /*
+  void addTexCoords(KnotPrecision u,
+		    KnotPrecision v);
+  */
+  void closeFace(void);
+  void finishFaces(void);
+  void addKnotInterval(unsigned int vertex1,
+		       unsigned int vertex2,
+		       KnotPrecision interval);
+  void finishKnotIntervals(void);
+  Mesh *buildMesh(unsigned int degree);
+
+private:
+
+  unsigned int m_offset;
+  unsigned int m_id;
+  vector<VertexPrecision> m_newVerts;
+  vector<unsigned int> m_newVertIDs;
+  unsigned int m_curVertsNum;
+  unsigned int m_newVertsNum;
+  unsigned int m_newFacesNum;
+  vector<unsigned int> m_newFaces;
+  unsigned int m_newKnotIntervalsNum;
+  vector<unsigned int> m_newKnotIndices;
+  vector<KnotPrecision> m_newKnotIntervals;
+};
+
+
+PatchMerger::PatchMerger()
+{
+  m_offset = 0;
+  m_id = 0;
+  m_curVertsNum = 0;
+  m_newVertsNum = 0;
+  m_newFacesNum = 0;
+  m_newKnotIntervalsNum = 0;
+} /* PatchMerger::PatchMerger */
+
+
+void
+PatchMerger::addPatch()
+{
+  m_curVertsNum = 0;
+} /* PatchMerger::addPatch */
+
+void
+PatchMerger::addVertex(VertexPrecision x,
+		       VertexPrecision y,
+		       VertexPrecision z,
+		       VertexPrecision w,
+		       unsigned int id)
+{
+  m_newVerts.push_back(x);
+  m_newVerts.push_back(y);
+  m_newVerts.push_back(z);
+  m_newVerts.push_back(w);
+  m_newVertIDs.push_back(m_id);
+  m_id++;
+  m_newVertsNum++;
+  m_curVertsNum++;
+} /* PatchMerger::addVertex */
+
+void
+PatchMerger::finishVertices(void)
+{
+} /* PatchMerger::finishVertices */
+
+void
+PatchMerger::startFace(unsigned int numEdges)
+{
+  m_newFaces.push_back(numEdges);
+} /* PatchMerger::startFace */
+
+
+void
+PatchMerger::addToFace(unsigned int vertNum)
+{
+  m_newFaces.push_back(vertNum + m_offset);
+} /* PatchMerger::addToFace */
+
+#if 0
+void
+PatchMerger::addTexCoords(KnotPrecision u,
+			  KnotPrecision v)
+{
+} /* PatchMerger::addTexCoords */
+#endif
+
+void
+PatchMerger::closeFace(void)
+{
+  m_newFacesNum++;
+} /* PatchMerger::closeFace */
+
+void
+PatchMerger::finishFaces(void)
+{
+} /* PatchMerger::finishFaces */
+
+void
+PatchMerger::addKnotInterval(unsigned int vertex1,
+			  unsigned int vertex2,
+			  KnotPrecision interval)
+{
+  m_newKnotIndices.push_back(vertex1 + m_offset);
+  m_newKnotIndices.push_back(vertex2 + m_offset);
+  m_newKnotIntervals.push_back(interval);
+  m_newKnotIntervalsNum++;
+} /* PatchMerger::addKnotInterval */
+
+void
+PatchMerger::finishKnotIntervals(void)
+{
+  // calculate offset for indices of the next patch
+  m_offset += m_curVertsNum;
+} /* PatchMerger::finishKnotIntervals */
+
+
+Mesh *
+PatchMerger::buildMesh(unsigned int degree)
+{
+ MeshBuilder *meshBuilder = NULL;
+ Mesh *newMesh = NULL;
+ vector<unsigned int>::iterator fi;
+ unsigned int numVerts;
+ unsigned int i, j, k;
+
+  newMesh = new Mesh(degree);
+  meshBuilder = MeshBuilder::create(*newMesh);
+
+  j = 0;
+  k = 0;
+  for(i = 0; i < m_newVertsNum; i++)
+    {
+      meshBuilder->addVertex(m_newVerts[j],
+			     m_newVerts[j+1],
+			     m_newVerts[j+2],
+			     m_newVerts[j+3],
+			     m_newVertIDs[k]);
+      j += 4;
+      k++;
+    }
+
+  meshBuilder->finishVertices();
+
+  k = 0;
+  for(i = 0; i < m_newFacesNum; i++)
+    {
+      numVerts = m_newFaces[k];
+      meshBuilder->startFace(numVerts);
+      k++;
+      for(j = 0; j < numVerts; j++)
+	{
+	  meshBuilder->addToFace(m_newFaces[k]);
+	  k++;
+	}
+
+      meshBuilder->closeFace();
+    }
+
+  meshBuilder->finishFaces();
+
+  if(m_newKnotIntervalsNum > 0)
+    {
+      j = 0;
+      for(i = 0; i < m_newKnotIntervalsNum; i++)
+	{
+
+	  meshBuilder->addKnotInterval(m_newKnotIndices[j],
+				       m_newKnotIndices[j+1],
+				       m_newKnotIntervals[i]);
+
+	  j += 2;
+	}
+    }
+
+  meshBuilder->finishKnotIntervals();
+
+  MeshBuilder::dispose(meshBuilder);
+
+
+ return newMesh;
+} /* PatchMerger::buildMesh */
+
+/**
  * AyWriter: Helper class to write a mesh to an Ayam scene file
  *
  * ToDo: add support for texture coordinates
@@ -1380,7 +1583,7 @@ FaceMerger::closeFace(void)
 		    l = 0;
 		  else
 		    l++;
-		      
+
 		}
 
 	      m_removeVerts.clear();
@@ -4489,7 +4692,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
-  
+
   FaceConnector *fc_handler = new FaceConnector(sdnpatch, o->selp);
 
   meshFlattener->flatten(*fc_handler);
@@ -4730,6 +4933,111 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* sdnpatch_reverttcmd */
 
 
+/* sdnpatch_mergepatchtcmd:
+ *  Tcl command to merge multiple sdnpatches into one
+ */
+int
+sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[])
+{
+  //int ay_status = AY_OK;
+ char fname[] = "sdnmergepatch";
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ sdnpatch_object *sdnpatch = NULL;
+ Mesh *newMesh = NULL;
+ PatchMerger *pm_handler = NULL;
+ MeshFlattener *meshFlattener = NULL;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  pm_handler = new PatchMerger();
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->type != sdnpatch_id)
+	{
+	  continue;
+	}
+
+      sdnpatch = (sdnpatch_object*)o->refine;
+
+      meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
+
+      if(meshFlattener)
+	{
+	  pm_handler->addPatch();
+	  meshFlattener->flatten(*pm_handler);
+
+	  MeshFlattener::dispose(meshFlattener);
+	}
+      else
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+
+      sel = sel->next;
+    } /* while */
+
+  newMesh = pm_handler->buildMesh(3);
+
+  if(newMesh)
+    {
+      if(!(o = (ay_object*)calloc(1, sizeof(ay_object))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+      o->type = sdnpatch_id;
+      ay_object_defaults(o);
+
+      if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
+	{
+	  free(o);
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+
+      o->refine = sdnpatch;
+      sdnpatch->subdivDegree = 3;
+      sdnpatch->subdivLevel = 2;
+
+      sdnpatch->controlMesh = newMesh;
+      newMesh = NULL;
+
+      sdnpatch_getcontrolvertices(sdnpatch);
+
+      ay_object_link(o);
+
+      o->modified = AY_TRUE;
+      ay_notify_force(o);
+
+      ay_notify_parent();
+      newMesh = NULL;
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Could not merge patches!");
+    }
+
+cleanup:
+
+  if(newMesh)
+    delete newMesh;
+  delete pm_handler;
+
+ return TCL_OK;
+} /* sdnpatch_mergepatchtcmd */
+
+
 /* sdnpatch_getcontrolvertices:
  *  get adress and content of all control vertices
  *  (for selection and editing)
@@ -4878,6 +5186,10 @@ Sdnpatch_Init(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "sdnmergeFace",
 		    (Tcl_CmdProc*) sdnpatch_mergefacetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "sdnmergePatch",
+		    (Tcl_CmdProc*) sdnpatch_mergepatchtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "sdnconnectFace",
