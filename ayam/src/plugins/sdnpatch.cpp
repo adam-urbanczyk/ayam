@@ -67,13 +67,16 @@ int sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
 
 int sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
-			     int argc, char *argv[]);
+			   int argc, char *argv[]);
 
 int sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
 int sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+int sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[]);
 
 int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
 
@@ -203,7 +206,16 @@ Revertor::finishKnotIntervals(void)
 
 
 /**
- * PatchMerger: Helper class to revert all edges of a sdnpatch
+ * PatchMerger: Helper class to merge multiple sdnpatches
+ *
+ * In contrast to the other helper classes, where the complete
+ * operation runs in the flattening stage, the PatchMerger must
+ * be used like this:
+ * patchMerger->addPatch();
+ * meshFlattener->flatten(&patchMerger);
+ * patchMerger->addPatch();
+ * meshFlattener->flatten(&patchMerger);
+ * newMesh = patchMerger->buildMesh();
  *
  * ToDo: add support for texture coordinates
  */
@@ -404,6 +416,7 @@ PatchMerger::buildMesh(unsigned int degree)
 
  return newMesh;
 } /* PatchMerger::buildMesh */
+
 
 /**
  * AyWriter: Helper class to write a mesh to an Ayam scene file
@@ -4942,6 +4955,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 {
   //int ay_status = AY_OK;
  char fname[] = "sdnmergepatch";
+ unsigned int degree = 0, level = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4969,6 +4983,17 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 
       sdnpatch = (sdnpatch_object*)o->refine;
 
+      if(degree == 0)
+	{
+	  degree = sdnpatch->subdivDegree;
+	  level = sdnpatch->subdivLevel;
+	}
+      else
+	{
+	  if(degree != sdnpatch->subdivDegree)
+	    continue;
+	}
+
       meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
 
       if(meshFlattener)
@@ -4987,7 +5012,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  newMesh = pm_handler->buildMesh(3);
+  newMesh = pm_handler->buildMesh(degree);
 
   if(newMesh)
     {
@@ -5007,7 +5032,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
 
       o->refine = sdnpatch;
-      sdnpatch->subdivDegree = 3;
+      sdnpatch->subdivDegree = degree;
       sdnpatch->subdivLevel = 2;
 
       sdnpatch->controlMesh = newMesh;
