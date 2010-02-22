@@ -50,6 +50,12 @@ $m add command -label "Reset All Knots" -command {
     undo save SDNResetKnots; sdneditKnots -r; rV; }
 $m add command -label "Set Knot" -command sdnpatch_setknot
 
+$m add command -label "Revert" -command  {
+    undo save SDNRevert; sdnrevert; rV; }
+
+$m add command -label "Merge" -command  {
+    sdnmergePatch; uS; rV; }
+
 $m add separator
 
 $m add command -label "NPatch To SDNPatch" -command {
