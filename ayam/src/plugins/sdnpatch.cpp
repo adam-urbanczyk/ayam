@@ -248,27 +248,41 @@ public:
 private:
 
   unsigned int m_offset;
+  unsigned int m_dummyoffset;
   unsigned int m_id;
   vector<VertexPrecision> m_newVerts;
   vector<unsigned int> m_newVertIDs;
   unsigned int m_curVertsNum;
+  unsigned int m_maxDummyIndex;
+  unsigned int m_numEdges;
+  bool m_faceIsDummy;
+  vector<unsigned int> m_newFace;
   unsigned int m_newVertsNum;
   unsigned int m_newFacesNum;
+
   vector<unsigned int> m_newFaces;
+  unsigned int m_newDummyFacesNum;
+  vector<unsigned int> m_newDummyFaces;
   unsigned int m_newKnotIntervalsNum;
   vector<unsigned int> m_newKnotIndices;
   vector<KnotPrecision> m_newKnotIntervals;
+  unsigned int m_newDummyKnotIntervalsNum;
+  vector<unsigned int> m_newDummyKnotIndices;
+  vector<KnotPrecision> m_newDummyKnotIntervals;
 };
 
 
 PatchMerger::PatchMerger()
 {
   m_offset = 0;
+  m_dummyoffset = 0;
   m_id = 0;
   m_curVertsNum = 0;
   m_newVertsNum = 0;
   m_newFacesNum = 0;
   m_newKnotIntervalsNum = 0;
+  m_newDummyFacesNum = 0;
+  m_newDummyKnotIntervalsNum = 0;
 } /* PatchMerger::PatchMerger */
 
 
@@ -276,6 +290,7 @@ void
 PatchMerger::addPatch()
 {
   m_curVertsNum = 0;
+  m_maxDummyIndex = 0;
 } /* PatchMerger::addPatch */
 
 void
@@ -303,14 +318,20 @@ PatchMerger::finishVertices(void)
 void
 PatchMerger::startFace(unsigned int numEdges)
 {
-  m_newFaces.push_back(numEdges);
+
+  m_numEdges = numEdges;
+  m_faceIsDummy = false;
 } /* PatchMerger::startFace */
 
 
 void
 PatchMerger::addToFace(unsigned int vertNum)
 {
-  m_newFaces.push_back(vertNum + m_offset);
+  if(vertNum >= m_curVertsNum)
+    {
+      m_faceIsDummy = true;
+    }
+  m_newFace.push_back(vertNum);
 } /* PatchMerger::addToFace */
 
 #if 0
@@ -324,30 +345,113 @@ PatchMerger::addTexCoords(KnotPrecision u,
 void
 PatchMerger::closeFace(void)
 {
-  m_newFacesNum++;
+ unsigned int i;
+
+  if(!m_faceIsDummy)
+    {
+      // process real face
+      m_newFaces.push_back(m_numEdges);
+      for(i = 0; i < m_numEdges; i++)
+	{
+	  m_newFaces.push_back(m_newFace[i] + m_offset);
+	}
+      m_newFacesNum++;
+    }
+  else
+    {
+      m_newDummyFaces.push_back(m_numEdges);
+      for(i = 0; i < m_numEdges; i++)
+	{
+	  // is this vertex dummy?
+	  if(m_newFace[i] < m_curVertsNum)
+	    {
+	      // no, process real vertex in dummy face
+	      m_newDummyFaces.push_back(0);
+	      m_newDummyFaces.push_back(m_newFace[i] + m_offset);
+	    }
+	  else
+	    {
+	      // yes, process dummy vertex
+	      m_newDummyFaces.push_back(1);
+	      // - m_curVertsNum shifts the indices to the (0-x)
+	      // range and
+	      // + m_dummyoffset accounts for dummy vertices from
+	      // multiple patches (like m_offset);
+	      // the (now zero based) indices will be offset again in
+	      // buildMesh() to get behind all real vertices, we can not
+	      // do it here since we do not know how many real vertices
+	      // we will get in total yet
+	      m_newDummyFaces.push_back(m_newFace[i] - m_curVertsNum +
+					m_dummyoffset);
+	      // calculate maximum dummy index; this is used to count
+	      // the number of dummy vertices in this patch; and this is
+	      // then used to calculate the m_dummyoffset for the next
+	      // patch(es)
+	      if(m_newFace[i] > m_maxDummyIndex)
+		m_maxDummyIndex = m_newFace[i];
+	    } // if
+	} // for
+      m_newDummyFacesNum++;
+    } // if
+  m_newFace.clear();
 } /* PatchMerger::closeFace */
 
 void
 PatchMerger::finishFaces(void)
 {
+
 } /* PatchMerger::finishFaces */
 
 void
 PatchMerger::addKnotInterval(unsigned int vertex1,
-			  unsigned int vertex2,
-			  KnotPrecision interval)
+			     unsigned int vertex2,
+			     KnotPrecision interval)
 {
-  m_newKnotIndices.push_back(vertex1 + m_offset);
-  m_newKnotIndices.push_back(vertex2 + m_offset);
-  m_newKnotIntervals.push_back(interval);
-  m_newKnotIntervalsNum++;
+  if((vertex1 < m_curVertsNum) && (vertex2 < m_curVertsNum))
+    {
+      // process real knot
+      m_newKnotIndices.push_back(vertex1 + m_offset);
+      m_newKnotIndices.push_back(vertex2 + m_offset);
+      m_newKnotIntervals.push_back(interval);
+      m_newKnotIntervalsNum++;
+    }
+  else
+    {
+      // process dummy knot
+      // using the same offseting scheme as for dummy faces above
+      if(vertex1 < m_curVertsNum)
+	{
+	  m_newDummyKnotIndices.push_back(0);
+	  m_newDummyKnotIndices.push_back(vertex1 + m_offset);
+	}
+      else
+	{
+	  m_newDummyKnotIndices.push_back(1);
+	  m_newDummyKnotIndices.push_back(vertex1 - m_curVertsNum +
+					  m_dummyoffset);
+	}
+      if(vertex2 < m_curVertsNum)
+	{
+	  m_newDummyKnotIndices.push_back(0);
+	  m_newDummyKnotIndices.push_back(vertex2 + m_offset);
+	}
+      else
+	{
+	  m_newDummyKnotIndices.push_back(1);
+	  m_newDummyKnotIndices.push_back(vertex2 - m_curVertsNum +
+					  m_dummyoffset);
+	}
+      m_newDummyKnotIntervals.push_back(interval);
+      m_newDummyKnotIntervalsNum++;
+    } // if
 } /* PatchMerger::addKnotInterval */
 
 void
 PatchMerger::finishKnotIntervals(void)
 {
-  // calculate offset for indices of the next patch
+  // calculate offsets for indices of the next patch
   m_offset += m_curVertsNum;
+  m_dummyoffset += (m_maxDummyIndex - m_curVertsNum);
 } /* PatchMerger::finishKnotIntervals */
 
 
@@ -358,7 +462,7 @@ PatchMerger::buildMesh(unsigned int degree)
  Mesh *newMesh = NULL;
  vector<unsigned int>::iterator fi;
  unsigned int numVerts;
- unsigned int i, j, k;
+ unsigned int i, j, k, v1, v2;
 
   newMesh = new Mesh(degree);
   meshBuilder = MeshBuilder::create(*newMesh);
@@ -393,6 +497,30 @@ PatchMerger::buildMesh(unsigned int degree)
       meshBuilder->closeFace();
     }
 
+  k = 0;
+  for(i = 0; i < m_newDummyFacesNum; i++)
+    {
+      numVerts = m_newDummyFaces[k];
+      meshBuilder->startFace(numVerts);
+      k++;
+      for(j = 0; j < numVerts; j++)
+	{
+	  if(m_newDummyFaces[k] == 0)
+	    {
+	      meshBuilder->addToFace(m_newDummyFaces[k+1]);
+	    }
+	  else
+	    {
+	      // + m_newVertsNum is the said second offset to shift
+	      // all dummy vertices behind all real vertices
+	      // (see closeFace() above)
+	      meshBuilder->addToFace(m_newDummyFaces[k+1] + m_newVertsNum);
+	    }
+	  k += 2;
+	}
+      meshBuilder->closeFace();
+    }
+
   meshBuilder->finishFaces();
 
   if(m_newKnotIntervalsNum > 0)
@@ -409,10 +537,37 @@ PatchMerger::buildMesh(unsigned int degree)
 	}
     }
 
+  if(m_newDummyKnotIntervalsNum > 0)
+    {
+      j = 0;
+      for(i = 0; i < m_newDummyKnotIntervalsNum; i++)
+	{
+	  if(m_newDummyKnotIndices[j] == 0)
+	    {
+	      v1 = m_newDummyKnotIndices[j+1];
+	    }
+	  else
+	    {
+	      v1 = m_newDummyKnotIndices[j+1] + m_newVertsNum;
+	    }
+	  if(m_newDummyKnotIndices[j+2] == 0)
+	    {
+	      v2 = m_newDummyKnotIndices[j+3];
+	    }
+	  else
+	    {
+	      v2 = m_newDummyKnotIndices[j+3] + m_newVertsNum;
+	    }
+
+	  meshBuilder->addKnotInterval(v1, v2, m_newDummyKnotIntervals[i]);
+
+	  j += 4;
+	}
+    } // if
+
   meshBuilder->finishKnotIntervals();
 
   MeshBuilder::dispose(meshBuilder);
-
 
  return newMesh;
 } /* PatchMerger::buildMesh */
@@ -1464,6 +1619,12 @@ FaceMerger::closeFace(void)
   fi = m_faceVerts.begin();
   for(i = 0; i < m_faceVerts.size(); i++)
     {
+      if(*fi >= m_newVertexIDs.size())
+	{
+	  isSelected = false;
+	  break;
+	}
+
       pnt = m_pnts;
       found = false;
       while(pnt)
@@ -1483,7 +1644,7 @@ FaceMerger::closeFace(void)
 	}
 
       fi++;
-    }
+    } // for
 
   if(isSelected)
     {
@@ -1969,6 +2130,13 @@ FaceConnector::closeFace(void)
   fi = m_faceVerts.begin();
   for(i = 0; i < m_faceVerts.size(); i++)
     {
+
+      if(*fi >= m_newVertexIDs.size())
+	{
+	  isSelected = false;
+	  break;
+	}
+
       pnt = m_pnts;
       found = false;
       while(pnt)
@@ -1988,7 +2156,7 @@ FaceConnector::closeFace(void)
 	}
 
       fi++;
-    }
+    } // for
 
   if(isSelected)
     {
