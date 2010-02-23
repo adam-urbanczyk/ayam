@@ -318,7 +318,6 @@ PatchMerger::finishVertices(void)
 void
 PatchMerger::startFace(unsigned int numEdges)
 {
-
   m_numEdges = numEdges;
   m_faceIsDummy = false;
 } /* PatchMerger::startFace */
@@ -418,7 +417,7 @@ PatchMerger::addKnotInterval(unsigned int vertex1,
   else
     {
       // process dummy knot
-      // using the same offseting scheme as for dummy faces above
+      // using the same offsetting scheme as for dummy faces above
       if(vertex1 < m_curVertsNum)
 	{
 	  m_newDummyKnotIndices.push_back(0);
@@ -449,9 +448,9 @@ PatchMerger::addKnotInterval(unsigned int vertex1,
 void
 PatchMerger::finishKnotIntervals(void)
 {
-  // calculate offsets for indices of the next patch
+  // calculate offsets for indices of the next patch(es)
   m_offset += m_curVertsNum;
-  m_dummyoffset += (m_maxDummyIndex - m_curVertsNum);
+  m_dummyoffset += (m_maxDummyIndex + 1 - m_curVertsNum);
 } /* PatchMerger::finishKnotIntervals */
 
 
@@ -562,7 +561,7 @@ PatchMerger::buildMesh(unsigned int degree)
 	  meshBuilder->addKnotInterval(v1, v2, m_newDummyKnotIntervals[i]);
 
 	  j += 4;
-	}
+	} // for
     } // if
 
   meshBuilder->finishKnotIntervals();
@@ -5121,15 +5120,19 @@ int
 sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
-  //int ay_status = AY_OK;
+ int ay_status = AY_OK;
  char fname[] = "sdnmergepatch";
  unsigned int degree = 0, level = 0;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
+ ay_object *o = NULL, *c = NULL;
  sdnpatch_object *sdnpatch = NULL;
  Mesh *newMesh = NULL;
  PatchMerger *pm_handler = NULL;
  MeshFlattener *meshFlattener = NULL;
+ unsigned int i, a;
+ double m[16] = {0};
+ std::vector<Vertex*> *vertices = NULL;
+ Vertex *v = NULL;
 
   /* check selection */
   if(!sel)
@@ -5146,10 +5149,38 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(o->type != sdnpatch_id)
 	{
+	  sel = sel->next;
 	  continue;
 	}
+      c = NULL;
+      if(AY_ISTRAFO(o))
+	{
+	  ay_status = ay_object_copy(o, &c);
+	  if(!ay_status && c)
+	    {
+	      ay_trafo_creatematrix(c, m);
 
-      sdnpatch = (sdnpatch_object*)o->refine;
+	      sdnpatch = (sdnpatch_object*)c->refine;
+	      sdnpatch_getcontrolvertices(sdnpatch);
+
+	      vertices = sdnpatch->controlVertices;
+	      a = 0;
+	      for(i = 0; i < vertices->size(); i++)
+		{
+		  ay_trafo_apply4(&(sdnpatch->controlCoords[a]), m);
+		  v = (*(sdnpatch->controlVertices))[i];
+		  v->setX(sdnpatch->controlCoords[a]);
+		  v->setY(sdnpatch->controlCoords[a+1]);
+		  v->setZ(sdnpatch->controlCoords[a+2]);
+		  v->setW(sdnpatch->controlCoords[a+3]);
+		  a += 4;
+		}
+	    }
+	}
+      else
+	{
+	  sdnpatch = (sdnpatch_object*)o->refine;
+	}
 
       if(degree == 0)
 	{
@@ -5159,7 +5190,12 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  if(degree != sdnpatch->subdivDegree)
-	    continue;
+	    {
+	      if(c)
+		ay_object_deletemulti(c);
+	      sel = sel->next;
+	      continue;
+	    }
 	}
 
       meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
@@ -5174,9 +5210,14 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
+	  if(c)
+	    ay_object_deletemulti(c);
 	  goto cleanup;
 	}
 
+      if(c)
+	ay_object_deletemulti(c);
+      
       sel = sel->next;
     } /* while */
 
