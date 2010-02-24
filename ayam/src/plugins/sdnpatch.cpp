@@ -89,9 +89,11 @@ int sdnpatch_getcontrolvertices(sdnpatch_object *sdnpatch);
  */
 class Revertor : public FlatMeshHandler
 {
-public:
-  Revertor(sdnpatch_object *sdnpatch);
 
+public:
+
+  Revertor(sdnpatch_object *sdnpatch);
+  ~Revertor();
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
 		 VertexPrecision z,
@@ -114,6 +116,7 @@ public:
   Mesh *m_newMesh;
 
 private:
+
   MeshBuilder *m_meshBuilder;
   sdnpatch_object *m_sdnpatch;
   unsigned int m_id;
@@ -129,6 +132,11 @@ Revertor::Revertor(sdnpatch_object *sdnpatch)
   m_id = 0;
 } /* Revertor::Revertor */
 
+Revertor::~Revertor()
+{
+  MeshBuilder::dispose(m_meshBuilder);
+} /* FaceConnector::~FaceConnector */
+
 
 void
 Revertor::addVertex(VertexPrecision x,
@@ -139,12 +147,14 @@ Revertor::addVertex(VertexPrecision x,
 {
   m_meshBuilder->addVertex(x,y,z,w,m_id);
   m_id++;
+ return;
 } /* Revertor::addVertex */
 
 void
 Revertor::finishVertices(void)
 {
   m_meshBuilder->finishVertices();
+ return;
 } /* Revertor::finishVertices */
 
 void
@@ -152,6 +162,7 @@ Revertor::startFace(unsigned int numEdges)
 {
   m_meshBuilder->startFace(numEdges);
   m_vertices.reserve(numEdges);
+ return;
 } /* Revertor::startFace */
 
 
@@ -159,6 +170,7 @@ void
 Revertor::addToFace(unsigned int vertNum)
 {
   m_vertices.push_back(vertNum);
+ return;
 } /* Revertor::addToFace */
 
 #if 0
@@ -166,7 +178,7 @@ void
 Revertor::addTexCoords(KnotPrecision u,
 		       KnotPrecision v)
 {
-
+ return;
 } /* Revertor::addTexCoords */
 #endif
 
@@ -182,12 +194,14 @@ Revertor::closeFace(void)
   m_vertices.clear();
 
   m_meshBuilder->closeFace();
+ return;
 } /* Revertor::closeFace */
 
 void
 Revertor::finishFaces(void)
 {
   m_meshBuilder->finishFaces();
+ return;
 } /* Revertor::finishFaces */
 
 void
@@ -196,12 +210,14 @@ Revertor::addKnotInterval(unsigned int vertex1,
 			  KnotPrecision interval)
 {
   m_meshBuilder->addKnotInterval(vertex2, vertex1, interval);
+ return;
 } /* Revertor::addKnotInterval */
 
 void
 Revertor::finishKnotIntervals(void)
 {
   m_meshBuilder->finishKnotIntervals();
+ return;
 } /* Revertor::finishKnotIntervals */
 
 
@@ -221,7 +237,9 @@ Revertor::finishKnotIntervals(void)
  */
 class PatchMerger : public FlatMeshHandler
 {
+
 public:
+
   PatchMerger(void);
 
   void addPatch(void);
@@ -291,6 +309,7 @@ PatchMerger::addPatch()
 {
   m_curVertsNum = 0;
   m_maxDummyIndex = 0;
+ return;
 } /* PatchMerger::addPatch */
 
 void
@@ -308,11 +327,13 @@ PatchMerger::addVertex(VertexPrecision x,
   m_id++;
   m_newVertsNum++;
   m_curVertsNum++;
+ return;
 } /* PatchMerger::addVertex */
 
 void
 PatchMerger::finishVertices(void)
 {
+ return;
 } /* PatchMerger::finishVertices */
 
 void
@@ -320,6 +341,7 @@ PatchMerger::startFace(unsigned int numEdges)
 {
   m_numEdges = numEdges;
   m_faceIsDummy = false;
+ return;
 } /* PatchMerger::startFace */
 
 
@@ -331,6 +353,7 @@ PatchMerger::addToFace(unsigned int vertNum)
       m_faceIsDummy = true;
     }
   m_newFace.push_back(vertNum);
+ return;
 } /* PatchMerger::addToFace */
 
 #if 0
@@ -338,6 +361,7 @@ void
 PatchMerger::addTexCoords(KnotPrecision u,
 			  KnotPrecision v)
 {
+ return;
 } /* PatchMerger::addTexCoords */
 #endif
 
@@ -393,12 +417,13 @@ PatchMerger::closeFace(void)
       m_newDummyFacesNum++;
     } // if
   m_newFace.clear();
+ return;
 } /* PatchMerger::closeFace */
 
 void
 PatchMerger::finishFaces(void)
 {
-
+ return;
 } /* PatchMerger::finishFaces */
 
 void
@@ -443,6 +468,7 @@ PatchMerger::addKnotInterval(unsigned int vertex1,
       m_newDummyKnotIntervals.push_back(interval);
       m_newDummyKnotIntervalsNum++;
     } // if
+ return;
 } /* PatchMerger::addKnotInterval */
 
 void
@@ -451,6 +477,7 @@ PatchMerger::finishKnotIntervals(void)
   // calculate offsets for indices of the next patch(es)
   m_offset += m_curVertsNum;
   m_dummyoffset += (m_maxDummyIndex + 1 - m_curVertsNum);
+ return;
 } /* PatchMerger::finishKnotIntervals */
 
 
@@ -527,7 +554,6 @@ PatchMerger::buildMesh(unsigned int degree)
       j = 0;
       for(i = 0; i < m_newKnotIntervalsNum; i++)
 	{
-
 	  meshBuilder->addKnotInterval(m_newKnotIndices[j],
 				       m_newKnotIndices[j+1],
 				       m_newKnotIntervals[i]);
@@ -579,7 +605,9 @@ PatchMerger::buildMesh(unsigned int degree)
  */
 class AyWriter : public FlatMeshHandler
 {
+
 public:
+
   AyWriter(FILE *filep);
 
   void addVertex(VertexPrecision x,
@@ -600,6 +628,7 @@ public:
   void finishKnotIntervals(void);
 
 private:
+
   FILE *m_fp;
 
   unsigned int m_numVertices;
@@ -643,6 +672,7 @@ AyWriter::addVertex(VertexPrecision x,
   m_vertices.push_back(y);
   m_vertices.push_back(z);
   m_vertices.push_back(w);
+ return;
 } /* AyWriter::addVertex */
 
 
@@ -650,6 +680,7 @@ void
 AyWriter::startFace(unsigned int numEdges)
 {
   m_numEdges.push_back(numEdges);
+ return;
 } /* AyWriter::startFace */
 
 
@@ -657,6 +688,7 @@ void
 AyWriter::addToFace(unsigned int vertNum)
 {
   m_faces.push_back(vertNum);
+ return;
 } /* AyWriter::addToFace */
 
 #if 0
@@ -668,6 +700,7 @@ AyWriter::addTexCoords(KnotPrecision u,
   m_texcoords.push_back(v);
   m_numTexCoords++;
   // XXXX remember current vertex index?
+ return;
 } /* AyWriter::addTexCoords */
 #endif
 
@@ -675,6 +708,7 @@ void
 AyWriter::closeFace(void)
 {
   m_numFaces++;
+ return;
 } /* AyWriter::closeFace */
 
 void
@@ -686,6 +720,7 @@ AyWriter::addKnotInterval(unsigned int vertex1,
   m_v2.push_back(vertex2);
   m_intervals.push_back(interval);
   m_numKnots++;
+ return;
 } /* AyWriter::addKnotInterval */
 
 void
@@ -758,15 +793,10 @@ AyWriter::finishKnotIntervals(void)
  */
 class AyConvertor
 {
+
 public:
-  AyConvertor(MeshFlattener *flattener)
-  {
-    if(!flattener)
-      return;
-    m_flattener = flattener;
-    m_numVertices = 0;
-    m_numFaces = 0;
-  };
+
+  AyConvertor(MeshFlattener *flattener);
 
   void vertexcb(VertexPrecision x,
 		VertexPrecision y,
@@ -780,12 +810,23 @@ public:
   void convert(ay_pomesh_object *pomesh);
 
 private:
+
   MeshFlattener *m_flattener;
   unsigned int m_numVertices;
   unsigned int m_numFaces;
   vector<VertexPrecision> m_vertices;
   vector<VertexPrecision> m_normals;
 }; /* AyConvertor */
+
+
+AyConvertor::AyConvertor(MeshFlattener *flattener)
+{
+  if(!flattener)
+    return;
+  m_flattener = flattener;
+  m_numVertices = 0;
+  m_numFaces = 0;
+};
 
 
 void
@@ -986,7 +1027,6 @@ void
 FaceExtruder::addToFace(unsigned int vertNum)
 {
   m_faceVerts.push_back(vertNum);
-
  return;
 } /* FaceExtruder::addToFace */
 
@@ -1006,6 +1046,13 @@ FaceExtruder::closeFace(void)
   fi = m_faceVerts.begin();
   for(i = 0; i < m_faceVerts.size(); i++)
     {
+      // rule out dummy faces
+      if(*fi >= m_newVertexIDs.size())
+	{
+	  isSelected = false;
+	  break;
+	}
+
       pnt = m_pnts;
       found = false;
       while(pnt)
@@ -1025,7 +1072,7 @@ FaceExtruder::closeFace(void)
 	}
 
       fi++;
-    }
+    } // for
 
   if(isSelected)
     {
@@ -1357,7 +1404,6 @@ void
 FaceRemover::addToFace(unsigned int vertNum)
 {
   m_faceVerts.push_back(vertNum);
-
  return;
 } /* FaceRemover::addToFace */
 
@@ -1618,6 +1664,7 @@ FaceMerger::closeFace(void)
   fi = m_faceVerts.begin();
   for(i = 0; i < m_faceVerts.size(); i++)
     {
+      // rule out dummy faces
       if(*fi >= m_newVertexIDs.size())
 	{
 	  isSelected = false;
@@ -2129,7 +2176,7 @@ FaceConnector::closeFace(void)
   fi = m_faceVerts.begin();
   for(i = 0; i < m_faceVerts.size(); i++)
     {
-
+      // rule out dummy faces
       if(*fi >= m_newVertexIDs.size())
 	{
 	  isSelected = false;
@@ -2401,6 +2448,7 @@ private:
   ay_point *m_pnts;
   MeshFlattener *m_meshFlattener;
 
+  unsigned int m_vertNum;
   unsigned int m_faceNum;
   unsigned int m_faceVertNum;
 
@@ -2420,11 +2468,9 @@ KnotSelector::KnotSelector(sdnpatch_object *sdnpatch, ay_point *pnts,
   m_pnts = pnts;
   m_meshFlattener = flattener;
   m_selectedKnots = knots;
-
+  m_vertNum = 0;
   m_faceNum = 0;
   m_faceVertNum = 0;
-
-
 } /* KnotSelector::KnotSelector */
 
 KnotSelector::~KnotSelector()
@@ -2440,6 +2486,7 @@ KnotSelector::addVertex(VertexPrecision x,
 			unsigned int id)
 {
   m_newVertexIDs.push_back(id);
+  m_vertNum++;
  return;
 } /* KnotSelector::addVertex */
 
@@ -2447,8 +2494,6 @@ KnotSelector::addVertex(VertexPrecision x,
 void
 KnotSelector::startFace(unsigned int numEdges)
 {
-
-
  return;
 } /* KnotSelector::startFace */
 
@@ -2461,6 +2506,10 @@ KnotSelector::addToFace(unsigned int vertNum)
  unsigned int vertex2;
  ay_point *pnt = NULL;
  KnotInterval *knot = NULL;
+
+  // rule out dummy vertices
+  if(vertNum >= m_vertNum)
+    return;
 
   if(m_faceVertNum == 0)
     {
