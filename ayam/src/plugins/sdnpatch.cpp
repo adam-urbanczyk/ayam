@@ -1606,6 +1606,7 @@ FaceMerger::FaceMerger(sdnpatch_object *sdnpatch, ay_point *pnts)
 {
   m_sdnpatch = sdnpatch;
   m_pnts = pnts;
+  m_newMesh = NULL;
 
   m_keepVertsNum = 0;
   m_removeVertsNum = 0;
@@ -1888,6 +1889,12 @@ FaceMerger::finishKnotIntervals(void)
  set<pair<unsigned int,unsigned int> > edges;
  set<pair<unsigned int,unsigned int> >::iterator ei;
  vector<unsigned int>::iterator fi1, fi2;
+
+  if((m_keepVertsNum == 0) || (m_removeVertsNum == 0))
+    {
+      m_error = true;
+      return;
+    }
 
   m_newMesh = new Mesh(m_sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*m_newMesh);
