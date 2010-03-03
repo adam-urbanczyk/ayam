@@ -9763,49 +9763,111 @@ ay_npt_getnextdifferent(char dir, int w, int h, int uo, int vo,
 	  /* closed/periodic in v direction */
 	  if(j == 0)
 	    {
-	      p2 = &(cv[h + offset]);
+	      /* wrap around */
+	      p2 = p + (h * stride);
 	    }
 	  else
 	    {
 	      p2 = p + offset;
 	    }
-
 	}
       break;
     case 1:
       /* East */
       offset = stride*h;
-      if(ut == 0 && i == w)
+      if(ut == 0)
 	{
-	  *dp = NULL;
-	  return;
+	  /* open in u direction */
+	  if(i == w)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
+	}
+      else
+	{
+	  /* closed/periodic in v direction */
+	  if(i == w)
+	    {
+	      /* wrap around */
+	      p2 = p + (w * stride);
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
 	}
       break;
     case 2:
       /* South */
       offset = stride;
-      if(vt == 0 && j == h)
+      if(vt == 0)
 	{
-	  *dp = NULL;
-	  return;
+	  /* open in v direction */
+	  if(j == h)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
+	}
+      else
+	{
+	  /* closed/periodic in v direction */
+	  if(j == h)
+	    {
+	      /* wrap around */
+	      p2 = p - (h * stride);
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
 	}
       break;
     case 3:
       /* West */
       offset = -stride*h;
-      if(ut == 0 && i == 0)
+      if(ut == 0)
 	{
-	  *dp = NULL;
-	  return;
+	  /* open in u direction */
+	  if(i == 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
+	}
+      else
+	{
+	  /* closed/periodic in v direction */
+	  if(i == 0)
+	    {
+	      /* wrap around */
+	      p2 = p - (w * stride);
+	    }
+	  else
+	    {
+	      p2 = p + offset;
+	    }
 	}
       break;
-    }
+    default:
+      break;
+    } /* switch */
 
   while(AY_COMP4DP(p, p2))
     {
-      
-      
-
       p2 += offset;
 
       /* degeneracy check */
