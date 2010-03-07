@@ -31,7 +31,24 @@ addText $w SDNPatchAttrData "Subdivision:"
 addInfo $w SDNPatchAttrData NPolys
 
 # add menu entry to the "Create/Custom Object" sub-menu
+
+uplevel #0 { array set sdncrt_options {
+    Width 3
+    Height 3
+    Depth 3
+    DX 1
+    DY 1
+    DZ 1
+} }
+
 mmenu_addcustom SDNPatch "crtOb SDNPatch;uS;sL;rV"
+mmenu_addcustom SDNCube {
+    runTool {\
+     sdncrt_options(Width) sdncrt_options(Height) sdncrt_options(Depth)\
+     sdncrt_options(DX) sdncrt_options(DY) sdncrt_options(DZ) }\
+     {"Width:" "Height:" "Depth:" "DX:" "DY:" "DZ:"}\
+	"sdnpatch_crtcube %0 %1 %2 %3 %4 %5;"
+}
 
 global ay
 $ay(cm) add cascade -menu $ay(cm).sdn -label "SDNPatch"
@@ -315,3 +332,258 @@ proc sdnpatch_setknot { } {
  return;
 }
 # sdnpatch_setknot
+
+
+# sdnpatch_crtcube:
+#
+#
+proc sdnpatch_crtcube { w h d dx dy dz } {
+
+    # create a temporary working level
+    crtOb Level 1
+
+    # enter the level
+    goDown -1
+
+    # now create 6 polymesh objects
+
+    # front
+    set np [expr $w * $h]
+
+    set nv {}
+    set i 0
+    while { $i < $np } {
+	lappend nv 4
+	incr i
+    }
+
+    set iv {}
+    set i 0
+    set ii 0
+    while { $i < $h } {
+	set j 0
+	while { $j < $w } {
+	    lappend iv $ii [expr $ii + 1]\
+		[expr $ii + $w + 2] [expr $ii + $w + 1]
+	    incr ii
+	    incr j
+	}
+	incr ii
+	incr i
+    }
+
+    set x [expr -($w * $dx) / 2.0]
+    set y [expr -($h * $dy) / 2.0]
+    set z [expr ($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sx $x
+    while { $i < [expr $h + 1] } {
+	set j 0
+	set x $sx
+	while { $j < [expr $w + 1] } {
+	    lappend cv $x $y $z
+	    set x [expr $x + $dx]
+	    incr j
+	}
+	set y [expr $y + $dy]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+    # back
+    set x [expr ($w * $dx) / 2.0]
+    set y [expr -($h * $dy) / 2.0]
+    set z [expr -($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sx $x
+    while { $i < [expr $h + 1] } {
+	set j 0
+	set x $sx
+	while { $j < [expr $w + 1] } {
+	    lappend cv $x $y $z
+	    set x [expr $x - $dx]
+	    incr j
+	}
+	set y [expr $y + $dy]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+    # left
+    set np [expr $h * $d]
+
+    set nv {}
+    set i 0
+    while { $i < $np } {
+	lappend nv 4
+	incr i
+    }
+
+    set iv {}
+    set i 0
+    set ii 0
+    while { $i < $h } {
+	set j 0
+	while { $j < $d } {
+	    lappend iv $ii [expr $ii + 1]\
+		[expr $ii + $d + 2] [expr $ii + $d + 1]
+	    incr ii
+	    incr j
+	}
+	incr ii
+	incr i
+    }
+
+    set x [expr -($w * $dx) / 2.0]
+    set y [expr -($h * $dy) / 2.0]
+    set z [expr -($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sz $z
+    while { $i < [expr $h + 1] } {
+	set j 0
+	set z $sz
+	while { $j < [expr $d + 1] } {
+	    lappend cv $x $y $z
+	    set z [expr $z + $dz]
+	    incr j
+	}
+	set y [expr $y + $dy]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+    # right
+    set x [expr ($w * $dx) / 2.0]
+    set y [expr -($h * $dy) / 2.0]
+    set z [expr ($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sz $z
+    while { $i < [expr $h + 1] } {
+	set j 0
+	set z $sz
+	while { $j < [expr $d + 1] } {
+	    lappend cv $x $y $z
+	    set z [expr $z - $dz]
+	    incr j
+	}
+	set y [expr $y + $dy]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+
+    # bottom
+    set np [expr $w * $d]
+
+    set nv {}
+    set i 0
+    while { $i < $np } {
+	lappend nv 4
+	incr i
+    }
+
+    set iv {}
+    set i 0
+    set ii 0
+    while { $i < $d } {
+	set j 0
+	while { $j < $w } {
+	    lappend iv $ii [expr $ii + 1]\
+		[expr $ii + $w + 2] [expr $ii + $w + 1]
+	    incr ii
+	    incr j
+	}
+	incr ii
+	incr i
+    }
+
+    set x [expr -($w * $dx) / 2.0]
+    set y [expr -($h * $dy) / 2.0]
+    set z [expr -($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sx $x
+    while { $i < [expr $d + 1] } {
+	set j 0
+	set x $sx
+	while { $j < [expr $w + 1] } {
+	    lappend cv $x $y $z
+	    set x [expr $x + $dx]
+	    incr j
+	}
+	set z [expr $z + $dz]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+    # top
+    set x [expr ($w * $dx) / 2.0]
+    set y [expr ($h * $dy) / 2.0]
+    set z [expr -($d * $dz) / 2.0]
+    set cv {}
+    set i 0
+    set sx $x
+    while { $i < [expr $d + 1] } {
+	set j 0
+	set x $sx
+	while { $j < [expr $w + 1] } {
+	    lappend cv $x $y $z
+	    set x [expr $x - $dx]
+	    incr j
+	}
+	set z [expr $z + $dz]
+	incr i
+    }
+
+    crtOb PolyMesh -polys $np -nverts $nv -iverts $iv -cv $cv
+
+    # select all polymeshes
+    selOb 0 1 2 3 4 5
+
+    # merge them into one
+    mergePo
+
+    selOb 6
+
+    # optimize the merged mesh
+    optiPo
+
+    # convert to SDNPatch
+    sdnconvertPO
+
+    # move the SDNPatch to parent level, go up and remove this
+    # level where the temporary polymesh objects were created
+    selOb 7
+
+    cutOb
+
+    goUp
+
+    uCR
+
+    sL
+
+    delOb
+
+    # paste/move the SDNPatch back to the scene
+    pasmovOb
+
+    # update tree view and redraw
+    uCL cl
+
+    sL
+
+    rV
+
+return;
+}
+# sdnpatch_crtcube
