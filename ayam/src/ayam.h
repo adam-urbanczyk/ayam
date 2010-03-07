@@ -1455,6 +1455,12 @@ extern unsigned int ay_current_primlevel;
 /* to avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
+/* directions */
+#define AY_NORTH  0
+#define AY_EAST   1
+#define AY_SOUTH  2
+#define AY_WEST   3
+
 
 #ifdef M_PI
  #define AY_PI M_PI
