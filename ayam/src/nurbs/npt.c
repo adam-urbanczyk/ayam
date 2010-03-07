@@ -9710,8 +9710,136 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_extractnptcmd */
 
 
+/* ay_npt_gnd:
+ * get next different control point in direction <dir> in a open NURBS
+ * surface <np> where the current points location is <i>/<j> and
+ * its address is <p>
+ * <dir> must be one of:
+ * 0 - North
+ * 1 - East
+ * 2 - South
+ * 3 - West
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (if the patch is degenerated or if the surface is not closed
+ * and ends)
+ */
+void
+ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
+	   double **dp)
+{
+ int offset, stride = 4;
+ double *p2 = NULL;
 
-/* ay_npt_getnextdifferent:
+  /* calculate offset */
+  switch(dir)
+    {
+    case AY_NORTH:
+      offset = -stride;
+      if(ind == 0)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_EAST:
+      offset = stride*np->height;
+      if(ind == np->width-1)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_SOUTH:
+      offset = stride;
+      if(ind == np->height-1)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_WEST:
+      offset = -stride*np->height;
+      if(ind == 0)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+  /* apply offset to p2 until p2 points to
+     a different control point than p
+     (in terms of their coordinate values)
+     or we run off the edge of the patch */
+  while(AY_COMP4DP(p, p2))
+    {
+      p2 += offset;
+
+      switch(dir)
+	{
+	case AY_NORTH:
+	  if(ind == 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  ind--;
+	  break;
+	case AY_EAST:
+	  if(ind == np->width-1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  ind++;
+	  break;
+	case AY_SOUTH:
+	  if(ind == np->height-1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  ind++;
+	  break;
+	case AY_WEST:
+	  if(ind == 0)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  ind--;
+	  break;
+	default:
+	  break;
+	} /* switch */
+    } /* while */
+
+  *dp = p2;
+
+ return;
+} /* ay_npt_gnd */
+
+
+/* ay_npt_gndcu:
  * get next different control point in direction <dir> in a NURBS
  * surface control point array of width <w>, height <h>, stride <stride>,
  * where the surface has uorder <uo> and vorder <vo> and u surface type <ut>
@@ -9722,144 +9850,71 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
  * 1 - East
  * 2 - South
  * 3 - West
- * <ut>/vt> must be one of:
- * 0 - Open
- * 1 - Closed
- * 2 - Periodic
  * returns result (new address) in <dp>
  * <dp> is set to NULL if there is no different point in the designated
  * direction (if the patch is degenerated or if the surface is not closed
  * and ends)
  */
 void
-ay_npt_getnextdifferent(char dir, int w, int h, int uo, int vo,
-			char ut, char vt, int i, int j,
-			int stride, double *cv, double *p,
-			double **dp)
+ay_npt_gndcu(char dir, ay_nurbpatch_object *np, int ind, double *p,
+	     double **dp)
 {
- int offset;
+ int offset, stride = 4;
  double *p2 = NULL;
 
   switch(dir)
     {
-    case 0:
-      /* North */
+    case AY_NORTH:
       offset = -stride;
-      if(vt == 0)
+      /* open in v direction */
+      if(ind == 0)
 	{
-	  /* open in v direction */
-	  if(j == 0)
-	    {
-	      *dp = NULL;
-	      return;
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  *dp = NULL;
+	  return;
 	}
       else
 	{
-	  /* closed/periodic in v direction */
-	  if(j == 0)
-	    {
-	      /* wrap around */
-	      p2 = p + (h * stride);
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  p2 = p + offset;
 	}
       break;
-    case 1:
-      /* East */
-      offset = stride*h;
-      if(ut == 0)
+    case AY_EAST:
+      offset = stride*np->height;
+      /* closed/periodic in v direction */
+      if(ind == np->width-1)
 	{
-	  /* open in u direction */
-	  if(i == w)
-	    {
-	      *dp = NULL;
-	      return;
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  /* wrap around */
+	  p2 = p + (np->width * stride);
 	}
       else
 	{
-	  /* closed/periodic in v direction */
-	  if(i == w)
-	    {
-	      /* wrap around */
-	      p2 = p + (w * stride);
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  p2 = p + offset;
 	}
       break;
-    case 2:
-      /* South */
+    case AY_SOUTH:
       offset = stride;
-      if(vt == 0)
+
+      /* open in v direction */
+      if(ind == np->height-1)
 	{
-	  /* open in v direction */
-	  if(j == h)
-	    {
-	      *dp = NULL;
-	      return;
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  *dp = NULL;
+	  return;
 	}
       else
 	{
-	  /* closed/periodic in v direction */
-	  if(j == h)
-	    {
-	      /* wrap around */
-	      p2 = p - (h * stride);
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  p2 = p + offset;
 	}
       break;
-    case 3:
-      /* West */
-      offset = -stride*h;
-      if(ut == 0)
+    case AY_WEST:
+      offset = -stride*np->height;
+      /* closed/periodic in v direction */
+      if(ind == 0)
 	{
-	  /* open in u direction */
-	  if(i == 0)
-	    {
-	      *dp = NULL;
-	      return;
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  /* wrap around */
+	  p2 = p - (np->width * stride);
 	}
       else
 	{
-	  /* closed/periodic in v direction */
-	  if(i == 0)
-	    {
-	      /* wrap around */
-	      p2 = p - (w * stride);
-	    }
-	  else
-	    {
-	      p2 = p + offset;
-	    }
+	  p2 = p + offset;
 	}
       break;
     default:
@@ -9882,8 +9937,211 @@ ay_npt_getnextdifferent(char dir, int w, int h, int uo, int vo,
   *dp = p2;
 
  return;
-} /* ay_npt_getnextdifferent */
+} /* ay_npt_gndcu */
 
+
+/* ay_npt_gndcv:
+ * get next different control point in direction <dir> in a NURBS
+ * surface control point array of width <w>, height <h>, stride <stride>,
+ * where the surface has uorder <uo> and vorder <vo> and u surface type <ut>
+ * and v surface type <vt> and the current points location is <i>/<j> and
+ * its address is <p>
+ * <dir> must be one of:
+ * 0 - North
+ * 1 - East
+ * 2 - South
+ * 3 - West
+ * <ut>/vt> must be one of:
+ * 0 - Open
+ * 1 - Closed
+ * 2 - Periodic
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (if the patch is degenerated or if the surface is not closed
+ * and ends)
+ */
+void
+ay_npt_gndcv(char dir, ay_nurbpatch_object *np, int ind, double *p,
+	     double **dp)
+{
+ int offset, stride = 4;
+ double *p2 = NULL;
+
+  switch(dir)
+    {
+    case AY_NORTH:
+      offset = -stride;
+      /* closed/periodic in v direction */
+      if(ind == 0)
+	{
+	  /* wrap around */
+	  p2 = p + (np->height * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_EAST:
+      offset = stride*np->height;
+      /* open in u direction */
+      if(ind == np->width-1)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_SOUTH:
+      offset = stride;
+      /* closed/periodic in v direction */
+      if(ind == np->height-1)
+	{
+	  /* wrap around */
+	  p2 = p - (np->height * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_WEST:
+      offset = -stride*np->height;
+      /* open in u direction */
+      if(ind == 0)
+	{
+	  *dp = NULL;
+	  return;
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+  while(AY_COMP4DP(p, p2))
+    {
+      p2 += offset;
+
+      /* degeneracy check */
+      if(p == p2)
+	{
+	  *dp = NULL;
+	  return;
+	}
+
+    } /* while */
+
+  *dp = p2;
+
+ return;
+} /* ay_npt_gndcv */
+
+
+/* ay_npt_gndcuv:
+ * get next different control point in direction <dir> in a NURBS
+ * surface control point array of width <w>, height <h>, stride <stride>,
+ * where the surface has uorder <uo> and vorder <vo> and u surface type <ut>
+ * and v surface type <vt> and the current points location is <i>/<j> and
+ * its address is <p>
+ * <dir> must be one of:
+ * 0 - North
+ * 1 - East
+ * 2 - South
+ * 3 - West
+ * returns result (new address) in <dp>
+ * <dp> is set to NULL if there is no different point in the designated
+ * direction (if the patch is degenerated or if the surface is not closed
+ * and ends)
+ */
+void
+ay_npt_gndcuv(char dir, ay_nurbpatch_object *np, int ind, double *p,
+	      double **dp)
+{
+ int offset, stride = 4;
+ double *p2 = NULL;
+
+  switch(dir)
+    {
+    case AY_NORTH:
+      offset = -stride;
+      /* closed/periodic in v direction */
+      if(ind == 0)
+	{
+	  /* wrap around */
+	  p2 = p + (np->height * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_EAST:
+      offset = stride*np->height;
+      /* closed/periodic in v direction */
+      if(ind == np->width-1)
+	{
+	  /* wrap around */
+	  p2 = p + (np->width * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_SOUTH:
+      offset = stride;
+      /* closed/periodic in v direction */
+      if(ind == np->height-1)
+	{
+	  /* wrap around */
+	  p2 = p - (np->height * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    case AY_WEST:
+      offset = -stride*np->height;
+      /* closed/periodic in v direction */
+      if(ind == 0)
+	{
+	  /* wrap around */
+	  p2 = p - (np->width * stride);
+	}
+      else
+	{
+	  p2 = p + offset;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+  while(AY_COMP4DP(p, p2))
+    {
+      p2 += offset;
+
+      /* degeneracy check */
+      if(p == p2)
+	{
+	  *dp = NULL;
+	  return;
+	}
+
+    } /* while */
+
+  *dp = p2;
+
+ return;
+} /* ay_npt_gndcuv */
 
 
 /* ay_npt_offset:
@@ -9894,6 +10152,333 @@ ay_npt_getnextdifferent(char dir, int w, int h, int uo, int vo,
  */
 int
 ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
+{
+ int ay_status = AY_OK;
+ int i, j, a, stride = 4;
+ double normal1[3] = {0}, normal2[3] = {0};
+ double normal3[3] = {0}, normal4[3] = {0};
+ double normal[3] = {0};
+ double normal11[3] = {0}, normal22[3] = {0};
+ double *newcv = NULL, *newukv = NULL, *newvkv = NULL;
+ double *p1, *p2, *p3;
+ double *copyrow = NULL, *copycol = NULL;
+ ay_nurbpatch_object *patch = NULL;
+
+  /* sanity check */
+  if(!o || !np)
+    return AY_ENULL;
+
+  patch = (ay_nurbpatch_object*)o->refine;
+
+  if(!(newcv = calloc(patch->width*patch->height*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(copyrow = calloc(patch->height, sizeof(double))))
+    {
+      free(newcv);
+      return AY_EOMEM;
+    }
+
+  if(!(copycol = calloc(patch->width, sizeof(double))))
+    {
+      free(newcv);
+      free(copyrow);
+      return AY_EOMEM;
+    }
+
+  /* first column */
+
+  /* first point in first column */
+  p1 = &(patch->controlv[0]);
+  /*p2 = &(patch->controlv[stride]);*/
+  ay_npt_gnd(AY_SOUTH, patch, 0, p1, &p2);
+  if(!p2)
+    {
+      /* first column is degenerated */
+      copycol[0] = AY_TRUE;
+    }
+  else
+    {
+      /*p3 = &(patch->controlv[patch->height*stride]);*/
+      ay_npt_gnd(AY_EAST, patch, 0, p1, &p3);
+      if(!p3)
+	{
+	  /* first row is degenerated */
+	  copyrow[0] = AY_TRUE;
+	}
+
+      ay_geom_calcnfrom3(p1, p2, p3, normal1);
+      newcv[0] = p1[0] + (normal1[0] * offset);
+      newcv[1] = p1[1] + (normal1[1] * offset);
+      newcv[2] = p1[2] + (normal1[2] * offset);
+      newcv[3] = p1[3];
+
+
+      /* middle points in first column */
+      a = stride;
+      for(j = 1; j < (patch->height - 1); j++)
+	{
+	  p1 = &(patch->controlv[a]);
+	  /*p2 = &(patch->controlv[a+stride]);*/
+	  ay_npt_gnd(AY_SOUTH, patch, j, p1, &p2);
+	  /*p3 = &(patch->controlv[a+patch->height*stride]);*/
+	  ay_npt_gnd(AY_EAST, patch, 0, p1, &p3);
+	  if(!p3)
+	    {
+	      /* this row is degenerated */
+	      copyrow[j] = AY_TRUE;
+	    }
+	  ay_geom_calcnfrom3(p1, p2, p3, normal1);
+
+	  /*p2 = &(patch->controlv[a-stride]);*/
+	  ay_npt_gnd(AY_NORTH, patch, j, p1, &p2);
+	  ay_geom_calcnfrom3(p1, p3, p2, normal2);
+
+
+	  normal[0] = normal1[0] + (normal2[0]-normal1[0]);
+	  normal[1] = normal1[1] + (normal2[1]-normal1[1]);
+	  normal[2] = normal1[2] + (normal2[2]-normal1[2]);
+
+	  newcv[a]   = p1[0] + (normal[0] * offset);
+	  newcv[a+1] = p1[1] + (normal[1] * offset);
+	  newcv[a+2] = p1[2] + (normal[2] * offset);
+	  newcv[a+3] = p1[3];
+	  a += stride;
+	}
+
+      /* last point in first column */
+      p1 = &(patch->controlv[a]);
+      /*p2 = &(patch->controlv[a-stride]);*/
+      ay_npt_gnd(AY_NORTH, patch, patch->height-1, p1, &p2);
+      /*p3 = &(patch->controlv[a+patch->height*stride]);*/
+      ay_npt_gnd(AY_EAST, patch, 0, p1, &p3);
+      if(!p3)
+	{
+	  /* last row is degenerated */
+	  copyrow[patch->height - 1] = AY_TRUE;
+	}
+      ay_geom_calcnfrom3(p1, p3, p2, normal1);
+      newcv[a]   = p1[0] + (normal1[0] * offset);
+      newcv[a+1] = p1[1] + (normal1[1] * offset);
+      newcv[a+2] = p1[2] + (normal1[2] * offset);
+      newcv[a+3] = p1[3];
+
+    }
+
+  /* midle columns */
+  a = patch->height*stride;
+  for(i = 1; i < (patch->width-1); i++)
+    {
+      /* first point in this column */
+      p1 = &(patch->controlv[a]);
+      /*p2 = &(patch->controlv[a+stride]);*/
+      ay_npt_gnd(AY_SOUTH, patch, 0, p1, &p2);
+      if(!p2)
+	{
+	  /* this column is degenerated */
+	  copycol[i] = AY_TRUE;
+	}
+
+      /*p3 = &(patch->controlv[a+patch->height*stride]);*/
+      ay_npt_gnd(AY_EAST, patch, i, p1, &p3);
+      ay_geom_calcnfrom3(p1, p2, p3, normal1);
+
+      /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+      ay_npt_gnd(AY_WEST, patch, i, p1, &p3);
+      ay_geom_calcnfrom3(p1, p3, p2, normal2);
+
+      normal[0] = normal1[0] + (normal2[0]-normal1[0]);
+      normal[1] = normal1[1] + (normal2[1]-normal1[1]);
+      normal[2] = normal1[2] + (normal2[2]-normal1[2]);
+
+      newcv[a]   = p1[0] + (normal[0] * offset);
+      newcv[a+1] = p1[1] + (normal[1] * offset);
+      newcv[a+2] = p1[2] + (normal[2] * offset);
+      newcv[a+3] = p1[3];
+      a += stride;
+
+      /* middle points in this column */
+      for(j = 1; j < (patch->height-1); j++)
+	{
+	  p1 = &(patch->controlv[a]);
+	  /*p2 = &(patch->controlv[a+stride]);*/
+	  ay_npt_gnd(AY_SOUTH, patch, j, p1, &p2);
+	  /*p3 = &(patch->controlv[a+patch->height*stride]);*/
+	  ay_npt_gnd(AY_EAST, patch, i, p1, &p3);
+	  ay_geom_calcnfrom3(p1, p2, p3, normal1);
+
+	  /*p2 = &(patch->controlv[a-stride]);*/
+	  ay_npt_gnd(AY_NORTH, patch, j, p1, &p2);
+	  ay_geom_calcnfrom3(p1, p3, p2, normal2);
+
+	  /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+	  ay_npt_gnd(AY_WEST, patch, i, p1, &p3);
+	  ay_geom_calcnfrom3(p1, p2, p3, normal3);
+
+	  /*p2 = &(patch->controlv[a+stride]);*/
+	  ay_npt_gnd(AY_SOUTH, patch, j, p1, &p2);
+	  ay_geom_calcnfrom3(p1, p3, p2, normal4);
+
+	  normal11[0] = normal1[0] + (normal3[0]-normal1[0]);
+	  normal11[1] = normal1[1] + (normal3[1]-normal1[1]);
+	  normal11[2] = normal1[2] + (normal3[2]-normal1[2]);
+
+	  normal22[0] = normal4[0] + (normal2[0]-normal4[0]);
+	  normal22[1] = normal4[1] + (normal2[1]-normal4[1]);
+	  normal22[2] = normal4[2] + (normal2[2]-normal4[2]);
+
+	  normal[0] = normal11[0] + (normal22[0]-normal11[0]);
+	  normal[1] = normal11[1] + (normal22[1]-normal11[1]);
+	  normal[2] = normal11[2] + (normal22[2]-normal11[2]);
+
+	  newcv[a]   = p1[0] + (normal[0] * offset);
+	  newcv[a+1] = p1[1] + (normal[1] * offset);
+	  newcv[a+2] = p1[2] + (normal[2] * offset);
+	  newcv[a+3] = p1[3];
+
+	  a += stride;
+	}
+
+      /* last point in this column */
+      p1 = &(patch->controlv[a]);
+      /*p2 = &(patch->controlv[a-stride]);*/
+      ay_npt_gnd(AY_NORTH, patch, patch->height-1, p1, &p2);
+      /*p3 = &(patch->controlv[a+patch->height*stride]);*/
+      ay_npt_gnd(AY_EAST, patch, i, p1, &p3);
+      ay_geom_calcnfrom3(p1, p3, p2, normal1);
+
+      /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+      ay_npt_gnd(AY_WEST, patch, i, p1, &p3);
+      ay_geom_calcnfrom3(p1, p2, p3, normal2);
+
+      normal[0] = normal1[0] + (normal2[0]-normal1[0]);
+      normal[1] = normal1[1] + (normal2[1]-normal1[1]);
+      normal[2] = normal1[2] + (normal2[2]-normal1[2]);
+
+      newcv[a]   = p1[0] + (normal[0] * offset);
+      newcv[a+1] = p1[1] + (normal[1] * offset);
+      newcv[a+2] = p1[2] + (normal[2] * offset);
+      newcv[a+3] = p1[3];
+      a += stride;
+
+    } /* for */
+
+  /* last column */
+
+  /* first point in last column */
+  p1 = &(patch->controlv[a]);
+  /*p2 = &(patch->controlv[a+stride]);*/
+  ay_npt_gnd(AY_SOUTH, patch, 0, p1, &p2);
+  if(!p2)
+    {
+      /* last column is degenerated */
+      copycol[patch->width-1] = AY_TRUE;
+    }
+
+  /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+  ay_npt_gnd(AY_WEST, patch, patch->width-1, p1, &p3);
+  ay_geom_calcnfrom3(p1, p3, p2, normal1);
+  newcv[a]   = p1[0] + (normal1[0] * offset);
+  newcv[a+1] = p1[1] + (normal1[1] * offset);
+  newcv[a+2] = p1[2] + (normal1[2] * offset);
+  newcv[a+3] = p1[3];
+
+  /* middle points in last column */
+  a += stride;
+  for(j = 1; j < (patch->height - 1); j++)
+    {
+      p1 = &(patch->controlv[a]);
+      /*p2 = &(patch->controlv[a+stride]);*/
+      ay_npt_gnd(AY_SOUTH, patch, j, p1, &p2);
+      /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+      ay_npt_gnd(AY_WEST, patch, patch->width-1, p1, &p3);
+      ay_geom_calcnfrom3(p1, p3, p2, normal1);
+
+      /*p2 = &(patch->controlv[a-stride]);*/
+      ay_npt_gnd(AY_NORTH, patch, j, p1, &p2);
+      ay_geom_calcnfrom3(p1, p2, p3, normal2);
+
+      normal[0] = normal1[0] + (normal2[0]-normal1[0]);
+      normal[1] = normal1[1] + (normal2[1]-normal1[1]);
+      normal[2] = normal1[2] + (normal2[2]-normal1[2]);
+
+      newcv[a]   = p1[0] + (normal[0] * offset);
+      newcv[a+1] = p1[1] + (normal[1] * offset);
+      newcv[a+2] = p1[2] + (normal[2] * offset);
+      newcv[a+3] = p1[3];
+      a += stride;
+    }
+
+  /* last point in last column */
+  p1 = &(patch->controlv[a]);
+  /*p2 = &(patch->controlv[a-stride]);*/
+  ay_npt_gnd(AY_NORTH, patch, patch->height-1, p1, &p2);
+  /*p3 = &(patch->controlv[a-patch->height*stride]);*/
+  ay_npt_gnd(AY_WEST, patch, patch->width-1, p1, &p3);
+  ay_geom_calcnfrom3(p1, p2, p3, normal1);
+  newcv[a]   = p1[0] + (normal1[0] * offset);
+  newcv[a+1] = p1[1] + (normal1[1] * offset);
+  newcv[a+2] = p1[2] + (normal1[2] * offset);
+  newcv[a+3] = p1[3];
+
+
+  /* copy knot vectors */
+  if(patch->uknot_type == AY_KTCUSTOM)
+    {
+      if(!(newukv = calloc(patch->width+patch->uorder, sizeof(double))))
+	{
+	  free(newcv);
+	  free(copyrow);
+	  free(copycol);
+	  return AY_EOMEM;
+	}
+      memcpy(newukv, patch->uknotv,
+	     (patch->width+patch->vorder)*sizeof(double));
+    }
+  if(patch->vknot_type == AY_KTCUSTOM)
+    {
+      if(!(newvkv = calloc(patch->height+patch->vorder, sizeof(double))))
+	{
+	  if(newukv)
+	    free(newukv);
+	  free(newcv);
+	  free(copyrow);
+	  free(copycol);
+	  return AY_EOMEM;
+	}
+      memcpy(newvkv, patch->vknotv,
+	     (patch->height+patch->vorder)*sizeof(double));
+    }
+
+  ay_status = ay_npt_create(patch->uorder, patch->vorder,
+			    patch->width, patch->height,
+			    patch->uknot_type, patch->vknot_type,
+			    newcv, newukv, newvkv, np);
+
+  if(ay_status || !np)
+    {
+      free(newcv);
+      free(copyrow);
+      free(copycol);
+      if(newukv)
+	free(newukv);
+      if(newvkv)
+	free(newvkv);
+    }
+
+ return ay_status;
+} /* ay_npt_offset */
+
+
+
+/* ay_npt_offset2:
+ *  create offset surface from <o>
+ *  the new surface is <offset> away from the original surface
+ *  returns new patch in <np>
+ *  WIP
+ */
+int
+ay_npt_offset2(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;

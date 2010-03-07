@@ -1051,6 +1051,13 @@ int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /*! \brief
  */
+void
+ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
+	   double **dp);
+
+
+/*! \brief
+ */
 int ay_npt_offset(ay_object *o, int mode, double offset,
 		  ay_nurbpatch_object **np);
 
