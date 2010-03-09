@@ -6550,11 +6550,11 @@ the procedural will create or the archive contains.
 <p>
 Script objects are the most flexible object type of Ayam.
 They may be used to create new objects, modify existing objects,
-or realise mechanisms like constraints using small scripts.
+or realise mechanisms like constraints using small scripts
+that are embedded in the Script objects themselves.
 <p>
-Those small scripts may employ functionality from Tcl and
-the Tcl scripting interface of Ayam to calculate data which
-is then used to create or modify objects of the scene
+Those small embedded scripts may employ functionality from Tcl and
+the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
 
 <sect2>Safe Interpreter<label id="safeinterp">
@@ -7216,19 +7216,25 @@ many polygons and a smooth surface; useful values range from 0 to 5.
 <sect2>SDNPatch Modelling Actions
 <p>
 This section, briefly, explains the special modelling actions defined
-for the SDNPatch custom object. In order to select a face for such an
-operation, just select all the control points defining the face.
+for the SDNPatch custom object. In order to select a face or edge for
+such an operation, just select all the control points defining the face
+or edge.
 All modelling actions can be started via the <tt>"Custom/SDNPatch"</tt>
 main menu.
 <p>
 <itemize>
 <item><tt/"Face Extrude"/, new faces are inserted in the mesh at all
-edges of the selected face, the selected face itself is displaced along
-its normal;
-<item><tt/"Face Remove"/, the selected face is removed from the mesh;
+edges of the selected faces, the selected faces themselves are displaced
+along their respective normals. If this operation is picking the wrong
+direction, try to revert all faces first, see below.
+<item><tt/"Face Remove"/, the selected face is removed from the mesh.
 <item><tt/"Face Merge"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
-to the neighboring faces of the first face;
+to the neighboring faces of the first face.
+The decision, which vertices of the faces will actually be connected,
+depends on the relative vertice distances: you need to move the two
+faces near each other to make clear, how the new connection shall be
+established.
 <item><tt/"Face Connect"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
 to the neighboring faces of the first face via a set of new faces.
@@ -7238,10 +7244,20 @@ faces near each other to make clear, how the new connection shall be
 established.
 <item><tt/"Reset All Knots"/, set all knot values to 1.0 (the default).
 <item><tt/"Set Knot"/, set the knot value of the selected edge.
+<item><tt/"Revert"/, reverts all faces.
+<item><tt/"Merge"/, merges multiple SDNPatch objects into one new.
 <item><tt/"Import PLY"/, import a PLY file.
 <item><tt/"Export PLY"/, export the currently selected SDNPatch object
 to a PLY file. 
 </itemize>
+
+In addition, there are two conversion operations that convert
+NURBS patch objects (or NURBS patch providing objects) and PolyMesh
+objects (or PolyMesh providing objects) to SDNPatch objects.
+
+Note that the PolyMesh to SDNPatch conversion only accepts closed
+quadrilateral polygon meshes (Triangles are omitted) and expects
+an optimized mesh (i.e. adjacent faces should share the same vertices).
 
 
 <sect1>Standard Properties<label id="stdprop">
