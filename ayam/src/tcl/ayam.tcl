@@ -633,6 +633,8 @@ array set ay {
  ws "X11"
  shiftcommand 0
  shifttab 0
+ startup 1
+ customkeys {}
 }
 # array ay
 
@@ -1649,7 +1651,7 @@ shader_scanAll
 shortcut_swapmb
 
 # bind keyboard shortcuts to main menu
-puts stdout "Establishing key bindings..."
+puts stdout "Establishing main key bindings..."
 shortcut_main .
 
 bind . <Escape> {
@@ -1875,9 +1877,6 @@ if { [info exists tk_mac_OpenDocuments] } {
     eval [subst "::tk::mac::OpenDocument $tk_mac_OpenDocuments"]
 }
 
-puts stdout "The tip of the day is:"
-tipoftheDay
-
 # save preference settings for use with the "Def."-Button in the
 # preferences dialog
 set avnames [array names ayprefs]
@@ -1970,6 +1969,7 @@ if { !$ayprefs(SingleWindow) && ($ay(noview) != 1) && ($ay(views) == "") } {
 }
 
 # now "activate" all views: establish mouse and key bindings
+puts stdout "Establishing view key bindings..."
 foreach view $ay(views) { viewBind $view }
 
 # arrange to make the view window under the mouse pointer current
@@ -1983,7 +1983,12 @@ if { $ay(ws) == "Aqua" } {
     cd "$env(HOME)/Documents"
 }
 
+puts stdout "The tip of the day is:"
+tipoftheDay
+
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
+
+set ay(startup) 0
 
 . configure -cursor {}
 
