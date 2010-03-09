@@ -31,11 +31,14 @@ typedef struct sdnpatch_object_s
   unsigned char subdivDegree;
 
   Mesh *controlMesh;
-  GLuint controlObject;
-
+  /*
+  GLuint controlWireList;
+  GLuint controlFaceList;
+  */
   Mesh *subdivMesh;
+  /*
   GLuint subdivObject;
-
+  */
   vector<Vertex*> *controlVertices;
   double *controlCoords;
 
@@ -132,6 +135,7 @@ Revertor::Revertor(sdnpatch_object *sdnpatch)
   m_id = 0;
 } /* Revertor::Revertor */
 
+
 Revertor::~Revertor()
 {
   MeshBuilder::dispose(m_meshBuilder);
@@ -150,12 +154,14 @@ Revertor::addVertex(VertexPrecision x,
  return;
 } /* Revertor::addVertex */
 
+
 void
 Revertor::finishVertices(void)
 {
   m_meshBuilder->finishVertices();
  return;
 } /* Revertor::finishVertices */
+
 
 void
 Revertor::startFace(unsigned int numEdges)
@@ -182,6 +188,7 @@ Revertor::addTexCoords(KnotPrecision u,
 } /* Revertor::addTexCoords */
 #endif
 
+
 void
 Revertor::closeFace(void)
 {
@@ -197,12 +204,14 @@ Revertor::closeFace(void)
  return;
 } /* Revertor::closeFace */
 
+
 void
 Revertor::finishFaces(void)
 {
   m_meshBuilder->finishFaces();
  return;
 } /* Revertor::finishFaces */
+
 
 void
 Revertor::addKnotInterval(unsigned int vertex1,
@@ -212,6 +221,7 @@ Revertor::addKnotInterval(unsigned int vertex1,
   m_meshBuilder->addKnotInterval(vertex2, vertex1, interval);
  return;
 } /* Revertor::addKnotInterval */
+
 
 void
 Revertor::finishKnotIntervals(void)
@@ -312,6 +322,7 @@ PatchMerger::addPatch()
  return;
 } /* PatchMerger::addPatch */
 
+
 void
 PatchMerger::addVertex(VertexPrecision x,
 		       VertexPrecision y,
@@ -330,11 +341,13 @@ PatchMerger::addVertex(VertexPrecision x,
  return;
 } /* PatchMerger::addVertex */
 
+
 void
 PatchMerger::finishVertices(void)
 {
  return;
 } /* PatchMerger::finishVertices */
+
 
 void
 PatchMerger::startFace(unsigned int numEdges)
@@ -420,11 +433,13 @@ PatchMerger::closeFace(void)
  return;
 } /* PatchMerger::closeFace */
 
+
 void
 PatchMerger::finishFaces(void)
 {
  return;
 } /* PatchMerger::finishFaces */
+
 
 void
 PatchMerger::addKnotInterval(unsigned int vertex1,
@@ -470,6 +485,7 @@ PatchMerger::addKnotInterval(unsigned int vertex1,
     } // if
  return;
 } /* PatchMerger::addKnotInterval */
+
 
 void
 PatchMerger::finishKnotIntervals(void)
@@ -2780,7 +2796,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
     }
 
   sdnpatch->subdivDegree = 3;
-  sdnpatch->subdivLevel = 2;
+  sdnpatch->subdivLevel = 0;
 
   sdnpatch->controlMesh = new Mesh(sdnpatch->subdivDegree);
   meshBuilder = MeshBuilder::create(*(sdnpatch->controlMesh));
@@ -2853,7 +2869,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  meshBuilder->addVertex(verts[i], verts[i+1],
 				 verts[i+2], verts[i+3], j);
-	  i+=4;
+	  i += 4;
 	} /* for */
       meshBuilder->finishVertices();
 
@@ -2883,7 +2899,10 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
     } /* if */
 
   MeshBuilder::dispose(meshBuilder);
-
+  /*
+  sdnpatch->controlWireList = glGenLists(1);
+  sdnpatch->controlFaceList = glGenLists(1);
+  */
   sdnpatch_getcontrolvertices(sdnpatch);
 
   o->refine = sdnpatch;
@@ -2969,9 +2988,11 @@ sdnpatch_copycb(void *src, void **dst)
     sdnpatch->controlMesh = new Mesh(*(srcsdnpatch->controlMesh));
 
   sdnpatch_getcontrolvertices(sdnpatch);
-
+  /*
   if(srcsdnpatch->subdivMesh)
     sdnpatch->subdivMesh = new Mesh(*(srcsdnpatch->subdivMesh));
+  */
+  sdnpatch->subdivMesh = NULL;
 
   *dst = (void *)sdnpatch;
 
@@ -3072,16 +3093,23 @@ sdnpatch_shadecb(struct Togl *togl, ay_object *o)
   if(!sdnpatch)
     return AY_ENULL;
 
-  if(!sdnpatch->subdivMesh)
-    return AY_OK;
-
-  meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
+  if(sdnpatch->subdivMesh)
+    meshFlattener = MeshFlattener::create(*(sdnpatch->subdivMesh));
+  else
+    meshFlattener = MeshFlattener::create(*(sdnpatch->controlMesh));
   meshFlattener->setCompatible(true);
 
   glBegin(GL_QUADS);
    meshFlattener->receiveVertices(std::tr1::bind(&sdnpatch_quadcb,
 						 _1, _2, _3, _4));
-   meshFlattener->receiveSmoothNormals(&glNormal3d);
+   if(sdnpatch->subdivMesh && sdnpatch->subdivLevel > 0)
+     {
+       meshFlattener->receiveSmoothNormals(&glNormal3d);
+     }
+   else
+     {
+       meshFlattener->receiveFlatNormals(&glNormal3d);
+     }
    meshFlattener->flattenFaces();
   glEnd();
 
@@ -3434,6 +3462,7 @@ sdnpatch_notifycb(ay_object *o)
  ay_point *pnt = NULL;
  Vertex *v = NULL;
  int curlev = 0;
+ char *in_action = NULL, arrname[] = "ay", varname[] = "action";
 
   if(!o)
     return AY_ENULL;
@@ -3458,18 +3487,23 @@ sdnpatch_notifycb(ay_object *o)
 	}
     }
 
+  in_action = Tcl_GetVar2(ay_interp, arrname, varname, TCL_GLOBAL_ONLY);
+
   /* update subdivision surface */
-  if(sdnpatch->subdivMesh)
+  if((!ay_prefs.lazynotify) || (in_action && *in_action == '0'))
     {
-      delete sdnpatch->subdivMesh;
-    }
+      if(sdnpatch->subdivMesh)
+	{
+	  delete sdnpatch->subdivMesh;
+	}
 
-  sdnpatch->subdivMesh = new Mesh(*(sdnpatch->controlMesh));
+      sdnpatch->subdivMesh = new Mesh(*(sdnpatch->controlMesh));
 
-  while(curlev < sdnpatch->subdivLevel)
-    {
-      sdnpatch->subdivMesh->subdivide();
-      curlev++;
+      while(curlev < sdnpatch->subdivLevel)
+	{
+	  sdnpatch->subdivMesh->subdivide();
+	  curlev++;
+	}
     }
 
  return AY_OK;
@@ -4425,7 +4459,6 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
 	}
       else
 	{
-	  printf("Gotcha!\n");
 	  /* just forward m and n */
 	  for(j = 0; j < po->nloops[i]; j++)
 	    {
