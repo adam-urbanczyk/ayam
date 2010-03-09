@@ -793,6 +793,11 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
+    # allow plugins to define their own actions
+    foreach customkey $ay(customkeys) {
+	catch { bind $w [lindex $customkey 0] [lindex $customkey 1] }
+    }
+
  return;
 }
 # shortcut_viewactions
