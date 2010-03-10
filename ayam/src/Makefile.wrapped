@@ -456,9 +456,13 @@ AYGSOLIBS = -L$(GELDIR)/lib -lgsoargs -lgelato
 
 # Aycsg Plugin
 # OpenCSG
-OPENCSGDIR = ../../OpenCSG-1.0.1
-OPENCSGINCDIR = $(OPENCSGDIR)/include
+OPENCSGDIR = ../../OpenCSG-1.3.0
 OPENCSGOBJS = $(OPENCSGDIR)/src/area.o $(OPENCSGDIR)/src/batch.o\
+	$(OPENCSGDIR)/src/context.o\
+	$(OPENCSGDIR)/src/settings.o\
+	$(OPENCSGDIR)/src/frameBufferObject.o\
+	$(OPENCSGDIR)/src/offscreenBuffer.o\
+	$(OPENCSGDIR)/src/pBufferTexture.o\
 	$(OPENCSGDIR)/src/openglHelper.o\
 	$(OPENCSGDIR)/src/occlusionQuery.o\
 	$(OPENCSGDIR)/src/renderGoldfeather.o\
@@ -471,10 +475,9 @@ OPENCSGOBJS = $(OPENCSGDIR)/src/area.o $(OPENCSGDIR)/src/batch.o\
 	$(OPENCSGDIR)/src/stencilManager.o\
 	$(OPENCSGDIR)/RenderTexture/RenderTexture.o
 
-
-GLEWDIR = ../../OpenCSG-1.0.1/glew
-GLEWINCDIR = $(GLEWDIR)/include
+GLEWDIR = ../../OpenCSG-1.3.0/glew
 GLEWLIB = -L$(GLEWDIR)/lib -lGLEW
+OPENCSGINC = -I$(OPENCSGDIR) -I$(OPENCSGDIR)/include -I$(GLEWDIR)/include
 
 AYCSGOBJS = plugins/aycsg.o\
 	plugins/ayCSGPrimitive.o
@@ -517,7 +520,7 @@ AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $
 	$(CC) -c $(CFLAGS) $*.c -o $@ $(AYINC)
 
 .cpp.o:
-	$(CXX) -c $(CFLAGS) $*.cpp -o $@ $(AYINC) -I$(OPENCSGINCDIR) -I$(GLEWINCDIR) -Iplugins
+	$(CXX) -c $(CFLAGS) $*.cpp -o $@ $(AYINC) -I$(OPENCSGINC) -Iplugins
 
 all: wrappedayam
 

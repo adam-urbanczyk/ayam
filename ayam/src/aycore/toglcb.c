@@ -26,6 +26,7 @@ ay_toglcb_create(struct Togl *togl)
  char fname[] = "ay_toglcb_create";
  ay_view_object *view = NULL;
  ay_object *o = NULL, *d = NULL, **l = NULL;
+ static int id = 0;
 
   /* create associated view object */
   if(!(view = calloc(1, sizeof(ay_view_object))))
@@ -82,6 +83,9 @@ ay_toglcb_create(struct Togl *togl)
   view->up[1] = 1.0;
   view->zoom = 3.0;
   view->type = AY_VTFRONT;
+
+  view->id = id;
+  id++;
 
   /* vital OpenGL defaults */
   glEnable(GL_DEPTH_TEST);

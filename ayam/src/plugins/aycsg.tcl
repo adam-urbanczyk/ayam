@@ -136,7 +136,7 @@ proc aycsgPreferences { } {
     addMenu $f aycsg_options_save DCSampling \
 	[list NoDCSampling OcclusionQuery DCSampling]
     addMenu $f aycsg_options_save OffscreenType \
-	[list Automatic FBO PBuffer]
+	[list Automatic FBO PBuffer FBOARB FBOEXT]
     addMenu $f aycsg_options_save Optimization \
 	[list Default ForceOn On Off]
     addCheck $f aycsg_options_save CalcBBS

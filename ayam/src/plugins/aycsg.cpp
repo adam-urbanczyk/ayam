@@ -264,6 +264,9 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
 
 	  // fill depth buffer (resolve CSG operations)
 	  glDisable(GL_LIGHTING);
+
+	  OpenCSG::setContext(view->id);
+
 	  OpenCSG::render(aycsg_primitives);
 
 	  // now draw again using existing depth buffer bits and
@@ -1693,6 +1696,12 @@ aycsg_setopttcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     case 2:
       offscreen = OpenCSG::PBuffer;
+      break;
+    case 3:
+      offscreen = OpenCSG::FrameBufferObjectARB;
+      break;
+    case 4:
+      offscreen = OpenCSG::FrameBufferObjectEXT;
       break;
     default:
       offscreen = OpenCSG::AutomaticOffscreenType;

@@ -976,6 +976,8 @@ typedef struct ay_view_object_s
 
   int isicon;
 
+  int id;
+
   /* alternative display callback */
   Togl_Callback *altdispcb;
 } ay_view_object;
