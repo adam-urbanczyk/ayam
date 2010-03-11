@@ -1434,6 +1434,10 @@ void ay_trafo_pointstoplane(double x1, double y1, double z1,
 			    double x3, double y3, double z3,
 			    double *A, double *B, double *C, double *D);
 
+/*! \brief apply scale around cog for a number of points
+ */
+void ay_trafo_scalecog(double scale, double *cv, int len, int stride);
+
 
 /* undo.c */
 

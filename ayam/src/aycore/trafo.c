@@ -1539,3 +1539,46 @@ ay_trafo_pointstoplane(double x1, double y1, double z1,
 } /* ay_trafo_pointstoplane */
 
 
+/* ay_trafo_scalecog:
+ *
+ */
+void
+ay_trafo_scalecog(double scale, double *cv, int len, int stride)
+{
+ int i;
+ double *p, cog[3] = {0};
+
+  if(!cv)
+    return;
+
+  p = cv;
+  for(i = 0; i < len; i++)
+    {
+      cog[0] += (p[0]/len);
+      cog[1] += (p[1]/len);
+      cog[2] += (p[2]/len);
+
+      p += stride;
+    } /* for */
+
+  p = cv;
+  for(i = 0; i < len; i++)
+    {
+      p[0] -= cog[0];
+      p[1] -= cog[1];
+      p[2] -= cog[2];
+
+      p[0] *= scale;
+      p[1] *= scale;
+      p[2] *= scale;
+
+      p[0] += cog[0];
+      p[1] += cog[1];
+      p[2] += cog[2];
+
+      p += stride;
+    } /* for */
+
+ return;
+} /* ay_trafo_scalecog */
+
