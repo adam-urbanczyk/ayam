@@ -956,7 +956,8 @@ AyConvertor::convert(ay_pomesh_object *pomesh)
 class FaceExtruder : public FlatMeshHandler
 {
 public:
-  FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts);
+  FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts,
+	       double length, double scale);
 
   void addVertex(VertexPrecision x,
 		 VertexPrecision y,
@@ -979,6 +980,9 @@ private:
 
   sdnpatch_object *m_sdnpatch;
   ay_point *m_pnts;
+
+  double m_length;
+  double m_scale;
 
   unsigned int m_oldVertsNum;
   unsigned int m_newVertsNum;
@@ -1006,10 +1010,15 @@ private:
 };
 
 
-FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts)
+FaceExtruder::FaceExtruder(sdnpatch_object *sdnpatch, ay_point *pnts,
+			   double length, double scale)
 {
   m_sdnpatch = sdnpatch;
   m_pnts = pnts;
+
+  m_length = length;
+  m_scale = scale;
+
   m_oldVertsNum = sdnpatch->controlVertices->size();
   m_newVertsNum = 0;
   m_newFacesNum = 0;
@@ -1126,7 +1135,10 @@ FaceExtruder::closeFace(void)
 	  ay_geom_calcnfrom3(&(cv[0]), &(cv[3]), &(cv[6]), N);
 	}
 
-      /* create the vertices */
+      /* apply scale factor */
+      ay_trafo_scalecog(m_scale, cv, m_faceVerts.size(), 3);
+
+      /* create the new vertices */
 
       newVerts.reserve(m_faceVerts.size());
 
@@ -1136,9 +1148,9 @@ FaceExtruder::closeFace(void)
 	{
 	  j = (*fi)*4+3;
 
-	  m_newVerts.push_back(p[0]-N[0]);
-	  m_newVerts.push_back(p[1]-N[1]);
-	  m_newVerts.push_back(p[2]-N[2]);
+	  m_newVerts.push_back(p[0]-(N[0]*m_length));
+	  m_newVerts.push_back(p[1]-(N[1]*m_length));
+	  m_newVerts.push_back(p[2]-(N[2]*m_length));
 	  m_newVerts.push_back(m_newVerts[j]);
 
 	  newVerts.push_back(m_oldVertsNum+m_newVertsNum);
@@ -1151,7 +1163,7 @@ FaceExtruder::closeFace(void)
 	  fi++;
 	}
 
-      /* create the faces */
+      /* create the new faces */
 
       for(i = 0; i < m_faceVerts.size()-1; i++)
 	{
@@ -4765,7 +4777,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
 
-  FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp);
+  FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp, 0.5, 0.5);
 
   meshFlattener->flatten(*handler);
 
