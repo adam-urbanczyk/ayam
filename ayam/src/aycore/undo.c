@@ -524,7 +524,7 @@ ay_undo_copy(ay_undo_object *uo)
  char view_setgridicon_cmd[] = "viewSetGridIcon ";
  char view_setdmodeicon_cmd[] = "viewSetDModeIcon ";
  Tcl_DString ds;
- int notify = AY_TRUE, notify_parent = AY_FALSE;
+ int find_parent = AY_TRUE, notify_parent = AY_FALSE;
  ay_object *parent = NULL;
  double obj;
  ay_pointedit pe;
@@ -724,11 +724,15 @@ ay_undo_copy(ay_undo_object *uo)
       o->hide = c->hide;
       o->hide_children = c->hide_children;
 
-      if((c->type != AY_IDVIEW) && (c->type != AY_IDROOT) && notify)
+      if((c->type != AY_IDVIEW) && (c->type != AY_IDROOT))
 	{
-	  notify_parent = AY_TRUE;
-	  parent = o;
-	  notify = AY_FALSE;
+	  ay_notify_force(o);
+	  if(find_parent)
+	    {
+	      notify_parent = AY_TRUE;
+	      parent = o;
+	      find_parent = AY_FALSE;
+	    }
 	} /* if */
 
       c = c->next;
