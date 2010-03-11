@@ -289,24 +289,26 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  char fname[] = "forceNot";
- int modified = AY_FALSE, all = AY_FALSE, inform_parent = AY_FALSE;
+ char notify_modified = AY_FALSE;
+ char notify_all = AY_FALSE;
+ char notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
   if(argc > 1)
     {
       if(!strcmp(argv[1], "mod"))
-	modified = AY_TRUE;
+	notify_modified = AY_TRUE;
       if(!strcmp(argv[1], "all"))
-	all = AY_TRUE;
+	notify_all = AY_TRUE;
     }
 
-  if((!sel) || (all))
+  if((!sel) || (notify_all))
     {
       o = ay_root->next;
       while(o)
 	{
-	  if(modified)
+	  if(notify_modified)
 	    {
 	      if(o->modified)
 		{
@@ -317,9 +319,10 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		      ay_error(AY_ERROR, fname, NULL);
 		    } /* if */
 
-		  inform_parent = AY_TRUE;
+		  o->modified = AY_FALSE;
+
+		  notify_parent = AY_TRUE;
 		}
-	      o->modified = AY_FALSE;
 	    }
 	  else
 	    {
@@ -330,12 +333,12 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		  ay_error(AY_ERROR, fname, NULL);
 		} /* if */
 
-	      inform_parent = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    }
 	  o = o->next;
 	} /* while */
 
-      if(inform_parent)
+      if(notify_parent)
 	{
 	  ay_notify_parent();
 	}
@@ -344,7 +347,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
     {
       while(sel)
 	{
-	  if(modified)
+	  if(notify_modified)
 	    {
 	      if(sel->object->modified)
 		{
@@ -365,10 +368,11 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		    }
 		  else
 		    {
-		      inform_parent = AY_TRUE;
+		      notify_parent = AY_TRUE;
 		    } /* if */
+
+		  sel->object->modified = AY_FALSE;
 		} /* if */
-	      sel->object->modified = AY_FALSE;
 	    }
 	  else
 	    {
@@ -389,14 +393,14 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		}
 	      else
 		{
-		  inform_parent = AY_TRUE;
+		  notify_parent = AY_TRUE;
 		} /* if */
 	    } /* if */
 
 	  sel = sel->next;
 	} /* while */
 
-      if(!ay_prefs.completenotify && inform_parent)
+      if(!ay_prefs.completenotify && notify_parent)
 	{
 	  ay_notify_parent();
 	}
@@ -522,10 +526,10 @@ ay_notify_complete(ay_object *r)
 	  /* added some objects, need to continue propagating... */
 	  propagate = AY_TRUE;
 	}
+
       /* for consecutive iterations, arrange to stop at old list, because
 	 we processed that already */
       u = t;
-
     } /* while */
 
   /* revert list */

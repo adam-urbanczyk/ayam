@@ -9,46 +9,44 @@
 
 # action.tcl - interactive actions
 
-#upAc:
-# bound to variable trace for ay(action) that in turn designates whether
-# modeling actions are going on, if ay(action) is written and 0,
-# (an action ended), we issue an additional notification, so that
-# objects may adapt their notification (do low quality but fast work, when
-# a modelling action is going on)
-proc upAc { n1 n2 op } {
+#actionEnd:
+# bound to variable trace for ay(action) that in turn
+# designates whether modeling actions are going on;
+# if ay(action) is written and 0 (an action ended),
+# we enforce an additional notification, so that
+# objects may adapt their notification (do low quality
+# but fast work, when a modelling action is going on,
+# do high quality but slow work, when the modelling
+# action finished)
+proc actionEnd { n1 n2 op } {
     global ay
 
     if { $ay(action) == 0 } {
-	forceNot mod
+	forceNot
      }
 
  return;
 }
-# upAc
+# actionEnd
 
-trace variable ay(action) w upAc
+trace variable ay(action) w actionEnd
 
 
-#stdReleaseBind:
+#actionBindRelease:
 # standard release binding for modeling actions:
-# force notification (if necessary);
+# force notification (via ay(action)/actionEnd above);
 # redraw all views; update property GUI
-proc stdReleaseBind { w } {
+proc actionBindRelease { w } {
     bind $w <ButtonRelease-1> {
 	set ay(action) 0
 	update
-	if { $ayprefs(LazyNotify) == 1 } {
-	    forceNot mod
-	    rV
-	} else {
-	    rV %W
-	}
+	rV
 	plb_update
 	focus %W
     }
  return;
 }
-# stdReleaseBind
+# actionBindRelease
 
 
 #
@@ -77,7 +75,7 @@ proc actionRotView { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 0
 
@@ -109,7 +107,7 @@ proc actionMoveView { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 0
 
@@ -141,7 +139,7 @@ proc actionZoomView { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 0
 }
@@ -171,7 +169,7 @@ proc actionMoveZView { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 0
 
@@ -202,7 +200,7 @@ proc actionMoveOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -234,7 +232,7 @@ proc actionRotOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -252,7 +250,7 @@ proc actionRotObabindp { w x y } {
 	    %W rotoaac -start %x %y $x $y"
     bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -310,7 +308,7 @@ proc actionSc1DXOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -342,7 +340,7 @@ proc actionSc1DYOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -374,7 +372,7 @@ proc actionSc1DZOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -406,7 +404,7 @@ proc actionSc2DOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -438,7 +436,7 @@ proc actionSc3DOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -470,7 +468,7 @@ proc actionStr2DOb { w } {
 
     bind $w <Motion> ""
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     $w setconf -drawh 1
 
@@ -484,7 +482,7 @@ proc actionTagP { w } {
     global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Select_Points"
-    viewSetMAIcon $w ay_Tag_img "Select_Points" 
+    viewSetMAIcon $w ay_Tag_img "Select_Points"
 
     actionClearB1 $w
 
@@ -863,7 +861,7 @@ proc actionEditP { w } {
 	set ay(action) 1
 	undo save EditPnt
 	%W mc
-	if { $ayprefs(FlashPoints) == 1 } {	
+	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -flash
 	} else {
 	    %W startpepac %x %y
@@ -885,7 +883,7 @@ proc actionEditP { w } {
 	}
     }
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
 	if { $ayprefs(FixFlashPoints) == 1 } {
@@ -917,7 +915,7 @@ proc actionEditWP { w } {
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	undo save EditWPnt
-	if { $ayprefs(FlashPoints) == 1 } {	
+	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -flash
 	} else {
 	    %W startpepac %x %y
@@ -936,7 +934,7 @@ proc actionEditWP { w } {
 	}
     }
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
 	if { $ayprefs(FixFlashPoints) == 1 } {
@@ -991,7 +989,7 @@ proc actionInsertP { w } {
 	}
     }
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
@@ -1029,7 +1027,7 @@ proc actionDeleteP { w } {
 	}
     }
 
-    stdReleaseBind $w
+    actionBindRelease $w
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <ButtonRelease-1> "+%W startpepac %x %y -flash -ignoreold"
@@ -1098,7 +1096,7 @@ proc actionSplitNC { w } {
 	    splitNC $u
 	    uCR; sL; rV
 	}
-	focus %W	
+	focus %W
     }
 
     $w setconf -drawh 0
@@ -1156,7 +1154,7 @@ proc actionPick { w } {
 
 	focus %W
     }
-    
+
     bind $w <B1-Motion> {
 	%W setconf -rect $oldx $oldy %x %y 1
     }
@@ -1199,7 +1197,7 @@ proc actionSnapToGrid2D { w } {
 
 #actionClearB1:
 # helper procedure to clear all bindings to mouse button 1;
-# all modeling actions call this before adding their bindings 
+# all modeling actions call this before adding their bindings
 proc actionClearB1 { w } {
     global ayviewshortcuts
 

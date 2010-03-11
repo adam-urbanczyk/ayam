@@ -3461,7 +3461,7 @@ sdnpatch_notifycb(ay_object *o)
  sdnpatch_object *sdnpatch = NULL;
  ay_point *pnt = NULL;
  Vertex *v = NULL;
- int curlev = 0;
+ int currentLevel = 0, targetLevel = 0;
  char *in_action = NULL, arrname[] = "ay", varname[] = "action";
 
   if(!o)
@@ -3487,23 +3487,38 @@ sdnpatch_notifycb(ay_object *o)
 	}
     }
 
+  targetLevel = sdnpatch->subdivLevel;
   in_action = Tcl_GetVar2(ay_interp, arrname, varname, TCL_GLOBAL_ONLY);
+  if(ay_prefs.lazynotify)
+    {
+      if(in_action && *in_action == '1')
+	{
+	  // XXXX ToDo: make this configurable
+	  //targetLevel = 0;
+	  return AY_OK;
+	}
+    }
+  else
+    {
+      if(in_action && *in_action == '1')
+	{
+	  // XXXX ToDo: make this configurable
+	  targetLevel = 1;
+	}
+    }
 
   /* update subdivision surface */
-  if((!ay_prefs.lazynotify) || (in_action && *in_action == '0'))
+  if(sdnpatch->subdivMesh)
     {
-      if(sdnpatch->subdivMesh)
-	{
-	  delete sdnpatch->subdivMesh;
-	}
+      delete sdnpatch->subdivMesh;
+    }
 
-      sdnpatch->subdivMesh = new Mesh(*(sdnpatch->controlMesh));
+  sdnpatch->subdivMesh = new Mesh(*(sdnpatch->controlMesh));
 
-      while(curlev < sdnpatch->subdivLevel)
-	{
-	  sdnpatch->subdivMesh->subdivide();
-	  curlev++;
-	}
+  while(currentLevel < targetLevel)
+    {
+      sdnpatch->subdivMesh->subdivide();
+      currentLevel++;
     }
 
  return AY_OK;
@@ -5306,7 +5321,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(c)
 	ay_object_deletemulti(c);
-      
+
       sel = sel->next;
     } /* while */
 
