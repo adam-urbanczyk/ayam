@@ -54,9 +54,12 @@ global ay
 $ay(cm) add cascade -menu $ay(cm).sdn -label "SDNPatch"
 menu $ay(cm).sdn -tearoff 0
 set m $ay(cm).sdn
-
+set ay(felength) 1.0
+set ay(fescale) 1.0
 $m add command -label "Face Extrude" -command {
-    undo save SDNExtFace; sdnextrudeFace; rV; }
+    runTool {ay(felength) ay(fescale)} {"Length:" "Scale:"} \
+	"undo save SDNExtFace; sdnextrudeFace %0 %1; rV;"
+}
 $m add command -label "Face Remove" -command {
     undo save SDNRemFace; sdnremoveFace; rV; }
 $m add command -label "Face Merge" -command {
@@ -89,6 +92,8 @@ $m add command -label "Export PLY" -command plyio_export
 mmenu_addlume $ay(cm).sdn
 
 # XXXX ToDo: add own keyboard shortcuts for face extrude etc.?
+
+#lappend ay(customkeys) [list {<Key-f>} {sdnpatch_selfaceact $w.f3D.togl} ]
 
 # tell the rest of Ayam (or other custom objects), that we are loaded
 lappend ay(co) SDNPatch

@@ -4752,6 +4752,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
  double obj;
  ay_pointedit pe;
  vector<unsigned int>::iterator si;
+ double length = 1.0, scale = 1.0;
 
   /* check selection */
   if(!sel)
@@ -4772,12 +4773,22 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(argc > 1)
+    {
+      Tcl_GetDouble(interp, argv[1], &length);
+      if(argc > 2)
+	{
+	  Tcl_GetDouble(interp, argv[2], &scale);
+	}
+    }
+
   sdnpatch = (sdnpatch_object*)o->refine;
 
   MeshFlattener *meshFlattener =
     MeshFlattener::create(*(sdnpatch->controlMesh));
 
-  FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp, 0.5, 0.5);
+  FlatMeshHandler *handler = new FaceExtruder(sdnpatch, o->selp,
+					      length, scale);
 
   meshFlattener->flatten(*handler);
 
