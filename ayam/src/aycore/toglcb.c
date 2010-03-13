@@ -219,7 +219,6 @@ ay_toglcb_destroy(struct Togl *togl)
 } /* ay_toglcb_destroy */
 
 
-
 /* ay_toglcb_reshape:
  *  Togl callback, called when view togl is
  *  exposed or reshaped

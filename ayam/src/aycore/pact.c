@@ -848,7 +848,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  ay_notify_force(o);
 	  ay_status = ay_notify_forceparent(o, AY_FALSE);
-	  view->drawmarker = AY_FALSE;
+	  view->drawmark = AY_FALSE;
 	} /* if */
 
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);

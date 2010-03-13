@@ -191,7 +191,7 @@ ay_shade_view(struct Togl *togl)
   glDisable(GL_LIGHTING);
 
   /* draw background image */
-  if(view->drawbg)
+  if(view->drawbgimage)
     {
       ay_draw_bgimage(togl);
     }
@@ -333,8 +333,8 @@ ay_shade_view(struct Togl *togl)
 
   glDisable(GL_LIGHTING);
 
-  /* draw marker */
-  if(view->drawmarker)
+  /* draw marked point in space */
+  if(view->drawmark)
     {
       glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 		(GLfloat)ay_prefs.tpb);

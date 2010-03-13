@@ -952,33 +952,39 @@ typedef struct ay_view_object_s
   int drawrect;
 
   /* mark a point in space */
+  double markworld[3];
   double markx;
   double marky;
-  int drawmarker;
+  int drawmark;
 
-  /* position */
+  /* position of the view window on the screen */
   int pos_x, pos_y;
 
-  /* internal */
+  /* is the view window iconified? */
+  int isicon;
+
+  /* is a modelling action active that needs to display handles? */
   int drawhandles;
-  /* call reshape before drawing */
+
+  /* need to call reshape before drawing? */
   int dirty;
 
   /* background image */
-  int drawbg;
   char *bgimage;
   int bgimagedirty;
+  int drawbgimage;
 
   /* geometry for background image */
   int bgwidth, bgheight;
   int bguorder, bgvorder;
   float *bgknotv, *bgcv;
 
-  int isicon;
-
+  /* unique identifier, for plugins (e.g. AyCSG) that tie
+     exclusive resources (e.g. offscreen buffers) to views */
   int id;
 
-  /* alternative display callback */
+  /* alternative display callback, for plugins that like to take
+     over drawing (e.g. AyCSG) */
   Togl_Callback *altdispcb;
 } ay_view_object;
 
