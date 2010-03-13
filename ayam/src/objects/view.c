@@ -140,9 +140,7 @@ ay_view_drawhcb(struct Togl *togl, ay_object *o)
        glVertex3d((GLdouble)view->to[0],(GLdouble)view->to[1],
 		  (GLdouble)view->to[2]);
       glEnd();
-
     }
-
 
  return AY_OK;
 } /* ay_view_drawhcb */
@@ -178,7 +176,8 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_view_object *view = NULL;
  char *n1 = "CameraData", *n2 = "ViewAttribData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int itemp = 0;
+ double oldmark[3];
+ int itemp = 0, need_markupdate = AY_TRUE;
  char *result;
  char fname[] = "view_setpropcb";
 
@@ -186,6 +185,8 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     return AY_ENULL;
 
   view = (ay_view_object *)o->refine;
+
+  memcpy(oldmark, view->markworld, 3*sizeof(double));
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("From_X",-1);
@@ -292,9 +293,26 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->local);
 
+  Tcl_SetStringObj(ton, "Mark_X", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[0]));
+
+  Tcl_SetStringObj(ton, "Mark_Y", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[1]));
+
+  Tcl_SetStringObj(ton, "Mark_Z", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[2]));
+
+  if(!AY_COMP3DP(oldmark, view->markworld))
+    {
+      need_markupdate = AY_TRUE;
+    }
+
   Tcl_SetStringObj(ton, "DrawBG", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &view->drawbg);
+  Tcl_GetIntFromObj(interp, to, &view->drawbgimage);
 
   result = Tcl_GetVar2(interp, "ViewAttribData", "BGImage",
 		       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -339,6 +357,13 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
   ay_toglcb_reshape(view->togl);
+
+  if(need_markupdate)
+    {
+      view->drawmark = AY_TRUE;
+      ay_viewt_updatemark(view->togl);
+    }
+
   ay_toglcb_display(view->togl);
 
   return AY_OK;
@@ -486,11 +511,23 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "DrawBG", -1);
-  to = Tcl_NewIntObj(view->drawbg);
+  to = Tcl_NewIntObj(view->drawbgimage);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "BGImage", -1);
   to = Tcl_NewStringObj(view->bgimage, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "Mark_X", -1);
+  to = Tcl_NewDoubleObj(view->markworld[0]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "Mark_Y", -1);
+  to = Tcl_NewDoubleObj(view->markworld[1]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "Mark_Z", -1);
+  to = Tcl_NewDoubleObj(view->markworld[2]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "togl", -1);
@@ -688,7 +725,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	{
 	  return ay_status;
 	}
-      fscanf(fileptr,"%d\n", &vtemp.drawbg);
+      fscanf(fileptr,"%d\n", &vtemp.drawbgimage);
     }
 
   if(ay_read_version >= 4)
@@ -898,7 +935,7 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
     {
       fprintf(fileptr,"\n");
     }
-  fprintf(fileptr,"%d\n",view->drawbg);
+  fprintf(fileptr,"%d\n",view->drawbgimage);
 
   fprintf(fileptr,"%g\n",view->nearp);
   fprintf(fileptr,"%g\n",view->farp);
@@ -1328,8 +1365,7 @@ ay_view_dropcb(ay_object *o)
 	      ay_toglcb_reshape(view->togl);
 	      ay_toglcb_display(view->togl);
 	      ay_viewt_uprop(view);
-	      view->drawmarker = AY_FALSE;
-
+	      view->drawmark = AY_FALSE;
 	    }
 	  break;
 	case AY_IDCAMERA:
@@ -1351,7 +1387,7 @@ ay_view_dropcb(ay_object *o)
 	  ay_toglcb_reshape(view->togl);
 	  ay_toglcb_display(view->togl);
 	  ay_viewt_uprop(view);
-	  view->drawmarker = AY_FALSE;
+	  view->drawmark = AY_FALSE;
 	  break;
 	case AY_IDNPATCH:
 	case AY_IDPAMESH:

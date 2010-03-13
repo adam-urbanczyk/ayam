@@ -169,7 +169,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  view->dirty = AY_FALSE;
 	}
 
-      if(view->drawbg)
+      if(view->drawbgimage)
 	{
 	  ay_draw_bgimage(togl);
 	}
@@ -324,8 +324,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
   if(!draw_offset)
     {
-      /* draw marker */
-      if(view->drawmarker)
+      /* draw marked point in space */
+      if(view->drawmark)
 	{
 	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 		    (GLfloat)ay_prefs.tpb);
@@ -338,10 +338,17 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	   glPushMatrix();
 	    glLoadIdentity();
 	    glBegin(GL_LINES);
+	    /*
 	     glVertex3d(view->markx-3.0, height-view->marky, 0.0);
 	     glVertex3d(view->markx+4.0, height-view->marky, 0.0);
 	     glVertex3d(view->markx, height-view->marky+3.0, 0.0);
 	     glVertex3d(view->markx, height-view->marky-4.0, 0.0);
+	    */
+	     glVertex3d(view->markx-3.0, view->marky, 0.0);
+	     glVertex3d(view->markx+4.0, view->marky, 0.0);
+	     glVertex3d(view->markx, view->marky+3.0, 0.0);
+	     glVertex3d(view->markx, view->marky-4.0, 0.0);
+
 	    glEnd();
 	   glPopMatrix();
 	   glMatrixMode(GL_PROJECTION);

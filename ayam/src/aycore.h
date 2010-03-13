@@ -1537,6 +1537,10 @@ int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
+int ay_viewt_updatemark(struct Togl *togl);
+
+/*! \brief
+ */
 int ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief

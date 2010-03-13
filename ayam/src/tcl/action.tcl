@@ -242,13 +242,13 @@ proc actionRotOb { w } {
 
 
 #
-proc actionRotObabindp { w x y } {
+proc actionRotObabindp { w } {
 
     viewTitle $w "" "Rotate_around_Point"
 
     bind $w <ButtonPress-1> "set ay(action) 1; %W mc;\
-	    %W rotoaac -start %x %y $x $y"
-    bind $w <B1-Motion> "%W rotoaac -winxy %x %y $x $y"
+	    %W rotoaac -start %x %y"
+    bind $w <B1-Motion> "%W rotoaac -winxy %x %y"
 
     actionBindRelease $w
 
@@ -273,7 +273,7 @@ proc actionRotObA { w } {
 	update
 	%W setconf -gmark %x %y 1
 	%W rotoaac
-	actionRotObabindp %W %x %y
+	actionRotObabindp %W
     }
     bind $w <ButtonRelease-1> ""
     bind $w <B1-Motion> ""

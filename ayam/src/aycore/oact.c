@@ -474,10 +474,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
- static double oldfromx = 0.0, oldfromy = 0.0, oldfromz = 0.0;
  double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0;
- double ax = 0.0, ay = 0.0, ay2 = 0.0, axo = 0.0, ayo = 0.0;
+ double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
  double dummy;
  double angle = 0.0, tpoint[4] = {0};
  double xaxis[3] = {1.0,0.0,0.0};
@@ -502,13 +501,13 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
     }
 
   /* parse args */
-  if(argc == 7)
+  if(argc == 5)
     {
       if(!strcmp(argv[2],"-winxy"))
 	{
-	  if(!view->drawmarker)
+	  if(!view->drawmark)
 	    {
-	      /* if view->drawmarker is not enabled some other action
+	      /* if view->drawmark is not enabled some other action
 		 changed view trafos so that the point is not valid
 		 anymore and we should request a new point */
 	      ay_error(AY_ERROR, fname,
@@ -516,29 +515,17 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      return TCL_OK;
 	    }
 
-	  if(oldfromx != view->from[0] ||
-	     oldfromy != view->from[1] ||
-	     oldfromz != view->from[2])
-	    {
-	      /* if some other action changed view trafos the point to
-		 rotate about is also not valid anymore and we should
-		 request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost point to rotate about. Please restart this action!");
-	      view->drawmarker = AY_FALSE;
-	      return TCL_OK;
-	    }
+	  ax = view->markx;
+	  ay = view->marky;
 
 	  Tcl_GetDouble(interp, argv[3], &winx);
 	  Tcl_GetDouble(interp, argv[4], &winy);
-	  Tcl_GetDouble(interp, argv[5], &ax);
-	  Tcl_GetDouble(interp, argv[6], &ay);
 
 	  if(view->usegrid)
 	    {
 	      ay_viewt_griddify(togl, &winx, &winy);
-	      ay_viewt_griddify(togl, &ax, &ay);
 	    }
+
 	}
       else
 	{
@@ -552,16 +539,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      Tcl_GetDouble(interp, argv[3], &winx);
 	      Tcl_GetDouble(interp, argv[4], &winy);
-	      Tcl_GetDouble(interp, argv[5], &ax);
-	      Tcl_GetDouble(interp, argv[6], &ay);
 
 	      if(view->usegrid)
 		{
 		  ay_viewt_griddify(togl, &winx, &winy);
-		  ay_viewt_griddify(togl, &ax, &ay);
-
-		  view->markx = ax;
-		  view->marky = ay;
 		}
 
 	      oldwinx = winx;
@@ -571,10 +552,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
     }
   else
     {
-      oldfromx = view->from[0];
-      oldfromy = view->from[1];
-      oldfromz = view->from[2];
-
       /*ay_error(AY_EARGS, fname, "-start winx winy|-winxy winx winy");*/
       return TCL_OK;
     }
@@ -592,15 +569,12 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
   glMatrixMode (GL_MODELVIEW);
 
-  ay2 = ay;
-
   /* rotate the object(s) */
   while(sel)
     {
       o = sel->object;
       if(o)
 	{
-	  ay = ay2;
 	  glPushMatrix();
 	  if(ay_currentlevel->object != ay_root)
 	    {
@@ -614,7 +588,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 
-	  owiny = height-owiny;
+	  /*owiny = height-owiny;*/
 
 	  /*
 	  dx = owinx;
@@ -628,7 +602,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
-
+	  
 	  if((v1[0]==0.0)&&(v1[1]==0.0))
 	    break;
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
@@ -679,7 +653,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      /*
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
-	      ay = height-ay;
+	      /*ay = height-ay;*/
 
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&dummy,&ayo,&axo);
 
@@ -734,9 +708,12 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      /*
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
-	      ay = height-ay;
+	      /*ay = height-ay;
 
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&ayo,&dummy);
+	      */
+	      axo = view->markworld[0];
+	      ayo = view->markworld[1];
 
 	      glPushMatrix();
 	      glLoadIdentity();
@@ -788,7 +765,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      /*
 	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 	      */
-	      ay = height-ay;
+	      /*ay = height-ay;*/
 
 	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&dummy,&ayo);
 

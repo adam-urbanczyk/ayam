@@ -1336,3 +1336,8 @@ addCheck $w ViewAttribData Local
 addText $w e5 "Background:"
 addCheck $w ViewAttribData DrawBG
 addFile $w ViewAttribData BGImage
+
+addText $w e6 "Mark:"
+addParam $w ViewAttribData Mark_X
+addParam $w ViewAttribData Mark_Y
+addParam $w ViewAttribData Mark_Z

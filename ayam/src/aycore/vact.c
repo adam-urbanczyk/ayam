@@ -37,7 +37,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 
 	if(view->type == AY_VTPERSP)
 	  {
-	    view->drawmarker = AY_FALSE;
+	    view->drawmark = AY_FALSE;
 	  }
       }
       else
@@ -56,10 +56,10 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
     }
 
   /* adjust marker */
-  if(view->drawmarker)
+  if(view->drawmark)
     {
       view->markx -= (oldwinx - winx);
-      view->marky -= (oldwiny - winy);
+      view->marky += (oldwiny - winy);
     }
 
   dxw = (oldwinx - winx) * view->conv_x;
@@ -137,6 +137,12 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   ay_trafo_apply3(view->to, mm);
 
   ay_toglcb_reshape(togl);
+  /*
+  if(view->drawmark)
+    {
+      ay_viewt_updatemark(togl);
+    }
+  */
   ay_toglcb_display(togl);
 
   ay_viewt_uprop(view);
@@ -162,8 +168,10 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
       {
 	Tcl_GetDouble(interp, argv[3], &winy);
 
-	view->drawmarker = AY_FALSE;
-
+	if(view->type == AY_VTPERSP)
+	  {
+	    view->drawmark = AY_FALSE;
+	  }
       }
       else
 	if(!strcmp(argv[2],"-start"))
@@ -181,9 +189,14 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
   if(oldwiny == winy)
     return TCL_OK;
 
-  dy = 1.1;
-  if((oldwiny - winy)>0)
-    dy = 0.9;
+  if((oldwiny - winy) > 0)
+    {
+      dy = 0.9;
+    }
+  else
+    {
+      dy = 1.1;
+    }
 
   /* zoom the view */
   view->zoom *= dy;
@@ -193,6 +206,12 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
   if(dy != 1.0)
     {
       ay_toglcb_reshape(togl);
+
+      if(view->drawmark)
+	{
+	  ay_viewt_updatemark(togl);
+	}
+
       ay_toglcb_display(togl);
     }
 
@@ -217,20 +236,22 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
   if(argc == 4)
     {
       if(!strcmp(argv[2],"-winy"))
-      {
-	Tcl_GetDouble(interp, argv[3], &winy);
+	{
+	  Tcl_GetDouble(interp, argv[3], &winy);
 
-	if(view->type == AY_VTPERSP)
-	  {
-	    view->drawmarker = AY_FALSE;
-	  }
-      }
+	  if(view->type == AY_VTPERSP)
+	    {
+	      view->drawmark = AY_FALSE;
+	    }
+	}
       else
-	if(!strcmp(argv[2],"-start"))
-	  {
-	    Tcl_GetDouble(interp, argv[3], &winy);
-	    oldwiny = winy;
-	  }
+	{
+	  if(!strcmp(argv[2],"-start"))
+	    {
+	      Tcl_GetDouble(interp, argv[3], &winy);
+	      oldwiny = winy;
+	    }
+	}
     }
   else
     {
@@ -260,6 +281,12 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
   if(dyw != 0.0)
     {
       ay_toglcb_reshape(togl);
+
+      if(view->drawmark)
+	{
+	  ay_viewt_updatemark(togl);
+	}
+
       ay_toglcb_display(togl);
     }
 
