@@ -59,7 +59,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   if(view->drawmark)
     {
       view->markx -= (oldwinx - winx);
-      view->marky += (oldwiny - winy);
+      view->marky -= (oldwiny - winy);
     }
 
   dxw = (oldwinx - winx) * view->conv_x;

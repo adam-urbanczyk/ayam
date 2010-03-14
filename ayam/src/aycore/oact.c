@@ -477,7 +477,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0;
  double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
- double dummy;
  double angle = 0.0, tpoint[4] = {0};
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
@@ -588,7 +587,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
 
-	  /*owiny = height-owiny;*/
+	  owiny = height-owiny;
 
 	  /*
 	  dx = owinx;
@@ -602,7 +601,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
-	  
+
 	  if((v1[0]==0.0)&&(v1[1]==0.0))
 	    break;
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
@@ -635,7 +634,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      v2[0] = v3[2];
 	      v2[1] = v3[1];
 	      xangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	      if(v2[1]<0.0)
+	      if(v2[1]>0.0)
 		xangle = 360.0-xangle;
 
 	      glPushMatrix();
@@ -647,15 +646,12 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      glRotated(xangle, 1.0, 0.0, 0.0);
 
-	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
+	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
-	      /*
-	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	      */
-	      /*ay = height-ay;*/
 
-	      gluUnProject(ax,ay,owinz,mm,mp,vp,&dummy,&ayo,&axo);
+	      axo = view->markworld[2];
+	      ayo = view->markworld[1];
 
 	      glPushMatrix();
 	      glLoadIdentity();
@@ -702,16 +698,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      glRotated(zangle, 0.0, 0.0, 1.0);
 
-	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
+	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
-	      /*
-	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	      */
-	      /*ay = height-ay;
 
-	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&ayo,&dummy);
-	      */
 	      axo = view->markworld[0];
 	      ayo = view->markworld[1];
 
@@ -747,7 +737,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      v2[0] = v3[0];
 	      v2[1] = v3[2];
 	      yangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	      if(v2[1]<0.0)
+	      if(v2[1]>0.0)
 		yangle = 360.0-yangle;
 
 	      glPushMatrix();
@@ -759,15 +749,12 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      glRotated(yangle, 0.0, 1.0, 0.0);
 
-	      /*	      glScaled (o->scalx, o->scaly, o->scalz);*/
+	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
-	      /*
-	      gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	      */
-	      /*ay = height-ay;*/
 
-	      gluUnProject(ax,ay,owinz,mm,mp,vp,&axo,&dummy,&ayo);
+	      axo = view->markworld[0];
+	      ayo = view->markworld[2];
 
 	      glPushMatrix();
 	      glLoadIdentity();
