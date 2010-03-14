@@ -1332,7 +1332,7 @@ idr_wrib_object(ay_object *o, char *file, double importance, int exclude,
 {
  int ay_status = AY_OK;
  ay_object *down = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
  char *parname = "name";
@@ -1613,7 +1613,7 @@ idr_wrib_object(ay_object *o, char *file, int mode)
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *down = NULL;
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
  char *parname = "name";
@@ -4322,7 +4322,7 @@ Idr_Init(Tcl_Interp *interp)
  int ay_status = AY_OK;
  char success_cmd[] =
    "puts stdout \"Importance Driven Rendering available now ...\"";
- void **arr = NULL;
+ ay_voidfp *arr = NULL;
 
 #ifdef WIN32
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -4413,8 +4413,8 @@ Idr_Init(Tcl_Interp *interp)
 
   /* dirty hack! overwrite root-object drawing routine */
   arr = ay_drawcbt.arr;
-  idr_root_drawcb = arr[ay_root->type];
-  arr[ay_root->type] = idr_drawroot_cb;
+  idr_root_drawcb = (ay_drawcb *)(arr[ay_root->type]);
+  arr[ay_root->type] = (ay_voidfp)idr_drawroot_cb;
 
   /* this object type allows us to draw within the ay view windows */
 #if 0
