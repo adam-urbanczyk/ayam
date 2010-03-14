@@ -788,22 +788,19 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		{
 		case AY_VTSIDE:
 		  /* rotate about x */
-		  glRotated(-angle,1.0,0.0,0.0);
 		  glTranslated(0.0,-v2[1],-v2[2]);
-
+		  glRotated(-angle,1.0,0.0,0.0);
 		  break;
 		case AY_VTFRONT:
 		case AY_VTTRIM:
 		  /* rotate about z */
-		  glRotated(-angle,0.0,0.0,1.0);
 		  glTranslated(-v2[0],-v2[1],0.0);
-
+		  glRotated(-angle,0.0,0.0,1.0);
 		  break;
 		case AY_VTTOP:
 		  /* rotate about y */
-		  glRotated(-angle,0.0,1.0,0.0);
 		  glTranslated(-v2[0],0.0,-v2[2]);
-
+		  glRotated(-angle,0.0,1.0,0.0);
 		  break;
 		default:
 		  break;
