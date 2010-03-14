@@ -338,17 +338,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	   glPushMatrix();
 	    glLoadIdentity();
 	    glBegin(GL_LINES);
-	    /*
 	     glVertex3d(view->markx-3.0, height-view->marky, 0.0);
 	     glVertex3d(view->markx+4.0, height-view->marky, 0.0);
 	     glVertex3d(view->markx, height-view->marky+3.0, 0.0);
 	     glVertex3d(view->markx, height-view->marky-4.0, 0.0);
-	    */
-	     glVertex3d(view->markx-3.0, view->marky, 0.0);
-	     glVertex3d(view->markx+4.0, view->marky, 0.0);
-	     glVertex3d(view->markx, view->marky+3.0, 0.0);
-	     glVertex3d(view->markx, view->marky-4.0, 0.0);
-
 	    glEnd();
 	   glPopMatrix();
 	   glMatrixMode(GL_PROJECTION);
