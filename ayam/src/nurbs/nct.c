@@ -1831,7 +1831,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      view->markx = fX;
 	      view->marky = height-fY;
-	      view->drawmarker = AY_TRUE;
+	      view->drawmark = AY_TRUE;
 	    }
 
 	  fvalid = AY_FALSE;
