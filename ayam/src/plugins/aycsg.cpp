@@ -242,6 +242,11 @@ aycsg_rendertcb(struct Togl *togl, int argc, char *argv[])
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  if(view->drawbgimage)
+    {
+      ay_draw_bgimage(togl);
+    }
+
   if(view->drawsel || view->drawlevel)
     {
       glPushMatrix();
