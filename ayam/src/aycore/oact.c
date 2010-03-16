@@ -474,7 +474,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
- double height = Togl_Height(togl);
  double winx = 0.0, winy = 0.0;
  double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
  double angle = 0.0, tpoint[4] = {0};
@@ -483,11 +482,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  double zaxis[3] = {0.0,0.0,1.0};
  double /*dx, dy, dax, day,*/ zangle, yangle, xangle;
  double quat[4];
- double v1[3] = {0}, v2[3] = {0}, v3[3];
+ double v1[3] = {0}, v2[3] = {0}, v3[3], v4[3];
  double alpha, beta;
- GLdouble m[16];
- GLdouble mp[16], mm[16], owinx = 0.0, owiny = 0.0, owinz = 0.0;
- GLint vp[4];
+ GLdouble m[16], mm[16], mmi[16];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
@@ -524,7 +521,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      ay_viewt_griddify(togl, &winx, &winy);
 	    }
-
 	}
       else
 	{
@@ -562,62 +558,42 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
-  glGetIntegerv(GL_VIEWPORT, vp);
-  glGetDoublev(GL_PROJECTION_MATRIX, mp);
-  glMatrixMode (GL_MODELVIEW);
+  /* calculate rotation angle from window coordinates
+     of picked points (old/start and current from drag)
+     and point to rotate about */
+  v1[0] = oldwinx - ax;
+  v1[1] = oldwiny - ay;
+  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
+    {
+      return TCL_OK;
+    }
+  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
+  if(v1[1] < 0.0)
+    alpha = 360.0 - alpha;
 
-  /* rotate the object(s) */
+  v2[0] = winx - ax;
+  v2[1] = winy - ay;
+  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
+    {
+      return TCL_OK;
+    }
+  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
+  if(v2[1] < 0.0)
+    beta = 360.0 - beta;
+
+  angle = beta - alpha;
+
+  /* rotate the selected object(s)/selected points */
+  glMatrixMode(GL_MODELVIEW);
   while(sel)
     {
       o = sel->object;
       if(o)
 	{
-	  glPushMatrix();
-	  if(ay_currentlevel->object != ay_root)
-	    {
-	      ay_trafo_getall(ay_currentlevel->next);
-	    }
-	   glTranslated(o->movx, o->movy, o->movz);
-	   /*ay_build_rotmatrix(m, o->quat);
-	     glMultMatrixf(&m[0][0]);*/
-	   glScaled (o->scalx, o->scaly, o->scalz);
-	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-
-	  owiny = height-owiny;
-
-	  /*
-	  dx = owinx;
-	  dy = owiny;
-	  dax = dx - ax;
-	  day = dy - ay;
-	  */
-
-	  owinx -= (owinx - ax);
-	  owiny -= (owiny - ay);
-
-	  v1[0] = oldwinx-owinx;
-	  v1[1] = oldwiny-owiny;
-
-	  if((v1[0]==0.0)&&(v1[1]==0.0))
-	    break;
-	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-	  if(v1[1]<0.0)
-	    alpha = 360.0-alpha;
-
-	  v2[0] = winx-owinx;
-	  v2[1] = winy-owiny;
-	  if((v2[0]==0.0)&&(v2[1]==0.0))
-	    break;
-	  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	  if(v2[1]<0.0)
-	    beta = 360.0-beta;
-
-	  angle = beta - alpha;
-
 	  switch(view->type)
 	    {
 	    case AY_VTSIDE:
@@ -625,49 +601,44 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      /* get old rotation about X */
 	      glPushMatrix();
-	      ay_quat_torotmatrix(o->quat, m);
-	      glMultMatrixd(m);
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	       ay_quat_torotmatrix(o->quat, m);
+	       glMultMatrixd(m);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
-	      AY_APTRAN3(v3,zaxis,mm);
+	      AY_APTRAN3(v3, zaxis, mm);
 	      v2[0] = v3[2];
 	      v2[1] = v3[1];
 	      xangle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
 	      if(v2[1]>0.0)
 		xangle = 360.0-xangle;
 
+	      /* transform ax/ay to object space */
 	      glPushMatrix();
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	      glTranslated(o->movx, o->movy, o->movz);
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	       glTranslated(o->movx, o->movy, o->movz);
+	       glRotated(xangle, 1.0, 0.0, 0.0);
+	       /*glScaled (o->scalx, o->scaly, o->scalz);*/
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+	      ay_trafo_invmatrix4(mm, mmi);
+	      AY_APTRAN3(v4, view->markworld, mmi);
+	      axo = v4[2];
+	      ayo = v4[1];
 
-	      glRotated(xangle, 1.0, 0.0, 0.0);
-
-	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPushMatrix();
+	       glLoadIdentity();
+	       glRotated(xangle, 1.0, 0.0, 0.0);
+	       glTranslated(0.0, -ayo, -axo);
+	       glRotated(-angle,1.0,0.0,0.0);
+	       glTranslated(0.0, ayo, axo);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
-	      axo = view->markworld[2];
-	      ayo = view->markworld[1];
-
-	      glPushMatrix();
-	      glLoadIdentity();
-
-	      glRotated(xangle, 1.0, 0.0, 0.0);
-
-	      glTranslated(0.0, -ayo, -axo);
-	      glRotated(-angle,1.0,0.0,0.0);
-	      glTranslated(0.0, ayo, axo);
-
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-	      glPopMatrix();
-
-	      v1[0] = 0.0;
-	      v1[1] = 0.0;
-	      v1[2] = 0.0;
+	      memset(v1, 0, 3*sizeof(double));
 
 	      AY_APTRAN3(v2,v1,mm);
 	      break;
@@ -677,9 +648,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      /* get old rotation about Z */
 	      glPushMatrix();
-	      ay_quat_torotmatrix(o->quat, m);
-	      glMultMatrixd(m);
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	       ay_quat_torotmatrix(o->quat, m);
+	       glMultMatrixd(m);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
 	      AY_APTRAN3(v3,xaxis,mm);
@@ -689,36 +660,33 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      if(v2[1]<0.0)
 		zangle = 360.0-zangle;
 
+	      /* transform ax/ay to object space */
 	      glPushMatrix();
-	      if(ay_currentlevel->object != ay_root)
+	       if(ay_currentlevel->object != ay_root)
 		{
 		  ay_trafo_getall(ay_currentlevel->next);
 		}
-	      glTranslated(o->movx, o->movy, o->movz);
-
-	      glRotated(zangle, 0.0, 0.0, 1.0);
-
-	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	       glTranslated(o->movx, o->movy, o->movz);
+	       glRotated(zangle, 0.0, 0.0, 1.0);
+	       /*glScaled (o->scalx, o->scaly, o->scalz);*/
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
-	      axo = view->markworld[0];
-	      ayo = view->markworld[1];
+	      ay_trafo_invmatrix4(mm,mmi);
+	      AY_APTRAN3(v4,view->markworld,mmi);
+	      axo = v4[0];
+	      ayo = v4[1];
 
 	      glPushMatrix();
-	      glLoadIdentity();
-
-	      glRotated(zangle, 0.0, 0.0, 1.0);
-
-	      glTranslated(-axo, -ayo, 0.0);
-	      glRotated(-angle,0.0,0.0,1.0);
-	      glTranslated(axo, ayo, 0.0);
-
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	       glLoadIdentity();
+	       glRotated(zangle, 0.0, 0.0, 1.0);
+	       glTranslated(-axo, -ayo, 0.0);
+	       glRotated(-angle,0.0,0.0,1.0);
+	       glTranslated(axo, ayo, 0.0);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
-	      v1[0] = 0.0;
-	      v1[1] = 0.0;
+	      memset(v1, 0, 3*sizeof(double));
 
 	      AY_APTRAN3(v2,v1,mm);
 	      break;
@@ -726,11 +694,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      /* rotate about y */
 
 	      /* get old rotation about Y */
-
 	      glPushMatrix();
-	      ay_quat_torotmatrix(o->quat, m);
-	      glMultMatrixd(m);
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	       ay_quat_torotmatrix(o->quat, m);
+	       glMultMatrixd(m);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
 	      AY_APTRAN3(v3,xaxis,mm);
@@ -740,37 +707,32 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      if(v2[1]>0.0)
 		yangle = 360.0-yangle;
 
+	      /* transform ax/ay to object space */
 	      glPushMatrix();
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	      glTranslated(o->movx, o->movy, o->movz);
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	       glTranslated(o->movx, o->movy, o->movz);
+	       glRotated(yangle, 0.0, 1.0, 0.0);
+	       /*glScaled (o->scalx, o->scaly, o->scalz);*/
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+	      ay_trafo_invmatrix4(mm, mmi);
+	      AY_APTRAN3(v4, view->markworld, mmi);
+	      axo = v4[0];
+	      ayo = v4[2];
 
-	      glRotated(yangle, 0.0, 1.0, 0.0);
-
-	      /*glScaled (o->scalx, o->scaly, o->scalz);*/
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPushMatrix();
+	       glLoadIdentity();
+	       glRotated(yangle, 0.0, 1.0, 0.0);
+	       glTranslated(-axo, 0.0, -ayo);
+	       glRotated(-angle,0.0,1.0,0.0);
+	       glTranslated(axo, 0.0, ayo);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
-	      axo = view->markworld[0];
-	      ayo = view->markworld[2];
-
-	      glPushMatrix();
-	      glLoadIdentity();
-
-	      glRotated(yangle, 0.0, 1.0, 0.0);
-
-	      glTranslated(-axo, 0.0, -ayo);
-	      glRotated(-angle,0.0,1.0,0.0);
-	      glTranslated(axo, 0.0, ayo);
-
-	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-	      glPopMatrix();
-
-	      v1[0] = 0.0;
-	      v1[1] = 0.0;
-	      v1[2] = 0.0;
+	      memset(v1, 0, 3*sizeof(double));
 
 	      AY_APTRAN3(v2,v1,mm);
 	      break;
@@ -805,7 +767,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		default:
 		  break;
 		} /* switch */
-
 	      glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -848,7 +809,6 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 		  ay_quat_axistoquat(zaxis, AY_D2R(angle), quat);
 		  ay_quat_add(quat, o->quat, o->quat);
-
 		  break;
 		case AY_VTTOP:
 		  /* rotate about y */
