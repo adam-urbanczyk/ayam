@@ -566,3 +566,53 @@ cleanup:
 
  return TCL_OK;
 } /* ay_selp_seltcmd */
+
+
+/* ay_selp_calccog:
+ *  calc cog from selected points
+ */
+void
+ay_selp_calccog(ay_point *pnts, double *cog)
+{
+ unsigned int i, a, numpoints;
+ ay_point *p = NULL;
+ int stride = 3;
+
+  if(!pnts || !cog)
+    {
+      return;
+    }
+
+  p = pnts;
+  while(p)
+    {
+      numpoints++;
+      p = p->next;
+    }
+
+  /*
+  if(!(vbuf = calloc(numpoints, stride*sizeof(double))))
+    {
+      return;
+    }
+  */
+
+  p = pnts;
+  for(i = 0; i< numpoints; i++)
+    {
+      /* XXXX ToDo: check, whether point is alread in vbuf;
+	 only if not: copy point to vbuf and update cog */
+
+      cog[0] = p->point[0]/numpoints;
+      cog[1] = p->point[1]/numpoints;
+      cog[2] = p->point[2]/numpoints;
+
+      a += stride;
+      p = p->next;
+    }
+
+
+  /* free(vbuf); */
+
+ return;
+} /* ay_selp_calccog */
