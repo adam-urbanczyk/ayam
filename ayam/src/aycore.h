@@ -1026,6 +1026,11 @@ int ay_selp_sel(ay_object *o, int indiceslen, int *indices);
 int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+/*! \brief
+ */
+void ay_selp_calccog(ay_point *pnts, double *cog);
+
+
 /* shade.c */
 
 /*! \brief
