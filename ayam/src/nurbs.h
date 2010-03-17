@@ -1010,53 +1010,52 @@ int ay_npt_rescaletrims(ay_object *trim,
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl command to insert a knot in a surface into u dimension
  */
 int ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl command to insert a knot in a surface into v dimension
  */
 int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief split a surface along u
  */
 int ay_npt_splitu(ay_object *src, double u, ay_object **result);
 
-/*! \brief
+/*! \brief Tcl command to split a surface along u
  */
 int ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief
+/*! \brief split a surface along v
  */
 int ay_npt_splitv(ay_object *src, double v, ay_object **result);
 
-/*! \brief
+/*! \brief Tcl command to split a surface along v
  */
 int ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief
+/*! \brief extract sub surface
  */
 int ay_npt_extractnp(ay_object *src, double umin, double umax,
 		     double vmin, double vmax, int relative,
 		     ay_object **result);
 
-/*! \brief
+/*! \brief Tcl command to extract a sub surface
  */
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief get next different control point
  */
-void
-ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
-	   double **dp);
+void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
+		double **dp);
 
 
-/*! \brief
+/*! \brief calculate offset surface
  */
 int ay_npt_offset(ay_object *o, int mode, double offset,
 		  ay_nurbpatch_object **np);
