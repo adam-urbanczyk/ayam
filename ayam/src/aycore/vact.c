@@ -80,7 +80,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   glPushMatrix();
    glLoadIdentity();
    /* check, whether we are able to derive camera orientation angles from t */
-   if(!t[0] && !t[2])
+   if((fabs(t[0]) < AY_EPSILON) && (fabs(t[2]) < AY_EPSILON)) 
      {
        /* no, this (hopefully just) happens with Top views, that
 	  are Y-Axis aligned and express a useful angle in view->up */
@@ -108,10 +108,12 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
        /* yes, derive angles from t */
        roty = AY_R2D(atan2(t[0], t[2]));
 
-       t2[0]=t[0];
-       t2[1]=t[2];
-       if(t[0] && t[2])
-	 rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
+       t2[0] = t[0];
+       t2[1] = t[2];
+       if((fabs(t[0]) > AY_EPSILON) && (fabs(t[2]) > AY_EPSILON))
+	 {
+	   rotx = AY_R2D(atan2(t[1], AY_V2LEN(t2)));
+	 }
 
        if(fabs(view->roll) > AY_EPSILON)
 	 glRotated(-view->roll, 0.0, 0.0, 1.0);
