@@ -42,7 +42,7 @@ ay_bbc_get(ay_object *o, double *bbox)
     return AY_ENULL;
 
   /* get transformations */
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
 
@@ -51,7 +51,7 @@ ay_bbc_get(ay_object *o, double *bbox)
    ay_quat_torotmatrix(o->quat, mr);
    glMultMatrixd(mr);
 
-   glScaled (o->scalx, o->scaly, o->scalz);
+   glScaled(o->scalx, o->scaly, o->scalz);
    glGetDoublev(GL_MODELVIEW_MATRIX, (GLdouble *)m);
   glPopMatrix();
 

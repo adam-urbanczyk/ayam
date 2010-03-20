@@ -344,7 +344,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        glTranslated(o->movx, o->movy, o->movz);
        ay_quat_torotmatrix(o->quat, m);
        glMultMatrixd((GLdouble*)m);
-       glScaled (o->scalx, o->scaly, o->scalz);
+       glScaled(o->scalx, o->scaly, o->scalz);
        glBegin(GL_POINTS);
        /* clear old point? */
        if(have_old_flashed_point && !ignore_old)
@@ -1459,7 +1459,7 @@ int
 ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
  char fname[] = "insert_point";
 
@@ -1807,7 +1807,7 @@ int
 ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
  char fname[] = "delete_point";
 
@@ -1922,7 +1922,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
  char fname[] = "edit_points";
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  /*ay_list_object *sel = ay_selection;*/
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -2159,7 +2159,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
  char fname[] = "weight_edit";
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  /*  ay_view_info *view = Togl_GetClientData(togl);*/
  double dx, winx = 0.0, new_weight = 0.0, *coords;
  static double oldwinx = 0.0;
@@ -2330,7 +2330,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char fname[] = "snap_to_grid";
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double p[3], *coords;
  int mode = 0;

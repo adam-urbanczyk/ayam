@@ -154,7 +154,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwiny = 0.0;
  double winy = 0.0;
@@ -224,7 +224,7 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp (togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwiny = 0.0;
  double winy = 0.0;

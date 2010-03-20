@@ -737,7 +737,7 @@ ay_draw_bgimage(struct Togl *togl)
 	  glEnable(GL_TEXTURE_2D);
 	  glEnable(GL_BLEND);
 	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	  glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+	  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 
 	  glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
 		    (GLfloat)ay_prefs.bgb);

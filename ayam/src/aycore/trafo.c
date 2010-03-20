@@ -871,7 +871,7 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   if(dz == 0.0)
     dz = 1.0;
 
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glScaled(dx, dy, dz);
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
@@ -990,7 +990,7 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_GetDouble(interp, argv[2], &dy);
   Tcl_GetDouble(interp, argv[3], &dz);
 
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glRotated(dx, 1.0, 0.0, 0.0);
    glRotated(dy, 0.0, 1.0, 0.0);

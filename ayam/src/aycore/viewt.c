@@ -336,11 +336,11 @@ ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
   ay_viewt_setupprojection(togl);
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-  glPopMatrix ();
+  glPopMatrix();
 
   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 	       worldX, worldY, worldZ);
