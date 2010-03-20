@@ -113,7 +113,7 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* get type of shader */
   type = SLC_GetType();
-  switch (type)
+  switch(type)
     {
     case SLC_TYPE_SURFACE:
       Tcl_DStringAppend(&ds, " surface ", -1);
@@ -370,7 +370,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* get type of shader */
   type = SLX_GetType();
-  switch (type)
+  switch(type)
     {
     case SLX_TYPE_SURFACE:
       Tcl_DStringAppend(&ds, " surface ", -1);
