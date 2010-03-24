@@ -287,6 +287,7 @@ proc actionRotObA { w } {
 
 #
 proc actionSc1DXOb { w } {
+    global ay
 
     viewTitle $w "" "Scale1DX"
     viewSetMAIcon $w ay_Scale1DX_img "Scale1DX"
@@ -312,9 +313,62 @@ proc actionSc1DXOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent $w]
+	set w [winfo parent $w]
+    }
+    set ay(oldabinding) [bind $w <Key-a>]
+    bind $w <Key-a> { actionSetMark %W actionSc1DXAOb }
+    after 2000 "bind $w <Key-a> {$ay(oldabinding)}"
+
  return;
 }
 # actionSc1DXOb
+
+
+proc actionSetMark { w nextaction } {
+
+    bind $w.f3D.togl <ButtonPress-1> "\
+	    %W mc;\
+	    update;\
+	    %W setconf -gmark %x %y 1;\
+	    $nextaction %W;"
+ return;
+}
+# actionSetMark
+
+#
+proc actionSc1DXAOb { w } {
+
+    viewTitle $w "" "Scale1DXA"
+    viewSetMAIcon $w ay_Scale1DX_img "Scale1DX"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Sc1DXAObj
+	%W mc
+	%W sc1dxaoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W sc1dxaoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionSc1DXAOb
 
 
 #

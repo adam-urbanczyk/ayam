@@ -398,11 +398,23 @@ int ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
+int ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[]);
+
+/*! \brief
+ */
 int ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */
+int ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[]);
+
+/*! \brief
+ */
 int ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[]);
+
+/*! \brief
+ */
+int ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief
  */

@@ -861,9 +861,15 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("sc1dxoac", ay_oact_sc1DXcb);
 
+  Togl_CreateCommand("sc1dxaoac", ay_oact_sc1DXAcb);
+
   Togl_CreateCommand("sc1dyoac", ay_oact_sc1DYcb);
 
+  Togl_CreateCommand("sc1dyaoac", ay_oact_sc1DYAcb);
+
   Togl_CreateCommand("sc1dzoac", ay_oact_sc1DZcb);
+
+  Togl_CreateCommand("sc1dzaoac", ay_oact_sc1DZAcb);
 
   Togl_CreateCommand("sc2doac", ay_oact_sc2Dcb);
 
