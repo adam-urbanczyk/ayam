@@ -562,9 +562,9 @@ proc shortcut_view { w } {
 	} else {
 	    set w [winfo toplevel %W]
 	}
-	%W.f3D.togl mc
+	$w.f3D.togl mc
 	viewSetType $w $ay(cVType) 0
-	%W.f3D.togl render
+	$w.f3D.togl render
     }
 
     # bind function keys
