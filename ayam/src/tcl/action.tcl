@@ -48,6 +48,22 @@ proc actionBindRelease { w } {
 }
 # actionBindRelease
 
+#actionSetMark:
+# helper for all actions about a user specified point (the mark)
+# e.g. rotate about and scale about
+proc actionSetMark { w nextaction } {
+
+    viewTitle $w "" "Mark Point"
+
+    bind $w.f3D.togl <ButtonPress-1> "\
+	    %W mc;\
+	    update;\
+	    %W setconf -gmark %x %y 1;\
+	    $nextaction %W;"
+ return;
+}
+# actionSetMark
+
 
 #
 proc actionRotView { w } {
@@ -211,6 +227,7 @@ proc actionMoveOb { w } {
 
 #
 proc actionRotOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Rotate"
     viewSetMAIcon $w ay_Rotate_img "Rotate"
@@ -236,15 +253,27 @@ proc actionRotOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionRotObA }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionRotOb
 
 
 #
-proc actionRotObabindp { w } {
+proc actionRotObA { w } {
 
-    viewTitle $w "" "Rotate_around_Point"
+    viewTitle $w "" "Rotate_about"
+    viewSetMAIcon $w ay_RotateA_img "Rotate_about"
+
+    actionClearB1 $w
 
     bind $w <ButtonPress-1> "set ay(action) 1; %W mc;\
 	    %W rotoaac -start %x %y"
@@ -252,31 +281,6 @@ proc actionRotObabindp { w } {
 
     actionBindRelease $w
 
-    $w setconf -drawh 1
-
- return;
-}
-# actionRotObabindp
-
-
-#
-proc actionRotObA { w } {
-
-    viewTitle $w "" "Select_a_Point"
-    viewSetMAIcon $w ay_RotateA_img "Rotate_around_Point"
-
-    actionClearB1 $w
-
-    bind $w <ButtonPress-1> {
-	undo save RotObjA
-	%W mc
-	update
-	%W setconf -gmark %x %y 1
-	%W rotoaac
-	actionRotObabindp %W
-    }
-    bind $w <ButtonRelease-1> ""
-    bind $w <B1-Motion> ""
     bind $w <Motion> ""
     $w setconf -drawh 1
 
@@ -287,7 +291,7 @@ proc actionRotObA { w } {
 
 #
 proc actionSc1DXOb { w } {
-    global ay
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Scale1DX"
     viewSetMAIcon $w ay_Scale1DX_img "Scale1DX"
@@ -316,28 +320,15 @@ proc actionSc1DXOb { w } {
     if { [string first ".view" $w] == 0 } {
 	set w [winfo toplevel $w]
     } else {
-	set w [winfo parent $w]
-	set w [winfo parent $w]
+	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w <Key-a>]
-    bind $w <Key-a> { actionSetMark %W actionSc1DXAOb }
-    after 2000 "bind $w <Key-a> {$ay(oldabinding)}"
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DXAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
 # actionSc1DXOb
-
-
-proc actionSetMark { w nextaction } {
-
-    bind $w.f3D.togl <ButtonPress-1> "\
-	    %W mc;\
-	    update;\
-	    %W setconf -gmark %x %y 1;\
-	    $nextaction %W;"
- return;
-}
-# actionSetMark
 
 #
 proc actionSc1DXAOb { w } {
@@ -373,6 +364,7 @@ proc actionSc1DXAOb { w } {
 
 #
 proc actionSc1DYOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Scale1DY"
     viewSetMAIcon $w ay_Scale1DY_img "Scale1DY"
@@ -398,13 +390,55 @@ proc actionSc1DYOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DYAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionSc1DYOb
 
 
 #
+proc actionSc1DYAOb { w } {
+
+    viewTitle $w "" "Scale1DYA"
+    viewSetMAIcon $w ay_Scale1DY_img "Scale1DY"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Sc1DYAObj
+	%W mc
+	%W sc1dyaoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W sc1dyaoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionSc1DYAOb
+
+
+#
 proc actionSc1DZOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Scale1DZ"
     viewSetMAIcon $w ay_Scale1DZ_img "Scale1DZ"
@@ -430,9 +464,50 @@ proc actionSc1DZOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DZAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionSc1DZOb
+
+
+#
+proc actionSc1DZAOb { w } {
+
+    viewTitle $w "" "Scale1DZA"
+    viewSetMAIcon $w ay_Scale1DZ_img "Scale1DZ"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Sc1DZAObj
+	%W mc
+	%W sc1dzaoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W sc1dzaoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionSc1DZAOb
 
 
 #

@@ -371,13 +371,13 @@ array set ayviewshortcuts {
 
     MoveO "m"
     RotO "r"
-    RotA "a"
     ScalX "x"
     ScalY "y"
     ScalZ "z"
     Scal2 "s"
     Scal3 "S"
     Stretch "T"
+    About "a"
 
     Edit "e"
     EditD "p"
