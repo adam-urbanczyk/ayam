@@ -507,7 +507,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		 changed view trafos so that the point is not valid
 		 anymore and we should request a new point */
 	      ay_error(AY_ERROR, fname,
-		    "Lost point to rotate about. Please restart this action!");
+		    "Lost mark. Please restart this action!");
 	      return TCL_OK;
 	    }
 
@@ -2462,7 +2462,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 		 changed view trafos so that the point is not valid
 		 anymore and we should request a new point */
 	      ay_error(AY_ERROR, fname,
-		    "Lost point to rotate about. Please restart this action!");
+		    "Lost mark. Please restart this action!");
 	      return TCL_OK;
 	    }
 
@@ -2695,7 +2695,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
  double al = 0.0, mov = 0.0, oldmov = 0.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
  double yaxis[3]={0.0,1.0,0.0}, v3[3];
- GLdouble vx[3], a[3], alpha, beta, gamma;
+ GLdouble vy[3], a[3], alpha, beta, gamma;
  GLdouble mp[16], mm[16], mmi[16], owinx, owiny, owinz;
  GLdouble m[16];
  GLint vp[4];
@@ -2721,7 +2721,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 		 changed view trafos so that the point is not valid
 		 anymore and we should request a new point */
 	      ay_error(AY_ERROR, fname,
-		    "Lost point to rotate about. Please restart this action!");
+		    "Lost mark. Please restart this action!");
 	      return TCL_OK;
 	    }
 
@@ -2803,18 +2803,18 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,1.0,0.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]);
+	  gluProject(0.0,1.0,0.0,mm,mp,vp,&vy[0],&vy[1],&vy[2]);
 
 	  owiny = height - owiny;
-	  vx[1] = height - vx[1];
+	  vy[1] = height - vy[1];
 
-	  vx[0] -= owinx;
-	  vx[1] -= owiny;
+	  vy[0] -= owinx;
+	  vy[1] -= owiny;
 
-	  if((vx[0]!=0.0)||(vx[1]!=0.0))
+	  if((vy[0]!=0.0)||(vy[1]!=0.0))
 	    {
-	      alpha = AY_R2D(acos(vx[0]/AY_V2LEN(vx)));
-	      if(vx[1]>0.0)
+	      alpha = AY_R2D(acos(vy[0]/AY_V2LEN(vy)));
+	      if(vy[1]>0.0)
 		alpha = 360.0-alpha;
 
 	      owinx = ax;
@@ -2868,7 +2868,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
 	  al = v3[0]*axo+v3[1]*ayo;
 
-	  mov = al - ((o->scalx*(dscaly))*((al-oldmov)/o->scalx));
+	  mov = al - ((o->scaly*(dscaly))*((al-oldmov)/o->scaly));
 
 	  if(o->selp)
 	    {
@@ -2954,7 +2954,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
  double al = 0.0, mov = 0.0, oldmov = 0.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
  double zaxis[3]={0.0,0.0,1.0}, v3[3];
- GLdouble vx[3], a[3], alpha, beta, gamma;
+ GLdouble vz[3], a[3], alpha, beta, gamma;
  GLdouble mp[16], mm[16], mmi[16], owinx, owiny, owinz;
  GLdouble m[16];
  GLint vp[4];
@@ -2980,7 +2980,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 		 changed view trafos so that the point is not valid
 		 anymore and we should request a new point */
 	      ay_error(AY_ERROR, fname,
-		    "Lost point to rotate about. Please restart this action!");
+		    "Lost mark. Please restart this action!");
 	      return TCL_OK;
 	    }
 
@@ -3062,18 +3062,18 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
 	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,0.0,1.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]);
+	  gluProject(0.0,0.0,1.0,mm,mp,vp,&vz[0],&vz[1],&vz[2]);
 
 	  owiny = height - owiny;
-	  vx[1] = height - vx[1];
+	  vz[1] = height - vz[1];
 
-	  vx[0] -= owinx;
-	  vx[1] -= owiny;
+	  vz[0] -= owinx;
+	  vz[1] -= owiny;
 
-	  if((vx[0]!=0.0)||(vx[1]!=0.0))
+	  if((vz[0]!=0.0)||(vz[1]!=0.0))
 	    {
-	      alpha = AY_R2D(acos(vx[0]/AY_V2LEN(vx)));
-	      if(vx[1]>0.0)
+	      alpha = AY_R2D(acos(vz[0]/AY_V2LEN(vz)));
+	      if(vz[1]>0.0)
 		alpha = 360.0-alpha;
 
 	      owinx = ax;
@@ -3119,15 +3119,15 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	  ay_trafo_invmatrix4(mm, mmi);
 	  AY_APTRAN3(a, view->markworld, mmi);
 	  axo = a[0];
-	  ayo = a[1];
+	  ayo = a[2];
 
 	  ay_quat_torotmatrix(o->quat, mm);
 	  AY_APTRAN3(v3, zaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[1]*ayo;
+	  al = v3[0]*axo+v3[2]*ayo;
 
-	  mov = al - ((o->scalx*(dscalz))*((al-oldmov)/o->scalx));
+	  mov = al - ((o->scalz*(dscalz))*((al-oldmov)/o->scalz));
 
 	  if(o->selp)
 	    {
