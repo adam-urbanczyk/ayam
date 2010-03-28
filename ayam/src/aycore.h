@@ -34,6 +34,9 @@ int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* clevel.c */
+
+/*! \brief find object o in the hierarchy beneath object c
+ */
 int ay_clevel_find(ay_object *c, ay_object *o, int *found);
 
 /*! \brief push object o onto current level stack
@@ -218,19 +221,19 @@ int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* geom.c */
 
-/*! \brief
+/*! \brief calculate intersection of two 3D lines
  */
 int ay_geom_intersectlines3D(double *p1, double *t1,
 			     double *p2, double *t2,
 			     double *p);
 
-/*! \brief
+/*! \brief calculate intersection of two 2D lines
  */
 int ay_geom_intersectlines2D(double *p1, double *t1,
 			     double *p2, double *t2,
 			     double *p);
 
-/*! \brief
+/*! \brief calculate normal from three points
  */
 void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
 
@@ -380,66 +383,66 @@ void ay_ns_init(Tcl_Interp *interp);
 
 /* oact.c */
 
-/*! \brief
+/*! \brief move object modelling action
  */
 int ay_oact_movetcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief rotate object modelling action
  */
 int ay_oact_rottcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief rotate about mark object modelling action
  */
 int ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D X object modelling action
  */
 int ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D X about mark object modelling action
  */
 int ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D Y object modelling action
  */
 int ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D Y about mark object modelling action
  */
 int ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D Z object modelling action
  */
 int ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 1D Z about mark object modelling action
  */
 int ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 2D object modelling action
  */
 int ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief scale 3D object modelling action
  */
 int ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief stretch 2D object modelling action
  */
 int ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[]);
 
 
 /* object.c */
 
-/*! \brief
+/*! \brief reset attributes of object o to defaults
  */
 void ay_object_defaults(ay_object *o);
 
-/*! \brief
+/*! \brief create an object
  */
 int ay_object_create(unsigned int index, ay_object **o);
 
-/*! \brief
+/*! \brief create an object with parameters
  */
 int ay_object_createargs(unsigned int index, int argc, char **argv,
 			 ay_object **o);
@@ -449,11 +452,11 @@ int ay_object_createargs(unsigned int index, int argc, char **argv,
 int ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief delete an objet
  */
 int ay_object_delete(ay_object *o);
 
-/*! \brief
+/*! \brief delete multiple (connected) objects
  */
 int ay_object_deletemulti(ay_object *o);
 
@@ -462,19 +465,19 @@ int ay_object_deletemulti(ay_object *o);
 int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief link object to the scene hierarchy
  */
 int ay_object_link(ay_object *o);
 
-/*! \brief
+/*! \brief unlink object from the scene hierarchy
  */
 int ay_object_unlink(ay_object *o);
 
-/*! \brief
+/*! \brief get type name
  */
 char *ay_object_gettypename(unsigned int index);
 
-/*! \brief
+/*! \brief get name of object o
  */
 char *ay_object_getname(ay_object *o);
 
@@ -483,11 +486,11 @@ char *ay_object_getname(ay_object *o);
 int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/*! \brief
+/*! \brief copy an object
  */
 int ay_object_copy(ay_object *src, ay_object **dst);
 
-/*! \brief
+/*! \brief copy multiple (connected) objects
  */
 int ay_object_copymulti(ay_object *src, ay_object **dst);
 
@@ -506,11 +509,11 @@ int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/*! \brief
+/*! \brief create level terminator object
  */
 int ay_object_crtendlevel(ay_object **o);
 
-/*! \brief
+/*! \brief remove instances of object o
  */
 int ay_object_deleteinstances(ay_object **o);
 
@@ -1715,5 +1718,8 @@ int ay_write_scene(char *fname, int selected);
  */
 int ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+
+
+/*! \file aycore.h \brief Ayam core API */
 
 #endif /* __aycore_h__ */

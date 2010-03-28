@@ -101,90 +101,98 @@
 
 /* Ayam Object Structure */
 
+/** Ayam object */
 typedef struct ay_object_s {
-  struct ay_object_s *next;  /* next object in same hierarchie-level */
-  struct ay_object_s *down;  /* children of this object */
+  struct ay_object_s *next;  /**< next object in same hierarchie-level */
+  struct ay_object_s *down;  /**< children of this object */
 
-  /* the type of the object, see AY_ID section below */
+  /** the type of the object (AY_ID*) */
   unsigned int type;
 
-  /* the name of the object */
+  /** the name of the object */
   char *name;
 
-  /* a "name" for OpenGL selection */
+  /** a "name" for OpenGL selection */
   unsigned int glname;
 
-  /* how many references of this object exist? */
+  /** how many references of this object exist? */
   unsigned int refcount;
 
-  /* is this object currently selected? */
+  /** is this object currently selected? */
   int selected;
 
-  /* is this object modified by an editing action? */
+  /** is this object modified by an editing action? */
   int modified;
 
-  /* does this object allow children? */
+  /** does this object allow children? */
   int parent;
 
-  /* do children inherit the transformation attributes? */
+  /** do children inherit the transformation attributes? */
   int inherit_trafos;
 
   /* Visibility */
-  /* is this object hidden? */
+  /** is this object hidden? */
   int hide;
-  /* should the children of this object be hidden? */
+  /** should the children of this object be hidden? */
   int hide_children;
 
-  double movx, movy, movz;
-  double rotx, roty, rotz;
-  double scalx, scaly, scalz;
-  double quat[4]; /* quaternion */
+  double movx, movy, movz; /**< translation attributes */
+  double rotx, roty, rotz; /**< orientation attributes */
+  double scalx, scaly, scalz; /**< scale attributes */
+  double quat[4]; /**< quaternion attribute */
+
 #if 0
-  struct ay_trafo_s *trafo; /* transformations of this object */
+  struct ay_trafo_s *trafo; /**< transformations of this object */
 #endif
-  struct ay_point_s *selp; /* selected points of this object */
+  struct ay_point_s *selp; /**< selected points of this object */
 
-  struct ay_tag_s *tags; /* tags of this object */
+  struct ay_tag_s *tags; /**< tags of this object */
 
-  struct ay_mat_object_s *mat; /* material of this object */
+  struct ay_mat_object_s *mat; /**< material of this object */
 
-  void *refine; /* type specific object (e.g. ay_sphere_object) */
+  void *refine; /**< type specific object (e.g. ay_sphere_object) */
 } ay_object;
 
 
+/** Ayam object list element */
 typedef struct ay_list_object_s
 {
-  struct ay_list_object_s *next;
-  ay_object *object;
+  struct ay_list_object_s *next; /**< next list element */
+  ay_object *object; /**< Ayam object */
 } ay_list_object;
 
 
 /* Shaders */
+
+/** RenderMan shader parameter */
 typedef struct ay_shader_arg_s
 {
-  struct ay_shader_arg_s *next;
-  char *name;
-  int type; /* color point vector scalar string */
+  struct ay_shader_arg_s *next; /**< next parameter */
+  char *name; /**< name of parameter */
+  int type; /**< type of parameter (AY_SA*)
+	      (color point vector scalar string) */
   union {
     float color[3];
     float point[4];
     float matrix[16];
     float scalar;
     char *string;
-  } val;
+  } val; /**< value of parameter */
 } ay_shader_arg;
 
 
+/** RenderMan shader */
 typedef struct ay_shader_s
 {
-  struct ay_shader_s *next;
-  int type; /* light volume surface displacement transformation */
-  char *name;
-  ay_shader_arg *arg;
+  struct ay_shader_s *next; /**< next shader */
+  int type; /**< shader type (AY_ST*)
+	      (light volume surface displacement transformation) */
+  char *name; /**< name of shader */
+  ay_shader_arg *arg; /**< shader parameters */
 } ay_shader;
 
 
-/* Material Object */
+/** Material Object */
 typedef struct ay_mat_object_s {
 
   int registered;
@@ -348,7 +356,7 @@ typedef struct ay_stess_s {
   int upslen, vpslen;
   /* arrays of lists of tesselated points */
   ay_stess_uvp **ups, **vps; /* [upslen], [vpslen] */
-  /**/
+  /* first trim is oriented clockwise */
   int ft_cw;
   /* number of tesselated trim curves */
   int tcslen;
@@ -1571,6 +1579,8 @@ extern unsigned int ay_current_primlevel;
 #include "nurbs.h"
 #include "objects.h"
 #include "contrib.h"
+
+/** \file ayam.h \brief main Ayam header */
 
 #ifdef __cplusplus
 }
