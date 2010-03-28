@@ -10,8 +10,9 @@
 # icons.tcl - this file carries all icon images
 
 # all icons are of size 25x25
-# imgdata may be created by juen as follows:
+# image data (base64 encoded) may be created by juen/uuencode as follows:
 # juen -a image.gif
+# uuencode -m image.gif image
 
 #set imgdata {\}
 #image create photo ay_Level_img -format GIF -data $imgdata
@@ -28,6 +29,7 @@ hZCHkwAND4oimQQQhn4Gnw0ZGaMeFloLfXWIlawHG5cosQQZnpSguBsDuyelGQt/n6CtBwMDSyu9
 G6qVzRm50RwMLBKNA8ENuM8c5gzdKxqZAsLZ2ucMYy0FHQWs2cTm3PLzHjMiKBTIBy2eGH8sfOgb
 cODADg04anjYccGYxIsuQgAAOw==}
 image create photo ay_Box_img -format GIF -data $imgdata
+
 set imgdata {\
 R0lGODdhCgAKAIQAAL29vSMhHFpUSGVfVDAtKMS9rsO3nr6ymbeumrerk7SokbGljykmIa6jjame
 iaOZhKugiqabhqCWgpyTf5iPfKKXgpSNfaqjla6om7a0rgAAAAAAAAAAAAAAAAAAAAAAACwAAAAA
@@ -757,5 +759,13 @@ jI+py+0Po5wUCVGTADibzXkBGGZkSZ2opK5Q6zpwLF/AfXdpnlcgttGxACVh
 }
 image create photo ay_Pick_img -format GIF -data $imgdata
 
+# Mark
+set imgdata {\
+R0lGODdhGQAZAMIFAAAAAK8AANJeXby8vNnZ2f///////////ywAAAAAGQAZ
+AAADcki63N6DjDkljRfXx7vSlBVm4idWZLqB6BWokXSyw3uVMjwIgXCHHkJg
+SAxwaCeeb7SaiQA1mEkFgNqYMeSgCnUCkdyulBMGBKeUsvjXTKu17a16jUW7
+ufDsrCrPk80KgEEsfGx1ORNVXoZ2LViOZ5EECQA7
+}
+image create photo ay_Mark_img -format GIF -data $imgdata
 
 catch {unset imgdata}

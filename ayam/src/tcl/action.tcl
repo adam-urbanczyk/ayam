@@ -54,6 +54,7 @@ proc actionBindRelease { w } {
 proc actionSetMark { w nextaction } {
 
     viewTitle $w "" "Mark Point"
+    viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
 
     bind $w.f3D.togl <ButtonPress-1> "\
 	    %W mc;\
