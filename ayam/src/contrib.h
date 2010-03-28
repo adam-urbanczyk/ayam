@@ -58,4 +58,6 @@ int ay_objsel_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
 
+/*! \file contrib.h \brief Ayam contrib API */
+
 #endif /* __contrib_h__ */

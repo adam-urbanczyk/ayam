@@ -12,7 +12,7 @@
  *
  */
 
-/* objects.h - prototypes of core objects */
+/* objects.h - prototypes of core object initializers */
 
 /* acurve.c */
 int ay_acurve_init(Tcl_Interp *interp);
@@ -154,5 +154,7 @@ int ay_trim_init(Tcl_Interp *interp);
 
 /* view.c */
 int ay_view_init(Tcl_Interp *interp);
+
+/*! \file objects.h \brief Ayam object initializers */
 
 #endif /* __objects_h__ */
