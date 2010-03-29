@@ -2607,7 +2607,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	  AY_APTRAN3(v3, xaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[1]*ayo;
+	  al = v3[0]*axo+v3[1]*ayo+v3[2]*a[2];
 
 	  mov = al - ((o->scalx*(dscalx))*((al-oldmov)/o->scalx));
 
@@ -2866,7 +2866,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	  AY_APTRAN3(v3, yaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[1]*ayo;
+	  al = v3[0]*axo+v3[1]*ayo+v3[2]*a[2];
 
 	  mov = al - ((o->scaly*(dscaly))*((al-oldmov)/o->scaly));
 
@@ -3125,7 +3125,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	  AY_APTRAN3(v3, zaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[2]*ayo;
+	  al = v3[0]*axo+v3[2]*ayo+v3[1]*a[1];
 
 	  mov = al - ((o->scalz*(dscalz))*((al-oldmov)/o->scalz));
 
