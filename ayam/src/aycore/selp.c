@@ -574,7 +574,7 @@ cleanup:
 void
 ay_selp_calccog(ay_point *pnts, double *cog)
 {
- unsigned int i, a, numpoints;
+ unsigned int i, a = 0, numpoints = 0;
  ay_point *p = NULL;
  int stride = 3;
 
