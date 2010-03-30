@@ -136,7 +136,8 @@ typedef struct ay_object_s {
   /** should the children of this object be hidden? */
   int hide_children;
 
-  double movx, movy, movz; /**< translation attributes */
+  /** translation attributes */
+  double movx, movy, movz;
   double rotx, roty, rotz; /**< orientation attributes */
   double scalx, scaly, scalz; /**< scale attributes */
   double quat[4]; /**< quaternion attribute */
@@ -261,7 +262,7 @@ typedef struct ay_mat_object_s {
 
 } ay_mat_object;
 
-
+/** RenderMan interface options */
 typedef struct ay_riopt_s
 {
   double Variance;
@@ -300,14 +301,16 @@ typedef struct ay_riopt_s
 } ay_riopt;
 
 
+/** Root object */
 typedef struct ay_root_object_s
 {
-  ay_riopt  *riopt;
-  ay_shader *imager;
-  ay_shader *atmosphere;
+  ay_riopt  *riopt; /**< RenderMan interface options of the current scene */
+  ay_shader *imager; /**< imager shader */
+  ay_shader *atmosphere; /**< atmosphere shader */
 } ay_root_object;
 
 
+/** NURBS curve object */
 typedef struct ay_nurbcurve_object_s
 {
   int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
@@ -368,6 +371,7 @@ typedef struct ay_stess_s {
 } ay_stess;
 
 
+/** NURBS patch object */
 typedef struct ay_nurbpatch_object_s
 {
   int width, height;
@@ -396,6 +400,7 @@ typedef struct ay_nurbpatch_object_s
 } ay_nurbpatch_object;
 
 
+/** PatchMesh object */
 typedef struct ay_pamesh_object_s {
   int width, height;
   int close_u, close_v;
@@ -417,6 +422,7 @@ typedef struct ay_pamesh_object_s {
 } ay_pamesh_object;
 
 
+/** PolyMesh object */
 typedef struct ay_pomesh_object_s {
   int type; /* currently unused */
 
@@ -431,6 +437,7 @@ typedef struct ay_pomesh_object_s {
 } ay_pomesh_object;
 
 
+/** SubdivisionMesh object */
 typedef struct ay_sdmesh_object_s {
   int scheme; /* AY_SDSCATMULL, AY_SDSLOOP */
 
@@ -449,6 +456,7 @@ typedef struct ay_sdmesh_object_s {
 } ay_sdmesh_object;
 
 
+/** Gordon object */
 typedef struct ay_gordon_object_s {
   int wcc; /* watch (and automatically correct parameter curves) */
   int uorder; /* desired order for u dimension */
@@ -462,6 +470,7 @@ typedef struct ay_gordon_object_s {
 } ay_gordon_object;
 
 
+/** Text object */
 typedef struct ay_text_object_s
 {
   char *fontname;
@@ -477,6 +486,7 @@ typedef struct ay_text_object_s
 } ay_text_object;
 
 
+/** Lightsource object */
 typedef struct ay_light_object_s
 {
   int type; /* custom, point, spot, distant */
@@ -498,18 +508,21 @@ typedef struct ay_light_object_s
 } ay_light_object;
 
 
+/** Level object */
 typedef struct ay_level_object_s
 {
   int type;
 } ay_level_object;
 
 
+/** Box object */
 typedef struct ay_box_object_s
 {
   double width, length, height;
 } ay_box_object;
 
 
+/** Bilinear patch object */
 typedef struct ay_bpatch_object_s
 {
   double p1[3];
@@ -519,6 +532,7 @@ typedef struct ay_bpatch_object_s
 } ay_bpatch_object;
 
 
+/** Sphere object */
 typedef struct ay_sphere_object_s
 {
   char closed;
@@ -529,6 +543,7 @@ typedef struct ay_sphere_object_s
 } ay_sphere_object;
 
 
+/** Cone object */
 typedef struct ay_cone_object_s
 {
   char closed;
@@ -539,6 +554,7 @@ typedef struct ay_cone_object_s
 } ay_cone_object;
 
 
+/** Disk object */
 typedef struct ay_disk_object_s
 {
   char is_simple;
@@ -548,6 +564,7 @@ typedef struct ay_disk_object_s
 } ay_disk_object;
 
 
+/** Cylinder object */
 typedef struct ay_cylinder_object_s
 {
   char closed;
@@ -558,6 +575,7 @@ typedef struct ay_cylinder_object_s
 } ay_cylinder_object;
 
 
+/** Hyperboloid object */
 typedef struct ay_hyperboloid_s
 {
   char closed;
@@ -567,6 +585,7 @@ typedef struct ay_hyperboloid_s
 } ay_hyperboloid_object;
 
 
+/** Paraboloid object */
 typedef struct ay_paraboloid_object_s
 {
   char closed;
@@ -576,6 +595,7 @@ typedef struct ay_paraboloid_object_s
 } ay_paraboloid_object;
 
 
+/** Torus object */
 typedef struct ay_torus_object_s
 {
   char closed;
@@ -585,40 +605,43 @@ typedef struct ay_torus_object_s
 } ay_torus_object;
 
 
+/** Interpolating curve object */
 typedef struct ay_icurve_object_s
 {
-  int type;
-  int length;
-  int order;
-  int derivs;
-  int param_type;
-  double sdlen, edlen;
-  double *controlv;
-  double sderiv[3];
-  double ederiv[3];
+  int type; /**< interpolation mode (C2-cubic or global) */
+  int length; /**< number of data points */
+  int order; /**< desired order of NURBS curve */
+  int derivs; /**< have end derivatives? */
+  int param_type;  /**< parameterization (chordal or centripetal) */
+  double sdlen; /**< start derivative length */
+  double edlen; /**< end derivative length */
 
-  /* cache NURBS curve representation */
+  double *controlv; /**< data points [length*3] */
+  double sderiv[3]; /**< start derivative */
+  double ederiv[3]; /**< end derivative */
+
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_icurve_object;
 
 
+/** Approximating curve object */
 typedef struct ay_acurve_object_s
 {
-  int length;
-  int alength;
-  int closed;
-  int symmetric;
-  int order;
-  /*
-  int imode;
-  double iparam;
-  */
-  double *controlv;
+  int length; /**< number of data points */
+  int alength; /**< desired number of NURBS control points */
+  int closed; /**< create closed curve? */
+  int symmetric; /**< create symmetric curve? */
+  int order; /**< desired order of NURBS curve */
 
-  /* cache NURBS curve representation */
+  double *controlv; /**< data points [length*3] */
+
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_acurve_object;
@@ -1188,30 +1211,34 @@ typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
 
 /* Globals */
-extern Tcl_Interp *ay_interp;
-extern Tcl_Interp *ay_safeinterp;
-extern ay_preferences ay_prefs;
+extern Tcl_Interp *ay_interp; /**< Main Ayam Tcl interpreter */
+extern Tcl_Interp *ay_safeinterp; /**< Safe Tcl interpreter (e.g. for Script
+				     object scripts */
+extern ay_preferences ay_prefs; /**< user preferences */
 
-/* pointer to the root object */
+/** pointer to the root object */
 extern ay_object *ay_root;
 
-/* pointer to slot (some objects ->next or ->down) where
+/** pointer to slot (some objects ->next or ->down) where
    the next object will be linked to */
 extern ay_object **ay_next;
 
+/** current view */
 extern ay_view_object *ay_currentview;
 
+/** current object selection */
 extern ay_list_object *ay_selection;
 
+/** current level */
 extern ay_list_object *ay_currentlevel;
 
-/* object clipboard */
+/** object clipboard */
 extern ay_object *ay_clipboard;
 
-/* registered object types */
+/** table of registered object types */
 extern Tcl_HashTable ay_otypesht;
 
-/* registered object type names */
+/** table of registered object type names */
 extern ay_table ay_typenamest;
 
 /* function pointer tables (object callbacks)*/
@@ -1232,10 +1259,10 @@ extern ay_table ay_bbccbt;
 
 extern ay_table ay_treedropcbt;
 
-/* registered tag types */
+/** table of registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
 
-/* temporary tag types */
+/** table of temporary tag types */
 extern Tcl_HashTable ay_temptagtypesht;
 
 extern ay_table ay_tagnamest;
