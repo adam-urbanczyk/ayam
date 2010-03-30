@@ -3196,3 +3196,228 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_oact_sc1DZAcb */
+
+
+/* ay_oact_sc2DAcb:
+ *
+ */
+int
+ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
+{
+ Tcl_Interp *interp = Togl_Interp(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
+ static double oldwinx = 0.0, oldwiny = 0.0;
+ double winx = 0.0, winy = 0.0, dscal = 1.0;
+ double tpoint[4]={0}, t1, t2, v1[2], v2[2];
+ GLdouble a[3], mp[16], mm[16], mmi[16];
+ GLint vp[4];
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_point *point = NULL;
+ char fname[] = "scale2DA_object";
+
+  if(view->type == AY_VTPERSP)
+    {
+      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
+      return TCL_OK;
+    }
+
+  /* parse args */
+  if(argc >= 4)
+    {
+      if(!strcmp(argv[2],"-winxy"))
+	{
+	  if(!view->drawmark)
+	    {
+	      /* if view->drawmark is not enabled some other action
+		 changed view trafos so that the point is not valid
+		 anymore and we should request a new point */
+	      ay_error(AY_ERROR, fname,
+		    "Lost mark. Please restart this action!");
+	      return TCL_OK;
+	    }
+
+	  ax = view->markx;
+	  ay = view->marky;
+
+	  Tcl_GetDouble(interp, argv[3], &winx);
+	  Tcl_GetDouble(interp, argv[4], &winy);
+	  if(view->usegrid)
+	    {
+	      ay_viewt_griddify(togl,&winx,&winy);
+	    }
+	}
+      else
+	{
+	  if(!strcmp(argv[2],"-start"))
+	    {
+
+	      if(!ay_selection)
+		{
+		  ay_error(AY_ENOSEL, fname, NULL);
+		  return TCL_OK;
+		}
+
+	      Tcl_GetDouble(interp, argv[3], &winx);
+	      Tcl_GetDouble(interp, argv[4], &winy);
+	      if(view->usegrid)
+		{
+		  ay_viewt_griddify(togl,&winx,&winy);
+		}
+
+	      oldwinx = winx;
+	      oldwiny = winy;
+	    }
+	}
+    }
+  else
+    {
+      ay_error(AY_EARGS, fname,
+		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+  if(!ay_selection)
+    {
+      return TCL_OK;
+    }
+
+  /* bail out, as long as we stay in the same grid cell */
+  if((oldwinx == winx) && (oldwiny == winy))
+    return TCL_OK;
+
+  glGetIntegerv(GL_VIEWPORT, vp);
+  glGetDoublev(GL_PROJECTION_MATRIX, mp);
+  glMatrixMode(GL_MODELVIEW);
+
+  /* scale the object(s) / selected points */
+  while(sel)
+    {
+      o = sel->object;
+      if(o)
+	{
+	  v1[0] = (oldwinx-ax);
+	  v1[1] = (oldwiny-ay);
+
+	  v2[0] = (winx-ax);
+	  v2[1] = (winy-ay);
+
+	  t1 = AY_V2LEN(v1);
+	  t2 = AY_V2LEN(v2);
+
+	  if(fabs(t1)>AY_EPSILON)
+	    dscal = t2/t1;
+	  else
+	    dscal = 1.0;
+
+	  glPushMatrix();
+	  if(view->type != AY_VTTRIM)
+	    {
+	      if(ay_currentlevel->object != ay_root)
+		{
+		  ay_trafo_getall(ay_currentlevel->next);
+		}
+	    }
+
+	  glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	  glPopMatrix();
+
+	  ay_trafo_invmatrix4(mm, mmi);
+	  AY_APTRAN3(a, view->markworld, mmi);
+	  axo = a[0];
+	  ayo = a[2];
+
+	  if(o->selp)
+	    {
+	      point = o->selp;
+
+	      glPushMatrix();
+	       glLoadIdentity();
+
+	       if(!view->local)
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
+
+	       glTranslated(a[0],a[1],a[2]);
+	       switch(view->type)
+		 {
+		 case AY_VTFRONT:
+		 case AY_VTTRIM:
+		   glScaled(dscal,dscal,1.0);
+		   break;
+		 case AY_VTSIDE:
+		   glScaled(1.0,dscal,dscal);
+		   break;
+		 case AY_VTTOP:
+		   glScaled(dscal,1.0,dscal);
+		   break;
+		 default:
+		   break;
+		 }
+	       glTranslated(-a[0],-a[1],-a[2]);
+
+	       if(!view->local)
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
+
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint,point->point,mm);
+		  memcpy(point->point,tpoint,3*sizeof(double));
+
+		  point = point->next;
+		}
+
+	      o->modified = AY_TRUE;
+	      ay_notify_force(o);
+
+	    }
+	  else
+	    {
+	       switch(view->type)
+		 {
+		 case AY_VTFRONT:
+		 case AY_VTTRIM:
+		   o->scalx *= dscal;
+		   o->scaly *= dscal;
+		   break;
+		 case AY_VTSIDE:
+		   o->scaly *= dscal;
+		   o->scalz *= dscal;
+		   break;
+		 case AY_VTTOP:
+		   o->scalx *= dscal;
+		   o->scalz *= dscal;
+		   break;
+		 default:
+		   break;
+		 }
+	      o->modified = AY_TRUE;
+	    } /* if */
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  oldwinx = winx;
+  oldwiny = winy;
+
+  if(!ay_prefs.lazynotify)
+    ay_notify_parent();
+
+  ay_toglcb_display(togl);
+
+ return TCL_OK;
+} /* ay_oact_sc2DAcb */

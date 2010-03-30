@@ -431,6 +431,10 @@ int ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[]);
 
+/*! \brief stretch 2D object modelling action
+ */
+int ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[]);
+
 
 /* object.c */
 
