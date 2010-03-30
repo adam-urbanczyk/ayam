@@ -513,6 +513,7 @@ proc actionSc1DZAOb { w } {
 
 #
 proc actionSc2DOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Scale2D"
     viewSetMAIcon $w ay_Scale2D_img "Scale2D"
@@ -538,9 +539,50 @@ proc actionSc2DOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc2DAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionSc2DOb
+
+
+#
+proc actionSc2DAOb { w } {
+
+    viewTitle $w "" "Scale2D"
+    viewSetMAIcon $w ay_Scale2D_img "Scale2D"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Sc2DAObj
+	%W mc
+	%W sc2daoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W sc2daoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionSc2DAOb
 
 
 #
