@@ -247,14 +247,6 @@ ADs=
 }
 image create photo ay_Rotate_img -format GIF -data $imgdata
 
-# RotateA
-set imgdata {\
-R0lGODdhGQAZAPEAAAAAAKCgoL29vQAAACwAAAAAGQAZAAACUpSPqcvtD1MIoNYZDbUchNiFl9N9
-Wsls3qKakuUqW2o9cQJnS41QN8DgHYQC4rDycnUUuWDohSRFoSvalHo7jZxNgeq6Ey0hX1RmUsrq
-1uz2owAAOw==
-}
-image create photo ay_RotateA_img -format GIF -data $imgdata
-
 # Scale3D
 set imgdata {\
 R0lGODdhGQAZAKUAAL2+vb29vby8vGBfYL6+vb29vr69vXZ1dRgYGLy9vKWlpQwMDAAAAI2Njb29
@@ -767,5 +759,49 @@ SAxwaCeeb7SaiQA1mEkFgNqYMeSgCnUCkdyulBMGBKeUsvjXTKu17a16jUW7
 ufDsrCrPk80KgEEsfGx1ORNVXoZ2LViOZ5EECQA7
 }
 image create photo ay_Mark_img -format GIF -data $imgdata
+
+# Cross
+set imgdata {\
+R0lGODlhBwAHAKEDAK8AANJeXby8vP///yH5BAEAAAIALAAAAAAHAAcAAAIN
+lGEpqAFxgJzGQcVwKgA7
+}
+image create photo ay_Cr_img -format GIF -data $imgdata
+
+# RotateA
+image create photo ay_RotateA_img -w 25 -h 25
+ay_RotateA_img copy ay_Rotate_img
+ay_RotateA_img copy ay_Cr_img -to 9 9
+
+
+# Scale1DXA
+image create photo ay_Scale1DXA_img -w 25 -h 25
+ay_Scale1DXA_img copy ay_Scale1DX_img
+ay_Scale1DXA_img copy ay_Cr_img -to 1 18
+
+# Scale1DYA
+image create photo ay_Scale1DYA_img -w 25 -h 25
+ay_Scale1DYA_img copy ay_Scale1DY_img
+ay_Scale1DYA_img copy ay_Cr_img -to 1 18
+
+# Scale1DZA
+image create photo ay_Scale1DZA_img -w 25 -h 25
+ay_Scale1DZA_img copy ay_Scale1DZ_img
+ay_Scale1DZA_img copy ay_Cr_img -to 18 18
+
+# Scale2DA
+image create photo ay_Scale2DA_img -w 25 -h 25
+ay_Scale2DA_img copy ay_Scale2D_img
+ay_Scale2DA_img copy ay_Cr_img -to 1 18
+
+# Scale3DA
+image create photo ay_Scale3DA_img -w 25 -h 25
+ay_Scale3DA_img copy ay_Scale3D_img
+ay_Scale3DA_img copy ay_Cr_img -to 18 1
+
+# StretchA
+image create photo ay_Stretch2DA_img -w 25 -h 25
+ay_Stretch2DA_img copy ay_Stretch2D_img
+#ay_Stretch2DA_img copy ay_Cr_img -to 12 9
+ay_Stretch2DA_img copy ay_Cr_img -to 1 18
 
 catch {unset imgdata}

@@ -335,7 +335,7 @@ proc actionSc1DXOb { w } {
 proc actionSc1DXAOb { w } {
 
     viewTitle $w "" "Scale1DXA"
-    viewSetMAIcon $w ay_Scale1DX_img "Scale1DX"
+    viewSetMAIcon $w ay_Scale1DXA_img "Scale1DX"
 
     actionClearB1 $w
 
@@ -409,7 +409,7 @@ proc actionSc1DYOb { w } {
 proc actionSc1DYAOb { w } {
 
     viewTitle $w "" "Scale1DYA"
-    viewSetMAIcon $w ay_Scale1DY_img "Scale1DY"
+    viewSetMAIcon $w ay_Scale1DYA_img "Scale1DY"
 
     actionClearB1 $w
 
@@ -483,7 +483,7 @@ proc actionSc1DZOb { w } {
 proc actionSc1DZAOb { w } {
 
     viewTitle $w "" "Scale1DZA"
-    viewSetMAIcon $w ay_Scale1DZ_img "Scale1DZ"
+    viewSetMAIcon $w ay_Scale1DZA_img "Scale1DZ"
 
     actionClearB1 $w
 
@@ -557,7 +557,7 @@ proc actionSc2DOb { w } {
 proc actionSc2DAOb { w } {
 
     viewTitle $w "" "Scale2D"
-    viewSetMAIcon $w ay_Scale2D_img "Scale2D"
+    viewSetMAIcon $w ay_Scale2DA_img "Scale2D"
 
     actionClearB1 $w
 
@@ -631,7 +631,7 @@ proc actionSc3DOb { w } {
 proc actionSc3DAOb { w } {
 
     viewTitle $w "" "Scale3DA"
-    viewSetMAIcon $w ay_Scale3D_img "Scale3DA"
+    viewSetMAIcon $w ay_Scale3DA_img "Scale3DA"
 
     actionClearB1 $w
 
@@ -705,7 +705,7 @@ proc actionStr2DOb { w } {
 proc actionStr2DAOb { w } {
 
     viewTitle $w "" "Stretch2DA"
-    viewSetMAIcon $w ay_Stretch2D_img "Stretch2DA"
+    viewSetMAIcon $w ay_Stretch2DA_img "Stretch2DA"
 
     actionClearB1 $w
 
