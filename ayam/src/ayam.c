@@ -879,6 +879,10 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("sc2daoac", ay_oact_sc2DAcb);
 
+  Togl_CreateCommand("str2daoac", ay_oact_str2DAcb);
+
+  Togl_CreateCommand("sc3daoac", ay_oact_sc3DAcb);
+
   /* objsel.c */
   Togl_CreateCommand("processObjSel", ay_objsel_processcb);
 

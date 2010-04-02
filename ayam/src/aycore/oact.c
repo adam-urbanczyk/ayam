@@ -14,14 +14,81 @@
 
 /* oact.c - object related interactive actions */
 
+
+/* ay_oact_parseargs:
+ *  helper for all actions; check view type, check object selection,
+ *  parse args
+ */
+int
+ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
+		  double *winx, double *winy, double *owinx, double *owiny)
+{
+ Tcl_Interp *interp = Togl_Interp(togl);
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+
+  if(view->type == AY_VTPERSP)
+    {
+      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
+      return AY_ERROR;
+    }
+
+  if(argc >= 4)
+    {
+      if(!strcmp(argv[2],"-winxy"))
+	{
+	  if(!ay_selection)
+	    {
+	      /* avoid too many error messages: return silently */
+	      return AY_ERROR;
+	    }
+
+	  Tcl_GetDouble(interp, argv[3], winx);
+	  Tcl_GetDouble(interp, argv[4], winy);
+	  if(view->usegrid)
+	    {
+	      ay_viewt_griddify(togl, winx, winy);
+	    }
+	}
+      else
+	{
+	  if(!strcmp(argv[2],"-start"))
+	    {
+	      if(!ay_selection)
+		{
+		  ay_error(AY_ENOSEL, fname, NULL);
+		  return AY_ERROR;
+		}
+
+	      Tcl_GetDouble(interp, argv[3], winx);
+	      Tcl_GetDouble(interp, argv[4], winy);
+	      if(view->usegrid)
+		{
+		  ay_viewt_griddify(togl, winx, winy);
+		}
+
+	      *owinx = *winx;
+	      *owiny = *winy;
+	    }
+	}
+    }
+  else
+    {
+      ay_error(AY_EARGS, fname,
+		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
+      return TCL_OK;
+    }
+
+ return AY_OK;
+} /* ay_oact_parseargs */
+
+
 /* ay_oact_movetcb:
  *
  */
 int
 ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_point *point = NULL;
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -36,84 +103,37 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  ay_object *o = NULL;
  char fname[] = "move_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl, &winx, &winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl, &winx, &winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-
-	      /* get real direction of current level coordinate system */
-	      glMatrixMode(GL_MODELVIEW);
-	      glPushMatrix();
-	      /*	    if(view->type != AY_VTTRIM)*/
-	      if(!view->local)
-		{
-		  if(ay_currentlevel->object != ay_root)
-		    {
-		      ay_trafo_getallisr(ay_currentlevel->next);
-		    }
-		}
-	      else
-		{
-		  if(ay_currentlevel->object != ay_root)
-		    {
-		      ay_trafo_getallis(ay_currentlevel->next);
-		    }
-		} /* if */
-	      glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	      glPopMatrix();
-	    } /* if */
-	} /* if */
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start winx winy|-winxy winx winy\\]");
-      return TCL_OK;
-    } /* if */
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
+
+  /* get real direction of current level coordinate system */
+  glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+   /*	    if(view->type != AY_VTTRIM)*/
+   if(!view->local)
+     {
+       if(ay_currentlevel->object != ay_root)
+	 {
+	   ay_trafo_getallisr(ay_currentlevel->next);
+	 }
+     }
+   else
+     {
+       if(ay_currentlevel->object != ay_root)
+	 {
+	   ay_trafo_getallis(ay_currentlevel->next);
+	 }
+     } /* if */
+   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+  glPopMatrix();
 
   /* calc dx, dy, dz */
   dx = -(oldwinx - winx) * view->conv_x;
@@ -240,8 +260,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double height = Togl_Height(togl);
@@ -260,61 +279,12 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "rotate_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc == 5)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start winx winy|-winxy winx winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -330,6 +300,10 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -347,8 +321,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
-
-	  if((v1[0]==0.0)&&(v1[1]==0.0))
+	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
 	    break;
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	  if(v1[1]<0.0)
@@ -356,7 +329,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	  v2[0] = winx-owinx;
 	  v2[1] = winy-owiny;
-	  if((v2[0]==0.0)&&(v2[1]==0.0))
+	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
 	    break;
 	  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
 	  if(v2[1]<0.0)
@@ -448,7 +421,6 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   if(!ay_prefs.lazynotify)
@@ -471,11 +443,11 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0;
- double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
+ double ax = 0.0, ay = 0.0;
  double angle = 0.0, tpoint[4] = {0};
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
@@ -490,69 +462,20 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "rotate_object_about";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc == 5)
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  if(!view->drawmark)
-	    {
-	      /* if view->drawmark is not enabled some other action
-		 changed view trafos so that the point is not valid
-		 anymore and we should request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost mark. Please restart this action!");
-	      return TCL_OK;
-	    }
-
-	  ax = view->markx;
-	  ay = view->marky;
-
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl, &winx, &winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl, &winx, &winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    } /* if */
-	} /* if */
-    }
-  else
-    {
-      /*ay_error(AY_EARGS, fname, "-start winx winy|-winxy winx winy");*/
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
       return TCL_OK;
     }
 
@@ -565,6 +488,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
   /* calculate rotation angle from window coordinates
      of picked points (old/start and current from drag)
      and point to rotate about */
+  ax = view->markx;
+  ay = view->marky;
+
   v1[0] = oldwinx - ax;
   v1[1] = oldwiny - ay;
   if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
@@ -626,15 +552,13 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      glPopMatrix();
 	      ay_trafo_invmatrix4(mm, mmi);
 	      AY_APTRAN3(v4, view->markworld, mmi);
-	      axo = v4[2];
-	      ayo = v4[1];
 
 	      glPushMatrix();
 	       glLoadIdentity();
 	       glRotated(xangle, 1.0, 0.0, 0.0);
-	       glTranslated(0.0, -ayo, -axo);
+	       glTranslated(0.0, -v4[1], -v4[2]);
 	       glRotated(-angle,1.0,0.0,0.0);
-	       glTranslated(0.0, ayo, axo);
+	       glTranslated(0.0, v4[1], v4[2]);
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -674,15 +598,13 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
 	      ay_trafo_invmatrix4(mm,mmi);
 	      AY_APTRAN3(v4,view->markworld,mmi);
-	      axo = v4[0];
-	      ayo = v4[1];
 
 	      glPushMatrix();
 	       glLoadIdentity();
 	       glRotated(zangle, 0.0, 0.0, 1.0);
-	       glTranslated(-axo, -ayo, 0.0);
+	       glTranslated(-v4[0], -v4[1], 0.0);
 	       glRotated(-angle,0.0,0.0,1.0);
-	       glTranslated(axo, ayo, 0.0);
+	       glTranslated(v4[0], v4[1], 0.0);
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -720,15 +642,13 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      glPopMatrix();
 	      ay_trafo_invmatrix4(mm, mmi);
 	      AY_APTRAN3(v4, view->markworld, mmi);
-	      axo = v4[0];
-	      ayo = v4[2];
 
 	      glPushMatrix();
 	       glLoadIdentity();
 	       glRotated(yangle, 0.0, 1.0, 0.0);
-	       glTranslated(-axo, 0.0, -ayo);
+	       glTranslated(-v4[0], 0.0, -v4[2]);
 	       glRotated(-angle,0.0,1.0,0.0);
-	       glTranslated(axo, 0.0, ayo);
+	       glTranslated(v4[0], 0.0, v4[2]);
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -852,7 +772,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -867,59 +787,12 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DX_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -933,6 +806,10 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -969,9 +846,13 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1038,7 +919,6 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -1059,7 +939,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -1074,57 +954,12 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DY_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -1138,6 +973,10 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -1171,9 +1010,13 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1240,7 +1083,6 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -1261,7 +1103,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -1276,60 +1118,12 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DZ_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -1343,6 +1137,10 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -1376,9 +1174,13 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1445,7 +1247,6 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -1995,7 +1796,7 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -2009,58 +1810,12 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale2D_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -2074,6 +1829,10 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -2096,9 +1855,13 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
+	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	    break;
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
+	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	    break;
 
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
@@ -2186,7 +1949,6 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -2207,7 +1969,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
@@ -2221,58 +1983,12 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale3D_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
-    {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
 
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
-      return TCL_OK;
-    }
+  if(ay_status)
+    return TCL_OK;
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -2286,6 +2002,10 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -2308,9 +2028,13 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
+	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	    break;
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
+	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	    break;
 
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
@@ -2368,7 +2092,6 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -2389,33 +2112,36 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 {
+ int ay_status = AY_OK;
+ char fname[] = "stretch2D_object";
+ double d = 0.0;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- char fname[] = "stretch_object";
 
-  if(view->type == AY_VTPERSP)
+  /* parse args */
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&d, &d, &d, &d);
+
+  if(ay_status)
+    return TCL_OK;
+
+  switch(view->type)
     {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
+    case AY_VTFRONT:
+    case AY_VTTRIM:
+      ay_oact_sc1DXcb(togl, argc, argv);
+      ay_oact_sc1DYcb(togl, argc, argv);
+      break;
+    case AY_VTSIDE:
+      ay_oact_sc1DZcb(togl, argc, argv);
+      ay_oact_sc1DYcb(togl, argc, argv);
+      break;
+    case AY_VTTOP:
+      ay_oact_sc1DXcb(togl, argc, argv);
+      ay_oact_sc1DZcb(togl, argc, argv);
+      break;
+    default:
+      break;
     }
-
- switch(view->type)
-   {
-   case AY_VTFRONT:
-   case AY_VTTRIM:
-     ay_oact_sc1DXcb(togl, argc, argv);
-     ay_oact_sc1DYcb(togl, argc, argv);
-     break;
-   case AY_VTSIDE:
-     ay_oact_sc1DZcb(togl, argc, argv);
-     ay_oact_sc1DYcb(togl, argc, argv);
-     break;
-   case AY_VTTOP:
-     ay_oact_sc1DXcb(togl, argc, argv);
-     ay_oact_sc1DZcb(togl, argc, argv);
-     break;
-   default:
-     break;
-   }
 
  return TCL_OK;
 } /* ay_oact_str2Dcb */
@@ -2427,12 +2153,12 @@ ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscalx = 1.0;
- double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
+ double ax = 0.0, ay = 0.0;
  double al = 0.0, mov = 0.0, oldmov = 0.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
  double xaxis[3]={1.0,0.0,0.0}, v3[3];
@@ -2445,76 +2171,29 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DXA_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  if(!view->drawmark)
-	    {
-	      /* if view->drawmark is not enabled some other action
-		 changed view trafos so that the point is not valid
-		 anymore and we should request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost mark. Please restart this action!");
-	      return TCL_OK;
-	    }
-
-	  ax = view->markx;
-	  ay = view->marky;
-
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
       return TCL_OK;
     }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
+
+  ax = view->markx;
+  ay = view->marky;
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -2524,6 +2203,10 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -2563,9 +2246,13 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -2600,14 +2287,12 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_trafo_invmatrix4(mm, mmi);
 	  AY_APTRAN3(a, view->markworld, mmi);
-	  axo = a[0];
-	  ayo = a[1];
 
 	  ay_quat_torotmatrix(o->quat, mm);
 	  AY_APTRAN3(v3, xaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[1]*ayo+v3[2]*a[2];
+	  al = v3[0]*a[0]+v3[1]*a[1]+v3[2]*a[2];
 
 	  mov = al - ((o->scalx*(dscalx))*((al-oldmov)/o->scalx));
 
@@ -2665,7 +2350,6 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -2686,12 +2370,12 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscaly = 1.0;
- double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
+ double ax = 0.0, ay = 0.0;
  double al = 0.0, mov = 0.0, oldmov = 0.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
  double yaxis[3]={0.0,1.0,0.0}, v3[3];
@@ -2704,76 +2388,29 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DYA_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  if(!view->drawmark)
-	    {
-	      /* if view->drawmark is not enabled some other action
-		 changed view trafos so that the point is not valid
-		 anymore and we should request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost mark. Please restart this action!");
-	      return TCL_OK;
-	    }
-
-	  ax = view->markx;
-	  ay = view->marky;
-
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
       return TCL_OK;
     }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
+
+  ax = view->markx;
+  ay = view->marky;
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -2783,6 +2420,10 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -2822,9 +2463,13 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -2859,14 +2504,12 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_trafo_invmatrix4(mm, mmi);
 	  AY_APTRAN3(a, view->markworld, mmi);
-	  axo = a[0];
-	  ayo = a[1];
 
 	  ay_quat_torotmatrix(o->quat, mm);
 	  AY_APTRAN3(v3, yaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[1]*ayo+v3[2]*a[2];
+	  al = v3[0]*a[0]+v3[1]*a[1]+v3[2]*a[2];
 
 	  mov = al - ((o->scaly*(dscaly))*((al-oldmov)/o->scaly));
 
@@ -2924,7 +2567,6 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -2945,12 +2587,12 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double height = Togl_Height(togl);
  static double oldwinx = 0.0, oldwiny = 0.0;
  double winx = 0.0, winy = 0.0, dscalz = 1.0;
- double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
+ double ax = 0.0, ay = 0.0;
  double al = 0.0, mov = 0.0, oldmov = 0.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
  double zaxis[3]={0.0,0.0,1.0}, v3[3];
@@ -2963,76 +2605,29 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  char fname[] = "scale1DZA_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  if(!view->drawmark)
-	    {
-	      /* if view->drawmark is not enabled some other action
-		 changed view trafos so that the point is not valid
-		 anymore and we should request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost mark. Please restart this action!");
-	      return TCL_OK;
-	    }
-
-	  ax = view->markx;
-	  ay = view->marky;
-
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
       return TCL_OK;
     }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
+
+  ax = view->markx;
+  ay = view->marky;
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -3042,6 +2637,10 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
 	  glPushMatrix();
@@ -3081,9 +2680,13 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+		break;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -3118,14 +2721,12 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	  ay_trafo_invmatrix4(mm, mmi);
 	  AY_APTRAN3(a, view->markworld, mmi);
-	  axo = a[0];
-	  ayo = a[2];
 
 	  ay_quat_torotmatrix(o->quat, mm);
 	  AY_APTRAN3(v3, zaxis, mm);
 
 	  oldmov = v3[0]*o->movx+v3[1]*o->movy+v3[2]*o->movz;
-	  al = v3[0]*axo+v3[2]*ayo+v3[1]*a[1];
+	  al = v3[0]*a[0]+v3[1]*a[1]+v3[2]*a[2];
 
 	  mov = al - ((o->scalz*(dscalz))*((al-oldmov)/o->scalz));
 
@@ -3183,7 +2784,6 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -3204,82 +2804,32 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 {
- Tcl_Interp *interp = Togl_Interp(togl);
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- double ax = 0.0, ay = 0.0, axo = 0.0, ayo = 0.0;
  static double oldwinx = 0.0, oldwiny = 0.0;
+ double ax = 0.0, ay = 0.0;
  double winx = 0.0, winy = 0.0, dscal = 1.0;
  double tpoint[4]={0}, t1, t2, v1[2], v2[2];
- GLdouble a[3], mp[16], mm[16], mmi[16];
- GLint vp[4];
+ GLdouble a[3], mm[16], mmi[16];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
  char fname[] = "scale2DA_object";
 
-  if(view->type == AY_VTPERSP)
-    {
-      ay_error(AY_ERROR, fname, "Operation not allowed in perspective views.");
-      return TCL_OK;
-    }
-
   /* parse args */
-  if(argc >= 4)
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
     {
-      if(!strcmp(argv[2],"-winxy"))
-	{
-	  if(!view->drawmark)
-	    {
-	      /* if view->drawmark is not enabled some other action
-		 changed view trafos so that the point is not valid
-		 anymore and we should request a new point */
-	      ay_error(AY_ERROR, fname,
-		    "Lost mark. Please restart this action!");
-	      return TCL_OK;
-	    }
-
-	  ax = view->markx;
-	  ay = view->marky;
-
-	  Tcl_GetDouble(interp, argv[3], &winx);
-	  Tcl_GetDouble(interp, argv[4], &winy);
-	  if(view->usegrid)
-	    {
-	      ay_viewt_griddify(togl,&winx,&winy);
-	    }
-	}
-      else
-	{
-	  if(!strcmp(argv[2],"-start"))
-	    {
-
-	      if(!ay_selection)
-		{
-		  ay_error(AY_ENOSEL, fname, NULL);
-		  return TCL_OK;
-		}
-
-	      Tcl_GetDouble(interp, argv[3], &winx);
-	      Tcl_GetDouble(interp, argv[4], &winy);
-	      if(view->usegrid)
-		{
-		  ay_viewt_griddify(togl,&winx,&winy);
-		}
-
-	      oldwinx = winx;
-	      oldwiny = winy;
-	    }
-	}
-    }
-  else
-    {
-      ay_error(AY_EARGS, fname,
-		 "\\[-start $winx $winy|-winxy $winx $winy\\]");
-      return TCL_OK;
-    }
-
-  if(!ay_selection)
-    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
       return TCL_OK;
     }
 
@@ -3287,47 +2837,58 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
   if((oldwinx == winx) && (oldwiny == winy))
     return TCL_OK;
 
-  glGetIntegerv(GL_VIEWPORT, vp);
-  glGetDoublev(GL_PROJECTION_MATRIX, mp);
+  /* calculate scale factor from the relative lengths
+     of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
+  ax = view->markx;
+  ay = view->marky;
+
+  v1[0] = (oldwinx-ax);
+  v1[1] = (oldwiny-ay);
+  /* bail out, if we get too near the mark */
+  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+    return TCL_OK;
+
+  v2[0] = (winx-ax);
+  v2[1] = (winy-ay);
+  /* bail out, if we get too near the mark */
+  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+    return TCL_OK;
+
+  t1 = AY_V2LEN(v1);
+  t2 = AY_V2LEN(v2);
+
+  if(fabs(t1)>AY_EPSILON)
+    dscal = t2/t1;
+  else
+    dscal = 1.0;
+
+  /* transform mark from world to current level space */
   glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  if(view->type != AY_VTTRIM)
+    {
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
+    }
+
+  glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glPopMatrix();
+
+  ay_trafo_invmatrix4(mm, mmi);
+  AY_APTRAN3(a, view->markworld, mmi);
 
   /* scale the object(s) / selected points */
   while(sel)
     {
       o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
       if(o)
 	{
-	  v1[0] = (oldwinx-ax);
-	  v1[1] = (oldwiny-ay);
-
-	  v2[0] = (winx-ax);
-	  v2[1] = (winy-ay);
-
-	  t1 = AY_V2LEN(v1);
-	  t2 = AY_V2LEN(v2);
-
-	  if(fabs(t1)>AY_EPSILON)
-	    dscal = t2/t1;
-	  else
-	    dscal = 1.0;
-
-	  glPushMatrix();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
-
-	  glGetDoublev(GL_MODELVIEW_MATRIX, mm);
-	  glPopMatrix();
-
-	  ay_trafo_invmatrix4(mm, mmi);
-	  AY_APTRAN3(a, view->markworld, mmi);
-	  axo = a[0];
-	  ayo = a[2];
-
 	  if(o->selp)
 	    {
 	      point = o->selp;
@@ -3386,29 +2947,34 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	       switch(view->type)
-		 {
-		 case AY_VTFRONT:
-		 case AY_VTTRIM:
-		   o->scalx *= dscal;
-		   o->scaly *= dscal;
-		   break;
-		 case AY_VTSIDE:
-		   o->scaly *= dscal;
-		   o->scalz *= dscal;
-		   break;
-		 case AY_VTTOP:
-		   o->scalx *= dscal;
-		   o->scalz *= dscal;
-		   break;
-		 default:
-		   break;
-		 }
+	      switch(view->type)
+		{
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  o->movx = o->scalx*dscal*((o->movx-a[0])/o->scalx)+a[0];
+		  o->movy = o->scaly*dscal*((o->movy-a[1])/o->scaly)+a[1];
+		  o->scalx *= dscal;
+		  o->scaly *= dscal;
+		  break;
+		case AY_VTSIDE:
+		  o->movy = o->scaly*dscal*((o->movy-a[1])/o->scaly)+a[1];
+		  o->movz = o->scalz*dscal*((o->movz-a[2])/o->scalz)+a[2];
+		  o->scaly *= dscal;
+		  o->scalz *= dscal;
+		  break;
+		case AY_VTTOP:
+		  o->movx = o->scalx*dscal*((o->movx-a[0])/o->scalx)+a[0];
+		  o->movz = o->scalz*dscal*((o->movz-a[2])/o->scalz)+a[2];
+		  o->scalx *= dscal;
+		  o->scalz *= dscal;
+		  break;
+		default:
+		  break;
+		}
 	      o->modified = AY_TRUE;
 	    } /* if */
 	} /* if */
 
-      sel = sel->next;
     } /* while */
 
   oldwinx = winx;
@@ -3421,3 +2987,211 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_oact_sc2DAcb */
+
+
+/* ay_oact_str2DAcb:
+ *
+ */
+int
+ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "stretch2DA_object";
+ double d = 0.0;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+
+  /* parse args */
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&d, &d, &d, &d);
+
+  if(ay_status)
+    return TCL_OK;
+
+  if(!view->drawmark)
+    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
+      return TCL_OK;
+    }
+
+  switch(view->type)
+    {
+    case AY_VTFRONT:
+    case AY_VTTRIM:
+      ay_oact_sc1DXAcb(togl, argc, argv);
+      ay_oact_sc1DYAcb(togl, argc, argv);
+      break;
+    case AY_VTSIDE:
+      ay_oact_sc1DZAcb(togl, argc, argv);
+      ay_oact_sc1DYAcb(togl, argc, argv);
+      break;
+    case AY_VTTOP:
+      ay_oact_sc1DXAcb(togl, argc, argv);
+      ay_oact_sc1DZAcb(togl, argc, argv);
+      break;
+    default:
+      break;
+    }
+
+ return TCL_OK;
+} /* ay_oact_str2DAcb */
+
+
+/* ay_oact_sc3DAcb:
+ *
+ */
+int
+ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ static double oldwinx = 0.0, oldwiny = 0.0;
+ double ax = 0.0, ay = 0.0;
+ double winx = 0.0, winy = 0.0, dscal = 1.0;
+ double tpoint[4]={0}, t1, t2, v1[2], v2[2];
+ GLdouble a[3], mm[16], mmi[16];
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_point *point = NULL;
+ char fname[] = "scale3DA_object";
+
+  if(!view->drawmark)
+    {
+      /* if view->drawmark is not enabled some other action
+	 changed view trafos so that the point is not valid
+	 anymore and we should request a new point */
+      ay_error(AY_ERROR, fname,
+	       "Lost mark. Please restart this action!");
+      return TCL_OK;
+    }
+
+  /* parse args */
+  ay_status = ay_oact_parseargs(togl, argc, argv, fname,
+				&winx, &winy, &oldwinx, &oldwiny);
+
+  if(ay_status)
+    return TCL_OK;
+
+  /* bail out, as long as we stay in the same grid cell */
+  if((oldwinx == winx) && (oldwiny == winy))
+    return TCL_OK;
+
+  ax = view->markx;
+  ay = view->marky;
+
+  /* calculate scale factor from the relative lengths
+     of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
+  v1[0] = (oldwinx-ax);
+  v1[1] = (oldwiny-ay);
+  /* bail out, if we get too near the mark */
+  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+    return TCL_OK;
+
+  v2[0] = (winx-ax);
+  v2[1] = (winy-ay);
+  /* bail out, if we get too near the mark */
+  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+    return TCL_OK;
+
+  t1 = AY_V2LEN(v1);
+  t2 = AY_V2LEN(v2);
+
+  if(fabs(t1)>AY_EPSILON)
+    dscal = t2/t1;
+  else
+    dscal = 1.0;
+
+  /* transform mark from world to current level space */
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   if(view->type != AY_VTTRIM)
+     {
+       if(ay_currentlevel->object != ay_root)
+	 {
+	   ay_trafo_getall(ay_currentlevel->next);
+	 }
+     }
+   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glPopMatrix();
+
+  ay_trafo_invmatrix4(mm, mmi);
+  AY_APTRAN3(a, view->markworld, mmi);
+
+  /* scale the object(s) / selected points */
+  while(sel)
+    {
+      o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
+      if(o)
+	{
+	  if(o->selp)
+	    {
+	      point = o->selp;
+
+	      glPushMatrix();
+	       glLoadIdentity();
+
+	       if(!view->local)
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallisr(ay_currentlevel->next);
+		     }
+		 }
+
+	       glTranslated(a[0],a[1],a[2]);
+	       glScaled(dscal,dscal,dscal);
+	       glTranslated(-a[0],-a[1],-a[2]);
+
+	       if(!view->local)
+		 {
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getallsr(ay_currentlevel->next);
+		     }
+		 }
+
+	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+	      glPopMatrix();
+
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint,point->point,mm);
+		  memcpy(point->point,tpoint,3*sizeof(double));
+
+		  point = point->next;
+		}
+
+	      o->modified = AY_TRUE;
+	      ay_notify_force(o);
+	    }
+	  else
+	    {
+	      o->movx = o->scalx*dscal*((o->movx-a[0])/o->scalx)+a[0];
+	      o->movy = o->scaly*dscal*((o->movy-a[1])/o->scaly)+a[1];
+	      o->movz = o->scalz*dscal*((o->movz-a[2])/o->scalz)+a[2];
+	      o->scalx *= dscal;
+	      o->scaly *= dscal;
+	      o->scalz *= dscal;
+
+	      o->modified = AY_TRUE;
+	    } /* if */
+	} /* if */
+    } /* while */
+
+  oldwinx = winx;
+  oldwiny = winy;
+
+  if(!ay_prefs.lazynotify)
+    ay_notify_parent();
+
+  ay_toglcb_display(togl);
+
+ return TCL_OK;
+} /* ay_oact_sc3DAcb */

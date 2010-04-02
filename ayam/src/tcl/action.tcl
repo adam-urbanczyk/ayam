@@ -587,6 +587,7 @@ proc actionSc2DAOb { w } {
 
 #
 proc actionSc3DOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Scale3D"
     viewSetMAIcon $w ay_Scale3D_img "Scale3D"
@@ -612,13 +613,55 @@ proc actionSc3DOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc3DAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionSc3DOb
 
 
 #
+proc actionSc3DAOb { w } {
+
+    viewTitle $w "" "Scale3DA"
+    viewSetMAIcon $w ay_Scale3D_img "Scale3DA"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Sc3DAObj
+	%W mc
+	%W sc3daoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W sc3daoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionSc3DAOb
+
+
+#
 proc actionStr2DOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Stretch2D"
     viewSetMAIcon $w ay_Stretch2D_img "Stretch2D"
@@ -644,9 +687,50 @@ proc actionStr2DOb { w } {
 
     $w setconf -drawh 1
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+    bind $w $ayviewshortcuts(About) { actionSetMark %W actionStr2DAOb }
+    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
  return;
 }
 # actionStr2DOb
+
+
+#
+proc actionStr2DAOb { w } {
+
+    viewTitle $w "" "Stretch2DA"
+    viewSetMAIcon $w ay_Stretch2D_img "Stretch2DA"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save Str2DAObj
+	%W mc
+	%W str2daoac -start %x %y
+	update
+    }
+
+    bind $w <B1-Motion> {
+	%W str2daoac -winxy %x %y
+	update
+    }
+
+    bind $w <Motion> ""
+
+    actionBindRelease $w
+
+    $w setconf -drawh 1
+
+ return;
+}
+# actionStr2DAOb
 
 
 #
