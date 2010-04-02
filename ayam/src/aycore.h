@@ -383,6 +383,12 @@ void ay_ns_init(Tcl_Interp *interp);
 
 /* oact.c */
 
+/*! \brief helper function to parse args
+ */
+int ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
+		      double *winx, double *winy,
+		      double *owinx, double *owiny);
+
 /*! \brief move object modelling action
  */
 int ay_oact_movetcb(struct Togl *togl, int argc, char *argv[]);
@@ -431,10 +437,17 @@ int ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief stretch 2D object modelling action
+/*! \brief scale 2D about mark object modelling action
  */
 int ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[]);
 
+/*! \brief stretch 2D about mark object modelling action
+ */
+int ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[]);
+
+/*! \brief scale 3D about mark object modelling action
+ */
+int ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[]);
 
 /* object.c */
 
