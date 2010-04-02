@@ -48,10 +48,11 @@ proc actionBindRelease { w } {
 }
 # actionBindRelease
 
+
 #actionSetMark:
 # helper for all actions about a user specified point (the mark)
 # e.g. rotate about and scale about
-proc actionSetMark { w nextaction } {
+proc actionSetMark { w { nextaction "" } } {
 
     viewTitle $w "" "Mark Point"
     viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
@@ -59,8 +60,15 @@ proc actionSetMark { w nextaction } {
     bind $w.f3D.togl <ButtonPress-1> "\
 	    %W mc;\
 	    update;\
-	    %W setconf -gmark %x %y 1;\
-	    $nextaction %W;"
+	    %W setconf -gmark %x %y 1;"
+
+    if { $nextaction != "" } {
+	bind $w.f3D.togl <ButtonPress-1> "+ $nextaction %W;"
+	bind $w <Key-Return> "\
+          bind %W <Key-Return> \"\";\
+          $nextaction %W.f3D.togl"
+    }
+
  return;
 }
 # actionSetMark
