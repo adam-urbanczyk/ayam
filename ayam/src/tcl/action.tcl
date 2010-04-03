@@ -54,7 +54,12 @@ proc actionBindRelease { w } {
 # e.g. rotate about and scale about
 proc actionSetMark { w { nextaction "" } } {
 
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    }
+
     viewTitle $w "" "Mark Point"
+
     viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
 
     bind $w.f3D.togl <ButtonPress-1> "\
@@ -279,8 +284,8 @@ proc actionRotOb { w } {
 #
 proc actionRotObA { w } {
 
-    viewTitle $w "" "Rotate_about"
-    viewSetMAIcon $w ay_RotateA_img "Rotate_about"
+    viewTitle $w "" "RotateA"
+    viewSetMAIcon $w ay_RotateA_img "RotateA"
 
     actionClearB1 $w
 
@@ -343,7 +348,7 @@ proc actionSc1DXOb { w } {
 proc actionSc1DXAOb { w } {
 
     viewTitle $w "" "Scale1DXA"
-    viewSetMAIcon $w ay_Scale1DXA_img "Scale1DX"
+    viewSetMAIcon $w ay_Scale1DXA_img "Scale1DXA"
 
     actionClearB1 $w
 
@@ -417,7 +422,7 @@ proc actionSc1DYOb { w } {
 proc actionSc1DYAOb { w } {
 
     viewTitle $w "" "Scale1DYA"
-    viewSetMAIcon $w ay_Scale1DYA_img "Scale1DY"
+    viewSetMAIcon $w ay_Scale1DYA_img "Scale1DYA"
 
     actionClearB1 $w
 
@@ -491,7 +496,7 @@ proc actionSc1DZOb { w } {
 proc actionSc1DZAOb { w } {
 
     viewTitle $w "" "Scale1DZA"
-    viewSetMAIcon $w ay_Scale1DZA_img "Scale1DZ"
+    viewSetMAIcon $w ay_Scale1DZA_img "Scale1DZA"
 
     actionClearB1 $w
 
@@ -565,7 +570,7 @@ proc actionSc2DOb { w } {
 proc actionSc2DAOb { w } {
 
     viewTitle $w "" "Scale2D"
-    viewSetMAIcon $w ay_Scale2DA_img "Scale2D"
+    viewSetMAIcon $w ay_Scale2DA_img "Scale2DA"
 
     actionClearB1 $w
 
