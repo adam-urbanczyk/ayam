@@ -202,7 +202,7 @@ proc toolbox_open { {w .tbw} } {
 	}
 	##################
 	if { $i == "trafo" } {
-	    lappend ay(toolbuttons) bmovo broto brota bscal
+	    lappend ay(toolbuttons) bmovo broto bscal bsc2d
 	    ######
 	    button $f.bmovo -image ay_Move_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionMoveOb
@@ -217,13 +217,6 @@ proc toolbox_open { {w .tbw} } {
 	    balloon_set $f.broto\
 		"rotate \[ [remkpkr $ayviewshortcuts(RotO)] \]"
 
-	    ######
-	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionRotObA
-	    }
-	    balloon_set $f.brota\
-		"rotate about \[ [remkpkr $ayviewshortcuts(RotA)] \]"
-
 	    #####
 	    button $f.bscal -image ay_Scale3D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc3DOb
@@ -231,17 +224,17 @@ proc toolbox_open { {w .tbw} } {
 	    balloon_set $f.bscal\
 		"scale 3D \[ [remkpkr $ayviewshortcuts(Scal3)] \]"
 
-	}
-	##################
-	if { $i == "trafo2" } {
-	    lappend ay(toolbuttons) bsc2d bsc1dx bsc1dy bsc1dz
-
 	    ######
 	    button $f.bsc2d -image ay_Scale2D_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionSc2DOb
 	    }
 	    balloon_set $f.bsc2d\
 		"scale 2D \[ [remkpkr $ayviewshortcuts(Scal2)] \]"
+
+	}
+	##################
+	if { $i == "trafo2" } {
+	    lappend ay(toolbuttons) bsc1dx bsc1dy bsc1dz bst2d
 
 	    ######
 	    button $f.bsc1dx -image ay_Scale1DX_img -padx 0 -pady 0 -command {
@@ -264,8 +257,25 @@ proc toolbox_open { {w .tbw} } {
 	    balloon_set $f.bsc1dz\
 		"scale z \[ [remkpkr $ayviewshortcuts(ScalZ)] \]"
 
-	}
+	    ######
+	    button $f.bst2d -image ay_Stretch2D_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionStr2DOb
+	    }
+	    balloon_set $f.bst2d\
+		"stretch \[ [remkpkr $ayviewshortcuts(Stretch)] \]"
 
+	}
+	##################
+	if { $i == "trafo3" } {
+	    lappend ay(toolbuttons) brota bsc1dxa bsc1dya bsc1dza
+
+	    ######
+	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionRotObA
+	    }
+	    balloon_set $f.brota\
+		"rotate about \[ [remkpkr $ayviewshortcuts(RotA)] \]"
+	}
 	##################
 
 	if { $i == "misc" } {
