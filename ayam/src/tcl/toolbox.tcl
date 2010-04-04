@@ -271,10 +271,31 @@ proc toolbox_open { {w .tbw} } {
 
 	    ######
 	    button $f.brota -image ay_RotateA_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionRotObA
+		toolbox_startaction actionRotOb 1
 	    }
 	    balloon_set $f.brota\
-		"rotate about \[ [remkpkr $ayviewshortcuts(RotA)] \]"
+		"rotate about \[ [remkpkr $ayviewshortcuts(RotO)] \]"
+
+	    ######
+	    button $f.bsc1dxa -image ay_Scale1DXA_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionScale1DX 1
+	    }
+	    balloon_set $f.bsc1dxa\
+		"scale 1D X about \[ [remkpkr $ayviewshortcuts(ScalX)] \]"
+	    ######
+	    button $f.bsc1dya -image ay_Scale1DYA_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionScale1DY 1
+	    }
+	    balloon_set $f.bsc1dya\
+		"scale 1D Y about \[ [remkpkr $ayviewshortcuts(ScalY)] \]"
+	    ######
+	    button $f.bsc1dza -image ay_Scale1DZA_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionScale1DZ 1
+	    }
+	    balloon_set $f.bsc1dza\
+		"scale 1D Z about \[ [remkpkr $ayviewshortcuts(ScalZ)] \]"
+
+
 	}
 	##################
 
@@ -884,7 +905,7 @@ proc toolbox_add { fn colspan } {
 # toolbox_add
 
 
-proc toolbox_startaction { action } {
+proc toolbox_startaction { action { about 0 } } {
     global ay ayprefs
 
     if { $ayprefs(SingleWindow) == 1 } {
@@ -897,16 +918,26 @@ proc toolbox_startaction { action } {
 	if { $intfocus != "" } {
 	    ${intfocus}.f3D.togl mc
 	    $action ${intfocus}.f3D.togl
+	    if { $about } {
+		actionSetMark ${intfocus} ${action}A
+	    }
+
 	} else {
 	    foreach i $ay(views) {
 		${i}.f3D.togl mc
 		$action ${i}.f3D.togl
+		if { $about } {
+		    actionSetMark ${i} ${action}A
+		}
 	    }
 	}
     } else {
 	foreach i $ay(views) {
 	    ${i}.f3D.togl mc
 	    $action ${i}.f3D.togl
+	    if { $about } {
+		actionSetMark ${i} ${action}A
+	    }
 	}
     }
     # if
