@@ -210,6 +210,7 @@ proc actionMoveZView { w } {
 
 #
 proc actionMoveOb { w } {
+    global ay ayviewshortcuts
 
     viewTitle $w "" "Move"
     viewSetMAIcon $w ay_Move_img "Move"
@@ -220,7 +221,11 @@ proc actionMoveOb { w } {
 	set ay(action) 1
 	undo save MoveObj
 	%W mc
-	%W moveoac -start %x %y
+	if { $ay(restrict) > 0 } {
+	    %W moveoac -start %x %y $ay(restrict)
+	} else {
+	    %W moveoac -start %x %y
+	}
 	update
     }
 
@@ -233,6 +238,25 @@ proc actionMoveOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    set ay(restrict) 0
+
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $w]
+    } else {
+	set w [winfo parent [winfo parent $w]]
+    }
+    set ay(oldxbinding) [bind $w $ayviewshortcuts(RestrictX)]
+    bind $w $ayviewshortcuts(RestrictX) { set ay(restrict) 1 }
+    after 2000 "bind $w $ayviewshortcuts(RestrictX) {$ay(oldxbinding)}"
+
+    set ay(oldybinding) [bind $w $ayviewshortcuts(RestrictY)]
+    bind $w $ayviewshortcuts(RestrictY) { set ay(restrict) 2 }
+    after 2000 "bind $w $ayviewshortcuts(RestrictY) {$ay(oldybinding)}"
+
+    set ay(oldzbinding) [bind $w $ayviewshortcuts(RestrictZ)]
+    bind $w $ayviewshortcuts(RestrictZ) { set ay(restrict) 3 }
+    after 2000 "bind $w $ayviewshortcuts(RestrictZ) {$ay(oldzbinding)}"
 
  return;
 }
