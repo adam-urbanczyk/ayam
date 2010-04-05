@@ -34,7 +34,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 
   if(argc >= 4)
     {
-      if(!strcmp(argv[2],"-winxy"))
+      if(argv[2][0] && (argv[2][1] == 'w') /*!strcmp(argv[2],"-winxy")*/)
 	{
 	  if(!ay_selection)
 	    {
@@ -51,7 +51,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 	}
       else
 	{
-	  if(!strcmp(argv[2],"-start"))
+	  if(argv[2][0] && (argv[2][1] == 's') /*!strcmp(argv[2],"-start")*/)
 	    {
 	      if(!ay_selection)
 		{
@@ -89,16 +89,18 @@ int
 ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_point *point = NULL;
  static double oldwinx = 0.0, oldwiny = 0.0;
+ static GLdouble m[16] = {0};
+ static int restrict = 0;
  double winx = 0.0, winy = 0.0;
  double dx = 0, dy = 0, dz = 0;
  double sdx = 0, sdy = 0, sdz = 0;
  double v1[3] = {0}, v2[3] = {0};
  double euler[3] = {0};
  GLdouble mm[16];
- static GLdouble m[16] = {0};
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  char fname[] = "move_object";
@@ -109,6 +111,18 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_status)
     return TCL_OK;
+
+  if((argc >= 4) && argv[2][0] && (argv[2][1] == 's'))
+    {
+      if(argc > 5)
+	{
+	  Tcl_GetInt(interp, argv[5], &restrict);
+	}	      
+      else
+	{
+	  restrict = 0;
+	}
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -142,6 +156,16 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   /* modify dx/dy/dz according to view type */
   if((view->type == AY_VTFRONT) || (view->type == AY_VTTRIM))
     {
+      /* restrict to X? */
+      if(restrict == 1)
+	{
+	  dy = 0.0;
+	}
+      /* restrict to Y? */
+      if(restrict == 2)
+	{
+	  dx = 0.0;
+	}
       v2[0] = dx;
       v2[1] = dy;
       v2[2] = 0.0;
@@ -153,6 +177,16 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   if(view->type == AY_VTSIDE)
     {
+      /* restrict to Z? */
+      if(restrict == 3)
+	{
+	  dy = 0.0;
+	}
+      /* restrict to Y? */
+      if(restrict == 2)
+	{
+	  dx = 0.0;
+	}
       v2[0] = 0.0;
       v2[1] = dy;
       v2[2] = -dx;
@@ -164,6 +198,16 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   if(view->type == AY_VTTOP)
     {
+      /* restrict to X? */
+      if(restrict == 1)
+	{
+	  dy = 0.0;
+	}
+      /* restrict to Z? */
+      if(restrict == 3)
+	{
+	  dx = 0.0;
+	}
       v2[0] = dx;
       v2[1] = 0.0;
       v2[2] = -dy;
@@ -2246,11 +2290,13 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
 		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
 		break;
 
@@ -2273,6 +2319,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalx = 1.0;
 
+	  /* transform mark from world to current level space */
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
 	    {
@@ -2463,11 +2510,13 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
 		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
 		break;
 
@@ -2490,6 +2539,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscaly = 1.0;
 
+	  /* transform mark from world to current level space */
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
 	    {
@@ -2680,11 +2730,13 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
 		break;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
+	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
 		break;
 
@@ -2707,6 +2759,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalz = 1.0;
 
+	  /* transform mark from world to current level space */
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
 	    {
