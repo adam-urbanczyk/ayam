@@ -247,15 +247,21 @@ proc actionMoveOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
     set ay(oldxbinding) [bind $w $ayviewshortcuts(RestrictX)]
-    bind $w $ayviewshortcuts(RestrictX) { set ay(restrict) 1 }
+    bind $w $ayviewshortcuts(RestrictX) "\
+	set ay(restrict) 1;\
+	viewSetMAIcon $w.f3D.togl ay_MoveX_img \"MoveX\";"
     after 2000 "bind $w $ayviewshortcuts(RestrictX) {$ay(oldxbinding)}"
 
     set ay(oldybinding) [bind $w $ayviewshortcuts(RestrictY)]
-    bind $w $ayviewshortcuts(RestrictY) { set ay(restrict) 2 }
+    bind $w $ayviewshortcuts(RestrictY) "\
+	set ay(restrict) 2;\
+	viewSetMAIcon $w.f3D.togl ay_MoveY_img \"MoveY\";"
     after 2000 "bind $w $ayviewshortcuts(RestrictY) {$ay(oldybinding)}"
 
     set ay(oldzbinding) [bind $w $ayviewshortcuts(RestrictZ)]
-    bind $w $ayviewshortcuts(RestrictZ) { set ay(restrict) 3 }
+    bind $w $ayviewshortcuts(RestrictZ) "\
+	set ay(restrict) 3;\
+	viewSetMAIcon $w.f3D.togl ay_MoveZ_img \"MoveZ\";"    
     after 2000 "bind $w $ayviewshortcuts(RestrictZ) {$ay(oldzbinding)}"
 
  return;
