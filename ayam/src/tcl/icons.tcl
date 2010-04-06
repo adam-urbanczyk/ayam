@@ -767,11 +767,12 @@ lGEpqAFxgJzGQcVwKgA7
 }
 image create photo ay_Cr_img -format GIF -data $imgdata
 
+# create more icons as variations of basic icons above
+
 # RotateA
 image create photo ay_RotateA_img -w 25 -h 25
 ay_RotateA_img copy ay_Rotate_img
 ay_RotateA_img copy ay_Cr_img -to 9 9
-
 
 # Scale1DXA
 image create photo ay_Scale1DXA_img -w 25 -h 25
@@ -803,5 +804,20 @@ image create photo ay_Stretch2DA_img -w 25 -h 25
 ay_Stretch2DA_img copy ay_Stretch2D_img
 #ay_Stretch2DA_img copy ay_Cr_img -to 12 9
 ay_Stretch2DA_img copy ay_Cr_img -to 1 18
+
+# MoveX
+image create photo ay_MoveX_img -w 25 -h 25
+ay_MoveX_img copy ay_Move_img
+ay_MoveX_img copy ay_Scale1DX_img -from 0 0 7 7
+
+# MoveY
+image create photo ay_MoveY_img -w 25 -h 25
+ay_MoveY_img copy ay_Move_img
+ay_MoveY_img copy ay_Scale1DY_img -from 0 0 7 8
+
+# MoveZ
+image create photo ay_MoveZ_img -w 25 -h 25
+ay_MoveZ_img copy ay_Move_img
+ay_MoveZ_img copy ay_Scale1DZ_img -from 0 0 7 8
 
 catch {unset imgdata}
