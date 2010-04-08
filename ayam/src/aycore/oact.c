@@ -166,6 +166,12 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  dx = 0.0;
 	}
+      /* restrict to Z? */
+      if(restrict == 3)
+	{
+	  dx = 0.0;
+	  dy = 0.0;
+	}
       v2[0] = dx;
       v2[1] = dy;
       v2[2] = 0.0;
@@ -187,6 +193,12 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  dx = 0.0;
 	}
+      /* restrict to X? */
+      if(restrict == 1)
+	{
+	  dx = 0.0;
+	  dy = 0.0;
+	}
       v2[0] = 0.0;
       v2[1] = dy;
       v2[2] = -dx;
@@ -207,6 +219,12 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       if(restrict == 3)
 	{
 	  dx = 0.0;
+	}
+      /* restrict to Y? */
+      if(restrict == 2)
+	{
+	  dx = 0.0;
+	  dy = 0.0;
 	}
       v2[0] = dx;
       v2[1] = 0.0;
