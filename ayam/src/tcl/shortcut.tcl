@@ -889,13 +889,13 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Move Objects:        <$svsc(MoveO)>
  Rotate Objects:      <$svsc(RotO)>
  Rotate Objects
- around Point:        <$svsc(RotA)>
+ about Mark:          <$svsc(RotO)$svsc(About)>
  Scale Objects (3D)   <$svsc(Scal3)>
  Scale Objects (2D)   <$svsc(Scal2)>
  Stretch Objects (2D) <$svsc(Stretch)>
- Scale Objects (1D,X) <$svsc(ScalX)>
- Scale Objects (1D,Y) <$svsc(ScalY)>
- Scale Objects (1D,Z) <$svsc(ScalZ)>
+ Scale Objects (1D,X) <$svsc(Scal2)$svsc(RestrictX)>
+ Scale Objects (1D,Y) <$svsc(Scal2)$svsc(RestrictY)>
+ Scale Objects (1D,Z) <$svsc(Scal2)$svsc(RestrictZ)>
 
  Edit Points          <$svsc(Edit)>
  Edit Points (direct) <$svsc(EditD)>
