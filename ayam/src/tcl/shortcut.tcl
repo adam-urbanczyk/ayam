@@ -774,9 +774,6 @@ proc shortcut_viewactions { w } {
 
     bind $w <$ayviewshortcuts(MoveO)> "actionMoveOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(RotO)> "actionRotOb $w.f3D.togl"
-    bind $w <$ayviewshortcuts(ScalX)> "actionSc1DXOb $w.f3D.togl"
-    bind $w <$ayviewshortcuts(ScalY)> "actionSc1DYOb $w.f3D.togl"
-    bind $w <$ayviewshortcuts(ScalZ)> "actionSc1DZOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(Scal2)> "actionSc2DOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(Scal3)> "actionSc3DOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(Stretch)> "actionStr2DOb $w.f3D.togl"

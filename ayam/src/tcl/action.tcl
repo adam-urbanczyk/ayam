@@ -210,7 +210,7 @@ proc actionMoveZView { w } {
 
 #
 proc actionMoveOb { w } {
-    global ay ayviewshortcuts
+    global ay ayprefs ayviewshortcuts
 
     viewTitle $w "" "Move"
     viewSetMAIcon $w ay_Move_img "Move"
@@ -239,6 +239,7 @@ proc actionMoveOb { w } {
 
     $w setconf -drawh 1
 
+    # always start unrestricted
     set ay(restrict) 0
 
     if { [string first ".view" $w] == 0 } {
@@ -246,23 +247,21 @@ proc actionMoveOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldxbinding) [bind $w $ayviewshortcuts(RestrictX)]
+
+    # allow restriction: x only
     bind $w $ayviewshortcuts(RestrictX) "\
 	set ay(restrict) 1;\
 	viewSetMAIcon $w.f3D.togl ay_MoveX_img \"MoveX\";"
-    after 2000 "bind $w $ayviewshortcuts(RestrictX) {$ay(oldxbinding)}"
 
-    set ay(oldybinding) [bind $w $ayviewshortcuts(RestrictY)]
+    # allow restriction: y only
     bind $w $ayviewshortcuts(RestrictY) "\
 	set ay(restrict) 2;\
 	viewSetMAIcon $w.f3D.togl ay_MoveY_img \"MoveY\";"
-    after 2000 "bind $w $ayviewshortcuts(RestrictY) {$ay(oldybinding)}"
 
-    set ay(oldzbinding) [bind $w $ayviewshortcuts(RestrictZ)]
+    # allow restriction: z only
     bind $w $ayviewshortcuts(RestrictZ) "\
 	set ay(restrict) 3;\
 	viewSetMAIcon $w.f3D.togl ay_MoveZ_img \"MoveZ\";"    
-    after 2000 "bind $w $ayviewshortcuts(RestrictZ) {$ay(oldzbinding)}"
 
  return;
 }
@@ -302,9 +301,8 @@ proc actionRotOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionRotObA }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
@@ -366,9 +364,8 @@ proc actionSc1DXOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DXAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
@@ -439,9 +436,8 @@ proc actionSc1DYOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DYAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
@@ -513,9 +509,7 @@ proc actionSc1DZOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DZAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
@@ -587,9 +581,17 @@ proc actionSc2DOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc2DAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
+
+    # allow restriction: x only
+    bind $w $ayviewshortcuts(RestrictX) "actionSc1DXOb $w.f3D.togl"
+
+    # allow restriction: y only
+    bind $w $ayviewshortcuts(RestrictY) "actionSc1DYOb $w.f3D.togl"
+
+    # allow restriction: z only
+    bind $w $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w.f3D.togl"    
 
  return;
 }
@@ -661,9 +663,8 @@ proc actionSc3DOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc3DAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
@@ -735,9 +736,8 @@ proc actionStr2DOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    set ay(oldabinding) [bind $w $ayviewshortcuts(About)]
+
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionStr2DAOb }
-    after 2000 "bind $w $ayviewshortcuts(About) {$ay(oldabinding)}"
 
  return;
 }
