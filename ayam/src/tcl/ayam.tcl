@@ -371,9 +371,6 @@ array set ayviewshortcuts {
 
     MoveO "m"
     RotO "r"
-    ScalX "x"
-    ScalY "y"
-    ScalZ "z"
     Scal2 "s"
     Scal3 "S"
     Stretch "T"
