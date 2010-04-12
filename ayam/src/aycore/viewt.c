@@ -1619,7 +1619,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_updatemark:
- *  copy from/to/up from the selected camera object to view <togl>
+ *  calculate new mark window coordinates
  */
 int
 ay_viewt_updatemark(struct Togl *togl)
@@ -1961,6 +1961,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 
 /* ay_viewt_setupintview:
  *  set up the view window <o> from data in <vtemp>
+ *  (while reading an internal view from a scene file)
  */
 int
 ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
@@ -2026,9 +2027,8 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 } /* ay_viewt_setupintview */
 
 
-
 /* ay_viewt_markfromsel:
- *  
+ *  set mark from selected objects cog
  */
 int
 ay_viewt_markfromsel(struct Togl *togl)

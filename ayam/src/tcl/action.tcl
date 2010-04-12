@@ -63,6 +63,7 @@ proc actionSetMark { w { nextaction "" } } {
 
     viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
 
+    # set mark from mouse click
     bind $w.f3D.togl <ButtonPress-1> "\
 	    %W mc;\
 	    update;\
@@ -74,8 +75,12 @@ proc actionSetMark { w { nextaction "" } } {
 	    update;\
 	    %W.f3D.togl setconf -cmark 1;"
 
+    # if nextaction is not empty, we are an intermediate
+    # action, embedded into some other action, which we arrange
+    # to re-start here (after setting the mark):
     if { $nextaction != "" } {
 	bind $w.f3D.togl <ButtonPress-1> "+ $nextaction %W;"
+	# take over old mark
 	bind $w <Key-Return> "\
           bind %W <Key-Return> \"\";\
           $nextaction %W.f3D.togl"
