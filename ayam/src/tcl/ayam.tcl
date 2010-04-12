@@ -375,6 +375,7 @@ array set ayviewshortcuts {
     Scal3 "S"
     Stretch "T"
     About "a"
+    Center "c"
 
     Edit "e"
     EditD "p"
@@ -384,7 +385,7 @@ array set ayviewshortcuts {
     DeSelect "N"
     InsertP "i"
     DeleteP "d"
-    SplitNC "c"
+    SplitNC "U"
     FindU "u"
 
     MoveV "v"

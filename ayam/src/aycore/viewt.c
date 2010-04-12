@@ -1004,6 +1004,19 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		} /* if */
 	    }
 	  break;
+	case 'c':
+	  if(!strcmp(argv[i], "-cmark"))
+	    {
+	      if(ay_selection)
+		{
+		  ay_status = ay_viewt_markfromsel(togl);
+		  if(!ay_status)
+		    {
+		      need_updatemark = AY_TRUE;
+		    }
+		}
+	    } /* if */
+	  break;
 	case 'd':
 	  if(!strcmp(argv[i], "-dfromx"))
 	    {
@@ -2011,3 +2024,69 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 
  return TCL_OK;
 } /* ay_viewt_setupintview */
+
+
+
+/* ay_viewt_markfromsel:
+ *  
+ */
+int
+ay_viewt_markfromsel(struct Togl *togl)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = NULL;
+ ay_object *o = NULL;
+ double cog[3] = {0};
+ GLint vp[4];
+ GLdouble mm[16], mp[16], winx, winy, winz;
+ int numo = 0;
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o)
+	{
+	  numo++;
+	}
+      sel = sel->next;
+    } /* while */
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o)
+	{
+	  cog[0] += o->movx/numo;
+	  cog[1] += o->movy/numo;
+	  cog[2] += o->movz/numo;
+	}
+      sel = sel->next;
+    } /* while */
+
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, mp);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
+   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glPopMatrix();
+
+  gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
+
+  view->markx = winx;
+  view->marky = winy;
+
+  AY_APTRAN3(view->markworld, cog, mm);
+
+  view->drawmark = AY_TRUE;
+
+ return AY_OK;
+} /* ay_viewt_markfromsel */

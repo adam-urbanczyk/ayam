@@ -1596,9 +1596,13 @@ int ay_viewt_griddify(struct Togl *togl, double *winx, double *winy);
  */
 int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief setup internal view (while reading from scene file)
  */
 int ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp);
+
+/*! \brief set mark from selected objects cog
+ */
+int ay_viewt_markfromsel(struct Togl *togl);
 
 
 /* w32t.c */

@@ -53,6 +53,7 @@ proc actionBindRelease { w } {
 # helper for all actions about a user specified point (the mark)
 # e.g. rotate about and scale about
 proc actionSetMark { w { nextaction "" } } {
+    global ayviewshortcuts
 
     if { [string first ".view" $w] == 0 } {
 	set w [winfo toplevel $w]
@@ -67,11 +68,18 @@ proc actionSetMark { w { nextaction "" } } {
 	    update;\
 	    %W setconf -gmark %x %y 1;"
 
+    # set mark from selected objects center of gravity
+    bind $w $ayviewshortcuts(Center) "\
+	    %W.f3D.togl mc;\
+	    update;\
+	    %W.f3D.togl setconf -cmark 1;"
+
     if { $nextaction != "" } {
 	bind $w.f3D.togl <ButtonPress-1> "+ $nextaction %W;"
 	bind $w <Key-Return> "\
           bind %W <Key-Return> \"\";\
           $nextaction %W.f3D.togl"
+	bind $w $ayviewshortcuts(Center) "+ $nextaction %W.f3D.togl;"
     }
 
  return;
