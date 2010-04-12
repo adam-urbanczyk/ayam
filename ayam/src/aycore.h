@@ -1572,27 +1572,27 @@ int ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief calculate new mark window coordinates
  */
 int ay_viewt_updatemark(struct Togl *togl);
 
-/*! \brief
+/*! \brief copy from/to/up from the selected camera object to view <togl>
  */
 int ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief copy camera settings of view <togl> to the selected camera object
  */
 int ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief update view property
  */
 void ay_viewt_uprop(ay_view_object *view);
 
-/*! \brief
+/*! \brief snap winx and winy to current grid
  */
 int ay_viewt_griddify(struct Togl *togl, double *winx, double *winy);
 
-/*! \brief
+/*! \brief an object has been dropped onto a view window
  */
 int ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[]);
 
