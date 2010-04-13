@@ -1604,6 +1604,10 @@ int ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp);
  */
 int ay_viewt_markfromsel(struct Togl *togl);
 
+/*! \brief set mark from selected points cog
+ */
+int ay_viewt_markfromselp(struct Togl *togl);
+
 
 /* w32t.c */
 #ifdef WIN32

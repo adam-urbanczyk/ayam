@@ -73,6 +73,12 @@ proc actionSetMark { w { nextaction "" } } {
     bind $w $ayviewshortcuts(Center) "\
 	    %W.f3D.togl mc;\
 	    update;\
+	    %W.f3D.togl setconf -cmark 0;"
+
+    # set mark from selected points center of gravity
+    bind $w $ayviewshortcuts(CenterP) "\
+	    %W.f3D.togl mc;\
+	    update;\
 	    %W.f3D.togl setconf -cmark 1;"
 
     # if nextaction is not empty, we are an intermediate
@@ -85,6 +91,7 @@ proc actionSetMark { w { nextaction "" } } {
           bind %W <Key-Return> \"\";\
           $nextaction %W.f3D.togl"
 	bind $w $ayviewshortcuts(Center) "+ $nextaction %W.f3D.togl;"
+	bind $w $ayviewshortcuts(CenterP) "+ $nextaction %W.f3D.togl;"
     }
 
  return;

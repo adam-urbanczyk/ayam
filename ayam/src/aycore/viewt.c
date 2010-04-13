@@ -1009,7 +1009,16 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      if(ay_selection)
 		{
-		  ay_status = ay_viewt_markfromsel(togl);
+		  Tcl_GetInt(interp, argv[i+1], &argi);
+
+		  if(argi == 0)
+		    {
+		      ay_status = ay_viewt_markfromsel(togl);
+		    }
+		  else
+		    {
+		      ay_status = ay_viewt_markfromselp(togl);
+		    }
 		  if(!ay_status)
 		    {
 		      need_updatemark = AY_TRUE;
@@ -2090,3 +2099,131 @@ ay_viewt_markfromsel(struct Togl *togl)
 
  return AY_OK;
 } /* ay_viewt_markfromsel */
+
+
+/* ay_viewt_markfromselp:
+ *  set mark from selected objects cog
+ */
+int
+ay_viewt_markfromselp(struct Togl *togl)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = NULL;
+ ay_point *selp = NULL;
+ ay_object *o = NULL;
+ double ttcog[3] = {0}, tcog[3] = {0}, cog[3] = {0};
+ GLint vp[4];
+ GLdouble mm[16], mp[16], winx, winy, winz;
+ unsigned int i, numo = 0, nump = 0, numpu = 0;
+ double **pnts = NULL;
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o && o->selp)
+	{
+	  numo++;
+	}
+      sel = sel->next;
+    }
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o && o->selp)
+	{
+	  selp = o->selp;
+	  nump = 0;
+	  while(selp)
+	    {
+	      nump++;
+	      selp = selp->next;
+	    }
+	  if(!(pnts = calloc(nump, sizeof(double*))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  selp = o->selp;
+	  for(i = 0; i < nump; i++)
+	    {
+	      pnts[i] = selp->point;
+	      selp = selp->next;
+	    }
+
+	  qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
+
+	  i = 0;
+	  numpu = nump;
+	  while(i < nump)
+	    {
+	      if((i < (nump-1)) &&
+		 !ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])))
+		{
+		  do
+		    {
+		      numpu--;
+		      i++;
+		    }
+		  while((i < nump) &&
+			!ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])));
+		}
+	      i++;
+	    }
+
+	  memset(tcog, 0 , 3*sizeof(double));
+	  i = 0;
+	  while(i < nump)
+	    {
+	      tcog[0] += (pnts[i])[0]/(double)numpu;
+	      tcog[1] += (pnts[i])[1]/(double)numpu;
+	      tcog[2] += (pnts[i])[2]/(double)numpu;
+	      if((i < (nump-1)) &&
+		 !ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])))
+		{
+		  do
+		    {
+		      i++;
+		    }
+		  while((i < nump) &&
+			!ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])));
+		}
+	      i++;
+	    }
+
+	  ay_trafo_creatematrix(o, mm);
+	  AY_APTRAN3(ttcog, tcog, mm);
+
+	  cog[0] += ttcog[0]/(double)numo;
+	  cog[1] += ttcog[1]/(double)numo;
+	  cog[2] += ttcog[2]/(double)numo;
+	}
+      sel = sel->next;
+    } /* while */
+
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, mp);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
+   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+  glPopMatrix();
+
+  gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
+
+  view->markx = winx;
+  view->marky = winy;
+
+  AY_APTRAN3(view->markworld, cog, mm);
+
+  view->drawmark = AY_TRUE;
+
+ return AY_OK;
+} /* ay_viewt_markfromselp */

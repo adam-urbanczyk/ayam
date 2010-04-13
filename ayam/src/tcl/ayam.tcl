@@ -376,6 +376,7 @@ array set ayviewshortcuts {
     Stretch "T"
     About "a"
     Center "c"
+    CenterP "C"
 
     Edit "e"
     EditD "p"

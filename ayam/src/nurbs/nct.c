@@ -5792,6 +5792,38 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 } /* ay_nct_cmppnt */
 
 
+/* ay_nct_cmppntp:
+ *
+ */
+int
+ay_nct_cmppntp(const void *p1, const void *p2)
+{
+
+  if(((*(double**)p1)[0] < (*(double**)p2)[0]) &&
+     (fabs((*(double**)p2)[0] - (*(double**)p1)[0]) > AY_EPSILON))
+    return -1;
+  if(((*(double**)p1)[0] > (*(double**)p2)[0]) &&
+     (fabs((*(double**)p1)[0] - (*(double**)p2)[0]) > AY_EPSILON))
+    return 1;
+
+  if(((*(double**)p1)[1] < (*(double**)p2)[1]) &&
+     (fabs((*(double**)p2)[1] - (*(double**)p1)[1]) > AY_EPSILON))
+    return -1;
+  if(((*(double**)p1)[1] > (*(double**)p2)[1]) &&
+     (fabs((*(double**)p1)[1] - (*(double**)p2)[1]) > AY_EPSILON))
+    return 1;
+
+  if(((*(double**)p1)[2] < (*(double**)p2)[2]) &&
+     (fabs((*(double**)p2)[2] - (*(double**)p1)[2]) > AY_EPSILON))
+    return -1;
+  if(((*(double**)p1)[2] > (*(double**)p2)[2]) &&
+     (fabs((*(double**)p1)[2] - (*(double**)p2)[2]) > AY_EPSILON))
+    return 1;
+
+  return 0;
+} /* ay_nct_cmppntp */
+
+
 /* ay_nct_estlen:
  *  estimate length of NURBS curve <nc>,
  *  outputs result in <len>
