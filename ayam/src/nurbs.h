@@ -636,6 +636,10 @@ int ay_nct_cmppnt(const void *p1, const void *p2);
 
 /*! \brief
  */
+int ay_nct_cmppntp(const void *p1, const void *p2);
+
+/*! \brief
+ */
 int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
 
 /*! \brief
