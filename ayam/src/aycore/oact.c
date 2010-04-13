@@ -2376,7 +2376,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 		 }
 
-	       glTranslated(mov,0.0,0.0);
+	       glTranslated(mov-o->movx,0.0,0.0);
 	       glScaled(dscalx,1.0,1.0);
 
 	       if(!view->local)
@@ -2596,7 +2596,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 		 }
 
-	       glTranslated(0.0,mov,0.0);
+	       glTranslated(0.0,mov-o->movy,0.0);
 	       glScaled(1.0,dscaly,1.0);
 
 	       if(!view->local)
@@ -2816,7 +2816,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 		 }
 
-	       glTranslated(0.0,0.0,mov);
+	       glTranslated(0.0,0.0,mov-o->movz);
 	       glScaled(1.0,1.0,dscalz);
 
 	       if(!view->local)
