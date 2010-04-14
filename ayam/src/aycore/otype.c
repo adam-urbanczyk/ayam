@@ -49,22 +49,31 @@ ay_otype_register(char *name,
 
  /* check, whether type is already registered */
   if((entry = Tcl_FindHashEntry(&ay_otypesht, name)))
-    { /* yes, we already registered this type */
+    {
+      /* yes, we already registered this type */
       increase_tc = AY_FALSE;
       i = (unsigned int) Tcl_GetHashValue(entry);
     }
   else
-    { /* no, this is a new type */
-
+    {
+      /* no, this is a new type */
       entry = Tcl_CreateHashEntry(&ay_otypesht, name, &new_item);
       Tcl_SetHashValue(entry, tc);
       i = tc;
     }
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (ay_voidfp)name, i)))
-    return ay_status;
+  if(!(entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)i)))
+    {
+      entry = Tcl_CreateHashEntry(&ay_typenamesht, (char*)i, &new_item);
+    }
+  Tcl_SetHashValue(entry, (void*)name);
 
+  /* register typename */
+  /*
+  if((ay_status = ay_table_additemo(&ay_typenamest, (void*)name, i)))
+    return ay_status;
+  */
   /* register create callback */
   if((ay_status = ay_table_additem(&ay_createcbt, (ay_voidfp)crtcb, i)))
     return ay_status;
@@ -168,10 +177,14 @@ ay_otype_registercore(char *name,
   Tcl_SetHashValue(entry, type_index);
 
   /* register typename */
-  if((ay_status = ay_table_additem(&ay_typenamest, (ay_voidfp)name,
-				   type_index)))
-    return ay_status;
+  entry = Tcl_CreateHashEntry(&ay_typenamesht, (char*)type_index, &new_item);
+  Tcl_SetHashValue(entry, (void*)name);
 
+  /*
+  if((ay_status = ay_table_additemo(&ay_typenamest, (ay_voidfp)name,
+				    type_index)))
+    return ay_status;
+  */
   /* register create callback */
   if((ay_status = ay_table_additem(&ay_createcbt, (ay_voidfp)crtcb,
 				   type_index)))
@@ -233,7 +246,8 @@ ay_otype_registercore(char *name,
     return ay_status;
 
   /* register bbc callback */
-  if((ay_status = ay_table_additem(&ay_bbccbt, (ay_voidfp)bbccb, type_index)))
+  if((ay_status = ay_table_additem(&ay_bbccbt, (ay_voidfp)bbccb,
+				   type_index)))
     return ay_status;
 
  return ay_status;

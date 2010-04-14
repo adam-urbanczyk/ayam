@@ -40,42 +40,42 @@ ay_object *ay_clipboard;
 Tcl_HashTable ay_otypesht;
 
 /* registered object type names */
-ay_table ay_typenamest;
+Tcl_HashTable ay_typenamesht;
 
-/* function pointer tables (object callbacks)*/
-ay_table ay_createcbt;
+/* function pointer tables (object callbacks) */
+ay_ftable ay_createcbt;
 
-ay_table ay_deletecbt;
+ay_ftable ay_deletecbt;
 
-ay_table ay_copycbt;
+ay_ftable ay_copycbt;
 
-ay_table ay_drawcbt;
+ay_ftable ay_drawcbt;
 
-ay_table ay_drawhcbt;
+ay_ftable ay_drawhcbt;
 
-ay_table ay_shadecbt;
+ay_ftable ay_shadecbt;
 
-ay_table ay_getpropcbt;
+ay_ftable ay_getpropcbt;
 
-ay_table ay_setpropcbt;
+ay_ftable ay_setpropcbt;
 
-ay_table ay_getpntcbt;
+ay_ftable ay_getpntcbt;
 
-ay_table ay_wribcbt;
+ay_ftable ay_wribcbt;
 
-ay_table ay_readcbt;
+ay_ftable ay_readcbt;
 
-ay_table ay_writecbt;
+ay_ftable ay_writecbt;
 
-ay_table ay_notifycbt;
+ay_ftable ay_notifycbt;
 
-ay_table ay_treedropcbt;
+ay_ftable ay_treedropcbt;
 
-ay_table ay_convertcbt;
+ay_ftable ay_convertcbt;
 
-ay_table ay_providecbt;
+ay_ftable ay_providecbt;
 
-ay_table ay_bbccbt;
+ay_ftable ay_bbccbt;
 
 
 /* registered tag types */
@@ -217,8 +217,7 @@ ay_init(Tcl_Interp *interp)
   /* initialize AY tables */
   Tcl_InitHashTable(&ay_otypesht, TCL_STRING_KEYS);
 
-  if((ay_status = ay_table_init(&ay_typenamest)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  Tcl_InitHashTable(&ay_typenamesht, TCL_ONE_WORD_KEYS);
 
   if((ay_status = ay_table_init(&ay_createcbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }

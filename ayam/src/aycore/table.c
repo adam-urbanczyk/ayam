@@ -15,7 +15,7 @@
 /* table.c - functions for function/callback tables */
 
 int
-ay_table_init(ay_table *table)
+ay_table_init(ay_ftable *table)
 {
   if(!(table->arr = calloc(64, sizeof(ay_voidfp))))
     return AY_EOMEM;
@@ -25,7 +25,7 @@ ay_table_init(ay_table *table)
 } /* ay_table_init */
 
 int
-ay_table_additem(ay_table *table, ay_voidfp item, unsigned int index)
+ay_table_additem(ay_ftable *table, ay_voidfp item, unsigned int index)
 {
  ay_voidfp *arr = NULL, *tmp = NULL;
 

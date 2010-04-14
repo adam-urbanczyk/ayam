@@ -1127,34 +1127,34 @@ int ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* table.c */
 
-/*! \brief
+/*! \brief initialize callback table
  */
-int ay_table_init(ay_table *table);
+int ay_table_init(ay_ftable *table);
 
-/*! \brief
+/*! \brief add item to callback table
  */
-int ay_table_additem(ay_table *table, ay_voidfp newitem, unsigned int index);
+int ay_table_additem(ay_ftable *table, ay_voidfp newitem, unsigned int index);
 
 
 /* tags.c */
 
-/*! \brief
+/*! \brief delete all tags from object o
  */
 int ay_tags_delall(ay_object *o);
 
-/*! \brief
+/*! \brief delete tag
  */
 int ay_tags_free(ay_tag *tag);
 
-/*! \brief
+/*! \brief copy a single tag
  */
 int ay_tags_copy(ay_tag *source, ay_tag **dest);
 
-/*! \brief
+/*! \brief copy all tags from object src to object dst
  */
 int ay_tags_copyall(ay_object *src, ay_object *dst);
 
-/*! \brief
+/*! \brief inquire about the temporary state of a tag
  */
 int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
 
@@ -1163,7 +1163,7 @@ int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
 int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief append tag to object
  */
 int ay_tags_append(ay_object *o, ay_tag *tag);
 

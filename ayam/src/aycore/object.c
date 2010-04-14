@@ -451,16 +451,16 @@ ay_object_unlink(ay_object *o)
 char *
 ay_object_gettypename(unsigned int index)
 {
- ay_voidfp *arr = NULL;
+ Tcl_HashEntry *entry = NULL;
 
-  if(index > ay_typenamest.size)
-    return NULL;
-
-  arr = ay_typenamest.arr;
-  if(!arr)
-    return NULL;
-
- return((char*)arr[index]);
+  if((entry = Tcl_FindHashEntry(&ay_typenamesht, (char*)index)))
+    {
+      return Tcl_GetHashValue(entry);
+    }
+  else
+    {
+      return NULL;
+    }
 } /* ay_object_gettypename */
 
 
