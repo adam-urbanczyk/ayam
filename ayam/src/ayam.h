@@ -647,6 +647,7 @@ typedef struct ay_acurve_object_s
 } ay_acurve_object;
 
 
+/** Concatenate curves object */
 typedef struct ay_concatnc_object_s
 {
   int closed;
@@ -662,6 +663,7 @@ typedef struct ay_concatnc_object_s
 } ay_concatnc_object;
 
 
+/** Offset curves object */
 typedef struct ay_offnc_object_s
 {
   int mode;
@@ -675,6 +677,7 @@ typedef struct ay_offnc_object_s
 } ay_offnc_object;
 
 
+/** Cap surface object */
 typedef struct ay_cap_object_s
 {
   int type;
@@ -685,6 +688,7 @@ typedef struct ay_cap_object_s
 } ay_cap_object;
 
 
+/** Bevel surface object */
 typedef struct ay_bevel_object_s
 {
   int has_cap;
@@ -695,6 +699,7 @@ typedef struct ay_bevel_object_s
 } ay_bevel_object;
 
 
+/** Custom object */
 typedef struct ay_custom_object_s
 {
   unsigned int type;
@@ -702,6 +707,7 @@ typedef struct ay_custom_object_s
 } ay_custom_object;
 
 
+/** Clone object */
 typedef struct ay_clone_object_s
 {
   int numclones;
@@ -716,6 +722,7 @@ typedef struct ay_clone_object_s
 } ay_clone_object;
 
 
+/** Camera object */
 typedef struct ay_camera_object_s
 {
   double from[3];
@@ -726,6 +733,7 @@ typedef struct ay_camera_object_s
 } ay_camera_object;
 
 
+/** RenderMan Interface Bytestream include object */
 typedef struct ay_riinc_object_s
 {
   double width, length, height;
@@ -733,6 +741,7 @@ typedef struct ay_riinc_object_s
 } ay_riinc_object;
 
 
+/** RenderMan Interface procedural object */
 typedef struct ay_riproc_object_s
 {
   int type;
@@ -742,6 +751,7 @@ typedef struct ay_riproc_object_s
 } ay_riproc_object;
 
 
+/** Surface of revolution object */
 typedef struct ay_revolve_object_s
 {
   double thetamax;
@@ -763,6 +773,7 @@ typedef struct ay_revolve_object_s
 } ay_revolve_object;
 
 
+/** Extrusion surface object */
 typedef struct ay_extrude_object_s
 {
  double height;
@@ -777,6 +788,7 @@ typedef struct ay_extrude_object_s
 } ay_extrude_object;
 
 
+/** Swept surface object */
 typedef struct ay_sweep_object_s
 {
  int rotate;
@@ -794,6 +806,7 @@ typedef struct ay_sweep_object_s
 } ay_sweep_object;
 
 
+/** Swung surface object */
 typedef struct ay_swing_object_s
 {
 
@@ -813,6 +826,7 @@ typedef struct ay_swing_object_s
 } ay_swing_object;
 
 
+/** Birail surface object (from three curves) */
 typedef struct ay_birail1_object_s
 {
  int close;
@@ -828,6 +842,7 @@ typedef struct ay_birail1_object_s
 } ay_birail1_object;
 
 
+/** Birail surface object (from four curves) */
 typedef struct ay_birail2_object_s
 {
  int close;
@@ -844,6 +859,7 @@ typedef struct ay_birail2_object_s
 } ay_birail2_object;
 
 
+/** Skinned surface object (Loft) */
 typedef struct ay_skin_object_s
 {
  int interpolate;
@@ -861,6 +877,7 @@ typedef struct ay_skin_object_s
 } ay_skin_object;
 
 
+/** Extract curve from surface object */
 typedef struct ay_extrnc_object_s
 {
   int side;
@@ -875,6 +892,7 @@ typedef struct ay_extrnc_object_s
 } ay_extrnc_object;
 
 
+/** Extract surface from surface object */
 typedef struct ay_extrnp_object_s
 {
   int pnum;
@@ -887,6 +905,7 @@ typedef struct ay_extrnp_object_s
 } ay_extrnp_object;
 
 
+/** Concatenate surfaces object */
 typedef struct ay_concatnp_object_s
 {
   int type;
@@ -903,6 +922,7 @@ typedef struct ay_concatnp_object_s
 } ay_concatnp_object;
 
 
+/** Offset surface object */
 typedef struct ay_offnp_object_s
 {
   int mode;
@@ -914,6 +934,8 @@ typedef struct ay_offnp_object_s
   int display_mode;
 } ay_offnp_object;
 
+
+/** Circle object */
 typedef struct ay_ncircle_object_s
 {
   double radius;
@@ -926,6 +948,7 @@ typedef struct ay_ncircle_object_s
 } ay_ncircle_object;
 
 
+/** Script object */
 typedef struct ay_script_object_s
 {
   char *script; /* the script text (Tcl) */
@@ -940,6 +963,7 @@ typedef struct ay_script_object_s
 } ay_script_object;
 
 
+/** View object */
 typedef struct ay_view_object_s
 {
   struct Togl *togl;
@@ -1020,6 +1044,7 @@ typedef struct ay_view_object_s
 } ay_view_object;
 
 
+/** Select object */
 typedef struct ay_select_object_s
 {
   char *indices; /* indices of objects to be selected */
@@ -1028,12 +1053,15 @@ typedef struct ay_select_object_s
 } ay_select_object;
 
 
+/** Trim surface object */
 typedef struct ay_trim_object_s
 {
   int patchnum;
   ay_object *npatch;
 } ay_trim_object;
 
+
+/** User preferences */
 typedef struct ay_preferences_s
 {
   int list_types;
@@ -1123,6 +1151,7 @@ typedef struct ay_preferences_s
 } ay_preferences;
 
 
+/** selected points */
 typedef struct ay_point_s
 {
   struct ay_point_s *next;
@@ -1132,6 +1161,7 @@ typedef struct ay_point_s
 } ay_point;
 
 
+/** multiple points */
 typedef struct ay_mpoint_s
 {
   struct ay_mpoint_s *next;
@@ -1140,6 +1170,8 @@ typedef struct ay_mpoint_s
   unsigned int *indices;
 } ay_mpoint;
 
+
+/** point edit helper */
 typedef struct ay_pointedit_s
 {
   unsigned int num;
@@ -1148,6 +1180,8 @@ typedef struct ay_pointedit_s
   int homogenous;
 } ay_pointedit;
 
+
+/** Tag, attach arbitrary information to objects */
 typedef struct ay_tag_s
 {
   struct ay_tag_s *next;
@@ -1157,6 +1191,7 @@ typedef struct ay_tag_s
 } ay_tag;
 
 
+/** transformation attributes */
 typedef struct ay_trafo_s
 {
   double movx, movy, movz;
@@ -1165,62 +1200,84 @@ typedef struct ay_trafo_s
   double quat[4]; /* quaternion */
 } ay_trafo;
 
+
 /* avoid the use of "void *" to store function pointers */
 typedef void (*ay_voidfp)(void);
 
-typedef struct ay_table_s
+/** callback table */
+typedef struct ay_ftable_s
 {
   unsigned int size;
   ay_voidfp *arr;
-} ay_table;
-
+} ay_ftable;
 
 /* Callbacks */
+
+/** Create callback, think constructor */
 typedef int (ay_createcb) (int argc, char *argv[], ay_object *o);
 
+/** Delete callback, think destructor */
 typedef int (ay_deletecb) (void *c);
 
+/** Copy callback, think copy constructor */
 typedef int (ay_copycb) (void *src, void **dst);
 
+/** Draw callback */
 typedef int (ay_drawcb) (struct Togl *togl,  ay_object *o);
 
+/** Get/Set properties callback */
 typedef int (ay_propcb) (Tcl_Interp *interp, int argc, char *argv[],
 			 ay_object *o);
 
+/** Select editable points callback */
 typedef int (ay_getpntcb) (int mode, ay_object *o, double *p,
 			   ay_pointedit *pe);
 
+/** RIB export callback */
 typedef int (ay_wribcb) (char *file, ay_object *o);
 
+/** Read (from Ayam scene file) callback */
 typedef int (ay_readcb) (FILE *fileptr, ay_object *o);
 
+/** Write (to Ayam scene file) callback */
 typedef int (ay_writecb) (FILE *fileptr, ay_object *o);
 
+/** Notification (update after changes to children) callback  */
 typedef int (ay_notifycb) (ay_object *o);
 
+/** Tree drop (update after Drag and Drop operation in TreeView) callback */
 typedef int (ay_treedropcb) (ay_object *o);
 
+/** Compare callback */
 typedef int (ay_comparecb) (ay_object *o1, ay_object *o2);
 
+/** Convert callback */
 typedef int (ay_convertcb) (ay_object *o, int in_place);
 
+/** Provide callback */
 typedef int (ay_providecb) (ay_object *o, unsigned int type,
 			    ay_object **result);
 
+/** Calculate bounding box callback */
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
 
 /* Globals */
-extern Tcl_Interp *ay_interp; /**< Main Ayam Tcl interpreter */
-extern Tcl_Interp *ay_safeinterp; /**< Safe Tcl interpreter (e.g. for Script
-				     object scripts */
-extern ay_preferences ay_prefs; /**< user preferences */
+
+/** Main Ayam Tcl interpreter */
+extern Tcl_Interp *ay_interp;
+
+/** Safe Tcl interpreter (e.g. for Script object scripts */
+extern Tcl_Interp *ay_safeinterp;
+
+/** user preferences */
+extern ay_preferences ay_prefs;
 
 /** pointer to the root object */
 extern ay_object *ay_root;
 
-/** pointer to slot (some objects ->next or ->down) where
-   the next object will be linked to */
+/** pointer to pointer (to some objects ->next or ->down slot) where
+    the next object will be linked to */
 extern ay_object **ay_next;
 
 /** current view */
@@ -1239,25 +1296,40 @@ extern ay_object *ay_clipboard;
 extern Tcl_HashTable ay_otypesht;
 
 /** table of registered object type names */
-extern ay_table ay_typenamest;
+extern Tcl_HashTable ay_typenamesht;
 
-/* function pointer tables (object callbacks)*/
-extern ay_table ay_createcbt;
-extern ay_table ay_deletecbt;
-extern ay_table ay_copycbt;
-extern ay_table ay_drawcbt;
-extern ay_table ay_drawhcbt;
-extern ay_table ay_shadecbt;
-extern ay_table ay_getpropcbt;
-extern ay_table ay_setpropcbt;
-extern ay_table ay_getpntcbt;
-extern ay_table ay_wribcbt;
-extern ay_table ay_readcbt;
-extern ay_table ay_writecbt;
-extern ay_table ay_notifycbt;
-extern ay_table ay_bbccbt;
+/* function pointer tables (object callbacks) */
+/** all registered create callbacks */
+extern ay_ftable ay_createcbt;
+/** all registered delete callbacks */
+extern ay_ftable ay_deletecbt;
+/** all registered copy callbacks */
+extern ay_ftable ay_copycbt;
+/** all registered draw callbacks */
+extern ay_ftable ay_drawcbt;
+/** all registered draw handles callbacks */
+extern ay_ftable ay_drawhcbt;
+/** all registered shade callbacks */
+extern ay_ftable ay_shadecbt;
+/** all registered get properties callbacks */
+extern ay_ftable ay_getpropcbt;
+/** all registered set properties callbacks */
+extern ay_ftable ay_setpropcbt;
+/** all registered get points callbacks */
+extern ay_ftable ay_getpntcbt;
+/** all registered RIB export callbacks */
+extern ay_ftable ay_wribcbt;
+/** all registered read callbacks */
+extern ay_ftable ay_readcbt;
+/** all registered write callbacks */
+extern ay_ftable ay_writecbt;
+/** all registered notify callbacks */
+extern ay_ftable ay_notifycbt;
+/** all registered bounding box calculation callbacks */
+extern ay_ftable ay_bbccbt;
 
-extern ay_table ay_treedropcbt;
+/** all registered tree drop callbacks */
+extern ay_ftable ay_treedropcbt;
 
 /** table of registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
@@ -1265,14 +1337,13 @@ extern Tcl_HashTable ay_tagtypesht;
 /** table of temporary tag types */
 extern Tcl_HashTable ay_temptagtypesht;
 
-extern ay_table ay_tagnamest;
+/** all registered conversion callbacks */
+extern ay_ftable ay_convertcbt;
 
-extern ay_table ay_oidptrt;
+/** all registered provide callbacks */
+extern ay_ftable ay_providecbt;
 
-extern ay_table ay_convertcbt;
-
-extern ay_table ay_providecbt;
-
+/** global error number */
 extern int ay_errno;
 
 extern ay_object *ay_last_read_object;
@@ -1281,7 +1352,9 @@ extern int ay_read_version;
 
 extern int ay_read_viewnum;
 
+/** major Ayam version number */
 extern char ay_version_ma[];
+/** minor Ayam version number */
 extern char ay_version_mi[];
 
 /* internal tags */

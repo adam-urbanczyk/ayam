@@ -18,7 +18,7 @@
 
 /* global variables: */
 
-ay_table ay_comparecbt;
+ay_ftable ay_comparecbt;
 
 
 /* prototypes of functions local to this module: */
