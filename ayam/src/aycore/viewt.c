@@ -2045,10 +2045,10 @@ ay_viewt_markfromsel(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
- double cog[3] = {0};
+ double *cogs = NULL, cog[3] = {0};
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
- int numo = 0;
+ int i = 0, a = 0, numo = 0, numu;
 
   sel = ay_selection;
   while(sel)
@@ -2061,18 +2061,73 @@ ay_viewt_markfromsel(struct Togl *togl)
       sel = sel->next;
     } /* while */
 
+  if(!(cogs = calloc(numo, 3*sizeof(double))))
+    return AY_EOMEM;
+
   sel = ay_selection;
   while(sel)
     {
       o = sel->object;
       if(o)
 	{
+	  cogs[a]   = o->movx;
+	  cogs[a+1] = o->movy;
+	  cogs[a+2] = o->movz;
+	  /*
 	  cog[0] += o->movx/numo;
 	  cog[1] += o->movy/numo;
 	  cog[2] += o->movz/numo;
+	  */
 	}
       sel = sel->next;
     } /* while */
+
+  qsort(cogs, numo, 3*sizeof(double), ay_nct_cmppnt);
+
+  i = 0;
+  a = 0;
+  numu = numo;
+  while(i < numo)
+    {
+      if((i < (numo-1)) &&
+	 !ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])))
+	{
+	  do
+	    {
+	      numu--;
+	      i++;
+	      a += 3;
+	    }
+	  while((i < numo) &&
+		!ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])));
+	}
+      i++;
+      a += 3;
+    }
+
+  i = 0;
+  a = 0;
+  while(i < numo)
+    {
+      cog[0] += cogs[a]  /(double)numu;
+      cog[1] += cogs[a+1]/(double)numu;
+      cog[2] += cogs[a+2]/(double)numu;
+      if((i < (numo-1)) &&
+	 !ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])))
+	{
+	  do
+	    {
+	      i++;
+	      a += 3;
+	    }
+	  while((i < numo) &&
+		!ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])));
+	}
+      i++;
+      a += 3;
+    }
+
+  free(cogs);
 
   glGetIntegerv(GL_VIEWPORT, vp);
 
@@ -2171,6 +2226,8 @@ ay_viewt_markfromselp(struct Togl *togl)
 		}
 	      i++;
 	    }
+
+	  free(pnts);
 
 	  memset(tcog, 0 , 3*sizeof(double));
 	  i = 0;
