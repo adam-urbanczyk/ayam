@@ -375,7 +375,7 @@ array set ayviewshortcuts {
     Scal3 "S"
     Stretch "T"
     About "a"
-    Center "c"
+    CenterO "c"
     CenterP "C"
 
     Edit "e"

@@ -49,11 +49,38 @@ proc actionBindRelease { w } {
 # actionBindRelease
 
 
+#actionBindCenter:
+# establish standard bindings for some modelling actions
+# that switch to about cog immediately, without going
+# the detour via actionSetMark below
+proc actionBindCenter { w { nextaction "" } } {
+    global ayviewshortcuts
+
+    # set mark from selected objects center of gravity
+    bind $w $ayviewshortcuts(CenterO) "\
+	    %W.f3D.togl mc;\
+	    update;\
+	    %W.f3D.togl setconf -cmark 0;"
+
+    # set mark from selected points center of gravity
+    bind $w $ayviewshortcuts(CenterP) "\
+	    %W.f3D.togl mc;\
+	    update;\
+	    %W.f3D.togl setconf -cmark 1;"
+    if { $nextaction != "" } {
+	bind $w $ayviewshortcuts(CenterO) "+ $nextaction %W.f3D.togl;"
+	bind $w $ayviewshortcuts(CenterP) "+ $nextaction %W.f3D.togl;"
+    }
+
+ return;
+}
+# actionBindCenter
+
+
 #actionSetMark:
 # helper for all actions about a user specified point (the mark)
 # e.g. rotate about and scale about
 proc actionSetMark { w { nextaction "" } } {
-    global ayviewshortcuts
 
     if { [string first ".view" $w] == 0 } {
 	set w [winfo toplevel $w]
@@ -69,18 +96,6 @@ proc actionSetMark { w { nextaction "" } } {
 	    update;\
 	    %W setconf -gmark %x %y 1;"
 
-    # set mark from selected objects center of gravity
-    bind $w $ayviewshortcuts(Center) "\
-	    %W.f3D.togl mc;\
-	    update;\
-	    %W.f3D.togl setconf -cmark 0;"
-
-    # set mark from selected points center of gravity
-    bind $w $ayviewshortcuts(CenterP) "\
-	    %W.f3D.togl mc;\
-	    update;\
-	    %W.f3D.togl setconf -cmark 1;"
-
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange
     # to re-start here (after setting the mark):
@@ -90,9 +105,9 @@ proc actionSetMark { w { nextaction "" } } {
 	bind $w <Key-Return> "\
           bind %W <Key-Return> \"\";\
           $nextaction %W.f3D.togl"
-	bind $w $ayviewshortcuts(Center) "+ $nextaction %W.f3D.togl;"
-	bind $w $ayviewshortcuts(CenterP) "+ $nextaction %W.f3D.togl;"
     }
+
+    actionBindCenter $w $nextaction
 
  return;
 }
@@ -324,6 +339,8 @@ proc actionRotOb { w } {
 
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionRotObA }
 
+    actionBindCenter $w actionRotObA
+
  return;
 }
 # actionRotOb
@@ -386,6 +403,8 @@ proc actionSc1DXOb { w } {
     }
 
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DXAOb }
+
+    actionBindCenter $w actionSc1DXAOb
 
  return;
 }
@@ -459,6 +478,8 @@ proc actionSc1DYOb { w } {
 
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DYAOb }
 
+    actionBindCenter $w actionSc1DYAOb
+
  return;
 }
 # actionSc1DYOb
@@ -530,6 +551,8 @@ proc actionSc1DZOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DZAOb }
+
+    actionBindCenter $w actionSc1DZAOb
 
  return;
 }
@@ -613,6 +636,8 @@ proc actionSc2DOb { w } {
     # allow restriction: z only
     bind $w $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w.f3D.togl"    
 
+    actionBindCenter $w actionSc2DAOb
+
  return;
 }
 # actionSc2DOb
@@ -686,6 +711,8 @@ proc actionSc3DOb { w } {
 
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc3DAOb }
 
+    actionBindCenter $w actionSc3DAOb
+
  return;
 }
 # actionSc3DOb
@@ -758,6 +785,8 @@ proc actionStr2DOb { w } {
     }
 
     bind $w $ayviewshortcuts(About) { actionSetMark %W actionStr2DAOb }
+
+    actionBindCenter $w actionStr2DAOb
 
  return;
 }
