@@ -1391,7 +1391,7 @@ with the view window, are:
 <item><tt/&lt;Shift+Left&gt;/, <tt/&lt;Shift+Up&gt;/, <tt/&lt;Shift+Right&gt;/,
 <tt/&lt;Shift+Down&gt;/ pan the view.
 
-<item><tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom view.
+<item><tt/&lt;+&gt;/, <tt/&lt;-&gt;/, or <tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom the view.
 </itemize>
 
 Interactive actions modifying the camera, that is associated with the
@@ -2169,9 +2169,10 @@ Every action can be started with a key press (a shortcut) when
 the keyboard focus is in a view window or by clicking on the associated
 button in the toolbox window.
 Using a keyboard shortcut starts that action in the current view only,
-the other views are not affected. Starting an action from the
-toolbox window will cause the action to be started in all
-view windows that are currently open simultaneously.
+the other views are not affected. In multi window GUI mode, starting an
+action from the toolbox window will cause the action to be started in all
+view windows that are currently open simultaneously. In single window GUI
+mode, the action will be started in the current internal view only.
 <p>
 It is perfectly ok to start and work with many different actions at
 the same time in different views: you can have e.g. a view, where you move
@@ -2223,6 +2224,11 @@ of the selected objects.
 Note that the objects/points will be moved in the XY-plane for
 Front-views, the ZY-plane for Side-views, and the XZ-plane
 for Top-views only, no matter how the view is rotated.
+<p>
+Since Ayam 1.17, the move action may be restricted to a certain
+axis, by pressing <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or <tt/&lt;z&gt;/
+right after the <tt/&lt;m&gt;/.
+
 
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
@@ -2238,21 +2244,24 @@ rotate modelling actions is applied.
 <p>
 Note that if multiple objects are selected, each object is rotated
 around the center of its own local coordinate system.
+Only the Rotate_X(_Y,_Z) property of the selected objects will
+be changed by this action.
 
-<sect1>Rotating Objects or Selected Points around a Point
+<sect1>Rotating Objects or Selected Points About a Point
 <p>
-Using the modelling action <tt/"Rotate about"/ (shortcut: <tt/&lt;a&gt;/)
-you may interactively rotate objects or the selected (tagged) points
-of the selected objects around a specified point in space.
-The action requires a point to be specified using a single
-click after the action has been started.
-The point will then be marked by a little red cross.
-If you want to rotate about a different point, you need to restart the
-action (simply press <tt/&lt;a&gt;/ again).
+Using the rotate about modelling action one may interactively rotate
+objects or the selected (tagged) points of the selected objects about
+a specific point in space.
 <p>
-After the first click, the action works the same way as
+To start the rotate about action, invoke the normal rotate action,
+then press <tt/&lt;a&gt;/.
+<p>
+To rotate about a different point, one needs to restart the
+intermediate set mark action (simply press <tt/&lt;a&gt;/ again).
+<p>
+After setting the mark, the action works the same way as
 the Rotate action, except that it rotates the selected object(s)
-around the specified point.
+or points about the mark.
 This, consequently, also works with multiple selected objects.
 Note that this action does not only change the Rotate_X(_Y,_Z)
 properties of the selected objects, but also the Translate_X(_Y,_Z)
@@ -2276,19 +2285,73 @@ scales just two axes of the selected objects or
 the selected (tagged) points of the selected objects. Those axes are
 XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.
 <p>
-The modelling actions <tt/"Scale X"/ (shortcut: <tt/&lt;x&gt;/),
-<tt/"Scale Y"/ (shortcut: <tt/&lt;y&gt;/), and
-<tt/"Scale Z"/ (shortcut: <tt/&lt;z&gt;/) scale only one axis
-of the selected objects or
-the selected (tagged) points of the selected objects.
+It is also possible to restrict the scaling of objects or selected
+points to just one axis.
+For that one needs to press <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or
+<tt/&lt;z&gt;/ right after <tt/&lt;s&gt;/ (e.g. <tt/&lt;sx&gt;/ for
+scale 1D about x).
 <p>
-The modelling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;Alt+s&gt;/)
+Since Ayam 1.17, direct access to the 1D scale modelling actions
+<tt/"Scale X"/ (old shortcut: <tt/&lt;x&gt;/),
+<tt/"Scale Y"/ (old shortcut: <tt/&lt;y&gt;/), and
+<tt/"Scale Z"/ (old shortcut: <tt/&lt;z&gt;/) is no longer available.
+<p>
+The modelling action <tt/"Stretch 2D"/ (shortcut: <tt/&lt;T&gt;/)
 works much like <tt/"Scale 2D"/ but the scale factor for each
 axis may be different. Never start this action by a click
 near one of the axes to be changed, as this will cause
 very big scale factors for the other axis. Try it first with
-a centered box by starting from one of the vertices,
+a centered box by starting from one of the box corners,
 then try it once starting on the X-axis.
+
+<sect1>Scaling Objects or Selected Points About a Point<label id="scalaac">
+<p>
+Using the scale about modelling actions one may interactively scale
+objects or the selected (tagged) points
+of the selected objects about a specific point in space.
+<p>
+To start a scale about action, invoke the normal scale action,
+then press <tt/&lt;a&gt;/ (e.g. <tt/&lt;sa&gt;/ for scale 2D about,
+<tt/&lt;sya&gt;/ for scale 1D Y about).
+<p>
+To scale about a different point, one needs to restart the
+intermediate set mark action (simply press <tt/&lt;a&gt;/ again).
+<p>
+After setting the mark, the action works the same way as
+the scale action, except that it scales the selected object(s)
+or points about the mark.
+This, consequently, also works with multiple selected objects.
+Note that this action does not only change the Scale_X(_Y,_Z)
+properties of the selected objects, but also the Translate_X(_Y,_Z)
+properties.
+<p>
+To avoid degenerated coordinates due to roundoff errors
+it is highly suggested to use grids with this action.
+
+<sect1>Setting the Mark<label id="markac">
+<p>
+This action may be invoked to mark a point in space for perusal
+of the modelling actions that rotate or scale about a point.
+The corresponding keyboard shortcut is <tt/&lt;a&gt;/.
+A single click sets the mark.
+When this action is active (also if started as intermediate action
+for e.g. rotate about), the following additional keyboard shortcuts are
+active:
+<itemize>
+<item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
+first rotates about a point then decides to also scale about
+this point),
+<item><tt/&lt;c&gt;/ set the mark to the center of gravity of all
+currently selected objects coordinate systems,
+<item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
+currently selected points.
+</itemize>
+
+The selected point will be marked by a little red cross.
+<p>
+Note that certain actions like e.g.  changing the view type will
+clear the mark.
+
 
 <sect1>Selecting Points<label id="selac">
 <p>
