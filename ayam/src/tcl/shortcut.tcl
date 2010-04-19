@@ -884,18 +884,29 @@ foreach elem [array names ayviewshortcuts] {
 
 $w.ftext.text insert end "Modelling Actions (View Windows):
 
- Pick Objects:        <$svsc(Pick)>
+ Pick Objects         <$svsc(Pick)>
 
- Move Objects:        <$svsc(MoveO)>
- Rotate Objects:      <$svsc(RotO)>
- Rotate Objects
- about Mark:          <$svsc(RotO)$svsc(About)>
+ Move Objects         <$svsc(MoveO)>
+  restrict X, Y, Z:   <$svsc(MoveO)$svsc(RestrictX)>, <$svsc(MoveO)$svsc(RestrictY)>, <$svsc(MoveO)$svsc(RestrictZ)>
+
+ Rotate Objects       <$svsc(RotO)>
+  about Mark, Center  <$svsc(RotO)$svsc(About)>, <$svsc(RotO)$svsc(CenterO)>
+  about Pnts Center   <$svsc(RotO)$svsc(CenterP)>
  Scale Objects (3D)   <$svsc(Scal3)>
  Scale Objects (2D)   <$svsc(Scal2)>
  Stretch Objects (2D) <$svsc(Stretch)>
  Scale Objects (1D,X) <$svsc(Scal2)$svsc(RestrictX)>
  Scale Objects (1D,Y) <$svsc(Scal2)$svsc(RestrictY)>
  Scale Objects (1D,Z) <$svsc(Scal2)$svsc(RestrictZ)>
+ Scale Objects 2D
+  about Mark, Center  <$svsc(Scal2)$svsc(About)>, <$svsc(Scal2)$svsc(CenterO)>
+  about Pnts Center   <$svsc(Scal2)$svsc(CenterP)>
+ Similar for other scale actions...
+
+ Set Mark             <$svsc(About)>
+  accept old Mark      <Return>
+  set objs center      <$svsc(CenterO)>
+  set pnts center      <$svsc(CenterP)>
 
  Edit Points          <$svsc(Edit)>
  Edit Points (direct) <$svsc(EditD)>
@@ -973,7 +984,7 @@ bind $w.ftext.text <ButtonPress-5>\
 set filler "                                                        "
 set i 2
 set on 0
-while {$i < 74} {
+while {$i < 82} {
     set line [$w.ftext.text get ${i}.0 ${i}.end]
     if { [string length $line] > 0 } {
 	if { $on } {
