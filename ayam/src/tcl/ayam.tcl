@@ -293,6 +293,7 @@ array set aymainshortcuts {
     SelNone "Ctrl-n"
 
     LastTool "Ctrl-t"
+    LastToolP "Ctrl-T"
 
     SProp0 "Key-0"
     SProp1 "Key-1"
@@ -335,7 +336,7 @@ array set ayviewshortcuts {
     Side "Ctrl-s"
     Top "Ctrl-t"
     Persp "Ctrl-p"
-    Trim "Ctrl-T"
+    Trim "Ctrl-F"
 
     Halve "Ctrl-H"
     Double "Ctrl-D"
