@@ -93,6 +93,7 @@ proc runTool { argvars argstrings command } {
     # foreach
 
     # complete the script
+    append okscript "set ay(lasttool) \$command;"
     append okscript "eval \"\$command\";"
     append okscript "grab release $w; restoreFocus $oldFocus; destroy $w"
 
