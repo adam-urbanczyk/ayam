@@ -148,7 +148,8 @@ proc shortcut_main { w } {
     bind $w <[repctrl $aymainshortcuts(LastTool)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(LastTool)]
 
-    bind $w <[repctrl $aymainshortcuts(LastToolP)]> "eval \$ay(lasttool)"
+    bind $w <[repctrl $aymainshortcuts(LastToolP)]> "\
+     if \{ \$ay(lasttool) != \"\" \} \{ eval \$ay(lasttool) \}"
 
 
     set m $ay(helpmenu)

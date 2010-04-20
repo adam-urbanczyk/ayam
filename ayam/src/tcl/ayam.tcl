@@ -639,6 +639,7 @@ array set ay {
  shifttab 0
  startup 1
  customkeys {}
+ lasttool ""
 }
 # array ay
 
