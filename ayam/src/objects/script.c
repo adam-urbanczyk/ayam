@@ -546,6 +546,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  int i;
  unsigned int j, len;
  int readc;
+ Tcl_Interp *interp = NULL;
  Tcl_Obj *toa = NULL, *ton = NULL;
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
  char *eolarrname = NULL;
@@ -559,6 +560,12 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   if(!o)
     return AY_ENULL;
+
+#ifdef AYNOSAFEINTERP
+  interp = ay_interp;
+#else
+  interp = ay_safeinterp;
+#endif
 
   if(!(sc = calloc(1, sizeof(ay_script_object))))
     { return AY_EOMEM; }
@@ -604,7 +611,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		{
 		  *eolarrname = '\0';
 		}
-	      /* the first m*/
+	      /* the first m */
 	      if(!(sc->params = calloc(arrmembers-1, sizeof(Tcl_Obj*))))
 		{
 		  ay_status = AY_EOMEM;
@@ -618,9 +625,10 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	      for(i = 0; i < arrmembers; i++)
 		{
 		  ay_read_string(fileptr, &membername);
+
 		  ay_read_string(fileptr, &memberval);
 
-		  Tcl_SetVar2(ay_interp, arrname, membername, memberval,
+		  Tcl_SetVar2(interp, arrname, membername, memberval,
 			      TCL_GLOBAL_ONLY);
 
 		  /* do not put the SP list into the object! */
@@ -628,7 +636,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 		    {
 		      Tcl_SetStringObj(ton, membername, -1);
 		      sc->params[j] =
-			Tcl_DuplicateObj(Tcl_ObjGetVar2(ay_interp, toa, ton,
+			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, ton,
 							TCL_GLOBAL_ONLY));
 		      Tcl_IncrRefCount(sc->params[j]);
 		      j++;
