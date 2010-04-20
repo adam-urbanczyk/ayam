@@ -81,6 +81,8 @@ if { $ay(ws) == "Aqua" && $ayprefs(SwapMB) } {
     set mb 2
 }
 bind $t <$mb> {
+    global ay ScriptAttr
+    set t $ay(pca).${ScriptAttr(w)}.tScript
     set xy [winfo pointerxy .]
     set x [lindex $xy 0]
     set y [lindex $xy 1]
