@@ -6,10 +6,10 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>29. Jan 2010
+<date>20. Apr 2010
 
 <abstract>
-This is the documentation of Ayam 1.16 - a free 3D modelling environment
+This is the documentation of Ayam 1.17 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is intended to be a reference manual,
@@ -629,6 +629,7 @@ then loads a new scene from disk. All objects from the file
 will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
+<p>
 This operation is not undoable!
 <p>
 Since Ayam 1.13 also files supported by any of the import plugins
@@ -656,7 +657,8 @@ may be imported using this route. See above (<tt/"Open"/).
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 <p>
 Since Ayam 1.13 also files supported by any of the export plugins
-may be exported using this route. See above (<tt/"Open"/).
+may be exported using this route. Just pick a file name with the
+desired extension. See above (<tt/"Open"/).
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (read, you have not given it a file name) you will be asked for a file
@@ -899,6 +901,9 @@ The <tt/"Tools"/ menu:
 It allows quick access to the last used entry/tool in the <tt/"Tools"/
 menu hierarchy. The label of the entry will be changed appropriately,
 e.g. to <tt/"Last (Revert U)"/, when a tool was started.
+The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/; to repeat
+the last used tool with the same set of parameters (and without opening
+the parameter dialog window again) <tt/&lt;Ctrl+T&gt;/ can be used.
 
 <item><tt/"Create"/, <tt/"Curve"/, and
 <tt/"Surface"/, are sub-menus with various NURBS based creation
@@ -3839,7 +3844,6 @@ Good looking soft shadows may be generated using area lights.
 Area lights may be created by simply placing a single object as child
 object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
 shader attached:
-<#if out=latex><x/needspace 3/</#if>
 <code>
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
@@ -6437,6 +6441,7 @@ of the extracted NURBS surface.
 <p>
 The OffsetNP object, available since Ayam 1.17, creates offset surfaces from
 NURBS surfaces using a simple algorithm.
+OffsetNP currently only works for open surfaces.
 The offset surface will always match the original surface in width/height,
 orders, and knots. See also the image above.
 <p>
@@ -6690,6 +6695,7 @@ management and property GUI creation.
 Since Ayam 1.9 the parameters set via a new property GUI may be
 comfortably saved with scene files by just adding the following
 comment as first line to the script:
+<#if out=latex><x/needspace 3/</#if>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -6756,6 +6762,7 @@ and act as an object of the type that the script created.
 If the script creates e.g. a NCurve object, the script object may
 be used as parameter object of a tool object that needs a NCurve,
 e.g. a Sweep:
+<#if out=latex><x/needspace 5/</#if>
 <code>
 +-Sweep
  | Cross_Section(Script)
@@ -6805,7 +6812,6 @@ needs a NCurve, e.g. a Sweep:
 A simple example script for a script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look
 like this:
-<#if out=latex><x/needspace 3/</#if>
 <code>
 revertC
 </code>
@@ -6823,6 +6829,7 @@ It is also possible to edit the code in an external editor and
 copy it to the script object using the operating system clipboard
 and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
 If the first line of the script is a comment like
+<#if out=latex><x/needspace 3/</#if>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -6846,7 +6853,6 @@ We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
 desired line length on the x axis. Just copy the following code to the
 Script property of a script object of type <tt/"Create"/, and activate it.
-<#if out=latex><x/needspace 5/</#if>
 <code>
 set length 1
 crtOb NCurve -length 2; hSL
@@ -6867,6 +6873,7 @@ A complete, easy to use, and safe GUI for the length parameter
 can be added by changing the script code
 (<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate changed
 or added code):
+<#if out=latex><x/needspace 18/</#if>
 <code>
 # Ayam, save array: LineAttrData
 if { ![info exists ::LineAttrData] } {
@@ -7245,9 +7252,9 @@ allows to model with Subdivision NURBS. The SDNPatch plugin is
 based on libsnurbs by Tom Cashman.
 <p>
 There are some special modelling actions for Subdivision NURBS
-defined (see below) and there are PLY import/export facilities. Furthermore,
-there are two conversion operations that convert NURBS patch and
-PolyMesh objects to SDNPatch objects.
+defined (see below) and there are PLY import/export facilities.
+Furthermore, there are two conversion operations that convert
+NURBS patch and PolyMesh objects to SDNPatch objects.
 <p>
 Please note that the plugin is still in experimental state,
 there is limited error checking and crashes may occur, if
@@ -7290,6 +7297,11 @@ main menu.
 edges of the selected faces, the selected faces themselves are displaced
 along their respective normals. If this operation is picking the wrong
 direction, try to revert all faces first, see below.
+Since Ayam 1.17 this operation has two parameters that control the
+offset of the extrusion operation (parameter <tt/"Length"/ and a
+scaling factor applied to the new displaced set of control points
+(parameter <tt/"Scale"/). The length parameter may be negative,
+to revert the direction of the extrusion.
 <item><tt/"Face Remove"/, the selected face is removed from the mesh.
 <item><tt/"Face Merge"/, the first two selected faces are removed
 from the mesh, the neighboring patches of the second face are connected
@@ -7634,6 +7646,7 @@ integer value: "3", a string: "on", a color: "1,1,1" or a point:
 <bf/Example/
 <p>
 Some examples for valid RiAttribute tags:
+<#if out=latex><x/needspace 5/</#if>
 <code>
 RiAttribute render,truedisplacement,i,1
 RiAttribute dice,numprobes,j,3,3
@@ -7687,7 +7700,7 @@ to the new specified values.
 <code>TC 0,0,10,0,0,10,10,10</code>
 Changes the texture coordinate space so that more and smaller tiles
 of a texture would be displayed on a primitive.
-
+<#if out=latex><x/needspace 3/</#if>
 <code>TC 0,0,0,1,1,0,1,1</code>
 Flips the texture coordinate space over two corners.
 A shader normally generating vertical stripes will create
@@ -7810,6 +7823,7 @@ consisting of <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
 <p>
 <bf/Examples/
 <p>
+<#if out=latex><x/needspace 3/</#if>
 <code>PV mycolor,constant,c,1,0,1,0</code>
 adds a single color value (0,1,0), which is the same all over the primitive,
 the respective surface shader should have a parameter <tt/"color mycolor"/;
@@ -8019,7 +8033,6 @@ of the object changed.
 <bf/Example/
 <p>
 A simple BNS tag could look like this:
-<#if out=latex><x/needspace 3/</#if>
 <code>BNS puts "notify callback about to fire"</code>
 <p>
 <bf/Notes/
