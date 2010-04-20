@@ -57,19 +57,30 @@ proc actionBindCenter { w { nextaction "" } } {
     global ayviewshortcuts
 
     # set mark from selected objects center of gravity
-    bind $w $ayviewshortcuts(CenterO) "\
-	    %W.f3D.togl mc;\
-	    update;\
-	    %W.f3D.togl setconf -cmark 0;"
+    bind $w $ayviewshortcuts(CenterO) {
+	if { [string first ".view" %W] == 0 } {
+	    set w [winfo toplevel %W]
+	} else {
+	    set w %W
+	}
+	$w.f3D.togl mc; update;
+	$w.f3D.togl setconf -cmark 0;
+    }
 
     # set mark from selected points center of gravity
-    bind $w $ayviewshortcuts(CenterP) "\
-	    %W.f3D.togl mc;\
-	    update;\
-	    %W.f3D.togl setconf -cmark 1;"
+    bind $w $ayviewshortcuts(CenterP) {
+	if { [string first ".view" %W] == 0 } {
+	    set w [winfo toplevel %W]
+	} else {
+	    set w %W
+	}
+	$w.f3D.togl mc; update;
+	$w.f3D.togl setconf -cmark 1;
+    }
+
     if { $nextaction != "" } {
-	bind $w $ayviewshortcuts(CenterO) "+ $nextaction %W.f3D.togl;"
-	bind $w $ayviewshortcuts(CenterP) "+ $nextaction %W.f3D.togl;"
+	bind $w $ayviewshortcuts(CenterO) "+ $nextaction \$w.f3D.togl;"
+	bind $w $ayviewshortcuts(CenterP) "+ $nextaction \$w.f3D.togl;"
     }
 
  return;
@@ -102,9 +113,16 @@ proc actionSetMark { w { nextaction "" } } {
     if { $nextaction != "" } {
 	bind $w.f3D.togl <ButtonPress-1> "+ $nextaction %W;"
 	# take over old mark
-	bind $w <Key-Return> "\
-          bind %W <Key-Return> \"\";\
-          $nextaction %W.f3D.togl"
+	bind $w <Key-Return> {
+          bind %W <Key-Return> "";
+          if { [string first ".view" %W] == 0 } {
+	      set w [winfo toplevel %W]
+          } else {
+	      set w %W
+	  }
+	}
+	bind $w <Key-Return> "+ $nextaction \$w.f3D.togl;"
+
     }
 
     actionBindCenter $w $nextaction
