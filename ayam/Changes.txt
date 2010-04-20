@@ -1,5 +1,5 @@
-[14. Apr 2010] CVS-Head:
-========================
+[20. Apr 2010] Ayam-1.17:
+=========================
 Bug Fixes:
 o Tcl errors when Ayam is started with object listbox activated (SF 2872817)
 o <Tab> key does not work after <Ctrl+l> (SF 2869550)
@@ -82,6 +82,8 @@ o added keyboard shortcut to reset a views camera (by default usind a
 o added a second set of zoom hotkeys to views (for those without numeric
   keypad) by default using "+"/"-"
 o added plugin defined modelling actions
+o added keyboard shortcut to repeat a modelling tool with parameters set
+  (<Ctrl+T>)
 
 Plugins:
 o switched AyCSG plugin to OpenCSG 1.3.0 for important multi view fixes
@@ -108,7 +110,8 @@ o aytest script tests can now be stopped
 o the create callbacks of NCurve, NCircle, ICurve, ACurve, NPatch, and
   PolyMesh objects now allow much more parameters to control the initially
   created object (e.g. one may now specify control points and knot vectors
-  directly on object creation); for the first time it is
+  directly on object creation); for the first time it is also possible to
+  create non empty PolyMesh objects this way
 
 Documentation/Example Files:
 o added Doxygen documentation for main Ayam headers
