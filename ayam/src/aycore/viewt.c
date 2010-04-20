@@ -2078,6 +2078,7 @@ ay_viewt_markfromsel(struct Togl *togl)
 	  cog[1] += o->movy/numo;
 	  cog[2] += o->movz/numo;
 	  */
+	  a += 3;
 	}
       sel = sel->next;
     } /* while */
