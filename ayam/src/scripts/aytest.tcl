@@ -1111,6 +1111,33 @@ array set ConcatNC_1 {
 }
 
 
+# ConcatNP Variation #1
+array set ConcatNP_1 {
+    precmd {
+	goDown -1;
+	crtOb NPatch; crtOb NPatch; hSL; 
+	switch $l {
+	    0 {
+		movOb 1 0 0;
+	    }
+	    1 {
+		movOb 2 0 0;
+	    }
+	    2 {
+		movOb 2 2 0;
+	    }
+	};
+	forceNot; goUp; hSL
+    }
+    arr ConcatNPAttrData
+    fixedvars { dummy }
+}
+
+lappend ConcatNP_1(vals) { 0 }
+lappend ConcatNP_1(vals) { 0 }
+lappend ConcatNP_1(vals) { 0 }
+
+
 # Trim Variation #1
 array set Trim_1 {
     precmd {
@@ -1124,24 +1151,12 @@ array set Trim_1 {
 }
 
 
-# ConcatNP Variation #1
-array set ConcatNP_1 {
-    precmd {
-	goDown -1;
-	crtOb NPatch; crtOb NPatch; hSL; movOb 1 0 0;
-	forceNot; goUp; hSL
-    }
-    arr ConcatNPAttrData
-    fixedvars { dummy }
-    vals { {0} }
-}
-
-
-
 
 set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 
-lappend types Cap Bevel ExtrNC ExtrNP OffsetNC ConcatNC Trim ConcatNP
+lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
+
+lappend types Trim
 
 set types {Revolve Skin Sweep Swing Skin Birail1 Birail2 Gordon}
 
