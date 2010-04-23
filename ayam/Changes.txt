@@ -25,8 +25,8 @@ o scale 1D with grids may lead to broken transformation (SF 2981861)
 
 Modelling:
 o added object type "OffsetNP" for the creation of offset surfaces
-o in the point selection action, points may now also be deselected using
-  the <Shift> key in conjunction with the mouse drag operation
+o default mouse drag point de-selection modifier is now <Control>
+  (used to be <Shift>) to avoid the clash with region zooming
 o MetaObj user controlled expressions now also run in the safe interpreter
 o View objects now accept a NURB patch object as child and map the
   background image on that (instead of fitting the image to the window)
