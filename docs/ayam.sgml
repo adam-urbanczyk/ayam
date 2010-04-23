@@ -2338,34 +2338,41 @@ it is highly suggested to use grids with this action.
 This action may be invoked to mark a point in space for perusal
 of the modelling actions that rotate or scale about a point.
 The corresponding keyboard shortcut is <tt/&lt;a&gt;/.
-A single click sets the mark.
-When this action is active (also if started as intermediate action
-for e.g. rotate about), the following additional keyboard shortcuts are
-active:
+Consequently, this action is also active as intermediate action
+for e.g. rotate about, where the keyboard shortcuts <tt/&lt;r&gt;/
+and then <tt/&lt;a&gt;/ would be used.
+<p>
+A single click with the mouse sets the mark. If grids are active in
+the view, the mark will be snapped to the nearest grid coordinates.
+Additionally, when this action is active, the following keyboard
+shortcuts are available:
 <itemize>
 <item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
 first rotates about a point then decides to also scale about
-this point),
+the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
+<tt/&lt;Return&gt;/, drag mouse...),
 <item><tt/&lt;c&gt;/ set the mark to the center of gravity of all
 currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
 currently selected points.
 </itemize>
 
-The selected point will be marked by a little red cross.
+The marked point will be shown as a little red cross in the view window.
 <p>
-Note that certain actions like e.g.  changing the view type will
+The mark may also directly be set using the corresponding view object
+property (see also section <ref id="vat" name ="ViewAttrib Property">).
+<p>
+Note that certain actions like e.g. changing the view type will
 clear the mark.
 
 
 <sect1>Selecting Points<label id="selac">
 <p>
-The modelling action <tt/"Select Points"/
-(shortcut: <tt/&lt;t&gt;/; for <em>t</em>ag points)
-may be applied to a NURBS curve, NURBS patch, or objects
-that support single point editing only. Objects usually draw their
-selectable points using small white rectangular handles (when a
-modelling action is active).
+The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
+for <em>t</em>ag points) may be applied to NURBS curves, NURBS patches,
+or objects that support single point editing only. Such objects usually
+draw their selectable points using small white rectangular handles
+(when a modelling action is active).
 <p>
 Selected points will be drawn in dark red when a modelling action is active.
 <p>
@@ -2377,31 +2384,37 @@ After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
 If the selected point is already in that list it will be removed from
 the list instead, the picked point will be deselected.
-Note that the list of selected points will not be
-deleted from the object until an explicit deselection is performed
-using the shortcut <tt/&lt;N&gt;/.
 <p>
-However, note that the list of selected points is not copied, if the object
-is copied using the clipboard. The selected points are also removed
-if certain modelling tools are used. But, since Ayam 1.16, selected
-points survive undo/redo.
+All points can be selected easily using the keyboard shortcut <tt/&lt;A&gt;/.
+<p>
+The list of selected points will not be deleted from the object until
+an explicit deselection is performed using the keyboard shortcut
+<tt/&lt;N&gt;/ or if certain modelling tools (e.g. inserting points)
+are used. 
+<p>
+The point selection can also be inverted using the keyboard shortcut
+<tt/&lt;I&gt;/.
+<p>
+Note that the list of selected points is not copied, if the object
+is copied using the clipboard. The selection is also not saved to
+Ayam scene files. Since Ayam 1.16, selected points survive undo/redo.
 <p>
 The point selection does not interfere with single point modelling
-actions.
+actions:
 It is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
 some other or even one of the selected points, switch back
-to the selection action, add other points to the selection or delete some
-points from the selection, switch to rotate, rotate the selected
+to the selection action, add other points to the selection or delete
+some points from the selection, switch to rotate, rotate the selected
 points and so on.
 <p>
-You may also add a bigger number of points to the selection using a
+One may also add a bigger number of points to the selection using a
 click and drag operation. All points that are inside the rectangular
 region defined by the click and drag will be added to the selection.
 In fact, this approach is the only way to safely add points to the
 selection that occlude each other.
 <p>
-Since Ayam 1.16.1, holding down the <tt/&lt;Shift&gt;/-key while
+Since Ayam 1.16.1, holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
 region from the selection.
 
@@ -3010,6 +3023,9 @@ but reread
 the image file if the notification callback of the view object
 is invoked (e.g. using the main menu entry
 <tt>"Tools/Force Notification"</tt>).
+
+<item><tt/"Mark"/ is the marked point (in world coordinates) for
+the rotate and scale about modelling actions.
 </itemize>
 
 <sect1>Camera Object<label id="cameraobj">
@@ -6434,9 +6450,9 @@ of the extracted NURBS surface.
 <sect1>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
 <p>
 <figure loc="ht">
-<eps file="pics/offnc.ps" height="5cm">
-<img src="pics/offnc.gif">
-<caption>Offset Surface (white) from NURBS Surface (blue) with Offset 0.2, -0.2, and 0.3</caption>
+<eps file="pics/offnp.ps" height="5cm">
+<img src="pics/offnp.gif">
+<caption>Offset Surface (white) from NURBS Surface (blue) with Offset 0.2</caption>
 </figure>
 <p>
 The OffsetNP object, available since Ayam 1.17, creates offset surfaces from
@@ -7298,7 +7314,7 @@ edges of the selected faces, the selected faces themselves are displaced
 along their respective normals. If this operation is picking the wrong
 direction, try to revert all faces first, see below.
 Since Ayam 1.17 this operation has two parameters that control the
-offset of the extrusion operation (parameter <tt/"Length"/ and a
+offset of the extrusion operation (parameter <tt/"Length"/) and a
 scaling factor applied to the new displaced set of control points
 (parameter <tt/"Scale"/). The length parameter may be negative,
 to revert the direction of the extrusion.
@@ -9212,13 +9228,12 @@ The new object will be created and linked to the scene as last object
 in the current level, no part of the GUI (object selection widget, property
 GUI, views) will be updated!
 <p>
-
 Depending on the type, further arguments may (or have to) be given;
 some object types expect other objects to be selected upon creation.
-
 <p>
 All arguments consist of a option name part and a value part (i.e. it is
-<tt/"-center 1"/ and not <tt/"-center"/ and also not <tt/"-center=1"/).
+<tt/"-center 1"/ and <em/not/ <tt/"-center"/ and also <em/not/
+<tt/"-center=1"/).
 The option names can be abbreviated. Useful default and fallback
 values exist (see below). The arguments can be mixed freely (their
 order is not important) and repeated. If arguments are repeated, only the
@@ -9276,8 +9291,17 @@ the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
   </itemize>
 Examples:
-<tt/"crtOb NCurve -length 10; uS; rV"/
-
+<tt/"crtOb NCurve"/
+creates a curve with length 4, order 4, standard (clamped) NURBS knot
+vector, control points at 0 0 0, 0.25 0 0, 0.5 0 0, 0.75 0 0 (all weights 1).
+<tt/"crtOb NCurve -center 1"/
+creates a centered curve with length 4, order 4, standard (clamped) NURBS knot
+vector, control points at -0.375 0 0, -0.125 0 0, 0.125 0 0, 0.375 0 0
+(all weights 1).
+<tt/"crtOb NCurve -length 5 -center 1 -dx 0.5"/
+creates a centered curve with length 5, order 4, standard (clamped) NURBS knot
+vector, control points at -1 0 0, -0.5 0 0, 0 0 0, 0.5 0 0, 1 0 0
+(all weights 1).
 <p>
 In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
@@ -9347,9 +9371,14 @@ and length specified by the <tt/"-edlen"/ option.
 
 </itemize>
 Examples:
-<tt/"crtOb ICurve -length 10; uS; rV"/
-<tt/"crtOb ICurve -l 5 -sderiv {0.0 0.5 0.0} -ederiv {1.0 0.5 0.0} -derivs 1 -center 1"/
-
+<tt/"crtOb ICurve"/
+creates a curve with length 4, order 4, control points at
+0 0 0, 0.25 0 0, 0.5 0 0, 0.75 0 0.
+<p>
+<tt/"crtOb ICurve -l 5 -sderiv {0.0 -0.5 0.0} -ederiv {0.0 -0.5 0.0} -derivs 1 -center 1"/
+creates a curve with length 5, order 4, control points at
+-0.5 0 0, -0.25 0 0, 0 0 0, 0.25 0 0, 0.5 0 0, end derivatives pointing
+straight upwards with length 0.5 in their respective end.
 <p>
 In versions of Ayam prior to 1.17, interpolating curves only accepted the
 <tt/"-length"/ argument.
@@ -9496,7 +9525,7 @@ In versions of Ayam prior to 1.17, NURBS patches only accepted the
   <itemize>
 
   <item><tt/"-polys"/: the value of this option specifies the number of
-polygons in the mesh. The number of polygons defaults to 0!
+polygons/faces in the mesh. The number of polygons defaults to 0!
 
   <item><tt/"-loops"/: the value of this option specifies the number of
 loops per polygon. It is therefore a list of positive integer values of a
@@ -9536,7 +9565,16 @@ The default value is 0 - no vertex normals are present.
   </itemize>
 Examples:
 <tt/"crtOb PolyMesh -p 1 -cv {0 0 0  1 0 0  0 1 0}"/
+creates a polymesh with a single triangular face.
+<p>
+<tt/"crtOb PolyMesh -p 2 -cv {0 0 0  1 0 0  1 1 0  0 1 0 } -iv {0 1 2 0 2 3 }"/
+creates a polymesh with two connected (vertex sharing) triangular faces.
+<p>
+<tt/"crtOb PolyMesh -p 3 -cv {0 0 0  1 0 0  1 1 0  0 1 0  1.5 0 0  1.5 1 0} -iv {0 1 2 0 2 3 1 4 5 2} -nv {3 3 4}"/
+creates a polymesh with two triangles and one quad all connected (vertex sharing).
+<p>
 <tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"/
+creates a polymesh with one triangular face that has a triangular hole.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -13796,6 +13834,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <itemize>
 <item>MajorRad: <ref id="top" name="Torus attribute">
 <item>Make Compatible: <ref id="makecompt" name="NCurve tool">
+<item>Mark: <ref id="vat" name="View attribute">
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
 <item>Material: <ref id="materialobj" name="Material object">,
