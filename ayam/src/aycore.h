@@ -14,6 +14,7 @@
 
 /* aycore.h - prototypes of core functions */
 
+
 /* bbc.c */
 
 /*! \brief calculate the bounding box of object o
@@ -308,21 +309,21 @@ int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 void ay_instt_init(Tcl_Interp *interp);
 
 
-/*interpol.c */
+/* interpol.c */
 
-/*! \brief
+/*! \brief interpolate between two arrays of homogenous 3D coordinates
  */
 int ay_interpol_1DA4D(double p, int len, double *st, double *en, double *ta);
 
-/*! \brief
+/*! \brief interpolate between two arrays of doubles
  */
 int ay_interpol_1DA1D(double p, int len, double *st, double *en, double *ta);
 
-/*! \brief
+/*! \brief interpolate between two sets of transformation attributes
  */
 int ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta);
 
-/*! \brief
+/*! \brief interpolate between two curves
  */
 int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
 			ay_object **ta);
@@ -330,19 +331,19 @@ int ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2,
 
 /* notify.c */
 
-/*! \brief
+/*! \brief register notify callback
  */
 int ay_notify_register(ay_notifycb *notcb, unsigned int type_id);
 
-/*! \brief
+/*! \brief call notification callbacks of all parent objects (of current level)
  */
 int ay_notify_parent(void);
 
-/*! \brief
+/*! \brief call notification callback of object <o>
  */
 int ay_notify_force(ay_object *o);
 
-/*! \brief
+/*! \brief call notification callback of parents of object <o>
  */
 int ay_notify_forceparent(ay_object *o, int silent);
 
@@ -351,16 +352,16 @@ int ay_notify_forceparent(ay_object *o, int silent);
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/*! \brief
+/*! \brief find parents
  */
 int ay_notify_findparents(ay_object *o, ay_object *r,
 			  ay_list_object **parents);
 
-/*! \brief
+/*! \brief do complete notification for object <r>
  */
 int ay_notify_complete(ay_object *r);
 
-/*! \brief
+/*! \brief initialize notification module
  */
 int ay_notify_init(Tcl_Interp *interp);
 
@@ -448,6 +449,7 @@ int ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[]);
 /*! \brief scale 3D about mark object modelling action
  */
 int ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[]);
+
 
 /* object.c */
 
@@ -1203,31 +1205,31 @@ int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
 
 /* tc.c */
 
-/*! \brief
+/*! \brief write the first TC tag from object <o> to RIB
  */
 int ay_tc_wrib(ay_object *o);
 
-/*! \brief
+/*! \brief write TC tag number <index> from object <o> to RIB
  */
 int ay_tc_wribindex(ay_object *o, int index);
 
-/*! \brief
+/*! \brief count TC tags of object <o>
  */
 int ay_tc_count(ay_object *o);
 
-/*! \brief
+/*! \brief initialize tc module by registering the TC tag type
  */
 void ay_tc_init(Tcl_Interp *interp);
 
 
 /* tcmd.c */
 
-/*! \brief Tcl command to
+/*! \brief Tcl command "revertC" to revert curves
  */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief show all objects below <o>
  */
 void ay_tcmd_showall(ay_object *o);
 
@@ -1236,7 +1238,7 @@ void ay_tcmd_showall(ay_object *o);
 int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/*! \brief
+/*! \brief hide all objects below <o>
  */
 void ay_tcmd_hideall(ay_object *o);
 
@@ -1250,7 +1252,7 @@ int ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief get bilinear patch coordinate address from index
  */
 int ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 			      double **p);
@@ -1266,7 +1268,7 @@ int ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
 #ifdef AYENABLEWAIT
-/*! \brief
+/*! \brief Tcl command to wait for a spawned process in order to avoid zombies
  */
 int ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -1498,15 +1500,15 @@ int ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* vact.c */
 
-/*! \brief
+/*! \brief move/pan view modelling action
  */
 int ay_vact_movetcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief zoom view modelling action
  */
 int ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief
+/*! \brief move (along z) view modelling action
  */
 int ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[]);
 

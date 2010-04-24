@@ -14,7 +14,9 @@
 
 /* vact.c - view related interactive actions */
 
-
+/* ay_vact_movetcb:
+ *  move/pan view modelling action
+ */
 int
 ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 {
@@ -153,6 +155,9 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_vact_movetcb */
 
 
+/* ay_vact_zoomtcb:
+ *  zoom view modelling action
+ */
 int
 ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
 {
@@ -223,6 +228,9 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_vact_zoomtcb */
 
 
+/* ay_vact_moveztcb:
+ *  move (along z) view modelling action
+ */
 int
 ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
 {
