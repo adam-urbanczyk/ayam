@@ -122,7 +122,6 @@ proc actionSetMark { w { nextaction "" } } {
 	  }
 	}
 	bind $w <Key-Return> "+ $nextaction \$w.f3D.togl;"
-
     }
 
     actionBindCenter $w $nextaction
@@ -1527,15 +1526,6 @@ proc actionPick { w } {
 
     bind $w <Motion> ""
 
-    if { [string first ".view" $w] == 0 } {
-	set t [winfo toplevel $w].f3D.togl
-    } else {
-	set t $w
-    }
-
-    $t setconf -drawh 0
-    $t setconf -mark 0 0 0
-
  return;
 }
 #actionPick
@@ -1578,6 +1568,22 @@ proc actionClearB1 { w } {
 # actionClearB1
 
 
+#actionClearKbd:
+# helper procedure to clear all left over keyboard bindings;
+# all modeling actions call this before adding their bindings
+proc actionClearKbd { w } {
+    global ayviewshortcuts
+
+    bind $w $ayviewshortcuts(CenterO) ""
+    bind $w $ayviewshortcuts(CenterP) ""
+
+    bind $w <Key-Return> ""
+
+ return;
+}
+# actionClearKbd
+
+
 #actionClear:
 # not really an action, clears all bindings, establishes picking bindings
 # when requested via preferences and is normally bound to the Esc-key
@@ -1585,6 +1591,7 @@ proc actionClear { w } {
     global ayprefs ayviewshortcuts
 
     actionClearB1 $w
+    actionClearKbd $w
 
     if { [string first ".view" $w] != 0 } {
 	bind $w <ButtonPress-1> "focus \$w"
@@ -1597,21 +1604,19 @@ proc actionClear { w } {
     if { $ayprefs(DefaultAction) == 0 } {
 	viewTitle $w "" "None"
 	viewSetMAIcon $w ay_Empty_img ""
-
-	if { [string first ".view" $w] == 0 } {
-	    set t [winfo toplevel $w].f3D.togl
-	} else {
-	    set t $w
-	}
-
-	$t setconf -drawh 0
-	$t setconf -mark 0 0 0
     } else {
 	actionPick $w
     }
 
+    # the following after scripts arrange for a short period
+    # 0.1 - 1s after the first press of the <Esc> key, that a second
+    # press of the <Esc> key also resets the mark and the focus
     set p [winfo parent [winfo parent $w]]
-    after 100 "bind $p <$ayviewshortcuts(Break)> \"resetFocus\""
+    after 100 "bind $p <$ayviewshortcuts(Break)>\
+               \"$p.f3D.togl setconf -drawh 0;\
+                 $p.f3D.togl setconf -mark 0 0 0;\
+                 resetFocus\""
+    # after 1s, the old binding is in effect
     after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
 
  return;
