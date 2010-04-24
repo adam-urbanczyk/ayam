@@ -84,7 +84,7 @@ ay_tc_wribindex(ay_object *o, int index)
 
 
 /* ay_tc_count:
- *  count TC tags
+ *  count TC tags of object <o>
  */
 int
 ay_tc_count(ay_object *o)

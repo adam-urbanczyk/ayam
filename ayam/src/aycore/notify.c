@@ -573,6 +573,9 @@ ay_notify_complete(ay_object *r)
 } /* ay_notify_complete */
 
 
+/* ay_notify_init:
+ *  initialize notification module
+ */
 int
 ay_notify_init(Tcl_Interp *interp)
 {
