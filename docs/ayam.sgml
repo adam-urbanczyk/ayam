@@ -2335,6 +2335,12 @@ it is highly suggested to use grids with this action.
 
 <sect1>Setting the Mark<label id="markac">
 <p>
+<figure loc="ht">
+<eps file="pics/mark.ps" height="5cm">
+<img src="pics/mark.gif">
+<caption>Front View With Mark Set At 1,-1,0</caption>
+</figure>
+<p>
 This action may be invoked to mark a point in space for perusal
 of the modelling actions that rotate or scale about a point.
 The corresponding keyboard shortcut is <tt/&lt;a&gt;/.
@@ -2372,9 +2378,22 @@ The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
 for <em>t</em>ag points) may be applied to NURBS curves, NURBS patches,
 or objects that support single point editing only. Such objects usually
 draw their selectable points using small white rectangular handles
-(when a modelling action is active).
+(when a modelling action is active):
 <p>
-Selected points will be drawn in dark red when a modelling action is active.
+<figure loc="ht">
+<eps file="pics/handles.ps" height="5cm">
+<img src="pics/handles.gif">
+<caption>Objects Without (r) And With (l) Editable Points/Handles</caption>
+</figure>
+<p>
+Selected points will be drawn in dark red when the select points modelling
+action or a modelling action that would modify the selected points is active:
+<p>
+<figure loc="ht">
+<eps file="pics/selpnts.ps" height="4cm">
+<img src="pics/selpnts.gif">
+<caption>Objects With Selected Points (red)</caption>
+</figure>
 <p>
 The selected points may be modified subsequently using the modelling actions
 Move, Rotate, and Scale as discussed above.
@@ -2427,7 +2446,8 @@ All those actions may be applied to objects that support single point
 editing only.
 Objects mark themselves editable by drawing the editable points using
 small white rectangular handles if one of the single point editing actions
-is activated and the object is selected.
+is activated and the object is selected
+(see also section <ref id="selac" name ="Selecting Points">).
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
