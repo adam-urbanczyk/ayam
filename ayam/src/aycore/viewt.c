@@ -2158,7 +2158,7 @@ ay_viewt_markfromsel(struct Togl *togl)
 
 
 /* ay_viewt_markfromselp:
- *  set mark from selected objects cog
+ *  set mark from selected points cog
  */
 int
 ay_viewt_markfromselp(struct Togl *togl)
@@ -2228,8 +2228,6 @@ ay_viewt_markfromselp(struct Togl *togl)
 	      i++;
 	    }
 
-	  free(pnts);
-
 	  memset(tcog, 0 , 3*sizeof(double));
 	  i = 0;
 	  while(i < nump)
@@ -2249,6 +2247,8 @@ ay_viewt_markfromselp(struct Togl *togl)
 		}
 	      i++;
 	    }
+
+	  free(pnts);
 
 	  ay_trafo_creatematrix(o, mm);
 	  AY_APTRAN3(ttcog, tcog, mm);
