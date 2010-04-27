@@ -151,6 +151,15 @@ proc shortcut_main { w } {
     bind $w <[repctrl $aymainshortcuts(LastToolP)]> "\
      if \{ \$ay(lasttool) != \"\" \} \{ eval \$ay(lasttool) \}"
 
+    bind $w <[repctrl $aymainshortcuts(Hide)]>\
+	"$m invoke 12;break"
+    bind $w <[repctrl $aymainshortcuts(Show)]>\
+	"$m invoke 14;break"
+
+    bind $w <[repctrl $aymainshortcuts(Convert)]>\
+	"$m invoke 17;break"
+    bind $w <[repctrl $aymainshortcuts(ConvertP)]>\
+	"$m invoke 18;break"
 
     set m $ay(helpmenu)
     bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"

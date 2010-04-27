@@ -295,6 +295,12 @@ array set aymainshortcuts {
     LastTool "Ctrl-t"
     LastToolP "Ctrl-T"
 
+    Hide "Ctrl-h"
+    Show "Ctrl-H"
+
+    Convert "Ctrl-k"
+    ConvertP "Ctrl-K"
+
     SProp0 "Key-0"
     SProp1 "Key-1"
     SProp2 "Key-2"
