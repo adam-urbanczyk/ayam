@@ -950,11 +950,6 @@ ay_object_ccp(ay_object *o)
 {
  int ay_status = AY_OK;
 
-  /* in case direct point editing is active:
-   *  clear the point cache of the direct point edit action
-   */
-  ay_pact_pedclear(o);
-
  return ay_status;
 } /* ay_object_ccp */
 

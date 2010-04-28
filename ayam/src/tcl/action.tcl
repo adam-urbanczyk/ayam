@@ -945,7 +945,6 @@ array set editPointDarray {
     wz 0.0
     ww 0.0
 
-    changed 0
     window ""
     valid 0
     local 1
@@ -969,7 +968,6 @@ proc updEditPointDarray { w } {
 	set array(w) $array(ww)
     }
 
-    set array(changed) 0
     update
     set f1 $w.f1
     set f $f1.fx
@@ -1008,21 +1006,14 @@ proc editPointApply { } {
     set array(z) [.editPointDw.f1.fz.e get]
     set array(w) [.editPointDw.f1.fw.e get]
 
-    if { ($array(x) != $array(x2)) ||
-	 ($array(y) != $array(y2)) ||
-	 ($array(z) != $array(z2)) ||
-	 ($array(w) != $array(w2))} {
-	set array(changed) 1
-	if { [winfo exists $array(window)] } {
-	    undo save DEditPnt
-	    $array(window) dpepac -apply
-	    rV
-	    plb_update
-	} else {
-	    ayError 2 "editPointDp" "Lost window to apply changes to!"
-	}
+    if { [winfo exists $array(window)] } {
+	undo save DEditPnt
+	$array(window) dpepac -apply
+	rV
+	plb_update
+    } else {
+	ayError 2 "editPointDp" "Lost window to apply changes to!"
     }
-    # if
 
  return;
 }
@@ -1037,8 +1028,6 @@ proc editPointDp { } {
     global ay tcl_platform AYWITHAQUA
 
     set w .editPointDw
-
-    set array(changed) 0
 
     if { [winfo exists $w] } {
 	updEditPointDarray $w
@@ -1175,7 +1164,7 @@ proc editPointDp { } {
 
 #
 proc actionDEditP { w } {
-    global ayprefs
+    global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Direct_Point_Edit"
     viewSetMAIcon $w ay_EditD_img "Direct_Point_Edit"
@@ -1184,20 +1173,49 @@ proc actionDEditP { w } {
 
     bind $w <ButtonPress-1> {
 	%W mc
+	set oldx %x
+	set oldy %y
 	set editPointDarray(valid) 0
 	%W startpepac %x %y -flash -ignoreold
 	%W dpepac -start %x %y
 	set editPointDarray(window) %W
 	if { $editPointDarray(valid) == 1 } {
 	    editPointDp
-	    %W setconf -mark %x %y 1
 	}
 	update
     }
 
-    bind $w <B1-Motion> ""
+    # next bindings taken from tag action (actionTagP)
+    bind $w <ButtonRelease-1> {
+	if { ($oldx != %x) || ($oldy != %y)} {
+	    %W selpac %x %y $oldx $oldy
+	} else {
+	    %W selpac %x %y
+	}
+	%W setconf -rect $oldx $oldy %x %y 0
+	rV
+	update
+	focus %W
+    }
+
+    bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
+	if { ($oldx != %x) || ($oldy != %y)} {
+	    %W selpac %x %y $oldx $oldy 1
+	} else {
+	    %W selpac %x %y
+	}
+	%W setconf -rect $oldx $oldy %x %y 0
+	rV
+	update
+	focus %W
+    }
+
+    bind $w <B1-Motion> {
+	%W setconf -rect $oldx $oldy %x %y 1
+    }
+
     bind $w <Motion> ""
-    bind $w <ButtonRelease-1> "focus %W"
+#    bind $w <ButtonRelease-1> "focus %W"
 
     if { $ayprefs(FlashPoints) == 1 } {
 	bind $w <Motion> {
