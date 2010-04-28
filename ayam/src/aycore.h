@@ -656,10 +656,6 @@ void ay_pact_clearpointedit(ay_pointedit *pe);
  */
 int ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe);
 
-/*! \brief helper to clear point cache
- */
-void ay_pact_pedclear(ay_object *o);
-
 /*! \brief tag/select point action
  */
 int ay_pact_seltcb(struct Togl *togl, int argc, char *argv[]);
