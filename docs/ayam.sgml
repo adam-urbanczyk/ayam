@@ -2592,11 +2592,11 @@ Edit|<tt/&lt;e&gt;/|
 <#if out=latex><x>inlinegfx pics/editac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editac.gif"></#if>
 @<hline>
-Edit Weights|<tt/&lt;mx&gt;/|
+Edit Weights|<tt/&lt;w&gt;/|
 <#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editwac.gif"></#if>
 @<hline>
-Edit Direct|<tt/&lt;my&gt;/|
+Edit Direct|<tt/&lt;p&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>
 @<hline>
@@ -2704,6 +2704,22 @@ The selected control point will be deleted from the curve.
 Deleting points from a curve with knot type <tt/"Custom"/
 may currently lead to an incorrect knot sequence, please
 check and correct the new sequence manually.
+See also the table below.
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Insert Points|<tt/&lt;i&gt;/|
+<#if out=latex><x>inlinegfx pics/insertac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/insertac.gif"></#if>
+@<hline>
+Delete Points|<tt/&lt;d&gt;/|
+<#if out=latex><x>inlinegfx pics/deleteac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/deleteac.gif"></#if>
+@<hline>
+</tabular>
+<caption>Insert/Delete Points Actions</caption>
+</table>
+<p>
 
 <sect1>Miscellaneous Actions<label id="miscac">
 <p>
