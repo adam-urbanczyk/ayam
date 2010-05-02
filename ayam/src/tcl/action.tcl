@@ -232,7 +232,7 @@ proc actionZoomView { w } {
 proc actionMoveZView { w } {
 
     viewTitle $w "" "MoveZ_View"
-    viewSetMAIcon $w ay_MoveV_img "MoveZ_View"
+    viewSetMAIcon $w ay_MoveVZ_img "MoveZ_View"
 
     actionClearB1 $w
 
