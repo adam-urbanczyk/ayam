@@ -105,7 +105,7 @@ proc actionSetMark { w { nextaction "" } } {
     bind $w.f3D.togl <ButtonPress-1> "\
 	    %W mc;\
 	    update;\
-	    %W setconf -gmark %x %y 1;"
+	    %W setconf -mark %x %y 1;"
 
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange

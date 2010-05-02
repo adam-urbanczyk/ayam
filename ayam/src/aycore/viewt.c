@@ -975,7 +975,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       switch(argv[i][1])
 	{
 	case 'b':
-	  if(!strcmp(argv[i], "-bgimage"))
+	  /*if(!strcmp(argv[i], "-bgimage"))*/
 	    {
 	      if(view->bgimage)
 		{
@@ -1005,7 +1005,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 'c':
-	  if(!strcmp(argv[i], "-cmark"))
+	  /*if(!strcmp(argv[i], "-cmark"))*/
 	    {
 	      if(ay_selection)
 		{
@@ -1179,7 +1179,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 'g':
-	  if(!strcmp(argv[i], "-grid"))
+	  /*if(!strcmp(argv[i], "-grid"))*/
 	    {
 	      if(argd >= 0.0)
 		{
@@ -1190,7 +1190,24 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  view->grid = 0.0;
 		} /* if */
 	    }
-	  if(!strcmp(argv[i], "-gmark"))
+	  break;
+	case 'i':
+	  /*if(!strcmp(argv[i], "-ico"))*/
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      view->isicon = argi;
+	    }
+	  break;
+	case 'l':
+	  /*if(!strcmp(argv[i], "-local"))*/
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &argi);
+	      view->local = argi;
+	      view->drawmark = AY_FALSE;
+	    }
+	  break;
+	case 'm':
+	  /*if(!strcmp(argv[i], "-mark"))*/
 	    {
 	      Tcl_GetDouble(interp, argv[i+1], &view->markx);
 	      Tcl_GetDouble(interp, argv[i+2], &view->marky);
@@ -1206,44 +1223,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 				  &(view->markworld[0]),
 				  &(view->markworld[1]),
 				  &(view->markworld[2]));
-	      /*
-	      printf("marked world: %g %g %g\n",view->markworld[0],
-		     view->markworld[1], view->markworld[2]);
-	      */
-	      need_updatemark = AY_TRUE;
-	    } /* if */
-	  break;
-	case 'i':
-	  if(!strcmp(argv[i], "-ico"))
-	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
-	      view->isicon = argi;
-	    }
-	  break;
-	case 'l':
-	  if(!strcmp(argv[i], "-local"))
-	    {
-	      Tcl_GetInt(interp, argv[i+1], &argi);
-	      view->local = argi;
-	      view->drawmark = AY_FALSE;
-	    }
-	  break;
-	case 'm':
-	  if(!strcmp(argv[i], "-mark"))
-	    {
-	      Tcl_GetDouble(interp, argv[i+1], &view->markx);
-	      Tcl_GetDouble(interp, argv[i+2], &view->marky);
-
-	      Tcl_GetInt(interp, argv[i+3], &argi);
-	      if(view->markx == 0.0 && view->marky == 0 &&
-		 argi == view->drawmark)
-		need_redraw = AY_FALSE;
-	      view->drawmark = argi;
 	      need_updatemark = AY_TRUE;
 	    } /* if */
 	  break;
 	case 'n':
-	  if(!strcmp(argv[i], "-name"))
+	  /*if(!strcmp(argv[i], "-name"))*/
 	    {
 	      o = ay_root->down;
 	      while(o)
@@ -1391,7 +1375,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 's':
-	  if(!strcmp(argv[i], "-shade"))
+	  /*if(!strcmp(argv[i], "-shade"))*/
 	    {
 	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->shade = argi;
