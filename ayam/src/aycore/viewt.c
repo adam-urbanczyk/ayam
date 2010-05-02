@@ -1019,10 +1019,20 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      ay_status = ay_viewt_markfromselp(togl);
 		    }
+
 		  if(!ay_status)
 		    {
 		      need_updatemark = AY_TRUE;
 		    }
+		  else
+		    {
+		      need_redraw = AY_FALSE;
+		      ay_error(AY_ERROR, fname, NULL);
+		    }
+		}
+	      else
+		{
+		  ay_error(AY_ENOSEL, fname, NULL);
 		}
 	    } /* if */
 	  break;
