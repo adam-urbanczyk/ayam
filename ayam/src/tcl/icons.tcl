@@ -820,4 +820,10 @@ image create photo ay_MoveZ_img -w 25 -h 25
 ay_MoveZ_img copy ay_Move_img
 ay_MoveZ_img copy ay_Scale1DZ_img -from 0 0 7 8
 
+# MoveVZ
+image create photo ay_MoveVZ_img -w 25 -h 25
+ay_MoveVZ_img copy ay_MoveV_img
+ay_MoveVZ_img copy ay_Scale1DZ_img -from 0 0 7 8 -to 17 0
+
+
 catch {unset imgdata}
