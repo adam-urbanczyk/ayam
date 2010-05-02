@@ -1422,9 +1422,30 @@ zooms in and moving the mouse down zooms out.
 defined through a mouse drag is also possible in any
 modelling mode, when holding down the <tt/&lt;Shift&gt;/-key.
 </itemize>
+See also the table below.
 <p>
-You may also move the view by dragging with the rightmost mouse
-button and zoom the view with the middle mouse button.
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Pan View|<tt/&lt;v&gt;/|
+<#if out=latex><x>inlinegfx pics/movevac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/movevac.gif"></#if>
+@<hline>
+Zoom View|<tt/&lt;o&gt;/|
+<#if out=latex><x>inlinegfx pics/zoomvac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/zoomvac.gif"></#if>
+@<hline>
+Rotate View|<tt/&lt;R&gt;/|
+<#if out=latex><x>inlinegfx pics/rotatevac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/rotatevac.gif"></#if>
+@<hline>
+</tabular>
+<caption>View Actions Overview</caption>
+</table>
+<p>
+You may also pan/move the view by dragging with the rightmost mouse
+button and zoom the view with the middle mouse button without affecting
+any other active view or modelling action.
 <p>
 If you have a wheel mouse and it is configured to send
 Mouse4 and Mouse5 button events, Ayam will zoom the view
@@ -1437,14 +1458,13 @@ through drawing modes using <tt/&lt;Ctrl+PgUp&gt;/ and
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
 shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
-you can change the views from to and zoom
-settings so that the selected objects will be displayed centered
-in the view window. This is handy if you are e.g. searching for
-objects or if you are simply lost in space.
+one can change the views camera settings so that the selected
+objects will be displayed centered in the view window. This is handy
+to search for objects or if the user is simply lost in space.
 <p>
 Using the menu entry <tt/"Align to Parent"/ or the shortcut
 <tt/&lt;Ctrl+a&gt;/  (<tt/&lt;L&gt;/ for internal views)
-you can change the views camera settings so that it is aligned
+one can change the views camera settings so that it is aligned
 to the coordinate system of the currently selected object.
 This is handy for modelling in local coordinate systems
 (e.g. when editing the control points of some planar curve defined in the
