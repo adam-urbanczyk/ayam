@@ -1,11 +1,27 @@
+[2. May 2010] CVS-Head:
+=========================
+Bug Fixes:
+o direct point editing is not setting the mark (SF 2993441)
+
+Modelling:
+o the mark is now reset on double <Esc>
+o direct point editing now uses the point selection instead of an own pointer;
+  thus, it now works with multiple selected objects, and one may apply
+  coordinate values to multiple (selected) points
+
+Documentation/Example Files:
+o documentation of modelling actions enhanced with tables containing
+  keyboard shortcuts and icons
+
+
 [20. Apr 2010] Ayam-1.17:
 =========================
 Bug Fixes:
 o Tcl errors when Ayam is started with object listbox activated (SF 2872817)
-o <Tab> key does not work after <Ctrl+l> (SF 2869550)
+o <Tab> key now works after <Ctrl+l> (SF 2869550)
 o the FaceConnect modelling operation of the SDNPatch plugin is now
   more robust (works with perpendicular faces) (SF 2872818)
-o PLY export of SDNPatch objects is not working (SF 2886961)
+o PLY export of SDNPatch objects is now working (SF 2886961)
 o the KnotEditor of the SDNPatch plugin now fetches old knot values
   and sets the new value for the correct edge (SF 2971502)
 o Script objects with own, script controlled, property GUIs fail to load
@@ -77,7 +93,7 @@ o added keyboard shortcuts to manipulate the selection and walk the object
   with the numeric keypad cursor keys; the modifier key depends on the
   platform: defaults are "Control" (on UNIX/X11), "Command" (on Aqua) and
   "Windows" (on Win32)
-o added keyboard shortcut to reset a views camera (by default usind a
+o added keyboard shortcut to reset a views camera (by default using a
   modifier (as above) plus numeric keypad "5")
 o added a second set of zoom hotkeys to views (for those without numeric
   keypad) by default using "+"/"-"
@@ -90,7 +106,7 @@ o switched AyCSG plugin to OpenCSG 1.3.0 for important multi view fixes
 o added AyCSG preference option "OffscreenType" to switch between
   PBuffer and FBO offscreen rendering types
 o the AyCSG continuous CSG rendering state is now conveyed to the
-  user using a red colored view menu icon
+  user using the view menu icon with a red frame 
 o SDNPatch operations (e.g. FaceMerge) are now more robust
 o added Length and Scale options to SDNPatch FaceExtrude operation
 o added SDNPatch revert operation (that reverts all edges)
