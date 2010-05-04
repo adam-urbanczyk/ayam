@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>20. Apr 2010
+<date>2. May 2010
 
 <abstract>
 This is the documentation of Ayam 1.17 - a free 3D modelling environment
@@ -622,7 +622,7 @@ The <tt/"File"/ menu deals with standard file operations:<label id="filem">
 <item><tt/"New"/, clears the current scene (deletes all objects) and reloads
 the working environment (if the preference setting
 <tt>"Main/NewLoadsEnv"</tt> is enabled).
-This operation is not undoable!
+This operation cannot be undone!
 
 <item><tt/"Open"/, clears the current scene and closes all views,
 then loads a new scene from disk. All objects from the file
@@ -630,7 +630,7 @@ will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
 <p>
-This operation is not undoable!
+This operation cannot be undone!
 <p>
 Since Ayam 1.13 also files supported by any of the import plugins
 may be imported using this route. Note that this only works if the
@@ -649,7 +649,7 @@ Otherwise, if just geometric objects are in the scene file (i.e. the file
 was created using <tt>"Special/Save Selected"</tt>), the new objects
 will be inserted in the current level of the scene.
 <p>
-This operation is not undoable!
+This operation cannot be undone!
 <p>
 Since Ayam 1.13 also files supported by any of the import plugins
 may be imported using this route. See above (<tt/"Open"/).
@@ -748,10 +748,10 @@ The <tt/"Edit"/ menu contains object and property clipboard
 operations, undo actions, and lets you open the preferences editor:
 <itemize>
 <item><tt/"Copy"/, copies the currently selected object(s) into the clipboard.
-This operation is not undoable!
+This operation cannot be undone!
 
 <item><tt/"Cut"/, moves the currently selected object(s) into the clipboard.
-This operation is not undoable!
+This operation cannot be undone!
 
 <item><tt/"Paste"/, copies the object(s) from the clipboard to the current
 level of the scene. Note that the content of the clipboard remains intact
@@ -761,10 +761,10 @@ You can move objects out of the clipboard (clearing it) using the menu entry
 Also note that referenced objects, when moved into the clipboard with
 <tt/"Cut"/, can not be moved out of it using a simple <tt/"Paste"/, use
 <tt>"Special/Clipboard/Paste (Move)"</tt> instead!
-This operation is not undoable!
+This operation cannot be undone!
 
 <item><tt/"Delete"/, removes the selected object(s) from the scene.
-This operation is not undoable!
+This operation cannot be undone!
 
 <item><tt/"Select All"/, selects all objects in the current level
 (except for the root object).
@@ -927,7 +927,7 @@ into a second PolyMesh object. The faces to be split off are selected
 by selecting all their control points with the select points modelling
 action (see also section <ref id="selac" name="Selecting Points">).
 The original selected PolyMesh objects will be changed. The changes to
-the original objects are undoable. Since the split operation does not
+the original objects cannot be undone. Since the split operation does not
 create optimized new objects, the <tt/"Optimize"/-tool (see below) may
 be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 
@@ -987,21 +987,21 @@ activated.
 <item><tt/"Show All"/ and <tt/"Hide All"/ set and unset the <tt/"Hide"/
 attribute of all objects in the scene (including the root object
 and all views!) regardles of the currently selected objects (and
-without changing the current selection). These operations are
-not undoable.
+without changing the current selection). These operations can
+not be undone using the undo system.
 
 <item><tt/"Convert"/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
 a Revolve object will e.g. be converted to a level containing NURBS
 patches that make up the surface of revolution and the caps.
-This operation is not undoable, i.e. the newly created objects
-will not be removed by using the undo system.
+This operation can not be undone, i.e. the newly created objects
+will not be removed, using the undo system.
 
 <item><tt/"Convert (In Place)"/, starts the convert action as
 outlined above, but replaces the original objects with the
 new converted ones. This operation, in contrast to the simple
-conversion, is undoable.
+conversion above, can be undone.
 
 <item><tt/"Force Notification"/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are
@@ -2240,9 +2240,107 @@ to zoom and move the view while modelling actions are active.
 For actions that modify the camera of a view
 please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Modelling Actions Overview
 <p>
 This section gives an overview over the various modelling actions.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/||<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Move|<tt/&lt;m&gt;/|
+<#if out=latex><x>inlinegfx pics/moveac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/moveac.gif"></#if>||
+Rotate|<tt/&lt;r&gt;/|
+<#if out=latex><x>inlinegfx pics/rotateac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/rotateac.gif"></#if>
+@<hline>
+Move X|<tt/&lt;mx&gt;/|
+<#if out=latex><x>inlinegfx pics/movexac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/movexac.gif"></#if>||
+Rotate About|<tt/&lt;ra&gt;/|
+<#if out=latex><x>inlinegfx pics/rotateaac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/rotateaac.gif"></#if>
+@<hline>
+Move Y|<tt/&lt;my&gt;/|
+<#if out=latex><x>inlinegfx pics/moveyac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/moveyac.gif"></#if>||
+Set Mark|<tt/&lt;a&gt;/|
+<#if out=latex><x>inlinegfx pics/markac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/markac.gif"></#if>
+@<hline>
+Move Z|<tt/&lt;mz&gt;/|
+<#if out=latex><x>inlinegfx pics/movezac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/movezac.gif"></#if>
+||||@<hline><hline>
+Scale 3D|<tt/&lt;S&gt;/|
+<#if out=latex><x>inlinegfx pics/scale3dac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale3dac.gif"></#if>||
+Scale 3D About|<tt/&lt;Sa&gt;/|
+<#if out=latex><x>inlinegfx pics/scale3daac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale3daac.gif"></#if>
+@<hline>
+Scale 2D|<tt/&lt;s&gt;/|
+<#if out=latex><x>inlinegfx pics/scale2dac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale2dac.gif"></#if>||
+Scale 2D About|<tt/&lt;sa&gt;/|
+<#if out=latex><x>inlinegfx pics/scale2daac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale2daac.gif"></#if>
+@<hline>
+Scale 1D X|<tt/&lt;sx&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dxac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dxac.gif"></#if>||
+Scale 1D X About|<tt/&lt;sxa&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dxaac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dxaac.gif"></#if>
+@<hline>
+Scale 1D Y|<tt/&lt;sy&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dyac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dyac.gif"></#if>||
+Scale 1D Y About|<tt/&lt;sya&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dyaac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dyaac.gif"></#if>
+@<hline>
+Scale 1D Z|<tt/&lt;sz&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dzac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dzac.gif"></#if>||
+Scale 1D Z About|<tt/&lt;sza&gt;/|
+<#if out=latex><x>inlinegfx pics/scale1dzaac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/scale1dzaac.gif"></#if>
+@<hline>
+Stretch 2D|<tt/&lt;T&gt;/|
+<#if out=latex><x>inlinegfx pics/stretchac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/stretchac.gif"></#if>||
+Stretch 2D About|<tt/&lt;Ta&gt;/|
+<#if out=latex><x>inlinegfx pics/stretchaac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/stretchaac.gif"></#if>
+@<hline><hline>
+Edit|<tt/&lt;e&gt;/|
+<#if out=latex><x>inlinegfx pics/editac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/editac.gif"></#if>||
+Tag Points|<tt/&lt;t&gt;/|
+<#if out=latex><x>inlinegfx pics/tagac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/tagac.gif"></#if>
+@<hline>
+Edit Weights|<tt/&lt;w&gt;/|
+<#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/editwac.gif"></#if>||
+Insert Points|<tt/&lt;i&gt;/|
+<#if out=latex><x>inlinegfx pics/insertac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/insertac.gif"></#if>
+@<hline>
+Edit Direct|<tt/&lt;p&gt;/|
+<#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/editdac.gif"></#if>||
+Delete Points|<tt/&lt;d&gt;/|
+<#if out=latex><x>inlinegfx pics/deleteac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/deleteac.gif"></#if>
+@<hline>
+</tabular>
+<caption>Modelling Actions Overview</caption>
+</table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Moving Objects or Selected Points
 <p>
@@ -2466,6 +2564,14 @@ Note that this action does not only change the Scale_X(_Y,_Z)
 properties of the selected objects, but also the Translate_X(_Y,_Z)
 properties.
 <p>
+Also note, that the three dimensional scaling about the mark
+occurs in all three dimensions, however, in the interactive
+set mark action one is only able to specify two dimensional
+coordinates using a mouse click (the third coordinate is always
+set to zero). To specify a true three dimensional mark one
+can use the corresponding view object attributes or select
+a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
+<p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
 
@@ -2509,18 +2615,23 @@ currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
 currently selected points.
 </itemize>
-
 The marked point will be shown as a little red cross in the view window
 (see image above).
 <p>
 The mark may also directly be set using the corresponding view object
 property (see also section <ref id="vat" name ="ViewAttrib Property">).
 <p>
-Note that certain actions like e.g. changing the view type will
-clear the mark.
+Also note, that one is only able to specify two dimensional mark
+coordinates using a mouse click (the third coordinate is always
+set to zero). To specify a true three dimensional mark one
+can use the corresponding view object attributes or select
+a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
+<p>
+Finally, remember that certain operations like e.g. changing the view
+type will clear the mark.
 
 
-<sect1>Selecting Points<label id="selac">
+<sect1>Selecting/Tagging Points<label id="selac">
 <p>
 The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
 for <em>t</em>ag points) may be applied to NURBS curves, NURBS patches,
@@ -2573,9 +2684,14 @@ are used.
 The point selection can also be inverted using the keyboard shortcut
 <tt/&lt;I&gt;/.
 <p>
+All three above shortcuts can be used anytime without interference wrt.
+active modelling actions.
+<p>
 Note that the list of selected points is not copied, if the object
 is copied using the clipboard. The selection is also not saved to
 Ayam scene files. Since Ayam 1.16, selected points survive undo/redo.
+However, the selection action iself is not an operation recorded
+in the undo buffer, thus cannot directly be undone.
 <p>
 The point selection does not interfere with single point modelling
 actions:
@@ -2653,14 +2769,29 @@ single points that make up the multiple point.
 
 <item>The modelling action <tt/"Direct Point Edit"/ (shortcut:
 <tt/&lt;p&gt;/)
-opens a small window where you may change the coordinates of the
-selected point directly by entering numbers.
+starts an intermediate point selection action and upon a click
+with the mouse opens a small window where you may change the
+coordinates of the selected point(s) directly by entering numbers.
+Nothing will be changed unless the <tt/"Return"/ key is pressed
+in a coordinate entry field or the <tt/"Apply"/ button is used.
+In contrast to the normal point selection action, clicking on new
+points while the edit point dialog is open deselects the old point(s),
+selects the new point and loads its coordinate values. In case
+of multiple selected objects, the deselection is only performed
+on the object with a new selection.
+<p>
 Note that the w coordinate setting will be ignored if the
-picked point does not have weight information (is not homogenous).
+a selected point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
-world space. This modelling action also only affects the points
-of the first of multiple selected objects.
+world space. Since Ayam 1.18, this modelling action may affect
+multiple points of multiple selected objects.
+Snapping points of different objects together is now possible too:
+Just select two objects, start direct point editing (press <tt/&lt;p&gt;/),
+pick a point on the first object (where a point of the second object
+should be snapped to), the point edit window opens, now drag select
+the point of the second object (do <em/not/ use a single click as this
+would load new coordinates) and press apply.
 <p>
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e. you can not move
@@ -2672,13 +2803,10 @@ open all the time. Furthermore, it is not necessary that the original
 object stays selected while working with the direct point edit dialog,
 you may select other objects to e.g. infer new point coordinates from
 their properties and apply them to the original object.
-However, certain actions like deleting objects, will also delete the
-reference to the selected points. In this case you will have to select
-the object and then a point to edit again. Furthermore notice that
-the coordinate values displayed in the direct point editing window
-will not update when the point is modified by another modelling
-action. Simply click on the point again in a view where the
-direct point editing action is active, to update the coordinate
+Furthermore notice that the coordinate values displayed in the direct
+point editing window will not update when the point is modified by
+another modelling action. Simply click on the point again in a view
+where the direct point editing action is active, to update the coordinate
 values in the direct point editing dialog.
 <p>
 Even though the dialog may display point coordinates in degraded
@@ -9287,9 +9415,9 @@ However, since Ayam 1.13 it is also possible to automatically run GUI
 updating commands in the console by using <tt/&lt;Shift+Return&gt;/
 instead of <tt/&lt;Return&gt;/ when issuing scripting interface commands.
 <p>
-If you want your changes to be undoable, you have to arrange for
-this manually too (see the documentation of the undo command:
-<ref id="scundo" name="Undo">).
+If you want your changes to be recorded in the undo buffer, you have
+to arrange for this manually too (see the documentation of the undo
+command: <ref id="scundo" name="Undo">).
 <p>
 From scripts it may be necessary to check whether an error occured
 during the execution of a command. All commands return
@@ -9410,8 +9538,9 @@ All commands are documented in the following scheme:
  <item><bf/Synopsis:/ <tt/"command param1 param2 [optionalparam1]"/
 (syntax of the command and its parameters),
  <item><bf/Background:/ does the command run in the background,
-<bf/Undo:/ is the result of the command undoable, <bf/Safe:/ is the command available
-in the safe interpreter (for Script objects and notify script tags),
+<bf/Undo:/ can the result of the command be undone,
+<bf/Safe:/ is the command available in the safe interpreter (for Script
+objects and notify script tags),
  <item><bf/Description:/ detailed description of the command and its
 parameters,
  <item><bf/Notes:/ additional information completing the detailed description,
@@ -10825,8 +10954,9 @@ ayError:
  <item>Background: No, Undo: No, Safe: No
  <item>Description: This command reports errors or warnings.
 You should always use ayError instead of puts because the error
-reporting mechanism of Ayam features compression of repeated
-messages and logging to files. Code should be one of: 1: warning, 2:
+reporting mechanism of Ayam features consistently formatted output,
+compression of repeated messages, and logging.
+Code should be one of: 1: warning, 2:
 error, 3: flush messages, 4: unspecified output.
 There are more codes defined (see ayam.h, look for Return/Error Codes)
 but they are not needed in the Tcl script context.
@@ -11223,7 +11353,7 @@ entry in the <tt>"Custom"</tt> main menu.
 Pressing the button or using the menu entry immediately starts the
 conversion process.
 <p>
-Since the changes of the conversion are not undoable, the conversion
+Since the changes of the conversion can not be undone, the conversion
 will not run if the scene contains unsaved changes.
 <p>
 The conversion will use the current parameters from the preference settings
@@ -12577,7 +12707,7 @@ This section contains all information about Ayam not fitting elsewhere.
 <sect1>The Undo System<label id="undos">
 <p>
 Using the undo system, you may correct mistakes you made while modelling.
-However, only modifications of objects are undoable. This includes changes
+However, only modifications of objects can be undone. This includes changes
 made by modelling actions, changes made using property GUIs, but also
 changes to views (type changes or changes to the camera settings associated
 with a view).
