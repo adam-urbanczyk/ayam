@@ -118,12 +118,9 @@ proc insinlinegfx { buf outfile } {
     set found 0
     set index [string first "inlinegfx" $buf]
     if { $index > -1 } {
-	set buf2 [ string range $buf 0 [expr $index -1] ]
-	puts $outfile $buf2
-	set buf2 [ string range $buf $index end ]
-	scan $buf2 "inlinegfx %s %s" fn height
-	puts $outfile\
-	    "\\rule\[-0.3cm\]\{0cm\}\{0.9cm\}\\raisebox\{-2mm\}\{\\epsfig\{file=${fn},height=$height\}\} \\\\"
+	set buf [regsub -all "inlinegfx (.*?) (.*?) " $buf\
+      {\rule[-0.3cm]{0cm}{0.9cm}\raisebox{-2mm}{\epsfig{file=\1,height=\2}}}]
+	puts $outfile $buf
 	set found 1
     }
     return $found;
