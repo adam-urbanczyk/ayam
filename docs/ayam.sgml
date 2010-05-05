@@ -2246,25 +2246,26 @@ please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
 <p>
 This section gives an overview over the various modelling actions.
 <table loc="ht">
-<tabular ca="|c|c|c|c|c|c|c|"><hline>
-<bf/Name/|<bf/Shortcut/|<bf/Icon/||<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+<tabular ca="|c|c|c||c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/|<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+<em>Transform:</em>|||||@<hline>
 Move|<tt/&lt;m&gt;/|
 <#if out=latex><x>inlinegfx pics/moveac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/moveac.gif"></#if>||
+<#if out=html><img src="pics/moveac.gif"></#if>|
 Rotate|<tt/&lt;r&gt;/|
 <#if out=latex><x>inlinegfx pics/rotateac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/rotateac.gif"></#if>
 @<hline>
 Move X|<tt/&lt;mx&gt;/|
 <#if out=latex><x>inlinegfx pics/movexac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/movexac.gif"></#if>||
+<#if out=html><img src="pics/movexac.gif"></#if>|
 Rotate About|<tt/&lt;ra&gt;/|
 <#if out=latex><x>inlinegfx pics/rotateaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/rotateaac.gif"></#if>
 @<hline>
 Move Y|<tt/&lt;my&gt;/|
 <#if out=latex><x>inlinegfx pics/moveyac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/moveyac.gif"></#if>||
+<#if out=html><img src="pics/moveyac.gif"></#if>|
 Set Mark|<tt/&lt;a&gt;/|
 <#if out=latex><x>inlinegfx pics/markac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/markac.gif"></#if>
@@ -2272,66 +2273,67 @@ Set Mark|<tt/&lt;a&gt;/|
 Move Z|<tt/&lt;mz&gt;/|
 <#if out=latex><x>inlinegfx pics/movezac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/movezac.gif"></#if>
-||||@<hline><hline>
+|||@<hline><hline>
 Scale 3D|<tt/&lt;S&gt;/|
 <#if out=latex><x>inlinegfx pics/scale3dac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/scale3dac.gif"></#if>||
+<#if out=html><img src="pics/scale3dac.gif"></#if>|
 Scale 3D About|<tt/&lt;Sa&gt;/|
 <#if out=latex><x>inlinegfx pics/scale3daac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/scale3daac.gif"></#if>
 @<hline>
 Scale 2D|<tt/&lt;s&gt;/|
 <#if out=latex><x>inlinegfx pics/scale2dac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/scale2dac.gif"></#if>||
+<#if out=html><img src="pics/scale2dac.gif"></#if>|
 Scale 2D About|<tt/&lt;sa&gt;/|
 <#if out=latex><x>inlinegfx pics/scale2daac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/scale2daac.gif"></#if>
 @<hline>
 Scale 1D X|<tt/&lt;sx&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dxac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/scale1dxac.gif"></#if>||
+<#if out=html><img src="pics/scale1dxac.gif"></#if>|
 Scale 1D X About|<tt/&lt;sxa&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dxaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/scale1dxaac.gif"></#if>
 @<hline>
 Scale 1D Y|<tt/&lt;sy&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dyac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/scale1dyac.gif"></#if>||
+<#if out=html><img src="pics/scale1dyac.gif"></#if>|
 Scale 1D Y About|<tt/&lt;sya&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dyaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/scale1dyaac.gif"></#if>
 @<hline>
 Scale 1D Z|<tt/&lt;sz&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dzac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/scale1dzac.gif"></#if>||
+<#if out=html><img src="pics/scale1dzac.gif"></#if>|
 Scale 1D Z About|<tt/&lt;sza&gt;/|
 <#if out=latex><x>inlinegfx pics/scale1dzaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/scale1dzaac.gif"></#if>
 @<hline>
 Stretch 2D|<tt/&lt;T&gt;/|
 <#if out=latex><x>inlinegfx pics/stretchac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/stretchac.gif"></#if>||
+<#if out=html><img src="pics/stretchac.gif"></#if>|
 Stretch 2D About|<tt/&lt;Ta&gt;/|
 <#if out=latex><x>inlinegfx pics/stretchaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/stretchaac.gif"></#if>
 @<hline><hline>
+<em>Edit:</em>|||||@<hline>
 Edit|<tt/&lt;e&gt;/|
 <#if out=latex><x>inlinegfx pics/editac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/editac.gif"></#if>||
+<#if out=html><img src="pics/editac.gif"></#if>|
 Tag Points|<tt/&lt;t&gt;/|
 <#if out=latex><x>inlinegfx pics/tagac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/tagac.gif"></#if>
 @<hline>
 Edit Weights|<tt/&lt;w&gt;/|
 <#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/editwac.gif"></#if>||
+<#if out=html><img src="pics/editwac.gif"></#if>|
 Insert Points|<tt/&lt;i&gt;/|
 <#if out=latex><x>inlinegfx pics/insertac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/insertac.gif"></#if>
 @<hline>
 Edit Direct|<tt/&lt;p&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
-<#if out=html><img src="pics/editdac.gif"></#if>||
+<#if out=html><img src="pics/editdac.gif"></#if>|
 Delete Points|<tt/&lt;d&gt;/|
 <#if out=latex><x>inlinegfx pics/deleteac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/deleteac.gif"></#if>
