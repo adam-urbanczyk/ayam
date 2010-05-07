@@ -165,7 +165,7 @@ array set ayprefs {
  FixImageButtons 0
  FixFlashPoints 0
 
- SafeAutoFocus 0
+ SafeAutoFocus 1
 
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
@@ -421,8 +421,8 @@ array set ayviewshortcuts {
 
     SelAllP "A"
     InvSelP "I"
-    CollP "C"
-    ExplP "E"
+    CollP "q"
+    ExplP "Q"
 
     SnapGrid2D "g"
     SnapGrid3D "G"

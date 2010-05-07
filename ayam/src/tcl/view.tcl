@@ -666,11 +666,13 @@ proc viewBind { w } {
 	}
 	#if
 
-	if { ($ayprefs(AutoFocus) == 1) && \
-		 ([string first ".view" %W] == 0) } {
-	    focus [winfo toplevel %W].f3D.togl
+	if { $ayprefs(AutoFocus) == 1 } {
+	    if { [string first ".view" %W] == 0 } {
+		focus [winfo toplevel %W].f3D.togl
+	    } else {
+		focus %W
+	    }
 	}
-
 	break;
     }
     #bind
@@ -697,11 +699,13 @@ proc viewBind { w } {
 	}
 	#if
 
-	if { ($ayprefs(AutoFocus) == 1) && \
-	     ([string first ".view" %W] == 0) } {
-	    focus [winfo toplevel %W].f3D.togl
+	if { $ayprefs(AutoFocus) == 1 } {
+	    if { [string first ".view" %W] == 0 } {
+		focus [winfo toplevel %W].f3D.togl
+	    } else {
+		focus %W
+	    }
 	}
-
 	break;
     }
     #bind
@@ -728,11 +732,13 @@ proc viewBind { w } {
 	}
 	#if
 
-	if { ($ayprefs(AutoFocus) == 1) && \
-	     ([string first ".view" %W] == 0) } {
-	    focus [winfo toplevel %W].f3D.togl
+	if { $ayprefs(AutoFocus) == 1 } {
+	    if { [string first ".view" %W] == 0 } {
+		focus [winfo toplevel %W].f3D.togl
+	    } else {
+		focus %W
+	    }
 	}
-
 	break;
     }
     #bind
