@@ -152,8 +152,8 @@ proc prefs_open {} {
     addCheckB $fw ayprefse SingleWindow [ms ayprefse_SingleWindow]
     if { $ayprefs(SingleWindow) == 0 } {
 	addCheckB $fw ayprefse AutoResize [ms ayprefse_AutoResize]
-	addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
     }
+    addCheckB $fw ayprefse AutoFocus [ms ayprefse_AutoFocus]
     if { $ay(ws) == "X11" } {
 	addCheckB $fw ayprefse TwmCompat [ms ayprefse_TwmCompat]
     }
