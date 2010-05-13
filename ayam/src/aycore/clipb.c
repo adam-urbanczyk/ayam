@@ -53,7 +53,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, fname,
 		   "Maybe there are referenced objects in it?");
 	  ay_error(AY_ERROR, fname,
-		   "Use menu: \\\"Special/Clipboard/Paste (Move)\\\" first!");
+		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
 	  return TCL_OK;
 	}
     }
@@ -155,7 +155,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_ERROR, fname,
 		   "Maybe there are referenced objects in it?");
 	  ay_error(AY_ERROR, fname,
-		   "Use menu: \\\"Special/Clipboard/Paste (Move)\\\" first!");
+		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
 	  return TCL_OK;
 	} /* if */
     } /* while */
