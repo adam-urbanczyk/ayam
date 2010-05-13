@@ -95,7 +95,6 @@ ay_notify_parent(void)
 	      lev->next->object->modified = AY_FALSE;
 	    }
 	} /* if */
-
       return ay_status;
     } /* if */
 
@@ -485,13 +484,25 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 int
 ay_notify_complete(ay_object *r)
 {
+ static int lock = 0;
  int propagate = AY_TRUE;
  ay_object *o;
  ay_tag *tag;
  ay_list_object *l = NULL, *s, *t, *u;
 
+  /* avoid recursive calls that may happen with Script objects */
+  if(lock)
+    {
+      return AY_OK;
+    }
+
+  lock = 1;
+
   if(!r)
-   return AY_ENULL;
+    {
+      lock = 0;
+      return AY_ENULL;
+    }
 
   o = ay_root;
 
@@ -568,6 +579,8 @@ ay_notify_complete(ay_object *r)
       free(s);
       s = t;
     } /* while */
+
+ lock = 0;
 
  return AY_OK;
 } /* ay_notify_complete */
