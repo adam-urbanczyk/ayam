@@ -932,6 +932,7 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_script_notifycb(ay_object *o)
 {
+ static int lock = 0;
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
  char buf[256], *l1 = NULL, *l2 = NULL;
@@ -941,30 +942,32 @@ ay_script_notifycb(ay_object *o)
  ay_list_object *old_currentlevel;
  ay_object *old_clipboard = NULL;
  ay_script_object *sc = NULL, *dsc = NULL;
- static int sema = 0;
  int i = 0;
  int old_rdmode = 0;
  ClientData old_restrictcd;
  Tcl_DString ds;
  Tcl_Interp *interp = NULL;
 
-
-  /* this semaphor protects ourselves from running in an endless
+  /* this lock protects ourselves from running in an endless
      recursive loop should the script modify our child objects
      (leading to another round of notification) */
-  if(sema)
+  if(lock)
     {
+      /*
+      ay_error(AY_ERROR, fname,
+	       "Recursive call to Script object notification blocked!");
+      */
       return AY_OK;
     }
   else
     {
-      sema = 1;
+      lock = 1;
     } /* if */
 
   /* check arguments */
   if(!o)
     {
-      sema = 0;
+      lock = 0;
       return AY_ENULL;
     } /* if */
 
@@ -975,7 +978,7 @@ ay_script_notifycb(ay_object *o)
   if((sc->active == 0) || (!sc->script) || (sc->script && !strlen(sc->script)))
     {
       /* script is inactive or empty, bail out... */
-      sema = 0;
+      lock = 0;
       return AY_OK;
     } /* if */
 
@@ -1252,7 +1255,7 @@ ay_script_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
-  sema = 0;
+  lock = 0;
 
  return AY_OK;
 } /* ay_script_notifycb */
