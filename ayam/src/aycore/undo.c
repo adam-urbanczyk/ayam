@@ -136,8 +136,6 @@ ay_undo_deletemulti(ay_object *o)
 	  /* delete selected points */
 	  if(d->selp)
 	    ay_selp_clear(d);
-	  /* clear cached pointers to this object */
-	  ay_object_ccp(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
 	  /* free name */
@@ -150,8 +148,6 @@ ay_undo_deletemulti(ay_object *o)
 	  /* delete selected points */
 	  if(d->selp)
 	    ay_selp_clear(d);
-	  /* clear cached pointers to this object */
-	  ay_object_ccp(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
 	  /* free name */
@@ -189,8 +185,6 @@ ay_undo_deletemulti(ay_object *o)
 	  /* delete selected points */
 	  if(d->selp)
 	    ay_selp_clear(d);
-	  /* clear cached pointers to this object */
-	  ay_object_ccp(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
 	  /* free name */
@@ -216,8 +210,6 @@ ay_undo_deletemulti(ay_object *o)
 	  /* delete selected points */
 	  if(d->selp)
 	    ay_selp_clear(d);
-	  /* clear cached pointers to this object */
-	  ay_object_ccp(d);
 	  /* delete tags */
 	  ay_tags_delall(d);
 	  /* free name */
@@ -711,9 +703,6 @@ ay_undo_copy(ay_undo_object *uo)
 	}
 
       /*ay_selp_clear(o);*/
-
-      /* clear cached pointers to this object */
-      ay_object_ccp(o);
 
       /* copy all other attributes */
       o->type = c->type;

@@ -976,7 +976,6 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
-	      ay_object_ccp(o);
 	    } /* if */
 	}
       else
@@ -1395,7 +1394,6 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		  o->modified = AY_TRUE;
 		  /* update pointers to controlv */
 		  ay_selp_clear(o);
-		  ay_object_ccp(o);
 		  /* finishing touches for new object */
 		  ay_object_defaults(newo);
 		  ay_trafo_copy(o, newo);

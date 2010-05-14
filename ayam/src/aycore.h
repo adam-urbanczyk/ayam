@@ -540,9 +540,6 @@ int ay_object_deleteinstances(ay_object **o);
  */
 int ay_object_replace(ay_object *src, ay_object *dst);
 
-/*! \brief
- */
-int ay_object_ccp(ay_object *o);
 
 /*! \brief
  */

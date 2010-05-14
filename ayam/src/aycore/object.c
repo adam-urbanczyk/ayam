@@ -349,9 +349,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       try_again = t;
     } /* while */
 
-  /* clear all cached pointers to scene hierarchy */
-  ay_status = ay_object_ccp(NULL);
-
   /* free selection */
   ay_sel_free(AY_FALSE);
 
@@ -939,19 +936,6 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
  return AY_OK;
 } /* ay_object_replace */
-
-
-/* ay_object_ccp:
- *  this function calls all functions that cleanup the caches of
- *  pointers to the scene hierarchy held by other parts of the core
- */
-int
-ay_object_ccp(ay_object *o)
-{
- int ay_status = AY_OK;
-
- return ay_status;
-} /* ay_object_ccp */
 
 
 /* ay_object_count:
