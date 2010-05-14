@@ -130,9 +130,6 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 
   sel = ay_selection;
 
-  /* clear all cached pointers to scene hierarchy */
-  ay_object_ccp(NULL);
-
   /* clear old clipboard */
 
   /* first, delete all instance objects */

@@ -41,7 +41,6 @@ ay_convert_force(ay_object *o, int in_place)
  ay_voidfp *arr = NULL;
  ay_convertcb *cb = NULL;
 
-
   /* call the conversion callback */
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[o->type]);
@@ -51,7 +50,7 @@ ay_convert_force(ay_object *o, int in_place)
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "convert callback failed");
+	  ay_error(AY_ERROR, fname, "Convert callback failed!");
 	  return AY_ERROR;
 	}
     }
@@ -74,7 +73,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
  int ay_status = AY_OK;
  char fname[] = "convOb";
  ay_list_object *sel = ay_selection;
- int in_place = AY_FALSE;
+ int in_place = AY_FALSE, notify_parent = AY_FALSE;
 
   if(argc > 1)
     {
@@ -94,17 +93,15 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
       else
 	{
 	  sel->object->modified = AY_TRUE;
+	  notify_parent = AY_TRUE;
 	}
       sel = sel->next;
     }
 
-  if(ay_selection)
+  if(notify_parent)
     {
       ay_status = ay_notify_parent();
     }
-
-  /* clear all cached pointers to scene hierarchy */
-  ay_status = ay_object_ccp(NULL);
 
  return TCL_OK;
 } /* ay_convert_forcetcmd */

@@ -875,9 +875,6 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  o->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(o);
-
 	  /* re-create tesselation of curve */
 	  ay_notify_force(sel->object);
 	}
@@ -1071,7 +1068,6 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	    /* update pointers to controlv */
 	    ay_status = ay_nct_recreatemp(curve);
-	    ay_object_ccp(sel->object);
 	    sel->object->modified = AY_TRUE;
 
 	    /* re-create tesselation of curve */
@@ -1343,7 +1339,6 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* update pointers to controlv */
 	  ay_nct_recreatemp(curve);
-	  ay_object_ccp(sel->object);
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
@@ -1457,8 +1452,6 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  curve->knotv = newknotv;
 	  curve->knot_type = AY_KTCUSTOM;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
 	  ay_nct_recreatemp(curve);
 
 	  src->modified = AY_TRUE;
@@ -2070,8 +2063,6 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      ay_status = ay_object_link(new);
 
-	      /* update pointers to controlv */
-	      ay_object_ccp(sel->object);
 	      sel->object->modified = AY_TRUE;
 
 	      /* re-create tesselation of original curve */
@@ -4634,7 +4625,6 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 	      p->refine = nc;
 	      /* update pointers to controlv */
 	      ay_selp_clear(o);
-	      ay_object_ccp(o);
 	      o->modified = AY_TRUE;
 
 	      /* re-create tesselation of curve */
@@ -5135,8 +5125,6 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    }
 
-	  /* update pointers to controlv */
-	  ay_status = ay_object_ccp(o);
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
@@ -5259,9 +5247,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  curve->knot_type = AY_KTCUSTOM;
 
-	  /* update pointers to controlv */
 	  ay_status = ay_nct_recreatemp(curve);
-	  ay_status = ay_object_ccp(o);
 
 	  o->modified = AY_TRUE;
 
@@ -5394,9 +5380,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 	      break;
 	    }
 
-	  /* update pointers to controlv */
 	  ay_status = ay_nct_recreatemp(o->refine);
-	  ay_status = ay_object_ccp(o);
 
 	  o->modified = AY_TRUE;
 
@@ -6094,8 +6078,6 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clean up */
 	  ay_status = ay_nct_recreatemp(curve);
-	  /* update pointers to controlv */
-	  ay_status = ay_object_ccp(o);
 	  ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 
@@ -6161,8 +6143,6 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clean up */
 	  ay_status = ay_nct_recreatemp(curve);
-	  /* update pointers to controlv */
-	  ay_status = ay_object_ccp(o);
 	  ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 

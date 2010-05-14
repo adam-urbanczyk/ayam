@@ -478,9 +478,6 @@ ay_ai_makeinstancestcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  /* clear all cached pointers to scene hierarchy */
-  ay_status = ay_object_ccp(NULL);
-
  return ay_status;
 } /* ay_ai_makeinstancestcmd */
 

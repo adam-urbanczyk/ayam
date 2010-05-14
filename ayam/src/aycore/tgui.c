@@ -105,11 +105,6 @@ ay_tgui_open(void)
       ay_error(AY_ERROR, fname,
 	       "Nothing to tesselate; select some NPatch objects!");
     }
-  else
-    {
-      /* clear all cached pointers to scene hierarchy */
-      ay_status = ay_object_ccp(NULL);
-    }
 
  return ay_status;
 } /* ay_tgui_open */

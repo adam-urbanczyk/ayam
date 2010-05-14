@@ -5851,9 +5851,6 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      sel->object->modified = AY_TRUE;
 
-	      /* update pointers to controlv */
-	      ay_object_ccp(sel->object);
-
 	      /* re-create tesselation of patch */
 	      ay_notify_force(sel->object);
 	    }
@@ -6027,9 +6024,6 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  else
 	    {
 	      sel->object->modified = AY_TRUE;
-
-	      /* update pointers to controlv */
-	      ay_object_ccp(sel->object);
 
 	      /* re-create tesselation of patch */
 	      ay_notify_force(sel->object);
@@ -7556,9 +7550,6 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  sel->object->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
-
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
 	  break;
@@ -7676,9 +7667,6 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
-
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
 
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
@@ -8415,9 +8403,6 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  sel->object->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
-
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
 	}
@@ -8511,9 +8496,6 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
-
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
 
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
@@ -8925,9 +8907,6 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  src->modified = AY_TRUE;
 
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
-
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
 	} /* if */
@@ -9036,9 +9015,6 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_npt_recreatemp(patch);
 
 	  src->modified = AY_TRUE;
-
-	  /* update pointers to controlv */
-	  ay_object_ccp(sel->object);
 
 	  /* re-create tesselation of patch */
 	  ay_notify_force(sel->object);
@@ -9243,9 +9219,6 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_link(new);
 
 	      sel->object->modified = AY_TRUE;
-
-	      /* update pointers to controlv */
-	      ay_object_ccp(sel->object);
 
 	      /* re-create tesselation of original patch */
 	      ay_notify_force(sel->object);
@@ -9469,9 +9442,6 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_link(new);
 
 	      sel->object->modified = AY_TRUE;
-
-	      /* update pointers to controlv */
-	      ay_object_ccp(sel->object);
 
 	      /* re-create tesselation of original patch */
 	      ay_notify_force(sel->object);
@@ -10831,8 +10801,6 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* re-create multiple points */
 	  ay_status = ay_npt_recreatemp(patch);
 
-	  /* update pointers to controlv */
-	  ay_status = ay_object_ccp(o);
 	  ay_selp_clear(o);
 	  /* notify notification about changes */
 	  o->modified = AY_TRUE;

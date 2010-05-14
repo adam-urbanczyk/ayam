@@ -45,9 +45,6 @@ ay_clear_scene(void)
   ucargs[1] = ucarg1;
   ay_undo_undotcmd(NULL, ay_interp, 2, ucargs);
 
-  /* clear all cached pointers to scene hierarchy */
-  ay_status = ay_object_ccp(NULL);
-
   /* remove all instance objects from the scene */
   ay_status = ay_object_deleteinstances(&(ay_root->next));
   o = ay_root;
