@@ -547,17 +547,15 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 			    controlv, NULL, NULL,
 			    (ay_nurbpatch_object **)(&(cap->refine)));
 
-  if(cap->refine)
-    {
-      ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
-	tolerance;
-      ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
-      controlv = NULL;
-    }
-  else
+  if(ay_status || !cap->refine)
     {
       goto cleanup;
     }
+
+  ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
+    tolerance;
+  ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
+  controlv = NULL;
 
   /* create trimcurve */
   if(!(trim = calloc(1, sizeof(ay_object))))
@@ -582,8 +580,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	{
 	  ay_status = ay_nct_crtncircle(1.0,
 			   (ay_nurbcurve_object **) (&(trim->refine)));
-	}
-      
+	}      
     }
   else
     {
@@ -678,6 +675,8 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	      tloop = tloop->next;
 	    }
 	  ay_status = ay_object_crtendlevel(&(tloop->next));
+	  if(ay_status)
+	    {goto cleanup;}
 	}
     }
   else
@@ -759,6 +758,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
     {
       revert = AY_TRUE;
     }
+
   /* create NURBS patch */
   if(!(cap = calloc(1, sizeof(ay_object))))
     {return AY_EOMEM;}
@@ -769,7 +769,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   cap->inherit_trafos = AY_FALSE;
 
   if(!(controlv = calloc(4*4, sizeof(double))))
-    {free(cap); return AY_EOMEM;}
+    {ay_status = AY_EOMEM; goto cleanup;}
 
   /* calc minx, maxx, miny, maxy from curve */
   minx = miny = DBL_MAX;
@@ -830,10 +830,13 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 			    AY_KTBEZIER, AY_KTBEZIER,
 			    controlv, NULL, NULL,
 			    (ay_nurbpatch_object **)(&(cap->refine)));
+  if(ay_status)
+    {goto cleanup;}
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
+  controlv = NULL;
 
   if(th != 0.0)
     {
@@ -842,7 +845,12 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
     }
 
   /* create trimcurve(s) */
-  ay_object_copy(curve, &trim);
+  ay_status = ay_object_copy(curve, &trim);
+  if(ay_status)
+    {goto cleanup;}
+
+  cap->down = trim;
+
   tc = (ay_nurbcurve_object *)trim->refine;
   ccv = tc->controlv;
   for(i = 0; i < tc->length*4; i+=4)
@@ -854,7 +862,6 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
   ay_trafo_defaults(trim);
 
-  cap->down = trim;
   if(!closed)
     {
       trim->scalx /= maxx;
@@ -890,31 +897,38 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	{
 	  ay_nct_revert(trim->refine);
 	}
-
     } /* if !closed */
 
   ay_status = ay_object_crtendlevel(&(trim->next));
+  if(ay_status)
+    {goto cleanup;}
 
   if(!closed)
     {
       if(!(tloop = calloc(1, sizeof(ay_object))))
-	{return AY_EOMEM;}
+	{ay_status = AY_EOMEM; goto cleanup;}
+
       ay_object_defaults(tloop);
       tloop->type = AY_IDLEVEL;
-
-      if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
-	return AY_EOMEM;
 
       tloop->down = cap->down;
       cap->down = tloop;
 
+      if(!(tloop->refine = calloc(1, sizeof(ay_level_object))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
       /* create another trimcurve */
       if(!(trim = calloc(1, sizeof(ay_object))))
-	{return AY_EOMEM;}
+	{ay_status = AY_EOMEM; goto cleanup;}
+
       ay_object_defaults(trim);
       trim->type = AY_IDNCURVE;
+
+      trim->next = tloop->down->next;
+      tloop->down->next = trim;
+
       if(!(controlv = calloc(4*4, sizeof(double))))
-	{return AY_EOMEM;}
+	{ay_status = AY_EOMEM; goto cleanup;}
 
       nc = tloop->down->refine;
 
@@ -938,13 +952,16 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 				controlv, NULL,
 				(ay_nurbcurve_object **)(&(trim->refine)));
 
-      if(trim->refine)
+      if(ay_status)
 	{
-	  ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-	    nc->glu_sampling_tolerance;
-	  ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-	    nc->display_mode;
+	  goto cleanup;
 	}
+
+      ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
+	nc->glu_sampling_tolerance;
+      ((ay_nurbcurve_object *)(trim->refine))->display_mode =
+	nc->display_mode;
+      controlv = NULL;
 
       if(revert)
 	{
@@ -964,11 +981,6 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
       ay_nct_revert((ay_nurbcurve_object *)(trim->refine));
 
-      trim->next = tloop->down->next;
-      tloop->down->next = trim;
-
-      trim = tloop->down;
-
       /* properly terminate level */
       tloop = cap->down;
       if(tloop)
@@ -978,10 +990,27 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	      tloop = tloop->next;
 	    }
 	  ay_status = ay_object_crtendlevel(&(tloop->next));
+	  if(ay_status)
+	    {goto cleanup;}
 	}
     } /* if !closed */
 
   *o = cap;
+
+  /* prevent cleanup code from doing something harmful */
+  cap = NULL;
+
+cleanup:
+
+  if(cap)
+    {
+      ay_object_deletemulti(cap);
+    }
+
+  if(controlv)
+    {
+      free(controlv);
+    }
 
  return AY_OK;
 } /* ay_revolve_crtside */
