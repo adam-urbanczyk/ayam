@@ -2207,36 +2207,25 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	}
       else
 	{
-	  if(arc == 360.0)
+	  tmpnc = NULL;
+	  ay_status = ay_nct_crtcircbsp(sections, radius, arc, order,
+					&tmpnc);
+	  if(!tmpnc)
 	    {
-	      tmpnc = NULL;
-	      ay_status = ay_nct_crtcircbsp(sections, radius, 360.0, order,
-					    &tmpnc);
-	      if(!tmpnc)
-		{
-		  if(new->uknotv)
-		    free(new->uknotv);
-		  if(new->vknotv)
-		    free(new->vknotv);
-		  if(new->controlv)
-		    free(new->controlv);
-		  free(new);
-		  return AY_ERROR;
-		} /* if */
-
-	      tcontrolv = tmpnc->controlv;
-	      new->vknotv = tmpnc->knotv;
-	      new->height = tmpnc->length;
-	      free(tmpnc);
-	    }
-	  else
-	    {
-	      /* unsupported case, just bail out */
 	      if(new->uknotv)
 		free(new->uknotv);
+	      if(new->vknotv)
+		free(new->vknotv);
+	      if(new->controlv)
+		free(new->controlv);
 	      free(new);
 	      return AY_ERROR;
 	    } /* if */
+
+	  tcontrolv = tmpnc->controlv;
+	  new->vknotv = tmpnc->knotv;
+	  new->height = tmpnc->length;
+	  free(tmpnc);
 	} /* if */
 
       if(!new->controlv)
