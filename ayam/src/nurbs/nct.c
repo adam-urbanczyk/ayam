@@ -2603,7 +2603,6 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_crtcircbsp:
- *  XXXX this only works for arc == 360.0!
  */
 int
 ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
@@ -2614,7 +2613,7 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
  double *controlv, m[16], angle;
  int len, a, i;
 
-  if((sections < 2) || (radius < -AY_EPSILON) || (order < 2))
+  if((sections < 2) || (fabs(radius) < AY_EPSILON) || (order < 2))
     return AY_ERROR;
 
   if(!result)
@@ -2630,6 +2629,12 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
   angle = arc/sections;
 
   ay_trafo_identitymatrix(m);
+
+  if(fabs(arc) < 360.0)
+    {
+      ay_trafo_rotatematrix((order/2.0)*-angle, 0.0, 0.0, 1.0, m);
+    }
+
   for(i = 0; i < len; i++)
     {
       a = i*4;
