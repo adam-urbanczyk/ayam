@@ -1,13 +1,20 @@
-[2. May 2010] CVS-Head:
-=========================
+[15. May 2010] CVS-Head:
+========================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
+o continuous complete notification for Script objects (SF 3001239)
 
 Modelling:
 o the mark is now reset on double <Esc>
 o direct point editing now uses the point selection instead of an own pointer;
   thus, it now works with multiple selected objects, and one may apply
   coordinate values to multiple (selected) points
+o the Revolve tool object now supports arbitrary ThetaMax values in
+  B-Spline mode (Sections != 0)
+
+GUI:
+o AutoFocus is now available (again) for single window GUI mode; here it
+  manages the focus of internal views
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
@@ -79,7 +86,7 @@ o scale 1D actions are now invoked in a similar scheme as the constrained
 GUI:
 o improved speed of focus changes between internal view 3 and the tree view
 o improved initial pane layout (also in use after switching from
-  (Floating Windows to Single Window GUI mode)
+  (floating windows to single window GUI mode)
 o added mnemonics to tree and object listbox context menus
 o fixed main menu mnemonics clashes
 o the property GUIs of many objects are now initialized on demand, not
@@ -223,7 +230,7 @@ o added example script "useaqsisapp.tcl" that prepares Ayam to use Aqsis
 o added example script "usepixie.tcl" that prepares Ayam to use Pixie
   from the /Library/pixie directory structure on Mac OS X
 o added helper script "colfocus.tcl" that switches the focus ring of
-  important widgets to a more visible color (for SingleWindow GUI mode)
+  important widgets to a more visible color (for single window GUI mode)
 o scripts in "Script" objects and BNS/ANS tags now run in a safe interpreter
 o "Script" object script execution environment has been improved to allow
   more complex scripts (that traverse the scene or use the clipboard)
@@ -376,7 +383,7 @@ o improved focus handling of property canvas
 o added context sensitive help launcher (<F1> key) to all import and
   export option windows and the preferences dialog
 o added preference option to switch Ayam to a single toplevel window
-  application; in SingleWindow mode, there are internal views and an
+  application; in single window mode, there are internal views and an
   internal toolbar, more floating view windows can be created as usual
 o added icon based modelling action display to view window menu bar
 o added saving of main window state normal/zoomed (maximized) to the
