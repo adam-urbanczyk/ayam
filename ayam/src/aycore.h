@@ -46,7 +46,7 @@ int ay_clevel_add(ay_object *o);
 
 /*! \brief pop current level stack
  */
-int ay_clevel_del(void);
+void ay_clevel_del(void);
 
 /*! \brief clear current level stack
  */
