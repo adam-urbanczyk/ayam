@@ -90,18 +90,18 @@ ay_clevel_add(ay_object *o)
 /* ay_clevel_del:
  *  remove topmost list object from current level stack
  */
-int
+void
 ay_clevel_del(void)
 {
  ay_list_object *lev = ay_currentlevel;
 
-  if(lev->next)
-  {
-    ay_currentlevel = lev->next;
-    free(lev);
-  }
+  if(lev && lev->next)
+    {
+      ay_currentlevel = lev->next;
+      free(lev);
+    }
 
- return AY_OK;
+ return;
 } /* ay_clevel_del */
 
 
@@ -116,12 +116,14 @@ ay_clevel_delall(void)
  ay_list_object *lev = ay_currentlevel;
 
   if(lev)
-    while(lev->next)
-      {
-	ay_currentlevel = lev->next;
-	free(lev);
-	lev = ay_currentlevel;
-      }
+    {
+      while(lev->next)
+	{
+	  ay_currentlevel = lev->next;
+	  free(lev);
+	  lev = ay_currentlevel;
+	}
+    }
 
   ay_status = ay_clevel_add(ay_root);
 

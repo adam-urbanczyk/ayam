@@ -1919,6 +1919,7 @@ int
 ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "droptcb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o, *v;
@@ -1950,6 +1951,10 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 	  if(cb)
 	    {
 	      ay_status = cb(v);
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, fname, "Drop callback failed!");
+		}
 	    }
 	}
       break;

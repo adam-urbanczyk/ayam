@@ -64,6 +64,11 @@ ay_tree_getclevel(char *node)
 
   ay_status = ay_clevel_delall();
 
+  if(ay_status)
+    {
+      return;
+    }
+
   if(memcmp(node, "root:", 5))
     {
       if(o)
@@ -102,7 +107,16 @@ ay_tree_getclevel(char *node)
 	  if((o) && (o->down))
 	    {
 	      ay_status = ay_clevel_add(o);
+	      if(ay_status)
+		{
+		  return;
+		}
 	      ay_status = ay_clevel_add(o->down);
+	      if(ay_status)
+		{
+		  ay_clevel_del();
+		  return;
+		}
 	      o = o->down;
 	    }
 	  else
@@ -151,9 +165,11 @@ ay_tree_getobject(char *node)
 	  p++;
 	}
 
-      c = node[p]; node[p] = 0;
+      c = node[p];
+      node[p] = 0;
       n = strtol(&node[i], NULL, 10);
-      node[p] = c; i = p;
+      node[p] = c;
+      i = p;
 
       if(o)
 	{
@@ -166,12 +182,13 @@ ay_tree_getobject(char *node)
 
       while((o) && (n))
 	{
-	  o = o->next; n--;
+	  o = o->next;
+	  n--;
 	}
 
       if(o == NULL)
 	return NULL;
-    }
+    } /* while */
 
  return o;
 } /* ay_tree_getobject */
@@ -190,7 +207,6 @@ ay_tree_crtnodename(ay_object *parent, ay_list_object *list, Tcl_DString *ds)
  int pos;
  ay_object *o = NULL;
  char buf[64] = "";
-
 
   if(list)
     {
@@ -366,7 +382,7 @@ ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
 	    } /* if */
 	} /* if */
       level = level->next;
-  } /* while */
+    } /* while */
 
  return AY_OK;
 } /* ay_tree_crtstringfromobj */
@@ -694,14 +710,15 @@ int aytree_CreateDndObject_tcmd(ClientData clientData, Tcl_Interp * interp,
  *  o if object is dropped _onto_ another:
  *    parent: target object
  *    position: -1
- *    - if parent has a drop callback registered, we just call it
+ *    (if parent has a drop callback registered, we just call it
+ *     instead of moving any objects)
  *  o if object is dropped _between_ two other objects:
  *    parent: parent object of level where drop occured
  *    position: the position of an object (drop occured between this
  *              and the next object)
- *  o Warning: tree.tcl/tree_drop prevents calling of this
- *    function with parameters which would make this function
- *    _crash badly_.
+ *  Warning: tree.tcl/tree_drop prevents calling of this
+ *  function with parameters which would make this function
+ *  _crash badly_.
  */
 int
 ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
