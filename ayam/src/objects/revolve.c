@@ -678,10 +678,19 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	  if(ay_status)
 	    {goto cleanup;}
 	}
+
+
+      if(revolve->sections != 0 && revolve->thetamax < 0)
+	{
+	  ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+	  ay_nct_revert((ay_nurbcurve_object *)tloop->down->refine);
+	}
+
     }
   else
     {
-      ay_nct_revert((ay_nurbcurve_object *)trim->refine);
+      if(revolve->sections == 0 || revolve->thetamax < 0)
+	ay_nct_revert((ay_nurbcurve_object *)trim->refine);
     } /* if */
 
   *o = cap;
