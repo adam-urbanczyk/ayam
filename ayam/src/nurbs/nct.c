@@ -2613,7 +2613,10 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
  double *controlv, m[16], angle;
  int len, a, i;
 
-  if((sections < 2) || (fabs(radius) < AY_EPSILON) || (order < 2))
+  if((sections < 2) && (fabs(arc) > 180.0))
+    return AY_ERROR;
+
+  if((fabs(radius) < AY_EPSILON) || (order < 2))
     return AY_ERROR;
 
   if(!result)
