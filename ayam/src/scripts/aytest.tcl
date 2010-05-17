@@ -625,6 +625,24 @@ set Revolve_2(ThetaMax) $angles
 lappend Revolve_2(vals) { 0 0 }
 
 
+# Revolve Variation #3
+array set Revolve_3 {
+    precmd {goDown -1;crtOb NCurve;hSL;movOb 1 0 0;rotOb 0 0 90;
+	forceNot;goUp;hSL}
+    arr RevolveAttrData
+    freevars {UpperCap LowerCap StartCap EndCap ThetaMax Sections Order}
+    UpperCap {0 1}
+    LowerCap {0 1}
+    StartCap {0 1}
+    EndCap {0 1}
+    Sections { 2 5 10 100 }
+    Order { 2 3 4 5 6 }
+    fixedvars { dummy }
+    vals { {0} }
+}
+set Revolve_3(ThetaMax) $angles
+
+
 # Extrude Variation #1
 array set Extrude_1 {
     precmd {
@@ -1157,8 +1175,6 @@ set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 
 lappend types Trim
-
-set types {Revolve Skin Sweep Swing Skin Birail1 Birail2 Gordon}
 
 puts -nonewline "Testing "
 foreach type $types {
