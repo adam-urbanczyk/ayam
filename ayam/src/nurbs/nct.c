@@ -2666,14 +2666,14 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_closedbsp";
- double *controlv;
- int i = 0, num = 0, a = 0, order = 4;
- double angle = 0.0;
- double m[16];
- ay_object *o = NULL;
+ int num = 0, order = 4;
+ double radius = 1.0, arc = 360.0;
 
+
+  /* parse args */
   if(argc < 2)
     {
       ay_error(AY_EARGS, fname, "numpoints");
@@ -2695,6 +2695,17 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 	order = 4;
     }
 
+  if(argc > 3)
+    {
+      Tcl_GetDouble(interp, argv[3], &arc);
+    }
+
+  if(argc > 4)
+    {
+      Tcl_GetDouble(interp, argv[4], &radius);
+    }
+
+  /* create object */
   if(!(o = calloc(1, sizeof(ay_object))))
     {
       ay_error(AY_EOMEM, fname, NULL);
@@ -2704,41 +2715,16 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
 
-  if(!(controlv = calloc((num+(order-1))*4, sizeof(double))))
+  ay_status = ay_nct_crtcircbsp(num-1, radius, arc, order,
+				(ay_nurbcurve_object**)&(o->refine));
+
+  if(ay_status || !o->refine)
     {
       free(o);
-      ay_error(AY_EOMEM, fname, NULL);
       return TCL_OK;
     }
 
-  angle = 360.0/num;
-
-  ay_trafo_identitymatrix(m);
-  for(i = 0; i < num+(order-1); i++)
-    {
-      a = i*4;
-      controlv[a] = 1.0;
-      controlv[a+1] = 0.0;
-      controlv[a+2] = 0.0;
-      controlv[a+3] = 1.0;
-      ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, m);
-      ay_trafo_apply3(&(controlv[a]), m);
-    }
-
-  ay_status = ay_nct_create(order, num+(order-1), AY_KTBSPLINE,
-			    controlv, NULL, &curve);
-
-  if(ay_status || !curve)
-    {
-      free(o); free(controlv);
-      return TCL_OK;
-    }
-
-  curve->type = AY_CTPERIODIC;
-  ay_nct_close(curve);
-  o->refine = curve;
-  o->type = AY_IDNCURVE;
-
+  curve = (ay_nurbcurve_object*)(o->refine);
   curve->createmp = AY_TRUE;
   ay_nct_recreatemp(curve);
 

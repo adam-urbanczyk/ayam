@@ -587,6 +587,8 @@ array set ay {
  nsphereradius 1.0
  cbspnum 6
  cbsporder 4
+ cbsptmax 360.0
+ cbsprad 1.0
  rmin 0.0
  rmax 1.0
  mindist 1.0e-04
