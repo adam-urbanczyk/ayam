@@ -327,9 +327,9 @@ $m add separator
 $m add cascade -menu $m.nc -label "Create" -underline 1
 menu $m.nc -tearoff 0
 $m.nc add command -label "ClosedBSpline" -command {
-    runTool {ay(cbspnum) ay(cbsporder) ay(cbsptmax) ay(cbsprad)}\
-	{"NumPoints:" "Order:" "ThetaMax:" "Radius:"}\
-	"crtClosedBS %0 %1 %2 %3; uCR; sL; forceNot; rV;"
+    runTool { ay(cbsprad) ay(cbsptmax) ay(cbspnum) ay(cbsporder) }\
+	{"Radius:" "Arc:" "NumPoints:" "Order:"}\
+	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"
 } -underline 0
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
