@@ -284,10 +284,11 @@ array set aymainshortcuts {
     Zap "Ctrl-Z"
     SwCon "Shift-Tab"
     SwLazyNotify "F6"
-    SwNURBS "F5"
-    SwWire "F4"
+    Update "F5"
+    SwNURBSWire "F4"
     SetSTP "F3"
     SetSTL "F2"
+
     RebuildTree "Ctrl-l"
     SelAll "Ctrl-a"
     SelNone "Ctrl-n"
@@ -648,6 +649,7 @@ array set ay {
  startup 1
  customkeys {}
  lasttool ""
+ draw_nurbs 1
 }
 # array ay
 
@@ -1498,6 +1500,11 @@ if { $ayprefs(SavePrefsGeom) > 1 } {
 
 # set proper version information
 set ayprefs(Version) $ay(ay_version)
+
+#
+if { $ayprefs(NPDisplayMode) != 0 || $ayprefs(NCDisplayMode) != 0 } {
+    set ay(draw_nurbs) 1
+}
 
 # ayam_updateprompt - print a first prompt after configuration change
 proc ayam_updateprompt {n1 n2 op} {

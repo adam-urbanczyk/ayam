@@ -585,18 +585,19 @@ proc prefs_toggleLazyNotification { } {
 
 # prefs_toggleSurfaceWire:
 #  toggle drawing of Curves/Surfaces vs. Wireframes (bound to F-Key)
-proc prefs_toggleSurfaceWire { draw_surface } {
-    global ayprefs ayprefse aymainshortcuts
+proc prefs_toggleSurfaceWire { } {
+    global ay ayprefs ayprefse aymainshortcuts
 
-    if { $draw_surface == 1 } {
+    if { $ay(draw_nurbs) == 0 } {
 	if { $ayprefs(NPDisplayMode) != 2 || $ayprefs(NCDisplayMode) != 2 } {
 	    set ayprefse(NPDisplayMode) 2
 	    set ayprefs(NPDisplayMode) 2
 	    set ayprefse(NCDisplayMode) 2
 	    set ayprefs(NCDisplayMode) 2
-	    ayError 4  $aymainshortcuts(SwNURBS)\
+	    ayError 4  $aymainshortcuts(SwNURBSWire)\
 		    "Drawing of Curves/Surfaces turned on."
 	    setPrefs
+	    set ay(draw_nurbs) 1
 	    update
 	    rV
 	}
@@ -606,9 +607,10 @@ proc prefs_toggleSurfaceWire { draw_surface } {
 	    set ayprefs(NPDisplayMode) 0
 	    set ayprefse(NCDisplayMode) 0
 	    set ayprefs(NCDisplayMode) 0
-	    ayError 4 $aymainshortcuts(SwWire)\
+	    ayError 4 $aymainshortcuts(SwNURBSWire)\
 		    "Drawing of Wireframes turned on."
 	    setPrefs
+	    set ay(draw_nurbs) 0
 	    update
 	    rV
 	}
