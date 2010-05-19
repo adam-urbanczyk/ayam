@@ -327,6 +327,8 @@ array set aymainshortcuts {
     IApplyMod "Shift"
     MenuMod "Alt"
 
+    ContextMod "Shift"
+
     ContextMenu "Shift-F10"
 }
 # array aymainshortcuts
@@ -1918,6 +1920,11 @@ if { ( $tcl_platform(platform) != "windows" ) &&
     catch {
 	bind pge <ISO_Left_Tab> "focus \[tk_focusPrev %W\]; plb_focus; break"
     }
+}
+
+# PropertyGUI context help
+bind pge <$aymainshortcuts(ContextMod)-Key-$aymainshortcuts(Help)> {
+    $ay(helpmenu) invoke 2
 }
 
 # redirect all tcl errors to the console?

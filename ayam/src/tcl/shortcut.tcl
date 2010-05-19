@@ -174,6 +174,9 @@ proc shortcut_main { w } {
     bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"
     $m entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(Help)]
 
+    bind $w <$aymainshortcuts(ContextMod)-Key-$aymainshortcuts(Help)>\
+	"$m invoke 1"
+
     set m $ay(specialmenu)
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
     $m entryconfigure 20 -accelerator [remkpkr $aymainshortcuts(Zap)]
