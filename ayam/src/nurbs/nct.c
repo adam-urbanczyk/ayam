@@ -144,9 +144,10 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 {
  int ay_status = AY_OK;
  ay_mpoint *p = NULL, *new = NULL;
- double *ta, **tmpp = NULL;
+ double *ta, *tb, **tmpp = NULL;
  unsigned int *tmpi = NULL;
- int found = AY_FALSE, a, b, i, j, count;
+ int found = AY_FALSE, i, j, count;
+ int stride = 4;
 
   if(!c)
     return AY_OK;
@@ -159,26 +160,24 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
   if(!(tmpp = calloc(c->length, sizeof(double *))))
     return AY_EOMEM;
   if(!(tmpi = calloc(c->length, sizeof(unsigned int))))
-    return AY_EOMEM;
+    { free(tmpp); return AY_EOMEM; }
 
-  a = 0;
-  for(j = 0; j < c->length; j++)
+  ta = c->controlv;
+  for(j = 0; j < (c->length-1); j++)
     {
-      ta = &(c->controlv[a]);
+      tb = ta;
 
       /* count identical points */
       count = 0;
-      b = 0;
-      for(i = 0; i < c->length; i++)
+      for(i = j; i < c->length; i++)
 	{
-	  if(!memcmp(ta, &(c->controlv[b]), 4*sizeof(double)))
+	  if(AY_COMP4DP(ta, tb))
 	    {
-	      tmpp[count] = &(c->controlv[b]);
+	      tmpp[count] = tb;
 	      tmpi[count] = i;
 	      count++;
 	    }
-
-	  b += 4;
+	  tb += stride;
 	} /* for */
 
       /* create new mp, if it is not already there */
@@ -188,7 +187,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  found = AY_FALSE;
 	  while(p && !found)
 	    {
-	      if(!memcmp(ta, p->points[0], 4*sizeof(double)))
+	      if(AY_COMP4DP(ta, p->points[0]))
 		found = AY_TRUE;
 
 	      p = p->next;
@@ -197,11 +196,12 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  if(!found)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
-		{ free(tmpp); return AY_EOMEM; }
+		{ free(tmpi); free(tmpp); return AY_EOMEM; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
-		{ free(tmpp); free(new); return AY_EOMEM; }
+		{ free(tmpi); free(tmpp); free(new); return AY_EOMEM; }
 	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
-		{ free(new->points); free(tmpp); free(new); return AY_EOMEM; }
+		{ free(tmpi); free(tmpp); free(new->points); free(new);
+		  return AY_EOMEM; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));
 	      memcpy(new->indices, tmpi, count*sizeof(unsigned int));
@@ -212,7 +212,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 
 	} /* if */
 
-      a += 4;
+      ta += stride;
     } /* for */
 
   free(tmpp);
