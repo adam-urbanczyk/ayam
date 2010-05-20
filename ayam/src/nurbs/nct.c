@@ -188,7 +188,10 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  while(p && !found)
 	    {
 	      if(AY_COMP4DP(ta, p->points[0]))
-		found = AY_TRUE;
+		{
+		  found = AY_TRUE;
+		  break;
+		}
 
 	      p = p->next;
 	    } /* while */
