@@ -7737,12 +7737,13 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 {
  int ay_status = AY_OK;
  ay_mpoint *mp = NULL, *new = NULL;
- double *ta, **tmpp = NULL;
+ double *ta, *tb, **tmpp = NULL;
  unsigned int *tmpi = NULL;
- int found = AY_FALSE, a, b, i, j, ii, jj, count;
+ int found = AY_FALSE, i, j, count;
+ int stride = 4;
 
   if(!np)
-    return AY_OK;
+    return AY_ENULL;
 
   ay_npt_clearmp(np);
 
@@ -7750,75 +7751,82 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
     return AY_OK;
 
   if(!(tmpp = calloc(np->width*np->height, sizeof(double *))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(tmpi = calloc(np->width*np->height, sizeof(unsigned int))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
-  a = 0;
-  for(ii = 0; ii < np->width; ii++)
+  ta = np->controlv;
+  for(i = 0; i < np->width*np->height; i++)
     {
-      for(jj = 0; jj < np->height; jj++)
+
+      /* count identical points */
+      count = 0;
+      tb = ta;
+      for(j = i; j < np->width*np->height; j++)
 	{
-	  ta = &(np->controlv[a]);
-
-	  /* count identical points */
-	  count = 0;
-	  b = 0;
-	  for(i = 0; i < np->width; i++)
+	  if(AY_COMP4DP(ta, tb))
 	    {
-	      for(j = 0; j < np->height; j++)
-		{
-		  if(!memcmp(ta, &(np->controlv[b]), 4*sizeof(double)))
-		    {
-		      tmpp[count] = &(np->controlv[b]);
-		      tmpi[count] = i*j;
-		      count++;
-		    }
+	      tmpp[count] = tb;
+	      tmpi[count] = j;
+	      count++;
+	    }
 
-		  b += 4;
-		} /* for */
-	    } /* for */
+	  tb += stride;
+	} /* for */
 
 	  /* create new mp, if it is not already there */
-	  if(count > 1)
+      if(count > 1)
+	{
+	  mp = np->mpoints;
+	  found = AY_FALSE;
+	  while(mp && !found)
 	    {
-	      mp = np->mpoints;
-	      found = AY_FALSE;
-	      while(mp && !found)
+	      if(AY_COMP4DP(ta, mp->points[0]))
 		{
-		  if(!memcmp(ta, mp->points[0], 4*sizeof(double)))
-		    {
-		      found = AY_TRUE;
-		    }
+		  found = AY_TRUE;
+		  break;
+		}
 
-		  mp = mp->next;
-		} /* while */
+	      mp = mp->next;
+	    } /* while */
 
-	      if(!found)
-		{
-		  if(!(new = calloc(1, sizeof(ay_mpoint))))
-		    { free(tmpp); return AY_EOMEM; }
-		  if(!(new->points = calloc(count, sizeof(double *))))
-		    { free(tmpp); free(new); return AY_EOMEM; }
-		  if(!(new->indices = calloc(count, sizeof(unsigned int))))
-		    { free(new->points); free(tmpp); free(new);
-		      return AY_EOMEM; }
-		  new->multiplicity = count;
-		  memcpy(new->points, tmpp, count*sizeof(double *));
-		  memcpy(new->indices, tmpi, count*sizeof(unsigned int));
+	  if(!found)
+	    {
+	      if(!(new = calloc(1, sizeof(ay_mpoint))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      if(!(new->points = calloc(count, sizeof(double *))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      new->multiplicity = count;
+	      memcpy(new->points, tmpp, count*sizeof(double *));
+	      memcpy(new->indices, tmpi, count*sizeof(unsigned int));
 
-		  new->next = np->mpoints;
-		  np->mpoints = new;
-		} /* if */
+	      new->next = np->mpoints;
+	      np->mpoints = new;
+	      new = NULL;
 	    } /* if */
+	} /* if */
 
-	  a += 4;
-	} /* for */
+      ta += stride;
     } /* for */
 
-  free(tmpp);
-  free(tmpi);
+cleanup:
+
+  if(tmpp)
+    free(tmpp);
+  if(tmpi)
+    free(tmpi);
+
+  if(new)
+    {
+      if(new->points)
+	free(new->points);
+      if(new->indices)
+	free(new->indices);
+      free(new);
+    }
 
  return ay_status;
 } /* ay_npt_recreatemp */
