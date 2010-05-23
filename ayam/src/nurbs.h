@@ -432,7 +432,7 @@ int ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 /*! \brief
  */
 int ay_nct_findu(struct Togl *togl, ay_object *o,
-		 double *winX, double *winY, double *u);
+		 double *winXY, double *worldXYZ, double *u);
 
 /*! \brief
  */

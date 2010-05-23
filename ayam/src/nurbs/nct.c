@@ -1633,7 +1633,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_nct_findu(struct Togl *togl, ay_object *o,
-	     double *winX, double *winY, double *u)
+	     double *winXY, double *worldXYZ, double *u)
 {
  int ay_status = AY_OK;
  /*  int width = Togl_Width(togl);*/
@@ -1641,7 +1641,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
  GLint viewport[4];
  GLdouble modelMatrix[16], projMatrix[16], winx, winy;
  GLfloat winz = 0.0f;
- double m[16];
+ double m[16], mi[16];
  GLfloat pixel1[3] = {0.9f,0.9f,0.9f}, pixel[3] = {0.0f,0.0f,0.0f};
  ay_nurbcurve_object *c = NULL;
  int dx[25] = {0,1,1,0,-1,-1,-1,0,1, 2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2};
@@ -1676,8 +1676,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   found = AY_FALSE;
   while(!found)
     {
-      winx = *winX+dx[i];
-      winy = height-*winY-dy[i];
+      winx = winXY[0]+dx[i];
+      winy = height-winXY[1]-dy[i];
       i++;
 
       if(i > 24)
@@ -1688,7 +1688,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
       glReadPixels((GLint)winx,(GLint)winy,1,1,
 		   GL_RGB,GL_FLOAT,&pixel);
 
-      if((pixel1[0] <= pixel[0]) && (pixel1[1] <= pixel[1]) &&
+      if((pixel1[0] <= pixel[0]) &&
+	 (pixel1[1] <= pixel[1]) &&
 	 (pixel1[2] <= pixel[2]))
 	{
 	  found = AY_TRUE;
@@ -1703,24 +1704,24 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    ay_trafo_getall(ay_currentlevel->next);
+
    glTranslated(o->movx, o->movy, o->movz);
    ay_quat_torotmatrix(o->quat, m);
    glMultMatrixd(m);
-
-   glScaled (o->scalx, o->scaly, o->scalz);
+   glScaled(o->scalx, o->scaly, o->scalz);
    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
    gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 	        &(point[0]), &(point[1]), &(point[2]));
-  glPopMatrix ();
+  glPopMatrix();
 
   /* get guess */
   stride = 4;
   if(!(cp = calloc(samples*stride, sizeof(double))))
     return AY_EOMEM;
-
+  point[2] *= -1.0;
   startu = c->knotv[c->order-1];
   endu = c->knotv[c->length];
 
@@ -1752,7 +1753,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 	  if(distance < min_distance)
 	    {
 	      *u = U[i]+((U[i+1]-U[i])/2.0);
-	      starti = i;
+	      starti = i-1;
 	      endi = i+1;
 	      min_distance = distance;
 	    }
@@ -1795,8 +1796,19 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
     { free(cp); return AY_ERROR; }
   */
 
-  *winX = winx;
-  *winY = winy;
+  winXY[0] = winx;
+  winXY[1] = winy;
+
+  ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
+		     c->controlv, *u, point);
+
+  ay_trafo_invmatrix4(m, mi);
+
+  ay_trafo_apply4(point, mi);
+
+  worldXYZ[0] = point[0];
+  worldXYZ[1] = point[1];
+  worldXYZ[2] = point[2];
 
   free(cp);
 
@@ -1812,13 +1824,13 @@ int
 ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "findU_cb";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  Tcl_Interp *interp = Togl_Interp(togl);
  int height = Togl_Height(togl);
- double winX = 0.0, winY = 0.0;
+ double winXY[2] = {0}, worldXYZ[3] = {0};
  static int fvalid = AY_FALSE;
- static double fX = 0.0, fY = 0.0;
- char fname[] = "findU_cb";
+ static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
  double u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
  char cmd[] = "puts $u";
@@ -1840,6 +1852,9 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      view->markx = fX;
 	      view->marky = height-fY;
+	      view->markworld[0] = fwX;
+	      view->markworld[1] = fwY;
+	      view->markworld[2] = fwZ;
 	      view->drawmark = AY_TRUE;
 	    }
 
@@ -1860,17 +1875,18 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  return TCL_OK;
 	}
 
-      Tcl_GetDouble(interp, argv[2], &winX);
-      Tcl_GetDouble(interp, argv[3], &winY);
+      Tcl_GetDouble(interp, argv[2], &(winXY[0]));
+      Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
       ay_status = ay_nct_findu(togl, ay_selection->object,
-			       &winX, &winY, &u);
+			       winXY, worldXYZ, &u);
 
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Could not find point on curve!");
 	  return TCL_OK;
 	}
+
       ton = Tcl_NewStringObj("u",-1);
       to = Tcl_NewDoubleObj(u);
       Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1878,8 +1894,11 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
       fvalid = AY_TRUE;
-      fX = winX;
-      fY = winY;
+      fX = winXY[0];
+      fY = winXY[1];
+      fwX = worldXYZ[0];
+      fwY = worldXYZ[1];
+      fwZ = worldXYZ[2];
     }
   else
     {
