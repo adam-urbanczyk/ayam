@@ -150,7 +150,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
  int stride = 4;
 
   if(!c)
-    return AY_OK;
+    return AY_ENULL;
 
   ay_nct_clearmp(c);
 
@@ -158,9 +158,9 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
     return AY_OK;
 
   if(!(tmpp = calloc(c->length, sizeof(double *))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(tmpi = calloc(c->length, sizeof(unsigned int))))
-    { free(tmpp); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ta = c->controlv;
   for(j = 0; j < (c->length-1); j++)
@@ -199,18 +199,18 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  if(!found)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
-		{ free(tmpi); free(tmpp); return AY_EOMEM; }
+		{ ay_status = AY_EOMEM; goto cleanup; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
-		{ free(tmpi); free(tmpp); free(new); return AY_EOMEM; }
+		{ ay_status = AY_EOMEM; goto cleanup; }
 	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
-		{ free(tmpi); free(tmpp); free(new->points); free(new);
-		  return AY_EOMEM; }
+		{ ay_status = AY_EOMEM; goto cleanup; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));
 	      memcpy(new->indices, tmpi, count*sizeof(unsigned int));
 
 	      new->next = c->mpoints;
 	      c->mpoints = new;
+	      new = NULL;
 	    } /* if */
 
 	} /* if */
@@ -218,8 +218,21 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
       ta += stride;
     } /* for */
 
-  free(tmpp);
-  free(tmpi);
+cleanup:
+
+  if(tmpp)
+    free(tmpp);
+  if(tmpi)
+    free(tmpi);
+
+  if(new)
+    {
+      if(new->points)
+	free(new->points);
+      if(new->indices)
+	free(new->indices);
+      free(new);
+    }
 
  return ay_status;
 } /* ay_nct_recreatemp */
