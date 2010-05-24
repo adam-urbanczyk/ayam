@@ -1849,6 +1849,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
  double u = 0.0;
  Tcl_Obj *to = NULL, *ton = NULL;
  char cmd[] = "puts $u";
+ ay_object *o, *pobject = NULL;
 
   if(argc > 2)
     {
@@ -1861,7 +1862,6 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	}
       if(!strcmp(argv[2],"-end"))
 	{
-
 	  /* draw cross */
 	  if(fvalid)
 	    {
@@ -1886,23 +1886,32 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
     {
       if(ay_selection->object->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
-	  return TCL_OK;
+	  ay_status = ay_provide_object(ay_selection->object,
+					AY_IDNCURVE, &pobject);
+	  if(!pobject)
+	    {
+	      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	      return TCL_OK;
+	    }
+	  o = pobject;
+	}
+      else
+	{
+	  o = ay_selection->object;
 	}
 
       Tcl_GetDouble(interp, argv[2], &(winXY[0]));
       Tcl_GetDouble(interp, argv[3], &(winXY[1]));
 
-      ay_status = ay_nct_findu(togl, ay_selection->object,
-			       winXY, worldXYZ, &u);
+      ay_status = ay_nct_findu(togl, o, winXY, worldXYZ, &u);
 
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Could not find point on curve!");
-	  return TCL_OK;
+	  goto cleanup;
 	}
 
-      ton = Tcl_NewStringObj("u",-1);
+      ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
       Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       Tcl_Eval(interp, cmd);
@@ -1918,6 +1927,13 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
   else
     {
       ay_error(AY_ENOSEL, fname, NULL);
+    }
+
+cleanup:
+
+  if(pobject)
+    {
+      ay_object_deletemulti(pobject);
     }
 
  return TCL_OK;
