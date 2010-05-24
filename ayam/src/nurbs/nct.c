@@ -1651,6 +1651,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
  double point[3] = {0}/*, guess = 0.0, e1 = 0.05, e2 = 0.05*/;
  double distance = 0.0, min_distance = 0.0;
  double *cp = NULL, U[10/* XXXX samples! */] = {0}, startu, endu;
+ ay_voidfp *arr = NULL;
+ ay_drawcb *cb = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1659,6 +1661,9 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
     return AY_EWTYPE;
 
   c = (ay_nurbcurve_object *)o->refine;
+
+  arr = ay_drawcbt.arr;
+  cb = (ay_drawcb *)(arr[o->type]);
 
   pixel1[0] = (float)ay_prefs.ser;
   pixel1[1] = (float)ay_prefs.seg;
@@ -1696,10 +1701,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 	}
     }
 
-  /* get winz */
-  glReadPixels((GLint)winx,(GLint)winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&winz);
-
-  /* get object coordinates */
+  /* get object coordinates of point on curve */
   glGetIntegerv(GL_VIEWPORT, viewport);
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
@@ -1712,16 +1714,29 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
    ay_quat_torotmatrix(o->quat, m);
    glMultMatrixd(m);
    glScaled(o->scalx, o->scaly, o->scalz);
+
+   /* we operate on selected objects, but those are drawn with
+      disabled depth test, which means: no correct z buffer data;
+      thus, we simply call the draw callback of the selected object
+      here again on an empty z buffer to get correct z buffer data */
+   glClear(GL_DEPTH_BUFFER_BIT);
+   if(cb)
+     ay_status = cb(togl, o);
+
    glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
-	        &(point[0]), &(point[1]), &(point[2]));
   glPopMatrix();
+
+  /* get winz */
+  glReadPixels((GLint)winx,(GLint)winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&winz);
+
+  gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
+	       &(point[0]), &(point[1]), &(point[2]));
 
   /* get guess */
   stride = 4;
   if(!(cp = calloc(samples*stride, sizeof(double))))
     return AY_EOMEM;
-  point[2] *= -1.0;
+
   startu = c->knotv[c->order-1];
   endu = c->knotv[c->length];
 
