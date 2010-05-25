@@ -1569,6 +1569,16 @@ proc actionSnapToGrid2D { w } {
 # actionSnapToGrid2D
 
 
+#
+proc actionSnapToMark { w } {
+    undo save SnapToMark
+    $w snapmac
+    rV
+ return;
+}
+# actionSnapToMark
+
+
 #actionClearB1:
 # helper procedure to clear all bindings to mouse button 1;
 # all modeling actions call this before adding their bindings

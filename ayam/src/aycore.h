@@ -693,6 +693,9 @@ int ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[]);
 
+/*! \brief snap selected points to the mark action
+ */
+int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
 
 /* pomesht.c */
 

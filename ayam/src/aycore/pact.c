@@ -586,7 +586,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
  Tcl_Interp *interp = NULL;
- ay_view_object *view = NULL;
+ /* ay_view_object *view = NULL;*/
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
  char *n1 = "editPointDarray", fname[] = "editPointDirect";
@@ -606,7 +606,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
     }
 
   interp = Togl_Interp(togl);
-  view = (ay_view_object *)Togl_GetClientData(togl);
+  /*  view = (ay_view_object *)Togl_GetClientData(togl);*/
 
   if(!strcmp(argv[2], "-start"))
     {
@@ -2404,6 +2404,78 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
  return TCL_OK;
 } /* ay_pact_snaptogridcb */
+
+
+/* ay_pact_snaptomarkcb:
+ *  this action callback snaps all selected points to the mark
+ */
+int
+ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "snap_to_grid";
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_point *pnt = NULL;
+ int notify_parent = AY_FALSE;
+ double m[16];
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(!o)
+	return TCL_OK;
+
+      if(o->selp)
+	{
+	  glMatrixMode(GL_MODELVIEW);
+	  glPushMatrix();
+	   ay_trafo_getall(ay_currentlevel->next);
+
+	   glTranslated(o->movx, o->movy, o->movz);
+	   ay_quat_torotmatrix(o->quat, m);
+	   glMultMatrixd(m);
+	   glScaled(o->scalx, o->scaly, o->scalz);
+
+	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	  glPopMatrix();
+
+	  pnt = o->selp;
+	  while(pnt)
+	    {
+	      memcpy(pnt->point, view->markworld, 3*sizeof(double));
+	      ay_trafo_apply4(pnt->point, m);
+
+	      pnt = pnt->next;
+	    } /* while */
+
+	  o->modified = AY_TRUE;
+
+	  ay_notify_force(o);
+	  notify_parent = AY_TRUE;
+	}
+      else
+	{
+	  /* XXXX output error message? */
+	} /* if */
+
+
+      sel = sel->next;
+   } /* while */
+
+  if(notify_parent)
+    ay_status = ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_pact_snaptomarkcb */
 
 
 /* ay_pact_notify:
