@@ -2419,7 +2419,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_point *pnt = NULL;
  int notify_parent = AY_FALSE;
- double m[16];
+ double m[16], mi[16];
 
   if(!sel)
     {
@@ -2446,13 +2446,14 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	   glScaled(o->scalx, o->scaly, o->scalz);
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	   ay_trafo_invmatrix4(m, mi);
 	  glPopMatrix();
 
 	  pnt = o->selp;
 	  while(pnt)
 	    {
 	      memcpy(pnt->point, view->markworld, 3*sizeof(double));
-	      ay_trafo_apply4(pnt->point, m);
+	      ay_trafo_apply4(pnt->point, mi);
 
 	      pnt = pnt->next;
 	    } /* while */
