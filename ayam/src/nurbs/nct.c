@@ -1648,7 +1648,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
  int dy[25] = {0,0,-1,-1,-1,0,1,1,1, 0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2,2,2,2,1};
  int found, i = 0, j = 0, k = 0, /*maxtry = 1000,*/ stride, samples = 10;
  int starti = 0, endi = 0;
- double point[3] = {0}/*, guess = 0.0, e1 = 0.05, e2 = 0.05*/;
+ double point[4] = {0}/*, guess = 0.0, e1 = 0.05, e2 = 0.05*/;
  double distance = 0.0, min_distance = 0.0;
  double *cp = NULL, U[10/* XXXX samples! */] = {0}, startu, endu;
  ay_voidfp *arr = NULL;
