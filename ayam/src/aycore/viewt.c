@@ -1233,6 +1233,24 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 				  &(view->markworld[0]),
 				  &(view->markworld[1]),
 				  &(view->markworld[2]));
+
+	      switch(view->type)
+		{
+		case AY_VTFRONT:
+		case AY_VTTRIM:
+		  view->markworld[2] = 0.0;
+		  break;
+		case AY_VTSIDE:
+		  view->markworld[0] = 0.0;
+		  break;
+		case AY_VTTOP:
+		  view->markworld[1] = 0.0;
+		  break;
+		default:
+		  /* XXXX output proper error message */
+		  break;
+		} /* switch */
+
 	      need_updatemark = AY_TRUE;
 	    } /* if */
 	  break;
