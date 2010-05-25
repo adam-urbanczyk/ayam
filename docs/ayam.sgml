@@ -2629,6 +2629,9 @@ set to zero). To specify a true three dimensional mark one
 can use the corresponding view object attributes or select
 a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
 <p>
+Another way of setting the mark is via the <tt/"FindU"/ special action
+for curves (see also section <ref id="miscac" name="Miscellaneous Actions">).
+<p>
 Finally, remember that certain operations like e.g. changing the view
 type will clear the mark.
 
@@ -2644,7 +2647,7 @@ draw their selectable points using small white rectangular handles
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
 <img src="pics/handles.gif">
-<caption>Objects Without (r, NCircle) And With (l, NCurve) Editable Points/Handles</caption>
+<caption>Objects Without And With Editable Points/Handles (right: NCircle, left: NCurve)</caption>
 </figure>
 <p>
 Selected points will be drawn in dark red when the select points modelling
@@ -2832,6 +2835,15 @@ the modelling plane associated with the view (i.e. in 2D).
 To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
 Note that the snapping also occurs, if the view has the preference
 option <tt/"Use Grid"/ turned off.
+
+<sect1>Snapping Points to the Mark<label id="snapmac">
+<p>
+Since Ayam 1.18 the snap points to mark action is available.
+This action is initiated using the shortcut <tt/&lt;M&gt;/.
+All selected points of all objects are snapped to the current
+mark coordinates (see section
+<ref id="markac" name="Setting the Mark">
+for more information about the mark).
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
 <p>
@@ -5078,10 +5090,10 @@ The Revolve object forms a surface of revolution from a NURBS curve.
 The Revolve object has the generating NURBS curve as child object
 and watches its changes and adapts to it automagically.
 <p>
-The axis of revolution is always the Y axis of the coordinate
-system that is defined by the next higher
-level in the object hierarchy (the Y axis of the revolve
-object itself). The generating curve should lie in the XY plane of this
+The axis of revolution is always the Y axis of the coordinate system
+that is defined by the next higher level in the object hierarchy as
+seen from the curve object (this is the Y axis of the revolve object).
+The generating curve should lie in the XY plane of this
 coordinate system. If not, it will be squashed down to this plane!
 <p>
 The following simple experiment should make the last
@@ -5135,8 +5147,8 @@ In addition to the number of sections, in B-Spline mode it is
 possible to control the order of the surface of revolution
 using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
 a standard value of 3 will be used.
-Note that the B-Spline mode is currently only available for
-full revolutions (<tt/"ThetaMax"/ should be 360.0).
+Note that since Ayam 1.18 also the B-Spline mode can realize arbitrary
+<tt/"ThetaMax"/ values (whereas one could only use 360.0 before).
 <p>
 The revolve object can automatically generate caps,
 which are trimmed NURBS patches. Using the parameters
@@ -8549,22 +8561,25 @@ interface commands.
 <caption>A Closed B-Spline</caption>
 </figure>
 <itemize>
-<item>Arguments: Number of control points (i).
-<item>Operation: This tool creates a closed cubic B-Spline curve with
-i+3 control points in the XY plane. The control points are arranged
-in a circle of radius 1 centered around the origin. This gives the curve
-a circular appearance (see image above) but it is <em>not</em> a true circle:
+<item>Arguments: Radius, Arc, NumPoints, Order.
+<item>Operation: This tool creates a B-Spline curve with
+NumPoints+Order (Arc=360.0) or NumPoints+(Order/2) (other Arc values)
+control points in the XY plane. The control points
+are arranged in a circle of radius Radius centered around the origin.
+This gives the curve a circular appearance (see image above) but it
+is <em>not</em> a true circle:
 If few control points are used, the radius of the circular curve
-is clearly smaller than 1. Furthermore, shape, parameterisation, and
+is clearly smaller than the desired Radius.
+Furthermore, shape, parameterisation, and
 curvature of the closed B-Spline are not exactly as one would expect
 from a circle.
 However, you can use the NURBCircle tool (see below) to create a true
 circle instead.
-<item>Note: i must be atleast 3. The first three control points of the
-new curve will be identical to the last three. Additionally, the curve
-will be marked as periodic and the generation of multiple points will
-be enabled, so that point edit actions know that they may need to move
-two points.
+<item>Note: NumPoints must be atleast 2. If Arc is 360.0, the first
+n control points of the new curve will be identical to the last n
+(where n is Order-1). Additionally, the curve will be marked as periodic
+and the generation of multiple points will be enabled, so that point edit
+actions know that they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
 </itemize>
 
