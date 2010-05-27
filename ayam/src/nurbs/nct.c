@@ -2735,22 +2735,21 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
  char fname[] = "create_closedbsp";
- int num = 0, order = 4;
+ int sections = 0, order = 4;
  double radius = 1.0, arc = 360.0;
-
 
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "numpoints");
+      ay_error(AY_EARGS, fname, "sections");
       return TCL_OK;
     }
 
-  Tcl_GetInt(interp, argv[1], &num);
+  Tcl_GetInt(interp, argv[1], &sections);
 
-  if(num <= 2)
+  if(sections < 1)
     {
-      ay_error(AY_ERROR, fname, "numpoints must be >= 3");
+      ay_error(AY_ERROR, fname, "sections must be >= 1");
       return TCL_OK;
     }
 
@@ -2781,7 +2780,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
 
-  ay_status = ay_nct_crtcircbsp(num-1, radius, arc, order,
+  ay_status = ay_nct_crtcircbsp(sections, radius, arc, order,
 				(ay_nurbcurve_object**)&(o->refine));
 
   if(ay_status || !o->refine)
