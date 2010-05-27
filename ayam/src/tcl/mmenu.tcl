@@ -326,7 +326,7 @@ $m add command -label "Last (None)"
 $m add separator
 $m add cascade -menu $m.nc -label "Create" -underline 1
 menu $m.nc -tearoff 0
-$m.nc add command -label "ClosedBSpline" -command {
+$m.nc add command -label "Circular BSpline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
 	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"
