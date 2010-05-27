@@ -590,7 +590,7 @@ array set ay {
  ncircradius 1.0
  ncircarc 360.0
  nsphereradius 1.0
- cbspnum 6
+ cbspsec 6
  cbsporder 4
  cbsptmax 360.0
  cbsprad 1.0
