@@ -5136,13 +5136,14 @@ RenderMan quadric.
 <p>
 Since Ayam 1.8 the Revolve object supports a B-Spline mode,
 that may be enabled by setting the new parameter <tt/"Sections"/
-to a value higher than 2. In this mode, a circular B-Spline is
+to a value higher than 0. In this mode, a circular B-Spline is
 used as basis for the surface of revolution, instead of the
 standard NURBS circle. Depending on the number of sections
 choosen, the surface of revolution does not exactly interpolate
 the parameter curve, but the surface may be edited more easily
 after a possible conversion to an ordinary NURBS patch object,
-because the control points will not be rational.
+because the control points will not be rational if the revolved
+curve is also not rational.
 In addition to the number of sections, in B-Spline mode it is
 possible to control the order of the surface of revolution
 using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
@@ -8553,29 +8554,28 @@ tools. All tools are accessible via the <tt/"Tools"/ menu of the
 main window. In addition, there are also corresponding scripting
 interface commands.
 
-<sect1>The Closed BSpline Tool<label id="cbspt">
+<sect1>The Circular BSpline Tool<label id="cbspt">
 <p>
 <figure loc="ht">
-<eps file="pics/multip.ps" height="5cm">
-<img src="pics/multip.gif">
-<caption>A Closed B-Spline</caption>
+<eps file="pics/cbsps.ps" height="5cm">
+<img src="pics/cbsps.gif">
+<caption>B-Spline Curves Created by the Circular BSPline Tool</caption>
 </figure>
 <itemize>
-<item>Arguments: Radius, Arc, NumPoints, Order.
+<item>Arguments: Radius, Arc, Sections, Order.
 <item>Operation: This tool creates a B-Spline curve with
-NumPoints+Order (Arc=360.0) or NumPoints+(Order/2) (other Arc values)
+Sections+1+Order (Arc=360.0) or Sections+1+(Order/2) (other Arc values)
 control points in the XY plane. The control points
 are arranged in a circle of radius Radius centered around the origin.
 This gives the curve a circular appearance (see image above) but it
 is <em>not</em> a true circle:
 If few control points are used, the radius of the circular curve
 is clearly smaller than the desired Radius.
-Furthermore, shape, parameterisation, and
-curvature of the closed B-Spline are not exactly as one would expect
-from a circle.
-However, you can use the NURBCircle tool (see below) to create a true
-circle instead.
-<item>Note: NumPoints must be atleast 2. If Arc is 360.0, the first
+Furthermore, shape, parameterisation, and curvature of the
+B-Spline curve are not exactly as one would expect from a circle.
+To create true circular curves, the NURBCircle tool (see below) should
+be used instead.
+<item>Note: Sections must be atleast 1. If Arc is 360.0, the first
 n control points of the new curve will be identical to the last n
 (where n is Order-1). Additionally, the curve will be marked as periodic
 and the generation of multiple points will be enabled, so that point edit
@@ -8591,36 +8591,27 @@ See also section <ref id="ncurvemp" name="Multiple Points">.
 <caption>A NURBS Circle</caption>
 </figure>
 <itemize>
-<item>Arguments: None.
-<item>Operation: The NURBCircle tool creates a full circular NURBS curve
-of radius 1 in the XY plane located at the origin.
+<item>Arguments: Radius, Arc.
+<item>Operation: The NURBCircle tool creates a circular NURBS curve
+of radius Radius and arc Arc in the XY plane located at the origin.
+The order of the curve will be 3. The number of control points used
+differs according to the arc, e.g. 9 for full circles, 5 for half circles,
+3 for a quarter circle.
 <item>Note: The NURBS curve created by the NURBCircle tool is rational
 (uses weights). This means, editing the curve (e.g. moving control points)
 may lead to unpredicted results (the curve does not behave exactly
-as wished). Use a closed B-Spline
-created with the Closed BSpline Tool (see above) if you want to edit
-the curve further.
-You can use this circle to easily create a NURBS-torus by moving
-the circle along X and then revolving it. The amount of movement
-determines the radius of the torus, whereas the radius of the circle
-determines the thickness.
+as wished). Use a closed B-Spline created with the Circular BSpline tool
+(see above) if you want to edit the curve further.
 Additionally, the created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
 they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
-</itemize>
-
-<sect1>The NURBCircleArc Tool<label id="ncircat">
 <p>
-<itemize>
-<item>Arguments: angle of the arc in degrees
-<item>Operation: The NURBCircle tool creates a circular NURBS curve
-arc of radius 1, with the specified angle, in the XY plane,
-located at the origin.
-<item>Note: The NURBS curve created by the NURBCircleArc tool is rational
-(uses weights). This means, editing the curve (e.g. moving control points)
-may lead to unpredicted results (the curve does not behave exactly
-as wished).
+You can use a NURBS circle created by this tool to easily create a
+NURBS-torus by moving the circle along X a bit and then revolving it.
+The amount of movement determines the radius of the torus, whereas
+the radius of the circle determines the thickness.
+
 </itemize>
 
 <sect1>The TrimRect Tool<label id="trrt">
