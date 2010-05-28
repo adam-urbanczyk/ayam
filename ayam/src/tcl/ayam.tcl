@@ -30,6 +30,7 @@ array set ayprefs {
  LazyNotify 0
  CompleteNotify 1
  EditSnaps 1
+ GlobalMark 0
  Snap3D 0
 
  Tolerance 30.0

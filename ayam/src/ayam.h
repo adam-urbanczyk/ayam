@@ -1075,6 +1075,7 @@ typedef struct ay_preferences_s
   int completenotify;
   int undo_levels;
   int snap3d;
+  int globalmark;
 
   /* RIB export prefs */
   int resolveinstances;

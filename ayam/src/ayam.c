@@ -593,6 +593,8 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.save_rootviews = AY_TRUE;
 
+  ay_prefs.globalmark = AY_FALSE;
+
  return ay_status;
 } /* ay_init */
 

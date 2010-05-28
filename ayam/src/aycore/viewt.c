@@ -1677,8 +1677,48 @@ ay_viewt_updatemark(struct Togl *togl)
 
   view->marky = height - view->marky;
 
- return TCL_OK;
+  if(ay_prefs.globalmark)
+    {
+      ay_viewt_updateglobalmark(togl);
+    }
+
+ return AY_OK;
 } /* ay_viewt_updatemark */
+
+
+/* ay_viewt_updateglobalmark:
+ *  manage the global mark after change in view togl
+ */
+int
+ay_viewt_updateglobalmark(struct Togl *togl)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_object *o = ay_root->down;
+ ay_view_object *v = NULL;
+
+  ay_prefs.globalmark = AY_FALSE;
+  while(o)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  v = (ay_view_object *)o->refine;
+	  if(v != view)
+	    {
+	      memcpy(v->markworld, view->markworld, 3*sizeof(double));
+	      v->drawmark = AY_TRUE;
+	      Togl_MakeCurrent(v->togl);
+	      ay_viewt_updatemark(v->togl);
+	      ay_toglcb_display(v->togl);
+	    }
+	}
+      o = o->next;
+    }
+  ay_prefs.globalmark = AY_TRUE;
+
+  Togl_MakeCurrent(togl);
+
+ return AY_OK;
+} /* ay_viewt_updateglobalmark */
 
 
 /* ay_viewt_fromcamtcb:
@@ -2090,11 +2130,7 @@ ay_viewt_markfromsel(struct Togl *togl)
 	  cogs[a]   = o->movx;
 	  cogs[a+1] = o->movy;
 	  cogs[a+2] = o->movz;
-	  /*
-	  cog[0] += o->movx/numo;
-	  cog[1] += o->movy/numo;
-	  cog[2] += o->movz/numo;
-	  */
+
 	  a += 3;
 	}
       sel = sel->next;
@@ -2169,6 +2205,11 @@ ay_viewt_markfromsel(struct Togl *togl)
   AY_APTRAN3(view->markworld, cog, mm);
 
   view->drawmark = AY_TRUE;
+
+  if(ay_prefs.globalmark)
+    {
+      ay_viewt_updateglobalmark(togl);
+    }
 
  return AY_OK;
 } /* ay_viewt_markfromsel */
@@ -2299,6 +2340,11 @@ ay_viewt_markfromselp(struct Togl *togl)
   AY_APTRAN3(view->markworld, cog, mm);
 
   view->drawmark = AY_TRUE;
+
+  if(ay_prefs.globalmark)
+    {
+      ay_viewt_updateglobalmark(togl);
+    }
 
  return AY_OK;
 } /* ay_viewt_markfromselp */

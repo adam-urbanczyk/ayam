@@ -1574,6 +1574,10 @@ int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_viewt_updatemark(struct Togl *togl);
 
+/*! \brief manage the global mark after change in view togl
+ */
+int ay_viewt_updateglobalmark(struct Togl *togl);
+
 /*! \brief copy from/to/up from the selected camera object to view <togl>
  */
 int ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[]);
