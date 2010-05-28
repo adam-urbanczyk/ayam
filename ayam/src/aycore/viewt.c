@@ -1696,6 +1696,7 @@ ay_viewt_updateglobalmark(struct Togl *togl)
  ay_object *o = ay_root->down;
  ay_view_object *v = NULL;
 
+  /* setting ay_prefs.globalmark to false avoids endless recursion... */
   ay_prefs.globalmark = AY_FALSE;
   while(o)
     {
@@ -1705,7 +1706,7 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 	  if(v != view)
 	    {
 	      memcpy(v->markworld, view->markworld, 3*sizeof(double));
-	      v->drawmark = AY_TRUE;
+	      v->drawmark = view->drawmark;
 	      Togl_MakeCurrent(v->togl);
 	      ay_viewt_updatemark(v->togl);
 	      ay_toglcb_display(v->togl);
