@@ -326,7 +326,7 @@ $m add command -label "Last (None)"
 $m add separator
 $m add cascade -menu $m.nc -label "Create" -underline 1
 menu $m.nc -tearoff 0
-$m.nc add command -label "Circular BSpline" -command {
+$m.nc add command -label "Circular B-Spline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
 	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"
@@ -420,7 +420,7 @@ $m.nct add command -label "Plot Curvature" -command {
     runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
 	    [list "Data points:" "Width:" "Scale Height:"]\
 	    "curvPlot %0 %1 %2; uCR; rV" }
-$m.nct add command -label "Shift BSpline" -command {
+$m.nct add command -label "Shift B-Spline" -command {
 runTool ay(shiftcbsp) {"Times:"}\
 	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
 $m.nct add command -label "To XY" -command {
