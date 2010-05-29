@@ -1572,7 +1572,7 @@ int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
 
 /*! \brief calculate new mark window coordinates
  */
-int ay_viewt_updatemark(struct Togl *togl);
+int ay_viewt_updatemark(struct Togl *togl, int local);
 
 /*! \brief manage the global mark after change in view togl
  */

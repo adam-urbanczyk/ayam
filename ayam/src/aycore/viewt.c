@@ -501,7 +501,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
       if(view->drawmark)
 	{
-	  ay_viewt_updatemark(togl);
+	  ay_viewt_updatemark(togl, AY_TRUE);
 	}
 
       if(argc)
@@ -742,10 +742,10 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
  *
  */
 void
-ay_viewt_changetype(ay_view_object *view, int type)
+ay_viewt_changetype(ay_view_object *view, int newtype)
 {
 
-  switch(type)
+  switch(newtype)
     {
     case AY_VTFRONT:
       view->from[0] = 0.0;
@@ -810,7 +810,7 @@ ay_viewt_changetype(ay_view_object *view, int type)
   view->roty = 0.0;
   view->rotz = 0.0;
 
-  if(type != view->type)
+  if(newtype != view->type)
     {
       if(view->type == AY_VTPERSP)
 	{
@@ -818,7 +818,7 @@ ay_viewt_changetype(ay_view_object *view, int type)
 	}
       else
 	{
-	  if(type == AY_VTPERSP)
+	  if(newtype == AY_VTPERSP)
 	    {
 	      view->zoom /= 12.0;
 	    }
@@ -826,9 +826,10 @@ ay_viewt_changetype(ay_view_object *view, int type)
 
     } /* if */
 
-  view->type = type;
-  view->drawmark = AY_FALSE;
+  view->type = newtype;
   view->aligned = AY_FALSE;
+
+  ay_viewt_updatemark(view->togl, AY_TRUE);
 
  return;
 } /* ay_viewt_changetype */
@@ -1434,13 +1435,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      if(argi != view->type)
 		{
 		  ay_viewt_changetype(view, argi);
-		  view->drawmark = AY_FALSE;
 		}
-
-	      view->rotx = 0.0;
-	      view->roty = 0.0;
-	      view->rotz = 0.0;
-	      view->aligned = AY_FALSE;
 	    }
 	  break;
 	case 'u':
@@ -1615,7 +1610,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
   if(view->drawmark && need_updatemark)
     {
-      ay_viewt_updatemark(togl);
+      ay_viewt_updatemark(togl, AY_FALSE);
     }
 
   if(need_redraw)
@@ -1640,10 +1635,12 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_viewt_updatemark:
- *  calculate new mark window coordinates
+ *  calculate new mark window coordinates, if <local> is true, do it
+ *  just for the view <togl>, otherwise and if also the globalmark
+ *  preference is enabled, also update all other views
  */
 int
-ay_viewt_updatemark(struct Togl *togl)
+ay_viewt_updatemark(struct Togl *togl, int local)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double dummy, mm[16], pm[16];
@@ -1677,7 +1674,7 @@ ay_viewt_updatemark(struct Togl *togl)
 
   view->marky = height - view->marky;
 
-  if(ay_prefs.globalmark)
+  if(!local && ay_prefs.globalmark)
     {
       ay_viewt_updateglobalmark(togl);
     }
@@ -1688,6 +1685,7 @@ ay_viewt_updatemark(struct Togl *togl)
 
 /* ay_viewt_updateglobalmark:
  *  manage the global mark after change in view togl
+ *  (copy the mark from the view <togl> to all other views)
  */
 int
 ay_viewt_updateglobalmark(struct Togl *togl)
@@ -1696,9 +1694,7 @@ ay_viewt_updateglobalmark(struct Togl *togl)
  ay_object *o = ay_root->down;
  ay_view_object *v = NULL;
 
-  /* setting ay_prefs.globalmark to false avoids endless recursion... */
-  ay_prefs.globalmark = AY_FALSE;
-  while(o)
+  while(o && o->next)
     {
       if(o->type == AY_IDVIEW)
 	{
@@ -1708,13 +1704,12 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 	      memcpy(v->markworld, view->markworld, 3*sizeof(double));
 	      v->drawmark = view->drawmark;
 	      Togl_MakeCurrent(v->togl);
-	      ay_viewt_updatemark(v->togl);
+	      ay_viewt_updatemark(v->togl, AY_TRUE);
 	      ay_toglcb_display(v->togl);
 	    }
 	}
       o = o->next;
     }
-  ay_prefs.globalmark = AY_TRUE;
 
   Togl_MakeCurrent(togl);
 
@@ -2207,11 +2202,6 @@ ay_viewt_markfromsel(struct Togl *togl)
 
   view->drawmark = AY_TRUE;
 
-  if(ay_prefs.globalmark)
-    {
-      ay_viewt_updateglobalmark(togl);
-    }
-
  return AY_OK;
 } /* ay_viewt_markfromsel */
 
@@ -2341,11 +2331,6 @@ ay_viewt_markfromselp(struct Togl *togl)
   AY_APTRAN3(view->markworld, cog, mm);
 
   view->drawmark = AY_TRUE;
-
-  if(ay_prefs.globalmark)
-    {
-      ay_viewt_updateglobalmark(togl);
-    }
 
  return AY_OK;
 } /* ay_viewt_markfromselp */

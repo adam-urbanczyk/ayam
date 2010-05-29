@@ -141,12 +141,7 @@ ay_vact_movetcb(struct Togl *togl, int argc, char *argv[])
   ay_trafo_apply3(view->to, mm);
 
   ay_toglcb_reshape(togl);
-  /*
-  if(view->drawmark)
-    {
-      ay_viewt_updatemark(togl);
-    }
-  */
+
   ay_toglcb_display(togl);
 
   ay_viewt_uprop(view);
@@ -216,7 +211,7 @@ ay_vact_zoomtcb(struct Togl *togl, int argc, char *argv[])
 
       if(view->drawmark)
 	{
-	  ay_viewt_updatemark(togl);
+	  ay_viewt_updatemark(togl, AY_TRUE);
 	}
 
       ay_toglcb_display(togl);
@@ -294,7 +289,7 @@ ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[])
 
       if(view->drawmark)
 	{
-	  ay_viewt_updatemark(togl);
+	  ay_viewt_updatemark(togl, AY_TRUE);
 	}
 
       ay_toglcb_display(togl);
