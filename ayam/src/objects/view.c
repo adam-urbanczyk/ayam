@@ -361,7 +361,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(need_markupdate)
     {
       view->drawmark = AY_TRUE;
-      ay_viewt_updatemark(view->togl);
+      ay_viewt_updatemark(view->togl, AY_FALSE);
     }
 
   ay_toglcb_display(view->togl);
