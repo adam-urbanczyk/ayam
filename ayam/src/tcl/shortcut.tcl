@@ -338,27 +338,42 @@ proc shortcut_main { w } {
     }
 
     if { [winfo exists $ay(treecm).tree] } {
-	$ay(treecm).tree entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
+	$ay(treecm).tree entryconfigure 0\
+	    -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
     }
 
     # autofocus bindings
-    if { $::ayprefs(SingleWindow) && $::ayprefs(AutoFocus) } {
+    if { $::ayprefs(SingleWindow) } {
 	if { $::ay(lb) == 1 } {
 	    bind $::ay(olb) <Enter> {
-		focus $::ay(olb)
+		if { $ayprefs(AutoFocus) == 1 } {
+		    focus $::ay(olb)
+		}
 	    }
 	} else {
 	    bind $::ay(tree) <Enter> {
-		focus $::ay(tree)
+		if { $ayprefs(AutoFocus) == 1 } {
+		    focus $::ay(tree)
+		}
 	    }
 	}
 	bind $::ay(plb) <Enter> {
-	    focus $::ay(pca)
+	    if { $ayprefs(AutoFocus) == 1 } {
+		focus $::ay(pca)
+	    }
 	}
 	bind $::ay(pca) <Enter> {
-	    focus $::ay(pca)
+	    if { $ayprefs(AutoFocus) == 1 } {
+		focus $::ay(pca)
+	    }
+	}
+	bind .fl.con.console <Enter> {
+	    if { $ayprefs(AutoFocus) == 1 } {
+		focus .fl.con.console
+	    }
 	}
     }
+    # if
 
  return;
 }
