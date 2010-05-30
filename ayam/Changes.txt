@@ -1,8 +1,10 @@
-[15. May 2010] CVS-Head:
+[30. May 2010] CVS-Head:
 ========================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
 o continuous complete notification for Script objects (SF 3001239)
+o fixed find u action failing for transformed curves (SF 3006822)
+o fixed find u action not setting the mark corectly (SF 3006824)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -11,10 +13,14 @@ o direct point editing now uses the point selection instead of an own pointer;
   coordinate values to multiple (selected) points
 o the Revolve tool object now supports arbitrary ThetaMax values in
   B-Spline mode (Sections != 0)
+o added Arc and Radius parameters to create closed B-Spline curve tool
+o added modelling action to snap selected points to the mark (new shortcut "M")
+o the find u modelling action now works with provided objects
+o added preference setting and facility to manage a global mark
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
-  manages the focus of internal views
+  manages the focus of internal widgets (views, tree, properties, console)
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
