@@ -1577,8 +1577,8 @@ objects within the views.
 a better view of the temporarily selected object.
 
 <item>The tolerance used to determine whether an object should be picked
-or not can be adjusted (see <tt/"PickTolerance"/ in <ref id="hidprefs"
-name="Hidden Preference Settings">).
+or not can be adjusted (see <tt/"PickTolerance"/ in
+<ref id="hidprefs" name="Hidden Preference Settings">).
 </itemize>
 
 <sect1>The Toolbox Window<label id="toolb">
@@ -1707,20 +1707,22 @@ by default.
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
 
-This option is not available in the SingleWindow GUI mode.
+This option is not available in the single window GUI mode.
 
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
 move the focus to a view or the main window, when the mouse pointer
-enters it. Note that this may only work correctly, when a window
-of Ayam already has the focus. Notice also, that moving the focus
-to a window might also raise it (depending on your operating system
-or window manager).
+enters it. However, depending on your operating system, window manager,
+or their settings, this may only work correctly, when a window
+of Ayam already has the focus. On some operating systems or window
+managers AutoFocus might not work at all. Furthermore, note that moving
+the focus to a window might also raise it.
 
-Note that while the preference editor is open, AutoFocus is temporarily
+In single window GUI mode, AutoFocus additionally manages the input
+focus of the internal views, tree view, property GUI, and console.
+
+While the preference editor is open, AutoFocus is temporarily
 turned off and changes to the <tt/"AutoFocus"/ preference setting will
-only be realized after the editor is closed.
-
-This option is not available in the SingleWindow GUI mode.
+only be realized after the preferences editor is closed.
 
 <item><tt/"TwmCompat"/ changes, how Ayam tells the window manager
 new geometries of windows. This option has to be toggled if Ayam
@@ -1842,6 +1844,10 @@ a click and drag action.
 Note that a change of this preference option takes effect after the
 current modelling action has been switched off and the single point
 editing has been activated (again).
+
+<item><tt/"GlobalMark"/ toggles whether each view should manage its
+own mark (off, default), or whether there should be just one global
+mark (on). 
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that should be active after a press of the <tt/&lt;Esc&gt;/ key.
@@ -14066,7 +14072,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
 <item>getType: <ref id="scgettype" name="scripting interface command">
-<item>Gimbal Lock: <ref id="gimb" name="avoiding Gimbal Locks">
+<item>Gimbal Lock: <ref id="gimb" name="avoiding gimbal locks">
+<item>GlobalMark: <ref id="prefmodel" name="preference setting">
 <item>goDown: <ref id="scgodown" name="scripting interface command">
 <item>goTop: <ref id="scgotop" name="scripting interface command">
 <item>Gordon: <ref id="gordonobj" name="Gordon object">
