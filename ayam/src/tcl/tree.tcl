@@ -804,6 +804,7 @@ $tree bindText <ButtonPress-1> "tree_selectItem 1 $sw.tree"
 # open sub tree
 $tree bindText <Double-ButtonPress-1> "tree_toggleSub $sw.tree"
 
+# focus management binding
 if { !$::ayprefs(SingleWindow) } {
     bind $tree <Key-Tab> "focus .fl.con.console;break"
 } else {
@@ -811,10 +812,7 @@ if { !$::ayprefs(SingleWindow) } {
 }
 
 # arrange for switching back to good old listbox
-bind $la <Double-ButtonPress-1> "\
-	global ayprefs; tree_close $w; olb_open $w;\
-	cS; olb_update; if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-	set ayprefs(showtr) 0"
+bind $la <Double-ButtonPress-1> tree_toggle
 balloon_set $la "Double click here\nto switch to listbox"
 
 # pack widgets
@@ -845,10 +843,7 @@ $m add command -label "Collapse" -command "tree_collapse"
 set m $ay(tree).popup
 
 $m add separator
-$m add command -label "Switch to Listbox" -command "\
-	global ay ayprefs; tree_close $w; olb_open $w; cS; olb_update;\
-	if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-	set ayprefs(showtr) 0"\
+$m add command -label "Switch to Listbox" -command tree_toggle\
     -underline 0
 $m add separator
 $m add command -label "Deselect Object" -command {
@@ -919,7 +914,7 @@ proc tree_close { w } {
     destroy $w.ftr
 
 }
-#tree_close
+# tree_close
 
 
 #tree_toggle:
@@ -930,6 +925,7 @@ proc tree_toggle { } {
     set w .fu.fMain.fHier
 
     if { [winfo exists $ay(tree)] } {
+	# switch to listbox
 	tree_close $w
 	olb_open $w
 	cS
@@ -939,6 +935,7 @@ proc tree_toggle { } {
 	}
 	set ayprefs(showtr) 0
     } else {
+	# switch to tree
 	cS; uS
 	olb_close $w
 	tree_open $w
@@ -954,9 +951,11 @@ proc tree_toggle { } {
 	set ayprefs(showtr) 1
     }
 
+    shortcut_main .
+
  return;
 }
-#tree_toggle
+# tree_toggle
 
 
 #tree_reset:
@@ -977,7 +976,7 @@ proc tree_reset { } {
 
  return;
 }
-#tree_reset
+# tree_reset
 
 
 #tree_gotop:
@@ -993,5 +992,5 @@ proc tree_gotop { } {
 
  return;
 }
-#tree_gotop
+# tree_gotop
 

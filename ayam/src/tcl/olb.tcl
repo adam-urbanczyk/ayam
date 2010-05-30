@@ -98,19 +98,7 @@ if { !$::ayprefs(SingleWindow) } {
 
 # olb context menu
 set m [menu $ay(olb).popup -tearoff 0]
-$m add command -label "Switch to Tree" -command "\
-	global ayprefs;\
-	cS; uS;\
-	olb_close $w;\
-	tree_open $w;\
-	tree_update root;\
-	plb_update;\
-	set ay(CurrentLevel) \"root\";\
-	set ay(SelectedLevel) \"root\";\
-	tree_paintLevel \"root\";\
-	set ay(DropActive) 0;\
-	if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-	set ayprefs(showtr) 1"\
+$m add command -label "Switch to Tree" -command tree_toggle\
     -underline 0
 $m add separator
 $m add command -label "Deselect Object" -command {
@@ -152,19 +140,7 @@ pack $f.li -in $f -side left -fill both -expand yes
 pack $f.s -in $f -side left -fill y -expand no
 
 # switch from listbox to tree
-bind $f.la <Double-1> "\
-    global ay ayprefs;\
-    cS; uS;\
-    olb_close $w;\
-    tree_open $w;\
-    tree_update root;\
-    plb_update;\
-    set ay(CurrentLevel) \"root\";\
-    set ay(SelectedLevel) \"root\";\
-    tree_paintLevel \"root\";\
-    set ay(DropActive) 0;\
-    if \{ \$ay(need_redraw) == 1 \} \{rV\};\
-    set ayprefs(showtr) 1"
+bind $f.la <Double-1> tree_toggle
 
 balloon_set $f.la "Double click here\nto switch to tree"
 

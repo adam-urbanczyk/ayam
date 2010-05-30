@@ -341,6 +341,25 @@ proc shortcut_main { w } {
 	$ay(treecm).tree entryconfigure 0 -accelerator [remkpkr $aymainshortcuts(RebuildTree)]
     }
 
+    # autofocus bindings
+    if { $::ayprefs(SingleWindow) && $::ayprefs(AutoFocus) } {
+	if { $::ay(lb) == 1 } {
+	    bind $::ay(olb) <Enter> {
+		focus $::ay(olb)
+	    }
+	} else {
+	    bind $::ay(tree) <Enter> {
+		focus $::ay(tree)
+	    }
+	}
+	bind $::ay(plb) <Enter> {
+	    focus $::ay(pca)
+	}
+	bind $::ay(pca) <Enter> {
+	    focus $::ay(pca)
+	}
+    }
+
  return;
 }
 # shortcut_main
