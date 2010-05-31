@@ -1608,7 +1608,8 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 
   ay_toglcb_reshape(togl);
 
-  if(view->drawmark && need_updatemark)
+  if((view->drawmark && need_updatemark) ||
+     (need_updatemark && ay_prefs.globalmark))
     {
       ay_viewt_updatemark(togl, AY_FALSE);
     }
