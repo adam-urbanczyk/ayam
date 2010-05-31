@@ -432,6 +432,7 @@ array set ayviewshortcuts {
     SnapGrid3D "G"
 
     SnapMark "M"
+    SnapMarkO "K"
 
     Hide "h"
     Show "H"

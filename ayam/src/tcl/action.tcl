@@ -1572,11 +1572,21 @@ proc actionSnapToGrid2D { w } {
 #
 proc actionSnapToMark { w } {
     undo save SnapToMark
-    $w snapmac
+    $w snapmac 0
     rV
  return;
 }
 # actionSnapToMark
+
+
+#
+proc actionSnapToMarkO { w } {
+    undo save SnapToMarkO
+    $w snapmac 1
+    rV
+ return;
+}
+# actionSnapToMarkO
 
 
 #actionClearB1:

@@ -2413,13 +2413,14 @@ int
 ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "snap_to_grid";
+ char fname[] = "snap_to_mark";
+ Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *pnt = NULL;
- int notify_parent = AY_FALSE;
- double m[16], mi[16];
+ int mode = 0, notify_parent = AY_FALSE;
+ double p[4], m[16], mi[16];
 
   if(!sel)
     {
@@ -2427,50 +2428,74 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  while(sel)
-    {
-      o = sel->object;
+  Tcl_GetInt(interp, argv[2], &mode);
 
-      if(!o)
-	return TCL_OK;
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   ay_trafo_getall(ay_currentlevel->next);
 
-      if(o->selp)
-	{
-	  glMatrixMode(GL_MODELVIEW);
-	  glPushMatrix();
-	   ay_trafo_getall(ay_currentlevel->next);
+   if(mode)
+     {
+       glGetDoublev(GL_MODELVIEW_MATRIX, m);
+       ay_trafo_invmatrix4(m, mi);
+     }
 
-	   glTranslated(o->movx, o->movy, o->movz);
-	   ay_quat_torotmatrix(o->quat, m);
-	   glMultMatrixd(m);
-	   glScaled(o->scalx, o->scaly, o->scalz);
+   while(sel)
+     {
+       o = sel->object;
 
-	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	   ay_trafo_invmatrix4(m, mi);
-	  glPopMatrix();
+       if(!o)
+	 return TCL_OK;
 
-	  pnt = o->selp;
-	  while(pnt)
-	    {
-	      memcpy(pnt->point, view->markworld, 3*sizeof(double));
-	      ay_trafo_apply4(pnt->point, mi);
+       if(mode == 0)
+	 {
+	   if(o->selp)
+	     {
+	       glPushMatrix();
+	        glTranslated(o->movx, o->movy, o->movz);
+		ay_quat_torotmatrix(o->quat, m);
+		glMultMatrixd(m);
+		glScaled(o->scalx, o->scaly, o->scalz);
 
-	      pnt = pnt->next;
-	    } /* while */
+		glGetDoublev(GL_MODELVIEW_MATRIX, m);
+		ay_trafo_invmatrix4(m, mi);
+	       glPopMatrix();
 
-	  o->modified = AY_TRUE;
+	       pnt = o->selp;
+	       while(pnt)
+		 {
+		   memcpy(pnt->point, view->markworld, 3*sizeof(double));
+		   ay_trafo_apply4(pnt->point, mi);
 
-	  ay_notify_force(o);
-	  notify_parent = AY_TRUE;
-	}
-      else
-	{
-	  /* XXXX output error message? */
-	} /* if */
+		   pnt = pnt->next;
+		 } /* while */
 
+	       o->modified = AY_TRUE;
 
-      sel = sel->next;
-   } /* while */
+	       ay_notify_force(o);
+	       notify_parent = AY_TRUE;
+	     }
+	   else
+	     {
+	       /* XXXX output error message? */
+	     } /* if */
+	 }
+       else
+	 {
+	   p[0] = view->markworld[0];
+	   p[1] = view->markworld[1];
+	   p[2] = view->markworld[2];
+	   ay_trafo_apply4(p, mi);
+	   o->movx = p[0];
+	   o->movy = p[1];
+	   o->movz = p[2];
+	   notify_parent = AY_TRUE;
+	 }
+
+       sel = sel->next;
+     } /* while */
+
+  glPopMatrix();
 
   if(notify_parent)
     ay_status = ay_notify_parent();
