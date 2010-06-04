@@ -10734,6 +10734,121 @@ ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
 } /* ay_npt_isclosednp */
 
 
+/* ay_npt_evaltcmd:
+ *
+ */
+int
+ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "evalNP";
+ ay_nurbpatch_object *patch;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ double u, v, point[4] = {0};
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+  /* parse args */
+  if(argc < 6)
+    {
+      ay_error(AY_EARGS, fname, "u v vnx vny vnz [vnw]");
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &u);
+
+  Tcl_GetDouble(interp, argv[2], &v);
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object *)o->refine;
+
+	  if((u < patch->uknotv[patch->uorder-1]) ||
+	     (u > patch->uknotv[patch->width]))
+	    {
+	      ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	      break;
+	    }
+
+	  if((v < patch->vknotv[patch->vorder-1]) ||
+	     (v > patch->vknotv[patch->height]))
+	    {
+	      ay_error(AY_ERROR, fname, "Parameter v out of range.");
+	      break;
+	    }
+
+	  if(patch->is_rat)
+	    {
+	      ay_status = ay_nb_SurfacePoint4D(patch->width-1, patch->height-1,
+					      patch->uorder-1, patch->vorder-1,
+					       patch->uknotv, patch->vknotv,
+					       patch->controlv,
+					       u, v, point);
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_SurfacePoint3D(patch->width-1, patch->height-1,
+					      patch->uorder-1, patch->vorder-1,
+					       patch->uknotv, patch->vknotv,
+					       patch->controlv,
+					       u, v, point);
+	    }
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, fname, "Failed to evaluate patch.");
+	      break;
+	    }
+	  else
+	    {
+	      ton = Tcl_NewStringObj(argv[3],-1);
+	      to = Tcl_NewDoubleObj(point[0]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      Tcl_SetStringObj(ton,argv[4],-1);
+	      to = Tcl_NewDoubleObj(point[1]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      Tcl_SetStringObj(ton,argv[5],-1);
+	      to = Tcl_NewDoubleObj(point[2]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      if(patch->is_rat && (argc > 6))
+		{
+		  Tcl_SetStringObj(ton,argv[6],-1);
+		  to = Tcl_NewDoubleObj(point[3]);
+		  Tcl_ObjSetVar2(interp,ton,NULL,to,
+				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		}
+
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	    }
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_npt_evaltcmd */
+
 
 
 /* templates */
