@@ -8294,7 +8294,7 @@ ay_npt_clampv(ay_nurbpatch_object *np)
     return AY_EOMEM;
 
   newvknotv = NULL;
-  if(!(newvknotv = calloc(np->width+np->vorder, sizeof(double))))
+  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
   for(i = 0; i < np->width; i++)
