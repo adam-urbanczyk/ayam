@@ -6153,6 +6153,105 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_reparamtcmd */
 
 
+/* ay_nct_evaltcmd:
+ *
+ */
+int
+ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "evalNC";
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ double u, point[4] = {0};
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+  /* parse args */
+  if(argc < 5)
+    {
+      ay_error(AY_EARGS, fname, "u vnx vny vnz [vnw]");
+      return TCL_OK;
+    }
+
+  Tcl_GetDouble(interp, argv[1], &u);
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  if((u < curve->knotv[curve->order-1]) ||
+	     (u > curve->knotv[curve->length]))
+	    break;
+
+	  if(curve->is_rat)
+	    {
+	      ay_status = ay_nb_CurvePoint4D(curve->length-1, curve->order-1,
+					     curve->knotv, curve->controlv,
+					     u, point);
+	    }
+	  else
+	    {
+	      ay_status = ay_nb_CurvePoint3D(curve->length-1, curve->order-1,
+					     curve->knotv, curve->controlv,
+					     u, point);
+	    }
+
+	  if(ay_status)
+	    {
+	      break;
+	    }
+	  else
+	    {
+	      ton = Tcl_NewStringObj(argv[2],-1);
+	      to = Tcl_NewDoubleObj(point[0]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      Tcl_SetStringObj(ton,argv[3],-1);
+	      to = Tcl_NewDoubleObj(point[1]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      Tcl_SetStringObj(ton,argv[4],-1);
+	      to = Tcl_NewDoubleObj(point[2]);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to,
+			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	      if(curve->is_rat && (argc > 5))
+		{
+		  Tcl_SetStringObj(ton,argv[5],-1);
+		  to = Tcl_NewDoubleObj(point[3]);
+		  Tcl_ObjSetVar2(interp,ton,NULL,to,
+				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+		}
+
+	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	    }
+
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+ return TCL_OK;
+} /* ay_nct_evaltcmd */
+
+
 /* templates */
 #if 0
 

@@ -652,6 +652,11 @@ int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/*! \brief
+ */
+int ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
+
 
 /* npt.c */
 
