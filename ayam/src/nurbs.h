@@ -1063,7 +1063,6 @@ int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
 		double **dp);
 
-
 /*! \brief calculate offset surface
  */
 int ay_npt_offset(ay_object *o, int mode, double offset,
@@ -1073,6 +1072,10 @@ int ay_npt_offset(ay_object *o, int mode, double offset,
  */
 int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 
+/*! \brief
+ */
+int ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
 
 /* pmt.c */
 
