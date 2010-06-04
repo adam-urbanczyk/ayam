@@ -6196,7 +6196,10 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((u < curve->knotv[curve->order-1]) ||
 	     (u > curve->knotv[curve->length]))
-	    break;
+	    {
+	      ay_error(AY_ERROR, fname, "Parameter out of range.");
+	      break;
+	    }
 
 	  if(curve->is_rat)
 	    {
@@ -6213,6 +6216,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
+	      ay_error(AY_ERROR, fname, "Failed to evaluate curve.");
 	      break;
 	    }
 	  else
