@@ -727,11 +727,35 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
  double *ccv = NULL, tolerance, minx, maxx, miny, maxy;
  double yaxis[3] = {0.0,1.0,0.0}, quat[4] = {0}, angle = 0.0;
  double m[16];
- ay_object *cap = NULL, *trim = NULL, *tloop = NULL;
+ ay_object *cap = NULL, *trim = NULL, *tloop = NULL, *rc = NULL;
  ay_nurbcurve_object *nc = NULL, *tc = NULL;
  int closed, revert = AY_FALSE;
 
   nc = (ay_nurbcurve_object *)curve->refine;
+
+  if(revolve->sections != 0)
+   {
+     ay_status = ay_object_copy(revolve->npatch, &rc);
+     if(!ay_status && rc)
+       {
+	 ay_npt_clampv((ay_nurbpatch_object *)(rc->refine));
+	 ay_npt_extractnc(rc, 0, 0.0, AY_FALSE, AY_FALSE, &nc);
+	 ay_object_delete(rc);
+	 if(!(curve = calloc(1, sizeof(ay_object))))
+	   {
+	     ay_status = AY_EOMEM;
+	     goto cleanup;
+	   }
+	 ay_object_defaults(curve);
+	 curve->type = AY_IDNCURVE;
+	 curve->refine = nc;
+       }
+     else
+       {
+	 return ay_status;
+       }
+   }
+
   ccv = nc->controlv;
 
   closed = ay_nct_isclosed(nc);
@@ -1020,6 +1044,12 @@ cleanup:
     {
       free(controlv);
     }
+
+  if(revolve->sections != 0)
+   {
+     if(curve)
+       ay_object_delete(curve);
+   }
 
  return AY_OK;
 } /* ay_revolve_crtside */
