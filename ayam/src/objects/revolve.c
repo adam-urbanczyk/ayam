@@ -481,7 +481,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 		  ay_object **o)
 {
  int ay_status = AY_OK;
- int mode = 0, i = 0;
+ int mode = 0, i = 0, order = 0;
  double P1[4] = {0}, P2[4] = {0}, m[16];
  double tolerance;
  double *controlv = NULL;
@@ -584,8 +584,12 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
     }
   else
     {
+      if(revolve->order <= 1)
+	order = 3;
+      else
+	order = revolve->order;
       ay_status = ay_nct_crtcircbsp(revolve->sections, 1.0,
-				    revolve->thetamax, revolve->order,
+				    revolve->thetamax, order,
 				(ay_nurbcurve_object **) (&(trim->refine)));
     }
 
