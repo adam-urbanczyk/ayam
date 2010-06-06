@@ -5804,7 +5804,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 
 
 /* ay_nct_cmppnt:
- *
+ *  compare two points (helper for qsort)
  */
 int
 ay_nct_cmppnt(const void *p1, const void *p2)
@@ -5836,7 +5836,7 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 
 
 /* ay_nct_cmppntp:
- *
+ *  compare two points given as pointers (helper for qsort)
  */
 int
 ay_nct_cmppntp(const void *p1, const void *p2)
@@ -6055,7 +6055,7 @@ cleanup:
 
 
 /* ay_nct_reparamtcmd:
- *
+ *  Tcl interface for NURBS curve reparameterisation tool
  */
 int
 ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -6103,6 +6103,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 					      stride, &vtemp);
 	      if(ay_status)
 		{
+		  ay_error(AY_ERROR, fname, "Knot creation failed.");
 		  return(TCL_OK);
 		}
 	      for(i=0; i<curve->order-1; i++)
@@ -6120,6 +6121,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 					       stride, &vtemp);
 	      if(ay_status)
 		{
+		  ay_error(AY_ERROR, fname, "Knot creation failed.");
 		  return(TCL_OK);
 		}
 	      for(i=0; i<curve->order-1; i++)
@@ -6137,7 +6139,6 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clean up */
 	  ay_status = ay_nct_recreatemp(curve);
-	  ay_selp_clear(o);
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
@@ -6154,7 +6155,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_evaltcmd:
- *
+ *  Tcl interface for NURBS curve evaluation
  */
 int
 ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
@@ -6183,74 +6184,71 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  while(sel)
+  o = sel->object;
+
+  if(o->type != AY_IDNCURVE)
     {
-      o = sel->object;
-      if(o->type != AY_IDNCURVE)
+      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+    }
+  else
+    {
+      curve = (ay_nurbcurve_object *)o->refine;
+
+      if((u < curve->knotv[curve->order-1]) ||
+	 (u > curve->knotv[curve->length]))
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_ERROR, fname, "Parameter out of range.");
+
+	  return TCL_OK;
+	}
+
+      if(curve->is_rat)
+	{
+	  ay_status = ay_nb_CurvePoint4D(curve->length-1, curve->order-1,
+					 curve->knotv, curve->controlv,
+					 u, point);
 	}
       else
 	{
-	  curve = (ay_nurbcurve_object *)o->refine;
+	  ay_status = ay_nb_CurvePoint3D(curve->length-1, curve->order-1,
+					 curve->knotv, curve->controlv,
+					 u, point);
+	}
 
-	  if((u < curve->knotv[curve->order-1]) ||
-	     (u > curve->knotv[curve->length]))
-	    {
-	      ay_error(AY_ERROR, fname, "Parameter out of range.");
-	      break;
-	    }
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Evaluation failed.");
+	  return TCL_OK;
+	}
+      else
+	{
+	  ton = Tcl_NewStringObj(argv[2],-1);
+	  to = Tcl_NewDoubleObj(point[0]);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	  if(curve->is_rat)
-	    {
-	      ay_status = ay_nb_CurvePoint4D(curve->length-1, curve->order-1,
-					     curve->knotv, curve->controlv,
-					     u, point);
-	    }
-	  else
-	    {
-	      ay_status = ay_nb_CurvePoint3D(curve->length-1, curve->order-1,
-					     curve->knotv, curve->controlv,
-					     u, point);
-	    }
+	  Tcl_SetStringObj(ton,argv[3],-1);
+	  to = Tcl_NewDoubleObj(point[1]);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-	  if(ay_status)
+	  Tcl_SetStringObj(ton,argv[4],-1);
+	  to = Tcl_NewDoubleObj(point[2]);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to,
+			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+	  if(curve->is_rat && (argc > 5))
 	    {
-	      ay_error(AY_ERROR, fname, "Failed to evaluate curve.");
-	      break;
-	    }
-	  else
-	    {
-	      ton = Tcl_NewStringObj(argv[2],-1);
-	      to = Tcl_NewDoubleObj(point[0]);
+	      Tcl_SetStringObj(ton,argv[5],-1);
+	      to = Tcl_NewDoubleObj(point[3]);
 	      Tcl_ObjSetVar2(interp,ton,NULL,to,
 			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      Tcl_SetStringObj(ton,argv[3],-1);
-	      to = Tcl_NewDoubleObj(point[1]);
-	      Tcl_ObjSetVar2(interp,ton,NULL,to,
-			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      Tcl_SetStringObj(ton,argv[4],-1);
-	      to = Tcl_NewDoubleObj(point[2]);
-	      Tcl_ObjSetVar2(interp,ton,NULL,to,
-			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	      if(curve->is_rat && (argc > 5))
-		{
-		  Tcl_SetStringObj(ton,argv[5],-1);
-		  to = Tcl_NewDoubleObj(point[3]);
-		  Tcl_ObjSetVar2(interp,ton,NULL,to,
-				 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-		}
-
-	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	    }
 
+	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	} /* if */
 
-      sel = sel->next;
-    } /* while */
+    } /* if */
 
  return TCL_OK;
 } /* ay_nct_evaltcmd */
