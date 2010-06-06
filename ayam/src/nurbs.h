@@ -602,22 +602,22 @@ int ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve coarsen tool
  */
 int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve knot removal tool
  */
 int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve trimming tool
  */
 int ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[]);
 
-/*! \brief
+/*! \brief trim NURBS curve
  */
 int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
