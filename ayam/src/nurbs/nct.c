@@ -5324,7 +5324,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_trim:
- *
+ *  trim NURBS curve (cut off pieces at start and/or end)
  */
 int
 ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
@@ -5457,7 +5457,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_isdegen:
- *
+ *  check curve for degeneracy
  */
 int
 ay_nct_isdegen(ay_nurbcurve_object *curve)
