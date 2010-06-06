@@ -621,38 +621,38 @@ int ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
-/*! \brief
+/*! \brief check curve for degeneracy
  */
 int ay_nct_isdegen(ay_nurbcurve_object *curve);
 
-/*! \brief
+/*! \brief create offset curve
  */
 int ay_nct_offset(ay_object *o, int mode, double offset,
 		  ay_nurbcurve_object **nc);
 
-/*! \brief
+/*! \brief compare two points (helper for qsort)
  */
 int ay_nct_cmppnt(const void *p1, const void *p2);
 
-/*! \brief
+/*! \brief compare two points given as pointers (helper for qsort)
  */
 int ay_nct_cmppntp(const void *p1, const void *p2);
 
-/*! \brief
+/*! \brief curve length estimation
  */
 int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve length estimation tool
  */
 int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve reparameterisation tool
  */
 int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS curve evaluation
  */
 int ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
@@ -927,7 +927,7 @@ int ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 			      int index, int side,
 			      double *result);
 
-/*! \brief
+/*! \brief extract curve from patch
  */
 int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
 		     int apply_trafo,
