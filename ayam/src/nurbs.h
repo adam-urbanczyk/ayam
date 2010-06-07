@@ -981,40 +981,40 @@ int ay_npt_collapseselp(ay_object *o);
  */
 int ay_npt_explodemp(ay_object *o);
 
-/*! \brief
+/*! \brief find and parse bevel parameter tags
  */
 int ay_npt_getbeveltags(ay_object *o, int place,
 			int *has_bevel, int *type, double *radius, int *sense);
 
-/*! \brief
+/*! \brief copy tesselation parameter tag
  */
 int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
-/*! \brief
+/*! \brief clamp surface in u dimension
  */
 int ay_npt_clampu(ay_nurbpatch_object *np);
 
-/*! \brief
+/*! \brief clamp surface in v dimension
  */
 int ay_npt_clampv(ay_nurbpatch_object *np);
 
-/*! \brief
+/*! \brief Tcl command to clamp a surface in u dimension
  */
 int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief
+/*! \brief Tcl command to clamp asurface in v dimension
  */
 int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/*! \brief
+/*! \brief rescale trim curves according to surface knot vector scaling
  */
 int ay_npt_rescaletrims(ay_object *trim,
 			int mode, double omin, double omax,
 			double nmin, double nmax);
 
-/*! \brief
+/*! \brief Tcl command to rescale the knot vectors of a surface
  */
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -1072,7 +1072,7 @@ int ay_npt_offset(ay_object *o, int mode, double offset,
  */
 int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 
-/*! \brief
+/*! \brief Tcl interface for NURBS patch evaluation
  */
 int ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
