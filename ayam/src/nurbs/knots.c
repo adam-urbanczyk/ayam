@@ -213,13 +213,13 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
       break;
 
     case AY_KTNURB:
-      for(i=0; i<order; i++)
+      for(i = 0; i < order; i++)
 	U[i] = 0.0;
-      j=1;
+      j = 1;
       kts = 1 + knot_count - (order*2);
-      for(i=order; i<=knot_count-order; i++)
+      for(i = order; i <= knot_count - order; i++)
 	U[i] = j++/((double)kts);
-      for(i=knot_count-order; i<knot_count; i++)
+      for(i = knot_count - order; i < knot_count; i++)
 	U[i] = 1.0;
       break;
 
@@ -238,7 +238,22 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 	ay_knots_centriparam(curve->controlv, length, 4, &ub);
 
       if(!ub)
-	return AY_ERROR;
+	{
+	  /*
+	    failed to create parameters (curve degenerated?);
+	    create a standard NURBS knot vector instead, and
+	    return the error
+	   */
+	  for(i = 0; i < order; i++)
+	    U[i] = 0.0;
+	  j = 1;
+	  kts = 1 + knot_count - (order*2);
+	  for(i = order; i <= knot_count - order; i++)
+	    U[i] = j++/((double)kts);
+	  for(i = knot_count - order; i < knot_count; i++)
+	    U[i] = 1.0;
+	  return AY_ERROR;
+	}
 
       /* knot averaging */
       for(j = 1; j < length-deg; j++)
@@ -530,6 +545,9 @@ ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
  double *X = NULL, *Ufoo = NULL, *U = NULL, *Qw = NULL;
  int r, ia, ib, done;
 
+  if(!curve || !Ubar)
+    return AY_ENULL;
+
   if(!(X = calloc(Ubarlen, sizeof(double))))
    {
      return AY_EOMEM;
@@ -596,7 +614,7 @@ ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
 
 /* ay_knots_mergenp:
  *  merge knots from Ubar[Ubarlen] and Vbar[Vbarlen] into the
- *  knot vectors of patch
+ *  respective knot vectors of patch
  */
 int
 ay_knots_mergenp(ay_nurbpatch_object *patch,
@@ -605,6 +623,9 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
  double *X = NULL, *Ufoo = NULL, *U = NULL, *Vfoo = NULL, *V = NULL;
  double *Qw = NULL;
  int r, ia, ib, done;
+
+  if(!patch || (!Ubar && !Vbar))
+    return AY_EOMEM;
 
   if(Ubar)
     {
