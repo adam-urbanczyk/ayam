@@ -16,7 +16,6 @@
 
 
 /* Includes */
-#include <assert.h>
 #include <limits.h>
 #include <float.h>
 #include <math.h>

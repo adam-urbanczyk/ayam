@@ -37,7 +37,8 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
  double s[3] = {0};
  ay_acurve_object *acurve = NULL;
 
-  assert(argv && o);
+  if(!argv || !o)
+    return AY_ENULL;
 
   /* parse args */
   while(i < argc)

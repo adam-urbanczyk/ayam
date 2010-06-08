@@ -154,13 +154,14 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 
 
 /* ay_knots_createnc:
+ *  create knot vector according to
+ *  the knot_type field for curve <curve>
  */
 int
 ay_knots_createnc(ay_nurbcurve_object *curve)
 {
  int order = 0, deg = 0, length = 0, knot_count = 0;
  int index, i = 0, j = 0, kts = 0;
- double *newknotv = NULL;
  double *ub = NULL, *U = NULL;
 
   /* sanity check */
@@ -173,24 +174,22 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
   knot_count = length + order;
 
   /* calloc new knot-arrays */
-  if((newknotv = calloc(knot_count, sizeof(double))) == NULL)
+  if((U = calloc(knot_count, sizeof(double))) == NULL)
     return AY_EOMEM;
 
   /* free old knot-array */
   if(curve->knotv)
     free(curve->knotv);
 
-  curve->knotv = newknotv;
-
-  U = curve->knotv;
+  curve->knotv = U;
 
   /* fill knot-arrays */
   switch(curve->knot_type)
     {
     case AY_KTBEZIER:
-      for(i=0; i<knot_count/2; i++)
+      for(i = 0; i < knot_count/2; i++)
 	U[i] = 0.0;
-      for(i=knot_count/2; i<knot_count; i++)
+      for(i = knot_count/2; i < knot_count; i++)
 	U[i] = 1.0;
       break;
 
@@ -334,7 +333,8 @@ void
 ay_knots_printerr(char *location, int errcode)
 {
 
-  assert(location);
+  if(!location)
+    return;
 
   switch(errcode)
     {
@@ -558,7 +558,6 @@ ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
 	}
       done = ((ia >= (curve->length+curve->order)) || (ib >= Ubarlen));
     }
-
 
   if(r == 0)
     {
