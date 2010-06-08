@@ -135,10 +135,21 @@ typedef struct ay_object_s {
   /** should the children of this object be hidden? */
   int hide_children;
 
-  /** translation attributes */
+  /** \name translation attributes */
+  /*@{*/
   double movx, movy, movz;
-  double rotx, roty, rotz; /**< orientation attributes */
-  double scalx, scaly, scalz; /**< scale attributes */
+  /*@}*/
+
+  /** \name orientation attributes */
+  /*@{*/
+  double rotx, roty, rotz;
+  /*@}*/
+
+  /** \name scale attributes */
+  /*@{*/
+  double scalx, scaly, scalz;
+  /*@}*/
+
   double quat[4]; /**< quaternion attribute */
 
 #if 0
@@ -1403,11 +1414,14 @@ extern unsigned int ay_current_primlevel;
 
 /* Definitions */
 
-/* The Truth */
+/** \name The Truth */
+/*@{*/
 #define AY_TRUE      1
 #define AY_FALSE     0
+/*@}*/
 
-/* Return/Error Codes */
+/** \name Return/Error Codes */
+/*@{*/
 #define AY_OK          0 /* everything all right */
 #define AY_EWARN       1 /* warning */
 #define AY_ERROR       2 /* unspecified error */
@@ -1429,9 +1443,10 @@ extern unsigned int ay_current_primlevel;
 #define AY_ENTYPE     31 /* type does not exist */
 #define AY_EREF       40 /* reference counter not zero */
 #define AY_ENULL      50 /* illegal zero pointer encountered */
+/*@}*/
 
-
-/* "Core" Object Type Ids */
+/** \name Object Type Ids */
+/*@{*/
 #define AY_IDROOT           0
 #define AY_IDNPATCH         1
 #define AY_IDNCURVE         2
@@ -1481,23 +1496,29 @@ extern unsigned int ay_current_primlevel;
 #define AY_IDOFFNP         46
 
 #define AY_IDLAST          50
+/*@}*/
 
-/* Level Object SubType Ids */
+/** \name Level Object SubType Ids */
+/*@{*/
 #define AY_LTEND    0
 #define AY_LTLEVEL  1
 #define AY_LTUNION  2
 #define AY_LTDIFF   3
 #define AY_LTINT    4
 #define AY_LTPRIM   5
+/*@}*/
 
-/* View Object SubType Ids */
+/** \name View Object SubType Ids */
+/*@{*/
 #define AY_VTFRONT  0
 #define AY_VTSIDE   1
 #define AY_VTTOP    2
 #define AY_VTPERSP  3
 #define AY_VTTRIM   4
+/*@}*/
 
-/* Shader Types */
+/** \name Shader Types */
+/*@{*/
 #define AY_STSURFACE        0
 #define AY_STDISPLACEMENT   1
 #define AY_STVOLUME         2
@@ -1509,8 +1530,10 @@ extern unsigned int ay_current_primlevel;
 #define AY_STINTERIOR       7
 #define AY_STEXTERIOR       8
 #define AY_STATMOSPHERE     9
+/*@}*/
 
-/* Shader Argument Types */
+/** \name Shader Argument Types */
+/*@{*/
 #define AY_SASCALAR  0
 #define AY_SAPOINT   1
 #define AY_SANORMAL  2
@@ -1518,51 +1541,68 @@ extern unsigned int ay_current_primlevel;
 #define AY_SACOLOR   4
 #define AY_SASTRING  5
 #define AY_SAMATRIX  6
+/*@}*/
 
-/* Light Source Types */
+/** \name Light Source Types */
+/*@{*/
 #define AY_LITCUSTOM    0
 #define AY_LITPOINT     1
 #define AY_LITDISTANT   2
 #define AY_LITSPOT      3
+/*@}*/
 
-/* NURBS Curve Types */
+/** \name NURBS Curve Types */
+/*@{*/
 #define AY_CTOPEN     0
 #define AY_CTCLOSED   1
 #define AY_CTPERIODIC 2
+/*@}*/
 
-/* Knot Vector Types */
+/** \name Knot Vector Types */
+/*@{*/
 #define AY_KTBEZIER    0
 #define AY_KTBSPLINE   1
 #define AY_KTNURB      2
 #define AY_KTCUSTOM    3
 #define AY_KTCHORDAL   4
 #define AY_KTCENTRI    5
+/*@}*/
 
-/* Patch Mesh Types */
+/** \name Patch Mesh Types */
+/*@{*/
 #define AY_PTBILINEAR  0
 #define AY_PTBICUBIC   1
+/*@}*/
 
-/* Basis Matrix Types */
+/** \name Basis Matrix Types */
+/*@{*/
 #define AY_BTBEZIER     0
 #define AY_BTBSPLINE    1
 #define AY_BTCATMULLROM 2
 #define AY_BTHERMITE    3
 #define AY_BTCUSTOM     4
+/*@}*/
 
-/* Subdivision Schemes */
+/** \name Subdivision Schemes */
+/*@{*/
 #define AY_SDSCATMULL    0
 #define AY_SDSLOOP       1
+/*@}*/
 
-/* Subdivision Tag Types */
+/** \name Subdivision Tag Types */
+/*@{*/
 #define AY_SDTHOLE    0
 #define AY_SDTCORNER  1
 #define AY_SDTCREASE  2
 #define AY_SDTIB      3
+/*@}*/
 
-/* Procedural Object Types */
-#define AY_PRTDREADA  0 /* Delayed Read Archive */
-#define AY_PRTRUNPROG 1 /* Run Program */
-#define AY_PRTDYNLOAD 2 /* Dynamic Load */
+/** \name Procedural Object Types */
+/*@{*/
+#define AY_PRTDREADA  0 /**< Delayed Read Archive */
+#define AY_PRTRUNPROG 1 /**< Run Program */
+#define AY_PRTDYNLOAD 2 /**< Dynamic Load */
+/*@}*/
 
 
 /* size of arrows */
@@ -1571,11 +1611,13 @@ extern unsigned int ay_current_primlevel;
 /* to avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
-/* directions */
+/** \name Directions */
+/*@{*/
 #define AY_NORTH  0
 #define AY_EAST   1
 #define AY_SOUTH  2
 #define AY_WEST   3
+/*@}*/
 
 
 #ifdef M_PI
