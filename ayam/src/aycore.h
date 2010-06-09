@@ -277,7 +277,7 @@ int ay_instt_checkclipboard(ay_object *o);
  */
 int ay_instt_wribiarchives(char *file, ay_object *o);
 
-/*! \brief
+/*! \brief resolve instance to normal object
  */
 int ay_instt_resolve(ay_object *i);
 
@@ -295,7 +295,7 @@ int ay_instt_checkinstance(ay_object *o, ay_object *target,
  */
 int ay_instt_check(ay_object *o, ay_object *target);
 
-/*! \brief
+/*! \brief find master of an instance
  */
 int ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r);
 
@@ -304,7 +304,7 @@ int ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r);
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/*! \brief
+/*! \brief initialize instance tool module
  */
 void ay_instt_init(Tcl_Interp *interp);
 
@@ -368,16 +368,16 @@ int ay_notify_init(Tcl_Interp *interp);
 
 /* ns.c */
 
-/*! \brief
+/*! \brief restrict processing of Tk events
  */
 Tk_RestrictAction ay_ns_restrictall(ClientData clientData,
 				    XEvent *eventPtr);
 
-/*! \brief
+/*! \brief execute script from ANS/BNS tag
  */
 int ay_ns_execute(ay_object *o, char *script);
 
-/*! \brief
+/*! \brief initialize notify script tag module
  */
 void ay_ns_init(Tcl_Interp *interp);
 
@@ -699,15 +699,15 @@ int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
 
 /* pomesht.c */
 
-/*! \brief
+/*! \brief delete a polymesh object
  */
 int ay_pomesht_destroy(ay_pomesh_object *pomesh);
 
-/*! \brief
+/*! \brief tesselate polymesh object
  */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
-/*! \brief
+/*! \brief merge polymesh objects
  */
 int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 		     ay_object **result);
@@ -717,7 +717,7 @@ int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/*! \brief
+/*! \brief optimize polymesh object
  */
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 
@@ -726,16 +726,16 @@ int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/*! \brief
+/*! \brief convert polymesh object to subdision mesh object
  */
 int ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh);
 
-/*! \brief
+/*! \brief split off a face from a polymesh object 
  */
 int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 			 ay_pomesh_object *target);
 
-/*! \brief
+/*! \brief split off a part from a polymesh object
  */
 int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		     ay_pomesh_object **result);
@@ -801,22 +801,22 @@ int ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief generate nurbs patch configuration info string
  */
 int ay_prop_getnpinfo(Tcl_Interp *interp, char *n1, ay_object *o);
 
-/*! \brief
+/*! \brief generate nurbs curve configuration info string
  */
 int ay_prop_getncinfo(Tcl_Interp *interp, char *n1, ay_object *o);
 
 
 /* provide.c */
 
-/*! \brief
+/*! \brief register a provide callback
  */
 int ay_provide_register(ay_providecb  *provcb, unsigned int type_id);
 
-/*! \brief
+/*! \brief provide an object of desired type
  */
 int ay_provide_object(ay_object *o, unsigned int type, ay_object **result);
 
@@ -873,31 +873,31 @@ void ay_pv_init(Tcl_Interp *interp);
 
 /* quat.c */
 
-/*! \brief
+/*! \brief convert rotation from axis/angle to quaternion
  */
 void ay_quat_axistoquat(double a[3], double phi, double q[4]);
 
-/*! \brief
+/*! \brief normalize a quaternion
  */
 void ay_quat_norm(double q[4]);
 
-/*! \brief
+/*! \brief add two quaternions
  */
 void ay_quat_add(double q1[4], double q2[4], double dest[4]);
 
-/*! \brief
+/*! \brief convert quaternion to rotation matrix
  */
 void ay_quat_torotmatrix(double q[4], double m[16]);
 
-/*! \brief
+/*! \brief convert quaternion to euler angles
  */
 void ay_quat_toeuler(double q[4], double euler[3]);
 
-/*! \brief
+/*! \brief interpolate between two quaternions
  */
 int ay_quat_slerp(double time, double q1[4], double q2[4], double *r);
 
-/*! \brief
+/*! \brief calculate dot product of two quaternions
  */
 double ay_quat_dot(double q1[4], double q2[4]);
 
@@ -1747,6 +1747,6 @@ int ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
 
-/*! \file aycore.h \brief Ayam core API */
+/*! \file aycore.h \brief Ayam Core API */
 
 #endif /* __aycore_h__ */
