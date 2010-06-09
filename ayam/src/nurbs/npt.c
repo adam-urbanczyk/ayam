@@ -10814,25 +10814,21 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ton = Tcl_NewStringObj(argv[3],-1);
 	  to = Tcl_NewDoubleObj(point[0]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
 	  Tcl_SetStringObj(ton,argv[4],-1);
 	  to = Tcl_NewDoubleObj(point[1]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
 	  Tcl_SetStringObj(ton,argv[5],-1);
 	  to = Tcl_NewDoubleObj(point[2]);
-	  Tcl_ObjSetVar2(interp,ton,NULL,to,
-			 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
 	  if(patch->is_rat && (argc > 6))
 	    {
 	      Tcl_SetStringObj(ton,argv[6],-1);
 	      to = Tcl_NewDoubleObj(point[3]);
-	      Tcl_ObjSetVar2(interp,ton,NULL,to,
-			     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	      Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 	    }
 
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
