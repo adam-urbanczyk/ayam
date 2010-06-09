@@ -16,43 +16,43 @@
 
 /* act.c */
 
-/*! \brief
+/*! \brief least squares approximation
  */
 int ay_act_leastSquares(double *Q, int m, int n, int p,
 			double **U, double **P);
 
-/*! \brief
+/*! \brief least squares approximation for closed curves
  */
 int ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
 			      double **U, double **P);
 
-/*! \brief
+/*! \brief resize approximating curve
  */
 int ay_act_resize(ay_acurve_object *curve, int new_length);
 
-/*! \brief
+/*! \brief revert approximating curve
  */
 int ay_act_revert(ay_acurve_object *curve);
 
-/*! \brief
+/*! \brief get point from approximating curve
  */
 int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
 
 
 /* capt.c */
 
-/*! \brief
+/*! \brief create cap from curve
  */
 int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
 
-/*! \brief
+/*! \brief create cap from curve
  */
 int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
 
 
 /* ict.c */
 
-/*! \brief
+/*! \brief C2 cubic interpolation
  */
 int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  int param_type,
@@ -60,7 +60,7 @@ int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  double *controlv,
 			  ay_nurbcurve_object **c);
 
-/*! \brief
+/*! \brief  C2 cubic interpolation for closed curve
  */
 int ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 				int param_type,
@@ -70,14 +70,14 @@ int ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
 
 
-/*! \brief
+/*! \brief global 3D interpolation
  */
 int ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 			  int have_end_derivs, int param_type,
 			  double *controlv, double *sderiv, double *ederiv,
 			  ay_nurbcurve_object **c);
 
-/*! \brief
+/*! \brief global 3D interpolation for closed curve
  */
 int ay_ict_interpolateG3DClosed(int iorder, int length,
 				double sdlen, double edlen,
@@ -86,15 +86,15 @@ int ay_ict_interpolateG3DClosed(int iorder, int length,
 				double *sderiv, double *ederiv,
 				ay_nurbcurve_object **c);
 
-/*! \brief
+/*! \brief resize interpolating curve
  */
 int ay_ict_resize(ay_icurve_object *curve, int new_length);
 
-/*! \brief
+/*! \brief revert interpolating curve
  */
 int ay_ict_revert(ay_icurve_object *curve);
 
-/*! \brief
+/*! \brief get point from interpolating curve
  */
 int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 

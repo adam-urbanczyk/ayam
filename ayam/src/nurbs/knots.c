@@ -481,6 +481,10 @@ ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
  int i = 0, ia = 0, ib = 0, done = AY_FALSE;
  double t = 0.0, *U = NULL;
 
+  /* sanity check */
+  if(!Ua || !Ub || !Ubar || !Ubarlen)
+    return AY_ENULL;
+
   if(!(U = calloc(Ualen+Ublen, sizeof(double))))
    {
      return AY_EOMEM;
@@ -545,6 +549,7 @@ ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen)
  double *X = NULL, *Ufoo = NULL, *U = NULL, *Qw = NULL;
  int r, ia, ib, done;
 
+  /* sanity check */
   if(!curve || !Ubar)
     return AY_ENULL;
 
@@ -624,6 +629,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
  double *Qw = NULL;
  int r, ia, ib, done;
 
+  /* sanity check */
   if(!patch || (!Ubar && !Vbar))
     return AY_EOMEM;
 
@@ -1004,6 +1010,7 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
  double t, *vk = NULL, totallen = 0.0, *lens = NULL;
  int i, j;
 
+  /* sanity check */
   if(!Q || !U)
     return AY_ENULL;
 
@@ -1082,6 +1089,7 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
  double t, *vk = NULL, totallen = 0.0, *lens = NULL;
  int i, j;
 
+  /* sanity check */
   if(!Q || !U)
     return AY_ENULL;
 
@@ -1158,6 +1166,10 @@ int
 ay_knots_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
+
+  /* sanity check */
+  if(!interp)
+    return AY_ENULL;
 
   /* register UMM tag type */
   ay_status = ay_tags_register(interp, ay_umm_tagname, &ay_umm_tagtype);
