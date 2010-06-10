@@ -545,6 +545,8 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(PanD)]>\
 	"viewPan $w.f3D.togl 3;break"
 
+    bind $w <[repctrl $ayviewshortcuts(PanM)]>\
+	"undo save PanMarkView; $w.f3D.togl setconf -panm 1; break"
 
     bind $w <[repctrl $ayviewshortcuts(SelAllP)]>\
 	"selPnts -all; rV;break"
