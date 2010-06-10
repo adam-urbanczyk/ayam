@@ -380,6 +380,8 @@ array set ayviewshortcuts {
     ZoomTO "Ctrl-o"
     ZoomTO2 "O"
 
+    PanM "period"
+
     MoveO "m"
     RotO "r"
     Scal2 "s"

@@ -912,7 +912,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  char arg1[] = "save";
  char arg2[] = "-start", arg3[] = "0";
  char arg4[] = "-winxy";
- char *tclargv[5] = {0};
+ char *tclargv[5] = {0}, buf1[64], buf2[64];
 #ifndef AYNOUNISTDH
  static clock_t t_lastcalled = 0, t_current = 0;
  struct tms tbuf;
@@ -1280,6 +1280,22 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  break;
 	case 'p':
+	  if(!strcmp(argv[i], "-panm"))
+	    {
+	      if(view->drawmark)
+		{
+		  tclargv[2] = arg2;
+		  tclargv[3] = arg3;
+		  tclargv[4] = arg3;
+		  ay_vact_movetcb(togl, 5, tclargv);
+		  tclargv[2] = arg4;
+		  sprintf(buf1, "%g", width/2.0-view->markx);
+		  tclargv[3] = buf1;
+		  sprintf(buf2, "%g", height/2.0-view->marky);
+		  tclargv[4] = buf2;
+		  ay_vact_movetcb(togl, 5, tclargv);
+		}
+	    }
 	  if(!strcmp(argv[i], "-panx"))
 	    {
 	      tclargv[2] = arg2;
