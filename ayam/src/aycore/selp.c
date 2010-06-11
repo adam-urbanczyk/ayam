@@ -300,7 +300,7 @@ ay_selp_center(ay_object *o, int mode)
 
       /* XXXX What about other multiple points? Should we not rather
 	 build a list of unique points and iterate over that? */
-      if(!AY_COMP3DP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	{
 	  x += (p2[0]/i);
 	  y += (p2[1]/i);
@@ -598,14 +598,14 @@ ay_selp_calccog(ay_point *pnts, double *cog)
   */
 
   p = pnts;
-  for(i = 0; i< numpoints; i++)
+  for(i = 0; i < numpoints; i++)
     {
       /* XXXX ToDo: check, whether point is alread in vbuf;
 	 only if not: copy point to vbuf and update cog */
 
-      cog[0] = p->point[0]/numpoints;
-      cog[1] = p->point[1]/numpoints;
-      cog[2] = p->point[2]/numpoints;
+      cog[0] += p->point[0]/numpoints;
+      cog[1] += p->point[1]/numpoints;
+      cog[2] += p->point[2]/numpoints;
 
       a += stride;
       p = p->next;
