@@ -232,7 +232,7 @@ dxfio_extrudebpatch(class dimeExtrusionEntity *entity, ay_object *o)
 	    {
 	      p1 = &(v[i*3]);
 	      p2 = &(v[j*3]);
-	      if(AY_COMP3DP(p1, p2))
+	      if(AY_V3COMP(p1, p2))
 		{
 		  n--;
 		}
@@ -276,7 +276,7 @@ dxfio_read3dface(const class dimeState *state,
   tdface->getVertices(v0, v1, v2, v3);
 
   // is this face a triangle?
-  if(AY_COMP3DP(v2,v3))
+  if(AY_V3COMP(v2,v3))
     {
       // yes it is a triangle
       if(!(pomesh = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
