@@ -7765,7 +7765,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
       tb = ta;
       for(j = i; j < np->width*np->height; j++)
 	{
-	  if(AY_COMP4DP(ta, tb))
+	  if(AY_V4COMP(ta, tb))
 	    {
 	      tmpp[count] = tb;
 	      tmpi[count] = j;
@@ -7782,7 +7782,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	  found = AY_FALSE;
 	  while(mp && !found)
 	    {
-	      if(AY_COMP4DP(ta, mp->points[0]))
+	      if(AY_V4COMP(ta, mp->points[0]))
 		{
 		  found = AY_TRUE;
 		  break;
@@ -9757,7 +9757,7 @@ ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
      a different control point than p
      (in terms of their coordinate values)
      or we run off the edge of the patch */
-  while(AY_COMP4DP(p, p2))
+  while(AY_V4COMP(p, p2))
     {
       p2 += offset;
 
@@ -9888,7 +9888,7 @@ ay_npt_gndcu(char dir, ay_nurbpatch_object *np, int ind, double *p,
       break;
     } /* switch */
 
-  while(AY_COMP4DP(p, p2))
+  while(AY_V4COMP(p, p2))
     {
       p2 += offset;
 
@@ -9992,7 +9992,7 @@ ay_npt_gndcv(char dir, ay_nurbpatch_object *np, int ind, double *p,
       break;
     } /* switch */
 
-  while(AY_COMP4DP(p, p2))
+  while(AY_V4COMP(p, p2))
     {
       p2 += offset;
 
@@ -10092,7 +10092,7 @@ ay_npt_gndcuv(char dir, ay_nurbpatch_object *np, int ind, double *p,
       break;
     } /* switch */
 
-  while(AY_COMP4DP(p, p2))
+  while(AY_V4COMP(p, p2))
     {
       p2 += offset;
 

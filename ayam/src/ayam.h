@@ -206,7 +206,7 @@ typedef struct ay_shader_s
 /** Material Object */
 typedef struct ay_mat_object_s {
 
-  int registered;
+  int registered; /**< is this material unique? */
 
   char **nameptr;
   unsigned int *refcountptr;
@@ -707,14 +707,6 @@ typedef struct ay_bevel_object_s
   double glu_sampling_tolerance;
   int display_mode;
 } ay_bevel_object;
-
-
-/** Custom object */
-typedef struct ay_custom_object_s
-{
-  unsigned int type;
-  void *object;
-} ay_custom_object;
 
 
 /** Clone object */
@@ -1619,7 +1611,8 @@ extern unsigned int ay_current_primlevel;
 #define AY_WEST   3
 /*@}*/
 
-
+/** \name Transcendent Tools */
+/*@{*/
 #ifdef M_PI
  #define AY_PI M_PI
  #define AY_HALFPI (M_PI/2.0)
@@ -1633,8 +1626,10 @@ extern unsigned int ay_current_primlevel;
 #define AY_R2D(x) ((x)*180.0/AY_PI)
 
 #define AY_COT(x) (cos(x)/sin(x))
+/*@}*/
 
-/* Basic Vector Arithmetic */
+/** \name Basic Vector Arithmetic */
+/*@{*/
 #define AY_VLEN(x,y,z) sqrt((x*x)+(y*y)+(z*z))
 
 #define AY_V3LEN(v) sqrt((v[0]*v[0])+(v[1]*v[1])+(v[2]*v[2]))
@@ -1666,7 +1661,8 @@ extern unsigned int ay_current_primlevel;
 
 #define AY_V4COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
 			   (fabs(v1[1]-v2[1]) < AY_EPSILON) &&\
-			   (fabs(v1[2]-v2[2]) < AY_EPSILON))
+			   (fabs(v1[2]-v2[2]) < AY_EPSILON) &&\
+                           (fabs(v1[3]-v2[3]) < AY_EPSILON))
 
 #define AY_V3COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
 			   (fabs(v1[1]-v2[1]) < AY_EPSILON) &&\
@@ -1675,23 +1671,13 @@ extern unsigned int ay_current_primlevel;
 #define AY_V2COMP(v1, v2) ((fabs(v1[0]-v2[0]) < AY_EPSILON) &&\
 			   (fabs(v1[1]-v2[1]) < AY_EPSILON))
 
+/*@}*/
+
 /* Warning: v1 and v2 must be different locations in memory! */
 #define AY_APTRAN4(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+v2[3]*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+v2[3]*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+v2[3]*m[14];v1[3]=v2[0]*m[3]+v2[1]*m[7]+v2[2]*m[11]+v2[3]*m[15];}
 
 /* Warning: v1 and v2 must be different locations in memory! */
 #define AY_APTRAN3(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+1.0*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+1.0*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+1.0*m[14];}
-
-#define AY_COMP4DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
-                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
-                            (fabs(P1[2]-P2[2]) < AY_EPSILON) &&\
-                            (fabs(P1[3]-P2[3]) < AY_EPSILON))
-
-#define AY_COMP3DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
-                            (fabs(P1[1]-P2[1]) < AY_EPSILON) &&\
-                            (fabs(P1[2]-P2[2]) < AY_EPSILON))
-
-#define AY_COMP2DP(P1, P2) ((fabs(P1[0]-P2[0]) < AY_EPSILON) &&\
-                            (fabs(P1[1]-P2[1]) < AY_EPSILON))
 
 #define AY_M44(m,r,c) ((m)[(c)*4+(r)])
 
@@ -1707,14 +1693,15 @@ extern unsigned int ay_current_primlevel;
 		       (fabs(1.0 - o->scalz) > AY_EPSILON))
 
 
-/* Version Strings and Numbers */
+/** \name Version Strings and Numbers */
+/*@{*/
 #define AY_VERSIONSTR "1.17"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
 #define AY_VERSION   17
 #define AY_VERSIONMI 0
-
+/*@}*/
 
 /* Ayam API */
 #include "aycore.h"

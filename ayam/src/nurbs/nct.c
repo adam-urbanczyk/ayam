@@ -171,7 +171,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
       count = 0;
       for(i = j; i < c->length; i++)
 	{
-	  if(AY_COMP4DP(ta, tb))
+	  if(AY_V4COMP(ta, tb))
 	    {
 	      tmpp[count] = tb;
 	      tmpi[count] = i;
@@ -187,7 +187,7 @@ ay_nct_recreatemp(ay_nurbcurve_object *c)
 	  found = AY_FALSE;
 	  while(p && !found)
 	    {
-	      if(AY_COMP4DP(ta, p->points[0]))
+	      if(AY_V4COMP(ta, p->points[0]))
 		{
 		  found = AY_TRUE;
 		  break;
@@ -4452,7 +4452,7 @@ ay_nct_toxy(ay_object *c)
   /* check, whether we, probably, operate on a closed B-Spline curve,
      if yes, we choose a different set of initial points */
   p = &(nc->controlv[(nc->length-(nc->order-1))*stride]);
-  if(AY_COMP3DP(tp1, p))
+  if(AY_V3COMP(tp1, p))
     {
       /*printf("Detected closed BSpline!\n");*/
       tp1 = &(nc->controlv[(nc->order/2)*stride]);
@@ -4475,17 +4475,17 @@ ay_nct_toxy(ay_object *c)
   while(!have_good_points  && (max_tries < (nc->length/2)))
     {
       have_good_points = AY_TRUE;
-      if(AY_COMP3DP(tp1, tp2))
+      if(AY_V3COMP(tp1, tp2))
 	{
 	  tp2 += stride;
 	  have_good_points = AY_FALSE;
 	}
-      if(AY_COMP3DP(tp2, tp3))
+      if(AY_V3COMP(tp2, tp3))
 	{
 	  tp3 -= stride;
 	  have_good_points = AY_FALSE;
 	}
-      if(AY_COMP3DP(tp1, tp3))
+      if(AY_V3COMP(tp1, tp3))
 	{
 	  tp3 -= stride;
 	  have_good_points = AY_FALSE;
@@ -4880,7 +4880,7 @@ ay_nct_center(int mode, ay_nurbcurve_object *curve)
 	 to be considered, omitting consecutive equal points */
       /* XXXX What about other multiple points? Should we not rather
 	 build a list of unique points and iterate over that? */
-      if(!AY_COMP3DP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	{
 	  x += (controlv[a]/i);
 	  y += (controlv[a+1]/i);
@@ -5472,7 +5472,7 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
     {
       p1 = &(curve->controlv[i*stride]);
       p2 = &(curve->controlv[(i+1)*stride]);
-      if(!AY_COMP3DP(p1, p2))
+      if(!AY_V3COMP(p1, p2))
 	return AY_FALSE;
     } /* for */
 

@@ -305,7 +305,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(view->markworld[2]));
 
-  if(!AY_COMP3DP(oldmark, view->markworld))
+  if(!AY_V3COMP(oldmark, view->markworld))
     {
       need_markupdate = AY_TRUE;
     }
