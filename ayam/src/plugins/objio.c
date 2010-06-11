@@ -2354,7 +2354,7 @@ objio_readface(char *str, int lastlinewasface)
 	  for(i = 0; i < nverts; i++)
 	    {
 	      oldpnt = &(po.controlv[i*stride]);
-	      if(AY_COMP3DP(oldpnt, gv))
+	      if(AY_V3COMP(oldpnt, gv))
 		{
 		  ay_error(AY_EWARN, fname, "Degenerated face encountered!");
 		  /*ay_error(AY_EOUTPUT, fname, str);*/
