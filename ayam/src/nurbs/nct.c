@@ -1752,7 +1752,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
       for(i = 0; i < samples-1; i++)
        {
 	 ay_status = ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
-					c->controlv, U[i]+((U[i+1]-U[i])/2.0),
+					c->controlv,
+					U[i]+((U[i+1]-U[i])/2.0),
 					&(cp[i*stride]));
 
        }
@@ -1871,6 +1872,11 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      view->markworld[1] = fwY;
 	      view->markworld[2] = fwZ;
 	      view->drawmark = AY_TRUE;
+
+	      if(ay_prefs.globalmark)
+		{
+		  ay_viewt_updateglobalmark(togl);
+		}
 	    }
 
 	  fvalid = AY_FALSE;
