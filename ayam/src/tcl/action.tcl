@@ -1454,6 +1454,36 @@ proc actionFindU { w } {
 
 
 #
+proc actionFindUV { w } {
+
+    viewTitle $w "" "Find_UV"
+    viewSetMAIcon $w ay_FindU_img "Find_UV"
+
+    actionClearB1 $w
+
+    bind $w <ButtonPress-1> {
+	%W mc
+	%W finduvac %x %y
+    }
+
+    bind $w <B1-Motion> ""
+
+    bind $w <Motion> ""
+
+    bind $w <ButtonRelease-1> {
+	%W finduvac -end %x %y
+	%W redraw
+	focus %W
+    }
+
+    $w setconf -drawh 0
+
+ return;
+}
+# actionFindUV
+
+
+#
 proc actionSplitNC { w } {
 
     viewTitle $w "" "Split_Curve"

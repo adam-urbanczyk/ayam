@@ -10840,6 +10840,361 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_evaltcmd */
 
 
+/* ay_npt_finduv:
+ *  transforms the window coordinates (winX, winY)
+ *  to the corresponding parametric values u, v
+ *  on the NURBS surface o
+ *  This function needs a valid OpenGL rendering context!
+ */
+int
+ay_npt_finduv(struct Togl *togl, ay_object *o,
+	      double *winXY, double *worldXYZ, double *u, double *v)
+{
+ int ay_status = AY_OK;
+ /*  int width = Togl_Width(togl);*/
+ int height = Togl_Height(togl);
+ GLint viewport[4];
+ GLdouble modelMatrix[16], projMatrix[16], winx, winy;
+ GLfloat winz = 0.0f;
+ double m[16], mi[16];
+ GLfloat pixel1[3] = {0.9f,0.9f,0.9f}, pixel[3] = {0.0f,0.0f,0.0f};
+ ay_nurbpatch_object *np = NULL;
+ int dx[25] = {0,1,1,0,-1,-1,-1,0,1, 2,2,2,1,0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2};
+ int dy[25] = {0,0,-1,-1,-1,0,1,1,1, 0,-1,-2,-2,-2,-2,-2,-1,0,1,2,2,2,2,2,1};
+ int found, i = 0, j = 0, k = 0, /*maxtry = 1000,*/ stride;
+ int usamples = 10, vsamples = 10;
+ int starti = 0, endi = 0;
+ int startj = 0, endj = 0;
+ double point[4] = {0}/*, guess = 0.0, e1 = 0.05, e2 = 0.05*/;
+ double distance = 0.0, min_distance = 0.0;
+ double *cp = NULL, *p = NULL;
+ double U[10/* XXXX usamples! */] = {0}, startu, endu;
+ double V[10/* XXXX vsamples! */] = {0}, startv, endv;
+ ay_voidfp *arr = NULL;
+ ay_drawcb *cb = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!o->type == AY_IDNPATCH)
+    return AY_EWTYPE;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  arr = ay_drawcbt.arr;
+  cb = (ay_drawcb *)(arr[o->type]);
+
+  pixel1[0] = (float)ay_prefs.ser;
+  pixel1[1] = (float)ay_prefs.seg;
+  pixel1[2] = (float)ay_prefs.seb;
+
+  /*
+  winx = winX;
+  winy = height - winY;
+  */
+
+  /*
+   * first, we try to find a point on the curve in window coordinates;
+   * we do this by comparing colors of rendered pixels
+   */
+  found = AY_FALSE;
+  while(!found)
+    {
+      winx = winXY[0]+dx[i];
+      winy = height-winXY[1]-dy[i];
+      i++;
+
+      if(i > 24)
+	{
+	  return AY_ERROR;
+	}
+
+      glReadPixels((GLint)winx,(GLint)winy,1,1,
+		   GL_RGB,GL_FLOAT,&pixel);
+
+      if((pixel1[0] <= pixel[0]) &&
+	 (pixel1[1] <= pixel[1]) &&
+	 (pixel1[2] <= pixel[2]))
+	{
+	  found = AY_TRUE;
+	}
+    }
+
+  /* get object coordinates of point on curve */
+  glGetIntegerv(GL_VIEWPORT, viewport);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   ay_trafo_getall(ay_currentlevel->next);
+
+   glTranslated(o->movx, o->movy, o->movz);
+   ay_quat_torotmatrix(o->quat, m);
+   glMultMatrixd(m);
+   glScaled(o->scalx, o->scaly, o->scalz);
+
+   /* we operate on selected objects, but those are drawn with
+      disabled depth test, which means: no correct z buffer data;
+      thus, we simply call the draw callback of the selected object
+      here again on an empty z buffer to get correct z buffer data */
+   glClear(GL_DEPTH_BUFFER_BIT);
+   if(cb)
+     ay_status = cb(togl, o);
+
+   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+  glPopMatrix();
+
+  /* get winz */
+  glReadPixels((GLint)winx,(GLint)winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&winz);
+
+  gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
+	       &(point[0]), &(point[1]), &(point[2]));
+
+  /* get guess */
+  stride = 4;
+  if(!(cp = calloc(usamples*vsamples*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  startu = np->uknotv[np->uorder-1];
+  endu = np->uknotv[np->width];
+
+  startv = np->vknotv[np->vorder-1];
+  endv = np->vknotv[np->height];
+
+  for(k = 0; k < 3; k++)
+    {
+      U[0] = startu;
+      for(i = 1; i < usamples-1; i++)
+	{
+	  U[i] = U[i-1]+(endu - startu)/(usamples-1);
+	}
+      U[usamples-1] = endu;
+
+      V[0] = startv;
+      for(i = 1; i < vsamples-1; i++)
+	{
+	  V[i] = V[i-1]+(endv - startv)/(vsamples-1);
+	}
+      V[vsamples-1] = endv;
+      p = cp;
+      for(i = 0; i < usamples-1; i++)
+       {
+	 for(j = 0; j < vsamples-1; j++)
+	   {
+
+	     ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+					      np->uorder-1, np->vorder-1,
+					      np->uknotv, np->vknotv,
+					      np->controlv,
+					      U[i]+((U[i+1]-U[i])/2.0),
+					      V[j]+((V[j+1]-V[j])/2.0),
+					      p);
+	     p += stride;
+	   }
+
+       }
+
+      min_distance = DBL_MAX;
+      p = cp;
+      for(i = 0; i < (usamples-1); i++)
+	{
+	 for(j = 0; j < (vsamples-1); j++)
+	   {
+
+	     distance = AY_VLEN((point[0] - p[0]),
+				(point[1] - p[1]),
+				(point[2] - p[2]));
+
+	     if(distance < min_distance)
+	       {
+		 *u = U[i]+((U[i+1]-U[i])/2.0);
+		 starti = i-1;
+		 endi = i+1;
+		 *v = V[i]+((V[i+1]-V[i])/2.0);
+		 startj = j-1;
+		 endj = j+1;
+		 min_distance = distance;
+	       }
+
+	     p += stride;
+	   } /* for */
+	} /* for */
+
+      if(starti < 0)
+	{
+	  startu = U[0];
+	}
+      else
+	{
+	  startu = U[starti];
+	}
+
+      if(endi >= usamples)
+	{
+	  endu = U[usamples-1];
+	}
+      else
+	{
+	  endu = U[endi];
+	}
+
+      if(startj < 0)
+	{
+	  startv = V[0];
+	}
+      else
+	{
+	  startv = V[startj];
+	}
+
+      if(endj >= vsamples)
+	{
+	  endv = V[vsamples-1];
+	}
+      else
+	{
+	  endv = V[endj];
+	}
+    } /* for */
+
+  winXY[0] = winx;
+  winXY[1] = winy;
+
+  ay_nb_SurfacePoint4D(np->width-1, np->height-1, np->uorder-1, np->vorder-1,
+		       np->uknotv, np->vknotv, np->controlv, *u, *v, point);
+
+  ay_trafo_invmatrix4(m, mi);
+
+  ay_trafo_apply4(point, mi);
+
+  worldXYZ[0] = point[0];
+  worldXYZ[1] = point[1];
+  worldXYZ[2] = point[2];
+
+  free(cp);
+
+ return ay_status;
+} /* ay_npt_finduv */
+
+
+/* ay_npt_finduvcb:
+ *  Togl callback to implement find parametric values
+ *  u/v for a picked point on a NURBS surface
+ */
+int
+ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "findUV_cb";
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ Tcl_Interp *interp = Togl_Interp(togl);
+ int height = Togl_Height(togl);
+ double winXY[2] = {0}, worldXYZ[3] = {0};
+ static int fvalid = AY_FALSE;
+ static double fX = 0.0, fY = 0.0, fwX = 0.0, fwY = 0.0, fwZ = 0.0;
+ double u = 0.0, v = 0.0;
+ Tcl_Obj *to = NULL, *ton = NULL;
+ char cmd[] = "puts \"$u $v\"";
+ ay_object *o, *pobject = NULL;
+
+  if(argc > 2)
+    {
+      if(!strcmp(argv[2],"-start"))
+	{
+	  /*	  view->drawhandles = AY_FALSE;
+		  display_cb(togl);*/
+	  fvalid = AY_FALSE;
+	  return TCL_OK;
+	}
+      if(!strcmp(argv[2],"-end"))
+	{
+	  /* draw cross */
+	  if(fvalid)
+	    {
+	      view->markx = fX;
+	      view->marky = height-fY;
+	      view->markworld[0] = fwX;
+	      view->markworld[1] = fwY;
+	      view->markworld[2] = fwZ;
+	      view->drawmark = AY_TRUE;
+
+	      if(ay_prefs.globalmark)
+		{
+		  ay_viewt_updateglobalmark(togl);
+		}
+	    }
+
+	  fvalid = AY_FALSE;
+	  return TCL_OK;
+	}
+    }
+  else
+    {
+      return TCL_OK;
+    }
+
+  if(ay_selection)
+    {
+      if(ay_selection->object->type != AY_IDNPATCH)
+	{
+	  ay_status = ay_provide_object(ay_selection->object,
+					AY_IDNPATCH, &pobject);
+	  if(!pobject)
+	    {
+	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      return TCL_OK;
+	    }
+	  o = pobject;
+	}
+      else
+	{
+	  o = ay_selection->object;
+	}
+
+      Tcl_GetDouble(interp, argv[2], &(winXY[0]));
+      Tcl_GetDouble(interp, argv[3], &(winXY[1]));
+
+      ay_status = ay_npt_finduv(togl, o, winXY, worldXYZ, &u, &v);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, "Could not find point on surface!");
+	  goto cleanup;
+	}
+
+      ton = Tcl_NewStringObj("u", -1);
+      to = Tcl_NewDoubleObj(u);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
+      Tcl_SetStringObj(ton, "v", -1);
+      to = Tcl_NewDoubleObj(v);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
+
+      Tcl_Eval(interp, cmd);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+      fvalid = AY_TRUE;
+      fX = winXY[0];
+      fY = winXY[1];
+      fwX = worldXYZ[0];
+      fwY = worldXYZ[1];
+      fwZ = worldXYZ[2];
+    }
+  else
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
+
+cleanup:
+
+  if(pobject)
+    {
+      ay_object_deletemulti(pobject);
+    }
+
+ return TCL_OK;
+} /* ay_npt_finduvcb */
+
 
 /* templates */
 #if 0

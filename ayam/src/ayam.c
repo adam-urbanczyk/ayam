@@ -1122,6 +1122,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "evalNP", ay_npt_evaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Togl_CreateCommand("finduvac", ay_npt_finduvcb);
+
+
 /* inform Tcl-context about compile time configuration: */
 
 #ifndef AYWRAPPED
