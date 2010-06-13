@@ -399,8 +399,9 @@ array set ayviewshortcuts {
     DeSelect "N"
     InsertP "i"
     DeleteP "d"
-    SplitNC "U"
+    SplitNC "bar"
     FindU "u"
+    FindUV "U"
 
     MoveV "v"
     MoveZV "V"

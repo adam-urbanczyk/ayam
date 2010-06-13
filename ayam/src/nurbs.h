@@ -1077,6 +1077,16 @@ int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 int ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+/*! \brief
+ */
+int ay_npt_finduv(struct Togl *togl, ay_object *o,
+		  double *winXY, double *worldXYZ, double *u, double *v);
+
+/*! \brief
+ */
+int ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[]);
+
+
 /* pmt.c */
 
 /*! \brief
