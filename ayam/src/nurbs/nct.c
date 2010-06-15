@@ -1740,7 +1740,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   startu = c->knotv[c->order-1];
   endu = c->knotv[c->length];
 
-  for(k = 0; k < 3; k++)
+  for(k = 0; k < 7; k++)
     {
       U[0] = startu;
       for(i = 1; i < samples-1; i++)
@@ -1758,8 +1758,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 
        }
 
-      min_distance = DBL_MAX;
       j = 0;
+      min_distance = DBL_MAX;
       for(i = 0; i < (samples-1); i++)
 	{
 	  distance = AY_VLEN((point[0] - cp[j]),
@@ -1818,6 +1818,8 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
 		     c->controlv, *u, point);
 
+  
+
   ay_trafo_invmatrix4(m, mi);
 
   ay_trafo_apply4(point, mi);
@@ -1873,10 +1875,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	      view->markworld[2] = fwZ;
 	      view->drawmark = AY_TRUE;
 
-	      if(ay_prefs.globalmark)
-		{
-		  ay_viewt_updateglobalmark(togl);
-		}
+	      ay_viewt_updatemark(togl, AY_FALSE);
 	    }
 
 	  fvalid = AY_FALSE;
@@ -1919,7 +1918,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
