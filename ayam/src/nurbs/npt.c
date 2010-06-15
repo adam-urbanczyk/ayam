@@ -10962,7 +10962,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
   startv = np->vknotv[np->vorder-1];
   endv = np->vknotv[np->height];
 
-  for(k = 0; k < 3; k++)
+  for(k = 0; k < 7; k++)
     {
       U[0] = startu;
       for(i = 1; i < usamples-1; i++)
@@ -11121,7 +11121,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
 	      if(ay_prefs.globalmark)
 		{
-		  ay_viewt_updateglobalmark(togl);
+		  ay_viewt_updatemark(togl, AY_FALSE);
 		}
 	    }
 
