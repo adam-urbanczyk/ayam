@@ -1457,7 +1457,7 @@ proc actionFindU { w } {
 proc actionFindUV { w } {
 
     viewTitle $w "" "Find_UV"
-    viewSetMAIcon $w ay_FindU_img "Find_UV"
+    viewSetMAIcon $w ay_FindUV_img "Find_UV"
 
     actionClearB1 $w
 

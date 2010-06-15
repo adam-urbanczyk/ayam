@@ -825,5 +825,20 @@ image create photo ay_MoveVZ_img -w 25 -h 25
 ay_MoveVZ_img copy ay_MoveV_img
 ay_MoveVZ_img copy ay_Scale1DZ_img -from 0 0 7 8 -to 17 0
 
+# FindUV
+set imgdata {\
+R0lGODlhGQAZAKUjAAAAAHRtXpmPfKKYg6qgibGljrSokbaqk7erlLitl7uu
+l7uvl7ywmL6ymb+ymsG0m8O2ncS3nru5tcW4oLy7vMi6oby8vLy8vb28vLy9
+vLy9vb29vL29vcu+pdDDqdTHrdjLsd3Qtejbwf//////////////////////
+////////////////////////////////////////////////////////////
+/////////////////////////////////ywAAAAAGQAZAAAG/kCLcEgsEjGZ
+YdISCBiZzWhxs2Q2otgFAqFgOI+XYSDSAYU+nYhjkVAsrsVLNdD5hECeyqOx
+cDPgRBoaGEICAiB4FRAODAsLfw5fT0IBZ2kPjY9/D5JDHGGUIGkAjW4ADg8Q
+EZ1CoExpDgoACQkADakTFaxFYw0JCAcAAAsOEBMdHbtEAQwIBgUGwgwPxx8f
+AYSTAQcF3QAGCAAQZSJ3ypQE6QAEBQgNAB8i8iDnTAP36QUHDBUg8mf1AhjC
+B21BBA+I0CTTZkgAQXfHOlSYeA6LxSgQVK2aZEHCEwoSJFjkSNKIsJIAhADg
+kFIlS5UkW65saWElzJgua+rkoBNlEk2bKVPyLDkk6NCWPGkSXWohCAA7
+}
+image create photo ay_FindUV_img -format GIF -data $imgdata
 
 catch {unset imgdata}
