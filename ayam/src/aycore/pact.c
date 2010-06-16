@@ -2407,7 +2407,8 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_pact_snaptomarkcb:
- *  this action callback snaps all selected points to the mark
+ *  this action callback snaps all selected points (mode == 0)
+ *  or objects (mode == 1) to the mark
  */
 int
 ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
@@ -2432,6 +2433,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
+   glLoadIdentity();
    ay_trafo_getall(ay_currentlevel->next);
 
    if(mode)
@@ -2465,7 +2467,16 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	       while(pnt)
 		 {
 		   memcpy(pnt->point, view->markworld, 3*sizeof(double));
-		   ay_trafo_apply4(pnt->point, mi);
+
+		   /* the mark data is non rational, so it makes
+		      no sense to use apply4() anyway */
+		   ay_trafo_apply3(pnt->point, mi);
+
+		   /* reset weight */
+		   if(pnt->homogenous)
+		     {
+		       pnt->point[3] = 1.0;
+		     }
 
 		   pnt = pnt->next;
 		 } /* while */
