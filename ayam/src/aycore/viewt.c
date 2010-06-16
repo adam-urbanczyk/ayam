@@ -1452,6 +1452,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		{
 		  ay_viewt_changetype(view, argi);
 		}
+	      /* this avoids havoc for repeated calls */
+	      view->rotx = 0.0;
+	      view->roty = 0.0;
+	      view->rotz = 0.0;
 	    }
 	  break;
 	case 'u':
