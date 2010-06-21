@@ -10745,7 +10745,8 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- double u, v, point[4] = {0};
+ int apply_trafo = AY_FALSE, argi = 0;
+ double u, v, point[4] = {0}, m[16] = {0};
  Tcl_Obj *to = NULL, *ton = NULL;
 
   /* parse args */
@@ -10755,9 +10756,15 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &u);
+  if(argv[1][0] == '-' && argv[1][1] == 't')
+    {
+      apply_trafo = AY_TRUE;
+      argi++;
+    }
 
-  Tcl_GetDouble(interp, argv[2], &v);
+  Tcl_GetDouble(interp, argv[argi+1], &u);
+
+  Tcl_GetDouble(interp, argv[argi+2], &v);
 
   if(!sel)
     {
@@ -10812,21 +10819,27 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ton = Tcl_NewStringObj(argv[3],-1);
+	  if(apply_trafo)
+	    {
+	      ay_trafo_creatematrix(o, m);
+	      ay_trafo_apply3(point, m);
+	    }
+
+	  ton = Tcl_NewStringObj(argv[argi+3],-1);
 	  to = Tcl_NewDoubleObj(point[0]);
 	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
-	  Tcl_SetStringObj(ton,argv[4],-1);
+	  Tcl_SetStringObj(ton,argv[argi+4],-1);
 	  to = Tcl_NewDoubleObj(point[1]);
 	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
-	  Tcl_SetStringObj(ton,argv[5],-1);
+	  Tcl_SetStringObj(ton,argv[argi+5],-1);
 	  to = Tcl_NewDoubleObj(point[2]);
 	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 
 	  if(patch->is_rat && (argc > 6))
 	    {
-	      Tcl_SetStringObj(ton,argv[6],-1);
+	      Tcl_SetStringObj(ton,argv[argi+6],-1);
 	      to = Tcl_NewDoubleObj(point[3]);
 	      Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
 	    }
