@@ -138,8 +138,9 @@ ay_viewt_rotate(ay_view_object *view, double rotx, double roty, double rotz)
      }
 
    if(roty != 0.0)
-     glRotated(roty, 0.0, 1.0, 0.0);
-
+     {
+       glRotated(roty, 0.0, 1.0, 0.0);
+     }
 
    glGetDoublev(GL_MODELVIEW_MATRIX, m);
   glPopMatrix();
@@ -829,7 +830,10 @@ ay_viewt_changetype(ay_view_object *view, int newtype)
   view->type = newtype;
   view->aligned = AY_FALSE;
 
-  ay_viewt_updatemark(view->togl, AY_TRUE);
+  if(view->drawmark)
+    {
+      ay_viewt_updatemark(view->togl, AY_TRUE);
+    }
 
  return;
 } /* ay_viewt_changetype */
@@ -1080,7 +1084,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      view->roty += argd;
 
 	      ay_viewt_rotate(view, 0.0, roty, 0.0);
-	      view->drawmark = AY_FALSE;
+	      need_updatemark = AY_TRUE;
 	      view->aligned = AY_FALSE;
 	    }
 	  if(!strcmp(argv[i], "-droty"))
@@ -1099,7 +1103,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		}
 
 	      ay_viewt_rotate(view, rotx, 0.0, rotz);
-	      view->drawmark = AY_FALSE;
+	      need_updatemark = AY_TRUE;
 	      view->aligned = AY_FALSE;
 	    }
 	  if(!strcmp(argv[i], "-droll"))
@@ -1686,6 +1690,11 @@ ay_viewt_updatemark(struct Togl *togl, int local)
       break;
     case AY_VTTOP:
       gluProject(view->markworld[0], 0, view->markworld[2], mm, pm, vp,
+		 &view->markx, &view->marky, &dummy);
+      break;
+    case AY_VTPERSP:
+      gluProject(view->markworld[0], view->markworld[1], view->markworld[2],
+		 mm, pm, vp,
 		 &view->markx, &view->marky, &dummy);
       break;
     default:
