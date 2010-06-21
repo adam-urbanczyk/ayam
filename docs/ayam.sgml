@@ -2592,7 +2592,7 @@ it is highly suggested to use grids with this action.
 </figure>
 <p>
 This action may be invoked to mark a point in space for perusal
-of the modelling actions that rotate or scale about a point.
+of other modelling actions that e.g. rotate or scale about a point.
 The corresponding keyboard shortcut is <tt/&lt;a&gt;/.
 Consequently, this action is also active as intermediate action
 for e.g. rotate about, where the keyboard shortcuts <tt/&lt;r&gt;/
@@ -2636,7 +2636,8 @@ can use the corresponding view object attributes or select
 a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
 <p>
 Another way of setting the mark is via the <tt/"FindU"/ special action
-for curves (see also section <ref id="miscac" name="Miscellaneous Actions">).
+for curves
+(see also section <ref id="finduac" name="Finding Points on Curves">).
 <p>
 Finally, remember that certain operations like e.g. changing the view
 type will clear the mark.
@@ -2889,22 +2890,58 @@ Delete Points|<tt/&lt;d&gt;/|
 </table>
 <p>
 
-<sect1>Miscellaneous Actions<label id="miscac">
+<sect1>Finding Points on Curves<label id="finduac">
 <p>
-This section documents some special modelling actions.
-<itemize>
-<item>The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
-may be applied to NURBS curves (objects of type NCurve) only.
+The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
+may be applied to NURBS curves (objects of type NCurve or
+objects that provide NCurve objects) only.
 This action may be used to get the corresponding parametric
-value u from a point on a curve. Pick a point on the curve
-(not a control point!). If this
-is done, the appropriate value for u is calculated, stored
+value u from a point on a curve. For every picked point
+the appropriate value for u is calculated, stored
 in the global variable u, and additionally written to the console.
-A small cross is drawn at the position of the picked point.
+The mark is set to the position of the picked point.
 Remember to exactly pick a point on the curve or nearby, otherwise
-the calculation may fail and no value will be written to the console.
+the calculation may fail.
+See also the table below.
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Find U|<tt/&lt;u&gt;/|
+<#if out=latex><x>inlinegfx pics/finduac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/finduac.gif"></#if>
+@<hline>
+</tabular>
+<caption>Find Point on Curve Action</caption>
+</table>
+<p>
 
-<item>The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
+<sect1>Finding Points on Surfaces<label id="finduvac">
+<p>
+The modelling action <tt/"FindUV"/ (shortcut: <tt/&lt;U&gt;/)
+may be applied to NURBS surfaces (objects of type NPatch or
+objects that provide NPatch objects) only.
+This action may be used to get the corresponding parametric
+values u and v from a point on a surface. For every picked point
+the appropriate values for u and v are calculated, stored
+in the global variables u and v, and additionally written to the console.
+The mark is set to the position of the picked point.
+Remember to exactly pick a point on the surface or nearby, otherwise
+the calculation may fail.
+See also the table below.
+<table loc="ht">
+<tabular ca="|c|c|c|"><hline>
+<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
+Find UV|<tt/&lt;U&gt;/|
+<#if out=latex><x>inlinegfx pics/finduvac.png 0.7cm </x></#if>
+<#if out=html><img src="pics/finduvac.gif"></#if>
+@<hline>
+</tabular>
+<caption>Find Point on Surface Action</caption>
+</table>
+<p>
+<sect1>Interactively Splitting Curves<label id="splitncac">
+<p>
+The modelling action <tt/"Split Curve"/ (shortcut <tt/&lt;c&gt;/)
 may be applied to NURBS curves (objects of type NCurve) only.
 Using this action you may split a NURBS curve into two new curves
 at a point on the curve that may be specified by picking a point
@@ -2914,7 +2951,6 @@ the calculation of the parametric value for the split will fail.
 The selected curve will be changed by this action, and
 a new curve will be created. It is currently not possible to undo
 the changes of a split!
-</itemize>
 
 <sect1>Editing in Local Space<label id="editlocal">
 <p>
@@ -10731,6 +10767,35 @@ values of the second point of the selected NURBS curve object to
 </itemize>
 
 
+<p><label id="scevalnc">
+evalNC:
+<itemize>
+ <item>Synopsis: <tt/"evalNC u varx vary varz [varw]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Evaluate the currently selected NURBS curve at
+designated parameter value u and write the results into the variables
+named varx, vary, varz, and (if the curve is rational) also varw.
+ <item>Notes: Only the first object from the selection is processed.
+This object must be of type NCurve.
+<item>Examples: <tt/"evalNC 0.75 x y z"/ evaluates the selected NURBS
+curve at parameter value 0.75 and writes the resulting values to the
+variables <tt/"x y z"/.
+</itemize>
+
+<p><label id="scevalnp">
+evalNP:
+<itemize>
+ <item>Synopsis: <tt/"evalNP u v varx vary varz [varw]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Evaluate the currently selected NURBS surface at
+designated parameter values u, v and write the results into the variables
+named varx, vary, varz, and (if the surface is rational) also varw.
+ <item>Notes: Only the first object from the selection is processed.
+This object must be of type NPatch. Potentially present trim curve
+information is not considered (one can e.g. evaluate in cut out parts
+of the surface).
+</itemize>
+
 <sect2>Updating the GUI<label id="sciupd">
 <p>
 These commands update various parts of the Ayam user interface:
@@ -11478,8 +11543,12 @@ preferences, you still have to switch to Pixie using the main menu
 <sect>Import and Export<label id="impex">
 <p>
 This section contains the documentation of all import and export
-modules of Ayam. Except for RIB export, all import and export
-modules are plugins that need to be loaded into Ayam before possible
+modules of Ayam.
+
+<sect1>Import and Export Plugin Management<label id="impexpl">
+<p>
+Except for RIB export, all import/export modules of Ayam
+are plugins that need to be loaded into the application before possible
 usage.
 Loading of an import/export plugin may be done in three different ways:
 <enum>
@@ -11495,10 +11564,38 @@ keyboard shortcuts) and specify a filename with the appropriate
 extension (e.g. <tt/".dxf"/). Ayam will automatically load the matching plugin
 (<tt/"dxfio"/) and open the import (or export) options dialog with
 the <tt/"FileName"/ option already set to the filename choosen before.
-This feature is available since Ayam 1.13.
+This feature is available since Ayam 1.13 and requires that the
+<tt/"Plugins"/ preferences are correctly set.
 </enum>
 
+<sect1>Import and Export Plugin Overview<label id="impexft">
 <p>
+The following table lists the Ayam features supported by the various
+import plugins.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|c|c|"><hline>
+<bf/Feature/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
+
+Quadrics|Yes|No|Yes|No|Yes|Yes@<hline>
+
+Trimmed NURBS|Yes|Yes|Yes|No|Yes|Yes@<hline>
+
+Parametrics|No|No|No|No|No|Yes@<hline>
+
+Curves|No|Yes|Yes|Yes|Yes|Yes@<hline>
+
+Transformations|Yes|No|Yes|No|No|Yes@<hline>
+
+Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
+
+Instances|Yes|No|No|No|No|No@<hline>
+
+CSG|Yes|No|No|No|No|No@<hline>
+</tabular>
+<caption>Ayam Features Supported by Various Import Plugins</caption>
+</table>
+
 Not all features of Ayam are supported in the various export
 options. The following table gives an overview of the supported
 features per export file format.
@@ -11549,33 +11646,6 @@ provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
 <p>
 Ayam is not perfect either, as in most import options material and
 animation data is completely ignored.
-<p>
-Speaking of import, the following table lists the Ayam features
-supported by the various import plugins.
-
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|c|c|"><hline>
-<bf/Feature/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
-
-Quadrics|Yes|No|Yes|No|Yes|Yes@<hline>
-
-Trimmed NURBS|Yes|Yes|Yes|No|Yes|Yes@<hline>
-
-Parametrics|No|No|No|No|No|Yes@<hline>
-
-Curves|No|Yes|Yes|Yes|Yes|Yes@<hline>
-
-Transformations|Yes|No|Yes|No|No|Yes@<hline>
-
-Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
-
-Instances|Yes|No|No|No|No|No@<hline>
-
-CSG|Yes|No|No|No|No|No@<hline>
-</tabular>
-<caption>Ayam Features Supported by Various Import Plugins</caption>
-</table>
-
 <p>
 The following table gives an overview of the file format versions
 supported by the various import and export plugins. Import of files
@@ -14017,6 +14087,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
 <item>estlenNC: <ref id="scestlennc" name="scripting interface command">
+<item>evalNC: <ref id="scevalnc" name="scripting interface command">
+<item>evalNP: <ref id="scevalnp" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
@@ -14049,7 +14121,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
-<item>FindU: <ref id="miscac" name="modelling action">
+<item>FindU: <ref id="finduac" name="modelling action">
+<item>FindUV: <ref id="finduvac" name="modelling action">
 <item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
@@ -14541,7 +14614,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="nspt" name="NURBS sphere tool">
 <item>Split: <ref id="sptct" name="split to curves tool">,
 <ref id="mmtools" name="split polymesh tool">
-<item>Split Curve: <ref id="miscac" name="modelling action">
+<item>Split Curve: <ref id="splitncac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
