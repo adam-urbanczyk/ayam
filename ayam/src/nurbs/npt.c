@@ -11165,10 +11165,10 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       Tcl_SetStringObj(ton, "v", -1);
       to = Tcl_NewDoubleObj(v);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
 
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);

@@ -1918,7 +1918,7 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
