@@ -6178,7 +6178,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 5)
     {
-      ay_error(AY_EARGS, fname, "u vnx vny vnz [vnw]");
+      ay_error(AY_EARGS, fname, "[-trafo] u vnx vny vnz");
       return TCL_OK;
     }
 
@@ -6251,13 +6251,6 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_SetStringObj(ton,argv[argi+4],-1);
 	  to = Tcl_NewDoubleObj(point[2]);
 	  Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
-
-	  if(curve->is_rat && (argc > 5))
-	    {
-	      Tcl_SetStringObj(ton,argv[argi+5],-1);
-	      to = Tcl_NewDoubleObj(point[3]);
-	      Tcl_ObjSetVar2(interp,ton,NULL,to, TCL_LEAVE_ERR_MSG);
-	    }
 
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 	} /* if */
