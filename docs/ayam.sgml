@@ -10787,11 +10787,13 @@ values of the second point of the selected NURBS curve object to
 <p><label id="scevalnc">
 evalNC:
 <itemize>
- <item>Synopsis: <tt/"evalNC u varx vary varz [varw]"/
+ <item>Synopsis: <tt/"evalNC [-trafo] u varx vary varz"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Evaluate the currently selected NURBS curve at
 designated parameter value u and write the results into the variables
-named varx, vary, varz, and (if the curve is rational) also varw.
+named varx, vary, and varz. If the optional parameter -trafo is set,
+the transformation attributes of the selected object are applied to the
+result.
  <item>Notes: Only the first object from the selection is processed.
 This object must be of type NCurve.
 <item>Examples: <tt/"evalNC 0.75 x y z"/ evaluates the selected NURBS
@@ -10806,7 +10808,9 @@ evalNP:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Evaluate the currently selected NURBS surface at
 designated parameter values u, v and write the results into the variables
-named varx, vary, varz, and (if the surface is rational) also varw.
+named varx, vary, and varz. If the optional parameter -trafo is set,
+the transformation attributes of the selected object are applied to the
+result.
  <item>Notes: Only the first object from the selection is processed.
 This object must be of type NPatch. Potentially present trim curve
 information is not considered (one can e.g. evaluate in cut out parts
