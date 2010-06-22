@@ -6171,20 +6171,27 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int apply_trafo = AY_FALSE, argi = 0;
+ int apply_trafo = AY_FALSE, to_world = AY_FALSE, argi = 0;
  double u, point[4] = {0}, m[16] = {0};
  Tcl_Obj *to = NULL, *ton = NULL;
 
   /* parse args */
   if(argc < 5)
     {
-      ay_error(AY_EARGS, fname, "[-trafo] u vnx vny vnz");
+      ay_error(AY_EARGS, fname, "[-trafo|-world] u vnx vny vnz");
       return TCL_OK;
     }
 
   if(argv[1][0] == '-' && argv[1][1] == 't')
     {
       apply_trafo = AY_TRUE;
+      argi++;
+    }
+
+  if(argv[1][0] == '-' && argv[1][1] == 'w')
+    {
+      apply_trafo = AY_TRUE;
+      to_world = AY_TRUE;
       argi++;
     }
 
@@ -6236,9 +6243,28 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(apply_trafo)
 	    {
-	      ay_trafo_creatematrix(o, m);
+	      if(to_world)
+		{
+		  glMatrixMode(GL_MODELVIEW);
+		  glPushMatrix();
+		   glLoadIdentity();
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getall(ay_currentlevel->next);
+		     }
+		   glTranslated(o->movx, o->movy, o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled(o->scalx, o->scaly, o->scalz);
+		   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+		  glPopMatrix();
+		}
+	      else
+		{
+		  ay_trafo_creatematrix(o, m);
+		}
 	      ay_trafo_apply3(point, m);
-	    }
+	    } /* if */
 
 	  ton = Tcl_NewStringObj(argv[argi+2],-1);
 	  to = Tcl_NewDoubleObj(point[0]);
