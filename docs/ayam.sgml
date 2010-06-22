@@ -1373,12 +1373,13 @@ that displays the current grid size. You may click on the icon to
 display a menu with predefined grid size values.
 Choosing one of the values 0.1, 0.25, 0.5, or 1.0 will set the
 grid size of the view to the choosen value and will additionally
-switch on drawing of the grid and snapping to the grid.
+enable drawing of the grid and snapping to the grid.
 The entry <tt/"X"/ allows to set a custom grid value.
-The last entry will set the grid size to 0.0 and switch off drawing of
+The last entry will set the grid size to 0.0 and disable drawing of
 and snapping to the grid.
-If a gridsize other than 0.1, 0.25, 0.5, or 1.0 is in effect for the view,
-a different icon (with an X) will be displayed in the icon menu instead.
+If a grid size other than 0.1, 0.25, 0.5, or 1.0 is in effect for the view,
+a generic icon (with a X instead of a number) will be displayed in the
+icon menu.
 
 <sect1>View Window Shortcuts and Actions<label id="vwsc">
 <p>
@@ -1473,13 +1474,16 @@ See also section <ref id="editlocal" name="Editing in Local Space">.
 
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
-When the view windows action is <tt/"Pick"/ you can pick (select) objects
-that appear within this view.
-You can invoke this action by pressing <tt/&lt;Shift+p&gt;/
-or make this action the default action using the preference
-setting <tt>"Modelling/DefaultAction"</tt>.
 This section describes techniques that you can use for selecting
 one or more objects within a view.
+<p>
+When the view windows action is <tt/"Pick"/ you can pick (select) objects
+that appear within this view with the mouse.
+You can invoke this action by pressing <tt/&lt;P&gt;/
+or make this action the default action using the preference
+setting <tt>"Modelling/DefaultAction"</tt>. If picking is the
+default action, it will be automatically enabled when any other
+action is broken using <tt/&lt;Esc&gt;/.
 
 <sect2>Selecting Individual Objects<label id="oneobjsel">
 <p>
@@ -1565,7 +1569,7 @@ the corresponding object is highlighted. Click <tt/"Ok"/ when you have
 determined which object to select or <tt/"Cancel"/ to close the list and keep
 the previous selection unchanged.
 Since Ayam 1.11 you can also use a double click in the list of selection
-candidates to select an object and close the dialog.
+candidates to select an object and immediately close the dialog.
 <p>
 Notes:
 <itemize>
@@ -1573,7 +1577,7 @@ Notes:
 objects within the views.
 
 <item>It is possible to use the <tt/"Zoom to Object"/ action (shortcut
-<tt/&lt;Ctrl+o&gt;/) while the ambiguous select listbox is open to get
+<tt/&lt;O&gt;/) while the ambiguous select listbox is open to get
 a better view of the temporarily selected object.
 
 <item>The tolerance used to determine whether an object should be picked
@@ -2243,14 +2247,17 @@ points and help in exact modelling.
 Also note that you may use the middle and rightmost mouse button
 to zoom and move the view while modelling actions are active.
 <p>
-For actions that modify the camera of a view
-please see section <ref id="vwsc" name="View Window Shortcuts and Actions">.
+For actions that modify the camera of a view please see section
+<ref id="vwsc" name="View Window Shortcuts and Actions">.
 
 <#if out=latex><x/newpage/</#if>
 
 <sect1>Modelling Actions Overview
 <p>
 This section gives an overview over the various modelling actions.
+Note that a more complete collection of shortcuts is available as separate
+reference card document in the Ayam distribution.
+
 <table loc="ht">
 <tabular ca="|c|c|c||c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/|<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
@@ -10787,13 +10794,14 @@ values of the second point of the selected NURBS curve object to
 <p><label id="scevalnc">
 evalNC:
 <itemize>
- <item>Synopsis: <tt/"evalNC [-trafo] u varx vary varz"/
+ <item>Synopsis: <tt/"evalNC [-trafo|-world] u varx vary varz"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Evaluate the currently selected NURBS curve at
 designated parameter value u and write the results into the variables
 named varx, vary, and varz. If the optional parameter -trafo is set,
 the transformation attributes of the selected object are applied to the
-result.
+result. If the optional parameter -world is set, the resulting
+coordinates are transformed to world space.
  <item>Notes: Only the first object from the selection is processed.
 This object must be of type NCurve.
 <item>Examples: <tt/"evalNC 0.75 x y z"/ evaluates the selected NURBS
@@ -10804,13 +10812,14 @@ variables <tt/"x y z"/.
 <p><label id="scevalnp">
 evalNP:
 <itemize>
- <item>Synopsis: <tt/"evalNP u v varx vary varz [varw]"/
+ <item>Synopsis: <tt/"evalNP [-trafo|-world] u v varx vary varz"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Evaluate the currently selected NURBS surface at
 designated parameter values u, v and write the results into the variables
 named varx, vary, and varz. If the optional parameter -trafo is set,
 the transformation attributes of the selected object are applied to the
-result.
+result. If the optional parameter -world is set, the resulting
+coordinates are transformed to world space.
  <item>Notes: Only the first object from the selection is processed.
 This object must be of type NPatch. Potentially present trim curve
 information is not considered (one can e.g. evaluate in cut out parts
