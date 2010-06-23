@@ -21,26 +21,25 @@ int
 ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
- char fname[] = "tmpGet";
  char *tmpname = NULL;
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "tmpdir varname");
+      ay_error(AY_EARGS, argv[0], "tmpdir varname");
       return TCL_OK;
     }
 
 #ifndef AYNOTEMPNAM
   if(!(tmpname = tempnam(argv[1], "ayam")))
     {
-      ay_error(AY_ERROR, fname, "cannot create tempname");
+      ay_error(AY_ERROR, argv[0], "cannot create tempname");
        return TCL_OK;
     }
 #else
   if(!(tmpname = tmpnam(argv[1])))
     {
-      ay_error(AY_ERROR, fname, "cannot create tempname");
+      ay_error(AY_ERROR, argv[0], "cannot create tempname");
       return TCL_OK;
     }
 #endif

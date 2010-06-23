@@ -628,12 +628,11 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  int i = 1, mergepvtags = AY_FALSE;
- char fname[] = "mergePo";
  ay_object *no = NULL;
 
   if(!ay_selection)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -650,7 +649,7 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(ay_status)
     { /* emit error message */
-      ay_error(AY_ERROR, fname, "Merge operation failed!");
+      ay_error(AY_ERROR, argv[0], "Merge operation failed!");
     }
   else
     { /* link the new PolyMesh to the scene */
@@ -927,7 +926,6 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 {
  int ay_status = AY_OK;
  int i = 1, optimize_coords = 1, ignore_normals = 1, optimize_faces = 0;
- char fname[] = "optiPo";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
 
@@ -953,7 +951,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -970,7 +968,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  if(ay_status)
 	    { /* emit error message */
-	      ay_error(AY_ERROR, fname, "Optimize operation failed!");
+	      ay_error(AY_ERROR, argv[0], "Optimize operation failed!");
 	    }
 	  else
 	    {
@@ -980,7 +978,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, "PolyMesh");
+	  ay_error(AY_EWTYPE, argv[0], "PolyMesh");
 	} /* if */
 
       sel = sel->next;
@@ -1361,13 +1359,12 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
- char fname[] = "splitPo";
  ay_object *o = NULL, *newo;
  ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1382,7 +1379,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	      newo = NULL;
 	      if(!(newo = calloc(1, sizeof(ay_object))))
 		{
-		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 
@@ -1403,18 +1400,18 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_error(AY_ERROR, fname, "Split operation failed!");
+		  ay_error(AY_ERROR, argv[0], "Split operation failed!");
 		  free(newo);
 		} /* if */
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname, "No point selection.");
+	      ay_error(AY_ERROR, argv[0], "No point selection.");
 	    } /* if */
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, "PolyMesh");
+	  ay_error(AY_EWTYPE, argv[0], "PolyMesh");
 	} /* if */
 
       sel = sel->next;

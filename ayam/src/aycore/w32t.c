@@ -24,12 +24,11 @@ ay_w32t_w32killtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "w32kill";
  HANDLE proc;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "process_id");
+      ay_error(AY_EARGS, argv[0], "process_id");
       return TCL_OK;
     }
 

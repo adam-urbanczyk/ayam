@@ -123,7 +123,6 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "crtOb";
  ay_voidfp *arr = NULL;
  unsigned int index;
  Tcl_HashEntry *entry = NULL;
@@ -133,14 +132,14 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "typename [args]!");
+      ay_error(AY_EARGS, argv[0], "typename [args]!");
       return TCL_OK;
     }
 
   entry = Tcl_FindHashEntry(&ay_otypesht, argv[1]);
   if(!entry)
     {
-      ay_error(AY_ENTYPE, fname, argv[1]);
+      ay_error(AY_ENTYPE, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -148,7 +147,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -162,7 +161,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, "Create callback failed!");
+      ay_error(ay_status, argv[0], "Create callback failed!");
       free(o);
       return TCL_OK;
     }
@@ -174,7 +173,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_object_crtendlevel(&(o->down));
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
            "Could not create terminating level object, scene is corrupt now!");
 	}
     }
@@ -290,13 +289,12 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "delOb";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection, *try_again = NULL, **next_try_again, *t;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -307,7 +305,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o == ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "Root object may not be deleted!");
+	  ay_error(AY_ERROR, argv[0], "Root object may not be deleted!");
 	}
       else
 	{
@@ -319,13 +317,13 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(ay_status)
 	    {
 	      /*
-	      ay_error(ay_status, fname, NULL);
+	      ay_error(ay_status, argv[0], NULL);
 	      ay_object_link(o);
 	      return TCL_OK;
 	      */
 	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
 		{
-		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      (*next_try_again)->object = o;
@@ -341,7 +339,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_object_delete(try_again->object);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  ay_object_link(o);
 	}
       t = try_again->next;
@@ -491,19 +489,18 @@ int
 ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- char fname[] = "nameOb";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "name");
+      ay_error(AY_EARGS, argv[0], "name");
       return TCL_OK;
     }
 
@@ -526,7 +523,7 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(o->name = calloc(strlen(argv[1])+1, sizeof(char))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -670,15 +667,14 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
  */
 int
 ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+		       int argc, char *argv[])
 {
- char fname[] = "hasChild";
  ay_object *o = NULL, *d = NULL;
  ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -712,18 +708,17 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  char *typename = NULL;
- char fname[] = "getType";
 
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "varname");
+      ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -731,7 +726,7 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -745,7 +740,7 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -760,18 +755,17 @@ ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  char *name = NULL;
- char fname[] = "getName";
 
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "varname");
+      ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -779,7 +773,7 @@ ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 

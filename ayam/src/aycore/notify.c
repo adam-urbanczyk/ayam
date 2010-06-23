@@ -287,7 +287,6 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "forceNot";
  char notify_modified = AY_FALSE;
  char notify_all = AY_FALSE;
  char notify_parent = AY_FALSE;
@@ -315,7 +314,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
 		  if(ay_status)
 		    {
-		      ay_error(AY_ERROR, fname, NULL);
+		      ay_error(AY_ERROR, argv[0], NULL);
 		    } /* if */
 
 		  o->modified = AY_FALSE;
@@ -329,7 +328,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, NULL);
+		  ay_error(AY_ERROR, argv[0], NULL);
 		} /* if */
 
 	      notify_parent = AY_TRUE;
@@ -354,7 +353,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
 		  if(ay_status)
 		    {
-		      ay_error(AY_ERROR, fname, NULL);
+		      ay_error(AY_ERROR, argv[0], NULL);
 		    } /* if */
 
 		  if(ay_prefs.completenotify)
@@ -362,7 +361,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		      ay_status = ay_notify_complete(sel->object);
 		      if(ay_status)
 			{
-			  ay_error(AY_ERROR, fname, NULL);
+			  ay_error(AY_ERROR, argv[0], NULL);
 			} /* if */
 		    }
 		  else
@@ -379,7 +378,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, NULL);
+		  ay_error(AY_ERROR, argv[0], NULL);
 		} /* if */
 
 	      if(ay_prefs.completenotify)
@@ -387,7 +386,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		  ay_status = ay_notify_complete(sel->object);
 		  if(ay_status)
 		    {
-		      ay_error(AY_ERROR, fname, NULL);
+		      ay_error(AY_ERROR, argv[0], NULL);
 		    } /* if */
 		}
 	      else

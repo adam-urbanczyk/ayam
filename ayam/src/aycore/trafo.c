@@ -521,12 +521,11 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "delTrafo";
  ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -538,7 +537,7 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_trafo_delegate(sel->object);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -701,11 +700,10 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char fname[] = "movOb";
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -745,12 +743,11 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "movPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -800,11 +797,10 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char fname[] = "scalOb";
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -851,12 +847,11 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "scalPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -917,11 +912,10 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
  double yaxis[3]={0.0,1.0,0.0};
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
- char fname[] = "rotOb";
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -977,12 +971,11 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
- char fname[] = "rotPnts";
  double tpoint[4] = {0};
 
   if(argc != 4)
     {
-      ay_error(AY_EARGS, fname, "%dx %dy %dz");
+      ay_error(AY_EARGS, argv[0], "%dx %dy %dz");
       return TCL_OK;
     }
 
@@ -1193,7 +1186,6 @@ ay_trafo_decomposematrix(double *m, ay_object *o)
  double rx, ry, rz;
  int i;
  double axis[3], quat[4] = {0};
- /*char fname[] = "ay_trafo_decompose";*/
 
   if(!m || !o)
     return;

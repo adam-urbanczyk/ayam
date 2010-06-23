@@ -1408,7 +1408,6 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "undo";
  int mode = 0; /* default mode is "undo" */
  int save_children = AY_FALSE;
  char *a = "ay", *n = "sc", *v = "1";
@@ -1443,7 +1442,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		  else
 		    {
-		      ay_error(AY_EARGS, fname, "redo|save|clear");
+		      ay_error(AY_EARGS, argv[0], "redo|save|clear");
 		      return TCL_OK;
 		    } /* if */
 		} /* if */
@@ -1547,7 +1546,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(undo_saved_op = calloc(strlen(argv[2]) + 1,
 				      sizeof(char))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  else

@@ -131,24 +131,17 @@ ay_clevel_delall(void)
 } /* ay_clevel_delall */
 
 
-/* ay_clevel_gotoptcmd:
- *  Tcl command to change the current level to the top level
+/* ay_clevel_gotop:
+ *  change the current level to the top level;
+ *  additionally, reset ay_next to the end of the top level
  */
 int
-ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+ay_clevel_gotop()
 {
  int ay_status = AY_OK;
- char fname[] = "goTop";
  ay_object *o = ay_root;
- /* char varName[20], newValue[10];*/
 
   ay_status = ay_clevel_delall();
-
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname, NULL);
-    }
 
   if(o)
     {
@@ -158,6 +151,27 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 	  o = o->next;
 	}
     }
+
+  return ay_status;
+} /* ay_clevel_gotop */
+
+/* ay_clevel_gotoptcmd:
+ *  Tcl command to change the current level to the top level
+ */
+int
+ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ /* char varName[20], newValue[10];*/
+
+  ay_status = ay_clevel_gotop();
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], NULL);
+    }
+
 #if 0
   /* Synchronize the value of ay(CurrentLevel) */
   sprintf(varName, "ay(CurrentLevel)");

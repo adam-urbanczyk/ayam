@@ -288,13 +288,12 @@ int
 ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
- char fname[] = "ayError";
  char *place = NULL, *detail = NULL;
  int ecode = AY_OK;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "ecode [fname detail]");
+      ay_error(AY_EARGS, argv[0], "ecode [fname detail]");
       return TCL_OK;
     }
 
@@ -334,9 +333,8 @@ int
 ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
- char fname[] = "getGLErr";
 
-  ay_error(AY_EOUTPUT, fname, (char *)gluErrorString(glGetError()));
+  ay_error(AY_EOUTPUT, argv[0], (char *)gluErrorString(glGetError()));
 
  return TCL_OK;
 } /* ay_error_getglerrortcmd */

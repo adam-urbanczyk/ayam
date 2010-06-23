@@ -817,12 +817,11 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "replaceScene";
 
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -830,7 +829,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
   ay_status = ay_clear_scene();
   if(ay_status)
     {
-      ay_error(ay_status, fname, "Could not clear scene!");
+      ay_error(ay_status, argv[0], "Could not clear scene!");
       return TCL_OK;
     }
 
@@ -839,7 +838,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, "Error reading file!");
+      ay_error(ay_status, argv[0], "Error reading file!");
       return TCL_OK;
     }
 
@@ -855,12 +854,11 @@ ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "insertScene";
 
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -868,7 +866,7 @@ ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, "Error reading file!");
+      ay_error(ay_status, argv[0], "Error reading file!");
       return TCL_OK;
     }
 

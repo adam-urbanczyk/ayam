@@ -71,7 +71,6 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "convOb";
  ay_list_object *sel = ay_selection;
  int in_place = AY_FALSE, notify_parent = AY_FALSE;
 
@@ -88,7 +87,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
       ay_status = ay_convert_force(sel->object, in_place);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	}
       else
 	{
