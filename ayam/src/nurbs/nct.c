@@ -849,7 +849,6 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
  int aknotc = 0, i;
- char fname[] = "refine";
  double *X = NULL;
  char **aknotv;
 
@@ -859,7 +858,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(X = calloc(aknotc, sizeof(double))))
 	{
-	  ay_error(AY_EOMEM,fname,NULL);
+	  ay_error(AY_EOMEM,argv[0],NULL);
 	  Tcl_Free((char *) aknotv);
 	  return TCL_OK;
 	}
@@ -886,7 +885,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_refine(curve, X, aknotc);
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "refine operation failed");
+	      ay_error(AY_ERROR, argv[0], "refine operation failed");
 	    }
 
 	  o->modified = AY_TRUE;
@@ -896,7 +895,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
 
       sel = sel->next;
@@ -1024,7 +1023,6 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  double *knotv, u;
  int count_start, count_end, i, j;
- char fname[] = "clamp";
 
   /*
   if(argc >= 2)
@@ -1065,7 +1063,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		/*
 		if(count_start || count_end)
 		  {
-		    ay_error(AY_ERROR, fname,
+		    ay_error(AY_ERROR, argv[0],
 			       "cannot clamp this curve");
 		    return TCL_OK;
 		  }
@@ -1076,7 +1074,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	    if(ay_status)
 	      {
-		ay_error(ay_status, fname, "clamp operation failed");
+		ay_error(ay_status, argv[0], "clamp operation failed");
 		return TCL_OK;
 	      }
 
@@ -1091,7 +1089,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  }
 	else
 	  {
-	    ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	    ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	  } /* if */
       } /* if */
 
@@ -1111,10 +1109,10 @@ int
 ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 {
  int ay_status = AY_OK;
+ char fname[] = "elevate";
  int i, j, a, b, clamp_me;
  double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int t = 1, nh = 0;
- char fname[] = "elevate";
 
   if(!curve)
     return AY_ENULL;
@@ -1241,7 +1239,6 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
  int i, j, a, b, clamp_me;
  double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int t = 1, nh = 0;
- char fname[] = "elevate";
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &t);
@@ -1291,7 +1288,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_clamp(curve);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, "clamp operation failed");
+		  ay_error(AY_ERROR, argv[0], "clamp operation failed");
 		}
 	    }
 
@@ -1300,14 +1297,14 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 			    curve->order + t),
 			     sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  if(!(Qw = calloc((curve->length + curve->length*t)*4,
 			   sizeof(double))))
 	    {
 	      free(Uh);
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -1318,21 +1315,21 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(ay_status,fname,"degree elevation failed");
+	      ay_error(ay_status,argv[0],"degree elevation failed");
 	      free(Uh); free(Qw); return TCL_OK;
 	    }
 
 	  if(!(realQw = realloc(Qw, nh*4* sizeof(double))))
 	    {
-	      ay_error(AY_ERROR, fname, "Memory may have leaked!");
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_ERROR, argv[0], "Memory may have leaked!");
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
 	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
 	    {
-	      ay_error(AY_ERROR, fname, "Memory may have leaked!");
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_ERROR, argv[0], "Memory may have leaked!");
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -1362,7 +1359,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	} /* if */
 
       sel = sel->next;
@@ -1387,17 +1384,16 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0, nq = 0;
- char fname[] = "insknNC";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r");
+      ay_error(AY_EARGS, argv[0], "u r");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1406,7 +1402,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -1423,7 +1419,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((u < knots[curve->order-1]) || (u > knots[curve->length]))
 	    {
-	      ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	      ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
 	      return TCL_OK;
 	    }
 
@@ -1436,7 +1432,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(curve->order < r+s)
 	    {
-	      ay_error(AY_ERROR, fname,
+	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
 	    }
@@ -1445,12 +1441,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -1494,11 +1490,10 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- char fname[] = "collMP";
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1511,7 +1506,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_collapseselp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, fname, "Collapse operation failed!");
+		ay_error(ay_status, argv[0], "Collapse operation failed!");
 	      }
 
 	    if(sel->object->selp)
@@ -1529,7 +1524,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_npt_collapseselp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status, fname, "Collapse operation failed!");
+		ay_error(ay_status, argv[0], "Collapse operation failed!");
 	      }
 
 	    if(sel->object->selp)
@@ -1541,7 +1536,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWTYPE, fname, "NCurve, NPatch");
+	    ay_error(AY_EWTYPE, argv[0], "NCurve, NPatch");
 	  }
 	  break;
 	} /* switch */
@@ -1564,11 +1559,10 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- char fname[] = "explMP";
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1581,7 +1575,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status,fname,"Explode operation failed!");
+		ay_error(ay_status,argv[0],"Explode operation failed!");
 	      }
 
  	    if(sel->object->selp)
@@ -1598,7 +1592,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_npt_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status,fname,"Explode operation failed!");
+		ay_error(ay_status,argv[0],"Explode operation failed!");
 	      }
 
  	    if(sel->object->selp)
@@ -1610,7 +1604,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWTYPE, fname, "NCurve, NPatch");
+	    ay_error(AY_EWTYPE, argv[0], "NCurve, NPatch");
 	    return TCL_OK;
 	  }
 	  break;
@@ -2094,17 +2088,16 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
- char fname[] = "split";
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "u");
+      ay_error(AY_EARGS, argv[0], "u");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2128,7 +2121,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		} /* if */
 
@@ -2141,7 +2134,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	      return TCL_OK;
 	    } /* if */
 	} /* if */
@@ -2169,31 +2162,30 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
  double m1[16], m2[16];
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc1 = NULL, *nc2 = NULL;
- char fname[] = "concat";
  ay_object *o = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   if(!sel->next)
     {
-      ay_error(AY_ERROR, fname, "select two NURB curves!");
+      ay_error(AY_ERROR, argv[0], "select two NURB curves!");
       return TCL_OK;
     }
 
   if((sel->object->type != AY_IDNCURVE) ||
      (sel->next->object->type != AY_IDNCURVE))
     {
-      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
       return TCL_OK;
     }
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2215,7 +2207,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(newcontrolv = calloc(nc1->length*4+nc2->length*4, sizeof(double))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       free(o);
       return TCL_OK;
     }
@@ -2253,7 +2245,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2458,7 +2450,6 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "crtNCircle";
  double arc = 360.0;
  ay_object *o = NULL;
  double radius = 1.0;
@@ -2484,7 +2475,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2513,7 +2504,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2537,7 +2528,6 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *parent = NULL, **last = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "create_trimrect";
  double def_controls[20] = { 1.0, 1.0, 0.0, 1.0,
 			     1.0,-1.0, 0.0, 1.0,
 			     -1.0,-1.0, 0.0, 1.0,
@@ -2550,7 +2540,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2580,21 +2570,21 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(curve = calloc(1,sizeof(ay_nurbcurve_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
   if(!(curve->controlv = calloc(20, sizeof(double))))
     {
       free(curve);
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
   if(!(curve->knotv = calloc(7, sizeof(double))))
     {
       free(curve->controlv); free(curve);
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -2739,14 +2729,13 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "create_closedbsp";
  int sections = 0, order = 4;
  double radius = 1.0, arc = 360.0;
 
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "sections");
+      ay_error(AY_EARGS, argv[0], "sections");
       return TCL_OK;
     }
 
@@ -2754,7 +2743,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(sections < 1)
     {
-      ay_error(AY_ERROR, fname, "sections must be >= 1");
+      ay_error(AY_ERROR, argv[0], "sections must be >= 1");
       return TCL_OK;
     }
 
@@ -2778,7 +2767,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   /* create object */
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -3681,7 +3670,6 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
- char fname[] = "rescaleknNC";
  int i = 1, mode = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
 
@@ -3707,7 +3695,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -3716,7 +3704,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -3740,13 +3728,13 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, "Could not rescale knots!");
+		  ay_error(ay_status, argv[0], "Could not rescale knots!");
 		}
 	      src->modified = AY_TRUE;
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname, "Need a custom knot vector!");
+	      ay_error(AY_ERROR, argv[0], "Need a custom knot vector!");
 	    } /* if */
 
 	} /* if */
@@ -3808,7 +3796,6 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o, *po = NULL;
  ay_nurbcurve_object *c, *c2 = NULL;
- char fname[] = "curvPlot";
  double width = 5.0, scale = 1.0, t, dt, *controlv, umin = 0.0, umax = 0.0;
  int a = 0, b = 0, samples = 100, freepo;
  char *cname;
@@ -3849,14 +3836,14 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	  controlv = NULL;
 	  if(!(controlv = calloc((samples+1)*4, sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  o = NULL;
 	  if(!(o = calloc(1, sizeof(ay_object))))
 	    {
 	      free(controlv);
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  ay_object_defaults(o);
@@ -4341,7 +4328,6 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "shiftCBNC";
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  ay_object *src = NULL;
@@ -4354,13 +4340,13 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(times == 0)
     {
-      ay_error(AY_ERROR, fname, "Parameter must be different from 0.");
+      ay_error(AY_ERROR, argv[0], "Parameter must be different from 0.");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4369,7 +4355,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -4380,7 +4366,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 	      times = (curve->length-curve->order+1)-abs(times);
 	      if(times <= 1)
 		{
-		  ay_error(AY_ERROR, fname,
+		  ay_error(AY_ERROR, argv[0],
 			   "Parameter out of range. Could not shift curve!");
 		  continue;
 		}
@@ -4391,7 +4377,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_shiftcbs(curve);
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, "Could not shift curve!");
+		  ay_error(ay_status, argv[0], "Could not shift curve!");
 		}
 	    } /* for */
 	  src->modified = AY_TRUE;
@@ -4583,13 +4569,12 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "toXYNC";
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4598,14 +4583,14 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
 	  ay_status = ay_nct_toxy(src);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname,
+	      ay_error(ay_status, argv[0],
 		       "Could not align object to XY plane!");
 	    }
 	  else
@@ -4633,14 +4618,13 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "makeCompNC";
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4651,14 +4635,14 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
 	  ay_status = ay_object_copy(o, nxt);
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Could not copy object!");
+	      ay_error(AY_ERROR, argv[0], "Could not copy object!");
 	      goto cleanup;
 	    }
 	  nxt = &((*nxt)->next);
@@ -4672,7 +4656,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_nct_makecompatible(src);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "Failed to make selected curves compatible!");
 	  goto cleanup;
 	}
@@ -4701,7 +4685,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Please select atleast two NURBS curves!");
+      ay_error(AY_ERROR, argv[0], "Please select atleast two NURBS curves!");
     } /* if */
 
   ay_notify_parent();
@@ -4949,14 +4933,13 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "centerNC";
  ay_list_object *sel = ay_selection;
  ay_object *c = NULL;
  int mode = 0;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4970,14 +4953,14 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
       c = sel->object;
       if(c->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
 	  ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)c->refine);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not center object!");
+	      ay_error(ay_status, argv[0], "Could not center object!");
 	    }
 
 	  c->modified = AY_TRUE;
@@ -5157,13 +5140,12 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "coarsenNC";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5172,7 +5154,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -5185,7 +5167,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_nct_coarsen((ay_nurbcurve_object*)o->refine);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not coarsen object!");
+	      ay_error(ay_status, argv[0], "Could not coarsen object!");
 	      break;
 	    }
 
@@ -5212,7 +5194,6 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "remknNC";
  int i = 0, s = 0, r = 0;
  double tol = DBL_MAX/*AY_EPSILON*/;
  double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
@@ -5222,13 +5203,13 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r [tol]");
+      ay_error(AY_EARGS, argv[0], "u r [tol]");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5247,7 +5228,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -5268,7 +5249,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(fabs(curve->knotv[i]-u) >= AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "could not find knot to remove");
+	      ay_error(AY_ERROR, argv[0], "could not find knot to remove");
 	      break;
 	    }
 
@@ -5290,7 +5271,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "knot removal failed");
+	      ay_error(AY_ERROR, argv[0], "knot removal failed");
 	      free(newcontrolv);
 	      newcontrolv = NULL;
 	      free(newknotv);
@@ -5394,20 +5375,19 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "trimNC";
  double umin = 0.0, umax = 0.0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "umin umax");
+      ay_error(AY_EARGS, argv[0], "umin umax");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5416,7 +5396,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(umax <= umin)
     {
-      ay_error(AY_ERROR, fname, "umin must be smaller than umax");
+      ay_error(AY_ERROR, argv[0], "umin must be smaller than umax");
       return TCL_OK;
     }
 
@@ -5425,7 +5405,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -5440,7 +5420,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "trim failed");
+	      ay_error(AY_ERROR, argv[0], "trim failed");
 	      break;
 	    }
 
@@ -5993,7 +5973,6 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "estlenNC";
  ay_nurbcurve_object *curve = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *po = NULL;
@@ -6003,13 +5982,13 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "vname");
+      ay_error(AY_EARGS, argv[0], "vname");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -6026,7 +6005,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "provide failed");
+	  ay_error(AY_ERROR, argv[0], "provide failed");
 	  goto cleanup;
 	}
     }
@@ -6067,7 +6046,6 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "reparamNC";
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -6077,7 +6055,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "t");
+      ay_error(AY_EARGS, argv[0], "t");
       return TCL_OK;
     }
 
@@ -6085,7 +6063,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -6094,7 +6072,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
@@ -6108,7 +6086,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 					      stride, &vtemp);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, "Knot creation failed.");
+		  ay_error(AY_ERROR, argv[0], "Knot creation failed.");
 		  return(TCL_OK);
 		}
 	      for(i=0; i<curve->order-1; i++)
@@ -6126,7 +6104,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 					       stride, &vtemp);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, "Knot creation failed.");
+		  ay_error(AY_ERROR, argv[0], "Knot creation failed.");
 		  return(TCL_OK);
 		}
 	      for(i=0; i<curve->order-1; i++)
@@ -6167,7 +6145,6 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "evalNC";
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -6178,7 +6155,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 5)
     {
-      ay_error(AY_EARGS, fname, "[-trafo|-world] u vnx vny vnz");
+      ay_error(AY_EARGS, argv[0], "[-trafo|-world] u vnx vny vnz");
       return TCL_OK;
     }
 
@@ -6199,7 +6176,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -6207,7 +6184,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(o->type != AY_IDNCURVE)
     {
-      ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
     }
   else
     {
@@ -6216,7 +6193,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
       if((u < curve->knotv[curve->order-1]) ||
 	 (u > curve->knotv[curve->length]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameter out of range.");
+	  ay_error(AY_ERROR, argv[0], "Parameter out of range.");
 
 	  return TCL_OK;
 	}
@@ -6236,7 +6213,7 @@ ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "Evaluation failed.");
+	  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
 	  return TCL_OK;
 	}
       else
@@ -6300,7 +6277,6 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "xxxxNC";
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -6308,7 +6284,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r");
+      ay_error(AY_EARGS, argv[0], "u r");
       return TCL_OK;
     }
 
@@ -6317,7 +6293,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -6326,7 +6302,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_nct_ncname);
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	}
       else
 	{
