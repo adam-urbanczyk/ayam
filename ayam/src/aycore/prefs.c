@@ -19,8 +19,7 @@ int
 ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
-  /* char fname[] = "getPrefs";*/
- char *n1="ayprefs";
+ char *n1 = "ayprefs";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   /* Modeling */
@@ -285,14 +284,12 @@ int
 ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
-  /* char fname[] = "setPrefs";*/
- char *n1="ayprefs", *n2 = "ayprefse";
+ char *n1 = "ayprefs", *n2 = "ayprefse";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int itemp = 0, ay_status = AY_OK, qf = 0;
  double dtemp = 0.0;
- char fname[] = "set_prefs";
  char *str = NULL;
- char *ucargs[3] = {0}, ucarg1[] = "clear";
+ char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 
   /* Modeling */
   toa = Tcl_NewStringObj(n1, -1);
@@ -306,7 +303,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ERROR, fname,
+      ay_error(AY_ERROR, argv[0],
        "Illegal value for PickEpsilon (should be >0.0), reset.");
       if(ay_prefs.pick_epsilon > 0.0)
 	{
@@ -356,7 +353,7 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  itemp = 2;
 
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 	   "Illegal value for UndoLevels (should be >2 or -1), reset to 2.");
 
 	  to = Tcl_NewIntObj(itemp);
@@ -370,13 +367,14 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 
       /*      ay_status = ay_undo_clear();*/
+      ucargs[0] = ucarg0;
       ucargs[1] = ucarg1;
       ay_undo_undotcmd(clientData, interp, 2, ucargs);
 
       ay_status = ay_undo_init(itemp);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 

@@ -92,7 +92,6 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
- char fname[] = "applyTrafo";
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *bak = NULL, *p = NULL;
@@ -101,7 +100,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
  if(argc < 2)
    {
-     ay_error(AY_EARGS, fname, "sel|all");
+     ay_error(AY_EARGS, argv[0], "sel|all");
      return TCL_OK;
    }
 
@@ -232,7 +231,6 @@ int
 ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "invPnts";
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -245,7 +243,7 @@ ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -364,7 +362,6 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "centerPnts";
  ay_list_object *sel = ay_selection;
  ay_point *oldpointsel = NULL;
  ay_object *o = NULL;
@@ -372,7 +369,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -411,7 +408,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not center object!");
+	      ay_error(ay_status, argv[0], "Could not center object!");
 	    }
 	  else
 	    {
@@ -482,7 +479,6 @@ int
 ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
- char fname[] = "selPnts";
  int ay_status = AY_OK;
  int i = 1, indiceslen = 0, *tmp = NULL, *indices = NULL;
  int select_all = AY_FALSE, select_none = AY_FALSE;
@@ -491,7 +487,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -512,7 +508,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(!(tmp = realloc(tmp, i*sizeof(int))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      goto cleanup;
 	    }
 	  indices = tmp;
@@ -524,7 +520,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!select_none && !select_all && (indiceslen == 0))
     {
-      ay_error(AY_ERROR, fname, NULL);
+      ay_error(AY_ERROR, argv[0], NULL);
       goto cleanup;
     }
 
@@ -550,7 +546,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	  /*
 	  goto cleanup;
 	  */

@@ -387,13 +387,12 @@ ay_write_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
- char fname[] = "saveScene";
  int selected = AY_FALSE;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename [1|0]");
+      ay_error(AY_EARGS, argv[0], "filename [1|0]");
       return TCL_OK;
     }
 

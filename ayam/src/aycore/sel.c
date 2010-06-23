@@ -77,7 +77,6 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "selOb";
  int lbmode = AY_FALSE;
  ay_list_object *oldsel, *newsel, *t;
  ay_object *o = ay_currentlevel->object;
@@ -116,7 +115,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_sel_add(o);
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		}
 	    }
@@ -152,7 +151,7 @@ ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_sel_add(o);
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		}
 	    } /* if */
@@ -205,13 +204,12 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int i = 0;
  ay_object *o = ay_currentlevel->object;
- char fname[] = "getSel";
  Tcl_Obj *to = NULL, *toa = NULL;
 
   /*  */
   if(argc < 1)
     {
-      ay_error(AY_EARGS, fname, "varname");
+      ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
     }
 
@@ -244,7 +242,6 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
  /*int ay_status = AY_OK;*/
- char fname[] = "hSL";
  ay_list_object *cl = ay_currentlevel;
  ay_object *l, *o = NULL;
  int num = 1, tnum;
@@ -257,7 +254,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       if(num < 1)
 	{
-	  ay_error(AY_ERROR, fname, "argument should be >= 1");
+	  ay_error(AY_ERROR, argv[0], "argument should be >= 1");
 	  num = 1;
 	} /* if */
     } /* if */

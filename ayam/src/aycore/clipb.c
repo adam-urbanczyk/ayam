@@ -23,13 +23,12 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "copOb";
  ay_object *clip = NULL, *o = NULL, *t = NULL;
  ay_list_object *sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -49,10 +48,10 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_clipboard = t;
-	  ay_error(AY_ERROR, fname, "Could not clear clipboard!");
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0], "Could not clear clipboard!");
+	  ay_error(AY_ERROR, argv[0],
 		   "Maybe there are referenced objects in it?");
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
 	  return TCL_OK;
 	}
@@ -65,7 +64,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       ay_clipboard = NULL;
       return TCL_OK;
     }
@@ -82,7 +81,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -102,13 +101,12 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "cutOb";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *clip = NULL, *t = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -117,12 +115,12 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(sel->object == ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "Can not cut root object!");
+	  ay_error(AY_ERROR, argv[0], "Can not cut root object!");
 	  return TCL_OK;
 	}
       if(sel->object->type == AY_IDVIEW)
 	{
-	  ay_error(AY_ERROR, fname, "Can not cut view object!");
+	  ay_error(AY_ERROR, argv[0], "Can not cut view object!");
 	  return TCL_OK;
 	}
       sel = sel->next;
@@ -148,10 +146,10 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_clipboard = t;
-	  ay_error(AY_ERROR, fname, "Could not clear clipboard!");
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0], "Could not clear clipboard!");
+	  ay_error(AY_ERROR, argv[0],
 		   "Maybe there are referenced objects in it?");
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
 	  return TCL_OK;
 	} /* if */
@@ -199,7 +197,6 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "pasOb";
  ay_object *ins = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -212,7 +209,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(instanceerr)
 	{
-	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
+	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
 	  return TCL_OK;
 	}
 
@@ -225,7 +222,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_object_copy(clip, &ins);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -233,7 +230,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  /* oops, could not link object */
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  ay_status = ay_object_delete(ins);
 	  return TCL_OK;
 	} /* if */
@@ -260,7 +257,6 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "cmovOb";
  ay_object *next = NULL, *clip = ay_clipboard;
  int instanceerr = AY_FALSE;
 
@@ -273,7 +269,7 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(instanceerr)
 	{
-	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
+	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
 	  return TCL_OK;
 	}
       clip = clip->next;
@@ -287,7 +283,7 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  /* oops, could not link object */
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
       clip = next;
@@ -314,7 +310,6 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "repOb";
  ay_object *clip = ay_clipboard, *clipend = NULL;
  ay_object **presel, *selend;
  int instanceerr = AY_FALSE;
@@ -322,7 +317,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -331,12 +326,12 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(sel->object == ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "Can not replace root object!");
+	  ay_error(AY_ERROR, argv[0], "Can not replace root object!");
 	  return TCL_OK;
 	}
       if(sel->object->type == AY_IDVIEW)
 	{
-	  ay_error(AY_ERROR, fname, "Can not replace view object!");
+	  ay_error(AY_ERROR, argv[0], "Can not replace view object!");
 	  return TCL_OK;
 	}
       sel = sel->next;
@@ -346,7 +341,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!clip)
     {
-      ay_error(AY_ERROR, fname, "Clipboard is empty!");
+      ay_error(AY_ERROR, argv[0], "Clipboard is empty!");
       return TCL_OK;
     }
 
@@ -359,7 +354,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(instanceerr)
 	{
-	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
+	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
 	  return TCL_OK;
 	}
 
@@ -385,7 +380,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   if(!(*presel))
     {
       /* internal error, scene structure broken? */
-      ay_error(AY_ERROR, fname, NULL);
+      ay_error(AY_ERROR, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -419,7 +414,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = ay_sel_free(AY_TRUE);
   if(ay_status)
     {
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
     }
 
   /* notify parent object about changes */

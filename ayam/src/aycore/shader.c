@@ -84,7 +84,6 @@ int
 ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
- char fname[] = "shaderScanSLC";
 #ifdef AYUSESLCARGS
  int i = 0, j = 0, numargs = 0;
  SLC_VISSYMDEF *symbol = NULL, *element = NULL;
@@ -95,14 +94,14 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "shaderpath varname");
+      ay_error(AY_EARGS, argv[0], "shaderpath varname");
       return TCL_OK;
     }
 
   if((SLC_SetShader(argv[1])) == -1)
     {
-      ay_error(AY_ERROR, fname, "SLC_SetShader failed for:");
-      ay_error(AY_ERROR, fname, argv[1]);
+      ay_error(AY_ERROR, argv[0], "SLC_SetShader failed for:");
+      ay_error(AY_ERROR, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -148,8 +147,8 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!symbol)
 	{
-	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
-	  ay_error(AY_ERROR, fname, argv[1]);
+	  ay_error(AY_ERROR, argv[0], "Cannot get symbol from shader:");
+	  ay_error(AY_ERROR, argv[0], argv[1]);
 	  SLC_EndShader();
 	  Tcl_DStringFree(&ds);
 	  return TCL_OK;
@@ -204,8 +203,8 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 	      element = SLC_GetArrayArgElement(symbol, j);
 	      if(!element)
 		{
-		  ay_error(AY_ERROR, fname, "Could not get array element:");
-		  ay_error(AY_ERROR, fname, symbol->svd_name);
+		  ay_error(AY_ERROR, argv[0], "Could not get array element:");
+		  ay_error(AY_ERROR, argv[0], symbol->svd_name);
 		  Tcl_DStringFree(&ds);
 		  return TCL_OK;
 		} /* if */
@@ -223,8 +222,8 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWARN,fname,"Skipping array argument!");
-	  /*	  ay_error(AY_EWARN,fname,symbol->svd_name);*/
+	  ay_error(AY_EWARN,argv[0],"Skipping array argument!");
+	  /*	  ay_error(AY_EWARN,argv[0],symbol->svd_name);*/
 	} /* if */
       /* XXXX temporarily discard array arguments */
     } /* for */
@@ -237,7 +236,7 @@ ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_DStringFree(&ds);
 #else
- ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslcargs!");
+ ay_error(AY_ERROR, argv[0], "This Ayam has not been linked with libslcargs!");
 #endif /* AYUSESLCARGS */
  return TCL_OK;
 } /* ay_shader_scanslctcmd */
@@ -322,7 +321,6 @@ int
 ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
- char fname[] = "shaderScanSLX";
 #ifdef AYUSESLXARGS
  int i = 0, j = 0, numargs = 0;
  SLX_VISSYMDEF *symbol = NULL, *element = NULL;
@@ -335,7 +333,7 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "shaderpath varname");
+      ay_error(AY_EARGS, argv[0], "shaderpath varname");
       return TCL_OK;
     }
 
@@ -358,8 +356,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if((SLX_SetShader(argv[1])) == -1)
     {
-      ay_error(AY_ERROR, fname, "SLX_SetShader failed for:");
-      ay_error(AY_ERROR, fname, argv[1]);
+      ay_error(AY_ERROR, argv[0], "SLX_SetShader failed for:");
+      ay_error(AY_ERROR, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -405,8 +403,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!symbol)
 	{
-	  ay_error(AY_ERROR, fname, "Cannot get symbol from shader:");
-	  ay_error(AY_ERROR, fname, argv[1]);
+	  ay_error(AY_ERROR, argv[0], "Cannot get symbol from shader:");
+	  ay_error(AY_ERROR, argv[0], argv[1]);
 	  /*
 	  SLX_EndShader();
 	  Tcl_DStringFree(&ds);
@@ -470,8 +468,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	      element = SLX_GetArrayArgElement(symbol, j);
 	      if(!element)
 		{
-		  ay_error(AY_ERROR, fname, "Could not get array element:");
-		  ay_error(AY_ERROR, fname, symbol->svd_name);
+		  ay_error(AY_ERROR, argv[0], "Could not get array element:");
+		  ay_error(AY_ERROR, argv[0], symbol->svd_name);
 		  Tcl_DStringFree(&ds);
 		  return TCL_OK;
 		} /* if */
@@ -489,8 +487,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWARN,fname,"Skipping array argument!");
-	  /*	  ay_error(AY_EWARN,fname,symbol->svd_name);*/
+	  ay_error(AY_EWARN,argv[0],"Skipping array argument!");
+	  /*	  ay_error(AY_EWARN,argv[0],symbol->svd_name);*/
 	} /* if */
       /* XXXX temporarily discard array arguments */
     } /* for */
@@ -503,8 +501,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_DStringFree(&ds);
 #else
- ay_error(AY_ERROR, fname, "This Ayam has not been linked with libslxargs!");
- ay_error(AY_ERROR, fname,
+ ay_error(AY_ERROR, argv[0], "This Ayam has not been linked with libslxargs!");
+ ay_error(AY_ERROR, argv[0],
 	  "Load the ayslx plugin and use shaderScan instead!");
 #endif /* AYUSESLXARGS */
  return TCL_OK;
@@ -784,7 +782,6 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
  char *n1 = NULL, *sname = NULL/*, *sfile = NULL*/;
  int shadertype = 0, itemp = 0, i;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char fname[] = "shaderGet";
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!sel) /* oops? */
@@ -795,7 +792,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "shadertype varname");
+      ay_error(AY_EARGS, argv[0], "shadertype varname");
       return TCL_OK;
     }
 
@@ -829,7 +826,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STIMAGER:
       if(o != ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "only root has imager");
+	  ay_error(AY_ERROR, argv[0], "only root has imager");
 	  return TCL_OK;
 	}
       else
@@ -841,7 +838,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STATMOSPHERE:
       if(o != ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "only root has atmosphere");
+	  ay_error(AY_ERROR, argv[0], "only root has atmosphere");
 	  return TCL_OK;
 	}
       else
@@ -853,7 +850,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STLIGHT:
       if(o->type != AY_IDLIGHT)
 	{
-	  ay_error(AY_ERROR, fname, "only light objects have light shaders");
+	  ay_error(AY_ERROR, argv[0], "only light objects have light shaders");
 	  return TCL_OK;
 	}
       else
@@ -865,7 +862,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STSURFACE:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have surface shaders");
 	  return TCL_OK;
 	}
@@ -878,7 +875,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STDISPLACEMENT:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have displacement shaders");
 	  return TCL_OK;
 	}
@@ -891,7 +888,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STINTERIOR:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have interior shaders");
 	  return TCL_OK;
 	}
@@ -904,7 +901,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STEXTERIOR:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have exterior shaders");
 	  return TCL_OK;
 	}
@@ -1107,7 +1104,6 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
  double dtemp = 0.0;
  char **sargnv, **sargtv;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char fname[] = "shaderSet";
  char *man[] = {"_0","_1","_2","_3","_4","_5","_6","_7","_8","_9","_10","_11","_12","_13","_14","_15"};
 
   if(!sel) /* oops? */
@@ -1118,7 +1114,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
   /* parse args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "shadertype [varname]");
+      ay_error(AY_EARGS, argv[0], "shadertype [varname]");
       return TCL_OK;
     }
 
@@ -1153,7 +1149,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STIMAGER:
       if(o != ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "only root has imager");
+	  ay_error(AY_ERROR, argv[0], "only root has imager");
 	  return TCL_OK;
 	}
       else
@@ -1166,7 +1162,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STATMOSPHERE:
       if(o != ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "only root has atmosphere");
+	  ay_error(AY_ERROR, argv[0], "only root has atmosphere");
 	  return TCL_OK;
 	}
       else
@@ -1179,7 +1175,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STLIGHT:
       if(o->type != AY_IDLIGHT)
 	{
-	  ay_error(AY_ERROR, fname, "only light objects have light shaders");
+	  ay_error(AY_ERROR, argv[0], "only light objects have light shaders");
 	  return TCL_OK;
 	}
       else
@@ -1191,7 +1187,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STSURFACE:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have surface shaders");
 	  return TCL_OK;
 	}
@@ -1204,7 +1200,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STDISPLACEMENT:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have displacement shaders");
 	  return TCL_OK;
 	}
@@ -1217,7 +1213,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STINTERIOR:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have interior shaders");
 	  return TCL_OK;
 	}
@@ -1230,7 +1226,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     case AY_STEXTERIOR:
       if(o->type != AY_IDMATERIAL)
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "only material objects have exterior shaders");
 	  return TCL_OK;
 	}
@@ -1276,7 +1272,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
     {
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
   if(!(newshader->name = calloc(strlen(result)+1, sizeof(char))))
@@ -1284,7 +1280,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
       free(newshader);
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1335,7 +1331,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       *argnext = newarg;
@@ -1351,7 +1347,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 	  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       strcpy(newarg->name, sargnv[i]);
@@ -1426,7 +1422,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
 	    ay_shader_free(newshader);
 	    Tcl_Free((char *) sargnv);
 	    Tcl_Free((char *) sargtv);
-	    ay_error(AY_EOMEM, fname, NULL);
+	    ay_error(AY_EOMEM, argv[0], NULL);
 	    return TCL_OK;
 	  }
 	  strcpy(newarg->val.string, result);

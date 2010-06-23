@@ -22,7 +22,6 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "revertC";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_acurve_object *acurve = NULL;
@@ -47,7 +46,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	  ay_status = ay_act_revert(acurve);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not revert ACurve!");
+	      ay_error(ay_status, argv[0], "Could not revert ACurve!");
 	    }
 
 	  ay_notify_force(o);
@@ -67,7 +66,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	  ay_status = ay_ict_revert(icurve);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not revert ICurve!");
+	      ay_error(ay_status, argv[0], "Could not revert ICurve!");
 	    }
 
 	  ay_notify_force(o);
@@ -87,7 +86,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	  ay_status = ay_nct_revert(ncurve);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname, "Could not revert NCurve!");
+	      ay_error(ay_status, argv[0], "Could not revert NCurve!");
 	    }
 
 	  o->modified = AY_TRUE;
@@ -141,7 +140,6 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
 {
   /*
  int ay_status = AY_OK;
- char fname[] = "show";
   */
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -208,7 +206,6 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
 {
   /*
  int ay_status = AY_OK;
- char fname[] = "hide";
   */
  int toggle = AY_FALSE;
  ay_list_object *sel = ay_selection;
@@ -364,19 +361,18 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int handled = AY_FALSE, freepo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fname[] = "getPnt";
  char fargs[] = "[-trafo|-p\\] (index | indexu indexv | u | u v) varx vary varz [varw]";
  Tcl_Obj *to = NULL, *ton = NULL;
 
   if(argc <= 1)
     {
-      ay_error(AY_EARGS, fname, fargs);
+      ay_error(AY_EARGS, argv[0], fargs);
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -410,7 +406,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNCURVE:
 	  if(argc2 < 6)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  if(!param)
@@ -434,7 +430,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDACURVE:
 	  if(argc2 < 5)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
@@ -446,7 +442,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDICURVE:
 	  if(argc2 < 5)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
@@ -458,7 +454,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  if(argc2 < 7)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  if(!param)
@@ -486,7 +482,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDBPATCH:
 	  if(argc2 < 5)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
@@ -498,7 +494,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDPAMESH:
 	  if(argc2 < 7)
 	    {
-	      ay_error(AY_EARGS, fname, fargs);
+	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
@@ -519,7 +515,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  if(argc2 < 6)
 		    {
-		      ay_error(AY_EARGS, fname, fargs);
+		      ay_error(AY_EARGS, argv[0], fargs);
 		      return TCL_OK;
 		    }
 		  if(!param)
@@ -580,7 +576,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!handled)
 	    {
-	      ay_error(AY_EWARN, fname,
+	      ay_error(AY_EWARN, argv[0],
 		       "do not know how to get point from this object");
 	    }
 	  break;
@@ -662,17 +658,16 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double dtemp = 0.0;
  int indexu = 0, indexv = 0, i = 0, homogenous = AY_FALSE;
  double *p = NULL;
- char fname[] = "setPnt";
 
   if(argc <= 1)
     {
-      ay_error(AY_EARGS, fname, "(index | indexu indexv) x y z [w]");
+      ay_error(AY_EARGS, argv[0], "(index | indexu indexv) x y z [w]");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -686,7 +681,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNCURVE:
 	  if(argc < 6)
 	    {
-	      ay_error(AY_EARGS, fname, "index x y z w");
+	      ay_error(AY_EARGS, argv[0], "index x y z w");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -698,7 +693,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDACURVE:
 	  if(argc < 5)
 	    {
-	      ay_error(AY_EARGS, fname, "index x y z");
+	      ay_error(AY_EARGS, argv[0], "index x y z");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -710,7 +705,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDICURVE:
 	  if(argc < 5)
 	    {
-	      ay_error(AY_EARGS, fname, "index x y z");
+	      ay_error(AY_EARGS, argv[0], "index x y z");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -722,7 +717,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDNPATCH:
 	  if(argc < 7)
 	    {
-	      ay_error(AY_EARGS, fname, "indexu indexv x y z w");
+	      ay_error(AY_EARGS, argv[0], "indexu indexv x y z w");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -735,7 +730,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDBPATCH:
 	  if(argc < 5)
 	    {
-	      ay_error(AY_EARGS, fname, "index x y z");
+	      ay_error(AY_EARGS, argv[0], "index x y z");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -747,7 +742,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	case AY_IDPAMESH:
 	  if(argc < 6)
 	    {
-	      ay_error(AY_EARGS, fname, "indexu indexv x y z w");
+	      ay_error(AY_EARGS, argv[0], "indexu indexv x y z w");
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
@@ -758,7 +753,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 3;
 	  break;
 	default:
-	  ay_error(AY_EWARN, fname,
+	  ay_error(AY_EWARN, argv[0],
 		   "do not know how to set point of this object");
 	  break;
 	} /* switch */
@@ -803,14 +798,13 @@ int
 ay_tcmd_waitpidtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- char fname[] = "waitPid";
  int pid;
  pid_t real_pid;
  int result;
 
   if(argc <= 1)
     {
-      ay_error(AY_EARGS, fname, "pid");
+      ay_error(AY_EARGS, argv[0], "pid");
       return TCL_OK;
     }
 
@@ -856,19 +850,18 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "withOb";
  ay_list_object *oldsel = ay_selection, *l = NULL;
  int i = 0, index = 0, commandindex = 3;
 
   if(!oldsel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "index [do] command");
+      ay_error(AY_EARGS, argv[0], "index [do] command");
       return TCL_OK;
     }
 
@@ -877,7 +870,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(commandindex >= argc)
     {
-      ay_error(AY_EARGS, fname, "index [do] command");
+      ay_error(AY_EARGS, argv[0], "index [do] command");
       return TCL_OK;
     }
 
@@ -885,7 +878,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(index < 0)
     {
-      ay_error(AY_ERROR, fname, "index must be positive");
+      ay_error(AY_ERROR, argv[0], "index must be positive");
       return TCL_OK;
     }
 
@@ -921,7 +914,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
   /* if index is here not -1, we did not find the object */
   if(index >= 0)
     {
-      ay_error(AY_ERROR, fname, "object not found in selection");
+      ay_error(AY_ERROR, argv[0], "object not found in selection");
     }
 
  return TCL_OK;

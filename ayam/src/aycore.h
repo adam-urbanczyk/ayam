@@ -52,6 +52,10 @@ void ay_clevel_del(void);
  */
 int ay_clevel_delall(void);
 
+/*! \brief change current level to the top level
+ */
+int ay_clevel_gotop();
+
 /*! \brief Tcl command to change current level to the top level
  */
 int ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,

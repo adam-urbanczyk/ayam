@@ -24,7 +24,7 @@ ay_clear_scene(void)
  char fname[] = "clear_scene";
  ay_object *o = ay_root, *o2 = NULL;
  ay_root_object *root = NULL;
- char *ucargs[3] = {0}, ucarg1[] = "clear";
+ char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 
   /* for all referenced objects in scene:
    *  - check if there are references to them in the clipboard,
@@ -42,6 +42,7 @@ ay_clear_scene(void)
 
   /* clear undo buffer */
   /*ay_status = ay_undo_clear();*/
+  ucargs[0] = ucarg0;
   ucargs[1] = ucarg1;
   ay_undo_undotcmd(NULL, ay_interp, 2, ucargs);
 
@@ -87,7 +88,7 @@ ay_clear_scene(void)
     }
 
   /* clear clevel */
-  ay_clevel_gotoptcmd(NULL, ay_interp, 0, NULL);
+  ay_clevel_gotop();
 
   /* free shaders from root object */
   root = (ay_root_object *)ay_root->refine;
@@ -117,12 +118,11 @@ ay_clear_scenetcmd(ClientData clientData, Tcl_Interp * interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "newScene";
 
   ay_status = ay_clear_scene();
   if(ay_status)
     {
-      ay_error(ay_status, fname, "Could not clear scene!");
+      ay_error(ay_status, argv[0], "Could not clear scene!");
     }
 
  return TCL_OK;

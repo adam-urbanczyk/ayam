@@ -248,13 +248,12 @@ int
 ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "tagIsTemp";
  int temp;
  char yes[] = "1", no[] = "0";
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "tagname");
+      ay_error(AY_EARGS, argv[0], "tagname");
       return TCL_OK;
     }
 
@@ -286,18 +285,17 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int index = 0, i, pasteProp = AY_FALSE;
- char fname[] = "setTags";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname,
+      ay_error(AY_EARGS, argv[0],
 	       "[type value]|-index index type value|-delete index");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -308,7 +306,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(argc < 5)
 	{
-	  ay_error(AY_EARGS, fname,
+	  ay_error(AY_EARGS, argv[0],
 		   "[type value]|-index index type value|-delete index");
 	  return TCL_OK;
 	}
@@ -322,7 +320,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!new)
 	    {
-	      ay_error(AY_ERROR, fname, "Tag not found!");
+	      ay_error(AY_ERROR, argv[0], "Tag not found!");
 	      return TCL_OK;
 	    }
 	  new = new->next;
@@ -344,7 +342,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[3])))
 	    {
 	      if(ay_prefs.wutag)
-		ay_error(AY_EWARN, fname, "Tag type is not registered!");
+		ay_error(AY_EWARN, argv[0], "Tag type is not registered!");
 	    }
 	  if(entry)
 	    {
@@ -353,7 +351,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!(new->name = calloc(strlen(argv[3])+1, sizeof(char))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  strcpy(new->name, argv[3]);
@@ -361,7 +359,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!(new->val = calloc(strlen(argv[4])+1, sizeof(char))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  strcpy(new->val, argv[4]);
@@ -384,7 +382,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!new)
 	    {
-	      ay_error(AY_ERROR, fname, "Tag not found!");
+	      ay_error(AY_ERROR, argv[0], "Tag not found!");
 	      return TCL_OK;
 	    }
 
@@ -438,7 +436,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
-		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 
@@ -446,7 +444,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[index])))
 		{
 		  if(ay_prefs.wutag)
-		    ay_error(AY_EWARN, fname, "Tag type is not registered!");
+		    ay_error(AY_EWARN, argv[0], "Tag type is not registered!");
 		}
 	      if(entry)
 		{
@@ -455,14 +453,14 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!(new->name = calloc(strlen(argv[index])+1, sizeof(char))))
 		{
-		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      strcpy(new->name, argv[index]);
 
 	      if(!(new->val = calloc(strlen(argv[index+1])+1, sizeof(char))))
 		{
-		  ay_error(AY_EOMEM, fname, NULL);
+		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      strcpy(new->val, argv[index+1]);
@@ -491,17 +489,16 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_tag *new = NULL, *t = NULL;
  Tcl_HashEntry *entry = NULL;
- char fname[] = "addTag";
 
    if(argc < 3)
      {
-       ay_error(AY_EARGS, fname, "type value");
+       ay_error(AY_EARGS, argv[0], "type value");
        return TCL_OK;
      }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -517,16 +514,16 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[1])))
 	{
 	  if(ay_prefs.wutag)
-	    ay_error(AY_EWARN, fname, "Tag type is not registered!");
+	    ay_error(AY_EWARN, argv[0], "Tag type is not registered!");
 	}
       if(!(new = calloc(1, sizeof(ay_tag))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       if(!(new->name = calloc(strlen(argv[1])+1, sizeof(char))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       strcpy(new->name,argv[1]);
@@ -536,7 +533,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(new->val = calloc(strlen(argv[2])+1, sizeof(char))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       strcpy(new->val,argv[2]);
@@ -570,17 +567,16 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL;
- char fname[] = "getTags";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "varname varname2");
+      ay_error(AY_EARGS, argv[0], "varname varname2");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -619,18 +615,17 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *tag = NULL, **last = NULL;
- char fname[] = "delTags";
  int mode = 0; /* 0 delall, 1 type */
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "type|all");
+      ay_error(AY_EARGS, argv[0], "type|all");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 

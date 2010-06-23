@@ -451,13 +451,12 @@ int
 ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- char fname[] = "objsel_getnmfrmnd";
  ay_object *o = NULL;
  Tcl_DString ds;
 
   if (argc != 3)
     {
-      ay_error(AY_EARGS, fname, "varname string");
+      ay_error(AY_EARGS, argv[0], "varname string");
       return TCL_OK;
     }
 

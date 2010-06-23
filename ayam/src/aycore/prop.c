@@ -20,7 +20,6 @@ ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "getProp";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_propcb *cb = NULL;
@@ -28,25 +27,28 @@ ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
   arr = ay_getpropcbt.arr;
   cb = (ay_propcb *)(arr[o->type]);
   if(cb)
-    ay_status = cb(interp, argc, argv, o);
+    {
+      ay_status = cb(interp, argc, argv, o);
+    }
 
   if(ay_status)
-    ay_error(AY_ERROR, fname, "getprop callback failed...");
-
+    {
+      ay_error(AY_ERROR, argv[0], "getprop callback failed...");
+    }
 
  return TCL_OK;
 } /* ay_prop_gettcmd */
@@ -58,7 +60,6 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "setProp";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_propcb *cb = NULL;
@@ -66,14 +67,14 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -84,7 +85,7 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
     ay_status = cb(interp, argc, argv, o);
 
   if(ay_status)
-    ay_error(AY_ERROR, fname, "setprop callback failed...");
+    ay_error(AY_ERROR, argv[0], "setprop callback failed...");
 
  return TCL_OK;
 } /* ay_prop_settcmd */
@@ -95,22 +96,21 @@ int
 ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- char fname[] = "getTrafo";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1="transfPropData";
+ char *n1 = "transfPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -170,10 +170,9 @@ int
 ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- char fname[] = "setTrafo";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1="transfPropData";
+ char *n1 = "transfPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  double dtemp;
  double xaxis[3] = {1.0,0.0,0.0};
@@ -184,14 +183,14 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -308,22 +307,21 @@ int
 ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- char fname[] = "getAttr";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1="attrPropData";
+ char *n1 = "attrPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -357,24 +355,23 @@ int
 ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- char fname[] = "setAttr";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1="attrPropData";
+ char *n1 = "attrPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char *string = NULL;
  int stringlen;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -384,7 +381,7 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
   if(o->name)
@@ -393,7 +390,7 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!(o->name = calloc(stringlen+1, sizeof(char))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
       strcpy(o->name, string);
@@ -421,24 +418,23 @@ int
 ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "getMat";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1="matPropData";
+ char *n1 = "matPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_mat_object *material = NULL;
  char *matname = NULL;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -475,11 +471,10 @@ int
 ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- char fname[] = "setMat";
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *m = NULL;
- char *n1="matPropData";
+ char *n1 = "matPropData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  char *string = NULL;
  int stringlen;
@@ -487,14 +482,14 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(!o)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -504,7 +499,7 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
   string = Tcl_GetStringFromObj(to, &stringlen);
   if(!string)
     {
-      ay_error(AY_ENULL, fname, NULL);
+      ay_error(AY_ENULL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -514,7 +509,7 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
       if(m)
 	m->refcount--;
       else
-	ay_error(AY_ERROR, fname, "could not decrease material refcount!");
+	ay_error(AY_ERROR, argv[0], "could not decrease material refcount!");
     }
 
   o->mat = NULL;
@@ -529,11 +524,12 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(m)
 	    m->refcount++;
 	  else
-	    ay_error(AY_ERROR, fname, "could not increase material refcount!");
+	    ay_error(AY_ERROR, argv[0],
+		     "could not increase material refcount!");
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "material is not registered");
+	  ay_error(AY_ERROR, argv[0], "material is not registered");
 	}
     }
 

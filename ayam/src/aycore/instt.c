@@ -779,23 +779,22 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char fname[] = "resolveIn";
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL,fname,NULL);
+      ay_error(AY_ENOSEL,argv[0],NULL);
       return TCL_OK;
     }
 
   if(!(o = sel->object))
     {
-      ay_error(AY_ERROR,fname,NULL);
+      ay_error(AY_ERROR,argv[0],NULL);
       return TCL_OK;
     }
 
   if(!o->type == AY_IDINSTANCE)
     {
-      ay_error(AY_ERROR, fname, "Object is not of type Instance!");
+      ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
       return TCL_OK;
     }
 
@@ -803,7 +802,7 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -975,31 +974,30 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_list_object *clevel = ay_currentlevel, *lev;
  ay_object *o = NULL, *master = NULL;
- char fname[] = "getMaster";
  int result = AY_FALSE;
  Tcl_DString ds;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "varname");
+      ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
     }
 
   if(!(o = sel->object))
     {
-      ay_error(AY_ERROR, fname, NULL);
+      ay_error(AY_ERROR, argv[0], NULL);
       return TCL_OK;
     }
 
   if(o->type != AY_IDINSTANCE)
     {
-      ay_error(AY_ERROR, fname, "Object is not of type Instance!");
+      ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
       return TCL_OK;
     }
 
@@ -1009,7 +1007,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(result == AY_FALSE)
     {
-      ay_error(ay_status, fname, "Could not find Master object in scene!");
+      ay_error(ay_status, argv[0], "Could not find Master object in scene!");
       return TCL_OK;
     }
 
