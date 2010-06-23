@@ -535,7 +535,6 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  /*int ay_status;*/
- char fname[] = "revertuS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -582,7 +581,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
 
@@ -634,7 +633,6 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  /*int ay_status;*/
- char fname[] = "revertvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -681,7 +679,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
 
@@ -1352,7 +1350,6 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status;
  ay_object *o = NULL;
- char fname[] = "crtNSphere";
  double radius = 1.0;
  int i = 1;
 
@@ -1371,7 +1368,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1384,7 +1381,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
   if(ay_status)
     {
       free(o);
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1393,7 +1390,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_object_delete(o->down);
       free(o);
-      ay_error(ay_status, fname, NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1425,13 +1422,12 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
  double zaxis[3]={0.0,0.0,1.0};
  double quat[4];
  ay_object *new = NULL;
- char fname[] = "create_cobbsphere";
 
   for(i = 0; i < 6; i++)
     {
       if(!(new = calloc(1,sizeof(ay_object))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -1446,7 +1442,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_object_delete(new);
-	  ay_error(AY_ERROR, fname, NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -1472,7 +1468,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_object_delete(new);
-	  ay_error(AY_ERROR, fname, NULL);
+	  ay_error(AY_ERROR, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -1704,18 +1700,17 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL, *curves = NULL, *next = NULL;
  int u = 0;
- char fname[] = "split_to_curves";
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   /* parse args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "u|v");
+      ay_error(AY_EARGS, argv[0], "u|v");
       return TCL_OK;
     }
 
@@ -1728,7 +1723,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	  break;
 	}
 
@@ -1743,7 +1738,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status || !curves)
 	{
-	  ay_error(AY_ERROR, fname, "Split failed");
+	  ay_error(AY_ERROR, argv[0], "Split failed");
 	}
 
       while(curves)
@@ -1927,13 +1922,12 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL, *patch = NULL;
  ay_nurbcurve_object *nc = NULL;
  int length = 0, ncurves = 0;
- char fname[] = "build_from_curves";
 
   sel = ay_selection;
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -1981,7 +1975,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status || !patch)
     {
-      ay_error(AY_ERROR, fname, "Build failed");
+      ay_error(AY_ERROR, argv[0], "Build failed");
     }
 
   if(patch)
@@ -5815,7 +5809,6 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
- char fname[] = "elevateNPU";
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &t);
@@ -5834,7 +5827,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Elevate failed");
+	      ay_error(AY_ERROR, argv[0], "Elevate failed");
 	    }
 	  else
 	    {
@@ -5846,7 +5839,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
 
       sel = sel->next;
@@ -5989,7 +5982,6 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
- char fname[] = "elevateNPV";
 
   if(argc >= 2)
     Tcl_GetInt(interp, argv[1], &t);
@@ -6008,7 +6000,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Elevate failed");
+	      ay_error(AY_ERROR, argv[0], "Elevate failed");
 	    }
 	  else
 	    {
@@ -6020,7 +6012,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
 
       sel = sel->next;
@@ -6040,7 +6032,6 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  /*int ay_status;*/
- char fname[] = "swapuvS";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pm = NULL;
@@ -6087,7 +6078,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -7468,7 +7459,6 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "closeuNP";
  int stride = 4;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
@@ -7478,7 +7468,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!sel->object)
 	{
-	  ay_error(AY_ENULL, fname, NULL);
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -7494,7 +7484,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 				    np->height * stride,
 				    sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -7509,7 +7499,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(newknotv = calloc(np->width + np->uorder + (np->uorder-1),
 				 sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -7532,7 +7522,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Error closing object!");
+	      ay_error(AY_ERROR, argv[0], "Error closing object!");
 	    }
 
 	  ay_status = ay_npt_recreatemp(np);
@@ -7543,7 +7533,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_notify_force(sel->object);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -7597,7 +7587,6 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "closevNP";
  int stride = 4, i;
  double *a, *b;
  double *newcontrolv = NULL, *tknotv;
@@ -7621,7 +7610,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 				    (np->height + (np->vorder-1)) * stride,
 				     sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 
@@ -7650,7 +7639,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Error closing object!");
+	      ay_error(AY_ERROR, argv[0], "Error closing object!");
 	    }
 
 	  ay_status = ay_npt_recreatemp(np);
@@ -7661,7 +7650,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_notify_force(sel->object);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -8330,7 +8319,6 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "clampuNP";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, u;
@@ -8360,7 +8348,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	  if((np->uknot_type == AY_KTNURB) ||
 	     (np->uknot_type == AY_KTBEZIER))
 	    {
-	      ay_error(AY_ERROR, fname, "Patch is already clamped!");
+	      ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
 	      break;
 	    }
 
@@ -8384,7 +8372,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(count_start || count_end)
 		{
-		  ay_error(AY_ERROR, fname, "Cannot clamp this patch!");
+		  ay_error(AY_ERROR, argv[0], "Cannot clamp this patch!");
 		  break;
 		}
 	    } /* if */
@@ -8393,7 +8381,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Error clamping object!");
+	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
 	    }
 
 	  ay_status = ay_npt_recreatemp(np);
@@ -8405,7 +8393,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -8424,7 +8412,6 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "clampvNP";
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, v;
@@ -8434,7 +8421,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!sel->object)
 	{
-	  ay_error(AY_ENULL, fname, NULL);
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -8454,7 +8441,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if((np->vknot_type == AY_KTNURB) ||
 	     (np->vknot_type == AY_KTBEZIER))
 	    {
-	      ay_error(AY_ERROR, fname, "Patch is already clamped!");
+	      ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
 	      break;
 	    }
 
@@ -8478,7 +8465,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(count_start || count_end)
 		{
-		  ay_error(AY_ERROR, fname, "Cannot clamp this patch!");
+		  ay_error(AY_ERROR, argv[0], "Cannot clamp this patch!");
 		  break;
 		}
 	    } /* if */
@@ -8487,7 +8474,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, fname, "Error clamping object!");
+	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
 	    }
 
 	  ay_status = ay_npt_recreatemp(np);
@@ -8499,7 +8486,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -8619,7 +8606,6 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
- char fname[] = "rescaleknNP";
  int i = 1, mode = 0, dim = 0;
  double rmin = 0.0, rmax = 1.0, mindist = 1.0e-04;
  double oldmin, oldmax;
@@ -8664,7 +8650,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -8673,7 +8659,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	}
       else
 	{
@@ -8729,7 +8715,8 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		    } /* if */
 		  if(ay_status)
 		    {
-		      ay_error(ay_status, fname, "Could not rescale u-knots!");
+		      ay_error(ay_status, argv[0],
+			       "Could not rescale u-knots!");
 		      break;
 		    }
 
@@ -8737,7 +8724,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, fname, "Need a custom knot vector!");
+		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector!");
 		} /* if */
 	    } /* if */
 
@@ -8789,13 +8776,14 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		    } /* if */
 		  if(ay_status)
 		    {
-		      ay_error(ay_status, fname, "Could not rescale v-knots!");
+		      ay_error(ay_status, argv[0],
+			       "Could not rescale v-knots!");
 		    }
 		  src->modified = AY_TRUE;
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, fname, "Need a custom knot vector!");
+		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector!");
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -8821,17 +8809,16 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
- char fname[] = "insknuNP";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "u r");
+      ay_error(AY_EARGS, argv[0], "u r");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -8840,7 +8827,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	}
       else
 	{
@@ -8857,7 +8844,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((u < knots[patch->uorder-1]) || (u > knots[patch->width]))
 	    {
-	      ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	      ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
 	      return TCL_OK;
 	    }
 
@@ -8870,7 +8857,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(patch->uorder < r+s)
 	    {
-	      ay_error(AY_ERROR, fname,
+	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
 	    }
@@ -8880,12 +8867,12 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  ay_status = ay_nb_InsertKnotSurfU(stride,
@@ -8930,17 +8917,16 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
- char fname[] = "insknvNP";
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "v r");
+      ay_error(AY_EARGS, argv[0], "v r");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -8949,7 +8935,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	}
       else
 	{
@@ -8966,7 +8952,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((v < knots[patch->vorder-1]) || (v > knots[patch->height]))
 	    {
-	      ay_error(AY_ERROR, fname, "Parameter v out of range.");
+	      ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
 	      return TCL_OK;
 	    }
 
@@ -8979,7 +8965,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(patch->vorder < r+s)
 	    {
-	      ay_error(AY_ERROR, fname,
+	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
 	    }
@@ -8989,12 +8975,12 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  ay_status = ay_nb_InsertKnotSurfV(stride,
@@ -9175,17 +9161,16 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
- char fname[] = "splituNP";
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "u");
+      ay_error(AY_EARGS, argv[0], "u");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -9209,7 +9194,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		} /* if */
 
@@ -9222,7 +9207,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	      return TCL_OK;
 	    } /* if */
 	} /* if */
@@ -9398,17 +9383,16 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double v = 0.0;
- char fname[] = "splitvNP";
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "v");
+      ay_error(AY_EARGS, argv[0], "v");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -9432,7 +9416,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		} /* if */
 
@@ -9445,7 +9429,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	      return TCL_OK;
 	    } /* if */
 	} /* if */
@@ -9619,17 +9603,16 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *new = NULL;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
  int relative = AY_FALSE;
- char fname[] = "extrNP";
 
   if(argc < 5)
     {
-      ay_error(AY_EARGS, fname, "umin umax vmin vmax [relative]");
+      ay_error(AY_EARGS, argv[0], "umin umax vmin vmax [relative]");
       return TCL_OK;
     }
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -9656,7 +9639,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
+		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		} /* if */
 
@@ -9664,7 +9647,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	      return TCL_OK;
 	    } /* if */
 	} /* if */
@@ -10741,7 +10724,6 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "evalNP";
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -10752,7 +10734,7 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse args */
   if(argc < 6)
     {
-      ay_error(AY_EARGS, fname, "[-trafo|-world] u v vnx vny vnz");
+      ay_error(AY_EARGS, argv[0], "[-trafo|-world] u v vnx vny vnz");
       return TCL_OK;
     }
 
@@ -10775,14 +10757,14 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   o = sel->object;
   if(o->type != AY_IDNPATCH)
     {
-      ay_error(AY_EWTYPE, fname, ay_npt_npname);
+      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
     }
   else
     {
@@ -10791,14 +10773,14 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
       if((u < patch->uknotv[patch->uorder-1]) ||
 	 (u > patch->uknotv[patch->width]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	  ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
 	  return TCL_OK;
 	}
 
       if((v < patch->vknotv[patch->vorder-1]) ||
 	 (v > patch->vknotv[patch->height]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameter v out of range.");
+	  ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
 	  return TCL_OK;
 	}
 
@@ -10821,7 +10803,7 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "Evaluation failed.");
+	  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
 	  return TCL_OK;
 	}
       else
@@ -11241,7 +11223,6 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status;
- char fname[] = "xxxx";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -11269,7 +11250,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -11278,7 +11259,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, fname, ay_npt_npname);
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	}
       else
 	{
