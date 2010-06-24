@@ -913,6 +913,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
  double temp[3] = {0};
  int i = 2;
  int kbdact_in_progress = AY_FALSE;
+ char arg0[] = "undo";
  char arg1[] = "save";
  char arg2[] = "-start", arg3[] = "0";
  char arg4[] = "-winxy";
@@ -1470,6 +1471,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      if(!kbdact_in_progress)
 		{
 		  /* undo save */
+		  tclargv[0] = arg0;
 		  tclargv[1] = arg1;
 		  tclargv[2] = argv[i+1];
 		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
