@@ -218,7 +218,10 @@ $m.cu add command -label "ACurve" -command {
 	"Create ACurve"
 } -underline 0
 $m.cu add command -label "NCircle" -command {
-    crtOb NCircle; uCR; sL; forceNot; rV;
+    runTool {ay(ncircradius) ay(ncirctmin) ay(ncirctmax)}\
+	{"Radius:" "TMin:" "TMax:"}\
+	"crtOb NCircle -radius %0 -tmin %1 -tmax %2; uCR; sL; forceNot; rV;"\
+	"Create NCircle"
 } -underline 3
 #  ^^^^^^^^^^^ => R
 $m add cascade -menu $m.su -label "Surface" -underline 0
@@ -940,6 +943,10 @@ proc mmenu_addcustom { name command } {
 proc mmenu_addlume { m } {
     global ay
     set i 0
+    # avoid processing ourselves
+    if { $m == $ay(toolsmenu) } {
+	incr i
+    }
     set last [$m index end]
     while { $i <= $last } {
 	if { [$m type $i] == "command" } {
