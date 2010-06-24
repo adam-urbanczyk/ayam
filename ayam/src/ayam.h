@@ -208,40 +208,44 @@ typedef struct ay_mat_object_s {
 
   int registered; /**< is this material unique? */
 
-  char **nameptr;
-  unsigned int *refcountptr;
-  ay_object *objptr;
+  char **nameptr; /**< pointer to name (stored in corresponding ay_object) */
+  unsigned int *refcountptr; /**< pointer to reference counter */
+  ay_object *objptr; /**< pointer to corresponding ay_object */
 
   /* RiStandard (3.1) Attributes */
 
-  /* Color */
+  /** \name Color */
+  /*@{*/
   int colr, colg, colb;
+  /*@}*/
 
-  /* Opacity */
+  /** \name Opacity */
+  /*@{*/
   int opr, opg, opb;
+  /*@}*/
 
   /* Matte */
-  int matte; /* no, yes */
+  int matte; /**< matte: 0 - no, 1 - yes */
 
   /* Shading */
-  double shading_rate;
-  int shading_interpolation; /* constant, smooth */
+  double shading_rate; /**< shading rate */
+  int shading_interpolation; /**< interpolation: 0 - constant, 1 - smooth */
 
   /* Displacement */
-  double dbound_val; /* displacement bound value */
-  int dbound; /* coordinate system for bound value */
+  double dbound_val; /**< displacement bound value */
+  int dbound; /**< coordinate system for bound value */
 
   /* Sidedness */
-  int sides; /* two-sided, one-sided */
+  int sides; /**< sidedness: 0 - two-sided, 1 - one-sided */
 
   /* Shaders */
-  /* Surface */
+  /** surface shader */
   ay_shader *sshader;
-  /* Displacement */
+  /** displacement shader */
   ay_shader *dshader;
-  /* Interior */
+  /** interior shader */
   ay_shader *ishader;
-  /* Exterior */
+  /** exterior shader */
   ay_shader *eshader;
 
   /* BMRT Specific Attributes */

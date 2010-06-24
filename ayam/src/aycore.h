@@ -540,19 +540,19 @@ int ay_object_crtendlevel(ay_object **o);
  */
 int ay_object_deleteinstances(ay_object **o);
 
-/*! \brief
+/*! \brief replace object dst with src
  */
 int ay_object_replace(ay_object *src, ay_object *dst);
 
 
-/*! \brief
+/*! \brief count objects beneath o
  */
 unsigned int ay_object_count(ay_object *o);
 
 
 /* otype.c */
 
-/*! \brief
+/*! \brief register core object type (with known type id)
  */
 int ay_otype_registercore(char *name,
 			  ay_createcb  *crtcb,
@@ -570,7 +570,7 @@ int ay_otype_registercore(char *name,
 			  ay_bbccb     *bbccb,
 			  unsigned int type_index);
 
-/*! \brief
+/*! \brief register object type (from plugin, create a type id)
  */
 int ay_otype_register(char *name,
 		      ay_createcb  *crtcb,
@@ -590,35 +590,35 @@ int ay_otype_register(char *name,
 
 /* matt.c */
 
-/*! \brief
+/*! \brief initialize material tools module
  */
 void ay_matt_init(Tcl_Interp *interp);
 
-/*! \brief
+/*! \brief register a material
  */
 int ay_matt_registermaterial(char *name, ay_mat_object *mat);
 
-/*! \brief
+/*! \brief check, whether material name is registered
  */
 int ay_matt_isregistered(char *name);
 
-/*! \brief
+/*! \brief de-register material
  */
 int ay_matt_deregister(char *name);
 
-/*! \brief
+/*! \brief get material object from name
  */
 int ay_matt_getmaterial(char *name, ay_mat_object **material);
 
-/*! \brief
+/*! \brief remove all material references
  */
 int ay_matt_removeallrefs(ay_object *o);
 
-/*! \brief
+/*! \brief remove all references to given material
  */
 int ay_matt_removerefs(ay_object *o, ay_mat_object *material);
 
-/*! \brief
+/*! \brief 
  */
 int ay_matt_removecliprefs(ay_object *o);
 
@@ -634,15 +634,15 @@ int ay_matt_creatematerialids(ay_object *o);
  */
 int ay_matt_clearmaterialids(ay_object *o);
 
-/*! \brief
+/*! \brief RIB export of material information
  */
 int ay_matt_wrib(char *file, ay_mat_object *m);
 
-/*! \brief
+/*! \brief objects of type may have no material
  */
 void ay_matt_nomaterial(unsigned int type);
 
-/*! \brief
+/*! \brief check whether objects of type may have a material
  */
 int ay_matt_mayhavematerial(unsigned int type);
 
@@ -707,7 +707,7 @@ int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pomesht_destroy(ay_pomesh_object *pomesh);
 
-/*! \brief tesselate polymesh object
+/*! \brief tesselate polymesh object (for drawing/shading purposes)
  */
 int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 
@@ -908,39 +908,39 @@ double ay_quat_dot(double q1[4], double q2[4]);
 
 /* read.c */
 
-/*! \brief
+/*! \brief read string from Ayam scene file
  */
 int ay_read_string(FILE *fileptr, char **result);
 
-/*! \brief
+/*! \brief read UNICODE string from Ayam scene file
  */
 int ay_read_unistring(FILE *fileptr, Tcl_UniChar **result);
 
-/*! \brief
+/*! \brief skip to next object
  */
 int ay_read_skip(FILE *fileptr);
 
-/*! \brief
+/*! \brief read header info from Ayam scene file
  */
 int ay_read_header(FILE *fileptr);
 
-/*! \brief
+/*! \brief read standard object attributes from Ayam scene file
  */
 int ay_read_attributes(FILE *fileptr, ay_object *o);
 
-/*! \brief
+/*! \brief read object tags from Ayam scene file
  */
 int ay_read_tags(FILE *fileptr, ay_object *o);
 
-/*! \brief
+/*! \brief read shader from Ayam scene file
  */
 int ay_read_shader(FILE *fileptr, ay_shader **result);
 
-/*! \brief
+/*! \brief read object from Ayam scene file
  */
 int ay_read_object(FILE *fileptr);
 
-/*! \brief
+/*! \brief read scene from Ayam scene file
  */
 int ay_read_scene(Tcl_Interp *interp, char *filename, int insert);
 
@@ -957,44 +957,44 @@ int ay_read_inserttcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* riattr.c */
 
-/*! \brief
+/*! \brief RIB export of RiAttr tag data
  */
 int ay_riattr_wrib(ay_object *o);
 
-/*! \brief
+/*! \brief initialize riattr module
  */
 void ay_riattr_init(Tcl_Interp *interp);
 
 
 /* riopt.c */
 
-/*! \brief
+/*! \brief RIB export of RiOpt tag data
  */
 int ay_riopt_wrib(ay_object *o);
 
-/*! \brief
+/*! \brief initialize riopt module
  */
 void ay_riopt_init(Tcl_Interp *interp);
 
 
 /* sdmesht.c */
 
-/*! \brief
+/*! \brief tesselate a SDMesh (for drawing/shading purposes)
  */
 int ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh);
 
-/*! \brief
+/*! \brief convert a SDMesh to a PolyMesh
  */
 int ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh);
 
 
 /* sel.c */
 
-/*! \brief
+/*! \brief clear the selection
  */
 int ay_sel_free(int clear_selflag);
 
-/*! \brief
+/*! \brief add object to selection
  */
 int ay_sel_add(ay_object *o);
 
@@ -1046,7 +1046,7 @@ int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_selp_center(ay_object *o, int mode);
 
-/*! \brief Tcl command to center an object
+/*! \brief Tcl command to center all points of an object
  */
 int ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1060,18 +1060,18 @@ int ay_selp_sel(ay_object *o, int indiceslen, int *indices);
 int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/*! \brief
+/*! \brief calculate center of gravity from a number of points
  */
 void ay_selp_calccog(ay_point *pnts, double *cog);
 
 
 /* shade.c */
 
-/*! \brief
+/*! \brief shade an object
  */
 void ay_shade_object(struct Togl *togl, ay_object *o, int push_name);
 
-/*! \brief
+/*! \brief shade complete scene
  */
 int ay_shade_view(struct Togl *togl);
 
@@ -1079,40 +1079,40 @@ int ay_shade_view(struct Togl *togl);
 /* shader.c */
 
 #ifdef AYUSESLCARGS
-/*! \brief
+/*! \brief scan a SLC shader argument
  */
 int ay_shader_scanslcsarg(SLC_VISSYMDEF *symbol, Tcl_DString *ds);
 #endif
 
 
-/*! \brief Tcl command to scan a SLC shader
+/*! \brief Tcl command to scan a SLC (BMRT) shader
  */
 int ay_shader_scanslctcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 #ifdef AYUSESLXARGS
-/*! \brief
+/*! \brief scan a SLX shader argument
  */
 int ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds);
 #endif
 
-/*! \brief Tcl command to scan a SLX shader
+/*! \brief Tcl command to scan a SLX (Aqsis) shader
  */
 int ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/*! \brief
+/*! \brief delete a shader
  */
 int ay_shader_free(ay_shader *shader);
 
-/*! \brief
+/*! \brief copy a shader argument
  */
 int ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest);
 
-/*! \brief
+/*! \brief copy a shader
  */
 int ay_shader_copy(ay_shader *source, ay_shader **dest);
 
-/*! \brief
+/*! \brief RIB export of a shader
  */
 int ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle);
 
@@ -1169,7 +1169,7 @@ int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tags_append(ay_object *o, ay_tag *tag);
 
-/*! \brief
+/*! \brief register a tag type
  */
 int ay_tags_register(Tcl_Interp *interp, char *name, char **result);
 
@@ -1193,12 +1193,12 @@ int ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief
+/*! \brief parse PV tags for RIB export
  */
 int ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		       RtPointer **valuesr);
 
-/*! \brief
+/*! \brief reconnect already existing tags after late tag type registration
  */
 int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
 
