@@ -594,6 +594,8 @@ array set ay {
  trimumax 1.0
  ncircradius 1.0
  ncircarc 360.0
+ ncirctmin 0.0
+ ncirctmax 360.0
  nsphereradius 1.0
  cbspsec 6
  cbsporder 4
