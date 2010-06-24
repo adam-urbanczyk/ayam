@@ -998,10 +998,10 @@ int ay_sel_free(int clear_selflag);
  */
 int ay_sel_add(ay_object *o);
 
-/*! \brief Tcl command to set the selection from the object listbox
+/*! \brief Tcl command to set the selection
  */
-int ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
-			 int argc, char *argv[]);
+int ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[]);
 
 /*! \brief Tcl command to get the selection
  */

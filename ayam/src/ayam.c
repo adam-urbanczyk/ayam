@@ -760,7 +760,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
 
   /* sel.c */
-  Tcl_CreateCommand(interp, "selOb", ay_sel_setfromlbtcmd,
+  Tcl_CreateCommand(interp, "selOb", ay_sel_selobtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "getSel", ay_sel_getseltcmd,

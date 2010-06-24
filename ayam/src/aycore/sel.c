@@ -67,14 +67,14 @@ ay_sel_add(ay_object *o)
 } /* ay_sel_add */
 
 
-/* ay_sel_setfromlbtcmd:
- *  set the selection from listbox
- *  I: argv[] contains the sorted and split list of selected elements
- *     of the hierarchy listbox
+/* ay_sel_selobtcmd:
+ *  set the selection
+ *  I: argv[] contains a sorted and split list of object indices
+ *  in the current level
  */
 int
-ay_sel_setfromlbtcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
+		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
  int lbmode = AY_FALSE;
@@ -190,13 +190,11 @@ cleanup:
     }
 
  return TCL_OK;
-} /* ay_sel_setfromlbtcmd */
+} /* ay_sel_selobtcmd */
 
 
 /* ay_sel_getseltcmd:
  *  get the current selection
- *  I: argv[] contains the sorted and split list of selected elements
- *     of the hierarchy listbox
  */
 int
 ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
