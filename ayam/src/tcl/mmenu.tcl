@@ -173,9 +173,9 @@ $m add command -label "Copy Marked Prop" -command {pclip_copy 1}
 $m add command -label "Paste Property" -command {global ay;
 pclip_paste; set ay(sc) 1}
 $m add separator
-$m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV} \
+$m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV}\
     -underline 0
-$m add command -label "Redo" -command \
+$m add command -label "Redo" -command\
     {undo redo; uCL cl "0 1"; plb_update; rV} -underline 0
 $m add separator
 $m add command -label "Material" -command {material_edit;} -underline 0
@@ -202,17 +202,20 @@ set ay(createmenu) $m
 $m add cascade -menu $m.cu -label "Curve" -underline 0
 menu $m.cu -tearoff 0
 $m.cu add command -label "NURBCurve" -command {
-    runTool ay(nclen) "Length:" \
-	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"
+    runTool ay(nclen) "Length:"\
+	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"\
+	"Create NCurve"
 } -underline 4
 #  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
-    runTool ay(iclen) "Length:" \
-	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"
+    runTool ay(iclen) "Length:"\
+	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"\
+	"Create ICurve"
 } -underline 0
 $m.cu add command -label "ACurve" -command {
-    runTool ay(iclen) "Length:" \
-	"crtOb ACurve -length %0; uCR; sL; forceNot; rV;"
+    runTool ay(iclen) "Length:"\
+	"crtOb ACurve -length %0; uCR; sL; forceNot; rV;"\
+	"Create ACurve"
 } -underline 0
 $m.cu add command -label "NCircle" -command {
     crtOb NCircle; uCR; sL; forceNot; rV;
@@ -221,15 +224,17 @@ $m.cu add command -label "NCircle" -command {
 $m add cascade -menu $m.su -label "Surface" -underline 0
 menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
-    runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"} \
-	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"
+    runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"}\
+	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"\
+	"Create NPatch"
 } -underline 0
 $m.su add command -label "BPatch" -command {
     crtOb BPatch; uCR; sL; forceNot; rV;
 } -underline 0
 $m.su add command -label "PatchMesh" -command {
     runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
-	"crtOb PatchMesh -width %0 -height %1; uCR; sL; forceNot; rV;"
+	"crtOb PatchMesh -width %0 -height %1; uCR; sL; forceNot; rV;"\
+	"Create PatchMesh"
 } -underline 0
 
 $m add cascade -menu $m.sl -label "Solid" -underline 4
@@ -329,11 +334,13 @@ menu $m.nc -tearoff 0
 $m.nc add command -label "Circular B-Spline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
-	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"
+	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"\
+	"Create Closed B-Spline"
 } -underline 0
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
-	    "crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"
+	"crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"\
+	"Create NURBCircle"
 } -underline 5
 $m.nc add command -label "TrimRect" -command {
     crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
@@ -356,8 +363,9 @@ $m.nc add command -label "OffsetNP" -command "level_crt OffsetNP \"\" -1;"
 $m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
 
 $m.nc add command -label "NURBSphere" -command {
-    runTool ay(nsphereradius) "Radius:" \
-	"crtNSphere -r %0; uCR; sL; forceNot; rV;"
+    runTool ay(nsphereradius) "Radius:"\
+	"crtNSphere -r %0; uCR; sL; forceNot; rV;"\
+	"Create NURBSphere"
 } -underline 4
 $m.nc add command -label "NURBSphere2" -command {
     crtNSphere2; uCR; sL; forceNot; rV
@@ -393,36 +401,55 @@ $m.nct add command -label "Make Periodic" -command { undo save "Make Periodic";
                                             plb_update; rV }
 $m.nct add command -label "Concat" -command { concatNC; uCR; rV}
 $m.nct add command -label "Split" -command {
-runTool ay(splitu) {"Split at:"} "undo save Split; splitNC %0; uCR; sL; rV" }
+    runTool ay(splitu) {"Split at:"}\
+	"undo save Split; splitNC %0; uCR; sL; rV"\
+	"Split Curve"
+}
 $m.nct add command -label "Trim" -command {
     runTool [list ay(trimumin) ay(trimumax)]\
-	    [list "UMin:" "UMax:"]\
-            "undo save TrimNC; trimNC %0 %1; plb_update; rV" }
+	[list "UMin:" "UMax:"]\
+	"undo save TrimNC; trimNC %0 %1; plb_update; rV"\
+	"Trim Curve"
+}
 $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
                                               plb_update; rV }
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
                                               plb_update; rV }
-$m.nct add command -label "Refine with" -command { runTool ay(refinekn) {"New Knots:"} "undo save Refine; refineNC \{%0\}; plb_update; rV" }
+$m.nct add command -label "Refine with" -command {
+    runTool ay(refinekn) {"New Knots:"}\
+	"undo save Refine; refineNC \{%0\}; plb_update; rV"\
+        "Refine Curve"
+}
 $m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
                                              plb_update; rV }
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
-	    "undo save Elevate; elevateNC %0; plb_update; rV" }
+	"undo save Elevate; elevateNC %0; plb_update; rV"\
+	"Elevate Curve"
+}
 $m.nct add command -label "Insert Knot" -command {
     runTool [list ay(insknu) ay(insknr)]\
-	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKn; insknNC %0 %1; plb_update; rV" }
+	[list "Insert knot at:" "Insert times:"]\
+	"undo save InsKn; insknNC %0 %1; plb_update; rV"\
+	"Insert Knot"
+}
 $m.nct add command -label "Remove Knot" -command {
     runTool [list ay(remknu) ay(remknr) ay(remtol)]\
-	    [list "Remove knot at:" "Remove times:" "Tolerance:"]\
-	    "undo save RemKn; remknNC %0 %1 %2; plb_update; rV" }
+	[list "Remove knot at:" "Remove times:" "Tolerance:"]\
+	"undo save RemKn; remknNC %0 %1 %2; plb_update; rV"\
+	"Remove Knot"
+}
 $m.nct add command -label "Plot Curvature" -command {
     runTool [list ay(curvatp) ay(curvatw) ay(curvats)]\
-	    [list "Data points:" "Width:" "Scale Height:"]\
-	    "curvPlot %0 %1 %2; uCR; rV" }
+	[list "Data points:" "Width:" "Scale Height:"]\
+	"curvPlot %0 %1 %2; uCR; rV"\
+	"Curvature Plot"
+}
 $m.nct add command -label "Shift B-Spline" -command {
-runTool ay(shiftcbsp) {"Times:"}\
-	    "undo save ShiftClosedBS; shiftClosedBS %0; rV" }
+    runTool ay(shiftcbsp) {"Times:"}\
+	"undo save ShiftClosedBS; shiftClosedBS %0; rV"\
+	"Shift B-Spline"
+}
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC; rV; }
 $m.nct add command -label "Make Compatible" -command {
@@ -430,12 +457,14 @@ $m.nct add command -label "Make Compatible" -command {
 $m.nct add command -label "Rescale Knots to Range" -command {
     undo save RescaleKnots;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleknNC -r %0 %1; plb_update;"
+	"rescaleknNC -r %0 %1; plb_update;"\
+	"Rescale Knots"
 }
 $m.nct add command -label "Rescale Knots to Mindist" -command {
     undo save RescaleKnots;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleknNC -d %0; plb_update;"
+	"rescaleknNC -d %0; plb_update;"\
+	"Rescale Knots"
 }
 $m.nct add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {
@@ -473,11 +502,15 @@ $m.npt add command -label "Close V" -command {
 }
 
 $m.npt add command -label "Split U" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitUNP; splituNP %0; uCR; sL; rV"
+    runTool ay(splitu) {"Split at:"}\
+	"undo save SplitUNP; splituNP %0; uCR; sL; rV"\
+	"Split Surface"
 }
 
 $m.npt add command -label "Split V" -command {
-runTool ay(splitu) {"Split at:"} "undo save SplitVNP; splitvNP %0; uCR; sL; rV"
+    runTool ay(splitu) {"Split at:"}\
+	"undo save SplitVNP; splitvNP %0; uCR; sL; rV"\
+	"Split Surface"
 }
 
 $m.npt add command -label "Clamp U" -command {
@@ -492,20 +525,23 @@ $m.npt add command -label "Clamp Both" -command {
 
 $m.npt add command -label "Insert Knot U" -command {
     runTool [list ay(insknu) ay(insknr)]\
-	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnUNP; insknuNP %0 %1; plb_update; rV"
+	[list "Insert knot at:" "Insert times:"]\
+	"undo save InsKnUNP; insknuNP %0 %1; plb_update; rV"\
+	"Insert Knot"
 }
 
 $m.npt add command -label "Insert Knot V" -command {
     runTool [list ay(insknu) ay(insknr)]\
-	    [list "Insert knot at:" "Insert times:"]\
-	    "undo save InsKnVNP; insknvNP %0 %1; plb_update; rV"
+	[list "Insert knot at:" "Insert times:"]\
+	"undo save InsKnVNP; insknvNP %0 %1; plb_update; rV"\
+	"Insert Knot"
 }
 
 $m.npt add command -label "Elevate UV" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
-	    [list "Elevate U by:" "Elevate V by:"]\
-	  "undo save ElevateUVNP; elevateuNP %0; elevatevNP %1; plb_update; rV"
+	[list "Elevate U by:" "Elevate V by:"]\
+	"undo save ElevateUVNP; elevateuNP %0; elevatevNP %1; plb_update; rV"\
+	"Elevate Surface"
 }
 
 $m.npt add command -label "Extract Curve" -command "level_crt ExtrNC \"\" -1;"
@@ -519,32 +555,38 @@ $m.npt add command -label "Extract Patch" -command "level_crt ExtrNP \"\" -1;"
 $m.npt add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleknNP -ru %0 %1; plb_update;"
+	"rescaleknNP -ru %0 %1; plb_update;"\
+	"Rescale Knots"
 }
 $m.npt add command -label "Rescale Knots to Range V" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleknNP -rv %0 %1; plb_update;"
+	"rescaleknNP -rv %0 %1; plb_update;"\
+	"Rescale Knots"
 }
 $m.npt add command -label "Rescale Knots to Range Both" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
-	    "rescaleknNP -r %0 %1; plb_update;"
+	"rescaleknNP -r %0 %1; plb_update;"\
+	"Rescale Knots"    ""
 }
 $m.npt add command -label "Rescale Knots to Mindist U" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleknNP -du %0; plb_update;"
+	"rescaleknNP -du %0; plb_update;"\
+	"Rescale Knots"
 }
 $m.npt add command -label "Rescale Knots to Mindist V" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleknNP -dv %0; plb_update;"
+	"rescaleknNP -dv %0; plb_update;"\
+	"Rescale Knots"
 }
 $m.npt add command -label "Rescale Knots to Mindist Both" -command {
     undo save RescaleKnots 1;
     runTool ay(mindist) "MinDist:"\
-	    "rescaleknNP -d %0; plb_update;"
+	"rescaleknNP -d %0; plb_update;"\
+	"Rescale Knots"
 }
 $m.npt add command -label "Reset Weights" -command {
     if { $ay(views) != "" } {

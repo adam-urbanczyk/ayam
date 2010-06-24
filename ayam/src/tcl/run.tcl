@@ -23,15 +23,15 @@
 #              "%0" will be substituted with first argument etc.
 # example:
 # runTool splitCurveu {"Split at u:"} "splitCurve %0"
-proc runTool { argvars argstrings command } {
-    global ay
+proc runTool { argvars argstrings command title {advargs ""} } {
+    global ay ayprefs
 
     winAutoFocusOff
     set oldFocus [focus]
     set w .rtw
     catch {destroy $w}
     toplevel $w -class Ayam
-    wm title $w "Ayam"
+    wm title $w $title
     wm iconname $w "Ayam"
     if { $ay(ws) == "Aqua" } {
 	winMakeFloat $w
@@ -43,6 +43,11 @@ proc runTool { argvars argstrings command } {
 
     set okscript ""
     append okscript "set command \"$command\";"
+
+    if { $ayprefs(FixDialogTitles) } {
+	label $f.l -text $title
+	pack $f.l -in $f -side top -fill x
+    }
 
     set index 0
     foreach i $argvars {
