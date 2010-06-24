@@ -47,7 +47,8 @@ mmenu_addcustom SDNCube {
      sdncrt_options(Width) sdncrt_options(Height) sdncrt_options(Depth)\
      sdncrt_options(DX) sdncrt_options(DY) sdncrt_options(DZ) }\
      {"Width:" "Height:" "Depth:" "DX:" "DY:" "DZ:"}\
-	"sdnpatch_crtcube %0 %1 %2 %3 %4 %5;"
+	"sdnpatch_crtcube %0 %1 %2 %3 %4 %5;"\
+	"Create SDNCube"
 }
 
 global ay
@@ -58,7 +59,8 @@ set ay(felength) 1.0
 set ay(fescale) 1.0
 $m add command -label "Face Extrude" -command {
     runTool {ay(felength) ay(fescale)} {"Length:" "Scale:"} \
-	"undo save SDNExtFace; sdnextrudeFace %0 %1; rV;"
+	"undo save SDNExtFace; sdnextrudeFace %0 %1; rV;"\
+	"Face Extrude"
 }
 $m add command -label "Face Remove" -command {
     undo save SDNRemFace; sdnremoveFace; rV; }
@@ -332,7 +334,8 @@ proc sdnpatch_setknot { } {
 
     # open edit window
     runTool {sdnsetkn_options(Knot)} {"Knot:"}\
-	"undo save SDNSetKnot; sdneditKnots -i %0; rV"
+	"undo save SDNSetKnot; sdneditKnots -i %0; rV"\
+	"Set Knot"
 
  return;
 }
