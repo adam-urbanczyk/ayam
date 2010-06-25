@@ -10895,6 +10895,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   np = (ay_nurbpatch_object *)o->refine;
 
+  /*arr = ay_shadecbt.arr;*/
   arr = ay_drawcbt.arr;
   cb = (ay_drawcb *)(arr[o->type]);
 
@@ -11177,6 +11178,13 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 	  goto cleanup;
 	}
 
+      fvalid = AY_TRUE;
+      fX = winXY[0];
+      fY = winXY[1];
+      fwX = worldXYZ[0];
+      fwY = worldXYZ[1];
+      fwZ = worldXYZ[2];
+
       ton = Tcl_NewStringObj("u", -1);
       to = Tcl_NewDoubleObj(u);
       Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
@@ -11186,13 +11194,6 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
       Tcl_Eval(interp, cmd);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
-      fvalid = AY_TRUE;
-      fX = winXY[0];
-      fY = winXY[1];
-      fwX = worldXYZ[0];
-      fwY = worldXYZ[1];
-      fwZ = worldXYZ[2];
     }
   else
     {

@@ -1910,18 +1910,18 @@ ay_nct_finducb(struct Togl *togl, int argc, char *argv[])
 	  goto cleanup;
 	}
 
-      ton = Tcl_NewStringObj("u", -1);
-      to = Tcl_NewDoubleObj(u);
-      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
-      Tcl_Eval(interp, cmd);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
       fvalid = AY_TRUE;
       fX = winXY[0];
       fY = winXY[1];
       fwX = worldXYZ[0];
       fwY = worldXYZ[1];
       fwZ = worldXYZ[2];
+
+      ton = Tcl_NewStringObj("u", -1);
+      to = Tcl_NewDoubleObj(u);
+      Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG|TCL_GLOBAL_ONLY);
+      Tcl_Eval(interp, cmd);
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
     }
   else
     {
