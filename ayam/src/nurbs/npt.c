@@ -10859,6 +10859,9 @@ ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
  *  to the corresponding parametric values u, v
  *  on the NURBS surface o
  *  This function needs a valid OpenGL rendering context!
+ *
+ *  XXXX ToDo: use gluPickMatrix() to speed this up
+ *
  */
 int
 ay_npt_finduv(struct Togl *togl, ay_object *o,
@@ -10895,9 +10898,32 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   np = (ay_nurbpatch_object *)o->refine;
 
-  /*arr = ay_shadecbt.arr;*/
-  arr = ay_drawcbt.arr;
+  arr = ay_shadecbt.arr;
+  /*arr = ay_drawcbt.arr;*/
   cb = (ay_drawcb *)(arr[o->type]);
+
+  glClear(GL_DEPTH_BUFFER_BIT);
+  glDisable(GL_LIGHTING);
+  /* set color for selected objects */
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   ay_trafo_getall(ay_currentlevel->next);
+
+   glTranslated(o->movx, o->movy, o->movz);
+   ay_quat_torotmatrix(o->quat, m);
+   glMultMatrixd(m);
+   glScaled(o->scalx, o->scaly, o->scalz);
+
+   if(cb)
+     ay_status = cb(togl, o);
+
+   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
+  glPopMatrix();
+
+  glEnable(GL_LIGHTING);
 
   pixel1[0] = (float)ay_prefs.ser;
   pixel1[1] = (float)ay_prefs.seg;
@@ -10909,7 +10935,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
   */
 
   /*
-   * first, we try to find a point on the curve in window coordinates;
+   * first, we try to find a point on the surface in window coordinates;
    * we do this by comparing colors of rendered pixels
    */
   found = AY_FALSE;
@@ -10935,30 +10961,10 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 	}
     }
 
-  /* get object coordinates of point on curve */
+  /* get object coordinates of point on surface */
   glGetIntegerv(GL_VIEWPORT, viewport);
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   ay_trafo_getall(ay_currentlevel->next);
-
-   glTranslated(o->movx, o->movy, o->movz);
-   ay_quat_torotmatrix(o->quat, m);
-   glMultMatrixd(m);
-   glScaled(o->scalx, o->scaly, o->scalz);
-
-   /* we operate on selected objects, but those are drawn with
-      disabled depth test, which means: no correct z buffer data;
-      thus, we simply call the draw callback of the selected object
-      here again on an empty z buffer to get correct z buffer data */
-   glClear(GL_DEPTH_BUFFER_BIT);
-   if(cb)
-     ay_status = cb(togl, o);
-
-   glGetDoublev(GL_MODELVIEW_MATRIX, modelMatrix);
-  glPopMatrix();
 
   /* get winz */
   glReadPixels((GLint)winx,(GLint)winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&winz);
