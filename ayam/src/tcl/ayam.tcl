@@ -2013,6 +2013,11 @@ if { !$ayprefs(SingleWindow) } {
     after idle viewMouseToCurrent
 }
 
+# always start with focus in main window, so that main menu shortcuts work
+if { $ayprefs(SingleWindow) && $ayprefs(AutoFocus) } {
+    after idle {focus -force .}
+}
+
 # correct current directory
 if { $ay(ws) == "Aqua" } {
     # when started via Finder/Dock we end up with cd /, correct this
