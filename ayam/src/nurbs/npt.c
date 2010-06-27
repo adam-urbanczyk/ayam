@@ -199,7 +199,10 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
       new = new_width-width;
 
       if(!(newpersec = calloc((width-1), sizeof(int))))
-	return AY_EOMEM;
+	{
+	  free(ncontrolv);
+	  return AY_EOMEM;
+	}
 
       while(new)
 	{
@@ -338,7 +341,10 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
       new = new_height-height;
 
       if(!(newpersec = calloc((height-1), sizeof(int))))
-	return AY_EOMEM;
+	{
+	  free(ncontrolv);
+	  return AY_EOMEM;
+	}
 
       while(new)
 	{
@@ -10898,8 +10904,8 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   np = (ay_nurbpatch_object *)o->refine;
 
+  /* flat-shade the selected object */
   arr = ay_shadecbt.arr;
-  /*arr = ay_drawcbt.arr;*/
   cb = (ay_drawcb *)(arr[o->type]);
 
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -11012,9 +11018,8 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 					      V[j]+((V[j+1]-V[j])/2.0),
 					      p);
 	     p += stride;
-	   }
-
-       }
+	   } /* for */
+       } /* for */
 
       min_distance = DBL_MAX;
       p = cp;
