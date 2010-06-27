@@ -983,11 +983,11 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_nurbcurve_object *ncurve = NULL;
  ay_mpoint *mp = NULL;
- int new_order, new_length, new_knot_type, new_type;
+ int new_order, new_length, old_length, new_knot_type, new_type;
  int order_modified = AY_FALSE, knots_modified = AY_FALSE;
- double *nknotv = NULL;
+ double *nknotv = NULL, *ncontrolv = NULL;
  int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
- int knotc, i;
+ int knotc, i, stride = 4;
  char **knotv;
 
   if(!o)
@@ -1002,6 +1002,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "Length", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &new_length);
+  old_length = ncurve->length;
 
   Tcl_SetStringObj(ton, "Order", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1048,8 +1049,9 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_status = ay_nct_resize(ncurve, new_length);
 
       if(ay_status)
-       ay_error(AY_ERROR, fname, "Could not resize curve!");
-
+	{
+	  ay_error(AY_ERROR, fname, "Could not resize curve!");
+	}
       updateKnots = AY_TRUE;
       o->modified = AY_TRUE;
     }
@@ -1057,6 +1059,29 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* apply new order */
   if((ncurve->order != new_order) && (new_order > 1))
     {
+      /* special case for periodic curves */
+      if(ncurve->type == AY_CTPERIODIC)
+	{
+	  if(new_length == old_length)
+	    {
+	      if(new_order < ncurve->order)
+		{
+		  ncurve->length -= (ncurve->order-new_order);
+		}
+	      else
+		{
+		  new_length = ncurve->length + (new_order - ncurve->order);
+		  if(!(ncontrolv = calloc(stride*new_length, sizeof(double))))
+		    return AY_EOMEM;
+		  memcpy(ncontrolv, ncurve->controlv,
+			 ncurve->length*stride*sizeof(double));
+		  free(ncurve->controlv);
+		  ncurve->controlv = ncontrolv;
+		  ncurve->length = new_length;
+		}
+	    }
+	}
+
       ncurve->order = new_order;
       updateKnots = AY_TRUE;
       order_modified = AY_TRUE;
