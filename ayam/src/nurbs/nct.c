@@ -459,8 +459,10 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
       new = new_length - curve->length;
 
       if(!(newpersec = calloc((curve->length-1), sizeof(int))))
-
-	return AY_EOMEM;
+	{
+	  free(ncontrolv);
+	  return AY_EOMEM;
+	}
       cv = curve->controlv;
 
       while(new)
@@ -1624,6 +1626,9 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
  *  to the corresponding parametric value u
  *  on the NURB curve o
  *  This function needs a valid OpenGL rendering context!
+ *
+ *  XXXX ToDo: use gluPickMatrix() to speed this up
+ *
  */
 int
 ay_nct_findu(struct Togl *togl, ay_object *o,
