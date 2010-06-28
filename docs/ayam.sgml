@@ -12,7 +12,7 @@
 This is the documentation of Ayam 1.17 - a free 3D modelling environment
 for the RenderMan interface.
 
-Please note, that this document is intended to be a reference manual,
+Please note, that this document is a reference manual,
 more detailed explanations of how to actually model with Ayam are
 given in the tutorials.
 
@@ -89,7 +89,7 @@ a tight integration of Ayam with any of those renderers.
 <p>
 How should one read this manual?
 <p>
-Since this manual is intended to be a reference manual, it is
+Since this manual is a reference manual, it is
 probably pointless to read it from the beginning to the end
 (except maybe for the next section, explaining the basics).
 Instead, just look up the documentation of the things you are interested
@@ -4503,6 +4503,12 @@ consequently, the last three control points will be moved. In addition,
 if the current knot type of the curve is <tt/"NURB"/ or <tt/"Bezier"/
 it will be changed to <tt/"B-Spline"/ automatically.
 </itemize>
+Since Ayam 1.18, when changing the order of a periodic curve (and not
+touching the length) Ayam will automatically add or remove control
+points to/from the curve so that the shape of the curve remains
+largely intact and the periodic extensions plausible.
+
+
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
@@ -9719,17 +9725,19 @@ the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
   </itemize>
 Examples:
-<tt/"crtOb NCurve"/
+<enum>
+<item><bf/<tt/"crtOb NCurve"//<newline>
 creates a curve with length 4, order 4, standard (clamped) NURBS knot
 vector, control points at 0 0 0, 0.25 0 0, 0.5 0 0, 0.75 0 0 (all weights 1).
-<tt/"crtOb NCurve -center 1"/
+<item><bf/<tt/"crtOb NCurve -center 1"//<newline>
 creates a centered curve with length 4, order 4, standard (clamped) NURBS knot
 vector, control points at -0.375 0 0, -0.125 0 0, 0.125 0 0, 0.375 0 0
 (all weights 1).
-<tt/"crtOb NCurve -length 5 -center 1 -dx 0.5"/
+<item><bf/<tt/"crtOb NCurve -length 5 -center 1 -dx 0.5"//<newline>
 creates a centered curve with length 5, order 4, standard (clamped) NURBS knot
 vector, control points at -1 0 0, -0.5 0 0, 0 0 0, 0.5 0 0, 1 0 0
 (all weights 1).
+</enum>
 <p>
 In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
@@ -9799,14 +9807,15 @@ and length specified by the <tt/"-edlen"/ option.
 
 </itemize>
 Examples:
-<tt/"crtOb ICurve"/
+<enum>
+<item><bf/<tt/"crtOb ICurve"//<newline>
 creates a curve with length 4, order 4, control points at
 0 0 0, 0.25 0 0, 0.5 0 0, 0.75 0 0.
-<p>
-<tt/"crtOb ICurve -l 5 -sderiv {0.0 -0.5 0.0} -ederiv {0.0 -0.5 0.0} -derivs 1 -center 1"/
+<item><bf/<tt/"crtOb ICurve -l 5 -sderiv {0.0 -0.5 0.0} -ederiv {0.0 -0.5 0.0} -derivs 1 -center 1"//<newline>
 creates a curve with length 5, order 4, control points at
 -0.5 0 0, -0.25 0 0, 0 0 0, 0.25 0 0, 0.5 0 0, end derivatives pointing
 straight upwards with length 0.5 in their respective end.
+</enum>
 <p>
 In versions of Ayam prior to 1.17, interpolating curves only accepted the
 <tt/"-length"/ argument.
@@ -9857,9 +9866,14 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
 
 </itemize>
 Examples:
-<tt/"crtOb ACurve -length 10; uS; rV"/
-<tt/"crtOb ACurve -l 5 -center 1"/
-
+<enum>
+<item><bf/<tt/"crtOb ACurve -length 6"//<newline>
+creates an approximating curve from 6 data points: 0 0 0, 0.25 0 0, 0.5 0 0,
+0.75 0 0, 1 0 0, 1.25 0 0.
+<item><bf/<tt/"crtOb ACurve -l 5 -center 1"//<newline>
+creates a centered approximating curve from 5 data points: -0.5 0 0,
+-0.25 0 0, 0 0 0, 0.25 0 0, 0.5 0 0.
+</enum>
 <p>
 In versions of Ayam prior to 1.17, approximating curves only accepted the
 <tt/"-length"/ argument.
@@ -9941,7 +9955,7 @@ the new patch will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
 </itemize>
 Examples:
-<tt/"crtOb NPatch -width 2 -height 2; uS; rV"/
+<tt/"crtOb NPatch -width 2 -height 2"/
 
 <p>
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
@@ -9992,17 +10006,20 @@ The default value is 0 - no vertex normals are present.
 
   </itemize>
 Examples:
-<tt/"crtOb PolyMesh -p 1 -cv {0 0 0  1 0 0  0 1 0}"/
+<enum>
+<item><bf/<tt/"crtOb PolyMesh -p 1 -cv {0 0 0  1 0 0  0 1 0}"//<newline>
 creates a polymesh with a single triangular face.
-<p>
-<tt/"crtOb PolyMesh -p 2 -cv {0 0 0  1 0 0  1 1 0  0 1 0 } -iv {0 1 2 0 2 3 }"/
+
+<item><bf/<tt/"crtOb PolyMesh -p 2 -cv {0 0 0  1 0 0  1 1 0  0 1 0 } -iv {0 1 2 0 2 3 }"//<newline>
 creates a polymesh with two connected (vertex sharing) triangular faces.
 <p>
-<tt/"crtOb PolyMesh -p 3 -cv {0 0 0  1 0 0  1 1 0  0 1 0  1.5 0 0  1.5 1 0} -iv {0 1 2 0 2 3 1 4 5 2} -nv {3 3 4}"/
-creates a polymesh with two triangles and one quad all connected (vertex sharing).
-<p>
-<tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"/
+<item><bf/<tt/"crtOb PolyMesh -p 3 -cv {0 0 0  1 0 0  1 1 0  0 1 0  1.5 0 0  1.5 1 0} -iv {0 1 2 0 2 3 1 4 5 2} -nv {3 3 4}"//<newline>
+creates a polymesh with two triangles and one quad all connected
+(vertex sharing).
+
+<item><bf/<tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"//<newline>
 creates a polymesh with one triangular face that has a triangular hole.
+</enum>
 
 <#if out=latex><x/newpage/</#if>
 
