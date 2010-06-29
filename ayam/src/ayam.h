@@ -525,97 +525,99 @@ typedef struct ay_light_object_s
 /** Level object */
 typedef struct ay_level_object_s
 {
-  int type;
+  int type; /**< type of level (AY_LT*) */
 } ay_level_object;
 
 
 /** Box object */
 typedef struct ay_box_object_s
 {
-  double width, length, height;
+  double width; /**< width of box (X) */
+  double length; /**< length of box (Z) */
+  double height; /**< height of box (Y) */
 } ay_box_object;
 
 
 /** Bilinear patch object */
 typedef struct ay_bpatch_object_s
 {
-  double p1[3];
-  double p2[3];
-  double p3[3];
-  double p4[3];
+  double p1[3]; /**< point 1 */
+  double p2[3]; /**< point 2 */
+  double p3[3]; /**< point 3 */
+  double p4[3]; /**< point 4 */
 } ay_bpatch_object;
 
 
 /** Sphere object */
 typedef struct ay_sphere_object_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   char is_simple;
   double radius;
   double zmin, zmax;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_sphere_object;
 
 
 /** Cone object */
 typedef struct ay_cone_object_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   char is_simple;
   double radius;
   double height;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_cone_object;
 
 
 /** Disk object */
 typedef struct ay_disk_object_s
 {
-  char is_simple;
+  char is_simple; /**< create missing cap surfaces? */
   double radius;
   double height;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_disk_object;
 
 
 /** Cylinder object */
 typedef struct ay_cylinder_object_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   char is_simple;
   double radius;
   double zmin, zmax;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_cylinder_object;
 
 
 /** Hyperboloid object */
 typedef struct ay_hyperboloid_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   double p1[3];
   double p2[3];
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_hyperboloid_object;
 
 
 /** Paraboloid object */
 typedef struct ay_paraboloid_object_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   double rmax;
   double zmin, zmax;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_paraboloid_object;
 
 
 /** Torus object */
 typedef struct ay_torus_object_s
 {
-  char closed;
+  char closed; /**< create missing cap surfaces? */
   double majorrad, minorrad;
   double phimin, phimax;
-  double thetamax;
+  double thetamax; /**< angle of revolution (degrees) */
 } ay_torus_object;
 
 
@@ -664,14 +666,15 @@ typedef struct ay_acurve_object_s
 /** Concatenate curves object */
 typedef struct ay_concatnc_object_s
 {
-  int closed;
-  int fillgaps;
-  int revert;
-  int knot_type;
-  double ftlength;
+  int closed; /**< create closed curve? */
+  int fillgaps; /**< create fillets? */
+  int revert; /**< revert created curve? */
+  int knot_type; /**< knot type of created curve */
+  double ftlength; /**< length of fillet end tangents */
 
-  /* cache NURBS curve representation */
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_concatnc_object;
@@ -680,12 +683,13 @@ typedef struct ay_concatnc_object_s
 /** Offset curves object */
 typedef struct ay_offnc_object_s
 {
-  int mode;
-  int revert;
-  double offset;
+  int mode; /**< offset mode */
+  int revert; /**< revert created curve? */
+  double offset; /**< offset/distance value */
 
-  /* cache NURBS curve representation */
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_offnc_object;
@@ -694,9 +698,11 @@ typedef struct ay_offnc_object_s
 /** Cap surface object */
 typedef struct ay_cap_object_s
 {
-  int type;
-  /* cache NURBS patch representation */
+  int type; /**< cap type (0 - trim, 1 - gordon) */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_cap_object;
@@ -705,9 +711,11 @@ typedef struct ay_cap_object_s
 /** Bevel surface object */
 typedef struct ay_bevel_object_s
 {
-  int has_cap;
-  /* cache NURBS patch representation */
+  int has_cap; /**< add cap surface? */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_bevel_object;
@@ -716,14 +724,17 @@ typedef struct ay_bevel_object_s
 /** Clone object */
 typedef struct ay_clone_object_s
 {
-  int numclones;
-  int rotate;
-  int mirror;
+  int numclones; /**< number of clones to create */
+  int rotate; /**< rotate clones (perpendicular to trajectory)? */
+  int mirror; /**< enable mirror mode? (0 - no, 1,2,3 - yes (YZ,XZ,XY)) */
+
   /* transformations */
   double movx, movy, movz;
   double rotx, roty, rotz;
   double scalx, scaly, scalz;
   double quat[4]; /* quaternion */
+
+  /** cached clones */
   ay_object *clones;
 } ay_clone_object;
 
@@ -731,11 +742,13 @@ typedef struct ay_clone_object_s
 /** Camera object */
 typedef struct ay_camera_object_s
 {
-  double from[3];
-  double to[3];
-  double up[3];
-  double roll, zoom;
-  double nearp, farp; /* clipping planes */
+  double from[3]; /**< viewpoint */
+  double to[3]; /**< aim point */
+  double up[3]; /**< up vector */
+  double roll; /**< roll angle */
+  double zoom; /**< zoom factor */
+  double nearp; /**< near clipping plane */
+  double farp; /**< far clipping plane */
 } ay_camera_object;
 
 
@@ -760,20 +773,21 @@ typedef struct ay_riproc_object_s
 /** Surface of revolution object */
 typedef struct ay_revolve_object_s
 {
-  double thetamax;
-  int sections;
-  int order;
-  int has_upper_cap;
-  ay_object *upper_cap;
-  int has_lower_cap;
-  ay_object *lower_cap;
-  int has_start_cap;
-  ay_object *start_cap;
-  int has_end_cap;
-  ay_object *end_cap;
+  double thetamax; /**< angle of revolution (degrees) */
+  int sections; /**< number of sections in u direction */
+  int order; /**< desired order in u direction */
+  int has_upper_cap; /**< create upper cap? */
+  ay_object *upper_cap; /**< cached upper cap */
+  int has_lower_cap; /**< create lower cap? */
+  ay_object *lower_cap; /**< cached lower cap */
+  int has_start_cap; /**< create start cap (at theta 0)? */
+  ay_object *start_cap; /**< cached start cap */
+  int has_end_cap; /**< create end cap (at thetamax)? */
+  ay_object *end_cap; /**< cached end cap */
 
-  /* cache NURBS patch representation */
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_revolve_object;
@@ -782,51 +796,57 @@ typedef struct ay_revolve_object_s
 /** Extrusion surface object */
 typedef struct ay_extrude_object_s
 {
- double height;
- int has_upper_cap;
- int has_lower_cap;
+  double height; /**< height of extrusion */
+  int has_upper_cap; /**< create upper cap? */
+  int has_lower_cap; /**< create lower cap? */
 
- ay_object *caps_and_bevels;
- /* cache NURBS patch representation */
- ay_object *npatch;
- double glu_sampling_tolerance;
- int display_mode;
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_extrude_object;
 
 
 /** Swept surface object */
 typedef struct ay_sweep_object_s
 {
- int rotate;
- int interpolate;
- int close;
- int sections;
- int has_start_cap;
- int has_end_cap;
+  int rotate; /**< rotate sections (perpendicular to trajectory)? */
+  int interpolate; /**< interpolate sections? */
+  int close; /**< create periodic (closed) surface? */
+  int sections; /**< desired number of sections (0 - automatic) */
+  int has_start_cap; /**< create start cap? */
+  int has_end_cap; /**< create end cap? */
 
- ay_object *caps_and_bevels;
- /* cache NURBS patch representation */
- ay_object *npatch;
- double glu_sampling_tolerance;
- int display_mode;
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_sweep_object;
 
 
 /** Swung surface object */
 typedef struct ay_swing_object_s
 {
+  int has_upper_cap; /**< create upper cap? */
+  ay_object *upper_cap; /**< cached upper cap */
+  int has_lower_cap; /**< create lower cap? */
+  ay_object *lower_cap; /**< cached lower cap */
+  int has_start_cap; /**< create start cap? */
+  ay_object *start_cap; /**< cached start cap */
+  int has_end_cap; /**< create end cap? */
+  ay_object *end_cap; /**< cached end cap */
 
-  int has_upper_cap;
-  ay_object *upper_cap;
-  int has_lower_cap;
-  ay_object *lower_cap;
-  int has_start_cap;
-  ay_object *start_cap;
-  int has_end_cap;
-  ay_object *end_cap;
-
-  /* cache NURBS patch representation */
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_swing_object;
@@ -835,64 +855,75 @@ typedef struct ay_swing_object_s
 /** Birail surface object (from three curves) */
 typedef struct ay_birail1_object_s
 {
- int close;
- int sections;
- int has_start_cap;
- int has_end_cap;
+  int close; /**< unused */
+  int sections; /**< number of sections in the birailed surface (U) */
+  int has_start_cap; /**< create start cap? */
+  int has_end_cap; /**< create end cap? */
 
- ay_object *caps_and_bevels;
- /* cache NURBS patch representation */
- ay_object *npatch;
- double glu_sampling_tolerance;
- int display_mode;
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_birail1_object;
 
 
 /** Birail surface object (from four curves) */
 typedef struct ay_birail2_object_s
 {
- int close;
- int sections;
- int interpolctrl;
- int has_start_cap;
- int has_end_cap;
+  int close; /**< unused */
+  int sections; /**< number of sections in the birailed surface (U) */
+  int interpolctrl;  /**< use interpolation control curve? */
+  int has_start_cap; /**< create start cap? */
+  int has_end_cap; /**< create end cap? */
 
- ay_object *caps_and_bevels;
- /* cache NURBS patch representation */
- ay_object *npatch;
- double glu_sampling_tolerance;
- int display_mode;
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_birail2_object;
 
 
 /** Skinned surface object (Loft) */
 typedef struct ay_skin_object_s
 {
- int interpolate;
- int uorder;
- int uknot_type;
- double uknotv;
- int has_start_cap;
- int has_end_cap;
+  int interpolate; /**< interpolate all curves? */
+  int uorder; /**< desired order in u direction */
+  int uknot_type;; /**< desired knot type in u direction */
+  double uknotv;; /**< desired knot vector in u direction */
+  int has_start_cap; /**< create start cap? */
+  int has_end_cap; /**< create end cap? */
 
- ay_object *caps_and_bevels;
- /* cache NURBS patch representation */
- ay_object *npatch;
- double glu_sampling_tolerance;
- int display_mode;
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance;
+  int display_mode;
 } ay_skin_object;
 
 
 /** Extract curve from surface object */
 typedef struct ay_extrnc_object_s
 {
-  int side;
-  int pnum;
-  int revert;
-  int relative;
-  double parameter;
-  /* cache NURBS curve representation */
+  int side; /**< which curve to extract? (0,1,2,3 - boundary; 4,5 - inner) */
+  int pnum; /**< select patch from multiple provided */
+  int revert; /**< revert extracted curve? */
+  int relative; /**< interpret parameter value in relative way? */
+  double parameter; /**< parameter value (u/v) */
+
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_extrnc_object;
@@ -901,11 +932,13 @@ typedef struct ay_extrnc_object_s
 /** Extract surface from surface object */
 typedef struct ay_extrnp_object_s
 {
-  int pnum;
-  int relative;
+  int pnum; /**< select patch from multiple provided */
+  int relative; /**< interpret parameter values in relative way? */
   double umin, umax, vmin, vmax;
-  /* cache NURBS patch representation */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_extrnp_object;
@@ -921,8 +954,9 @@ typedef struct ay_concatnp_object_s
   int fillgaps;
   double ftlength;
 
-  /* cache NURBS patch representation */
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_concatnp_object;
@@ -934,8 +968,9 @@ typedef struct ay_offnp_object_s
   int mode;
   double offset;
 
-  /* cache NURBS patch representation */
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_offnp_object;
@@ -944,11 +979,13 @@ typedef struct ay_offnp_object_s
 /** Circle object */
 typedef struct ay_ncircle_object_s
 {
-  double radius;
-  double tmin;
-  double tmax;
-  /* cache NURBS curve representation */
+  double radius; /**< radius of circle/arc */
+  double tmin; /**< start angle of circle/arc */
+  double tmax; /**< end angle of circle/arc */
+
+  /** cached NURBS curve representation */
   ay_object *ncurve;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_ncircle_object;
@@ -957,24 +994,25 @@ typedef struct ay_ncircle_object_s
 /** Script object */
 typedef struct ay_script_object_s
 {
-  char *script; /* the script text (Tcl) */
-  int active; /* 0 - Inactive, 1 - Active */
-  int type; /* 0 - Run, 1 - Create, 2 - Modify */
-  ay_object *cm_objects; /* created or modified objects */
+  char *script; /**< the script text (Tcl) */
+  int active; /**< activate/run the script? (0 - Inactive, 1 - Active) */
+  int type; /**< type of script (0 - Run, 1 - Create, 2 - Modify) */
+  ay_object *cm_objects; /**< created or modified objects */
 
-  int modified;
-  Tcl_Obj *cscript; /* cache compiled script */
-  int paramslen;
-  Tcl_Obj **params; /* save script parameters */
+  int modified; /**< need to recompile the script? */
+  Tcl_Obj *cscript; /**< cache compiled script */
+
+  int paramslen; /**< number of saved script parameters */
+  Tcl_Obj **params; /**< save script parameters */
 } ay_script_object;
 
 
 /** View object */
 typedef struct ay_view_object_s
 {
-  struct Togl *togl;
-  int type; /* Persp, Front, Side, Top, Trim */
-  double grid; /* gridsize, 0.0 == no grid */
+  struct Togl *togl; /**< pointer to corresponding Togl widget structure */
+  int type; /**< view type (AY_VT*) (Persp., Front, Side, Top, Trim) */
+  double grid; /**< gridsize, 0.0 == no grid */
 
   int local; /* editing takes place in local space, not world space */
   int aligned; /* view is aligned to object-space of selected object */
@@ -995,11 +1033,13 @@ typedef struct ay_view_object_s
   int drawobjectcs;
 
   /* camera */
-  double from[3];
-  double to[3];
-  double up[3];
-  double roll, zoom;
-  double nearp, farp; /* clipping planes */
+  double from[3]; /**< viewpoint */
+  double to[3]; /**< aim point */
+  double up[3]; /**< up vector */
+  double roll; /**< roll angle */
+  double zoom; /**< zoom factor */
+  double nearp; /**< near clipping plane */
+  double farp; /**< far clipping plane */
 
   /* temporarily in use for rotation with cursor keys */
   double rotx, roty, rotz;
@@ -1053,16 +1093,18 @@ typedef struct ay_view_object_s
 /** Select object */
 typedef struct ay_select_object_s
 {
-  char *indices; /* indices of objects to be selected */
-  int length; /* length of seli array */
-  int *seli; /* cache of object indices */
+  char *indices; /**< indices of objects to be selected */
+  int length; /**< length of seli array */
+  int *seli; /**< cache of object indices */
 } ay_select_object;
 
 
 /** Trim surface object */
 typedef struct ay_trim_object_s
 {
-  int patchnum;
+  int patchnum; /**< select patch from multiple provided */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
 } ay_trim_object;
 
