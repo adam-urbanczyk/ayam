@@ -9955,7 +9955,26 @@ the new patch will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
 </itemize>
 Examples:
-<tt/"crtOb NPatch -width 2 -height 2"/
+<enum>
+<item><bf/<tt/"crtOb NPatch"//<newline>
+creates a flat patch with width 4, height 4, uorder 4, vorder 4,
+standard (clamped) NURBS knot vectors, control points arranged in a
+equidistant grid in the XY plane from 0 0 0 to 0.75 0.75 0 (all weights 1).
+<item><bf/<tt/"crtOb NPatch -vdy 0 -vdz 0.25"//<newline>
+creates the same patch as above in the XZ plane (ground plane).
+<item><bf/<tt/"crtOb NPatch -udy 0.25"//<newline>
+creates a sheared version of the standard NURBS patch in the XY plane.
+<item><bf/<tt/"crtOb NPatch -udy 0.25 -vdz 0.25"//<newline>
+creates a 3D sheared version of the standard NURBS patch.
+<item><bf/<tt/"crtOb NPatch -width 2 -height 2 -center 1 -udx 2 -vdy 2"//
+<newline>
+creates a centered patch with width 2, height 2, uorder 2, vorder 2,
+standard (clamped) NURBS knot vectors, control points at -1 0 0, 1 0 0,
+-1 1 0, 1 1 0 (all weights 1).
+<item><bf/<tt/"crtOb NPatch -width 3 -height 2 -uorder 2 -cv { -1 0 1 1  1 0 1 1  -1 0 0 1  1 0 0 1  -1 1 0 1  1 1 0 1 }"//<newline>
+creates a angular patch in the XZ and XY plane (remove <tt/-uorder 2/ to get
+a smooth shape).
+</enum>
 
 <p>
 In versions of Ayam prior to 1.17, NURBS patches only accepted the
