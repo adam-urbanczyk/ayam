@@ -1062,7 +1062,7 @@ ay_view_notifycb(ay_object *o)
  char fname[] = "view_notifycb";
  GLint result;
  GLdouble m[16] = {0};
- int i, j, k = 0, l = 0;
+ int i, j, k = 0, l = 0, x = 0;
 
   if(!o)
     return AY_ENULL;
@@ -1127,7 +1127,8 @@ ay_view_notifycb(ay_object *o)
 	  else
 	    {
 	      /* check/correct byte order */
-	      if(TIFFIsMSB2LSB(tif))
+	      *(char *)&x = 1;
+	      if(x != 1)
 		{
 		  /* byte order must be corrected: we need intel format */
 		  for(c = 0; c < w*h; c++)
