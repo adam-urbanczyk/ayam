@@ -343,11 +343,11 @@ int ay_notify_register(ay_notifycb *notcb, unsigned int type_id);
  */
 int ay_notify_parent(void);
 
-/*! \brief call notification callback of object <o>
+/*! \brief call notification callback of object o
  */
 int ay_notify_force(ay_object *o);
 
-/*! \brief call notification callback of parents of object <o>
+/*! \brief call notification callback of parents of object o
  */
 int ay_notify_forceparent(ay_object *o, int silent);
 
@@ -361,7 +361,7 @@ int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_notify_findparents(ay_object *o, ay_object *r,
 			  ay_list_object **parents);
 
-/*! \brief do complete notification for object <r>
+/*! \brief do complete notification for object r
  */
 int ay_notify_complete(ay_object *r);
 
@@ -1205,15 +1205,15 @@ int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
 
 /* tc.c */
 
-/*! \brief write the first TC tag from object <o> to RIB
+/*! \brief write the first TC tag from object o to RIB
  */
 int ay_tc_wrib(ay_object *o);
 
-/*! \brief write TC tag number <index> from object <o> to RIB
+/*! \brief write single TC tag from object o to RIB
  */
 int ay_tc_wribindex(ay_object *o, int index);
 
-/*! \brief count TC tags of object <o>
+/*! \brief count TC tags of object o
  */
 int ay_tc_count(ay_object *o);
 
@@ -1229,7 +1229,7 @@ void ay_tc_init(Tcl_Interp *interp);
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/*! \brief show all objects below <o>
+/*! \brief show all objects below o
  */
 void ay_tcmd_showall(ay_object *o);
 
@@ -1238,7 +1238,7 @@ void ay_tcmd_showall(ay_object *o);
 int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/*! \brief hide all objects below <o>
+/*! \brief hide all objects below o
  */
 void ay_tcmd_hideall(ay_object *o);
 
@@ -1582,11 +1582,11 @@ int ay_viewt_updatemark(struct Togl *togl, int local);
  */
 int ay_viewt_updateglobalmark(struct Togl *togl);
 
-/*! \brief copy from/to/up from the selected camera object to view <togl>
+/*! \brief copy from/to/up from the selected camera object to view togl
  */
 int ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[]);
 
-/*! \brief copy camera settings of view <togl> to the selected camera object
+/*! \brief copy camera settings of view togl to the selected camera object
  */
 int ay_viewt_tocamtcb(struct Togl *togl, int argc, char *argv[]);
 

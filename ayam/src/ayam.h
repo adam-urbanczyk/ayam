@@ -552,9 +552,10 @@ typedef struct ay_bpatch_object_s
 typedef struct ay_sphere_object_s
 {
   char closed; /**< create missing cap surfaces? */
-  char is_simple;
-  double radius;
-  double zmin, zmax;
+  char is_simple; /**< is thetamax 360.0 and are zmin/zmax >= radius? */
+  double radius; /**< radius of sphere */
+  double zmin; /**< delimit sphere on z axis */
+  double zmax; /**< delimit sphere on z axis */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_sphere_object;
 
@@ -563,9 +564,9 @@ typedef struct ay_sphere_object_s
 typedef struct ay_cone_object_s
 {
   char closed; /**< create missing cap surfaces? */
-  char is_simple;
-  double radius;
-  double height;
+  char is_simple; /**< is thetamax 360.0? */
+  double radius; /**< radius of cone */
+  double height; /**< height of cone */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_cone_object;
 
@@ -573,9 +574,9 @@ typedef struct ay_cone_object_s
 /** Disk object */
 typedef struct ay_disk_object_s
 {
-  char is_simple; /**< create missing cap surfaces? */
-  double radius;
-  double height;
+  char is_simple; /**< is thetamax 360.0? */
+  double radius; /**< radius of disk */
+  double height; /**< displacement of disk on z axis */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_disk_object;
 
@@ -584,9 +585,10 @@ typedef struct ay_disk_object_s
 typedef struct ay_cylinder_object_s
 {
   char closed; /**< create missing cap surfaces? */
-  char is_simple;
-  double radius;
-  double zmin, zmax;
+  char is_simple; /**< is thetamax 360.0? */
+  double radius; /**< radius of cylinder */
+  double zmin; /**< delimit cylinder on z axis */
+  double zmax; /**< delimit cylinder on z axis */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_cylinder_object;
 
@@ -595,8 +597,8 @@ typedef struct ay_cylinder_object_s
 typedef struct ay_hyperboloid_s
 {
   char closed; /**< create missing cap surfaces? */
-  double p1[3];
-  double p2[3];
+  double p1[3]; /**< point 1 */
+  double p2[3]; /**< point 2 */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_hyperboloid_object;
 
@@ -605,8 +607,9 @@ typedef struct ay_hyperboloid_s
 typedef struct ay_paraboloid_object_s
 {
   char closed; /**< create missing cap surfaces? */
-  double rmax;
-  double zmin, zmax;
+  double rmax; /**< radius on base */
+  double zmin; /**< delimit paraboloid on z axis */
+  double zmax; /**< delimit paraboloid on z axis */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_paraboloid_object;
 
@@ -756,7 +759,7 @@ typedef struct ay_camera_object_s
 typedef struct ay_riinc_object_s
 {
   double width, length, height;
-  char *file;
+  char *file; /**< filename of include file */
 } ay_riinc_object;
 
 
@@ -1014,23 +1017,22 @@ typedef struct ay_view_object_s
   int type; /**< view type (AY_VT*) (Persp., Front, Side, Top, Trim) */
   double grid; /**< gridsize, 0.0 == no grid */
 
-  int local; /* editing takes place in local space, not world space */
-  int aligned; /* view is aligned to object-space of selected object */
+  int local; /* editing takes place in local space, not world space? */
+  int aligned; /* view is aligned to object-space of selected object? */
 
-  int drawsel; /* draw selected objects (and their children) only */
-  int drawlevel; /* draw current level (and below) only */
-  int redraw; /* automatic redraw */
-  int drawgrid; /* draw grid */
-  int usegrid; /* use (snap to) grid */
-  int shade; /* shade view */
-  int antialiaslines; /* use antialiasing for line drawing */
+  int drawsel; /**< draw selected objects (and their children) only? */
+  int drawlevel; /**< draw current level (and below) only? */
+  int redraw; /**< automatic redraw? */
+  int drawgrid; /**< draw grid? */
+  int usegrid; /**< use (snap to) grid? */
+  int shade; /**< shade view? */
+  int antialiaslines; /**< use antialiasing for line drawing? */
 
   /*#ifdef AY_ENABLEPPREV*/
-  int ppreview; /* create a permanent preview */
+  int ppreview; /**< create a permanent preview? */
   /*#endif*/
 
-  /* draw object coordinate system? */
-  int drawobjectcs;
+  int drawobjectcs; /**< draw object coordinate system? */
 
   /* camera */
   double from[3]; /**< viewpoint */
@@ -1080,11 +1082,11 @@ typedef struct ay_view_object_s
   int bguorder, bgvorder;
   float *bgknotv, *bgcv;
 
-  /* unique identifier, for plugins (e.g. AyCSG) that tie
+  /** unique identifier, for plugins (e.g. AyCSG) that tie
      exclusive resources (e.g. offscreen buffers) to views */
   int id;
 
-  /* alternative display callback, for plugins that like to take
+  /** alternative display callback, for plugins that like to take
      over drawing (e.g. AyCSG) */
   Togl_Callback *altdispcb;
 } ay_view_object;
