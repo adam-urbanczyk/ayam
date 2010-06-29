@@ -998,6 +998,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      return TCL_OK;
 		    } /* if */
 		  strcpy(view->bgimage, argv[i+1]);
+		  view->bgimagedirty = AY_TRUE;
 		  o = ay_root->down;
 		  while(o)
 		    {
