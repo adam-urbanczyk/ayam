@@ -327,19 +327,18 @@ typedef struct ay_root_object_s
 /** NURBS curve object */
 typedef struct ay_nurbcurve_object_s
 {
-  int type; /* AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC */
-  int length;
-  int order;
-  int knot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
-  int is_rat;
-  double *controlv;
-  double *knotv;
+  int type; /**< curve type (AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC) */
+  int length; /**< curve length */
+  int order; /**< curve order */
+  int knot_type; /**< knot type (AY_KT*) */
+  int is_rat; /**< is any weight != 1.0 */
+  double *controlv; /**< control points [length*4] */
+  double *knotv; /**< knot vector [length+order]*/
 
-  /* GLU */
   double glu_sampling_tolerance;
-  int display_mode;
+  int display_mode; /**< drawing mode */
 
-  GLUnurbsObj *no;
+  GLUnurbsObj *no; /**< GLU NURBS object */
 
   /* stess */
   int tesslen;
@@ -395,7 +394,9 @@ typedef struct ay_nurbpatch_object_s
   /*int closedu, closedv;*/ /* unused */
   int is_rat;
 
-  double *controlv, *uknotv, *vknotv;
+  double *controlv; /**< control points [width*height*4] */
+  double *uknotv;
+  double *vknotv;
   /*double *texv;*/ /* unused */
 
   /* GLU */
@@ -418,7 +419,7 @@ typedef struct ay_nurbpatch_object_s
 typedef struct ay_pamesh_object_s {
   int width, height;
   int close_u, close_v;
-  double *controlv; /* [width*height*4] */
+  double *controlv; /**< control points [width*height*4] */
   int type; /* AY_PTBILINEAR, AY_PTBICUBIC */
   int btype_u; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
 		  AY_BTCUSTOM */
@@ -429,8 +430,9 @@ typedef struct ay_pamesh_object_s {
   int vstep;
   double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
 
-  /* cache NURBS patch representation */
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_pamesh_object;
@@ -438,47 +440,49 @@ typedef struct ay_pamesh_object_s {
 
 /** PolyMesh object */
 typedef struct ay_pomesh_object_s {
-  int type; /* currently unused */
+  int type; /**< unused */
 
-  unsigned int npolys; /* total number of polygons */
-  unsigned int *nloops; /* [npolys] */
-  unsigned int *nverts; /* [<sum of all elements of nloops>] */
-  unsigned int *verts; /* [<sum of all elements of nverts>] */
+  unsigned int npolys; /**< total number of polygons */
+  unsigned int *nloops; /**< loops per polygon [npolys] */
+  unsigned int *nverts; /**< verts per loop[<sum of all elements of nloops>] */
+  unsigned int *verts; /**< [<sum of all elements of nverts>] */
 
-  unsigned int ncontrols; /* total number of control points */
-  int has_normals; /* 0 - No, stride=3; 1 - Yes, stride=6 */
-  double *controlv; /* [ncontrols * stride] */
+  unsigned int ncontrols; /**< total number of control points */
+  int has_normals; /**< vertex normals? 0 - No, stride=3; 1 - Yes, stride=6 */
+  double *controlv; /**< control points [ncontrols * stride] */
 } ay_pomesh_object;
 
 
 /** SubdivisionMesh object */
 typedef struct ay_sdmesh_object_s {
-  int scheme; /* AY_SDSCATMULL, AY_SDSLOOP */
+  int scheme; /**< subdivision scheme (AY_SDSCATMULL, AY_SDSLOOP) */
 
-  unsigned int nfaces; /* total number of faces */
-  unsigned int *nverts; /* [nfaces] */
-  unsigned int *verts; /* [<sum of all elements of nverts>] */
+  unsigned int nfaces; /**< total number of faces */
+  unsigned int *nverts; /**< number of vertices per face [nfaces] */
+  unsigned int *verts; /**< vertex indices [<sum of all elements of nverts>] */
+  unsigned int ntags; /**< total number of tags */
+  int *tags; /**< [ntags] (AY_SDTHOLE, AY_SDTCORNER, AY_SDTCREASE, AY_SDTIB) */
+  unsigned int *nargs; /**< number of arguments per tag [ntags * 2] */
+  int *intargs; /**< integer args [<sum of all even elements of nargs>] */
+  double *floatargs; /**< float args [<sum of all uneven elements of nargs>] */
 
-  unsigned int ntags; /* total number of tags */
-  int *tags; /* [ntags] (AY_SDTHOLE, AY_SDTCORNER, AY_SDTCREASE, AY_SDTIB) */
-  unsigned int *nargs; /* [ntags * 2] */
-  int *intargs; /* [<sum of all even elements of nargs>] */
-  double *floatargs; /* [<sum of all uneven elements of nargs>] */
-
-  unsigned int ncontrols; /* total number of control points */
-  double *controlv; /* [ncontrols * 3] */
+  unsigned int ncontrols; /**< total number of control points */
+  double *controlv; /**< control points [ncontrols * 3] */
 } ay_sdmesh_object;
 
 
 /** Gordon object */
 typedef struct ay_gordon_object_s {
-  int wcc; /* watch (and automatically correct parameter curves) */
-  int uorder; /* desired order for u dimension */
-  int vorder; /* desired order for v dimension */
+  int wcc; /**< watch (and automatically correct) parameter curves? */
+  int uorder; /**< desired order for u dimension */
+  int vorder; /**< desired order for v dimension */
 
+  /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
-  /* cache NURBS patch representation */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_gordon_object;
@@ -487,14 +491,16 @@ typedef struct ay_gordon_object_s {
 /** Text object */
 typedef struct ay_text_object_s
 {
-  char *fontname;
-  Tcl_UniChar *unistring;
-  double height;
-  int revert;
-  int has_upper_cap;
-  int has_lower_cap;
-  /* cache NURBS patch representation */
+  char *fontname; /**< filename of TrueType font description file */
+  Tcl_UniChar *unistring; /**< UNICODE string of text */
+  double height; /**< height of letters (Z) */
+  int revert; /**< revert curves (to fix trim problems)? */
+  int has_upper_cap; /**< create upper cap? */
+  int has_lower_cap; /**< create lower cap? */
+
+  /** cached NURBS patch representation */
   ay_object *npatch;
+
   double glu_sampling_tolerance;
   int display_mode;
 } ay_text_object;
@@ -503,22 +509,22 @@ typedef struct ay_text_object_s
 /** Lightsource object */
 typedef struct ay_light_object_s
 {
-  int type; /* custom, point, spot, distant */
-  int on; /* 0 off, 1 on */
-  int local; /* light only local objects (same level and below)? 0 off, 1 on */
-  RtLightHandle light_handle; /* handle of local lights */
-  int shadows; /* cast shadows? 0 off, 1 on */
-  int samples; /* number of samples (for area lights), default 1 */
+  int type; /**< light type: custom, point, spot, or distant (AY_LT*) */
+  int on; /**< light state: 0 off, 1 on */
+  int local; /**< light only local objects (same level and below)? */
+  RtLightHandle light_handle; /**< RI handle of local lights */
+  int shadows; /**< light casts shadows? */
+  int samples; /**< number of samples (for area lights), default: 1 */
   int colr, colg, colb;
-  double intensity;
-  double cone_angle;
-  double cone_delta_angle;
-  double beam_distribution;
-  int use_sm; /* create shadow map */
-  int sm_resolution; /* shadow map resolution */
-  ay_shader *lshader;
-  double tfrom[3];
-  double tto[3];
+  double intensity; /**< intensity of light source */
+  double cone_angle; /**< size of spot light cone */
+  double cone_delta_angle; /**< size of spot light penumbra */
+  double beam_distribution; /**< intensity distribution in spot light beam */
+  int use_sm; /**< create shadow map? */
+  int sm_resolution; /**< shadow map resolution */
+  ay_shader *lshader; /**< light shader (for custom lights only!) */
+  double tfrom[3]; /**< light source position */
+  double tto[3]; /**< light source aim point */
 } ay_light_object;
 
 
@@ -899,8 +905,8 @@ typedef struct ay_skin_object_s
 {
   int interpolate; /**< interpolate all curves? */
   int uorder; /**< desired order in u direction */
-  int uknot_type;; /**< desired knot type in u direction */
-  double uknotv;; /**< desired knot vector in u direction */
+  int uknot_type; /**< desired knot type in u direction */
+  double uknotv; /**< desired knot vector in u direction */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
 
