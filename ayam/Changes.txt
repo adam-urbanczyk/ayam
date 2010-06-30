@@ -1,4 +1,4 @@
-[22. Jun 2010] CVS-Head:
+[30. Jun 2010] CVS-Head:
 ========================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
@@ -7,6 +7,8 @@ o fixed find u action failing for transformed curves (SF 3006822)
 o fixed find u action not setting the mark corectly (SF 3006824)
 o fixed Revolve caps in B-Spline mode (Sections != 0) (SF 3012391)
 o fixed potential crash in NURBS patch clamp V tool (SF 3012393)
+o fixed setting the BGImage via view menu (SF 3023248)
+o fixed BGImage drawing on Win32 (SF 3023249)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -16,21 +18,25 @@ o direct point editing now uses the point selection instead of an own pointer;
 o the Revolve tool object now supports arbitrary ThetaMax values in
   B-Spline mode (Sections != 0)
 o added Arc and Radius parameters to create closed B-Spline curve tool
+o added Radius, TMin, and TMax parameters to NCircle object creation dialog
 o added modelling action to snap the selected points to the mark
   (new shortcut "M")
 o added modelling action to snap the selected objects to the mark
   (new shortcut "K")
 o added view action to pan the view to the mark (new shortcut ".")
-o the find u modelling action now works with provided objects
+o the find u modelling action now works with provided objects, and
+  is more exact
 o added find uv modelling action that finds the u and v parameters for a
   picked point on a NURBS surface
 o added preference setting and facility to manage a global mark,
   if enabled, all views share a single mark; thus, one can set it in
   one view and use it in another
+o improved order changes for periodic NURBS curves via the property GUI
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
   manages the focus of internal widgets (views, tree, properties, console)
+o Tool dialogs now display a more descriptive window name
 
 Scripts/Scripting Interface:
 o added commands to evaluate NURBS curves/surfaces: "evalNC"/"evalNP"
