@@ -387,23 +387,24 @@ typedef struct ay_stess_s {
 /** NURBS patch object */
 typedef struct ay_nurbpatch_object_s
 {
-  int width, height;
-  int uorder, vorder;
-  int uknot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
-  int vknot_type; /* AY_KTBEZIER, AY_KTBSPLINE, AY_KTNURB, AY_KTCUSTOM */
+  int width; /**< width of patch (u)*/
+  int height; /**< height of patch (v) */
+  int uorder; /**< order in u direction */
+  int vorder; /**< order in v direction */
+  int uknot_type; /**< u knot type (AY_KT*) */
+  int vknot_type; /**< v knot type (AY_KT*) */
   /*int closedu, closedv;*/ /* unused */
-  int is_rat;
+  int is_rat; /**< is any weight != 1.0 */
 
   double *controlv; /**< control points [width*height*4] */
-  double *uknotv;
-  double *vknotv;
+  double *uknotv; /**< u knot vector [width+uorder]*/
+  double *vknotv; /**< v knot vector [height+vorder]*/
   /*double *texv;*/ /* unused */
 
-  /* GLU */
-  GLUnurbsObj *no;
+  GLUnurbsObj *no; /**< GLU NURBS object */
 
   double glu_sampling_tolerance;
-  int display_mode;
+  int display_mode; /**< drawing mode */
 
   /* stess */
   int tessqf;
