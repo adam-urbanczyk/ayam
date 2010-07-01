@@ -125,39 +125,39 @@ int ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax);
  */
 int ay_knots_rescaletomindist(int n, double *knotv, double mindist);
 
-/**
+/** Unify two knot vectors.
  */
 int ay_knots_unify(double *Ua, int Ualen, double *Ub, int Ublen,
 		   double **Ubar, int *Ubarlen);
 
-/**
+/** Merge knot vector into curve knots.
  */
 int ay_knots_mergenc(ay_nurbcurve_object *curve, double *Ubar, int Ubarlen);
 
-/**
+/** Merge knot vectors into patch knots.
  */
 int ay_knots_mergenp(ay_nurbpatch_object *patch,
 		     double *Ubar, int Ubarlen, double *Vbar, int Vbarlen);
 
-/**
+/** Calculate valid knot bounds.
  */
 int ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 			double *umin, double *umax);
 
-/**
+/** Calculate valid knot bounds.
  */
 int ay_knots_getvminmax(ay_object *o, int order, int knots, double *knotv,
 			double *vmin, double *vmax);
 
-/**
+/** Set valid knot bounds (create UMM tag).
  */
 int ay_knots_setuminmax(ay_object *o, double umin, double umax);
 
-/**
+/** Set valid knot bounds (create VMM tag).
  */
 int ay_knots_setvminmax(ay_object *o, double vmin, double vmax);
 
-/**
+/** Coarsen a knot vector.
  */
 int ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 		     double **newknotv);
@@ -348,180 +348,180 @@ int ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP,
 
 /* nct.c */
 
-/**
+/** Create curve object.
  */
 int ay_nct_create(int order, int length, int knot_type,
 		  double *controlv, double *knotv,
 		  ay_nurbcurve_object **curveptr);
 
-/**
+/** Destroy curve object.
  */
 int ay_nct_destroy(ay_nurbcurve_object *curve);
 
-/**
+/** Remove multiple points from curve \a c.
  */
 void ay_nct_clearmp(ay_nurbcurve_object *c);
 
-/**
+/** Re-create multiple points for curve \a c.
  */
 int ay_nct_recreatemp(ay_nurbcurve_object *c);
 
-/**
+/** Collapse selected points to multiple points.
  */
 int ay_nct_collapseselp(ay_object *o);
 
-/**
+/** Explode selected multiple points.
  */
 int ay_nct_explodemp(ay_object *o);
 
-/**
+/** Resize NURBS curve to new length.
  */
 int ay_nct_resize(ay_nurbcurve_object *curve, int new_length);
 
-/**
+/** Close NURBS curve.
  */
 int ay_nct_close(ay_nurbcurve_object *curve);
 
-/**
+/** Revert NURBS curve.
  */
 int ay_nct_revert(ay_nurbcurve_object *curve);
 
-/**
+/** Refine NURBS curve.
  */
 int ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv,
 		  int newknotvlen);
 
-/**
+/** Refine NURBS curve.
  */
 int ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Clamp NURBS curve.
  */
 int ay_nct_clamp(ay_nurbcurve_object *curve);
 
-/**
+/** Clamp NURBS curve.
  */
 int ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/**
+/** Elevate order of NURBS curve.
  */
 int ay_nct_elevate(ay_nurbcurve_object *curve, int new_order);
 
-/**
+/** Elevate order of NURBS curve.
  */
 int ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Insert knot into NURBS curve.
  */
 int ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Collapse selected points of NURBS curve to multiple points.
  */
 int ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Explode selected multiple points.
  */
 int ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Find point on NURBS curve.
  */
 int ay_nct_findu(struct Togl *togl, ay_object *o,
 		 double *winXY, double *worldXYZ, double *u);
 
-/**
+/** Find point on NURBS curve modelling action.
  */
 int ay_nct_finducb(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** Split NURBS curve.
  */
 int ay_nct_split(ay_object *src, double u, ay_object **result);
 
-/**
+/** Split NURBS curve.
  */
 int ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/**
+/** Concatenate selected NURBS curves.
  */
 int ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Create a NURBS circle.
  */
 int ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve);
 
-/**
+/** Create a circular NURBS arc.
  */
 int ay_nct_crtncirclearc(double radius, double arc,
 			 ay_nurbcurve_object **curve);
 
-/**
+/** Create a NURBS half-circle.
  */
 int ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve);
 
-/**
+/** Create a NURBS circle.
  */
 int ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/**
+/** Create a NURBS rectangle.
  */
 int ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Create a circular B-Spline curve.
  */
 int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 		      ay_nurbcurve_object **result);
 
-/**
+/** Create a circular B-Spline curve.
  */
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/**
+/** Calculate orientation of NURBS curve.
  */
 int ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
 
-/**
+/** Check NURBS curve closedness.
  */
 int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
-/**
+/** Set NURBS curve type.
  */
 int ay_nct_settype(ay_nurbcurve_object *nc);
 
-/**
+/** Apply transformations to all control points.
  */
 int ay_nct_applytrafo(ay_object *c);
 
-/**
+/** Get control point from index.
  */
 int ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p);
 
-/**
+/** Concatenate multiple NURBS curves.
  */
 int ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 			  ay_object *curves,
 			  ay_object **result);
 
-/**
+/** Create fillet.
  */
 int ay_nct_fillgap(int order, double tanlen,
 		   ay_nurbcurve_object *c1, ay_nurbcurve_object *c2,
 		   ay_object **result);
 
-/**
+/** Create fillets.
  */
 int ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves);
 
-/**
+/** Arrange objects.
  */
 int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
@@ -529,16 +529,16 @@ int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
  */
 int ay_nct_addinternalcps(ay_object *curve, int where);
 
-/**
+/** Rescale the knot vectors of selected curves.
  */
 int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/**
+/** Calculate curvature at parameter value \a t.
  */
 double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 
-/**
+/** Create curvature plot curve.
  */
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -552,29 +552,29 @@ int ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
  */
 int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
 
-/**
+/** Make a number of curves compatible.
  */
 int ay_nct_makecompatible(ay_object *curves);
 
-/**
+/** Shift control points.
  */
 int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
 
-/**
+/** Shift control points.
  */
 int ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/**
+/** Rotate curve to XY plane.
  */
 int ay_nct_toxy(ay_object *c);
 
-/**
+/** Rotate curve to XY plane.
  */
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/**
+/** Make a number of curves compatible.
  */
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -585,20 +585,20 @@ void ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
 			   double guess, int max_try, double e1, double e2,
 			   double *u);
 
-/**
+/** Check whether any weight is != 1.0.
  */
 int ay_nct_israt(ay_nurbcurve_object *curve);
 
-/**
+/** Center NURBS curve.
  */
 int ay_nct_center(int mode, ay_nurbcurve_object *curve);
 
-/**
+/** Center NURBS curve.
  */
 int ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Coarsen NURBS curve.
  */
 int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
@@ -617,7 +617,7 @@ int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[]);
 
-/** trim NURBS curve
+/** Trim NURBS curve.
  */
 int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
@@ -660,157 +660,157 @@ int ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* npt.c */
 
-/**
+/** Create NURBS patch object.
  */
 int ay_npt_create(int uorder, int vorder, int width, int height,
 		  int uknot_type, int vknot_type,
 		  double *controlv, double *uknotv, double *vknotv,
 		  ay_nurbpatch_object **patchptr);
 
-/**
+/** Destroy NURBS patch object.
  */
 int ay_npt_destroy(ay_nurbpatch_object *patch);
 
-/**
+/** Create Ayam object for NURBS patch.
  */
 int ay_npt_createnpatchobject(ay_object **result);
 
-/**
+/** Resize width (U) of 2D control point array.
  */
 int ay_npt_resizearrayw(double **controlvptr, int stride,
 			int width, int height, int new_width);
 
-/**
+/** Resize width (U) of NURBS patch.
  */
 int ay_npt_resizew(ay_nurbpatch_object *np, int new_width);
 
-/**
+/** Resize height (V) of 2D control point array.
  */
 int ay_npt_resizearrayh(double **controlvptr, int stride,
 			int width, int height, int new_height);
 
-/**
+/** Resize height (V) of NURBS patch.
  */
 int ay_npt_resizeh(ay_nurbpatch_object *np, int new_height);
 
-/**
+/** Revert NURBS patch in U direction.
  */
 int ay_npt_revertu(ay_nurbpatch_object *np);
 
-/**
+/** Revert NURBS patch in U direction.
  */
 int ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Revert NURBS patch in V direction.
  */
 int ay_npt_revertv(ay_nurbpatch_object *np);
 
-/**
+/** Revert NURBS patch in V direction.
  */
 int ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Flip UV of 2D control point array.
  */
 int ay_npt_swaparray(double **controlvptr, int stride,
 		     int width, int height);
 
-/**
+/** Flip UV of NURBS patch.
  */
 int ay_npt_swapuv(ay_nurbpatch_object *np);
 
-/**
+/** Draw trim curves using GLU.
  */
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
 
-/**
+/** Export trim curves to RIB.
  */
 int ay_npt_wribtrimcurves(ay_object *o);
 
-/**
+/** Create Cobbs NURBS sphere patch.
  */
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
 
-/**
+/** Create standard NURBS sphere (revolved half circle).
  */
 int ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere);
 
-/**
+/** Create standard NURBS sphere (revolved half circle).
  */
 int ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/**
+/** Create multi patch Cobbs NURBS sphere.
  */
 int ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/**
+/** Split NURBS patch to curves along U.
  */
 int ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 			  ay_object **curves, ay_object ***last);
 
-/**
+/** Split NURBS patch to curves along V.
  */
 int ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 			  ay_object **curves, ay_object ***last);
 
-/**
+/** Split NURBS patch to curves.
  */
 int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
 
 
-/**
+/** Build NURBS patch from curves.
  */
 int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 			   int knot_type, int apply_trafo,
 			   ay_object **patch);
 
 
-/**
+/** Build NURBS patch from curves.
  */
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
 
-/**
+/** Concatenate NURBS patches.
  */
 int ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 		  ay_object **result);
 
 
-/**
+/** Create surface of revolution.
  */
 int ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 		   ay_nurbpatch_object **revolution);
 
-/**
+/** Create swung surface.
  */
 int ay_npt_swing(ay_object *o1, ay_object *o2,
 		 ay_nurbpatch_object **swing);
 
-/**
+/** Create swept surface.
  */
 int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		 int rotate, int closed, ay_nurbpatch_object **sweep,
 		 int has_start_cap, ay_object **start_cap,
 		 int has_end_cap, ay_object **end_cap);
 
-/**
+/** Create periodic swept surface.
  */
 int ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3,
 		       int sections, int rotate,
 		       ay_nurbpatch_object **closedsweep);
 
-/**
+/** Create birailed surface from three curves.
  */
 int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		   int closed, ay_nurbpatch_object **birail1,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
-/**
+/** Create birailed surface from four curves.
  */
 int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   ay_object *o5,
@@ -819,84 +819,84 @@ int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
-/**
+/** Interpolate NURBS patch in U direction.
  */
 int ay_npt_interpolateu(ay_nurbpatch_object *np, int order);
 
-/**
+/** Interpolate NURBS patch in V direction.
  */
 int ay_npt_interpolatev(ay_nurbpatch_object *np, int order);
 
-/**
+/** Create loft/skinned surface.
  */
 int ay_npt_skinu(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);
 
-/**
+/** Create loft/skinned surface.
  */
 int ay_npt_skinv(ay_object *curves, int order, int knot_type,
 		 int interpolate, ay_nurbpatch_object **skin);
 
-/**
+/** Create extruded surface.
  */
 int ay_npt_extrude(double height, ay_object *o,
 		   ay_nurbpatch_object **extrusion);
 
-/**
+/** Calculate 2d tangent from control points.
  */
 int ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 				   double *P, int a, double *T);
 
-/**
+/** Calculate 3D normal from control points.
  */
 int ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
 				  int stride, double *P, int a, double *N);
 
-/**
+/** Create bevel surface.
  */
 int ay_npt_bevel(int type, double radius, int align, ay_object *o,
 		 ay_nurbpatch_object **bevel);
 
-/**
+/** Create cap surface.
  */
 int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominx, double *omaxx,
 		     double *ominy, double *omaxy, double *oangle,
 		     ay_nurbpatch_object **cap);
 
-/**
+/** Apply transformations to all control points.
  */
 int ay_npt_applytrafo(ay_object *p);
 
-/**
+/** Get control point from index.
  */
 int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 			   double **p);
 
-/**
+/** Elevate U order of NURBS patch.
  */
 int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
 
-/**
+/** Elevate U order of NURBS patch.
  */
 int ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Elevate V order of NURBS patch.
  */
 int ay_npt_elevatev(ay_nurbpatch_object *patch, int t);
 
-/**
+/** Elevate V order of NURBS patch.
  */
 int ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Swap U and V of NURBS patch.
  */
 int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Create gordon surface.
  */
 int ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  int uorder, int vorder,
@@ -916,68 +916,68 @@ int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
  */
 int ay_npt_gordonwc(ay_object *g);
 
-/**
+/** Extract boundary curve from NURBS patch.
  */
 int ay_npt_extractboundary(ay_object *o, int apply_trafo,
 			   ay_nurbcurve_object **result);
 
-/**
+/** Extract middle point.
  */
 int ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 			      int index, int side,
 			      double *result);
 
-/** extract curve from patch
+/** Extract curve from patch.
  */
 int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
 		     int apply_trafo,
 		     ay_nurbcurve_object **result);
 
-/**
+/** Check whether any weight is != 1.0.
  */
 int ay_npt_israt(ay_nurbpatch_object *np);
 
-/**
+/** Check whether curve is boundary.
  */
 int ay_npt_isboundcurve(ay_object *o,
 			double b1, double b2, double b3, double b4,
 			int *result);
 
-/**
+/** Check whether NURBS patch is trimmed.
  */
 int ay_npt_istrimmed(ay_object *o, int mode);
 
-/**
+/** Close NURBS patch in U direction.
  */
 int ay_npt_closeu(ay_nurbpatch_object *np);
 
-/**
+/** Close NURBS patch in U direction.
  */
 int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Close NURBS patch in V direction.
  */
 int ay_npt_closev(ay_nurbpatch_object *np);
 
-/**
+/** Close NURBS patch in V direction.
  */
 int ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/**
+/** Remove multiple points from patch \a np.
  */
 void ay_npt_clearmp(ay_nurbpatch_object *np);
 
-/**
+/** Re-create multiple points for patch \a np.
  */
 int ay_npt_recreatemp(ay_nurbpatch_object *np);
 
-/**
+/** Collapse selected points to multiple points.
  */
 int ay_npt_collapseselp(ay_object *o);
 
-/**
+/** Explode selected multiple points.
  */
 int ay_npt_explodemp(ay_object *o);
 
@@ -1097,7 +1097,7 @@ int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
  */
 int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
 
-/**
+/** Get control point from index.
  */
 int ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 			   double **p);
