@@ -335,7 +335,7 @@ typedef struct ay_nurbcurve_object_s
   double *controlv; /**< control points [length*4] */
   double *knotv; /**< knot vector [length+order]*/
 
-  double glu_sampling_tolerance;
+  double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
 
   GLUnurbsObj *no; /**< GLU NURBS object */
@@ -403,7 +403,7 @@ typedef struct ay_nurbpatch_object_s
 
   GLUnurbsObj *no; /**< GLU NURBS object */
 
-  double glu_sampling_tolerance;
+  double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
 
   /* stess */
@@ -434,8 +434,8 @@ typedef struct ay_pamesh_object_s {
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_pamesh_object;
 
 
@@ -484,8 +484,8 @@ typedef struct ay_gordon_object_s {
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_gordon_object;
 
 
@@ -502,8 +502,8 @@ typedef struct ay_text_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_text_object;
 
 
@@ -649,8 +649,8 @@ typedef struct ay_icurve_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_icurve_object;
 
 
@@ -668,8 +668,8 @@ typedef struct ay_acurve_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_acurve_object;
 
 
@@ -685,8 +685,8 @@ typedef struct ay_concatnc_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_concatnc_object;
 
 
@@ -700,8 +700,8 @@ typedef struct ay_offnc_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_offnc_object;
 
 
@@ -713,8 +713,8 @@ typedef struct ay_cap_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_cap_object;
 
 
@@ -726,8 +726,8 @@ typedef struct ay_bevel_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_bevel_object;
 
 
@@ -798,8 +798,8 @@ typedef struct ay_revolve_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_revolve_object;
 
 
@@ -816,8 +816,8 @@ typedef struct ay_extrude_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_extrude_object;
 
 
@@ -837,8 +837,8 @@ typedef struct ay_sweep_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_sweep_object;
 
 
@@ -857,8 +857,8 @@ typedef struct ay_swing_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_swing_object;
 
 
@@ -876,8 +876,8 @@ typedef struct ay_birail1_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_birail1_object;
 
 
@@ -896,8 +896,8 @@ typedef struct ay_birail2_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_birail2_object;
 
 
@@ -917,8 +917,8 @@ typedef struct ay_skin_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_skin_object;
 
 
@@ -934,8 +934,8 @@ typedef struct ay_extrnc_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_extrnc_object;
 
 
@@ -949,8 +949,8 @@ typedef struct ay_extrnp_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_extrnp_object;
 
 
@@ -967,8 +967,8 @@ typedef struct ay_concatnp_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_concatnp_object;
 
 
@@ -981,8 +981,8 @@ typedef struct ay_offnp_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_offnp_object;
 
 
@@ -996,8 +996,8 @@ typedef struct ay_ncircle_object_s
   /** cached NURBS curve representation */
   ay_object *ncurve;
 
-  double glu_sampling_tolerance;
-  int display_mode;
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
 } ay_ncircle_object;
 
 
