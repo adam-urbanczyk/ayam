@@ -42,15 +42,12 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 
     # create an instance first (for ExtrNC/ExtrNP)?
     if { $keepsel < 0 } {
-	if { [llength $selected] == 1 } {
-	    getTrafo
-	}
-	crtOb Instance; uCR; sL
-	if { [llength $selected] == 1 } {
-	    setTrafo
-	}
+	crtOb Instance; uCR; sL;
+	# arrange for the Transformations property to be hidden/disabled
+	addTag RP Transformations
     }
 
+    # now create the level object
     set ay_error 0
     if { $crtargs != "" } {
 	eval [subst "crtOb $objtype $crtargs"]
