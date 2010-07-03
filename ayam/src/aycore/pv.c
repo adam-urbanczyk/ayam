@@ -807,6 +807,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       *datalen = count;
       break;
     case 'c':
+    case 'p':
+    case 'n':
+    case 'v':
       if(type == 0)
 	{
 	  /* allocate memory */
