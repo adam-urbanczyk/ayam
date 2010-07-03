@@ -5797,9 +5797,9 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    {
 	      p1 = &(vn[j*3]);
 	      AY_V3SCAL(p1, offset);
-	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
-	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride]   = curve->controlv[j*stride]   + p1[0];
+	      newcv[j*stride+1] = curve->controlv[j*stride+1] + p1[1];
+	      newcv[j*stride+2] = curve->controlv[j*stride+2] + p1[2];
 	      newcv[j*stride+3] = curve->controlv[j*stride+3];
 	    } /* for */
 	} /* if */
@@ -5827,6 +5827,9 @@ cleanup:
       if(newkv)
 	free(newkv);
     }
+
+  if(vn)
+    free(vn);
 
  return ay_status;
 } /* ay_nct_offset */
