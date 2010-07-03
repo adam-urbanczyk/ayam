@@ -31,7 +31,7 @@ NCInfoBall "N/A"
 # create UI
 set w [frame $ay(pca).$OffsetNCAttr(w)]
 
-addMenu $w OffsetNCAttrData Mode [list "Bevel" "Section" "Bevel3D" ]
+addMenu $w OffsetNCAttrData Mode [list "Bevel" "Section" "Bevel3D" "3DPVN"]
 addCheck $w OffsetNCAttrData Revert
 addParam $w OffsetNCAttrData Offset
 

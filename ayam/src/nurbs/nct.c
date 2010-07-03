@@ -5484,9 +5484,13 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
  double zaxis[3] = {0.0,0.0,1.0};
  ay_nurbcurve_object *curve = NULL;
+ ay_tag *tag = NULL;
  int p1len, p2len, p3len;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
  double t1[2], t2[2], n[2];
+ char *nname = ay_prefs.normalname;
+ unsigned int vnlen = 0;
+ double *vn = NULL;
 
   /* sanity check */
   if(!o || !nc)
@@ -5768,6 +5772,37 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    } /* for */
 	} /* if */
 
+      if(mode == 3)
+	{
+	  /*
+	    "3DPVN" mode:
+	     offset points according to normal delivered as primitive variable
+	  */
+	  tag = o->tags;
+	  while(tag)
+	    {
+	      if(ay_pv_checkndt(tag, nname, "varying", "n"))
+		{
+		  ay_pv_convert(tag,0,&vnlen,(void**)&vn);
+		  break;
+		}
+	      tag = tag->next;
+	    }
+	  if(!vn || (vnlen != curve->length))
+	    {
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	  for(j = 0; j < curve->length; j++)
+	    {
+	      p1 = &(vn[j*3]);
+	      AY_V3SCAL(p1, offset);
+	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
+	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
+	      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride+3] = curve->controlv[j*stride+3];
+	    } /* for */
+	} /* if */
     } /* if */
 
   if(curve->knot_type == AY_KTCUSTOM)
@@ -5783,10 +5818,14 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
   ay_status = ay_nct_create(curve->order, curve->length, curve->knot_type,
 			    newcv, newkv, nc);
 
+cleanup:
+
   if(ay_status || !nc)
     {
-      free(newcv);
-      free(newkv);
+      if(newcv)
+	free(newcv);
+      if(newkv)
+	free(newkv);
     }
 
  return ay_status;
