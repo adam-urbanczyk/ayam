@@ -5809,8 +5809,8 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
     {
       if(!(newkv = calloc(curve->length+curve->order, sizeof(double))))
 	{
-	  free(newcv);
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
       memcpy(newkv, curve->knotv, (curve->length+curve->order)*sizeof(double));
     }
