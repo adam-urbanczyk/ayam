@@ -177,168 +177,168 @@ int ay_knots_init(Tcl_Interp *interp);
 
 /* nb.c */
 
-/**
+/** LU decomposition of the nxn matrix A.
  */
 int ay_nb_LUDecompose(int n, double *A, int *pivot);
 
-/**
+/** Inversion of the nxn matrix inv.
  */
 int ay_nb_LUInvert(int n, double *inv, int *pivot);
 
-/**
+/** Interpolate the n+1 4D points in Q.
  */
 int ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc,
 				int d);
 
-/**
+/** Interpolate the n+1 4D points in Q with end derivatives.
  */
 int ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc,
 				 int d, double *D1, double *D2);
 
-/**
+/** Remove a knot from a NURBS curve.
  */
 int ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
 			    int r, int s, int num, double *Ubar, double *Qw);
 
-/**
+/** Calculate binomial coefficients.
  */
 void ay_nb_Bin(int maxn, int maxk, double *bin);
 
-/**
+/** Elevate degree of a NURBS curve.
  */
 int ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
 			     int t, int *nh, double *Uh, double *Qw);
 
-/**
+/** Solve tridiagonal equation system.
  */
 int ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P);
 
-/**
+/** Insert knot into rational NURBS curve.
  */
 int ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 			    int k, int s, int r, int *nq, double *UQ,
 			    double *Qw);
 
-/**
+/** Insert knot into non-rational NURBS curve.
  */
 int ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
 			    int k, int s, int r, int *nq, double *UQ,
 			    double *Q);
 
-/**
+/** Find knot span containing parameter u.
  */
 int ay_nb_FindSpan(int n, int p, double u, double *U);
 
-/**
+/** Find knot span containing parameter u and calculate multiplicity.
  */
 int ay_nb_FindSpanMult(int n, int p, double u, double *U, int *s);
 
-/**
+/** Calculate NURBS basis functions.
  */
 void ay_nb_BasisFuns(int i, double u, int p, double *U, double *N);
 
-/**
+/** Calculate a point on a rational NURBS curve.
  */
 int ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u,
 		       double *C);
 
-/**
+/** Calculate a point on a non-rational NURBS curve.
  */
 int ay_nb_CurvePoint3D(int n, int p, double *U, double *P, double u,
 		       double *C);
 
-/**
+/** Calculate a point on a rational NURBS surface.
  */
 int ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 			 double *Pw, double u, double v, double *C);
 
-/**
+/** Calculate a point on a non-rational NURBS surface.
  */
 int ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
 			 double *P, double u, double v, double *C);
 
-/**
+/** Calculate derivatives of NURBS basis funs.
  */
 void ay_nb_DersBasisFuns(int i, double u, int p, int n, double *U,
 			 double *ders);
 
-/**
+/** Calculate first derivative of non-rational NURBS curve.
  */
 void ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
 			     double *C1);
 
-/**
+/** Calculate second derivative of non-rational NURBS curve.
  */
 void ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
 			   double *C2);
 
-/**
+/** Calculate first derivative of rational NURBS curve.
  */
 void ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
 			     double *C1);
 
-/**
+/** Calculate second derivative of rational NURBS curve.
  */
 void ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
 			   double *C2);
 
-/**
+/** Calculate first derivative of rational NURBS surface.
  */
 void ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 			      double *Pw, double u, double v, double *C);
 
-/**
+/** Calculate first derivative of non-rational NURBS surface.
  */
 void ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
 			      double *P, double u, double v, double *C);
 
-/**
+/** Create NURBS circle or arc.
  */
 int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 			       int *length, double **knotv, double **controlv);
 
-/**
+/** Refine knot vector of NURBS curve with a new vector.
  */
 void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 			       double *X, int r, double *Ubar, double *Qw);
 
-/**
+/** Elevate degree of NURBS surface in U dimension.
  */
 int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 			     double *Pw, int t,
 			     int *nw, double *Uh, double *Qw);
 
-/**
+/** Elevate degree of NURBS surface in V dimension.
  */
 int ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 			     double *Pw, int t,
 			     int *nh, double *Vh, double *Qw);
 
-/**
+/** Refine U knot vector of NURBS surface with a new vector.
  */
 int ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
 			      double *Pw, double *X, int r,
 			      double *Ubar, double *Qw);
 
-/**
+/** Refine V knot vector of NURBS surface with a new vector.
  */
 int ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
 			      double *Pw, double *X, int r,
 			      double *Vbar, double *Qw);
 
-/**
+/** Decompose NURBS curve into Bezier segments.
  */
 int ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 			 int *nb, double **Qw);
 
-/**
+/** Insert knot into NURBS surface in U dimension.
  */
 int ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP,
 			  double *Pw,
 			  double u, int k, int s, int r,
 			  double *UQ, double *Qw);
 
-/**
+/** Insert knot into NURBS surface in V dimension.
  */
 int ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP,
 			  double *Pw,
@@ -543,12 +543,12 @@ double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Unfinished.
  */
 int ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 		     double *intersection);
 
-/**
+/** Unfinished.
  */
 int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
 
@@ -579,7 +579,7 @@ int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/**
+/** Unused.
  */
 void ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
 			   double guess, int max_try, double e1, double e2,
@@ -896,23 +896,23 @@ int ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Create gordon surface.
+/** Create Gordon surface.
  */
 int ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  int uorder, int vorder,
 		  ay_nurbpatch_object **gordon);
 
-/**
+/** Helper for gordonwc().
  */
 int ay_npt_gordonmodw(ay_object *o1, ay_object *o2);
 
-/**
+/** Helper for gordonwc().
  */
 int ay_npt_gordoncc(ay_object *o1, ay_object *o2, int stride,
 		    double *p1, double *p2, double *pp1, double *pp2,
 		    double *m1, double *m2);
 
-/**
+/** Watch and correct Gordon surface children.
  */
 int ay_npt_gordonwc(ay_object *g);
 
@@ -981,94 +981,94 @@ int ay_npt_collapseselp(ay_object *o);
  */
 int ay_npt_explodemp(ay_object *o);
 
-/** find and parse bevel parameter tags
+/** Find and parse bevel parameter tags.
  */
 int ay_npt_getbeveltags(ay_object *o, int place,
 			int *has_bevel, int *type, double *radius, int *sense);
 
-/** copy tesselation parameter tag
+/** Copy tesselation parameter tag.
  */
 int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
-/** clamp surface in u dimension
+/** Clamp surface in U dimension.
  */
 int ay_npt_clampu(ay_nurbpatch_object *np);
 
-/** clamp surface in v dimension
+/** Clamp surface in V dimension.
  */
 int ay_npt_clampv(ay_nurbpatch_object *np);
 
-/** Tcl command to clamp a surface in u dimension
+/** Tcl command to clamp a surface in U dimension.
  */
 int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Tcl command to clamp asurface in v dimension
+/** Tcl command to clamp asurface in V dimension.
  */
 int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** rescale trim curves according to surface knot vector scaling
+/** Rescale trim curves according to surface knot vector scaling.
  */
 int ay_npt_rescaletrims(ay_object *trim,
 			int mode, double omin, double omax,
 			double nmin, double nmax);
 
-/** Tcl command to rescale the knot vectors of a surface
+/** Tcl command to rescale the knot vectors of a surface.
  */
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/** Tcl command to insert a knot in a surface into u dimension
+/** Tcl command to insert a knot in a surface into U dimension
  */
 int ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Tcl command to insert a knot in a surface into v dimension
+/** Tcl command to insert a knot in a surface into V dimension
  */
 int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** split a surface along u
+/** Split a surface along U.
  */
 int ay_npt_splitu(ay_object *src, double u, ay_object **result);
 
-/** Tcl command to split a surface along u
+/** Tcl command to split a surface along V.
  */
 int ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** split a surface along v
+/** Split a surface along V.
  */
 int ay_npt_splitv(ay_object *src, double v, ay_object **result);
 
-/** Tcl command to split a surface along v
+/** Tcl command to split a surface along V.
  */
 int ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** extract sub surface
+/** Extract sub surface.
  */
 int ay_npt_extractnp(ay_object *src, double umin, double umax,
 		     double vmin, double vmax, int relative,
 		     ay_object **result);
 
-/** Tcl command to extract a sub surface
+/** Tcl command to extract a sub surface.
  */
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** get next different control point
+/** Get next different control point.
  */
 void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
 		double **dp);
 
-/** calculate offset surface
+/** Calculate offset surface.
  */
 int ay_npt_offset(ay_object *o, int mode, double offset,
 		  ay_nurbpatch_object **np);
 
-/**
+/** Check NURBS surface closedness.
  */
 int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 
@@ -1077,23 +1077,23 @@ int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 int ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/**
+/** Find point on NURBS surface.
  */
 int ay_npt_finduv(struct Togl *togl, ay_object *o,
 		  double *winXY, double *worldXYZ, double *u, double *v);
 
-/**
+/** Find point on NURBS surface modelling action.
  */
 int ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[]);
 
 
 /* pmt.c */
 
-/**
+/** Convert patchmesh to NURBS patch.
  */
 int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
-/**
+/** Check patchmesh for errors.
  */
 int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
 
@@ -1102,15 +1102,15 @@ int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
 int ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 			   double **p);
 
-/**
+/** Flip UV of patchmesh.
  */
 int ay_pmt_swapuv(ay_pamesh_object *pm);
 
-/**
+/** Revert patchmesh in U direction.
  */
 int ay_pmt_revertu(ay_pamesh_object *pm);
 
-/**
+/** Revert patchmesh in V direction.
  */
 int ay_pmt_revertv(ay_pamesh_object *pm);
 
@@ -1160,7 +1160,7 @@ int ay_stess_TessNP(ay_object *o, int qf);
 
 /* tess.c */
 
-/**
+/** Tesselate NURBS patch (convert to PolyMesh) with GLU.
  */
 int ay_tess_npatch(ay_object *o,
 		   int smethod, double sparamu, double sparamv,
@@ -1169,19 +1169,19 @@ int ay_tess_npatch(ay_object *o,
 		   int use_vn, char *myn,
 		   ay_object **pm);
 
-/**
+/** Tcl command to tesselate NURBS patch (convert to PolyMesh).
  */
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/**
+/** Tesselate a single polymesh face.
  */
 int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 		    unsigned int f, unsigned int m, unsigned int n,
 		    int optimize,
 		    ay_pomesh_object **trpomesh);
 
-/**
+/** Tesselate a polymesh with GLU.
  */
 int ay_tess_pomesh(ay_pomesh_object *pomesh, int optimize,
 		   ay_pomesh_object **trpomesh);
