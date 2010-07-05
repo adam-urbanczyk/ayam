@@ -4605,7 +4605,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
