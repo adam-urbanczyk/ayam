@@ -161,7 +161,7 @@ typedef struct ay_object_s {
 
   struct ay_mat_object_s *mat; /**< material of this object */
 
-  void *refine; /**< type specific object (e.g. ay_sphere_object) */
+  void *refine; /**< type specific object (e.g.\ ay_sphere_object) */
 } ay_object;
 
 
@@ -332,8 +332,8 @@ typedef struct ay_nurbcurve_object_s
   int order; /**< curve order */
   int knot_type; /**< knot type (AY_KT*) */
   int is_rat; /**< is any weight != 1.0 */
-  double *controlv; /**< control points [length*4] */
-  double *knotv; /**< knot vector [length+order]*/
+  double *controlv; /**< control points [length * 4] */
+  double *knotv; /**< knot vector [length + order]*/
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
@@ -387,18 +387,18 @@ typedef struct ay_stess_s {
 /** NURBS patch object */
 typedef struct ay_nurbpatch_object_s
 {
-  int width; /**< width of patch (u)*/
-  int height; /**< height of patch (v) */
-  int uorder; /**< order in u direction */
-  int vorder; /**< order in v direction */
-  int uknot_type; /**< u knot type (AY_KT*) */
-  int vknot_type; /**< v knot type (AY_KT*) */
+  int width; /**< width of patch (U)*/
+  int height; /**< height of patch (V) */
+  int uorder; /**< order in U direction */
+  int vorder; /**< order in V direction */
+  int uknot_type; /**< U knot type (AY_KT*) */
+  int vknot_type; /**< V knot type (AY_KT*) */
   /*int closedu, closedv;*/ /* unused */
   int is_rat; /**< is any weight != 1.0 */
 
-  double *controlv; /**< control points [width*height*4] */
-  double *uknotv; /**< u knot vector [width+uorder]*/
-  double *vknotv; /**< v knot vector [height+vorder]*/
+  double *controlv; /**< control points [width * height * 4] */
+  double *uknotv; /**< u knot vector [width + uorder]*/
+  double *vknotv; /**< v knot vector [height + vorder]*/
   /*double *texv;*/ /* unused */
 
   GLUnurbsObj *no; /**< GLU NURBS object */
@@ -418,14 +418,15 @@ typedef struct ay_nurbpatch_object_s
 
 /** PatchMesh object */
 typedef struct ay_pamesh_object_s {
-  int width, height;
-  int close_u, close_v;
-  double *controlv; /**< control points [width*height*4] */
-  int type; /* AY_PTBILINEAR, AY_PTBICUBIC */
-  int btype_u; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
-		  AY_BTCUSTOM */
-  int btype_v; /* AY_BTBEZIER, AY_BTBSPLINE, AY_BTCATMULLROM, AY_BTHERMITE,
-		  AY_BTCUSTOM */
+  int width; /**< width of patch mesh (U) */
+  int height; /**< height of patch mesh (V) */
+  int close_u; /**< is patch mesh closed in U? */
+  int close_v; /**< is patch mesh closed in V? */
+  double *controlv; /**< control points [width * height * 4] */
+
+  int type; /**< type of patch mesh (AY_PT*, bilinear or bicubic) */
+  int btype_u; /**< basis type of patch mesh in U, (AY_BT*) */
+  int btype_v; /**< basis type of patch mesh in V, (AY_BT*) */
   int ustep;
   double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
   int vstep;
@@ -445,8 +446,8 @@ typedef struct ay_pomesh_object_s {
 
   unsigned int npolys; /**< total number of polygons */
   unsigned int *nloops; /**< loops per polygon [npolys] */
-  unsigned int *nverts; /**< verts per loop[<sum of all elements of nloops>] */
-  unsigned int *verts; /**< [<sum of all elements of nverts>] */
+  unsigned int *nverts; /**< verts per loop[total_sum(nloops)] */
+  unsigned int *verts; /**< [total_sum(nverts)] */
 
   unsigned int ncontrols; /**< total number of control points */
   int has_normals; /**< vertex normals? 0 - No, stride=3; 1 - Yes, stride=6 */
@@ -460,12 +461,12 @@ typedef struct ay_sdmesh_object_s {
 
   unsigned int nfaces; /**< total number of faces */
   unsigned int *nverts; /**< number of vertices per face [nfaces] */
-  unsigned int *verts; /**< vertex indices [<sum of all elements of nverts>] */
+  unsigned int *verts; /**< vertex indices [total_sum(nverts)] */
   unsigned int ntags; /**< total number of tags */
-  int *tags; /**< [ntags] (AY_SDTHOLE, AY_SDTCORNER, AY_SDTCREASE, AY_SDTIB) */
+  int *tags; /**< tags [ntags] (AY_SDT*, hole, corner, crease, intpolbound) */
   unsigned int *nargs; /**< number of arguments per tag [ntags * 2] */
-  int *intargs; /**< integer args [<sum of all even elements of nargs>] */
-  double *floatargs; /**< float args [<sum of all uneven elements of nargs>] */
+  int *intargs; /**< integer args [sum of all even elements of nargs] */
+  double *floatargs; /**< float args [sum of all uneven elements of nargs] */
 
   unsigned int ncontrols; /**< total number of control points */
   double *controlv; /**< control points [ncontrols * 3] */
@@ -475,8 +476,8 @@ typedef struct ay_sdmesh_object_s {
 /** Gordon object */
 typedef struct ay_gordon_object_s {
   int wcc; /**< watch (and automatically correct) parameter curves? */
-  int uorder; /**< desired order for u dimension */
-  int vorder; /**< desired order for v dimension */
+  int uorder; /**< desired order for U dimension */
+  int vorder; /**< desired order for V dimension */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -642,7 +643,7 @@ typedef struct ay_icurve_object_s
   double sdlen; /**< start derivative length */
   double edlen; /**< end derivative length */
 
-  double *controlv; /**< data points [length*3] */
+  double *controlv; /**< data points [length * 3] */
   double sderiv[3]; /**< start derivative */
   double ederiv[3]; /**< end derivative */
 
@@ -663,7 +664,7 @@ typedef struct ay_acurve_object_s
   int symmetric; /**< create symmetric curve? */
   int order; /**< desired order of NURBS curve */
 
-  double *controlv; /**< data points [length*3] */
+  double *controlv; /**< data points [length * 3] */
 
   /** cached NURBS curve representation */
   ay_object *ncurve;
@@ -1089,12 +1090,12 @@ typedef struct ay_view_object_s
   int bguorder, bgvorder;
   float *bgknotv, *bgcv;
 
-  /** unique identifier, for plugins (e.g. AyCSG) that tie
-     exclusive resources (e.g. offscreen buffers) to views */
+  /** unique identifier, for plugins (e.g.\ AyCSG) that tie
+     exclusive resources (e.g.\ offscreen buffers) to views */
   int id;
 
   /** alternative display callback, for plugins that like to take
-     over drawing (e.g. AyCSG) */
+     over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
 } ay_view_object;
 
@@ -1325,7 +1326,7 @@ typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 /** Main Ayam Tcl interpreter */
 extern Tcl_Interp *ay_interp;
 
-/** Safe Tcl interpreter (e.g. for Script object scripts */
+/** Safe Tcl interpreter (e.g.\ for Script object scripts */
 extern Tcl_Interp *ay_safeinterp;
 
 /** user preferences */
