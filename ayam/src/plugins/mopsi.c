@@ -2045,14 +2045,13 @@ mopsi_tcmd(ClientData clientData, Tcl_Interp *interp,
 	   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "import_mops";
  char *n1="mopsi_options";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -2074,7 +2073,7 @@ mopsi_tcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = mopsi_scene(interp, argv[1], AY_TRUE);
 
   if(ay_status)
-    ay_error(ay_status, fname, NULL);
+    ay_error(ay_status, argv[0], NULL);
 
  return TCL_OK;
 }

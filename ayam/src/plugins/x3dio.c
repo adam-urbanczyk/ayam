@@ -6322,7 +6322,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "x3dioRead";
  char errstr[256];
  char *minus;
  int i = 2, slayer = -1, elayer = -1;
@@ -6352,7 +6351,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 2)
     {
       if(x3dio_errorlevel > 0)
-	ay_error(AY_EARGS, fname, "filename");
+	ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -6418,7 +6417,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		      else
 			{
 			  if(x3dio_errorlevel > 0)
-			    ay_error(AY_ERROR, fname,
+			    ay_error(AY_ERROR, argv[0],
 	    "could not parse layer range, specify it as: startindex-endindex");
 			  return TCL_OK;
 			} /* if */
@@ -6450,7 +6449,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	      errcode,
 	      scew_error_string(errcode));
       if(x3dio_errorlevel > 0)
-	ay_error(AY_ERROR, fname, errstr);
+	ay_error(AY_ERROR, argv[0], errstr);
       if(errcode == scew_error_expat)
         {
 	  expat_code = scew_error_expat_code(parser);
@@ -6460,7 +6459,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  scew_error_expat_column(parser),
 		  scew_error_expat_string(expat_code));
 	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, errstr);
+	    ay_error(AY_ERROR, argv[0], errstr);
         }
       return TCL_OK;
     } /* if */
@@ -6486,7 +6485,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       /*if(x3dio_errorlevel > 1)*/
 	{
-	  ay_error(AY_EOUTPUT, fname,
+	  ay_error(AY_EOUTPUT, argv[0],
 		   "Import cancelled! Not all objects may have been read!");
 	}
     }
@@ -9349,14 +9348,13 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "x3dioWrite";
  int selected = AY_FALSE, toplevellayers = AY_FALSE, i = 2;
 
   /* check args */
   if(argc < 2)
     {
       if(x3dio_errorlevel > 0)
-	ay_error(AY_EARGS, fname, "filename");
+	ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 

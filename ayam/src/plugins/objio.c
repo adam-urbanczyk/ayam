@@ -1555,13 +1555,12 @@ objio_writescenetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "objio_write";
  int selected = AY_FALSE, i = 2;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -3849,13 +3848,12 @@ objio_readscenetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "objio_read";
  int i = 2;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 

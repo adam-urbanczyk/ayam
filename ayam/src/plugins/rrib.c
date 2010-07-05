@@ -5694,7 +5694,6 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "rrib";
  int frame = 0, read_camera = 1, read_options = 1, read_lights = 1;
  int read_material = 1, read_partial = 0, error_level = 1, read_strim = 1;
  int i = 2;
@@ -5703,7 +5702,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename [-f framenumber]!");
+      ay_error(AY_EARGS, argv[0], "filename [-f framenumber]!");
       return TCL_OK;
     }
 
@@ -5777,14 +5776,14 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!(n = calloc(1, sizeof(ay_object))))
 	    {
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
 
 	  if(!(n->name = calloc(10, sizeof(ay_object))))
 	    {
 	      free(n);
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
 
@@ -5793,7 +5792,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!(l = calloc(1, sizeof(ay_level_object))))
 	    {
 	      free(n->name); free(n);
-	      ay_error(AY_EOMEM, fname, NULL);
+	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
 	  ay_status = ay_object_crtendlevel(&(n->down));
@@ -5827,7 +5826,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status)
     {
-      ay_error(AY_ERROR, fname, NULL);
+      ay_error(AY_ERROR, argv[0], NULL);
     }
 
  return TCL_OK;
