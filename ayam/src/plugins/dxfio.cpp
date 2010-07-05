@@ -1720,7 +1720,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "dxfio_read";
  char *minus, lineerrstr[64];
  int i = 2;
  double accuracy = 0.1;
@@ -1738,7 +1737,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // check args
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -1790,7 +1789,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 			}
 		      else
 			{
-			  ay_error(AY_ERROR, fname,
+			  ay_error(AY_ERROR, argv[0],
 	    "could not parse layer range, specify it as: startindex-endindex");
 			  return TCL_OK;
 			} // if
@@ -1807,7 +1806,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!in.setFile(filename))
     {
-      ay_error(AY_EOPENFILE, fname, argv[1]);
+      ay_error(AY_EOPENFILE, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -1821,7 +1820,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       int line = in.getFilePosition();
       sprintf(lineerrstr, "DXF read error in line: %d", line);
       if(dxfio_errorlevel > 0)
-	ay_error(AY_ERROR, fname, lineerrstr);
+	ay_error(AY_ERROR, argv[0], lineerrstr);
       return TCL_OK;
     }
 
@@ -2495,7 +2494,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "dxfio_write";
  const char *filename = NULL;
  int i = 2, li;
  ay_object *o;
@@ -2519,7 +2517,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // check args
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -2565,7 +2563,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   dimeOutput out;
   if(!out.setFilename(argv[1]))
     {
-      ay_error(AY_EOPENFILE, fname, argv[1]);
+      ay_error(AY_EOPENFILE, argv[0], argv[1]);
 
       return TCL_OK;
     }
@@ -2672,7 +2670,7 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!dxfio_cancelled)
 	{
-	  ay_error(AY_ERROR, fname, "Error writing file!");
+	  ay_error(AY_ERROR, argv[0], "Error writing file!");
 	}
     }
 

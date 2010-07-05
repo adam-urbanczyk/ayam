@@ -4341,7 +4341,6 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnconvertNP";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *p = NULL, *newo = NULL;
  int i = 0;
@@ -4373,7 +4372,7 @@ sdnpatch_convnptcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4524,7 +4523,6 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnconvertPO";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *p = NULL, *newo = NULL;
  int i = 0;
@@ -4556,7 +4554,7 @@ sdnpatch_convpotcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4601,7 +4599,6 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnimpPly";
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
 
@@ -4626,13 +4623,14 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
       MeshBuilder::dispose(meshBuilder);
       controlMesh->clear();
       delete controlMesh;
-      ay_error(AY_ERROR, fname, "Error reading file!");
+      ay_error(AY_ERROR, argv[0], "Error reading file!");
+      ay_error(AY_ERROR, argv[0], argv[1]);
       return TCL_OK;
     }
 
   if(!(o = (ay_object*)calloc(1, sizeof(ay_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4641,7 +4639,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
     {
-      ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4663,8 +4661,8 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   delete plyReader;
   MeshBuilder::dispose(meshBuilder);
 
-  ay_error(AY_EOUTPUT, fname, "Done importing PLY from:");
-  ay_error(AY_EOUTPUT, fname, argv[1]);
+  ay_error(AY_EOUTPUT, argv[0], "Done importing PLY from:");
+  ay_error(AY_EOUTPUT, argv[0], argv[1]);
 
  return TCL_OK;
 } /* sdnpatch_impplytcmd */
@@ -4678,7 +4676,6 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnexpPly";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4686,14 +4683,14 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4723,12 +4720,12 @@ sdnpatch_expplytcmd(ClientData clientData, Tcl_Interp *interp,
 
       MeshFlattener::dispose(meshFlattener);
       file.close();
-      ay_error(AY_EOUTPUT, fname, "Done exporting PLY to:");
-      ay_error(AY_EOUTPUT, fname, argv[1]);
+      ay_error(AY_EOUTPUT, argv[0], "Done exporting PLY to:");
+      ay_error(AY_EOUTPUT, argv[0], argv[1]);
     }
   else
     {
-      ay_error(AY_EOPENFILE, fname, argv[1]);
+      ay_error(AY_EOPENFILE, argv[0], argv[1]);
     }
 
  return TCL_OK;
@@ -4743,7 +4740,6 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnextrudeFace";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4757,7 +4753,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4804,7 +4800,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!(newp = (ay_point*)calloc(1, sizeof(ay_point))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -4837,7 +4833,6 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnremoveFace";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4845,7 +4840,7 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4885,7 +4880,7 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not remove face!");
+      ay_error(AY_ERROR, argv[0], "Could not remove face!");
     }
 
   delete fr_handler;
@@ -4903,7 +4898,6 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnmergeFace";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4911,7 +4905,7 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -4938,7 +4932,7 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(fm_handler->m_newMesh)
 	delete fm_handler->m_newMesh;
-      ay_error(AY_ERROR, fname, "Face merge failed!");
+      ay_error(AY_ERROR, argv[0], "Face merge failed!");
       goto cleanup;
     }
 
@@ -4971,7 +4965,6 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnconnectFace";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -4979,7 +4972,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5008,7 +5001,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(fc_handler->m_newMesh)
 	delete fc_handler->m_newMesh;
-      ay_error(AY_ERROR, fname, "Face connect failed!");
+      ay_error(AY_ERROR, argv[0], "Face connect failed!");
       goto cleanup;
     }
 
@@ -5042,7 +5035,6 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdneditKnots";
  ay_point *oldselp = NULL;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -5091,7 +5083,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5145,7 +5137,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname,
+	  ay_error(AY_ERROR, argv[0],
 		   "could not find interval; invalid edge selected?");
 	}
       break;
@@ -5187,7 +5179,6 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
   //int ay_status = AY_OK;
- char fname[] = "sdnrevert";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  sdnpatch_object *sdnpatch = NULL;
@@ -5195,7 +5186,7 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5230,7 +5221,7 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not revert!");
+      ay_error(AY_ERROR, argv[0], "Could not revert!");
     }
 
   delete r_handler;
@@ -5248,7 +5239,6 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "sdnmergepatch";
  unsigned int degree = 0, level = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *c = NULL;
@@ -5264,7 +5254,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
   /* check selection */
   if(!sel)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
@@ -5336,7 +5326,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  if(c)
 	    ay_object_deletemulti(c);
 	  goto cleanup;
@@ -5354,7 +5344,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(!(o = (ay_object*)calloc(1, sizeof(ay_object))))
 	{
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  goto cleanup;
 	}
       o->type = sdnpatch_id;
@@ -5363,7 +5353,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!(sdnpatch = (sdnpatch_object*)calloc(1, sizeof(sdnpatch_object))))
 	{
 	  free(o);
-	  ay_error(AY_EOMEM, fname, NULL);
+	  ay_error(AY_EOMEM, argv[0], NULL);
 	  goto cleanup;
 	}
 
@@ -5386,7 +5376,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      ay_error(AY_ERROR, fname, "Could not merge patches!");
+      ay_error(AY_ERROR, argv[0], "Could not merge patches!");
     }
 
 cleanup:

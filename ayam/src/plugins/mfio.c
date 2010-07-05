@@ -3026,13 +3026,12 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "3dmf_import";
  int i = 2;
 
  /* check args */
  if(argc < 2)
    {
-     ay_error(AY_EARGS, fname, "filename");
+     ay_error(AY_EARGS, argv[0], "filename");
      return TCL_OK;
    }
 
@@ -3076,13 +3075,13 @@ ay_mfio_importscenetcmd(ClientData clientData, Tcl_Interp * interp,
   if(ay_status)
     {
       ay_mfio_printerr(ay_mfio_mf3d_errno);
-      ay_error(AY_ERROR, fname, "Error while importing from:");
-      ay_error(AY_ERROR, fname, argv[1]);
+      ay_error(AY_ERROR, argv[0], "Error while importing from:");
+      ay_error(AY_ERROR, argv[0], argv[1]);
     }
   else
     {
-      ay_error(AY_EOUTPUT, fname, "Done importing scene from:");
-      ay_error(AY_EOUTPUT, fname, argv[1]);
+      ay_error(AY_EOUTPUT, argv[0], "Done importing scene from:");
+      ay_error(AY_EOUTPUT, argv[0], argv[1]);
     }
 
  return TCL_OK;
@@ -3097,13 +3096,12 @@ ay_mfio_exportscenetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "3dmf_export";
  int selected = AY_FALSE, i = 2;
 
   /* check args */
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 

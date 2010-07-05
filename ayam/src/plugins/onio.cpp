@@ -1940,7 +1940,6 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "onio_write";
  FILE *fp = NULL;
  const char *filename = NULL;
  int t, i = 2, version = 3, li;
@@ -1957,7 +1956,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   // check args
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -2012,7 +2011,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!fp)
     {
-      ay_error(AY_EOPENFILE, fname, argv[1]);
+      ay_error(AY_EOPENFILE, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -2135,7 +2134,7 @@ onio_writetcmd(ClientData clientData, Tcl_Interp *interp,
                         NULL/*&error_log*/);
   if(!ok)
     {
-      ay_error(AY_ERROR, fname, "Error writing file!");
+      ay_error(AY_ERROR, argv[0], "Error writing file!");
     }
 
   // close the file
@@ -3373,7 +3372,6 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "onio_read";
  ONX_Model model;
  char *minus;
  int i = 2, slayer = -1, elayer = -1;
@@ -3387,7 +3385,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // check args
   if(argc < 2)
     {
-      ay_error(AY_EARGS, fname, "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -3439,7 +3437,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 			}
 		      else
 			{
-			  ay_error(AY_ERROR, fname,
+			  ay_error(AY_ERROR, argv[0],
 	    "could not parse layer range, specify it as: startindex-endindex");
 			  return TCL_OK;
 			} // if
@@ -3455,7 +3453,7 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   FILE *archive_fp = ON::OpenFile(filename, "rb");
   if(!archive_fp)
     {
-      ay_error(AY_EOPENFILE, fname, argv[1]);
+      ay_error(AY_EOPENFILE, argv[0], argv[1]);
       return TCL_OK;
     }
 
@@ -3471,13 +3469,13 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   // print diagnostic
   if(!rc)
     {
-      ay_error(AY_ERROR, fname, "Error reading file!");
+      ay_error(AY_ERROR, argv[0], "Error reading file!");
     }
 
   // see if everything is in good shape
   if(!model.IsValid(NULL/*stderr*/))
     {
-      ay_error(AY_ERROR, fname, "Model is not valid!");
+      ay_error(AY_ERROR, argv[0], "Model is not valid!");
     }
 
   // set progress
@@ -3497,8 +3495,8 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 					  accuracy);
 	      if(ay_status)
 		{
-		  ay_error(ay_status, fname, NULL);
-		  ay_error(AY_ERROR, fname,
+		  ay_error(ay_status, argv[0], NULL);
+		  ay_error(AY_ERROR, argv[0],
 		      "Failed to read/convert object; continuing with next!");
 		}
 	      else
