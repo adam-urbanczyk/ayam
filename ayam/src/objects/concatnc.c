@@ -437,7 +437,7 @@ ay_concatnc_notifycb(ay_object *o)
       ay_nct_applytrafo(ncurve);
       ay_status = ay_nct_elevate((ay_nurbcurve_object *)(ncurve->refine),
 				 highest_order);
-      ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine);
+      ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine, 0);
       ncurve = ncurve->next;
     } /* while */
 

@@ -918,24 +918,129 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  *
  */
 int
-ay_nct_clamp(ay_nurbcurve_object *curve)
+ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 {
  int ay_status = AY_OK;
  double *newcontrolv = NULL, *newknotv = NULL;
  double u;
- int stride, r, k, s, nq = 0;
+ int stride = 4, i, j, k, s, nq, rs = 0, re = 0;
 
   if(!curve)
     return AY_ENULL;
 
-  stride = 4;
+  if(side == 0 || side == 1)
+    {
+      /* clamp start */
+      u = curve->knotv[0];
+      s = 0;
+      for(i = 1; i < curve->order; i++)
+	{
+	  if(u == curve->knotv[i])
+	    s++;
+	  else
+	    break;
+	}
 
-  /* clamp start */
-  k = curve->order-1;
-  u = curve->knotv[k];
-  s = 0;
-  r = curve->order - 1;
-  curve->length += r;
+      if(s != curve->order)
+	{
+	  u = curve->knotv[curve->order-1];
+
+	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
+				 curve->knotv, &s);
+
+	  rs = curve->order /*- 1*/ - s;
+	  curve->length += rs;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-rs-1,
+			 curve->order-1, curve->knotv, curve->controlv, u, k,
+			 s, rs, &nq, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(curve->controlv);
+	  curve->controlv = newcontrolv;
+
+	  free(curve->knotv);
+	  curve->knotv = newknotv;
+	} /* if */
+    } /* if */
+
+  if(side == 0 || side == 2)
+    {
+      /* clamp end */
+      s = 0;
+      j = curve->length+curve->order-1;
+      u = curve->knotv[j];
+      for(i = 1; i < curve->order; i++)
+	{
+	  if(u == curve->knotv[j-i])
+	    s++;
+	  else
+	    break;
+	}
+
+      if(s != curve->order)
+	{
+	  u = curve->knotv[curve->length];
+
+	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
+				 curve->knotv, &s);
+
+	  re = curve->order - 1 - s;
+	  curve->length += re;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-re-1,
+			 curve->order-1, curve->knotv, curve->controlv, u, k,
+			 s, re, &nq, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(curve->controlv);
+	  curve->controlv = newcontrolv;
+
+	  free(curve->knotv);
+	  curve->knotv = newknotv;
+	} /* if */
+    } /* if */
+
+  if(rs == 0 && re == 0)
+    {
+      return AY_OK;
+    }
+
+  /* create new controlv, knotv, discarding the first rs and last re knots */
+  switch(side)
+    {
+    case 0:
+      curve->length -= rs+re;
+      break;
+    case 1:
+      curve->length -= rs;
+      break;
+    case 2:
+      curve->length -= re;
+      break;
+    default:
+      break;
+    }
 
   newcontrolv = NULL;
   if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
@@ -945,63 +1050,28 @@ ay_nct_clamp(ay_nurbcurve_object *curve)
   if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
-		curve->order-1, curve->knotv, curve->controlv, u, k,
-		s, r, &nq, newknotv, newcontrolv);
+  switch(side)
+    {
+    case 0:
+    case 1:
+      /* clamped both or start: ignore first rs knots */
+      memcpy(newcontrolv, &(curve->controlv[rs*stride]),
+	     curve->length*stride*sizeof(double));
 
-  if(ay_status)
-    return ay_status;
+      memcpy(newknotv, &(curve->knotv[rs]),
+	     (curve->length+curve->order)*sizeof(double));
+      break;
+    case 2:
+      /* clamped end: ignore last re knots */
+      memcpy(newcontrolv, curve->controlv,
+	     curve->length*stride*sizeof(double));
 
-  free(curve->controlv);
-  curve->controlv = newcontrolv;
-
-  free(curve->knotv);
-  curve->knotv = newknotv;
-
-  /* clamp end */
-  k = curve->length;
-  u = curve->knotv[k];
-  k--;
-  s = 0;
-  r = curve->order - 1;
-  curve->length += r;
-
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newknotv = NULL;
-  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
-		       curve->order-1, curve->knotv, curve->controlv, u, k,
-		       s, r, &nq, newknotv, newcontrolv);
-
-  if(ay_status)
-    return ay_status;
-
-  free(curve->controlv);
-  curve->controlv = newcontrolv;
-
-  free(curve->knotv);
-  curve->knotv = newknotv;
-
-  /* create new controlv, knotv, discarding the first p and last p knots */
-  curve->length -= (curve->order-1)*2;
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newknotv = NULL;
-  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  memcpy(newcontrolv, &(curve->controlv[(curve->order-1)*stride]),
-	 curve->length*stride*sizeof(double));
-
-  memcpy(newknotv, &(curve->knotv[curve->order-1]),
-	 (curve->length+curve->order)*sizeof(double));
+      memcpy(newknotv, curve->knotv,
+	     (curve->length+curve->order)*sizeof(double));
+      break;
+    default:
+      break;
+    }
 
   free(curve->controlv);
   curve->controlv = newcontrolv;
@@ -1023,15 +1093,16 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
- double *knotv, u;
- int count_start, count_end, i, j;
+ int side = 0;
 
-  /*
+
   if(argc >= 2)
-    Tcl_GetInt(interp, argv[1], &t);
-  */
+    {
+      Tcl_GetInt(interp, argv[1], &side);
+    }
+
   while(sel)
-  {
+    {
 
     if(sel->object)
       {
@@ -1041,38 +1112,12 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(sel->object);
 
 	    curve = (ay_nurbcurve_object *)sel->object->refine;
-	    knotv = curve->knotv;
 
 	    if((curve->knot_type == AY_KTNURB) ||
 	       (curve->knot_type == AY_KTBEZIER))
-	      return TCL_OK;
+	      break;
 
-	    if(curve->knot_type == AY_KTCUSTOM)
-	      {
-		count_start = 0;
-		count_end = 0;
-		u = knotv[0];
-		for(i = 1; i < curve->order; i++)
-		 if(u == knotv[i])
-		   count_start++;
-
-		j = curve->length+curve->order-1;
-		u = knotv[j];
-		for(i = j-1; i >= curve->length; i--)
-		 if(u == knotv[i])
-		   count_end++;
-
-		/*
-		if(count_start || count_end)
-		  {
-		    ay_error(AY_ERROR, argv[0],
-			       "cannot clamp this curve");
-		    return TCL_OK;
-		  }
-		*/
-	      }
-
-	    ay_status = ay_nct_clamp(curve);
+	    ay_status = ay_nct_clamp(curve, side);
 
 	    if(ay_status)
 	      {
@@ -1157,7 +1202,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
   if(clamp_me)
     {
-      ay_status = ay_nct_clamp(curve);
+      ay_status = ay_nct_clamp(curve, 0);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "clamp operation failed");
@@ -1287,7 +1332,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(clamp_me)
 	    {
-	      ay_status = ay_nct_clamp(curve);
+	      ay_status = ay_nct_clamp(curve, 0);
 	      if(ay_status)
 		{
 		  ay_error(AY_ERROR, argv[0], "clamp operation failed");
@@ -1817,7 +1862,7 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
 		     c->controlv, *u, point);
 
-  
+
 
   ay_trafo_invmatrix4(m, mi);
 
@@ -4144,7 +4189,7 @@ ay_nct_makecompatible(ay_object *curves)
 	} /* if */
 
       if(clamp_me)
-	ay_status = ay_nct_clamp(curve);
+	ay_status = ay_nct_clamp(curve, 0);
 
       o = o->next;
     } /* while */

@@ -398,7 +398,7 @@ int ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Clamp NURBS curve.
  */
-int ay_nct_clamp(ay_nurbcurve_object *curve);
+int ay_nct_clamp(ay_nurbcurve_object *curve, int side);
 
 /** Clamp NURBS curve.
  */
