@@ -396,11 +396,15 @@ int ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv,
 int ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** Clamp periodic NURBS curve on both ends.
+ */
+int ay_nct_clampperiodic(ay_nurbcurve_object *curve);
+
 /** Clamp NURBS curve.
  */
 int ay_nct_clamp(ay_nurbcurve_object *curve, int side);
 
-/** Clamp NURBS curve.
+/** Tcl command to clamp NURBS curves.
  */
 int ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);

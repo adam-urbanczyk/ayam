@@ -1005,7 +1005,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  newknotv = NULL;
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
-
+  printf("insert at %lg, span:%d, s:%d re:%d\n",u, k, s, re);
 	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-re-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, re, &nq, newknotv, newcontrolv);
@@ -1083,6 +1083,59 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 } /* ay_nct_clamp */
 
 
+/* ay_nct_clampperiodic:
+ *
+ */
+int
+ay_nct_clampperiodic(ay_nurbcurve_object *curve)
+{
+ int ay_status = AY_OK;
+ double *newcontrolv = NULL, *newknotv = NULL;
+ int stride = 4, p, np, nq;
+
+  if(!curve)
+    return AY_ENULL;
+
+  p = curve->order-1;
+  np = curve->length;
+  nq = np+(p*2);
+
+  /* get some memory to work on */
+  if(!(newcontrolv = calloc(nq*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(newknotv = calloc(nq+curve->order, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  /* insert knots */
+  ay_status = ay_nb_CurveInsertKnot4D(np-1, p, curve->knotv, curve->controlv,
+                        curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
+
+  if(ay_status)
+    return ay_status;
+
+  /* nq is now np+p-1! */
+  ay_status = ay_nb_CurveInsertKnot4D(nq, p, newknotv, newcontrolv,
+			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
+
+  if(ay_status)
+    return ay_status;
+
+  /* copy results back to curve, ignoring the first p and last p cv/knots */
+  memcpy(curve->controlv, &(newcontrolv[p*stride]),
+	 curve->length*stride*sizeof(double));
+
+  memcpy(curve->knotv, &(newknotv[p]),
+	 (curve->length+curve->order)*sizeof(double));
+
+  free(newcontrolv);
+
+  free(newknotv);
+
+ return AY_OK;
+} /* ay_nct_clampperiodic */
+
+
 /* ay_nct_clamptcmd:
  *  Tcl interface for NURBS curve clamping tool
  */
@@ -1117,7 +1170,10 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	       (curve->knot_type == AY_KTBEZIER))
 	      break;
 
-	    ay_status = ay_nct_clamp(curve, side);
+	    if(curve->knot_type == AY_KTBSPLINE && side == 0)
+	      ay_status = ay_nct_clampperiodic(curve);
+	    else
+	      ay_status = ay_nct_clamp(curve, side);
 
 	    if(ay_status)
 	      {
