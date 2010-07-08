@@ -915,7 +915,8 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_clamp:
- *
+ *  clamp NURBS curve, it is safe to call this with half clamped curves
+ *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
  */
 int
 ay_nct_clamp(ay_nurbcurve_object *curve, int side)
@@ -1005,7 +1006,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  newknotv = NULL;
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
-  printf("insert at %lg, span:%d, s:%d re:%d\n",u, k, s, re);
+
 	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-re-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, re, &nq, newknotv, newcontrolv);
@@ -1084,7 +1085,8 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
 
 /* ay_nct_clampperiodic:
- *
+ *  fast clamp for curves with periodic knot vectors (e.g. AY_KTBSPLINE),
+ *  always clamps both ends
  */
 int
 ay_nct_clampperiodic(ay_nurbcurve_object *curve)
