@@ -774,10 +774,10 @@ typedef struct ay_riinc_object_s
 /** RenderMan Interface procedural object */
 typedef struct ay_riproc_object_s
 {
-  int type;
+  int type; /**< type of procedural (AY_PRT*) */
   double minx, miny, minz, maxx, maxy, maxz;
-  char *file;
-  char *data;
+  char *file; /**< filename of procedural file */
+  char *data; /**< procedural arguments */
 } ay_riproc_object;
 
 
@@ -785,8 +785,8 @@ typedef struct ay_riproc_object_s
 typedef struct ay_revolve_object_s
 {
   double thetamax; /**< angle of revolution (degrees) */
-  int sections; /**< number of sections in u direction */
-  int order; /**< desired order in u direction */
+  int sections; /**< number of sections in U direction */
+  int order; /**< desired order in U direction */
   int has_upper_cap; /**< create upper cap? */
   ay_object *upper_cap; /**< cached upper cap */
   int has_lower_cap; /**< create lower cap? */
@@ -906,9 +906,9 @@ typedef struct ay_birail2_object_s
 typedef struct ay_skin_object_s
 {
   int interpolate; /**< interpolate all curves? */
-  int uorder; /**< desired order in u direction */
-  int uknot_type; /**< desired knot type in u direction */
-  double uknotv; /**< desired knot vector in u direction */
+  int uorder; /**< desired order in U direction */
+  int uknot_type; /**< desired knot type in U direction */
+  double uknotv; /**< desired knot vector in U direction */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
 
@@ -1060,7 +1060,7 @@ typedef struct ay_view_object_s
   /* rectangle, currently used to draw
      a rectangle while drag-selection of points */
   double rect_xmin, rect_xmax, rect_ymin, rect_ymax;
-  int drawrect;
+  int drawrect; /**< draw the selection rectangle? */
 
   /* mark a point in space */
   double markworld[3];
@@ -1071,31 +1071,31 @@ typedef struct ay_view_object_s
   /* position of the view window on the screen */
   int pos_x, pos_y;
 
-  /* is the view window iconified? */
+  /** is the view window iconified? */
   int isicon;
 
-  /* is a modelling action active that needs to display handles? */
+  /** is a modelling action active that needs to display handles? */
   int drawhandles;
 
-  /* need to call reshape before drawing? */
+  /** need to call reshape before drawing? */
   int dirty;
 
   /* background image */
-  char *bgimage;
-  int bgimagedirty;
-  int drawbgimage;
+  char *bgimage; /**< the background image file name */
+  int bgimagedirty; /**< reload background image? */
+  int drawbgimage; /**< draw background image? */
 
   /* geometry for background image */
   int bgwidth, bgheight;
   int bguorder, bgvorder;
   float *bgknotv, *bgcv;
 
-  /** unique identifier, for plugins (e.g.\ AyCSG) that tie
-     exclusive resources (e.g.\ offscreen buffers) to views */
+  /** unique identifier, for plugins (e.g.\ AyCSG) that need to tie
+      exclusive resources (e.g.\ offscreen buffers) to views */
   int id;
 
   /** alternative display callback, for plugins that like to take
-     over drawing (e.g.\ AyCSG) */
+      over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
 } ay_view_object;
 
@@ -1122,7 +1122,7 @@ typedef struct ay_trim_object_s
 /** User preferences */
 typedef struct ay_preferences_s
 {
-  int list_types;
+  int list_types;  /**< show object types in tree view? */
   int mark_hidden;
   int single_window;
 
@@ -1160,10 +1160,10 @@ typedef struct ay_preferences_s
   double lir, lig, lib; /* default light color */
   double sxr, sxg, sxb; /* default drag selection rectangle color (XOR) */
 
-  int use_materialcolor;
+  int use_materialcolor; /**< shade objects in color taken from material? */
 
-  double linewidth;
-  double sellinewidth;
+  double linewidth; /**< width of lines */
+  double sellinewidth; /**< width of lines */
 
   /* error handling */
   char onerror; /* 0 stop, 1 continue */
@@ -1175,37 +1175,36 @@ typedef struct ay_preferences_s
   int wrib_em;
   int wrib_archives;
 
-  /* rendering quality */
-  double glu_sampling_tolerance;
-  int np_display_mode;
-  int nc_display_mode;
-  int glu_cache_float; /* unused */
+  
+  double glu_sampling_tolerance; /**< drawing/shading quality */
+  int np_display_mode; /**< display mode for NURBS surfaces */
+  int nc_display_mode; /**< display mode for NURBS curves */
+  int glu_cache_float; /**< unused */
 
-  int stess_qf;
+  int stess_qf; /**< quality factor derived from GLU sampling tolerance */
 
-  /* sampling mode/quality for NURBS -> PolyMesh conversion */
+  /** default sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;
   double sparamu;
   double sparamv;
 
-  /* control warnings about unknown tag types */
+  /** control warnings about unknown tag types */
   int wutag;
 
-  /* parameters for glPolygonOffset */
-  double polyoffset0;
-  double polyoffset1;
+  double polyoffset0; /**< offset draw & shade */
+  double polyoffset1; /**< parameter 2 for glPolygonOffset */
 
-  /* save root & views with the currently open scene? */
+  /** save root & views with the currently open scene? */
   int save_rootviews;
 
-  /* is a permanent preview window open? */
+  /** is a permanent preview window open? */
   int pprev_open;
   char *pprender;
 
   /* PV tag names */
-  char *texcoordname;
-  char *normalname;
-  char *colorname;
+  char *texcoordname; /**< default name for texture coordinate PV tags */
+  char *normalname; /**< default name for vertex normal PV tags */
+  char *colorname; /**< default name for vertex color PV tags */
 
 } ay_preferences;
 
@@ -1213,40 +1212,40 @@ typedef struct ay_preferences_s
 /** selected points */
 typedef struct ay_point_s
 {
-  struct ay_point_s *next;
-  int homogenous; /* AY_TRUE, AY_FALSE */
-  double *point;
-  unsigned int index;
+  struct ay_point_s *next; /**< next point */
+  int homogenous; /**< is this point homogeneous/rational? */
+  double *point; /**< pointer to point data (in objects data structure!) */
+  unsigned int index; /**< index of point (to restore point after undo) */
 } ay_point;
 
 
 /** multiple points */
 typedef struct ay_mpoint_s
 {
-  struct ay_mpoint_s *next;
-  int multiplicity;
-  double **points;
-  unsigned int *indices;
+  struct ay_mpoint_s *next; /**< next multiple point */
+  int multiplicity; /**< how many points? */
+  double **points; /**< pointers to point data [multiplicity] */
+  unsigned int *indices; /**< indices [multiplicity] */
 } ay_mpoint;
 
 
-/** point edit helper */
+/** point edit helper (ay_getpntcb callbacks fill it) */
 typedef struct ay_pointedit_s
 {
-  unsigned int num;
-  double **coords;
-  unsigned int *indices;
-  int homogenous;
+  unsigned int num; /**< number of selected point */
+  double **coords; /**< pointers to point data [num] */
+  unsigned int *indices; /**< indices [num] */
+  int homogenous; /**< are these points homogeneous/rational? */
 } ay_pointedit;
 
 
 /** Tag, attach arbitrary information to objects */
 typedef struct ay_tag_s
 {
-  struct ay_tag_s *next;
-  char *name;
-  char *type;
-  char *val;
+  struct ay_tag_s *next; /**< next tag */
+  char *name; /**< name of tag (e.g.\ "PV") */
+  char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */
+  char *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
 } ay_tag;
 
 
@@ -1260,14 +1259,14 @@ typedef struct ay_trafo_s
 } ay_trafo;
 
 
-/* avoid the use of "void *" to store function pointers */
+/** to avoid the use of "void *" to store function pointers */
 typedef void (*ay_voidfp)(void);
 
 /** callback table */
 typedef struct ay_ftable_s
 {
-  unsigned int size;
-  ay_voidfp *arr;
+  unsigned int size; /**< number of callback function pointers in table */
+  ay_voidfp *arr; /**< callback function pointers [size] */
 } ay_ftable;
 
 /* Callbacks */
@@ -1481,7 +1480,7 @@ extern unsigned int ay_current_primlevel;
 #define AY_EFORMAT    12 /* wrong file format  */
 #define AY_EUEOF      13 /* unexpected EOF read */
 #define AY_EEOF       14 /* EOF read */
-#define AY_EDONOTLINK 15 /* Do not link read object! */
+#define AY_EDONOTLINK 15 /* do not link read object */
 #define AY_ENOSEL     20 /* nothing selected */
 #define AY_EARGS      21 /* missing or wrong args */
 #define AY_EOPT       22 /* missing or malformed option value */
@@ -1653,10 +1652,10 @@ extern unsigned int ay_current_primlevel;
 /*@}*/
 
 
-/* size of arrows */
+/** size of arrows */
 #define AY_POINTER 8
 
-/* to avoid direct comparison of doubles with 0.0 */
+/** to avoid direct comparison of doubles with 0.0 */
 #define AY_EPSILON 1.0e-06
 
 /** \name Directions */
@@ -1766,6 +1765,22 @@ extern unsigned int ay_current_primlevel;
 #include "contrib.h"
 
 /** \file ayam.h \brief main Ayam header */
+
+/** \mainpage Ayam
+ *  This is the source level documentation of Ayam - a free 3D
+ *  modelling environment for the RenderMan interface.
+ *  Suggested exploration is via the data structures and via the file
+ *  list entries from the menu on the left hand side.\n
+ *  There is only brief documentation here (an overview extracted from
+ *  the main Ayam header files), more comprehensive documentation is
+ *  available in the source code.
+ *
+ *  Other places of interest:
+ *  - Official Ayam home page: http://www.ayam3d.org/
+ *  - WebCVS: http://ayam.cvs.sourceforge.net/viewvc/ayam/ayam/
+ *  - Official user level documentation: http://www.ayam3d.org/docs/
+ *
+ */
 
 #ifdef __cplusplus
 }
