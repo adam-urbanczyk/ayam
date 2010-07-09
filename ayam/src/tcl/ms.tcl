@@ -268,7 +268,7 @@ ms_set de ayprefse_Snap3D "Soll das Bewegen von Punkten zu Gitter-Koordinaten\
 \nin allen drei Dimensionen erfolgen?"
 ms_set de ayprefse_FlashPoints "Sollen editierbare Punkte aufleuchten, wenn\
 der\nMauszeiger über ihnen steht?"
-ms_set en ayprefse_GlobalMark "Soll es nur eine globale Marke geben?"
+ms_set de ayprefse_GlobalMark "Soll es nur eine globale Marke geben?"
 ms_set de ayprefse_DefaultAction "Modellier-Aktion, die beim Drücken der\
 \n<Esc>-Taste gestartet werden soll."
 ms_set de ayprefse_UndoLevels "Anzahl zurücknehmbarer Modellierschritte;\
@@ -454,7 +454,7 @@ ms_set fr ayprefse_EditSnaps "Faire correspondre les coordonnées des points\
 #ms_set fr ayprefse_Snap3D "Snap coordinate values in all three dimensions?"
 #ms_set fr ayprefse_FlashPoints "Flash editable points in single point\
 #editing modes?"
-#ms_set en ayprefse_GlobalMark "Maintain a single, global mark, or many local\
+#ms_set fr ayprefse_GlobalMark "Maintain a single, global mark, or many local\
 #marks (for each view)?"
 #ms_set fr ayprefse_DefaultAction "Modelling action invoked, when <Esc> key\
 #is pressed."
