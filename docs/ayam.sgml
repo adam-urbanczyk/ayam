@@ -2624,7 +2624,7 @@ shortcuts are available:
 <item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
 first rotates about a point then decides to also scale about
 the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
-<tt/&lt;Return&gt;/, drag mouse...),
+<tt/&lt;Return&gt;/, drag mouse &hellip;),
 <item><tt/&lt;c&gt;/ set the mark to the center of gravity of all
 currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
@@ -5885,7 +5885,7 @@ because all unclamped curves have to be converted to
 clamped ones; then, for every curve with low order degree elevation
 has to be done; then a uniform knot vector has to be found; then all
 curves have to be refined using this new knot vector; interpolation
-adds another dimension of complexity... If you experience
+adds another dimension of complexity. If you experience
 lags when editing the child curves of a skin object try to switch
 to lazy notification.
 Since Ayam 1.9, a skin object will also use all the curves of a
@@ -6726,6 +6726,10 @@ and knots. See also the image above.
 <p>
 Since Ayam 1.15 there is a third offsetting algorithm available, that creates
 offsets from non planar curves.
+<p>
+Since Ayam 1.18 there is a fourth offsetting algorithm available, that
+creates offsets from non planar curves using a primitive variable tag
+that contains normal information for the curve (vertex normals).
 <p>
 You may convert the current OffsetNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -9001,6 +9005,10 @@ without changing the shape of the curve. The curve will
 interpolate the first and the last control point afterwards.
 <item>Note: The knot type of the curves will be changed to <tt/"Custom"/.
 The point selection will be removed from the original objects.
+In Ayam versions prior to 1.18 it was an error if the curve was already
+clamped at either side, this is no longer the case.
+Furthermore, curves with multiple knots in the end region(s) could not be
+clamped, this works ok now.
 See also the documentation of the corresponding
 <ref id="scclampnc" name="scripting interface command">.
 </itemize>
@@ -9750,7 +9758,8 @@ In versions of Ayam prior to 1.17, NURBS curves only accepted the
   <item><tt/"-type"/: the type of the new curve, must be one of
 0 - Open, 1 - Closed; default is 0.
 
-  <item><tt/"-length"/: length of the new curve, the length defaults to 4.
+  <item><tt/"-length"/: length (number of data points to interpolate)
+of the new curve; the length defaults to 4.
 
   <item><tt/"-order"/: order of the new curve, the order defaults to 4.
 If a value greater than the length is specified, the order will be made
@@ -9809,10 +9818,10 @@ and length specified by the <tt/"-edlen"/ option.
 Examples:
 <enum>
 <item><bf/<tt/"crtOb ICurve"//<newline>
-creates a curve with length 4, order 4, control points at
+creates a curve with length 4, order 4, data points at
 0 0 0, 0.25 0 0, 0.5 0 0, 0.75 0 0.
 <item><bf/<tt/"crtOb ICurve -l 5 -sderiv {0.0 -0.5 0.0} -ederiv {0.0 -0.5 0.0} -derivs 1 -center 1"//<newline>
-creates a curve with length 5, order 4, control points at
+creates a curve with length 5, order 4, data points at
 -0.5 0 0, -0.25 0 0, 0 0 0, 0.25 0 0, 0.5 0 0, end derivatives pointing
 straight upwards with length 0.5 in their respective end.
 </enum>
@@ -10008,7 +10017,7 @@ integer values of a length equal to the sum of all elements of the
 The default value of this option is a list of proper length with the
 elements set to a sequence of integers so that the control points are
 used in the same order as specified via the <tt/"-cv"/ option
-(0, 1, 2, 3, ...).
+(0, 1, 2, 3, &hellip;).
 
   <item><tt/"-cv"/: The value of this option is a list of floating point
 numbers that describe the 3D (non homogeneous) coordinates of the control
@@ -10018,7 +10027,8 @@ specified in this list (directly following the coordinate values of each
 control point) and stride is 6, otherwise stride is 3.
 This list must have a length of stride by the highest value in
 the list provided via the <tt/"-iverts"/ option.
-The default value of this option is an empty list.
+The default value of this option is an empty list, this implies that this
+option must be specified to create a non-empty PolyMesh object.
 
   <item><tt/"-vnormals"/: determines whether vertex normals are present.
 The default value is 0 - no vertex normals are present.
@@ -10471,13 +10481,20 @@ properties:
 <p><label id="scclampnc">
 clampNC - clamp NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"clampNC"/
+ <item>Synopsis: <tt/"clampNC [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
-the knots will have o equal values at start and end (where o is the
-order of the curve).
+the knots will have o equal values at the desired side(s), where o is the
+order of the curve. If the side parameter is omitted or 0, both sides
+are clamped.
+If the side parameter is 1 only the start, and if it is 2 only the end
+is clamped.
+In Ayam versions prior to 1.18 it was an error if the curve was already
+clamped at either side, this is no longer the case.
+Furthermore, curves with multiple knots in the end region(s) could not be
+clamped, this works ok now.
 See also section <ref id="clat" name="The Clamp Tool">.
 </itemize>
 
