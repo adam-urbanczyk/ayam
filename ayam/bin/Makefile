@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [10. Jun 2007]
+# Makefile [2. Jan 2010]
 # Makefile for the installation of Ayam (precompiled wrapped version)
 
 # Choose an installation prefix.
@@ -36,7 +36,7 @@ MKDIR = mkdir -p
 # Nothing needs to be changed below this line.
 
 DOCFILES = ../Setup.txt ../Changes.txt ../License.txt ../doc/refcard.tcl\
-../doc/refcard.ps ../doc/ayam.pdf
+../doc/refcard.pdf ../doc/ayam.pdf
 
 install:
 	$(MKDIR) $(BINDIR)
@@ -131,5 +131,5 @@ uninstall:
 	-rm -rf $(LIBDIR)/loadsdnpatch.tcl
 	-rm -rf $(LIBDIR)/libsnurbs.so
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
-refcard.ps ayam.pdf html;
+refcard.pdf ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
