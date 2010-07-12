@@ -1,4 +1,4 @@
-[30. Jun 2010] CVS-Head:
+[12. Jul 2010] CVS-Head:
 ========================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
@@ -20,10 +20,10 @@ o the Revolve tool object now supports arbitrary ThetaMax values in
 o added Arc and Radius parameters to create closed B-Spline curve tool
 o added Radius, TMin, and TMax parameters to NCircle object creation dialog
 o added modelling action to snap the selected points to the mark
-  (new shortcut "M")
+  (new shortcut <M>)
 o added modelling action to snap the selected objects to the mark
-  (new shortcut "K")
-o added view action to pan the view to the mark (new shortcut ".")
+  (new shortcut <K>)
+o added view action to pan the view to the mark (new shortcut <.>)
 o the find u modelling action now works with provided objects, and
   is more exact
 o added find uv modelling action that finds the u and v parameters for a
@@ -32,6 +32,9 @@ o added preference setting and facility to manage a global mark,
   if enabled, all views share a single mark; thus, one can set it in
   one view and use it in another
 o improved order changes for periodic NURBS curves via the property GUI
+o NURBS curve clamping now works with half clamped curves and also with
+  curves where there are multiple knots in the end region(s)
+o NURBS curve clamping can now also clamp only one end of the curve
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
