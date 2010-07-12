@@ -32,6 +32,12 @@ o added preference setting and facility to manage a global mark,
   if enabled, all views share a single mark; thus, one can set it in
   one view and use it in another
 o improved order changes for periodic NURBS curves via the property GUI
+o added "3DPVN" curve offset mode that offsets a curve along normals
+  supplied via a primitive variable tag
+o creating ExtrNC/ExtrNP objects via the main menu now automatically adds a
+  remove property tag ("RP Transformations") to the created instance child
+  so that the instance always follows the transformations of the surface
+  the curve/sub-surface is extracted from
 o NURBS curve clamping now works with half clamped curves and also with
   curves where there are multiple knots in the end region(s)
 o NURBS curve clamping can now also clamp only one end of the curve
