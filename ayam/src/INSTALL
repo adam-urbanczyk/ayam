@@ -1,10 +1,9 @@
-INSTALL [5. Sep 2009]
+INSTALL [12. Jul 2010]
 
 Compilation Instructions for Ayam
 ---------------------------------
 
-There are two major ways to compile Ayam, "shared" and "wrapped standalone"
-( using Wrap0.3 ).
+There are two major ways to compile Ayam: "shared" and "wrapped standalone".
 The binaries you get with the binary distribution of Ayam are "wrapped
 standalone". This means Tcl/Tk and the main Tcl-scripts of Ayam are all
 statically combined in the executable. This means no hassle with Tcl/Tk
@@ -34,25 +33,17 @@ version of Ayam:
 
 - ANSI-C-compiler
 - Tcl/Tk sources ( at least V8.2, at most V8.4.19 )
-  ftp://ftp.scriptics.com/pub/tcl/
-  ( May move to SourceForge in the future, see:
-    http://tcl.sourceforge.net/ ) 
-  Note that a complete installation of Tcl/Tk is required.
-  However:
-   On most systems, there should be an installed Tcl/Tk 8.x nowadays.
-   If this is the case
-   ( check it by typing "wish" in a shell, then type "puts $tcl_patchLevel" )
-   you then just have to download the sources of the installed
-   version ( see output of the puts command! ), unpack them,
-   and run configure.
-   No compiling of this Tcl/Tk is necessary!
-  Note also that Ayam uses Togl, a Tk-Widget that needs internal
+  http://tcl.sourceforge.net/
+  Note that a complete installation _and_ the sources of Tcl/Tk are
+  required.
+  This is because Ayam uses Togl, a Tk-widget that needs internal
   Tk-headers to be compiled. It is _not sufficient_ to just have
-  an installed Tcl/Tk on your system, please
+  an installed Tcl/Tk on your system, so please
   _get the source distribution_ of Tcl/Tk and get the right
   version, as Togl is known to crash if Tcl/Tk versions mismatch!
+  See also Note 1 below.
 - OpenGL ( gl.h, glu.h, libGL.so, libGLU.so )
-  Version of GL is uncritical ( 1.1 should do, see also Note 1 ),
+  Version of GL is uncritical ( 1.1 should do, see also Note 2 ),
   Version of GLU should be atleast 1.2 ( due to the use of the GLU
   tesselation facility in the PolyMesh and SubdivisionMesh objects ),
   ( Mesa may be used as replacement for a real OpenGL. Since
@@ -74,9 +65,6 @@ version of Ayam:
 - Togl ( togl.h, togl.c )
   For most systems a working Togl is already included in the Ayam
   source distribution, see subdir togl. No download necessary!
-  For MacOSX/Aqua you need to download atleast Togl-1.7 from
-  http://sourceforge.net/projects/togl/
-  and copy all its contents over to "ayam/src/togl".
 - TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
@@ -96,6 +84,16 @@ If you unpack Tcl/Tk and BMRT as sister directories to the Ayam
 directory, editing of the Makefile will be easier.
 
 Note 1:
+On most systems, there should be an installed Tcl/Tk 8.4.x nowadays.
+If this is the case
+( check it by typing "wish" in a shell, then type "puts $tcl_patchLevel" )
+you then just have to download the sources of the installed
+version ( see output of the puts command! ), unpack them,
+and run configure in the unpacked source trees.
+No compiling of this Tcl/Tk is necessary but you need the configured
+sources in order to compile Ayam!
+
+Note 2:
 If OpenGL 1.1 is not available to you, you can still compile Ayam, if your
 OpenGL is supporting the polygon offset extension (e.g. on IRIX 6.2).
 
@@ -178,9 +176,7 @@ version of Ayam:
 
 - ANSI-C-compiler
 - Tcl/Tk sources ( V8.2.x (see also Note 1) )
-  ftp://ftp.scriptics.com/pub/tcl/
-  ( May move to SourceForge in the future, see:
-    http://tcl.sourceforge.net/ )
+  http://tcl.sourceforge.net/
   Note that you do not need to _install_ Tcl/Tk to compile and use
   the wrapped standalone version of Ayam. But compiling this Tcl/Tk
   is still necessary. Compile static versions of Tcl/TK using:
@@ -224,6 +220,9 @@ version of Ayam:
   You can also use libslxargs from Aqsis ( http://www.aqsis.com/ )
   as libslcargs replacement and libri2rib from Aqsis as libribout
   replacement.
+- Togl ( togl.h, togl.c )
+  For most systems a working Togl is already included in the Ayam
+  source distribution, see subdir togl. No download necessary!
 - TIFF ( tiffio.h, libtiff.so )
   http://www.libtiff.org/
 - The Affine Toolkit
