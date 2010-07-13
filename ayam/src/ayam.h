@@ -626,8 +626,10 @@ typedef struct ay_paraboloid_object_s
 typedef struct ay_torus_object_s
 {
   char closed; /**< create missing cap surfaces? */
-  double majorrad, minorrad;
-  double phimin, phimax;
+  double majorrad; /**< ring radius (hole radius + minorrad) */
+  double minorrad; /**< ring thickness */
+  double phimin; /**< delimit ring on minorrad circle */
+  double phimax; /**< delimit ring on minorrad circle */
   double thetamax; /**< angle of revolution (degrees) */
 } ay_torus_object;
 
@@ -766,7 +768,10 @@ typedef struct ay_camera_object_s
 /** RenderMan Interface Bytestream include object */
 typedef struct ay_riinc_object_s
 {
+  /*@{*/
+  /** size of box representation (for drawing purposes) */
   double width, length, height;
+  /*@}*/
   char *file; /**< filename of include file */
 } ay_riinc_object;
 
@@ -775,7 +780,10 @@ typedef struct ay_riinc_object_s
 typedef struct ay_riproc_object_s
 {
   int type; /**< type of procedural (AY_PRT*) */
+  /*@{*/
+  /** bounding box */
   double minx, miny, minz, maxx, maxy, maxz;
+  /*@}*/
   char *file; /**< filename of procedural file */
   char *data; /**< procedural arguments */
 } ay_riproc_object;
@@ -945,7 +953,10 @@ typedef struct ay_extrnp_object_s
 {
   int pnum; /**< select patch from multiple provided */
   int relative; /**< interpret parameter values in relative way? */
+  /*@{*/
+  /** rectangular region in parameter space (sub-surface to extract) */
   double umin, umax, vmin, vmax;
+  /*@}*/
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -976,8 +987,8 @@ typedef struct ay_concatnp_object_s
 /** Offset surface object */
 typedef struct ay_offnp_object_s
 {
-  int mode;
-  double offset;
+  int mode; /**< unused */
+  double offset; /**< offset/distance value */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -1011,7 +1022,7 @@ typedef struct ay_script_object_s
   ay_object *cm_objects; /**< created or modified objects */
 
   int modified; /**< need to recompile the script? */
-  Tcl_Obj *cscript; /**< cache compiled script */
+  Tcl_Obj *cscript; /**< cached compiled script */
 
   int paramslen; /**< number of saved script parameters */
   Tcl_Obj **params; /**< save script parameters */
@@ -1025,8 +1036,8 @@ typedef struct ay_view_object_s
   int type; /**< view type (AY_VT*) (Persp., Front, Side, Top, Trim) */
   double grid; /**< gridsize, 0.0 == no grid */
 
-  int local; /* editing takes place in local space, not world space? */
-  int aligned; /* view is aligned to object-space of selected object? */
+  int local; /**< editing takes place in local space, not world space? */
+  int aligned; /**< view is aligned to object-space of selected object? */
 
   int drawsel; /**< draw selected objects (and their children) only? */
   int drawlevel; /**< draw current level (and below) only? */
@@ -1051,25 +1062,34 @@ typedef struct ay_view_object_s
   double nearp; /**< near clipping plane */
   double farp; /**< far clipping plane */
 
-  /* temporarily in use for rotation with cursor keys */
+  /*@{*/
+  /** temporarily in use for rotation with cursor keys */
   double rotx, roty, rotz;
+  /*@}*/
 
-  /* how to get from win to world coordinates (in parallel views!) */
+  /*@{*/
+  /** how to get from win to world coordinates (in parallel views!) */
   double conv_x, conv_y;
+  /*@}*/
 
-  /* rectangle, currently used to draw
-     a rectangle while drag-selection of points */
+  /*@{*/
+  /** rectangle, drawn e.g.\ while drag-selecting objects or points */
   double rect_xmin, rect_xmax, rect_ymin, rect_ymax;
+  /*@}*/
   int drawrect; /**< draw the selection rectangle? */
 
-  /* mark a point in space */
+  /*@{*/
+  /** mark a point in space */
   double markworld[3];
   double markx;
   double marky;
-  int drawmark;
+  /*@}*/
+  int drawmark; /**< draw the mark? */
 
-  /* position of the view window on the screen */
+  /*@{*/
+  /** position of the view window on the screen */
   int pos_x, pos_y;
+  /*@}*/
 
   /** is the view window iconified? */
   int isicon;
@@ -1085,10 +1105,12 @@ typedef struct ay_view_object_s
   int bgimagedirty; /**< reload background image? */
   int drawbgimage; /**< draw background image? */
 
-  /* geometry for background image */
+  /*@{*/
+  /** cached geometry and parameters for background image NURBS patch */
   int bgwidth, bgheight;
   int bguorder, bgvorder;
   float *bgknotv, *bgcv;
+  /*@}*/
 
   /** unique identifier, for plugins (e.g.\ AyCSG) that need to tie
       exclusive resources (e.g.\ offscreen buffers) to views */
@@ -1122,58 +1144,82 @@ typedef struct ay_trim_object_s
 /** User preferences */
 typedef struct ay_preferences_s
 {
-  int list_types;  /**< show object types in tree view? */
-  int mark_hidden;
-  int single_window;
+  int list_types; /**< show object types in tree view? */
+  int mark_hidden; /**< mark hidden objecs in tree view (with a !)? */
+  int single_window; /**< is the GUI in single window mode? */
 
   /* modelling prefs */
-  int edit_snaps_to_grid;
-  double pick_epsilon;
-  int lazynotify;
-  int completenotify;
-  int undo_levels;
-  int snap3d;
-  int globalmark;
+  int edit_snaps_to_grid; /**< edit points first snaps them to the grid? */
+  double pick_epsilon; /**< control point picking accuracy */
+  int lazynotify; /**< control notification */
+  int completenotify; /**< control complete notification */
+  int undo_levels; /**< number of undo levels, -1 turns undo off */
+  int snap3d; /**< snap points to the grid in 3D? */
+  int globalmark; /**< maintain a global mark? */
 
   /* RIB export prefs */
-  int resolveinstances;
-  int checklights;
-  int ristandard;
-  int use_sm;
-  int defaultmat; /* 0 no, 1 matte, 2 "default" */
-  int writeident;
-  int excludehidden;
+  int resolveinstances; /**< resolve all instances for RIB export? */
+  int checklights; /**< check/correct light sources for RIB export? */
+  int ristandard; /**< only issue RI standard compliant requests */
+  int use_sm; /**< use shadow maps? */
+  int defaultmat; /**< default material: 0 no, 1 matte, 2 "default" */
+  int writeident; /**< write object names as RI comments? */
+  int excludehidden; /**< exclude hidden objects from RIB export? */
 
   /* Mops Import prefs */
   int mopsiresetdisplaymode;
   int mopsiresettolerance;
 
   /* drawing */
-  double handle_size; /* size of points */
+  double handle_size; /**< size of points */
 
-  double bgr, bgg, bgb; /* background color */
-  double obr, obg, obb; /* object color */
-  double ser, seg, seb; /* selection color */
-  double grr, grg, grb; /* grid color */
-  double tpr, tpg, tpb; /* tagged points color */
-  double shr, shg, shb; /* default shade color */
-  double lir, lig, lib; /* default light color */
-  double sxr, sxg, sxb; /* default drag selection rectangle color (XOR) */
+  /*@{*/
+  /** background color */
+  double bgr, bgg, bgb;
+  /*@}*/
+  /*@{*/
+  /** object color */
+  double obr, obg, obb;
+  /*@}*/
+  /*@{*/
+  /** selection color */
+  double ser, seg, seb;
+  /*@}*/
+  /*@{*/
+  /** grid color */
+  double grr, grg, grb;
+  /*@}*/
+  /*@{*/
+  /** tagged points color */
+  double tpr, tpg, tpb;
+  /*@}*/
+  /*@{*/
+  /** default shade color */
+  double shr, shg, shb;
+  /*@}*/
+  /*@{*/
+  /** default light color */
+  double lir, lig, lib;
+  /*@}*/
+  /*@{*/
+  /** default drag selection rectangle color (XOR) */
+  double sxr, sxg, sxb;
+  /*@}*/
 
   int use_materialcolor; /**< shade objects in color taken from material? */
 
   double linewidth; /**< width of lines */
-  double sellinewidth; /**< width of lines */
+  double sellinewidth; /**< width of selected lines */
 
   /* error handling */
-  char onerror; /* 0 stop, 1 continue */
-  int writelog;
-  char *logfile;
+  char onerror; /**< what to do if errors occur? 0 stop, 1 continue */
+  int writelog; /**< write error messages to a log file? */
+  char *logfile; /**< file name of log file */
 
   /* state of the RIB exporter */
-  int wrib_sm;
-  int wrib_em;
-  int wrib_archives;
+  int wrib_sm; /**< is RIB export writing a shadow map? */
+  int wrib_em; /**< is RIB export writing a environment map? */
+  int wrib_archives; /**< is RIB export writing an archive? */
 
   
   double glu_sampling_tolerance; /**< drawing/shading quality */
@@ -1199,7 +1245,7 @@ typedef struct ay_preferences_s
 
   /** is a permanent preview window open? */
   int pprev_open;
-  char *pprender;
+  char *pprender; /**< permanent preview render command template */
 
   /* PV tag names */
   char *texcoordname; /**< default name for texture coordinate PV tags */
@@ -1415,7 +1461,8 @@ extern char ay_version_ma[];
 /** minor Ayam version number */
 extern char ay_version_mi[];
 
-/* internal tags */
+/** \name Tag names and types */
+/*@{*/
 extern char *ay_oi_tagtype;
 extern char *ay_oi_tagname;
 extern char *ay_riattr_tagtype;
@@ -1454,6 +1501,7 @@ extern char *ay_rp_tagtype;
 extern char *ay_rp_tagname;
 extern char *ay_hc_tagtype;
 extern char *ay_hc_tagname;
+/*@}*/
 
 extern unsigned int ay_current_glname;
 extern int ay_wrib_framenum;
@@ -1652,7 +1700,7 @@ extern unsigned int ay_current_primlevel;
 /*@}*/
 
 
-/** size of arrows */
+/** Size of arrows */
 #define AY_POINTER 8
 
 /** to avoid direct comparison of doubles with 0.0 */
@@ -1729,13 +1777,17 @@ extern unsigned int ay_current_primlevel;
 /*@}*/
 
 /* Warning: v1 and v2 must be different locations in memory! */
+/** Apply 4x4 transformation matrix \a m to 3D point/vector in \a v2 */
 #define AY_APTRAN4(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+v2[3]*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+v2[3]*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+v2[3]*m[14];v1[3]=v2[0]*m[3]+v2[1]*m[7]+v2[2]*m[11]+v2[3]*m[15];}
 
 /* Warning: v1 and v2 must be different locations in memory! */
+/** Apply 4x4 transformation matrix \a m to 3D point/vector in \a v2 */
 #define AY_APTRAN3(v1,v2,m) {v1[0]=v2[0]*m[0]+v2[1]*m[4]+v2[2]*m[8]+1.0*m[12];v1[1]=v2[0]*m[1]+v2[1]*m[5]+v2[2]*m[9]+1.0*m[13];v1[2]=v2[0]*m[2]+v2[1]*m[6]+v2[2]*m[10]+1.0*m[14];}
 
+/** 4x4 matrix element access */
 #define AY_M44(m,r,c) ((m)[(c)*4+(r)])
 
+/** is ay_object \a o transformed? */
 #define AY_ISTRAFO(o) ((fabs(o->movx) > AY_EPSILON) ||\
 		       (fabs(o->movy) > AY_EPSILON) ||\
 		       (fabs(o->movz) > AY_EPSILON) ||\
