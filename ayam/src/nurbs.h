@@ -16,43 +16,43 @@
 
 /* act.c */
 
-/** least squares approximation
+/** Do a least squares approximation.
  */
 int ay_act_leastSquares(double *Q, int m, int n, int p,
 			double **U, double **P);
 
-/** least squares approximation for closed curves
+/** Do a least squares approximation for a closed curve.
  */
 int ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
 			      double **U, double **P);
 
-/** resize approximating curve
+/** Resize a approximating curve.
  */
 int ay_act_resize(ay_acurve_object *curve, int new_length);
 
-/** revert approximating curve
+/** Revert a approximating curve.
  */
 int ay_act_revert(ay_acurve_object *curve);
 
-/** get point from approximating curve
+/** Get point from approximating curve.
  */
 int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
 
 
 /* capt.c */
 
-/** create cap from curve
+/** Create cap from (planar) curve.
  */
 int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
 
-/** create cap from curve
+/** Create cap from non planar curve.
  */
 int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
 
 
 /* ict.c */
 
-/** C2 cubic interpolation
+/** Do a C2 cubic interpolation.
  */
 int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  int param_type,
@@ -60,7 +60,7 @@ int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  double *controlv,
 			  ay_nurbcurve_object **c);
 
-/**  C2 cubic interpolation for closed curve
+/** Do a C2 cubic interpolation for a closed curve.
  */
 int ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 				int param_type,
@@ -68,16 +68,14 @@ int ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 			       double *controlv,
 			       ay_nurbcurve_object **c);
 
-
-
-/** global 3D interpolation
+/** Do a global 3D interpolation.
  */
 int ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 			  int have_end_derivs, int param_type,
 			  double *controlv, double *sderiv, double *ederiv,
 			  ay_nurbcurve_object **c);
 
-/** global 3D interpolation for closed curve
+/** Do a global 3D interpolation for a closed curve.
  */
 int ay_ict_interpolateG3DClosed(int iorder, int length,
 				double sdlen, double edlen,
@@ -86,15 +84,15 @@ int ay_ict_interpolateG3DClosed(int iorder, int length,
 				double *sderiv, double *ederiv,
 				ay_nurbcurve_object **c);
 
-/** resize interpolating curve
+/** Resize a interpolating curve.
  */
 int ay_ict_resize(ay_icurve_object *curve, int new_length);
 
-/** revert interpolating curve
+/** Revert a interpolating curve.
  */
 int ay_ict_revert(ay_icurve_object *curve);
 
-/** get point from interpolating curve
+/** Get point from a interpolating curve.
  */
 int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
@@ -177,11 +175,11 @@ int ay_knots_init(Tcl_Interp *interp);
 
 /* nb.c */
 
-/** LU decomposition of the nxn matrix A.
+/** Do a LU decomposition of the nxn matrix A.
  */
 int ay_nb_LUDecompose(int n, double *A, int *pivot);
 
-/** Inversion of the nxn matrix inv.
+/** Invert the nxn matrix inv.
  */
 int ay_nb_LUInvert(int n, double *inv, int *pivot);
 
@@ -625,24 +623,24 @@ int ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax);
 
-/** check curve for degeneracy
+/** Check curve for degeneracy.
  */
 int ay_nct_isdegen(ay_nurbcurve_object *curve);
 
-/** create offset curve
+/** Create offset curve.
  */
 int ay_nct_offset(ay_object *o, int mode, double offset,
 		  ay_nurbcurve_object **nc);
 
-/** compare two points (helper for qsort)
+/** Compare two points (helper for qsort).
  */
 int ay_nct_cmppnt(const void *p1, const void *p2);
 
-/** compare two points given as pointers (helper for qsort)
+/** Compare two points given as pointers (helper for qsort).
  */
 int ay_nct_cmppntp(const void *p1, const void *p2);
 
-/** curve length estimation
+/** Do curve length estimation.
  */
 int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
 
@@ -1173,12 +1171,12 @@ int ay_tess_npatch(ay_object *o,
 		   int use_vn, char *myn,
 		   ay_object **pm);
 
-/** Tcl command to tesselate NURBS patch (convert to PolyMesh).
+/** Tcl command to tesselate NURBS patch (convert to PolyMesh) with GLU.
  */
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Tesselate a single polymesh face.
+/** Tesselate a single polymesh face with GLU.
  */
 int ay_tess_pomeshf(ay_pomesh_object *pomesh,
 		    unsigned int f, unsigned int m, unsigned int n,
