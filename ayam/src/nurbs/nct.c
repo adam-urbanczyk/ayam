@@ -929,6 +929,17 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
   if(!curve)
     return AY_ENULL;
 
+  if(side == 0)
+    {
+      if((curve->knot_type == AY_KTBSPLINE) ||
+	 ((curve->type == AY_CTPERIODIC) &&
+	  ((curve->knot_type == AY_KTCHORDAL) ||
+	   (curve->knot_type == AY_KTCENTRI))))
+	{
+	  return ay_nct_clampperiodic(curve);
+	}
+    }
+
   if(side == 0 || side == 1)
     {
       /* clamp start */
@@ -1102,21 +1113,21 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
   np = curve->length;
   nq = np+(p*2);
 
-  /* get some memory to work on */
+  /* get some fresh memory to work on */
   if(!(newcontrolv = calloc(nq*stride, sizeof(double))))
     return AY_EOMEM;
 
   if(!(newknotv = calloc(nq+curve->order, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  /* insert knots */
+  /* insert knots at start */
   ay_status = ay_nb_CurveInsertKnot4D(np-1, p, curve->knotv, curve->controlv,
                         curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
     return ay_status;
 
-  /* nq is now np+p-1! */
+  /* insert knots at end (nq is now np+p-1!) */
   ay_status = ay_nb_CurveInsertKnot4D(nq, p, newknotv, newcontrolv,
 			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
 
@@ -1159,44 +1170,41 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
 
-    if(sel->object)
-      {
-	if(sel->object->type == AY_IDNCURVE)
-	  {
-	    if(sel->object->selp)
-	      ay_selp_clear(sel->object);
+      if(sel->object)
+	{
+	  if(sel->object->type == AY_IDNCURVE)
+	    {
+	      if(sel->object->selp)
+		ay_selp_clear(sel->object);
 
-	    curve = (ay_nurbcurve_object *)sel->object->refine;
+	      curve = (ay_nurbcurve_object *)sel->object->refine;
 
-	    if((curve->knot_type == AY_KTNURB) ||
-	       (curve->knot_type == AY_KTBEZIER))
-	      break;
+	      if((curve->knot_type == AY_KTNURB) ||
+		 (curve->knot_type == AY_KTBEZIER))
+		break;
 
-	    if(curve->knot_type == AY_KTBSPLINE && side == 0)
-	      ay_status = ay_nct_clampperiodic(curve);
-	    else
 	      ay_status = ay_nct_clamp(curve, side);
 
-	    if(ay_status)
-	      {
-		ay_error(ay_status, argv[0], "clamp operation failed");
-		return TCL_OK;
-	      }
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0], "clamp operation failed");
+		  return TCL_OK;
+		}
 
-	    curve->knot_type = AY_KTCUSTOM;
+	      curve->knot_type = AY_KTCUSTOM;
 
-	    /* update pointers to controlv */
-	    ay_status = ay_nct_recreatemp(curve);
-	    sel->object->modified = AY_TRUE;
+	      /* update pointers to controlv */
+	      ay_status = ay_nct_recreatemp(curve);
+	      sel->object->modified = AY_TRUE;
 
-	    /* re-create tesselation of curve */
-	    ay_notify_force(sel->object);
-	  }
-	else
-	  {
-	    ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
-	  } /* if */
-      } /* if */
+	      /* re-create tesselation of curve */
+	      ay_notify_force(sel->object);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	    } /* if */
+	} /* if */
 
     sel = sel->next;
   } /* while */
@@ -1227,10 +1235,13 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
   else
     t = new_order - curve->order;
 
- /* clamp the curve? */
+  /* clamp the curve? */
   clamp_me = AY_FALSE;
 
-  if(curve->knot_type == AY_KTBSPLINE)
+  if((curve->knot_type == AY_KTBSPLINE) ||
+     ((curve->type == AY_CTPERIODIC) &&
+      ((curve->knot_type == AY_KTCHORDAL) ||
+       (curve->knot_type == AY_KTCENTRI))))
     {
       clamp_me = AY_TRUE;
     }
@@ -1346,7 +1357,9 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
  int t = 1, nh = 0;
 
   if(argc >= 2)
-    Tcl_GetInt(interp, argv[1], &t);
+    {
+      Tcl_GetInt(interp, argv[1], &t);
+    }
 
   while(sel)
     {
@@ -1360,7 +1373,10 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* clamp the curve? */
 	  clamp_me = AY_FALSE;
 
-	  if(curve->knot_type == AY_KTBSPLINE)
+	  if((curve->knot_type == AY_KTBSPLINE) ||
+	     ((curve->type == AY_CTPERIODIC) &&
+	      ((curve->knot_type == AY_KTCHORDAL) ||
+	       (curve->knot_type == AY_KTCENTRI))))
 	    {
 	      clamp_me = AY_TRUE;
 	    }
@@ -4218,7 +4234,10 @@ ay_nct_makecompatible(ay_object *curves)
     {
       curve = (ay_nurbcurve_object *) o->refine;
       clamp_me = AY_FALSE;
-      if(curve->knot_type == AY_KTBSPLINE)
+      if((curve->knot_type == AY_KTBSPLINE) ||
+	 ((curve->type == AY_CTPERIODIC) &&
+	  ((curve->knot_type == AY_KTCHORDAL) ||
+	   (curve->knot_type == AY_KTCENTRI))))
 	{
 	  clamp_me = AY_TRUE;
 	}
@@ -4248,6 +4267,9 @@ ay_nct_makecompatible(ay_object *curves)
 
       if(clamp_me)
 	ay_status = ay_nct_clamp(curve, 0);
+
+      if(ay_status)
+	return ay_status;
 
       o = o->next;
     } /* while */
@@ -4312,12 +4334,12 @@ ay_nct_makecompatible(ay_object *curves)
 
 	  if(!(realQw = realloc(Qw, nh*4*sizeof(double))))
 	    {
-	      return AY_EOMEM;
+	      free(Uh); free(Qw); return AY_EOMEM;
 	    }
 
 	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
 	    {
-	      return AY_EOMEM;
+	      free(Uh); free(realQw); return AY_EOMEM;
 	    }
 
 	  free(curve->knotv);
