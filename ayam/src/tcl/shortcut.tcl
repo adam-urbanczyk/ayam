@@ -982,11 +982,10 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Reset Weights        <$svsc(WeightR)>
 
  Select Points        <$svsc(Select)>
- De-Select Points     <$svsc(DeSelect)>
  Insert Points        <$svsc(InsertP)>
  Delete Points        <$svsc(DeleteP)>
 
- Select All Points    <$svsc(SelAllP)>
+ Select All/No Points <$svsc(SelAllP)>/<$svsc(DeSelect)>
  Invert PointSel      <$svsc(InvSelP)>
  Collapse Selected    <$svsc(CollP)>
  Explode Selected     <$svsc(ExplP)>
@@ -997,6 +996,7 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Show Objects         <$svsc(Show)>
 
  FindU                <$svsc(FindU)>
+ FindUV               <$svsc(FindUV)>
  Split Curve          <$svsc(SplitNC)>
 
 View Actions (View Windows):
@@ -1027,12 +1027,14 @@ View Actions (View Windows):
 
  Cycle View Type     <$svsc(TypeUp)> / <$svsc(TypeDown)>
 
+ Cycle Draw/Shade    <$svsc(DMUp)> / <$svsc(DMDown)>
+
 Function Keys (View Windows):
 
 Adjust NURBS Sampling Rate: <${aymainshortcuts(SetSTL)}> / <${aymainshortcuts(SetSTP)}>
- Toggle Wire/NURBS:          <${aymainshortcuts(SwWire)}> / <${aymainshortcuts(SwNURBS)}>
+ Toggle Wire/NURBS:          <${aymainshortcuts(SwNURBSWire)}>
  Toggle Lazy Notification    <${aymainshortcuts(SwLazyNotify)}>
-
+ Update                      <${aymainshortcuts(Update)}>
 
 See the reference card in the docs
 folder for a printable and more
