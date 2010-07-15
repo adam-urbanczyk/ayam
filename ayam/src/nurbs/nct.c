@@ -1243,7 +1243,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
       ((curve->knot_type == AY_KTCHORDAL) ||
        (curve->knot_type == AY_KTCENTRI))))
     {
-      clamp_me = AY_TRUE;
+      ay_status = ay_nct_clampperiodic(curve);
     }
   else
     {
@@ -1272,10 +1272,11 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
   if(clamp_me)
     {
       ay_status = ay_nct_clamp(curve, 0);
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname, "clamp operation failed");
-	} /* if */
+    } /* if */
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "clamp operation failed");
     } /* if */
 
   /* alloc new knotv & new controlv */
@@ -1378,7 +1379,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	      ((curve->knot_type == AY_KTCHORDAL) ||
 	       (curve->knot_type == AY_KTCENTRI))))
 	    {
-	      clamp_me = AY_TRUE;
+	      ay_status = ay_nct_clampperiodic(curve);
 	    }
 	  else
 	    {
@@ -1407,10 +1408,11 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(clamp_me)
 	    {
 	      ay_status = ay_nct_clamp(curve, 0);
-	      if(ay_status)
-		{
-		  ay_error(AY_ERROR, argv[0], "clamp operation failed");
-		}
+	    }
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "clamp operation failed");
 	    }
 
 	  /* alloc new knotv & new controlv */
@@ -4239,7 +4241,7 @@ ay_nct_makecompatible(ay_object *curves)
 	  ((curve->knot_type == AY_KTCHORDAL) ||
 	   (curve->knot_type == AY_KTCENTRI))))
 	{
-	  clamp_me = AY_TRUE;
+	  ay_status = ay_nct_clampperiodic(curve);
 	}
       else
 	{
