@@ -1308,15 +1308,13 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
   if(!(realQw = realloc(Qw, nh*4* sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
+      free(Uh); free(Qw);
+      return AY_EOMEM;
     }
 
   if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
     {
-      ay_error(AY_ERROR, fname, "Memory may have leaked!");
-      ay_error(AY_EOMEM, fname, NULL);
+      free(Uh); free(realQw);
       return AY_ERROR;
     }
 
@@ -1444,15 +1442,13 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!(realQw = realloc(Qw, nh*4* sizeof(double))))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Memory may have leaked!");
-	      ay_error(AY_EOMEM, argv[0], NULL);
+	      free(Uh); free(Qw);
 	      return TCL_OK;
 	    }
 
 	  if(!(realUh = realloc(Uh, (nh+curve->order+t)*sizeof(double))))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Memory may have leaked!");
-	      ay_error(AY_EOMEM, argv[0], NULL);
+	      free(Uh); free(realQw);
 	      return TCL_OK;
 	    }
 
