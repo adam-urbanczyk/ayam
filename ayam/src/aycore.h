@@ -245,39 +245,39 @@ void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
 
 /* instt.c */
 
-/**
+/** Build OID hash table (OID->master).
  */
 int ay_instt_createoidht(ay_object *o);
 
-/**
+/** Connect instance objects to master objects based on OID tag information.
  */
 int ay_instt_connect(ay_object *o, ay_object **last);
 
-/**
+/** Create OID string.
  */
 int ay_instt_createoid(char **dest);
 
-/**
+/** Create OID tags for all referenced objects.
  */
 int ay_instt_createorigids(ay_object *o);
 
-/**
+/** Create OID tags for all instance objects.
  */
 int ay_instt_createinstanceids(ay_object *o);
 
-/**
+/** Remove all OID tags from the scene.
  */
 int ay_instt_clearoidtags(ay_object *o);
 
-/**
+/** Search for instance objects.
  */
 int ay_instt_findinstance(ay_object *r, ay_object *o);
 
-/**
+/** Check if there are instances in the clipboard.
  */
 int ay_instt_checkclipboard(ay_object *o);
 
-/**
+/** RIB export of instances to RI archives
  */
 int ay_instt_wribiarchives(char *file, ay_object *o);
 
@@ -290,12 +290,12 @@ int ay_instt_resolve(ay_object *i);
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/**
+/** DnD helper.
  */
 int ay_instt_checkinstance(ay_object *o, ay_object *target,
 			   ay_object *instance, int *check_this_tree);
 
-/**
+/** DnD helper.
  */
 int ay_instt_check(ay_object *o, ay_object *target);
 
@@ -618,19 +618,19 @@ int ay_matt_removeallrefs(ay_object *o);
  */
 int ay_matt_removerefs(ay_object *o, ay_mat_object *material);
 
-/** 
+/** remove material references from clipboard
  */
 int ay_matt_removecliprefs(ay_object *o);
 
-/**
+/** Connect objects to the appropriate material objects (using MI tags).
  */
 int ay_matt_connect(ay_object *o);
 
-/**
+/** Creates MI tags for all objects with a material.
  */
 int ay_matt_creatematerialids(ay_object *o);
 
-/**
+/** Removes MI tags.
  */
 int ay_matt_clearmaterialids(ay_object *o);
 
@@ -642,7 +642,7 @@ int ay_matt_wrib(char *file, ay_mat_object *m);
  */
 void ay_matt_nomaterial(unsigned int type);
 
-/** check whether objects of type may have a material
+/** Check whether objects of given type may have a material.
  */
 int ay_matt_mayhavematerial(unsigned int type);
 
@@ -1341,39 +1341,39 @@ void ay_trafo_apply4(double *c, double *m);
 void ay_trafo_apply4v(double *c, unsigned int clen, unsigned int stride,
 		      double *m);
 
-/**
+/** concatenate all trafos onto GL matrix stack
  */
 void ay_trafo_getall(ay_list_object *lo);
 
-/**
+/** inversely concatenate all trafos onto GL matrix stack
  */
 void ay_trafo_getalli(ay_list_object *lo);
 
-/**
+/** concatenate all scale trafos onto GL matrix stack
  */
 void ay_trafo_getalls(ay_list_object *lo);
 
-/**
+/** inversely concatenate all scale trafos onto GL matrix stack
  */
 void ay_trafo_getallis(ay_list_object *lo);
 
-/**
+/** concatenate all scale and rotate trafos onto GL matrix stack
  */
 void ay_trafo_getallsr(ay_list_object *lo);
 
-/**
+/** inversely concatenate all scale and rotate trafos onto GL matrix stack
  */
 void ay_trafo_getallisr(ay_list_object *lo);
 
-/**
+/** concatenate all rotate trafos onto GL matrix stack
  */
 void ay_trafo_getallr(ay_list_object *lo);
 
-/**
+/** inversely concatenate all rotate trafos onto GL matrix stack
  */
 void ay_trafo_getallir(ay_list_object *lo);
 
-/**
+/** delegate trafos to children
  */
 int ay_trafo_delegate(ay_object *o);
 
@@ -1382,19 +1382,19 @@ int ay_trafo_delegate(ay_object *o);
 int ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/**
+/** apply transformations to a point (object to world)
  */
 void ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p);
 
-/**
+/** inversely apply transformations to a point (world to object)
  */
 void ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p);
 
-/**
+/** copy transformation attributes
  */
 void ay_trafo_copy(ay_object *src, ay_object *dst);
 
-/**
+/** add transformation attributes
  */
 void ay_trafo_add(ay_object *src, ay_object *dst);
 
@@ -1515,62 +1515,62 @@ int ay_vact_moveztcb(struct Togl *togl, int argc, char *argv[]);
 
 /* viewt.c */
 
-/**
+/** set up the camera projection of a view
  */
 void ay_viewt_setupprojection(struct Togl *togl);
 
-/**
+/** rotate a view
  */
 void ay_viewt_rotate(ay_view_object *view, double rotx, double roty,
 		     double rotz);
 
-/**
+/** convert window coordinates to object space
  */
 void ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
 		       double winX, double winY,
 		       double *objX, double *objY, double *objZ);
 
-/**
+/** convert rectangle in window coordinates to object space
  */
 void ay_viewt_winrecttoobj(struct Togl *togl, ay_object *o,
 			   double winX, double winY,
 			   double winX2, double winY2,
 			   double *obj);
 
-/**
+/** convert window coordinates to world space
  */
 void ay_viewt_wintoworld(struct Togl *togl, double winX, double winY,
 			 double *worldX, double *worldY, double *worldZ);
 
-/**
+/** zoom a view to an object
  */
 int ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** align a view to an object
  */
 int ay_viewt_align(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** align a view
  */
 void ay_viewt_alignlocal(void);
 
-/**
+/** make view (the associated GL context) current
  */
 int ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** change the type of a view (Front->Side)
  */
 void ay_viewt_changetype(ay_view_object *view, int type);
 
-/**
+/** update view after size changed
  */
 int ay_viewt_reshapetcb(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** re-draw a view
  */
 int ay_viewt_redrawtcb(struct Togl *togl, int argc, char *argv[]);
 
-/**
+/** configure a view
  */
 int ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[]);
 
