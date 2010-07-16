@@ -811,11 +811,15 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_instt_checkinstance:
- *  Recursive! Check, whether master object of "instance"
- *  is a (even remote) parent of "target"
- *  (to prevent recursive instances).
+ *  Recursively check, whether master object of "instance"
+ *  is a direct or remote parent of "target" to prevent
+ *  recursive instances (instance is child of master).
  *  Returns AY_TRUE, if recursive instances would result from
- *  a DnD/paste operation of "instance" to "target".
+ *  a DnD/paste operation of "instance" to "target",
+ *  else returns AY_FALSE.
+ *  This function first recursively browses the scene searching
+ *  for the target, and when found, upon unwinding the recursive
+ *  invocations checks all (intermediate) parents from target to o.
  */
 int
 ay_instt_checkinstance(ay_object *o, ay_object *target,
@@ -824,38 +828,38 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
  int res = AY_FALSE;
  int check = AY_FALSE;
 
- while(o->next)
+  while(o->next)
     {
-      if(o->down)
+      if(o == target)
+	{
+	  /* inform all parent invocations that they need to check */
+	  *check_this_tree = AY_TRUE;
+	  return AY_FALSE;
+	} /* if */
+
+      if(o->down && o->down->next)
 	{
 	  res = ay_instt_checkinstance(o->down, target, instance, &check);
-	  *check_this_tree = check;
 
-	  if(res)
+	  /* immediately return a positive result */
+	  if(res == AY_TRUE)
 	    {
 	      return res;
 	    } /* if */
+
+	  /* inform parent invocation whether it needs to check */
+	  *check_this_tree = check;
 
 	  if(check)
 	    {
 	      if(o == ((ay_object *)instance->refine))
 		{
 		  return AY_TRUE;
+		}
+	      else
+		{
+		  return AY_FALSE;
 		} /* if */
-	    } /* if */
-	} /* if */
-
-      if(o == target)
-	{
-	  *check_this_tree = AY_TRUE;
-
-	  if((o == ((ay_object *)instance->refine)) && o->down)
-	    {
-	      return AY_TRUE;
-	    }
-	  else
-	    {
-	      return AY_FALSE;
 	    } /* if */
 	} /* if */
 
@@ -870,6 +874,7 @@ ay_instt_checkinstance(ay_object *o, ay_object *target,
  *  Recursively browse through children of "o"
  *  (i.e. to be dropped/pasted) objects and call
  *  ay_instt_checkinstance() on them (if they are instances)
+ *  Also check o (if it is a instance).
  */
 int
 ay_instt_check(ay_object *o, ay_object *target)
@@ -888,7 +893,7 @@ ay_instt_check(ay_object *o, ay_object *target)
 	    {
 	      res = ay_instt_check(down, target);
 
-	      /* immediately return positive result */
+	      /* immediately return a positive result */
 	      if(res == AY_TRUE)
 		return res;
 	    } /* if */
@@ -902,9 +907,10 @@ ay_instt_check(ay_object *o, ay_object *target)
 		} /* if */
 
 	      /* recursive check */
+	      check = AY_FALSE;
 	      res = ay_instt_checkinstance(ay_root, target, down, &check);
 
-	      /* immediately return positive result */
+	      /* immediately return a positive result */
 	      if(res == AY_TRUE)
 		return res;
 	    } /* if */
@@ -913,12 +919,18 @@ ay_instt_check(ay_object *o, ay_object *target)
 	} /* while */
     } /* if */
 
-
   if(o->type == AY_IDINSTANCE)
     {
+      /* first, do easy check */
+      if(((ay_object*)o->refine) == target)
+	{
+	  return AY_TRUE;
+	} /* if */
+
+      check = AY_FALSE;
       res = ay_instt_checkinstance(ay_root, target, o, &check);
 
-      /* immediately return positive result */
+      /* immediately return a positive result */
       if(res == AY_TRUE)
 	return res;
     } /* if */
