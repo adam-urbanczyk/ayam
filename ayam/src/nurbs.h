@@ -527,10 +527,6 @@ int ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves);
  */
 int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
-/**
- */
-int ay_nct_addinternalcps(ay_object *curve, int where);
-
 /** Rescale the knot vectors of selected curves.
  */
 int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
