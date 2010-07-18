@@ -346,18 +346,20 @@ typedef struct ay_nurbcurve_object_s
   int tessqf;
 
   /* multiple points */
-  int createmp;
-  struct ay_mpoint_s *mpoints;
+  int createmp; /**< create multiple points? */
+  struct ay_mpoint_s *mpoints; /**< multiple points */
 } ay_nurbcurve_object;
 
 
 /* a tesselated NURBS patch point */
 typedef struct ay_stess_uvp_s {
-  struct ay_stess_uvp_s *next;
-  int type;    /* 0 - original point, 1 - trimloop point */
-  int dir;     /* direction of associated trimcurve, 0 - cw, 1 - ccw */
-  double u, v; /* associated parametric values of this point */
-  double C[6]; /* geometric coordinates and normal of this point */
+  struct ay_stess_uvp_s *next; /**< next point */
+  int type; /**< 0 - original point, 1 - trimloop point */
+  int dir; /**< direction of associated trimcurve, 0 - cw, 1 - ccw */
+  /*@{*//** associated parametric values of this point */
+  double u, v;
+  /*@}*/
+  double C[6]; /**< geometric coordinates and normal of this point */
 } ay_stess_uvp;
 
 
@@ -411,8 +413,8 @@ typedef struct ay_nurbpatch_object_s
   ay_stess *stess;
 
   /* multiple points */
-  int createmp;
-  struct ay_mpoint_s *mpoints;
+  int createmp; /**< create multiple points? */
+  struct ay_mpoint_s *mpoints; /**< multiple points */
 } ay_nurbpatch_object;
 
 
@@ -427,10 +429,10 @@ typedef struct ay_pamesh_object_s {
   int type; /**< type of patch mesh (AY_PT*, bilinear or bicubic) */
   int btype_u; /**< basis type of patch mesh in U, (AY_BT*) */
   int btype_v; /**< basis type of patch mesh in V, (AY_BT*) */
-  int ustep;
-  double *ubasis; /* [16], only in use for btype_u == AY_BTCUSTOM */
-  int vstep;
-  double *vbasis; /* [16], only in use for btype_v == AY_BTCUSTOM */
+  int ustep; /**< step size of basis in U */
+  double *ubasis; /**< U basis [16], only in use for btype_u == AY_BTCUSTOM */
+  int vstep; /**< step size of basis in V */
+  double *vbasis; /**< V basis [16], only in use for btype_v == AY_BTCUSTOM */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -517,7 +519,9 @@ typedef struct ay_light_object_s
   RtLightHandle light_handle; /**< RI handle of local lights */
   int shadows; /**< light casts shadows? */
   int samples; /**< number of samples (for area lights), default: 1 */
+  /*@{*//** light color */
   int colr, colg, colb;
+  /*@}*/
   double intensity; /**< intensity of light source */
   double cone_angle; /**< size of spot light cone */
   double cone_delta_angle; /**< size of spot light penumbra */
@@ -742,10 +746,17 @@ typedef struct ay_clone_object_s
   int mirror; /**< enable mirror mode? (0 - no, 1,2,3 - yes (YZ,XZ,XY)) */
 
   /* transformations */
+  /*@{*//** translation */
   double movx, movy, movz;
+  /*@}*/
+  /*@{*//** orientation */
   double rotx, roty, rotz;
+  /*@}*/
+  /** \name scale attributes */
+  /*@{*//** scale */
   double scalx, scaly, scalz;
-  double quat[4]; /* quaternion */
+  /*@}*/
+  double quat[4]; /**< quaternion */
 
   /** cached clones */
   ay_object *clones;
@@ -1167,8 +1178,8 @@ typedef struct ay_preferences_s
   int excludehidden; /**< exclude hidden objects from RIB export? */
 
   /* Mops Import prefs */
-  int mopsiresetdisplaymode;
-  int mopsiresettolerance;
+  int mopsiresetdisplaymode; /**< reset display mode for Mops import? */
+  int mopsiresettolerance; /**< reset tolerance for Mops import? */
 
   /* drawing */
   double handle_size; /**< size of points */
@@ -1231,8 +1242,8 @@ typedef struct ay_preferences_s
 
   /** default sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;
-  double sparamu;
-  double sparamv;
+  double sparamu; /** sampling parameter for U dimension */
+  double sparamv; /** sampling parameter for V dimension */
 
   /** control warnings about unknown tag types */
   int wutag;
@@ -1298,10 +1309,19 @@ typedef struct ay_tag_s
 /** transformation attributes */
 typedef struct ay_trafo_s
 {
+  /** \name translation attributes */
+  /*@{*//** translation */
   double movx, movy, movz;
+  /*@}*/
+  /** \name orientation attributes */
+  /*@{*//** orientation */
   double rotx, roty, rotz;
+  /*@}*/
+  /** \name scale attributes */
+  /*@{*//** scale */
   double scalx, scaly, scalz;
-  double quat[4]; /* quaternion */
+  /*@}*/
+  double quat[4]; /**< quaternion */
 } ay_trafo;
 
 
