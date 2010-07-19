@@ -224,14 +224,14 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
   ay_status = ay_nct_split(c1, 0.5, &c3);
 
   /* split first half in first and second quarter */
-  ay_nct_clamp(curve, 0);
+  ay_nct_clamp(curve, 1);
   ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
 				      0.0, 1.0);
   ay_status = ay_nct_split(c1, 0.5, &c2);
 
   /* split second half in third and fourth quarter */
   curve = (ay_nurbcurve_object*)c3->refine;
-  ay_nct_clamp(curve, 0);
+  ay_nct_clamp(curve, 2);
   ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
 				      0.0, 1.0);
   ay_status = ay_nct_split(c3, 0.5, &c4);
