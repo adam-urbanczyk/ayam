@@ -944,7 +944,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
     {
       /* clamp start */
       u = curve->knotv[0];
-      s = 0;
+      s = 1;
       for(i = 1; i < curve->order; i++)
 	{
 	  if(u == curve->knotv[i])
@@ -953,14 +953,14 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	    break;
 	}
 
-      if(s != curve->order)
+      if(s < curve->order)
 	{
 	  u = curve->knotv[curve->order-1];
 
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 				 curve->knotv, &s);
 
-	  rs = curve->order /*- 1*/ - s;
+	  rs = (curve->order - 1) - s;
 	  curve->length += rs;
 
 	  newcontrolv = NULL;
@@ -989,7 +989,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
   if(side == 0 || side == 2)
     {
       /* clamp end */
-      s = 0;
+      s = 1;
       j = curve->length+curve->order-1;
       u = curve->knotv[j];
       for(i = 1; i < curve->order; i++)
@@ -1000,14 +1000,14 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	    break;
 	}
 
-      if(s != curve->order)
+      if(s < curve->order)
 	{
 	  u = curve->knotv[curve->length];
 
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 				 curve->knotv, &s);
 
-	  re = curve->order - 1 - s;
+	  re = (curve->order - 1) - s;
 	  curve->length += re;
 
 	  newcontrolv = NULL;
@@ -1072,6 +1072,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       memcpy(newknotv, &(curve->knotv[rs]),
 	     (curve->length+curve->order)*sizeof(double));
+      newknotv[0] = newknotv[1];
       break;
     case 2:
       /* clamped end: ignore last re knots */
@@ -1080,6 +1081,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       memcpy(newknotv, curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));
+      
+      newknotv[curve->length+curve->order-1] =
+	newknotv[curve->length+curve->order-2];
       break;
     default:
       break;
@@ -2160,6 +2164,9 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       memcpy(newknotv,nc1->knotv,(nc1->length+nc1->order)*sizeof(double));
 
+      newknotv[curve->length+curve->order-1] =
+	newknotv[curve->length+curve->order-2];
+
       free(nc2->controlv);
       nc2->controlv = NULL;
       free(nc2->knotv);
@@ -2176,7 +2183,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       memcpy(nc2->knotv,&(nc1->knotv[nc1->length-1]),
 	     (nc2->length+nc2->order)*sizeof(double));
-
+      nc2->knotv[0] = nc2->knotv[1];
       free(nc1->controlv);
       nc1->controlv = newcontrolv;
       free(nc1->knotv);
@@ -4155,7 +4162,7 @@ ay_nct_makecompatible(ay_object *curves)
 		if(u == curve->knotv[i])
 		  b++;
 
-	      if((a < curve->order) || (b < curve->order))
+	      if((a < (curve->order)) || (b < (curve->order)))
 		{
 		  clamp_me = AY_TRUE;
 		}
