@@ -137,7 +137,7 @@ ay_nct_clearmp(ay_nurbcurve_object *c)
 
 
 /* ay_nct_recreatemp:
- *  recreate mpoints from identical controlpoints
+ *  recreate mpoints from identical control points
  */
 int
 ay_nct_recreatemp(ay_nurbcurve_object *c)
@@ -940,9 +940,10 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	}
     }
 
+  /* clamp start? */
   if(side == 0 || side == 1)
     {
-      /* clamp start */
+      /* the next fragment also counts the phantom knot! */
       u = curve->knotv[0];
       s = 1;
       for(i = 1; i < curve->order; i++)
@@ -955,6 +956,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       if(s < curve->order)
 	{
+	  /* clamp start */
 	  u = curve->knotv[curve->order-1];
 
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
@@ -986,9 +988,10 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	} /* if */
     } /* if */
 
+  /* clamp end? */
   if(side == 0 || side == 2)
     {
-      /* clamp end */
+      /* the next fragment also counts the phantom knot! */
       s = 1;
       j = curve->length+curve->order-1;
       u = curve->knotv[j];
@@ -1002,6 +1005,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       if(s < curve->order)
 	{
+	  /* clamp end */
 	  u = curve->knotv[curve->length];
 
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
@@ -1072,6 +1076,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       memcpy(newknotv, &(curve->knotv[rs]),
 	     (curve->length+curve->order)*sizeof(double));
+      /* improve phantom knot */
       newknotv[0] = newknotv[1];
       break;
     case 2:
@@ -1081,7 +1086,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 
       memcpy(newknotv, curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));
-      
+      /* improve phantom knot */
       newknotv[curve->length+curve->order-1] =
 	newknotv[curve->length+curve->order-2];
       break;
@@ -2164,6 +2169,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       memcpy(newknotv,nc1->knotv,(nc1->length+nc1->order)*sizeof(double));
 
+      /* improve phantom knot */
       newknotv[curve->length+curve->order-1] =
 	newknotv[curve->length+curve->order-2];
 
@@ -2183,7 +2189,9 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       memcpy(nc2->knotv,&(nc1->knotv[nc1->length-1]),
 	     (nc2->length+nc2->order)*sizeof(double));
+      /* improve phantom knot */
       nc2->knotv[0] = nc2->knotv[1];
+
       free(nc1->controlv);
       nc1->controlv = newcontrolv;
       free(nc1->knotv);
@@ -3242,7 +3250,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
       length++;
     }
 
-  /* construct new knotvector */
+  /* construct new knot vector */
   if(knot_type == 0)
     {
       ktype = AY_KTNURB;
