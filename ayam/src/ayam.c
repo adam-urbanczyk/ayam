@@ -86,8 +86,6 @@ Tcl_HashTable ay_temptagtypesht;
 
 int ay_errno;
 
-ay_object *ay_last_read_object;
-
 int ay_read_version;
 
 int ay_read_viewnum;
