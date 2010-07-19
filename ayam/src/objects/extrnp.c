@@ -542,6 +542,9 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!s->npatch)
+	return AY_ERROR;
+
       /* copy extracted npatch */
       ay_status = ay_object_copy(s->npatch, t);
       if(ay_status)

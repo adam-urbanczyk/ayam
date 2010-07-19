@@ -513,6 +513,9 @@ ay_offnc_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!s->ncurve)
+	return AY_ERROR;
+
       /* copy offnc */
       ay_status = ay_object_copy(s->ncurve, t);
       if(ay_status)

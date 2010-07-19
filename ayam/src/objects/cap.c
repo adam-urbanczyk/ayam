@@ -521,6 +521,10 @@ ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      /* copy eventually present TP tags */
 	      ay_npt_copytptag(o, *result);
 	    } /* if */
+	}
+      else
+	{
+	  return AY_ERROR;
 	} /* if */
     } /* if */
 

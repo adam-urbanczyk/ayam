@@ -95,7 +95,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      option_handled = AY_TRUE;
 	      break;
 	    case 'n':
-	      /* -npolys */
+	      /* -nverts */
 	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
 		 TCL_OK)
 		{

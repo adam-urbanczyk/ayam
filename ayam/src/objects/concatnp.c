@@ -519,6 +519,10 @@ ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    }
 	  ay_trafo_copy(o, *result);
 	}
+      else
+	{
+	  return AY_ERROR;
+	}
     }
 
  return ay_status;

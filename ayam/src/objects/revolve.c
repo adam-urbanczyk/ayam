@@ -1214,6 +1214,9 @@ ay_revolve_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!r->npatch)
+	return AY_ERROR;
+
       /* copy revolution */
       p = r->npatch;
       while(p)

@@ -1201,6 +1201,10 @@ ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    {
 	      ay_trafo_copy(o, *result);
 	    } /* if */
+	}
+      else
+	{
+	  return AY_ERROR;
 	} /* if */
     } /* if */
 

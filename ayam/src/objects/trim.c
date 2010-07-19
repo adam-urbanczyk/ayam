@@ -443,6 +443,9 @@ ay_trim_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!trim->npatch)
+	return AY_ERROR;
+
       /* copy patch(es) */
       p = trim->npatch;
       while(p)

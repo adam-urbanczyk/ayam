@@ -1144,6 +1144,9 @@ ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!r->npatch)
+	return AY_ERROR;
+
       /* copy swung surface */
       p = r->npatch;
       while(p)
