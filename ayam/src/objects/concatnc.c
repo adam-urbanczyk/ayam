@@ -605,7 +605,14 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(cc->ncurve)
 	{
 	  ay_status = ay_object_copy(cc->ncurve, result);
-	  ay_trafo_copy(o, *result);
+	  if(*result)
+	    {
+	      ay_trafo_copy(o, *result);
+	    }
+	}
+      else
+	{
+	  return AY_ERROR;
 	}
     }
 

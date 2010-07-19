@@ -1267,6 +1267,10 @@ ay_pamesh_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(type == AY_IDNPATCH)
     {
       t = &(new);
+
+      if(!pm->npatch)
+	return AY_ERROR;
+
       p = pm->npatch;
       while(p)
 	{

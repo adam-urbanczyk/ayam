@@ -942,6 +942,9 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       t = &(new);
 
+      if(!e->npatch)
+	return AY_ERROR;
+
       /* copy extrusion(s) */
       p = e->npatch;
       while(p)

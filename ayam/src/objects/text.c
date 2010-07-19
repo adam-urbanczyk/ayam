@@ -940,6 +940,10 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
   if(type == AY_IDNPATCH)
     {
       t = &(tmp);
+
+      if(!text->npatch)
+	return AY_ERROR;
+
       p = text->npatch;
       while(p)
 	{
