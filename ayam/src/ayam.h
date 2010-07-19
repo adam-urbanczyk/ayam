@@ -300,16 +300,16 @@ typedef struct ay_riopt_s
   int RadSteps;
   int PatchSamples;
 
-  char *textures;
-  char *shaders;
-  char *archives;
-  char *procedurals;
+  char *textures; /**< texture search path */
+  char *shaders; /**< shaders search path */
+  char *archives; /**< archives search path */
+  char *procedurals; /**< procedurals search path */
 
   int texturemem;
   int geommem;
 
-  int width;
-  int height;
+  int width; /**< width of image in pixels */
+  int height; /**< height of image in pixels */
 
   int use_std_display;
 } ay_riopt;
@@ -351,7 +351,7 @@ typedef struct ay_nurbcurve_object_s
 } ay_nurbcurve_object;
 
 
-/* a tesselated NURBS patch point */
+/** a tesselated NURBS patch point */
 typedef struct ay_stess_uvp_s {
   struct ay_stess_uvp_s *next; /**< next point */
   int type; /**< 0 - original point, 1 - trimloop point */
@@ -363,26 +363,27 @@ typedef struct ay_stess_uvp_s {
 } ay_stess_uvp;
 
 
-/* a complete tesselation */
+/** a complete tesselation */
 typedef struct ay_stess_s {
   /* untrimmed patch */
-  int tessw, tessh;
-  double *tessv; /* [tessw*tessh] */
+  int tessw; /**< number of tesselated points in U dimension */
+  int tessh; /**< number of tesselated points in V dimension */
+  double *tessv; /**< tesselated points [tessw*tessh] */
 
   /* trimmed patch */
-  /* number of arrays of tesselated points */
-  int upslen, vpslen;
-  /* arrays of lists of tesselated points */
-  ay_stess_uvp **ups, **vps; /* [upslen], [vpslen] */
-  /* first trim is oriented clockwise */
-  int ft_cw;
-  /* number of tesselated trim curves */
-  int tcslen;
-  /* tesselated trim curves */
-  double **tcs; /* [tcslen][tcslens[i]] */
-  /* length and direction of trim curves */
-  int *tcslens, *tcsdirs; /* [tcslen] */
-  double ud, vd;
+  int upslen; /**< number of arrays of tesselated points (U) */
+  int vpslen; /**< number of arrays of tesselated points (V) */
+  ay_stess_uvp **ups; /**< lists of tesselated points [upslen] */
+  ay_stess_uvp **vps; /**< lists of tesselated points [vpslen] */
+
+  int ft_cw; /**< first trim is oriented clockwise? */
+  int tcslen; /**< number of tesselated trim curves */
+  double **tcs; /**< tesselated trim curves [tcslen][tcslens[i]] */
+  int *tcslens; /**< lengths of trim curves [tcslen] */
+  int *tcsdirs; /**< directions of trim curves [tcslen] */
+
+  double ud; /**< distance */
+  double vd; /**< distance */
 } ay_stess;
 
 
@@ -1232,7 +1233,7 @@ typedef struct ay_preferences_s
   int wrib_em; /**< is RIB export writing a environment map? */
   int wrib_archives; /**< is RIB export writing an archive? */
 
-  
+
   double glu_sampling_tolerance; /**< drawing/shading quality */
   int np_display_mode; /**< display mode for NURBS surfaces */
   int nc_display_mode; /**< display mode for NURBS curves */
@@ -1242,8 +1243,8 @@ typedef struct ay_preferences_s
 
   /** default sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;
-  double sparamu; /** sampling parameter for U dimension */
-  double sparamv; /** sampling parameter for V dimension */
+  double sparamu; /**< sampling parameter for U dimension */
+  double sparamv; /**< sampling parameter for V dimension */
 
   /** control warnings about unknown tag types */
   int wutag;
@@ -1391,7 +1392,7 @@ typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 /** Main Ayam Tcl interpreter */
 extern Tcl_Interp *ay_interp;
 
-/** Safe Tcl interpreter (e.g.\ for Script object scripts */
+/** Safe Tcl interpreter (e.g.\ for Script object scripts) */
 extern Tcl_Interp *ay_safeinterp;
 
 /** user preferences */
@@ -1400,7 +1401,7 @@ extern ay_preferences ay_prefs;
 /** pointer to the root object */
 extern ay_object *ay_root;
 
-/** pointer to pointer (to some objects ->next or ->down slot) where
+/** pointer to pointer (pointer to some objects ->next or ->down slot) where
     the next object will be linked to */
 extern ay_object **ay_next;
 
@@ -1422,7 +1423,8 @@ extern Tcl_HashTable ay_otypesht;
 /** table of registered object type names */
 extern Tcl_HashTable ay_typenamesht;
 
-/* function pointer tables (object callbacks) */
+/* \name function pointer tables (object callbacks) */
+/*@{*/
 /** all registered create callbacks */
 extern ay_ftable ay_createcbt;
 /** all registered delete callbacks */
@@ -1451,30 +1453,35 @@ extern ay_ftable ay_writecbt;
 extern ay_ftable ay_notifycbt;
 /** all registered bounding box calculation callbacks */
 extern ay_ftable ay_bbccbt;
-
 /** all registered tree drop callbacks */
 extern ay_ftable ay_treedropcbt;
-
 /** table of registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
-
 /** table of temporary tag types */
 extern Tcl_HashTable ay_temptagtypesht;
-
 /** all registered conversion callbacks */
 extern ay_ftable ay_convertcbt;
-
 /** all registered provide callbacks */
 extern ay_ftable ay_providecbt;
+/*@}*/
 
 /** global error number */
 extern int ay_errno;
 
-extern ay_object *ay_last_read_object;
-
+/** currently read scene file version (!= Ayam version!) */
 extern int ay_read_version;
 
+/** currently read view number (internal views get different treatment) */
 extern int ay_read_viewnum;
+
+/** current gl name (for object picking) */
+extern unsigned int ay_current_glname;
+
+/** current frame number in RIB export */
+extern int ay_wrib_framenum;
+
+/** current primitive level in RIB export (to avoid nested RiSolid()s) */
+extern unsigned int ay_current_primlevel;
 
 /** major Ayam version number */
 extern char ay_version_ma[];
@@ -1522,10 +1529,6 @@ extern char *ay_rp_tagname;
 extern char *ay_hc_tagtype;
 extern char *ay_hc_tagname;
 /*@}*/
-
-extern unsigned int ay_current_glname;
-extern int ay_wrib_framenum;
-extern unsigned int ay_current_primlevel;
 
 /* Definitions */
 
@@ -1720,7 +1723,7 @@ extern unsigned int ay_current_primlevel;
 /*@}*/
 
 
-/** Size of arrows */
+/** size of arrows */
 #define AY_POINTER 8
 
 /** to avoid direct comparison of doubles with 0.0 */
