@@ -1405,37 +1405,53 @@ int
 ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "insert_point";
  Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
- char fname[] = "insert_point";
+ int notify_parent = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
 
-  if(ay_selection)
+  if(!sel)
     {
-      if(!ay_selection->object)
-	return TCL_OK;
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
 
-      Tcl_GetDouble(interp, argv[2], &winX);
-      Tcl_GetDouble(interp, argv[3], &winY);
+  Tcl_GetDouble(interp, argv[2], &winX);
+  Tcl_GetDouble(interp, argv[3], &winY);
 
-      ay_viewt_wintoobj(togl, ay_selection->object,
+  while(sel)
+    {
+      o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
+      if(!o)
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  break;
+	}
+
+      ay_viewt_wintoobj(togl, o,
 			winX, winY,
 			&objX, &objY, &objZ);
 
-      switch(ay_selection->object->type)
+      switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_insertac((ay_acurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	default:
@@ -1450,16 +1466,17 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-	  ay_selp_clear(ay_selection->object);
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
-	  ay_status = ay_notify_parent();
-	  ay_toglcb_display(togl);
-	}
-    }
-  else
+	  notify_parent = AY_TRUE;
+	  ay_selp_clear(o);
+	  ay_status = ay_notify_force(o);
+	  o->modified = AY_TRUE;
+	} /* if */
+    } /* while */
+
+  if(notify_parent)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_status = ay_notify_parent();
+      ay_toglcb_display(togl);
     }
 
  return TCL_OK;
@@ -1712,37 +1729,53 @@ int
 ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ char fname[] = "delete_point";
  Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
- char fname[] = "delete_point";
+ int notify_parent = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
 
-  if(ay_selection)
+  if(!sel)
     {
-      if(!ay_selection->object)
-	return TCL_OK;
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
 
-      Tcl_GetDouble(interp, argv[2], &winX);
-      Tcl_GetDouble(interp, argv[3], &winY);
+  Tcl_GetDouble(interp, argv[2], &winX);
+  Tcl_GetDouble(interp, argv[3], &winY);
 
-      ay_viewt_wintoobj(togl, ay_selection->object,
+  while(sel)
+    {
+      o = sel->object;
+
+      /* so that we may use break; */
+      sel = sel->next;
+
+      if(!o)
+	{
+	  ay_error(AY_ENULL, fname, NULL);
+	  break;
+	}
+
+      ay_viewt_wintoobj(togl, o,
 			winX, winY,
 			&objX, &objY, &objZ);
 
-      switch(ay_selection->object->type)
+      switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_deleteac((ay_acurve_object *)
-				       (ay_selection->object->refine),
+				       (o->refine),
 				       objX, objY, objZ);
 	  break;
 	default:
@@ -1757,16 +1790,17 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-	  ay_selp_clear(ay_selection->object);
-	  ay_status = ay_notify_force(ay_selection->object);
+	  notify_parent = AY_TRUE;
+	  ay_selp_clear(o);
+	  ay_status = ay_notify_force(o);
 	  ay_selection->object->modified = AY_TRUE;
-	  ay_status = ay_notify_parent();
-	  ay_toglcb_display(togl);
-	}
-    }
-  else
+	} /* if */
+    } /* while */
+
+  if(notify_parent)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_status = ay_notify_parent();
+      ay_toglcb_display(togl);
     }
 
  return TCL_OK;
