@@ -33,6 +33,9 @@ static int pact_objectslen;
 
 
 /* prototypes of functions local to this module: */
+int ay_pact_findpoint(int len, int stride, double *cv,
+		      double objX, double objY, double objZ, int *index);
+
 int ay_pact_insertnc(ay_nurbcurve_object *curve,
 		     double objX, double objY, double objZ);
 
@@ -810,6 +813,52 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_pedtcb */
 
 
+/* ay_pact_findpoint:
+ *  find point in cv array
+ */
+int
+ay_pact_findpoint(int len, int stride, double *cv,
+		  double objX, double objY, double objZ, int *index)
+{
+ int i, a;
+ double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
+
+  if(!cv || !index)
+   return AY_ENULL;
+
+  if(min_distance == 0.0)
+    min_distance = DBL_MAX;
+
+  a = 0;
+  for(i = 0; i < len; i++)
+    {
+      if((fabs(objX - cv[a])   < AY_EPSILON) &&
+	 (fabs(objY - cv[a+1]) < AY_EPSILON) &&
+	 (fabs(objZ - cv[a+2]) < AY_EPSILON))
+	{
+	  *index = i;
+	  break;
+	}
+      else
+	{
+	  distance = AY_VLEN((objX - cv[a]),
+			     (objY - cv[a+1]),
+			     (objZ - cv[a+2]));
+
+	  if(distance < min_distance)
+	    {
+	      *index = i;
+	      min_distance = distance;
+	    }
+	} /* if */
+
+      a += stride;
+    } /* for */
+
+ return AY_OK;
+} /* ay_pact_findpoint */
+
+
 /* ay_pact_insertnc:
  *  insert a point into a NURBS curve (NCurve)
  */
@@ -820,30 +869,14 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
  int i = 0, j = 0, k = 0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
  int inserted, sections = 0, section;
 
   if(!curve)
     return AY_ENULL;
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
-
-  for(i = 0; i < curve->length; i++)
-    {
-      distance = AY_VLEN((objX - curve->controlv[j]),
-			 (objY - curve->controlv[j+1]),
-			 (objZ - curve->controlv[j+2]));
-
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 4;
-    } /* for */
+  ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
+				objX, objY, objZ, &index);
 
   /* no point picked? */
   if(index == -1)
@@ -1110,30 +1143,14 @@ ay_pact_insertic(ay_icurve_object *icurve,
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
  int i = 0, j = 0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
   if(!icurve)
     return AY_ENULL;
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
-
-  for(i = 0; i < icurve->length; i++)
-    {
-      distance = AY_VLEN((objX - icurve->controlv[j]),
-			 (objY - icurve->controlv[j+1]),
-			 (objZ - icurve->controlv[j+2]));
-
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 3;
-    } /* for */
+  ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
+				objX, objY, objZ, &index);
 
   /* no point picked? */
   if(index == -1)
@@ -1242,7 +1259,6 @@ ay_pact_insertic(ay_icurve_object *icurve,
       return AY_ERROR;
     }
 
-
   free(icurve->controlv);
   icurve->controlv = newcontrolv;
 
@@ -1257,34 +1273,17 @@ int
 ay_pact_insertac(ay_acurve_object *acurve,
 		 double objX, double objY, double objZ)
 {
-
  int ay_status = AY_OK;
- char fname[] = "insert_pointic";
+ char fname[] = "insert_pointac";
  int i = 0, j = 0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
   if(!acurve)
     return AY_ENULL;
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
-
-  for(i = 0; i < acurve->length; i++)
-    {
-      distance = AY_VLEN((objX - acurve->controlv[j]),
-			 (objY - acurve->controlv[j+1]),
-			 (objZ - acurve->controlv[j+2]));
-
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 3;
-    } /* for */
+  ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
+				objX, objY, objZ, &index);
 
   /* no point picked? */
   if(index == -1)
@@ -1381,7 +1380,6 @@ ay_pact_insertac(ay_acurve_object *acurve,
 
   if((acurve->closed) && (index == acurve->length-2))
     {
-
       inserted = AY_TRUE;
     }
 
@@ -1392,7 +1390,6 @@ ay_pact_insertac(ay_acurve_object *acurve,
       ay_error(AY_ERROR, fname, "Cannot insert point here!");
       return AY_ERROR;
     }
-
 
   free(acurve->controlv);
   acurve->controlv = newcontrolv;
@@ -1417,8 +1414,6 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       if(!ay_selection->object)
 	return TCL_OK;
 
-      ay_selp_clear(ay_selection->object);
-
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
@@ -1432,38 +1427,35 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while inserting point!");
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while inserting point!");
-
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_insertac((ay_acurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while inserting point!");
-
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	default:
+	  ay_error(AY_EWTYPE, fname, "Curve");
+	  ay_status = AY_ERROR;
 	  break;
 	}
 
-       ay_status = ay_notify_parent();
-
-       ay_toglcb_display(togl);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, "Error inserting point!");
+	}
+      else
+	{
+	  ay_selp_clear(ay_selection->object);
+	  ay_status = ay_notify_force(ay_selection->object);
+	  ay_selection->object->modified = AY_TRUE;
+	  ay_status = ay_notify_parent();
+	  ay_toglcb_display(togl);
+	}
     }
   else
     {
@@ -1482,10 +1474,9 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
- char fname[] = "delete_point";
+ char fname[] = "delete_pointnc";
  double *cv = NULL;
  int i = 0, j = 0, k = 0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
   if(!curve)
@@ -1493,29 +1484,18 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
 
   cv = curve->controlv;
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
+  ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
+				objX, objY, objZ, &index);
 
-  index = -1;
-  for(i = 0; i < curve->length; i++)
+  if(index == -1)
     {
-      distance = AY_VLEN((objX - cv[j]),
-			 (objY - cv[j+1]),
-			 (objZ - cv[j+2]));
+      return AY_OK;
+    }
 
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 4;
-    } /* for */
-
-  if((index != -1) && (curve->length-1 < 2))
+  if(curve->length-1 < 2)
     {
       ay_error(AY_ERROR, fname, "need atleast two points");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   if((curve->type) &&
@@ -1606,10 +1586,10 @@ int
 ay_pact_deleteic(ay_icurve_object *icurve,
 		 double objX, double objY, double objZ)
 {
- char fname[] = "delete_point";
+ int ay_status = AY_OK;
+ char fname[] = "delete_pointic";
  double *cv = NULL;
- int i=0, j=0, k=0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
+ int i = 0, j = 0, k = 0, index = -1;
  double *newcontrolv = NULL;
 
   if(!icurve)
@@ -1617,29 +1597,18 @@ ay_pact_deleteic(ay_icurve_object *icurve,
 
   cv = icurve->controlv;
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
+  ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
+				objX, objY, objZ, &index);
 
-  index = -1;
-  for(i = 0; i < icurve->length; i++)
+  if(index == -1)
     {
-      distance = AY_VLEN((objX - cv[j]),
-			 (objY - cv[j+1]),
-			 (objZ - cv[j+2]));
+      return AY_OK;
+    }
 
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 3;
-    } /* for */
-
-  if((index != -1) && (icurve->length-1 < 3))
+  if(icurve->length-1 < 3)
     {
       ay_error(AY_ERROR, fname, "need atleast three points");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   /* create new icurve */
@@ -1673,6 +1642,7 @@ ay_pact_deleteic(ay_icurve_object *icurve,
  return AY_OK;
 } /* ay_pact_deleteic */
 
+
 /* ay_pact_deleteac:
  *  delete a point from an approximating curve (ACurve)
  */
@@ -1680,40 +1650,26 @@ int
 ay_pact_deleteac(ay_acurve_object *acurve,
 		 double objX, double objY, double objZ)
 {
- char fname[] = "delete_point";
- double *cv = NULL;
- int i=0, j=0, k=0, index = -1;
- double min_distance = ay_prefs.pick_epsilon, distance = 0.0;
+ int ay_status = AY_OK;
+ char fname[] = "delete_pointac";
+ int i = 0, j = 0, k = 0, index = -1;
  double *newcontrolv = NULL;
 
   if(!acurve)
     return AY_ENULL;
 
-  cv = acurve->controlv;
+  ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
+				objX, objY, objZ, &index);
 
-  if(min_distance == 0.0)
-    min_distance = DBL_MAX;
-
-  index = -1;
-  for(i = 0; i < acurve->length; i++)
+  if(index == -1)
     {
-      distance = AY_VLEN((objX - cv[j]),
-			 (objY - cv[j+1]),
-			 (objZ - cv[j+2]));
+      return AY_OK;
+    }
 
-      if(distance < min_distance)
-	{
-	  index = i;
-	  min_distance = distance;
-	}
-
-      j += 3;
-    } /* for */
-
-  if((index != -1) && (acurve->length-1 < 3))
+  if(acurve->length-1 < 3)
     {
       ay_error(AY_ERROR, fname, "need atleast three points");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   /* create new acurve */
@@ -1726,7 +1682,7 @@ ay_pact_deleteac(ay_acurve_object *acurve,
       /* copy controlv */
       j = 0;
       k = 0;
-      for(i=0; i<=acurve->length; i++)
+      for(i = 0; i <= acurve->length; i++)
 	{
 	  if(i != index)
 	    {
@@ -1765,8 +1721,6 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       if(!ay_selection->object)
 	return TCL_OK;
 
-      ay_selp_clear(ay_selection->object);
-
       Tcl_GetDouble(interp, argv[2], &winX);
       Tcl_GetDouble(interp, argv[3], &winY);
 
@@ -1780,38 +1734,35 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while deleting point!");
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while deleting point!");
-
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_deleteac((ay_acurve_object *)
 				       (ay_selection->object->refine),
 				       objX, objY, objZ);
-	  if(ay_status)
-	    ay_error(ay_status, fname, "Error while deleting point!");
-
-	  ay_status = ay_notify_force(ay_selection->object);
-	  ay_selection->object->modified = AY_TRUE;
 	  break;
 	default:
+	  ay_error(AY_EWTYPE, fname, "Curve");
+	  ay_status = AY_ERROR;
 	  break;
 	}
 
-       ay_status = ay_notify_parent();
-
-       ay_toglcb_display(togl);
+      if(ay_status)
+	{
+	  ay_error(ay_status, fname, "Error deleting point!");
+	}
+      else
+	{
+	  ay_selp_clear(ay_selection->object);
+	  ay_status = ay_notify_force(ay_selection->object);
+	  ay_selection->object->modified = AY_TRUE;
+	  ay_status = ay_notify_parent();
+	  ay_toglcb_display(togl);
+	}
     }
   else
     {
