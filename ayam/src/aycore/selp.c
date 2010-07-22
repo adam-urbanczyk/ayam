@@ -612,3 +612,99 @@ ay_selp_calccog(ay_point *pnts, double *cog)
 
  return;
 } /* ay_selp_calccog */
+
+
+/* ay_selp_rem:
+ *  
+ */
+int
+ay_selp_rem(ay_object *o, int index)
+{
+ int ay_status = AY_OK;
+ ay_point **pp = NULL, *p = NULL;
+ double obj;
+ ay_pointedit pe;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* remove point with matching index */
+  p = o->selp;
+  pp = &(o->selp);
+  while(p)
+    {
+      if(index == p->index)
+	{
+	  *pp = p->next;
+	  free(p);
+	  p = *pp;
+	  break;
+	}
+      pp = &(p->next);
+      p = p->next;
+    }
+
+  /* readjust indices of remaining points */
+  p = o->selp;
+  while(p)
+    {
+      if(p->index > index)
+	{
+	  p->index--;
+	}
+      p = p->next;
+    }
+
+  /* update pointers */
+  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+
+ return ay_status;
+} /* ay_selp_rem */
+
+
+/* ay_selp_ins:
+ *  
+ */
+int
+ay_selp_ins(ay_object *o, int index, int addtoselp)
+{
+ int ay_status = AY_OK;
+ ay_point *p = NULL, *newp = NULL;
+ double obj;
+ ay_pointedit pe;
+
+  if(!o)
+    return AY_ENULL;
+
+  /* add point with matching index */
+  if(addtoselp)
+    {
+      if(!(newp = calloc(1, sizeof(ay_point))))
+	{
+	  return AY_EOMEM;
+	}
+      newp->next = o->selp;
+      o->selp = newp;
+      newp->index = index;
+    }
+
+  /* readjust indices of old points */
+  if(newp)
+    p = newp->next;
+  else
+    p = o->selp;
+
+  while(p)
+    {
+      if(p->index > index )
+	{
+	  p->index++;
+	}
+      p = p->next;
+    }
+
+  /* update pointers */
+  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+
+ return ay_status;
+} /* ay_selp_ins */

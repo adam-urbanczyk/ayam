@@ -1064,6 +1064,13 @@ int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_selp_calccog(ay_point *pnts, double *cog);
 
+/** repair selected points indizes after point removal
+ */
+int ay_selp_rem(ay_object *o, int index);
+
+/** repair selected points indizes after point insertion
+ */
+int ay_selp_ins(ay_object *o, int index, int addtoselp);
 
 /* shade.c */
 
