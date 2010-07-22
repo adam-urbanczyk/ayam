@@ -1021,47 +1021,67 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  curve->length--;
 	  return AY_EOMEM;
 	}
-
-      j = 0; k = 0;
-      for(i = 0; i < curve->length-1; i++)
+      oldcontrolv = curve->controlv;
+      j = 0;
+      inserted = AY_FALSE;
+      for(i = 0; i < (curve->length-1); i++)
 	{
-	  if(i == *index)
-	    {
-	      /* insert point here */
-	      memcpy(&newcontrolv[k],&curve->controlv[j],4*sizeof(double));
+	  memcpy(&(newcontrolv[j*4]), &(oldcontrolv[i*4]),
+		 4*sizeof(double));
 
-	      k += 4;
-	      if(i == curve->length-2)
-		{ /* the new point is the new last point */
-		  newcontrolv[k] = curve->controlv[j] +
-		    ((curve->controlv[j]-curve->controlv[j-4])/2.0);
-		  newcontrolv[k+1] = curve->controlv[j+1]+
-		    ((curve->controlv[j+1]-curve->controlv[j+1-4])/2.0);
-		  newcontrolv[k+2] = curve->controlv[j+2]+
-		    ((curve->controlv[j+2]-curve->controlv[j+2-4])/2.0);
-		  newcontrolv[k+3] = curve->controlv[j+3]+
-		    ((curve->controlv[j+3]-curve->controlv[j+3-4])/2.0);
-		}
-	      else
-		{
-		  newcontrolv[k] = curve->controlv[j] +
-		    ((curve->controlv[j+4]-curve->controlv[j])/2.0);
-		  newcontrolv[k+1] = curve->controlv[j+1]+
-		    ((curve->controlv[j+1+4]-curve->controlv[j+1])/2.0);
-		  newcontrolv[k+2] = curve->controlv[j+2]+
-		    ((curve->controlv[j+2+4]-curve->controlv[j+2])/2.0);
-		  newcontrolv[k+3] = curve->controlv[j+3]+
-		    ((curve->controlv[j+3+4]-curve->controlv[j+3])/2.0);
-		} /* if */
+	  if((i == curve->length-2) && !inserted)
+	    { /* the new point is the new last point */
+
+	      k = (curve->length-1)*4;
+	      j *= 4;
+	      newcontrolv[k] = curve->controlv[j] +
+		((curve->controlv[j]-curve->controlv[j-4])/2.0);
+	      newcontrolv[k+1] = curve->controlv[j+1]+
+		((curve->controlv[j+1]-curve->controlv[j+1-4])/2.0);
+	      newcontrolv[k+2] = curve->controlv[j+2]+
+		((curve->controlv[j+2]-curve->controlv[j+2-4])/2.0);
+	      newcontrolv[k+3] = curve->controlv[j+3]+
+		((curve->controlv[j+3]-curve->controlv[j+3-4])/2.0);
+	      inserted = AY_TRUE;
 	    }
 	  else
 	    {
-	      memcpy(&newcontrolv[k],&curve->controlv[j],4*sizeof(double));
-	    } /* if */
+	      if(i >= *index && !inserted)
+		{
+		  if((fabs(oldcontrolv[i*4]-oldcontrolv[(i+1)*4]) >
+		      AY_EPSILON) ||
+		     (fabs(oldcontrolv[i*4+1]-oldcontrolv[(i+1)*4+1]) >
+		      AY_EPSILON) ||
+		     (fabs(oldcontrolv[i*4+2]-oldcontrolv[(i+1)*4+2]) >
+		      AY_EPSILON))
+		    {
+		      newcontrolv[(j+1)*4] = oldcontrolv[i*4] +
+			((oldcontrolv[(i+1)*4] - oldcontrolv[i*4])/2.0);
 
-	  k += 4;
-	  j += 4;
+		      newcontrolv[(j+1)*4+1] = oldcontrolv[i*4+1] +
+			((oldcontrolv[(i+1)*4+1] - oldcontrolv[i*4+1])/2.0);
+
+		      newcontrolv[(j+1)*4+2] = oldcontrolv[i*4+2] +
+			((oldcontrolv[(i+1)*4+2] - oldcontrolv[i*4+2])/2.0);
+
+		      newcontrolv[(j+1)*4+3] = oldcontrolv[i*4+3] +
+			((oldcontrolv[(i+1)*4+3] - oldcontrolv[i*4+3])/2.0);
+
+		      j++;
+		      inserted = AY_TRUE;
+		    } /* if */
+		} /* if */
+	    } /* if */
+	  j++;
 	} /* for */
+
+      if(!inserted)
+	{
+	  free(newcontrolv);
+	  curve->length--;
+	  ay_error(AY_ERROR, fname, "Cannot insert point here!");
+	  return AY_ERROR;
+	}
 
       free(curve->controlv);
       curve->controlv = newcontrolv;
