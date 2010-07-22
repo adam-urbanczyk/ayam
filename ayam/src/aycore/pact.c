@@ -36,23 +36,23 @@ static int pact_objectslen;
 int ay_pact_findpoint(int len, int stride, double *cv,
 		      double objX, double objY, double objZ, int *index);
 
-int ay_pact_insertnc(ay_nurbcurve_object *curve,
+int ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
-int ay_pact_insertic(ay_icurve_object *curve,
+int ay_pact_insertic(ay_icurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
 
-int ay_pact_insertac(ay_acurve_object *curve,
+int ay_pact_insertac(ay_acurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
-int ay_pact_deletenc(ay_nurbcurve_object *curve,
+int ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 		     double objX, double objY, double objZ);
 
-int ay_pact_deleteic(ay_icurve_object *icurve,
+int ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 		     double objX, double objY, double objZ);
 
-int ay_pact_deleteac(ay_acurve_object *acurve,
+int ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		     double objX, double objY, double objZ);
 
 int ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
@@ -863,23 +863,24 @@ ay_pact_findpoint(int len, int stride, double *cv,
  *  insert a point into a NURBS curve (NCurve)
  */
 int
-ay_pact_insertnc(ay_nurbcurve_object *curve,
+ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointnc";
- int i = 0, j = 0, k = 0, index = -1;
+ int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
  int inserted, sections = 0, section;
 
-  if(!curve)
+  if(!curve || !index)
     return AY_ENULL;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
   /* no point picked? */
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -893,8 +894,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
        */
       oldcontrolv = curve->controlv;
 
-      if(index == curve->length-1)
-	index--;
+      if(*index == curve->length-1)
+	*index--;
 
       curve->length++;
       if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
@@ -907,7 +908,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
       inserted = AY_FALSE;
       for(i = 0; i < (curve->length-1); i++)
 	{
-	  if(i >= index && !inserted)
+	  if(i >= *index && !inserted)
 	    {
 	      memcpy(&(newcontrolv[j*4]), &(oldcontrolv[i*4]),
 		     4*sizeof(double));
@@ -969,7 +970,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 		}
 	    }
 
-	  section = sections*index/(curve->length-1);
+	  section = sections*(*index)/(curve->length-1);
 
 	  k = 0; i = 0;
 	  for(j = 0; j < curve->length+curve->order-1; j++)
@@ -1024,7 +1025,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
       j = 0; k = 0;
       for(i = 0; i < curve->length-1; i++)
 	{
-	  if(i == index)
+	  if(i == *index)
 	    {
 	      /* insert point here */
 	      memcpy(&newcontrolv[k],&curve->controlv[j],4*sizeof(double));
@@ -1083,7 +1084,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
 		}
 	    }
 
-	  section = sections*index/(curve->length-1);
+	  section = sections*(*index)/(curve->length-1);
 
 	  k = 0; i = 0;
 	  for(j = 0; j < curve->length+curve->order-2; j++)
@@ -1137,23 +1138,24 @@ ay_pact_insertnc(ay_nurbcurve_object *curve,
  *  insert a point into an interpolating curve (ICurve)
  */
 int
-ay_pact_insertic(ay_icurve_object *icurve,
+ay_pact_insertic(ay_icurve_object *icurve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointic";
- int i = 0, j = 0, index = -1;
+ int i = 0, j = 0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
-  if(!icurve)
+  if(!icurve || !index)
     return AY_ENULL;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
   /* no point picked? */
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1166,14 +1168,14 @@ ay_pact_insertic(ay_icurve_object *icurve,
 
   if(!icurve->type)
     {
-      if(index == icurve->length-1)
+      if(*index == icurve->length-1)
 	{
-	  index--;
+	  *index--;
 	}
     }
   else
     {
-      if(index == icurve->length-1)
+      if(*index == icurve->length-1)
 	{
 	  icurve->length++;
 	  if(!(newcontrolv = calloc(icurve->length*3, sizeof(double))))
@@ -1211,7 +1213,7 @@ ay_pact_insertic(ay_icurve_object *icurve,
   inserted = AY_FALSE;
   for(i = 0; i < (icurve->length-1); i++)
     {
-      if(i >= index && !inserted)
+      if(i >= *index && !inserted)
 	{
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
@@ -1245,7 +1247,7 @@ ay_pact_insertic(ay_icurve_object *icurve,
       j++;
     } /* for */
 
-  if((icurve->type) && (index == icurve->length-2))
+  if((icurve->type) && (*index == icurve->length-2))
     {
 
       inserted = AY_TRUE;
@@ -1270,23 +1272,24 @@ ay_pact_insertic(ay_icurve_object *icurve,
  *  insert a point into an approximating curve (ACurve)
  */
 int
-ay_pact_insertac(ay_acurve_object *acurve,
+ay_pact_insertac(ay_acurve_object *acurve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "insert_pointac";
- int i = 0, j = 0, index = -1;
+ int i = 0, j = 0;
  double *newcontrolv = NULL, *oldcontrolv = NULL;
  int inserted;
 
-  if(!acurve)
+  if(!acurve || !index)
     return AY_ENULL;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
   /* no point picked? */
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1299,14 +1302,14 @@ ay_pact_insertac(ay_acurve_object *acurve,
 
   if(!acurve->closed)
     {
-      if(index == acurve->length-1)
+      if(*index == acurve->length-1)
 	{
-	  index--;
+	  *index--;
 	}
     }
   else
     {
-      if(index == acurve->length-1)
+      if(*index == acurve->length-1)
 	{
 	  acurve->length++;
 	  if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
@@ -1344,7 +1347,7 @@ ay_pact_insertac(ay_acurve_object *acurve,
   inserted = AY_FALSE;
   for(i = 0; i < (acurve->length-1); i++)
     {
-      if(i >= index && !inserted)
+      if(i >= *index && !inserted)
 	{
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
@@ -1368,7 +1371,6 @@ ay_pact_insertac(ay_acurve_object *acurve,
 	      j++;
 	      inserted = AY_TRUE;
 	    }
-
 	}
       else
 	{
@@ -1378,7 +1380,7 @@ ay_pact_insertac(ay_acurve_object *acurve,
       j++;
     } /* for */
 
-  if((acurve->closed) && (index == acurve->length-2))
+  if((acurve->closed) && (*index == acurve->length-2))
     {
       inserted = AY_TRUE;
     }
@@ -1408,7 +1410,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "insert_point";
  Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
- int notify_parent = AY_FALSE;
+ int index, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
@@ -1441,17 +1443,17 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_insertnc((ay_nurbcurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_insertic((ay_icurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_insertac((ay_acurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	default:
@@ -1467,7 +1469,8 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_clear(o);
+	  /*ay_selp_clear(o);*/
+	  ay_selp_ins(o, index, AY_FALSE);
 	  ay_status = ay_notify_force(o);
 	  o->modified = AY_TRUE;
 	} /* if */
@@ -1487,24 +1490,25 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
  *  delete a point from a NURBS curve (NCurve)
  */
 int
-ay_pact_deletenc(ay_nurbcurve_object *curve,
+ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointnc";
  double *cv = NULL;
- int i = 0, j = 0, k = 0, index = -1;
+ int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
-  if(!curve)
+  if(!curve || !index)
     return AY_ENULL;
 
   cv = curve->controlv;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1516,70 +1520,67 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
     }
 
   if((curve->type) &&
-     (index > (curve->length-curve->order)))
+     (*index > (curve->length-curve->order)))
     {
-      index = curve->order-(curve->length-index)-1;
+      *index = curve->order-(curve->length-(*index))-1;
     }
 
   /* create new curve */
-  if(index != -1)
+
+  curve->length--;
+  if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
+    return AY_EOMEM;
+
+  /* copy controlv */
+  j = 0;
+  k = 0;
+  for(i = 0; i <= curve->length; i++)
     {
-      curve->length--;
-      if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
-	return AY_EOMEM;
-
-      /* copy controlv */
-      j = 0;
-      k = 0;
-      for(i = 0; i <= curve->length; i++)
+      if(i != *index)
 	{
-	  if(i != index)
-	    {
-	      newcontrolv[k] = curve->controlv[j];
-	      newcontrolv[k+1] = curve->controlv[j+1];
-	      newcontrolv[k+2] = curve->controlv[j+2];
-	      newcontrolv[k+3] = curve->controlv[j+3];
-	      k += 4;
-	    }
-
-	  j += 4;
-	} /* for */
-
-      free(curve->controlv);
-      curve->controlv = newcontrolv;
-
-      if(curve->knot_type == AY_KTBEZIER)
-	curve->order--;
-
-      if(curve->length < curve->order)
-	curve->order = curve->length;
-
-      /* generate new knots? */
-      if(curve->knot_type == AY_KTCUSTOM)
-	{
-	  if(!(newknotv = calloc(curve->order+curve->length,
-				 sizeof(double))))
-	    { return AY_EOMEM; }
-
-	  memcpy(newknotv, curve->knotv, (curve->length)*sizeof(double));
-	  memcpy(&(newknotv[curve->length]),
-		 &(curve->knotv[curve->length+1]),
-		 curve->order*sizeof(double));
-	  /*
-	    for(i=0;i<curve->length+curve->order;i++)
-	    {
-	    newknotv[i] = curve->knotv[i];
-	    }
-	  */
-	  free(curve->knotv);
-	  curve->knotv = newknotv;
-	}
-      else
-	{
-	  ay_status = ay_knots_createnc(curve);
+	  newcontrolv[k] = curve->controlv[j];
+	  newcontrolv[k+1] = curve->controlv[j+1];
+	  newcontrolv[k+2] = curve->controlv[j+2];
+	  newcontrolv[k+3] = curve->controlv[j+3];
+	  k += 4;
 	}
 
-    } /* if */
+      j += 4;
+    } /* for */
+
+  free(curve->controlv);
+  curve->controlv = newcontrolv;
+
+  if(curve->knot_type == AY_KTBEZIER)
+    curve->order--;
+
+  if(curve->length < curve->order)
+    curve->order = curve->length;
+
+  /* generate new knots? */
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(newknotv = calloc(curve->order+curve->length,
+			     sizeof(double))))
+	{ return AY_EOMEM; }
+
+      memcpy(newknotv, curve->knotv, (curve->length)*sizeof(double));
+      memcpy(&(newknotv[curve->length]),
+	     &(curve->knotv[curve->length+1]),
+	     curve->order*sizeof(double));
+      /*
+	for(i=0;i<curve->length+curve->order;i++)
+	{
+	newknotv[i] = curve->knotv[i];
+	}
+      */
+      free(curve->knotv);
+      curve->knotv = newknotv;
+    }
+  else
+    {
+      ay_status = ay_knots_createnc(curve);
+    }
 
   if(curve->type)
     {
@@ -1600,24 +1601,25 @@ ay_pact_deletenc(ay_nurbcurve_object *curve,
  *  delete a point from an interpolating curve (ICurve)
  */
 int
-ay_pact_deleteic(ay_icurve_object *icurve,
+ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointic";
  double *cv = NULL;
- int i = 0, j = 0, k = 0, index = -1;
+ int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
 
-  if(!icurve)
+  if(!icurve || !index)
     return AY_ENULL;
 
   cv = icurve->controlv;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1629,32 +1631,32 @@ ay_pact_deleteic(ay_icurve_object *icurve,
     }
 
   /* create new icurve */
-  if(index != -1)
+  icurve->length--;
+  if(!(newcontrolv = calloc(icurve->length*3, sizeof(double))))
     {
-      icurve->length--;
-      if(!(newcontrolv = calloc(icurve->length*3, sizeof(double))))
-	return AY_EOMEM;
+      icurve->length++;
+      return AY_EOMEM;
+    }
 
-      /* copy controlv */
-      j = 0;
-      k = 0;
-      for(i=0; i<=icurve->length; i++)
+  /* copy controlv */
+  j = 0;
+  k = 0;
+  for(i = 0; i <= icurve->length; i++)
+    {
+      if(i != *index)
 	{
-	  if(i != index)
-	    {
-	      newcontrolv[k] = icurve->controlv[j];
-	      newcontrolv[k+1] = icurve->controlv[j+1];
-	      newcontrolv[k+2] = icurve->controlv[j+2];
+	  newcontrolv[k] = icurve->controlv[j];
+	  newcontrolv[k+1] = icurve->controlv[j+1];
+	  newcontrolv[k+2] = icurve->controlv[j+2];
 
-	      k += 3;
-	    }
+	  k += 3;
+	}
 
-	  j += 3;
-	} /* for */
+      j += 3;
+    } /* for */
 
-      free(icurve->controlv);
-      icurve->controlv = newcontrolv;
-   } /* if */
+  free(icurve->controlv);
+  icurve->controlv = newcontrolv;
 
  return AY_OK;
 } /* ay_pact_deleteic */
@@ -1664,21 +1666,22 @@ ay_pact_deleteic(ay_icurve_object *icurve,
  *  delete a point from an approximating curve (ACurve)
  */
 int
-ay_pact_deleteac(ay_acurve_object *acurve,
+ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 		 double objX, double objY, double objZ)
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointac";
- int i = 0, j = 0, k = 0, index = -1;
+ int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
 
-  if(!acurve)
+  if(!acurve || !index)
     return AY_ENULL;
 
+  *index = -1;
   ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
-				objX, objY, objZ, &index);
+				objX, objY, objZ, index);
 
-  if(index == -1)
+  if(*index == -1)
     {
       return AY_OK;
     }
@@ -1690,32 +1693,32 @@ ay_pact_deleteac(ay_acurve_object *acurve,
     }
 
   /* create new acurve */
-  if(index != -1)
+  acurve->length--;
+  if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
     {
-      acurve->length--;
-      if(!(newcontrolv = calloc(acurve->length*3, sizeof(double))))
-	return AY_EOMEM;
+      acurve->length++;
+      return AY_EOMEM;
+    }
 
-      /* copy controlv */
-      j = 0;
-      k = 0;
-      for(i = 0; i <= acurve->length; i++)
+  /* copy controlv */
+  j = 0;
+  k = 0;
+  for(i = 0; i <= acurve->length; i++)
+    {
+      if(i != *index)
 	{
-	  if(i != index)
-	    {
-	      newcontrolv[k] = acurve->controlv[j];
-	      newcontrolv[k+1] = acurve->controlv[j+1];
-	      newcontrolv[k+2] = acurve->controlv[j+2];
+	  newcontrolv[k] = acurve->controlv[j];
+	  newcontrolv[k+1] = acurve->controlv[j+1];
+	  newcontrolv[k+2] = acurve->controlv[j+2];
 
-	      k += 3;
-	    }
+	  k += 3;
+	}
 
-	  j += 3;
-	} /* for */
+      j += 3;
+    } /* for */
 
-      free(acurve->controlv);
-      acurve->controlv = newcontrolv;
-   } /* if */
+  free(acurve->controlv);
+  acurve->controlv = newcontrolv;
 
  return AY_OK;
 } /* ay_pact_deleteac */
@@ -1732,7 +1735,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "delete_point";
  Tcl_Interp *interp = Togl_Interp(togl);
  double winX = 0.0, winY = 0.0, objX = 0.0, objY = 0.0, objZ = 0.0;
- int notify_parent = AY_FALSE;
+ int index, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
@@ -1765,17 +1768,17 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	case AY_IDNCURVE:
 	  ay_status = ay_pact_deletenc((ay_nurbcurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	case AY_IDICURVE:
 	  ay_status = ay_pact_deleteic((ay_icurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	case AY_IDACURVE:
 	  ay_status = ay_pact_deleteac((ay_acurve_object *)
-				       (o->refine),
+				       (o->refine), &index,
 				       objX, objY, objZ);
 	  break;
 	default:
@@ -1791,7 +1794,8 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_clear(o);
+	  /*ay_selp_clear(o);*/
+	  ay_selp_rem(o, index);
 	  ay_status = ay_notify_force(o);
 	  ay_selection->object->modified = AY_TRUE;
 	} /* if */
