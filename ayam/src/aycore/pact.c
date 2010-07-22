@@ -895,7 +895,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
       oldcontrolv = curve->controlv;
 
       if(*index == curve->length-1)
-	*index--;
+	*index = *index - 1;
 
       curve->length++;
       if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
@@ -913,9 +913,9 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	      memcpy(&(newcontrolv[j*4]), &(oldcontrolv[i*4]),
 		     4*sizeof(double));
 
-	      if(oldcontrolv[i*4] != oldcontrolv[(i+1)*4] ||
-		 oldcontrolv[i*4+1] != oldcontrolv[(i+1)*4+1] ||
-		 oldcontrolv[i*4+2] != oldcontrolv[(i+1)*4+2])
+	      if((fabs(oldcontrolv[i*4]-oldcontrolv[(i+1)*4]) > AY_EPSILON) ||
+	      (fabs(oldcontrolv[i*4+1]-oldcontrolv[(i+1)*4+1]) > AY_EPSILON) ||
+	      (fabs(oldcontrolv[i*4+2]-oldcontrolv[(i+1)*4+2]) > AY_EPSILON))
 		{
 		  newcontrolv[(j+1)*4] = oldcontrolv[i*4] +
 		    ((oldcontrolv[(i+1)*4] - oldcontrolv[i*4])/2.0);
@@ -1170,7 +1170,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
     {
       if(*index == icurve->length-1)
 	{
-	  *index--;
+	  *index = *index - 1;
 	}
     }
   else
@@ -1218,9 +1218,9 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
 
-	  if(oldcontrolv[i*3] != oldcontrolv[(i+1)*3] ||
-	     oldcontrolv[i*3+1] != oldcontrolv[(i+1)*3+1] ||
-	     oldcontrolv[i*3+2] != oldcontrolv[(i+1)*3+2])
+	  if((fabs(oldcontrolv[i*3]-oldcontrolv[(i+1)*3]) > AY_EPSILON) ||
+	     (fabs(oldcontrolv[i*3+1]-oldcontrolv[(i+1)*3+1]) > AY_EPSILON) ||
+	     (fabs(oldcontrolv[i*3+2]-oldcontrolv[(i+1)*3+2]) > AY_EPSILON))
 	    {
 	      newcontrolv[(j+1)*3] = oldcontrolv[i*3] +
 		((oldcontrolv[(i+1)*3] - oldcontrolv[i*3])/2.0);
@@ -1304,7 +1304,7 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
     {
       if(*index == acurve->length-1)
 	{
-	  *index--;
+	  *index = *index - 1;
 	}
     }
   else
@@ -1352,9 +1352,9 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
 	  memcpy(&(newcontrolv[j*3]), &(oldcontrolv[i*3]),
 		 3*sizeof(double));
 
-	  if(oldcontrolv[i*3] != oldcontrolv[(i+1)*3] ||
-	     oldcontrolv[i*3+1] != oldcontrolv[(i+1)*3+1] ||
-	     oldcontrolv[i*3+2] != oldcontrolv[(i+1)*3+2])
+	  if((fabs(oldcontrolv[i*3]-oldcontrolv[(i+1)*3]) > AY_EPSILON) ||
+	     (fabs(oldcontrolv[i*3+1]-oldcontrolv[(i+1)*3+1]) > AY_EPSILON) ||
+	     (fabs(oldcontrolv[i*3+2]-oldcontrolv[(i+1)*3+2]) > AY_EPSILON))
 	    {
 	      newcontrolv[(j+1)*3] = oldcontrolv[i*3] +
 		((oldcontrolv[(i+1)*3] - oldcontrolv[i*3])/2.0);
@@ -1469,7 +1469,6 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  /*ay_selp_clear(o);*/
 	  ay_selp_ins(o, index, AY_FALSE);
 	  ay_status = ay_notify_force(o);
 	  o->modified = AY_TRUE;
@@ -1529,7 +1528,10 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 
   curve->length--;
   if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
-    return AY_EOMEM;
+    {
+      curve->length++;
+      return AY_EOMEM;
+    }
 
   /* copy controlv */
   j = 0;
@@ -1562,7 +1564,9 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
     {
       if(!(newknotv = calloc(curve->order+curve->length,
 			     sizeof(double))))
-	{ return AY_EOMEM; }
+	{
+	  return AY_EOMEM;
+	}
 
       memcpy(newknotv, curve->knotv, (curve->length)*sizeof(double));
       memcpy(&(newknotv[curve->length]),
@@ -1794,7 +1798,6 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  /*ay_selp_clear(o);*/
 	  ay_selp_rem(o, index);
 	  ay_status = ay_notify_force(o);
 	  ay_selection->object->modified = AY_TRUE;
