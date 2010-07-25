@@ -250,68 +250,77 @@ typedef struct ay_mat_object_s {
 
   /* BMRT Specific Attributes */
    /* Radiosity */
-    /* Average Color */
+    /*@{*/
+    /** Average Color */
     int avr, avg, avb, ava;
-    /* Emitted Color */
+    /*@}*/
+    /*@{*/
+    /** Emitted Color */
     int emr, emg, emb, ema;
-    /* Specular Color */
+    /*@}*/
+    /*@{*/
+    /** Specular Color */
     int spr, spg, spb, spa;
+    /*@}*/
     /* Meshing */
-    double patch_size, elem_size, min_size;
+    double patch_size; /**< radiosity meshing parameter */
+    double elem_size; /**< radiosity meshing parameter */
+    double min_size; /**< radiosity meshing parameter */
     /* Calculation */
-    int zonal; /* dontset, none, zonal_receives, zonal_shoots, full_zonal */
+    int zonal; /**< which radiosity calculations to perform?
+    (dontset, none, zonal_receives, zonal_shoots, full_zonal) */
     /* Caustics */
-    int has_caustics; /* no, yes */
+    int has_caustics; /**< calculate caustics? */
 
    /* Shadows */
-   int cast_shadows; /* Os, none, opaque, surface */
+   int cast_shadows; /**< shadow type (Os, none, opaque, surface) */
 
    /* Displacements */
-   int true_displacement; /* no, yes */
+   int true_displacement; /**< calculate true displacements? */
 
    /* Visibility */
-   int camera; /* yes, no */
-   int reflection; /* yes, no */
-   int shadow; /* yes, no */
+   int camera; /**< is visible? */
+   int reflection; /**< is visible in reflections? */
+   int shadow; /**< is visible in shadows? */
 
 } ay_mat_object;
 
 /** RenderMan interface options */
 typedef struct ay_riopt_s
 {
-  double Variance;
-  double Samples_X;
-  double Samples_Y;
-  char FilterFunc;
-  double FilterWidth;
-  double FilterHeight;
-  double ExpGain;
-  double ExpGamma;
-  double RGBA_ONE;
-  double RGBA_MIN;
-  double RGBA_MAX;
-  double RGBA_Dither;
+  double Variance; /**< maximum allowed variance of two pixel values */
+  double Samples_X; /**< number of samples taken per pixel (X dimension) */
+  double Samples_Y; /**< number of samples taken per pixel (Y dimension) */
+  char FilterFunc; /**< function used to filter final pixel values */
+  double FilterWidth; /**< size of the filter */
+  double FilterHeight; /**< size of the filter */
+  double ExpGain; /**< exposure */
+  double ExpGamma; /**< exposure gamma */
+  double RGBA_ONE; /**< quantization parameter */
+  double RGBA_MIN; /**< quantization parameter */
+  double RGBA_MAX; /**< quantization parameter */
+  double RGBA_Dither; /**< dithering parameter */
 
-  int MinSamples;
-  int MaxSamples;
-  int MaxRayLevel;
-  double ShadowBias;
-  char PRManSpec;
-  int RadSteps;
-  int PatchSamples;
+  int MinSamples; /**< minimum number of samples per pixel */
+  int MaxSamples; /**< maximum number of samples per pixel */
+  int MaxRayLevel; /**< maximum number of recursive rays */
+  double ShadowBias; /**< minimum shadow distance */
+  char PRManSpec; /**< toggles behaviour of BMRT's specular() function */
+  int RadSteps; /**< number of radiosity steps (0 - disable radiosity) */
+  int PatchSamples; /**< minimum number of radiosity samples per patch */
 
   char *textures; /**< texture search path */
   char *shaders; /**< shaders search path */
   char *archives; /**< archives search path */
   char *procedurals; /**< procedurals search path */
 
-  int texturemem;
-  int geommem;
+  int texturemem; /**< size of texture cache */
+  int geommem; /**< size of geometry cache */
 
   int width; /**< width of image in pixels */
   int height; /**< height of image in pixels */
 
-  int use_std_display;
+  int use_std_display; /**< export standard RiDisplay statement? */
 } ay_riopt;
 
 
@@ -341,9 +350,9 @@ typedef struct ay_nurbcurve_object_s
   GLUnurbsObj *no; /**< GLU NURBS object */
 
   /* stess */
-  int tesslen;
-  double *tessv;
-  int tessqf;
+  int tesslen; /**< number of points in tesselation */
+  double *tessv; /**< cached tesselation [tesslen*3] */
+  int tessqf; /**< cached tesselation quality */
 
   /* multiple points */
   int createmp; /**< create multiple points? */
@@ -410,8 +419,8 @@ typedef struct ay_nurbpatch_object_s
   int display_mode; /**< drawing mode */
 
   /* stess */
-  int tessqf;
-  ay_stess *stess;
+  int tessqf; /**< cached tesselation quality */
+  ay_stess *stess; /**< cached tesselation */
 
   /* multiple points */
   int createmp; /**< create multiple points? */
@@ -1839,7 +1848,7 @@ extern char *ay_hc_tagname;
 #include "objects.h"
 #include "contrib.h"
 
-/** \file ayam.h \brief main Ayam header */
+/** \file ayam.h Main Ayam Header */
 
 /** \mainpage Ayam
  *  This is the source level documentation of Ayam - a free 3D
