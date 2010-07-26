@@ -954,3 +954,41 @@ ay_object_count(ay_object *o)
 
  return lcount;
 } /* ay_object_count */
+
+
+/* ay_object_candelete:
+ *  
+ */
+int
+ay_object_candelete(ay_object *p, ay_object *o)
+{
+ int ay_status = AY_OK;
+ int refs;
+
+  if(!p || !o)
+    return AY_ENULL;
+
+  while(o && o->next)
+    {
+      if(o->down && o->down->next)
+	{
+	  /* recurse into children */
+	  ay_status = ay_object_candelete(p, o->down);
+
+	  /* immediately return a negative result */
+	  if(ay_status)
+	    return ay_status;
+	}
+
+      if(o->refcount)
+	{
+	  refs = 0;
+	  ay_instt_countrefs(p, o, &refs);
+	  if(o->refcount > refs)
+	    return AY_ERROR;
+	}
+      o = o->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_object_candelete */

@@ -41,6 +41,21 @@ ay_convert_force(ay_object *o, int in_place)
  ay_voidfp *arr = NULL;
  ay_convertcb *cb = NULL;
 
+  if(!o)
+    return AY_ENULL;
+
+  if(in_place && o->down && o->down->next)
+    {
+      ay_status = ay_object_candelete(o->down, o->down);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname,
+		   "Can not remove children, conversion failed!");
+	  return AY_ERROR;
+	}
+    }
+
   /* call the conversion callback */
   arr = ay_convertcbt.arr;
   cb = (ay_convertcb *)(arr[o->type]);

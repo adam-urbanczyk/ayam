@@ -308,6 +308,10 @@ int ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r);
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
+/** find instances of a master and count them
+ */
+int ay_instt_countrefs(ay_object *o, ay_object *m, int *refs);
+
 /** initialize instance tool module
  */
 void ay_instt_init(Tcl_Interp *interp);
@@ -544,10 +548,14 @@ int ay_object_deleteinstances(ay_object **o);
  */
 int ay_object_replace(ay_object *src, ay_object *dst);
 
-
 /** count objects beneath o
  */
 unsigned int ay_object_count(ay_object *o);
+
+
+/** can objects in <o> be deleted?
+ */
+int ay_object_candelete(ay_object *p, ay_object *o);
 
 
 /* otype.c */
