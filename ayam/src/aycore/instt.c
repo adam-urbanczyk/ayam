@@ -1009,7 +1009,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(o->type != AY_IDINSTANCE)
     {
-      ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
+      ay_error(AY_EWTYPE, argv[0], "Instance");
       return TCL_OK;
     }
 
@@ -1048,8 +1048,9 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_instt_countrefs:
- *  in the list of objects <o> search for instances of master <m>
- *  and count them in <refs>
+ *  _recursively_ search for instances of master <m>
+ *  in the list of objects <o> (and all their children)
+ *  and count all found references in <refs>
  */
 int
 ay_instt_countrefs(ay_object *o, ay_object *m, int *refs)
