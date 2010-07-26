@@ -1047,6 +1047,40 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_instt_getmastertcmd */
 
 
+/* ay_instt_countrefs:
+ *  in the list of objects <o> search for instances of master <m>
+ *  and count them in <refs>
+ */
+int
+ay_instt_countrefs(ay_object *o, ay_object *m, int *refs)
+{
+ int ay_status = AY_OK;
+
+  if(!o || !m || !refs)
+    return AY_ENULL;
+
+  while(o && o->next)
+    {
+      if(o->down && o->down->next)
+	{
+	  ay_status = ay_instt_countrefs(o->down, m, refs);
+	  if(ay_status)
+	    return ay_status;
+	}
+      if(o->type == AY_IDINSTANCE)
+	{
+	  if(o->refine == m)
+	    {
+	      *refs = *refs + 1;
+	    }
+	}
+      o = o->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_instt_countrefs */
+
+
 /* ay_instt_init:
  *  initialize instt module
  */
