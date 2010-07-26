@@ -957,7 +957,10 @@ ay_object_count(ay_object *o)
 
 
 /* ay_object_candelete:
- *  
+ *  _recursively_ check, whether there are referenced/master objects
+ *  in the object hierarchy <p>/<o> and whether any references/instances
+ *  of those masters are _not_ in this hierarchy. If this is the case,
+ *  <o> must not be deleted.
  */
 int
 ay_object_candelete(ay_object *p, ay_object *o)

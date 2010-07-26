@@ -1013,8 +1013,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
       ay_status = ay_nct_close(curve);
     }
   else
-    { /* curve is not closed */
-
+    {
+      /* curve is not periodic */
       curve->length++;
       if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
 	{
@@ -1030,8 +1030,8 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 		 4*sizeof(double));
 
 	  if((i == curve->length-2) && !inserted)
-	    { /* the new point is the new last point */
-
+	    {
+	      /* the new point is the new last point */
 	      k = (curve->length-1)*4;
 	      j *= 4;
 	      newcontrolv[k] = curve->controlv[j] +
