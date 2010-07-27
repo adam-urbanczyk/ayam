@@ -10,7 +10,7 @@
  *
  */
 
-/* x3dio.cpp - Ayam X3D Import/Export Plugin based on Expat/SCEW */
+/** \file x3dio.c Ayam X3D Import/Export Plugin based on Expat/SCEW */
 
 /* Ayam includes: */
 #include "ayam.h"
@@ -23,13 +23,15 @@
 
 /* local types: */
 
+/** transformation stack */
 typedef struct x3dio_trafostate_s {
-  struct x3dio_trafostate_s *next;
+  struct x3dio_trafostate_s *next; /**< next state in stack */
 
-  double m[16];
+  double m[16]; /**< 4x4 transformation matrix */
 
 } x3dio_trafostate;
 
+/** X3D export callback type */
 typedef int (x3dio_writecb) (scew_element *element, ay_object *o);
 
 
@@ -4676,11 +4678,11 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	  /* create endlevel object */
 	  if(x3dio_lrobject)
 	    {
-	      ay_object_crtendlevel(&(x3dio_lrobject->next));
+	      x3dio_lrobject->next = ay_endlevel;
 	    }
 	  else
 	    {
-	      ay_object_crtendlevel(&(o->down));
+	      o->down = ay_endlevel;
 	    }
 
 	  /* rescale knots to safe distance? */
@@ -4724,8 +4726,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	}
       else
 	{
-	  /* just create endlevel object */
-	  ay_object_crtendlevel(&(x3dio_lrobject->down));
+	  x3dio_lrobject->down = ay_endlevel;
 	} /* if */
     } /* if */
 
@@ -4843,8 +4844,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
 
   /* reset old transformation state */
   x3dio_ctrafos = old_state;
-
-  ay_object_crtendlevel(ay_next);
+  *ay_next = ay_endlevel;
   ay_next = old_aynext;
   ay_object_link(o);
 
@@ -4937,8 +4937,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
 
   /* reset old transformation state */
   x3dio_ctrafos = old_state;
-
-  ay_object_crtendlevel(ay_next);
+  *ay_next = ay_endlevel;
   ay_next = old_aynext;
   ay_object_link(o);
 
@@ -5285,8 +5284,7 @@ int x3dio_readcadelement(scew_element *element, int type)
       if(ay_status == AY_EDONOTLINK)
 	break;
     }
-
-  ay_object_crtendlevel(ay_next);
+  *ay_next = ay_endlevel;
   ay_next = old_aynext;
   ay_object_link(o);
 
@@ -5605,7 +5603,7 @@ x3dio_readtransform(scew_element *element)
   /* properly close level */
   if(need_level)
     {
-      ay_object_crtendlevel(ay_next);
+      *ay_next = ay_endlevel;
       ay_next = old_aynext;
       ay_object_link(o);
       /* read shape name from DEF */
@@ -5663,7 +5661,7 @@ x3dio_readshape(scew_element *element)
     {
       /* read more than one geometric element */
       /* => keep level */
-      ay_object_crtendlevel(ay_next);
+      *ay_next = ay_endlevel;
       ay_next = old_aynext;
       ay_object_link(o);
       /* read shape name from DEF */
@@ -9422,9 +9420,9 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* x3dio_writetcmd */
 
 
-/* X_Init:
- *  initialize the x3dio plugin
- *  note: this function _must_ be named and capitalized exactly this way
+/** X_Init:
+ *  Initialize the x3dio plugin.\ \n
+ *  Note: this function _must_ be named and capitalized exactly this way
  *  regardless of the filename of the shared object (see: man n load)!
  */
 #ifdef WIN32
