@@ -863,7 +863,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
 	      if(!new->down)
-		ay_object_crtendlevel(&(new->down));
+		new->down = ay_endlevel;
 
 	      ay_object_link(new);
 	    } /* if */
@@ -872,8 +872,9 @@ ay_text_convertcb(ay_object *o, int in_place)
     }
   else
     {
-      ay_object_crtendlevel(&l);
-      l->parent = AY_TRUE;
+      ay_status = ay_object_create(AY_IDLEVEL, &l);
+      if(ay_status)
+	{ return AY_ERROR; }
       level = (ay_level_object *)(l->refine);
       level->type = AY_LTLEVEL;
       next = &(l->down);
@@ -891,7 +892,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	      new->hide_children = AY_TRUE;
 	      new->parent = AY_TRUE;
 	      if(!new->down)
-		ay_object_crtendlevel(&(new->down));
+		new->down = ay_endlevel;
 
 	      *next = new;
 	      next = &(new->next);
@@ -901,7 +902,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
-	  ay_object_crtendlevel(next);
+	  *next = ay_endlevel;
 	  ay_object_replace(l, o);
 	}
       else
@@ -957,7 +958,7 @@ ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      new->parent = AY_TRUE;
 	      if(!new->down)
 		{
-		  ay_object_crtendlevel(&(new->down));
+		  new->down = ay_endlevel;
 		}
 	      *t = new;
 	      t = &(new->next);

@@ -174,7 +174,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
       if(!c->next)
 	{
-	  ay_object_crtendlevel(&(c->next));
+	  c->next = ay_endlevel;
 	  c = NULL;
 	}
       else

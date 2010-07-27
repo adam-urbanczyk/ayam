@@ -892,11 +892,11 @@ ay_extrude_notifycb(ay_object *o)
 		{
 		  tloop = tloop->next;
 		}
-	      ay_status = ay_object_crtendlevel(&(tloop->next));
+	      tloop->next = ay_endlevel;
 	    }
 	  else
 	    {
-	      ay_status = ay_object_crtendlevel(&(bevel->down));
+	      bevel->down = ay_endlevel;
 	    }
 
 	  ((ay_nurbpatch_object *)bevel->refine)->
@@ -956,7 +956,7 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      return AY_ERROR;
 	    }
 	  ay_trafo_copy(o, *t);
-	  ay_object_crtendlevel(&(*t)->down);
+	  (*t)->down = ay_endlevel;
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -1026,7 +1026,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 
 	  if(*next)
 	    {
-	      ay_object_crtendlevel(&(*next)->down);
+	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
 	    }
 
@@ -1037,7 +1037,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	      if(*next)
 		{
 		  (*next)->parent = AY_TRUE;
-		  ay_object_crtendlevel(&(*next)->down);
+		  (*next)->down = ay_endlevel;
 		  next = &((*next)->next);
 		}
 	      p = p->next;
@@ -1060,8 +1060,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
-
-      ay_object_crtendlevel(next);
+      *next = ay_endlevel;
     }
   else
     {
@@ -1071,7 +1070,7 @@ ay_extrude_convertcb(ay_object *o, int in_place)
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
-	  ay_object_crtendlevel(&(new->down));
+	  new->down = ay_endlevel;
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);

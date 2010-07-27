@@ -603,9 +603,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
   ((ay_nurbcurve_object *)(trim->refine))->display_mode =
     nc->display_mode;
 
-  ay_status = ay_object_crtendlevel(&(trim->next));
-  if(ay_status)
-    {goto cleanup;}
+  trim->next = ay_endlevel;
 
   if(fabs(revolve->thetamax) != 360.0)
     {
@@ -678,9 +676,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	    {
 	      tloop = tloop->next;
 	    }
-	  ay_status = ay_object_crtendlevel(&(tloop->next));
-	  if(ay_status)
-	    {goto cleanup;}
+	  tloop->next = ay_endlevel;
 	}
 
 
@@ -936,9 +932,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	}
     } /* if !closed */
 
-  ay_status = ay_object_crtendlevel(&(trim->next));
-  if(ay_status)
-    {goto cleanup;}
+  trim->next = ay_endlevel;
 
   if(!closed)
     {
@@ -1026,9 +1020,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 	    {
 	      tloop = tloop->next;
 	    }
-	  ay_status = ay_object_crtendlevel(&(tloop->next));
-	  if(ay_status)
-	    {goto cleanup;}
+	  tloop->next = ay_endlevel;
 	}
     } /* if !closed */
 
@@ -1337,7 +1329,7 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 	    {
 	      (*next)->hide_children = AY_TRUE;
 	      (*next)->parent = AY_TRUE;
-	      ay_object_crtendlevel(&(*next)->down);
+	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
 	    }
 	} /* if */
@@ -1372,8 +1364,7 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
-
-      ay_object_crtendlevel(next);
+      *next = ay_endlevel;
     }
   else
     {
@@ -1383,7 +1374,7 @@ ay_revolve_convertcb(ay_object *o, int in_place)
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
-	  ay_object_crtendlevel(&(new->down));
+	  new->down = ay_endlevel;
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);
