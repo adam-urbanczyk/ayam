@@ -684,12 +684,7 @@ ay_read_object(FILE *fileptr)
 
   if(o->parent && (!o->down))
     {
-      ay_status = ay_object_crtendlevel(&(o->down));
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname,
-	"Could not create terminating level object, scene is corrupt now!");
-	}
+      o->down = ay_endlevel;
     }
 
   ay_status = ay_object_link(o);

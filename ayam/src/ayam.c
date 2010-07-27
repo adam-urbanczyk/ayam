@@ -24,6 +24,9 @@ ay_preferences ay_prefs = {0};
 /* pointer to the root object */
 ay_object *ay_root;
 
+/* pointer to the endlevel object */
+ay_object *ay_endlevel;
+
 /* pointer to slot where the next object will be linked to */
 ay_object **ay_next;
 
@@ -489,10 +492,9 @@ ay_init(Tcl_Interp *interp)
   /* create terminating level object in current level */
   if((ay_status = ay_object_create(AY_IDLEVEL, &ay_root->next)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
-
+  ay_endlevel = ay_root->next;
   /* create terminating level object in views level */
-  if((ay_status = ay_object_create(AY_IDLEVEL, &ay_root->down)))
-    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+  ay_root->down = ay_root->next;
 
   ay_next = &(ay_root->next);
 
