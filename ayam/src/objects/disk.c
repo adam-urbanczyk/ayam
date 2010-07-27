@@ -489,10 +489,7 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
-
-      ay_status = ay_object_crtendlevel(&(new->down));
-      if(ay_status)
-	goto cleanup;
+      new->down = ay_endlevel;
 
       ay_trafo_copy(o, new);
       new->refine = np;

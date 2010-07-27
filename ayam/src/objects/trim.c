@@ -340,7 +340,7 @@ ay_trim_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_trim_object *trim = NULL;
  ay_object *down = NULL, *npatch = NULL, *ncurve = NULL;
- ay_object **next = NULL, *endlevel = NULL;
+ ay_object **next = NULL;
  int i = 0;
 
   if(!o)
@@ -370,11 +370,6 @@ ay_trim_notifycb(ay_object *o)
     {
       trim->npatch = npatch;
 
-      if(!npatch->down)
-	{
-	  ay_object_crtendlevel(&(npatch->down));
-	}
-
       while(npatch && (i < trim->patchnum))
 	{
 	  npatch = npatch->next;
@@ -384,16 +379,14 @@ ay_trim_notifycb(ay_object *o)
 	{
 	  down = down->next;
 
-	  /* find and save endlevel object */
+	  /* copy new trim curves to patch object */
 	  next = &(npatch->down);
+
 	  while((*next)->next)
 	    {
 	      next = &((*next)->next);
 	    }
 
-	  endlevel = *next;
-
-	  /* copy new trim curves to patch object */
 	  while(down->next)
 	    {
 	      ncurve = NULL;
@@ -406,8 +399,7 @@ ay_trim_notifycb(ay_object *o)
 	      down = down->next;
 	    } /* while */
 
-	  /* append saved endlevel object */
-	  *next = endlevel;
+	  *next = ay_endlevel;
 	} /* if */
     } /* if */
 
@@ -522,8 +514,7 @@ ay_trim_convertcb(ay_object *o, int in_place)
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
-
-      ay_object_crtendlevel(next);
+      *next = ay_endlevel;
     }
 
   /* second, link new objects, or replace old objects with them */

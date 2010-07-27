@@ -451,7 +451,7 @@ ay_offnp_notifycb(ay_object *o)
     }
   else
     {
-      ay_object_crtendlevel(&(newo->down));
+      newo->down = ay_endlevel;
     }
 
   /* copy sampling tolerance/mode over to new object */

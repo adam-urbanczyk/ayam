@@ -547,7 +547,7 @@ ay_bevel_convertcb(ay_object *o, int in_place)
       ay_trafo_copy(o, new);
       new->hide_children = AY_TRUE;
       new->parent = AY_TRUE;
-      ay_object_crtendlevel(&(new->down));
+      new->down = ay_endlevel;
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new);

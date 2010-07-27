@@ -700,8 +700,8 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
+      new->down = ay_endlevel;
 
-      ay_status = ay_object_crtendlevel(&(new->down));
       if(ay_status)
 	goto cleanup;
 
@@ -818,7 +818,7 @@ ay_cone_convertcb(ay_object *o, int in_place)
 	{
 	  t = t->next;
 	}
-      ay_status = ay_object_crtendlevel(&(t->next));
+      t->next = ay_endlevel;
     }
   else
     {

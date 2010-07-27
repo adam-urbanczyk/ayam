@@ -1065,8 +1065,7 @@ ay_script_notifycb(ay_object *o)
 	      down = down->next;
 	    }
 	  o->down = down;
-
-	  ay_object_crtendlevel(&(last->next));
+	  last->next = ay_endlevel;
 	}
 
       /* restore old selection */

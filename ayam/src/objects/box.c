@@ -510,10 +510,7 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
-
-      ay_status = ay_object_crtendlevel(&(new->down));
-      if(ay_status)
-	goto cleanup;
+      new->down = ay_endlevel;
 
       ay_trafo_copy(o, new);
       new->refine = np;
@@ -609,7 +606,7 @@ ay_box_convertcb(ay_object *o, int in_place)
     {
       t = t->next;
     }
-  ay_status = ay_object_crtendlevel(&(t->next));
+  t->next = ay_endlevel;
 
   /* second, link new objects, or replace old object with them */
 

@@ -788,10 +788,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
-
-      ay_status = ay_object_crtendlevel(&(new->down));
-      if(ay_status)
-	goto cleanup;
+      new->down = ay_endlevel;
 
       new->refine = np;
 
@@ -942,7 +939,7 @@ ay_hyperboloid_convertcb(ay_object *o, int in_place)
 	{
 	  t = t->next;
 	}
-      ay_status = ay_object_crtendlevel(&(t->next));
+      t->next = ay_endlevel;
     }
   else
     {
