@@ -673,7 +673,7 @@ dxfio_readinsert(const class dimeState *state,
 		  ay_status = dxfio_readentitydcb(state, entity, clientdata);
 		} // for
 	      // terminate level hierarchy
-	      ay_object_crtendlevel(ay_next);
+	      *ay_next = ay_endlevel;
 	      // reset ay_next
 	      ay_next = old_aynext;
 	      newb->object = newo;
@@ -2847,3 +2847,5 @@ Dxfio_Init(Tcl_Interp *interp)
 } /* Dxfio_Init */
 
 } // extern "C"
+
+/*! \file dxfio.cpp \brief DXF Import/Export Plugin */

@@ -2364,8 +2364,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
   newo->parent = AY_TRUE;
   newo->hide_children = AY_TRUE;
   newo->inherit_trafos = AY_FALSE;
-
-  ay_object_crtendlevel(&(newo->down));
+  newo->down = ay_endlevel;
 
   // link the new patch into the scene hierarchy
   ay_status = ay_object_link(newo);
@@ -2617,8 +2616,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       olo->refine = level;
       olo->parent = AY_TRUE;
       olo->inherit_trafos = AY_TRUE;
-
-      ay_status = ay_object_crtendlevel(&(olo->down));
+      olo->down = ay_endlevel;
 
       ay_status = ay_object_link(olo);
 
@@ -2707,8 +2705,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      lo->refine = level;
 	      lo->parent = AY_TRUE;
 	      lo->inherit_trafos = AY_TRUE;
-
-	      ay_status = ay_object_crtendlevel(&(lo->down));
+	      lo->down = ay_endlevel;
 
 	      ay_status = ay_object_link(lo);
 
@@ -3260,7 +3257,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
   newo->inherit_trafos = AY_TRUE;
   newo->parent = AY_TRUE;
   newo->refine = newlevel;
-  ay_status = ay_object_crtendlevel(&(newo->down));
+  newo->down = ay_endlevel;
 
   ay_status = ay_object_link(newo);
 
