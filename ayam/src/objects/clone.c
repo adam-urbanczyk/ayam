@@ -1056,7 +1056,7 @@ ay_clone_convertcb(ay_object *o, int in_place)
   while(*next)
     next = &((*next)->next);
 
-  ay_status = ay_object_crtendlevel(next);
+  *next = ay_endlevel;
 
   /* second, link new objects, or replace old objects with them */
 
