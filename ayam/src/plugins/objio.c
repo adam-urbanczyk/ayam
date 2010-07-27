@@ -10,7 +10,7 @@
  *
  */
 
-/* objio.c - Wavefront OBJ Input/Output module */
+/* \file objio.c Wavefront OBJ Input/Output plugin */
 
 #include "ayam.h"
 #include <ctype.h>
@@ -3205,7 +3205,7 @@ objio_readtrim(char *str, int hole)
   /* repair nexttrim pointer? */
   if(tcount > 1)
     {
-      ay_object_crtendlevel(objio_nexttrim);
+      *objio_nexttrim = ay_endlevel;
       objio_nexttrim = &(l->next);
     }
 
@@ -3415,9 +3415,7 @@ objio_readend(void)
       if(objio_trims)
 	{
 	  /* properly terminate the list of trims */
-	  ay_status = ay_object_crtendlevel(objio_nexttrim);
-	  if(ay_status)
-	    goto cleanup;
+	  *objio_nexttrim = ay_endlevel;
 	  o->down = objio_trims;
 
 	  /* check for simple trim, if it is the only one */
@@ -3433,9 +3431,7 @@ objio_readend(void)
 	      if(is_bound)
 		{
 		  ay_object_deletemulti(objio_trims);
-		  ay_status = ay_object_crtendlevel(&(o->down));
-		  if(ay_status)
-		    goto cleanup;
+		  o->down = ay_endlevel;
 		}
 	    } /* if */
 	  objio_trims = NULL;
@@ -3443,7 +3439,7 @@ objio_readend(void)
 	}
       else
 	{
-	  ay_status = ay_object_crtendlevel(&(o->down));
+	  o->down = ay_endlevel;
 	} /* if */
 
       /* rescale knot vectors */
