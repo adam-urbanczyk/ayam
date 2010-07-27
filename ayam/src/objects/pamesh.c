@@ -1330,8 +1330,7 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
     }
   else
     {
-      ay_object_crtendlevel(&l);
-      l->parent = AY_TRUE;
+      ay_status = ay_object_create(AY_IDLEVEL, &l);
       level = (ay_level_object *)(l->refine);
       level->type = AY_LTLEVEL;
       next = &(l->down);
@@ -1354,7 +1353,7 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
-	  ay_object_crtendlevel(next);
+	  *next = ay_endlevel;
 	  ay_object_replace(l, o);
 	}
       else
