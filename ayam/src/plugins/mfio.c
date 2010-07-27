@@ -1467,11 +1467,11 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 
   if(!(newo = calloc(1, sizeof(ay_object))))
     { free(newl); return AY_EOMEM; }
+  ay_object_defaults(newo);
 
   newo->refine = newl;
-
   newo->type = AY_IDLEVEL;
-  ay_object_defaults(newo);
+  newo->down = ay_endlevel;
 
   ay_mfio_lastreadobject = newo;
 
@@ -1480,8 +1480,6 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
   ay_clevel_add(newo);
 
   ay_next = &(newo->down);
-
-  ay_status = ay_object_crtendlevel(ay_next);
 
   ay_clevel_add(newo->down);
 
@@ -1558,8 +1556,7 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
   if(mfio_readingtrims == 1)
     {
       mfio_readingtrims = 0;
-
-      ay_status = ay_object_crtendlevel(ay_next);
+      *ay_next = ay_endlevel;
 
       ay_mfio_lastreadobject = ay_currentlevel->object;
       if(ay_currentlevel && ay_currentlevel->next)
@@ -1586,8 +1583,7 @@ ay_mfio_readecntr(MF3DVoidObjPtr object)
 		  if(is_bound)
 		    {
 		      ay_object_deletemulti(ay_mfio_trimmedpatch->down);
-		      ay_status = ay_object_crtendlevel(
-					       &(ay_mfio_trimmedpatch->down));
+		      ay_mfio_trimmedpatch->down = ay_endlevel;
 		    }
 		} /* if */
 
