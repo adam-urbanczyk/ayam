@@ -1444,7 +1444,7 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
 		{
 		  while(tmp->next)
 		    tmp = tmp->next;
-		  ay_object_crtendlevel(&(tmp->next));
+		  tmp->next = ay_endlevel;
 		} // if
 	    } // if
 	} // if
