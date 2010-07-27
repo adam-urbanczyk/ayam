@@ -665,10 +665,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
       new->inherit_trafos = AY_FALSE;
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
-
-      ay_status = ay_object_crtendlevel(&(new->down));
-      if(ay_status)
-	goto cleanup;
+      new->down = ay_endlevel;
 
       majorrad = torus->majorrad;
       minorrad = torus->minorrad;
@@ -806,9 +803,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      newp->inherit_trafos = AY_FALSE;
 	      newp->parent = AY_TRUE;
 	      newp->hide_children = AY_TRUE;
-
-	      if((ay_status = ay_object_crtendlevel(&(newp->down))))
-		goto cleanup;
+	      newp->down = ay_endlevel;
 
 	      ay_trafo_copy(new, newp);
 
@@ -927,7 +922,7 @@ ay_torus_convertcb(ay_object *o, int in_place)
 	{
 	  t = t->next;
 	}
-      ay_status = ay_object_crtendlevel(&(t->next));
+      t->next = ay_endlevel;
     }
   else
     {
