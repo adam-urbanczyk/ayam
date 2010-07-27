@@ -48,7 +48,7 @@ ay_toglcb_create(struct Togl *togl)
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
 
-  ay_object_crtendlevel(&(o->down));
+  o->down = ay_endlevel;
 
   /* link object (manually, not via ay_object_link())
      as child to ay_root */

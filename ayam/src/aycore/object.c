@@ -15,7 +15,7 @@
 /* object.c - general object management*/
 
 /* ay_object_defaults:
- *  reset object attributes of ay_object *o to save default settings
+ *  reset object attributes of ay_object <o> to safe default settings
  */
 void
 ay_object_defaults(ay_object *o)
@@ -166,16 +166,10 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* for objects that may have children that do not have
-     a child already create an EndLevel object */
+  /* for potential parent objects, create endlevel terminator */
   if(o->parent && (!o->down))
     {
-      ay_status = ay_object_crtendlevel(&(o->down));
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, argv[0],
-           "Could not create terminating level object, scene is corrupt now!");
-	}
+      o->down = ay_endlevel;
     }
 
   /* link object to scene structure */
@@ -204,8 +198,11 @@ ay_object_delete(ay_object *o)
   if(o->refcount > 0)
     return AY_EREF;
 
+  if(o == ay_endlevel)
+    return AY_OK;
+
   /* delete children first */
-  if(o->down)
+  if(o->down && (o->down != ay_endlevel))
     {
       down = o->down;
       while(down)
@@ -354,7 +351,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_object_deletetcmd */
-
 
 
 /* ay_object_link:
@@ -542,7 +538,8 @@ ay_object_copy(ay_object *src, ay_object **dst)
 {
  int ay_status = AY_OK;
  char fname[] = "object_copy";
- ay_object *sub = NULL, *sub2 = NULL, *temp = NULL, *new = NULL;
+ ay_object *sub = NULL, *new = NULL;
+ ay_object **next = NULL;
  ay_voidfp *arr = NULL;
  ay_copycb *cb = NULL;
  ay_mat_object *mat = NULL;
@@ -550,6 +547,12 @@ ay_object_copy(ay_object *src, ay_object **dst)
 
   if(!src || !dst)
     return AY_ENULL;
+
+  /* refuse to copy the endlevel terminator */
+  if(src == ay_endlevel)
+    {
+      *dst = ay_endlevel;
+    }
 
   /* copy generic object */
   if(!(new = calloc(1, sizeof(ay_object))))
@@ -561,7 +564,8 @@ ay_object_copy(ay_object *src, ay_object **dst)
   /* danger! links point to original hierarchy */
 
   new->next = NULL;
-  new->down = NULL;
+  if(src->down != ay_endlevel)
+    new->down = NULL;
   new->selp = NULL;
   new->tags = NULL;
 
@@ -604,26 +608,19 @@ ay_object_copy(ay_object *src, ay_object **dst)
     }
 
   /* copy children */
-  if(src->down)
+  if(src->down && src->down != ay_endlevel)
     {
       sub = src->down;
-
-      if((ay_status = ay_object_copy(sub, &new->down)))
-	return ay_status;
-      temp = new->down;
-      sub = sub->next;
-
+      next = &(new->down);
       while(sub)
 	{
-	  sub2 = sub->next;
-	  if((ay_status = ay_object_copy(sub, &temp->next)))
+	  if((ay_status = ay_object_copy(sub, next)))
 	    return ay_status;
-	  temp = temp->next;
+	  next = &((*next)->next);
 
-	  sub = sub2;
+	  sub = sub->next;
 	} /* while */
-
-    } /* if */
+    }
 
   new->modified = AY_TRUE;
   new->selected = AY_FALSE;
@@ -669,7 +666,7 @@ int
 ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
- ay_object *o = NULL, *d = NULL;
+ ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
 
   if(!sel)
@@ -686,8 +683,7 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      d = o->down;
-      if(d->next)
+      if(o->down != ay_endlevel)
 	{
 	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
 	}
@@ -796,34 +792,8 @@ ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_object_crtendlevel(ay_object **o)
 {
- int ay_status = AY_OK;
- char fname[] = "object_crtendlevel";
- ay_object *new = NULL;
- ay_level_object *l = NULL;
-
-  if(!(new = calloc(1, sizeof(ay_object))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
-
-  ay_object_defaults(new);
-
-  new->type = AY_IDLEVEL;
-
-  if(!(l = calloc(1, sizeof(ay_level_object))))
-    {
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
-
-  l->type = AY_LTEND;
-
-  new->refine = l;
-
-  *o = new;
-
- return ay_status;
+ *o = ay_endlevel;
+ return AY_OK;
 } /* ay_object_crtendlevel */
 
 
@@ -845,7 +815,7 @@ ay_object_deleteinstances(ay_object **o)
   last = o;
   while(co)
     {
-      if(co->down)
+      if(co->down && co->down->next)
 	{
 	  ay_status = ay_object_deleteinstances(&(co->down));
 	} /* if */
@@ -892,7 +862,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
   oldrefcount = dst->refcount;
   oldnext = dst->next;
 
-  if(dst->down)
+  if(dst->down && dst->down->next)
     {
       ay_object_deletemulti(dst->down);
     }

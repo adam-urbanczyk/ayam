@@ -1410,6 +1410,9 @@ extern ay_preferences ay_prefs;
 /** pointer to the root object */
 extern ay_object *ay_root;
 
+/** pointer to the terminating end level object */
+extern ay_object *ay_endlevel;
+
 /** pointer to pointer (pointer to some objects ->next or ->down slot) where
     the next object will be linked to */
 extern ay_object **ay_next;
