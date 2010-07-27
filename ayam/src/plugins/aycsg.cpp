@@ -1429,7 +1429,8 @@ aycsg_copytree(int sel_only, ay_object *t, int *is_csg, ay_object **target)
       ay_status = AY_OK;
 
       // we just descend into non-empty level objects (and NURBS patches)
-      if(((t->type == AY_IDLEVEL) || (t->type == AY_IDNPATCH)) && (t->down))
+      if(((t->type == AY_IDLEVEL) || (t->type == AY_IDNPATCH)) && t->down &&
+	 t->down->next)
 	{
 	  // descend
 	  ay_status = aycsg_copytree(AY_FALSE,
@@ -1543,13 +1544,15 @@ aycsg_cleartree(ay_object *t)
 
   while(t)
     {
-      if(t->type == AY_IDLEVEL && t->down)
+      if(((t->type == AY_IDLEVEL) || (t->type == AY_IDNPATCH)) && t->down
+	 && t->down->next)
 	{
 	  aycsg_cleartree(t->down);
 	} // if
 
       temp = t->next;
-      free(t);
+      if(t != ay_endlevel)
+	free(t);
       t = temp;
     } // while
 
