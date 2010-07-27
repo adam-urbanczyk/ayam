@@ -963,7 +963,7 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	   return;
 	 ((ay_level_object *)(level->refine))->type = AY_LTLEVEL;
 
-	 ay_status = ay_object_crtendlevel(&(level->down));
+	 level->down = ay_endlevel;
 	 ncinloop = &(level->down);
 
 
@@ -1204,13 +1204,7 @@ ay_rrib_RiLightSource(RtToken name,
     }
 
   ay_rrib_co.parent = AY_TRUE;
-  ay_status = ay_object_crtendlevel(&(ay_rrib_co.down));
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname,
-	   "Could not create terminating level object, scene is corrupt now!");
-    }
-
+  ay_rrib_co.down = ay_endlevel;
   ay_rrib_co.refine = (void *)(&l);
   ay_rrib_co.type = AY_IDLIGHT;
 
@@ -5414,12 +5408,12 @@ ay_rrib_linkobject(void *object, int type)
 		{
 		  t = t->next;
 		}
-	      ay_status = ay_object_crtendlevel(&(t->next));
+	      t->next = ay_endlevel;
 	      endlevel = &(t->next);
 	    }
 	  else
 	    {
-	      ay_status = ay_object_crtendlevel(&(ay_rrib_co.down));
+	      ay_rrib_co.down = ay_endlevel;
 	      endlevel = &(ay_rrib_co.down);
 	    }
 	} /* if */
@@ -5433,12 +5427,7 @@ ay_rrib_linkobject(void *object, int type)
 
   if(ay_rrib_co.parent && (!ay_rrib_co.down))
     {
-      ay_status = ay_object_crtendlevel(&(ay_rrib_co.down));
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, fname,
-          "Could not create terminating level object, scene is corrupt now!");
-	} /* if */
+      ay_rrib_co.down = ay_endlevel;
     } /* if */
 
   if(!ay_rrib_level)
@@ -5780,7 +5769,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  if(!(n->name = calloc(10, sizeof(ay_object))))
+	  if(!(n->name = calloc(11, sizeof(char))))
 	    {
 	      free(n);
 	      ay_error(AY_EOMEM, argv[0], NULL);
@@ -5795,9 +5784,8 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
-	  ay_status = ay_object_crtendlevel(&(n->down));
 	  l->type = AY_LTLEVEL;
-
+	  n->down = ay_endlevel;
 	  n->type = AY_IDLEVEL;
 	  ay_object_defaults(n);
 	  n->parent = AY_TRUE;
