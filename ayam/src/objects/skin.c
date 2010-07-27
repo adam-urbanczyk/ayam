@@ -787,7 +787,7 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       (*t)->hide_children = AY_TRUE;
       (*t)->parent = AY_TRUE;
-      ay_object_crtendlevel(&(*t)->down);
+      (*t)->down = ay_endlevel;
 
       t = &((*t)->next);
 
@@ -858,7 +858,7 @@ ay_skin_convertcb(ay_object *o, int in_place)
 	    {
 	      (*next)->hide_children = AY_TRUE;
 	      (*next)->parent = AY_TRUE;
-	      ay_object_crtendlevel(&(*next)->down);
+	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
 	    }
 	}
@@ -880,7 +880,7 @@ ay_skin_convertcb(ay_object *o, int in_place)
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
 
-      ay_object_crtendlevel(next);
+      *next = ay_endlevel;
     }
   else
     {
@@ -890,7 +890,7 @@ ay_skin_convertcb(ay_object *o, int in_place)
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
-	  ay_object_crtendlevel(&(new->down));
+	  new->down = ay_endlevel;
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);

@@ -2780,7 +2780,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!parent)
 	    {
 	      sel->object->down = o;
-	      ay_object_crtendlevel(&(o->next));
+	      o->next = ay_endlevel;
 	    }
 	  else
 	    {

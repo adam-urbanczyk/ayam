@@ -537,7 +537,7 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
       cv[i+2] = 0.0;
     }
 
-  ay_status = ay_object_crtendlevel(&(curve->next));
+  curve->next = ay_endlevel;
   cap->down = curve;
 
   if(ay_nct_isclosed(nc) == AY_FALSE)
@@ -613,11 +613,11 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
 	    {
 	      tloop = tloop->next;
 	    }
-	  ay_status = ay_object_crtendlevel(&(tloop->next));
+	  tloop->next = ay_endlevel;
 	}
       else
 	{
-	  ay_status = ay_object_crtendlevel(&(trim->down));
+	  trim->down = ay_endlevel;
 	}
 
     } /* if */
@@ -831,7 +831,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       cv[i+2] = 0.0;
     }
 
-  ay_status = ay_object_crtendlevel(&(curve->next));
+  curve->next = ay_endlevel;
   cap->down = curve;
 
   /* create another trimcurve to close the loop */
@@ -931,11 +931,11 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 	{
 	  tloop = tloop->next;
 	}
-      ay_status = ay_object_crtendlevel(&(tloop->next));
+      tloop->next = ay_endlevel;
     }
   else
     {
-      ay_status = ay_object_crtendlevel(&(trim->down));
+      trim->down = ay_endlevel;
     }
 
   /* return result */
@@ -1267,7 +1267,7 @@ ay_swing_convertcb(ay_object *o, int in_place)
 	    {
 	      (*next)->hide_children = AY_TRUE;
 	      (*next)->parent = AY_TRUE;
-	      ay_object_crtendlevel(&(*next)->down);
+	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
 	    }
 	} /* if */
@@ -1302,8 +1302,7 @@ ay_swing_convertcb(ay_object *o, int in_place)
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
-
-      ay_object_crtendlevel(next);
+      *next = ay_endlevel;
     }
   else
     {
@@ -1313,7 +1312,7 @@ ay_swing_convertcb(ay_object *o, int in_place)
 	  ay_trafo_copy(o, new);
 	  new->hide_children = AY_TRUE;
 	  new->parent = AY_TRUE;
-	  ay_object_crtendlevel(&(new->down));
+	  new->down = ay_endlevel;
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);

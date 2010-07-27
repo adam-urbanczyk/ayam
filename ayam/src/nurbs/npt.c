@@ -1382,14 +1382,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
   ay_object_defaults(o);
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
-
-  ay_status = ay_object_crtendlevel(&(o->down));
-  if(ay_status)
-    {
-      free(o);
-      ay_error(ay_status, argv[0], NULL);
-      return TCL_OK;
-    }
+  o->down = ay_endlevel;
 
   ay_status = ay_npt_crtnsphere(radius, (ay_nurbpatch_object **)&(o->refine));
   if(ay_status)
@@ -1441,7 +1434,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       ay_object_defaults(new);
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
-      ay_status = ay_object_crtendlevel(&(new->down));
+      new->down = ay_endlevel;
 
       ay_status = ay_npt_crtcobbsphere(
 			(ay_nurbpatch_object **)&(new->refine));
@@ -1833,7 +1826,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
   ay_object_defaults(new);
   new->parent = AY_TRUE;
   new->hide_children = AY_TRUE;
-  ay_status = ay_object_crtendlevel(&(new->down));
+  new->down = ay_endlevel;
 
   if(!(newcontrolv = calloc(newwidth*newheight*4, sizeof(double))))
     {
