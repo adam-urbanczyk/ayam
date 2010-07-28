@@ -23,10 +23,6 @@
 
 void ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds);
 
-int ay_tree_crtstringfromobj(ay_object *level, ay_object *o,
-			     ay_list_object *list,
-			     Tcl_DString *ds);
-
 int ay_tree_gettreetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
@@ -255,7 +251,7 @@ ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds)
       name = NULL;
       name = ay_object_getname(o);
 
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  Tcl_DStringAppend(ds, "{ ", -1);
 	  if(ay_prefs.mark_hidden)
@@ -306,86 +302,10 @@ ay_tree_crttreestring(Tcl_Interp *interp, ay_object *o, Tcl_DString *ds)
 	} /* if */
 
       o = o->next;
-  } /* while */
+    } /* while */
 
  return;
 } /* ay_tree_crttreestring */
-
-
-/* ay_tree_crtstringfromobj:
- *
- */
-int
-ay_tree_crtstringfromobj(ay_object *level, ay_object *o, ay_list_object *list,
-			 Tcl_DString *ds)
-{
- int ay_status = AY_OK;
- ay_list_object *new = NULL, *tmp = NULL, *last = NULL;
-
-  if(!level)
-    return AY_ENULL;
-
-  /* omit trailing EndLevel-Object! */
-  while(level->next)
-    {
-      if(level == o)
-	{
-	  if(!(new = calloc(1,sizeof(ay_list_object))))
-	    return AY_EOMEM;
-
-	  tmp = list;
-	  while(tmp->next)
-	    tmp = tmp->next;
-	  tmp->next = new;
-
-	  new->object = level;
-
-	  ay_tree_crtnodename(ay_root, list->next, ds);
-
-	  tmp = list;
-	  while(tmp->next)
-	    {
-	      last = tmp;
-	      tmp = tmp->next;
-	    }
-
-	  free(last->next);
-	  last->next = NULL;
-	}
-      else
-	{
-	  if(level->down)
-	    {
-
-	      new = NULL;
-	      if(!(new = calloc(1,sizeof(ay_list_object))))
-		return AY_EOMEM;
-
-	      new->object = level;
-	      tmp = list;
-	      while(tmp->next)
-		tmp = tmp->next;
-	      tmp->next = new;
-
-	      ay_status = ay_tree_crtstringfromobj(level->down, o, list, ds);
-
-	      tmp = list;
-	      while(tmp->next)
-		{
-		  last = tmp;
-		  tmp = tmp->next;
-		}
-
-	      free(last->next);
-	      last->next = NULL;
-
-	    } /* if */
-	} /* if */
-      level = level->next;
-    } /* while */
-
- return AY_OK;
-} /* ay_tree_crtstringfromobj */
 
 
 /* ay_tree_gettreetcmd:
@@ -725,35 +645,34 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "treeDnd";
  ay_object *p = NULL, *o = NULL, **t = NULL, *open = NULL, *target = NULL;
- ay_list_object *sel = ay_selection, *newlevel = NULL, *st = ay_selection;
+ ay_list_object *sel = NULL;
  int i = 0, j = 0, instanceerr = AY_FALSE, has_callback = AY_FALSE;
- Tcl_DString ds;
  ay_voidfp *arr = NULL;
  ay_treedropcb *cb = NULL;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, fname, "parent position newclevel");
+      ay_error(AY_EARGS, argv[0], "parent position newclevel");
       return TCL_OK;
     }
 
-  if(!sel)
+  if(!ay_selection)
     {
-      ay_error(AY_ENOSEL, fname, NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
   /* check, whether ay_root "hides" in the selection somewhere */
-  while(st)
+  sel = ay_selection;
+  while(sel)
     {
-      if(st->object == ay_root)
+      if(sel->object == ay_root)
 	{
-	  ay_error(AY_ERROR, fname, "Can not move root!");
+	  ay_error(AY_ERROR, argv[0], "Can not move root!");
 	  return TCL_OK;
 	}
-      st = st->next;
+      sel = sel->next;
     }
 
   p = ay_tree_getobject(argv[1]);
@@ -776,15 +695,12 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if((has_callback == AY_FALSE) && (!p->parent))
 	{
-	  ay_error(AY_ERROR, fname, "Can not place objects here!");
+	  ay_error(AY_ERROR, argv[0], "Can not place objects here!");
 	}
 
       if((ay_status == AY_EDONOTLINK) || (!p->parent))
 	{
-
-	  Tcl_SetVar(interp, argv[3], "no-drop",
-		     TCL_LEAVE_ERR_MSG);
-
+	  Tcl_SetVar(interp, argv[3], "1", TCL_LEAVE_ERR_MSG);
 	  return TCL_OK;
 	}
 
@@ -831,7 +747,8 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
     } /* if */
 
-  /* instance check */
+  /* instance check, also check if views are to be moved */
+  sel = ay_selection;
   while(sel)
     {
       o = sel->object;
@@ -842,30 +759,21 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(instanceerr)
 	{
-	  ay_error(AY_ERROR, fname, "Recursive instances would result!");
+	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
+	  return TCL_OK;
+	}
+
+      if(o->type == AY_IDVIEW)
+	{
+	  ay_error(AY_ERROR, argv[0], "View objects may not be moved!");
 	  return TCL_OK;
 	}
 
       sel = sel->next;
     } /* while instance check */
 
-  /* check if views are to be moved */
-  sel = ay_selection;
   /* move objects */
-  while(sel)
-    {
-      o = sel->object;
-      if(o->type == AY_IDVIEW)
-	{
-	  ay_error(AY_ERROR, fname, "View objects may not be moved!");
-	  return TCL_OK;
-	}
-
-      sel = sel->next;
-    }
-
   sel = ay_selection;
-  /* move objects */
   while(sel)
     {
       o = sel->object;
@@ -881,20 +789,6 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
       open = o;
       sel = sel->next;
     }
-
-  /* reconstruct current level */
-  Tcl_DStringInit(&ds);
-  if(!(newlevel = calloc(1, sizeof(ay_list_object))))
-    return TCL_OK;
-  newlevel->object = ay_root;
-
-  ay_status = ay_tree_crtstringfromobj(ay_root, open, newlevel, &ds);
-
-  free(newlevel);
-
-  Tcl_SetVar(interp, argv[3], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
-
-  Tcl_DStringFree(&ds);
 
  return TCL_OK;
 } /* ay_tree_dndtcmd */
