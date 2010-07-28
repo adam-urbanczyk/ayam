@@ -559,52 +559,55 @@ proc tree_move { } {
     }
 
     set ay_error 0
-    set newclevel ""
-    treeDnd $parent $position newclevel
+    set nodrop 0
+
+    treeDnd $parent $position nodrop
+
     if { $ay_error == 0 } {
 
 	set ay(SelectedLevel) "root"
 
-	if { $newclevel != "no-drop" } {
+	if { ! $nodrop } {
 	    tree_update $ay(CurrentLevel)
 	    update
+	    after idle "tree_update $parent"
 
-	    if { $newclevel != "" } {
-		eval "set b [list $newclevel]"
-
-		set node root
-		foreach elem $b {
-		    append node ":"
-		    append node $elem
-		}
-
-		if { [$ay(tree) exists $node] } {
-		    set node [$ay(tree) parent $node]
-		} else {
-		    set node root
-		}
-
-		if { [$ay(tree) exists $node] } {
-		    tree_update $node
-		    update
-		    if { $node != "root" } {
-			$ay(tree) itemconfigure $node -open 1
-		    }
-		}
-	    }
-	    # if
-
-	    set ay(CurrentLevel) "root"
-	    set ay(SelectedLevel) "root"
+	    tree_openTree $ay(tree) $parent
+	    set ay(CurrentLevel) $parent
+	    set ay(SelectedLevel) $parent
+	    cl $parent
 	    update
 	    $ay(tree) selection clear
 	    tree_handleSelection
-	    tree_selectItem 0 $ay(tree) "root:0"
-	    tree_paintLevel "root"
+	    tree_paintLevel $parent
+
+	    set sel ""
+	    set nodes [$ay(tree) nodes $ay(CurrentLevel)]
+	    if { $position == -1 } {
+		if { [llength $old_selection] == 1 } {
+		    set sel [lindex $nodes end]
+		} else {
+		    set off [expr [llength $old_selection] - 1]
+		    set sel [lrange $nodes end-$off end]
+		}
+	    } else {
+		if { [llength $old_selection] == 1 } {
+		    set sel [lindex $nodes $position]
+		} else {
+		    set off [expr $position + [llength $old_selection] - 1]
+		    set sel [lrange $nodes $position $off]
+		}
+	    }
+	    if { $sel != "" } {
+		eval "$ay(tree) selection set $sel"
+		tree_handleSelection
+		$ay(tree) see [lindex $sel 1]
+	    }
 	    forceNot all
 	    plb_update
 	    rV
 	} else {
+	    # treeDnd returned "no-drop"; restore old selection
 	    $ay(tree) selection set $old_selection
 	    set level [$ay(tree) parent [lindex $old_selection 0]]
 	    set ay(CurrentLevel) $level
@@ -618,6 +621,7 @@ proc tree_move { } {
 	# if
 
     } else {
+	# an error occured in treeDnd; restore old selection
 	$ay(tree) selection set $old_selection
 	set level [$ay(tree) parent [lindex $old_selection 0]]
 	set ay(CurrentLevel) $level
