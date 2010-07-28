@@ -936,7 +936,7 @@ int
 ay_object_candelete(ay_object *p, ay_object *o)
 {
  int ay_status = AY_OK;
- int refs;
+ unsigned int refs;
 
   if(!p || !o)
     return AY_ENULL;
