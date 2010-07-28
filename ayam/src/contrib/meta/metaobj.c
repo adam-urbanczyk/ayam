@@ -39,7 +39,7 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 {
  int ay_status = AY_OK;
  meta_world *w = NULL;
- char fname[] = "crtball";
+ char fname[] = "metaobj_createcb";
  ay_object *first_child = NULL;
 
   if (!(w = calloc (1, sizeof (meta_world))))
@@ -137,9 +137,15 @@ metaobj_createcb (int argc, char *argv[], ay_object * o)
 
   ay_status = ay_object_create (metacomp_id, &first_child);
 
+  if(ay_status)
+    {
+      /*XXXX memory leak */
+      return AY_ERROR;
+    }
+
   o->down = first_child;
 
-  ay_status = ay_object_crtendlevel (&(first_child->next));
+  first_child->next = ay_endlevel;
 
   w->currentnumpoly = 0;
   w->o = o->down;
@@ -173,9 +179,8 @@ metaobj_deletecb (void *c)
   if (w->nvertex)
     free(w->nvertex);
 
-
   if (w->mgrid)
-  free(w->mgrid);
+    free(w->mgrid);
 
   meta_freecubestack (w);
 
@@ -844,7 +849,7 @@ metaobj_bbccb (ay_object *o, double *bbox, int *flags)
   /* P8 */
   bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
 
-  return AY_OK;
+ return AY_OK;
 } /* metaobj_bbccb */
 
 
