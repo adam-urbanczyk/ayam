@@ -310,7 +310,7 @@ int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** find instances of a master and count them
  */
-int ay_instt_countrefs(ay_object *o, ay_object *m, int *refs);
+int ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs);
 
 /** initialize instance tool module
  */

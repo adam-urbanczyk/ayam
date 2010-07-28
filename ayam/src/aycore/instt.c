@@ -1053,7 +1053,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
  *  and count all found references in <refs>
  */
 int
-ay_instt_countrefs(ay_object *o, ay_object *m, int *refs)
+ay_instt_countrefs(ay_object *o, ay_object *m, unsigned int *refs)
 {
  int ay_status = AY_OK;
 
