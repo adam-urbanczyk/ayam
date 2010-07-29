@@ -264,6 +264,8 @@ proc tree_toggleSelection { tree node } {
 	# if llength nlist
     }
     # if lsearch
+
+    # allow dnd of multiple selected objects
     $tree bindText <ButtonPress-1> ""
     $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
 
@@ -336,9 +338,9 @@ proc tree_multipleSelection { tree node } {
 	rV
     }
 
+    # allow dnd of multiple selected objects
     $tree bindText <ButtonPress-1> ""
     $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
-
 
     set ay(treeselectsema) 0
 

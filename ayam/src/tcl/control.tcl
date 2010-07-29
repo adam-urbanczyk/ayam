@@ -536,6 +536,11 @@ proc selAdd { ud } {
 	    eval [subst "$tree selection set $sel"]
 	    $tree see $sel
 	    eval [subst "treeSelect $sel"]
+
+	    # allow dnd of multiple selected objects
+	    $tree bindText <ButtonPress-1> ""
+	    $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
+
 	    plb_update
 	    if { $ay(need_redraw) == 1 } {
 		rV
