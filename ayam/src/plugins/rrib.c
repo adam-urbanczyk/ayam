@@ -937,7 +937,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
  RtFloat *minptr = NULL, *maxptr = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *level = NULL, **ncinloop = NULL;
- int ay_status = AY_OK;
 
   nptr = n;
   orderptr = order;
@@ -1112,7 +1111,6 @@ ay_rrib_RiLightSource(RtToken name,
  int i = 0;
  RtPoint *pnt = NULL;
  RtColor *col = NULL;
- char fname[] = "ay_rrib_RiLightSource";
 
   if(!ay_rrib_readlights)
     return((RtLightHandle)(ay_rrib_clighthandle++));
@@ -5366,9 +5364,9 @@ void
 ay_rrib_linkobject(void *object, int type)
 {
  int ay_status = AY_OK;
- ay_object *o = NULL, *t = NULL, **endlevel = NULL;
+ /* char *fname = "ay_rrib_linkobject";*/
+ ay_object *o = NULL, *t = NULL;
  ay_nurbpatch_object *np = NULL;
- char *fname = "ay_rrib_linkobject";
  double oldmin, oldmax;
  int is_bound = AY_FALSE;
 
@@ -5409,12 +5407,10 @@ ay_rrib_linkobject(void *object, int type)
 		  t = t->next;
 		}
 	      t->next = ay_endlevel;
-	      endlevel = &(t->next);
 	    }
 	  else
 	    {
 	      ay_rrib_co.down = ay_endlevel;
-	      endlevel = &(ay_rrib_co.down);
 	    }
 	} /* if */
     } /* if */
@@ -5445,6 +5441,10 @@ ay_rrib_linkobject(void *object, int type)
     } /* if */
 
   ay_status = ay_object_copy(&ay_rrib_co, &o);
+  if(ay_status)
+    {
+      return;
+    }
   ay_status = ay_object_link(o);
 
   if(type == AY_IDNPATCH)
@@ -5499,11 +5499,6 @@ ay_rrib_linkobject(void *object, int type)
 
   if(type == AY_IDNPATCH)
     {
-      if(endlevel)
-	{
-	  ay_object_delete(*endlevel);
-	  *endlevel = NULL;
-	}
       ay_rrib_co.down = NULL;
     } /* if */
 
