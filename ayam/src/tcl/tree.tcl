@@ -24,6 +24,19 @@ set ay(SelectedLevel) ""
 # for drag and drop within the tree
 set ay(DndDestination) ""
 
+proc Tree::finsert { path parent node args } {
+    variable $path
+    upvar 0  $path data
+
+    Widget::init Tree::Node $path.$node $args
+
+    lappend data($parent) $node
+
+    set data($node) [list $parent]
+
+    return;
+}
+
 #tree_openTree:
 # open all nodes pointing to <node>
 proc tree_openTree { tree node } {
@@ -58,9 +71,8 @@ proc tree_createSub { tree node l } {
 	set ll [llength $n]
 	set inode [lindex $n 0]
 	if { $x > 0 } {
-	    $tree insert end $node $node:$y -text $inode -drawcross auto\
-	    -image emptybm
-
+	    $tree finsert $node $node:$y -text $inode -drawcross auto\
+		-image emptybm
 	}
 	if { $ll > 1 } {
 	    tree_createSub $tree $node:$y $n
@@ -69,6 +81,8 @@ proc tree_createSub { tree node l } {
 	incr y
     }
     # foreach
+
+ return;
 }
 # tree_createSub
 
@@ -101,6 +115,8 @@ proc tree_update { node } {
 	set ay(TreeUpdateSema) 1
     }
 
+    #puts "tree_update $node"
+
     # update may take some time, take measures:
     # after 0.1s we block the UI and make the
     # mouse cursor a watch
@@ -122,8 +138,8 @@ proc tree_update { node } {
     foreach n $curtree {
 	set ll [llength $n]
 	set inode [lindex $n 0]
-	$ay(tree) insert end $node $node:$count -text $inode -drawcross auto\
-		-image emptybm -fill $color
+	$ay(tree) finsert $node $node:$count -text $inode -drawcross auto\
+	    -image emptybm -fill $color
 	if { $ll > 1 } {
 	    tree_createSub $ay(tree) $node:$count $n
 	}
@@ -572,8 +588,9 @@ proc tree_move { } {
 	if { ! $nodrop } {
 	    tree_update $ay(CurrentLevel)
 	    update
-	    after idle "tree_update $parent"
-
+	    if { $parent != $ay(CurrentLevel) } {
+		after idle "tree_update $parent"
+	    }
 	    tree_openTree $ay(tree) $parent
 	    set ay(CurrentLevel) $parent
 	    set ay(SelectedLevel) $parent
