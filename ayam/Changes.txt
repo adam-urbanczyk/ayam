@@ -1,4 +1,4 @@
-[21. Jul 2010] CVS-Head:
+[29. Jul 2010] CVS-Head:
 ========================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
@@ -11,6 +11,8 @@ o fixed setting the BGImage via view menu (SF 3023248)
 o fixed BGImage drawing on Win32 (SF 3023249)
 o fixed skins with periodic chordal/centripetal curves (SF 3030062)
 o fixed false positives and crashes of instance DnD/C&P (SF 3031448)
+o fixed in-place conversion leading to broken scenes (SF 3032589)
+o fixed drag and drop with multiple objects selected by keyboard (SF 3036465)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -52,6 +54,8 @@ GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
   manages the focus of internal widgets (views, tree, properties, console)
 o Tool dialogs now display a more descriptive window name
+o tree drag and drop now keeps the object selection intact and opens
+  the target level
 
 Scripts/Scripting Interface:
 o added commands to evaluate NURBS curves/surfaces: "evalNC"/"evalNP"
