@@ -54,7 +54,6 @@ proc tree_createSub { tree node l } {
     set x 0
     set y -1
     foreach n $l {
-	update
 	set ll [llength $n]
 	set inode [lindex $n 0]
 	if { $x > 0 } {
@@ -747,6 +746,10 @@ $sw setwidget $tree
 set ay(tree) $tree
 
 # bindings
+
+# open whole subtrees
+bind $tree <Shift-space> "tree_toggleTree;break"
+
 # scroll tree with wheel
 bind $tree <ButtonPress-4> "$tree yview scroll -1 pages; break"
 bind $tree <ButtonPress-5> "$tree yview scroll 1 pages; break"
@@ -1028,3 +1031,28 @@ proc tree_gotop { } {
 }
 # tree_gotop
 
+
+#tree_toggleTree:
+# open/close all selected sub-trees recursively
+proc tree_toggleTree { } {
+    global ay
+
+    set sel ""
+    set sel [$ay(tree) selection get]
+
+    foreach node $sel {
+	if { [$ay(tree) itemcget $node -open] } {
+	    foreach n [$ay(tree) nodes $node] {
+		$ay(tree) closetree $n
+	    }
+	    $ay(tree) closetree $node
+	} else {
+	    foreach n [$ay(tree) nodes $node] {
+		$ay(tree) opentree $n
+	    }
+	    $ay(tree) opentree $node
+	}
+    }
+ return;
+}
+# tree_toggleTree
