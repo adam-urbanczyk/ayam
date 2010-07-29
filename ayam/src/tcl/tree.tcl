@@ -24,19 +24,6 @@ set ay(SelectedLevel) ""
 # for drag and drop within the tree
 set ay(DndDestination) ""
 
-proc Tree::finsert { path parent node args } {
-    variable $path
-    upvar 0  $path data
-
-    Widget::init Tree::Node $path.$node $args
-
-    lappend data($parent) $node
-
-    set data($node) [list $parent]
-
-    return;
-}
-
 #tree_openTree:
 # open all nodes pointing to <node>
 proc tree_openTree { tree node } {
@@ -923,6 +910,30 @@ set ay(CurrentLevel) "root"
 set ay(SelectedLevel) "root"
 tree_paintLevel "root"
 set ay(DropActive) 0
+
+#Tree::finsert
+#  A faster tree "insert", placed here to avoid trouble
+#  on startup (only after tree widget creation BWidgets
+#  code is fully loaded and the Tree namespace present).
+#  In contrast to Tree::insert:
+#  This proc has no error checks.
+#  This proc just appends new nodes (it has no index argument).
+#  This proc does not schedule any redraw updates (we
+#  trigger them "manually" via the -redraw option anyway).
+#  This proc does not return the new node.
+proc Tree::finsert { path parent node args } {
+    variable $path
+    upvar 0  $path data
+
+    Widget::init Tree::Node $path.$node $args
+
+    lappend data($parent) $node
+
+    set data($node) [list $parent]
+
+    return;
+}
+# Tree::finsert
 
 
  return;
