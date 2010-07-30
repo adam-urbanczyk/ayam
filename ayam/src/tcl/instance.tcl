@@ -46,7 +46,8 @@ proc instance_edit { } {
     if { $mo != "" } {
 
 	goTop
-
+	set mo [string range $mo 5 end]
+	set mo [string map {: " "} $mo]
 	set len [llength $mo]
 	set node "root"
 	if { $len > 1 } {

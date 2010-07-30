@@ -35,12 +35,13 @@ void ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 		     int selonly);
 
 /* tree.c */
+
+int ay_tree_crtnodefromobj(ay_object *o, ay_object *l, int d,
+			   char **node, char **ins, int *found);
+
 void ay_tree_getclevel(char *node);
 
 ay_object *ay_tree_getobject(char *node);
-
-int ay_tree_crtnodename(ay_object *parent, ay_list_object *list,
-			Tcl_DString *ds);
 
 int ay_tree_registerdrop(ay_treedropcb  *cb, unsigned int type_id);
 

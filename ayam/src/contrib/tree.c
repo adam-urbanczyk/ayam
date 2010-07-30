@@ -29,7 +29,6 @@ int ay_tree_gettreetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-
 /* functions: */
 
 /* ay_tree_registerdrop:
@@ -46,6 +45,82 @@ ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
 
  return ay_status;
 } /* ay_tree_registerdrop */
+
+
+/* ay_tree_init:
+ *  _recursively_ search for object <o> in hierarchy <l> (typically ay_root),
+ *  build up node string on the go; <d> must be 1; <node> and <ins> pointers
+ *  to callers memory;
+ *  returns AY_TRUE in <found> if o really was found but does
+ *  not touch <found> if o was not found in l.
+ *
+ *  Note: caller _must_ _use_ <ins>, but _free_ <node>!
+ *  Example:
+ *   char *node, *realnode; int found = AY_FALSE;
+ *   ay_tree_crtnodefromobj(o,ay_root,1,&node,&realnode,&found);
+ *   if(found) {
+ *     ... use realnode ...
+ *     free(node);
+ */
+int
+ay_tree_crtnodefromobj(ay_object *o, ay_object *l, int d,
+		       char **node, char **ins, int *found)
+{
+ int ay_status = AY_OK;
+ int pos = 0;
+ char buf[64] = "";
+
+  while(l->next)
+    {
+      if(l != o)
+	{
+	  if(l->down && l->down->next)
+	    {
+	      ay_status = ay_tree_crtnodefromobj(o, l->down, d+1,
+						 node, ins, found);
+
+	      /* immediately return any errors */
+	      if(ay_status)
+		return ay_status;
+
+	      if(*found)
+		{
+		  if(d > 1)
+		    sprintf(buf, ":%d", pos);
+		  else
+		    sprintf(buf, "root:%d", pos);
+		  /* prepend buf to current node string,
+		     also remember the new start in ins */
+		  *ins = *ins - strlen(buf);
+		  strncpy(*ins, buf, strlen(buf));
+		  return AY_OK;
+		}
+	    } /* if */
+	}
+      else
+	{
+	  if(!(*node = calloc(d*64, sizeof(char))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  if(d > 1)
+	    sprintf(buf, ":%d", pos);
+	  else
+	    sprintf(buf, "root:%d", pos);
+	  /* copy buf to _end_ of node string,
+	     also remember this place in ins */
+	  *ins = &((*node)[d*64-1-strlen(buf)]);
+	  strcpy(*ins, buf);
+	  *found = AY_TRUE;
+	  return AY_OK;
+	} /* if */
+
+      pos++;
+      l = l->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_tree_crtnodefromobj */
 
 
 /* ay_tree_getclevel:
@@ -188,49 +263,6 @@ ay_tree_getobject(char *node)
 
  return o;
 } /* ay_tree_getobject */
-
-
-/* ay_tree_crtnodename:
- *  creates a Tcl-node string from a list
- *  of level object objects, that lead to this
- *  object; list has to be in order
- *  (not like the current level list)
- */
-int
-ay_tree_crtnodename(ay_object *parent, ay_list_object *list, Tcl_DString *ds)
-{
- int ay_status = AY_OK;
- int pos;
- ay_object *o = NULL;
- char buf[64] = "";
-
-  if(list)
-    {
-      o = parent;
-
-      pos = 0;
-      while((o) && (o != list->object))
-	{
-	  o = o->next;
-	  pos++;
-	}
-
-      if(o)
-	{
-	  sprintf(buf, "%d ", pos);
-	  Tcl_DStringAppend(ds, buf, -1);
-	}
-      else
-	{
-	  return AY_ENULL;
-	}
-
-      if((ay_status = ay_tree_crtnodename(list->object->down,list->next, ds)))
-	return ay_status;
-    }
-
- return AY_OK;
-} /* ay_tree_crtnodename */
 
 
 /* ay_tree_crttreestring:
@@ -647,13 +679,15 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_object *p = NULL, *o = NULL, **t = NULL, *open = NULL, *target = NULL;
  ay_list_object *sel = NULL;
- int i = 0, j = 0, instanceerr = AY_FALSE, has_callback = AY_FALSE;
+ int i = 0, j = 0, instanceerr = AY_FALSE;
  ay_voidfp *arr = NULL;
  ay_treedropcb *cb = NULL;
+ char *buf = NULL, *node = NULL;
+ int found = AY_FALSE;
 
-  if(argc < 3)
+  if(argc < 4)
     {
-      ay_error(AY_EARGS, argv[0], "parent position newclevel");
+      ay_error(AY_EARGS, argv[0], "parent position nodropvar newclvar");
       return TCL_OK;
     }
 
@@ -686,22 +720,25 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
       arr = ay_treedropcbt.arr;
       cb = (ay_treedropcb *)(arr[p->type]);
 
-      /* call callback */
       if(cb)
 	{
-	  has_callback = AY_TRUE;
+	  /* call callback */
 	  ay_status = cb(p);
-	}
 
-      if((has_callback == AY_FALSE) && (!p->parent))
-	{
-	  ay_error(AY_ERROR, argv[0], "Can not place objects here!");
+	  if(ay_status == AY_EDONOTLINK)
+	    {
+	      Tcl_SetVar(interp, argv[3], "1", TCL_LEAVE_ERR_MSG);
+	      return TCL_OK;
+	    }
 	}
-
-      if((ay_status == AY_EDONOTLINK) || (!p->parent))
+      else
 	{
-	  Tcl_SetVar(interp, argv[3], "1", TCL_LEAVE_ERR_MSG);
-	  return TCL_OK;
+	  if(!p->parent)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Can not place objects here!");
+	      Tcl_SetVar(interp, argv[3], "1", TCL_LEAVE_ERR_MSG);
+	      return TCL_OK;
+	    }
 	}
 
       t = &(p->down);
@@ -727,13 +764,15 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(p)
 	    {
+	      target = p;
 	      p = p->down;
 	    }
 	  else
 	    {
 	      p = ay_root;
+	      target = p;
 	    }
-	  target = p;
+
 	  j = 1;
 	  while(p->next)
 	    {
@@ -790,11 +829,21 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     }
 
+  /* repair current level */
+  if(target != ay_root)
+    {
+      ay_tree_crtnodefromobj(target, ay_root, 1, &buf, &node, &found);
+
+      Tcl_SetVar(interp, argv[4], node, TCL_LEAVE_ERR_MSG);
+
+      free(buf);
+    }
+
  return TCL_OK;
 } /* ay_tree_dndtcmd */
 
 
-/* ay_tree_inittcmd:
+/* ay_tree_init:
  *  initialize this module
  */
 int
@@ -841,4 +890,5 @@ ay_tree_init(Tcl_Interp *interp)
   */
 
  return AY_OK;
-} /* ay_tree_inittcmd */
+} /* ay_tree_init */
+

@@ -564,30 +564,34 @@ proc tree_move { } {
 
     set ay_error 0
     set nodrop 0
+    set newclevel ""
 
-    treeDnd $parent $position nodrop
+    treeDnd $parent $position nodrop newclevel
 
     if { $ay_error == 0 } {
 
 	set ay(SelectedLevel) "root"
 
 	if { ! $nodrop } {
-	    tree_update $ay(CurrentLevel)
-	    update
-	    if { $parent != $ay(CurrentLevel) } {
-		after idle "tree_update $parent"
+	    if { $newclevel == "" } {
+		set newclevel "root"
 	    }
-	    tree_openTree $ay(tree) $parent
-	    set ay(CurrentLevel) $parent
-	    set ay(SelectedLevel) $parent
-	    cl $parent
+	    set oldclevel $ay(CurrentLevel)
+	    set ay(CurrentLevel) $newclevel
+	    set ay(SelectedLevel) $newclevel
+	    tree_update $oldclevel
 	    update
+	    if { $newclevel != $oldclevel } {
+		after idle "tree_update $newclevel"
+	    }
+	    update
+	    tree_openTree $ay(tree) $newclevel
 	    $ay(tree) selection clear
 	    tree_handleSelection
-	    tree_paintLevel $parent
+	    tree_paintLevel $newclevel
 
 	    set sel ""
-	    set nodes [$ay(tree) nodes $ay(CurrentLevel)]
+	    set nodes [$ay(tree) nodes $newclevel]
 	    if { $position == -1 } {
 		if { [llength $old_selection] == 1 } {
 		    set sel [lindex $nodes end]
@@ -606,7 +610,9 @@ proc tree_move { } {
 	    if { $sel != "" } {
 		eval "$ay(tree) selection set $sel"
 		tree_handleSelection
-		$ay(tree) see [lindex $sel 1]
+		set node [lindex $sel 0]
+		update
+		$ay(tree) see $node
 	    }
 	    forceNot all
 	    plb_update
