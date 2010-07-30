@@ -939,42 +939,6 @@ ay_instt_check(ay_object *o, ay_object *target)
 } /* ay_instt_check */
 
 
-/* ay_instt_getmaster:
- *  Recursively browse through the scene and find the master
- *  object of the instance object o.
- */
-int
-ay_instt_getmaster(ay_object *o, ay_object *i, ay_object **r)
-{
- int result = AY_FALSE;
-
-  while(o->next)
-    {
-      if(o->down)
-	{
-	  result = ay_instt_getmaster(o->down, i, r);
-
-	  if(result == AY_TRUE)
-	    {
-	      ay_clevel_add(o);
-	      return AY_TRUE;
-	    }
-	}
-
-      if(i->refine == o)
-	{
-	  *r = o;
-	  ay_clevel_add(o);
-	  return AY_TRUE;
-	}
-
-      o = o->next;
-    } /* while */
-
- return AY_FALSE;
-} /* ay_instt_getmaster */
-
-
 /* ay_instt_getmastertcmd:
  *  find the master object of the (currently selected) instance object
  */
@@ -984,10 +948,9 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_list_object *clevel = ay_currentlevel, *lev;
- ay_object *o = NULL, *master = NULL;
- int result = AY_FALSE;
- Tcl_DString ds;
+ ay_object *o = NULL;
+ int found = AY_FALSE;
+ char *buf = NULL, *node = NULL;
 
   if(!sel)
     {
@@ -1013,35 +976,19 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_currentlevel = NULL;
+  ay_status = ay_tree_crtnodefromobj(o->refine, ay_root, 1,
+				     &buf, &node, &found);
 
-  result = ay_instt_getmaster(ay_root, o, &master);
-
-  if(result == AY_FALSE)
+  if(found == AY_FALSE)
     {
       ay_error(ay_status, argv[0], "Could not find Master object in scene!");
       return TCL_OK;
     }
 
-  Tcl_DStringInit(&ds);
+  Tcl_SetVar(interp, argv[1], node, TCL_LEAVE_ERR_MSG);
 
-  if(ay_currentlevel->object == ay_root)
-    ay_clevel_del();
-
-  ay_tree_crtnodename(ay_root, ay_currentlevel, &ds);
-
-  Tcl_SetVar(interp, argv[1], Tcl_DStringValue(&ds), TCL_LEAVE_ERR_MSG);
-
-  Tcl_DStringFree(&ds);
-
-  while(ay_currentlevel)
-    {
-      lev = ay_currentlevel->next;
-      free(ay_currentlevel);
-      ay_currentlevel = lev;
-    }
-
-  ay_currentlevel = clevel;
+  if(buf)
+    free(buf);
 
  return TCL_OK;
 } /* ay_instt_getmastertcmd */
