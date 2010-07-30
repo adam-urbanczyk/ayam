@@ -337,7 +337,7 @@ proc material_highlight { } {
     if { $mat == "" } { return; }
 
     ayError 4 highlightMaterial\
-	    "Searching for objects of material \\\"$mat\\\" ..."
+	    "Searching for objects of material \"$mat\" ..."
     update
 
     set aid [after 500 {mouseWatch 1 {. .tbw}}]
