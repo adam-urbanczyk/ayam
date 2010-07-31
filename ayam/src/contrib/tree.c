@@ -47,7 +47,7 @@ ay_tree_registerdrop(ay_treedropcb *cb, unsigned int type_id)
 } /* ay_tree_registerdrop */
 
 
-/* ay_tree_init:
+/* ay_tree_crtnodefromobj:
  *  _recursively_ search for object <o> in hierarchy <l> (typically ay_root),
  *  build up node string on the go; <d> must be 1; <node> and <ins> pointers
  *  to callers memory;
@@ -677,9 +677,9 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_object *p = NULL, *o = NULL, **t = NULL, *open = NULL, *target = NULL;
+ ay_object *p = NULL, *o = NULL, **t = NULL, *target = NULL;
  ay_list_object *sel = NULL;
- int i = 0, j = 0, instanceerr = AY_FALSE;
+ int i = 0, j = 0;
  ay_voidfp *arr = NULL;
  ay_treedropcb *cb = NULL;
  char *buf = NULL, *node = NULL;
@@ -792,11 +792,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
 
-      instanceerr = AY_FALSE;
-
-      instanceerr = ay_instt_check(o, target);
-
-      if(instanceerr)
+      if(ay_instt_check(o, target))
 	{
 	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
 	  return TCL_OK;
@@ -825,7 +821,6 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	  *t = o;
 	  t = &(o->next);
 	}
-      open = o;
       sel = sel->next;
     }
 
@@ -834,9 +829,12 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_tree_crtnodefromobj(target, ay_root, 1, &buf, &node, &found);
 
-      Tcl_SetVar(interp, argv[4], node, TCL_LEAVE_ERR_MSG);
+      if(found)
+	{
+	  Tcl_SetVar(interp, argv[4], node, TCL_LEAVE_ERR_MSG);
 
-      free(buf);
+	  free(buf);
+	}
     }
 
  return TCL_OK;
