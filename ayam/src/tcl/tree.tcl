@@ -572,6 +572,8 @@ proc tree_move { } {
 
 	set ay(SelectedLevel) "root"
 
+	set ay(sc) 1
+
 	if { ! $nodrop } {
 	    if { $newclevel == "" } {
 		set newclevel "root"
