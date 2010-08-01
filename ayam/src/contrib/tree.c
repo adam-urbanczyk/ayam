@@ -842,7 +842,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_tree_init:
- *  initialize this module
+ *  initialize tree management module
  */
 int
 ay_tree_init(Tcl_Interp *interp)

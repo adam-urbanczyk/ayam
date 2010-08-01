@@ -274,7 +274,7 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 
 
 /* ay_objsel_processcb:
- *
+ *  Togl action callback for object picking
  */
 int
 ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
@@ -445,11 +445,11 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
 
 
 /* ay_objsel_getnmfrmndtcmd:
- * returns the name of an object designated by its node (in tree format)
+ *  Tcl command to get the name of an object from a node description
  */
 int
 ay_objsel_getnmfrmndtcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
+			 int argc, char *argv[])
 {
  ay_object *o = NULL;
  Tcl_DString ds;
