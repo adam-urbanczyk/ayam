@@ -1035,6 +1035,7 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	if { $ay(SelectedLevel) != "" } {
 	    if { [$ay(tree) exists $ay(SelectedLevel)] } {
 		tree_openTree $ay(tree) $ay(SelectedLevel)
+		tree_paintLevel $ay(SelectedLevel)
 	    } else {
 		set ay(SelectedLevel) "root"
 		set ay(CurrentLevel) "root"
