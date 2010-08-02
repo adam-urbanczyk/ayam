@@ -101,7 +101,7 @@ proc tree_update { node } {
 	set ay(TreeUpdateSema) 1
     }
 
-    #puts "tree_update $node"
+    puts "tree_update $node"
 
     # update may take some time, take measures:
     # after 0.1s we block the UI and make the
@@ -581,10 +581,21 @@ proc tree_move { } {
 	    set oldclevel $ay(CurrentLevel)
 	    set ay(CurrentLevel) $newclevel
 	    set ay(SelectedLevel) $newclevel
-	    tree_update $oldclevel
-	    update
-	    if { $newclevel != $oldclevel } {
-		after idle "tree_update $newclevel"
+	    if { [string eq $newclevel $oldclevel] } {
+		# both levels are the same, just need one update
+		tree_update $oldclevel
+	    } else {
+		# levels are different, but we might just need one update,
+		# if e.g. oldlevel is root: and newlevel is root:1
+		# or, oldlevel is root:1 and newlevel is root:
+		if { [string first $newclevel $oldclevel] != 0 } {
+		    # newlevel does not include oldlevel => update oldlevel
+		    tree_update $oldclevel
+		}
+		if { [string first $oldclevel $newclevel] != 0 } {
+		    # oldlevel does not include newlevel => update newlevel
+		    after idle "update;tree_update $newclevel"
+		}
 	    }
 	    update
 	    tree_openTree $ay(tree) $newclevel
