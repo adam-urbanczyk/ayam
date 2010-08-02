@@ -549,7 +549,7 @@ int ay_object_replace(ay_object *src, ay_object *dst);
 unsigned int ay_object_count(ay_object *o);
 
 
-/** can objects in <o> be deleted?
+/** can objects in o be deleted?
  */
 int ay_object_candelete(ay_object *p, ay_object *o);
 
