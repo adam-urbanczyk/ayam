@@ -978,7 +978,11 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 			 s, rs, &nq, newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(curve->controlv);
 	  curve->controlv = newcontrolv;
@@ -1027,7 +1031,11 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 			 s, re, &nq, newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(curve->controlv);
 	  curve->controlv = newcontrolv;
@@ -1134,14 +1142,22 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
                         curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
-    return ay_status;
+    {
+      free(newknotv);
+      free(newcontrolv);
+      return ay_status;
+    }
 
   /* insert knots at end (nq is now np+p-1!) */
   ay_status = ay_nb_CurveInsertKnot4D(nq, p, newknotv, newcontrolv,
 			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
-    return ay_status;
+    {
+      free(newknotv);
+      free(newcontrolv);
+      return ay_status;
+    }
 
   /* copy results back to curve, ignoring the first p and last p cv/knots */
   memcpy(curve->controlv, &(newcontrolv[p*stride]),
