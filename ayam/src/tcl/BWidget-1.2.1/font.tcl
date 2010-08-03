@@ -372,7 +372,7 @@ proc SelectFont::_getfont { path } {
         set data(family) $font(-family)
         set data(size)   $font(-size)
         foreach st $_styles {
-            $path.$st configure -relief [expr {$data($st) ? "sunken":"raised"}]
+            $path.$st configure -relief [expr {$data($st) ? "sunken" : "raised" } ]
         }
     }
 }
