@@ -5727,7 +5727,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 
   if(clamp_me)
     {
-      ay_status = ay_npt_clampu(patch);
+      ay_status = ay_npt_clampu(patch, 0);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "clamp operation failed");
@@ -5891,7 +5891,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 
   if(clamp_me)
     {
-      ay_status = ay_npt_clampv(patch);
+      ay_status = ay_npt_clampv(patch, 0);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "clamp operation failed");
@@ -8084,230 +8084,187 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 
 
 /* ay_npt_clampu:
- *  clamp patch <np> in u direction
- *  Warning: only works correctly for unclamped patches
+ *  clamp NURBS patch, it is safe to call this with half clamped patches
+ *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
  */
 int
-ay_npt_clampu(ay_nurbpatch_object *np)
+ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 {
  int ay_status = AY_OK;
- double *newcontrolv = NULL, *newuknotv = NULL;
+ double *newcontrolv = NULL, *newknotv = NULL;
  double u;
- int stride, r, k, s;
+ int stride = 4, i, j, k, s, rs = 0, re = 0;
 
-  if(!np)
+  if(!patch)
     return AY_ENULL;
 
-  stride = 4;
-
-  /* clamp start */
-  k = np->uorder - 1;
-  u = np->uknotv[k];
-  s = 0;
-  r = np->uorder - 1;
-  np->width += r;
-
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newuknotv = NULL;
-  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height-1,
-		np->uorder-1, np->uknotv, np->controlv, u, k,
-		s, r, newuknotv, newcontrolv);
-
-  if(ay_status)
+  /* clamp start? */
+  if(side == 0 || side == 1)
     {
-      free(newcontrolv); free(newuknotv);
-      return ay_status;
+      /* the next fragment also counts the phantom knot! */
+      u = patch->uknotv[0];
+      s = 1;
+      for(i = 1; i < patch->uorder; i++)
+	{
+	  if(u == patch->uknotv[i])
+	    s++;
+	  else
+	    break;
+	}
+
+      if(s < patch->uorder)
+	{
+	  /* clamp start */
+	  u = patch->uknotv[patch->uorder-1];
+
+	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
+				 patch->uknotv, &s);
+
+	  rs = (patch->uorder - 1) - s;
+	  patch->width += rs;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfU(stride, patch->width-rs-1,
+			 patch->height-1, patch->uorder-1, patch->uknotv,
+			 patch->controlv, u, k, s, rs,
+			 newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->uknotv);
+	  patch->uknotv = newknotv;
+	} /* if */
+    } /* if */
+
+  /* clamp end? */
+  if(side == 0 || side == 2)
+    {
+      /* the next fragment also counts the phantom knot! */
+      s = 1;
+      j = patch->width+patch->uorder-1;
+      u = patch->uknotv[j];
+      for(i = 1; i < patch->uorder; i++)
+	{
+	  if(u == patch->uknotv[j-i])
+	    s++;
+	  else
+	    break;
+	}
+
+      if(s < patch->uorder)
+	{
+	  /* clamp end */
+	  u = patch->uknotv[patch->width];
+
+	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
+				 patch->uknotv, &s);
+
+	  re = (patch->uorder - 1) - s;
+	  patch->width += re;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfU(stride, patch->width-re-1,
+			 patch->height-1, patch->uorder-1, patch->uknotv,
+			 patch->controlv, u, k, s, re,
+			 newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->uknotv);
+	  patch->uknotv = newknotv;
+	} /* if */
+    } /* if */
+
+  if(rs == 0 && re == 0)
+    {
+      return AY_OK;
     }
 
-  free(np->controlv);
-  np->controlv = newcontrolv;
-
-  free(np->uknotv);
-  np->uknotv = newuknotv;
-
-  /* clamp end */
-  k = np->width;
-  u = np->uknotv[k];
-  k--;
-  s = 0;
-  r = np->uorder - 1;
-  np->width += r;
-
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newuknotv = NULL;
-  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  ay_status = ay_nb_InsertKnotSurfU(stride, np->width-r-1, np->height-1,
-		       np->uorder-1, np->uknotv, np->controlv, u, k,
-		       s, r, newuknotv, newcontrolv);
-
-  if(ay_status)
+  /* create new controlv, knotv, discarding the first rs and last re knots */
+  switch(side)
     {
-      free(newcontrolv); free(newuknotv);
-      return ay_status;
+    case 0:
+      patch->width -= rs+re;
+      break;
+    case 1:
+      patch->width -= rs;
+      break;
+    case 2:
+      patch->width -= re;
+      break;
+    default:
+      break;
     }
 
-  free(np->controlv);
-  np->controlv = newcontrolv;
-
-  free(np->uknotv);
-  np->uknotv = newuknotv;
-
-  /* create new controlv, uknotv, discarding the first p and last p knots */
-  np->width -= (np->uorder-1)*2;
   newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
+  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+			    sizeof(double))))
     return AY_EOMEM;
 
-  newuknotv = NULL;
-  if(!(newuknotv = calloc(np->width+np->uorder, sizeof(double))))
+  newknotv = NULL;
+  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
-  memcpy(newcontrolv, &(np->controlv[(np->uorder-1)*np->height*stride]),
-	 np->width*np->height*stride*sizeof(double));
+  switch(side)
+    {
+    case 0:
+    case 1:
+      /* clamped both or start: ignore first rs knots */
+      memcpy(newcontrolv, &(patch->controlv[rs*patch->height*stride]),
+	     patch->width*patch->height*stride*sizeof(double));
 
-  memcpy(newuknotv, &(np->uknotv[np->uorder-1]),
-	 (np->width+np->uorder)*sizeof(double));
+      memcpy(newknotv, &(patch->uknotv[rs]),
+	     (patch->width+patch->uorder)*sizeof(double));
+      /* improve phantom knot */
+      newknotv[0] = newknotv[1];
+      break;
+    case 2:
+      /* clamped end: ignore last re knots */
+      memcpy(newcontrolv, patch->controlv,
+	     patch->width*patch->height*stride*sizeof(double));
 
-  free(np->controlv);
-  np->controlv = newcontrolv;
+      memcpy(newknotv, patch->uknotv,
+	     (patch->width+patch->uorder)*sizeof(double));
+      /* improve phantom knot */
+      newknotv[patch->width+patch->uorder-1] =
+	newknotv[patch->width+patch->uorder-2];
+      break;
+    default:
+      break;
+    }
 
-  free(np->uknotv);
-  np->uknotv = newuknotv;
+  free(patch->controlv);
+  patch->controlv = newcontrolv;
 
-  np->uknot_type = AY_KTCUSTOM;
-
-  ay_status = ay_npt_recreatemp(np);
+  free(patch->uknotv);
+  patch->uknotv = newknotv;
 
  return AY_OK;
 } /* ay_npt_clampu */
-
-
-/* ay_npt_clampv:
- *  clamp patch <np> in v direction
- *  Warning: only works correctly for unclamped patches
- */
-int
-ay_npt_clampv(ay_nurbpatch_object *np)
-{
- int ay_status = AY_OK;
- double *newcontrolv = NULL, *newvknotv = NULL;
- double v;
- int stride, r, k, s;
- int i, a, b, oldheight;
-
-  if(!np)
-    return AY_ENULL;
-
-  stride = 4;
-
-  /* clamp start */
-  k = np->vorder - 1;
-  v = np->vknotv[k];
-  s = 0;
-  r = np->vorder - 1;
-  np->height += r;
-
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newvknotv = NULL;
-  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
-		np->vorder-1, np->vknotv, np->controlv, v, k,
-		s, r, newvknotv, newcontrolv);
-
-  if(ay_status)
-    {
-      free(newcontrolv); free(newvknotv);
-      return ay_status;
-    }
-
-  free(np->controlv);
-  np->controlv = newcontrolv;
-
-  free(np->vknotv);
-  np->vknotv = newvknotv;
-
-  /* clamp end */
-  k = np->height;
-  v = np->vknotv[k];
-  k--;
-  s = 0;
-  r = np->vorder - 1;
-  np->height += r;
-
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newvknotv = NULL;
-  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  ay_status = ay_nb_InsertKnotSurfV(stride, np->width-1, np->height-r-1,
-		       np->vorder-1, np->vknotv, np->controlv, v, k,
-		       s, r, newvknotv, newcontrolv);
-
-  if(ay_status)
-    {
-      free(newcontrolv); free(newvknotv);
-      return ay_status;
-    }
-
-  free(np->controlv);
-  np->controlv = newcontrolv;
-
-  free(np->vknotv);
-  np->vknotv = newvknotv;
-
-  /* create new controlv, vknotv, discarding the first p and last p knots */
-  oldheight = np->height;
-  np->height -= (np->vorder-1)*2;
-  newcontrolv = NULL;
-  if(!(newcontrolv = calloc(np->width*np->height*stride, sizeof(double))))
-    return AY_EOMEM;
-
-  newvknotv = NULL;
-  if(!(newvknotv = calloc(np->height+np->vorder, sizeof(double))))
-    { free(newcontrolv); return AY_EOMEM; }
-
-  for(i = 0; i < np->width; i++)
-    {
-      a = i*np->height*stride;
-      b = (i*oldheight+(np->vorder-1))*stride;
-      memcpy(&(newcontrolv[a]), &(np->controlv[b]),
-	     np->height*stride*sizeof(double));
-    } /* for */
-
-  memcpy(newvknotv, &(np->vknotv[np->vorder-1]),
-	 (np->height+np->vorder)*sizeof(double));
-
-  free(np->controlv);
-  np->controlv = newcontrolv;
-
-  free(np->vknotv);
-  np->vknotv = newvknotv;
-
-  np->vknot_type = AY_KTCUSTOM;
-
-  ay_status = ay_npt_recreatemp(np);
-
- return AY_OK;
-} /* ay_npt_clampv */
 
 
 /* ay_npt_clamputcmd:
@@ -8321,7 +8278,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, u;
- int i, j, count_start, count_end;
+ int i, j, a, b;
 
   while(sel)
     {
@@ -8353,30 +8310,27 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(np->uknot_type == AY_KTCUSTOM)
 	    {
-	      count_start = 0;
-	      count_end = 0;
-
-	      /* compare knots at start */
-	      u = knotv[0];
+	      a = 1;
+	      u = np->uknotv[0];
 	      for(i = 1; i < np->uorder; i++)
-		if(u == knotv[i])
-		  count_start++;
+		if(u == np->uknotv[i])
+		  a++;
 
-	      /* compare knots at end */
 	      j = np->width+np->uorder-1;
-	      u = knotv[j];
-	      for(i = j-1; i >= np->width; i--)
-		if(u == knotv[i])
-		  count_end++;
+	      b = 1;
+	      u = np->uknotv[j];
+	      for(i = j; i >= np->width; i--)
+		if(u == np->uknotv[i])
+		  b++;
 
-	      if(count_start || count_end)
+	      if((a > np->uorder) && (b > np->uorder))
 		{
-		  ay_error(AY_ERROR, argv[0], "Cannot clamp this patch!");
+		  ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
 		  break;
-		}
+		} /* if */
 	    } /* if */
 
-	  ay_status = ay_npt_clampu(np);
+	  ay_status = ay_npt_clampu(np, 0);
 
 	  if(ay_status)
 	    {
@@ -8403,6 +8357,200 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_clamputcmd */
 
 
+/* ay_npt_clampv:
+ *  clamp NURBS patch, it is safe to call this with half clamped patches
+ *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
+ */
+int
+ay_npt_clampv(ay_nurbpatch_object *patch, int side)
+{
+ int ay_status = AY_OK;
+ double *newcontrolv = NULL, *newknotv = NULL;
+ double v;
+ int stride = 4, i, j, k, s, oh, rs = 0, re = 0;
+
+  if(!patch)
+    return AY_ENULL;
+
+  /* clamp start? */
+  if(side == 0 || side == 1)
+    {
+      /* the next fragment also counts the phantom knot! */
+      v = patch->vknotv[0];
+      s = 1;
+      for(i = 1; i < patch->vorder; i++)
+	{
+	  if(v == patch->vknotv[i])
+	    s++;
+	  else
+	    break;
+	}
+
+      if(s < patch->vorder)
+	{
+	  /* clamp start */
+	  v = patch->vknotv[patch->vorder-1];
+
+	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
+				 patch->vknotv, &s);
+
+	  rs = (patch->vorder - 1) - s;
+	  patch->height += rs;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfV(stride, patch->width-1,
+			 patch->height-rs-1, patch->vorder-1, patch->vknotv,
+			 patch->controlv, v, k, s, rs,
+			 newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->vknotv);
+	  patch->vknotv = newknotv;
+	} /* if */
+    } /* if */
+
+  /* clamp end? */
+  if(side == 0 || side == 2)
+    {
+      /* the next fragment also counts the phantom knot! */
+      s = 1;
+      j = patch->height+patch->vorder-1;
+      v = patch->vknotv[j];
+      for(i = 1; i < patch->vorder; i++)
+	{
+	  if(v == patch->vknotv[j-i])
+	    s++;
+	  else
+	    break;
+	}
+
+      if(s < patch->vorder)
+	{
+	  /* clamp end */
+	  v = patch->vknotv[patch->height];
+
+	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
+				 patch->vknotv, &s);
+
+	  re = (patch->vorder - 1) - s;
+	  patch->height += re;
+
+	  newcontrolv = NULL;
+	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+				    sizeof(double))))
+	    return AY_EOMEM;
+
+	  newknotv = NULL;
+	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
+	    { free(newcontrolv); return AY_EOMEM; }
+
+	  ay_status = ay_nb_InsertKnotSurfV(stride, patch->width-1,
+			 patch->height-re-1, patch->vorder-1, patch->vknotv,
+			 patch->controlv, v, k, s, re,
+			 newknotv, newcontrolv);
+
+	  if(ay_status)
+	    return ay_status;
+
+	  free(patch->controlv);
+	  patch->controlv = newcontrolv;
+
+	  free(patch->vknotv);
+	  patch->vknotv = newknotv;
+	} /* if */
+    } /* if */
+
+  if(rs == 0 && re == 0)
+    {
+      return AY_OK;
+    }
+
+  oh = patch->height;
+
+  /* create new controlv, knotv, discarding the first rs and last re knots */
+  switch(side)
+    {
+    case 0:
+      patch->height -= rs+re;
+      break;
+    case 1:
+      patch->height -= rs;
+      break;
+    case 2:
+      patch->height -= re;
+      break;
+    default:
+      break;
+    }
+
+  newcontrolv = NULL;
+  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
+			    sizeof(double))))
+    return AY_EOMEM;
+
+  newknotv = NULL;
+  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
+    { free(newcontrolv); return AY_EOMEM; }
+
+  switch(side)
+    {
+    case 0:
+    case 1:
+      /* clamped both or start: ignore first rs knots */
+      for(i = 0; i < patch->width; i++)
+	{
+	  memcpy(&(newcontrolv[i*patch->height*stride]),
+		 &(patch->controlv[(i*oh+rs)*stride]),
+	     patch->height*stride*sizeof(double));
+	}
+
+      memcpy(newknotv, &(patch->vknotv[rs]),
+	     (patch->height+patch->vorder)*sizeof(double));
+      /* improve phantom knot */
+      newknotv[0] = newknotv[1];
+      break;
+    case 2:
+      /* clamped end: ignore last re knots */
+      for(i = 0; i < patch->width; i++)
+	{
+	  memcpy(&(newcontrolv[i*patch->height*stride]),
+		 &(patch->controlv[i*oh*stride]),
+	     patch->height*stride*sizeof(double));
+	}
+
+      memcpy(newknotv, patch->vknotv,
+	     (patch->height+patch->vorder)*sizeof(double));
+      /* improve phantom knot */
+      newknotv[patch->height+patch->vorder-1] =
+	newknotv[patch->height+patch->vorder-2];
+      break;
+    default:
+      break;
+    }
+
+  free(patch->controlv);
+  patch->controlv = newcontrolv;
+
+  free(patch->vknotv);
+  patch->vknotv = newknotv;
+
+ return AY_OK;
+} /* ay_npt_clampv */
+
+
 /* ay_npt_clampvtcmd:
  *  Tcl interface for ay_npt_clampv above
  */
@@ -8414,7 +8562,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  double *knotv, v;
- int i, j, count_start, count_end;
+ int i, j, a, b;
 
   while(sel)
     {
@@ -8446,30 +8594,27 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(np->vknot_type == AY_KTCUSTOM)
 	    {
-	      count_start = 0;
-	      count_end = 0;
-
-	      /* compare knots at start */
-	      v = knotv[0];
+	      a = 1;
+	      v = np->vknotv[0];
 	      for(i = 1; i < np->vorder; i++)
-		if(v == knotv[i])
-		  count_start++;
+		if(v == np->vknotv[i])
+		  a++;
 
-	      /* compare knots at end */
 	      j = np->height+np->vorder-1;
-	      v = knotv[j];
-	      for(i = j-1; i >= np->height; i--)
-		if(v == knotv[i])
-		  count_end++;
+	      b = 1;
+	      v = np->vknotv[j];
+	      for(i = j; i >= np->height; i--)
+		if(v == np->vknotv[i])
+		  b++;
 
-	      if(count_start || count_end)
+	      if((a > np->vorder) && (b > np->vorder))
 		{
-		  ay_error(AY_ERROR, argv[0], "Cannot clamp this patch!");
+		  ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
 		  break;
-		}
+		} /* if */
 	    } /* if */
 
-	  ay_status = ay_npt_clampv(np);
+	  ay_status = ay_npt_clampv(np, 0);
 
 	  if(ay_status)
 	    {
