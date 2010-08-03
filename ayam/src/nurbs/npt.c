@@ -8138,7 +8138,11 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 			 newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
@@ -8189,7 +8193,11 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 			 newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
@@ -8337,6 +8345,8 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
 	    }
 
+	  np->uknot_type = AY_KTCUSTOM;
+
 	  ay_status = ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
@@ -8412,7 +8422,11 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 			 newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
@@ -8463,7 +8477,11 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 			 newknotv, newcontrolv);
 
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
@@ -8620,6 +8638,8 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
 	    }
+
+	  np->vknot_type = AY_KTCUSTOM;
 
 	  ay_status = ay_npt_recreatemp(np);
 
