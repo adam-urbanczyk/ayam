@@ -990,16 +990,16 @@ int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
 /** Clamp surface in U dimension.
  */
-int ay_npt_clampu(ay_nurbpatch_object *np);
-
-/** Clamp surface in V dimension.
- */
-int ay_npt_clampv(ay_nurbpatch_object *np);
+int ay_npt_clampu(ay_nurbpatch_object *np, int side);
 
 /** Tcl command to clamp a surface in U dimension.
  */
 int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
+
+/** Clamp surface in V dimension.
+ */
+int ay_npt_clampv(ay_nurbpatch_object *np, int side);
 
 /** Tcl command to clamp asurface in V dimension.
  */

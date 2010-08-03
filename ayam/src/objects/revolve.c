@@ -738,7 +738,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
      ay_status = ay_object_copy(revolve->npatch, &rc);
      if(!ay_status && rc)
        {
-	 ay_npt_clampv((ay_nurbpatch_object *)(rc->refine));
+	 ay_npt_clampv((ay_nurbpatch_object *)(rc->refine), 0);
 	 ay_npt_extractnc(rc, 0, 0.0, AY_FALSE, AY_FALSE, &nc);
 	 ay_object_delete(rc);
 	 if(!(curve = calloc(1, sizeof(ay_object))))
