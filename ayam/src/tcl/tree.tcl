@@ -101,7 +101,7 @@ proc tree_update { node } {
 	set ay(TreeUpdateSema) 1
     }
 
-    puts "tree_update $node"
+    #puts "tree_update $node"
 
     # update may take some time, take measures:
     # after 0.1s we block the UI and make the
@@ -869,9 +869,9 @@ $m add cascade -label "Tree" -menu $ay(tree).popup.tree\
     -underline 1
 set m [menu $ay(tree).popup.tree -tearoff 0]
 $m add command -label "Rebuild" -command "tree_reset"
-$m add command -label "Expand" -command "tree_expand"
-$m add command -label "Collapse" -command "tree_collapse"
-
+$m add command -label "Expand All" -command "tree_expand"
+$m add command -label "Collapse All" -command "tree_collapse"
+$m add command -label "Toggle Selected" -command "tree_toggleTree"
 set m $ay(tree).popup
 
 $m add separator
@@ -941,7 +941,7 @@ set ay(DropActive) 0
 #  This proc has no error checks.
 #  This proc just appends new nodes (it has no index argument).
 #  This proc does not schedule any redraw updates (we
-#  trigger them "manually" via the -redraw option anyway).
+#  trigger them "manually" via the tree widgets -redraw option anyway).
 #  This proc does not return the new node.
 proc Tree::finsert { path parent node args } {
     variable $path
@@ -953,7 +953,7 @@ proc Tree::finsert { path parent node args } {
 
     set data($node) [list $parent]
 
-    return;
+ return;
 }
 # Tree::finsert
 
