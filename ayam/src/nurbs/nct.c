@@ -14,9 +14,12 @@
 
 /* nct.c NURBS curve tools */
 
-/* local variables */
+/* local variables: */
 
 char ay_nct_ncname[] = "NCurve";
+
+
+/* functions: */
 
 /* ay_nct_create:
  *   create a NURBS curve
@@ -948,7 +951,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
       s = 1;
       for(i = 1; i < curve->order; i++)
 	{
-	  if(u == curve->knotv[i])
+	  if(fabs(u - curve->knotv[i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -1001,7 +1004,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
       u = curve->knotv[j];
       for(i = 1; i < curve->order; i++)
 	{
-	  if(u == curve->knotv[j-i])
+	  if(fabs(u - curve->knotv[j-i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -1277,14 +1280,14 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 	  a = 1;
 	  u = curve->knotv[0];
 	  for(i = 1; i < curve->order; i++)
-	    if(u == curve->knotv[i])
+	    if(fabs(u - curve->knotv[i]) < AY_EPSILON)
 	      a++;
 
 	  j = curve->length+curve->order-1;
 	  b = 1;
 	  u = curve->knotv[j];
 	  for(i = j; i >= curve->length; i--)
-	    if(u == curve->knotv[i])
+	    if(fabs(u - curve->knotv[i]) < AY_EPSILON)
 	      b++;
 
 	  if((a < curve->order) || (b < curve->order))
@@ -1376,8 +1379,8 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
- int i, j, a, b, clamp_me;
- double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ int clamp_me;
+ double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
  int t = 1, nh = 0;
 
   if(argc >= 2)
@@ -1408,23 +1411,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(curve->knot_type == AY_KTCUSTOM)
 		{
-		  a = 1;
-		  u = curve->knotv[0];
-		  for(i = 1; i < curve->order; i++)
-		    if(u == curve->knotv[i])
-		      a++;
-
-		  j = curve->length+curve->order-1;
-		  b = 1;
-		  u = curve->knotv[j];
-		  for(i = j; i >= curve->length; i--)
-		    if(u == curve->knotv[i])
-		      b++;
-
-		  if((a < curve->order) || (b < curve->order))
-		    {
-		      clamp_me = AY_TRUE;
-		    }
+		  clamp_me = AY_TRUE;
 		}
 	    }
 
@@ -4176,14 +4163,14 @@ ay_nct_makecompatible(ay_object *curves)
 	      a = 1;
 	      u = curve->knotv[0];
 	      for(i = 1; i < curve->order; i++)
-		if(u == curve->knotv[i])
+		if(fabs(u - curve->knotv[i]) < AY_EPSILON)
 		  a++;
 
 	      j = curve->length+curve->order-1;
 	      b = 1;
 	      u = curve->knotv[j];
 	      for(i = j-1; i >= curve->length; i--)
-		if(u == curve->knotv[i])
+		if(fabs(u - curve->knotv[i]) < AY_EPSILON)
 		  b++;
 
 	      if((a < (curve->order)) || (b < (curve->order)))

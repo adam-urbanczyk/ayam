@@ -14,16 +14,18 @@
 
 /* npt.c NURBS patch tools */
 
-/* local variables */
+/* local variables: */
 
 char ay_npt_npname[] = "NPatch";
 
+
 /* prototypes of functions local to this module: */
+
 int ay_npt_rescaletrim(ay_object *trim,
 		       int mode, double omin, double omax,
 		       double nmin, double nmax);
 
-/* functions */
+/* functions: */
 
 /* ay_npt_create:
  *   create a NURBS patch object
@@ -274,7 +276,7 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 
 
 /* ay_npt_resizew:
- *  change width of a NURBPatch
+ *  change width of a NURBS patch
  */
 int
 ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
@@ -411,7 +413,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 
 
 /* ay_npt_resizeh:
- *  change height of a NURBPatch
+ *  change height of a NURBS patch
  */
 int
 ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
@@ -5708,14 +5710,14 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 	  a = 1;
 	  u = patch->uknotv[0];
 	  for(i = 1; i < patch->uorder; i++)
-	    if(u == patch->uknotv[i])
+	    if(fabs(u - patch->uknotv[i]) < AY_EPSILON)
 	      a++;
 
 	  j = patch->width+patch->uorder-1;
 	  b = 1;
 	  u = patch->uknotv[j];
 	  for(i = j; i >= patch->width; i--)
-	    if(u == patch->uknotv[i])
+	    if(fabs(u - patch->uknotv[i]) < AY_EPSILON)
 	      b++;
 
 	  if((a < patch->uorder) || (b < patch->uorder))
@@ -5872,14 +5874,14 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 	  a = 1;
 	  v = patch->vknotv[0];
 	  for(i = 1; i < patch->vorder; i++)
-	    if(v == patch->vknotv[i])
+	    if(fabs(v - patch->vknotv[i]) < AY_EPSILON)
 	      a++;
 
 	  j = patch->height+patch->vorder-1;
 	  b = 1;
 	  v = patch->vknotv[j];
 	  for(i = j; i >= patch->height; i--)
-	    if(v == patch->vknotv[i])
+	    if(fabs(v - patch->vknotv[i]) < AY_EPSILON)
 	      b++;
 
 	  if((a < patch->vorder) || (b < patch->vorder))
@@ -8106,7 +8108,7 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
       s = 1;
       for(i = 1; i < patch->uorder; i++)
 	{
-	  if(u == patch->uknotv[i])
+	  if(fabs(u - patch->uknotv[i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -8161,7 +8163,7 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
       u = patch->uknotv[j];
       for(i = 1; i < patch->uorder; i++)
 	{
-	  if(u == patch->uknotv[j-i])
+	  if(fabs(u - patch->uknotv[j-i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -8285,8 +8287,14 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
- double *knotv, u;
- int i, j, a, b;
+ ay_object *o = NULL;
+ int side = 0;
+
+
+  if(argc >= 2)
+    {
+      Tcl_GetInt(interp, argv[1], &side);
+    }
 
   while(sel)
     {
@@ -8296,49 +8304,22 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      if(sel->object->type == AY_IDNPATCH)
-	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
+      o = sel->object;
+      sel = sel->next;
 
-	  np = (ay_nurbpatch_object *)sel->object->refine;
+      if(o->type == AY_IDNPATCH)
+	{
+
+	  np = (ay_nurbpatch_object *)o->refine;
 
 	  /* check whether we need to clamp at all */
-	  knotv = np->uknotv;
-
 	  if((np->uknot_type == AY_KTNURB) ||
 	     (np->uknot_type == AY_KTBEZIER))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
-	      break;
+	      continue;
 	    }
 
-	  if(np->uknot_type == AY_KTCUSTOM)
-	    {
-	      a = 1;
-	      u = np->uknotv[0];
-	      for(i = 1; i < np->uorder; i++)
-		if(u == np->uknotv[i])
-		  a++;
-
-	      j = np->width+np->uorder-1;
-	      b = 1;
-	      u = np->uknotv[j];
-	      for(i = j; i >= np->width; i--)
-		if(u == np->uknotv[i])
-		  b++;
-
-	      if((a > np->uorder) && (b > np->uorder))
-		{
-		  ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
-		  break;
-		} /* if */
-	    } /* if */
-
-	  ay_status = ay_npt_clampu(np, 0);
+	  ay_status = ay_npt_clampu(np, side);
 
 	  if(ay_status)
 	    {
@@ -8347,18 +8328,23 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np->uknot_type = AY_KTCUSTOM;
 
+	  /* remove all selected points */
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+
 	  ay_status = ay_npt_recreatemp(np);
 
-	  sel->object->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_force(o);
 	}
       else
 	{
 	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
-      sel = sel->next;
     } /* while */
 
   ay_notify_parent();
@@ -8390,7 +8376,7 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
       s = 1;
       for(i = 1; i < patch->vorder; i++)
 	{
-	  if(v == patch->vknotv[i])
+	  if(fabs(v - patch->vknotv[i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -8445,7 +8431,7 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
       v = patch->vknotv[j];
       for(i = 1; i < patch->vorder; i++)
 	{
-	  if(v == patch->vknotv[j-i])
+	  if(fabs(v - patch->vknotv[j-i]) < AY_EPSILON)
 	    s++;
 	  else
 	    break;
@@ -8579,8 +8565,14 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
- double *knotv, v;
- int i, j, a, b;
+ ay_object *o = NULL;
+ int side = 0;
+
+
+  if(argc >= 2)
+    {
+      Tcl_GetInt(interp, argv[1], &side);
+    }
 
   while(sel)
     {
@@ -8590,49 +8582,22 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      if(sel->object->type == AY_IDNPATCH)
-	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
+      o = sel->object;
+      sel = sel->next;
 
-	  np = (ay_nurbpatch_object *)sel->object->refine;
+      if(o->type == AY_IDNPATCH)
+	{
+
+	  np = (ay_nurbpatch_object *)o->refine;
 
 	  /* check whether we need to clamp at all */
-	  knotv = np->vknotv;
-
 	  if((np->vknot_type == AY_KTNURB) ||
 	     (np->vknot_type == AY_KTBEZIER))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
 	      break;
 	    }
 
-	  if(np->vknot_type == AY_KTCUSTOM)
-	    {
-	      a = 1;
-	      v = np->vknotv[0];
-	      for(i = 1; i < np->vorder; i++)
-		if(v == np->vknotv[i])
-		  a++;
-
-	      j = np->height+np->vorder-1;
-	      b = 1;
-	      v = np->vknotv[j];
-	      for(i = j; i >= np->height; i--)
-		if(v == np->vknotv[i])
-		  b++;
-
-	      if((a > np->vorder) && (b > np->vorder))
-		{
-		  ay_error(AY_ERROR, argv[0], "Patch is already clamped!");
-		  break;
-		} /* if */
-	    } /* if */
-
-	  ay_status = ay_npt_clampv(np, 0);
+	  ay_status = ay_npt_clampv(np, side);
 
 	  if(ay_status)
 	    {
@@ -8641,18 +8606,23 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np->vknot_type = AY_KTCUSTOM;
 
+	  /* remove all selected points */
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+
 	  ay_status = ay_npt_recreatemp(np);
 
-	  sel->object->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_force(o);
 	}
       else
 	{
 	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
-      sel = sel->next;
     } /* while */
 
   ay_notify_parent();
