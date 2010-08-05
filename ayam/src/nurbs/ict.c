@@ -1193,8 +1193,8 @@ ay_ict_revert(ay_icurve_object *curve)
 
 
 /* ay_ict_getpntfromindex:
- *
- *
+ *  return the adress of the control point designated by <index>
+ *  of the interpolating curve <curve> in <p>
  */
 int
 ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
@@ -1202,10 +1202,13 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
  int stride = 3;
  char fname[] = "ict_getpntfromindex";
 
+  if(!curve || !p)
+    return AY_ENULL;
+
   if(index > (curve->length+1) || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   if(index < curve->length)
@@ -1225,5 +1228,5 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
 	}
     }
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_ict_getpntfromindex */
