@@ -14,6 +14,8 @@
 
 /* act.c - approximating curve tools */
 
+/* prototypes of functions local to this module: */
+
 int ay_act_svd(int m, int n, int withu, int withv,
 	       double eps, double tol,
 	       double *a, double *q, double *u, double *v);
@@ -23,6 +25,7 @@ int ay_act_multmatrixmn(int m, int n, double *M1, double *M2, double *R);
 int ay_act_solve(int m, int n, double *A, double *B, double *X);
 
 
+/* functions: */
 
 /* ay_act_svd:
  *  singular value decomposition of matrix <a[m][n]> into <q>, <u> and <v>
@@ -513,9 +516,9 @@ ay_act_leastSquares(double *Q, int m, int n, int p, double **U, double **P)
   if(n > m)
     return AY_ERROR;
 
-  ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
+  ay_status = ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
 
-  if(!ub)
+  if(ay_status || !ub)
     {
       return AY_ERROR;
     }
@@ -784,12 +787,16 @@ ay_act_leastSquaresClosed(double *Q, int m, int n, int p,
     return AY_ENULL;
 
   if(n > m+p)
-    return AY_ERROR;
+    {
+      return AY_ERROR;
+    }
 
-  ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
+  ay_status = ay_knots_chordparam(Q, m/*Qlen*/, istride, &ub);
 
-  if(!ub)
-    return AY_ERROR;
+  if(ay_status || !ub)
+    {
+      return AY_ERROR;
+    }
 
   if(!(*U = calloc(n+p+1, sizeof(double))))
     {
@@ -1139,8 +1146,8 @@ ay_act_revert(ay_acurve_object *curve)
 
 
 /* ay_act_getpntfromindex:
- *
- *
+ *  return the adress of the control point designated by <index>
+ *  of the approximating curve <curve> in <p>
  */
 int
 ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
@@ -1148,10 +1155,13 @@ ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
  int stride = 3;
  char fname[] = "act_getpntfromindex";
 
+  if(!curve || !p)
+    return AY_ENULL;
+
   if(index >= curve->length || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
-      return AY_OK;
+      return AY_ERROR;
     }
 
   *p = &(curve->controlv[index*stride]);
