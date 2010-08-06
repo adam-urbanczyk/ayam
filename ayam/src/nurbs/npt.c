@@ -5670,6 +5670,9 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
  int stride = 4;
  char fname[] = "npt_getpntfromindex";
 
+  if(!patch || !p)
+    return AY_ENULL;
+
   if(indexu >= patch->width || indexu < 0)
     {
       ay_error(AY_ERROR, fname, "index u out of range");
@@ -5695,8 +5698,8 @@ int
 ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 {
  int ay_status = AY_OK;
- double u, *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
- int i, j, a, b, clamp_me = AY_FALSE, nw = 0;
+ double *Uh = NULL, *Qw = NULL, *realQw = NULL, *realUh = NULL;
+ int clamp_me = AY_FALSE, nw = 0;
  char fname[] = "npt_elevateu";
 
   if(patch->uknot_type == AY_KTBSPLINE)
@@ -5707,23 +5710,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
     {
       if(patch->uknot_type == AY_KTCUSTOM)
 	{
-	  a = 1;
-	  u = patch->uknotv[0];
-	  for(i = 1; i < patch->uorder; i++)
-	    if(fabs(u - patch->uknotv[i]) < AY_EPSILON)
-	      a++;
-
-	  j = patch->width+patch->uorder-1;
-	  b = 1;
-	  u = patch->uknotv[j];
-	  for(i = j; i >= patch->width; i--)
-	    if(fabs(u - patch->uknotv[i]) < AY_EPSILON)
-	      b++;
-
-	  if((a < patch->uorder) || (b < patch->uorder))
-	    {
-	      clamp_me = AY_TRUE;
-	    } /* if */
+	  clamp_me = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -5859,8 +5846,8 @@ int
 ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 {
  int ay_status = AY_OK;
- double v, *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
- int i, j, a, b, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
+ double *Vh = NULL, *Qw = NULL, *realQw = NULL, *realVh = NULL;
+ int i, clamp_me = AY_FALSE, nh = 0, ind1, ind2;
  char fname[] = "npt_elevatev";
 
   if(patch->vknot_type == AY_KTBSPLINE)
@@ -5871,23 +5858,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
     {
       if(patch->vknot_type == AY_KTCUSTOM)
 	{
-	  a = 1;
-	  v = patch->vknotv[0];
-	  for(i = 1; i < patch->vorder; i++)
-	    if(fabs(v - patch->vknotv[i]) < AY_EPSILON)
-	      a++;
-
-	  j = patch->height+patch->vorder-1;
-	  b = 1;
-	  v = patch->vknotv[j];
-	  for(i = j; i >= patch->height; i--)
-	    if(fabs(v - patch->vknotv[i]) < AY_EPSILON)
-	      b++;
-
-	  if((a < patch->vorder) || (b < patch->vorder))
-	    {
-	      clamp_me = AY_TRUE;
-	    } /* if */
+	  clamp_me = AY_TRUE;
 	} /* if */
     } /* if */
 

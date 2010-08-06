@@ -314,10 +314,13 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 {
  char fname[] = "ay_tcmd_getbppntfromindex";
 
+  if(!patch || !p)
+    return AY_ENULL;
+
   if(index >= 4 || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   switch(index)
