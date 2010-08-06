@@ -39,7 +39,8 @@ ay_act_svd(int m, int n, int withu, int withv, double eps, double tol,
  double c, f, g, h, s, x, y, z;
  double *e;
 
-  e = (double *)calloc(n, sizeof(double));
+  if(!(e = (double *)calloc(n, sizeof(double))))
+    return 1;
   retval = 0;
 
   /* Copy 'a' to 'u' */
@@ -252,7 +253,7 @@ test_f_convergence:
       z = q[k];
       if(l == k) goto convergence;
 
-    /* shift from bottom 2x2 minor */
+      /* shift from bottom 2x2 minor */
       iter++;
       if(iter > 30) {
 	retval = k;
@@ -437,7 +438,7 @@ ay_act_solve(int m, int n, double *A, double *B, double *X)
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       svd_status = ay_act_svd(m, n, 1, 1,
-			      1.5/*AY_EPSILON*/, 0.25/*AY_EPSILON*/,
+			      1.5/*AY_EPSILON*/, /*0.25*/AY_EPSILON,
 			      A, q, u, v);
 
       if(svd_status)
@@ -448,7 +449,8 @@ ay_act_solve(int m, int n, double *A, double *B, double *X)
 	  for(i = 0; i < n; i++)
 	    {
 	      tmp[i] = 0.0;
-	      if(q[i] > AY_EPSILON /* XXXX ?Use different constant/tol? */)
+	      /* XXXX ?Use different constant/tol? */
+	      if(fabs(q[i]) > AY_EPSILON)
 		{
 		  for(j = 0; j < m; j++)
 		    {
