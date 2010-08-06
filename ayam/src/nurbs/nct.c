@@ -5300,7 +5300,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* calculate knot multiplicity */
 	  s = 1;
-	  while(curve->knotv[i] == curve->knotv[i+s])
+	  while(fabs(curve->knotv[i] - curve->knotv[i+s]) < AY_EPSILON)
 	    {
 	      s++;
 	    }
