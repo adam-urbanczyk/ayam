@@ -206,10 +206,10 @@ using the context menu.
 <p>
 The two representations have very different properties regarding
 speed, use of resources, and versatility. The tree is, due to the
-Drag-and-Drop operations, much more versatile but also slower.
+drag and drop operations, much more versatile but also slower.
 <p>
 Both representations manage a so called <tt/"current level"/.
-This level is the level that is displayed in the object listbox.
+This level is the scene level that is displayed in the object listbox.
 In the tree view the current level is drawn in black while all
 other levels are grayed out. Selection of objects
 may take place in the current level only!
@@ -246,7 +246,7 @@ child level.
 The same may be accomplished using single clicks on the well known
 plus/minus symbols in front of the name of those objects.
 <p>
-Drag-and-Drop operation is also possible to move objects in the
+Drag and drop operation is also possible to move objects in the
 hierarchy and to initiate special actions like connecting materials
 to objects. However, this last feature is documented in section
 <ref id="obandprp" name="Objects, Properties, and Tags">
@@ -259,11 +259,14 @@ clipboard operations:
 <item><tt>"Tree/Rebuild"</tt> completely removes the tree nodes, rebuilds
 the hierarchy, makes the top level current, and clears the object selection,
 
-<item><tt>"Tree/Expand"</tt> opens all nodes with child nodes,
+<item><tt>"Tree/Expand All"</tt> opens all nodes with child nodes,
 
-<item><tt>"Tree/Collapse"</tt> closes all nodes with child nodes,
+<item><tt>"Tree/Collapse All"</tt> closes all nodes with child nodes,
 
-<item><tt>"Switch to Listbox"</tt> removes the tree and replaces it
+<item><tt>"Tree/Toggle Selected"</tt> toggles display of all sub-levels
+of the selected objects,
+
+<item><tt>"Switch to Listbox"</tt> removes the tree view and replaces it
 with the object listbox (see below).
 
 <item><tt>"Deselect Object"</tt> deselects the currently selected
@@ -288,6 +291,11 @@ selection, but rather extend it in the respective direction,
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 
+<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
+since Ayam 1.11 and extend the selection up to the first
+or last object in the current level respectively.
+The root object, however, will always be omitted.
+
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
 
 <item><tt/&lt;Left&gt;/ enters the parent level,
@@ -299,10 +307,8 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <item><tt/&lt;Space&gt;/ toggles display of the child objects of the
 selected object(s).
 
-<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
-since Ayam 1.11 and extend the selection up to the first
-or last object in the current level respectively.
-The root object, however, will always be omitted.
+<item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
+selected object(s) (available since Ayam 1.18).
 
 </itemize>
 <p>
@@ -1239,7 +1245,7 @@ the current view will already be selected in the dialog box.
 
 <item><tt/"Open PPrev"/, <tt/"Close PPrev"/: those menu entries are just
 available, if the compile time option <tt/AYENABLEPPREV/ has been set.
-This option is not set for the official Ayam binaries.
+This option is <em>not</em> set for the official Ayam binaries.
 Permanent preview (PPrev) continuously writes a RIB stream to
 a (fast) RenderMan renderer, a frame for each redraw operation
 of the view window that was used to open the preview. This way, the
@@ -1325,7 +1331,7 @@ constrain modelling actions to grid coordinates.
 
 <item><tt/"Set Gridsize"/, may be used to change the size of the grid
 associated with this view. Another way to change the grid size is
-to use the grid menu on the rightmost side, see below.
+to use the grid icon menu on the rightmost side, see below.
 
 <item><tt/"Half Size"/, change width and height to the half of the
 current values.
@@ -1851,7 +1857,7 @@ editing has been activated (again).
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off, default), or whether there should be just one global
-mark (on). 
+mark (on).
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that should be active after a press of the <tt/&lt;Esc&gt;/ key.
@@ -2101,7 +2107,7 @@ The first sub-section deals with error message handling:
 stemming from Tcl/Tk should be redirected to the console,
 rather than be handled by Tcls sometimes annoying error
 handling dialog box. However, this dialog box with the built in
-stack trace can also become very handy, if you write and debug
+stack trace can also become very handy, while writing and debugging
 Tcl scripts.
 
 <item><tt/"Logging"/ determines, whether error messages should
@@ -2425,7 +2431,7 @@ Rotate|<tt/&lt;r&gt;/|
 </table>
 
 
-<sect1>Rotating Objects or Selected Points About a Point
+<sect1>Rotating Objects or Selected Points About a Point<label id="rotaac">
 <p>
 Using the rotate about modelling action one may interactively rotate
 objects or the selected (tagged) points of the selected objects about
@@ -2698,7 +2704,7 @@ All points can be selected easily using the keyboard shortcut <tt/&lt;A&gt;/.
 The list of selected points will not be deleted from the object until
 an explicit deselection is performed using the keyboard shortcut
 <tt/&lt;N&gt;/ or if certain modelling tools (e.g. inserting points)
-are used. 
+are used.
 <p>
 The point selection can also be inverted using the keyboard shortcut
 <tt/&lt;I&gt;/.
@@ -2799,8 +2805,8 @@ selects the new point and loads its coordinate values. In case
 of multiple selected objects, the deselection is only performed
 on the object with a new selection.
 <p>
-Note that the w coordinate setting will be ignored if the
-a selected point does not have weight information (is not homogenous).
+Note that the w coordinate setting will be ignored if a
+selected point does not have weight information (is not homogenous).
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
 world space. Since Ayam 1.18, this modelling action may affect
@@ -3255,7 +3261,7 @@ statement will be written to the RIB, which looks like this:
 If you disable this option, be sure to add atleast one
 RiDisplay tag to the root object (see also section
 <ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
-not contain a Display statement. This option has no effect on
+not contain a RiDisplay statement. This option has no effect on
 RIBs created by the QuickRender and Render actions in view windows.
 
 <item><tt/"Variance"/, maximum allowed variance of two pixel values.
@@ -3280,7 +3286,7 @@ pixel.
 <tt/"RGBA_Dither"/, specify quantisation and dithering
 
 <item><tt/"MinSamples"/, <tt/"MaxSamples"/, minimum and maximum number
-of samples per pixels.
+of samples per pixel (for variance based sampling).
 
 <item><tt/"MaxRayLevel"/, maximum number of recursive rays.
 
@@ -3288,7 +3294,7 @@ of samples per pixels.
 be in order to shadow another object.
 
 <item><tt/"PRManSpec"/, toggles behaviour of BMRT's specular() function
-between PRMan compatible (default) and RiStandard compatible.
+between PRMan compatible (default) and RI standard compatible.
 
 <item><tt/"RadSteps"/, number of radiosity steps, the default 0 leads
 to no radiosity calculations to be performed.
@@ -3356,14 +3362,14 @@ Note that picking of objects currently does not work in views of type
 View objects act in special ways, when certain objects are dropped
 onto them in the tree view:
 <p>
-When a camera object is dropped onto a view object using Drag-and-Drop
+When a camera object is dropped onto a view object using drag and drop
 in the tree view the camera settings of the camera object will be copied
 to the views camera.
 <p>
 When a light object of type <tt/"Spot"/ is dropped onto a view object
-using Drag-and-Drop in the tree view the views camera will be changed,
+using drag and drop in the tree view the views camera will be changed,
 so that the user looks along the light to see what objects of the scene
-are lighted by the light object (this works best with perspective views
+are lit by the light object (this works best with perspective views
 that have equal width and height).
 <p>
 Since Ayam 1.8 it is possible, to directly drag objects from the
@@ -3460,7 +3466,7 @@ Therefore, they has just have two properties
 explained above, see sections <ref id="camp" name="Camera"> and
 <ref id="attrs" name="Attributes Property">.
 <p>
-When a view object is dropped onto a camera object using Drag-and-Drop
+When a view object is dropped onto a camera object using drag and drop
 in the tree view, the camera settings from the view will be copied
 to the camera object.
 <p>
@@ -3914,7 +3920,7 @@ Material objects are used to attach RiAttributes and shaders to
 geometric objects.
 <p>
 When geometric objects are dropped onto a material object using
-Drag-and-Drop in the tree view they will be connected to this
+drag and drop in the tree view they will be connected to this
 material object.
 <p>
 While geometric objects are connected to a material object this material
@@ -4032,7 +4038,7 @@ Note that you can not preview the effect of a light source in
 shaded Ayam views, currently. However it is possible to estimate
 the effect of a spot light source by simply dropping it into
 a perspective view window, the view will then show you the objects
-lighted by the spot.
+lit by the spot.
 <p>
 The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
@@ -4062,7 +4068,7 @@ value is on.
 just local objects (objects, that are defined in the same level
 in the scene hierarchy as the light source object or below it) or
 all objects in the scene.
-The default is off, all objects in the scene are lighted!
+The default is off, all objects in the scene are lit!
 The <tt/"IsLocal"/ attribute is ignored for lights that are
 defined in the root level of the scene. Mind also that shadow maps
 will always contain shadows from all objects in the scene,
@@ -4113,13 +4119,13 @@ illumination effect (e.g. around 30 for the standard distance of
 falloff area at the edge of the beam of a spot light.
 <item><tt/"BeamDistrib"/ (beam distribution) determines, how the light
 falls off in the beam of the spot light. Larger values result in narrower
-lighted areas.
+lit areas.
 </itemize>
 
 In order to ease the parameterisation of spot lights, you may drop the
 light source object onto a view object or into a view window
 (preferably one with a perspective viewing transformation and with equal
-width and height) to see what objects of the scene are actually lighted
+width and height) to see what objects of the scene are actually lit
 by the light object.
 
 <sect2>Using ShadowMaps<label id="shadowmaps">
@@ -4298,7 +4304,7 @@ An example:
 <item>Create a custom light object.
 <item>Assign the arealight light shader to it.
 <item>Create a sphere.
-<item>Drag-and-Drop the sphere onto the Light object so that it becomes
+<item>Drag and drop the sphere onto the Light object so that it becomes
 a child of the light object.
 <item>Transform the sphere object to your hearts content; the position
 and size of the object determines the position and size of the light source!
@@ -4507,7 +4513,6 @@ Since Ayam 1.18, when changing the order of a periodic curve (and not
 touching the length) Ayam will automatically add or remove control
 points to/from the curve so that the shape of the curve remains
 largely intact and the periodic extensions plausible.
-
 
 
 <sect2>Multiple Points<label id="ncurvemp">
@@ -4961,7 +4966,7 @@ The new instance still points to the original master and <em>not</em>
 to the copy of the master.
 <p>
 It is possible to move masters and instances through the scene hierarchy
-using Drag-and-Drop in the tree view or using the clipboard with
+using drag and drop in the tree view or using the clipboard with
 <tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
 <p>
 You can resolve an instance object at any time using
@@ -6290,7 +6295,7 @@ field always displays the parameters of the created NURBS patch.
 <sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
 The ICurve object creates a global interpolating NURBS curve from n
-3D non-rational data points.
+3D non-rational ordered data points.
 The curve may be closed, the order of the curve may be configured,
 the parameterisation may be adapted, and end derivatives may be specified.
 The open versions use n+2 NURBS control points, and the closed ones n+3.
@@ -6392,7 +6397,7 @@ automatically from the desired order.
 </figure>
 <p>
 The ACurve object, available since Ayam 1.15, creates an approximating
-NURBS curve with m control points from n 3D non-rational data points
+NURBS curve with m control points from n 3D non-rational ordered data points
 (see image above).
 The number of data points must be higher than or equal to the number of
 control points used. The approximation algorithm used is a least
@@ -7774,7 +7779,7 @@ established.
 <item><tt/"Merge"/, merges multiple SDNPatch objects into one new.
 <item><tt/"Import PLY"/, import a PLY file.
 <item><tt/"Export PLY"/, export the currently selected SDNPatch object
-to a PLY file. 
+to a PLY file.
 </itemize>
 
 In addition, there are two conversion operations that convert
@@ -7912,7 +7917,7 @@ and selected for editing.
 If you change the name, the object will be disconnected from the
 old material and connected to the new material.
 An easier way to connect geometric objects to material objects is to simply
-drop the geometric objects onto the material object using Drag-and-Drop
+drop the geometric objects onto the material object using drag and drop
 in the tree view.
 </itemize>
 
@@ -8635,7 +8640,7 @@ interface commands.
 <figure loc="ht">
 <eps file="pics/cbsps.ps" height="5cm">
 <img src="pics/cbsps.gif">
-<caption>B-Spline Curves Created by the Circular B-SPline Tool</caption>
+<caption>B-Spline Curves Created by the Circular B-Spline Tool</caption>
 </figure>
 <itemize>
 <item>Arguments: Radius, Arc, Sections, Order.
@@ -8685,7 +8690,7 @@ differs according to the arc, e.g. 9 points for full circles,
 <item>Note: The NURBS curve created by the NURBCircle tool is rational
 (uses weights). This means, editing the curve (e.g. moving control points)
 may lead to unpredicted results (the curve does not behave exactly
-as wished). Use a closed B-Spline created with the Circular BSpline tool
+as wished). Use a closed B-Spline created with the Circular B-Spline tool
 (see above) if you want to edit the curve further.
 Additionally, the created curve will be marked as closed and the generation
 of multiple points will be enabled, so that point edit actions know that
@@ -10134,7 +10139,7 @@ selPnts - select points:
 <itemize>
  <item>Synopsis: <tt/"selPnts [-all|index1 index2 ...]"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: 
+ <item>Description:
  <itemize>
   <item>If called without arguments, this command deselects all points.
   <item>If the argument is <tt/"-all"/, this command selects all points.
@@ -10672,26 +10677,40 @@ of the curve will be changed to <tt/"Custom"/.
 <p><label id="scclampnpu"><label id="scclampunp">
 clampuNP - clamp NURBS patch in U direction:
 <itemize>
- <item>Synopsis: <tt/"clampuNP"/
+ <item>Synopsis: <tt/"clampuNP [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-U direction).
+U direction). If the side parameter is omitted or 0, both sides
+are clamped.
+If the side parameter is 1 only the start, and if it is 2 only the end
+is clamped.
+In Ayam versions prior to 1.18 it was an error if the patch was already
+clamped at either side, this is no longer the case.
+Furthermore, patches with multiple knots in the end region(s) could not be
+clamped, this works ok now.
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
 <p><label id="scclampnpv"><label id="scclampvnp">
 clampvNP - clamp NURBS patch in V direction:
 <itemize>
- <item>Synopsis: <tt/"clampvNP"/
+ <item>Synopsis: <tt/"clampvNP [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-V direction).
+V direction). If the side parameter is omitted or 0, both sides
+are clamped.
+If the side parameter is 1 only the start, and if it is 2 only the end
+is clamped.
+In Ayam versions prior to 1.18 it was an error if the patch was already
+clamped at either side, this is no longer the case.
+Furthermore, patches with multiple knots in the end region(s) could not be
+clamped, this works ok now.
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
@@ -12889,9 +12908,9 @@ changes to views (type changes or changes to the camera settings associated
 with a view).
 <p>
 It is currently <em>not</em> possible to undo any changes to the object
-hierarchy, including clipboard (e.g. cut, paste) and drag-and-drop
+hierarchy, including clipboard (e.g. cut, paste) and drag and drop
 operations. If you delete an object, it is gone! If you, accidentally, move
-an object using drag-and-drop, undo will not help!
+an object using drag and drop, undo will not help!
 <p>
 The undo system works by storing copies of the different states of changed
 objects in an undo buffer. You may step backward through the saved states using
@@ -14054,7 +14073,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Center All Points: <ref id="mmspecial" name="main menu entry">
 <item>Circle: <ref id="ncirct" name="NURBS circle tool">,
 <ref id="ncircleobj" name="NCircle object">
-<item>Clamp: <ref id="clat" name="clamp tool">
+<item>Clamp: <ref id="clat" name="clamp curve tool">,
+<ref id="clanpt" name="clamp patch tool">
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
 <item>clampuNP: <ref id="scclampunp" name="scripting interface command">
 <item>clampvNP: <ref id="scclampvnp" name="scripting interface command">
@@ -14069,7 +14089,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="hyp" name="Hyperboloid attribute">,
 <ref id="ncattr" name="NCurve attribute">,
 <ref id="concatncp" name="ConcatNC attribute">
-<item>Closed BSpline: <ref id="cbspt" name="closed BSpline tool">
+<item>Closed B-Spline: <ref id="cbspt" name="closed B-Spline tool">
 <item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>coarsenNC: <ref id="sccoarsennc" name="scripting interface command">,
 <ref id="coart" name="coarsen tool">
@@ -14206,6 +14226,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="finduac" name="modelling action">
 <item>FindUV: <ref id="finduvac" name="modelling action">
+<item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
 <item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
@@ -14386,7 +14407,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
-<ref id="iac" name="move object">
+<ref id="iac" name="modelling action">
 <item>movOb: <ref id="scmovob" name="scripting interface command">
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
@@ -14468,6 +14489,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
+<item>Pivot: <ref id="rotaac" name="modelling action">
 <item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Point: <ref id="pdsl" name="light type">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
@@ -14475,7 +14497,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PPRender: <ref id="prefrib" name="preference setting">
 <item>Preferences: <ref id="prefs" name="Preferences">,
 <ref id="hidprefs" name="hidden preference settings">
-<item>PrepDiaCap: <ref id="hidprefs" name="hidden preference setting">
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
@@ -14590,7 +14611,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Roll: <ref id="camp" name="Camera attribute">
 <item>Root: <ref id="rootobj" name="Root object">
 <item>Rotate: <ref id="vwsc" name="view action">,
-<ref id="rotac" name="rotate object">,
+<ref id="rotac" name="modelling action">,
 <ref id="swp" name="Sweep attribute">,
 <ref id="cloneattr" name="Clone attribute">
 <item>Rotation: <ref id="trap" name="transformations property">,
@@ -14619,7 +14640,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scsavescene" name="scripting interface command">
 <item>Scale: <ref id="trap" name="transformations property">,
-<ref id="scalac" name="scale object">
+<ref id="scalac" name="modelling action">
 <item>ScaleFactor: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">,
 <ref id="impwav" name="Wavefront OBJ import option">,

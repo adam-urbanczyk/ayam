@@ -3,7 +3,7 @@
 # sgml-tools (linuxdoc) packages LaTeX-output for PDF, namely:
 # change .gif to .png, and append the height parameter from the
 # leading epsfile command line to the .png-command line.
-# Why Debian-sgml-tools had to change in such an incompatible way (as opposed
+# Why Debian sgml-tools had to change in such an incompatible way (as opposed
 # to the original sgml-tools package) is completely beyond my understanding.
 #
 # Also, format control beyond the capabilites of Linuxdoc-SGML is
