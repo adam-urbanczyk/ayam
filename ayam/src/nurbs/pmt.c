@@ -624,21 +624,24 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
  int stride = 4;
  char fname[] = "pmt_getpntfromindex";
 
+  if(!patch || !p)
+    return AY_ENULL;
+
   if(indexu >= patch->width || indexu < 0)
     {
       ay_error(AY_ERROR, fname, "index u out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   if(indexv >= patch->height || indexv < 0)
     {
       ay_error(AY_ERROR, fname, "index v out of range");
-      return TCL_OK;
+      return AY_ERROR;
     }
 
   *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_pmt_getpntfromindex */
 
 
