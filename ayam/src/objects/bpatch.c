@@ -381,17 +381,19 @@ int
 ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_bpatch_object *bpatch = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *c = NULL;
  int i, j, a;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   bpatch = (ay_bpatch_object *)(o->refine);
 
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
+
   switch(mode)
     {
     case 0:
@@ -500,7 +502,40 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       pe->num = a;
       break;
     case 3:
-      ay_selp_clear(o);
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < 4)
+	    {
+	      switch(pnt->index)
+		{
+		case 0:
+		  pnt->point = bpatch->p1;
+		  break;
+		case 1:
+		  pnt->point = bpatch->p2;
+		  break;
+		case 2:
+		  pnt->point = bpatch->p3;
+		  break;
+		case 3:
+		  pnt->point = bpatch->p4;
+		  break;
+		default:
+		  break;
+		}
+	      pnt->homogenous = AY_FALSE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	} /* while */
       break;
     default:
       break;

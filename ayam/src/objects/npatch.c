@@ -1377,7 +1377,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *peindices = NULL, peindex = 0;
 
-  if(!o || !p)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
@@ -1521,6 +1521,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)(npatch->width*npatch->height))
 	    {
 	      pnt->point = &(npatch->controlv[pnt->index*4]);
+	      pnt->homogenous = AY_TRUE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
@@ -1530,7 +1531,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      free(pnt);
 	      pnt = *lastpnt;
 	    }
-	}
+	} /* while */
       break;
     } /* if */
 
