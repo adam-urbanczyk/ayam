@@ -353,7 +353,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_point *old_selp = NULL, selp = {0};
+ ay_point *old_selp = NULL, *selp = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL, *po = NULL;
@@ -534,20 +534,27 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      cb = (ay_getpntcb *)(arr[o->type]);
 	      if(cb)
 		{
-		  old_selp = o->selp;
-		  o->selp = &selp;
-		  Tcl_GetInt(interp, argv[i], &indexu);
-		  selp.index = (unsigned int)indexu;
-		  ay_status = cb(3, o, NULL, NULL);
-		  if(ay_status)
+		  if(!(selp = calloc(1, sizeof(ay_point))))
 		    {
-		      ay_error(AY_ERROR, argv[0], "getpnt failed");
+		      ay_error(AY_EOMEM, argv[0], NULL);
 		      return TCL_OK;
 		    }
-		  p = selp.point;
-		  homogenous = selp.homogenous;
+		  old_selp = o->selp;
+		  o->selp = selp;
+		  Tcl_GetInt(interp, argv[i], &indexu);
+		  selp->index = (unsigned int)indexu;
+		  ay_status = cb(3, o, NULL, NULL);
+		  if(ay_status || (!o->selp))
+		    {
+		      ay_error(AY_ERROR, argv[0], "getpntcb failed");
+		      return TCL_OK;
+		    }
+		  p = selp->point;
+		  homogenous = selp->homogenous;
+		  free(selp);
 		  o->selp = old_selp;
 		  handled = AY_TRUE;
+		  j = i+1;
 		}
 	    }
 
