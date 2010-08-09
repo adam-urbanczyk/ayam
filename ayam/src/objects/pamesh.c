@@ -392,11 +392,12 @@ int
 ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_pamesh_object *pamesh = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   pamesh = (ay_pamesh_object *)(o->refine);
@@ -489,7 +490,25 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       break;
     case 3:
-      ay_selp_clear(o);
+      /* rebuild from o->selp */
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < (unsigned int)(pamesh->width * pamesh->height))
+	    {
+	      pnt->point = &(pamesh->controlv[pnt->index*4]);
+	      pnt->homogenous = AY_TRUE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	} /* while */
       break;
     default:
       break;

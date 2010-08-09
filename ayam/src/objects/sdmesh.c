@@ -272,7 +272,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  unsigned int *peindices = NULL, peindex = 0;
  const int stride = 3;
 
-  if(!o || !p)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
@@ -380,6 +380,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < sdmesh->ncontrols)
 	    {
 	      pnt->point = &(sdmesh->controlv[pnt->index*stride]);
+	      pnt->homogenous = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
@@ -389,7 +390,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      free(pnt);
 	      pnt = *lastpnt;
 	    }
-	}
+	} /* while */
       break;
     default:
       break;

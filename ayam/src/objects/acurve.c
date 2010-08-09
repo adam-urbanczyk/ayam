@@ -504,7 +504,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  const int stride = 3;
  unsigned int *peindices = NULL, peindex = 0;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   acurve = (ay_acurve_object *)(o->refine);
@@ -613,6 +613,7 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)acurve->length)
 	    {
 	      pnt->point = &(acurve->controlv[pnt->index*stride]);
+	      pnt->homogenous = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

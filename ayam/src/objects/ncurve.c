@@ -814,7 +814,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *peindices = NULL, peindex = 0;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
@@ -954,6 +954,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)ncurve->length)
 	    {
 	      pnt->point = &(ncurve->controlv[pnt->index*4]);
+	      pnt->homogenous = AY_TRUE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

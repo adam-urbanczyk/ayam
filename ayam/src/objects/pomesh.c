@@ -676,7 +676,7 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  unsigned int *peindices = NULL, peindex = 0;
  int stride = 0;
 
-  if(!o || !p)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
@@ -788,6 +788,7 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < pomesh->ncontrols)
 	    {
 	      pnt->point = &(pomesh->controlv[pnt->index*stride]);
+	      pnt->homogenous = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

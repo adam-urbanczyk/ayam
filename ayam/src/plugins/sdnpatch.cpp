@@ -10,7 +10,7 @@
  *
  */
 
-/* sdnpatch.cpp - sdnpatch custom object (Subdivision NURBS) */
+/** \file sdnpatch.cpp SDNPatch custom object (Subdivision NURBS) */
 
 #include "snurbs.h"
 #include "knotinterval.h"
@@ -3671,14 +3671,14 @@ int
 sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  sdnpatch_object *sdnpatch = NULL;
- ay_point *pnt = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  unsigned int i = 0, a = 0;
  double minDist = ay_prefs.pick_epsilon, curDist = 0.0;
  double **tmpc, *c;
  unsigned int *tmpi;
  std::vector<Vertex*> *vertices = NULL;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   sdnpatch = (sdnpatch_object *)(o->refine);
@@ -3775,19 +3775,33 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       break;
     case 3:
       /* rebuild from o->selp */
-
       pnt = o->selp;
+      lastpnt = &o->selp;
       while(pnt)
 	{
-	  pnt->point = &(sdnpatch->controlCoords[pnt->index*4]);
-	  pnt = pnt->next;
+	  if(pnt->index < vertices->size())
+	    {
+	      pnt->point = &(sdnpatch->controlCoords[pnt->index*4]);
+	      pnt->homogenous = AY_TRUE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
 	}
       break;
     default:
       break;
     } // switch
 
-  pe->homogenous = AY_TRUE;
+  if(pe)
+    {
+      pe->homogenous = AY_TRUE;
+    }
 
  return AY_OK;
 } /* sdnpatch_getpntcb */
