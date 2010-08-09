@@ -3688,6 +3688,9 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   vertices = sdnpatch->controlVertices;
 
+  if(pe)
+    pe->homogenous = AY_TRUE;
+
   switch(mode)
     {
     case 0:
@@ -3797,11 +3800,6 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     default:
       break;
     } // switch
-
-  if(pe)
-    {
-      pe->homogenous = AY_TRUE;
-    }
 
  return AY_OK;
 } /* sdnpatch_getpntcb */

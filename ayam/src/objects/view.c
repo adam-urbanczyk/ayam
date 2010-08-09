@@ -561,6 +561,9 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
+  if(pe)
+    pe->homogenous = AY_FALSE;
+
   switch(mode)
     {
     case 0:
@@ -570,7 +573,6 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       pe->coords[0] = view->from;
       pe->coords[1] = view->to;
-      pe->homogenous = AY_FALSE;
       pe->num = 2;
       break;
     case 1:
@@ -604,7 +606,6 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
-      pe->homogenous = AY_FALSE;
       pe->num = 1;
       break;
     case 2:
@@ -641,7 +642,6 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
       pe->num = a;
       break;
