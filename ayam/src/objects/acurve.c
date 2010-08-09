@@ -512,6 +512,9 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
+  if(pe)
+    pe->homogenous = AY_FALSE;
+
   switch(mode)
     {
     case 0:
@@ -528,7 +531,6 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  a += stride;
 	}
 
-      pe->homogenous = AY_FALSE;
       pe->num = acurve->length;
       break;
     case 1:
@@ -553,8 +555,6 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      pe->homogenous = AY_FALSE;
 
       if(!(pe->coords = calloc(1, sizeof(double*))))
 	return AY_EOMEM;
@@ -598,7 +598,6 @@ ay_acurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
       pe->indices = peindices;
       pe->num = a;

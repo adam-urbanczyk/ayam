@@ -689,7 +689,8 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  pe->homogenous = AY_FALSE;
+  if(pe)
+    pe->homogenous = AY_FALSE;
 
   switch(mode)
     {
