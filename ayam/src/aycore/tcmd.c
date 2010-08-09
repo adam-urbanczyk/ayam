@@ -314,13 +314,10 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 {
  char fname[] = "ay_tcmd_getbppntfromindex";
 
-  if(!patch || !p)
-    return AY_ENULL;
-
   if(index >= 4 || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
-      return AY_ERROR;
+      return TCL_OK;
     }
 
   switch(index)
@@ -354,18 +351,22 @@ int
 ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
+ int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
+ ay_point *old_selp = NULL, selp = {0};
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *np = NULL;
- ay_object *src = NULL, *po = NULL;
+ ay_object *o = NULL, *po = NULL;
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
- int homogenous = AY_FALSE, trafo = AY_FALSE, param = AY_FALSE;
+ int homogenous = AY_FALSE, apply_trafo = AY_FALSE;
+ int to_world = AY_FALSE, eval = AY_FALSE;
  int handled = AY_FALSE, freepo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-p\\] (index | indexu indexv | u | u v) varx vary varz [varw]";
+ char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v) varx vary varz [varw]";
  Tcl_Obj *to = NULL, *ton = NULL;
+ ay_voidfp *arr = NULL;
+ ay_getpntcb *cb = NULL;
 
   if(argc <= 1)
     {
@@ -381,16 +382,32 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while((j < 3) && (j < argc))
     {
-      if(!strcmp(argv[j], "-trafo"))
+      if(argv[j][0] == '-' && argv[j][1] == 't')
 	{
-	  trafo = AY_TRUE;
+	  /* -trafo */
+	  apply_trafo = AY_TRUE;
 	  i++;
 	  argc2--;
 	}
-
-      if(!strcmp(argv[j], "-p"))
+      if(argv[j][0] == '-' && argv[j][1] == 'w')
 	{
-	  param = AY_TRUE;
+	  /* -world */
+	  apply_trafo = AY_TRUE;
+	  to_world = AY_TRUE;
+	  i++;
+	  argc2--;
+	}
+      if(argv[j][0] == '-' && argv[j][1] == 'e')
+	{
+	  /* -eval */
+	  eval = AY_TRUE;
+	  i++;
+	  argc2--;
+	}
+      if(argv[j][0] == '-' && argv[j][1] == 'p')
+	{
+	  /* -param */
+	  eval = AY_TRUE;
 	  i++;
 	  argc2--;
 	}
@@ -400,11 +417,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
   j = 0;
   while(sel)
     {
-      src = sel->object;
+      o = sel->object;
       p = NULL;
       homogenous = AY_FALSE;
       freepo = AY_FALSE;
-      switch(src->type)
+      switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  if(argc2 < 6)
@@ -412,10 +429,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
-	  if(!param)
+	  if(!eval)
 	    {
 	      Tcl_GetInt(interp, argv[i], &indexu);
-	      ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
+	      ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
 				     indexu, &p);
 	      homogenous = AY_TRUE;
 	    }
@@ -423,7 +440,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      Tcl_GetDouble(interp, argv[i], &u);
 	      p = utmp;
-	      nc = (ay_nurbcurve_object *)(src->refine);
+	      nc = (ay_nurbcurve_object *)(o->refine);
 	      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
 				 nc->controlv, u, p);
 	      homogenous = AY_FALSE;
@@ -437,7 +454,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
-	  ay_act_getpntfromindex((ay_acurve_object*)(src->refine),
+	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
 				 indexu, &p);
 	  homogenous = AY_FALSE;
 	  j = i+1;
@@ -449,7 +466,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
-	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
+	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
 				 indexu, &p);
 	  homogenous = AY_FALSE;
 	  j = i+1;
@@ -460,11 +477,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
-	  if(!param)
+	  if(!eval)
 	    {
 	      Tcl_GetInt(interp, argv[i], &indexu);
 	      Tcl_GetInt(interp, argv[i+1], &indexv);
-	      ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
+	      ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				     indexu, indexv, &p);
 	      homogenous = AY_TRUE;
 	    }
@@ -473,7 +490,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      Tcl_GetDouble(interp, argv[i], &u);
 	      Tcl_GetDouble(interp, argv[i+1], &v);
 	      p = utmp;
-	      np = (ay_nurbpatch_object *)(src->refine);
+	      np = (ay_nurbpatch_object *)(o->refine);
 	      ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				   np->uorder-1, np->vorder-1,
 				   np->uknotv, np->vknotv,
@@ -489,7 +506,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
-	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
+	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
 				    indexu, &p);
 	  homogenous = AY_FALSE;
 	  j = i+1;
@@ -502,7 +519,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  Tcl_GetInt(interp, argv[i], &indexu);
 	  Tcl_GetInt(interp, argv[i+1], &indexv);
-	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
+	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
 				 indexu, indexv, &p);
 	  homogenous = AY_TRUE;
 	  j = i+2;
@@ -510,73 +527,99 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	default:
 	  handled = AY_FALSE;
-	  if(argc2 < 7)
+
+	  if(!eval)
 	    {
-	      po = NULL;
-	      ay_provide_object(src, AY_IDNCURVE, &po);
-	      if(po)
+	      arr = ay_getpntcbt.arr;
+	      cb = (ay_getpntcb *)(arr[o->type]);
+	      if(cb)
 		{
-		  if(argc2 < 6)
+		  old_selp = o->selp;
+		  o->selp = &selp;
+		  Tcl_GetInt(interp, argv[i], &indexu);
+		  selp.index = (unsigned int)indexu;
+		  ay_status = cb(3, o, NULL, NULL);
+		  if(ay_status)
 		    {
-		      ay_error(AY_EARGS, argv[0], fargs);
+		      ay_error(AY_ERROR, argv[0], "getpnt failed");
 		      return TCL_OK;
 		    }
-		  if(!param)
-		    {
-		      Tcl_GetInt(interp, argv[i], &indexu);
-		      ay_nct_getpntfromindex((ay_nurbcurve_object*)
-					     (po->refine),
-					     indexu, &p);
-		      homogenous = AY_TRUE;
-		    }
-		  else
-		    {
-		      Tcl_GetDouble(interp, argv[i], &u);
-		      p = utmp;
-		      nc = (ay_nurbcurve_object *)(po->refine);
-		      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
-					 nc->controlv, u, p);
-		      homogenous = AY_FALSE;
-		    } /* if */
-		  j = i+1;
+		  p = selp.point;
+		  homogenous = selp.homogenous;
+		  o->selp = old_selp;
 		  handled = AY_TRUE;
-		  freepo = AY_TRUE;
-		} /* if */
-	    } /* if */
+		}
+	    }
 
-	  if(argc2 == 7)
+	  if(!handled)
 	    {
-	      po = NULL;
-	      ay_provide_object(src, AY_IDNPATCH, &po);
-	      if(po)
+	      if(argc2 < 7)
 		{
-		  if(!param)
+		  po = NULL;
+		  ay_provide_object(o, AY_IDNCURVE, &po);
+		  if(po)
 		    {
-		      Tcl_GetInt(interp, argv[i], &indexu);
-		      Tcl_GetInt(interp, argv[i+1], &indexv);
-		      ay_npt_getpntfromindex((ay_nurbpatch_object*)
-					     (po->refine),
-					     indexu, indexv, &p);
-		      homogenous = AY_TRUE;
-		    }
-		  else
-		    {
-		      Tcl_GetDouble(interp, argv[i], &u);
-		      Tcl_GetDouble(interp, argv[i+1], &v);
-		      p = utmp;
-		      np = (ay_nurbpatch_object *)(po->refine);
-		      ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-					   np->uorder-1, np->vorder-1,
-					   np->uknotv, np->vknotv,
-					   np->controlv, u, v, p);
-		      homogenous = AY_FALSE;
+		      if(argc2 < 6)
+			{
+			  ay_error(AY_EARGS, argv[0], fargs);
+			  return TCL_OK;
+			}
+		      if(!eval)
+			{
+			  Tcl_GetInt(interp, argv[i], &indexu);
+			  ay_nct_getpntfromindex((ay_nurbcurve_object*)
+						 (po->refine),
+						 indexu, &p);
+			  homogenous = AY_TRUE;
+			}
+		      else
+			{
+			  Tcl_GetDouble(interp, argv[i], &u);
+			  p = utmp;
+			  nc = (ay_nurbcurve_object *)(po->refine);
+			  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+					     nc->knotv, nc->controlv, u, p);
+			  homogenous = AY_FALSE;
+			} /* if */
+		      j = i+1;
+		      handled = AY_TRUE;
+		      freepo = AY_TRUE;
 		    } /* if */
-		  j = i+2;
-		  handled = AY_TRUE;
-		  freepo = AY_TRUE;
+		} /* if */
+
+	      if(argc2 == 7)
+		{
+		  po = NULL;
+		  ay_provide_object(o, AY_IDNPATCH, &po);
+		  if(po)
+		    {
+		      if(!eval)
+			{
+			  Tcl_GetInt(interp, argv[i], &indexu);
+			  Tcl_GetInt(interp, argv[i+1], &indexv);
+			  ay_npt_getpntfromindex((ay_nurbpatch_object*)
+						 (po->refine),
+						 indexu, indexv, &p);
+			  homogenous = AY_TRUE;
+			}
+		      else
+			{
+			  Tcl_GetDouble(interp, argv[i], &u);
+			  Tcl_GetDouble(interp, argv[i+1], &v);
+			  p = utmp;
+			  np = (ay_nurbpatch_object *)(po->refine);
+			  ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+					       np->uorder-1, np->vorder-1,
+					       np->uknotv, np->vknotv,
+					       np->controlv, u, v, p);
+			  homogenous = AY_FALSE;
+			} /* if */
+		      j = i+2;
+		      handled = AY_TRUE;
+		      freepo = AY_TRUE;
+		    } /* if */
 		} /* if */
 	    } /* if */
-
 	  if(!handled)
 	    {
 	      ay_error(AY_EWARN, argv[0],
@@ -588,9 +631,28 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       if(p)
 	{
 	  /* apply trafos? */
-	  if(trafo)
+	  if(apply_trafo)
 	    { /* Yes! */
-	      ay_trafo_creatematrix(src, m);
+	      if(to_world)
+		{
+		  glMatrixMode(GL_MODELVIEW);
+		  glPushMatrix();
+		   glLoadIdentity();
+		   if(ay_currentlevel->object != ay_root)
+		     {
+		       ay_trafo_getall(ay_currentlevel->next);
+		     }
+		   glTranslated(o->movx, o->movy, o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled(o->scalx, o->scaly, o->scalz);
+		   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+		  glPopMatrix();
+		}
+	      else
+		{
+		  ay_trafo_creatematrix(o, m);
+		}
 
 	      if(homogenous)
 		{
@@ -657,7 +719,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  ay_list_object *sel = ay_selection;
- ay_object *src = NULL;
+ ay_object *o = NULL;
  double dtemp = 0.0;
  int indexu = 0, indexv = 0, i = 0, homogenous = AY_FALSE;
  double *p = NULL;
@@ -676,10 +738,10 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      src = sel->object;
+      o = sel->object;
       p = NULL;
       homogenous = AY_FALSE;
-      switch(src->type)
+      switch(o->type)
 	{
 	case AY_IDNCURVE:
 	  if(argc < 6)
@@ -688,7 +750,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
-	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(src->refine),
+	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
 				 indexu, &p);
 	  homogenous = AY_TRUE;
 	  i = 2;
@@ -700,7 +762,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
-	  ay_act_getpntfromindex((ay_acurve_object*)(src->refine),
+	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
 				 indexu, &p);
 	  homogenous = AY_FALSE;
 	  i = 2;
@@ -712,7 +774,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
-	  ay_ict_getpntfromindex((ay_icurve_object*)(src->refine),
+	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
 				 indexu, &p);
 	  homogenous = AY_FALSE;
 	  i = 2;
@@ -725,7 +787,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  Tcl_GetInt(interp, argv[2], &indexv);
-	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(src->refine),
+	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				 indexu, indexv, &p);
 	  homogenous = AY_TRUE;
 	  i = 3;
@@ -737,7 +799,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
-	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(src->refine),
+	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
 				    indexu, &p);
 	  homogenous = AY_FALSE;
 	  i = 2;
@@ -750,7 +812,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  Tcl_GetInt(interp, argv[2], &indexv);
-	  ay_pmt_getpntfromindex((ay_pamesh_object*)(src->refine),
+	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
 				 indexu, indexv, &p);
 	  homogenous = AY_TRUE;
 	  i = 3;
@@ -778,7 +840,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      p[3] = dtemp;
 	    } /* if */
 
-	  src->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
