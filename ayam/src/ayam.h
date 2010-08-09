@@ -100,6 +100,65 @@
 
 /* Ayam Object Structure */
 
+/** selected points */
+typedef struct ay_point_s
+{
+  struct ay_point_s *next; /**< next point */
+  int homogenous; /**< is this point homogeneous/rational? */
+  double *point; /**< pointer to point data (in objects data structure!) */
+  unsigned int index; /**< index of point (to restore point after undo) */
+} ay_point;
+
+
+/** multiple points */
+typedef struct ay_mpoint_s
+{
+  struct ay_mpoint_s *next; /**< next multiple point */
+  int multiplicity; /**< how many points? */
+  double **points; /**< pointers to point data [multiplicity] */
+  unsigned int *indices; /**< indices [multiplicity] */
+} ay_mpoint;
+
+
+/** point edit helper (ay_getpntcb callbacks fill it) */
+typedef struct ay_pointedit_s
+{
+  unsigned int num; /**< number of selected point */
+  double **coords; /**< pointers to point data [num] */
+  unsigned int *indices; /**< indices [num] */
+  int homogenous; /**< are these points homogeneous/rational? */
+} ay_pointedit;
+
+
+/** Tag, attach arbitrary information to objects */
+typedef struct ay_tag_s
+{
+  struct ay_tag_s *next; /**< next tag */
+  char *name; /**< name of tag (e.g.\ "PV") */
+  char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */
+  char *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
+} ay_tag;
+
+
+/** transformation attributes */
+typedef struct ay_trafo_s
+{
+  /** \name translation attributes */
+  /*@{*//** translation */
+  double movx, movy, movz;
+  /*@}*/
+  /** \name orientation attributes */
+  /*@{*//** orientation */
+  double rotx, roty, rotz;
+  /*@}*/
+  /** \name scale attributes */
+  /*@{*//** scale */
+  double scalx, scaly, scalz;
+  /*@}*/
+  double quat[4]; /**< quaternion */
+} ay_trafo;
+
+
 /** Ayam object */
 typedef struct ay_object_s {
   struct ay_object_s *next;  /**< next object in same hierarchie-level */
@@ -153,11 +212,11 @@ typedef struct ay_object_s {
   double quat[4]; /**< quaternion attribute */
 
 #if 0
-  struct ay_trafo_s *trafo; /**< transformations of this object */
+  ay_trafo *trafo; /**< transformations of this object */
 #endif
-  struct ay_point_s *selp; /**< selected points of this object */
+  ay_point *selp; /**< selected points of this object */
 
-  struct ay_tag_s *tags; /**< tags of this object */
+  ay_tag *tags; /**< tags of this object */
 
   struct ay_mat_object_s *mat; /**< material of this object */
 
@@ -356,7 +415,7 @@ typedef struct ay_nurbcurve_object_s
 
   /* multiple points */
   int createmp; /**< create multiple points? */
-  struct ay_mpoint_s *mpoints; /**< multiple points */
+  ay_mpoint *mpoints; /**< multiple points */
 } ay_nurbcurve_object;
 
 
@@ -424,7 +483,7 @@ typedef struct ay_nurbpatch_object_s
 
   /* multiple points */
   int createmp; /**< create multiple points? */
-  struct ay_mpoint_s *mpoints; /**< multiple points */
+  ay_mpoint *mpoints; /**< multiple points */
 } ay_nurbpatch_object;
 
 
@@ -1274,65 +1333,6 @@ typedef struct ay_preferences_s
   char *colorname; /**< default name for vertex color PV tags */
 
 } ay_preferences;
-
-
-/** selected points */
-typedef struct ay_point_s
-{
-  struct ay_point_s *next; /**< next point */
-  int homogenous; /**< is this point homogeneous/rational? */
-  double *point; /**< pointer to point data (in objects data structure!) */
-  unsigned int index; /**< index of point (to restore point after undo) */
-} ay_point;
-
-
-/** multiple points */
-typedef struct ay_mpoint_s
-{
-  struct ay_mpoint_s *next; /**< next multiple point */
-  int multiplicity; /**< how many points? */
-  double **points; /**< pointers to point data [multiplicity] */
-  unsigned int *indices; /**< indices [multiplicity] */
-} ay_mpoint;
-
-
-/** point edit helper (ay_getpntcb callbacks fill it) */
-typedef struct ay_pointedit_s
-{
-  unsigned int num; /**< number of selected point */
-  double **coords; /**< pointers to point data [num] */
-  unsigned int *indices; /**< indices [num] */
-  int homogenous; /**< are these points homogeneous/rational? */
-} ay_pointedit;
-
-
-/** Tag, attach arbitrary information to objects */
-typedef struct ay_tag_s
-{
-  struct ay_tag_s *next; /**< next tag */
-  char *name; /**< name of tag (e.g.\ "PV") */
-  char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */
-  char *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
-} ay_tag;
-
-
-/** transformation attributes */
-typedef struct ay_trafo_s
-{
-  /** \name translation attributes */
-  /*@{*//** translation */
-  double movx, movy, movz;
-  /*@}*/
-  /** \name orientation attributes */
-  /*@{*//** orientation */
-  double rotx, roty, rotz;
-  /*@}*/
-  /** \name scale attributes */
-  /*@{*//** scale */
-  double scalx, scaly, scalz;
-  /*@}*/
-  double quat[4]; /**< quaternion */
-} ay_trafo;
 
 
 /** to avoid the use of "void *" to store function pointers */
