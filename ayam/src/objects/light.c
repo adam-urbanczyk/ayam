@@ -476,11 +476,12 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_light_object *light = NULL;
  ay_shader *shader = NULL;
  ay_shader_arg *sarg = NULL;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *c;
  int has_from = 0, has_to = 0, numpts = 0, a = 0;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   light = (ay_light_object *)(o->refine);
@@ -488,6 +489,8 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
+  if(pe)
+    pe->homogenous = AY_FALSE;
 
   if(light->type == AY_LITCUSTOM)
     {
@@ -561,7 +564,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		pe->coords[0] = light->tto;
 	    }
 
-	  pe->homogenous = AY_FALSE;
 	  pe->num = numpts;
 	} /* if */
       break;
@@ -600,7 +602,6 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
-      pe->homogenous = AY_FALSE;
       pe->num = 1;
       break;
     case 2:
@@ -642,10 +643,47 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->homogenous = AY_FALSE;
       pe->coords = pecoords;
       pe->num = a;
 
+      break;
+    case 3:
+      if(has_from)
+	numpts++;
+
+      if(has_to)
+	numpts++;
+
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < numpts)
+	    {
+	      switch(pnt->index)
+		{
+		case 0:
+		  pnt->point = light->tfrom;
+		  break;
+		case 1:
+		  pnt->point = light->tto;
+		  break;
+		default:
+		  break;
+		}
+	      pnt->homogenous = AY_FALSE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	} /* while */
+      break;
+    default:
       break;
     } /* switch */
 
