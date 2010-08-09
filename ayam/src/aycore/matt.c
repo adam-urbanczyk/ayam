@@ -320,7 +320,7 @@ ay_matt_creatematerialids(ay_object *o)
  int ay_status = AY_OK;
  ay_tag *newtag = NULL;
  ay_mat_object *mat = NULL;
- char *mname = NULL, *tname = NULL;;
+ char *mname = NULL, *tname = NULL;
 
   if(!o)
     return AY_ENULL;
