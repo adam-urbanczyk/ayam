@@ -725,11 +725,16 @@ int
 ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
+ int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ ay_point *old_selp = NULL, *selp = NULL;
  double dtemp = 0.0;
  int indexu = 0, indexv = 0, i = 0, homogenous = AY_FALSE;
+ int clear_selp = AY_FALSE, handled = AY_FALSE;
  double *p = NULL;
+ ay_voidfp *arr = NULL;
+ ay_getpntcb *cb = NULL;
 
   if(argc <= 1)
     {
@@ -748,6 +753,8 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       p = NULL;
       homogenous = AY_FALSE;
+      clear_selp = AY_FALSE;
+      handled = AY_FALSE;
       switch(o->type)
 	{
 	case AY_IDNCURVE:
@@ -771,7 +778,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
 				 indexu, &p);
-	  homogenous = AY_FALSE;
 	  i = 2;
 	  break;
 	case AY_IDICURVE:
@@ -783,7 +789,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
 				 indexu, &p);
-	  homogenous = AY_FALSE;
 	  i = 2;
 	  break;
 	case AY_IDNPATCH:
@@ -808,7 +813,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  Tcl_GetInt(interp, argv[1], &indexu);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
 				    indexu, &p);
-	  homogenous = AY_FALSE;
 	  i = 2;
 	  break;
 	case AY_IDPAMESH:
@@ -825,8 +829,42 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i = 3;
 	  break;
 	default:
-	  ay_error(AY_EWARN, argv[0],
-		   "do not know how to set point of this object");
+	  if(argc < 4)
+	    {
+	      ay_error(AY_EARGS, argv[0], "index x y z [w]");
+	      return TCL_OK;
+	    }
+	  handled = AY_FALSE;
+	  arr = ay_getpntcbt.arr;
+	  cb = (ay_getpntcb *)(arr[o->type]);
+	  if(cb)
+	    {
+	      if(!(selp = calloc(1, sizeof(ay_point))))
+		{
+		  ay_error(AY_EOMEM, argv[0], NULL);
+		  return TCL_OK;
+		}
+	      old_selp = o->selp;
+	      o->selp = selp;
+	      Tcl_GetInt(interp, argv[1], &indexu);
+	      selp->index = (unsigned int)indexu;
+	      ay_status = cb(3, o, NULL, NULL);
+	      if(ay_status || (!o->selp))
+		{
+		  ay_error(AY_ERROR, argv[0], "getpntcb failed");
+		  return TCL_OK;
+		}
+	      p = selp->point;
+	      homogenous = selp->homogenous;
+	      clear_selp = AY_TRUE;
+	      handled = AY_TRUE;
+	      i = 2;
+	    }
+	  if(!handled)
+	    {
+	      ay_error(AY_EWARN, argv[0],
+		       "do not know how to set point of this object");
+	    }
 	  break;
 	} /* switch */
 
@@ -843,11 +881,25 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(homogenous)
 	    {
-	      Tcl_GetDouble(interp, argv[i+3], &dtemp);
-	      p[3] = dtemp;
+	      if(argc > i+3)
+		{
+		  Tcl_GetDouble(interp, argv[i+3], &dtemp);
+		  p[3] = dtemp;
+		}
+	      else
+		{
+		  p[3] = 1.0;
+		}
 	    } /* if */
 
+	  ay_notify_force(o);
 	  o->modified = AY_TRUE;
+
+	  if(clear_selp)
+	    {
+	      free(selp);
+	      o->selp = old_selp;
+	    }
 	} /* if */
 
       sel = sel->next;
