@@ -4757,8 +4757,6 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
  sdnpatch_object *sdnpatch = NULL;
  unsigned int i = 0;
  ay_point *newp = NULL;
- double obj;
- ay_pointedit pe;
  vector<unsigned int>::iterator si;
  double length = 1.0, scale = 1.0;
 
@@ -4822,7 +4820,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
       si++;
     }
 
-  ay_pact_getpoint(3, o, &obj, &pe);
+  ay_pact_getpoint(3, o, NULL, NULL);
 
   o->modified = AY_TRUE;
   ay_notify_force(o);

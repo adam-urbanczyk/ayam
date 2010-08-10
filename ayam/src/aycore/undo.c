@@ -518,8 +518,6 @@ ay_undo_copy(ay_undo_object *uo)
  Tcl_DString ds;
  int find_parent = AY_TRUE, notify_parent = AY_FALSE;
  ay_object *parent = NULL;
- double obj;
- ay_pointedit pe;
  Tk_Window win;
  char *winpath = NULL;
 
@@ -699,7 +697,7 @@ ay_undo_copy(ay_undo_object *uo)
       if(c->selp)
 	{
 	  ay_status = ay_undo_copyselp(c, o);
-	  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+	  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 	}
 
       /*ay_selp_clear(o);*/
