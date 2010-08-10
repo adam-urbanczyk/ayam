@@ -434,8 +434,6 @@ ay_selp_sel(ay_object *o, int indiceslen, int *indices)
  int ay_status = AY_OK;
  ay_point *po = NULL, *p = NULL;
  int i = 0, have_it = AY_FALSE;
- double obj;
- ay_pointedit pe;
 
   if(!o || !indices)
     return AY_ENULL;
@@ -466,7 +464,7 @@ ay_selp_sel(ay_object *o, int indiceslen, int *indices)
     }
 
   /* update pointers */
-  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 
  return ay_status;
 } /* ay_selp_sel */
@@ -622,8 +620,6 @@ ay_selp_rem(ay_object *o, int index)
 {
  int ay_status = AY_OK;
  ay_point **pp = NULL, *p = NULL;
- double obj;
- ay_pointedit pe;
 
   if(!o)
     return AY_ENULL;
@@ -656,7 +652,7 @@ ay_selp_rem(ay_object *o, int index)
     }
 
   /* update pointers */
-  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 
  return ay_status;
 } /* ay_selp_rem */
@@ -670,8 +666,6 @@ ay_selp_ins(ay_object *o, int index, int addtoselp)
 {
  int ay_status = AY_OK;
  ay_point *p = NULL, *newp = NULL;
- double obj;
- ay_pointedit pe;
 
   if(!o)
     return AY_ENULL;
@@ -704,7 +698,7 @@ ay_selp_ins(ay_object *o, int index, int addtoselp)
     }
 
   /* update pointers */
-  ay_status = ay_pact_getpoint(3, o, &obj, &pe);
+  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 
  return ay_status;
 } /* ay_selp_ins */
