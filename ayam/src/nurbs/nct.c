@@ -1376,7 +1376,7 @@ int
 ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  int clamp_me;
@@ -1385,7 +1385,12 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      Tcl_GetInt(interp, argv[1], &t);
+      tcl_status = Tcl_GetInt(interp, argv[1], &t);
+      if(tcl_status != TCL_OK)
+	{
+	  ay_error(AY_ERROR, argv[0], NULL);
+	  return TCL_OK;
+	}
     }
 
   while(sel)
