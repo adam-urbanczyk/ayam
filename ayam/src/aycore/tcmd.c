@@ -541,7 +541,13 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		  old_selp = o->selp;
 		  o->selp = selp;
-		  Tcl_GetInt(interp, argv[i], &indexu);
+		  ay_status = ay_tcmd_getuint(argv[i], &selp->index);
+		  if(ay_status)
+		    {
+		      free(selp);
+		      o->selp = old_selp;
+		      return TCL_OK;
+		    }
 		  selp->index = (unsigned int)indexu;
 		  ay_status = cb(3, o, NULL, NULL);
 		  if(ay_status || (!o->selp))
@@ -846,8 +852,13 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      old_selp = o->selp;
 	      o->selp = selp;
-	      Tcl_GetInt(interp, argv[1], &indexu);
-	      selp->index = (unsigned int)indexu;
+	      ay_status = ay_tcmd_getuint(argv[1], &selp->index);
+	      if(ay_status)
+		{
+		  free(selp);
+		  o->selp = old_selp;
+		  return TCL_OK;
+		}
 	      ay_status = cb(3, o, NULL, NULL);
 	      if(ay_status || (!o->selp))
 		{
@@ -1043,3 +1054,59 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_tcmd_withobtcmd */
+
+
+/* ay_tcmd_getuint:
+ *  convert string to unsigned int
+ */
+int
+ay_tcmd_getuint(char *str, unsigned int *uint)
+{
+ unsigned long int ret;
+ char fname[] = "getuint", *p;
+
+  if(!str || !uint)
+    return AY_ENULL;
+
+  errno = 0;
+
+  ret = strtoul(str, &p, 0);
+
+  if(p == str)
+    {
+      ay_error(AY_ERROR, fname, "expected unsigned integer value but got:");
+      ay_error(AY_ERROR, fname, str);
+      return AY_ERROR;
+    }
+
+  if(errno != 0)
+    {
+#ifdef EINVAL
+      if(errno == EINVAL)
+	{
+	  ay_error(AY_ERROR, fname, "conversion failed");
+	  return AY_ERROR;
+	}
+#endif
+      if(errno == ERANGE && ret == ULONG_MAX)
+	{
+	  ay_error(AY_ERROR, fname, "conversion overflow");
+	  return AY_ERROR;
+	}
+
+      if(ret == 0)
+	{
+	  ay_error(AY_ERROR, fname, "conversion failed");
+	  return AY_ERROR;
+	}
+    } /* if */
+
+  if(p && (*p != '\0'))
+    {
+      ay_error(AY_EWARN, fname, "ignoring trailing characters");
+    }
+
+  *uint = (unsigned int)ret;
+
+ return AY_OK;
+} /* ay_tcmd_getuint */
