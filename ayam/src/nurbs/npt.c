@@ -5793,13 +5793,20 @@ int
 ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
 
   if(argc >= 2)
-    Tcl_GetInt(interp, argv[1], &t);
+    {
+      tcl_status = Tcl_GetInt(interp, argv[1], &t);
+      if(tcl_status != TCL_OK)
+	{
+	  ay_error(AY_ERROR, argv[0], NULL);
+	  return TCL_OK;
+	}
+    }
 
   while(sel)
     {
@@ -5950,13 +5957,20 @@ int
 ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
  int t = 1;
 
   if(argc >= 2)
-    Tcl_GetInt(interp, argv[1], &t);
+    {
+      tcl_status = Tcl_GetInt(interp, argv[1], &t);
+      if(tcl_status != TCL_OK)
+	{
+	  ay_error(AY_ERROR, argv[0], NULL);
+	  return TCL_OK;
+	}
+    }
 
   while(sel)
     {
