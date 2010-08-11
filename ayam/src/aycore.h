@@ -1297,6 +1297,9 @@ int ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** convert string to unsigned int
+ */
+int ay_tcmd_getuint(char *str, unsigned int *uint);
 
 /* tgui.c */
 
