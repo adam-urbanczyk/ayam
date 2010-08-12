@@ -5801,11 +5801,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &t);
-      if(tcl_status != TCL_OK)
-	{
-	  ay_error(AY_ERROR, argv[0], NULL);
-	  return TCL_OK;
-	}
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -5965,11 +5961,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &t);
-      if(tcl_status != TCL_OK)
-	{
-	  ay_error(AY_ERROR, argv[0], NULL);
-	  return TCL_OK;
-	}
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -8269,7 +8261,7 @@ int
 ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL;
@@ -8278,7 +8270,8 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      Tcl_GetInt(interp, argv[1], &side);
+      tcl_status = Tcl_GetInt(interp, argv[1], &side);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -8547,7 +8540,7 @@ int
 ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL;
@@ -8556,7 +8549,8 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      Tcl_GetInt(interp, argv[1], &side);
+      tcl_status = Tcl_GetInt(interp, argv[1], &side);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -8922,7 +8916,7 @@ int
 ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -8941,6 +8935,12 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
   while(sel)
     {
       src = sel->object;
@@ -8950,16 +8950,8 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  patch = (ay_nurbpatch_object*)src->refine;
 	  knots = patch->uknotv;
-
-	  Tcl_GetDouble(interp, argv[1], &u);
 
 	  if((u < knots[patch->uorder-1]) || (u > knots[patch->width]))
 	    {
@@ -8972,13 +8964,17 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
 				 knots, &s);
 
-	  Tcl_GetInt(interp, argv[2], &r);
-
 	  if(patch->uorder < r+s)
 	    {
 	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
+	    }
+
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
 	    }
 
 	  patch->width += r;
@@ -9030,7 +9026,7 @@ int
 ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -9048,6 +9044,12 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+  
+  tcl_status = Tcl_GetDouble(interp, argv[1], &v);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -9058,16 +9060,8 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  patch = (ay_nurbpatch_object*)src->refine;
 	  knots = patch->vknotv;
-
-	  Tcl_GetDouble(interp, argv[1], &v);
 
 	  if((v < knots[patch->vorder-1]) || (v > knots[patch->height]))
 	    {
@@ -9080,13 +9074,17 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 				 knots, &s);
 
-	  Tcl_GetInt(interp, argv[2], &r);
-
 	  if(patch->vorder < r+s)
 	    {
 	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
+	    }
+
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
 	    }
 
 	  patch->height += r;
@@ -9276,7 +9274,7 @@ int
 ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
@@ -9293,7 +9291,8 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &u);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -9498,7 +9497,7 @@ int
 ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double v = 0.0;
@@ -9515,7 +9514,8 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &v);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &v);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -9717,7 +9717,7 @@ int
 ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double umin = 0.0, umax = 0.0, vmin = 0.0, vmax = 0.0;
@@ -9735,14 +9735,19 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &umin);
-  Tcl_GetDouble(interp, argv[2], &umax);
-  Tcl_GetDouble(interp, argv[3], &vmin);
-  Tcl_GetDouble(interp, argv[4], &vmax);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &vmin);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[4], &vmax);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(argc > 5)
     {
-      Tcl_GetInt(interp, argv[5], &relative);
+      tcl_status = Tcl_GetInt(interp, argv[5], &relative);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)

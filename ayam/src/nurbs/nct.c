@@ -849,13 +849,13 @@ int
 ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
  int aknotc = 0, i;
  double *X = NULL;
- char **aknotv;
+ char **aknotv = NULL;
 
   if(argc > 1)
     {
@@ -870,10 +870,12 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 
       for(i = 0; i < aknotc; i++)
 	{
-	  Tcl_GetDouble(interp, aknotv[i], &X[i]);
+	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	} /* for */
 
       Tcl_Free((char *) aknotv);
+      aknotv = NULL;
     } /* if */
 
   while(sel)
@@ -906,12 +908,19 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
+  ay_notify_parent();
+
+cleanup:
+
   if(X)
     {
       free(X);
     }
 
-  ay_notify_parent();
+  if(aknotv)
+    {
+      Tcl_Free((char *) aknotv);
+    }
 
  return TCL_OK;
 } /* ay_nct_refinetcmd */
@@ -1184,7 +1193,7 @@ int
 ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  int side = 0;
@@ -1192,7 +1201,8 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      Tcl_GetInt(interp, argv[1], &side);
+      tcl_status = Tcl_GetInt(interp, argv[1], &side);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -1514,7 +1524,7 @@ int
 ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL;
  ay_nurbcurve_object *curve = NULL;
@@ -1533,6 +1543,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
   while(sel)
     {
       src = sel->object;
@@ -1542,16 +1558,8 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  curve = (ay_nurbcurve_object*)src->refine;
 	  knots = curve->knotv;
-
-	  Tcl_GetDouble(interp, argv[1], &u);
 
 	  if((u < knots[curve->order-1]) || (u > knots[curve->length]))
 	    {
@@ -1564,13 +1572,17 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 				 knots, &s);
 
-	  Tcl_GetInt(interp, argv[2], &r);
-
 	  if(curve->order < r+s)
 	    {
 	      ay_error(AY_ERROR, argv[0],
 			 "Knot insertion leads to illegal knot sequence.");
 	      return TCL_OK;
+	    }
+
+	  /* remove all selected points */
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
 	    }
 
 	  curve->length += r;
@@ -2871,7 +2883,7 @@ int
 ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
  int sections = 0, order = 4;
@@ -2884,7 +2896,8 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetInt(interp, argv[1], &sections);
+  tcl_status = Tcl_GetInt(interp, argv[1], &sections);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(sections < 1)
     {
@@ -2894,19 +2907,23 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 2)
     {
-      Tcl_GetInt(interp, argv[2], &order);
+      tcl_status = Tcl_GetInt(interp, argv[2], &order);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
       if(order < 2)
 	order = 4;
     }
 
   if(argc > 3)
     {
-      Tcl_GetDouble(interp, argv[3], &arc);
+      tcl_status = Tcl_GetDouble(interp, argv[3], &arc);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   if(argc > 4)
     {
-      Tcl_GetDouble(interp, argv[4], &radius);
+      tcl_status = Tcl_GetDouble(interp, argv[4], &radius);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   /* create object */
@@ -4377,7 +4394,7 @@ int
 ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *curve = NULL;
  ay_object *src = NULL;
@@ -4385,7 +4402,8 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      Tcl_GetInt(interp, argv[1], &times);
+      tcl_status = Tcl_GetInt(interp, argv[1], &times);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   if(times == 0)
@@ -4982,7 +5000,7 @@ int
 ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *c = NULL;
  int mode = 0;
@@ -4995,7 +5013,8 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      Tcl_GetInt(interp, argv[1], &mode);
+      tcl_status = Tcl_GetInt(interp, argv[1], &mode);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -5243,7 +5262,7 @@ int
 ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  int i = 0, s = 0, r = 0;
  double tol = DBL_MAX/*AY_EPSILON*/;
  double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
@@ -5263,12 +5282,15 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &u);
-  Tcl_GetInt(interp, argv[2], &r);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(argc > 3)
     {
-      Tcl_GetDouble(interp, argv[3], &tol);
+      tcl_status = Tcl_GetDouble(interp, argv[3], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   printf("%lg\n",tol);
@@ -6137,7 +6159,7 @@ int
 ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -6151,7 +6173,8 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetInt(interp, argv[1], &type);
+  tcl_status = Tcl_GetInt(interp, argv[1], &type);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(!sel)
     {
@@ -6368,7 +6391,7 @@ int
 ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -6380,8 +6403,10 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &u);
-  Tcl_GetInt(interp, argv[2], &r);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(!sel)
     {
