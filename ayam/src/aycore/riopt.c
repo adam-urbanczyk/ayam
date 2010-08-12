@@ -28,7 +28,7 @@ ay_riopt_wrib(ay_object *o)
  RtInt itemp, i2temp[2] = {0};
  RtFloat ftemp, f2temp[2] = {0.0f,0.0f};
  RtPoint ptemp = {0.0f,0.0f,0.0f};
- char fname[] = "ay_riopt_wrib", e1[] = "Missing value in RiAttribute tag!";
+ char fname[] = "riopt_wrib", e1[] = "Missing value in RiAttribute tag!";
 
   if(!o)
     return AY_ENULL;

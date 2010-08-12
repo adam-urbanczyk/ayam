@@ -686,7 +686,7 @@ int
 ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		   RtPointer **valuesr)
 {
- char fname[] = "ay_tags_parseplist", e1[] = "Missing value in parameter!";
+ char fname[] = "tags_parseplist", e1[] = "Missing value in parameter!";
  char *tmp = NULL, *parname = NULL, *partype = NULL, *parval = NULL;
  char *parval2 = NULL;
  char tok[] = ",";

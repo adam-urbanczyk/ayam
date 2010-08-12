@@ -161,7 +161,7 @@ ay_read_header(FILE *fileptr)
  int ay_status = AY_OK;
  char *version = NULL, *nbuffer = NULL;
  int version_unknown = AY_TRUE;
- char fname[] = "ay_read_header";
+ char fname[] = "read_header";
 
   ay_status = ay_read_string(fileptr, &nbuffer);
   if(ay_status)
@@ -358,7 +358,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
  ay_tag *tag = NULL, *last = NULL;
  Tcl_HashEntry *entry = NULL;
  int tcount = 0, i = 0;
- char fname[] = "ay_read_tags";
+ char fname[] = "read_tags";
 #ifdef AYNOSAFEINTERP
  int deactivate = 0;
  char *tc = NULL;

@@ -26,7 +26,7 @@ static char *ay_view_name = "View";
 int
 ay_view_createcb(int argc, char *argv[], ay_object *o)
 {
- char fname[] = "ay_view_createcb";
+ char fname[] = "view_createcb";
 
   ay_error(AY_ERROR, fname, "Can not create a view this way, use viewOpen!");
 
@@ -42,7 +42,7 @@ ay_view_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_view_deletecb(void *c)
 {
- char fname[] = "ay_view_deletecb";
+ char fname[] = "view_deletecb";
  ay_view_object *view = NULL;
 
   view = (ay_view_object *)(c);
@@ -61,7 +61,7 @@ ay_view_deletecb(void *c)
 int
 ay_view_copycb(void *src, void **dst)
 {
- char fname[] = "ay_view_copycb";
+ char fname[] = "view_copycb";
 
   ay_error(AY_ERROR, fname, "can not copy a view object");
 
