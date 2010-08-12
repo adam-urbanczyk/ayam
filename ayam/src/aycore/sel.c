@@ -239,7 +239,7 @@ int
 ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	       int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
+ int tcl_status = TCL_OK;
  ay_list_object *cl = ay_currentlevel;
  ay_object *l, *o = NULL;
  int num = 1, tnum;
@@ -248,7 +248,8 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(argv[1])
 	{
-	  Tcl_GetInt(interp, argv[1], &num);
+	  tcl_status = Tcl_GetInt(interp, argv[1], &num);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	}
       if(num < 1)
 	{

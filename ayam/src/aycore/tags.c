@@ -279,6 +279,7 @@ int
 ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *new = NULL, **next = NULL;
@@ -311,7 +312,8 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      Tcl_GetInt(ay_interp, argv[2], &index);
+      tcl_status = Tcl_GetInt(interp, argv[2], &index);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
       /* find tag */
       o = sel->object;
@@ -372,7 +374,8 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
   if(!strcmp(argv[1], "-delete"))
     {
 
-      Tcl_GetInt(ay_interp, argv[2], &index);
+      tcl_status = Tcl_GetInt(interp, argv[2], &index);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
       /* find tag */
       o = sel->object;

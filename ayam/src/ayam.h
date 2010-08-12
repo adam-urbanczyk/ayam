@@ -1834,6 +1834,17 @@ extern char *ay_hc_tagname;
 		       (fabs(1.0 - o->scaly) > AY_EPSILON) ||\
 		       (fabs(1.0 - o->scalz) > AY_EPSILON))
 
+/** check and report tcl error status, then return */
+#define AY_CHTCLERRRET(stat,name,interp) if(stat){\
+	  ay_error(AY_ERROR, name, Tcl_GetStringResult(interp));\
+	  Tcl_ResetResult(interp);\
+	  return TCL_OK;}
+
+/** check and report tcl error status, then jump to cleanup label */
+#define AY_CHTCLERRGOT(stat,name,interp) if(stat){\
+	  ay_error(AY_ERROR, name, Tcl_GetStringResult(interp));\
+	  Tcl_ResetResult(interp);\
+	  goto cleanup;}
 
 /** \name Version Strings and Numbers */
 /*@{*/
