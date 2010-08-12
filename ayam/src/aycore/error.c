@@ -289,7 +289,7 @@ ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 	      int argc, char *argv[])
 {
  char *place = NULL, *detail = NULL;
- int ecode = AY_OK;
+ int tcl_status = TCL_OK, ecode = AY_OK;
 
   if(argc < 2)
     {
@@ -303,7 +303,8 @@ ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
       detail = argv[3];
     }
 
-  Tcl_GetInt(interp, argv[1], &ecode);
+  tcl_status = Tcl_GetInt(interp, argv[1], &ecode);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   ay_error(ecode, place, detail);
 
