@@ -23,7 +23,7 @@ void
 ay_toglcb_create(struct Togl *togl)
 {
  /*int ay_status = AY_OK;*/
- char fname[] = "ay_toglcb_create";
+ char fname[] = "toglcb_create";
  ay_view_object *view = NULL;
  ay_object *o = NULL, *d = NULL, **l = NULL;
  static int id = 0;

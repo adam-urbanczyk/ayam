@@ -36,7 +36,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  RtString *stemp;
  RtPoint *ptemp;
  RtColor *ctemp;
- char fname[] = "ay_pv_filltokpar", e1[] = "Missing data value in PV-tag!";
+ char fname[] = "pv_filltokpar", e1[] = "Missing data value in PV-tag!";
  Tcl_DString ds;
 
   if(!o)

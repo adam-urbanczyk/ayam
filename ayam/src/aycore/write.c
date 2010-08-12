@@ -299,7 +299,7 @@ ay_write_scene(char *fname, int selected)
  int ay_status = AY_OK;
  ay_object *o = ay_root;
  FILE *fileptr = NULL;
- char funcname[] = "ay_write_scene";
+ char funcname[] = "write_scene";
 
   if(selected)
     {

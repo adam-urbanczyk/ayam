@@ -130,7 +130,7 @@ ay_root_deletecb(void *c)
 int
 ay_root_copycb(void *src, void **dst)
 {
- char fname[] = "ay_root_copycb";
+ char fname[] = "root_copycb";
 
   ay_error(AY_ERROR, fname, "can not copy a root object");
 
@@ -205,7 +205,7 @@ ay_root_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char fname[] = "ay_root_setpropcb";
+ char fname[] = "root_setpropcb";
  char *n1 = "RiOptData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_root_object *root = NULL;
