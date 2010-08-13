@@ -857,7 +857,7 @@ if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
     # X11 on Darwin sends Shift-Tab for Shift-Tab
     set ayprefs(ShiftTab) "<Shift-Tab>"
 
-    # 
+    #
     set ayviewshortcuts(OSUp) "Ctrl-KP_8"
     set ayviewshortcuts(OSDown) "Ctrl-KP_2"
     set ayviewshortcuts(OSSUp) "Ctrl-Shift-KP_8"
@@ -912,6 +912,7 @@ proc uCL { mode {addargs ""} } {
     global ay
 
     if { $ay(lb) == 0 } {
+	# TreeView is active
 	set oldnodes [$ay(tree) nodes  $ay(CurrentLevel)]
 
 	if { $mode == "cl" } {
@@ -931,14 +932,17 @@ proc uCL { mode {addargs ""} } {
 	    }
 
 	}
+	# if mode cl
 
 	if { $mode == "cs" } {
 	    $ay(tree) selection clear
 	}
+	# if mode cs
 
-
-
-    } else { eval [subst "uS $addargs"] }
+    } else {
+	# ListBox is active
+	eval [subst "uS $addargs"]
+    }
 
  return;
 }
@@ -951,7 +955,8 @@ proc uCL { mode {addargs ""} } {
 proc uCR { } {
     global ay
 
-    if { $ay(lb) == 0} {
+    if { $ay(lb) == 0 } {
+	# TreeView is active
 	set oldcount [llength [$ay(tree) nodes  $ay(CurrentLevel)]]
 	set l ""
 	getLevel l dummy
@@ -969,7 +974,10 @@ proc uCR { } {
 	    }
 	}
 
-    } else { uS }
+    } else {
+	# ListBox is active
+	uS
+    }
 
     # set scene changed state to changed
     set ay(sc) 1
@@ -999,7 +1007,9 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
 	set lb $ay(olb)
 
-	if { $maintain_selection } { set sel [$lb curselection] }
+	if { $maintain_selection } {
+	    set sel [$lb curselection]
+	}
 
 	# delete all current entries
 	$lb delete 0 end
@@ -1010,8 +1020,8 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	eval [subst "$lb insert end $curlevel"]
 
 	if { $maintain_selection && ($sel != "") } {
-	    $lb selection set $sel
-	    selOb -lb $sel
+	    eval $lb selection set $sel
+	    eval selOb -lb $sel
 	}
 
 	if { $update_prop == 1 } {
@@ -1023,7 +1033,9 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	# TreeView is active
 	set t $ay(tree)
 
-	if { $maintain_selection } { set sel [$t selection get] }
+	if { $maintain_selection } {
+	    set sel [$t selection get]
+	}
 
 	if { $ay(ul) == "" } {
 	    tree_update root
@@ -1050,8 +1062,8 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	}
 
 	if { $maintain_selection && ($sel != "") } {
-	    $t selection set $sel
-	    treeSelect $sel
+	    eval $t selection set $sel
+	    eval treeSelect $sel
 	}
 
 	if { $update_prop == 1 } {
@@ -1603,7 +1615,7 @@ if { $ayprefs(SingleWindow) } {
       \};\
       .fu.fMain.fview3.f3D.togl configure -cursor \{\};\
       break"
-    bindtags .fu.fMain.fview3 {ff all Frame .fu.fMain.fview3} 
+    bindtags .fu.fMain.fview3 {ff all Frame .fu.fMain.fview3}
 
     bind .fv.fViews.fview2 $ayprefs(ShiftTab) {+
 	.fv.fViews.fview2.f3D.togl configure -cursor {};
