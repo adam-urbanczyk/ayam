@@ -1028,9 +1028,11 @@ proc tree_reset { } {
 	tree_openTree $ay(tree) $ay(CurrentLevel)
 	set ay(SelectedLevel) $ay(CurrentLevel)
 	if { $sel != "" } {
+	    tree_paintLevel $ay(CurrentLevel)
 	    eval $ay(tree) selection set $sel
 	    eval treeSelect $sel
 	} else {
+	    tree_paintLevel $ay(CurrentLevel)
 	    $ay(tree) selection clear
 	    treeSelect
 	}
@@ -1039,6 +1041,7 @@ proc tree_reset { } {
 	goTop
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
+	tree_paintLevel $ay(CurrentLevel)
 	cS
 	#tree_selectItem 1 $ay(tree) "root:0"
 	$ay(tree) see "root:0"
