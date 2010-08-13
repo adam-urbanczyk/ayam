@@ -479,7 +479,8 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  double *pecoord = NULL, **pecoords = NULL, *c;
- int has_from = 0, has_to = 0, numpts = 0, a = 0;
+ int has_from = 0, has_to = 0, a = 0;
+ unsigned int numpts = 0;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
