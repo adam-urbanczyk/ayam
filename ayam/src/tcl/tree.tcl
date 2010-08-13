@@ -1019,16 +1019,33 @@ proc tree_toggle { } {
 proc tree_reset { } {
     global ay
 
-    cS
-    plb_update
-    rV
+    set sel ""
+    set sel [$ay(tree) selection get]
 
     tree_update root
-    set ay(CurrentLevel) "root"
-    set ay(SelectedLevel) "root"
-    #tree_selectItem 1 $ay(tree) "root:0"
-    tree_paintLevel "root"
-    $ay(tree) see "root:0"
+    update
+    if { [$ay(tree) exists $ay(CurrentLevel)] } {
+	tree_openTree $ay(tree) $ay(CurrentLevel)
+	set ay(SelectedLevel) $ay(CurrentLevel)
+	if { $sel != "" } {
+	    eval $ay(tree) selection set $sel
+	    eval treeSelect $sel
+	} else {
+	    $ay(tree) selection clear
+	    treeSelect
+	}
+	tree_handleSelection
+    } else {
+	goTop
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	cS
+	#tree_selectItem 1 $ay(tree) "root:0"
+	$ay(tree) see "root:0"
+    }
+
+    plb_update
+    rV
 
  return;
 }
