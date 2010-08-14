@@ -650,11 +650,6 @@ int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Tcl interface for NURBS curve evaluation
- */
-int ay_nct_evaltcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
-
 
 /* npt.c */
 
@@ -1070,10 +1065,6 @@ int ay_npt_offset(ay_object *o, int mode, double offset,
  */
 int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
 
-/** Tcl interface for NURBS patch evaluation
- */
-int ay_npt_evaltcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[]);
 
 /** Find point on NURBS surface.
  */
