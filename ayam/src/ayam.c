@@ -1055,9 +1055,6 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "reparamNC", ay_nct_reparamtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "evalNC", ay_nct_evaltcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1117,9 +1114,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "evalNP", ay_npt_evaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
@@ -1323,12 +1317,6 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "evalNC", ay_nct_evaltcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "evalNP", ay_npt_evaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return ay_status;

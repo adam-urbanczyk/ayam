@@ -444,8 +444,34 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      p = utmp;
 	      nc = (ay_nurbcurve_object *)(o->refine);
-	      ay_nb_CurvePoint4D(nc->length-1, nc->order-1, nc->knotv,
-				 nc->controlv, u, p);
+
+	      /* check parameter */
+	      if((u < nc->knotv[nc->order-1]) ||
+		 (u > nc->knotv[nc->length]))
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter out of range.");
+		  return TCL_OK;
+		}
+
+	      /* evaluate the curve */
+	      if(nc->is_rat)
+		{
+		  ay_status = ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
+						 nc->knotv, nc->controlv,
+						 u, p);
+		}
+	      else
+		{
+		  ay_status = ay_nb_CurvePoint3D(nc->length-1, nc->order-1,
+						 nc->knotv, nc->controlv,
+						 u, p);
+		}
+
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
+		  return TCL_OK;
+		}
 	      homogenous = AY_FALSE;
 	    } /* if */
 	  j = i+1;
@@ -500,10 +526,43 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      p = utmp;
 	      np = (ay_nurbpatch_object *)(o->refine);
-	      ay_nb_SurfacePoint4D(np->width-1, np->height-1,
-				   np->uorder-1, np->vorder-1,
-				   np->uknotv, np->vknotv,
-				   np->controlv, u, v, p);
+
+	      /* check parameters */
+	      if((u < np->uknotv[np->uorder-1]) ||
+		 (u > np->uknotv[np->width]))
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
+		  return TCL_OK;
+		}
+
+	      if((v < np->vknotv[np->vorder-1]) ||
+		 (v > np->vknotv[np->height]))
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
+		  return TCL_OK;
+		}
+
+	      /* evaluate the patch */
+	      if(np->is_rat)
+		{
+		  ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
+						   np->uorder-1, np->vorder-1,
+						   np->uknotv, np->vknotv,
+						   np->controlv, u, v, p);
+		}
+	      else
+		{
+		  ay_status = ay_nb_SurfacePoint3D(np->width-1, np->height-1,
+						   np->uorder-1, np->vorder-1,
+						   np->uknotv, np->vknotv,
+						   np->controlv, u, v, p);
+		}
+
+	      if(ay_status)
+		{
+		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
+		  return TCL_OK;
+		}
 	      homogenous = AY_FALSE;
 	    } /* if */
 	  j = i+2;
