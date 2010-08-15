@@ -9670,10 +9670,12 @@ To create new objects the <tt/"crtOb"/ command can be used.
  <item>Synopsis: <tt/"crtOb type [args]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: New objects may be created with the command <tt/"crtOb"/,
-type may be derived from the type name, as displayed in the tree view.
+<tt/"type"/ may be derived from the object type names, as displayed in the
+tree view.
 The new object will be created and linked to the scene as last object
 in the current level, no part of the GUI (object selection widget, property
-GUI, views) will be updated!
+GUI, views) will be updated. Furthermore, the new object will <em>not</em>
+be selected.
 <p>
 Depending on the type, further arguments may (or have to) be given;
 some object types expect other objects to be selected upon creation.
@@ -10831,72 +10833,59 @@ whereas a NURBS patch requires two index parameters (indexu and indexv).
 <p><label id="scgetpnt">
 getPnt:
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo|-p] indexu [indexv] varx vary varz [varw]"/
+ <item>Synopsis: <tt/"getPnt [-trafo|-world|-eval] indexu [indexv] varx vary varz [varw]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables varx, vary, varz, and
 varw.
-If the special argument <tt/"-trafo"/ is given, the coordinates
+If the optional argument <tt/"-trafo"/ is given, the coordinates
 will additionally be transformed by the values given in the objects
 Transformation property.
-If the argument <tt/"-p"/ is given, the <tt/"indexu"/ and <tt/"indexv"/
-values are interpreted as parametric values of a NURBS curve or surface
-and the corresponding point on the curve or surface is delivered in
-varx, vary, and varz.
-<item>Examples: <tt/"getPnt 1 x y z w"/ gets the coordinate
-values of the second point of the selected NURBS curve and writes
-the values to the variables <tt/"x y z w"/. <tt/"getPnt -p 0.5 x y z w"/
-gets the curve point at parametric value <tt/"0.5"/ and writes
-the values to the variables <tt/"x y z w"/.
+If the optional argument <tt/"-world"/ is given, the coordinates
+will additionally be transformed to world space.
+If the optional argument <tt/"-eval"/ is given, the <tt/"indexu"/
+and <tt/"indexv"/ values are interpreted as parametric values of a
+NURBS curve or surface and the corresponding point on the curve or
+surface is delivered in varx, vary, and varz.
+<item>Examples:
+<enum>
+<item><bf/<tt/"getPnt 1 x y z w"//<newline>
+gets the coordinate values of the second point of the selected NURBS
+curve and writes the values to the variables <tt/"x y z w"/.
+<item><bf/<tt/"getPnt -eval 0.5 x y z w"//<newline>
+gets the curve point at parametric value <tt/"0.5"/ and writes the
+values to the variables <tt/"x y z w"/.
+</enum>
 </itemize>
 
 <p><label id="scsetpnt">
 setPnt:
 <itemize>
- <item>Synopsis: <tt/"setPnt indexu [indexv] x y z [w]"/
+ <item>Synopsis: <tt/"setPnt [-world] indexu [indexv] x y z [w]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Set a control point of the
 currently selected object to the coordinates x, y, z, and w.
- <item>Example: <tt/"setPnt 1 0.0 0.2 0.3 1.0"/ sets the coordinate
-values of the second point of the selected NURBS curve object to
-<tt/"0.0 0.2 0.3 1.0"/.
+If the optional parameter <tt/"-world"/ is given, the coordinate values are
+expressed in world space and will be transformed to appropriate
+object space coordinates. If the optional parameter <tt/"w"/ is omitted,
+but the selected object has rational points, a default value of 1.0 will
+be used.
+ <item>Examples:
+<enum>
+<item><bf/<tt/"setPnt 1 0.0 0.2 0.3 1.0"//<newline>
+sets the coordinate values of the second point of the selected NURBS
+curve object to <tt/"0.0 0.2 0.3 1.0"/.
+<item><bf/<tt/"setPnt -world 0 0 0 0"//<newline>
+sets the first point of the selected NURBS
+curve object to the world origin, regardless of the transformation
+attributes of the curve object (or any of its potential parent objects).
+<item><bf/<tt/"setPnt 2 1 0.0 0.2 0.3"//<newline>
+sets the coordinate values of the second point in the third column of
+the control mesh of the selected NURBS
+patch object to <tt/"0.0 0.2 0.3 1.0"/.
+</enum>
 </itemize>
 
-
-<p><label id="scevalnc">
-evalNC:
-<itemize>
- <item>Synopsis: <tt/"evalNC [-trafo|-world] u varx vary varz"/
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Evaluate the currently selected NURBS curve at
-designated parameter value u and write the results into the variables
-named varx, vary, and varz. If the optional parameter -trafo is set,
-the transformation attributes of the selected object are applied to the
-result. If the optional parameter -world is set, the resulting
-coordinates are transformed to world space.
- <item>Notes: Only the first object from the selection is processed.
-This object must be of type NCurve.
-<item>Examples: <tt/"evalNC 0.75 x y z"/ evaluates the selected NURBS
-curve at parameter value 0.75 and writes the resulting values to the
-variables <tt/"x y z"/.
-</itemize>
-
-<p><label id="scevalnp">
-evalNP:
-<itemize>
- <item>Synopsis: <tt/"evalNP [-trafo|-world] u v varx vary varz"/
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Evaluate the currently selected NURBS surface at
-designated parameter values u, v and write the results into the variables
-named varx, vary, and varz. If the optional parameter -trafo is set,
-the transformation attributes of the selected object are applied to the
-result. If the optional parameter -world is set, the resulting
-coordinates are transformed to world space.
- <item>Notes: Only the first object from the selection is processed.
-This object must be of type NPatch. Potentially present trim curve
-information is not considered (one can e.g. evaluate in cut out parts
-of the surface).
-</itemize>
 
 <sect2>Updating the GUI<label id="sciupd">
 <p>
@@ -14190,8 +14179,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
 <item>ErrorLevel: <ref id="rribopt" name="RIB import option">
 <item>estlenNC: <ref id="scestlennc" name="scripting interface command">
-<item>evalNC: <ref id="scevalnc" name="scripting interface command">
-<item>evalNP: <ref id="scevalnp" name="scripting interface command">
+<item>evaluate curve/suface: <ref id="scgetpnt" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
