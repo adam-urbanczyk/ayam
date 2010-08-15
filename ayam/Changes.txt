@@ -1,8 +1,8 @@
 [15. Aug 2010] CVS-Head:
 =======================
 Bug Fixes:
-o direct point editing is not setting the mark (SF 2993441)
-o continuous complete notification for Script objects (SF 3001239)
+o fixed direct point editing not setting the mark (SF 2993441)
+o fixed continuous complete notification for Script objects (SF 3001239)
 o fixed find u action failing for transformed curves (SF 3006822)
 o fixed find u action not setting the mark corectly (SF 3006824)
 o fixed Revolve caps in B-Spline mode (Sections != 0) (SF 3012391)
@@ -13,7 +13,7 @@ o fixed skins with periodic chordal/centripetal curves (SF 3030062)
 o fixed false positives and crashes of instance DnD/C&P (SF 3031448)
 o fixed in-place conversion leading to broken scenes (SF 3032589)
 o fixed drag and drop with multiple objects selected by keyboard (SF 3036465)
-o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3036465)
+o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3044564)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -64,6 +64,12 @@ o tree drag and drop now keeps the object selection intact and opens
 Scripts/Scripting Interface:
 o number conversion errors are now correctly detected and reported in all
   scripting interface commands
+o added "-world" option to setPnt/getPnt commands (to transform coordinates
+  from/to world space)
+o renamed "-p" option to "-eval" for getPnt
+o getPnt can now work with arbitrary object types (even from plugins) as
+  long as they support single point editing; i.e. it now works with PolyMesh,
+  SDMesh, and SDNPatch objects
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
