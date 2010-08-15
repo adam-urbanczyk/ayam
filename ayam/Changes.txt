@@ -1,5 +1,5 @@
-[29. Jul 2010] CVS-Head:
-========================
+[15. Aug 2010] CVS-Head:
+=======================
 Bug Fixes:
 o direct point editing is not setting the mark (SF 2993441)
 o continuous complete notification for Script objects (SF 3001239)
@@ -13,6 +13,7 @@ o fixed skins with periodic chordal/centripetal curves (SF 3030062)
 o fixed false positives and crashes of instance DnD/C&P (SF 3031448)
 o fixed in-place conversion leading to broken scenes (SF 3032589)
 o fixed drag and drop with multiple objects selected by keyboard (SF 3036465)
+o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3036465)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -47,6 +48,9 @@ o creating ExtrNC/ExtrNP objects via the main menu now automatically adds a
 o NURBS curve clamping now works with half clamped curves and also with
   curves where there are multiple knots in the end region(s)
 o NURBS curve clamping can now also clamp only one end of the curve
+o NURBS patch clamping now works with half clamped patches and also with
+  patches where there are multiple knots in the end region(s)
+o NURBS patch clamping can now also clamp only one end of the patch
 o the point insert/delete modelling actions now work with multiple
   selected objects
 
@@ -58,7 +62,8 @@ o tree drag and drop now keeps the object selection intact and opens
   the target level
 
 Scripts/Scripting Interface:
-o added commands to evaluate NURBS curves/surfaces: "evalNC"/"evalNP"
+o number conversion errors are now correctly detected and reported in all
+  scripting interface commands
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
