@@ -246,7 +246,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  return TCL_OK;
 	}
 
-      if(o->selp)
+      if(o->selp && (!o->selp->readonly))
 	{
 	  glMatrixMode(GL_MODELVIEW);
 	  glPushMatrix();
@@ -399,7 +399,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	  angle = beta - alpha;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -722,7 +722,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      break;
 	    } /* switch */
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -935,7 +935,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalx = 1.0;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -1099,7 +1099,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscaly = 1.0;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -1263,7 +1263,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalz = 1.0;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -1405,7 +1405,7 @@ ay_oact_sc1DXWcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
-      if(o->selp)
+      if(o->selp && (!o->selp->readonly))
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
@@ -1577,7 +1577,7 @@ ay_oact_sc1DYWcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
-      if(o->selp)
+      if(o->selp && (!o->selp->readonly))
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
@@ -1750,7 +1750,7 @@ ay_oact_sc1DZWcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
-      if(o->selp)
+      if(o->selp && (!o->selp->readonly))
 	{
 	  glPushMatrix();
 	  if(view->type != AY_VTTRIM)
@@ -1933,7 +1933,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscal = 1.0;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -2106,7 +2106,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscal = 1.0;
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -2361,7 +2361,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scalx*(dscalx))*((al-oldmov)/o->scalx));
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -2581,7 +2581,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scaly*(dscaly))*((al-oldmov)/o->scaly));
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -2801,7 +2801,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scalz*(dscalz))*((al-oldmov)/o->scalz));
 
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -2960,7 +2960,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 
       if(o)
 	{
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 
@@ -3203,7 +3203,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 
       if(o)
 	{
-	  if(o->selp)
+	  if(o->selp && (!o->selp->readonly))
 	    {
 	      point = o->selp;
 

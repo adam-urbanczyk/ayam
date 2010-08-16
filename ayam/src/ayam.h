@@ -91,10 +91,6 @@
   #undef AYGLUCBTYPE
   #define AYGLUCBTYPE (_GLUfuncptr)
  #endif
- #ifdef AYUSESUPERGLU
-  #undef AYGLUCBTYPE
-  #define AYGLUCBTYPE
- #endif
 #endif
 
 
@@ -104,7 +100,8 @@
 typedef struct ay_point_s
 {
   struct ay_point_s *next; /**< next point */
-  int homogenous; /**< is this point homogeneous/rational? */
+  char homogenous; /**< is this point homogeneous/rational? */
+  char readonly;  /**< is this point read only/not editable? */
   double *point; /**< pointer to point data (in objects data structure!) */
   unsigned int index; /**< index of point (to restore point after undo) */
 } ay_point;
@@ -114,7 +111,7 @@ typedef struct ay_point_s
 typedef struct ay_mpoint_s
 {
   struct ay_mpoint_s *next; /**< next multiple point */
-  int multiplicity; /**< how many points? */
+  int multiplicity; /**< how many single points? */
   double **points; /**< pointers to point data [multiplicity] */
   unsigned int *indices; /**< indices [multiplicity] */
 } ay_mpoint;
@@ -126,7 +123,8 @@ typedef struct ay_pointedit_s
   unsigned int num; /**< number of selected point */
   double **coords; /**< pointers to point data [num] */
   unsigned int *indices; /**< indices [num] */
-  int homogenous; /**< are these points homogeneous/rational? */
+  char homogenous; /**< are these points homogeneous/rational? */
+  char readonly; /**< are these points read only/not editable? */
 } ay_pointedit;
 
 
@@ -1848,11 +1846,11 @@ extern char *ay_hc_tagname;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.17"
+#define AY_VERSIONSTR "1.18pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   17
+#define AY_VERSION   18
 #define AY_VERSIONMI 0
 /*@}*/
 
