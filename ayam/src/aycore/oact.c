@@ -363,7 +363,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -384,7 +384,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
 	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-	    break;
+	    continue;
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	  if(v1[1]<0.0)
 	    alpha = 360.0-alpha;
@@ -869,7 +869,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -909,12 +909,12 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1036,7 +1036,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -1073,12 +1073,12 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1200,7 +1200,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -1237,12 +1237,12 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -1892,7 +1892,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -1918,12 +1918,12 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
 	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-	    break;
+	    continue;
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
 	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-	    break;
+	    continue;
 
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
@@ -2065,7 +2065,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -2091,12 +2091,12 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	  v1[0] = (oldwinx-owinx);
 	  v1[1] = (oldwiny-owiny);
 	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-	    break;
+	    continue;
 
 	  v2[0] = (winx-owinx);
 	  v2[1] = (winy-owiny);
 	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-	    break;
+	    continue;
 
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
@@ -2266,7 +2266,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -2310,13 +2310,13 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	      v1[1] = (oldwiny-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -2486,7 +2486,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -2530,13 +2530,13 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	      v1[1] = (oldwiny-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -2706,7 +2706,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
@@ -2750,13 +2750,13 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	      v1[1] = (oldwiny-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
 	      /* bail out, if we get too near the mark */
 	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
-		break;
+		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
 	      if(v1[1]<0.0)
@@ -2955,7 +2955,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)
