@@ -81,6 +81,7 @@ ay_pact_clearpointedit(ay_pointedit *pe)
 
   pe->num = 0;
   pe->homogenous = AY_FALSE;
+  pe->readonly = AY_FALSE;
 
  return;
 } /* ay_pact_clearpointedit */
@@ -280,6 +281,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  newp->homogenous = pe.homogenous;
+		  newp->readonly = pe.readonly;
 		} /* if */
 	    } /* for */
 	} /* if */
@@ -381,6 +383,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
       glFlush();
       glDrawBuffer(GL_BACK);
     } /* if */
+
 #endif
 
  return AY_OK;
@@ -474,7 +477,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
       ay_status = ay_pact_getpoint(1, sel->object, obj, &pact_pe);
 
-      if(!ay_status && pact_pe.coords)
+      if(!ay_status && pact_pe.coords && (!pact_pe.readonly))
 	{
 	  o = sel->object;
 
@@ -778,8 +781,18 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	      selp = o->selp;
 	      while(selp)
 		{
-		  memcpy(selp->point, tcoords, 4*sizeof(double));
-		  o->modified = AY_TRUE;
+		  if(!selp->readonly)
+		    {
+		      if(selp->homogenous)
+			{
+			  memcpy(selp->point, tcoords, 4*sizeof(double));
+			}
+		      else
+			{
+			  memcpy(selp->point, tcoords, 3*sizeof(double));
+			}
+		      o->modified = AY_TRUE;
+		    }
 		  selp = selp->next;
 		} /* while */
 
@@ -2225,6 +2238,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
  char fname[] = "reset_weights";
  double p[3], *coords;
  unsigned int i;
+ int notify_parent = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
@@ -2245,7 +2259,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	  ay_error(AY_ERROR, fname, NULL);
 	}
 
-      if(pe.coords && pe.homogenous)
+      if(pe.coords && pe.homogenous && (!pe.readonly))
 	{
 	  for(i = 0; i < pe.num; i++)
 	    {
@@ -2265,10 +2279,11 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	      np->is_rat = AY_FALSE;
 	    }
 	  ay_notify_force(o);
+	  notify_parent = AY_TRUE;
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "No rational points found!");
+	  ay_error(AY_ERROR, fname, "No editable rational points found!");
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
@@ -2276,7 +2291,8 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
       sel = sel->next;
    } /* while */
 
-  ay_status = ay_notify_parent();
+  if(notify_parent)
+    ay_status = ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_wrtcb */
@@ -2294,7 +2310,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double p[3], *coords;
- int mode = 0;
+ int mode = 0, notify_parent = AY_FALSE;
  unsigned int i = 0;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -2321,10 +2337,9 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
       if(!o->selp)
 	{
-
 	  ay_status = ay_pact_getpoint(0, o, p, &pe);
 
-	  if(ay_status || (!pe.coords))
+	  if(ay_status || (!pe.coords) || pe.readonly)
 	    {
 	      ay_error(AY_ERROR, fname, NULL);
 	    }
@@ -2365,54 +2380,61 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 
 	  ay_pact_clearpointedit(&pe);
-
 	}
       else
 	{
 	  pnt = o->selp;
 	  while(pnt)
 	    {
-	      coords = pnt->point;
-	      if(mode == 0)
+	      if(!pnt->readonly)
 		{
-		  ay_pact_griddify(&(coords[0]), view->grid);
-		  ay_pact_griddify(&(coords[1]), view->grid);
-		  ay_pact_griddify(&(coords[2]), view->grid);
-		}
-	      else
-		{
-		  switch(view->type)
+		  coords = pnt->point;
+		  if(mode == 0)
 		    {
-		    case AY_VTFRONT:
-		    case AY_VTTRIM:
 		      ay_pact_griddify(&(coords[0]), view->grid);
 		      ay_pact_griddify(&(coords[1]), view->grid);
-		      break;
-		    case AY_VTSIDE:
-		      ay_pact_griddify(&(coords[1]), view->grid);
 		      ay_pact_griddify(&(coords[2]), view->grid);
-		      break;
-		    case AY_VTTOP:
-		      ay_pact_griddify(&(coords[0]), view->grid);
-		      ay_pact_griddify(&(coords[2]), view->grid);
-		      break;
-		    default:
-		      /* XXXX output proper error message */
-		      break;
-		    } /* switch */
+		    }
+		  else
+		    {
+		      switch(view->type)
+			{
+			case AY_VTFRONT:
+			case AY_VTTRIM:
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  break;
+			case AY_VTSIDE:
+			  ay_pact_griddify(&(coords[1]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
+			  break;
+			case AY_VTTOP:
+			  ay_pact_griddify(&(coords[0]), view->grid);
+			  ay_pact_griddify(&(coords[2]), view->grid);
+			  break;
+			default:
+			  /* XXXX output proper error message */
+			  break;
+			} /* switch */
+		    } /* if */
+
+		  o->modified = AY_TRUE;
+
 		} /* if */
 	      pnt = pnt->next;
 	    } /* while */
 	} /* if */
 
-      o->modified = AY_TRUE;
-
-      ay_notify_force(o);
-
+      if(o->modified)
+	{
+	  ay_notify_force(o);
+	  notify_parent = AY_TRUE;
+	}
       sel = sel->next;
    } /* while */
 
-  ay_status = ay_notify_parent();
+  if(notify_parent)
+    ay_status = ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_snaptogridcb */
@@ -2478,25 +2500,30 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	       pnt = o->selp;
 	       while(pnt)
 		 {
-		   memcpy(pnt->point, view->markworld, 3*sizeof(double));
-
-		   /* the mark data is non rational, so it makes
-		      no sense to use apply4() anyway */
-		   ay_trafo_apply3(pnt->point, mi);
-
-		   /* reset weight */
-		   if(pnt->homogenous)
+		   if(!pnt->readonly)
 		     {
-		       pnt->point[3] = 1.0;
-		     }
+		       memcpy(pnt->point, view->markworld, 3*sizeof(double));
 
+		       /* the mark data is non rational, so it makes
+			  no sense to use apply4() anyway */
+		       ay_trafo_apply3(pnt->point, mi);
+
+		       /* reset weight */
+		       if(pnt->homogenous)
+			 {
+			   pnt->point[3] = 1.0;
+			 }
+
+		       o->modified = AY_TRUE;
+		     } /* if */
 		   pnt = pnt->next;
 		 } /* while */
 
-	       o->modified = AY_TRUE;
-
-	       ay_notify_force(o);
-	       notify_parent = AY_TRUE;
+	       if(o->modified)
+		 {
+		   ay_notify_force(o);
+		   notify_parent = AY_TRUE;
+		 }
 	     }
 	   else
 	     {
