@@ -843,7 +843,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	      if((pnt->index < (unsigned int)(icurve->length+2)) &&
 		 icurve->derivs)
 		{
-		  if(pnt->index == icurve->length)
+		  if(pnt->index == (unsigned int)icurve->length)
 		    pnt->point = icurve->sderiv;
 		  else
 		    pnt->point = icurve->ederiv;
