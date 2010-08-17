@@ -426,10 +426,12 @@ ay_trafo_delegate(ay_object *o)
 {
  ay_object *child = NULL;
  double euler[3] = {0};
+ /*
  double quat[4] = {0};
  double xaxis[3] = {1.0, 0.0, 0.0};
  double yaxis[3] = {0.0, 1.0, 0.0};
  double zaxis[3] = {0.0, 0.0, 1.0};
+ */
  double m[16] = {0}, v1[4] = {0};
 
   if(!o)
@@ -697,6 +699,7 @@ int
 ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -707,9 +710,12 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -738,12 +744,14 @@ int
 ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
  double tpoint[4] = {0};
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -751,9 +759,12 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -766,22 +777,29 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o)
 	{
-	  point = o->selp;
-	  while(point)
-	    {
-	      AY_APTRAN3(tpoint,point->point,mm);
-	      memcpy(point->point,tpoint,3*sizeof(double));
-
-	      point = point->next;
-	    }
 	  if(o->selp)
-	    o->modified = AY_TRUE;
-	}
+	    {
+	      if(!o->selp->readonly)
+		{
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint,point->point,mm);
+		      memcpy(point->point,tpoint,3*sizeof(double));
+
+		      point = point->next;
+		    }
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
+	    } /* if */
+	} /* if */
 
       sel = sel->next;
     }
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_movpntstcmd */
@@ -794,6 +812,7 @@ int
 ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -804,9 +823,12 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(dx == 0.0)
     dx = 1.0;
@@ -842,12 +864,14 @@ int
 ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
  double tpoint[4] = {0};
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -855,9 +879,12 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(dx == 0.0)
     dx = 1.0;
@@ -877,22 +904,29 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o)
 	{
-	  point = o->selp;
-	  while(point)
-	    {
-	      AY_APTRAN3(tpoint, point->point, mm);
-	      memcpy(point->point, tpoint, 3*sizeof(double));
-
-	      point = point->next;
-	    }
 	  if(o->selp)
-	    o->modified = AY_TRUE;
-	}
+	    {
+	      if(!o->selp->readonly)
+		{
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint, point->point, mm);
+		      memcpy(point->point, tpoint, 3*sizeof(double));
+
+		      point = point->next;
+		    }
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
+	    } /* if */
+	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_scalpntstcmd */
@@ -905,6 +939,7 @@ int
 ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -919,9 +954,12 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -966,12 +1004,14 @@ int
 ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
+ int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
  GLdouble mm[16];
  double tpoint[4] = {0};
+ int notify_parent = AY_FALSE;
 
   if(argc != 4)
     {
@@ -979,9 +1019,12 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &dx);
-  Tcl_GetDouble(interp, argv[2], &dy);
-  Tcl_GetDouble(interp, argv[3], &dz);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &dx);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &dy);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[3], &dz);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -996,24 +1039,29 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o)
 	{
-	  point = o->selp;
-	  while(point)
-	    {
-	      AY_APTRAN3(tpoint, point->point, mm);
-	      memcpy(point->point, tpoint, 3*sizeof(double));
-
-	      point = point->next;
-	    }
 	  if(o->selp)
 	    {
-	      o->modified = AY_TRUE;
-	    }
+	      if(!o->selp->readonly)
+		{
+		  point = o->selp;
+		  while(point)
+		    {
+		      AY_APTRAN3(tpoint, point->point, mm);
+		      memcpy(point->point, tpoint, 3*sizeof(double));
+
+		      point = point->next;
+		    }
+		  o->modified = AY_TRUE;
+		  notify_parent = AY_TRUE;
+		} /* if */
+	    } /* if */
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  if(notify_parent)
+    ay_notify_parent();
 
  return TCL_OK;
 } /* ay_trafo_rotpntstcmd */
