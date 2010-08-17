@@ -980,6 +980,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], "getpntcb failed");
 		  goto cleanup;
 		}
+	      if(o->selp->readonly)
+		{
+		  ay_error(AY_ERROR, argv[0], "points are readonly");
+		  goto cleanup;
+		}
 	      p = selp->point;
 	      homogenous = selp->homogenous;
 	      handled = AY_TRUE;
