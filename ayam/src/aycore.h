@@ -1057,7 +1057,7 @@ int ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** add points to point selection
  */
-int ay_selp_sel(ay_object *o, int indiceslen, int *indices);
+int ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices);
 
 /** Tcl command to manipulate the point selection
  */
@@ -1075,6 +1075,11 @@ int ay_selp_rem(ay_object *o, int index);
 /** repair selected points indizes after point insertion
  */
 int ay_selp_ins(ay_object *o, int index, int addtoselp);
+
+/** getpnts callback helper
+ */
+int ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
+		    int arrlen, int stride, double *arr);
 
 /* shade.c */
 
