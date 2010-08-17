@@ -429,11 +429,12 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  *  select points from indices
  */
 int
-ay_selp_sel(ay_object *o, int indiceslen, int *indices)
+ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices)
 {
  int ay_status = AY_OK;
  ay_point *po = NULL, *p = NULL;
- int i = 0, have_it = AY_FALSE;
+ unsigned int i = 0;
+ char have_it = AY_FALSE;
 
   if(!o || !indices)
     return AY_ENULL;
@@ -478,7 +479,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int i = 1, indiceslen = 0, *tmp = NULL, *indices = NULL;
+ unsigned int i = 1, indiceslen = 0, *tmp = NULL, *indices = NULL;
  int select_all = AY_FALSE, select_none = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -497,20 +498,20 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
   /* parse list of indices */
   if(!select_none)
     {
-      while(i < argc)
+      while(i < (unsigned int)argc)
 	{
 	  if(!strcmp(argv[i],"-all"))
 	    {
 	      select_all = AY_TRUE;
 	      break;
 	    }
-	  if(!(tmp = realloc(tmp, i*sizeof(int))))
+	  if(!(tmp = realloc(tmp, i*sizeof(unsigned int))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      goto cleanup;
 	    }
 	  indices = tmp;
-	  sscanf(argv[i], "%d", &(indices[indiceslen]));
+	  sscanf(argv[i], "%u", &(indices[indiceslen]));
 	  indiceslen++;
 	  i++;
 	} /* while */
@@ -702,3 +703,139 @@ ay_selp_ins(ay_object *o, int index, int addtoselp)
 
  return ay_status;
 } /* ay_selp_ins */
+
+
+/* ay_selp_getpnts:
+ *  getpnts callback helper
+ */
+int
+ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
+		int arrlen, int stride, double *arr)
+{
+ ay_point *pnt = NULL, **lastpnt = NULL;
+ double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
+ double **pecoords = NULL, *pecoord = NULL, *control = NULL, *c;
+ int i = 0, j = 0, a = 0, found = AY_FALSE;
+ unsigned int *peindices = NULL, peindex = 0;
+
+  if(!o || ((mode != 3) && (!p || !pe)))
+    return AY_ENULL;
+
+  if(min_dist == 0.0)
+    min_dist = DBL_MAX;
+
+  if(stride == 4)
+    pe->homogenous = AY_TRUE;
+
+  switch(mode)
+    {
+    case 0:
+      /* select all points */
+      if(!(pe->coords = calloc(arrlen, sizeof(double*))))
+	return AY_EOMEM;
+      if(!(pe->indices = calloc(arrlen, sizeof(unsigned int))))
+	return AY_EOMEM;
+
+      for(i = 0; i < arrlen; i++)
+	{
+	  pe->coords[i] = &(arr[a]);
+	  pe->indices[i] = i;
+	  a += stride;
+	}
+
+      pe->num = arrlen;
+      break;
+    case 1:
+      /* selection based on a single point */
+      for(i = 0; i < arrlen; i++)
+	{
+	  dist = AY_VLEN((p[0] - arr[j]),
+			 (p[1] - arr[j+1]),
+			 (p[2] - arr[j+2]));
+
+	  if(dist < min_dist)
+	    {
+	      pecoord = &(control[j]);
+	      peindex = i;
+	      min_dist = dist;
+	    }
+
+	  j += stride;
+	} /* for */
+
+      if(!pecoord)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      if(!found)
+	{
+	  if(!(pe->coords = calloc(1, sizeof(double *))))
+	    return AY_EOMEM;
+
+	  if(!(pe->indices = calloc(1, sizeof(unsigned int))))
+	    return AY_EOMEM;
+
+	  pe->coords[0] = pecoord;
+	  pe->indices[0] = peindex;
+	  pe->num = 1;
+	} /* if */
+      break;
+    case 2:
+      /* selection based on planes */
+      j = 0;
+      a = 0;
+      for(i = 0; i < arrlen; i++)
+	{
+	  c = &(arr[j]);
+
+	  /* test point c against the four planes in p */
+	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+	    {
+	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      if(!(peindices = realloc(peindices,
+				       (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+	      pecoords[a] = &(control[j]);
+	      peindices[a] = i;
+	      a++;
+	    } /* if */
+
+	  j += stride;
+	} /* for */
+
+      if(!pecoords)
+	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
+
+      pe->coords = pecoords;
+      pe->indices = peindices;
+      pe->num = a;
+      break;
+    case 3:
+      /* rebuild from o->selp */
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < (unsigned int)arrlen)
+	    {
+	      pnt->point = &(arr[pnt->index*stride]);
+	      if(stride == 4)
+		pnt->homogenous = AY_TRUE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	} /* while */
+      break;
+    } /* switch */
+
+ return AY_OK;
+} /* ay_sel_getpnts */
