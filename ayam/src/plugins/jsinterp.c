@@ -55,7 +55,7 @@ static JSClass jsinterp_global_class = {
 };
 
 /** A bunch of pre-defined global functions (that wrap Ayam Tcl commands). */
-static JSFunctionSpec jsinterp_globalfunctions[] = {
+static JSFunctionSpec jsinterp_global_functions[] = {
   {"crtOb", jsinterp_wrapcrtobcmd, 0, 0, 0},
   {0}
 };
@@ -127,6 +127,7 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 	}
       else
 	{
+	  free(nargv);
 	  return AY_ERROR;
 	}
     } /* for */
@@ -158,6 +159,8 @@ jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
     }
 
   ay_object_createtcmd(clientData, jsinterp_interp, argc+1, sargv);
+
+  free(sargv);
 
   *rval = JSVAL_VOID; /* return undefined */
 
@@ -282,14 +285,14 @@ Jsinterp_Init(Tcl_Interp *interp)
      like Object and Array. */
   if(!JS_InitStandardClasses(jsinterp_cx, jsinterp_global))
     {
-      ay_error(AY_ERROR, fname, "Failed to init.");
+      ay_error(AY_ERROR, fname, "Failed to init global object.");
       return TCL_OK;
     }
 
   if (!JS_DefineFunctions(jsinterp_cx, jsinterp_global,
-			  jsinterp_globalfunctions))
+			  jsinterp_global_functions))
     {
-      ay_error(AY_ERROR, fname, "Failed to define functions.");
+      ay_error(AY_ERROR, fname, "Failed to define global functions.");
       return TCL_OK;
     }
 
