@@ -22,13 +22,17 @@
 
 /* prototypes of functions local to this module: */
 
+/** error reporting wrapper function */
 void jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report);
 
+/** Tcl command to evaluate a JS script */
 int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** JS function to wrap the crtOb command */
 int jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc,
 			  jsval *argv, jsval *rval);
+
 
 /* global variables: */
 
@@ -68,8 +72,8 @@ static Tcl_Interp *jsinterp_interp;
 void
 jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report)
 {
-  char fname[] = "jsinterp_error";
-  char buf[128] = "";
+ char fname[] = "jsinterp_error";
+ char buf[128] = "";
 
   if(!cx || !message || !report)
     {
@@ -133,6 +137,10 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
  return AY_OK;
 } /* jsinterp_convargs */
 
+
+/* jsinterp_wrapcrtobcmd:
+ *  JS function to wrap the crtOb command 
+ */
 int
 jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 		      jsval *rval)
