@@ -192,6 +192,10 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 {
  jsval rval;
  JSBool ok = JS_TRUE;
+ Tcl_Channel channel;
+ Tcl_Obj *obj = NULL;
+ unsigned char *bytes;
+ int length;
 
   /* check args */
   if(argc < 2)
@@ -211,8 +215,25 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   /* evaluate */
   if(argv[1][0] == '-' && argv[1][1] == 'f')
     {
+      if(argc < 3)
+	{
+	  ay_error(AY_EARGS, argv[0], "(script | -file filename)");
+	  jsinterp_interp = NULL;
+	  return TCL_OK;
+	}
       /* -file */
-      /* XXXX todo: read and eval .js file */
+      obj = Tcl_NewObj();
+      channel = Tcl_OpenFileChannel(interp, argv[2], "r", 0);
+      if(channel)
+	{
+	  Tcl_ReadChars(channel, obj, -1, 0);
+	  Tcl_Close(interp, channel);
+	}
+      bytes = Tcl_GetByteArrayFromObj(obj, &length);
+      ok = JS_EvaluateScript(jsinterp_cx, jsinterp_global,
+			     (char*)bytes, length,
+			     argv[2], 0, &rval);
+      Tcl_IncrRefCount(obj);Tcl_DecrRefCount(obj);
     }
   else
     {
@@ -304,6 +325,7 @@ Jsinterp_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
+  /* Define new global JS functions that wrap Tcl/Ayam functionality. */
   if (!JS_DefineFunctions(jsinterp_cx, jsinterp_global,
 			  jsinterp_global_functions))
     {
@@ -311,8 +333,7 @@ Jsinterp_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  /* create commands */
-
+  /* Create Tcl commands. */
   Tcl_CreateCommand(interp, "jsEval", jsinterp_evaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
