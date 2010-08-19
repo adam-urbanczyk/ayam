@@ -106,7 +106,7 @@ int
 jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 		  char ***sargv)
 {
- char **nargv = NULL;
+ char *c, **nargv = NULL;
  uintN i;
  JSString *jss;
 
@@ -124,6 +124,21 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
       if(jss)
 	{
 	  nargv[i+1] = JS_GetStringBytes(jss);
+
+	  /* convert JS Array to Tcl list */
+	  if(JSVAL_IS_OBJECT(argv[i]))
+	    {
+	      if(JS_IsArrayObject(cx, JSVAL_TO_OBJECT(argv[i])))
+		{
+		  c = nargv[i+1];
+		  while(*c != '\0')
+		    {
+		      if(*c == ',')
+			*c = ' ';
+		      c++;
+		    }
+		} /* if */
+	    } /* if */
 	}
       else
 	{
