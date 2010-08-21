@@ -614,6 +614,7 @@ typedef struct ay_box_object_s
   double width; /**< width of box (X) */
   double length; /**< length of box (Z) */
   double height; /**< height of box (Y) */
+  double *pnts;
 } ay_box_object;
 
 

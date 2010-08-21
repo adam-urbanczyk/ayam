@@ -16,6 +16,8 @@
 
 static char *ay_box_name = "Box";
 
+int ay_box_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_box_createcb:
@@ -59,6 +61,9 @@ ay_box_deletecb(void *c)
 
   box = (ay_box_object *)(c);
 
+  if(box->pnts)
+    free(box->pnts);
+
   free(box);
 
  return AY_OK;
@@ -80,6 +85,8 @@ ay_box_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(box, src, sizeof(ay_box_object));
+
+  box->pnts = NULL;
 
   *dst = (void *)box;
 
@@ -198,6 +205,65 @@ ay_box_shadecb(struct Togl *togl, ay_object *o)
 
  return AY_OK;
 } /* ay_box_shadecb */
+
+
+/* ay_box_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of box object
+ */
+int
+ay_box_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_box_object *box = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  box = (ay_box_object *) o->refine;
+
+
+  if(!box->pnts)
+    {
+      if(!(pnts = calloc(8*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      box->pnts = pnts;
+      ay_box_notifycb(o);
+    }
+  else
+    {
+      pnts = box->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < 8; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+ return AY_OK;
+} /* ay_box_drawhcb */
+
+
+/* ay_box_getpntcb:
+ *  get point (editing and selection) callback function of box object
+ */
+int
+ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_box_object *box = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  box = (ay_box_object *)o->refine;
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, 8, 3, box->pnts);
+} /* ay_box_getpntcb */
 
 
 /* ay_box_setpropcb:
@@ -410,6 +476,51 @@ ay_box_bbccb(ay_object *o, double *bbox, int *flags)
 
  return AY_OK;
 } /* ay_box_bbccb */
+
+
+/* ay_box_notifycb:
+ *  notification callback function of box object
+ */
+int
+ay_box_notifycb(ay_object *o)
+{
+ ay_box_object *box = NULL;
+ double wh, hh, lh;
+ double *pnts = NULL;
+ int i = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  box = (ay_box_object *)o->refine;
+
+  if(box->pnts)
+    {
+      pnts = box->pnts;
+      wh = (box->width  * 0.5);
+      lh = (box->length * 0.5);
+      hh = (box->height * 0.5);
+      a = 0;
+      for(i = 0; i < 8; i++)
+	{
+	  if(i%4<2)
+	    pnts[a] = -wh;
+	  else
+	    pnts[a] = wh;
+	  if(i%2<1)
+	    pnts[a+1] = -hh;
+	  else
+	    pnts[a+1] = hh;
+	  if(i<4)
+	    pnts[a+2] = -lh;
+	  else
+	    pnts[a+2] = lh;
+	  a += 3;
+	} /* for */
+    } /* if */
+
+ return AY_OK;
+} /* ay_box_notifycb */
 
 
 /* ay_box_providecb:
@@ -639,16 +750,18 @@ ay_box_init(Tcl_Interp *interp)
 				    ay_box_deletecb,
 				    ay_box_copycb,
 				    ay_box_drawcb,
-				    NULL, /* no points to edit */
+				    ay_box_drawhcb,
 				    ay_box_shadecb,
 				    ay_box_setpropcb,
 				    ay_box_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_box_getpntcb,
 				    ay_box_readcb,
 				    ay_box_writecb,
 				    ay_box_wribcb,
 				    ay_box_bbccb,
 				    AY_IDBOX);
+
+  ay_status = ay_notify_register(ay_box_notifycb, AY_IDBOX);
 
   ay_status = ay_convert_register(ay_box_convertcb, AY_IDBOX);
 
