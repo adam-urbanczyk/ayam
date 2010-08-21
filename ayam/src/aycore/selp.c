@@ -710,11 +710,11 @@ ay_selp_ins(ay_object *o, int index, int addtoselp)
  */
 int
 ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
-		int arrlen, int stride, double *arr)
+		int readonly, int arrlen, int stride, double *arr)
 {
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double **pecoords = NULL, *pecoord = NULL, *control = NULL, *c;
+ double **pecoords = NULL, *pecoord = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *peindices = NULL, peindex = 0;
 
@@ -726,6 +726,8 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
   if(stride == 4)
     pe->homogenous = AY_TRUE;
+
+  pe->readonly = readonly;
 
   switch(mode)
     {
@@ -755,7 +757,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
 	  if(dist < min_dist)
 	    {
-	      pecoord = &(control[j]);
+	      pecoord = &(arr[j]);
 	      peindex = i;
 	      min_dist = dist;
 	    }
@@ -798,7 +800,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	      if(!(peindices = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
 		return AY_EOMEM;
-	      pecoords[a] = &(control[j]);
+	      pecoords[a] = &(arr[j]);
 	      peindices[a] = i;
 	      a++;
 	    } /* if */
