@@ -256,11 +256,22 @@ int
 ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_box_object *box = NULL;
+ double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
 
   box = (ay_box_object *)o->refine;
+
+  if(!box->pnts)
+    {
+      if(!(pnts = calloc(8*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      box->pnts = pnts;
+      ay_box_notifycb(o);
+    }
 
  return ay_selp_getpnts(mode, o, p, pe, 1, 8, 3, box->pnts);
 } /* ay_box_getpntcb */
