@@ -220,6 +220,8 @@ ay_box_drawhcb(struct Togl *togl, ay_object *o)
 
   box = (ay_box_object *) o->refine;
 
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   if(!box->pnts)
     {
@@ -244,6 +246,9 @@ ay_box_drawhcb(struct Togl *togl, ay_object *o)
        a += 3;
      }
   glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
 
  return AY_OK;
 } /* ay_box_drawhcb */
