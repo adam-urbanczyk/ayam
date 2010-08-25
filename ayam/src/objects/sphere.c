@@ -185,12 +185,12 @@ ay_sphere_drawcb(struct Togl *togl, ay_object *o)
       phimin = -AY_HALFPI;
     }
 
-  phi = fabs(phimax) + fabs(phimin);
+  phi = fabs(phimax - phimin);
 
   phidiff = phi/4;
   thetadiff = AY_D2R(thetamax/8);
 
-  angle = phimin;
+  angle = phimin<phimax?phimin:phimax;
   for(j = 0; j <= 4; j++)
     {
       P1[j*3] = cos(angle)*radius;
@@ -326,11 +326,11 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
       phimin = -AY_HALFPI;
     }
 
-  phi = fabs(phimax) + fabs(phimin);
+  phi = fabs(phimax - phimin);
   phidiff = phi/4;
   thetadiff = thetamax/8;
 
-  angle = phimin;
+  angle = phimin<phimax?phimin:phimax;
   for(j = 0; j <= 4; j++)
     {
       P1[j*3] = cos(angle)*radius;
@@ -377,36 +377,34 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 	  glPushMatrix();
 	  glNormal3d(0.0,-1.0,0.0);
 	  glBegin(GL_TRIANGLE_FAN);
-	   glVertex3d(0.0,  0.0, zmin);
+	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
 	   for(i = 0; i < 5; i++)
 	     {
 	       glVertex3dv(&(P1[i*3]));
 	     }
 	  glEnd();
 	  glBegin(GL_TRIANGLES);
-	   glVertex3d(0.0,  0.0, zmin);
-	   glVertex3d(rmax, 0.0, zmax);
-	   glVertex3d(0.0,  0.0, zmax);
+	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
+	   glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
+	   glVertex3d(0.0,  0.0, zmin>zmax?zmin:zmax);
 	  glEnd();
-
 
 	  glRotated(thetamax, 0.0, 0.0, 1.0);
 
 	  glBegin(GL_TRIANGLE_FAN);
-	   glVertex3d(0.0,  0.0, zmin);
+	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
 	   for(i = 0; i < 5; i++)
 	     {
 	       glVertex3dv(&(P1[i*3]));
 	     }
 	  glEnd();
 	  glBegin(GL_TRIANGLES);
-	   glVertex3d(0.0,  0.0, zmin);
-	   glVertex3d(rmax, 0.0, zmax);
-	   glVertex3d(0.0,  0.0, zmax);
+	   glVertex3d(0.0,  0.0, zmin<zmax?zmin:zmax);
+	   glVertex3d(zmin<zmax?rmax:rmin, 0.0, zmin>zmax?zmin:zmax);
+	   glVertex3d(0.0,  0.0, zmin>zmax?zmin:zmax);
 	  glEnd();
 
 	  glPopMatrix();
-
 	}
 
       /* draw caps */
