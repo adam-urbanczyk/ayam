@@ -614,7 +614,7 @@ typedef struct ay_box_object_s
   double width; /**< width of box (X) */
   double length; /**< length of box (Z) */
   double height; /**< height of box (Y) */
-  double *pnts;
+  double *pnts; /**< read only points [8] (created on request) */
 } ay_box_object;
 
 
@@ -658,6 +658,7 @@ typedef struct ay_disk_object_s
   double radius; /**< radius of disk */
   double height; /**< displacement of disk on z axis */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [8] (created on request) */
 } ay_disk_object;
 
 
