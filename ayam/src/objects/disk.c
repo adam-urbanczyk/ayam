@@ -16,6 +16,8 @@
 
 static char *ay_disk_name = "Disk";
 
+int ay_disk_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_disk_createcb:
@@ -60,6 +62,9 @@ ay_disk_deletecb(void *c)
 
   disk = (ay_disk_object *)(c);
 
+  if(disk->pnts)
+    free(disk->pnts);
+
   free(disk);
 
  return AY_OK;
@@ -81,6 +86,8 @@ ay_disk_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(disk, src, sizeof(ay_disk_object));
+
+  disk->pnts = NULL;
 
   *dst = (void *)disk;
 
@@ -203,6 +210,81 @@ ay_disk_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_disk_shadecb */
 
 
+/* ay_disk_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of disk object
+ */
+int
+ay_disk_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_disk_object *disk = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  disk = (ay_disk_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!disk->pnts)
+    {
+      if(!(pnts = calloc(9*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      disk->pnts = pnts;
+      ay_disk_notifycb(o);
+    }
+  else
+    {
+      pnts = disk->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < 9; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_disk_drawhcb */
+
+
+/* ay_disk_getpntcb:
+ *  get point (editing and selection) callback function of disk object
+ */
+int
+ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_disk_object *disk = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  disk = (ay_disk_object *)o->refine;
+
+  if(!disk->pnts)
+    {
+      if(!(pnts = calloc(9*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      disk->pnts = pnts;
+      ay_disk_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, 9, 3, disk->pnts);
+} /* ay_disk_getpntcb */
+
+
 /* ay_disk_setpropcb:
  *  set property (from Tcl to C context) callback function of disk object
  */
@@ -248,6 +330,9 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+
+  ay_notify_force(o);
+
   ay_notify_parent();
 
  return AY_OK;
@@ -407,6 +492,80 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 
  return AY_OK;
 } /* ay_disk_bbccb */
+
+
+/* ay_disk_notifycb:
+ *  notification callback function of disk object
+ */
+int
+ay_disk_notifycb(ay_object *o)
+{
+ ay_disk_object *disk = NULL;
+ double *pnts = NULL;
+ double radius = 0.0, w = 0.0;
+ int i = 0, a = 0;
+ double thetadiff, angle;
+
+  if(!o)
+    return AY_ENULL;
+
+  disk = (ay_disk_object *)o->refine;
+
+  radius = disk->radius;
+
+  w = (sqrt(2.0)*0.5);
+
+  if(disk->pnts)
+    {
+      pnts = disk->pnts;
+      if(disk->is_simple)
+	{
+	  pnts[0] = radius;
+
+	  pnts[3] = radius*w;
+	  pnts[4] = -radius*w;
+
+	  pnts[7] = -radius;
+
+	  pnts[9] = -radius*w;
+	  pnts[10] = -radius*w;
+
+	  pnts[12] = -radius;
+
+	  pnts[15] = -radius*w;
+	  pnts[16] = radius*w;
+
+	  pnts[19] = radius;
+
+	  pnts[21] = radius*w;
+	  pnts[22] = radius*w;
+
+	  a = 2;
+	  for(i = 0; i < 8; i++)
+	    {
+	      pnts[a] = disk->height;
+	      a += 3;
+	    } /* for */
+
+	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
+	}
+      else
+	{
+	  thetadiff = AY_D2R(disk->thetamax/8);
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*radius;
+	      pnts[a+1] = sin(angle)*radius;
+	      pnts[a+2] = disk->height;
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+	} /* if */
+    } /* if */
+
+ return AY_OK;
+} /* ay_disk_notifycb */
 
 
 /* ay_disk_providecb:
@@ -578,16 +737,18 @@ ay_disk_init(Tcl_Interp *interp)
 				    ay_disk_deletecb,
 				    ay_disk_copycb,
 				    ay_disk_drawcb,
-				    NULL, /* no points to edit */
+				    ay_disk_drawhcb,
 				    ay_disk_shadecb,
 				    ay_disk_setpropcb,
 				    ay_disk_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_disk_getpntcb,
 				    ay_disk_readcb,
 				    ay_disk_writecb,
 				    ay_disk_wribcb,
 				    ay_disk_bbccb,
 				    AY_IDDISK);
+
+  ay_status = ay_notify_register(ay_disk_notifycb, AY_IDDISK);
 
   ay_status = ay_convert_register(ay_disk_convertcb, AY_IDDISK);
 
