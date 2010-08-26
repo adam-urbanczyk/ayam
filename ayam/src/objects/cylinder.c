@@ -16,6 +16,8 @@
 
 static char *ay_cylinder_name = "Cylinder";
 
+int ay_cylinder_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_cylinder_createcb:
@@ -62,6 +64,9 @@ ay_cylinder_deletecb(void *c)
 
   cylinder = (ay_cylinder_object *)(c);
 
+  if(cylinder->pnts)
+    free(cylinder->pnts);
+
   free(cylinder);
 
  return AY_OK;
@@ -83,6 +88,8 @@ ay_cylinder_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(cylinder, src, sizeof(ay_cylinder_object));
+
+  cylinder->pnts = NULL;
 
   *dst = (void *)cylinder;
 
@@ -370,6 +377,81 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_cylinder_shadecb */
 
 
+/* ay_cylinder_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of cylinder object
+ */
+int
+ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_cylinder_object *cylinder = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  cylinder = (ay_cylinder_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!cylinder->pnts)
+    {
+      if(!(pnts = calloc(9*3*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      cylinder->pnts = pnts;
+      ay_cylinder_notifycb(o);
+    }
+  else
+    {
+      pnts = cylinder->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < 9*3; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_cylinder_drawhcb */
+
+
+/* ay_cylinder_getpntcb:
+ *  get point (editing and selection) callback function of cylinder object
+ */
+int
+ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_cylinder_object *cylinder = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  cylinder = (ay_cylinder_object *)o->refine;
+
+  if(!cylinder->pnts)
+    {
+      if(!(pnts = calloc(9*3*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      cylinder->pnts = pnts;
+      ay_cylinder_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, 9*3, 3, cylinder->pnts);
+} /* ay_cylinder_getpntcb */
+
+
 /* ay_cylinder_setpropcb:
  *  set property (from Tcl to C context) callback function of cylinder object
  */
@@ -424,6 +506,7 @@ ay_cylinder_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+  ay_cylinder_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -709,6 +792,100 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_cylinder_bbccb */
 
 
+/* ay_cylinder_notifycb:
+ *  notification callback function of cylinder object
+ */
+int
+ay_cylinder_notifycb(ay_object *o)
+{
+ ay_cylinder_object *cylinder = NULL;
+ double *pnts = NULL;
+ double radius = 0.0, w = 0.0;
+ int i = 0, a = 0;
+ double thetadiff, angle;
+
+  if(!o)
+    return AY_ENULL;
+
+  cylinder = (ay_cylinder_object *)o->refine;
+
+  radius = cylinder->radius;
+
+  w = (sqrt(2.0)*0.5);
+
+  if(cylinder->pnts)
+    {
+      pnts = cylinder->pnts;
+      /* lower ring */
+      if(cylinder->is_simple)
+	{
+	  pnts[0] = radius;
+
+	  pnts[3] = radius*w;
+	  pnts[4] = -radius*w;
+
+	  pnts[7] = -radius;
+
+	  pnts[9] = -radius*w;
+	  pnts[10] = -radius*w;
+
+	  pnts[12] = -radius;
+
+	  pnts[15] = -radius*w;
+	  pnts[16] = radius*w;
+
+	  pnts[19] = radius;
+
+	  pnts[21] = radius*w;
+	  pnts[22] = radius*w;
+
+	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
+	}
+      else
+	{
+	  thetadiff = AY_D2R(cylinder->thetamax/8);
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*radius;
+	      pnts[a+1] = sin(angle)*radius;
+
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+	} /* if */
+
+      /* middle ring */
+      memcpy(&(pnts[27]),pnts,9*3*sizeof(double));
+
+      /* upper ring */
+      memcpy(&(pnts[54]),pnts,9*3*sizeof(double));
+	  
+      /* set heights */
+      a = 2;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cylinder->zmin;
+	  a += 3;
+	} /* for */
+
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = 0.0;
+	  a += 3;
+	} /* for */
+      
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cylinder->zmax;
+	  a += 3;
+	} /* for */
+    } /* if */
+
+ return AY_OK;
+} /* ay_cylinder_notifycb */
+
+
 /* ay_cylinder_providecb:
  *  provide callback function of cylinder object
  */
@@ -957,16 +1134,18 @@ ay_cylinder_init(Tcl_Interp *interp)
 				    ay_cylinder_deletecb,
 				    ay_cylinder_copycb,
 				    ay_cylinder_drawcb,
-				    NULL, /* no points to edit */
+				    ay_cylinder_drawhcb,
 				    ay_cylinder_shadecb,
 				    ay_cylinder_setpropcb,
 				    ay_cylinder_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_cylinder_getpntcb,
 				    ay_cylinder_readcb,
 				    ay_cylinder_writecb,
 				    ay_cylinder_wribcb,
 				    ay_cylinder_bbccb,
 				    AY_IDCYLINDER);
+
+  ay_status = ay_notify_register(ay_cylinder_notifycb, AY_IDCYLINDER);
 
   ay_status = ay_convert_register(ay_cylinder_convertcb, AY_IDCYLINDER);
 
