@@ -16,6 +16,8 @@
 
 static char *ay_cone_name = "Cone";
 
+int ay_cone_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_cone_createcb:
@@ -61,6 +63,9 @@ ay_cone_deletecb(void *c)
 
   cone = (ay_cone_object *)(c);
 
+  if(cone->pnts)
+    free(cone->pnts);
+
   free(cone);
 
  return AY_OK;
@@ -82,6 +87,8 @@ ay_cone_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(cone, src, sizeof(ay_cone_object));
+
+  cone->pnts = NULL;
 
   *dst = (void *)cone;
 
@@ -313,6 +320,83 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_cone_shadecb */
 
 
+/* ay_cone_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of cone object
+ */
+int
+ay_cone_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_cone_object *cone = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  cone = (ay_cone_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!cone->pnts)
+    {
+      if(!(pnts = calloc(10*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      cone->pnts = pnts;
+      ay_cone_notifycb(o);
+    }
+  else
+    {
+      pnts = cone->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < 10; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_cone_drawhcb */
+
+
+
+
+/* ay_cone_getpntcb:
+ *  get point (editing and selection) callback function of cone object
+ */
+int
+ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_cone_object *cone = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  cone = (ay_cone_object *)o->refine;
+
+  if(!cone->pnts)
+    {
+      if(!(pnts = calloc(10*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      cone->pnts = pnts;
+      ay_cone_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, 10, 3, cone->pnts);
+} /* ay_cone_getpntcb */
+
+
 /* ay_cone_setpropcb:
  *  set property (from Tcl to C context) callback function of cone object
  */
@@ -363,6 +447,7 @@ ay_cone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+  ay_cone_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -620,6 +705,77 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_cone_bbccb */
 
 
+/* ay_cone_notifycb:
+ *  notification callback function of cone object
+ */
+int
+ay_cone_notifycb(ay_object *o)
+{
+ ay_cone_object *cone = NULL;
+ double *pnts = NULL;
+ double radius = 0.0, w = 0.0;
+ int i = 0, a = 0;
+ double thetadiff, angle;
+
+  if(!o)
+    return AY_ENULL;
+
+  cone = (ay_cone_object *)o->refine;
+
+  radius = cone->radius;
+
+  w = (sqrt(2.0)*0.5);
+
+  if(cone->pnts)
+    {
+      pnts = cone->pnts;
+      if(cone->is_simple)
+	{
+	  pnts[0] = radius;
+
+	  pnts[3] = radius*w;
+	  pnts[4] = -radius*w;
+
+	  pnts[7] = -radius;
+
+	  pnts[9] = -radius*w;
+	  pnts[10] = -radius*w;
+
+	  pnts[12] = -radius;
+
+	  pnts[15] = -radius*w;
+	  pnts[16] = radius*w;
+
+	  pnts[19] = radius;
+
+	  pnts[21] = radius*w;
+	  pnts[22] = radius*w;
+
+
+	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
+
+	  pnts[29] = cone->height;
+	}
+      else
+	{
+	  thetadiff = AY_D2R(cone->thetamax/8);
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*radius;
+	      pnts[a+1] = sin(angle)*radius;
+
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+	  pnts[29] = cone->height;
+	} /* if */
+    } /* if */
+
+ return AY_OK;
+} /* ay_cone_notifycb */
+
+
 /* ay_cone_providecb:
  *  provide callback function of cone object
  */
@@ -857,16 +1013,18 @@ ay_cone_init(Tcl_Interp *interp)
 				    ay_cone_deletecb,
 				    ay_cone_copycb,
 				    ay_cone_drawcb,
-				    NULL, /* no points to edit */
+				    ay_cone_drawhcb,
 				    ay_cone_shadecb,
 				    ay_cone_setpropcb,
 				    ay_cone_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_cone_getpntcb,
 				    ay_cone_readcb,
 				    ay_cone_writecb,
 				    ay_cone_wribcb,
 				    ay_cone_bbccb,
 				    AY_IDCONE);
+
+  ay_status = ay_notify_register(ay_cone_notifycb, AY_IDCONE);
 
   ay_status = ay_convert_register(ay_cone_convertcb, AY_IDCONE);
 
