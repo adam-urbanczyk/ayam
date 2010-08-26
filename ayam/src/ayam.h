@@ -648,6 +648,7 @@ typedef struct ay_cone_object_s
   double radius; /**< radius of cone */
   double height; /**< height of cone */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [9] (created on request) */
 } ay_cone_object;
 
 
@@ -658,7 +659,7 @@ typedef struct ay_disk_object_s
   double radius; /**< radius of disk */
   double height; /**< displacement of disk on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [8] (created on request) */
+  double *pnts; /**< read only points [9] (created on request) */
 } ay_disk_object;
 
 
