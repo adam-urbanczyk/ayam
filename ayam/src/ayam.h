@@ -614,7 +614,7 @@ typedef struct ay_box_object_s
   double width; /**< width of box (X) */
   double length; /**< length of box (Z) */
   double height; /**< height of box (Y) */
-  double *pnts; /**< read only points [8] (created on request) */
+  double *pnts; /**< read only points [8 * 3] (created on request) */
 } ay_box_object;
 
 
@@ -648,7 +648,7 @@ typedef struct ay_cone_object_s
   double radius; /**< radius of cone */
   double height; /**< height of cone */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9] (created on request) */
+  double *pnts; /**< read only points [9 * 3] (created on request) */
 } ay_cone_object;
 
 
@@ -659,7 +659,7 @@ typedef struct ay_disk_object_s
   double radius; /**< radius of disk */
   double height; /**< displacement of disk on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9] (created on request) */
+  double *pnts; /**< read only points [9 * 3] (created on request) */
 } ay_disk_object;
 
 
@@ -672,6 +672,7 @@ typedef struct ay_cylinder_object_s
   double zmin; /**< delimit cylinder on z axis */
   double zmax; /**< delimit cylinder on z axis */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [9 * 3 * 3] (created on request) */
 } ay_cylinder_object;
 
 
