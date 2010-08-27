@@ -860,15 +860,16 @@ ay_cylinder_notifycb(ay_object *o)
 
       /* upper ring */
       memcpy(&(pnts[54]),pnts,9*3*sizeof(double));
-	  
+
       /* set heights */
+      /* lower ring */
       a = 2;
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = cylinder->zmin;
 	  a += 3;
 	} /* for */
-
+      /* middle ring */
       hh = cylinder->zmin + ((cylinder->zmax - cylinder->zmin) / 2.0);
 
       for(i = 0; i <= 8; i++)
@@ -876,7 +877,7 @@ ay_cylinder_notifycb(ay_object *o)
 	  pnts[a] = hh;
 	  a += 3;
 	} /* for */
-      
+      /* upper ring */
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = cylinder->zmax;
