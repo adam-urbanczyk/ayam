@@ -802,7 +802,7 @@ ay_cylinder_notifycb(ay_object *o)
  double *pnts = NULL;
  double radius = 0.0, w = 0.0;
  int i = 0, a = 0;
- double thetadiff, angle;
+ double thetadiff, angle, hh;
 
   if(!o)
     return AY_ENULL;
@@ -869,9 +869,11 @@ ay_cylinder_notifycb(ay_object *o)
 	  a += 3;
 	} /* for */
 
+      hh = cylinder->zmin + ((cylinder->zmax - cylinder->zmin) / 2.0);
+
       for(i = 0; i <= 8; i++)
 	{
-	  pnts[a] = 0.0;
+	  pnts[a] = hh;
 	  a += 3;
 	} /* for */
       
