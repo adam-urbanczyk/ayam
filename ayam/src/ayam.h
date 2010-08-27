@@ -637,6 +637,7 @@ typedef struct ay_sphere_object_s
   double zmin; /**< delimit sphere on z axis */
   double zmax; /**< delimit sphere on z axis */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [9 * 3 * 3] (created on request) */
 } ay_sphere_object;
 
 

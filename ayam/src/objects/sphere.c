@@ -16,6 +16,8 @@
 
 static char *ay_sphere_name = "Sphere";
 
+int ay_sphere_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_sphere_createcb:
@@ -62,6 +64,9 @@ ay_sphere_deletecb(void *c)
 
   sphere = (ay_sphere_object *)(c);
 
+  if(sphere->pnts)
+    free(sphere->pnts);
+
   free(sphere);
 
  return AY_OK;
@@ -83,6 +88,8 @@ ay_sphere_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(sphere, src, sizeof(ay_sphere_object));
+
+  sphere->pnts = NULL;
 
   *dst = (void *)sphere;
 
@@ -157,7 +164,6 @@ ay_sphere_drawcb(struct Togl *togl, ay_object *o)
 
       return AY_OK;
     }
-
 
   zmin = sphere->zmin;
   zmax = sphere->zmax;
@@ -457,6 +463,81 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_sphere_shadecb */
 
 
+/* ay_sphere_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of sphere object
+ */
+int
+ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_sphere_object *sphere = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  sphere = (ay_sphere_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!sphere->pnts)
+    {
+      if(!(pnts = calloc(9*3*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      sphere->pnts = pnts;
+      ay_sphere_notifycb(o);
+    }
+  else
+    {
+      pnts = sphere->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < 9*3; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_sphere_drawhcb */
+
+
+/* ay_sphere_getpntcb:
+ *  get point (editing and selection) callback function of sphere object
+ */
+int
+ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_sphere_object *sphere = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sphere = (ay_sphere_object *)o->refine;
+
+  if(!sphere->pnts)
+    {
+      if(!(pnts = calloc(9*3*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      sphere->pnts = pnts;
+      ay_sphere_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, 9*3, 3, sphere->pnts);
+} /* ay_sphere_getpntcb */
+
+
 /* ay_sphere_setpropcb:
  *  set property (from Tcl to C context) callback function of sphere object
  */
@@ -513,6 +594,7 @@ ay_sphere_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+  ay_sphere_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -847,6 +929,145 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_sphere_bbccb */
 
 
+/* ay_sphere_notifycb:
+ *  notification callback function of sphere object
+ */
+int
+ay_sphere_notifycb(ay_object *o)
+{
+ ay_sphere_object *sphere = NULL;
+ double *pnts = NULL;
+ double radius = 0.0, w = 0.0, rmin, rmax;
+ int i = 0, a = 0;
+ double thetadiff, angle, hh;
+
+  if(!o)
+    return AY_ENULL;
+
+  sphere = (ay_sphere_object *)o->refine;
+
+  radius = sphere->radius;
+
+  w = (sqrt(2.0)*0.5);
+
+  if(sphere->pnts)
+    {
+      pnts = sphere->pnts;
+
+      if(sphere->is_simple)
+	{
+	  memset(pnts, 0, 9*3*sizeof(double));
+	  memset(&(pnts[54]), 0, 9*3*sizeof(double));
+
+	  pnts[27] = radius;
+
+	  pnts[30] = radius*w;
+	  pnts[31] = -radius*w;
+
+	  pnts[34] = -radius;
+
+	  pnts[36] = -radius*w;
+	  pnts[37] = -radius*w;
+
+	  pnts[39] = -radius;
+
+	  pnts[42] = -radius*w;
+	  pnts[43] = radius*w;
+
+	  pnts[46] = radius;
+
+	  pnts[48] = radius*w;
+	  pnts[49] = radius*w;
+
+	  memcpy(&(pnts[51]),&(pnts[27]),3*sizeof(double));
+	}
+      else
+	{
+	  if(fabs(sphere->zmax) < radius)
+	    {
+	      rmax = sqrt(radius*radius-sphere->zmax*sphere->zmax);
+	    }
+	  else
+	    {
+	      rmax = 0.0;
+	    }
+
+	  if(fabs(sphere->zmin) < radius)
+	    {
+	      rmin = sqrt(radius*radius-sphere->zmin*sphere->zmin);
+	    }
+	  else
+	    {
+	      rmin = 0.0;
+	    }
+
+	  thetadiff = AY_D2R(sphere->thetamax/8);
+
+	  /* lower ring */
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*rmin;
+	      pnts[a+1] = sin(angle)*rmin;
+
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+
+	  /* middle ring */
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*radius;
+	      pnts[a+1] = sin(angle)*radius;
+
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+
+	  /* upper ring */
+	  angle = 0.0;
+	  for(i = 0; i <= 8; i++)
+	    {
+	      pnts[a] = cos(angle)*rmax;
+	      pnts[a+1] = sin(angle)*rmax;
+
+	      a += 3;
+	      angle += thetadiff;
+	    } /* for */
+	} /* if */
+
+      /* set heights */
+
+      /* lower ring */
+      a = 2;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = sphere->zmin;
+	  a += 3;
+	} /* for */
+
+      /* middle ring */
+      hh = sphere->zmin + ((sphere->zmax - sphere->zmin) / 2.0);
+
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = hh;
+	  a += 3;
+	} /* for */
+
+      /* upper ring */
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = sphere->zmax;
+	  a += 3;
+	} /* for */
+    } /* if */
+
+ return AY_OK;
+} /* ay_sphere_notifycb */
+
+
 /* ay_sphere_providecb:
  *  provide callback function of sphere object
  */
@@ -1076,7 +1297,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		      /*X*/
 		      cv2[j] = 0.0/*cv2[k]*/; /* 0.0 - fan shape */
 		      /*Y*/
-		      cv2[j+1] = 0.0; 
+		      cv2[j+1] = 0.0;
 		      /*Z*/
 		      cv2[j+2] = zmin;
 
@@ -1206,16 +1427,18 @@ ay_sphere_init(Tcl_Interp *interp)
 				    ay_sphere_deletecb,
 				    ay_sphere_copycb,
 				    ay_sphere_drawcb,
-				    NULL, /* no points to edit */
+				    ay_sphere_drawhcb,
 				    ay_sphere_shadecb,
 				    ay_sphere_setpropcb,
 				    ay_sphere_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_sphere_getpntcb,
 				    ay_sphere_readcb,
 				    ay_sphere_writecb,
 				    ay_sphere_wribcb,
 				    ay_sphere_bbccb,
 				    AY_IDSPHERE);
+
+  ay_status = ay_notify_register(ay_sphere_notifycb, AY_IDSPHERE);
 
   ay_status = ay_convert_register(ay_sphere_convertcb, AY_IDSPHERE);
 
