@@ -18,6 +18,8 @@ static char *ay_cylinder_name = "Cylinder";
 
 int ay_cylinder_notifycb(ay_object *o);
 
+#define AY_PCYLINDER 30
+
 /* functions: */
 
 /* ay_cylinder_createcb:
@@ -395,7 +397,7 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!cylinder->pnts)
     {
-      if(!(pnts = calloc(9*3*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -410,7 +412,7 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-   for(i = 0; i < 9*3; i++)
+   for(i = 0; i < AY_PCYLINDER; i++)
      {
        glVertex3dv((GLdouble *)&pnts[a]);
        a += 3;
@@ -440,7 +442,7 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!cylinder->pnts)
     {
-      if(!(pnts = calloc(9*3*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -448,7 +450,7 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_cylinder_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, 9*3, 3, cylinder->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCYLINDER, 3, cylinder->pnts);
 } /* ay_cylinder_getpntcb */
 
 
@@ -816,35 +818,43 @@ ay_cylinder_notifycb(ay_object *o)
   if(cylinder->pnts)
     {
       pnts = cylinder->pnts;
-      /* lower ring */
+
+      hh = cylinder->zmin + ((cylinder->zmax - cylinder->zmin) / 2.0);
+
+      pnts[2] = cylinder->zmin;
+      pnts[5] = hh;
+      pnts[8] = cylinder->zmax;
+
       if(cylinder->is_simple)
 	{
-	  pnts[0] = radius;
+	  /* lower ring */
+	  pnts[9] = radius;
 
-	  pnts[3] = radius*w;
-	  pnts[4] = -radius*w;
+	  pnts[12] = radius*w;
+	  pnts[13] = -radius*w;
 
-	  pnts[7] = -radius;
+	  pnts[16] = -radius;
 
-	  pnts[9] = -radius*w;
-	  pnts[10] = -radius*w;
+	  pnts[18] = -radius*w;
+	  pnts[19] = -radius*w;
 
-	  pnts[12] = -radius;
+	  pnts[21] = -radius;
 
-	  pnts[15] = -radius*w;
-	  pnts[16] = radius*w;
+	  pnts[24] = -radius*w;
+	  pnts[25] = radius*w;
 
-	  pnts[19] = radius;
+	  pnts[28] = radius;
 
-	  pnts[21] = radius*w;
-	  pnts[22] = radius*w;
+	  pnts[30] = radius*w;
+	  pnts[31] = radius*w;
 
-	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
+	  memcpy(&(pnts[33]),&(pnts[9]),3*sizeof(double));
 	}
       else
 	{
 	  thetadiff = AY_D2R(cylinder->thetamax/8);
 	  angle = 0.0;
+	  a = 9;
 	  for(i = 0; i <= 8; i++)
 	    {
 	      pnts[a] = cos(angle)*radius;
@@ -856,21 +866,20 @@ ay_cylinder_notifycb(ay_object *o)
 	} /* if */
 
       /* middle ring */
-      memcpy(&(pnts[27]),pnts,9*3*sizeof(double));
+      memcpy(&(pnts[36]),&(pnts[9]),9*3*sizeof(double));
 
       /* upper ring */
-      memcpy(&(pnts[54]),pnts,9*3*sizeof(double));
+      memcpy(&(pnts[63]),&(pnts[9]),9*3*sizeof(double));
 
       /* set heights */
       /* lower ring */
-      a = 2;
+      a = 11;
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = cylinder->zmin;
 	  a += 3;
 	} /* for */
       /* middle ring */
-      hh = cylinder->zmin + ((cylinder->zmax - cylinder->zmin) / 2.0);
 
       for(i = 0; i <= 8; i++)
 	{

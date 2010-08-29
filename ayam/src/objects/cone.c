@@ -18,6 +18,9 @@ static char *ay_cone_name = "Cone";
 
 int ay_cone_notifycb(ay_object *o);
 
+#define AY_PCONE 11
+
+
 /* functions: */
 
 /* ay_cone_createcb:
@@ -338,7 +341,7 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!cone->pnts)
     {
-      if(!(pnts = calloc(10*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PCONE*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -353,7 +356,7 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-   for(i = 0; i < 10; i++)
+   for(i = 0; i < AY_PCONE; i++)
      {
        glVertex3dv((GLdouble *)&pnts[a]);
        a += 3;
@@ -365,8 +368,6 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
 
  return AY_OK;
 } /* ay_cone_drawhcb */
-
-
 
 
 /* ay_cone_getpntcb:
@@ -385,7 +386,7 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!cone->pnts)
     {
-      if(!(pnts = calloc(10*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PCONE*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -393,7 +394,7 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_cone_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, 10, 3, cone->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PCONE, 3, cone->pnts);
 } /* ay_cone_getpntcb */
 
 
@@ -731,35 +732,35 @@ ay_cone_notifycb(ay_object *o)
       pnts = cone->pnts;
       if(cone->is_simple)
 	{
-	  pnts[0] = radius;
+	  pnts[3] = radius;
 
-	  pnts[3] = radius*w;
-	  pnts[4] = -radius*w;
+	  pnts[6] = radius*w;
+	  pnts[7] = -radius*w;
 
-	  pnts[7] = -radius;
+	  pnts[10] = -radius;
 
-	  pnts[9] = -radius*w;
-	  pnts[10] = -radius*w;
+	  pnts[12] = -radius*w;
+	  pnts[13] = -radius*w;
 
-	  pnts[12] = -radius;
+	  pnts[15] = -radius;
 
-	  pnts[15] = -radius*w;
-	  pnts[16] = radius*w;
+	  pnts[18] = -radius*w;
+	  pnts[19] = radius*w;
 
-	  pnts[19] = radius;
+	  pnts[22] = radius;
 
-	  pnts[21] = radius*w;
-	  pnts[22] = radius*w;
+	  pnts[24] = radius*w;
+	  pnts[25] = radius*w;
 
+	  memcpy(&(pnts[27]),&(pnts[3]),3*sizeof(double));
 
-	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
-
-	  pnts[29] = cone->height;
+	  pnts[32] = cone->height;
 	}
       else
 	{
 	  thetadiff = AY_D2R(cone->thetamax/8);
 	  angle = 0.0;
+	  a = 3;
 	  for(i = 0; i <= 8; i++)
 	    {
 	      pnts[a] = cos(angle)*radius;
@@ -768,7 +769,7 @@ ay_cone_notifycb(ay_object *o)
 	      a += 3;
 	      angle += thetadiff;
 	    } /* for */
-	  pnts[29] = cone->height;
+	  pnts[32] = cone->height;
 	} /* if */
     } /* if */
 
