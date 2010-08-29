@@ -18,6 +18,8 @@ static char *ay_sphere_name = "Sphere";
 
 int ay_sphere_notifycb(ay_object *o);
 
+#define AY_PSPHERE 30
+
 /* functions: */
 
 /* ay_sphere_createcb:
@@ -481,7 +483,7 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!sphere->pnts)
     {
-      if(!(pnts = calloc(9*3*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PSPHERE*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -496,7 +498,7 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-   for(i = 0; i < 9*3; i++)
+   for(i = 0; i < AY_PSPHERE; i++)
      {
        glVertex3dv((GLdouble *)&pnts[a]);
        a += 3;
@@ -526,7 +528,7 @@ ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!sphere->pnts)
     {
-      if(!(pnts = calloc(9*3*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PSPHERE*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -534,7 +536,7 @@ ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_sphere_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, 9*3, 3, sphere->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PSPHERE, 3, sphere->pnts);
 } /* ay_sphere_getpntcb */
 
 
@@ -937,7 +939,7 @@ ay_sphere_notifycb(ay_object *o)
 {
  ay_sphere_object *sphere = NULL;
  double *pnts = NULL;
- double radius = 0.0, w = 0.0, rmin, rmax;
+ double radius = 0.0, w = 0.0, zmin, zmax, rmin, rmax;
  int i = 0, a = 0;
  double thetadiff, angle, hh;
 
@@ -954,32 +956,54 @@ ay_sphere_notifycb(ay_object *o)
     {
       pnts = sphere->pnts;
 
+      if(fabs(sphere->zmin) < sphere->radius)
+	zmin = sphere->zmin;
+      else
+	if(sphere->zmin < 0)
+	  zmin = -sphere->radius;
+	else
+	  zmin = sphere->radius;
+
+      if(fabs(sphere->zmax) < sphere->radius)
+	zmax = sphere->zmax;
+      else
+	if(sphere->zmax < 0)
+	  zmax = -sphere->radius;
+	else
+	  zmax = sphere->radius;
+
+      hh = zmin + ((zmax - zmin) / 2.0);
+
+      pnts[2] = zmin;
+      pnts[5] = hh;
+      pnts[8] = zmax;
+
       if(sphere->is_simple)
 	{
-	  memset(pnts, 0, 9*3*sizeof(double));
-	  memset(&(pnts[54]), 0, 9*3*sizeof(double));
+	  memset(&(pnts[9]), 0, 9*3*sizeof(double));
+	  memset(&(pnts[63]), 0, 9*3*sizeof(double));
 
-	  pnts[27] = radius;
+	  pnts[36] = radius;
 
-	  pnts[30] = radius*w;
-	  pnts[31] = -radius*w;
+	  pnts[39] = radius*w;
+	  pnts[40] = -radius*w;
 
-	  pnts[34] = -radius;
+	  pnts[43] = -radius;
 
-	  pnts[36] = -radius*w;
-	  pnts[37] = -radius*w;
+	  pnts[45] = -radius*w;
+	  pnts[46] = -radius*w;
 
-	  pnts[39] = -radius;
+	  pnts[48] = -radius;
 
-	  pnts[42] = -radius*w;
-	  pnts[43] = radius*w;
+	  pnts[51] = -radius*w;
+	  pnts[52] = radius*w;
 
-	  pnts[46] = radius;
+	  pnts[55] = radius;
 
-	  pnts[48] = radius*w;
-	  pnts[49] = radius*w;
+	  pnts[57] = radius*w;
+	  pnts[58] = radius*w;
 
-	  memcpy(&(pnts[51]),&(pnts[27]),3*sizeof(double));
+	  memcpy(&(pnts[60]),&(pnts[36]),3*sizeof(double));
 	}
       else
 	{
@@ -1005,6 +1029,7 @@ ay_sphere_notifycb(ay_object *o)
 
 	  /* lower ring */
 	  angle = 0.0;
+	  a = 9;
 	  for(i = 0; i <= 8; i++)
 	    {
 	      pnts[a] = cos(angle)*rmin;
@@ -1040,16 +1065,14 @@ ay_sphere_notifycb(ay_object *o)
       /* set heights */
 
       /* lower ring */
-      a = 2;
+      a = 11;
       for(i = 0; i <= 8; i++)
 	{
-	  pnts[a] = sphere->zmin;
+	  pnts[a] = zmin;
 	  a += 3;
 	} /* for */
 
       /* middle ring */
-      hh = sphere->zmin + ((sphere->zmax - sphere->zmin) / 2.0);
-
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = hh;
@@ -1059,7 +1082,7 @@ ay_sphere_notifycb(ay_object *o)
       /* upper ring */
       for(i = 0; i <= 8; i++)
 	{
-	  pnts[a] = sphere->zmax;
+	  pnts[a] = zmax;
 	  a += 3;
 	} /* for */
     } /* if */

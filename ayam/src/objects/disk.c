@@ -18,6 +18,8 @@ static char *ay_disk_name = "Disk";
 
 int ay_disk_notifycb(ay_object *o);
 
+#define AY_PDISK 10
+
 /* functions: */
 
 /* ay_disk_createcb:
@@ -228,7 +230,7 @@ ay_disk_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!disk->pnts)
     {
-      if(!(pnts = calloc(9*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PDISK*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -243,7 +245,7 @@ ay_disk_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-   for(i = 0; i < 9; i++)
+   for(i = 0; i < AY_PDISK; i++)
      {
        glVertex3dv((GLdouble *)&pnts[a]);
        a += 3;
@@ -273,7 +275,7 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!disk->pnts)
     {
-      if(!(pnts = calloc(9*3, sizeof(double))))
+      if(!(pnts = calloc(AY_PDISK*3, sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -281,7 +283,7 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       ay_disk_notifycb(o);
     }
 
- return ay_selp_getpnts(mode, o, p, pe, 1, 9, 3, disk->pnts);
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PDISK, 3, disk->pnts);
 } /* ay_disk_getpntcb */
 
 
@@ -504,7 +506,7 @@ ay_disk_notifycb(ay_object *o)
  double *pnts = NULL;
  double radius = 0.0, w = 0.0;
  int i = 0, a = 0;
- double thetadiff, angle;
+ double thetadiff = 0.0, angle = 0.0;
 
   if(!o)
     return AY_ENULL;
@@ -520,39 +522,41 @@ ay_disk_notifycb(ay_object *o)
       pnts = disk->pnts;
       if(disk->is_simple)
 	{
-	  pnts[0] = radius;
+	  pnts[3] = radius;
 
-	  pnts[3] = radius*w;
-	  pnts[4] = -radius*w;
+	  pnts[6] = radius*w;
+	  pnts[7] = -radius*w;
 
-	  pnts[7] = -radius;
+	  pnts[10] = -radius;
 
-	  pnts[9] = -radius*w;
-	  pnts[10] = -radius*w;
+	  pnts[12] = -radius*w;
+	  pnts[13] = -radius*w;
 
-	  pnts[12] = -radius;
+	  pnts[15] = -radius;
 
-	  pnts[15] = -radius*w;
-	  pnts[16] = radius*w;
+	  pnts[18] = -radius*w;
+	  pnts[19] = radius*w;
 
-	  pnts[19] = radius;
+	  pnts[22] = radius;
 
-	  pnts[21] = radius*w;
-	  pnts[22] = radius*w;
+	  pnts[24] = radius*w;
+	  pnts[25] = radius*w;
 
 	  a = 2;
-	  for(i = 0; i < 8; i++)
+	  for(i = 0; i < 9; i++)
 	    {
 	      pnts[a] = disk->height;
 	      a += 3;
 	    } /* for */
 
-	  memcpy(&(pnts[24]),pnts,3*sizeof(double));
+	  memcpy(&(pnts[27]),&(pnts[3]),3*sizeof(double));
 	}
       else
 	{
 	  thetadiff = AY_D2R(disk->thetamax/8);
 	  angle = 0.0;
+	  pnts[2] = disk->height;
+	  a = 3;
 	  for(i = 0; i <= 8; i++)
 	    {
 	      pnts[a] = cos(angle)*radius;
