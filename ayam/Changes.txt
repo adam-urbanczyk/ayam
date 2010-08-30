@@ -1,4 +1,4 @@
-[15. Aug 2010] CVS-Head:
+[30. Aug 2010] CVS-Head:
 =======================
 Bug Fixes:
 o fixed direct point editing not setting the mark (SF 2993441)
@@ -14,6 +14,7 @@ o fixed false positives and crashes of instance DnD/C&P (SF 3031448)
 o fixed in-place conversion leading to broken scenes (SF 3032589)
 o fixed drag and drop with multiple objects selected by keyboard (SF 3036465)
 o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3044564)
+o fixed drawing/shading of sphere objects (SF 3054130)
 
 Modelling:
 o the mark is now reset on double <Esc>
@@ -53,6 +54,10 @@ o NURBS patch clamping now works with half clamped patches and also with
 o NURBS patch clamping can now also clamp only one end of the patch
 o the point insert/delete modelling actions now work with multiple
   selected objects
+o several objects now support read only points, they can be selected and
+  their coordinates inquired (for snapping/aligning or transformation purposes)
+  but they can not be modified, the supporting objects are:
+  Box, Sphere, Cylinder, Disk, Cone
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
@@ -70,6 +75,7 @@ o renamed "-p" option to "-eval" for getPnt
 o getPnt can now work with arbitrary object types (even from plugins) as
   long as they support single point editing; i.e. it now works with PolyMesh,
   SDMesh, and SDNPatch objects
+o added a JavaScript interpreter plugin
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
