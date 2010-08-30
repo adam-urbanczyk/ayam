@@ -684,6 +684,7 @@ typedef struct ay_hyperboloid_s
   double p1[3]; /**< point 1 */
   double p2[3]; /**< point 2 */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [] (created on request) */
 } ay_hyperboloid_object;
 
 
@@ -695,6 +696,7 @@ typedef struct ay_paraboloid_object_s
   double zmin; /**< delimit paraboloid on z axis */
   double zmax; /**< delimit paraboloid on z axis */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [] (created on request) */
 } ay_paraboloid_object;
 
 
@@ -707,6 +709,7 @@ typedef struct ay_torus_object_s
   double phimin; /**< delimit ring on minorrad circle */
   double phimax; /**< delimit ring on minorrad circle */
   double thetamax; /**< angle of revolution (degrees) */
+  double *pnts; /**< read only points [] (created on request) */
 } ay_torus_object;
 
 
