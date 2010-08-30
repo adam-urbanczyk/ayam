@@ -16,10 +16,14 @@
 
 static char *ay_parab_name = "Paraboloid";
 
+int ay_paraboloid_notifycb(ay_object *o);
+
+#define AY_PPARAB 30
+
 /* functions: */
 
 /* ay_parab_createcb:
- *  create callback function of parab object
+ *  create callback function of paraboloid object
  */
 int
 ay_parab_createcb(int argc, char *argv[], ay_object *o)
@@ -49,7 +53,7 @@ ay_parab_createcb(int argc, char *argv[], ay_object *o)
 
 
 /* ay_parab_deletecb:
- *  delete callback function of parab object
+ *  delete callback function of paraboloid object
  */
 int
 ay_parab_deletecb(void *c)
@@ -61,6 +65,9 @@ ay_parab_deletecb(void *c)
 
   parab = (ay_paraboloid_object *)(c);
 
+  if(parab->pnts)
+    free(parab->pnts);
+
   free(parab);
 
  return AY_OK;
@@ -68,7 +75,7 @@ ay_parab_deletecb(void *c)
 
 
 /* ay_parab_copycb:
- *  copy callback function of parab object
+ *  copy callback function of paraboloid object
  */
 int
 ay_parab_copycb(void *src, void **dst)
@@ -83,6 +90,8 @@ ay_parab_copycb(void *src, void **dst)
 
   memcpy(parab, src, sizeof(ay_paraboloid_object));
 
+  parab->pnts = NULL;
+
   *dst = (void *)parab;
 
  return AY_OK;
@@ -90,7 +99,8 @@ ay_parab_copycb(void *src, void **dst)
 
 
 /* ay_parab_drawcb:
- *  draw (display in an Ayam view window) callback function of parab object
+ *  draw (display in an Ayam view window) callback function of paraboloid
+ *  object
  */
 int
 ay_parab_drawcb(struct Togl *togl, ay_object *o)
@@ -352,6 +362,81 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_parab_shadecb */
 
 
+/* ay_parab_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of parab object
+ */
+int
+ay_parab_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_paraboloid_object *parab = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  parab = (ay_paraboloid_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!parab->pnts)
+    {
+      if(!(pnts = calloc(AY_PPARAB*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      parab->pnts = pnts;
+      ay_paraboloid_notifycb(o);
+    }
+  else
+    {
+      pnts = parab->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < AY_PPARAB; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_parab_drawhcb */
+
+
+/* ay_parab_getpntcb:
+ *  get point (editing and selection) callback function of parab object
+ */
+int
+ay_parab_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_paraboloid_object *parab = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  parab = (ay_paraboloid_object *)o->refine;
+
+  if(!parab->pnts)
+    {
+      if(!(pnts = calloc(AY_PPARAB*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      parab->pnts = pnts;
+      ay_paraboloid_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PPARAB, 3, parab->pnts);
+} /* ay_parab_getpntcb */
+
+
 /* ay_parab_setpropcb:
  *  set property (from Tcl to C context) callback function of parab object
  */
@@ -414,6 +499,7 @@ ay_parab_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+  ay_paraboloid_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -655,6 +741,84 @@ ay_parab_bbccb(ay_object *o, double *bbox, int *flags)
 
  return AY_OK;
 } /* ay_parab_bbccb */
+
+
+/* ay_paraboloid_notifycb:
+ *  notification callback function of parab object
+ */
+int
+ay_paraboloid_notifycb(ay_object *o)
+{
+ ay_paraboloid_object *parab = NULL;
+ double *pnts = NULL;
+ double zmin, zmid, zmax, rmin, rmid, rmax;
+ int i = 0, a = 0;
+ double thetadiff, angle;
+
+  if(!o)
+    return AY_ENULL;
+
+  parab = (ay_paraboloid_object *)o->refine;
+
+  if(parab->pnts)
+    {
+      pnts = parab->pnts;
+
+      zmin = parab->zmin;
+      zmax = parab->zmax;
+
+      zmid = zmin + ((zmax - zmin) / 2.0);
+
+      rmin = zmin>0.0?sqrt(zmin)*parab->rmax/(sqrt(parab->zmax)):0.0;
+      rmid = zmid>0.0?sqrt(zmid)*parab->rmax/(sqrt(parab->zmax)):0.0;
+      rmax = parab->rmax;
+
+      pnts[2] = zmin;
+      pnts[5] = zmid;
+      pnts[8] = zmax;
+
+      thetadiff = AY_D2R(parab->thetamax/8);
+
+      /* lower ring */
+      angle = 0.0;
+      a = 9;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmin;
+	  pnts[a+1] = sin(angle)*rmin;
+	  pnts[a+2] = zmin;
+
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+
+      /* middle ring */
+      angle = 0.0;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmid;
+	  pnts[a+1] = sin(angle)*rmid;
+	  pnts[a+2] = zmid;
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+
+      /* upper ring */
+      angle = 0.0;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmax;
+	  pnts[a+1] = sin(angle)*rmax;
+	  pnts[a+2] = zmax;
+	  
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+
+    } /* if */
+
+ return AY_OK;
+} /* ay_paraboloid_notifycb */
 
 
 /* ay_parab_providecb:
@@ -1078,16 +1242,18 @@ ay_parab_init(Tcl_Interp *interp)
 				    ay_parab_deletecb,
 				    ay_parab_copycb,
 				    ay_parab_drawcb,
-				    NULL, /* no points to edit */
+				    ay_parab_drawhcb,
 				    ay_parab_shadecb,
 				    ay_parab_setpropcb,
 				    ay_parab_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_parab_getpntcb,
 				    ay_parab_readcb,
 				    ay_parab_writecb,
 				    ay_parab_wribcb,
 				    ay_parab_bbccb,
 				    AY_IDPARABOLOID);
+
+  ay_status = ay_notify_register(ay_paraboloid_notifycb, AY_IDPARABOLOID);
 
   ay_status = ay_convert_register(ay_paraboloid_convertcb, AY_IDPARABOLOID);
 
