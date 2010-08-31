@@ -16,6 +16,10 @@
 
 static char *ay_hyperb_name = "Hyperboloid";
 
+int ay_hyperboloid_notifycb(ay_object *o);
+
+#define AY_PHYPERB 30
+
 /* functions: */
 
 /* ay_hyperb_createcb:
@@ -60,6 +64,9 @@ ay_hyperb_deletecb(void *c)
 
   h = (ay_hyperboloid_object *)(c);
 
+  if(h->pnts)
+    free(h->pnts);
+
   free(h);
 
  return AY_OK;
@@ -81,6 +88,8 @@ ay_hyperb_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(h, src, sizeof(ay_hyperboloid_object));
+
+  h->pnts = NULL;
 
   *dst = (void *)h;
 
@@ -341,6 +350,81 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_hyperb_shadecb */
 
 
+/* ay_hyperb_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of hyperb object
+ */
+int
+ay_hyperb_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_hyperboloid_object *h = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  h = (ay_hyperboloid_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!h->pnts)
+    {
+      if(!(pnts = calloc(AY_PHYPERB*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      h->pnts = pnts;
+      ay_hyperboloid_notifycb(o);
+    }
+  else
+    {
+      pnts = h->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < AY_PHYPERB; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_hyperb_drawhcb */
+
+
+/* ay_hyperb_getpntcb:
+ *  get point (editing and selection) callback function of hyperb object
+ */
+int
+ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_hyperboloid_object *h = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  h = (ay_hyperboloid_object *)o->refine;
+
+  if(!h->pnts)
+    {
+      if(!(pnts = calloc(AY_PHYPERB*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      h->pnts = pnts;
+      ay_hyperboloid_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PHYPERB, 3, h->pnts);
+} /* ay_hyperb_getpntcb */
+
+
 /* ay_hyperb_setpropcb:
  *  set property (from Tcl to C context) callback function of hyperb object
  */
@@ -401,6 +485,7 @@ ay_hyperb_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
+  ay_hyperboloid_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -662,6 +747,101 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 
  return AY_OK;
 } /* ay_hyperb_bbccb */
+
+
+/* ay_hyperboloid_notifycb:
+ *  notification callback function of hyperb object
+ */
+int
+ay_hyperboloid_notifycb(ay_object *o)
+{
+ ay_hyperboloid_object *h = NULL;
+ double *pnts = NULL;
+ double rmin = 0.0, rmid = 0.0, rmax = 0.0;
+ double amin = 0.0, amid = 0.0, amax = 0.0;
+ double thetadiff, angle, p3[3];
+ int i = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  h = (ay_hyperboloid_object *)o->refine;
+
+  if(h->pnts)
+    {
+      pnts = h->pnts;
+
+      p3[0] = h->p1[0]+((h->p2[0]-h->p1[0])/2.0);
+      p3[1] = h->p1[1]+((h->p2[1]-h->p1[1])/2.0);
+      p3[2] = h->p1[2]+((h->p2[2]-h->p1[2])/2.0);
+
+      if((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1])>AY_EPSILON)
+	rmin = sqrt((h->p1[0]*h->p1[0])+(h->p1[1]*h->p1[1]));
+      if(rmin>AY_EPSILON)
+	amin = acos(h->p1[0]/rmin);
+      if(h->p1[1] < 0.0)
+	amin = -amin;
+
+      if((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1])>AY_EPSILON)
+	rmax = sqrt((h->p2[0]*h->p2[0])+(h->p2[1]*h->p2[1]));
+      if(rmax>AY_EPSILON)
+	amax = acos(h->p2[0]/rmax);
+      if(h->p2[1] < 0.0)
+	amax = -amax;
+
+      if((p3[0]*p3[0])+(p3[1]*p3[1])>AY_EPSILON)
+	rmid = sqrt((p3[0]*p3[0])+(p3[1]*p3[1]));
+      if(rmid>AY_EPSILON)
+	amid = acos(p3[0]/rmid);
+      if(p3[1] < 0.0)
+	amid = -amid;
+
+      pnts[2] = h->p1[2];
+      pnts[5] = p3[2];
+      pnts[8] = h->p2[2];
+
+      thetadiff = AY_D2R(h->thetamax/8);
+
+      /* lower ring */
+      angle = amin;
+      a = 9;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmin;
+	  pnts[a+1] = sin(angle)*rmin;
+	  pnts[a+2] = h->p1[2];
+
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+
+      /* middle ring */
+      angle = amid;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmid;
+	  pnts[a+1] = sin(angle)*rmid;
+	  pnts[a+2] = p3[2];
+
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+
+      /* upper ring */
+      angle = amax;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(angle)*rmax;
+	  pnts[a+1] = sin(angle)*rmax;
+	  pnts[a+2] = h->p2[2];
+
+	  a += 3;
+	  angle += thetadiff;
+	} /* for */
+    } /* if */
+
+ return AY_OK;
+} /* ay_hyperboloid_notifycb */
 
 
 /* ay_hyperb_providecb:
@@ -978,16 +1158,18 @@ ay_hyperb_init(Tcl_Interp *interp)
 				    ay_hyperb_deletecb,
 				    ay_hyperb_copycb,
 				    ay_hyperb_drawcb,
-				    NULL, /* no points to edit */
+				    ay_hyperb_drawhcb,
 				    ay_hyperb_shadecb,
 				    ay_hyperb_setpropcb,
 				    ay_hyperb_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_hyperb_getpntcb,
 				    ay_hyperb_readcb,
 				    ay_hyperb_writecb,
 				    ay_hyperb_wribcb,
 				    ay_hyperb_bbccb,
 				    AY_IDHYPERBOLOID);
+
+  ay_status = ay_notify_register(ay_hyperboloid_notifycb, AY_IDHYPERBOLOID);
 
   ay_status = ay_convert_register(ay_hyperboloid_convertcb, AY_IDHYPERBOLOID);
 
