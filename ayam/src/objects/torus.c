@@ -16,6 +16,10 @@
 
 static char *ay_torus_name = "Torus";
 
+int ay_torus_notifycb(ay_object *o);
+
+#define AY_PTORUS 90
+
 /* functions: */
 
 /* ay_torus_createcb:
@@ -62,6 +66,9 @@ ay_torus_deletecb(void *c)
 
   torus = (ay_torus_object *)(c);
 
+  if(torus->pnts)
+    free(torus->pnts);
+
   free(torus);
 
  return AY_OK;
@@ -83,6 +90,8 @@ ay_torus_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(torus, src, sizeof(ay_torus_object));
+
+  torus->pnts = NULL;
 
   *dst = (void *)torus;
 
@@ -334,6 +343,81 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_torus_shadecb */
 
 
+/* ay_torus_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of torus object
+ */
+int
+ay_torus_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_torus_object *torus = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+
+  torus = (ay_torus_object *) o->refine;
+
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(!torus->pnts)
+    {
+      if(!(pnts = calloc(AY_PTORUS*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      torus->pnts = pnts;
+      ay_torus_notifycb(o);
+    }
+  else
+    {
+      pnts = torus->pnts;
+    }
+
+  glPointSize((GLfloat)point_size);
+
+  glBegin(GL_POINTS);
+   for(i = 0; i < AY_PTORUS; i++)
+     {
+       glVertex3dv((GLdouble *)&pnts[a]);
+       a += 3;
+     }
+  glEnd();
+
+  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+	    (GLfloat)ay_prefs.seb);
+
+ return AY_OK;
+} /* ay_torus_drawhcb */
+
+
+/* ay_torus_getpntcb:
+ *  get point (editing and selection) callback function of torus object
+ */
+int
+ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_torus_object *torus = NULL;
+ double *pnts = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  torus = (ay_torus_object *)o->refine;
+
+  if(!torus->pnts)
+    {
+      if(!(pnts = calloc(AY_PTORUS*3, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+      torus->pnts = pnts;
+      ay_torus_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, AY_PTORUS, 3, torus->pnts);
+} /* ay_torus_getpntcb */
+
+
 /* ay_torus_setpropcb:
  *  set property (from Tcl to C context) callback function of torus object
  */
@@ -383,7 +467,7 @@ ay_torus_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
   o->modified = AY_TRUE;
-
+  ay_torus_notifycb(o);
   ay_notify_parent();
 
  return AY_OK;
@@ -618,6 +702,72 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 
  return AY_OK;
 } /* ay_torus_bbccb */
+
+
+/* ay_torus_notifycb:
+ *  notification callback function of torus object
+ */
+int
+ay_torus_notifycb(ay_object *o)
+{
+ ay_torus_object *torus = NULL;
+ double *pnts = NULL;
+ double phi, mar, mir, thetamax;
+ double phidiff, thetadiff, pangle, tangle;
+ double P1[2] = {0};
+ int i = 0, j = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  torus = (ay_torus_object *)o->refine;
+
+  if(torus->pnts)
+    {
+      pnts = torus->pnts;
+
+      mar = torus->majorrad;
+      mir = torus->minorrad;
+      thetamax = torus->thetamax;
+      thetadiff = (thetamax/8);
+
+      phi = torus->phimax - torus->phimin;
+      phidiff = AY_D2R(phi/8);
+      thetadiff = AY_D2R(torus->thetamax/8);
+
+      tangle = 0.0;
+      for(i = 0; i <= 8; i++)
+	{
+	  pnts[a] = cos(tangle)*mar;
+	  pnts[a+1] = sin(tangle)*mar;
+
+	  a += 3;
+	  tangle += thetadiff;
+	} /* for */
+
+      pangle = AY_D2R(torus->phimin);
+      for(i = 0; i <= 8; i++)
+	{
+	  P1[0] = cos(pangle)*mir;
+	  P1[1] = sin(pangle)*mir;
+
+	  tangle = 0.0;
+	  for(j = 0; j <= 8; j++)
+	    {
+	      pnts[a] = (mar+P1[0])*cos(tangle);
+	      pnts[a+1] = (mar+P1[0])*sin(tangle);
+	      pnts[a+2] = P1[1];
+
+	      a += 3;
+	      tangle += thetadiff;
+	    } /* for */
+	  pangle += phidiff;
+	} /* for */
+
+    } /* if */
+
+ return AY_OK;
+} /* ay_torus_notifycb */
 
 
 /* ay_torus_providecb:
@@ -961,16 +1111,18 @@ ay_torus_init(Tcl_Interp *interp)
 				    ay_torus_deletecb,
 				    ay_torus_copycb,
 				    ay_torus_drawcb,
-				    NULL, /* no points to edit */
+				    ay_torus_drawhcb,
 				    ay_torus_shadecb,
 				    ay_torus_setpropcb,
 				    ay_torus_getpropcb,
-				    NULL, /* No Picking! */
+				    ay_torus_getpntcb,
 				    ay_torus_readcb,
 				    ay_torus_writecb,
 				    ay_torus_wribcb,
 				    ay_torus_bbccb,
 				    AY_IDTORUS);
+
+  ay_status = ay_notify_register(ay_torus_notifycb, AY_IDTORUS);
 
   ay_status = ay_convert_register(ay_torus_convertcb, AY_IDTORUS);
 
