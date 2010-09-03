@@ -16,6 +16,8 @@
 
 static char *ay_extrude_name = "Extrude";
 
+int ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_extrude_createcb:
@@ -181,6 +183,37 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_extrude_object *extrude = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  extrude = (ay_extrude_object *) o->refine;
+
+  if(extrude->npatch)
+    {
+      patch = (ay_nurbpatch_object *)extrude->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_extrude_drawhcb */
@@ -192,8 +225,22 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_extrude_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_extrude_object *extrude = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  extrude = (ay_extrude_object *)o->refine;
+
+  if(extrude->npatch)
+    {
+      patch = (ay_nurbpatch_object *)extrude->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_extrude_getpntcb */
 
 
@@ -208,7 +255,6 @@ ay_extrude_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /* char fname[] = "extrude_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_extrude_object *extrude = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -910,6 +956,11 @@ ay_extrude_notifycb(ay_object *o)
 	} /* while */
     } /* if */
 
+  if(o->selp)
+    {
+      ay_extrude_getpntcb(3, o, NULL, NULL);
+    }
+
  return ay_status;
 } /* ay_extrude_notifycb */
 
@@ -1108,7 +1159,7 @@ ay_extrude_init(Tcl_Interp *interp)
 				    ay_extrude_deletecb,
 				    ay_extrude_copycb,
 				    ay_extrude_drawcb,
-				    NULL, /* no handles */
+				    ay_extrude_drawhcb,
 				    ay_extrude_shadecb,
 				    ay_extrude_setpropcb,
 				    ay_extrude_getpropcb,
