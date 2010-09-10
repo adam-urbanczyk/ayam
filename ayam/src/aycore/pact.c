@@ -101,7 +101,7 @@ ay_pact_getpoint(int mode, ay_object *o, double *obj, ay_pointedit *pe)
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
 
-  if(!o || !obj || !pe)
+  if(!o || ((mode != 3) && (!obj || !pe)))
     return AY_ENULL;
 
   arr = ay_getpntcbt.arr;

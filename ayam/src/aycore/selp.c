@@ -441,9 +441,12 @@ ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices)
 
   for(i = 0; i < indiceslen; i++)
     {
-      if(!(po = calloc(1, sizeof(ay_point))))
+      if(!po)
 	{
-	  return AY_EOMEM;
+	  if(!(po = calloc(1, sizeof(ay_point))))
+	    {
+	      return AY_EOMEM;
+	    }
 	}
       have_it = AY_FALSE;
       p = o->selp;
@@ -459,13 +462,18 @@ ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices)
       if(!have_it)
 	{
 	  po->index = indices[i];
+	  po->next = o->selp;
+	  o->selp = po;
+	  po = NULL;
 	}
-      po->next = o->selp;
-      o->selp = po;
-    }
+    } /* for */
 
   /* update pointers */
   ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+
+  /* cleanup */
+  if(po)
+    free(po);
 
  return ay_status;
 } /* ay_selp_sel */
@@ -512,6 +520,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  indices = tmp;
 	  sscanf(argv[i], "%u", &(indices[indiceslen]));
+
 	  indiceslen++;
 	  i++;
 	} /* while */
@@ -519,7 +528,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!select_none && !select_all && (indiceslen == 0))
     {
-      ay_error(AY_ERROR, argv[0], NULL);
+      ay_error(AY_EARGS, argv[0], " [-all | indices]");
       goto cleanup;
     }
 
@@ -718,7 +727,9 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
  int i = 0, j = 0, a = 0, found = AY_FALSE;
  unsigned int *peindices = NULL, peindex = 0;
 
-  if(!o || ((mode != 3) && (!p || !pe)))
+  if(!o || !arr)
+    return AY_ENULL;
+  if((mode != 3) && (!p || !pe))
     return AY_ENULL;
 
   if(min_dist == 0.0)
@@ -836,6 +847,9 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	      pnt = *lastpnt;
 	    }
 	} /* while */
+      break;
+    default:
+      return AY_ERROR;
       break;
     } /* switch */
 
