@@ -278,7 +278,6 @@ int
 ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_sphere_object *sphere = NULL;
- GLUquadricObj *qobj = NULL;
  double phimax, phimin, phi, rmax, rmin, thetamax, zmin, zmax, radius;
  double phidiff, thetadiff, angle;
  int i, j, k;
@@ -299,13 +298,8 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
     {
       /* yes, it is */
 
-      if(!(qobj = gluNewQuadric()))
-	return AY_EOMEM;
-
       /* draw */
-      gluSphere(qobj,radius,10,10);
-
-      gluDeleteQuadric(qobj);
+      gluSphere(ay_gluquadobj,radius,10,10);
 
       return AY_OK;
     }
@@ -422,20 +416,16 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  glPushMatrix();
 
-	  qobj = NULL;
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
 	  glTranslated(0.0,0.0,zmin);
 	  if(fabs(thetamax) != 360.0)
 	    {
 	      glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(qobj, 0.0, rmin, 8, 1, 0.0, thetamax);
+	      gluPartialDisk(ay_gluquadobj, 0.0, rmin, 8, 1, 0.0, thetamax);
 	    }
 	  else
 	    {
-	      gluDisk(qobj, 0.0, rmin, 8, 1);
+	      gluDisk(ay_gluquadobj, 0.0, rmin, 8, 1);
 	    }
-	  gluDeleteQuadric(qobj);
 
 	  glPopMatrix();
 	}
@@ -444,24 +434,20 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  glPushMatrix();
 
-	  qobj = NULL;
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
 	  glTranslated(0.0, 0.0, zmax);
 	  if(fabs(thetamax) != 360.0)
 	    {
 	      glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(qobj, 0.0, rmax, 8, 1, 0.0, thetamax);
+	      gluPartialDisk(ay_gluquadobj, 0.0, rmax, 8, 1, 0.0, thetamax);
 	    }
 	  else
 	    {
-	      gluDisk(qobj, 0.0, rmax, 8, 1);
+	      gluDisk(ay_gluquadobj, 0.0, rmax, 8, 1);
 	    }
-	  gluDeleteQuadric(qobj);
 
 	  glPopMatrix();
 	}
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_sphere_shadecb */

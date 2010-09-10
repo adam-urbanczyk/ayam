@@ -177,7 +177,6 @@ int
 ay_disk_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_disk_object *disk = NULL;
- GLUquadricObj *qobj = NULL;
  double radius, thetamax;
 
   if(!o)
@@ -191,24 +190,19 @@ ay_disk_shadecb(struct Togl *togl, ay_object *o)
   radius = disk->radius;
   thetamax = disk->thetamax;
 
-  if(!(qobj = gluNewQuadric()))
-    return AY_EOMEM;
-
   glTranslated(0.0, 0.0, (GLdouble)disk->height);
 
   /* check, if disk is simple */
   if(disk->is_simple)
     {
       /* yes, it is */
-      gluDisk(qobj, 0.0, radius, 8, 1);
+      gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
     }
   else
     {
       glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-      gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
+      gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
     }
-
-  gluDeleteQuadric(qobj);
 
  return AY_OK;
 } /* ay_disk_shadecb */

@@ -226,7 +226,6 @@ int
 ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_hyperboloid_object *h = NULL;
- GLUquadricObj *qobj = NULL;
  double rmi = 0.0, rma = 0.0, ami = 0.0, ama = 0.0;
  int i;
  double P1[9*2], P2[9*2];
@@ -292,42 +291,35 @@ ay_hyperb_shadecb(struct Togl *togl, ay_object *o)
   if(h->closed)
     {
       /* caps */
-      qobj = NULL;
-      if(!(qobj = gluNewQuadric()))
-	return AY_EOMEM;
-      gluQuadricOrientation(qobj, GLU_INSIDE);
+      gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
       glPushMatrix();
        glRotated(AY_R2D(ami),0.0,0.0,1.0);
        glTranslated(0.0, 0.0, h->p1[2]);
        if(fabs(h->thetamax) == 360.0)
 	 {
-	   gluDisk(qobj, 0.0, rmi, 8, 1);
+	   gluDisk(ay_gluquadobj, 0.0, rmi, 8, 1);
 	 }
        else
 	 {
 	   glRotated(h->thetamax-90.0, 0.0, 0.0, 1.0);
-	   gluPartialDisk(qobj, 0.0, rmi, 8, 1, 0.0, h->thetamax);
+	   gluPartialDisk(ay_gluquadobj, 0.0, rmi, 8, 1, 0.0, h->thetamax);
 	 }
       glPopMatrix();
-      gluDeleteQuadric(qobj);
+      gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
-      qobj = NULL;
-      if(!(qobj = gluNewQuadric()))
-	return AY_EOMEM;
       glPushMatrix();
        glRotated(AY_R2D(ama),0.0,0.0,1.0);
        glTranslated(0.0, 0.0, h->p2[2]);
        if(fabs(h->thetamax) == 360.0)
 	 {
-	   gluDisk(qobj, 0.0, rma, 8, 1);
+	   gluDisk(ay_gluquadobj, 0.0, rma, 8, 1);
 	 }
        else
 	 {
 	   glRotated(h->thetamax-90.0, 0.0, 0.0, 1.0);
-	   gluPartialDisk(qobj, 0.0, rma, 8, 1, 0.0, h->thetamax);
+	   gluPartialDisk(ay_gluquadobj, 0.0, rma, 8, 1, 0.0, h->thetamax);
 	 }
       glPopMatrix();
-      gluDeleteQuadric(qobj);
 
       /* "side" patches */
       glBegin(GL_QUADS);

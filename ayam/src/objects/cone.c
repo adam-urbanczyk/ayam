@@ -219,7 +219,6 @@ int
 ay_cone_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_cone_object *cone = NULL;
- GLUquadricObj *qobj = NULL;
  double thetamax, height, radius;
  double thetadiff, angle;
  int i;
@@ -240,21 +239,15 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
   if(cone->is_simple)
     {
       /* yes, it is */
-      if(!(qobj = gluNewQuadric()))
-	return AY_EOMEM;
 
       /* draw */
-      gluCylinder(qobj, radius, 0.0, height, 8, 1);
-
-      gluDeleteQuadric(qobj);
+      gluCylinder(ay_gluquadobj, radius, 0.0, height, 8, 1);
 
       if(cone->closed)
 	{
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
-	  gluQuadricOrientation(qobj, GLU_INSIDE);
-	  gluDisk(qobj, 0.0, radius, 8, 1);
-	  gluDeleteQuadric(qobj);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
+	  gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 	}
 
       return AY_OK;
@@ -306,15 +299,12 @@ ay_cone_shadecb(struct Togl *togl, ay_object *o)
       /* draw cap */
       glPushMatrix();
 
-       qobj = NULL;
-       if(!(qobj = gluNewQuadric()))
-	 return AY_EOMEM;
-       gluQuadricOrientation(qobj, GLU_INSIDE);
+       gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
 
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
-       gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
+       gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
 
-       gluDeleteQuadric(qobj);
+       gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
       glPopMatrix();
 

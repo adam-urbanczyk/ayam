@@ -211,7 +211,6 @@ ay_parab_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_parab_shadecb(struct Togl *togl, ay_object *o)
 {
- GLUquadricObj *qobj = NULL;
  ay_paraboloid_object *parab = NULL;
  double height, hdiff, angle, thetadiff, f;
  int i, j;
@@ -319,21 +318,19 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  glPushMatrix();
 
-	  qobj = NULL;
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
-	  gluQuadricOrientation(qobj, GLU_INSIDE);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
 	  glTranslated(0.0, 0.0, parab->zmin);
 	  if(fabs(parab->thetamax) != 360.0)
 	    {
 	      glRotated(parab->thetamax-90.0, 0.0, 0.0, 1.0);
-	      gluPartialDisk(qobj, 0.0, R[0], 8, 1, 0.0, parab->thetamax);
+	      gluPartialDisk(ay_gluquadobj, 0.0, R[0], 8, 1, 0.0,
+			     parab->thetamax);
 	    }
 	  else
 	    {
-	      gluDisk(qobj, 0.0, R[0], 8, 1);
+	      gluDisk(ay_gluquadobj, 0.0, R[0], 8, 1);
 	    }
-	  gluDeleteQuadric(qobj);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
 	  glPopMatrix();
 	}
@@ -341,24 +338,20 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
       /* always draw upper cap */
       glPushMatrix();
 
-       qobj = NULL;
-       if(!(qobj = gluNewQuadric()))
-	 return AY_EOMEM;
        glTranslated(0.0, 0.0, parab->zmax);
        if(fabs(parab->thetamax) != 360.0)
 	 {
 	   glRotated(parab->thetamax-90.0, 0.0, 0.0, 1.0);
-	   gluPartialDisk(qobj, 0.0, R[4], 8, 1, 0.0, parab->thetamax);
+	   gluPartialDisk(ay_gluquadobj, 0.0, R[4], 8, 1, 0.0,
+			  parab->thetamax);
 	 }
        else
 	 {
-	   gluDisk(qobj, 0.0, R[4], 8, 1);
+	   gluDisk(ay_gluquadobj, 0.0, R[4], 8, 1);
 	 }
-       gluDeleteQuadric(qobj);
 
       glPopMatrix();
-
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_parab_shadecb */
