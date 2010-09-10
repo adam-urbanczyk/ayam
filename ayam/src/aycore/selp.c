@@ -735,10 +735,13 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
   if(min_dist == 0.0)
     min_dist = DBL_MAX;
 
-  if(stride == 4)
-    pe->homogenous = AY_TRUE;
-
-  pe->readonly = readonly;
+  if(pe)
+    {
+      if(stride == 4)
+	pe->homogenous = AY_TRUE;
+ 
+      pe->readonly = readonly;
+    }
 
   switch(mode)
     {
@@ -837,6 +840,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	      pnt->point = &(arr[pnt->index*stride]);
 	      if(stride == 4)
 		pnt->homogenous = AY_TRUE;
+	      pnt->readonly = readonly;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
