@@ -18,7 +18,9 @@ static char *ay_hyperb_name = "Hyperboloid";
 
 int ay_hyperboloid_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PHYPERB 30
+
 
 /* functions: */
 

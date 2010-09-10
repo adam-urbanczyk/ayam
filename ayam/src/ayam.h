@@ -637,7 +637,7 @@ typedef struct ay_sphere_object_s
   double zmin; /**< delimit sphere on z axis */
   double zmax; /**< delimit sphere on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9 * 3 * 3] (created on request) */
+  double *pnts; /**< read only points [30 * 3] (created on request) */
 } ay_sphere_object;
 
 
@@ -649,7 +649,7 @@ typedef struct ay_cone_object_s
   double radius; /**< radius of cone */
   double height; /**< height of cone */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9 * 3] (created on request) */
+  double *pnts; /**< read only points [11 * 3] (created on request) */
 } ay_cone_object;
 
 
@@ -660,7 +660,7 @@ typedef struct ay_disk_object_s
   double radius; /**< radius of disk */
   double height; /**< displacement of disk on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9 * 3] (created on request) */
+  double *pnts; /**< read only points [10 * 3] (created on request) */
 } ay_disk_object;
 
 
@@ -673,7 +673,7 @@ typedef struct ay_cylinder_object_s
   double zmin; /**< delimit cylinder on z axis */
   double zmax; /**< delimit cylinder on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [9 * 3 * 3] (created on request) */
+  double *pnts; /**< read only points [30 * 3] (created on request) */
 } ay_cylinder_object;
 
 
@@ -684,7 +684,7 @@ typedef struct ay_hyperboloid_s
   double p1[3]; /**< point 1 */
   double p2[3]; /**< point 2 */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [] (created on request) */
+  double *pnts; /**< read only points [30 * 3] (created on request) */
 } ay_hyperboloid_object;
 
 
@@ -696,7 +696,7 @@ typedef struct ay_paraboloid_object_s
   double zmin; /**< delimit paraboloid on z axis */
   double zmax; /**< delimit paraboloid on z axis */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [] (created on request) */
+  double *pnts; /**< read only points [30 * 3] (created on request) */
 } ay_paraboloid_object;
 
 
@@ -709,7 +709,7 @@ typedef struct ay_torus_object_s
   double phimin; /**< delimit ring on minorrad circle */
   double phimax; /**< delimit ring on minorrad circle */
   double thetamax; /**< angle of revolution (degrees) */
-  double *pnts; /**< read only points [] (created on request) */
+  double *pnts; /**< read only points [90 * 3] (created on request) */
 } ay_torus_object;
 
 

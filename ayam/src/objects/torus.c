@@ -18,7 +18,9 @@ static char *ay_torus_name = "Torus";
 
 int ay_torus_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PTORUS 90
+
 
 /* functions: */
 

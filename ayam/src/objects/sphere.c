@@ -18,7 +18,9 @@ static char *ay_sphere_name = "Sphere";
 
 int ay_sphere_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PSPHERE 30
+
 
 /* functions: */
 
