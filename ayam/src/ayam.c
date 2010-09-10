@@ -39,6 +39,8 @@ ay_list_object *ay_currentlevel;
 /* object clipboard */
 ay_object *ay_clipboard;
 
+GLUquadric *ay_gluquadobj;
+
 /* registered object types */
 Tcl_HashTable ay_otypesht;
 
@@ -498,6 +500,7 @@ ay_init(Tcl_Interp *interp)
 
   ay_next = &(ay_root->next);
 
+
   ay_currentlevel = NULL;
   ay_status = ay_clevel_add(NULL);
   ay_status = ay_clevel_add(ay_root);
@@ -505,6 +508,11 @@ ay_init(Tcl_Interp *interp)
   ay_currentview = NULL;
   ay_selection = NULL;
   ay_clipboard = NULL;
+
+  if(!(ay_gluquadobj = gluNewQuadric()))
+    {
+      return AY_ERROR;
+    }
 
   ay_prefs.handle_size = 6.0;
   ay_prefs.glu_sampling_tolerance = 30.0;
@@ -1320,8 +1328,7 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return ay_status;
-}
-/* ay_safeinit */
+} /* ay_safeinit */
 
 
 #ifndef AYWRAPPED

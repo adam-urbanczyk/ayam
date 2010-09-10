@@ -1435,6 +1435,9 @@ extern ay_list_object *ay_currentlevel;
 /** object clipboard */
 extern ay_object *ay_clipboard;
 
+/** global GLU quadric object (for drawing quadrics with GLU) */
+extern GLUquadric *ay_gluquadobj;
+
 /** table of registered object types */
 extern Tcl_HashTable ay_otypesht;
 

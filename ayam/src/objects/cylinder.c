@@ -248,7 +248,6 @@ int
 ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_cylinder_object *cylinder = NULL;
- GLUquadricObj *qobj = NULL;
  double thetamax, zmin, zmax, radius;
  double thetadiff, angle;
  int i;
@@ -269,28 +268,20 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
     {
       /* yes, it is */
 
-      if(!(qobj = gluNewQuadric()))
-	return AY_EOMEM;
       glTranslated(0.0, 0.0, cylinder->zmin);
       /* draw */
-      gluCylinder(qobj, radius, radius, cylinder->zmax - cylinder->zmin, 8, 1);
-
-      gluDeleteQuadric(qobj);
+      gluCylinder(ay_gluquadobj, radius, radius,
+		  cylinder->zmax - cylinder->zmin, 8, 1);
 
       if(cylinder->closed)
 	{
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
-	  gluQuadricOrientation(qobj, GLU_INSIDE);
-	  gluDisk(qobj, 0.0, radius, 8, 1);
-	  gluDeleteQuadric(qobj);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
+	  gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
+	  gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
 	  glTranslated(0.0, 0.0, -cylinder->zmin+cylinder->zmax);
 
-	  if(!(qobj = gluNewQuadric()))
-	    return AY_EOMEM;
-	  gluDisk(qobj, 0.0, radius, 8, 1);
-	  gluDeleteQuadric(qobj);
+	  gluDisk(ay_gluquadobj, 0.0, radius, 8, 1);
 	}
 
       return AY_OK;
@@ -346,36 +337,26 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
       /* draw caps */
       glPushMatrix();
 
-       qobj = NULL;
-       if(!(qobj = gluNewQuadric()))
-	 return AY_EOMEM;
-       gluQuadricOrientation(qobj, GLU_INSIDE);
+       gluQuadricOrientation(ay_gluquadobj, GLU_INSIDE);
 
        glTranslated(0.0,0.0,zmin);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
 
-       gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
+       gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
 
-       gluDeleteQuadric(qobj);
+       gluQuadricOrientation(ay_gluquadobj, GLU_OUTSIDE);
 
       glPopMatrix();
 
       glPushMatrix();
 
-       qobj = NULL;
-       if(!(qobj = gluNewQuadric()))
-	 return AY_EOMEM;
-
        glTranslated(0.0, 0.0, zmax);
        glRotated(thetamax-90.0, 0.0, 0.0, 1.0);
 
-       gluPartialDisk(qobj, 0.0, radius, 8, 1, 0.0, thetamax);
-
-       gluDeleteQuadric(qobj);
+       gluPartialDisk(ay_gluquadobj, 0.0, radius, 8, 1, 0.0, thetamax);
 
       glPopMatrix();
-
-    }
+    } /* if */
 
  return AY_OK;
 } /* ay_cylinder_shadecb */
