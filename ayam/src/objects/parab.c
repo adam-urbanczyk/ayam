@@ -18,7 +18,9 @@ static char *ay_parab_name = "Paraboloid";
 
 int ay_paraboloid_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PPARAB 30
+
 
 /* functions: */
 

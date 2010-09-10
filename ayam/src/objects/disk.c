@@ -18,7 +18,9 @@ static char *ay_disk_name = "Disk";
 
 int ay_disk_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PDISK 10
+
 
 /* functions: */
 

@@ -18,6 +18,7 @@ static char *ay_cone_name = "Cone";
 
 int ay_cone_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PCONE 11
 
 

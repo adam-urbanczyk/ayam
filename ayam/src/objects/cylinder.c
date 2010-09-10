@@ -18,7 +18,9 @@ static char *ay_cylinder_name = "Cylinder";
 
 int ay_cylinder_notifycb(ay_object *o);
 
+/* number of read only points */
 #define AY_PCYLINDER 30
+
 
 /* functions: */
 
