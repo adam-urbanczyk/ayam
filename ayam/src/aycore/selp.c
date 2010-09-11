@@ -487,7 +487,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- unsigned int i = 1, indiceslen = 0, *tmp = NULL, *indices = NULL;
+ unsigned int i = 1, indiceslen = 0, *indices = NULL;
  int select_all = AY_FALSE, select_none = AY_FALSE;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -502,25 +502,29 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
     {
       select_none = AY_TRUE;
     }
+  else
+    {
+      if((argv[1][0] == '-') && (argv[1][1] == 'a'))
+	{
+	  select_all = AY_TRUE;
+	}
+    }
 
   /* parse list of indices */
-  if(!select_none)
+  if(!select_none && !select_all)
     {
+      if(!(indices = calloc(argc, sizeof(unsigned int))))
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
       while(i < (unsigned int)argc)
 	{
-	  if(!strcmp(argv[i],"-all"))
+	  ay_status = ay_tcmd_getuint(argv[i], &(indices[indiceslen]));
+	  if(ay_status)
 	    {
-	      select_all = AY_TRUE;
-	      break;
-	    }
-	  if(!(tmp = realloc(tmp, i*sizeof(unsigned int))))
-	    {
-	      ay_error(AY_EOMEM, argv[0], NULL);
 	      goto cleanup;
 	    }
-	  indices = tmp;
-	  sscanf(argv[i], "%u", &(indices[indiceslen]));
-
 	  indiceslen++;
 	  i++;
 	} /* while */
@@ -528,7 +532,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!select_none && !select_all && (indiceslen == 0))
     {
-      ay_error(AY_EARGS, argv[0], " [-all | indices]");
+      ay_error(AY_EARGS, argv[0], "[-all | indices]");
       goto cleanup;
     }
 
