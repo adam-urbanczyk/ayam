@@ -1,4 +1,4 @@
-[30. Aug 2010] CVS-Head:
+[11. Sep 2010] CVS-Head:
 =======================
 Bug Fixes:
 o fixed direct point editing not setting the mark (SF 2993441)
@@ -54,10 +54,11 @@ o NURBS patch clamping now works with half clamped patches and also with
 o NURBS patch clamping can now also clamp only one end of the patch
 o the point insert/delete modelling actions now work with multiple
   selected objects
-o several objects now support read only points, they can be selected and
+o several objects now support read only points, which can be selected and
   their coordinates inquired (for snapping/aligning or transformation purposes)
-  but they can not be modified, the supporting objects are:
-  Box, Sphere, Cylinder, Disk, Cone
+  but they can not be modified; the supporting objects are:
+  Box, Sphere, Cylinder, Disk, Cone, Torus, Hyperboloid, Paraboloid,
+  Extrude, Revolve
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
