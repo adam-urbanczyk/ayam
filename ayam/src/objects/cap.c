@@ -16,6 +16,8 @@
 
 static char *ay_cap_name = "Cap";
 
+int ay_cap_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_cap_createcb:
@@ -146,6 +148,37 @@ ay_cap_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_cap_object *cap = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  cap = (ay_cap_object *) o->refine;
+
+  if(cap->npatch)
+    {
+      patch = (ay_nurbpatch_object *)cap->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_cap_drawhcb */
@@ -157,8 +190,22 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_cap_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_cap_object *cap = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  cap = (ay_cap_object *)o->refine;
+
+  if(cap->npatch)
+    {
+      patch = (ay_nurbpatch_object *)cap->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_cap_getpntcb */
 
 
@@ -443,6 +490,11 @@ ay_cap_notifycb(ay_object *o)
 	cap->display_mode;
     }
 
+  if(o->selp)
+    {
+      ay_cap_getpntcb(3, o, NULL, NULL);
+    }
+
  return AY_OK;
 } /* ay_cap_notifycb */
 
@@ -545,11 +597,11 @@ ay_cap_init(Tcl_Interp *interp)
 				    ay_cap_deletecb,
 				    ay_cap_copycb,
 				    ay_cap_drawcb,
-				    NULL, /* No handles! */
+				    ay_cap_drawhcb,
 				    ay_cap_shadecb,
 				    ay_cap_setpropcb,
 				    ay_cap_getpropcb,
-				    NULL, /* No points! */
+				    ay_cap_getpntcb,
 				    ay_cap_readcb,
 				    ay_cap_writecb,
 				    ay_cap_wribcb,

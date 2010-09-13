@@ -16,6 +16,8 @@
 
 static char *ay_birail1_name = "Birail1";
 
+int ay_birail1_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_birail1_createcb:
@@ -180,6 +182,37 @@ ay_birail1_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_birail1_object *birail1 = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  birail1 = (ay_birail1_object *) o->refine;
+
+  if(birail1->npatch)
+    {
+      patch = (ay_nurbpatch_object *)birail1->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_birail1_drawhcb */
@@ -191,8 +224,22 @@ ay_birail1_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_birail1_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_birail1_object *birail1 = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  birail1 = (ay_birail1_object *)o->refine;
+
+  if(birail1->npatch)
+    {
+      patch = (ay_nurbpatch_object *)birail1->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_birail1_getpntcb */
 
 
@@ -734,6 +781,11 @@ cleanup:
   if(npatch)
     free(npatch);
 
+  if(o->selp)
+    {
+      ay_birail1_getpntcb(3, o, NULL, NULL);
+    }
+
  return ay_status;
 } /* ay_birail1_notifycb */
 
@@ -915,7 +967,7 @@ ay_birail1_init(Tcl_Interp *interp)
 				    ay_birail1_deletecb,
 				    ay_birail1_copycb,
 				    ay_birail1_drawcb,
-				    NULL, /* no handles */
+				    ay_birail1_drawhcb,
 				    ay_birail1_shadecb,
 				    ay_birail1_setpropcb,
 				    ay_birail1_getpropcb,

@@ -16,6 +16,8 @@
 
 static char *ay_gordon_name = "Gordon";
 
+int ay_gordon_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_gordon_createcb:
@@ -182,6 +184,37 @@ ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_gordon_object *gordon = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  gordon = (ay_gordon_object *) o->refine;
+
+  if(gordon->npatch)
+    {
+      patch = (ay_nurbpatch_object *)gordon->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_gordon_drawhcb */
@@ -193,8 +226,22 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_gordon_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_gordon_object *gordon = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  gordon = (ay_gordon_object *)o->refine;
+
+  if(gordon->npatch)
+    {
+      patch = (ay_nurbpatch_object *)gordon->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_gordon_getpntcb */
 
 
@@ -727,6 +774,11 @@ cleanup:
       ay_object_delete(inpatch);
     }
 
+  if(o->selp)
+    {
+      ay_gordon_getpntcb(3, o, NULL, NULL);
+    }
+
  return ay_status;
 } /* ay_gordon_notifycb */
 
@@ -908,7 +960,7 @@ ay_gordon_init(Tcl_Interp *interp)
 				    ay_gordon_deletecb,
 				    ay_gordon_copycb,
 				    ay_gordon_drawcb,
-				    NULL, /* no handles */
+				    ay_gordon_drawhcb,
 				    ay_gordon_shadecb,
 				    ay_gordon_setpropcb,
 				    ay_gordon_getpropcb,
