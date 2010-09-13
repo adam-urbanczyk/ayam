@@ -554,6 +554,7 @@ cleanup:
       ay_object_deletemulti(pobject);
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_extrnp_getpntcb(3, o, NULL, NULL);

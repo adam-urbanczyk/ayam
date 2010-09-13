@@ -956,6 +956,7 @@ ay_extrude_notifycb(ay_object *o)
 	} /* while */
     } /* if */
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_extrude_getpntcb(3, o, NULL, NULL);

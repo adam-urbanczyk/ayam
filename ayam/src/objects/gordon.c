@@ -774,6 +774,7 @@ cleanup:
       ay_object_delete(inpatch);
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_gordon_getpntcb(3, o, NULL, NULL);

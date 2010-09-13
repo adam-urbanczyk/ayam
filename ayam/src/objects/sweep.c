@@ -837,6 +837,7 @@ cleanup:
       sweep->npatch = NULL;
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_sweep_getpntcb(3, o, NULL, NULL);

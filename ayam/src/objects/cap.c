@@ -490,6 +490,7 @@ ay_cap_notifycb(ay_object *o)
 	cap->display_mode;
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_cap_getpntcb(3, o, NULL, NULL);
