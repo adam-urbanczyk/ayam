@@ -16,6 +16,8 @@
 
 static char *ay_offnp_name = "OffsetNP";
 
+int ay_offnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_offnp_createcb:
@@ -150,23 +152,44 @@ ay_offnp_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_object *c = NULL;
  ay_offnp_object *offnp = NULL;
  ay_nurbpatch_object *patch = NULL;
- ay_object *c = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
  double *p1, *p2;
  double m[16];
 
   if(!o)
     return AY_ENULL;
 
-  offnp = (ay_offnp_object *)o->refine;
+  offnp = (ay_offnp_object *) o->refine;
 
-  if(offnp && offnp->npatch)
+  if(offnp->npatch)
     {
       /* get NURBS patch and its last control points */
       patch = (ay_nurbpatch_object *)offnp->npatch->refine;
       p1 = &(patch->controlv[patch->width*patch->height*4-8]);
       p2 = p1+4;
+
+      /* draw points */
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
 
       /* draw arrow */
       glPushMatrix();
@@ -190,8 +213,22 @@ ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_offnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_offnp_object *offnp = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  offnp = (ay_offnp_object *)o->refine;
+
+  if(offnp->npatch)
+    {
+      patch = (ay_nurbpatch_object *)offnp->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_offnp_getpntcb */
 
 
@@ -472,6 +509,12 @@ cleanup:
   if(provided)
     {
       ay_object_deletemulti(npatch);
+    }
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_offnp_getpntcb(3, o, NULL, NULL);
     }
 
  return ay_status;

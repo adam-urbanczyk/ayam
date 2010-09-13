@@ -16,6 +16,8 @@
 
 static char *ay_extrnp_name = "ExtrNP";
 
+int ay_extrnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_extrnp_createcb:
@@ -152,9 +154,37 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_extrnp_object *extrnp = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
 
   if(!o)
     return AY_ENULL;
+
+  extrnp = (ay_extrnp_object *) o->refine;
+
+  if(extrnp->npatch)
+    {
+      patch = (ay_nurbpatch_object *)extrnp->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_extrnp_drawhcb */
@@ -166,8 +196,22 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_extrnp_object *extrnp = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  extrnp = (ay_extrnp_object *)o->refine;
+
+  if(extrnp->npatch)
+    {
+      patch = (ay_nurbpatch_object *)extrnp->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_extrnp_getpntcb */
 
 
@@ -510,6 +554,11 @@ cleanup:
       ay_object_deletemulti(pobject);
     }
 
+  if(o->selp)
+    {
+      ay_extrnp_getpntcb(3, o, NULL, NULL);
+    }
+
  return ay_status;
 } /* ay_extrnp_notifycb */
 
@@ -613,7 +662,7 @@ ay_extrnp_init(Tcl_Interp *interp)
 				    ay_extrnp_deletecb,
 				    ay_extrnp_copycb,
 				    ay_extrnp_drawcb,
-				    NULL/*ay_extrnp_drawhcb*/,
+				    ay_extrnp_drawhcb,
 				    ay_extrnp_shadecb,
 				    ay_extrnp_setpropcb,
 				    ay_extrnp_getpropcb,

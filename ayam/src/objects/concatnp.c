@@ -16,6 +16,10 @@
 
 static char *ay_concatnp_name = "ConcatNP";
 
+int ay_concatnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
+/* functions: */
+
 /* ay_concatnp_createcb:
  *  create callback function of concatnp object
  */
@@ -142,6 +146,37 @@ ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_concatnp_object *concatnp = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  concatnp = (ay_concatnp_object *) o->refine;
+
+  if(concatnp->npatch)
+    {
+      patch = (ay_nurbpatch_object *)concatnp->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_concatnp_drawhcb */
@@ -153,8 +188,22 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_concatnp_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_concatnp_object *concatnp = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  concatnp = (ay_concatnp_object *)o->refine;
+
+  if(concatnp->npatch)
+    {
+      patch = (ay_nurbpatch_object *)concatnp->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_concatnp_getpntcb */
 
 
@@ -434,6 +483,11 @@ ay_concatnp_notifycb(ay_object *o)
   /* free list of temporary curves */
   ay_object_deletemulti(patches);
 
+  if(o->selp)
+    {
+      ay_concatnp_getpntcb(3, o, NULL, NULL);
+    }
+
  return AY_OK;
 } /* ay_concatnp_notifycb */
 
@@ -542,7 +596,7 @@ ay_concatnp_init(Tcl_Interp *interp)
 				    ay_concatnp_deletecb,
 				    ay_concatnp_copycb,
 				    ay_concatnp_drawcb,
-				    NULL, /* no handles */
+				    ay_concatnp_drawhcb,
 				    ay_concatnp_shadecb,
 				    ay_concatnp_setpropcb,
 				    ay_concatnp_getpropcb,
