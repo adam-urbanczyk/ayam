@@ -483,6 +483,7 @@ ay_concatnp_notifycb(ay_object *o)
   /* free list of temporary curves */
   ay_object_deletemulti(patches);
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_concatnp_getpntcb(3, o, NULL, NULL);

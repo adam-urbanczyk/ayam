@@ -517,6 +517,7 @@ cleanup:
       ay_object_delete(npatch);
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_bevel_getpntcb(3, o, NULL, NULL);

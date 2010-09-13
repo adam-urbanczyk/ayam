@@ -781,6 +781,7 @@ cleanup:
   if(npatch)
     free(npatch);
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_birail1_getpntcb(3, o, NULL, NULL);

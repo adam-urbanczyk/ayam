@@ -789,6 +789,7 @@ cleanup:
       all_curves = c;
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_skin_getpntcb(3, o, NULL, NULL);

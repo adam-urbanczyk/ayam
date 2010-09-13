@@ -1221,6 +1221,7 @@ ay_revolve_notifycb(ay_object *o)
       ay_object_delete(pobject);
     }
 
+  /* recover selected points */
   if(o->selp)
     {
       ay_revolve_getpntcb(3, o, NULL, NULL);
