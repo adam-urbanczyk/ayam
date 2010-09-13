@@ -276,7 +276,6 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  int found = AY_FALSE, j = 0, argvi = 0;
  ay_object *o = NULL;
- char fname[] = "goDown";
  /*
  char *part1 = "ay", *part2 = "CurrentLevel";
  char tmp[256];
@@ -286,7 +285,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc != 2)
     {
-      /* ay_error(AY_EARGS, fname, "index"); */
+      /* ay_error(AY_EARGS, argv[0], "index"); */
       return TCL_OK;
     }
 
@@ -340,7 +339,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_clevel_add(o);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -348,13 +347,13 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
       if(ay_status)
 	{
 	  ay_clevel_del();
-	  ay_error(ay_status, fname, NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
       if(!o->down)
 	{
-	  ay_error(AY_ENULL, fname, NULL);
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -410,6 +409,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_clevel_gettcmd:
  *  Tcl command to get the objects of the current level
+ *  getLevel
  */
 int
 ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
@@ -418,13 +418,12 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = ay_currentlevel->object;
  char *name = NULL;
  char *typename = NULL;
- char fname[] = "getLevel";
  Tcl_DString ds;
 
   /* check args */
   if(argc != 3)
     {
-      ay_error(AY_EARGS, fname, "varname varname");
+      ay_error(AY_EARGS, argv[0], "varname varname");
       return TCL_OK;
     }
 
@@ -511,7 +510,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ENULL, fname, NULL);
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	} /* if */
 
@@ -524,7 +523,7 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ENULL, fname, NULL);
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	}
 
@@ -560,7 +559,6 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "cl";
  static ay_list_object *ocl = NULL;
  ay_list_object *tcl;
  ay_object *o = ay_root;
@@ -570,7 +568,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc != 2)
     {
-      ay_error(AY_EARGS, fname, "(-|level)");
+      ay_error(AY_EARGS, argv[0], "( - | level )");
       return TCL_OK;
     }
 
@@ -586,7 +584,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  /* report error */
-	  ay_error(AY_ERROR, fname, "no level saved");
+	  ay_error(AY_ERROR, argv[0], "no level saved");
 	  return TCL_OK;
 	}
     }
@@ -643,7 +641,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_clevel_add(o);
 	      if(ay_status)
 		{
-		  ay_error(AY_ERROR, fname, NULL);
+		  ay_error(AY_ERROR, argv[0], NULL);
 		  return TCL_OK;
 		}
 	      o = o->down;
@@ -651,7 +649,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(ay_status)
 		{
 		  ay_clevel_del();
-		  ay_error(AY_ERROR, fname, NULL);
+		  ay_error(AY_ERROR, argv[0], NULL);
 		  return TCL_OK;
 		}
 	    }
@@ -664,7 +662,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_currentlevel = ocl;
 	      ocl = NULL;
 	      /* report error */
-	      ay_error(AY_ERROR, fname, "could not find level");
+	      ay_error(AY_ERROR, argv[0], "could not find level");
 	      return TCL_OK;
 	    } /* if */
 	  /* jump over the index number that we just processed */
