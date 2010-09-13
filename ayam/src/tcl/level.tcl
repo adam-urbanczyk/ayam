@@ -56,36 +56,39 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     }
     if { $ay_error } { return; }
 
+    # move the instance/selected object to the new level object
     cutOb
     getLevel a b
     goDown -1
     pasmovOb
 
-    if { $keepsel == 0 } {
+    # manage the selection
+    if { $keepsel <= 0 } {
 	goUp
 	set ay(ul) $ay(CurrentLevel)
 	uS; sL; forceNot; rV;
     } else {
+	# arrange to keep the old selection
 	if { $ay(lb) == 0 } {
+	    # tree is active
 	    set tree $ay(tree)
 
 	    # update the level, where the new level/tool object was created
 	    set ay(ul) $ay(CurrentLevel)
 	    uS
-	    # paint the level gray (not current)
+
+	    # paint the old current level gray
 	    set nlist [$tree nodes $ay(CurrentLevel)]
 	    foreach n $nlist {
 		$tree itemconfigure $n -fill darkgrey
 	    }
+
 	    # set the new current level
 	    if { $ay(CurrentLevel) == "root" } {
-		set ay(CurrentLevel) $ay(CurrentLevel):[expr [llength $a]-1]
+		set ay(CurrentLevel) ${ay(CurrentLevel)}:[expr [llength $a]-1]
 	    } else {
-		set ay(CurrentLevel) $ay(CurrentLevel):[expr [llength $a]-2]
+		set ay(CurrentLevel) ${ay(CurrentLevel)}:[expr [llength $a]-2]
 	    }
-	    # update the new current level with the selected objects
-	    set ay(ul) $ay(CurrentLevel)
-	    uS
 
 	    # open the tree-node
 	    tree_openSub $tree 1 $ay(CurrentLevel)
