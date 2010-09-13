@@ -498,15 +498,31 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* parse args */
   if(argc == 1)
     {
       select_none = AY_TRUE;
     }
   else
     {
-      if((argv[1][0] == '-') && (argv[1][1] == 'a'))
+      if((argv[1][0] == '-'))
 	{
-	  select_all = AY_TRUE;
+	  /* -all */
+	  if(argv[1][1] == 'a')
+	    {
+	      select_all = AY_TRUE;
+	    }
+	  /* -none */
+	  if(argv[1][1] == 'n')
+	    {
+	      select_none = AY_TRUE;
+	    }
+	  /* -help */
+	  if(argv[1][1] == 'h')
+	    {
+	      ay_error(AY_EARGS, argv[0], "[-all | -none | indices]");
+	      goto cleanup;
+	    }
 	}
     }
 
@@ -530,12 +546,6 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* while */
     } /* if */
 
-  if(!select_none && !select_all && (indiceslen == 0))
-    {
-      ay_error(AY_EARGS, argv[0], "[-all | indices]");
-      goto cleanup;
-    }
-
   while(sel)
     {
       o = sel->object;
@@ -549,12 +559,19 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(select_all)
 	    {
 	      ay_status = ay_selp_selall(o);
+
+	      /* it is no error if we could not select any points, when
+		 the user requested no specific points, but "all" */
+	      if(ay_status == AY_ERROR)
+		{
+		  ay_status = AY_OK;
+		}
 	    }
 	  else
 	    {
 	      ay_status = ay_selp_sel(o, indiceslen, indices);
 	    }
-	}
+	} /* if */
 
       if(ay_status)
 	{
