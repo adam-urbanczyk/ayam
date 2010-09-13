@@ -326,10 +326,11 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_camera_object *camera = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
+ ay_point *pnt = NULL, **lastpnt = NULL;
  double *pecoord = NULL, **pecoords = NULL, *c;
  int a;
 
-  if(!o || !p || !pe)
+  if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
 
   camera = (ay_camera_object *)(o->refine);
@@ -421,7 +422,34 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       
       break;
     case 3:
-      ay_selp_clear(o);
+      pnt = o->selp;
+      lastpnt = &o->selp;
+      while(pnt)
+	{
+	  if(pnt->index < 2)
+	    {
+	      switch(pnt->index)
+		{
+		case 0:
+		  pnt->point = camera->from;
+		  break;
+		case 1:
+		  pnt->point = camera->to;
+		  break;
+		default:
+		  break;
+		}
+	      pnt->homogenous = AY_FALSE;
+	      lastpnt = &(pnt->next);
+	      pnt = pnt->next;
+	    }
+	  else
+	    {
+	      *lastpnt = pnt->next;
+	      free(pnt);
+	      pnt = *lastpnt;
+	    }
+	} /* while */
       break;
     default:
       break;
