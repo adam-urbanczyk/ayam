@@ -68,7 +68,7 @@ ay_sel_add(ay_object *o)
 
 
 /* ay_sel_selobtcmd:
- *  set the selection
+ *  set the selection (selOb command)
  *  I: argv[] contains a sorted and split list of object indices
  *  in the current level
  */
@@ -155,12 +155,12 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		  return TCL_OK;
 		}
 	    } /* if */
-
 	} /* for */
     } /* if */
 
 cleanup:
   newsel = ay_selection;
+
   /* do we need a complete redraw ? */
   ay_draw_needredraw(oldsel, newsel, &need_redraw);
 
@@ -204,14 +204,14 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = ay_currentlevel->object;
  Tcl_Obj *to = NULL, *toa = NULL;
 
-  /*  */
+  /* check args */
   if(argc < 1)
     {
       ay_error(AY_EARGS, argv[0], "varname");
       return TCL_OK;
     }
 
-  toa = Tcl_NewStringObj(argv[1],-1);
+  toa = Tcl_NewStringObj(argv[1], -1);
 
   while(o)
     {
