@@ -16,6 +16,8 @@
 
 static char *ay_swing_name = "Swing";
 
+int ay_swing_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_swing_createcb:
@@ -194,6 +196,37 @@ ay_swing_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_swing_object *swing = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  swing = (ay_swing_object *) o->refine;
+
+  if(swing->npatch)
+    {
+      patch = (ay_nurbpatch_object *)swing->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_swing_drawhcb */
@@ -205,8 +238,22 @@ ay_swing_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_swing_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_swing_object *swing = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  swing = (ay_swing_object *)o->refine;
+
+  if(swing->npatch)
+    {
+      patch = (ay_nurbpatch_object *)swing->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_swing_getpntcb */
 
 
@@ -1101,8 +1148,8 @@ ay_swing_notifycb(ay_object *o)
 
     } /* if */
 
-  /* remove provided object */
 cleanup:
+  /* remove provided object(s) */
   if(provided_cs && cs)
     {
       ay_object_delete(cs);
@@ -1110,6 +1157,11 @@ cleanup:
   if(provided_tr && tr)
     {
       ay_object_delete(tr);
+    }
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_swing_getpntcb(3, o, NULL, NULL);
     }
 
  return ay_status;
@@ -1350,7 +1402,7 @@ ay_swing_init(Tcl_Interp *interp)
 				    ay_swing_deletecb,
 				    ay_swing_copycb,
 				    ay_swing_drawcb,
-				    NULL, /* no handles */
+				    ay_swing_drawhcb,
 				    ay_swing_shadecb,
 				    ay_swing_setpropcb,
 				    ay_swing_getpropcb,
