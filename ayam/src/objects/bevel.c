@@ -16,6 +16,8 @@
 
 static char *ay_bevel_name = "Bevel";
 
+int ay_bevel_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_bevel_createcb:
@@ -157,6 +159,37 @@ ay_bevel_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
+ ay_bevel_object *bevel = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
+ ay_nurbpatch_object *patch = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  bevel = (ay_bevel_object *) o->refine;
+
+  if(bevel->npatch)
+    {
+      patch = (ay_nurbpatch_object *)bevel->npatch->refine;
+      pnts = patch->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < patch->width*patch->height; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_bevel_drawhcb */
@@ -168,8 +201,22 @@ ay_bevel_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_bevel_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbpatch_object *patch = NULL;
+ ay_bevel_object *bevel = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  bevel = (ay_bevel_object *)o->refine;
+
+  if(bevel->npatch)
+    {
+      patch = (ay_nurbpatch_object *)bevel->npatch->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, patch->width*patch->height, 4,
+			     patch->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_bevel_getpntcb */
 
 
@@ -470,6 +517,11 @@ cleanup:
       ay_object_delete(npatch);
     }
 
+  if(o->selp)
+    {
+      ay_bevel_getpntcb(3, o, NULL, NULL);
+    }
+
  return ay_status;
 } /* ay_bevel_notifycb */
 
@@ -583,7 +635,7 @@ ay_bevel_init(Tcl_Interp *interp)
 				    ay_bevel_deletecb,
 				    ay_bevel_copycb,
 				    ay_bevel_drawcb,
-				    NULL, /* no handles */
+				    ay_bevel_drawhcb,
 				    ay_bevel_shadecb,
 				    ay_bevel_setpropcb,
 				    ay_bevel_getpropcb,
