@@ -118,6 +118,13 @@ lappend types Trim Text
 
 lappend types Camera Light Material RiInc RiProc Script Select
 
+set nopnttypes ""
+lappend nopnttypes Revolve Extrude
+
+set noconvtypes ""
+lappend noconvtypes Camera Light Material RiInc RiProc Select
+
+
 set view1 ""
 if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
     set view1 .fv.fViews.fview1.f3D.togl
@@ -127,8 +134,10 @@ if { [winfo exists .fv.fViews.fview2.f3D.togl] } {
     set view2 .fv.fViews.fview2.f3D.togl
 }
 
-
+puts -nonewline "Testing "
 foreach type $types {
+
+    puts -nonewline "${type}, "
 
     puts $log "Creating a $type ...\n"
     crtOb $type
@@ -184,12 +193,17 @@ foreach type $types {
     puts $log "Selecting points of $type ...\n"
     selPnts -all
     selPnts
-    selPnts 0 2
-    selPnts
 
-    puts $log "Converting a $type ...\n"
-    convOb
-    convOb -inplace
+    if { [lsearch -exact $nopnttypes $type] == -1 } {
+	selPnts 0 2
+	selPnts
+    }
+
+    if { [lsearch -exact $noconvtypes $type] == -1 } {
+	puts $log "Converting a $type ...\n"
+	convOb
+	convOb -inplace
+    }
 
     # missing tests: select points via action callback,
     # draw points/handles, (comparison - AI?), export?
