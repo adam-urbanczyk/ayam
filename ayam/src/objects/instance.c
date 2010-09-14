@@ -40,8 +40,8 @@ ay_instance_createcb(int argc, char *argv[], ay_object *o)
 
   /* XXXX create a blacklist data structure for this test */
   if((target->type == AY_IDROOT) || (target->type == AY_IDVIEW) ||
-     (target->type == AY_IDLIGHT) || (target->type == AY_IDINSTANCE)
-     || (target->type == AY_IDMATERIAL))
+     (target->type == AY_IDLIGHT) || (target->type == AY_IDINSTANCE) ||
+     (target->type == AY_IDMATERIAL))
     {
       ay_error(AY_ERROR, fname,
 	       "cannot create instance of this type of object");
@@ -69,7 +69,6 @@ ay_instance_deletecb(void *c)
     return AY_OK;
 
   o = (ay_object *)(c);
-
 
   o->refcount--;
 
@@ -116,7 +115,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
 
   glPushMatrix();
 
-   if(ay_instance_hasrptrafo(o))
+   if(o->tags && ay_instance_hasrptrafo(o))
      {
        glLoadIdentity();
        
@@ -126,6 +125,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
        glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
      }
 
+   /* draw the master */
    arr = ay_drawcbt.arr;
    cb = (ay_drawcb *)(arr[m->type]);
 
@@ -140,17 +140,21 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
        return AY_ERROR;
      }
 
-   if(!m->inherit_trafos)
-     glLoadIdentity();
-
-   if(!m->hide_children)
+   /* draw the children of the master */
+   if(m->down && m->down->next)
      {
-       down = m->down;
-       while(down)
+       if(!m->inherit_trafos)
+	 glLoadIdentity();
+
+       if(!m->hide_children)
 	 {
-	   ay_draw_object(togl, down, AY_TRUE);
-	   down = down->next;
-	 } /* while */
+	   down = m->down;
+	   while(down)
+	     {
+	       ay_draw_object(togl, down, AY_TRUE);
+	       down = down->next;
+	     } /* while */
+	 }
      }
 
   glPopMatrix();
@@ -179,7 +183,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
 
   glPushMatrix();
 
-   if(ay_instance_hasrptrafo(o))
+   if(o->tags && ay_instance_hasrptrafo(o))
      {
        glLoadIdentity();
        
@@ -189,6 +193,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
        glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
      }
 
+   /* shade the master */
    arr = ay_shadecbt.arr;
    cb = (ay_drawcb *)(arr[m->type]);
 
@@ -203,17 +208,21 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
        return AY_ERROR;
      }
 
-   if(!m->inherit_trafos)
-     glLoadIdentity();
-
-   if(!m->hide_children)
+   /* shade the children of the master */
+   if(m->down && m->down->next)
      {
-       down = m->down;
-       while(down)
+       if(!m->inherit_trafos)
+	 glLoadIdentity();
+
+       if(!m->hide_children)
 	 {
-	   ay_shade_object(togl, down, AY_FALSE);
-	   down = down->next;
-	 } /* while */
+	   down = m->down;
+	   while(down)
+	     {
+	       ay_shade_object(togl, down, AY_FALSE);
+	       down = down->next;
+	     } /* while */
+	 }
      }
 
   glPopMatrix();
@@ -228,6 +237,45 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_instance_drawhcb(struct Togl *togl, ay_object *o)
 {
+ char fname[] = "instance_drawh";
+ int ay_status = AY_OK;
+ ay_voidfp *arr = NULL;
+ ay_object *m = NULL;
+ ay_drawcb *cb = NULL;
+ double tm[16];
+
+  if(!o)
+    return AY_ENULL;
+
+  m = (ay_object *)o->refine;
+
+  glPushMatrix();
+
+   if(o->tags && ay_instance_hasrptrafo(o))
+     {
+       glLoadIdentity();
+       
+       glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
+       ay_quat_torotmatrix(m->quat, tm);
+       glMultMatrixd((GLdouble*)tm);
+       glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
+     }
+
+   arr = ay_drawhcbt.arr;
+   cb = (ay_drawcb *)(arr[m->type]);
+
+   if(cb)
+     ay_status = cb(togl, m);
+
+   if(ay_status)
+     {
+       ay_error(AY_ERROR, fname, "draw handles callback failed");
+
+       glPopMatrix();
+       return AY_ERROR;
+     }
+
+  glPopMatrix();
 
  return AY_OK;
 } /* ay_instance_drawhcb */
@@ -239,11 +287,25 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ int ay_status = AY_OK;
+ ay_voidfp *arr = NULL;
+ ay_object *m = NULL;
+ ay_getpntcb *cb = NULL;
 
   if(!o)
     return AY_ENULL;
 
- return AY_OK;
+  m = (ay_object *)o->refine;
+
+  arr = ay_getpntcbt.arr;
+  cb = (ay_getpntcb *)(arr[m->type]);
+
+  if(cb)
+    ay_status = cb(mode, m, p, pe);
+  else
+    ay_status = AY_OK;
+
+ return ay_status;
 } /* ay_instance_getpntcb */
 
 
@@ -478,7 +540,7 @@ ay_instance_bbccb(ay_object *o, double *bbox, int *flags)
   t = (ay_object *)o->refine;
 
   /* get transformations */
-  if(ay_instance_hasrptrafo(o))
+  if(o->tags && ay_instance_hasrptrafo(o))
     ay_trafo_creatematrix(t, m);
   else
     ay_trafo_creatematrix(o, m);
@@ -699,7 +761,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
 	free(temp);
 
       /* use transformation attributes from instance, not from original */
-      if(!ay_instance_hasrptrafo(i))
+      if(!i->tags || !ay_instance_hasrptrafo(i))
 	{
 	  i->movx = movx;
 	  i->movy = movy;
@@ -728,7 +790,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
       ay_status = ay_object_copy(orig, &new);
       if(new)
 	{
-	  if(!ay_instance_hasrptrafo(i))
+	  if(!i->tags || !ay_instance_hasrptrafo(i))
 	    {
 	      ay_trafo_copy(i, new);
 	    }
@@ -771,7 +833,7 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
 
       ay_status = ay_object_copy(i, result);
-      if(!ay_instance_hasrptrafo(o))
+      if(!o->tags || !ay_instance_hasrptrafo(o))
 	ay_trafo_copy(o, *result);
 
     }
@@ -791,7 +853,7 @@ ay_instance_providecb(ay_object *o, unsigned int type, ay_object **result)
 	    we got it, copy transformation from instance
 	    to result
 	  */
-	  if(!ay_instance_hasrptrafo(o))
+	  if(!o->tags || !ay_instance_hasrptrafo(o))
 	    ay_trafo_copy(o, *result);
 	}
     } /* if */
@@ -842,11 +904,11 @@ ay_instance_init(Tcl_Interp *interp)
 				    ay_instance_deletecb,
 				    ay_instance_copycb,
 				    ay_instance_drawcb,
-				    NULL, /* no handles! */
+				    ay_instance_drawhcb,
 				    ay_instance_shadecb,
 				    ay_instance_setpropcb,
 				    ay_instance_getpropcb,
-				    NULL, /* no picking! */
+				    ay_instance_getpntcb,
 				    ay_instance_readcb,
 				    ay_instance_writecb,
 				    ay_instance_wribcb,
