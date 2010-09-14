@@ -16,6 +16,8 @@
 
 static char *ay_ncircle_name = "NCircle";
 
+int ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_ncircle_createcb:
@@ -214,27 +216,50 @@ ay_ncircle_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
  ay_ncircle_object *ncircle = NULL;
- ay_nurbcurve_object *nc = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ double *pnts = NULL;
+ double point_size = ay_prefs.handle_size;
  double *p1, *p2;
 
   if(!o)
     return AY_ENULL;
 
-  ncircle = (ay_ncircle_object *)o->refine;
+  ncircle = (ay_ncircle_object *) o->refine;
 
   if(ncircle && ncircle->ncurve)
     {
-      /* get NURBS curve and its last control points */
-      nc = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-      p1 = &(nc->controlv[nc->length*4-8]);
+      /* get NURBS curve and its first/last control points */
+      curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+      p1 = &(curve->controlv[curve->length*4-8]);
       p2 = p1+4;
+
       /* draw arrow */
       ay_draw_arrow(togl, p1, p2);
-    }
+
+      /* draw read only points */
+      pnts = curve->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < curve->length; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    } /* if */
 
  return AY_OK;
 } /* ay_ncircle_drawhcb */
+
 
 /* ay_ncircle_getpntcb:
  *  get point (editing and selection) callback function of ncircle object
@@ -242,8 +267,22 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_ncircle_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbcurve_object *curve = NULL;
+ ay_ncircle_object *ncircle = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  ncircle = (ay_ncircle_object *)o->refine;
+
+  if(ncircle->ncurve)
+    {
+      curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			     curve->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_ncircle_getpntcb */
 
 
@@ -511,8 +550,13 @@ ay_ncircle_notifycb(ay_object *o)
   if(revert)
     ay_nct_revert(nc);
 
-
   ncircle->ncurve = ncurve;
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_ncircle_getpntcb(3, o, NULL, NULL);
+    }
 
  return AY_OK;
 } /* ay_ncircle_notifycb */
@@ -623,7 +667,7 @@ ay_ncircle_init(Tcl_Interp *interp)
 				    NULL, /* no shading */
 				    ay_ncircle_setpropcb,
 				    ay_ncircle_getpropcb,
-				    NULL, /* no editable points */
+				    ay_ncircle_getpntcb,
 				    ay_ncircle_readcb,
 				    ay_ncircle_writecb,
 				    NULL, /* no RIB export */
