@@ -1172,15 +1172,6 @@ int ay_tags_copy(ay_tag *source, ay_tag **dest);
  */
 int ay_tags_copyall(ay_object *src, ay_object *dst);
 
-/** inquire about the temporary state of a tag
- */
-int ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result);
-
-/** Tcl command to inquire about the temporary state of a tag
- */
-int ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
-		       int argc, char *argv[]);
-
 /** append tag to object
  */
 int ay_tags_append(ay_object *o, ay_tag *tag);

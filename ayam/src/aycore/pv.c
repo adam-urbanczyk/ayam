@@ -489,7 +489,7 @@ ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
     { ay_status = AY_ERROR; goto cleanup; }
 
   /* copy "name,detail,type," */
-  Tcl_DStringAppend(&ds, t1->val, (int)(comma1-(t1->val)));
+  Tcl_DStringAppend(&ds, (char*)t1->val, (int)(comma1-((char*)t1->val)));
 
   sscanf(comma1, "%d", &n1);
 
@@ -578,7 +578,7 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
       c1++;
     }
 
-  if(!strncmp(t1->val, t2->val, (c1 - t1->val)))
+  if(!strncmp((char*)t1->val, (char*)t2->val, (c1 - (char*)t1->val)))
     {
       return AY_TRUE;
     }

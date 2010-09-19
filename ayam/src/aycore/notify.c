@@ -467,6 +467,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 		}
 	      newt->next = o->tags;
 	      newt->type = ay_nc_tagtype;
+	      newt->is_temp = AY_TRUE;
 	      o->tags = newt;
 	    }
 
@@ -592,14 +593,11 @@ int
 ay_notify_init(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
- int dummy;
 
   /* register NC tag type */
   ay_status = ay_tags_register(interp, ay_nc_tagname, &ay_nc_tagtype);
   if(ay_status)
     return ay_status;
-
-  ay_status = ay_tags_temp(interp, ay_nc_tagname, 1, &dummy);
 
   return AY_OK;
 } /* ay_notify_init */
