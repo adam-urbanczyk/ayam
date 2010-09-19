@@ -891,6 +891,27 @@ ay_instance_hasrptrafo(ay_object *o)
 } /* ay_instance_hasrptrafo */
 
 
+/* ay_instance_notifycb:
+ *  notification callback function of instance object
+ */
+int
+ay_instance_notifycb(ay_object *o)
+{
+ int ay_status = AY_OK;
+
+  if(!o)
+    return AY_OK;
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_instance_getpntcb(3, o, NULL, NULL);
+    }
+
+ return ay_status;
+} /* ay_instance_notifycb */
+
+
 /* ay_instance_init:
  *  initialize the instance object module
  */
@@ -915,6 +936,8 @@ ay_instance_init(Tcl_Interp *interp)
 				    ay_instance_bbccb,
 				    AY_IDINSTANCE);
 
+
+  ay_status = ay_notify_register(ay_instance_notifycb, AY_IDINSTANCE);
 
   ay_status = ay_convert_register(ay_instance_convertcb, AY_IDINSTANCE);
 
