@@ -484,7 +484,7 @@ aycsg_flatten(ay_object *t, struct Togl *togl, int parent_csgtype,
 		{
 		  if(tag->val)
 		    {
-		      sscanf(tag->val, "%d", &dc);
+		      sscanf((char*)tag->val, "%d", &dc);
 		    } // if
 		} // if
 	      tag = tag->next;

@@ -86,9 +86,6 @@ ay_ftable ay_bbccbt;
 /* registered tag types */
 Tcl_HashTable ay_tagtypesht;
 
-/* temporary tag types */
-Tcl_HashTable ay_temptagtypesht;
-
 int ay_errno;
 
 int ay_read_version;
@@ -275,8 +272,6 @@ ay_init(Tcl_Interp *interp)
 
   /* Tags */
   Tcl_InitHashTable(&ay_tagtypesht, TCL_STRING_KEYS);
-
-  Tcl_InitHashTable(&ay_temptagtypesht, TCL_STRING_KEYS);
 
   /* initialize instancing helper module */
   ay_instt_init(interp);
@@ -792,8 +787,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* tags.c */
-  Tcl_CreateCommand(interp, "tagIsTemp", ay_tags_istemptcmd,
-		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "setTags", ay_tags_settcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "addTag", ay_tags_addtcmd,
@@ -1299,9 +1292,6 @@ ay_safeinit(Tcl_Interp *interp)
 
   Tcl_CreateCommand(interp, "shaderGet", ay_shader_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "tagIsTemp", ay_tags_istemptcmd,
-		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "setTags", ay_tags_settcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

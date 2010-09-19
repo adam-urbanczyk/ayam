@@ -132,9 +132,11 @@ typedef struct ay_pointedit_s
 typedef struct ay_tag_s
 {
   struct ay_tag_s *next; /**< next tag */
+  char is_temp; /**< is this tag temporary? */
+  char is_binary; /**< is this tag binary? */
   char *name; /**< name of tag (e.g.\ "PV") */
   char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */
-  char *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
+  void *val; /**< value of tag (e.g.\ "mycolor,constant,c,1,0,1,0") */
 } ay_tag;
 
 
@@ -1444,6 +1446,9 @@ extern Tcl_HashTable ay_otypesht;
 /** table of registered object type names */
 extern Tcl_HashTable ay_typenamesht;
 
+/** table of registered tag types */
+extern Tcl_HashTable ay_tagtypesht;
+
 /* \name function pointer tables (object callbacks) */
 /*@{*/
 /** all registered create callbacks */
@@ -1476,10 +1481,6 @@ extern ay_ftable ay_notifycbt;
 extern ay_ftable ay_bbccbt;
 /** all registered tree drop callbacks */
 extern ay_ftable ay_treedropcbt;
-/** table of registered tag types */
-extern Tcl_HashTable ay_tagtypesht;
-/** table of temporary tag types */
-extern Tcl_HashTable ay_temptagtypesht;
 /** all registered conversion callbacks */
 extern ay_ftable ay_convertcbt;
 /** all registered provide callbacks */

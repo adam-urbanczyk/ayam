@@ -96,7 +96,6 @@ ay_write_tags(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_tag *tag = NULL;
  int tcount = 0;
- int temp = 0;
 
   if(!o)
     return AY_ENULL;
@@ -105,13 +104,9 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->name && tag->val)
+      if(tag->name && tag->val && !tag->is_temp && !tag->is_binary)
 	{
-	  ay_status = ay_tags_temp(ay_interp, tag->name, 0, &temp);
-	  if(temp == AY_FALSE)
-	    {
-	      tcount++;
-	    }
+	  tcount++;
 	}
       tag = tag->next;
     }
@@ -122,14 +117,10 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->name && tag->val)
+      if(tag->name && tag->val && !tag->is_temp && !tag->is_binary)
 	{
-	  ay_status = ay_tags_temp(ay_interp, tag->name, 0, &temp);
-	  if(temp == AY_FALSE)
-	    {
-	      fprintf(fileptr,"%s\n",tag->name);
-	      fprintf(fileptr,"%s\n",tag->val);
-	    }
+	  fprintf(fileptr,"%s\n",tag->name);
+	  fprintf(fileptr,"%s\n",(char*)tag->val);
 	}
       tag = tag->next;
     }

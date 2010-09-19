@@ -200,78 +200,6 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 } /* ay_tags_register */
 
 
-/* ay_tags_temp:
- *  if set == 1: mark tag type "name" temporary, it will not be saved
- *               to files and possibly excluded from the tag property
- *               GUIs as well
- *  if set == 0: set result to 1 if tag type "name" is temporary
- *               else set result to 0
- */
-int
-ay_tags_temp(Tcl_Interp *interp, char *name, int set, int *result)
-{
- int new_item = 0;
- Tcl_HashEntry *entry = NULL;
- char fname[] = "tags_temp";
-
-  if(set == 1)
-    { /* set */
-      if((entry = Tcl_FindHashEntry(&ay_temptagtypesht, name)))
-	{
-	  ay_error(AY_ERROR, fname, "tag type already marked temporary");
-	  return AY_ERROR;
-	}
-
-      entry = Tcl_CreateHashEntry(&ay_temptagtypesht, name, &new_item);
-      Tcl_SetHashValue(entry, 1);
-    }
-  else
-    { /* query */
-      if((entry = Tcl_FindHashEntry(&ay_temptagtypesht, name)))
-	{
-	  *result = AY_TRUE;
-	}
-      else
-	{
-	  *result = AY_FALSE;
-	}
-    } /* if */
-
- return AY_OK;
-} /* ay_tags_temp */
-
-
-/* ay_tags_istemptcmd:
- *  query for tagname in first argument, whether it is temporary or not
- */
-int
-ay_tags_istemptcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- int temp;
- char yes[] = "1", no[] = "0";
-
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "tagname");
-      return TCL_OK;
-    }
-
-  ay_tags_temp(interp, argv[1], 0, &temp);
-
-  if(temp)
-    {
-      Tcl_SetResult(interp, yes, TCL_VOLATILE);
-    }
-  else
-    {
-      Tcl_SetResult(interp, no, TCL_VOLATILE);
-    }
-
- return TCL_OK;
-} /* ay_tags_istemptcmd */
-
-
 /* ay_tags_settcmd:
  *  set new tags of selected object(s), after removing all old tags
  */
@@ -573,7 +501,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "varname varname2");
+      ay_error(AY_EARGS, argv[0], "vname1 vname2 [vname3 [vname4]]");
       return TCL_OK;
     }
 
@@ -585,6 +513,14 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_SetVar(interp,argv[1], "", TCL_LEAVE_ERR_MSG);
   Tcl_SetVar(interp,argv[2], "", TCL_LEAVE_ERR_MSG);
+  if(argc > 3)
+    {
+      Tcl_SetVar(interp,argv[3], "", TCL_LEAVE_ERR_MSG);
+      if(argc > 4)
+	{
+	  Tcl_SetVar(interp,argv[4], "", TCL_LEAVE_ERR_MSG);
+	}
+    }
 
   o = sel->object;
   if(o)
@@ -598,7 +534,34 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 	      Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
 			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	    }
+	      if(argc > 3)
+		{
+		  if(tag->is_temp)
+		    {
+		      Tcl_SetVar(interp,argv[3],"1", TCL_APPEND_VALUE |\
+				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		    }
+		  else
+		    {
+		      Tcl_SetVar(interp,argv[3],"0", TCL_APPEND_VALUE |\
+				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		    }
+
+		  if(argc > 4)
+		    {
+		      if(tag->is_binary)
+			{
+			  Tcl_SetVar(interp,argv[4],"1", TCL_APPEND_VALUE |\
+				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+			}
+		      else
+			{
+			  Tcl_SetVar(interp,argv[4],"0", TCL_APPEND_VALUE |\
+				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+			}
+		    } /* if */
+		} /* if */
+	    } /* if */
 	  tag = tag->next;
 	} /* while */
     } /* if */
