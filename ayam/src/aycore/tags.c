@@ -91,10 +91,20 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
     { free(new); return AY_EOMEM; }
   strcpy(new->name, source->name);
 
-  /* copy val */
-  if(!(new->val = calloc(1, strlen(source->val)+1)))
-    { free(new); free(new->name); return AY_EOMEM; }
-  strcpy(new->val, source->val);
+  if(source->is_binary)
+    {
+      /* copy binary val */
+      if(!(new->val = calloc(1, *(size_t*)source->val)))
+	{ free(new); free(new->name); return AY_EOMEM; }
+      memcpy(new->val, source->val, (*(size_t*)source->val));
+    }
+  else
+    {
+      /* copy ASCII val */
+      if(!(new->val = calloc(1, strlen(source->val)+1)))
+	{ free(new); free(new->name); return AY_EOMEM; }
+      strcpy(new->val, source->val);
+    }
 
   *dest = new;
 
@@ -210,10 +220,11 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- ay_tag *new = NULL, **next = NULL;
+ ay_tag *t = NULL, *new = NULL, **next = NULL;
+ ay_tag *oldtemptags = NULL, **otnext = NULL;
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int index = 0, i, pasteProp = AY_FALSE;
+ int stride = 2, index = 0, i, pasteProp = AY_FALSE, have_flags = AY_FALSE;
 
   if(argc < 3)
     {
@@ -256,6 +267,12 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  new = new->next;
 	} /* for */
 
+      if(new->is_binary)
+	{
+	  ay_error(AY_ERROR, argv[0], "Can not set binary tags!");
+	  return TCL_OK;
+	}
+
       if(strcmp(argv[3], ""))
 	{
 	  if(new->name)
@@ -278,14 +295,13 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      new->type = (char *)Tcl_GetHashValue(entry);
 	    }
-
+	  /* create new tag */
 	  if(!(new->name = calloc(strlen(argv[3])+1, sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  strcpy(new->name, argv[3]);
-
 
 	  if(!(new->val = calloc(strlen(argv[4])+1, sizeof(char))))
 	    {
@@ -328,6 +344,11 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* normal setTags functionality */
 
+  if(!strcmp(argv[1], "-flags"))
+    {
+      have_flags = AY_TRUE;
+    }
+
   /* is a paste property in progress? */
   toa = Tcl_NewStringObj("ay", -1);
   ton = Tcl_NewStringObj("pasteProp", -1);
@@ -340,17 +361,56 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!o)
 	{
+	  ay_error(AY_ENULL, argv[0], NULL);
 	  return TCL_OK;
 	}
 
-      next = &(o->tags);
       if(!pasteProp)
 	{
+	  /* save old temp and binary tags */
+	  t = o->tags;
+	  otnext = &(oldtemptags);
+	  next = &(o->tags);
+	  while(t)
+	    {
+	      if(t->is_temp || t->is_binary)
+		{
+		  /* link tag t to end of list in oldtemptags */
+		  *otnext = t;
+		  /* unlink tag t from list in o->tags */
+		  *next = t->next;
+		  /* prepare processing the next tag */
+		  t = t->next;
+		  /* properly terminate the list in oldtemptags */
+		  (*otnext)->next = NULL;
+		  otnext = &((*otnext)->next);
+		}
+	      else
+		{
+		  /* prepare processing the next tag */
+		  next = &(t->next);
+		  t = t->next;
+		}
+	    } /* while */
+	  
 	  /* delete old tags */
 	  ay_tags_delall(o);
+
+	  /* now add again the saved temporary/binary tags */
+	  if(oldtemptags)
+	    {
+	      o->tags = oldtemptags;
+	      oldtemptags = NULL;
+	      next = otnext;
+	    }
+	  else
+	    {
+	      next = &(o->tags);
+	    }
 	}
       else
 	{
+	  /* pasting properties via property clipboard appends... */
 	  new = o->tags;
 	  while(new)
 	    {
@@ -359,12 +419,22 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	} /* if */
 
-      /* add new tags */
-      for(index = 1; index < argc-1; index += 2)
+      /* add new tags from args */
+
+      if(have_flags)
+	stride = 4;
+
+      for(index = 1; index < argc-1; index += stride)
 	{
 	  if(strcmp(argv[index], ""))
 	    {
-
+	      /* always omit temporary and binary tags */
+	      if(have_flags && (!strcmp(argv[index+2], "1") ||
+				!strcmp(argv[index+3], "1")))
+		{
+		  continue;
+		}
+		
 	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);
