@@ -128,6 +128,8 @@ global ay ayprefs tagsPropData Tags tcl_platform
 getTags names values tempflags binflags
 set tagsPropData(names) $names
 set tagsPropData(values) $values
+set tagsPropData(tempflags) $tempflags
+set tagsPropData(binflags) $binflags
 
 set ay(bok) $ay(appb)
 
@@ -193,18 +195,23 @@ global ay tagsPropData Tags
 
 set names $tagsPropData(names)
 set values $tagsPropData(values)
+set tempflags $tagsPropData(tempflags)
+set binflags $tagsPropData(binflags)
+
 set alltags ""
 set i 0
 foreach tag $names {
 
 lappend alltags $tag
 lappend alltags [lindex $values $i]
+lappend alltags [lindex $values $i]
+lappend alltags [lindex $values $i]
 
 incr i
 }
 
 if { [llength $alltags] > 0 } {
-    eval [subst "setTags $alltags"]
+    eval [subst "setTags -flags $alltags"]
 }
 
 }
