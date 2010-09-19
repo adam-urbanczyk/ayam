@@ -552,7 +552,7 @@ ay_notify_complete(ay_object *r)
       o = t->object;
       if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  o->tags->val++;
+	  o->tags->val = (char*)o->tags->val + 1;
 	}
       t->next = s;
       s = t;
@@ -563,7 +563,7 @@ ay_notify_complete(ay_object *r)
       o = s->object;
       if(o && o->tags && (o->tags->type == ay_nc_tagtype))
 	{
-	  o->tags->val--;
+	  o->tags->val = (char*)o->tags->val - 1;
 	  if(o->tags->val == 0)
 	    {
 	      ay_notify_force(o);
@@ -580,7 +580,7 @@ ay_notify_complete(ay_object *r)
       s = t;
     } /* while */
 
- lock = 0;
+  lock = 0;
 
  return AY_OK;
 } /* ay_notify_complete */
@@ -596,8 +596,6 @@ ay_notify_init(Tcl_Interp *interp)
 
   /* register NC tag type */
   ay_status = ay_tags_register(interp, ay_nc_tagname, &ay_nc_tagtype);
-  if(ay_status)
-    return ay_status;
 
-  return AY_OK;
+ return ay_status;
 } /* ay_notify_init */
