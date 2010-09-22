@@ -16,6 +16,8 @@
 
 static char *ay_clone_name = "Clone";
 
+int ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 int ay_clone_notifycb(ay_object *o);
 
 /* functions: */
@@ -1164,6 +1166,12 @@ ay_clone_notifycb(ay_object *o)
     {
       ay_error(AY_ERROR, fname, "cannot clone this object");
     } /* if */
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_clone_getpntcb(3, o, NULL, NULL);
+    }
 
  return AY_OK;
 } /* ay_clone_notifycb */
