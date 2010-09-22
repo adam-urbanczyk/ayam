@@ -835,6 +835,9 @@ typedef struct ay_clone_object_s
   /*@}*/
   double quat[4]; /**< quaternion */
 
+  double *pnts;
+  unsigned int pntslen;
+
   /** cached clones */
   ay_object *clones;
 } ay_clone_object;

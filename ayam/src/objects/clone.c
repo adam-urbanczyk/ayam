@@ -16,6 +16,8 @@
 
 static char *ay_clone_name = "Clone";
 
+int ay_clone_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_clone_createcb:
@@ -72,6 +74,9 @@ ay_clone_deletecb(void *c)
 
   clone = (ay_clone_object *)(c);
 
+  if(clone->pnts)
+    free(clone->pnts);
+
   while(clone->clones)
     {
       t = clone->clones;
@@ -102,6 +107,8 @@ ay_clone_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(clone, src, sizeof(ay_clone_object));
+
+  clone->pnts = NULL;
 
   clone->clones = NULL;
 
@@ -170,6 +177,39 @@ ay_clone_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_clone_object *cc = NULL;
+ double point_size = ay_prefs.handle_size;
+ unsigned int i = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  cc = (ay_clone_object *)o->refine;
+
+  if(!cc->pnts)
+    {
+      cc->pntslen = 1;
+      ay_clone_notifycb(o);
+    }
+
+  if(cc->pnts)
+    {
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < cc->pntslen; i++)
+	{
+	  glVertex3dv((GLdouble *)&cc->pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_clone_drawhcb */
@@ -181,8 +221,20 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_clone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_clone_object *cc = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  cc = (ay_clone_object *)o->refine;
+
+  if(!cc->pnts)
+    {
+      cc->pntslen = 1;
+      ay_clone_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, cc->pntslen, 4, cc->pnts);
 } /* ay_clone_getpntcb */
 
 
@@ -642,6 +694,9 @@ ay_clone_notifycb(ay_object *o)
  double xaxis[3] = {1.0,0.0,0.0};
  double yaxis[3] = {0.0,1.0,0.0};
  double zaxis[3] = {0.0,0.0,1.0};
+ double *p1 = NULL, *p2 = NULL;
+ ay_pointedit pe = {0};
+ unsigned int j = 0, a = 0;
 
   if(!o)
     return AY_ENULL;
@@ -658,7 +713,7 @@ ay_clone_notifycb(ay_object *o)
   /* get (first) child object */
   down = o->down;
 
-  if(!down)
+  if(!down || !down->next)
     return AY_OK;
 
   if(
@@ -816,6 +871,8 @@ ay_clone_notifycb(ay_object *o)
 	      next = &(clone->clones);
 	      while(down->next)
 		{
+		  /* XXXX add instantiability test here! */
+
 		  /* create a new instance object */
 		  newo = NULL;
 		  if(!(newo = calloc(1, sizeof(ay_object))))
@@ -954,6 +1011,154 @@ ay_clone_notifycb(ay_object *o)
 	    } /* if */
 	} /* if */
 
+      /* manage read only points */
+      if(clone->pnts || clone->pntslen)
+	{
+	  /* first clear the old points */
+	  if(clone->pnts)
+	    free(clone->pnts);
+	  clone->pnts = NULL;
+
+	  if(!clone->mirror)
+	    {
+	      if(clone->pntslen && clone->numclones && clone->clones)
+		{
+		  down = o->down;
+
+		  ay_status = ay_pact_getpoint(0, down, xaxis, &pe);
+
+		  if(!ay_status && pe.num)
+		    {
+
+		      if(!(clone->pnts = calloc(clone->numclones * pe.num,
+						4 * sizeof(double))))
+			{
+			  return AY_EOMEM;
+			}
+		      clone->pntslen = clone->numclones * pe.num;
+		      tr = clone->clones;
+		      for(i = 0; i < clone->numclones; i++)
+			{
+			  ay_trafo_creatematrix(tr, m);
+			  if(pe.homogenous)
+			    {
+			      for(j = 0; j < pe.num; j++)
+				{
+				  p1 = &(clone->pnts[a]);
+				  p2 = pe.coords[j];
+				  AY_APTRAN4(p1, p2, m);
+				  a += 4;
+				} /* for */
+			    }
+			  else
+			    {
+			      for(j = 0; j < pe.num; j++)
+				{
+				  p1 = &(clone->pnts[a]);
+				  p2 = pe.coords[j];
+				  AY_APTRAN3(p1, p2, m);
+				  p1[3] = 1.0;
+				  a += 4;
+				} /* for */
+			    } /* if */
+			  tr = tr->next;
+			} /* for */
+		    } /* if */
+		  ay_pact_clearpointedit(&pe);
+		} /* if */
+	    }
+	  else
+	    {
+	      if(clone->pntslen && clone->clones)
+		{
+		  down = o->down;
+		  tr = clone->clones;
+		  clone->pntslen = 0;
+		  while(down && down->next && tr)
+		    {
+		      ay_status = ay_pact_getpoint(0, down, xaxis, &pe);
+
+		      if(!ay_status && pe.num)
+			{
+
+			  clone->pntslen += (2 * pe.num);
+
+			  p1 = realloc(clone->pnts,
+				       clone->pntslen*4*sizeof(double));
+
+			  if(p1)
+			    {
+			      clone->pnts = p1;
+
+			      ay_trafo_creatematrix(tr, m);
+			      if(pe.homogenous)
+				{
+				  for(j = 0; j < pe.num; j++)
+				    {
+				      p1 = &(clone->pnts[a]);
+				      p2 = pe.coords[j];
+				      AY_APTRAN4(p1, p2, m);
+				      a += 4;
+				    } /* for */
+				}
+			      else
+				{
+				  for(j = 0; j < pe.num; j++)
+				    {
+				      p1 = &(clone->pnts[a]);
+				      p2 = pe.coords[j];
+				      AY_APTRAN3(p1, p2, m);
+				      p1[3] = 1.0;
+				      a += 4;
+				    } /* for */
+				} /* if */
+
+			      ay_trafo_creatematrix(down, m);
+			      if(pe.homogenous)
+				{
+				  for(j = 0; j < pe.num; j++)
+				    {
+				      p1 = &(clone->pnts[a]);
+				      p2 = pe.coords[j];
+				      AY_APTRAN4(p1, p2, m);
+				      a += 4;
+				    } /* for */
+				}
+			      else
+				{
+				  for(j = 0; j < pe.num; j++)
+				    {
+				      p1 = &(clone->pnts[a]);
+				      p2 = pe.coords[j];
+				      AY_APTRAN3(p1, p2, m);
+				      p1[3] = 1.0;
+				      a += 4;
+				    } /* for */
+				} /* if */
+			    }
+			  else
+			    {
+			      /* realloc() failed! */
+			      ay_pact_clearpointedit(&pe);
+			      free(clone->pnts);
+			      clone->pnts = NULL;
+			      break;
+			    } /* if */
+
+			} /* if */
+		      
+		      ay_pact_clearpointedit(&pe);
+
+		      down = down->next;
+		      tr = tr->next;
+		    } /* while */
+		} /* if */
+	    } /* if */
+
+	  /* */
+	  if(!clone->pnts)
+	    clone->pntslen = 0;
+	} /* if */
     }
   else
     {
@@ -1187,7 +1392,7 @@ ay_clone_init(Tcl_Interp *interp)
 				    ay_clone_deletecb,
 				    ay_clone_copycb,
 				    ay_clone_drawcb,
-				    NULL, /* no handles */
+				    ay_clone_drawhcb,
 				    ay_clone_shadecb,
 				    ay_clone_setpropcb,
 				    ay_clone_getpropcb,
