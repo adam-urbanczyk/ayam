@@ -835,8 +835,8 @@ typedef struct ay_clone_object_s
   /*@}*/
   double quat[4]; /**< quaternion */
 
-  double *pnts;
-  unsigned int pntslen;
+  double *pnts; /**< read only points [pntslen*4] (created on request) */
+  unsigned int pntslen; /**< number of read only points */
 
   /** cached clones */
   ay_object *clones;
@@ -1060,12 +1060,12 @@ typedef struct ay_extrnp_object_s
 /** Concatenate surfaces object */
 typedef struct ay_concatnp_object_s
 {
-  int type;
-  int revert;
-  int knot_type;
+  int type; /**< unused */
+  int revert; /**< revert created patch in U direction? */
+  int knot_type; /**< knot type of created patch in U direction (AY_KT*) */
 
-  int fillgaps;
-  double ftlength;
+  int fillgaps; /**< unused */
+  double ftlength; /**< unused */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
