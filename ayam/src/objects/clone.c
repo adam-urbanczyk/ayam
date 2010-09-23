@@ -1023,22 +1023,29 @@ ay_clone_notifycb(ay_object *o)
 
 	  if(!clone->mirror)
 	    {
+	      /* normal or trajectory mode... */
 	      if(clone->pntslen && clone->numclones && clone->clones)
 		{
 		  down = o->down;
 
+		  /* get all points of first child */
 		  ay_status = ay_pact_getpoint(0, down, xaxis, &pe);
 
 		  if(!ay_status && pe.num)
 		    {
-
+		      /* get memory for all clone points */
 		      if(!(clone->pnts = calloc(clone->numclones * pe.num,
 						4 * sizeof(double))))
 			{
-			  return AY_EOMEM;
+			  ay_pact_clearpointedit(&pe);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
 			}
 		      clone->pntslen = clone->numclones * pe.num;
 		      tr = clone->clones;
+		      /* iterate over all clones and transform/copy
+			 the child points according to clone trafos
+			 into the big clone points vector */
 		      for(i = 0; i < clone->numclones; i++)
 			{
 			  ay_trafo_creatematrix(tr, m);
@@ -1071,11 +1078,17 @@ ay_clone_notifycb(ay_object *o)
 	    }
 	  else
 	    {
+	      /* mirror mode... */
 	      if(clone->pntslen && clone->clones)
 		{
 		  down = o->down;
 		  tr = clone->clones;
 		  clone->pntslen = 0;
+		  /* iterate over all children and transform/copy
+		     the child points according to child and then
+		     also according to the corresponding mirror clone
+		     trafos into a big clone points vector (built
+		     up dynamically using realloc()) */
 		  while(down && down->next && tr)
 		    {
 		      ay_status = ay_pact_getpoint(0, down, xaxis, &pe);
@@ -1167,13 +1180,14 @@ ay_clone_notifycb(ay_object *o)
       ay_error(AY_ERROR, fname, "cannot clone this object");
     } /* if */
 
+cleanup:
   /* recover selected points */
   if(o->selp)
     {
       ay_clone_getpntcb(3, o, NULL, NULL);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_clone_notifycb */
 
 
