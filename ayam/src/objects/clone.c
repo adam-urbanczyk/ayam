@@ -716,7 +716,7 @@ ay_clone_notifycb(ay_object *o)
   down = o->down;
 
   if(!down || !down->next)
-    return AY_OK;
+    goto cleanup;
 
   if(
      (down->type != AY_IDMATERIAL) &&
@@ -742,7 +742,7 @@ ay_clone_notifycb(ay_object *o)
 	      if(ay_status || !tr)
 		{
 		  /* XXXX issue error message? */
-		  return AY_OK;
+		  goto cleanup;
 		}
 	      else
 		{
@@ -761,8 +761,14 @@ ay_clone_notifycb(ay_object *o)
 	      /* create a new instance object */
 	      newo = NULL;
 	      if(!(newo = calloc(1, sizeof(ay_object))))
-		return AY_EOMEM; /* XXXX memory leak! */
-
+		{
+		  if(tr_iscopy)
+		    {
+		      ay_object_deletemulti(tr);
+		    }
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
 	      ay_object_defaults(newo);
 	      newo->type = AY_IDINSTANCE;
 	      if(down->type != AY_IDINSTANCE)
@@ -848,7 +854,10 @@ ay_clone_notifycb(ay_object *o)
 		  /* create a new instance object */
 		  newo = NULL;
 		  if(!(newo = calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM; /* XXXX memory leak! */
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
 
 		  ay_object_defaults(newo);
 		  newo->type = AY_IDINSTANCE;
@@ -878,7 +887,10 @@ ay_clone_notifycb(ay_object *o)
 		  /* create a new instance object */
 		  newo = NULL;
 		  if(!(newo = calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM; /* XXXX memory leak! */
+		    {
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
 
 		  ay_object_defaults(newo);
 		  newo->type = AY_IDINSTANCE;
