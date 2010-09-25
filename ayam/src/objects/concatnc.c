@@ -16,6 +16,8 @@
 
 static char *ay_concatnc_name = "ConcatNC";
 
+int ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* ay_concatnc_createcb:
  *  create callback function of concatnc object
  */
@@ -132,10 +134,11 @@ ay_concatnc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
  ay_concatnc_object *concatnc = NULL;
  ay_nurbcurve_object *nc = NULL;
- /*double *p1, *p2;*/
- double *p1, *p2;
+ double *pnts = NULL, *p1, *p2;
+ double point_size = ay_prefs.handle_size;
  /*double m[16];*/
 
   if(!o)
@@ -145,8 +148,29 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 
   if(concatnc && concatnc->ncurve)
     {
-      /* get NURBS curve and its last control points */
+      /* get NURBS curve */
       nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
+
+
+      /* get and draw read only points */
+      pnts = nc->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i <nc->length; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+
+      /* get first/last control points */
       p1 = &(nc->controlv[nc->length*4-8]);
       p2 = p1+4;
 
@@ -175,8 +199,22 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_concatnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbcurve_object *curve = NULL;
+ ay_concatnc_object *concatnc = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  concatnc = (ay_concatnc_object *)o->refine;
+
+  if(concatnc->ncurve)
+    {
+      curve = (ay_nurbcurve_object *)concatnc->ncurve->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			     curve->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_concatnc_getpntcb */
 
 
@@ -428,7 +466,7 @@ ay_concatnc_notifycb(ay_object *o)
 
   if(!curves)
     {
-      return AY_OK;
+      goto cleanup;
     }
 
   ncurve = curves;
@@ -525,10 +563,18 @@ ay_concatnc_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+cleanup:
+
   /* free list of temporary curves */
   ay_object_deletemulti(curves);
 
- return AY_OK;
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_concatnc_getpntcb(3, o, NULL, NULL);
+    }
+
+ return ay_status;
 } /* ay_concatnc_notifycb */
 
 

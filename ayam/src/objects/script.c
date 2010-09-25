@@ -25,6 +25,10 @@ static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
 
 static char *ay_script_sa = "Ayam, save array:"; /* Save Array */
 
+int ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
+int ay_script_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_script_createcb:
@@ -92,6 +96,10 @@ ay_script_deletecb(void *c)
       free(sc->params);
     }
 
+  /* free read only points */
+  if(sc->pnts)
+    free(sc->pnts);
+
   free(sc);
 
  return AY_OK;
@@ -116,6 +124,8 @@ ay_script_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(scdst, scsrc, sizeof(ay_script_object));
+
+  scdst->pnts = NULL;
 
   /* copy saved parameters */
   scdst->params = NULL;
@@ -240,6 +250,39 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_script_drawhcb(struct Togl *togl, ay_object *o)
 {
+ ay_script_object *sc = NULL;
+ double point_size = ay_prefs.handle_size;
+ unsigned int i = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(!sc->pnts)
+    {
+      sc->pntslen = 1;
+      ay_script_notifycb(o);
+    }
+
+  if(sc->pnts)
+    {
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < sc->pntslen; i++)
+	{
+	  glVertex3dv((GLdouble *)&sc->pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
 
  return AY_OK;
 } /* ay_script_drawhcb */
@@ -251,8 +294,20 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_script_object *sc = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  sc = (ay_script_object *)o->refine;
+
+  if(!sc->pnts)
+    {
+      sc->pntslen = 1;
+      ay_script_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, sc->pntslen, 4, sc->pnts);
 } /* ay_script_getpntcb */
 
 
@@ -936,12 +991,15 @@ ay_script_notifycb(ay_object *o)
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
  char buf[256], *l1 = NULL, *l2 = NULL;
+ double *p1, *p2, dummy[3], m[16];
+ unsigned int j = 0, a = 0;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
  ay_object *ddown = NULL, *last = NULL;
  ay_list_object *l = NULL, *old_sel = NULL, *sel = NULL;
  ay_list_object *old_currentlevel;
  ay_object *old_clipboard = NULL;
  ay_script_object *sc = NULL, *dsc = NULL;
+ ay_pointedit pe = {0};
  int i = 0;
  int old_rdmode = 0;
  ClientData old_restrictcd;
@@ -1254,9 +1312,94 @@ ay_script_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+  /* manage read only points */
+  if(sc->pnts || sc->pntslen)
+    {
+      /* first clear the old points */
+      if(sc->pnts)
+	free(sc->pnts);
+      sc->pnts = NULL;
+
+      if(sc->pntslen && sc->cm_objects)
+	{
+	  down = sc->cm_objects;
+	  sc->pntslen = 0;
+	  /* iterate over all cm_objects and transform/copy
+	     their points according to the respective trafos
+	     into a big points vector (built up dynamically
+	     using realloc()) */
+	  while(down)
+	    {
+	      ay_status = ay_pact_getpoint(0, down, dummy, &pe);
+
+	      if(!ay_status && pe.num)
+		{
+
+		  sc->pntslen += pe.num;
+
+		  p1 = realloc(sc->pnts,
+			       sc->pntslen*4*sizeof(double));
+
+		  if(p1)
+		    {
+		      sc->pnts = p1;
+
+		      ay_trafo_creatematrix(down, m);
+		      if(pe.homogenous)
+			{
+			  for(j = 0; j < pe.num; j++)
+			    {
+			      p1 = &(sc->pnts[a]);
+			      p2 = pe.coords[j];
+			      AY_APTRAN4(p1, p2, m);
+			      a += 4;
+			    } /* for */
+			}
+		      else
+			{
+			  for(j = 0; j < pe.num; j++)
+			    {
+			      p1 = &(sc->pnts[a]);
+			      p2 = pe.coords[j];
+			      AY_APTRAN3(p1, p2, m);
+			      p1[3] = 1.0;
+			      a += 4;
+			    } /* for */
+			} /* if */
+		    }
+		  else
+		    {
+		      /* realloc() failed! */
+		      ay_pact_clearpointedit(&pe);
+		      free(sc->pnts);
+		      sc->pnts = NULL;
+		      break;
+		    } /* if */
+		  
+		} /* if */
+		      
+	      ay_pact_clearpointedit(&pe);
+
+	      down = down->next;
+	    } /* while */
+
+	  /* */
+	  if(!sc->pnts)
+	    sc->pntslen = 0;
+	} /* if */
+    } /* if */
+
+cleanup:
+
   lock = 0;
 
- return AY_OK;
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_script_getpntcb(3, o, NULL, NULL);
+    }
+
+ return ay_status;
 } /* ay_script_notifycb */
 
 
@@ -1457,7 +1600,7 @@ ay_script_init(Tcl_Interp *interp)
 				    ay_script_deletecb,
 				    ay_script_copycb,
 				    ay_script_drawcb,
-				    ay_script_drawhcb, /* no handles? */
+				    ay_script_drawhcb,
 				    ay_script_shadecb,
 				    ay_script_setpropcb,
 				    ay_script_getpropcb,
