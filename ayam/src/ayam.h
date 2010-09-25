@@ -1117,6 +1117,9 @@ typedef struct ay_script_object_s
 
   int paramslen; /**< number of saved script parameters */
   Tcl_Obj **params; /**< save script parameters */
+
+  double *pnts; /**< read only points [pntslen*4] (created on request) */
+  unsigned int pntslen; /**< number of read only points */
 } ay_script_object;
 
 
