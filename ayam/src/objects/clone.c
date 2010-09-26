@@ -704,6 +704,8 @@ ay_clone_notifycb(ay_object *o)
     return AY_ENULL;
 
   clone = (ay_clone_object *)(o->refine);
+
+  /* clear the old clones */
   while(clone->clones)
     {
       tr = clone->clones;
@@ -711,6 +713,13 @@ ay_clone_notifycb(ay_object *o)
       free(tr);
     }
   tr = NULL;
+
+  /* always clear the old read only points */
+  if(clone->pnts)
+    {
+      free(clone->pnts);
+      clone->pnts = NULL;
+    }
 
   /* get (first) child object */
   down = o->down;
@@ -1026,13 +1035,8 @@ ay_clone_notifycb(ay_object *o)
 	} /* if */
 
       /* manage read only points */
-      if(clone->pnts || clone->pntslen)
+      if(clone->pntslen)
 	{
-	  /* first clear the old points */
-	  if(clone->pnts)
-	    free(clone->pnts);
-	  clone->pnts = NULL;
-
 	  if(!clone->mirror)
 	    {
 	      /* normal or trajectory mode... */
@@ -1181,10 +1185,6 @@ ay_clone_notifycb(ay_object *o)
 		    } /* while */
 		} /* if */
 	    } /* if */
-
-	  /* */
-	  if(!clone->pnts)
-	    clone->pntslen = 0;
 	} /* if */
     }
   else
@@ -1193,6 +1193,13 @@ ay_clone_notifycb(ay_object *o)
     } /* if */
 
 cleanup:
+  
+  /* correct any inconsistent values of pnts and pntslen */
+  if(clone->pntslen && !clone->pnts)
+    {
+      clone->pntslen = 0;
+    }
+
   /* recover selected points */
   if(o->selp)
     {
