@@ -1029,15 +1029,21 @@ ay_script_notifycb(ay_object *o)
       return AY_ENULL;
     } /* if */
 
-  /* before we do anything, check whether we have a runnable script at all
-     and check, whether we are active */
   sc = (ay_script_object *)(o->refine);
 
+  /* always clear the old read only points */
+  if(sc->pnts)
+    {
+      free(sc->pnts);
+      sc->pnts = NULL;
+    }
+
+  /* before we do anything, check whether we have a runnable script at all
+     and check, whether we are active */
   if((sc->active == 0) || (!sc->script) || (sc->script && !strlen(sc->script)))
     {
       /* script is inactive or empty, bail out... */
-      lock = 0;
-      return AY_OK;
+      goto cleanup;
     } /* if */
 
 #ifdef AYNOSAFEINTERP
@@ -1315,11 +1321,6 @@ ay_script_notifycb(ay_object *o)
   /* manage read only points */
   if(sc->pnts || sc->pntslen)
     {
-      /* first clear the old points */
-      if(sc->pnts)
-	free(sc->pnts);
-      sc->pnts = NULL;
-
       if(sc->pntslen && sc->cm_objects)
 	{
 	  down = sc->cm_objects;
@@ -1382,22 +1383,24 @@ ay_script_notifycb(ay_object *o)
 
 	      down = down->next;
 	    } /* while */
-
-	  /* */
-	  if(!sc->pnts)
-	    sc->pntslen = 0;
 	} /* if */
     } /* if */
 
 cleanup:
 
-  lock = 0;
+  /* correct any inconsistent values of pnts and pntslen */
+  if(sc->pntslen && !sc->pnts)
+    {
+      sc->pntslen = 0;
+    }
 
   /* recover selected points */
   if(o->selp)
     {
       ay_script_getpntcb(3, o, NULL, NULL);
     }
+
+  lock = 0;
 
  return ay_status;
 } /* ay_script_notifycb */
