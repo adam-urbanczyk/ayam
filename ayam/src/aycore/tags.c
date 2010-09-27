@@ -29,6 +29,14 @@ ay_tags_free(ay_tag *tag)
   if(tag->name)
     free(tag->name);
 
+  if(tag->is_binary)
+    {
+      if(((ay_btval*)tag->val)->size)
+	{
+	  free(((ay_btval*)tag->val)->payload);
+	}
+    }
+
   if(tag->val)
     free(tag->val);
 
@@ -71,6 +79,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
 {
  int ay_status = AY_OK;
  ay_tag *new = NULL;
+ ay_btval *nbt = NULL;
 
   if(!source || !dest)
     return AY_ENULL;
@@ -94,9 +103,16 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   if(source->is_binary)
     {
       /* copy binary val */
-      if(!(new->val = calloc(1, *(size_t*)source->val)))
+      if(!(new->val = calloc(1, sizeof(ay_btval))))
 	{ free(new); free(new->name); return AY_EOMEM; }
-      memcpy(new->val, source->val, (*(size_t*)source->val));
+      memcpy(new->val, source->val, sizeof(ay_btval));
+      if(((ay_btval*)new->val)->size)
+	{
+	  nbt = ((ay_btval*)new->val);
+	  if(!(nbt->payload = calloc(1, nbt->size)))
+	    {free(new->val); free(new); free(new->name); return AY_EOMEM; }
+	  memcpy(nbt->payload, ((ay_btval*)source->val)->payload, nbt->size);
+	}
     }
   else
     {
