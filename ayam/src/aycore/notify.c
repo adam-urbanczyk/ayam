@@ -200,10 +200,22 @@ ay_notify_force(ay_object *o)
       return AY_ERROR;
     }
 
+  /* search for NO tag(s) and notify the objects therein */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_no_tagtype)
+	{
+	  ay_notify_force(((ay_btval*)tag->val)->payload);
+	}
+      tag = tag->next;
+    }
+
   /* search for and execute all ANS (after notify) tag(s) */
   tag = o->tags;
   while(tag)
     {
+
       if(tag->type == ay_ans_tagtype)
 	ay_ns_execute(o, tag->val);
       tag = tag->next;
