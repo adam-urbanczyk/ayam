@@ -140,6 +140,13 @@ typedef struct ay_tag_s
 } ay_tag;
 
 
+/** binary tag value */
+typedef struct ay_btval_s
+{
+  size_t size; /**< size of payload (may be 0!) */
+  void *payload; /**< binary tag value of size size */
+} ay_btval;
+
 /** transformation attributes */
 typedef struct ay_trafo_s
 {
@@ -1556,6 +1563,8 @@ extern char *ay_rp_tagtype;
 extern char *ay_rp_tagname;
 extern char *ay_hc_tagtype;
 extern char *ay_hc_tagname;
+extern char *ay_no_tagtype;
+extern char *ay_no_tagname;
 /*@}*/
 
 /* Definitions */

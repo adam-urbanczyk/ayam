@@ -180,6 +180,10 @@ char *ay_hc_tagtype;
 
 char *ay_hc_tagname = "HC";
 
+char *ay_no_tagtype;
+
+char *ay_no_tagname = "NO";
+
 
 static char *ay_log = "/tmp/ay.log";
 
@@ -481,6 +485,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register HC (Has Child) tag type */
   ay_tags_register(interp, ay_hc_tagname, &ay_hc_tagtype);
+
+  /* register NO (Notify Object) tag type */
+  ay_tags_register(interp, ay_no_tagname, &ay_no_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))
