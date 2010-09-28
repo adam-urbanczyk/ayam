@@ -633,6 +633,13 @@ proc shortcut_view { w } {
 	$w.f3D.togl render
     }
 
+    bind $w <[repctrl $ayviewshortcuts(TransO)]>\
+            { prefs_setTransformPoints 0 }
+
+    bind $w <[repctrl $ayviewshortcuts(TransP)]>\
+            { prefs_setTransformPoints 1 }
+
+
     # bind function keys
     shortcut_fkeys $w
 

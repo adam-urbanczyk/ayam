@@ -342,6 +342,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.globalmark);
 
+  Tcl_SetStringObj(ton, "TransformPoints", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.transform_points);
+
   Tcl_SetStringObj(ton, "UndoLevels", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &itemp);

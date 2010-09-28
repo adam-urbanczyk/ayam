@@ -32,6 +32,7 @@ array set ayprefs {
  EditSnaps 1
  GlobalMark 0
  Snap3D 0
+ TransformPoints 0
 
  Tolerance 30.0
  NPDisplayMode 2
@@ -390,9 +391,11 @@ array set ayviewshortcuts {
     About "a"
     CenterO "c"
     CenterP "C"
+    TransO "o"
+    TransP "p"
 
     Edit "e"
-    EditD "p"
+    EditD "E"
     WeightE "w"
     WeightR "W"
     Select "t"
@@ -406,7 +409,7 @@ array set ayviewshortcuts {
     MoveV "v"
     MoveZV "V"
     RotV "R"
-    ZoomV "o"
+    ZoomV "Z"
 
     Break "Escape"
     MoveVButton "3"
@@ -1512,6 +1515,9 @@ if { $ay(failsafe) == 0 } {
 	puts stderr "Not found. Please save preferences."
     }
 }
+
+# override TransformPoints setting (always transform objects after restart)
+set ayprefs(TransformPoints) 0
 
 # make (new) preference settings known to C-context
 prefs_set

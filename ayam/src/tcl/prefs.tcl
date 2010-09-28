@@ -195,6 +195,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse Snap3D [ms ayprefse_Snap3D]
     addCheckB $fw ayprefse FlashPoints [ms ayprefse_FlashPoints]
     addCheckB $fw ayprefse GlobalMark [ms ayprefse_GlobalMark]
+    addCheckB $fw ayprefse TransformPoints [ms ayprefse_GlobalMark]
 
     set l $ay(defactions)
     addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l
@@ -666,6 +667,27 @@ proc prefs_setSamplingTolerance { plus } {
  return;
 }
 # prefs_setSamplingTolerance
+
+
+# prefs_setTransformPoints:
+#
+proc prefs_setTransformPoints { p } {
+    global ayprefs ayprefse ayviewshortcuts
+
+    set ayprefs(TransformPoints) $p
+    set ayprefse(TransformPoints) $p
+
+    if { $ayprefs(TransformPoints) == 1 } {
+	ayError 4 $ayviewshortcuts(TransP) "Transforming points."
+    } else {
+	ayError 4 $ayviewshortcuts(TransO) "Transforming objects."
+    }
+
+    setPrefs
+
+ return;
+}
+# prefs_setTransformPoints:
 
 
 # prefs_warnNeedRestart:
