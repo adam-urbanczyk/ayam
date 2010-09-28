@@ -16,6 +16,8 @@
 
 static char *ay_offnc_name = "OffsetNC";
 
+int ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
 /* functions: */
 
 /* ay_offnc_createcb:
@@ -138,11 +140,13 @@ ay_offnc_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 {
+ int i = 0, a = 0;
  ay_offnc_object *offnc = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *c = NULL;
- double *p1, *p2;
+ double *pnts = NULL, *p1, *p2;
  double m[16];
+ double point_size = ay_prefs.handle_size;
 
   if(!o)
     return AY_ENULL;
@@ -166,6 +170,24 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 
        ay_draw_arrow(togl, p1, p2);
       glPopMatrix();
+
+      /* draw read only points */
+      pnts = nc->controlv;
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < nc->length; i++)
+	{
+	  glVertex3dv((GLdouble *)&pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
     }
 
  return AY_OK;
@@ -178,8 +200,22 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 int
 ay_offnc_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
+ ay_nurbcurve_object *curve = NULL;
+ ay_offnc_object *offnc = NULL;
 
- return AY_OK;
+  if(!o)
+    return AY_ENULL;
+
+  offnc = (ay_offnc_object *)o->refine;
+
+  if(offnc->ncurve)
+    {
+      curve = (ay_nurbcurve_object *)offnc->ncurve->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1, curve->length, 4,
+			     curve->controlv);
+    }
+
+ return AY_ERROR;
 } /* ay_offnc_getpntcb */
 
 
@@ -479,6 +515,12 @@ cleanup:
   if(provided)
     {
       ay_object_deletemulti(ncurve);
+    }
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_offnc_getpntcb(3, o, NULL, NULL);
     }
 
  return ay_status;
