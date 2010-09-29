@@ -126,6 +126,7 @@ ay_script_copycb(void *src, void **dst)
   memcpy(scdst, scsrc, sizeof(ay_script_object));
 
   scdst->pnts = NULL;
+  scdst->pntslen = 0;
 
   /* copy saved parameters */
   scdst->params = NULL;
@@ -1319,7 +1320,7 @@ ay_script_notifycb(ay_object *o)
     } /* if */
 
   /* manage read only points */
-  if(sc->pnts || sc->pntslen)
+  if(sc->pntslen)
     {
       if(sc->pntslen && sc->cm_objects)
 	{
@@ -1376,9 +1377,9 @@ ay_script_notifycb(ay_object *o)
 		      sc->pnts = NULL;
 		      break;
 		    } /* if */
-		  
+
 		} /* if */
-		      
+
 	      ay_pact_clearpointedit(&pe);
 
 	      down = down->next;
