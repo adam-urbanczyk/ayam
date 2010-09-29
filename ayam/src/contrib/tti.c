@@ -1328,11 +1328,16 @@ ay_tti_close(ay_tti_font *ttfont)
 
   if(ttfont)
     {
-      free(ttfont->buffer);
-      free(ttfont->cmap);
-      free(ttfont->loca);
-      free(ttfont->glyf);
-      free(ttfont->hmtx);
+      if(ttfont->buffer)
+	free(ttfont->buffer);
+      if(ttfont->cmap)
+	free(ttfont->cmap);
+      if(ttfont->loca)
+	free(ttfont->loca);
+      if(ttfont->glyf)
+	free(ttfont->glyf);
+      if(ttfont->hmtx)
+	free(ttfont->hmtx);
     }
 
  return;
@@ -1394,7 +1399,6 @@ ay_tti_getcurves(char *ttfname, int letter, ay_tti_letter *cur)
       error = ay_tti_open(font, ttfname); /* open font */
       if(error != AY_TTI_OK)
 	{
-	  free(font);
 	  return error;
 	}
     }
