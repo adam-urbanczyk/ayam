@@ -677,6 +677,13 @@ ay_text_notifycb(ay_object *o)
   text->npatch = NULL;
   nextnpatch = &(text->npatch);
 
+  /* always clear the old read only points */
+  if(text->pnts)
+    {
+      free(text->pnts);
+      text->pnts = NULL;
+    }
+
   if(!text->fontname || text->fontname[0] == '\0' ||
      !text->unistring || text->unistring[0] == 0)
     return AY_OK;
