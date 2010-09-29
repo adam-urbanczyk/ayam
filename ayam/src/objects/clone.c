@@ -111,6 +111,7 @@ ay_clone_copycb(void *src, void **dst)
   memcpy(clone, src, sizeof(ay_clone_object));
 
   clone->pnts = NULL;
+  clone->pntslen = 0;
 
   clone->clones = NULL;
 
@@ -1177,7 +1178,7 @@ ay_clone_notifycb(ay_object *o)
 			    } /* if */
 
 			} /* if */
-		      
+
 		      ay_pact_clearpointedit(&pe);
 
 		      down = down->next;
@@ -1193,7 +1194,7 @@ ay_clone_notifycb(ay_object *o)
     } /* if */
 
 cleanup:
-  
+
   /* correct any inconsistent values of pnts and pntslen */
   if(clone->pntslen && !clone->pnts)
     {
