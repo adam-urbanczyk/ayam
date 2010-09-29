@@ -17,6 +17,10 @@
 
 static char *ay_text_name = "Text";
 
+int ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
+
+int ay_text_notifycb(ay_object *o);
+
 /* functions: */
 
 /* ay_text_createcb:
@@ -64,6 +68,10 @@ ay_text_deletecb(void *c)
   if(text->unistring)
     free(text->unistring);
 
+  /* free read only points */
+  if(text->pnts)
+    free(text->pnts);
+
   free(text);
 
  return AY_OK;
@@ -89,6 +97,9 @@ ay_text_copycb(void *src, void **dst)
   tdst->npatch = NULL;
   tdst->fontname = NULL;
   tdst->unistring = NULL;
+
+  tdst->pnts = NULL;
+  tdst->pntslen = 0;
 
   if(tsrc->fontname)
     {
@@ -172,6 +183,73 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 
  return AY_OK;
 } /* ay_text_shadecb */
+
+
+/* ay_text_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of text object
+ */
+int
+ay_text_drawhcb(struct Togl *togl, ay_object *o)
+{
+ ay_text_object *text = NULL;
+ double point_size = ay_prefs.handle_size;
+ unsigned int i = 0, a = 0;
+
+  if(!o)
+    return AY_ENULL;
+
+  text = (ay_text_object *)o->refine;
+
+  if(!text->pnts)
+    {
+      text->pntslen = 1;
+      ay_text_notifycb(o);
+    }
+
+  if(text->pnts)
+    {
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+      for(i = 0; i < text->pntslen; i++)
+	{
+	  glVertex3dv((GLdouble *)&text->pnts[a]);
+	  a += 4;
+	}
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    }
+
+ return AY_OK;
+} /* ay_text_drawhcb */
+
+
+/* ay_text_getpntcb:
+ *  get point (editing and selection) callback function of text object
+ */
+int
+ay_text_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ ay_text_object *text = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  text = (ay_text_object *)o->refine;
+
+  if(!text->pnts)
+    {
+      text->pntslen = 1;
+      ay_text_notifycb(o);
+    }
+
+ return ay_selp_getpnts(mode, o, p, pe, 1, text->pntslen, 4, text->pnts);
+} /* ay_text_getpntcb */
 
 
 /* ay_text_setpropcb:
@@ -582,9 +660,12 @@ ay_text_notifycb(ay_object *o)
  ay_object *patch, **nextnpatch;
  ay_object ext = {0}, endlevel = {0};
  ay_extrude_object extrude = {0};
+ ay_pointedit pe = {0};
  Tcl_UniChar *uc;
  int i;
+ unsigned int j, a = 0;
  double xoffset = 0.0, yoffset = 0.0;
+ double *p1, *p2, dummy[3], m[16];
 
   if(!o)
     return AY_ENULL;
@@ -821,10 +902,77 @@ ay_text_notifycb(ay_object *o)
       uc++;
     } /* while */
 
+  /* manage read only points */
+  if(text->pntslen)
+    {
+      if(text->pntslen && text->npatch)
+	{
+	  patch = text->npatch;
+	  text->pntslen = 0;
+	  /* iterate over all patches and transform/copy
+	     their points according to the respective trafos
+	     into a big points vector (built up dynamically
+	     using realloc()) */
+	  while(patch)
+	    {
+	      ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
+
+	      if(!ay_status && pe.num)
+		{
+
+		  text->pntslen += pe.num;
+
+		  p1 = realloc(text->pnts,
+			       text->pntslen*4*sizeof(double));
+
+		  if(p1)
+		    {
+		      text->pnts = p1;
+
+		      ay_trafo_creatematrix(patch, m);
+
+		      for(j = 0; j < pe.num; j++)
+			{
+			  p1 = &(text->pnts[a]);
+			  p2 = pe.coords[j];
+			  AY_APTRAN4(p1, p2, m);
+			  a += 4;
+			} /* for */
+		    }
+		  else
+		    {
+		      /* realloc() failed! */
+		      ay_pact_clearpointedit(&pe);
+		      free(text->pnts);
+		      text->pnts = NULL;
+		      break;
+		    } /* if */
+
+		} /* if */
+
+	      ay_pact_clearpointedit(&pe);
+
+	      patch = patch->next;
+	    } /* while */
+	} /* if */
+    } /* if */
+
 cleanup:
 
   /* free (temporary) font structure */
   tti_status = ay_tti_getcurves(NULL, 0, NULL);
+
+  /* correct any inconsistent values of pnts and pntslen */
+  if(text->pntslen && !text->pnts)
+    {
+      text->pntslen = 0;
+    }
+
+  /* recover selected points */
+  if(o->selp)
+    {
+      ay_text_getpntcb(3, o, NULL, NULL);
+    }
 
  return ay_status;
 } /* ay_text_notifycb */
@@ -989,11 +1137,11 @@ ay_text_init(Tcl_Interp *interp)
 				   ay_text_deletecb,
 				   ay_text_copycb,
 				   ay_text_drawcb,
-				   NULL,
+				   ay_text_drawhcb,
 				   ay_text_shadecb,
 				   ay_text_setpropcb,
 				   ay_text_getpropcb,
-				   NULL,
+				   ay_text_getpntcb,
 				   ay_text_readcb,
 				   ay_text_writecb,
 				   ay_text_wribcb,

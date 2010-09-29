@@ -581,6 +581,9 @@ typedef struct ay_text_object_s
   /** cached NURBS patch representation */
   ay_object *npatch;
 
+  double *pnts; /**< read only points [pntslen*4] (created on request) */
+  unsigned int pntslen; /**< number of read only points */
+
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
 } ay_text_object;
