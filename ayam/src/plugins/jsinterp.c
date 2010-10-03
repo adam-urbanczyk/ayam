@@ -30,11 +30,13 @@ int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 /** JS function to wrap the crtOb command */
-int jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc,
-			  jsval *argv, jsval *rval);
+int jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj,
+			  uintN argc, jsval *argv,
+			  jsval *rval);
 
 /** JS function to wrap the eval command */
-int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj,
+			 uintN argc, jsval *argv,
 			 jsval *rval);
 
 /** JS function to wrap a command with args */
@@ -47,6 +49,7 @@ int jsinterp_wraptcmd(JSContext *cx, JSObject *obj,
 		      uintN argc, jsval *argv,
 		      jsval *rval);
 
+/** JS function to link a Tcl var to a JS var */
 int jsinterp_tclvar(JSContext *cx, JSObject *obj,
 		    uintN argc, jsval *argv,
 		    jsval *rval);
@@ -260,7 +263,9 @@ jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 /* jsinterp_wrapevalcmd:
  *  JS function to wrap the eval command 
  *  we can not use jsinterp_wraptcmdargs() because the Tcl_CmdInfo proc
- *  of "eval" points to Tcl_CommandObjV absent from the Tcl C interface
+ *  of "eval" points to Tcl_CommandObjV which we can not use with plain
+ *  argc/argv-args; furthermore, we need to transfer the result of the
+ *  evaluation back to JS
  */
 int
 jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
@@ -414,7 +419,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(jsinterp_interp, toa, ton,
 		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  if(Tcl_GetIntFromObj(jsinterp_interp, to, &ival) != TCL_ERROR)
+  if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
     {
       if(!JS_NewNumberValue(jsinterp_cx, (double)ival, newjsval))
 	{
@@ -424,7 +429,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      if(Tcl_GetDoubleFromObj(jsinterp_interp, to, &dval) != TCL_ERROR)
+      if(Tcl_GetDoubleFromObj(NULL, to, &dval) != TCL_ERROR)
 	{
 	  if(!JS_NewNumberValue(jsinterp_cx, dval, newjsval))
 	    {
