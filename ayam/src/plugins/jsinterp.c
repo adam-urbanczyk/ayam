@@ -33,6 +33,24 @@ int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 int jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc,
 			  jsval *argv, jsval *rval);
 
+/** JS function to wrap the eval command */
+int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+			 jsval *rval);
+
+/** JS function to wrap a command with args */
+int jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj,
+			  uintN argc, jsval *argv,
+			  jsval *rval);
+
+/** JS function to wrap a command without args */
+int jsinterp_wraptcmd(JSContext *cx, JSObject *obj,
+		      uintN argc, jsval *argv,
+		      jsval *rval);
+
+int jsinterp_tclvar(JSContext *cx, JSObject *obj,
+		    uintN argc, jsval *argv,
+		    jsval *rval);
+
 
 /* global variables: */
 
@@ -56,7 +74,14 @@ static JSClass jsinterp_global_class = {
 
 /** A bunch of pre-defined global functions (that wrap Ayam Tcl commands). */
 static JSFunctionSpec jsinterp_global_functions[] = {
+  {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"crtOb", jsinterp_wrapcrtobcmd, 0, 0, 0},
+  {"delOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"cutOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"copOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"pasOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"pasmovOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"tclvar", jsinterp_tclvar, 0, 0, 0},
   {0}
 };
 
@@ -154,6 +179,55 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 } /* jsinterp_convargs */
 
 
+/* jsinterp_objtoval:
+ *  helper function to convert a Tcl_Obj to a jsval 
+ */
+int
+jsinterp_objtoval(Tcl_Obj *to, jsval *v)
+{
+ char *sval;
+ int ival;
+ double dval;
+ JSString *jss;
+
+  if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
+    {
+      if(JS_NewNumberValue(jsinterp_cx, (double)ival, v))
+	{
+	  return AY_OK;
+	}
+    }
+  else
+    {
+      if(Tcl_GetDoubleFromObj(NULL, to, &dval) != TCL_ERROR)
+	{
+	  if(JS_NewNumberValue(jsinterp_cx, dval, v))
+	    {
+	      return AY_OK;
+	    }
+	}
+      else
+	{
+	  if((sval = Tcl_GetString(to)) != NULL)
+	    {
+	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
+		{
+		  *v = (jsval)jss;
+		  return AY_OK;
+		}
+	    }
+	  /*
+	  else
+	    {
+
+	    }*/ /* if */
+	} /* if */
+    } /* if */
+
+ return AY_ERROR;
+} /* jsinterp_objtoval */
+
+
 /* jsinterp_wrapcrtobcmd:
  *  JS function to wrap the crtOb command 
  */
@@ -181,6 +255,249 @@ jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
  return JS_TRUE;
 } /* jsinterp_wrapcrtobcmd */
+
+
+/* jsinterp_wrapevalcmd:
+ *  JS function to wrap the eval command 
+ *  we can not use jsinterp_wraptcmdargs() because the Tcl_CmdInfo proc
+ *  of "eval" points to Tcl_CommandObjV absent from the Tcl C interface
+ */
+int
+jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+		     jsval *rval)
+{
+ int tcl_status = TCL_OK;
+ char *script, *resstr;
+ Tcl_Obj *resobj;
+
+  if(argc < 1)
+    {
+      JS_ReportError(cx, "insufficient arguments, need script");
+    }
+
+  if(JSVAL_IS_STRING(argv[0]))
+    {
+      script = JS_GetStringBytes(JSVAL_TO_STRING(argv[0]));
+      tcl_status = Tcl_EvalEx(jsinterp_interp, script, -1, TCL_EVAL_GLOBAL);
+      switch(tcl_status)
+	{
+	case TCL_ERROR:
+	  JS_ReportError(cx, "Tcl script failed");
+	  /* XXXX add line info? */
+	  break;
+	case TCL_RETURN:
+	  resobj = Tcl_GetObjResult(jsinterp_interp);
+	  resstr = Tcl_GetString(resobj);
+	  if(resstr && (resstr[0] != '\0'))
+	    {
+	      if(!jsinterp_objtoval(resobj, rval))
+		{
+		  return JS_TRUE;
+		}
+	      else
+		{
+		  JS_ReportError(cx, "failed to convert script result");
+		}
+	    }
+	  break;
+	default:
+	  /* caters for TCL_OK, TCL_BREAK, and TCL_CONTINUE */
+	  break;
+	} /* switch */
+    }
+  else
+    {
+      JS_ReportError(cx, "bad script");
+    }
+
+  *rval = JSVAL_VOID; /* return undefined */
+
+ return JS_TRUE;
+} /* jsinterp_wrapevalcmd */
+
+
+/* jsinterp_wraptcmdargs:
+ *  JS function to wrap a Tcl command that takes arguments
+ */
+int
+jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+		      jsval *rval)
+{
+ int ay_status = AY_OK;
+ ClientData clientData = {0};
+ Tcl_CmdInfo cmdinfo = {0};
+ char **sargv;
+
+  ay_status = jsinterp_convargs(cx, argc, argv, &sargv);
+
+  if(ay_status)
+    {
+      JS_ReportError(cx, "argument conversion failed");
+      return JS_FALSE;
+    }
+
+  if(Tcl_GetCommandInfo(jsinterp_interp, sargv[0], &cmdinfo))
+    {
+      cmdinfo.proc(clientData, jsinterp_interp, argc+1, sargv);
+    }
+  else
+    {
+      /* command not found! */
+      JS_ReportError(cx, "command not found");
+      return JS_FALSE;
+    }
+
+  free(sargv);
+
+  *rval = JSVAL_VOID; /* return undefined */
+
+ return JS_TRUE;
+} /* jsinterp_wraptcmdargs */
+
+
+/* jsinterp_wraptcmd:
+ *  JS function to wrap a simple Tcl command (no arguments)
+ */
+int
+jsinterp_wraptcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+		  jsval *rval)
+{
+ char *sargv[2] = {0};
+ ClientData clientData = {0};
+ Tcl_CmdInfo cmdinfo = {0};
+
+  sargv[0] = JS_GetStringBytes(JS_GetFunctionId(
+				JS_ValueToFunction(cx, argv[-2])));
+
+  if(Tcl_GetCommandInfo(jsinterp_interp, sargv[0], &cmdinfo))
+    {
+      cmdinfo.proc(clientData, jsinterp_interp, 1, sargv);
+    }
+  else
+    {
+      /* command not found! */
+      JS_ReportError(cx, "command not found");
+      return JS_FALSE;
+    }
+
+  /* free something? */
+
+  *rval = JSVAL_VOID; /* return undefined */
+
+ return JS_TRUE;
+} /* jsinterp_wraptcmd */
+
+
+/* jsinterp_vartraceproc:
+ *  variable trace procedure,
+ *  transport Tcl variable to JavaScript context
+ */
+char *
+jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
+		      char *name1, char *name2, int flags)
+{
+ jsval *newjsval = NULL;
+ Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ char *sval;
+ int ival;
+ double dval;
+ JSString *jss;
+
+  if(!(newjsval = calloc(1, sizeof(jsval))))
+    {
+      return NULL;
+    }
+
+  toa = Tcl_NewStringObj(name1, -1);
+  ton = Tcl_NewStringObj(name2, -1);
+
+  to = Tcl_ObjGetVar2(jsinterp_interp, toa, ton,
+		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  if(Tcl_GetIntFromObj(jsinterp_interp, to, &ival) != TCL_ERROR)
+    {
+      if(!JS_NewNumberValue(jsinterp_cx, (double)ival, newjsval))
+	{
+	  free(newjsval);
+	  goto cleanup;
+	}
+    }
+  else
+    {
+      if(Tcl_GetDoubleFromObj(jsinterp_interp, to, &dval) != TCL_ERROR)
+	{
+	  if(!JS_NewNumberValue(jsinterp_cx, dval, newjsval))
+	    {
+	      free(newjsval);
+	      goto cleanup;
+	    }
+	}
+      else
+	{
+	  if((sval = Tcl_GetString(to)) != NULL)
+	    {
+	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
+		{
+		  *newjsval = (jsval)jss;
+		}
+	      else
+		{
+		  free(newjsval);
+		  goto cleanup; 
+		}
+	    }
+	  else
+	    {
+	      free(newjsval);
+	      goto cleanup; 
+	    }
+	}
+    } /* if */
+
+  JS_AddRoot(jsinterp_cx, newjsval);
+
+  JS_SetProperty(jsinterp_cx, jsinterp_global, name1, newjsval);
+
+cleanup:
+
+  Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return NULL;
+} /* jsinterp_vartraceproc */
+
+
+/* jsinterp_tclvar:
+ *  JS function to establish an automatic connection
+ *  between a Tcl var and a JS var
+ */
+int
+jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+		jsval *rval)
+{
+ ClientData clientData = {0};
+ uintN i = 0;
+ char *vname;
+
+  for(i = 0; i < argc; i++)
+    {
+      if(JSVAL_IS_STRING(argv[i]))
+	{
+
+	  vname = JS_GetStringBytes(JSVAL_TO_STRING(argv[i]));
+
+	  /* establish a write trace */
+	  Tcl_TraceVar(jsinterp_interp,
+		       vname,
+		       TCL_TRACE_WRITES,
+		       jsinterp_vartraceproc, clientData);
+	}
+    }
+
+  *rval = JSVAL_VOID; /* return undefined */
+
+ return JS_TRUE;
+} /* jsinterp_tclvar */
 
 
 /* jsinterp_evaltcmd:
@@ -241,6 +558,7 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
       ok = JS_EvaluateScript(jsinterp_cx, jsinterp_global,
 			     argv[1], strlen(argv[1]),
 			     "argv[1]", 0, &rval);
+      JS_ClearPendingException(jsinterp_cx);
     }
 
   if(!ok)
