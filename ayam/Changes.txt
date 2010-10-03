@@ -1,4 +1,4 @@
-[11. Sep 2010] CVS-Head:
+[3. Oct 2010] CVS-Head:
 =======================
 Bug Fixes:
 o fixed direct point editing not setting the mark (SF 2993441)
@@ -17,6 +17,14 @@ o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3044564)
 o fixed drawing/shading of sphere objects (SF 3054130)
 
 Modelling:
+o the default zoom view (<o>) and direct point edit (<p>) keyboard
+  shortcuts are now (<V>) and (<E>) respectively to make way for two
+  very important new shortcuts:
+o modelling actions like move, scale, or rotate no longer decide
+  what to transform (objects or selected points) based on the point
+  selection; now always objects are transformed, until the user
+  switches explicitly to points using <p> (while <o> can be used to switch
+  back to objects)
 o the mark is now reset on double <Esc>
 o direct point editing now uses the point selection instead of an own pointer;
   thus, it now works with multiple selected objects, and one may apply
