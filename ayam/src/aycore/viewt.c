@@ -732,6 +732,11 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
 
+  Tcl_SetStringObj(ton, "cVPnts", -1);
+  to = Tcl_NewIntObj(view->transform_points);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
@@ -1323,6 +1328,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      tclargv[3] = arg3;
 	      tclargv[4] = argv[i+1];
 	      ay_vact_movetcb(togl, 5, tclargv);
+	    }
+	  if(!strcmp(argv[i], "-pnts"))
+	    {
+	      Tcl_GetInt(interp, argv[i+1], &view->transform_points);
 	    }
 	  if(!strcmp(argv[i], "-pos"))
 	    {

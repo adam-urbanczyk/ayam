@@ -1065,12 +1065,26 @@ proc viewSetMAIcon { w image balloon } {
     global ay tcl_platform AYWITHAQUA
 
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
+	set i1 [string first "view" $w]
+	set i2 [string first "." $w $i1]
+	incr i2 -1
+
+	set vimage ay_[string range $w $i1 $i2]_img
+	catch {	image create photo $vimage -w 25 -h 25 }
+	$vimage copy $image
+
+	# add red dot for pnts-trafo mode?
+	if { $ay(cVPnts) } {
+	    set col \#af0000
+	    $vimage put $col -to 20 20 24 24
+	}
+
 	set m fMenu.a
 
 	set w [winfo parent [winfo parent $w]]
 
 	set conf "$w.$m configure"
-	eval [subst "$w.$m configure -image $image"]
+	eval "$conf -image $vimage"
 	if { $balloon != "" } {
 	    eval [subst "balloon_set $w.$m $balloon"]
 	} else {
@@ -1158,6 +1172,43 @@ proc viewToggleMMode { w } {
  return;
 }
 # viewToggleMMode
+
+
+##############################
+# viewSetPMode:
+#  toggle object/point transformation mode
+proc viewSetPMode { w on } {
+    global ay AYWITHAQUA
+
+    set togl $w.f3D.togl
+
+    if { [string first ".view" $w] == 0 } {
+	set w [winfo toplevel $togl]
+    }
+
+    if { $on } {
+	$togl setconf -pnts 1
+	set ay(cVPnts) 1
+	set col \#af0000
+    } else {
+	$togl setconf -pnts 0
+	set ay(cVPnts) 0
+	set col \#bdbdbd
+
+    }
+
+    if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
+
+	set m fMenu.a
+
+	set image [$w.$m cget -image]
+	$image put $col -to 20 20 24 24
+    }
+
+ return;
+}
+# viewSetPMode
+
 
 
 ##############################

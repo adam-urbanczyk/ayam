@@ -246,7 +246,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	  return TCL_OK;
 	}
 
-      if(ay_prefs.transform_points)
+      if(view->transform_points)
 	{
 	  if(o->selp && (!o->selp->readonly))
 	    {
@@ -402,7 +402,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	  angle = beta - alpha;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -727,7 +727,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	      break;
 	    } /* switch */
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -943,7 +943,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalx = 1.0;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -1110,7 +1110,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscaly = 1.0;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -1277,7 +1277,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscalz = 1.0;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -1421,7 +1421,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscal = 1.0;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -1596,7 +1596,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	  else
 	    dscal = 1.0;
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -1854,7 +1854,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scalx*(dscalx))*((al-oldmov)/o->scalx));
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -2077,7 +2077,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scaly*(dscaly))*((al-oldmov)/o->scaly));
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -2300,7 +2300,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	  mov = al - ((o->scalz*(dscalz))*((al-oldmov)/o->scalz));
 
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -2462,7 +2462,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 
       if(o)
 	{
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
@@ -2707,7 +2707,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 
       if(o)
 	{
-	  if(ay_prefs.transform_points)
+	  if(view->transform_points)
 	    {
 	      if(o->selp && (!o->selp->readonly))
 		{
