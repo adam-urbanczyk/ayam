@@ -612,6 +612,9 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	bindtags $w.f3D.togl [list all $w.f3D.togl Togl $w]
     }
 
+    # switch modelling mode menu to an own (widget dependent) image
+    viewSetMModeIcon $w 0
+
     update
     set ay(cviewsema) 0
     update
@@ -1029,20 +1032,35 @@ proc viewSetDModeIcon { w mode } {
 proc viewSetMModeIcon { w mode } {
     global ay AYWITHAQUA
 
+    set i [string first "view" $w]
+    set vimage ay_[string range $w $i end]_img
+
     if { [string first ".view" $w] == 0 } {
 	# guard against calling with sub-widget
 	set w [winfo toplevel $w]
     }
 
     if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
+
+	if { $mode == 0 } {
+	    set image ay_MMGlobLoc_img
+	} else {
+	    set image ay_MMLocGlob_img
+	}
+
+	catch {	image create photo $vimage -w 25 -h 25 }
+	$vimage copy $image
+
+	# add red dot for pnts-trafo mode?
+	if { $ay(cVPnts) } {
+	    set col \#af0000
+	    $vimage put $col -to 20 1 24 5
+	}
+
 	set m fMenu.mm
 	set conf "$w.$m configure"
 
-	if { $mode == 0 } {
-	    eval "$conf -image ay_MMGlobLoc_img"
-	} else {
-	    eval "$conf -image ay_MMLocGlob_img"
-	}
+	eval "$conf -image $vimage"
     } else {
 	set conf "$w.menubar entryconfigure 4"
 
@@ -1065,26 +1083,13 @@ proc viewSetMAIcon { w image balloon } {
     global ay tcl_platform AYWITHAQUA
 
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
-	set i1 [string first "view" $w]
-	set i2 [string first "." $w $i1]
-	incr i2 -1
-
-	set vimage ay_[string range $w $i1 $i2]_img
-	catch {	image create photo $vimage -w 25 -h 25 }
-	$vimage copy $image
-
-	# add red dot for pnts-trafo mode?
-	if { $ay(cVPnts) } {
-	    set col \#af0000
-	    $vimage put $col -to 20 20 24 24
-	}
 
 	set m fMenu.a
 
 	set w [winfo parent [winfo parent $w]]
 
 	set conf "$w.$m configure"
-	eval "$conf -image $vimage"
+	eval "$conf -image $image"
 	if { $balloon != "" } {
 	    eval [subst "balloon_set $w.$m $balloon"]
 	} else {
@@ -1199,10 +1204,10 @@ proc viewSetPMode { w on } {
 
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
 
-	set m fMenu.a
+	set m fMenu.mm
 
 	set image [$w.$m cget -image]
-	$image put $col -to 20 20 24 24
+	$image put $col -to 20 1 24 5
     }
 
  return;

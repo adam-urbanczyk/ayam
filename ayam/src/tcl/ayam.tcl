@@ -663,6 +663,7 @@ array set ay {
  customkeys {}
  lasttool ""
  draw_nurbs 1
+ cVPnts 0
 }
 # array ay
 
