@@ -32,7 +32,6 @@ array set ayprefs {
  EditSnaps 1
  GlobalMark 0
  Snap3D 0
- TransformPoints 0
 
  Tolerance 30.0
  NPDisplayMode 2
@@ -1516,8 +1515,6 @@ if { $ay(failsafe) == 0 } {
     }
 }
 
-# override TransformPoints setting (always transform objects after restart)
-set ayprefs(TransformPoints) 0
 
 # make (new) preference settings known to C-context
 prefs_set

@@ -1220,6 +1220,8 @@ typedef struct ay_view_object_s
       exclusive resources (e.g.\ offscreen buffers) to views */
   int id;
 
+  int transform_points; /**< transform points (1) or objects (0)? */
+
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
@@ -1260,7 +1262,6 @@ typedef struct ay_preferences_s
   int undo_levels; /**< number of undo levels, -1 turns undo off */
   int snap3d; /**< snap points to the grid in 3D? */
   int globalmark; /**< maintain a global mark? */
-  int transform_points; /**< transform points (1) or objects (0)? */
 
   /* RIB export prefs */
   int resolveinstances; /**< resolve all instances for RIB export? */
