@@ -91,6 +91,15 @@ static JSFunctionSpec jsinterp_global_functions[] = {
 /** Tcl interpreter */
 static Tcl_Interp *jsinterp_interp;
 
+/** Tcl_Obj types */
+static Tcl_ObjType *jsinterp_BooleanType = NULL;
+static Tcl_ObjType *jsinterp_ByteArrayType = NULL;
+static Tcl_ObjType *jsinterp_DoubleType = NULL;
+static Tcl_ObjType *jsinterp_IntType = NULL;
+static Tcl_ObjType *jsinterp_ListType = NULL;
+static Tcl_ObjType *jsinterp_StringType = NULL;
+static Tcl_ObjType *jsinterp_WideIntType = NULL;
+
 
 /* functions: */
 
@@ -190,9 +199,102 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 {
  char *sval;
  int ival;
- double dval;
+ /* double dval;*/
  JSString *jss;
+ JSObject *arr;
+ jsint i;
+ int objc;
+ Tcl_Obj **objv;
+ jsval *elemv;
 
+  if(to->typePtr == jsinterp_IntType)
+    {
+      if(JS_NewNumberValue(jsinterp_cx,
+			   (double)to->internalRep.longValue, v))
+	{
+	  return AY_OK;
+	}
+    }
+  else if (to->typePtr == jsinterp_DoubleType)
+    {
+      if(JS_NewNumberValue(jsinterp_cx,
+			   (double)to->internalRep.doubleValue, v))
+	{
+	  return AY_OK;
+	}
+    }
+    else if (to->typePtr == jsinterp_BooleanType)
+      {
+	if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
+	  {
+	    if(JS_NewNumberValue(jsinterp_cx, (double)ival, v))
+	      {
+		return AY_OK;
+	      }
+	  }
+      }
+  /*
+  else if (to->typePtr == tclByteArrayTypePtr) {
+    str = (char *) Tcl_GetByteArrayFromObj(to, &len);
+    ...
+  }
+  */
+  else if (to->typePtr == jsinterp_ListType)
+    {
+      Tcl_ListObjGetElements(NULL, to, &objc, &objv);
+      if(objc)
+	{
+	  if((arr = JS_NewArrayObject(jsinterp_cx, objc, NULL)))
+	    {
+	      /*
+		this early copy to the result pointer (v) effectively
+		roots the Array object so that it is GC safe
+		(because for the outermost call v points to a rval, and
+		for the inner calls the GC can always reach all elements)
+	      */
+	      *v = OBJECT_TO_JSVAL(arr);
+
+	      for(i = 0; i < (jsint)objc; i++)
+		{
+		  if(!jsinterp_objtoval(objv[i], elemv))
+		    {   
+		      if(!JS_SetElement(jsinterp_cx, arr, i, elemv))
+			{
+			  return AY_ERROR;
+			}
+		    }
+		  else
+		    {
+		      return AY_ERROR;
+		    }
+		} /* for */
+
+	      return AY_OK;
+	    } /* if */
+	}
+      else
+	{
+	  /* create empty string */
+	  if((jss = JS_NewStringCopyZ(jsinterp_cx, NULL)))
+	    {
+	      *v = STRING_TO_JSVAL(jss);
+	      return AY_OK;
+	    }
+	}
+    }
+  else
+    {
+      if((sval = Tcl_GetString(to)) != NULL)
+	{
+	  if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
+	    {
+	      *v = STRING_TO_JSVAL(jss);
+	      return AY_OK;
+	    }
+	}
+    }
+
+#if 0
   if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
     {
       if(JS_NewNumberValue(jsinterp_cx, (double)ival, v))
@@ -215,7 +317,7 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 	    {
 	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
 		{
-		  *v = (jsval)jss;
+		  *v = STRING_TO_JSVAL(jss);
 		  return AY_OK;
 		}
 	    }
@@ -226,7 +328,7 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 	    }*/ /* if */
 	} /* if */
     } /* if */
-
+#endif
  return AY_ERROR;
 } /* jsinterp_objtoval */
 
@@ -443,7 +545,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
 		{
-		  *newjsval = (jsval)jss;
+		  *newjsval = STRING_TO_JSVAL(jss);
 		}
 	      else
 		{
@@ -661,6 +763,14 @@ Jsinterp_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   jsinterp_interp = NULL;
+
+  jsinterp_BooleanType = Tcl_GetObjType("boolean");
+  jsinterp_ByteArrayType = Tcl_GetObjType("bytearray");
+  jsinterp_DoubleType = Tcl_GetObjType("double");
+  jsinterp_IntType = Tcl_GetObjType("int");
+  jsinterp_ListType = Tcl_GetObjType("list");
+  jsinterp_StringType = Tcl_GetObjType("string");
+  jsinterp_WideIntType = Tcl_GetObjType("wideInt");
 
   ay_error(AY_EOUTPUT, fname, "Plugin 'jsinterp' successfully loaded.");
 
