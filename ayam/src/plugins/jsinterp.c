@@ -192,7 +192,7 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 
 
 /* jsinterp_objtoval:
- *  helper function to convert a Tcl_Obj to a jsval 
+ *  helper function to convert a Tcl_Obj to a jsval
  */
 int
 jsinterp_objtoval(Tcl_Obj *to, jsval *v)
@@ -205,7 +205,7 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
  jsint i;
  int objc;
  Tcl_Obj **objv;
- jsval *elemv;
+ jsval elemv, arrv;
 
   if(to->typePtr == jsinterp_IntType)
     {
@@ -246,19 +246,16 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 	{
 	  if((arr = JS_NewArrayObject(jsinterp_cx, objc, NULL)))
 	    {
-	      /*
-		this early copy to the result pointer (v) effectively
-		roots the Array object so that it is GC safe
-		(because for the outermost call v points to a rval, and
-		for the inner calls the GC can always reach all elements)
-	      */
-	      *v = OBJECT_TO_JSVAL(arr);
+	      /* root the Array object so that it is GC safe */
+	      arrv = OBJECT_TO_JSVAL(arr);
+	      JS_AddRoot(jsinterp_cx, &arrv);
 
+	      /* now convert/add the array elements */
 	      for(i = 0; i < (jsint)objc; i++)
 		{
-		  if(!jsinterp_objtoval(objv[i], elemv))
-		    {   
-		      if(!JS_SetElement(jsinterp_cx, arr, i, elemv))
+		  if(!jsinterp_objtoval(objv[i], &elemv))
+		    {
+		      if(!JS_SetElement(jsinterp_cx, arr, i, &elemv))
 			{
 			  return AY_ERROR;
 			}
@@ -269,6 +266,12 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 		    }
 		} /* for */
 
+	      /* unroot the Array object to avoid memory leak */
+	      JS_RemoveRoot(jsinterp_cx, &arrv);
+
+	      /* for the outermost call, this effectively roots the
+		array again (sigh) so that it is GC safe */
+	      *v = arrv;
 	      return AY_OK;
 	    } /* if */
 	}
@@ -334,7 +337,7 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 
 
 /* jsinterp_wrapcrtobcmd:
- *  JS function to wrap the crtOb command 
+ *  JS function to wrap the crtOb command
  */
 int
 jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
@@ -363,7 +366,7 @@ jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
 
 /* jsinterp_wrapevalcmd:
- *  JS function to wrap the eval command 
+ *  JS function to wrap the eval command
  *  we can not use jsinterp_wraptcmdargs() because the Tcl_CmdInfo proc
  *  of "eval" points to Tcl_CommandObjV which we can not use with plain
  *  argc/argv-args; furthermore, we need to transfer the result of the
@@ -550,13 +553,13 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 	      else
 		{
 		  free(newjsval);
-		  goto cleanup; 
+		  goto cleanup;
 		}
 	    }
 	  else
 	    {
 	      free(newjsval);
-	      goto cleanup; 
+	      goto cleanup;
 	    }
 	}
     } /* if */
@@ -764,6 +767,7 @@ Jsinterp_Init(Tcl_Interp *interp)
 
   jsinterp_interp = NULL;
 
+  /* Get object type struct pointers. */
   jsinterp_BooleanType = Tcl_GetObjType("boolean");
   jsinterp_ByteArrayType = Tcl_GetObjType("bytearray");
   jsinterp_DoubleType = Tcl_GetObjType("double");
