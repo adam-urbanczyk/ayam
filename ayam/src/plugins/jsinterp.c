@@ -506,72 +506,89 @@ char *
 jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 		      char *name1, char *name2, int flags)
 {
- jsval *newjsval = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- char *sval;
- int ival;
- double dval;
- JSString *jss;
+ JSObject *obj = NULL;
+ jsval *newjsval, *objval;
+ int create_object = AY_TRUE;
 
   if(!(newjsval = calloc(1, sizeof(jsval))))
     {
-      return NULL;
+      goto cleanup;
     }
 
   toa = Tcl_NewStringObj(name1, -1);
-  ton = Tcl_NewStringObj(name2, -1);
-
-  to = Tcl_ObjGetVar2(jsinterp_interp, toa, ton,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
+  if(name2)
     {
-      if(!JS_NewNumberValue(jsinterp_cx, (double)ival, newjsval))
+      ton = Tcl_NewStringObj(name2, -1);
+    }
+
+  to = Tcl_ObjGetVar2(interp, toa, ton, flags);
+
+  JS_AddRoot(jsinterp_cx, &newjsval);
+
+  if(jsinterp_objtoval(to, newjsval))
+    {
+      /* XXXX report error? */
+      goto cleanup;
+    }
+
+  if(name2)
+    {
+      /* array */
+      if(!(objval = calloc(1, sizeof(jsval))))
 	{
-	  free(newjsval);
 	  goto cleanup;
+	}
+
+      JS_AddRoot(jsinterp_cx, objval);
+
+      if(JS_LookupProperty(jsinterp_cx, jsinterp_global, name1, objval))
+	{
+	  if(!JSVAL_IS_VOID(*objval))
+	    {
+	      if(JSVAL_IS_OBJECT(*objval))
+		{
+		  obj = JSVAL_TO_OBJECT(*objval);
+		  create_object = AY_FALSE;
+		}
+	    }
+	} /* if */
+
+      if(create_object)
+	{
+	  obj = JS_NewObject(jsinterp_cx, NULL, NULL, NULL);
+	  *objval = OBJECT_TO_JSVAL(obj);
+	  JS_SetProperty(jsinterp_cx, jsinterp_global, name1, objval);
+	}
+
+      JS_SetProperty(jsinterp_cx, obj, name2, newjsval);
+
+      JS_RemoveRoot(jsinterp_cx, objval);
+
+      if(!create_object)
+	{
+	  free(objval);
 	}
     }
   else
     {
-      if(Tcl_GetDoubleFromObj(NULL, to, &dval) != TCL_ERROR)
-	{
-	  if(!JS_NewNumberValue(jsinterp_cx, dval, newjsval))
-	    {
-	      free(newjsval);
-	      goto cleanup;
-	    }
-	}
-      else
-	{
-	  if((sval = Tcl_GetString(to)) != NULL)
-	    {
-	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
-		{
-		  *newjsval = STRING_TO_JSVAL(jss);
-		}
-	      else
-		{
-		  free(newjsval);
-		  goto cleanup;
-		}
-	    }
-	  else
-	    {
-	      free(newjsval);
-	      goto cleanup;
-	    }
-	}
-    } /* if */
+      /* scalar */
+      JS_SetProperty(jsinterp_cx, jsinterp_global, name1, newjsval);
+    }
 
-  JS_AddRoot(jsinterp_cx, newjsval);
-
-  JS_SetProperty(jsinterp_cx, jsinterp_global, name1, newjsval);
+  JS_RemoveRoot(jsinterp_cx, newjsval);
+  newjsval = NULL;
 
 cleanup:
 
+  if(newjsval)
+    free(newjsval);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+  if(ton)
+    {
+      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+    }
 
  return NULL;
 } /* jsinterp_vartraceproc */
@@ -593,14 +610,17 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
     {
       if(JSVAL_IS_STRING(argv[i]))
 	{
-
 	  vname = JS_GetStringBytes(JSVAL_TO_STRING(argv[i]));
 
 	  /* establish a write trace */
-	  Tcl_TraceVar(jsinterp_interp,
-		       vname,
-		       TCL_TRACE_WRITES,
-		       jsinterp_vartraceproc, clientData);
+	  if(!TCL_OK == Tcl_TraceVar(jsinterp_interp,
+				     vname,
+				     TCL_TRACE_WRITES,
+				     jsinterp_vartraceproc, clientData))
+	    {
+	      JS_ReportError(cx, "failed to establish trace");
+	      printf("BLEA!\n");
+	    }
 	}
     }
 
