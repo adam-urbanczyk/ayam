@@ -11647,6 +11647,88 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
+<sect1>JavaScript Scripting Interface
+<p>
+This sections contains the documentation of the JavaScript scripting
+interface available after loading of the <tt>"jsinterp"</tt> plugin.
+<p>
+The JavaScript scripting interface is available since Ayam 1.18 and
+is based on the Mozilla SpiderMonkey JavaScript engine.
+<p>
+Upon loading, the <tt>"jsinterp"</tt> plugin creates one JavaScript
+context that lives until Ayam exits.
+
+<sect2>Accessing JavaScript from Tcl and Script Objects
+<p>
+To access the JavaScript functionality from the Tcl scripting interface,
+the <tt>"jsEval"</tt> command can be used. Furthermore, Script object
+scripts may also be implemented in JavaScript, provided the first line
+of the script is a comment that instructs Ayam to use the JavaScript
+interpreter:
+<code>
+/* Ayam, use: JavaScript; */
+...
+</code>.
+
+<sect2>JavaScript Functions
+<p>
+This subsection informs about the global functions additionally
+availabe in the Ayam JavaScript interpreter.
+<p>
+Those are converted Tcl commands, <tt>"tcleval"</tt>, and <tt>"tclvar"</tt>.
+<p>
+The functionality of Ayam is accessible from JavaScript via a larger
+set of global functions, named as the corresponding Tcl commands
+(e.g. one may create Ayam objects in JavaScript using a function call
+like this: <tt>crtOb("Sphere");</tt>, or, with additional arguments:
+<tt>crtOb("Sphere", "-radius", 3.0);</tt>).
+<p>
+Apart from commands converted to functions, there is the function
+<tt>"tcleval"</tt>, that allows to evaluate Tcl scripts:
+<code>
+var a = 42;
+a = tcleval("puts " + a + "; return 5;");
+tcleval("puts " + a);
+</code>.
+The <tt>"tcleval"</tt> function allows access to all the
+functionality of Ayam that is just available as a Tcl procedure.
+Note that return values are properly transferred back to JavaScript.
+<p>
+Using the function <tt>"tclvar"</tt> one may establish a link
+between a global Tcl variable and a corresponding global variable
+in the JavaScript context. The <tt>"tclvar"</tt> function establishes
+a write trace on the Tcl variable, so that changes on the Tcl
+side are always automatically reflected on the JavaScript side:
+<code>
+tclvar("a");
+tcleval("set a 42");
+tcleval("puts " + a);
+</code>.
+Mind that the corresponding variable on the JavaScript side does
+<em>not</em> exist until the first write onto the Tcl variable.
+The Tcl variable, in turn, does not have to exist, when the
+<tt>"tclvar"</tt> function is called (i.e. all the work is done
+in the trace callback).
+
+<sect2>Data Conversion
+<p>
+When data is transferred from the Tcl to the JavaScript side,
+the following conversions are in effect:
+Booleans will be converted to integer values.
+Lists will be converted to Array objects (nesting is allowed).
+Associative arrays will be converted to objects with named properties.
+
+<sect2>Complete Example
+<p>
+This section contains a complete example for a Script object
+written in JavaScript. 
+<code>
+var a = 42;
+a = tcleval("puts " + a + "; return 5;");
+tcleval("puts " + a);
+</code>
+
+
 
 <sect>Import and Export<label id="impex">
 <p>
@@ -13789,9 +13871,9 @@ Due to the way Ayam is implemented, several restrictions and
 deficiencies exist:
 <itemize>
 <item>Almost all strings in Ayam (scene file names, object names,
-material names) are restricted to be 7 bit ASCII. If the scene is
+material names) are restricted to be 7-bit ASCII. If the scene is
 not to be transported between platforms (e.g. between UNIX and Win32),
-using 8 bit ASCII should be fine, however.
+using 8-bit ASCII should be fine, however.
 <item>The maximum scene depth (i.e. the maximum number of nested levels)
 depends on the maximum stack size of the operating system Ayam is
 running on (due to the use of recursion almost everywhere when traversing
@@ -13800,7 +13882,7 @@ the scene, e.g. for drawing purposes).
 no control over roundoff error in lengthy calculations exists.
 Saving of scene files only uses the precision dictated by the current
 standard C library. This may degrade the precision of the models.
-Using of double precision numbers via the Tcl scripting interface or
+The usage of double precision numbers via the Tcl scripting interface or
 the GUI also can reduce model precision due to
 double-string-double-conversions (the precision of those conversion
 operations can be adjusted by the user via the <tt/"TclPrecision"/
@@ -13809,11 +13891,16 @@ preference setting, however).
 <item>Materials may only be assigned to complete objects, not to
 certain parts of objects.
 <item>Undo/Redo are not possible for scene structure changes.
+<item>In the user interface, colors are always represented as
+three 8-bit RGB values, even though the RenderMan interface allows
+for different color sample numbers and floating point samples
+instead of integers to be used.
 <item>There are no acceleration structures for e.g. drawing and object
 tree updates. This limits the number of objects that Ayam can handle
 simultaneously without big lags in redraws or after scene structure
 changes to about 1000. However, Ayam objects should be high-level objects,
-not single polygons, anyway.
+not single polygons, anyway, i.e. one usually gets away with about 100
+objects for moderately complex scenes, the Marsrakete uses just 62 objects.
 </itemize>
 
 Ayam user interface deficiencies:
