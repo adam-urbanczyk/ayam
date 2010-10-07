@@ -60,6 +60,8 @@ int jsinterp_tclvar(JSContext *cx, JSObject *obj,
 char jsinterp_version_ma[] = AY_VERSIONSTR;
 char jsinterp_version_mi[] = AY_VERSIONSTRMI;
 
+char *jsinterp_langtype = NULL;
+
 /** JS runtime */
 static JSRuntime *jsinterp_rt;
 /** JS context */
@@ -702,6 +704,18 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 } /* jsinterp_evaltcmd */
 
 
+/* jsinterp_evalcb:
+ *  Ayam Script object evaluation callback
+ */
+int
+jsinterp_evalcb(char *script, int modified, Tcl_Obj *cscript)
+{
+
+
+ return AY_OK;
+} /* jsinterp_evalcb */
+
+
 /* Jsinterp_Init:
  *  initialize JavaScript interpreter plugin
  *  note: this function _must_ be capitalized exactly this way
@@ -713,6 +727,7 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 int
 Jsinterp_Init(Tcl_Interp *interp)
 {
+ int ay_status = AY_OK;
  char fname[] = "jsinterp_init";
 
   if(Tcl_InitStubs(interp, "8.2", 0) == NULL)
@@ -784,6 +799,22 @@ Jsinterp_Init(Tcl_Interp *interp)
   /* Create Tcl commands. */
   Tcl_CreateCommand(interp, "jsEval", jsinterp_evaltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* Register JavaScript language. */
+  ay_status = ay_tcmd_registerlang("JavaScript", &jsinterp_langtype);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Failed to register language.");
+      return TCL_OK;
+    }
+
+  ay_status = ay_table_additem(&ay_sevalcbt, (ay_voidfp)jsinterp_evalcb,
+			       (int)jsinterp_langtype);
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "Failed to register evaluation callback.");
+      return TCL_OK;
+    }
 
   jsinterp_interp = NULL;
 

@@ -1270,3 +1270,32 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 
  return AY_OK;
 } /* ay_tcmd_getuint */
+
+
+/* ay_tcmd_registerlang:
+ *  register a new language
+ */
+int
+ay_tcmd_registerlang(char *name, char **result)
+{
+ int new_item = 0;
+ Tcl_HashEntry *entry = NULL;
+ static char *langcounter = (char *) 0;
+ char fname[] = "registerlang";
+
+  /* check, if language is already registered */
+  if((entry = Tcl_FindHashEntry(&ay_languagesht, name)))
+    {
+      ay_error(AY_ERROR, fname, "language already registered");
+      return AY_ERROR;
+    }
+
+  langcounter++;
+
+  entry = Tcl_CreateHashEntry(&ay_languagesht, name, &new_item);
+  Tcl_SetHashValue(entry, langcounter);
+
+  *result = langcounter;
+
+ return AY_OK;
+} /* ay_tcmd_registerlang */
