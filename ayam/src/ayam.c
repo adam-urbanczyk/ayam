@@ -82,6 +82,10 @@ ay_ftable ay_providecbt;
 
 ay_ftable ay_bbccbt;
 
+ay_ftable ay_sevalcbt;
+
+/* registered languages */
+Tcl_HashTable ay_languagesht;
 
 /* registered tag types */
 Tcl_HashTable ay_tagtypesht;
@@ -273,6 +277,12 @@ ay_init(Tcl_Interp *interp)
 
   if((ay_status = ay_table_init(&ay_providecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_sevalcbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  /* Languages */
+  Tcl_InitHashTable(&ay_languagesht, TCL_STRING_KEYS);
 
   /* Tags */
   Tcl_InitHashTable(&ay_tagtypesht, TCL_STRING_KEYS);

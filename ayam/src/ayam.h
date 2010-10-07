@@ -1421,6 +1421,9 @@ typedef int (ay_providecb) (ay_object *o, unsigned int type,
 /** Calculate bounding box callback */
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
 
+/** Script evaluation callback */
+typedef int (ay_sevalcb) (char *script, int modified, Tcl_Obj *cscript);
+
 
 /* Globals */
 
@@ -1467,6 +1470,9 @@ extern Tcl_HashTable ay_typenamesht;
 /** table of registered tag types */
 extern Tcl_HashTable ay_tagtypesht;
 
+/** table of registered script languages */
+extern Tcl_HashTable ay_languagesht;
+
 /* \name function pointer tables (object callbacks) */
 /*@{*/
 /** all registered create callbacks */
@@ -1504,6 +1510,10 @@ extern ay_ftable ay_convertcbt;
 /** all registered provide callbacks */
 extern ay_ftable ay_providecbt;
 /*@}*/
+
+/** all registered script evaluation callbacks */
+extern ay_ftable ay_sevalcbt;
+
 
 /** global error number */
 extern int ay_errno;
