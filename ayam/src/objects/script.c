@@ -11,6 +11,7 @@
  */
 
 #include "ayam.h"
+#include <ctype.h>
 
 /* script.c - script object */
 
@@ -23,7 +24,9 @@ static char *ay_script_name = "Script";
 
 static char *ay_script_sp = "SP"; /* Save (Individual) Parameters */
 
-static char *ay_script_sa = "Ayam, save array:"; /* Save Array */
+static char *ay_script_sa = "array:"; /* Save Array */
+
+static char *ay_script_ul = "use:"; /* Use (Language) */
 
 int ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
@@ -320,24 +323,36 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 {
  int ay_status = AY_OK;
  char *arrname = NULL;
- char *arrnameend = NULL;
+ char *lineend = NULL, *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
  Tcl_Obj *toa = NULL, *ton = NULL;
 
 
   /* handle script parameters */
-  if(sc->script && strstr(sc->script, ay_script_sa))
+  if(sc->script)
     {
-      arrname = strchr(sc->script, ':');
+      lineend = strchr(sc->script, '\n');
+      if(lineend)
+	*lineend = '\0';
+      else
+	return ay_status;
+
+      if(!(arrname = strstr(sc->script, ay_script_sa)))
+	{
+	  *lineend = '\n';
+	  return ay_status;
+	}
+
+      arrname = strchr(arrname, ':');
+
       arrname++;
-      while(arrname[0] == ' ')
+      while(arrname[0] == ' ' || arrname[0] == '\t')
 	arrname++;
 
-      arrnameend = strchr(arrname, '\n');
-
-      if(arrnameend)
-	*arrnameend = '\0';
+      arrnameend = arrname;
+      while(isgraph(arrnameend[0]) && (arrnameend[0] != ','))
+	arrnameend++;
 
       if(sc->params)
 	{
@@ -351,7 +366,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	  sc->paramslen = 0;
 	}
 
-      toa = Tcl_NewStringObj(arrname, -1);
+      toa = Tcl_NewStringObj(arrname, arrnameend - arrname - 1);
       ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
@@ -389,8 +404,8 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	    } /* if */
 	} /* if */
 
-      if(arrnameend)
-	*arrnameend = '\n';
+      if(lineend)
+	*lineend = '\n';
 
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -982,6 +997,54 @@ ay_script_bbccb(ay_object *o, double *bbox, int *flags)
 } /* ay_script_bbccb */
 
 
+/* ay_script_getlanguage:
+ *  helper for notifycb; get language (process use:)
+ */
+int
+ay_script_getlanguage(ay_script_object *sc, char **lang)
+{
+ int ay_status = AY_OK;
+ char *lineend = NULL;
+ char *langname = NULL, *langend = NULL;
+
+  if(sc->script)
+    {
+      lineend = strchr(sc->script, '\n');
+      if(lineend)
+	*lineend = '\0';
+      else
+	return ay_status;
+
+      if(!(langname = strstr(sc->script, ay_script_ul)))
+	{
+	  *lineend = '\n';
+	  return ay_status;
+	}
+
+      langname = strchr(langname, ':');
+
+      langname++;
+      while(langname[0] == ' ' || langname[0] == '\t')
+	langname++;
+
+      langend = langname;
+      while(isgraph(langend[0]) && (langend[0] != ','))
+	langend++;
+
+      if(!(*lang = calloc(langend - langname + 1, sizeof(char))))
+	{
+	  *lineend = '\n';
+	  return AY_EOMEM;
+	}
+      strncpy(*lang, langname, langend - langname);
+
+      *lineend = '\n';
+    } /* if */
+
+ return ay_status;
+} /* ay_script_getlanguage */
+
+
 /* ay_script_notifycb:
  *  notification callback function of script object
  */
@@ -991,7 +1054,7 @@ ay_script_notifycb(ay_object *o)
  static int lock = 0;
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "script_notifycb";
- char buf[256], *l1 = NULL, *l2 = NULL;
+ char buf[256], *l1 = NULL, *l2 = NULL, *language = NULL;
  double *p1, *p2, dummy[3], m[16];
  unsigned int j = 0, a = 0;
  ay_object *down = NULL, **nexto = NULL, **old_aynext, *ccm_objects;
@@ -1001,11 +1064,14 @@ ay_script_notifycb(ay_object *o)
  ay_object *old_clipboard = NULL;
  ay_script_object *sc = NULL, *dsc = NULL;
  ay_pointedit pe = {0};
+ ay_voidfp *arr = NULL;
  int i = 0;
  int old_rdmode = 0;
  ClientData old_restrictcd;
  Tcl_DString ds;
  Tcl_Interp *interp = NULL;
+ Tcl_HashTable *ht = &ay_languagesht;
+ Tcl_HashEntry *entry = NULL;
 
   /* this lock protects ourselves from running in an endless
      recursive loop should the script modify our child objects
@@ -1077,14 +1143,37 @@ ay_script_notifycb(ay_object *o)
   /* prepare compiling the script? */
   if(sc->modified || (!sc->cscript))
     {
+      sc->cb = NULL;
+      /* clear old compiled script */
       if(sc->cscript)
 	{
 	  Tcl_DecrRefCount(sc->cscript);
 	  sc->cscript = NULL;
 	}
-      sc->cscript = Tcl_NewStringObj(sc->script, -1);
-      Tcl_IncrRefCount(sc->cscript);
-      sc->modified = AY_FALSE;
+
+      /* get language (process use:) */
+      ay_script_getlanguage(sc, &language);
+      if(language)
+	{
+	  if((entry = Tcl_FindHashEntry(ht, language)))
+	    {
+	      arr = ay_sevalcbt.arr;
+	      sc->cb = (ay_sevalcb *)(arr[(int)Tcl_GetHashValue(entry)]);
+	    }
+	}
+
+      if(sc->cb)
+	{
+	  /* JavaScript/Lua/... */
+	  sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	}
+      else
+	{
+	  /* Tcl */
+	  sc->cscript = Tcl_NewStringObj(sc->script, -1);
+	  Tcl_IncrRefCount(sc->cscript);
+	  sc->modified = AY_FALSE;
+	}
     }
 
   if(ay_currentview)
@@ -1100,7 +1189,16 @@ ay_script_notifycb(ay_object *o)
       /* Just Run */
 
       /* evaluate (execute) script */
-      result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+      if(sc->cb)
+	{
+	  /* JavaScript/Lua/... */
+	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	}
+      else
+	{
+	  /* Tcl */
+	  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+	}
     } /* if */
 
   if(sc->type == 1)
@@ -1117,7 +1215,16 @@ ay_script_notifycb(ay_object *o)
       ay_selection = NULL;
 
       /* evaluate (execute) script */
-      result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+      if(sc->cb)
+	{
+	  /* JavaScript/Lua/... */
+	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	}
+      else
+	{
+	  /* Tcl */
+	  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+	}
 
       /* move newly created objects to script object */
       if(o->down && o->down->next)
@@ -1222,9 +1329,20 @@ ay_script_notifycb(ay_object *o)
 	  ay_clevel_del();
 	  ay_status = ay_clevel_add(o->down);
 
-	  /* evaluate (execute) script */
 	  if(!ay_status)
-	    result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+	    {
+	      /* evaluate (execute) script */
+	      if(sc->cb)
+		{
+		  /* JavaScript/Lua/... */
+		  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+		}
+	      else
+		{
+		  /* Tcl */
+		  result = Tcl_EvalObjEx(interp, sc->cscript, TCL_EVAL_GLOBAL);
+		}
+	    }
 
 	  /* call notification of modified objects */
 	  sel = ay_selection;
