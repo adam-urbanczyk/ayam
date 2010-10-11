@@ -1140,7 +1140,7 @@ ay_script_notifycb(ay_object *o)
       ay_script_getpropcb(interp, 0, NULL, o);
     }
 
-  /* prepare compiling the script? */
+  /* prepare compiling/compile the script? */
   if(sc->modified || (!sc->cscript))
     {
       sc->cb = NULL;
@@ -1160,12 +1160,18 @@ ay_script_notifycb(ay_object *o)
 	      arr = ay_sevalcbt.arr;
 	      sc->cb = (ay_sevalcb *)(arr[(int)Tcl_GetHashValue(entry)]);
 	    }
+	  else
+	    {
+	      ay_error(AY_ERROR, fname, "unknown language");
+	      ay_status = AY_ERROR;
+	      goto resenv;
+	    }
 	}
 
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
 	}
       else
 	{
@@ -1174,7 +1180,7 @@ ay_script_notifycb(ay_object *o)
 	  Tcl_IncrRefCount(sc->cscript);
 	  sc->modified = AY_FALSE;
 	}
-    }
+    } /* if */
 
   if(ay_currentview)
     {
@@ -1192,7 +1198,7 @@ ay_script_notifycb(ay_object *o)
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
 	}
       else
 	{
@@ -1218,7 +1224,7 @@ ay_script_notifycb(ay_object *o)
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
 	}
       else
 	{
@@ -1335,7 +1341,7 @@ ay_script_notifycb(ay_object *o)
 	      if(sc->cb)
 		{
 		  /* JavaScript/Lua/... */
-		  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+		  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
 		}
 	      else
 		{
@@ -1372,6 +1378,8 @@ ay_script_notifycb(ay_object *o)
     } /* if */
 
   Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
+
+resenv:
 
   if(ay_currentview)
     {
