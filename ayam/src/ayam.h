@@ -1114,6 +1114,10 @@ typedef struct ay_ncircle_object_s
 } ay_ncircle_object;
 
 
+/** Script evaluation callback */
+typedef int (ay_sevalcb) (char *script, int compile, Tcl_Obj **cscript);
+
+
 /** Script object */
 typedef struct ay_script_object_s
 {
@@ -1130,6 +1134,8 @@ typedef struct ay_script_object_s
 
   double *pnts; /**< read only points [pntslen*4] (created on request) */
   unsigned int pntslen; /**< number of read only points */
+
+  ay_sevalcb *cb; /**< script evaluation callback (for JavaScript, Lua ...) */
 } ay_script_object;
 
 
@@ -1420,9 +1426,6 @@ typedef int (ay_providecb) (ay_object *o, unsigned int type,
 
 /** Calculate bounding box callback */
 typedef int (ay_bbccb) (ay_object *o, double *bbox, int *flags);
-
-/** Script evaluation callback */
-typedef int (ay_sevalcb) (char *script, int modified, Tcl_Obj *cscript);
 
 
 /* Globals */
