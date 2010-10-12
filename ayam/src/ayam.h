@@ -1115,7 +1115,8 @@ typedef struct ay_ncircle_object_s
 
 
 /** Script evaluation callback */
-typedef int (ay_sevalcb) (char *script, int compile, Tcl_Obj **cscript);
+typedef int (ay_sevalcb) (Tcl_Interp *interp, char *script, int compile,
+			  Tcl_Obj **cscript);
 
 
 /** Script object */

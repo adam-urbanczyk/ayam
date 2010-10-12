@@ -1165,7 +1165,7 @@ ay_script_notifycb(ay_object *o)
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(sc->script, AY_TRUE, &(sc->cscript));
+	  result = sc->cb(interp, sc->script, AY_TRUE, &(sc->cscript));
 	}
       else
 	{
@@ -1200,7 +1200,7 @@ ay_script_notifycb(ay_object *o)
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
+	  result = sc->cb(interp, sc->script, AY_FALSE, &(sc->cscript));
 	}
       else
 	{
@@ -1226,7 +1226,7 @@ ay_script_notifycb(ay_object *o)
       if(sc->cb)
 	{
 	  /* JavaScript/Lua/... */
-	  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
+	  result = sc->cb(interp, sc->script, AY_FALSE, &(sc->cscript));
 	}
       else
 	{
@@ -1343,7 +1343,8 @@ ay_script_notifycb(ay_object *o)
 	      if(sc->cb)
 		{
 		  /* JavaScript/Lua/... */
-		  result = sc->cb(sc->script, AY_FALSE, &(sc->cscript));
+		  result = sc->cb(interp, sc->script, AY_FALSE,
+				  &(sc->cscript));
 		}
 	      else
 		{

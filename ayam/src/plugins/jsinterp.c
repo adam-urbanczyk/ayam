@@ -102,6 +102,7 @@ static Tcl_ObjType *jsinterp_ListType = NULL;
 static Tcl_ObjType *jsinterp_StringType = NULL;
 static Tcl_ObjType *jsinterp_WideIntType = NULL;
 
+static unsigned int jsinterp_errorline;
 
 /* functions: */
 
@@ -121,6 +122,8 @@ jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report)
 
   sprintf(buf, "JS line %u", (unsigned int) report->lineno);
   ay_error(AY_ERROR, buf, message);
+
+  jsinterp_errorline = (unsigned int) report->lineno;
 
  return;
 } /* jsinterp_error */
@@ -378,7 +381,7 @@ int
 jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 		     jsval *rval)
 {
- int tcl_status = TCL_OK;
+ int tcl_status = TCL_OK, retval = JS_TRUE;
  char *script, *resstr;
  Tcl_Obj *resobj;
 
@@ -396,6 +399,7 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	case TCL_ERROR:
 	  JS_ReportError(cx, "Tcl script failed");
 	  /* XXXX add line info? */
+	  retval = JS_FALSE;
 	  break;
 	case TCL_RETURN:
 	  resobj = Tcl_GetObjResult(jsinterp_interp);
@@ -424,7 +428,7 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
   *rval = JSVAL_VOID; /* return undefined */
 
- return JS_TRUE;
+ return retval;
 } /* jsinterp_wrapevalcmd */
 
 
@@ -707,16 +711,19 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
  *  Ayam Script object evaluation callback
  */
 int
-jsinterp_evalcb(char *script, int compile, Tcl_Obj **cscript)
+jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
+		Tcl_Obj **cscript)
 {
  JSScript *binscript = NULL;
  JSObject *scriptObj = NULL;
  jsval result;
+ char fname[] = "jsinterp_evalcb";
 
   /* compile or execute? */
   if(compile)
     {
       /* compile... */
+
       if(*cscript)
 	{
 	  /* there is already an outdated version of the compiled script
@@ -738,7 +745,7 @@ jsinterp_evalcb(char *script, int compile, Tcl_Obj **cscript)
 	  *cscript = Tcl_NewByteArrayObj((unsigned char*)&result,
 					 sizeof(jsval));
 
-	  /* Tcl_NewByteArrayObj() stored a _copy_ of the jsval, so now
+	  /* Tcl_NewByteArrayObj() stored a _copy_ of the jsval, so that
 	     we must protect the internal representation of the Tcl_Obj
 	     from GC (not &result) */
 	  JS_AddRoot(jsinterp_cx,
@@ -749,20 +756,30 @@ jsinterp_evalcb(char *script, int compile, Tcl_Obj **cscript)
       else
 	{
 	  /* compilation failed */
+	  ay_error(AY_ERROR, fname, "compilation failed");
+	  return TCL_ERROR;
 	}
     }
   else
     {
       /* execute... */
+      jsinterp_interp = interp;
       scriptObj =
 	JSVAL_TO_OBJECT(*(jsval*)Tcl_GetByteArrayFromObj(*cscript, NULL));
       binscript = JS_GetPrivate(jsinterp_cx, scriptObj);
       if(!JS_ExecuteScript(jsinterp_cx, jsinterp_global, binscript,
 			   &result))
 	{
+	  interp->errorLine = (int)jsinterp_errorline;
+	  /* Starting with Tcl 8.6 we need this instead: */
+	  /*
+	  Tcl_SetErrorLine(interp, (int)jsinterp_errorline);
+	  */
+	  jsinterp_interp = NULL;
 	  return TCL_ERROR;
 	}
-    }
+      jsinterp_interp = NULL;
+    } /* if */
 
  return TCL_OK;
 } /* jsinterp_evalcb */
