@@ -621,7 +621,6 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 				     jsinterp_vartraceproc, clientData))
 	    {
 	      JS_ReportError(cx, "failed to establish trace");
-	      printf("BLEA!\n");
 	    }
 	}
     }
@@ -708,11 +707,64 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
  *  Ayam Script object evaluation callback
  */
 int
-jsinterp_evalcb(char *script, int modified, Tcl_Obj *cscript)
+jsinterp_evalcb(char *script, int compile, Tcl_Obj **cscript)
 {
+ JSScript *binscript = NULL;
+ JSObject *scriptObj = NULL;
+ jsval result;
 
+  /* compile or execute? */
+  if(compile)
+    {
+      /* compile... */
+      if(*cscript)
+	{
+	  /* there is already an outdated version of the compiled script
+	     => manage associated memory */
+	  JS_RemoveRoot(jsinterp_cx,
+			(jsval*)Tcl_GetByteArrayFromObj(*cscript, NULL));
 
- return AY_OK;
+	  Tcl_DecrRefCount(*cscript);
+	  *cscript = NULL;
+	}
+
+      binscript = JS_CompileScript(jsinterp_cx, jsinterp_global,
+				   script, strlen(script),
+				   NULL, 1);
+      if(binscript)
+	{
+	  scriptObj = JS_NewScriptObject(jsinterp_cx, binscript);
+	  result = OBJECT_TO_JSVAL(scriptObj);
+	  *cscript = Tcl_NewByteArrayObj((unsigned char*)&result,
+					 sizeof(jsval));
+
+	  /* Tcl_NewByteArrayObj() stored a _copy_ of the jsval, so now
+	     we must protect the internal representation of the Tcl_Obj
+	     from GC (not &result) */
+	  JS_AddRoot(jsinterp_cx,
+		     (jsval*)Tcl_GetByteArrayFromObj(*cscript, NULL));
+
+	  Tcl_IncrRefCount(*cscript);
+	}
+      else
+	{
+	  /* compilation failed */
+	}
+    }
+  else
+    {
+      /* execute... */
+      scriptObj =
+	JSVAL_TO_OBJECT(*(jsval*)Tcl_GetByteArrayFromObj(*cscript, NULL));
+      binscript = JS_GetPrivate(jsinterp_cx, scriptObj);
+      if(!JS_ExecuteScript(jsinterp_cx, jsinterp_global, binscript,
+			   &result))
+	{
+	  return TCL_ERROR;
+	}
+    }
+
+ return TCL_OK;
 } /* jsinterp_evalcb */
 
 
