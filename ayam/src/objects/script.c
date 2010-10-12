@@ -1144,12 +1144,6 @@ ay_script_notifycb(ay_object *o)
   if(sc->modified || (!sc->cscript))
     {
       sc->cb = NULL;
-      /* clear old compiled script */
-      if(sc->cscript)
-	{
-	  Tcl_DecrRefCount(sc->cscript);
-	  sc->cscript = NULL;
-	}
 
       /* get language (process use:) */
       ay_script_getlanguage(sc, &language);
@@ -1176,6 +1170,14 @@ ay_script_notifycb(ay_object *o)
       else
 	{
 	  /* Tcl */
+
+	  /* clear old compiled script */
+	  if(sc->cscript)
+	    {
+	      Tcl_DecrRefCount(sc->cscript);
+	      sc->cscript = NULL;
+	    }
+
 	  sc->cscript = Tcl_NewStringObj(sc->script, -1);
 	  Tcl_IncrRefCount(sc->cscript);
 	  sc->modified = AY_FALSE;
