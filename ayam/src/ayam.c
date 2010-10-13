@@ -1268,6 +1268,57 @@ ay_safeinit(Tcl_Interp *interp)
 {
  int ay_status = AY_OK;
 
+
+  /* clevel.c */
+  Tcl_CreateCommand(interp, "goTop", ay_clevel_gotoptcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "goUp", ay_clevel_gouptcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "goDown", ay_clevel_godowntcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getLevel", ay_clevel_gettcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  /*
+  Tcl_CreateCommand(interp, "cl", ay_clevel_cltcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  */
+  /* clipb.c */
+  Tcl_CreateCommand(interp, "copOb", ay_clipb_copytcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "cutOb", ay_clipb_cuttcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "pasOb", ay_clipb_pastetcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_movetcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* conv.c */
+  Tcl_CreateCommand(interp, "convOb", ay_convert_forcetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* instt.c */
+  Tcl_CreateCommand(interp, "resolveIn", ay_instt_resolvetcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getMaster", ay_instt_getmastertcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* object.c */
+  Tcl_CreateCommand(interp, "crtOb", ay_object_createtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "delOb", ay_object_deletetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "nameOb", ay_object_setnametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1280,6 +1331,15 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getName", ay_object_getnametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* pomesht.c */
+  Tcl_CreateCommand(interp, "mergePo", ay_pomesht_mergetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "optiPo", ay_pomesht_optimizetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "splitPo", ay_pomesht_splittcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* prop.c */
   Tcl_CreateCommand(interp, "setProp", ay_prop_settcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1304,23 +1364,53 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getMat", ay_prop_getmattcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* prefs.c */
+  Tcl_CreateCommand(interp, "setPrefs", ay_prefs_settcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getPrefs", ay_prefs_gettcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* sel.c */
+  Tcl_CreateCommand(interp, "selOb", ay_sel_selobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getSel", ay_sel_getseltcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "hSL", ay_sel_hsltcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+  /* shader.c */
   Tcl_CreateCommand(interp, "shaderSet", ay_shader_settcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "shaderGet", ay_shader_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* tags.c */
   Tcl_CreateCommand(interp, "setTags", ay_tags_settcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateCommand(interp, "addTag", ay_tags_addtcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateCommand(interp, "getTags", ay_tags_gettcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
   Tcl_CreateCommand(interp, "delTags", ay_tags_deletetcmd,
 		      (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* tcmd.c */
+  Tcl_CreateCommand(interp, "revertC", ay_tcmd_reverttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "showOb", ay_tcmd_showtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_hidetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "getPnt", ay_tcmd_getpointtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1328,11 +1418,176 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "setPnt", ay_tcmd_setpointtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* trafo.c */
+  Tcl_CreateCommand(interp, "delegTrafo", ay_trafo_delegatetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "movOb", ay_trafo_movobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "movPnts", ay_trafo_movpntstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "scalOb", ay_trafo_scalobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "scalPnts", ay_trafo_scalpntstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "rotOb", ay_trafo_rotobtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "rotPnts", ay_trafo_rotpntstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+  /* selp.c */
+  Tcl_CreateCommand(interp, "selPnts", ay_selp_seltcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "invPnts", ay_selp_inverttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "applyTrafo", ay_selp_applytrafotcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "centerPnts", ay_selp_centertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+
+  /* NURBS */
+
+  /* nurbs/nct.c */
+  Tcl_CreateCommand(interp, "refineNC", ay_nct_refinetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "coarsenNC", ay_nct_coarsentcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "clampNC", ay_nct_clamptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "elevateNC", ay_nct_elevatetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "insknNC", ay_nct_insertkntcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "remknNC", ay_nct_removekntcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "collMP", ay_nct_collapsetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "explMP", ay_nct_explodetcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "splitNC", ay_nct_splittcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "concatNC", ay_nct_concattcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "crtNCircle", ay_nct_crtncircletcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "crtNRect", ay_nct_crtrecttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "crtClosedBS", ay_nct_crtclosedbsptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "rescaleknNC", ay_nct_rescaleknvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "curvPlot", ay_nct_curvplottcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "shiftClosedBS", ay_nct_shiftcbstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "centerNC", ay_nct_centertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "trimNC", ay_nct_trimtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "estlenNC", ay_nct_estlentcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "withOb", ay_tcmd_withobtcmd,
+  Tcl_CreateCommand(interp, "reparamNC", ay_nct_reparamtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  /* nurbs/npt.c */
+  Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "crtNSphere2", ay_npt_crtnsphere2tcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "splitNP", ay_npt_splittocurvestcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "topoly", ay_tess_npatchtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevatevtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "swapuvS", ay_npt_swapuvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "revertuS", ay_npt_revertutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "revertvS", ay_npt_revertvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "closeuNP", ay_npt_closeutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "closevNP", ay_npt_closevtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clamputcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "rescaleknNP", ay_npt_rescaleknvnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "insknuNP", ay_npt_insertknutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "insknvNP", ay_npt_insertknvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "splituNP", ay_npt_splitutcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "splitvNP", ay_npt_splitvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
  return ay_status;
 } /* ay_safeinit */
