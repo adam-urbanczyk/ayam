@@ -52,9 +52,12 @@ int jsinterp_tclvar(JSContext *cx, JSObject *obj,
 
 /* global variables: */
 
+/** major Ayam version we are compiled with */
 char jsinterp_version_ma[] = AY_VERSIONSTR;
+/** minor Ayam version we are compiled with */
 char jsinterp_version_mi[] = AY_VERSIONSTRMI;
 
+/** language id */
 char *jsinterp_langtype = NULL;
 
 /** JS runtime */
@@ -72,23 +75,27 @@ static JSClass jsinterp_global_class = {
     JSCLASS_NO_OPTIONAL_MEMBERS
 };
 
-/** A bunch of pre-defined global functions (that wrap Ayam Tcl commands). */
+/** A bunch of pre-defined global functions,
+    that wrap Ayam Tcl commands (e.g. crtOb),
+    evaluate Tcl scripts (tcleval), and
+    manage variable connections (tclvar). */
 static JSFunctionSpec jsinterp_global_functions[] = {
-  {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"crtOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delOb", jsinterp_wraptcmd, 0, 0, 0},
   {"cutOb", jsinterp_wraptcmd, 0, 0, 0},
   {"copOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasmovOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
   {0}
 };
 
-/** Tcl interpreter */
+/** current Tcl interpreter */
 static Tcl_Interp *jsinterp_interp;
 
-/** Tcl_Obj types */
+/** \name Tcl_Obj types (for data conversion in jsinterp_objtovar()) */
+/*@{*/
 static Tcl_ObjType *jsinterp_BooleanType = NULL;
 static Tcl_ObjType *jsinterp_ByteArrayType = NULL;
 static Tcl_ObjType *jsinterp_DoubleType = NULL;
@@ -96,7 +103,9 @@ static Tcl_ObjType *jsinterp_IntType = NULL;
 static Tcl_ObjType *jsinterp_ListType = NULL;
 static Tcl_ObjType *jsinterp_StringType = NULL;
 static Tcl_ObjType *jsinterp_WideIntType = NULL;
+/*@}*/
 
+/** current error line */
 static unsigned int jsinterp_errorline;
 
 /* functions: */
@@ -124,6 +133,9 @@ jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report)
 } /* jsinterp_error */
 
 
+/* jsinterp_unload:
+ *  unused, there is no way to shut down the plugin
+ */
 void jsinterp_unload()
 {
 
@@ -133,7 +145,8 @@ void jsinterp_unload()
     JS_ShutDown();
 
  return;
-}
+} /* jsinterp_unload */
+
 
 /* jsinterp_convargs:
  *  helper to convert function/command arguments from
