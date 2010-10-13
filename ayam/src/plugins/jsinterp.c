@@ -29,11 +29,6 @@ void jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report);
 int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** JS function to wrap the crtOb command */
-int jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj,
-			  uintN argc, jsval *argv,
-			  jsval *rval);
-
 /** JS function to wrap the eval command */
 int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj,
 			 uintN argc, jsval *argv,
@@ -80,12 +75,12 @@ static JSClass jsinterp_global_class = {
 /** A bunch of pre-defined global functions (that wrap Ayam Tcl commands). */
 static JSFunctionSpec jsinterp_global_functions[] = {
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
-  {"crtOb", jsinterp_wrapcrtobcmd, 0, 0, 0},
-  {"delOb", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"cutOb", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"copOb", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"pasOb", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"pasmovOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"crtOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"delOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"cutOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"copOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"pasOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"pasmovOb", jsinterp_wraptcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
   {0}
 };
@@ -198,13 +193,13 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 
 /* jsinterp_objtoval:
  *  helper function to convert a Tcl_Obj to a jsval
+ *  XXXX add support for unicode strings
  */
 int
 jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 {
  char *sval;
  int ival;
- /* double dval;*/
  JSString *jss;
  JSObject *arr;
  jsint i;
@@ -302,72 +297,8 @@ jsinterp_objtoval(Tcl_Obj *to, jsval *v)
 	}
     }
 
-#if 0
-  if(Tcl_GetIntFromObj(NULL, to, &ival) != TCL_ERROR)
-    {
-      if(JS_NewNumberValue(jsinterp_cx, (double)ival, v))
-	{
-	  return AY_OK;
-	}
-    }
-  else
-    {
-      if(Tcl_GetDoubleFromObj(NULL, to, &dval) != TCL_ERROR)
-	{
-	  if(JS_NewNumberValue(jsinterp_cx, dval, v))
-	    {
-	      return AY_OK;
-	    }
-	}
-      else
-	{
-	  if((sval = Tcl_GetString(to)) != NULL)
-	    {
-	      if((jss = JS_NewStringCopyZ(jsinterp_cx, sval)))
-		{
-		  *v = STRING_TO_JSVAL(jss);
-		  return AY_OK;
-		}
-	    }
-	  /*
-	  else
-	    {
-
-	    }*/ /* if */
-	} /* if */
-    } /* if */
-#endif
  return AY_ERROR;
 } /* jsinterp_objtoval */
-
-
-/* jsinterp_wrapcrtobcmd:
- *  JS function to wrap the crtOb command
- */
-int
-jsinterp_wrapcrtobcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
-		      jsval *rval)
-{
- int ay_status = AY_OK;
- ClientData clientData = {0};
- char **sargv;
-
-  ay_status = jsinterp_convargs(cx, argc, argv, &sargv);
-
-  if(ay_status)
-    {
-      JS_ReportError(cx, "argument conversion failed");
-      return JS_FALSE;
-    }
-
-  ay_object_createtcmd(clientData, jsinterp_interp, argc+1, sargv);
-
-  free(sargv);
-
-  *rval = JSVAL_VOID; /* return undefined */
-
- return JS_TRUE;
-} /* jsinterp_wrapcrtobcmd */
 
 
 /* jsinterp_wrapevalcmd:
@@ -454,7 +385,15 @@ jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
   if(Tcl_GetCommandInfo(jsinterp_interp, sargv[0], &cmdinfo))
     {
-      cmdinfo.proc(clientData, jsinterp_interp, argc+1, sargv);
+      if(!cmdinfo.isNativeObjectProc)
+	{
+	  cmdinfo.proc(clientData, jsinterp_interp, argc+1, sargv);
+	}
+      else
+	{
+	  JS_ReportError(cx, "unsupported command type");
+	  return JS_FALSE;
+	}
     }
   else
     {
@@ -487,7 +426,15 @@ jsinterp_wraptcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
   if(Tcl_GetCommandInfo(jsinterp_interp, sargv[0], &cmdinfo))
     {
-      cmdinfo.proc(clientData, jsinterp_interp, 1, sargv);
+      if(!cmdinfo.isNativeObjectProc)
+	{
+	  cmdinfo.proc(clientData, jsinterp_interp, 1, sargv);
+	}
+      else
+	{
+	  JS_ReportError(cx, "unsupported command type");
+	  return JS_FALSE;
+	}
     }
   else
     {
