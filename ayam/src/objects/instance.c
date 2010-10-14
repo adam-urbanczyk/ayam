@@ -118,7 +118,7 @@ ay_instance_drawcb(struct Togl *togl, ay_object *o)
    if(o->tags && ay_instance_hasrptrafo(o))
      {
        glLoadIdentity();
-       
+
        glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
        ay_quat_torotmatrix(m->quat, tm);
        glMultMatrixd((GLdouble*)tm);
@@ -186,7 +186,7 @@ ay_instance_shadecb(struct Togl *togl, ay_object *o)
    if(o->tags && ay_instance_hasrptrafo(o))
      {
        glLoadIdentity();
-       
+
        glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
        ay_quat_torotmatrix(m->quat, tm);
        glMultMatrixd((GLdouble*)tm);
@@ -254,7 +254,7 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
    if(o->tags && ay_instance_hasrptrafo(o))
      {
        glLoadIdentity();
-       
+
        glTranslated((GLdouble)m->movx, (GLdouble)m->movy, (GLdouble)m->movz);
        ay_quat_torotmatrix(m->quat, tm);
        glMultMatrixd((GLdouble*)tm);
@@ -279,141 +279,6 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
 
  return AY_OK;
 } /* ay_instance_drawhcb */
-
-
-/* ay_instance_addnonm:
- *  
- */
-int
-ay_instance_addnonm(ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *m;
- ay_tag *tag;
- ay_tag *newnotag, *newnmtag;
- int found = AY_FALSE;
-
-  if(!o)
-    return AY_ENULL;
-
-  m = (ay_object *)o->refine;
-
-  tag = m->tags;
-  while(tag)
-    {
-      if(tag->type == ay_no_tagtype)
-	{
-	  if(o == ((ay_btval*)tag->val)->payload)
-	    {
-	      found = 1;
-	      break;
-	    }
-	}
-      tag = tag->next;
-    } /* while */
-
-  if(!found)
-    {
-      if(!(newnotag = calloc(1, sizeof(ay_tag))))
-	{
-	  return AY_EOMEM;
-	}
-      newnotag->type = ay_no_tagtype;
-      newnotag->is_temp = AY_TRUE;
-      newnotag->is_binary = AY_TRUE;
-      if(!(newnotag->val = calloc(1, sizeof(ay_btval))))
-	{
-	  free(newnotag);
-	  return AY_EOMEM;
-	}
-      ((ay_btval*)newnotag->val)->size = 0;
-      ((ay_btval*)newnotag->val)->payload = o;
-
-      if(!(newnmtag = calloc(1, sizeof(ay_tag))))
-	{
-	  ay_tags_free(newnotag);
-	  return AY_EOMEM;
-	}
-
-      newnmtag->type = ay_no_tagtype;
-      newnmtag->is_temp = AY_TRUE;
-      newnmtag->is_binary = AY_TRUE;
-      if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
-	{
-	  free(newnmtag);
-	  ay_tags_free(newnotag);
-	  return AY_EOMEM;
-	}
-      ((ay_btval*)newnmtag->val)->size = 0;
-      ((ay_btval*)newnmtag->val)->payload = m;
-
-      /* link new tags */
-      newnotag->next = m->tags;
-      m->tags = newnotag;
-
-      newnmtag->next = o->tags;
-      o->tags = newnmtag;
-    } /* if */
-
- return ay_status;
-} /* ay_instance_addnonm */
-
-
-/* ay_instance_remnonm:
- *  
- */
-int
-ay_instance_remnonm(ay_object *o)
-{
- int ay_status = AY_OK;
- ay_object *m;
- ay_tag *tag, **lasttag;
- int found = AY_FALSE;
-
-  if(!o)
-    return AY_ENULL;
-
-  m = (ay_object *)o->refine;
-
-  tag = m->tags;
-  lasttag = &(m->tags);
-  while(tag)
-    {
-      if(tag->type == ay_no_tagtype)
-	{
-	  if(o == ((ay_btval*)tag->val)->payload)
-	    {
-	      *lasttag = tag->next;
-	      ay_tags_free(tag);
-	      found = AY_TRUE;
-	      break;
-	    }
-	}
-      tag = tag->next;
-    } /* while */
-
-  /* look for and remove corresponding NM tag only if we found the NO tag */
-  if(found)
-    {
-      tag = o->tags;
-      lasttag = &(o->tags);
-      while(tag)
-	{
-	  if(tag->type == ay_nm_tagtype)
-	    {
-	      if(m == ((ay_btval*)tag->val)->payload)
-		{
-		  *lasttag = tag->next;
-		  ay_tags_free(tag);
-		  break;
-		}
-	    }
-	  tag = tag->next;
-	} /* while */
-    } /* if */
-
- return ay_status;
-} /* ay_instance_remnonm */
 
 
 /* ay_instance_getpntcb:
@@ -442,7 +307,7 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(ay_status && (mode != 3) && pe && pe->num)
 	{
 	  /* add NO tag to master, add NM tag to instance */
-	  ay_status = ay_instance_addnonm(o);
+	  ay_status = ay_tags_addnonm(o, (ay_object*)o->refine);
 	  if(ay_status)
 	    {
 	      ay_pact_clearpointedit(pe);
@@ -451,7 +316,7 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(mode == 3 && !o->selp)
 	{
-	  ay_status = ay_instance_remnonm(o);
+	  ay_status = ay_tags_remnonm(o, (ay_object*)o->refine);
 	}
     } /* if */
 
@@ -916,7 +781,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
 	  i->movx = movx;
 	  i->movy = movy;
 	  i->movz = movz;
-	  
+
 	  i->rotx = rotx;
 	  i->roty = roty;
 	  i->rotz = rotz;
