@@ -281,6 +281,141 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
 } /* ay_instance_drawhcb */
 
 
+/* ay_instance_addnonm:
+ *  
+ */
+int
+ay_instance_addnonm(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *m;
+ ay_tag *tag;
+ ay_tag *newnotag, *newnmtag;
+ int found = AY_FALSE;
+
+  if(!o)
+    return AY_ENULL;
+
+  m = (ay_object *)o->refine;
+
+  tag = m->tags;
+  while(tag)
+    {
+      if(tag->type == ay_no_tagtype)
+	{
+	  if(o == ((ay_btval*)tag->val)->payload)
+	    {
+	      found = 1;
+	      break;
+	    }
+	}
+      tag = tag->next;
+    } /* while */
+
+  if(!found)
+    {
+      if(!(newnotag = calloc(1, sizeof(ay_tag))))
+	{
+	  return AY_EOMEM;
+	}
+      newnotag->type = ay_no_tagtype;
+      newnotag->is_temp = AY_TRUE;
+      newnotag->is_binary = AY_TRUE;
+      if(!(newnotag->val = calloc(1, sizeof(ay_btval))))
+	{
+	  free(newnotag);
+	  return AY_EOMEM;
+	}
+      ((ay_btval*)newnotag->val)->size = 0;
+      ((ay_btval*)newnotag->val)->payload = o;
+
+      if(!(newnmtag = calloc(1, sizeof(ay_tag))))
+	{
+	  ay_tags_free(newnotag);
+	  return AY_EOMEM;
+	}
+
+      newnmtag->type = ay_no_tagtype;
+      newnmtag->is_temp = AY_TRUE;
+      newnmtag->is_binary = AY_TRUE;
+      if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
+	{
+	  free(newnmtag);
+	  ay_tags_free(newnotag);
+	  return AY_EOMEM;
+	}
+      ((ay_btval*)newnmtag->val)->size = 0;
+      ((ay_btval*)newnmtag->val)->payload = m;
+
+      /* link new tags */
+      newnotag->next = m->tags;
+      m->tags = newnotag;
+
+      newnmtag->next = o->tags;
+      o->tags = newnmtag;
+    } /* if */
+
+ return ay_status;
+} /* ay_instance_addnonm */
+
+
+/* ay_instance_remnonm:
+ *  
+ */
+int
+ay_instance_remnonm(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *m;
+ ay_tag *tag, **lasttag;
+ int found = AY_FALSE;
+
+  if(!o)
+    return AY_ENULL;
+
+  m = (ay_object *)o->refine;
+
+  tag = m->tags;
+  lasttag = &(m->tags);
+  while(tag)
+    {
+      if(tag->type == ay_no_tagtype)
+	{
+	  if(o == ((ay_btval*)tag->val)->payload)
+	    {
+	      *lasttag = tag->next;
+	      ay_tags_free(tag);
+	      found = AY_TRUE;
+	      break;
+	    }
+	}
+      tag = tag->next;
+    } /* while */
+
+  /* look for and remove corresponding NM tag only if we found the NO tag */
+  if(found)
+    {
+      tag = o->tags;
+      lasttag = &(o->tags);
+      while(tag)
+	{
+	  if(tag->type == ay_nm_tagtype)
+	    {
+	      if(m == ((ay_btval*)tag->val)->payload)
+		{
+		  *lasttag = tag->next;
+		  ay_tags_free(tag);
+		  break;
+		}
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+ return ay_status;
+} /* ay_instance_remnonm */
+
+
 /* ay_instance_getpntcb:
  *  get point (editing and selection) callback function of instance object
  */
@@ -291,8 +426,6 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_voidfp *arr = NULL;
  ay_object *m = NULL;
  ay_getpntcb *cb = NULL;
- ay_tag *tag, **lasttag;
- int found = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -305,64 +438,21 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   if(cb)
     {
       ay_status = cb(mode, m, p, pe);
-      /* add NO tag to master */
+
       if(ay_status && (mode != 3) && pe && pe->num)
 	{
-	  tag = m->tags;
-	  while(tag)
+	  /* add NO tag to master, add NM tag to instance */
+	  ay_status = ay_instance_addnonm(o);
+	  if(ay_status)
 	    {
-	      if(tag->type == ay_no_tagtype)
-		{
-		  if(o == ((ay_btval*)tag->val)->payload)
-		    {
-		      found = 1;
-		      break;
-		    }
-		}
-	      tag = tag->next;
-	    } /* while */
-
-	  if(!found)
-	    {
-	      if(!(tag = calloc(1, sizeof(ay_tag))))
-		{
-		  ay_pact_clearpointedit(pe);
-		  return AY_EOMEM;
-		}
-	      tag->type = ay_no_tagtype;
-	      tag->is_temp = AY_TRUE;
-	      tag->is_binary = AY_TRUE;
-	      if(!(tag->val = calloc(1, sizeof(ay_btval))))
-		{
-		  ay_pact_clearpointedit(pe);
-		  free(tag);
-		  return AY_EOMEM;
-		}
-	      ((ay_btval*)tag->val)->size = 0;
-	      ((ay_btval*)tag->val)->payload = o;
-	      /* link new tag */
-	      tag->next = m->tags;
-	      m->tags = tag;
-	    } /* if */
+	      ay_pact_clearpointedit(pe);
+	    }
 	} /* if */
 
       if(mode == 3 && !o->selp)
 	{
-	  tag = m->tags;
-	  lasttag = &(m->tags);
-	  while(tag)
-	    {
-	      if(tag->type == ay_no_tagtype)
-		{
-		  if(o == ((ay_btval*)tag->val)->payload)
-		    {
-		      *lasttag = tag->next;
-		      break;
-		    }
-		}
-	      tag = tag->next;
-	    } /* while */
-	} /* if */
+	  ay_status = ay_instance_remnonm(o);
+	}
     } /* if */
 
  return ay_status;
