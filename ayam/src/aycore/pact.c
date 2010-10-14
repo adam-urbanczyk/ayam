@@ -1527,14 +1527,11 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointnc";
- double *cv = NULL;
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL, *newknotv = NULL;
 
   if(!curve || !index)
     return AY_ENULL;
-
-  cv = curve->controlv;
 
   *index = -1;
   ay_status = ay_pact_findpoint(curve->length, 4, curve->controlv,
@@ -1643,20 +1640,17 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 {
  int ay_status = AY_OK;
  char fname[] = "delete_pointic";
- double *cv = NULL;
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL;
 
   if(!icurve || !index)
     return AY_ENULL;
 
-  cv = icurve->controlv;
-
   *index = -1;
   ay_status = ay_pact_findpoint(icurve->length, 3, icurve->controlv,
 				objX, objY, objZ, index);
 
-  if(*index == -1)
+  if(ay_status || *index == -1)
     {
       return AY_OK;
     }
@@ -1718,7 +1712,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
   ay_status = ay_pact_findpoint(acurve->length, 3, acurve->controlv,
 				objX, objY, objZ, index);
 
-  if(*index == -1)
+  if(ay_status || *index == -1)
     {
       return AY_OK;
     }
