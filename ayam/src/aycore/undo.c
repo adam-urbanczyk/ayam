@@ -37,6 +37,8 @@ int ay_undo_copyroot(ay_root_object *src, ay_root_object *dst);
 
 int ay_undo_copyselp(ay_object *src, ay_object *dst);
 
+int ay_undo_copytags(ay_object *src, ay_object *dst);
+
 int ay_undo_copy(ay_undo_object *uo);
 
 int ay_undo_redo(void);
@@ -499,6 +501,36 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
 } /* ay_undo_copyselp */
 
 
+/* ay_undo_copytags:
+ *  copy all tags from object <src> to object <dst>
+ *  including temporary tags
+ */
+int
+ay_undo_copytags(ay_object *src, ay_object *dst)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag = NULL, **newtagptr = NULL;
+
+  if(!src || !dst)
+    return AY_ENULL;
+
+  tag = src->tags;
+  newtagptr = &(dst->tags);
+  while(tag)
+    {
+      ay_status = ay_tags_copy(tag, newtagptr);
+      if(ay_status == AY_OK)
+	{
+	  newtagptr = &((*newtagptr)->next);
+	  *newtagptr = NULL;
+	}
+      tag = tag->next;
+    }
+
+ return AY_OK;
+} /* ay_undo_copytags */
+
+
 /* ay_undo_copy:
  *  copy objects from undo object <uo> back to the scene
  *  (in-place) using references information
@@ -559,7 +591,7 @@ ay_undo_copy(ay_undo_object *uo)
 	{
 	  ay_status = ay_tags_delall(o);
 	}
-      ay_status = ay_tags_copyall(c, o);
+      ay_status = ay_undo_copytags(c, o);
 
       /* copy type specific part */
       switch(c->type)
@@ -957,7 +989,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 
   /* copy tags */
   if(src->tags)
-    ay_status = ay_tags_copyall(src, new);
+    ay_status = ay_undo_copytags(src, new);
 
   /* copy selected points */
   if(src->selp)

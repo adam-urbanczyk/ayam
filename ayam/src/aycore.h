@@ -1209,6 +1209,14 @@ int ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
  */
 int ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname);
 
+/** add NO/NM tags
+ */
+int ay_tags_addnonm(ay_object *o, ay_object *m);
+
+/** remove NO/NM tags
+ */
+int ay_tags_remnonm(ay_object *o, ay_object *m);
+
 
 /* tc.c */
 

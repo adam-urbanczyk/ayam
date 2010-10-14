@@ -191,6 +191,7 @@ ay_object_delete(ay_object *o)
  ay_object *down = NULL, *d = NULL;
  ay_mat_object *mat = NULL;
  unsigned int *refcountptr;
+ ay_tag *tag = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -198,6 +199,7 @@ ay_object_delete(ay_object *o)
   if(o->refcount > 0)
     return AY_EREF;
 
+  /* never delete the one and only end level object */
   if(o == ay_endlevel)
     return AY_OK;
 
@@ -229,6 +231,23 @@ ay_object_delete(ay_object *o)
   /* delete selected points */
   if(o->selp)
     ay_selp_clear(o);
+
+  /* see if other objects point to us via NO tags; remove those tags */
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_nm_tagtype)
+	{
+	  d = (ay_object*)(((ay_btval*)tag->val)->payload);
+	  tag = tag->next;
+
+	  ay_tags_remnonm(d, o);
+	}
+      else
+	{
+	  tag = tag->next;
+	}
+    } /* while */
 
   /* delete tags */
   if(o->tags)

@@ -130,6 +130,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
 
 /* ay_tags_copyall:
  *  copy all tags from object <src> to object <dst>
+ *  temporary tags are _not_ copied
  */
 int
 ay_tags_copyall(ay_object *src, ay_object *dst)
@@ -144,11 +145,14 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
   newtagptr = &(dst->tags);
   while(tag)
     {
-      ay_status = ay_tags_copy(tag, newtagptr);
-      if(ay_status == AY_OK)
+      if(!tag->is_temp)
 	{
-	  newtagptr = &((*newtagptr)->next);
-	  *newtagptr = NULL;
+	  ay_status = ay_tags_copy(tag, newtagptr);
+	  if(ay_status == AY_OK)
+	    {
+	      newtagptr = &((*newtagptr)->next);
+	      *newtagptr = NULL;
+	    }
 	}
       tag = tag->next;
     }
@@ -408,7 +412,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		  t = t->next;
 		}
 	    } /* while */
-	  
+
 	  /* delete old tags */
 	  ay_tags_delall(o);
 
@@ -450,7 +454,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  continue;
 		}
-		
+
 	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);
@@ -976,3 +980,132 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 
  return AY_OK;
 } /* ay_tags_reconnect */
+
+
+/* ay_tags_addnonm:
+ *
+ */
+int
+ay_tags_addnonm(ay_object *o, ay_object *m)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag;
+ ay_tag *newnotag, *newnmtag;
+ int found = AY_FALSE;
+
+  if(!o || !m)
+    return AY_ENULL;
+
+  tag = m->tags;
+  while(tag)
+    {
+      if(tag->type == ay_no_tagtype)
+	{
+	  if(o == ((ay_btval*)tag->val)->payload)
+	    {
+	      found = 1;
+	      break;
+	    }
+	}
+      tag = tag->next;
+    } /* while */
+
+  if(!found)
+    {
+      if(!(newnotag = calloc(1, sizeof(ay_tag))))
+	{
+	  return AY_EOMEM;
+	}
+      newnotag->type = ay_no_tagtype;
+      newnotag->is_temp = AY_TRUE;
+      newnotag->is_binary = AY_TRUE;
+      if(!(newnotag->val = calloc(1, sizeof(ay_btval))))
+	{
+	  free(newnotag);
+	  return AY_EOMEM;
+	}
+      ((ay_btval*)newnotag->val)->size = 0;
+      ((ay_btval*)newnotag->val)->payload = o;
+
+      if(!(newnmtag = calloc(1, sizeof(ay_tag))))
+	{
+	  ay_tags_free(newnotag);
+	  return AY_EOMEM;
+	}
+
+      newnmtag->type = ay_no_tagtype;
+      newnmtag->is_temp = AY_TRUE;
+      newnmtag->is_binary = AY_TRUE;
+      if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
+	{
+	  free(newnmtag);
+	  ay_tags_free(newnotag);
+	  return AY_EOMEM;
+	}
+      ((ay_btval*)newnmtag->val)->size = 0;
+      ((ay_btval*)newnmtag->val)->payload = m;
+
+      /* link new tags */
+      newnotag->next = m->tags;
+      m->tags = newnotag;
+
+      newnmtag->next = o->tags;
+      o->tags = newnmtag;
+    } /* if */
+
+ return ay_status;
+} /* ay_tags_addnonm */
+
+
+/* ay_tags_remnonm:
+ *
+ */
+int
+ay_tags_remnonm(ay_object *o, ay_object *m)
+{
+ int ay_status = AY_OK;
+ ay_tag *tag, **lasttag;
+ int found = AY_FALSE;
+
+  if(!o || !m)
+    return AY_ENULL;
+
+  tag = m->tags;
+  lasttag = &(m->tags);
+  while(tag)
+    {
+      if(tag->type == ay_no_tagtype)
+	{
+	  if(o == ((ay_btval*)tag->val)->payload)
+	    {
+	      *lasttag = tag->next;
+	      ay_tags_free(tag);
+	      found = AY_TRUE;
+	      break;
+	    }
+	}
+      tag = tag->next;
+    } /* while */
+
+  /* look for and remove corresponding NM tag only if we found the NO tag */
+  if(found)
+    {
+      tag = o->tags;
+      lasttag = &(o->tags);
+      while(tag)
+	{
+	  if(tag->type == ay_nm_tagtype)
+	    {
+	      if(m == ((ay_btval*)tag->val)->payload)
+		{
+		  *lasttag = tag->next;
+		  ay_tags_free(tag);
+		  break;
+		}
+	    }
+	  tag = tag->next;
+	} /* while */
+    } /* if */
+
+ return ay_status;
+} /* ay_tags_remnonm */
