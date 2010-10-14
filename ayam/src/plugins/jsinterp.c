@@ -115,7 +115,6 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"getTags", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delTags", jsinterp_wraptcmdargs, 0, 0, 0},
 
-  {"revertC", jsinterp_wraptcmd, 0, 0, 0},
   {"getPnt", jsinterp_wraptcmdargs, 0, 0, 0},
   {"setPnt", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delegTrafo", jsinterp_wraptcmd, 0, 0, 0},
@@ -129,6 +128,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"invPnts", jsinterp_wraptcmd, 0, 0, 0},
   {"applyTrafo", jsinterp_wraptcmdargs, 0, 0, 0},
   {"centerPnts", jsinterp_wraptcmd, 0, 0, 0},
+
+  {"revertC", jsinterp_wraptcmd, 0, 0, 0},
   {"refineNC", jsinterp_wraptcmd, 0, 0, 0},
   {"coarsenNC", jsinterp_wraptcmd, 0, 0, 0},
   {"clampNC", jsinterp_wraptcmd, 0, 0, 0},
@@ -138,28 +139,24 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"splitNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"estlenNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"reparamNC", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
 
+  {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertuS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertvS", jsinterp_wraptcmd, 0, 0, 0},
-
   {"closeuNP", jsinterp_wraptcmd, 0, 0, 0},
   {"closevNP", jsinterp_wraptcmd, 0, 0, 0},
-
   {"insknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"insknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"clampuNP", jsinterp_wraptcmd, 0, 0, 0},
   {"clampvNP", jsinterp_wraptcmd, 0, 0, 0},
   {"rescaleknNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"topoly", jsinterp_wraptcmd, 0, 0, 0},
   {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
-
   {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
-
+  {"splituNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"splitvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
-
 
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
