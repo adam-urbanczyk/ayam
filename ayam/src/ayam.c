@@ -1371,10 +1371,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getMat", ay_prop_getmattcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  /* prefs.c */
-  Tcl_CreateCommand(interp, "setPrefs", ay_prefs_settcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
+  /* XXXX ? */
   Tcl_CreateCommand(interp, "getPrefs", ay_prefs_gettcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1385,7 +1382,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "getSel", ay_sel_getseltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "hSL", ay_sel_hsltcmd,
+  Tcl_CreateCommand(interp, "sL", ay_sel_hsltcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
 
