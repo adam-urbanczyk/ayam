@@ -133,6 +133,17 @@ ay_notify_parent(void)
 	      return AY_ERROR;
 	    } /* if */
 
+	  /* search for NO tag(s) and notify the objects therein */
+	  tag = o->tags;
+	  while(tag)
+	    {
+	      if(tag->type == ay_no_tagtype)
+		{
+		  ay_notify_force(((ay_btval*)tag->val)->payload);
+		}
+	      tag = tag->next;
+	    }
+
 	  /* search for and execute all ANS (after notify) tag(s) */
 	  tag = o->tags;
 	  while(tag)
