@@ -86,6 +86,81 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"copOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasmovOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"repOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"convOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"goTop", jsinterp_wraptcmd, 0, 0, 0},
+  {"goUp", jsinterp_wraptcmd, 0, 0, 0},
+  {"goDown", jsinterp_wraptcmd, 0, 0, 0},
+  {"getLevel", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"resolveIn", jsinterp_wraptcmd, 0, 0, 0},
+  {"nameOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
+  {"optiPo", jsinterp_wraptcmd, 0, 0, 0},
+  {"splitPo", jsinterp_wraptcmd, 0, 0, 0},
+  {"setProp", jsinterp_wraptcmd, 0, 0, 0},
+  {"getProp", jsinterp_wraptcmd, 0, 0, 0},
+  {"setTrafo", jsinterp_wraptcmd, 0, 0, 0},
+  {"getTrafo", jsinterp_wraptcmd, 0, 0, 0},
+  {"setAttr", jsinterp_wraptcmd, 0, 0, 0},
+  {"getAttr", jsinterp_wraptcmd, 0, 0, 0},
+  {"setMat", jsinterp_wraptcmd, 0, 0, 0},
+  {"getMat", jsinterp_wraptcmd, 0, 0, 0},
+  {"shaderSet", jsinterp_wraptcmd, 0, 0, 0},
+  {"shaderGet", jsinterp_wraptcmd, 0, 0, 0},
+  {"selOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"getSel", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"sL", jsinterp_wraptcmd, 0, 0, 0},
+  {"setTags", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"addTag", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"getTags", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"delTags", jsinterp_wraptcmdargs, 0, 0, 0},
+
+  {"revertC", jsinterp_wraptcmd, 0, 0, 0},
+  {"getPnt", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"setPnt", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"delegTrafo", jsinterp_wraptcmd, 0, 0, 0},
+  {"movOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"movPnts", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"scalOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"scalPnts", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"rotOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"rotPnts", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"selPnts", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"invPnts", jsinterp_wraptcmd, 0, 0, 0},
+  {"applyTrafo", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"centerPnts", jsinterp_wraptcmd, 0, 0, 0},
+  {"refineNC", jsinterp_wraptcmd, 0, 0, 0},
+  {"coarsenNC", jsinterp_wraptcmd, 0, 0, 0},
+  {"clampNC", jsinterp_wraptcmd, 0, 0, 0},
+  {"elevateNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"insknNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remknNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"splitNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"estlenNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"reparamNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
+
+  {"revertuS", jsinterp_wraptcmd, 0, 0, 0},
+  {"revertvS", jsinterp_wraptcmd, 0, 0, 0},
+
+  {"closeuNP", jsinterp_wraptcmd, 0, 0, 0},
+  {"closevNP", jsinterp_wraptcmd, 0, 0, 0},
+
+  {"insknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"insknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"clampuNP", jsinterp_wraptcmd, 0, 0, 0},
+  {"clampvNP", jsinterp_wraptcmd, 0, 0, 0},
+  {"rescaleknNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"topoly", jsinterp_wraptcmd, 0, 0, 0},
+  {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
+
+  {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
+
+  {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
+
+
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
   {0}
@@ -627,29 +702,32 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   /* evaluate */
   if(argv[1][0] == '-' && argv[1][1] == 'f')
     {
+      /* -file */
+
       if(argc < 3)
 	{
 	  ay_error(AY_EARGS, argv[0], "(script | -file filename)");
 	  jsinterp_interp = NULL;
 	  return TCL_OK;
 	}
-      /* -file */
-      obj = Tcl_NewObj();
+
       channel = Tcl_OpenFileChannel(interp, argv[2], "r", 0);
       if(channel)
 	{
+	  obj = Tcl_NewObj();
 	  Tcl_ReadChars(channel, obj, -1, 0);
 	  Tcl_Close(interp, channel);
+
+	  bytes = Tcl_GetByteArrayFromObj(obj, &length);
+	  ok = JS_EvaluateScript(jsinterp_cx, jsinterp_global,
+				 (char*)bytes, length,
+				 argv[2], 0, &rval);
+	  Tcl_IncrRefCount(obj);Tcl_DecrRefCount(obj);
 	}
-      bytes = Tcl_GetByteArrayFromObj(obj, &length);
-      ok = JS_EvaluateScript(jsinterp_cx, jsinterp_global,
-			     (char*)bytes, length,
-			     argv[2], 0, &rval);
-      Tcl_IncrRefCount(obj);Tcl_DecrRefCount(obj);
     }
   else
     {
-      /* interpret argument */
+      /* interpret first argument as JS script */
       ok = JS_EvaluateScript(jsinterp_cx, jsinterp_global,
 			     argv[1], strlen(argv[1]),
 			     "argv[1]", 0, &rval);
