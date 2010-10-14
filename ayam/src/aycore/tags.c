@@ -983,7 +983,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 
 
 /* ay_tags_addnonm:
- *
+ *  add NO/NM tags
  */
 int
 ay_tags_addnonm(ay_object *o, ay_object *m)
@@ -996,6 +996,9 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
   if(!o || !m)
     return AY_ENULL;
 
+  /* see if there is already a NO tag in the master
+     that points to us, if there is one, nothing
+     needs to be done */
   tag = m->tags;
   while(tag)
     {
@@ -1003,7 +1006,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 	{
 	  if(o == ((ay_btval*)tag->val)->payload)
 	    {
-	      found = 1;
+	      found = AY_TRUE;
 	      break;
 	    }
 	}
@@ -1012,6 +1015,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 
   if(!found)
     {
+      /* first, get memory for the two new binary tags */
       if(!(newnotag = calloc(1, sizeof(ay_tag))))
 	{
 	  return AY_EOMEM;
@@ -1045,7 +1049,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
       ((ay_btval*)newnmtag->val)->size = 0;
       ((ay_btval*)newnmtag->val)->payload = m;
 
-      /* link new tags */
+      /* second, link the new tags */
       newnotag->next = m->tags;
       m->tags = newnotag;
 
@@ -1058,7 +1062,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 
 
 /* ay_tags_remnonm:
- *
+ *  remove NO/NM tags
  */
 int
 ay_tags_remnonm(ay_object *o, ay_object *m)
