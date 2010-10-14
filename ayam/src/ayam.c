@@ -188,6 +188,10 @@ char *ay_no_tagtype;
 
 char *ay_no_tagname = "NO";
 
+char *ay_nm_tagtype;
+
+char *ay_nm_tagname = "NM";
+
 
 static char *ay_log = "/tmp/ay.log";
 
@@ -498,6 +502,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register NO (Notify Object) tag type */
   ay_tags_register(interp, ay_no_tagname, &ay_no_tagtype);
+
+  /* register NM (Notify Master) tag type */
+  ay_tags_register(interp, ay_nm_tagname, &ay_nm_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))

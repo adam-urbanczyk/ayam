@@ -1584,6 +1584,8 @@ extern char *ay_hc_tagtype;
 extern char *ay_hc_tagname;
 extern char *ay_no_tagtype;
 extern char *ay_no_tagname;
+extern char *ay_nm_tagtype;
+extern char *ay_nm_tagname;
 /*@}*/
 
 /* Definitions */
