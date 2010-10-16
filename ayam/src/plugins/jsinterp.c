@@ -49,6 +49,11 @@ int jsinterp_tclvar(JSContext *cx, JSObject *obj,
 		    uintN argc, jsval *argv,
 		    jsval *rval);
 
+/** JS function to set a Tcl var from JS */
+int jsinterp_tclset(JSContext *cx, JSObject *obj,
+		    uintN argc, jsval *argv,
+		    jsval *rval);
+
 
 /* global variables: */
 
@@ -76,9 +81,10 @@ static JSClass jsinterp_global_class = {
 };
 
 /** A bunch of pre-defined global functions,
-    that wrap Ayam Tcl commands (e.g. crtOb),
-    evaluate Tcl scripts (tcleval), and
-    manage variable connections (tclvar). */
+    that wrap Ayam Tcl commands (e.g. crtOb()),
+    evaluate Tcl scripts (tcleval()),
+    manage variable connections (tclvar()), and
+    set Tcl variables from JS (tclset()). */
 static JSFunctionSpec jsinterp_global_functions[] = {
   {"crtOb", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delOb", jsinterp_wraptcmd, 0, 0, 0},
@@ -94,9 +100,11 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"getLevel", jsinterp_wraptcmdargs, 0, 0, 0},
   {"resolveIn", jsinterp_wraptcmd, 0, 0, 0},
   {"nameOb", jsinterp_wraptcmd, 0, 0, 0},
+
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},
   {"splitPo", jsinterp_wraptcmd, 0, 0, 0},
+
   {"setProp", jsinterp_wraptcmd, 0, 0, 0},
   {"getProp", jsinterp_wraptcmd, 0, 0, 0},
   {"setTrafo", jsinterp_wraptcmd, 0, 0, 0},
@@ -130,36 +138,53 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"centerPnts", jsinterp_wraptcmd, 0, 0, 0},
 
   {"revertC", jsinterp_wraptcmd, 0, 0, 0},
+
   {"refineNC", jsinterp_wraptcmd, 0, 0, 0},
   {"coarsenNC", jsinterp_wraptcmd, 0, 0, 0},
   {"clampNC", jsinterp_wraptcmd, 0, 0, 0},
   {"elevateNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"insknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"remknNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  /* collMP explMP ? */
   {"splitNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"concatNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"crtNCircle", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"crtNRect", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"crtClosedBS", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"rescaleknNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  /* curvPlot ? */
+  {"shiftClosedBS", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"toXYNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"makeCompNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"centerNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"trimNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"estlenNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"reparamNC", jsinterp_wraptcmdargs, 0, 0, 0},
 
+  {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
+  {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
+  {"splitNP", jsinterp_wraptcmd, 0, 0, 0},
+  {"buildNP", jsinterp_wraptcmd, 0, 0, 0},
+  /* topoly? */
+  {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertuS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertvS", jsinterp_wraptcmd, 0, 0, 0},
   {"closeuNP", jsinterp_wraptcmd, 0, 0, 0},
   {"closevNP", jsinterp_wraptcmd, 0, 0, 0},
-  {"insknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"insknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"clampuNP", jsinterp_wraptcmd, 0, 0, 0},
   {"clampvNP", jsinterp_wraptcmd, 0, 0, 0},
   {"rescaleknNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"insknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"insknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"splituNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"splitvNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
-  {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
+  {"tclset", jsinterp_tclset, 0, 0, 0},
   {0}
 };
 
@@ -665,6 +690,121 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
  return JS_TRUE;
 } /* jsinterp_tclvar */
+
+
+/* jsinterp_jsvaltoobj:
+ *  helper for jsinterp_tclset() below
+ *  convert jsval to Tcl_Obj
+ */
+void
+jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
+{
+ int ival;
+ jsuint i, arrlen;
+ jsdouble *dval;
+ JSString *jss;
+ JSObject *jso;
+ Tcl_Obj *lto;
+ jsval arrelem;
+
+  if(JSVAL_IS_BOOLEAN(jv))
+    {
+      ival = JSVAL_TO_BOOLEAN(jv);
+      *to = Tcl_NewBooleanObj(ival);
+      return;
+    }
+  if(JSVAL_IS_INT(jv))
+    {
+      /*JS_ValueToECMAInt32(jsinterp_cx, jv, &ival);*/
+      ival = JSVAL_TO_INT(jv);
+      *to = Tcl_NewIntObj(ival);
+      return;
+    }
+  if(JSVAL_IS_DOUBLE(jv))
+    {
+      dval = JSVAL_TO_DOUBLE(jv);
+      *to = Tcl_NewDoubleObj((double)*dval);
+      return;
+    }
+  if(JSVAL_IS_STRING(jv))
+    {
+      jss = JSVAL_TO_STRING(jv);
+      *to = Tcl_NewStringObj(JS_GetStringBytes(jss), -1);
+      return;
+    }
+  if(JSVAL_IS_OBJECT(jv))
+    {
+      jso = JSVAL_TO_OBJECT(jv);
+      if(JS_IsArrayObject(jsinterp_cx, jso))
+	{
+	  if(JS_GetArrayLength(jsinterp_cx, jso, &arrlen))
+	    {
+	      *to = Tcl_NewListObj(0, NULL);
+	      if(arrlen > 0)
+		{
+		  for(i = 0; i < arrlen; i++)
+		    {
+		      if(JS_GetElement(jsinterp_cx, jso, i, &arrelem))
+			{
+			  jsinterp_jsvaltoobj(arrelem, &lto);
+			  if(lto)
+			    {
+			      Tcl_ListObjAppendElement(NULL, *to, lto);
+			    }
+			}
+		    } /* for */
+		} /* if */
+	    } /* if */
+	} /* if */
+    } /* if */
+
+  return;
+} /* jsinterp_jsvaltoobj */
+
+
+/* jsinterp_tclset:
+ *  JS function to efficiently set Tcl vars from JS
+ */
+int
+jsinterp_tclset(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
+		jsval *rval)
+{
+ uintN i = 0;
+ char *vname;
+ Tcl_Obj *ton = NULL, *to = NULL;
+
+  if(argc < 2)
+    {
+      JS_ReportError(cx, "insufficient arguments, need varname and value");
+    }
+
+  for(i = 0; (i+1) < argc; i += 2)
+    {
+      if(JSVAL_IS_STRING(argv[i]))
+	{
+	  /* get variable name */
+	  vname = JS_GetStringBytes(JSVAL_TO_STRING(argv[i]));
+	  ton = Tcl_NewStringObj(vname, -1);
+
+	  /* get variable value */
+	  to = NULL;
+	  jsinterp_jsvaltoobj(argv[i+1], &to);
+
+	  /* set the variable */
+	  if(to)
+	    {
+	      Tcl_ObjSetVar2(jsinterp_interp, ton, NULL, to,
+			     TCL_LEAVE_ERR_MSG);
+	    }
+
+	  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+	} /* if */
+    } /* for */
+
+  *rval = JSVAL_VOID; /* return undefined */
+
+ return JS_TRUE;
+} /* jsinterp_tclset */
 
 
 /* jsinterp_evaltcmd:
