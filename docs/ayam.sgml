@@ -7097,6 +7097,11 @@ that are embedded in the Script objects themselves.
 Those small embedded scripts may employ functionality from Tcl and
 the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
+<p>
+Since Ayam 1.18 Script objects may also use arbitrary, plugin provided,
+scripting languages, like e.g. JavaScript, provided by the
+<tt/"jsinterp"/ plugin (see also:
+<ref id="jsinterp" name="JavaScript Scripting Interface">).
 
 <sect2>Safe Interpreter<label id="safeinterp">
 <p>
@@ -7106,8 +7111,8 @@ posed a huge security risk. This is no longer the case.
 Script objects scripts now run in a safe interpreter with reduced
 instruction set. They can no longer write to the file system, get
 onto the network, or confuse the application state. Direct access
-to Tk is also completely blocked but Script objects still can have their
-own property GUIs (see examples below).
+to Tk is also completely blocked, but Script objects still can have their
+own property GUIs (refer to the examples below).
 <p>
 In particular, the following Tcl commands are not available in the
 safe interpreter:
@@ -7197,6 +7202,17 @@ use the clipboard) to be written:
 When a script is running, the current level is the child level of the
 respective script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished.
+<p>
+Since Ayam 1.18 Script objects may also use arbitrary, plugin provided,
+scripting languages. To switch to a different language, the first line
+of the script must be a comment (in the syntax of the other language)
+with the word <tt>"use:"</tt> followed by the language name, as
+provided by the corresponding plugin, e.g. for JavaScript the first line
+should look like this:
+<code>
+/* Ayam, use: JavaScript */
+</code>
+.
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -11647,7 +11663,7 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
-<sect1>JavaScript Scripting Interface
+<sect1>JavaScript Scripting Interface<label id="jsinterp">
 <p>
 This sections contains the documentation of the JavaScript scripting
 interface available after loading of the <tt>"jsinterp"</tt> plugin.
@@ -11661,19 +11677,24 @@ context that lives until Ayam exits.
 <sect2>Accessing JavaScript from Tcl and Script Objects
 <p>
 To access the JavaScript functionality from the Tcl scripting interface,
-the <tt>"jsEval"</tt> command can be used. Furthermore, Script object
-scripts may also be implemented in JavaScript, provided the first line
-of the script is a comment that instructs Ayam to use the JavaScript
-interpreter:
+the <tt>"jsEval"</tt> command can be used:
 <code>
-/* Ayam, use: JavaScript; */
+jsEval { var a = 0; a = a + 5.5; tclset("a", a); }
+jsEval -f scriptfile.js
+</code>.
+<p>
+Furthermore, Script object scripts may also be implemented in JavaScript,
+provided the first line of the script is a comment that instructs Ayam to
+use the JavaScript interpreter:
+<code>
+/* Ayam, use: JavaScript */
 ...
 </code>.
 
 <sect2>JavaScript Functions
 <p>
 This subsection informs about the global functions additionally
-availabe in the Ayam JavaScript interpreter.
+available in the Ayam JavaScript interpreter.
 <p>
 Those are converted Tcl commands, <tt>"tcleval"</tt>, and <tt>"tclvar"</tt>.
 <p>
@@ -11689,8 +11710,8 @@ Apart from commands converted to functions, there is the function
 var a = 42;
 a = tcleval("puts " + a + "; return 5;");
 tcleval("puts " + a);
-</code>.
-The <tt>"tcleval"</tt> function allows access to all the
+</code>
+The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript.
 <p>
@@ -11703,12 +11724,26 @@ side are always automatically reflected on the JavaScript side:
 tclvar("a");
 tcleval("set a 42");
 tcleval("puts " + a);
-</code>.
+</code>
 Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write onto the Tcl variable.
 The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e. all the work is done
 in the trace callback).
+<p>
+The third function is <tt>"tclset"</tt> that efficiently sets
+Tcl variables from the JavaScript context.
+For example:
+<code>
+var a = 3.3;
+var b = new Array(1, 3, 5);
+tclset("a", a);
+tclset("b", b);
+</code>
+sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
+and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
+Note that the variable names may point to Tcl array elements
+<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>.
 
 <sect2>Data Conversion
 <p>
@@ -11723,9 +11758,15 @@ Associative arrays will be converted to objects with named properties.
 This section contains a complete example for a Script object
 written in JavaScript. 
 <code>
-var a = 42;
-a = tcleval("puts " + a + "; return 5;");
-tcleval("puts " + a);
+/* Ayam, use: JavaScript */
+tclvar("SphereAttrData");
+getProp();
+if(SphereAttrData)
+{
+  tclset("SphereAttrData(ZMin)", SphereAttrData.Radius);
+  tclset("SphereAttrData(ZMax)", SphereAttrData.Radius);
+  setProp();
+}
 </code>
 
 
