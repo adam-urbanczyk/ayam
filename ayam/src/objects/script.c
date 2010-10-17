@@ -351,7 +351,8 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	arrname++;
 
       arrnameend = arrname;
-      while(isgraph(arrnameend[0]) && (arrnameend[0] != ','))
+      while(isgraph(arrnameend[0]) && (arrnameend[0] != ',') &&
+	    (arrnameend[0] != ';'))
 	arrnameend++;
 
       if(sc->params)
@@ -1028,7 +1029,7 @@ ay_script_getlanguage(ay_script_object *sc, char **lang)
 	langname++;
 
       langend = langname;
-      while(isgraph(langend[0]) && (langend[0] != ','))
+      while(isgraph(langend[0]) && (langend[0] != ',') && (langend[0] != ';'))
 	langend++;
 
       if(!(*lang = calloc(langend - langname + 1, sizeof(char))))
