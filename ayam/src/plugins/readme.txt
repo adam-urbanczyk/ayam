@@ -1,12 +1,12 @@
-[readme.txt - 25. Jul 2009]
+[readme.txt - 17. Oct 2010]
 
 This directory contains a collection of various plugins for Ayam.
 
 This file gives just an overview about what is here; for more complete
 documentation please refer to the main Ayam documentation.
 
-The plugins can be grouped in four categories, shader parsing plugins,
-import/export plugins, object type plugins, and
+The plugins can be grouped in five categories, shader parsing plugins,
+import/export plugins, object type plugins, scripting language plugins, and
 miscellaneous helper plugins.
 
 Shader Parsing Plugins
@@ -33,12 +33,20 @@ onio - Rhino OpenNURBS 3DM import/export
 rrib - RenderMan RIB import
 x3dio - X3D import/export
 
+
 Object Type Plugins
 -------------------
 
 csphere - example custom object
 metaobj - model with implicit surfaces (meta balls)
 sdnpatch - model with Subdivision NURBS
+
+
+Scripting Language Plugins
+--------------------------
+
+jsinterp - JavaScript plugin
+
 
 Misc
 ----
