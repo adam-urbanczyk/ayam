@@ -32,12 +32,10 @@ int jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 /** helper function to convert a Tcl_Obj to a jsval */
 int jsinterp_objtoval(Tcl_Obj *to, jsval *v);
 
-
 /** JS function to wrap the eval command */
 int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj,
 			 uintN argc, jsval *argv,
 			 jsval *rval);
-
 
 /** JS function to wrap a command with args */
 int jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj,
@@ -762,31 +760,28 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
 	  if(JS_GetArrayLength(jsinterp_cx, jso, &arrlen))
 	    {
 	      *to = Tcl_NewListObj(0, NULL);
-	      if(arrlen > 0)
+	      for(i = 0; i < arrlen; i++)
 		{
-		  for(i = 0; i < arrlen; i++)
+		  if(JS_GetElement(jsinterp_cx, jso, i, &arrelem))
 		    {
-		      if(JS_GetElement(jsinterp_cx, jso, i, &arrelem))
+		      jsinterp_jsvaltoobj(arrelem, &lto);
+		      if(lto)
 			{
-			  jsinterp_jsvaltoobj(arrelem, &lto);
-			  if(lto)
-			    {
-			      Tcl_ListObjAppendElement(NULL, *to, lto);
-			    }
-			  else
-			    {
-			      /* could not convert element! */
-			      /* XXXX add proper error handling */
-			      return;
-			    }
+			  Tcl_ListObjAppendElement(NULL, *to, lto);
 			}
-		    } /* for */
-		} /* if */
+		      else
+			{
+			  /* could not convert element! */
+			  /* XXXX add proper error handling */
+			  return;
+			}
+		    } /* if */
+		} /* for */
 	    } /* if */
 	} /* if */
     } /* if */
 
-  return;
+ return;
 } /* jsinterp_jsvaltoobj */
 
 
@@ -865,7 +860,7 @@ jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
   jsinterp_interp = interp;
 
   /* evaluate */
-  if(argv[1][0] == '-' && argv[1][1] == 'f')
+  if((argv[1][0] == '-') && (argv[1][1] == 'f'))
     {
       /* -file */
 
