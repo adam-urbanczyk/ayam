@@ -94,6 +94,8 @@ install:
 	-$(INSTALL) plugins/sdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadsdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) plugins/libsnurbs.so $(LIBDIR)
+	-$(INSTALL) plugins/jsinterp.so $(LIBDIR)
+	-$(INSTALL) plugins/loadjsinterp.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -130,6 +132,7 @@ uninstall:
 	-rm -rf $(LIBDIR)/sdnpatch.so $(LIBDIR)/sdnpatch.tcl
 	-rm -rf $(LIBDIR)/loadsdnpatch.tcl
 	-rm -rf $(LIBDIR)/libsnurbs.so
+	-rm -rf $(LIBDIR)/jsinterp.so $(LIBDIR)/loadjsinterp.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.pdf ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile

@@ -509,6 +509,10 @@ SNURBSDIR = ../../../sdk/subdnurbs-0.1/src
 SDNPATCHINC = -I $(SNURBSDIR)/libsnurbs/ -I $(SNURBSDIR)/libply -DPLY_BOOST_CSTDINT
 SDNPATCHLIB = -L $(SNURBSDIR)/libsnurbs/ -lsnurbs
 
+# JSInterp Plugin
+JSDIR = ../../../sdk/js/src
+JSINC = -I $(JSDIR) -I $(JSDIR)/Linux_All_DBG.OBJ -DXP_UNIX
+JSLIB = -L $(JSDIR)/Linux_All_DBG.OBJ -ljs
 
 AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
@@ -634,6 +638,10 @@ sdnpatch.so:
 	$(CXX) -c $(CFLAGS) plugins/sdnpatch.cpp -o plugins/sdnpatch.o $(AYINC) $(SDNPATCHINC)
 	$(CXX) $(SHLFLAGS) plugins/sdnpatch.o -o plugins/sdnpatch.so $(SDNPATCHLIB)
 
+jsinterp.so:
+	$(CXX) -c $(CFLAGS) plugins/sdnpatch.cpp -o plugins/sdnpatch.o $(AYINC) $(SDNPATCHINC)
+	$(CXX) $(SHLFLAGS) plugins/sdnpatch.o -o plugins/sdnpatch.so $(SDNPATCHLIB)
+
 plugins/ayerror.o:
 	$(CC) -c $(CFLAGS) plugins/ayerror.c -o plugins/ayerror.o $(TCLINC)
 
@@ -709,6 +717,9 @@ install:
 	-$(INSTALL) plugins/sdnpatch.so $(LIBDIR)
 	-$(INSTALL) plugins/sdnpatch.tcl $(LIBDIR)
 	-$(INSTALL) plugins/loadsdnpatch.tcl $(LIBDIR)
+	-$(INSTALL) plugins/libsnurbs.so $(LIBDIR)
+	-$(INSTALL) plugins/jsinterp.so $(LIBDIR)
+	-$(INSTALL) plugins/loadjsinterp.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
@@ -740,8 +751,10 @@ uninstall:
 	-rm -rf $(LIBDIR)/onio.so $(LIBDIR)/onio.tcl $(LIBDIR)/loadonio.tcl
 	-rm -rf $(LIBDIR)/dxfio.so $(LIBDIR)/dxfio.tcl $(LIBDIR)/loaddxfio.tcl
 	-rm -rf $(LIBDIR)/x3dio.so $(LIBDIR)/x3dio.tcl $(LIBDIR)/loadx3dio.tcl
-	-rm -rf $(LIBDIR)/sdnpatch.so $(LIBDIR)/sdnpatch.tcl
+	-rm -rf $(LIBDIR)/sdnpatch.so $(LIBDIR)/sdnpatch.tcl 
 	-rm -rf $(LIBDIR)/loadsdnpatch.tcl
+	-rm -rf $(LIBDIR)/libsnurbs.so
+	-rm -rf $(LIBDIR)/jsinterp.so $(LIBDIR)/loadjsinterp.tcl
 	-cd $(DOCDIR); rm -rf Setup.txt Changes.txt License.txt refcard.tcl\
 refcard.pdf ayam.pdf html;
 	-rm -rf $(LIBDIR)/Makefile
