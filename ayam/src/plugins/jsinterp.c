@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2007 by Randolf Schultz
+ * Ayam is copyrighted 1998-2010 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -25,14 +25,19 @@
 /** error reporting wrapper function */
 void jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report);
 
-/** Tcl command to evaluate a JS script */
-int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
+/** helper to convert function/command arguments */
+int jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
+		      char ***sargv);
+
+/** helper function to convert a Tcl_Obj to a jsval */
+int jsinterp_objtoval(Tcl_Obj *to, jsval *v);
+
 
 /** JS function to wrap the eval command */
 int jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj,
 			 uintN argc, jsval *argv,
 			 jsval *rval);
+
 
 /** JS function to wrap a command with args */
 int jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj,
@@ -44,15 +49,30 @@ int jsinterp_wraptcmd(JSContext *cx, JSObject *obj,
 		      uintN argc, jsval *argv,
 		      jsval *rval);
 
+/** variable trace procedure to transport a Tcl variable to JavaScript */
+char *jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
+			    char *name1, char *name2, int flags);
+
 /** JS function to link a Tcl var to a JS var */
 int jsinterp_tclvar(JSContext *cx, JSObject *obj,
 		    uintN argc, jsval *argv,
 		    jsval *rval);
 
+/** helper function to convert a jsval to a Tcl_Obj */
+void jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to);
+
 /** JS function to set a Tcl var from JS */
 int jsinterp_tclset(JSContext *cx, JSObject *obj,
 		    uintN argc, jsval *argv,
 		    jsval *rval);
+
+/** Tcl command to evaluate a JS script */
+int jsinterp_evaltcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
+/** Ayam Script object evaluation callback */
+int jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
+		    Tcl_Obj **cscript);
 
 
 /* global variables: */
@@ -233,7 +253,8 @@ jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report)
 /* jsinterp_unload:
  *  unused, there is no way to shut down the plugin
  */
-void jsinterp_unload()
+void
+jsinterp_unload()
 {
 
     /* Cleanup. */
@@ -695,6 +716,7 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 /* jsinterp_jsvaltoobj:
  *  helper for jsinterp_tclset() below
  *  convert jsval to Tcl_Obj
+ *  XXXX add support for unicode strings
  */
 void
 jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
@@ -750,6 +772,12 @@ jsinterp_jsvaltoobj(jsval jv, Tcl_Obj **to)
 			  if(lto)
 			    {
 			      Tcl_ListObjAppendElement(NULL, *to, lto);
+			    }
+			  else
+			    {
+			      /* could not convert element! */
+			      /* XXXX add proper error handling */
+			      return;
 			    }
 			}
 		    } /* for */
