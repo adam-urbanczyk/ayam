@@ -30,7 +30,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
  char option_handled = AY_FALSE;
  char **av;
  int avlen;
- int optnum = 0, i = 2, j = 0, npolys = 0, tmpi = 0;
+ int optnum = 0, i = 2, j = 0, k = 0, npolys = 0, tmpi = 0;
  unsigned int *nloops = NULL, *nverts = NULL, *verts = NULL;
  int nloopslen = 0, nvertslen = 0, vertslen = 0;
  unsigned int totalverts = 0;
@@ -109,6 +109,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 		      ay_status = AY_EOMEM;
 		      goto cleanup;
 		    }
+
 		  for(j = 0; j < avlen; j++)
 		    {
 		      tcl_status = Tcl_GetInt(ay_interp, av[j], &tmpi);
@@ -257,11 +258,13 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 
       if(!verts)
 	{
+	  k = 0;
 	  for(i = 0; i < npolys; i++)
 	    {
 	      for(j = 0; j < nloops[i]; j++)
 		{
-		  totalverts += nverts[j];
+		  totalverts += nverts[k];
+		  k++;
 		}
 	    }
 	  if(!(verts = calloc(totalverts, sizeof(unsigned int))))
@@ -279,11 +282,13 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
       if(!controlv)
 	{
 	  totalverts = 0;
+	  k = 0;
 	  for(i = 0; i < npolys; i++)
 	    {
 	      for(j = 0; j < nloops[i]; j++)
 		{
-		  totalverts += nverts[j];
+		  totalverts += nverts[k];
+		  k++;
 		}
 	    }
 	  if(!(controlv = calloc(totalverts, stride*sizeof(double))))
@@ -337,11 +342,13 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	  goto cleanup;
 	}
       totalverts = 0;
+      k = 0;
       for(i = 0; i < npolys; i++)
 	{
 	  for(j = 0; j < nloops[i]; j++)
 	    {
-	      totalverts += nverts[j];
+	      totalverts += nverts[k];
+	      k++;
 	    }
 	}
       if(vertslen < totalverts)
