@@ -209,7 +209,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
 /** current Tcl interpreter */
 static Tcl_Interp *jsinterp_interp;
 
-/** \name Tcl_Obj types (for data conversion in jsinterp_objtovar()) */
+/** \name Tcl_Obj types (for data conversion in jsinterp_objtoval()) */
 /*@{*/
 static Tcl_ObjType *jsinterp_BooleanType = NULL;
 static Tcl_ObjType *jsinterp_ByteArrayType = NULL;
@@ -272,9 +272,11 @@ int
 jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 		  char ***sargv)
 {
+ int ay_status = AY_OK;
  char *c, **nargv = NULL;
  uintN i;
  JSString *jss;
+ jsval jssval;
 
   if(!(nargv = calloc(argc+1, sizeof(char*))))
     return AY_EOMEM;
@@ -287,36 +289,81 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
   for(i = 0; i < argc; i++)
     {
       jss = JS_ValueToString(cx, argv[i]);
+
       if(jss)
 	{
-	  nargv[i+1] = JS_GetStringBytes(jss);
+	  jssval = STRING_TO_JSVAL(jss);
+	  JS_AddRoot(jsinterp_cx, &jssval);
 
-	  /* convert JS Array to Tcl list */
-	  if(JSVAL_IS_OBJECT(argv[i]))
+	  c = JS_GetStringBytes(jss);
+	  
+	  if(c && (c[0] != '\0'))
 	    {
-	      if(JS_IsArrayObject(cx, JSVAL_TO_OBJECT(argv[i])))
+	      if(!(nargv[i+1] = calloc(strlen(c), sizeof(char))))
 		{
-		  c = nargv[i+1];
-		  while(*c != '\0')
+		  JS_RemoveRoot(jsinterp_cx, &jssval);
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+
+	      strcpy(nargv[i+1], c);
+
+	      /* convert JS Array syntax (a,b,c) to Tcl list syntax (a b c) */
+	      if(JSVAL_IS_OBJECT(argv[i]))
+		{
+		  if(JS_IsArrayObject(cx, JSVAL_TO_OBJECT(argv[i])))
 		    {
-		      if(*c == ',')
-			*c = ' ';
-		      c++;
-		    }
+		      c = nargv[i+1];
+		      while(*c != '\0')
+			{
+			  if(*c == ',')
+			    {
+			      *c = ' ';
+			    }
+			  c++;
+			}
+		    } /* if */
 		} /* if */
+	    }
+	  else
+	    {
+	      /* could not get string? */
+	      JS_RemoveRoot(jsinterp_cx, &jssval);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
 	    } /* if */
+	  JS_RemoveRoot(jsinterp_cx, &jssval);
 	}
       else
 	{
-	  free(nargv);
-	  return AY_ERROR;
-	}
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	} /* if */
     } /* for */
 
-  /* return result */
-  *sargv = nargv;
+cleanup:
 
- return AY_OK;
+  if(ay_status == AY_OK)
+    {
+      /* return result */
+      *sargv = nargv;
+    }
+  else
+    {
+      /* clean up partial conversion */
+      if(nargv)
+	{
+	  for(; i >= 0; i--)
+	    {
+	      if(nargv[i])
+		free(nargv[i]);
+	    }
+
+	  free(nargv);
+	} /* if */
+    } /* if */
+
+ return ay_status;
 } /* jsinterp_convargs */
 
 
@@ -499,10 +546,11 @@ int
 jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 		      jsval *rval)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, js_status = JS_TRUE;
  ClientData clientData = {0};
  Tcl_CmdInfo cmdinfo = {0};
  char **sargv;
+ uintN i;
 
   ay_status = jsinterp_convargs(cx, argc, argv, &sargv);
 
@@ -521,21 +569,29 @@ jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
       else
 	{
 	  JS_ReportError(cx, "unsupported command type");
-	  return JS_FALSE;
+	  js_status = JS_FALSE;
 	}
     }
   else
     {
       /* command not found! */
       JS_ReportError(cx, "command not found");
-      return JS_FALSE;
+      js_status = JS_FALSE;
     }
 
-  free(sargv);
+  if(sargv)
+    {
+      for(i = 0; i < argc+1; i++)
+	{
+	  if(sargv[i])
+	    free(sargv[i]);
+	}
+      free(sargv);
+    }
 
   *rval = JSVAL_VOID; /* return undefined */
 
- return JS_TRUE;
+ return js_status;
 } /* jsinterp_wraptcmdargs */
 
 
@@ -969,7 +1025,7 @@ jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 			   &result))
 	{
 	  interp->errorLine = (int)jsinterp_errorline;
-	  /* Starting with Tcl 8.6 we need this instead: */
+	  /* Starting with Tcl 8.6 we will need this instead: */
 	  /*
 	  Tcl_SetErrorLine(interp, (int)jsinterp_errorline);
 	  */
