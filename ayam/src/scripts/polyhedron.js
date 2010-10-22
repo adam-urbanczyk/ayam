@@ -28,7 +28,7 @@ if(!tcleval("info exists PolyhedronAttrGUI;"))
 
 
 function alert( txt ) {
-  tcleval("puts " + alert);
+  tcleval("puts " + txt);
   return (true);
 }
 
