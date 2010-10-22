@@ -367,7 +367,7 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 	  sc->paramslen = 0;
 	}
 
-      toa = Tcl_NewStringObj(arrname, arrnameend - arrname - 1);
+      toa = Tcl_NewStringObj(arrname, arrnameend - arrname);
       ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
