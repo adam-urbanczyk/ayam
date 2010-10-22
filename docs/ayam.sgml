@@ -11671,8 +11671,9 @@ interface available after loading of the <tt>"jsinterp"</tt> plugin.
 The JavaScript scripting interface is available since Ayam 1.18 and
 is based on the Mozilla SpiderMonkey JavaScript engine.
 <p>
-Upon loading, the <tt>"jsinterp"</tt> plugin creates one JavaScript
-context that lives until Ayam exits.
+Upon loading, the <tt>"jsinterp"</tt> plugin creates <em>one</em> JavaScript
+context that lives (with all variables and objects defined therein)
+until Ayam exits.
 
 <sect2>Accessing JavaScript from Tcl and Script Objects
 <p>
@@ -11681,7 +11682,7 @@ the <tt>"jsEval"</tt> command can be used:
 <code>
 jsEval { var a = 0; a = a + 5.5; tclset("a", a); }
 jsEval -f scriptfile.js
-</code>.
+</code>
 <p>
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
@@ -11689,20 +11690,42 @@ use the JavaScript interpreter:
 <code>
 /* Ayam, use: JavaScript */
 ...
-</code>.
+</code>
+
+Note that the JavaScript scripting context inherits the limitations
+of the calling Tcl context (see also section:
+<ref id="safeinterp" name="Safe Interpreter">).
+For example, when running in a Script object,
+the following code fails:
+<code>
+tcleval("exit");
+</code>
+it does not fail, when the calling context ist the main Tcl interpreter;
+one can e.g. type into the Ayam console:
+<code>
+jsEval {tcleval("exit");}
+</code>
+and Ayam quits.
 
 <sect2>JavaScript Functions
 <p>
 This subsection informs about the global functions additionally
 available in the Ayam JavaScript interpreter.
 <p>
-Those are converted Tcl commands, <tt>"tcleval"</tt>, and <tt>"tclvar"</tt>.
+Those are converted Tcl commands, <tt>"tcleval"</tt>, <tt>"tclvar"</tt>,
+and <tt>"tclset"</tt>.
+<p>
+<sect3>Converted Tcl Commands
 <p>
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands
 (e.g. one may create Ayam objects in JavaScript using a function call
 like this: <tt>crtOb("Sphere");</tt>, or, with additional arguments:
 <tt>crtOb("Sphere", "-radius", 3.0);</tt>).
+Generally, all commands available in the safe Ayam Tcl interpreter are also
+available as converted function.
+<p>
+<sect3>tcleval
 <p>
 Apart from commands converted to functions, there is the function
 <tt>"tcleval"</tt>, that allows to evaluate Tcl scripts:
@@ -11715,11 +11738,13 @@ The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript.
 <p>
-Using the function <tt>"tclvar"</tt> one may establish a link
-between a global Tcl variable and a corresponding global variable
-in the JavaScript context. The <tt>"tclvar"</tt> function establishes
-a write trace on the Tcl variable, so that changes on the Tcl
-side are always automatically reflected on the JavaScript side:
+<sect3>tclvar
+<p>
+Using the function <tt>"tclvar"</tt> one may establish a link between
+a Tcl variable and a corresponding variable in the JavaScript context.
+The <tt>"tclvar"</tt> function establishes a write trace on the Tcl
+variable, so that changes on the Tcl side are always automatically
+reflected on the JavaScript side:
 <code>
 tclvar("a");
 tcleval("set a 42");
@@ -11730,6 +11755,8 @@ Mind that the corresponding variable on the JavaScript side does
 The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e. all the work is done
 in the trace callback).
+<p>
+<sect3>tclset
 <p>
 The third function is <tt>"tclset"</tt> that efficiently sets
 Tcl variables from the JavaScript context.
@@ -11747,7 +11774,9 @@ Note that the variable names may point to Tcl array elements
 
 <sect2>Data Conversion
 <p>
-When data is transferred from the Tcl to the JavaScript side,
+When data is transferred from the Tcl to the JavaScript side
+(e.g. while converting return values of tcleval() or variable
+values linked via tclvar()),
 the following conversions are in effect:
 Booleans will be converted to integer values.
 Lists will be converted to Array objects (nesting is allowed).
