@@ -1,4 +1,4 @@
-[13. Oct 2010] CVS-Head:
+[22. Oct 2010] CVS-Head:
 =======================
 Bug Fixes:
 o fixed direct point editing not setting the mark (SF 2993441)
@@ -89,6 +89,8 @@ o getPnt can now work with arbitrary object types (even from plugins) as
 o added a JavaScript interpreter plugin
 o Script objects can now use arbitrary languages provided by plugins
   (e.g. JavaScript)
+o added a example Script object script (written in JavaScript) that creates
+  a Polyhedron from a Conway notation ("polyhedron.js")
 
 Documentation/Example Files:
 o documentation of modelling actions enhanced with tables containing
