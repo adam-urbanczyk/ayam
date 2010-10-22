@@ -223,6 +223,7 @@ static Tcl_ObjType *jsinterp_WideIntType = NULL;
 /** current error line */
 static unsigned int jsinterp_errorline;
 
+
 /* functions: */
 
 /* jsinterp_error:
@@ -660,11 +661,12 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 
   to = Tcl_ObjGetVar2(interp, toa, ton, flags);
 
-  JS_AddRoot(jsinterp_cx, &newjsval);
+  JS_AddRoot(jsinterp_cx, newjsval);
 
   if(jsinterp_objtoval(to, newjsval))
     {
       /* XXXX report error? */
+      JS_RemoveRoot(jsinterp_cx, newjsval);
       goto cleanup;
     }
 
@@ -673,6 +675,7 @@ jsinterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
       /* array */
       if(!(objval = calloc(1, sizeof(jsval))))
 	{
+	  JS_RemoveRoot(jsinterp_cx, newjsval);
 	  goto cleanup;
 	}
 
@@ -1032,6 +1035,8 @@ jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 	}
       jsinterp_interp = NULL;
     } /* if */
+
+  /*JS_MaybeGC(jsinterp_cx);*/
 
  return TCL_OK;
 } /* jsinterp_evalcb */
