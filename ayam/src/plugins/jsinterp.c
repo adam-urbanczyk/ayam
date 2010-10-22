@@ -296,10 +296,10 @@ jsinterp_convargs(JSContext *cx, uintN argc, jsval *argv,
 	  JS_AddRoot(jsinterp_cx, &jssval);
 
 	  c = JS_GetStringBytes(jss);
-	  
+
 	  if(c && (c[0] != '\0'))
 	    {
-	      if(!(nargv[i+1] = calloc(strlen(c), sizeof(char))))
+	      if(!(nargv[i+1] = calloc(strlen(c)+1, sizeof(char))))
 		{
 		  JS_RemoveRoot(jsinterp_cx, &jssval);
 		  ay_status = AY_EOMEM;
@@ -353,7 +353,7 @@ cleanup:
       /* clean up partial conversion */
       if(nargv)
 	{
-	  for(; i >= 0; i--)
+	  for(; i > 0; i--)
 	    {
 	      if(nargv[i])
 		free(nargv[i]);
@@ -508,7 +508,8 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	  /* XXXX add line info? */
 	  retval = JS_FALSE;
 	  break;
-	case TCL_RETURN:
+	default:
+	  /* caters for TCL_RETURN, TCL_OK, TCL_BREAK, and TCL_CONTINUE */
 	  resobj = Tcl_GetObjResult(jsinterp_interp);
 	  resstr = Tcl_GetString(resobj);
 	  if(resstr && (resstr[0] != '\0'))
@@ -522,9 +523,6 @@ jsinterp_wrapevalcmd(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 		  JS_ReportError(cx, "failed to convert script result");
 		}
 	    }
-	  break;
-	default:
-	  /* caters for TCL_OK, TCL_BREAK, and TCL_CONTINUE */
 	  break;
 	} /* switch */
     }
@@ -581,7 +579,7 @@ jsinterp_wraptcmdargs(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 
   if(sargv)
     {
-      for(i = 0; i < argc+1; i++)
+      for(i = 1; i < argc+1; i++)
 	{
 	  if(sargv[i])
 	    free(sargv[i]);
