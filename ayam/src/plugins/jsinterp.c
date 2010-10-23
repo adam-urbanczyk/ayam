@@ -741,7 +741,7 @@ int
 jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 		jsval *rval)
 {
- ClientData clientData = {0};
+ ClientData clientData = jsinterp_vartraceproc;
  uintN i = 0;
  char *vname;
 
@@ -751,13 +751,19 @@ jsinterp_tclvar(JSContext *cx, JSObject *obj, uintN argc, jsval *argv,
 	{
 	  vname = JS_GetStringBytes(JSVAL_TO_STRING(argv[i]));
 
-	  /* establish a write trace */
-	  if(!TCL_OK == Tcl_TraceVar(jsinterp_interp,
-				     vname,
-				     TCL_TRACE_WRITES,
-				     jsinterp_vartraceproc, clientData))
+	  /* if there is not already a write trace... */
+	  if(!Tcl_VarTraceInfo(jsinterp_interp, vname, TCL_TRACE_WRITES,
+			       jsinterp_vartraceproc, NULL))
 	    {
-	      JS_ReportError(cx, "failed to establish trace");
+	      /* ...establish a write trace */
+	      if(!TCL_OK == Tcl_TraceVar(jsinterp_interp,
+					 vname,
+					 TCL_TRACE_WRITES,
+					 jsinterp_vartraceproc,
+					 clientData))
+		{
+		  JS_ReportError(cx, "failed to establish trace");
+		}
 	    }
 	}
     }
