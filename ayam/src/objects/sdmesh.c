@@ -330,7 +330,7 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->indices = calloc(1, sizeof(unsigned int))))
 	return AY_EOMEM;
 
-      pe->coords[0] = &(control[j]);
+      pe->coords[0] = pecoord;
       pe->indices[0] = peindex;
       pe->num = 1;
       break;
