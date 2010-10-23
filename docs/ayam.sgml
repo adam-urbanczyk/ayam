@@ -8633,6 +8633,7 @@ the original objects they are pointing to.
 The tag type <tt/OI/ is not meant to be used by the end user.
 Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
+
 <item>MI (Material ID) Tag<label id="mitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
@@ -8642,6 +8643,12 @@ the objects they are assigned to.
 The tag type <tt/MI/ is not meant to be used by the end user.
 Furthermore, changing the IDs manually avails to nothing as the
 tags are rebuilt before every export/save operation.
+
+<item>NO/NM Tags
+<p>
+These tags are internal binary tags, that transport the notification
+across the scene.
+
 </itemize>
 
 <sect2>List of Known Tags
@@ -8651,13 +8658,16 @@ known since Ayam 1.10 and in all accompanying extensions (plugins).
 <p>
 <tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
 "PV", "SaveMainGeom", "SavePaneLayout", "TP", "MI", "OI", "DC", "TM", "NP",
-"RP", "BNS", "DBNS", "ANS", "DANS",
+"RP", "BNS", "DBNS", "ANS", "DANS", "NO", "NM",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 The following tags are temporary (they will not be displayed in the
 Tags property of an object, if the preference option <tt>"HideTmpTags"</tt>
 is enabled):
 <tt>"MI", "OI"</tt>
+<p>
+Tags of type <tt>"NO", "NM"</tt> are binary, they never show up in the
+Tags property.
 <p>
 Documentation on all those tags can be found in the sections above.
 
@@ -10154,16 +10164,25 @@ uCR
 # select new object
 sL
 </code>
+In Script objects scripts the above example sequence would leave out
+the <tt/"uCR"/ command, as access to the GUI is blocked anyway:
+<code>
+# create object
+crtOb NCurve
+# select new object
+sL
+</code>
 </itemize>
 
 <p><label id="schsl">
 hSL - hidden select last object:
 <itemize>
  <item>Synopsis: <tt/"hSL"/
- <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Select the last object in the current level
-but do not update the GUI. This command is mainly for use in Script
-objects script code.
+but do not update the GUI.
+Note: prior to Ayam 1.18 this command used to be available in the
+safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 </itemize>
 
 <sect2>Selecting Points
