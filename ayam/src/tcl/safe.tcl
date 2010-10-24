@@ -54,9 +54,6 @@ proc safe_init { interp } {
     interp alias $interp setProperty {} setProperty
     interp alias $interp getProperty {} safe_getProperty
 
-    # sL => hidden selection
-    interp alias $interp sL {} hSL
-
     # make some Tcl procedures known in the safe interpreter
 
     #safe_transfer setProperty $interp
@@ -100,6 +97,8 @@ proc safe_puts { args } {
 	set channelId [lindex $args 0]
 	if { ($channelId == "stdout") || ($channelId == "stderr") } {
 	    puts $channelId [lrange $args 1 end]
+	} else {
+	    puts stderr "Access to channel $channelId blocked!"
 	}
     }
 
