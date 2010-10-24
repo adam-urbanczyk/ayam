@@ -125,11 +125,10 @@ addString $w matPropData Materialname
 proc getTagsp { } {
 global ay ayprefs tagsPropData Tags tcl_platform
 
-getTags names values tempflags binflags
+getTags names values tempflags
 set tagsPropData(names) $names
 set tagsPropData(values) $values
 set tagsPropData(tempflags) $tempflags
-set tagsPropData(binflags) $binflags
 
 set ay(bok) $ay(appb)
 
@@ -155,8 +154,7 @@ set i 0
 set j 0
 foreach tag $names {
 
-    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) || \
-	     ![lindex $binflags $i] } {
+    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) } {
 
 	$m add command -label "Tag#$j ($tag)" -command\
 		"undo save RemTag;setTags -delete $i;plb_update"
@@ -169,8 +167,7 @@ foreach tag $names {
 addCommand $w c2 "Add Tag!" {addTagp}
 set i 0
 foreach tag $names {
-    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) || \
-	     ![lindex $binflags $i] } {
+    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) } {
 	set val [lindex $values $i]
 	set len [string length $val]
 	if { $len > $ayprefs(MaxTagLen) } {
@@ -196,7 +193,6 @@ global ay tagsPropData Tags
 set names $tagsPropData(names)
 set values $tagsPropData(values)
 set tempflags $tagsPropData(tempflags)
-set binflags $tagsPropData(binflags)
 
 set alltags ""
 set i 0
@@ -204,8 +200,7 @@ foreach tag $names {
 
 lappend alltags $tag
 lappend alltags [lindex $values $i]
-lappend alltags [lindex $values $i]
-lappend alltags [lindex $values $i]
+lappend alltags [lindex $tempflags $i]
 
 incr i
 }
