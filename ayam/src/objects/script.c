@@ -621,7 +621,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
  Tcl_Interp *interp = NULL;
  Tcl_Obj *toa = NULL, *ton = NULL;
  char *arrname = NULL, *membername = NULL, *memberval = NULL;
- char *eolarrname = NULL;
+ char *arrnameend = NULL, *lineend = NULL;
  int arrmembers = 0;
 #ifdef AYNOSAFEINTERP
  int deactivate = 0;
@@ -668,31 +668,43 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 8)
     {
-      if(sc->script && strstr(sc->script, ay_script_sa))
+      if(sc->script)
 	{
 	  fscanf(fileptr, "%d\n", &arrmembers);
 
 	  if(arrmembers > 0)
 	    {
-	      arrname = strchr(sc->script, ':')+1;
-	      while(arrname[0] == ' ')
+	      lineend = strchr(sc->script, '\n');
+	      if(lineend)
+		*lineend = '\0';
+
+	      arrname = strstr(sc->script, ay_script_sa);
+	      if(!arrname)
+		{
+		  if(lineend)
+		    *lineend = '\n';
+		  goto cleanup;
+		}
+	      arrname = strchr(arrname, ':');
+
+	      arrname++;
+	      while(arrname[0] == ' ' || arrname[0] == '\t')
 		arrname++;
 
-	      eolarrname = strchr(sc->script, '\n');
-	      if(eolarrname)
-		{
-		  *eolarrname = '\0';
-		}
-	      /* the first m */
+	      arrnameend = arrname;
+	      while(isgraph(arrnameend[0]) && (arrnameend[0] != ',') &&
+		    (arrnameend[0] != ';'))
+		arrnameend++;
+
 	      if(!(sc->params = calloc(arrmembers-1, sizeof(Tcl_Obj*))))
 		{
 		  ay_status = AY_EOMEM;
-		  return ay_status;
+		  goto cleanup;
 		}
 	      sc->paramslen = arrmembers-1;
 
-	      toa = Tcl_NewStringObj(arrname, -1);
-	      ton = Tcl_NewStringObj(arrname, -1);
+	      toa = Tcl_NewStringObj(arrname, arrnameend - arrname);
+	      ton = Tcl_NewStringObj("", -1);
 	      j = 0;
 	      for(i = 0; i < arrmembers; i++)
 		{
@@ -700,7 +712,8 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
 		  ay_read_string(fileptr, &memberval);
 
-		  Tcl_SetVar2(interp, arrname, membername, memberval,
+		  Tcl_SetVar2(interp, Tcl_GetString(toa),
+			      membername, memberval,
 			      TCL_GLOBAL_ONLY);
 
 		  /* do not put the SP list into the object! */
@@ -723,13 +736,14 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 	      Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-	      if(eolarrname)
-		{
-		  *eolarrname = '\n';
-		}
+	      if(lineend)
+		*lineend = '\n';
+
 	    } /* if */
 	} /* if */
     } /* if */
+
+cleanup:
 
   o->refine = sc;
 
