@@ -17,12 +17,19 @@
 */
 
 // create the PolyhedronAttr Property GUI
+var PolyhedronAttrData = new Object();
 if(!tcleval("info exists PolyhedronAttrData;"))
 {
-  tclvar("PolyhedronAttrData");
-  tcleval("set PolyhedronAttrData(Notation) \"jtD\";");
+  PolyhedronAttrData.Notation = 
+    tcleval("set PolyhedronAttrData(Notation) \"jtD\";");
   tcleval("set PolyhedronAttrData(SP) {Notation};");
 }
+else
+{
+  PolyhedronAttrData.Notation = 
+    tcleval("set PolyhedronAttrData(Notation);");
+}
+
 if(!tcleval("info exists PolyhedronAttrGUI;"))
 {
   tcleval("set ::phw [addPropertyGUI PolyhedronAttr \"\" \"\"];");
