@@ -977,19 +977,22 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
 
  Pick Objects         <$svsc(Pick)>
 
- Move Objects         <$svsc(MoveO)>
+ Transform Objects    <$svsc(TransO)>
+ Transform Points     <$svsc(TransP)>
+
+ Move                 <$svsc(MoveO)>
   restrict X, Y, Z:   <$svsc(MoveO)$svsc(RestrictX)>, <$svsc(MoveO)$svsc(RestrictY)>, <$svsc(MoveO)$svsc(RestrictZ)>
 
- Rotate Objects       <$svsc(RotO)>
+ Rotate               <$svsc(RotO)>
   about Mark, Center  <$svsc(RotO)$svsc(About)>, <$svsc(RotO)$svsc(CenterO)>
   about Pnts Center   <$svsc(RotO)$svsc(CenterP)>
- Scale Objects (3D)   <$svsc(Scal3)>
- Scale Objects (2D)   <$svsc(Scal2)>
- Stretch Objects (2D) <$svsc(Stretch)>
- Scale Objects (1D,X) <$svsc(Scal2)$svsc(RestrictX)>
- Scale Objects (1D,Y) <$svsc(Scal2)$svsc(RestrictY)>
- Scale Objects (1D,Z) <$svsc(Scal2)$svsc(RestrictZ)>
- Scale Objects 2D
+ Scale (3D)           <$svsc(Scal3)>
+ Scale (2D)           <$svsc(Scal2)>
+ Stretch (2D)         <$svsc(Stretch)>
+ Scale (1D,X)         <$svsc(Scal2)$svsc(RestrictX)>
+ Scale (1D,Y)         <$svsc(Scal2)$svsc(RestrictY)>
+ Scale (1D,Z)         <$svsc(Scal2)$svsc(RestrictZ)>
+ Scale 2D
   about Mark, Center  <$svsc(Scal2)$svsc(About)>, <$svsc(Scal2)$svsc(CenterO)>
   about Pnts Center   <$svsc(Scal2)$svsc(CenterP)>
  Similar for other scale actions...
