@@ -442,15 +442,14 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       /* add new tags from args */
 
       if(have_flags)
-	stride = 4;
+	stride = 3;
 
-      for(index = 1; index < argc-1; index += stride)
+      for(index = 2; index < argc-1; index += stride)
 	{
 	  if(strcmp(argv[index], ""))
 	    {
-	      /* always omit temporary and binary tags */
-	      if(have_flags && (!strcmp(argv[index+2], "1") ||
-				!strcmp(argv[index+3], "1")))
+	      /* always omit temporary tags */
+	      if(have_flags && (!strcmp(argv[index+2], "1")))
 		{
 		  continue;
 		}
@@ -591,7 +590,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "vname1 vname2 [vname3 [vname4]]");
+      ay_error(AY_EARGS, argv[0], "vname1 vname2 [vname3]");
       return TCL_OK;
     }
 
@@ -606,10 +605,6 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 3)
     {
       Tcl_SetVar(interp,argv[3], "", TCL_LEAVE_ERR_MSG);
-      if(argc > 4)
-	{
-	  Tcl_SetVar(interp,argv[4], "", TCL_LEAVE_ERR_MSG);
-	}
     }
 
   o = sel->object;
@@ -636,20 +631,6 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      Tcl_SetVar(interp,argv[3],"0", TCL_APPEND_VALUE |\
 				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 		    }
-
-		  if(argc > 4)
-		    {
-		      if(tag->is_binary)
-			{
-			  Tcl_SetVar(interp,argv[4],"1", TCL_APPEND_VALUE |\
-				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-			}
-		      else
-			{
-			  Tcl_SetVar(interp,argv[4],"0", TCL_APPEND_VALUE |\
-				     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-			}
-		    } /* if */
 		} /* if */
 	    } /* if */
 	  tag = tag->next;
@@ -702,7 +683,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	      tag = o->tags;
 	      while(tag)
 		{
-		  if(tag->name)
+		  if(!tag->is_binary && tag->name)
 		    {
 		      if(!strcmp(argv[1], tag->name))
 			{
