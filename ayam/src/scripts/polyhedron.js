@@ -2,18 +2,21 @@
 /*
   polyhedron.js: example script for Ayam Script object;
   !this script needs the jsinterp plugin to be loaded!
-  this script wants Script Object type "Create" and creates
-  a Polyhedron from a Conway notation; it also has a property GUI,
-  just add a tag "NP PolyhedronAttr" to the script object to see it
+  this script wants Script Object type "Create" and
+  creates a Polyhedron from a Conway notation; it also
+  has a property GUI, just add a tag "NP PolyhedronAttr"
+  to the script object to see it
 
-  Interesting notations to try out (besides the default "jtD"):
-  eptI, k5aY5, t3gD, sdk5sI, ggC, eepT, eesD, at5jP5
+  Interesting notations to try out (besides the default
+  "jtD"): eptI, k5aY5, t3gD, sdk5sI, ggC, eepT, eesD,
+  at5jP5
 
   This script is based on code from George W. Hart:
   http://www.georgehart.com/virtual-polyhedra/conway_notation.html
   .
 */
 
+// create the PolyhedronAttr Property GUI
 if(!tcleval("info exists PolyhedronAttrData;"))
 {
   tclvar("PolyhedronAttrData");
@@ -27,12 +30,14 @@ if(!tcleval("info exists PolyhedronAttrGUI;"))
 }
 
 
+// re-route alert()s to the Ayam console
 function alert( txt ) {
-  tcleval("puts " + txt);
+  tcleval("puts stderr \"Polyhedron: " + txt + "\"");
   return (true);
-}
+} // alert()
 
-function goodInput(notation) {                        // check input format
+// check input format
+function goodInput(notation) {
 
   if (notation.search(/([^ktajsgebomdcrpTCOIDPAY0123456789])/) != -1) {
     alert("Undefined character: " + RegExp.lastParen);
@@ -47,19 +52,13 @@ function goodInput(notation) {                        // check input format
     return (false);
   }
   return (true);       // found no problems
-}
+} // goodInput()
 
-function compound () {       // read state of radio buttons
-  //   The program is set up to output compound with dual as well, but this
-  //   requires a careful canonicalization, which is rather slow.  So I have
-  //   commented out this option, until I come up with a faster method.
-  //   return (document.buttons.compound[1].checked == 1)
-  return (false);
-}
 
 //------------------notation processing functions--------------------
 
-function generatePoly(notation) {     // create polyhedron from notation
+// create polyhedron from notation
+function generatePoly(notation) {     
   var poly = new polyhedron();       // each polyhedron, during construction
   var n=0;                           // numeric argument
 
@@ -112,9 +111,10 @@ function generatePoly(notation) {     // create polyhedron from notation
   }
   //   poly.xyz = canonicalXYZ(poly, 5)     // refine final coords of poly and dual
   return (poly);
-}
+} // generatePoly()
 
-function getOps(question) {    //  Convert notation into string of ops
+//  Convert notation into string of ops
+function getOps(question) {
   var ans = question;              // Global replacements in notation:
   ans = ans.replace(/P4$/g, "C");  // P4 --> C   (C is prism)
   ans = ans.replace(/A3$/g, "O");  // A3 --> O   (O is antiprism)
@@ -143,7 +143,7 @@ function getOps(question) {    //  Convert notation into string of ops
   ans = ans.replace(/gI/g, "gD");  // gI --> gD  (for uniqueness)
   //  inform (question + " executed as " + ans);
   return (ans);
-}
+} // getOps()
 
 //------------------------polyhedra functions------------------
 
@@ -163,7 +163,7 @@ function polyhedron() {       // constructor of initially null polyhedron
   this.face = new Array();   // array of faces.          face.length = # faces
   this.xyz = new Array();    // array of vertex coords.  xyz.length = # of vertices
   this.name = "null polyhedron";
-}
+} // polyhedron()
 
 
 //-------------------------primative polyhedra-----------------
@@ -175,9 +175,9 @@ function tetrahedron() {
 			new Array(0,1,2), new Array(0,2,3), new Array(0,3,1), new Array(1,3,2) );
   ans.xyz = new Array (
 		       new Array(1.,1.,1.), new Array(1.,-1.,-1.),
-		       new Array(-1.,1.,-1.), new Array(-1.,-1.,1.) )
-    return (ans)
-    }
+		       new Array(-1.,1.,-1.), new Array(-1.,-1.,1.) );
+  return (ans);
+}
 
 function octahedron() {
   var ans = new polyhedron();
@@ -187,9 +187,9 @@ function octahedron() {
 			new Array(1,4,5), new Array(1,5,2), new Array(2,5,3), new Array(3,5,4) );
   ans.xyz = new Array (
 		       new Array(0,0,1.414), new Array(1.414,0,0), new Array(0,1.414,0),
-		       new Array(-1.414,0,0), new Array(0,-1.414,0), new Array(0,0,-1.414) )
-    return (ans)
-    }
+		       new Array(-1.414,0,0), new Array(0,-1.414,0), new Array(0,0,-1.414) );
+  return (ans);
+}
 
 function cube() {
   var ans = new polyhedron();
@@ -201,9 +201,9 @@ function cube() {
 		       new Array(0.707,0.707,0.707), new Array(-0.707,0.707,0.707),
 		       new Array(-0.707,-0.707,0.707), new Array(0.707,-0.707,0.707),
 		       new Array(0.707,-0.707,-0.707), new Array(0.707,0.707,-0.707),
-		       new Array(-0.707,0.707,-0.707), new Array(-0.707,-0.707,-0.707) )
-    return (ans)
-    }
+		       new Array(-0.707,0.707,-0.707), new Array(-0.707,-0.707,-0.707) );
+  return (ans);
+}
 
 function icosahedron() {
   var ans = new polyhedron();
@@ -220,9 +220,9 @@ function icosahedron() {
 		       new Array(-0.851,-0.618,0.526), new Array(0.325,-1.,0.526),
 		       new Array(0.851,0.618,-0.526), new Array(0.851,-0.618,-0.526),
 		       new Array(-0.325,1.,-0.526), new Array(-1.051,0,-0.526),
-		       new Array(-0.325,-1.,-0.526), new Array(0,0,-1.176) )
-    return (ans)
-    }
+		       new Array(-0.325,-1.,-0.526), new Array(0,0,-1.176) );
+  return (ans);
+}
 
 function dodecahedron() {
   var ans = new polyhedron();
@@ -242,9 +242,9 @@ function dodecahedron() {
 		       new Array(-0.797878,0.618,-0.356822), new Array(-0.136294,1.,-0.356822),
 		       new Array(-0.136294,-1.,-0.356822), new Array(-0.797878,-0.618034,-0.356822),
 		       new Array(0.356822,0.618,-0.797878), new Array(0.356822,-0.618,-0.797878),
-		       new Array(-0.713644,0,-0.797878), new Array(0,0,-1.07047) )
-    return (ans)
-    }
+		       new Array(-0.713644,0,-0.797878), new Array(0,0,-1.07047) );
+  return (ans);
+}
 
 function prism(n) {
   var theta = 6.283185/n;        // pie angle
@@ -627,8 +627,8 @@ function flags2poly() {     // arrange symbolic flags into polyhedron format
     ctr++;
   }
   newPoly();                  // release memory
-  poly.name = "unknown polyhedron"
-    return (poly);
+  poly.name = "unknown polyhedron";
+  return (poly);
 }
 
 
@@ -729,8 +729,8 @@ function orthogonal(v3, v2, v1) {   // find unit vector orthog to plane of 3 pts
   ans[0] = d1[1]*d2[2] - d1[2]*d2[1];    // cross product
   ans[1] = d1[2]*d2[0] - d1[0]*d2[2];
   ans[2] = d1[0]*d2[1] - d1[1]*d2[0];
-  return (ans)
-    }
+  return (ans);
+}
 
 function intersect(set1, set2, set3) {  // find element common to 3 sets
   for (var i=0; i<set1.length; i++)    // by brute force search
@@ -777,7 +777,7 @@ function crtPoMesh(poly)
 
   crtOb("PolyMesh", "-p", poly.face.length, "-cv", poly.xyz,
 	"-nv", lengths, "-iv", flatfaces);
-}
+} // crtPoMesh()
 
 // create polyhedron from notation
 if(goodInput(PolyhedronAttrData.Notation))
@@ -786,12 +786,6 @@ if(goodInput(PolyhedronAttrData.Notation))
 
   // create PolyMesh object from poly
   crtPoMesh(poly);
-
-/*
-if (compound())
-     crtPoMesh(globSavedDual);
-*/
-
 }
 
 // EOF
