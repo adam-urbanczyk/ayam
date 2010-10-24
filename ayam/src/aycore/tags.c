@@ -678,31 +678,29 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       if(o)
 	{
 	  last = &(o->tags);
-	  if(mode)
+	  tag = o->tags;
+	  while(tag)
 	    {
-	      tag = o->tags;
-	      while(tag)
+	      if(!tag->is_binary && tag->name)
 		{
-		  if(!tag->is_binary && tag->name)
+		  if(mode || (!strcmp(argv[1], tag->name)))
 		    {
-		      if(!strcmp(argv[1], tag->name))
-			{
-			  *last = tag->next;
-			  ay_tags_free(tag);
-			  tag = *last;
-			}
-		      else
-			{
-			  last = &(tag->next);
-			  tag = tag->next;
-			} /* if */
+		      *last = tag->next;
+		      ay_tags_free(tag);
+		      tag = *last;
+		    }
+		  else
+		    {
+		      last = &(tag->next);
+		      tag = tag->next;
 		    } /* if */
-		} /* while */
-	    }
-	  else
-	    {
-	      ay_tags_delall(o);
-	    } /* if */
+		}
+	      else
+		{
+		  last = &(tag->next);
+		  tag = tag->next;
+		} /* if */
+	    } /* while */
 	} /* if */
 
       sel = sel->next;
