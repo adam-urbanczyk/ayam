@@ -766,6 +766,7 @@ int
 ay_script_writecb(FILE *fileptr, ay_object *o)
 {
  ay_script_object *sc = NULL;
+ char *lineend = NULL;
  char *arrname = NULL, *membername = NULL;
  char *arrnameend = NULL, *memberval = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
@@ -798,20 +799,32 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
       fprintf(fileptr, "0\n");
     } /* if */
 
-  if(sc->script && strstr(sc->script, ay_script_sa))
+  if(sc->script)
     {
-      arrname = strchr(sc->script, ':');
+      lineend = strchr(sc->script, '\n');
+      if(lineend)
+	*lineend = '\0';
+
+      arrname = strstr(sc->script, ay_script_sa);
+      if(!arrname)
+	{
+	  if(lineend)
+	    *lineend = '\n';
+	  return AY_OK;
+	}
+      arrname = strchr(arrname, ':');
+
       arrname++;
-      while(arrname[0] == ' ')
+      while(arrname[0] == ' ' || arrname[0] == '\t')
 	arrname++;
 
-      arrnameend = strchr(arrname, '\n');
-
-      if(arrnameend)
-	*arrnameend = '\0';
+      arrnameend = arrname;
+      while(isgraph(arrnameend[0]) && (arrnameend[0] != ',') &&
+	    (arrnameend[0] != ';'))
+	arrnameend++;
 
       /* get "SP" array variable */
-      toa = Tcl_NewStringObj(arrname, -1);
+      toa = Tcl_NewStringObj(arrname,  arrnameend - arrname);
       ton = Tcl_NewStringObj(ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
@@ -849,8 +862,8 @@ ay_script_writecb(FILE *fileptr, ay_object *o)
 	  fprintf(fileptr, "0\n");
 	} /* if */
 
-      if(arrnameend)
-	*arrnameend = '\n';
+      if(lineend)
+	*lineend = '\n';
 
       Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
