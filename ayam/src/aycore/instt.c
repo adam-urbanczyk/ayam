@@ -721,12 +721,16 @@ ay_instt_resolve(ay_object *i)
   inext = i->next;
   iname = i->name;
 
-  /* free some data that may be accidentally attached to the
-     instance object (by errors in other parts of the core?) */
   if(i->selp)
-    ay_selp_clear(i);
+    {
+      ay_selp_clear(i);
+      ay_tags_remnonm(i, orig);
+    }
 
-  ay_tags_delall(i);
+  if(i->tags)
+    {
+      ay_tags_delall(i);
+    }
 
   /* copy data from original object via temp object to instance object */
   ay_status = ay_object_copy(orig, &temp);
