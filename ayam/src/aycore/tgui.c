@@ -63,12 +63,23 @@ ay_tgui_open(void)
     {
       if(sel->object && (sel->object->type == AY_IDINSTANCE))
 	{
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	      ay_tags_remnonm(sel->object, (ay_object*)sel->object->refine);
+	    }
+
 	  sel = sel->next;
 	  continue;
 	}
       if(sel->object && ((sel->object->type == AY_IDNPATCH) ||
 		       (!ay_provide_object(sel->object, AY_IDNPATCH, NULL))))
 	{
+	  if(sel->object->selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
+
 	  new = NULL;
 	  if(!(new = calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
@@ -328,7 +339,7 @@ ay_tgui_ok(void)
  int ay_status = AY_OK;
  char fname[] = "tgui_ok";
  ay_list_object *oref = ay_tgui_origrefs;
- ay_object *o = ay_tgui_origs, *l = NULL;
+ ay_object *o = ay_tgui_origs, *l = NULL, **ll = NULL;
 
   while(ay_tgui_origrefs)
     {
@@ -336,7 +347,7 @@ ay_tgui_ok(void)
       ay_tgui_origs = o->next;
 
       /* remove trim curves */
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_status = ay_object_deletemulti(o->down);
 	  if(ay_status)
@@ -345,16 +356,18 @@ ay_tgui_ok(void)
 		"Could not remove children, maybe referenced objects?");
 
 	      l = o->down;
+	      ll = &(o->down);
 	      while(l->next)
 		{
+		  ll = &(l->next);
 		  l = l->next;
 		}
-	      ay_object_delete(l->next);
-	      l->next = ay_clipboard;
+
+	      *ll = ay_clipboard;
 	      ay_clipboard = o->down;
+
 	      o->down = NULL;
 	      ay_error(AY_ERROR, fname, "Moved children to clipboard!");
-
 	    } /* if */
 	  o->down = NULL;
 	} /* if */
