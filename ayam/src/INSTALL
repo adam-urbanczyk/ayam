@@ -1,4 +1,4 @@
-INSTALL [12. Jul 2010]
+INSTALL [26. Oct 2010]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -557,8 +557,25 @@ then type:
 Load it via menu entry "File/Load Plugin".
 Use it via menu entry "Create/Custom/SDNPatch" and "Custom/SDNPatch".
 
+3.12 jsinterp (JavaScript Scripting) Plugin
+-------------------------------------------
 
-3.12 Installing/Uninstalling Ayam
+Additional prerequisites to compile the jsinterp plugin are:
+Mozilla SpiderMonkey V1.7 ( get it from http://www.mozilla.org/ )
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+JSDIR, JSINC, JSLIB
+
+then type:
+>make jsinterp.so
+
+Load it via menu entry "File/Load Plugin".
+Use it via the jsEval command or a Script object where the first line is
+a JavaScript comment:
+/* Ayam, use: JavaScript */
+
+3.13 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
@@ -595,7 +612,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.13 Creating an application bundle on MacOSX
+3.14 Creating an application bundle on MacOSX
 ---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
