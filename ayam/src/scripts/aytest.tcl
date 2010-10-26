@@ -102,8 +102,8 @@ uplevel #0 {
 
 puts $log "Testing default object callbacks...\n"
 
+# set up types to test
 set types ""
-
 lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 
 lappend types NCurve ICurve ACurve NCircle
@@ -118,9 +118,15 @@ lappend types Trim Text
 
 lappend types Camera Light Material RiInc RiProc Script Select
 
+# these types do not support getPnt (when empty):
 set nopnttypes ""
-lappend nopnttypes Revolve Extrude
+lappend nopnttypes Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 
+lappend nopnttypes Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
+
+lappend nopnttypes Clone Script Text
+
+# these types do not support conversion:
 set noconvtypes ""
 lappend noconvtypes Camera Light Material RiInc RiProc Select
 
