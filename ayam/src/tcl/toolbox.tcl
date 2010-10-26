@@ -912,7 +912,7 @@ proc toolbox_add { fn colspan } {
 proc toolbox_startaction { action { about 0 } } {
     global ay ayprefs
 
-    if { $ayprefs(SingleWindow) == 1 } {
+    if { ($ayprefs(AutoFocus) != 1) && ($ayprefs(SingleWindow) == 1) } {
 	set intfocus ""
 	foreach i $ay(views) {
 	    if { $i == [focus] } {
