@@ -1894,7 +1894,7 @@ extern char *ay_nm_tagname;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.18pre"
+#define AY_VERSIONSTR "1.18"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
