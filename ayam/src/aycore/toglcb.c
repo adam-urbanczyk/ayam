@@ -100,6 +100,15 @@ ay_toglcb_create(struct Togl *togl)
 
   /* glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color); */
 
+  if(!ay_gluquadobj)
+    {
+      if(!(ay_gluquadobj = gluNewQuadric()))
+	{
+	  /* XXXX error handling? */
+	  return;
+	}
+    }
+
  return;
 } /* ay_toglcb_create */
 

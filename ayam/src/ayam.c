@@ -528,11 +528,6 @@ ay_init(Tcl_Interp *interp)
   ay_selection = NULL;
   ay_clipboard = NULL;
 
-  if(!(ay_gluquadobj = gluNewQuadric()))
-    {
-      return AY_ERROR;
-    }
-
   ay_prefs.handle_size = 6.0;
   ay_prefs.glu_sampling_tolerance = 30.0;
   ay_prefs.pick_epsilon = 0.2;
