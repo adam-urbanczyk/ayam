@@ -39,7 +39,7 @@ ay_list_object *ay_currentlevel;
 /* object clipboard */
 ay_object *ay_clipboard;
 
-GLUquadric *ay_gluquadobj;
+GLUquadric *ay_gluquadobj = NULL;
 
 /* registered object types */
 Tcl_HashTable ay_otypesht;
