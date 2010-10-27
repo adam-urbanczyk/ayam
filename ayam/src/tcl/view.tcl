@@ -1219,7 +1219,11 @@ proc viewSetPMode { w on } {
 ##############################
 # viewSetBGImage:
 proc viewSetBGImage { view } {
-    global ay
+    global ay ayprefs
+
+    $view mc
+    set ay(ImageFile) $ay(cVBGImage)
+    update
 
     winAutoFocusOff
 
@@ -1231,18 +1235,20 @@ proc viewSetBGImage { view } {
     if { $ay(ws) == "Aqua" } {
 	winMakeFloat $w
     } else {
-	wm transient $w [winfo toplevel $view]
+	if { $ayprefs(SingleWindow) == 1 } {
+	    wm transient $w .
+	} else {
+	    wm transient $w [winfo toplevel $view]
+	}
     }
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
-
-    $view mc
-    set ay(ImageFile) $ay(cVBGImage)
-    update
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    addText $f t1 "Select TIFF"
     addFileT $f ay ImageFile \
 	{ {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
 
@@ -1261,7 +1267,6 @@ proc viewSetBGImage { view } {
 	grab release .setBGI;\
 	focus $view;\
 	destroy $w"
-
 
     button $f.bca -text "Cancel" -pady $ay(pady) -width 15 -command "\
 	global ay;
