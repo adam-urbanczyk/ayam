@@ -26,7 +26,7 @@ set angled $::SpiralAttrData(AngleD)
 set r $::SpiralAttrData(Radius)
 set zd $::SpiralAttrData(ZDiff)
 
-crtOb NCurve -length $length;hSL
+crtOb NCurve -length $length;sL
 set angle 0.0
 set z 0.0
 for {set i 0} {$i < $length} {incr i} {
