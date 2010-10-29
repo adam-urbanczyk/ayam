@@ -16,7 +16,7 @@ if { ![info exists ::LineAttrGUI] } {
 
 set length $::LineAttrData(Length)
 
-crtOb NCurve -length 2; hSL
+crtOb NCurve -length 2; sL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 
