@@ -7087,6 +7087,7 @@ and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
 the procedural will create or the archive contains.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 <sect1>Script Object<label id="scriptobj">
 <p>
 Script objects are the most flexible object type of Ayam.
@@ -7173,7 +7174,6 @@ management and property GUI creation.
 Since Ayam 1.9 the parameters set via a new property GUI may be
 comfortably saved with scene files by just adding the following
 comment as first line to the script:
-<#if out=latex><x/needspace 3/</#if>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -7251,7 +7251,6 @@ and act as an object of the type that the script created.
 If the script creates e.g. a NCurve object, the script object may
 be used as parameter object of a tool object that needs a NCurve,
 e.g. a Sweep:
-<#if out=latex><x/needspace 5/</#if>
 <code>
 +-Sweep
  | Cross_Section(Script)
@@ -7259,8 +7258,8 @@ e.g. a Sweep:
 </code>
 If the newly created object has to be selected by the script code
 for further parameterisation purposes, the selection should be done
-using the new scripting interface command <tt/"hSL"/ (hidden select
-last).
+using the scripting interface command <tt/"sL"/ (which performs
+a hidden selection in the safe interpreter context).
 Consequently, the most simple example script for a script object
 of type <tt/"Create"/ looks like this:
 <code>
@@ -7268,7 +7267,8 @@ crtOb NCurve
 </code>
 Or, with further parameterisation
 <code>
-crtOb NCurve; hSL
+crtOb NCurve
+sL
 setProperty NCurveAttr(Order) 2
 </code>
 
@@ -7318,7 +7318,6 @@ It is also possible to edit the code in an external editor and
 copy it to the script object using the operating system clipboard
 and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
 If the first line of the script is a comment like
-<#if out=latex><x/needspace 3/</#if>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -7344,7 +7343,8 @@ desired line length on the x axis. Just copy the following code to the
 Script property of a script object of type <tt/"Create"/, and activate it.
 <code>
 set length 1
-crtOb NCurve -length 2; hSL
+crtOb NCurve -length 2
+sL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
@@ -7377,7 +7377,8 @@ if { ![info exists ::LineAttrGUI] } {
 }
 set length $::LineAttrData(Length)
 # ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-crtOb NCurve -length 2; hSL
+crtOb NCurve -length 2
+sL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
@@ -7430,7 +7431,7 @@ crtOb Clone
 goDown -1
 pasmovOb
 goUp
-hSL
+sL
 getProp
 set CloneAttrData(NumClones) [expr round($len)]
 setProp
@@ -8135,7 +8136,6 @@ integer value: "3", a string: "on", a color: "1,1,1" or a point:
 <bf/Example/
 <p>
 Some examples for valid RiAttribute tags:
-<#if out=latex><x/needspace 5/</#if>
 <code>
 RiAttribute render,truedisplacement,i,1
 RiAttribute dice,numprobes,j,3,3
@@ -8189,7 +8189,7 @@ to the new specified values.
 <code>TC 0,0,10,0,0,10,10,10</code>
 Changes the texture coordinate space so that more and smaller tiles
 of a texture would be displayed on a primitive.
-<#if out=latex><x/needspace 3/</#if>
+
 <code>TC 0,0,0,1,1,0,1,1</code>
 Flips the texture coordinate space over two corners.
 A shader normally generating vertical stripes will create
@@ -8312,7 +8312,6 @@ consisting of <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
 <p>
 <bf/Examples/
 <p>
-<#if out=latex><x/needspace 3/</#if>
 <code>PV mycolor,constant,c,1,0,1,0</code>
 adds a single color value (0,1,0), which is the same all over the primitive,
 the respective surface shader should have a parameter <tt/"color mycolor"/;
@@ -11260,7 +11259,6 @@ however, to <em>not</em> rewind the undo state, when a modelling
 operation only failed for some (not for all) of the selected objects.
  </itemize>
  <item>Example:
-<#if out=latex><x/needspace 6/</#if>
 <code>
 undo save "MovOb"
 set ay_error ""
@@ -11357,6 +11355,8 @@ $ay(cm) add command -label "Place Object" -command {
 The trailing <tt/"plb_update; rV"/ command ensures that the GUI is updated
 properly and all views display the new position of the moved objects.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Moving NURBS points<label id="scexnurb">
 <p>
 The following example script snippet shows how to move control points
@@ -11393,12 +11393,13 @@ rV
 Now use this as path for a Sweep.
 For instance, using the next small script.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Easy Sweep<label id="scexsweep">
 <p>
 The following example script shows how to easily create a sweep from a
 selected path curve (avoiding the manual and lengthy creation and
 parameterisation of a suitable cross section).
-<#if out=latex><x/needspace 13/</#if>
 <code>
 proc easySweep { } {
  # first, we create a sweep object
@@ -11455,6 +11456,8 @@ $ay(cm) add command -label "Easy Sweep" -command {
 After running the above script you should have a new menu
 entry <tt>"Custom/Easy Sweep"</tt> that calls the <tt>easySweep</tt>
 procedure.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Toolbox Buttons<label id="scextoolbox">
 <p>
@@ -11830,6 +11833,8 @@ if(SphereAttrData)
   setProp();
 }
 </code>
+
+<#if out=latex><x/newpage/</#if>
 
 The next example shows, how to manage a property GUI in a JavaScript
 implemented script. Use Script object type <tt/"Create"/.
