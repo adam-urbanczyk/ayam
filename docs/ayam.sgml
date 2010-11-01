@@ -1438,7 +1438,7 @@ Pan View|<tt/&lt;v&gt;/|
 <#if out=latex><x>inlinegfx pics/movevac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/movevac.gif"></#if>
 @<hline>
-Zoom View|<tt/&lt;o&gt;/|
+Zoom View|<tt/&lt;V&gt;/|
 <#if out=latex><x>inlinegfx pics/zoomvac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/zoomvac.gif"></#if>
 @<hline>
@@ -2350,7 +2350,7 @@ Insert Points|<tt/&lt;i&gt;/|
 <#if out=latex><x>inlinegfx pics/insertac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/insertac.gif"></#if>
 @<hline>
-Edit Direct|<tt/&lt;p&gt;/|
+Edit Direct|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>|
 Delete Points|<tt/&lt;d&gt;/|
@@ -2362,6 +2362,19 @@ Delete Points|<tt/&lt;d&gt;/|
 </table>
 
 <#if out=latex><x/newpage/</#if>
+
+<sect1>Transforming Objects or Selected Points
+<p>
+Many modelling actions either work on objects transformation attributes
+or coordinates of selected points. Before Ayam 1.18 this was controlled
+implicitly by the point selection, if points were selected, they would
+be transformed. Since Ayam 1.18 there are two new
+keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/) that let the
+user control this behaviour directly per view, <tt/&lt;o&gt;/ switches
+to object transformations and <tt/&lt;p&gt;/ to point transformations.
+These shortcuts can be used anytime, even in the middle of any other
+actions. If points are to be modified, a little red point will appear
+in the modelling mode icon in the view menu.
 
 <sect1>Moving Objects or Selected Points
 <p>
@@ -2684,8 +2697,8 @@ action or a modelling action that would modify the selected points is active:
 </figure>
 <p>
 The selected editable points may be modified subsequently using the
-modelling actions Move, Rotate, and Scale as discussed above.
-Selected points always take precedence for those modelling actions.
+modelling actions Move, Rotate, and Scale as discussed above when the
+view is switched to point transformations using the shortcut <tt/&lt;p&gt;/.
 See also the table below.
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2761,7 +2774,7 @@ Edit Weights|<tt/&lt;w&gt;/|
 <#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editwac.gif"></#if>
 @<hline>
-Edit Direct|<tt/&lt;p&gt;/|
+Edit Direct|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>
 @<hline>
@@ -2797,7 +2810,7 @@ If a NURBS curve has multiple points, this action modifies all
 single points that make up the multiple point.
 
 <item>The modelling action <tt/"Direct Point Edit"/ (shortcut:
-<tt/&lt;p&gt;/)
+<tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
 with the mouse opens a small window where you may change the
 coordinates of the selected editable point(s) directly by entering
@@ -2820,7 +2833,7 @@ world space.
 Since Ayam 1.18, this modelling action may affect
 multiple points of multiple selected objects.
 Snapping points of different objects together is now possible too:
-Just select two objects, start direct point editing (press <tt/&lt;p&gt;/),
+Just select two objects, start direct point editing (press <tt/&lt;E&gt;/),
 pick a point on the first object (where a point of the second object
 should be snapped to), the point edit window opens, now drag select
 the point of the second object (do <em/not/ use a single click as this
