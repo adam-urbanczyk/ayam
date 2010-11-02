@@ -1,5 +1,5 @@
-[22. Oct 2010] CVS-Head:
-=======================
+[28. Oct 2010] Ayam 1.18:
+=========================
 Bug Fixes:
 o fixed direct point editing not setting the mark (SF 2993441)
 o fixed continuous complete notification for Script objects (SF 3001239)
@@ -15,6 +15,7 @@ o fixed in-place conversion leading to broken scenes (SF 3032589)
 o fixed drag and drop with multiple objects selected by keyboard (SF 3036465)
 o fixed current level after tree reset/rebuild (via <Ctrl-l>) (SF 3044564)
 o fixed drawing/shading of sphere objects (SF 3054130)
+o fixed single point editing of PolyMesh and SDMesh objects (SF 3094086)
 
 Modelling:
 o the default zoom view (<o>) and direct point edit (<p>) keyboard
@@ -68,7 +69,9 @@ o several objects now support read only points, which can be selected and
   their coordinates inquired (for snapping/aligning or transformation purposes)
   but they can not be modified; the supporting objects are:
   Box, Sphere, Cylinder, Disk, Cone, Torus, Hyperboloid, Paraboloid,
-  Extrude, Revolve
+  Extrude, Revolve, Sweep, Swing, Skin, Birail1, Birail2, Gordon, Cap,
+  Bevel, ExtrNC, ExtrNP, OffsetNC, OffsetNP, ConcatNC, ConcatNP, Clone,
+  Script, Instance, Text
 
 GUI:
 o AutoFocus is now available (again) for single window GUI mode; here it
@@ -76,6 +79,8 @@ o AutoFocus is now available (again) for single window GUI mode; here it
 o Tool dialogs now display a more descriptive window name
 o tree drag and drop now keeps the object selection intact and opens
   the target level
+o starting modelling actions from the toolbox now also considers the
+  AutoFocus preference setting, if enabled, the action is started in all views
 
 Scripts/Scripting Interface:
 o number conversion errors are now correctly detected and reported in all
@@ -86,6 +91,7 @@ o renamed "-p" option to "-eval" for getPnt
 o getPnt can now work with arbitrary object types (even from plugins) as
   long as they support single point editing; i.e. it now works with PolyMesh,
   SDMesh, and SDNPatch objects
+o the "hSL" command has been removed from safe interpreters, use "sL" instead
 o added a JavaScript interpreter plugin
 o Script objects can now use arbitrary languages provided by plugins
   (e.g. JavaScript)
