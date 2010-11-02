@@ -7128,7 +7128,7 @@ onto the network, or confuse the application state. Direct access
 to Tk is also completely blocked, but Script objects still can have their
 own property GUIs (refer to the examples below).
 <p>
-In particular, the following Tcl commands are not available in the
+In particular, the following Tcl commands are <em>not</em> available in the
 safe interpreter:
 cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
 source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
@@ -7225,7 +7225,11 @@ should look like this:
 <code>
 /* Ayam, use: JavaScript */
 </code>
-.
+The special comments for saving of array items and language switching
+can be used in conjunction like this:
+<code>
+/* Ayam, use: JavaScript, save array: MyArr */
+</code>
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -11698,6 +11702,8 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>JavaScript Scripting Interface<label id="jsinterp">
 <p>
 This sections contains the documentation of the JavaScript scripting
@@ -11755,12 +11761,15 @@ and <tt>"tclset"</tt>.
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands
 (e.g. one may create Ayam objects in JavaScript using a function call
-like this: <tt>crtOb("Sphere");</tt>, or, with additional arguments:
-<tt>crtOb("Sphere", "-radius", 3.0);</tt>).
-Generally, all commands available in the safe Ayam Tcl interpreter are also
+like this: <tt>crtOb("NCircle");</tt>, or, with additional arguments:
+<tt>crtOb("NCircle", "-radius", 3.0);</tt>).
+In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
 <ref id="sccomm" name="Index of Procedures and Commands">
 for a complete list of those commands).
+<p>
+Note that Tcl procedures are not available as global function, they
+can be called using tcleval() as documented in the next section.
 
 <sect3>tcleval<label id="tcleval">
 <p>
@@ -11770,7 +11779,9 @@ Apart from commands converted to functions, there is the function
 var a = 42;
 a = tcleval("puts " + a + "; return 5;");
 tcleval("puts " + a);
+/* expected output: 42 5 */
 </code>
+
 The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript.
@@ -11786,6 +11797,7 @@ reflected on the JavaScript side:
 tclvar("a");
 tcleval("set a 42");
 tcleval("puts " + a);
+/* expected output: 42 */
 </code>
 Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write onto the Tcl variable.
@@ -11816,7 +11828,7 @@ tclset("b", b);
 </code>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
 and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
-Note that the variable names may point to Tcl array elements:
+Note that the variable names may also point to Tcl array elements:
 <tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>.
 
 <sect2>Data Conversion
@@ -11825,9 +11837,55 @@ When data is transferred from the Tcl to the JavaScript side
 (e.g. while converting return values of tcleval() or variable
 values linked via tclvar()),
 the following conversions are in effect:
-Booleans will be converted to integer values.
-Lists will be converted to Array objects (nesting is allowed).
+Scalar data types will be converted to their directly matching counterparts,
+except for Booleans, which will be converted to integer values.
+Lists will be converted to Array objects (nesting is allowed and will
+produce accordingly nested arrays).
 Associative arrays will be converted to objects with named properties.
+Unicode strings are currently not supported.
+See also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/Tcl/|<bf/JavaScript/@<hline>
+Boolean (true, false)|Integer (1, 0)@<hline>
+Integer (2)|Integer (2)@<hline>
+Double (3.14)|Double (3.14)@<hline>
+String ("mystr")|String ("mystr")@<hline>
+List ({0 1 2})|Array ((0, 1, 2))@<hline>
+Array (mya(mye) = 0.1)|Object (mya.mye = 0.1)@<hline>
+</tabular>
+<caption>Tcl to JavaScript Data Conversions</caption>
+</table>
+
+When data is transferred from the JavaScript side to the Tcl side
+(e.g. as function argument), the following conversions are in
+effect:
+Scalar data types will be converted to their directly matching counterparts,
+Array objects will be converted to lists (nesting is allowed and will
+produce accordingly nested lists).
+Unicode strings and objects of a type other than Array (e.g. Boolean) are
+currently not supported.
+See also the following table.
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/JavaScript/|<bf/Tcl/@<hline>
+Integer (2)|Integer (2)@<hline>
+Double (3.14)|Double (3.14)@<hline>
+String ("mystr")|String ("mystr")@<hline>
+Array ((0, 1, 2))|List ({0 1 2})@<hline>
+</tabular>
+<caption>JavaScript to Tcl Data Conversions</caption>
+</table>
+The transport/conversion of object properties (to e.g. associative array
+elements) can be arranged manually like this:
+<code>
+var a = new Object();
+a.b = 3.14;
+tclset("a(b)", a.b);
+</code>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect2>Complete Examples
 <p>
@@ -11847,7 +11905,6 @@ if(SphereAttrData)
 }
 </code>
 
-<#if out=latex><x/newpage/</#if>
 
 The next example shows, how to manage a property GUI in a JavaScript
 implemented script. Use Script object type <tt/"Create"/.
