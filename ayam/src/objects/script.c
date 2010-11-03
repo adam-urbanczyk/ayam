@@ -541,11 +541,12 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
  char *n1="ScriptAttrData", *empty = "";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_script_object *sc = NULL;
  char *arrname = NULL;
- char *arrnameend = NULL;
+ char *lineend = NULL, *arrnameend = NULL;
  Tcl_Obj *arrmemberlist = NULL, *arrmember;
  int arrmembers = 0, i;
 
@@ -577,19 +578,36 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   /* handle script parameters */
-  if(sc->params && sc->script && strstr(sc->script, ay_script_sa))
+  if(sc->params && sc->script)
     {
-      arrname = strchr(sc->script, ':');
+      lineend = strchr(sc->script, '\n');
+      if(lineend)
+	{
+	  *lineend = '\0';
+	}
+      else
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      if(!(arrname = strstr(sc->script, ay_script_sa)))
+	{
+	  goto cleanup;
+	}
+
+      arrname = strchr(arrname, ':');
+
       arrname++;
-      while(arrname[0] == ' ')
+      while(arrname[0] == ' ' || arrname[0] == '\t')
 	arrname++;
 
-      arrnameend = strchr(arrname, '\n');
+      arrnameend = arrname;
+      while(isgraph(arrnameend[0]) && (arrnameend[0] != ',') &&
+	    (arrnameend[0] != ';'))
+	arrnameend++;
 
-      if(arrnameend)
-	*arrnameend = '\0';
-
-      Tcl_SetStringObj(toa, arrname, -1);
+      Tcl_SetStringObj(toa, arrname, arrnameend - arrname);
       Tcl_SetStringObj(ton, ay_script_sp, -1);
 
       arrmemberlist = Tcl_ObjGetVar2(interp, toa, ton, TCL_GLOBAL_ONLY);
@@ -610,9 +628,12 @@ ay_script_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	    } /* for */
 	} /* if */
 
-      if(arrnameend)
-	*arrnameend = '\n';
     } /* if */
+
+cleanup:
+
+  if(lineend)
+    *lineend = '\n';
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
