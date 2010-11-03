@@ -647,7 +647,7 @@ ay_selp_calccog(ay_point *pnts, double *cog)
  *  
  */
 int
-ay_selp_rem(ay_object *o, int index)
+ay_selp_rem(ay_object *o, unsigned int index)
 {
  int ay_status = AY_OK;
  ay_point **pp = NULL, *p = NULL;
@@ -693,7 +693,7 @@ ay_selp_rem(ay_object *o, int index)
  *  
  */
 int
-ay_selp_ins(ay_object *o, int index, int addtoselp)
+ay_selp_ins(ay_object *o, unsigned int index, int addtoselp)
 {
  int ay_status = AY_OK;
  ay_point *p = NULL, *newp = NULL;

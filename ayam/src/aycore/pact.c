@@ -1502,7 +1502,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_ins(o, index, AY_FALSE);
+	  ay_selp_ins(o, (unsigned int)index, AY_FALSE);
 	  ay_status = ay_notify_force(o);
 	  o->modified = AY_TRUE;
 	} /* if */
@@ -1825,7 +1825,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
       else
 	{
 	  notify_parent = AY_TRUE;
-	  ay_selp_rem(o, index);
+	  ay_selp_rem(o, (unsigned int)index);
 	  ay_status = ay_notify_force(o);
 	  ay_selection->object->modified = AY_TRUE;
 	} /* if */
