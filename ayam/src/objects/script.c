@@ -32,6 +32,8 @@ int ay_script_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe);
 
 int ay_script_notifycb(ay_object *o);
 
+int ay_script_hasnptrafo(ay_object *o);
+
 /* functions: */
 
 /* ay_script_createcb:
@@ -182,8 +184,11 @@ ay_script_drawcb(struct Togl *togl, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  /* ignore own transformation attributes */
-  glLoadIdentity();
+  /* ignore own transformation attributes? */
+  if(!o->tags || !ay_script_hasnptrafo(o))
+    {
+      glLoadIdentity();
+    }
 
   sc = (ay_script_object *)o->refine;
 
@@ -221,8 +226,11 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  /* ignore own transformation attributes */
-  glLoadIdentity();
+  /* ignore own transformation attributes? */
+  if(!o->tags || !ay_script_hasnptrafo(o))
+    {
+      glLoadIdentity();
+    }
 
   sc = (ay_script_object *)o->refine;
 
@@ -260,6 +268,12 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 
   if(!o)
     return AY_ENULL;
+
+  /* ignore own transformation attributes? */
+  if(!o->tags || !ay_script_hasnptrafo(o))
+    {
+      glLoadIdentity();
+    }
 
   sc = (ay_script_object *)o->refine;
 
@@ -747,7 +761,12 @@ cleanup:
 
   o->refine = sc;
 
-  ay_trafo_defaults(o);
+  /* clean transformation attributes if no NP Transformations
+     tag is present */
+  if(!o->tags || !ay_script_hasnptrafo(o))
+    {
+      ay_trafo_defaults(o);
+    }
 
 #ifdef AYNOSAFEINTERP
   if(sc->active)
@@ -1159,8 +1178,12 @@ ay_script_notifycb(ay_object *o)
   old_aynext = ay_next;
   ay_next = &(o->down);
 
-  /* XXXX make this depend on NP/RP tags */
-  ay_trafo_defaults(o);
+  /* clean transformation attributes if no NP Transformations
+     tag is present */
+  if(!o->tags || !ay_script_hasnptrafo(o))
+    {
+      ay_trafo_defaults(o);
+    }
 
   /* copy cached/saved individual parameters to global Tcl array */
   if(/*!sc->modified && */sc->params)
@@ -1746,6 +1769,35 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 
  return AY_OK;
 } /* ay_script_providecb */
+
+
+/* ay_script_hasnptrafo:
+ *  has object <o> a NP tag for the transformations property?
+ */
+int
+ay_script_hasnptrafo(ay_object *o)
+{
+ ay_tag *t = NULL;
+
+  if(!o)
+    return AY_FALSE;
+
+  /* find NP tag */
+  t = o->tags;
+  while(t)
+    {
+      if(t->type == ay_np_tagtype)
+	{
+	  if(t->val && strstr(t->val, "Transformations"))
+	    {
+	      return AY_TRUE;
+	    }
+	}
+      t = t->next;
+    }
+
+ return AY_FALSE;
+} /* ay_script_hasnptrafo */
 
 
 /* ay_script_init:
