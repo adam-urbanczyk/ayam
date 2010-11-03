@@ -1672,8 +1672,10 @@ proc actionClear { w } {
     if { $ayprefs(DefaultAction) == 0 } {
 	viewTitle $w "" "None"
 	viewSetMAIcon $w ay_Empty_img ""
+	$w setconf -drawh 0
     } else {
 	actionPick $w
+	$w setconf -drawh 0
     }
 
     # the following after scripts arrange for a short period
