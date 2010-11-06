@@ -1384,7 +1384,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 
 	      ay_pomesht_split((ay_pomesh_object*)o->refine, o->selp,
-			       (ay_pomesh_object**)&(newo->refine));
+			       (ay_pomesh_object**)(void*)&(newo->refine));
 
 	      if(newo->refine)
 		{
