@@ -1093,7 +1093,7 @@ mopsi_tags(FILE *fileptr)
      if(entry)
        tag->type = (char *)Tcl_GetHashValue(entry);
 
-     mopsi_string(fileptr,(char**)&(tag->val));
+     mopsi_string(fileptr,(char**)(void*)&(tag->val));
 
      tag->next = o->tags;
      o->tags = tag;

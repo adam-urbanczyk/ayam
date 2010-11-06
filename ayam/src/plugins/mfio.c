@@ -1911,7 +1911,7 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
     }
 
   /* we write out the curve now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { free(mf3do.points); free(mf3do.knots); ay_mfio_mf3d_errno = status;
       return AY_ERROR; }
@@ -1989,7 +1989,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
     } /* for */
 
   /* we write out the patch now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
       ay_mfio_mf3d_errno = status; return AY_ERROR; }
@@ -2006,7 +2006,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
     {
       tco.objectType = kMF3DObjTrimCurves;
       /* we write out the trimcurve-object now */
-      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&tco);
+      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&tco);
       if(status != kMF3DNoErr)
 	{ free(mf3do.points); free(mf3do.vKnots); free(mf3do.uKnots);
 	  ay_mfio_mf3d_errno = status; return AY_ERROR; }
@@ -2110,7 +2110,7 @@ ay_mfio_writenurbcurve(MF3D_FilePtr fileptr, ay_object *o)
     }
 
   /* we write out the curve now */
-  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2191,7 +2191,7 @@ ay_mfio_writepolymesh(MF3D_FilePtr fileptr, ay_object *o)
 	} /* for */
 
       /* we write out the object now */
-      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
       if(status != kMF3DNoErr)
 	{  /* XXXX Memory leaks here! */
 	  ay_mfio_mf3d_errno = status; return AY_ERROR; }
@@ -2257,7 +2257,7 @@ ay_mfio_writebox(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.box = &bd;
 
   /* we write out the box now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2311,7 +2311,7 @@ ay_mfio_writesphere(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.ellipsoid = &ed;
 
   /* we write out the sphere now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2366,7 +2366,7 @@ ay_mfio_writecylinder(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.cylinder = &cd;
 
   /* we write out the cylinder now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2376,7 +2376,7 @@ ay_mfio_writecylinder(MF3D_FilePtr fileptr, ay_object *o)
       cp.objectType = kMF3DObjCaps;
       cp.caps = kCapsBottom | kCapsTop;
 
-      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&cp);
+      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&cp);
       if(status != kMF3DNoErr)
 	{ ay_mfio_mf3d_errno = status; return AY_ERROR; }
     }
@@ -2432,7 +2432,7 @@ ay_mfio_writecone(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.cone = &cd;
 
   /* we write out the cone now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2442,7 +2442,7 @@ ay_mfio_writecone(MF3D_FilePtr fileptr, ay_object *o)
       cp.objectType = kMF3DObjCaps;
       cp.caps = kCapsBottom;
 
-      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&cp);
+      status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&cp);
       if(status != kMF3DNoErr)
 	{ ay_mfio_mf3d_errno = status; return AY_ERROR; }
     }
@@ -2493,7 +2493,7 @@ ay_mfio_writedisk(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.disk = &dd;
 
   /* we write out the disk now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2549,7 +2549,7 @@ ay_mfio_writetorus(MF3D_FilePtr fileptr, ay_object *o)
   mf3do.torus = &td;
 
   /* we write out the torus now */
-  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2587,7 +2587,7 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   to.translate.z = (MF3DFloat32)o->movz;
 
   if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0))
-    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&to);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&to);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2597,21 +2597,21 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   ro.axis = MF3DAxisZ;
   ro.radians = -euler[0];
   if(euler[0] != 0.0)
-    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
   ro.axis = MF3DAxisY;
   ro.radians = -euler[1];
   if(euler[1] != 0.0)
-    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
   ro.axis = MF3DAxisX;
   ro.radians = -euler[2];
   if(euler[2] != 0.0)
-    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&ro);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&ro);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2621,7 +2621,7 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
   so.scale.z = o->scalz;
 
   if((o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0))
-    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&so);
+    status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&so);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2638,7 +2638,7 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
 	  dco.diffuseColor.red = mo->mat->colr;
 	  dco.diffuseColor.green = mo->mat->colg;
 	  dco.diffuseColor.blue = mo->mat->colb;
-	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&dco);
+	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&dco);
 	  if(status != kMF3DNoErr)
 	    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 	} /* if */
@@ -2649,7 +2649,7 @@ ay_mfio_writeattributes(MF3D_FilePtr fileptr, ay_object *o)
 	  tco.transparency.red = mo->mat->opr;
 	  tco.transparency.green = mo->mat->opg;
 	  tco.transparency.blue = mo->mat->opb;
-	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)&tco);
+	  status = MF3DWriteAnObject(fileptr, (MF3DVoidObjPtr)(void*)&tco);
 	  if(status != kMF3DNoErr)
 	    { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 	} /* if */
@@ -2810,7 +2810,7 @@ ay_mfio_writecntr(MF3D_FilePtr fileptr)
   mf3do.objectType = kMF3DObjContainer;
 
   /* we write out a container now */
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2829,7 +2829,7 @@ ay_mfio_writeecntr(MF3D_FilePtr fileptr)
  MF3DErr status = kMF3DNoErr;	/* temporary result code */
 
   mf3do.objectType = kMF3DObjEndContainer;
-  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)&mf3do);
+  status = MF3DWriteAnObject (fileptr, (MF3DVoidObjPtr)(void*)&mf3do);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 
@@ -2940,7 +2940,7 @@ ay_mfio_writescene(Tcl_Interp *interp, char *filename, int selected)
     return AY_EOPENFILE;
 
   /* write the metafile-object */
-  status = MF3DWriteAnObject(metafilePtr, (MF3DVoidObjPtr)&mfo);
+  status = MF3DWriteAnObject(metafilePtr, (MF3DVoidObjPtr)(void*)&mfo);
   if(status != kMF3DNoErr)
     { ay_mfio_mf3d_errno = status; return AY_ERROR; }
 

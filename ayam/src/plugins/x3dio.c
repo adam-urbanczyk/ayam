@@ -1585,7 +1585,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
  float *texcoords, *colors;
  int *normali, *colori, *texcoordi;
  int expandcolors = AY_FALSE;
- int i, stride = 3;
+ unsigned int i, stride = 3;
  double *expandedcontrols = NULL;
  double *expandednormals = NULL;
  float *expandedtexcoords = NULL;
@@ -5501,7 +5501,7 @@ x3dio_readtransform(scew_element *element)
 {
  int ay_status = AY_OK;
  scew_element *child = NULL;
- ay_object *o = NULL, **old_aynext;
+ ay_object *o = NULL, **old_aynext = NULL;
  const char *element_name = NULL;
  int need_level = AY_FALSE;
  float scale[3] = {1.0f, 1.0f, 1.0f};
@@ -8072,7 +8072,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  to->type = AY_IDPOMESH;
 
 		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-					  (ay_pomesh_object **)&(to->refine));
+				  (ay_pomesh_object **)(void*)&(to->refine));
 
 		  /* temporarily save the tesselated face */
 		  if(nextli)
@@ -8114,7 +8114,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	  to->type = AY_IDPOMESH;
 
 	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-				      (ay_pomesh_object **)&(to->refine));
+				   (ay_pomesh_object **)(void*)&(to->refine));
 
 	  /* temporarily save the tesselated face */
 	  if(nextli)

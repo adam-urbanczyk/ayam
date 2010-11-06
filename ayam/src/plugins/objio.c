@@ -701,7 +701,8 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	    {
 	      have_texcoords = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      ay_status = ay_pv_convert(tag, 0,
+					&mystlen, (void**)(void*)&mystarr);
 	      if(ay_status)
 		goto cleanup;
 	      break;
@@ -1026,7 +1027,8 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	    {
 	      have_texcoords = AY_TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      ay_status = ay_pv_convert(tag, 0,
+					&mystlen, (void**)(void*)&mystarr);
 	      if(ay_status)
 		return AY_ERROR;
 	      break;
@@ -1119,7 +1121,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		  to->type = AY_IDPOMESH;
 
 		  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-					  (ay_pomesh_object **)&(to->refine));
+				   (ay_pomesh_object **)(void*)&(to->refine));
 
 		  /* temporarily save the tesselated face */
 		  if(nextli)
@@ -1159,7 +1161,7 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  to->type = AY_IDPOMESH;
 
 	  ay_status = ay_tess_pomeshf(po, i, q, r, AY_FALSE,
-				      (ay_pomesh_object **)&(to->refine));
+				  (ay_pomesh_object **)(void*)&(to->refine));
 
 	  /* temporarily save the tesselated face */
 	  if(nextli)
@@ -2519,8 +2521,8 @@ objio_readpolyline(char *str)
 {
  int ay_status = AY_OK;
  char *c = NULL;
- int gvindex = 0, tvindex = 0, dummy, length = 0, stride = 4, texvlen;
- double *gv, *tv, *controlv = NULL, *tmp, *texv;
+ int gvindex = 0, tvindex = 0, dummy, length = 0, stride = 4, texvlen = 0;
+ double *gv, *tv, *controlv = NULL, *tmp, *texv = NULL;
  ay_object *o = NULL;
 
   if(!str)
@@ -2620,7 +2622,7 @@ objio_readpolyline(char *str)
   ay_object_defaults(o);
   o->type = AY_IDNCURVE;
   ay_status = ay_nct_create(2, length, AY_KTNURB, controlv, NULL,
-			    ((ay_nurbcurve_object **)&(o->refine)));
+			    ((ay_nurbcurve_object **)(void*)&(o->refine)));
 
   ay_object_link(o);
 
