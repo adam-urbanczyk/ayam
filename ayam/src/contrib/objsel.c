@@ -328,6 +328,8 @@ ay_objsel_processcb (struct Togl *togl, int argc, char *argv[])
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
     }
 
+  Togl_MakeCurrent(togl);
+
   glGetIntegerv (GL_VIEWPORT, viewport);
 
   glSelectBuffer (1024, selectBuf);
