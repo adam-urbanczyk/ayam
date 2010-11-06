@@ -2398,7 +2398,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = ay_nct_create(nc1->order, nc1->length+nc2->length,
 			    ktype, newcontrolv, NULL,
-			    (ay_nurbcurve_object **)&(o->refine));
+			    (ay_nurbcurve_object **)(void*)&(o->refine));
 
   if(ay_status)
     {
@@ -2643,19 +2643,19 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc < 2)
     {
       ay_status = ay_nct_crtncircle(radius,
-				    (ay_nurbcurve_object **)&(o->refine));
+				 (ay_nurbcurve_object **)(void*)&(o->refine));
     }
   else
     {
       if(arc >= 360.0 || arc <= -360.0 || arc == 0.0)
 	{
 	  ay_status = ay_nct_crtncircle(radius,
-					(ay_nurbcurve_object **)&(o->refine));
+				  (ay_nurbcurve_object **)(void*)&(o->refine));
 	}
       else
 	{
 	  ay_status = ay_nct_crtncirclearc(radius, arc,
-					(ay_nurbcurve_object **)&(o->refine));
+				  (ay_nurbcurve_object **)(void*)&(o->refine));
 	}
     } /* if */
 
@@ -2937,7 +2937,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   ay_object_defaults(o);
 
   ay_status = ay_nct_crtcircbsp(sections, radius, arc, order,
-				(ay_nurbcurve_object**)&(o->refine));
+				(ay_nurbcurve_object**)(void*)&(o->refine));
 
   if(ay_status || !o->refine)
     {
@@ -3365,7 +3365,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
   ay_status = ay_nct_create(order, length,
 			    ktype, newcontrolv, newknotv,
-			    (ay_nurbcurve_object **)&(newo->refine));
+			    (ay_nurbcurve_object **)(void*)&(newo->refine));
 
   if(ay_status)
     {
@@ -5487,7 +5487,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(sel->object);
 	    }
 
-	  ay_status = ay_nct_trim((ay_nurbcurve_object**)(&(o->refine)),
+	  ay_status = ay_nct_trim((ay_nurbcurve_object**)(void*)&(o->refine),
 				  umin, umax);
 
 	  if(ay_status)
@@ -5850,7 +5850,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    {
 	      if(ay_pv_checkndt(tag, nname, "varying", "n"))
 		{
-		  ay_pv_convert(tag,0,&vnlen,(void**)&vn);
+		  ay_pv_convert(tag, 0, &vnlen, (void**)(void*)&vn);
 		  break;
 		}
 	      tag = tag->next;

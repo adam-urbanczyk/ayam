@@ -470,7 +470,7 @@ ay_offnp_notifycb(ay_object *o)
 
   /* create the offset */
   ay_status = ay_npt_offset(npatch, offnp->mode, offnp->offset,
-			    (ay_nurbpatch_object **)(&(newo->refine)));
+			    (ay_nurbpatch_object **)(void*)&(newo->refine));
 
   if(ay_status || !newo->refine)
     goto cleanup;

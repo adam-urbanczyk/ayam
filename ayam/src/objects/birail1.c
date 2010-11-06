@@ -577,7 +577,7 @@ ay_birail1_notifycb(ay_object *o)
 
   ay_status = ay_npt_birail1(curve1, curve2, curve3,
 			   birail1->sections, AY_FALSE/*birail1->close*/,
-			   (ay_nurbpatch_object **)(&(npatch->refine)),
+			   (ay_nurbpatch_object **)(void*)&(npatch->refine),
 			   has_startb?AY_FALSE:birail1->has_start_cap,
 			   &start_cap,
 			   has_endb?AY_FALSE:birail1->has_end_cap,
@@ -611,7 +611,7 @@ ay_birail1_notifycb(ay_object *o)
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
       ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE, AY_FALSE,
-		    (ay_nurbcurve_object**)&(curve4.refine));
+		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
 
       if(ay_status)
 	goto cleanup;
@@ -636,7 +636,7 @@ ay_birail1_notifycb(ay_object *o)
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
       ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &curve4,
-			       (ay_nurbpatch_object**)&(bevel->refine));
+			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
       curve4.refine = NULL;
@@ -660,7 +660,7 @@ ay_birail1_notifycb(ay_object *o)
 	  curve5->type = AY_IDNCURVE;
 
 	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				    (ay_nurbcurve_object**)&(curve5->refine));
+			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
 
 	  if(ay_status)
 	    goto cleanup;
@@ -681,7 +681,7 @@ ay_birail1_notifycb(ay_object *o)
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
       ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE, AY_FALSE,
-		    (ay_nurbcurve_object**)&(curve4.refine));
+		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
 
       if(ay_status)
 	goto cleanup;
@@ -706,7 +706,7 @@ ay_birail1_notifycb(ay_object *o)
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
       ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &curve4,
-			       (ay_nurbpatch_object**)&(bevel->refine));
+			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
       curve4.refine = NULL;
@@ -731,7 +731,7 @@ ay_birail1_notifycb(ay_object *o)
 	  curve5->type = AY_IDNCURVE;
 
 	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				    (ay_nurbcurve_object**)&(curve5->refine));
+			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
 
 	  if(ay_status)
 	    goto cleanup;

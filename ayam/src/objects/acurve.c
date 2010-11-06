@@ -1091,7 +1091,7 @@ ay_acurve_notifycb(ay_object *o)
 
   ay_status = ay_nct_create(acurve->order, aclen, AY_KTCUSTOM,
 			    controlv, knotv,
-			    (ay_nurbcurve_object **)(&(ncurve->refine)));
+			   (ay_nurbcurve_object **)(void*)&(ncurve->refine));
 
   if(ay_status)
     {

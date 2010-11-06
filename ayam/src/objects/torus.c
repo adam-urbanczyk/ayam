@@ -841,10 +841,10 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_object_defaults(newc);
       newc->movx += majorrad;
       ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
-				(ay_nurbcurve_object **)&(newc->refine));
+			      (ay_nurbcurve_object **)(void*)&(newc->refine));
 
       ay_status = ay_npt_revolve(newc, -thetamax, 0, 0,
-				 (ay_nurbpatch_object **)&(new->refine));
+			      (ay_nurbpatch_object **)(void*)&(new->refine));
 
 
       ay_quat_axistoquat(xaxis, -AY_D2R(90.0), quat);
@@ -962,7 +962,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if((ay_status = ay_npt_create(2, 3, 2, height,
 				     AY_KTNURB, AY_KTCUSTOM,
 				     cv2, NULL, kn,
-				     (ay_nurbpatch_object**)&(newp->refine))))
+			      (ay_nurbpatch_object**)(void*)&(newp->refine))))
 		goto cleanup;
 
 	      kn = NULL; cv2 = NULL;

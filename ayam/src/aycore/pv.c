@@ -920,8 +920,8 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
 
   if(stag && ttag)
     {
-      ay_pv_convert(stag, 0, &sdalen, (void**)&sda);
-      ay_pv_convert(ttag, 0, &tdalen, (void**)&tda);
+      ay_pv_convert(stag, 0, &sdalen, (void**)(void*)&sda);
+      ay_pv_convert(ttag, 0, &tdalen, (void**)(void*)&tda);
 
       if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen))
 	{ ay_status = AY_ERROR; goto cleanup; }
@@ -989,7 +989,7 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
 
   if(ctag)
     {
-      ay_pv_convert(ctag, 1, &cdalen, (void**)&cda);
+      ay_pv_convert(ctag, 1, &cdalen, (void**)(void*)&cda);
 
       if(cdalen == 0)
 	{ ay_status = AY_ERROR; goto cleanup; }

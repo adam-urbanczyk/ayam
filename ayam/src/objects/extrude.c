@@ -600,7 +600,7 @@ ay_extrude_notifycb(ay_object *o)
 
 	  ay_status = ay_npt_createnpatchobject(&(ext->npatch));
 
-	  ay_npt_extrude(ext->height, c, (ay_nurbpatch_object **)
+	  ay_npt_extrude(ext->height, c, (ay_nurbpatch_object **)(void*)
 			 &(ext->npatch->refine));
 
 	  ((ay_nurbpatch_object *)ext->npatch->refine)->
@@ -623,7 +623,7 @@ ay_extrude_notifycb(ay_object *o)
 					   startb_radius,
 					   AY_FALSE,
 					   c,
-				    (ay_nurbpatch_object **)&(bevel->refine));
+			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
 		  if(startb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_trafo_copy(c, bevel);
@@ -648,7 +648,7 @@ ay_extrude_notifycb(ay_object *o)
 					   endb_radius,
 					   AY_FALSE,
 					   c,
-				    (ay_nurbpatch_object **)&(bevel->refine));
+			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
 		  if(endb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
 		  ay_trafo_copy(c, bevel);
@@ -705,7 +705,7 @@ ay_extrude_notifycb(ay_object *o)
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
 		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,&angle,
-				  (ay_nurbpatch_object **)&(cap->refine));
+			       (ay_nurbpatch_object **)(void*)&(cap->refine));
 
 		  umaxx *= trim->scalx;
 		  uminx *= trim->scalx;
@@ -834,7 +834,7 @@ ay_extrude_notifycb(ay_object *o)
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
 		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,&angle,
-				  (ay_nurbpatch_object **)&(cap->refine));
+			       (ay_nurbpatch_object **)(void*)&(cap->refine));
 
 		  lmaxx *= trim->scalx;
 		  lminx *= trim->scalx;

@@ -970,7 +970,7 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
   new->type = AY_IDPOMESH;
 
   ay_status = ay_sdmesht_topolymesh(sdmesh,
-				    ((ay_pomesh_object**)&(new->refine)));
+				  (ay_pomesh_object**)(void*)&(new->refine));
 
   /* second, link new object(s), or replace old object with it/them */
   if(new && new->refine)

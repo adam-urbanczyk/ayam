@@ -394,7 +394,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
      if(entry)
        tag->type = (char *)Tcl_GetHashValue(entry);
 
-     ay_read_string(fileptr, (char**)&(tag->val));
+     ay_read_string(fileptr, (char**)(void*)&(tag->val));
 
      /* do not create tags with NULL pointers */
      if(!tag->val)

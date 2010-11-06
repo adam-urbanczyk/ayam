@@ -93,7 +93,7 @@ ay_pmt_bilinearcltonpatch(ay_pamesh_object *pamesh, ay_object **result)
     }
 
   ay_status = ay_npt_create(2, 2, w, h, AY_KTNURB, AY_KTNURB, cv, NULL, NULL,
-			    (ay_nurbpatch_object **)&(o->refine));
+			    (ay_nurbpatch_object **)(void*)&(o->refine));
 
   if(ay_status)
     {
@@ -281,7 +281,7 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  ay_status = ay_npt_create(uorder, vorder,
 				    evwinwidth, evwinheight,
 				    ktu, ktv, cv, NULL, NULL,
-				    (ay_nurbpatch_object **)&(o->refine));
+				 (ay_nurbpatch_object **)(void*)&(o->refine));
 
 	  if(ay_status)
 	    {
@@ -408,7 +408,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
       memcpy(cv, pamesh->controlv, evwinwidth*evwinheight*4*sizeof(double));
       ay_status = ay_npt_create(uorder, vorder, evwinwidth, evwinheight,
 				ktu, ktv, cv, NULL, NULL,
-				(ay_nurbpatch_object **)&(o->refine));
+				(ay_nurbpatch_object **)(void*)&(o->refine));
       *result = o;
     }
   else
@@ -467,7 +467,7 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	      ay_status = ay_npt_create(uorder, vorder,
 					evwinwidth, evwinheight,
 					ktu, ktv, cv, NULL, NULL,
-					(ay_nurbpatch_object **)&(o->refine));
+				 (ay_nurbpatch_object **)(void*)&(o->refine));
 
 	      /* link new object */
 	      if(nexto)

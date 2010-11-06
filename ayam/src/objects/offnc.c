@@ -474,7 +474,7 @@ ay_offnc_notifycb(ay_object *o)
 
   /* create the offset */
   ay_status = ay_nct_offset(ncurve, offnc->mode, offnc->offset,
-			    (ay_nurbcurve_object **)(&(newo->refine)));
+			    (ay_nurbcurve_object **)(void*)&(newo->refine));
 
   if(ay_status || !newo->refine)
     goto cleanup;

@@ -480,7 +480,7 @@ ay_bevel_notifycb(ay_object *o)
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
   ay_status = ay_npt_bevel(b_type, b_radius, align, curve,
-			   (ay_nurbpatch_object**)&(npatch->refine));
+			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
 
   if(ay_status)
     goto cleanup;

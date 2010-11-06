@@ -592,7 +592,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
 			    controlv, NULL, NULL,
-			    (ay_nurbpatch_object **)(&(cap->refine)));
+			    (ay_nurbpatch_object **)(void*)&(cap->refine));
 
   if(ay_status || !cap->refine)
     {
@@ -621,12 +621,12 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
       if(fabs(revolve->thetamax) != 360.0)
 	{
 	  ay_status = ay_nct_crtncirclearc(1.0, revolve->thetamax,
-			   (ay_nurbcurve_object **) (&(trim->refine)));
+			   (ay_nurbcurve_object **)(void*)&(trim->refine));
 	}
       else
 	{
 	  ay_status = ay_nct_crtncircle(1.0,
-			   (ay_nurbcurve_object **) (&(trim->refine)));
+			   (ay_nurbcurve_object **)(void*)&(trim->refine));
 	}      
     }
   else
@@ -637,7 +637,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	order = revolve->order;
       ay_status = ay_nct_crtcircbsp(revolve->sections, 1.0,
 				    revolve->thetamax, order,
-				(ay_nurbcurve_object **) (&(trim->refine)));
+			      (ay_nurbcurve_object **)(void*)&(trim->refine));
     }
 
   if(ay_status || !trim->refine)
@@ -702,7 +702,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 
       ay_status = ay_nct_create(2, 3, AY_KTNURB,
 				controlv, NULL,
-				(ay_nurbcurve_object **)(&(trim->refine)));
+			     (ay_nurbcurve_object **)(void*)&(trim->refine));
 
       if(ay_status || !trim->refine)
 	{
@@ -909,7 +909,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
 			    controlv, NULL, NULL,
-			    (ay_nurbpatch_object **)(&(cap->refine)));
+			    (ay_nurbpatch_object **)(void*)&(cap->refine));
   if(ay_status)
     {goto cleanup;}
 
@@ -1028,7 +1028,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
       ay_status = ay_nct_create(2, 4, AY_KTNURB,
 				controlv, NULL,
-				(ay_nurbcurve_object **)(&(trim->refine)));
+			     (ay_nurbcurve_object **)(void*)&(trim->refine));
 
       if(ay_status)
 	{
@@ -1169,7 +1169,7 @@ ay_revolve_notifycb(ay_object *o)
 
   ay_status = ay_npt_revolve(curve, revolve->thetamax, revolve->sections,
 			     revolve->order,
-			     (ay_nurbpatch_object **)(&(npatch->refine)));
+			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
     return ay_status;

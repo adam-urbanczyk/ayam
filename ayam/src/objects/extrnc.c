@@ -531,7 +531,7 @@ ay_extrnc_notifycb(ay_object *o)
 
   ay_status = ay_npt_extractnc(npatch, extrnc->side, extrnc->parameter,
 			       extrnc->relative, AY_FALSE,
-			       (ay_nurbcurve_object **)(&(ncurve->refine)));
+			  (ay_nurbcurve_object **)(void*)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)
     {

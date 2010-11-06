@@ -1282,7 +1282,7 @@ ay_icurve_notifycb(ay_object *o)
 					     icurve->derivs, param_type,
 					     icurve->controlv,
 					     icurve->sderiv, icurve->ederiv,
-				 (ay_nurbcurve_object **)(&(ncurve->refine)));
+			  (ay_nurbcurve_object **)(void*)&(ncurve->refine));
 	}
       else
 	{
@@ -1291,7 +1291,7 @@ ay_icurve_notifycb(ay_object *o)
 					    icurve->derivs, param_type,
 					    icurve->controlv,
 					    icurve->sderiv, icurve->ederiv,
-				 (ay_nurbcurve_object **)(&(ncurve->refine)));
+			  (ay_nurbcurve_object **)(void*)&(ncurve->refine));
 	}
     }
   else
@@ -1303,7 +1303,7 @@ ay_icurve_notifycb(ay_object *o)
 					    param_type, icurve->derivs,
 					    icurve->sderiv, icurve->ederiv,
 					    icurve->controlv,
-				 (ay_nurbcurve_object **)(&(ncurve->refine)));
+			  (ay_nurbcurve_object **)(void*)&(ncurve->refine));
 	}
       else
 	{
@@ -1312,7 +1312,7 @@ ay_icurve_notifycb(ay_object *o)
 					    param_type, icurve->derivs,
 					    icurve->sderiv, icurve->ederiv,
 					    icurve->controlv,
-				 (ay_nurbcurve_object **)(&(ncurve->refine)));
+		          (ay_nurbcurve_object **)(void*)&(ncurve->refine));
 	}
     }
 
