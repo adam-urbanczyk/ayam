@@ -290,7 +290,7 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
     }
 
   if((ay_status = ay_nct_create(order, length, kt, cv, kv,
-				(ay_nurbcurve_object**)&(o->refine))))
+				(ay_nurbcurve_object**)(void*)&(o->refine))))
     {
       ay_error(ay_status, fname, NULL);
       ay_status = AY_ERROR;

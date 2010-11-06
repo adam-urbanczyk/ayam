@@ -1454,7 +1454,7 @@ ay_tti_outlinetoncurve(ay_tti_outline *outline, ay_object **result)
   new->type = AY_IDNCURVE;
 
   ay_status = ay_nct_create(order, length, AY_KTCUSTOM, controlv, knotv,
-			    (ay_nurbcurve_object **)&(new->refine));
+			    (ay_nurbcurve_object **)(void*)&(new->refine));
 
   if(ay_status)
     { goto cleanup; }

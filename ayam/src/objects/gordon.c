@@ -686,7 +686,7 @@ ay_gordon_notifycb(ay_object *o)
 
   ay_status = ay_npt_gordon(hcurves, vcurves, inpatch,
 			    gordon->uorder, gordon->vorder,
-			    (ay_nurbpatch_object **)(&(npatch->refine)));
+			    (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
     {
@@ -713,7 +713,7 @@ ay_gordon_notifycb(ay_object *o)
 	  bcurve.type = AY_IDNCURVE;
 	  ay_status = ay_npt_extractnc(gordon->npatch, b_extrncparams[i],
 				       0.0, AY_FALSE, AY_FALSE,
-		    (ay_nurbcurve_object**)&(bcurve.refine));
+		              (ay_nurbcurve_object**)(void*)&(bcurve.refine));
 
 	  if(ay_status)
 	    goto cleanup;
@@ -739,7 +739,7 @@ ay_gordon_notifycb(ay_object *o)
 	  bevel->inherit_trafos = AY_FALSE;
 	  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE,
 				   &bcurve,
-			       (ay_nurbpatch_object**)&(bevel->refine));
+			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
 	  ay_nct_destroy((ay_nurbcurve_object*)bcurve.refine);
 	  bcurve.refine = NULL;

@@ -1320,7 +1320,7 @@ ay_tess_npatch(ay_object *o,
 	      if(ay_pv_checkndt(tag, myst, "varying", "g"))
 		{
 		  ay_status = ay_pv_convert(tag, 1, &texcoordlen,
-					    (void**)&texcoords);
+					    (void**)(void*)&texcoords);
 
 		  if(!ay_status && texcoords)
 		    {
@@ -1350,7 +1350,7 @@ ay_tess_npatch(ay_object *o,
 	      if(ay_pv_checkndt(tag, mycs, "varying", "c"))
 		{
 		  ay_status = ay_pv_convert(tag, 1, &vcolorlen,
-					    (void**)&vcolors);
+					    (void**)(void*)&vcolors);
 
 		  if(!ay_status && vcolors)
 		    {
@@ -1390,7 +1390,7 @@ ay_tess_npatch(ay_object *o,
 	      if(ay_pv_checkndt(tag, myn, "varying", "n"))
 		{
 		  ay_status = ay_pv_convert(tag, 1, &vnormallen,
-					    (void**)&vnormals);
+					    (void**)(void*)&vnormals);
 
 		  if(!ay_status && vnormals)
 		    {

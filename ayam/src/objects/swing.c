@@ -567,7 +567,7 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
 			    controlv, NULL, NULL,
-			    (ay_nurbpatch_object **)(&(cap->refine)));
+			    (ay_nurbpatch_object **)(void*)&(cap->refine));
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
@@ -632,7 +632,7 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
 
       ay_status = ay_nct_create(2, 3, AY_KTNURB,
 				controlv, NULL,
-				(ay_nurbcurve_object **)(&(trim->refine)));
+			      (ay_nurbcurve_object **)(void*)&(trim->refine));
 
       if(trim->refine)
 	{
@@ -849,7 +849,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   ay_status = ay_npt_create(2, 2, 2, 2,
 			    AY_KTBEZIER, AY_KTBEZIER,
 			    controlv, NULL, NULL,
-			    (ay_nurbpatch_object **)(&(cap->refine)));
+			    (ay_nurbpatch_object **)(void*)&(cap->refine));
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
@@ -933,7 +933,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   ay_status = ay_nct_create(2, 4, AY_KTNURB,
 			    controlv, NULL,
-			    (ay_nurbcurve_object **)(&(trim->refine)));
+			    (ay_nurbcurve_object **)(void*)&(trim->refine));
 
   if(trim->refine)
     {
@@ -1107,7 +1107,7 @@ ay_swing_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
 
   ay_status = ay_npt_swing(cs, tr,
-			   (ay_nurbpatch_object **)(&(npatch->refine)));
+			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
     return ay_status;

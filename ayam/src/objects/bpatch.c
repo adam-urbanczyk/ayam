@@ -948,7 +948,7 @@ ay_bpatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       if((ay_status = ay_npt_create(2, 2, 2, 2, AY_KTNURB, AY_KTNURB,
 				    NULL, NULL, NULL,
-				    (ay_nurbpatch_object**)&(new->refine))))
+			       (ay_nurbpatch_object**)(void*)&(new->refine))))
 	{
 	  free(new);
 	  ay_error(ay_status, fname, NULL);

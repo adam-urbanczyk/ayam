@@ -615,7 +615,7 @@ ay_skin_notifycb(ay_object *o)
       bevel->inherit_trafos = AY_FALSE;
       ay_nct_applytrafo(c);
       ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, c,
-			       (ay_nurbpatch_object**)&(bevel->refine));
+			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_object_delete(c);
       c = NULL;
@@ -639,7 +639,7 @@ ay_skin_notifycb(ay_object *o)
 	  c->type = AY_IDNCURVE;
 
 	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				    (ay_nurbcurve_object**)&(c->refine));
+				  (ay_nurbcurve_object**)(void*)&(c->refine));
 
 	  if(ay_status)
 	    goto cleanup;
@@ -688,7 +688,7 @@ ay_skin_notifycb(ay_object *o)
       bevel->inherit_trafos = AY_FALSE;
       ay_nct_applytrafo(c);
       ay_status = ay_npt_bevel(endb_type, endb_radius*-1.0, AY_TRUE, c,
-			       (ay_nurbpatch_object**)&(bevel->refine));
+			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_object_delete(c);
       c = NULL;
@@ -712,7 +712,7 @@ ay_skin_notifycb(ay_object *o)
 	  c->type = AY_IDNCURVE;
 
 	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				    (ay_nurbcurve_object**)&(c->refine));
+				  (ay_nurbcurve_object**)(void*)&(c->refine));
 
 	  if(ay_status)
 	    goto cleanup;
@@ -752,7 +752,7 @@ ay_skin_notifycb(ay_object *o)
 
   ay_status = ay_npt_skinu(all_curves, skin->uorder, skin->uknot_type,
 			   skin->interpolate,
-			   (ay_nurbpatch_object **)(&(newo->refine)));
+			   (ay_nurbpatch_object **)(void*)&(newo->refine));
 
   if(ay_status)
     {

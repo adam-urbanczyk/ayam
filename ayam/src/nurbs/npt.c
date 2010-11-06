@@ -1333,7 +1333,7 @@ ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere)
 
   /* first, we create a half circle in the XY plane */
   ay_status = ay_nct_crtnhcircle(radius,
-				 (ay_nurbcurve_object **)(&(newc->refine)));
+			    (ay_nurbcurve_object **)(void*)(&(newc->refine)));
   if(ay_status)
     {
       free(newc);
@@ -1386,7 +1386,8 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
   o->hide_children = AY_TRUE;
   o->down = ay_endlevel;
 
-  ay_status = ay_npt_crtnsphere(radius, (ay_nurbpatch_object **)&(o->refine));
+  ay_status = ay_npt_crtnsphere(radius,
+				(ay_nurbpatch_object **)(void*)&(o->refine));
   if(ay_status)
     {
       ay_object_delete(o->down);
@@ -1439,7 +1440,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       new->down = ay_endlevel;
 
       ay_status = ay_npt_crtcobbsphere(
-			(ay_nurbpatch_object **)&(new->refine));
+			(ay_nurbpatch_object **)(void*)&(new->refine));
       if(ay_status)
 	{
 	  ay_object_delete(new);
@@ -1552,7 +1553,7 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 
       ay_status = ay_nct_create(patch->vorder, dstlen, patch->vknot_type,
 				controlv, knotv,
-				(ay_nurbcurve_object **)&(new->refine));
+				(ay_nurbcurve_object **)(void*)&(new->refine));
       if(ay_status)
 	{
 	  free(new); free(knotv); free(controlv);
@@ -1659,7 +1660,7 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 
       ay_status = ay_nct_create(patch->uorder, dstlen, patch->uknot_type,
 				controlv, knotv,
-				(ay_nurbcurve_object **)&(new->refine));
+				(ay_nurbcurve_object **)(void*)&(new->refine));
       if(ay_status)
 	{
 	  free(new); free(knotv); free(controlv);
@@ -1886,7 +1887,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 			    newwidth, newheight,
 			    newuknot_type, newvknot_type,
 			    newcontrolv, NULL, newvknotv,
-			    (ay_nurbpatch_object **)&(new->refine));
+			    (ay_nurbpatch_object **)(void*)&(new->refine));
 
   if(ay_status)
     {

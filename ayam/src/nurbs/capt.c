@@ -246,7 +246,7 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
   /* create Gordon surface */
   ay_status = ay_npt_gordon(c1, c4, NULL,
 			    curve->order, curve->order,
-			    (ay_nurbpatch_object**)&(new->refine));
+			    (ay_nurbpatch_object**)(void*)&(new->refine));
 
   /* return result */
   *cap = new;
