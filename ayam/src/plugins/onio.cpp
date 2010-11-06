@@ -1102,7 +1102,8 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	    {
 	      has_texcoords = TRUE;
 
-	      ay_status = ay_pv_convert(tag, 0, &mystlen, (void**)&mystarr);
+	      ay_status = ay_pv_convert(tag, 0,
+					&mystlen, (void**)(void*)&mystarr);
 	      if(ay_status)
 		goto cleanup;
 	      break;
@@ -1115,7 +1116,8 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	      has_fnormals = TRUE;
 
 	      // XXXX check
-	      ay_status = ay_pv_convert(tag, 3, &fnlen, (void**)&fnarr);
+	      ay_status = ay_pv_convert(tag, 3,
+					&fnlen, (void**)(void*)&fnarr);
 	      if(ay_status)
 		goto cleanup;
 	      break;
@@ -1207,7 +1209,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 		  to->type = AY_IDPOMESH;
 
 		  ay_status = ay_tess_pomeshf(pm, i, q, r, AY_FALSE,
-					  (ay_pomesh_object **)&(to->refine));
+				   (ay_pomesh_object **)(void*)&(to->refine));
 
 		  // temporarily save the tesselated face
 		  if(nextli)
@@ -1247,7 +1249,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	  to->type = AY_IDPOMESH;
 
 	  ay_status = ay_tess_pomeshf(pm, i, q, r, AY_FALSE,
-				      (ay_pomesh_object **)&(to->refine));
+				   (ay_pomesh_object **)(void*)&(to->refine));
 
 	  // temporarily save the tesselated face
 	  if(nextli)

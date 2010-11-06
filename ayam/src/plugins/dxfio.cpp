@@ -731,7 +731,7 @@ dxfio_readline(const class dimeState *state,
   newcv[7] = 1.0;
 
   ay_nct_create(2, 2, AY_KTNURB, newcv, NULL,
-		(ay_nurbcurve_object**)&(newo->refine));
+		(ay_nurbcurve_object**)(void*)&(newo->refine));
 
   ay_object_defaults(newo);
 
@@ -778,7 +778,7 @@ dxfio_readlwpolyline(const class dimeState *state,
     } // for
 
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
-		(ay_nurbcurve_object**)&(newo->refine));
+		(ay_nurbcurve_object**)(void*)&(newo->refine));
 
   ay_object_defaults(newo);
 
@@ -841,7 +841,7 @@ dxfio_getpolyline(const class dimeState *state,
     } // for
 
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
-		(ay_nurbcurve_object**)&(newo->refine));
+		(ay_nurbcurve_object**)(void*)&(newo->refine));
   newo->type = AY_IDNCURVE;
 
   // XXXX process bulges?
@@ -858,7 +858,7 @@ dxfio_getpolymesh(const class dimeState *state,
 		  void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
- unsigned int a, i, j, numfaces = 0, numverts = 0,m,n;
+ unsigned int a, i, numfaces = 0, numverts = 0,m,n;
  ay_pomesh_object *pomesh = NULL;
  dimeVertex *v;
  dimeVec3f cv;
@@ -897,7 +897,6 @@ dxfio_getpolymesh(const class dimeState *state,
   if(!(pomesh->nverts = (unsigned int*)calloc(numfaces, sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
   a = 0;
-  j = 0;
   for(i = 0; i < numfaces; i++)
     {
       // every polymesh polygon/face has just one loop (no holes)
@@ -980,7 +979,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
  int w, h, uorder = 0, vorder = 0, uknott = 0, vknott = 0, numcv;
  int i, j, a, b, c;
  double *controlv = NULL;
- bool closem = false, closen = false;
+ // bool closem = false, closen = false;
  dimeVertex *v;
  dimeVec3f cv;
 
@@ -1026,7 +1025,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
 	  w++;
 	  uorder++;
 	}
-      closem = true;
+      //closem = true;
     }
   if(polyline->getFlags() & dimePolyline::POLYMESH_CLOSED_N)
     {
@@ -1041,7 +1040,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
 	  h++;
 	  vorder++;
 	}
-      closen = true;
+      //closen = true;
     }
 
   // copy coordinate values
@@ -1091,7 +1090,7 @@ dxfio_getsmoothsurface(const class dimeState *state,
 
   ay_npt_create(uorder, vorder, w, h, uknott, vknott,
 		controlv, NULL, NULL,
-		(ay_nurbpatch_object**)&(newo->refine));
+		(ay_nurbpatch_object**)(void*)&(newo->refine));
 
   /*
   if(closem)
@@ -1381,7 +1380,7 @@ dxfio_readspline(const class dimeState *state,
 
   // now create a NURBCurve object
   ay_nct_create(order, len, AY_KTCUSTOM, newcv, newkv,
-		(ay_nurbcurve_object**)&(newo->refine));
+		(ay_nurbcurve_object**)(void*)&(newo->refine));
 
   ay_object_defaults(newo);
 
@@ -1895,7 +1894,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
  ay_pomesh_object *pm, *trpm = NULL;
  double m1[16] = {0}, m2[16] = {0};
  int stride = 3, iverts = 0;
- bool has_vnormals = false;
  bool needtess = false;
  unsigned int a, f = 0, i, j, p = 0, q = 0, r = 0;
  dimePolyline *pl = NULL;
@@ -1909,9 +1907,6 @@ dxfio_writepomesh(ay_object *o, dimeModel *dm, double *m)
   memcpy(m2, m, 16*sizeof(double));
   ay_trafo_creatematrix(o, m1);
   ay_trafo_multmatrix4(m2, m1);
-
-  if(pm->has_normals)
-    has_vnormals = true;
 
   for(i = 0; i < pm->npolys; i++)
     {
@@ -2494,7 +2489,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status = AY_OK;
- const char *filename = NULL;
  int i = 2, li;
  ay_object *o;
  char aname[] = "dxfio_options", vname1[] = "Progress";
@@ -2522,8 +2516,6 @@ dxfio_writetcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   // parse args
-  filename = argv[1];
-
   while(i+1 < argc)
     {
       if(!strcmp(argv[i], "-c"))
