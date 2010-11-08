@@ -22,8 +22,11 @@ proc actionEnd { n1 n2 op } {
     global ay
 
     if { $ay(action) == 0 } {
-	forceNot
-     }
+	# only initiate notification for modified objects
+	# this also avoids unneeded lengthy notification runs in
+	# view actions (view-rotate, view-move etc.)
+	forceNot -mod
+    }
 
  return;
 }
@@ -1535,8 +1538,8 @@ proc actionPick { w } {
     bind $w <ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
 
-	if { [winfo exists .reconsider] == 0} {
-	    if { ($oldx == %x) || ($oldy == %y)} {
+	if { [winfo exists .reconsider] == 0 } {
+	    if { ($oldx == %x) || ($oldy == %y) } {
 		%W processObjSel node %x %y
 		singleObjSel $node
 	    } else {
@@ -1672,11 +1675,15 @@ proc actionClear { w } {
     if { $ayprefs(DefaultAction) == 0 } {
 	viewTitle $w "" "None"
 	viewSetMAIcon $w ay_Empty_img ""
-	$w setconf -drawh 0
     } else {
 	actionPick $w
-	$w setconf -drawh 0
     }
+
+    # do not draw points in none/pick action
+    $w setconf -drawh 0
+
+    # re-establish standard set mark binding
+    bind $w <$ayviewshortcuts(About)> "actionSetMark $w"
 
     # the following after scripts arrange for a short period
     # 0.1 - 1s after the first press of the <Esc> key, that a second
