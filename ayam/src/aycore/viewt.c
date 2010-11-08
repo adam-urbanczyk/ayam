@@ -1032,11 +1032,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      ay_status = ay_viewt_markfromselp(togl);
 		    }
 
-		  if(!ay_status)
-		    {
-		      need_updatemark = AY_TRUE;
-		    }
-		  else
+		  if(ay_status)
 		    {
 		      need_redraw = AY_FALSE;
 		      ay_error(AY_ERROR, fname, NULL);
@@ -2140,6 +2136,7 @@ ay_viewt_markfromsel(struct Togl *togl)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
+ int height = Togl_Height(togl);
  double *cogs = NULL, cog[3] = {0};
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
@@ -2238,11 +2235,16 @@ ay_viewt_markfromsel(struct Togl *togl)
   gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
 
   view->markx = winx;
-  view->marky = winy;
+  view->marky = height-winy;
 
   AY_APTRAN3(view->markworld, cog, mm);
 
   view->drawmark = AY_TRUE;
+
+  if(ay_prefs.globalmark)
+    {
+      ay_viewt_updateglobalmark(togl);
+    }
 
  return AY_OK;
 } /* ay_viewt_markfromsel */
@@ -2258,6 +2260,7 @@ ay_viewt_markfromselp(struct Togl *togl)
  ay_list_object *sel = NULL;
  ay_point *selp = NULL;
  ay_object *o = NULL;
+ int height = Togl_Height(togl);
  double ttcog[3] = {0}, tcog[3] = {0}, cog[3] = {0};
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
@@ -2368,11 +2371,16 @@ ay_viewt_markfromselp(struct Togl *togl)
   gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
 
   view->markx = winx;
-  view->marky = winy;
+  view->marky = height-winy;
 
   AY_APTRAN3(view->markworld, cog, mm);
 
   view->drawmark = AY_TRUE;
+
+  if(ay_prefs.globalmark)
+    {
+      ay_viewt_updateglobalmark(togl);
+    }
 
  return AY_OK;
 } /* ay_viewt_markfromselp */
