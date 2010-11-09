@@ -2171,49 +2171,42 @@ ay_viewt_markfromsel(struct Togl *togl)
       sel = sel->next;
     } /* while */
 
-  qsort(cogs, numo, 3*sizeof(double), ay_nct_cmppnt);
-
-  i = 0;
-  a = 0;
-  numu = numo;
-  while(i < numo)
+  if(numo > 1)
     {
-      if((i < (numo-1)) &&
-	 !ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])))
+      qsort(cogs, numo, 3*sizeof(double), ay_nct_cmppnt);
+
+      numu = numo;
+      a = 0;
+      for(i = 0; i < numo-1; i++)
 	{
-	  do
+	  if(!ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
 	    {
 	      numu--;
-	      i++;
-	      a += 3;
 	    }
-	  while((i < numo) &&
-		!ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])));
+	  a += 3;
 	}
-      i++;
-      a += 3;
-    }
-
-  i = 0;
-  a = 0;
-  while(i < numo)
-    {
-      cog[0] += cogs[a]  /(double)numu;
-      cog[1] += cogs[a+1]/(double)numu;
-      cog[2] += cogs[a+2]/(double)numu;
-      if((i < (numo-1)) &&
-	 !ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])))
+      a = 0;
+      for(i = 0; i < numo-1; i++)
 	{
-	  do
+	  if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
 	    {
-	      i++;
-	      a += 3;
+	      cog[0] += cogs[a]  /(double)numu;
+	      cog[1] += cogs[a+1]/(double)numu;
+	      cog[2] += cogs[a+2]/(double)numu;
 	    }
-	  while((i < numo) &&
-		!ay_nct_cmppnt(&(cogs[a]),&(cogs[a+3])));
+	  a += 3;
 	}
-      i++;
-      a += 3;
+      /* after the for, i == numo, but a == (numo-1)*3 */
+      if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
+	{
+	  cog[0] += cogs[a+3]/(double)numu;
+	  cog[1] += cogs[a+4]/(double)numu;
+	  cog[2] += cogs[a+5]/(double)numu;
+	}
+    }
+  else
+    {
+      memcpy(cog, cogs, 3*sizeof(double));
     }
 
   free(cogs);
@@ -2304,53 +2297,50 @@ ay_viewt_markfromselp(struct Togl *togl)
 
 	  qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
 
-	  i = 0;
 	  numpu = nump;
-	  while(i < nump)
+	  for(i = 0; i < nump-1; i++)
 	    {
-	      if((i < (nump-1)) &&
-		 !ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])))
+	      if(!ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
 		{
-		  do
-		    {
-		      numpu--;
-		      i++;
-		    }
-		  while((i < nump) &&
-			!ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])));
+		  numpu--;
 		}
-	      i++;
 	    }
-
 	  memset(tcog, 0 , 3*sizeof(double));
-	  i = 0;
-	  while(i < nump)
+	  for(i = 0; i < nump-1; i++)
+	    {
+	      if(ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+		{
+		  tcog[0] += (pnts[i])[0]/(double)numpu;
+		  tcog[1] += (pnts[i])[1]/(double)numpu;
+		  tcog[2] += (pnts[i])[2]/(double)numpu;
+		}
+	    }
+	  /* after the for, i == nump */
+	  if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
 	    {
 	      tcog[0] += (pnts[i])[0]/(double)numpu;
 	      tcog[1] += (pnts[i])[1]/(double)numpu;
 	      tcog[2] += (pnts[i])[2]/(double)numpu;
-	      if((i < (nump-1)) &&
-		 !ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])))
-		{
-		  do
-		    {
-		      i++;
-		    }
-		  while((i < nump) &&
-			!ay_nct_cmppntp(&(pnts[i]),&(pnts[i+1])));
-		}
-	      i++;
 	    }
 
 	  free(pnts);
+	  if(AY_ISTRAFO(o))
+	    {
+	      ay_trafo_creatematrix(o, mm);
+	      AY_APTRAN3(ttcog, tcog, mm);
 
-	  ay_trafo_creatematrix(o, mm);
-	  AY_APTRAN3(ttcog, tcog, mm);
+	      cog[0] += ttcog[0]/(double)numo;
+	      cog[1] += ttcog[1]/(double)numo;
+	      cog[2] += ttcog[2]/(double)numo;
+	    }
+	  else
+	    {
+	      cog[0] += tcog[0]/(double)numo;
+	      cog[1] += tcog[1]/(double)numo;
+	      cog[2] += tcog[2]/(double)numo;
+	    }
 
-	  cog[0] += ttcog[0]/(double)numo;
-	  cog[1] += ttcog[1]/(double)numo;
-	  cog[2] += ttcog[2]/(double)numo;
-	}
+	} /* if */
       sel = sel->next;
     } /* while */
 
