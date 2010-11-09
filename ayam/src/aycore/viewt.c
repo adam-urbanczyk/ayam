@@ -1026,16 +1026,27 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  if(argi == 0)
 		    {
 		      ay_status = ay_viewt_markfromsel(togl);
+		      if(ay_status)
+			{
+			  need_redraw = AY_FALSE;
+			  ay_error(AY_ERROR, fname, NULL);
+			}
 		    }
 		  else
 		    {
 		      ay_status = ay_viewt_markfromselp(togl);
-		    }
-
-		  if(ay_status)
-		    {
-		      need_redraw = AY_FALSE;
-		      ay_error(AY_ERROR, fname, NULL);
+		      if(ay_status)
+			{
+			  need_redraw = AY_FALSE;
+			  if(ay_status == AY_ERROR)
+			    {
+			      ay_error(AY_ERROR, fname, "no points selected");
+			    }
+			  else
+			    {
+			      ay_error(AY_ERROR, fname, NULL);
+			    }
+			}
 		    }
 		}
 	      else
@@ -2081,6 +2092,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
   else
     return AY_ERROR;
 
+  /* protect togl and altdispcb pointers from the memcpy below */
   togl = view->togl;
   altdispcb = view->altdispcb;
   if(view->bgimage)
@@ -2123,7 +2135,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 
   Tcl_Eval(ay_interp, update_cmd);
 
- return TCL_OK;
+ return AY_OK;
 } /* ay_viewt_setupintview */
 
 
@@ -2273,6 +2285,9 @@ ay_viewt_markfromselp(struct Togl *togl)
 	}
       sel = sel->next;
     }
+
+  if(numo == 0)
+    return AY_ERROR;
 
   sel = ay_selection;
   while(sel)
