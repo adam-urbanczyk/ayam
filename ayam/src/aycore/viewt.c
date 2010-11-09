@@ -2186,6 +2186,9 @@ ay_viewt_markfromsel(struct Togl *togl)
 	  a += 3;
 	}
       a = 0;
+      /* for the special case of two equal cogs, make
+	 sure we have the first of the cogs in cog */
+      memcpy(cog, cogs, 3*sizeof(double));
       for(i = 0; i < numo-1; i++)
 	{
 	  if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
@@ -2295,35 +2298,46 @@ ay_viewt_markfromselp(struct Togl *togl)
 	      selp = selp->next;
 	    }
 
-	  qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
-
-	  numpu = nump;
-	  for(i = 0; i < nump-1; i++)
+	  if(nump > 1)
 	    {
-	      if(!ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+	      qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
+	      /* calculate the number of unique points */
+	      numpu = nump;
+	      for(i = 0; i < nump-1; i++)
 		{
-		  numpu--;
+		  if(!ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+		    {
+		      numpu--;
+		    }
 		}
-	    }
-	  memset(tcog, 0 , 3*sizeof(double));
-	  for(i = 0; i < nump-1; i++)
-	    {
-	      if(ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+	      /* for the special case of two equal points, make
+		 sure we have the first of the points in tcog */
+	      memcpy(tcog, *pnts, 3*sizeof(double));
+	      /* calculate the cog */
+	      for(i = 0; i < nump-1; i++)
+		{
+		  if(ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+		    {
+		      tcog[0] += (pnts[i])[0]/(double)numpu;
+		      tcog[1] += (pnts[i])[1]/(double)numpu;
+		      tcog[2] += (pnts[i])[2]/(double)numpu;
+		    }
+		}
+	      /* after the for, i == nump */
+	      if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
 		{
 		  tcog[0] += (pnts[i])[0]/(double)numpu;
 		  tcog[1] += (pnts[i])[1]/(double)numpu;
 		  tcog[2] += (pnts[i])[2]/(double)numpu;
 		}
 	    }
-	  /* after the for, i == nump */
-	  if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
+	  else
 	    {
-	      tcog[0] += (pnts[i])[0]/(double)numpu;
-	      tcog[1] += (pnts[i])[1]/(double)numpu;
-	      tcog[2] += (pnts[i])[2]/(double)numpu;
+	      memcpy(tcog, *pnts, 3*sizeof(double));
 	    }
 
 	  free(pnts);
+
 	  if(AY_ISTRAFO(o))
 	    {
 	      ay_trafo_creatematrix(o, mm);
