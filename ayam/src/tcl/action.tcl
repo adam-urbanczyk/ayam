@@ -112,7 +112,7 @@ proc actionSetMark { w { nextaction "" } } {
     # set mark from mouse click
     bind $w.f3D.togl <ButtonPress-1> {
 	%W mc
-	%W setconf -mark %x %y 1
+	%W setconf -mark %x %y
     }
 
     # if nextaction is not empty, we are an intermediate
@@ -1714,7 +1714,7 @@ proc actionClear { w } {
     set p [winfo parent [winfo parent $w]]
     after 100 "bind $p <$ayviewshortcuts(Break)>\
                \"$p.f3D.togl setconf -drawh 0;\
-                 $p.f3D.togl setconf -mark 0 0 0;\
+                 $p.f3D.togl setconf -mark n;\
                  resetFocus\""
     # after 1s, the old binding is in effect
     after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
