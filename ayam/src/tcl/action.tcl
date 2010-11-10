@@ -351,7 +351,14 @@ proc actionRotOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionRotObA }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionRotObA %W.f3D.togl
+	} else {
+	    actionSetMark %W actionRotObA
+	}
+    }
 
     actionBindCenter $w actionRotObA
 
@@ -421,7 +428,14 @@ proc actionSc1DXOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DXAOb }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionSc1DXAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionSc1DXAOb
+	}
+    }
 
     actionBindCenter $w actionSc1DXAOb
 
@@ -492,7 +506,14 @@ proc actionSc1DYOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DYAOb }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionSc1DYAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionSc1DYAOb
+	}
+    }
 
     actionBindCenter $w actionSc1DYAOb
 
@@ -562,7 +583,15 @@ proc actionSc1DZOb { w } {
     } else {
 	set w [winfo parent [winfo parent $w]]
     }
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc1DZAOb }
+
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionSc1DZAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionSc1DZAOb
+	}
+    }
 
     actionBindCenter $w actionSc1DZAOb
 
@@ -633,7 +662,14 @@ proc actionSc2DOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc2DAOb }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionSc2DAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionSc2DAOb
+	}
+    }
 
     # allow restriction: x only
     bind $w $ayviewshortcuts(RestrictX) "actionSc1DXOb $w.f3D.togl"
@@ -713,7 +749,14 @@ proc actionSc3DOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionSc3DAOb }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionSc3DAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionSc3DAOb
+	}
+    }
 
     actionBindCenter $w actionSc3DAOb
 
@@ -784,7 +827,14 @@ proc actionStr2DOb { w } {
 	set w [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) { actionSetMark %W actionStr2DAOb }
+    bind $w $ayviewshortcuts(About) {
+	%W.f3D.togl mc
+	if { $ay(cVDrawMark) } {
+	    actionStr2DAOb %W.f3D.togl
+	} else {
+	    actionSetMark %W actionStr2DAOb
+	}
+    }
 
     actionBindCenter $w actionStr2DAOb
 
@@ -1660,9 +1710,6 @@ proc actionClear { w } {
     # do not draw points in none/pick action
     $w setconf -drawh 0
 
-    # re-establish standard set mark binding
-    bind $w <$ayviewshortcuts(About)> "actionSetMark $w"
-
     # the following after scripts arrange for a short period
     # 0.1 - 1s after the first press of the <Esc> key, that a second
     # press of the <Esc> key also resets the mark and the focus
@@ -1673,6 +1720,9 @@ proc actionClear { w } {
                  resetFocus\""
     # after 1s, the old binding is in effect
     after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
+
+    # re-establish standard set mark binding
+    bind $p <$ayviewshortcuts(About)> "actionSetMark $p"
 
  return;
 }

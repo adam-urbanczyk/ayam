@@ -701,7 +701,6 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewStringObj(view->bgimage, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  /**/
   Tcl_SetStringObj(ton, "cVFromX", -1);
   to = Tcl_NewDoubleObj(view->from[0]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -726,16 +725,17 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewDoubleObj(view->to[2]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-
   Tcl_SetStringObj(ton, "cVZoom", -1);
   to = Tcl_NewDoubleObj(view->zoom);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
 
   Tcl_SetStringObj(ton, "cVPnts", -1);
   to = Tcl_NewIntObj(view->transform_points);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "cVDrawMark", -1);
+  to = Tcl_NewIntObj(view->drawmark);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
@@ -1040,7 +1040,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			  need_redraw = AY_FALSE;
 			  if(ay_status == AY_ERROR)
 			    {
-			      ay_error(AY_ERROR, fname, "no points selected");
+			      ay_error(AY_ERROR, fname, "No points selected!");
 			    }
 			  else
 			    {
@@ -2207,7 +2207,7 @@ ay_viewt_markfromsel(struct Togl *togl)
 	{
 	  if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
 	    {
-	      cog[0] += cogs[a+3]  /(double)numu;
+	      cog[0] += cogs[a+3]/(double)numu;
 	      cog[1] += cogs[a+4]/(double)numu;
 	      cog[2] += cogs[a+5]/(double)numu;
 	    }
