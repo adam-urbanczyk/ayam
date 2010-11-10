@@ -664,6 +664,7 @@ array set ay {
  lasttool ""
  draw_nurbs 1
  cVPnts 0
+ cVDrawMark 0
 }
 # array ay
 
