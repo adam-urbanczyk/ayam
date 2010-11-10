@@ -2200,23 +2200,18 @@ ay_viewt_markfromsel(struct Togl *togl)
       a = 0;
       /* for the special case of two equal cogs, make
 	 sure we have the first of the cogs in cog */
-      memcpy(cog, cogs, 3*sizeof(double));
-      for(i = 0; i < numo-1; i++)
+      cog[0] = cogs[a]  /(double)numu;
+      cog[1] = cogs[a+1]/(double)numu;
+      cog[2] = cogs[a+2]/(double)numu;
+      for(i = 1; i < numo; i++)
 	{
 	  if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
 	    {
-	      cog[0] += cogs[a]  /(double)numu;
-	      cog[1] += cogs[a+1]/(double)numu;
-	      cog[2] += cogs[a+2]/(double)numu;
+	      cog[0] += cogs[a+3]  /(double)numu;
+	      cog[1] += cogs[a+4]/(double)numu;
+	      cog[2] += cogs[a+5]/(double)numu;
 	    }
 	  a += 3;
-	}
-      /* after the for, i == numo, but a == (numo-1)*3 */
-      if(ay_nct_cmppnt(&(cogs[a]), &(cogs[a+3])))
-	{
-	  cog[0] += cogs[a+3]/(double)numu;
-	  cog[1] += cogs[a+4]/(double)numu;
-	  cog[2] += cogs[a+5]/(double)numu;
 	}
     }
   else
@@ -2327,23 +2322,18 @@ ay_viewt_markfromselp(struct Togl *togl)
 		}
 	      /* for the special case of two equal points, make
 		 sure we have the first of the points in tcog */
-	      memcpy(tcog, *pnts, 3*sizeof(double));
+	      tcog[0] = (pnts[0])[0]/(double)numpu;
+	      tcog[1] = (pnts[0])[1]/(double)numpu;
+	      tcog[2] = (pnts[0])[2]/(double)numpu;
 	      /* calculate the cog */
-	      for(i = 0; i < nump-1; i++)
+	      for(i = 1; i < nump; i++)
 		{
-		  if(ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+		  if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
 		    {
 		      tcog[0] += (pnts[i])[0]/(double)numpu;
 		      tcog[1] += (pnts[i])[1]/(double)numpu;
 		      tcog[2] += (pnts[i])[2]/(double)numpu;
 		    }
-		}
-	      /* after the for, i == nump */
-	      if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
-		{
-		  tcog[0] += (pnts[i])[0]/(double)numpu;
-		  tcog[1] += (pnts[i])[1]/(double)numpu;
-		  tcog[2] += (pnts[i])[2]/(double)numpu;
 		}
 	    }
 	  else
