@@ -66,8 +66,8 @@ proc actionBindCenter { w { nextaction "" } } {
 	} else {
 	    set w %W
 	}
-	$w.f3D.togl mc; update;
-	$w.f3D.togl setconf -cmark 0;
+	$w.f3D.togl mc
+	$w.f3D.togl setconf -cmark 0
     }
 
     # set mark from selected points center of gravity
@@ -77,8 +77,8 @@ proc actionBindCenter { w { nextaction "" } } {
 	} else {
 	    set w %W
 	}
-	$w.f3D.togl mc; update;
-	$w.f3D.togl setconf -cmark 1;
+	$w.f3D.togl mc
+	$w.f3D.togl setconf -cmark 1
     }
 
     if { $nextaction != "" } {
@@ -94,6 +94,7 @@ proc actionBindCenter { w { nextaction "" } } {
 #actionSetMark:
 # helper for all actions about a user specified point (the mark)
 # e.g. rotate about and scale about
+# but also a full fledged action to set the mark
 proc actionSetMark { w { nextaction "" } } {
 
     if { [string first ".view" $w] == 0 } {
@@ -109,10 +110,10 @@ proc actionSetMark { w { nextaction "" } } {
     }
 
     # set mark from mouse click
-    bind $w.f3D.togl <ButtonPress-1> "\
-	    %W mc;\
-	    update;\
-	    %W setconf -mark %x %y 1;"
+    bind $w.f3D.togl <ButtonPress-1> {
+	%W mc
+	%W setconf -mark %x %y 1
+    }
 
     # if nextaction is not empty, we are an intermediate
     # action, embedded into some other action, which we arrange
@@ -152,14 +153,12 @@ proc actionRotView { w } {
 	%W mc
 	set oldx %x
 	set oldy %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W setconf -drotx [expr {$oldx - %x}] -droty [expr {$oldy - %y}]
 	set oldx %x
 	set oldy %y
-	update
     }
 
     bind $w <Motion> ""
@@ -186,12 +185,10 @@ proc actionMoveView { w } {
 	undo save MovView
 	%W mc
 	%W movevac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W movevac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -218,12 +215,10 @@ proc actionZoomView { w } {
 	undo save ZoomView
 	%W mc
 	%W zoomvac -start %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W zoomvac -winy %y
-	update
     }
 
     bind $w <Motion> ""
@@ -248,12 +243,10 @@ proc actionMoveZView { w } {
 	undo save MovZView
 	%W mc
 	%W movezvac -start %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W movezvac -winy %y
-	update
     }
 
     bind $w <Motion> ""
@@ -285,7 +278,6 @@ proc actionMoveOb { w } {
 	} else {
 	    %W moveoac -start %x %y
 	}
-	update
     }
 
     bind $w <B1-Motion> {
@@ -320,7 +312,7 @@ proc actionMoveOb { w } {
     # allow restriction: z only
     bind $w $ayviewshortcuts(RestrictZ) "\
 	set ay(restrict) 3;\
-	viewSetMAIcon $w.f3D.togl ay_MoveZ_img \"MoveZ\";"    
+	viewSetMAIcon $w.f3D.togl ay_MoveZ_img \"MoveZ\";"
 
  return;
 }
@@ -341,12 +333,10 @@ proc actionRotOb { w } {
 	undo save RotObj
 	%W mc
 	%W rotoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W rotoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -378,13 +368,20 @@ proc actionRotObA { w } {
 
     actionClearB1 $w
 
-    bind $w <ButtonPress-1> "set ay(action) 1; %W mc;\
-	    %W rotoaac -start %x %y"
-    bind $w <B1-Motion> "%W rotoaac -winxy %x %y"
+    bind $w <ButtonPress-1> {
+	set ay(action) 1
+	undo save RotateA
+	%W mc
+	%W rotoaac -start %x %y
+    }
+    bind $w <B1-Motion> {
+	%W rotoaac -winxy %x %y
+    }
 
     actionBindRelease $w
 
     bind $w <Motion> ""
+
     $w setconf -drawh 1
 
  return;
@@ -406,12 +403,10 @@ proc actionSc1DXOb { w } {
 	undo save Sc1DXObj
 	%W mc
 	%W sc1dxoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dxoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -434,6 +429,7 @@ proc actionSc1DXOb { w } {
 }
 # actionSc1DXOb
 
+
 #
 proc actionSc1DXAOb { w } {
 
@@ -447,12 +443,10 @@ proc actionSc1DXAOb { w } {
 	undo save Sc1DXAObj
 	%W mc
 	%W sc1dxaoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dxaoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -480,12 +474,10 @@ proc actionSc1DYOb { w } {
 	undo save Sc1DYObj
 	%W mc
 	%W sc1dyoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dyoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -522,12 +514,10 @@ proc actionSc1DYAOb { w } {
 	undo save Sc1DYAObj
 	%W mc
 	%W sc1dyaoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dyaoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -555,12 +545,10 @@ proc actionSc1DZOb { w } {
 	undo save Sc1DZObj
 	%W mc
 	%W sc1dzoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dzoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -596,12 +584,10 @@ proc actionSc1DZAOb { w } {
 	undo save Sc1DZAObj
 	%W mc
 	%W sc1dzaoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc1dzaoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -629,12 +615,10 @@ proc actionSc2DOb { w } {
 	undo save Sc2DObj
 	%W mc
 	%W sc2doac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc2doac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -658,7 +642,7 @@ proc actionSc2DOb { w } {
     bind $w $ayviewshortcuts(RestrictY) "actionSc1DYOb $w.f3D.togl"
 
     # allow restriction: z only
-    bind $w $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w.f3D.togl"    
+    bind $w $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w.f3D.togl"
 
     actionBindCenter $w actionSc2DAOb
 
@@ -680,12 +664,10 @@ proc actionSc2DAOb { w } {
 	undo save Sc2DAObj
 	%W mc
 	%W sc2daoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc2daoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -713,12 +695,10 @@ proc actionSc3DOb { w } {
 	undo save Sc3DObj
 	%W mc
 	%W sc3doac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc3doac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -755,12 +735,10 @@ proc actionSc3DAOb { w } {
 	undo save Sc3DAObj
 	%W mc
 	%W sc3daoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W sc3daoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -788,12 +766,10 @@ proc actionStr2DOb { w } {
 	undo save Str2DObj
 	%W mc
 	%W str2doac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W str2doac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -830,12 +806,10 @@ proc actionStr2DAOb { w } {
 	undo save Str2DAObj
 	%W mc
 	%W str2daoac -start %x %y
-	update
     }
 
     bind $w <B1-Motion> {
 	%W str2daoac -winxy %x %y
-	update
     }
 
     bind $w <Motion> ""
@@ -859,14 +833,14 @@ proc actionTagP { w } {
     actionClearB1 $w
 
     bind $w <ButtonPress-1> {
-#	undo save
+	# undo save TagP
 	%W mc
 	set oldx %x
 	set oldy %y
     }
 
     bind $w <ButtonRelease-1> {
-	if { ($oldx != %x) || ($oldy != %y)} {
+	if { ($oldx != %x) || ($oldy != %y) } {
 	    %W selpac %x %y $oldx $oldy
 	} else {
 	    %W selpac %x %y
@@ -878,7 +852,7 @@ proc actionTagP { w } {
     }
 
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
-	if { ($oldx != %x) || ($oldy != %y)} {
+	if { ($oldx != %x) || ($oldy != %y) } {
 	    %W selpac %x %y $oldx $oldy 1
 	} else {
 	    %W selpac %x %y
@@ -912,7 +886,6 @@ proc actionTagP { w } {
 	    bind $w <Shift-ButtonRelease-1> "+\
           %W startpepac %x %y -flash -ignoreold;"
 	}
-
     }
     $w setconf -drawh 1
 
@@ -923,7 +896,7 @@ proc actionTagP { w } {
 
 #
 proc actionDelTagP { w } {
-#    undo save
+    # undo save DelTagP
     $w deselpac
     rV
 
@@ -1194,7 +1167,7 @@ proc actionDEditP { w } {
 
     # next bindings taken from tag action (actionTagP)
     bind $w <ButtonRelease-1> {
-	if { ($oldx != %x) || ($oldy != %y)} {
+	if { ($oldx != %x) || ($oldy != %y) } {
 	    %W selpac %x %y $oldx $oldy
 	} else {
 	    %W selpac %x %y
@@ -1206,7 +1179,7 @@ proc actionDEditP { w } {
     }
 
     bind $w <${ayviewshortcuts(TagMod)}-ButtonRelease-1> {
-	if { ($oldx != %x) || ($oldy != %y)} {
+	if { ($oldx != %x) || ($oldy != %y) } {
 	    %W selpac %x %y $oldx $oldy 1
 	} else {
 	    %W selpac %x %y
@@ -1229,7 +1202,6 @@ proc actionDEditP { w } {
 	    %W startpepac %x %y -flash
 	}
     }
-    #if
 
     $w setconf -drawh 1
 
@@ -1246,6 +1218,8 @@ proc actionEditP { w } {
     viewSetMAIcon $w ay_Edit_img "Edit_Points"
 
     actionClearB1 $w
+
+    bind $w <Motion> ""
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
@@ -1561,7 +1535,7 @@ proc actionPick { w } {
 	%W setconf -rect $oldx $oldy %x %y 0
 
 	if { [winfo exists .reconsider] == 0} {
-	    if { ($oldx == %x) || ($oldy == %y)} {
+	    if { ($oldx == %x) || ($oldy == %y) } {
 		%W processObjSel node %x %y
 		addObjSel $node
 	    } else {
@@ -1583,7 +1557,7 @@ proc actionPick { w } {
 
  return;
 }
-#actionPick
+# actionPick
 
 
 #
