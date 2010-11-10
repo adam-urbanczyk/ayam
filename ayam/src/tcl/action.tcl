@@ -104,6 +104,10 @@ proc actionSetMark { w { nextaction "" } } {
 
     viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
 
+    if { $nextaction == "" } {
+	actionClearB1 $w.f3D.togl
+    }
+
     # set mark from mouse click
     bind $w.f3D.togl <ButtonPress-1> "\
 	    %W mc;\
