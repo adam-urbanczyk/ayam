@@ -1,3 +1,13 @@
+[10. Oct 2010] CVS-Head:
+========================
+Bug Fixes:
+o fixed set mark not setting the correct location (SF 3105801)
+o fixed <Esc> not resetting binding for set mark (SF 3105793)
+o fixed <Esc> not resetting handle drawing (SF 3105791)
+o fixed Script objects in JavaScript fail to save SP params (SF 3105790)
+o fixed undo of rotate about action (SF )
+
+
 [28. Oct 2010] Ayam 1.18:
 =========================
 Bug Fixes:
