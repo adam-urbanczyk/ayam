@@ -1574,12 +1574,11 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		multipleObjSel $node
 	    }
-	    rV
-	    update
 	}
 
 	focus %W
     }
+    # bind
 
     bind $w <${ayviewshortcuts(PickMod)}-ButtonRelease-1> {
 	%W setconf -rect $oldx $oldy %x %y 0
@@ -1592,12 +1591,11 @@ proc actionPick { w } {
 		%W processObjSel node $oldx $oldy %x %y
 		addMultipleObjSel $node
 	    }
-	    rV
-	    update
 	}
 
 	focus %W
     }
+    # bind
 
     bind $w <B1-Motion> {
 	%W setconf -rect $oldx $oldy %x %y 1
