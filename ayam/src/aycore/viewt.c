@@ -1238,39 +1238,53 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'm':
 	  /*if(!strcmp(argv[i], "-mark"))*/
 	    {
-	      Tcl_GetDouble(interp, argv[i+1], &view->markx);
-	      Tcl_GetDouble(interp, argv[i+2], &view->marky);
-	      if(view->usegrid)
-		ay_viewt_griddify(togl, &view->markx, &view->marky);
-	      Tcl_GetInt(interp, argv[i+3], &argi);
-	      if(view->markx == 0.0 && view->marky == 0.0 &&
-		 argi == view->drawmark)
-		need_redraw = AY_FALSE;
-	      view->drawmark = argi;
-
-	      ay_viewt_wintoworld(togl, view->markx, view->marky,
-				  &(view->markworld[0]),
-				  &(view->markworld[1]),
-				  &(view->markworld[2]));
-
-	      switch(view->type)
+	      if(argv[i+1][0] == 'n')
 		{
-		case AY_VTFRONT:
-		case AY_VTTRIM:
-		  view->markworld[2] = 0.0;
-		  break;
-		case AY_VTSIDE:
-		  view->markworld[0] = 0.0;
-		  break;
-		case AY_VTTOP:
-		  view->markworld[1] = 0.0;
-		  break;
-		default:
-		  /* XXXX output proper error message */
-		  break;
-		} /* switch */
+		  if(!view->drawmark)
+		    {
+		      need_redraw = AY_FALSE;
+		    }
 
-	      need_updatemark = AY_TRUE;
+		  view->drawmark = AY_FALSE;
+
+		  if(ay_prefs.globalmark)
+		    {
+		      ay_viewt_updateglobalmark(togl);
+		    }
+		}
+	      else
+		{
+		  Tcl_GetDouble(interp, argv[i+1], &view->markx);
+		  Tcl_GetDouble(interp, argv[i+2], &view->marky);
+		  if(view->usegrid)
+		    ay_viewt_griddify(togl, &view->markx, &view->marky);
+
+		  view->drawmark = AY_TRUE;
+
+		  ay_viewt_wintoworld(togl, view->markx, view->marky,
+				      &(view->markworld[0]),
+				      &(view->markworld[1]),
+				      &(view->markworld[2]));
+
+		  switch(view->type)
+		    {
+		    case AY_VTFRONT:
+		    case AY_VTTRIM:
+		      view->markworld[2] = 0.0;
+		      break;
+		    case AY_VTSIDE:
+		      view->markworld[0] = 0.0;
+		      break;
+		    case AY_VTTOP:
+		      view->markworld[1] = 0.0;
+		      break;
+		    default:
+		      /* XXXX output proper error message */
+		      break;
+		    } /* switch */
+
+		  need_updatemark = AY_TRUE;
+		} /* if */
 	    } /* if */
 	  break;
 	case 'n':
