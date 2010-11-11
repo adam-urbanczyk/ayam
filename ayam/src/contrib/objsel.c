@@ -250,9 +250,10 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
     node[strlen(node) - 1] = 0;
 
   /* Verify that 'tmp' is big enough to store the Tcl command */
-  if ((strlen (node) + 15) > 256)
+  if ((strlen (node) + strlen (var) + 16) > 256)
     {
-      tmp = (char*) realloc (tmp, (strlen (node) + 15) * sizeof (char));
+      tmp = (char*) realloc (tmp, (strlen (node) + strlen (var) + 16) *
+			     sizeof (char));
       if (!tmp)
 	{
 	  free (node);
