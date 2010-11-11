@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>26. Oct 2010
+<date>11. Nov 2010
 
 <abstract>
 This is the documentation of Ayam 1.18 - a free 3D modelling environment
@@ -1128,7 +1128,7 @@ objects. Objects and tags in the object clipboard are not
 affected!
 
 <item><tt>"Select Renderer"</tt> opens a dialog where the renderer
-for direct rendering from a view may be choosen.
+for direct rendering from a view may be chosen.
 The changes will have effect on all preference settings that control
 direct rendering from a view, except whether RenderGUIs should
 be used.
@@ -1378,7 +1378,7 @@ On the right hand side in the view menu bar there is a little icon
 that displays the current grid size. You may click on the icon to
 display a menu with predefined grid size values.
 Choosing one of the values 0.1, 0.25, 0.5, or 1.0 will set the
-grid size of the view to the choosen value and will additionally
+grid size of the view to the chosen value and will additionally
 enable drawing of the grid and snapping to the grid.
 The entry <tt/"X"/ allows to set a custom grid value.
 The last entry will set the grid size to 0.0 and disable drawing of
@@ -1404,6 +1404,11 @@ with the view window, are:
 <tt/&lt;Shift+Down&gt;/ pan the view.
 
 <item><tt/&lt;+&gt;/, <tt/&lt;-&gt;/, or <tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom the view.
+
+<item><tt/&lt;Ctrl+5&gt;/ (on the numeric keypad!) resets the views
+camera (From and To) to the view type dependend default values.
+
+<item><tt/&lt;.&gt;/ pans the view to the mark.
 </itemize>
 
 Interactive actions modifying the camera, that is associated with the
@@ -1477,6 +1482,21 @@ This is handy for modelling in local coordinate systems
 (e.g. when editing the control points of some planar curve defined in the
 XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Space">.
+<p>
+Since Ayam 1.18 one may also move through the scene hierarchy and
+change the selection directly in view windows:
+<itemize>
+<item><tt/&lt;Ctrl+4&gt;/, <tt/&lt;Ctrl+6&gt;/ (on the numeric keypad!)
+move up and down in the hierarchy respectively, also selecting the parent
+or first child.
+
+<item><tt/&lt;Ctrl+2&gt;/, <tt/&lt;Ctrl+8&gt;/ (on the numeric keypad!)
+select the next or previous object.
+
+<item><tt/&lt;Ctrl+Shift+2&gt;/, <tt/&lt;Ctrl+Shift+8&gt;/
+(on the numeric keypad!)
+extend the current selection to include the next or previous object.
+</itemize>
 
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
@@ -2604,7 +2624,7 @@ set mark action one is only able to specify two dimensional
 coordinates using a mouse click (the third coordinate is always
 set to zero). To specify a true three dimensional mark one
 can use the corresponding view object attributes or select
-a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
+a point and set the mark to it (shortcut <tt/&lt;C&gt;/).
 <p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
@@ -2653,7 +2673,7 @@ The marked point will be shown as a little red cross in the view window
 (see image above).
 <p>
 The mark may also directly be set using the corresponding view object
-property (see also section <ref id="vat" name ="ViewAttrib Property">).
+property (see also section <ref id="vat" name="ViewAttrib Property">).
 <p>
 Also note, that one is only able to specify two dimensional mark
 coordinates using a mouse click (the third coordinate is always
@@ -2785,7 +2805,7 @@ Edit Direct|<tt/&lt;E&gt;/|
 Objects mark themselves editable by drawing the editable points using
 small white rectangular handles if one of the single point editing actions
 is activated and the object is selected
-(see also section <ref id="selac" name ="Selecting Points">).
+(see also section <ref id="selac" name="Selecting Points">).
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
@@ -3471,7 +3491,7 @@ level will be drawn.
 <item><tt/"UseGrid"/ toggles, whether the current grid should be
 used by the interactive modelling actions.
 <item><tt/"Local"/ enables editing in local object space.
-See also section <ref id="editlocal" name ="Editing in Local Space">.
+See also section <ref id="editlocal" name="Editing in Local Space">.
 
 <item><tt/"DrawBG"/ controls whether the background image should
 be drawn.
@@ -5246,7 +5266,7 @@ that may be enabled by setting the new parameter <tt/"Sections"/
 to a value higher than 0. In this mode, a circular B-Spline is
 used as basis for the surface of revolution, instead of the
 standard NURBS circle. Depending on the number of sections
-choosen, the surface of revolution does not exactly interpolate
+chosen, the surface of revolution does not exactly interpolate
 the parameter curve, but the surface may be edited more easily
 after a possible conversion to an ordinary NURBS patch object,
 because the control points will not be rational if the revolved
@@ -5676,7 +5696,7 @@ Note that the cross section curve does not have to be two dimensional, and,
 in contrast to the normal Sweep object, it also does not have to be
 defined in a special plane. Also note that the precision with which the
 resulting surface will interpolate the rail curves depends on the
-number of sections choosen.
+number of sections chosen.
 <p>
 The Birail1 object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -5796,7 +5816,7 @@ in terms of length, order, and knots. Incompatible curves will be made
 compatible before birailing automatically; the height of the resulting
 surface, however, is not easily predictable anymore in this case.
 Also note that the precision with which the resulting surface will
-interpolate the rail curves depends on the number of sections choosen.
+interpolate the rail curves depends on the number of sections chosen.
 <p>
 If a fifth curve is present as parameter object, this curve will
 control the morphing (interpolation) process. The y coordinate
@@ -11959,7 +11979,7 @@ Implicit loading means one can simply use the main menu entries
 keyboard shortcuts) and specify a filename with the appropriate
 extension (e.g. <tt/".dxf"/). Ayam will automatically load the matching plugin
 (<tt/"dxfio"/) and open the import (or export) options dialog with
-the <tt/"FileName"/ option already set to the filename choosen before.
+the <tt/"FileName"/ option already set to the filename chosen before.
 This feature is available since Ayam 1.13 and requires that the
 <tt/"Plugins"/ preferences are correctly set.
 </enum>
@@ -14218,6 +14238,7 @@ providing a lot of good music
 <item>W. T. Hewitt and D. Yip: The NURBS Procedure Library
 <item>Philippe Lavoie: The NURBS++ Library
 <item>Tom Cashman: snurbs (Subdivision NURBS) library
+<item>George W. Hart: Conway notation polyhedron generator
 <item>Everyone involved in the development of Tcl/Tk, OpenGL, The RenderMan
 Interface
 </itemize>
@@ -14294,7 +14315,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
-<item>ACurve: <ref id="acurveobj" name ="ACurve object">
+<item>ACurve: <ref id="acurveobj" name="ACurve object">
 <item>Action: <ref id="iac" name="interactive actions">
 <item>Active: <ref id="scriptattr" name="Script attribute">
 <item>Adaptive: <ref id="moattr" name="MetaObj attributes">
@@ -14471,7 +14492,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Edit: <ref id="editac" name="edit points">,
 <ref id="mmedit" name="edit menu">
 <item>Edit Local: <ref id="vmconf" name="view menu entry">,
-<ref id="editlocal" name ="Editing in Local Space">
+<ref id="editlocal" name="Editing in Local Space">
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
 <item>Elevate: <ref id="elevt" name="elevate tool">
@@ -14588,7 +14609,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexi">I
 <itemize>
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
-<item>ICurve: <ref id="icurveobj" name ="ICurve object">
+<item>ICurve: <ref id="icurveobj" name="ICurve object">
 <item>IDR: <ref id="idr" name="IDR plugin">
 <item>IgnoreFirstTrim: <ref id="imprhino" name="3DM (Rhino) import option">
 <item>IgnoreHidden: <ref id="exprhino" name="3DM (Rhino) export option">
@@ -14610,7 +14631,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>insknvNP: <ref id="scinsknvnp" name="scripting interface command">
 <item>Insert Knot: <ref id="insknt" name="insert knot tool">
 <item>insertScene: <ref id="scinsertscene" name="scripting interface command">
-<item>Instance: <ref id="instanceobj" name ="Instance object">
+<item>Instance: <ref id="instanceobj" name="Instance object">
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
 <item>Intensity: <ref id="lip" name="Light attribute">
 <item>Interior: <ref id="matshader" name="shader">
@@ -14664,7 +14685,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local: <ref id="vat" name="View attribute">,
-<ref id="editlocal" name ="Editing in Local Space">
+<ref id="editlocal" name="Editing in Local Space">
 <item>Locale: <ref id="prefgui" name="preference setting">
 <item>Loft: <ref id="skinobj" name="Skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
