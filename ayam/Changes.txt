@@ -5,7 +5,11 @@ o fixed set mark not setting the correct location (SF 3105801)
 o fixed <Esc> not resetting binding for set mark (SF 3105793)
 o fixed <Esc> not resetting handle drawing (SF 3105791)
 o fixed Script objects in JavaScript fail to save SP params (SF 3105790)
-o fixed undo of rotate about action (SF )
+o fixed undo of rotate about action (SF 3107141)
+
+Modelling:
+o if a mark is already set in a view, the intermediate set mark action is
+  now omitted automatically
 
 
 [28. Oct 2010] Ayam 1.18:
@@ -90,7 +94,13 @@ o Tool dialogs now display a more descriptive window name
 o tree drag and drop now keeps the object selection intact and opens
   the target level
 o starting modelling actions from the toolbox now also considers the
-  AutoFocus preference setting, if enabled, the action is started in all views
+  AutoFocus preference setting, if enabled, the action is started in all
+  view windows
+o added keyboard shortcuts to manage the current level and the object
+  selection directly in a view window: (<Ctrl+4>, <Ctrl+6>: go up/down,
+  <Ctrl+2>, <Ctrl+8>: select next/previous object, <Ctrl+Shift+2>,
+  <Ctrl+Shift+8>: extend selection to next/previous object, all numbers
+  on the numeric keypad!
 
 Scripts/Scripting Interface:
 o number conversion errors are now correctly detected and reported in all
