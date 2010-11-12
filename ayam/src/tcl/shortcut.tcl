@@ -870,7 +870,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(EditD)> "actionDEditP $w.f3D.togl"
     bind $w <$ayviewshortcuts(WeightE)> "actionEditWP $w.f3D.togl"
     bind $w <$ayviewshortcuts(WeightR)> "actionResetWP $w.f3D.togl"
-    bind $w <$ayviewshortcuts(About)> "actionSetMark $w"
+    bind $w <$ayviewshortcuts(About)> "actionSetMark $w.f3D.togl"
 
     bind $w <$ayviewshortcuts(Select)> "actionTagP $w.f3D.togl"
     bind $w <$ayviewshortcuts(InsertP)> "actionInsertP $w.f3D.togl"
