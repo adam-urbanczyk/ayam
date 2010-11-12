@@ -59,8 +59,14 @@ proc actionBindRelease { w } {
 proc actionBindCenter { w { nextaction "" } } {
     global ayviewshortcuts
 
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+
     # set mark from selected objects center of gravity
-    bind $w $ayviewshortcuts(CenterO) {
+    bind $t $ayviewshortcuts(CenterO) {
 	if { [string first ".view" %W] == 0 } {
 	    set w [winfo toplevel %W]
 	} else {
@@ -71,7 +77,7 @@ proc actionBindCenter { w { nextaction "" } } {
     }
 
     # set mark from selected points center of gravity
-    bind $w $ayviewshortcuts(CenterP) {
+    bind $t $ayviewshortcuts(CenterP) {
 	if { [string first ".view" %W] == 0 } {
 	    set w [winfo toplevel %W]
 	} else {
@@ -82,8 +88,8 @@ proc actionBindCenter { w { nextaction "" } } {
     }
 
     if { $nextaction != "" } {
-	bind $w $ayviewshortcuts(CenterO) "+ $nextaction \$w.f3D.togl;"
-	bind $w $ayviewshortcuts(CenterP) "+ $nextaction \$w.f3D.togl;"
+	bind $t $ayviewshortcuts(CenterO) "+ $nextaction \$w.f3D.togl;"
+	bind $t $ayviewshortcuts(CenterP) "+ $nextaction \$w.f3D.togl;"
     }
 
  return;
@@ -97,20 +103,16 @@ proc actionBindCenter { w { nextaction "" } } {
 # but also a full fledged action to set the mark
 proc actionSetMark { w { nextaction "" } } {
 
-    if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
-    }
-
     viewTitle $w "" "Mark Point"
 
-    viewSetMAIcon $w.f3D.togl ay_Mark_img "Mark_Point"
+    viewSetMAIcon $w ay_Mark_img "Mark_Point"
 
     if { $nextaction == "" } {
-	actionClearB1 $w.f3D.togl
+	actionClearB1 $w
     }
 
     # set mark from mouse click
-    bind $w.f3D.togl <ButtonPress-1> {
+    bind $w <ButtonPress-1> {
 	%W mc
 	%W setconf -mark %x %y
     }
@@ -119,17 +121,18 @@ proc actionSetMark { w { nextaction "" } } {
     # action, embedded into some other action, which we arrange
     # to re-start here (after setting the mark):
     if { $nextaction != "" } {
-	bind $w.f3D.togl <ButtonPress-1> "+ $nextaction %W;"
-	# take over old mark
-	bind $w <Key-Return> {
-          bind %W <Key-Return> "";
-          if { [string first ".view" %W] == 0 } {
-	      set w [winfo toplevel %W]
-          } else {
-	      set w %W
-	  }
+
+	if { [string first ".view" $w] == 0 } {
+	    set t [winfo toplevel $w]
+	} else {
+	    set t [winfo parent [winfo parent $w]]
 	}
-	bind $w <Key-Return> "+ $nextaction \$w.f3D.togl;"
+
+	bind $w <ButtonPress-1> "+ $nextaction %W;"
+	# take over old mark
+	bind $t <Key-Return> "bind $t <Key-Return> \"\";\
+                              $nextaction $t.f3D.togl;"
+
     }
 
     actionBindCenter $w $nextaction
@@ -294,25 +297,25 @@ proc actionMoveOb { w } {
     set ay(restrict) 0
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
     # allow restriction: x only
-    bind $w $ayviewshortcuts(RestrictX) "\
+    bind $t $ayviewshortcuts(RestrictX) "\
 	set ay(restrict) 1;\
-	viewSetMAIcon $w.f3D.togl ay_MoveX_img \"MoveX\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveX_img \"MoveX\";"
 
     # allow restriction: y only
-    bind $w $ayviewshortcuts(RestrictY) "\
+    bind $t $ayviewshortcuts(RestrictY) "\
 	set ay(restrict) 2;\
-	viewSetMAIcon $w.f3D.togl ay_MoveY_img \"MoveY\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveY_img \"MoveY\";"
 
     # allow restriction: z only
-    bind $w $ayviewshortcuts(RestrictZ) "\
+    bind $t $ayviewshortcuts(RestrictZ) "\
 	set ay(restrict) 3;\
-	viewSetMAIcon $w.f3D.togl ay_MoveZ_img \"MoveZ\";"
+	viewSetMAIcon $t.f3D.togl ay_MoveZ_img \"MoveZ\";"
 
  return;
 }
@@ -346,19 +349,18 @@ proc actionRotOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionRotObA %W.f3D.togl
-	} else {
-	    actionSetMark %W actionRotObA
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionRotObA $w;\
+	} else {\
+	    actionSetMark $w actionRotObA;\
+	}"
 
     actionBindCenter $w actionRotObA
 
@@ -369,6 +371,7 @@ proc actionRotOb { w } {
 
 #
 proc actionRotObA { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "RotateA"
     viewSetMAIcon $w ay_RotateA_img "RotateA"
@@ -377,7 +380,7 @@ proc actionRotObA { w } {
 
     bind $w <ButtonPress-1> {
 	set ay(action) 1
-	undo save RotateA
+	undo save RotObjA
 	%W mc
 	%W rotoaac -start %x %y
     }
@@ -390,6 +393,13 @@ proc actionRotObA { w } {
     bind $w <Motion> ""
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionRotObA"
 
  return;
 }
@@ -423,19 +433,18 @@ proc actionSc1DXOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionSc1DXAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionSc1DXAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionSc1DXAOb $w;\
+	} else {\
+	    actionSetMark $w actionSc1DXAOb;\
+	}"
 
     actionBindCenter $w actionSc1DXAOb
 
@@ -446,6 +455,7 @@ proc actionSc1DXOb { w } {
 
 #
 proc actionSc1DXAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Scale1DXA"
     viewSetMAIcon $w ay_Scale1DXA_img "Scale1DXA"
@@ -468,6 +478,13 @@ proc actionSc1DXAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DXAOb"
 
  return;
 }
@@ -501,19 +518,18 @@ proc actionSc1DYOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionSc1DYAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionSc1DYAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionSc1DYAOb $w;\
+	} else {\
+	    actionSetMark $w actionSc1DYAOb;\
+	}"
 
     actionBindCenter $w actionSc1DYAOb
 
@@ -524,6 +540,7 @@ proc actionSc1DYOb { w } {
 
 #
 proc actionSc1DYAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Scale1DYA"
     viewSetMAIcon $w ay_Scale1DYA_img "Scale1DYA"
@@ -546,6 +563,13 @@ proc actionSc1DYAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DYAOb"
 
  return;
 }
@@ -579,19 +603,18 @@ proc actionSc1DZOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionSc1DZAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionSc1DZAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionSc1DZAOb $w;\
+	} else {\
+	    actionSetMark $w actionSc1DZAOb;\
+	}"
 
     actionBindCenter $w actionSc1DZAOb
 
@@ -602,6 +625,7 @@ proc actionSc1DZOb { w } {
 
 #
 proc actionSc1DZAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Scale1DZA"
     viewSetMAIcon $w ay_Scale1DZA_img "Scale1DZA"
@@ -624,6 +648,13 @@ proc actionSc1DZAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc1DZAOb"
 
  return;
 }
@@ -657,28 +688,27 @@ proc actionSc2DOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionSc2DAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionSc2DAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionSc2DAOb $w;\
+	} else {\
+	    actionSetMark $w actionSc2DAOb;\
+	}"
 
     # allow restriction: x only
-    bind $w $ayviewshortcuts(RestrictX) "actionSc1DXOb $w.f3D.togl"
+    bind $t $ayviewshortcuts(RestrictX) "actionSc1DXOb $w"
 
     # allow restriction: y only
-    bind $w $ayviewshortcuts(RestrictY) "actionSc1DYOb $w.f3D.togl"
+    bind $t $ayviewshortcuts(RestrictY) "actionSc1DYOb $w"
 
     # allow restriction: z only
-    bind $w $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w.f3D.togl"
+    bind $t $ayviewshortcuts(RestrictZ) "actionSc1DZOb $w"
 
     actionBindCenter $w actionSc2DAOb
 
@@ -689,6 +719,7 @@ proc actionSc2DOb { w } {
 
 #
 proc actionSc2DAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Scale2D"
     viewSetMAIcon $w ay_Scale2DA_img "Scale2DA"
@@ -711,6 +742,13 @@ proc actionSc2DAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc2DAOb"
 
  return;
 }
@@ -744,19 +782,18 @@ proc actionSc3DOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionSc3DAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionSc3DAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionSc3DAOb $w;\
+	} else {\
+	    actionSetMark $w actionSc3DAOb;\
+	}"
 
     actionBindCenter $w actionSc3DAOb
 
@@ -767,6 +804,7 @@ proc actionSc3DOb { w } {
 
 #
 proc actionSc3DAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Scale3DA"
     viewSetMAIcon $w ay_Scale3DA_img "Scale3DA"
@@ -789,6 +827,13 @@ proc actionSc3DAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionSc3DAOb"
 
  return;
 }
@@ -822,19 +867,18 @@ proc actionStr2DOb { w } {
     $w setconf -drawh 1
 
     if { [string first ".view" $w] == 0 } {
-	set w [winfo toplevel $w]
+	set t [winfo toplevel $w]
     } else {
-	set w [winfo parent [winfo parent $w]]
+	set t [winfo parent [winfo parent $w]]
     }
 
-    bind $w $ayviewshortcuts(About) {
-	%W.f3D.togl mc
-	if { $ay(cVDrawMark) } {
-	    actionStr2DAOb %W.f3D.togl
-	} else {
-	    actionSetMark %W actionStr2DAOb
-	}
-    }
+    bind $t $ayviewshortcuts(About) "\
+	$w mc;\
+	if { \$ay(cVDrawMark) } {\
+	    actionStr2DAOb $w;\
+	} else {\
+	    actionSetMark $w actionStr2DAOb;\
+	}"
 
     actionBindCenter $w actionStr2DAOb
 
@@ -845,6 +889,7 @@ proc actionStr2DOb { w } {
 
 #
 proc actionStr2DAOb { w } {
+    global ayviewshortcuts
 
     viewTitle $w "" "Stretch2DA"
     viewSetMAIcon $w ay_Stretch2DA_img "Stretch2DA"
@@ -867,6 +912,13 @@ proc actionStr2DAOb { w } {
     actionBindRelease $w
 
     $w setconf -drawh 1
+
+    if { [string first ".view" $w] == 0 } {
+	set t [winfo toplevel $w]
+    } else {
+	set t [winfo parent [winfo parent $w]]
+    }
+    bind $t $ayviewshortcuts(About) "actionSetMark $w actionStr2DAOb"
 
  return;
 }
@@ -1691,8 +1743,10 @@ proc actionClear { w } {
     actionClearKbd $w
 
     if { [string first ".view" $w] != 0 } {
+	set t [winfo parent [winfo parent $w]]
 	bind $w <ButtonPress-1> "focus \$w"
     } else {
+	set t [winfo toplevel $w]
 	bind $w <ButtonPress-1> ""
     }
 
@@ -1711,16 +1765,15 @@ proc actionClear { w } {
     # the following after scripts arrange for a short period
     # 0.1 - 1s after the first press of the <Esc> key, that a second
     # press of the <Esc> key also resets the mark and the focus
-    set p [winfo parent [winfo parent $w]]
-    after 100 "bind $p <$ayviewshortcuts(Break)>\
-               \"$p.f3D.togl setconf -drawh 0;\
-                 $p.f3D.togl setconf -mark n;\
+    after 100 "bind $t <$ayviewshortcuts(Break)>\
+               \"$t.f3D.togl setconf -drawh 0;\
+                 $t.f3D.togl setconf -mark n;\
                  resetFocus\""
     # after 1s, the old binding is in effect
-    after 1000 "bind $p <$ayviewshortcuts(Break)> \"actionClear $p.f3D.togl\""
+    after 1000 "bind $t <$ayviewshortcuts(Break)> \"actionClear $t.f3D.togl\""
 
     # re-establish standard set mark binding
-    bind $p <$ayviewshortcuts(About)> "actionSetMark $p"
+    bind $t <$ayviewshortcuts(About)> "actionSetMark $t.f3D.togl"
 
  return;
 }
