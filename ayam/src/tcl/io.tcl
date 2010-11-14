@@ -46,7 +46,6 @@ proc io_replaceScene { } {
     if { $newfilename != "" } {
 	viewCloseAll
 	cS; plb_update
-	#    .fu.fMain.fHier.fsel.bnon invoke
 	set ay(askedscriptdisable) 0
 	update
 	set filename $newfilename
@@ -69,6 +68,16 @@ proc io_replaceScene { } {
 	    } ]
 	}
 
+	# change working directory
+	if { [file exists $filename] } {
+	    set dirname [file dirname $filename]
+	    cd $dirname
+	    set .fl.con(-prompt) {[file tail [pwd]]>}
+	    .fl.con delete end-1lines end
+	    Console:prompt .fl.con "\n"
+	}
+
+	# read the file
 	replaceScene $filename
 
 	if { $ay_error < 2 } {
@@ -78,14 +87,7 @@ proc io_replaceScene { } {
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
 
-	    if { [file exists $filename] } {
-		set dirname [file dirname $filename]
-		cd $dirname
-		set .fl.con(-prompt) {[file tail [pwd]]>}
-		.fl.con delete end-1lines end
-		Console:prompt .fl.con "\n"
-	    }
-
+	    # restore main window geometry from tag
 	    io_readMainGeom
 
 	} else {
@@ -100,7 +102,9 @@ proc io_replaceScene { } {
 	update
 	uS
 	rV
+	# add scene file to most recently used list
 	io_mruAdd $filename
+	# reset scene change indicator
 	set ay(sc) 0
 	update
 	foreach view $ay(views) { viewBind $view }
