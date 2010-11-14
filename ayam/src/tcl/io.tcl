@@ -91,6 +91,8 @@ proc io_replaceScene { } {
 	    io_readMainGeom
 
 	} else {
+	    wm title . "Ayam - Main - : --"
+	    set ay(filename) ""
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
 	}
