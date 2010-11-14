@@ -599,28 +599,30 @@ proc io_mruLoad { index } {
 		file copy -force -- $filename ${filename}${ayprefs(BackupExt)}
 	    } ]
 	}
+	# change working directory
+	if { [file exists $filename] } {
+	    set dirname [file dirname $filename]
+	    cd $dirname
 
+	    set .fl.con(-prompt) {[file tail [pwd]]>}
+	    .fl.con delete end-1lines end
+	    Console:prompt .fl.con "\n"
+	}
+
+	# read the file
 	replaceScene $filename
 
 	if { $ay_error < 2 } {
-
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
 	    ayError 4 "replaceScene" "Done reading scene from:"
 	    ayError 4 "replaceScene" "$filename"
-	    set ay(sc) 0
-
-	    if { [file exists $filename] } {
-		set dirname [file dirname $filename]
-		cd $dirname
-
-		set .fl.con(-prompt) {[file tail [pwd]]>}
-		.fl.con delete end-1lines end
-		Console:prompt .fl.con "\n"
-	    }
+	    # restore main window geometry from tag
 	    io_readMainGeom
 	} else {
+	    wm title . "Ayam - Main - : --"
+	    set ay(filename) ""
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
 	}
@@ -630,16 +632,15 @@ proc io_mruLoad { index } {
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	update
-
 	uS
 	rV
 	update
-
+	# reset scene change indicator
+	set ay(sc) 0
 	foreach view $ay(views) { viewBind $view }
 	update
 
 	after idle viewMouseToCurrent
-
     }
 
  return;
@@ -1149,7 +1150,7 @@ proc io_readMainGeom { } {
 	    $tree selection set $sel
 	    treeSelect $sel
 	} else {
-	    $ay(olb) selection set $sel	
+	    $ay(olb) selection set $sel
 	    selOb -lb $sel
 	}
     }
@@ -1309,7 +1310,7 @@ proc io_importScene { filename } {
 	    set plugin [lindex $ayprefs(ALPlugins) $i]
 	    # XXXX import procedure name
 	    set import_proc "${plugin}_import"
-	    # 
+	    #
 	    if { ! [info exists $import_proc] } {
 		set ay(autoload) $plugin
 		io_lcAuto
@@ -1369,7 +1370,7 @@ proc io_exportScene { filename } {
 	    set plugin [lindex $ayprefs(ALPlugins) $i]
 	    # XXXX export procedure name
 	    set export_proc "${plugin}_export"
-	    # 
+	    #
 	    if { ! [info exists $export_proc] } {
 		set ay(autoload) $plugin
 		io_lcAuto
