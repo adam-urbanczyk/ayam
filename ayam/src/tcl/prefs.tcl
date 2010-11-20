@@ -88,7 +88,7 @@ proc prefs_open {} {
     catch {destroy $w}
 
     set width 370
-    #if { $tcl_platform(platform) == "windows" } { 
+    #if { $tcl_platform(platform) == "windows" } {
     #set width 400
     #}
     toplevel $w -class Ayam -width $width -height 400
@@ -274,7 +274,7 @@ proc prefs_open {} {
     # Misc
     set fw [$nb insert end Misc -text Misc\
 	    -raisecmd "prefs_rsnb $nb Misc"]
-    
+
     addText $fw e0 "Errors:"
     addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
     addCheckB $fw ayprefse Logging [ms ayprefse_Logging]
@@ -304,7 +304,7 @@ proc prefs_open {} {
 
     # controlling buttons
     set f [frame $w.f3]
-    button $f.bok -text "Ok" -width 8 -command { 
+    button $f.bok -text "Ok" -width 8 -command {
 	global ay ayprefs ayprefse
 
 	prefs_warnNeedRestart
@@ -325,7 +325,7 @@ proc prefs_open {} {
 	destroy .prefsw
     }
 
-    button $f.bap -text "Apply" -width 8 -command { 
+    button $f.bap -text "Apply" -width 8 -command {
 	global ay ayprefs ayprefse
 
 	prefs_warnNeedRestart
@@ -370,7 +370,7 @@ proc prefs_open {} {
     pack $f.bok $f.bap $f.bdef $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x -expand no
 
-    # 
+    #
     bind $w <Enter> {
 	global ayprefs
 	if { $ayprefs(AutoFocus) == 1 } {
@@ -416,7 +416,10 @@ proc prefs_open {} {
     # bind function keys
     shortcut_fkeys $w
 
-    bind $w <Control-Tab> "prefs_nextpage $nb;break"
+    # bind Control-Tab to switch the notebook to the next page
+    bind $w <Control-Tab> "prefs_nextpage $nb 1;break"
+    bind $w <Shift-Control-Tab> "prefs_nextpage $nb 0;break"
+    catch {bind $w <Control-ISO_Left_Tab> "prefs_nextpage $nb 0;break"}
 
     if { ($ayprefs(SavePrefsGeom) > 0) && ($ay(prefsgeom) != "") } {
 	winMoveOrResize $w $ay(prefsgeom)
@@ -655,7 +658,7 @@ proc prefs_setSamplingTolerance { plus } {
 		update
 		rV
 	    }
-	    
+
 	}
 	# if
 
@@ -681,7 +684,7 @@ proc prefs_warnNeedRestart {} {
      } {
 	set t "Need Restart!"
 	set m "Some of your changes need a restart of Ayam to take effect!"
-	
+
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
@@ -705,7 +708,7 @@ proc prefs_reset {} {
     if { [file exists $ay(ayamrc)] } {
 	set t "Reset Preferences?"
 	set m "Ready to remove file:\n\"$ay(ayamrc)\"?"
-	
+
 	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
@@ -731,8 +734,8 @@ proc prefs_reset {} {
 
 
 # prefs_nextpage:
-#  show next page (bound to <Control-Tab>)
-proc prefs_nextpage { nb } {
+#  show next/prev page (bound to <Control-Tab>/<Shift-Control-Tab>)
+proc prefs_nextpage { nb dir } {
     global ay ayprefs
 
     set allpages [$nb pages]
@@ -740,10 +743,18 @@ proc prefs_nextpage { nb } {
 
     set index [$nb index $ay(prefssection)]
 
-    if { $index == [expr {$allpageslen - 1}] } {
-	set index 0
+    if { $dir == 1 } {
+	if { $index == [expr {$allpageslen - 1}] } {
+	    set index 0
+	} else {
+	    incr index
+	}
     } else {
-	incr index
+	if { $index == 0 } {
+	    set index [expr {$allpageslen - 1}]
+	} else {
+	    set index [expr {$index - 1}]
+	}
     }
     set page [lindex $allpages $index]
     set ay(prefssection) $page
