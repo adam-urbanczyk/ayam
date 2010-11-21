@@ -1,5 +1,16 @@
-[10. Oct 2010] CVS-Head:
+[21. Nov 2010] CVS-Head:
 ========================
+Bug Fixes:
+o
+
+
+Scripts/Scripting Interface:
+o added script ("aac.tcl") that switches the rotate and scale transformations
+  to their "about center" variants automatically
+
+
+[15. Nov 2010] Ayam-1.18.1:
+===========================
 Bug Fixes:
 o fixed set mark not setting the correct location (SF 3105801)
 o fixed <Esc> not resetting binding for set mark (SF 3105793)
@@ -10,6 +21,12 @@ o fixed undo of rotate about action (SF 3107141)
 Modelling:
 o if a mark is already set in a view, the intermediate set mark action is
   now omitted automatically
+o the current directory is now set before scenes are replaced, this allows
+  them to load assets (e.g. fonts, background images) from the current
+  directory (i.e. with relative path) more easily
+o the filename is now reset if scenes load with errors to protect the
+  previously loaded scene file
+o Script objects now fully support the NP/Transformations tag
 
 
 [28. Oct 2010] Ayam 1.18:
