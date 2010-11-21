@@ -639,6 +639,22 @@ proc tgui_open { } {
 	bind $f.e <<CommitTG>> "+if { \"%K\" == \"KP_Enter\" } {break};"
     }
 
+    # establish "Help"-binding
+    global aymainshortcuts
+    bind $w <[repctrl $aymainshortcuts(Help)]> {
+	global ay ayprefs
+	set tag tesst
+	if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	    set lslash [string last "/" $ayprefs(Docs)]
+	    set url [string range\
+			 $ayprefs(Docs) 0 $lslash]/ayam-5.html\#$tag
+	    browser_urlOpen $url
+	} else {
+	    browser_urlOpen $ayprefs(Docs)ayam-5.html\#$tag
+	}
+    }
+    # bind
+
     wm deiconify $w
 
     tgui_block "User interaction is restricted by tesselation dialog!"
