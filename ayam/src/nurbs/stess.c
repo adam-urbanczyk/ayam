@@ -164,7 +164,7 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 			    int dim, int is_rat, int stride,
 			    int *m, double **V)
 {
- int i, j, eq = AY_TRUE;
+ int i, j, eq;
  double *p1, *p2, *t;
 
   if(!U || !P || !m || !V)
@@ -182,14 +182,16 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
       p2 = p1 + stride;
       for(j = 0; j < p-1; j++)
 	{
-	  if(memcmp(p1, p2, dim*sizeof(double)))
+	  if((fabs(p1[0]-p2[0]) > AY_EPSILON) ||
+	     ((dim>1) && (fabs(p1[1]-p2[1]) > AY_EPSILON)) ||
+	     ((dim>2) && (fabs(p1[2]-p2[2]) > AY_EPSILON)))
 	    {
 	      eq = AY_FALSE;
 	      break;
 	    }
 	  if(eq && is_rat)
 	    {
-	      if(p1[3] != p2[3])
+	      if(fabs(p1[3]-p2[3]) > AY_EPSILON)
 		{
 		  eq = AY_FALSE;
 		  break;
@@ -202,7 +204,12 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 	{
 	  t = NULL;
 	  if(!(t = realloc(*V, ((*m)+1)*sizeof(double))))
-	    return AY_ENULL;
+	    {
+	      if(*V)
+		free(*V);
+	      *m = 0; *V = NULL;
+	      return AY_EOMEM;
+	    }
 	  *V = t;
 	  (*V)[(*m)] = U[i + p + 1];
 	  (*m)++;
@@ -227,7 +234,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 		       int *Clen, double **C)
 {
  int ay_status = AY_OK;
- int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0;
+ int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0, mc2 = 0;
  double *N = NULL, Cw[3], *Ct = NULL, u, ud, u1, *V;
 
   if(!U || !Pw || !Clen || !C)
@@ -235,9 +242,9 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
   if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-
+  /*  
   ay_status = ay_stess_FindMultiplePoints(n, p, U, Pw, 2, is_rat, 4, &mc, &V);
-
+  */
   *Clen = ((4 + n) * qf);
 
   if(!(Ct = calloc((*Clen + mc) * 2, sizeof(double))))
@@ -245,7 +252,6 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
       free(N);
       return AY_EOMEM;
     }
-
   m = 0;
   ud = (U[n]-U[p])/((*Clen)-1);
   u = U[p];
@@ -257,7 +263,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	{
 	  u1 = u;
 	  incu = AY_TRUE;
-	  /* do we have multiple points and are they not used up? */
+	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
 	    { /* yes */
 	      /* is V[vi] between u-ud and u? (by calculating u we would
@@ -265,7 +271,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	      if((u-ud < V[vi]) && (V[vi] < u))
 		{
 		  /* is V[vi] sufficiently different from u? */
-		  if((u - V[vi]) > AY_EPSILON)
+		  if(fabs(u - V[vi]) > AY_EPSILON)
 		    { /* yes */
 		      /* calculate multiple point before u and remember
 			 to not increase u by ud in this iteration */
@@ -282,7 +288,6 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 		    } /* if */
 		} /* if */
 	    } /* if */
-
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
 
 	  ay_nb_BasisFuns(span, u1, p, U, N);
@@ -300,7 +305,20 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	  Ct[m]   = Cw[0]/Cw[2];
 	  Ct[m+1] = Cw[1]/Cw[2];
 
-	  m += 2;
+	  /* make sure that there are no consecutive identical
+	     points in the output, as Merge(U/V)Vectors() below
+	     would choke on that (unnecessarily) */
+
+	  if(!l || (fabs(Ct[m-2] - Ct[m]) > AY_EPSILON) ||
+	     (fabs(Ct[m-1] - Ct[m+1]) > AY_EPSILON))
+	    {
+	      m += 2;
+	    }
+	  else
+	    {
+	      mc2++;
+	    }
+
 	  if(incu)
 	    u += ud;
 	} /* for */
@@ -311,8 +329,9 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
       for(l = 0; l < (*Clen) + mc; l++)
 	{
 	  u1 = u;
+
 	  incu = AY_TRUE;
-	  /* do we have multiple points and are they not used up? */
+	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
 	    { /* yes */
 	      /* is V[vi] between u-ud and u (by calculating u we would
@@ -320,7 +339,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	      if((u-ud < V[vi]) && (V[vi] < u))
 		{ /* yes */
 		  /* is V[vi] sufficiently different from u? */
-		  if((u - V[vi]) > AY_EPSILON)
+		  if(fabs(u - V[vi]) > AY_EPSILON)
 		    { /* yes */
 		      /* calculate multiple point before u and remember
 			 to not increase u by ud in this iteration */
@@ -349,14 +368,27 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
 
-	  m += 2;
+	  /* make sure that there are no consecutive identical
+	     points in the output, as Merge(U/V)Vectors() below
+	     would choke on that (unnecessarily) */
+	  if(!l || (fabs(Ct[m-2] - Ct[m]) > AY_EPSILON) ||
+	     (fabs(Ct[m-1] - Ct[m+1]) > AY_EPSILON))
+	    {
+	      m += 2;
+	    }
+	  else
+	    {
+	      mc2++;
+	    }
+
 	  if(incu)
 	    u += ud;
 	} /* for */
+
     } /* if */
 
   *C = Ct;
-  *Clen += mc1;
+  *Clen += mc1-mc2;
 
   free(N);
 
@@ -402,7 +434,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	{
 	  u1 = u;
 	  incu = AY_TRUE;
-	  /* do we have multiple points and are they not used up? */
+	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
 	    { /* yes */
 	      /* is V[vi] between u-ud and u? (by calculating u we would
@@ -410,7 +442,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	      if((u-ud < V[vi]) && (V[vi] < u))
 		{
 		  /* is V[vi] sufficiently different from u? */
-		  if((u - V[vi]) > AY_EPSILON)
+		  if(fabs(u - V[vi]) > AY_EPSILON)
 		    { /* yes */
 		      /* calculate multiple point before u and remember
 			 to not increase u by ud in this iteration */
@@ -429,7 +461,6 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	    } /* if */
 
 	  span = ay_nb_FindSpan(n-1, p, u1, U);
-
 	  ay_nb_BasisFuns(span, u1, p, U, N);
 
 	  memset(Cw, 0, 4*sizeof(double));
@@ -458,7 +489,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	{
 	  u1 = u;
 	  incu = AY_TRUE;
-	  /* do we have multiple points and are they not used up? */
+	  /* are there unprocessed multiple points? */
 	  if((mc > 0) && (vi < mc))
 	    { /* yes */
 	      /* is V[vi] between u-ud and u (by calculating u we would
@@ -466,7 +497,7 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	      if((u-ud < V[vi]) && (V[vi] < u))
 		{ /* yes */
 		  /* is V[vi] sufficiently different from u? */
-		  if((u - V[vi]) > AY_EPSILON)
+		  if(fabs(u - V[vi]) > AY_EPSILON)
 		    { /* yes */
 		      /* calculate multiple point before u and remember
 			 to not increase u by ud in this iteration */
@@ -522,11 +553,11 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
  int a, b;
  double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
  double temp[3] = {0}, *Ct = NULL, fder[12] = {0}, *fd1, *fd2;
+ int *spanus = NULL, *spanvs = NULL;
 
-  if(!(Nu = calloc(p+1, sizeof(double))))
+  if(!(Nu = calloc(p+1+q+1, sizeof(double))))
     return AY_EOMEM;
-  if(!(Nv = calloc(q+1, sizeof(double))))
-    { free(Nu); return AY_EOMEM; }
+  Nv = Nu + (p+1);
 
   *Cn = (4 + n) * qf;
   ud = (U[n] - U[p]) / ((*Cn) - 1);
@@ -535,21 +566,91 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
-    { free(Nu); free(Nv); return AY_EOMEM; }
+    { free(Nu); return AY_EOMEM; }
+
+  if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
+    { free(Nu); free(Ct); return AY_EOMEM; }
+  spanvs = spanus + (*Cn);
+
+  /* employ linear variants of FindSpan() as they are much faster
+     than a binary search; especially, since we calculate
+     spans for all parameters in order */
+
+  u = U[p];
+  spanu = p;
+  for(a = 0; a < (*Cn)-1; a++)
+    {
+      /*
+      if(u < U[p+1])
+	{
+	  spanus[a] = p;
+	}
+      else
+	{
+	  while(u >= U[spanu])
+	    {
+	      spanu++;
+	    }
+	  spanus[a] = spanu-1;
+	}
+      */
+
+      if(u > U[p+1])
+	{
+	  while(u > U[spanu+1])
+	    {
+	      spanu++;
+	    }
+	}
+      spanus[a] = spanu;
+
+      u += ud;
+    }
+  spanus[a] = spanus[a-1];
+
+  v = V[q];
+  spanv = q;
+  for(a = 0; a < (*Cm)-1; a++)
+    {
+      /*
+      if(v < V[q+1])
+	{
+	  spanvs[a] = q;
+	}
+      else
+	{
+	  while(v > V[spanv])
+	    {
+	      spanv++;
+	    }
+	  spanvs[a] = spanv-1;
+	}
+      */
+
+      if(v > V[q+1])
+	{
+	  while(v > V[spanv+1])
+	    {
+	      spanv++;
+	    }
+	}
+      spanvs[a] = spanv;
+      v += vd;
+    }
+  spanvs[a] = spanvs[a-1];
 
   u = U[p];
   for(a = 0; a < (*Cn); a++)
     {
+      spanu = spanus[a];
+      ay_nb_BasisFuns(spanu, u, p, U, Nu);
+      indu = spanu - p;
       v = V[q];
       for(b = 0; b < (*Cm); b++)
 	{
-
-	  spanu = ay_nb_FindSpan(n-1, p, u, U);
-	  ay_nb_BasisFuns(spanu, u, p, U, Nu);
-	  spanv = ay_nb_FindSpan(m-1, q, v, V);
+	  spanv = spanvs[b];
 	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
-	  indu = spanu - p;
 	  /*j = (a*(*Cn)+b)*3;*/
 	  for(l = 0; l <= q; l++)
 	    {
@@ -588,7 +689,7 @@ ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
   *C = Ct;
 
   free(Nu);
-  free(Nv);
+  free(spanus);
 
  return AY_OK;
 } /* ay_stess_SurfacePoints3D */
@@ -601,17 +702,18 @@ int
 ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 			 double *Pw, int qf, int *Cn, int *Cm, double **C)
 {
+ int ay_status = AY_OK;
  int spanu = 0, spanv = 0, indu = 0, indv = 0, l = 0, k = 0, i = 0, j = 0;
  int a, b, ti;
  double u, v, ud, vd, *Nu = NULL, *Nv = NULL;
  double Cw[4] = {0}, *Ct = NULL, *temp = NULL, fder[12] = {0}, *fd1, *fd2;
+ int *spanus = NULL, *spanvs = NULL;
 
-  if(!(Nu = calloc(p+1, sizeof(double))))
-    return AY_EOMEM;
-  if(!(Nv = calloc(q+1, sizeof(double))))
-    { free(Nu); return AY_EOMEM; }
-  if(!(temp = calloc((q+1)*4, sizeof(double))))
-    { free(Nu); free(Nv); return AY_EOMEM; }
+  if(!(Nu = calloc(p+1+q+1+((q+1)*4), sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  Nv = Nu + (p+1);
+  temp = Nv + (q+1);
 
   *Cn = (4 + n) * qf;
   ud = (U[n] - U[p]) / ((*Cn) - 1);
@@ -619,22 +721,95 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
   *Cm = (4 + m) * qf;
   vd = (V[m] - V[q]) / ((*Cm) - 1);
 
+  if(!(spanus = calloc((*Cn)+(*Cm), sizeof(int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  spanvs = spanus + (*Cn);
+
   if(!(Ct = calloc((*Cn)*(*Cm)*6, sizeof(double))))
-    { free(Nu); free(Nv); free(temp); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* employ linear variants of FindSpan() as they are much faster
+     than a binary search; especially, since we calculate
+     spans for all parameters in order */
+
+  u = U[p];
+  spanu = p;
+  for(a = 0; a < (*Cn)-1; a++)
+    {
+      /*
+      if(u < U[p+1])
+	{
+	  spanus[a] = p;
+	}
+      else
+	{
+	  while(u > U[spanu])
+	    {
+	      spanu++;
+	    }
+	  spanus[a] = spanu-1;
+	}
+      */
+
+      if(u > U[p+1])
+	{
+	  while(u > U[spanu+1])
+	    {
+	      spanu++;
+	    }
+	}
+      spanus[a] = spanu;
+      u += ud;
+    }
+  spanus[a] = spanus[a-1];
+
+
+  v = V[q];
+  spanv = q;
+  for(a = 0; a < (*Cm)-1; a++)
+    {
+      /*
+      if(v < V[q+1])
+	{
+	  spanvs[a] = q;
+	}
+      else
+	{
+	  while(v > V[spanv])
+	    {
+	      spanv++;
+	    }
+	  spanvs[a] = spanv-1;
+	}
+      */
+
+      if(v > V[q+1])
+	{
+	  while(v > V[spanv+1])
+	    {
+	      spanv++;
+	    }
+	}
+      spanvs[a] = spanv;
+      v += vd;
+    }
+  spanvs[a] = spanvs[a-1];
 
   u = U[p];
   for(a = 0; a < (*Cn); a++)
     {
+      spanu = spanus[a];
+      ay_nb_BasisFuns(spanu, u, p, U, Nu);
+
+      indu = spanu - p;
+
       v = V[q];
+
       for(b = 0; b < (*Cm); b++)
 	{
-
-	  spanu = ay_nb_FindSpan(n-1, p, u, U);
-	  ay_nb_BasisFuns(spanu, u, p, U, Nu);
-	  spanv = ay_nb_FindSpan(m-1, q, v, V);
+	  spanv = spanvs[b];
 	  ay_nb_BasisFuns(spanv, v, q, V, Nv);
 
-	  indu = spanu - p;
 	  ti = 0;
 	  for(l = 0; l <= q; l++)
 	    {
@@ -684,13 +859,18 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
       u += ud;
     } /* for */
 
+  /* return result */
   *C = Ct;
 
-  free(Nu);
-  free(Nv);
-  free(temp);
+cleanup:
 
- return AY_OK;
+  if(Nu)
+    free(Nu);
+
+  if(spanus)
+    free(spanus);
+
+ return ay_status;
 } /* ay_stess_SurfacePoints4D */
 
 
@@ -944,7 +1124,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
   if(toggle)
     {
       /*
-     fprintf(stderr,"Uneven number of trimloop points (%d) detected!\n",count);
+	printf("Uneven number of trimloop points detected!\n");
       */
 
       /* free b */
@@ -963,7 +1143,7 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
       inserted = 0;
       p1 = a;
       p2 = b;
-      while(!inserted)
+      while(!inserted && b)
 	{
 	  if(p1->next)
 	    {
@@ -980,7 +1160,9 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * a trimloop point and delete the original trimloop
 		       * point!
 		       */
-		      fprintf(stderr,"Transmogrifying point!\n");
+		      
+		      printf("Transmogrifying point!\n");
+		      
 		      p1->type = 1;
 		      p1->dir = p2->dir;
 		      p3 = p2->next;
@@ -1006,6 +1188,18 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		      p1 = p1->next;
 		    } /* if */
 		} /* if */
+	    }
+	  else
+	    {
+	      /* falling off the border of the patch
+		 => discard remaining trim points */
+	      while(b)
+		{
+		  p2 = b->next;
+		  free(b);
+		  b = p2;
+		}
+
 	    } /* if */
 	} /* while */
 
@@ -1045,7 +1239,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
   if(toggle)
     {
       /*
-     fprintf(stderr,"Uneven number of trimloop points (%d) detected!\n",count);
+	printf("Uneven number of trimloop points detected!\n");
       */
 
       /* free b */
@@ -1064,7 +1258,7 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
       inserted = 0;
       p1 = a;
       p2 = b;
-      while(!inserted)
+      while(!inserted && b)
 	{
 	  if(p1->next)
 	    {
@@ -1081,7 +1275,9 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * a trimloop point and delete the original trimloop
 		       * point!
 		       */
+		      /*
 		      fprintf(stderr,"Transmogrifying point!\n");
+		      */
 		      p1->type = 1;
 		      p1->dir = p2->dir;
 		      p3 = p2->next;
@@ -1107,6 +1303,18 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		      p1 = p1->next;
 		    } /* if */
 		} /* if */
+	    }
+	  else
+	    {
+	      /* falling off the border of the patch
+		 => discard remaining trim points */
+	      while(b)
+		{
+		  p2 = b->next;
+		  free(b);
+		  b = p2;
+		}
+
 	    } /* if */
 	} /* while */
 
@@ -1352,9 +1560,9 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
     } /* for */
 
-  /* remove unwanted lines (all lines that contain no trimloop point) */
   if(first_loop_cw)
     {
+      /* remove unwanted lines (all lines that contain no trimloop point) */
       for(i = 0; i < Cn; i++)
 	{
 	  trimloop_point = AY_FALSE;
@@ -1392,14 +1600,10 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
       while(uvpptr)
 	{
-	  ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			    p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
-
 	  ay_nb_CompFirstDerSurf4D(p->width-1, p->height-1,
 			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 			    p->controlv, uvpptr->u, uvpptr->v, ders);
-
+	  memcpy(uvpptr->C, ders, 3*sizeof(double));
 	  fd1 = &(ders[3]);
 	  fd2 = &(ders[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
@@ -1683,15 +1887,11 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 
       while(uvpptr)
 	{
-
-	  ay_nb_SurfacePoint4D(p->width-1, p->height-1,
-			       p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
-			       p->controlv, uvpptr->u, uvpptr->v, uvpptr->C);
-
 	  ay_nb_CompFirstDerSurf4D(p->width-1, p->height-1,
 			    p->uorder-1, p->vorder-1, p->uknotv, p->vknotv,
 			    p->controlv, uvpptr->u, uvpptr->v, ders);
 
+	  memcpy(uvpptr->C, ders, 3*sizeof(double));
 	  fd1 = &(ders[3]);
 	  fd2 = &(ders[6]);
 	  AY_V3CROSS(temp, fd2, fd1);
@@ -1726,18 +1926,18 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
   if(!stess)
     return AY_ENULL;
 
-  if(!stess->ft_cw)
-    out = 0;
-  else
-    out = 1;
-
   /* draw iso-u lines */
   for(i = 0; i < stess->upslen; i++)
     {
       uvpptr = stess->ups[i];
 
-      if(!out)
-	glBegin(GL_LINE_STRIP);
+      if(!stess->ft_cw)
+	{
+	  out = 0;
+	  glBegin(GL_LINE_STRIP);
+	}
+      else
+	out = 1;
 
       while(uvpptr)
 	{
@@ -1771,18 +1971,18 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
     } /* for */
 
 
-  if(!stess->ft_cw)
-    out = 0;
-  else
-    out = 1;
-
   /* draw iso-v lines */
   for(i = 0; i < stess->vpslen; i++)
     {
       uvpptr = stess->vps[i];
 
-      if(!out)
-	glBegin(GL_LINE_STRIP);
+      if(!stess->ft_cw)
+	{
+	  out = 0;
+	  glBegin(GL_LINE_STRIP);
+	}
+      else
+	out = 1;
 
       while(uvpptr)
 	{
@@ -1833,7 +2033,7 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
       glEnd();
     } /* for */
 
- return AY_OK; 
+ return AY_OK;
 } /* ay_stess_DrawTrimmedSurface */
 
 
@@ -1843,7 +2043,7 @@ ay_stess_DrawTrimmedSurface(ay_object *o)
 int
 ay_stess_ShadeTrimmedSurface(ay_object *o)
 {
- int i;
+ int i, forwardu1;
  ay_stess *stess = NULL;
  ay_stess_uvp *u1, *u2, *v1, *v2;
  ay_nurbpatch_object *p = NULL;
@@ -1879,94 +2079,164 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	  glNormal3dv((GLdouble*)&((u2->C)[3]));
 	  glVertex3dv((GLdouble*)(u2->C));
 
-	  if(u1->type == 1 && u2->type == 1)
+
+	  if(u1->type == 1 || u2->type == 1)
 	    {
-	      u1 = u1->next;
-	      u2 = u2->next;
+	      /* we cross a trimcurve/leave the surface
+		 => forward to next complete cell (where both,
+		 u1 and u2, point to the surface again) */
+
+	      /* break current strip */
+	      glEnd();
+
+	      forwardu1 = AY_FALSE;
+
+	      if(u1->type == 0 && u2->type == 1)
+		{
+		  forwardu1 = AY_TRUE;
+		}
+
+	      if(u1->type == 1 && u2->type == 1)
+		{
+		  u1 = u1->next;
+		  u2 = u2->next;
+		}
+	      else
+		{
+		  if(forwardu1)
+		    {
+		      /* u2 is off, u1 still on, forward u1 to next boundary */
+		      /* but stop right before u2 in any case */
+		      u2 = u2->next;
+		      if(u2)
+			{
+			  while(u1 && u1->next &&
+				((u1->next->v < u2->v) || u1->next->type))
+			    {
+			      u1 = u1->next;
+			      if(u1 && u1->type)
+				{
+				  u1 = u1->next;
+				  break;
+				}
+			    }
+			}
+		    }
+		  else
+		    {
+		      /* forwardu2 would be AY_TRUE */
+		      /* u1 is off, u2 still on, forward u2 to next boundary */
+		      /* but stop right before u1 in any case */
+		      u1 = u1->next;
+		      if(u1)
+			{
+			  while(u2 && u2->next &&
+				((u2->next->v < u1->v) || u2->next->type))
+			    {
+			      u2 = u2->next;
+			      if(u2 && u2->type)
+				{
+				  u2 = u2->next;
+				  break;
+				}
+			    }
+			}
+		    }
+		}
+
+	      while(u1 && u2)
+		{
+		  if(fabs(u1->v - u2->v) < stess->vd)
+		    {
+		      if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
+			{
+			  break;
+			}
+		    }
+
+		  if(u1->v < u2->v)
+		    {
+		      while(u1 && u1->next && (u1->next->v < u2->v))
+			u1 = u1->next;
+
+		      if(!u1)
+			break;
+
+		      if(fabs(u1->v - u2->v) < stess->vd)
+			{
+			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
+			    {
+			      break;
+			    }
+			}
+
+		      while(u2 && u2->next && (u2->next->v < u1->v))
+			u2 = u2->next;
+
+		      if(!u2)
+			break;
+
+		      if(fabs(u1->v - u2->v) < stess->vd)
+			{
+			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
+			    {
+			      break;
+			    }
+			}
+		    }
+		  else
+		    {
+
+		      while(u2 && u2->next && (u2->next->v < u1->v))
+			u2 = u2->next;
+
+		      if(!u2)
+			break;
+
+		      if(fabs(u1->v - u2->v) < stess->vd)
+			{
+			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
+			    {
+			      break;
+			    }
+			}
+
+		      while(u1 && u1->next && (u1->next->v < u2->v))
+			u1 = u1->next;
+
+		      if(!u1)
+			break;
+
+		      if(fabs(u1->v - u2->v) < stess->vd)
+			{
+			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
+			    {
+			      break;
+			    }
+			}
+
+		    }
+
+		  /* avoid infinite loop */
+		  if(u1 && u2)
+		    {
+		      if(u1->v < u2->v)
+			u1 = u1->next;
+		      else
+			u2 = u2->next;
+		    }
+		} /* while */
+
 	      if(!u1 || !u2)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
 		  break;
 		}
-	      glEnd();
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((u1->C)[3]));
-	      glVertex3dv((GLdouble*)(u1->C));
-	      glNormal3dv((GLdouble*)&((u2->C)[3]));
-	      glVertex3dv((GLdouble*)(u2->C));
-	    } /* if */
 
-	  if(u1->type == 1 && u2->type == 0)
-	    {
-	      if(!u1->next)
-		{
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  glNormal3dv((GLdouble*)&((u1->C)[3]));
-		  glVertex3dv((GLdouble*)(u1->C));
-		  while(u2)
-		    {
-		      glNormal3dv((GLdouble*)&((u2->C)[3]));
-		      glVertex3dv((GLdouble*)(u2->C));
-		      glNormal3dv((GLdouble*)&((u1->C)[3]));
-		      glVertex3dv((GLdouble*)(u1->C));
-		      u2 = u2->next;
-		    }
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
+	      /* if we get here, u1 and u2 point to the next
+		 complete cell in the surface */
 
-	      u1 = u1->next;
-	      glEnd();
-
-	      while(u2 && (u2->v+stess->vd < u1->v))
-		u2 = u2->next;
-
-	      if(!u2)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      glBegin(GL_TRIANGLE_STRIP);
-	      glNormal3dv((GLdouble*)&((u1->C)[3]));
-	      glVertex3dv((GLdouble*)(u1->C));
-	      glNormal3dv((GLdouble*)&((u2->C)[3]));
-	      glVertex3dv((GLdouble*)(u2->C));
-	    } /* if */
-
-	  if(u1->type == 0 && u2->type == 1)
-	    {
-	      if(!u2->next)
-		{
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  while(u1)
-		    {
-		      glNormal3dv((GLdouble*)&((u1->C)[3]));
-		      glVertex3dv((GLdouble*)(u1->C));
-		      glNormal3dv((GLdouble*)&((u2->C)[3]));
-		      glVertex3dv((GLdouble*)(u2->C));
-		      u1 = u1->next;
-		    }
-		  glEnd();
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
-	      u2 = u2->next;
-	      glEnd();
-
-	      while(u1 && (u1->v+stess->vd < u2->v))
-		u1 = u1->next;
-
-	      if(!u1)
-		{
-		  glBegin(GL_TRIANGLE_STRIP);
-		  break;
-		}
-
+	      /* start a new strip */
 	      glBegin(GL_TRIANGLE_STRIP);
 	      glNormal3dv((GLdouble*)&((u1->C)[3]));
 	      glVertex3dv((GLdouble*)(u1->C));
@@ -1981,7 +2251,7 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
       glEnd();
 
     } /* for */
-
+#if 0
   for(i = 0; i < (stess->vpslen-1); i++)
     {
       v1 = stess->vps[i+1];
@@ -2051,7 +2321,10 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      while(v2 && (v2->u+stess->ud < v1->u))
 		v2 = v2->next;
 
-	      if(!v2)
+	      while(v1 && (v1->u+stess->ud < v2->u))
+		v1 = v1->next;
+
+	      if(!v1 || !v2)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
 		  break;
@@ -2089,7 +2362,10 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      while(v1 && (v1->u+stess->ud < v2->u))
 		v1 = v1->next;
 
-	      if(!v1)
+	      while(v2 && (v2->u+stess->ud < v1->u))
+		v2 = v2->next;
+
+	      if(!v1 || !v2)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
 		  break;
@@ -2109,7 +2385,7 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
       glEnd();
 
     } /* for */
-
+#endif
  return AY_OK;
 } /* ay_stess_ShadeTrimmedSurface */
 
