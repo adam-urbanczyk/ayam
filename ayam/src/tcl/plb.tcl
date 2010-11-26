@@ -438,10 +438,12 @@ if { [llength $index] == 1 } {
 	if { ! [info exists ${type}_props] } {
 	    # props are undefined yet, try to run the
 	    # object type specific init procedure...
+	    set ay(bok) $ay(appb)
 	    catch { eval init_${type} }
 	}
 
 	eval [subst "set props {\$${type}_props}"]
+
 	# remove properties from RP tags
 	set tn ""
 	getTags tn tv
@@ -471,7 +473,7 @@ if { [llength $index] == 1 } {
 	    eval [subst "$lb insert end $props"]
 	}
 
-	# also insert properties from NP tags
+	# also add properties from NP tags
 	if { ($tn != "") && ([ string first NP $tn ] != -1) } {
 	    set i 0
 	    foreach tag $tn {
