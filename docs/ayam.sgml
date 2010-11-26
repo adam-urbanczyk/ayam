@@ -161,17 +161,17 @@ as well.
 <caption>Single Window GUI Mode</caption>
 </figure>
 <p>
-Until Ayam 1.14 all windows, main, toolbar, and views were always single
+Until Ayam 1.14 all windows, main, toolbox, and views were always single
 top level windows - a so called floating windows GUI mode. Since version
 1.14, a new GUI mode is available where the main window, three view
-windows and the toolbar are integrated in one top level window. This mode
+windows and the toolbox are integrated in one top level window. This mode
 is called single window GUI mode, see also the image above.
 The new single window GUI mode is enabled by default. All sub windows are
 in panes, the space occupied by a sub window may be adjusted by dragging
 the mouse at the borderlines of the panes. The number of views is not
 limited to three, albeit all extra views will become extra top level windows.
 <p>
-The next sections document the three types of windows, main, toolbar,
+The next sections document the three types of windows, main, toolbox,
 and views in detail.
 
 <sect1>Anatomy of the Main Window
@@ -499,9 +499,9 @@ displacement shader) using <tt/"Paste to selected"/ in the
 <tt>"Special/Clipboard"</tt> sub-menu.
 <p>
 Pasting a property to multiple selected objects does work too.
-This is a great way to apply e.g. a surface shader to a big number
-of material objects, without going the long way of setting a new
-shader and entering parameters for it for every object.
+This is a great way to apply e.g. a parameterised surface shader to
+a bigger number of material objects, without going the long way of
+setting a new shader and entering parameters for it for every object.
 <p>
 Since you may not want to copy and paste whole properties all the time,
 you may even mark single parameters with a double click on the
@@ -556,13 +556,13 @@ If something does not work as advertised, the console may be worth
 a look.
 <p>
 The console captures the stderr and stdout channels of the
-Tcl-interpreter Ayam is running in. You can also redirect all internal
-Tcl error messages, that would normally cause a Tcl error dialog window
-to appear, to the console using the preference setting
-<tt>"Misc/RedirectTcl"</tt>
+Tcl-interpreter Ayam is running in. It is also possible to
+redirect all internal Tcl error messages, that would normally
+cause a Tcl error dialog window to appear, to the console using
+the preference setting <tt>"Misc/RedirectTcl"</tt>
 (see section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <p>
-You can also enter commands or even complete new Tcl procedures
+One can of course also enter commands or even complete new Tcl procedures
 into the console. However, this is a feature for an advanced
 user that studied section <ref id="script" name="Scripting Interface">.
 You need to explicitly click into the console to give it the input
@@ -1153,6 +1153,7 @@ about the ayamrc file.
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Toolbox Window">). From version 1.3 on,
 Ayam remembers the state of the toolbox in the saved preferences.
+This option is not available if Ayam is in single window GUI mode.
 
 <item><tt/"Toggle TreeView"/ toggles object tree view and object listbox.
 From version 1.3 on, Ayam remembers whether the tree view or the
@@ -1205,8 +1206,8 @@ The title of the view window gives information about
 name, current type, and the currently active modelling
 action of the view.
 <p>
-Since Ayam 1.14 the current modelling action is also displayed in
-the view menu bar as an icon.
+The current modelling action, modelling mode, drawing mode and
+grid size are also displayed in the view menu bar as an icon.
 
 <sect1>The View Menu<label id="vm">
 <p>
@@ -1362,9 +1363,15 @@ changed accordingly (interpreted as if defined in the local coordinate space).
 See also section <ref id="editlocal" name="Editing in Local Space">.
 </itemize>
 
+Apart from the text based menus documented above, there are also some icon
+based menus in the view window menu bar:
+<p>
 The <tt/"Modelling mode"/ icon menu may be used to quickly change the current
 modelling mode (local, or global, see also section
-<ref id="editlocal" name="Editing in Local Space">)
+<ref id="editlocal" name="Editing in Local Space">).
+This icon, additionally, conveys whether objects or points will currently
+modified by a modelling action (for points, a red dot will be present
+in the upper right corner of the icon).
 <p>
 
 The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
@@ -1625,9 +1632,20 @@ You can open and close it using the main menu entry
 <tt>"Special/Toggle Toolbox"</tt>.
 <p>
 Note that in contrast to the keyboard shortcuts of the
-view windows the buttons in the toolbox switch to the modelling
-actions for all available views. For more information about
+view windows, the buttons in the toolbox may switch to the modelling
+actions for all open views. This is the case if Ayam is in single window
+GUI mode <em>and</em> AutoFocus is enabled or if Ayam is in multi window
+GUI mode. For more information about
 the actions see section <ref id="iac" name="Interactive Actions">.
+<p>
+When creating objects, holding down
+the <tt>"Ctrl"</tt> key while pressing the corresponding toolbox button
+will keep the objects selected.
+This is especially useful for objects that would move the currently
+selected objects to themselves as children (Level, Revolve, Skin etc.).
+<p>
+Several other tool buttons also change their behaviour with modifier
+keys, check the tooltips.
 <p>
 The toolbox window may be configured by the user using the
 hidden preference setting <tt/"toolBoxList"/ in the ayamrc file.
@@ -1644,11 +1662,11 @@ You may also resize the window to change from the vertical standard
 layout to a horizontal one, optimizing the use of precious screen
 space. After resizing, the toolbox will re-layout the buttons,
 warning you if the space is too small for all buttons to display.
-If the window is too big for the desired layout and the
-preference setting <tt>"Misc/ToolBoxShrink"</tt> is switched on, the
+If the window is too big for the desired layout and the hidden
+preference setting <tt>"ToolBoxShrink"</tt> is switched on, the
 toolbox will shrink wrap the window to match the space occupied by
 the buttons.
-Furthermore, using the preference setting <tt>"Misc/ToolBoxTrans"</tt>
+Furthermore, using the hidden preference setting <tt>"ToolBoxTrans"</tt>
 the toolbox window can be made transient.
 It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
@@ -1787,8 +1805,9 @@ See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 <item><tt/"Scripts"/ is a list of Tcl scripts that will
 be executed on startup. Since Ayam 1.16, the scripts do <em>not</em>
 have to be specified with full path and filename anymore. Furthermore,
-the plugins directories are automatically searched, and the tcl extension
-is automatically added, so that a setting of <tt/"colfocus;loadayslx"/
+the scripts and plugins directories (as specified below) are automatically
+searched, and the tcl extension is automatically added, so that a setting
+of <tt/"colfocus;loadayslx"/
 would load the colfocus script from the scripts directory and the
 ayslx shader parsing plugin from the plugins directory.
 If non absolute paths are used they are relative
@@ -1849,7 +1868,8 @@ depending on references of changed objects takes place:
 <itemize>
 <item><tt/"Never"/, for manual control of complete notification
 (manual complete notification can be carried out using the main
-menu entry <tt>"Tools/Force Notification"</tt>);
+menu entry <tt>"Tools/Force Notification"</tt>) or using the
+keyboard shortcut <tt>"F5"</tt>;
 <item><tt/"Always"/, a complete notification is done whenever the
 normal notification is carried out;
 <item><tt/"Lazy"/, the complete notification runs
@@ -1877,10 +1897,13 @@ editing has been activated (again).
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off, default), or whether there should be just one global
-mark (on).
+mark (on). Note that enabling this preference setting will not
+immediately lead to a global mark set in all windows, one rather
+needs to set a new mark that will then become global.
 
 <item><tt/"DefaultAction"/ determines the modelling action
-that should be active after a press of the <tt/&lt;Esc&gt;/ key.
+that should be active after a press of the <tt/&lt;Esc&gt;/ key
+in a view window.
 
 <item><tt/"UndoLevels"/ determines the number of modelling steps
 that should be saved in the undo buffer. Useful values range
@@ -2144,17 +2167,6 @@ related preferences:
 <item><tt/"SaveAddsMRU"/; if this is switched on, saving to a file
 will add that file to the most recently used files list in the
 main menu for quick access.
-
-<item><tt/"ToolBoxTrans"/; controls whether the toolbox window
-should be declared as a transient window of the main window.
-It will then, depending on the window manager or its configuration,
-get a different or no decoration, no icon (or no entry in the
-task bar on Windows), and will always be iconified
-when the main window gets iconified.
-
-<item><tt/"ToolBoxShrink"/; controls whether the toolbox window
-should automatically shrink-wrap around the calculated layout
-of the buttons after a resize operation.
 
 <item><tt/"RGTrans"/; controls whether the RenderUI-windows
 should be declared as a transient window of the main window.
@@ -2702,7 +2714,7 @@ draw their selectable points using small white or blue rectangular handles
 (when a modelling action is active):
 <p>
 <figure loc="ht">
-<eps file="pics/handles.ps" height="5cm">
+<eps file="pics/handles.ps" height="4cm">
 <img src="pics/handles.gif">
 <caption>Objects With Read Only And With Editable Points/Handles (right: NCircle, left: NCurve)</caption>
 </figure>
@@ -13681,6 +13693,17 @@ cleared using the main menu entry <tt>"File/New"</tt>.
 The default value is 1 - yes, load the environment file on
 <tt>"File/New"</tt>.
 
+<item><tt>"ToolBoxShrink"</tt>, controls whether the toolbox window
+should shrink wrap around its contents after a resize operation.
+This option is not used in single window GUI mode. Default is 1 - yes.
+
+<item><tt>"ToolBoxTrans"</tt>, decides if the toolbox window should
+be made transient. It will then, depending on the window manager or its
+configuration, get a different or no decoration, no icon (or no entry in the
+task bar on Windows), and will always be iconified when the main window
+gets iconified. Not used in single window GUI mode. 
+The default value is 1 - yes.
+
 <item><tt/"PaneMargins"/, is a list of currently five floating
 point values, used as a safety margin for the panes:
 console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
@@ -15103,8 +15126,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="npattr" name="NPatch attribute">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
-<item>ToolBoxShrink: <ref id="prefmisc" name="preference setting">
-<item>ToolBoxTrans: <ref id="prefmisc" name="preference setting">
+<item>ToolBoxShrink: <ref id="hidprefs" name="hidden preference setting">
+<item>ToolBoxTrans: <ref id="hidprefs" name="hidden preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
 <item>TopLevelLayers: <ref id="expdxfopt" name="DXF export option">,
