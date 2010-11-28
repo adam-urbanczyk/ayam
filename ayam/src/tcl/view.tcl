@@ -1043,9 +1043,15 @@ proc viewSetMModeIcon { w mode } {
     if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
 
 	if { $mode == 0 } {
-	    set image ay_MMGlobLoc_img
+	    set image ay_MMGlob_img
 	} else {
-	    set image ay_MMLocGlob_img
+	    if { $mode == 1 } {
+		set image ay_MMLocLev_img
+	    } else {
+		if { $mode == 2 } {
+		    set image ay_MMLocObj_img
+		}
+	    }
 	}
 
 	catch {	image create photo $vimage -w 25 -h 25 }
@@ -1153,9 +1159,9 @@ proc viewToggleDMode { w } {
 
 
 ##############################
-# viewToggleMMode:
-#  toggle modelling mode (local <> global)
-proc viewToggleMMode { w } {
+# viewCycleMMode:
+#  cycle modelling mode (> global > local(lev) > local(obj) >)
+proc viewCycleMMode { w } {
     global ay
 
     set togl $w.f3D.togl
@@ -1164,19 +1170,27 @@ proc viewToggleMMode { w } {
 	set w [winfo toplevel $togl]
     }
 
-    if { $ay(cVMMode) > 0 } {
-	$togl setconf -local 0
-	viewSetMModeIcon $w 0
-	set ay(cVMMode) 0
-    } else {
+    if { $ay(cVMMode) == 0 } {
 	$togl setconf -local 1
 	viewSetMModeIcon $w 1
 	set ay(cVMMode) 1
+    } else {
+	if { $ay(cVMMode) == 1 } {
+	    $togl setconf -local 2
+	    viewSetMModeIcon $w 2
+	    set ay(cVMMode) 2
+	} else {
+	    if { $ay(cVMMode) == 2 } {
+		$togl setconf -local 0
+		viewSetMModeIcon $w 0
+		set ay(cVMMode) 0
+	    }
+	}
     }
 
  return;
 }
-# viewToggleMMode
+# viewCycleMMode
 
 
 ##############################

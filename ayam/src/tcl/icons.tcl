@@ -626,21 +626,30 @@ DBdcEIYYZORyCYSWQLMAEWhIYcYSaRCxwCSogGgJIwRIYYAUUhQxiS6WHKLjjoIEAgA7
 image create photo ay_DMShadeDraw_img -format GIF -data $imgdata
 
 # Modelling Mode (Local/Global) Menu Icons:
-# MMLocGlob
-set imgdata {\
-R0lGODdhGQAZAIAAAOnp6b29vSwAAAAAGQAZAAACU4SPqRntD2Mz8UhJK7i6hs09mQOG0PiZWFlO
-pPK6Ytam01bLNvnmes3y/U6xC4t44wQZN6HwhMOoPqCcc8abLUaopwj7nRa/XjBUjGqiy6qt210A
-ADs=
-}
-image create photo ay_MMLocGlob_img -format GIF -data $imgdata
-
-# MMGlobLoc
+# MMGlob
 set imgdata {\
 R0lGODdhGQAZAMIAAOnp6b29vb28vLy8vLy9vAAAAAAAAAAAACwAAAAAGQAZAAADXgi63N5BDBKq
 vfiqMED+37aAZPWAHpqmYcBim4taL722WhbXsg7fvtzPNCPqgK6YjDVKGp1Cmwnp4dF6uyBs2NtG
 pV1vGGwllrOkMlSNW5eO0+ljPlK+ufb7VU7vMxIAOw==
 }
-image create photo ay_MMGlobLoc_img -format GIF -data $imgdata
+image create photo ay_MMGlob_img -format GIF -data $imgdata
+
+# MMLocLev
+set imgdata {\
+R0lGODlhGQAZAKEDAAAAAL29venp6f///ywAAAAAGQAZAAACXJSPqRntD2Mz
+8UhJq7i6hs09mQOG0PiZWFlOpPK6Ytam01bLNvnmes3y/U6xC4t44wQZN6Hw
+hMOoPqCcc8abKQAj1NPBxYpMAKhHWBabJemi9tJOTsGAenmBzxsKADs=
+}
+image create photo ay_MMLocLev_img -format GIF -data $imgdata
+
+# MMLocObj
+set imgdata {\
+R0lGODlhGQAZAKEDAAAAAL29venp6f///ywAAAAAGQAZAAACYZSPqRntD2Mz
+8UhJq7i6hs09mQOG0PiZWFlOpPK6Ytam01bLNvnmes3y/U6xC4t44wQZN6Hw
+hMOoPqCcc8abLQDcZDYEAAGoSM64MUa5hOdA2qd2tN8atpw8fXDPi77fUAAA
+Ow==
+}
+image create photo ay_MMLocObj_img -format GIF -data $imgdata
 
 # NPatch tools:
 # Gordon
