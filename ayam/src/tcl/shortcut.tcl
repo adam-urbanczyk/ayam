@@ -473,43 +473,38 @@ proc shortcut_view { w } {
 	bind $w <[repctrl $ayviewshortcuts(Shade)]> "viewToggleDMode $w;break"
     }
 
-    bind $w <[repctrl $ayviewshortcuts(DGrid)]> "$m invoke 10;break"
-    $m entryconfigure 10 -accelerator [remkpkr $ayviewshortcuts(DGrid)]
-    bind $w <[repctrl $ayviewshortcuts(UGrid)]> "$m invoke 11;break"
-    $m entryconfigure 11 -accelerator [remkpkr $ayviewshortcuts(UGrid)]
-    bind $w <[repctrl $ayviewshortcuts(SGrid)]> "$m invoke 12;break"
-    $m entryconfigure 12 -accelerator [remkpkr $ayviewshortcuts(SGrid)]
+    bind $w <[repctrl $ayviewshortcuts(DGrid)]> "$m invoke 11;break"
+    $m entryconfigure 11 -accelerator [remkpkr $ayviewshortcuts(DGrid)]
+    bind $w <[repctrl $ayviewshortcuts(UGrid)]> "$m invoke 12;break"
+    $m entryconfigure 12 -accelerator [remkpkr $ayviewshortcuts(UGrid)]
+    bind $w <[repctrl $ayviewshortcuts(SGrid)]> "$m invoke 13;break"
+    $m entryconfigure 13 -accelerator [remkpkr $ayviewshortcuts(SGrid)]
 
     if { ([winfo toplevel $w] == $w) } {
-	bind $w <[repctrl $ayviewshortcuts(Halve)]> "$m invoke 14;break"
-	$m entryconfigure 14 -accelerator [remkpkr $ayviewshortcuts(Halve)]
-	bind $w <[repctrl $ayviewshortcuts(Double)]> "$m invoke 15;break"
-	$m entryconfigure 15 -accelerator [remkpkr $ayviewshortcuts(Double)]
+	bind $w <[repctrl $ayviewshortcuts(Halve)]> "$m invoke 15;break"
+	$m entryconfigure 15 -accelerator [remkpkr $ayviewshortcuts(Halve)]
+	bind $w <[repctrl $ayviewshortcuts(Double)]> "$m invoke 16;break"
+	$m entryconfigure 16 -accelerator [remkpkr $ayviewshortcuts(Double)]
     }
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
-	$m entryconfigure 21 -accelerator [remkpkr $ayviewshortcuts(ZoomTO)]
-	bind $w <[repctrl $ayviewshortcuts(ZoomTO)]> "$m invoke 21;break"
+	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(ZoomTO)]
+	bind $w <[repctrl $ayviewshortcuts(ZoomTO)]> "$m invoke 22;break"
 
-	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(Align)]
-	bind $w <[repctrl $ayviewshortcuts(Align)]> "$m invoke 22;break"
+	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Align)]
+	bind $w <[repctrl $ayviewshortcuts(Align)]> "$m invoke 23;break"
     } else {
-	$m entryconfigure 21 -accelerator [remkpkr $ayviewshortcuts(ZoomTO2)]
-	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(Align2)]
-	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Local2)]
+	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(ZoomTO2)]
+	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Align2)]
     }
 
-    bind $w <[repctrl $ayviewshortcuts(ZoomTO2)]> "$m invoke 21;break"
-    bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 22;break"
+    bind $w <[repctrl $ayviewshortcuts(ZoomTO2)]> "$m invoke 22;break"
+    bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 23;break"
 
-    #set m $ay(mmodem)
-    #$m entryconfigure 1 -accelerator [remkpkr $ayviewshortcuts(Local)]
-    #bind $w <[repctrl $ayviewshortcuts(Local)]> "$m invoke 1;break"
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
-	bind $w <[repctrl $ayviewshortcuts(Local)]> "viewToggleMMode $w;break"
-	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Local)]
+	bind $w <[repctrl $ayviewshortcuts(Local)]> "viewCyleMMode $w;break"
     }
 
-    bind $w <[repctrl $ayviewshortcuts(Local2)]> "viewToggleMMode $w;break"
+    bind $w <[repctrl $ayviewshortcuts(Local2)]> "viewCycleMMode $w;break"
 
     bind $w <[repctrl $ayviewshortcuts(RotL)]>\
 	    "$w.f3D.togl setconf -undokb ViewRotX -drotx 5.0 -droty 0.0;break"

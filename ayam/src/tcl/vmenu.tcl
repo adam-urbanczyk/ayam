@@ -138,7 +138,9 @@ $m add check -label "Automatic Redraw" -variable ay(cVRedraw) -command "\
 	global ay;\
 	$w.f3D.togl setconf -draw \$ay(cVRedraw);\
 	\$ay(currentView) mc"
-set cm [menu $m.mmode -tearoff 0]
+
+# drawing mode sub menu
+set cm [menu $m.dmode -tearoff 0]
 $m add cascade -label "Drawing Mode" -menu $cm
 
 $cm add radio -label "Draw" -variable ay(cVDMode) -value 0 -command "\
@@ -157,6 +159,29 @@ $cm add radio -label "ShadeAndDraw" -variable ay(cVDMode) -value 2 -command "\
 	global ay;\
 	$w.f3D.togl setconf -shade \$ay(cVDMode);\
 	viewSetDModeIcon $w 2;\
+	\$ay(currentView) mc"
+
+# modelling mode sub menu
+set cm [menu $m.mmode -tearoff 0]
+$m add cascade -label "Modelling Mode" -menu $cm
+
+$cm add radio -label "Global" -variable ay(cVMMode) -value 0 -command "\
+        global ay;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        viewSetMModeIcon $w \$ay(cVMMode);\
+	\$ay(currentView) mc"
+
+$cm add radio -label "Local (Level)" -variable ay(cVMMode) -value 1 -command "\
+        global ay;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        viewSetMModeIcon $w \$ay(cVMMode);\
+	\$ay(currentView) mc"
+
+$cm add radio -label "Local (Object)" -variable ay(cVMMode) -value 2\
+    -command "\
+        global ay;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        viewSetMModeIcon $w \$ay(cVMMode);\
 	\$ay(currentView) mc"
 
 $m add check -label "Draw Selection only" -variable ay(cVDrawSel) -command "\
@@ -222,8 +247,8 @@ $m add command -label "Double Size" -command "\
     \$ay(currentView) mc"
 
 if { ([winfo toplevel $w] != $w) } {
-    $m entryconfigure 14 -state disabled
     $m entryconfigure 15 -state disabled
+    $m entryconfigure 16 -state disabled
 }
 
 $m add separator
@@ -251,11 +276,6 @@ $m add command -label "Align to Object" -command "\
 	undo save AlignToObj;\
 	$w.f3D.togl mc; $w.f3D.togl align; \$ay(currentView) mc"
 
-$m add check -label "Local" -variable ay(cVMMode) -command "\
-        global ay;\
-	$w.f3D.togl setconf -local \$ay(cVMMode);\
-        viewSetMModeIcon $w \$ay(cVMMode);\
-	\$ay(currentView) mc"
 
 # XXXX This could be just a label or a menu displaying current action
 # or even allowing to start modeling actions, but which actions, all?
@@ -274,7 +294,7 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 
 # Modelling Mode Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
-    menubutton $w.fMenu.mm -image ay_MMGlobLoc_img -menu $w.fMenu.mm.m\
+    menubutton $w.fMenu.mm -image ay_MMGlob_img -menu $w.fMenu.mm.m\
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.mm "change global/local mode"
     set m [menu $w.fMenu.mm.m -tearoff 0]
@@ -283,21 +303,28 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     $mb add cascade -label Global -menu $m
 }
 
-$m add command -image ay_MMGlobLoc_img -hidemargin 1 -command "\
+$m add command -image ay_MMGlob_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 0;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
 	viewSetMModeIcon $w 0;\
 	\$ay(currentView) mc"
 
-$m add command -image ay_MMLocGlob_img -hidemargin 1 -command "\
+$m add command -image ay_MMLocLev_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 1;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
 	viewSetMModeIcon $w 1;\
 	\$ay(currentView) mc"
 
+$m add command -image ay_MMLocObj_img -hidemargin 1 -command "\
+        global ay; set ay(cVMMode) 2;\
+	$w.f3D.togl setconf -local \$ay(cVMMode);\
+	viewSetMModeIcon $w 2;\
+	\$ay(currentView) mc"
+
 if { $AYWITHAQUA } {
-    $m entryconfigure 0 -image {} -label Global
-    $m entryconfigure 1 -image {} -label Local
+    $m entryconfigure 0 -image {} -label "Global"
+    $m entryconfigure 1 -image {} -label "Local (Level)"
+    $m entryconfigure 2 -image {} -label "Local (Object)"
 }
 
 # Drawing Mode Menu

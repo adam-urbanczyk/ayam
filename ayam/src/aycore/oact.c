@@ -103,7 +103,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  GLdouble mm[16];
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char fname[] = "move_object";
+ char fname[] = "move_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -112,10 +112,13 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   if(ay_status)
     return TCL_OK;
 
+  /* if first argument is -start ... */
   if((argc >= 4) && argv[2][0] && (argv[2][1] == 's'))
     {
+      /* if we have the restrict argument ... */
       if(argc > 5)
 	{
+	  /* get restrict axis */
 	  Tcl_GetInt(interp, argv[5], &restrict);
 	}	      
       else
@@ -342,7 +345,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "rotate_object";
+ char fname[] = "rotate_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -527,7 +530,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "rotate_object_about";
+ char fname[] = "rotateA_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -855,7 +858,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DX_object";
+ char fname[] = "scale1DX_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1025,7 +1028,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DY_object";
+ char fname[] = "scale1DY_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1192,7 +1195,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DZ_object";
+ char fname[] = "scale1DZ_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1358,7 +1361,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale2D_object";
+ char fname[] = "scale2D_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1533,7 +1536,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale3D_object";
+ char fname[] = "scale3D_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1668,7 +1671,7 @@ int
 ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "stretch2D_object";
+ char fname[] = "stretch2D_act";
  double d = 0.0;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
@@ -1724,7 +1727,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DXA_object";
+ char fname[] = "scale1DXA_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -1947,7 +1950,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DYA_object";
+ char fname[] = "scale1DYA_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -2170,7 +2173,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale1DZA_object";
+ char fname[] = "scale1DZA_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -2387,7 +2390,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale2DA_object";
+ char fname[] = "scale2DA_act";
 
   /* parse args */
   ay_status = ay_oact_parseargs(togl, argc, argv, fname,
@@ -2573,7 +2576,7 @@ int
 ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK;
- char fname[] = "stretch2DA_object";
+ char fname[] = "stretch2DA_act";
  double d = 0.0;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
@@ -2633,7 +2636,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_point *point = NULL;
- char fname[] = "scale3DA_object";
+ char fname[] = "scale3DA_act";
 
   if(!view->drawmark)
     {
@@ -2702,7 +2705,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
+      /* so that we may use continue; */
       sel = sel->next;
 
       if(o)

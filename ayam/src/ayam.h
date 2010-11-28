@@ -1147,8 +1147,8 @@ typedef struct ay_view_object_s
   int type; /**< view type (AY_VT*) (Persp., Front, Side, Top, Trim) */
   double grid; /**< gridsize, 0.0 == no grid */
 
-  int local; /**< editing takes place in local space, not world space? */
-  int aligned; /**< view is aligned to object-space of selected object? */
+  int local; /**< edit space (0 - global (world), 1 - level, 2 - object) */
+  int aligned; /**< view is currently aligned to level or object space? */
 
   int drawsel; /**< draw selected objects (and their children) only? */
   int drawlevel; /**< draw current level (and below) only? */
