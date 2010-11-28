@@ -1172,16 +1172,19 @@ proc viewCycleMMode { w } {
 
     if { $ay(cVMMode) == 0 } {
 	$togl setconf -local 1
+        $togl align
 	viewSetMModeIcon $w 1
 	set ay(cVMMode) 1
     } else {
 	if { $ay(cVMMode) == 1 } {
 	    $togl setconf -local 2
+	    $togl align
 	    viewSetMModeIcon $w 2
 	    set ay(cVMMode) 2
 	} else {
 	    if { $ay(cVMMode) == 2 } {
 		$togl setconf -local 0
+		viewSetType $w $ay(cVType) 1
 		viewSetMModeIcon $w 0
 		set ay(cVMMode) 0
 	    }

@@ -306,18 +306,21 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 $m add command -image ay_MMGlob_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 0;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
+	viewSetType $w \$ay(cVType) 1;\
 	viewSetMModeIcon $w 0;\
 	\$ay(currentView) mc"
 
 $m add command -image ay_MMLocLev_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 1;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        $w.f3D.togl align;\
 	viewSetMModeIcon $w 1;\
 	\$ay(currentView) mc"
 
 $m add command -image ay_MMLocObj_img -hidemargin 1 -command "\
         global ay; set ay(cVMMode) 2;\
 	$w.f3D.togl setconf -local \$ay(cVMMode);\
+        $w.f3D.togl align;\
 	viewSetMModeIcon $w 2;\
 	\$ay(currentView) mc"
 
