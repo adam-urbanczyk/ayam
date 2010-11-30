@@ -61,6 +61,14 @@ proc viewSetType { w type {redraw 1} } {
     update
     # actionClear $w
 
+    set ay(cVType) $type
+
+    if { [info exists ay(cVMMode)] } {
+	viewSetMModeIcon $w $ay(cVMMode)
+    } else {
+	viewSetMModeIcon $w 0
+    }
+
  return;
 }
 # viewSetType
@@ -337,12 +345,13 @@ proc viewTitle { w type action } {
 	    set confm $w.menubar.mconf
 	}
 
+	# manage resize entries
 	if { $type == "Persp" } {
-	    $confm entryconfigure 17 -state normal
-	    $confm entryconfigure 18 -state normal
+	    $confm entryconfigure 15 -state normal
+	    $confm entryconfigure 16 -state normal
 	} else {
-	    $confm entryconfigure 17 -state disabled
-	    $confm entryconfigure 18 -state disabled
+	    $confm entryconfigure 15 -state disabled
+	    $confm entryconfigure 16 -state disabled
 	}
     }
     # if
@@ -1063,6 +1072,41 @@ proc viewSetMModeIcon { w mode } {
 	    $vimage put $col -to 20 1 24 5
 	}
 
+	# add view type as letter (FSTP) in the upper left corner
+	if { [info exists ay(cVType)] } {
+	    set type $ay(cVType)
+	} else {
+	    set type 0
+	}
+	set col \#000000
+	if { $type == 0 } {
+	    # F
+	    $vimage put $col -to 2 1 8 3
+	    $vimage put $col -to 2 1 4 11
+	    $vimage put $col -to 2 5 6 7
+	}
+	if { $type == 1 } {
+	    # S
+	    $vimage put $col -to 3 1 7 3
+	    $vimage put $col -to 3 5 7 7
+	    $vimage put $col -to 3 9 7 11
+	    $vimage put $col -to 2 2 4 6
+	    $vimage put $col -to 6 6 8 10
+	    $vimage put $col -to 7 2 8 4
+	    $vimage put $col -to 2 8 3 10 
+	}
+	if { $type == 2 } {
+	    # T
+	    $vimage put $col -to 1 1 9 3
+	    $vimage put $col -to 4 3 6 11
+	}
+	if { $type == 3 } {
+	    # P
+	    $vimage put $col -to 2 1 7 3
+	    $vimage put $col -to 2 5 7 7
+	    $vimage put $col -to 6 2 8 6
+	    $vimage put $col -to 2 1 4 11
+	}
 	set m fMenu.mm
 	set conf "$w.$m configure"
 
@@ -1070,11 +1114,35 @@ proc viewSetMModeIcon { w mode } {
     } else {
 	set conf "$w.menubar entryconfigure 4"
 
-	if { $mode == 0 } {
-	    eval "$conf -label Global"
+	if { [info exists ay(cVType)] } {
+	    set type $ay(cVType)
 	} else {
-	    eval "$conf -label Local"
+	    set type 0
 	}
+	set lab ""
+	if { $type == 0 } {
+	    set lab "F"
+	}
+	if { $type == 1 } {
+	    set lab "S"
+	}
+	if { $type == 2 } {
+	    set lab "T"
+	}
+	if { $type == 3 } {
+	    set lab "P"
+	}
+	if { $mode == 0 } {
+	    append lab "-Glob"
+	}
+	if { $mode == 0 } {
+	    append lab "-LocLev"
+	}
+	if { $mode == 0 } {
+	    append lab "-LocObj"
+	}
+
+	eval "$conf -label $lab"
     }
 
  return;

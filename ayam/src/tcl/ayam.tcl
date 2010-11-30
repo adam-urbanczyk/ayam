@@ -1629,6 +1629,9 @@ if { $ayprefs(SingleWindow) } {
 	.fv.fViews.fview1.f3D.togl configure -cursor {};
     }
 
+    # make view1 a front view
+    viewSetType .fv.fViews.fview1 0
+
     # make view2 a top view
     viewSetType .fv.fViews.fview2 2
 
