@@ -958,6 +958,7 @@ proc viewSetGridIcon { w gridsize } {
 	set m fMenu.g
 	set conf "$w.$m configure"
     } else {
+	# external views on Aqua
 	set menubar 1
 	set m menubar.mgrid
 	set conf "$w.menubar entryconfigure 6"
@@ -1012,24 +1013,26 @@ proc viewSetDModeIcon { w mode } {
 	set m fMenu.dm
 	set conf "$w.$m configure"
     } else {
+	# external views on Aqua
 	set menubar 1
 	set m menubar.dm
 	set conf "$w.menubar entryconfigure 5"
     }
-
-    if { $mode == 0 } {
-	eval "$conf -image ay_DMDraw_img"
-	if {$menubar} { eval "$conf -image {} -label \"Draw\"" }
-    } else {
-	if { $mode == 1 } {
+    switch $mode {
+	0 {
+	    eval "$conf -image ay_DMDraw_img"
+	    if {$menubar} { eval "$conf -image {} -label \"Draw\"" }
+	}
+	1 {
 	    eval "$conf -image ay_DMShade_img"
 	    if {$menubar} { eval "$conf -image {} -label \"Shade\"" }
-	} else {
+	}
+	2 {
 	    eval "$conf -image ay_DMShadeDraw_img"
 	    if {$menubar} { eval "$conf -image {} -label \"Shade&Draw\"" }
 	}
     }
-
+    # switch
  return;
 }
 # viewSetDModeIcon
@@ -1079,39 +1082,43 @@ proc viewSetMModeIcon { w mode } {
 	    set type 0
 	}
 	set col \#000000
-	if { $type == 0 } {
-	    # F
-	    $vimage put $col -to 2 1 8 3
-	    $vimage put $col -to 2 1 4 11
-	    $vimage put $col -to 2 5 6 7
+	switch $type {
+	    0 {
+		# F
+		$vimage put $col -to 2 1 8 3
+		$vimage put $col -to 2 1 4 11
+		$vimage put $col -to 2 5 6 7
+	    }
+	    1 {
+		# S
+		$vimage put $col -to 3 1 7 3
+		$vimage put $col -to 3 5 7 7
+		$vimage put $col -to 3 9 7 11
+		$vimage put $col -to 2 2 4 6
+		$vimage put $col -to 6 6 8 10
+		$vimage put $col -to 7 2 8 4
+		$vimage put $col -to 2 8 3 10 
+	    }
+	    2 {
+		# T
+		$vimage put $col -to 1 1 9 3
+		$vimage put $col -to 4 3 6 11
+	    }
+	    3 {
+		# P
+		$vimage put $col -to 2 1 7 3
+		$vimage put $col -to 2 5 7 7
+		$vimage put $col -to 6 2 8 6
+		$vimage put $col -to 2 1 4 11
+	    }
 	}
-	if { $type == 1 } {
-	    # S
-	    $vimage put $col -to 3 1 7 3
-	    $vimage put $col -to 3 5 7 7
-	    $vimage put $col -to 3 9 7 11
-	    $vimage put $col -to 2 2 4 6
-	    $vimage put $col -to 6 6 8 10
-	    $vimage put $col -to 7 2 8 4
-	    $vimage put $col -to 2 8 3 10 
-	}
-	if { $type == 2 } {
-	    # T
-	    $vimage put $col -to 1 1 9 3
-	    $vimage put $col -to 4 3 6 11
-	}
-	if { $type == 3 } {
-	    # P
-	    $vimage put $col -to 2 1 7 3
-	    $vimage put $col -to 2 5 7 7
-	    $vimage put $col -to 6 2 8 6
-	    $vimage put $col -to 2 1 4 11
-	}
+	# switch
 	set m fMenu.mm
 	set conf "$w.$m configure"
 
 	eval "$conf -image $vimage"
     } else {
+	# external views on Aqua
 	set conf "$w.menubar entryconfigure 4"
 
 	if { [info exists ay(cVType)] } {
@@ -1120,31 +1127,36 @@ proc viewSetMModeIcon { w mode } {
 	    set type 0
 	}
 	set lab ""
-	if { $type == 0 } {
-	    set lab "F"
+	switch $type {
+	    0 {
+		set lab "F"
+	    }
+	    1 {
+		set lab "S"
+	    }
+	    2 {
+		set lab "T"
+	    }
+	    3 {
+		set lab "P"
+	    }
 	}
-	if { $type == 1 } {
-	    set lab "S"
+	# switch
+	switch $mode {
+	    0 {
+		append lab "-Glob"
+	    }
+	    1 {
+		append lab "-LocLev"
+	    }
+	    2 {
+		append lab "-LocObj"
+	    }
 	}
-	if { $type == 2 } {
-	    set lab "T"
-	}
-	if { $type == 3 } {
-	    set lab "P"
-	}
-	if { $mode == 0 } {
-	    append lab "-Glob"
-	}
-	if { $mode == 0 } {
-	    append lab "-LocLev"
-	}
-	if { $mode == 0 } {
-	    append lab "-LocObj"
-	}
-
+	# switch
 	eval "$conf -label $lab"
     }
-
+    # if
  return;
 }
 # viewSetMModeIcon
@@ -1156,6 +1168,7 @@ proc viewSetMModeIcon { w mode } {
 proc viewSetMAIcon { w image balloon } {
     global ay tcl_platform AYWITHAQUA
 
+    # external views on Aqua do not display any such icon
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
 
 	set m fMenu.a
