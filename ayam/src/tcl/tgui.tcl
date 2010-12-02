@@ -640,20 +640,7 @@ proc tgui_open { } {
     }
 
     # establish "Help"-binding
-    global aymainshortcuts
-    bind $w <[repctrl $aymainshortcuts(Help)]> {
-	global ay ayprefs
-	set tag tesst
-	if { [string first "file://" $ayprefs(Docs)] != -1 } {
-	    set lslash [string last "/" $ayprefs(Docs)]
-	    set url [string range\
-			 $ayprefs(Docs) 0 $lslash]/ayam-5.html\#$tag
-	    browser_urlOpen $url
-	} else {
-	    browser_urlOpen $ayprefs(Docs)ayam-5.html\#$tag
-	}
-    }
-    # bind
+    shortcut_addcshelp $w ayam-5.html tesst
 
     wm deiconify $w
 

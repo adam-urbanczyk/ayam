@@ -1155,3 +1155,31 @@ proc shortcut_addescescbinding { w } {
  return;
 }
 # shortcut_addescescbinding
+
+# shortcut_callcshelp:
+# 
+proc shortcut_callcshelp { base tag } {
+    global ayprefs
+    if { [string first "file://" $ayprefs(Docs)] != -1 } {
+	set lslash [string last "/" $ayprefs(Docs)]
+	set url [string range\
+		     $ayprefs(Docs) 0 $lslash]/${base}\#$tag
+	browser_urlOpen $url
+    } else {
+	browser_urlOpen $ayprefs(Docs)${base}\#$tag
+    }
+ return;
+}
+# shortcut_callcshelp
+
+
+# shortcut_addcshelp:
+#  add context sensitive help binding to window <w>
+#  base: html file, e.g. ayam-5.html, tag: html tag, e.g. tesst
+#  => http://www.ayam3d.org/docs/ayam-5.html#tesst
+proc shortcut_addcshelp { w base tag } {
+    global aymainshortcuts
+    bind $w <[repctrl $aymainshortcuts(Help)]> "shortcut_callcshelp $base $tag"
+ return;
+}
+# shortcut_addcshelp
