@@ -914,7 +914,7 @@ proc setViewAttr { } {
     viewSetGridIcon [winfo parent [winfo parent $togl]]\
 	$ViewAttribData(GridSize)
     viewSetDModeIcon [winfo parent [winfo parent $togl]]\
-	$ViewAttribData(Mode)
+	$ViewAttribData(DrawingMode)
     viewSetMModeIcon [winfo parent [winfo parent $togl]]\
 	$ViewAttribData(Local)
 
@@ -1471,7 +1471,8 @@ w     fViewAttr
 
 array set ViewAttribData {
  Type 0
- Mode 0
+ DrawingMode 0
+ ModellingMode 0
 }
 
 set w [frame $ay(pca).$ViewAttrib(w)]
@@ -1484,7 +1485,7 @@ addParam $w ViewAttribData Height
 
 addText $w e2 "Drawing:"
 addCheck $w ViewAttribData Redraw
-addMenu $w ViewAttribData Mode [list Draw Shade ShadeAndDraw]
+addMenu $w ViewAttribData DrawingMode [list Draw Shade ShadeAndDraw]
 addCheck $w ViewAttribData DrawSel
 addCheck $w ViewAttribData DrawLevel
 addCheck $w ViewAttribData DrawObjectCS
@@ -1496,7 +1497,9 @@ addCheck $w ViewAttribData DrawGrid
 addCheck $w ViewAttribData UseGrid
 
 addText $w e4 "Space:"
-addCheck $w ViewAttribData Local
+addMenu $w ViewAttribData ModellingMode\
+    [list "Global" "Local (Level)" "Local (Object)" ]
+
 
 addText $w e5 "Background:"
 addCheck $w ViewAttribData DrawBG
