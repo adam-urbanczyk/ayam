@@ -916,7 +916,7 @@ proc setViewAttr { } {
     viewSetDModeIcon [winfo parent [winfo parent $togl]]\
 	$ViewAttribData(DrawingMode)
     viewSetMModeIcon [winfo parent [winfo parent $togl]]\
-	$ViewAttribData(Local)
+	$ViewAttribData(ModellingMode)
 
     setProp
 
