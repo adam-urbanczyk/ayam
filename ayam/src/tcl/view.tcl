@@ -571,6 +571,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     # add to list of views
     lappend ay(views) $w
 
+    $w.f3D.togl mc
     $w.f3D.togl setconf -name $name
 
     set ay(currentView) $w.f3D.togl
