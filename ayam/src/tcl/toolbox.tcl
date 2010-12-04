@@ -175,6 +175,7 @@ proc toolbox_open { {w .tbw} } {
 	    ######
 	    button $f.bv -image ay_View_img -padx 0 -pady 0 -command {
 		viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;
+		after idle viewMouseToCurrent
 	    }
 	    balloon_set $f.bv "new view"
 

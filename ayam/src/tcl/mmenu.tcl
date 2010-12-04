@@ -285,7 +285,8 @@ menu $m.cus -tearoff 0
 
 $m add separator
 $m add command -label "View" \
-    -command "viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;" \
+    -command "viewOpen 400 300; global ay; set ay(ul) root:0; uS 0 1; rV;\
+		after idle viewMouseToCurrent" \
     -underline 0
 $m add separator
 $m add command -label "Instance" \
