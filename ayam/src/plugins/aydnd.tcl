@@ -7,13 +7,13 @@
 #
 # See the file License for details.
 
-# aydnd.tcl - ayam dnd support plugin
+# aydnd.tcl - Ayam dnd support plugin based on tkdnd by Georgios Petasis
 
 # Usage:
 # o place tkdnd.dll/tkdnd.so, pkgIndex.tcl, and tkDND_Utils.tcl
 #   into the directory "ayam/bin/plugins/tkdnd"
 # o source ayam/bin/plugins/aydnd.tcl manually via the console or
-#   as startup script (preferences "Main/Scripts")
+#   as startup script (add "aydnd" to preferences "Main/Scripts")
 # o drag and drop Ayam scene files to the Ayam main window
 
 # aydnd_handlefiledrop:
@@ -22,14 +22,12 @@
 proc aydnd_handlefiledrop { data type } {
     global ay ayprefs ay_error
 
-    puts $data
-
-    set newfilename $data
+    set insert 0
+    foreach newfilename $data {
 
     if { $newfilename != "" } {
 	viewCloseAll
 	cS; plb_update
-	#    .fu.fMain.fHier.fsel.bnon invoke
 	set ay(askedscriptdisable) 0
 	update
 	set filename $newfilename
@@ -52,26 +50,37 @@ proc aydnd_handlefiledrop { data type } {
 	    } ]
 	}
 
-	replaceScene $filename
+	# change working directory
+	if { [file exists $filename] } {
+	    set dirname [file dirname $filename]
+	    cd $dirname
+	    set .fl.con(-prompt) {[file tail [pwd]]>}
+	    .fl.con delete end-1lines end
+	    Console:prompt .fl.con "\n"
+	}
 
+	# read the file
+	if { $insert } {
+	    set fname "insertScene"
+	    insertScene $filename
+
+	} else {
+	    set fname "replaceScene"
+	    replaceScene $filename
+	}
 	if { $ay_error < 2 } {
 	    set windowfilename [file tail [file rootname $filename]]
 	    wm title . "Ayam - Main - $windowfilename : --"
 	    set ay(filename) $filename
-	    ayError 4 "replaceScene" "Done reading scene from:"
-	    ayError 4 "replaceScene" "$filename"
+	    ayError 4 $fname "Done reading scene from:"
+	    ayError 4 $fname "$filename"
 
-	    if { [file exists $filename] } {
-		set dirname [file dirname $filename]
-		cd $dirname
-		set .fl.con(-prompt) {[file tail [pwd]]>}
-		.fl.con delete end-1lines end
-		Console:prompt .fl.con "\n"
-	    }
-
+	    # restore main window geometry from tag
 	    io_readMainGeom
 
 	} else {
+	    wm title . "Ayam - Main - : --"
+	    set ay(filename) ""
 	    ayError 2 "Ayam" "There were errors while loading:"
 	    ayError 2 "Ayam" "$filename"
 	}
@@ -83,7 +92,9 @@ proc aydnd_handlefiledrop { data type } {
 	update
 	uS
 	rV
+	# add scene file to most recently used list
 	io_mruAdd $filename
+	# reset scene change indicator
 	set ay(sc) 0
 	update
 	foreach view $ay(views) { viewBind $view }
@@ -92,7 +103,9 @@ proc aydnd_handlefiledrop { data type } {
 	after idle viewMouseToCurrent
     }
     # if
-
+    set insert 1
+    }
+    # foreach
  return;
 }
 # aydnd_handlefiledrop
@@ -108,7 +121,8 @@ package require tkdnd
 
 cd $origwd
 
-dnd bindtarget . Files <Drop> {aydnd_handlefiledrop  %D %T}
+tkdnd::drop_target register . DND_Files
+bind . <<Drop>> {aydnd_handlefiledrop  %D %T}
 
 # bind views to image files (load as bgimage)
 # bind views to images (load as bgimage)
