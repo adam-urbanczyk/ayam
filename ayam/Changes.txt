@@ -1,4 +1,4 @@
-[30. Nov 2010] CVS-Head:
+[6. Dec 2010] CVS-Head:
 ========================
 Bug Fixes:
 o fixed STESS drawing of certain trimmed NURBS (SF 3119442)
