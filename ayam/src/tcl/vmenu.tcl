@@ -10,7 +10,7 @@
 # vmenu.tcl - the view menu
 
 proc vmenu_open { w } {
-global ay AYWITHAQUA
+global ay ayprefs AYWITHAQUA
 
 if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
     set menubar 0
@@ -330,6 +330,10 @@ if { $AYWITHAQUA } {
     $m entryconfigure 2 -image {} -label "Local (Object)"
 }
 
+if { $ayprefs(FixIconMenus) } {
+    vmenu_fixiconmenu $m 3
+}
+
 # Drawing Mode Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.dm -image ay_DMDraw_img -menu $w.fMenu.dm.m\
@@ -367,6 +371,10 @@ if { $AYWITHAQUA } {
     $m entryconfigure 2 -image {} -label "Shade&Draw"
 }
 
+if { $ayprefs(FixIconMenus) } {
+    vmenu_fixiconmenu $m 3
+}
+
 # Grid Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
     menubutton $w.fMenu.g -image ay_Grid_img -menu $w.fMenu.g.m\
@@ -395,8 +403,8 @@ $m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
     $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
-$m add command -image ay_GridX_img -hidemargin 1 -command "
-    after idle \{$confm invoke 12\}"
+$m add command -image ay_GridX_img -hidemargin 1 -command "\
+    after idle \{$confm invoke 13\}"
 
 $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
@@ -412,6 +420,10 @@ if { $AYWITHAQUA } {
     $m entryconfigure 5 -image {} -label "No Grid"
 }
 
+if { $ayprefs(FixIconMenus) } {
+    vmenu_fixiconmenu $m 6
+}
+
 # Help menu (just for MacOSX/Aqua!)
 if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
     set m [menu $mb.help -tearoff 0]
@@ -422,7 +434,7 @@ if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
 	    browser_urlOpen $ayprefs(Docs)
 	}
     }
-    
+
     $m add command -label "Help on object" -command {
 	after idle { catch {
 	    global ayprefs
@@ -513,3 +525,20 @@ global AYWITHAQUA
 return $mb;
 }
 # vmenu_addbutton
+
+# vmenu_fixiconmenu
+#  fix redraw problems for icon based menus (on Win32)
+#
+proc vmenu_fixiconmenu { m n } {
+    set pre "catch {tkwait window $m};"
+    set i 0;
+    while {$i < $n} {
+	set cmd $pre
+	append cmd [$m entrycget $i -command]
+	$m entryconfigure $i -command $cmd
+	incr i;
+    }
+
+ return;
+}
+# vmenu_fixiconmenu
