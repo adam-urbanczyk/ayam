@@ -3080,7 +3080,7 @@ the view using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
 views). Since Ayam 1.18, the view is automatically aligned to the
 selected object or current level when cycling through the global/local
 modes. Manually aligning a view may still be necessary, if the camera
-of the view is e.g. changed by a view action (however, re-aligning is also
+of the view is e.g. changed by a view action (however, realigning is also
 always possible by cycling the modelling mode three times).
 But let us get back to our local view.
 <p>
@@ -3131,6 +3131,20 @@ cross section curve was rotated by 90 degrees around the y axis, the
 front view now again displays a circle. Note again the orientation
 of the Root object coordinate system. One can safely edit the cross
 section curve, it will stay planar.
+
+Note, that object local aligned views only align to the first of multiple
+selected objects; if all selected objects have the same transformation
+attributes, everything is fine, but if not, some objects will be misaligned.
+
+Also remember: when a view is level local, changing the current level
+does not automatically realign the view. If the view is object local,
+changing the object selection will also possibly lead to a misaligned
+view. To realign the view after changing the current level or object
+selection simply press <tt/&lt;L&gt;/. Note that aligning the view changes
+the aim point of the view camera to the origin of the respective local
+coordinate system which might not be appropriate for modelling purposes;
+so, after a selection change, one may want to also zoom the view to the
+newly selected object: <tt/&lt;LO&gt;/.
 
 <sect>Objects, Properties, and Tags<label id="obandprp">
 <p>
@@ -13684,6 +13698,10 @@ On all other systems this option is disabled by default.
 in the toolbox) that stay depressed when used. This option is disabled
 by default on all platforms.
 
+<item><tt/"FixIconMenus"/, enables a workaround for the view icon menus
+that sometimes destroy the drawing when closing.
+This option is enabled by default on Win32.
+
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
 when certain dialog windows are open, so that they do not get
@@ -14643,6 +14661,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FindU: <ref id="finduac" name="modelling action">
 <item>FindUV: <ref id="finduvac" name="modelling action">
 <item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
+<item>FixIconMenus: <ref id="hidprefs" name="hidden preference setting">
 <item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
@@ -14666,6 +14685,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
 <item>getType: <ref id="scgettype" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding gimbal locks">
+<item>Global: <ref id="editlocal" name="Editing in Local Spaces">
 <item>GlobalMark: <ref id="prefmodel" name="preference setting">
 <item>goDown: <ref id="scgodown" name="scripting interface command">
 <item>goTop: <ref id="scgotop" name="scripting interface command">
@@ -14782,7 +14802,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
 <item>Local: <ref id="vat" name="View attribute">,
-<ref id="editlocal" name="Editing in Local Space">
+<ref id="editlocal" name="Editing in Local Spaces">
 <item>Locale: <ref id="prefgui" name="preference setting">
 <item>Loft: <ref id="skinobj" name="Skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
