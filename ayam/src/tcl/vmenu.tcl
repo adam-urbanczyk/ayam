@@ -331,6 +331,8 @@ if { $AYWITHAQUA } {
 }
 
 if { $ayprefs(FixIconMenus) } {
+    bind $m <Map> {set ::ay(imm) 1}
+    bind $m <Unmap> {set ::ay(imm) 0}
     vmenu_fixiconmenu $m 3
 }
 
@@ -372,6 +374,8 @@ if { $AYWITHAQUA } {
 }
 
 if { $ayprefs(FixIconMenus) } {
+    bind $m <Map> {set ::ay(imm) 1}
+    bind $m <Unmap> {set ::ay(imm) 0}
     vmenu_fixiconmenu $m 3
 }
 
@@ -421,6 +425,8 @@ if { $AYWITHAQUA } {
 }
 
 if { $ayprefs(FixIconMenus) } {
+    bind $m <Map> {set ::ay(imm) 1}
+    bind $m <Unmap> {set ::ay(imm) 0}
     vmenu_fixiconmenu $m 6
 }
 
@@ -526,11 +532,15 @@ return $mb;
 }
 # vmenu_addbutton
 
+
 # vmenu_fixiconmenu
 #  fix redraw problems for icon based menus (on Win32)
 #
 proc vmenu_fixiconmenu { m n } {
-    set pre "catch {tkwait window $m};"
+    # as we can not tkwait on a menu (they are never destroyed, just
+    # unmapped) we emulate the tkwait with a vwait and some
+    # bindings to <Map>/<Unmap> (above)
+    set pre "if $::ay(imm) { vwait ::ay(imm) } ; "
     set i 0;
     while {$i < $n} {
 	set cmd $pre
