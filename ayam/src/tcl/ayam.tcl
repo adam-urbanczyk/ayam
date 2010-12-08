@@ -666,6 +666,7 @@ array set ay {
  draw_nurbs 1
  cVPnts 0
  cVDrawMark 0
+ imm 0
 }
 # array ay
 
