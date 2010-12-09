@@ -401,7 +401,7 @@ ay_draw_grid(struct Togl *togl)
 	 {
 	   ay_trafo_getall(ay_currentlevel->next);
 	 }
-       if(view->aligned && ay_selection)
+       if((view->local == 2) && view->aligned && ay_selection)
 	 {
 	   o = ay_selection->object;
 	   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
@@ -435,12 +435,10 @@ ay_draw_grid(struct Togl *togl)
 	}
 
       dx = fabs(gwinx-owinx);
-      if(dx < 1.0)
-	dx = 1.0;
-
       dy = fabs(gwiny-owiny);
-      if(dy < 1.0)
-	dy = 1.0;
+
+      if((dx < 3.0) || (dy < 3.0))
+	return;
 
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
@@ -482,7 +480,7 @@ ay_draw_grid(struct Togl *togl)
   else
     {
 
-      if(grid < 1E-6)
+      if((grid/view->conv_x < 3.0) || (grid/view->conv_y < 3.0))
 	return;
 
       switch(view->type)
