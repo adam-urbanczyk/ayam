@@ -1809,11 +1809,12 @@ the scene using <tt>"File/New"</tt> (if the hidden preference option
 <tt/"NewLoadsEnv"/ is switched on).
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
-<item><tt/"Scripts"/ is a list of Tcl scripts that will
+<item><tt/"Scripts"/ is a list of Tcl script files that will
 be executed on startup. Since Ayam 1.16, the scripts do <em>not</em>
 have to be specified with full path and filename anymore. Furthermore,
-the scripts and plugins directories (as specified below) are automatically
-searched, and the tcl extension is automatically added, so that a setting
+the scripts and plugins directories (as specified using the
+<tt/"Plugins"/ option below) are automatically searched, and the tcl
+extension is automatically added, so that a setting
 of <tt/"colfocus;loadayslx"/
 would load the colfocus script from the scripts directory and the
 ayslx shader parsing plugin from the plugins directory.
@@ -1822,6 +1823,8 @@ to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
 a semicolon (<tt/";"/) on Win32.
+
+
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
@@ -11743,6 +11746,39 @@ After running the script, the console will always resize to exactly
 two lines of text. Different values may be chosen easily by adapting the
 script.
 
+<sect2>Color the Focus Ring<label id="colfocustcl">
+<p>
+The script <tt>"colfocus.tcl"</tt> (for colored focus), may be
+used to paint the focus ring in a more visible color.
+<p>
+After running the script, the focus ring will be painted in blue
+(instead of black): focussed sub-windows (views, console, object
+tree) will be more easily recognizable.
+
+<sect2>Automatic About Center Actions<label id="aactcl">
+<p>
+The script <tt>"aac.tcl"</tt> (for automatic about center), may be
+used to switch all modelling actions to their about variants with
+the mark set to the center of the current selection automatically.
+<p>
+After running the script, invoking e.g. the scale 2D action using
+the shortcut <tt/&lt;s&gt;/ will:
+<enum>
+<item>if the modelling mode is object,
+<enum>
+<item>set the mark to center of all selected objects
+<item>invoke the about variant of scale 2D
+</enum>
+(this is the equivalent of <tt/&lt;sac&gt;/)
+<item>if the modelling mode is point,
+<enum>
+<item>set the mark to center of all selected points
+<item>invoke the about variant of scale 2D
+</enum>
+(this is the equivalent of <tt/&lt;saC&gt;/)
+</enum>
+
+
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
 Since Ayam 1.15 there is an external Tcl script named <tt>"bgconvert.tcl"</tt>
@@ -11820,6 +11856,7 @@ be set up properly.
 Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
+
 
 <#if out=latex><x/newpage/</#if>
 
@@ -13595,10 +13632,10 @@ preference settings:
 <itemize>
 
 <item><tt/"Balloon"/: time in ms until the tooltip window appears
-(default: 1500ms - 1.5s)
+(default: 1500 - 1.5s)
 
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
-buffer (default: 2000ms - 2s)
+buffer (default: 2000 - 2s)
 
 <item><tt/"toolBoxList"/: a list of sections or groups of buttons
 describing the appearance of the toolbox window (default, using all
@@ -13673,11 +13710,11 @@ are 255 for the red, 128 for the green, and 0 for the blue component.
 <item><tt/"IconGamma"/: this setting may be used to adapt the contrast
 of all icons (in view menu and the toolbox) to your display gamma. If you
 are on a SGI it is recommended to set this to about "0.7". The default
-value <tt>""</tt> leads to no changes of any icon images.
+value <tt>""</tt> (empty string) leads to no changes of any icon images.
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
 view OpenGL widget creation, like e.g. <tt/"-stereo true"/. The default
-value is <tt>""</tt>.
+value is <tt>""</tt> (empty string).
 
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
 appears if scenes with script objects or tags are loaded. The default
@@ -13697,10 +13734,6 @@ On all other systems this option is disabled by default.
 <item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
 in the toolbox) that stay depressed when used. This option is disabled
 by default on all platforms.
-
-<item><tt/"FixIconMenus"/, enables a workaround for the view icon menus
-that sometimes destroy the drawing when closing.
-This option is enabled by default on Win32.
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
@@ -13725,10 +13758,10 @@ the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
 
-<item><tt/"CursorEnd"/, this option is enabled by default. If switched
+<item><tt/"CursorEnd"/, if switched
 on, the first click into the console will move the cursor to the input
 prompt, ready for command input, instead of moving the cursor to the
-point of the click.
+point of the click. This option is enabled by default.
 
 <item><tt/"LineWidth"/, line width used for drawing the lines of
 unselected objects (blue lines in standard color configuration).
@@ -14661,7 +14694,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FindU: <ref id="finduac" name="modelling action">
 <item>FindUV: <ref id="finduvac" name="modelling action">
 <item>FixDialogTitles: <ref id="hidprefs" name="hidden preference setting">
-<item>FixIconMenus: <ref id="hidprefs" name="hidden preference setting">
 <item>FixImageButtons: <ref id="hidprefs" name="hidden preference setting">
 <item>FixX11Menu: <ref id="hidprefs" name="hidden preference setting">
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
