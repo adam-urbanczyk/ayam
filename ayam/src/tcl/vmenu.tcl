@@ -330,11 +330,6 @@ if { $AYWITHAQUA } {
     $m entryconfigure 2 -image {} -label "Local (Object)"
 }
 
-if { $ayprefs(FixIconMenus) } {
-    bind $m <Map> {set ::ay(imm) 1}
-    bind $m <Unmap> {set ::ay(imm) 0}
-    vmenu_fixiconmenu $m 3
-}
 
 # Drawing Mode Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
@@ -373,11 +368,6 @@ if { $AYWITHAQUA } {
     $m entryconfigure 2 -image {} -label "Shade&Draw"
 }
 
-if { $ayprefs(FixIconMenus) } {
-    bind $m <Map> {set ::ay(imm) 1}
-    bind $m <Unmap> {set ::ay(imm) 0}
-    vmenu_fixiconmenu $m 3
-}
 
 # Grid Menu
 if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
@@ -424,11 +414,6 @@ if { $AYWITHAQUA } {
     $m entryconfigure 5 -image {} -label "No Grid"
 }
 
-if { $ayprefs(FixIconMenus) } {
-    bind $m <Map> {set ::ay(imm) 1}
-    bind $m <Unmap> {set ::ay(imm) 0}
-    vmenu_fixiconmenu $m 6
-}
 
 # Help menu (just for MacOSX/Aqua!)
 if { $AYWITHAQUA && (! ([winfo toplevel $w] != $w)) } {
@@ -531,24 +516,3 @@ global AYWITHAQUA
 return $mb;
 }
 # vmenu_addbutton
-
-
-# vmenu_fixiconmenu
-#  fix redraw problems for icon based menus (on Win32)
-#
-proc vmenu_fixiconmenu { m n } {
-    # as we can not tkwait on a menu (they are never destroyed, just
-    # unmapped) we emulate the tkwait with a vwait and some
-    # bindings to <Map>/<Unmap> (above)
-    set pre "if $::ay(imm) { vwait ::ay(imm) } ; "
-    set i 0;
-    while {$i < $n} {
-	set cmd $pre
-	append cmd [$m entrycget $i -command]
-	$m entryconfigure $i -command $cmd
-	incr i;
-    }
-
- return;
-}
-# vmenu_fixiconmenu

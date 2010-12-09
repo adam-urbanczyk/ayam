@@ -165,7 +165,6 @@ array set ayprefs {
  FixX11Menu 1
  FixImageButtons 0
  FixFlashPoints 0
- FixIconMenus 0
 
  SafeAutoFocus 1
 
@@ -666,7 +665,6 @@ array set ay {
  draw_nurbs 1
  cVPnts 0
  cVDrawMark 0
- imm 0
 }
 # array ay
 
@@ -694,8 +692,6 @@ if { $tcl_platform(platform) == "windows" } {
 
     # Windows users surely expect this
     set ayprefs(AddExtensions) 1
-
-    set ayprefs(FixIconMenus) 1
 
     set sc ""
     set scdir ""
