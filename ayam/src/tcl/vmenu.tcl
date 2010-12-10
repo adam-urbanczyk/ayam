@@ -383,26 +383,21 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 
 $m add command -image ay_Grid01_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.1 -drawg 1 -ugrid 1;\
-    $w.f3D.togl render;\
     viewSetGridIcon $w 0.1"
 $m add command -image ay_Grid025_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.25 -drawg 1 -ugrid 1;\
-    $w.f3D.togl render;\
     viewSetGridIcon $w 0.25"
 $m add command -image ay_Grid05_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.5 -drawg 1 -ugrid 1;\
-    $w.f3D.togl render;\
     viewSetGridIcon $w 0.5"
 $m add command -image ay_Grid10_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 1.0 -drawg 1 -ugrid 1;\
-    $w.f3D.togl render;\
     viewSetGridIcon $w 1.0"
 $m add command -image ay_GridX_img -hidemargin 1 -command "\
     after idle \{$confm invoke 13\}"
 
 $m add command -image ay_Grid_img -hidemargin 1 -command "\
     $w.f3D.togl setconf -grid 0.0 -drawg 0 -ugrid 0;\
-    $w.f3D.togl render;\
     viewSetGridIcon $w 0.0"
 
 if { $AYWITHAQUA } {
