@@ -392,6 +392,7 @@ ay_draw_grid(struct Togl *togl)
 
   if(view->local && view->type != AY_VTPERSP)
     {
+      /* local view */
       glGetIntegerv(GL_VIEWPORT, vp);
       glMatrixMode(GL_PROJECTION);
       glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -415,6 +416,7 @@ ay_draw_grid(struct Togl *togl)
        glGetDoublev(GL_MODELVIEW_MATRIX, mm);
       glPopMatrix();
 
+      /* get origin in window space */
       gluProject(0.0, 0.0, 0.0, mm, mp, vp, &owinx, &owiny, &owinz);
 
       switch(view->type)
@@ -437,6 +439,11 @@ ay_draw_grid(struct Togl *togl)
       dx = fabs(gwinx-owinx);
       dy = fabs(gwiny-owiny);
 
+      /*
+	protect from drawing more lines than the view has pixels;
+	more precisely, we even stop drawing the grid if we do not
+	have more than two blank pixels between two grid lines
+      */
       if((dx < 3.0) || (dy < 3.0))
 	return;
 
@@ -479,7 +486,13 @@ ay_draw_grid(struct Togl *togl)
     }
   else
     {
+      /* global (or perspective) view */
 
+      /*
+	protect from drawing more lines than the view has pixels;
+	more precisely, we even stop drawing the grid if we do not
+	have more than two blank pixels between two grid lines
+      */
       if((grid/view->conv_x < 3.0) || (grid/view->conv_y < 3.0))
 	return;
 
@@ -535,7 +548,6 @@ ay_draw_grid(struct Togl *togl)
 	  maxwiny = minwiny + 2*(-view->zoom) + grid;
 	}
 
-      /*printf("%g %g %g %g\n",minwinx,maxwinx,minwiny,maxwiny);*/
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
 
@@ -734,6 +746,7 @@ ay_draw_bgimage(struct Togl *togl)
     {
       if(view->bgknotv && view->bgcv)
 	{
+	  /* map the image onto a NURBS patch */
 	  glDisable(GL_DEPTH_TEST);
 	  glEnable(GL_TEXTURE_2D);
 	  glEnable(GL_BLEND);
@@ -785,6 +798,7 @@ ay_draw_bgimage(struct Togl *togl)
 	}
       else
 	{
+	  /* fill the complete view window */
 	  glDisable(GL_DEPTH_TEST);
 	  glEnable(GL_TEXTURE_2D);
 	  glEnable(GL_BLEND);
