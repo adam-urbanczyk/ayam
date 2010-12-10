@@ -46,6 +46,7 @@ topoly.tcl - add helper to custom menu that converts all objects in place
  to plain PolyMesh objects
 useaqsisapp.tcl - use Aqsis.app as renderer (MacOSX only!)
 usepixie.tcl - use Pixie as renderer (MacOSX only!)
+aac.tcl - automatically invoke the about mark variants of actions
 
 Misc:
 aytest.tcl - test Ayam
