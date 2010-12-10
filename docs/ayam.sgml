@@ -623,7 +623,7 @@ the shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 <label id="mmfile">
-The <tt/"File"/ menu deals with standard file operations:<label id="filem">
+The <tt/"File"/ menu deals with standard file operations:
 <itemize>
 <item><tt/"New"/, clears the current scene (deletes all objects) and reloads
 the working environment (if the preference setting
@@ -11735,6 +11735,13 @@ tags (if present) will override these parameters.
 TP tags may be created easily using the tesselation tool, see also
 section <ref id="tesst" name="The Tesselation Tool">.
 
+<sect2>Convert Everything to NURBS patches<label id="tonpatchtcl">
+<p>
+Since Ayam 1.14 there ist a script named <tt>"tonpatch.tcl"</tt> that
+recursively browses through the scene and converts everything
+to a NURBS patch representation (it flattens the tool object
+hierarchy).
+
 <sect2>Restrict the Console<label id="twolconstcl">
 <p>
 The script <tt>"2lcons.tcl"</tt> (for two line console), may be
@@ -11777,6 +11784,13 @@ the shortcut <tt/&lt;s&gt;/ will:
 </enum>
 (this is the equivalent of <tt/&lt;saC&gt;/)
 </enum>
+
+The script modifies all rotate and scale actions (including their axis
+confined variants).
+<p>
+Note, that the mark is not reset to a new center, when the selection
+changes. After a selection change (e.g. by selecting points in a
+different view) simply restart the action.
 
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
@@ -14238,6 +14252,20 @@ that render very slowly.
 <item>Disable <tt/"UseMatColor"/.
 </itemize>
 
+<sect1>Modelling Without Views<label id="modsanv">
+<p>
+To work with very large/complex scenes, it may be necessary to turn off
+all views. In Ayam one can do this in the multi window GUI mode
+(see section <ref id="prefgui" name="GUI preference settings">).
+If there are many objects, it is also advisable to switch the object
+selection widget from tree view mode to list box mode (menu:
+<tt>"Special/Toggle TreeView"</tt>.
+<p>
+Modelling without views does not work on Apple MacOSX (Aqua) if
+GLU functionality is involved (as every GLU functionality on MacOSX
+needs a GL context). GLU is needed for the PolyMesh and NURBS
+tesselation.
+
 <sect1>Restrictions and Implementation Deficiencies<label id="defi">
 <p>
 Due to the way Ayam is implemented, several restrictions and
@@ -14451,7 +14479,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="index">
 <label id="index0">0
 <itemize>
-<item>2lcons: <ref id="twolconstcl" name="example/helper script">,
+<item>2lcons: <ref id="twolconstcl" name="example/helper script">
 <item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
 <item>3DMF: <ref id="imp3dmf" name="3DMF (Apple) Import">,
@@ -14460,6 +14488,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <label id="indexa">A
 <itemize>
+<item>aac: <ref id="aactcl" name="example/helper script">
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
@@ -14563,6 +14592,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="coart" name="coarsen tool">
 <item>Collapse: <ref id="collt" name="Collapse tool">,
 <ref id="treecontm" name="tree context menu entry">
+<item>colfocus: <ref id="colfocustcl" name="example/helper script">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="Light attribute">
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
@@ -15250,6 +15280,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NCurve attribute">,
 <ref id="npattr" name="NPatch attribute">
+<item>tonpatch: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
 <item>ToolBoxShrink: <ref id="hidprefs" name="hidden preference setting">
