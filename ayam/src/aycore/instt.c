@@ -86,7 +86,7 @@ ay_instt_createoidht(ay_object *o)
  *  to avoid crashes, unconnected instances will be removed
  *  immediately
  */
-int
+void
 ay_instt_connect(ay_object *o, ay_object **last)
 {
  int ay_status = AY_OK;
@@ -98,7 +98,7 @@ ay_instt_connect(ay_object *o, ay_object **last)
  Tcl_HashTable *ht = &ay_instt_oidptr_ht;
 
   if(!o)
-    return AY_OK;
+    return;
 
   while(o)
     {
@@ -146,18 +146,16 @@ ay_instt_connect(ay_object *o, ay_object **last)
 
       if(!removed)
 	{
-	  if(o->down)
-	    ay_status = ay_instt_connect(o->down, &(o->down));
-
-	  if(ay_status)
-	    return ay_status;
-
+	  if(o->down && o->down->next)
+	    {
+	      ay_instt_connect(o->down, &(o->down));
+	    }
 	  last = &(o->next);
 	  o = o->next;
 	} /* if */
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_instt_connect */
 
 

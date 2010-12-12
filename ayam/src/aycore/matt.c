@@ -258,10 +258,10 @@ ay_matt_removecliprefs(ay_object *o)
  *  connect objects to the appropriate material objects
  *  (using MI tags and the material id hashtable)
  */
-int
+void
 ay_matt_connect(ay_object *o)
 {
- int ay_status = AY_OK;
+ char fname[] = "matt_connect", errmsg[] = "Could not find material!";
  int found = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
  ay_tag *tag = NULL;
@@ -270,7 +270,7 @@ ay_matt_connect(ay_object *o)
  unsigned int *refcountptr = NULL;
 
   if(!o)
-    return AY_ENULL;
+    return;
 
   while(o)
     {
@@ -290,22 +290,25 @@ ay_matt_connect(ay_object *o)
 		      (*refcountptr)++;
 		    }
 		}
+	      else
+		{
+		  ay_error(AY_ERROR, fname, errmsg);
+		}
 	      found = AY_TRUE;
 	    } /* if */
 
 	  tag = tag->next;
 	} /* while */
 
-      if(o->down)
-	ay_status = ay_matt_connect(o->down);
-
-      if(ay_status)
-	return ay_status;
+      if(o->down && o->down->next)
+	{
+	  ay_matt_connect(o->down);
+	}
 
       o = o->next;
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_matt_connect */
 
 

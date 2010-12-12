@@ -794,7 +794,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
     }
 
   /* connect objects to their materials */
-  ay_status = ay_matt_connect(ay_root);
+  ay_matt_connect(ay_root);
 
   /* clear Material ID tags from scene */
   ay_status = ay_matt_clearmaterialids(ay_root);
