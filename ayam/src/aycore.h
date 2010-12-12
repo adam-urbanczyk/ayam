@@ -251,7 +251,7 @@ int ay_instt_createoidht(ay_object *o);
 
 /** Connect instance objects to master objects based on OID tag information.
  */
-int ay_instt_connect(ay_object *o, ay_object **last);
+void ay_instt_connect(ay_object *o, ay_object **last);
 
 /** Create OID string.
  */
@@ -628,7 +628,7 @@ int ay_matt_removecliprefs(ay_object *o);
 
 /** Connect objects to the appropriate material objects (using MI tags).
  */
-int ay_matt_connect(ay_object *o);
+void ay_matt_connect(ay_object *o);
 
 /** Creates MI tags for all objects with a material.
  */
