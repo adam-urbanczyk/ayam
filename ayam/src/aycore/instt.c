@@ -90,7 +90,7 @@ int
 ay_instt_connect(ay_object *o, ay_object **last)
 {
  int ay_status = AY_OK;
- char fname[] = "instt_connect";
+ char fname[] = "instt_connect", errmsg[] = "Could not re-connect instance!";
  int found = AY_FALSE, removed = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
  ay_tag *tag = NULL;
@@ -112,10 +112,9 @@ ay_instt_connect(ay_object *o, ay_object **last)
 	      if(tag->type == ay_oi_tagtype)
 		{
 		  if(!(entry = Tcl_FindHashEntry(ht, tag->val)))
-		    { /* OID not registered? */
-		      ay_error(AY_ERROR, fname,
-                    "Could not connect instance, removing instance with OID:");
-		      ay_error(AY_ERROR, fname, tag->val);
+		    {
+		      /* OID not registered? */
+		      ay_error(AY_ERROR, fname, errmsg);
 		      *last = o->next;
 		      ay_status = ay_object_delete(o);
 		      removed = AY_TRUE;
@@ -135,8 +134,14 @@ ay_instt_connect(ay_object *o, ay_object **last)
 	    } /* while */
 
 	  if(!found)
-	    return AY_ERROR; /* this should never happen */
-
+	    {
+	      /* instance without OID tag? */
+	      ay_error(AY_ERROR, fname, errmsg);
+	      *last = o->next;
+	      ay_status = ay_object_delete(o);
+	      removed = AY_TRUE;
+	      o = *last;
+	    }
 	} /* if */
 
       if(!removed)
