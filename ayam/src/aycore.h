@@ -273,9 +273,13 @@ int ay_instt_clearoidtags(ay_object *o);
  */
 int ay_instt_findinstance(ay_object *r, ay_object *o);
 
-/** Check if there are instances in the clipboard.
+/** Remove all instances of object o from clipboard.
  */
-int ay_instt_checkclipboard(ay_object *o);
+void ay_instt_remclipboard(ay_object *o);
+
+/** Check if there are instances in the clipboard, remove them.
+ */
+void ay_instt_clearclipboard(ay_object *o);
 
 /** RIB export of instances to RI archives
  */
