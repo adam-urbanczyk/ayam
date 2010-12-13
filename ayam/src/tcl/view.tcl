@@ -95,6 +95,12 @@ proc viewCycleType { w dir {recover 1} } {
 
     set oldtype $ay(cVType)
 
+    set realign 0
+    if { $ay(cVMMode) > 0 } {
+	set recover 0
+	set realign 1
+    }
+
     update
 
     set type [expr $ay(cVType) + $dir]
@@ -106,8 +112,8 @@ proc viewCycleType { w dir {recover 1} } {
     # set new view type (also completely resets the camera)
     viewSetType $w $type 0
 
-    # recover old view aim-point and zoom
     if { $recover } {
+	# recover old view aim-point and zoom
 	if { $oldtype != 3 } {
 	    if { ($oldtype == 0) && ($type == 1) } {
 		# from front to side
@@ -154,7 +160,12 @@ proc viewCycleType { w dir {recover 1} } {
     # if
 
     $togl mc
-    $togl redraw
+
+    if { $realign } {
+	$togl align
+    } else {
+	$togl redraw
+    }
 
     # was: set ay(cVType) $type
   
