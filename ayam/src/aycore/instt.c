@@ -647,37 +647,63 @@ ay_instt_findinstance(ay_object *r, ay_object *o)
 } /* ay_instt_findinstance */
 
 
-/* ay_instt_checkclipboard:
- *  used by ay_clear_scene(); see there for description
+/* ay_instt_remclipboard:
+ *  remove all instances of object o from clipboard
  */
-int
-ay_instt_checkclipboard(ay_object *o)
+void
+ay_instt_remclipboard(ay_object *o)
+{
+ ay_object **last = &ay_clipboard, *cur = ay_clipboard;
+
+  while(cur)
+    {
+      if((cur->type == AY_IDINSTANCE) && (cur->refine == o))
+	{
+	  *last = cur->next;
+	  ay_object_delete(cur);
+	  cur = *last;
+	}
+      else
+	{
+	  cur = cur->next;
+	}
+    }
+
+ return;
+} /* ay_instt_remclipboard */
+
+
+/* ay_instt_clearclipboard:
+ *  Check if there are instances in the clipboard, remove them.
+ */
+void
+ay_instt_clearclipboard(ay_object *o)
 {
  int ay_status = AY_OK;
 
   if(!o)
-    return AY_OK;
+    return;
 
   while(o)
     {
-      if(o->refcount>0 && o->type != AY_IDMATERIAL)
+      if((o->refcount > 0) && (o->type != AY_IDMATERIAL))
 	{
 	  ay_status = ay_instt_findinstance(o, ay_clipboard);
 	  if(ay_status)
-	    return ay_status;
+	    {
+	      ay_instt_remclipboard(o);
+	    }
 	}
 
       if(o->down)
-	ay_status = ay_instt_checkclipboard(o->down);
-
-      if(ay_status)
-	return ay_status;
-
+	{
+	  ay_instt_clearclipboard(o->down);
+	}
       o = o->next;
-    }
+    } /* while */
 
- return ay_status;
-} /* ay_instt_checkclipboard */
+ return;
+} /* ay_instt_clearclipboard */
 
 
 /* ay_instt_resolve:

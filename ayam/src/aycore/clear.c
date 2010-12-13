@@ -26,19 +26,8 @@ ay_clear_scene(void)
  ay_root_object *root = NULL;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 
-  /* for all referenced objects in scene:
-   *  - check if there are references to them in the clipboard,
-   *    if yes, cancel operation!
-   */
-  ay_status = ay_instt_checkclipboard(ay_root);
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname,
-	       "There are referencing objects in the clipboard!");
-      ay_error(AY_ERROR, fname,
-	       "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
-      return AY_ERROR;
-    }
+  /* clear instances of masters in the scene from clipboard */
+  ay_instt_clearclipboard(ay_root);
 
   /* clear undo buffer */
   /*ay_status = ay_undo_clear();*/
