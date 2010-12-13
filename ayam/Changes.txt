@@ -1,18 +1,23 @@
-[6. Dec 2010] CVS-Head:
+[13. Dec 2010] CVS-Head:
 ========================
 Bug Fixes:
 o fixed STESS drawing of certain trimmed NURBS (SF 3119442)
 o fixed Apply-keyboard shortcut not working in all properties (SF 3119439)
 
 Modelling:
-o there is now a second local modelling mode: level, here, the view can
+o there is now a second local modelling mode: level; here, the view can
   be aligned to the space of the current parent object
-o cycling through the modelling modes now automatically re-aligns and
+o cycling through the modelling modes now automatically realigns and
   redraws the view
+o cycling view types of local views now also automatically realigns the view
+o when zooming, grid drawing now stops automatically just before the grid
+  lines would fill the entire background of the view
 
 GUI:
 o view type and modelling mode are now displayed in the modelling mode
-  menu icon
+  menu icon as letter in the upper left and lower right corner, respectively
+o instances in the clipboard are automatically cleared upon "File/New" now
+  (if their respective master object is in the scene, not the clipboard)
 
 Scripts/Scripting Interface:
 o added script ("aac.tcl") that switches the rotate and scale transformation
