@@ -695,7 +695,7 @@ ay_instt_clearclipboard(ay_object *o)
 	    }
 	}
 
-      if(o->down)
+      if(o->down && o->down->next)
 	{
 	  ay_instt_clearclipboard(o->down);
 	}
