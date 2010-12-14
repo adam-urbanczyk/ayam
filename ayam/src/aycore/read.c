@@ -785,6 +785,13 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   ay_instt_createoidht(ay_root->next);
   /* link instance objects to their originals */
   ay_instt_connect(ay_root->next, &(ay_root->next));
+
+  /* connect objects to their materials */
+  ay_matt_connect(ay_root);
+
+  /* clear Material ID tags from scene */
+  ay_status = ay_matt_clearmaterialids(ay_root);
+
   /* force rebuild of all objects, that rely on children */
   o = ay_root;
   while(o)
@@ -792,12 +799,6 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
       ay_notify_force(o);
       o = o->next;
     }
-
-  /* connect objects to their materials */
-  ay_matt_connect(ay_root);
-
-  /* clear Material ID tags from scene */
-  ay_status = ay_matt_clearmaterialids(ay_root);
 
   /* inserting files does not change the save_rootviews state */
   if(insert)
