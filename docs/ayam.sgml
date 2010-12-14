@@ -635,6 +635,8 @@ then loads a new scene from disk. All objects from the file
 will be read. Depending on the setting of
 <tt>"Preferences/Main/BakOnReplace"</tt>
 a backup copy of the file that is read will be made before loading.
+See section <ref id="opensf" name="Opening Scene Files">
+for a more detailed discussion.
 <p>
 This operation cannot be undone!
 <p>
@@ -654,6 +656,8 @@ objects will be created in the top level of the scene.
 Otherwise, if just geometric objects are in the scene file (i.e. the file
 was created using <tt>"Special/Save Selected"</tt>), the new objects
 will be inserted in the current level of the scene.
+See section <ref id="insertsf" name="Inserting Scene Files">
+for a more detailed discussion.
 <p>
 This operation cannot be undone!
 <p>
@@ -662,13 +666,26 @@ may be imported using this route. See above (<tt/"Open"/).
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 <p>
+All objects in the scene will be saved to the scene file, but
+if the current scene was loaded from a file without root object
+(and thus without view windows), root and views will be omitted
+from the saved scene file as well.
+See section <ref id="savesf" name="Saving Scene Files">
+for a more detailed discussion.
+<p>
 Since Ayam 1.13 also files supported by any of the export plugins
 may be exported using this route. Just pick a file name with the
-desired extension. See above (<tt/"Open"/).
+desired extension (see above, <tt/"Open"/).
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
-(read, you have not given it a file name) you will be asked for a file
-name first.
+(the scene file name is "unnamed") Ayam will ask for a file name first.
+<p>
+All objects in the scene will be saved to the scene file, but
+if the current scene was loaded from a file without root object
+(and thus without view windows), root and views will be omitted
+from the saved scene file as well.
+See section <ref id="savesf" name="Saving Scene Files">
+for a more detailed discussion.
 
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
 empty. You need to load a plugin first to gain to the menu entries
@@ -13544,6 +13561,121 @@ convOb -inplace; trimNC 0.0 0.5
 See section <ref id="scriptobjex" name="Script Object Example"> for
 information on how this script might be expanded to support a
 GUI and more error checking.
+
+<sect1>Scene File Management<label id="scenefile">
+<p>
+This section contains information on what exactly happens, when
+Ayam reads or writes a scene file.
+
+<sect2>Opening Scene Files<label id="opensf">
+<p>
+When reading a scene using <tt>"File/Open"</tt> or the MRU list:
+<enum>
+<item> Ayam will first check the scene changed status of the currently
+loaded scene and warn the user, if the current scene contains unsaved
+changes,
+<item> then Ayam will clear the undo buffer and the current scene
+(the clipboard content is not touched, except for instance objects,
+whose masters are cleared with the scene: those instance objects will
+be deleted from the clipboard),
+<item> if the new file appears to be an Ayam scene file (judged solely
+by the file name extension) Ayam will change the working directory to the
+path of the scene file (otherwise, Ayam will try to import the file using
+an import plugin responsible for the file),
+<item> now, a backup copy of the file to read will be made (depending
+on the preference setting <tt>"Main/BakOnReplace"</tt>),
+note: even if the backup fails, scene reading continues,
+<item> the header of the scene file will be read to derive the scene
+file format version,
+<item> the file will be read with all objects,
+<item> all instances will be connected to their masters using the
+information stored in <tt/"OI"/ tags, if a master can not be found in
+the scene, the instance will be removed,
+<item> all objects will be connected to their materials using the
+information stored in <tt/"MI"/ tags, if no matching material can
+be found, the connection will not be established,
+<item> a complete notification will be run,
+<item> if the file contains a root object with <tt/"SaveMainGeom"/
+and/or <tt/"SavePaneLayout"/ tags, the respective window/widget
+geometries from the tags will be re-established,
+<item> if no errors occurred during reading, the current scene name
+will be set to that of the file,
+otherwise the current scene name will be reset to "unnamed",
+<item> the file name will be put to the first most recently used
+files entry in the file menu,
+<item> the scene changed state will be reset to "unchanged",
+<item> if a root object was read, a save views flag will be set,
+otherwise it will be cleared and following save operations will not save
+the root and any views (i.e. scene files without root and views
+stay scene files without root and views).
+</enum>
+
+When reading objects from a file:
+<enum>
+<item> if a view object is read, a new view window will be opened
+(except for the first three view objects in single window GUI mode,
+where only the configuration of the view objects read will be copied
+to the already existing view objects of the three internal views),
+<item> if one object is of a currently undefined type (i.e. defined
+by a plugin), Ayam will derive a potential plugin name from the
+object type name and load the plugin, then scene reading continues,
+<item> if loading of an object fails, Ayam continues to read from
+the file.
+</enum>
+
+<sect2>Inserting Scene Files<label id="insertsf">
+<p>
+In contrast to reading scenes via <tt>"File/Open"</tt> or the MRU list,
+reading scenes via <tt>"File/Insert"</tt> does some things differently:
+<enum>
+<item> the current scene will not be cleared,
+<item> the current level will not be reset before reading the file;
+if the scene file to be inserted contains no root and no views,
+the new objects will be created in the current level, otherwise the
+objects will be created in the topmost level of the scene, which will
+also be the new current level in any case (after reading),
+<item> if a material is missing from the file, and a matching (by name)
+material exists in the scene, the objects will be connected to this
+material,
+<item> view windows will be opened for every view object,
+<item> the current directory will only be changed during the file
+read operation,
+<item> if a material object is read, Ayam will immediately register
+it; if this registration fails (because there is already a material
+with that name registered), objects from the file will not be be linked
+to the material object from the file, but to the material object
+that was already registered before,
+<item> the current file name will not be changed,
+<item> the scene changed state will be set to "changed",
+<item> the save views flag will not be changed, this means that
+inserting a scene file without views into an empty scene (e.g.
+directly after application startup or after <tt>"File/New"</tt>)
+and then saving the scene, will enrich the scene file with root
+and views (in contrast to loading this scene via <tt>"File/Open"</tt>).
+</enum>
+
+<sect2>Saving Scene Files<label id="savesf">
+<p>
+When saving a scene using <tt>"File/Save"</tt>:
+<enum>
+<item> Ayam will first check the current scene file name, if the name is
+"unnamed", a new file name will be requested,
+<item> if the file appears not to be an Ayam scene file (judged solely
+by the file name extension) Ayam will try to export the current scene
+using an export plugin responsible for the file type instead of saving
+to an Ayam scene file,
+<item> the geometry of the main window and internal widgets is saved
+to <tt/"SaveMainGeom"/ and/or <tt/"SavePaneLayout"/ tags (if present),
+<item> <tt/"OI"/ tags and <tt/"MI"/ tags will be created to allow
+instances to be connected to their respective masters and objects
+to their materials, when reading the scene file,
+<item> then, all objects from the scene will be saved to the file,
+if the save views flag is not set, root and views will be omitted,
+<item> if no errors occured during saving the file, the file name
+will be put to the first most recently used files entry in the file menu,
+and the scene changed state will be set to "unchanged",
+<item> if errors occured, the current scene changed state will be kept.
+</enum>
 
 
 <sect1>Ayamrc File<label id="ayamrc">
