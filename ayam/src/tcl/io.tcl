@@ -12,34 +12,41 @@
 # io_replaceScene:
 # clear scene, then read new scene file
 #
-proc io_replaceScene { } {
+proc io_replaceScene { {newfilename ""} } {
     global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
-    set filename $ay(filename)
+    if { $newfilename eq "" } {
 
-    if { $filename == "" } {
-	set dirname [pwd]
-    } else {
-	set dirname [file dirname $filename]
-	if { $dirname == "." } { set dirname [pwd] }
-    }
+	set filename $ay(filename)
 
-    set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
-
-    if { $tcl_platform(os) != "Darwin" } {
-	set newfilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename] -initialdir $dirname\
-		-title "Select file to load:"]
-    } else {
-	if { [file exists [file tail $filename]] } {
-	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-		    -initialfile [file tail $filename]\
-		    -title "Select file to load:"]
+	if { $filename == "" } {
+	    set dirname [pwd]
 	} else {
+	    set dirname [file dirname $filename]
+	    if { $dirname == "." } { set dirname [pwd] }
+	}
+
+	set types [subst {
+	    {"Ayam Scene" ".ay"}
+	    {"Supported Files" {$ayprefs(ALFileTypes)}}
+	    {"All files" *}}]
+
+	if { $tcl_platform(os) != "Darwin" } {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
-		    -title "Select file to load:"]
+				 -initialfile [file tail $filename]\
+				 -initialdir $dirname\
+				 -title "Select file to load:"]
+	} else {
+	    if { [file exists [file tail $filename]] } {
+		set newfilename [tk_getOpenFile -filetypes $types -parent .\
+				     -initialfile [file tail $filename]\
+				     -title "Select file to load:"]
+	    } else {
+		set newfilename [tk_getOpenFile -filetypes $types -parent .\
+				     -title "Select file to load:"]
+	    }
 	}
     }
 
@@ -125,34 +132,40 @@ proc io_replaceScene { } {
 # io_insertScene:
 #  insert a scene
 #
-proc io_insertScene { } {
+proc io_insertScene { {ifilename ""} } {
     global ay ayprefs tcl_platform
 
     winAutoFocusOff
 
-    set filename $ay(filename)
+    if { $ifilename eq "" } {
 
-    if { $filename == "" } {
-	set dirname [pwd]
-    } else {
-	set dirname [file dirname $filename]
-	if { $dirname == "." } { set dirname [pwd] }
-    }
+	set filename $ay(filename)
 
-    set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
-
-    if { $tcl_platform(os) != "Darwin" } {
-	set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		-initialfile [file tail $filename] -initialdir $dirname\
-		-title "Select file to load:"]
-    } else {
-	if { [file exists [file tail $filename]] } {
-	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		    -initialfile [file tail $filename]\
-		    -title "Select file to load:"]
+	if { $filename == "" } {
+	    set dirname [pwd]
 	} else {
+	    set dirname [file dirname $filename]
+	    if { $dirname == "." } { set dirname [pwd] }
+	}
+
+	set types [subst {{"Ayam Scene" ".ay"}
+	    {"Supported Files" {$ayprefs(ALFileTypes)}}
+	    {"All files" *}}]
+
+	if { $tcl_platform(os) != "Darwin" } {
 	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
-		    -title "Select file to load:"]
+			       -initialfile [file tail $filename]\
+			       -initialdir $dirname\
+			       -title "Select file to load:"]
+	} else {
+	    if { [file exists [file tail $filename]] } {
+		set ifilename [tk_getOpenFile -filetypes $types -parent .\
+				   -initialfile [file tail $filename]\
+				   -title "Select file to load:"]
+	    } else {
+		set ifilename [tk_getOpenFile -filetypes $types -parent .\
+				   -title "Select file to load:"]
+	    }
 	}
     }
 
@@ -226,7 +239,9 @@ proc io_saveScene { ask selected } {
 	    if { $dirname == "." } { set dirname [pwd] }
 	}
 
-	set types [subst {{"Ayam Scene" ".ay"} {"Supported Files" {$ayprefs(ALFileTypes)}} {"All files" *}}]
+	set types [subst {{"Ayam Scene" ".ay"}
+	    {"Supported Files" {$ayprefs(ALFileTypes)}}
+	    {"All files" *}}]
 
 	if { $tcl_platform(os) != "Darwin" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
