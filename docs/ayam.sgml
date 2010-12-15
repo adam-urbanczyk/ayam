@@ -6,7 +6,7 @@
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>26. Nov 2010
+<date>15. Dec 2010
 
 <abstract>
 This is the documentation of Ayam 1.18 - a free 3D modelling environment
@@ -16,7 +16,7 @@ Please note, that this document is a reference manual,
 more detailed explanations of how to actually model with Ayam are
 given in the tutorials.
 
-This document has been written using the SGML-Tools formatting
+This document has been written using the SGML-Tools (LinuxDoc) formatting
 system to generate files in a variety of text formats from one source file.
 There are HTML and PDF versions of this document prepared for you.
 
@@ -55,7 +55,7 @@ Quicktime 3D Metafile (3DMF) export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
-<item>Scripting interface: Tcl.
+<item>Scripting interfaces: Tcl, JavaScript.
 <item>Script objects.
 <item>Miscellaneous: (automatic) instancing, arbitrary number of modelling
 views, object clipboard, independent property clipboard, console,
@@ -744,12 +744,8 @@ for more information.
 <item><tt/"Load Plugin"/, loads a file containing a custom object or a plugin.
 Depending on the platform Ayam is running on, these are files with the
 file name extension <tt/".so"/ or <tt/".dll"/.
-There are currently two types of plugins for Ayam: custom objects and
-import/export plugins.
-See section <ref id="customobj" name="Custom Objects">
-for more information about custom objects.
-See section <ref id="impex" name="Import and Export">
-for more information about import/export plugins.
+See section <ref id="plugov" name="Plugins Overview"> for more
+information regarding Ayam plugins.
 
 <item><tt/"Save Prefs"/, save the current preference settings
 to the ayamrc file after making a backup copy of this file (see section
@@ -1841,8 +1837,6 @@ the directory where the Ayam executable resides).
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
 a semicolon (<tt/";"/) on Win32.
 
-
-
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
 custom objects when unknown object types are encountered while reading
@@ -1850,6 +1844,14 @@ Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
 an error. If non absolute paths are used they are relative
 to the directory where the Ayam executable resides.
+Thus, the default value "plugins" leads to Ayam searching for plugins
+in the directory "plugins" located in the directory, where the Ayam
+executable resides:
+<code>
+.../ayam/bin/Ayam.exe
+.../ayam/bin/plugins/
+.../ayam/bin/plugins/ayslx.dll
+</code>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
 by a semicolon (<tt/";"/) on Win32.
 
@@ -14069,6 +14071,29 @@ display the documentation URL)
 of the Netscape WWW browser (used to display the documentation URL)
 <item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
 setting (used if no ayamrc file exists).
+</itemize>
+
+<sect1>Plugins Overview<label id="plugov">
+<p>
+This section serves as a overview of the various plugins available
+in Ayam.
+<p>
+There are currently three major types of plugins for Ayam: shader parsing
+plugins, custom objects, and import/export plugins.
+See sections <ref id="spplugins" name="Shader Parsing Plugins">,
+<ref id="customobj" name="Custom Objects">, and
+<ref id="impex" name="Import and Export">
+for more information regarding the respective plugin types.
+<p>
+Furthermore, there are the following specific plugins:
+<itemize>
+<item>jsinterp &ndash; JavaScript scripting interface
+(see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
+<item>AyCSG &ndash; CSG rendering
+(see section <ref id="idr" name="CSG preview using the AyCSG plugin">),
+<item>IDR &ndash; Importance Driven Rendering
+(see section <ref id="idr" name="Importance Driven Rendering">),
+<item>aydnd &ndash; inter-application drag and drop.
 </itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
