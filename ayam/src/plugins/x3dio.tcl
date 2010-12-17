@@ -152,8 +152,8 @@ proc x3dio_import { } {
     bind $w <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
-    # context help
-    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impx3d }
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-7.html impx3d
 
     winCenter $w
     grab $w
@@ -286,8 +286,8 @@ proc x3dio_export { } {
     bind $w <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
-    # context help
-    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expx3d }
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-7.html expx3d
 
     winCenter $w
     grab $w
