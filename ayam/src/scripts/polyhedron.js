@@ -20,20 +20,30 @@
 var PolyhedronAttrData = new Object();
 if(!tcleval("info exists PolyhedronAttrData;"))
 {
-  PolyhedronAttrData.Notation = 
+  PolyhedronAttrData.Notation =
     tcleval("set PolyhedronAttrData(Notation) \"jtD\";");
+
   tcleval("set PolyhedronAttrData(SP) {Notation};");
 }
 else
 {
-  PolyhedronAttrData.Notation = 
+  PolyhedronAttrData.Notation =
     tcleval("set PolyhedronAttrData(Notation);");
 }
 
 if(!tcleval("info exists PolyhedronAttrGUI;"))
 {
+  // setting seeds/ops must be done before addPropertyGUI to enable
+  // transport of the values from safe interpreter to main interpreter
+  tcleval("set PolyhedronAttrData(Seeds) \"TOCIDPnAnYn (n>3)\";");
+  tcleval("set PolyhedronAttrData(Ops) \"dtkajsgebomrp\";");
+
   tcleval("set ::phw [addPropertyGUI PolyhedronAttr \"\" \"\"];");
   tcleval("addString $::phw PolyhedronAttrData Notation;");
+
+  tcleval("addText $::phw e1 \"Syntax:\"");
+  tcleval("addInfo $::phw PolyhedronAttrData Seeds;");
+  tcleval("addInfo $::phw PolyhedronAttrData Ops;");
 }
 
 
@@ -65,7 +75,7 @@ function goodInput(notation) {
 //------------------notation processing functions--------------------
 
 // create polyhedron from notation
-function generatePoly(notation) {     
+function generatePoly(notation) {
   var poly = new polyhedron();       // each polyhedron, during construction
   var n=0;                           // numeric argument
 
