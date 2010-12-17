@@ -200,7 +200,7 @@ proc plyio_import { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    #bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impply }
+    #shortcut_addcshelp $w ayam-7.html impply
 
     winCenter $w
     grab $w
@@ -304,8 +304,7 @@ proc plyio_export { } {
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
     # context help
-    #bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#expply }
-
+    #shortcut_addcshelp $w ayam-7.html expply
     winCenter $w
     grab $w
     focus $w.f2.bok

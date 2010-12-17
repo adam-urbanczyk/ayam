@@ -110,8 +110,8 @@ proc mopsi_import { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    # context help
-    bind $w <[repctrl $aymainshortcuts(Help)]> { cHelp ayam-7.html\#impmops }
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-7.html impmops
 
     winCenter $w
     grab $w

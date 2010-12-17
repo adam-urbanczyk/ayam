@@ -69,6 +69,9 @@ proc ai_open { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-8.html ai
+
     winCenter $w
     focus $f.bok
     tkwait window $w

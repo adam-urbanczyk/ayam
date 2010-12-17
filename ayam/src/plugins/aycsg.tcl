@@ -190,6 +190,9 @@ proc aycsgPreferences { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-8.html aycsg
+
     bind $w <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $w <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
