@@ -1740,9 +1740,11 @@ if { !$ayprefs(SingleWindow) } {
     if { $ayprefs(showtb) == 1 } {
 	toolbox_open
     }
+    # no way to reset all panes in floating windows mode
+    $ay(specialmenu) entryconfigure 11 -state disabled
 } else {
     # no external toolbox for SingleWindow mode
-    $ay(specialmenu) entryconfigure 12 -state disabled
+    $ay(specialmenu) entryconfigure 13 -state disabled
 }
 
 # re-establish old main window position and size
