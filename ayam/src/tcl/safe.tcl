@@ -39,7 +39,7 @@ proc safe_init { interp } {
     interp alias $interp addString {} addString
     interp alias $interp addStringB {} addStringB
 
-    interp alias $interp addCommand {} addCommand
+    interp alias $interp addCommand {} save_addCommand
     interp alias $interp addCommandB {} addCommandB
 
     interp alias $interp addText {} addText
@@ -136,6 +136,19 @@ proc safe_addPropertyGUI { name {sproc ""} {gproc ""} } {
  return $w;
 }
 # safe_addPropertyGUI
+
+
+# save_addCommand:
+#  safe version of addCommand; makes sure, the command runs in
+#  the safe interpreter
+proc save_addCommand { w name text command } {
+    set newcmd "aySafeInterp eval { "
+    append newcmd $command
+    append newcmd " }"
+    addCommand $w $name $text $newcmd
+ return;
+}
+# save_addCommand
 
 
 # safe_getProperty:
