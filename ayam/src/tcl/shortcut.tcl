@@ -179,7 +179,7 @@ proc shortcut_main { w } {
 
     set m $ay(specialmenu)
     bind $w <[repctrl $aymainshortcuts(Zap)]> zap
-    $m entryconfigure 20 -accelerator [remkpkr $aymainshortcuts(Zap)]
+    $m entryconfigure 21 -accelerator [remkpkr $aymainshortcuts(Zap)]
 
     bind $w <Map> unzap
 

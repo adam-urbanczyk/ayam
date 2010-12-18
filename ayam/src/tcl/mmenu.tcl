@@ -790,6 +790,9 @@ $m add command -label "Scan Shaders" -command "shader_scanAll" \
 $m add command -label "Reset Preferences" -command "prefs_reset" \
     -underline 6
 #    ^^^^^^^^^^^ => P
+$m add command -label "Reset Layout" -command "winRestorePaneLayout \"\"" \
+    -underline 6
+#    ^^^^^^^^^^^ => L
 $m add separator
 $m add command -label "Toggle Toolbox" -command "toolbox_toggle" \
     -underline 11
