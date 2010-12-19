@@ -18,6 +18,8 @@ proc safe_init { interp } {
     catch {interp share {} stdout $interp}
     catch {interp share {} stderr $interp}
 
+    # make some Tcl procedures known in the safe interpreter
+
     # property GUI
     interp alias $interp addPropertyGUI {} safe_addPropertyGUI
     interp alias $interp addParam {} addParam
@@ -50,11 +52,12 @@ proc safe_init { interp } {
     # puts
     interp alias $interp puts {} safe_puts
 
-    # property
+    # property management
     interp alias $interp setProperty {} setProperty
     interp alias $interp getProperty {} safe_getProperty
 
-    # make some Tcl procedures known in the safe interpreter
+    # redraw
+    interp alias $interp rV {} rV
 
     #safe_transfer setProperty $interp
 
