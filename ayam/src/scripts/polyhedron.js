@@ -40,10 +40,22 @@ if(!tcleval("info exists PolyhedronAttrGUI;"))
 
   tcleval("set ::phw [addPropertyGUI PolyhedronAttr \"\" \"\"];");
   tcleval("addString $::phw PolyhedronAttrData Notation;");
+  tcleval("addCommand $::phw PolyhedronAttrData Random! phrnd;");
 
   tcleval("addText $::phw e1 \"Syntax:\"");
   tcleval("addInfo $::phw PolyhedronAttrData Seeds;");
   tcleval("addInfo $::phw PolyhedronAttrData Ops;");
+
+  tcleval("proc phrnd { } {\
+set s [list T O C I D P3 P4 P5 P6 P7 P8 Y3 Y4 Y5 Y6 Y7 Y8 T T];\
+set o [list d t k a j s g e b o m r p d d];\
+append n [lindex $o [expr round(rand()*12)]];\
+append n [lindex $o [expr round(rand()*12)]];\
+append n [lindex $o [expr round(rand()*12)]];\
+append n [lindex $s [expr round(rand()*18)]];\
+set ::PolyhedronAttrData(Notation) $n;\
+setProperty PolyhedronAttr(Notation) $n;\
+rV;}");
 }
 
 
