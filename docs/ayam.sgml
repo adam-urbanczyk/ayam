@@ -7893,11 +7893,20 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>SDNPatch Object<label id="sdnpatchobj">
 <p>
+<figure loc="ht">
+<eps file="pics/sdnpatch.ps" height="5cm">
+<img src="pics/sdnpatch.gif">
+<caption>SDNPatches, l: control mesh, m: knot set, r: no knot set</caption>
+</figure>
+<p>
 The SDNPatch custom object is available since Ayam 1.16 and
-allows to model with Subdivision NURBS. The SDNPatch plugin is
-based on libsnurbs by Tom Cashman.
+allows to model with Subdivision NURBS, which extend the traditional
+subdivision schemes with knot values (see also the image above).
+The SDNPatch plugin is based on libsnurbs by Tom Cashman.
 <p>
 There are some special modelling actions for Subdivision NURBS
 defined (see below) and there are PLY import/export facilities.
@@ -7982,6 +7991,7 @@ Note that the PolyMesh to SDNPatch conversion only accepts closed
 quadrilateral polygon meshes (Triangles are omitted) and expects
 an optimized mesh (i.e. adjacent faces should share the same vertices).
 
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Standard Properties<label id="stdprop">
 <p>
