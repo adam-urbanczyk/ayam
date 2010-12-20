@@ -1,11 +1,12 @@
-[13. Dec 2010] CVS-Head:
+[20. Dec 2010] CVS-Head:
 ========================
 Bug Fixes:
 o fixed STESS drawing of certain trimmed NURBS (SF 3119442)
 o fixed Apply-keyboard shortcut not working in all properties (SF 3119439)
+o fixed security hole in addCommand property GUI element (SF 3140745)
 
 Modelling:
-o there is now a second local modelling mode: level; here, the view can
+o there is now a second local modelling mode: "level"; here, the view can
   be aligned to the space of the current parent object
 o cycling through the modelling modes now automatically realigns and
   redraws the view
@@ -18,10 +19,16 @@ o view type and modelling mode are now displayed in the modelling mode
   menu icon as letter in the upper left and lower right corner, respectively
 o instances in the clipboard are automatically cleared upon "File/New" now
   (if their respective master object is in the scene, not the clipboard)
+o added menu entry to restore the pane layout to a "natural preset"
+  ("Special/Reset Layout")
 
 Scripts/Scripting Interface:
 o added script ("aac.tcl") that switches the rotate and scale transformation
   modelling actions to their "about center" variants automatically
+o the "polyhedron.js" example script object script property GUI now displays
+  notation info items and has a button that creates a random polyhedron
+o the "rV" command is now available in the safe interpreter, to allow command
+  entries in script object controlled property GUIs to update all views
 
 
 [15. Nov 2010] Ayam-1.18.1:
