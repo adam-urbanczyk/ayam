@@ -1,5 +1,5 @@
 <!doctype linuxdoc system>
-
+<!-- comment -->
 <article>
 
 <title>Ayam
@@ -11900,6 +11900,72 @@ Note that the script does not change the <tt>"RIB-Export/Renderer"</tt>
 preferences, you still have to switch to Pixie using the main menu
 <tt>"Special/Select Renderer"</tt> once.
 
+<#if out=latex><x/newpage/</#if>
+
+<sect2>Create Polyhedrons from Conway Notations<label id="polyhedronjs">
+<p>
+<figure loc="ht">
+<eps file="pics/polyh-jtD.ps" height="5cm">
+<img src="pics/polyh-jtD.gif">
+<caption>Polyhedron generated from Conway notation: jtD</caption>
+</figure>
+<p>
+Since Ayam 1.18 there is a complete example script for the JavaScript
+scripting interface distributed as <tt>"polyhedron.js"</tt> which
+creates polyhedrons from Conway notations.
+The script is based on the online Polyhedron VRML generator by
+George W. Hart.
+<p>
+This script must be used in a Script object of type <tt/"Create"/.
+For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
+of value <tt/"PolyhedronAttr"/ to the script object to see it.
+<p>
+The Conway notation defines a set of operations executed consecutively
+on a seed/basic shape.
+The script currently supports the following seeds and operations,
+information taken verbatim from George W. Harts fine web pages
+(see also section <ref id="secref" name="References">).
+<p>
+<bf/Seeds:/<newline>
+The Platonic solids are denoted T, O, C, I, and D, according to their
+first letter. Other polyhedra which are implemented here include prisms,
+Pn, antiprisms, An, and pyramids, Yn, where n is a number (3 or greater)
+which you specify to indicate the size of the base you want, e.g.,
+Y3=T, P4=C, and A3=O.
+<p>
+<bf/Operations:/<newline>
+Currently, d, t, k, a, j, s, g, e, b, o, m, r, and p are defined.
+They are motivated by the operations needed to create the Archimedean
+solids and their duals from the Platonic solids. The following tables
+explain the operations in detail (these abbreviated explanations are
+again taken from George W. Hart):
+
+<table loc="p">
+<#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
+<bf/Letter/|<bf/Name/|<bf/Description/@<hline>
+<tt/d/|dual|The dual of a polyhedron has a vertex for each face, and a face for each vertex, of the original polyhedron, e.g., dC=O.@<hline>
+<tt/t/&thinsp;/&thinsp;<tt/t/<em/n/|truncate all&thinsp;/&thinsp;just <em/n/-fold vertices|Truncating a polyhedron cuts off each vertex, producing a new <em/n/-sided face for each <em/n/-fold vertex.@<hline>
+<tt/k/&thinsp;/&thinsp;<tt/k/<em/n/|kis all&thinsp;/&thinsp;just <em/n/-sided faces|The kis operation divides each <em/n/-sided face into <em/n/ triangles. A new vertex is added in the center of each face.@<hline>
+<tt/a/|ambo|The ambo operation can be thought of as truncating to the edge midpoints. It produces a polyhedron, aX, with one vertex for each edge of X.@<hline>
+<tt/j/|join|The join operator is dual to ambo, so jX=dadX=daX. jX is like kX without the original edges of X.@<hline>
+<tt/e/|expand|Each face of X is separated from all its neighbors and reconnected with a new 4-sided face, corresponding to an edge of X. An n-gon is then added to connect the 4-sided faces at each n-fold vertex.@<hline>
+<tt/s/|snub|The snub operation can be thought of as eC followed by the operation of slicing each of the new 4-fold faces along a diagonal into two triangles. With a consistent handedness to these cuts, all the vertices of sX are 5-fold.@<hline>
+<tt/g/|gyro|The dual operation to s is g. g is like k but with the new edges connecting the face centers to the 1/3 points on the edges rather than the vertices.@<hline>
+<tt/b/|bevel|The bevel operation can be defined by bX=taX.@<hline>
+<tt/o/|ortho|Dual to e, oX=deX=jjX. oX has the effect of putting new vertices in the middle of each face of X and connecting them, with new edges, to the edge midpoints of X.@<hline>
+<tt/m/|meta|Dual to b, m is like k and o combined; new edges connect new vertices at the face centers to the old vertices and new vertices at the edge midpoints.@<hline>
+</tabular>
+<caption>Conway Notation Operations</caption>
+</table>
+
+<table loc="p">
+<#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
+<bf/Letter/|<bf/Name/|<bf/Description/@<hline>
+<tt/r/|reflect|Changes a left-handed solid to right handed, or vice versa, but has no effect on a reflexible solid. So rC=C, but compare sC and rsC.@<hline>
+<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g., pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e., paX=apX.@<hline>
+</tabular>
+<caption>Additional Operations</caption>
+</table>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -14547,6 +14613,8 @@ maybe an updated version is available from the internet:
 <item>The Ayam FAQ: <tt>http://www.ayam3d.org/faq.html</tt>
 <item>The RenderMan Repository: <tt>http://www.renderman.org/</tt>
 <item>The RenderMan Academy: <tt>http://www.rendermanacademy.com/</tt>
+<item>George W. Hart, Virtual Polyhedra<newline>
+<tt>http://www.georgehart.com/virtual-polyhedra/conway_notation.html</tt>
 </itemize>
 
 <sect1>Acknowledgements
@@ -15157,6 +15225,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Pivot: <ref id="rotaac" name="modelling action">
 <item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Point: <ref id="pdsl" name="light type">
+<item>polyhedron.js: <ref id="polyhedronjs" name="example/helper script">
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
 <item>PPRender: <ref id="prefrib" name="preference setting">
