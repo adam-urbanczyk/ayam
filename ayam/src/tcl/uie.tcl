@@ -1283,6 +1283,7 @@ proc addPropertyGUI { name {sproc ""} {gproc ""} } {
     global ay $name
 
     set w $ay(pca).f$name
+    set ay(bok) $ay(appb)
 
     if { ![info exists $name] } {
 	frame $w
