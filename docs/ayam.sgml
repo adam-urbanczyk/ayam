@@ -1,12 +1,21 @@
 <!doctype linuxdoc system>
-<!-- comment -->
+<!--
+Due to post processing, there must only be one
+<ref id="tag" name="secname">
+per input line;
+To keep longer code examples on one page in page based output
+(i.e. LaTeX/PDF) use:
+<#if out=latex><x/needspace 8/</#if>
+likewise, enforce a new page with:
+<#if out=latex><x/newpage/</#if>
+ -->
 <article>
 
 <title>Ayam
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>15. Dec 2010
+<date>22. Dec 2010
 
 <abstract>
 This is the documentation of Ayam 1.18 - a free 3D modelling environment
@@ -1162,6 +1171,11 @@ where the preferences are saved; after a restart of Ayam, all
 preferences will be reset to factory defaults. See also
 section <ref id="ayamrc" name="Ayamrc File"> for more information
 about the ayamrc file.
+
+<item><tt>"Reset Layout"</tt> resets the pane layout in single window
+GUI mode so that the upper internal views get an approximately even share
+of available screen space and the object selection widget and property
+GUI are completely visible.
 
 <item><tt/"Toggle Toolbox"/ closes or opens the toolbox window
 (see <ref id="toolb" name="The Toolbox Window">). From version 1.3 on,
@@ -7450,6 +7464,7 @@ of the first child object of the script object.
 If the script object has e.g. a NCurve object as first child, the
 script object may be used as parameter object of a tool object that
 needs a NCurve, e.g. a Sweep:
+<#if out=latex><x/needspace 6/</#if>
 <code>
 +-Sweep
  +-Cross_Section(Script)
@@ -7900,12 +7915,14 @@ in the expr-statement above) to speed up the expression.
 <figure loc="ht">
 <eps file="pics/sdnpatch.ps" height="5cm">
 <img src="pics/sdnpatch.gif">
-<caption>SDNPatches, l: control mesh, m: knot set, r: no knot set</caption>
+<caption>SDNPatches, l: control mesh, m: subdivided mesh with knot, r: subdivided mesh without knot</caption>
 </figure>
 <p>
 The SDNPatch custom object is available since Ayam 1.16 and
 allows to model with Subdivision NURBS, which extend the traditional
-subdivision schemes with knot values (see also the image above).
+subdivision schemes with knot values (see also the image above,
+where in the middle mesh a knot value has been set in the left hand
+side of the mesh).
 The SDNPatch plugin is based on libsnurbs by Tom Cashman.
 <p>
 There are some special modelling actions for Subdivision NURBS
@@ -8287,6 +8304,7 @@ that differ from the standard RiAttributes.
 <tt/"RiAttribute"/ tags possibly attached to the material object of this
 geometric object.
 <p>
+<#if out=latex><x/newpage/</#if>
 In order to create a tag of type RiAttribute, the type string must be
 <tt/"RiAttribute"/. The syntax of the value string is as following:
 <p>
@@ -10323,6 +10341,7 @@ If run in the safe interpreter (e.g. from a Script objects script)
 this command will create a hidden selection.
 This command is often called in a sequence
 after creating a new object like this:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 # create object
 crtOb NCurve
