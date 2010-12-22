@@ -1,4 +1,4 @@
-[readme.txt - 24. Jul 2009]
+[readme.txt - 22. Dec 2010]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -73,3 +73,5 @@ conscir.tcl - create a circular B-Spline whose control points are
 crtlinegui.tcl - create line, with GUI
 crtspiral.tcl - create spirals
 crtspiralgui.tcl - create spirals with GUI
+polyhedron.js - create polyhedrons from Conway notation
+                (needs jsinterp plugin!)
