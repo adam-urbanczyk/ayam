@@ -54,12 +54,10 @@ proc viewSetType { w type {redraw 1} } {
 	}
     }
     # switch
+
     if { $redraw } {
 	$togl render
     }
-    $ay(currentView) mc
-    update
-    # actionClear $w
 
     set ay(cVType) $type
 
@@ -159,16 +157,12 @@ proc viewCycleType { w dir {recover 1} } {
     }
     # if
 
-    $togl mc
-
     if { $realign } {
 	$togl align
     } else {
 	$togl redraw
     }
 
-    # was: set ay(cVType) $type
-  
  return;
 }
 # viewCycleType
@@ -193,7 +187,6 @@ proc viewCycleDrawMode { w dir } {
     # set icon
     viewSetDModeIcon $w $mode
 
-    $togl mc
     $togl redraw
 
  return;
@@ -409,7 +402,6 @@ proc viewSetFOV { view } {
 	$view mc;\
 	undo save SetFOV;\
 	$view setconf -fovx \$ay(FOV);\
-	$view render;\
 	update;\
 	grab release .setFov;\
 	focus $view;\
@@ -473,7 +465,6 @@ proc viewSetGrid { view } {
         \} else \{\
 	  $view setconf -grid \$ay(GridSize);\
         \};\
-	$view render;\
         set w \[winfo parent \[winfo parent $view\]\];\
 	viewSetGridIcon \$w \$ay(GridSize);\
 	update;\
@@ -1045,6 +1036,7 @@ proc viewSetDModeIcon { w mode } {
 	}
     }
     # switch
+
  return;
 }
 # viewSetDModeIcon
@@ -1313,7 +1305,6 @@ proc viewSetPMode { w on } {
     }
 
     if { (! $AYWITHAQUA) || ([string first ".view" $w] != 0) } {
-
 	set m fMenu.mm
 
 	set image [$w.$m cget -image]
@@ -1372,7 +1363,6 @@ proc viewSetBGImage { view } {
 	 $view setconf -dbg \$ay(cVDrawBG);\
         };\
         set ay(sc) 1;\
-	$view render;\
 	update;\
 	grab release .setBGI;\
 	focus $view;\
