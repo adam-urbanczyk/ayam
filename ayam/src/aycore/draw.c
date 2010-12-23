@@ -394,7 +394,6 @@ ay_draw_grid(struct Togl *togl)
     {
       /* local view */
       glGetIntegerv(GL_VIEWPORT, vp);
-      glMatrixMode(GL_PROJECTION);
       glGetDoublev(GL_PROJECTION_MATRIX, mp);
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
@@ -417,7 +416,11 @@ ay_draw_grid(struct Togl *togl)
       glPopMatrix();
 
       /* get origin in window space */
-      gluProject(0.0, 0.0, 0.0, mm, mp, vp, &owinx, &owiny, &owinz);
+      if(GL_FALSE == gluProject(0.0, 0.0, 0.0, mm, mp, vp,
+				&owinx, &owiny, &owinz))
+	{
+	  return;
+	}
 
       switch(view->type)
 	{
@@ -668,14 +671,16 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
  GLdouble p1x, p1y, p2x, p2y, alpha;
  GLint vp[4];
 
-  glDisable(GL_DEPTH_TEST);
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
   glGetIntegerv(GL_VIEWPORT, vp);
 
-  gluProject((GLdouble)to[0], (GLdouble)to[1],
-	     (GLdouble)to[2], mvm, pm, vp,
-	     &win1x, &win1y, &win1z);
+  if(GL_FALSE == gluProject((GLdouble)to[0], (GLdouble)to[1],
+			    (GLdouble)to[2], mvm, pm, vp,
+			    &win1x, &win1y, &win1z))
+    {
+      return;
+    }
 
   gluProject((GLdouble)from[0], (GLdouble)from[1],
 	     (GLdouble)from[2], mvm, pm, vp,
@@ -702,6 +707,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
 	alpha = -90.0;
     }
 
+  glDisable(GL_DEPTH_TEST);
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
    glLoadIdentity();
@@ -1079,15 +1085,24 @@ ay_draw_cs(struct Togl *togl)
   glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
   glGetDoublev(GL_PROJECTION_MATRIX, pm);
   glGetIntegerv(GL_VIEWPORT, vp);
-  gluProject((GLdouble)1.0, (GLdouble)0.0,
-	     (GLdouble)0.0, mvm, pm, vp,
-	     &win1x, &win1y, &win1z);
-  gluProject((GLdouble)0.0, (GLdouble)1.0,
-	     (GLdouble)0.0, mvm, pm, vp,
-	     &win2x, &win2y, &win2z);
-  gluProject((GLdouble)0.0, (GLdouble)0.0,
-	     (GLdouble)1.0, mvm, pm, vp,
-	     &win3x, &win3y, &win3z);
+  if(GL_FALSE == gluProject((GLdouble)1.0, (GLdouble)0.0,
+			    (GLdouble)0.0, mvm, pm, vp,
+			    &win1x, &win1y, &win1z))
+    {
+      return;
+    }
+  if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)1.0,
+			    (GLdouble)0.0, mvm, pm, vp,
+			    &win2x, &win2y, &win2z))
+    {
+      return;
+    }
+  if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)0.0,
+			    (GLdouble)1.0, mvm, pm, vp,
+			    &win3x, &win3y, &win3z))
+    {
+      return;
+    }
 
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
