@@ -1689,6 +1689,10 @@ proc aytest_runTests { tests } {
 
     . configure -cursor watch
     .testGUI configure -cursor watch
+    if { [winfo exists .fl.con] == 1 } {
+	set oldprompt ${::.fl.con(-prompt)}
+	set ::.fl.con(-prompt) ""
+    }
     update
 
     set ::aytest_result 0
@@ -1710,13 +1714,17 @@ proc aytest_runTests { tests } {
 
 	close $::log
 
-	puts "Finished Test $test..."
+	puts "\nFinished Test $test..."
     }
     # foreach
 
     . configure -cursor {}
     if { [winfo exists .testGUI] } {
 	.testGUI configure -cursor {}
+    }
+    if { [winfo exists .fl.con] == 1 } {
+	set ::.fl.con(-prompt) $oldprompt
+	Console:prompt .fl.con
     }
     update
 
