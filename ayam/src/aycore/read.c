@@ -562,7 +562,7 @@ ay_read_object(FILE *fileptr)
  int ay_status = AY_OK;
  int type = 0, has_name = 0, has_child = 0, read = 0;
  ay_object *o = NULL;
- ay_tag tag;
+ ay_tag tag = {0};
  ay_voidfp *arr = NULL;
  ay_readcb *cb = NULL;
  char *type_name = NULL, err[255], autoload[] = "io_lcAuto";
