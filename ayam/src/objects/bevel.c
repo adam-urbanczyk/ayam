@@ -29,7 +29,7 @@ ay_bevel_createcb(int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char fname[] = "crtbevel";
  ay_bevel_object *new = NULL;
- ay_tag bt;
+ ay_tag bt = {0};
  char tagname[] = "BP", tagval[] = "0,0,0.1,0";
 
   if(!o)
