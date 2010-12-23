@@ -365,7 +365,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double cog[3] = {0}, dt[3] = {0}, dt2[3] = {0}, l, lx, ly, lz;
- int i, a;
+ int i, a, have_bb = AY_FALSE;
  GLdouble m[16] = {0}, mt[16] = {0};
 
   if(sel)
@@ -377,6 +377,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_bbc_get(o, bb);
 	  if(!ay_status)
 	    {
+	      have_bb = AY_TRUE;
 	      a = 0;
 	      for(i = 0; i < 8; i++)
 		{
@@ -410,6 +411,11 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
 	  sel = sel->next;
 	} /* while */
+
+      if(!have_bb)
+	{
+	  return TCL_OK;
+	}
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
