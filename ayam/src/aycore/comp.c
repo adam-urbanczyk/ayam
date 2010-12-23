@@ -177,9 +177,21 @@ ay_comp_tag(ay_tag *t1, ay_tag *t2)
   if(((t1->type != t2->type) && ((t1->type != NULL) || (t2->type != NULL)) &&
       (strcmp(t1->type, t2->type))))
     return AY_FALSE;
-  if(((t1->val != t2->val) && ((t1->val != NULL) || (t2->val != NULL)) &&
-      (strcmp(t1->val, t2->val))))
+  if(t1->is_binary != t2->is_binary)
     return AY_FALSE;
+
+  if(!t1->is_binary)
+    {
+      /* compare string vals */
+      if(((t1->val != t2->val) && ((t1->val != NULL) || (t2->val != NULL)) &&
+	  (strcmp(t1->val, t2->val))))
+	return AY_FALSE;
+    }
+  else
+    {
+      /* XXXX ToDo: compare binary vals */
+      return AY_FALSE;
+    }
 
  return AY_TRUE;
 } /* ay_comp_tag */
