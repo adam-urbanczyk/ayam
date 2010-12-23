@@ -702,7 +702,7 @@ lappend Extrude_1(vals) { 1.0 }
 
 # Extrude Variation #2
 array set Extrude_2 {
-    precmd {goDown -1;crtClosedBS 4;hSL movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    precmd {goDown -1;crtClosedBS 4;hSL;movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
     arr ExtrudeAttrData
     freevars {StartCap EndCap}
     StartCap {0 1}
@@ -719,7 +719,7 @@ lappend Extrude_2(vals) { 10.0 }
 
 # Extrude Variation #3
 array set Extrude_3 {
-    precmd {goDown -1;crtOb NCircle;hSL movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    precmd {goDown -1;crtOb NCircle;hSL;movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
     arr ExtrudeAttrData
     freevars {StartCap EndCap}
     StartCap {0 1}
