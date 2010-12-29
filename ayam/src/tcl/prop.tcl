@@ -69,7 +69,9 @@ addParam $w transfPropData Quat3
 
 proc setAttrp { } {
     global attrPropData
-    regsub -all " " $attrPropData(Objectname) "_" attrPropData(Objectname)
+    # replace all whitespace/control characters by underscores
+    regsub -all "\[\[:space:\]\[:cntrl:\]\]" $attrPropData(Objectname)\
+	"_" attrPropData(Objectname)
     setAttr
     uCL cl "0 1"
  return;
