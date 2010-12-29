@@ -96,7 +96,7 @@ proc material_createp { } {
 	global ay aydd ayprefs ay_error
 
 	# replace all whitespace by underscores
-	regsub -all " " $aydd(Name) "_" temp
+	regsub -all "\[\[:space:\]\[:cntrl:\]\]" $aydd(Name) "_" temp
 
 	set ay_error 0
 
@@ -263,6 +263,12 @@ proc material_edit { } {
 # MaterialAttr Property:
 
 proc setMaterialAttrp { } {
+    global MaterialAttrData
+
+    # replace all whitespace/control characters by underscores
+    regsub -all "\[\[:space:\]\[:cntrl:\]\]" $MaterialAttrData(Materialname)\
+	"_" MaterialAttrData(Materialname)
+
     setProp
     uCL cl "0 1"
  return;
