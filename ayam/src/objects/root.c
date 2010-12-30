@@ -250,7 +250,7 @@ ay_root_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton, "FilterWidth", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  riopt->FilterWidth = itemp;
+  riopt->FilterWidth = dtemp;
   Tcl_SetStringObj(ton, "FilterHeight", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
