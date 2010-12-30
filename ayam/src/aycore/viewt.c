@@ -11,6 +11,7 @@
  */
 
 #include "ayam.h"
+#include "tiffio.h"
 
 #ifndef AYNOUNISTDH
 #include <sys/times.h>
@@ -2418,3 +2419,80 @@ ay_viewt_markfromselp(struct Togl *togl)
 
  return AY_OK;
 } /* ay_viewt_markfromselp */
+
+
+/* ay_viewt_saveimgtcb:
+ *
+ */
+int
+ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[])
+{
+ char fname[] = "saveimg", fargs[] = "filename";
+ TIFF *tif;
+ unsigned int i, w, h, s = 3;
+ unsigned char *pixels;
+ int dim[4];
+
+  if(argc <= 1)
+    {
+      ay_error(AY_EARGS, argv[0], fargs);
+      return TCL_OK;
+    }
+
+  Togl_MakeCurrent(togl);
+
+  glGetIntegerv(GL_VIEWPORT, dim);
+
+  w = dim[2];
+  h = dim[3];
+
+  if(!(pixels = calloc(w*h*s, sizeof(unsigned char))))
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      return TCL_OK;
+    }
+
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+  glReadBuffer(GL_FRONT);
+
+  /* is the buffer, we are reading here ok? */
+  glReadPixels(0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+  tif = TIFFOpen(argv[2], "w");
+  if(tif)
+    {
+      TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, (uint32) w);
+      TIFFSetField(tif, TIFFTAG_IMAGELENGTH, (uint32) h);
+      TIFFSetField(tif, TIFFTAG_BITSPERSAMPLE, 8);
+      TIFFSetField(tif, TIFFTAG_COMPRESSION, COMPRESSION_NONE);
+      TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
+      TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, s/*3/4*/);
+      TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
+      TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, 1);
+      TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION,
+		   "Created by Ayam.");
+
+      for(i = 0; i < h; i++)
+	{
+	  if(TIFFWriteScanline(tif, &(pixels[(h-i-1)*w*s]), i, 0) < 0)
+	    {
+	      TIFFClose(tif);
+	      ay_error(AY_ERROR, fname, "Error writing image file.");
+	      goto cleanup;
+	    }
+	}
+      TIFFClose(tif);
+    }
+  else
+    {
+      ay_error(AY_ERROR, fname, "Error opening image file.");
+      goto cleanup;
+    }
+
+cleanup:
+
+  if(pixels)
+    free(pixels);
+
+ return TCL_OK;
+} /* ay_viewt_saveimgtcb */

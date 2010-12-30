@@ -975,6 +975,9 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("drop", ay_viewt_droptcb);
 
+  Togl_CreateCommand("saveimg", ay_viewt_saveimgtcb);
+
+
   /* w32t.c */
 #ifdef WIN32
   Tcl_CreateCommand(interp, "w32kill", ay_w32t_w32killtcmd,
