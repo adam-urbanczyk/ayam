@@ -1640,6 +1640,9 @@ int ay_viewt_markfromsel(struct Togl *togl);
  */
 int ay_viewt_markfromselp(struct Togl *togl);
 
+/** save TIFF image file
+ */
+int ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[]);
 
 /* w32t.c */
 #ifdef WIN32
