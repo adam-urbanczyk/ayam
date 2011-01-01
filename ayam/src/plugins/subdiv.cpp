@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2010 by Randolf Schultz
+ * Ayam is copyrighted 1998-2011 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -32,7 +32,6 @@ int Subdiv_Init(Tcl_Interp *interp);
 } // extern "C"
 
 
-
 // functions
 
 /* subdiv_notifycb:
@@ -55,7 +54,6 @@ subdiv_notifycb(ay_object *o)
 
   sdmesh = (ay_sdmesh_object *) o->refine;
 
-
   if(sdmesh->level == 0)
     {
       ay_object_delete(sdmesh->pomesh);
@@ -67,10 +65,10 @@ subdiv_notifycb(ay_object *o)
 
   for(i = 0; i < sdmesh->ncontrols; ++i)
     {
-
       cv[i].setPos(cvec3f((float)sdmesh->controlv[j],
 			  (float)sdmesh->controlv[j+1],
 			  (float)sdmesh->controlv[j+2]));
+      Vertex::ref(&cv[i]);
       j += 3;
     }
 
@@ -118,6 +116,7 @@ subdiv_notifycb(ay_object *o)
       qm->toAyam(&po->controlv, &po->ncontrols,
 		 &po->nverts, &po->verts, &po->npolys);
 
+      delete qm;
     }
   else
     {
@@ -128,6 +127,7 @@ subdiv_notifycb(ay_object *o)
       tm->toAyam(&po->controlv, &po->ncontrols,
 		 &po->nverts, &po->verts, &po->npolys);
 
+      delete tm;
     }
 
   if(po->nloops)
@@ -148,7 +148,6 @@ subdiv_notifycb(ay_object *o)
 
 cleanup:
 
-  //
   delete[] cv;
 
   if(ay_status)
