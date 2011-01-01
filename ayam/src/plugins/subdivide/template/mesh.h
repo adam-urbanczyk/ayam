@@ -1,5 +1,5 @@
 // -*- Mode: c++ -*-
-// $Id: mesh.h,v 1.1 2011/01/01 16:48:38 randolf Exp $
+// $Id: mesh.h,v 1.2 2011/01/01 20:04:13 randolf Exp $
 // $Source: /home/randi/bak/ayam/src/plugins/subdivide/template/mesh.h,v $
 
 /* Subdivide V2.0
@@ -196,8 +196,7 @@ MeshTp<Face>::MeshTp(Vertex *cv, uint nfaces, uint *nverts, uint *verts) {
     for(int u = 0; u < novtx; ++u) 
       _v[u] = &(cv[verts[start+u]]);
     TLFaceType* t = new TLFaceType(novtx, _v);
-    delete _v;
-      
+
     EnoType e;
 
     for(e = 1; e < t->noVtx()+1; ++e) {
