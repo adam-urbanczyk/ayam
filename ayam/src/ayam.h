@@ -548,6 +548,11 @@ typedef struct ay_sdmesh_object_s {
 
   unsigned int ncontrols; /**< total number of control points */
   double *controlv; /**< control points [ncontrols * 3] */
+
+  unsigned int level;  /**< subdivide to which level? */
+
+  /** cached (subdivided) PolyMesh representation */
+  ay_object *pomesh;
 } ay_sdmesh_object;
 
 
@@ -1518,7 +1523,6 @@ extern ay_ftable ay_providecbt;
 /** all registered script evaluation callbacks */
 extern ay_ftable ay_sevalcbt;
 
-
 /** global error number */
 extern int ay_errno;
 
@@ -1894,11 +1898,11 @@ extern char *ay_nm_tagname;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.18"
+#define AY_VERSIONSTR "1.19pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   18
+#define AY_VERSION   19
 #define AY_VERSIONMI 0
 /*@}*/
 

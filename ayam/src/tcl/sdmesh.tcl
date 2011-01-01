@@ -31,6 +31,7 @@ Scheme 0
 set w [frame $ay(pca).$SDMeshAttr(w)]
 
 addMenu $w SDMeshAttrData Scheme {Catmull-Clark Loop}
+addParam $w SDMeshAttrData Level
 addInfo $w SDMeshAttrData NFaces
 addInfo $w SDMeshAttrData NControls
 

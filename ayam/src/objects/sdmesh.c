@@ -219,8 +219,14 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
 
-
-  ay_status = ay_sdmesht_tesselate(sdmesh);
+  if(sdmesh->pomesh)
+    {
+      ay_shade_object(togl, sdmesh->pomesh, AY_FALSE);
+    }
+  else
+    {
+      ay_status = ay_sdmesht_tesselate(sdmesh);
+    }
 
  return ay_status;
 } /* ay_sdmesh_shadecb */
@@ -412,7 +418,7 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*char fname[] = "sdmesh_setpropcb";*/
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_sdmesh_object *sdmesh = NULL;
- int new_scheme;
+ int i;
 
   if(!o)
     return AY_ENULL;
@@ -424,12 +430,20 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Scheme", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp, to, &new_scheme);
+  Tcl_GetIntFromObj(interp, to, &i);
 
-  sdmesh->scheme = new_scheme;
+  sdmesh->scheme = i;
+
+  Tcl_SetStringObj(ton, "Level", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &i);
+
+  sdmesh->level = i;
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+  ay_notify_force(o);
 
   o->modified = AY_TRUE;
   ay_notify_parent();
@@ -460,6 +474,11 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Scheme", -1);
   to = Tcl_NewIntObj(sdmesh->scheme);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "Level", -1);
+  to = Tcl_NewIntObj(sdmesh->level);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -962,6 +981,13 @@ ay_sdmesh_convertcb(ay_object *o, int in_place)
 
   sdmesh = (ay_sdmesh_object *) o->refine;
 
+  if(sdmesh->pomesh)
+    {
+      ay_object_copy(sdmesh->pomesh, &new);
+      ay_object_link(new);
+      return AY_OK;
+    }
+
   /* first, create new object(s) */
   if(!(new = calloc(1, sizeof(ay_object))))
     { return AY_EOMEM; }
@@ -1012,10 +1038,6 @@ ay_sdmesh_init(Tcl_Interp *interp)
 				    ay_sdmesh_wribcb,
 				    ay_sdmesh_bbccb,
 				    AY_IDSDMESH);
-
-  /*
-    ay_status = ay_notify_register(ay_sdmesh_notifycb, AY_IDSDMESH);
-  */
 
     ay_status = ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
 
