@@ -1,5 +1,15 @@
-[20. Dec 2010] CVS-Head:
-========================
+[1. Jan 2011] CVS-Head:
+=======================
+Bug Fixes:
+o fixed setting the FilterWidth for RIB export (SF 3148250)
+
+Modelling:
+o added plugin "subdiv" that, with the help of "Subdivide2.0", can be used
+  to improve the display of sdmesh objects by real subdivided surfaces
+
+
+[23. Dec 2010] Ayam-1.18.2:
+===========================
 Bug Fixes:
 o fixed STESS drawing of certain trimmed NURBS (SF 3119442)
 o fixed Apply-keyboard shortcut not working in all properties (SF 3119439)
