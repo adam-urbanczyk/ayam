@@ -188,18 +188,24 @@ ay_sdmesh_drawcb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
-
-  for(i = 0; i < sdmesh->nfaces; i++)
+  if(sdmesh->drawsub && sdmesh->pomesh)
     {
-      glBegin(GL_LINE_LOOP);
-       for(k = 0; k < sdmesh->nverts[m]; k++)
-	 {
-	   a = sdmesh->verts[n++];
-	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a * 3])));
-	 }
-      glEnd();
-      m++;
-    } /* for */
+      ay_draw_object(togl, sdmesh->pomesh, AY_TRUE);
+    }
+  else
+    {
+      for(i = 0; i < sdmesh->nfaces; i++)
+	{
+	  glBegin(GL_LINE_LOOP);
+	  for(k = 0; k < sdmesh->nverts[m]; k++)
+	    {
+	      a = sdmesh->verts[n++];
+	      glVertex3dv((GLdouble*)(&(sdmesh->controlv[a * 3])));
+	    }
+	  glEnd();
+	  m++;
+	} /* for */
+    }
 
  return AY_OK;
 } /* ay_sdmesh_drawcb */
@@ -440,6 +446,12 @@ ay_sdmesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   sdmesh->level = i;
 
+  Tcl_SetStringObj(ton, "DrawSub", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &i);
+
+  sdmesh->drawsub = i;
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -489,6 +501,11 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "NControls", -1);
   to = Tcl_NewIntObj((int)sdmesh->ncontrols);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "DrawSub", -1);
+  to = Tcl_NewIntObj(sdmesh->drawsub);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -585,6 +602,12 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
       a += 3;
     } /* for */
 
+  if(ay_read_version > 13)
+    {
+      fscanf(fileptr,"%u\n",&sdmesh->level);
+      fscanf(fileptr,"%c\n",&sdmesh->drawsub);
+    }
+
   o->refine = sdmesh;
 
  return AY_OK;
@@ -666,6 +689,9 @@ ay_sdmesh_writecb(FILE *fileptr, ay_object *o)
 	      sdmesh->controlv[a+1], sdmesh->controlv[a+2]);
       a += 3;
     }
+
+  fprintf(fileptr, "%u\n", sdmesh->level);
+  fprintf(fileptr, "%c\n", sdmesh->drawsub);
 
  return AY_OK;
 } /* ay_sdmesh_writecb */
