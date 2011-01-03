@@ -147,11 +147,6 @@ proc material_edit { } {
 	return;
     }
 
-    set sel [lindex $sel 0]
-
-    # we only work with one object
-    selOb $sel
-
     getType type
     global ${type}_props
     eval set props \$${type}_props
@@ -174,13 +169,17 @@ proc material_edit { } {
 	material_createp
 
 	# if a new material has been created by the user
-	# we link it to the object and select it again for editing
+	# we link it to the object(s) and select it again for editing
 	if { $ay_error > 0 } { return; }
 	getProp
 	set newmaterial $MaterialAttrData(Materialname)
-	selOb $sel
-	set matPropData(Materialname) $newmaterial
-	setMat
+	foreach obj $sel {
+	    selOb $obj
+	    getMat
+	    set matPropData(Materialname) $newmaterial
+	    setMat
+	}
+	# select the material again
 	sL;rV
 
     } else {
