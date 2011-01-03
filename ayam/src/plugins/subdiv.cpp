@@ -10,19 +10,20 @@
  *
  */
 
+// Ayam includes
 #include "ayam.h"
 
-// subdiv includes
+// libsub includes
 #include "vertex.h"
 #include "quadmesh.h"
 #include "trimesh.h"
 
 
-// prototypes of functions local to this module
+// prototypes of functions local to this module:
 
 extern "C" {
 
-  int subdiv_notifycb(ay_object *o);
+int subdiv_notifycb(ay_object *o);
 
 #ifdef WIN32
   __declspec (dllexport)
@@ -32,7 +33,7 @@ int Subdiv_Init(Tcl_Interp *interp);
 } // extern "C"
 
 
-// functions
+// functions:
 
 /* subdiv_notifycb:
  *  notification callback function of sdmesh object
@@ -68,6 +69,8 @@ subdiv_notifycb(ay_object *o)
       cv[i].setPos(cvec3f((float)sdmesh->controlv[j],
 			  (float)sdmesh->controlv[j+1],
 			  (float)sdmesh->controlv[j+2]));
+      // reference all verts so that deleting a mesh object
+      // does not delete the verts (with the wrong delete)
       Vertex::ref(&cv[i]);
       j += 3;
     }
@@ -81,31 +84,38 @@ subdiv_notifycb(ay_object *o)
 	}
       newo->type = AY_IDPOMESH;
       ay_object_defaults(newo);
+
       if(!(po = (ay_pomesh_object*)calloc(1, sizeof(ay_pomesh_object))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
       po->has_normals = AY_TRUE;
+
       newo->refine = po;
       sdmesh->pomesh = newo;
     }
   else
     {
+      // re-use existing pomesh
       po = (ay_pomesh_object*)sdmesh->pomesh->refine;
+
+      if(po->controlv)
+	free(po->controlv);
+      po->controlv = NULL;
+
+      if(po->verts)
+	free(po->verts);
+      po->verts = NULL;
+
+      if(po->nverts)
+	free(po->nverts);
+      po->nverts = NULL;
+
+      if(po->nloops)
+	free(po->nloops);
+      po->nloops = NULL;
     }
-
-  if(po->controlv)
-    free(po->controlv);
-  po->controlv = NULL;
-
-  if(po->nverts)
-    free(po->nverts);
-  po->nverts = NULL;
-
-  if(po->verts)
-    free(po->verts);
-  po->verts = NULL;
 
   if(sdmesh->scheme == AY_SDSCATMULL)
     {
@@ -129,10 +139,6 @@ subdiv_notifycb(ay_object *o)
 
       delete tm;
     }
-
-  if(po->nloops)
-    free(po->nloops);
-  po->nloops = NULL;
 
   if(!(po->nloops = (unsigned int*)calloc(po->npolys,
 					  sizeof(unsigned int))))
