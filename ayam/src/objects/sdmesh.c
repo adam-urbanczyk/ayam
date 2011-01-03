@@ -72,6 +72,9 @@ ay_sdmesh_deletecb(void *c)
   if(sdmesh->controlv)
     free(sdmesh->controlv);
 
+  if(sdmesh->pomesh)
+    ay_object_delete(sdmesh->pomesh);
+
   free(sdmesh);
 
  return AY_OK;
@@ -104,6 +107,8 @@ ay_sdmesh_copycb(void *src, void **dst)
   sdmesh->intargs = NULL;
   sdmesh->floatargs = NULL;
   sdmesh->controlv = NULL;
+
+  sdmesh->pomesh = NULL;
 
   /* copy nverts */
   if(sdmeshsrc->nverts)
