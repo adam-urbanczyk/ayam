@@ -1,5 +1,5 @@
 // -*- Mode: c++ -*-
-// $Id: triangleiter.cpp,v 1.1 2011/01/01 16:48:38 randolf Exp $
+// $Id: triangleiter.cpp,v 1.2 2011/01/04 15:29:37 randolf Exp $
 // $Source: /home/randi/bak/ayam/src/plugins/subdivide/src/triangleiter.cpp,v $
 /* Subdivide V2.0
    Copyright (C) 2000 Henning Biermann, Denis Zorin, NYU
@@ -26,6 +26,7 @@ Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 
 #include "mesh.h"
 #include "trimesh.h"
+#include "triangleiter.h"
 
 TriangleIter::TriangleIter(TriIter ti) 
 { _ti = new TriIter(ti); }
