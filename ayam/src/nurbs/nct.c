@@ -1594,6 +1594,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    {
+	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
@@ -2241,7 +2242,7 @@ int
 ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *new = NULL;
  double u = 0.0;
@@ -2258,7 +2259,8 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &u);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   while(sel)
     {
@@ -2725,7 +2727,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
     } /* if */
 
-  if(!(curve = calloc(1,sizeof(ay_nurbcurve_object))))
+  if(!(curve = calloc(1, sizeof(ay_nurbcurve_object))))
     {
       ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
@@ -5091,9 +5093,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	}
 
       /* coarsen control points */
-
       if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
-	return AY_EOMEM;
+	{
+	  if(newknotv)
+	    free(newknotv);
+	  return AY_EOMEM;
+	}
 
       /* copy first p points */
       memcpy(&(newcontrolv[0]), &(curve->controlv[0]),
@@ -5143,9 +5148,12 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	}
 
       /* coarsen control points */
-
       if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
-	return AY_EOMEM;
+	{
+	  if(newknotv)
+	    free(newknotv);
+	  return AY_EOMEM;
+	}
 
       /* copy first point */
       memcpy(newcontrolv, curve->controlv, stride*sizeof(double));
@@ -5293,8 +5301,6 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
-  printf("%lg\n",tol);
-
   while(sel)
     {
       o = sel->object;
@@ -5332,8 +5338,17 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      s++;
 	    }
 
-	  newcontrolv = calloc(curve->length*4, sizeof(double));
-	  newknotv = calloc(curve->length+curve->order, sizeof(double));
+	  if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	    {
+	      free(newcontrolv);
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
 
 	  /* remove the knot */
 	  ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
@@ -5446,7 +5461,7 @@ int
 ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  double umin = 0.0, umax = 0.0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -5463,8 +5478,10 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  Tcl_GetDouble(interp, argv[1], &umin);
-  Tcl_GetDouble(interp, argv[2], &umax);
+  tcl_status = Tcl_GetDouble(interp, argv[1], &umin);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetDouble(interp, argv[2], &umax);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
   if(umax <= umin)
     {
@@ -5855,7 +5872,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		}
 	      tag = tag->next;
 	    }
-	  if(!vn || (vnlen != curve->length))
+	  if(!vn || (vnlen != (unsigned int)curve->length))
 	    {
 	      ay_status = AY_ERROR;
 	      goto cleanup;
