@@ -1427,7 +1427,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
   for(i = 0; i < 6; i++)
     {
-      if(!(new = calloc(1,sizeof(ay_object))))
+      if(!(new = calloc(1, sizeof(ay_object))))
 	{
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
@@ -7445,12 +7445,6 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(!sel->object)
-	{
-	  ay_error(AY_ENULL, argv[0], NULL);
-	  return TCL_OK;
-	}
-
       switch(sel->object->type)
 	{
 	case AY_IDNPATCH:
@@ -7574,9 +7568,6 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(!sel->object)
-	return TCL_OK;
-
       switch(sel->object->type)
 	{
 	case AY_IDNPATCH:
@@ -8277,13 +8268,8 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(!sel->object)
-	{
-	  /* something is very wrong */
-	  return TCL_OK;
-	}
-
       o = sel->object;
+      /* so that we may use continue */
       sel = sel->next;
 
       if(o->type == AY_IDNPATCH)
@@ -8556,13 +8542,8 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(!sel->object)
-	{
-	  ay_error(AY_ENULL, argv[0], NULL);
-	  return TCL_OK;
-	}
-
       o = sel->object;
+      /* so that we may use continue */
       sel = sel->next;
 
       if(o->type == AY_IDNPATCH)
@@ -9297,39 +9278,37 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object)
+      if(sel->object->type == AY_IDNPATCH)
 	{
-	  if(sel->object->type == AY_IDNPATCH)
+	  /* remove all selected points */
+	  if(sel->object->selp)
 	    {
-	      /* remove all selected points */
-	      if(sel->object->selp)
-		{
-		  ay_selp_clear(sel->object);
-		}
-
-	      new = NULL;
-
-	      ay_status = ay_npt_splitu(sel->object, u, &new);
-
-	      if(ay_status)
-		{
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		} /* if */
-
-	      ay_status = ay_object_link(new);
-
-	      sel->object->modified = AY_TRUE;
-
-	      /* re-create tesselation of original patch */
-	      ay_notify_force(sel->object);
+	      ay_selp_clear(sel->object);
 	    }
-	  else
+
+	  new = NULL;
+
+	  ay_status = ay_npt_splitu(sel->object, u, &new);
+
+	  if(ay_status)
 	    {
-	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
+
+	  ay_status = ay_object_link(new);
+
+	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of original patch */
+	  ay_notify_force(sel->object);
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  return TCL_OK;
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
@@ -9520,39 +9499,38 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object)
+
+      if(sel->object->type == AY_IDNPATCH)
 	{
-	  if(sel->object->type == AY_IDNPATCH)
+	  /* remove all selected points */
+	  if(sel->object->selp)
 	    {
-	      /* remove all selected points */
-	      if(sel->object->selp)
-		{
-		  ay_selp_clear(sel->object);
-		}
-
-	      new = NULL;
-
-	      ay_status = ay_npt_splitv(sel->object, v, &new);
-
-	      if(ay_status)
-		{
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		} /* if */
-
-	      ay_status = ay_object_link(new);
-
-	      sel->object->modified = AY_TRUE;
-
-	      /* re-create tesselation of original patch */
-	      ay_notify_force(sel->object);
+	      ay_selp_clear(sel->object);
 	    }
-	  else
+
+	  new = NULL;
+
+	  ay_status = ay_npt_splitv(sel->object, v, &new);
+
+	  if(ay_status)
 	    {
-	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
+
+	  ay_status = ay_object_link(new);
+
+	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of original patch */
+	  ay_notify_force(sel->object);
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  return TCL_OK;
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
@@ -9753,28 +9731,25 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object)
+      if(sel->object->type == AY_IDNPATCH)
 	{
-	  if(sel->object->type == AY_IDNPATCH)
+	  new = NULL;
+
+	  ay_status = ay_npt_extractnp(sel->object, umin, umax, vmin, vmax,
+				       relative, &new);
+
+	  if(ay_status)
 	    {
-	      new = NULL;
-
-	      ay_status = ay_npt_extractnp(sel->object, umin, umax, vmin, vmax,
-					   relative, &new);
-
-	      if(ay_status)
-		{
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		} /* if */
-
-	      ay_status = ay_object_link(new);
-	    }
-	  else
-	    {
-	      ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
+
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  return TCL_OK;
 	} /* if */
       sel = sel->next;
     } /* while */
