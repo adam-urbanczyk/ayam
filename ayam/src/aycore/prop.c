@@ -32,11 +32,6 @@ ay_prop_gettcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   arr = ay_getpropcbt.arr;
   cb = (ay_propcb *)(arr[o->type]);
@@ -72,11 +67,6 @@ ay_prop_settcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   /* get callback from table */
   arr = ay_setpropcbt.arr;
@@ -108,11 +98,6 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("Translate_X", -1);
@@ -188,11 +173,6 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj("ay", -1);
   ton = Tcl_NewStringObj("pasteProp", -1);
@@ -319,11 +299,6 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("Objectname", -1);
@@ -369,11 +344,6 @@ ay_prop_setattrtcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("Objectname", -1);
@@ -432,11 +402,6 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("Materialname", -1);
@@ -487,11 +452,6 @@ ay_prop_setmattcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
 
   toa = Tcl_NewStringObj(n1, -1);
   ton = Tcl_NewStringObj("Materialname", -1);

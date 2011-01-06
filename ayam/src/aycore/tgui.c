@@ -48,7 +48,7 @@ ay_tgui_open(void)
  int ay_status = AY_OK;
  char fname[] = "tgui_open";
  ay_list_object *sel = ay_selection;
- ay_object *new = NULL, **last = NULL;
+ ay_object *o = NULL, *new = NULL, **last = NULL;
  ay_list_object *newl = NULL, **lastl = NULL;
 
   if(!sel)
@@ -61,23 +61,24 @@ ay_tgui_open(void)
   lastl = &(ay_tgui_origrefs);
   while(sel)
     {
-      if(sel->object && (sel->object->type == AY_IDINSTANCE))
+      o = sel->object;
+      if(o->type == AY_IDINSTANCE)
 	{
-	  if(sel->object->selp)
+	  if(o->selp)
 	    {
-	      ay_selp_clear(sel->object);
-	      ay_tags_remnonm(sel->object, (ay_object*)sel->object->refine);
+	      ay_selp_clear(o);
+	      ay_tags_remnonm(o, (ay_object*)o->refine);
 	    }
 
 	  sel = sel->next;
 	  continue;
 	}
-      if(sel->object && ((sel->object->type == AY_IDNPATCH) ||
-		       (!ay_provide_object(sel->object, AY_IDNPATCH, NULL))))
+      if((o->type == AY_IDNPATCH) ||
+	 (!ay_provide_object(o, AY_IDNPATCH, NULL)))
 	{
-	  if(sel->object->selp)
+	  if(o->selp)
 	    {
-	      ay_selp_clear(sel->object);
+	      ay_selp_clear(o);
 	    }
 
 	  new = NULL;
@@ -87,12 +88,12 @@ ay_tgui_open(void)
 	  last = &(new->next);
 	  /* we use the new ay_object to store the type specific
 	     parts and transformations of the NPATCH object */
-	  memcpy(new, sel->object, sizeof(ay_object));
+	  memcpy(new, o, sizeof(ay_object));
 	  new->next = NULL;
 
 	  /* ay_tgui_update() may delete tags, make the original
 	     tags immune to that */
-	  sel->object->tags = NULL;
+	  o->tags = NULL;
 
 	  /* we save a pointer to the original object in the scene */
 	  newl = NULL;
@@ -100,7 +101,7 @@ ay_tgui_open(void)
 	    return AY_EOMEM;
 	  *lastl = newl;
 	  lastl = &(newl->next);
-	  newl->object = sel->object;
+	  newl->object = o;
 	}
       else
 	{

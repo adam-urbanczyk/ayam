@@ -381,41 +381,40 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  /* save old point selection */
-	  oldpointsel = o->selp;
-	  o->selp = NULL;
 
-	  /* center all points */
-	  switch(o->type)
+      /* save old point selection */
+      oldpointsel = o->selp;
+      o->selp = NULL;
+
+      /* center all points */
+      switch(o->type)
+	{
+	case AY_IDNCURVE:
+	  ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
+	  break;
+	default:
+	  ay_status = ay_selp_selall(o);
+	  if(!ay_status)
 	    {
-	    case AY_IDNCURVE:
-	      ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
-	      break;
-	    default:
-	      ay_status = ay_selp_selall(o);
-	      if(!ay_status)
-		{
-		  ay_status = ay_selp_center(o, mode);
-		}
-	      break;
-	    } /* switch */
+	      ay_status = ay_selp_center(o, mode);
+	    }
+	  break;
+	} /* switch */
 
 	  /* recover point selection */
-	  ay_selp_clear(o);
-	  o->selp = oldpointsel;
+      ay_selp_clear(o);
+      o->selp = oldpointsel;
 
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, argv[0], "Could not center object!");
-	    }
-	  else
-	    {
-	      o->modified = AY_TRUE;
-	      ay_notify_force(o);
-	    }
-	} /* if */
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], "Could not center object!");
+	}
+      else
+	{
+	  o->modified = AY_TRUE;
+	  ay_notify_force(o);
+	}
+
       sel = sel->next;
     } /* while */
 

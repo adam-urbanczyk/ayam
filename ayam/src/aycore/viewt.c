@@ -2184,10 +2184,9 @@ ay_viewt_markfromsel(struct Togl *togl)
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  numo++;
-	}
+
+      numo++;
+
       sel = sel->next;
     } /* while */
 
@@ -2198,14 +2197,13 @@ ay_viewt_markfromsel(struct Togl *togl)
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  cogs[a]   = o->movx;
-	  cogs[a+1] = o->movy;
-	  cogs[a+2] = o->movz;
 
-	  a += 3;
-	}
+      cogs[a]   = o->movx;
+      cogs[a+1] = o->movy;
+      cogs[a+2] = o->movz;
+
+      a += 3;
+
       sel = sel->next;
     } /* while */
 
@@ -2300,7 +2298,7 @@ ay_viewt_markfromselp(struct Togl *togl)
   while(sel)
     {
       o = sel->object;
-      if(o && o->selp)
+      if(o->selp)
 	{
 	  numo++;
 	}
@@ -2314,7 +2312,7 @@ ay_viewt_markfromselp(struct Togl *togl)
   while(sel)
     {
       o = sel->object;
-      if(o && o->selp)
+      if(o->selp)
 	{
 	  selp = o->selp;
 	  nump = 0;
