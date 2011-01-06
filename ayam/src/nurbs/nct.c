@@ -1198,7 +1198,6 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  int side = 0;
 
-
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &side);
@@ -1208,40 +1207,37 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
 
-      if(sel->object)
+      if(sel->object->type == AY_IDNCURVE)
 	{
-	  if(sel->object->type == AY_IDNCURVE)
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  curve = (ay_nurbcurve_object *)sel->object->refine;
+
+	  if((curve->knot_type == AY_KTNURB) ||
+	     (curve->knot_type == AY_KTBEZIER))
+	    break;
+
+	  ay_status = ay_nct_clamp(curve, side);
+
+	  if(ay_status)
 	    {
-	      if(sel->object->selp)
-		ay_selp_clear(sel->object);
-
-	      curve = (ay_nurbcurve_object *)sel->object->refine;
-
-	      if((curve->knot_type == AY_KTNURB) ||
-		 (curve->knot_type == AY_KTBEZIER))
-		break;
-
-	      ay_status = ay_nct_clamp(curve, side);
-
-	      if(ay_status)
-		{
-		  ay_error(ay_status, argv[0], "clamp operation failed");
-		  return TCL_OK;
-		}
-
-	      curve->knot_type = AY_KTCUSTOM;
-
-	      /* update pointers to controlv */
-	      ay_status = ay_nct_recreatemp(curve);
-	      sel->object->modified = AY_TRUE;
-
-	      /* re-create tesselation of curve */
-	      ay_notify_force(sel->object);
+	      ay_error(ay_status, argv[0], "clamp operation failed");
+	      return TCL_OK;
 	    }
-	  else
-	    {
-	      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
-	    } /* if */
+
+	  curve->knot_type = AY_KTCUSTOM;
+
+	  /* update pointers to controlv */
+	  ay_status = ay_nct_recreatemp(curve);
+	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_force(sel->object);
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
 	} /* if */
 
     sel = sel->next;
@@ -2264,39 +2260,38 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(sel->object)
+
+      /* remove all selected points */
+      if(sel->object->selp)
 	{
-	  /* remove all selected points */
-	  if(sel->object->selp)
+	  ay_selp_clear(sel->object);
+	}
+
+      if(sel->object->type == AY_IDNCURVE)
+	{
+	  new = NULL;
+
+	  ay_status = ay_nct_split(sel->object, u, &new);
+
+	  if(ay_status)
 	    {
-	      ay_selp_clear(sel->object);
-	    }
-
-	  if(sel->object->type == AY_IDNCURVE)
-	    {
-	      new = NULL;
-
-	      ay_status = ay_nct_split(sel->object, u, &new);
-
-	      if(ay_status)
-		{
-		  ay_error(ay_status, argv[0], NULL);
-		  return TCL_OK;
-		} /* if */
-
-	      ay_status = ay_object_link(new);
-
-	      sel->object->modified = AY_TRUE;
-
-	      /* re-create tesselation of original curve */
-	      ay_notify_force(sel->object);
-	    }
-	  else
-	    {
-	      ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
+
+	  ay_status = ay_object_link(new);
+
+	  sel->object->modified = AY_TRUE;
+
+	  /* re-create tesselation of original curve */
+	  ay_notify_force(sel->object);
+	}
+      else
+	{
+	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  return TCL_OK;
 	} /* if */
+
       sel = sel->next;
     } /* while */
 
@@ -2706,7 +2701,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
 
-  if(sel && sel->object && (sel->object->type == AY_IDNPATCH))
+  if(sel && (sel->object->type == AY_IDNPATCH))
     {
       create_trim = AY_TRUE;
       patch = (ay_nurbpatch_object *)sel->object->refine;
