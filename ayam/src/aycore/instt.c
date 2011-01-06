@@ -815,28 +815,29 @@ ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel)
     {
-      ay_error(AY_ENOSEL,argv[0],NULL);
+      ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
 
-  if(!(o = sel->object))
+  while(sel)
     {
-      ay_error(AY_ERROR,argv[0],NULL);
-      return TCL_OK;
-    }
+      o = sel->object;
+      /* so that we may use continue */
+      sel = sel->next;
 
-  if(!o->type == AY_IDINSTANCE)
-    {
-      ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
-      return TCL_OK;
-    }
+      if(!o->type == AY_IDINSTANCE)
+	{
+	  ay_error(AY_ERROR, argv[0], "Object is not of type Instance!");
+	  continue;
+	}
 
-  ay_status = ay_instt_resolve(o);
+      ay_status = ay_instt_resolve(o);
 
-  if(ay_status)
-    {
-      ay_error(ay_status, argv[0], NULL);
-      return TCL_OK;
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], NULL);
+	  continue;
+	}
     }
 
  return TCL_OK;
@@ -997,11 +998,7 @@ ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!(o = sel->object))
-    {
-      ay_error(AY_ERROR, argv[0], NULL);
-      return TCL_OK;
-    }
+  o = sel->object;
 
   if(o->type != AY_IDINSTANCE)
     {

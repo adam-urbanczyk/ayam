@@ -162,8 +162,7 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
     {
       o = sel->object;
 
-      if(o)
-	o->hide = AY_FALSE;
+      o->hide = AY_FALSE;
 
       sel = sel->next;
     } /* while */
@@ -234,24 +233,22 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
     {
       o = sel->object;
 
-      if(o)
+      if(toggle)
 	{
-	  if(toggle)
+	  if(o->hide)
 	    {
-	      if(o->hide)
-		{
-		  o->hide = AY_FALSE;
-		}
-	      else
-		{
-		  o->hide = AY_TRUE;
-		}
+	      o->hide = AY_FALSE;
 	    }
 	  else
 	    {
 	      o->hide = AY_TRUE;
 	    }
 	}
+      else
+	{
+	  o->hide = AY_TRUE;
+	}
+
       sel = sel->next;
     } /* while */
 

@@ -178,10 +178,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* sanity check */
-      if(!o)
-	return TCL_OK;
-
       if(!multiple)
 	{
 	  glReadPixels((GLint)(winX),(GLint)(height-winY), 1, 1,
@@ -456,31 +452,28 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   while(sel)
     {
-      if(!sel->object)
-	return TCL_OK;
+      o = sel->object;
 
-      mins = fabs(sel->object->scalx);
+      mins = fabs(o->scalx);
 
-      if(fabs(sel->object->scaly) < mins)
-	mins = sel->object->scaly;
+      if(fabs(o->scaly) < mins)
+	mins = o->scaly;
 
-      if(fabs(sel->object->scalz) < mins)
-	mins = sel->object->scalz;
+      if(fabs(o->scalz) < mins)
+	mins = o->scalz;
 
       ay_prefs.pick_epsilon = oldpickepsilon / lscal *
 	(view->conv_x/0.006) / mins;
 
       /*printf("using pickepsilon %g\n", ay_prefs.pick_epsilon);*/
 
-      ay_viewt_wintoobj(togl, sel->object, winX, winY,
+      ay_viewt_wintoobj(togl, o, winX, winY,
 			&(obj[0]), &(obj[1]), &(obj[2]));
 
-      ay_status = ay_pact_getpoint(1, sel->object, obj, &pact_pe);
+      ay_status = ay_pact_getpoint(1, o, obj, &pact_pe);
 
       if(!ay_status && pact_pe.coords && (!pact_pe.readonly))
 	{
-	  o = sel->object;
-
 	  /* save coords */
 	  if(!(tmp = realloc(pecoords,
 			     (pact_pe.num + penumber)*sizeof(double*))))
@@ -630,9 +623,6 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  o = sel->object;
 
-	  if(!o)
-	    return TCL_OK;
-
 	  /* pick new point */
 	  ay_viewt_wintoobj(togl, o, winX, winY,
 			    &(obj[0]), &(obj[1]), &(obj[2]));
@@ -770,7 +760,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
       while(sel)
 	{
 	  o = sel->object;
-	  if(o && o->selp)
+	  if(o->selp)
 	    {
 	      if(!local)
 		{
@@ -1459,15 +1449,6 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
-      sel = sel->next;
-
-      if(!o)
-	{
-	  ay_error(AY_ENULL, fname, NULL);
-	  break;
-	}
-
       ay_viewt_wintoobj(togl, o,
 			winX, winY,
 			&objX, &objY, &objZ);
@@ -1506,6 +1487,8 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_notify_force(o);
 	  o->modified = AY_TRUE;
 	} /* if */
+
+      sel = sel->next;
     } /* while */
 
   if(notify_parent)
@@ -1782,15 +1765,6 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      /* so that we may use break; */
-      sel = sel->next;
-
-      if(!o)
-	{
-	  ay_error(AY_ENULL, fname, NULL);
-	  break;
-	}
-
       ay_viewt_wintoobj(togl, o,
 			winX, winY,
 			&objX, &objY, &objZ);
@@ -1829,6 +1803,8 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	  ay_status = ay_notify_force(o);
 	  ay_selection->object->modified = AY_TRUE;
 	} /* if */
+
+      sel = sel->next;
     } /* while */
 
   if(notify_parent)
@@ -2243,9 +2219,6 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
-      if(!o)
-	return TCL_OK;
-
       ay_status = ay_pact_getpoint(0, o, p, &pe);
 
       if(ay_status)
@@ -2325,9 +2298,6 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
   while(sel)
     {
       o = sel->object;
-
-      if(!o)
-	return TCL_OK;
 
       if(!o->selp)
 	{
@@ -2474,9 +2444,6 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
      {
        o = sel->object;
 
-       if(!o)
-	 return TCL_OK;
-
        if(mode == 0)
 	 {
 	   if(o->selp)
@@ -2556,8 +2523,8 @@ ay_pact_notify(ay_object *o, int j, int k)
 {
  ay_point *oldselp = NULL, tmpselp = {0};
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(pact_numcpo[j] == 1)
     {

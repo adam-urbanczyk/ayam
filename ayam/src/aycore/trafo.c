@@ -533,9 +533,6 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      if(!sel->object)
-	return TCL_OK;
-
       ay_status = ay_trafo_delegate(sel->object);
       if(ay_status)
 	{
@@ -720,13 +717,11 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  o->movx += dx;
-	  o->movy += dy;
-	  o->movz += dz;
-	  o->modified = AY_TRUE;
-	}
+
+      o->movx += dx;
+      o->movy += dy;
+      o->movz += dz;
+      o->modified = AY_TRUE;
 
       sel = sel->next;
     }
@@ -775,23 +770,21 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  if(o->selp)
-	    {
-	      if(!o->selp->readonly)
-		{
-		  point = o->selp;
-		  while(point)
-		    {
-		      AY_APTRAN3(tpoint,point->point,mm);
-		      memcpy(point->point,tpoint,3*sizeof(double));
 
-		      point = point->next;
-		    }
-		  o->modified = AY_TRUE;
-		  notify_parent = AY_TRUE;
-		} /* if */
+      if(o->selp)
+	{
+	  if(!o->selp->readonly)
+	    {
+	      point = o->selp;
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint,point->point,mm);
+		  memcpy(point->point,tpoint,3*sizeof(double));
+
+		  point = point->next;
+		}
+	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    } /* if */
 	} /* if */
 
@@ -840,13 +833,11 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  o->scalx *= dx;
-	  o->scaly *= dy;
-	  o->scalz *= dz;
-	  o->modified = AY_TRUE;
-	}
+
+      o->scalx *= dx;
+      o->scaly *= dy;
+      o->scalz *= dz;
+      o->modified = AY_TRUE;
 
       sel = sel->next;
     }
@@ -902,23 +893,21 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  if(o->selp)
-	    {
-	      if(!o->selp->readonly)
-		{
-		  point = o->selp;
-		  while(point)
-		    {
-		      AY_APTRAN3(tpoint, point->point, mm);
-		      memcpy(point->point, tpoint, 3*sizeof(double));
 
-		      point = point->next;
-		    }
-		  o->modified = AY_TRUE;
-		  notify_parent = AY_TRUE;
-		} /* if */
+      if(o->selp)
+	{
+	  if(!o->selp->readonly)
+	    {
+	      point = o->selp;
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint, point->point, mm);
+		  memcpy(point->point, tpoint, 3*sizeof(double));
+
+		  point = point->next;
+		}
+	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    } /* if */
 	} /* if */
 
@@ -965,28 +954,25 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
 
-      if(o)
+      o->rotx += dx;
+      if(dx != 0.0)
 	{
-	  o->rotx += dx;
-	  if(dx != 0.0)
-	    {
-	      ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
-	      ay_quat_add(quat, o->quat, o->quat);
-	    }
-	  o->roty += dy;
-	  if(dy != 0.0)
-	    {
-	      ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
-	      ay_quat_add(quat, o->quat, o->quat);
-	    }
-	  o->rotz += dz;
-	  if(dz != 0.0)
-	    {
-	      ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
-	      ay_quat_add(quat, o->quat, o->quat);
-	    }
-	  o->modified = AY_TRUE;
+	  ay_quat_axistoquat(xaxis, dx*AY_PI/180.0, quat);
+	  ay_quat_add(quat, o->quat, o->quat);
 	}
+      o->roty += dy;
+      if(dy != 0.0)
+	{
+	  ay_quat_axistoquat(yaxis, dy*AY_PI/180.0, quat);
+	  ay_quat_add(quat, o->quat, o->quat);
+	}
+      o->rotz += dz;
+      if(dz != 0.0)
+	{
+	  ay_quat_axistoquat(zaxis, dz*AY_PI/180.0, quat);
+	  ay_quat_add(quat, o->quat, o->quat);
+	}
+      o->modified = AY_TRUE;
 
       sel = sel->next;
     } /* while */
@@ -1037,23 +1023,21 @@ ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(o)
-	{
-	  if(o->selp)
-	    {
-	      if(!o->selp->readonly)
-		{
-		  point = o->selp;
-		  while(point)
-		    {
-		      AY_APTRAN3(tpoint, point->point, mm);
-		      memcpy(point->point, tpoint, 3*sizeof(double));
 
-		      point = point->next;
-		    }
-		  o->modified = AY_TRUE;
-		  notify_parent = AY_TRUE;
-		} /* if */
+      if(o->selp)
+	{
+	  if(!o->selp->readonly)
+	    {
+	      point = o->selp;
+	      while(point)
+		{
+		  AY_APTRAN3(tpoint, point->point, mm);
+		  memcpy(point->point, tpoint, 3*sizeof(double));
+
+		  point = point->next;
+		}
+	      o->modified = AY_TRUE;
+	      notify_parent = AY_TRUE;
 	    } /* if */
 	} /* if */
 
@@ -1138,15 +1122,24 @@ ay_trafo_invmatrix4(double *m, double *mi)
       return AY_ERROR;
 
    det = 1.0 / det;
-   AY_M44(mi,0,0) = (  (AY_M44(m,1,1)*AY_M44(m,2,2) - AY_M44(m,2,1)*AY_M44(m,1,2) )*det);
-   AY_M44(mi,0,1) = (- (AY_M44(m,0,1)*AY_M44(m,2,2) - AY_M44(m,2,1)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,0,2) = (  (AY_M44(m,0,1)*AY_M44(m,1,2) - AY_M44(m,1,1)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,1,0) = (- (AY_M44(m,1,0)*AY_M44(m,2,2) - AY_M44(m,2,0)*AY_M44(m,1,2) )*det);
-   AY_M44(mi,1,1) = (  (AY_M44(m,0,0)*AY_M44(m,2,2) - AY_M44(m,2,0)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,1,2) = (- (AY_M44(m,0,0)*AY_M44(m,1,2) - AY_M44(m,1,0)*AY_M44(m,0,2) )*det);
-   AY_M44(mi,2,0) = (  (AY_M44(m,1,0)*AY_M44(m,2,1) - AY_M44(m,2,0)*AY_M44(m,1,1) )*det);
-   AY_M44(mi,2,1) = (- (AY_M44(m,0,0)*AY_M44(m,2,1) - AY_M44(m,2,0)*AY_M44(m,0,1) )*det);
-   AY_M44(mi,2,2) = (  (AY_M44(m,0,0)*AY_M44(m,1,1) - AY_M44(m,1,0)*AY_M44(m,0,1) )*det);
+   AY_M44(mi,0,0) = (  (AY_M44(m,1,1)*AY_M44(m,2,2) -
+			AY_M44(m,2,1)*AY_M44(m,1,2) )*det);
+   AY_M44(mi,0,1) = (- (AY_M44(m,0,1)*AY_M44(m,2,2) -
+			AY_M44(m,2,1)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,0,2) = (  (AY_M44(m,0,1)*AY_M44(m,1,2) -
+			AY_M44(m,1,1)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,1,0) = (- (AY_M44(m,1,0)*AY_M44(m,2,2) -
+			AY_M44(m,2,0)*AY_M44(m,1,2) )*det);
+   AY_M44(mi,1,1) = (  (AY_M44(m,0,0)*AY_M44(m,2,2) -
+			AY_M44(m,2,0)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,1,2) = (- (AY_M44(m,0,0)*AY_M44(m,1,2) -
+			AY_M44(m,1,0)*AY_M44(m,0,2) )*det);
+   AY_M44(mi,2,0) = (  (AY_M44(m,1,0)*AY_M44(m,2,1) -
+			AY_M44(m,2,0)*AY_M44(m,1,1) )*det);
+   AY_M44(mi,2,1) = (- (AY_M44(m,0,0)*AY_M44(m,2,1) -
+			AY_M44(m,2,0)*AY_M44(m,0,1) )*det);
+   AY_M44(mi,2,2) = (  (AY_M44(m,0,0)*AY_M44(m,1,1) -
+			AY_M44(m,1,0)*AY_M44(m,0,1) )*det);
 
    /* Do the translation part */
    AY_M44(mi,0,3) = - (AY_M44(m,0,3) * AY_M44(mi,0,0) +

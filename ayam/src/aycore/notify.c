@@ -74,7 +74,7 @@ ay_notify_parent(void)
       while(sel)
 	{
 	  o = sel->object;
-	  if(o && o->modified)
+	  if(o->modified)
 	    {
 	      ay_status = ay_notify_complete(o);
 	      o->modified = AY_FALSE;

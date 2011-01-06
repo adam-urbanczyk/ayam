@@ -957,9 +957,9 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 
   while(sel)
     {
-      o = ay_selection->object;
+      o = sel->object;
 
-      if(o && o->type == AY_IDPOMESH)
+      if(o->type == AY_IDPOMESH)
 	{
 	  ay_status = AY_OK;
 	  if(optimize_coords)
@@ -1370,7 +1370,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-      o = ay_selection->object;
+      o = sel->object;
 
       if(o->type == AY_IDPOMESH)
 	{

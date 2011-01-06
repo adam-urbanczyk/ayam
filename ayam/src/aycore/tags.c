@@ -259,9 +259,6 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!sel->object)
-    return TCL_OK;
-
   if(!strcmp(argv[1],"-index"))
     {
       if(argc < 5)
@@ -378,12 +375,6 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-
-      if(!o)
-	{
-	  ay_error(AY_ENULL, argv[0], NULL);
-	  return TCL_OK;
-	}
 
       if(!pasteProp)
 	{
@@ -525,10 +516,6 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
-      if(!o)
-	{
-	  return TCL_OK;
-	}
 
       /* we first try to resolve the tag type */
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[1])))
@@ -608,34 +595,31 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o = sel->object;
-  if(o)
+  tag = o->tags;
+  while(tag)
     {
-      tag = o->tags;
-      while(tag)
+      if(tag->name && tag->val)
 	{
-	  if(tag->name && tag->val)
+	  Tcl_SetVar(interp,argv[1],tag->name, TCL_APPEND_VALUE |\
+		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	  Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
+		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	  if(argc > 3)
 	    {
-	      Tcl_SetVar(interp,argv[1],tag->name, TCL_APPEND_VALUE |\
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	      Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	      if(argc > 3)
+	      if(tag->is_temp)
 		{
-		  if(tag->is_temp)
-		    {
-		      Tcl_SetVar(interp,argv[3],"1", TCL_APPEND_VALUE |\
-				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		    }
-		  else
-		    {
-		      Tcl_SetVar(interp,argv[3],"0", TCL_APPEND_VALUE |\
-				 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		    }
-		} /* if */
+		  Tcl_SetVar(interp,argv[3],"1", TCL_APPEND_VALUE |\
+			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		}
+	      else
+		{
+		  Tcl_SetVar(interp,argv[3],"0", TCL_APPEND_VALUE |\
+			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+		}
 	    } /* if */
-	  tag = tag->next;
-	} /* while */
-    } /* if */
+	} /* if */
+      tag = tag->next;
+    } /* while */
 
   return TCL_OK;
 } /* ay_tags_gettcmd */
@@ -675,33 +659,30 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
 
-      if(o)
+      last = &(o->tags);
+      tag = o->tags;
+      while(tag)
 	{
-	  last = &(o->tags);
-	  tag = o->tags;
-	  while(tag)
+	  if(!tag->is_binary && tag->name)
 	    {
-	      if(!tag->is_binary && tag->name)
+	      if(mode || (!strcmp(argv[1], tag->name)))
 		{
-		  if(mode || (!strcmp(argv[1], tag->name)))
-		    {
-		      *last = tag->next;
-		      ay_tags_free(tag);
-		      tag = *last;
-		    }
-		  else
-		    {
-		      last = &(tag->next);
-		      tag = tag->next;
-		    } /* if */
+		  *last = tag->next;
+		  ay_tags_free(tag);
+		  tag = *last;
 		}
 	      else
 		{
 		  last = &(tag->next);
 		  tag = tag->next;
 		} /* if */
-	    } /* while */
-	} /* if */
+	    }
+	  else
+	    {
+	      last = &(tag->next);
+	      tag = tag->next;
+	    } /* if */
+	} /* while */
 
       sel = sel->next;
     } /* while */
