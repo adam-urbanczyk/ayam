@@ -755,7 +755,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
   if(!(nverts = calloc(sdmesh->nfaces, sizeof(RtInt))))
     {
-      free(controls); return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   for(i = 0; i < sdmesh->nfaces; i++)
@@ -766,7 +767,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
   if(!(verts = calloc(total_verts, sizeof(RtInt))))
     {
-      free(controls); free(nverts); return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   for(i = 0; i < total_verts; i++)
@@ -778,7 +780,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
     {
       if(!(tags = calloc(sdmesh->ntags, sizeof(RtToken))))
 	{
-	  free(controls); free(nverts); free(verts); return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
       for(i = 0; i < sdmesh->ntags; i++)
 	{
@@ -803,8 +806,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
       if(!(nargs = calloc(total_verts, sizeof(RtInt))))
 	{
-	  free(controls); free(nverts); free(verts); free(tags);
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
       for(i = 0; i < (2 * sdmesh->ntags); i++)
 	{
@@ -819,8 +822,8 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
       if(!(intargs = calloc(total_intargs, sizeof(RtInt))))
 	{
-	  free(controls); free(nverts); free(verts); free(tags); free(nargs);
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
       for(i = 0; i < total_intargs; i++)
 	{
@@ -829,14 +832,14 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 
       if(!(floatargs = calloc(total_floatargs, sizeof(RtFloat))))
 	{
-	  free(controls); free(nverts); free(verts); free(tags); free(nargs);
-	  if(intargs){free(intargs);} return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
       for(i = 0; i < total_floatargs; i++)
 	{
 	  floatargs[i] = (RtFloat)(sdmesh->floatargs[i]);
 	}
-    }
+    } /* if */
 
   /* Do we have any primitive variables? */
   if(!(pvc = ay_pv_count(o)))
@@ -862,10 +865,16 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
     {
       /* Yes, we have primitive variables. */
       if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
       tokens[0] = "P";
       parms[0] = (RtPointer)controls;
@@ -887,30 +896,48 @@ ay_sdmesh_wribcb(char *file, ay_object *o)
 			    (RtInt)0, NULL, NULL, NULL, NULL,
 			    (RtInt)n, tokens, parms);
 	} /* if */
-
-      for(j = 1; j < n; j++)
-	{
-	  free(tokens[j]);
-	  free(parms[j]);
-	}
-
-      free(tokens);
-      free(parms);
-
     } /* if */
 
   /* clean up */
-  free(controls);
-  free(nverts);
-  free(verts);
+cleanup:
+
+  if(controls)
+    free(controls);
+  if(nverts)
+    free(nverts);
+  if(verts)
+    free(verts);
+
   if(sdmesh->ntags > 0)
     {
-      free(tags);
-      free(nargs);
+      if(tags)
+	free(tags);
+      if(nargs)
+	free(nargs);
       if(intargs)
 	free(intargs);
       if(floatargs)
 	free(floatargs);
+    }
+
+  if(tokens)
+    {
+      for(j = 1; j < n; j++)
+	{
+	  if(tokens[j])
+	    free(tokens[j]);
+	}
+      free(tokens);
+    }
+
+  if(parms)
+    {
+      for(j = 1; j < n; j++)
+	{
+	  if(parms[j])
+	    free(parms[j]);
+	}
+      free(parms);
     }
 
  return ay_status;
