@@ -24,16 +24,300 @@ static char *ay_sdmesh_name = "SDMesh";
 int
 ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 {
+ int ay_status = AY_OK;
+ int tcl_status = TCL_OK;
+ char fname[] = "sdmesh_createcb";
+ char option_handled = AY_FALSE;
+ char **av;
+ int avlen;
+ int scheme = AY_SDSCATMULL, optnum = 0, i = 2, j = 0;
+ unsigned int ui = 0, uj = 0, nfaces = 0, tmpui = 0;
+ unsigned int *nverts = NULL, *verts = NULL;
+ unsigned int nvertslen = 0, vertslen = 0;
+ unsigned int totalverts = 0, controlvlen = 0;
+ double *controlv = NULL;
+ int stride = 3;
  ay_sdmesh_object *sdmesh = NULL;
+
+  /* parse args */
+  while(i < argc)
+    {
+      if(i+1 >= argc)
+	{
+	  ay_error(AY_EOPT, fname, argv[i]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      tcl_status = TCL_OK;
+      ay_status = AY_OK;
+      option_handled = AY_FALSE;
+      optnum = i;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'f':
+	      /* -faces */
+	      ay_status = ay_tcmd_getuint(argv[i+1], &nfaces);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'n':
+	      /* -nverts */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(nverts)
+		    {
+		      free(nverts);
+		    }
+		  if(!(nverts = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+
+		  for(j = 0; j < avlen; j++)
+		    {
+		      ay_status = ay_tcmd_getuint(av[j], &tmpui);
+		      if(ay_status != AY_OK)
+			{
+			  break;
+			}
+		      nverts[j] = tmpui;
+		    } /* for */
+		  nvertslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'v':
+	      /* -verts */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(verts)
+		    {
+		      free(verts);
+		    }
+		  if(!(verts = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      ay_status = ay_tcmd_getuint(av[j], &tmpui);
+		      if(ay_status != AY_OK)
+			{
+			  break;
+			}
+		      verts[j] = tmpui;
+		    } /* for */
+		  vertslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'c':
+	      /* -cv */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(controlv)
+		    {
+		      free(controlv);
+		    }
+		  if(!(controlv = calloc(avlen, sizeof(double))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 av[j], &controlv[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  controlvlen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 's':
+	      /* -scheme */
+	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &scheme);
+	      option_handled = AY_TRUE;
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  if(option_handled &&
+	     ((tcl_status != TCL_OK) || (ay_status != AY_OK)))
+	    {
+	      ay_error(AY_EOPT, fname, argv[i]);
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+
+	  i += 2;
+	}
+      else
+	{
+	  i++;
+	} /* if */
+
+      if(!option_handled)
+	{
+	  ay_error(AY_EUOPT, fname, argv[optnum]);
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+    } /* while */
+
+  controlvlen /= stride;
+
+  if(nfaces > 0)
+    {
+      if(!nverts)
+	{
+	  if(!(nverts = calloc(nfaces, sizeof(unsigned int))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(ui = 0; ui < nfaces; ui++)
+	    {
+	      nverts[ui] = 3;
+	    } /* for */
+	  nvertslen = uj;
+	} /* if */
+
+      if(!verts)
+	{
+	  for(ui = 0; ui < nfaces; ui++)
+	    {
+	      totalverts += nverts[ui];
+	    }
+	  if(!(verts = calloc(totalverts, sizeof(unsigned int))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  for(ui = 0; ui < totalverts; ui++)
+	    {
+	      verts[ui] = ui;
+	    } /* for */
+	  vertslen = totalverts;
+	} /* if */
+
+      if(!controlv)
+	{
+	  totalverts = 0;
+	  for(ui = 0; ui < nfaces; ui++)
+	    {
+	      totalverts += nverts[ui];
+	    }
+	  if(!(controlv = calloc(totalverts, stride*sizeof(double))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  uj = 0;
+	  for(ui = 0; ui < totalverts; ui++)
+	    {
+	      controlv[uj]   = ui;
+	      controlv[uj+1] = ui;
+	      controlv[uj+2] = ui;
+
+	      uj += stride;
+	    } /* for */
+	  controlvlen = totalverts;
+	} /* if */
+
+    } /* if */
 
   if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
     {
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
+
+  /* check the array lengths */
+  if(nfaces > 0)
+    {
+      if(nvertslen < nfaces)
+	{
+	  ay_error(AY_ERROR, fname, "nverts < nfaces");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      totalverts = 0;
+      for(ui = 0; ui < nfaces; ui++)
+	{
+	  totalverts += nverts[ui];
+	}
+      if(vertslen < totalverts)
+	{
+	  ay_error(AY_ERROR, fname, "verts < sum(nverts)");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+      for(ui = 0; ui < vertslen; ui++)
+	{
+	  if(verts[ui] >= controlvlen)
+	    {
+	      ay_error(AY_ERROR, fname, "vertex index out of bounds");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	}
+
+      sdmesh->scheme = scheme;
+      sdmesh->nfaces = nfaces;
+      sdmesh->nverts = nverts;
+      sdmesh->verts = verts;
+      sdmesh->controlv = controlv;
+      sdmesh->ncontrols = controlvlen;
+    } /* if(nfaces > 0) */
 
   o->refine = (void *)sdmesh;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  nverts = NULL;
+  verts = NULL;
+  controlv = NULL;
+  sdmesh = NULL;
+
+cleanup:
+
+  if(nverts)
+    free(nverts);
+
+  if(verts)
+    free(verts);
+
+  if(controlv)
+    free(controlv);
+
+  if(sdmesh)
+    free(sdmesh);
+
+  if(ay_status == AY_EOMEM)
+    {
+      ay_error(AY_EOMEM, fname, NULL);
+      ay_status = AY_ERROR;
+    }
+
+ return ay_status;
 } /* ay_sdmesh_createcb */
 
 
