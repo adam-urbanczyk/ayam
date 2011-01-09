@@ -141,9 +141,7 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_extrnc_object *extrnc = NULL;
  ay_nurbcurve_object *nc = NULL;
- ay_object *c = NULL;
  double *pnts = NULL, *p1, *p2;
- double m[16];
  double point_size = ay_prefs.handle_size;
 
   if(!o)
@@ -164,11 +162,11 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
       glPointSize((GLfloat)point_size);
 
       glBegin(GL_POINTS);
-      for(i = 0; i <nc->length; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i <nc->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)&pnts[a]);
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
@@ -179,16 +177,7 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
       p2 = p1+4;
 
       /* draw arrow */
-      glPushMatrix();
-        c = extrnc->ncurve;
-	glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
-	ay_quat_torotmatrix(c->quat, m);
-	glMultMatrixd((GLdouble*)m);
-	glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-
-        ay_draw_arrow(togl, p1, p2);
-
-      glPopMatrix();
+      ay_draw_arrow(togl, p1, p2);
     } /* if */
 
  return AY_OK;
@@ -545,8 +534,10 @@ ay_extrnc_notifycb(ay_object *o)
 
   extrnc->ncurve = ncurve;
 
-  /* copy transformation attributes over to new object */
-  ay_trafo_copy(npatch, ncurve);
+  /* copy transformation attributes over to extrnc object
+     (the extracted curve is always at the same place as
+     the surface) */
+  ay_trafo_copy(npatch, o);
 
   /* copy sampling tolerance/mode over to new object */
   ((ay_nurbcurve_object *)ncurve->refine)->glu_sampling_tolerance =
