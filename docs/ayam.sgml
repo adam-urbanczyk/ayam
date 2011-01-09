@@ -824,7 +824,9 @@ pasted to the currently selected property; use
 <item><tt/"Material"/, searches for the material object currently
 associated with the selected object and selects it for editing.
 If the selected object has no material yet, a new material
-will be created first.
+will be created: Ayam will prompt for the name of the new
+material, the material object will be created, if successful,
+the material will be linked to all currently selected objects.
 
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
@@ -3109,7 +3111,7 @@ differently in X-window and Y-window coordinates in aligned local views
 How to make a view local and align it?
 <p>
 All you need to do is to first select an object and then press
-<tt/&lt;l&gt;/ <em>twice</em> to make the view object local (one can
+<tt/&lt;l&gt;/ <em>twice</em> to make the view object-local (one can
 also use <tt/&lt;Ctrl+l&gt;/ in external views).
 In Ayam versions prior to 1.18 one also needed to manually align
 the view using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
@@ -3132,8 +3134,9 @@ images:
 A Sweep object with a circular B-Spline curve as cross section (rotated
 about the y axis by 90 degrees) and a straight standard curve as trajectory.
 The Sweep itself is rotated about the z axis by 30 degrees. The view is a
-front view. Note how inadequate the grid spacing would be to edit the
-trajectory curve (it is e.g. near impossible to edit the curve and keep
+front view, the cross section and trajectory are both selected.
+Note how inadequate the grid spacing would be to edit the trajectory curve
+(it is e.g. near impossible to edit the curve and keep
 it straight). 
 
 Press <tt/&lt;l&gt;/.
@@ -3168,12 +3171,12 @@ front view now again displays a circle. Note again the orientation
 of the Root object coordinate system. One can safely edit the cross
 section curve, it will stay planar.
 
-Note, that object local aligned views only align to the first of multiple
+Note, that object-local aligned views only align to the first of multiple
 selected objects; if all selected objects have the same transformation
 attributes, everything is fine, but if not, some objects will be misaligned.
 
-Also remember: when a view is level local, changing the current level
-does not automatically realign the view. If the view is object local,
+Also remember: when a view is level-local, changing the current level
+does not automatically realign the view. If the view is object-local,
 changing the object selection will also possibly lead to a misaligned
 view. To realign the view after changing the current level or object
 selection simply press <tt/&lt;L&gt;/. Note that aligning the view changes
@@ -8979,6 +8982,10 @@ consisting of six NURBS patches.
 the selection.
 <item>Operation: The tool creates a Revolve object, and moves
 the selected objects to it.
+<code>
+|-NCurve     ==>     +-Revolve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="revolveobj" name="Revolve Object">
 for more information regarding the revolve object.
 This tool uses the object clipboard to move the objects so that the
@@ -8992,6 +8999,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates an Extrude object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Extrude
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the extrude object.
 This tool uses the object clipboard to move the objects so that the
@@ -9005,6 +9017,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Sweep object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Sweep
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the Sweep object.
 This tool uses the object clipboard to move the objects so that the
@@ -9018,6 +9035,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Cap object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Cap
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="capobj" name="Cap Object">
 for more information regarding the Cap object.
 This tool uses the object clipboard to move the objects so that the
@@ -9031,6 +9053,12 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Birail1 object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Birail1
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the Birail1 object.
 This tool uses the object clipboard to move the objects so that the
@@ -9044,6 +9072,13 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Birail2 object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Birail2
+|-NCurve              |-NCurve
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the Birail2 object.
 This tool uses the object clipboard to move the objects so that the
@@ -9057,6 +9092,13 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Gordon object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Gordon
+|-NCurve              |-NCurve
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="gordonobj" name="Gordon Object">
 for more information regarding the Gordon object.
 This tool uses the object clipboard to move the objects so that the
@@ -9070,6 +9112,12 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Skin object, and moves
 the selected objects to it.
+<code>
+|-NCurve             +-Skin
+|-NCurve     ==>      |-NCurve
+|-NCurve              |-NCurve
+                      \-NCurve
+</code>
 <item>Note: See section <ref id="skinobj" name="Skin Object">
 for more information regarding the Skin object.
 This tool uses the object clipboard to move the objects so that the
@@ -9098,6 +9146,11 @@ See also the documentation of the corresponding
 the selection.
 <item>Operation: The selected NURBS curves will be concatenated
 and a new third curve will be created.
+<code>
+|-NCurve             |-NCurve
+|-NCurve     ==>     |-NCurve
+                     |-NCurve
+</code>
 <item>Note: If one of the curves has weights, the resulting curve
 will have weights too. If the knot type of the first curve
 is <tt/"Custom"/, it will be converted to <tt/"NURB"/, otherwise the
@@ -9122,6 +9175,10 @@ the selection and additionally requests a parametric value.
 new NURBS curves at the designated parametric value. The splitting process
 involves application of knot insertion, so that both new curves will
 get a custom knot vector.
+<code>
+|-NCurve     ==>     |-NCurve
+                     |-NCurve
+</code>
 <item>Note: The original selected NURBS curve will be changed and
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
@@ -9555,6 +9612,10 @@ respectively).
 <item>Operation: The patches will be split at the parametric value t
 into two patches (in U or V parametric dimension, respectively) using
 knot insertion.
+<code>
+|-NPatch     ==>     |-NPatch
+                     |-NPatch
+</code>
 <item>Note: The original patch will be modified and a new patch will be
 created.
 The point selection will be removed from the original object.
@@ -9567,10 +9628,15 @@ See also the documentation of the corresponding scripting interface commands
 <sect1>The Extract Curve Tool<label id="extnct">
 <p>
 <itemize>
-<item>Arguments: The extract curve tool takes the selected objects from
-the selection.
-<item>Operation: The tool creates instances from all selected objects
-then creates an ExtrNC object and moves the instances to it.
+<item>Arguments: The extract curve tool takes the first of the selected
+objects from the selection.
+<item>Operation: The tool creates an instance the first of the selected
+objects then creates an ExtrNC object and moves the instance to it.
+<code>
+|-NPatch             |-NPatch
+             ==>     +-ExtrNC
+                      \-Instance_of_NPatch(Instance)
+</code>
 <item>Note: This tool uses the object clipboard to move the objects
 around so that the original clipboard contents are lost when this tool
 finishes.
@@ -9582,10 +9648,16 @@ for more information regarding the ExtrNC object.
 <sect1>The Extract Patch Tool<label id="extrnpt">
 <p>
 <itemize>
-<item>Arguments: The extract patch tool takes the selected objects from
-the selection.
-<item>Operation: The tool creates instances from all selected objects
-then creates an ExtrNP object and moves the instances to it.
+<item>Arguments: The extract patch tool takes the first of the selected
+objects from the selection.
+<item>Operation: The tool creates an instance from the first of the
+selected objects then creates an ExtrNP object and moves the
+instance to it.
+<code>
+|-NPatch             |-NPatch
+             ==>     +-ExtrNP
+                      \-Instance_of_NPatch(Instance)
+</code>
 <item>Note: This tool uses the object clipboard to move the objects
 around so that the original clipboard contents are lost when this tool
 finishes.
@@ -9603,6 +9675,13 @@ See also the documentation of the corresponding
 the selection.
 <item>Operation: The selected NURBS patch will be split into NURBS curves,
 along direction U or V.
+<code>
+|-NPatch             |-NPatch
+                     |-NCurve
+             ==>     |-NCurve
+                     |-NCurve
+                     |-NCurve
+</code>
 <item>Note: The original NURBS patch object is not deleted.
 See also the documentation of the corresponding
 <ref id="scsplitnp" name="scripting interface command">.
@@ -9623,6 +9702,13 @@ for numbers of two to four and four for bigger numbers of used curves.
 The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
+<code>
+|-NCurve               |-NCurve
+|-NCurve               |-NCurve
+|-NCurve     ==>       |-NCurve
+|-NCurve               |-NCurve
+                       |-NPatch
+</code>
 <item>Note: The original NURBS curves objects are not deleted.
 See also the documentation of the corresponding
 <ref id="scbuildnp" name="scripting interface command">.
