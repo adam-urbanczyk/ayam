@@ -14,7 +14,7 @@ set ExtrNC 1
 proc init_ExtrNC { } {
 global ay ExtrNC_props ExtrNCAttr ExtrNCAttrData
 
-set ExtrNC_props { Transformations Attributes Material Tags ExtrNCAttr }
+set ExtrNC_props { Attributes Tags ExtrNCAttr }
 
 array set ExtrNCAttr {
 arr   ExtrNCAttrData
