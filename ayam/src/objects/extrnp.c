@@ -535,10 +535,14 @@ ay_extrnp_notifycb(ay_object *o)
       goto cleanup;
     }
 
+  ay_trafo_defaults(npatch);
+
   extrnp->npatch = npatch;
 
-  /* copy transformation attributes over to new object */
-  ay_trafo_copy(n, npatch);
+  /* copy transformation attributes over to extrnp object
+     (the extracted patch is always at the same place as
+     the original surface) */
+  ay_trafo_copy(n, o);
 
   /* copy sampling tolerance/mode over to new object */
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
