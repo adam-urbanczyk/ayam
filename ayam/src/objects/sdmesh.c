@@ -365,11 +365,12 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  if(!nargs)
 	    {
-	      if(!(nargs = calloc(tagslen, sizeof(unsigned int))))
+	      if(!(nargs = calloc(tagslen*2, sizeof(unsigned int))))
 		{
 		  ay_status = AY_EOMEM;
 		  goto cleanup;
 		}
+	      nargslen = tagslen*2;
 	    }
 	}
     } /* if */
