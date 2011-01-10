@@ -561,7 +561,9 @@ ay_offnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_error(ay_status, fname, NULL);
 	  return AY_ERROR;
 	}
-      ay_trafo_add(o, *t);
+
+      ay_trafo_copy(o, *t);
+
       t = &((*t)->next);
 
       *result = new;
@@ -590,12 +592,13 @@ ay_offnp_convertcb(ay_object *o, int in_place)
   if(r->npatch)
     {
       ay_status = ay_object_copy(r->npatch, &new);
-      ay_trafo_add(o, new);
     } /* if */
 
   /* second, link new object, or replace old object with it */
   if(new)
     {
+      ay_trafo_copy(o, new);
+
       if(!in_place)
 	{
 	  ay_status = ay_object_link(new);
