@@ -494,8 +494,10 @@ ay_offnc_notifycb(ay_object *o)
   /* link new object to offnc object */
   offnc->ncurve = newo;
 
-  /* copy transformation attributes over to new object */
-  ay_trafo_copy(ncurve, newo);
+  /* copy transformation attributes over to offnp object
+     (the offset curve is always at the same place as
+     the surface) */
+  ay_trafo_copy(ncurve, o);
 
   /* copy sampling tolerance/mode over to new object */
   ((ay_nurbcurve_object *)newo->refine)->glu_sampling_tolerance =

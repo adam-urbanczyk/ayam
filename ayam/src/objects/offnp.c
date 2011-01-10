@@ -478,8 +478,10 @@ ay_offnp_notifycb(ay_object *o)
   /* link new object to offnp object */
   offnp->npatch = newo;
 
-  /* copy transformation attributes over to new object */
-  ay_trafo_copy(npatch, newo);
+  /* copy transformation attributes over to offnp object
+     (the offset curve is always at the same place as
+     the surface) */
+  ay_trafo_copy(npatch, o);
 
   /* copy trim curve(s) */
   if(npatch->down && npatch->down->next)

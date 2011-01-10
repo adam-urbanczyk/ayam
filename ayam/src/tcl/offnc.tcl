@@ -14,7 +14,7 @@ set OffsetNC 1
 proc init_OffsetNC { } {
 global ay OffsetNC_props OffsetNCAttr OffsetNCAttrData
 
-set OffsetNC_props { Transformations Attributes Tags OffsetNCAttr }
+set OffsetNC_props { Attributes Tags OffsetNCAttr }
 
 array set OffsetNCAttr {
 arr   OffsetNCAttrData
