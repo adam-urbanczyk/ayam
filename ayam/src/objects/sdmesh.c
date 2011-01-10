@@ -31,11 +31,14 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
  char **av;
  int avlen;
  int scheme = AY_SDSCATMULL, optnum = 0, i = 2, j = 0;
+ int *tags = NULL, *iargs = NULL;
  unsigned int ui = 0, uj = 0, nfaces = 0, tmpui = 0;
- unsigned int *nverts = NULL, *verts = NULL;
- unsigned int nvertslen = 0, vertslen = 0;
- unsigned int totalverts = 0, controlvlen = 0;
- double *controlv = NULL;
+ unsigned int *nverts = NULL, *verts = NULL, *nargs = 0;
+ unsigned int nvertslen = 0, vertslen = 0, tagslen = 0;
+ unsigned int totalverts = 0, controlvlen = 0, nargslen = 0;
+ unsigned int totaliargs = 0, totaldargs = 0;
+ unsigned int iargslen = 0, dargslen = 0;
+ double *dargs = NULL, *controlv = NULL;
  int stride = 3;
  ay_sdmesh_object *sdmesh = NULL;
 
@@ -77,7 +80,6 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 		      ay_status = AY_EOMEM;
 		      goto cleanup;
 		    }
-
 		  for(j = 0; j < avlen; j++)
 		    {
 		      ay_status = ay_tcmd_getuint(av[j], &tmpui);
@@ -153,6 +155,122 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	    case 's':
 	      /* -scheme */
 	      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &scheme);
+	      option_handled = AY_TRUE;
+	      break;
+	    case 't':
+	      /* -tags */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(tags)
+		    {
+		      free(tags);
+		    }
+		  if(!(tags = calloc(avlen, sizeof(int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp,
+					      av[j], &tags[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  tagslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'a':
+	      /* -args (nargs) */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(nargs)
+		    {
+		      free(nargs);
+		    }
+		  if(!(nargs = calloc(avlen, sizeof(unsigned int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      ay_status = ay_tcmd_getuint(av[j], &tmpui);
+		      if(ay_status != AY_OK)
+			{
+			  break;
+			}
+		      nargs[j] = tmpui;
+		    } /* for */
+		  nargslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'i':
+	      /* -intargs */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(iargs)
+		    {
+		      free(iargs);
+		    }
+		  if(!(iargs = calloc(avlen, sizeof(int))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetInt(ay_interp,
+					      av[j], &iargs[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  iargslen = avlen;
+		  Tcl_Free((char *) av);
+		}
+	      option_handled = AY_TRUE;
+	      break;
+	    case 'd':
+	      /* -doubleargs */
+	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		 TCL_OK)
+		{
+		  if(dargs)
+		    {
+		      free(dargs);
+		    }
+		  if(!(dargs = calloc(avlen, sizeof(double))))
+		    {
+		      Tcl_Free((char *) av);
+		      ay_status = AY_EOMEM;
+		      goto cleanup;
+		    }
+		  for(j = 0; j < avlen; j++)
+		    {
+		      tcl_status = Tcl_GetDouble(ay_interp,
+						 av[j], &dargs[j]);
+		      if(tcl_status != TCL_OK)
+			{
+			  break;
+			}
+		    } /* for */
+		  dargslen = avlen;
+		  Tcl_Free((char *) av);
+		}
 	      option_handled = AY_TRUE;
 	      break;
 	    default:
@@ -243,6 +361,17 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	  controlvlen = totalverts;
 	} /* if */
 
+      if(tagslen)
+	{
+	  if(!nargs)
+	    {
+	      if(!(nargs = calloc(tagslen, sizeof(unsigned int))))
+		{
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
+		}
+	    }
+	}
     } /* if */
 
   if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
@@ -251,9 +380,9 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
       goto cleanup;
     }
 
-  /* check the array lengths */
   if(nfaces > 0)
     {
+      /* check the array lengths */
       if(nvertslen < nfaces)
 	{
 	  ay_error(AY_ERROR, fname, "nverts < nfaces");
@@ -280,11 +409,46 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	      goto cleanup;
 	    }
 	}
+      /* check tag args only if there are tags */
+      if(tagslen)
+	{
+	  if(nargslen != (tagslen*2))
+	    {
+	      ay_error(AY_ERROR, fname, "wrong number of (tag) args");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	  for(ui = 0; ui < nargslen; ui+=2)
+	    {
+	      totaliargs += nargs[ui];
+	      totaldargs += nargs[ui+1];
+	    }
+	  if(totaliargs != iargslen)
+	    {
+	      ay_error(AY_ERROR, fname, "wrong number of integer (tag) args");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	  if(totaldargs != dargslen)
+	    {
+	      ay_error(AY_ERROR, fname, "wrong number of double (tag) args");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
+	} /* if */
 
       sdmesh->scheme = scheme;
       sdmesh->nfaces = nfaces;
       sdmesh->nverts = nverts;
       sdmesh->verts = verts;
+
+      sdmesh->ntags = tagslen;
+      sdmesh->tags = tags;
+
+      sdmesh->nargs = nargs;
+      sdmesh->intargs = iargs;
+      sdmesh->floatargs = dargs;
+
       sdmesh->controlv = controlv;
       sdmesh->ncontrols = controlvlen;
     } /* if(nfaces > 0) */
@@ -294,6 +458,10 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
   /* prevent cleanup code from doing something harmful */
   nverts = NULL;
   verts = NULL;
+  tags = NULL;
+  nargs = NULL;
+  iargs = NULL;
+  dargs = NULL;
   controlv = NULL;
   sdmesh = NULL;
 
@@ -304,6 +472,18 @@ cleanup:
 
   if(verts)
     free(verts);
+
+  if(tags)
+    free(tags);
+
+  if(nargs)
+    free(nargs);
+
+  if(iargs)
+    free(iargs);
+
+  if(dargs)
+    free(dargs);
 
   if(controlv)
     free(controlv);
