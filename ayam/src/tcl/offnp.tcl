@@ -14,7 +14,7 @@ set OffsetNP 1
 proc init_OffsetNP { } {
 global ay OffsetNP_props OffsetNPAttr OffsetNPAttrData
 
-set OffsetNP_props { Transformations Attributes Tags OffsetNPAttr }
+set OffsetNP_props { Attributes Tags OffsetNPAttr }
 
 array set OffsetNPAttr {
 arr   OffsetNPAttrData
