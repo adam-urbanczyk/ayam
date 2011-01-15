@@ -477,6 +477,11 @@ int ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Create control points for a circular B-Spline curve.
+ */
+int ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
+			double **result);
+
 /** Create a circular B-Spline curve.
  */
 int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,

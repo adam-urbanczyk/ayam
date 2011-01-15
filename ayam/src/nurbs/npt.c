@@ -2116,11 +2116,11 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *curve, *tmpnc = NULL;
+ ay_nurbcurve_object *curve;
  double *uknotv = NULL, *tcontrolv = NULL;
  double radius = 0.0, w = 0.0, x, y/*, z*/;
- int i = 0, j = 0, a = 0, b = 0, c = 0;
- double m[16], point[4] = {0};
+ int i = 0, j = 0, a = 0, b = 0, c = 0, knot_count = 0;
+ double m[16], point[4] = {0}, *V = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -2149,7 +2149,8 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 
   if(!(uknotv = calloc(curve->length+curve->order, sizeof(double))))
     {
-      free(new); return AY_EOMEM;
+      free(new);
+      return AY_EOMEM;
     }
 
   memcpy(uknotv, curve->knotv, (curve->length+curve->order)*sizeof(double));
@@ -2159,6 +2160,37 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
   new->uknot_type = curve->knot_type;
   new->vknot_type = AY_KTCUSTOM;
   new->width = curve->length;
+
+  if(sections > 0)
+    {
+      new->height = sections+(order-1);
+      knot_count = new->height+order;
+      if(!(V = calloc(knot_count, sizeof(double))))
+	{
+	  ay_npt_destroy(new);
+	  return AY_EOMEM;
+	}
+      V[0] = 0.0;
+      for(i = 1; i < knot_count; i++)
+	{
+	  V[i] = (double)i/(knot_count-1);
+	}
+      new->vknotv = V;
+    }
+  else
+    {
+      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
+					     &new->height, &new->vknotv,
+					     NULL);
+    }
+
+  if(!(new->controlv = calloc(new->height*new->width*4,
+			      sizeof(double))))
+    {
+
+      ay_npt_destroy(new);
+      return AY_EOMEM;
+    }
 
   /* fill controlv */
   a = 0;
@@ -2179,57 +2211,35 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 
       radius = point[0];
 
-      if(tcontrolv)
-	free(tcontrolv);
-      tcontrolv = NULL;
-      if(new->vknotv)
-	free(new->vknotv);
-      new->vknotv = NULL;
       if(sections == 0)
 	{
 	  if(arc > 0.0)
 	    {
 	      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
-						  &(new->height), &new->vknotv,
+						  &new->height, NULL,
 						  &tcontrolv);
 	    }
 	  else
 	    {
 	      ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0,
-						  &(new->height), &new->vknotv,
+						  &new->height, NULL,
 						  &tcontrolv);
 	    } /* if */
-	  new->is_rat = AY_TRUE;
+
 	}
       else
 	{
-	  tmpnc = NULL;
-	  ay_status = ay_nct_crtcircbsp(sections, radius, arc, order,
-					&tmpnc);
-	  if(!tmpnc)
-	    {
-	      if(new->uknotv)
-		free(new->uknotv);
-	      if(new->vknotv)
-		free(new->vknotv);
-	      if(new->controlv)
-		free(new->controlv);
-	      free(new);
-	      return AY_ERROR;
-	    } /* if */
+	  ay_status = ay_nct_crtcircbspcv(sections, radius, arc, order,
+					  &tcontrolv);
 
-	  tcontrolv = tmpnc->controlv;
-	  new->vknotv = tmpnc->knotv;
-	  new->height = tmpnc->length;
-	  free(tmpnc);
 	} /* if */
 
-      if(!new->controlv)
+      if(ay_status)
 	{
-	  if(!(new->controlv = calloc(new->height*new->width*4,
-				      sizeof(double))))
-	    return AY_EOMEM;
+	  ay_npt_destroy(new);
+	  return ay_status;
 	}
+
 
       /* copy to real controlv */
       b = 0;
@@ -2246,6 +2256,9 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 
 	a += 4;
     } /* for */
+
+  if(curve->is_rat || (sections == 0))
+    new->is_rat = AY_TRUE;
 
   if(tcontrolv)
     free(tcontrolv);
@@ -9026,7 +9039,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
-  
+
   tcl_status = Tcl_GetDouble(interp, argv[1], &v);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 

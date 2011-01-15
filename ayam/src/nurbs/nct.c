@@ -2817,21 +2817,19 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_crtrecttcmd */
 
 
-/* ay_nct_crtcircbsp:
+/* ay_nct_crtcircbspcv:
  */
 int
-ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
-		  ay_nurbcurve_object **result)
+ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
+		    double **result)
 {
- int ay_status;
- ay_nurbcurve_object *curve = NULL;
  double *controlv, m[16], angle;
  int len, a, i;
 
   if((sections < 2) && (fabs(arc) > 180.0))
     return AY_ERROR;
 
-  if((fabs(radius) < AY_EPSILON) || (order < 2))
+  if((radius < 0.0) || (order < 2))
     return AY_ERROR;
 
   if(!result)
@@ -2839,9 +2837,16 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 
   len = sections+(order-1);
 
-  if(!(controlv = calloc(len*4, sizeof(double))))
+  if(!*result)
     {
-      return AY_EOMEM;
+      if(!(controlv = calloc(len*4, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
+    }
+  else
+    {
+      controlv = *result;
     }
 
   angle = arc/sections;
@@ -2864,10 +2869,44 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
       ay_trafo_apply3(&(controlv[a]), m);
     } /* for */
 
-  ay_status = ay_nct_create(order, len, AY_KTBSPLINE, controlv, NULL,
-			    &curve);
+  /* return result */
+  if(!*result)
+    *result = controlv;
 
-  *result = curve;
+ return AY_OK;
+} /* ay_nct_crtcircbspcv */
+
+
+/* ay_nct_crtcircbsp:
+ */
+int
+ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
+		  ay_nurbcurve_object **result)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *curve = NULL;
+ double *controlv = NULL;
+ int len = 0;
+
+  ay_status = ay_nct_crtcircbspcv(sections, radius, arc, order, &controlv);
+
+  if(!ay_status)
+    {
+
+      len = sections+(order-1);
+
+      ay_status = ay_nct_create(order, len, AY_KTBSPLINE, controlv, NULL,
+				&curve);
+
+      if(ay_status)
+	{
+	  free(controlv);
+	  return ay_status;
+	}
+
+      /* return result */
+      *result = curve;
+    }
 
  return ay_status;
 } /* ay_nct_crtcircbsp */

@@ -2118,6 +2118,11 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
  *  O = {0.0,0.0,0.0};
  *  X = {1.0,0.0,0.0};
  *  Y = {0.0,1.0,0.0};)
+ *
+ *  To improve performance for repeated calls with nearly identical
+ *  parameters (e.g. by ay_npt_revolve()) this function supports the
+ *  knotv and controlv parameters to be NULL, and, in this case, does
+ *  not calculate knots or control points, respectively.
 */
 int
 ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
@@ -2150,15 +2155,82 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
   dtheta = theta/narcs;
   n = 2 * narcs; /* n+1 control points */
+
+  *length = n+1;
+
   w1 = cos(AY_D2R(dtheta/2.0)); /* dtheta/2 == base angle */
 
-  /* alloc mem for Pw and U */
-  if(!(Pw = calloc((n+1)*4, sizeof(double))))
-    return AY_EOMEM;
+  if(knotv)
+    {
+      /* alloc mem for new knots (or use caller
+	 delivered memory) */
+      if(!*knotv)
+	{
+	  if(!(U = calloc((n+1)+4, sizeof(double))))
+	    {
+	      if(!*controlv)
+		free(Pw);
+	      return AY_EOMEM;
+	    }
+	}
+      else
+	{
+	  U = *knotv;
+	}
 
-  if(!(U = calloc((n+1)+4, sizeof(double))))
-    { free(Pw); return AY_EOMEM; }
+      /* calculate new knots */
+      j = 2*narcs+1;
+      for(i=0; i<3; i++)
+	{
+	  U[i] = 0.0;
+	  U[i+j] = 1.0;
+	}
+      switch(narcs)
+	{
+	case 1:
+	  break;
+	case 2:
+	  U[3] = 0.5;
+	  U[4] = 0.5;
+	  break;
+	case 3:
+	  U[3] = 1.0/3.0;
+	  U[4] = 1.0/3.0;
+	  U[5] = 2.0/3.0;
+	  U[6] = 2.0/3.0;
+	  break;
+	case 4:
+	  U[3] = 0.25;
+	  U[4] = 0.25;
+	  U[5] = 0.5;
+	  U[6] = 0.5;
+	  U[7] = 0.75;
+	  U[8] = 0.75;
+	  break;
+	} /* switch */
 
+      /* return results */
+      if(!*knotv)
+	*knotv = U;
+    } /* if */
+
+  /* this permits to call us for calculation of length and knots only */
+  if(!controlv)
+    return AY_OK;
+
+  /* alloc mem for new control points (or use caller
+     delivered memory) */
+  if(!*controlv)
+    {
+      if(!(Pw = calloc((n+1)*4, sizeof(double))))
+	return AY_EOMEM;
+    }
+  else
+    {
+      Pw = *controlv;
+    }
+
+  /* calculate new control points */
   P0[0] = r * cos(AY_D2R(ths));
   P0[1] = r * sin(AY_D2R(ths));
   P0[3] = 1.0;
@@ -2194,39 +2266,9 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 	}
     } /* for */
 
-  j = 2*narcs+1;
-  for(i=0; i<3; i++)
-    {
-      U[i] = 0.0;
-      U[i+j] = 1.0;
-    }
-  switch(narcs)
-    {
-    case 1:
-      break;
-    case 2:
-      U[3] = 0.5;
-      U[4] = 0.5;
-      break;
-    case 3:
-      U[3] = 1.0/3.0;
-      U[4] = 1.0/3.0;
-      U[5] = 2.0/3.0;
-      U[6] = 2.0/3.0;
-      break;
-    case 4:
-      U[3] = 0.25;
-      U[4] = 0.25;
-      U[5] = 0.5;
-      U[6] = 0.5;
-      U[7] = 0.75;
-      U[8] = 0.75;
-      break;
-    } /* switch */
-
-  *knotv = U;
-  *controlv = Pw;
-  *length = n+1;
+  /* return results */
+  if(!*controlv)
+    *controlv = Pw;
 
  return AY_OK;
 } /* ay_nb_CreateNurbsCircleArc */
