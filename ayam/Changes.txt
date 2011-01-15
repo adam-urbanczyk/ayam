@@ -1,12 +1,24 @@
-[1. Jan 2011] CVS-Head:
+[15. Jan 2011] CVS-Head:
 =======================
 Bug Fixes:
 o fixed setting the FilterWidth for RIB export (SF 3148250)
+o fixed read only points of ExtrNC/ExtrNP/OffsetNC/OffsetNP objects
+  appearing in wrong places (SF 3154051, 3154053)
+o fixed is_rat attribute of revolve object (SF 3159003)
 
 Modelling:
 o added plugin "subdiv" that, with the help of "Subdivide2.0", can be used
   to improve the display of sdmesh objects by real subdivided surfaces
+o added options to control subdivision level and drawing to sdmesh objects
 
+GUI:
+o main menu "Edit/Material" now works with multiple selected objects
+  when creating materials
+
+Scripts/Scripting Interface:
+o added script ("autorot.tcl") that automatically rotates a view
+o the create callback of the SDMesh object now supports much more options
+  to control the initially created object
 
 [23. Dec 2010] Ayam-1.18.2:
 ===========================
