@@ -317,7 +317,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 	    {
 	      nverts[ui] = 3;
 	    } /* for */
-	  nvertslen = uj;
+	  nvertslen = nfaces;
 	} /* if */
 
       if(!verts)
