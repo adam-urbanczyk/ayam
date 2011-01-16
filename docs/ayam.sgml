@@ -826,7 +826,8 @@ associated with the selected object and selects it for editing.
 If the selected object has no material yet, a new material
 will be created: Ayam will prompt for the name of the new
 material, the material object will be created, if successful,
-the material will be linked to all currently selected objects.
+the material will be linked to <em>all</em> currently selected objects
+(even if they are already linked to other objects).
 
 <item><tt/"Master"/, searches for the master object of the
 currently selected instance object and selects it for editing,
@@ -6790,6 +6791,10 @@ the ExtrNC object. Therefore, the main menu entry
 will automatically create an instance of the currently selected object
 and move it to the newly created ExtrNC object.
 <p>
+As the geometry of the extracted curve is completely defined by
+the master surface, ExtrNC objects do not support own transformation
+attributes (since Ayam 1.19).
+<p>
 Note that the extraction of any curves currently completely ignores
 potentially present trimming information of the NPatch object.
 <p>
@@ -6924,6 +6929,10 @@ Since Ayam 1.18 there is a fourth offsetting algorithm available, that
 creates offsets from non planar curves using a primitive variable tag
 that contains normal information for the curve (vertex normals).
 <p>
+As the geometry of the offset curve is completely defined by
+the master curve, OffsetNC objects do not support own transformation
+attributes (since Ayam 1.19).
+<p>
 You may convert the current OffsetNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
@@ -7031,6 +7040,10 @@ the ExtrNP object. Therefore, the main menu entry
 will automatically create an instance of the currently selected object
 and move it to the newly created ExtrNP object.
 <p>
+As the geometry of the extracted surface is completely defined by
+the master surface, ExtrNP objects do not support own transformation
+attributes (since Ayam 1.19).
+<p>
 Also note that eventually present trim curves will <em>not</em> be honored
 properly.
 <p>
@@ -7091,6 +7104,10 @@ orders, and knots. See also the image above.
 <p>
 You may convert the current OffsetNP object to an ordinary NURBS patch
 object using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+As the geometry of the offset surface is completely defined by
+the master surface, OffsetNP objects do not support own transformation
+attributes (since Ayam 1.19).
 <p>
 The following table briefly lists some capabilities of the OffsetNP object.
 <table loc="ht">
@@ -7628,7 +7645,6 @@ the two different trajectory curves):
 <img src="pics/scriptex3.gif">
 <caption>Hierarchy Building Script Object Example</caption>
 </figure>
-
 
 
 <sect1>Select Object<label id="selectobj">
@@ -10369,6 +10385,70 @@ creates a polymesh with two triangles and one quad all connected
 
 <item><bf/<tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"//<newline>
 creates a polymesh with one triangular face that has a triangular hole.
+</enum>
+
+<#if out=latex><x/newpage/</#if>
+
+  <item><tt/"SDMesh"/: Subdivision meshes accept the following arguments:
+  <itemize>
+
+  <item><tt/"-scheme"/: the value of this option specifies the subdivision
+scheme, it may be set to 0 - Catmull Clark or 1 - Loop only. Default is 0.
+
+  <item><tt/"-faces"/: the value of this option specifies the number of
+faces in the mesh. The number of polygons defaults to 0!
+
+  <item><tt/"-nverts"/: the value of this option specifies the number of
+vertices per face. It is therefore a list of positive integer
+values of a length equal to the number of faces.
+The default value of this option is a list of proper length with all
+elements set to 3 (only triangles are in the mesh).
+
+  <item><tt/"-verts"/: the value of this option specifies all the (zero
+based) indices of the vertices of all faces. It is therefore a list of
+integer values of a length equal to the sum of all elements of the
+<tt/"-nverts"/ option.
+The default value of this option is a list of proper length with the
+elements set to a sequence of integers so that the control points are
+used in the same order as specified via the <tt/"-cv"/ option
+(0, 1, 2, 3, &hellip;).
+
+  <item><tt/"-cv"/: The value of this option is a list of floating point
+numbers that describe the 3D (non homogeneous) coordinates of the control
+points. The indices specified via the <tt/"-verts"/ option point to
+this list.
+This list must have a length of 3 multiplied by the highest value in
+the list provided via the <tt/"-verts"/ option.
+The default value of this option is an empty list, this implies that this
+option must be specified to create a non-empty SDMesh object.
+
+  <item><tt/"-tags"/: the value of this option specifies a number of tags.
+It is therefore a list of positive integer values of arbitrary length.
+The default value of this option is an empty list: no tags.
+
+  <item><tt/"-args"/: the value of this option specifies the number of
+integer and floating point arguments per tag.
+It is therefore a list of positive integer values of length:
+double number of tags. The even entries specify the number of integer and
+the odd entries the number of floating point arguments.
+The default value of this option is list of proper length, with all
+elements set to zero (no tags have any arguments).
+
+  <item><tt/"-intargs"/: the value of this option specifies the
+integer arguments of all tags.
+It is therefore a list of integer values of length
+sum of all even elements given by the <tt/"-args"/ option.
+
+  <item><tt/"-doubleargs"/: the value of this option specifies the
+floating point arguments of all tags.
+It is therefore a list of double values of length
+sum of all odd elements given by the <tt/"-args"/ option.
+
+  </itemize>
+Examples:
+<enum>
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 2 3  0 1 2} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5}"//<newline>
+creates a tetrahedral mesh.
 </enum>
 
 <#if out=latex><x/newpage/</#if>
