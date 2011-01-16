@@ -226,6 +226,7 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 
   if(npolys > 0)
     {
+      /* see if we can automatically fill some arrays */
       if(!nloops)
 	{
 	  if(!(nloops = calloc(npolys, sizeof(unsigned int))))
@@ -324,9 +325,9 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
       goto cleanup;
     }
 
-  /* check the array lengths */
   if(npolys > 0)
     {
+      /* check the parameters */
       if(nloopslen < npolys)
 	{
 	  ay_error(AY_ERROR, fname, "nloops < npolys");
@@ -350,6 +351,13 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	{
 	  for(uj = 0; uj < nloops[ui]; uj++)
 	    {
+	      if(nverts[uk] < 3)
+		{
+		  ay_error(AY_ERROR, fname,
+			   "unsupported number of vertices per loop (<3)");
+		  ay_status = AY_ERROR;
+		  goto cleanup;
+		}
 	      totalverts += nverts[uk];
 	      uk++;
 	    }

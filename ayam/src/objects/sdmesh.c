@@ -305,6 +305,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 
   if(nfaces > 0)
     {
+      /* see if we can automatically fill some arrays */
       if(!nverts)
 	{
 	  if(!(nverts = calloc(nfaces, sizeof(unsigned int))))
@@ -383,7 +384,7 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
 
   if(nfaces > 0)
     {
-      /* check the array lengths */
+      /* check the parameters */
       if(nvertslen < nfaces)
 	{
 	  ay_error(AY_ERROR, fname, "nverts < nfaces");
@@ -393,6 +394,13 @@ ay_sdmesh_createcb(int argc, char *argv[], ay_object *o)
       totalverts = 0;
       for(ui = 0; ui < nfaces; ui++)
 	{
+	  if(nverts[ui] < 3)
+	    {
+	      ay_error(AY_ERROR, fname,
+		       "unsupported number of vertices per face (<3)");
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    }
 	  totalverts += nverts[ui];
 	}
       if(vertslen < totalverts)
