@@ -1902,7 +1902,7 @@ RtVoid RiSubdivisionMesh( RtToken scheme, RtInt nfaces,
    }
    if ( vertices[i] > l )
      l = vertices[i];
-   fprintf( fp, "%d] ", vertices[i] );
+   fprintf( fp, "%d]\n", vertices[i] );
 
    if ( ntags )
    {
@@ -1932,17 +1932,17 @@ RtVoid RiSubdivisionMesh( RtToken scheme, RtInt nfaces,
       }      
       for ( i=0; i<ia-1; i++ )
       {
-	 fprintf( fp, "%d", intargs[i] );
+	 fprintf( fp, "%d ", intargs[i] );
       }
       if (ia)
-	 fprintf( fp, "%d]\n[", intargs[i] );
+	 fprintf( fp, "%d] [", intargs[i] );
       else
 	 fprintf( fp, "] [" );
       
       /* Print floatargs[]. */
       for ( i=0; i<fa-1; i++ )
       {
-	 fprintf( fp, "%g", floatargs[i] );
+	 fprintf( fp, "%g ", floatargs[i] );
       }
       if (fa)
 	 fprintf( fp, "%g]\n", floatargs[i] );
