@@ -5072,6 +5072,11 @@ SDMesh object:
 <itemize>
 <item><tt/"Scheme"/, subdivision scheme, since Ayam 1.11 you
 may choose between Catmull-Clark and Loop.
+<item><tt/"Level"/ is the number of subdivision steps that should
+be carried out when subdividing the mesh for preview (this needs
+the <tt/"subdiv"/ plugin).
+<item><tt/"DrawSub"/ allows to switch between the control polygon
+and the subdivided polygon outlines when drawing the mesh.
 <item><tt/"NFaces"/, the number of faces.
 <item><tt/"NControls"/, the total number of control points
 defined.
@@ -10393,7 +10398,7 @@ creates a polymesh with one triangular face that has a triangular hole.
   <itemize>
 
   <item><tt/"-scheme"/: the value of this option specifies the subdivision
-scheme, it may be set to 0 - Catmull Clark or 1 - Loop only. Default is 0.
+scheme, it may be set to 0 - Catmull-Clark or 1 - Loop only. Default is 0.
 
   <item><tt/"-faces"/: the value of this option specifies the number of
 faces in the mesh. The number of polygons defaults to 0!
@@ -10454,7 +10459,9 @@ Examples:
 <enum>
 <item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5}"//<newline>
 creates a tetrahedral (four triangular faces) mesh.
-<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {1} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {1} -args {1 1} -intargs {0} -doubleargs {3.0}"//<newline>
+creates a tetrahedral mesh with a semi-sharp corner.
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {2} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
 creates a tetrahedral mesh with a crease.
 </enum>
 
@@ -15082,11 +15089,12 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Double Size: <ref id="vmconf" name="view menu entry">
 <item>DrawGrid, DrawLevel, DrawSel, DrawBG:
 <ref id="vat" name="View attribute">
-<item>Draw Selection only: <ref id="vmconf" name="view menu entry">
-<item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
+<item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
+<item>Draw Selection only: <ref id="vmconf" name="view menu entry">
+<item>DrawSub: <ref id="sdmattr" name="SDMesh attribute">
 <item>DXF: <ref id="impdxf" name="DXF import plugin">,
 <ref id="expdxf" name="DXF export plugin">
 <item>DynamicLoad: <ref id="riprocp" name="RiProc attribute">
@@ -15280,7 +15288,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="ncattr" name="NCurve attribute">,
 <ref id="acp" name="ACurve attribute">,
 <ref id="icp" name="ICurve attribute">
-<item>Level: <ref id="levelobj" name="Level object">
+<item>Level: <ref id="levelobj" name="Level object">,
+<ref id="sdmattr" name="SDMesh attribute">,
 <ref id="sdnpattr" name="SDNPatch attribute">
 <item>Light: <ref id="lightobj" name="Light object">,
 <ref id="prefdraw" name="preference setting">
@@ -15575,6 +15584,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalPnts <ref id="scscalpnts" name="scripting interface command">
 <item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
+<item>Scheme: <ref id="sdmattr" name="SDMesh attribute">
 <item>Script: <ref id="script" name="scripting interface">,
 <ref id="scriptobj" name="Script object">
 <item>Scripts: <ref id="prefgui" name="preference setting">
