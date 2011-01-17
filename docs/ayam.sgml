@@ -10424,13 +10424,18 @@ option must be specified to create a non-empty SDMesh object.
 
   <item><tt/"-tags"/: the value of this option specifies a number of tags.
 It is therefore a list of positive integer values of arbitrary length.
+The only allowed values are 0 - hole, 1 - corner, 2 - crease, and
+3 - interpolateboundary.
 The default value of this option is an empty list: no tags.
 
   <item><tt/"-args"/: the value of this option specifies the number of
 integer and floating point arguments per tag.
 It is therefore a list of positive integer values of length:
 double number of tags. The even entries specify the number of integer and
-the odd entries the number of floating point arguments.
+the odd entries the number of floating point arguments per tag.
+The content of this list is partially dictated by the <tt/"-tags"/
+option, e.g. a crease entry has atleast two integer arguments and one
+floating point argument.
 The default value of this option is list of proper length, with all
 elements set to zero (no tags have any arguments).
 
@@ -10447,8 +10452,10 @@ sum of all odd elements given by the <tt/"-args"/ option.
   </itemize>
 Examples:
 <enum>
-<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 2 3  0 1 2} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5}"//<newline>
-creates a tetrahedral mesh.
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5}"//<newline>
+creates a tetrahedral (four triangular faces) mesh.
+<item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {1} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
+creates a tetrahedral mesh with a crease.
 </enum>
 
 <#if out=latex><x/newpage/</#if>
