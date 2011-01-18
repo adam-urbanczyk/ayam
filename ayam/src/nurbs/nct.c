@@ -2818,6 +2818,13 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_crtcircbspcv:
+ *
+ *  To improve performance for repeated calls with nearly identical
+ *  parameters (e.g. by ay_npt_revolve()) this function supports
+ *  *result to be non NULL, to avoid constant reallocation in repeated calls.
+ *  Since no error check can be performed regarding the size of this memory
+ *  region it is highly suggested to simply reuse the region allocated by
+ *  a first call of this function.
  */
 int
 ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,

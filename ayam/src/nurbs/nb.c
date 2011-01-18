@@ -2123,6 +2123,11 @@ ay_nb_CompFirstDerSurf3D(int n, int m, int p, int q, double *U, double *V,
  *  parameters (e.g. by ay_npt_revolve()) this function supports the
  *  knotv and controlv parameters to be NULL, and, in this case, does
  *  not calculate knots or control points, respectively.
+ *  Furthermore, *knotv and *controlv may be non NULL, to avoid constant
+ *  reallocation in repeated calls. Since no error check can be performed
+ *  regarding the size of the memory regions pointed to by *knotv / *controlv
+ *  it is highly suggested to simply reuse the regions created by a first
+ *  call of this function.
 */
 int
 ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
@@ -2722,7 +2727,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 
   *nw = mh-ph;
 
- cleanup:
+cleanup:
  if(bezalfs)
    free(bezalfs);
  if(bpts)
@@ -3100,7 +3105,7 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 
   *nh = mh-ph;
 
- cleanup:
+cleanup:
  if(bezalfs)
    free(bezalfs);
  if(bpts)
@@ -3389,6 +3394,7 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
       /* allocate next segment */
       if(!(temp = realloc(lQw, (Qwlen+(p+1)) * stride * sizeof(double))))
 	{
+	  free(alphas);
 	  return AY_EOMEM;
 	}
       lQw = temp;
@@ -3565,7 +3571,7 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	} /* for */
     } /* for */
 
- cleanup:
+cleanup:
 
   if(alpha)
     free(alpha);
@@ -3684,7 +3690,7 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	} /* for */
     } /* for */
 
- cleanup:
+cleanup:
 
   if(alpha)
     free(alpha);
