@@ -216,29 +216,29 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
 
   angle =  ay_quat_dot(q1, q2);
 
-  if(angle < 0.0f)
+  if(angle < 0.0)
     {
-      q1[0] *= -1.0f;
-      q1[1] *= -1.0f;
-      q1[2] *= -1.0f;
-      q1[3] *= -1.0f;
-      angle *= -1.0f;
+      q1[0] *= -1.0;
+      q1[1] *= -1.0;
+      q1[2] *= -1.0;
+      q1[3] *= -1.0;
+      angle *= -1.0;
     }
 
-  if((angle + 1.0f) > 0.05f)
+  if((angle + 1.0) > 0.05)
     {
-      if((1.0f - angle) >= 0.05f)
+      if((1.0 - angle) >= 0.05)
 	{
 	  /* spherical interpolation */
 	  theta = acos(angle);
-	  invsintheta = 1.0f / sin(theta);
-	  scale = sin(theta * (1.0f-time)) * invsintheta;
+	  invsintheta = 1.0 / sin(theta);
+	  scale = sin(theta * (1.0-time)) * invsintheta;
 	  invscale = sin(theta * time) * invsintheta;
 	}
       else
 	{
 	  /* linear interploation */
-	  scale = 1.0f - time;
+	  scale = 1.0 - time;
 	  invscale = time;
 	}
     }
@@ -249,7 +249,7 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
       q2[1] = q1[0];
       q2[2] = -q1[3];
       q2[3] = q1[2];
-      scale = sin(AY_PI * (0.5f - time));
+      scale = sin(AY_PI * (0.5 - time));
       invscale = sin(AY_PI * time);
     } /* if */
 
@@ -273,5 +273,17 @@ ay_quat_dot(double q1[4], double q2[4])
   return((q1[0] * q2[0]) + (q1[1] * q2[1]) +
     (q1[2] * q2[2]) + (q1[3] * q2[3]));
 } /* ay_quat_dot */
+
+
+/* ay_quat_inv:
+ *  calculate inverse of a quaternion
+ */
+void
+ay_quat_inv(double q[4])
+{
+  ay_quat_norm(q);
+  q[3] = -q[3];
+ return;
+} /* ay_quat_inv */
 
 #undef AY_QEPSILON
