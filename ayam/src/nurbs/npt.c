@@ -2441,7 +2441,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	     int has_end_cap, ay_object **end_cap)
 {
  int ay_status = AY_OK;
- ay_object *curve = NULL;
+ ay_object *curve = NULL, o = {0};
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
@@ -2453,9 +2453,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0, plensf = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
- double mr[16];
- double quat[4] = {0};
- double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
+ double mr[16], quat[4] = {0}, axisrot[4] = {0};
+ double *cscv = NULL, *trcv = NULL, *sfcv = NULL;
 
   if(!o1 || !o2 || !sweep)
     return AY_ENULL;
@@ -2616,12 +2615,6 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   ay_trafo_identitymatrix(mr);
 
-  if(!(rots = calloc((sections+1)*4, sizeof(double))))
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
-
   /* copy cross sections controlv section+1 times and sweep it */
   for(i = 0; i <= sections; i++)
     {
@@ -2695,13 +2688,13 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      len = AY_V3LEN(A);
 	      AY_V3SCAL(A,(1.0/len));
 
-	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
-	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
+	      axisrot[0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+	      memcpy(&(axisrot[1]), A, 3*sizeof(double));
 
-	      if(fabs(rots[i*4]) > AY_EPSILON)
+	      if(fabs(axisrot[0]) > AY_EPSILON)
 		{
-		  ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
-					rots[i*4+2], rots[i*4+3], mr);
+		  ay_trafo_rotatematrix(-axisrot[0], axisrot[1],
+					axisrot[2], axisrot[3], mr);
 		}
 	    } /* if */
 
@@ -2782,9 +2775,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  /* rotate it */
 		  if(rotate)
 		    {
-		      if(fabs(rots[0]) > AY_EPSILON)
+		      if(fabs(axisrot[0]) > AY_EPSILON)
 			{
-			  ay_quat_axistoquat(&(rots[1]), AY_D2R(-rots[0]),
+			  ay_quat_axistoquat(&(axisrot[1]),
+					     AY_D2R(-axisrot[0]),
 					     quat);
 			  ay_quat_add(quat, (*start_cap)->quat,
 				      (*start_cap)->quat);
@@ -2808,10 +2802,14 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      if(*end_cap)
 		{
 		  /* transform cap */
+		  memcpy((*end_cap)->quat,o1->quat,4*sizeof(double));
+		  (*end_cap)->scalx = o1->scalx;
+		  (*end_cap)->scaly = o1->scaly;
+		  (*end_cap)->scalz = o1->scalz;
+
 		  /* move it */
 		  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
 				     trcv, tr->knotv[tr->length], p2);
-		  ay_trafo_copy(o1, *end_cap);
 		  (*end_cap)->movx = p2[0];
 		  (*end_cap)->movy = p2[1];
 		  (*end_cap)->movz = p2[2];
@@ -2845,16 +2843,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  /* rotate it */
 		  if(rotate)
 		    {
-		      for(j = 0; j <= sections; j++)
-			{
-			  if(fabs(rots[j*4]) > AY_EPSILON)
-			    {
-			      ay_quat_axistoquat(&(rots[j*4+1]),
-						 AY_D2R(-rots[j*4]), quat);
-			      ay_quat_add(quat, (*end_cap)->quat,
-					  (*end_cap)->quat);
-			    } /* if */
-			} /* for */
+		      ay_trafo_decomposematrix(mr, &o);
+		      ay_quat_inv(o.quat);
+		      ay_quat_add(o.quat, (*end_cap)->quat,
+				  (*end_cap)->quat);
 		    } /* if */
 		}
 	      else
@@ -2871,9 +2863,8 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   *sweep = new;
 
   /* clean up */
- cleanup:
-  if(rots)
-    free(rots);
+cleanup:
+
   if(cscv)
     free(cscv);
   if(trcv)
@@ -2911,8 +2902,8 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0, plensf = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
- double mr[16];
- double *cscv = NULL, *trcv = NULL, *sfcv = NULL, *rots = NULL;
+ double mr[16], axisrot[4] = {0};
+ double *cscv = NULL, *trcv = NULL, *sfcv = NULL;
 
   if(!o1 || !o2 || !closedsweep)
     return AY_ENULL;
@@ -3057,12 +3048,6 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   ay_trafo_identitymatrix(mr);
 
-  if(!(rots = calloc(new->width*4, sizeof(double))))
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
-
   /* copy cross sections controlv section times and sweep it */
   for(i = 0; i < sections; i++)
     {
@@ -3124,13 +3109,13 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      len = AY_V3LEN(A);
 	      AY_V3SCAL(A,(1.0/len));
 
-	      rots[i*4+0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
-	      memcpy(&(rots[i*4+1]), A, 3*sizeof(double));
+	      axisrot[0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+	      memcpy(&(axisrot[1]), A, 3*sizeof(double));
 
-	      if(fabs(rots[i*4]) > AY_EPSILON)
+	      if(fabs(axisrot[0]) > AY_EPSILON)
 		{
-		  ay_trafo_rotatematrix(-rots[i*4], rots[i*4+1],
-					rots[i*4+2], rots[i*4+3], mr);
+		  ay_trafo_rotatematrix(-axisrot[0], axisrot[1],
+					axisrot[2], axisrot[3], mr);
 		}
 	    } /* if */
 
@@ -3163,9 +3148,8 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   *closedsweep = new;
 
   /* clean up */
- cleanup:
-  if(rots)
-    free(rots);
+cleanup:
+
   if(cscv)
     free(cscv);
   if(trcv)

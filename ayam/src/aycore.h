@@ -913,6 +913,10 @@ int ay_quat_slerp(double time, double q1[4], double q2[4], double *r);
  */
 double ay_quat_dot(double q1[4], double q2[4]);
 
+/** calculate inverted quaternion
+ */
+void ay_quat_inv(double q[4]);
+
 
 /* read.c */
 
