@@ -130,7 +130,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
 
 /* ay_tags_copyall:
  *  copy all tags from object <src> to object <dst>
- *  temporary tags are _not_ copied
+ *  internal and binary tags are _not_ copied
  */
 int
 ay_tags_copyall(ay_object *src, ay_object *dst)
@@ -145,7 +145,7 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
   newtagptr = &(dst->tags);
   while(tag)
     {
-      if(!tag->is_temp)
+      if(!tag->is_intern && !tag->is_binary)
 	{
 	  ay_status = ay_tags_copy(tag, newtagptr);
 	  if(ay_status == AY_OK)
@@ -238,18 +238,19 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
+ char args[] =
+   "[type value]|-index index type value|-delete index";
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_tag *t = NULL, *new = NULL, **next = NULL;
- ay_tag *oldtemptags = NULL, **otnext = NULL;
+ ay_tag *oldibtags = NULL, **otnext = NULL;
  Tcl_HashEntry *entry = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- int stride = 2, index = 0, i, pasteProp = AY_FALSE, have_flags = AY_FALSE;
+ int index = 0, i = 0, pasteProp = AY_FALSE;
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0],
-	       "[type value]|-index index type value|-delete index");
+      ay_error(AY_EARGS, argv[0], args);
       return TCL_OK;
     }
 
@@ -263,8 +264,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(argc < 5)
 	{
-	  ay_error(AY_EARGS, argv[0],
-		   "[type value]|-index index type value|-delete index");
+	  ay_error(AY_EARGS, argv[0], args);
 	  return TCL_OK;
 	}
 
@@ -274,19 +274,27 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       /* find tag */
       o = sel->object;
       new = o->tags;
-      for(i = 0; i < index; i++)
+      while(new)
 	{
-	  if(!new)
+	  if(new->is_intern || new->is_binary)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Tag not found!");
-	      return TCL_OK;
+	      new = new->next;
 	    }
-	  new = new->next;
-	} /* for */
+	  else
+	    {
+	      if(i == index)
+		break;
+	      else
+		{
+		  i++;
+		  new = new->next;
+		}
+	    }
+	} /* while */
 
-      if(new->is_binary)
+      if(!new)
 	{
-	  ay_error(AY_ERROR, argv[0], "Can not set binary tags!");
+	  ay_error(AY_ERROR, argv[0], "Tag not found!");
 	  return TCL_OK;
 	}
 
@@ -326,7 +334,6 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 	  strcpy(new->val, argv[4]);
-
 	} /* if */
 
       return TCL_OK; /* early exit! */
@@ -334,6 +341,11 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!strcmp(argv[1], "-delete"))
     {
+      if(argc < 3)
+	{
+	  ay_error(AY_EARGS, argv[0], args);
+	  return TCL_OK;
+	}
 
       tcl_status = Tcl_GetInt(interp, argv[2], &index);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -342,29 +354,41 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       new = o->tags;
       next = &(o->tags);
-      for(i = 0; i < index; i++)
+      while(new)
 	{
-	  if(!new)
+	  if(new->is_intern || new->is_binary)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Tag not found!");
-	      return TCL_OK;
+	      next = &(new->next);
+	      new = new->next;
 	    }
+	  else
+	    {
+	      if(i == index)
+		break;
+	      else
+		{
+		  i++;
+		  next = &(new->next);
+		  new = new->next;
+		}
+	    }
+	} /* while */
 
-	  next = &(new->next);
-	  new = new->next;
-	} /* for */
-      *next = new->next;
-      ay_tags_free(new);
+      if(!new)
+	{
+	  ay_error(AY_ERROR, argv[0], "Tag not found!");
+	  return TCL_OK;
+	}
+      else
+	{
+	  *next = new->next;
+	  ay_tags_free(new);
+	}
 
       return TCL_OK; /* early exit! */
     } /* if */
 
   /* normal setTags functionality */
-
-  if(!strcmp(argv[1], "-flags"))
-    {
-      have_flags = AY_TRUE;
-    }
 
   /* is a paste property in progress? */
   toa = Tcl_NewStringObj("ay", -1);
@@ -378,21 +402,21 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!pasteProp)
 	{
-	  /* save old temp and binary tags */
+	  /* save old internal and binary tags */
 	  t = o->tags;
-	  otnext = &(oldtemptags);
+	  otnext = &(oldibtags);
 	  next = &(o->tags);
 	  while(t)
 	    {
-	      if(t->is_temp || t->is_binary)
+	      if(t->is_intern || t->is_binary)
 		{
-		  /* link tag t to end of list in oldtemptags */
+		  /* link tag t to end of list in oldibtags */
 		  *otnext = t;
 		  /* unlink tag t from list in o->tags */
 		  *next = t->next;
 		  /* prepare processing the next tag */
 		  t = t->next;
-		  /* properly terminate the list in oldtemptags */
+		  /* properly terminate the list in oldibtags */
 		  (*otnext)->next = NULL;
 		  otnext = &((*otnext)->next);
 		}
@@ -407,11 +431,11 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* delete old tags */
 	  ay_tags_delall(o);
 
-	  /* now add again the saved temporary/binary tags */
-	  if(oldtemptags)
+	  /* now add again the saved internal/binary tags */
+	  if(oldibtags)
 	    {
-	      o->tags = oldtemptags;
-	      oldtemptags = NULL;
+	      o->tags = oldibtags;
+	      oldibtags = NULL;
 	      next = otnext;
 	    }
 	  else
@@ -431,26 +455,15 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
 
       /* add new tags from args */
-
-      if(have_flags)
-	stride = 3;
-
-      for(index = 1; index < argc-1; index += stride)
+      for(index = 1; index < argc-1; index += 2)
 	{
 	  if(strcmp(argv[index], ""))
 	    {
-	      /* always omit temporary tags */
-	      if(have_flags && (!strcmp(argv[index+2], "1")))
-		{
-		  continue;
-		}
-
 	      if(!(new = calloc(1, sizeof(ay_tag))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
-
 	      /* we first try to resolve the tag type */
 	      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[index])))
 		{
@@ -533,7 +546,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
-      strcpy(new->name,argv[1]);
+      strcpy(new->name, argv[1]);
 
       if(entry)
 	new->type = (char *)Tcl_GetHashValue(entry);
@@ -543,7 +556,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
-      strcpy(new->val,argv[2]);
+      strcpy(new->val, argv[2]);
 
       if(!o->tags)
 	{
@@ -577,7 +590,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "vname1 vname2 [vname3]");
+      ay_error(AY_EARGS, argv[0], "vname1 vname2");
       return TCL_OK;
     }
 
@@ -589,34 +602,17 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_SetVar(interp,argv[1], "", TCL_LEAVE_ERR_MSG);
   Tcl_SetVar(interp,argv[2], "", TCL_LEAVE_ERR_MSG);
-  if(argc > 3)
-    {
-      Tcl_SetVar(interp,argv[3], "", TCL_LEAVE_ERR_MSG);
-    }
 
   o = sel->object;
   tag = o->tags;
   while(tag)
     {
-      if(tag->name && tag->val)
+      if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
 	{
 	  Tcl_SetVar(interp,argv[1],tag->name, TCL_APPEND_VALUE |\
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 	  Tcl_SetVar(interp,argv[2],tag->val, TCL_APPEND_VALUE |\
 		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	  if(argc > 3)
-	    {
-	      if(tag->is_temp)
-		{
-		  Tcl_SetVar(interp,argv[3],"1", TCL_APPEND_VALUE |\
-			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		}
-	      else
-		{
-		  Tcl_SetVar(interp,argv[3],"0", TCL_APPEND_VALUE |\
-			     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-		}
-	    } /* if */
 	} /* if */
       tag = tag->next;
     } /* while */
@@ -981,7 +977,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 	  return AY_EOMEM;
 	}
       newnotag->type = ay_no_tagtype;
-      newnotag->is_temp = AY_TRUE;
+      newnotag->is_intern = AY_TRUE;
       newnotag->is_binary = AY_TRUE;
       if(!(newnotag->val = calloc(1, sizeof(ay_btval))))
 	{
@@ -998,7 +994,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 	}
 
       newnmtag->type = ay_no_tagtype;
-      newnmtag->is_temp = AY_TRUE;
+      newnmtag->is_intern = AY_TRUE;
       newnmtag->is_binary = AY_TRUE;
       if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
 	{

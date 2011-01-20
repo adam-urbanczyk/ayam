@@ -490,7 +490,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 		}
 	      newt->next = o->tags;
 	      newt->type = ay_nc_tagtype;
-	      newt->is_temp = AY_TRUE;
+	      newt->is_intern = AY_TRUE;
 	      o->tags = newt;
 	    }
 

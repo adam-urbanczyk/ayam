@@ -132,7 +132,7 @@ typedef struct ay_pointedit_s
 typedef struct ay_tag_s
 {
   struct ay_tag_s *next; /**< next tag */
-  char is_temp; /**< is this tag temporary? */
+  char is_intern; /**< is this tag internal? */
   char is_binary; /**< is this tag binary? */
   char *name; /**< name of tag (e.g.\ "PV") */
   char *type; /**< type of tag (e.g.\ ay_pv_tagtype) */

@@ -286,7 +286,6 @@ proc prefs_open {} {
 	addCheckB $fw ayprefse ToolBoxShrink [ms ayprefse_ToolBoxShrink]
     }
     addCheckB $fw ayprefse RGTrans [ms ayprefse_RGTrans]
-    addCheckB $fw ayprefse HideTmpTags [ms ayprefse_HideTmpTags]
     addParamB $fw ayprefse TclPrecision [ms ayprefse_TclPrecision]\
 	    { 4 5 6 12 17 }
     addMenuB $fw ayprefse SavePrefsGeom [ms ayprefse_SavePrefsGeom]\

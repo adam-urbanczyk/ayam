@@ -503,7 +503,7 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
 
 /* ay_undo_copytags:
  *  copy all tags from object <src> to object <dst>
- *  including temporary tags
+ *  including internal and binary tags
  */
 int
 ay_undo_copytags(ay_object *src, ay_object *dst)

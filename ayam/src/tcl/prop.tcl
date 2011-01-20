@@ -127,10 +127,9 @@ addString $w matPropData Materialname
 proc getTagsp { } {
 global ay ayprefs tagsPropData Tags tcl_platform
 
-getTags names values tempflags
+getTags names values
 set tagsPropData(names) $names
 set tagsPropData(values) $values
-set tagsPropData(tempflags) $tempflags
 
 set ay(bok) $ay(appb)
 
@@ -153,32 +152,24 @@ pack $f.mb -in $f -side left -fill x -expand yes -pady 0
 pack $f -in $w -side top -fill x
 
 set i 0
-set j 0
 foreach tag $names {
-
-    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) } {
-
-	$m add command -label "Tag#$j ($tag)" -command\
-		"undo save RemTag;setTags -delete $i;plb_update"
-
-	incr j
-    }
+    $m add command -label "Tag#$i ($tag)" -command\
+	"undo save RemTag;setTags -delete $i;plb_update"
     incr i
 }
 
 addCommand $w c2 "Add Tag!" {addTagp}
 set i 0
 foreach tag $names {
-    if { (!$ayprefs(HideTmpTags) || ![lindex $tempflags $i]) } {
-	set val [lindex $values $i]
-	set len [string length $val]
-	if { $len > $ayprefs(MaxTagLen) } {
-	    set val [string range $val 0 $ayprefs(MaxTagLen)]
-	    set val "${val}..."
-	}
-	button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
-	pack $w.b$i -fill x -expand yes
+    set val [lindex $values $i]
+    set len [string length $val]
+    if { $len > $ayprefs(MaxTagLen) } {
+	set val [string range $val 0 $ayprefs(MaxTagLen)]
+	set val "${val}..."
     }
+    button $w.b$i -text "$tag: $val" -command "addTagp $i" -bd 1 -pady 0
+    pack $w.b$i -fill x -expand yes
+
     incr i
 }
 $ay(pca) itemconfigure 1 -window $w
@@ -194,21 +185,17 @@ global ay tagsPropData Tags
 
 set names $tagsPropData(names)
 set values $tagsPropData(values)
-set tempflags $tagsPropData(tempflags)
 
 set alltags ""
 set i 0
 foreach tag $names {
-
-lappend alltags $tag
-lappend alltags [lindex $values $i]
-lappend alltags [lindex $tempflags $i]
-
-incr i
+    lappend alltags $tag
+    lappend alltags [lindex $values $i]
+    incr i
 }
 
 if { [llength $alltags] > 0 } {
-    eval [subst "setTags -flags $alltags"]
+    eval [subst "setTags $alltags"]
 }
 
 }
