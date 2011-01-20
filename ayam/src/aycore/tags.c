@@ -435,7 +435,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
       if(have_flags)
 	stride = 3;
 
-      for(index = 2; index < argc-1; index += stride)
+      for(index = 1; index < argc-1; index += stride)
 	{
 	  if(strcmp(argv[index], ""))
 	    {
