@@ -191,8 +191,6 @@ ms_set en ayprefse_ToolBoxTrans "Make the toolbox window transient?"
 ms_set en ayprefse_ToolBoxShrink "Make the toolbox window shrink wrap around\
 its contents,\nwhen the user resizes it?"
 ms_set en ayprefse_RGTrans "Make all rendering user interfaces transient?"
-ms_set en ayprefse_HideTmpTags "Hide all tags marked temporary from\nthe\
-tag property GUIs?"
 ms_set en ayprefse_TclPrecision "Precision of Tcl mathematics.\nHigh values\
 lead to exact but hard\nto edit numbers in entry fields."
 ms_set en ayprefse_SavePrefsGeom "Save geometry of preferences window for\
@@ -381,8 +379,6 @@ ms_set de ayprefse_ToolBoxShrink "Soll das Werkzeugfenster sich dem\
 Inhalt anpassen,\nwenn es in der Größe verändert wird?"
 ms_set de ayprefse_RGTrans "Sollen alle Rendering Fenster als transient\
 markiert werden?"
-ms_set de ayprefse_HideTmpTags "Sollen temporäre Tags aus den Tag\
-Eigenschaften ausgeblendet werden?"
 ms_set de ayprefse_TclPrecision "Genauigkeit der Wandlung von\
 Gleitkommazahlen von Tcl.\nHohe Werte führen zu exakten aber schwer\
 editierbaren\nWerten in Eingabefeldern."
@@ -542,8 +538,6 @@ ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"
 ms_set fr ayprefse_ToolBoxShrink "Rendre la fenêtre Boîte-à-Outils ajustable\
 à son contenu,\nlorsque l'utilisateur en modifie la taille?"
 ms_set fr ayprefse_RGTrans "Rendre toutes les interface utilisateur transient?"
-ms_set fr ayprefse_HideTmpTags "Cacher tous les étiquette marquées\
-temporaires\ndans les propriétés de l'interface graphique?"
 ms_set fr ayprefse_TclPrecision "Precision des mathématiques Tcl."
 #ms_set fr ayprefse_SavePrefsGeom "Save geometry of preferences window for\
 #next invocation?"

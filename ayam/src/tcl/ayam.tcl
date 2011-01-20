@@ -129,7 +129,6 @@ array set ayprefs {
  ToolBoxTrans 0
  ToolBoxShrink 1
  RGTrans 0
- HideTmpTags 0
  Kill "kill"
  Cat "cat"
  Wait ""
@@ -245,6 +244,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set env. variable AYNOSPLASH.}
 {Press <Shift-Enter> in the Console for immediate update and redraw.}
+{To get rid of the mark, press <Esc> twice.}
 }
 }
 # array ayprefs

@@ -104,7 +104,7 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->name && tag->val && !tag->is_temp && !tag->is_binary)
+      if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
 	{
 	  tcount++;
 	}
@@ -117,7 +117,7 @@ ay_write_tags(FILE *fileptr, ay_object *o)
   tag = o->tags;
   while(tag)
     {
-      if(tag->name && tag->val && !tag->is_temp && !tag->is_binary)
+      if(tag->name && tag->val && !tag->is_intern && !tag->is_binary)
 	{
 	  fprintf(fileptr,"%s\n",tag->name);
 	  fprintf(fileptr,"%s\n",(char*)tag->val);
