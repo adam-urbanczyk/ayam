@@ -15,10 +15,10 @@ likewise, enforce a new page with:
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>22. Dec 2010
+<date>24. Jan 2010
 
 <abstract>
-This is the documentation of Ayam 1.18 - a free 3D modelling environment
+This is the documentation of Ayam 1.19 - a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -2218,9 +2218,6 @@ main menu for quick access.
 should be declared as a transient window of the main window.
 See the discussion of <tt/"ToolBoxTrans"/ above for more information
 about transient windows.
-
-<item><tt/"HideTmpTags"/ may be used to hide tags that are marked
-temporary (internal tag types do so) from the tag property GUI.
 
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point numbers with. You may want to decrease this number to about 5
@@ -8830,30 +8827,23 @@ A BP tag could look like this:
 
 <sect2>Internal Tags
 <p>
-The following tags are of no general use. They are used
-by Ayam internally only.
+The following tags are used by Ayam internally only; they will <em>not</em>
+appear in the tags property GUI and they can <em>not</em> be deleted or
+changed using the scripting interface.
 <itemize>
 <item>OI (Object ID) Tag<label id="oitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between instance objects and
 the original objects they are pointing to.
-<p>
-The tag type <tt/OI/ is not meant to be used by the end user.
-Furthermore, changing the IDs manually avails to nothing as the
-tags are rebuilt before every export/save operation.
 
 <item>MI (Material ID) Tag<label id="mitt">
 <p>
 This tag is used by the RIB exporter and the scene storage
 facility to establish links between material objects and
 the objects they are assigned to.
-<p>
-The tag type <tt/MI/ is not meant to be used by the end user.
-Furthermore, changing the IDs manually avails to nothing as the
-tags are rebuilt before every export/save operation.
 
-<item>NO/NM Tags
+<item>NO/NM Tags<label id="nott"><label id="nmtt">
 <p>
 These tags are internal binary tags, that transport the notification
 across the scene.
@@ -8870,12 +8860,11 @@ known since Ayam 1.10 and in all accompanying extensions (plugins).
 "RP", "BNS", "DBNS", "ANS", "DANS", "NO", "NM",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
-The following tags are temporary (they will not be displayed in the
-Tags property of an object, if the preference option <tt>"HideTmpTags"</tt>
-is enabled):
+The following tags are for internal use (they will not be displayed in the
+Tags property of an object):
 <tt>"MI", "OI"</tt>
 <p>
-Tags of type <tt>"NO", "NM"</tt> are binary, they never show up in the
+Tags of type <tt>"NO", "NM"</tt> are binary, they also never show up in the
 Tags property.
 <p>
 Documentation on all those tags can be found in the sections above.
@@ -9909,36 +9898,35 @@ More documentation to come.
 
 <sect2>The Global Property Management and Data Arrays<label id="ayproparr">
 <p>
-For every property, a corresponding global array exists, where the data
-of the property may be saved.
-This global array only holds useful data when the respective
-property GUI is active, or when it has been filled explicitly by
-the so called get-property callback.
-The data may be transferred back to the selected object using
-the so called set-property callback.
-The names of the array and the callbacks may be inferred from another global
-array that is always named like the property itself, e.g. for the tags
-property the following global array <tt/"Tags"/ is defined:
+For every property, a corresponding global arrays exists, where the
+property is managed. For the Transformations property, this array looks
+like this:
 <#if out=latex><x/needspace 7/</#if>
 <code>
-Tags {
-arr   tagsPropData
-sproc setTagsp
-gproc getTagsp
-w     fTagsAttr
+Transformations {
+arr   transfPropData
+sproc setTrafo
+gproc getTrafo
+w     fTrafoAttr
 }
 </code>
-The entry arr designates the name of the global property data array
-(thus, tags data is stored in an array called <tt/"tagsPropData"/).
-The entries sproc and gproc designate the set-property and get-property
-callbacks respectively.
-If sproc or gproc are empty (<tt/""/), a standard callback
+The first entry, <tt/"arr"/, designates the name of the global property
+data array (thus, transformation data is stored in an array called
+<tt/"transfPropData"/).
+The entries <tt/"sproc"/ and <tt/"gproc"/ designate the set-property and
+get-property callbacks (procedures or commands) respectively.
+If sproc or gproc are empty strings (<tt/""/), standard callbacks
 named <tt/"setProp"/ or <tt/"getProp"/ should be used to get
 or set the property values.
-But for the tags property, the procedures <tt/"setTagsp"/ and
-<tt/"getTagsp"/ should be used.
-The last entry, <tt/"w"/, is the path and name of the main property
-GUI window.
+But for the transformations property, the <tt/"setTrafo"/ and
+<tt/"getTrafo"/ commands should be used.
+The last entry, <tt/"w"/, is the name of the main property GUI window.
+To get the full widget path of this window, the current value of
+ay(pca) needs to be prepended.
+<p>
+Note that the global property data array only holds useful data when the
+respective property GUI is active, or when it has been filled explicitly
+by the so called get-property callback.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
@@ -10388,9 +10376,16 @@ creates a polymesh with two connected (vertex sharing) triangular faces.
 creates a polymesh with two triangles and one quad all connected
 (vertex sharing).
 
-<item><bf/<tt/"crtOb PolyMesh -p 1 -l {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"//<newline>
+<item><bf/<tt/"crtOb PolyMesh -p 1 -loops {2} -cv {0 0 0  1 0 0  0 1 0  .25 .25 0  .5 .25 0  .25 .5 0}"//<newline>
 creates a polymesh with one triangular face that has a triangular hole.
 </enum>
+Notes:<newline>
+Besides checking the lengths of arrays, maximum indices, and minimum
+number of vertices per loop, there is no error checking.
+Undetected, but problematic for further processing steps &ndash; possibly
+in other applications, errors include: degenerated or non-planar polygons,
+hole loops geometrically outside or touching the outline loop, disagreeing
+loop directions between faces/non-manifold meshes, unused control points.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -10455,6 +10450,9 @@ It is therefore a list of double values of length
 sum of all odd elements given by the <tt/"-args"/ option.
 
   </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5}"//<newline>
@@ -10464,16 +10462,37 @@ creates a tetrahedral mesh with a semi-sharp corner.
 <item><bf/<tt/"crtOb SDMesh -f 4 -v {0 1 3  1 2 3  0 3 2  0 2 1} -cv {0 0 0  1 0 0  0 0 -1  0.5 1 -0.5} -tags {2} -args {2 1} -intargs {0 1} -doubleargs {10.0}"//<newline>
 creates a tetrahedral mesh with a crease.
 </enum>
+Notes:<newline>
+Besides checking the lengths of arrays, maximum indices, and minimum
+number of vertices per face, there is no error checking.
+Undetected, but problematic for further processing steps &ndash; possibly
+in other applications, errors include: degenerated or non-planar polygons,
+polygons with too high vertex counts (for the selected subdivision scheme),
+non-manifold meshes, unused control points, wrong tag arguments.
 
 <#if out=latex><x/newpage/</#if>
 
   <item><tt/"Level"/: Levels must be given an additional argument
 determining the type of the new level, this argument may be one of:
 <tt/"0"/ (level), <tt/"1"/ (union), <tt/"2"/ (intersection),
-<tt/"3"/ (difference), <tt/"4"/ (primitive).
+<tt/"3"/ (difference), or <tt/"4"/ (primitive).
+
+Examples:
+<enum>
+<item><bf/<tt/"crtOb Level 0"//<newline>
+creates a simple level object.
+<item><bf/<tt/"crtOb Level 3"//<newline>
+creates a CSG difference level object.
+</enum>
  <item><tt/"Material"/: Materials must be given an additional
-argument giving the name of the new material. Example:
-<tt/"crtOb Material default; uS; rV"/
+argument giving the name of the new material.
+
+Example:
+<enum>
+<item><bf/<tt/"crtOb Material Wood"//<newline>
+creates a material named Wood.
+</enum>
+
  <item><tt/"Instance"/: creates an instance of the selected object.
  <item>...
  </itemize>
@@ -15213,7 +15232,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="attrs" name="attribute">
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>Hider: <ref id="rihtag" name="RiHider tag type">
-<item>HideTmpTags: <ref id="prefmisc" name="preference setting">
 <item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>hSL: <ref id="schsl" name="scripting interface command">
