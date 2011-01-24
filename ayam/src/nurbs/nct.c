@@ -3715,16 +3715,15 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
       if(rotate)
 	{
-
 	  ay_nb_ComputeFirstDer4D(tr->length-1, tr->order-1, tr->knotv,
 				  trcv, u, T1);
 
 	  len = AY_V3LEN(T1);
-	  AY_V3SCAL(T1,(1.0/len))
+	  AY_V3SCAL(T1,(1.0/len));
 
-	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+	  if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	      (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	      (fabs(T1[2]-T0[2]) > AY_EPSILON)))
 	    {
 	      AY_V3CROSS(A,T0,T1)
 	      len = AY_V3LEN(A);
