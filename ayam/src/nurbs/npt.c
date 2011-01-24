@@ -2581,7 +2581,6 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   if(closed)
     {
-
       ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 			 tr->knotv[tr->length], p2);
 
@@ -2675,14 +2674,11 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	    }
 
 	  len = AY_V3LEN(T1);
-	  AY_V3SCAL(T1,(1.0/len))
+	  AY_V3SCAL(T1,(1.0/len));
 
-	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)) ||
-	     (T1[0] * T0[0] < 0) ||
-	     (T1[1] * T0[1] < 0) ||
-	     (T1[2] * T0[2] < 0))
+	  if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	      (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	      (fabs(T1[2]-T0[2]) > AY_EPSILON)))
 	    {
 	      AY_V3CROSS(A,T0,T1);
 	      len = AY_V3LEN(A);
@@ -3096,14 +3092,11 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 				  trcv, u, T1);
 
 	  len = AY_V3LEN(T1);
-	  AY_V3SCAL(T1,(1.0/len))
+	  AY_V3SCAL(T1,(1.0/len));
 
-	  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)) ||
-	     (T1[0] * T0[0] < 0) ||
-	     (T1[1] * T0[1] < 0) ||
-	     (T1[2] * T0[2] < 0))
+	  if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	      (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	      (fabs(T1[2]-T0[2]) > AY_EPSILON)))
 	    {
 	      AY_V3CROSS(A,T0,T1);
 	      len = AY_V3LEN(A);
@@ -3339,14 +3332,14 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       ay_nb_CurvePoint4D(r2->length-1, r2->order-1, r2->knotv, r2cv,
 			 u, p2);
 
-      AY_V3SUB(T1, p2, p1)
+      AY_V3SUB(T1, p2, p1);
       lent1 = AY_V3LEN(T1);
-      AY_V3SCAL(T1,(1.0/lent1))
+      AY_V3SCAL(T1,(1.0/lent1));
 
       /* create rotation matrix */
-      if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-	  (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	  (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+      if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	  (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	  (fabs(T1[2]-T0[2]) > AY_EPSILON)))
 	{
 	  ay_trafo_translatematrix(((p5[0])),
 				   ((p5[1])),
@@ -3820,9 +3813,9 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   ay_trafo_identitymatrix(mcs);
   ay_trafo_identitymatrix(mr);
 
-  if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-      (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-      (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+  if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+      (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+      (fabs(T1[2]-T0[2]) > AY_EPSILON)))
     {
       AY_V3CROSS(A,T0,T1);
       lent0 = AY_V3LEN(A);
@@ -3971,12 +3964,12 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
       AY_V3SUB(T1, p2, p1)
       lent1 = AY_V3LEN(T1);
-      AY_V3SCAL(T1,(1.0/lent1))
+      AY_V3SCAL(T1,(1.0/lent1));
 
       /* create rotation matrix */
-      if(((fabs(fabs(T1[0])-fabs(T0[0])) > AY_EPSILON) ||
-	  (fabs(fabs(T1[1])-fabs(T0[1])) > AY_EPSILON) ||
-	  (fabs(fabs(T1[2])-fabs(T0[2])) > AY_EPSILON)))
+      if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	  (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	  (fabs(T1[2]-T0[2]) > AY_EPSILON)))
 	{
 	  ay_trafo_translatematrix(((p5[0])),
 				   ((p5[1])),
