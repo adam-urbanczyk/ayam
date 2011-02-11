@@ -923,7 +923,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
 
       sel = sel->next;
@@ -1271,7 +1271,7 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
     sel = sel->next;
@@ -1547,7 +1547,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -1602,7 +1602,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -1736,7 +1736,7 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWTYPE, argv[0], "NCurve, NPatch");
+	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  }
 	  break;
 	} /* switch */
@@ -1804,7 +1804,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	default:
 	  {
-	    ay_error(AY_EWTYPE, argv[0], "NCurve, NPatch");
+	    ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	    return TCL_OK;
 	  }
 	  break;
@@ -2343,8 +2343,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
-	  return TCL_OK;
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -3865,7 +3864,7 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -4522,7 +4521,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -4750,7 +4749,7 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -4802,7 +4801,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -5121,7 +5120,7 @@ ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
       c = sel->object;
       if(c->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -5328,7 +5327,7 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -5410,7 +5409,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -5598,7 +5597,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -6308,7 +6307,7 @@ ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -6415,7 +6414,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNCURVE)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_nct_ncname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{

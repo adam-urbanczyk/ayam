@@ -592,7 +592,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
 
@@ -689,7 +689,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
 
@@ -1729,32 +1729,34 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
     {
       curves = NULL;
       src = sel->object;
+
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
-	  break;
-	}
-
-      if(u)
-	{
-	  ay_status = ay_npt_splittocurvesu(src, AY_TRUE, &curves, NULL);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
-   	  ay_status = ay_npt_splittocurvesv(src, AY_TRUE, &curves, NULL);
-	} /* if */
+	  if(u)
+	    {
+	      ay_status = ay_npt_splittocurvesu(src, AY_TRUE, &curves, NULL);
+	    }
+	  else
+	    {
+	      ay_status = ay_npt_splittocurvesv(src, AY_TRUE, &curves, NULL);
+	    } /* if */
 
-      if(ay_status || !curves)
-	{
-	  ay_error(AY_ERROR, argv[0], "Split failed");
-	}
+	  if(ay_status || !curves)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Split failed");
+	    }
 
-      while(curves)
-	{
-	  next = curves->next;
-	  ay_trafo_copy(src, curves);
-	  ay_status = ay_object_link(curves);
-	  curves = next;
+	  while(curves)
+	    {
+	      next = curves->next;
+	      ay_trafo_copy(src, curves);
+	      ay_status = ay_object_link(curves);
+	      curves = next;
+	    }
 	}
 
       sel = sel->next;
@@ -5777,7 +5779,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -5942,7 +5944,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -5999,7 +6001,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
 
@@ -7453,7 +7455,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_notify_force(sel->object);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -7567,7 +7569,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_notify_force(sel->object);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
       sel = sel->next;
@@ -8255,8 +8257,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWARN, argv[0], "Ignoring object of unsupported type.");
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
     } /* while */
 
@@ -8529,7 +8530,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
     } /* while */
 
@@ -8701,7 +8702,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -8881,7 +8882,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -8997,7 +8998,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
       src = sel->object;
       if(src->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
@@ -9264,8 +9265,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
-	  return TCL_OK;
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -9486,8 +9486,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
-	  return TCL_OK;
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -9707,8 +9706,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
-	  return TCL_OK;
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
       sel = sel->next;
     } /* while */
@@ -11186,7 +11184,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       o = sel->object;
       if(o->type != AY_IDNPATCH)
 	{
-	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
       else
 	{
