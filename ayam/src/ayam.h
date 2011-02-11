@@ -1332,6 +1332,7 @@ typedef struct ay_preferences_s
 
   /* error handling */
   char onerror; /**< what to do if errors occur? 0 stop, 1 continue */
+  char errorlevel; /**< what to output to the console? 0 nothing, ... 3 all */
   int writelog; /**< write error messages to a log file? */
   char *logfile; /**< file name of log file */
 
@@ -1591,6 +1592,11 @@ extern char *ay_no_tagtype;
 extern char *ay_no_tagname;
 extern char *ay_nm_tagtype;
 extern char *ay_nm_tagname;
+/*@}*/
+
+/** \name Generic Error Message Strings */
+/*@{*/
+extern char *ay_error_igntype;
 /*@}*/
 
 /* Definitions */

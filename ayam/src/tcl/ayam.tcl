@@ -191,6 +191,7 @@ array set ayprefs {
  SavePanes 1
  PaneConfig ""
  PaneMargins { 20.0 5.0 10.0 10.0 10.0 }
+ ErrorLevel 3
 
  BindInternalViews 0
 

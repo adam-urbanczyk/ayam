@@ -573,6 +573,8 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.wutag = AY_TRUE;
 
+  ay_prefs.errorlevel = 3;
+
   if(!(ay_prefs.logfile = calloc(strlen(ay_log)+1, sizeof(char))))
     return AY_EOMEM;
   strcpy(ay_prefs.logfile, ay_log);

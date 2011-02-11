@@ -279,6 +279,8 @@ proc prefs_open {} {
     addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
     addCheckB $fw ayprefse Logging [ms ayprefse_Logging]
     addStringB $fw ayprefse LogFile [ms ayprefse_LogFile]
+    addMenuB $fw ayprefse ErrorLevel [ms ayprefse_ErrorLevel]\
+	    {Silence Errors Warnings All}
     addText $fw e2 "UI:"
     addCheckB $fw ayprefse SaveAddsMRU [ms ayprefse_SaveAddsMRU]
     if { $ayprefs(SingleWindow) == 0 } {
