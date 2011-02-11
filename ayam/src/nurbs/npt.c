@@ -277,6 +277,7 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 
 /* ay_npt_resizew:
  *  change width of a NURBS patch
+ *  does _not_ maintain multiple points
  */
 int
 ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
@@ -290,7 +291,8 @@ ay_npt_resizew(ay_nurbpatch_object *np, int new_width)
 				  np->width, np->height,
 				  new_width);
 
-  np->width = new_width;
+  if(!ay_status)
+    np->width = new_width;
 
  return ay_status;
 } /* ay_npt_resizew */
@@ -414,6 +416,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 
 /* ay_npt_resizeh:
  *  change height of a NURBS patch
+ *  does _not_ maintain multiple points
  */
 int
 ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
@@ -427,7 +430,8 @@ ay_npt_resizeh(ay_nurbpatch_object *np, int new_height)
 				  np->width, np->height,
 				  new_height);
 
-  np->height = new_height;
+  if(!ay_status)
+    np->height = new_height;
 
  return ay_status;
 } /* ay_npt_resizeh */
@@ -500,7 +504,11 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
   np->uknotv = np->vknotv;
   np->vknotv = dt;
 
-  ay_status = ay_npt_recreatemp(np);
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original surface */
+  if(np->mpoints)
+    ay_npt_recreatemp(np);
 
  return ay_status;
 } /* ay_npt_swapuv */
@@ -529,7 +537,11 @@ ay_npt_revertu(ay_nurbpatch_object *np)
 	} /* for */
     } /* for */
 
-  ay_status = ay_npt_recreatemp(np);
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original surface */
+  if(np->mpoints)
+    ay_npt_recreatemp(np);
 
  return ay_status;
 } /* ay_npt_revertu */
@@ -554,9 +566,6 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
       switch(sel->object->type)
 	{
 	case AY_IDNPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_revertu(np);
@@ -564,9 +573,6 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_pmt_revertu(pm);
@@ -574,9 +580,6 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  bp = (ay_bpatch_object *)sel->object->refine;
 
 	  memcpy(pt, bp->p1, 3*sizeof(double));
@@ -592,6 +595,10 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
+
+      if(sel->object->modified)
+	if(sel->object->selp)
+	  ay_selp_clear(sel->object);
 
       sel = sel->next;
     } /* while */
@@ -627,7 +634,11 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 	} /* for */
     } /* for */
 
-  ay_status = ay_npt_recreatemp(np);
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original surface */
+  if(np->mpoints)
+    ay_npt_recreatemp(np);
 
  return ay_status;
 } /* ay_npt_revertv */
@@ -652,9 +663,6 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
       switch(sel->object->type)
 	{
 	case AY_IDNPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_revertv(np);
@@ -662,9 +670,6 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_pmt_revertv(pm);
@@ -672,9 +677,6 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  bp = (ay_bpatch_object *)sel->object->refine;
 
 	  memcpy(pt, bp->p1, 3*sizeof(double));
@@ -690,6 +692,10 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
+
+      if(sel->object->modified)
+	if(sel->object->selp)
+	  ay_selp_clear(sel->object);
 
       sel = sel->next;
     } /* while */
@@ -1895,13 +1901,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
       return ay_status;
     }
 
-  ay_status = ay_npt_recreatemp((ay_nurbpatch_object *)new->refine);
-
-  if(ay_status)
-    {
-      ay_object_delete(new);
-      return ay_status;
-    }
+  ay_npt_recreatemp((ay_nurbpatch_object *)new->refine);
 
   /* return result */
   *patch = new;
@@ -2179,15 +2179,28 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
     }
   else
     {
-      ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
-					     &new->height, &new->vknotv,
-					     NULL);
-    }
+      if(arc > 0.0)
+	{
+	  ay_status = ay_nb_CreateNurbsCircleArc(radius, 0.0, arc,
+						 &new->height, &new->vknotv,
+						 NULL);
+	}
+      else
+	{
+	  ay_status = ay_nb_CreateNurbsCircleArc(radius, arc, 0.0,
+						 &new->height, &new->vknotv,
+						 NULL);
+	} /* if */
+      if(ay_status)
+	{
+	  ay_npt_destroy(new);
+	  return ay_status;
+	}
+    } /* if */
 
   if(!(new->controlv = calloc(new->height*new->width*4,
 			      sizeof(double))))
     {
-
       ay_npt_destroy(new);
       return AY_EOMEM;
     }
@@ -2225,7 +2238,6 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 						  &new->height, NULL,
 						  &tcontrolv);
 	    } /* if */
-
 	}
       else
 	{
@@ -5708,8 +5720,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 
   patch->width = nw;
 
-  if(patch->createmp)
-    ay_status = ay_npt_recreatemp(patch);
+  ay_npt_recreatemp(patch);
 
  return ay_status;
 } /* ay_npt_elevateu */
@@ -5731,16 +5742,18 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &t);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+      if(t <= 0)
+	{
+	  ay_error(AY_ERROR, argv[0], "argument must be > 0");
+	  return TCL_OK;
+	}
     }
 
   while(sel)
     {
       if(sel->object->type == AY_IDNPATCH)
 	{
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_status = ay_npt_elevateu(patch, t);
@@ -5752,6 +5765,11 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 	  else
 	    {
 	      sel->object->modified = AY_TRUE;
+
+	      if(sel->object->selp)
+		{
+		  ay_selp_clear(sel->object);
+		}
 
 	      /* re-create tesselation of patch */
 	      ay_notify_force(sel->object);
@@ -5868,8 +5886,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 
   patch->height = nh;
 
-  if(patch->createmp)
-    ay_status = ay_npt_recreatemp(patch);
+  ay_npt_recreatemp(patch);
 
  return ay_status;
 } /* ay_npt_elevatev */
@@ -5891,17 +5908,18 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &t);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+      if(t <= 0)
+	{
+	  ay_error(AY_ERROR, argv[0], "argument must be > 0");
+	  return TCL_OK;
+	}
     }
 
   while(sel)
     {
       if(sel->object->type == AY_IDNPATCH)
 	{
-	  if(sel->object->selp)
-	    {
-	      ay_selp_clear(sel->object);
-	    }
-
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 	  ay_status = ay_npt_elevatev(patch, t);
 
@@ -5912,6 +5930,11 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  else
 	    {
 	      sel->object->modified = AY_TRUE;
+
+	      if(sel->object->selp)
+		{
+		  ay_selp_clear(sel->object);
+		}
 
 	      /* re-create tesselation of patch */
 	      ay_notify_force(sel->object);
@@ -5950,9 +5973,6 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
       switch(sel->object->type)
 	{
 	case AY_IDNPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_swapuv(np);
@@ -5960,9 +5980,6 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDPAMESH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  pm = (ay_pamesh_object *)sel->object->refine;
 
 	  ay_pmt_swapuv(pm);
@@ -5970,9 +5987,6 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 	  break;
 	case AY_IDBPATCH:
-	  if(sel->object->selp)
-	    ay_selp_clear(sel->object);
-
 	  bp = (ay_bpatch_object *)sel->object->refine;
 
 	  memcpy(pt, bp->p1, 3*sizeof(double));
@@ -5988,6 +6002,11 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EWTYPE, argv[0], "NPatch, PaMesh, BPatch");
 	  break;
 	} /* switch */
+
+      if(sel->object->modified)
+	if(sel->object->selp)
+	  ay_selp_clear(sel->object);
+
       sel = sel->next;
     } /* while */
 
@@ -7426,7 +7445,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Error closing object!");
 	    }
 
-	  ay_status = ay_npt_recreatemp(np);
+	  ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
 
@@ -7540,7 +7559,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_ERROR, argv[0], "Error closing object!");
 	    }
 
-	  ay_status = ay_npt_recreatemp(np);
+	  ay_npt_recreatemp(np);
 
 	  sel->object->modified = AY_TRUE;
 
@@ -7619,10 +7638,9 @@ ay_npt_clearmp(ay_nurbpatch_object *np)
  *  recreate mpoints from identical controlpoints for
  *  patch <np>
  */
-int
+void
 ay_npt_recreatemp(ay_nurbpatch_object *np)
 {
- int ay_status = AY_OK;
  ay_mpoint *mp = NULL, *new = NULL;
  double *ta, *tb, **tmpp = NULL;
  unsigned int *tmpi = NULL;
@@ -7630,18 +7648,18 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
  int stride = 4;
 
   if(!np)
-    return AY_ENULL;
+    return;
 
   ay_npt_clearmp(np);
 
   if(!np->createmp)
-    return AY_OK;
+    return;
 
   if(!(tmpp = calloc(np->width*np->height, sizeof(double *))))
-    { ay_status = AY_EOMEM; goto cleanup; }
+    { goto cleanup; }
 
   if(!(tmpi = calloc(np->width*np->height, sizeof(unsigned int))))
-    { ay_status = AY_EOMEM; goto cleanup; }
+    { goto cleanup; }
 
   ta = np->controlv;
   for(i = 0; i < np->width*np->height; i++)
@@ -7662,7 +7680,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	  tb += stride;
 	} /* for */
 
-	  /* create new mp, if it is not already there */
+      /* create new mp, if it is not already there */
       if(count > 1)
 	{
 	  mp = np->mpoints;
@@ -7681,11 +7699,11 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 	  if(!found)
 	    {
 	      if(!(new = calloc(1, sizeof(ay_mpoint))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
+		{ goto cleanup; }
 	      if(!(new->points = calloc(count, sizeof(double *))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
+		{ goto cleanup; }
 	      if(!(new->indices = calloc(count, sizeof(unsigned int))))
-		{ ay_status = AY_EOMEM; goto cleanup; }
+		{ goto cleanup; }
 	      new->multiplicity = count;
 	      memcpy(new->points, tmpp, count*sizeof(double *));
 	      memcpy(new->indices, tmpi, count*sizeof(unsigned int));
@@ -7715,7 +7733,7 @@ cleanup:
       free(new);
     }
 
- return ay_status;
+ return;
 } /* ay_npt_recreatemp */
 
 
@@ -7969,7 +7987,9 @@ ay_npt_copytptag(ay_object *src, ay_object *dst)
 	  while(o)
 	    {
 	      s = o->tags;
-	      ay_tags_copy(t, &(o->tags));
+	      ay_status = ay_tags_copy(t, &(o->tags));
+	      if(ay_status)
+		break;
 	      o->tags->next = s;
 	      o = o->next;
 	    } /* while */
@@ -8187,7 +8207,6 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  int side = 0;
 
-
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &side);
@@ -8227,7 +8246,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(o);
 	    }
 
-	  ay_status = ay_npt_recreatemp(np);
+	  ay_npt_recreatemp(np);
 
 	  o->modified = AY_TRUE;
 
@@ -8236,6 +8255,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
+	  ay_error(AY_EWARN, argv[0], "Ignoring object of unsupported type.");
 	  ay_error(AY_EWTYPE, argv[0], ay_npt_npname);
 	} /* if */
     } /* while */
@@ -8461,7 +8481,6 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  int side = 0;
 
-
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &side);
@@ -8501,7 +8520,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_selp_clear(o);
 	    }
 
-	  ay_status = ay_npt_recreatemp(np);
+	  ay_npt_recreatemp(np);
 
 	  o->modified = AY_TRUE;
 
@@ -8851,6 +8870,12 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
+  if(r <= 0)
+    {
+      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      return TCL_OK;
+    }
+
   while(sel)
     {
       src = sel->object;
@@ -8960,6 +8985,12 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(r <= 0)
+    {
+      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      return TCL_OK;
+    }
 
   while(sel)
     {
@@ -11165,7 +11196,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clean up */
 	  /* re-create multiple points */
-	  ay_status = ay_npt_recreatemp(patch);
+	  ay_npt_recreatemp(patch);
 
 	  ay_selp_clear(o);
 	  /* notify notification about changes */

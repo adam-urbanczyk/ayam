@@ -562,7 +562,7 @@ ay_npatch_copycb(void *src, void **dst)
   npatch->mpoints = NULL;
   if(npatchsrc->mpoints)
     {
-      ay_status = ay_npt_recreatemp(npatch);
+      ay_npt_recreatemp(npatch);
     }
 
   /* XXXX manage tesselation */
@@ -1850,9 +1850,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(updateMPs)
     {
-      ay_status = ay_npt_recreatemp(npatch);
-      if(ay_status)
-	ay_error(AY_ERROR, fname, "Error re-creating MPoints!");
+      ay_npt_recreatemp(npatch);
     }
 
   ay_status = ay_notify_parent();

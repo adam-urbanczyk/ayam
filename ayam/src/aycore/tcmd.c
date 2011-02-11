@@ -35,12 +35,6 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
       switch(o->type)
 	{
 	case AY_IDACURVE:
-
-	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
-
 	  acurve = (ay_acurve_object*)o->refine;
 
 	  ay_status = ay_act_revert(acurve);
@@ -48,19 +42,13 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, argv[0], "Could not revert ACurve!");
 	    }
-
-	  ay_notify_force(o);
-
-	  o->modified = AY_TRUE;
-
+	  else
+	    {
+	      ay_notify_force(o);
+	      o->modified = AY_TRUE;
+	    }
 	  break;
 	case AY_IDICURVE:
-
-	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
-
 	  icurve = (ay_icurve_object*)o->refine;
 
 	  ay_status = ay_ict_revert(icurve);
@@ -68,19 +56,13 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, argv[0], "Could not revert ICurve!");
 	    }
-
-	  ay_notify_force(o);
-
-	  o->modified = AY_TRUE;
-
+	  else
+	    {
+	      ay_notify_force(o);
+	      o->modified = AY_TRUE;
+	    }
 	  break;
 	case AY_IDNCURVE:
-
-	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
-
 	  ncurve = (ay_nurbcurve_object*)o->refine;
 
 	  ay_status = ay_nct_revert(ncurve);
@@ -88,17 +70,19 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      ay_error(ay_status, argv[0], "Could not revert NCurve!");
 	    }
-
-	  o->modified = AY_TRUE;
-
+	  else
+	    {
+	      ay_notify_force(o);
+	      o->modified = AY_TRUE;
+	    }
 	  break;
 	default:
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	  break;
 	} /* switch */
 
       sel = sel->next;
     } /* while */
-
 
   ay_notify_parent();
 
