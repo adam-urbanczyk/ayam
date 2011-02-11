@@ -446,7 +446,7 @@ ay_ncurve_copycb(void *src, void **dst)
   ncurve->mpoints = NULL;
   if(ncurvesrc->mpoints)
     {
-      ay_status = ay_nct_recreatemp(ncurve);
+      ay_nct_recreatemp(ncurve);
     }
 
   /* return result */
@@ -1248,9 +1248,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /*  if(ncurve->mpoints)*/
   if(updateMPs)
     {
-      ay_status = ay_nct_recreatemp(ncurve);
-      if(ay_status)
-	ay_error(AY_ERROR, fname, "Error re-creating MPoints!");
+      ay_nct_recreatemp(ncurve);
     }
 
   /* re-create stess tesselation */

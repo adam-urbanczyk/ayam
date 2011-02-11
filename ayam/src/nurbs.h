@@ -362,7 +362,7 @@ void ay_nct_clearmp(ay_nurbcurve_object *c);
 
 /** Re-create multiple points for curve \a c.
  */
-int ay_nct_recreatemp(ay_nurbcurve_object *c);
+void ay_nct_recreatemp(ay_nurbcurve_object *c);
 
 /** Collapse selected points to multiple points.
  */
@@ -969,7 +969,7 @@ void ay_npt_clearmp(ay_nurbpatch_object *np);
 
 /** Re-create multiple points for patch \a np.
  */
-int ay_npt_recreatemp(ay_nurbpatch_object *np);
+void ay_npt_recreatemp(ay_nurbpatch_object *np);
 
 /** Collapse selected points to multiple points.
  */

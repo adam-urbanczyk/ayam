@@ -1151,7 +1151,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	}
     } /* if */
 
-  ay_status = ay_nct_recreatemp(curve);
+  ay_nct_recreatemp(curve);
 
  return ay_status;
 } /* ay_pact_insertnc */
@@ -1608,7 +1608,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 	}
     }
 
-  ay_status = ay_nct_recreatemp(curve);
+  ay_nct_recreatemp(curve);
 
  return AY_OK;
 } /* ay_pact_deletenc */

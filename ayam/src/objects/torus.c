@@ -843,9 +843,14 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
 			      (ay_nurbcurve_object **)(void*)&(newc->refine));
 
+      if(ay_status)
+	goto cleanup;
+
       ay_status = ay_npt_revolve(newc, -thetamax, 0, 0,
 			      (ay_nurbpatch_object **)(void*)&(new->refine));
 
+      if(ay_status)
+	goto cleanup;
 
       ay_quat_axistoquat(xaxis, -AY_D2R(90.0), quat);
       new->rotx += 90.0;
@@ -997,6 +1002,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 
       /* return result */
       *result = new;
+      /* prevent cleanup code from doing something harmful */
       new = NULL;
     } /* if */
 
@@ -1013,9 +1019,7 @@ cleanup:
 
   if(new)
     {
-      if(new->down)
-	ay_object_delete(o->down);
-      free(new);
+      ay_object_deletemulti(new);
     }
 
   if(newc)
