@@ -771,7 +771,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 
 
 /* ay_knots_getuminmax:
- *  get minimun/maximum u parametric values from knot vector <knotv>
+ *  get minimum/maximum u parametric values from knot vector <knotv>
  *  of object <o> with order <order> and number of knots (encodes
  *  size in u parametric dimension) <knots> from UMM tag (if present)
  *  or directly from the knot vector (else)
@@ -812,7 +812,7 @@ ay_knots_getuminmax(ay_object *o, int order, int knots, double *knotv,
 
 
 /* ay_knots_getvminmax:
- *  get minimun/maximum v parametric values from knot vector <knotv>
+ *  get minimum/maximum v parametric values from knot vector <knotv>
  *  of object <o> with order <order> and number of knots (encodes
  *  size in v parametric dimension) <knots> from UMM tag (if present)
  *  or directly from the knot vector (else)
@@ -1157,6 +1157,78 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
 
  return AY_OK;
 } /* ay_knots_centriparam */
+
+
+/* ay_knots_classify:
+ *  
+ */
+int
+ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
+		  double eps)
+{
+ unsigned int i = 0;
+ double d;
+ int is_bspline = AY_TRUE;
+ int is_clamped = AY_TRUE;
+ int is_nurb = AY_TRUE;
+
+  if(Ulen < 2 || !U)
+    return AY_KTCUSTOM;
+
+  d = U[1]-U[0];
+  /* check all knot intervals */
+  for(i = 1; i < (Ulen-1); i++)
+    {
+      if(fabs((U[i+1]-U[i])-d) > eps)
+	{
+	  is_bspline = AY_FALSE;
+	  break;
+	}
+    }
+  if(is_bspline)
+    return AY_KTBSPLINE;
+
+  /* check first order intervals */
+  for(i = 1; i < order; i++)
+    {
+      if(fabs(U[i+1]-U[i]) > eps)
+	{
+	  is_clamped = AY_FALSE;
+	  break;
+	}
+    }
+  if(is_clamped)
+    {
+      /* check last order intervals */
+      for(i = Ulen-2; i >= (Ulen-order); i--)
+	{
+	  if(fabs(U[i+1] - U[i]) > eps)
+	    {
+	      is_clamped = AY_FALSE;
+	      break;
+	    }
+	}
+    }
+  if(is_clamped)
+    {
+      /* check intermediate intervals */
+      d = U[order+1]-U[order];
+      for(i = order+1; i < (Ulen-order); i++)
+	{
+	  if(fabs((U[i+1]-U[i]) - d) > eps)
+	    {
+	      is_nurb = AY_FALSE;
+	      break;
+	    }
+	}
+      if(is_nurb)
+	{
+	  return AY_KTNURB;
+	}
+    }
+
+ return AY_KTCUSTOM;
+} /* ay_knots_classify */
 
 
 /* ay_knots_init:
