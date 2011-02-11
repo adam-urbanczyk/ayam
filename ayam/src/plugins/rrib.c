@@ -5859,8 +5859,7 @@ Rrib_Init(Tcl_Interp *interp)
   /* source rrib.tcl, it contains Tcl-code for menu entries */
   if((Tcl_EvalFile(interp, "rrib.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \"rrib.tcl\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"rrib.tcl\"!");
        return TCL_OK;
      }
 

@@ -1807,8 +1807,7 @@ Aycsg_Init(Tcl_Interp *interp)
   // source aycsg.tcl, it contains Tcl-code for new key bindings etc.
   if((Tcl_EvalFile(interp, "aycsg.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"aycsg.tcl\\\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"aycsg.tcl\"!");
        return TCL_OK;
      }
 

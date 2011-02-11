@@ -119,10 +119,19 @@ subdiv_notifycb(ay_object *o)
 
   if(sdmesh->scheme == AY_SDSCATMULL)
     {
+      try {
       qm = new QuadMesh(cv, sdmesh->nfaces, sdmesh->nverts, sdmesh->verts);
-
-      qm->subdivide(sdmesh->level);
-
+      } catch (...) {
+	ay_status = AY_ERROR;
+	goto cleanup;
+      }
+      try {
+	qm->subdivide(sdmesh->level);
+      } catch (...) {
+	ay_status = AY_ERROR;
+	delete qm;
+	goto cleanup;
+      }
       qm->toAyam(&po->controlv, &po->ncontrols,
 		 &po->nverts, &po->verts, &po->npolys);
 

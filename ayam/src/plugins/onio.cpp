@@ -3585,8 +3585,7 @@ Onio_Init(Tcl_Interp *interp)
   // source onio.tcl, it contains vital Tcl-code
   if((Tcl_EvalFile(interp, "onio.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"onio.tcl\\\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"onio.tcl\"!");
        return TCL_OK;
      }
 
