@@ -2205,6 +2205,15 @@ If this is enabled, you should clear the log manually from time
 to time, as Ayam will always append to <tt/"LogFile"/.
 
 <item><tt/"LogFile"/; see above.
+
+<item><tt/"ErrorLevel"/, this option controls how many messages
+should be written to the Ayam console. Available
+values are: <tt/"Silence"/ no output,
+<tt/"Errors"/ all error messages,
+<tt/"Warnings"/, all error and warning messages,
+and finally <tt/"All"/ all messages, even informative,
+should be written to the console.
+
 </itemize>
 
 The last sub-section contains miscellaneous user interface
@@ -9137,8 +9146,8 @@ original clipboard contents are lost when this tool finishes.
 <sect1>The Revert Tool<label id="revertt">
 <p>
 <itemize>
-<item>Arguments: The revert tool takes all NURBS curves and
-ICurves from the selection.
+<item>Arguments: The revert tool takes all NCurve,
+ICurve, and ACurve objects from the selection.
 <item>Operation: The direction of the selected curves will be
 reversed.
 <item>Note: The direction of a curve is shown as
@@ -11012,8 +11021,8 @@ revertC - revert curves:
 <itemize>
  <item>Synopsis: <tt/"revertC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Revert the direction of the selected NURBS curves
-and interpolating curves.
+ <item>Description: Revert the direction of the selected NURBS,
+interpolating, and approximating curves.
 See also section <ref id="revertt" name="The Revert Tool">.
 </itemize>
 
@@ -13860,7 +13869,7 @@ GUI and more error checking.
 
 <sect1>Scene File Management<label id="scenefile">
 <p>
-This section contains information on what exactly happens, when
+This section contains exhaustive information on what exactly happens, when
 Ayam reads or writes a scene file.
 
 <sect2>Opening Scene Files<label id="opensf">
@@ -13903,7 +13912,8 @@ files entry in the file menu,
 <item> if a root object was read, a save views flag will be set,
 otherwise it will be cleared and following save operations will not save
 the root and any views (i.e. scene files without root and views
-stay scene files without root and views).
+stay scene files without root and views, even if new views
+are opened and parameterized).
 </enum>
 
 When reading objects from a file:
@@ -13914,7 +13924,15 @@ where only the configuration of the view objects read will be copied
 to the already existing view objects of the three internal views),
 <item> if one object is of a currently undefined type (i.e. defined
 by a plugin), Ayam will derive a potential plugin name from the
-object type name and load the plugin, then scene reading continues,
+object type name and attempt to load the plugin, then scene reading
+continues,
+<item> if a material object is read, Ayam will immediately register
+it; if this registration fails (because there is already a material
+with that name registered; this material can <em>only</em> be in the
+clipboard, as all other objects were deleted before opening the file),
+the material object will be created, but objects from the file will
+not be be linked to the material object from the file, but to the
+material object that was already registered before,
 <item> if loading of an object fails, Ayam continues to read from
 the file.
 </enum>
@@ -13938,9 +13956,10 @@ material,
 read operation,
 <item> if a material object is read, Ayam will immediately register
 it; if this registration fails (because there is already a material
-with that name registered), objects from the file will not be be linked
-to the material object from the file, but to the material object
-that was already registered before,
+with that name registered), the material object will be created, but
+objects from the file will not be be linked to the material object
+from the file, but to the material object that was already registered
+before,
 <item> the current file name will not be changed,
 <item> the scene changed state will be set to "changed",
 <item> the save views flag will not be changed, this means that
@@ -13961,12 +13980,14 @@ by the file name extension) Ayam will try to export the current scene
 using an export plugin responsible for the file type instead of saving
 to an Ayam scene file,
 <item> the geometry of the main window and internal widgets is saved
-to <tt/"SaveMainGeom"/ and/or <tt/"SavePaneLayout"/ tags (if present),
+to <tt/"SaveMainGeom"/ and/or <tt/"SavePaneLayout"/ tags (if present
+in the Root object),
 <item> <tt/"OI"/ tags and <tt/"MI"/ tags will be created to allow
 instances to be connected to their respective masters and objects
 to their materials, when reading the scene file,
-<item> then, all objects from the scene will be saved to the file,
-if the save views flag is not set, root and views will be omitted,
+<item> then, all objects from the scene will be saved to the file;
+if the save views flag is cleared (while reading the previous scene file),
+root and views will be omitted,
 <item> if no errors occured during saving the file, the file name
 will be put to the first most recently used files entry in the file menu,
 and the scene changed state will be set to "unchanged",
@@ -15140,7 +15161,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>EnvFile: <ref id="prefgui" name="preference setting">
 <item>Environment Variables: <ref id="envvars" name="Environment Variables">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
-<item>ErrorLevel: <ref id="rribopt" name="RIB import option">
+<item>ErrorLevel: <ref id="prefmisc" name="preference setting">,
+<ref id="rribopt" name="RIB import option">
 <item>estlenNC: <ref id="scestlennc" name="scripting interface command">
 <item>evaluate curve/suface: <ref id="scgetpnt" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
