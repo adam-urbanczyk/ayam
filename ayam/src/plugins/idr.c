@@ -4438,8 +4438,7 @@ Idr_Init(Tcl_Interp *interp)
   /* load idr GUI extensions */
   if((Tcl_EvalFile(interp, "idr.tcl")) != TCL_OK)
     {
-      ay_error(AY_ERROR, fname,
-	       "Error while sourcing \\\"idr.tcl\\\"!");
+      ay_error(AY_ERROR, fname, "Error while sourcing \"idr.tcl\"!");
       return TCL_OK;
     }
 

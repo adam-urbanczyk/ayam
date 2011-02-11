@@ -2138,8 +2138,7 @@ Mopsi_Init(Tcl_Interp *interp)
   /* source mopsi.tcl, it contains vital Tcl-code */
   if((Tcl_EvalFile(interp, "mopsi.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"mopsi.tcl\\\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"mopsi.tcl\"!");
        return TCL_OK;
      }
 

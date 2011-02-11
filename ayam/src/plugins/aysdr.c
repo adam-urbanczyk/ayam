@@ -338,15 +338,12 @@ Aysdr_Init(Tcl_Interp *interp)
   /* source aysdr.tcl, it contains Tcl-code for path rewriting */
   if((Tcl_EvalFile(interp, "aysdr.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"aysdr.tcl\\\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"aysdr.tcl\"!");
        return TCL_OK;
      }
 
-  ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'aysdr' successfully loaded.");
-  ay_error(AY_EOUTPUT, fname,
-	   "Ayam will now scan for .sdr-shaders only!");
+  ay_error(AY_EOUTPUT, fname, "Plugin 'aysdr' successfully loaded.");
+  ay_error(AY_EOUTPUT, fname, "Ayam will now scan for .sdr-shaders only!");
 
  return TCL_OK;
 } /* Aysdr_Init */

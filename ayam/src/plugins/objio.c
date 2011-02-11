@@ -4018,8 +4018,7 @@ Objio_Init(Tcl_Interp *interp)
   /* source objio.tcl, it contains vital Tcl-code */
   if((Tcl_EvalFile(interp, "objio.tcl")) != TCL_OK)
      {
-       ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"objio.tcl\\\"!");
+       ay_error(AY_ERROR, fname, "Error while sourcing \"objio.tcl\"!");
        return TCL_OK;
      }
 

@@ -3523,13 +3523,12 @@ Mfio_Init(Tcl_Interp *interp)
   if((Tcl_EvalFile(interp, "mfio.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"mfio.tcl\\\"!");
+		  "Error while sourcing \"mfio.tcl\"!");
        return TCL_OK;
      }
 
 
-  ay_error(AY_EOUTPUT, fname,
-	   "Plugin 'mfio' successfully loaded.");
+  ay_error(AY_EOUTPUT, fname, "Plugin 'mfio' successfully loaded.");
 
 
  return TCL_OK;

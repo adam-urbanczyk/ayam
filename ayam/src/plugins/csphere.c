@@ -910,12 +910,12 @@ Csphere_Init(Tcl_Interp *interp)
   if((Tcl_EvalFile(interp, "csphere.tcl")) != TCL_OK)
      {
        ay_error(AY_ERROR, fname,
-		  "Error while sourcing \\\"csphere.tcl\\\"!");
+		  "Error while sourcing \"csphere.tcl\"!");
        return TCL_OK;
      }
 
   ay_error(AY_EOUTPUT, fname,
-	   "Custom object \\\"CSphere\\\" successfully loaded.");
+	   "Custom object \"CSphere\" successfully loaded.");
 
  return TCL_OK;
 } /* Csphere_Init */

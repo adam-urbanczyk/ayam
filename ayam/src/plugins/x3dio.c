@@ -9460,8 +9460,7 @@ X_Init(Tcl_Interp *interp)
   /* source x3dio.tcl, it contains vital Tcl-code */
   if((Tcl_EvalFile(interp, "x3dio.tcl")) != TCL_OK)
     {
-      ay_error(AY_ERROR, fname,
-	       "Error while sourcing \\\"x3dio.tcl\\\"!");
+      ay_error(AY_ERROR, fname, "Error while sourcing \"x3dio.tcl\"!");
       return TCL_OK;
     }
 
