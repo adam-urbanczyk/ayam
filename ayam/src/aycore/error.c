@@ -14,6 +14,12 @@
 
 /* error.c - functions for writing out error messages */
 
+char *ay_error_igntype = "Ignoring object of unsupported type.";
+
+static char aye_gentxterr[] = "Error! ", aye_gentxtwarn[] = "Warning! ";
+static char aye_errcmd[] = "puts stderr {", aye_warncmd[] = "puts stdout {";
+static char aye_lmsg1[] = "Last message repeated ", aye_lmsg2[] = " times.";
+
 
 /* prototypes of functions local to this module: */
 void ay_error_wlog(char *message);
@@ -30,8 +36,8 @@ ay_error_wlog(char *message)
  static int warned = AY_FALSE;
  char *m = NULL;
 
- if(!message)
-   return;
+  if(!message)
+    return;
 
   if(ay_prefs.writelog)
     {
@@ -42,7 +48,7 @@ ay_error_wlog(char *message)
 	      if(!warned)
 		{
 		  fprintf(stderr,
-			  "Unable to open logfile: \"%s\" for writing!\n",
+			"Ayam: Unable to open logfile: \"%s\" for writing!\n",
 			  ay_prefs.logfile);
 		  warned = AY_TRUE;
 		} /* if */
@@ -63,7 +69,7 @@ ay_error_wlog(char *message)
       fclose(log);
     } /* if */
 
-  return;
+ return;
 } /* ay_error_wlog */
 
 
@@ -79,10 +85,7 @@ ay_error(int code, char *where, char *what)
  Tcl_Interp *interp = ay_interp;
  Tcl_DString ds, dsl;
  Tcl_Obj *to = NULL, *ton = NULL;
- char gentxterr[] = "Error! ", gentxtwarn[] = "Warning! ";
- char warncmd[] = "puts stdout {", errcmd[] = "puts stderr {";
- char lmsg[] = "Last message repeated ", lmsg2[] = " times.";
- char *countstr = NULL;
+ char countstr[TCL_INTEGER_SPACE];
  static char *last_message = NULL;
  static int count = 0;
  int len;
@@ -91,43 +94,39 @@ ay_error(int code, char *where, char *what)
 
   if(code == AY_OK)
     {
-      ton = Tcl_NewStringObj("ay_error", -1);
-      to = Tcl_NewIntObj(code);
-      Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
-		     TCL_GLOBAL_ONLY);
-      Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-      return;
+      goto set_ay_error;
     }
 
   Tcl_DStringInit(&ds);
 
   if((code == AY_EWARN) || (code == AY_EOUTPUT))
     {
-      Tcl_DStringAppend(&ds, warncmd, -1);
+      Tcl_DStringAppend(&ds, aye_warncmd, -1);
     }
   else
     {
-      Tcl_DStringAppend(&ds, errcmd, -1);
+      Tcl_DStringAppend(&ds, aye_errcmd, -1);
     }
-
 
   if(code == AY_EFLUSH)
     {
       if(count >= 1)
 	{
 	  Tcl_DStringInit(&dsl);
-	  Tcl_DStringAppend(&dsl, warncmd, -1);
-	  Tcl_DStringAppend(&dsl, lmsg, -1);
-	  if(!(countstr = calloc(32, sizeof(char))))
-	    return; /* this should never happen */
+	  Tcl_DStringAppend(&dsl, aye_warncmd, -1);
+	  Tcl_DStringAppend(&dsl, aye_lmsg1, -1);
 	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
-	  Tcl_DStringAppend(&dsl, lmsg2, -1);
+	  Tcl_DStringAppend(&dsl, aye_lmsg2, -1);
 	  Tcl_DStringAppend(&dsl, "}", -1);
 	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
-	  ay_error_wlog(Tcl_DStringValue(&dsl));
+
+	  if(ay_prefs.writelog)
+	    {
+	      ay_error_wlog(Tcl_DStringValue(&dsl));
+	    }
+
 	  Tcl_DStringFree(&dsl);
-	  free(countstr);
 	}
       count = 0;
       if(last_message)
@@ -140,7 +139,6 @@ ay_error(int code, char *where, char *what)
       return;
     } /* if */
 
-
   if(where)
     {
       Tcl_DStringAppend(&ds, where, -1);
@@ -149,6 +147,12 @@ ay_error(int code, char *where, char *what)
 
   switch(code)
     {
+    case AY_EWARN:
+      Tcl_DStringAppend(&ds, aye_gentxtwarn, -1);
+      break;
+    case AY_ERROR:
+      Tcl_DStringAppend(&ds, aye_gentxterr, -1);
+      break;
     case AY_EOMEM:
       Tcl_DStringAppend(&ds, "Out of memory!", -1);
       break;
@@ -194,14 +198,8 @@ ay_error(int code, char *where, char *what)
     case AY_EUEOF:
       Tcl_DStringAppend(&ds, "Unexpected EOF encountered: ", -1);
       break;
-    case AY_ERROR:
-      Tcl_DStringAppend(&ds, gentxterr, -1);
-      break;
-    case AY_EWARN:
-      Tcl_DStringAppend(&ds, gentxtwarn, -1);
-      break;
     default:
-      Tcl_DStringAppend(&ds, gentxterr, -1);
+      Tcl_DStringAppend(&ds, aye_gentxterr, -1);
       break;
     } /* switch */
 
@@ -222,36 +220,48 @@ ay_error(int code, char *where, char *what)
       /* last messages were identical, just count and exit */
       count++;
       Tcl_DStringFree(&ds);
-      /*
-      Tcl_SetVar(interp, "ay_error", "1", TCL_GLOBAL_ONLY | TCL_LEAVE_ERR_MSG);
-      return;
-      */
       goto set_ay_error;
     }
   else
     {
-      /* last messages were not identical */
+      /* last messages were not identical,
+	 save the current message,
+	 output the saved message */
       if(count >= 1)
 	{
 	  Tcl_DStringInit(&dsl);
-	  Tcl_DStringAppend(&dsl, warncmd, -1);
-	  Tcl_DStringAppend(&dsl, lmsg, -1);
-	  if(!(countstr = calloc(32, sizeof(char))))
-	    return; /* this should never happen */
+	  Tcl_DStringAppend(&dsl, aye_warncmd, -1);
+	  Tcl_DStringAppend(&dsl, aye_lmsg1, -1);
 	  len = sprintf(countstr, "%d", count);
 	  Tcl_DStringAppend(&dsl, countstr, len);
-	  Tcl_DStringAppend(&dsl, lmsg2, -1);
+	  Tcl_DStringAppend(&dsl, aye_lmsg2, -1);
 	  Tcl_DStringAppend(&dsl, "}", -1);
-	  Tcl_Eval(interp, Tcl_DStringValue(&dsl));
-	  ay_error_wlog(Tcl_DStringValue(&dsl));
+	  if(((code == AY_EOUTPUT) && (ay_prefs.errorlevel > 2)) ||
+	     ((code == AY_EWARN) && (ay_prefs.errorlevel > 1)) ||
+	     ay_prefs.errorlevel > 0)
+	    {
+	      Tcl_Eval(interp, Tcl_DStringValue(&dsl));
+	    }
+	  if(ay_prefs.writelog)
+	    {
+	      ay_error_wlog(Tcl_DStringValue(&dsl));
+	    }
 	  Tcl_DStringFree(&dsl);
-	  free(countstr);
 	} /* if */
 	count = 0;
     } /* if */
 
-  Tcl_Eval(interp, Tcl_DStringValue(&ds));
-  ay_error_wlog(Tcl_DStringValue(&ds));
+  /* output the current message */
+  if(((code == AY_EOUTPUT) && (ay_prefs.errorlevel > 2)) ||
+     ((code == AY_EWARN) && (ay_prefs.errorlevel > 1)) ||
+     ay_prefs.errorlevel > 0)
+    {
+      Tcl_Eval(interp, Tcl_DStringValue(&ds));
+    }
+  if(ay_prefs.writelog)
+    {
+      ay_error_wlog(Tcl_DStringValue(&ds));
+    }
 
   if(last_message)
     {

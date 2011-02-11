@@ -184,6 +184,11 @@ ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
 ms_set en ayprefse_RedirectTcl "Redirect all Tcl error messages to the\
 console?"
 ms_set en ayprefse_Logging "Log all messages to a file?"
+ms_set en ayprefse_ErrorLevel "Which messages should go to the console?\
+\nSilence - None\
+\nErrors - Only Errors\
+\nWarnings - Warnings and Errors\
+\nAll - Warnings, Errors, and Informative Messages"
 ms_set en ayprefse_LogFile "Path and name of the file to log all messages to."
 ms_set en ayprefse_SaveAddsMRU "Add the name of saved scenes to the\
 \nMost-Recently-Used file menu entries?"
@@ -370,6 +375,12 @@ ms_set de ayprefse_RedirectTcl "Sollen alle Fehlermeldungen von Tcl auf\
 die Konsole umgelenkt werden?"
 ms_set de ayprefse_Logging "Sollen alle Mitteilungen in einer Logdatei\
 mitgeschrieben werden?"
+ms_set en ayprefse_ErrorLevel "Welche Mitteilungen sollen in der Konsole\
+angezeigt werden?\
+\nSilence - Keine\
+\nErrors - Nur Fehler\
+\nWarnings - Warnungen und Fehler\
+\nAll - Warnungen, Fehler und Informationen"
 ms_set de ayprefse_LogFile "Pfad und Name der Logdatei."
 ms_set de ayprefse_SaveAddsMRU "Sollen die Namen abgespeicherter Szenen\
 den\nzuletzt-benutzte-Dateien-Einträgen im\nHauptmenü hinzugefügt werden?"
@@ -532,6 +543,11 @@ TCL vers la console?"
 ms_set fr ayprefse_Logging "Sauvegarder tous les message dans un fichier?"
 ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des\
 messages?"
+ms_set en ayprefse_ErrorLevel "Which messages should go to the console?\
+\nSilence - None\
+\nErrors - Only Errors\
+\nWarnings - Warnings and Errors\
+\nAll - Warnings, Errors, and Informative Messages"
 ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
 l'entrée de menu\nMost-Recently-Used files?"
 ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"

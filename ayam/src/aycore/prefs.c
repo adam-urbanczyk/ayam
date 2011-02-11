@@ -224,6 +224,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewStringObj(ay_prefs.logfile, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "ErrorLevel", -1);
+  to = Tcl_NewIntObj((int)ay_prefs.errorlevel);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "PPRender", -1);
   to = Tcl_NewStringObj(ay_prefs.pprender, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -629,6 +633,11 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "Logging", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.writelog);
+
+  Tcl_SetStringObj(ton, "ErrorLevel", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &itemp);
+  ay_prefs.errorlevel = itemp;
 
   Tcl_SetStringObj(ton, "LogFile", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
