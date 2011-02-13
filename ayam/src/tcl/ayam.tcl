@@ -580,9 +580,14 @@ array set ay {
  GridSize 1.0
  FOV 45.0
  nclen 4
+ ncadda ""
  npwidth 4
  npheight 4
+ npadda ""
  iclen 4
+ icadda ""
+ aclen 4
+ acadda ""
  pmwidth 4
  pmheight 4
  elevd 1
