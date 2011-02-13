@@ -38,7 +38,7 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
  int tcl_status = TCL_OK;
  char fname[] = "crtnpatch";
  char option_handled = AY_FALSE;
- int center = AY_FALSE;
+ int center = AY_FALSE, createmp = -1;
  int stride = 4, uorder = 4, vorder = 4, width = 4, height = 4;
  int ukt = AY_KTNURB, vkt = AY_KTNURB, optnum = 0, i = 2, j = 0, k = 0;
  int acvlen = 0, aukvlen = 0, avkvlen = 0;
@@ -249,6 +249,11 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
 		  option_handled = AY_TRUE;
 		  break;
+		case 'r':
+		  /* -createmp */
+		  tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1], &createmp);
+		  option_handled = AY_TRUE;
+		  break;
 		default:
 		  break;
 		} /* switch */
@@ -439,9 +444,16 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	  s[1] += udy;
 	  s[2] += udz;
 	}
-
-      npatch->is_rat = AY_FALSE;
     } /* if */
+
+  if(createmp>-1)
+    {
+      npatch->createmp = createmp;
+    }
+  else
+    {
+      npatch->createmp = AY_TRUE;
+    }
 
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
