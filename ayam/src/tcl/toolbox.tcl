@@ -478,12 +478,21 @@ proc toolbox_open { {w .tbw} } {
 	    lappend ay(toolbuttons) bnc bic bnci bnp
 
 	    button $f.bnc -image ay_NCurve_img -padx 0 -pady 0 -command {
-		crtOb NCurve -length $ay(nclen); uCR;
-		sL; forceNot; rV;
+		if { $ay(ncadda) == "" } {
+		    crtOb NCurve -length $ay(nclen);
+		} else {
+		    eval crtOb NCurve -length $ay(nclen) $ay(ncadda);
+		}
+		uCR; sL; forceNot; rV;
 	    }
 	    bind $f.bnc <Control-ButtonPress-1> {
 		%W configure -relief sunken
-		crtOb NCurve -length $ay(nclen); uCR; rV;
+		if { $ay(ncadda) == "" } {
+		    crtOb NCurve -length $ay(nclen);
+		} else {
+		    eval crtOb NCurve -length $ay(nclen) $ay(ncadda);
+		}
+		uCR; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -491,11 +500,21 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bic -image ay_ICurve_img -padx 0 -pady 0 -command {
-		crtOb ICurve -length $ay(iclen); uCR; sL; rV;
+		if { $ay(icadda) == "" } {
+		    crtOb ICurve -length $ay(iclen);
+		} else {
+		    eval crtOb ICurve -length $ay(iclen) $ay(icadda);
+		}
+		uCR; sL; rV;
 	    }
 	    bind $f.bic <Control-ButtonPress-1> {
 		%W configure -relief sunken
-		crtOb ICurve -length $ay(iclen); uCR; rV;
+		if { $ay(icadda) == "" } {
+		    crtOb ICurve -length $ay(iclen);
+		} else {
+		    eval crtOb ICurve -length $ay(iclen) $ay(icadda);
+		}
+		uCR; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -536,12 +555,22 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bnp -image ay_NPatch_img -padx 0 -pady 0 -command {
-		crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
+		if { $ay(npadda) == "" } {
+		    crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
+		} else {
+		    eval crtOb NPatch -width $ay(npwidth)\
+			-height $ay(npheight) $ay(npadda);
+		}
 		uCR; sL; rV;
 	    }
 	    bind $f.bnp <Control-ButtonPress-1> {
 		%W configure -relief sunken
-		crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
+		if { $ay(npadda) == "" } {
+		    crtOb NPatch -width $ay(npwidth) -height $ay(npheight);
+		} else {
+		    eval crtOb NPatch -width $ay(npwidth)\
+			-height $ay(npheight) $ay(npadda);
+		}
 		uCR; rV;
 		after 100 "%W configure -relief raised"
 		break;
