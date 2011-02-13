@@ -34,7 +34,7 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
  int tcl_status = TCL_OK;
  char fname[] = "crtncurve";
  char option_handled = AY_FALSE;
- int center = AY_FALSE;
+ int center = AY_FALSE, createmp = -1;
  int stride = 4, order = 4, length = 4, kt = AY_KTNURB, optnum = 0;
  int i = 2, j = 0;
  int acvlen = 0, akvlen = 0;
@@ -129,6 +129,11 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 		case 'e':
 		  /* -center */
 		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &center);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'r':
+		  /* -createmp */
+		  tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1], &createmp);
 		  option_handled = AY_TRUE;
 		  break;
 		default:
@@ -322,10 +327,14 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 
   ay_nct_settype((ay_nurbcurve_object*)(o->refine));
 
-  ((ay_nurbcurve_object*)(o->refine))->createmp = AY_TRUE;
-
-  ((ay_nurbcurve_object*)(o->refine))->is_rat = AY_FALSE;
-
+  if(createmp>-1)
+    {
+      ((ay_nurbcurve_object*)(o->refine))->createmp = createmp;
+    }
+  else
+    {
+      ((ay_nurbcurve_object*)(o->refine))->createmp = AY_TRUE;
+    }
 
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
