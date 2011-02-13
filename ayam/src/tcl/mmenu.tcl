@@ -205,19 +205,19 @@ set ay(createmenu) $m
 $m add cascade -menu $m.cu -label "Curve" -underline 0
 menu $m.cu -tearoff 0
 $m.cu add command -label "NURBCurve" -command {
-    runTool ay(nclen) "Length:"\
-	"crtOb NCurve -length %0; uCR; sL; forceNot; rV;"\
+    runTool {ay(nclen) ay(ncadda)} {"Length:" "AddArgs:"}\
+	"crtOb NCurve -length %0 %1; uCR; sL; forceNot; rV;"\
 	"Create NCurve"
 } -underline 4
 #  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
-    runTool ay(iclen) "Length:"\
-	"crtOb ICurve -length %0; uCR; sL; forceNot; rV;"\
+    runTool {ay(iclen) ay(ncadda)} { "Length:" "AddArgs:"}\
+	"crtOb ICurve -length %0 %1; uCR; sL; forceNot; rV;"\
 	"Create ICurve"
 } -underline 0
 $m.cu add command -label "ACurve" -command {
-    runTool ay(iclen) "Length:"\
-	"crtOb ACurve -length %0; uCR; sL; forceNot; rV;"\
+    runTool {ay(aclen) ay(ncadda)} { "Length:" "AddArgs:"}\
+	"crtOb ACurve -length %0 %1; uCR; sL; forceNot; rV;"\
 	"Create ACurve"
 } -underline 0
 $m.cu add command -label "NCircle" -command {
@@ -230,8 +230,9 @@ $m.cu add command -label "NCircle" -command {
 $m add cascade -menu $m.su -label "Surface" -underline 0
 menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
-    runTool {ay(npwidth) ay(npheight)} {"Width:" "Height:"}\
-	"crtOb NPatch -width %0 -height %1; uCR; sL; forceNot; rV;"\
+    runTool {ay(npwidth) ay(npheight) ay(npadda)}\
+	{"Width:" "Height:" "AddArgs:"}\
+	"crtOb NPatch -width %0 -height %1 %2; uCR; sL; forceNot; rV;"\
 	"Create NPatch"
 } -underline 0
 $m.su add command -label "BPatch" -command {

@@ -80,7 +80,10 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	uie_fixEntry $f2.e
 
 	# fill current value of $i into the entry
-	eval [subst "$f2.e insert @0 \$$i"]
+	eval "set vali \$$i"
+	if { $vali != "" } {
+	    $f2.e insert @0 $vali
+	}
 
 	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
 	pack $f2 -in $w.f1 -side top -expand yes -fill x
