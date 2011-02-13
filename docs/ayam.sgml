@@ -840,8 +840,11 @@ see also section <ref id="instanceobj" name="Instance Object">.
 <label id="mmcreate">
 The <tt/"Create"/ menu entries let you create objects. In contrast
 to the object creation via the toolbox some menu entries present you
-with small requesters, where you may adjust parameters for the object
-to be created. Here are the entries of the <tt/Create/ menu:
+with small dialogs, where you may adjust parameters for the object
+to be created.
+The entry fields in those dialogs support Tcl expressions as detailed
+in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
+Here are the entries of the <tt/Create/ menu:
 <itemize>
 <item><tt/"NURBCurve"/, create a new NURBS curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
@@ -926,13 +929,19 @@ also section <ref id="textobj" name="Text Object">.
 </itemize>
 
 <label id="mmtools">
-The <tt/"Tools"/ menu:
+The <tt/"Tools"/ menu hosts modelling tools to create complex objects
+or modify existing objects. Some tools open dialog windows to request
+parameters.
+The entry fields in those dialogs support Tcl expressions as detailed
+in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
+The entries of the <tt/"Tools"/ menu are:
 <itemize>
 <item><tt/"Last (None)"/, this menu entry is available since Ayam 1.13.
 It allows quick access to the last used entry/tool in the <tt/"Tools"/
-menu hierarchy. The label of the entry will be changed appropriately,
-e.g. to <tt/"Last (Revert U)"/, when a tool was started.
-The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/; to repeat
+menu hierarchy. The label of the entry will be changed appropriately
+when a tool was started, e.g. to <tt/"Last (Revert U)"/ after the
+<tt/"Tools/Surface/Revert U"/-tool was used.
+The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/. To repeat
 the last used tool with the same set of parameters (and without opening
 the parameter dialog window again) <tt/&lt;Ctrl+T&gt;/ can be used.
 
@@ -4750,6 +4759,9 @@ modifying control points. Note that using NPatch objects should be seen as
 last resort, only to be used when the flexibility of all the NURBS
 surface creating tool objects is not high enough to achieve a certain shape.
 <p>
+Like NCurve objects, NPatch objects mark their last control point with
+a small arrow. Note that the arrow points in the V direction (height).
+<p>
 Since Ayam 1.10, NPatch objects also support the concept
 of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
@@ -4909,6 +4921,10 @@ four points defining the geometry of the patch:<p>
 <p>
 The PatchMesh object may be used to model with bilinear and
 bicubic patch meshes.
+<p>
+Like NCurve objects, NPatch objects mark their last control point with
+a small arrow. Note that the arrow points in the V direction (height).
+<p>
 The PatchMesh object may be converted to a NURBS patch
 representation using the main menu entry <tt>"Tools/Convert"</tt>.
 However, this does not work for all possible types of patch meshes
@@ -5579,7 +5595,7 @@ transformation attributes.
 The Swing object, available since Ayam 1.14, forms a surface that results
 from rotating a NURBS curve (cross section or profile) around an axis while
 scaling it according to a second NURBS curve (trajectory or path).
-This process is sometimes also called rotational sweep.
+This process is sometimes also called <em>rotational sweep</em>.
 <p>
 The swing object has the generating NURBS curves as child objects
 and watches their movements and adapts to them automagically.
@@ -6065,8 +6081,8 @@ the birail object.
 <p>
 The skin object forms a surface defined by a set of cross section curves,
 where the first and last curve will always be interpolated by the surface
-(this process is sometimes also called lofting). When only two parameter
-curves are used the skin forms a so called ruled surface.
+(this process is sometimes also called <em>lofting</em>). When only two
+parameter curves are used the skin forms a so called <em>ruled surface</em>.
 <p>
 The complete template for the Skin object hierarchy, consequently,
 looks like this:
@@ -8884,6 +8900,22 @@ This section describes NURBS curve and surface related modelling
 tools. All tools are accessible via the <tt/"Tools"/ menu of the
 main window. In addition, there are also corresponding scripting
 interface commands.
+<p>
+Many modifying tools work on multiple selected objects and execute
+the selected operation on all those selected objects in order
+of their appearance in the current level.
+<p>
+Tools that take only NURBS curves or surfaces from the selection
+will warn if the selection contains objects of unsuitable type,
+but processing will continue.
+<p>
+In case of an error, however, the processing of multiple selected
+objects immediately stops.
+<p>
+If an operation executed successfully on an object, the selected
+points will be removed from the object. Then the notification
+of the object will be run. The notification of the parent object(s)
+will be run after processing of all selected objects finished.
 
 <sect1>The Circular B-Spline Tool<label id="cbspt">
 <p>
@@ -9504,7 +9536,7 @@ they automatically collapse to a multiple point again!
 <itemize>
 <item>Arguments: The swap uv tool takes a number of NURBS patches,
 BPatch, or PatchMesh objects from the selection.
-<item>Operation: The u and v dimension of the selected objects will
+<item>Operation: The U and V dimension of the selected objects will
 be swapped (width and height will be exchanged) without altering the
 shape of the patches.
 </itemize>
@@ -9540,7 +9572,7 @@ will be reversed in the u dimension (width).
 <item>Arguments: The revert v tool takes a number of NURBS patches
 or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
-will be reversed in the v dimension (height).
+will be reversed in the V dimension (height).
 <item>Note: See also the documentation of the corresponding
 <ref id="screvertvs" name="scripting interface command">.
 </itemize>
@@ -10390,11 +10422,12 @@ creates a polymesh with one triangular face that has a triangular hole.
 </enum>
 Notes:<newline>
 Besides checking the lengths of arrays, maximum indices, and minimum
-number of vertices per loop, there is no error checking.
-Undetected, but problematic for further processing steps &ndash; possibly
-in other applications, errors include: degenerated or non-planar polygons,
+number of vertices per loop, there is <em>no</em> error checking.
+Undetected errors include: degenerated or non-planar polygons,
 hole loops geometrically outside or touching the outline loop, disagreeing
-loop directions between faces/non-manifold meshes, unused control points.
+loop winding orders between faces, non-manifold meshes, unused control points.
+Those errors may be problematic for further processing steps &ndash; some
+may go unnoticed in Ayam and will only be detected later in other applications.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -10473,11 +10506,12 @@ creates a tetrahedral mesh with a crease.
 </enum>
 Notes:<newline>
 Besides checking the lengths of arrays, maximum indices, and minimum
-number of vertices per face, there is no error checking.
-Undetected, but problematic for further processing steps &ndash; possibly
-in other applications, errors include: degenerated or non-planar polygons,
-polygons with too high vertex counts (for the selected subdivision scheme),
+number of vertices per face, there is <em>no</em> error checking.
+Undetected errors include: degenerated or non-planar faces,
+faces with unsuitable vertex counts (for the selected subdivision scheme),
 non-manifold meshes, unused control points, wrong tag arguments.
+Those errors may be problematic for further processing steps &ndash; some
+may go unnoticed in Ayam and will only be detected later in other applications.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -11700,6 +11734,45 @@ the procedure procedure.
 Tcl and works only correctly for procedures, that end with
 a single <tt>"return;"</tt> statement.
 </itemize>
+
+<sect1>Expression Support in Dialog Entries<label id="scexpdiag">
+<p>
+Various entries of dialogs for object creation and modelling tools
+support Tcl variables and expressions.
+
+One can e.g. enter
+<code>
+$::u
+</code>
+instead of a knot value in the insert knot tool parameter dialog
+to infer the parametric value from the global variable u (that
+may have been set before using the find u modelling action) and
+insert a knot at the picked point.
+
+It is also possible to enter complex mathematical expressions:
+<code>
+[expr sin(45)]
+</code>
+
+or call into own procedures (that have to return appropriately
+typed values):
+<code>
+[myproc]
+</code>
+.
+
+Repeated calling of the tool without opening the dialog, will
+execute the provided expression again.
+This means, one can e.g. create a number of curves with increasing
+length by entering into the Ayam console
+<code>
+set ::myvar 1
+</code>
+then entering for the length in the create NURBS curve dialog:
+<code>
+[incr ::myvar]
+</code>
+then pressing <tt/&lt;Ctrl+T&gt;/ multiple times.
 
 <sect1>Scripting Interface Examples
 <p>
