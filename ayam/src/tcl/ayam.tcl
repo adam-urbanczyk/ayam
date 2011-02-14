@@ -218,6 +218,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {Have I mentioned the documentation lately?}
 {Drop geometric objects on to materials to connect them.}
 {Drop lights on to views to check where they are lighting to.}
+{Drop objects on to view windows to zoom to/see the objects.}
 {Tired of the splash screen? Start Ayam with -nosplash.}
 {Hold down <Alt> and drag the mouse to rotate a view.}
 {Start Ayam with -failsafe to reset prefs to factory defaults.}
@@ -243,7 +244,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {There is a FAQ on http://www.ayam3d.org/faq.html!}
 {Tree updates slowly? Always work in sub-levels!}
 {The <Return> key in property GUIs now does an instant apply.}
-{Tired of the splash screen? Set env. variable AYNOSPLASH.}
+{Tired of the splash screen? Set the environment variable AYNOSPLASH.}
 {Press <Shift-Enter> in the Console for immediate update and redraw.}
 {To get rid of the mark, press <Esc> twice.}
 }

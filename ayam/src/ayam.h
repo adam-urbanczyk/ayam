@@ -1235,6 +1235,8 @@ typedef struct ay_view_object_s
 
   int transform_points; /**< transform points (1) or objects (0)? */
 
+  int enable_undo; /**< enable undo for view actions? (0 no, 1 yes) */
+
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;

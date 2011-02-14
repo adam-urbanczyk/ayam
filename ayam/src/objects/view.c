@@ -297,6 +297,10 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->transform_points);
 
+  Tcl_SetStringObj(ton, "EnableUndo", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &view->enable_undo);
+
   Tcl_SetStringObj(ton, "Mark_X", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(view->markworld[0]));
@@ -516,6 +520,10 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "TransformPoints", -1);
   to = Tcl_NewIntObj(view->transform_points);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "EnableUndo", -1);
+  to = Tcl_NewIntObj(view->enable_undo);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "DrawBG", -1);
@@ -785,6 +793,11 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr,"%d\n", &vtemp.isicon);
     }
 
+  if(ay_read_version >= 14)
+    {
+      fscanf(fileptr,"%d\n", &vtemp.enable_undo);
+    }
+
   vtemp.drawhandles = AY_FALSE;
 
   if(ay_prefs.single_window & (ay_read_viewnum < 4))
@@ -813,7 +826,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	}
 
       return AY_EDONOTLINK;
-    }
+    } /* if */
 
   /* open the view */
   sprintf(command,"viewOpen %d %d 0\n", width, height);
@@ -981,6 +994,8 @@ ay_view_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr,"%d\n",view->antialiaslines);
 
   fprintf(fileptr,"%d\n",view->isicon);
+
+  fprintf(fileptr,"%d\n",view->enable_undo);
 
  return AY_OK;
 } /* ay_view_writecb */
