@@ -153,7 +153,7 @@ proc actionRotView { w } {
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	%W mc
-	if { $ay(cVUndo) } {
+	if { !$ay(cVUndo) } {
 	    undo save RotView
 	}
 	set oldx %x
@@ -188,7 +188,7 @@ proc actionMoveView { w } {
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	%W mc
-	if { $ay(cVUndo) } {
+	if { !$ay(cVUndo) } {
 	    undo save MovView
 	}
 	%W movevac -start %x %y
@@ -220,7 +220,7 @@ proc actionZoomView { w } {
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	%W mc
-	if { $ay(cVUndo) } {
+	if { !$ay(cVUndo) } {
 	    undo save ZoomView
 	}
 	%W zoomvac -start %y
@@ -250,7 +250,7 @@ proc actionMoveZView { w } {
     bind $w <ButtonPress-1> {
 	set ay(action) 1
 	%W mc
-	if { $ay(cVUndo) } {
+	if { !$ay(cVUndo) } {
 	    undo save MovZView
 	}
 	%W movezvac -start %y
