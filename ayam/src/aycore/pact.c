@@ -1494,7 +1494,6 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
   if(notify_parent)
     {
       ay_status = ay_notify_parent();
-      ay_toglcb_display(togl);
     }
 
  return TCL_OK;
@@ -1810,7 +1809,6 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
   if(notify_parent)
     {
       ay_status = ay_notify_parent();
-      ay_toglcb_display(togl);
     }
 
  return TCL_OK;
@@ -2398,7 +2396,9 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
    } /* while */
 
   if(notify_parent)
-    ay_status = ay_notify_parent();
+    {
+      ay_status = ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_pact_snaptogridcb */
