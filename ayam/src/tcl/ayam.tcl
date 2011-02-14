@@ -246,7 +246,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 {The <Return> key in property GUIs now does an instant apply.}
 {Tired of the splash screen? Set the environment variable AYNOSPLASH.}
 {Press <Shift-Enter> in the Console for immediate update and redraw.}
-{To get rid of the mark, press <Esc> twice.}
+{To get rid of the mark, press <Esc> twice in a view.}
 }
 }
 # array ayprefs
