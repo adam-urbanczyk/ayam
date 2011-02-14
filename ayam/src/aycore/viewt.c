@@ -747,6 +747,10 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   to = Tcl_NewIntObj(view->drawmark);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "cVUndo", -1);
+  to = Tcl_NewIntObj(view->enable_undo);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
 
@@ -1507,15 +1511,19 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'u':
 	  if(!strcmp(argv[i], "-undokb"))
 	    {
-	      /* save current state of view, but only once per
-		 keypress-keyrelease-sequence */
-	      if(!kbdact_in_progress)
+	      if(view->enable_undo)
 		{
-		  /* undo save */
-		  tclargv[0] = arg0;
-		  tclargv[1] = arg1;
-		  tclargv[2] = argv[i+1];
-		  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, tclargv);
+		  /* save current state of view, but only once per
+		     keypress-keyrelease-sequence */
+		  if(!kbdact_in_progress)
+		    {
+		      /* undo save */
+		      tclargv[0] = arg0;
+		      tclargv[1] = arg1;
+		      tclargv[2] = argv[i+1];
+		      ay_status = ay_undo_undotcmd(NULL, ay_interp,
+						   3, tclargv);
+		    }
 		}
 	    }
 	  if(!strcmp(argv[i], "-upx"))

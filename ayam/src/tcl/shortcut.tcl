@@ -730,7 +730,10 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w.f3D.togl <${ayviewshortcuts(ZoomRMod)}-ButtonRelease-${i}> {
-	undo save ZoomRView
+	%W mc
+	if { $ay(cVUndo) } {
+	    undo save ZoomRView
+	}
 	%W setconf -zrect 1 -rect $oldx $oldy %x %y 0
 	%W redraw
 	focus %W
@@ -744,8 +747,10 @@ proc shortcut_viewactions { w } {
     set i $ayviewshortcuts(ZoomVButton)
 
     bind $w.f3D.togl <ButtonPress-${i}> {
-	undo save ZoomView
 	%W mc
+	if { $ay(cVUndo) } {
+	    undo save ZoomView
+	}
 	%W zoomvac -start %y
 	update
     }
@@ -762,8 +767,10 @@ proc shortcut_viewactions { w } {
     set i  $ayviewshortcuts(MoveVButton)
 
     bind $w.f3D.togl <ButtonPress-${i}> {
-	undo save MoveView
 	%W mc
+	if { $ay(cVUndo) } {
+	    undo save MoveView
+	}
 	%W movevac -start %x %y
 	update
     }
@@ -778,8 +785,10 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w.f3D.togl <ButtonPress-4> {
-	undo save ZoomView
 	%W mc
+	if { $ay(cVUndo) } {
+	    undo save ZoomView
+	}
 	%W setconf -dzoom $::ayprefs(WheelZoom)
 	update
 	%W reshape
@@ -788,8 +797,10 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w.f3D.togl <ButtonPress-5> {
-	undo save ZoomView
 	%W mc
+	if { $ay(cVUndo) } {
+	    undo save ZoomView
+	}
 	%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	update
 	%W reshape
@@ -802,7 +813,10 @@ proc shortcut_viewactions { w } {
 	if { [string first ".view" $w] != 0 } {
 	    # internal view
 	    bind $w <MouseWheel> {
-		undo save ZoomView
+		%W.f3D.togl mc
+		if { $ay(cVUndo) } {
+		    undo save ZoomView
+		}
 		%W.f3D.togl mc
 		if { %D < 0.0 } {
 		    %W.f3D.togl setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
@@ -817,8 +831,10 @@ proc shortcut_viewactions { w } {
 	} else {
 	    # extra view window
 	    bind $w <MouseWheel> {
-		undo save ZoomView
 		%W mc
+		if { $ay(cVUndo) } {
+		    undo save ZoomView
+		}
 		if { %D < 0.0 } {
 		    %W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 		} else {
@@ -835,8 +851,10 @@ proc shortcut_viewactions { w } {
 
     if { $ay(ws) == "Aqua" } {
 	bind $w.f3D.togl <MouseWheel> {
-	    undo save ZoomView
 	    %W mc
+	    if { $ay(cVUndo) } {
+		undo save ZoomView
+	    }
 	    if { %D < 0.0 } {
 		%W setconf -dzoom [expr 1.0/$::ayprefs(WheelZoom)]
 	    } else {
