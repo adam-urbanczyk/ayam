@@ -1235,7 +1235,7 @@ typedef struct ay_view_object_s
 
   int transform_points; /**< transform points (1) or objects (0)? */
 
-  int disable_undo; /**< disable undo for view actions? (0 no (def.), 1 yes) */
+  int enable_undo; /**< enable undo for view actions? (0 no, 1 yes (def.) */
 
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
