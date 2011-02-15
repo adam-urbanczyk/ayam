@@ -748,7 +748,7 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "cVUndo", -1);
-  to = Tcl_NewIntObj(view->disable_undo);
+  to = Tcl_NewIntObj(view->enable_undo);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
@@ -1511,7 +1511,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	case 'u':
 	  if(!strcmp(argv[i], "-undokb"))
 	    {
-	      if(!view->disable_undo)
+	      if(view->enable_undo)
 		{
 		  /* save current state of view, but only once per
 		     keypress-keyrelease-sequence */

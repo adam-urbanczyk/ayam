@@ -83,6 +83,7 @@ ay_toglcb_create(struct Togl *togl)
   view->up[1] = 1.0;
   view->zoom = 3.0;
   view->type = AY_VTFRONT;
+  view->enable_undo = AY_TRUE;
  
   view->id = id;
   id++;
