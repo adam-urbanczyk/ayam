@@ -17,7 +17,6 @@ uplevel #0 { array set rrib_options {
   ReadLights 1
   ReadMaterial 1
   ReadPartial 0
-  ErrorLevel 1
   RescaleKnots 0.0
   ScaleFactor 1.0
   filename ""
@@ -75,7 +74,6 @@ proc rrib_import { } {
     addCheck $f rrib_options ReadPartial
     addCheck $f rrib_options ReadSTrim
     addParam $f rrib_options RescaleKnots [list 0.0 1.0e-4]
-    addMenu $f rrib_options ErrorLevel [list Silence Errors Warnings All]
 
     set f [frame $w.f2]
     button $f.bok -text "Ok" -width 5 -command {
@@ -94,8 +92,7 @@ proc rrib_import { } {
 	    -p $rrib_options(ReadPartial)\
 	    -r $rrib_options(RescaleKnots)\
 	    -s $rrib_options(ScaleFactor)\
-	    -t $rrib_options(ReadSTrim)\
-	    -e $rrib_options(ErrorLevel);
+	    -t $rrib_options(ReadSTrim);
 
 	cd $oldcd
 	goTop

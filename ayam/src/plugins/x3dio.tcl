@@ -12,7 +12,6 @@
 uplevel #0 { array set x3dio_options {
     Accuracy 1.0e-12
     Cancel 0
-    ErrorLevel 1
     ReadCurves 1
     ReadViewpoints 1
     ReadLayers -1
@@ -84,7 +83,6 @@ proc x3dio_import { } {
     addParam $f x3dio_options ReadLayers [list "-1" 1 1-10]
     addParam $f x3dio_options RescaleKnots [list 0.0 1.0e-4]
     addCheck $f x3dio_options MergeInlineDefs
-    addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
     set f [frame $w.f2]
@@ -99,7 +97,6 @@ proc x3dio_import { } {
 	    -a $x3dio_options(Accuracy)\
 	    -c $x3dio_options(ReadCurves)\
 	    -v $x3dio_options(ReadViewpoints)\
-	    -e $x3dio_options(ErrorLevel)\
 	    -l $x3dio_options(ReadLayers)\
 	    -s $x3dio_options(ReadSTrim)\
 	    -r $x3dio_options(RescaleKnots)\
@@ -224,7 +221,6 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteParametrics
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
-    addMenu $f x3dio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f x3dio_options Progress
 
     set f [frame $w.f2]
@@ -240,7 +236,6 @@ proc x3dio_export { } {
 
 	x3dioWrite [file tail $x3dio_options(FileName)]\
 	    -c $x3dio_options(WriteCurves)\
-	    -e $x3dio_options(ErrorLevel)\
 	    -v $x3dio_options(WriteViews)\
 	    -s $x3dio_options(WriteSelected)\
 	    -o $x3dio_options(ObeyNoExport)\

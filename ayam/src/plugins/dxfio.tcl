@@ -11,7 +11,6 @@
 
 uplevel #0 { array set dxfio_options {
     Cancel 0
-    ErrorLevel 1
     ReadCurves 1
     ReadLayers -1
     IgnoreFirstTrim 0
@@ -71,7 +70,6 @@ proc dxfio_import { } {
     addCheck $f dxfio_options ReadCurves
     addParam $f dxfio_options ReadLayers [list "-1" 1 1-10]
     addParam $f dxfio_options RescaleKnots [list 0.0 1.0e-4]
-    addMenu $f dxfio_options ErrorLevel [list Silence Errors Warnings All]
     addProgress $f dxfio_options Progress
 
     set f [frame $w.f2]
@@ -84,7 +82,6 @@ proc dxfio_import { } {
 
 	dxfioRead [file tail $dxfio_options(FileName)]\
 	    -c $dxfio_options(ReadCurves)\
-	    -e $dxfio_options(ErrorLevel)\
 	    -l $dxfio_options(ReadLayers)\
 	    -r $dxfio_options(RescaleKnots)\
 	    -f $dxfio_options(ScaleFactor)
