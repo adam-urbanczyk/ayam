@@ -1730,6 +1730,8 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   dxfio_slayer = -1;
   dxfio_elayer = -1;
 
+  dxfio_errorlevel = ay_prefs.errorlevel;
+
   // reset internal progress counter
   dxfio_readprogressdcb(0.0f, (void*)1);
 
@@ -1753,11 +1755,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &dxfio_importcurves);
-	}
-      else
-      if(!strcmp(argv[i], "-e"))
-	{
-	  sscanf(argv[i+1], "%d", &dxfio_errorlevel);
 	}
       else
       if(!strcmp(argv[i], "-r"))

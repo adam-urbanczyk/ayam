@@ -627,7 +627,7 @@ int ay_rrib_printerror(RIB_HANDLE rib, int code, int severity,
 int ay_rrib_readrib(char *filename, int frame, int read_camera,
 		    int read_options,
 		    int read_lights, int read_material, int read_partial,
-		    int error_level, int read_strim);
+		    int read_strim);
 
 #ifdef WIN32
   __declspec (dllexport)
@@ -5562,7 +5562,7 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
 int
 ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
 		int read_lights, int read_material, int read_partial,
-		int error_level, int read_strim)
+		int read_strim)
 {
  int ay_status = AY_OK;
  RIB_HANDLE rib = NULL;
@@ -5605,7 +5605,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_readlights = read_lights;
   ay_rrib_readmaterial = read_material;
   ay_rrib_readpartial = read_partial;
-  ay_rrib_errorlevel = error_level;
+  ay_rrib_errorlevel = ay_prefs.errorlevel;
   ay_rrib_readstrim = read_strim;
 
   gRibNopRITable[kRIB_FRAMEBEGIN] = (PRIB_RIPROC)ay_rrib_RiFrameBegin;
@@ -5679,7 +5679,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  int frame = 0, read_camera = 1, read_options = 1, read_lights = 1;
- int read_material = 1, read_partial = 0, error_level = 1, read_strim = 1;
+ int read_material = 1, read_partial = 0, read_strim = 1;
  int i = 2;
  ay_object *o, *n = NULL, **old_aynext;
  ay_level_object *l = NULL;
@@ -5741,11 +5741,6 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &read_strim);
 	}
-      else
-      if(!strcmp(argv[i], "-e"))
-	{
-	  sscanf(argv[i+1], "%d", &error_level);
-	}
 
       i+=2;
   } /* while */
@@ -5805,7 +5800,7 @@ ay_rrib_readribtcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_status = ay_rrib_readrib(argv[1], frame, read_camera, read_options,
 			      read_lights, read_material, read_partial,
-			      error_level, read_strim);
+			      read_strim);
 
   if(ay_status)
     {

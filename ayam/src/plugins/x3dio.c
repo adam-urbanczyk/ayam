@@ -6338,7 +6338,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
   x3dio_mergeinlinedefs = AY_FALSE;
-  x3dio_errorlevel = 1;
+  x3dio_errorlevel = ay_prefs.errorlevel;
 
   x3dio_totalelements = 0;
   x3dio_handledelements = 0;
@@ -6369,11 +6369,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-v"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_importviews);
-	}
-      else
-      if(!strcmp(argv[i], "-e"))
-	{
-	  sscanf(argv[i+1], "%d", &x3dio_errorlevel);
 	}
       else
       if(!strcmp(argv[i], "-r"))
@@ -9363,18 +9358,13 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writeparam = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
   x3dio_scalefactor = 1.0;
-  x3dio_errorlevel = 1;
+  x3dio_errorlevel = ay_prefs.errorlevel;
 
   while(i+1 < argc)
     {
       if(!strcmp(argv[i], "-c"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_writecurves);
-	}
-      else
-      if(!strcmp(argv[i], "-e"))
-	{
-	  sscanf(argv[i+1], "%d", &x3dio_errorlevel);
 	}
       else
       if(!strcmp(argv[i], "-s"))
