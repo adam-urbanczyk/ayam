@@ -471,7 +471,10 @@ typedef struct ay_nurbpatch_object_s
   int vorder; /**< order in V direction */
   int uknot_type; /**< U knot type (AY_KT*) */
   int vknot_type; /**< V knot type (AY_KT*) */
-  /*int closedu, closedv;*/ /* unused */
+
+  int utype; /**< closeness type (AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC) */
+  int vtype; /**< closeness type (AY_CTOPEN, AY_CTCLOSED, AY_CTPERIODIC) */
+
   int is_rat; /**< is any weight != 1.0 */
 
   double *controlv; /**< control points [width * height * 4] */

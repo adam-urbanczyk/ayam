@@ -75,7 +75,10 @@ ay_nct_create(int order, int length, int knot_type,
       curve->knotv = knotv;
     } /* if */
 
-  ay_nct_settype(curve);
+  if(controlv)
+    {
+      ay_nct_settype(curve);
+    }
 
   /* return result */
   *curveptr = curve;
@@ -3198,7 +3201,7 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
  double u, P1[4], P2[4];
 
   if(!nc)
-    return AY_ENULL;
+    return AY_FALSE;
 
   u = nc->knotv[nc->order-1];
   ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
@@ -3228,6 +3231,7 @@ int
 ay_nct_settype(ay_nurbcurve_object *nc)
 {
  int stride = 4;
+ double *s, *e;
 
   if(!nc)
     return AY_ENULL;
@@ -3238,8 +3242,9 @@ ay_nct_settype(ay_nurbcurve_object *nc)
     }
   else
     {
-      if(!memcmp(nc->controlv, &(nc->controlv[(nc->length-1)*stride]),
-		 stride*sizeof(double)))
+      s = nc->controlv;
+      e = s + ((nc->length-1)*stride);
+      if(AY_V4COMP(s, e))
 	nc->type = AY_CTCLOSED;
       else
 	nc->type = AY_CTPERIODIC;

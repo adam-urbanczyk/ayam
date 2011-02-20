@@ -536,6 +536,8 @@ ay_ncircle_notifycb(ay_object *o)
   nc->display_mode = ncircle->display_mode;
   nc->glu_sampling_tolerance = ncircle->glu_sampling_tolerance;
 
+
+
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
       ay_nct_destroy(nc);
@@ -549,6 +551,8 @@ ay_ncircle_notifycb(ay_object *o)
 
   if(revert)
     ay_nct_revert(nc);
+
+  ay_nct_settype(nc);
 
   ncircle->ncurve = ncurve;
 
