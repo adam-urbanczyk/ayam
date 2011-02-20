@@ -446,6 +446,8 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
+  ay_npt_setuvtypes(npatch);
+
   if(createmp>-1)
     {
       npatch->createmp = createmp;

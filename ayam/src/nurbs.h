@@ -496,7 +496,7 @@ int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
 
-/** Check NURBS curve closedness.
+/** Check NURBS curve closeness.
  */
 int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
@@ -963,6 +963,18 @@ int ay_npt_closev(ay_nurbpatch_object *np);
 int ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
+/** Check NURBS patch closeness in U direction.
+ */
+int ay_npt_isclosedu(ay_nurbpatch_object *np);
+
+/** Check NURBS patch closeness in V direction.
+ */
+int ay_npt_isclosedv(ay_nurbpatch_object *np);
+
+/** Set the NURBS patch utype and vtype attributes.
+ */
+int ay_npt_setuvtypes(ay_nurbpatch_object *np);
+
 /** Remove multiple points from patch \a np.
  */
 void ay_npt_clearmp(ay_nurbpatch_object *np);
@@ -1058,7 +1070,7 @@ int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Get next different control point.
  */
-void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int ind, double *p,
+void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int i, int j, double *p,
 		double **dp);
 
 /** Calculate offset surface.
