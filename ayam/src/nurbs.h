@@ -1078,11 +1078,6 @@ void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int i, int j, double *p,
 int ay_npt_offset(ay_object *o, int mode, double offset,
 		  ay_nurbpatch_object **np);
 
-/** Check NURBS surface closedness.
- */
-int ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv);
-
-
 /** Find point on NURBS surface.
  */
 int ay_npt_finduv(struct Togl *togl, ay_object *o,
