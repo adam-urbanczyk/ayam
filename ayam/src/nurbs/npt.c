@@ -2423,6 +2423,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
     } /* for */
 
   new->is_rat = ay_npt_israt(new);
+  ay_npt_setuvtypes(new);
 
   /* return result */
   *swing = new;
@@ -2878,6 +2879,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
     } /* for i = 0; i <= sections; i++ */
 
   new->is_rat = ay_npt_israt(new);
+  ay_npt_setuvtypes(new);
 
   /* return result */
   *sweep = new;
@@ -3160,6 +3162,8 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   new->is_rat = ay_npt_israt(new);
 
   ay_status = ay_npt_closeu(new);
+
+  ay_npt_setuvtypes(new);
 
   /* return result */
   *closedsweep = new;
@@ -3519,6 +3523,9 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  ay_object_delete(curve);
 	}
     } /* if */
+
+  new->is_rat = ay_npt_israt(new);
+  ay_npt_setuvtypes(new);
 
   /* return result */
   *birail1 = new;
@@ -4142,6 +4149,8 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	}
     } /* if */
 
+  new->is_rat = ay_npt_israt(new);
+  ay_npt_setuvtypes(new);
 
   /* return result */
   *birail2 = new;
@@ -4832,6 +4841,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
   new->height = curve->length;
   new->glu_sampling_tolerance = curve->glu_sampling_tolerance;
   new->is_rat = curve->is_rat;
+  new->vtype = curve->type;
 
   /* fill controlv */
   a = 0;
