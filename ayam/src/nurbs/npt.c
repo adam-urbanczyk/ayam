@@ -7603,6 +7603,13 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_npt_isclosedu:
  *  check whether NURBS patch <np> is closed in u direction
+ *  by sampling the surface at the respective borders at parametric
+ *  values defined by the knot vector (plus one intermediate value
+ *  for each knot interval) and check the surface points at those
+ *  parametric values for equality
+ *  returns:
+ *   AY_TRUE - surface is closed in u
+ *   AY_FALSE - surface is open in u
  */
 int
 ay_npt_isclosedu(ay_nurbpatch_object *np)
@@ -7618,9 +7625,10 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
   /* check closedness in U direction */
   for(i = np->vorder-1; i < np->height; i++)
     {
+      /* check knot */
       v = np->vknotv[i];
 
-      /* check knot */
+      /* calculate and compare surface points */
       ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				       np->uorder-1, np->vorder-1,
 				       np->uknotv, np->vknotv,
@@ -7637,11 +7645,13 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 				       v,
 				       p2);
 
-      if(!AY_V4COMP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
 
       /* check intermediate knot */
       v += (np->vknotv[i+1] - np->vknotv[i])/2.0;
+
+      /* calculate and compare surface points */
       ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				       np->uorder-1, np->vorder-1,
 				       np->uknotv, np->vknotv,
@@ -7658,14 +7668,14 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 				       v,
 				       p2);
 
-      if(!AY_V4COMP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
     } /* for */
 
   /* check last knot */
   v = np->vknotv[np->height];
 
-  /* check knot */
+  /* calculate and compare surface points */
   ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				   np->uorder-1, np->vorder-1,
 				   np->uknotv, np->vknotv,
@@ -7682,7 +7692,7 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 				   v,
 				   p2);
 
-  if(!AY_V4COMP(p1,p2))
+  if(!AY_V3COMP(p1,p2))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -7691,6 +7701,13 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 
 /* ay_npt_isclosedv:
  *  check whether NURBS patch <np> is closed in v direction
+ *  by sampling the surface at the respective borders at parametric
+ *  values defined by the knot vector (plus one intermediate value
+ *  for each knot interval) and check the surface points at those
+ *  parametric values for equality
+ *  returns:
+ *   AY_TRUE - surface is closed in v
+ *   AY_FALSE - surface is open in v
  */
 int
 ay_npt_isclosedv(ay_nurbpatch_object *np)
@@ -7706,9 +7723,10 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
   /* check closedness in V direction */
   for(i = np->uorder-1; i < np->width; i++)
     {
+      /* check knot */
       u = np->uknotv[i];
 
-      /* check knot */
+      /* calculate and compare surface points */
       ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				       np->uorder-1, np->vorder-1,
 				       np->uknotv, np->vknotv,
@@ -7725,11 +7743,13 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
 				       v2,
 				       p2);
 
-      if(!AY_V4COMP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
 
       /* check intermediate knot */
       u += (np->uknotv[i+1] - np->uknotv[i])/2.0;
+
+      /* calculate and compare surface points */
       ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				       np->uorder-1, np->vorder-1,
 				       np->uknotv, np->vknotv,
@@ -7746,14 +7766,14 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
 				       v2,
 				       p2);
 
-      if(!AY_V4COMP(p1,p2))
+      if(!AY_V3COMP(p1,p2))
 	return AY_FALSE;
     } /* for */
 
   /* check last knot */
   u = np->uknotv[np->width];
 
-  /* check knot */
+  /* calculate and compare surface points */
   ay_status = ay_nb_SurfacePoint4D(np->width-1, np->height-1,
 				   np->uorder-1, np->vorder-1,
 				   np->uknotv, np->vknotv,
@@ -7770,7 +7790,7 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
 				   v2,
 				   p2);
 
-  if(!AY_V4COMP(p1,p2))
+  if(!AY_V3COMP(p1,p2))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -10584,60 +10604,6 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 
  return ay_status;
 } /* ay_npt_offset */
-
-
-/* ay_npt_isclosednp:
- *  check, whether NURBS patch <np> is closed
- *  outputs results for respective dimension to
- *  <closedu> and <closedv>
- *
- */
-int
-ay_npt_isclosednp(ay_nurbpatch_object *np, int *closedu, int *closedv)
-{
- int i, a, b;
- int stride = 4;
- double *cv;
-
-  if(!np || !closedu || !closedv)
-    return AY_ENULL;
-
-  cv = np->controlv;
-
-  a = 0;
-  b = (np->width-1)*np->height*stride;
-  *closedu = AY_TRUE;
-  for(i = 0; i < np->height; i++)
-    {
-      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
-	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
-	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
-	{
-	  *closedu = AY_FALSE;
-	  break;
-	}
-      a += stride;
-      b += stride;
-    }
-
-  a = 0;
-  b = (np->height-1)*stride;
-  *closedv = AY_TRUE;
-  for(i = 0; i < np->width-1; i++)
-    {
-      if(fabs(cv[a]-cv[b]) > AY_EPSILON ||
-	 fabs(cv[a+1]-cv[b+1]) > AY_EPSILON ||
-	 fabs(cv[a+2]-cv[b+2]) > AY_EPSILON)
-	{
-	  *closedv = AY_FALSE;
-	  break;
-	}
-      a += (np->height*stride);
-      b += (np->height*stride);
-    }
-
- return AY_OK;
-} /* ay_npt_isclosednp */
 
 
 /* ay_npt_finduv:

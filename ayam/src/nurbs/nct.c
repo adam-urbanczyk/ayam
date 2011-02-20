@@ -3213,9 +3213,7 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
 		     nc->knotv, nc->controlv,
 		     u, P2);
 
-  if((fabs(P1[0]-P2[0]) < AY_EPSILON) &&
-     (fabs(P1[1]-P2[1]) < AY_EPSILON) &&
-     (fabs(P1[2]-P2[2]) < AY_EPSILON))
+  if(AY_V3COMP(P1, P2))
     return AY_TRUE;
   else
     return AY_FALSE;
