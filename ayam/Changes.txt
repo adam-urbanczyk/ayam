@@ -1,4 +1,4 @@
-[13. Feb 2011] CVS-Head:
+[20. Feb 2011] CVS-Head:
 ========================
 Bug Fixes:
 o fixed setting the FilterWidth for RIB export (SF 3148250)
@@ -7,7 +7,7 @@ o fixed read only points of ExtrNC/ExtrNP/OffsetNC/OffsetNP objects
 o fixed is_rat attribute of revolve object (SF 3159003)
 o fixed revolve for curves that touch the axis of revolution (SF 3159009)
 o fixed RIB export of SDMesh objects with tags in Affines simple
-  RIB writer (distributed with Ayam)
+  RIB writer (distributed with Ayam, no SF bug item created)
 o fixed "Add Bevel" command entries in various tool object property
   GUIs (SF 3164571)
 
@@ -18,6 +18,8 @@ o added options to control subdivision level and drawing to sdmesh objects
 o NURBS modelling tools now only delete the selected points from objects
   where the modelling operation succeeded
 o added "-createmp" option to the creation of NCurve/NPatch objects
+o offset surfaces now work for closed/periodic surfaces (in all possible
+  combinations of open/closed/periodic for U and V)
 
 GUI:
 o main menu "Edit/Material" now works with multiple selected objects
@@ -25,12 +27,15 @@ o main menu "Edit/Material" now works with multiple selected objects
 o added "ErrorLevel" preference setting that controls how many messages
   appear in the Ayam console
 o added access to advanced (command line) arguments to the creation of
-  curve/npatch objects via dialog
+  curve/npatch objects via new create dialog entry field "AddArgs"
+o added View attribute "EnableUndo" that allows to determine whether view
+  actions should be recorded in the undo system
 
 Scripts/Scripting Interface:
 o added script ("autorot.tcl") that automatically rotates a view
 o the create callback of the SDMesh object now supports much more options
   to control the initially created object
+
 
 [23. Dec 2010] Ayam-1.18.2:
 ===========================
