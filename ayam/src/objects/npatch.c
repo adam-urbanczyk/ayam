@@ -2446,6 +2446,14 @@ ay_npatch_notifycb(ay_object *o)
 
   npatch = (ay_nurbpatch_object *)(o->refine);
 
+  if((npatch->uknot_type > AY_KTCUSTOM) ||
+     (npatch->vknot_type > AY_KTCUSTOM))
+    {
+      ay_status = ay_knots_createnp(npatch);
+      if(ay_status)
+	return ay_status;
+    }
+
   if(npatch->display_mode != 0)
     {
       display_mode = npatch->display_mode-1;

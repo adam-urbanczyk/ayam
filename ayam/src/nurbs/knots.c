@@ -21,11 +21,12 @@
 int
 ay_knots_createnp(ay_nurbpatch_object *patch)
 {
- int uorder = 0, vorder = 0, width = 0, height = 0;
+ int uorder = 0, vorder = 0, deg = 0, width = 0, height = 0;
  int uknot_count = 0, vknot_count = 0;
- int i = 0, j = 0, kts = 0;
+ int index = 0, i = 0, j = 0, kts = 0;
+ double *ub = NULL;
  /*int start = 0;*/
- double *newuknotv = NULL, *newvknotv = NULL;
+ double *U = NULL, *V = NULL;
 
   /* sanity check */
   if(!patch)
@@ -38,23 +39,35 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
   uknot_count = width + uorder;
   vknot_count = height + vorder;
 
-  /* calloc new knot-arrays */
-  if(!(newuknotv = calloc(uknot_count, sizeof(double))))
-    return AY_EOMEM;
+  if(patch->uknot_type != AY_KTCUSTOM)
+    {
+      /* calloc new knot-arrays */
+      if(!(U = calloc(uknot_count, sizeof(double))))
+	return AY_EOMEM;
 
-  if(!(newvknotv = calloc(vknot_count, sizeof(double))))
-    { free(newuknotv); return AY_EOMEM; }
+      /* free old knot-arrays */
+      if(patch->uknotv != NULL)
+	free(patch->uknotv);
 
-  /* free old knot-arrays */
-  if(patch->uknotv != NULL)
-    free(patch->uknotv);
+      patch->uknotv = U;
+    }
 
-  patch->uknotv = newuknotv;
+  if(patch->vknot_type != AY_KTCUSTOM)
+    {
+      if(!(V = calloc(vknot_count, sizeof(double))))
+	{
+	  if(U)
+	    {
+	      free(U);
+	      patch->uknotv = NULL;
+	    }
+	  return AY_EOMEM;
+	}
+      if(patch->vknotv != NULL)
+	free(patch->vknotv);
 
-  if(patch->vknotv != NULL)
-    free(patch->vknotv);
-
-  patch->vknotv = newvknotv;
+      patch->vknotv = V;
+    }
 
   /* fill knot-arrays */
   switch(patch->uknot_type)
@@ -94,6 +107,65 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	(patch->uknotv)[i] = j++/(double)kts;
       for(i=uknot_count-uorder; i<uknot_count; i++)
 	(patch->uknotv)[i] = 1.0;
+      break;
+
+    case AY_KTCHORDAL:
+    case AY_KTCENTRI:
+
+      deg = uorder-1;
+
+      if(patch->uknot_type == AY_KTCHORDAL)
+	ay_knots_chordparamnp(0, patch->controlv, width, height, 4, &ub);
+      else
+	ay_knots_centriparamnp(0, patch->controlv, width, height, 4, &ub);
+
+      if(!ub)
+	{
+	  /*
+	    failed to create parameters (curve degenerated?);
+	    create a standard NURBS knot vector instead
+	   */
+	  for(i = 0; i < uorder; i++)
+	    U[i] = 0.0;
+	  j = 1;
+	  kts = 1 + uknot_count - (uorder*2);
+	  for(i = uorder; i <= uknot_count - uorder; i++)
+	    U[i] = j++/((double)kts);
+	  for(i = uknot_count - uorder; i < uknot_count; i++)
+	    U[i] = 1.0;
+	  break;
+	}
+
+      /* knot averaging */
+      for(j = 1; j < width-deg; j++)
+	{
+	  index = j + (uorder - 1);
+	  U[index] = 0.0;
+	  for(i = j; i < j + deg; i++)
+	    {
+	      U[index] += ub[i];
+	    }
+	  U[index] /= ((double)deg);
+	}
+
+      if(patch->utype != AY_CTPERIODIC)
+	{
+	  for(i = 0; i < uorder; i++)
+	    U[i] = 0.0;
+	  for(i = width; i < uknot_count; i++)
+	    U[i] = 1.0;
+	}
+      else
+	{
+	  /* periodic curves get periodic knot extensions */
+	  for(i = 0; i < deg; i++)
+	    U[i] = U[i+(width-deg)] - 1.0;
+
+	  for(i = width; i < uknot_count; i++)
+	    U[i] = 1.0 + U[i-(width-deg)];
+	}
+
+      free(ub);
       break;
 
     case AY_KTCUSTOM:
@@ -140,6 +212,65 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	(patch->vknotv)[i] = j++/((double)kts);
       for(i=vknot_count-vorder; i<vknot_count; i++)
 	(patch->vknotv)[i] = 1.0;
+      break;
+
+    case AY_KTCHORDAL:
+    case AY_KTCENTRI:
+
+      deg = vorder-1;
+
+      if(patch->uknot_type == AY_KTCHORDAL)
+	ay_knots_chordparamnp(1, patch->controlv, width, height, 4, &ub);
+      else
+	ay_knots_centriparamnp(1, patch->controlv, width, height, 4, &ub);
+
+      if(!ub)
+	{
+	  /*
+	    failed to create parameters (curve degenerated?);
+	    create a standard NURBS knot vector instead
+	   */
+	  for(i = 0; i < vorder; i++)
+	    V[i] = 0.0;
+	  j = 1;
+	  kts = 1 + vknot_count - (vorder*2);
+	  for(i = vorder; i <= vknot_count - vorder; i++)
+	    V[i] = j++/((double)kts);
+	  for(i = vknot_count - vorder; i < vknot_count; i++)
+	    V[i] = 1.0;
+	  break;
+	}
+
+      /* knot averaging */
+      for(j = 1; j < height-deg; j++)
+	{
+	  index = j + (vorder - 1);
+	  V[index] = 0.0;
+	  for(i = j; i < j + deg; i++)
+	    {
+	      V[index] += ub[i];
+	    }
+	  V[index] /= ((double)deg);
+	}
+
+      if(patch->utype != AY_CTPERIODIC)
+	{
+	  for(i = 0; i < vorder; i++)
+	    V[i] = 0.0;
+	  for(i = height; i < vknot_count; i++)
+	    V[i] = 1.0;
+	}
+      else
+	{
+	  /* periodic curves get periodic knot extensions */
+	  for(i = 0; i < deg; i++)
+	    V[i] = V[i+(height-deg)] - 1.0;
+
+	  for(i = height; i < vknot_count; i++)
+	    V[i] = 1.0 + V[i-(height-deg)];
+	}
+
+      free(ub);
       break;
 
     case AY_KTCUSTOM:
@@ -1157,6 +1288,148 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
 
  return AY_OK;
 } /* ay_knots_centriparam */
+
+
+/* ay_knots_chordparamnp:
+ *  create chordal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+ */
+int
+ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
+		      double **U)
+{
+ double t, *vk = NULL, totallen = 0.0, *lens = NULL;
+ int i, j, Ulen = 0;
+
+  /* sanity check */
+  if(!Q || !U)
+    return AY_ENULL;
+
+  if(dir)
+    {
+      ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = height;
+    }
+  else
+    {
+      ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = width;
+    }
+
+  /* get some memory */
+  if(!(vk = calloc(Ulen, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* compute total length and partial lengths */
+  j = 0;
+  for(i = 0; i < Ulen-1; i++)
+    {
+      totallen += lens[i];
+
+      j += stride;
+    }
+
+  if(totallen < AY_EPSILON)
+    {
+      free(vk);
+      free(lens);
+      return AY_ERROR;
+    }
+
+  /* compute the chordal parameterization */
+  vk[0] = 0.0;
+  j = 0;
+  t = 0.0;
+  for(i = 1; i < Ulen-1; i++)
+    {
+      t += lens[j]/totallen;
+      vk[i] = t;
+
+      j++;
+    }
+  vk[Ulen-1] = 1.0;
+
+  /* return result */
+  *U = vk;
+
+  /* clean up */
+  free(lens);
+
+ return AY_OK;
+} /* ay_knots_chordparamnp */
+
+
+/* ay_knots_centriparamnp:
+ *  create centripetal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+ */
+int
+ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
+		      double **U)
+{
+ double t, *vk = NULL, totallen = 0.0, *lens = NULL;
+ int i, j, Ulen = 0;
+
+  /* sanity check */
+  if(!Q || !U)
+    return AY_ENULL;
+
+  if(dir)
+    {
+      ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = height;
+    }
+  else
+    {
+      ay_npt_avglensu(Q, width, height, stride, &lens);
+      Ulen = width;
+    }
+
+  /* get some memory */
+  if(!(vk = calloc(Ulen, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* compute total length and partial lengths */
+  j = 0;
+  for(i = 0; i < Ulen-1; i++)
+    {
+      if(fabs(lens[i])>AY_EPSILON)
+	{
+	  lens[i] = sqrt(lens[i]);
+	  totallen += lens[i];
+	}
+    }
+
+  if(totallen < AY_EPSILON)
+    {
+      free(vk);
+      free(lens);
+      return AY_ERROR;
+    }
+
+  /* compute the chordal parameterization */
+  vk[0] = 0.0;
+  j = 0;
+  t = 0.0;
+  for(i = 1; i < Ulen-1; i++)
+    {
+      t += lens[j]/totallen;
+      vk[i] = t;
+
+      j++;
+    }
+  vk[Ulen-1] = 1.0;
+
+  /* return result */
+  *U = vk;
+
+  /* clean up */
+  free(lens);
+
+ return AY_OK;
+} /* ay_knots_centriparamnp */
 
 
 /* ay_knots_classify:
