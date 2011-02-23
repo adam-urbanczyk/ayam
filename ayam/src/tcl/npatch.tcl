@@ -38,9 +38,11 @@ addParam $w NPatchAttrData Height
 addParam $w NPatchAttrData Order_U
 addParam $w NPatchAttrData Order_V
 
-addMenu $w NPatchAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
+addMenu $w NPatchAttrData Knot-Type_U [list Bezier B-Spline NURB Custom\
+					 Chordal Centripetal]
 addString $w NPatchAttrData Knots_U
-addMenu $w NPatchAttrData Knot-Type_V [list Bezier B-Spline NURB Custom]
+addMenu $w NPatchAttrData Knot-Type_V [list Bezier B-Spline NURB Custom\
+					 Chordal Centripetal]
 addString $w NPatchAttrData Knots_V
 
 addCheck $w NPatchAttrData CreateMP

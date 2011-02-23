@@ -168,6 +168,16 @@ int ay_knots_chordparam(double *Q, int Qlen, int stride, double **U);
  */
 int ay_knots_centriparam(double *Q, int Qlen, int stride, double **U);
 
+/** Create chordal parameterized knots for a surface..
+ */
+int ay_knots_chordparamnp(int dir, double *Q, int width, int height,
+			  int stride, double **U);
+
+/** Create centripetal parameterized knots for a surface.
+ */
+int ay_knots_centriparamnp(int dir, double *Q, int width, int height,
+			   int stride, double **U);
+
 /** Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);
@@ -1068,11 +1078,6 @@ int ay_npt_extractnp(ay_object *src, double umin, double umax,
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Get next different control point.
- */
-void ay_npt_gnd(char dir, ay_nurbpatch_object *np, int i, int j, double *p,
-		double **dp);
-
 /** Calculate offset surface.
  */
 int ay_npt_offset(ay_object *o, int mode, double offset,
@@ -1087,6 +1092,16 @@ int ay_npt_finduv(struct Togl *togl, ay_object *o,
  */
 int ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[]);
 
+
+/** Compute average control point distances in U direction.
+ */
+int ay_npt_avglensu(double *cv, int width, int height, int stride,
+		    double **avlens);
+
+/** Compute average control point distances in V direction.
+ */
+int ay_npt_avglensv(double *cv, int width, int height, int stride,
+		    double **avlens);
 
 /* pmt.c */
 

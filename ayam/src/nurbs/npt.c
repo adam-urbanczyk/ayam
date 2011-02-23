@@ -25,6 +25,25 @@ int ay_npt_rescaletrim(ay_object *trim,
 		       int mode, double omin, double omax,
 		       double nmin, double nmax);
 
+void ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
+		 double **dp);
+
+void ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
+		 double **dp);
+
+void ay_npt_gnduc(char dir, ay_nurbpatch_object *np, int i, double *p,
+		  double **dp);
+
+void ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
+		  double **dp);
+
+void ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
+		  double **dp);
+
+void ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
+		  double **dp);
+
+
 /* functions: */
 
 /* ay_npt_create:
@@ -67,29 +86,40 @@ ay_npt_create(int uorder, int vorder, int width, int height,
       patch->is_rat = ay_npt_israt(patch);
     } /* if */
 
-  ay_status = ay_knots_createnp(patch);
-  if(ay_status)
+  if(((uknot_type != AY_KTCUSTOM) && !uknotv) ||
+     ((vknot_type != AY_KTCUSTOM) && !vknotv))
     {
-      if(newcontrolv)
+      /* we need to create knots */
+      ay_status = ay_knots_createnp(patch);
+      if(ay_status)
 	{
-	  free(newcontrolv);
-	  patch->controlv = NULL;
-	}
-      free(patch);
-      return ay_status;
-    } /* if */
+	  if(newcontrolv)
+	    {
+	      free(newcontrolv);
+	      patch->controlv = NULL;
+	    }
+	  free(patch);
+	  return ay_status;
+	} /* if */
 
-  if((uknot_type == AY_KTCUSTOM) && uknotv)
+      if((uknot_type == AY_KTCUSTOM) && uknotv)
+	{
+	  if(patch->uknotv)
+	    free(patch->uknotv);
+	  patch->uknotv = uknotv;
+	} /* if */
+
+      if((vknot_type == AY_KTCUSTOM) && vknotv)
+	{
+	  if(patch->vknotv)
+	    free(patch->vknotv);
+	  patch->vknotv = vknotv;
+	} /* if */
+    }
+  else
     {
-      if(patch->uknotv)
-	free(patch->uknotv);
+      /* caller specified own knots */
       patch->uknotv = uknotv;
-    } /* if */
-
-  if((vknot_type == AY_KTCUSTOM) && vknotv)
-    {
-      if(patch->vknotv)
-	free(patch->vknotv);
       patch->vknotv = vknotv;
     } /* if */
 
@@ -1156,7 +1186,7 @@ ay_npt_wribtrimcurves(ay_object *o)
       free(w);
     } /* if */
 
-  return ay_status;
+ return ay_status;
 } /* ay_npt_wribtrimcurves */
 
 
@@ -2311,10 +2341,10 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
  int stride = 4;
  int i = 0, j = 0, a;
 
-  /* check parameters */
   if(!o1 || !o2 || !swing)
     return AY_ENULL;
 
+  /* check parameters */
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
     return AY_OK;
 
@@ -4248,7 +4278,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	  d[i] += AY_V3LEN(v);
 	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!" );
+	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!");
 	      free(uk); free(d); free(U); return AY_OK;
 	    }
 	  ind2 += N*stride;
@@ -4382,7 +4412,7 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	  d[i] += AY_V3LEN(v);
 	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!" );
+	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!");
 	      free(vk); free(d); free(V); return AY_OK;
 	    }
 	  ind += stride;
@@ -9992,7 +10022,6 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
  int offset, stride = 4;
  double *p2 = NULL;
 
-
   if(dir == AY_EAST)
     {
       /* calculate offset */
@@ -10420,6 +10449,7 @@ typedef void (ay_npt_gndcb) (char dir, ay_nurbpatch_object *np,
 /* ay_npt_offset:
  *  create offset surface from <o>
  *  the new surface is <offset> away from the original surface
+ *  <mode> is currently unused
  *  returns new patch in <np>
  */
 int
@@ -10439,6 +10469,9 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
   /* sanity check */
   if(!o || !np)
     return AY_ENULL;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
 
   patch = (ay_nurbpatch_object*)o->refine;
 
@@ -10473,8 +10506,6 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
   a = 0;
   for(i = 0; i < patch->width; i++)
     {
-
-      /* middle points in this column */
       for(j = 0; j < patch->height; j++)
 	{
 	  p0 = &(patch->controlv[a]);
@@ -10552,6 +10583,10 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 	      newcv[a+2] = (p0[2] + (normal1[2] * offset));
 	      newcv[a+3] = p0[3];
 	    }
+	  else
+	    {
+	      memcpy(&(newcv[a]), p0, stride*sizeof(double));
+	    }
 
 	  a += stride;
 	} /* for */
@@ -10591,7 +10626,7 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 			    patch->uknot_type, patch->vknot_type,
 			    newcv, newukv, newvkv, np);
 
-  if(ay_status || !np)
+  if(ay_status || !*np)
     {
       free(newcv);
       free(copyrow);
@@ -10650,7 +10685,8 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   np = (ay_nurbpatch_object *)o->refine;
 
-  /* flat-shade the selected object */
+  /* shade the selected object without lighting as we are mostly
+     interested in the corresponding Z-Buffer values */
   arr = ay_shadecbt.arr;
   cb = (ay_drawcb *)(arr[o->type]);
 
@@ -10718,13 +10754,13 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 
   glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
 
-  /* get winz */
+  /* get Z-Buffer value of picked point (winz) */
   glReadPixels((GLint)winx,(GLint)winy,1,1,GL_DEPTH_COMPONENT,GL_FLOAT,&winz);
 
   gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 	       &(point[0]), &(point[1]), &(point[2]));
 
-  /* get guess */
+  /* in 7 iterations, search for matching parametric values of <point> */
   stride = 4;
   if(!(cp = calloc(usamples*vsamples*stride, sizeof(double))))
     return AY_EOMEM;
@@ -10830,6 +10866,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
 	}
     } /* for */
 
+  /* compile/return results */
   winXY[0] = winx;
   winXY[1] = winy;
 
@@ -10966,6 +11003,109 @@ cleanup:
 
  return TCL_OK;
 } /* ay_npt_finduvcb */
+
+
+/* ay_npt_avglensu:
+ *  Compute average control point distances in U direction.
+ */
+int
+ay_npt_avglensu(double *cv, int width, int height, int stride,
+		double **avlens)
+{
+ double *lens;
+ int i, j, a, b;
+
+  if(!cv || !avlens)
+    {
+      return AY_ENULL;
+    }
+
+  if(!(lens = calloc(width-1, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* compute average partial lengths */
+  a = 0;
+  b = height;
+  for(i = 0; i < width-1; i++)
+    {
+      for(j = 0; j < height; j++)
+	{
+	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
+	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
+	     (fabs(cv[b+2] - cv[a+2]) > AY_EPSILON))
+	    {
+	      lens[i] += AY_VLEN((cv[b] - cv[a]),
+				 (cv[b+1] - cv[a+1]),
+				 (cv[b+2] - cv[a+2]))/width;
+	    }
+	  else
+	    {
+	      lens[i] = 0.0;
+	    }
+	  a += stride;
+	  b += stride;
+	}
+    }
+
+  /* return result */
+  *avlens = lens;
+
+ return AY_OK;
+} /* ay_npt_avglensu */
+
+
+/* ay_npt_avglensv:
+ *  Compute average control point distances in V direction.
+ */
+int
+ay_npt_avglensv(double *cv, int width, int height, int stride,
+		double **avlens)
+{
+ double *lens;
+ int i, j, a, b;
+
+  if(!cv || !avlens)
+    {
+      return AY_ENULL;
+    }
+
+  if(!(lens = calloc(height-1, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  /* compute average partial lengths */
+  for(i = 0; i < height-1; i++)
+    {
+      a = i*stride;
+      b = a+stride;
+      for(j = 0; j < width; j++)
+	{
+	  if((fabs(cv[b] - cv[a]) > AY_EPSILON) ||
+	     (fabs(cv[b+1] - cv[a+1]) > AY_EPSILON) ||
+	     (fabs(cv[b+2] - cv[a+2]) > AY_EPSILON))
+	    {
+	      lens[i] += AY_VLEN((cv[b] - cv[a]),
+				 (cv[b+1] - cv[a+1]),
+				 (cv[b+2] - cv[a+2]))/height;
+	    }
+	  else
+	    {
+	      lens[i] = 0.0;
+	    }
+	  a += (height*stride);
+	  b += (height*stride);
+	}
+    }
+
+  /* return result */
+  *avlens = lens;
+
+ return AY_OK;
+} /* ay_npt_avglensv */
+
 
 
 /* templates */
