@@ -137,12 +137,12 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 /* ay_npt_destroy:
  *   destroy a NURBS patch object
  */
-int
+void
 ay_npt_destroy(ay_nurbpatch_object *patch)
 {
 
   if(!patch)
-    return AY_ENULL;
+    return;
 
   if(patch->mpoints)
     ay_npt_clearmp(patch);
@@ -158,7 +158,7 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
 
   free(patch);
 
- return AY_OK;
+ return;
 } /* ay_npt_destroy */
 
 

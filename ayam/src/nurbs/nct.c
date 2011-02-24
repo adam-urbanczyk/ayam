@@ -57,7 +57,7 @@ ay_nct_create(int order, int length, int knot_type,
       curve->is_rat = ay_nct_israt(curve);
     } /* if */
 
-  if(knot_type != AY_KTCUSTOM && knotv == NULL)
+  if((knot_type != AY_KTCUSTOM) && !knotv)
     {
       /* we need to create knots */
       ay_status = ay_knots_createnc(curve);
@@ -90,12 +90,12 @@ ay_nct_create(int order, int length, int knot_type,
 /* ay_nct_destroy:
  *   destroy a NURBS curve object
  */
-int
+void
 ay_nct_destroy(ay_nurbcurve_object *curve)
 {
 
   if(!curve)
-    return AY_ENULL;
+    return;
 
   if(curve->mpoints)
     ay_nct_clearmp(curve);
@@ -108,7 +108,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 
   free(curve);
 
-  return AY_OK;
+ return;
 } /* ay_nct_destroy */
 
 
@@ -118,7 +118,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 void
 ay_nct_clearmp(ay_nurbcurve_object *c)
 {
-  ay_mpoint *next = NULL, *p = NULL;
+ ay_mpoint *next = NULL, *p = NULL;
 
   if(!c)
     return;

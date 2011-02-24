@@ -364,7 +364,7 @@ int ay_nct_create(int order, int length, int knot_type,
 
 /** Destroy curve object.
  */
-int ay_nct_destroy(ay_nurbcurve_object *curve);
+void ay_nct_destroy(ay_nurbcurve_object *curve);
 
 /** Remove multiple points from curve \a c.
  */
@@ -677,7 +677,7 @@ int ay_npt_create(int uorder, int vorder, int width, int height,
 
 /** Destroy NURBS patch object.
  */
-int ay_npt_destroy(ay_nurbpatch_object *patch);
+void ay_npt_destroy(ay_nurbpatch_object *patch);
 
 /** Create Ayam object for NURBS patch.
  */
