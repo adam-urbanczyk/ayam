@@ -4247,7 +4247,11 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
 
   np = (ay_nurbpatch_object *)p->refine;
 
-  ay_npt_isclosednp(np, &is_closed_u, &is_closed_v);
+  if(np->utype == AY_CTCLOSED)
+    is_closed_u = AY_TRUE;
+
+  if(np->vtype == AY_CTCLOSED)
+    is_closed_v = AY_TRUE;
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     {
