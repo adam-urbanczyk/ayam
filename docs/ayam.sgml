@@ -849,14 +849,26 @@ Here are the entries of the <tt/Create/ menu:
 <item><tt/"NURBCurve"/, create a new NURBS curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="ncurveobj" name="NCurve Object">.
+Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+field where you may specify additional command line arguments to
+the <tt/"crtOb NCurve"/ command, as outlined in section
+<ref id="sccrtnc" name="Creating Objects">.
 
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="icurveobj" name="ICurve Object">.
+Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+field where you may specify additional command line arguments to
+the <tt/"crtOb ICurve"/ command, as outlined in section
+<ref id="sccrtic" name="Creating Objects">.
 
 <item><tt/"ACurve"/, create a new approximating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="acurveobj" name="ACurve Object">.
+Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+field where you may specify additional command line arguments to
+the <tt/"crtOb ACurve"/ command, as outlined in section
+<ref id="sccrtac" name="Creating Objects">.
 
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
@@ -864,6 +876,10 @@ also section <ref id="ncircleobj" name="NCircle Object">.
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where you may specify the width and height of the new patch. See
 also section <ref id="npatchobj" name="NPatch Object">.
+Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+field where you may specify additional command line arguments to
+the <tt/"crtOb NPatch"/ command, as outlined in section
+<ref id="sccrtnp" name="Creating Objects">.
 
 <item><tt/"BPatch"/, create a new bilinear patch. See
 also section <ref id="bpatchobj" name="BPatch Object">.
@@ -3660,6 +3676,11 @@ is invoked (e.g. using the main menu entry
 
 <item><tt/"Mark"/ is the marked point (in world coordinates) for
 the rotate and scale about modelling actions.
+To reset the mark, press <tt>&lt;Esc&gt;</tt> twice.
+
+<item><tt/"EnableUndo"/ is switched on by default and allows to
+disable undo for view actions, e.g. panning or zooming a view,
+these actions then also do not change the scene changed state.
 </itemize>
 
 <sect1>Camera Object<label id="cameraobj">
@@ -4622,8 +4643,12 @@ would be:
 <tt>{ 0.0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1.0 }</tt>.
 
 <p>
-The knot types <tt/"Chordal"/ and <tt/"Centripetal"/ will generate knot values
-whose distribution reflect the distances of the control points.
+The knot types <tt/"Chordal"/ and <tt/"Centripetal"/ will generate knot
+values whose distribution reflect the distances of the control points.
+This only works, if there are free knots in the knot vector,
+i.e. knots that are not subject to clamping or periodic extensions
+(the default NURBS curve with 4 control points and order 4 has
+<em>none</em>).
 For open curves, the generated knot vector will be clamped, for periodic
 curves, proper periodic extensions will be created.
 Those knot types are mainly useful for curves with unevenly distributed
@@ -7125,7 +7150,9 @@ of the extracted NURBS surface.
 <p>
 The OffsetNP object, available since Ayam 1.17, creates offset surfaces from
 NURBS surfaces using a simple algorithm.
-OffsetNP currently only works for open surfaces.
+Since Ayam 1.19 OffsetNP also works for closed and periodic (in any
+possible combination of closeness in the two dimensions) surfaces.
+Note that degenerate and rational surfaces are still not supported.
 The offset surface will always match the original surface in width/height,
 orders, and knots. See also the image above.
 <p>
@@ -10060,6 +10087,7 @@ object type:
 
 <#if out=latex><x/newpage/</#if>
 
+<label id="sccrtnc">
   <itemize>
   <item><tt/"NCurve"/: NURBS curves accept the following arguments:
   <itemize>
@@ -10102,6 +10130,9 @@ of automatically created control points in the z dimension, default is 0.0
   <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
 the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
+
+  <item><tt/"-createmp"/: The <tt/"-createmp"/ option toggles creation
+of multiple points. The default value is 0.
   </itemize>
 Examples:
 <enum>
@@ -10123,6 +10154,7 @@ In versions of Ayam prior to 1.17, NURBS curves only accepted the
 
 <#if out=latex><x/newpage/</#if>
 
+<label id="sccrtic">
   <item><tt/"ICurve"/: Interpolating curves accept the following arguments:
   <itemize>
 
@@ -10202,6 +10234,7 @@ In versions of Ayam prior to 1.17, interpolating curves only accepted the
 
 <#if out=latex><x/newpage/</#if>
 
+<label id="sccrtac">
   <item><tt/"ACurve"/: Approximating curves accept the following arguments:
   <itemize>
 
@@ -10260,6 +10293,7 @@ In versions of Ayam prior to 1.17, approximating curves only accepted the
 
 <#if out=latex><x/newpage/</#if>
 
+<label id="sccrtnp">
   <item><tt/"NPatch"/: NURBS patches accept the following arguments:
   <itemize>
   <item><tt/"-width"/: width of the new patch, the width defaults to 4.
@@ -10333,6 +10367,9 @@ in a column (V parametric dimension, along height), default is 0.0
   <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
 the new patch will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
+
+  <item><tt/"-createmp"/: The <tt/"-createmp"/ option toggles creation
+of multiple points. The default value is 0.
 </itemize>
 Examples:
 <enum>
@@ -13956,12 +13993,15 @@ changes,
 (the clipboard content is not touched, except for instance objects,
 whose masters are cleared with the scene: those instance objects will
 be deleted from the clipboard),
-<item> if the new file appears to be an Ayam scene file (judged solely
-by the file name extension) Ayam will change the working directory to the
-path of the scene file (otherwise, Ayam will try to import the file using
-an import plugin responsible for the file),
+<item> if the new file appears not to be an Ayam scene file (judged solely
+by the file name extension) Ayam will try to import the file using
+an import plugin responsible for the file (automatically loading the
+matching plugin if unavailable),
+<item> Ayam will change the application working directory to the
+directory of the scene file,
 <item> now, a backup copy of the file to read will be made (depending
-on the preference setting <tt>"Main/BakOnReplace"</tt>),
+on the preference setting <tt>"Main/BakOnReplace"</tt>), a potentially
+existing old backup copy will be silently overwritten,
 note: even if the backup fails, scene reading continues,
 <item> the header of the scene file will be read to derive the scene
 file format version,
@@ -13978,7 +14018,9 @@ and/or <tt/"SavePaneLayout"/ tags, the respective window/widget
 geometries from the tags will be re-established,
 <item> if no errors occurred during reading, the current scene name
 will be set to that of the file,
-otherwise the current scene name will be reset to "unnamed",
+otherwise the current scene name will be reset to "unnamed" (to avoid
+clobbering good scene files that failed to load for some reason with a
+single, maybe even unintentional, press of <tt/&lt;Ctrl+s&gt;/),
 <item> the file name will be put to the first most recently used
 files entry in the file menu,
 <item> the scene changed state will be reset to "unchanged",
@@ -14006,8 +14048,8 @@ clipboard, as all other objects were deleted before opening the file),
 the material object will be created, but objects from the file will
 not be be linked to the material object from the file, but to the
 material object that was already registered before,
-<item> if loading of an object fails, Ayam continues to read from
-the file.
+<item> if loading of an object fails, Ayam skips to the next object
+and continues to read from the file.
 </enum>
 
 <sect2>Inserting Scene Files<label id="insertsf">
@@ -14015,12 +14057,13 @@ the file.
 In contrast to reading scenes via <tt>"File/Open"</tt> or the MRU list,
 reading scenes via <tt>"File/Insert"</tt> does some things differently:
 <enum>
-<item> the current scene will not be cleared,
+<item> the current scene will not be cleared before reading the file,
 <item> the current level will not be reset before reading the file;
 if the scene file to be inserted contains no root and no views,
 the new objects will be created in the current level, otherwise the
 objects will be created in the topmost level of the scene, which will
 also be the new current level in any case (after reading),
+<item> no backup copy will be made of the file to be inserted,
 <item> if a material is missing from the file, and a matching (by name)
 material exists in the scene, the objects will be connected to this
 material,
@@ -14051,16 +14094,19 @@ When saving a scene using <tt>"File/Save"</tt>:
 <item> if the file appears not to be an Ayam scene file (judged solely
 by the file name extension) Ayam will try to export the current scene
 using an export plugin responsible for the file type instead of saving
-to an Ayam scene file,
+to an Ayam scene file (automatically loading the
+matching plugin if unavailable),
 <item> the geometry of the main window and internal widgets is saved
 to <tt/"SaveMainGeom"/ and/or <tt/"SavePaneLayout"/ tags (if present
 in the Root object),
 <item> <tt/"OI"/ tags and <tt/"MI"/ tags will be created to allow
 instances to be connected to their respective masters and objects
-to their materials, when reading the scene file,
+to their materials, when reading the scene file again,
 <item> then, all objects from the scene will be saved to the file;
-if the save views flag is cleared (while reading the previous scene file),
-root and views will be omitted,
+if the save views flag was cleared while reading the previous scene file,
+root and views will be omitted (i.e. scene files without root and views
+stay scene files without root and views, even if new views
+are opened and parameterized),
 <item> if no errors occured during saving the file, the file name
 will be put to the first most recently used files entry in the file menu,
 and the scene changed state will be set to "unchanged",
@@ -15224,6 +15270,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Elevate: <ref id="elevt" name="elevate tool">
 <item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
+<item>EnableUndo: <ref id="vat" name="View attribute">
 <item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
 <item>EndCap: <ref id="extrattr" name="Extrude attribute">,
 <ref id="rep" name="Revolve attribute">,
