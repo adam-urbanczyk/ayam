@@ -178,6 +178,11 @@ int ay_knots_chordparamnp(int dir, double *Q, int width, int height,
 int ay_knots_centriparamnp(int dir, double *Q, int width, int height,
 			   int stride, double **U);
 
+/** Classify a knot vector (returns AY_KT*).
+ */
+int ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
+		      double eps);
+
 /** Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);

@@ -4379,7 +4379,8 @@ x3dio_readnurbscurve(scew_element *element, unsigned int dim)
 	} /* if */
       if(has_knots)
 	{
-	  nc.knot_type = AY_KTCUSTOM;
+	  nc.knot_type = ay_knots_classify(nc.order, knots, nc.length+nc.order,
+					   AY_EPSILON);
 	  nc.knotv = knots;
 	  knots = NULL;
 	}
@@ -4418,7 +4419,6 @@ cleanup:
 
 /* x3dio_fixnpatch:
  *  fix row/column major order in np controlv (from X3D to Ayam style);
- *  XXXX to be done: improve the knot vector (type)
  */
 int
 x3dio_fixnpatch(ay_nurbpatch_object *np)
@@ -4576,7 +4576,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 
       if(has_uknots)
 	{
-	  np.uknot_type = AY_KTCUSTOM;
+	  np.uknot_type = ay_knots_classify(np.uorder, uknots,
+					    np.width+np.uorder,
+					    AY_EPSILON);
 	  np.uknotv = uknots;
 	  uknots = NULL;
 	}
@@ -4587,7 +4589,9 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 
       if(has_vknots)
 	{
-	  np.vknot_type = AY_KTCUSTOM;
+	  np.vknot_type = ay_knots_classify(np.vorder, vknots,
+					    np.height+np.vorder,
+					    AY_EPSILON);
 	  np.vknotv = vknots;
 	  vknots = NULL;
 	}
