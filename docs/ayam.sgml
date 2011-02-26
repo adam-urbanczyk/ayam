@@ -5094,13 +5094,15 @@ in the resulting surface). All tags known from the RenderMan interface
 (hole, crease, corner, and interpolateboundary) are supported by Ayam,
 but they may currently not be changed by the user.
 <p>
-Furthermore, Ayam is currently not able to do the subdivision and
-show the resulting smooth surface. All that is shown in wireframe and
-shaded views is the original polygonal mesh.
+Unless the <tt/"subdiv"/ plugin (available since Ayam 1.19) is loaded,
+Ayam is not able to do the subdivision and show the resulting smooth
+surface. All that is shown in wireframe and shaded views is the original
+polygonal mesh.
 <p>
 Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
 objects. Note however that only the original unrefined control
-polygon will be converted.
+polygon will be converted if the <tt/"Level"/ attribute is zero
+or if the <tt/"subdiv"/ plugin is not loaded.
 <p>
 The following table briefly lists some capabilities of the SDMesh object.
 <table loc="ht">
@@ -14512,14 +14514,15 @@ setting (used if no ayamrc file exists).
 This section serves as a overview of the various plugins available
 in Ayam.
 <p>
-There are currently three major types of plugins for Ayam: shader parsing
-plugins, custom objects, and import/export plugins.
+There are currently four major types of plugins for Ayam: shader parsing
+plugins, custom objects, import/export plugins, and modelling helper
+plugins.
 See sections <ref id="spplugins" name="Shader Parsing Plugins">,
 <ref id="customobj" name="Custom Objects">, and
 <ref id="impex" name="Import and Export">
 for more information regarding the respective plugin types.
 <p>
-Furthermore, there are the following specific plugins:
+Furthermore, there are the following modelling helper plugins:
 <itemize>
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
@@ -14527,7 +14530,9 @@ Furthermore, there are the following specific plugins:
 (see section <ref id="idr" name="CSG preview using the AyCSG plugin">),
 <item>IDR &ndash; Importance Driven Rendering
 (see section <ref id="idr" name="Importance Driven Rendering">),
-<item>aydnd &ndash; inter-application drag and drop.
+<item>aydnd &ndash; inter-application drag and drop
+<item>subdiv &ndash; Catmull-Clark and Loop subdivision for the SDMesh
+object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 </itemize>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
