@@ -201,6 +201,7 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
  int width, height, i, j, a, b;
+ int uknot_type, vknot_type;
  double *controlv = NULL;
  double *uknotv = NULL, *vknotv = NULL;
  ay_nurbpatch_object *patch = NULL;
@@ -250,9 +251,14 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
       a++;
     } /* for */
 
+  uknot_type = ay_knots_classify(o->uOrder, uknotv, width+o->uOrder,
+				 AY_EPSILON);
+  vknot_type = ay_knots_classify(o->vOrder, vknotv, height+o->vOrder,
+				 AY_EPSILON);
+
   /* now create a NURBPatch */
   ay_status = ay_npt_create(o->uOrder, o->vOrder, width, height,
-			    AY_KTCUSTOM, AY_KTCUSTOM,
+			    uknot_type, vknot_type,
 			    controlv, uknotv, vknotv,
 			    &patch);
 
@@ -341,7 +347,7 @@ int
 ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
 {
  int ay_status = AY_OK;
- int length, i, a, b;
+ int length, i, a, b, knot_type;
  double *controlv = NULL;
  double *knotv = NULL;
  MF3DNURBCurveObjPtr o = (MF3DNURBCurveObjPtr) object;
@@ -378,9 +384,12 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
       a++;
     } /* for */
 
+  knot_type = ay_knots_classify(o->order, knotv, length+o->order,
+				AY_EPSILON);
+
   /* now create a NURBCurve */
   ay_status = ay_nct_create(o->order, length,
-			    AY_KTCUSTOM, controlv, knotv,
+			    knot_type, controlv, knotv,
 			    &curve);
 
   if(ay_status)
