@@ -3219,8 +3219,8 @@ cleanup:
 
 /* objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam style);
- *  additionally, multiply the weights in for rational vertices
- *  XXXX to be done: improve the knot vector (type)
+ *  additionally, multiply the weights in for rational vertices, and
+ *  try to detect the knot type
  */
 int
 objio_fixnpatch(ay_nurbpatch_object *np)
@@ -3260,6 +3260,24 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 
   np->is_rat = ay_npt_israt(np);
 
+  if(objio_rescaleknots != 0.0)
+    {
+      ay_knots_rescaletomindist(np->width+np->uorder, np->uknotv,
+				objio_rescaleknots);
+
+      ay_knots_rescaletomindist(np->height+np->vorder, np->vknotv,
+				objio_rescaleknots);
+
+    }
+
+  np->uknot_type = ay_knots_classify(np->uorder, np->uknotv,
+				     np->width+np->uorder,
+				     AY_EPSILON);
+
+  np->vknot_type = ay_knots_classify(np->vorder, np->vknotv,
+				     np->height+np->vorder,
+				     AY_EPSILON);
+
  return ay_status;
 } /* objio_fixnpatch */
 
@@ -3267,8 +3285,8 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 /* objio_fixncurve:
  *  fix a Wavefront NURBS curve by
  *  multiplying the weights in for rational vertices
- *  rescaling the knot vector to safe distances
- *  XXXX to be done: improve the knot vector (type, GLU compat)
+ *  rescaling the knot vector to safe distances, and
+ *  try to detect the knot type
  */
 int
 objio_fixncurve(ay_nurbcurve_object *nc)
@@ -3300,6 +3318,10 @@ objio_fixncurve(ay_nurbcurve_object *nc)
       ay_knots_rescaletomindist(nc->length+nc->order, nc->knotv,
 				objio_rescaleknots);
     }
+
+  nc->knot_type = ay_knots_classify(nc->order, nc->knotv,
+				    nc->length+nc->order,
+				    AY_EPSILON);
 
  return ay_status;
 } /* objio_fixncurve */
