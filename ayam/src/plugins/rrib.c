@@ -838,6 +838,9 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
     }
 
 
+
+
+
   if(!(np.vknotv = calloc(nv+vorder, sizeof(double))))
     return;
 
@@ -907,6 +910,14 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 
   if((vmin > np.vknotv[np.vorder]) || (vmax < np.vknotv[np.height]))
     ay_knots_setvminmax(&ay_rrib_co, vmin, vmax);
+
+  /* detect knot types */
+  np.uknot_type = ay_knots_classify(np.uorder, np.uknotv,
+				    np.width+np.uorder,
+				    AY_EPSILON);
+  np.vknot_type = ay_knots_classify(np.vorder, np.vknotv,
+				    np.height+np.vorder,
+				    AY_EPSILON);
 
   ay_rrib_co.parent = AY_TRUE;
   ay_rrib_co.hide_children = AY_TRUE;
