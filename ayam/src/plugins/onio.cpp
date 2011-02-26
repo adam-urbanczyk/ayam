@@ -2245,6 +2245,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 {
  int ay_status = AY_OK;
  int width, height, i, j, a, b, stride;
+ int uknot_type, vknot_type;
  double *controlv = NULL;
  double *uknotv = NULL, *vknotv = NULL, *knotv;
  ay_nurbpatch_object *patch = NULL;
@@ -2347,9 +2348,18 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 				onio_rescaleknots);
     }
 
+  // detect knot types
+  uknot_type = ay_knots_classify(p_s->m_order[0], uknotv,
+				 width+p_s->m_order[0],
+				 AY_EPSILON);
+
+  vknot_type = ay_knots_classify(p_s->m_order[1], vknotv,
+				 height+p_s->m_order[1],
+				 AY_EPSILON);
+
   // now create a NURBPatch object
   ay_status = ay_npt_create(p_s->m_order[0], p_s->m_order[1], width, height,
-			    AY_KTCUSTOM, AY_KTCUSTOM,
+			    uknot_type, vknot_type,
 			    controlv, uknotv, vknotv,
 			    &patch);
 
@@ -2386,7 +2396,7 @@ int
 onio_readnurbscurve(ON_NurbsCurve *p_c)
 {
  int ay_status = AY_OK;
- int length, i, a, b, stride;
+ int length, i, a, b, stride, knot_type;
  double *controlv = NULL;
  double *knotv = NULL;
  ay_nurbcurve_object *curve = NULL;
@@ -2475,8 +2485,12 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
     ay_knots_rescaletomindist(length+p_c->m_order, knotv,
 			      onio_rescaleknots);
 
+  // detect knot type
+  knot_type = ay_knots_classify(p_c->m_order, knotv, length+p_c->m_order,
+				AY_EPSILON);
+
   // now create a NURBCurve object
-  ay_status = ay_nct_create(p_c->m_order, length, AY_KTCUSTOM, controlv, knotv,
+  ay_status = ay_nct_create(p_c->m_order, length, knot_type, controlv, knotv,
 			    &curve);
 
   if(ay_status)
