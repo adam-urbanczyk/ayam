@@ -5581,7 +5581,6 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 	     (curve->controlv[i+stride+1] - curve->controlv[i+1-stride]));
 	}
 
-
       i += stride;
     } /* while */
 
@@ -6692,32 +6691,59 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
     return AY_EWTYPE;
 
   np = (ay_nurbpatch_object *)o->refine;
+
+  /* extract four curves (from each boundary) */
   if(np->vknot_type == AY_KTNURB || np->vknot_type == AY_KTBEZIER)
     {
       ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo, &u0);
+      if(ay_status)
+	goto cleanup;
       ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo, &un);
+      if(ay_status)
+	goto cleanup;
     }
   else
     {
       ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo, &u0);
+      if(ay_status)
+	goto cleanup;
       ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo, &un);
+      if(ay_status)
+	goto cleanup;
     }
 
   if(np->uknot_type == AY_KTNURB || np->uknot_type == AY_KTBEZIER)
     {
       ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo, &v0);
+      if(ay_status)
+	goto cleanup;
       ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo, &vn);
+      if(ay_status)
+	goto cleanup;
     }
   else
     {
       ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo, &v0);
+      if(ay_status)
+	goto cleanup;
       ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo, &vn);
+      if(ay_status)
+	goto cleanup;
     }
 
+  /* clamp all curves and arrange them properly */
   ay_status = ay_nct_clamp(u0, 0);
+  if(ay_status)
+    goto cleanup;
   ay_status = ay_nct_clamp(un, 0);
+  if(ay_status)
+    goto cleanup;
   ay_status = ay_nct_clamp(v0, 0);
+  if(ay_status)
+    goto cleanup;
   ay_status = ay_nct_clamp(vn, 0);
+  if(ay_status)
+    goto cleanup;
 
   ay_nct_revert(un);
   ay_nct_revert(v0);
@@ -6740,8 +6766,9 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   o1.next = &o2;
   o2.next = &o3;
 
+  /* concatenate all four extracted curves */
   ay_status = ay_nct_concatmultiple(AY_TRUE, 1, AY_FALSE, &o0, &c);
-  if(!c)
+  if(ay_status || !c)
     {ay_status = AY_ERROR; goto cleanup;}
 
   if(apply_trafo)
@@ -6758,6 +6785,9 @@ cleanup:
   ay_nct_destroy(un);
   ay_nct_destroy(v0);
   ay_nct_destroy(vn);
+
+  if(c)
+    free(c);
 
  return ay_status;
 } /* ay_npt_extractboundary */
@@ -7158,6 +7188,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   /* return result */
   *result = nc;
+  /* prevent cleanup code from doing something harmful */
   nc = NULL;
 
 cleanup:
@@ -7175,6 +7206,7 @@ cleanup:
 
   if(Qw)
     free(Qw);
+
   if(UVQ)
     free(UVQ);
 
