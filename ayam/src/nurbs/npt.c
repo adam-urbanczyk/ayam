@@ -6682,6 +6682,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
+ ay_nurbpatch_object *np;
  ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c;
 
   if(!o || !result)
@@ -6690,10 +6691,33 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   if(o->type != AY_IDNPATCH)
     return AY_EWTYPE;
 
-  ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo, &u0);
-  ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo, &un);
-  ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo, &v0);
-  ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo, &vn);
+  np = (ay_nurbpatch_object *)o->refine;
+  if(np->vknot_type == AY_KTNURB || np->vknot_type == AY_KTBEZIER)
+    {
+      ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo, &u0);
+      ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo, &un);
+    }
+  else
+    {
+      ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo, &u0);
+      ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo, &un);
+    }
+
+  if(np->uknot_type == AY_KTNURB || np->uknot_type == AY_KTBEZIER)
+    {
+      ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo, &v0);
+      ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo, &vn);
+    }
+  else
+    {
+      ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo, &v0);
+      ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo, &vn);
+    }
+
+  ay_status = ay_nct_clamp(u0, 0);
+  ay_status = ay_nct_clamp(un, 0);
+  ay_status = ay_nct_clamp(v0, 0);
+  ay_status = ay_nct_clamp(vn, 0);
 
   ay_nct_revert(un);
   ay_nct_revert(v0);
