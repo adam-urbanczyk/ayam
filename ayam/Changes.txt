@@ -1,4 +1,4 @@
-[20. Feb 2011] CVS-Head:
+[28. Feb 2011] CVS-Head:
 ========================
 Bug Fixes:
 o fixed setting the FilterWidth for RIB export (SF 3148250)
@@ -10,6 +10,9 @@ o fixed RIB export of SDMesh objects with tags in Affines simple
   RIB writer (distributed with Ayam, no SF bug item created)
 o fixed "Add Bevel" command entries in various tool object property
   GUIs (SF 3164571)
+o fixed boundary curve extraction for surfaces with unclamped knot
+  vectors (SF 3194851)
+o fixed small memory leak in ExtrNC object (in Boundary mode) (SF 3194853)
 
 Modelling:
 o added plugin "subdiv" that, with the help of "Subdivide2.0", can be used
@@ -20,6 +23,7 @@ o NURBS modelling tools now only delete the selected points from objects
 o added "-createmp" option to the creation of NCurve/NPatch objects
 o offset surfaces now work for closed/periodic surfaces (in all possible
   combinations of open/closed/periodic for U and V)
+o aded chordal and centripetal knot types to NURBS patches
 
 GUI:
 o main menu "Edit/Material" now works with multiple selected objects
