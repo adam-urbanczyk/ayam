@@ -47,9 +47,10 @@ proc aytest_selectGUI { } {
 
     $lb insert end "Test 1 - Default Object Callbacks"
     $lb insert end "Test 2 - Valid Solid Object Variations"
-    $lb insert end "Test 3 - Valid Tool Object Variations"
-    $lb insert end "Test 4 - Modelling Tools"
-    $lb insert end "Test 5 - All Solid Object Variations"
+    $lb insert end "Test 3 - Valid NURBS Object Variations"
+    $lb insert end "Test 4 - Valid Tool Object Variations"
+    $lb insert end "Test 5 - Modelling Tools"
+    $lb insert end "Test 6 - All Solid Object Variations"
 
     # preferences
     set f [frame $w.fp]
@@ -569,19 +570,139 @@ lappend types Box Sphere Cylinder Disk Cone
 #set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
+
+    puts -nonewline "${type}, "
+
     aytest_var $type
 }
 # foreach
-
+puts -nonewline "\n"
 }
 }
 # aytest_2
 
-
 #
-# Test 3 - Valid Tool Object Variations
+# Test 3 - Valid NURBS Object Variations
 #
 proc aytest_3 { } {
+uplevel #0 {
+
+puts $log "Testing valid NURBS object variations ...\n"
+
+# lengths/widths/heights to test
+set lengthvals { 2 3 4 5 6 7 8 9 10 100 }
+
+# orders to test
+set ordervals { 2 3 4 5 6 7 8 9 10 }
+
+# knot types to test
+#  (deliberately omitting: 0 - Bezier, and 3 - Custom)
+set ktvals { 1 2 4 5 }
+
+# also some harmless float values
+set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 20 100 1000}
+
+
+#############
+# NCurve
+#############
+
+# NCurve Variation #1
+array set NCurve_1 {
+    arr NCurveAttrData
+    freevars {Length Order Knot-Type}
+    fixedvars {dummy}
+    vals { {0} }
+}
+set NCurve_1(Length) $lengthvals
+set NCurve_1(Order) $ordervals
+set NCurve_1(Knot-Type) $ktvals
+set NCurve_1(valcmd) {
+    [expr {$::NCurveAttrData(Order) <= $::NCurveAttrData(Length)}]
+}
+
+
+# NCurve Variation #2 (Bezier knots)
+array set NCurve_2 {
+    arr NCurveAttrData
+    freevars {Length Order}
+    fixedvars {Knot-Type}
+    vals { {0} }
+}
+set NCurve_2(Length) $lengthvals
+set NCurve_2(Order) $ordervals
+set NCurve_2(valcmd) {
+    [expr {$::NCurveAttrData(Order) == $::NCurveAttrData(Length)}]
+}
+
+
+# ToDo: NCurve with Custom knots
+
+
+#############
+# NPatch
+#############
+
+# NPatch Variation #1
+array set NPatch_1 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V Knot-Type_U}
+    fixedvars {dummy}
+    vals { {0} }
+}
+set NPatch_1(Width) $lengthvals
+set NPatch_1(Height) $lengthvals
+set NPatch_1(Order_U) $ordervals
+set NPatch_1(Order_V) $ordervals
+set NPatch_1(Knot-Type_U) $ktvals
+set NPatch_1(Knot-Type_V) $ktvals
+set NPatch_1(valcmd) {
+    [expr {($::NPatchAttrData(Order_U) <= $::NPatchAttrData(Width)) &&
+	   ($::NPatchAttrData(Order_V) <= $::NPatchAttrData(Height))}]
+}
+
+# NPatch Variation #2 (Bezier knots)
+array set NPatch_2 {
+    arr NPatchAttrData
+    freevars {Width Height Order_U Order_V}
+    fixedvars {Knot-Type_U Knot-Type_V}
+    vals { {0 0} }
+}
+set NPatch_2(Width) $lengthvals
+set NPatch_2(Height) $lengthvals
+set NPatch_2(Order_U) $ordervals
+set NPatch_2(Order_V) $ordervals
+set NPatch_2(Knot-Type_U) $ktvals
+set NPatch_2(Knot-Type_V) $ktvals
+set NPatch_2(valcmd) {
+    [expr {($::NPatchAttrData(Order_U) == $::NPatchAttrData(Width)) &&
+	   ($::NPatchAttrData(Order_V) == $::NPatchAttrData(Height))}]
+}
+
+
+# ToDo: NPatch with Custom knots
+
+set types {}
+lappend types NCurve NPatch
+
+foreach type $types {
+    puts $log "Testing $type ...\n"
+
+    puts -nonewline "${type}, "
+
+    aytest_var $type
+}
+# foreach
+puts -nonewline "\n"
+}
+}
+# aytest_3
+
+
+#
+# Test 4 - Valid Tool Object Variations
+#
+proc aytest_4 { } {
 uplevel #0 {
 
 puts $log "Testing valid tool object variations ...\n"
@@ -1041,11 +1162,28 @@ array set ExtrNC_1 {
     precmd {
 	goDown -1;
 	crtOb NPatch;
+	hSL;
+	getProp;
+	switch $l {
+	    1 { set ::NPatchAttrData(Knot-Type_U) 1; }
+	    2 { set ::NPatchAttrData(Knot-Type_V) 1; }
+	    3 { set ::NPatchAttrData(Knot-Type_U) 1;
+		set ::NPatchAttrData(Knot-Type_V) 1; }
+	}
+	setProp;
 	forceNot;
 	goUp;
 	hSL
     }
     arr ExtrNCAttrData
+
+    freevars { Side Parameter Relative Revert }
+
+    Side { 0 1 2 3 4 5 6 7 8 }
+    Parameter { 0.0 0.1 0.33 0.5 0.66 0.9 1.0 }
+    Relative { 0 1 }
+    Revert { 0 1 }
+
     fixedvars {dummy}
 }
 
@@ -1198,25 +1336,23 @@ lappend types Trim
 
 puts -nonewline "Testing "
 foreach type $types {
-
     puts $log "Testing $type ...\n"
 
     puts -nonewline "${type}, "
 
     aytest_var $type
-
 }
 # foreach
 puts -nonewline "\n"
 }
 }
-# aytest_3
+# aytest_4
 
 
 #
-# Test 4 - Modelling Tools
+# Test 5 - Modelling Tools
 #
-proc aytest_4 { } {
+proc aytest_5 { } {
 uplevel #0 {
 
 # test modelling tools
@@ -1224,13 +1360,13 @@ puts $log "Testing modelling tools ...\n"
 
 }
 }
-# aytest_4
+# aytest_5
 
 
 #
-# Test 5 - All Solid Object Variations
+# Test 6 - All Solid Object Variations
 #
-proc aytest_5 { } {
+proc aytest_6 { } {
 uplevel #0 {
 
 puts $log "Testing all solid object variations (Errors expected!) ...\n"
@@ -1420,7 +1556,7 @@ foreach type $types {
 
 }
 }
-# aytest_5
+# aytest_6
 
 
 # aytest_varcmds:
@@ -1558,6 +1694,7 @@ proc aytest_var { type } {
 
 # Every object variation array contains the following components:
 #  precmd - commands to run after object creation but before variation
+#  valcmd - command to rule out invalid combinations of parameters
 #  postcmd - actual commands to test the implementation
 #  arr - array to put all variable data into
 #  fixedvars - list of fixed variables in array arr
@@ -1580,12 +1717,14 @@ proc aytest_var { type } {
       eval set fixedvars \$::${type}_${i}(fixedvars)
       eval set vals \$::${type}_${i}(vals)
       set l 0
+
       foreach valset $vals {
 
 	  # create a Level for each value set tested
 	  crtOb Level
 	  goDown -1
 
+	  # create a prototype object
 	  crtOb $type
 	  hSL
 
@@ -1618,21 +1757,27 @@ proc aytest_var { type } {
 		  append body " "
 	      }
 	      set k 0
-	      set cmds {
+	      set cmds ""
+	      if { [info exists ::${type}_${i}(valcmd)] } {
+		  append cmds "if \{ "
+		  eval append cmds \$::${type}_${i}(valcmd)
+		  append cmds " \} \{ "
+	      }
+	      append cmds {\
 		  selOb 0;copOb;pasOb;hSL;
 		  setProp;
 		  movOb $k $l $i;
-		  incr k 2;
+		  incr k 2;\
 	      }
-
 	      if { [info exists ::${type}_${i}(postcmd)] } {
 		  eval append cmds \$::${type}_${i}(postcmd)
 	      }
-
 	      if { ! $::aytestprefs(KeepObjects) } {
 		  append cmds ";delOb;"
 	      }
-
+	      if { [info exists ::${type}_${i}(valcmd)] } {
+		  append cmds " \};"
+	      }
 	      lappend body $cmds
 
 	      # call forall with test commands
