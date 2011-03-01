@@ -1306,7 +1306,7 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      ay_npt_avglensu(Q, width, height, stride, &lens);
+      ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
@@ -1376,7 +1376,7 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      ay_npt_avglensu(Q, width, height, stride, &lens);
+      ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
