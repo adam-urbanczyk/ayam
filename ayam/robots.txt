@@ -2,4 +2,10 @@ User-agent: *
 Disallow: src/affine
 Disallow: src/MF3D
 Disallow: src/tcl/BWidget-1.2.1
+Disallow: src/tcl/bwlangrc.tcl
+Disallow: src/tcl/console.tcl
+Disallow: src/tcl/pane.tcl
+Disallow: src/tcl/widget.tcl
+Disallow: src/plugins/subdivide
+
 
