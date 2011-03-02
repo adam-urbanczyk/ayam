@@ -240,6 +240,8 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     array set $arrname [array get pclip_reset]
 } -takefocus 0 -highlightthickness 0
 
+set ay(rstb) $f.b2
+
 pack $f.b1 $f.b2 -in $f -side left -fill x -expand yes
 pack $f -in $w.fArg -side bottom -fill x -expand no
 
