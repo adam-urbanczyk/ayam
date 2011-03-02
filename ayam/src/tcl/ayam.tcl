@@ -268,6 +268,7 @@ array set aymainshortcuts {
     MRU4 "Ctrl-KeyPress-4"
 
     Apply "Ctrl-A"
+    Reset "Ctrl-R"
 
     Copy "Ctrl-c"
     Cut "Ctrl-x"

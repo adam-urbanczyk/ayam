@@ -111,6 +111,7 @@ proc shortcut_main { w } {
 
 
     bind $w <[repctrl $aymainshortcuts(Apply)]> "$ay(appb) invoke;break"
+    bind $w <[repctrl $aymainshortcuts(Reset)]> "$ay(rstb) invoke;break"
 
     set m $ay(editmenu)
     bind $w <[repctrl $aymainshortcuts(Copy)]> "$m invoke 0;break"
