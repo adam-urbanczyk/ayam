@@ -1,12 +1,17 @@
 <!doctype linuxdoc system>
 <!--
-Due to post processing, there must only be one
+The SGML syntax in this document deviates from Linuxdoc-SGML
+in the following points:
+
+1) Due to post processing, there must only be one
 <ref id="tag" name="secname">
 per input line;
-To keep longer code examples on one page in page based output
+
+2) To keep longer code examples on one page in page based output
 (i.e. LaTeX/PDF) use:
 <#if out=latex><x/needspace 8/</#if>
-likewise, enforce a new page with:
+
+3) likewise, enforce a new page with:
 <#if out=latex><x/newpage/</#if>
  -->
 <article>
@@ -36,14 +41,76 @@ In addition, you can use the provided SGML-source to generate other formats.
 
 <sect>Introduction
 <p>
-This section contains general information about Ayam and this document.
+This section contains general information about this manual and Ayam.
+
+<sect1>About this Manual
+<p>
+How should one read this manual?
+<p>
+Since this document is a reference manual, it is
+probably pointless to read it from the beginning to the end
+(except maybe for the next section, explaining the basics).
+Instead, just look up the documentation of the things you are interested
+in via the table of contents or the index. Cross references will then
+guide you to other important parts of the documentation.
+Again: this manual has a rather large index, please use it
+(see section <ref id="index" name="Index">)!
+<p>
+This document is organized in the following way:
+<p>
+After this first section, the user interface of Ayam is introduced and
+basic handling instructions for the application are given in the second
+section.
+In the third section all interactive modelling actions are documented.
+The fourth section details all object types and object properties,
+followed by documentation on all NURBS modelling tools in the fifth
+section.
+In the sixth section the Tcl scripting interface is explained and the
+following seventh section has all information about the import and export
+plugins. The eighth section is the dreaded miscellaneous section that
+contains documentation not fitting elsewhere.
+<p>
+In this manual, the following typographic conventions are used:
+<itemize>
+<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/ (press control <em>and</em>
+c key), for shortcuts like <tt/&lt;Ctrl+Shift+t&gt;/ an abbreviated
+version: <tt/&lt;Ctrl+T&gt;/ will be used;
+<item>names (of object types, menu entries, properties, or property elements):
+<tt/"A Name"/;
+<item>Tcl code examples:
+<code>
+set riopt(runtime) { a b }
+</code>
+<item>Object hierarchies:
+<code>
++-Parent_Object(Type)
+ | First_Child_Object(Type)
+ | Second_Child_Object(Type)
+ | [Third_Child_Object_may_be_present_or_not(Type)]
+ | Empty_Level(Level)
+ +-Sub_Level(Level)
+ || First_Child_Object_of_Sub_Level(Type)
+ |\ Last_Child_Object_of_Sub_Level(Type)
+ \ Last_Child_Object(Type)
++-Next_Parent_Object(Type)
+</code>
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>About Ayam
 <p>
 Ayam is a free 3D modelling environment for the RenderMan Interface,
-distributed under the BSD licence.
+distributed under the modified BSD licence (no advertisement clause).
+
+<sect2>History
 <p>
-Ayam was formerly known as <tt>"The Mops"</tt>.
+Ayam is in development since 1997 and was formerly known as
+<tt>"The Mops"</tt>. Ayam formed the software base of the
+authors PhD work. New versions of Ayam were released in
+approximately half year intervals.
+
+<sect2>Features Overview
 <p>
 Here is a short summary of the Ayam feature set:
 <itemize>
@@ -94,58 +161,33 @@ completely eliminating the need for BMRT. Furthermore, shader parsing
 plugins are available for all major RenderMan compliant renderers allowing
 a tight integration of Ayam with any of those renderers.
 
-<sect1>About this Manual
+<sect2>Coordinate Systems and Units
 <p>
-How should one read this manual?
+Ayam uses a right-handed coordinate system as used by OpenGL
+but as opposed to RenderMan, the latter using a left-handed
+coordinate system.
 <p>
-Since this manual is a reference manual, it is
-probably pointless to read it from the beginning to the end
-(except maybe for the next section, explaining the basics).
-Instead, just look up the documentation of the things you are interested
-in via the table of contents or the index. Cross references will then
-guide you to other important parts of the documentation.
-Again: this manual has a rather large index, please use it
-(see section <ref id="index" name="Index">)!
+In the default modelling view of type <tt/"Front"/, the positive
+X-axis points to the right, the positive Y-axis points upwards
+and the Z-axis points outside the screen, to the user.
 <p>
-This manual is organized in the following way:
+All coordinate values in Ayam are dimensionless. It is up to the
+user to define what e.g. a value of 1.0 means: one inch, one
+centimeter, or one meter.
 <p>
-After this first section, the user interface of Ayam is introduced and
-basic handling instructions for the application are given in the second
-section.
-In the third section all interactive modelling actions are documented.
-The fourth section details all object types and object properties,
-followed by documentation on all NURBS modelling tools in the fifth
-section.
-In the sixth section the Tcl scripting interface is explained and the
-following seventh section has all information about the import and export
-plugins. The eighth section is the dreaded miscellaneous section that
-contains documentation not fitting elsewhere.
+Due to the limited precision of floating point arithmetics used in Ayam,
+coordinate values should be defined in the range between -10.0 and 10.0
+for most accurate results.
 <p>
-In this manual, the following typographic conventions are used:
-<itemize>
-<item>keyboard shortcuts: <tt/&lt;Ctrl+c&gt;/ (press control <em>and</em>
-c key), for shortcuts like <tt/&lt;Ctrl+Shift+t&gt;/ an abbreviated
-version: <tt/&lt;Ctrl+T&gt;/ will be used;
-<item>names (of object types, menu entries, properties, or property elements):
-<tt/"A Name"/;
-<item>Tcl code examples:
-<code>
-set riopt(runtime) { a b }
-</code>
-<item>Object hierarchies:
-<code>
-+-Parent_Object(Type)
- | First_Child_Object(Type)
- | Second_Child_Object(Type)
- | [Third_Child_Object_may_be_present_or_not(Type)]
- | Empty_Level(Level)
- +-Sub_Level(Level)
- || First_Child_Object_of_Sub_Level(Type)
- |\ Last_Child_Object_of_Sub_Level(Type)
- \ Last_Child_Object(Type)
-+-Next_Parent_Object(Type)
-</code>
-</itemize>
+NURBS curves and surfaces support rational coordinate values by
+allowing a fourth value (the weight) to be specified for each
+control point.
+In Ayam those weights are always pre-multiplied with the coordinate
+values (to allow faster drawing with OpenGL/GLU, which expects rational
+coordinate values to be delivered this way). A negative side effect
+of this is that direct modification of weights for modelling
+purposes becomes more complicated. However, the use of weights as direct
+design tool is not that important anyway.
 
 <sect>The Ayam GUI
 <p>
@@ -6883,6 +6925,14 @@ data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
 (simply the medium of all control points of a patch in the designated
 dimension). This option is useful to re-engineer swept surfaces, delivered
 as simple patches.
+<p>
+Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
+the extraction process just copies the respective boundary control points,
+which only works for clamped knot vectors. To extract a boundary from
+a surface with e.g. a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
+but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
+as <tt/"U"/ uses a different, more expensive, extraction process (which
+involves knot insertion).
 
 <item><tt/"Parameter"/ controls the parametric value in U or V
 direction in the parameter space of the NURBS patch object where the
