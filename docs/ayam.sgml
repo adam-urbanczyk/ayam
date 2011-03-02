@@ -669,8 +669,15 @@ mouse button).
 <sect1>The Main Menu<label id="mm">
 <p>
 This section discusses the main menu bar. Note that many menu entries
-have keyboard shortcuts that are displayed in each entry. You can adapt
-the shortcuts using the <tt>"ayamrc"</tt> file
+have keyboard shortcuts that are displayed in each entry.
+<p>
+Note that the main menu keyboard shortcuts only work if the main window
+has the keyboard input focus <em>and</em> the input focus is not in the
+console or in a property GUI element (i.e. a data entry field).
+Hit <tt>"Esc"</tt> to set the focus to the object selection
+widget and thus enable the main menu keyboard shortcuts.
+<p>
+One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 <label id="mmfile">
@@ -1288,6 +1295,38 @@ and trademark information.
 for various user interface elements (including the toolbox buttons).
 </itemize>
 
+<sect1>Main Window Keyboard Shortcuts
+<p>
+Many keyboard shortcuts of the main window have been discussed
+in the previous sections already but there are some more.
+<p>
+Note that the main window keyboard shortcuts only work if the main window
+has the keyboard input focus <em>and</em> the input focus is not in the
+console or in a property GUI element (i.e. a data entry field).
+Hit <tt>"Esc"</tt> to set the focus to the object selection
+widget and thus enable the main window keyboard shortcuts.
+<p>
+One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+(see section <ref id="ayamrc" name="Ayamrc File">).
+<p>
+An important group of shortcuts is available on the function
+keys: <tt>"F1"</tt> has already been mentioned, it opens a
+web browser and displays the URL from the <tt>"Docs"</tt>
+preference setting.
+<tt>"F2"</tt> and <tt>"F3"</tt> lower and raise the global
+GLU sampling tolerance value respectively.
+<tt>"F4"</tt> toggles between display of control cage and
+true curves/surfaces.
+<tt>"F5"</tt> rebuilds the object tree and issues a complete
+notification. It is therefore helpful to update the complete
+GUI after changes made to the scene using the scripting interface
+in the console.
+<tt>"F6"</tt> toggles lazy notification.
+<p>
+<tt>"Ctrl+A"</tt> is bound to the <tt>"Apply"</tt> and
+<tt>"Ctrl+R"</tt> to the <tt>"Reset"</tt> button of the
+property GUI.
+
 
 <sect1>Anatomy of a View<label id="viewwin">
 <p>
@@ -1309,11 +1348,13 @@ grid size are also displayed in the view menu bar as an icon.
 <sect1>The View Menu<label id="vm">
 <p>
 This section discusses the view menu bar. Note that many menu entries
-have keyboard shortcuts that are displayed in each entry. You can adapt
-the shortcuts using the <tt>"ayamrc"</tt> file
-(see section <ref id="ayamrc" name="Ayamrc File">).
+have keyboard shortcuts that are displayed in each entry.
+<p>
 Note that the view menu keyboard shortcuts only work if the view window
 has the keyboard input focus.
+<p>
+One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+(see section <ref id="ayamrc" name="Ayamrc File">).
 
 <label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
@@ -1502,8 +1543,12 @@ icon menu.
 <p>
 Important keyboard commands of a view window (aside from the view
 menu shortcuts) are discussed in this section.
+<p>
 Note that the view keyboard shortcuts only work if the view window
 has the keyboard input focus.
+<p>
+One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+(see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
 Keyboard shortcuts directly modifying the camera, that is associated
 with the view window, are:
@@ -14038,7 +14083,7 @@ Ayam reads or writes a scene file.
 <p>
 When reading a scene using <tt>"File/Open"</tt> or the MRU list:
 <enum>
-<item> Ayam will first check the scene changed status of the currently
+<item> Ayam will first check the scene changed state of the currently
 loaded scene and warn the user, if the current scene contains unsaved
 changes,
 <item> then Ayam will clear the undo buffer and the current scene
@@ -14048,7 +14093,7 @@ be deleted from the clipboard),
 <item> if the new file appears not to be an Ayam scene file (judged solely
 by the file name extension) Ayam will try to import the file using
 an import plugin responsible for the file (automatically loading the
-matching plugin if unavailable),
+matching plugin if not already loaded),
 <item> Ayam will change the application working directory to the
 directory of the scene file,
 <item> now, a backup copy of the file to read will be made (depending
@@ -14059,10 +14104,10 @@ note: even if the backup fails, scene reading continues,
 file format version,
 <item> the file will be read with all objects,
 <item> all instances will be connected to their masters using the
-information stored in <tt/"OI"/ tags, if a master can not be found in
+information stored in <tt/"OI"/ tags; if a master can not be found in
 the scene, the instance will be removed,
 <item> all objects will be connected to their materials using the
-information stored in <tt/"MI"/ tags, if no matching material can
+information stored in <tt/"MI"/ tags; if no matching material can
 be found, the connection will not be established,
 <item> a complete notification will be run,
 <item> if the file contains a root object with <tt/"SaveMainGeom"/
@@ -14147,7 +14192,7 @@ When saving a scene using <tt>"File/Save"</tt>:
 by the file name extension) Ayam will try to export the current scene
 using an export plugin responsible for the file type instead of saving
 to an Ayam scene file (automatically loading the
-matching plugin if unavailable),
+matching plugin if not already loaded),
 <item> the geometry of the main window and internal widgets is saved
 to <tt/"SaveMainGeom"/ and/or <tt/"SavePaneLayout"/ tags (if present
 in the Root object),
