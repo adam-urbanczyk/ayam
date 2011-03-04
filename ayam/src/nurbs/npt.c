@@ -128,6 +128,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
       ay_npt_setuvtypes(patch);
     }
 
+  /* return result */
   *patchptr = patch;
 
  return AY_OK;
@@ -846,7 +847,7 @@ ay_npt_wribtrimcurves(ay_object *o)
   if(!o)
     return AY_OK;
 
-  if(!(o->type == AY_IDNPATCH))
+  if(o->type != AY_IDNPATCH)
     return AY_OK;
 
   /* parse trimcurves */
@@ -2457,6 +2458,8 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
 
   /* return result */
   *swing = new;
+
+  /* prevent cleanup code from doing something harmful */
   new = NULL;
 
 cleanup:
@@ -2468,13 +2471,7 @@ cleanup:
 
   if(new)
     {
-      if(new->uknotv)
-	free(new->uknotv);
-      if(new->vknotv)
-	free(new->vknotv);
-      if(new->controlv)
-	free(new->controlv);
-      free(new);
+      ay_npt_destroy(new);
     }
 
  return ay_status;
@@ -2609,22 +2606,17 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   /* allocate control point and knot arrays */
   if(!(controlv = calloc(new->width*new->height*stride, sizeof(double))))
-    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   new->controlv = controlv;
   if(!(new->vknotv = calloc(new->height + new->vorder, sizeof(double))))
-    { free(new); free(controlv); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(new->uknotv = calloc(new->width + new->uorder, sizeof(double))))
-    {
-      free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { goto cleanup; }
+
 
   if(cs->knot_type == AY_KTCUSTOM)
     {
@@ -2914,6 +2906,9 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* return result */
   *sweep = new;
 
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
+
   /* clean up */
 cleanup:
 
@@ -2923,6 +2918,11 @@ cleanup:
     free(trcv);
   if(sfcv)
     free(sfcv);
+
+  if(new)
+    {
+      ay_npt_destroy(new);
+    }
 
  return ay_status;
 } /* ay_npt_sweep */
@@ -3050,25 +3050,18 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   /* allocate control point and knot arrays */
   if(!(controlv = calloc(cs->length*new->width*stride, sizeof(double))))
-    { free(new); ay_status = AY_EOMEM; goto cleanup; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   new->controlv = controlv;
   if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
-    {
-      free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(new->uknotv = calloc(sections+4, sizeof(double))))
-    {
-      free(new->vknotv); free(controlv); free(new);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ay_status = ay_knots_createnp(new);
   if(ay_status)
-    {
-      free(new->uknotv); free(new->vknotv); free(new); free(controlv);
-      ay_status = AY_EOMEM; goto cleanup;
-    }
+    { goto cleanup; }
 
   if(cs->knot_type == AY_KTCUSTOM)
     {
@@ -3137,7 +3130,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		  ay_trafo_scalematrix(1.0, 1.0, 1.0/p3[1], m);
 		}
 	    }
-	}
+	} /* if */
 
       /* now, apply rotation (if requested) */
       u = tr->knotv[tr->order-1]+(((double)i/sections)*plen);
@@ -3198,6 +3191,9 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* return result */
   *closedsweep = new;
 
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
+
   /* clean up */
 cleanup:
 
@@ -3207,6 +3203,11 @@ cleanup:
     free(trcv);
   if(sfcv)
     free(sfcv);
+
+  if(new)
+    {
+      ay_npt_destroy(new);
+    }
 
  return ay_status;
 } /* ay_npt_closedsweep */
@@ -3560,8 +3561,8 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   /* return result */
   *birail1 = new;
 
+  /* prevent cleanup code from doing something harmful */
   new = NULL;
-  controlv = NULL;
 
   /* clean up */
 cleanup:
@@ -3572,16 +3573,11 @@ cleanup:
     free(r1cv);
   if(r2cv)
     free(r2cv);
+
   if(new)
     {
-      if(new->uknotv)
-	free(new->uknotv);
-      if(new->vknotv)
-	free(new->vknotv);
-      free(new);
+      ay_npt_destroy(new);
     }
-  if(controlv)
-    free(controlv);
 
  return ay_status;
 } /* ay_npt_birail1 */
@@ -4185,8 +4181,8 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   /* return result */
   *birail2 = new;
 
+  /* prevent cleanup code from doing something harmful */
   new = NULL;
-  controlv = NULL;
 
   /* clean up */
 cleanup:
@@ -4205,14 +4201,9 @@ cleanup:
     free(iccv);
   if(new)
     {
-      if(new->uknotv)
-	free(new->uknotv);
-      if(new->vknotv)
-	free(new->vknotv);
-      free(new);
+      ay_npt_destroy(new);
     }
-  if(controlv)
-    free(controlv);
+
   if(incompatible)
     {
       ay_status = ay_object_delete(o1);
@@ -4627,6 +4618,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   if(ay_status)
     {goto cleanup;}
 
+  /* prevent cleanup code from doing something harmful */
   U = NULL;
   V = NULL;
   skc = NULL;
@@ -4800,6 +4792,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   if(ay_status)
     {goto cleanup;}
 
+  /* prevent cleanup code from doing something harmful */
   U = NULL;
   V = NULL;
   skc = NULL;
@@ -5542,11 +5535,11 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   if(!(patch = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
   if(!(patch->vknotv = calloc(4, sizeof(double))))
-    { free(patch); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(patch->uknotv = calloc(4, sizeof(double))))
-    { free(patch); free(patch->vknotv); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(patch->controlv = calloc(4*4, sizeof(double))))
-    { free(patch); free(patch->vknotv); free(patch->uknotv); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   patch->width = 2;
   patch->height = 2;
@@ -5608,7 +5601,18 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   *omaxy = maxy;
   *oangle = angle;
 
+  /* return result */
   *cap = patch;
+
+  /* prevent cleanup code from doing something harmful */
+  patch = NULL;
+
+cleanup:
+
+  if(patch)
+    {
+      ay_npt_destroy(patch);
+    }
 
  return ay_status;
 } /* ay_npt_createcap */
@@ -5627,7 +5631,7 @@ ay_npt_applytrafo(ay_object *p)
   if(!p)
     return AY_ENULL;
 
-  if(!p->type == AY_IDNPATCH)
+  if(p->type != AY_IDNPATCH)
     return AY_EWTYPE;
 
   np = (ay_nurbpatch_object *)(p->refine);
@@ -6375,24 +6379,15 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 cleanup:
   if(skinu)
     {
-      free(skinu->uknotv);
-      free(skinu->vknotv);
-      free(skinu->controlv);
-      free(skinu);
+      ay_npt_destroy(skinu);
     }
   if(skinv)
     {
-      free(skinv->uknotv);
-      free(skinv->vknotv);
-      free(skinv->controlv);
-      free(skinv);
+      ay_npt_destroy(skinv);
     }
   if(interpatch && !in)
     {
-      free(interpatch->uknotv);
-      free(interpatch->vknotv);
-      free(interpatch->controlv);
-      free(interpatch);
+      ay_npt_destroy(interpatch);
     }
   if(unifiedU)
     {
@@ -6956,7 +6951,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
     {
     case 0:
     case 1:
-      nc->order =  np->uorder;
+      nc->order = np->uorder;
       nc->knot_type = np->uknot_type;
       nc->length = np->width;
       break;
@@ -7086,6 +7081,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a += (np->height+((r>0)?r:0))*stride;
 	}
 
+      /* prevent cleanup code from doing something harmful */
       if(r < 1)
 	Qw = NULL;
 
@@ -7138,6 +7134,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
       memcpy(&(cv[0]), &(Qw[a]), np->height*stride*sizeof(double));
 
+      /* prevent cleanup code from doing something harmful */
       if(r < 1)
 	Qw = NULL;
 
@@ -7188,6 +7185,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   /* return result */
   *result = nc;
+
   /* prevent cleanup code from doing something harmful */
   nc = NULL;
 
@@ -8902,7 +8900,7 @@ ay_npt_rescaletrim(ay_object *trim,
   if(!trim)
     return AY_ENULL;
 
-  if(!trim->type == AY_IDNCURVE)
+  if(trim->type != AY_IDNCURVE)
     return AY_ERROR;
 
   nc = (ay_nurbcurve_object *)trim->refine;
@@ -10736,7 +10734,7 @@ ay_npt_finduv(struct Togl *togl, ay_object *o,
   if(!o)
     return AY_ENULL;
 
-  if(!o->type == AY_IDNPATCH)
+  if(o->type != AY_IDNPATCH)
     return AY_EWTYPE;
 
   np = (ay_nurbpatch_object *)o->refine;
