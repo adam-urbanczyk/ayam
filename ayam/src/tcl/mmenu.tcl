@@ -424,8 +424,9 @@ $m.nct add command -label "Refine" -command { undo save Refine; refineNC;
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
                                               plb_update; rV }
 $m.nct add command -label "Refine with" -command {
-    runTool ay(refinekn) {"New Knots:"}\
-	"undo save Refine; refineNC \{%0\}; plb_update; rV"\
+    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
+	"undo save Refine; refineNC \{%1\}; plb_update; rV"\
         "Refine Curve"
 }
 $m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
@@ -436,15 +437,17 @@ $m.nct add command -label "Elevate" -command {
 	"Elevate Curve"
 }
 $m.nct add command -label "Insert Knot" -command {
-    runTool [list ay(insknu) ay(insknr)]\
-	[list "Insert knot at:" "Insert times:"]\
-	"undo save InsKn; insknNC %0 %1; plb_update; rV"\
+    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    runTool [list ay(okn) ay(insknu) ay(insknr)]\
+	[list "Old knots:" "Insert knot at:" "Insert times:"]\
+	"undo save InsKn; insknNC %1 %2; plb_update; rV"\
 	"Insert Knot"
 }
 $m.nct add command -label "Remove Knot" -command {
-    runTool [list ay(remknu) ay(remknr) ay(remtol)]\
-	[list "Remove knot at:" "Remove times:" "Tolerance:"]\
-	"undo save RemKn; remknNC %0 %1 %2; plb_update; rV"\
+    getProp; set ay(okn) $::NCurveAttrData(Knots);
+    runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
+	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
+	"undo save RemKn; remknNC %1 %2 %3; plb_update; rV"\
 	"Remove Knot"
 }
 $m.nct add command -label "Plot Curvature" -command {
