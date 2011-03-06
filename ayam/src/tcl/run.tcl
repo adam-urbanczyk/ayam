@@ -85,7 +85,8 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	    $f2.e insert @0 $vali
 	}
 
-	pack $f2.l $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
+	pack $f2.l -in $f2 -padx 2 -pady 2 -side left -expand no -fill x
+	pack $f2.e -in $f2 -padx 2 -pady 2 -side left -expand yes -fill x
 	pack $f2 -in $w.f1 -side top -expand yes -fill x
 
 	# and simultaneously build up a script
