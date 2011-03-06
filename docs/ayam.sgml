@@ -10677,6 +10677,41 @@ creates a material named Wood.
 <tt/"crtOb Sphere; uS; rV"/.
 </itemize>
 
+There are some helper commands, that create certain often used
+curves:
+<p><label id="sccrtncircle">
+crtNCircle - create NURBS circle:
+<itemize>
+ <item>Synopsis: <tt/"crtNCircle [-r radius] [-a arc]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command creates a circular NURBS curve
+with radius as defined via the <tt/-r/ option and arc as
+defined via the <tt/-a/ option. The curve always starts on the
+positive X axis. The radius defaults to 1.0 and
+the arc to 360.0. The arc option supports negative values.
+</itemize>
+<p><label id="sccrtclosedbs">
+crtClosedBS - create closed (circular) B-Spline:
+<itemize>
+ <item>Synopsis: <tt/"crtClosedBS sections [order [arc [radius]]]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command creates a circular B-Spline curve
+with desired number of sections, order, arc, and radius.
+The curve always starts on the positive X axis. 
+</itemize>
+<p><label id="sccrtnrect">
+crtNRect - create a rectangular NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"crtNRect"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command creates a rectangular NURBS curve
+that fits the parameter space of the currently selected NURBS
+patch object (or the current parent object, if it is a NPatch).
+If no NURBS patch is selected or parent, this command will create a
+centered quadratic curve with width 2.0 and height 2.0 instead.
+</itemize>
+
+
 <sect2>Manipulating the Selection<label id="selob">
 <p>
 These commands are probably the most important ones, because many other
@@ -10717,7 +10752,7 @@ If run in the safe interpreter (e.g. from a Script objects script)
 this command will create a hidden selection.
 This command is often called in a sequence
 after creating a new object like this:
-<#if out=latex><x/needspace 8/</#if>
+
 <code>
 # create object
 crtOb NCurve
@@ -11060,6 +11095,14 @@ addTag:
 value to the currently selected objects(s).
 It is legal to deliver <tt>""</tt> as value parameter. This is e.g.
 needed for the <tt/"NoExport"/ tag.
+<item>Examples:
+<enum>
+<item><bf><tt>"addTag NoExport """</tt></bf><newline>
+adds a <tt/"NoExport"/ tag to the selected objects.
+<item><bf><tt>"addTag RP Transformations"</tt></bf><newline>
+adds a <tt/"RP"/ (remove property) tag to the selected objects
+that hides the Transformations property GUI.
+</enum>
 </itemize>
 
 <p><label id="scdeltags">
@@ -11067,10 +11110,17 @@ delTags:
 <itemize>
  <item>Synopsis: <tt/"delTags type"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Delete all tags of type-string type from
+ <item>Description: Delete all tags of designated type from
 the currently selected objects(s).
 If type is <tt/"all"/, all tags are deleted from the
 currently selected objects(s).
+<item>Examples:
+<enum>
+<item><bf><tt>"delTags all"</tt></bf><newline>
+removes all tags from the selected objects.
+<item><bf><tt>"delTags RP"</tt></bf><newline>
+removes all <tt>"RP"</tt> tags from the selected objects.
+</enum>
 </itemize>
 
 <p><label id="scgettags">
@@ -11080,8 +11130,8 @@ getTags:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get all tags from
 the currently selected objects and put them as lists into two
-variables named tvname for the tag type-strings and vvname for the tag
-value-strings.
+variables named tvname for the tag types and vvname for the tag
+values.
 </itemize>
 
 <p><label id="scsettags">
@@ -11090,9 +11140,15 @@ setTags:
  <item>Synopsis: <tt/"setTags tags"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Clear all tags from the currently selected object
-and set new tags. The tag type-strings are taken from the list elements
+and set new tags. The tag types are taken from the list elements
 with even index numbers
 and the tag value-strings from the list elements with odd index numbers.
+<item>Examples:
+<enum>
+<item><bf><tt>"setTags &lcub;RP Transformations RP Attributes&rcub;"</tt></bf><newline>
+replaces all tags from the selected objects with two <tt>"RP"</tt>
+tags.
+</enum>
 </itemize>
 
 <sect2>Manipulating NURBS Curves and Surfaces<label id="scinurbs">
