@@ -40,6 +40,7 @@ addParam $w ExtrNCAttrData Parameter
 addCheck $w ExtrNCAttrData Relative
 addParam $w ExtrNCAttrData PatchNum
 addCheck $w ExtrNCAttrData Revert
+addCheck $w ExtrNCAttrData CreatePVN
 
 addParam $w ExtrNCAttrData Tolerance
 addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)

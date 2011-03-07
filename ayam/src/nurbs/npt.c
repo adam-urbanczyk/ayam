@@ -4269,7 +4269,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	  d[i] += AY_V3LEN(v);
 	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!");
+	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
 	      free(uk); free(d); free(U); return AY_OK;
 	    }
 	  ind2 += N*stride;
@@ -4403,7 +4403,7 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	  d[i] += AY_V3LEN(v);
 	  if(AY_V3LEN(v) < AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch!");
+	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
 	      free(vk); free(d); free(V); return AY_OK;
 	    }
 	  ind += stride;
@@ -6690,38 +6690,46 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   /* extract four curves (from each boundary) */
   if(np->vknot_type == AY_KTNURB || np->vknot_type == AY_KTBEZIER)
     {
-      ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo, &u0);
+      ay_status = ay_npt_extractnc(o, 0, 0.0, AY_FALSE, apply_trafo,
+				   AY_FALSE, NULL, &u0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo, &un);
+      ay_status = ay_npt_extractnc(o, 1, 0.0, AY_FALSE, apply_trafo,
+				   AY_FALSE, NULL, &un);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
-      ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo, &u0);
+      ay_status = ay_npt_extractnc(o, 4, 0.0, AY_TRUE, apply_trafo,
+				   AY_FALSE, NULL, &u0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo, &un);
+      ay_status = ay_npt_extractnc(o, 4, 1.0, AY_TRUE, apply_trafo,
+				   AY_FALSE, NULL, &un);
       if(ay_status)
 	goto cleanup;
     }
 
   if(np->uknot_type == AY_KTNURB || np->uknot_type == AY_KTBEZIER)
     {
-      ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo, &v0);
+      ay_status = ay_npt_extractnc(o, 2, 0.0, AY_FALSE, apply_trafo,
+				   AY_FALSE, NULL, &v0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo, &vn);
+      ay_status = ay_npt_extractnc(o, 3, 0.0, AY_FALSE, apply_trafo,
+				   AY_FALSE, NULL, &vn);
       if(ay_status)
 	goto cleanup;
     }
   else
     {
-      ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo, &v0);
+      ay_status = ay_npt_extractnc(o, 5, 0.0, AY_TRUE, apply_trafo,
+				   AY_FALSE, NULL, &v0);
       if(ay_status)
 	goto cleanup;
-      ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo, &vn);
+      ay_status = ay_npt_extractnc(o, 5, 1.0, AY_TRUE, apply_trafo,
+				   AY_FALSE, NULL, &vn);
       if(ay_status)
 	goto cleanup;
     }
@@ -6918,10 +6926,12 @@ ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
  *   vector?; this parameter is ignored for the extraction of boundary curves
  *  apply_trafo: this parameter controls whether trafos of <o> should be
  *   copied to the curve, or applied to the control points of the curve
+ *  create_pvn: should the normals be calculated and stored in a PV tag?
  */
 int
 ay_npt_extractnc(ay_object *o, int side, double param, int relative,
-		 int apply_trafo,
+		 int apply_trafo, int create_pvn,
+		 double **pvn,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
@@ -7178,6 +7188,58 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a += stride;
 	}
     }
+
+  if(create_pvn)
+    {
+      if(!(*pvn = calloc(nc->length*3, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      switch(side)
+	{
+	case 0:
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      /*&(pvn[a])*/
+		a += stride;
+	    }
+	  break;
+	case 1:
+	  nc->order = np->uorder;
+	  nc->knot_type = np->uknot_type;
+	  nc->length = np->width;
+	  break;
+	case 2:
+	case 3:
+	  nc->order = np->vorder;
+	  nc->knot_type = np->vknot_type;
+	  nc->length = np->height;
+	  break;
+	case 4:
+	  nc->order =  np->uorder;
+	  nc->knot_type = np->uknot_type;
+	  nc->length = np->width;
+	  break;
+	case 5:
+	  nc->order = np->vorder;
+	  nc->knot_type = np->vknot_type;
+	  nc->length = np->height;
+	  break;
+	case 7:
+	  nc->order =  np->uorder;
+	  nc->knot_type = np->uknot_type;
+	  nc->length = np->width;
+	  break;
+	case 8:
+	  nc->order = np->vorder;
+	  nc->knot_type = np->vknot_type;
+	  nc->length = np->height;
+	  break;
+	default:
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	} /* switch */
+    } /* if */
 
   nc->is_rat = ay_nct_israt(nc);
 
@@ -7548,7 +7610,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Error closing object!");
+	      ay_error(AY_ERROR, argv[0], "Error closing object.");
 	    }
 
 	  ay_npt_recreatemp(np);
@@ -7662,7 +7724,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Error closing object!");
+	      ay_error(AY_ERROR, argv[0], "Error closing object.");
 	    }
 
 	  ay_npt_recreatemp(np);
@@ -8116,7 +8178,7 @@ ay_npt_collapseselp(ay_object *o)
 
   if((!o->selp) || (count < 2))
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first!");
+      ay_error(AY_ERROR, fname, "Select (<t>ag) atleast two points first.");
       return AY_ERROR;
     }
 
@@ -8214,7 +8276,7 @@ ay_npt_explodemp(ay_object *o)
 
   if(!selp)
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first.");
       return AY_ERROR;
     }
 
@@ -8254,7 +8316,7 @@ ay_npt_explodemp(ay_object *o)
 
   if(err)
     {
-      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first!");
+      ay_error(AY_ERROR, fname, "Select (<t>ag) some multiple points first.");
       ay_status = AY_ERROR;
     }
 
@@ -8578,7 +8640,7 @@ ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
+	      ay_error(AY_ERROR, argv[0], "Error clamping object.");
 	    }
 
 	  np->uknot_type = AY_KTCUSTOM;
@@ -8851,7 +8913,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Error clamping object!");
+	      ay_error(AY_ERROR, argv[0], "Error clamping object.");
 	    }
 
 	  np->vknot_type = AY_KTCUSTOM;
@@ -9100,7 +9162,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		  if(ay_status)
 		    {
 		      ay_error(ay_status, argv[0],
-			       "Could not rescale u-knots!");
+			       "Could not rescale u-knots.");
 		      break;
 		    }
 
@@ -9108,7 +9170,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector!");
+		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector.");
 		} /* if */
 	    } /* if */
 
@@ -9161,13 +9223,13 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		  if(ay_status)
 		    {
 		      ay_error(ay_status, argv[0],
-			       "Could not rescale v-knots!");
+			       "Could not rescale v-knots.");
 		    }
 		  src->modified = AY_TRUE;
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector!");
+		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector.");
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -9443,7 +9505,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if((u <= knots[0/*patch->uorder...?*/]) || (u >= knots[patch->width]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameter u out of range!");
+	  ay_error(AY_ERROR, fname, "Parameter u out of range.");
 	  return AY_ERROR;
 	}
 
@@ -9650,7 +9712,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if((v <= knots[0/*patch->vorder...?*/]) || (v >= knots[patch->height]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameter v out of range!");
+	  ay_error(AY_ERROR, fname, "Parameter v out of range.");
 	  return AY_ERROR;
 	}
 
@@ -9851,7 +9913,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
  int ay_status = AY_OK;
  ay_object *copy = NULL, *np1 = NULL, *np2 = NULL;
  ay_nurbpatch_object *patch = NULL;
- char fname[] = "npt_extractnp", split_errmsg[] = "Split failed!";
+ char fname[] = "npt_extractnp", split_errmsg[] = "Split failed.";
  double uv, uvmin, uvmax;
 
   if(!src || !result)
@@ -9895,13 +9957,13 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
       if((umin < patch->uknotv[patch->uorder-1]) ||
 	 (umax > patch->uknotv[patch->width]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameters umin/umax out of range!");
+	  ay_error(AY_ERROR, fname, "Parameters umin/umax out of range.");
 	  return AY_ERROR;
 	}
       if((vmin < patch->vknotv[patch->vorder-1]) ||
 	 (vmax > patch->vknotv[patch->height]))
 	{
-	  ay_error(AY_ERROR, fname, "Parameters vmin/vmax out of range!");
+	  ay_error(AY_ERROR, fname, "Parameters vmin/vmax out of range.");
 	  return AY_ERROR;
 	}
 
@@ -11022,7 +11084,7 @@ ay_npt_finduvcb(struct Togl *togl, int argc, char *argv[])
 
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "Could not find point on surface!");
+	  ay_error(AY_ERROR, fname, "Could not find point on surface.");
 	  goto cleanup;
 	}
 
