@@ -2321,9 +2321,9 @@ to time, as Ayam will always append to <tt/"LogFile"/.
 <item><tt/"ErrorLevel"/, this option controls how many messages
 should be written to the Ayam console. Available
 values are: <tt/"Silence"/ no output,
-<tt/"Errors"/ all error messages,
-<tt/"Warnings"/, all error and warning messages,
-and finally <tt/"All"/ all messages, even informative,
+<tt/"Errors"/ only error messages,
+<tt/"Warnings"/, only error and warning messages,
+and finally <tt/"All"/ (default), all messages, even informative,
 should be written to the console.
 
 </itemize>
@@ -10696,7 +10696,8 @@ crtClosedBS - create closed (circular) B-Spline:
  <item>Synopsis: <tt/"crtClosedBS sections [order [arc [radius]]]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: This command creates a circular B-Spline curve
-with desired number of sections, order, arc, and radius.
+with desired number of sections, order (defaults to 4), arc (defaults
+to 360.0, negative values are allowed), and radius (defaults to 1.0).
 The curve always starts on the positive X axis. 
 </itemize>
 <p><label id="sccrtnrect">
@@ -12867,7 +12868,10 @@ Instances may be easily created again using Automatic Instancing
 Procedural objects will not be evaluated, instead, RiProc objects
 will be created, that carry all arguments and create the same
 sequence of RIB requests upon export as was read upon import.
-
+<p>
+Note that in the case of serious syntactic errors of the RIB file
+more informative error messages are printed to the stderr channel
+of Ayam (which is not redirected to the Ayam console).
 
 <sect2>RIB Import Options<label id="rribopt">
 <p>
@@ -12911,16 +12915,6 @@ NURBS patches and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
 to NURBS that may be safely drawn using GLU. The default value 0.0 means
 no scaling.
-<item><tt/"ErrorLevel"/, this option controls how many error messages
-should be printed to the Ayam console while reading the RIB. Available
-values are: <tt/"Silence"/ no output except for severe errors,
-<tt/"Errors"/ all error messages should be printed,
-<tt/"Warnings"/, all error and warning messages should be printed,
-and finally <tt/"All"/ all messages, even informative,
-should be printed.
-Note that in the case of serious syntactic errors of the RIB file
-more informative error messages are printed to the stderr channel
-of Ayam (which is not redirected to the Ayam console).
 </itemize>
 
 <sect1>RenderMan Interface Bytestream (RIB) Export<label id="exprib">
@@ -13070,13 +13064,6 @@ of layers may be selected for import.
 NURBS curves so that the distances between different knots are not smaller
 than the given value. A <tt/"RescaleKnots"/ value of 1.0e-04 leads to NURBS
 that may be safely drawn using GLU. The default value 0.0 means no scaling.
-<item><tt/"ErrorLevel"/: controls how many messages will be printed
-to the Ayam console while importing. Available
-values are: <tt/"Silence"/ no output except for severe errors,
-<tt/"Errors"/ all error messages should be printed,
-<tt/"Warnings"/, all error and warning messages should be printed,
-and finally <tt/"All"/ all messages, even informative,
-should be printed.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, Dime is reading the DXF file; from 50 to 100 percent,
 the dxfio plugin is converting the DXF entities to Ayam objects.
@@ -13845,13 +13832,6 @@ knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 The default value 0.0 means no scaling.
 <item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
 imported objects.
-<item><tt/"ErrorLevel"/, this option controls how many error messages
-should be printed to the Ayam console while importing. Available
-values are: <tt/"Silence"/ no output except for severe errors,
-<tt/"Errors"/ all error messages should be printed,
-<tt/"Warnings"/, all error and warning messages should be printed,
-and finally <tt/"All"/ all messages, even informative,
-should be printed.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, the x3dio plugin is reading the XML file,
 from 50 to 100 percent the x3dio plugin is creating Ayam objects.
@@ -13874,7 +13854,8 @@ Start exporting to a X3D file using the menu entry
 The export functionality of the x3dio plugin currently covers
 export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
-may be converted to NURBS curves or surfaces or to PolyMeshes.
+may be converted to NURBS curves or surfaces or to PolyMeshes
+(e.g. SDMesh objects).
 <p>
 Some NURBS tool objects can be exported as parametric NURBS nodes,
 e.g. Sweep objects may be exported as NurbsSweptSurface nodes.
@@ -13925,8 +13906,10 @@ NURBS curve providing objects to the exported file (This option does
 view points;
 <item><tt>"WriteParametrics"</tt> toggles writing of the following
 tool objects as plain NURBS surface or higher level primitives:
-Revolve as NurbsSwungSurface, Sweep as NurbsSweptSurface, Extrude as
-NurbsSweptSurface);
+Revolve as NurbsSwungSurface,
+Swing as NurbsSwungSurface,
+Sweep as NurbsSweptSurface,
+Extrude as NurbsSweptSurface);
 <item><tt>"ResolveInstances"</tt> controls, whether instance objects should
 be resolved to normal objects or exported as DEF/USE pairs, note that no
 attempt is made to detect whether the master objects (the DEFs) will be
@@ -13936,8 +13919,6 @@ conjunction with the X3D export options <tt>"WriteSelected"</tt> or
 <tt>"ResolveInstances"</tt> option is switched on;
 <item><tt>"TopLevelLayers"</tt> arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
-<item><tt/"ErrorLevel"/ determines which messages should be output
-during export;
 <item><tt/"Progress"/ displays the progress of the export;
 from 0 to 50 percent, the x3dio plugin is creating a XML document
 in memory and from 50 to 100 percent this XML document will be written
@@ -15363,6 +15344,9 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>CreateMP: <ref id="ncattr" name="NCurve attribute">
 <item>Create ShadowMap: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
+<item>crtClosedBS: <ref id="sccrtclosedbs" name="scripting interface command">
+<item>crtNCircle: <ref id="sccrtncircle" name="scripting interface command">
+<item>crtNRect: <ref id="sccrtnrect" name="scripting interface command">
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
 <item>CSG: <ref id="levelobj" name="Level object">,
 <ref id="aycsg" name="AyCSG CSG preview plugin">
@@ -15437,8 +15421,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>EnvFile: <ref id="prefgui" name="preference setting">
 <item>Environment Variables: <ref id="envvars" name="Environment Variables">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
-<item>ErrorLevel: <ref id="prefmisc" name="preference setting">,
-<ref id="rribopt" name="RIB import option">
+<item>ErrorLevel: <ref id="prefmisc" name="preference setting">
 <item>estlenNC: <ref id="scestlennc" name="scripting interface command">
 <item>evaluate curve/suface: <ref id="scgetpnt" name="scripting interface command">
 <item>ExcludeHidden: <ref id="prefrib" name="preference setting">
