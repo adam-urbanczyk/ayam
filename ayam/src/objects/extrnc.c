@@ -246,6 +246,10 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->revert));
 
+  Tcl_SetStringObj(ton,"CreatePVN",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(extrnc->create_pvn));
+
   Tcl_SetStringObj(ton,"Relative",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->relative));
@@ -310,6 +314,11 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"CreatePVN",-1);
+  to = Tcl_NewIntObj(extrnc->create_pvn);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Relative",-1);
   to = Tcl_NewIntObj(extrnc->relative);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -368,6 +377,11 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr, "%d\n", &extrnc->relative);
     }
 
+  if(ay_read_version >= 14)
+    {
+      fscanf(fileptr, "%d\n", &extrnc->create_pvn);
+    }
+
   o->refine = extrnc;
 
  return AY_OK;
@@ -394,6 +408,7 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", extrnc->pnum);
   fprintf(fileptr, "%d\n", extrnc->revert);
   fprintf(fileptr, "%d\n", extrnc->relative);
+  fprintf(fileptr, "%d\n", extrnc->create_pvn);
 
  return AY_OK;
 } /* ay_extrnc_writecb */
@@ -449,7 +464,7 @@ ay_extrnc_notifycb(ay_object *o)
  ay_object *npatch = NULL, *pobject = NULL;
  ay_object *ncurve = NULL;
  int mode, pnum, provided = AY_FALSE;
- double tolerance;
+ double *pvn = NULL, tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -519,14 +534,21 @@ ay_extrnc_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
 
   ay_status = ay_npt_extractnc(npatch, extrnc->side, extrnc->parameter,
-			       extrnc->relative, AY_FALSE,
+			       extrnc->relative, AY_FALSE, extrnc->create_pvn,
+			       &pvn,
 			  (ay_nurbcurve_object **)(void*)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)
     {
       goto cleanup;
     }
-
+  if(pvn)
+    {
+      ay_pv_add(o, ay_prefs.normalname, "varying", 2,
+		((ay_nurbcurve_object *)(ncurve->refine))->length,
+		3, (void*)pvn);
+      free(pvn);
+    }
   if(extrnc->revert)
     {
       ay_status = ay_nct_revert((ay_nurbcurve_object *)(ncurve->refine));

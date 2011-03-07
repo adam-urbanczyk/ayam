@@ -1048,6 +1048,7 @@ typedef struct ay_extrnc_object_s
   int pnum; /**< select patch from multiple provided */
   int revert; /**< revert extracted curve? */
   int relative; /**< interpret parameter value in relative way? */
+  int create_pvn; /**< create PV tag with normals? */
   double parameter; /**< parameter value (u/v) */
 
   /** cached NURBS curve representation */

@@ -506,9 +506,10 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
   if(!(curve = calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
 
-  ay_status = ay_npt_extractnc(swing->npatch, upper?0:1, 0.0, AY_FALSE, AY_TRUE, &nc);
+  ay_status = ay_npt_extractnc(swing->npatch, upper?0:1, 0.0, AY_FALSE,
+			       AY_TRUE, AY_FALSE, NULL, &nc);
 
-  if(!nc)
+  if(ay_status || !nc)
     { ay_status = AY_ERROR; goto cleanup; }
 
   ay_object_defaults(curve);
@@ -739,7 +740,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 	return AY_EOMEM;
 
       ay_status = ay_npt_extractnc(swing->npatch, start?2:3, 0.0, AY_FALSE,
-				   AY_TRUE,
+				   AY_TRUE, AY_FALSE, NULL,
 				   &nc);
 
       if(!nc)
