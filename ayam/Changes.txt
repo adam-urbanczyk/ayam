@@ -1,4 +1,4 @@
-[28. Feb 2011] CVS-Head:
+[7. Mar 2011] CVS-Head:
 ========================
 Bug Fixes:
 o fixed setting the FilterWidth for RIB export (SF 3148250)
@@ -30,10 +30,14 @@ o main menu "Edit/Material" now works with multiple selected objects
   when creating materials
 o added "ErrorLevel" preference setting that controls how many messages
   appear in the Ayam console
+o removed the "ErrorLevel" preference setting from all import/export
+  parameter dialogs, all plugins use the global preference setting now
 o added access to advanced (command line) arguments to the creation of
   curve/npatch objects via new create dialog entry field "AddArgs"
 o added View attribute "EnableUndo" that allows to determine whether view
   actions should be recorded in the undo system
+o parameter dialogs of knot manipulating tools now display the original
+  knot vector as reference
 
 Scripts/Scripting Interface:
 o added script ("autorot.tcl") that automatically rotates a view
