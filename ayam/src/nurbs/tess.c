@@ -1523,6 +1523,7 @@ cleanup:
   if(npatch->no)
     {
       gluDeleteNurbsRenderer(npatch->no);
+      npatch->no = NULL;
     }
 
   if(texcoords)
