@@ -18,6 +18,8 @@
 
 char ay_npt_npname[] = "NPatch";
 
+typedef void (ay_npt_gndcb) (char dir, ay_nurbpatch_object *np,
+			     int i, double *p, double **dp);
 
 /* prototypes of functions local to this module: */
 
@@ -43,6 +45,9 @@ void ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
 void ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 		  double **dp);
 
+int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
+		     ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
+		     double *result);
 
 /* functions: */
 
@@ -6936,10 +6941,14 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *np = NULL;
+ ay_nurbpatch_object npt = {0};
  ay_nurbcurve_object *nc = NULL;
- double *cv, m[16], *Qw = NULL, *UVQ = NULL;
+ double *cv = NULL, *nv = NULL, m[16] = {0}, *Qw = NULL, *UVQ = NULL;
  double uv, uvmin, uvmax;
- int stride = 4, i, a, k = 0, s = 0, r = 0;
+ int stride = 4, i, a, b, k = 0, s = 0, r = 0;
+ ay_npt_gndcb *gnducb = ay_npt_gndu;
+ ay_npt_gndcb *gndvcb = ay_npt_gndv;
+
 
   if(!o || !result)
     return AY_ENULL;
@@ -7181,18 +7190,31 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
   if(apply_trafo)
     {
       cv = nc->controlv;
-      a = 0;
+      b = 0;
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_trafo_apply4(&(cv[a]), m);
-	  a += stride;
+	  ay_trafo_apply4(&(cv[b]), m);
+	  b += stride;
 	}
     }
 
+  /* calculate curve normals */
   if(create_pvn)
     {
-      if(!(*pvn = calloc(nc->length*3, sizeof(double))))
+      if(!(nv = calloc(nc->length*3, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      if(np->utype == AY_CTCLOSED)
+	gnducb = ay_npt_gnduc;
+      else
+	if(np->utype == AY_CTPERIODIC)
+	  gnducb = ay_npt_gndup;
+
+      if(np->vtype == AY_CTCLOSED)
+	gndvcb = ay_npt_gndvc;
+      else
+	if(np->vtype == AY_CTPERIODIC)
+	  gndvcb = ay_npt_gndvp;
 
       switch(side)
 	{
@@ -7200,44 +7222,85 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      /*&(pvn[a])*/
-		a += stride;
+	      ay_npt_getnormal(np, i, 0, gnducb, gndvcb, &(nv[a]));
+	      a += 3;
 	    }
 	  break;
 	case 1:
-	  nc->order = np->uorder;
-	  nc->knot_type = np->uknot_type;
-	  nc->length = np->width;
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_npt_getnormal(np, i, np->width, gnducb, gndvcb, &(nv[a]));
+	      a += 3;
+	    }
 	  break;
 	case 2:
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_npt_getnormal(np, 0, i, gnducb, gndvcb, &(nv[a]));
+	      a += 3;
+	    }
+	  break;
 	case 3:
-	  nc->order = np->vorder;
-	  nc->knot_type = np->vknot_type;
-	  nc->length = np->height;
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_npt_getnormal(np, np->height, i, gnducb, gndvcb, &(nv[a]));
+	      a += 3;
+	    }
 	  break;
 	case 4:
-	  nc->order =  np->uorder;
-	  nc->knot_type = np->uknot_type;
-	  nc->length = np->width;
+	  /* assume k, s, r are still correctly set */
+	  if(r > 0)
+	    {
+	      memcpy(&npt, np, sizeof(ay_nurbpatch_object));
+	      npt.height += r;
+	      npt.controlv = Qw;
+	      npt.vknotv = UVQ;
+
+	      a = k - (np->vorder-1) + (np->vorder-1-s+r-1)/2 + 1;
+	    }
+	  else
+	    {
+	      a = k - (np->vorder-1);
+	    }
+
+	  b = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_npt_getnormal(&npt, i, a, gnducb, gndvcb, &(nv[b]));
+	      b += 3;
+	    }
 	  break;
 	case 5:
-	  nc->order = np->vorder;
-	  nc->knot_type = np->vknot_type;
-	  nc->length = np->height;
-	  break;
-	case 7:
-	  nc->order =  np->uorder;
-	  nc->knot_type = np->uknot_type;
-	  nc->length = np->width;
-	  break;
-	case 8:
-	  nc->order = np->vorder;
-	  nc->knot_type = np->vknot_type;
-	  nc->length = np->height;
+	  /* assume k, s, r are still correctly set */
+
+	  if(r > 0)
+	    {
+	      memcpy(&npt, np, sizeof(ay_nurbpatch_object));
+	      npt.width += r;
+	      npt.controlv = Qw;
+	      npt.uknotv = UVQ;
+
+	      a = k - (np->uorder-1) + (np->uorder-1-s+r-1)/2 + 1;
+	    }
+	  else
+	    {
+	      a = k - (np->uorder-1);
+	    }
+
+	  b = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_npt_getnormal(&npt, a, i, gnducb, gndvcb, &(nv[b]));
+	      b += 3;
+	    }
 	  break;
 	default:
-	  ay_status = AY_ERROR;
-	  goto cleanup;
+	  free(nv);
+	  nv = NULL;
+	  break;
 	} /* switch */
     } /* if */
 
@@ -7247,6 +7310,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 
   /* return result */
   *result = nc;
+  if(nv)
+    *pvn = nv;
 
   /* prevent cleanup code from doing something harmful */
   nc = NULL;
@@ -10558,10 +10623,6 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 } /* ay_npt_gndvp */
 
 
-typedef void (ay_npt_gndcb) (char dir, ay_nurbpatch_object *np,
-			     int i, double *p, double **dp);
-
-
 /* ay_npt_offset:
  *  create offset surface from <o>
  *  the new surface is <offset> away from the original surface
@@ -10573,7 +10634,7 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
- int nnormals = AY_FALSE;
+ int nnormals = 0;
  double normal1[3] = {0}, normal2[3] = {0};
  double *newcv = NULL, *newukv = NULL, *newvkv = NULL;
  double *p0, *p1, *p2, *p3, *p4;
@@ -10754,6 +10815,92 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
     }
 
  return ay_status;
+} /* ay_npt_offset */
+
+
+/* ay_npt_getnormal:
+ *
+ */
+int
+ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
+		 ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
+		 double *result)
+{
+ double *p0, *p1, *p2, *p3, *p4;
+ int nnormals = 0, stride = 4;
+ double normal1[3] = {0}, normal2[3] = {0};
+
+  p0 = &(np->controlv[(i*np->height+j)*stride]);
+
+  /* get 4 surrounding and different points from p0 */
+  gnducb(AY_EAST, np, i, p0, &p1);
+  gndvcb(AY_SOUTH, np, j, p0, &p2);
+  gnducb(AY_WEST, np, i, p0, &p3);
+  gndvcb(AY_NORTH, np, j, p0, &p4);
+
+  /* calulate mean normal from 1-4 normals */
+  if(p1 && p2)
+    {
+      ay_geom_calcnfrom3(p0, p1, p2, normal1);
+      nnormals++;
+    }
+  if(p2 && p3)
+    {
+      ay_geom_calcnfrom3(p0, p2, p3, normal2);
+      if(nnormals)
+	{
+	  normal1[0] += normal2[0];
+	  normal1[1] += normal2[1];
+	  normal1[2] += normal2[2];
+	}
+      else
+	{
+	  memcpy(normal1, normal2, 3*sizeof(double));
+	}
+      nnormals++;
+    }
+  if(p3 && p4)
+    {
+      ay_geom_calcnfrom3(p0, p3, p4, normal2);
+      if(nnormals)
+	{
+	  normal1[0] += normal2[0];
+	  normal1[1] += normal2[1];
+	  normal1[2] += normal2[2];
+	}
+      else
+	{
+	  memcpy(normal1, normal2, 3*sizeof(double));
+	}
+      nnormals++;
+    }
+  if(p4 && p1)
+    {
+      ay_geom_calcnfrom3(p0, p4, p1, normal2);
+      if(nnormals)
+	{
+	  normal1[0] += normal2[0];
+	  normal1[1] += normal2[1];
+	  normal1[2] += normal2[2];
+	}
+      else
+	{
+	  memcpy(normal1, normal2, 3*sizeof(double));
+	}
+      nnormals++;
+    }
+
+  if(nnormals > 1)
+    {
+      normal1[0] /= nnormals;
+      normal1[1] /= nnormals;
+      normal1[2] /= nnormals;
+    }
+
+  if(nnormals > 0)
+    memcpy(result, normal1, 3*sizeof(double));
+
+ return AY_OK;
 } /* ay_npt_offset */
 
 

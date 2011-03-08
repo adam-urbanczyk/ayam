@@ -544,7 +544,7 @@ ay_extrnc_notifycb(ay_object *o)
     }
   if(pvn)
     {
-      ay_pv_add(o, ay_prefs.normalname, "varying", 2,
+      ay_pv_add(ncurve, ay_prefs.normalname, "varying", 2,
 		((ay_nurbcurve_object *)(ncurve->refine))->length,
 		3, (void*)pvn);
       free(pvn);
