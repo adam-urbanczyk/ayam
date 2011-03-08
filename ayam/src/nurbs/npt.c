@@ -7252,9 +7252,12 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  break;
 	case 4:
 	  /* assume k, s, r are still correctly set */
+	  memcpy(&npt, np, sizeof(ay_nurbpatch_object));
+
+	  /* if we inserted knots... */
 	  if(r > 0)
 	    {
-	      memcpy(&npt, np, sizeof(ay_nurbpatch_object));
+	      /* ...correct npt */
 	      npt.height += r;
 	      npt.controlv = Qw;
 	      npt.vknotv = UVQ;
@@ -7275,10 +7278,12 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  break;
 	case 5:
 	  /* assume k, s, r are still correctly set */
+	  memcpy(&npt, np, sizeof(ay_nurbpatch_object));
 
+	  /* if we inserted knots... */
 	  if(r > 0)
 	    {
-	      memcpy(&npt, np, sizeof(ay_nurbpatch_object));
+	      /* ...correct npt */
 	      npt.width += r;
 	      npt.controlv = Qw;
 	      npt.uknotv = UVQ;
