@@ -5974,7 +5974,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(ay_pv_checkndt(tag, nname, "varying", "n"))
+	      if(ay_pv_checkndt(tag, nname, "varying", "p"))
 		{
 		  ay_pv_convert(tag, 0, &vnlen, (void**)(void*)&vn);
 		  break;
