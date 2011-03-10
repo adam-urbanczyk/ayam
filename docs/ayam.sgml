@@ -6994,6 +6994,10 @@ This option is available since Ayam 1.15.
 
 <item><tt/"Revert"/ immediately reverts the extracted curve.
 
+<item><tt/"CreatePVN"/ controls creation of a PV tag that contains
+the normals (derived from the surface control points) on the surface.
+This PV tag can then be used to control a 3D offset.
+
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g. by a beveled extrude object as child
 of the ExtrNC object.
@@ -7066,21 +7070,43 @@ of the created NURBS curve.
 </figure>
 <p>
 The OffsetNC object, available since Ayam 1.14, creates offset curves from
-planar NURBS curves using two simple algorithms; one derived from the bevel
-creation algorithm and the other simply offsetting control polygon sections.
+planar NURBS curves using four different algorithms.
 The offset curve will always match the original curve in type, length, order,
 and knots. See also the image above.
 <p>
-Since Ayam 1.15 there is a third offsetting algorithm available, that creates
-offsets from non planar curves.
-<p>
+The available offset algorithms are:
+
+<bf/<tt/Point//<newline>
+offsets each control point along the normal derived from the surrounding
+control points; the offset curve created by this algorithm may come too
+near the original curve at sharp convex features whose exact forms are
+not preserved well either,
+
+<bf/<tt/Section//<newline>
+this algorithm offsets all control polygon sections in the direction of their
+normal and places new control points at intersection points of the lines
+defined by the offset sections; this algorithm is better in avoiding self
+intersections of the offset curve but the offset curve may be too far away
+from the original curve at sharp convex or concave features
+(regions of high curvature),
+
+<bf/<tt/Hybrid//<newline>
+available since Ayam 1.19, this algorithm offsets the curve two times using
+the Point and Section algorithm and then mixes the results so that the bad
+features of the two algorithms cancel out each other,
+
+<bf/<tt/3DPVN//<newline>
 Since Ayam 1.18 there is a fourth offsetting algorithm available, that
-creates offsets from non planar curves using a primitive variable tag
-that contains normal information for the curve (vertex normals).
+creates true three dimensional offsets from non planar curves using
+a primitive variable tag that contains normal information for the curve
+(vertex normals). Such tags can be created manually or automatically
+e.g. when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
 <p>
 As the geometry of the offset curve is completely defined by
 the master curve, OffsetNC objects do not support own transformation
 attributes (since Ayam 1.19).
+<p>
+The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam1.19.
 <p>
 You may convert the current OffsetNC object to an ordinary NURBS curve
 object using the main menu entry <tt>"Tools/Convert"</tt>.
