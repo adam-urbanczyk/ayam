@@ -954,20 +954,18 @@ int ay_npt_skinv(ay_object *curves, int order, int knot_type,
 int ay_npt_extrude(double height, ay_object *o,
 		   ay_nurbpatch_object **extrusion);
 
-/** Calculate 2d tangent from control points.
+/** Calculate 2D tangent from control points.
  */
 int ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 				   double *P, int a, double *T);
-
-/** Calculate 3D normal from control points.
- */
-int ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
-				  int stride, double *P, int a, double *N);
 
 /** Create bevel surface.
  */
 int ay_npt_bevel(int type, double radius, int align, ay_object *o,
 		 ay_nurbpatch_object **bevel);
+
+int ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
+		  ay_nurbpatch_object **bevel);
 
 /** Create cap surface.
  */

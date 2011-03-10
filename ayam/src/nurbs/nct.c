@@ -555,40 +555,34 @@ int
 ay_nct_close(ay_nurbcurve_object *curve)
 {
  int ay_status = AY_OK;
- double *controlv = NULL, *end = NULL;
- int i;
+ double *end = NULL;
 
   if(!curve)
     return AY_ENULL;
 
-  /* close curve */
-  if(curve->type == AY_CTCLOSED)
+  switch(curve->type)
     {
+    case AY_CTCLOSED:
+      /* close curve */
       end = &(curve->controlv[(curve->length*4)-4]);
       memcpy(end, curve->controlv, 4*sizeof(double));
-    } /* if */
-
-  /* make curve periodic */
-  if(curve->type == AY_CTPERIODIC)
-    {
+      break;
+    case AY_CTPERIODIC:
+      /* make curve periodic */
       if(curve->length >= ((curve->order-1)*2))
 	{
-	  controlv = curve->controlv;
-	  end = &(controlv[(curve->length-(curve->order-1))*4]);
-
-	  for(i = 0; i < (curve->order-1); i++)
-	    {
-	      memcpy(end, controlv, 4*sizeof(double));
-	      controlv += 4;
-	      end += 4;
-	    }
+	  end = &(curve->controlv[(curve->length-(curve->order-1))*4]);
+	  memcpy(end, curve->controlv, (curve->order-1)*4*sizeof(double));
 	}
       else
 	{
 	  curve->type = AY_CTOPEN;
 	  return AY_ERROR;
 	} /* if */
-    } /* if */
+      break;
+    default:
+      break;
+    }
 
  return ay_status;
 } /* ay_nct_close */
@@ -5667,7 +5661,6 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  *  create offset curve from <o>
  *  the new curve is <offset> away from the original
  *  returns new curve in <nc>
- *  WIP
  */
 int
 ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
@@ -5677,6 +5670,8 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
  double zaxis[3] = {0.0,0.0,1.0};
  ay_nurbcurve_object *curve = NULL;
+ ay_nurbcurve_object *offcurve1 = NULL;
+ ay_nurbcurve_object *offcurve2 = NULL;
  ay_tag *tag = NULL;
  int p1len, p2len, p3len;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
@@ -5721,33 +5716,33 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
     }
   else
     {
-      if(mode == 0)
+      switch(mode)
 	{
+	case 0:
 	  /*
-	    "Bevel" mode:
-	     offset corner points according to normals derived
-	     from surrounding control points
+	    "Point" mode:
+	    offset corner points according to normals derived
+	    from surrounding control points
 	  */
 	  for(j = 0; j < curve->length; j++)
 	    {
 
 	      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
-				       curve->order-1, 4, curve->controlv, j,
-				       tangent);
+					     curve->order-1, 4,
+					     curve->controlv, j,
+					     tangent);
 
 	      AY_V3CROSS(normal, tangent, zaxis);
 	      AY_V3SCAL(normal, offset);
 
 	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
 	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride+2] = curve->controlv[j*stride+2];
 	      newcv[j*stride+3] = curve->controlv[j*stride+3];
 
 	    } /* for */
-	} /* if */
-
-      if(mode == 1)
-	{
+	  break;
+	case 1:
 	  /*
 	    "Section" mode:
 	    offset control polygon sections
@@ -5889,11 +5884,11 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		   * sub-optimal offset quality (collisions occur)
 		   */
 		  /*
-		  AY_V2NORM(t2);
-		  for(i = 0; i < p2len; i++)
+		    AY_V2NORM(t2);
+		    for(i = 0; i < p2len; i++)
 		    {
-		      newcv[(j+i)*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
-		      newcv[(j+i)*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
+		    newcv[(j+i)*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
+		    newcv[(j+i)*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
 		    }
 		  */
 
@@ -5938,38 +5933,40 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  if((curve->type == AY_CTPERIODIC) && (curve->order > 2))
 	    {
 	      j = (curve->length-(curve->order-1))*stride;
-	      memcpy(&(newcv[0]), &(newcv[j]), stride*sizeof(double));
+	      memcpy(&(newcv[j]), &(newcv[0]),
+		     (curve->order-1)*stride*sizeof(double));
 	    }
-
-	} /* if */
-
-      if(mode == 2)
-	{
+	  break;
+	case 2:
 	  /*
-	    "Bevel3D" mode:
-	     offset corner points according to normals derived
-	     from surrounding control points
+	    "Hybrid" mode:
+	    use a combination of both, point and section mode
 	  */
+	  ay_status = ay_nct_offset(o, 0, offset, &offcurve1);
+	  if(ay_status)
+	    { goto cleanup; }
+
+	  ay_status = ay_nct_offset(o, 1, offset, &offcurve2);
+	  if(ay_status)
+	    { goto cleanup; }
+
 	  for(j = 0; j < curve->length; j++)
 	    {
+	      p1 = &(offcurve1->controlv[j*stride]);
+	      p2 = &(offcurve2->controlv[j*stride]);
+	      n[0] = (p1[0]+p2[0])/2.0;
+	      n[1] = (p1[1]+p2[1])/2.0;
 
-	      ay_npt_getnormalfromcontrol3D(curve->type, curve->length,
-				       curve->order-1, 4, curve->controlv, j,
-				       normal);
-	      AY_V3SCAL(normal, offset);
-	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
-	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2] + normal[2];
+	      newcv[j*stride]   = n[0];
+	      newcv[j*stride+1] = n[1];
+	      newcv[j*stride+2] = curve->controlv[j*stride+2];
 	      newcv[j*stride+3] = curve->controlv[j*stride+3];
-
 	    } /* for */
-	} /* if */
-
-      if(mode == 3)
-	{
+	  break;
+	case 3:
 	  /*
 	    "3DPVN" mode:
-	     offset points according to normal delivered as primitive variable
+	    offset points according to normal delivered as primitive variable
 	  */
 	  tag = o->tags;
 	  while(tag)
@@ -5995,7 +5992,11 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	      newcv[j*stride+2] = curve->controlv[j*stride+2] + p1[2];
 	      newcv[j*stride+3] = curve->controlv[j*stride+3];
 	    } /* for */
-	} /* if */
+	  break;
+	default:
+	  break;
+	}
+
     } /* if */
 
   if(curve->knot_type == AY_KTCUSTOM)
@@ -6023,6 +6024,12 @@ cleanup:
 
   if(vn)
     free(vn);
+
+  if(offcurve1)
+    ay_nct_destroy(offcurve1);
+
+  if(offcurve2)
+    ay_nct_destroy(offcurve2);
 
  return ay_status;
 } /* ay_nct_offset */
