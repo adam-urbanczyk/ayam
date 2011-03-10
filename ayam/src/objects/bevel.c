@@ -396,7 +396,8 @@ ay_bevel_notifycb(ay_object *o)
  int ay_status = AY_OK;
  int mode = 0;
  ay_bevel_object *bevel = NULL;
- ay_object *npatch = NULL, *curve, *bcurve, *t = NULL, *pobject1 = NULL;
+ ay_object *npatch = NULL, *curve, *bcurve, *t = NULL;
+ ay_object *pobject1 = NULL, *pobject2 = NULL;
  int align = AY_FALSE, has_b = AY_FALSE;
  int b_type, b_sense;
  double b_radius, tolerance;
@@ -452,6 +453,12 @@ ay_bevel_notifycb(ay_object *o)
       if(o->down->next->type == AY_IDNCURVE)
 	{
 	  bcurve = o->down->next;
+	}
+      else
+	{
+	  ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject2);
+	  /*XXXX report error?*/
+	  bcurve = pobject2;
 	}
     }
 
@@ -517,10 +524,14 @@ ay_bevel_notifycb(ay_object *o)
   npatch = NULL;
 
 cleanup:
-  /* remove provided object */
+  /* remove provided objects */
   if(pobject1)
     {
-      ay_object_delete(pobject1);
+      ay_object_deletemulti(pobject1);
+    }
+  if(pobject2)
+    {
+      ay_object_deletemulti(pobject2);
     }
 
   if(t)
