@@ -396,7 +396,7 @@ ay_bevel_notifycb(ay_object *o)
  int ay_status = AY_OK;
  int mode = 0;
  ay_bevel_object *bevel = NULL;
- ay_object *npatch = NULL, *curve, *t = NULL, *pobject1 = NULL;
+ ay_object *npatch = NULL, *curve, *bcurve, *t = NULL, *pobject1 = NULL;
  int align = AY_FALSE, has_b = AY_FALSE;
  int b_type, b_sense;
  double b_radius, tolerance;
@@ -446,6 +446,15 @@ ay_bevel_notifycb(ay_object *o)
       goto cleanup;
     }
 
+  /* see if there is a bevel curve */
+  if(o->down->next)
+    {
+      if(o->down->next->type == AY_IDNCURVE)
+	{
+	  bcurve = o->down->next;
+	}
+    }
+
   /* check curves rotation attributes; only allow align operation,
      if curve is not rotated, because otherwise the transformations
      would not be treated correctly in ay_npt_bevel() */
@@ -479,9 +488,16 @@ ay_bevel_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
-  ay_status = ay_npt_bevel(b_type, b_radius, align, curve,
+  if(!bcurve)
+    {
+      ay_status = ay_npt_bevel(b_type, b_radius, align, curve,
 			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
-
+    }
+  else
+    {
+      ay_status = ay_npt_bevelc(b_radius, AY_FALSE, curve, bcurve,
+			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
+    }
   if(ay_status)
     goto cleanup;
 
