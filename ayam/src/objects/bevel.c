@@ -456,7 +456,7 @@ ay_bevel_notifycb(ay_object *o)
 	}
       else
 	{
-	  ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject2);
+	  ay_status = ay_provide_object(o->down->next, AY_IDNCURVE, &pobject2);
 	  /*XXXX report error?*/
 	  bcurve = pobject2;
 	}
