@@ -5029,133 +5029,6 @@ ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 } /* ay_npt_gettangentfromcontrol2D */
 
 
-/* ay_npt_getnormalfromcontrol3D:
- *
- *
- */
-int
-ay_npt_getnormalfromcontrol3D(int ctype, int n, int p,
-			      int stride, double *P, int a, double *N)
-{
- int ay_status = AY_OK;
- int found = AY_FALSE, wrapped = AY_FALSE;
- int b, i1, i2;
- int before, after;
- double P1[4], P2[4], P3[4];
- double t1[3], t2[3];
-
-  if(ctype == AY_CTPERIODIC)
-    {
-      if(a == 0)
-	a = (n-p);
-      if(a == n)
-	a = p;
-      if(a > (n-p))
-	a -= (n-p);
-    } /* if */
-
-  /* find a good point after P[a] */
-  if((ctype == AY_CTOPEN) && (a == (n-1)))
-    {
-      return(ay_npt_getnormalfromcontrol3D(ctype, n, p,
-					   stride, P, a-1, N));
-      /*after = a;*/
-    }
-  else
-    {
-      b = a+1;
-      i1 = a*stride;
-      while(!found)
-	{
-	  if(b >= n)
-	    {
-	      if(wrapped)
-		return AY_ERROR;
-	      wrapped = AY_TRUE;
-	      b = 0;
-	    } /* if */
-
-	  i2 = b*stride;
-	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]) || (P[i1+2] != P[i2+2]))
-	    {
-	      found = AY_TRUE;
-	    }
-	  else
-	    {
-	      b++;
-	    } /* if */
-	} /* while */
-      after = b;
-    } /* if */
-
-  /* find a good point before P[a] */
-  if((ctype == AY_CTOPEN) && (a == 0))
-    {
-      return(ay_npt_getnormalfromcontrol3D(ctype, n, p,
-					   stride, P, 1, N));
-      /*before = a;*/
-    }
-  else
-    {
-      found = AY_FALSE;
-      wrapped = AY_FALSE;
-      b = a-1;
-      i1 = a*stride;
-      while(!found)
-	{
-	  if(b < 0)
-	    {
-	      if(wrapped)
-		return AY_ERROR;
-	      wrapped = AY_TRUE;
-	      b = (n-1);
-	    } /* if */
-
-	  i2 = b*stride;
-	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]) || (P[i1+2] != P[i2+2]))
-	    {
-	      found = AY_TRUE;
-	    }
-	  else
-	    {
-	      b--;
-	    } /* if */
-	} /* while */
-      before = b;
-    } /* if */
-
-  /* calculate the normal */
-  memcpy(P1, &(P[after*stride]), stride*sizeof(double));
-  memcpy(P2, &(P[a*stride]), stride*sizeof(double));
-  memcpy(P3, &(P[before*stride]), stride*sizeof(double));
-
-  for(i1 = 0; i1 < 3; i1++)
-    {
-      P1[i1] /= P1[3];
-      P2[i1] /= P2[3];
-      P3[i1] /= P3[3];
-    }
-
-  ay_geom_calcnfrom3(P1, P2, P3, t1);
-
-  /* now calculate the tangent */
-  t2[0] = (P[after*stride]/P[after*stride+3]) -
-    (P[before*stride]/P[before*stride+3]);
-  t2[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
-    (P[(before*stride)+1]/P[(before*stride)+3]);
-  t2[2] = (P[(after*stride)+2]/P[(after*stride)+3]) -
-    (P[(before*stride)+2]/P[(before*stride)+3]);
-
-  AY_V3NORM(t2);
-
-  AY_V3CROSS(N, t1, t2);
-
-  AY_V3NORM(N);
-
- return ay_status;
-} /* ay_npt_getnormalfromcontrol3D */
-
-
 /* ay_npt_bevel:
  *  create a bevel in <bevel> from a planar closed NURB curve <o>;
  *  direction of curve defines, whether bevel rounds inwards or outwards;
@@ -5513,6 +5386,146 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   *bevel = patch;
 
   /* clean-up */
+  if(tccontrolv)
+    free(tccontrolv);
+
+ return ay_status;
+} /* ay_npt_bevel */
+
+
+/* ay_npt_bevelc:
+ *  create a bevel in <bevel> from a planar closed NURB curve <o>;
+ *  direction of curve defines, whether bevel rounds inwards or outwards;
+ *  type: 0 - round (quarter circle), 1 - linear, 2 - ridge
+ *  radius: radius of the bevel
+ */
+int
+ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
+	      ay_nurbpatch_object **bevel)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *curve = NULL;
+ ay_nurbcurve_object *offcurve1 = NULL, *offcurve2 = NULL;
+ ay_nurbcurve_object *bcurve = NULL;
+ double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
+ double middle[4] = {0};
+ int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
+
+  if(!o1 || !o2 || !bevel)
+    return AY_ENULL;
+
+  if(o1->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  if(o2->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  curve = (ay_nurbcurve_object *)o1->refine;
+
+  bcurve = (ay_nurbcurve_object *)o2->refine;
+
+  if(!(controlv = calloc((bcurve->length+capped)*curve->length*stride,
+			 sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  /*
+  if(!(uknotv = calloc(bcurve->length+capped+bcurve->order,
+		       sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(uknotv, bcurve->knotv, bcurve->length+bcurve->order);
+
+  if(!(vknotv = calloc(curve->length+curve->order,
+		       sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(vknotv, curve->knotv, curve->length+curve->order);
+  */
+  /* fill controlv */
+  /* first loop */
+  memcpy(controlv, curve->controlv, curve->length*stride*sizeof(double));
+
+  /* other loops */
+  a = curve->length*stride;
+  c = stride;
+  for(i = 1; i < bcurve->length; i++)
+    {
+      ay_status = ay_nct_offset(o1, 0, radius*bcurve->controlv[c], &offcurve1);
+      if(ay_status)
+	{ goto cleanup; }
+
+      ay_status = ay_nct_offset(o1, 1, radius*bcurve->controlv[c], &offcurve2);
+      if(ay_status)
+	{ goto cleanup; }
+
+      b = 0;
+      for(j = 0; j < curve->length; j++)
+	{
+	  controlv[a]   =
+	    (offcurve1->controlv[b]+offcurve2->controlv[b])/2.0;
+	  controlv[a+1] =
+	    (offcurve1->controlv[b+1]+offcurve2->controlv[b+1])/2.0;
+	  controlv[a+2] = radius*bcurve->controlv[c+1];
+	  controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
+	  a += stride;
+	  b += stride;
+	} /* for */
+
+      ay_nct_destroy(offcurve1);
+      offcurve1 = NULL;
+
+      ay_nct_destroy(offcurve2);
+      offcurve2 = NULL;
+
+      c += stride;
+    } /* for */
+
+  /* cap loops */
+  if(capped)
+    {
+      ay_status = ay_npt_extractmiddlepoint(curve->controlv, curve->length,
+					    1, 4, 0, 1, middle);
+      if(ay_status)
+	{ goto cleanup; }
+
+      for(i = 0; i < capped; i++)
+	{
+	  b = 0;
+	  for(j = 0; j < curve->length; j++)
+	    {
+	      controlv[a]   = curve->controlv[b];
+	      controlv[a+1] = curve->controlv[b+1];
+
+	      controlv[a]   = middle[0];
+	      controlv[a+1] = middle[1];
+	      a += stride;
+	    }
+	}
+
+      /* extend knots */
+
+    } /* if */
+
+  ay_status = ay_npt_create(bcurve->order, curve->order,
+			    bcurve->length+capped, curve->length,
+			    bcurve->knot_type, curve->knot_type,
+			    controlv, NULL, NULL,
+			    bevel);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* prevent cleanup code from doing something harmful */
+  controlv = NULL;
+  uknotv = NULL;
+  vknotv = NULL;
+
+cleanup:
+
+  /* clean-up */
+  if(controlv)
+    free(controlv);
+  if(uknotv)
+    free(uknotv);
+  if(vknotv)
+    free(vknotv);
   if(tccontrolv)
     free(tccontrolv);
 
