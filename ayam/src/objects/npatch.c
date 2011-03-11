@@ -711,6 +711,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  int display_mode = ay_prefs.np_display_mode;
  /* int cache = ay_prefs.glu_cache_float;*/
+ double w;
 
   if(!o)
     return AY_ENULL;
@@ -776,22 +777,33 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       a++;
     }
   a = 0;
-  for(i = 0; i < width*height; i++)
+  if(npatch->is_rat)
     {
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      if(npatch->is_rat)
+      for(i = 0; i < width*height; i++)
+	{
+	  w = npatch->controlv[b+3];
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b++;
+	}
+    }
+  else
+    {
+      for(i = 0; i < width*height; i++)
 	{
 	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b+=2;
 	}
-      b++;
     }
-
 #ifdef AYWITHAQUA
   glPushAttrib((GLbitfield) GL_POLYGON_BIT);
 #endif /* AYWITHAQUA */
@@ -814,7 +826,6 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 
 
   gluNurbsCallback(npatch->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
-
 
   gluBeginSurface(npatch->no);
 
@@ -1106,6 +1117,7 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
+ double w;
 
   if(!o)
     return AY_ENULL;
@@ -1169,20 +1181,32 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
       a++;
     }
   a = 0;
-  for(i = 0; i < width*height; i++)
+  if(npatch->is_rat)
     {
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)npatch->controlv[b];
-      a++; b++;
-      if(npatch->is_rat)
+      for(i = 0; i < width*height; i++)
+	{
+	  w = npatch->controlv[b+3];
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b++;
+	}
+    }
+  else
+    {
+      for(i = 0; i < width*height; i++)
 	{
 	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++;
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b++;
+	  controls[a] = (GLfloat)npatch->controlv[b];
+	  a++; b+=2;
 	}
-      b++;
     }
 
 #ifndef AYWITHAQUA
@@ -2076,6 +2100,19 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   npatch->is_rat = ay_npt_israt(npatch);
 
+  /* Prior to 1.19 Ayam used pre-multiplied rational coordinates... */
+  if(npatch->is_rat && (ay_read_version < 14))
+    {
+      a = 0;
+      for(i = 0; i < npatch->width*npatch->height; i++)
+	{
+	  npatch->controlv[a+1] /= npatch->controlv[a+3];
+	  npatch->controlv[a+2] /= npatch->controlv[a+3];
+	  npatch->controlv[a+3] /= npatch->controlv[a+3];
+	  a += 4;
+	}
+    }
+
   o->refine = npatch;
 
  return AY_OK;
@@ -2142,7 +2179,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
- double umind, umaxd, vmind, vmaxd;
+ double umind, umaxd, vmind, vmaxd, w;
  RtInt nu, nv, uorder, vorder;
  RtFloat *uknots = NULL, *vknots = NULL, umin, umax, vmin, vmax;
  RtFloat *controls = NULL;
@@ -2186,25 +2223,45 @@ ay_npatch_wribcb(char *file, ay_object *o)
     }
   a = 0;
   /* RenderMan expects u-major order! */
-  for(i = 0; i < nv; i++)
+  if(patch->is_rat)
     {
-      b = i*4;
-      for(j = 0; j < nu; j++)
+      for(i = 0; i < nv; i++)
 	{
-	  controls[a] = (RtFloat)patch->controlv[b];
-	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+1];
-	  a++;
-	  controls[a] = (RtFloat)patch->controlv[b+2];
-	  a++;
-	  if(patch->is_rat)
+	  b = i*4;
+	  for(j = 0; j < nu; j++)
 	    {
+	      w = patch->controlv[b+3];
+	      controls[a] = (RtFloat)patch->controlv[b]*w;
+	      a++;
+	      controls[a] = (RtFloat)patch->controlv[b+1]*w;
+	      a++;
+	      controls[a] = (RtFloat)patch->controlv[b+2]*w;
+	      a++;
 	      controls[a] = (RtFloat)patch->controlv[b+3];
 	      a++;
-	    }
-	  b += (nv*4);
+
+	      b += (nv*4);
+	    } /* for */
 	} /* for */
-    } /* for */
+    }
+  else
+    {
+      for(i = 0; i < nv; i++)
+	{
+	  b = i*4;
+	  for(j = 0; j < nu; j++)
+	    {
+	      controls[a] = (RtFloat)patch->controlv[b];
+	      a++;
+	      controls[a] = (RtFloat)patch->controlv[b+1];
+	      a++;
+	      controls[a] = (RtFloat)patch->controlv[b+2];
+	      a++;
+
+	      b += (nv*4);
+	    } /* for */
+	} /* for */
+    } /* if */
 
   ay_knots_getuminmax(o, patch->uorder, patch->uorder + patch->width,
 		      patch->uknotv, &umind, &umaxd);

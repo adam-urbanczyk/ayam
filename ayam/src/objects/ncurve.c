@@ -569,8 +569,8 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
  ay_nurbcurve_object *ncurve = NULL;
  int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
+ double w;
  static GLfloat *knots = NULL, *controls = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -613,21 +613,34 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       a++;
     }
   a = 0;
-  for(i = 0; i < length; i++)
+  if(ncurve->is_rat)
     {
-      controls[a] = (GLfloat)ncurve->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)ncurve->controlv[b];
-      a++; b++;
-      controls[a] = (GLfloat)ncurve->controlv[b];
-      a++; b++;
-      if(ncurve->is_rat)
+      for(i = 0; i < length; i++)
+	{
+	  w = ncurve->controlv[b+3];
+	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b++;
+	} /* for */
+    }
+  else
+    {
+      for(i = 0; i < length; i++)
 	{
 	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++;
-	}
-      b++;
-    } /* for */
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b++;
+	  controls[a] = (GLfloat)ncurve->controlv[b];
+	  a++; b+=2;
+	} /* for */
+    } /* if */
+
 #ifndef AYWITHAQUA
   if(!ncurve->no)
   {
@@ -1421,6 +1434,19 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
       ncurve->type = AY_CTPERIODIC;
 
   ncurve->is_rat = ay_nct_israt(ncurve);
+
+  /* Prior to 1.19 Ayam used pre-multiplied rational coordinates... */
+  if(ncurve->is_rat && (ay_read_version < 14))
+    {
+      a = 0;
+      for(i = 0; i < ncurve->length; i++)
+	{
+	  ncurve->controlv[a+1] /= ncurve->controlv[a+3];
+	  ncurve->controlv[a+2] /= ncurve->controlv[a+3];
+	  ncurve->controlv[a+3] /= ncurve->controlv[a+3];
+	  a += 4;
+	}
+    }
 
   if(ncurve->knot_type != AY_KTCUSTOM)
     {

@@ -2496,22 +2496,10 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
   if(!curve)
     return AY_ENULL;
 
-  i = 7;
-  controls[i] = sqrt(2.0)/2.0;
-  controls[i-2] *= sqrt(2.0)/2.0;
-  controls[i-3] *= sqrt(2.0)/2.0;
-  i += 8;
-  controls[i] = sqrt(2.0)/2.0;
-  controls[i-2] *= sqrt(2.0)/2.0;
-  controls[i-3] *= sqrt(2.0)/2.0;
-  i += 8;
-  controls[i] = sqrt(2.0)/2.0;
-  controls[i-2] *= sqrt(2.0)/2.0;
-  controls[i-3] *= sqrt(2.0)/2.0;
-  i += 8;
-  controls[i] = sqrt(2.0)/2.0;
-  controls[i-2] *= sqrt(2.0)/2.0;
-  controls[i-3] *= sqrt(2.0)/2.0;
+  controls[7] = sqrt(2.0)/2.0;
+  controls[15] = sqrt(2.0)/2.0;
+  controls[23] = sqrt(2.0)/2.0;
+  controls[31] = sqrt(2.0)/2.0;
 
   for(i = 0; i < 9; i++)
     {
@@ -2609,14 +2597,8 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
   if(!curve)
     return AY_ENULL;
 
-  i = 4;
-  controls[i] *= sqrt(2.0)/2.0;
-  controls[i+1] *= sqrt(2.0)/2.0;
-  controls[i+3] = sqrt(2.0)/2.0;
-  i += 8;
-  controls[i] *= sqrt(2.0)/2.0;
-  controls[i+1] *= sqrt(2.0)/2.0;
-  controls[i+3] = sqrt(2.0)/2.0;
+  controls[7] = sqrt(2.0)/2.0;
+  controls[15] = sqrt(2.0)/2.0;
 
   for(i = 0; i < 5; i++)
     {

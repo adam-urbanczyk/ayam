@@ -297,8 +297,8 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	  for(j = 0; j <= p; j++)
 	    {
 	      k = (span-p+j)*4;
-	      Cw[0] = Cw[0] + N[j]*Pw[k];
-	      Cw[1] = Cw[1] + N[j]*Pw[k+1];
+	      Cw[0] = Cw[0] + N[j]*(Pw[k]*Pw[k+3]);
+	      Cw[1] = Cw[1] + N[j]*(Pw[k+1]*Pw[k+3]);
 	      Cw[2] = Cw[2] + N[j]*Pw[k+3];
 	    }
 
@@ -468,9 +468,9 @@ ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 	  for(j = 0; j <= p; j++)
 	    {
 	      k = (span-p+j)*4;
-	      Cw[0] = Cw[0] + N[j]*Pw[k];
-	      Cw[1] = Cw[1] + N[j]*Pw[k+1];
-	      Cw[2] = Cw[2] + N[j]*Pw[k+2];
+	      Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
+	      Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
+	      Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
 	      Cw[3] = Cw[3] + N[j]*Pw[k+3];
 	    }
 
@@ -820,9 +820,9 @@ ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 		  /* was: temp = temp + Nu[k]*Pw[indu+k][indv]; */
 		  i = (((indu+k)*m)+indv)*4;
 
-		  temp[ti+0] += Nu[k]*Pw[i];
-		  temp[ti+1] += Nu[k]*Pw[i+1];
-		  temp[ti+2] += Nu[k]*Pw[i+2];
+		  temp[ti+0] += Nu[k]*Pw[i]*Pw[i+3];
+		  temp[ti+1] += Nu[k]*Pw[i+1]*Pw[i+3];
+		  temp[ti+2] += Nu[k]*Pw[i+2]*Pw[i+3];
 		  temp[ti+3] += Nu[k]*Pw[i+3];
 		} /* for */
 	      ti += 4;

@@ -2257,8 +2257,8 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
       ay_geom_intersectlines2D(P0, T0, P2, T2, P1);
 
-      Pw[(index+1)*4]     = w1*P1[0];
-      Pw[((index+1)*4)+1] = w1*P1[1];
+      Pw[(index+1)*4]     = P1[0];
+      Pw[((index+1)*4)+1] = P1[1];
       Pw[((index+1)*4)+3] = w1;
 
       memcpy(&Pw[(index+2)*4], P2, 4*sizeof(double));

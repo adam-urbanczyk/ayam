@@ -1107,7 +1107,7 @@ ay_tess_npatch(ay_object *o,
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
  double t1[2], t2[2], t3[2], t4[2];
  double c1[4], c2[4], c3[4], c4[4];
- double knotlen;
+ double knotlen, w;
  ay_tess_tri *tr1 = NULL, *tr2;
 
   if(!o || !pm)
@@ -1183,8 +1183,15 @@ ay_tess_npatch(ay_object *o,
       a++;
     }
   a = 0;
-  for(i = 0; i < (unsigned int)width*height*4; i++)
+  for(i = 0; i < (unsigned int)width*height; i++)
     {
+      w = npatch->controlv[a+3];
+      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      a++;
+      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      a++;
+      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      a++;
       controls[a] = (GLfloat)npatch->controlv[a];
       a++;
     }
