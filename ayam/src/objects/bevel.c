@@ -398,7 +398,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_bevel_object *bevel = NULL;
  ay_object *npatch = NULL, *curve, *bcurve, *t = NULL;
  ay_object *pobject1 = NULL, *pobject2 = NULL;
- int align = AY_FALSE, has_b = AY_FALSE;
+ int align = AY_FALSE, has_b = AY_FALSE, has_cap = AY_FALSE;
  int b_type, b_sense;
  double b_radius, tolerance;
 
@@ -502,7 +502,11 @@ ay_bevel_notifycb(ay_object *o)
     }
   else
     {
-      ay_status = ay_npt_bevelc(b_radius, AY_FALSE, curve, bcurve,
+      if(b_type > 2)
+	{
+	  has_cap = AY_TRUE;
+	}
+      ay_status = ay_npt_bevelc(b_radius, has_cap, curve, bcurve,
 			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
     }
   if(ay_status)

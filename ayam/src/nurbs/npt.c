@@ -5408,7 +5408,7 @@ ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
  ay_nurbcurve_object *offcurve1 = NULL, *offcurve2 = NULL;
  ay_nurbcurve_object *bcurve = NULL;
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
- double middle[4] = {0};
+ double middle[4] = {0}, ud = 0.0;
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
 
   if(!o1 || !o2 || !bevel)
@@ -5427,17 +5427,23 @@ ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
   if(!(controlv = calloc((bcurve->length+capped)*curve->length*stride,
 			 sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  /*
-  if(!(uknotv = calloc(bcurve->length+capped+bcurve->order,
-		       sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  memcpy(uknotv, bcurve->knotv, bcurve->length+bcurve->order);
 
-  if(!(vknotv = calloc(curve->length+curve->order,
-		       sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  memcpy(vknotv, curve->knotv, curve->length+curve->order);
-  */
+  /* copy custom knots */
+  if(bcurve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(uknotv = calloc(bcurve->length+capped+bcurve->order,
+			   sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(uknotv, bcurve->knotv, bcurve->length+bcurve->order);
+    }
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(vknotv = calloc(curve->length+curve->order,
+			   sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(vknotv, curve->knotv, curve->length+curve->order);
+    }
+
   /* fill controlv */
   /* first loop */
   memcpy(controlv, curve->controlv, curve->length*stride*sizeof(double));
@@ -5447,11 +5453,13 @@ ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
   c = stride;
   for(i = 1; i < bcurve->length; i++)
     {
-      ay_status = ay_nct_offset(o1, 0, radius*bcurve->controlv[c], &offcurve1);
+      ay_status = ay_nct_offset(o1, 0, -radius*bcurve->controlv[c],
+				&offcurve1);
       if(ay_status)
 	{ goto cleanup; }
 
-      ay_status = ay_nct_offset(o1, 1, radius*bcurve->controlv[c], &offcurve2);
+      ay_status = ay_nct_offset(o1, 1, -radius*bcurve->controlv[c],
+				&offcurve2);
       if(ay_status)
 	{ goto cleanup; }
 
@@ -5485,28 +5493,44 @@ ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
       if(ay_status)
 	{ goto cleanup; }
 
+      /* access last point in bevel curve */
+      c -= stride;
+
+      /* fill cap control points */
       for(i = 0; i < capped; i++)
 	{
 	  b = 0;
 	  for(j = 0; j < curve->length; j++)
 	    {
-	      controlv[a]   = curve->controlv[b];
-	      controlv[a+1] = curve->controlv[b+1];
-
 	      controlv[a]   = middle[0];
 	      controlv[a+1] = middle[1];
+	      controlv[a+2] = radius*bcurve->controlv[c+1];
+	      controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
 	      a += stride;
 	    }
 	}
-
       /* extend knots */
-
+      if(uknotv)
+	{
+	  ud = (bcurve->knotv[bcurve->length] -
+		bcurve->knotv[bcurve->length-1])/(capped+1);
+	  for(i = 0; i < capped; i++)
+	    {
+	      uknotv[bcurve->length+i] =
+		uknotv[bcurve->length-1] + ud;
+	      ud += ud;
+	    }
+	  /* copy last knots to right place */
+	  memcpy(&(uknotv[bcurve->length+capped]),
+		 &(bcurve->knotv[bcurve->length]),
+		 bcurve->order*sizeof(double));
+	}
     } /* if */
 
   ay_status = ay_npt_create(bcurve->order, curve->order,
 			    bcurve->length+capped, curve->length,
 			    bcurve->knot_type, curve->knot_type,
-			    controlv, NULL, NULL,
+			    controlv, uknotv, vknotv,
 			    bevel);
 
   if(ay_status)
@@ -5528,9 +5552,13 @@ cleanup:
     free(vknotv);
   if(tccontrolv)
     free(tccontrolv);
+  if(offcurve1)
+    ay_nct_destroy(offcurve1);
+  if(offcurve2)
+    ay_nct_destroy(offcurve2);
 
  return ay_status;
-} /* ay_npt_bevel */
+} /* ay_npt_bevelc */
 
 
 /* ay_npt_createcap:
