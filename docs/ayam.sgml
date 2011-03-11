@@ -3480,7 +3480,7 @@ Birail1|NCurve*|Yes|NPatch+|No*@<hline>
 Birail2|NCurve*|Yes|NPatch+|No*@<hline>
 Skin|NCurve*|Yes|NPatch+|No*@<hline>
 Gordon|NCurve*/Level|Yes|NPatch+|No*@<hline>
-Bevel|NCurve|Yes|NPatch|No*@<hline>
+Bevel|NCurve+|Yes|NPatch|No*@<hline>
 Cap|NCurve+|Yes|NPatch|No*@<hline>
 Text|No|Yes|NPatch+|No*@<hline>
 Trim|NPatch/NCurve+/Level+|Yes|NPatch|No*@<hline>
@@ -6458,13 +6458,14 @@ field always displays the parameters of the created NURBS patch.
 <caption>Bevel Object (left: Curve, right: Resulting Bevelled Surface)</caption>
 </figure>
 <p>
-The bevel object forms a bevelled surface from a single parameter
-curve.
+The bevel object forms a bevelled surface from a single planar parameter
+curve. The bevel cross section shape may be defined by a second curve.
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
 <code>
 +-Bevel
- \ NCurve
+ | NCurve
+ \ [NCurve]
 </code>
 <p>
 Bevels are also available as properties of different tool objects
@@ -6483,6 +6484,15 @@ how to easily achieve this. If the curve is closed or periodic,
 the appropriate curve type should be set in the curve object,
 otherwise the bevelled surface may expose defects.
 <p>
+Since Ayam 1.19 the bevel object supports a second parameter curve
+that defines the bevels cross section shape. It should run from
+0,0 to 1,1. If present, the type parameter is ignored (with one
+notable exception) as the shape of the bevel is defined by the second curve.
+If the type is <tt/"RoundCapped"/ or <tt/"LinearCapped"/ the bevel
+will be extended to a cap.
+Note that even if the curve should end at 1,1, this is not mandatory
+and allows for bevels of differing width and height to be created.
+<p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
 <p>
@@ -6493,7 +6503,7 @@ The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Bevel|NCurve|Yes|NPatch|No*@<hline>
+Bevel|NCurve+|Yes|NPatch|No*@<hline>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
 </table>
@@ -7092,7 +7102,7 @@ from the original curve at sharp convex or concave features
 
 <bf/<tt/Hybrid//<newline>
 available since Ayam 1.19, this algorithm offsets the curve two times using
-the Point and Section algorithm and then mixes the results so that the bad
+the Point and Section algorithms and then mixes the results so that the bad
 features of the two algorithms cancel out each other,
 
 <bf/<tt/3DPVN//<newline>
