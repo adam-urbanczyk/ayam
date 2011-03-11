@@ -802,8 +802,8 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 	{
 	  w = (GLdouble)curve->controlv[b];
 
-	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12]*w);
-	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13]*w);
+	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12])*w;
+	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13])*w;
 	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
 	  a += 3;
 	}
@@ -1038,8 +1038,8 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
 	      /* apply transformation */
-	      u[b] = (RtFloat)(m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
-	      v[b] = (RtFloat)(m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
+	      u[b] = (RtFloat)((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
+	      v[b] = (RtFloat)((m[1]*x + m[5]*y + m[9]*z + m[13])*w2);
 	      w[b] = (RtFloat)w2;
 
 	      b++;
@@ -1103,9 +1103,9 @@ ay_npt_wribtrimcurves(ay_object *o)
 
 			  /* apply transformation */
 			  u[b] = (RtFloat)
-			    (m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
+			    ((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
 			  v[b] = (RtFloat)
-			    (m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
+			    ((m[1]*x + m[5]*y + m[9]*z + m[13])*w2);
 			  w[b] = (RtFloat)w2;
 
 			  b++;
@@ -1154,8 +1154,8 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
 		  /* apply transformation */
-		  u[b] = (RtFloat)(m[0]*x + m[4]*y + m[8]*z + m[12]*w2);
-		  v[b] = (RtFloat)(m[1]*x + m[5]*y + m[9]*z + m[13]*w2);
+		  u[b] = (RtFloat)((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
+		  v[b] = (RtFloat)((m[1]*x + m[5]*y + m[9]*z + m[13])*w2);
 		  w[b] = (RtFloat)w2;
 
 		  b++;
@@ -2302,7 +2302,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
       for(i = 0; i < new->height; i++)
 	{
 	  new->controlv[c]   = tcontrolv[b];
-	  new->controlv[c+1] = point[1]*tcontrolv[b+3];
+	  new->controlv[c+1] = point[1];
 	  new->controlv[c+2] = tcontrolv[b+1];
 	  new->controlv[c+3] = tcontrolv[b+3]*w;
 	  b += 4;
@@ -2449,9 +2449,9 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
       for(i = 0; i < cs->length; i++)
 	{
 	  ay_trafo_apply4(p, m);
+
 	  if(fabs(1.0-trcv[j*stride+3]) > AY_EPSILON)
 	    {
-	      p[1] *= trcv[j*stride+3];
 	      p[3] *= trcv[j*stride+3];
 	    }
 	  p += 4;
@@ -4905,7 +4905,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
 
       controlv[c] = point[0];
       controlv[c+1] = point[1];
-      controlv[c+2] = point[2]+(height*curve->controlv[a+3]);
+      controlv[c+2] = point[2]+height;
       controlv[c+3] = curve->controlv[a+3];
 
       c += 4;
@@ -5012,10 +5012,8 @@ ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
     } /* if */
 
   /* now calculate the tangent */
-  T[0] = (P[after*stride]/P[after*stride+3]) -
-    (P[before*stride]/P[before*stride+3]);
-  T[1] = (P[(after*stride)+1]/P[(after*stride)+3]) -
-    (P[(before*stride)+1]/P[(before*stride)+3]);
+  T[0] = P[after*stride] - P[before*stride];
+  T[1] = P[(after*stride)+1] - P[(before*stride)+1];
 
   /* normalize tangent vector */
   l = sqrt(T[0]*T[0]+T[1]*T[1]);
@@ -5195,37 +5193,14 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
   /* transform second loop */
   if((type == 0) || (type == 3))
     {
-
+      a = 0;
       for(j = 0; j < curve->length; j++)
 	{
-	  /* get displacement direction */
-	  ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
-					 curve->order-1, 4, controlv, j,
-					 tangent);
-
-	  w = controlv[b+3];
-	  x = controlv[b]/w;
-	  y = controlv[b+1]/w;
-	  z = controlv[b+2]/w;
-
-	  AY_V3CROSS(normal, tangent, zaxis)
-	  AY_V3SCAL(normal, radius-(radius*w))
-
-	  /* create transformation matrix */
-	  ay_trafo_identitymatrix(m);
-	  ay_trafo_translatematrix(normal[0], normal[1], radius*w, m);
-
-	  /* transform point */
-	  point[0] = m[0]*x + m[4]*y + m[8]*z + m[12]*1.0;
-	  point[1] = m[1]*x + m[5]*y + m[9]*z + m[13]*1.0;
-	  point[2] = m[2]*x + m[6]*y + m[10]*z + m[14]*1.0;
-
-	  controlv[b]   = point[0]*(w*ww);
-	  controlv[b+1] = point[1]*(w*ww);
-	  controlv[b+2] = point[2]*(w*ww);
-
-	  controlv[b+3] = ww*w;
-
+	  controlv[b] = controlv[a];
+	  controlv[b+1] = controlv[a+1];
+	  controlv[b+2] = controlv[a+2]+radius;
+	  controlv[b+3] = controlv[a+3]*ww;
+	  a += 4;
 	  b += 4;
 	} /* for */
     } /* if */
@@ -5240,20 +5215,20 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	      ww = 0.8535;
 	      if(k == 0)
 		{
-		  displacex = 0.8535/ww;
-		  displacey = 0.3535/ww;
+		  displacex = 0.8535;
+		  displacey = 0.3535;
 		}
 	      else
 		{
-		  displacex = 0.3535/ww;
-		  displacey = 0.8535/ww;
+		  displacex = 0.3535;
+		  displacey = 0.8535;
 		}
 	    }
 	  else
 	    {
 	      ww = 1.1;
-	      displacex = 0.5/ww;
-	      displacey = 0.5/ww;
+	      displacex = 0.5;
+	      displacey = 0.5;
 	    }
 
 	  for(j = 0; j < curve->length; j++)
@@ -5269,21 +5244,21 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	      w = controlv[b+3];
 
 	      AY_V3CROSS(normal, tangent, zaxis)
-	      AY_V3SCAL(normal,(radius*(1.0-displacex)))
+	      AY_V3SCAL(normal, (radius*(1.0-displacex)))
 
 	      /* create transformation matrix */
 	      ay_trafo_identitymatrix(m);
 	      ay_trafo_translatematrix(normal[0], normal[1],
-				       displacey * radius * w, m);
+				       displacey * radius, m);
 
 	      /* transform point */
-	      point[0] = m[0]*x + m[4]*y + m[8]*z + m[12]*1.0;
-	      point[1] = m[1]*x + m[5]*y + m[9]*z + m[13]*1.0;
-	      point[2] = m[2]*x + m[6]*y + m[10]*z + m[14]*1.0;
+	      point[0] = m[0]*x + m[4]*y + m[8]*z + m[12];
+	      point[1] = m[1]*x + m[5]*y + m[9]*z + m[13];
+	      point[2] = m[2]*x + m[6]*y + m[10]*z + m[14];
 
-	      controlv[b]   = point[0]*ww;
-	      controlv[b+1] = point[1]*ww;
-	      controlv[b+2] = point[2]*ww;
+	      controlv[b]   = point[0];
+	      controlv[b+1] = point[1];
+	      controlv[b+2] = point[2];
 
 	      controlv[b+3] = w*ww;
 
@@ -5309,7 +5284,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 
       /* create transformation matrix */
       ay_trafo_identitymatrix(m);
-      ay_trafo_translatematrix(normal[0], normal[1], radius*w, m);
+      ay_trafo_translatematrix(normal[0], normal[1], radius, m);
 
       /* transform point */
       point[0] = m[0]*x + m[4]*y + m[8]*z + m[12]*1.0;
@@ -5394,10 +5369,12 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 
 
 /* ay_npt_bevelc:
- *  create a bevel in <bevel> from a planar closed NURB curve <o>;
- *  direction of curve defines, whether bevel rounds inwards or outwards;
- *  type: 0 - round (quarter circle), 1 - linear, 2 - ridge
- *  radius: radius of the bevel
+ *  create a bevel in <bevel> from a planar closed NURB curve <o1>;
+ *  <o2> defines the cross section of the bevel, it should run from
+ *  0,0 to 1,1: bevel rounds inwards (to make it round outwards, let
+ *  <o2> run from 0,0 to 0,-1;
+ *  radius: radius of the bevel (-DBL_MAX, DBL_MAX);
+ *  capped: create capped bevel (0, 1)?
  */
 int
 ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
@@ -5502,6 +5479,7 @@ ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
 	  b = 0;
 	  for(j = 0; j < curve->length; j++)
 	    {
+	      /* XXXX add support for capped>1 here */
 	      controlv[a]   = middle[0];
 	      controlv[a+1] = middle[1];
 	      controlv[a+2] = radius*bcurve->controlv[c+1];
