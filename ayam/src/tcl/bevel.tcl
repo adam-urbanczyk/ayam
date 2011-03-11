@@ -108,7 +108,7 @@ proc bevel_setTags { } {
     if { $newtags != "" } {
 	eval [subst "setTags $newtags"]
     } else {
-	delTags all
+	delTags "BP"
     }
 
  return;
