@@ -2261,8 +2261,8 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
       /* project point onto XY-Plane! */
       point[2] = 0.0; /* XXXX loss of data! */
 
-      point[0] = m[0]*x + m[4]*y /*+ m[8]*point[2]*/ + m[12]*w;
-      point[1] = m[1]*x + m[5]*y /*+ m[9]*point[2]*/ + m[13]*w;
+      point[0] = m[0]*x + m[4]*y /*+ m[8]*point[2]*/ + m[12];
+      point[1] = m[1]*x + m[5]*y /*+ m[9]*point[2]*/ + m[13];
       /*point[3] = m[3]*x + m[7]*y + m[11]*point[2] + m[15]*w;*/
 
       radius = point[0];
