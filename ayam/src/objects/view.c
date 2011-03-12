@@ -1262,7 +1262,7 @@ ay_view_notifycb(ay_object *o)
 	      j = 0;
 	      for(i = 0; i < np->width*np->height; i++)
 		{
-		  ay_trafo_apply4(&(np->controlv[j]), m);
+		  ay_trafo_apply3(&(np->controlv[j]), m);
 		  j += 4;
 		}
 	    }
