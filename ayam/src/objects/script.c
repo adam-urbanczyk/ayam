@@ -1770,24 +1770,39 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(cmo->type != type)
 		{
 		  ay_status = ay_provide_object(cmo, type, npo);
+
+		  /* test succeeded */
+		  if(!result && (ay_status == AY_OK))
+		    return AY_OK;
 		}
 	      else
 		{
+		  /* test succeeded */
+		  if(!result)
+		    return AY_OK;
+
 		  ay_status = ay_object_copy(cmo, npo);
 		}
 
 	      if(!ay_status && *npo)
 		{
-		  npo = &((*npo)->next);
+		  while(*npo)
+		    npo = &((*npo)->next);
 		}
 	      cmo = cmo->next;
 	    } /* while */
-	  *result = po;
+
+	  if(result)
+	    *result = po;
 	} /* if */
       break;
     default:
       break;
     } /* switch */
+
+  /* test failed */
+  if(!result)
+    return AY_ERROR;
 
  return AY_OK;
 } /* ay_script_providecb */
