@@ -1593,7 +1593,7 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 	  j = 0;
 	  for(k = 0; k < dstlen; k++)
 	    {
-	      ay_trafo_apply4(&(controlv[j]), m);
+	      ay_trafo_apply3(&(controlv[j]), m);
 	      j += stride;
 	    } /* for */
 	}
@@ -1700,7 +1700,7 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 	  k = 0;
 	  for(i = 0; i < dstlen; i++)
 	    {
-	      ay_trafo_apply4(&(controlv[k]), m);
+	      ay_trafo_apply3(&(controlv[k]), m);
 	      k += stride;
 	    } /* for */
 	}
@@ -1902,7 +1902,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 	  /* apply curves transformation-matrix */
 	  for(j = 0; j < newheight; j++)
 	    {
-	      ay_trafo_apply4(&(newcontrolv[i]), m);
+	      ay_trafo_apply3(&(newcontrolv[i]), m);
 	      i += stride;
 	    } /* for */
 	}
@@ -2367,7 +2367,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   a = 0;
   for(i = 0; i < cs->length; i++)
     {
-      ay_trafo_apply4(&(cscv[a]), m);
+      ay_trafo_apply3(&(cscv[a]), m);
       a += stride;
     }
 
@@ -2380,7 +2380,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   a = 0;
   for(i = 0; i < tr->length; i++)
     {
-      ay_trafo_apply4(&(trcv[a]), m);
+      ay_trafo_apply3(&(trcv[a]), m);
       a += stride;
     }
 
@@ -2448,7 +2448,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
 
       for(i = 0; i < cs->length; i++)
 	{
-	  ay_trafo_apply4(p, m);
+	  ay_trafo_apply3(p, m);
 
 	  if(fabs(1.0-trcv[j*stride+3]) > AY_EPSILON)
 	    {
@@ -2536,7 +2536,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < cs->length; i++)
     {
-      ay_trafo_apply4(&(cscv[a]), mcs);
+      ay_trafo_apply3(&(cscv[a]), mcs);
       a += stride;
     }
 
@@ -2549,7 +2549,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < tr->length; i++)
     {
-      ay_trafo_apply4(&(trcv[a]), mtr);
+      ay_trafo_apply3(&(trcv[a]), mtr);
       a += stride;
     }
 
@@ -2566,7 +2566,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       a = 0;
       for(i = 0; i < sf->length; i++)
 	{
-	  ay_trafo_apply4(&(sfcv[a]), mtr);
+	  ay_trafo_apply3(&(sfcv[a]), mtr);
 	  if(fabs(sfcv[a+2]) > AY_EPSILON)
 	    sfis3d = AY_TRUE;
 	  a += stride;
@@ -2768,7 +2768,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&(controlv[i*cs->length*stride+j*stride]), mi);
+	  ay_trafo_apply3(&(controlv[i*cs->length*stride+j*stride]), mi);
 	} /* for */
 
 
@@ -2986,7 +2986,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < cs->length; i++)
     {
-      ay_trafo_apply4(&(cscv[a]), mcs);
+      ay_trafo_apply3(&(cscv[a]), mcs);
       a += stride;
     }
 
@@ -2999,7 +2999,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < tr->length; i++)
     {
-      ay_trafo_apply4(&(trcv[a]), mtr);
+      ay_trafo_apply3(&(trcv[a]), mtr);
       a += stride;
     }
 
@@ -3016,7 +3016,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       a = 0;
       for(i = 0; i < sf->length; i++)
 	{
-	  ay_trafo_apply4(&(sfcv[a]), mtr);
+	  ay_trafo_apply3(&(sfcv[a]), mtr);
 	  if(fabs(sfcv[a+2]) > AY_EPSILON)
 	    sfis3d = AY_TRUE;
 	  a += stride;
@@ -3182,7 +3182,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&(controlv[i*cs->length*stride+j*stride]), mi);
+	  ay_trafo_apply3(&(controlv[i*cs->length*stride+j*stride]), mi);
 	} /* for */
 
     } /* for */
@@ -3268,7 +3268,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < cs->length; i++)
     {
-      ay_trafo_apply4(&(cscv[a]), mcs);
+      ay_trafo_apply3(&(cscv[a]), mcs);
       a += stride;
     }
 
@@ -3281,7 +3281,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < r1->length; i++)
     {
-      ay_trafo_apply4(&(r1cv[a]), mr1);
+      ay_trafo_apply3(&(r1cv[a]), mr1);
       a += stride;
     }
 
@@ -3294,7 +3294,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   a = 0;
   for(i = 0; i < r2->length; i++)
     {
-      ay_trafo_apply4(&(r2cv[a]), mr2);
+      ay_trafo_apply3(&(r2cv[a]), mr2);
       a += stride;
     }
 
@@ -3509,7 +3509,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       /* sweep profile */
       for(j = 0; j < cs->length; j++)
 	{
-	  ay_trafo_apply4(&controlv[i*cs->length*stride+j*stride], mi);
+	  ay_trafo_apply3(&controlv[i*cs->length*stride+j*stride], mi);
 	} /* for */
 
       /* save rail vector for next iteration */
@@ -3548,8 +3548,8 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
       for(j = 0; j < tc->length; j++)
 	{
-	  ay_trafo_apply4(&(tc->controlv[j*stride]), mcs);
-	  ay_trafo_apply4(&(tc->controlv[j*stride]), mi);
+	  ay_trafo_apply3(&(tc->controlv[j*stride]), mcs);
+	  ay_trafo_apply3(&(tc->controlv[j*stride]), mi);
 	} /* for */
 
       ay_status = ay_capt_createfromcurve(curve, end_cap);
@@ -3696,7 +3696,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       a = 0;
       for(i = 0; i < ic->length; i++)
 	{
-	  ay_trafo_apply4(&(iccv[a]), mr1);
+	  ay_trafo_apply3(&(iccv[a]), mr1);
 	  a += stride;
 	}
       plenic = fabs(ic->knotv[ic->length] - ic->knotv[ic->order-1]);
@@ -3711,7 +3711,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   a = 0;
   for(i = 0; i < cs1->length; i++)
     {
-      ay_trafo_apply4(&(cs1cv[a]), mcs);
+      ay_trafo_apply3(&(cs1cv[a]), mcs);
       a += stride;
     }
 
@@ -3724,7 +3724,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   a = 0;
   for(i = 0; i < r1->length; i++)
     {
-      ay_trafo_apply4(&(r1cv[a]), mr1);
+      ay_trafo_apply3(&(r1cv[a]), mr1);
       a += stride;
     }
 
@@ -3737,7 +3737,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   a = 0;
   for(i = 0; i < r2->length; i++)
     {
-      ay_trafo_apply4(&(r2cv[a]), mr2);
+      ay_trafo_apply3(&(r2cv[a]), mr2);
       a += stride;
     }
 
@@ -3750,7 +3750,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   a = 0;
   for(i = 0; i < cs2->length; i++)
     {
-      ay_trafo_apply4(&(cs2cv[a]), mcs);
+      ay_trafo_apply3(&(cs2cv[a]), mcs);
       a += stride;
     }
 
@@ -3970,7 +3970,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
   for(j = 0; j < cs2->length; j++)
     {
-      ay_trafo_apply4(&cs2cv[j*stride], mcs);
+      ay_trafo_apply3(&cs2cv[j*stride], mcs);
     } /* for */
 
   ay_trafo_identitymatrix(mr);
@@ -4139,7 +4139,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       /* sweep profile */
       for(j = 0; j < cs1->length; j++)
 	{
-	  ay_trafo_apply4(&controlv[i*cs1->length*stride+j*stride], mi);
+	  ay_trafo_apply3(&controlv[i*cs1->length*stride+j*stride], mi);
 	} /* for */
 
       /* save rail vector for next iteration */
@@ -5181,7 +5181,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	  for(j = 0; j < curve->length; j++)
 	    {
 	      memcpy(&(controlv[b]), &(curve->controlv[a]), 4*sizeof(double));
-	      /*ay_trafo_apply4(&(controlv[b]), m);*/
+	      /*ay_trafo_apply3(&(controlv[b]), m);*/
 	      controlv[b+2] = 0.0;
 	      a += 4;
 	      b += 4;
@@ -5350,7 +5350,7 @@ ay_npt_bevel(int type, double radius, int align, ay_object *o,
 	{
 	  for(j = 0; j < curve->length; j++)
 	    {
-	      ay_trafo_apply4(&(controlv[b]), m);
+	      ay_trafo_apply3(&(controlv[b]), m);
 	      b += 4;
 	    } /* for */
 	} /* for */
@@ -5667,7 +5667,7 @@ ay_npt_applytrafo(ay_object *p)
   i = 0;
   while(i < np->width*np->height*stride)
     {
-      ay_trafo_apply4(&(np->controlv[i]), m);
+      ay_trafo_apply3(&(np->controlv[i]), m);
 
       i += stride;
     } /* while */
@@ -7212,7 +7212,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       b = 0;
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_trafo_apply4(&(cv[b]), m);
+	  ay_trafo_apply3(&(cv[b]), m);
 	  b += stride;
 	}
     }
