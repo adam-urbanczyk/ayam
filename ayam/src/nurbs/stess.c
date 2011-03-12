@@ -992,8 +992,9 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		  for(j = 0; j < c->length; j++)
 		    {
 		      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
-		      AY_APTRAN4(p2, p1, mm)
-		      memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
+		      AY_APTRAN3(p2, p1, mm)
+		      memcpy(&(dtmp[j*4]), p2, 3*sizeof(double));
+		      dtmp[j*4+3] = c->controlv[j*4+3];
 		    }
 		  ti = 0;
 		  ay_stess_CurvePoints2D(c->length, c->order-1, c->knotv, dtmp,
@@ -1062,8 +1063,9 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  for(j = 0; j < c->length; j++)
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
-	      AY_APTRAN4(p2, p1, mm)
-	      memcpy(&(dtmp[j*4]), p2, 4*sizeof(double));
+	      AY_APTRAN3(p2, p1, mm)
+	      memcpy(&(dtmp[j*4]), p2, 3*sizeof(double));
+	      dtmp[j*4+3] = c->controlv[j*4+3];
 	    }
 
 	  ay_stess_CurvePoints2D(c->length, c->order-1, c->knotv, dtmp,

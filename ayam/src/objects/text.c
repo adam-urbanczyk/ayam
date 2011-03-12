@@ -942,7 +942,15 @@ ay_text_notifycb(ay_object *o)
 			{
 			  p1 = &(text->pnts[a]);
 			  p2 = pe.coords[j];
-			  AY_APTRAN4(p1, p2, m);
+			  AY_APTRAN3(p1, p2, m);
+			  if(pe.homogenous)
+			    {
+			      p1[3] = pe.coords[j][3];
+			    }
+			  else
+			    {
+			      p1[3] = 1.0;
+			    }
 			  a += 4;
 			} /* for */
 		    }
