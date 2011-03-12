@@ -7444,10 +7444,13 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
     }
 
   p = tcv;
-  for(i = 0; i < ncurve->length-1; i++)
+  for(i = 0; i < ncurve->length; i++)
     {
       AY_APTRAN3(p,cv,m);
-      p[3] = cv[3];
+      /* multiply in the weights to not get fooled
+	 by e.g. a 9-point-circle */
+      p[0] *= cv[3];
+      p[1] *= cv[3];
       p += stride;
       cv += stride;
     }
