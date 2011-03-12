@@ -1072,7 +1072,8 @@ ay_clone_notifycb(ay_object *o)
 				{
 				  p1 = &(clone->pnts[a]);
 				  p2 = pe.coords[j];
-				  AY_APTRAN4(p1, p2, m);
+				  AY_APTRAN3(p1, p2, m);
+				  p1[3] = pe.coords[j][3];
 				  a += 4;
 				} /* for */
 			    }
@@ -1129,7 +1130,8 @@ ay_clone_notifycb(ay_object *o)
 				    {
 				      p1 = &(clone->pnts[a]);
 				      p2 = pe.coords[j];
-				      AY_APTRAN4(p1, p2, m);
+				      AY_APTRAN3(p1, p2, m);
+				      p1[3] = pe.coords[j][3];
 				      a += 4;
 				    } /* for */
 				}
@@ -1152,7 +1154,8 @@ ay_clone_notifycb(ay_object *o)
 				    {
 				      p1 = &(clone->pnts[a]);
 				      p2 = pe.coords[j];
-				      AY_APTRAN4(p1, p2, m);
+				      AY_APTRAN3(p1, p2, m);
+				      p1[3] = pe.coords[j][3];
 				      a += 4;
 				    } /* for */
 				}

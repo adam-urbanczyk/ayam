@@ -656,7 +656,7 @@ ay_gordon_notifycb(ay_object *o)
 		      a = 0;
 		      for(i = 0; i < patch->width*patch->height; i++)
 			{
-			  ay_trafo_apply4(&(patch->controlv[a]), m);
+			  ay_trafo_apply3(&(patch->controlv[a]), m);
 			  a += 4;
 			}
 		    } /* if */
