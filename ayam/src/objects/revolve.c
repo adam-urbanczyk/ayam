@@ -936,8 +936,8 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   for(i = 0; i < tc->length*4; i+=4)
     {
       memcpy(P1, &(ccv[i]), 4*sizeof(double));
-      AY_APTRAN4(P2, P1, m)
-      memcpy(&(ccv[i]), P2, 4*sizeof(double));
+      AY_APTRAN3(P2, P1, m)
+      memcpy(&(ccv[i]), P2, 3*sizeof(double));
     }
 
   ay_trafo_defaults(trim);
