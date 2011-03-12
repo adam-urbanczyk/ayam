@@ -3253,7 +3253,7 @@ ay_nct_applytrafo(ay_object *c)
   i = 0;
   while(i < nc->length*stride)
     {
-      ay_trafo_apply4(&(nc->controlv[i]), m);
+      ay_trafo_apply3(&(nc->controlv[i]), m);
 
       i += stride;
     } /* while */
@@ -4571,7 +4571,7 @@ ay_nct_toxy(ay_object *c)
   p = nc->controlv;
   for(i = 0; i < nc->length; i++)
     {
-      ay_trafo_apply4(p, m);
+      ay_trafo_apply3(p, m);
       p += stride;
     } /* for */
 
@@ -4689,7 +4689,7 @@ ay_nct_toxy(ay_object *c)
       p = nc->controlv;
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_trafo_apply4(p, m);
+	  ay_trafo_apply3(p, m);
 	  p += stride;
 	} /* for */
 
