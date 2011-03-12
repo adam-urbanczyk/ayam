@@ -597,7 +597,7 @@ ay_gordon_notifycb(ay_object *o)
 		  a = 0;
 		  for(i = 0; i < curve->length; i++)
 		    {
-		      ay_trafo_apply4(&(curve->controlv[a]), m);
+		      ay_trafo_apply3(&(curve->controlv[a]), m);
 		      a += 4;
 		    }
 		} /* if */

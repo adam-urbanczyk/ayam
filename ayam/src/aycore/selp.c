@@ -125,10 +125,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
       p = o->selp;
       while(p)
 	{
-	  if(p->homogenous)
-	    ay_trafo_apply4(p->point, m);
-	  else
-	    ay_trafo_apply3(p->point, m);
+	  ay_trafo_apply3(p->point, m);
 
 	  p = p->next;
 	}

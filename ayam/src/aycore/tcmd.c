@@ -723,16 +723,11 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		{
 		  ay_trafo_creatematrix(o, m);
 		}
-
+	      memcpy(tmp, p, 3*sizeof(double));
+	      ay_trafo_apply3(tmp, m);
 	      if(homogenous)
 		{
-		  memcpy(tmp, p, 4*sizeof(double));
-		  ay_trafo_apply4(tmp, m);
-		}
-	      else
-		{
-		  memcpy(tmp, p, 3*sizeof(double));
-		  ay_trafo_apply3(tmp, m);
+		  tmp[3] = p[3];
 		}
 
 	      tp = tmp;
@@ -1019,14 +1014,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		ay_trafo_invmatrix4(m, mi);
 	       glPopMatrix();
 
-	       if(homogenous)
-		 {
-		   ay_trafo_apply4(p, mi);
-		 }
-	       else
-		 {
-		   ay_trafo_apply3(p, mi);
-		 }
+	       ay_trafo_apply3(p, mi);
 	    } /* if */
 
 	  ay_notify_force(o);
