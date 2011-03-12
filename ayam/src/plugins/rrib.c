@@ -837,10 +837,6 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
       np.uknotv[i] = (double)(uknot[i]);
     }
 
-
-
-
-
   if(!(np.vknotv = calloc(nv+vorder, sizeof(double))))
     return;
 
@@ -891,6 +887,10 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
 	  if(stride == 4)
 	    {
 	      p[3] = (double)(pp[3]);
+	      /* de-multiply weights */
+	      p[0] /= p[3];
+	      p[1] /= p[3];
+	      p[2] /= p[3];
 	    }
 	  else
 	    {
@@ -1001,9 +1001,11 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     l = 0;
 	     for(k = 0; k < *nptr; k++)
 	       {
-		 nc->controlv[l] = (double)*uptr;
-		 nc->controlv[l+1] = (double)*vptr;
+		 /* copy data and de-multiply weights */
+		 nc->controlv[l] = (double)*uptr/(*wptr);
+		 nc->controlv[l+1] = (double)*vptr/(*wptr);
 		 nc->controlv[l+3] = (double)*wptr;
+
 		 l += 4;
 		 uptr++;
 		 vptr++;
@@ -1068,8 +1070,9 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 l = 0;
 	 for(k = 0; k < *nptr; k++)
 	   {
-	     nc->controlv[l] = (double)*uptr;
-	     nc->controlv[l+1] = (double)*vptr;
+	     /* copy data and de-multiply weights */
+	     nc->controlv[l] = (double)*uptr/(*wptr);
+	     nc->controlv[l+1] = (double)*vptr/(*wptr);
 	     nc->controlv[l+3] = (double)*wptr;
 	     l += 4;
 	     uptr++;
@@ -2509,33 +2512,31 @@ ay_rrib_RiPatch(RtToken type,
  RtFloat *pw = NULL;
  char *hvars[2] = {"P","Pw"};
 
- if(!strcmp(type, RI_BICUBIC))
-   {
-     ay_rrib_RiPatchMesh(RI_BICUBIC, 4, (RtToken)"no",
-			 4, (RtToken)"no", n, tokens, parms);
-     return;
-   }
-
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
+
+  /* only handle non-rational bilinear patches by Ayam BPatch objects */
   if(tokensfound[PPWTBL_PW])
     {
-      pw = (RtFloat*)tokensfound[PPWTBL_PW];
-      stride = 4;
+      ay_rrib_RiPatchMesh(RI_BILINEAR, 2, (RtToken)"no",
+			  2, (RtToken)"no", n, tokens, parms);
+    }
+  if((!strcmp(type, RI_BICUBIC)))
+    {
+
+      ay_rrib_RiPatchMesh(RI_BICUBIC, 4, (RtToken)"no",
+			  4, (RtToken)"no", n, tokens, parms);
+      return;
+    }
+
+  if(tokensfound[PPWTBL_P])
+    {
+      pw = (RtFloat*)tokensfound[PPWTBL_P];
+      stride = 3;
     }
   else
     {
-      if(tokensfound[PPWTBL_P])
-	{
-	  pw = (RtFloat*)tokensfound[PPWTBL_P];
-	  stride = 3;
-	}
-      else
-	{
-	  return;
-	}
-    } /* if */
-
-  /* XXXX divide by w? */
+      return;
+    }
 
   i = 0;
   bp.p1[0] = pw[i];
@@ -2656,6 +2657,10 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	  if(stride == 4)
 	    {
 	      p[3] = (double)(pp[3]);
+	      /* de-multiply weights */
+	      p[0] /= p[3];
+	      p[1] /= p[3];
+	      p[2] /= p[3];
 	    }
 	  else
 	    {

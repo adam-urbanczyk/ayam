@@ -1398,9 +1398,9 @@ ay_nb_CurvePoint4D(int n, int p, double *U, double *Pw, double u, double *C)
     {
 
       k = (span-p+j)*4;
-      Cw[0] = Cw[0] + N[j]*Pw[k];
-      Cw[1] = Cw[1] + N[j]*Pw[k+1];
-      Cw[2] = Cw[2] + N[j]*Pw[k+2];
+      Cw[0] = Cw[0] + N[j]*Pw[k]*Pw[k+3];
+      Cw[1] = Cw[1] + N[j]*Pw[k+1]*Pw[k+3];
+      Cw[2] = Cw[2] + N[j]*Pw[k+2]*Pw[k+3];
       Cw[3] = Cw[3] + N[j]*Pw[k+3];
     }
 
@@ -1481,9 +1481,9 @@ ay_nb_SurfacePoint4D(int n, int m, int p, int q, double *U, double *V,
 	  /* was: temp[l] = temp[l] + Nu[k]*Pw[indu+k][indv]; */
 	  i = (((indu+k)*(m+1))+indv)*4;
 
-	  temp[j+0] += Nu[k]*Pw[i];
-	  temp[j+1] += Nu[k]*Pw[i+1];
-	  temp[j+2] += Nu[k]*Pw[i+2];
+	  temp[j+0] += Nu[k]*Pw[i]*Pw[i+3];
+	  temp[j+1] += Nu[k]*Pw[i+1]*Pw[i+3];
+	  temp[j+2] += Nu[k]*Pw[i+2]*Pw[i+3];
 	  temp[j+3] += Nu[k]*Pw[i+3];
 	} /* for */
       j += 4;
@@ -1770,14 +1770,14 @@ ay_nb_ComputeFirstDer4D(int n, int p, double *U, double *Pw, double u,
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      C0[0] = C0[0] + nders[j] * (Pw[k]);
-      C0[1] = C0[1] + nders[j] * (Pw[k+1]);
-      C0[2] = C0[2] + nders[j] * (Pw[k+2]);
+      C0[0] = C0[0] + nders[j] * (Pw[k]*Pw[k+3]);
+      C0[1] = C0[1] + nders[j] * (Pw[k+1]*Pw[k+3]);
+      C0[2] = C0[2] + nders[j] * (Pw[k+2]*Pw[k+3]);
       wder0 = wder0 + nders[j] * (Pw[k+3]);
 
-      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]);
-      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]);
-      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]);
+      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]*Pw[k+3]);
+      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]*Pw[k+3]);
+      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]*Pw[k+3]);
       wder1 = wder1 + nders[(p+1)+j] * (Pw[k+3]);
     }
 
@@ -1835,19 +1835,19 @@ ay_nb_ComputeSecDer4D(int n, int p, double *U, double *Pw, double u,
   for(j = 0; j <= p; j++)
     {
       k = (span-p+j)*4;
-      C0[0] = C0[0] + nders[j] * (Pw[k]);
-      C0[1] = C0[1] + nders[j] * (Pw[k+1]);
-      C0[2] = C0[2] + nders[j] * (Pw[k+2]);
+      C0[0] = C0[0] + nders[j] * (Pw[k]*Pw[k+3]);
+      C0[1] = C0[1] + nders[j] * (Pw[k+1]*Pw[k+3]);
+      C0[2] = C0[2] + nders[j] * (Pw[k+2]*Pw[k+3]);
       wder0 = wder0 + nders[j] * (Pw[k+3]);
 
-      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]);
-      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]);
-      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]);
+      C1[0] = C1[0] + nders[(p+1)+j] * (Pw[k]*Pw[k+3]);
+      C1[1] = C1[1] + nders[(p+1)+j] * (Pw[k+1]*Pw[k+3]);
+      C1[2] = C1[2] + nders[(p+1)+j] * (Pw[k+2]*Pw[k+3]);
       wder1 = wder1 + nders[(p+1)+j] * (Pw[k+3]);
 
-      C2[0] = C2[0] + nders[(p+1)*2+j] * (Pw[k]);
-      C2[1] = C2[1] + nders[(p+1)*2+j] * (Pw[k+1]);
-      C2[2] = C2[2] + nders[(p+1)*2+j] * (Pw[k+2]);
+      C2[0] = C2[0] + nders[(p+1)*2+j] * (Pw[k]*Pw[k+3]);
+      C2[1] = C2[1] + nders[(p+1)*2+j] * (Pw[k+1]*Pw[k+3]);
+      C2[2] = C2[2] + nders[(p+1)*2+j] * (Pw[k+2]*Pw[k+3]);
       wder2 = wder2 + nders[(p+1)*2+j] * (Pw[k+3]);
     } /* for */
 
@@ -1941,9 +1941,9 @@ ay_nb_CompFirstDerSurf4D(int n, int m, int p, int q, double *U, double *V,
 	    {
 	      /* was: temp[s] = temp[s] + Nu[k][r]*P[uspan-p+r][vspan-q+s]; */
 	      i = (((uspan-p+r)*(m+1))+(vspan-q+s))*4;
-	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i];
-	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1];
-	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2];
+	      temp[s*4]   += Nu[(k*(p+1))+r]*Pw[i]*Pw[i+3];
+	      temp[s*4+1] += Nu[(k*(p+1))+r]*Pw[i+1]*Pw[i+3];
+	      temp[s*4+2] += Nu[(k*(p+1))+r]*Pw[i+2]*Pw[i+3];
 	      temp[s*4+3] += Nu[(k*(p+1))+r]*Pw[i+3];
 	    }
 	}
