@@ -865,7 +865,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   /* apply transformation matrix */
   for(i = 0; i < 4; i++)
     {
-      ay_trafo_apply4(&(controlv[i*4]), m);
+      ay_trafo_apply3(&(controlv[i*4]), m);
     } /* for */
 
   /* rescale cross section curve and rotate it to the XY plane
