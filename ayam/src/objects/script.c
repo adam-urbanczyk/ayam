@@ -1754,6 +1754,46 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   sc = (ay_script_object *)(o->refine);
 
+  if(!result)
+    {
+      switch(sc->type)
+	{
+	case 1:
+	case 2:
+	  if(sc->cm_objects)
+	    {
+	      npo = &po;
+	      cmo = sc->cm_objects;
+	      while(cmo && cmo->next)
+		{
+		  if(cmo->type != type)
+		    {
+		      ay_status = ay_provide_object(cmo, type, NULL);
+
+		      if(ay_status == AY_OK)
+			{
+			  return AY_OK;
+			}
+		      /* it is sufficient if we can provide atleast
+			 one object of wanted type, thus we do not
+			 give up here immediately... */
+		    }
+		  else
+		    {
+		      return AY_OK;
+		    }
+
+		  cmo = cmo->next;
+		} /* while */
+	    } /* if */
+	  break;
+	default:
+	  break;
+	} /* switch */
+
+      return AY_ERROR;
+    } /* if */
+
   if(sc->cm_objects)
     ay_sel_clearselflag(sc->cm_objects);
 
@@ -1770,17 +1810,9 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(cmo->type != type)
 		{
 		  ay_status = ay_provide_object(cmo, type, npo);
-
-		  /* test succeeded */
-		  if(!result && (ay_status == AY_OK))
-		    return AY_OK;
 		}
 	      else
 		{
-		  /* test succeeded */
-		  if(!result)
-		    return AY_OK;
-
 		  ay_status = ay_object_copy(cmo, npo);
 		}
 
@@ -1799,10 +1831,6 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
     default:
       break;
     } /* switch */
-
-  /* test failed */
-  if(!result)
-    return AY_ERROR;
 
  return AY_OK;
 } /* ay_script_providecb */

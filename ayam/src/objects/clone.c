@@ -1342,16 +1342,28 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!result)
     {
-      if(o->down)
+      down = o->down;
+      while(down)
 	{
 	  if(o->down->type == type)
-	    return AY_OK;
+	    {
+	      return AY_OK;
+	    }
 	  else
-	    return ay_provide_object(o->down, type, NULL);
-	}
-      else
-	return AY_ERROR;
-    }
+	    {
+	      ay_status = ay_provide_object(o->down, type, NULL);
+	      if(ay_status == AY_OK)
+		return AY_OK;
+	      /* it is sufficient if we can provide atleast
+		 one object of wanted type, thus we do not
+		 give up here immediately... */
+	    }
+
+	  down = down->next;
+	} /* while */
+
+      return AY_ERROR;
+    } /* if */
 
   cc = (ay_clone_object *) o->refine;
 
@@ -1377,13 +1389,14 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  if(newo)
 	    {
 	      *next = newo;
-	      next = &(newo->next);
 	      /* add trafo to all provided objects */
-	      while(newo)
+	      ay_trafo_add(o, newo);
+	      while(newo->next)
 		{
-		  ay_trafo_add(o, newo);
 		  newo = newo->next;
+		  ay_trafo_add(o, newo);
 		}
+	      next = &(newo->next);
 	    } /* if */
 	  down = down->next;
 	} /* while */
@@ -1412,10 +1425,10 @@ ay_clone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      ay_trafo_add(o, po);
 	      po = po->next;
 	    }
-	  /* link clones */
+	  /* link provided objects to result */
 	  if(cc->mirror == 0)
 	    {
-	      /* in order */
+	      /* in order for normal clones */
 	      *next = newo;
 	      while(newo->next)
 		{
