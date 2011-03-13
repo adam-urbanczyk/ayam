@@ -1158,6 +1158,9 @@ mopsi_nurbcurve(FILE *fileptr, ay_object *o)
       if(has_weights)
 	{
 	  fscanf(fileptr,"%lg\n",&(curve->controlv[a]));
+	  curve->controlv[a-3] /= curve->controlv[a];
+	  curve->controlv[a-2] /= curve->controlv[a];
+	  curve->controlv[a-1] /= curve->controlv[a];
 	  a++;
 	}
       else
@@ -1246,6 +1249,9 @@ mopsi_nurbpatch(FILE *fileptr, ay_object *o)
 	if(has_weights)
 	  {
 	    fscanf(fileptr,"%lg\n",&(patch->controlv[a]));
+	    patch->controlv[a-3] /= patch->controlv[a];
+	    patch->controlv[a-2] /= patch->controlv[a];
+	    patch->controlv[a-1] /= patch->controlv[a];
 	    a++;
 	  }
 	else
