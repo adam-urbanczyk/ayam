@@ -84,6 +84,8 @@ static int objio_tesspomesh = AY_FALSE;
 
 static int objio_writecurves = AY_TRUE;
 
+static int objio_writedmw = AY_FALSE; /** < de-multiply weights? */
+
 static unsigned int objio_allobjcnt = 0;
 static unsigned int objio_curobjcnt = 0;
 
@@ -347,10 +349,10 @@ objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
     {
       if(nc->is_rat)
 	{
-	  pw[0] = p1[0]/p1[3];
-	  pw[1] = p1[1]/p1[3];
+	  pw[0] = p1[0];
+	  pw[1] = p1[1];
 	  AY_APTRAN3(v,pw,ma)
-	    v[2] = p1[3];
+	  v[2] = p1[3];
 	  fprintf(fileptr, "vp %g %g %g\n", v[0], v[1], v[2]);
 	}
       else
@@ -671,11 +673,11 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 	{
 	  if(np->is_rat)
 	    {
-	      pw[0] = p2[0]/p2[3];
-	      pw[1] = p2[1]/p2[3];
-	      pw[2] = p2[2]/p2[3];
+	      pw[0] = p2[0];
+	      pw[1] = p2[1];
+	      pw[2] = p2[2];
 	      AY_APTRAN3(p1,pw,m)
-		p1[3] = p2[3];
+	      p1[3] = p2[3];
 	      p1 += 4;
 	    }
 	  else
@@ -3219,7 +3221,9 @@ cleanup:
 
 /* objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam style);
- *  additionally, multiply the weights in for rational vertices, and
+ *  additionally, set the is_rat attribute
+ *  (optionally) de-multiplying the weights for rational vertices
+ *  (optionally) multiply the weights in for rational vertices, and
  *  try to detect the knot type
  */
 int
@@ -3243,11 +3247,11 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 	{
 	  memcpy(p1, p2, stride * sizeof(double));
 
-	  if(p1[3] != 1.0)
+	  if(objio_writedmw && (p1[3] != 1.0))
 	    {
-	      p1[0] *= p1[3];
-	      p1[1] *= p1[3];
-	      p1[2] *= p1[3];
+	      p1[0] /= p1[3];
+	      p1[1] /= p1[3];
+	      p1[2] /= p1[3];
 	    }
 
 	  p1 += stride;
@@ -3283,10 +3287,11 @@ objio_fixnpatch(ay_nurbpatch_object *np)
 
 
 /* objio_fixncurve:
- *  fix a Wavefront NURBS curve by
- *  multiplying the weights in for rational vertices
- *  rescaling the knot vector to safe distances, and
- *  try to detect the knot type
+ *  fix up a Wavefront NURBS curve by
+ *  setting the is_rat attribute
+ *  (optionally) de-multiplying the weights
+ *  (optionally) rescaling the knot vector to safe distances, and
+ *  trying to detect the knot type
  */
 int
 objio_fixncurve(ay_nurbcurve_object *nc)
@@ -3300,18 +3305,21 @@ objio_fixncurve(ay_nurbcurve_object *nc)
 
   p = nc->controlv;
 
-  for(i = 0; i < nc->length; i++)
-    {
-      if(p[3] != 1.0)
-	{
-	  p[0] *= p[3];
-	  p[1] *= p[3];
-	  p[2] *= p[3];
-	} /* if */
-      p += stride;
-    } /* for */
-
   nc->is_rat = ay_nct_israt(nc);
+
+  if(nc->is_rat && objio_writedmw)
+    {
+      for(i = 0; i < nc->length; i++)
+	{
+	  if(p[3] != 1.0)
+	    {
+	      p[0] /= p[3];
+	      p[1] /= p[3];
+	      p[2] /= p[3];
+	    } /* if */
+	  p += stride;
+	} /* for */
+    }
 
   if(objio_rescaleknots != 0.0)
     {

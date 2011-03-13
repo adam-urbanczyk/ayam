@@ -244,7 +244,7 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 {
  int ay_status = AY_OK;
  int i, j, a, stride = 4;
- double *cv, umin, umax, vmin, vmax;
+ double cv[4], umin, umax, vmin, vmax;
  ay_nurbpatch_object *np = NULL;
  ON_NurbsSurface *p_n = NULL;
 
@@ -263,22 +263,19 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 
   // copy control points
   a = 0;
-  cv = p_n->m_cv;
   for(i = 0; i < np->width; i++)
     {
       for(j = 0; j < np->height; j++)
 	{
+	  memcpy(cv, &(np->controlv[a]), 4*sizeof(double));
+	  ay_trafo_apply3(cv, m);
 	  if(np->is_rat)
 	    {
-	      p_n->SetCV(i, j, ON::homogeneous_rational, &(np->controlv[a]));
-	      ay_trafo_apply4(cv, m);
-	      cv += 4;
+	      p_n->SetCV(i, j, ON::euclidean_rational, cv);
 	    }
 	  else
 	    {
-	      p_n->SetCV(i, j, ON::not_rational, &(np->controlv[a]));
-	      ay_trafo_apply3(cv, m);
-	      cv += 3;
+	      p_n->SetCV(i, j, ON::not_rational, cv);
 	    }
 	  a += stride;
 	} // for
@@ -414,8 +411,9 @@ onio_get2dcurveobj(ay_object *o, ON_NurbsCurve **pp_c)
       ay_trafo_apply3(cv, m);
       if(nc->is_rat)
 	{
+	  // move weight to correct position for a 2D point
 	  cv[2] = cv[3];
-	  p_c->SetCV(i, ON::homogeneous_rational, cv);
+	  p_c->SetCV(i, ON::euclidean_rational, cv);
 	}
       else
 	{
@@ -956,7 +954,7 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
  int i, a, stride = 4;
- double *cv, umin, umax;
+ double cv[4], umin, umax;
  ay_nurbcurve_object *nc = NULL;
  ON_NurbsCurve *p_c = NULL;
 
@@ -975,20 +973,17 @@ onio_writencurve(ay_object *o, ONX_Model *p_m, double *m)
 
   // copy control points
   a = 0;
-  cv = p_c->m_cv;
   for(i = 0; i < nc->length; i++)
     {
+      memcpy(cv, &(nc->controlv[a]), 4*sizeof(double));
+      ay_trafo_apply3(cv, m);
       if(nc->is_rat)
 	{
-	  p_c->SetCV(i, ON::homogeneous_rational, &(nc->controlv[a]));
-	  ay_trafo_apply4(cv, m);
-	  cv += 4;
+	  p_c->SetCV(i, ON::euclidean_rational, cv);
 	}
       else
 	{
-	  p_c->SetCV(i, ON::not_rational, &(nc->controlv[a]));
-	  ay_trafo_apply3(cv, m);
-	  cv += 3;
+	  p_c->SetCV(i, ON::not_rational, cv);
 	}
       a += stride;
     } // for
@@ -2317,6 +2312,22 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 	} // for
     } // if
 
+  // convert from homogenous to euclidean
+  // (de-multiply the weights)
+  a = 0;
+  for(i = 0; i < width; i++)
+    {
+      for(j = 0; j < height; j++)
+	{
+	  if(controlv[a+3] != 1.0)
+	    {
+	      controlv[a]   *= controlv[a+3];
+	      controlv[a+1] *= controlv[a+3];
+	      controlv[a+2] *= controlv[a+3];
+	    }
+	} // for
+    } // for
+
   // copy the knot vectors
   knotv = p_s->m_knot[0];
   a = 1; b = 0;
@@ -2456,7 +2467,6 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	} // if
     } // if
 
-
   // if weights are in the file but the dimension of the curve is
   // higher than 3, copy the weights in this step
   if(p_c->m_is_rat && (p_c->m_dim > 3))
@@ -2469,6 +2479,19 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	  b += 4;
 	} // for
     } // if
+
+  // convert from homogenous to euclidean
+  // (de-multiply the weights)
+  a = 0;
+  for(i = 0; i < length; i++)
+    {
+      if(controlv[a+3] != 1.0)
+	{
+	  controlv[a]   /= controlv[a+3];
+	  controlv[a+1] /= controlv[a+3];
+	  controlv[a+2] /= controlv[a+3];
+	}
+    } // for
 
   // copy the knot vector
   a = 1; b = 0;
