@@ -1,4 +1,4 @@
-[7. Mar 2011] CVS-Head:
+[14. Mar 2011] CVS-Head:
 ========================
 Bug Fixes:
 o fixed setting the FilterWidth for RIB export (SF 3148250)
@@ -13,6 +13,9 @@ o fixed "Add Bevel" command entries in various tool object property
 o fixed boundary curve extraction for surfaces with unclamped knot
   vectors (SF 3194851)
 o fixed small memory leak in ExtrNC object (in Boundary mode) (SF 3194853)
+o fixed provide of script for multiple objects (SF 3210473)
+o fixed provide of clone for multiple objects (SF 3210478)
+
 
 Modelling:
 o added plugin "subdiv" that, with the help of "Subdivide2.0", can be used
@@ -24,6 +27,12 @@ o added "-createmp" option to the creation of NCurve/NPatch objects
 o offset surfaces now work for closed/periodic surfaces (in all possible
   combinations of open/closed/periodic for U and V)
 o aded chordal and centripetal knot types to NURBS patches
+o added new curve offset algorithm "Hybrid"
+o renamed "Bevel" curve offset algorithm to "Point"
+o removed curve offset algorithm "Bevel3D"
+o added cross section shape defining parameter curve to Bevel object
+  (allows to create arbitrarily shaped bevels)
+o rational coordinates are no longer stored with the weights pre-multiplied
 
 GUI:
 o main menu "Edit/Material" now works with multiple selected objects
