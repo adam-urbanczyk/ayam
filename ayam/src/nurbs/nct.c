@@ -97,8 +97,17 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
   if(!curve)
     return;
 
+  /* free multipe points */
   if(curve->mpoints)
     ay_nct_clearmp(curve);
+
+  /* free gluNurbsRenderer */
+  if(curve->no)
+    gluDeleteNurbsRenderer(curve->no);
+
+  /* free (simple) tesselation */
+  if(curve->tessv)
+    free(curve->tessv);
 
   if(curve->controlv)
     free(curve->controlv);

@@ -1186,11 +1186,11 @@ ay_tess_npatch(ay_object *o,
   for(i = 0; i < (unsigned int)width*height; i++)
     {
       w = npatch->controlv[a+3];
-      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
       a++;
-      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
       a++;
-      controls[a] = (GLfloat)npatch->controlv[a]*w;
+      controls[a] = (GLfloat)(npatch->controlv[a]*w);
       a++;
       controls[a] = (GLfloat)npatch->controlv[a];
       a++;
