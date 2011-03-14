@@ -240,8 +240,7 @@ ay_object_delete(ay_object *o)
 	{
 	  d = (ay_object*)(((ay_btval*)tag->val)->payload);
 	  tag = tag->next;
-
-	  ay_tags_remnonm(d, o);
+	  ay_tags_remnonm(o, d);
 	}
       else
 	{

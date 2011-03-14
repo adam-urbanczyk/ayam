@@ -1019,6 +1019,8 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 
 /* ay_tags_remnonm:
  *  remove NO/NM tags
+ * @param[in] o object with nm tag (typically a instance) (may be NULL)
+ * @param[in] m object with no tag (typically the master of o)
  */
 int
 ay_tags_remnonm(ay_object *o, ay_object *m)
@@ -1027,9 +1029,10 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
  ay_tag *tag, **lasttag;
  int found = AY_FALSE;
 
-  if(!o || !m)
+  if(!m)
     return AY_ENULL;
 
+  /* look for and remove the NO tag */
   tag = m->tags;
   lasttag = &(m->tags);
   while(tag)
@@ -1048,7 +1051,7 @@ ay_tags_remnonm(ay_object *o, ay_object *m)
     } /* while */
 
   /* look for and remove corresponding NM tag only if we found the NO tag */
-  if(found)
+  if(found && m)
     {
       tag = o->tags;
       lasttag = &(o->tags);

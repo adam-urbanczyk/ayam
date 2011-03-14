@@ -1380,6 +1380,9 @@ ay_undo_clear(void)
 
 /* ay_undo_clearobj:
  *  clear all undo information of object <o> from undo buffer
+ *  also prevent NO tags pointing to <o> from sneaking back
+ *  into the scene and causing havoc
+ *  for possible future undo/redo operations
  */
 int
 ay_undo_clearobj(ay_object *o)
@@ -1388,7 +1391,19 @@ ay_undo_clearobj(ay_object *o)
  int i = 0;
  ay_undo_object *uo = NULL;
  ay_object **lu = NULL, *u = NULL, *down;
+ ay_object *no_master = NULL;
  ay_list_object **lr = NULL, *r = NULL;
+ ay_tag *tag = NULL;
+
+  tag = o->tags;
+  while(tag)
+    {
+      if(tag->type == ay_nm_tagtype)
+	{
+	  no_master = (ay_object*)(((ay_btval*)tag->val)->payload);
+	}
+      tag = tag->next;
+    }
 
   for(i = 0; i < undo_buffer_size; i++)
     {
@@ -1399,6 +1414,10 @@ ay_undo_clearobj(ay_object *o)
       r = uo->references;
       while(u)
 	{
+	  if(r->object == no_master)
+	    {
+	      ay_tags_remnonm(NULL, u);
+	    }
 	  if(r->object == o)
 	    {
 	      *lu = u->next;
