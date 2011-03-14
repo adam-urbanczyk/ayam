@@ -379,7 +379,7 @@ ay_ncurve_deletecb(void *c)
   if(ncurve->controlv)
     free(ncurve->controlv);
 
-  /* free mpoints */
+  /* free multipe points */
   ay_nct_clearmp(ncurve);
 
   /* free gluNurbsRenderer */
@@ -618,11 +618,11 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       for(i = 0; i < length; i++)
 	{
 	  w = ncurve->controlv[b+3];
-	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b]*w;
+	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
 	  a++; b++;
 	  controls[a] = (GLfloat)ncurve->controlv[b];
 	  a++; b++;

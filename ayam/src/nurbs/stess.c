@@ -233,7 +233,6 @@ int
 ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 		       int *Clen, double **C)
 {
- int ay_status = AY_OK;
  int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0, mc2 = 0;
  double *N = NULL, Cw[3], *Ct = NULL, u, ud, u1, *V;
 
@@ -296,10 +295,10 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
 	  for(j = 0; j <= p; j++)
 	    {
-	      k = (span-p+j)*4;
-	      Cw[0] = Cw[0] + N[j]*(Pw[k]*Pw[k+3]);
-	      Cw[1] = Cw[1] + N[j]*(Pw[k+1]*Pw[k+3]);
-	      Cw[2] = Cw[2] + N[j]*Pw[k+3];
+	      k = (span-p+j)*3;
+	      Cw[0] = Cw[0] + N[j]*(Pw[k]*Pw[k+2]);
+	      Cw[1] = Cw[1] + N[j]*(Pw[k+1]*Pw[k+2]);
+	      Cw[2] = Cw[2] + N[j]*Pw[k+2];
 	    }
 
 	  Ct[m]   = Cw[0]/Cw[2];
@@ -363,7 +362,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
 	  for(j = 0; j <= p; j++)
 	    {
-	      k = (span-p+j)*4;
+	      k = (span-p+j)*2;
 	      Ct[m]   = Ct[m]   + N[j]*Pw[k];
 	      Ct[m+1] = Ct[m+1] + N[j]*Pw[k+1];
 	    }
@@ -921,7 +920,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
  int ay_status = AY_OK;
  double *dtmp = NULL, angle, **tts, p1[4], p2[4], *loopelem = NULL;
  double *tmp = NULL;
- int i, j, numtrims = 0, *tls, *tds, loop_empty, ti;
+ int i, j, numtrims = 0, *tls, *tds, loop_empty, ti, stride;
  ay_object *d = NULL, *dd = NULL, *loop = NULL;
  ay_nurbcurve_object *c = NULL;
  double mm[16];
@@ -944,9 +943,9 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
   if(!(tts = calloc(numtrims, sizeof(double *))))
     return AY_EOMEM;
   if(!(tls = calloc(numtrims, sizeof(int))))
-    { free(tts); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   if(!(tds = calloc(numtrims, sizeof(int))))
-    { free(tts); free(tls); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   i = 0;
   d = o->down;
@@ -985,16 +984,22 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		{
 		  loop_empty = AY_FALSE;
 
-		  if(!(dtmp = calloc(c->length*4, sizeof(double))))
-		    { return AY_EOMEM; } /* XXXX Memory Leak */
+		  if(c->is_rat)
+		    stride = 3;
+		  else
+		    stride = 2;
+
+		  if(!(dtmp = calloc(c->length*stride, sizeof(double))))
+		    { ay_status = AY_EOMEM; goto cleanup; }
 
 		  /* apply transformations */
 		  for(j = 0; j < c->length; j++)
 		    {
 		      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 		      AY_APTRAN3(p2, p1, mm)
-		      memcpy(&(dtmp[j*4]), p2, 3*sizeof(double));
-		      dtmp[j*4+3] = c->controlv[j*4+3];
+		      memcpy(&(dtmp[j*stride]), p2, 3*sizeof(double));
+		      if(c->is_rat)
+			dtmp[j*stride+2] = c->controlv[j*4+3];
 		    }
 		  ti = 0;
 		  ay_stess_CurvePoints2D(c->length, c->order-1, c->knotv, dtmp,
@@ -1011,7 +1016,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		      tls[i] += ti;
 		      tmp = realloc(tts[i], tls[i]*2*sizeof(double));
 		      if(!tmp)
-			{ return AY_EOMEM; } /* XXXX Memory Leak */
+			{ ay_status = AY_EOMEM; goto cleanup; }
 		      tts[i] = tmp;
 		      memcpy(&((tts[i])[(tls[i]-ti)*2]), loopelem,
 			     ti*2*sizeof(double));
@@ -1056,16 +1061,22 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
       if(c)
 	{
-	  if(!(dtmp = calloc(c->length*4, sizeof(double))))
-	    { return AY_EOMEM; } /* XXXX Memory Leak? */
+	  if(c->is_rat)
+	    stride = 3;
+	  else
+	    stride = 2;
+
+	  if(!(dtmp = calloc(c->length*stride, sizeof(double))))
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  /* apply transformations */
 	  for(j = 0; j < c->length; j++)
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 	      AY_APTRAN3(p2, p1, mm)
-	      memcpy(&(dtmp[j*4]), p2, 3*sizeof(double));
-	      dtmp[j*4+3] = c->controlv[j*4+3];
+	      memcpy(&(dtmp[j*stride]), p2, 3*sizeof(double));
+	      if(c->is_rat)
+		dtmp[j*stride+2] = c->controlv[j*4+3];
 	    }
 
 	  ay_stess_CurvePoints2D(c->length, c->order-1, c->knotv, dtmp,
@@ -1096,7 +1107,22 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
   *tl = tls;
   *td = tds;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  tts = NULL;
+  tls = NULL;
+  td = NULL;
+
+cleanup:
+  if(tts)
+    free(tts); 
+  if(tls)
+    free(tls);
+  if(td)
+    free(td);
+  if(dtmp)
+    free(dtmp);
+
+ return ay_status;
 } /* ay_stess_TessTrimCurves */
 
 
@@ -1162,9 +1188,9 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		       * a trimloop point and delete the original trimloop
 		       * point!
 		       */
-		      
+		      /*
 		      printf("Transmogrifying point!\n");
-		      
+		      */
 		      p1->type = 1;
 		      p1->dir = p2->dir;
 		      p3 = p2->next;
@@ -2047,7 +2073,7 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 {
  int i, forwardu1;
  ay_stess *stess = NULL;
- ay_stess_uvp *u1, *u2, *v1, *v2;
+ ay_stess_uvp *u1, *u2/*, *v1, *v2*/;
  ay_nurbpatch_object *p = NULL;
 
   p = (ay_nurbpatch_object *)o->refine;
@@ -2466,7 +2492,6 @@ ay_stess_TessNP(ay_object *o, int qf)
  int ay_status = AY_OK;
  /*char fname[] = "stess_TessNP";*/
  ay_nurbpatch_object *npatch;
- /*static int warned = AY_FALSE;*/
 
   if(!o)
     return AY_ENULL;
@@ -2479,16 +2504,7 @@ ay_stess_TessNP(ay_object *o, int qf)
   if(ay_npt_istrimmed(o, 0))
     {
       /* this is a nontrivially trimmed NURBS patch */
-      /*
-      if(!warned)
-	{
-	  ay_error(AY_ERROR, fname, "can not stess trimmed patches");
-	  warned = AY_TRUE;
-	}
-      */
-
       ay_status = ay_stess_TessTrimmedNP(o, qf);
-
     }
   else
     {
@@ -2524,7 +2540,6 @@ ay_stess_TessNP(ay_object *o, int qf)
 	} /* if */
 
       npatch->tessqf = qf;
-
     } /* if */
 
  return AY_OK;

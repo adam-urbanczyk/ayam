@@ -506,7 +506,7 @@ ay_npatch_deletecb(void *c)
   if(npatch->controlv)
     free(npatch->controlv);
 
-  /* free mpoints */
+  /* free multiple points */
   ay_npt_clearmp(npatch);
 
   /* free gluNurbsRenderer */
@@ -782,11 +782,11 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       for(i = 0; i < width*height; i++)
 	{
 	  w = npatch->controlv[b+3];
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
 	  controls[a] = (GLfloat)npatch->controlv[b];
 	  a++; b++;
@@ -1186,11 +1186,11 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
       for(i = 0; i < width*height; i++)
 	{
 	  w = npatch->controlv[b+3];
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b]*w;
+	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
 	  a++; b++;
 	  controls[a] = (GLfloat)npatch->controlv[b];
 	  a++; b++;

@@ -964,6 +964,8 @@ int ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 int ay_npt_bevel(int type, double radius, int align, ay_object *o,
 		 ay_nurbpatch_object **bevel);
 
+/** Create bevel surface from cross section bevel curve.
+ */
 int ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
 		  ay_nurbpatch_object **bevel);
 
@@ -1272,43 +1274,43 @@ int ay_pmt_revertv(ay_pamesh_object *pm);
 
 /* stess.c */
 
-/**
+/** Remove tesselation from NURBS patch.
  */
 int ay_stess_destroy(ay_nurbpatch_object *np);
 
-/**
+/** Calculate stess usable quality factor from GLU sampling tolerance.
  */
 int ay_stess_GetQF(double gst);
 
-/**
+/** Tesselate a (non-rational or rational) 2D (trim) curve.
  */
 int ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat,
 			   int qf, int *Clen, double **C);
 
-/**
+/** Tesselate a (non-rational or rational) 3D curve.
  */
 int ay_stess_CurvePoints3D(int n, int p, double *U, double *Pw, int is_rat,
 			   int qf, int *Clen, double **C);
 
-/**
+/** Tesselate a untrimmed, non-rational NURBS surface.
  */
 int ay_stess_SurfacePoints3D(int n, int m, int p, int q, double *U, double *V,
 			     double *P, int qf, int *Cn, int *Cm, double **C);
 
-/**
+/** Tesselate a untrimmed, rational NURBS surface.
  */
 int ay_stess_SurfacePoints4D(int n, int m, int p, int q, double *U, double *V,
 			     double *P, int qf, int *Cn, int *Cm, double **C);
 
-/**
+/** Draw tesselation of a trimmed NURBS surface.
  */
 int ay_stess_DrawTrimmedSurface(ay_object *o);
 
-/**
+/** Shade tesselation of a trimmed NURBS surface.
  */
 int ay_stess_ShadeTrimmedSurface(ay_object *o);
 
-/**
+/** Tesselate a NURBS surface.
  */
 int ay_stess_TessNP(ay_object *o, int qf);
 

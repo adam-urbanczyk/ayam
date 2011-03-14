@@ -150,8 +150,17 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
   if(!patch)
     return;
 
+  /* free multiple points */
   if(patch->mpoints)
     ay_npt_clearmp(patch);
+
+  /* free gluNurbsRenderer */
+  if(patch->no)
+    gluDeleteNurbsRenderer(patch->no);
+
+  /* free tesselation */
+  if(patch->stess)
+    ay_stess_destroy(patch);
 
   if(patch->controlv)
     free(patch->controlv);
@@ -802,8 +811,8 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 	{
 	  w = (GLdouble)curve->controlv[b];
 
-	  controls[a] = (GLfloat)(m[0]*x + m[4]*y + m[12])*w;
-	  controls[a+1] = (GLfloat)(m[1]*x + m[5]*y + m[13])*w;
+	  controls[a] = (GLfloat)((m[0]*x + m[4]*y + m[12])*w);
+	  controls[a+1] = (GLfloat)((m[1]*x + m[5]*y + m[13])*w);
 	  controls[a+2] = (GLfloat)(w /*m[3]*x + m[7]*y + m[15]*w*/);
 	  a += 3;
 	}

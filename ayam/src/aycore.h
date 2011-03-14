@@ -28,7 +28,10 @@ int ay_bbc_get(ay_object *o, double *bbox);
  */
 int ay_clear_scene(void);
 
-/** Tcl command to remove all objects from the scene
+/** Remove all objects from the scene.
+ *  Implements the \a newScene scripting interface command.
+ *  See also the corresponding section in the \ayd{scnewscene}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -56,23 +59,34 @@ int ay_clevel_delall(void);
  */
 int ay_clevel_gotop();
 
-/** Tcl command to change current level to the top level
+/** Change current level to the top level.
+ *  Implements the \a goTop scripting interface command.
+ *  See also the corresponding section in the \ayd{scgotop}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Tcl command to change current level to the parent level
+/** Change current level to the parent level.
+ *  Implements the \a goUp scripting interface command.
+ *  See also the corresponding section in the \ayd{scgoup}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Tcl command to change current level to the child level
- *         of the first selected object
+/** Change current level to the child level of the first selected object.
+ *  Implements the \a goDown scripting interface command.
+ *  See also the corresponding section in the \ayd{scgodown}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Tcl command to get a string specification of the current level
+/** Get a string specification of the current level.
+ *  Implements the \a getLevel scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetlevel}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -85,30 +99,42 @@ int ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* clipb.c */
 
-/** Tcl command to copy selected objects to the object clipboard
+/** Copy selected objects to the object clipboard.
+ *  Implements the \a copOb scripting interface command.
+ *  See also the corresponding section in the \ayd{sccopob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Tcl command to move selected objects to the object clipboard
+/** Move selected objects to the object clipboard.
+ *  Implements the \a movOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scmovob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Tcl command to copy the objects from the object clipboard
- *         to the scene
+/** Copy the objects from the object clipboard to the scene.
+ *  Implements the \a pasOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scpasob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Tcl command to move the objects from the object clipboard
- *         to the scene
+/** Move the objects from the object clipboard to the scene.
+ *  Implements the \a pasmovOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scpasmovob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Tcl command to replace the selected objects with the
- *         objects from the object clipboard
+/** Replace the selected objects with the objects from the object clipboard.
+ *  Implements the \a repOb scripting interface command.
+ *  See also the corresponding section in the \ayd{screpob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -151,7 +177,10 @@ int ay_convert_register(ay_convertcb  *convcb, unsigned int type_id);
  */
 int ay_convert_force(ay_object *o, int in_place);
 
-/** Tcl command to convert objects
+/** Convert selected objects.
+ *  Implements the \a convOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scconvob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -209,7 +238,10 @@ void ay_draw_cs(struct Togl *togl);
  */
 void ay_error(int code, char *where, char *what);
 
-/** Tcl command to report an error to the user
+/** Report an error to the user.
+ *  Implements the \a ayError scripting interface command.
+ *  See also the corresponding section in the \ayd{scayerror}.
+ *  \returns TCL_OK in any case.
  */
 int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -289,7 +321,10 @@ int ay_instt_wribiarchives(char *file, ay_object *o);
  */
 int ay_instt_resolve(ay_object *i);
 
-/** Tcl command to resolve instances to normal objects
+/** Resolve selected instances to normal objects.
+ *  Implements the \a resolveIn scripting interface command.
+ *  See also the corresponding section in the \ayd{scresolvein}.
+ *  \returns TCL_OK in any case.
  */
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
