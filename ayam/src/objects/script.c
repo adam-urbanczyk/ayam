@@ -69,13 +69,39 @@ ay_script_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_script_deletecb(void *c)
 {
+ int result = TCL_OK;
  ay_script_object *sc = NULL;
  int i = 0;
+ Tcl_Interp *interp = NULL;
 
   if(!c)
     return AY_ENULL;
 
   sc = (ay_script_object *)(c);
+
+  /* free compiled script */
+  if(sc->cscript)
+    {
+      if(sc->cb)
+	{
+
+#ifdef AYNOSAFEINTERP
+	  interp = ay_interp;
+#else
+	  interp = ay_safeinterp;
+#endif
+
+	  /* JavaScript/Lua/... */
+	  result = sc->cb(interp, NULL, AY_TRUE, &(sc->cscript));
+	}
+
+      /* if there is no callback or it did not clean up properly... */
+      if(sc->cscript)
+	{
+	  Tcl_DecrRefCount(sc->cscript);
+	  sc->cscript = NULL;
+	}
+    }
 
   /* free the script string */
   if(sc->script)
@@ -83,13 +109,6 @@ ay_script_deletecb(void *c)
 
   if(sc->cm_objects)
     ay_object_deletemulti(sc->cm_objects);
-
-  /* free compiled script */
-  if(sc->cscript)
-    {
-      Tcl_DecrRefCount(sc->cscript);
-      sc->cscript = NULL;
-    }
 
   /* free saved parameters */
   if(sc->params)

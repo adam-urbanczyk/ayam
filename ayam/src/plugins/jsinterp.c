@@ -996,6 +996,9 @@ jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 	  *cscript = NULL;
 	}
 
+      if(!script)
+	return TCL_OK;
+
       binscript = JS_CompileScript(jsinterp_cx, jsinterp_global,
 				   script, strlen(script),
 				   NULL, 1);
@@ -1042,7 +1045,8 @@ jsinterp_evalcb(Tcl_Interp *interp, char *script, int compile,
       jsinterp_interp = NULL;
     } /* if */
 
-  /*JS_MaybeGC(jsinterp_cx);*/
+  JS_MaybeGC(jsinterp_cx);
+  /*JS_GC(jsinterp_cx);*/
 
  return TCL_OK;
 } /* jsinterp_evalcb */
