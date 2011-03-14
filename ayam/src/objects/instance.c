@@ -291,6 +291,7 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_voidfp *arr = NULL;
  ay_object *m = NULL;
  ay_getpntcb *cb = NULL;
+ ay_point *origselp = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -302,9 +303,25 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(cb)
     {
+      /*
+       * when repairing pointers from our selected points (mode 3)
+       * temporarily replace the masters selp with our own so that
+       * the getpnt callback does the right thing (repairing _our_ selps)
+       */
+      if(mode == 3 && o->selp)
+	{
+	  origselp = m->selp;
+	  m->selp = o->selp;
+	}
+
       ay_status = cb(mode, m, p, pe);
 
-      if(ay_status && (mode != 3) && pe && pe->num)
+      if(mode == 3 && o->selp)
+	{
+	  m->selp = origselp;
+	}
+
+      if((!ay_status) && (mode != 3) && pe && pe->num)
 	{
 	  /* add NO tag to master, add NM tag to instance */
 	  ay_status = ay_tags_addnonm(o, (ay_object*)o->refine);

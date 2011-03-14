@@ -993,7 +993,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
 	  return AY_EOMEM;
 	}
 
-      newnmtag->type = ay_no_tagtype;
+      newnmtag->type = ay_nm_tagtype;
       newnmtag->is_intern = AY_TRUE;
       newnmtag->is_binary = AY_TRUE;
       if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
