@@ -1214,7 +1214,10 @@ int ay_npt_extractnp(ay_object *src, double umin, double umax,
 		     double vmin, double vmax, int relative,
 		     ay_object **result);
 
-/** Tcl command to extract a sub surface.
+/** Extract a sub surface from the selected NURBS patches.
+ *  Implements the \a extrNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scextrnp}.
+ *  \returns TCL_OK in any case.
  */
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -1326,7 +1329,10 @@ int ay_tess_npatch(ay_object *o,
 		   int use_vn, char *myn,
 		   ay_object **pm);
 
-/** Tcl command to tesselate NURBS patch (convert to PolyMesh) with GLU.
+/** Tesselate selected NURBS patches (convert to PolyMesh) with GLU.
+ *  Implements the \a tessNP scripting interface command.
+ *  See also the corresponding section in the \ayd{sctessnp}.
+ *  \returns TCL_OK in any case.
  */
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
