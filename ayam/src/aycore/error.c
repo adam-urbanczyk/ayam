@@ -292,7 +292,10 @@ set_ay_error:
 
 
 /* ay_error_tcmd:
- *
+ *  Report an error to the user.
+ *  Implements the \a ayError scripting interface command.
+ *  See also the corresponding section in the \ayd{scayerror}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
@@ -339,6 +342,9 @@ ay_error_glucb(GLenum err)
 /* ay_error_getglerrortcmd:
  *  get current GL error state and string
  *  and call ay_error with it for output
+ *  Implements the \a getGLErr scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetglerr}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,

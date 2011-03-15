@@ -156,7 +156,9 @@ ay_clevel_gotop()
 } /* ay_clevel_gotop */
 
 /* ay_clevel_gotoptcmd:
- *  Tcl command to change the current level to the top level
+ *  Implements the \a goTop scripting interface command.
+ *  See also the corresponding section in the \ayd{scgotop}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -184,7 +186,9 @@ ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_clevel_gouptcmd:
- *  Tcl command to change the current level to the parent level
+ *  Implements the \a goUp scripting interface command.
+ *  See also the corresponding section in the \ayd{scgoup}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -267,7 +271,9 @@ ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_clevel_godowntcmd:
- *  Tcl command to change the current level
+ *  Implements the \a goDown scripting interface command.
+ *  See also the corresponding section in the \ayd{scgodown}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
@@ -408,8 +414,9 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_clevel_gettcmd:
- *  Tcl command to get the objects of the current level
- *  getLevel
+ *  Implements the \a getLevel scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetlevel}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,

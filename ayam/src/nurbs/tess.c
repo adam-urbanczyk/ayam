@@ -1568,8 +1568,10 @@ cleanup:
 
 
 /* ay_tess_npatchtcmd:
- *
- *
+ *  Tesselate selected NURBS patches (convert to PolyMesh) with GLU.
+ *  Implements the \a tessNP scripting interface command.
+ *  See also the corresponding section in the \ayd{sctessnp}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,

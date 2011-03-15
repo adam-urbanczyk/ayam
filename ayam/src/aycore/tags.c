@@ -940,6 +940,8 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 
 /* ay_tags_addnonm:
  *  add NO/NM tags
+ * @param[in] o object that gets the nm tag (typically a instance)
+ * @param[in] m object that gets the no tag (typically the master of o)
  */
 int
 ay_tags_addnonm(ay_object *o, ay_object *m)

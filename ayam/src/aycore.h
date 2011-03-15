@@ -29,9 +29,6 @@ int ay_bbc_get(ay_object *o, double *bbox);
 int ay_clear_scene(void);
 
 /** Remove all objects from the scene.
- *  Implements the \a newScene scripting interface command.
- *  See also the corresponding section in the \ayd{scnewscene}.
- *  \returns TCL_OK in any case.
  */
 int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -60,33 +57,21 @@ int ay_clevel_delall(void);
 int ay_clevel_gotop();
 
 /** Change current level to the top level.
- *  Implements the \a goTop scripting interface command.
- *  See also the corresponding section in the \ayd{scgotop}.
- *  \returns TCL_OK in any case.
  */
 int ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
 /** Change current level to the parent level.
- *  Implements the \a goUp scripting interface command.
- *  See also the corresponding section in the \ayd{scgoup}.
- *  \returns TCL_OK in any case.
  */
 int ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
 /** Change current level to the child level of the first selected object.
- *  Implements the \a goDown scripting interface command.
- *  See also the corresponding section in the \ayd{scgodown}.
- *  \returns TCL_OK in any case.
  */
 int ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
 /** Get a string specification of the current level.
- *  Implements the \a getLevel scripting interface command.
- *  See also the corresponding section in the \ayd{scgetlevel}.
- *  \returns TCL_OK in any case.
  */
 int ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -100,41 +85,26 @@ int ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 /* clipb.c */
 
 /** Copy selected objects to the object clipboard.
- *  Implements the \a copOb scripting interface command.
- *  See also the corresponding section in the \ayd{sccopob}.
- *  \returns TCL_OK in any case.
  */
 int ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 /** Move selected objects to the object clipboard.
- *  Implements the \a movOb scripting interface command.
- *  See also the corresponding section in the \ayd{scmovob}.
- *  \returns TCL_OK in any case.
  */
 int ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
 /** Copy the objects from the object clipboard to the scene.
- *  Implements the \a pasOb scripting interface command.
- *  See also the corresponding section in the \ayd{scpasob}.
- *  \returns TCL_OK in any case.
  */
 int ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
 /** Move the objects from the object clipboard to the scene.
- *  Implements the \a pasmovOb scripting interface command.
- *  See also the corresponding section in the \ayd{scpasmovob}.
- *  \returns TCL_OK in any case.
  */
 int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 /** Replace the selected objects with the objects from the object clipboard.
- *  Implements the \a repOb scripting interface command.
- *  See also the corresponding section in the \ayd{screpob}.
- *  \returns TCL_OK in any case.
  */
 int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -178,9 +148,6 @@ int ay_convert_register(ay_convertcb  *convcb, unsigned int type_id);
 int ay_convert_force(ay_object *o, int in_place);
 
 /** Convert selected objects.
- *  Implements the \a convOb scripting interface command.
- *  See also the corresponding section in the \ayd{scconvob}.
- *  \returns TCL_OK in any case.
  */
 int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -239,9 +206,6 @@ void ay_draw_cs(struct Togl *togl);
 void ay_error(int code, char *where, char *what);
 
 /** Report an error to the user.
- *  Implements the \a ayError scripting interface command.
- *  See also the corresponding section in the \ayd{scayerror}.
- *  \returns TCL_OK in any case.
  */
 int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -251,9 +215,6 @@ int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 void ay_error_glucb(GLenum err);
 
 /** Get the current GL error state and report it to the user.
- *  Implements the \a getGLErr scripting interface command.
- *  See also the corresponding section in the \ayd{scgetglerr}.
- *  \returns TCL_OK in any case.
  */
 int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -325,9 +286,6 @@ int ay_instt_wribiarchives(char *file, ay_object *o);
 int ay_instt_resolve(ay_object *i);
 
 /** Resolve selected instances to normal objects.
- *  Implements the \a resolveIn scripting interface command.
- *  See also the corresponding section in the \ayd{scresolvein}.
- *  \returns TCL_OK in any case.
  */
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -342,9 +300,6 @@ int ay_instt_checkinstance(ay_object *o, ay_object *target,
 int ay_instt_check(ay_object *o, ay_object *target);
 
 /** Find the master of the selected instance.
- *  Implements the \a getMaster scripting interface command.
- *  See also the corresponding section in the \ayd{scgetmaster}.
- *  \returns TCL_OK in any case.
  */
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -397,9 +352,6 @@ int ay_notify_force(ay_object *o);
 int ay_notify_forceparent(ay_object *o, int silent);
 
 /** Enforce notification of selected objects.
- *  Implements the \a forceNot scripting interface command.
- *  See also the corresponding section in the \ayd{scforcenot}.
- *  \returns TCL_OK in any case.
  */
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -519,9 +471,6 @@ int ay_object_createargs(unsigned int index, int argc, char **argv,
 			 ay_object **o);
 
 /** Create a new object and link it to the current level.
- *  Implements the \a crtOb scripting interface command.
- *  See also the corresponding section in the \ayd{sccrtob}.
- *  \returns TCL_OK in any case.
  */
 int ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -535,9 +484,6 @@ int ay_object_delete(ay_object *o);
 int ay_object_deletemulti(ay_object *o);
 
 /** Delete selected objects.
- *  Implements the \a delOb scripting interface command.
- *  See also the corresponding section in the \ayd{scdelob}.
- *  \returns TCL_OK in any case.
  */
 int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -559,9 +505,6 @@ char *ay_object_gettypename(unsigned int index);
 char *ay_object_getname(ay_object *o);
 
 /** Set the name of the selected objects.
- *  Implements the \a nameOb scripting interface command.
- *  See also the corresponding section in the \ayd{scnameob}.
- *  \returns TCL_OK in any case.
  */
 int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -585,9 +528,6 @@ int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
 /** Get the name of the selected object.
- *  Implements the \a getName scripting interface command.
- *  See also the corresponding section in the \ayd{scgetname}.
- *  \returns TCL_OK in any case.
  */
 int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -781,9 +721,6 @@ int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 		     ay_object **result);
 
 /** Merge the selected polymesh objects.
- *  Implements the \a mergePo scripting interface command.
- *  See also the corresponding section in the \ayd{scmergepo}.
- *  \returns TCL_OK in any case.
  */
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -793,9 +730,6 @@ int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 
 /** Optimize the selected polymesh objects.
- *  Implements the \a optiPo scripting interface command.
- *  See also the corresponding section in the \ayd{scoptipo}.
- *  \returns TCL_OK in any case.
  */
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -815,9 +749,6 @@ int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		     ay_pomesh_object **result);
 
 /** Split selected faces from selected polymesh objects.
- *  Implements the \a splitPo scripting interface command.
- *  See also the corresponding section in the \ayd{scsplitpo}.
- *  \returns TCL_OK in any case.
  */
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);

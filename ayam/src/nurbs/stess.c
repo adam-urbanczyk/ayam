@@ -1074,7 +1074,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 	      AY_APTRAN3(p2, p1, mm)
-	      memcpy(&(dtmp[j*stride]), p2, 3*sizeof(double));
+	      memcpy(&(dtmp[j*stride]), p2, stride*sizeof(double));
 	      if(c->is_rat)
 		dtmp[j*stride+2] = c->controlv[j*4+3];
 	    }
