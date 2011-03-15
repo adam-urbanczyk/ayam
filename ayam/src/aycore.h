@@ -250,7 +250,10 @@ int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_error_glucb(GLenum err);
 
-/** Tcl command to get the current GL error state and report it
+/** Get the current GL error state and report it to the user.
+ *  Implements the \a getGLErr scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetglerr}.
+ *  \returns TCL_OK in any case.
  */
 int ay_error_getglerrortcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -338,7 +341,10 @@ int ay_instt_checkinstance(ay_object *o, ay_object *target,
  */
 int ay_instt_check(ay_object *o, ay_object *target);
 
-/** Tcl command to find a master of an instance
+/** Find the master of the selected instance.
+ *  Implements the \a getMaster scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetmaster}.
+ *  \returns TCL_OK in any case.
  */
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -390,7 +396,10 @@ int ay_notify_force(ay_object *o);
  */
 int ay_notify_forceparent(ay_object *o, int silent);
 
-/** Tcl command to enforce notification
+/** Enforce notification of selected objects.
+ *  Implements the \a forceNot scripting interface command.
+ *  See also the corresponding section in the \ayd{scforcenot}.
+ *  \returns TCL_OK in any case.
  */
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -509,7 +518,10 @@ int ay_object_create(unsigned int index, ay_object **o);
 int ay_object_createargs(unsigned int index, int argc, char **argv,
 			 ay_object **o);
 
-/** Tcl command to create objects
+/** Create a new object and link it to the current level.
+ *  Implements the \a crtOb scripting interface command.
+ *  See also the corresponding section in the \ayd{sccrtob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -522,7 +534,10 @@ int ay_object_delete(ay_object *o);
  */
 int ay_object_deletemulti(ay_object *o);
 
-/** Tcl command to delete objects
+/** Delete selected objects.
+ *  Implements the \a delOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scdelob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -543,7 +558,10 @@ char *ay_object_gettypename(unsigned int index);
  */
 char *ay_object_getname(ay_object *o);
 
-/** Tcl command to set the name of an object
+/** Set the name of the selected objects.
+ *  Implements the \a nameOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scnameob}.
+ *  \returns TCL_OK in any case.
  */
 int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -566,7 +584,10 @@ int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Tcl command to get the name of an object
+/** Get the name of the selected object.
+ *  Implements the \a getName scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetname}.
+ *  \returns TCL_OK in any case.
  */
 int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -759,7 +780,10 @@ int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 		     ay_object **result);
 
-/** Tcl command to merge polymesh objects
+/** Merge the selected polymesh objects.
+ *  Implements the \a mergePo scripting interface command.
+ *  See also the corresponding section in the \ayd{scmergepo}.
+ *  \returns TCL_OK in any case.
  */
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -768,7 +792,10 @@ int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 
-/** Tcl command to optimize polymesh objects
+/** Optimize the selected polymesh objects.
+ *  Implements the \a optiPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scoptipo}.
+ *  \returns TCL_OK in any case.
  */
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -787,7 +814,10 @@ int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		     ay_pomesh_object **result);
 
-/** Tcl command to split polymesh objects
+/** Split selected faces from selected polymesh objects.
+ *  Implements the \a splitPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scsplitpo}.
+ *  \returns TCL_OK in any case.
  */
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
