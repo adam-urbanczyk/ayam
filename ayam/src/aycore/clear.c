@@ -100,7 +100,9 @@ ay_clear_scene(void)
 
 
 /* ay_clear_scenetcmd:
- *
+ *  Implements the \a newScene scripting interface command.
+ *  See also the corresponding section in the \ayd{scnewscene}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_clear_scenetcmd(ClientData clientData, Tcl_Interp * interp,

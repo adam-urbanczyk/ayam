@@ -621,6 +621,9 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 /* ay_pomesht_mergetcmd:
  *  merge all selected PolyMesh objects into a new one
  *  and link this new PolyMesh to the scene
+ *  Implements the \a mergePo scripting interface command.
+ *  See also the corresponding section in the \ayd{scmergepo}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -919,6 +922,9 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
 
 /* ay_pomesht_optimizetcmd:
  *  optimizes all selected PolyMesh objects
+ *  Implements the \a optiPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scoptipo}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -1351,8 +1357,11 @@ ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 
 
 /* ay_pomesht_splittcmd:
- *  split selectedpolymesh objects into two, based on their
- *  selected points
+ *  split selected polymesh objects into two, based on their
+ *  selected points (split off selected faces)
+ *  Implements the \a splitPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scsplitpo}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,

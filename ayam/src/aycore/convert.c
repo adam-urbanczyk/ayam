@@ -80,6 +80,9 @@ ay_convert_force(ay_object *o, int in_place)
 
 /* ay_convert_forcetcmd:
  *  force conversion of selected object(s)
+ *  Implements the \a convOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scconvob}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,

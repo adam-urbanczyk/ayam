@@ -304,6 +304,9 @@ ay_notify_forceparent(ay_object *o, int silent)
 /* ay_notify_forcetcmd:
  *  force notification of selected objects or all objects
  *  in the scene (if selection is empty)
+ *  Implements the \a forceNot scripting interface command.
+ *  See also the corresponding section in the \ayd{scforcenot}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,

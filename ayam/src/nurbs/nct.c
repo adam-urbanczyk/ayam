@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* nct.c NURBS curve tools */
+/*! \file nct.c \brief NURBS curve tools */
 
 /* local variables: */
 
@@ -21,8 +21,17 @@ char ay_nct_ncname[] = "NCurve";
 
 /* functions: */
 
-/* ay_nct_create:
- *  create a NURBS curve
+/** ay_nct_create:
+ *  create a NURBS curve object
+ *
+ * @param[in] order Order of new curve (valid range: 2 - 100)
+ * @param[in] length Length of new curve (valid range: 2 - 100)
+ * @param[in] knot_type Knot type of new curve (AY_KT*)
+ * @param[in] controlv Pointer to control points [length*stride]
+ *            may be NULL
+ * @param[in] knotv Pointer to knots [length+order]
+ *            may be NULL
+ * @param[in,out] curveptr new NURBS curve object
  */
 int
 ay_nct_create(int order, int length, int knot_type,
@@ -87,8 +96,10 @@ ay_nct_create(int order, int length, int knot_type,
 } /* ay_nct_create */
 
 
-/* ay_nct_destroy:
+/** ay_nct_destroy:
  *  gracefully destroy a NURBS curve object
+ *
+ * @param[in] curve NURBS curve object to destroy
  */
 void
 ay_nct_destroy(ay_nurbcurve_object *curve)
@@ -121,18 +132,20 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 } /* ay_nct_destroy */
 
 
-/* ay_nct_clearmp:
- *  delete all mpoints from curve <c>
+/** ay_nct_clearmp:
+ *  delete all mpoints from curve
+ *
+ * @param[in] curve NURBS curve object
  */
 void
-ay_nct_clearmp(ay_nurbcurve_object *c)
+ay_nct_clearmp(ay_nurbcurve_object *curve)
 {
  ay_mpoint *next = NULL, *p = NULL;
 
-  if(!c)
+  if(!curve)
     return;
 
-  p = c->mpoints;
+  p = curve->mpoints;
 
   while(p)
     {
@@ -145,14 +158,16 @@ ay_nct_clearmp(ay_nurbcurve_object *c)
       p = next;
     } /* while */
 
-  c->mpoints = NULL;
+  curve->mpoints = NULL;
 
  return;
 } /* ay_nct_clearmp */
 
 
-/* ay_nct_recreatemp:
- *  recreate mpoints of curve <c> from identical control points
+/** ay_nct_recreatemp:
+ *  recreate mpoints of curve from identical control points
+ *
+ * @param[in] curve NURBS curve object
  */
 void
 ay_nct_recreatemp(ay_nurbcurve_object *c)
@@ -252,8 +267,10 @@ cleanup:
 } /* ay_nct_recreatemp */
 
 
-/* ay_nct_collapseselp:
- *  collapse selected points
+/** ay_nct_collapseselp:
+ *  collapse selected points of NURBS curve
+ *
+ * @param[in] o NURBS curve object
  */
 int
 ay_nct_collapseselp(ay_object *o)
@@ -359,8 +376,10 @@ ay_nct_collapseselp(ay_object *o)
 } /* ay_nct_collapseselp */
 
 
-/* ay_nct_explodemp:
- *  explode selected mpoints
+/** ay_nct_explodemp:
+ *  explode selected mpoints of NURBS curve
+ *
+ * @param[in] o NURBS curve object
  */
 int
 ay_nct_explodemp(ay_object *o)
@@ -438,6 +457,9 @@ ay_nct_explodemp(ay_object *o)
 
 /* ay_nct_resize:
  *  resize a NURBS curve
+ *
+ * @param[in] curve NURBS curve object
+ * @param[in] new_length new length of curve
  */
 int
 ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
@@ -558,7 +580,10 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 
 
 /* ay_nct_close:
- *  close a NURBS curve, or make it periodic
+ *  close a NURBS curve, or make it periodic (according to
+ *  the current value of the type field)
+ *
+ * @param[in] curve NURBS curve object to close
  */
 int
 ay_nct_close(ay_nurbcurve_object *curve)
@@ -599,6 +624,8 @@ ay_nct_close(ay_nurbcurve_object *curve)
 
 /* ay_nct_revert:
  *  revert a NURBS curve
+ *
+ * @param[in] curve NURBS curve object to revert
  */
 int
 ay_nct_revert(ay_nurbcurve_object *curve)
@@ -664,6 +691,10 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 /* ay_nct_refine:
  *  refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve
+ *
+ * @param[in] curve NURBS curve object to refine
+ * @param[in] newknotv vector of new knot values (may be NULL)
+ * @param[in] newknotvlen length of vector
  */
 int
 ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
@@ -865,8 +896,11 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 } /* ay_nct_refine */
 
 
-/* ay_nct_refinetcmd:
- *  Tcl interface for NURBS curve refine tool
+/** ay_nct_refinetcmd:
+ *  Refine selected NURBS curves.
+ *  Implements the \a refineNC scripting interface command.
+ *  See also the corresponding section in the \ayd{screfinenc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -956,6 +990,9 @@ cleanup:
 /* ay_nct_clamp:
  *  clamp NURBS curve, it is safe to call this with half clamped curves
  *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
+ *
+ * @param[in] curve NURBS curve object to clamp
+ * @param[in] side 
  */
 int
 ay_nct_clamp(ay_nurbcurve_object *curve, int side)
@@ -1213,8 +1250,11 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
 } /* ay_nct_clampperiodic */
 
 
-/* ay_nct_clamptcmd:
- *  Tcl interface for NURBS curve clamping tool
+/** ay_nct_clamptcmd:
+ *  Clamp selected NURBS curves.
+ *  Implements the \a clampNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scclampnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1416,8 +1456,11 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 } /* ay_nct_elevate */
 
 
-/* ay_nct_elevatetcmd:
- *  Tcl interface for NURBS curve order elevation tool
+/** ay_nct_elevatetcmd:
+ *  Elevate order of selected NURBS curves.
+ *  Implements the \a elevateNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scelevatenc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1565,8 +1608,11 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_elevatetcmd */
 
 
-/* ay_nct_insertkntcmd:
- *  Tcl interface for NURBS curve knot insertion tool
+/** ay_nct_insertkntcmd:
+ *  Insert knot into selected NURBS curves.
+ *  Implements the \a insknNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scinsknnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1687,8 +1733,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_insertkntcmd */
 
 
-/* ay_nct_collapsetcmd:
- *
+/** ay_nct_collapsetcmd:
+ *  Collapse selected points of selected NURBS curves/patches to
+ *  multiple points.
+ *  Implements the \a collMP scripting interface command.
+ *  See also the corresponding section in the \ayd{sccollmp}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1756,8 +1806,12 @@ ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_collapsetcmd */
 
 
-/* ay_nct_explodetcmd:
- *
+/** ay_nct_explodetcmd:
+ *  Explode selected multiple points of selected NURBS curves/patches to
+ *  single points.
+ *  Implements the \a explMP scripting interface command.
+ *  See also the corresponding section in the \ayd{scexplmp}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2292,8 +2346,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 } /* ay_nct_split */
 
 
-/* ay_nct_splittcmd:
- *  Tcl interface for NURBS curve split tool
+/** ay_nct_splittcmd:
+ *  Split selected NURBS curves.
+ *  Implements the \a splitNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scsplitnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2361,8 +2418,11 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_splittcmd */
 
 
-/* ay_nct_concattcmd:
- *  Tcl interface for NURBS curve concatenation tool
+/** ay_nct_concattcmd:
+ *  Concatenate selected NURBS curves.
+ *  Implements the \a concatNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scconcatnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2640,8 +2700,11 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
 } /* ay_nct_crtnhcircle */
 
 
-/* ay_nct_crtncircletcmd:
- *
+/** ay_nct_crtncircletcmd:
+ *  Create a NURBS circle.
+ *  Implements the \a crtNCircle scripting interface command.
+ *  See also the corresponding section in the \ayd{sccrtncircle}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2715,8 +2778,11 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_crtncircletcmd */
 
 
-/* ay_nct_crtrecttcmd:
- *
+/** ay_nct_crtrecttcmd:
+ *  Create a NURBS rectangle.
+ *  Implements the \a crtNRect scripting interface command.
+ *  See also the corresponding section in the \ayd{sccrtnrect}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
@@ -2964,8 +3030,11 @@ ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 } /* ay_nct_crtcircbsp */
 
 
-/* ay_nct_crtclosedbsptcmd:
- *
+/** ay_nct_crtclosedbsptcmd:
+ *  Create a circular B-Spline curve.
+ *  Implements the \a crtClosedBS scripting interface command.
+ *  See also the corresponding section in the \ayd{sccrtclosedbs}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -3804,11 +3873,14 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 } /* ay_nct_arrange */
 
 
-/* ay_nct_rescaleknvtcmd:
+/** ay_nct_rescaleknvtcmd:
  *  rescale the knot vectors of the selected NURBS curves
  *  - to the range 0.0 - 1.0 (no arguments)
  *  - to a specific range (-r min max)
  *  - so that all knots have a minimum guaranteed distance (-d mindist)
+ *  Implements the \a rescaleknNC scripting interface command.
+ *  See also the corresponding section in the \ayd{screscaleknnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -4473,8 +4545,11 @@ ay_nct_shiftcbs(ay_nurbcurve_object *curve)
 } /* ay_nct_shiftcbs */
 
 
-/* ay_nct_shiftcbstcmd:
- *  shift the control points of a closed B-Spline
+/** ay_nct_shiftcbstcmd:
+ *  Shift control points of selected NURBS curves.
+ *  Implements the \a shiftClosedBS scripting interface command.
+ *  See also the corresponding section in the \ayd{scshiftclosedbs}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
@@ -4715,8 +4790,11 @@ ay_nct_toxy(ay_object *c)
 } /* ay_nct_toxy */
 
 
-/* ay_nct_toxytcmd:
- *  Tcl interface for NURBS curve toxy tool
+/** ay_nct_toxytcmd:
+ *  Rotate selected NURBS curves to XY plane.
+ *  Implements the \a toxyNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sctoxync}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
@@ -4764,8 +4842,11 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_toxytcmd */
 
 
-/* ay_nct_makecomptcmd:
- *
+/** ay_nct_makecomptcmd:
+ *  Make selected NURBS curves compatible.
+ *  Implements the \a makeCompNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scmakecompnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5082,8 +5163,11 @@ ay_nct_center(int mode, ay_nurbcurve_object *curve)
 } /* ay_nct_center */
 
 
-/* ay_nct_centertcmd:
- *  Tcl interface for NURBS curve center tool
+/** ay_nct_centertcmd:
+ *  Center selected NURBS curves.
+ *  Implements the \a centerNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sccenternc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_centertcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5296,8 +5380,11 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 } /* ay_nct_coarsen */
 
 
-/* ay_nct_coarsentcmd:
- *  Tcl interface for NURBS curve coarsen tool
+/** ay_nct_coarsentcmd:
+ *  Coarsen selected NURBS curves.
+ *  Implements the \a coarsenNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sccoarsennc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5351,8 +5438,11 @@ ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_coarsentcmd */
 
 
-/* ay_nct_removekntcmd:
- *  Tcl interface for NURBS curve knot removal tool
+/** ay_nct_removekntcmd:
+ *  Remove knot from selected NURBS curves.
+ *  Implements the \a remknNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scremknnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
@@ -5548,8 +5638,11 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 } /* ay_nct_trim */
 
 
-/* ay_nct_trimtcmd:
- *  Tcl interface for NURBS curve trimming tool
+/** ay_nct_trimtcmd:
+ *  Trim selected NURBS curves.
+ *  Implements the \a trimNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sctrimnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -6203,8 +6296,11 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 } /* ay_nct_estlen */
 
 
-/* ay_nct_estlentcmd:
- *  Tcl interface for NURBS curve length estimation tool
+/** ay_nct_estlentcmd:
+ *  Estimate length of selected NURBS curves.
+ *  Implements the \a estlenNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scestlennc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
@@ -6276,8 +6372,11 @@ cleanup:
 } /* ay_nct_estlentcmd */
 
 
-/* ay_nct_reparamtcmd:
- *  Tcl interface for NURBS curve reparameterisation tool
+/** ay_nct_reparamtcmd:
+ *  Reparameterise selected NURBS curves.
+ *  Implements the \a reparamNC scripting interface command.
+ *  See also the corresponding section in the \ayd{screparamnc}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,

@@ -804,6 +804,9 @@ ay_instt_resolve(ay_object *i)
 
 /* ay_instt_resolvetcmd:
  *  resolve selected instance object by copying its master object
+ *  Implements the \a resolveIn scripting interface command.
+ *  See also the corresponding section in the \ayd{scresolvein}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -975,6 +978,9 @@ ay_instt_check(ay_object *o, ay_object *target)
 
 /* ay_instt_getmastertcmd:
  *  find the master object of the (currently selected) instance object
+ *  Implements the \a getMaster scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetmaster}.
+ *  \returns TCL_OK in any case.
  */
 int
 ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
