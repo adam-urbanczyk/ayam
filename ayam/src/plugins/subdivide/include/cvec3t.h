@@ -1,5 +1,5 @@
 // -*- Mode: c++ -*-
-// $Id: cvec3t.h,v 1.1 2011/01/01 16:48:38 randolf Exp $
+// $Id: cvec3t.h,v 1.2 2011/03/16 19:01:21 randolf Exp $
 // $Source: /home/randi/bak/ayam/src/plugins/subdivide/include/cvec3t.h,v $
 
 /* Subdivide V2.0
@@ -113,13 +113,13 @@ public:
 		   v[Y] + t * ( v1.v[Y] - v[Y] ), 
 		     v[Z] + t * ( v1.v[Z] - v[Z])); }
   //: returns the componentwise minimum
-  CVec3T min( const CVec3T& o ) const
+  CVec3T vmin( const CVec3T& o ) const
     { F a = ::min( v[X], o.v[X] );
       F b = ::min( v[Y], o.v[Y] );
       F c = ::min( v[Z], o.v[Z] );
       return CVec3T( a, b,c); }
   //: returns the componentwise maximum
-  CVec3T max( const CVec3T& o ) const
+  CVec3T vmax( const CVec3T& o ) const
     { F a = ::max( v[X], o.v[X] );
       F b = ::max( v[Y], o.v[Y] );
       F c = ::max( v[Z], o.v[Z] );
