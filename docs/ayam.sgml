@@ -6361,6 +6361,7 @@ direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
 in the Ayam object tree view:
+<#if out=latex><x/needspace 8/</#if>
 <code>
 +-Gordon
  | U1(NCurve)
@@ -6936,7 +6937,6 @@ for use as parameter object for other tool objects, like e.g.
 Revolve (see image above).
 It also works with NURBS patch providing objects, so that
 the following example hierarchy is valid:
-<#if out=latex><x/needspace 8/</#if>
 <code>
 --NPatch
 +-Skin
@@ -13456,7 +13456,6 @@ terse, when it comes to trim curves. There is no clearly defined way of
 saving trim curves in 3DMF 1.0. However, the method presented here is the
 only way that works with the free provided 3DMF parser.
 Trimmed NURBS patches will be written by Ayam like this:
-<#if out=latex><x/needspace 14/</#if>
 <code>
 Container (
 	NURBPatch ( ...
