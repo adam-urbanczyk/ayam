@@ -54,10 +54,10 @@ int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 /** ay_npt_create:
  *  Create a NURBS patch object.
  *
- * @param[in] uorder Order of new patch in U direction (valid range: 2 - 100)
- * @param[in] vorder Order of new patch in V direction (valid range: 2 - 100)
- * @param[in] width Width of new patch (U direction) (valid range: 2 - 100)
- * @param[in] height Height of new patch (V direction) (valid range: 2 - 100)
+ * @param[in] uorder Order of new patch in U direction (2 - 10, unchecked)
+ * @param[in] vorder Order of new patch in V direction (2 - 10, unchecked)
+ * @param[in] width Width of new patch (U direction) (2 - 100, unchecked)
+ * @param[in] height Height of new patch (V direction) (2 - 100, unchecked)
  * @param[in] uknot_type Knot type of new patch in U direction (AY_KT*)
  * @param[in] vknot_type Knot type of new patch in V direction (AY_KT*)
  * @param[in] controlv Pointer to control points [width*height*stride]
