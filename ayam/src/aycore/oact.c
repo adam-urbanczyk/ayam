@@ -617,7 +617,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		 }
 	       glTranslated(o->movx, o->movy, o->movz);
 	       glRotated(xangle, 1.0, 0.0, 0.0);
-	       /*glScaled(o->scalx, o->scaly, o->scalz);*/
+	       if(view->transform_points)
+		 {
+		   glScaled(o->scalx, o->scaly, o->scalz);
+		 }
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 	      ay_trafo_invmatrix4(mm, mmi);
@@ -662,7 +665,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		}
 	       glTranslated(o->movx, o->movy, o->movz);
 	       glRotated(zangle, 0.0, 0.0, 1.0);
-	       /*glScaled(o->scalx, o->scaly, o->scalz);*/
+	       if(view->transform_points)
+		 {
+		   glScaled(o->scalx, o->scaly, o->scalz);
+		 }
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -675,6 +681,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 	       glTranslated(-v4[0], -v4[1], 0.0);
 	       glRotated(-angle,0.0,0.0,1.0);
 	       glTranslated(v4[0], v4[1], 0.0);
+
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 
@@ -707,7 +714,10 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		 }
 	       glTranslated(o->movx, o->movy, o->movz);
 	       glRotated(yangle, 0.0, 1.0, 0.0);
-	       /*glScaled(o->scalx, o->scaly, o->scalz);*/
+	       if(view->transform_points)
+		 {
+		   glScaled(o->scalx, o->scaly, o->scalz);
+		 }
 	       glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	      glPopMatrix();
 	      ay_trafo_invmatrix4(mm, mmi);
