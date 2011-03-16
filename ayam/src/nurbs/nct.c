@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/*! \file nct.c \brief NURBS curve tools */
+/** \file nct.c \brief NURBS curve tools */
 
 /* local variables: */
 
@@ -24,14 +24,15 @@ char ay_nct_ncname[] = "NCurve";
 /** ay_nct_create:
  *  create a NURBS curve object
  *
- * @param[in] order Order of new curve (valid range: 2 - 100)
- * @param[in] length Length of new curve (valid range: 2 - 100)
+ * @param[in] order Order of new curve (2 - 10, unchecked)
+ * @param[in] length Length of new curve (2 - 1000, unchecked)
  * @param[in] knot_type Knot type of new curve (AY_KT*)
  * @param[in] controlv Pointer to control points [length*stride]
  *            may be NULL
  * @param[in] knotv Pointer to knots [length+order]
  *            may be NULL
  * @param[in,out] curveptr new NURBS curve object
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_create(int order, int length, int knot_type,
@@ -271,6 +272,7 @@ cleanup:
  *  collapse selected points of NURBS curve
  *
  * @param[in] o NURBS curve object
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_collapseselp(ay_object *o)
@@ -380,6 +382,7 @@ ay_nct_collapseselp(ay_object *o)
  *  explode selected mpoints of NURBS curve
  *
  * @param[in] o NURBS curve object
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_explodemp(ay_object *o)
@@ -455,11 +458,12 @@ ay_nct_explodemp(ay_object *o)
 } /* ay_nct_explodemp */
 
 
-/* ay_nct_resize:
+/** ay_nct_resize:
  *  resize a NURBS curve
  *
  * @param[in] curve NURBS curve object
  * @param[in] new_length new length of curve
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
@@ -584,6 +588,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
  *  the current value of the type field)
  *
  * @param[in] curve NURBS curve object to close
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_close(ay_nurbcurve_object *curve)
@@ -622,10 +627,11 @@ ay_nct_close(ay_nurbcurve_object *curve)
 } /* ay_nct_close */
 
 
-/* ay_nct_revert:
+/** ay_nct_revert:
  *  revert a NURBS curve
  *
  * @param[in] curve NURBS curve object to revert
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_revert(ay_nurbcurve_object *curve)
@@ -688,13 +694,14 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 } /* ay_nct_revert */
 
 
-/* ay_nct_refine:
+/** ay_nct_refine:
  *  refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve
  *
  * @param[in] curve NURBS curve object to refine
  * @param[in] newknotv vector of new knot values (may be NULL)
  * @param[in] newknotvlen length of vector
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
@@ -987,12 +994,15 @@ cleanup:
 } /* ay_nct_refinetcmd */
 
 
-/* ay_nct_clamp:
+/** ay_nct_clamp:
  *  clamp NURBS curve, it is safe to call this with half clamped curves
- *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
  *
  * @param[in] curve NURBS curve object to clamp
- * @param[in] side 
+ * @param[in] side side to clamp:
+ *             - 0: clamp both sides
+ *             - 1: clamp only start
+ *             - 2: clamp only end
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_clamp(ay_nurbcurve_object *curve, int side)
@@ -1188,9 +1198,12 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 } /* ay_nct_clamp */
 
 
-/* ay_nct_clampperiodic:
+/** ay_nct_clampperiodic:
  *  fast clamp for curves with periodic knot vectors (e.g. AY_KTBSPLINE),
  *  always clamps both ends
+ *
+ * @param[in] curve NURBS curve object to clamp
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_clampperiodic(ay_nurbcurve_object *curve)
@@ -1329,8 +1342,12 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_clamptcmd */
 
 
-/* ay_nct_elevate:
- *  elevate NURBS curve <curve> to the new order <new_order>
+/** ay_nct_elevate:
+ *  elevate NURBS curve to new order
+ *
+ * @param[in] curve NURBS curve object to elevate
+ * @param[in] new_order new order
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
@@ -6179,7 +6196,7 @@ ay_nct_cmppntp(const void *p1, const void *p2)
      (fabs((*(double**)p1)[2] - (*(double**)p2)[2]) > AY_EPSILON))
     return 1;
 
-  return 0;
+ return 0;
 } /* ay_nct_cmppntp */
 
 
