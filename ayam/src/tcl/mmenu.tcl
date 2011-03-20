@@ -336,60 +336,6 @@ if { ! $AYWITHAQUA } {
 
 set ay(toolsmenu) $m
 $m add command -label "Last (None)"
-$m add separator
-$m add cascade -menu $m.nc -label "Create" -underline 1
-menu $m.nc -tearoff 0
-$m.nc add command -label "Circular B-Spline" -command {
-    runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
-	{"Radius:" "Arc:" "Sections:" "Order:"}\
-	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"\
-	"Create Closed B-Spline"
-} -underline 0
-$m.nc add command -label "NURBCircle" -command {
-    runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
-	"crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"\
-	"Create NURBCircle"
-} -underline 5
-$m.nc add command -label "TrimRect" -command {
-    crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
-} -underline 0
-
-$m.nc add separator
-
-$m.nc add command -label "ConcatNC" -command "level_crt ConcatNC;" \
-    -underline 2
-$m.nc add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;" \
-    -underline 0
-$m.nc add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;" \
-    -underline 1
-
-$m.nc add separator
-
-$m.nc add command -label "ConcatNP" -command "level_crt ConcatNP;"
-$m.nc add command -label "OffsetNP" -command "level_crt OffsetNP \"\" -1;"
-
-$m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
-
-$m.nc add command -label "NURBSphere" -command {
-    runTool ay(nsphereradius) "Radius:"\
-	"crtNSphere -r %0; uCR; sL; forceNot; rV;"\
-	"Create NURBSphere"
-} -underline 4
-$m.nc add command -label "NURBSphere2" -command {
-    crtNSphere2; uCR; sL; forceNot; rV
-}
-$m.nc add separator
-$m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
-$m.nc add command -label "Extrude" -command "level_crt Extrude;" -underline 0
-$m.nc add command -label "Sweep" -command "level_crt Sweep;" -underline 0
-$m.nc add command -label "Swing" -command "level_crt Swing;" -underline 1
-$m.nc add command -label "Cap" -command "level_crt Cap;" -underline 1
-$m.nc add command -label "Bevel" -command "level_crt Bevel;" -underline 2
-$m.nc add command -label "Birail1" -command "level_crt Birail1;" -underline 6
-$m.nc add command -label "Birail2" -command "level_crt Birail2;" -underline 6
-$m.nc add command -label "Gordon" -command "level_crt Gordon;" -underline 0
-$m.nc add command -label "Skin" -command "level_crt Skin;" -underline 1
-$m.nc add command -label "Trim" -command "level_crt Trim;" -underline 3
 
 $m add separator
 
@@ -672,6 +618,63 @@ $sm add command -label "Center All Points (2D-XZ)"\
 	plb_update; rV" \
     -underline 23
 #    ^^^^^^^^^^^^ => Z
+
+$m add separator
+
+$m add cascade -menu $m.nc -label "Create" -underline 1
+menu $m.nc -tearoff 0
+$m.nc add command -label "Circular B-Spline" -command {
+    runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
+	{"Radius:" "Arc:" "Sections:" "Order:"}\
+	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"\
+	"Create Closed B-Spline"
+} -underline 0
+$m.nc add command -label "NURBCircle" -command {
+    runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
+	"crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"\
+	"Create NURBCircle"
+} -underline 5
+$m.nc add command -label "TrimRect" -command {
+    crtNRect; set ay(ul) $ay(CurrentLevel); uS 0 1; rV
+} -underline 0
+
+$m.nc add separator
+
+$m.nc add command -label "ConcatNC" -command "level_crt ConcatNC;" \
+    -underline 2
+$m.nc add command -label "OffsetNC" -command "level_crt OffsetNC \"\" -1;" \
+    -underline 0
+$m.nc add command -label "ExtrNC" -command "level_crt ExtrNC \"\" -1;" \
+    -underline 1
+
+$m.nc add separator
+
+$m.nc add command -label "ConcatNP" -command "level_crt ConcatNP;"
+$m.nc add command -label "OffsetNP" -command "level_crt OffsetNP \"\" -1;" \
+     -underline 1
+
+$m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
+
+$m.nc add command -label "NURBSphere" -command {
+    runTool ay(nsphereradius) "Radius:"\
+	"crtNSphere -r %0; uCR; sL; forceNot; rV;"\
+	"Create NURBSphere"
+} -underline 4
+$m.nc add command -label "NURBSphere2" -command {
+    crtNSphere2; uCR; sL; forceNot; rV
+}
+$m.nc add separator
+$m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
+$m.nc add command -label "Extrude" -command "level_crt Extrude;" -underline 0
+$m.nc add command -label "Sweep" -command "level_crt Sweep;" -underline 1
+$m.nc add command -label "Swing" -command "level_crt Swing;" -underline 4
+$m.nc add command -label "Cap" -command "level_crt Cap;" -underline 1
+$m.nc add command -label "Bevel" -command "level_crt Bevel;" -underline 2
+$m.nc add command -label "Birail1" -command "level_crt Birail1;" -underline 6
+$m.nc add command -label "Birail2" -command "level_crt Birail2;" -underline 6
+$m.nc add command -label "Gordon" -command "level_crt Gordon;" -underline 0
+$m.nc add command -label "Skin" -command "level_crt Skin;" -underline 1
+$m.nc add command -label "Trim" -command "level_crt Trim;" -underline 3
 
 $m add separator
 
