@@ -984,7 +984,7 @@ ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], "PolyMesh");
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
@@ -1420,7 +1420,7 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_EWTYPE, argv[0], "PolyMesh");
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	} /* if */
 
       sel = sel->next;
