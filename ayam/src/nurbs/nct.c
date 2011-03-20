@@ -3784,7 +3784,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
     return AY_ENULL;
 
   if(t->type != AY_IDNCURVE)
-    return AY_OK;
+    return AY_ERROR;
 
   /* count objects */
   l = o;
@@ -6136,8 +6136,14 @@ cleanup:
 } /* ay_nct_offset */
 
 
-/* ay_nct_cmppnt:
+/** ay_nct_cmppnt:
  *  compare two points (helper for qsort)
+ * @param[in] p1 points to point 1
+ * @param[in] p2 points to point 2
+ * \returns
+ *   - 0  the points are equal
+ *   - -1 p1 is smaller than p2
+ *   - 1 p1 is bigger than p2
  */
 int
 ay_nct_cmppnt(const void *p1, const void *p2)
@@ -6168,8 +6174,14 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 } /* ay_nct_cmppnt */
 
 
-/* ay_nct_cmppntp:
+/** ay_nct_cmppntp:
  *  compare two points given as pointers (helper for qsort)
+ * @param[in] p1 points to pointer to point 1
+ * @param[in] p2 points to pointer to point 2
+ * \returns
+ *   - 0  the points are equal
+ *   - -1 p1 is smaller than p2
+ *   - 1 p1 is bigger than p2
  */
 int
 ay_nct_cmppntp(const void *p1, const void *p2)
@@ -6200,9 +6212,11 @@ ay_nct_cmppntp(const void *p1, const void *p2)
 } /* ay_nct_cmppntp */
 
 
-/* ay_nct_estlen:
- *  estimate length of NURBS curve <nc>,
- *  outputs result in <len>
+/** ay_nct_estlen:
+ *  estimate length of NURBS curve
+ * @param[in] nc NURBS curve object
+ * @param[in,out] len estimated length
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_estlen(ay_nurbcurve_object *nc, double *len)

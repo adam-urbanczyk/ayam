@@ -886,7 +886,7 @@ ay_npt_wribtrimcurves(ay_object *o)
     return AY_OK;
 
   if(o->type != AY_IDNPATCH)
-    return AY_OK;
+    return AY_ERROR;
 
   /* parse trimcurves */
   /* count loops */
@@ -2385,7 +2385,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
 
   /* check parameters */
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE))
-    return AY_OK;
+    return AY_ERROR;
 
   cs = (ay_nurbcurve_object *)(o1->refine);
   tr = (ay_nurbcurve_object *)(o2->refine);
@@ -2549,9 +2549,15 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   if(!o1 || !o2 || !sweep)
     return AY_ENULL;
 
+  if(has_start_cap && !start_cap)
+    return AY_ENULL;
+
+  if(has_end_cap && !end_cap)
+    return AY_ENULL;
+
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
      (o3 && (o3->type != AY_IDNCURVE)))
-    return AY_OK;
+    return AY_ERROR;
 
   cs = (ay_nurbcurve_object *)(o1->refine);
   tr = (ay_nurbcurve_object *)(o2->refine);
@@ -3284,7 +3290,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
      (o3->type != AY_IDNCURVE))
-    return AY_OK;
+    return AY_ERROR;
 
   cs = (ay_nurbcurve_object *)(o1->refine);
   r1 = (ay_nurbcurve_object *)(o2->refine);
@@ -3665,7 +3671,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
      (o3->type != AY_IDNCURVE) || (o4->type != AY_IDNCURVE) ||
      (o5 && o5->type != AY_IDNCURVE))
-    return AY_OK;
+    return AY_ERROR;
 
   cs1 = (ay_nurbcurve_object *)(o1->refine);
   r1 = (ay_nurbcurve_object *)(o2->refine);
@@ -4873,7 +4879,7 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
     return AY_OK;
 
   if(o->type != AY_IDNCURVE)
-    return AY_OK;
+    return AY_ERROR;
 
   curve = (ay_nurbcurve_object *)(o->refine);
 
@@ -10931,6 +10937,9 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
  int nnormals = 0, stride = 4;
  double normal1[3] = {0}, normal2[3] = {0};
 
+  if(!np || !gnducb || !gndvcb || !result)
+    return AY_ENULL;
+
   p0 = &(np->controlv[(i*np->height+j)*stride]);
 
   /* get 4 surrounding and different points from p0 */
@@ -10998,11 +11007,12 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
       normal1[2] /= nnormals;
     }
 
+  /* return result */
   if(nnormals > 0)
     memcpy(result, normal1, 3*sizeof(double));
 
  return AY_OK;
-} /* ay_npt_offset */
+} /* ay_npt_getnormal */
 
 
 /* ay_npt_finduv:
