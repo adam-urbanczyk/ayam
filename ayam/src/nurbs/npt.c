@@ -537,7 +537,7 @@ ay_npt_swaparray(double **controlvptr, int stride,
   free(*controlvptr);
   *controlvptr = ncontrolv;
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_npt_swaparray */
 
 
@@ -604,6 +604,12 @@ ay_npt_revertu(ay_nurbpatch_object *np)
 	  memcpy(&(np->controlv[jj]), t, stride*sizeof(double));
 	} /* for */
     } /* for */
+
+  /* revert knots */
+  if(np->uknot_type >= AY_KTCUSTOM)
+    {
+      ay_knots_revert(np->uknotv, np->width+np->uorder);
+    } /* if */
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -704,6 +710,12 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 	  jj -= stride;
 	} /* for */
     } /* for */
+
+  /* revert knots */
+  if(np->vknot_type >= AY_KTCUSTOM)
+    {
+      ay_knots_revert(np->vknotv, np->height+np->vorder);
+    } /* if */
 
   /* since we do not create new multiple points
      we only need to re-create them if there were

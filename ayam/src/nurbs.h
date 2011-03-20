@@ -183,6 +183,11 @@ int ay_knots_centriparamnp(int dir, double *Q, int width, int height,
 int ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 		      double eps);
 
+/** Revert a knot vector.
+ */
+int ay_knots_revert(double *U, int ulen);
+
+
 /** Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);

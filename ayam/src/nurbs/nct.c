@@ -636,9 +636,8 @@ ay_nct_close(ay_nurbcurve_object *curve)
 int
 ay_nct_revert(ay_nurbcurve_object *curve)
 {
- int i, j, kncount;
+ int i, j;
  double dtemp;
- double *newknotv = NULL;
 
   if(!curve)
     return AY_ENULL;
@@ -670,24 +669,9 @@ ay_nct_revert(ay_nurbcurve_object *curve)
     } /* while */
 
   /* revert knots */
-  if(curve->knot_type == AY_KTCUSTOM)
+  if(curve->knot_type >= AY_KTCUSTOM)
     {
-      kncount = curve->length+curve->order;
-
-      if(!(newknotv = calloc(kncount, sizeof(double))))
-	return AY_EOMEM;
-
-      newknotv[0] = curve->knotv[0];
-      newknotv[kncount-1] = curve->knotv[kncount-1];
-      j = kncount-2;
-      for(i=1; i < (kncount-1); i++)
-	{
-	  newknotv[i] = newknotv[0]+(newknotv[kncount-1]-curve->knotv[j]);
-
-	  j--;
-	}
-      free(curve->knotv);
-      curve->knotv = newknotv;
+      ay_knots_revert(curve->knotv, curve->length+curve->order);
     } /* if */
 
  return AY_OK;

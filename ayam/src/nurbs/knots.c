@@ -1504,6 +1504,36 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 } /* ay_knots_classify */
 
 
+/* ay_knots_revert:
+ *  
+ */
+int
+ay_knots_revert(double *U, int ulen)
+{
+ double *Ut = NULL;
+ int i, j;
+
+  if(!(Ut = calloc(ulen, sizeof(double))))
+    return AY_EOMEM;
+
+  Ut[0] = U[0];
+  Ut[ulen-1] = U[ulen-1];
+  j = ulen-2;
+  for(i=1; i < (ulen-1); i++)
+    {
+      Ut[i] = Ut[0]+(Ut[ulen-1]-U[j]);
+
+      j--;
+    }
+
+  memcpy(U, Ut, ulen*sizeof(double));
+
+  free(Ut);
+
+ return AY_OK;
+} /* ay_knots_revert */
+
+
 /* ay_knots_init:
  *  initialize the knots module
  */
