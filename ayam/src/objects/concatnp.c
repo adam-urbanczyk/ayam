@@ -432,7 +432,9 @@ ay_concatnp_notifycb(ay_object *o)
       /* copy or provide */
       if(down->type == AY_IDNPATCH)
 	{
-	  ay_object_copy(down, next);
+	  ay_status = ay_object_copy(down, next);
+	  if(ay_status)
+	    goto cleanup;
 	  next = &((*next)->next);
 	}
       else
@@ -480,8 +482,11 @@ ay_concatnp_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+cleanup:
+
   /* free list of temporary curves */
-  ay_object_deletemulti(patches);
+  if(patches)
+    ay_object_deletemulti(patches);
 
   /* recover selected points */
   if(o->selp)
