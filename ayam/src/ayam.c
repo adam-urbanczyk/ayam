@@ -1141,6 +1141,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "concatS", ay_npt_concatstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
 
 

@@ -157,7 +157,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 /** ay_npt_destroy:
  *   destroy a NURBS patch object
  *
- * @param[in] patch Pointer to NURBS patch object to destroy
+ * @param[in] patch NURBS patch object to destroy
  */
 void
 ay_npt_destroy(ay_nurbpatch_object *patch)
@@ -582,8 +582,12 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
 } /* ay_npt_swapuv */
 
 
-/* ay_npt_revertu:
- *  revert control vector of NURBS patch <np> in u dimension
+/** ay_npt_revertu:
+ *  revert control vector and knots of NURBS patch in u dimension
+ *
+ * @param[in] patch NURBS patch object to revert
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_revertu(ay_nurbpatch_object *np)
@@ -625,6 +629,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
  *  Revert selected surfaces in U direction.
  *  Implements the \a revertuS scripting interface command.
  *  See also the corresponding section in the \ayd{screvertus}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -687,7 +692,11 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_revertv:
- *  revert control vector of NURBS patch <np> in v dimension
+ *  revert control vector of NURBS patch in v dimension
+ *
+ * @param[in] patch NURBS patch object to revert
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_revertv(ay_nurbpatch_object *np)
@@ -731,6 +740,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
  *  Revert selected surfaces in V direction.
  *  Implements the \a revertuS scripting interface command.
  *  See also the corresponding section in the \ayd{screvertus}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -1082,7 +1092,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      z = (RtFloat)((curve->controlv)[(k*4)+2]);
 	      w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
-	      /* apply transformation */
+	      /* apply transformation & multiply in the weight */
 	      u[b] = (RtFloat)((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
 	      v[b] = (RtFloat)((m[1]*x + m[5]*y + m[9]*z + m[13])*w2);
 	      w[b] = (RtFloat)w2;
@@ -1146,7 +1156,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 			  z = (RtFloat)((curve->controlv)[(k*4)+2]);
 			  w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
-			  /* apply transformation */
+			  /* apply transformation & multiply in the weight */
 			  u[b] = (RtFloat)
 			    ((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
 			  v[b] = (RtFloat)
@@ -1198,7 +1208,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  z = (RtFloat)((curve->controlv)[(k*4)+2]);
 		  w2 = (RtFloat)((curve->controlv)[(k*4)+3]);
 
-		  /* apply transformation */
+		  /* apply transformation & multiply in the weight */
 		  u[b] = (RtFloat)((m[0]*x + m[4]*y + m[8]*z + m[12])*w2);
 		  v[b] = (RtFloat)((m[1]*x + m[5]*y + m[9]*z + m[13])*w2);
 		  w[b] = (RtFloat)w2;
@@ -1843,7 +1853,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_object_link(curves);
 	      curves = next;
 	    }
-	}
+	} /* if */
 
       sel = sel->next;
     } /* while */
@@ -2056,7 +2066,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      ncurves++;
 	    }
-	}
+	} /* if */
       sel = sel->next;
     } /* while */
 
@@ -5860,6 +5870,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
  *  Elevate U order of selected NURBS patches.
  *  Implements the \a elevateuNP scripting interface command.
  *  See also the corresponding section in the \ayd{scelevateunp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -6029,6 +6040,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
  *  Elevate V order of selected NURBS patches.
  *  Implements the \a elevatevNP scripting interface command.
  *  See also the corresponding section in the \ayd{scelevatevnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -6094,6 +6106,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
  *  Swap U and V of selected surfaces.
  *  Implements the \a swapuvS scripting interface command.
  *  See also the corresponding section in the \ayd{scswapuvs}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -7702,6 +7715,7 @@ ay_npt_closeu(ay_nurbpatch_object *np)
  *  Close selected NURBS patches in U direction.
  *  Implements the \a closeuS scripting interface command.
  *  See also the corresponding section in the \ayd{sccloseus}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -7827,6 +7841,7 @@ ay_npt_closev(ay_nurbpatch_object *np)
  *  Close selected NURBS patches in V direction.
  *  Implements the \a closevS scripting interface command.
  *  See also the corresponding section in the \ayd{scclosevs}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -8762,6 +8777,7 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
  *  Clamp selected NURBS patches in U direction.
  *  Implements the \a clampuNP scripting interface command.
  *  See also the corresponding section in the \ayd{scclampunp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -9038,6 +9054,7 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
  *  Clamp selected NURBS patches in V direction.
  *  Implements the \a clampvNP scripting interface command.
  *  See also the corresponding section in the \ayd{scclampvnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -9208,9 +9225,10 @@ ay_npt_rescaletrims(ay_object *trim,
  *    ([-d|-du|-dv] mindist)
  *  where -r/-d operate on both dimensions, -ru/-du only on u
  *  and -rv/-dv only on the v dimension
-
+ *
  *  Implements the \a rescaleknNP scripting interface command.
  *  See also the corresponding section in the \ayd{screscaleknnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -9415,6 +9433,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  *  Insert knots into selected NURBS patches (U direction).
  *  Implements the \a insknuNP scripting interface command.
  *  See also the corresponding section in the \ayd{scinsknunp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -9534,6 +9553,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  *  Insert knots into selected NURBS patches (V direction).
  *  Implements the \a insknvNP scripting interface command.
  *  See also the corresponding section in the \ayd{scinsknvnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -9791,6 +9811,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
  *  Split selected NURBS patches in U direction.
  *  Implements the \a splituNP scripting interface command.
  *  See also the corresponding section in the \ayd{scsplitunp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -10014,6 +10035,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
  *  Split selected NURBS patches in V direction.
  *  Implements the \a splitvNP scripting interface command.
  *  See also the corresponding section in the \ayd{scsplitvnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -10235,6 +10257,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
  *  Extract a sub surface from the selected NURBS patches.
  *  Implements the \a extrNP scripting interface command.
  *  See also the corresponding section in the \ayd{scextrnp}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -11494,6 +11517,96 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 
 
 
+/* ay_npt_concatstcmd:
+ *
+ */
+int
+ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int ay_status;
+ int i = 1, type = 0, knot_type = 0;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL, *patches = NULL, **next = NULL;
+ ay_object *newo = NULL;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(!strcmp(argv[i], "-t"))
+	    {
+	      sscanf(argv[i+1], "%d", &type);
+	    }
+	  if(!strcmp(argv[i], "-k"))
+	    {
+	      sscanf(argv[i+1], "%d", &knot_type);
+	    }
+	  i += 2;
+	} /* while */
+    } /* if */
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  next = &patches;
+  while(sel)
+    {
+      o = sel->object;
+      /* copy or provide */
+      if(o->type == AY_IDNPATCH)
+	{
+	  ay_status = ay_object_copy(o, next);
+	  if(ay_status)
+	    goto cleanup;
+	  next = &((*next)->next);
+	}
+      else
+	{
+	  ay_provide_object(o, AY_IDNPATCH, next);
+	  while(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	}
+
+      /* gracefully exit, if there are no
+	 (or not enough?) patches to concat */
+      if(!patches)
+	{
+	  return TCL_OK;
+	}
+
+      ay_status = ay_npt_concat(patches, type, knot_type,
+				0, &newo);
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, argv[0], "Failed to concat!");
+	}
+      else
+	{
+	  ay_object_link(newo);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+cleanup:
+  /* free list of temporary curves */
+  ay_object_deletemulti(patches);
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_concatstcmd */
+
+
 /* templates */
 #if 0
 
@@ -11507,6 +11620,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
  int ay_status;
+ int i = 1;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
