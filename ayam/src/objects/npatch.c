@@ -2231,11 +2231,11 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	  for(j = 0; j < nu; j++)
 	    {
 	      w = patch->controlv[b+3];
-	      controls[a] = (RtFloat)patch->controlv[b]*w;
+	      controls[a] = (RtFloat)(patch->controlv[b]*w);
 	      a++;
-	      controls[a] = (RtFloat)patch->controlv[b+1]*w;
+	      controls[a] = (RtFloat)(patch->controlv[b+1]*w);
 	      a++;
-	      controls[a] = (RtFloat)patch->controlv[b+2]*w;
+	      controls[a] = (RtFloat)(patch->controlv[b+2]*w);
 	      a++;
 	      controls[a] = (RtFloat)patch->controlv[b+3];
 	      a++;

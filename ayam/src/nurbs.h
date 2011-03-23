@@ -1118,6 +1118,12 @@ int ay_npt_avglensu(double *cv, int width, int height, int stride,
 int ay_npt_avglensv(double *cv, int width, int height, int stride,
 		    double **avlens);
 
+/** Concatenate selected surfaces.
+ */
+int ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
+
+
 /* pmt.c */
 
 /** Convert patchmesh to NURBS patch.
