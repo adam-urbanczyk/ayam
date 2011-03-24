@@ -11516,15 +11516,18 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 } /* ay_npt_avglensv */
 
 
-
 /* ay_npt_concatstcmd:
+ *  Concatenate selected surfaces.
+ *  Implements the \a concatS scripting interface command.
+ *  See also the corresponding section in the \ayd{scconcats}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
- int ay_status;
+ int ay_status, tcl_status;
  int i = 1, type = 0, knot_type = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *patches = NULL, **next = NULL;
@@ -11537,11 +11540,25 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-t"))
 	    {
-	      sscanf(argv[i+1], "%d", &type);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &type);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(type <= 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "type must be > 0");
+		  return TCL_OK;
+		}
 	    }
 	  if(!strcmp(argv[i], "-k"))
 	    {
-	      sscanf(argv[i+1], "%d", &knot_type);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knot_type);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(knot_type <= 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "knot type must be > 0");
+		  return TCL_OK;
+		}
 	    }
 	  i += 2;
 	} /* while */
@@ -11558,6 +11575,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       o = sel->object;
+
       /* copy or provide */
       if(o->type == AY_IDNPATCH)
 	{
@@ -11573,35 +11591,34 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      next = &((*next)->next);
 	    }
-	}
-
-      /* gracefully exit, if there are no
-	 (or not enough?) patches to concat */
-      if(!patches)
-	{
-	  return TCL_OK;
-	}
-
-      ay_status = ay_npt_concat(patches, type, knot_type,
-				0, &newo);
-
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, argv[0], "Failed to concat!");
-	}
-      else
-	{
-	  ay_object_link(newo);
 	} /* if */
 
       sel = sel->next;
     } /* while */
 
+  /* gracefully exit, if there are no
+     (or not enough?) patches to concat */
+  if(!patches)
+    {
+      return TCL_OK;
+    }
+
+  ay_status = ay_npt_concat(patches, type, knot_type, 0, &newo);
+
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, argv[0], "Failed to concat!");
+    }
+  else
+    {
+      ay_object_link(newo);
+    } /* if */
+
+  ay_notify_parent();
+
 cleanup:
   /* free list of temporary curves */
   ay_object_deletemulti(patches);
-
-  ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_concatstcmd */
@@ -11619,7 +11636,7 @@ int
 ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 		int argc, char *argv[])
 {
- int ay_status;
+ int ay_status, tcl_status;
  int i = 1;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -11633,13 +11650,26 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(!strcmp(argv[i], "-r"))
 	    {
 	      mode = 0;
-	      sscanf(argv[i+1], "%lg", &rmin);
-	      sscanf(argv[i+2], "%lg", &rmax);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &rmin);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(rmin <= 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "rmin must be > 0");
+		  return TCL_OK;
+		}
 	    }
 	  if(!strcmp(argv[i], "-d"))
 	    {
 	      mode = 1;
-	      sscanf(argv[i+1], "%lg", &mindist);
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &mindist_type);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(mindist_type <= 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "mindist must be > 0");
+		  return TCL_OK;
+		}
 	    }
 	  i += 2;
 	} /* while */
