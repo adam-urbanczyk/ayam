@@ -1086,9 +1086,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  return AY_ERROR;
 	}
 
-      free(curve->controlv);
-      curve->controlv = newcontrolv;
-
       if(curve->knot_type == AY_KTCUSTOM)
 	{
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
@@ -1148,7 +1145,15 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
       if(curve->knot_type != AY_KTCUSTOM)
 	{
 	  ay_status = ay_knots_createnc(curve);
+	  if(ay_status)
+	    {
+	      curve->length--;
+	      return ay_status;
+	    }
 	}
+
+      free(curve->controlv);
+      curve->controlv = newcontrolv;
     } /* if */
 
   ay_nct_recreatemp(curve);
@@ -1253,9 +1258,6 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
 
 	      newcontrolv[(j+1)*3+2] = oldcontrolv[i*3+2] +
 		((oldcontrolv[(i+1)*3+2] - oldcontrolv[i*3+2])/2.0);
-
-	      newcontrolv[(j+1)*3+3] = oldcontrolv[i*3+3] +
-		((oldcontrolv[(i+1)*3+3] - oldcontrolv[i*3+3])/2.0);
 
 	      j++;
 	      inserted = AY_TRUE;
@@ -1387,9 +1389,6 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
 
 	      newcontrolv[(j+1)*3+2] = oldcontrolv[i*3+2] +
 		((oldcontrolv[(i+1)*3+2] - oldcontrolv[i*3+2])/2.0);
-
-	      newcontrolv[(j+1)*3+3] = oldcontrolv[i*3+3] +
-		((oldcontrolv[(i+1)*3+3] - oldcontrolv[i*3+3])/2.0);
 
 	      j++;
 	      inserted = AY_TRUE;
