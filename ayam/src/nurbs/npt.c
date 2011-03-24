@@ -1458,7 +1458,7 @@ int
 ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[])
 {
- int ay_status;
+ int ay_status, tcl_status;
  ay_object *o = NULL;
  double radius = 1.0;
  int i = 1;
@@ -1470,7 +1470,14 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!strcmp(argv[i], "-r"))
 	    {
-	      sscanf(argv[i+1], "%lg", &radius);
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &radius);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(radius <= AY_EPSILON)
+		{
+		  ay_error(AY_ERROR, argv[0], "radius must be > 0");
+		  return TCL_OK;
+		}
 	    }
 	  i += 2;
 	} /* while */
@@ -9301,123 +9308,113 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(dim == 0 || dim == 1)
 	    {
 	      /* process u dimension */
-	      if(patch->uknot_type == AY_KTCUSTOM)
+
+	      if(mode)
 		{
-		  if(mode)
+		  /* save old knot range */
+		  oldmin = patch->uknotv[0];
+		  oldmax = patch->uknotv[patch->width+patch->uorder-1];
+
+		  /* rescale knots */
+		  ay_status = ay_knots_rescaletomindist(patch->width +
+							patch->uorder,
+							patch->uknotv,
+							mindist);
+		  /* scale trim curves */
+		  if(src->down && src->down->next)
 		    {
-		      /* save old knot range */
-		      oldmin = patch->uknotv[0];
-		      oldmax = patch->uknotv[patch->width+patch->uorder-1];
-
-		      /* rescale knots */
-		      ay_status = ay_knots_rescaletomindist(patch->width +
-							    patch->uorder,
-							    patch->uknotv,
-							    mindist);
-		      /* scale trim curves */
-		      if(src->down && src->down->next)
-			{
-			  ay_status = ay_npt_rescaletrims(src->down,
-							  0,
-							  oldmin,
-							  oldmax,
-						          patch->uknotv[0],
-				  patch->uknotv[patch->width+patch->uorder-1]);
-
-			}
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      0,
+						      oldmin,
+						      oldmax,
+						      patch->uknotv[0],
+				patch->uknotv[patch->width+patch->uorder-1]);
 
 		    }
-		  else
-		    {
-		      /* first scale trim curves */
-		      if(src->down && src->down->next)
-			{
-			  ay_status = ay_npt_rescaletrims(src->down,
-							  0,
-						          patch->uknotv[0],
-				 patch->uknotv[patch->width+patch->uorder-1],
-							  rmin, rmax);
 
-			}
-		      /* now scale the knots */
-		      ay_status = ay_knots_rescaletorange(patch->width +
-							  patch->uorder,
-							  patch->uknotv,
-							  rmin, rmax);
-
-		    } /* if */
-		  if(ay_status)
-		    {
-		      ay_error(ay_status, argv[0],
-			       "Could not rescale u-knots.");
-		      break;
-		    }
-
-		  src->modified = AY_TRUE;
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector.");
+		  /* first scale trim curves */
+		  if(src->down && src->down->next)
+		    {
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      0,
+						      patch->uknotv[0],
+				 patch->uknotv[patch->width+patch->uorder-1],
+						      rmin, rmax);
+
+		    }
+		  /* now scale the knots */
+		  ay_status = ay_knots_rescaletorange(patch->width +
+						      patch->uorder,
+						      patch->uknotv,
+						      rmin, rmax);
+
 		} /* if */
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0],
+			   "Could not rescale u-knots.");
+		  break;
+		}
+
+	      src->modified = AY_TRUE;
+
 	    } /* if */
 
 	  if(dim == 0 || dim == 2)
 	    {
 	      /* process v dimension */
-	      if(patch->vknot_type == AY_KTCUSTOM)
+
+	      if(mode)
 		{
-		  if(mode)
+		  /* save old knot range */
+		  oldmin = patch->vknotv[0];
+		  oldmax = patch->vknotv[patch->height+patch->vorder-1];
+
+		  /* rescale knots */
+		  ay_status = ay_knots_rescaletomindist(patch->height +
+							patch->vorder,
+							patch->vknotv,
+							mindist);
+
+		  /* scale trim curves */
+		  if(src->down && src->down->next)
 		    {
-		      /* save old knot range */
-		      oldmin = patch->vknotv[0];
-		      oldmax = patch->vknotv[patch->height+patch->vorder-1];
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      1,
+						      oldmin,
+						      oldmax,
+						      patch->vknotv[0],
+			       patch->vknotv[patch->height+patch->vorder-1]);
 
-		      /* rescale knots */
-		      ay_status = ay_knots_rescaletomindist(patch->height +
-							    patch->vorder,
-							    patch->vknotv,
-							    mindist);
-
-		      /* scale trim curves */
-		       if(src->down && src->down->next)
-			{
-			  ay_status = ay_npt_rescaletrims(src->down,
-							  1,
-							  oldmin,
-							  oldmax,
-						          patch->vknotv[0],
-				 patch->vknotv[patch->height+patch->vorder-1]);
-
-			}
 		    }
-		  else
-		    {
-		      /* first scale trim curves */
-		      if(src->down && src->down->next)
-			{
-			  ay_status = ay_npt_rescaletrims(src->down,
-							  1,
-							  patch->vknotv[0],
-				 patch->vknotv[patch->height+patch->vorder-1],
-							  rmin, rmax);
-			}
-		      /* now scale the knots */
-		      ay_status = ay_knots_rescaletorange(patch->height +
-							  patch->vorder,
-							  patch->vknotv,
-							  rmin, rmax);
-		    } /* if */
-		  if(ay_status)
-		    {
-		      ay_error(ay_status, argv[0],
-			       "Could not rescale v-knots.");
-		    }
-		  src->modified = AY_TRUE;
 		}
 	      else
 		{
-		  ay_error(AY_EWARN, argv[0], "Need a custom knot vector.");
+		  /* first scale trim curves */
+		  if(src->down && src->down->next)
+		    {
+		      ay_status = ay_npt_rescaletrims(src->down,
+						      1,
+						      patch->vknotv[0],
+				patch->vknotv[patch->height+patch->vorder-1],
+						      rmin, rmax);
+		    }
+		  /* now scale the knots */
+		  ay_status = ay_knots_rescaletorange(patch->height +
+						      patch->vorder,
+						      patch->vknotv,
+						      rmin, rmax);
 		} /* if */
+	      if(ay_status)
+		{
+		  ay_error(ay_status, argv[0],
+			   "Could not rescale v-knots.");
+		}
+	      src->modified = AY_TRUE;
+
 	    } /* if */
 	} /* if */
       sel = sel->next;
@@ -11528,7 +11525,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status, tcl_status;
- int i = 1, type = 0, knot_type = 0;
+ int i = 1, type = AY_CTOPEN, knot_type = AY_KTNURB;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *patches = NULL, **next = NULL;
  ay_object *newo = NULL;
