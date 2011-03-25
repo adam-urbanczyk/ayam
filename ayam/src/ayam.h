@@ -100,7 +100,7 @@
 typedef struct ay_point_s
 {
   struct ay_point_s *next; /**< next point */
-  char homogenous; /**< is this point homogeneous/rational? */
+  char rational; /**< is this point rational? */
   char readonly;  /**< is this point read only/not editable? */
   double *point; /**< pointer to point data (in objects data structure!) */
   unsigned int index; /**< index of point (to restore point after undo) */
@@ -123,7 +123,7 @@ typedef struct ay_pointedit_s
   unsigned int num; /**< number of selected point */
   double **coords; /**< pointers to point data [num] */
   unsigned int *indices; /**< indices [num] */
-  char homogenous; /**< are these points homogeneous/rational? */
+  char rational; /**< are these points rational? */
   char readonly; /**< are these points read only/not editable? */
 } ay_pointedit;
 

@@ -75,7 +75,7 @@ ay_selp_selall(ay_object *o)
 	{
 	  newp->index = pe.indices[i];
 	}
-      newp->homogenous = pe.homogenous;
+      newp->rational = pe.rational;
     } /* for */
 
   ay_pact_clearpointedit(&pe);
@@ -755,7 +755,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
   if(pe)
     {
       if(stride == 4)
-	pe->homogenous = AY_TRUE;
+	pe->rational = AY_TRUE;
  
       pe->readonly = readonly;
     }
@@ -856,7 +856,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 	    {
 	      pnt->point = &(arr[pnt->index*stride]);
 	      if(stride == 4)
-		pnt->homogenous = AY_TRUE;
+		pnt->rational = AY_TRUE;
 	      pnt->readonly = readonly;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;

@@ -708,7 +708,7 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->homogenous = AY_FALSE;
+    pe->rational = AY_FALSE;
 
   switch(mode)
     {
@@ -807,7 +807,7 @@ ay_pomesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < pomesh->ncontrols)
 	    {
 	      pnt->point = &(pomesh->controlv[pnt->index*stride]);
-	      pnt->homogenous = AY_FALSE;
+	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

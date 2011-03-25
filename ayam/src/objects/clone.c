@@ -1066,7 +1066,7 @@ ay_clone_notifycb(ay_object *o)
 		      for(i = 0; i < clone->numclones; i++)
 			{
 			  ay_trafo_creatematrix(tr, m);
-			  if(pe.homogenous)
+			  if(pe.rational)
 			    {
 			      for(j = 0; j < pe.num; j++)
 				{
@@ -1124,7 +1124,7 @@ ay_clone_notifycb(ay_object *o)
 			      clone->pnts = p1;
 
 			      ay_trafo_creatematrix(tr, m);
-			      if(pe.homogenous)
+			      if(pe.rational)
 				{
 				  for(j = 0; j < pe.num; j++)
 				    {
@@ -1148,7 +1148,7 @@ ay_clone_notifycb(ay_object *o)
 				} /* if */
 
 			      ay_trafo_creatematrix(down, m);
-			      if(pe.homogenous)
+			      if(pe.rational)
 				{
 				  for(j = 0; j < pe.num; j++)
 				    {

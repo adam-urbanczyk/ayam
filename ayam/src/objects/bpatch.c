@@ -395,7 +395,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->homogenous = AY_FALSE;
+    pe->rational = AY_FALSE;
 
   switch(mode)
     {
@@ -525,7 +525,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		default:
 		  break;
 		}
-	      pnt->homogenous = AY_FALSE;
+	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

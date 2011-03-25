@@ -1567,7 +1567,7 @@ resenv:
 		      sc->pnts = p1;
 
 		      ay_trafo_creatematrix(down, m);
-		      if(pe.homogenous)
+		      if(pe.rational)
 			{
 			  for(j = 0; j < pe.num; j++)
 			    {
