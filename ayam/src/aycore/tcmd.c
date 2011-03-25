@@ -339,7 +339,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL, *po = NULL;
  int indexu = 0, indexv = 0, i = 1, j = 1, argc2 = argc;
- int homogenous = AY_FALSE, apply_trafo = AY_FALSE;
+ int rational = AY_FALSE, apply_trafo = AY_FALSE;
  int to_world = AY_FALSE, eval = AY_FALSE;
  int handled = AY_FALSE, freepo = AY_FALSE;
  int clear_selp = AY_FALSE;
@@ -401,7 +401,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
       p = NULL;
-      homogenous = AY_FALSE;
+      rational = AY_FALSE;
       freepo = AY_FALSE;
       switch(o->type)
 	{
@@ -417,7 +417,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
 				     indexu, &p);
-	      homogenous = AY_TRUE;
+	      rational = AY_TRUE;
 	    }
 	  else
 	    {
@@ -453,7 +453,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
 		  return TCL_OK;
 		}
-	      homogenous = AY_FALSE;
+	      rational = AY_FALSE;
 	    } /* if */
 	  j = i+1;
 	  break;
@@ -467,7 +467,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
 				 indexu, &p);
-	  homogenous = AY_FALSE;
+	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
 	case AY_IDICURVE:
@@ -480,7 +480,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
 				 indexu, &p);
-	  homogenous = AY_FALSE;
+	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
 	case AY_IDNPATCH:
@@ -497,7 +497,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	      ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				     indexu, indexv, &p);
-	      homogenous = AY_TRUE;
+	      rational = AY_TRUE;
 	    }
 	  else
 	    {
@@ -544,7 +544,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], "Evaluation failed.");
 		  return TCL_OK;
 		}
-	      homogenous = AY_FALSE;
+	      rational = AY_FALSE;
 	    } /* if */
 	  j = i+2;
 	  break;
@@ -558,7 +558,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
 				    indexu, &p);
-	  homogenous = AY_FALSE;
+	  rational = AY_FALSE;
 	  j = i+1;
 	  break;
 	case AY_IDPAMESH:
@@ -573,7 +573,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
 				 indexu, indexv, &p);
-	  homogenous = AY_TRUE;
+	  rational = AY_TRUE;
 	  j = i+2;
 	  break;
 
@@ -607,7 +607,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		      goto cleanup;
 		    }
 		  p = selp->point;
-		  homogenous = selp->homogenous;
+		  rational = selp->rational;
 		  free(selp);
 		  o->selp = old_selp;
 		  clear_selp = AY_FALSE;
@@ -637,7 +637,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			  ay_nct_getpntfromindex((ay_nurbcurve_object*)
 						 (po->refine),
 						 indexu, &p);
-			  homogenous = AY_TRUE;
+			  rational = AY_TRUE;
 			}
 		      else
 			{
@@ -646,7 +646,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			  nc = (ay_nurbcurve_object *)(po->refine);
 			  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,
 					     nc->knotv, nc->controlv, u, p);
-			  homogenous = AY_FALSE;
+			  rational = AY_FALSE;
 			} /* if */
 		      j = i+1;
 		      handled = AY_TRUE;
@@ -669,7 +669,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 			  ay_npt_getpntfromindex((ay_nurbpatch_object*)
 						 (po->refine),
 						 indexu, indexv, &p);
-			  homogenous = AY_TRUE;
+			  rational = AY_TRUE;
 			}
 		      else
 			{
@@ -683,7 +683,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 					       np->uorder-1, np->vorder-1,
 					       np->uknotv, np->vknotv,
 					       np->controlv, u, v, p);
-			  homogenous = AY_FALSE;
+			  rational = AY_FALSE;
 			} /* if */
 		      j = i+2;
 		      handled = AY_TRUE;
@@ -725,7 +725,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      memcpy(tmp, p, 3*sizeof(double));
 	      ay_trafo_apply3(tmp, m);
-	      if(homogenous)
+	      if(rational)
 		{
 		  tmp[3] = p[3];
 		}
@@ -751,7 +751,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  to = Tcl_NewDoubleObj(tp[2]);
 	  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG |
 			 TCL_GLOBAL_ONLY | TCL_PARSE_PART1);
-	  if(homogenous)
+	  if(rational)
 	    {
 	      Tcl_SetStringObj(ton, argv[j+3], -1);
 	      to = Tcl_NewDoubleObj(tp[3]);
@@ -801,7 +801,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_point *old_selp = NULL, *selp = NULL;
  double dtemp = 0.0;
- int indexu = 0, indexv = 0, i = 1, homogenous = AY_FALSE;
+ int indexu = 0, indexv = 0, i = 1, rational = AY_FALSE;
  int from_world = AY_FALSE, clear_selp = AY_FALSE, handled = AY_FALSE;
  double *p = NULL;
  ay_voidfp *arr = NULL;
@@ -842,7 +842,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       o = sel->object;
       p = NULL;
-      homogenous = AY_FALSE;
+      rational = AY_FALSE;
       clear_selp = AY_FALSE;
       handled = AY_FALSE;
       switch(o->type)
@@ -857,7 +857,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
 				 indexu, &p);
-	  homogenous = AY_TRUE;
+	  rational = AY_TRUE;
 	  i++;
 	  break;
 	case AY_IDACURVE:
@@ -896,7 +896,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				 indexu, indexv, &p);
-	  homogenous = AY_TRUE;
+	  rational = AY_TRUE;
 	  i += 2;
 	  break;
 	case AY_IDBPATCH:
@@ -923,7 +923,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_pmt_getpntfromindex((ay_pamesh_object*)(o->refine),
 				 indexu, indexv, &p);
-	  homogenous = AY_TRUE;
+	  rational = AY_TRUE;
 	  i += 2;
 	  break;
 	default:
@@ -962,7 +962,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  goto cleanup;
 		}
 	      p = selp->point;
-	      homogenous = selp->homogenous;
+	      rational = selp->rational;
 	      handled = AY_TRUE;
 	      i++;
 	    }
@@ -988,7 +988,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	  p[2] = dtemp;
 
-	  if(homogenous)
+	  if(rational)
 	    {
 	      if(argc > i+3)
 		{

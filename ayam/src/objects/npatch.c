@@ -1424,7 +1424,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->homogenous = AY_TRUE;
+    pe->rational = AY_TRUE;
 
   switch(mode)
     {
@@ -1560,7 +1560,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)(npatch->width*npatch->height))
 	    {
 	      pnt->point = &(npatch->controlv[pnt->index*4]);
-	      pnt->homogenous = AY_TRUE;
+	      pnt->rational = AY_TRUE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }

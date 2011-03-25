@@ -6188,6 +6188,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 {
  int ay_status = AY_OK;
  char fname[] = "npt_gordon";
+ int stride = 4;
  ay_object *c;
  ay_object *lcu = NULL/*, *lcv = NULL*/; /* last cu/cv curve */
  ay_nurbcurve_object *nc = NULL;
@@ -6447,11 +6448,12 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   ay_status = ay_knots_mergenp(interpatch, unifiedU, uUlen, unifiedV, uVlen);
 
   /* combine surfaces */
+  k = 0;
   for(i = 0; i < skinu->width; i++)
     {
       for(j = 0; j < skinu->height; j++)
 	{
-	  k = (i*skinu->height+j)*4;
+	  
 	  skinu->controlv[k] += skinv->controlv[k];
 	  skinu->controlv[k] -= interpatch->controlv[k];
 
@@ -6471,6 +6473,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	    {
 	      skinu->controlv[k+3] = 1.0;
 	    }
+	  k += stride;
 	} /* for */
     } /* for */
 
@@ -6481,6 +6484,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   skinu = NULL;
 
 cleanup:
+
   if(skinu)
     {
       ay_npt_destroy(skinu);
@@ -8379,7 +8383,7 @@ ay_npt_collapseselp(ay_object *o)
       new->points[i] = selp->point;
       new->indices[i] = selp->index;
       i++;
-      if(selp->homogenous)
+      if(selp->rational)
 	memcpy(selp->point, first, 4*sizeof(double));
       else
 	memcpy(selp->point, first, 3*sizeof(double));

@@ -347,7 +347,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       pe->coords[0] = camera->from;
       pe->coords[1] = camera->to;
-      pe->homogenous = AY_FALSE;
+      pe->rational = AY_FALSE;
       pe->num = 2;
       break;
     case 1:
@@ -379,7 +379,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
-      pe->homogenous = AY_FALSE;
+      pe->rational = AY_FALSE;
       pe->num = 1;
       break;
     case 2:
@@ -416,7 +416,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->homogenous = AY_FALSE;
+      pe->rational = AY_FALSE;
       pe->coords = pecoords;
       pe->num = a;
       
@@ -439,7 +439,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		default:
 		  break;
 		}
-	      pnt->homogenous = AY_FALSE;
+	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
