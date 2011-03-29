@@ -3689,7 +3689,7 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
   vertices = sdnpatch->controlVertices;
 
   if(pe)
-    pe->homogenous = AY_TRUE;
+    pe->rational = AY_TRUE;
 
   switch(mode)
     {
@@ -3785,7 +3785,7 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < vertices->size())
 	    {
 	      pnt->point = &(sdnpatch->controlCoords[pnt->index*4]);
-	      pnt->homogenous = AY_TRUE;
+	      pnt->rational = AY_TRUE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
