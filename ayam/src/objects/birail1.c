@@ -633,16 +633,12 @@ ay_birail1_notifycb(ay_object *o)
 	}
 
       bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
+      ay_status = ay_npt_createnpatchobject(&bevel);
+      if(ay_status)
 	{
-	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
 
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
       ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &curve4,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
@@ -705,16 +701,12 @@ ay_birail1_notifycb(ay_object *o)
 	}
 
       bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
+      ay_status = ay_npt_createnpatchobject(&bevel);
+      if(ay_status)
 	{
-	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
 
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
       ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &curve4,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
@@ -770,6 +762,7 @@ ay_birail1_notifycb(ay_object *o)
 	}
     }
 
+  /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
 cleanup:
