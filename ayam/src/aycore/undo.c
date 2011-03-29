@@ -1450,7 +1450,11 @@ ay_undo_clearobj(ay_object *o)
 
 
 /* ay_undo_undotcmd:
+ *  manages the undo system
+ *  Implements the \a undo scripting interface command.
+ *  See also the corresponding section in the \ayd{scundo}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
