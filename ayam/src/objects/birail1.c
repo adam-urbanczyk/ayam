@@ -263,9 +263,9 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"Close",-1);
+  Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(birail1->close));
+  Tcl_GetIntFromObj(interp,to, &(birail1->type));
 
   Tcl_SetStringObj(ton,"Sections",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -318,8 +318,8 @@ ay_birail1_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ton = Tcl_NewStringObj(n1,-1);
 
-  Tcl_SetStringObj(ton,"Close",-1);
-  to = Tcl_NewIntObj(birail1->close);
+  Tcl_SetStringObj(ton,"Type",-1);
+  to = Tcl_NewIntObj(birail1->type);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -371,7 +371,7 @@ ay_birail1_readcb(FILE *fileptr, ay_object *o)
   if(!(birail1 = calloc(1, sizeof(ay_birail1_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%d\n",&birail1->close);
+  fscanf(fileptr,"%d\n",&birail1->type);
   fscanf(fileptr,"%d\n",&birail1->sections);
   fscanf(fileptr,"%d\n",&birail1->has_start_cap);
   fscanf(fileptr,"%d\n",&birail1->has_end_cap);
@@ -397,7 +397,7 @@ ay_birail1_writecb(FILE *fileptr, ay_object *o)
 
   birail1 = (ay_birail1_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", birail1->close);
+  fprintf(fileptr, "%d\n", birail1->type);
   fprintf(fileptr, "%d\n", birail1->sections);
   fprintf(fileptr, "%d\n", birail1->has_start_cap);
   fprintf(fileptr, "%d\n", birail1->has_end_cap);
@@ -566,22 +566,29 @@ ay_birail1_notifycb(ay_object *o)
   ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
 		      &endb_sense);
 
-  /* birail1 */
-  if(!(npatch = calloc(1, sizeof(ay_object))))
+  ay_status = ay_npt_createnpatchobject(&npatch);
+  if(ay_status)
     {
-      ay_status = AY_EOMEM; goto cleanup;
+      goto cleanup;
     }
 
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
-
-  ay_status = ay_npt_birail1(curve1, curve2, curve3,
-			   birail1->sections, AY_FALSE/*birail1->close*/,
+  /* do the birail */
+  if(birail1->type < 2)
+    {
+      ay_status = ay_npt_birail1(curve1, curve2, curve3,
+			   birail1->sections, birail1->type,
 			   (ay_nurbpatch_object **)(void*)&(npatch->refine),
 			   has_startb?AY_FALSE:birail1->has_start_cap,
 			   &start_cap,
 			   has_endb?AY_FALSE:birail1->has_end_cap,
 			   &end_cap);
+    }
+  else
+    {
+      ay_status = ay_npt_birail1periodic(curve1, curve2, curve3,
+					 birail1->sections,
+			   (ay_nurbpatch_object **)(void*)&(npatch->refine));
+    }
 
   if(ay_status)
     goto cleanup;

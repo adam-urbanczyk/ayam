@@ -29,7 +29,7 @@ proc birail1_getAttr { } {
 
     set ay(bok) $ay(appb)
 
-    #addCheck $w Birail1AttrData Close
+    addMenu $w Birail1AttrData Type [list Open Closed Periodic]
     addParam $w Birail1AttrData Sections
     addCheck $w Birail1AttrData StartCap
     addCheck $w Birail1AttrData EndCap
@@ -103,6 +103,7 @@ w     fBirail1Attr
 }
 
 array set Birail1AttrData {
+Type 0
 DisplayMode 1
 NPInfoBall "n/a"
 }

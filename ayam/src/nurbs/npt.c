@@ -3656,6 +3656,334 @@ cleanup:
 } /* ay_npt_birail1 */
 
 
+/* ay_npt_birail1periodic:
+ *  sweep cross section <o1> along rails <o2> and <o3>;
+ *  Rotation code derived from J. Bloomenthals "Reference Frames"
+ *  (Graphic Gems I).
+ */
+int
+ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
+		       int sections,
+		       ay_nurbpatch_object **birail1)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *new = NULL;
+ ay_nurbcurve_object *cs, *r1, *r2;
+ double *controlv = NULL;
+ int i = 0, j = 0, a = 0, stride;
+ double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4];
+ double T0[3] = {0.0,0.0,-1.0};
+ double T1[3] = {0.0,0.0,0.0};
+ double A[3] = {0.0,0.0,0.0};
+ double lent0 = 0.0, lent1 = 0.0, plenr1 = 0.0, plenr2 = 0.0;
+ double m[16] = {0}, mi[16] = {0}, mcs[16], mr1[16], mr2[16];
+ double mr[16], mrs[16], axisrot[4] = {0};
+ double *cscv = NULL, *r1cv = NULL, *r2cv = NULL;
+ double scalx, scaly, scalz;
+
+  if(!o1 || !o2 || !o3 || !birail1)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
+     (o3->type != AY_IDNCURVE))
+    return AY_ERROR;
+
+  cs = (ay_nurbcurve_object *)(o1->refine);
+  r1 = (ay_nurbcurve_object *)(o2->refine);
+  r2 = (ay_nurbcurve_object *)(o3->refine);
+
+  stride = 4;
+
+  /* apply all transformations to cross-section curves controlv */
+  if(!(cscv = calloc(cs->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(cscv, cs->controlv, cs->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o1, mcs);
+  a = 0;
+  for(i = 0; i < cs->length; i++)
+    {
+      ay_trafo_apply3(&(cscv[a]), mcs);
+      a += stride;
+    }
+
+  /* apply all transformations to rail1 curves controlv */
+  if(!(r1cv = calloc(r1->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(r1cv, r1->controlv, r1->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o2, mr1);
+  a = 0;
+  for(i = 0; i < r1->length; i++)
+    {
+      ay_trafo_apply3(&(r1cv[a]), mr1);
+      a += stride;
+    }
+
+  /* apply all transformations to rail2 curves controlv */
+  if(!(r2cv = calloc(r2->length * stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  memcpy(r2cv, r2->controlv, r2->length * stride * sizeof(double));
+
+  ay_trafo_creatematrix(o3, mr2);
+  a = 0;
+  for(i = 0; i < r2->length; i++)
+    {
+      ay_trafo_apply3(&(r2cv[a]), mr2);
+      a += stride;
+    }
+
+  /* allocate the new patch */
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  /* calculate number of sections */
+  if(sections <= 0)
+    {
+      if(r2->length > r1->length)
+	{
+	  a = r2->length;
+	}
+      else
+	{
+	  a = r1->length;
+	}
+      if(a == 2)
+	{
+	  sections = 1;
+	}
+      else
+	{
+	  sections = a + 1;
+	}
+      new->uorder = r1->order;
+    }
+  else
+    {
+      if(sections > 2)
+	{
+	  new->uorder = 4;
+	}
+      else
+	{
+	  new->uorder = sections+1;
+	}
+    } /* if */
+
+  new->vorder = cs->order;
+  new->uknot_type = AY_KTBSPLINE;
+  new->vknot_type = cs->knot_type;
+  new->width = sections+new->uorder-1;
+  new->height = cs->length;
+
+  new->glu_sampling_tolerance = cs->glu_sampling_tolerance;
+
+  /* allocate control point and knot arrays */
+  if(!(controlv = calloc(new->width*new->height*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  new->controlv = controlv;
+  if(!(new->uknotv = calloc(new->width+new->uorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(new->vknotv = calloc(new->height+new->vorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  ay_status = ay_knots_createnp(new);
+  if(ay_status)
+    { goto cleanup; }
+
+  if(cs->knot_type == AY_KTCUSTOM)
+    {
+      memcpy(new->vknotv,cs->knotv,(cs->length+cs->order)*sizeof(double));
+    }
+
+  /* calculate first point of rail1 and rail2 */
+  ay_nb_CurvePoint4D(r1->length-1, r1->order-1, r1->knotv, r1cv,
+		     r1->knotv[r1->order-1], p1);
+
+  ay_nb_CurvePoint4D(r2->length-1, r2->order-1, r2->knotv, r2cv,
+		     r2->knotv[r2->order-1], p2);
+
+  AY_V3SUB(T0, p2, p1)
+  lent0 = AY_V3LEN(T0);
+  AY_V3SCAL(T0,(1.0/lent0))
+  memcpy(p5, p1, 3*sizeof(double));
+  memcpy(p6, p2, 3*sizeof(double));
+
+  plenr1 = fabs(r1->knotv[r1->length] - r1->knotv[r1->order-1]);
+  plenr2 = fabs(r2->knotv[r2->length] - r2->knotv[r2->order-1]);
+
+  ay_trafo_identitymatrix(mr);
+  ay_trafo_identitymatrix(mrs);
+
+  /* copy first section */
+  memcpy(&(controlv[0]), &(cscv[0]), cs->length * stride * sizeof(double));
+
+  /* copy cross sections controlv section times and sweep it along the rails */
+  for(i = 1; i <= sections; i++)
+    {
+      memcpy(&(controlv[i * stride * cs->length]), &(cscv[0]),
+	     cs->length * stride * sizeof(double));
+
+      u = r1->knotv[r1->order-1]+(((double)i/sections)*plenr1);
+      ay_nb_CurvePoint4D(r1->length-1, r1->order-1, r1->knotv, r1cv,
+			 u, p1);
+      u = r2->knotv[r2->order-1]+(((double)i/sections)*plenr2);
+      ay_nb_CurvePoint4D(r2->length-1, r2->order-1, r2->knotv, r2cv,
+			 u, p2);
+
+      AY_V3SUB(T1, p2, p1);
+      lent1 = AY_V3LEN(T1);
+      AY_V3SCAL(T1,(1.0/lent1));
+
+      /* create rotation matrix */
+      if(((fabs(T1[0]-T0[0]) > AY_EPSILON) ||
+	  (fabs(T1[1]-T0[1]) > AY_EPSILON) ||
+	  (fabs(T1[2]-T0[2]) > AY_EPSILON)))
+	{
+	  ay_trafo_translatematrix(((p5[0])),
+				   ((p5[1])),
+				   ((p5[2])),
+				   mr);
+	  AY_V3CROSS(A,T0,T1);
+	  lent0 = AY_V3LEN(A);
+	  AY_V3SCAL(A,(1.0/lent0));
+
+	  axisrot[0] = AY_R2D(acos(AY_V3DOT(T0,T1)));
+	  memcpy(&axisrot[1], A, 3*sizeof(double));
+
+	  if(fabs(axisrot[0]) > AY_EPSILON)
+	    {
+	      ay_trafo_rotatematrix(-axisrot[0], axisrot[1],
+				    axisrot[2], axisrot[3], mr);
+	      /*
+		the mrs matrix is used to properly rotate the cross
+		section curve for the calculation of the scale factors
+	      */
+	      ay_trafo_rotatematrix(-axisrot[0], axisrot[1],
+				    axisrot[2], axisrot[3], mrs);
+
+	    }
+	  ay_trafo_translatematrix(-(p5[0]),
+				   -(p5[1]),
+				   -(p5[2]),
+				   mr);
+	} /* if */
+
+      /* create transformation matrix */
+
+      /* first, set it to identity */
+      ay_trafo_identitymatrix(m);
+
+      /* apply scaling */
+      memcpy(p7, p1, 3*sizeof(double));
+      memcpy(p8, p2, 3*sizeof(double));
+      ay_trafo_apply3(p7, mrs);
+      ay_trafo_apply3(p8, mrs);
+
+      if(fabs(p6[0]-p5[0]) > AY_EPSILON)
+        {
+	  if(fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]) > AY_EPSILON)
+	    scalx = fabs(p8[0]-p7[0])/fabs(p6[0]-p5[0]);
+	  else
+	    scalx = 1.0;
+        }
+      else
+        {
+	  scalx = 1.0;
+	}
+
+      if(fabs(p6[1]-p5[1]) > AY_EPSILON)
+        {
+	  if(fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]) > AY_EPSILON)
+	    scaly = fabs(p8[1]-p7[1])/fabs(p6[1]-p5[1]);
+	  else
+	    scaly = 1.0;
+        }
+      else
+        {
+	  scaly = 1.0;
+	}
+
+      if(fabs(p6[2]-p5[2]) > AY_EPSILON)
+        {
+	  if(fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]) > AY_EPSILON)
+	    scalz = fabs(p8[2]-p7[2])/fabs(p6[2]-p5[2]);
+	  else
+	    scalz = 1.0;
+        }
+      else
+        {
+	  scalz = 1.0;
+	}
+
+      ay_trafo_translatematrix(((p5[0])),
+			       ((p5[1])),
+			       ((p5[2])),
+			       m);
+      ay_trafo_scalematrix(1.0/scalx,
+			   1.0/scaly,
+			   1.0/scalz,
+			   m);
+      ay_trafo_translatematrix(-(p5[0]),
+			       -(p5[1]),
+			       -(p5[2]),
+			       m);
+
+      /* apply rotation */
+      ay_trafo_multmatrix4(m, mr);
+
+      /* add translation */
+      ay_trafo_translatematrix((p5[0]-p1[0]),
+			       (p5[1]-p1[1]),
+			       (p5[2]-p1[2]),
+			       m);
+
+      /* invert matrix */
+      ay_trafo_invmatrix4(m, mi);
+
+      /* sweep profile */
+      for(j = 0; j < cs->length; j++)
+	{
+	  ay_trafo_apply3(&controlv[i*cs->length*stride+j*stride], mi);
+	} /* for */
+
+      /* save rail vector for next iteration */
+      memcpy(T0, T1, 3*sizeof(double));
+      lent0 = lent1;
+    } /* for */
+
+
+  new->is_rat = ay_npt_israt(new);
+
+  ay_status = ay_npt_closeu(new);
+
+  ay_npt_setuvtypes(new);
+
+  /* return result */
+  *birail1 = new;
+
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
+
+  /* clean up */
+cleanup:
+
+  if(cscv)
+    free(cscv);
+  if(r1cv)
+    free(r1cv);
+  if(r2cv)
+    free(r2cv);
+
+  if(new)
+    {
+      ay_npt_destroy(new);
+    }
+
+ return ay_status;
+} /* ay_npt_birail1periodic */
+
+
 /* ay_npt_birail2:
  *  sweep cross section curve <o1> along rail curves <o2> and <o3>
  *  morphing it into cross section curve <o4>, interpolation control
