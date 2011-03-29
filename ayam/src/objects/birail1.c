@@ -606,6 +606,9 @@ ay_birail1_notifycb(ay_object *o)
 
   birail1->npatch = npatch;
 
+  /* prevent cleanup code from doing something harmful */
+  npatch = NULL;
+
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_sampling_tolerance =
     tolerance;
@@ -617,7 +620,7 @@ ay_birail1_notifycb(ay_object *o)
     {
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(npatch, 3, 0.0, AY_FALSE, AY_FALSE,
+      ay_status = ay_npt_extractnc(birail1->npatch, 3, 0.0, AY_FALSE, AY_FALSE,
 				   AY_FALSE, NULL,
 		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
 
@@ -685,7 +688,7 @@ ay_birail1_notifycb(ay_object *o)
       memset(&curve4, 0, sizeof(ay_object));
       ay_object_defaults(&curve4);
       curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(npatch, 2, 0.0, AY_FALSE, AY_FALSE,
+      ay_status = ay_npt_extractnc(birail1->npatch, 2, 0.0, AY_FALSE, AY_FALSE,
 				   AY_FALSE, NULL,
 		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
 
@@ -762,9 +765,6 @@ ay_birail1_notifycb(ay_object *o)
 	}
     }
 
-  /* prevent cleanup code from doing something harmful */
-  npatch = NULL;
-
 cleanup:
   /* remove provided objects */
   if(got_c1)
@@ -783,7 +783,9 @@ cleanup:
     }
 
   if(npatch)
-    free(npatch);
+    {
+      ay_object_delete(npatch);
+    }
 
   /* recover selected points */
   if(o->selp)
@@ -932,9 +934,6 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 	{
 	  ay_status = ay_object_copy(birail1->npatch, &new);
 	  ay_trafo_copy(o, new);
-	  new->hide_children = AY_TRUE;
-	  new->parent = AY_TRUE;
-	  new->down = ay_endlevel;
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);
