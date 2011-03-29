@@ -121,6 +121,7 @@ ay_object_createargs(unsigned int index, int argc, char **argv, ay_object **o)
 /* ay_object_createtcmd:
  *  Implements the \a crtOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccrtob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -315,6 +316,7 @@ ay_object_deletemulti(ay_object *o)
  *  Delete selected objects.
  *  Implements the \a delOb scripting interface command.
  *  See also the corresponding section in the \ayd{scdelob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -517,6 +519,7 @@ ay_object_getname(ay_object *o)
 /* ay_object_setnametcmd:
  *  Implements the \a nameOb scripting interface command.
  *  See also the corresponding section in the \ayd{scnameob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -785,6 +788,7 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_object_getnametcmd:
  *  Implements the \a getName scripting interface command.
  *  See also the corresponding section in the \ayd{scgetname}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -835,6 +839,8 @@ ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_object_crtendlevel(ay_object **o)
 {
+  if(!o)
+    return AY_ENULL;
  *o = ay_endlevel;
  return AY_OK;
 } /* ay_object_crtendlevel */

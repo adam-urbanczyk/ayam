@@ -18,6 +18,7 @@
 /* ay_clipb_copytcmd:
  *  Implements the \a copOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccopob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -99,6 +100,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
  *  move currently selected objects to the clipboard
  *  Implements the \a movOb scripting interface command.
  *  See also the corresponding section in the \ayd{scmovob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -198,6 +200,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
  *  paste objects from the clipboard to the current level
  *  Implements the \a pasOb scripting interface command.
  *  See also the corresponding section in the \ayd{scpasob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -261,6 +264,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
  *  move objects from the clipboard to the current level
  *  Implements the \a pasmovOb scripting interface command.
  *  See also the corresponding section in the \ayd{scpasmovob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int
@@ -317,6 +321,7 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
  *  replace objects from the current selection with the clipboard content
  *  Implements the \a repOb scripting interface command.
  *  See also the corresponding section in the \ayd{screpob}.
+ *
  *  \returns TCL_OK in any case.
  */
 int

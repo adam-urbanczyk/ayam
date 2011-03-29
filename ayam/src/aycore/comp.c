@@ -1218,7 +1218,7 @@ ay_comp_birail1(ay_object *o1, ay_object *o2)
   s1 = (ay_birail1_object *)o1->refine;
   s2 = (ay_birail1_object *)o2->refine;
 
-  if((s1->close != s2->close) ||
+  if((s1->type != s2->type) ||
      (s1->sections != s2->sections) ||
      (s1->has_start_cap != s2->has_start_cap) ||
      (s1->has_end_cap != s2->has_end_cap))

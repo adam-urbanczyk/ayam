@@ -16,10 +16,14 @@
 
 /* ay_tcmd_reverttcmd:
  *  revert selected curves
+ *  Implements the \a revertC scripting interface command.
+ *  See also the corresponding section in the \ayd{screvertc}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[])
+		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -325,8 +329,11 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 
 
 /* ay_tcmd_getpointtcmd:
+ *  get points of selected objects
+ *  Implements the \a getPnt scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetpnt}.
  *
- *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -789,8 +796,11 @@ cleanup:
 
 
 /* ay_tcmd_setpointtcmd:
+ *  set points of selected objects
+ *  Implements the \a setPnt scripting interface command.
+ *  See also the corresponding section in the \ayd{scsetpnt}.
  *
- *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1105,8 +1115,14 @@ ay_tcmd_fastexittcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_tcmd_withobtcmd:
+ *  execute command(s) for one of the selected objects;
  *  this command modifies the selection before executing
  *  another command of the Ayam scripting interface
+ *
+ *  Implements the \a withOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scwithob}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
