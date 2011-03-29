@@ -832,6 +832,12 @@ int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
+/** Create periodic birailed surface from three curves.
+ */
+int ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
+			   int sections,
+			   ay_nurbpatch_object **birail1);
+
 /** Create birailed surface from four curves.
  */
 int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,

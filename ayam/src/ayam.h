@@ -984,7 +984,7 @@ typedef struct ay_swing_object_s
 /** Birail surface object (from three curves) */
 typedef struct ay_birail1_object_s
 {
-  int close; /**< unused */
+  int type; /**< create open (0), closed (1), or periodic (2) surface? */
   int sections; /**< number of sections in the birailed surface (U) */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
