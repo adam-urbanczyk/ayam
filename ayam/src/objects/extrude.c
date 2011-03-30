@@ -704,7 +704,7 @@ ay_extrude_notifycb(ay_object *o)
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
-		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,&angle,
+		  ay_npt_createcap(z,curve,&uminx,&umaxx,&uminy,&umaxy,
 			       (ay_nurbpatch_object **)(void*)&(cap->refine));
 
 		  umaxx *= trim->scalx;
@@ -833,7 +833,7 @@ ay_extrude_notifycb(ay_object *o)
 
 		  ay_status = ay_npt_createnpatchobject(&cap);
 
-		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,&angle,
+		  ay_npt_createcap(z,curve,&lminx,&lmaxx,&lminy,&lmaxy,
 			       (ay_nurbpatch_object **)(void*)&(cap->refine));
 
 		  lmaxx *= trim->scalx;

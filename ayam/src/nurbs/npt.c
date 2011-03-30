@@ -5942,13 +5942,13 @@ cleanup:
 int
 ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		 double *ominx, double *omaxx,
-		 double *ominy, double *omaxy, double *oangle,
+		 double *ominy, double *omaxy,
 		 ay_nurbpatch_object **cap)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
  double knotv[4] = {0.0,0.0,1.0,1.0};
- double minx, miny, maxx, maxy, angle;
+ double minx, miny, maxx, maxy;
  int i, stride;
 
   /* calloc the new patch */
@@ -5969,9 +5969,11 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   memcpy(patch->vknotv, knotv, 4*sizeof(double));
 
   i = 0;
-  minx = curve->controlv[0]; maxx = minx;
-  miny = curve->controlv[1]; maxy = miny;
-  angle = 0.0;
+  minx = curve->controlv[0];
+  maxx = minx;
+  miny = curve->controlv[1];
+  maxy = miny;
+
   stride = 4;
   while(i < curve->length*stride)
     {
@@ -5983,16 +5985,6 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 	maxy = curve->controlv[i+1];
       if(curve->controlv[i+1] < miny)
 	miny = curve->controlv[i+1];
-
-      /* compute direction */
-      if((i < (curve->length-1) * stride) && (i > stride))
-	{
-	  angle +=
-	    ((curve->controlv[i+stride] - curve->controlv[i-stride])*
-	     (curve->controlv[i+1] - curve->controlv[i+1-stride])) -
-	    ((curve->controlv[i] - curve->controlv[i-stride])*
-	     (curve->controlv[i+stride+1] - curve->controlv[i+1-stride]));
-	}
 
       i += stride;
     } /* while */
@@ -6019,7 +6011,6 @@ ay_npt_createcap(double z, ay_nurbcurve_object *curve,
   *omaxx = maxx;
   *ominy = miny;
   *omaxy = maxy;
-  *oangle = angle;
 
   /* return result */
   *cap = patch;
