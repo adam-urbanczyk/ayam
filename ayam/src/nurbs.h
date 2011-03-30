@@ -889,7 +889,7 @@ int ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
  */
 int ay_npt_createcap(double z, ay_nurbcurve_object *curve,
 		     double *ominx, double *omaxx,
-		     double *ominy, double *omaxy, double *oangle,
+		     double *ominy, double *omaxy,
 		     ay_nurbpatch_object **cap);
 
 /** Apply transformations to all control points.
