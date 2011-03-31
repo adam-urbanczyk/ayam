@@ -40,21 +40,21 @@ proc sweep_getAttr { } {
     addCheck $w SweepAttrData EndCap
 
     if { $BevelTags(HasStartBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
+	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 SweepAttrData"
 	addMenu $w BevelTags SBType $ay(bevelmodes)
 	addParam $w BevelTags SBRadius
 	addCheck $w BevelTags SBRevert
     } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
+	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 SweepAttrData"
     }
 
     if { $BevelTags(HasEndBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
+	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 SweepAttrData"
 	addMenu $w BevelTags EBType $ay(bevelmodes)
 	addParam $w BevelTags EBRadius
 	addCheck $w BevelTags EBRevert
     } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 1"
+	addCommand $w c2 "Add End Bevel!" "bevel_add 1 SweepAttrData"
     }
 
     addParam $w SweepAttrData Tolerance

@@ -35,21 +35,21 @@ proc birail1_getAttr { } {
     addCheck $w Birail1AttrData EndCap
 
     if { $BevelTags(HasStartBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
+	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 Birail1AttrData"
 	addMenu $w BevelTags SBType $ay(bevelmodes)
 	addParam $w BevelTags SBRadius
 	addCheck $w BevelTags SBRevert
     } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
+	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 Birail1AttrData"
     }
 
     if { $BevelTags(HasEndBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
+	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 Birail1AttrData"
 	addMenu $w BevelTags EBType $ay(bevelmodes)
 	addParam $w BevelTags EBRadius
 	addCheck $w BevelTags EBRevert
     } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 1"
+	addCommand $w c2 "Add End Bevel!" "bevel_add 1 Birail1AttrData"
     }
 
     addParam $w Birail1AttrData Tolerance
