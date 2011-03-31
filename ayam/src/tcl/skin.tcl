@@ -39,21 +39,21 @@ proc skin_getAttr { } {
     addCheck $w SkinAttrData EndCap
 
     if { $BevelTags(HasStartBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0"
+	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 SkinAttrData"
 	addMenu $w BevelTags SBType $ay(bevelmodes)
 	addParam $w BevelTags SBRadius
 	addCheck $w BevelTags SBRevert
     } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 0"
+	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 SkinAttrData"
     }
 
     if { $BevelTags(HasEndBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1"
+	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 SkinAttrData"
 	addMenu $w BevelTags EBType $ay(bevelmodes)
 	addParam $w BevelTags EBRadius
 	addCheck $w BevelTags EBRevert
     } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 1"
+	addCommand $w c2 "Add End Bevel!" "bevel_add 1 SkinAttrData"
     }
 
     addParam $w SkinAttrData Tolerance

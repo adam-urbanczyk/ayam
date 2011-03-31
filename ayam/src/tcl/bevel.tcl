@@ -116,8 +116,8 @@ proc bevel_setTags { } {
 # bevel_setTags
 
 
-proc bevel_add { place } {
-    global ay BevelTags
+proc bevel_add { place arr } {
+    global ay BevelTags $arr
 
     # set up array
     if { $place == 0 } {
@@ -148,23 +148,37 @@ proc bevel_add { place } {
     # create tags
     bevel_setTags
 
-    # update property GUI
-    plb_update
-
-    # apply changes to object?
+    # apply changes to object
     if { $ay(shiftcommand) == 1 } {
 	set ay(shiftcommand) 0
 	update
 	$ay(appb) invoke
+
+	# update property GUI
+	plb_update
+    } else {
+	# save current property GUI state
+	foreach name [array names $arr] {
+	    eval set savearray($name) $${arr}($name)
+	}
+
+	# update property GUI (temporarily destroys the property GUI state)
+	plb_update
+
+	# restore  property GUI state
+	foreach name [array names $arr] {
+	    eval set ${arr}($name) $savearray($name)
+	}
     }
+    # if
 
  return;
 }
 # bevel_add
 
 
-proc bevel_rem { place } {
-    global ay BevelTags
+proc bevel_rem { place arr } {
+    global ay BevelTags $arr
 
     # set up array
     if { $place == 0 } {
@@ -183,15 +197,29 @@ proc bevel_rem { place } {
     # create tags
     bevel_setTags
 
-    # update property GUI
-    plb_update
-
     # apply changes to object?
     if { $ay(shiftcommand) == 1 } {
 	set ay(shiftcommand) 0
 	update
 	$ay(appb) invoke
+
+	# update property GUI
+	plb_update
+    } else {
+	# save current property GUI state
+	foreach name [array names $arr] {
+	    eval set savearray($name) $${arr}($name)
+	}
+
+	# update property GUI (temporarily destroys the property GUI state)
+	plb_update
+
+	# restore  property GUI state
+	foreach name [array names $arr] {
+	    eval set ${arr}($name) $savearray($name)
+	}
     }
+    # if
 
  return;
 }
