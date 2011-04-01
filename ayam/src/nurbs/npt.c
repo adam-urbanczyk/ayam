@@ -3585,47 +3585,70 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       lent0 = lent1;
     } /* for */
 
-  /* create start cap (if birail is not closed) */
-  if(has_start_cap && !closed)
+  if(closed)
     {
-      curve = NULL;
-      ay_status = ay_object_copy(o1, &curve);
-      /*ay_trafo_defaults(curve);*/
-      ay_status = ay_capt_createfromcurve(curve, start_cap);
-      /* transform cap */
-      if(*start_cap)
+      /* make sure we create a closed surface (even if the
+	 rails are not closed) by setting the first and
+	 last section to a mean between the two */
+      a = 0;
+      j = sections*cs->length*stride;
+      for(i = 0; i < cs->length; i++)
 	{
-	    /*ay_trafo_copy(o1, *start_cap);*/
-	  /* fix direction for aycsg */
-	  (*start_cap)->scalz *= -1.0;
-	}
-      else
-	{
-	  ay_object_delete(curve);
-	} /* if */
-    } /* if */
+	  controlv[a]   += ((controlv[j]-controlv[a])/2.0);
+	  controlv[a+1] += ((controlv[j+1]-controlv[a+1])/2.0);
+	  controlv[a+2] += ((controlv[j+2]-controlv[a+2])/2.0);
 
-  /* create end-cap (if birail is not closed) */
-  if(has_end_cap && !closed)
-    {
-      curve = NULL;
-      ay_status = ay_object_copy(o1, &curve);
-      tc = (ay_nurbcurve_object*)curve->refine;
-      ay_trafo_creatematrix(curve, mcs);
-      ay_trafo_defaults(curve);
-
-      for(j = 0; j < tc->length; j++)
-	{
-	  ay_trafo_apply3(&(tc->controlv[j*stride]), mcs);
-	  ay_trafo_apply3(&(tc->controlv[j*stride]), mi);
+	  a += stride;
+	  j += stride;
 	} /* for */
 
-      ay_status = ay_capt_createfromcurve(curve, end_cap);
-
-      if(!*end_cap)
+      memcpy(&(controlv[sections*cs->length*stride]), controlv,
+	     cs->length*stride*sizeof(double));
+    }
+  else
+    {
+      /* create start cap */
+      if(has_start_cap)
 	{
-	  ay_object_delete(curve);
-	}
+	  curve = NULL;
+	  ay_status = ay_object_copy(o1, &curve);
+	  /*ay_trafo_defaults(curve);*/
+	  ay_status = ay_capt_createfromcurve(curve, start_cap);
+	  /* transform cap */
+	  if(*start_cap)
+	    {
+	      /*ay_trafo_copy(o1, *start_cap);*/
+	      /* fix direction for aycsg */
+	      (*start_cap)->scalz *= -1.0;
+	    }
+	  else
+	    {
+	      ay_object_delete(curve);
+	    } /* if */
+	} /* if */
+
+      /* create end-cap (if birail is not closed) */
+      if(has_end_cap)
+	{
+	  curve = NULL;
+	  ay_status = ay_object_copy(o1, &curve);
+	  tc = (ay_nurbcurve_object*)curve->refine;
+	  ay_trafo_creatematrix(curve, mcs);
+	  ay_trafo_defaults(curve);
+
+	  for(j = 0; j < tc->length; j++)
+	    {
+	      ay_trafo_apply3(&(tc->controlv[j*stride]), mcs);
+	      ay_trafo_apply3(&(tc->controlv[j*stride]), mi);
+	    } /* for */
+
+	  ay_status = ay_capt_createfromcurve(curve, end_cap);
+
+	  if(!*end_cap)
+	    {
+	      ay_object_delete(curve);
+	    }
+	} /* if */
     } /* if */
 
   new->is_rat = ay_npt_israt(new);
