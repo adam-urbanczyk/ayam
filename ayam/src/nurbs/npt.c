@@ -3760,7 +3760,7 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  /* calculate number of sections */
+  /* calculate number of sections and uorder */
   if(sections <= 0)
     {
       if(r2->length > r1->length)

@@ -478,7 +478,7 @@ ay_knots_check(int length, int order, int knot_count, double *knotv)
 void
 ay_knots_printerr(char *location, int errcode)
 {
-
+  /* sanity check */
   if(!location)
     return;
 
@@ -1132,8 +1132,15 @@ ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 } /* ay_knots_coarsen */
 
 
-/* ay_knots_chordparam:
- *  create chordal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+/** ay_knots_chordparam:
+ *  create chordal parameterization from points
+ *
+ * @param[in] Q vector of points
+ * @param[in] Qlen number of points in Q
+ * @param[in] stride stride (difference between points) in Q
+ * @param[in,out] U vector of parameters
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
@@ -1211,8 +1218,15 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
 } /* ay_knots_chordparam */
 
 
-/* ay_knots_centriparam:
- *  create centripetal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+/** ay_knots_centriparam:
+ *  create centripetal parameterization from points
+ *
+ * @param[in] Q vector of points
+ * @param[in] Qlen number of points in Q
+ * @param[in] stride stride (difference between points) in Q
+ * @param[in,out] U vector of parameters
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
@@ -1290,8 +1304,17 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
 } /* ay_knots_centriparam */
 
 
-/* ay_knots_chordparamnp:
- *  create chordal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+/** ay_knots_chordparamnp:
+ *  create chordal parameterization from points of a surface
+ *
+ * @param[in] dir direction to consider (0 - U, 1 - V)
+ * @param[in] Q vector of points
+ * @param[in] width width of surface
+ * @param[in] height height of surface
+ * @param[in] stride stride (difference between points) in Q
+ * @param[in,out] U vector of parameters
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
@@ -1360,12 +1383,21 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
 } /* ay_knots_chordparamnp */
 
 
-/* ay_knots_centriparamnp:
- *  create centripetal parameterization in <U[Ulen]> from points in <Q[Qlen]>
+/** ay_knots_centriparamnp:
+ *  create centripetal parameterization from points of a surface
+ *
+ * @param[in] dir direction to consider (0 - U, 1 - V)
+ * @param[in] Q vector of points
+ * @param[in] width width of surface
+ * @param[in] height height of surface
+ * @param[in] stride stride (difference between points) in Q
+ * @param[in,out] U vector of parameters
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
-		      double **U)
+		       double **U)
 {
  double t, *vk = NULL, totallen = 0.0, *lens = NULL;
  int i, j, Ulen = 0;
@@ -1409,7 +1441,7 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
       return AY_ERROR;
     }
 
-  /* compute the chordal parameterization */
+  /* compute the centripetal parameterization */
   vk[0] = 0.0;
   j = 0;
   t = 0.0;
@@ -1432,8 +1464,15 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 } /* ay_knots_centriparamnp */
 
 
-/* ay_knots_classify:
- *  
+/** ay_knots_classify:
+ *  determine the type of a knot vector
+ *
+ * @param[in] order order of the curve/surface
+ * @param[in] U knot vector
+ * @param[in] Ulen length of knot vector
+ * @param[in] eps maximum distance of equal knots
+ *
+ * \returns knot vector type (AY_KTCUSTOM in error)
  */
 int
 ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
@@ -1445,6 +1484,7 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
  int is_clamped = AY_TRUE;
  int is_nurb = AY_TRUE;
 
+  /* sanity check */
   if(Ulen < 2 || !U)
     return AY_KTCUSTOM;
 
@@ -1504,29 +1544,38 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 } /* ay_knots_classify */
 
 
-/* ay_knots_revert:
- *  
+/** ay_knots_revert:
+ *  revert a knot vector
+ *
+ * @param[in] U knot vector
+ * @param[in] Ulen length of knot vector
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_knots_revert(double *U, int ulen)
+ay_knots_revert(double *U, int Ulen)
 {
  double *Ut = NULL;
  int i, j;
 
-  if(!(Ut = calloc(ulen, sizeof(double))))
+  /* sanity check */
+  if(!U)
+    return AY_ENULL;
+
+  if(!(Ut = calloc(Ulen, sizeof(double))))
     return AY_EOMEM;
 
   Ut[0] = U[0];
-  Ut[ulen-1] = U[ulen-1];
-  j = ulen-2;
-  for(i=1; i < (ulen-1); i++)
+  Ut[Ulen-1] = U[Ulen-1];
+  j = Ulen-2;
+  for(i=1; i < (Ulen-1); i++)
     {
-      Ut[i] = Ut[0]+(Ut[ulen-1]-U[j]);
+      Ut[i] = Ut[0]+(Ut[Ulen-1]-U[j]);
 
       j--;
     }
 
-  memcpy(U, Ut, ulen*sizeof(double));
+  memcpy(U, Ut, Ulen*sizeof(double));
 
   free(Ut);
 
@@ -1534,8 +1583,9 @@ ay_knots_revert(double *U, int ulen)
 } /* ay_knots_revert */
 
 
-/* ay_knots_init:
+/** ay_knots_init:
  *  initialize the knots module
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_knots_init(Tcl_Interp *interp)
