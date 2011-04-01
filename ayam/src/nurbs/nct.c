@@ -1430,7 +1430,7 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
 
   if(ay_status)
     {
-      ay_error(ay_status,fname,"Degree elevation failed.");
+      ay_error(ay_status, fname, "Degree elevation failed.");
       free(Uh); free(Qw); return AY_ERROR;
     }
 
@@ -5062,8 +5062,12 @@ ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
 } /* ay_nct_findufrompoint */
 
 
-/* ay_nct_israt:
+/** ay_nct_israt:
+ *  Check whether curve is rational.
  *
+ * @param[in] curve NURBS curve to check
+ *
+ * \returns AY_TRUE if curve is rational, AY_FALSE else.
  */
 int
 ay_nct_israt(ay_nurbcurve_object *curve)
@@ -5601,8 +5605,14 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_removekntcmd */
 
 
-/* ay_nct_trim:
+/** ay_nct_trim:
  *  trim NURBS curve (cut off pieces at start and/or end)
+ *
+ * @param[in] curve NURBS curve to trim
+ * @param[in] umin new minimum knot value
+ * @param[in] umax new maximum knot value
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
@@ -5739,8 +5749,12 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_trimtcmd */
 
 
-/* ay_nct_isdegen:
- *  check curve for degeneracy
+/** ay_nct_isdegen:
+ *  check curve for degeneracy (all points equal)
+ *
+ * @param[in] curve NURBS curve to check
+ *
+ * \returns AY_TRUE if curve is degenerate, AY_FALSE else.
  */
 int
 ay_nct_isdegen(ay_nurbcurve_object *curve)
@@ -5763,10 +5777,19 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 } /* ay_nct_isdegen */
 
 
-/* ay_nct_offset:
- *  create offset curve from <o>
- *  the new curve is <offset> away from the original
- *  returns new curve in <nc>
+/** ay_nct_offset:
+ *  create offset curve
+ *
+ * @param[in] o NURBS curve object to offset
+ * @param[in] mode offset mode:
+ *            - 0: point mode
+ *            - 1: section mode
+ *            - 2: hybrid mode
+ *            - 3: 3D PV N mode
+ * @param[in] offset offset distance
+ * @param[in,out] nc offset curve
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
@@ -5961,7 +5984,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 					       &(newcv[j*stride])))
 		    {
 		      /*
-		       * if the intersection failed (e.g. due to colinear
+		       * if the intersection failed (e.g. due to collinear
 		       * segments) we simply pick one of the inner segment
 		       * points
 		       */
@@ -6101,7 +6124,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  break;
 	default:
 	  break;
-	}
+	} /* switch */
 
     } /* if */
 
