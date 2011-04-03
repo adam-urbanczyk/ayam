@@ -6011,6 +6011,10 @@ The following parameters further control the birailing process:
 
 <sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
 <p>
+Similar to the <tt/"Sweep"/, the <tt/"Type"/ attribute controls, whether the
+swept surface should be open, closed, or periodic in the direction
+of the birail curves.
+<p>
 The parameter <tt/"Sections"/ determines how many
 sections (in U direction) should be used, when generating the
 birailed NURBS patch. The birailed NURBS patch always has sections+1 control
@@ -10108,6 +10112,11 @@ so be careful when adding new elements to this array.
 See also section <ref id="ayamrc" name="Ayamrc File">.
 Use <tt/"parray ayprefs"/ in the console to see what is there.
 More documentation to come.
+<p>
+Note that changes to this array on the Tcl side do not immediately
+take effect as the data needs to be transferred to the C context
+using the <tt/"setPrefs"/ command.
+See also section <ref id="sciprefs" name="Managing Preferences">.
 
 <sect2>The Global Property Management and Data Arrays<label id="ayproparr">
 <p>
@@ -11351,8 +11360,8 @@ splitNC - split NURBS curve
  <item>Synopsis: <tt/"splitNC u"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: splits the selected NURBS curve at designated parametric
-value into two curves, creating one new curve and modifying the original
-selected curve.
+value into two curves, creating one new curve and
+<em>modifying the original</em> selected curve.
 See also section <ref id="splitt" name="The Split Tool">.
 </itemize>
 
@@ -11691,6 +11700,28 @@ line, if the <tt/&lt;Shift&gt;/ key is held down. <tt/&lt;Shift+Return&gt;/
 may also be used without commands on the command line.
 By default, the <tt/"AUCommands"/ are <tt/"uS; rV;"/, leading to
 updated object tree, property GUI, and views.
+
+<sect2>Managing Preferences<label id="sciprefs">
+<p>
+These commands manage preferences data:
+<p><label id="scgetprefs">
+getPrefs - get preferences data:
+<itemize>
+ <item>Synopsis: <tt/"getPrefs"/
+ <item>Background: No, Undo: No, Safe: No
+ <item>Description: Copy preferences data from the C to the Tcl context.
+</itemize>
+
+<p><label id="scsetprefs">
+setPrefs - set preferences data:
+<itemize>
+ <item>Synopsis: <tt/"setPrefs"/
+ <item>Background: No, Undo: No, Safe: No
+ <item>Description: Copy preferences data from the Tcl to the C context.
+This is necessary after a change to the global ayprefs Tcl array to let
+the changes take effect.
+</itemize>
+
 
 <sect2>Custom Objects<label id="scicust">
 <p>
@@ -12341,13 +12372,13 @@ the shortcut <tt/&lt;s&gt;/ will:
 <enum>
 <item>if the modelling mode is object,
 <enum>
-<item>set the mark to center of all selected objects
+<item>set the mark to the center of all selected objects
 <item>invoke the about variant of scale 2D
 </enum>
 (this is the equivalent of <tt/&lt;sac&gt;/)
 <item>if the modelling mode is point,
 <enum>
-<item>set the mark to center of all selected points
+<item>set the mark to the center of all selected points
 <item>invoke the about variant of scale 2D
 </enum>
 (this is the equivalent of <tt/&lt;saC&gt;/)
@@ -12358,14 +12389,35 @@ confined variants).
 <p>
 Note, that the mark is not reset to a new center, when the selection
 changes. After a selection change (e.g. by selecting points in a
-different view) simply restart the action.
+different view) simply restart the action to transform about the
+new center.
+<p>
+To temporarily disable the modified behaviour, the <tt/&lt;F11&gt;/
+key can be used.
+<p>
+To rotate or scale about a different point than the center, the mark
+may still be set manually using <tt/&lt;a&gt;/.
+
+<sect2>Automatic Point Actions<label id="apnttcl">
+<p>
+The script <tt>"apnt.tcl"</tt> (for automatic point), may be
+used to switch the modelling mode of the current or all views
+to point modelling automatically after a point selection.
+<p>
+After running the script, selecting (tagging) a point using the
+select point action (shortcut <tt/&lt;t&gt;/) will automatically
+switch the view to point modelling so that the next modelling
+actions (e.g. move, via shortcut <tt/&lt;m&gt;/) will always
+transform the points, and not modify the objects transformations.
+<p>
+Switch back to object modelling via shortcut <tt/&lt;o&gt;/.
 
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
 Since Ayam 1.15 there is an external Tcl script named <tt>"bgconvert.tcl"</tt>
-that converts scene files from one 3D file format to another, with the help
-of Ayam which is running in the background.
+available that converts scene files from one 3D file format to another,
+with the help of Ayam which is running in the background.
 In the most simple form, bgconvert may be used from a UNIX command line
 (or shell script) like this:
 <code>
@@ -12461,23 +12513,22 @@ of value <tt/"PolyhedronAttr"/ to the script object to see it.
 <p>
 The Conway notation defines a set of operations executed consecutively
 on a seed/basic shape.
-The script currently supports the following seeds and operations,
-information taken verbatim from George W. Harts fine web pages
-(see also section <ref id="secref" name="References">).
+The script currently supports the following seeds and operations
+(information taken from George W. Harts fine web pages,
+see also section <ref id="secref" name="References">).
 <p>
 <bf/Seeds:/<newline>
 The Platonic solids are denoted T, O, C, I, and D, according to their
-first letter. Other polyhedra which are implemented here include prisms,
-Pn, antiprisms, An, and pyramids, Yn, where n is a number (3 or greater)
-which you specify to indicate the size of the base you want, e.g.,
+first letter. Other polyhedra which are implemented here include prisms:
+Pn, antiprisms: An, and pyramids: Yn, where n is a number (3 or greater)
+which must be specified to indicate the size of the base, e.g.,
 Y3=T, P4=C, and A3=O.
 <p>
 <bf/Operations:/<newline>
 Currently, d, t, k, a, j, s, g, e, b, o, m, r, and p are defined.
 They are motivated by the operations needed to create the Archimedean
 solids and their duals from the Platonic solids. The following tables
-explain the operations in detail (these abbreviated explanations are
-again taken from George W. Hart):
+explain the operations in more detail:
 
 <table loc="p">
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
@@ -12505,6 +12556,8 @@ again taken from George W. Hart):
 </tabular>
 <caption>Additional Operations</caption>
 </table>
+
+These abbreviated explanations were again taken from George W. Hart.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -13072,7 +13125,7 @@ SOLID and TRACE entities are imported as BPatch objects.
 BLOCK and INSERT entities will be converted to appropriate master (referenced)
 and instance objects (references).
 <p>
-Bulges and extrusions are not supported.
+Bulges and extrusions are <em>not</em> supported.
 <p>
 The following table comprehensively lists the supported DXF entities and
 their Ayam counterparts that will be created upon import.
@@ -13099,16 +13152,16 @@ INSERT|Instance@<hline>
 <p>
 The DXF import may be controlled via different options:
 <itemize>
-<item><tt>"FileName"</tt> is the path and name of the DXF file to import.
-<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+<item><tt>"FileName"</tt>: is the path and name of the DXF file to import.
+<item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
 be imported.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
 <item><tt/"ReadLayers"/: By default, all entities from all layers will be
 imported.
-Using the <tt/"ReadLayers"/ import option, a single layer or a range
+Using the <tt/"ReadLayers"/: import option, a single layer or a range
 of layers may be selected for import.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of imported
+<item><tt/"RescaleKnots"/: allows to rescale the knot vectors of imported
 NURBS curves so that the distances between different knots are not smaller
 than the given value. A <tt/"RescaleKnots"/ value of 1.0e-04 leads to NURBS
 that may be safely drawn using GLU. The default value 0.0 means no scaling.
@@ -13170,15 +13223,15 @@ not supported. Texture coordinates will not be exported.
 <p>
 The DXF export may be controlled via different options:
 <itemize>
-<item><tt>"FileName"</tt> is the path and name of the DXF file to export to.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt>"FileName"</tt>: is the path and name of the DXF file to export to.
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 exported objects.
 <item><tt/"WriteSelected"/: exports only the selected objects.
 <item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags.
 <item><tt/"IgnoreHidden"/: ignores all hidden objects.
-<item><tt>"WriteCurves"</tt> if this is disabled, no freeform curves will
+<item><tt>"WriteCurves"</tt>: if this is disabled, no freeform curves will
 be exported.
-<item><tt>"TopLevelLayers"</tt> controls whether the top level Level
+<item><tt>"TopLevelLayers"</tt>: controls whether the top level Level
 objects in the Ayam scene to be exported should be interpreted as layers.
 If this option is enabled, all objects in these levels will be placed on
 the respective layer. Objects that are not in one of those levels
@@ -13212,7 +13265,7 @@ Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
 points (e.g. curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
-is not supported (however, since Ayam 1.9, UMM/VMM
+is not supported (however, since Ayam 1.9, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
 values).
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
@@ -13231,26 +13284,26 @@ syntax only, files that use older syntax will not be imported correctly.
 <p>
 The following options control the Wavefront OBJ import process:
 <itemize>
-<item><tt>"FileName"</tt> is the name of the Wavefront OBJ file (version 3.0)
-<item><tt>"MergeFaces"</tt> controls, whether consecutive polygonal
+<item><tt>"FileName"</tt>: is the name of the Wavefront OBJ file (version 3.0)
+<item><tt>"MergeFaces"</tt>: controls, whether consecutive polygonal
 faces should be merged into a single PolyMesh object for import.
 Note that the merged PolyMesh objects probably needs to be optimized if there
 are vertices used by multiple faces
 (main menu <tt>"Tools/PolyMesh/Optimize"</tt>).
-<item><tt>"MergePVTags"</tt> controls, whether the PV tags of PolyMesh
+<item><tt>"MergePVTags"</tt>: controls, whether the PV tags of PolyMesh
 objects should be merged as well if they are subject to automatic
 merging (see above).
-<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+<item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
 be imported. This option does <em>not</em> influence the import of trim curves!
-<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+<item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+<item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 1.0e-04 leads to NURBS that may be safely drawn using GLU.
 The default value 0.0 means no scaling.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 100 percent, the objio plugin is reading lines from the
@@ -13314,14 +13367,14 @@ Object names will be exported as <tt>o</tt> statements.
 <p>
 The following parameters control the Wavefront OBJ export:
 <itemize>
-<item><tt>"FileName"</tt> is the filename of the Wavefront OBJ file;
-<item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
+<item><tt>"FileName"</tt>: is the filename of the Wavefront OBJ file;
+<item><tt>"WriteSelected"</tt>: exports only the currently selected object(s);
 <item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
 to triangles for export;
-<item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and NURBS
+<item><tt>"WriteCurves"</tt>: toggles writing of NURBS curves and NURBS
 curve providing objects to the exported Wavefront OBJ file (This option does
 <em>not</em> influence the export of trim curves.);
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 exported objects;
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 100 percent, the objio plugin is writing the Ayam objects
@@ -13394,16 +13447,16 @@ not available.
 <p>
 The following parameters, additionally, control the 3DMF import:
 <itemize>
-<item><tt>"FileName"</tt> is the filename of the 3DMF file to import;
+<item><tt>"FileName"</tt>: is the filename of the 3DMF file to import;
 <item><tt/"ScaleFactor"/: The <tt/"ScaleFactor"/ option allows to apply a
 scaling factor to all imported objects.
 <item><tt/"ReadCurves"/:
-If the <tt/"ReadCurves"/ import option is switched off, no curves will be
+If the <tt/"ReadCurves"/: import option is switched off, no curves will be
 imported. This option does <em>not</em> influence the import of trim curves.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+<item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 1.0e-04 leads to NURBS that may be safely drawn using GLU.
@@ -13489,14 +13542,14 @@ manner.
 <p>
 The following parameters, additionally, control the 3DMF export:
 <itemize>
-<item><tt>"FileName"</tt> is the filename of the 3DMF file to export;
+<item><tt>"FileName"</tt>: is the filename of the 3DMF file to export;
 <item><tt/"WriteBinary"/: This option controls whether the text version
 or the binary version of the 3DMF file format should be used for export.
 <item><tt/"ScaleFactor"/:
-The <tt/"ScaleFactor"/ option allows to apply a scaling factor to all
+This option allows to apply a scaling factor to all
 exported objects.
 <item><tt/"WriteSelected"/: exports only the selected objects.
-<item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+<item><tt/"WriteCurves"/: If this option is disabled,
 no curves will be written to the exported 3DMF file. This option does
 <em>not</em> influence the export of trim curves.
 </itemize>
@@ -13556,26 +13609,28 @@ PlaneSurface|NPatch@<hline>
 <p>
 The 3DM import process is controlled by the following options:
 <itemize>
-<item><tt/"ScaleFactor"/: The <tt/"ScaleFactor"/ option allows to apply a
+<item><tt/"ScaleFactor"/: This option allows to apply a
 scaling factor to all imported objects.
-<item><tt/"Accuracy"/: The <tt/"Accuracy"/ import option controls the
+<item><tt/"Accuracy"/: This option controls the
 tolerance of OpenNURBS internal operations, in this case the value is
 mostly used for conversion operations to the NURBS form.
-<item><tt/"ReadCurves"/: If the <tt/"ReadCurves"/ import option is
+<item><tt/"ReadCurves"/: If this option is
 switched off, no curves will be imported. This option does <em>not</em>
 influence the import of trim curves.
 <item><tt/"ReadLayers"/: By default, all objects from all layers will be
 imported.
 Using the <tt/"ReadLayers"/ import option, a single layer or a range
 of layers may be selected for import.
-<item><tt/"ReadSTrim"/: Another import option is <tt/"ReadSTrim"/.
-This useful to ignore simple bounding trim loops of NURBS surfaces if
-they are the only trim loop for that surface.
+<item><tt/"ReadSTrim"/: This option helps to ignore single bounding
+trim loops of NURBS surfaces.
 Importing this single bounding trim loop would just make the Ayam scene
 more complex than needed in many cases.
+If <tt/"ReadSTrim"/ is switched off, no simple trims (trims that only
+run along the border of a NURBS patch) will be imported if they are the
+only trim curves.
 This option replaces the <tt/"IgnoreFirstTrim"/ import option
 available before Ayam 1.13 with slightly different semantics.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+<item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 1.0e-04 leads to NURBS that may be safely drawn using GLU.
@@ -13600,6 +13655,8 @@ Start exporting to a Rhino 3DM file using the menu entry
 (if this menu entry is not available, you have to load the
 <tt>"onio"</tt> plugin using the menu entry
 <tt>"File/Load Plugin"</tt> first).
+<p>
+The onio plugin exports 3DM files of version 3.0.
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -13653,25 +13710,27 @@ checking NURBS surfaces for planarity).
 <item><tt/"WriteSelected"/: exports only the selected objects.
 <item><tt/"ObeyNoExport"/: ignores all objects with <tt/"NoExport"/ tags.
 <item><tt/"IgnoreHidden"/: ignores all hidden objects.
-<item><tt/"WriteCurves"/: If the <tt/"WriteCurves"/ option is disabled,
+<item><tt/"WriteCurves"/: If this option is disabled,
 no curves will be written to the exported Rhino 3DM file. This option does
 <em>not</em> influence the export of trim curves.
-<item><tt/"QuadAsBRep"/: If the <tt/"QuadAsBRep"/ option is enabled
+<item><tt/"QuadAsBRep"/: If this option is enabled
 spheres, cylinders, cones, and torii will not be exported as collection
 of NURBS surfaces (as converted by Ayam) but as BRep objects (as converted
 by the OpenNURBS toolkit).
 However, not all features of the quadric objects will be translated in
 this case:
-The BRep sphere does not support ZMin, ZMax, and ThetaMax.
-The BRep cylinder does not support ThetaMax (base caps will
+ <itemize>
+ <item>The BRep sphere does not support ZMin, ZMax, and ThetaMax.
+ <item>The BRep cylinder does not support ThetaMax (base caps will
 be created if the cylinder is closed).
-The BRep cone does not support ThetaMax (a base cap will be
+ <item>The BRep cone does not support ThetaMax (a base cap will be
 created, if the cone is closed).
-The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
+ <item>The BRep torus does not support PhiMin, PhiMax, and ThetaMax.
+ </itemize>
 The <tt/"QuadAsBRep"/ option has no effect on the export of disks,
 hyperboloids, and paraboloids. Those will always be exported as NURBS
 surfaces.
-<item><tt>"TopLevelLayers"</tt> controls whether the top level Level
+<item><tt>"TopLevelLayers"</tt>: controls whether the top level Level
 objects in the Ayam scene to be exported should be interpreted as layers.
 If this option is enabled, all objects in these levels will be placed on
 the respective layer. Objects that are not in one of those levels
@@ -13702,7 +13761,7 @@ Start importing from a Web3D X3D file using the menu entry
 The import functionality of the <tt>"x3dio"</tt> plugin currently covers
 import of the following X3D elements (grouped by components):
 <itemize>
-<item>Geometry3D:
+<item><bf/Geometry3D:/
 Box, Sphere, Cylinder, Cone, ElevationGrid, Extrusion,
 IndexedFaceSet, IndexedTriangleSet, IndexedTriangleStripSet,
 IndexedTriangleFanSet, TriangleSet, TriangleStripSet, TriangleFanSet,
@@ -13716,7 +13775,7 @@ the X3D element.
 ElevationGrids are imported as bilinear patch meshes.
 <p><p>
 
-<item>Geometry2D:
+<item><bf/Geometry2D:/
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
 <p><p>
 Arcs and Circles are imported as NCircle objects.
@@ -13725,7 +13784,7 @@ Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 (otherwise as Disks).
 <p><p>
 
-<item>NURBS:
+<item><bf/NURBS:/
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
 TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
@@ -13733,14 +13792,14 @@ NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
 All NURBS elements are fully supported.
 <p><p>
 
-<item>CAD:
+<item><bf/CAD:/
 QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
 <p><p>
 CADLayer objects will be imported as top level level objects.
 CADAssembly and CADPart objects will be imported as level objects.
 <p><p>
 
-<item>Light sources:
+<item><bf/Light sources:/
 DirectionalLight, PointLight, SpotLight.
 <p><p>
 The lights will be directly mapped to the standard RenderMan
@@ -13750,7 +13809,7 @@ of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
 <p><p>
 
-<item>Navigation:
+<item><bf/Navigation:/
 Viewpoint.
 <p><p>
 Viewpoint elements will be imported as view objects (with corresponding
@@ -13758,7 +13817,7 @@ view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
 <p><p>
 
-<item>Non geometric/Scene structure:
+<item><bf>Non geometric/Scene structure:</bf>
 Transformation, Shape, Group, Inline.
 <p><p>
 Shear transformations are not supported.
@@ -13864,20 +13923,20 @@ in some cases.
 <p>
 The following options further control the X3D import process:
 <itemize>
-<item><tt>"FileName"</tt> is the name of the X3D file to be imported
-<item><tt>"ReadCurves"</tt> if this is disabled, no freeform curves will
+<item><tt>"FileName"</tt>: is the name of the X3D file to be imported
+<item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
 be imported. This option does <em>not</em> influence the import of trim curves!
-<item><tt>"ReadViewpoints"</tt> controls whether viewpoints should
+<item><tt>"ReadViewpoints"</tt>: controls whether viewpoints should
 be read as view, camera, or not at all.
-<item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
+<item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
-<item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
+<item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
 1.0e-04 leads to NURBS that may be safely drawn using GLU.
 The default value 0.0 means no scaling.
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
 <item><tt/"Progress"/: displays the progress of the import;
 from 0 to 50 percent, the x3dio plugin is reading the XML file,
@@ -13937,36 +13996,39 @@ Instances can be resolved or exported as USE/DEF pairs.
 <p>
 The following parameters, additionally, control the X3D (Web3D) export:
 <itemize>
-<item><tt>"FileName"</tt> is the filename of the X3D file;
-<item><tt/"ScaleFactor"/ allows to apply a scaling factor to all
+<item><tt>"FileName"</tt>: is the filename of the X3D file;
+<item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 exported objects;
-<item><tt>"WriteSelected"</tt> exports only the currently selected object(s);
-<item><tt>"ObeyNoExport"</tt> toggles export of objects with <tt/"NoExport"/
+<item><tt>"WriteSelected"</tt>: exports only the currently selected object(s);
+<item><tt>"ObeyNoExport"</tt>: toggles export of objects with <tt/"NoExport"/
 tags;
-<item><tt>"IgnoreHidden"</tt> toggles export of hidden objects;
-<item><tt>"TessPoMesh"</tt> automatically tesselates all PolyMesh objects
+<item><tt>"IgnoreHidden"</tt>: toggles export of hidden objects;
+<item><tt>"TessPoMesh"</tt>: automatically tesselates all PolyMesh objects
 to triangles for export;
-<item><tt>"WriteCurves"</tt> toggles writing of NURBS curves and
+<item><tt>"WriteCurves"</tt>: toggles writing of NURBS curves and
 NURBS curve providing objects to the exported file (This option does
 <em>not</em> influence the export of trim curves.);
-<item><tt>"WriteViews"</tt> controls whether views should be exported as
+<item><tt>"WriteViews"</tt>: controls whether views should be exported as
 view points;
-<item><tt>"WriteParametrics"</tt> toggles writing of the following
+<item><tt>"WriteParametrics"</tt>: toggles writing of the following
 tool objects as plain NURBS surface or higher level primitives:
-Revolve as NurbsSwungSurface,
-Swing as NurbsSwungSurface,
-Sweep as NurbsSweptSurface,
-Extrude as NurbsSweptSurface);
-<item><tt>"ResolveInstances"</tt> controls, whether instance objects should
+ <itemize>
+ <item>Revolve as NurbsSwungSurface,
+ <item>Swing as NurbsSwungSurface,
+ <item>Sweep as NurbsSweptSurface,
+ <item>Extrude as NurbsSweptSurface);
+ </itemize>
+<item><tt>"ResolveInstances"</tt>: controls, whether instance objects should
 be resolved to normal objects or exported as DEF/USE pairs, note that no
 attempt is made to detect whether the master objects (the DEFs) will be
 exported for all exported instances (USE); this may happen especially in
 conjunction with the X3D export options <tt>"WriteSelected"</tt> or
-<tt>"IgnoreHidden"</tt>, erroneous X3D files may result unless the
+<tt>"IgnoreHidden"</tt>, incomplete/erroneous X3D files may result unless the
 <tt>"ResolveInstances"</tt> option is switched on;
-<item><tt>"TopLevelLayers"</tt> arranges for all child objects of top level
+
+<item><tt>"TopLevelLayers"</tt>: arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
-<item><tt/"Progress"/ displays the progress of the export;
+<item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the x3dio plugin is creating a XML document
 in memory and from 50 to 100 percent this XML document will be written
 to the X3D file.
@@ -15283,6 +15345,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="vwsc" name="view action">
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
+<item>apnt: <ref id="apnttcl" name="example/helper script">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
@@ -15526,6 +15589,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="indexg">G
 <itemize>
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
+<item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
 <item>getType: <ref id="scgettype" name="scripting interface command">
 <item>Gimbal Lock: <ref id="gimb" name="avoiding gimbal locks">
@@ -15958,6 +16022,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
+<item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
 <item>Shade: <ref id="prefdraw" name="preference setting">,
 <ref id="vmconf" name="view menu entry">

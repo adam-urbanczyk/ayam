@@ -1,4 +1,4 @@
-[readme.txt - 22. Dec 2010]
+[readme.txt - 3. Apr 2011]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -47,6 +47,8 @@ topoly.tcl - add helper to custom menu that converts all objects in place
 useaqsisapp.tcl - use Aqsis.app as renderer (MacOSX only!)
 usepixie.tcl - use Pixie as renderer (MacOSX only!)
 aac.tcl - automatically invoke the about mark variants of actions
+apnt.tcl - automatically invoke the point modelling mode after each point
+ selection
 
 Misc:
 aytest.tcl - test Ayam
