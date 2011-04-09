@@ -1062,6 +1062,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
  * (n, p, U, Pw) if new curve does not deviate <tol> distance from old
  * result: new controls Qw and knots Ubar (allocated outside!)
  * Does now check for curve changes!
+ * Modifies U and Pw!
  */
 int
 ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
@@ -1228,7 +1229,8 @@ ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
     }
 
   /* copy results */
-  memcpy(Ubar, U, ((n+p+2)-t)*sizeof(double));
+  if(U != Ubar)
+    memcpy(Ubar, U, ((n+p+2)-t)*sizeof(double));
   memcpy(Qw, Pw, ((n+1)-t)*4*sizeof(double));
 
   free(temp);
@@ -3699,3 +3701,39 @@ cleanup:
 
  return ay_status;
 } /* ay_nb_InsertKnotSurfV */
+
+
+/*
+ * ay_nb_RemoveKnotSurfV: (NURBS++)
+ * remove knot r (with multiplicity s) num times from surface
+ * (w, h, p, V, Pw) if new surface does not deviate <tol> distance from old
+ * result: new controls Qw and knots Vbar (both allocated outside!)
+ */
+int
+ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
+		      int r, int s, int num, double *Vbar, double *Qw)
+{
+ int ay_status = AY_OK;
+ int stride = 4, i, a, b;
+
+  if(!V || !Pw || !Vbar || !Qw)
+    {
+      return AY_ENULL;
+    }
+
+  for(i = 0; i <= w; i++)
+    {
+      a = i*(h+1)*stride;
+      b = i*(h+1-num)*stride;
+      memcpy(Vbar, V, (h+q+2)*sizeof(double));
+      ay_status = ay_nb_CurveRemoveKnot4D(h, q, Vbar, &(Pw[a]), tol,
+					  r, s, num, Vbar, &(Qw[b]));
+
+      if(ay_status)
+	{
+	  break;
+	}
+    }
+
+ return ay_status;
+} /* ay_nb_RemoveKnotSurfV */

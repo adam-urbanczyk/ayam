@@ -363,6 +363,12 @@ int ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP,
 			  double v, int k, int s, int r,
 			  double *VQ, double *Qw);
 
+/** Remove knot from NURBS surface in V dimension.
+ */
+int ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw,
+			  double tol,
+			  int r, int s, int num, double *Vbar, double *Qw);
+
 
 /* nct.c */
 
@@ -1128,6 +1134,16 @@ int ay_npt_avglensv(double *cv, int width, int height, int stride,
  */
 int ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
+
+/** Remove knot from selected surfaces.
+ */
+int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
+/** Remove knot from selected surfaces.
+ */
+int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 
 /* pmt.c */

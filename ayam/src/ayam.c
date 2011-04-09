@@ -1141,6 +1141,12 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "remknuNP", ay_npt_remknunptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "remknvNP", ay_npt_remknvnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "concatS", ay_npt_concatstcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1595,6 +1601,14 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "extrNP", ay_npt_extractnptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "concatS", ay_npt_concatstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "remknuNP", ay_npt_remknunptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "remknvNP", ay_npt_remknvnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return ay_status;
 } /* ay_safeinit */
