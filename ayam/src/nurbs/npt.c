@@ -11967,6 +11967,304 @@ cleanup:
 } /* ay_npt_concatstcmd */
 
 
+/* ay_npt_remknunptcmd:
+ *  Extract a sub surface from the selected NURBS patches.
+ *  Implements the \a remknuNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scextrnp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ int i = 0, r = 0, s = 0;
+ double u = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, argv[0], "u r [tol]");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(r <= 0)
+    {
+      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      return TCL_OK;
+    }
+
+  if(argc > 3)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[3], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  /* find knot to remove */
+	  while((i<(patch->height+patch->uorder)) &&
+		(fabs(patch->uknotv[i]-u) > AY_EPSILON))
+	    {
+	      i++;
+	    }
+
+	  if(fabs(patch->uknotv[i]-u) >= AY_EPSILON)
+	    {
+	      ay_error(AY_ERROR, argv[0], "could not find knot to remove");
+	      break;
+	    }
+
+	  /* calculate knot multiplicity */
+	  s = 1;
+	  while(fabs(patch->uknotv[i] - patch->uknotv[i+s]) < AY_EPSILON)
+	    {
+	      s++;
+	    }
+
+	  if(r > s)
+	    {
+	      r = s;
+	    }
+
+	  /* swap U/V for there is no RemoveKnotSurfU */
+	  ay_npt_swapuv(patch);
+
+	  if(!(newcontrolv = calloc(patch->width*(patch->height-r)*4,
+				    sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+	  if(!(newknotv = calloc(patch->height+patch->vorder,
+				 sizeof(double))))
+	    {
+	      free(newcontrolv);
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  /* remove the knot */
+	  ay_status = ay_nb_RemoveKnotSurfV(patch->width-1, patch->height-1,
+					    patch->vorder-1,
+					    patch->vknotv, patch->controlv,
+					    tol, i, s, r,
+					    newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Knot removal failed.");
+	      free(newcontrolv);
+	      newcontrolv = NULL;
+	      free(newknotv);
+	      newknotv = NULL;
+	      break;
+	    }
+
+	  /* save results */
+	  patch->height -= r;
+
+	  free(patch->controlv );
+	  free(patch->vknotv);
+	  patch->controlv = newcontrolv;
+	  patch->vknotv = newknotv;
+
+	  patch->vknot_type = AY_KTCUSTOM;
+
+	  ay_npt_recreatemp(patch);
+
+	  /* swap back */
+	  ay_npt_swapuv(patch);
+
+	  /* remove all selected points */
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(o);
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_remknunptcmd */
+
+
+/* ay_npt_remknvnptcmd:
+ *  Extract a sub surface from the selected NURBS patches.
+ *  Implements the \a remknvNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scextrnp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ int i = 0, r = 0, s = 0;
+ double v = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, argv[0], "v r [tol]");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetDouble(interp, argv[1], &v);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  tcl_status = Tcl_GetInt(interp, argv[2], &r);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(r <= 0)
+    {
+      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      return TCL_OK;
+    }
+
+  if(argc > 3)
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[3], &tol);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  /* find knot to remove */
+	  while((i<(patch->height+patch->vorder)) &&
+		(fabs(patch->vknotv[i]-v) > AY_EPSILON))
+	    {
+	      i++;
+	    }
+
+	  if(fabs(patch->vknotv[i]-v) >= AY_EPSILON)
+	    {
+	      ay_error(AY_ERROR, argv[0], "could not find knot to remove");
+	      break;
+	    }
+
+	  /* calculate knot multiplicity */
+	  s = 1;
+	  while(fabs(patch->vknotv[i] - patch->vknotv[i+s]) < AY_EPSILON)
+	    {
+	      s++;
+	    }
+
+	  if(r > s)
+	    {
+	      r = s;
+	    }
+
+	  if(!(newcontrolv = calloc(patch->width*(patch->height-r)*4,
+				    sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+	  if(!(newknotv = calloc(patch->height+patch->vorder,
+				 sizeof(double))))
+	    {
+	      free(newcontrolv);
+	      ay_error(AY_EOMEM, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  /* remove the knot */
+	  ay_status = ay_nb_RemoveKnotSurfV(patch->width-1, patch->height-1,
+					    patch->vorder-1,
+					    patch->vknotv, patch->controlv,
+					    tol, i, s, r,
+					    newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Knot removal failed.");
+	      free(newcontrolv);
+	      newcontrolv = NULL;
+	      free(newknotv);
+	      newknotv = NULL;
+	      break;
+	    }
+
+	  /* save results */
+	  patch->height -= r;
+
+	  free(patch->controlv );
+	  free(patch->vknotv);
+	  patch->controlv = newcontrolv;
+	  patch->vknotv = newknotv;
+
+	  patch->vknot_type = AY_KTCUSTOM;
+
+	  ay_npt_recreatemp(patch);
+
+	  /* remove all selected points */
+	  if(o->selp)
+	    {
+	      ay_selp_clear(o);
+	    }
+
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  ay_notify_force(o);
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_remknvnptcmd */
+
+
 /* templates */
 #if 0
 
