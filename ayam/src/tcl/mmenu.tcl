@@ -517,14 +517,6 @@ $m.npt add command -label "Elevate UV" -command {
 	"Elevate Surface"
 }
 
-$m.npt add command -label "Extract Curve" -command "level_crt ExtrNC \"\" -1;"
-
-$m.npt add command -label "Extract Patch" -command "level_crt ExtrNP \"\" -1;"
-
-#    runTool [list ay(extrnpumin) ay(extrnpumax) ay(extrnpvmin) ay(extrnpvmax)]\
-#	    [list "UMin:" "UMax:" "VMin:" "VMax:"]\
-#	    "undo save extrNP; extrNP %0 %1 %2 %3; uCR; sL; rV"
-
 $m.npt add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
