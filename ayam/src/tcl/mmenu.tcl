@@ -494,6 +494,22 @@ $m.npt add command -label "Insert Knot V" -command {
 	"Insert Knot"
 }
 
+$m.npt add command -label "Remove Knot U" -command {
+    getProp; set ay(okn) $::NPatchAttrData(Knots_U);
+    runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
+	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
+	"undo save RemKnU; remknuNP %1 %2 %3; plb_update; rV"\
+	"Remove Knot U"
+}
+
+$m.npt add command -label "Remove Knot V" -command {
+    getProp; set ay(okn) $::NPatchAttrData(Knots_V);
+    runTool [list ay(okn) ay(remknu) ay(remknr) ay(remtol)]\
+	[list "Old knots:" "Remove knot:" "Remove times:" "Tolerance:"]\
+	"undo save RemKnV; remknvNP %1 %2 %3; plb_update; rV"\
+	"Remove Knot V"
+}
+
 $m.npt add command -label "Elevate UV" -command {
     runTool [list ay(elevnpu) ay(elevnpv)]\
 	[list "Elevate U by:" "Elevate V by:"]\
