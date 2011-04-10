@@ -1,14 +1,24 @@
-[24. Mar 2011] CVS-Head:
+[10. Apr 2011] CVS-Head:
 ========================
 Bug Fixes:
 o 
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
+o added support for periodic surfaces to be created by Birail1
+
+GUI:
+o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
+  and Text objects are now properly saved (the data is not applied) for
+  AddBevel/RemoveBevel
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
-
+o added script "apnt.tcl" to automatically switch a view (or all views)
+  to point modelling, after the point selection action was used
+o added "remknuNP"/"remknvNP" commands to remove knots from surfaces
+o added "-i" option to all knot removal commands to specify a knot by
+  index (not by value)
 
 
 [16. Mar 2011] Ayam-1.19:
@@ -38,7 +48,7 @@ o NURBS modelling tools now only delete the selected points from objects
 o added "-createmp" option to the creation of NCurve/NPatch objects
 o offset surfaces now work for closed/periodic surfaces (in all possible
   combinations of open/closed/periodic for U and V)
-o aded chordal and centripetal knot types to NURBS patches
+o added chordal and centripetal knot types to NURBS patches
 o added new curve offset algorithm "Hybrid"
 o renamed "Bevel" curve offset algorithm to "Point"
 o removed curve offset algorithm "Bevel3D"
