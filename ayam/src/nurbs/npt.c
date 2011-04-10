@@ -11982,12 +11982,12 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int i = 0, r = 0, s = 0;
+ int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double u = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
 
-  if(argc < 2)
+  if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "u r [tol]");
+      ay_error(AY_EARGS, argv[0], "(u | -i ind) r [tol]");
       return TCL_OK;
     }
 
@@ -11996,11 +11996,27 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+  if((argv[1][0] == '-') && (argv[1][1] == 'i'))
+    {
+      tcl_status = Tcl_GetInt(interp, argv[2], &j);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(j < 0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Index must be > 0.");
+	  return TCL_OK;
+	}
+      have_index = AY_TRUE;
+      i++;
+    }
+  else
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[1], &u);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+  i++;
+  tcl_status = Tcl_GetInt(interp, argv[i], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
-  tcl_status = Tcl_GetInt(interp, argv[2], &r);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  i++;
 
   if(r <= 0)
     {
@@ -12008,9 +12024,9 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 3)
+  if(argc > 3+have_index)
     {
-      tcl_status = Tcl_GetDouble(interp, argv[3], &tol);
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
@@ -12022,6 +12038,20 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object*)o->refine;
 
 	  /* find knot to remove */
+	  if(have_index)
+	    {
+	      if(j >= (patch->width+patch->uorder))
+		{
+		  ay_error(AY_ERROR, argv[0], "Index out of range.");
+		  break;
+		}
+	      u = patch->uknotv[j];
+	    }
+
+	  /* even if we have an index already, this makes sure we get to
+	     know the first of the possibly multiple knots (to correctly
+	     compute the current multiplicity) */
+	  i = 0;
 	  while((i<(patch->height+patch->uorder)) &&
 		(fabs(patch->uknotv[i]-u) > AY_EPSILON))
 	    {
@@ -12041,6 +12071,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	      s++;
 	    }
 
+	  /* we can not remove knots more often than they appear */
 	  if(r > s)
 	    {
 	      r = s;
@@ -12134,12 +12165,12 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int i = 0, r = 0, s = 0;
+ int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double v = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
 
   if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "v r [tol]");
+      ay_error(AY_EARGS, argv[0], "(v | -i ind) r [tol]");
       return TCL_OK;
     }
 
@@ -12148,11 +12179,27 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
-
-  tcl_status = Tcl_GetDouble(interp, argv[1], &v);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  if((argv[1][0] == '-') && (argv[1][1] == 'i'))
+    {
+      tcl_status = Tcl_GetInt(interp, argv[2], &j);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(j < 0)
+	{
+	  ay_error(AY_ERROR, argv[0], "Index must be > 0.");
+	  return TCL_OK;
+	}
+      have_index = AY_TRUE;
+      i++;
+    }
+  else
+    {
+      tcl_status = Tcl_GetDouble(interp, argv[1], &v);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+  i++;
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
+  i++;
 
   if(r <= 0)
     {
@@ -12160,9 +12207,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(argc > 3)
+  if(argc > 3+have_index)
     {
-      tcl_status = Tcl_GetDouble(interp, argv[3], &tol);
+      tcl_status = Tcl_GetDouble(interp, argv[i], &tol);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
@@ -12174,6 +12221,20 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object*)o->refine;
 
 	  /* find knot to remove */
+	  if(have_index)
+	    {
+	      if(j >= (patch->height+patch->vorder))
+		{
+		  ay_error(AY_ERROR, argv[0], "Index out of range.");
+		  break;
+		}
+	      v = patch->vknotv[j];
+	    }
+
+	  /* even if we have an index already, this makes sure we get to
+	     know the first of the possibly multiple knots (to correctly
+	     compute the current multiplicity) */
+	  i = 0;
 	  while((i<(patch->height+patch->vorder)) &&
 		(fabs(patch->vknotv[i]-v) > AY_EPSILON))
 	    {
@@ -12193,6 +12254,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      s++;
 	    }
 
+	  /* we can not remove knots more often than they appear */
 	  if(r > s)
 	    {
 	      r = s;
