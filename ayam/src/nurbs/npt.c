@@ -556,6 +556,9 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
 
   ay_status = ay_npt_swaparray(&(np->controlv), 4, np->width, np->height);
 
+  if(ay_status)
+    return ay_status;
+
   i = np->width;
   np->width = np->height;
   np->height = i;
@@ -564,6 +567,7 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
   np->uorder = np->vorder;
   np->vorder = i;
 
+  /* swap knots */
   i = np->uknot_type;
   np->uknot_type = np->vknot_type;
   np->vknot_type = i;
@@ -571,6 +575,11 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
   dt = np->uknotv;
   np->uknotv = np->vknotv;
   np->vknotv = dt;
+
+  /* swap closeness types */
+  i = np->utype;
+  np->utype = np->vtype;
+  np->vtype = i;
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -1264,6 +1273,7 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere)
  ay_nurbpatch_object *new = NULL;
  double *controls = NULL;
  double t = 0.0, d = 0.0;
+ int i, a;
 
   if(!(controls = calloc(100, sizeof(double))))
     return AY_EOMEM;
@@ -1395,6 +1405,15 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere)
   controls[97] = -4.0*(1.0-t);
   controls[98] = 4.0*(1.0-t);
   controls[99] = 4.0*(3.0-t);
+
+  a = 0;
+  for(i = 0; i < 25; i++)
+    {
+      controls[a]   /= controls[a+3];
+      controls[a+1] /= controls[a+3];
+      controls[a+2] /= controls[a+3];
+      a += 4;
+    }
 
   ay_status = ay_npt_create(5, 5, 5, 5, AY_KTNURB, AY_KTNURB,
 			    controls, NULL, NULL, &new);
