@@ -9660,7 +9660,9 @@ The point selection will be removed from the original objects.
 NURBS curves from the selection and requests a range (two float values).
 <item>Operation: The knot vectors of the curves will be scaled, so that
 their first and last values match the given range.
-<item>Note: The knot type of the curve has to be <tt/"Custom"/!
+<item>Note: Since Ayam 1.20 the knot type of the curve does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This tool does not change the geometry of the curves.
 </itemize>
 
@@ -9672,7 +9674,9 @@ NURBS curves from the selection and request a minimum distance value.
 <item>Operation: The knot vectors of the curves will be scaled, so that
 no two knots have a distance smaller than the given minimum distance
 (except for multiple knots).
-<item>Note: The knot type of the curve has to be <tt/"Custom"/!
+<item>Note: Since Ayam 1.20 the knot type of the curve does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This tool does not change the geometry of the curves.
 </itemize>
 
@@ -9787,7 +9791,9 @@ NURBS patches from the selection and requests a range.
 <item>Operation: The knot vectors of the patches will be scaled, so that
 their first and last values match the given range. Trim curves, if
 present, will also be scaled to match the new range.
-<item>Note: The knot types of the patch have to be <tt/"Custom"/!
+<item>Note: Since Ayam 1.20 the knot type of the surface does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This tool does not change the geometry of the patches.
 See also the documentation of the corresponding
 <ref id="screscaleknnp" name="scripting interface command">.
@@ -9802,7 +9808,9 @@ NURBS patches from the selection and request a minimum distance value.
 no two knots have a distance smaller than the given minimum distance
 (except for multiple knots). Trim curves, if present, will also be scaled
 to match the new range.
-<item>Note: The knot types of the patch have to be <tt/"Custom"/!
+<item>Note: Since Ayam 1.20 the knot type of the surface does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This tool does not change the geometry of the patches.
 See also the documentation of the corresponding
 <ref id="screscaleknnp" name="scripting interface command">.
