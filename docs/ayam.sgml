@@ -9830,6 +9830,32 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknvnp" name="insknvNP">.
 </itemize>
 
+<sect1>The Patch Remove Knot Tool<label id="remknts">
+<p>
+<figure loc="ht">
+<eps file="pics/remknnp.ps" height="5cm">
+<img src="pics/remknnp.gif">
+<caption>Remove Knot Tool (left: original surface, right: the knot at t=0.5 has been removed 1 time)</caption>
+</figure>
+<itemize>
+<item>Arguments: The remove knot tool takes a number of NURBS surfaces from
+the selection and requests three additional values, a parametric value t,
+an integer value i, and a tolerance tol.
+<item>Operation: The specified knot (t) will be removed i
+times from the knot vector of the selected surfaces if the shape of the
+resulting surfaces does not deviate more than tol from the original surfaces
+in any point.
+If the knot can not be removed r times due to the tolerance, an
+error is reported and the original surface is left unchanged.
+<item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
+changing the shape of the surfaces, however, this is not guaranteed.
+The point selection will be removed from the original objects.
+See also the documentation of the corresponding scripting interface commands
+<ref id="scremknunp" name="remknuNP">, and
+<ref id="scremknunp" name="remknvNP">.
+</itemize>
+
+
 <sect1>The Patch Split Tools<label id="splitnpt">
 <p>
 <itemize>
@@ -11497,6 +11523,38 @@ height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
+</itemize>
+
+<p><label id="scremknunp">
+remknuNP - remove u knot from NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"remknuNP u r [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove a knot at the position
+specified by u (u must be in the valid range of the knot vector
+of the selected surface) r times from the surface. Note that the
+shape of the surface may be changed by this tool unless the parameter
+tol is specified. If tol is specified, the new surface does not deviate
+from the original surface more than tol in any point.
+If the knot can not be removed r times due to the tolerance, an
+error is reported and the original surface is left unchanged.
+See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
+</itemize>
+
+<p><label id="scremknvnp">
+remknvNP - remove v knot from NURBS surface:
+<itemize>
+ <item>Synopsis: <tt/"remknvNP v r [tol]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Remove a knot at the position
+specified by v (v must be in the valid range of the knot vector
+of the selected surface) r times from the surface. Note that the
+shape of the surface may be changed by this tool unless the parameter
+tol is specified. If tol is specified, the new surface does not deviate
+from the original surface more than tol in any point.
+If the knot can not be removed r times due to the tolerance, an
+error is reported and the original surface is left unchanged.
+See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 </itemize>
 
 <p><label id="scsplitnpu"><label id="scsplitunp">
@@ -15900,6 +15958,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Relative: <ref id="extrncp" name="ExtrNC attribute">,
 <ref id="extrnpp" name="ExtrNP attribute">
 <item>remknNC: <ref id="scremknnc" name="scripting interface command">
+<item>remknuNP: <ref id="scremknunp" name="scripting interface command">
+<item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Render: <ref id="vm" name="view menu entry">,
