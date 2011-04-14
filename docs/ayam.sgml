@@ -9363,7 +9363,7 @@ a small arrow at the end of the curve.
 Eventually selected points will still be selected after this
 operation.
 See also the documentation of the corresponding
-<ref id="screvert" name="scripting interface command">.
+scripting interface command <ref id="screvert" name="revert">.
 </itemize>
 
 <sect1>The Concat Tool<label id="conct">
@@ -9410,7 +9410,7 @@ get a custom knot vector.
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
 See also the documentation of the corresponding
-<ref id="scsplitnc" name="scripting interface command">.
+scripting interface command <ref id="scsplitnc" name="splitNC">.
 </itemize>
 
 <sect1>The Trim Tool<label id="trimt">
@@ -9428,7 +9428,7 @@ designated parametric range (umin, umax).
 <item>Note: The trimming process involves the application of knot insertion
 so that the curves will get a custom knot vector.
 See also the documentation of the corresponding
-<ref id="sctrimnc" name="scripting interface command">.
+scripting interface command <ref id="sctrimnc" name="trimNC">.
 </itemize>
 
 <sect1>The Elevate Tool<label id="elevt">
@@ -9449,7 +9449,7 @@ will be clamped automatically. The knot type of the curve will
 be changed to custom. New control points will be added and the position
 of old control points may be changed in the progress.
 See also the documentation of the corresponding
-<ref id="scelevatenc" name="scripting interface command">.
+scripting interface command <ref id="scelevatenc" name="elevateNC">.
 </itemize>
 
 <sect1>The Refine Tool<label id="refit">
@@ -9480,7 +9480,7 @@ control points into all control point intervals except for the
 first (last) p intervals (where p is the degree of the curve).
 The shape of the curve will be changed in this case.
 See also the documentation of the corresponding
-<ref id="screfinenc" name="scripting interface command">.
+scripting interface command <ref id="screfinenc" name="refineNC">.
 </itemize>
 
 <sect1>The Coarsen Tool<label id="coart">
@@ -9502,7 +9502,7 @@ For closed curves, the coarsen tool will not remove the last point.
 The coarsen tool will also remove knot values from curves with
 custom knot vectors.
 See also the documentation of the corresponding
-<ref id="sccoarsennc" name="scripting interface command">.
+scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
 </itemize>
 
 <sect1>The Clamp Tool<label id="clat">
@@ -9527,7 +9527,7 @@ clamped at either side, this is no longer the case.
 Furthermore, curves with multiple knots in the end region(s) could not be
 clamped, this works ok now.
 See also the documentation of the corresponding
-<ref id="scclampnc" name="scripting interface command">.
+scripting interface command <ref id="scclampnc" name="clampNC">.
 </itemize>
 
 <sect1>The Insert Knot Tool<label id="insknt">
@@ -9547,7 +9547,7 @@ shape of the curve(s).
 <item>Note: The knot type of the curves will be changed to <tt/"Custom"/.
 The point selection will be removed from the original objects.
 See also the documentation of the corresponding
-<ref id="scinsknnc" name="scripting interface command">.
+scripting interface command <ref id="scinsknnc" name="insknNC">.
 </itemize>
 
 <sect1>The Remove Knot Tool<label id="remknt">
@@ -9571,7 +9571,7 @@ error is reported and the original curve is left unchanged.
 changing the shape of the curves, however, this is not guaranteed.
 The point selection will be removed from the original objects.
 See also the documentation of the corresponding
-<ref id="scremknnc" name="scripting interface command">.
+scripting interface command <ref id="scremknnc" name="remknNC">.
 </itemize>
 
 <sect1>The Plot Curvature Tool<label id="plotcurt">
@@ -9743,7 +9743,7 @@ or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the u dimension (width).
 <item>Note: See also the documentation of the corresponding
-<ref id="screvertus" name="scripting interface command">.
+scripting interface command <ref id="screvertus" name="revertuS">.
 </itemize>
 
 <sect1>The Revert V Tool<label id="revertvt">
@@ -9754,7 +9754,7 @@ or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the V dimension (height).
 <item>Note: See also the documentation of the corresponding
-<ref id="screvertvs" name="scripting interface command">.
+scripting interface command <ref id="screvertvs" name="revertvS">.
 </itemize>
 
 <sect1>The Patch Clamp Tool<label id="clanpt">
@@ -9796,7 +9796,7 @@ not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This tool does not change the geometry of the patches.
 See also the documentation of the corresponding
-<ref id="screscaleknnp" name="scripting interface command">.
+scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </itemize>
 
 <sect1>The Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
@@ -9813,7 +9813,7 @@ not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This tool does not change the geometry of the patches.
 See also the documentation of the corresponding
-<ref id="screscaleknnp" name="scripting interface command">.
+scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </itemize>
 
 <sect1>The Patch Insert Knot Tool<label id="insknnpt">
@@ -9926,7 +9926,7 @@ Eventually present trim curves will <em>not</em> be honored properly.
 See section <ref id="extrnpobj" name="ExtrNP object">
 for more information regarding the ExtrNP object.
 See also the documentation of the corresponding
-<ref id="scextrnp" name="scripting interface command">.
+scripting interface command <ref id="scextrnp" name="extrNP">.
 </itemize>
 
 <sect1>The Split to Curves Tool<label id="sptct">
@@ -9945,7 +9945,7 @@ along direction U or V.
 </code>
 <item>Note: The original NURBS patch object is not deleted.
 See also the documentation of the corresponding
-<ref id="scsplitnp" name="scripting interface command">.
+scripting interface command <ref id="scsplitnp" name="splitNP">.
 </itemize>
 
 <sect1>The Build from Curves Tool<label id="bfct">
@@ -9972,7 +9972,7 @@ the first curve.
 </code>
 <item>Note: The original NURBS curves objects are not deleted.
 See also the documentation of the corresponding
-<ref id="scbuildnp" name="scripting interface command">.
+scripting interface command <ref id="scbuildnp" name="buildNP">.
 </itemize>
 
 <sect1>The Tesselation Tool<label id="tesst">
@@ -12097,8 +12097,9 @@ typed values):
 </code>
 .
 
-Repeated calling of the tool without opening the dialog, will
-execute the provided expression again.
+Repeated calling of the tool without opening the dialog (using
+the keyboard shortcut <tt/&lt;Ctrl+T&gt;/), will execute the
+provided expression again.
 This means, one can e.g. create a number of curves with increasing
 length by entering into the Ayam console
 <code>
