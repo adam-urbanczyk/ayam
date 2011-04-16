@@ -9357,13 +9357,25 @@ original clipboard contents are lost when this tool finishes.
 <item>Arguments: The revert tool takes all NCurve,
 ICurve, and ACurve objects from the selection.
 <item>Operation: The direction of the selected curves will be
-reversed.
+reversed. This tool also reverts the relative knot distances
+of NURBS curves
+so that a NURBS curve defined on the (asymmetric) knot vector
+
+<tt/"0.0 0.0 0.0 0.75 1.0 1.0 1.0"/
+
+will get the knot vector
+
+<tt/"0.0 0.0 0.0 0.25 1.0 1.0 1.0"/
+
+after reversal. This ensures that the shape of a NURBS curve does not
+change during reversal. Interpolating and approximating curves may
+change their shape.
 <item>Note: The direction of a curve is shown as
 a small arrow at the end of the curve.
 Eventually selected points will still be selected after this
 operation.
 See also the documentation of the corresponding
-scripting interface command <ref id="screvert" name="revert">.
+scripting interface command <ref id="screvert" name="revertC">.
 </itemize>
 
 <sect1>The Concat Tool<label id="conct">
@@ -9384,8 +9396,12 @@ is <tt/"Custom"/, it will be converted to <tt/"NURB"/, otherwise the
 knot type of the new curve will be that of the first selected curve.
 Due to those changes of the knot values, the resulting curve might
 differ from the original curves.
-See also section <ref id="concatncobj" name="ConcatNC Object">.
 The original NURBS curves will not be deleted by this tool.
+See also section <ref id="concatncobj" name="ConcatNC Object">.
+<!--
+See also the documentation of the corresponding
+scripting interface command <ref id="scconcatnc" name="concatNC">.
+-->
 </itemize>
 
 <sect1>The Split Tool<label id="splitt">
@@ -9632,6 +9648,8 @@ in the XY plane will be changed, so that it is defined in the XY plane
 the world coordinate system in the middle).
 <item>Note: A reverse operation, apart from undo, would be to apply the
 current transformation attributes to the control points of the curves.
+See also the documentation of the corresponding
+scripting interface command <ref id="sctoxync" name="toXYNC">.
 </itemize>
 
 <sect1>The Make Compatible Tool<label id="makecompt">
@@ -9651,6 +9669,8 @@ However, since clamping, degree elevation, and knot insertion may be
 used on the curves, their order, knot vectors, and control points
 may be changed.
 The point selection will be removed from the original objects.
+See also the documentation of the corresponding
+scripting interface command <ref id="scmakecompnc" name="makeCompNC">.
 </itemize>
 
 <sect1>The Rescale Knots to Range Tool<label id="resckrt">
@@ -9664,6 +9684,8 @@ their first and last values match the given range.
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This tool does not change the geometry of the curves.
+See also the documentation of the corresponding
+scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </itemize>
 
 <sect1>The Rescale Knots to Mindist Tool<label id="resckmt">
@@ -9678,6 +9700,8 @@ no two knots have a distance smaller than the given minimum distance
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This tool does not change the geometry of the curves.
+See also the documentation of the corresponding
+scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </itemize>
 
 <sect1>The Collapse Points Tool<label id="collt">
@@ -9719,6 +9743,8 @@ BPatch, or PatchMesh objects from the selection.
 <item>Operation: The U and V dimension of the selected objects will
 be swapped (width and height will be exchanged) without altering the
 shape of the patches.
+See also the documentation of the corresponding
+scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </itemize>
 
 <sect1>The Elevate UV Tool<label id="elevuvt">
@@ -9733,6 +9759,9 @@ will be clamped automatically. The knot type of the patch will
 be changed to <tt/"Custom"/. New control points will be added and the position
 of old control points may be changed in the progress.
 The point selection will be removed from the original object.
+See also the documentation of the corresponding scripting interface commands
+<ref id="scelevateunp" name="elevateuNP">, and
+<ref id="scelevatevnp" name="elevatevNP">.
 </itemize>
 
 <sect1>The Revert U Tool<label id="revertut">
@@ -9742,6 +9771,8 @@ The point selection will be removed from the original object.
 or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the u dimension (width).
+For NURBS patches this tool also reverts the relative knot distances
+of the corresponding knot vector.
 <item>Note: See also the documentation of the corresponding
 scripting interface command <ref id="screvertus" name="revertuS">.
 </itemize>
@@ -9753,6 +9784,8 @@ scripting interface command <ref id="screvertus" name="revertuS">.
 or BPatch or PatchMesh objects from the selection.
 <item>Operation: The control point arrays of the selected objects
 will be reversed in the V dimension (height).
+For NURBS patches this tool also reverts the relative knot distances
+of the corresponding knot vector.
 <item>Note: See also the documentation of the corresponding
 scripting interface command <ref id="screvertvs" name="revertvS">.
 </itemize>
@@ -11382,8 +11415,9 @@ to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
 <tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
 distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
 distance ensures that all knots (except for multiple knots) have a distance
-bigger than mindist afterwards. The knot type of the curve has to be
-<tt/"Custom"/!
+bigger than mindist afterwards. Since Ayam 1.20 the knot type of the curve does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This operation does not change the shape of the curve.
 See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 </itemize>
@@ -11436,6 +11470,16 @@ reparamNC - reparameterise a NURBS curve:
  <item>Description: reparameterise all selected NURBS curves to have
 chordal knots (type: 0), or centripetal knots (type: 1). The knot type
 of the curve will be changed to <tt/"Custom"/.
+</itemize>
+
+<p><label id="scmakecompnc">
+makeCompNC - make NURBS curves compatible
+<itemize>
+ <item>Synopsis: <tt/"makeCompNC"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: makes the selected NURBS curves compatible
+i.e. of the same order and defined on the same knot vector.
+See also section <ref id="makecompt" name="The Make Compatible Tool">.
 </itemize>
 
 <p><label id="scclampnpu"><label id="scclampunp">
@@ -11491,7 +11535,9 @@ distance mindist if the <tt/"-d"/ argument is used. The <tt/"-ru"/, <tt/"-rv"/,
 Scaling to a minimum distance ensures that all knots (except for multiple
 knots) have a distance bigger than mindist afterwards. Trim curves, if
 present, will also be scaled to match the new range.
-The knot types of the patch have to be <tt/"Custom"/!
+Since Ayam 1.20 the knot type of the curve does
+not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
+does not change the knot type.
 This operation does not change the shape of the patch.
 See also sections
 <ref id="resckrnpt" name="The Patch Rescale Knots to Range Tool">
@@ -11563,6 +11609,28 @@ from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
+</itemize>
+
+<p><label id="scelevateunp">
+elevateuNP - elevate NURBS surface in u direction:
+<itemize>
+ <item>Synopsis: <tt/"elevateuNP n"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Elevate the u order of the selected NURBS surfaces
+without changing the shape of the surfaces by n.
+The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
+See also section <ref id="elevuvt" name="The Elevate UV Tool">.
+</itemize>
+
+<p><label id="scelevatevnp">
+elevatevNP - elevate NURBS surface in v direction:
+<itemize>
+ <item>Synopsis: <tt/"elevatevNP n"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Elevate the v order of the selected NURBS surfaces
+without changing the shape of the surfaces by n.
+The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
+See also section <ref id="elevuvt" name="The Elevate UV Tool">.
 </itemize>
 
 <p><label id="scsplitnpu"><label id="scsplitunp">
