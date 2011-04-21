@@ -1110,7 +1110,7 @@ ay_acurve_notifycb(ay_object *o)
     {
       for(i = 0; i < nc->length-(nc->order); i++)
 	{
-	  ay_nct_shiftcbs(nc);
+	  ay_nct_shiftarr(4, nc->length, nc->controlv);
 	}
     }
 

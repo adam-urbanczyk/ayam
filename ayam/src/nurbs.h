@@ -591,12 +591,13 @@ int ay_nct_makecompatible(ay_object *curves);
 
 /** Shift control points.
  */
-int ay_nct_shiftcbs(ay_nurbcurve_object *curve);
+int ay_nct_shiftarr(int stride, int cvlen, double *cv);
 
-/** Shift control points of selected NURBS curves.
+/** Shift control points of selected curves.
  */
-int ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int
+ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[]);
 
 /** Rotate curve to XY plane.
  */

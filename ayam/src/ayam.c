@@ -1059,7 +1059,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "curvPlot", ay_nct_curvplottcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "shiftClosedBS", ay_nct_shiftcbstcmd,
+  Tcl_CreateCommand(interp, "shiftC", ay_nct_shiftctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
@@ -1519,7 +1519,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "curvPlot", ay_nct_curvplottcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "shiftClosedBS", ay_nct_shiftcbstcmd,
+  Tcl_CreateCommand(interp, "shiftC", ay_nct_shiftctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
