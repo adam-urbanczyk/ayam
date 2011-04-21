@@ -1,7 +1,7 @@
-[10. Apr 2011] CVS-Head:
+[21. Apr 2011] CVS-Head:
 ========================
 Bug Fixes:
-o 
+o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -19,7 +19,9 @@ o added script "apnt.tcl" to automatically switch a view (or all views)
 o added "remknuNP"/"remknvNP" commands to remove knots from surfaces
 o added "-i" option to all knot removal commands to specify a knot by
   index (not by value)
-
+o renamed "shiftClosedBS" to "shiftC" command, "shiftC" can now also
+  shift/cycle normal closed NURBS curves, ICurve and ACurve objects
+ 
 
 [16. Mar 2011] Ayam-1.19:
 =========================
