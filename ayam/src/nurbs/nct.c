@@ -1494,7 +1494,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(t <= 0)
 	{
-	  ay_error(AY_ERROR, argv[0], "argument must be > 0");
+	  ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
 	  return TCL_OK;
 	}
     }
@@ -1564,7 +1564,7 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(ay_status,argv[0],"Degree elevation failed.");
+	      ay_error(ay_status, argv[0], "Degree elevation failed.");
 	      free(Uh); free(Qw);
 	      return TCL_OK;
 	    }
@@ -1660,7 +1660,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      ay_error(AY_ERROR, argv[0], "r must be > 0.");
       return TCL_OK;
     }
 
@@ -2465,7 +2465,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!sel->next)
     {
-      ay_error(AY_ERROR, argv[0], "select two NURB curves.");
+      ay_error(AY_ERROR, argv[0], "Select two NURBS curves.");
       return TCL_OK;
     }
 
@@ -4320,8 +4320,13 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
 } /* ay_nct_intersectca */
 
 
-/* ay_nct_makecompatible:
+/** ay_nct_makecompatible:
+ *  make a number of curves compatible i.e. of the same order
+ *  and defined on the same knot vector
  *
+ * @param[in,out] curves a number of NURBS curve objects
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_makecompatible(ay_object *curves)
@@ -4527,55 +4532,66 @@ cleanup:
 } /* ay_nct_makecompatible */
 
 
-/* ay_nct_shiftcbs:
- *  shift the control points of a closed B-Spline one time so that the
- *  second control point will be the first (and so on) afterwards
+/** ay_nct_shiftarr:
+ *  shift the control points of a 1D (curve) control vector
+ *
+ * @param[in] stride size of a point
+ * @param[in] cvlen number of points in control vector
+ * @param[in,out] cv control vector
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_shiftcbs(ay_nurbcurve_object *curve)
+ay_nct_shiftarr(int stride, int cvlen, double *cv)
 {
  int ay_status = AY_OK;
- int a, i, stride = 4;
- double t[4] = {0};
+ int a, i;
+ double *t = NULL;
 
-  if(!curve)
+  if(!cv)
     return AY_ENULL;
 
-  memcpy(t, curve->controlv, stride * sizeof(double));
+  if(!(t = calloc(stride, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(t, cv, stride * sizeof(double));
 
   a = 0;
-  for(i = 0; i < (curve->length-(curve->order-1)-1); i++)
+  for(i = 0; i < cvlen-1; i++)
     {
-      memcpy(&(curve->controlv[a]), &(curve->controlv[a+stride]),
+      memcpy(&(cv[a]), &(cv[a+stride]),
 	     stride * sizeof(double));
       a += stride;
     }
 
-  memcpy(&(curve->controlv[(curve->length-curve->order)*stride]), t,
-	 stride * sizeof(double));
+  memcpy(&(cv[(cvlen-1)*stride]), t, stride * sizeof(double));
 
-  ay_status = ay_nct_close(curve);
+  free(t);
 
  return ay_status;
-} /* ay_nct_shiftcbs */
+} /* ay_nct_shiftarr */
 
 
-/** ay_nct_shiftcbstcmd:
- *  Shift control points of selected NURBS curves.
- *  Implements the \a shiftClosedBS scripting interface command.
- *  See also the corresponding section in the \ayd{scshiftclosedbs}.
+/** ay_nct_shiftctcmd:
+ *  Shift control points of selected curves.
+ *  Implements the \a shiftC scripting interface command.
+ *  See also the corresponding section in the \ayd{scshiftc}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_nurbcurve_object *curve = NULL;
+ ay_nurbcurve_object *ncurve = NULL;
+ ay_icurve_object *icurve = NULL;
+ ay_acurve_object *acurve = NULL;
  ay_object *src = NULL;
  int i, times = 1;
+ int cvlen, stride;
+ double *cv;
 
   if(argc > 1)
     {
@@ -4598,33 +4614,65 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       src = sel->object;
-      if(src->type != AY_IDNCURVE)
+      cvlen = 0;
+      switch(src->type)
 	{
+	case AY_IDNCURVE:
+	  ncurve = (ay_nurbcurve_object*)src->refine;
+	  stride = 4;
+	  cv = ncurve->controlv;
+	  cvlen = ncurve->length;
+	  break;
+	case AY_IDICURVE:
+	  icurve = (ay_icurve_object*)src->refine;
+	  stride = 3;
+	  cv = icurve->controlv;
+	  cvlen = icurve->length;
+	  break;
+	case AY_IDACURVE:
+	  acurve = (ay_acurve_object*)src->refine;
+	  stride = 4;
+	  cv = acurve->controlv;
+	  cvlen = acurve->length;
+	  break;
+
+	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	  break;
 	}
-      else
+
+      if(cvlen)
 	{
-	  curve = (ay_nurbcurve_object*)src->refine;
 
 	  if(times < 1)
 	    {
-	      times = (curve->length-curve->order+1)-abs(times);
+	      times = cvlen-abs(times);
 	      if(times <= 1)
 		{
 		  ay_error(AY_ERROR, argv[0],
 			   "Parameter out of range. Could not shift curve.");
-		  continue;
+		  break;
 		}
 	    }
 
 	  for(i = 0; i < times; i++)
 	    {
-	      ay_status = ay_nct_shiftcbs(curve);
+	      ay_status = ay_nct_shiftarr(stride, cvlen, cv);
 	      if(ay_status)
 		{
 		  ay_error(ay_status, argv[0], "Could not shift curve.");
+		  break;
 		}
 	    } /* for */
+
+	  if(ay_status)
+	    break;
+
+	  if((src->type == AY_IDNCURVE) && (ncurve->type != AY_CTOPEN))
+	    {
+	      ay_nct_close(ncurve);
+	    }
+
 	  src->modified = AY_TRUE;
 	} /* if */
 
@@ -4634,7 +4682,7 @@ ay_nct_shiftcbstcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_nct_shiftcbstcmd */
+} /* ay_nct_shiftctcmd */
 
 
 /* ay_nct_toxy :
