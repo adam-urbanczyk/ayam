@@ -165,8 +165,8 @@ a tight integration of Ayam with any of those renderers.
 <sect2>Coordinate Systems and Units
 <p>
 Ayam uses a right-handed coordinate system as used by OpenGL
-but as opposed to RenderMan, the latter using a left-handed
-coordinate system.
+but as opposed to RenderMan (the latter is using a left-handed
+coordinate system).
 <p>
 In the default modelling view of type <tt/"Front"/, the positive
 X-axis points to the right, the positive Y-axis points upwards
@@ -191,9 +191,11 @@ But a negative side effect of this appproach was that modification
 of coordinates or weights for modelling purposes was unnecessarily
 complicated.
 Therefore, since Ayam 1.19, rational coordinates are now euclidean
-rational, the weight is not multiplied with the coordinates anymore.
+rational, the weight is not pre-multiplied with the coordinates anymore
+(this will be done internally when handing the coordinates over for
+drawing or export purposes).
 Scene files from older versions are converted automatically to the
-new coordinates when read by Ayam 1.19, but loading of scene files
+new coordinate scheme when read by Ayam 1.19, but loading of scene files
 written by Ayam 1.19 into older versions of Ayam requires conversion
 (e.g. by means of a script).
 
@@ -643,6 +645,12 @@ You may try this out by typing <tt/tip/ in the console,
 then press <tt/&lt;Tab&gt;/.
 The console automagically completes <tt/tip/ to <tt/tipoftheDay/
 (the procedure that prints out the tip of the day, just try it).
+<p>
+Remember that many commands of the Ayam scripting interface work
+in background: without update of object selection widget, property GUI or
+redrawing of view windows. But one can enforce an immediate update of
+the GUI and redrawing of all views by using <tt/&lt;Shift-Enter&gt;/
+instead of <tt/&lt;Enter&gt;/ when entering commands.
 <p>
 Another simple demonstration of the consoles capabilities:
 <itemize>
@@ -3029,7 +3037,7 @@ of multiple selected objects, the deselection is only performed
 on the object with a new selection.
 <p>
 Note that the w coordinate setting will be ignored if a
-selected point does not have weight information (is not homogenous).
+selected point does not have weight information (is not rational).
 <p>
 Using the small menu on top of the coordinate window you may
 determine whether editing takes place in local object or global
@@ -9608,17 +9616,17 @@ number of data points and will be scaled to the specified width
 and by the specified height value. See also the image above.
 </itemize>
 
-<sect1>The Shift Closed B-Spline Tool<label id="shiftclbspt">
+<sect1>The Shift Closed Curve Tool<label id="shiftclc">
 <p>
 <figure loc="ht">
 <eps file="pics/shiftclsbsp.ps" height="4cm">
 <img src="pics/shiftclsbsp.gif">
-<caption>Shift Closed B-Spline Tool (left: Closed B-Spline Curve, right: Shifted Curve)</caption>
+<caption>Shift Closed Curve Tool (left: Closed B-Spline Curve, right: Shifted Curve)</caption>
 </figure>
 <itemize>
-<item>Arguments: The shift closed B-Spline tool takes a number of
-NURBS curves, that should be closed B-Splines, from the selection and
-requests one additional integer parameter.
+<item>Arguments: The shift closed curve tool takes a number of
+closed curves (NCurve, ICurve, and ACurve objects are supported),
+from the selection and requests one additional integer parameter.
 <item>Operation: The control points of the curve(s) will be shifted, so that
 the second control point will be the first after this operation.
 The shifting process will be repeated according to the integer parameter i
@@ -10331,12 +10339,14 @@ an automatically created knot vector of the type specified by the
 <tt/"-kt"/ option above.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
-option is a list of floating point numbers that describe the 3D homogeneous
-coordinates of the control points. This list may also only specify
-one point, which is then taken as starting point and DX/DY/DZ (see below)
-are used to create the missing control points. To specify a complete
-control vector, this list should have curve length by 4 elements,
-e.g. for a curve of length 3, specify 12 values:
+option is a list of floating point numbers that describe the 4D euclidean
+rational (weight <em>not</em> multiplied in) coordinates of the control
+points.
+This list may also only specify one point, which is then taken as starting
+point and DX/DY/DZ (see below) are used to create the missing control points
+automatically.
+To specify a complete control vector, this list should have curve length
+by 4 elements, e.g. for a curve of length 3, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0}"/.
 
   <item><tt/"-dx"/: the value of this option specifies the distance
@@ -10394,10 +10404,11 @@ identical to the length value.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 3D
-(non homogeneous) coordinates of the control points. This list may also
+(non rational) coordinates of the control points. This list may also
 only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
-are used to create the missing control points. To specify a complete
+are used to create the missing control points automatically.
+To specify a complete
 control vector, this list should have curve length by 3 elements,
 e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
@@ -10477,10 +10488,11 @@ must be one of 0 - Asymmetric, 1 - Symmetric; default is 0.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 3D
-(non homogeneous) coordinates of the control points. This list may also
+(non rational) coordinates of the control points. This list may also
 only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
-are used to create the missing control points. To specify a complete
+are used to create the missing control points automatically.
+To specify a complete
 control vector, this list should have curve length by 3 elements,
 e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
@@ -10552,10 +10564,12 @@ an automatically created knot vector of the type specified by the
 <tt/"-vkt"/ option above.
 
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
-option is a list of floating point numbers that describe the 3D homogeneous
-coordinates of the control points. This list may also only specify
-one point, which is then taken as starting point and UDX/UDY/UDZ and
-VDX/VDY/VDZ (see below) are used to create the missing control points.
+option is a list of floating point numbers that describe the 4D euclidean
+rational (weight <em>not</em> multiplied in) coordinates of the control
+points.
+This list may also only specify one point, which is then taken as starting
+point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
+missing control points automatically.
 To specify a complete control vector, this list should have width by
 height by 4 elements,
 e.g. for a patch of width 2 and height 2, specify 16 values:
@@ -10649,7 +10663,7 @@ used in the same order as specified via the <tt/"-cv"/ option
 (0, 1, 2, 3, &hellip;).
 
   <item><tt/"-cv"/: The value of this option is a list of floating point
-numbers that describe the 3D (non homogeneous) coordinates of the control
+numbers that describe the 3D (non rational) coordinates of the control
 points. The indices specified via the <tt/"-iverts"/ option point to
 this list. If the <tt/"-vnormals"/ option is 1, also vertex normals are
 specified in this list (directly following the coordinate values of each
@@ -10714,7 +10728,7 @@ used in the same order as specified via the <tt/"-cv"/ option
 (0, 1, 2, 3, &hellip;).
 
   <item><tt/"-cv"/: The value of this option is a list of floating point
-numbers that describe the 3D (non homogeneous) coordinates of the control
+numbers that describe the 3D (non rational) coordinates of the control
 points. The indices specified via the <tt/"-verts"/ option point to
 this list.
 This list must have a length of 3 multiplied by the highest value in
@@ -16173,8 +16187,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ShadowMaps: <ref id="prefrib" name="preference setting">,
 <ref id="shadowmaps" name="using shadowmaps">
 <item>Shadows: <ref id="lip" name="Light attribute">
-<item>Shift Closed B-Spline:
-<ref id="shiftclbspt" name="shift closed B-Spline tool">
+<item>Shift Closed Curve:
+<ref id="shiftclc" name="shift closed curve tool">
 <item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
