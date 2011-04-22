@@ -4535,6 +4535,7 @@ cleanup:
 /** ay_nct_shiftarr:
  *  shift the control points of a 1D (curve) control vector
  *
+ * @param[in] dir direction of the shift (0: left, 1: right)
  * @param[in] stride size of a point
  * @param[in] cvlen number of points in control vector
  * @param[in,out] cv control vector
@@ -4542,7 +4543,7 @@ cleanup:
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_shiftarr(int stride, int cvlen, double *cv)
+ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
 {
  int ay_status = AY_OK;
  int a, i;
@@ -4554,17 +4555,33 @@ ay_nct_shiftarr(int stride, int cvlen, double *cv)
   if(!(t = calloc(stride, sizeof(double))))
     return AY_EOMEM;
 
-  memcpy(t, cv, stride * sizeof(double));
-
-  a = 0;
-  for(i = 0; i < cvlen-1; i++)
+  if(dir)
     {
-      memcpy(&(cv[a]), &(cv[a+stride]),
-	     stride * sizeof(double));
-      a += stride;
+      memcpy(t, cv, stride * sizeof(double));
+      a = 0;
+      for(i = 0; i < cvlen-1; i++)
+	{
+	  memcpy(&(cv[a]), &(cv[a+stride]),
+		 stride * sizeof(double));
+	  a += stride;
+	}
+      /* saved first becomes new last */
+      memcpy(&(cv[(cvlen-1)*stride]), t, stride * sizeof(double));
     }
+  else
+    {
+      memcpy(t, &(cv[(cvlen-1)*stride]), stride * sizeof(double));
 
-  memcpy(&(cv[(cvlen-1)*stride]), t, stride * sizeof(double));
+      a = (cvlen-2)*stride;
+      for(i = 0; i < cvlen-1; i++)
+	{
+	  memcpy(&(cv[a+stride]), &(cv[a]),
+		 stride * sizeof(double));
+	  a -= stride;
+	}
+      /* saved last becomes new first */
+      memcpy(cv, t, stride * sizeof(double));
+    }
 
   free(t);
 
@@ -4631,7 +4648,7 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	case AY_IDACURVE:
 	  acurve = (ay_acurve_object*)src->refine;
-	  stride = 4;
+	  stride = 3;
 	  cv = acurve->controlv;
 	  cvlen = acurve->length;
 	  break;
@@ -4643,37 +4660,47 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(cvlen)
 	{
-
-	  if(times < 1)
+	  for(i = 0; i < abs(times); i++)
 	    {
-	      times = cvlen-abs(times);
-	      if(times <= 1)
-		{
-		  ay_error(AY_ERROR, argv[0],
-			   "Parameter out of range. Could not shift curve.");
-		  break;
-		}
-	    }
-
-	  for(i = 0; i < times; i++)
-	    {
-	      ay_status = ay_nct_shiftarr(stride, cvlen, cv);
+	      if(times > 0)
+		ay_status = ay_nct_shiftarr(1, stride, cvlen, cv);
+	      else
+		ay_status = ay_nct_shiftarr(0, stride, cvlen, cv);
 	      if(ay_status)
 		{
 		  ay_error(ay_status, argv[0], "Could not shift curve.");
 		  break;
 		}
+
+	      /* fix multiple points at the ends
+		 of closed/periodic NURBS curves */
+	      if((src->type == AY_IDNCURVE) && (ncurve->type != AY_CTOPEN))
+		{
+		  if(times > 0)
+		    {
+		      ay_nct_close(ncurve);
+		    }
+		  else
+		    {
+		      if(ncurve->type == AY_CTPERIODIC)
+			memcpy(cv,
+			       &(cv[(ncurve->length-ncurve->order+1)*stride]),
+			       (ncurve->order-1)*sizeof(double));
+		      else
+			memcpy(cv,
+			       &(cv[(ncurve->length-1)*stride]),
+			       stride*sizeof(double));
+		    }
+		} /* if */
+
 	    } /* for */
 
 	  if(ay_status)
 	    break;
 
-	  if((src->type == AY_IDNCURVE) && (ncurve->type != AY_CTOPEN))
-	    {
-	      ay_nct_close(ncurve);
-	    }
-
 	  src->modified = AY_TRUE;
+
+	  ay_notify_force(src);
 	} /* if */
 
       sel = sel->next;

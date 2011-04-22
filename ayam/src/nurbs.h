@@ -591,7 +591,7 @@ int ay_nct_makecompatible(ay_object *curves);
 
 /** Shift control points.
  */
-int ay_nct_shiftarr(int stride, int cvlen, double *cv);
+int ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv);
 
 /** Shift control points of selected curves.
  */
