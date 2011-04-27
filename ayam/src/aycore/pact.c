@@ -235,7 +235,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		      /* we have that point already, so we remove
 			 it from the selection if we are not in
 			 multiple selection mode; we also remove
-			 if we are in multiple deletion mode */
+			 it if we are in multiple deletion mode */
 		      if(!multiple || multipledel)
 			{
 			  if(last)
@@ -577,19 +577,22 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
 /* ay_pact_pedtcb:
  *  single point direct edit callback
- *
+ *  ToDo: rename to editPointNumeric
  */
 int
 ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  Tcl_Interp *interp = NULL;
  /* ay_view_object *view = NULL;*/
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
  char *n1 = "editPointDarray", fname[] = "editPointDirect";
+ char *str = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int local = 0/*, need_parentnotify = AY_TRUE*/;
+ int set_x = AY_FALSE, set_y = AY_FALSE;
+ int set_z = AY_FALSE, set_w = AY_FALSE;
  double *coords, wcoords[4], tcoords[4];
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
@@ -737,22 +740,46 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
       Tcl_SetStringObj(ton,"x",-1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &tcoords[0]);
+      str = Tcl_GetStringFromObj(to, NULL);
+      if(str[0] != '\0')
+	{
+	  tcl_status = Tcl_GetDoubleFromObj(interp, to, &tcoords[0]);
+	  AY_CHTCLERRGOT(tcl_status, fname, interp);
+	  set_x = AY_TRUE;
+	}
 
       Tcl_SetStringObj(ton,"y",-1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &tcoords[1]);
+      str = Tcl_GetStringFromObj(to, NULL);
+      if(str[0] != '\0')
+	{
+	  tcl_status = Tcl_GetDoubleFromObj(interp, to, &tcoords[1]);
+	  AY_CHTCLERRGOT(tcl_status, fname, interp);
+	  set_y = AY_TRUE;
+	}
 
       Tcl_SetStringObj(ton,"z",-1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &tcoords[2]);
+      str = Tcl_GetStringFromObj(to, NULL);
+      if(str[0] != '\0')
+	{
+	  tcl_status = Tcl_GetDoubleFromObj(interp, to, &tcoords[2]);
+	  AY_CHTCLERRGOT(tcl_status, fname, interp);
+	  set_z = AY_TRUE;
+	}
 
       Tcl_SetStringObj(ton,"w",-1);
       to = Tcl_ObjGetVar2(interp, toa, ton,
 			  TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_GetDoubleFromObj(interp, to, &tcoords[3]);
+      str = Tcl_GetStringFromObj(to, NULL);
+      if(str[0] != '\0')
+	{
+	  tcl_status = Tcl_GetDoubleFromObj(interp, to, &tcoords[3]);
+	  AY_CHTCLERRGOT(tcl_status, fname, interp);
+	  set_w = AY_TRUE;
+	}
 
       /* apply coordinates to all selected objects selected points */
       sel = ay_selection;
@@ -768,22 +795,48 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 		}
 
 	      selp = o->selp;
-	      while(selp)
+
+	      if(set_x && set_y && set_z && set_w)
 		{
-		  if(!selp->readonly)
+		  while(selp)
 		    {
-		      if(selp->rational)
+		      if(!selp->readonly)
 			{
-			  memcpy(selp->point, tcoords, 4*sizeof(double));
+			  if(selp->rational)
+			    {
+			      memcpy(selp->point, tcoords, 4*sizeof(double));
+			    }
+			  else
+			    {
+			      memcpy(selp->point, tcoords, 3*sizeof(double));
+			    }
+			  o->modified = AY_TRUE;
 			}
-		      else
+		      selp = selp->next;
+		    } /* while */
+		}
+	      else
+		{
+		  while(selp)
+		    {
+		      if(!selp->readonly)
 			{
-			  memcpy(selp->point, tcoords, 3*sizeof(double));
+			  if(set_x)
+			    selp->point[0] = tcoords[0];
+			  if(set_y)
+			    selp->point[1] = tcoords[1];
+			  if(set_z)
+			    selp->point[2] = tcoords[2];
+			  if(selp->rational)
+			    {
+			      if(set_w)
+				selp->point[3] = tcoords[3];
+			    }
+			  o->modified = AY_TRUE;
 			}
-		      o->modified = AY_TRUE;
-		    }
-		  selp = selp->next;
-		} /* while */
+		      selp = selp->next;
+		    } /* while */
+		} /* if */
 
 	      /* XXXX does notify() recalc is_rat? Should it? */
 	      if(o->type == AY_IDNCURVE)
@@ -810,6 +863,8 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 
       return TCL_OK;
     } /* if */
+
+cleanup:
 
  return TCL_OK;
 } /* ay_pact_pedtcb */
@@ -948,7 +1003,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	{
 	  free(newcontrolv);
 	  curve->length--;
-	  ay_error(AY_ERROR, fname, "Cannot insert point here!");
+	  ay_error(AY_ERROR, fname, "Cannot insert point here.");
 	  return AY_ERROR;
 	}
 
@@ -1003,7 +1058,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  curve->knotv = newknotv;
 
 	  /*
-	  ay_error(AY_EWARN,fname, "Changed knot type to B-Spline!");
+	  ay_error(AY_EWARN,fname, "Changed knot type to B-Spline.");
 	  curve->knot_type = AY_KTBSPLINE;
 	  */
 	}
@@ -1081,7 +1136,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	{
 	  free(newcontrolv);
 	  curve->length--;
-	  ay_error(AY_ERROR, fname, "Cannot insert point here!");
+	  ay_error(AY_ERROR, fname, "Cannot insert point here.");
 	  return AY_ERROR;
 	}
 
@@ -1136,7 +1191,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  curve->knotv = newknotv;
 
 	  /*
-	    ay_error(AY_EWARN,fname, "Changed knot type to NURB!");
+	    ay_error(AY_EWARN,fname, "Changed knot type to NURB.");
 	    curve->knot_type = AY_KTNURB;
 	  */
 	} /* if */
@@ -1281,7 +1336,7 @@ ay_pact_insertic(ay_icurve_object *icurve, int *index,
     {
       free(newcontrolv);
       icurve->length--;
-      ay_error(AY_ERROR, fname, "Cannot insert point here!");
+      ay_error(AY_ERROR, fname, "Cannot insert point here.");
       return AY_ERROR;
     }
 
@@ -1410,7 +1465,7 @@ ay_pact_insertac(ay_acurve_object *acurve, int *index,
     {
       free(newcontrolv);
       acurve->length--;
-      ay_error(AY_ERROR, fname, "Cannot insert point here!");
+      ay_error(AY_ERROR, fname, "Cannot insert point here.");
       return AY_ERROR;
     }
 
@@ -1469,14 +1524,14 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "Curve");
+	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
 	  ay_status = AY_ERROR;
 	  break;
 	}
 
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, "Error inserting point!");
+	  ay_error(ay_status, fname, "Error inserting point.");
 	}
       else
 	{
@@ -1524,7 +1579,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 
   if(curve->length-1 < 2)
     {
-      ay_error(AY_ERROR, fname, "need atleast two points");
+      ay_error(AY_ERROR, fname, "Need atleast two points.");
       return AY_ERROR;
     }
 
@@ -1601,7 +1656,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
       ay_status = ay_nct_close(curve);
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, "cannot close this curve");
+	  ay_error(ay_status, fname, "Cannot close this curve.");
 	}
     }
 
@@ -1637,7 +1692,7 @@ ay_pact_deleteic(ay_icurve_object *icurve, int *index,
 
   if(icurve->length-1 < 3)
     {
-      ay_error(AY_ERROR, fname, "need atleast three points");
+      ay_error(AY_ERROR, fname, "Need atleast three points.");
       return AY_ERROR;
     }
 
@@ -1699,7 +1754,7 @@ ay_pact_deleteac(ay_acurve_object *acurve, int *index,
 
   if(acurve->length-1 < 3)
     {
-      ay_error(AY_ERROR, fname, "need atleast three points");
+      ay_error(AY_ERROR, fname, "Need atleast three points.");
       return AY_ERROR;
     }
 
@@ -1784,14 +1839,14 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 				       objX, objY, objZ);
 	  break;
 	default:
-	  ay_error(AY_EWTYPE, fname, "Curve");
+	  ay_error(AY_EWTYPE, fname, "NCurve, ICurve, or ACurve");
 	  ay_status = AY_ERROR;
 	  break;
 	}
 
       if(ay_status)
 	{
-	  ay_error(ay_status, fname, "Error deleting point!");
+	  ay_error(ay_status, fname, "Error deleting point.");
 	}
       else
 	{
@@ -2157,7 +2212,7 @@ ay_pact_wetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  else
 	    {
-	      ay_error(AY_ERROR, fname, "Point is not rational!");
+	      ay_error(AY_ERROR, fname, "Point is not rational.");
 	    } /* if */
 	} /* for */
 
@@ -2246,7 +2301,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	}
       else
 	{
-	  ay_error(AY_ERROR, fname, "No editable rational points found!");
+	  ay_error(AY_ERROR, fname, "No editable rational points found.");
 	} /* if */
 
       ay_pact_clearpointedit(&pe);
