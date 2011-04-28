@@ -398,7 +398,7 @@ array set ayviewshortcuts {
     TransP "p"
 
     Edit "e"
-    EditD "E"
+    EditN "E"
     WeightE "w"
     WeightR "W"
     Select "t"

@@ -881,7 +881,7 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(Scal3)> "actionSc3DOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(Stretch)> "actionStr2DOb $w.f3D.togl"
     bind $w <$ayviewshortcuts(Edit)> "actionEditP $w.f3D.togl"
-    bind $w <$ayviewshortcuts(EditD)> "actionDEditP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(EditN)> "actionEditNumP $w.f3D.togl"
     bind $w <$ayviewshortcuts(WeightE)> "actionEditWP $w.f3D.togl"
     bind $w <$ayviewshortcuts(WeightR)> "actionResetWP $w.f3D.togl"
     bind $w <$ayviewshortcuts(About)> "actionSetMark $w.f3D.togl"
@@ -1016,8 +1016,8 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
   set objs center      <$svsc(CenterO)>
   set pnts center      <$svsc(CenterP)>
 
- Edit Points          <$svsc(Edit)>
- Edit Points (direct) <$svsc(EditD)>
+ Edit Points Direct   <$svsc(Edit)>
+ Edit Points Numeric  <$svsc(EditN)>
  Edit Weight          <$svsc(WeightE)>
  Reset Weights        <$svsc(WeightR)>
 

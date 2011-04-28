@@ -1015,7 +1015,9 @@ proc actionDelTagP { w } {
 # actionDelTagP
 
 
-array set editPointDarray {
+# in this global array the numeric edit points
+# action keeps its data
+array set editPntArr {
     x 0.0
     x2 0.0
     y 0.0
@@ -1041,10 +1043,12 @@ array set editPointDarray {
 }
 # array
 
-# updEditPointDarray:
-# helper for editPointDp
-proc updEditPointDarray { w } {
-    upvar #0 editPointDarray array
+
+# editPointUpdate:
+# helper for editPointDialog
+# updates the dialog entries
+proc editPointUpdate { w } {
+    upvar #0 editPntArr array
 
     if { $array(local) == 1 } {
 	set array(x) $array(lx)
@@ -1081,15 +1085,15 @@ proc updEditPointDarray { w } {
 
  return;
 }
-# updEditPointDarray
+# editPointUpdate
 
 
 #editPointApply:
-# helper for actionDEditP
+# helper for editPointDialog
 # apply the changes from the dialog
 proc editPointApply { } {
     global ay
-    upvar #0 editPointDarray array
+    upvar #0 editPntArr array
 
     set array(x) [.editPointDw.f1.fx.e get]
     set array(y) [.editPointDw.f1.fy.e get]
@@ -1097,12 +1101,12 @@ proc editPointApply { } {
     set array(w) [.editPointDw.f1.fw.e get]
 
     if { [winfo exists $array(window)] } {
-	undo save DEditPnt
-	$array(window) dpepac -apply
+	undo save EditPntNum
+	$array(window) penpac -apply
 	rV
 	plb_update
     } else {
-	ayError 2 "editPointDp" "Lost window to apply changes to!"
+	ayError 2 "editPointApply" "Lost window to apply changes to!"
     }
 
  return;
@@ -1110,17 +1114,17 @@ proc editPointApply { } {
 # editPointApply
 
 
-#editPointDp:
-# helper for actionDEditP
+#editPointDialog:
+# helper for actionEditNumP below
 # directly edit coordinates of points
-proc editPointDp { } {
-    upvar #0 editPointDarray array
+proc editPointDialog { } {
+    upvar #0 editPointArray array
     global ay tcl_platform AYWITHAQUA
 
     set w .editPointDw
 
     if { [winfo exists $w] } {
-	updEditPointDarray $w
+	editPointUpdate $w
 	return;
     }
 
@@ -1148,16 +1152,16 @@ proc editPointDp { } {
     }
     set m [menu $f.mb.m -tearoff 0]
     $m add command -label "Local" -command {
-	global editPointDarray
-	set editPointDarray(local) 1
+	global editPntArr
+	set editPntArr(local) 1
 	.editPointDw.f1.fm.mb configure -text "Local"
-	updEditPointDarray .editPointDw
+	editPointUpdate .editPointDw
     }
     $m add command -label "World" -command {
-	global editPointDarray
-	set editPointDarray(local) 0
+	global editPntArr
+	set editPntArr(local) 0
 	.editPointDw.f1.fm.mb configure -text "World"
-	updEditPointDarray .editPointDw
+	editPointUpdate .editPointDw
     }
     pack $f.mb -in $f -side left -fill x -expand yes -pady 0
     pack $f -in $w.f1 -side top -fill x
@@ -1169,10 +1173,10 @@ proc editPointDp { } {
     entry $f.e -width 8
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top  -fill x
+    pack $f -in $w.f1 -side top -fill x
 
-    bind $f.e <Key-Return>  "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+    bind $f.e <Key-Return> "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
 
     set f $w.f1
     set f [frame $f.fy]
@@ -1181,10 +1185,10 @@ proc editPointDp { } {
     entry $f.e -width 8
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top  -fill x
+    pack $f -in $w.f1 -side top -fill x
 
-    bind $f.e <Key-Return>  "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+    bind $f.e <Key-Return> "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
 
     set f $w.f1
     set f [frame $f.fz]
@@ -1193,10 +1197,10 @@ proc editPointDp { } {
     entry $f.e -width 8
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top  -fill x
+    pack $f -in $w.f1 -side top -fill x
 
-    bind $f.e <Key-Return>  "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+    bind $f.e <Key-Return> "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
 
     set f $w.f1
     set f [frame $f.fw]
@@ -1205,13 +1209,13 @@ proc editPointDp { } {
     entry $f.e -width 8
     pack $f.l -in $f -padx 2 -pady 2 -side left -fill x -expand no
     pack $f.e -in $f -padx 2 -pady 2 -side left -fill x -expand yes
-    pack $f -in $w.f1 -side top  -fill x
+    pack $f -in $w.f1 -side top -fill x
 
-    bind $f.e <Key-Return>  "editPointApply;break"
-    catch {bind $f.e <Key-KP_Enter>  "editPointApply;break"}
+    bind $f.e <Key-Return> "editPointApply;break"
+    catch {bind $f.e <Key-KP_Enter> "editPointApply;break"}
 
     update
-    updEditPointDarray $w
+    editPointUpdate $w
 
     set f [frame $w.f2]
     button $f.bok -text "Apply" -width 5 -pady $ay(pady)\
@@ -1249,15 +1253,15 @@ proc editPointDp { } {
 
  return;
 }
-# editPointDp
+# editPointDialog
 
 
 #
-proc actionDEditP { w } {
+proc actionEditNumP { w } {
     global ayprefs ayviewshortcuts
 
-    viewTitle $w "" "Direct_Point_Edit"
-    viewSetMAIcon $w ay_EditD_img "Direct_Point_Edit"
+    viewTitle $w "" "Edit_Points_Num"
+    viewSetMAIcon $w ay_EditD_img "Edit_Points_Num"
 
     actionClearB1 $w
 
@@ -1265,12 +1269,12 @@ proc actionDEditP { w } {
 	%W mc
 	set oldx %x
 	set oldy %y
-	set editPointDarray(valid) 0
+	set editPntArr(valid) 0
 	%W startpepac %x %y -flash -ignoreold
-	%W dpepac -start %x %y
-	set editPointDarray(window) %W
-	if { $editPointDarray(valid) == 1 } {
-	    editPointDp
+	%W penpac -start %x %y
+	set editPntArr(window) %W
+	if { $editPntArr(valid) == 1 } {
+	    editPointDialog
 	}
 	update
     }
@@ -1317,7 +1321,7 @@ proc actionDEditP { w } {
 
  return;
 }
-# actionDEditP
+# actionEditNumP
 
 
 #
