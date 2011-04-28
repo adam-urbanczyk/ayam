@@ -575,19 +575,19 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 } /* ay_pact_startpetcb */
 
 
-/* ay_pact_pedtcb:
- *  single point direct edit callback
- *  ToDo: rename to editPointNumeric
+/* ay_pact_pentcb:
+ *  single point numeric edit callback
+ *
  */
 int
-ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
+ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 {
  int ay_status = AY_OK, tcl_status = TCL_OK;
  Tcl_Interp *interp = NULL;
  /* ay_view_object *view = NULL;*/
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
- char *n1 = "editPointDarray", fname[] = "editPointDirect";
+ char *n1 = "editPntArr", fname[] = "editPntNum";
  char *str = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  int local = 0/*, need_parentnotify = AY_TRUE*/;
@@ -867,7 +867,7 @@ ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[])
 cleanup:
 
  return TCL_OK;
-} /* ay_pact_pedtcb */
+} /* ay_pact_pentcb */
 
 
 /* ay_pact_findpoint:

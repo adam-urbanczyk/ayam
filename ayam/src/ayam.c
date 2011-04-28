@@ -923,7 +923,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("pepac", ay_pact_petcb);
 
-  Togl_CreateCommand("dpepac", ay_pact_pedtcb);
+  Togl_CreateCommand("penpac", ay_pact_pentcb);
 
   Togl_CreateCommand("wepac", ay_pact_wetcb);
 

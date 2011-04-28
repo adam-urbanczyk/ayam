@@ -677,15 +677,15 @@ int ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[]);
 
-/** directly edit coordinate values of points action
+/** numerically edit coordinate values of points action
  */
-int ay_pact_pedtcb(struct Togl *togl, int argc, char *argv[]);
+int ay_pact_pentcb(struct Togl *togl, int argc, char *argv[]);
 
 /** helper to snap points to the grid
  */
 void ay_pact_griddify(double *n, double grid);
 
-/** point edit action
+/** direct point edit action
  */
 int ay_pact_petcb(struct Togl *togl, int argc, char *argv[]);
 
