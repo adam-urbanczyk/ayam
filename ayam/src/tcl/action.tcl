@@ -1044,7 +1044,7 @@ array set editPntArr {
 # array
 
 
-# editPointUpdate:
+#editPointUpdate:
 # helper for editPointDialog
 # updates the dialog entries
 proc editPointUpdate { w } {
@@ -1100,6 +1100,42 @@ proc editPointApply { } {
     set array(z) [.editPointDw.f1.fz.e get]
     set array(w) [.editPointDw.f1.fw.e get]
 
+    # if there are scripts or variable accesses in the
+    # entry fields, execute / realize them ...
+    if { [string match {*\[*} $array(x)] } {
+	eval set array(x) $array(x)
+    } else {
+	if { [string match {*\$*} $array(x)] } {
+	    eval [subst "set array(x) $array(x)"]
+	}
+    }
+
+    if { [string match {*\[*} $array(y)] } {
+	eval set array(y) $array(y)
+    } else {
+	if { [string match {*\$*} $array(y)] } {
+	    eval [subst "set array(y) $array(y)"]
+	}
+    }
+
+    if { [string match {*\[*} $array(z)] } {
+	eval set array(z) $array(z)
+    } else {
+	if { [string match {*\$*} $array(z)] } {
+	    eval [subst "set array(z) $array(z)"]
+	}
+    }
+
+    if { [string match {*\[*} $array(w)] } {
+	eval set array(w) $array(w)
+    } else {
+	if { [string match {*\$*} $array(w)] } {
+	    eval [subst "set array(w) $array(w)"]
+	}
+    }
+
+    # in floating window GUI mode our window
+    # may be closed now, better check that...
     if { [winfo exists $array(window)] } {
 	undo save EditPntNum
 	$array(window) penpac -apply
