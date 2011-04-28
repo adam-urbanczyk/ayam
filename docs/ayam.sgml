@@ -3003,14 +3003,15 @@ is activated and the object is selected
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
 objects. In contrast to the move action, you need to directly pick on
-the handle of the point you want to move. Furthermore, it is not possible
-to move points of multiple selected objects, only the first selected
-object is considered.
+the handle of the point you want to move. Since Ayam 1.18 it is possible
+to edit points of multiple selected objects (in former versions
+only points from the first selected object were considered).
 <p>
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e. you can not move
 single points apart from a multiple point using the point
-edit action.
+edit action. Temporarily disable the <tt/"CreateMP"/ property or
+explode the multiple point to do that.
 
 <item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
@@ -3022,19 +3023,19 @@ the first selected object is considered.
 If a NURBS curve has multiple points, this action modifies all
 single points that make up the multiple point.
 
-<item>The modelling action <tt/"Direct Point Edit"/ (shortcut:
+<item>The modelling action <tt/"Numeric Point Edit"/ (shortcut:
 <tt/&lt;E&gt;/)
 starts an intermediate point selection action and upon a click
 with the mouse opens a small window where you may change the
-coordinates of the selected editable point(s) directly by entering
+coordinates of the selected editable point(s) by entering
 new coordinate values on the keyboard.
 Nothing will be changed unless the <tt/"Return"/ key is pressed
 in a coordinate entry field or the <tt/"Apply"/ button is used.
 In contrast to the normal point selection action, clicking on new
 points while the edit point dialog is open deselects the old point(s),
-selects the new point and loads its coordinate values. In case
-of multiple selected objects, the deselection is only performed
-on the object with a new selection.
+selects the new point and loads its coordinate values into the
+entry fields. In case of multiple selected objects, the deselection
+is only performed on the object with a new selection.
 <p>
 Note that the w coordinate setting will be ignored if a
 selected point does not have weight information (is not rational).
@@ -3046,31 +3047,35 @@ world space.
 Since Ayam 1.18, this modelling action may affect
 multiple points of multiple selected objects.
 Snapping points of different objects together is now possible too:
-Just select two objects, start direct point editing (press <tt/&lt;E&gt;/),
+Just select two objects, start numeric point editing (press <tt/&lt;E&gt;/),
 pick a point on the first object (where a point of the second object
 should be snapped to), the point edit window opens, now drag select
 the point of the second object (do <em/not/ use a single click as this
 would load new coordinates) and press apply.
 <p>
-Since Ayam 1.18 the direct point editing action also supports read only
+Since Ayam 1.18 the numeric point editing action also supports read only
 points, their coordinates may be retrieved, but applying any values
 will have no effect.
 <p>
+Since Ayam 1.20 single coordinate entry fields may be empty to
+prevent a change of the corresponding coordinate value.
+<p>
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e. you can not move
-single points apart from a multiple point using the direct point
-edit action.
+single points apart from a multiple point using the numeric point
+edit action. Temporarily disable the <tt/"CreateMP"/ property or
+explode the multiple point to do that.
 <p>
-Notice that since Ayam 1.4 the direct point editing dialog may stay
+Notice that since Ayam 1.4 the numeric point editing dialog may stay
 open all the time. Furthermore, it is not necessary that the original
-object stays selected while working with the direct point edit dialog,
+object stays selected while working with the numeric point edit dialog,
 you may select other objects to e.g. infer new point coordinates from
 their properties and apply them to the original object.
-Furthermore notice that the coordinate values displayed in the direct
+Furthermore notice that the coordinate values displayed in the numeric
 point editing window will not update when the point is modified by
 another modelling action. Simply click on the point again in a view
-where the direct point editing action is active, to update the coordinate
-values in the direct point editing dialog.
+where the numeric point editing action is active, to update the coordinate
+values in the numeric point editing dialog.
 <p>
 Even though the dialog may display point coordinates in degraded
 accuracy (due to floating point to string conversion, see also
@@ -3258,7 +3263,7 @@ of the view is e.g. changed by a view action (however, realigning is also
 always possible by cycling the modelling mode three times).
 But let us get back to our local view.
 <p>
-To illustrate local a views little bit further, see the following example
+To illustrate local views a little bit further, see the following example
 images:
 
 <figure loc="ht">
@@ -9588,7 +9593,10 @@ an integer value i, and a tolerance tol.
 <item>Operation: The specified knot (t) will be removed i
 times from the knot vector of the selected curves if the shape of the
 resulting curve does not deviate more than tol from the original curve
-in any point.
+in any point. Since Ayam 1.20
+the knot to remove may also be specified using its (zero based)
+index in the knot vector (by entering -i index instead of a parametric
+value t, i.e. <tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original curve is left unchanged.
 <item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
@@ -9627,12 +9635,18 @@ and by the specified height value. See also the image above.
 <item>Arguments: The shift closed curve tool takes a number of
 closed curves (NCurve, ICurve, and ACurve objects are supported),
 from the selection and requests one additional integer parameter.
-<item>Operation: The control points of the curve(s) will be shifted, so that
-the second control point will be the first after this operation.
+<item>Operation: The control points of the curve(s) will be shifted.
+For a simple closed curve, shifting with i=1, the first control point will get
+the coordinates of the former last control point. This means, positive shifts
+occur in the direction of the curve. Note that for closed and periodic
+NURBS curves, the multiple points will be managed correctly.
 The shifting process will be repeated according to the integer parameter i
-given.
+given. The parameter i may be negative to revert the direction of the
+shifting.
 <item>Note: Eventually selected points will still be selected after this
 operation. See also the image above.
+See also the documentation of the corresponding
+scripting interface command <ref id="scshiftc" name="shiftC">.
 </itemize>
 
 <sect1>The To XY Tool<label id="toxyt">
@@ -9893,7 +9907,10 @@ an integer value i, and a tolerance tol.
 <item>Operation: The specified knot (t) will be removed i
 times from the knot vector of the selected surfaces if the shape of the
 resulting surfaces does not deviate more than tol from the original surfaces
-in any point.
+in any point. Since Ayam 1.20
+the knot to remove may also be specified using its (zero based)
+index in the knot vector (by entering -i index instead of a parametric
+value t, i.e. <tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
@@ -11343,11 +11360,15 @@ See also section <ref id="insknt" name="The Insert Knot Tool">.
 <p><label id="scremknnc">
 remknNC - remove knot from NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"remknNC u r [tol]"/
+ <item>Synopsis: <tt/"remknNC (u|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
-of the selected curve) r times from the curve. Note that the
+of the selected curve) r times from the curve. Since Ayam 1.20
+the knot to remove may also be specified using its (zero based)
+index in the knot vector (i.e. use <tt/"remknNC -i 4 1"/ instead of
+<tt/"remknNC 0.5 1"/).
+Note that the
 shape of the curve may be changed by this tool unless the parameter
 tol is specified. If tol is specified the new curve does not deviate
 from the original curve more than tol in any point on the curve.
@@ -11445,6 +11466,21 @@ splitNC - split NURBS curve
 value into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
 See also section <ref id="splitt" name="The Split Tool">.
+</itemize>
+
+<p><label id="scshiftc">
+shiftC - shift control points of a (closed) curve:
+<itemize>
+ <item>Synopsis: <tt/"shiftC i"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: shifts the control points of the selected
+NCurve, ACurve, and ICurve objects by an amount specified by the
+parameter i (which may be negative to revert the direction of the shifting).
+For a simple closed curve, shifting with i=1, the first control point will get
+the coordinates of the former last control point. This means, positive shifts
+occur in the direction of the curve. Note that for closed and periodic
+NURBS curves, the multiple points will be managed correctly.
+See also section <ref id="shiftclc" name="The Shift Closed Curve Tool">.
 </itemize>
 
 <p><label id="sctoxync">
@@ -11596,11 +11632,14 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 <p><label id="scremknunp">
 remknuNP - remove u knot from NURBS surface:
 <itemize>
- <item>Synopsis: <tt/"remknuNP u r [tol]"/
+ <item>Synopsis: <tt/"remknuNP (u|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
-of the selected surface) r times from the surface. Note that the
+of the selected surface) r times from the surface. Since Ayam 1.20
+the knot to remove may also be specified using its (zero based)
+index in the knot vector (i.e. use <tt/"remknuNP -i 4 1"/ instead of
+<tt/"remknuNP 0.5 1"/). Note that the
 shape of the surface may be changed by this tool unless the parameter
 tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
@@ -11612,11 +11651,14 @@ See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 <p><label id="scremknvnp">
 remknvNP - remove v knot from NURBS surface:
 <itemize>
- <item>Synopsis: <tt/"remknvNP v r [tol]"/
+ <item>Synopsis: <tt/"remknvNP (v|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by v (v must be in the valid range of the knot vector
-of the selected surface) r times from the surface. Note that the
+of the selected surface) r times from the surface. Since Ayam 1.20
+the knot to remove may also be specified using its (zero based)
+index in the knot vector (i.e. use <tt/"remknvNP -i 4 1"/ instead of
+<tt/"remknvNP 0.5 1"/). Note that the
 shape of the surface may be changed by this tool unless the parameter
 tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
@@ -12790,7 +12832,8 @@ tcleval("puts " + a);
 
 The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
-Note that return values are properly transferred back to JavaScript.
+Note that return values are properly transferred back to JavaScript
+according to the rules for data conversion as documented below.
 <p>
 <sect3>tclvar<label id="tclvar">
 <p>
