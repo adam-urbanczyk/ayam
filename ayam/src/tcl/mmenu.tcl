@@ -402,10 +402,10 @@ $m.nct add command -label "Plot Curvature" -command {
 	"curvPlot %0 %1 %2; uCR; rV"\
 	"Curvature Plot"
 }
-$m.nct add command -label "Shift B-Spline" -command {
+$m.nct add command -label "Shift" -command {
     runTool ay(shiftcbsp) {"Times:"}\
-	"undo save ShiftClosedBS; shiftClosedBS %0; rV"\
-	"Shift B-Spline"
+	"undo save ShiftC; shiftC %0; rV"\
+	"Shift Curve"
 }
 $m.nct add command -label "To XY" -command {
     undo save ToXYNC; toXYNC; rV; }
