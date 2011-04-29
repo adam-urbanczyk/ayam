@@ -16,7 +16,7 @@ set Light_props { Transformations Attributes Tags LightShader LightAttr }
 #  get Attributes from C context and build new PropertyGUI
 #
 proc light_getAttr { } {
-    global ay LightAttr LightAttrData
+    global ay ayprefs LightAttr LightAttrData
 
     set oldfocus [focus]
 
@@ -59,16 +59,8 @@ proc light_getAttr { } {
 	addParam $w LightAttrData To_Y
 	addParam $w LightAttrData To_Z
     }
-    $ay(pca) itemconfigure 1 -window $w
-    update
-    plb_resize
-    # adapt scrollregion
-    set width [expr [winfo reqwidth $w] + 10]
-    set height [expr [winfo reqheight $w] + 10]
-    $ay(pca) configure -scrollregion [list 0 5 $width $height]
-    if { [winfo exists $oldfocus] } {
-	focus -force $oldfocus
-    }
+
+    plb_setwin $w $oldfocus
 
  return;
 }
@@ -94,8 +86,6 @@ proc light_getShader { } {
     set w [frame $ay(pca).$LightShader(w)]
     shaderGet light ay_shader
     shader_buildGUI $w light
-    $ay(pca) itemconfigure 1 -window $w
-    plb_resize
 
  return;
 }

@@ -77,6 +77,7 @@ bind $f.li <<ListboxSelect>> {
     eval [subst "set arrname \$${prop}(arr)"]
     global pclip_reset $arrname
     array set pclip_reset  [array get $arrname]
+
     $ay(pca) itemconfigure 1 -window $ay(pca).$ww
 
     # resize canvas
@@ -84,12 +85,11 @@ bind $f.li <<ListboxSelect>> {
     set height [expr [winfo reqheight $ay(pca).$ww] + 10]
     $ay(pca) configure -width $width
     $ay(pca) configure -height $height
-    $ay(pca) configure -scrollregion [list 0 5 $width $height]
 
-    # resize main?
-    if { $ayprefs(AutoResize) == 1 } {
-	plb_resize
-    }
+    # resize main window
+    plb_resize
+
+    # manage property clipboard
     if { [array exists pclip_omit] } {
 	unset pclip_omit
 	set labels [array names pclip_omit_label]
@@ -130,6 +130,8 @@ bind $f.li <<ListboxSelect>> {
 	}
     }
     # if
+
+    after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
 }
 # bind
 
@@ -222,7 +224,7 @@ button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
 
     eval [subst "set arrname \$${prop}(arr)"]
     global pclip_reset $arrname
-    array set pclip_reset  [array get $arrname]
+    array set pclip_reset [array get $arrname]
     rV
 } -takefocus 0 -highlightthickness 0
 
@@ -501,6 +503,7 @@ if { [llength $index] == 1 } {
 
 	    set getprocp ""
 	    eval [subst "set getprocp \$${prop}(gproc)"]
+
 	    if { $getprocp != "" } { $getprocp } else { getProp }
 
 	    $ay(pca) itemconfigure 1 -window $ay(pca).$w
@@ -513,10 +516,9 @@ if { [llength $index] == 1 } {
 	    $ay(pca) configure -height $height
 	    $ay(pca) configure -scrollregion [list 0 5 $width $height]
 
-	    # resize main?
-	    if { $ayprefs(AutoResize) == 1 } {
-		plb_resize
-	    }
+	    # resize main window
+	    plb_resize
+
 	    # update omit array
 	    if { [array exists pclip_omit] } {
 		unset pclip_omit
@@ -530,6 +532,7 @@ if { [llength $index] == 1 } {
 		array set pclip_omit { }
 		array set pclip_omit_label { }
 	    }
+
 	    # improve focus traversal (speed-wise)
 	    if { $ay(lb) == 1 } {
 		bind $ay(olb) <Key-Tab>\
@@ -567,6 +570,8 @@ if { [llength $index] == 1 } {
 }
 # if
 
+after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
+
 set ay(PlbUpdateSema) 0
 
  return;
@@ -575,7 +580,7 @@ set ay(PlbUpdateSema) 0
 
 
 # plb_resize:
-#
+#  resize the main window according to the currently selected property
 #
 proc plb_resize { } {
     global ayprefs ay
@@ -689,3 +694,39 @@ proc plb_showprop { prop } {
  return;
 }
 # plb_showprop
+
+
+# plb_setwin:
+#
+#
+proc plb_setwin { w {fw ""} } {
+    global ay
+
+    if {![winfo exists $w] } {
+	return
+    }
+
+    # set new window
+    $ay(pca) itemconfigure 1 -window $w
+    update
+
+    # resize canvas
+    set width [expr [winfo reqwidth $w] + 10]
+    set height [expr [winfo reqheight $w] + 10]
+    $ay(pca) configure -width $width
+    $ay(pca) configure -height $height
+
+    # resize main window
+    plb_resize
+
+    # adapt scrollregion
+    after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
+
+    # manage focus
+    if { [winfo exists $fw] } {
+	focus -force $fw
+    }
+
+ return;
+}
+# plb_setwin

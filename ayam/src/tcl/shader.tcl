@@ -584,6 +584,8 @@ for {set i 0} {$i < $numargs} {incr i} {
 }
 # for
 
+plb_setwin $w ""
+
  return;
 }
 # shader_buildGUI
@@ -691,19 +693,22 @@ proc shader_findShader { sname } {
 # shader_findShader
 
 proc shader_getAtm { } {
-global ay ay_shader Atmosphere
-destroy $ay(pca).$Atmosphere(w)
-set w [frame $ay(pca).$Atmosphere(w)]
-shaderGet atmosphere ay_shader
-shader_buildGUI $w atmosphere
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    global ay ay_shader Atmosphere
+
+    destroy $ay(pca).$Atmosphere(w)
+    set w [frame $ay(pca).$Atmosphere(w)]
+    shaderGet atmosphere ay_shader
+    shader_buildGUI $w atmosphere
+
+ return;
 }
 
 proc shader_setAtm { } {
 
-shaderSet atmosphere ay_shader
+    shaderSet atmosphere ay_shader
 
+
+ return;
 }
 
 array set Atmosphere {
@@ -717,20 +722,21 @@ set w [frame $ay(pca).$Atmosphere(w)]
 ####
 ####
 proc shader_getImg { } {
-global ay ay_shader Imager
+    global ay ay_shader Imager
 
-catch {destroy $ay(pca).$Imager(w)}
-set w [frame $ay(pca).$Imager(w)]
-shaderGet imager ay_shader
-shader_buildGUI $w imager
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$Imager(w)}
+    set w [frame $ay(pca).$Imager(w)]
+    shaderGet imager ay_shader
+    shader_buildGUI $w imager
+
+ return;
 }
 
 proc shader_setImg { } {
 
-shaderSet imager ay_shader
+    shaderSet imager ay_shader
 
+ return;
 }
 
 array set Imager {
@@ -744,20 +750,21 @@ set w [frame $ay(pca).$Imager(w)]
 ####
 ####
 proc shader_getSurf { } {
-global ay ay_shader Surface
+    global ay ay_shader Surface
 
-catch {destroy $ay(pca).$Surface(w)}
-set w [frame $ay(pca).$Surface(w)]
-shaderGet surface ay_shader
-shader_buildGUI $w surface
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$Surface(w)}
+    set w [frame $ay(pca).$Surface(w)]
+    shaderGet surface ay_shader
+    shader_buildGUI $w surface
+
+ return;
 }
 
 proc shader_setSurf { } {
 
-shaderSet surface ay_shader
+    shaderSet surface ay_shader
 
+ return;
 }
 
 array set Surface {
@@ -771,20 +778,21 @@ set w [frame $ay(pca).$Surface(w)]
 ####
 ####
 proc shader_getDisp { } {
-global ay ay_shader Displacement
+    global ay ay_shader Displacement
 
-catch {destroy $ay(pca).$Displacement(w)}
-set w [frame $ay(pca).$Displacement(w)]
-shaderGet displacement ay_shader
-shader_buildGUI $w displacement
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$Displacement(w)}
+    set w [frame $ay(pca).$Displacement(w)]
+    shaderGet displacement ay_shader
+    shader_buildGUI $w displacement
+
+ return;
 }
 
 proc shader_setDisp { } {
 
-shaderSet displacement ay_shader
+    shaderSet displacement ay_shader
 
+ return;
 }
 
 array set Displacement {
@@ -798,20 +806,21 @@ set w [frame $ay(pca).$Displacement(w)]
 ####
 ####
 proc shader_getInt { } {
-global ay ay_shader Interior
+    global ay ay_shader Interior
 
-catch {destroy $ay(pca).$Interior(w)}
-set w [frame $ay(pca).$Interior(w)]
-shaderGet interior ay_shader
-shader_buildGUI $w interior
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$Interior(w)}
+    set w [frame $ay(pca).$Interior(w)]
+    shaderGet interior ay_shader
+    shader_buildGUI $w interior
+
+ return;
 }
 
 proc shader_setInt { } {
 
-shaderSet interior ay_shader
+    shaderSet interior ay_shader
 
+ return;
 }
 
 array set Interior {
@@ -825,20 +834,21 @@ set w [frame $ay(pca).$Interior(w)]
 ####
 ####
 proc shader_getExt { } {
-global ay ay_shader Exterior
+    global ay ay_shader Exterior
 
-catch {destroy $ay(pca).$Exterior(w)}
-set w [frame $ay(pca).$Exterior(w)]
-shaderGet exterior ay_shader
-shader_buildGUI $w exterior
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+    catch {destroy $ay(pca).$Exterior(w)}
+    set w [frame $ay(pca).$Exterior(w)]
+    shaderGet exterior ay_shader
+    shader_buildGUI $w exterior
+
+ return;
 }
 
 proc shader_setExt { } {
 
-shaderSet exterior ay_shader
+    shaderSet exterior ay_shader
 
+ return;
 }
 
 array set Exterior {
