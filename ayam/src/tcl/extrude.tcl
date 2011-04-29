@@ -58,19 +58,7 @@ proc extrude_getAttr { } {
     addMenu $w ExtrudeAttrData DisplayMode $ay(npdisplaymodes)
 
     # add UI to property canvas
-    $ay(pca) itemconfigure 1 -window $w
-    update
-    plb_resize
-
-    # adapt canvas scrollregion
-    set width [expr [winfo reqwidth $w] + 10]
-    set height [expr [winfo reqheight $w] + 10]
-    $ay(pca) configure -scrollregion [list 0 5 $width $height]
-
-    # restore focus
-    if { [winfo exists $oldfocus] } {
-	focus -force $oldfocus
-    }
+    plb_setwin $w $oldfocus
 
  return;
 }

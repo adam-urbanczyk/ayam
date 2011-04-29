@@ -172,8 +172,9 @@ foreach tag $names {
 
     incr i
 }
-$ay(pca) itemconfigure 1 -window $w
-plb_resize
+
+    plb_setwin $w ""
+
 }
 # getTagsp
 
