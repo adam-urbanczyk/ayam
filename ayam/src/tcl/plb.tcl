@@ -15,18 +15,6 @@ set ay(PlbUpdateSema) 0
 
 # Procedures:
 
-# plb_resizecanvas:
-#
-#
-proc plb_resizecanvas { win W H } {
-   $win itemconfigure all -width $W
-   set bbox [$win bbox all]
-   $win configure -scrollregion $bbox -yscrollincrement 0.1i
- return;
-}
-# plb_resizecanvas
-
-
 # plb_open:
 #
 #
@@ -74,11 +62,15 @@ bind $f.li <<ListboxSelect>> {
     eval [subst "set getprocp \$${prop}(gproc)"]
     if { $getprocp != "" } { $getprocp } else { getProp }
 
+    # save current property data for the "Reset" button
     eval [subst "set arrname \$${prop}(arr)"]
     global pclip_reset $arrname
-    array set pclip_reset  [array get $arrname]
+    catch {array unset pclip_reset}
+    array set pclip_reset [array get $arrname]
 
+    # make new property GUI visible in the canvas
     $ay(pca) itemconfigure 1 -window $ay(pca).$ww
+    $ay(pca) configure -takefocus 1
 
     # resize canvas
     set width [expr [winfo reqwidth $ay(pca).$ww] + 10]
@@ -104,9 +96,9 @@ bind $f.li <<ListboxSelect>> {
     }
 
     if { $ay(lb) == 0 } {
-	global ay; focus -force $ay(tree)
+	focus -force $ay(tree)
     } else {
-	global ay; focus -force $ay(olb)
+	focus -force $ay(olb)
     }
     # improve focus traversal (speed-wise)
     global tcl_platform AYWITHAQUA
@@ -222,8 +214,10 @@ button $f.b1 -text "Apply" -padx 10 -pady 0 -command {
     eval [subst "set getprocp \$${prop}(gproc)"]
     if { $getprocp != "" } { $getprocp } else { getProp }
 
+    # save current property data for the "Reset" button
     eval [subst "set arrname \$${prop}(arr)"]
     global pclip_reset $arrname
+    catch {array unset pclip_reset}
     array set pclip_reset [array get $arrname]
     rV
 } -takefocus 0 -highlightthickness 0
@@ -239,6 +233,7 @@ button $f.b2 -text "Reset" -padx 10 -pady 0 -command {
     set prop [$lb get $sel]
     global $prop pclip_reset
     eval [subst "set arrname \$${prop}(arr)"]
+
     array set $arrname [array get pclip_reset]
 } -takefocus 0 -highlightthickness 0
 
@@ -374,207 +369,149 @@ return;
 #
 #
 proc plb_update { } {
-global ay ayprefs ay_error curtypes pclip_omit pclip_omit_label
-global tcl_platform AYWITHAQUA
+    global ay ayprefs ay_error curtypes pclip_omit pclip_omit_label
+    global tcl_platform AYWITHAQUA
 
-# protect against double updates
-if { $ay(PlbUpdateSema) == 1 } {
-    return
-} else {
-    set ay(PlbUpdateSema) 1
-}
+    # protect against double updates
+    if { $ay(PlbUpdateSema) == 1 } {
+	return
+    } else {
+	set ay(PlbUpdateSema) 1
+    }
 
-set index ""
+    set index ""
 
-if { $ay(lb) == 1 } {
-    set index [$ay(olb) curselection]
-} else {
-    set index [$ay(tree) selection get]
-}
-
-if { $index == "" } {
     if { $ay(lb) == 1 } {
-	set w $ay(olb)
+	set index [$ay(olb) curselection]
     } else {
-	set w $ay(tree)
-    }
-    if { $ayprefs(SingleWindow) == 1 } {
-	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
-    } else {
-	bind $w <Key-Tab> "focus .fl.con.console;break"
-    }
-    $ay(pca) configure -takefocus 0
-}
-
-# avoid leaving the focus on an empty property canvas
-if { ( [string first $ay(pca) [focus]] == 0 ) && ( [llength $index] == 0 ) } {
-    resetFocus
-}
-
-set lb $ay(plb)
-set oldsel ""
-set oldsel [$lb curselection]
-
-# delete current entries
-$lb delete 0 end
-
-# show new property GUI
-$ay(pca) itemconfigure 1 -window $ay(pw)
-if { [llength $index] == 1 } {
-    set type ""
-    if { $ay(lb) == 1 } {
-	set type [lindex $curtypes $index]
-    } else {
-	set oldayerror $ay_error
-	getType type
-	set ay_error $oldayerror
+	set index [$ay(tree) selection get]
     }
 
-    if { $type == "" } {
-	set ay(PlbUpdateSema) 0
-	return;
+    if { $index == "" } {
+	if { $ay(lb) == 1 } {
+	    set w $ay(olb)
+	} else {
+	    set w $ay(tree)
+	}
+	if { $ayprefs(SingleWindow) == 1 } {
+	    bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
+	} else {
+	    bind $w <Key-Tab> "focus .fl.con.console;break"
+	}
+	$ay(pca) configure -takefocus 0
     }
 
-    if { $type != ".." } {
-	global ${type}_props
+    # avoid leaving the focus on an empty property canvas
+    if { ( [string first $ay(pca) [focus]] == 0 ) &&
+	 ( [llength $index] == 0 ) } {
+	resetFocus
+    }
 
-	# get props of selected object
-	if { ! [info exists ${type}_props] } {
-	    # props are undefined yet, try to run the
-	    # object type specific init procedure...
-	    set ay(bok) $ay(appb)
-	    catch { eval init_${type} }
+    set lb $ay(plb)
+    set oldsel ""
+    set oldsel [$lb curselection]
+
+    # delete current entries
+    $lb delete 0 end
+
+    # show new property GUI
+    $ay(pca) itemconfigure 1 -window $ay(pw)
+    if { [llength $index] == 1 } {
+	set type ""
+	if { $ay(lb) == 1 } {
+	    set type [lindex $curtypes $index]
+	} else {
+	    set oldayerror $ay_error
+	    getType type
+	    set ay_error $oldayerror
 	}
 
-	eval [subst "set props {\$${type}_props}"]
+	if { $type == "" } {
+	    set ay(PlbUpdateSema) 0
+	    return;
+	}
 
-	# remove properties from RP tags
-	set tn ""
-	getTags tn tv
-	if { ($tn != "") && ([ string first RP $tn ] != -1) } {
-	    set i 0
-	    foreach tag $tn {
-		if { [lindex $tn $i] == "RP" } {
-		    set val [lindex $tv $i]
-		    set j 0
-		    set nprops ""
-		    foreach prop $props {
-			if { $prop != $val } {
-			    lappend nprops $prop
+	if { $type != ".." } {
+	    global ${type}_props
+
+	    # get props of selected object
+	    if { ! [info exists ${type}_props] } {
+		# props are undefined yet, try to run the
+		# object type specific init procedure...
+		set ay(bok) $ay(appb)
+		catch { eval init_${type} }
+	    }
+
+	    eval [subst "set props {\$${type}_props}"]
+
+	    # remove properties from RP tags
+	    set tn ""
+	    getTags tn tv
+	    if { ($tn != "") && ([ string first RP $tn ] != -1) } {
+		set i 0
+		foreach tag $tn {
+		    if { [lindex $tn $i] == "RP" } {
+			set val [lindex $tv $i]
+			set j 0
+			set nprops ""
+			foreach prop $props {
+			    if { $prop != $val } {
+				lappend nprops $prop
+			    }
+			    incr j
 			}
-			incr j
+			set props $nprops
 		    }
-		    set props $nprops
+		    incr i
 		}
-		incr i
+		# foreach
 	    }
-	    # foreach
-	}
-	# if
+	    # if
 
-	# add props to listbox
-	if { [llength $props] > 0 } {
-	    eval [subst "$lb insert end $props"]
-	}
-
-	# also add properties from NP tags
-	if { ($tn != "") && ([ string first NP $tn ] != -1) } {
-	    set i 0
-	    foreach tag $tn {
-		if { [lindex $tn $i] == "NP" } {
-		    $lb insert end [lindex $tv $i]
-		}
-		incr i
-	    }
-	    # foreach
-	}
-	# if
-    }
-    # if
-
-    # re-create old propgui?
-    if { $oldsel != "" && $oldsel <= [$lb index end] } {
-	$lb selection set $oldsel
-	set tmp [$lb curselection]
-	if { $tmp != "" } {
-	    set prop [$lb get $tmp]
-	    global $prop ayprefs
-	    eval [subst "set w \$${prop}(w)"]
-
-	    set getprocp ""
-	    eval [subst "set getprocp \$${prop}(gproc)"]
-
-	    if { $getprocp != "" } { $getprocp } else { getProp }
-
-	    $ay(pca) itemconfigure 1 -window $ay(pca).$w
-	    $ay(pca) configure -takefocus 1
-
-	    # resize canvas
-	    set width [expr [winfo reqwidth $ay(pca).$w] + 10]
-	    set height [expr [winfo reqheight $ay(pca).$w] + 10]
-	    $ay(pca) configure -width $width
-	    $ay(pca) configure -height $height
-	    $ay(pca) configure -scrollregion [list 0 5 $width $height]
-
-	    # resize main window
-	    plb_resize
-
-	    # update omit array
-	    if { [array exists pclip_omit] } {
-		unset pclip_omit
-		set labels [array names pclip_omit_label]
-		foreach label $labels {
-		    set oldname [$label cget -text]
-		    set name [string trimleft $oldname !]
-		    $label configure -text $name
-		}
-		unset pclip_omit_label
-		array set pclip_omit { }
-		array set pclip_omit_label { }
+	    # add props to listbox
+	    if { [llength $props] > 0 } {
+		eval [subst "$lb insert end $props"]
 	    }
 
-	    # improve focus traversal (speed-wise)
-	    if { $ay(lb) == 1 } {
-		bind $ay(olb) <Key-Tab>\
-			"focus [tk_focusNext $ay(pca).$w];plb_focus;break"
-		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
-			"focus $ay(olb);break"
-		if { ( $tcl_platform(platform) != "windows" ) &&\
-			( ! $AYWITHAQUA ) } {
-		    catch {bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
-			       "focus $ay(olb);break"}
+	    # also add properties from NP tags
+	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+		set i 0
+		foreach tag $tn {
+		    if { [lindex $tn $i] == "NP" } {
+			$lb insert end [lindex $tv $i]
+		    }
+		    incr i
 		}
-	    } else {
-		bind $ay(tree) <Key-Tab>\
-		    "focus [tk_focusNext $ay(pca).$w];plb_focus;break"
-
-		bind [tk_focusNext $ay(pca).$w] <Shift-Tab>\
-		    "focus $ay(tree);break"
-		if { ( $tcl_platform(platform) != "windows" ) &&\
-			 ( ! $AYWITHAQUA ) } {
-		    catch {bind [tk_focusNext $ay(pca).$w] <ISO_Left_Tab>\
-			       "focus $ay(tree);break"}
-		}
+		# foreach
 	    }
 	    # if
 	}
 	# if
+
+	# re-create old propgui?
+	if { $oldsel != "" && $oldsel <= [$lb index end] } {
+	    $lb selection set $oldsel
+	    set tmp [$lb curselection]
+	    if { $tmp != "" } {
+		event generate $lb <<ListboxSelect>>
+	    }
+	    # if
+	}
+	# if
+
+	# avoid leaving the focus on an empty property canvas
+	if { $oldsel != "" && ( $oldsel > [$lb index end] ) } {
+	    resetFocus
+	}
+
     }
     # if
 
-    # avoid leaving the focus on an empty property canvas
-    if { $oldsel != "" && ( $oldsel > [$lb index end] ) } {
-	resetFocus
-    }
+    after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
 
-}
-# if
+    set ay(PlbUpdateSema) 0
 
-after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
-
-set ay(PlbUpdateSema) 0
-
- return;
+    return;
 }
 # plb_update
 
@@ -697,8 +634,9 @@ proc plb_showprop { prop } {
 
 
 # plb_setwin:
-#
-#
+# helper for dynamic property GUIs
+# set the canvas window and resize the canvas
+# also adapts the scroll region and restores the focus
 proc plb_setwin { w {fw ""} } {
     global ay
 
