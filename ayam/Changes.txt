@@ -1,7 +1,9 @@
-[21. Apr 2011] CVS-Head:
+[1. May 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
+o Tcl error when applying the ViewAttrib property (SF 3295757)
+o property reset does not work after object selection change (SF 3295758)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -11,6 +13,11 @@ GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
   and Text objects are now properly saved (the data is not applied) for
   AddBevel/RemoveBevel
+o renamed direct point edit action to numeric point edit
+o empty fields are now allowed in the numeric point edit dialog to allow
+  "no change" for the respective coordinate
+o the numeric point edit dialog now supports scripts and variable accesses
+  in the entry fields
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
@@ -20,8 +27,8 @@ o added "remknuNP"/"remknvNP" commands to remove knots from surfaces
 o added "-i" option to all knot removal commands to specify a knot by
   index (not by value)
 o renamed "shiftClosedBS" to "shiftC" command, "shiftC" can now also
-  shift/cycle normal closed NURBS curves, ICurve and ACurve objects
- 
+  shift/cycle normal closed NURBS curves, ICurve, and ACurve objects
+
 
 [16. Mar 2011] Ayam-1.19:
 =========================
