@@ -177,7 +177,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "CameraData", *n2 = "ViewAttribData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  double oldmark[3];
- int itemp = 0, need_markupdate = AY_TRUE;
+ int itemp = 0, setmark = AY_FALSE, need_markupdate = AY_TRUE;
  char *result;
  char fname[] = "view_setpropcb";
 
@@ -301,21 +301,32 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &view->enable_undo);
 
-  Tcl_SetStringObj(ton, "Mark_X", -1);
+  Tcl_SetStringObj(ton, "SetMark", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[0]));
+  Tcl_GetIntFromObj(interp, to, &setmark);
 
-  Tcl_SetStringObj(ton, "Mark_Y", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[1]));
-
-  Tcl_SetStringObj(ton, "Mark_Z", -1);
-  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(view->markworld[2]));
-
-  if(!AY_V3COMP(oldmark, view->markworld))
+  if(setmark)
     {
-      need_markupdate = AY_TRUE;
+      Tcl_SetStringObj(ton, "Mark_X", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[0]));
+
+      Tcl_SetStringObj(ton, "Mark_Y", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[1]));
+
+      Tcl_SetStringObj(ton, "Mark_Z", -1);
+      to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG |
+			  TCL_GLOBAL_ONLY);
+      Tcl_GetDoubleFromObj(interp, to, &(view->markworld[2]));
+
+      if(!AY_V3COMP(oldmark, view->markworld))
+	{
+	  need_markupdate = AY_TRUE;
+	}
+      view->drawmark = AY_TRUE;
     }
 
   Tcl_SetStringObj(ton, "DrawBG", -1);
@@ -368,7 +379,6 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(need_markupdate)
     {
-      view->drawmark = AY_TRUE;
       ay_viewt_updatemark(view->togl, AY_FALSE);
     }
 
@@ -544,6 +554,10 @@ ay_view_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton, "Mark_Z", -1);
   to = Tcl_NewDoubleObj(view->markworld[2]);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "SetMark", -1);
+  to = Tcl_NewIntObj(view->drawmark);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "togl", -1);
