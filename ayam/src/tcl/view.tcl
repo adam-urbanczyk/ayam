@@ -1511,6 +1511,7 @@ addText $w e6 "Mark:"
 addParam $w ViewAttribData Mark_X
 addParam $w ViewAttribData Mark_Y
 addParam $w ViewAttribData Mark_Z
+addCheck $w ViewAttribData SetMark
 
 addText $w e7 "Undo:"
 addCheck $w ViewAttribData EnableUndo
