@@ -167,7 +167,7 @@ proc bevel_add { place arr } {
 
 	# restore  property GUI state
 	foreach name [array names $arr] {
-	    eval set ${arr}($name) $savearray($name)
+	    eval set ${arr}($name) {$savearray($name)}
 	}
     }
     # if
@@ -216,7 +216,7 @@ proc bevel_rem { place arr } {
 
 	# restore  property GUI state
 	foreach name [array names $arr] {
-	    eval set ${arr}($name) $savearray($name)
+	    eval set ${arr}($name) {$savearray($name)}
 	}
     }
     # if
