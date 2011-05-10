@@ -2967,6 +2967,9 @@ ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
  double *controlv, m[16], angle;
  int len, a, i;
 
+  if(fabs(arc) > 360.0)
+    return AY_ERROR;
+
   if((sections < 2) && (fabs(arc) > 180.0))
     return AY_ERROR;
 
@@ -3120,6 +3123,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status || !o->refine)
     {
+      ay_error(AY_ERROR, argv[0], "Failed to create closed B-Spline.");
       free(o);
       return TCL_OK;
     }
@@ -4547,13 +4551,19 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
 {
  int ay_status = AY_OK;
  int a, i;
+ double t4[4];
  double *t = NULL;
 
   if(!cv)
     return AY_ENULL;
 
-  if(!(t = calloc(stride, sizeof(double))))
-    return AY_EOMEM;
+  if(stride > 4)
+    {
+      if(!(t = calloc(stride, sizeof(double))))
+	return AY_EOMEM;
+    }
+  else
+    t = t4;
 
   if(dir)
     {
@@ -4583,7 +4593,8 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
       memcpy(cv, t, stride * sizeof(double));
     }
 
-  free(t);
+  if(stride > 4)
+    free(t);
 
  return ay_status;
 } /* ay_nct_shiftarr */
