@@ -1470,10 +1470,20 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  break;
 	case 's':
-	  /*if(!strcmp(argv[i], "-shade"))*/
+	  if(!strcmp(argv[i], "-shade"))
 	    {
 	      Tcl_GetInt(interp, argv[i+1], &argi);
 	      view->shade = argi;
+	    }
+	  if(!strcmp(argv[i], "-smark"))
+	    {
+	      Tcl_GetDouble(interp, argv[i+1], &(view->markworld[0]));
+	      Tcl_GetDouble(interp, argv[i+2], &(view->markworld[1]));
+	      Tcl_GetDouble(interp, argv[i+3], &(view->markworld[2]));
+
+	      view->drawmark = AY_TRUE;
+
+	      need_updatemark = AY_TRUE;
 	    }
 	  break;
 	case 't':

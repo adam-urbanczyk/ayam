@@ -1424,6 +1424,31 @@ proc viewPan { togl dir } {
 }
 # viewPan
 
+
+##############################
+# setMark:
+proc setMark { px {y 0} {z 0} } {
+    global ay
+
+    if { $ay(views) == "" } {
+	return;
+    }
+
+    if { [llength $px] >= 2 } {
+	set x [lindex $px 0]
+	set y [lindex $px 1]
+	set z [lindex $px 2]
+    } else {
+	set x $px
+    }
+    set w [lindex $ay(views) 0]
+    ${w}.f3D.togl setconf -smark $x $y $z
+
+ return;
+}
+# setMark
+
+
 # some code, that has to be executed in global context when this
 # module is sourced the first time (on application startup):
 
