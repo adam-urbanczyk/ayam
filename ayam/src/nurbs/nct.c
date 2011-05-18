@@ -1660,7 +1660,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0.");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -1852,7 +1852,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_nct_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status,argv[0],"Explode operation failed.");
+		ay_error(ay_status, argv[0], "Explode operation failed.");
 	      }
 
  	    if(sel->object->selp)
@@ -1869,7 +1869,7 @@ ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 	    ay_status = ay_npt_explodemp(sel->object);
 	    if(ay_status)
 	      {
-		ay_error(ay_status,argv[0],"Explode operation failed.");
+		ay_error(ay_status, argv[0], "Explode operation failed.");
 	      }
 
  	    if(sel->object->selp)
@@ -3083,7 +3083,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(sections < 1)
     {
-      ay_error(AY_ERROR, argv[0], "sections must be >= 1");
+      ay_error(AY_ERROR, argv[0], "Parameter sections must be >= 1.");
       return TCL_OK;
     }
 
@@ -3384,7 +3384,7 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 
   if(index >= curve->length || index < 0)
     {
-      ay_error(AY_ERROR, fname, "index out of range");
+      ay_error(AY_ERROR, fname, "Parameter index out of range.");
       return AY_ERROR;
     }
 
@@ -5602,7 +5602,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0.");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -5826,7 +5826,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(umax <= umin)
     {
-      ay_error(AY_ERROR, argv[0], "umin must be smaller than umax");
+      ay_error(AY_ERROR, argv[0], "Parameter umin must be smaller than umax.");
       return TCL_OK;
     }
 
@@ -6525,7 +6525,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_error(AY_ERROR, argv[0], "provide failed");
+	  ay_error(AY_ERROR, argv[0], "Provide failed.");
 	  goto cleanup;
 	}
     }
