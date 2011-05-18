@@ -155,7 +155,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 
 
 /** ay_npt_destroy:
- *   destroy a NURBS patch object
+ *   gracefully destroy a NURBS patch object
  *
  * @param[in] patch NURBS patch object to destroy
  */
@@ -1498,7 +1498,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(radius <= AY_EPSILON)
 		{
-		  ay_error(AY_ERROR, argv[0], "radius must be > 0");
+		  ay_error(AY_ERROR, argv[0], "Parameter radius must be > 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -1882,7 +1882,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status || !curves)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Split failed");
+	      ay_error(AY_ERROR, argv[0], "Split failed.");
 	    }
 
 	  while(curves)
@@ -2118,7 +2118,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status || !patch)
     {
-      ay_error(AY_ERROR, argv[0], "Build failed");
+      ay_error(AY_ERROR, argv[0], "Build failed.");
     }
 
   if(patch)
@@ -6141,13 +6141,13 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 
   if(indexu >= patch->width || indexu < 0)
     {
-      ay_error(AY_ERROR, fname, "index u out of range");
+      ay_error(AY_ERROR, fname, "Index u out of range.");
       return AY_ERROR;
     }
 
   if(indexv >= patch->height || indexv < 0)
     {
-      ay_error(AY_ERROR, fname, "index v out of range");
+      ay_error(AY_ERROR, fname, "Index v out of range.");
       return AY_ERROR;
     }
 
@@ -6185,7 +6185,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
       ay_status = ay_npt_clampu(patch, 0);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "clamp operation failed");
+	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
 	  return AY_ERROR;
 	} /* if */
     } /* if */
@@ -6215,7 +6215,7 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
   if(ay_status)
     {
       free(Uh); free(Qw);
-      ay_error(ay_status, fname, "degree elevation failed");
+      ay_error(ay_status, fname, "Degree elevation failed.");
       return AY_ERROR;
     }
 
@@ -6274,7 +6274,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(t <= 0)
 	{
-	  ay_error(AY_ERROR, argv[0], "argument must be > 0");
+	  ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
 	  return TCL_OK;
 	}
     }
@@ -6289,7 +6289,7 @@ ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Elevate failed");
+	      ay_error(AY_ERROR, argv[0], "Elevate failed.");
 	    }
 	  else
 	    {
@@ -6346,7 +6346,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
       ay_status = ay_npt_clampv(patch, 0);
       if(ay_status)
 	{
-	  ay_error(AY_ERROR, fname, "clamp operation failed");
+	  ay_error(AY_ERROR, fname, "Clamp operation failed.");
 	  return AY_ERROR;
 	} /* if */
     } /* if */
@@ -6376,7 +6376,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
   if(ay_status)
     {
       free(Vh); free(Qw);
-      ay_error(ay_status, fname, "degree elevation failed");
+      ay_error(ay_status, fname, "Degree elevation failed.");
       return AY_ERROR;
     }
 
@@ -6444,7 +6444,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(t <= 0)
 	{
-	  ay_error(AY_ERROR, argv[0], "argument must be > 0");
+	  ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
 	  return TCL_OK;
 	}
     }
@@ -6458,7 +6458,7 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Elevate failed");
+	      ay_error(AY_ERROR, argv[0], "Elevate failed.");
 	    }
 	  else
 	    {
@@ -6724,7 +6724,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 		  /* XXXX ...which is not supported yet... */
 		  free(intersections);
 		  ay_error(AY_ERROR, fname,
-			   "unsupported number of u/v curves");
+			   "Unsupported number of u/v curves.");
 		  return AY_ERROR;
 		  /*
 		    ay_status = ay_nct_intersectca(cu, cv, intersections);
@@ -9846,7 +9846,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -9966,7 +9966,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -10501,10 +10501,10 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
   if(!src || !result)
     return AY_ENULL;
 
-  /**/
+  /* check parameters */
   if(((umin + AY_EPSILON) > umax) || ((vmin + AY_EPSILON) > vmax))
     {
-      ay_error(AY_ERROR, fname, "min must be smaller than max");
+      ay_error(AY_ERROR, fname, "Parameter min must be smaller than max.");
       return AY_ERROR;
     }
 
@@ -11924,7 +11924,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(type < 0)
 		{
-		  ay_error(AY_ERROR, argv[0], "type must be >= 0");
+		  ay_error(AY_ERROR, argv[0], "Parameter type must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -11935,7 +11935,8 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(knot_type < 0)
 		{
-		  ay_error(AY_ERROR, argv[0], "knot type must be >= 0");
+		  ay_error(AY_ERROR, argv[0],
+			   "Parameter knot type must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -12056,7 +12057,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -12096,7 +12097,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(fabs(patch->uknotv[i]-u) >= AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, argv[0], "could not find knot to remove");
+	      ay_error(AY_ERROR, argv[0], "Could not find knot to remove.");
 	      break;
 	    }
 
@@ -12239,7 +12240,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(r <= 0)
     {
-      ay_error(AY_ERROR, argv[0], "r must be > 0");
+      ay_error(AY_ERROR, argv[0], "Parameter r must be > 0.");
       return TCL_OK;
     }
 
@@ -12279,7 +12280,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(fabs(patch->vknotv[i]-v) >= AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, argv[0], "could not find knot to remove");
+	      ay_error(AY_ERROR, argv[0], "Could not find knot to remove.");
 	      break;
 	    }
 
