@@ -912,19 +912,14 @@ int ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
  */
 int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
 
-/** Elevate U order of selected NURBS patches.
- */
-int ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
-
 /** Elevate V order of NURBS patch.
  */
 int ay_npt_elevatev(ay_nurbpatch_object *patch, int t);
 
-/**  Elevate V order of selected NURBS patches.
+/** Elevate U/V order of selected NURBS patches.
  */
-int ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /** Swap U and V of selected surfaces.
  */
@@ -1146,6 +1141,10 @@ int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** Interpolate selected surfaces.
+ */
+int ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /* pmt.c */
 

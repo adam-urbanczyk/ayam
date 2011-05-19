@@ -6251,73 +6251,6 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
 } /* ay_npt_elevateu */
 
 
-/** ay_npt_elevateutcmd:
- *  Elevate U order of selected NURBS patches.
- *  Implements the \a elevateuNP scripting interface command.
- *  See also the corresponding section in the \ayd{scelevateunp}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_npt_elevateutcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
-{
- int tcl_status = TCL_OK, ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
- ay_nurbpatch_object *patch = NULL;
- int t = 1;
-
-  if(argc >= 2)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[1], &t);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-      if(t <= 0)
-	{
-	  ay_error(AY_ERROR, argv[0], "Argument must be > 0.");
-	  return TCL_OK;
-	}
-    }
-
-  while(sel)
-    {
-      if(sel->object->type == AY_IDNPATCH)
-	{
-	  patch = (ay_nurbpatch_object *)sel->object->refine;
-
-	  ay_status = ay_npt_elevateu(patch, t);
-
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, argv[0], "Elevate failed.");
-	    }
-	  else
-	    {
-	      sel->object->modified = AY_TRUE;
-
-	      if(sel->object->selp)
-		{
-		  ay_selp_clear(sel->object);
-		}
-
-	      /* re-create tesselation of patch */
-	      ay_notify_force(sel->object);
-	    }
-	}
-      else
-	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
-
-      sel = sel->next;
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_npt_elevateutcmd */
-
-
 /* ay_npt_elevatev:
  *
  */
@@ -6421,21 +6354,22 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
 } /* ay_npt_elevatev */
 
 
-/** ay_npt_elevatevtcmd:
- *  Elevate V order of selected NURBS patches.
- *  Implements the \a elevatevNP scripting interface command.
- *  See also the corresponding section in the \ayd{scelevatevnp}.
+/** ay_npt_elevateuvtcmd:
+ *  Elevate U/V order of selected NURBS patches.
+ *  Implements the \a elevateuNP and \a elevatevNP scripting
+ *  interface commands.
+ *  See also the corresponding section in the \ayd{scelevateunp}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *patch = NULL;
- int t = 1;
+ int elevatev = AY_FALSE, t = 1;
 
   if(argc >= 2)
     {
@@ -6449,12 +6383,19 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
     }
 
+  if(!strcmp(argv[0], "elevatevNP"))
+    elevatev = AY_TRUE;
+
   while(sel)
     {
       if(sel->object->type == AY_IDNPATCH)
 	{
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
-	  ay_status = ay_npt_elevatev(patch, t);
+
+	  if(elevatev)
+	    ay_status = ay_npt_elevateu(patch, t);
+	  else
+	    ay_status = ay_npt_elevateu(patch, t);
 
 	  if(ay_status)
 	    {
@@ -6484,7 +6425,8 @@ ay_npt_elevatevtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_npt_elevatevtcmd */
+} /* ay_npt_elevateuvtcmd */
+
 
 
 /** ay_npt_swapuvtcmd:
@@ -7972,7 +7914,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 cleanup:
 
   if(c)
-    ay_object_delete(c);
+    ay_object_deletemulti(c);
 
   if(tcv)
     free(tcv);
@@ -12362,6 +12304,92 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_npt_remknvnptcmd */
+
+
+/** ay_npt_interpuvtcmd:
+ *  Interpolate the selected NURBS patches along U/V.
+ *  Implements the \a interpuNP and \a interpvNP scripting interface commands.
+ *  See also the corresponding section in the \ayd{interpunp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_nurbpatch_object *patch = NULL;
+ ay_list_object *sel = ay_selection;
+ int interpoluv = AY_FALSE, interpolv = AY_FALSE, order = 0;
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, argv[0], "order");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  tcl_status = Tcl_GetInt(interp, argv[1], &order);
+  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+  if(order <= 2)
+    {
+      ay_error(AY_ERROR, argv[0], "Parameter order must be > 2.");
+      return TCL_OK;
+    }
+
+  if(!strcmp(argv[0], "interpvNP"))
+    interpolv = AY_TRUE;
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object*)o->refine;
+
+	  if(interpolv)
+	    ay_status = ay_npt_interpolatev(patch, order);
+	  else
+	    ay_status = ay_npt_interpolateu(patch, order);
+
+	  if(!ay_status)
+	    {
+	      ay_npt_recreatemp(patch);
+
+	      /* remove all selected points */
+	      if(o->selp)
+		{
+		  ay_selp_clear(o);
+		}
+
+	      o->modified = AY_TRUE;
+
+	      /* re-create tesselation of patch */
+	      ay_notify_force(o);
+	    }
+	  else
+	    {
+	      ay_error(AY_EWARN, argv[0], "Interpolation failed.");
+	    }
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_interpuvtcmd */
 
 
 /* templates */
