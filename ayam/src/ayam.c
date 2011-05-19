@@ -1096,10 +1096,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "topoly", ay_tess_npatchtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateutcmd,
+  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevatevtcmd,
+  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevateuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "swapuvS", ay_npt_swapuvtcmd,
@@ -1148,6 +1148,12 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "concatS", ay_npt_concatstcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "interpuNP", ay_npt_interpuvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "interpvNP", ay_npt_interpuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
@@ -1556,10 +1562,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "topoly", ay_tess_npatchtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateutcmd,
+  Tcl_CreateCommand(interp, "elevateuNP", ay_npt_elevateuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevatevtcmd,
+  Tcl_CreateCommand(interp, "elevatevNP", ay_npt_elevateuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "swapuvS", ay_npt_swapuvtcmd,
@@ -1608,6 +1614,12 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "remknvNP", ay_npt_remknvnptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "interpuNP", ay_npt_interpuvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "interpvNP", ay_npt_interpuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return ay_status;
