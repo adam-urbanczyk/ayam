@@ -517,6 +517,18 @@ $m.npt add command -label "Elevate UV" -command {
 	"Elevate Surface"
 }
 
+$m.npt add command -label "Interpolate U" -command {
+    runTool ay(interpo) {"Order:"}\
+	"undo save InterpUNP; interpuNP %0; plb_update; rV"\
+	"Interp Surface U"
+}
+
+$m.npt add command -label "Interpolate V" -command {
+    runTool ay(interpo) {"Order:"}\
+	"undo save InterpVNP; interpvNP %0; plb_update; rV"\
+	"Interp Surface V"
+}
+
 $m.npt add command -label "Rescale Knots to Range U" -command {
     undo save RescaleKnots 1;
     runTool {ay(rmin) ay(rmax)} {"RangeMin:" "RangeMax:"}\
