@@ -2058,7 +2058,7 @@ updated objects via instances.
 should be snapped to the grid when a grid is defined and
 in use for the single point modelling actions.
 
-<item><tt/"Snap3D"/ controls, whether points that are snapped to
+<item><tt/"Snap3D"/ controls whether points that are snapped to
 grid coordinates (in single point editing actions and when grids are active)
 should be influenced in all three dimensions, or just the two dimensions
 determined by the type of the view.
@@ -2321,7 +2321,7 @@ miscellaneous settings.
 
 The first sub-section deals with error message handling:
 <itemize>
-<item><tt/"RedirectTcl"/ controls, whether error messages
+<item><tt/"RedirectTcl"/ controls whether error messages
 stemming from Tcl/Tk should be redirected to the console,
 rather than be handled by Tcls sometimes annoying error
 handling dialog box. However, this dialog box with the built in
@@ -2361,8 +2361,8 @@ about transient windows.
 point numbers with. You may want to decrease this number to about 5
 if any numbers in the entry fields are represented in an exact, but also
 too lengthy and hard to read fashion, like 0.4999999 instead of 0.5.
-Note that you may lose information in doing so. The default value used
-by Tcl is 12 and results in no loss of information. The default value
+Note that you may lose model precision in doing so. The default value used
+by Tcl is 12 and results in no loss of precision. The default value
 used by Ayam is 6 and should result in a good balance between precision
 and readability.
 
@@ -2563,7 +2563,7 @@ Insert Points|<tt/&lt;i&gt;/|
 <#if out=latex><x>inlinegfx pics/insertac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/insertac.gif"></#if>
 @<hline>
-Edit Direct|<tt/&lt;E&gt;/|
+Edit Numeric|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>|
 Delete Points|<tt/&lt;d&gt;/|
@@ -2602,7 +2602,7 @@ for Top-views only, no matter how the view is rotated.
 Since Ayam 1.17, the move action may be restricted to a certain
 axis, by pressing <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or <tt/&lt;z&gt;/
 right after the <tt/&lt;m&gt;/.
-See also the table below.
+For an overview of the move actions see also the table below.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2642,8 +2642,8 @@ rotate modelling actions is applied.
 <p>
 Note that if multiple objects are selected, each object is rotated
 around the center of its own local coordinate system.
-Only the Rotate_X(_Y,_Z) property of the selected objects will
-be changed by this action.
+Only the Rotate_X, Rotate_Y, or Rotate_Z property of the selected
+objects will be changed by this action.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2685,9 +2685,10 @@ After setting the mark, the action works the same way as
 the Rotate action, except that it rotates the selected object(s)
 or points about the mark.
 This, consequently, also works with multiple selected objects.
-Note that this action does not only change the Rotate_X(_Y,_Z)
-properties of the selected objects, but also the Translate_X(_Y,_Z)
-properties.
+Note that this action does not only change the Rotate_X,
+Rotate_Y, or Rotate_Z
+properties of the selected objects, but also the Translate_X,
+Translate_Y, or Translate_Z properties.
 <p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
@@ -2725,7 +2726,7 @@ near one of the axes to be changed, as this will cause
 very big scale factors for the other axis. Try it first with
 a centered box by starting from one of the box corners,
 then try it once starting on the X-axis.
-See also the table below.
+For an overview of the scale actions see also the table below.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2767,7 +2768,7 @@ of the selected objects about a specific point in space.
 To start a scale about action, invoke the normal scale action,
 then press <tt/&lt;a&gt;/ (e.g. <tt/&lt;sa&gt;/ for scale 2D about,
 <tt/&lt;sya&gt;/ for scale 1D Y about).
-See also the table below.
+For an overview of the scale about actions see also the table below.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2807,8 +2808,10 @@ After setting the mark, the action works the same way as
 the scale action, except that it scales the selected object(s)
 or points about the mark.
 This, consequently, also works with multiple selected objects.
-Note that this action does not only change the Scale_X(_Y,_Z)
-properties of the selected objects, but also the Translate_X(_Y,_Z)
+Note that this action does not only change the Scale_X, Scale_Y,
+or Scale_Z
+properties of the selected objects, but also the Translate_X,
+Translate_Y, or Translate_Z
 properties.
 <p>
 Also note, that the three dimensional scaling about the mark
@@ -2939,8 +2942,8 @@ are used.
 The point selection can also be inverted using the keyboard shortcut
 <tt/&lt;I&gt;/.
 <p>
-All three above shortcuts can be used anytime without interference wrt.
-active modelling actions.
+All three above shortcuts can be used anytime without interfering
+with any other active modelling actions.
 <p>
 Note that the list of selected points is not copied, if the object
 is copied using the clipboard. The selection is also not saved to
@@ -2965,16 +2968,16 @@ selection that occlude each other.
 <p>
 Since Ayam 1.16.1, holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
-region from the selection.
+region defined by the drag from the selection.
 
 
 <sect1>Editing Points<label id="editac">
 <p>
 To edit the points of an object three actions (<tt/"Edit"/,
-<tt/"Edit Weights"/, and <tt/"Direct Point Edit"/) are available.
+<tt/"Edit Weights"/, and <tt/"Numeric Point Edit"/) are available.
 All those actions may be applied to objects that support single point
 editing only.
-See also the table below.
+For an overview of the point edit actions see also the table below.
 <p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2987,7 +2990,7 @@ Edit Weights|<tt/&lt;w&gt;/|
 <#if out=latex><x>inlinegfx pics/editwac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editwac.gif"></#if>
 @<hline>
-Edit Direct|<tt/&lt;E&gt;/|
+Numeric Edit|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>
 @<hline>
@@ -3032,17 +3035,17 @@ new coordinate values on the keyboard.
 Nothing will be changed unless the <tt/"Return"/ key is pressed
 in a coordinate entry field or the <tt/"Apply"/ button is used.
 In contrast to the normal point selection action, clicking on new
-points while the edit point dialog is open deselects the old point(s),
+points, while the edit point dialog is open, deselects the old point(s),
 selects the new point and loads its coordinate values into the
 entry fields. In case of multiple selected objects, the deselection
 is only performed on the object with a new selection.
 <p>
-Note that the w coordinate setting will be ignored if a
-selected point does not have weight information (is not rational).
+Note that the w coordinate setting will be ignored for selected points
+that do not have weight information (are not rational).
 <p>
-Using the small menu on top of the coordinate window you may
-determine whether editing takes place in local object or global
-world space.
+Using the small menu on top of the coordinate window one can
+determine whether editing takes place in local/object space or
+global/world space.
 <p>
 Since Ayam 1.18, this modelling action may affect
 multiple points of multiple selected objects.
@@ -3050,8 +3053,8 @@ Snapping points of different objects together is now possible too:
 Just select two objects, start numeric point editing (press <tt/&lt;E&gt;/),
 pick a point on the first object (where a point of the second object
 should be snapped to), the point edit window opens, now drag select
-the point of the second object (do <em/not/ use a single click as this
-would load new coordinates) and press apply.
+the point of the second object (do <em/not/ use a single click for
+selection as this would also load new coordinates) and press apply.
 <p>
 Since Ayam 1.18 the numeric point editing action also supports read only
 points, their coordinates may be retrieved, but applying any values
@@ -3183,7 +3186,6 @@ Find U|<tt/&lt;u&gt;/|
 </tabular>
 <caption>Find Point on Curve Action</caption>
 </table>
-<p>
 
 <sect1>Finding Points on Surfaces<label id="finduvac">
 <p>
@@ -3210,7 +3212,6 @@ Find UV|<tt/&lt;U&gt;/|
 </tabular>
 <caption>Find Point on Surface Action</caption>
 </table>
-<p>
 
 <sect1>Interactively Splitting Curves<label id="splitncac">
 <p>
@@ -3785,7 +3786,9 @@ is invoked (e.g. using the main menu entry
 
 <item><tt/"Mark"/ is the marked point (in world coordinates) for
 the rotate and scale about modelling actions.
-To reset the mark, press <tt>&lt;Esc&gt;</tt> twice.
+
+<item><tt/"SetMark"/ controls whether the data from the <tt/"Mark"/
+entries above should be used as new mark coordinates.
 
 <item><tt/"EnableUndo"/ is switched on by default and allows to
 disable undo for view actions, e.g. panning or zooming a view,
@@ -5884,7 +5887,7 @@ Sweep|NCurve*|Yes|NPatch+|No*@<hline>
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
-Since Ayam 1.10 the <tt/"Type"/ attribute controls, whether the
+Since Ayam 1.10 the <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
 of the trajectory curve.
 <p>
@@ -6024,7 +6027,7 @@ The following parameters further control the birailing process:
 
 <sect2>Birail1Attr Property<label id="birail1p"><label id="birail1attrprop">
 <p>
-Similar to the <tt/"Sweep"/, the <tt/"Type"/ attribute controls, whether the
+Similar to the <tt/"Sweep"/, the <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
 of the birail curves.
 <p>
@@ -6287,7 +6290,7 @@ The following parameters control the skinning process:
 
 <sect2>SkinAttr Property<label id="skp"><label id="skinattrprop">
 <p>
-The first parameter <tt/"Interpolation"/ controls,
+The first parameter <tt/"Interpolation"/ controls
 whether the inner curves should also be interpolated by the
 skinning surface.
 <p>
@@ -6995,11 +6998,13 @@ The extraction process is controlled by the following attributes:
 <sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
 <p>
 <itemize>
-<item><tt/"Side"/ controls, which curve should be extracted.
-Available values are <tt/"U0"/, <tt/"Un"/: extract boundary curve along
-width; <tt/"V0"/, <tt/"Vn"/: extract boundary curve along
-height; <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1) extract curve
-along width and height respectively at specified parametric value (see below).
+<item><tt/"Side"/ controls which curve should be extracted from the
+surface.
+Available values are <tt/"U0"/, <tt/"Un"/: extract upper or lower
+boundary curve (along width); <tt/"V0"/, <tt/"Vn"/: extract left or right
+boundary curve (along height); <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1)
+extract curve along width and height respectively at specified parametric
+value (see below).
 <p>
 Since Ayam 1.13 it is also possible to extract the complete boundary
 curve of the patch (<tt/"Boundary"/).
@@ -7035,13 +7040,13 @@ This option is available since Ayam 1.15.
 
 <item><tt/"CreatePVN"/ controls creation of a PV tag that contains
 the normals (derived from the surface control points) on the surface.
-This PV tag can then be used to control a 3D offset.
+This PV tag can then be used to control a 3D offset curve.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
-patches delivered e.g. by a beveled extrude object as child
+patches delivered e.g. by a beveled Extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
-surface of e.g. a Revolve object.
+surface of e.g. said Extrude object.
 
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the extracted NURBS curve.
@@ -7567,7 +7572,7 @@ Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
 GUI of Ayam should be avoided. In particular, the following
 procedures and commands should <em>not</em> be used: uS, uCR, uCL,
-selOb, plb_update, cutOb, copOb, delOb, undo!
+selOb, plb_update, undo!
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
 GUIs for e.g. script parameters. This may be accomplished by adding
@@ -8263,10 +8268,10 @@ The corresponding property GUI contains the following elements:
 <item><tt/"Reset All!"/ immediately resets all transformation
 attributes to the default values.
 
-<item><tt/"Translation_X (_Y, _Z)"/ is the displacement of the
+<item><tt/"Translate_X (_Y, _Z)"/ is the displacement of the
 object from the world origin in X (Y, Z) direction.
 
-<item><tt/"Rotation_X (_Y, _Z)"/ is the angle (in degrees)
+<item><tt/"Rotate_X (_Y, _Z)"/ is the angle (in degrees)
 of the rotation of the object around the X (Y, Z) axis.
 Read the next section for more information on how to use these
 entries. Read it!
@@ -11696,6 +11701,9 @@ splituNP - split NURBS patch:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
 at parametric value u.
+The selected NPatch will be modified and a new NPatch object will
+be created and appended as new object to the
+current level of the scene.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
@@ -11706,6 +11714,9 @@ splitvNP - split NURBS patch:
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Splits the selected NPatch objects into two patches
 at parametric value v.
+The selected NPatch will be modified and a new NPatch object will
+be created and appended as new object to the
+current level of the scene.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
@@ -11715,10 +11726,43 @@ extrNP - extract NURBS patch:
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Extracts a sub-patch from the selected NPatch
-objects. The sub-patch is specified by the parametric values umin, umax,
+objects. The extracted patch will be appended as new object to the
+current level of the scene. The sub-patch to be extracted is specified
+by the parametric values umin, umax,
 vmin, and vmax which have to be in the respective valid knot range.
 See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 </itemize>
+
+<p><label id="scinterpunp">
+interpuNP - interpolate NURBS surface in u direction:
+<itemize>
+ <item>Synopsis: <tt/"interpuNP order"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Interpolate the selected NURBS surfaces
+in u direction with desired order (which must be higher than 2).
+The surface will interpolate all current control points after the
+interpolation and the position of certain control points will be
+changed in this process so that, after interpolation, the new control
+points will not be interpolated by the surface. The surface will
+interpolate the old control point positions.
+The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+</itemize>
+
+<p><label id="scinterpvnp">
+interpvNP - interpolate NURBS surface in v direction:
+<itemize>
+ <item>Synopsis: <tt/"interpvNP order"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Interpolate the selected NURBS surfaces
+in v direction with desired order (which must be higher than 2).
+The surface will interpolate all current control points after the
+interpolation and the position of certain control points will be
+changed in this process so that, after interpolation, the new control
+points will not be interpolated by the surface. The surface will
+interpolate the old control point positions.
+The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
+</itemize>
+
 
 <p><label id="scsplitnp">
 splitNP - split NURBS patch:
@@ -12134,7 +12178,7 @@ a second argument (<tt/"opname"/).
 This name will be displayed in the default console prompt, to inform the
 user about which operation would be undone/redone, if undo/redo would be
 used (e.g. <tt>"[Undo:MoveObj/Redo:none].../bin&gt;"</tt>).
-Since Ayam 1.13, a third argument may be given, that controls, whether
+Since Ayam 1.13, a third argument may be given, that controls whether
 all the children of the selected objects should also be saved. This may
 be needed if the modelling action that follows the undo save is about to
 change the selected objects and also their children.
@@ -13181,12 +13225,12 @@ imported!
 be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
 this camera object onto a perspective View object in Ayam after import
 to see through the camera of the imported RIB.
-<item><tt/"ReadOptions"/, controls, whether RiOptions are
+<item><tt/"ReadOptions"/, controls whether RiOptions are
 to be imported from the RIB to the scene. Note that those
 RiOptions will overwrite the current global settings in the Ayam scene.
 <item><tt/"ReadLights"/, if this is enabled the lights from the
 RIB will be imported.
-<item><tt/"ReadMaterial"/, controls, whether material objects
+<item><tt/"ReadMaterial"/, controls whether material objects
 are to be created for the imported objects. All material objects
 are created in a special level named <tt/"Materials"/ in the top level
 of the scene. The plugin tries to keep the number of generated
@@ -13477,12 +13521,12 @@ syntax only, files that use older syntax will not be imported correctly.
 The following options control the Wavefront OBJ import process:
 <itemize>
 <item><tt>"FileName"</tt>: is the name of the Wavefront OBJ file (version 3.0)
-<item><tt>"MergeFaces"</tt>: controls, whether consecutive polygonal
+<item><tt>"MergeFaces"</tt>: controls whether consecutive polygonal
 faces should be merged into a single PolyMesh object for import.
 Note that the merged PolyMesh objects probably needs to be optimized if there
 are vertices used by multiple faces
 (main menu <tt>"Tools/PolyMesh/Optimize"</tt>).
-<item><tt>"MergePVTags"</tt>: controls, whether the PV tags of PolyMesh
+<item><tt>"MergePVTags"</tt>: controls whether the PV tags of PolyMesh
 objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
@@ -14210,7 +14254,7 @@ tool objects as plain NURBS surface or higher level primitives:
  <item>Sweep as NurbsSweptSurface,
  <item>Extrude as NurbsSweptSurface);
  </itemize>
-<item><tt>"ResolveInstances"</tt>: controls, whether instance objects should
+<item><tt>"ResolveInstances"</tt>: controls whether instance objects should
 be resolved to normal objects or exported as DEF/USE pairs, note that no
 attempt is made to detect whether the master objects (the DEFs) will be
 exported for all exported instances (USE); this may happen especially in
@@ -14244,8 +14288,9 @@ operations. If you delete an object, it is gone! If you, accidentally, move
 an object using drag and drop, undo will not help!
 <p>
 The undo system works by storing copies of the different states of changed
-objects in an undo buffer. You may step backward through the saved states using
-<tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/ (redo).
+objects in an undo buffer. You may step backwards through the saved states
+using <tt/&lt;Ctrl+z&gt;/ (undo) but also forward using <tt/&lt;Ctrl+y&gt;/
+(redo).
 <p>
 The storage space occupied by the undo buffer may be adjusted using the
 preferences (<tt>"Prefs/Modelling/UndoLevels"</tt>). A value of -1 for
@@ -14255,12 +14300,12 @@ always one state of the scene that can be restored, plus, a potential
 undo operation can also always be undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
-in the prompt of the Ayam console and, since Ayam 1.14, in the main menu
-entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
+in the default prompt of the Ayam console and, since Ayam 1.14, also in
+the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
-Delete Object, New Scene, Open (Replace) Scene, and Close View.
+New Scene, Open (Replace) Scene, and Close View.
 <p>
 Note that undo/redo will also modify objects that currently reside in the
 object clipboard (if they have saved states in the undo buffer).
@@ -15317,14 +15362,13 @@ the GUI also can reduce model precision due to
 double-string-double-conversions (the precision of those conversion
 operations can be adjusted by the user via the <tt/"TclPrecision"/
 preference setting, however).
-<item>Ayam is currently not portable to 64-bit platforms.
 <item>Materials may only be assigned to complete objects, not to
 certain parts of objects.
 <item>Undo/Redo are not possible for scene structure changes.
 <item>In the user interface, colors are always represented as
 three 8-bit RGB values, even though the RenderMan interface allows
-for different color sample numbers and floating point samples
-instead of integers to be used.
+e.g. for different color sample numbers or floating point samples
+instead of integers to be used for colors.
 <item>There are no acceleration structures for e.g. drawing and object
 tree updates. This limits the number of objects that Ayam can handle
 simultaneously without big lags in redraws or after scene structure
@@ -15341,7 +15385,7 @@ titles well, and they are not to be seen in the single window GUI
 mode at all.
 </itemize>
 
-<sect1>How to join the fun<label id="secfun">
+<sect1>How to join the fun<label id="fun">
 <p>
 Helping to make Ayam even better will spice up your life too!
 Here is how to do it:
@@ -16215,6 +16259,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
+<item>SetMark: <ref id="vat" name="View attribute">
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
