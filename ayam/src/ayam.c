@@ -1117,10 +1117,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "closevNP", ay_npt_closevtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clamputcmd,
+  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clampuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampvtcmd,
+  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rescaleknNP", ay_npt_rescaleknvnptcmd,
@@ -1583,10 +1583,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "closevNP", ay_npt_closevtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clamputcmd,
+  Tcl_CreateCommand(interp, "clampuNP", ay_npt_clampuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampvtcmd,
+  Tcl_CreateCommand(interp, "clampvNP", ay_npt_clampuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "rescaleknNP", ay_npt_rescaleknvnptcmd,

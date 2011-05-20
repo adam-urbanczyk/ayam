@@ -67,6 +67,8 @@ int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
  * @param[in] vknotv Pointer to knots [height+vorder]
  *            may be NULL unless vknot_type is AY_KTCUSTOM
  * @param[in,out] patchptr new NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_create(int uorder, int vorder, int width, int height,
@@ -198,6 +200,8 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
  *   with a NURBS patch object
  *
  * @param[in,out] result new Ayam object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_createnpatchobject(ay_object **result)
@@ -6428,7 +6432,6 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_elevateuvtcmd */
 
 
-
 /** ay_npt_swapuvtcmd:
  *  Swap U and V of selected surfaces.
  *  Implements the \a swapuvS scripting interface command.
@@ -8449,8 +8452,8 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
 
 
 /* ay_npt_setuvtypes:
- *  set the utype and vtype attributes according to the actual configuration
- *  of the NURBS patch <np>
+ *  set the utype and vtype (closedness) attributes according to
+ *  the actual configuration of the NURBS patch <np>
  */
 int
 ay_npt_setuvtypes(ay_nurbpatch_object *np)
@@ -9104,81 +9107,6 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 } /* ay_npt_clampu */
 
 
-/** ay_npt_clamputcmd:
- *  Clamp selected NURBS patches in U direction.
- *  Implements the \a clampuNP scripting interface command.
- *  See also the corresponding section in the \ayd{scclampunp}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
-{
- int tcl_status = TCL_OK, ay_status = AY_OK;
- ay_list_object *sel = ay_selection;
- ay_nurbpatch_object *np = NULL;
- ay_object *o = NULL;
- int side = 0;
-
-  if(argc >= 2)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[1], &side);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-    }
-
-  while(sel)
-    {
-      o = sel->object;
-      /* so that we may use continue */
-      sel = sel->next;
-
-      if(o->type == AY_IDNPATCH)
-	{
-
-	  np = (ay_nurbpatch_object *)o->refine;
-
-	  /* check whether we need to clamp at all */
-	  if((np->uknot_type == AY_KTNURB) ||
-	     (np->uknot_type == AY_KTBEZIER))
-	    {
-	      continue;
-	    }
-
-	  ay_status = ay_npt_clampu(np, side);
-
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, argv[0], "Error clamping object.");
-	    }
-
-	  np->uknot_type = AY_KTCUSTOM;
-
-	  /* remove all selected points */
-	  if(o->selp)
-	    {
-	      ay_selp_clear(o);
-	    }
-
-	  ay_npt_recreatemp(np);
-
-	  o->modified = AY_TRUE;
-
-	  /* re-create tesselation of patch */
-	  ay_notify_force(o);
-	}
-      else
-	{
-	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	} /* if */
-    } /* while */
-
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_npt_clamputcmd */
-
-
 /* ay_npt_clampv:
  *  clamp NURBS patch, it is safe to call this with half clamped patches
  *  side: 0 - clamp both ends, 1 - clamp only start, 2 - clamp only end
@@ -9381,28 +9309,31 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 } /* ay_npt_clampv */
 
 
-/** ay_npt_clampvtcmd:
- *  Clamp selected NURBS patches in V direction.
- *  Implements the \a clampvNP scripting interface command.
- *  See also the corresponding section in the \ayd{scclampvnp}.
+/** ay_npt_clampuvtcmd:
+ *  Clamp selected NURBS patches in U/V direction.
+ *  Implements the \a clampuNP and \a clampvNP scripting interface commands.
+ *  See also the corresponding section in the \ayd{scclampunp}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
+ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
  ay_object *o = NULL;
- int side = 0;
+ int clampv = AY_FALSE, side = 0;
 
   if(argc >= 2)
     {
       tcl_status = Tcl_GetInt(interp, argv[1], &side);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
+
+  if(!strcmp(argv[0], "clampvNP"))
+    clampv = AY_TRUE;
 
   while(sel)
     {
@@ -9415,21 +9346,33 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)o->refine;
 
-	  /* check whether we need to clamp at all */
-	  if((np->vknot_type == AY_KTNURB) ||
-	     (np->vknot_type == AY_KTBEZIER))
+	  if(clampv)
 	    {
-	      break;
+	      /* check whether we need to clamp at all */
+	      if((np->vknot_type == AY_KTNURB) ||
+		 (np->vknot_type == AY_KTBEZIER))
+		{
+		  continue;
+		}
+	      ay_status = ay_npt_clampv(np, side);
 	    }
-
-	  ay_status = ay_npt_clampv(np, side);
+	  else
+	    {
+	      /* check whether we need to clamp at all */
+	      if((np->uknot_type == AY_KTNURB) ||
+		 (np->uknot_type == AY_KTBEZIER))
+		{
+		  continue;
+		}
+	      ay_status = ay_npt_clampu(np, side);
+	    }
 
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Error clamping object.");
 	    }
 
-	  np->vknot_type = AY_KTCUSTOM;
+	  np->uknot_type = AY_KTCUSTOM;
 
 	  /* remove all selected points */
 	  if(o->selp)
@@ -9453,7 +9396,7 @@ ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_npt_clampvtcmd */
+} /* ay_npt_clampuvtcmd */
 
 
 /* ay_npt_rescaletrim:
@@ -12321,7 +12264,7 @@ ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int interpoluv = AY_FALSE, interpolv = AY_FALSE, order = 0;
+ int interpolv = AY_FALSE, order = 0;
 
   if(argc < 2)
     {
