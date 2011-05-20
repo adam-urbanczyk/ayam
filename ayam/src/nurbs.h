@@ -320,13 +320,13 @@ int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
 			       double *X, int r, double *Ubar, double *Qw);
 
-/** Elevate degree of NURBS surface in U dimension.
+/** Elevate degree of NURBS surface in U direction.
  */
 int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 			     double *Pw, int t,
 			     int *nw, double *Uh, double *Qw);
 
-/** Elevate degree of NURBS surface in V dimension.
+/** Elevate degree of NURBS surface in V direction.
  */
 int ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 			     double *Pw, int t,
@@ -349,21 +349,21 @@ int ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
 int ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 			 int *nb, double **Qw);
 
-/** Insert knot into NURBS surface in U dimension.
+/** Insert knot into NURBS surface in U direction.
  */
 int ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP,
 			  double *Pw,
 			  double u, int k, int s, int r,
 			  double *UQ, double *Qw);
 
-/** Insert knot into NURBS surface in V dimension.
+/** Insert knot into NURBS surface in V direction.
  */
 int ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP,
 			  double *Pw,
 			  double v, int k, int s, int r,
 			  double *VQ, double *Qw);
 
-/** Remove knot from NURBS surface in V dimension.
+/** Remove knot from NURBS surface in V direction.
  */
 int ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw,
 			  double tol,
@@ -1033,22 +1033,17 @@ int ay_npt_getbeveltags(ay_object *o, int place,
  */
 int ay_npt_copytptag(ay_object *src, ay_object *dst);
 
-/** Clamp surface in U dimension.
+/** Clamp surface in U direction.
  */
 int ay_npt_clampu(ay_nurbpatch_object *np, int side);
 
-/** Clamp selected NURBS patches in U direction.
- */
-int ay_npt_clamputcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
-
-/** Clamp surface in V dimension.
+/** Clamp surface in V direction.
  */
 int ay_npt_clampv(ay_nurbpatch_object *np, int side);
 
-/** Clamp selected NURBS patches in V direction.
+/** Clamp selected NURBS patches in U/V direction.
  */
-int ay_npt_clampvtcmd(ClientData clientData, Tcl_Interp *interp,
+int ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
 /** Rescale trim curves according to surface knot vector scaling.
