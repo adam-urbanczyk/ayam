@@ -1243,6 +1243,10 @@ void ay_tc_init(Tcl_Interp *interp);
 
 /* tcmd.c */
 
+/** convert a Tcl list of doubles to a C array of doubles
+ */
+int ay_tcmd_convdlist(char *vname, int *dllen, double **dl);
+
 /** Tcl command "revertC" to revert curves
  */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,

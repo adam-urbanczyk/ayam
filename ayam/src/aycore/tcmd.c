@@ -12,7 +12,58 @@
 
 #include "ayam.h"
 
-/* tcmd.c - various simple tcl commands */
+/* tcmd.c - various simple Tcl commands and support functions */
+
+/** ay_tcmd_convdlist:
+ *  convert a Tcl list of doubles to a C array of doubles
+ *
+ *  \returns TCL_OK upon successful completion, TCL_ERROR else.
+ */
+int
+ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
+{
+ int tcl_status = TCL_OK;
+ Tcl_Obj *vnamePtr = NULL, *listPtr = NULL, **elemvPtr = NULL;
+ int i;
+
+  vnamePtr = Tcl_NewStringObj(vname, -1);
+  if(!vnamePtr)
+    {
+      return TCL_ERROR;
+    }
+
+  listPtr = Tcl_ObjGetVar2(ay_interp, vnamePtr, NULL, TCL_LEAVE_ERR_MSG |
+			   TCL_PARSE_PART1);
+
+  if(!listPtr)
+    {
+      return TCL_ERROR;
+    }
+
+  tcl_status = Tcl_ListObjGetElements(ay_interp, listPtr, dllen, &elemvPtr);
+
+  if(tcl_status != TCL_OK)
+    {
+      return TCL_ERROR;
+    }
+
+  if(!(*dl = calloc(*dllen, sizeof(double))))
+    {
+      return TCL_ERROR;
+    }
+
+  for(i = 0; i < *dllen; i++)
+    {
+      tcl_status = Tcl_GetDoubleFromObj(ay_interp, elemvPtr[i], &((*dl)[i]));
+      if(tcl_status != TCL_OK)
+	{
+	  return TCL_ERROR;
+	}
+    }
+
+ return TCL_OK;
+} /* ay_tcmd_convdlist */
+
 
 /* ay_tcmd_reverttcmd:
  *  revert selected curves
@@ -119,8 +170,12 @@ ay_tcmd_showall(ay_object *o)
 } /* ay_tcmd_showall */
 
 
-/* ay_tcmd_showtcmd:
+/** ay_tcmd_showtcmd:
+ *  show (unhide) selected (or all) objects
+ *  Implements the \a show scripting interface command.
+ *  See also the corresponding section in the \ayd{scshow}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
@@ -185,7 +240,11 @@ ay_tcmd_hideall(ay_object *o)
 
 
 /* ay_tcmd_hidetcmd:
+ *  hide selected (or all) objects
+ *  Implements the \a hide scripting interface command.
+ *  See also the corresponding section in the \ayd{schide}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
@@ -352,7 +411,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int clear_selp = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v) varx vary varz [varw]";
+ char fargs[] = "[-trafo|-world|-eval] (all | index | indexu indexv | u | u v) varx [vary varz [varw]]";
  Tcl_Obj *to = NULL, *ton = NULL;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
@@ -649,6 +708,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		      else
 			{
 			  tcl_status = Tcl_GetDouble(interp, argv[i], &u);
+			  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 			  p = utmp;
 			  nc = (ay_nurbcurve_object *)(po->refine);
 			  ay_nb_CurvePoint4D(nc->length-1, nc->order-1,

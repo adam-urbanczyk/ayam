@@ -98,6 +98,16 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 	    case 'c':
 	      switch(argv[i][2])
 		{
+		case 'n':
+		  /* -cn */
+		  if(cv)
+		    {
+		      free(cv);
+		      cv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &acvlen, &cv);
+		  option_handled = AY_TRUE;
+		  break;
 		case 'v':
 		  /* -cv */
 		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
@@ -242,11 +252,12 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 	}
       /*
 	in case we got less control points than we
-	originally needed, extrapolate the last point
+	originally needed, extrapolate the last point(s)
 	using dx,dy,dz;
 	this provides a way for easy specification of
-	an arbitrary starting point (just provide one
-	control point, we take care of the rest here...)
+	a curve with an arbitrary starting point:
+	just provide one control point, we take care
+	of the rest here...
       */
       if(acvlen/stride < length)
 	{
