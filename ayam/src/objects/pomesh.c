@@ -156,33 +156,50 @@ ay_pomesh_createcb(int argc, char *argv[], ay_object *o)
 	      option_handled = AY_TRUE;
 	      break;
 	    case 'c':
-	      /* -cv */
-	      if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
-		 TCL_OK)
+	      switch(argv[i][2])
 		{
+		case 'n':
+		  /* -cn */
 		  if(controlv)
 		    {
 		      free(controlv);
+		      controlv = NULL;
 		    }
-		  if(!(controlv = calloc(avlen, sizeof(double))))
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &avlen, &controlv);
+		  option_handled = AY_TRUE;
+		  break;
+		case 'v':
+		  /* -cv */
+		  if(Tcl_SplitList(ay_interp, argv[i+1], &avlen, &av) ==
+		     TCL_OK)
 		    {
-		      Tcl_Free((char *) av);
-		      ay_status = AY_EOMEM;
-		      goto cleanup;
-		    }
-		  for(j = 0; j < avlen; j++)
-		    {
-		      tcl_status = Tcl_GetDouble(ay_interp,
-						 av[j], &controlv[j]);
-		      if(tcl_status != TCL_OK)
+		      if(controlv)
 			{
-			  break;
+			  free(controlv);
 			}
-		    } /* for */
-		  controlvlen = avlen;
-		  Tcl_Free((char *) av);
-		}
-	      option_handled = AY_TRUE;
+		      if(!(controlv = calloc(avlen, sizeof(double))))
+			{
+			  Tcl_Free((char *) av);
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+		      for(j = 0; j < avlen; j++)
+			{
+			  tcl_status = Tcl_GetDouble(ay_interp,
+						     av[j], &controlv[j]);
+			  if(tcl_status != TCL_OK)
+			    {
+			      break;
+			    }
+			} /* for */
+		      controlvlen = avlen;
+		      Tcl_Free((char *) av);
+		    }
+		  option_handled = AY_TRUE;
+		  break;
+		default:
+		  break;
+		} /* switch */
 	      break;
 	    case 'v':
 	      /* -vnormals */

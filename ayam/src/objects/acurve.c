@@ -97,6 +97,16 @@ ay_acurve_createcb(int argc, char *argv[], ay_object *o)
 	    case 'c':
 	      switch(argv[i][2])
 		{
+		case 'n':
+		  /* -cn */
+		  if(cv)
+		    {
+		      free(cv);
+		      cv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &acvlen, &cv);
+		  option_handled = AY_TRUE;
+		  break;
 		case 'v':
 		  /* -cv */
 		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
