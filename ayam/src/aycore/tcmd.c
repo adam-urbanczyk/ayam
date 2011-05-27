@@ -26,6 +26,11 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
  Tcl_Obj *vnamePtr = NULL, *listPtr = NULL, **elemvPtr = NULL;
  int i;
 
+  if(!vname || !dllen || !dl)
+    {
+      return TCL_ERROR;
+    }
+
   vnamePtr = Tcl_NewStringObj(vname, -1);
   if(!vnamePtr)
     {
@@ -154,6 +159,9 @@ ay_tcmd_showall(ay_object *o)
 {
  ay_object *down;
 
+  if(!o)
+   return;
+
   if(o->down)
     {
       down = o->down;
@@ -172,8 +180,8 @@ ay_tcmd_showall(ay_object *o)
 
 /** ay_tcmd_showtcmd:
  *  show (unhide) selected (or all) objects
- *  Implements the \a show scripting interface command.
- *  See also the corresponding section in the \ayd{scshow}.
+ *  Implements the \a showOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scshowob}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -187,19 +195,19 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
- if(argc > 1)
-   {
-     if(!strcmp(argv[1], "-all"))
-       {
-	 o = ay_root;
-	 while(o)
-	   {
-	     ay_tcmd_showall(o);
-	     o = o->next;
-	   }
-	 return TCL_OK;
-       }
-   }
+  if(argc > 1)
+    {
+      if(!strcmp(argv[1], "-all"))
+	{
+	  o = ay_root;
+	  while(o)
+	    {
+	      ay_tcmd_showall(o);
+	      o = o->next;
+	    }
+	  return TCL_OK;
+	}
+    }
 
   while(sel)
     {
@@ -223,6 +231,9 @@ ay_tcmd_hideall(ay_object *o)
 {
  ay_object *down;
 
+  if(!o)
+   return;
+
   if(o->down)
     {
       down = o->down;
@@ -235,20 +246,20 @@ ay_tcmd_hideall(ay_object *o)
 
   o->hide = AY_TRUE;
 
-  return;
+ return;
 } /* ay_tcmd_hideall */
 
 
 /* ay_tcmd_hidetcmd:
  *  hide selected (or all) objects
- *  Implements the \a hide scripting interface command.
- *  See also the corresponding section in the \ayd{schide}.
+ *  Implements the \a hideOb scripting interface command.
+ *  See also the corresponding section in the \ayd{schideob}.
  *
  *  \returns TCL_OK in any case.
  */
 int
 ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
-		  int argc, char *argv[])
+		 int argc, char *argv[])
 {
   /*
  int ay_status = AY_OK;
@@ -257,24 +268,24 @@ ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
- if(argc>1)
-   {
-     if(!strcmp(argv[1],"-toggle"))
-       {
-	 toggle = AY_TRUE;
-       }
+  if(argc > 1)
+    {
+      if(!strcmp(argv[1],"-toggle"))
+	{
+	  toggle = AY_TRUE;
+	}
 
-     if(!strcmp(argv[1], "-all"))
-       {
-	 o = ay_root;
-	 while(o)
-	   {
-	     ay_tcmd_hideall(o);
-	     o = o->next;
-	   }
-	 return TCL_OK;
-       }
-   } /* if */
+      if(!strcmp(argv[1], "-all"))
+	{
+	  o = ay_root;
+	  while(o)
+	    {
+	      ay_tcmd_hideall(o);
+	      o = o->next;
+	    }
+	  return TCL_OK;
+	}
+    } /* if */
 
   while(sel)
     {
