@@ -85,13 +85,18 @@ ay_selp_selall(ay_object *o)
 
 
 /* ay_selp_applytrafotcmd:
- *  apply transformation to editable points of selected objects
+ *  apply transformations to editable points of selected objects
+ *
+ *  Implements the \a applyTrafo scripting interface command.
+ *  See also the corresponding section in the \ayd{scapplytrafo}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[])
 {
- /*int ay_status = AY_OK;*/
+ int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *bak = NULL, *p = NULL;
@@ -104,7 +109,7 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
      return TCL_OK;
    }
 
- if(!strcmp(argv[1],"all"))
+ if(!strcmp(argv[1], "all"))
    all = AY_TRUE;
 
   while(sel)
@@ -115,7 +120,13 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  bak = o->selp;
 	  o->selp = NULL;
-	  ay_selp_selall(o);
+	  ay_status = ay_selp_selall(o);
+	  if(ay_status)
+	    {
+	      ay_selp_clear(o);
+	      o->selp = bak;
+	      return TCL_OK;
+	    }
 	}
 
       /* create trafo */
@@ -188,7 +199,11 @@ ay_selp_invert(ay_object *o)
   o->selp = NULL;
   ay_status = ay_selp_selall(o);
   if(ay_status)
-    return ay_status;
+    {
+      ay_selp_clear(o);
+      o->selp = p;
+      return ay_status;
+    }
 
   /* remove all points, that are in p (old selection), from p2 (new
      selection); additionally, clear p */
@@ -222,7 +237,12 @@ ay_selp_invert(ay_object *o)
 
 
 /* ay_selp_inverttcmd:
- *  invert selection of editable points of selected objects
+ *  invert point selection of selected objects
+ *
+ *  Implements the \a invPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{scinvpnts}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
@@ -350,15 +370,20 @@ ay_selp_center(ay_object *o, int mode)
 } /* ay_selp_center */
 
 
-/* ay_sel_centertcmd:
- *  centerPnts command that moves all points of an object so that their
+/* ay_selp_centertcmd:
+ *  moves all points of the selected objects so that their
  *  center is identical to the object coordinate systems center
+ *
+ *  Implements the \a centerPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{sccenterpnts}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_point *oldpointsel = NULL;
  ay_object *o = NULL;
@@ -372,7 +397,8 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      Tcl_GetInt(interp, argv[1], &mode);
+      tcl_status = Tcl_GetInt(interp, argv[1], &mode);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
   while(sel)
@@ -398,13 +424,13 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 	  break;
 	} /* switch */
 
-	  /* recover point selection */
+      /* recover point selection */
       ay_selp_clear(o);
       o->selp = oldpointsel;
 
       if(ay_status)
 	{
-	  ay_error(ay_status, argv[0], "Could not center object!");
+	  ay_error(ay_status, argv[0], "Could not center.");
 	}
       else
 	{
@@ -418,7 +444,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_sel_centertcmd */
+} /* ay_selp_centertcmd */
 
 
 /* ay_selp_sel:
@@ -476,7 +502,12 @@ ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices)
 
 
 /* ay_selp_seltcmd:
- *  select all editable points of selected objects
+ *  select points of selected objects
+ *
+ *  Implements the \a selPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{scselpnts}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
@@ -516,7 +547,8 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* -help */
 	  if(argv[1][1] == 'h')
 	    {
-	      ay_error(AY_EARGS, argv[0], "[-all | -none | indices]");
+	      ay_error(AY_EARGS, argv[0],
+		       "[-all | -none | ind1 ind2 ... indn]");
 	      goto cleanup;
 	    }
 	}
