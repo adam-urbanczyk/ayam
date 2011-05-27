@@ -153,6 +153,16 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 	    case 'k':
 	      switch(argv[i][2])
 		{
+		case 'n':
+		  /* -kn */
+		  if(kv)
+		    {
+		      free(kv);
+		      kv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &akvlen, &kv);
+		  option_handled = AY_TRUE;
+		  break;
 		case 't':
 		  /* -kt */
 		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &kt);

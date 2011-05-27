@@ -110,36 +110,53 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 		  option_handled = AY_TRUE;
 		  break;
 		case 'k':
-		  /* -uknotv */
-		  if(Tcl_SplitList(ay_interp, argv[i+1], &aukvlen, &akv) ==
-		     TCL_OK)
+		  switch(argv[i][3])
 		    {
-		      if(ukv)
+		    case 'n':
+		      /* -uknotv */
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &aukvlen, &akv) ==
+			 TCL_OK)
 			{
-			  free(ukv);
-			}
-		      if(!(ukv = calloc(aukvlen, sizeof(double))))
-			{
-			  Tcl_Free((char *) akv);
-			  ay_status = AY_EOMEM;
-			  goto cleanup;
-			}
-		      for(j = 0; j < aukvlen; j++)
-			{
-			  tcl_status = Tcl_GetDouble(ay_interp,
-						     akv[j], &ukv[j]);
-			  if(tcl_status != TCL_OK)
+			  if(ukv)
 			    {
-			      break;
+			      free(ukv);
 			    }
-			} /* for */
-		      Tcl_Free((char *) akv);
-		    }
-		  option_handled = AY_TRUE;
+			  if(!(ukv = calloc(aukvlen, sizeof(double))))
+			    {
+			      Tcl_Free((char *) akv);
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
+			    }
+			  for(j = 0; j < aukvlen; j++)
+			    {
+			      tcl_status = Tcl_GetDouble(ay_interp,
+							 akv[j], &ukv[j]);
+			      if(tcl_status != TCL_OK)
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *) akv);
+			}
+		      option_handled = AY_TRUE;
+		      break;
+		    case 't':
+		      /* -uktype */
+		      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &ukt);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
 		  break;
-		case 't':
-		  /* -uktype */
-		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &ukt);
+		case 'n':
+		  /* -un */
+		  if(ukv)
+		    {
+		      free(ukv);
+		      ukv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &aukvlen, &ukv);
 		  option_handled = AY_TRUE;
 		  break;
 		default:
@@ -177,36 +194,53 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 		  option_handled = AY_TRUE;
 		  break;
 		case 'k':
-		  /* -vknotv */
-		  if(Tcl_SplitList(ay_interp, argv[i+1], &avkvlen, &akv) ==
-		     TCL_OK)
+		  switch(argv[i][3])
 		    {
-		      if(vkv)
+		    case 'n':
+		      /* -vknotv */
+		      if(Tcl_SplitList(ay_interp, argv[i+1], &avkvlen, &akv) ==
+			 TCL_OK)
 			{
-			  free(vkv);
-			}
-		      if(!(vkv = calloc(avkvlen, sizeof(double))))
-			{
-			  Tcl_Free((char *) akv);
-			  ay_status = AY_EOMEM;
-			  goto cleanup;
-			}
-		      for(j = 0; j < avkvlen; j++)
-			{
-			  tcl_status = Tcl_GetDouble(ay_interp,
-						     akv[j], &vkv[j]);
-			  if(tcl_status != TCL_OK)
+			  if(vkv)
 			    {
-			      break;
+			      free(vkv);
 			    }
-			} /* for */
-		      Tcl_Free((char *) akv);
-		    }
-		  option_handled = AY_TRUE;
+			  if(!(vkv = calloc(avkvlen, sizeof(double))))
+			    {
+			      Tcl_Free((char *) akv);
+			      ay_status = AY_EOMEM;
+			      goto cleanup;
+			    }
+			  for(j = 0; j < avkvlen; j++)
+			    {
+			      tcl_status = Tcl_GetDouble(ay_interp,
+							 akv[j], &vkv[j]);
+			      if(tcl_status != TCL_OK)
+				{
+				  break;
+				}
+			    } /* for */
+			  Tcl_Free((char *) akv);
+			}
+		      option_handled = AY_TRUE;
+		      break;
+		    case 't':
+		      /* -vktype */
+		      tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vkt);
+		      option_handled = AY_TRUE;
+		      break;
+		    default:
+		      break;
+		    } /* switch */
 		  break;
-		case 't':
-		  /* -vktype */
-		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vkt);
+		case 'n':
+		  /* -vn */
+		  if(vkv)
+		    {
+		      free(vkv);
+		      vkv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &avkvlen, &vkv);
 		  option_handled = AY_TRUE;
 		  break;
 		default:
@@ -216,6 +250,16 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	    case 'c':
 	      switch(argv[i][2])
 		{
+		case 'n':
+		  /* -cn */
+		  if(cv)
+		    {
+		      free(cv);
+		      cv = NULL;
+		    }
+		  tcl_status = ay_tcmd_convdlist(argv[i+1], &acvlen, &cv);
+		  option_handled = AY_TRUE;
+		  break;
 		case 'v':
 		  /* -cv */
 		  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen, &acv) ==
