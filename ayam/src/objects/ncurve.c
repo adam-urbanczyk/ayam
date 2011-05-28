@@ -310,7 +310,7 @@ ay_ncurve_createcb(int argc, char *argv[], ay_object *o)
 	}
     }
 
-  if(kt < 0 || kt > 5)
+  if(kt < 0 || kt > 5 || (kt == AY_KTCUSTOM && !kv))
     {
       kt = AY_KTNURB;
     }

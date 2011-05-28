@@ -423,12 +423,12 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     }
 
-  if(ukt < 0 || ukt > 5)
+  if(ukt < 0 || ukt > 5 || (ukt == AY_KTCUSTOM && !ukv))
     {
       ukt = AY_KTNURB;
     }
 
-  if(vkt < 0 || vkt > 5)
+  if(vkt < 0 || vkt > 5 || (vkt == AY_KTCUSTOM && !vkv))
     {
       vkt = AY_KTNURB;
     }
