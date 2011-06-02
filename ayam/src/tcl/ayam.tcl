@@ -1444,6 +1444,7 @@ ayam_loadscript gordon
 ayam_loadscript hyperb
 ayam_loadscript icurve
 ayam_loadscript instance
+ayam_loadscript ipatch
 ayam_loadscript level
 ayam_loadscript light
 ayam_loadscript material

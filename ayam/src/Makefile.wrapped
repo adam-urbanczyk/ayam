@@ -350,6 +350,7 @@ AYAMOBJS = aycore/bbc.o\
 	objects/hyperb.o\
 	objects/icurve.o\
 	objects/instance.o\
+	objects/ipatch.o\
 	objects/level.o\
 	objects/light.o\
 	objects/material.o\

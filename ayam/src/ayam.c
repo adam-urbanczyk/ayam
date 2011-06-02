@@ -400,6 +400,9 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_instance_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  if((ay_status = ay_ipatch_init(interp)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
   if((ay_status = ay_level_init(interp)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 

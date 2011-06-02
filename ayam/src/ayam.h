@@ -497,6 +497,27 @@ typedef struct ay_nurbpatch_object_s
 } ay_nurbpatch_object;
 
 
+/** IPatch object */
+typedef struct ay_ipatch_object_s {
+  int width; /**< width of patch (U) */
+  int height; /**< height of patch (V) */
+  int close_u; /**< is patch closed in U? */
+  int close_v; /**< is patch closed in V? */
+  int order_u; /**< desired interpolation order (U) */
+  int order_v; /**< desired interpolation order (V) */
+  int ktype_u; /**< knot (parameterization) type (U) */
+  int ktype_v; /**< knot (parameterization) type (V) */
+
+  double *controlv; /**< control points (data points) [width * height * 4] */
+
+  /** cached NURBS patch representation */
+  ay_object *npatch;
+
+  double glu_sampling_tolerance; /**< drawing quality */
+  int display_mode; /**< drawing mode */
+} ay_ipatch_object;
+
+
 /** PatchMesh object */
 typedef struct ay_pamesh_object_s {
   int width; /**< width of patch mesh (U) */
@@ -1687,6 +1708,7 @@ extern char *ay_error_igntype;
 #define AY_IDTRIM          44
 #define AY_IDCONCATNP      45
 #define AY_IDOFFNP         46
+#define AY_IDIPATCH        47
 
 #define AY_IDLAST          50
 /*@}*/
