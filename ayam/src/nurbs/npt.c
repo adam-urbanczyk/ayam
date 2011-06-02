@@ -144,7 +144,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
       patch->vknotv = vknotv;
     } /* if */
 
-  if(controlv)
+  if(controlv && patch->uknotv && patch->vknotv)
     {
       ay_npt_setuvtypes(patch);
     }
