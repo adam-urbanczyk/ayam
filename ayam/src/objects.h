@@ -77,6 +77,9 @@ int ay_icurve_init(Tcl_Interp *interp);
 /* instance.c */
 int ay_instance_init(Tcl_Interp *interp);
 
+/* ipatch.c */
+int ay_ipatch_init(Tcl_Interp *interp);
+
 /* level.c */
 int ay_level_init(Tcl_Interp *interp);
 
