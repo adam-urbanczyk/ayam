@@ -7166,20 +7166,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
 	goto cleanup;
     }
 
-  /* clamp all curves and arrange them properly */
-  ay_status = ay_nct_clamp(u0, 0);
-  if(ay_status)
-    goto cleanup;
-  ay_status = ay_nct_clamp(un, 0);
-  if(ay_status)
-    goto cleanup;
-  ay_status = ay_nct_clamp(v0, 0);
-  if(ay_status)
-    goto cleanup;
-  ay_status = ay_nct_clamp(vn, 0);
-  if(ay_status)
-    goto cleanup;
-
+  /* arrange the curves properly */
   ay_nct_revert(un);
   ay_nct_revert(v0);
 
@@ -7200,6 +7187,12 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   o0.next = &o1;
   o1.next = &o2;
   o2.next = &o3;
+
+  /* in case the surface has different orders for U/V
+     make them compatible (this also clamps the curves) */
+  ay_status = ay_nct_makecompatible(&o0);
+  if(ay_status)
+    {ay_status = AY_ERROR; goto cleanup;}
 
   /* concatenate all four extracted curves */
   ay_status = ay_nct_concatmultiple(AY_TRUE, 1, AY_FALSE, &o0, &c);
