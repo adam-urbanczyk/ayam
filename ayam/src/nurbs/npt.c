@@ -4805,7 +4805,8 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	} /* for */
     } /* for */
 
-  free(np->uknotv);
+  if(np->uknotv)
+    free(np->uknotv);
   np->uknotv = U;
   np->uknot_type = AY_KTCUSTOM;
   np->uorder = pu+1;
@@ -4926,8 +4927,8 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	{ free(d); free(vk); free(V); return ay_status; }
 
     } /* for */
-
-  free(np->vknotv);
+  if(np->vknotv)
+    free(np->vknotv);
   np->vknotv = V;
   np->vknot_type = AY_KTCUSTOM;
   np->vorder = pv+1;
