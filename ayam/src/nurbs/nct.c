@@ -2263,7 +2263,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       curve->length += r;
 
-      if(r != 0)
+      if(r > 0)
 	{
 	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
@@ -2288,6 +2288,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
 	  free(curve->knotv);
 	  curve->knotv = newknotv;
+	}
+      else
+	{
+	  /* can not insert knot at wanted position... */
+	  return AY_ERROR;
 	} /* if */
 
       curve->knot_type = AY_KTCUSTOM;
