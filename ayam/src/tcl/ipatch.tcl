@@ -25,8 +25,8 @@ proc init_IPatch { } {
     }
 
     array set IPatchAttrData {
-	Knot-Type_U 1
-	Knot-Type_V 1
+	Knot-Type_U 0
+	Knot-Type_V 0
 	DisplayMode 1
 	NPInfoBall "n/a"
     }

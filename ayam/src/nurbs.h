@@ -856,11 +856,11 @@ int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
 /** Interpolate NURBS patch in U direction.
  */
-int ay_npt_interpolateu(ay_nurbpatch_object *np, int order);
+int ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype);
 
 /** Interpolate NURBS patch in V direction.
  */
-int ay_npt_interpolatev(ay_nurbpatch_object *np, int order);
+int ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
 
 /** Create loft/skinned surface.
  */
