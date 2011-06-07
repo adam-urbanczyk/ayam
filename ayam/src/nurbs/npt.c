@@ -4683,7 +4683,7 @@ cleanup:
  *
  */
 int
-ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
+ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolateu";
@@ -4727,15 +4727,28 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
       for(k = 1; k < K; k++)
 	{
 	  ind += N*stride;
+	  
 	  v[0] = Pw[ind]   - Pw[ind2];
 	  v[1] = Pw[ind+1] - Pw[ind2+1];
 	  v[2] = Pw[ind+2] - Pw[ind2+2];
-	  d[i] += AY_V3LEN(v);
-	  if(AY_V3LEN(v) < AY_EPSILON)
+
+	  if(fabs(v[0]) < AY_EPSILON &&
+	     fabs(v[1]) < AY_EPSILON &&
+	     fabs(v[2]) < AY_EPSILON)
 	    {
 	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
 	      free(uk); free(d); free(U); return AY_OK;
 	    }
+
+	  if(ktype == AY_KTCENTRI)
+	    {
+	      d[i] += sqrt(AY_V3LEN(v));
+	    }
+	  else
+	    {
+	      d[i] += AY_V3LEN(v);
+	    }
+
 	  ind2 += N*stride;
 	} /* for */
     } /* for */
@@ -4753,7 +4766,15 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
 	  v[1] = Pw[ind+1] - Pw[ind2+1];
 	  v[2] = Pw[ind+2] - Pw[ind2+2];
 
-	  uk[k] += (AY_V3LEN(v)/d[i]);
+	  if(ktype == AY_KTCENTRI)
+	    {
+	      uk[k] += (sqrt(AY_V3LEN(v))/d[i]);
+	    }
+	  else
+	    {
+	      uk[k] += (AY_V3LEN(v)/d[i]);
+	    }
+
 	  ind += stride;
 	  ind2 += stride;
 	} /* for */
@@ -4824,7 +4845,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order)
  *
  */
 int
-ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
+ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolatev";
@@ -4865,12 +4886,24 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	  v[0] = Pw[ind2]   - Pw[ind];
 	  v[1] = Pw[ind2+1] - Pw[ind+1];
 	  v[2] = Pw[ind2+2] - Pw[ind+2];
-	  d[i] += AY_V3LEN(v);
-	  if(AY_V3LEN(v) < AY_EPSILON)
+
+	  if(fabs(v[0]) < AY_EPSILON &&
+	     fabs(v[1]) < AY_EPSILON &&
+	     fabs(v[2]) < AY_EPSILON)
 	    {
 	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
 	      free(vk); free(d); free(V); return AY_OK;
 	    }
+
+	  if(ktype == AY_KTCENTRI)
+	    {
+	      d[i] += sqrt(AY_V3LEN(v));
+	    }
+	  else
+	    {
+	      d[i] += AY_V3LEN(v);
+	    }
+
 	  ind += stride;
 	} /* for */
     } /* for */
@@ -4888,7 +4921,15 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order)
 	  v[1] = Pw[ind2+1] - Pw[ind+1];
 	  v[2] = Pw[ind2+2] - Pw[ind+2];
 
-	  vk[k] += (AY_V3LEN(v)/d[i]);
+	  if(ktype == AY_KTCENTRI)
+	    {
+	      vk[k] += (sqrt(AY_V3LEN(v))/d[i]);
+	    }
+	  else
+	    {
+	      vk[k] += (AY_V3LEN(v)/d[i]);
+	    }
+
 	  ind += N*stride;
 	  ind2 += N*stride;
 	} /* for */
@@ -5089,7 +5130,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   skc = NULL;
 
   if(interpolate && degU > 1)
-    ay_status = ay_npt_interpolateu(*skin, order);
+    ay_status = ay_npt_interpolateu(*skin, order, AY_KTCHORDAL);
 
 cleanup:
   if(uk)
@@ -5263,7 +5304,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   skc = NULL;
 
   if(interpolate && degV > 1)
-    ay_status = ay_npt_interpolatev(*skin, order);
+    ay_status = ay_npt_interpolatev(*skin, order, AY_KTCHORDAL);
 
 cleanup:
   if(vk)
@@ -6701,8 +6742,8 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 
   if(need_interpol)
     {
-      ay_status = ay_npt_interpolateu(interpatch, uorder);
-      ay_status = ay_npt_interpolatev(interpatch, vorder);
+      ay_status = ay_npt_interpolateu(interpatch, uorder, AY_KTCHORDAL);
+      ay_status = ay_npt_interpolatev(interpatch, vorder, AY_KTCHORDAL);
     }
 
   ay_status = ay_npt_skinv(cu, uorder, AY_KTCUSTOM, AY_TRUE, &skinu);
@@ -7189,7 +7230,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
   o2.next = &o3;
 
   /* in case the surface has different orders for U/V
-     make them compatible (this also clamps the curves) */
+     make the curves compatible (this also clamps them) */
   ay_status = ay_nct_makecompatible(&o0);
   if(ay_status)
     {ay_status = AY_ERROR; goto cleanup;}
@@ -12258,7 +12299,7 @@ ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int interpolv = AY_FALSE, order = 0;
+ int interpolv = AY_FALSE, order = 0, ktype = AY_KTCHORDAL;
 
   if(argc < 2)
     {
@@ -12281,6 +12322,14 @@ ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(argc > 2)
+    {
+      tcl_status = Tcl_GetInt(interp, argv[2], &ktype);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+      if(ktype)
+	ktype = AY_KTCENTRI;
+    }
+
   if(!strcmp(argv[0], "interpvNP"))
     interpolv = AY_TRUE;
 
@@ -12292,9 +12341,9 @@ ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object*)o->refine;
 
 	  if(interpolv)
-	    ay_status = ay_npt_interpolatev(patch, order);
+	    ay_status = ay_npt_interpolatev(patch, order, ktype);
 	  else
-	    ay_status = ay_npt_interpolateu(patch, order);
+	    ay_status = ay_npt_interpolateu(patch, order, ktype);
 
 	  if(!ay_status)
 	    {

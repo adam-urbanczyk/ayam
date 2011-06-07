@@ -30,7 +30,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  char option_handled = AY_FALSE;
  int center = AY_FALSE, createmp = -1;
  int stride = 3, uorder = 4, vorder = 4, width = 4, height = 4;
- int ukt = AY_KTNURB, vkt = AY_KTNURB, optnum = 0, i = 2, j = 0, k = 0;
+ int ukt = 0, vkt = 0, optnum = 0, i = 2, j = 0, k = 0;
  int acvlen = 0;
  char **acv = NULL;
  double *cv = NULL;
@@ -286,6 +286,14 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ip->height = height;
   ip->order_u = uorder;
   ip->order_v = vorder;
+  if(ukt == 1)
+    ip->ktype_u = AY_KTCENTRI;
+  else
+    ip->ktype_u = AY_KTCHORDAL;
+  if(vkt == 1)
+    ip->ktype_v = AY_KTCENTRI;
+  else
+    ip->ktype_v = AY_KTCHORDAL;
 
   if(!cv)
     {
@@ -752,10 +760,9 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char fname[] = "ipatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ipatch_object *ipatch = NULL;
- int new_ktype_u, new_close_u, new_width;
- int new_ktype_v, new_close_v, new_height;
+ int new_ktype_u, new_close_u, new_order_u, new_width;
+ int new_ktype_v, new_close_v, new_order_v, new_height;
  int update = AY_FALSE;
-
 
   if(!o)
     return AY_ENULL;
@@ -783,11 +790,11 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Order_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_close_u);
+  Tcl_GetIntFromObj(interp,to, &new_order_u);
 
   Tcl_SetStringObj(ton,"Order_V",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &new_close_v);
+  Tcl_GetIntFromObj(interp,to, &new_order_v);
 
   Tcl_SetStringObj(ton,"Knot-Type_U",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -797,8 +804,32 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_ktype_v);
 
-  ipatch->ktype_u = new_ktype_u;
-  ipatch->ktype_v = new_ktype_v;
+  if((new_order_u != ipatch->order_u)||
+     (new_order_v != ipatch->order_v)||
+     (new_close_u != ipatch->close_u)||
+     (new_close_v != ipatch->close_v)||
+     (new_ktype_u != ipatch->ktype_u)||
+     (new_ktype_v != ipatch->ktype_v))
+    update = AY_TRUE;
+
+  if(new_order_u < 0)
+    new_order_u = 0;
+
+  if(new_order_v < 0)
+    new_order_v = 0;
+
+  ipatch->order_u = new_order_u;
+  ipatch->order_v = new_order_v;
+
+  if(new_ktype_u == 0)
+    ipatch->ktype_u = AY_KTCHORDAL;
+  else
+    ipatch->ktype_u = AY_KTCENTRI;
+
+  if(new_ktype_v == 0)
+    ipatch->ktype_v = AY_KTCHORDAL;
+  else
+    ipatch->ktype_v = AY_KTCENTRI;
 
   ipatch->close_u = new_close_u;
   ipatch->close_v = new_close_v;
@@ -833,7 +864,10 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
 	ay_error(AY_ERROR,fname,"Could not resize patch!");
       else
-	ipatch->width = new_width;
+	{
+	  ipatch->width = new_width;
+	  update = AY_TRUE;
+	}
     } /* if */
 
   if(new_height != ipatch->height && (new_height > 1))
@@ -850,7 +884,10 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       if(ay_status)
 	ay_error(AY_ERROR,fname,"Could not resize patch!");
       else
-	ipatch->height = new_height;
+	{
+	  ipatch->height = new_height;
+	  update = AY_TRUE;
+	}
     } /* if */
 
   if(update)
@@ -915,11 +952,17 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Knot-Type_U",-1);
-  to = Tcl_NewIntObj(ipatch->ktype_u);
+  if(ipatch->ktype_u == AY_KTCHORDAL)
+    to = Tcl_NewIntObj(0);
+  else
+    to = Tcl_NewIntObj(1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knot-Type_V",-1);
-  to = Tcl_NewIntObj(ipatch->ktype_v);
+  if(ipatch->ktype_v == AY_KTCHORDAL)
+    to = Tcl_NewIntObj(0);
+  else
+    to = Tcl_NewIntObj(1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -1134,7 +1177,7 @@ ay_ipatch_notifycb(ay_object *o)
  ay_object *p = NULL;
  ay_ipatch_object *ip = NULL;
  ay_nurbpatch_object *np = NULL;
- double *cv = NULL, *icv = NULL, *npcv = NULL;
+ double *cv = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1172,18 +1215,18 @@ ay_ipatch_notifycb(ay_object *o)
   ay_npt_createnpatchobject(&p);
   p->refine = (void*)np;
 
-  if(ip->width > 2)
+  if(ip->width > 2 && ip->order_u > 2)
     {
-      ay_status = ay_npt_interpolateu(np, ip->order_u);
+      ay_status = ay_npt_interpolateu(np, ip->order_u, ip->ktype_u);
 
       if(ay_status)
 	goto cleanup;
     } /* if*/
 
 
-  if(ip->height > 2)
+  if(ip->height > 2 && ip->order_v > 2)
     {
-     ay_status = ay_npt_interpolatev(np, ip->order_v);
+     ay_status = ay_npt_interpolatev(np, ip->order_v, ip->ktype_v);
 
       if(ay_status)
 	goto cleanup;
