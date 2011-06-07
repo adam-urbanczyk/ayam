@@ -1,14 +1,16 @@
-[14. May 2011] CVS-Head:
+[7. Jun 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
 o Tcl error when applying the ViewAttrib property (SF 3295757)
 o property reset does not work after object selection change (SF 3295758)
 o last element of dynamic property GUIs not visible (SF 3301967)
+o extracting the boundary of patches with differing orders (SF 3312039)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
 o added support for periodic surfaces to be created by Birail1
+o added object type "IPatch" for interpolating surfaces
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -24,6 +26,7 @@ o the ViewAttrib property GUI no longer unconditionally sets the mark,
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
+o added "interpuNP"/"interpvNP" scripting commands to interpolate surfaces
 o added script "apnt.tcl" to automatically switch a view (or all views)
   to point modelling, after the point selection action was used
 o added "remknuNP"/"remknvNP" commands to remove knots from surfaces
