@@ -28,6 +28,7 @@ proc init_IPatch { } {
 	Knot-Type_U 1
 	Knot-Type_V 1
 	DisplayMode 1
+	NPInfoBall "n/a"
     }
 
     # create IPatchAttr-UI
@@ -49,6 +50,9 @@ proc init_IPatch { } {
 
     addParam $w IPatchAttrData Tolerance
     addMenu $w IPatchAttrData DisplayMode $ay(npdisplaymodes)
+
+    addText $w IPatchAttrData "Created NURBS Patch:"
+    addInfo $w IPatchAttrData NPInfo
 
  return;
 }
