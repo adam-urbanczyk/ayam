@@ -636,7 +636,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     min_dist = DBL_MAX;
 
   if(pe)
-    pe->rational = AY_TRUE;
+    pe->rational = AY_FALSE;
 
   switch(mode)
     {
@@ -729,7 +729,7 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  if(pnt->index < (unsigned int)(ipatch->width * ipatch->height))
 	    {
 	      pnt->point = &(ipatch->controlv[pnt->index*3]);
-	      pnt->rational = AY_TRUE;
+	      pnt->rational = AY_FALSE;
 	      lastpnt = &(pnt->next);
 	      pnt = pnt->next;
 	    }
