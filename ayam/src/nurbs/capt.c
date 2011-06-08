@@ -16,10 +16,14 @@
 
 
 /* ay_capt_createfromcurve:
- *  create a cap from a single NURBS curve <c>
- *  the curve object <c> will be used as trim curve
- *  so copy it before calling this function,
- *  if <c> already lives in the scene hierarchy!
+ *  create a cap surface from a single planar NURBS curve;
+ *  the curve object will be moved to the new NURBS patch
+ *  as trim curve
+ *
+ * @param[in,out] c NURBS curve object
+ * @param[in,out] cap new NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_capt_createfromcurve(ay_object *c, ay_object **cap)
@@ -39,7 +43,6 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
   while(c)
     {
-
       if(!c->type == AY_IDNCURVE)
 	return AY_ERROR;
 
@@ -192,13 +195,18 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
 
 /* ay_capt_createfromnpcurve:
- *  create a cap from a single non-planar NURBS curve <c>
+ *  create a cap surface from a single non-planar NURBS curve
  *  by splitting the outline into four pieces, arranging the
  *  pieces and building a Gordon surface from them (thanks to
  *  "the reverse" for inspiration);
- *  <c> will be split, so copy it before calling this function,
- *  if <c> already lives in the scene hierarchy!
+ *  the curve object will be modified (split)!
+ *
  *  XXXX allow parameterisation of split points and desired surface orders
+ *
+ * @param[in,out] c NURBS curve object
+ * @param[in,out] cap new NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
@@ -216,6 +224,8 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
     return AY_ERROR;
 
   ay_status = ay_npt_createnpatchobject(&new);
+  if(ay_status)
+    goto cleanup;
 
   curve = (ay_nurbcurve_object*)c1->refine;
 
@@ -230,7 +240,7 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
       ay_status = ay_nct_split(c1, hknots[i], &c3);
       i++;
     }
-  if(ay_status || !c3)
+  if(!c3 || ay_status)
     goto cleanup;
 
   /* split first half in first and second quarter */
@@ -244,7 +254,7 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
       ay_status = ay_nct_split(c1, hknots[i], &c2);
       i++;
     }
-  if(ay_status || !c2)
+  if(!c2 || ay_status)
     goto cleanup;
 
   /* split second half in third and fourth quarter */
@@ -264,7 +274,12 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
 
   /* arrange quarters */
   ay_status = ay_nct_revert((ay_nurbcurve_object*)c3->refine);
+  if(ay_status)
+    goto cleanup;
+
   ay_status = ay_nct_revert((ay_nurbcurve_object*)c4->refine);
+  if(ay_status)
+    goto cleanup;
 
   c1->next = c3;
   c4->next = c2;
@@ -273,6 +288,9 @@ ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
   ay_status = ay_npt_gordon(c1, c4, NULL,
 			    curve->order, curve->order,
 			    (ay_nurbpatch_object**)(void*)&(new->refine));
+
+  if(ay_status)
+    goto cleanup;
 
   /* return result */
   *cap = new;
