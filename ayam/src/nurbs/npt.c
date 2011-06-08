@@ -11746,14 +11746,10 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 				 (cv[b+1] - cv[a+1]),
 				 (cv[b+2] - cv[a+2]))/width;
 	    }
-	  else
-	    {
-	      lens[i] = 0.0;
-	    }
 	  a += stride;
 	  b += stride;
-	}
-    }
+	} /* for */
+    } /* for */
 
   /* return result */
   *avlens = lens;
@@ -11797,14 +11793,11 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
 				 (cv[b+1] - cv[a+1]),
 				 (cv[b+2] - cv[a+2]))/height;
 	    }
-	  else
-	    {
-	      lens[i] = 0.0;
-	    }
+
 	  a += (height*stride);
 	  b += (height*stride);
-	}
-    }
+	} /* for */
+    } /* for */
 
   /* return result */
   *avlens = lens;

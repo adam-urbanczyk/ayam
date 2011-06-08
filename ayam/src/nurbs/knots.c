@@ -122,7 +122,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       if(!ub)
 	{
 	  /*
-	    failed to create parameters (curve degenerated?);
+	    failed to create parameters (patch degenerated?);
 	    create a standard NURBS knot vector instead
 	   */
 	  for(i = 0; i < uorder; i++)
@@ -227,7 +227,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       if(!ub)
 	{
 	  /*
-	    failed to create parameters (curve degenerated?);
+	    failed to create parameters (patch degenerated?);
 	    create a standard NURBS knot vector instead
 	   */
 	  for(i = 0; i < vorder; i++)
