@@ -4679,17 +4679,22 @@ cleanup:
 
 
 /* ay_npt_interpolateu:
+ * interpolate NURBS patch along U (width) 
  *
+ * @param[in,out] np NURBS patch object to interpolate
+ * @param[in] order desired interpolation order
+ * @param[in] ktype parameterization type (AY_KTCHORDAL or AY_KTCENTRI) 
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolateu";
- int i, k, N, K, stride, ind, ind2, pu;
- double *uk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
- double *U = NULL, *Q = NULL;
+ int i, k, N, K, stride, ind, ind2, pu, num;
+ double *uk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
+ double *U = NULL, *Q = NULL, total, d;
 
   if(!np)
     return AY_ENULL;
@@ -4699,91 +4704,85 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   stride = 4;
   Pw = np->controlv;
   pu = order-1;
+  num = np->height;
 
   if(!(uk = calloc(K, sizeof(double))))
     return AY_EOMEM;
 
-  if(!(d = calloc(N, sizeof(double))))
+  if(!(cds = calloc(K+1, sizeof(double))))
     {
       free(uk); return AY_EOMEM;
     }
 
   if(!(U = calloc(K+np->uorder, sizeof(double))))
     {
-      free(uk); free(d); return AY_EOMEM;
+      free(uk); free(cds); return AY_EOMEM;
     }
 
-  if(!(Q = calloc(K*4, sizeof(double))))
+  if(!(Q = calloc(K*stride, sizeof(double))))
     {
-      free(uk); free(d); free(U); return AY_EOMEM;
+      free(uk); free(cds); free(U); return AY_EOMEM;
     }
 
-  /* find average chord length */
+  /* calculate parameterization */
   for(i = 0; i < N; i++)
-    {
-      d[i] = 0.0;
+    {      
       ind = i*stride;
       ind2 = i*stride;
+      total = 0.0;
+
       for(k = 1; k < K; k++)
 	{
 	  ind += N*stride;
-	  
+
 	  v[0] = Pw[ind]   - Pw[ind2];
 	  v[1] = Pw[ind+1] - Pw[ind2+1];
 	  v[2] = Pw[ind+2] - Pw[ind2+2];
 
-	  if(fabs(v[0]) < AY_EPSILON &&
-	     fabs(v[1]) < AY_EPSILON &&
-	     fabs(v[2]) < AY_EPSILON)
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
-	      free(uk); free(d); free(U); return AY_OK;
+	      if(ktype == AY_KTCENTRI)
+		{
+		  cds[k] = sqrt(AY_V3LEN(v));
+		}
+	      else
+		{
+		  cds[k] = AY_V3LEN(v);
+		}
+	      total += cds[k];
 	    }
-
-	  if(ktype == AY_KTCENTRI)
-	    {
-	      d[i] += sqrt(AY_V3LEN(v));
-	    }
-	  else
-	    {
-	      d[i] += AY_V3LEN(v);
-	    }
-
 	  ind2 += N*stride;
 	} /* for */
+
+      if(total < AY_EPSILON)
+	{
+	  num--;
+	}
+      else
+	{
+	  d = 0.0;
+	  for(k = 1; k < K; k++)
+	    {
+	      d += cds[k];
+	      uk[k] += d/total;
+	    }
+	}
     } /* for */
 
-  /* create knotv */
-  ind = N*stride;
-  ind2 = 0;
+  if(num == 0)
+    {
+      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
+      free(uk); free(cds); free(U); return AY_ERROR;
+    }
+
   uk[0] = 0.0;
   for(k = 1; k < K; k++)
     {
-      uk[k] = 0.0;
-      for(i = 0; i < N; i++)
-	{
-	  v[0] = Pw[ind]   - Pw[ind2];
-	  v[1] = Pw[ind+1] - Pw[ind2+1];
-	  v[2] = Pw[ind+2] - Pw[ind2+2];
-
-	  if(ktype == AY_KTCENTRI)
-	    {
-	      uk[k] += (sqrt(AY_V3LEN(v))/d[i]);
-	    }
-	  else
-	    {
-	      uk[k] += (AY_V3LEN(v)/d[i]);
-	    }
-
-	  ind += stride;
-	  ind2 += stride;
-	} /* for */
-
-      uk[k] /= N;
-      uk[k] += uk[k-1];
-    } /* for */
+      uk[k] /= num;
+    }
   uk[K-1] = 1.0;
-
 
   for(i = 1; i < (K-pu); i++)
     {
@@ -4816,12 +4815,12 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
       ay_status = ay_nb_GlobalInterpolation4D(K-1, Q, uk, U, pu);
 
       if(ay_status)
-	{ free(d); free(uk); free(U); free(Q); return ay_status; }
+	{ free(cds); free(uk); free(U); free(Q); return ay_status; }
 
       ind = i*stride;
       for(k = 0; k < K; k++)
 	{
-	  memcpy(&(Pw[ind]), &(Q[k*4]), stride*sizeof(double));
+	  memcpy(&(Pw[ind]), &(Q[k*stride]), stride*sizeof(double));
 	  ind += N*stride;
 	} /* for */
     } /* for */
@@ -4833,7 +4832,7 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   np->uorder = pu+1;
 
   free(uk);
-  free(d);
+  free(cds);
   free(Q);
 
  return AY_OK;
@@ -4841,17 +4840,22 @@ ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 
 
 /* ay_npt_interpolatev:
+ * interpolate NURBS patch along V (height) 
  *
+ * @param[in,out] np NURBS patch object to interpolate
+ * @param[in] order desired interpolation order
+ * @param[in] ktype parameterization type (AY_KTCHORDAL or AY_KTCENTRI) 
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "npt_interpolatev";
- int i, k, N, K, stride, ind, ind2, pv;
- double *vk = NULL, *d = NULL, *Pw = NULL, v[3] = {0};
- double *V = NULL;
+ int i, k, N, K, stride, ind, ind2, pv, num;
+ double *vk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
+ double *V = NULL, total, d;
 
   if(!np)
     return AY_ENULL;
@@ -4861,25 +4865,26 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
   stride = 4;
   Pw = np->controlv;
   pv = np->vorder-1;
+  num = np->width;
 
   if(!(vk = calloc(N, sizeof(double))))
     return AY_EOMEM;
 
-  if(!(d = calloc(K, sizeof(double))))
+  if(!(cds = calloc(N+1, sizeof(double))))
     {
       free(vk); return AY_EOMEM;
     }
 
   if(!(V = calloc(N+np->vorder, sizeof(double))))
     {
-      free(vk); free(d); return AY_EOMEM;
+      free(vk); free(cds); return AY_EOMEM;
     }
 
-  /* find average chord length */
+  /* calculate parameterization */
   for(i = 0; i < K; i++)
     {
       ind = (i*N)*stride;
-      d[i] = 0.0;
+      total = 0.0;
       for(k = 1; k < N; k++)
 	{
 	  ind2 = ind+stride;
@@ -4887,58 +4892,50 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 	  v[1] = Pw[ind2+1] - Pw[ind+1];
 	  v[2] = Pw[ind2+2] - Pw[ind+2];
 
-	  if(fabs(v[0]) < AY_EPSILON &&
-	     fabs(v[1]) < AY_EPSILON &&
-	     fabs(v[2]) < AY_EPSILON)
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
 	    {
-	      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
-	      free(vk); free(d); free(V); return AY_OK;
+	      if(ktype == AY_KTCENTRI)
+		{
+		  cds[k] = sqrt(AY_V3LEN(v));
+		}
+	      else
+		{
+		  cds[k] += AY_V3LEN(v);
+		}
+	      total += cds[k];
 	    }
-
-	  if(ktype == AY_KTCENTRI)
-	    {
-	      d[i] += sqrt(AY_V3LEN(v));
-	    }
-	  else
-	    {
-	      d[i] += AY_V3LEN(v);
-	    }
-
 	  ind += stride;
 	} /* for */
+
+      if(total < AY_EPSILON)
+	{
+	  num--;
+	}
+      else
+	{
+	  d = 0.0;
+	  for(k = 1; k < N; k++)
+	    {
+	      d += cds[k];
+	      vk[k] += d/total;
+	    }
+	}
     } /* for */
 
-  /* create knotv */
+  if(num == 0)
+    {
+      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
+      free(vk); free(cds); free(V); return AY_ERROR;
+    }
+
   vk[0] = 0.0;
   for(k = 1; k < N; k++)
     {
-      ind2 = k*stride;
-      ind = ind2-stride;
-      vk[k] = 0.0;
-      for(i = 0; i < K; i++)
-	{
-	  v[0] = Pw[ind2]   - Pw[ind];
-	  v[1] = Pw[ind2+1] - Pw[ind+1];
-	  v[2] = Pw[ind2+2] - Pw[ind+2];
-
-	  if(ktype == AY_KTCENTRI)
-	    {
-	      vk[k] += (sqrt(AY_V3LEN(v))/d[i]);
-	    }
-	  else
-	    {
-	      vk[k] += (AY_V3LEN(v)/d[i]);
-	    }
-
-	  ind += N*stride;
-	  ind2 += N*stride;
-	} /* for */
-
-      vk[k] /= K;
-      vk[k] += vk[k-1];
-    } /* for */
+      vk[k] /= num;
+    }
   vk[N-1] = 1.0;
-
 
   for(i = 1; i < (N-pv); i++)
     {
@@ -4965,9 +4962,10 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 			&(np->controlv[ind]), vk, V, pv);
 
       if(ay_status)
-	{ free(d); free(vk); free(V); return ay_status; }
+	{ free(cds); free(vk); free(V); return ay_status; }
 
     } /* for */
+
   if(np->vknotv)
     free(np->vknotv);
   np->vknotv = V;
@@ -4975,7 +4973,7 @@ ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
   np->vorder = pv+1;
 
   free(vk);
-  free(d);
+  free(cds);
 
  return AY_OK;
 } /* ay_npt_interpolatev */
@@ -6818,7 +6816,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
     {
       for(j = 0; j < skinu->height; j++)
 	{
-	  
+
 	  skinu->controlv[k] += skinv->controlv[k];
 	  skinu->controlv[k] -= interpatch->controlv[k];
 
