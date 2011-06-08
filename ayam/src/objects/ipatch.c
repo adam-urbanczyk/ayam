@@ -1199,8 +1199,7 @@ ay_ipatch_notifycb(ay_object *o)
     {
       for(j = 0; j < ip->height; j++)
 	{
-	  memcpy(&(cv[a]), &(ip->controlv[b]),
-		 3*sizeof(double));
+	  memcpy(&(cv[a]), &(ip->controlv[b]), 3*sizeof(double));
 
 	  cv[a+3] = 1.0;
 
@@ -1221,7 +1220,16 @@ ay_ipatch_notifycb(ay_object *o)
 
       if(ay_status)
 	goto cleanup;
-    } /* if*/
+    }
+  else
+    {
+      if(ip->width < 4)
+	np->uorder = ip->width;
+      else
+	np->uorder = 4;
+      np->uknot_type = AY_KTNURB;
+      ay_knots_createnp(np);
+    } /* if */
 
 
   if(ip->height > 2 && ip->order_v > 2)
@@ -1230,7 +1238,16 @@ ay_ipatch_notifycb(ay_object *o)
 
       if(ay_status)
 	goto cleanup;
-    } /* if*/
+    }
+  else
+    {
+      if(ip->height < 4)
+	np->vorder = ip->height;
+      else
+	np->vorder = 4;
+      np->vknot_type = AY_KTNURB;
+      ay_knots_createnp(np);
+    } /* if */
 
   ip->npatch = p;
 
