@@ -652,6 +652,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
  /*int ay_status;*/
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+ ay_ipatch_object *ip = NULL;
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
@@ -664,6 +665,13 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_revertu(np);
+
+	  sel->object->modified = AY_TRUE;
+	  break;
+	case AY_IDIPATCH:
+	  ip = (ay_ipatch_object *)sel->object->refine;
+
+	  ay_ipt_revertu(ip);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -763,6 +771,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
  /*int ay_status;*/
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+ ay_ipatch_object *ip = NULL;
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
@@ -775,6 +784,13 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_revertv(np);
+
+	  sel->object->modified = AY_TRUE;
+	  break;
+	case AY_IDIPATCH:
+	  ip = (ay_ipatch_object *)sel->object->refine;
+
+	  ay_ipt_revertv(ip);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
@@ -6486,6 +6502,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
  /*int ay_status;*/
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+ ay_ipatch_object *ip = NULL;
  ay_pamesh_object *pm = NULL;
  ay_bpatch_object *bp = NULL;
  double pt[3];
@@ -6498,6 +6515,13 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
 	  ay_npt_swapuv(np);
+
+	  sel->object->modified = AY_TRUE;
+	  break;
+	case AY_IDIPATCH:
+	  ip = (ay_ipatch_object *)sel->object->refine;
+
+	  ay_ipt_swapuv(ip);
 
 	  sel->object->modified = AY_TRUE;
 	  break;
