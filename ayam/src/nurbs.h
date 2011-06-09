@@ -97,6 +97,21 @@ int ay_ict_revert(ay_icurve_object *curve);
 int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
 
+/* ipt.c */
+
+/** Flip UV of interpolating patch.
+ */
+int ay_ipt_swapuv(ay_ipatch_object *ip);
+
+/** Revert interpolating patch in U direction.
+ */
+int ay_ipt_revertu(ay_ipatch_object *ip);
+
+/** Revert interpolating patch in V direction.
+ */
+int ay_ipt_revertv(ay_ipatch_object *ip);
+
+
 /* knots.c */
 
 /** Create knots for a NURBS patch.
