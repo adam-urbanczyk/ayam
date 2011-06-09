@@ -508,7 +508,7 @@ typedef struct ay_ipatch_object_s {
   int ktype_u; /**< knot (parameterization) type (U) */
   int ktype_v; /**< knot (parameterization) type (V) */
 
-  double *controlv; /**< control points (data points) [width * height * 4] */
+  double *controlv; /**< control points (data points) [width * height * 3] */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -758,7 +758,7 @@ typedef struct ay_torus_object_s
 /** Interpolating curve object */
 typedef struct ay_icurve_object_s
 {
-  int type; /**< interpolation mode (C2-cubic or global) */
+  int type; /**< curve type (AY_CTOPEN, AY_CTCLOSED) */
   int length; /**< number of data points */
   int order; /**< desired order of NURBS curve */
   int derivs; /**< have end derivatives? */
