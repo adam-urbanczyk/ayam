@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2011 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -30,6 +30,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  char option_handled = AY_FALSE;
  int center = AY_FALSE, createmp = -1;
  int stride = 3, uorder = 4, vorder = 4, width = 4, height = 4;
+ int uclosed = AY_FALSE, vclosed = AY_FALSE;
  int ukt = 0, vkt = 0, optnum = 0, i = 2, j = 0, k = 0;
  int acvlen = 0;
  char **acv = NULL;
@@ -72,6 +73,11 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 	    case 'u':
 	      switch(argv[i][2])
 		{
+		case 'c':
+		  /* -uclosed */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &uclosed);
+		  option_handled = AY_TRUE;
+		  break;
 		case 'd':
 		  switch(argv[i][3])
 		    {
@@ -111,6 +117,11 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 	    case 'v':
 	      switch(argv[i][2])
 		{
+		case 'c':
+		  /* -vclosed */
+		  tcl_status = Tcl_GetInt(ay_interp, argv[i+1], &vclosed);
+		  option_handled = AY_TRUE;
+		  break;
 		case 'd':
 		  switch(argv[i][3])
 		    {
@@ -286,6 +297,9 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ip->height = height;
   ip->order_u = uorder;
   ip->order_v = vorder;
+  ip->close_u = uclosed;
+  ip->close_v = vclosed;
+
   if(ukt == 1)
     ip->ktype_u = AY_KTCENTRI;
   else
@@ -582,7 +596,7 @@ ay_ipatch_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ipatch_shadecb */
 
 
-/* ay_ncurve_drawhcb:
+/* ay_ipatch_drawhcb:
  *  draw handles (in an Ayam view window) callback function of ipatch object
  */
 int
@@ -1173,16 +1187,19 @@ int
 ay_ipatch_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
- int i, j, a, b;
+ int i, j, a, b, mode;
  ay_object *p = NULL;
  ay_ipatch_object *ip = NULL;
  ay_nurbpatch_object *np = NULL;
- double *cv = NULL;
+ double tolerance, *cv = NULL;
 
   if(!o)
     return AY_ENULL;
 
   ip = (ay_ipatch_object *)o->refine;
+
+  mode = ip->display_mode;
+  tolerance = ip->glu_sampling_tolerance;
 
   if(ip->npatch)
     {
@@ -1250,6 +1267,23 @@ ay_ipatch_notifycb(ay_object *o)
     } /* if */
 
   ip->npatch = p;
+
+  /* copy sampling tolerance/mode attributes to caps and bevels */
+  if(ip->npatch)
+    {
+      p = ip->npatch;
+      while(p)
+	{
+	  if(p->type == AY_IDNPATCH)
+	    {
+	      ((ay_nurbpatch_object *)
+	       (p->refine))->glu_sampling_tolerance = tolerance;
+	      ((ay_nurbpatch_object *)
+	       (p->refine))->display_mode = mode;
+	    }
+	  p = p->next;
+	}
+    }
 
   /* prevent cleanup code from doing something harmful */
   p = NULL;
