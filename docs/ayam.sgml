@@ -4891,10 +4891,17 @@ NURBS curve using the attribute <tt/"CreateMP"/.
 
 <sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
+<figure loc="ht">
+<eps file="pics/npatch.ps" height="5cm">
+<img src="pics/npatch.gif">
+<caption>NURBS patch: surface (blue) from control polygon (white)</caption>
+</figure>
+<p>
 The NPatch object allows to model NURBS surfaces in a direct way, e.g. by
-modifying control points. Note that using NPatch objects should be seen as
-last resort, only to be used when the flexibility of all the NURBS
-surface creating tool objects is not high enough to achieve a certain shape.
+modifying control points (see also the image above). Note that using
+NPatch objects should be seen as last resort, only to be used when the
+flexibility of all the NURBS surface creating tool objects is not high
+enough to achieve a certain shape.
 <p>
 Like NCurve objects, NPatch objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
@@ -5023,6 +5030,69 @@ and you will be on the safe side.
 <p>
 Since Ayam 1.5 also NURBS curve providing objects are supported
 as trim curves.
+
+<sect1>IPatch (Interpolating Patch) Object<label id="ipatchobj">
+<p>
+<figure loc="ht">
+<eps file="pics/ipatch.ps" height="5cm">
+<img src="pics/ipatch.gif">
+<caption>Interpolating surface (blue) from data points (white)</caption>
+</figure>
+<p>
+A IPatch forms a surface defined by interpolating a regular grid
+of three dimensional and non rational data points (see also the
+image above).
+<p>
+You may convert the current IPatch object to an ordinary NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+The following table briefly lists some capabilities of the IPatch object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+IPatch|No|Yes|NPatch|Yes@<hline>
+</tabular>
+<caption>IPatch Object Capabilities</caption>
+</table>
+<p>
+
+<sect2>IPatchAttr Property<label id=ipattr><label id="ipatchattrprop">
+<p>
+The IPatchAttr property contains the following elements:
+<itemize>
+<item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
+Similar to the <tt/"Length"/ parameter of the NCurve object, changes to
+<tt/"Width"/ or <tt/"Height"/ add or remove internal control points
+(i.e. to double the resolution of a 4 by 4 interpolating patch in U direction,
+change the <tt/"Width"/ from 4 to 7; this will lead to an additional
+control point inserted into every section of the original patch).
+
+<item><tt/"Order_U"/ and <tt/"Order_V"/ set the desired interpolation
+orders of the patch.
+
+<item><tt/"Knot-Type_U"/ and <tt/"Knot-Type_V"/ allow to choose between
+chordal and centripetal interpolation parameterizations.
+</itemize>
+The next parameters control the appearance of the patch for display
+in Ayam:
+<itemize>
+<item><tt/"Tolerance"/ is in fact the GLU sampling tolerance used to
+control the quality of the sampling when rendering the patch.
+Smaller tolerance settings lead to higher quality but also
+slower display.
+A setting of 0.0 means, that the global preference setting
+<tt>"Drawing/Tolerance"</tt> should be used.
+
+<item><tt/"DisplayMode"/ sets the display mode, either the control
+hull is drawn (<tt/"ControlHull"/), or just the outlines of the polygons
+created by the tesselation (<tt/"OutlinePolygon"/), or just the
+outlines of the patch (<tt/"OutlinePatch"/). The default setting
+(<tt/"Global"/) means, that the value of the global preference setting
+<tt>"Drawing/NPDisplayMode"</tt> should be used instead.
+
+<item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
+of the created NURBS patch.
+</itemize>
 
 <sect1>BPatch (Bilinear Patch) Object<label id="bpatchobj">
 <p>
@@ -10656,6 +10726,83 @@ In versions of Ayam prior to 1.17, NURBS patches only accepted the
 
 <#if out=latex><x/newpage/</#if>
 
+<label id="sccrtip">
+  <item><tt/"IPatch"/: Interpolating patches accept the following arguments:
+  <itemize>
+  <item><tt/"-width"/: width of the new patch, the width defaults to 4.
+  <item><tt/"-height"/: height of the new patch, the height defaults to 4.
+  <item><tt/"-uorder"/: order of the new patch in U parametric dimension,
+the order defaults to 4. If a value greater than the width is specified,
+the order will be made identical to the width value.
+A value of 0 switches off interpolation along U.
+  <item><tt/"-ukt"/: the U parameterisation type, must be one of
+0 - Chordal (default), 1 - Centripetal.
+  <item><tt/"-vorder"/: order of the new patch in V parametric dimension,
+the order defaults to 4. If a value greater than the height is specified,
+the order will be made identical to the height value.
+A value of 0 switches off interpolation along V.
+  <item><tt/"-vkt"/: the V parameterisation type, must be one of
+0 - Chordal (default), 1 - Centripetal.
+
+  <item><tt/"-cv"/: the control vector of the new patch. The value of this
+option is a list of floating point numbers that describe the 3D
+non rational coordinates of the data points to be interpolated.
+This list may also only specify one point, which is then taken as starting
+point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
+missing control points automatically.
+To specify a complete control vector, this list should have width by
+height by 3 elements,
+e.g. for a patch of width 2 and height 2, specify 12 values:
+<tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0  2.0 1.0 0.0}"/.
+
+  <item><tt/"-udx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a row (U parametric dimension, along width), default is 0.25.
+
+  <item><tt/"-udy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a row (U parametric dimension, along width), default is 0.0.
+
+  <item><tt/"-udz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a row (U parametric dimension, along width), default is 0.0
+
+  <item><tt/"-vdx"/: the value of this option specifies the distance
+of automatically created control points in the x dimension between points
+in a column (V parametric dimension, along height), default is 0.0.
+
+  <item><tt/"-vdy"/: the value of this option specifies the distance
+of automatically created control points in the y dimension between points
+in a column (V parametric dimension, along height), default is 0.25.
+
+  <item><tt/"-vdz"/: the value of this option specifies the distance
+of automatically created control points in the z dimension between points
+in a column (V parametric dimension, along height), default is 0.0
+
+  <item><tt/"-center"/: If the value of the <tt/"-center"/ option is 1,
+the new patch will be centered. The default value is 0, no centering.
+This option is only in effect if no <tt/"-cv"/ option is specified.
+
+</itemize>
+Examples:
+<enum>
+<item><bf/<tt/"crtOb IPatch"//<newline>
+creates a flat patch with width 4, height 4, uorder 4, vorder 4,
+chordal parameterisation, data points arranged in a
+equidistant grid in the XY plane from 0 0 0 to 0.75 0.75 0.
+<item><bf/<tt/"crtOb IPatch -vdy 0 -vdz 0.25"//<newline>
+creates the same patch as above in the XZ plane (ground plane).
+<item><bf/<tt/"crtOb IPatch -udy 0.25"//<newline>
+creates a sheared version of the standard IPatch in the XY plane.
+<item><bf/<tt/"crtOb IPatch -udy 0.25 -vdz 0.25"//<newline>
+creates a 3D sheared version of the standard Ipatch.
+<item><bf/<tt/"crtOb IPatch -width 3 -height 3 -center 1 -udx 2 -vdy 2"//
+<newline>
+creates a centered patch with width 3, height 3, uorder 3, and vorder 3.
+</enum>
+
+<#if out=latex><x/newpage/</#if>
+
   <item><tt/"PolyMesh"/: Polymeshes accept the following arguments:
   <itemize>
 
@@ -15902,6 +16049,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
+<item>IPatch: <ref id="ipatchobj" name="IPatch object">
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
