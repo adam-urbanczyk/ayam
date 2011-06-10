@@ -235,6 +235,12 @@ $m.su add command -label "NURBPatch" -command {
 	"crtOb NPatch -width %0 -height %1 %2; uCR; sL; forceNot; rV;"\
 	"Create NPatch"
 } -underline 0
+$m.su add command -label "IPatch" -command {
+    runTool {ay(ipwidth) ay(ipheight) ay(ipadda)}\
+	{"Width:" "Height:" "AddArgs:"}\
+	"crtOb IPatch -width %0 -height %1 %2; uCR; sL; forceNot; rV;"\
+	"Create IPatch"
+} -underline 0
 $m.su add command -label "BPatch" -command {
     crtOb BPatch; uCR; sL; forceNot; rV;
 } -underline 0
