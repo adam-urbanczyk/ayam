@@ -587,6 +587,9 @@ array set ay {
  npwidth 4
  npheight 4
  npadda ""
+ ipwidth 4
+ ipheight 4
+ ipadda ""
  iclen 4
  icadda ""
  aclen 4
