@@ -14,9 +14,12 @@
 
 /* ipt.c - interpolating surface tools */
 
-/* ay_ipt_swapuv:
+/** ay_ipt_swapuv:
+ * swap U and V dimensions of a IPatch
  *
+ * @param[in,out] ip IPatch object to process
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ipt_swapuv(ay_ipatch_object *ip)
@@ -28,6 +31,9 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
     return AY_ENULL;
 
   ay_status = ay_npt_swaparray(&(ip->controlv), 3, ip->width, ip->height);
+
+  if(ay_status)
+    return ay_status;
 
   i = ip->width;
   ip->width = ip->height;
@@ -49,16 +55,21 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
 } /* ay_ipt_swapuv */
 
 
-/* ay_ipt_revertu:
+/** ay_ipt_revertu:
+ * revert IPatch along U (width)
  *
+ * @param[in,out] ip IPatch object to revert
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ipt_revertu(ay_ipatch_object *ip)
 {
- int ay_status = AY_OK;
  int i, j, ii, jj, stride = 3;
  double t[4];
+
+ if(!ip)
+   return AY_ENULL;
 
   for(i = 0; i < ip->height; i++)
     {
@@ -73,12 +84,16 @@ ay_ipt_revertu(ay_ipatch_object *ip)
 	}
     }
 
- return ay_status;
+ return AY_OK;
 } /* ay_ipt_revertu */
 
 
-/* ay_ipt_revertv:
+/** ay_ipt_revertv:
+ * revert IPatch along V (height)
  *
+ * @param[in,out] ip IPatch object to revert
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ipt_revertv(ay_ipatch_object *ip)
@@ -105,7 +120,8 @@ ay_ipt_revertv(ay_ipatch_object *ip)
  return ay_status;
 } /* ay_ipt_revertv */
 
-/* ay_ipt_interpolateu:
+
+/** ay_ipt_interpolateu:
  * interpolate NURBS patch along U (width) 
  *
  * @param[in,out] np NURBS patch object to interpolate
@@ -266,7 +282,7 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 } /* ay_ipt_interpolateu */
 
 
-/* ay_ipt_interpolatev:
+/** ay_ipt_interpolatev:
  * interpolate NURBS patch along V (height) 
  *
  * @param[in,out] np NURBS patch object to interpolate
@@ -404,7 +420,6 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 
  return AY_OK;
 } /* ay_ipt_interpolatev */
-
 
 
 /** ay_ipt_interpuvtcmd:
