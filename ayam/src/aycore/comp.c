@@ -61,6 +61,8 @@ int ay_comp_ncurve(ay_object *o1, ay_object *o2);
 
 int ay_comp_icurve(ay_object *o1, ay_object *o2);
 
+int ay_comp_ipatch(ay_object *o1, ay_object *o2);
+
 int ay_comp_acurve(ay_object *o1, ay_object *o2);
 
 int ay_comp_npatch(ay_object *o1, ay_object *o2);
@@ -597,6 +599,41 @@ ay_comp_icurve(ay_object *o1, ay_object *o2)
 
  return AY_TRUE;
 } /* ay_comp_icurve */
+
+
+/* ay_comp_ipatch:
+ *
+ */
+int
+ay_comp_ipatch(ay_object *o1, ay_object *o2)
+{
+ ay_ipatch_object *i1, *i2;
+
+  i1 = (ay_ipatch_object *)o1->refine;
+  i2 = (ay_ipatch_object *)o2->refine;
+
+  if((i1->width != i2->width) ||
+     (i1->height != i2->height) ||
+     (i1->close_u != i2->close_u) ||
+     (i1->close_v != i2->close_v) ||
+     (i1->order_u != i2->order_u) ||
+     (i1->order_v != i2->order_v) ||
+     (i1->ktype_u != i2->ktype_u) ||
+     (i1->ktype_v != i2->ktype_v))
+    return AY_FALSE;
+
+  if(memcmp(i1->controlv, i2->controlv, 3*i1->width*i1->height*sizeof(double)))
+    return AY_FALSE;
+
+  /*
+  if(memcmp(i1->sderiv, i2->sderiv, 3*sizeof(double)))
+    return AY_FALSE;
+
+  if(memcmp(i1->ederiv, i2->ederiv, 3*sizeof(double)))
+    return AY_FALSE;
+  */
+ return AY_TRUE;
+} /* ay_comp_ipatch */
 
 
 
@@ -1532,6 +1569,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_trim, AY_IDTRIM);
   ay_status = ay_comp_register(ay_comp_concatnp, AY_IDCONCATNP);
   ay_status = ay_comp_register(ay_comp_offnp, AY_IDOFFNP);
+  ay_status = ay_comp_register(ay_comp_ipatch, AY_IDIPATCH);
 
  return ay_status;
 } /* ay_comp_init */
