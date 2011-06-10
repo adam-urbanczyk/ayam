@@ -811,7 +811,7 @@ ay_sweep_notifycb(ay_object *o)
       if(sweep->interpolate)
 	{
 	  np = (ay_nurbpatch_object *)sweep->npatch->refine;
-	  ay_status = ay_npt_interpolateu(np, np->uorder, AY_KTCHORDAL);
+	  ay_status = ay_ipt_interpolateu(np, np->uorder, AY_KTCHORDAL);
 	}
     }
 

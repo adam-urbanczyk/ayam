@@ -111,6 +111,19 @@ int ay_ipt_revertu(ay_ipatch_object *ip);
  */
 int ay_ipt_revertv(ay_ipatch_object *ip);
 
+/** Interpolate NURBS patch in U direction.
+ */
+int ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype);
+
+/** Interpolate NURBS patch in V direction.
+ */
+int ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
+
+/** Interpolate selected surfaces.
+ */
+int ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
+
 
 /* knots.c */
 
@@ -869,14 +882,6 @@ int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   int has_start_cap, ay_object **start_cap,
 		   int has_end_cap, ay_object **end_cap);
 
-/** Interpolate NURBS patch in U direction.
- */
-int ay_npt_interpolateu(ay_nurbpatch_object *np, int order, int ktype);
-
-/** Interpolate NURBS patch in V direction.
- */
-int ay_npt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
-
 /** Create loft/skinned surface.
  */
 int ay_npt_skinu(ay_object *curves, int order, int knot_type,
@@ -1151,10 +1156,6 @@ int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Interpolate selected surfaces.
- */
-int ay_npt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
 
 /* pmt.c */
 
