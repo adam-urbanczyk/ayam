@@ -358,6 +358,8 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = (void *)ip;
 
+  ay_notify_force(o);
+
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
 
@@ -1233,7 +1235,7 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->width > 2 && ip->order_u > 2)
     {
-      ay_status = ay_npt_interpolateu(np, ip->order_u, ip->ktype_u);
+      ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
 
       if(ay_status)
 	goto cleanup;
@@ -1251,7 +1253,7 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->height > 2 && ip->order_v > 2)
     {
-     ay_status = ay_npt_interpolatev(np, ip->order_v, ip->ktype_v);
+     ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
 
       if(ay_status)
 	goto cleanup;
