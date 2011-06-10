@@ -68,8 +68,8 @@ ay_ipt_revertu(ay_ipatch_object *ip)
  int i, j, ii, jj, stride = 3;
  double t[4];
 
- if(!ip)
-   return AY_ENULL;
+  if(!ip)
+    return AY_ENULL;
 
   for(i = 0; i < ip->height; i++)
     {
@@ -101,6 +101,9 @@ ay_ipt_revertv(ay_ipatch_object *ip)
  int ay_status = AY_OK;
  int i, j, ii, jj, stride = 3;
  double t[4];
+
+  if(!ip)
+    return AY_ENULL;
 
   for(i = 0; i < ip->width; i++)
     {
@@ -134,7 +137,7 @@ int
 ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
- char fname[] = "npt_interpolateu";
+ char fname[] = "ipt_interpolateu";
  int i, k, N, K, stride, ind, ind2, pu, num;
  double *uk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *U = NULL, *Q = NULL, total, d;
@@ -295,7 +298,7 @@ int
 ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
- char fname[] = "npt_interpolatev";
+ char fname[] = "ipt_interpolatev";
  int i, k, N, K, stride, ind, ind2, pv, num;
  double *vk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *V = NULL, total, d;
