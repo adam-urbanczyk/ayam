@@ -14,6 +14,46 @@
 
 /* ipt.c - interpolating surface tools */
 
+
+/** ay_ipt_getpntfromindex:
+ * get address of a single control point from its indices
+ * (performing bounds checking)
+ *
+ * @param[in] patch IPatch object to process
+ * @param[in] indexu index of desired control point in U dimension (width)
+ * @param[in] indexv index of desired control point in V dimension (height)
+ * @param[in,out] p pointer to pointer where to store the resulting address
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_ipt_getpntfromindex(ay_ipatch_object *patch, int indexu, int indexv,
+		       double **p)
+{
+ int stride = 3;
+ char fname[] = "ipt_getpntfromindex";
+
+  if(!patch || !p)
+    return AY_ENULL;
+
+  if(indexu >= patch->width || indexu < 0)
+    {
+      ay_error(AY_ERROR, fname, "index u out of range");
+      return AY_ERROR;
+    }
+
+  if(indexv >= patch->height || indexv < 0)
+    {
+      ay_error(AY_ERROR, fname, "index v out of range");
+      return AY_ERROR;
+    }
+
+  *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
+
+ return AY_OK;
+} /* ay_ipt_getpntfromindex */
+
+
 /** ay_ipt_swapuv:
  * swap U and V dimensions of a IPatch
  *
