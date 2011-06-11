@@ -645,8 +645,13 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 } /* ay_pmt_getpntfromindex */
 
 
-/* ay_pmt_swapuv:
+/** ay_pmt_swapuv:
  *
+ * swap U and V dimensions of a patch mesh
+ *
+ * @param[in,out] ip patch mesh object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  *
  */
 int
@@ -660,6 +665,9 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
     return AY_ENULL;
 
   ay_status = ay_npt_swaparray(&(pm->controlv), 4, pm->width, pm->height);
+
+  if(ay_status)
+    return ay_status;
 
   i = pm->width;
   pm->width = pm->height;
@@ -682,8 +690,11 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
 
 
 /* ay_pmt_revertu:
+ * revert patch mesh along U (width)
  *
+ * @param[in,out] ip patch mesh object to revert
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pmt_revertu(ay_pamesh_object *pm)
@@ -709,8 +720,12 @@ ay_pmt_revertu(ay_pamesh_object *pm)
 } /* ay_pmt_revertu */
 
 
-/* ay_pmt_revertv:
+/** ay_pmt_revertv:
+ * revert patch mesh along V (height)
  *
+ * @param[in,out] ip patch mesh object to revert
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pmt_revertv(ay_pamesh_object *pm)
