@@ -99,6 +99,11 @@ int ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p);
 
 /* ipt.c */
 
+/** Get control point from index.
+ */
+int ay_ipt_getpntfromindex(ay_ipatch_object *patch, int indexu, int indexv,
+			   double **p);
+
 /** Flip UV of interpolating patch.
  */
 int ay_ipt_swapuv(ay_ipatch_object *ip);
