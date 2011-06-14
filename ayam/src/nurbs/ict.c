@@ -109,67 +109,80 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   if(!(knotv = calloc(nlength+4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(lengths = calloc(length-1, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  a = 0;
-  for(i = 0; i < (length-1); i++)
+  if(param_type != AY_KTUNIFORM)
     {
-      lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-			   (controlv[a+4] - controlv[a+1]),
-			   (controlv[a+5] - controlv[a+2]));
+      if(!(lengths = calloc(length-1, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      if(param_type == AY_KTCENTRI)
+      a = 0;
+      for(i = 0; i < (length-1); i++)
 	{
-	  lengths[i] = sqrt(lengths[i]);
+	  lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
+			       (controlv[a+4] - controlv[a+1]),
+			       (controlv[a+5] - controlv[a+2]));
+
+	  if(param_type == AY_KTCENTRI)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+
+	  totallength += lengths[i];
+
+	  a += 3;
+	} /* for */
+      /*
+	the old knot calculation was not really knot averaging
+	for(i = 0; i < 4; i++)
+	knotv[i] = 0.0;
+
+	j = 0;
+	knot = 0.0;
+	for(i = 4; i < nlength; i++)
+	{
+	knot += lengths[j]/totallength;
+	knotv[i] = knot;
+	j++;
 	}
 
-      totallength += lengths[i];
+	for(i = nlength; i < nlength+4; i++)
+	knotv[i] = 1.0;
+      */
+      if(!(vk = calloc(length+1, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      a += 3;
-    } /* for */
-  /*
-  the old knot calculation was not really knot averaging
-  for(i = 0; i < 4; i++)
-    knotv[i] = 0.0;
-
-  j = 0;
-  knot = 0.0;
-  for(i = 4; i < nlength; i++)
-    {
-      knot += lengths[j]/totallength;
-      knotv[i] = knot;
-      j++;
-    }
-
-  for(i = nlength; i < nlength+4; i++)
-    knotv[i] = 1.0;
-  */
-  if(!(vk = calloc(length+1, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  vk[0] = 0.0;
-  j = 0;
-  knot = 0.0;
-  for(i = 1; i < length; i++)
-    {
-      knot += lengths[j]/totallength;
-      vk[i] = knot;
-      j++;
-    }
-  vk[length] = 1.0;
-
-  /* knot averaging (for 2 additional knots) */
-  for(j = 0; j < length-2; j++)
-    {
-      index = j + 4;
-      knotv[index] = 0.0;
-      for(i = j; i < j + 3; i++)
+      vk[0] = 0.0;
+      j = 0;
+      knot = 0.0;
+      for(i = 1; i < length; i++)
 	{
-	  knotv[index] += vk[i];
+	  knot += lengths[j]/totallength;
+	  vk[i] = knot;
+	  j++;
 	}
-      knotv[index] /= 3.0;
+      vk[length] = 1.0;
+
+      /* knot averaging (for 2 additional knots) */
+      for(j = 0; j < length-2; j++)
+	{
+	  index = j + 4;
+	  knotv[index] = 0.0;
+	  for(i = j; i < j + 3; i++)
+	    {
+	      knotv[index] += vk[i];
+	    }
+	  knotv[index] /= 3.0;
+	}
     }
+  else
+    {
+      /* create uniform knots */
+      for(j = 1; j < length-1; j++)
+	{
+	  index = j + 3;
+	  knotv[index] = (double)j/(length-1);
+	}
+    }
+
   for(i = 0; i < 4; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+4; i++)
@@ -312,66 +325,79 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
   if(!(knotv = calloc(nlength+4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(lengths = calloc(length, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  for(i = 0; i < length; i++)
+  if(param_type != AY_KTUNIFORM)
     {
-      lengths[i] = AY_VLEN((ccontrolv[a+3] - ccontrolv[a]),
-			   (ccontrolv[a+4] - ccontrolv[a+1]),
-			   (ccontrolv[a+5] - ccontrolv[a+2]));
+      if(!(lengths = calloc(length, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      if(param_type == AY_KTCENTRI)
+      for(i = 0; i < length; i++)
 	{
-	  lengths[i] = sqrt(lengths[i]);
+	  lengths[i] = AY_VLEN((ccontrolv[a+3] - ccontrolv[a]),
+			       (ccontrolv[a+4] - ccontrolv[a+1]),
+			       (ccontrolv[a+5] - ccontrolv[a+2]));
+
+	  if(param_type == AY_KTCENTRI)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+
+	  totallength += lengths[i];
+
+	  a += 3;
+	} /* for */
+      /*
+	the old knot calculation was not really knot averaging
+	for(i = 0; i < 4; i++)
+	knotv[i] = 0.0;
+
+	j = 0;
+	knot = 0.0;
+	for(i = 4; i < nlength; i++)
+	{
+	knot += lengths[j]/totallength;
+	knotv[i] = knot;
+	j++;
 	}
 
-      totallength += lengths[i];
+	for(i = nlength; i < nlength+4; i++)
+	knotv[i] = 1.0;
+      */
+      if(!(vk = calloc(length+2, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      a += 3;
-    } /* for */
-  /*
-  the old knot calculation was not really knot averaging
-  for(i = 0; i < 4; i++)
-    knotv[i] = 0.0;
-
-  j = 0;
-  knot = 0.0;
-  for(i = 4; i < nlength; i++)
-    {
-      knot += lengths[j]/totallength;
-      knotv[i] = knot;
-      j++;
-    }
-
-  for(i = nlength; i < nlength+4; i++)
-    knotv[i] = 1.0;
-  */
-  if(!(vk = calloc(length+2, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-
-  vk[0] = 0.0;
-  j = 0;
-  knot = 0.0;
-  for(i = 1; i < (length+1); i++)
-    {
-      knot += lengths[j]/totallength;
-      vk[i] = knot;
-      j++;
-    }
-  vk[length+1] = 1.0;
-
-  /* knot averaging (for 3 additional knots) */
-  for(j = 0; j < length-1; j++)
-    {
-      index = j+4;
-      knotv[index] = 0.0;
-      for(i = j; i < j + 3; i++)
+      vk[0] = 0.0;
+      j = 0;
+      knot = 0.0;
+      for(i = 1; i < (length+1); i++)
 	{
-	  knotv[index] += vk[i];
+	  knot += lengths[j]/totallength;
+	  vk[i] = knot;
+	  j++;
 	}
-      knotv[index] /= 3.0;
+      vk[length+1] = 1.0;
+
+      /* knot averaging (for 3 additional knots) */
+      for(j = 0; j < length-1; j++)
+	{
+	  index = j+4;
+	  knotv[index] = 0.0;
+	  for(i = j; i < j + 3; i++)
+	    {
+	      knotv[index] += vk[i];
+	    }
+	  knotv[index] /= 3.0;
+	}
     }
+  else
+    {
+      /* create uniform knots */
+      for(j = 1; j < length; j++)
+	{
+	  index = j + 3;
+	  knotv[index] = (double)j/(length);
+	}
+    }
+
   for(i = 0; i < 4; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+4; i++)
@@ -515,19 +541,26 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
   a = 0;
   for(i = 0; i < (length-1); i++)
     {
-      lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-			   (controlv[a+4] - controlv[a+1]),
-			   (controlv[a+5] - controlv[a+2]));
 
-      if(param_type == AY_KTCENTRI)
+      if(param_type == AY_KTUNIFORM)
 	{
-	  lengths[i] = sqrt(lengths[i]);
+	  lengths[i] = 0.01;
 	}
+      else
+	{
+	  lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
+			       (controlv[a+4] - controlv[a+1]),
+			       (controlv[a+5] - controlv[a+2]));
 
+	  if(param_type == AY_KTCENTRI)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
+	}
       totallength += lengths[i];
 
       a += 3;
-    }
+    } /* for */
 
   if(!(vk = calloc(length+1, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -554,6 +587,7 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
 	}
       knotv[index] /= deg;
     }
+
   for(i = 0; i < order; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+order; i++)
@@ -699,28 +733,43 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
   a = 0;
   for(i = 0; i < length-1; i++)
     {
-      lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
-			   (controlv[a+4] - controlv[a+1]),
-			   (controlv[a+5] - controlv[a+2]));
 
-      if(param_type == AY_KTCENTRI)
+      if(param_type == AY_KTUNIFORM)
 	{
-	  lengths[i] = sqrt(lengths[i]);
+	  lengths[i] = 0.01;
+	}
+      else
+	{
+	  lengths[i] = AY_VLEN((controlv[a+3] - controlv[a]),
+			       (controlv[a+4] - controlv[a+1]),
+			       (controlv[a+5] - controlv[a+2]));
+
+	  if(param_type == AY_KTCENTRI)
+	    {
+	      lengths[i] = sqrt(lengths[i]);
+	    }
 	}
 
       totallength += lengths[i];
 
       a += 3;
-    }
+    } /* for */
 
-  a = (length-1)*3;
-  lengths[length-1] = AY_VLEN((controlv[0] - controlv[a]),
-			      (controlv[1] - controlv[a+1]),
-			      (controlv[2] - controlv[a+2]));
-
-  if(param_type == AY_KTCENTRI)
+  if(param_type == AY_KTUNIFORM)
     {
-      lengths[length-1] = sqrt(lengths[length-1]);
+      lengths[length-1] = 0.01;
+    }
+  else
+    {
+      a = (length-1)*3;
+      lengths[length-1] = AY_VLEN((controlv[0] - controlv[a]),
+				  (controlv[1] - controlv[a+1]),
+				  (controlv[2] - controlv[a+2]));
+
+      if(param_type == AY_KTCENTRI)
+	{
+	  lengths[length-1] = sqrt(lengths[length-1]);
+	}
     }
 
   totallength += lengths[length-1];
@@ -775,10 +824,15 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
 	}
       knotv[index] /= deg;
     }
+
   for(i = 0; i < order; i++)
     knotv[i] = 0.0;
   for(i = nlength; i < nlength+order; i++)
     knotv[i] = 1.0;
+
+ for(i = 0; i < nlength+order; i++)
+    printf("%g ",knotv[i]);
+    printf("\n");
 
   /* set up a sparse control vector */
   /* first point */

@@ -36,7 +36,7 @@ set w [frame $ay(pca).$ICurveAttr(w)]
 addMenu $w ICurveAttrData Type [list "Open" "Closed" ]
 addParam $w ICurveAttrData Length
 addParam $w ICurveAttrData Order
-addMenu $w ICurveAttrData ParamType [list "Chordal" "Centripetal" ]
+addMenu $w ICurveAttrData ParamType [list "Chordal" "Centripetal" "Uniform" ]
 addCheck $w ICurveAttrData Derivatives
 addParam $w ICurveAttrData SDLen
 addParam $w ICurveAttrData EDLen
