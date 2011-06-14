@@ -1781,6 +1781,7 @@ extern char *ay_error_igntype;
 #define AY_KTCUSTOM    3
 #define AY_KTCHORDAL   4
 #define AY_KTCENTRI    5
+#define AY_KTUNIFORM   6
 /*@}*/
 
 /** \name Patch Mesh Types */
