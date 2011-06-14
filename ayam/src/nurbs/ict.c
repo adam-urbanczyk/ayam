@@ -830,10 +830,6 @@ ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,
   for(i = nlength; i < nlength+order; i++)
     knotv[i] = 1.0;
 
- for(i = 0; i < nlength+order; i++)
-    printf("%g ",knotv[i]);
-    printf("\n");
-
   /* set up a sparse control vector */
   /* first point */
   memcpy(ncontrolv,controlv,3*sizeof(double));
