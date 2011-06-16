@@ -422,7 +422,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int clear_selp = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval] (all | index | indexu indexv | u | u v) varx [vary varz [varw]]";
+ char fargs[] = "[-trafo|-world|-eval] (all | index | indexu indexv | u | u v) (varx [vary varz [varw]] | -vn varname)";
+ char *range = NULL;
  Tcl_Obj *to = NULL, *ton = NULL;
  ay_voidfp *arr = NULL;
  ay_getpntcb *cb = NULL;
@@ -463,6 +464,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	  argc2--;
 	}
+      /* provided for backwards compatibility... */
       if(argv[j][0] == '-' && argv[j][1] == 'p')
 	{
 	  /* -param */
@@ -507,8 +509,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < nc->knotv[nc->order-1]) ||
 		 (u > nc->knotv[nc->length]))
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter out of range.");
-		  return TCL_OK;
+		  ay_error_formatrange(0, &(nc->knotv[nc->order-1]),
+				       &(nc->knotv[nc->length]), &range);
+		  ay_error(AY_ERANGE, argv[0], range);
+		  goto cleanup;
 		}
 
 	      /* evaluate the curve */
@@ -590,14 +594,20 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		 (u > np->uknotv[np->width]))
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
-		  return TCL_OK;
+		  ay_error_formatrange(0, &(np->uknotv[np->uorder-1]),
+				       &(np->uknotv[np->width]), &range);
+		  ay_error(AY_ERANGE, argv[0], range);
+		  goto cleanup;
 		}
 
 	      if((v < np->vknotv[np->vorder-1]) ||
 		 (v > np->vknotv[np->height]))
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
-		  return TCL_OK;
+		  ay_error_formatrange(0, &(np->vknotv[np->vorder-1]),
+				       &(np->vknotv[np->height]), &range);
+		  ay_error(AY_ERANGE, argv[0], range);
+		  goto cleanup;
 		}
 
 	      /* evaluate the patch */
@@ -625,6 +635,22 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	  j = i+2;
 	  break;
+	case AY_IDIPATCH:
+	  if(argc2 < 7)
+	    {
+	      ay_error(AY_EARGS, argv[0], fargs);
+	      return TCL_OK;
+	    }
+	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
+				 indexu, indexv, &p);
+	  rational = AY_FALSE;
+	  j = i+2;
+	  break;
+
 	case AY_IDBPATCH:
 	  if(argc2 < 5)
 	    {
@@ -862,6 +888,9 @@ cleanup:
       o->selp = old_selp;
     }
 
+  if(range)
+    free(range);
+
  return TCL_OK;
 } /* ay_tcmd_getpointtcmd */
 
@@ -892,7 +921,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc <= 1)
     {
       ay_error(AY_EARGS, argv[0],
-	       "[-world] (index | indexu indexv) x y z [w]");
+	       "[-world] [-all] index (indexv) (x y z [w] | -vn varname)");
       return TCL_OK;
     }
 
@@ -978,6 +1007,20 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_npt_getpntfromindex((ay_nurbpatch_object*)(o->refine),
 				 indexu, indexv, &p);
 	  rational = AY_TRUE;
+	  i += 2;
+	  break;
+	case AY_IDIPATCH:
+	  if(argc < 5)
+	    {
+	      ay_error(AY_EARGS, argv[0], "indexu indexv x y z");
+	      return TCL_OK;
+	    }
+	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  tcl_status = Tcl_GetInt(interp, argv[i], &indexv);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
+				 indexu, indexv, &p);
 	  i += 2;
 	  break;
 	case AY_IDBPATCH:
@@ -1229,7 +1272,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(index < 0)
     {
-      ay_error(AY_ERROR, argv[0], "index must be positive");
+      ay_error(AY_ERROR, argv[0], "Index must be positive.");
       return TCL_OK;
     }
 
@@ -1265,7 +1308,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
   /* if index is here not -1, we did not find the object */
   if(index >= 0)
     {
-      ay_error(AY_ERROR, argv[0], "object not found in selection");
+      ay_error(AY_ERROR, argv[0], "Object not found in selection.");
     }
 
  return TCL_OK;
@@ -1290,7 +1333,7 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 
   if(p == str)
     {
-      ay_error(AY_ERROR, fname, "expected unsigned integer value but got:");
+      ay_error(AY_ERROR, fname, "Expected unsigned integer value but got:");
       ay_error(AY_ERROR, fname, str);
       return AY_ERROR;
     }
@@ -1300,26 +1343,26 @@ ay_tcmd_getuint(char *str, unsigned int *uint)
 #ifdef EINVAL
       if(errno == EINVAL)
 	{
-	  ay_error(AY_ERROR, fname, "conversion failed");
+	  ay_error(AY_ERROR, fname, "Conversion failed.");
 	  return AY_ERROR;
 	}
 #endif
       if(errno == ERANGE && ret == ULONG_MAX)
 	{
-	  ay_error(AY_ERROR, fname, "conversion overflow");
+	  ay_error(AY_ERROR, fname, "Conversion overflow.");
 	  return AY_ERROR;
 	}
 
       if(ret == 0)
 	{
-	  ay_error(AY_ERROR, fname, "conversion failed");
+	  ay_error(AY_ERROR, fname, "Conversion failed.");
 	  return AY_ERROR;
 	}
     } /* if */
 
   if(p && (*p != '\0'))
     {
-      ay_error(AY_EWARN, fname, "ignoring trailing characters");
+      ay_error(AY_EWARN, fname, "Ignoring trailing characters.");
     }
 
   *uint = (unsigned int)ret;
@@ -1342,7 +1385,7 @@ ay_tcmd_registerlang(char *name, char **result)
   /* check, if language is already registered */
   if((entry = Tcl_FindHashEntry(&ay_languagesht, name)))
     {
-      ay_error(AY_ERROR, fname, "language already registered");
+      ay_error(AY_ERROR, fname, "Language is already registered.");
       return AY_ERROR;
     }
 

@@ -167,6 +167,9 @@ ay_error(int code, char *where, char *what)
     case AY_EFORMAT:
       Tcl_DStringAppend(&ds, "Wrong file format!", -1);
       break;
+    case AY_ERANGE:
+      Tcl_DStringAppend(&ds, "Argument out of range, should be: ", -1);
+      break;
     case AY_ENOSEL:
       Tcl_DStringAppend(&ds, "No object(s) selected!", -1);
       break;
@@ -337,6 +340,41 @@ ay_error_glucb(GLenum err)
 
  return;
 } /* ay_error_glucb */
+
+
+/* ay_error_formatrange:
+ *  format range string
+ */
+void
+ay_error_formatrange(char type, void *lb, void *ub, char **detail)
+{
+ char *msg = NULL;
+
+  if(!lb || !ub || !detail)
+    return;
+
+  switch(type)
+    {
+    case 0:
+      /* double */
+      if((msg = calloc(TCL_DOUBLE_SPACE*2+10, sizeof(char))))
+	sprintf(msg, "[%lg, %lg].", *(double*)lb, *(double*)ub);
+      break;
+    case 1:
+      /* int */
+      if((msg = calloc(TCL_INTEGER_SPACE*2+10, sizeof(char))))
+	sprintf(msg, "[%d, %d].", *(int*)lb, *(int*)ub);
+      break;
+
+    default:
+      break;
+    } /* switch */
+
+  /* return result */
+  *detail = msg;
+
+ return;
+} /* ay_error_formatrange */
 
 
 /* ay_error_getglerrortcmd:
