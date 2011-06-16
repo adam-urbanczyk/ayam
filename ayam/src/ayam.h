@@ -1648,6 +1648,7 @@ extern char *ay_error_igntype;
 #define AY_EUEOF      13 /* unexpected EOF read */
 #define AY_EEOF       14 /* EOF read */
 #define AY_EDONOTLINK 15 /* do not link read object */
+#define AY_ERANGE     16 /* argument out of range */
 #define AY_ENOSEL     20 /* nothing selected */
 #define AY_EARGS      21 /* missing or wrong args */
 #define AY_EOPT       22 /* missing or malformed option value */
