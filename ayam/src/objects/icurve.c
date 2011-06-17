@@ -392,8 +392,8 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
   /*memcpy(icurve->ederiv, eder, 3*sizeof(double));*/
 
   icurve->ederiv[0] = cv[(length-1)*3]  -eder[0];
-  icurve->ederiv[1] = cv[(length-1)*3+1]-sder[1];
-  icurve->ederiv[2] = cv[(length-1)*3+2]-sder[2];
+  icurve->ederiv[1] = cv[(length-1)*3+1]-eder[1];
+  icurve->ederiv[2] = cv[(length-1)*3+2]-eder[2];
 
   icurve->controlv = cv;
 
@@ -1279,8 +1279,11 @@ ay_icurve_notifycb(ay_object *o)
   ay_object_defaults(ncurve);
   ncurve->type = AY_IDNCURVE;
 
-  if(icurve->param_type)
+  if(icurve->param_type == 1)
     param_type = AY_KTCENTRI;
+
+  if(icurve->param_type == 2)
+    param_type = AY_KTUNIFORM;
 
   if(icurve->order != 4)
     {
