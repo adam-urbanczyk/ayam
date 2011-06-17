@@ -894,7 +894,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 		      j = 0;
 		      for(i = 0; i < np->width*np->height; i++)
 			{
-			  ay_trafo_apply4(&(cv[j]), m);
+			  ay_trafo_apply3(&(cv[j]), m);
 			  j += stride;
 			}
 		      ay_trafo_defaults(*n);

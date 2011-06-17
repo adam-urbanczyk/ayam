@@ -825,7 +825,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = height*stride+2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = cone->height * controlv[j+1-(height*stride)];
+	  controlv[j] = cone->height;
 	  controlv[j+1] = controlv[j+1-(height*stride)];
 	  j += stride;
 	}

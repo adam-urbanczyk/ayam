@@ -937,13 +937,13 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = 2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = cylinder->zmin * controlv[j+1];
+	  controlv[j] = cylinder->zmin;
 	  j += stride;
 	}
       memcpy(&(controlv[j-2]), cv, height*stride*sizeof(double));
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = cylinder->zmax * controlv[j+1];
+	  controlv[j] = cylinder->zmax;
 	  j += stride;
 	}
 
