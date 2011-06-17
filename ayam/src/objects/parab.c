@@ -886,7 +886,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = (3*height*stride) + 2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = paraboloid->zmax * controlv[j+1];
+	  controlv[j] = paraboloid->zmax;
 	  j += stride;
 	}
 
@@ -915,7 +915,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  j = 2;
 	  for(i = 0; i < height; i++)
 	    {
-	      controlv[j] = paraboloid->zmin * controlv[j+1];
+	      controlv[j] = paraboloid->zmin;
 	      j += stride;
 	    }
 
@@ -954,7 +954,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = (height*stride) + 2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = z * controlv[j+1];
+	  controlv[j] = z;
 	  j += stride;
 	}
 
@@ -981,7 +981,7 @@ ay_paraboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = (2*height*stride) + 2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = z * controlv[j+1];
+	  controlv[j] = z;
 	  j += stride;
 	}
 
