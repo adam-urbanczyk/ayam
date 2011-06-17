@@ -509,8 +509,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < nc->knotv[nc->order-1]) ||
 		 (u > nc->knotv[nc->length]))
 		{
-		  ay_error_formatrange(0, &(nc->knotv[nc->order-1]),
-				       &(nc->knotv[nc->length]), &range);
+		  ay_error_formatdrange(nc->knotv[nc->order-1],
+					nc->knotv[nc->length], &range);
 		  ay_error(AY_ERANGE, argv[0], range);
 		  goto cleanup;
 		}
@@ -594,8 +594,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		 (u > np->uknotv[np->width]))
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
-		  ay_error_formatrange(0, &(np->uknotv[np->uorder-1]),
-				       &(np->uknotv[np->width]), &range);
+		  ay_error_formatdrange(np->uknotv[np->uorder-1],
+					np->uknotv[np->width], &range);
 		  ay_error(AY_ERANGE, argv[0], range);
 		  goto cleanup;
 		}
@@ -604,8 +604,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		 (v > np->vknotv[np->height]))
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
-		  ay_error_formatrange(0, &(np->vknotv[np->vorder-1]),
-				       &(np->vknotv[np->height]), &range);
+		  ay_error_formatdrange(np->vknotv[np->vorder-1],
+					np->vknotv[np->height], &range);
 		  ay_error(AY_ERANGE, argv[0], range);
 		  goto cleanup;
 		}

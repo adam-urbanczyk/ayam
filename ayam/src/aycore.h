@@ -214,9 +214,13 @@ int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_error_glucb(GLenum err);
 
-/** Format range error message.
+/** Format double range error message.
  */
-void ay_error_formatrange(char type, void *lb, void *ub, char **detail);
+void ay_error_formatdrange(double lb, double ub, char **detail);
+
+/** Format integer range error message.
+ */
+void ay_error_formatirange(int lb, int ub, char **detail);
 
 /** Get the current GL error state and report it to the user.
  */

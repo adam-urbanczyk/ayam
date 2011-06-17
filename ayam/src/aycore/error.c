@@ -342,39 +342,46 @@ ay_error_glucb(GLenum err)
 } /* ay_error_glucb */
 
 
-/* ay_error_formatrange:
- *  format range string
+/* ay_error_formatdrange:
+ *  format double range string
  */
 void
-ay_error_formatrange(char type, void *lb, void *ub, char **detail)
+ay_error_formatdrange(double lb, double ub, char **detail)
 {
  char *msg = NULL;
 
-  if(!lb || !ub || !detail)
+  if(!detail)
     return;
 
-  switch(type)
-    {
-    case 0:
-      /* double */
-      if((msg = calloc(TCL_DOUBLE_SPACE*2+10, sizeof(char))))
-	sprintf(msg, "[%lg, %lg].", *(double*)lb, *(double*)ub);
-      break;
-    case 1:
-      /* int */
-      if((msg = calloc(TCL_INTEGER_SPACE*2+10, sizeof(char))))
-	sprintf(msg, "[%d, %d].", *(int*)lb, *(int*)ub);
-      break;
-
-    default:
-      break;
-    } /* switch */
+  if((msg = calloc(TCL_DOUBLE_SPACE*2+10, sizeof(char))))
+    sprintf(msg, "[%lg, %lg].", lb, ub);
 
   /* return result */
   *detail = msg;
 
  return;
-} /* ay_error_formatrange */
+} /* ay_error_formatdrange */
+
+
+/* ay_error_formatirange:
+ *  format integer range string
+ */
+void
+ay_error_formatirange(int lb, int ub, char **detail)
+{
+ char *msg = NULL;
+
+  if(!detail)
+    return;
+
+  if((msg = calloc(TCL_INTEGER_SPACE*2+10, sizeof(char))))
+    sprintf(msg, "[%d, %d].", lb, ub);
+
+  /* return result */
+  *detail = msg;
+
+ return;
+} /* ay_error_formatirange */
 
 
 /* ay_error_getglerrortcmd:
