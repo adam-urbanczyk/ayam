@@ -1250,7 +1250,7 @@ int
 ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
 {
  int stride = 3;
- char fname[] = "ict_getpntfromindex";
+ char fname[] = "ict_getpntfromindex", *range = NULL;
 
   if(!curve || !p)
     return AY_ENULL;
@@ -1258,6 +1258,10 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
   if(index > (curve->length+1) || index < 0)
     {
       ay_error(AY_ERROR, fname, "index out of range");
+      ay_error_formatirange(0, curve->length+1, &range);
+      ay_error(AY_ERANGE, fname, range);
+      if(range)
+	free(range);
       return AY_ERROR;
     }
 

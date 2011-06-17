@@ -622,7 +622,7 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 		       double **p)
 {
  int stride = 4;
- char fname[] = "pmt_getpntfromindex";
+ char fname[] = "pmt_getpntfromindex", *range = NULL;
 
   if(!patch || !p)
     return AY_ENULL;
@@ -630,12 +630,20 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
   if(indexu >= patch->width || indexu < 0)
     {
       ay_error(AY_ERROR, fname, "index u out of range");
+      ay_error_formatirange(0, patch->width-1, &range);
+      ay_error(AY_ERANGE, fname, range);
+      if(range)
+	free(range);
       return AY_ERROR;
     }
 
   if(indexv >= patch->height || indexv < 0)
     {
       ay_error(AY_ERROR, fname, "index v out of range");
+      ay_error_formatirange(0, patch->height-1, &range);
+      ay_error(AY_ERANGE, fname, range);
+      if(range)
+	free(range);
       return AY_ERROR;
     }
 

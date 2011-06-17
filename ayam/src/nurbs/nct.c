@@ -1639,6 +1639,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0, nq = 0;
+ char *range = NULL;
 
   if(argc < 3)
     {
@@ -1679,6 +1680,11 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	  if((u < knots[curve->order-1]) || (u > knots[curve->length]))
 	    {
 	      ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
+	      ay_error_formatdrange(knots[curve->order-1],
+				    knots[curve->length], &range);
+	      ay_error(AY_ERANGE, argv[0], range);
+	      if(range)
+		free(range);
 	      return TCL_OK;
 	    }
 
@@ -2232,7 +2238,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
  ay_nurbcurve_object *nc1 = NULL, *nc2 = NULL;
  double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, r = 0, s = 0, nq = 0, nc1len = 0;
- char fname[] = "split";
+ char fname[] = "split", *range = NULL;
 
   if(!src || !result)
     return AY_ENULL;
@@ -2251,6 +2257,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       if((u <= knots[0/*curve->order-2*/]) || (u >= knots[curve->length]))
 	{
 	  ay_error(AY_ERROR, fname, "Parameter u out of range.");
+	  ay_error_formatdrange(knots[0],
+				knots[curve->length], &range);
+	  ay_error(AY_ERANGE, fname, range);
+	  if(range)
+	    free(range);
 	  return AY_ERROR;
 	}
 
@@ -3382,7 +3393,7 @@ int
 ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 {
  int stride = 4;
- char fname[] = "nct_getpntfromindex";
+ char fname[] = "nct_getpntfromindex", *range = NULL;
 
   if(!curve || !p)
     return AY_ENULL;
@@ -3390,6 +3401,10 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
   if(index >= curve->length || index < 0)
     {
       ay_error(AY_ERROR, fname, "Parameter index out of range.");
+      ay_error_formatirange(0, curve->length-1, &range);
+      ay_error(AY_ERANGE, fname, range);
+      if(range)
+	free(range);
       return AY_ERROR;
     }
 
@@ -5566,6 +5581,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  int have_index = AY_FALSE, i = 1, j = 0, s = 0, r = 0;
+ char *range = NULL;
  double tol = DBL_MAX/*AY_EPSILON*/;
  double u = 0.0, *newknotv = NULL, *newcontrolv = NULL;
  ay_nurbcurve_object *curve;
@@ -5634,6 +5650,10 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(j >= (curve->length+curve->order))
 		{
 		  ay_error(AY_ERROR, argv[0], "Index out of range.");
+		  ay_error_formatirange(0, curve->length+curve->order, &range);
+		  ay_error(AY_ERANGE, argv[0], range);
+		  if(range)
+		    free(range);
 		  break;
 		}
 	      u = curve->knotv[j];
