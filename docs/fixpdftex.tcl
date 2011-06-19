@@ -12,9 +12,10 @@
 #   with smaller line spacing
 # o verbatim environments should not cross pages (needspace)
 # o all sections start on a new page (newpage)
+# o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
 
-set procs {fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insinlinegfx}
+set procs {fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx}
 
 proc fixheight { buf outfile } {
     global height
@@ -112,6 +113,17 @@ proc insneedspace { buf outfile } {
     }
     return $found;
 }
+
+
+proc insphantomsection { buf outfile } {
+    set found 0
+    if { [string first "phantomsection" $buf] > -1 } {
+	puts $outfile "\\phantomsection"
+	set found 1
+    }
+    return $found;
+}
+
 
 proc insinlinegfx { buf outfile } {
     global height
