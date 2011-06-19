@@ -13,6 +13,9 @@ per input line;
 
 3) likewise, enforce a new page with:
 <#if out=latex><x/newpage/</#if>
+
+4) for references in sections, prepend the label statement with
+<#if out=latex><x/phantomsection/</#if>
 .
  -->
 <article>
@@ -696,6 +699,7 @@ widget and thus enable the main menu keyboard shortcuts.
 One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmfile">
 The <tt/"File"/ menu deals with standard file operations:
 <itemize>
@@ -836,6 +840,7 @@ the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
 and quit the application.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmedit">
 The <tt/"Edit"/ menu contains object and property clipboard
 operations, undo actions, and lets you open the preferences editor:
@@ -902,6 +907,7 @@ see also section <ref id="instanceobj" name="Instance Object">.
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmcreate">
 The <tt/"Create"/ menu entries let you create objects. In contrast
 to the object creation via the toolbox some menu entries present you
@@ -945,6 +951,14 @@ Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb NPatch"/ command, as outlined in section
 <ref id="sccrtnp" name="Creating Objects">.
+
+<item><tt/"IPatch"/, create a new interpolating patch. A small dialog box will
+pop up, where you may specify the width and height of the new patch. See
+also section <ref id="ipatchobj" name="IPatch Object">.
+This dialog also contains a <tt/"AddArgs"/ entry
+field where you may specify additional command line arguments to
+the <tt/"crtOb IPatch"/ command, as outlined in section
+<ref id="sccrtip" name="Creating Objects">.
 
 <item><tt/"BPatch"/, create a new bilinear patch. See
 also section <ref id="bpatchobj" name="BPatch Object">.
@@ -1009,6 +1023,7 @@ also section <ref id="selectobj" name="Select Object">.
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmtools">
 The <tt/"Tools"/ menu hosts modelling tools to create complex objects
 or modify existing objects. Some tools open dialog windows to request
@@ -1142,10 +1157,12 @@ in the object clipboard. You can clear the color from the tree view
 with the keyboard shortcut <tt/&lt;Ctrl+l&gt;/.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmcustom">
 The <tt/"Custom"/ menu is initially empty. Custom objects and plugins,
 may create entries here.
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmspecial">
 The <tt/"Special"/ menu contains seldom used tools:
 <itemize>
@@ -1286,6 +1303,7 @@ If one of the iconified windows is de-iconified later, all other zapped
 windows will be de-iconified as well.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="mmhelp">
 The <tt/"Help"/ menu:
 <itemize>
@@ -1373,6 +1391,7 @@ has the keyboard input focus.
 One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
@@ -1425,6 +1444,7 @@ See also section <ref id="shadowmaps" name="Using ShadowMaps">.
 available for the internal views of Ayam in single window GUI mode.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="vmtype">
 The <tt/"Type"/ menu entries:
 <itemize>
@@ -1445,6 +1465,7 @@ of certain modelling actions. See sections
 <ref id="iac" name="Interactive Actions (Modelling)">
 for more information.
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="vmconf">
 The <tt/"Configure"/ menu may be used to change preferences of the view.
 Some preferences are outlined in greater detail in section
@@ -10407,7 +10428,7 @@ object type:
 <p>
 
 <#if out=latex><x/newpage/</#if>
-
+<#if out=latex><x/phantomsection/</#if>
 <label id="sccrtnc">
   <itemize>
   <item><tt/"NCurve"/: NURBS curves accept the following arguments:
@@ -10476,7 +10497,7 @@ In versions of Ayam prior to 1.17, NURBS curves only accepted the
 <tt/"-length"/ argument.
 
 <#if out=latex><x/newpage/</#if>
-
+<#if out=latex><x/phantomsection/</#if>
 <label id="sccrtic">
   <item><tt/"ICurve"/: Interpolating curves accept the following arguments:
   <itemize>
@@ -10557,7 +10578,7 @@ In versions of Ayam prior to 1.17, interpolating curves only accepted the
 <tt/"-length"/ argument.
 
 <#if out=latex><x/newpage/</#if>
-
+<#if out=latex><x/phantomsection/</#if>
 <label id="sccrtac">
   <item><tt/"ACurve"/: Approximating curves accept the following arguments:
   <itemize>
@@ -10617,7 +10638,7 @@ In versions of Ayam prior to 1.17, approximating curves only accepted the
 <tt/"-length"/ argument.
 
 <#if out=latex><x/newpage/</#if>
-
+<#if out=latex><x/phantomsection/</#if>
 <label id="sccrtnp">
   <item><tt/"NPatch"/: NURBS patches accept the following arguments:
   <itemize>
@@ -10725,7 +10746,7 @@ In versions of Ayam prior to 1.17, NURBS patches only accepted the
 <tt/"-width"/ and <tt/"-height"/ argument.
 
 <#if out=latex><x/newpage/</#if>
-
+<#if out=latex><x/phantomsection/</#if>
 <label id="sccrtip">
   <item><tt/"IPatch"/: Interpolating patches accept the following arguments:
   <itemize>
@@ -10986,7 +11007,9 @@ creates a material named Wood.
 
 There are some helper commands, that create certain often used
 curves:
-<p><label id="sccrtncircle">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccrtncircle">
 crtNCircle - create NURBS circle:
 <itemize>
  <item>Synopsis: <tt/"crtNCircle [-r radius] [-a arc]"/
@@ -10997,7 +11020,9 @@ defined via the <tt/-a/ option. The curve always starts on the
 positive X axis. The radius defaults to 1.0 and
 the arc to 360.0. The arc option supports negative values.
 </itemize>
-<p><label id="sccrtclosedbs">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccrtclosedbs">
 crtClosedBS - create closed (circular) B-Spline:
 <itemize>
  <item>Synopsis: <tt/"crtClosedBS sections [order [arc [radius]]]"/
@@ -11007,7 +11032,9 @@ with desired number of sections, order (defaults to 4), arc (defaults
 to 360.0, negative values are allowed), and radius (defaults to 1.0).
 The curve always starts on the positive X axis. 
 </itemize>
-<p><label id="sccrtnrect">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccrtnrect">
 crtNRect - create a rectangular NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"crtNRect"/
@@ -11024,7 +11051,9 @@ centered quadratic curve with width 2.0 and height 2.0 instead.
 <p>
 These commands are probably the most important ones, because many other
 scripting interface commands operate on selected objects only:
-<p><label id="scselob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scselob">
 selOb - select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
@@ -11037,7 +11066,9 @@ selects the first object in the current level, <tt/"selOb 0 1"/ selects
 the first two objects in the current level.
 </itemize>
 
-<p><label id="scwithob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scwithob">
 withOb - execute a command on certain selected object(s):
 <itemize>
  <item>Synopsis: <tt/"withOb index [do] command"/
@@ -11049,7 +11080,9 @@ without changing the selection state of any objects.
 object from multiple selected objects. All objects stay selected.
 </itemize>
 
-<p><label id="scsl">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsl">
 sL - select last object:
 <itemize>
  <item>Synopsis: <tt/"sL"/
@@ -11079,7 +11112,9 @@ sL
 </code>
 </itemize>
 
-<p><label id="schsl">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="schsl">
 hSL - hidden select last object:
 <itemize>
  <item>Synopsis: <tt/"hSL"/
@@ -11093,7 +11128,9 @@ safe interpreter. This is no longer the case, use <tt/"sL"/ instead.
 <sect2>Selecting Points
 <p>
 This command manipulates the point selection.
-<p><label id="scselpnts">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scselpnts">
 selPnts - select points:
 <itemize>
  <item>Synopsis: <tt/"selPnts [-all|index1 index2 ...]"/
@@ -11118,7 +11155,9 @@ Since Ayam 1.9 two new commands are implemented that ease
 the manipulation of property values from the scripting interface:
 
 
-<p><label id="scgetproperty">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgetproperty">
 getProperty - get single property value
 <itemize>
  <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
@@ -11145,7 +11184,9 @@ set r $::SphereAttrData(Radius)
 See also section
 <ref id="ayproparr" name="Global Property Management and Data Arrays">.
 
-<p><label id="scsetproperty">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsetproperty">
 setProperty - set single property value
 <itemize>
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
@@ -11175,21 +11216,27 @@ See also section
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
 These commands operate the object clipboard:
-<p><label id="sccopob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccopob">
 copOb - copy object:
 <itemize>
  <item>Synopsis: <tt/"copOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Copy the selected object(s) to the object clipboard.
 </itemize>
-<p><label id="sccutob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccutob">
 cutOb - cut object:
 <itemize>
  <item>Synopsis: <tt/"cutOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Move the selected object(s) into the object clipboard.
 </itemize>
-<p><label id="scpasob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scpasob">
 pasOb - paste object:
 <itemize>
  <item>Synopsis: <tt/"pasOb"/
@@ -11197,14 +11244,18 @@ pasOb - paste object:
  <item>Description: Copy the selected object(s) from the object
 clipboard to the current level.
 </itemize>
-<p><label id="scdelob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scdelob">
 delOb - delete object:
 <itemize>
  <item>Synopsis: <tt/"delOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Delete the selected object(s) from the scene.
 </itemize>
-<p><label id="sccmovob"><label id="scpasmovob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccmovob"><label id="scpasmovob">
 pasmovOb - paste (move) object:
 <itemize>
  <item>Synopsis: <tt/"pasmovOb"/
@@ -11216,7 +11267,9 @@ clipboard to the current level.
 <p>
 The following commands operate the property clipboard,
 which is totally independent from the object clipboard.
-<p><label id="scpclip_copy"><label id="sccopyprop">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scpclip_copy"><label id="sccopyprop">
 pclip_copy/copyProp - copy a property to the property clipboard
 <itemize>
  <item>Synopsis: <tt/"pclip_copy mode"/ or <tt/"copyProp mode"/
@@ -11230,7 +11283,9 @@ Note that you may call this procedure also using the shortcut
 <tt/"copyProp"/.
 </itemize>
 
-<p><label id="scpclip_paste"><label id="scpasteprop">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scpclip_paste"><label id="scpasteprop">
 pclip_paste/pasteProp - paste a property
 <itemize>
  <item>Synopsis: <tt/"pclip_paste"/ or <tt/"pasteProp"/
@@ -11244,7 +11299,9 @@ Note that you may call this procedure also using the shortcut
 <sect2>Hierarchy Operations<label id="scihier">
 <p>
 These commands manipulate the current level of Ayam:
-<p><label id="scgodown">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgodown">
 goDown:
 <itemize>
  <item>Synopsis: <tt/"goDown index"/
@@ -11255,7 +11312,9 @@ the parent level will be entered instead. If index is -1, the last
 object of the current level will be entered.
 </itemize>
 
-<p><label id="scgoup">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgoup">
 goUp:
 <itemize>
  <item>Synopsis: <tt/"goUp"/
@@ -11263,7 +11322,9 @@ goUp:
  <item>Description: Go one level up in the object hierarchy.
 </itemize>
 
-<p><label id="scgotop">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgotop">
 goTop:
 <itemize>
  <item>Synopsis: <tt/"goTop"/
@@ -11274,7 +11335,9 @@ goTop:
 <sect2>Transformations<label id="scitrafo">
 <p>
 These commands transform objects or selected points of objects:
-<p><label id="scmovob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scmovob">
 movOb - move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
@@ -11284,7 +11347,9 @@ objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
 </itemize>
 
-<p><label id="scrotob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scrotob">
 rotOb - rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
@@ -11294,7 +11359,9 @@ objects X axis, then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
-<p><label id="scscalob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scscalob">
 scalOb - scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
@@ -11307,7 +11374,9 @@ direction of the objects Z axis.
 be changed to 1.0 silently!
 </itemize>
 
-<p><label id="scmovsel"><label id="scmovpnts">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scmovsel"><label id="scmovpnts">
 movPnts - move selected points:
 <itemize>
  <item>Synopsis: <tt/"movPnts dx dy dz"/
@@ -11317,7 +11386,9 @@ objects X axis, by dy in direction of the objects Y axis and by dz in
 direction of the objects Z axis.
 </itemize>
 
-<p><label id="scrotsel"><label id="scrotpnts">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scrotsel"><label id="scrotpnts">
 rotPnts - rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
@@ -11327,7 +11398,9 @@ objects X axis then by dy degrees around objects Y axis and then by dz degrees
 around the objects Z axis. Note the order of the rotations!
 </itemize>
 
-<p><label id="scscalsel"><label id="scscalpnts">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scscalsel"><label id="scscalpnts">
 scalPnts - scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalPnts dx dy dz"/
@@ -11340,7 +11413,9 @@ direction of the objects Z axis.
 be changed to 1.0 silently!
 </itemize>
 
-<p><label id="scdelegtrafo">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scdelegtrafo">
 delegTrafo - delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
@@ -11351,7 +11426,9 @@ the transformations of the selected objects will be reset to the
 default values.
 </itemize>
 
-<p><label id="scapplytrafo">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scapplytrafo">
 applyTrafo - apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
@@ -11367,7 +11444,9 @@ be reset to the default values.
 <sect2>Manipulating Shaders<label id="scishaders">
 <p>
 These commands operate the shader properties:
-<p><label id="scshaderset">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scshaderset">
 shaderSet:
 <itemize>
  <item>Synopsis: <tt/"shaderSet shadertype [varname]"/
@@ -11379,7 +11458,9 @@ or <tt/"interior"/. If varname is not given, the shader in question
 is deleted from the object instead.
 </itemize>
 
-<p><label id="scshaderget">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scshaderget">
 shaderGet:
 <itemize>
  <item>Synopsis: <tt/"shaderGet shadertype varname"/
@@ -11394,7 +11475,9 @@ pointed to by varname.
 <sect2>Manipulating Tags<label id="scitags">
 <p>
 These commands may be used to modify the tags of an object:
-<p><label id="scaddtag">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scaddtag">
 addTag:
 <itemize>
  <item>Synopsis: <tt/"addTag type value"/
@@ -11413,7 +11496,9 @@ that hides the Transformations property GUI.
 </enum>
 </itemize>
 
-<p><label id="scdeltags">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scdeltags">
 delTags:
 <itemize>
  <item>Synopsis: <tt/"delTags type"/
@@ -11431,7 +11516,9 @@ removes all <tt>"RP"</tt> tags from the selected objects.
 </enum>
 </itemize>
 
-<p><label id="scgettags">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgettags">
 getTags:
 <itemize>
  <item>Synopsis: <tt/"getTags tvname vvname"/
@@ -11442,7 +11529,9 @@ variables named tvname for the tag types and vvname for the tag
 values.
 </itemize>
 
-<p><label id="scsettags">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsettags">
 setTags:
 <itemize>
  <item>Synopsis: <tt/"setTags tags"/
@@ -11463,7 +11552,9 @@ tags.
 <p>
 These are more specialized commands to change NURBS curve and surface
 properties:
-<p><label id="scclampnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scclampnc">
 clampNC - clamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"clampNC [side]"/
@@ -11483,7 +11574,9 @@ clamped, this works ok now.
 See also section <ref id="clat" name="The Clamp Tool">.
 </itemize>
 
-<p><label id="scelevatenc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scelevatenc">
 elevateNC - elevate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC n"/
@@ -11494,7 +11587,9 @@ The knot type of the elevated curves will be changed to <tt/"Custom"/.
 See also section <ref id="elevt" name="The Elevate Tool">.
 </itemize>
 
-<p><label id="scinsknnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinsknnc">
 insknNC - insert knot into NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
@@ -11509,7 +11604,9 @@ the shape of the curves will not change!
 See also section <ref id="insknt" name="The Insert Knot Tool">.
 </itemize>
 
-<p><label id="scremknnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scremknnc">
 remknNC - remove knot from NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"remknNC (u|-i ind) r [tol]"/
@@ -11529,7 +11626,9 @@ error is reported and the original curve is left unchanged.
 See also section <ref id="remknt" name="The Remove Knot Tool">.
 </itemize>
 
-<p><label id="screfinenc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screfinenc">
 refineNC - refine NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
@@ -11542,7 +11641,9 @@ The knot type of the refined curve may be changed to <tt/"Custom"/.
 See also section <ref id="refit" name="The Refine Tool">.
 </itemize>
 
-<p><label id="sccoarsennc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sccoarsennc">
 coarsenNC - coarsen NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"coarsenNC"/
@@ -11552,7 +11653,9 @@ selected NURBS curves.
 See also section <ref id="coart" name="The Coarsen Tool">.
 </itemize>
 
-<p><label id="screvert"><label id="screvertc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screvert"><label id="screvertc">
 revertC - revert curves:
 <itemize>
  <item>Synopsis: <tt/"revertC"/
@@ -11562,7 +11665,9 @@ interpolating, and approximating curves.
 See also section <ref id="revertt" name="The Revert Tool">.
 </itemize>
 
-<p><label id="screvertu"><label id="screvertus">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screvertu"><label id="screvertus">
 revertuS - revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertuS"/
@@ -11572,7 +11677,9 @@ the u parametric dimension.
 See also section <ref id="revertut" name="The Revert U Tool">.
 </itemize>
 
-<p><label id="screvertv"><label id="screvertvs">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screvertv"><label id="screvertvs">
 revertvS - revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertvS"/
@@ -11582,7 +11689,9 @@ the v parametric dimension.
 See also section <ref id="revertvt" name="The Revert V Tool">.
 </itemize>
 
-<p><label id="scswapuvs">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scswapuvs">
 swapuvS - swap dimensions of surfaces:
 <itemize>
  <item>Synopsis: <tt/"swapuvS"/
@@ -11592,7 +11701,9 @@ exchanging width and height (without altering the shape of the surfaces).
 See also section <ref id="swapuvt" name="The Swap UV Tool">.
 </itemize>
 
-<p><label id="screscaleknnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screscaleknnc">
 rescaleknNC - rescale knots of NURBS curves:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax|-d mindist]"/
@@ -11609,7 +11720,9 @@ This operation does not change the shape of the curve.
 See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 </itemize>
 
-<p><label id="scsplitnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsplitnc">
 splitNC - split NURBS curve
 <itemize>
  <item>Synopsis: <tt/"splitNC u"/
@@ -11620,7 +11733,9 @@ value into two curves, creating one new curve and
 See also section <ref id="splitt" name="The Split Tool">.
 </itemize>
 
-<p><label id="scshiftc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scshiftc">
 shiftC - shift control points of a (closed) curve:
 <itemize>
  <item>Synopsis: <tt/"shiftC i"/
@@ -11635,7 +11750,9 @@ NURBS curves, the multiple points will be managed correctly.
 See also section <ref id="shiftclc" name="The Shift Closed Curve Tool">.
 </itemize>
 
-<p><label id="sctoxync">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sctoxync">
 toXYNC - move NURBS curve to XY plane
 <itemize>
  <item>Synopsis: <tt/"toXYNC"/
@@ -11645,7 +11762,9 @@ objects to its XY plane.
 See also section <ref id="toxyt" name="The To XY Tool">.
 </itemize>
 
-<p><label id="sctrimnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sctrimnc">
 trimNC - trim NURBS curve
 <itemize>
  <item>Synopsis: <tt/"trimNC umin umax"/
@@ -11655,7 +11774,9 @@ parametric range (umin-umax), modifying the original selected curve.
 See also section <ref id="trimt" name="The Trim Tool">.
 </itemize>
 
-<p><label id="scestlennc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scestlennc">
 estlenNC - estimate length of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"estlenNC varname"/
@@ -11664,7 +11785,9 @@ estlenNC - estimate length of NURBS curve:
 and put the result into the designated variable.
 </itemize>
 
-<p><label id="screparamnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screparamnc">
 reparamNC - reparameterise a NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"reparamNC type"/
@@ -11674,7 +11797,9 @@ chordal knots (type: 0), or centripetal knots (type: 1). The knot type
 of the curve will be changed to <tt/"Custom"/.
 </itemize>
 
-<p><label id="scmakecompnc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scmakecompnc">
 makeCompNC - make NURBS curves compatible
 <itemize>
  <item>Synopsis: <tt/"makeCompNC"/
@@ -11684,7 +11809,9 @@ i.e. of the same order and defined on the same knot vector.
 See also section <ref id="makecompt" name="The Make Compatible Tool">.
 </itemize>
 
-<p><label id="scclampnpu"><label id="scclampunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scclampnpu"><label id="scclampunp">
 clampuNP - clamp NURBS patch in U direction:
 <itemize>
  <item>Synopsis: <tt/"clampuNP [side]"/
@@ -11704,7 +11831,9 @@ clamped, this works ok now.
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
-<p><label id="scclampnpv"><label id="scclampvnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scclampnpv"><label id="scclampvnp">
 clampvNP - clamp NURBS patch in V direction:
 <itemize>
  <item>Synopsis: <tt/"clampvNP [side]"/
@@ -11724,7 +11853,9 @@ clamped, this works ok now.
 See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 </itemize>
 
-<p><label id="screscaleknnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screscaleknnp">
 rescaleknNP - rescale knots of NURBS patches:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
@@ -11749,7 +11880,9 @@ and
 of the selected NURBS patch objects to the new range (0.2, 0.3).
 </itemize>
 
-<p><label id="scinsknnpu"><label id="scinsknunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinsknnpu"><label id="scinsknunp">
 insknuNP - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknuNP u r"/
@@ -11765,7 +11898,9 @@ the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 </itemize>
 
-<p><label id="scinsknnpv"><label id="scinsknvnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinsknnpv"><label id="scinsknvnp">
 insknvNP - insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknvNP v r"/
@@ -11781,7 +11916,9 @@ the shape of the patches will not change!
 See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 </itemize>
 
-<p><label id="scremknunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scremknunp">
 remknuNP - remove u knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknuNP (u|-i ind) r [tol]"/
@@ -11800,7 +11937,9 @@ error is reported and the original surface is left unchanged.
 See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 </itemize>
 
-<p><label id="scremknvnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scremknvnp">
 remknvNP - remove v knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknvNP (v|-i ind) r [tol]"/
@@ -11819,7 +11958,9 @@ error is reported and the original surface is left unchanged.
 See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 </itemize>
 
-<p><label id="scelevateunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scelevateunp">
 elevateuNP - elevate NURBS surface in u direction:
 <itemize>
  <item>Synopsis: <tt/"elevateuNP n"/
@@ -11830,7 +11971,9 @@ The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 See also section <ref id="elevuvt" name="The Elevate UV Tool">.
 </itemize>
 
-<p><label id="scelevatevnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scelevatevnp">
 elevatevNP - elevate NURBS surface in v direction:
 <itemize>
  <item>Synopsis: <tt/"elevatevNP n"/
@@ -11841,7 +11984,9 @@ The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
 See also section <ref id="elevuvt" name="The Elevate UV Tool">.
 </itemize>
 
-<p><label id="scsplitnpu"><label id="scsplitunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsplitnpu"><label id="scsplitunp">
 splituNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splituNP u"/
@@ -11854,7 +11999,9 @@ current level of the scene.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
-<p><label id="scsplitnpv"><label id="scsplitvnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsplitnpv"><label id="scsplitvnp">
 splitvNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitvNP v"/
@@ -11867,7 +12014,9 @@ current level of the scene.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
-<p><label id="scextrnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scextrnp">
 extrNP - extract NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
@@ -11880,7 +12029,9 @@ vmin, and vmax which have to be in the respective valid knot range.
 See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 </itemize>
 
-<p><label id="scinterpunp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinterpunp">
 interpuNP - interpolate NURBS surface in u direction:
 <itemize>
  <item>Synopsis: <tt/"interpuNP order"/
@@ -11895,7 +12046,9 @@ interpolate the old control point positions.
 The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 </itemize>
 
-<p><label id="scinterpvnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinterpvnp">
 interpvNP - interpolate NURBS surface in v direction:
 <itemize>
  <item>Synopsis: <tt/"interpvNP order"/
@@ -11911,7 +12064,9 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 </itemize>
 
 
-<p><label id="scsplitnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsplitnp">
 splitNP - split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
@@ -11921,7 +12076,9 @@ along parametric dimension u or v.
 See also section <ref id="splitnpt" name="The Patch Split Tools">.
 </itemize>
 
-<p><label id="scbuildnp">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scbuildnp">
 buildNP - build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
@@ -11939,7 +12096,9 @@ Note that the exact arguments needed depend on the type of the selected
 object, e.g. a NURBS curve requires just one index parameter (indexu),
 whereas a NURBS patch requires two index parameters (indexu and indexv).
 
-<p><label id="scgetpnt">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgetpnt">
 getPnt:
 <itemize>
  <item>Synopsis: <tt/"getPnt [-trafo|-world|-eval] indexu [indexv] varx vary varz [varw]"/
@@ -11967,7 +12126,9 @@ values to the variables <tt/"x y z w"/.
 </enum>
 </itemize>
 
-<p><label id="scsetpnt">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsetpnt">
 setPnt:
 <itemize>
  <item>Synopsis: <tt/"setPnt [-world] indexu [indexv] x y z [w]"/
@@ -11999,7 +12160,9 @@ patch object to <tt/"0.0 0.2 0.3 1.0"/.
 <sect2>Updating the GUI<label id="sciupd">
 <p>
 These commands update various parts of the Ayam user interface:
-<p><label id="scrv">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scrv">
 rV - redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
@@ -12008,7 +12171,9 @@ rV - redraw all views:
 iconified views and views where automatic redraw has been turned off.
 </itemize>
 
-<p><label id="scus">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scus">
 uS - update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
@@ -12039,7 +12204,9 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
  </itemize>
 </itemize>
 
-<p><label id="scucl">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scucl">
 uCL - update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
@@ -12050,7 +12217,9 @@ The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
 operation mode, and "cs" just clears the selection.
 </itemize>
 
-<p><label id="scucr">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scucr">
 uCR - update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
@@ -12060,7 +12229,9 @@ or tree view after objects have been created and need to be added to
 the current level. See also the discussion of <tt/"uS"/ above.
 </itemize>
 
-<p><label id="scplb_update">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scplb_update">
 plb_update - property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
@@ -12121,7 +12292,9 @@ Ayam.
 <p>
 There are two commands that help to apply arbitrary commands
 to a number of objects, forAll and forAllT:
-<p><label id="scforall">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scforall">
 forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll recursive command"</tt>
@@ -12151,7 +12324,9 @@ correctly maintains the current selection.
  </itemize>
 </itemize>
 
-<p><label id="scforallt">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scforallt">
 forAllT:
 <itemize>
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
@@ -12182,7 +12357,9 @@ correctly maintains the current selection.
 <p>
 These commands help to load scenes from and save them to Ayam scene
 files:
-<p><label id="scnewscene">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scnewscene">
 newScene:
 <itemize>
  <item>Synopsis: <tt>"newScene"</tt>
@@ -12190,7 +12367,9 @@ newScene:
  <item>Description: clears the current scene.
 </itemize>
 
-<p><label id="screplacescene">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="screplacescene">
 replaceScene:
 <itemize>
  <item>Synopsis: <tt>"replaceScene filename"</tt>
@@ -12199,7 +12378,9 @@ replaceScene:
 from filename.
 </itemize>
 
-<p><label id="scinsertscene">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scinsertscene">
 insertScene:
 <itemize>
  <item>Synopsis: <tt>"insertScene filename"</tt>
@@ -12207,7 +12388,9 @@ insertScene:
  <item>Description: inserts a scene from filename.
 </itemize>
 
-<p><label id="scsavescene">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scsavescene">
 saveScene:
 <itemize>
  <item>Synopsis: <tt>"saveScene filename"</tt>
@@ -12220,7 +12403,9 @@ saveScene:
 This command allows to export the current scene to a RenderMan
 Interface Bytestream (RIB):
 
-<p><label id="scwrib">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scwrib">
 wrib - RIB export:
 <itemize>
  <item>Synopsis:
@@ -12257,7 +12442,9 @@ by a <tt/"-filename "/, this is no longer the case.
 <p>
 This command is for error reporting from scripts:
 
-<p><label id="scayerror">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scayerror">
 ayError:
 <itemize>
  <item>Synopsis: <tt>"ayError code place detail"</tt>
@@ -12278,7 +12465,9 @@ Detail is the string to be output.
 <p>
 Miscellaneous commands:
 
-<p><label id="scgettype">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scgettype">
 getType:
 <itemize>
  <item>Synopsis: <tt>"getType varname"</tt>
@@ -12289,7 +12478,9 @@ the well known strings that are displayed in the hierarchy list box
 if the objects are not named (NPatch, NCurve, Sphere, etc.).
 </itemize>
 
-<p><label id="sctmpget">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="sctmpget">
 tmpGet:
 <itemize>
  <item>Synopsis: <tt>"tmpGet tmpdir varname"</tt>
@@ -12298,7 +12489,9 @@ tmpGet:
 file in tmpdir and puts the complete name into varname.
 </itemize>
 
-<p><label id="schaschild">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="schaschild">
 hasChild:
 <itemize>
  <item>Synopsis: <tt>"hasChild"</tt>
@@ -12307,7 +12500,9 @@ hasChild:
 has child objects, otherwise it returns 0.
 </itemize>
 
-<p><label id="scundo">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scundo">
 undo:
 <itemize>
  <item>Synopsis: <tt>"undo [redo|save opname [0|1]|clear|rewind]"</tt>
@@ -12350,7 +12545,9 @@ if { $ay_error > 1 } {
 <item>Notes: See also section <ref id="undos" name="The Undo System">.
 </itemize>
 
-<p><label id="scconvob">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scconvob">
 convOb:
 <itemize>
  <item>Synopsis: <tt>"convOb [-inplace]"</tt>
@@ -12360,7 +12557,9 @@ for the selected object(s). If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
 </itemize>
 
-<p><label id="scforcenot">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scforcenot">
 forceNot:
 <itemize>
  <item>Synopsis: <tt>"forceNot [mod|all]"</tt>
@@ -12374,7 +12573,9 @@ If the <tt>"all"</tt> parameter is used, all objects
 will be notified regardless of the selection.
 </itemize>
 
-<p><label id="scaddtoproc">
+<p>
+<#if out=latex><x/phantomsection/</#if>
+<label id="scaddtoproc">
 addToProc:
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
@@ -15708,6 +15909,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="exp3dmf" name="3DM (Apple) Export">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexa">A
 <itemize>
 <item>aac: <ref id="aactcl" name="example/helper script">
@@ -15751,6 +15953,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>ayError: <ref id="scayerror" name="scripting interface command">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexb">B
 <itemize>
 <item>Background: <ref id="prefdraw" name="preference setting">
@@ -15781,6 +15984,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexc">C
 <itemize>
 <item>CalcBBS: <ref id="aycsg" name="AyCSG plugin option">
@@ -15853,6 +16057,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexd">D
 <itemize>
 <item>DANS: <ref id="anstag" name="tag type">
@@ -15892,6 +16097,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>DynamicLoad: <ref id="riprocp" name="RiProc attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexe">E
 <itemize>
 <item>Edit: <ref id="editac" name="edit points">,
@@ -15939,6 +16145,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="extt" name="Extrude tool">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexf">F
 <itemize>
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
@@ -15969,6 +16176,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FTLength: <ref id="concatncp" name="ConcatNC attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexg">G
 <itemize>
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
@@ -15986,6 +16194,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="prefdraw" name="drawing preference setting">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexh">H
 <itemize>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
@@ -16013,6 +16222,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Hyperboloid: <ref id="hyperboloidobj" name="Hyperboloid object">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexi">I
 <itemize>
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
@@ -16057,11 +16267,13 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="npattr" name="NPatch attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexj">J
 <itemize>
 <item>.
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexk">K
 <itemize>
 <item>kdialog: <ref id="kdialogtcl" name="example/helper script">
@@ -16074,6 +16286,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Knot-Type_V: <ref id="npattr" name="NPatch attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexl">L
 <itemize>
 <item>Last (None): <ref id="mmtools" name="main menu entry">
@@ -16105,6 +16318,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="textattr" name="Text attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexm">M
 <itemize>
 <item>MajorRad: <ref id="top" name="Torus attribute">
@@ -16141,6 +16355,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexn">N
 <itemize>
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
@@ -16167,6 +16382,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexo">O
 <itemize>
 <item>ObeyNoExport: <ref id="exprhino" name="3DM (Rhino) export option">
@@ -16196,6 +16412,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Order_U: <ref id="skp" name="Skin attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexp">P
 <itemize>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
@@ -16238,6 +16455,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexq">Q
 <itemize>
 <item>QuadAsBRep: <ref id="exprhino" name="3DM (Rhino) export option">
@@ -16249,6 +16467,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Quick Render: <ref id="vm" name="view menu entry">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexr">R
 <itemize>
 <item>Radius: <ref id="spattr" name="Sphere attribute">,
@@ -16356,6 +16575,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rV: <ref id="scrv" name="scripting interface command">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexs">S
 <itemize>
 <item>SafeAutoFocus: <ref id="hidprefs" name="hidden preference setting">
@@ -16480,6 +16700,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Symmetric: <ref id="acp" name="ACurve attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indext">T
 <itemize>
 <item>Tag: <ref id="prefdraw" name="preference setting">
@@ -16551,6 +16772,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="icp" name="ICurve attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexu">U
 <itemize>
 <item>uCL: <ref id="scucl" name="scripting interface command">
@@ -16576,6 +16798,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>UseSM: <ref id="lip" name="Light attribute">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexv">V
 <itemize>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
@@ -16585,6 +16808,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>VMM: <ref id="ummtag" name="tag type">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexw">W
 <itemize>
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
@@ -16609,17 +16833,21 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>WriteViews: <ref id="expx3dopt" name="X3D (Web3D) export option">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexx">X
 <itemize>
 <item>X3D: <ref id="impx3d" name="X3D (Web3D) Import">,
 <ref id="expx3d" name="X3D (Web3D) Export">
 </itemize>
 
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexy">Y
 <itemize>
 <item>.
 </itemize>
 
+
+<#if out=latex><x/phantomsection/</#if>
 <label id="indexz">Z
 <itemize>
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
