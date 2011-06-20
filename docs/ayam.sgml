@@ -1378,35 +1378,34 @@ name, current type, and the currently active modelling
 action of the view.
 <p>
 The current modelling action, modelling mode, drawing mode and
-grid size are also displayed in the view menu bar as an icon.
+grid size are also displayed as a set of icons on the right hand
+side of the view menu bar.
 
 <sect1>The View Menu<label id="vm">
 <p>
 This section discusses the view menu bar. Note that many menu entries
 have keyboard shortcuts that are displayed in each entry.
-<p>
-Note that the view menu keyboard shortcuts only work if the view window
+Those view menu keyboard shortcuts only work if the view window
 has the keyboard input focus.
-<p>
-One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+The shortcuts are adaptable using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
 <#if out=latex><x/phantomsection/</#if>
 <label id="vmview">
 Here are all meny entries of the <tt/"View"/ menu:
 <itemize>
-<item><tt/"Quick Render"/: the scene is exported to a RIB using the
+<item><tt/"Quick Render"/: the scene is exported to a RIB file using the
 camera settings of the current view; then the <tt/"QRender"/ command
 (see the preferences) will be called. Note that the RIB export
-will override the RiOption settings for image size and use the current
+will not use the RiOption settings for image size but the current
 window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
 
-<item><tt/"Render"/: the scene is exported to a RIB using the
+<item><tt/"Render"/: the scene is exported to a RIB file using the
 camera settings of the current view; then the <tt/"Render"/ command
 (see the preferences) will be called. Note that the RIB export
-will override the RiOption settings for image size and use the current
+will not use the RiOption settings for image size but the current
 window size instead.
 Also note that the environment variable <tt/SHADERS/ will be adapted
 to the preference setting <tt/Shaders/ for rendering.
@@ -2437,8 +2436,8 @@ Smaller values lead to better quality and more tesselated polygons.
 <sect>Interactive Actions (Modelling)<label id="iac">
 <p>
 Before invoking any modelling action you should select one or more
-objects using the object hierarchy in the main window or using the
-pick action!
+objects using the object hierarchy in the main window, the pick action,
+or selection manipulating keyboard shortcuts.
 <p>
 Every action can be started with a key press (a shortcut) when
 the keyboard focus is in a view window or by clicking on the associated
@@ -2447,7 +2446,8 @@ Using a keyboard shortcut starts that action in the current view only,
 the other views are not affected. In multi window GUI mode, starting an
 action from the toolbox window will cause the action to be started in all
 view windows that are currently open simultaneously. In single window GUI
-mode, the action will be started in the current internal view only.
+mode, the action will be started in the current internal view only
+(unless <tt/"AutoFocus"/ is enabled).
 <p>
 It is perfectly ok to start and work with many different actions at
 the same time in different views: you can have e.g. a view, where you move
@@ -2856,10 +2856,11 @@ it is highly suggested to use grids with this action.
 <p>
 This action may be invoked to mark a point in space for perusal
 of other modelling actions that e.g. rotate or scale about a point.
-The corresponding keyboard shortcut is <tt/&lt;a&gt;/.
-Consequently, this action is also active as intermediate action
-for e.g. rotate about, where the keyboard shortcuts <tt/&lt;r&gt;/
-and then <tt/&lt;a&gt;/ would be used.
+<p>
+The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
+This action is also active as intermediate action for e.g. rotate
+about, where the keyboard shortcuts <tt/&lt;r&gt;/
+and then <tt/&lt;a&gt;/ would be used in a sequence.
 See also the table below.
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -2887,16 +2888,10 @@ currently selected objects coordinate systems,
 currently selected points.
 </itemize>
 The marked point will be shown as a little red cross in the view window
-(see image above).
+(see also the image above).
 <p>
 The mark may also directly be set using the corresponding view object
 property (see also section <ref id="vat" name="ViewAttrib Property">).
-<p>
-Also note, that one is only able to specify two dimensional mark
-coordinates using a mouse click (the third coordinate is always
-set to zero). To specify a true three dimensional mark one
-can use the corresponding view object attributes or select
-a point and set the mark to the center (shortcut <tt/&lt;C&gt;/).
 <p>
 Another way of setting the mark is via the <tt/"FindU"/ special action
 for curves
@@ -2905,6 +2900,14 @@ or the <tt/"FindUV"/ special action
 for surfaces
 (see also section <ref id="finduvac" name="Finding Points on Surfaces">)
 .
+<p>
+Also note, that, using a mouse click, one is only able to specify two
+dimensional mark coordinates (the third coordinate is always
+set to zero).
+<p>
+The mark can also be used to remember an important point in space
+and get back to it later using the pan to mark action
+(keyboard shortcut <tt/&lt;.&gt;/).
 <p>
 Finally, remember that certain operations like e.g. changing the view
 type will clear the mark.
