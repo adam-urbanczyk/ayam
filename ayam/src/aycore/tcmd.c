@@ -19,6 +19,9 @@
 int ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 			 int from_world);
 
+int ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
+			 int apply_trafo);
+
 
 /* functions: */
 
@@ -409,6 +412,90 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 } /* ay_tcmd_getbppntfromindex */
 
 
+/* ay_tcmd_getallpoints:
+ *
+ */
+int
+ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
+		     int apply_trafo)
+{
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_pointedit pe = {0};
+ unsigned int i = 0;
+ double p[4] = {0};
+ double m[16];
+ int flags = TCL_APPEND_VALUE | TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
+   TCL_PARSE_PART1;
+ Tcl_Obj *to = NULL, *ton = NULL;
+
+ ton = Tcl_NewStringObj(vn, -1);
+
+  if(apply_trafo == 2)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      glLoadIdentity();
+      if(ay_currentlevel->object != ay_root)
+	ay_trafo_getall(ay_currentlevel->next);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(apply_trafo == 1)
+	{
+	  glPushMatrix();
+	  glTranslated(o->movx, o->movy, o->movz);
+	  ay_quat_torotmatrix(o->quat, m);
+	  glMultMatrixd(m);
+	  glScaled(o->scalx, o->scaly, o->scalz);
+	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	  glPopMatrix();
+	} /* if */
+
+      ay_pact_getpoint(0, o, p, &pe);
+
+      for(i = 0; i < pe.num; i++)
+	{
+	  memcpy(p, pe.coords[i], 3*sizeof(double));
+	  if(apply_trafo)
+	    ay_trafo_apply3(p, m);
+
+	  to = Tcl_NewDoubleObj(p[0]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	  to = Tcl_NewDoubleObj(p[1]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	  to = Tcl_NewDoubleObj(p[2]);
+	  Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+
+	  if(pe.rational)
+	    {
+	      to = Tcl_NewDoubleObj(pe.coords[i][3]);
+	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
+	    } /* if */
+
+	} /* for */
+
+      ay_pact_clearpointedit(&pe);
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+  if(apply_trafo == 2)
+    {
+      glPopMatrix();
+    }
+
+  Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
+
+ return TCL_OK;
+} /* ay_tcmd_getallpoints */
+
+
 /* ay_tcmd_getpointtcmd:
  *  get points of selected objects
  *  Implements the \a getPnt scripting interface command.
@@ -433,7 +520,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int clear_selp = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval] (all | index | indexu indexv | u | u v) (varx [vary varz [varw]] | -vn varname)";
+ char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)| -all varname)";
  char *range = NULL;
  Tcl_Obj *to = NULL, *ton = NULL;
  ay_voidfp *arr = NULL;
@@ -485,6 +572,18 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       j++;
     } /* while */
+
+  if(argv[i][0] == '-' && argv[i][1] == 'a')
+    {
+      /* -all */
+      i = 0;
+      if(to_world)
+	i = 2;
+      else
+	if(apply_trafo)
+	  i = 1;
+      return ay_tcmd_getallpoints(interp, argv[0], argv[argc-1], i);
+    }
 
   j = 0;
   while(sel)
@@ -957,7 +1056,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 
 	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	  ay_trafo_invmatrix4(m, mi);
-	  glPopMatrix();	  
+	  glPopMatrix();
 	} /* if */
 
       p = m;
