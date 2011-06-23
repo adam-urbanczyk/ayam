@@ -11566,10 +11566,13 @@ clampNC - clamp NURBS curve:
 without changing the shape of the curves.
 The knot type of the clamped curve will be changed to <tt/"Custom"/ and
 the knots will have o equal values at the desired side(s), where o is the
-order of the curve. If the side parameter is omitted or 0, both sides
+order of the curve.
+<p><p>
+If the side parameter is omitted or 0, both sides
 are clamped.
 If the side parameter is 1 only the start, and if it is 2 only the end
 is clamped.
+<p>
 In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
 Furthermore, curves with multiple knots in the end region(s) could not be
@@ -11620,6 +11623,7 @@ of the selected curve) r times from the curve. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (i.e. use <tt/"remknNC -i 4 1"/ instead of
 <tt/"remknNC 0.5 1"/).
+<p><p>
 Note that the
 shape of the curve may be changed by this tool unless the parameter
 tol is specified. If tol is specified the new curve does not deviate
@@ -11716,9 +11720,12 @@ to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
 <tt>[rmin, rmax]</tt> if the <tt/"-r"/ argument is given or to the minimum
 distance mindist if the <tt/"-d"/ argument is used. Scaling to a minimum
 distance ensures that all knots (except for multiple knots) have a distance
-bigger than mindist afterwards. Since Ayam 1.20 the knot type of the curve does
+bigger than mindist afterwards.
+<p><p>
+Since Ayam 1.20 the knot type of the curve does
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
+<p>
 This operation does not change the shape of the curve.
 See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 </itemize>
@@ -11823,10 +11830,13 @@ clampuNP - clamp NURBS patch in U direction:
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-U direction). If the side parameter is omitted or 0, both sides
+U direction).
+<p><p>
+If the side parameter is omitted or 0, both sides
 are clamped.
 If the side parameter is 1 only the start, and if it is 2 only the end
 is clamped.
+<p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
@@ -11845,10 +11855,13 @@ clampvNP - clamp NURBS patch in V direction:
 patches without changing the shape of the patches.
 The knot type will be changed to <tt/"Custom"/ and the knots will have o
 equal values at start and end (where o is the order of the patch in
-V direction). If the side parameter is omitted or 0, both sides
+V direction).
+<p><p>
+If the side parameter is omitted or 0, both sides
 are clamped.
 If the side parameter is 1 only the start, and if it is 2 only the end
 is clamped.
+<p>
 In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
@@ -12096,28 +12109,41 @@ See also section <ref id="bfct" name="The Build from Curves Tool">.
 Use these two commands to read or manipulate single points of arbitrary
 objects.
 Note that the exact arguments needed depend on the type of the selected
-object, e.g. a NURBS curve requires just one index parameter (indexu),
-whereas a NURBS patch requires two index parameters (indexu and indexv).
+object, e.g. manipulating the points of a NURBS curve requires just one
+index parameter (indexu), whereas manipulating the points of a NURBS
+patch requires two index parameters (indexu and indexv) to be specified.
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scgetpnt">
 getPnt:
 <itemize>
- <item>Synopsis: <tt/"getPnt [-trafo|-world|-eval] indexu [indexv] varx vary varz [varw]"/
+ <item>Synopsis: <tt/"getPnt [-trafo | -world | -eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname) | -all varname)"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Get a control point of the currently selected object
 and write the coordinate values into the variables varx, vary, varz, and
 varw.
+<p><p>
 If the optional argument <tt/"-trafo"/ is given, the coordinates
 will additionally be transformed by the values given in the objects
 Transformation property.
-If the optional argument <tt/"-world"/ is given, the coordinates
+<p>
+If the optional argument <tt/"-world"/ is used, the coordinates
 will additionally be transformed to world space.
-If the optional argument <tt/"-eval"/ is given, the <tt/"indexu"/
+<p>
+If the optional argument <tt/"-eval"/ is specified, the <tt/"indexu"/
 and <tt/"indexv"/ values are interpreted as parametric values of a
 NURBS curve or surface and the corresponding point on the curve or
 surface is delivered in varx, vary, and varz.
+<p>
+If the alternative argument <tt/"-vn"/ is given, the coordinate values
+will be appended to the list variable specified by <tt/"varname"/.
+<p>
+If the alternative argument <tt/"-all"/ is used, all coordinate values
+of the selected objects will be appended to the list variable
+specified by <tt/"varname"/.
+<item>Notes: In Ayam versions prior to 1.20, only global variables
+were written, this is no longer the case.
 <item>Examples:
 <enum>
 <item><bf/<tt/"getPnt 1 x y z w"//<newline>
@@ -12134,15 +12160,31 @@ values to the variables <tt/"x y z w"/.
 <label id="scsetpnt">
 setPnt:
 <itemize>
- <item>Synopsis: <tt/"setPnt [-world] indexu [indexv] x y z [w]"/
+ <item>Synopsis:
+<tt/"setPnt [-world] (indexu [indexv] (x y z [w] | -vn varname) | -all varname)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Set a control point of the
-currently selected object to the coordinates x, y, z, and w.
+currently selected object to the coordinates x, y, z, and w or to
+coordinates from a list, or set all control points from a list of
+coordinate values.
+<p><p>
 If the optional parameter <tt/"-world"/ is given, the coordinate values are
 expressed in world space and will be transformed to appropriate
-object space coordinates. If the optional parameter <tt/"w"/ is omitted,
+object space coordinates before setting.
+<p>
+If the optional parameter <tt/"w"/ is omitted,
 but the selected object has rational points, a default value of 1.0 will
-be used.
+be used for the weight.
+<p>
+If the alternative parameter <tt/"-vn"/ is used, the coordinate
+values will be read from the variable specified by <tt/"varname"/
+which must be a list of double values.
+<p>
+If the alternative parameter <tt/"-all"/ is provided, all control
+points of the selected objects will be set and the coordinate
+values will be read from the variable specified by <tt/"varname"/
+which must be a list of double values.
+
  <item>Examples:
 <enum>
 <item><bf/<tt/"setPnt 1 0.0 0.2 0.3 1.0"//<newline>
@@ -12185,7 +12227,9 @@ uS - update select:
 to the object hierarchy.
 <p>
 If update_prop is 0 no update of the property GUIs will take place.
+<p>
 If maintain_selection is 1 the old selection will be established again.
+<p>
 If both arguments are omitted update_prop defaults
 to 1 and maintain_selection to 0.
  <item>Deficiencies: uS completely removes the object tree from
@@ -12415,18 +12459,23 @@ wrib - RIB export:
 <tt>"wrib filename [-image imagename] [-smonly|-selonly|-objonly]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: exports the current scene to a RIB file designated
-by <tt/"filename"/. If the argument <tt/"-image"/ is given, the RIB file
+by <tt/"filename"/.
+<p><p>
+If the argument <tt/"-image"/ is given, the RIB file
 will create an image file named <tt/"imagename"/ upon rendering. The export
 will use the camera transformation from the currently selected Camera
 object.
+<p>
 If the argument <tt/"-smonly"/ is provided, a RIB to render shadow maps
 will be created and the argument of <tt/"-image"/ will be ignored.
-If the argument <tt/"-selonly"/ is given, only the selected (geometric)
+<p>
+If the argument <tt/"-selonly"/ is used, only the selected (geometric)
 objects will be exported, which will result in a RIB file not
 suitable for rendering (no setup, camera transformation, or lights
 are in it) but for inclusion into other scenes via RiArchive.
 Likewise <tt/"-objonly"/ leads to a RIB file containing all objects in the
 scene but not suitable for rendering.
+<p>
 The <tt>"wrib"</tt> command always needs a selected camera object
 (unless the <tt/"-selonly"/ or <tt/"-objonly"/ options are given); if
 there is none or if the camera transformations of the camera associated
@@ -15345,13 +15394,24 @@ in Ayam.
 <p>
 There are currently four major types of plugins for Ayam: shader parsing
 plugins, custom objects, import/export plugins, and modelling helper
-plugins.
-See sections <ref id="spplugins" name="Shader Parsing Plugins">,
-<ref id="customobj" name="Custom Objects">, and
-<ref id="impex" name="Import and Export">
-for more information regarding the respective plugin types.
-<p>
-Furthermore, there are the following modelling helper plugins:
+plugins:
+<enum>
+<item>shader parsing plugins:<newline>
+aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
+
+See also section <ref id="spplugins" name="Shader Parsing Plugins">.
+
+<item>custom objects:<newline>
+metaobj, sdnpatch, csphere.
+
+See also section <ref id="customobj" name="Custom Objects">.
+
+<item>import/export plugins:<newline>
+dxfio, mfio, mopsi, objio, onio, rrib, x3dio.
+
+See also section <ref id="impex" name="Import and Export">.
+
+<item>modelling helper plugins:
 <itemize>
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
@@ -15363,6 +15423,8 @@ Furthermore, there are the following modelling helper plugins:
 <item>subdiv &ndash; Catmull-Clark and Loop subdivision for the SDMesh
 object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 </itemize>
+
+</enum>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
