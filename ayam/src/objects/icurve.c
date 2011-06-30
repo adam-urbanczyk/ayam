@@ -1376,9 +1376,11 @@ ay_icurve_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
-	  /* reset display mode of new curve to "global" */
+	  /* reset display mode and sampling tolerance
+	     of new curve to "global"? */
 	  nc = (ay_nurbcurve_object *)(new->refine);
 	  nc->display_mode = 0;
+	  nc->glu_sampling_tolerance = 0.0;
 
 	  ay_trafo_copy(o, new);
 
@@ -1405,7 +1407,6 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_icurve_object *ic = NULL;
- ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1424,8 +1425,6 @@ ay_icurve_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(ic->ncurve)
 	{
-	  nc = (ay_nurbcurve_object *)ic->ncurve->refine;
-	  nc->display_mode = ic->display_mode;
 	  ay_status = ay_object_copy(ic->ncurve, result);
 	  if(*result)
 	    {
