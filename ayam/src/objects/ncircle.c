@@ -536,8 +536,6 @@ ay_ncircle_notifycb(ay_object *o)
   nc->display_mode = ncircle->display_mode;
   nc->glu_sampling_tolerance = ncircle->glu_sampling_tolerance;
 
-
-
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
       ay_nct_destroy(nc);
@@ -588,9 +586,11 @@ ay_ncircle_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
-	  /* reset display mode of new curve to "global" */
+	  /* reset display mode and sampling tolerance
+	     of new curve to "global"? */
 	  nc = (ay_nurbcurve_object *)(new->refine);
 	  nc->display_mode = 0;
+	  nc->glu_sampling_tolerance = 0.0;
 
 	  ay_trafo_copy(o, new);
 
@@ -617,7 +617,6 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_ncircle_object *ncircle = NULL;
- ay_nurbcurve_object *nc = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -636,8 +635,6 @@ ay_ncircle_providecb(ay_object *o, unsigned int type, ay_object **result)
     {
       if(ncircle->ncurve)
 	{
-	  nc = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-	  nc->display_mode = ncircle->display_mode;
 	  ay_status = ay_object_copy(ncircle->ncurve, result);
 	  if(*result)
 	    {
@@ -685,6 +682,7 @@ ay_ncircle_init(Tcl_Interp *interp)
 
   ay_status = ay_provide_register(ay_ncircle_providecb, AY_IDNCIRCLE);
 
+  /* ncircles may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCIRCLE);
 
  return ay_status;
