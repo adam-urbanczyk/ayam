@@ -3843,11 +3843,6 @@ Camera|No|No|N/A|Yes@<hline>
 <sect1>Box Object<label id="boxobj">
 <p>
 A solid box, centered at the origin of the object coordinate system.
-This object will always be exported as solid primitive in RIBs;
-consisting of six bilinear patches.
-<p>
-Since Ayam 1.8.2, a box object may be converted to three NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the Box object.
 <table loc="ht">
@@ -3870,6 +3865,13 @@ direction of the Z axis of the objects coordinate system).
 <item><tt/"Height"/ is the height of the box (size of the box in
 direction of the Y axis of the objects coordinate system).
 </itemize>
+
+<sect2>RIB Export and Conversion
+<p>
+The box object will always be exported as six bilinear patches.
+<p>
+Since Ayam 1.8.2, a box object may be converted to three NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect1>Quadric Primitives<label id="qprim">
 <p>
@@ -5055,6 +5057,14 @@ and you will be on the safe side.
 Since Ayam 1.5 also NURBS curve providing objects are supported
 as trim curves.
 
+<sect2>RIB Export
+<p>
+NPatch objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are supported.
+
 <sect1>IPatch (Interpolating Patch) Object<label id="ipatchobj">
 <p>
 <figure loc="ht">
@@ -5118,6 +5128,14 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 of the created NURBS patch.
 </itemize>
 
+<sect2>RIB Export
+<p>
+IPatch objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
+
 <sect1>BPatch (Bilinear Patch) Object<label id="bpatchobj">
 <p>
 A BPatch is a simple bilinear patch defined by four control
@@ -5139,7 +5157,7 @@ BPatch|No|Yes|NPatch|Yes@<hline>
 
 <sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p>
-The BPatchAttr property allows you to set the
+The BPatchAttr property allows to directly control the
 four points defining the geometry of the patch:<p>
 <itemize>
 <item><tt/"P1_X"/, <tt/"P1_Y"/, <tt/"P1_Z"/, first point.
@@ -5147,6 +5165,14 @@ four points defining the geometry of the patch:<p>
 <item><tt/"P3_X"/, <tt/"P3_Y"/, <tt/"P3_Z"/, third point.
 <item><tt/"P4_X"/, <tt/"P4_Y"/, <tt/"P4_Z"/, fourth point.
 </itemize>
+
+<sect2>RIB Export
+<p>
+BPatch objects will be exported as bilinear patch primitives:
+<p>
+<tt>RiPatch(RI_BILINEAR, ...);</tt>
+<p>
+PV tags are supported.
 
 <sect1>PatchMesh Object<label id="patchmeshobj">
 <p>
@@ -5214,6 +5240,14 @@ outlines of the patch (OutlinePatch). The default setting
 <tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
 
+<sect2>RIB Export
+<p>
+PatchMesh objects will be exported as patch mesh primitives:
+<p>
+<tt>RiPatchMesh(...);</tt>
+<p>
+PV tags are supported.
+
 <sect1>PolyMesh Object<label id="polymeshobj">
 <p>
 The PolyMesh object may be used to include objects that
@@ -5273,6 +5307,14 @@ defined.
 <item><tt/"HasNormals"/ is 1 if the object uses vertex normals,
 else it is 0.
 </itemize>
+
+<sect2>RIB Export
+<p>
+PolyMesh objects will be exported as RiPointsGeneralPolygons primitives
+(regardless whether the actual configuration would fit into a simpler
+polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+<p>
+PV tags are supported.
 
 <sect1>SDMesh Object<label id="sdmeshobj">
 <p>
@@ -5343,10 +5385,19 @@ and the subdivided polygon outlines when drawing the mesh.
 defined.
 </itemize>
 
+<sect2>RIB Export
+<p>
+SDMesh objects will be exported as subdivision mesh primitives:
+<p>
+<tt>RiSubdivisionMesh(...);</tt>
+<p>
+PV tags are supported.
+
 <sect1>Instance Object<label id="instanceobj">
 <p>
 Instance objects help to save memory consumption in scenes with many
-similar or repeating objects.
+similar or repeating objects or transport geometric data across the
+scene hierarchy.
 <p>
 The term instance is unfortunately misleading (and can be very confusing
 if you are accustomed to the terminology of object oriented programming),
@@ -5358,10 +5409,9 @@ an instance object: it is just a pointer to an original object (here
 also called master object).
 A link can be placed anywhere on the file system,
 an instance object can be placed anywhere in the scene hierarchy, and
-additionally, it can be transformed (otherwise it would be pretty
-useless).
+additionally, it can be transformed.
 <p>
-Normally, the sole purpose of instance objects is to save storage space,
+Normally, the sole purpose of instance objects is to save space,
 in memory and on the disk. But in the tool object context, instances
 also serve as a means to transport geometric data across the scene
 hierarchy to make tool objects depend on each other (see also section
@@ -5382,75 +5432,31 @@ Some simple rules for instancing:
 Root, View, Instance, Material, Light. Do not try to fool
 Ayam and create instances of levels that contain aforementioned
 types of objects, things will go awry!
-<item>You may, however, put some instances
+<item>It is allowed, however, to put some instances
 into a level object and create instances of this level
 (this is sometimes called hierarchical instancing).
-<item>But you may not put instances of a level into the very same
-level (this would be recursive instancing, which is not supported by Ayam).
-<item>The original object may not be deleted from the scene
+<item>But one may not put instances of a level into the very same
+level or one of its children (this would be recursive instancing,
+which is not supported by Ayam).
+<item>The original/master object may not be deleted from the scene
 as long as there are instances of that object in the scene or in the
 object clipboard.
 </itemize>
 
-If you can not delete an object, and the error message tells
-you something about a reference counter, then you were about
-to violate the second rule. Clean the clipboard using
+If deleting of an object fails, and the error message
+complains about the reference counter not being zero, then
+the last rule was about to be violated. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
-or resolve all references.
+or resolve all references first.
 <p>
-Note that it is not possible to copy a master object and some instances
-of it, so that the new instances point to the newly created master.
-All copies of instance objects always point to the same master object.
-<code>
---NCurve   <-----
-                 |
---Instance  -----
-</code>
-For example, when the above two objects are copied and pasted back to the
-scene, the following scene hierarchy results:
-<code>
---NCurve   <-------
-                 | |
---Instance  -----  |
-                   | !
---NCurve           |
-                   |
---Instance  -------
-</code>
-The new instance still points to the original master and <em>not</em>
-to the copy of the master.
-<p>
-It is possible to move masters and instances through the scene hierarchy
-using drag and drop in the tree view or using the clipboard with
-<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
-<p>
-You can resolve an instance object at any time using
+One can resolve an instance object at any time using
 the converter registered for objects of type <tt>Instance</tt> (simply
 select the instance object and use the menu entry
 <tt>"Tools/Convert"</tt>). To resolve all instance objects in a scene
-to normal objects, you may use the main menu entry:
+to normal objects, one can also use the main menu entry:
 <tt>"Special/Instances/Resolve all Instances"</tt>.
 <p>
-Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
-in a special way:
-if the <tt>"Transformations"</tt> property is removed using a
-<tt>"RP"</tt> tag, the instance does not provide objects with
-an own set of transformation attributes (to ease hierarchy building
-with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
-pointers to already existing objects are required and where it is
-expected, that the instance reflects the master exactly).
-<p>
-The RIB export of instances does not use the RiInstance facility
-of the RenderMan interface, but the ReadArchive mechanism.
-This means, every original object in the scene will be written
-in a separate archive (RIB file) on disk, and every instance will
-cause that archive file to be read. You can change this behaviour
-using the preference setting <tt/"ResInstances"/:
-If <tt/"ResInstances"/ is enabled, all instances will be resolved
-(temporarily) before being exported to RIB.
-<p>
-Ayam can also create instances for complete scenes or just parts
-of scenes automatically
+Ayam can also create instances for complete scenes automatically
 (see section <ref id="ai" name="Automatic Instancing">).
 <p>
 To easily find the master object of an instance, just select the
@@ -5469,8 +5475,65 @@ Instance|No|No|Master|No*@<hline>
 </tabular>
 <caption>Instance Object Capabilities</caption>
 </table>
-<p>
 
+<sect2>Instances without Transformations (References)<label id="referencing">
+<p>
+Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
+in a special way:
+if the <tt>"Transformations"</tt> property is removed using a
+<tt>"RP"</tt> tag, the instance does not provide objects with
+an own set of transformation attributes (to ease hierarchy building
+with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
+pointers to already existing objects are required and where it is
+expected, that the instance reflects the master exactly, including
+its transformation attributes).
+<p>
+This special case of an instance is sometimes also called reference.
+
+<sect2>Instances and the Object Clipboard
+<p>
+It is not possible to copy a master object and some instances
+of it, so that the new instances point to the newly created master.
+All copies of instance objects always point to the same original
+master object.
+<p>
+For example, when the following two objects are copied and pasted back to the
+scene
+<code>
+--NCurve   <-----
+                 |
+--Instance  -----
+</code>
+the following scene hierarchy results:
+<code>
+--NCurve   <-------
+                 | |
+--Instance  -----  |
+                   | !
+--NCurve           |
+                   |
+--Instance  -------
+</code>
+The new instance still points to the original master and <em>not</em>
+to the copy of the master.
+<p>
+It is possible to move masters and instances through the scene hierarchy
+using drag and drop in the tree view or using the clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
+
+<sect2>RIB Export
+<p>
+The RIB export of instances does <em>not</em> use the RiInstance facility
+of the RenderMan interface, but rather the more flexible ReadArchive
+mechanism.
+<p>
+This means, every master object in the scene will be written
+in a separate archive (RIB file) on disk, and every instance will
+cause that archive file to be read when rendering the RIB file.
+You can change this behaviour using the RIB export preference setting
+<tt/"ResInstances"/: If <tt/"ResInstances"/ is enabled, all instances
+will be resolved temporarily to normal objects before being exported
+to RIB. The resulting RIB file will then be self contained.
 
 <sect1>Clone Object<label id="cloneobj">
 <p>
@@ -5480,7 +5543,7 @@ Instance|No|No|Master|No*@<hline>
 <caption>Clone Object (blue) with Trajectory Curve (white)</caption>
 </figure>
 <p>
-The Clone object allows you to easily create and control an arbitrary
+The Clone object allows to easily create and control an arbitrary
 number of instances of a single object, hereafter called the cloned
 object.
 The instances can be transformed (each by a certain amount expressed
@@ -12142,6 +12205,7 @@ will be appended to the list variable specified by <tt/"varname"/.
 If the alternative argument <tt/"-all"/ is used, all coordinate values
 of the selected objects will be appended to the list variable
 specified by <tt/"varname"/.
+
 <item>Notes: In Ayam versions prior to 1.20, only global variables
 were written, this is no longer the case.
 <item>Examples:
@@ -12184,6 +12248,9 @@ If the alternative parameter <tt/"-all"/ is provided, all control
 points of the selected objects will be set and the coordinate
 values will be read from the variable specified by <tt/"varname"/
 which must be a list of double values.
+<p>
+When reading data from list variables, no precision will be lost
+as there are no double-string-double conversions involved.
 
  <item>Examples:
 <enum>
@@ -13211,11 +13278,13 @@ until Ayam exits.
 <sect2>Accessing JavaScript from Tcl and Script Objects
 <p>
 To access the JavaScript functionality from the Tcl scripting interface,
-the <tt>"jsEval"</tt> command can be used:
-<code>
-jsEval { var a = 0; a = a + 5.5; tclset("a", a); }
-jsEval -f scriptfile.js
-</code>
+the <tt>"jsEval"</tt> command can be used to directly execute JavaScript
+code (in <em>italics</em>):
+<p>
+<tt>jsEval {</tt><em>var a = 0; a = a + 5.5; tclset("a", a);</em><tt/}/
+<p> or from a file:
+<p>
+<tt>jsEval -f scriptfile.js</tt>
 <p>
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
@@ -13230,14 +13299,14 @@ of the calling Tcl context (see also section:
 <ref id="safeinterp" name="Safe Interpreter">).
 For example, when running in a Script object,
 the following code fails:
-<code>
-tcleval("exit");
-</code>
+<p>
+<em>tcleval("</em><tt>exit</tt><em>");</em>
+<p>
 it does not fail, when the calling context ist the main Tcl interpreter;
 one can e.g. type into the Ayam console:
-<code>
-jsEval {tcleval("exit");}
-</code>
+<p>
+<tt>jsEval {</tt><em>tcleval("</em><tt>exit</tt><em>");</em><tt>}</tt>
+<p>
 and Ayam quits.
 
 <sect2>JavaScript Functions
@@ -16562,6 +16631,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Refcount: <ref id="attrs" name="attribute">
 <item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
 <ref id="materialobj" name="Material Object">
+<item>Reference: <ref id="referencing" name="Reference">
 <item>References: <ref id="secref" name="references">
 <item>refineNC: <ref id="screfinenc" name="scripting interface command">,
 <ref id="refit" name="refine tool">
