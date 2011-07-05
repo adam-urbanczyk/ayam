@@ -1394,6 +1394,9 @@ typedef struct ay_preferences_s
   int pprev_open;
   char *pprender; /**< permanent preview render command template */
 
+  /** should conversion reset the display_mode/sampling_tolerance? */
+  int conv_reset_display;
+
   /* PV tag names */
   char *texcoordname; /**< default name for texture coordinate PV tags */
   char *normalname; /**< default name for vertex normal PV tags */

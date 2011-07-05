@@ -1378,9 +1378,12 @@ ay_icurve_convertcb(ay_object *o, int in_place)
 	{
 	  /* reset display mode and sampling tolerance
 	     of new curve to "global"? */
-	  nc = (ay_nurbcurve_object *)(new->refine);
-	  nc->display_mode = 0;
-	  nc->glu_sampling_tolerance = 0.0;
+	  if(ay_prefs.conv_reset_display)
+	    {
+	      nc = (ay_nurbcurve_object *)(new->refine);
+	      nc->display_mode = 0;
+	      nc->glu_sampling_tolerance = 0.0;
+	    }
 
 	  ay_trafo_copy(o, new);
 

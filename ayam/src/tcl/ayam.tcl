@@ -201,6 +201,8 @@ array set ayprefs {
  PVNormalName "N"
  PVColorName "Cs"
 
+ ConvResetDisplay 1
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
