@@ -599,9 +599,15 @@ ay_concatnc_convertcb(ay_object *o, int in_place)
       ay_status = ay_object_copy(cc->ncurve, &new);
       if(new)
 	{
-	  /* reset display mode of new curve to "global" */
 	  nc = (ay_nurbcurve_object *)(new->refine);
-	  nc->display_mode = 0;
+
+	  /* reset display mode and sampling tolerance
+	     of new curve to "global"? */
+	  if(ay_prefs.conv_reset_display)
+	    {
+	      nc->display_mode = 0;
+	      nc->glu_sampling_tolerance = 0.0;
+	    }
 
 	  /* immediately create and show the multiple points */
 	  nc->createmp = AY_TRUE;

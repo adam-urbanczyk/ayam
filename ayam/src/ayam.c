@@ -576,6 +576,8 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.wutag = AY_TRUE;
 
+  ay_prefs.conv_reset_display = AY_TRUE;
+
   ay_prefs.errorlevel = 3;
 
   if(!(ay_prefs.logfile = calloc(strlen(ay_log)+1, sizeof(char))))
