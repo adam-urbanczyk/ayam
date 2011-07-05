@@ -226,6 +226,28 @@ ay_npt_createnpatchobject(ay_object **result)
 } /* ay_npt_createnpatchobject */
 
 
+/** ay_npt_resetdisplay:
+ *   reset the display attributes of a NURBS patch
+ *
+ * @param[in] o NURBS patch object to destroy
+ */
+void
+ay_npt_resetdisplay(ay_object *o)
+{
+  ay_nurbpatch_object *patch;
+
+  if(!o || !o->type == AY_IDNPATCH)
+    return;
+
+  patch = (ay_nurbpatch_object *)o->refine;
+
+  patch->glu_sampling_tolerance = 0.0;
+  patch->display_mode = 0;
+
+ return;
+} /* ay_npt_destroy */
+
+
 /* ay_npt_resizearrayw:
  *  change width of a 2D control point array <controlvptr> with
  *  stride <stride>, width <width>, and height <height> to new
