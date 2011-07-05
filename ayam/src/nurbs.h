@@ -737,6 +737,10 @@ void ay_npt_destroy(ay_nurbpatch_object *patch);
  */
 int ay_npt_createnpatchobject(ay_object **result);
 
+/** Reset the display attributes of a NURBS patch.
+ */
+void ay_npt_resetdisplay(ay_object *o);
+
 /** Resize width (U) of 2D control point array.
  */
 int ay_npt_resizearrayw(double **controlvptr, int stride,
