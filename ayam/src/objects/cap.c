@@ -519,12 +519,24 @@ ay_cap_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_object_copy(cap->npatch, &new);
 
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
       if(new)
 	{
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(ay_prefs.conv_reset_display)
+	    {
+	      ay_npt_resetdisplay(new);
+	    }
+
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new);
+
 	  ay_trafo_add(o, new);
+
+
+	  if(!new->down)
+	    new->down = ay_endlevel;
+
 	  if(!in_place)
 	    {
 	      ay_status = ay_object_link(new);

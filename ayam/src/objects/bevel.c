@@ -628,18 +628,28 @@ ay_bevel_convertcb(ay_object *o, int in_place)
   if(r->npatch)
     {
       ay_status = ay_object_copy(r->npatch, &new);
-      ay_trafo_copy(o, new);
-      new->hide_children = AY_TRUE;
-      new->parent = AY_TRUE;
-      new->down = ay_endlevel;
+      if(new)
+	{
+	  ay_trafo_copy(o, new);
 
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+	  if(!new->down)
+	    new->down = ay_endlevel;
+
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new);
+	}
    } /* if */
 
   /* second, link new objects, or replace old objects with them */
   if(new)
     {
+      /* reset display mode and sampling tolerance
+	 of new patch to "global"? */
+      if(ay_prefs.conv_reset_display)
+	{
+	  ay_npt_resetdisplay(new);
+	}
+
       if(!in_place)
 	{
 	  ay_status = ay_object_link(new);
