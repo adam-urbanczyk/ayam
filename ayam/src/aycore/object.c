@@ -346,7 +346,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_status = ay_object_unlink(o);
 
-	  ay_status = ay_undo_clearobj(o);
+	  ay_undo_clearobj(o);
 
 	  ay_status = ay_object_delete(o);
 	  if(ay_status)
@@ -872,7 +872,7 @@ ay_object_deleteinstances(ay_object **o)
       if(co->type == AY_IDINSTANCE)
 	{
 	  next = co->next;
-	  ay_status = ay_undo_clearobj(co);
+	  ay_undo_clearobj(co);
 	  ay_status = ay_object_delete(co);
 	  (*last) = next;
 	  co = next;
@@ -901,8 +901,9 @@ ay_object_replace(ay_object *src, ay_object *dst)
  ay_voidfp *arr = NULL;
  ay_deletecb *dcb = NULL;
  ay_mat_object *oldmat = NULL;
- ay_object *oldnext = NULL;
+ ay_object *oldnext = NULL, *d = NULL;
  int oldrefcount = 0;
+ ay_tag *tag = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -918,6 +919,23 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->tags)
     {
+      /* see if other objects point to dst via NO tags; remove those tags */
+      tag = dst->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_nm_tagtype)
+	    {
+	      d = (ay_object*)(((ay_btval*)tag->val)->payload);
+	      tag = tag->next;
+	      ay_tags_remnonm(dst, d);
+	    }
+	  else
+	    {
+	      tag = tag->next;
+	    }
+	} /* while */
+
+      /* delete all tags */
       ay_tags_delall(dst);
     }
 

@@ -25,9 +25,9 @@ typedef struct ay_undo_object_s
 } ay_undo_object;
 
 /* prototypes of functions local to this module */
-int ay_undo_deletemulti(ay_object *o);
+void ay_undo_deletemulti(ay_object *o);
 
-int ay_undo_clearuo(ay_undo_object *uo);
+void ay_undo_clearuo(ay_undo_object *uo);
 
 int ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst);
 
@@ -111,7 +111,7 @@ ay_undo_init(int buffer_size)
 /* ay_undo_deletemulti:
  *  delete some connected objects
  */
-int
+void
 ay_undo_deletemulti(ay_object *o)
 {
  int ay_status = AY_OK;
@@ -122,7 +122,7 @@ ay_undo_deletemulti(ay_object *o)
  ay_voidfp *arr = NULL;
 
   if(!o)
-    return AY_ENULL;
+    return;
 
   d = o;
   while(d)
@@ -207,13 +207,14 @@ ay_undo_deletemulti(ay_object *o)
 
 	  if(ay_status)
 	    {
-	      return ay_status;
+	      return;
 	    }
 	  /* delete selected points */
 	  if(d->selp)
 	    ay_selp_clear(d);
 	  /* delete tags */
-	  ay_tags_delall(d);
+	  if(d->tags)
+	    ay_tags_delall(d);
 	  /* free name */
 	  if(d->name)
 	    free(d->name);
@@ -225,14 +226,14 @@ ay_undo_deletemulti(ay_object *o)
       d = next;
     } /* while */
 
- return AY_OK;
+ return;
 } /* ay_undo_deletemulti */
 
 
 /* ay_undo_clearuo:
  *  clear a single undo object
  */
-int
+void
 ay_undo_clearuo(ay_undo_object *uo)
 {
  ay_list_object *lo = NULL;
@@ -256,7 +257,7 @@ ay_undo_clearuo(ay_undo_object *uo)
     }
   uo->operation = NULL;
 
- return AY_OK;
+ return;
 } /* ay_undo_clearuo */
 
 
@@ -848,7 +849,6 @@ int
 ay_undo_rewind(void)
 {
  char fname[] = "rewind";
- int ay_status = AY_OK;
  ay_undo_object *uo = NULL;
 
   if(undo_current < 0)
@@ -864,7 +864,7 @@ ay_undo_rewind(void)
     }
 
   uo = &(undo_buffer[undo_current]);
-  ay_status = ay_undo_clearuo(uo);
+  ay_undo_clearuo(uo);
 
   undo_current--;
 
@@ -1087,7 +1087,7 @@ ay_undo_save(int save_children)
 
       /* clear */
       uo = &(undo_buffer[0]);
-      ay_status = ay_undo_clearuo(uo);
+      ay_undo_clearuo(uo);
       /* shift */
       for(i = 0; i < undo_buffer_size-1; i++)
 	{
@@ -1120,7 +1120,7 @@ ay_undo_save(int save_children)
 	  for(i = undo_current; i < undo_buffer_size; i++)
 	    {
 	      uo = &(undo_buffer[i]);
-	      ay_status = ay_undo_clearuo(uo);
+	      ay_undo_clearuo(uo);
 	    }
 	  uo = &(undo_buffer[undo_current]);
 	  /* link name of saved modelling operation to this undo object */
@@ -1140,7 +1140,7 @@ ay_undo_save(int save_children)
   /* check, whether the current undo slot contains saved objects */
   if(uo->objects)
     { /* yes, free them */
-      ay_status = ay_undo_clearuo(uo);
+      ay_undo_clearuo(uo);
     }
 
   /* finally, we may copy objects (and save references to the original
@@ -1352,17 +1352,16 @@ ay_undo_save(int save_children)
 /* ay_undo_clear:
  *  clear all undo information
  */
-int
+void
 ay_undo_clear(void)
 {
- int ay_status = AY_OK;
  int i = 0;
  ay_undo_object *uo = NULL;
 
   for(i = 0; i < undo_buffer_size; i++)
     {
       uo = &(undo_buffer[i]);
-      ay_status = ay_undo_clearuo(uo);
+      ay_undo_clearuo(uo);
     }
 
   undo_current = -1;
@@ -1374,7 +1373,7 @@ ay_undo_clear(void)
     }
   undo_saved_op = NULL;
 
- return AY_OK;
+ return;
 } /* ay_undo_clear */
 
 
@@ -1384,10 +1383,9 @@ ay_undo_clear(void)
  *  into the scene and causing havoc
  *  for possible future undo/redo operations
  */
-int
+void
 ay_undo_clearobj(ay_object *o)
 {
- int ay_status = AY_OK;
  int i = 0;
  ay_undo_object *uo = NULL;
  ay_object **lu = NULL, *u = NULL, *down;
@@ -1423,7 +1421,7 @@ ay_undo_clearobj(ay_object *o)
 	      *lu = u->next;
 	      *lr = r->next;
 	      u->next = NULL;
-	      ay_status = ay_undo_deletemulti(u);
+	      ay_undo_deletemulti(u);
 	      free(r);
 	      u = *lu;
 	      r = *lr;
@@ -1445,7 +1443,7 @@ ay_undo_clearobj(ay_object *o)
       down = down->next;
     }
 
- return AY_OK;
+ return;
 } /* ay_undo_clearobj */
 
 
@@ -1625,7 +1623,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
       break;
     case 3:
       /* perform clear */
-      ay_status = ay_undo_clear();
+      ay_undo_clear();
       uc = 0;
       /* re-set undo prompt */
       Tcl_SetVar2(interp, a, n3, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
