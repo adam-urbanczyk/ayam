@@ -918,7 +918,7 @@ ay_object_replace(ay_object *src, ay_object *dst)
 
   if(dst->tags)
     {
-      ay_status = ay_tags_delall(dst);
+      ay_tags_delall(dst);
     }
 
   if(dst->name)

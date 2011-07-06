@@ -18,13 +18,12 @@
 /* ay_tags_free:
  *  free tag <tag>
  */
-int
+void
 ay_tags_free(ay_tag *tag)
 {
- int ay_status = AY_OK;
 
   if(!tag)
-    return AY_OK;
+    return;
 
   if(tag->name)
     free(tag->name);
@@ -42,20 +41,20 @@ ay_tags_free(ay_tag *tag)
 
   free(tag);
 
- return ay_status;
+ return;
 } /* ay_tags_free */
 
 
 /* ay_tags_delall:
  *  remove all tags from object <o>
  */
-int
+void
 ay_tags_delall(ay_object *o)
 {
  ay_tag *t = NULL, *nt = NULL;
 
   if(!o)
-    return AY_OK;
+    return;
 
   t = o->tags;
   while(t)
@@ -67,7 +66,7 @@ ay_tags_delall(ay_object *o)
 
   o->tags = NULL;
 
- return AY_OK;
+ return;
 } /* ay_tags_delall */
 
 
