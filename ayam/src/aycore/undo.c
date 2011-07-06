@@ -589,7 +589,7 @@ ay_undo_copy(ay_undo_object *uo)
       /* copy tags */
       if(o->tags)
 	{
-	  ay_status = ay_tags_delall(o);
+	  ay_tags_delall(o);
 	}
       ay_status = ay_undo_copytags(c, o);
 

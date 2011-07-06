@@ -1170,11 +1170,11 @@ int ay_table_additem(ay_ftable *table, ay_voidfp newitem, unsigned int index);
 
 /** delete all tags from object o
  */
-int ay_tags_delall(ay_object *o);
+void ay_tags_delall(ay_object *o);
 
-/** delete tag
+/** delete a single tag
  */
-int ay_tags_free(ay_tag *tag);
+void ay_tags_free(ay_tag *tag);
 
 /** copy a single tag
  */
