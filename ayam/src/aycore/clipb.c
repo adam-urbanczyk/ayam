@@ -46,7 +46,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
       o = clip;
       clip = clip->next;
       ay_clipboard = clip;
-      ay_status = ay_undo_clearobj(o);
+      ay_undo_clearobj(o);
       ay_status = ay_object_delete(o);
       if(ay_status)
 	{
@@ -148,7 +148,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       o = clip;
       clip = clip->next;
       ay_clipboard = clip;
-      ay_status = ay_undo_clearobj(o);
+      ay_undo_clearobj(o);
       ay_status = ay_object_delete(o);
       if(ay_status)
 	{

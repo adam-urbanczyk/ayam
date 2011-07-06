@@ -1524,11 +1524,11 @@ int ay_undo_init(int buffer_size);
 
 /** clear all undo states
  */
-int ay_undo_clear(void);
+void ay_undo_clear(void);
 
 /** clear all undo states of object o
  */
-int ay_undo_clearobj(ay_object *o);
+void ay_undo_clearobj(ay_object *o);
 
 /** Tcl command to interface to the undo system
  */
