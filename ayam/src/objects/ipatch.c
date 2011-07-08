@@ -775,6 +775,8 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "IPatchAttrData";
  char fname[] = "ipatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ ay_object *p = NULL;
+ ay_nurbpatch_object *np = NULL;
  ay_ipatch_object *ipatch = NULL;
  int new_ktype_u, new_close_u, new_order_u, new_width;
  int new_ktype_v, new_close_v, new_order_v, new_height;
@@ -914,6 +916,20 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       ay_notify_parent();
     }
+
+  /* set new display mode/sampling tolerance */
+  p = ipatch->npatch;
+  while(p)
+    {
+      if(p->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object *)p->refine;
+	  np->display_mode = ipatch->display_mode;
+	  np->glu_sampling_tolerance = ipatch->glu_sampling_tolerance;
+	}
+
+      p = p->next;
+    } /* while */
 
  return AY_OK;
 } /* ay_ipatch_setpropcb */

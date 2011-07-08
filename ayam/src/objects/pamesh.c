@@ -529,6 +529,8 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "PatchMeshAttrData";
  char fname[] = "pamesh_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ ay_object *p = NULL;
+ ay_nurbpatch_object *np = NULL;
  ay_pamesh_object *pamesh = NULL;
  int new_close_u, new_width, new_btype_u, new_step_u;
  int new_close_v, new_height, new_btype_v, new_step_v;
@@ -715,6 +717,20 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       ay_notify_parent();
     }
+
+  /* set new display mode/sampling tolerance */
+  p = pamesh->npatch;
+  while(p)
+    {
+      if(p->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object *)p->refine;
+	  np->display_mode = pamesh->display_mode;
+	  np->glu_sampling_tolerance = pamesh->glu_sampling_tolerance;
+	}
+
+      p = p->next;
+    } /* while */
 
  return AY_OK;
 } /* ay_pamesh_setpropcb */
