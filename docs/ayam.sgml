@@ -27,7 +27,7 @@ per input line;
 <date>13. Mar 2011
 
 <abstract>
-This is the documentation of Ayam 1.19 - a free 3D modelling environment
+This is the documentation of Ayam 1.19 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -226,8 +226,8 @@ as well.
 </figure>
 <p>
 Until Ayam 1.14 all windows, main, toolbox, and views were always single
-top level windows - a so called floating windows GUI mode. Since version
-1.14, a new GUI mode is available where the main window, three view
+top level windows &ndash; a so called floating windows GUI mode. Since
+version 1.14, a new GUI mode is available where the main window, three view
 windows and the toolbox are integrated in one top level window. This mode
 is called single window GUI mode, see also the image above.
 The new single window GUI mode is enabled by default. All sub windows are
@@ -2312,9 +2312,9 @@ of shadow maps, see discussion of <tt/"RenderPT"/ above.
 use <tt/"zfile"/ for RenderMan and <tt/"shadow"/ for Gelato.
 
 <item><tt/"SMFileType"/, type of shadow maps to be created, currently
-available types are <tt/"z"/ - normal shadow maps (for RenderMan
-renderers and Gelato), <tt/"avgz"/ - Woo shadow maps (for Gelato only!),
-and <tt/"volz"/ - volume shadow maps (for Gelato only!).
+available types are <tt/"z"/ &ndash; normal shadow maps (for RenderMan
+renderers and Gelato), <tt/"avgz"/ &ndash; Woo shadow maps (for Gelato only!),
+and <tt/"volz"/ &ndash; volume shadow maps (for Gelato only!).
 
 <item><tt/"SMChangeShaders"/, toggles, whether Ayam should automatically
 prepend a "shader" to light shader names for lights that use shadow maps
@@ -3379,21 +3379,19 @@ The capabilities are:
 and understood by the <tt/"crtOb"/ scripting interface command;
 <item><bf/Parent of/: the object is a parent object (can have child
 objects of the designated type),
-+ - multiple child objects may be present (one or many),
-* - multiple child objects must be present (many),
++ &ndash; multiple child objects may be present (one or many),
+* &ndash; multiple child objects must be present (many),
 note that the type of the child object must not directly match, the child
 must rather provide an object of the appropriate type (see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">);
 <item><bf/Material/: the object can be associated with a material;
 <item><bf>Converts to/Provides</bf>: type of converted/provided objects
 (Children means, the provided objects of the children are delivered upstream),
-+ - multiple objects may be provided (one or many),
-* - multiple objects will be provided (many);
-<item><bf/Point Edit/: the object has editable points, * - read only points
-are supported.
++ &ndash; multiple objects may be provided (one or many),
+* &ndash; multiple objects will be provided (many);
+<item><bf/Point Edit/: the object has editable points,
+* &ndash; read only points are supported.
 </itemize>
-
-<#if out=latex><x/newpage/</#if>
 
 Example:
 <table loc="ht">
@@ -3491,6 +3489,7 @@ These objects enable direct manipulation of freeform surfaces:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
+IPatch|No|Yes|NPatch|Yes@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
 PatchMesh|No|Yes|NPatch|Yes@<hline>
 </tabular>
@@ -3694,8 +3693,8 @@ of the view. Interactive modelling actions in a view are limited to that
 input plane (unless the view is switched to local modelling; available since
 Ayam 1.4; see also section
 <ref id="editlocal" name="Editing in Local Spaces">).
-The standard input planes are as following: Front - XY-plane,
-Side - ZY-plane, Top - XZ-plane, Trim - XY-plane.
+The standard input planes are as following: Front &ndash; XY-plane,
+Side &ndash; ZY-plane, Top &ndash; XZ-plane, Trim &ndash; XY-plane.
 <p>
 In perspective views no interactive modelling actions are possible,
 but you may position the camera, pick objects, and select points.
@@ -5175,6 +5174,12 @@ BPatch objects will be exported as bilinear patch primitives:
 PV tags are supported.
 
 <sect1>PatchMesh Object<label id="patchmeshobj">
+<p>
+<figure loc="ht">
+<eps file="pics/pamesh.ps" height="5.5cm">
+<img src="pics/pamesh.gif">
+<caption>Bicubic (left) and Bilinear (right) PatchMesh Surfaces (blue) from their Respective Control Polygons (white)</caption>
+</figure>
 <p>
 The PatchMesh object may be used to model with bilinear and
 bicubic patch meshes.
@@ -8076,13 +8081,14 @@ ranges and indices are silently ignored.
 <p>
 Examples:
  <itemize>
-  <item><tt/"0,2"/ - delivers the first and third provided objects upstream;
-  <item><tt/"end-0"/ - delivers all provided objects in reversed order
+  <item><tt/"0,2"/ &ndash; delivers the first and third provided objects
 upstream;
-  <item><tt/"0,0,0"/ - delivers three copies of the first provided object
+  <item><tt/"end-0"/ &ndash; delivers all provided objects in reversed order
 upstream;
-  <item><tt/"0,4-end,1"/ - delivers the first, the fifth (if there are so many)
-up to the last, and the second object upstream.
+  <item><tt/"0,0,0"/ &ndash; delivers three copies of the first provided
+object upstream;
+  <item><tt/"0,4-end,1"/ &ndash; delivers the first, the fifth (if there are
+so many) up to the last, and the second object upstream.
  </itemize>
 </itemize>
 
@@ -8710,8 +8716,9 @@ In order to create a tag of type RiAttribute, the type string must be
 where attrname is the name of the attribute (e.g. "render") paramname
 is the name of the parameter (e.g. "displacementbound") paramtype is a
 single character defining the type of the parameter (it may be one of
-<tt/f/ - float, <tt/g/ - float pair, <tt/i/ - integer, <tt/j/ - integer
-pair, <tt/s/ - string, <tt/c/ - color, <tt/p/ - point) and finally
+<tt/f/ &ndash; float, <tt/g/ &ndash; float pair, <tt/i/ &ndash; integer,
+<tt/j/ &ndash; integer pair, <tt/s/ &ndash; string, <tt/c/ &ndash; color,
+<tt/p/ &ndash; point) and finally
 param is the value of the parameter itself (e.g. a float: "1.2", an
 integer value: "3", a string: "on", a color: "1,1,1" or a point:
 "0.4,0.5,1.0").
@@ -9021,11 +9028,12 @@ will be used when the NPatch object is tesselated for e.g. a
 conversion to a PolyMesh object. The syntax of the TP tag is:
 <tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
-which tesselation method to use (1 - ParametricError,
-2 - PathLength, and 3 - DomainDistance) and <tt/"&lt;tparamu&gt;"/ and
-<tt/"&lt;tparamv&gt;"/ are float values describing the respective parameter
-value for the chosen tesselation method. The second parameter value
-is ignored for the tesselation methods 1 and 2.
+which tesselation method to use (1 &ndash; ParametricError,
+2 &ndash; PathLength, and 3 &ndash; DomainDistance) and
+<tt/"&lt;tparamu&gt;"/ and <tt/"&lt;tparamv&gt;"/ are float values
+describing the respective parameter value for the chosen tesselation
+method. The second parameter value is ignored for the tesselation methods
+1 and 2.
 <p>
 Note that the syntax of the <tt/"TP"/ tag changed in Ayam 1.9,
 the old syntax only allowed one parameter.
@@ -10504,11 +10512,12 @@ object type:
 If a value greater than the length is specified, the order will be made
 identical to the length value.
   <item><tt/"-kt"/: the knot type of the new curve, must be one of
-0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+0 &ndash; Bezier, 1 &ndash; BSpline, 2 &ndash; NURB, 3 &ndash; Custom,
+4 &ndash; Chordal, 5 &ndash; Centripetal.
 A knot vector of specified type will automatically be created.
-The knot type defaults to 2 - NURB.
+The knot type defaults to 2 &ndash; NURB.
 If a custom knot vector is specified using the <tt/"-kv"/ option below,
-the knot type will always be set to 3 - Custom.
+the knot type will always be set to 3 &ndash; Custom.
 
   <item><tt/"-kv"/: the knot vector of the new curve. The value of this
 option is a list of floating point numbers of length curve length plus
@@ -10569,7 +10578,7 @@ In versions of Ayam prior to 1.17, NURBS curves only accepted the
   <itemize>
 
   <item><tt/"-type"/: the type of the new curve, must be one of
-0 - Open, 1 - Closed; default is 0.
+0 &ndash; Open, 1 &ndash; Closed; default is 0.
 
   <item><tt/"-length"/: length (number of data points to interpolate)
 of the new curve; the length defaults to 4.
@@ -10579,7 +10588,7 @@ If a value greater than the length is specified, the order will be made
 identical to the length value.
 
   <item><tt/"-pt"/: the parameter type of the new curve, must be one of
-0 - Chordal, 1 - Centripetal; default is 0.
+0 &ndash; Chordal, 1 &ndash; Centripetal; default is 0.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 3D
@@ -10606,7 +10615,8 @@ the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
 
   <item><tt/"-derivs"/: the value of this option controls whether
-user defined end derivatives should be used: 0 - no, 1 - yes, default is 0.
+user defined end derivatives should be used: 0 &ndash; no, 1 &ndash; yes,
+default is 0.
 
   <item><tt/"-sdlen"/: the value of this option specifies the
 relative length (in relation to the distance of the first and second
@@ -10650,7 +10660,7 @@ In versions of Ayam prior to 1.17, interpolating curves only accepted the
   <itemize>
 
   <item><tt/"-type"/: the type of the new curve, must be one of
-0 - Open, 1 - Closed; default is 0.
+0 &ndash; Open, 1 &ndash; Closed; default is 0.
 
   <item><tt/"-length"/: length (number of data points to approximate)
 of the new curve, the length defaults to 4.
@@ -10663,7 +10673,7 @@ If a value greater than the length is specified, the order will be made
 identical to the length value.
 
   <item><tt/"-symmetric"/: toggles creation of symmetric curves,
-must be one of 0 - Asymmetric, 1 - Symmetric; default is 0.
+must be one of 0 &ndash; Asymmetric, 1 &ndash; Symmetric; default is 0.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 3D
@@ -10714,11 +10724,12 @@ In versions of Ayam prior to 1.17, approximating curves only accepted the
 the order defaults to 4. If a value greater than the width is specified,
 the order will be made identical to the width value.
   <item><tt/"-ukt"/: the U knot type of the new patch, must be one of
-0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+0 &ndash; Bezier, 1 &ndash; BSpline, 2 &ndash; NURB, 3 &ndash; Custom,
+4 &ndash; Chordal, 5 &ndash; Centripetal.
 A knot vector of specified type will automatically be created.
-The knot type defaults to 2 - NURB.
+The knot type defaults to 2 &ndash; NURB.
 If a custom knot vector is specified using the <tt/"-ukv"/ option below,
-the knot type will always be set to 3 - Custom.
+the knot type will always be set to 3 &ndash; Custom.
   <item><tt/"-ukv"/: the U knot vector of the new patch. The value of this
 option is a list of floating point numbers of length width plus
 patch U order, e.g. for a patch with width 2 and U order 2, specify
@@ -10730,11 +10741,12 @@ an automatically created knot vector of the type specified by the
 the order defaults to 4. If a value greater than the height is specified,
 the order will be made identical to the height value.
   <item><tt/"-vkt"/: the V knot type of the new patch, must be one of
-0 - Bezier, 1 - BSpline, 2 - NURB, 3 - Custom, 4 - Chordal, 5 - Centripetal.
+0 &ndash; Bezier, 1 &ndash; BSpline, 2 &ndash; NURB, 3 &ndash; Custom,
+4 &ndash; Chordal, 5 &ndash; Centripetal.
 A knot vector of specified type will automatically be created.
-The knot type defaults to 2 - NURB.
+The knot type defaults to 2 &ndash; NURB.
 If a custom knot vector is specified using the <tt/"-vkv"/ option below,
-the knot type will always be set to 3 - Custom.
+the knot type will always be set to 3 &ndash; Custom.
   <item><tt/"-vkv"/: the V knot vector of the new patch. The value of this
 option is a list of floating point numbers of length height plus
 patch V order, e.g. for a patch with height 2 and V order 2, specify
@@ -10823,13 +10835,13 @@ the order defaults to 4. If a value greater than the width is specified,
 the order will be made identical to the width value.
 A value of 0 switches off interpolation along U.
   <item><tt/"-ukt"/: the U parameterisation type, must be one of
-0 - Chordal (default), 1 - Centripetal.
+0 &ndash; Chordal (default), 1 &ndash; Centripetal.
   <item><tt/"-vorder"/: order of the new patch in V parametric dimension,
 the order defaults to 4. If a value greater than the height is specified,
 the order will be made identical to the height value.
 A value of 0 switches off interpolation along V.
   <item><tt/"-vkt"/: the V parameterisation type, must be one of
-0 - Chordal (default), 1 - Centripetal.
+0 &ndash; Chordal (default), 1 &ndash; Centripetal.
 
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
 option is a list of floating point numbers that describe the 3D
@@ -10930,7 +10942,7 @@ The default value of this option is an empty list, this implies that this
 option must be specified to create a non-empty PolyMesh object.
 
   <item><tt/"-vnormals"/: determines whether vertex normals are present.
-The default value is 0 - no vertex normals are present.
+The default value is 0 &ndash; no vertex normals are present.
 
   </itemize>
 Examples:
@@ -10963,7 +10975,8 @@ may go unnoticed in Ayam and will only be detected later in other applications.
   <itemize>
 
   <item><tt/"-scheme"/: the value of this option specifies the subdivision
-scheme, it may be set to 0 - Catmull-Clark or 1 - Loop only. Default is 0.
+scheme, it may be set to 0 &ndash; Catmull-Clark or 1 &ndash; Loop only.
+Default is 0.
 
   <item><tt/"-faces"/: the value of this option specifies the number of
 faces in the mesh. The number of polygons defaults to 0!
@@ -10994,8 +11007,8 @@ option must be specified to create a non-empty SDMesh object.
 
   <item><tt/"-tags"/: the value of this option specifies a number of tags.
 It is therefore a list of positive integer values of arbitrary length.
-The only allowed values are 0 - hole, 1 - corner, 2 - crease, and
-3 - interpolateboundary.
+The only allowed values are 0 &ndash; hole, 1 &ndash; corner,
+2 &ndash; crease, and 3 &ndash; interpolateboundary.
 The default value of this option is an empty list: no tags.
 
   <item><tt/"-args"/: the value of this option specifies the number of
@@ -11076,7 +11089,7 @@ curves:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccrtncircle">
-crtNCircle - create NURBS circle:
+crtNCircle &ndash; create NURBS circle:
 <itemize>
  <item>Synopsis: <tt/"crtNCircle [-r radius] [-a arc]"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11089,7 +11102,7 @@ the arc to 360.0. The arc option supports negative values.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccrtclosedbs">
-crtClosedBS - create closed (circular) B-Spline:
+crtClosedBS &ndash; create closed (circular) B-Spline:
 <itemize>
  <item>Synopsis: <tt/"crtClosedBS sections [order [arc [radius]]]"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11101,7 +11114,7 @@ The curve always starts on the positive X axis.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccrtnrect">
-crtNRect - create a rectangular NURBS curve:
+crtNRect &ndash; create a rectangular NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"crtNRect"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11120,7 +11133,7 @@ scripting interface commands operate on selected objects only:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scselob">
-selOb - select object(s):
+selOb &ndash; select object(s):
 <itemize>
  <item>Synopsis: <tt/"selOb [index]"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11135,7 +11148,7 @@ the first two objects in the current level.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scwithob">
-withOb - execute a command on certain selected object(s):
+withOb &ndash; execute a command on certain selected object(s):
 <itemize>
  <item>Synopsis: <tt/"withOb index [do] command"/
  <item>Background: depends on command, Undo: depends on command, Safe: Yes
@@ -11149,7 +11162,7 @@ object from multiple selected objects. All objects stay selected.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsl">
-sL - select last object:
+sL &ndash; select last object:
 <itemize>
  <item>Synopsis: <tt/"sL"/
  <item>Background: No, Undo: No, Safe: Yes
@@ -11181,7 +11194,7 @@ sL
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="schsl">
-hSL - hidden select last object:
+hSL &ndash; hidden select last object:
 <itemize>
  <item>Synopsis: <tt/"hSL"/
  <item>Background: Yes, Undo: No, Safe: No
@@ -11197,7 +11210,7 @@ This command manipulates the point selection.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scselpnts">
-selPnts - select points:
+selPnts &ndash; select points:
 <itemize>
  <item>Synopsis: <tt/"selPnts [-all|index1 index2 ...]"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11224,7 +11237,7 @@ the manipulation of property values from the scripting interface:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scgetproperty">
-getProperty - get single property value
+getProperty &ndash; get single property value
 <itemize>
  <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11253,7 +11266,7 @@ See also section
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsetproperty">
-setProperty - set single property value
+setProperty &ndash; set single property value
 <itemize>
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11285,7 +11298,7 @@ These commands operate the object clipboard:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccopob">
-copOb - copy object:
+copOb &ndash; copy object:
 <itemize>
  <item>Synopsis: <tt/"copOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11294,7 +11307,7 @@ copOb - copy object:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccutob">
-cutOb - cut object:
+cutOb &ndash; cut object:
 <itemize>
  <item>Synopsis: <tt/"cutOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11303,7 +11316,7 @@ cutOb - cut object:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scpasob">
-pasOb - paste object:
+pasOb &ndash; paste object:
 <itemize>
  <item>Synopsis: <tt/"pasOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11313,7 +11326,7 @@ clipboard to the current level.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scdelob">
-delOb - delete object:
+delOb &ndash; delete object:
 <itemize>
  <item>Synopsis: <tt/"delOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11322,7 +11335,7 @@ delOb - delete object:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccmovob"><label id="scpasmovob">
-pasmovOb - paste (move) object:
+pasmovOb &ndash; paste (move) object:
 <itemize>
  <item>Synopsis: <tt/"pasmovOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11336,7 +11349,7 @@ which is totally independent from the object clipboard.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scpclip_copy"><label id="sccopyprop">
-pclip_copy/copyProp - copy a property to the property clipboard
+pclip_copy/copyProp &ndash; copy a property to the property clipboard
 <itemize>
  <item>Synopsis: <tt/"pclip_copy mode"/ or <tt/"copyProp mode"/
  <item>Background: Yes, Undo: No, Safe: No
@@ -11352,7 +11365,7 @@ Note that you may call this procedure also using the shortcut
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scpclip_paste"><label id="scpasteprop">
-pclip_paste/pasteProp - paste a property
+pclip_paste/pasteProp &ndash; paste a property
 <itemize>
  <item>Synopsis: <tt/"pclip_paste"/ or <tt/"pasteProp"/
  <item>Background: Yes, Undo: Yes, Safe: No
@@ -11404,7 +11417,7 @@ These commands transform objects or selected points of objects:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scmovob">
-movOb - move objects:
+movOb &ndash; move objects:
 <itemize>
  <item>Synopsis: <tt/"movOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11416,7 +11429,7 @@ direction of the objects Z axis.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scrotob">
-rotOb - rotate objects:
+rotOb &ndash; rotate objects:
 <itemize>
  <item>Synopsis: <tt/"rotOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11428,7 +11441,7 @@ around the objects Z axis. Note the order of the rotations!
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scscalob">
-scalOb - scale objects:
+scalOb &ndash; scale objects:
 <itemize>
  <item>Synopsis: <tt/"scalOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11443,7 +11456,7 @@ be changed to 1.0 silently!
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scmovsel"><label id="scmovpnts">
-movPnts - move selected points:
+movPnts &ndash; move selected points:
 <itemize>
  <item>Synopsis: <tt/"movPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11455,7 +11468,7 @@ direction of the objects Z axis.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scrotsel"><label id="scrotpnts">
-rotPnts - rotate selected points:
+rotPnts &ndash; rotate selected points:
 <itemize>
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11467,7 +11480,7 @@ around the objects Z axis. Note the order of the rotations!
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scscalsel"><label id="scscalpnts">
-scalPnts - scale selected points:
+scalPnts &ndash; scale selected points:
 <itemize>
  <item>Synopsis: <tt/"scalPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11482,7 +11495,7 @@ be changed to 1.0 silently!
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scdelegtrafo">
-delegTrafo - delegate transformations:
+delegTrafo &ndash; delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11495,7 +11508,7 @@ default values.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scapplytrafo">
-applyTrafo - apply transformations:
+applyTrafo &ndash; apply transformations:
 <itemize>
  <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11621,7 +11634,7 @@ properties:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scclampnc">
-clampNC - clamp NURBS curve:
+clampNC &ndash; clamp NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"clampNC [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11646,7 +11659,7 @@ See also section <ref id="clat" name="The Clamp Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scelevatenc">
-elevateNC - elevate NURBS curve:
+elevateNC &ndash; elevate NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"elevateNC n"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11659,7 +11672,7 @@ See also section <ref id="elevt" name="The Elevate Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scinsknnc">
-insknNC - insert knot into NURBS curve:
+insknNC &ndash; insert knot into NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"insknNC u r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11676,7 +11689,7 @@ See also section <ref id="insknt" name="The Insert Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scremknnc">
-remknNC - remove knot from NURBS curve:
+remknNC &ndash; remove knot from NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"remknNC (u|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11699,7 +11712,7 @@ See also section <ref id="remknt" name="The Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screfinenc">
-refineNC - refine NURBS curve:
+refineNC &ndash; refine NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11714,7 +11727,7 @@ See also section <ref id="refit" name="The Refine Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sccoarsennc">
-coarsenNC - coarsen NURBS curve:
+coarsenNC &ndash; coarsen NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"coarsenNC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11726,7 +11739,7 @@ See also section <ref id="coart" name="The Coarsen Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screvert"><label id="screvertc">
-revertC - revert curves:
+revertC &ndash; revert curves:
 <itemize>
  <item>Synopsis: <tt/"revertC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11738,7 +11751,7 @@ See also section <ref id="revertt" name="The Revert Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screvertu"><label id="screvertus">
-revertuS - revert surfaces:
+revertuS &ndash; revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertuS"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11750,7 +11763,7 @@ See also section <ref id="revertut" name="The Revert U Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screvertv"><label id="screvertvs">
-revertvS - revert surfaces:
+revertvS &ndash; revert surfaces:
 <itemize>
  <item>Synopsis: <tt/"revertvS"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11762,7 +11775,7 @@ See also section <ref id="revertvt" name="The Revert V Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scswapuvs">
-swapuvS - swap dimensions of surfaces:
+swapuvS &ndash; swap dimensions of surfaces:
 <itemize>
  <item>Synopsis: <tt/"swapuvS"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11774,7 +11787,7 @@ See also section <ref id="swapuvt" name="The Swap UV Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screscaleknnc">
-rescaleknNC - rescale knots of NURBS curves:
+rescaleknNC &ndash; rescale knots of NURBS curves:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax|-d mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11796,7 +11809,7 @@ See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsplitnc">
-splitNC - split NURBS curve
+splitNC &ndash; split NURBS curve
 <itemize>
  <item>Synopsis: <tt/"splitNC u"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11809,7 +11822,7 @@ See also section <ref id="splitt" name="The Split Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scshiftc">
-shiftC - shift control points of a (closed) curve:
+shiftC &ndash; shift control points of a (closed) curve:
 <itemize>
  <item>Synopsis: <tt/"shiftC i"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11826,7 +11839,7 @@ See also section <ref id="shiftclc" name="The Shift Closed Curve Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sctoxync">
-toXYNC - move NURBS curve to XY plane
+toXYNC &ndash; move NURBS curve to XY plane
 <itemize>
  <item>Synopsis: <tt/"toXYNC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11838,7 +11851,7 @@ See also section <ref id="toxyt" name="The To XY Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="sctrimnc">
-trimNC - trim NURBS curve
+trimNC &ndash; trim NURBS curve
 <itemize>
  <item>Synopsis: <tt/"trimNC umin umax"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11850,7 +11863,7 @@ See also section <ref id="trimt" name="The Trim Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scestlennc">
-estlenNC - estimate length of NURBS curve:
+estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"estlenNC varname"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11861,7 +11874,7 @@ and put the result into the designated variable.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screparamnc">
-reparamNC - reparameterise a NURBS curve:
+reparamNC &ndash; reparameterise a NURBS curve:
 <itemize>
  <item>Synopsis: <tt/"reparamNC type"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11873,7 +11886,7 @@ of the curve will be changed to <tt/"Custom"/.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scmakecompnc">
-makeCompNC - make NURBS curves compatible
+makeCompNC &ndash; make NURBS curves compatible
 <itemize>
  <item>Synopsis: <tt/"makeCompNC"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -11885,7 +11898,7 @@ See also section <ref id="makecompt" name="The Make Compatible Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scclampnpu"><label id="scclampunp">
-clampuNP - clamp NURBS patch in U direction:
+clampuNP &ndash; clamp NURBS patch in U direction:
 <itemize>
  <item>Synopsis: <tt/"clampuNP [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11910,7 +11923,7 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scclampnpv"><label id="scclampvnp">
-clampvNP - clamp NURBS patch in V direction:
+clampvNP &ndash; clamp NURBS patch in V direction:
 <itemize>
  <item>Synopsis: <tt/"clampvNP [side]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11935,7 +11948,7 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="screscaleknnp">
-rescaleknNP - rescale knots of NURBS patches:
+rescaleknNP &ndash; rescale knots of NURBS patches:
 <itemize>
  <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11962,7 +11975,7 @@ of the selected NURBS patch objects to the new range (0.2, 0.3).
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scinsknnpu"><label id="scinsknunp">
-insknuNP - insert knot into NURBS patch:
+insknuNP &ndash; insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknuNP u r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11980,7 +11993,7 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scinsknnpv"><label id="scinsknvnp">
-insknvNP - insert knot into NURBS patch:
+insknvNP &ndash; insert knot into NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"insknvNP v r"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -11998,7 +12011,7 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scremknunp">
-remknuNP - remove u knot from NURBS surface:
+remknuNP &ndash; remove u knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknuNP (u|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12019,7 +12032,7 @@ See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scremknvnp">
-remknvNP - remove v knot from NURBS surface:
+remknvNP &ndash; remove v knot from NURBS surface:
 <itemize>
  <item>Synopsis: <tt/"remknvNP (v|-i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12040,7 +12053,7 @@ See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scelevateunp">
-elevateuNP - elevate NURBS surface in u direction:
+elevateuNP &ndash; elevate NURBS surface in u direction:
 <itemize>
  <item>Synopsis: <tt/"elevateuNP n"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12053,7 +12066,7 @@ See also section <ref id="elevuvt" name="The Elevate UV Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scelevatevnp">
-elevatevNP - elevate NURBS surface in v direction:
+elevatevNP &ndash; elevate NURBS surface in v direction:
 <itemize>
  <item>Synopsis: <tt/"elevatevNP n"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12066,7 +12079,7 @@ See also section <ref id="elevuvt" name="The Elevate UV Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsplitnpu"><label id="scsplitunp">
-splituNP - split NURBS patch:
+splituNP &ndash; split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splituNP u"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -12081,7 +12094,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsplitnpv"><label id="scsplitvnp">
-splitvNP - split NURBS patch:
+splitvNP &ndash; split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitvNP v"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -12096,7 +12109,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scextrnp">
-extrNP - extract NURBS patch:
+extrNP &ndash; extract NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"extrNP umin umax vmin vmax"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -12111,7 +12124,7 @@ See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scinterpunp">
-interpuNP - interpolate NURBS surface in u direction:
+interpuNP &ndash; interpolate NURBS surface in u direction:
 <itemize>
  <item>Synopsis: <tt/"interpuNP order"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12128,7 +12141,7 @@ The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scinterpvnp">
-interpvNP - interpolate NURBS surface in v direction:
+interpvNP &ndash; interpolate NURBS surface in v direction:
 <itemize>
  <item>Synopsis: <tt/"interpvNP order"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -12146,7 +12159,7 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scsplitnp">
-splitNP - split NURBS patch:
+splitNP &ndash; split NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"splitNP (u|v)"/
  <item>Background: Yes, Undo: No, Safe: No
@@ -12158,7 +12171,7 @@ See also section <ref id="splitnpt" name="The Patch Split Tools">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scbuildnp">
-buildNP - build NURBS patch:
+buildNP &ndash; build NURBS patch:
 <itemize>
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Background: Yes, Undo: No, Safe: No
@@ -12275,7 +12288,7 @@ These commands update various parts of the Ayam user interface:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scrv">
-rV - redraw all views:
+rV &ndash; redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
  <item>Background: No, Undo: No, Safe: No
@@ -12286,7 +12299,7 @@ iconified views and views where automatic redraw has been turned off.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scus">
-uS - update select:
+uS &ndash; update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
  <item>Background: No, Undo: No, Safe: No
@@ -12321,7 +12334,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scucl">
-uCL - update current level:
+uCL &ndash; update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
  <item>Background: No, Undo: No, Safe: No
@@ -12334,7 +12347,7 @@ operation mode, and "cs" just clears the selection.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scucr">
-uCR - update current level after create:
+uCR &ndash; update current level after create:
 <itemize>
  <item>Synopsis: <tt/"uCR"/
  <item>Background: No, Undo: No, Safe: No
@@ -12346,7 +12359,7 @@ the current level. See also the discussion of <tt/"uS"/ above.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scplb_update">
-plb_update - property listbox update:
+plb_update &ndash; property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
  <item>Background: No, Undo: No, Safe: No
@@ -12371,7 +12384,7 @@ updated object tree, property GUI, and views.
 <p>
 These commands manage preferences data:
 <p><label id="scgetprefs">
-getPrefs - get preferences data:
+getPrefs &ndash; get preferences data:
 <itemize>
  <item>Synopsis: <tt/"getPrefs"/
  <item>Background: No, Undo: No, Safe: No
@@ -12379,7 +12392,7 @@ getPrefs - get preferences data:
 </itemize>
 
 <p><label id="scsetprefs">
-setPrefs - set preferences data:
+setPrefs &ndash; set preferences data:
 <itemize>
  <item>Synopsis: <tt/"setPrefs"/
  <item>Background: No, Undo: No, Safe: No
@@ -12393,7 +12406,7 @@ the changes take effect.
 <p>
 This command manages custom objects (plugins):
 <p><label id="scio_lc">
-io_lc - load custom:
+io_lc &ndash; load custom:
 <itemize>
  <item>Synopsis: <tt/"io_lc filename"/
  <item>Background: No, Undo: No, Safe: No
@@ -12520,7 +12533,7 @@ Interface Bytestream (RIB):
 <p>
 <#if out=latex><x/phantomsection/</#if>
 <label id="scwrib">
-wrib - RIB export:
+wrib &ndash; RIB export:
 <itemize>
  <item>Synopsis:
 <tt>"wrib filename [-image imagename] [-smonly|-selonly|-objonly]"</tt>
@@ -14263,7 +14276,7 @@ no curves will be written to the exported 3DMF file. This option does
 <p>
 Since version 1.8.2 Ayam contains a plugin named onio that may import
 scenes from the Rhino 3DM file format using the OpenNURBS toolkit
-(hence the name of the plugin onio - <bf/O/pen<bf/N/URBS <bf/IO/)
+(hence the name of the plugin onio &ndash; <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start importing from a Rhino 3DM file using the menu entry
@@ -14352,7 +14365,7 @@ to Ayam objects.
 <p>
 Since version 1.8.2 Ayam contains a plugin named onio that exports scenes
 to the Rhino 3DM file format using the OpenNURBS toolkit
-(hence the name of the plugin onio - <bf/O/pen<bf/N/URBS <bf/IO/)
+(hence the name of the plugin onio &ndash; <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start exporting to a Rhino 3DM file using the menu entry
@@ -15192,10 +15205,10 @@ rendering from a view window should be kept on disk (default: 5)
 
 <item><tt/"WarnPropPasteToSel"/: should
 <tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
-requester? (default: 1 - yes)
+requester? (default: 1 &ndash; yes)
 
 <item><tt/"WarnUnknownTag"/ controls the warning messages for
-unknown tag types. (default: 1 - yes)
+unknown tag types. (default: 1 &ndash; yes)
 
 <item><tt/"DailyTips"/: a list of strings that appear as tips
 on startup in the console (default: large)
@@ -15249,7 +15262,7 @@ value is <tt>""</tt> (empty string).
 
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
 appears if scenes with script objects or tags are loaded. The default
-value is 1 - yes, warn about script objects and tags.
+value is 1 &ndash; yes, warn about script objects and tags.
 
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
 on X11 (displaced menus do not stay open). This option is enabled
@@ -15331,33 +15344,33 @@ this).
 
 <item><tt/"ListTypes"/ determines, whether the type of an
 object should be displayed in braces in the tree view or listbox.
-The default value is 1 - yes, list the types.
+The default value is 1 &ndash; yes, list the types.
 
 <item><tt/"MarkHidden"/ determines, whether hidden objects
 should be marked (using a preceding exclamation mark)
 in the tree view or object listbox.
-The default value is 1 - yes, mark hidden objects.
+The default value is 1 &ndash; yes, mark hidden objects.
 
 <item><tt/"LoadEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ on startup.
-The default value is 1 - yes, load the environment file on startup.
+The default value is 1 &ndash; yes, load the environment file on startup.
 
 <item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
 the scene file specified by <tt/"EnvFile"/ also when the scene is
 cleared using the main menu entry <tt>"File/New"</tt>.
-The default value is 1 - yes, load the environment file on
+The default value is 1 &ndash; yes, load the environment file on
 <tt>"File/New"</tt>.
 
 <item><tt>"ToolBoxShrink"</tt>, controls whether the toolbox window
 should shrink wrap around its contents after a resize operation.
-This option is not used in single window GUI mode. Default is 1 - yes.
+This option is not used in single window GUI mode. Default is 1 &ndash; yes.
 
 <item><tt>"ToolBoxTrans"</tt>, decides if the toolbox window should
 be made transient. It will then, depending on the window manager or its
 configuration, get a different or no decoration, no icon (or no entry in the
 task bar on Windows), and will always be iconified when the main window
 gets iconified. Not used in single window GUI mode. 
-The default value is 1 - yes.
+The default value is 1 &ndash; yes.
 
 <item><tt/"PaneMargins"/, is a list of currently five floating
 point values, used as a safety margin for the panes:
