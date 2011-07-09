@@ -4675,6 +4675,8 @@ and size of the object determines the position and size of the light source!
 There is an example scene named <tt>"arealight.ay"</tt> distributed with
 Ayam.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
 <p>
 <figure loc="ht">
@@ -4914,6 +4916,8 @@ they automatically collapse to a multiple point again!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>NPatch (NURBS Patch) Object<label id="npatchobj">
 <p>
 <figure loc="ht">
@@ -5064,6 +5068,8 @@ NPatch objects will be exported as NURBS patch primitives:
 <p>
 PV tags are supported.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>IPatch (Interpolating Patch) Object<label id="ipatchobj">
 <p>
 <figure loc="ht">
@@ -5122,7 +5128,8 @@ created by the tesselation (<tt/"OutlinePolygon"/), or just the
 outlines of the patch (<tt/"OutlinePatch"/). The default setting
 (<tt/"Global"/) means, that the value of the global preference setting
 <tt>"Drawing/NPDisplayMode"</tt> should be used instead.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
 </itemize>
@@ -5135,11 +5142,19 @@ IPatch objects will be exported as NURBS patch primitives:
 <p>
 PV tags are currently not supported.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>BPatch (Bilinear Patch) Object<label id="bpatchobj">
 <p>
+<figure loc="ht">
+<eps file="pics/bpatch.ps" height="5cm">
+<img src="pics/bpatch.gif">
+<caption>Bilinear Patch</caption>
+</figure>
+<p>
 A BPatch is a simple bilinear patch defined by four control
-points. BPatch objects are e.g. used to build box objects, see
-<ref id="boxobj" name="Box Object">).
+points. BPatch objects are e.g. used internally to build box objects,
+see also <ref id="boxobj" name="Box Object">).
 <p>
 You may convert the current BPatch object to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
@@ -5172,6 +5187,8 @@ BPatch objects will be exported as bilinear patch primitives:
 <tt>RiPatch(RI_BILINEAR, ...);</tt>
 <p>
 PV tags are supported.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>PatchMesh Object<label id="patchmeshobj">
 <p>
@@ -5253,6 +5270,8 @@ PatchMesh objects will be exported as patch mesh primitives:
 <p>
 PV tags are supported.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>PolyMesh Object<label id="polymeshobj">
 <p>
 The PolyMesh object may be used to include objects that
@@ -5320,6 +5339,8 @@ PolyMesh objects will be exported as RiPointsGeneralPolygons primitives
 polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
 <p>
 PV tags are supported.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>SDMesh Object<label id="sdmeshobj">
 <p>
@@ -5397,6 +5418,8 @@ SDMesh objects will be exported as subdivision mesh primitives:
 <tt>RiSubdivisionMesh(...);</tt>
 <p>
 PV tags are supported.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Instance Object<label id="instanceobj">
 <p>
@@ -5540,6 +5563,8 @@ You can change this behaviour using the RIB export preference setting
 will be resolved temporarily to normal objects before being exported
 to RIB. The resulting RIB file will then be self contained.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Clone Object<label id="cloneobj">
 <p>
 <figure loc="ht">
@@ -5676,6 +5701,8 @@ Mirror|Yes|No|Yes@<hline>
 <caption>Clone Parameterisation Examples</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Revolve Object<label id="revolveobj">
 <p>
 <figure loc="ht">
@@ -5763,6 +5790,8 @@ try to revert the revolved curve.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Extrude Object<label id="extrudeobj">
 <p>
@@ -5890,6 +5919,8 @@ and holes, possible scale transformations should be carried out on the
 hole curve control points, rather than on the hole curve object
 transformation attributes.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Swing Object<label id="swingobj">
 <p>
 <figure loc="ht">
@@ -5952,6 +5983,7 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the Swing, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Sweep Object<label id="sweepobj">
 <p>
@@ -6126,6 +6158,8 @@ the Sweep object.
 <caption>Sweep Parameterisation Examples</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Birail1 Object<label id="birail1obj">
 <p>
 <figure loc="ht">
@@ -6242,6 +6276,8 @@ the birail object.
 <caption>Birail1 Parameterisation Examples</caption>
 </table>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Birail2 Object<label id="birail2obj">
 <p>
 <figure loc="ht">
@@ -6297,8 +6333,8 @@ control the morphing (interpolation) process. The y coordinate
 of this curve at a specific point, which should have a value between
 0 and 1, determines the ratio of control of the first cross section
 (0) and the second cross section (1) over the interpolated curve.
-Thus, a straight line running from point (0,0) to (1,1) will mimic
-the standard linear interpolation that would be carried out if no
+Thus, a straight line running from point (0,0) to (1,1) will be equivalent
+to the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve, unless the <tt/"InterpolCtrl"/
@@ -6378,6 +6414,8 @@ the birail object.
 </tabular>
 <caption>Birail2 Parameterisation Examples</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Skin Object<label id="skinobj">
 <p>
@@ -6498,6 +6536,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the skin, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Gordon Object<label id="gordonobj">
 <p>
@@ -6645,6 +6685,8 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 To help in the exact configuration of the Gordon surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Bevel Object<label id="bevelobj">
 <p>
 <figure loc="!ht">
@@ -6750,6 +6792,8 @@ of the <tt/"BevelAttr"/ property.
 To help in the exact configuration of the bevel, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Cap Object<label id="capobj">
 <p>
 <figure loc="!ht">
@@ -6826,6 +6870,8 @@ of the <tt/"CapAttr"/ property.
 <p>
 To help in the exact configuration of the cap, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
 <p>
@@ -6913,7 +6959,8 @@ data points automatically.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
@@ -6922,6 +6969,8 @@ The parameters <tt/"Mode"/, <tt/"Closed"/, and <tt/"IParam"/ are gone
 since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
 by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
 automatically from the desired order.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
 <p>
@@ -7004,10 +7053,13 @@ of the approximating NURBS curve. Currently, only orders higher than
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
 <p>
@@ -7101,10 +7153,13 @@ that does not exactly preserve the shape of the original curves.
 If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
 shape may be preserved completely.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
 <p>
@@ -7209,13 +7264,16 @@ patches delivered e.g. by a beveled Extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
 surface of e.g. said Extrude object.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the extracted NURBS curve.
 </itemize>
 <p>
 See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
 <p>
@@ -7262,10 +7320,13 @@ or arc to be created. Negative values are allowed.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
 <p>
@@ -7342,10 +7403,13 @@ offset curve. Negative values are allowed.
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
 <p>
@@ -7389,10 +7453,13 @@ surface will be reversed (in U direction).
 
 <item>The <tt/"Knot-Type"/ parameter allows to choose between NURB
 and B-Spline knot vectors for the concatenated surface (in U direction).
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>ExtrNP (Extract NURBS Patch) Object<label id="extrnpobj">
 <p>
@@ -7464,10 +7531,13 @@ surface of e.g. a Revolve object.
 
 <item>See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the extracted NURBS surface.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
 <p>
@@ -7511,10 +7581,13 @@ offset surface. Negative values are allowed.
 
 <item>See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
+</itemize>
+<itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS surface.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Text Object<label id="textobj">
 <p>
@@ -7601,6 +7674,8 @@ borders of the bevel surfaces with high values for the bevel radius.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>RiInc Object<label id="riincobj">
 <p>
 RiInc objects may be used to include objects or whole scene parts into your
@@ -7659,6 +7734,7 @@ the procedural will create or the archive contains.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
+
 <sect1>Script Object<label id="scriptobj">
 <p>
 Script objects are the most flexible object type of Ayam.
@@ -8029,6 +8105,7 @@ the two different trajectory curves):
 <caption>Hierarchy Building Script Object Example</caption>
 </figure>
 
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Select Object<label id="selectobj">
 <p>
@@ -8092,6 +8169,7 @@ so many) up to the last, and the second object upstream.
  </itemize>
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Trim Object<label id="trimobj">
 <p>
@@ -8137,6 +8215,8 @@ patch providing object deliver a list. This way, a bevel of an
 extrusion might be trimmed.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Custom Objects<label id="customobj">
 <p>
 Custom objects are plugins that extend the Ayam capabilities by
@@ -8157,6 +8237,8 @@ more information regarding its properties.
 <p>
 One custom object is already distributed with Ayam. This Metaball
 custom object is documented in the next section:
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Metaball Object<label id="metaobjobj"><label id="metacompobj">
 <p>
