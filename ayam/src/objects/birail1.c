@@ -904,6 +904,13 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 	  ay_status = ay_object_copy(birail1->npatch, next);
 	  if(*next)
 	    {
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(*next);
+		}
+
 	      (*next)->parent = AY_TRUE;
 	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
@@ -918,6 +925,13 @@ ay_birail1_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_copy(b, next);
 	      if(*next)
 		{
+		  /* reset display mode and sampling tolerance
+		     of new patch to "global"? */
+		  if(!in_place && ay_prefs.conv_reset_display)
+		    {
+		      ay_npt_resetdisplay(*next);
+		    }
+
 		  next = &((*next)->next);
 		}
 	      b = b->next;
@@ -933,11 +947,21 @@ ay_birail1_convertcb(ay_object *o, int in_place)
        if(birail1->npatch)
 	{
 	  ay_status = ay_object_copy(birail1->npatch, &new);
-	  ay_trafo_copy(o, new);
+	  if(new)
+	    {
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(new);
+		}
 
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-	}
+	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+	    } /* if */
+	} /* if */
     } /* if */
 
   /* second, link new objects, or replace old objects with them */
