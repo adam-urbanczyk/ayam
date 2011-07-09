@@ -523,7 +523,7 @@ ay_cap_convertcb(ay_object *o, int in_place)
 	{
 	  /* reset display mode and sampling tolerance
 	     of new patch to "global"? */
-	  if(ay_prefs.conv_reset_display)
+	  if(!in_place && ay_prefs.conv_reset_display)
 	    {
 	      ay_npt_resetdisplay(new);
 	    }
@@ -532,7 +532,6 @@ ay_cap_convertcb(ay_object *o, int in_place)
 	  ay_npt_copytptag(o, new);
 
 	  ay_trafo_add(o, new);
-
 
 	  if(!new->down)
 	    new->down = ay_endlevel;

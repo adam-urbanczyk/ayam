@@ -1339,62 +1339,90 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  ay_pamesh_object *pamesh = NULL;
- ay_level_object *level = NULL;
- ay_object *l = NULL, *p = NULL, *new = NULL, **next = NULL;
+ ay_object *p = NULL, *new = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
 
+  /* first, create new objects */
+
   pamesh = (ay_pamesh_object *) o->refine;
   p = pamesh->npatch;
-  if(!in_place)
+  if(p && p->next)
     {
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, &new);
-	  if(new)
-	    {
-	      ay_trafo_copy(o, new);
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-
-	      ay_status = ay_object_link(new);
-	    } /* if */
-	  p = p->next;
-	} /* while */
-    }
-  else
-    {
-      ay_status = ay_object_create(AY_IDLEVEL, &l);
-      level = (ay_level_object *)(l->refine);
-      level->type = AY_LTLEVEL;
-      next = &(l->down);
-
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, &new);
-	  if(new)
-	    {
-	      ay_trafo_copy(o, new);
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-
-	      *next = new;
-	      next = &(new->next);
-	    } /* if */
-	  p = p->next;
-	} /* while */
+      ay_status = ay_object_create(AY_IDLEVEL, &new);
 
       if(new)
 	{
-	  *next = ay_endlevel;
-	  ay_object_replace(l, o);
+	  next = &(new->down);
+
+	  while(p)
+	    {
+	      ay_status = ay_object_copy(p, next);
+	      if(*next)
+		{
+		  ay_trafo_copy(o, *next);
+
+		  /* reset display mode and sampling tolerance
+		     of new patch to "global"? */
+		  if(ay_prefs.conv_reset_display)
+		    {
+		      ay_npt_resetdisplay(*next);
+		    }
+
+		  /* copy eventually present TP tags */
+		  ay_npt_copytptag(o, *next);
+
+		  (*next)->parent = AY_TRUE;
+		  (*next)->down = ay_endlevel;
+
+		  next = &((*next)->next);
+		} /* if */
+	      p = p->next;
+	    } /* while */
+
+	  if(!new->down)
+	    {
+	      ay_object_delete(new);
+	      new = NULL;
+	      ay_status = AY_ERROR;
+	    }
+
+	} /* if */
+    }
+  else
+    {
+      if(p)
+	{
+	  ay_status = ay_object_copy(p, &new);
+	  if(new)
+	    {
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(new);
+		}
+
+	      ay_trafo_copy(o, new);
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+	    } /* if */
+	} /* if */
+    } /* if */
+
+  /* second, link new objects, or replace old objects with them */
+
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
 	}
       else
 	{
-	  ay_object_delete(l);
+	  ay_status = ay_object_replace(new, o);
 	} /* if */
     } /* if */
 

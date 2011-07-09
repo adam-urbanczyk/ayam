@@ -622,7 +622,6 @@ ay_bevel_convertcb(ay_object *o, int in_place)
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
   r = (ay_bevel_object *) o->refine;
 
   if(r->npatch)
@@ -637,26 +636,22 @@ ay_bevel_convertcb(ay_object *o, int in_place)
 
 	  /* copy eventually present TP tags */
 	  ay_npt_copytptag(o, new);
-	}
-   } /* if */
 
-  /* second, link new objects, or replace old objects with them */
-  if(new)
-    {
-      /* reset display mode and sampling tolerance
-	 of new patch to "global"? */
-      if(ay_prefs.conv_reset_display)
-	{
-	  ay_npt_resetdisplay(new);
-	}
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(!in_place && ay_prefs.conv_reset_display)
+	    {
+	      ay_npt_resetdisplay(new);
+	    }
 
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
+	  if(!in_place)
+	    {
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_status = ay_object_replace(new, o);
+	    } /* if */
 	} /* if */
     } /* if */
 
