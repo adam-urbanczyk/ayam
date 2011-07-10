@@ -597,6 +597,13 @@ ay_offnp_convertcb(ay_object *o, int in_place)
   /* second, link new object, or replace old object with it */
   if(new)
     {
+      /* reset display mode and sampling tolerance
+	 of new patch to "global"? */
+      if(!in_place && ay_prefs.conv_reset_display)
+	{
+	  ay_npt_resetdisplay(new);
+	}
+
       ay_trafo_copy(o, new);
 
       if(!in_place)

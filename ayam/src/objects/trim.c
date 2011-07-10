@@ -506,6 +506,13 @@ ay_trim_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_copy(b, next);
 	      if(*next)
 		{
+		  /* reset display mode and sampling tolerance
+		     of new patch to "global"? */
+		  if(!in_place && ay_prefs.conv_reset_display)
+		    {
+		      ay_npt_resetdisplay(*next);
+		    }
+
 		  next = &((*next)->next);
 		}
 	      b = b->next;

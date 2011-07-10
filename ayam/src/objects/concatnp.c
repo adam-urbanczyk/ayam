@@ -519,9 +519,13 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
       ay_status = ay_object_copy(cc->npatch, &new);
       if(new)
 	{
-	  /* reset display mode of new patch to "global" */
-	  np = (ay_nurbpatch_object *)(new->refine);
-	  np->display_mode = 0;
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(!in_place && ay_prefs.conv_reset_display)
+	    {
+	      ay_npt_resetdisplay(new);
+	    }
+
 
 	  /* immediately create and show the multiple points */
 	  np->createmp = AY_TRUE;

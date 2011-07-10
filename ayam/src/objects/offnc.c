@@ -599,29 +599,29 @@ ay_offnc_convertcb(ay_object *o, int in_place)
   if(r->ncurve)
     {
       ay_status = ay_object_copy(r->ncurve, &new);
-    } /* if */
 
-  /* second, link new object, or replace old object with it */
-  if(new)
-    {
-      /* reset display mode and sampling tolerance
-	 of new curve to "global"? */
-      if(ay_prefs.conv_reset_display)
+      /* second, link new object, or replace old object with it */
+      if(new)
 	{
-	  nc = (ay_nurbcurve_object *)(new->refine);
-	  nc->display_mode = 0;
-	  nc->glu_sampling_tolerance = 0.0;
-	}
+	  /* reset display mode and sampling tolerance
+	     of new curve to "global"? */
+	  if(!in_place && ay_prefs.conv_reset_display)
+	    {
+	      nc = (ay_nurbcurve_object *)(new->refine);
+	      nc->display_mode = 0;
+	      nc->glu_sampling_tolerance = 0.0;
+	    }
 
-      ay_trafo_copy(o, new);
+	  ay_trafo_copy(o, new);
 
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
+	  if(!in_place)
+	    {
+	      ay_status = ay_object_link(new);
+	    }
+	  else
+	    {
+	      ay_object_replace(new, o);
+	    } /* if */
 	} /* if */
     } /* if */
 
