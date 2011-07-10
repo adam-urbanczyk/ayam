@@ -1002,7 +1002,7 @@ ay_text_convertcb(ay_object *o, int in_place)
  int ay_status = AY_OK;
  ay_text_object *t = NULL;
  ay_level_object *level = NULL;
- ay_object *l = NULL, *npatch, *new = NULL, **next = NULL;
+ ay_object *npatch, *new = NULL, **next = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -1010,68 +1010,78 @@ ay_text_convertcb(ay_object *o, int in_place)
   t = (ay_text_object *) o->refine;
 
   npatch = t->npatch;
-  if(!in_place)
+  if(npatch && npatch->next)
     {
+      ay_status = ay_object_create(AY_IDLEVEL, &new);
+      if(ay_status)
+	{ return AY_ERROR; }
+      new->parent = AY_TRUE;
+      level = (ay_level_object *)(new->refine);
+      level->type = AY_LTLEVEL;
+
+      next = &(new->down);
       while(npatch)
 	{
-	  new = NULL;
-	  ay_status = ay_object_copy(npatch, &new);
-	  if(!ay_status && new)
+	  ay_status = ay_object_copy(npatch, next);
+	  if(*next)
 	    {
-	      ay_trafo_copy(o, new);
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(*next);
+		}
 
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
+	      ay_trafo_copy(o, *next);
 
-	      new->hide_children = AY_TRUE;
-	      new->parent = AY_TRUE;
-	      if(!new->down)
-		new->down = ay_endlevel;
+	      (*next)->hide_children = AY_TRUE;
+	      (*next)->parent = AY_TRUE;
+	      (*next)->down = ay_endlevel;
 
-	      ay_object_link(new);
+	      next = &((*next)->next);
 	    } /* if */
 	  npatch = npatch->next;
 	} /* while */
+
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new->down);
+
     }
   else
     {
-      ay_status = ay_object_create(AY_IDLEVEL, &l);
-      if(ay_status)
-	{ return AY_ERROR; }
-      level = (ay_level_object *)(l->refine);
-      level->type = AY_LTLEVEL;
-      next = &(l->down);
-      while(npatch)
+
+      ay_status = ay_object_copy(npatch, &new);
+      if(!ay_status && new)
 	{
-	  new = NULL;
-	  ay_status = ay_object_copy(npatch, &new);
-	  if(!ay_status && new)
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(!in_place && ay_prefs.conv_reset_display)
 	    {
-	      ay_trafo_copy(o, new);
+	      ay_npt_resetdisplay(new);
+	    }
 
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
+	  ay_trafo_copy(o, new);
 
-	      new->hide_children = AY_TRUE;
-	      new->parent = AY_TRUE;
-	      if(!new->down)
-		new->down = ay_endlevel;
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new);
 
-	      *next = new;
-	      next = &(new->next);
-	    } /* if */
-	  npatch = npatch->next;
-	} /* while */
+	  new->hide_children = AY_TRUE;
+	  new->parent = AY_TRUE;
+	  if(!new->down)
+	    new->down = ay_endlevel;
+	} /* if */
+    } /* if */
 
-      if(new)
+  if(new)
+    {
+      if(!in_place)
 	{
-	  *next = ay_endlevel;
-	  ay_object_replace(l, o);
+	  ay_object_link(new);
 	}
       else
 	{
-	  ay_object_delete(l);
-	} /* if */
+	  ay_object_replace(o, new);
+	}
     } /* if */
 
  return AY_OK;

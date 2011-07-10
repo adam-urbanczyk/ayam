@@ -958,6 +958,13 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	  ay_status = ay_object_copy(r->npatch, next);
 	  if(*next)
 	    {
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(*next);
+		}
+
 	      (*next)->parent = AY_TRUE;
 	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
@@ -972,6 +979,13 @@ ay_sweep_convertcb(ay_object *o, int in_place)
 	      ay_status = ay_object_copy(b, next);
 	      if(*next)
 		{
+		  /* reset display mode and sampling tolerance
+		     of new patch to "global"? */
+		  if(!in_place && ay_prefs.conv_reset_display)
+		    {
+		      ay_npt_resetdisplay(*next);
+		    }
+
 		  next = &((*next)->next);
 		}
 	      b = b->next;
@@ -987,12 +1001,22 @@ ay_sweep_convertcb(ay_object *o, int in_place)
        if(r->npatch)
 	{
 	  ay_status = ay_object_copy(r->npatch, &new);
-	  ay_trafo_copy(o, new);
-	  new->hide_children = AY_TRUE;
-	  new->parent = AY_TRUE;
-	  new->down = ay_endlevel;
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
+	  if(new)
+	    {
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(new);
+		}
+
+	      ay_trafo_copy(o, new);
+	      new->hide_children = AY_TRUE;
+	      new->parent = AY_TRUE;
+	      new->down = ay_endlevel;
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+	    }
 	}
     } /* if */
 
