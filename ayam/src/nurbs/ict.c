@@ -1213,6 +1213,7 @@ ay_ict_revert(ay_icurve_object *curve)
 {
  int i, j;
  double dtemp;
+ double t[3];
 
   if(!curve)
     return AY_ENULL;
@@ -1238,13 +1239,28 @@ ay_ict_revert(ay_icurve_object *curve)
       j-=3;
     } /* while */
 
+  /* revert derivatives */
+  memcpy(t, curve->sderiv, 3*sizeof(double));
+  memcpy(curve->sderiv, curve->ederiv, 3*sizeof(double));
+  memcpy(curve->ederiv, t, 3*sizeof(double));
+
+  dtemp = curve->sdlen;
+  curve->sdlen = curve->edlen;
+  curve->edlen = dtemp;
+
  return AY_OK;
 } /* ay_ict_revert */
 
 
-/* ay_ict_getpntfromindex:
- *  return the adress of the control point designated by <index>
- *  of the interpolating curve <curve> in <p>
+/** ay_ict_getpntfromindex:
+ * get address of a single control point from its indices
+ * (performing bounds checking)
+ *
+ * @param[in] patch IPatch object to process
+ * @param[in] index index of desired control point
+ * @param[in,out] p pointer to pointer where to store the resulting address
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
