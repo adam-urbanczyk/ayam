@@ -1,4 +1,4 @@
-[25. Jun 2011] CVS-Head:
+[13. Jul 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -7,6 +7,8 @@ o property reset does not work after object selection change (SF 3295758)
 o last element of dynamic property GUIs not visible (SF 3301967)
 o extracting the boundary of patches with differing orders (SF 3312039)
 o conversion of quadrics to NURBS (SF 3322311)
+o setting the display mode/tolerance of PatchMesh objects (SF 3360488)
+o reverting interpolating curves with custom derivatives (SF 3366276)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -16,6 +18,7 @@ o added centripetal parameterization to surface interpolation
 o the surface interpolation can now cope with degenerate rows/columns
   in the input data
 o added uniform parameterization to ICurve
+o 
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
