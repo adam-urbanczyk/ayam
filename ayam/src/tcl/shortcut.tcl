@@ -508,25 +508,25 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(Local2)]> "viewCycleMMode $w;break"
 
     bind $w <[repctrl $ayviewshortcuts(RotL)]>\
-	    "$w.f3D.togl setconf -undokb ViewRotX -drotx 5.0 -droty 0.0;break"
+   "$w.f3D.togl setconf -undokb ViewRotX -drotx $::ayprefs(KbdRot) -droty 0.0;break"
     bind $w <[repctrl $ayviewshortcuts(RotR)]>\
-	    "$w.f3D.togl setconf -undokb ViewRotX -drotx -5.0 -droty 0.0;break"
+   "$w.f3D.togl setconf -undokb ViewRotX -drotx -$::ayprefs(KbdRot) -droty 0.0;break"
     bind $w <[repctrl $ayviewshortcuts(RotU)]>\
-	    "$w.f3D.togl setconf -undokb ViewRotY -droty 5.0 -drotx 0.0;break"
+   "$w.f3D.togl setconf -undokb ViewRotY -droty $::ayprefs(KbdRot) -drotx 0.0;break"
     bind $w <[repctrl $ayviewshortcuts(RotD)]>\
-	    "$w.f3D.togl setconf -undokb ViewRotY -droty -5.0 -drotx 0.0;break"
+   "$w.f3D.togl setconf -undokb ViewRotY -droty -$::ayprefs(KbdRot) -drotx 0.0;break"
 
     bind $w <[repctrl $ayviewshortcuts(ZoomI)]>\
-	    "$w.f3D.togl setconf -undokb ViewZoomIn -dzoom 0.9;break"
+	"$w.f3D.togl setconf -undokb ViewZoomIn -dzoom $::ayprefs(KbdZoomI);break"
 
     bind $w <[repctrl $ayviewshortcuts(ZoomO)]>\
-	    "$w.f3D.togl setconf -undokb ViewZoomOut -dzoom 1.1;break"
+	"$w.f3D.togl setconf -undokb ViewZoomOut -dzoom $::ayprefs(KbdZoomO);break"
 
     bind $w <[repctrl $ayviewshortcuts(ZoomI2)]>\
-	    "$w.f3D.togl setconf -undokb ViewZoomIn -dzoom 0.9;break"
+	"$w.f3D.togl setconf -undokb ViewZoomIn -dzoom $::ayprefs(KbdZoomI);break"
 
     bind $w <[repctrl $ayviewshortcuts(ZoomO2)]>\
-	    "$w.f3D.togl setconf -undokb ViewZoomOut -dzoom 1.1;break"
+	"$w.f3D.togl setconf -undokb ViewZoomOut -dzoom $::ayprefs(KbdZoomO);break"
 
 
     bind $w <[repctrl $ayviewshortcuts(PanL)]>\
