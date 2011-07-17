@@ -182,6 +182,9 @@ array set ayprefs {
  AUCommands { uS; rV; }
 
  WheelZoom 0.5
+ KbdZoomI 0.78125
+ KbdZoomO 1.28
+ KbdRot 5.0
 
  PolyOffset0 1.0
  PolyOffset1 1.0
