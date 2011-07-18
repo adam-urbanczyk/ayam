@@ -43,9 +43,9 @@ proc init_IPatch { } {
     addCheck $w IPatchAttrData Close_U
     addCheck $w IPatchAttrData Close_V
 
-    addMenu $w IPatchAttrData Knot-Type_U [list Chordal Centripetal]
+    addMenu $w IPatchAttrData Knot-Type_U [list Chordal Centripetal Uniform]
 
-    addMenu $w IPatchAttrData Knot-Type_V [list Chordal Centripetal]
+    addMenu $w IPatchAttrData Knot-Type_V [list Chordal Centripetal Uniform]
 
 
     addParam $w IPatchAttrData Tolerance

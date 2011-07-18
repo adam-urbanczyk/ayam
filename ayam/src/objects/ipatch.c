@@ -300,14 +300,20 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ip->close_u = uclosed;
   ip->close_v = vclosed;
 
-  if(ukt == 1)
-    ip->ktype_u = AY_KTCENTRI;
-  else
+  if(ukt == 0)
     ip->ktype_u = AY_KTCHORDAL;
-  if(vkt == 1)
-    ip->ktype_v = AY_KTCENTRI;
   else
+    if(ukt == 1)
+      ip->ktype_u = AY_KTCENTRI;
+    else
+      ip->ktype_u = AY_KTUNIFORM;
+  if(vkt == 0)
     ip->ktype_v = AY_KTCHORDAL;
+  else
+    if(ukt == 1)
+      ip->ktype_v = AY_KTCENTRI;
+    else
+      ip->ktype_u = AY_KTUNIFORM;
 
   if(!cv)
     {
@@ -839,15 +845,37 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ipatch->order_u = new_order_u;
   ipatch->order_v = new_order_v;
 
-  if(new_ktype_u == 0)
-    ipatch->ktype_u = AY_KTCHORDAL;
-  else
-    ipatch->ktype_u = AY_KTCENTRI;
+  switch(new_ktype_u)
+    {
+    case 0:
+      ipatch->ktype_u = AY_KTCHORDAL;
+      break;
+    case 1:
+      ipatch->ktype_u = AY_KTCENTRI;
+      break;
+    case 2:
+      ipatch->ktype_u = AY_KTUNIFORM;
+      break;
+    default:
+      /* output error? */
+      break;
+    }
 
-  if(new_ktype_v == 0)
-    ipatch->ktype_v = AY_KTCHORDAL;
-  else
-    ipatch->ktype_v = AY_KTCENTRI;
+  switch(new_ktype_v)
+    {
+    case 0:
+      ipatch->ktype_v = AY_KTCHORDAL;
+      break;
+    case 1:
+      ipatch->ktype_v = AY_KTCENTRI;
+      break;
+    case 2:
+      ipatch->ktype_v = AY_KTUNIFORM;
+      break;
+    default:
+      /* output error? */
+      break;
+    }
 
   ipatch->close_u = new_close_u;
   ipatch->close_v = new_close_v;
@@ -987,14 +1015,20 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(ipatch->ktype_u == AY_KTCHORDAL)
     to = Tcl_NewIntObj(0);
   else
-    to = Tcl_NewIntObj(1);
+    if(ipatch->ktype_u == AY_KTCENTRI)
+      to = Tcl_NewIntObj(1);
+    else
+      to = Tcl_NewIntObj(2);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton,"Knot-Type_V",-1);
   if(ipatch->ktype_v == AY_KTCHORDAL)
     to = Tcl_NewIntObj(0);
   else
-    to = Tcl_NewIntObj(1);
+    if(ipatch->ktype_u == AY_KTCENTRI)
+      to = Tcl_NewIntObj(1);
+    else
+      to = Tcl_NewIntObj(2);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 

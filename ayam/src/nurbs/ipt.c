@@ -173,11 +173,12 @@ ay_ipt_revertv(ay_ipatch_object *ip)
 
 
 /** ay_ipt_interpolateu:
- * interpolate NURBS patch along U (width) 
+ * interpolate NURBS patch along U (width)
  *
  * @param[in,out] np NURBS patch object to interpolate
  * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL or AY_KTCENTRI) 
+ * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ *            AY_KTCENTRI, or AY_KTUNIFORM)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -220,7 +221,7 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 
   /* calculate parameterization */
   for(i = 0; i < N; i++)
-    {      
+    {
       ind = i*stride;
       ind2 = i*stride;
       total = 0.0;
@@ -243,7 +244,14 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 		}
 	      else
 		{
-		  cds[k] = AY_V3LEN(v);
+		  if(ktype == AY_KTUNIFORM)
+		    {
+		      cds[k] = 0.01;
+		    }
+		  else
+		    {
+		      cds[k] = AY_V3LEN(v);
+		    }
 		}
 	      total += cds[k];
 	    }
@@ -334,11 +342,12 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 
 
 /** ay_ipt_interpolatev:
- * interpolate NURBS patch along V (height) 
+ * interpolate NURBS patch along V (height)
  *
  * @param[in,out] np NURBS patch object to interpolate
  * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL or AY_KTCENTRI) 
+ * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ *            AY_KTCENTRI, or AY_KTUNIFORM)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -396,7 +405,14 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 		}
 	      else
 		{
-		  cds[k] += AY_V3LEN(v);
+		  if(ktype == AY_KTUNIFORM)
+		    {
+		      cds[k] = 0.01;
+		    }
+		  else
+		    {
+		      cds[k] += AY_V3LEN(v);
+		    }
 		}
 	      total += cds[k];
 	    }
