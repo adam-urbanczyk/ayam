@@ -368,8 +368,9 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  unsigned int nextloops = 0, nextnverts = 0, nextverts = 0,
    nextcontrols = 0, oldpmncontrols = 0;
  int has_normals = -1, stride = 0;
- double tm[16];
+ double tm[16], rtm[16];
  int have_trafo = AY_FALSE, have_pv_tags = AY_TRUE;
+ int have_rotation = AY_FALSE;
  ay_tag *tag1 = NULL, *tag2 = NULL, *mtag = NULL;
  char *ct;
 
@@ -490,7 +491,19 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 	    }
 	  else
 	    {
-	      have_trafo = AY_TRUE;
+	      have_trafo = AY_FALSE;
+	    }
+
+	  if((fabs(o->quat[0]) > AY_EPSILON) ||
+	     (fabs(o->quat[1]) > AY_EPSILON) ||
+	     (fabs(o->quat[2]) > AY_EPSILON) ||
+	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	    {
+	      have_rotation = AY_TRUE;
+	    }
+	  else
+	    {
+	      have_rotation = AY_FALSE;
 	    }
 
 	  i++;
@@ -525,10 +538,13 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
 	  /* if the object has non-default transformation attributes,
 	     we also need to transform the control points */
-	  if(have_trafo)
+	  if(have_trafo || have_rotation)
 	    {
 	      k = 0;
 	      ay_trafo_creatematrix(o, tm);
+	      if(has_normals && have_rotation)
+		ay_quat_torotmatrix(o->quat, rtm);
+
 	      for(j = 0; j < pm->ncontrols; j++)
 		{
 		  memcpy(&(npm->controlv[nextcontrols + k]),
@@ -537,9 +553,9 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
 		  ay_trafo_apply3(&(npm->controlv[nextcontrols + k]), tm);
 
-		  if(has_normals)
+		  if(has_normals && have_rotation)
 		    ay_trafo_apply3(&(npm->controlv[nextcontrols + k + 3]),
-				    tm);
+				    rtm);
 
 		  k += stride;
 		} /* for */
