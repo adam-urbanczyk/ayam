@@ -537,6 +537,10 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 
 		  ay_trafo_apply3(&(npm->controlv[nextcontrols + k]), tm);
 
+		  if(has_normals)
+		    ay_trafo_apply3(&(npm->controlv[nextcontrols + k + 3]),
+				    tm);
+
 		  k += stride;
 		} /* for */
 	    }
