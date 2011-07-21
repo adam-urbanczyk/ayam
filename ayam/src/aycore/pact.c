@@ -299,30 +299,22 @@ void
 ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 {
  int old_is_new = AY_FALSE;
- static int have_old_flashed_point = AY_FALSE;
  static double old_pnt[3] = {0};
  static ay_object *old_o = NULL;
  double m[16];
 
 #ifdef GL_VERSION_1_1
 
-  if(have_old_flashed_point && pnt)
+  if(old_o && pnt)
     {
       if((pnt[0] == old_pnt[0]) &&
 	 (pnt[1] == old_pnt[1]) &&
-	 (pnt[2] == old_pnt[2]))
+	 (pnt[2] == old_pnt[2]) &&
+	 (old_o == o))
 	{
 	  old_is_new = AY_TRUE;
 	}
     }
-
-  if(!o)
-    {
-      o = old_o;
-    }
-
-  if(!o)
-    return;
 
   if(!old_is_new || ignore_old)
     {
@@ -339,37 +331,45 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 	 {
 	   ay_trafo_getall(ay_currentlevel->next);
 	 }
-       glTranslated(o->movx, o->movy, o->movz);
-       ay_quat_torotmatrix(o->quat, m);
-       glMultMatrixd((GLdouble*)m);
-       glScaled(o->scalx, o->scaly, o->scalz);
-       glBegin(GL_POINTS);
+
        /* clear old point? */
-       if(have_old_flashed_point && !ignore_old)
+       if(old_o && !ignore_old)
 	 {
-	   glVertex3dv(old_pnt);
-	   have_old_flashed_point = AY_FALSE;
+	   glPushMatrix();
+	    glTranslated(old_o->movx, old_o->movy, old_o->movz);
+	    ay_quat_torotmatrix(old_o->quat, m);
+	    glMultMatrixd((GLdouble*)m);
+	    glScaled(old_o->scalx, old_o->scaly, old_o->scalz);
+	    glBegin(GL_POINTS);
+	     glVertex3dv(old_pnt);
+	    glEnd();
+	   glPopMatrix();
 	   old_o = NULL;
-	 }
-       /*
-	 glEnd();
-	 glFlush();
-	 glBegin(GL_POINTS);
-       */
+	 } /* if */
+
+       /*glFlush();*/
+
        /* draw new point? */
-       if(pnt)
+       if(pnt && o)
 	 {
-	   glVertex3dv(pnt);
+	   glPushMatrix();
+	    glLoadIdentity();
+	    glTranslated(o->movx, o->movy, o->movz);
+	    ay_quat_torotmatrix(o->quat, m);
+	    glMultMatrixd((GLdouble*)m);
+	    glScaled(o->scalx, o->scaly, o->scalz);
+	    glBegin(GL_POINTS);
+	     glVertex3dv(pnt);
+	    glEnd();
+	   glPopMatrix();
 	   memcpy(old_pnt, pnt, 3*sizeof(double));
 	   old_o = o;
-	   have_old_flashed_point = AY_TRUE;
 	 }
        else
 	 {
-	   have_old_flashed_point = AY_FALSE;
+	   old_o = NULL;
 	 }
-       glEnd();
-      glPopMatrix();
+
       glEnable(GL_DEPTH_TEST);
       /* the following line fixes problems with Intel
 	 onboard graphics (i915) */
@@ -565,6 +565,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   if(ay_selection && (argc > 4))
     {
+      if(pact_objectslen > 0)
+	o = pact_objects[0];
       if(argc > 5)
 	ay_pact_flashpoint(AY_TRUE, pecoords?*pecoords:NULL, o);
       else
