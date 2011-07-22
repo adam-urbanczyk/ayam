@@ -1108,7 +1108,7 @@ ay_revolve_notifycb(ay_object *o)
  ay_object *curve = NULL, *pobject = NULL, *npatch = NULL;
  ay_nurbcurve_object *nc = NULL;
  int ay_status = AY_OK;
- int got_object = AY_FALSE, mode = 0;
+ int is_provided = AY_FALSE, mode = 0;
  double tolerance;
 
   if(!o)
@@ -1154,7 +1154,7 @@ ay_revolve_notifycb(ay_object *o)
       else
 	{
 	  curve = pobject;
-	  got_object = AY_TRUE;
+	  is_provided = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -1216,9 +1216,9 @@ ay_revolve_notifycb(ay_object *o)
     } /* if */
 
   /* remove provided object */
-  if(got_object)
+  if(is_provided)
     {
-      ay_object_delete(pobject);
+      ay_object_deletemulti(pobject);
     }
 
   /* recover selected points */
