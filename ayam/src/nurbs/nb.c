@@ -245,7 +245,7 @@ ay_nb_GlobalInterpolation4D(int n, double *Q, double *ub, double *Uc, int d)
 	  ind = (i*(n+1)) + (span-d+j);
 	  A[ind] = N[j];
 	}
-  }
+    }
 
   A[0] = 1.0;
   A[n*(n+1)+n] = 1.0;
@@ -3505,7 +3505,7 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
       for(i = 0; i <= p-j-s; i++)
 	{
 	  /*alpha[i][j] = (u-UP[L+i])/(UP[i+k+1]-UP[L+i]);*/
-	  ai = i*(p-s)+j;
+	  ai = j*(p-s)+i;
 	  alpha[ai] = (u-UP[L+i])/(UP[i+k+1]-UP[L+i]);
 	} /* for */
     } /* for */
@@ -3543,7 +3543,7 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	  for(i = 0; i <= p-j-s; i++)
 	    {
 	      /*Rw[i] = alpha[i][j]*Rw[i+1] + (1.0-alpha[i][j])*Rw[i]*/
-	      ai = i*(p-s)+j;
+	      ai = j*(p-s)+i;
 	      i1 = i*stride;
 	      i2 = (i+1)*stride;
 	      Rw[i1]   = alpha[ai]*Rw[i2]   + (1.0-alpha[ai])*Rw[i1];
@@ -3624,7 +3624,7 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
       for(i = 0; i <= q-j-s; i++)
 	{
 	  /*alpha[i][j] = (v-VP[L+i])/(VP[i+k+1]-VP[L+i]);*/
-	  ai = i*(q-s)+j;
+	  ai = j*(q-s)+i;
 	  alpha[ai] = (v-VP[L+i])/(VP[i+k+1]-VP[L+i]);
 	} /* for */
     } /* for */
@@ -3662,7 +3662,7 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	  for(i = 0; i <= q-j-s; i++)
 	    {
 	      /*Rw[i] = alpha[i][j]*Rw[i+1] + (1.0-alpha[i][j])*Rw[i]*/
-	      ai = i*(q-s)+j;
+	      ai = j*(q-s)+i;
 	      i1 = i*stride;
 	      i2 = (i+1)*stride;
 	      Rw[i1]   = alpha[ai]*Rw[i2]   + (1.0-alpha[ai])*Rw[i1];
