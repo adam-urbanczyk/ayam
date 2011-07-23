@@ -2504,7 +2504,7 @@ cleanup:
     free(texv);
 
   if(t.tags)
-    ay_status = ay_tags_delall(&t);
+    ay_tags_delall(&t);
 
   if(degen)
     {
