@@ -1,4 +1,4 @@
-[13. Jul 2011] CVS-Head:
+[23. Jul 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -9,6 +9,8 @@ o extracting the boundary of patches with differing orders (SF 3312039)
 o conversion of quadrics to NURBS (SF 3322311)
 o setting the display mode/tolerance of PatchMesh objects (SF 3360488)
 o reverting interpolating curves with custom derivatives (SF 3366276)
+o merging transformed PolyMeshes with normals (SF 3374188)
+o crash in surface knot insertion (SF 3376414)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -18,7 +20,7 @@ o added centripetal parameterization to surface interpolation
 o the surface interpolation can now cope with degenerate rows/columns
   in the input data
 o added uniform parameterization to ICurve
-o 
+o improved flashing of editable points for multiple selected objects
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -31,6 +33,9 @@ o the numeric point edit dialog now supports scripts and variable accesses
   in the entry fields
 o the ViewAttrib property GUI no longer unconditionally sets the mark,
   this is now controlled by the new entry "SetMark" instead
+o zooming views via the keyboard is now reversible
+o the amounts of rotation and zooming per keyboard are now configurable
+  via the ayamrc file
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
