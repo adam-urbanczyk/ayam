@@ -229,7 +229,7 @@ ay_npt_createnpatchobject(ay_object **result)
 /** ay_npt_resetdisplay:
  *   reset the display attributes of a NURBS patch
  *
- * @param[in] o NURBS patch object to destroy
+ * @param[in] o NURBS patch object to reset
  */
 void
 ay_npt_resetdisplay(ay_object *o)
@@ -245,7 +245,7 @@ ay_npt_resetdisplay(ay_object *o)
   patch->display_mode = 0;
 
  return;
-} /* ay_npt_destroy */
+} /* ay_npt_resetdisplay */
 
 
 /* ay_npt_resizearrayw:
@@ -4714,8 +4714,6 @@ cleanup:
 
  return ay_status;
 } /* ay_npt_birail2 */
-
-
 
 
 /* ay_npt_skinu:
@@ -9561,9 +9559,9 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* remove all selected points */
-	  if(sel->object->selp)
+	  if(src->selp)
 	    {
-	      ay_selp_clear(sel->object);
+	      ay_selp_clear(src);
 	    }
 
 	  patch->width += r;
@@ -9576,6 +9574,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
 	    {
+	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
@@ -9583,6 +9582,14 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 					    patch->width-r-1, patch->height-1,
 		        patch->uorder-1, patch->uknotv, patch->controlv, u, k,
 		        s, r, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      ay_error(AY_ERROR, argv[0], "knot insertion failed");
+	      return TCL_OK;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
@@ -9596,7 +9603,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	  src->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_force(src);
 	} /* if */
 
       sel = sel->next;
@@ -9702,6 +9709,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
 	    {
+	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
@@ -9709,6 +9717,14 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 					    patch->width-1, patch->height-r-1,
 		        patch->vorder-1, patch->vknotv, patch->controlv, v, k,
 		        s, r, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      ay_error(AY_ERROR, argv[0], "knot insertion failed");
+	      return TCL_OK;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
