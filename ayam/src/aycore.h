@@ -155,10 +155,6 @@ int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* draw.c */
 
-/** draw the selected points of an object
- */
-void ay_draw_selp(ay_object *o);
-
 /** draw an object
  */
 void ay_draw_object(struct Togl *togl, ay_object *o, int selected);

@@ -179,6 +179,7 @@ ay_shade_view(struct Togl *togl)
  ay_object *o = ay_root;
  ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
+ ay_point *point = NULL;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  double m[16];
 
@@ -273,12 +274,18 @@ ay_shade_view(struct Togl *togl)
       /* draw handles of selected objects */
       if(view->drawhandles && view->shade < 2)
 	{
-	  /* let all handles appear "on top" of current drawing         */
-	  /* Do we really want this? In a shaded view, the user expects */
-	  /* probably removal of hidden bits. On the other hand, he     */
-	  /* might not be able to reach all handles he wants to then,   */
-	  /* when modelling in a shaded view.                           */
-	  glClear(GL_DEPTH_BUFFER_BIT);
+	  /* let all handles appear "on top" of current drawing
+	  * Do we really want this? In a shaded view, the user expects
+	  * probably removal of hidden bits. On the other hand, he
+	  * might not be able to reach all handles he wants to then,
+	  * when modelling in a shaded view. So, for now, hide the
+	  * handles in perspective views, as they are thought for
+	  * review, not modelling anyway
+	  */
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glClear(GL_DEPTH_BUFFER_BIT);
+	    }
 
 	  glDisable(GL_LIGHTING);
 
@@ -299,34 +306,90 @@ ay_shade_view(struct Togl *togl)
 	      if(!o->hide)
 		{
 		  glPushMatrix();
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
 
-		  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			       (GLdouble)o->movz);
-		  ay_quat_torotmatrix(o->quat, m);
-		  glMultMatrixd((GLdouble*)m);
-		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-			   (GLdouble)o->scalz);
+		   cb = (ay_drawcb *)(arr[o->type]);
 
-		  cb = (ay_drawcb *)(arr[o->type]);
-
-		  if(cb)
-		    {
-		      ay_status = cb(togl, o);
-		      if(ay_status)
-			{
-			  ay_error(ay_status, fname,
-				   "draw handle callback failed");
-			}
-		    }
-
-		  /* draw selected points */
-		  if(o->selp)
-		    ay_draw_selp(o);
+		   if(cb)
+		     {
+		       ay_status = cb(togl, o);
+		       if(ay_status)
+			 {
+			   ay_error(ay_status, fname,
+				    "draw handle callback failed");
+			 }
+		     }
 
 		  glPopMatrix();
 		}
 	      sel = sel->next;
 	    } /* while */
+
+	  /* draw selected points */
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glDisable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 0.9999999);
+	      glDepthFunc(GL_LEQUAL);
+	    }
+
+	  /* set color for selected points */
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
+
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      o = sel->object;
+
+	      if(!o->hide && o->selp)
+		{
+		  glPushMatrix();
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
+
+		   point = o->selp;
+		   glBegin(GL_POINTS);
+		    while(point)
+		      {
+			glVertex3d((GLdouble)point->point[0],
+				   (GLdouble)point->point[1],
+				   (GLdouble)point->point[2]);
+
+			point = point->next;
+		      }
+		   glEnd();
+
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+
+	  /* set color for selected objects */
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
+
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glEnable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 1.0);
+	      glDepthFunc(GL_LESS);
+	    }
 	} /* if */
       glPopMatrix();
     } /* if */
@@ -358,7 +421,6 @@ ay_shade_view(struct Togl *togl)
       glEnable(GL_DEPTH_TEST);
     } /* if */
 
-
   if(view->drawlevel)
     {
       glMatrixMode(GL_MODELVIEW);
@@ -367,6 +429,7 @@ ay_shade_view(struct Togl *togl)
 
   glDisable(GL_DITHER);
 
+  /* shade and draw? */
   if(view->shade > 1)
     {
 #ifdef GL_VERSION_1_1
@@ -376,6 +439,7 @@ ay_shade_view(struct Togl *togl)
       glDisable(GL_POLYGON_OFFSET_EXT);
       glPolygonOffsetEXT(0.0, 0.0);
 #endif
+
       ay_draw_view(togl, AY_TRUE);
     }
 
