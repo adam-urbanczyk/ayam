@@ -16,45 +16,6 @@ unsigned int ay_current_glname = 0;
 
 /* draw.c - functions for drawing a scene using OpenGL */
 
-/* ay_draw_selp:
- *  draw selected points of object o (if there are any)
- */
-void
-ay_draw_selp(ay_object *o)
-{
- ay_point *point = NULL;
-
-  if(o->selp)
-    {
-      glDisable(GL_DEPTH_TEST);
-
-      /* set color for selected points */
-      glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
-		(GLfloat)ay_prefs.tpb);
-
-      point = o->selp;
-      glBegin(GL_POINTS);
-
-       while(point)
-	 {
-	   glVertex3d((GLdouble)point->point[0], (GLdouble)point->point[1],
-		      (GLdouble)point->point[2]);
-
-	   point = point->next;
-	 }
-
-       /* set color for selected objects */
-       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		 (GLfloat)ay_prefs.seb);
-      glEnd();
-
-      glEnable(GL_DEPTH_TEST);
-    }
-
- return;
-} /* ay_draw_selp */
-
-
 /* ay_draw_object:
  *  draw a single object o (and children) in view togl
  *  o if selected is AY_FALSE, selected objects
@@ -156,6 +117,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
  ay_object *o = ay_root;
  ay_voidfp *arr = NULL;
  ay_drawcb *cb = NULL;
+ ay_point *point = NULL;
  double m[16];
 
   glDisable(GL_LIGHTING);
@@ -247,7 +209,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	}
       else
 	{
-	  glDepthRange(0.0, 0.9999);
+	  glDepthRange(0.0, 0.99999);
 	  glDepthFunc(GL_LEQUAL);
 	} /* if */
 
@@ -275,7 +237,10 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  /* let all handles appear "on top" of current drawing;     */
 	  /* we cannot use the glDisable(GL_DEPTH_TEST);-method here */
 	  /* because we need the Z-values for vertice picking...     */
-	  glClear(GL_DEPTH_BUFFER_BIT);
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glClear(GL_DEPTH_BUFFER_BIT);
+	    }
 
 	  /* set size of points */
 	  glPointSize((GLfloat)ay_prefs.handle_size);
@@ -291,33 +256,91 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 		{
 		  glPushMatrix();
 
-		  glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
-			       (GLdouble)o->movz);
-		  ay_quat_torotmatrix(o->quat, m);
-		  glMultMatrixd((GLdouble*)m);
-		  glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
-			   (GLdouble)o->scalz);
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
 
-		  cb = (ay_drawcb *)(arr[o->type]);
+		   cb = (ay_drawcb *)(arr[o->type]);
 
-		  if(cb)
-		    {
-		      ay_status = cb(togl, o);
-		      if(ay_status)
-			{
-			  ay_error(ay_status, fname,
-				   "draw handle callback failed");
-			}
-		    }
-
-		  /* draw selected points */
-		  if(o->selp)
-		    ay_draw_selp(o);
+		   if(cb)
+		     {
+		       ay_status = cb(togl, o);
+		       if(ay_status)
+			 {
+			   ay_error(ay_status, fname,
+				    "draw handle callback failed");
+			 }
+		     }
 
 		  glPopMatrix();
 		}
 	      sel = sel->next;
 	    } /* while */
+
+	  /* draw selected points */
+
+	  /* let those be "on top" of all points */
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glDisable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 0.99998);
+	      glDepthFunc(GL_LEQUAL);
+	    }
+
+	  /* set color for selected points */
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
+
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      o = sel->object;
+
+	      if(!o->hide && o->selp)
+		{
+		  glPushMatrix();
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
+
+		   point = o->selp;
+		   glBegin(GL_POINTS);
+		    while(point)
+		      {
+			glVertex3d((GLdouble)point->point[0],
+				   (GLdouble)point->point[1],
+				   (GLdouble)point->point[2]);
+			point = point->next;
+		      }
+		   glEnd();
+
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+
+	  /* set color for selected objects */
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
+
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glEnable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 1.0);
+	      glDepthFunc(GL_LESS);
+	    }
 	} /* if */
       glPopMatrix();
     } /* if */
