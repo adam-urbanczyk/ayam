@@ -9478,6 +9478,8 @@ X_Init(Tcl_Interp *interp)
 				       x3dio_writelevelobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDCLONE),
 				       x3dio_writecloneobj);
+  ay_status = x3dio_registerwritecb((char *)(AY_IDMIRROR),
+				       x3dio_writecloneobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDINSTANCE),
 				       x3dio_writeinstanceobj);
   ay_status = x3dio_registerwritecb((char *)(AY_IDSCRIPT),

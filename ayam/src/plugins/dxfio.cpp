@@ -2813,6 +2813,9 @@ Dxfio_Init(Tcl_Interp *interp)
   ay_status = dxfio_registerwritecb((char *)(AY_IDCLONE),
 				   dxfio_writeclone);
 
+  ay_status = dxfio_registerwritecb((char *)(AY_IDMIRROR),
+				   dxfio_writeclone);
+
   ay_status = dxfio_registerwritecb((char *)(AY_IDINSTANCE),
 				   dxfio_writeinstance);
 
