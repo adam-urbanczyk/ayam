@@ -3971,6 +3971,8 @@ Objio_Init(Tcl_Interp *interp)
 				       objio_writelevel);
   ay_status = objio_registerwritecb((char *)(AY_IDCLONE),
 				       objio_writeclone);
+  ay_status = objio_registerwritecb((char *)(AY_IDMIRROR),
+				       objio_writeclone);
   ay_status = objio_registerwritecb((char *)(AY_IDINSTANCE),
 				       objio_writeinstance);
   ay_status = objio_registerwritecb((char *)(AY_IDSCRIPT),

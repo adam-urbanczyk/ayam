@@ -3468,6 +3468,8 @@ Mfio_Init(Tcl_Interp *interp)
 				       ay_mfio_writeinstance);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDCLONE),
 				       ay_mfio_writeclone);
+  ay_status = ay_mfio_registerwritecb((char *)(AY_IDMIRROR),
+				       ay_mfio_writeclone);
   ay_status = ay_mfio_registerwritecb((char *)(AY_IDSCRIPT),
 				       ay_mfio_writescript);
 

@@ -303,7 +303,7 @@ $m add command -label "Instance" \
 $m add command -label "Clone" -command "level_crt Clone;" \
     -underline 2
 #    ^^^^^^^^^^^ => O
-$m add command -label "Mirror" -command "level_crt Clone \"-mirror 1\";" \
+$m add command -label "Mirror" -command "level_crt Mirror;" \
     -underline 2
 #    ^^^^^^^^^^^ => R
 $m add command -label "Material" \

@@ -3713,6 +3713,9 @@ Onio_Init(Tcl_Interp *interp)
   ay_status = onio_registerwritecb((char *)(AY_IDCLONE),
 				   onio_writeclone);
 
+  ay_status = onio_registerwritecb((char *)(AY_IDMIRROR),
+				   onio_writeclone);
+
   ay_status = onio_registerwritecb((char *)(AY_IDINSTANCE),
 				   onio_writeinstance);
 
