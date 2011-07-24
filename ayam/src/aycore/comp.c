@@ -1553,6 +1553,7 @@ ay_comp_init()
   ay_status = ay_comp_register(ay_comp_cap, AY_IDCAP);
   ay_status = ay_comp_register(ay_comp_concatnc, AY_IDCONCATNC);
   ay_status = ay_comp_register(ay_comp_clone, AY_IDCLONE);
+  ay_status = ay_comp_register(ay_comp_clone, AY_IDMIRROR);
   ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
   ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
   ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
