@@ -907,7 +907,7 @@ typedef struct ay_riinc_object_s
 } ay_riinc_object;
 
 
-/** RenderMan Interface procedural object */
+/** RenderMan Interface Bytestream procedural object */
 typedef struct ay_riproc_object_s
 {
   int type; /**< type of procedural (AY_PRT*) */
@@ -1713,6 +1713,7 @@ extern char *ay_error_igntype;
 #define AY_IDCONCATNP      45
 #define AY_IDOFFNP         46
 #define AY_IDIPATCH        47
+#define AY_IDMIRROR        48
 
 #define AY_IDLAST          50
 /*@}*/
