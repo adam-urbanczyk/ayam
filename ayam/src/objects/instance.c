@@ -261,6 +261,9 @@ ay_instance_drawhcb(struct Togl *togl, ay_object *o)
        glScaled((GLdouble)m->scalx, (GLdouble)m->scaly, (GLdouble)m->scalz);
      }
 
+   glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	     (GLfloat)ay_prefs.obb);
+
    arr = ay_drawhcbt.arr;
    cb = (ay_drawcb *)(arr[m->type]);
 
@@ -329,6 +332,10 @@ ay_instance_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      ay_pact_clearpointedit(pe);
 	    }
+	  /* since we currently can not issue a notification on our
+	     master (and its parents) in a meaningful way we rather
+	     forbid point editing */
+	  pe->readonly = AY_TRUE;
 	} /* if */
 
       if(mode == 3 && !o->selp)
@@ -936,7 +943,9 @@ int
 ay_instance_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
-
+#if 0
+ static int is_notify = AY_FALSE;
+#endif
   if(!o)
     return AY_OK;
 
@@ -945,6 +954,20 @@ ay_instance_notifycb(ay_object *o)
     {
       ay_instance_getpntcb(3, o, NULL, NULL);
     }
+
+  /* */
+#if 0
+  if(!is_notify)
+    {
+      is_notify = AY_TRUE;
+
+      ay_notify_force(o->refine);
+
+      /* notify parent? */
+
+      is_notify = AY_FALSE;
+    }
+#endif
 
  return ay_status;
 } /* ay_instance_notifycb */
