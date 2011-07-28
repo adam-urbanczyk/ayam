@@ -109,7 +109,7 @@ lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
 
 lappend types NCurve ICurve ACurve NCircle
 
-lappend types NPatch BPatch PatchMesh
+lappend types NPatch IPatch BPatch PatchMesh
 
 lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 
@@ -119,13 +119,15 @@ lappend types Trim Text
 
 lappend types Camera Light Material RiInc RiProc Script Select
 
+lappend types Clone Mirror
+
 # these types do not support getPnt (when empty):
 set nopnttypes ""
 lappend nopnttypes Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
 
 lappend nopnttypes Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 
-lappend nopnttypes Clone Script Text
+lappend nopnttypes Clone Mirror Script Text
 
 # these types do not support conversion:
 set noconvtypes ""
@@ -646,7 +648,7 @@ set NCurve_2(valcmd) {
 # NPatch Variation #1
 array set NPatch_1 {
     arr NPatchAttrData
-    freevars {Width Height Order_U Order_V Knot-Type_U}
+    freevars {Width Height Order_U Order_V Knot-Type_U Knot-Type_V}
     fixedvars {dummy}
     vals { {0} }
 }
