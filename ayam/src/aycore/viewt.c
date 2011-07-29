@@ -652,6 +652,8 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
 
   Togl_MakeCurrent(togl);
 
+  ay_viewt_setupprojection(togl);
+
   ay_currentview = view;
 
   toa = Tcl_NewStringObj(n1, -1);
