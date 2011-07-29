@@ -285,7 +285,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       toa = Tcl_NewStringObj(n2,-1);
       ton = Tcl_NewStringObj(n2,-1);
 
-      Tcl_SetStringObj(ton,"Mirror",-1);
+      Tcl_SetStringObj(ton,"Plane",-1);
       to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG |
 			  TCL_GLOBAL_ONLY);
       Tcl_GetIntFromObj(interp,to, &(itemp));
@@ -448,7 +448,7 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       toa = Tcl_NewStringObj(n2,-1);
       ton = Tcl_NewStringObj(n2,-1);
 
-      Tcl_SetStringObj(ton,"Mirror",-1);
+      Tcl_SetStringObj(ton,"Plane",-1);
       to = Tcl_NewIntObj(clone->mirror - 1);
       Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
