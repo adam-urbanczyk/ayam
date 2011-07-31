@@ -31,4 +31,7 @@ if { $ayprefs(SingleWindow) == 1 } {
     foreach w $widgets {
 	catch [$w conf -highlightcolor $focuscol]
     }
+
+
+    ayError 4 "colfocus" "Enabled."
 }

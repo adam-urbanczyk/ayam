@@ -147,3 +147,5 @@ $ay(cm) add command -label "RevertZDialog" -command {
     zdialog_revert
     # XXXX remove ourselves from the menu?
 }
+
+ayError 4 "zdialog" "Enabled."
