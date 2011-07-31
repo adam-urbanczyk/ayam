@@ -49,3 +49,5 @@ bind .fl.con.console <Configure> {
 # bind
 
 event generate .fl.con.console <Configure> -when tail
+
+ayError 4 "2lcons" "Enabled."

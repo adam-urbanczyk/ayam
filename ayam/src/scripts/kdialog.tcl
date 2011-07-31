@@ -187,3 +187,5 @@ $ay(cm) add command -label "RevertKDialog" -command {
     kdialog_revert
     # XXXX also remove ourselves from the menu?
 }
+
+ayError 4 "kdialog" "Enabled."
