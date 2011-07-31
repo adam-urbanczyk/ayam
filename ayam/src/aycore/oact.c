@@ -44,6 +44,7 @@ ay_oact_parseargs(struct Togl *togl, int argc, char *argv[], char *fname,
 
 	  Tcl_GetDouble(interp, argv[3], winx);
 	  Tcl_GetDouble(interp, argv[4], winy);
+
 	  if(view->usegrid)
 	    {
 	      ay_viewt_griddify(togl, winx, winy);
@@ -389,16 +390,19 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 
 	  v1[0] = oldwinx-owinx;
 	  v1[1] = oldwiny-owiny;
-	  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	  /* bail out, if we get too near the mark */
+	  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
 	    continue;
 	  alpha = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-	  if(v1[1]<0.0)
+	  if(v1[1] < 0.0)
 	    alpha = 360.0-alpha;
 
 	  v2[0] = winx-owinx;
 	  v2[1] = winy-owiny;
-	  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	  /* bail out, if we get too near the mark */
+	  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
 	    continue;
+
 	  beta = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
 	  if(v2[1]<0.0)
 	    beta = 360.0-beta;
@@ -563,6 +567,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 
   v1[0] = oldwinx - ax;
   v1[1] = oldwiny - ay;
+  /* bail out, if we get too near the mark */
   if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
     {
       return TCL_OK;
@@ -921,37 +926,40 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	  vx[0] -= owinx;
 	  vx[1] -= owiny;
 
-	  if((vx[0]!=0.0)||(vx[1]!=0.0))
+	  if((fabs(vx[0]) > AY_EPSILON) || (fabs(vx[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vx[0]/AY_V2LEN(vx)));
-	      if(vx[1]>0.0)
+	      if(vx[1] > 0.0)
 		alpha = 360.0-alpha;
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
-	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
 		continue;
 
 	      v2[0] = (winx-owinx);
  	      v2[1] = (winy-owiny);
-	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
 		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
-	      if(v1[1]<0.0)
+	      if(v1[1] < 0.0)
 		beta = 360.0-beta;
 
 	      gamma = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
-	      if(v2[1]<0.0)
+	      if(v2[1] < 0.0)
 		gamma = 360.0-gamma;
 
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscalx = t2/t1;
 	      else
 		dscalx = 1.0;
+
 	    }
 	  else
 	    dscalx = 1.0;
@@ -1011,7 +1019,9 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -1088,7 +1098,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	  vy[0] -= owinx;
 	  vy[1] -= owiny;
 
-	  if((vy[0]!=0.0)||(vy[1]!=0.0))
+	  if((fabs(vy[0]) > AY_EPSILON) || (fabs(vy[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vy[0]/AY_V2LEN(vy)));
 	      if(vy[1]>0.0)
@@ -1096,12 +1106,14 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
-	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
 		continue;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
-	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
 		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
@@ -1115,7 +1127,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscaly = t2/t1;
 	      else
 		dscaly = 1.0;
@@ -1178,7 +1190,9 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
@@ -1255,7 +1269,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	  vz[0] -= owinx;
 	  vz[1] -= owiny;
 
-	  if((vz[0]!=0.0)||(vz[1]!=0.0))
+	  if((fabs(vz[0]) > AY_EPSILON) || (fabs(vz[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vz[0]/AY_V2LEN(vz)));
 	      if(vz[1]>0.0)
@@ -1263,12 +1277,14 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 
 	      v1[0] = (oldwinx-owinx);
 	      v1[1] = (oldwiny-owiny);
-	      if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
 		continue;
 
 	      v2[0] = (winx-owinx);
 	      v2[1] = (winy-owiny);
-	      if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+	      /* bail out, if we get too near the origin */
+	      if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
 		continue;
 
 	      beta = AY_R2D(acos(v1[0]/AY_V2LEN(v1)));
@@ -1282,7 +1298,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscalz = t2/t1;
 	      else
 		dscalz = 1.0;
@@ -1345,12 +1361,14 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
  return TCL_OK;
-} /* ay_oact_sc1DXcb */
+} /* ay_oact_sc1DZcb */
 
 
 /* ay_oact_sc2Dcb:
@@ -1429,7 +1447,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
 
-	  if(fabs(t1)>AY_EPSILON)
+	  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 	    dscal = t2/t1;
 	  else
 	    dscal = 1.0;
@@ -1604,7 +1622,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 	  t1 = AY_V2LEN(v1);
 	  t2 = AY_V2LEN(v2);
 
-	  if(fabs(t1)>AY_EPSILON)
+	  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 	    dscal = t2/t1;
 	  else
 	    dscal = 1.0;
@@ -1803,7 +1821,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	  vx[0] -= owinx;
 	  vx[1] -= owiny;
 
-	  if((vx[0]!=0.0)||(vx[1]!=0.0))
+	  if((fabs(vx[0]) > AY_EPSILON) || (fabs(vx[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vx[0]/AY_V2LEN(vx)));
 	      if(vx[1]>0.0)
@@ -1835,7 +1853,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscalx = t2/t1;
 	      else
 		dscalx = 1.0;
@@ -2026,7 +2044,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	  vy[0] -= owinx;
 	  vy[1] -= owiny;
 
-	  if((vy[0]!=0.0)||(vy[1]!=0.0))
+	  if((fabs(vy[0]) > AY_EPSILON) || (fabs(vy[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vy[0]/AY_V2LEN(vy)));
 	      if(vy[1]>0.0)
@@ -2058,7 +2076,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscaly = t2/t1;
 	      else
 		dscaly = 1.0;
@@ -2249,7 +2267,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	  vz[0] -= owinx;
 	  vz[1] -= owiny;
 
-	  if((vz[0]!=0.0)||(vz[1]!=0.0))
+	  if((fabs(vz[0]) > AY_EPSILON) || (fabs(vz[1]) > AY_EPSILON))
 	    {
 	      alpha = AY_R2D(acos(vz[0]/AY_V2LEN(vz)));
 	      if(vz[1]>0.0)
@@ -2281,7 +2299,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 	      t1 = cos(AY_D2R(alpha)+AY_D2R(beta))*AY_V2LEN(v1);
 	      t2 = cos(AY_D2R(alpha)+AY_D2R(gamma))*AY_V2LEN(v2);
 
-	      if(fabs(t1)>AY_EPSILON)
+	      if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
 		dscalz = t2/t1;
 	      else
 		dscalz = 1.0;
@@ -2443,7 +2461,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
   t1 = AY_V2LEN(v1);
   t2 = AY_V2LEN(v2);
 
-  if(fabs(t1)>AY_EPSILON)
+  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
     dscal = t2/t1;
   else
     dscal = 1.0;
@@ -2676,20 +2694,22 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
      of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
   v1[0] = (oldwinx-ax);
   v1[1] = (oldwiny-ay);
+
   /* bail out, if we get too near the mark */
-  if((fabs(v1[0])<AY_EPSILON)&&(fabs(v1[1])<AY_EPSILON))
+  if((fabs(v1[0]) < AY_EPSILON) && (fabs(v1[1]) < AY_EPSILON))
     return TCL_OK;
 
   v2[0] = (winx-ax);
   v2[1] = (winy-ay);
+
   /* bail out, if we get too near the mark */
-  if((fabs(v2[0])<AY_EPSILON)&&(fabs(v2[1])<AY_EPSILON))
+  if((fabs(v2[0]) < AY_EPSILON) && (fabs(v2[1]) < AY_EPSILON))
     return TCL_OK;
 
   t1 = AY_V2LEN(v1);
   t2 = AY_V2LEN(v2);
 
-  if(fabs(t1)>AY_EPSILON)
+  if(fabs(t2) > AY_EPSILON && fabs(t1) > AY_EPSILON)
     dscal = t2/t1;
   else
     dscal = 1.0;
@@ -2784,7 +2804,9 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
   oldwiny = winy;
 
   if(!ay_prefs.lazynotify)
-    ay_notify_parent();
+    {
+      ay_notify_parent();
+    }
 
   ay_toglcb_display(togl);
 
