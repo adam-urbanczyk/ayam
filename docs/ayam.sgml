@@ -2753,6 +2753,7 @@ near one of the axes to be changed, as this will cause
 very big scale factors for the other axis. Try it first with
 a centered box by starting from one of the box corners,
 then try it once starting on the X-axis.
+<p>
 For an overview of the scale actions see also the table below.
 <p>
 <table loc="ht">
@@ -2866,7 +2867,9 @@ of other modelling actions that e.g. rotate or scale about a point.
 The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
 This action is also active as intermediate action for e.g. rotate
 about, where the keyboard shortcuts <tt/&lt;r&gt;/
-and then <tt/&lt;a&gt;/ would be used in a sequence.
+and then <tt/&lt;a&gt;/ would be used in a sequence and after
+setting the mark, the rotate about action would be active.
+<p>
 See also the table below.
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -5089,9 +5092,6 @@ A IPatch forms a surface defined by interpolating a regular grid
 of three dimensional and non rational data points (see also the
 image above).
 <p>
-You may convert the current IPatch object to an ordinary NURBS patch
-using the main menu entry <tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the IPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5115,9 +5115,17 @@ control point inserted into every section of the original patch).
 
 <item><tt/"Order_U"/ and <tt/"Order_V"/ set the desired interpolation
 orders of the patch.
+In addition, if any of these parameters is set to zero, no interpolation
+will take place in the respective dimension.
 
-<item><tt/"Knot-Type_U"/ and <tt/"Knot-Type_V"/ allow to choose between
-chordal and centripetal interpolation parameterizations.
+<item><tt/"Knot-Type_U"/ and <tt/"Knot-Type_V"/ switches the parameterisation
+between <tt/"Chordal"/, <tt/"Centripetal"/, and <tt/"Uniform"/.
+The centripetal method generates a better parameterisation if the
+input data contains sharp turns.
+The uniform method generates worse parameterisations (that lead to
+wiggles and overshooting)
+in the general case but it might help in some edge cases.
+
 </itemize>
 The next parameters control the appearance of the patch for display
 in Ayam:
@@ -5141,6 +5149,12 @@ outlines of the patch (<tt/"OutlinePatch"/). The default setting
 of the created NURBS patch.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The interpolated surface may be converted to an ordinary NURBS patch
+using the main menu entry
+<tt>"Tools/Convert"</tt>.
+
 <sect2>RIB Export
 <p>
 IPatch objects will be exported as NURBS patch primitives:
@@ -5163,9 +5177,6 @@ A BPatch is a simple bilinear patch defined by four control
 points. BPatch objects are e.g. used internally to build box objects,
 see also <ref id="boxobj" name="Box Object">).
 <p>
-You may convert the current BPatch object to an ordinary NURBS patch
-using the main menu entry <tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the BPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5186,6 +5197,11 @@ four points defining the geometry of the patch:<p>
 <item><tt/"P3_X"/, <tt/"P3_Y"/, <tt/"P3_Z"/, third point.
 <item><tt/"P4_X"/, <tt/"P4_Y"/, <tt/"P4_Z"/, fourth point.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The bilinear patch may be converted to an ordinary NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>RIB Export
 <p>
@@ -5210,17 +5226,7 @@ bicubic patch meshes.
 <p>
 Like NCurve objects, NPatch objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
-<p>
-The PatchMesh object may be converted to a NURBS patch
-representation using the main menu entry <tt>"Tools/Convert"</tt>.
-However, this does not work for all possible types of patch meshes
-(e.g. patch meshes with the basis types Catmull-Rom, Hermite, or
-Custom can not be converted, currently).
-An internal NURBS patch representation is also in use when drawing
-the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
-and when shading the patch mesh.
-Consequently, there is currently no shaded representation of patch meshes
-of basis type Catmull-Rom, Hermite or Custom.
+
 <p>
 The following table briefly lists some capabilities of the PatchMesh object.
 <table loc="ht">
@@ -5269,6 +5275,19 @@ outlines of the patch (OutlinePatch). The default setting
 <tt>"Drawing/DisplayMode"</tt> should be used.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The patch mesh may be converted to an ordinary NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>.
+However, this does not work for all possible types of patch meshes
+(e.g. patch meshes with the basis types Catmull-Rom, Hermite, or
+Custom can not be converted, currently).
+An internal NURBS patch representation is also in use when drawing
+the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
+and when shading the patch mesh.
+Consequently, there is currently no shaded representation of patch meshes
+of basis type Catmull-Rom, Hermite or Custom.
+
 <sect2>RIB Export
 <p>
 PatchMesh objects will be exported as patch mesh primitives:
@@ -5311,12 +5330,6 @@ object will lead to a real waste of memory. You may use the
 merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
 <p>
-Since Ayam 1.11, PolyMesh objects may be converted to SDMesh
-objects. Note that no verification of the usability of the
-mesh as base mesh for a subdivision surface is carried out.
-Usually, such meshes have to be manifold and may not contain
-T-junctions.
-<p>
 The following table briefly lists some capabilities of the PolyMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5338,6 +5351,15 @@ defined.
 <item><tt/"HasNormals"/ is 1 if the object uses vertex normals,
 else it is 0.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+Since Ayam 1.11, PolyMesh objects may be converted to SDMesh
+objects using the main menu entry <tt>"Tools/Convert"</tt>.
+Note that no verification of the usability of the
+mesh as base mesh for a subdivision surface is carried out.
+Usually, such meshes have to be manifold and may not contain
+T-junctions.
 
 <sect2>RIB Export
 <p>
@@ -5386,11 +5408,6 @@ Ayam is not able to do the subdivision and show the resulting smooth
 surface. All that is shown in wireframe and shaded views is the original
 polygonal mesh.
 <p>
-Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
-objects. Note however that only the original unrefined control
-polygon will be converted unless the <tt/"Level"/ attribute is not zero
-and the <tt/"subdiv"/ plugin is loaded.
-<p>
 The following table briefly lists some capabilities of the SDMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -5417,6 +5434,13 @@ and the subdivided polygon outlines when drawing the mesh.
 <item><tt/"NControls"/, the total number of control points
 defined.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
+objects. Note however that only the original unrefined control
+polygon (the base mesh) will be converted unless the <tt/"Level"/
+attribute is not zero and the <tt/"subdiv"/ plugin is loaded.
 
 <sect2>RIB Export
 <p>
@@ -7125,8 +7149,12 @@ control points used by the interpolating NURBS curve, then the order is
 silently changed to match the number of control points.
 
 <item>The parameter <tt/"ParamType"/ switches the parameterisation
-between <tt/"Chordal"/ and <tt/"Centripetal"/, the latter generating
-a better parameterisation if the input data contains sharp turns.
+between <tt/"Chordal"/, <tt/"Centripetal"/, and <tt/"Uniform"/.
+The centripetal method generates a better parameterisation if the
+input data contains sharp turns.
+The uniform method is available since Ayam 1.20 and generates
+worse parameterisations (that lead to wiggles and overshooting)
+in the general case but it might help in some edge cases.
 
 <item>The parameters <tt/"SDLen"/ and <tt/"EDLen"/ are used to control
 the length of the first and last derivative (if automatically
