@@ -74,6 +74,7 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
 {
  int ay_status = AY_OK;
  int i;
+ double d, *dp;
 
   if(!ip)
     return AY_ENULL;
@@ -99,6 +100,26 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
   ip->ktype_u = ip->ktype_v;
   ip->ktype_v = i;
 
+  d = ip->sdlen_u;
+  ip->sdlen_u = ip->sdlen_v;
+  ip->sdlen_v = d;
+
+  d = ip->edlen_u;
+  ip->edlen_u = ip->edlen_v;
+  ip->edlen_v = d;
+
+  i = ip->derivs_u;
+  ip->derivs_u = ip->derivs_v;
+  ip->derivs_v = i;
+
+  dp = ip->sderiv_u;
+  ip->sderiv_u = ip->sderiv_v;
+  ip->sderiv_v = dp;
+
+  dp = ip->ederiv_u;
+  ip->ederiv_u = ip->ederiv_v;
+  ip->ederiv_v = dp;
+
  return ay_status;
 } /* ay_ipt_swapuv */
 
@@ -114,7 +135,7 @@ int
 ay_ipt_revertu(ay_ipatch_object *ip)
 {
  int i, j, ii, jj, stride = 3;
- double t[4];
+ double t[4], *dp;
 
   if(!ip)
     return AY_ENULL;
@@ -129,6 +150,28 @@ ay_ipt_revertu(ay_ipatch_object *ip)
 	  memcpy(&(ip->controlv[ii]), &(ip->controlv[jj]),
 		 stride*sizeof(double));
 	  memcpy(&(ip->controlv[jj]), t, stride*sizeof(double));
+	}
+    }
+
+  dp = ip->sderiv_u;
+  ip->sderiv_u = ip->ederiv_u;
+  ip->ederiv_u = dp;
+
+  if(ip->sderiv_v && ip->ederiv_v)
+    {
+      for(i = 0; i < ip->width/2; i++)
+	{
+	  ii = i*stride;
+	  jj = (ip->width-1-i)*stride;
+	  memcpy(t, &(ip->sderiv_v[ii]), stride*sizeof(double));
+	  memcpy(&(ip->sderiv_v[ii]), &(ip->sderiv_v[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(ip->sderiv_v[jj]), t, stride*sizeof(double));
+
+	  memcpy(t, &(ip->ederiv_v[ii]), stride*sizeof(double));
+	  memcpy(&(ip->ederiv_v[ii]), &(ip->ederiv_v[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(ip->ederiv_v[jj]), t, stride*sizeof(double));
 	}
     }
 
@@ -148,7 +191,7 @@ ay_ipt_revertv(ay_ipatch_object *ip)
 {
  int ay_status = AY_OK;
  int i, j, ii, jj, stride = 3;
- double t[4];
+ double t[4], *dp;
 
   if(!ip)
     return AY_ENULL;
@@ -165,6 +208,28 @@ ay_ipt_revertv(ay_ipatch_object *ip)
 	  memcpy(&(ip->controlv[jj]), t, stride*sizeof(double));
 	  ii += stride;
 	  jj -= stride;
+	}
+    }
+
+  dp = ip->sderiv_v;
+  ip->sderiv_v = ip->ederiv_v;
+  ip->ederiv_v = dp;
+
+  if(ip->sderiv_u && ip->ederiv_u)
+    {
+      for(i = 0; i < ip->height/2; i++)
+	{
+	  ii = i*stride;
+	  jj = (ip->height-1-i)*stride;
+	  memcpy(t, &(ip->sderiv_u[ii]), stride*sizeof(double));
+	  memcpy(&(ip->sderiv_u[ii]), &(ip->sderiv_u[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(ip->sderiv_u[jj]), t, stride*sizeof(double));
+
+	  memcpy(t, &(ip->ederiv_u[ii]), stride*sizeof(double));
+	  memcpy(&(ip->ederiv_u[ii]), &(ip->ederiv_u[jj]),
+		 stride*sizeof(double));
+	  memcpy(&(ip->ederiv_u[jj]), t, stride*sizeof(double));
 	}
     }
 
