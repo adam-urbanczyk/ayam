@@ -503,12 +503,26 @@ typedef struct ay_ipatch_object_s {
   int height; /**< height of patch (V) */
   int close_u; /**< is patch closed in U? */
   int close_v; /**< is patch closed in V? */
-  int order_u; /**< desired interpolation order (U) */
-  int order_v; /**< desired interpolation order (V) */
+  int order_u; /**< desired (interpolation) order (U) */
+  int order_v; /**< desired (interpolation) order (V) */
   int ktype_u; /**< knot (parameterization) type (U) */
   int ktype_v; /**< knot (parameterization) type (V) */
 
   double *controlv; /**< control points (data points) [width * height * 3] */
+
+  double sdlen_u; /**< length of auto generated start derivative */
+  double edlen_u; /**< length of auto generated end derivative */
+
+  double sdlen_v; /**< length of auto generated start derivative */
+  double edlen_v; /**< length of auto generated end derivative */
+
+  int derivs_u; /**< have end derivatives? */
+  double *sderiv_u; /**< start derivatives [height * 3] */
+  double *ederiv_u; /**< end derivatives [height * 3] */
+
+  int derivs_v; /**< have end derivatives? */
+  double *sderiv_v; /**< start derivatives [width * 3] */
+  double *ederiv_v; /**< end derivatives [width * 3] */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -761,12 +775,14 @@ typedef struct ay_icurve_object_s
   int type; /**< curve type (AY_CTOPEN, AY_CTCLOSED) */
   int length; /**< number of data points */
   int order; /**< desired order of NURBS curve */
-  int derivs; /**< have end derivatives? */
+
   int param_type;  /**< parameterization (chordal or centripetal) */
-  double sdlen; /**< start derivative length */
-  double edlen; /**< end derivative length */
+  double sdlen; /**< length of auto generated start derivative */
+  double edlen; /**< length of auto generated end derivative */
 
   double *controlv; /**< data points [length * 3] */
+
+  int derivs; /**< have end derivatives? */
   double sderiv[3]; /**< start derivative */
   double ederiv[3]; /**< end derivative */
 

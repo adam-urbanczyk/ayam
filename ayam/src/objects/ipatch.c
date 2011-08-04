@@ -38,6 +38,8 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  double udx = 0.25, udy = 0.0, udz = 0.0;
  double vdx = 0.0, vdy = 0.25, vdz = 0.0;
  double ext = 0.0, s[3] = {0};
+ double sdlen_u = 0.125, edlen_u = 0.125;
+ double sdlen_v = 0.125, edlen_v = 0.125;
  ay_ipatch_object *ip = NULL;
 
   if(!o)
@@ -315,6 +317,11 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
     else
       ip->ktype_u = AY_KTUNIFORM;
 
+  ip->sdlen_u = sdlen_u;
+  ip->edlen_u = edlen_u;
+  ip->sdlen_v = sdlen_v;
+  ip->edlen_v = edlen_v;
+
   if(!cv)
     {
       if(!(cv = calloc(width*height*stride,sizeof(double))))
@@ -401,6 +408,16 @@ ay_ipatch_deletecb(void *c)
   if(ipatch->controlv)
     free(ipatch->controlv);
 
+  /* free derivatives */
+  if(ipatch->sderiv_u)
+    free(ipatch->sderiv_u);
+  if(ipatch->ederiv_u)
+    free(ipatch->ederiv_u);
+  if(ipatch->sderiv_v)
+    free(ipatch->sderiv_v);
+  if(ipatch->ederiv_v)
+    free(ipatch->ederiv_v);
+
   /* free NURBS patch(es) */
   if(ipatch->npatch)
     ay_object_deletemulti(ipatch->npatch);
@@ -417,6 +434,7 @@ ay_ipatch_deletecb(void *c)
 int
 ay_ipatch_copycb(void *src, void **dst)
 {
+ int ay_status = AY_OK;
  ay_ipatch_object *ipatch = NULL, *ipatchsrc = NULL;
 
   if(!src || !dst)
@@ -435,11 +453,64 @@ ay_ipatch_copycb(void *src, void **dst)
   if(!(ipatch->controlv = calloc(3 * ipatch->width * ipatch->height,
 				 sizeof(double))))
     {
-      free(ipatch);
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
   memcpy(ipatch->controlv, ipatchsrc->controlv,
 	 3 * ipatch->width * ipatch->height * sizeof(double));
+
+  /* copy derivatives */
+  if(ipatch->derivs_u)
+    {
+      if(!(ipatch->sderiv_u = calloc(3 * ipatch->height,
+				     sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(ipatch->sderiv_u, ipatchsrc->sderiv_u,
+	     3 * ipatch->height * sizeof(double));
+
+      if(!(ipatch->ederiv_u = calloc(3 * ipatch->height,
+				     sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(ipatch->ederiv_u, ipatchsrc->ederiv_u,
+	     3 * ipatch->height * sizeof(double));
+    }
+  else
+    {
+      ipatch->sderiv_u = NULL;
+      ipatch->ederiv_u = NULL;
+    }
+
+  if(ipatch->derivs_v)
+    {
+      if(!(ipatch->sderiv_v = calloc(3 * ipatch->width,
+				     sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(ipatch->sderiv_v, ipatchsrc->sderiv_v,
+	     3 * ipatch->width * sizeof(double));
+
+      if(!(ipatch->ederiv_v = calloc(3 * ipatch->width,
+				     sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(ipatch->ederiv_v, ipatchsrc->ederiv_v,
+	     3 * ipatch->width * sizeof(double));
+    }
+  else
+    {
+      ipatch->sderiv_v = NULL;
+      ipatch->ederiv_v = NULL;
+    }
 
   /* copy NURBS patch(es) */
   if(ipatchsrc->npatch)
@@ -448,6 +519,27 @@ ay_ipatch_copycb(void *src, void **dst)
     }
 
   *dst = (void *)ipatch;
+
+  ipatch = NULL;
+
+cleanup:
+
+  if(ipatch)
+    {
+      if(ipatch->controlv)
+	free(ipatch->controlv);
+
+      if(ipatch->sderiv_u)
+	free(ipatch->sderiv_u);
+      if(ipatch->ederiv_u)
+	free(ipatch->ederiv_u);
+      if(ipatch->sderiv_v)
+	free(ipatch->sderiv_v);
+      if(ipatch->ederiv_v)
+	free(ipatch->ederiv_v);
+
+      free(ipatch);
+    }
 
  return AY_OK;
 } /* ay_ipatch_copycb */
@@ -674,7 +766,6 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  a += 3;
 	}
 
-
       pe->num = ipatch->width * ipatch->height;
 
       break;
@@ -702,7 +793,6 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!found)
 	{
-
 	  if(!(pe->coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
 
@@ -828,6 +918,31 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_ktype_v);
 
+  Tcl_SetStringObj(ton,"Derivatives_U",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &ipatch->derivs_u);
+
+  Tcl_SetStringObj(ton,"SDLen_U",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(ipatch->sdlen_u));
+
+  Tcl_SetStringObj(ton,"EDLen_U",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(ipatch->edlen_u));
+
+  Tcl_SetStringObj(ton,"Derivatives_V",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &ipatch->derivs_v);
+
+  Tcl_SetStringObj(ton,"SDLen_V",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(ipatch->sdlen_v));
+
+  Tcl_SetStringObj(ton,"EDLen_V",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(ipatch->edlen_v));
+
+
   if((new_order_u != ipatch->order_u)||
      (new_order_v != ipatch->order_v)||
      (new_close_u != ipatch->close_u)||
@@ -914,6 +1029,7 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  ipatch->width = new_width;
 	  update = AY_TRUE;
 	}
+
     } /* if */
 
   if(new_height != ipatch->height && (new_height > 1))
@@ -1032,6 +1148,36 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Derivatives_U",-1);
+  to = Tcl_NewIntObj(ipatch->derivs_u);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"SDLen_U",-1);
+  to = Tcl_NewDoubleObj(ipatch->sdlen_u);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"EDLen_U",-1);
+  to = Tcl_NewDoubleObj(ipatch->edlen_u);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"Derivatives_V",-1);
+  to = Tcl_NewIntObj(ipatch->derivs_v);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"SDLen_V",-1);
+  to = Tcl_NewDoubleObj(ipatch->sdlen_v);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"EDLen_V",-1);
+  to = Tcl_NewDoubleObj(ipatch->edlen_v);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(ipatch->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -1057,6 +1203,7 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_ipatch_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_ipatch_object *ipatch = NULL;
  int i, a;
 
@@ -1074,27 +1221,126 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&ipatch->order_v);
   fscanf(fileptr,"%d\n",&ipatch->ktype_u);
   fscanf(fileptr,"%d\n",&ipatch->ktype_v);
+  fscanf(fileptr,"%lg\n",&ipatch->sdlen_u);
+  fscanf(fileptr,"%lg\n",&ipatch->edlen_u);
+  fscanf(fileptr,"%lg\n",&ipatch->sdlen_v);
+  fscanf(fileptr,"%lg\n",&ipatch->edlen_v);
 
   if(!(ipatch->controlv = calloc(ipatch->width*ipatch->height*3,
 				 sizeof(double))))
     {
-      free(ipatch);
-      return AY_EOMEM;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   a = 0;
   for(i = 0; i < ipatch->width*ipatch->height; i++)
     {
-      fscanf(fileptr,"%lg %lg %lg\n",&(ipatch->controlv[a]),
+      fscanf(fileptr, "%lg %lg %lg\n",
+	     &(ipatch->controlv[a]),
 	     &(ipatch->controlv[a+1]),
 	     &(ipatch->controlv[a+2]));
       a += 3;
+    }
+
+  fscanf(fileptr,"%d\n",&(ipatch->derivs_u));
+  if(ipatch->derivs_u)
+    {
+      if(!(ipatch->sderiv_u = calloc(ipatch->height*3, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fscanf(fileptr, "%lg %lg %lg\n",
+		 &(ipatch->sderiv_u[a]),
+		 &(ipatch->sderiv_u[a+1]),
+		 &(ipatch->sderiv_u[a+2]));
+	  a += 3;
+	}
+
+      if(!(ipatch->ederiv_u = calloc(ipatch->height*3, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fscanf(fileptr, "%lg %lg %lg\n",
+		 &(ipatch->ederiv_u[a]),
+		 &(ipatch->ederiv_u[a+1]),
+		 &(ipatch->ederiv_u[a+2]));
+	  a += 3;
+	}
+    }
+
+  fscanf(fileptr,"%d\n",&(ipatch->derivs_v));
+  if(ipatch->derivs_v)
+    {
+      if(!(ipatch->sderiv_v = calloc(ipatch->height*3, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fscanf(fileptr, "%lg %lg %lg\n",
+		 &(ipatch->sderiv_v[a]),
+		 &(ipatch->sderiv_v[a+1]),
+		 &(ipatch->sderiv_v[a+2]));
+	  a += 3;
+	}
+
+      if(!(ipatch->ederiv_v = calloc(ipatch->height*3, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fscanf(fileptr, "%lg %lg %lg\n",
+		 &(ipatch->ederiv_v[a]),
+		 &(ipatch->ederiv_v[a+1]),
+		 &(ipatch->ederiv_v[a+2]));
+	  a += 3;
+	}
     }
 
   fscanf(fileptr,"%lg\n",&(ipatch->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(ipatch->display_mode));
 
   o->refine = ipatch;
+
+  /* prevent cleanup code from doing something harmful */
+  ipatch = NULL;
+
+cleanup:
+
+  if(ipatch)
+    {
+      if(ipatch->controlv)
+	free(ipatch->controlv);
+
+      if(ipatch->sderiv_u)
+	free(ipatch->sderiv_u);
+      if(ipatch->ederiv_u)
+	free(ipatch->ederiv_u);
+      if(ipatch->sderiv_v)
+	free(ipatch->sderiv_v);
+      if(ipatch->ederiv_v)
+	free(ipatch->ederiv_v);
+
+      free(ipatch);
+    }
 
  return AY_OK;
 } /* ay_ipatch_readcb */
@@ -1122,6 +1368,10 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", ipatch->order_v);
   fprintf(fileptr, "%d\n", ipatch->ktype_u);
   fprintf(fileptr, "%d\n", ipatch->ktype_v);
+  fprintf(fileptr, "%g\n", ipatch->sdlen_u);
+  fprintf(fileptr, "%g\n", ipatch->edlen_u);
+  fprintf(fileptr, "%g\n", ipatch->sdlen_v);
+  fprintf(fileptr, "%g\n", ipatch->edlen_v);
 
   a = 0;
   for(i = 0; i < ipatch->width*ipatch->height; i++)
@@ -1130,6 +1380,48 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
 	      ipatch->controlv[a+1],
 	      ipatch->controlv[a+2]);
       a += 3;
+    }
+
+  fprintf(fileptr, "%d\n", ipatch->derivs_u);
+  if(ipatch->derivs_u)
+    {
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fprintf(fileptr,"%g %g %g\n", ipatch->sderiv_u[a],
+		  ipatch->sderiv_u[a+1],
+		  ipatch->sderiv_u[a+2]);
+	  a += 3;
+	}
+      a = 0;
+      for(i = 0; i < ipatch->height; i++)
+	{
+	  fprintf(fileptr,"%g %g %g\n", ipatch->ederiv_u[a],
+		  ipatch->ederiv_u[a+1],
+		  ipatch->ederiv_u[a+2]);
+	  a += 3;
+	}
+    }
+
+  fprintf(fileptr, "%d\n", ipatch->derivs_v);
+  if(ipatch->derivs_v)
+    {
+      a = 0;
+      for(i = 0; i < ipatch->width; i++)
+	{
+	  fprintf(fileptr,"%g %g %g\n", ipatch->sderiv_v[a],
+		  ipatch->sderiv_v[a+1],
+		  ipatch->sderiv_v[a+2]);
+	  a += 3;
+	}
+      a = 0;
+      for(i = 0; i < ipatch->width; i++)
+	{
+	  fprintf(fileptr,"%g %g %g\n", ipatch->ederiv_v[a],
+		  ipatch->ederiv_v[a+1],
+		  ipatch->ederiv_v[a+2]);
+	  a += 3;
+	}
     }
 
   fprintf(fileptr, "%g\n", ipatch->glu_sampling_tolerance);
@@ -1303,7 +1595,7 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->height > 2 && ip->order_v > 2)
     {
-     ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
+      ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
 
       if(ay_status)
 	goto cleanup;

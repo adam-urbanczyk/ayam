@@ -47,6 +47,13 @@ proc init_IPatch { } {
 
     addMenu $w IPatchAttrData Knot-Type_V [list Chordal Centripetal Uniform]
 
+    addCheck $w IPatchAttrData Derivatives_U
+    addParam $w IPatchAttrData SDLen_U
+    addParam $w IPatchAttrData EDLen_U
+
+    addCheck $w IPatchAttrData Derivatives_V
+    addParam $w IPatchAttrData SDLen_V
+    addParam $w IPatchAttrData EDLen_V
 
     addParam $w IPatchAttrData Tolerance
     addMenu $w IPatchAttrData DisplayMode $ay(npdisplaymodes)
