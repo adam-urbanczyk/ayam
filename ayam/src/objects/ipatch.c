@@ -32,6 +32,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  int stride = 3, uorder = 4, vorder = 4, width = 4, height = 4;
  int uclosed = AY_FALSE, vclosed = AY_FALSE;
  int ukt = 0, vkt = 0, optnum = 0, i = 2, j = 0, k = 0;
+ int deriv_u = AY_FALSE, deriv_v = AY_FALSE;
  int acvlen = 0;
  char **acv = NULL;
  double *cv = NULL;
@@ -40,6 +41,9 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  double ext = 0.0, s[3] = {0};
  double sdlen_u = 0.125, edlen_u = 0.125;
  double sdlen_v = 0.125, edlen_v = 0.125;
+ double *sderiv_u = NULL, *ederiv_u = NULL;
+ double *sderiv_v = NULL, *ederiv_v = NULL;
+ double **deriv;
  ay_ipatch_object *ip = NULL;
 
   if(!o)
@@ -214,6 +218,138 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 		default:
 		  break;
 		} /* switch */
+	      break;
+	    case 'e':
+	      if(argv[i][2] == 'd')
+		{
+		  switch(argv[i][3])
+		    {
+		    case 'e':
+		      /* -ederiv_u/-ederiv_v */
+		      if(strlen(argv[i]) == 9)
+			{
+			  if(argv[i][8] == 'u')
+			    deriv = &ederiv_u;
+			  else
+			    deriv = &ederiv_v;
+
+			  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen,
+					   &acv) == TCL_OK)
+			    {
+			      if(*deriv)
+				{
+				  free(*deriv);
+				}
+			      if(!(*deriv = calloc(acvlen, sizeof(double))))
+				{
+				  Tcl_Free((char *) acv);
+				  ay_status = AY_EOMEM;
+				  goto cleanup;
+				}
+			      for(j = 0; j < acvlen; j++)
+				{
+				  tcl_status = Tcl_GetDouble(ay_interp,
+							acv[j], &(*deriv)[j]);
+				  if(tcl_status != TCL_OK)
+				    {
+				      break;
+				    }
+				} /* for */
+			      Tcl_Free((char *) acv);
+			    } /* if */
+			  option_handled = AY_TRUE;
+			} /* if */
+		      break;
+		    case 'l':
+		      /* -edlen_u/-edlen_v */
+		      if(strlen(argv[i]) == 8)
+			{
+			  if(argv[i][7] == 'u')
+			    tcl_status = Tcl_GetDouble(ay_interp, argv[i+1],
+						       &edlen_u);
+			  else
+			    tcl_status = Tcl_GetDouble(ay_interp, argv[i+1],
+						       &edlen_v);
+			  option_handled = AY_TRUE;
+			}
+		      break;
+
+		    default:
+		      break;
+		    } /* switch */
+		} /* if */
+	      break;
+	    case 'd':
+	      if(argv[i][2] == 'e' && strlen(argv[i]) == 8)
+		{
+		  /* -deriv_u/-deriv_v */
+		  if(argv[i][7] == 'u')
+		    tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1],
+						&deriv_u);
+		  else
+		    tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1],
+						&deriv_v);
+		  option_handled = AY_TRUE;
+		}
+	      break;
+	    case 's':
+	      if(argv[i][2] == 'd')
+		{
+		  switch(argv[i][3])
+		    {
+		    case 'e':
+		      /* -sderiv_u/-sderiv_v */
+		      if(strlen(argv[i]) == 9)
+			{
+			  if(argv[i][8] == 'u')
+			    deriv = &sderiv_u;
+			  else
+			    deriv = &sderiv_v;
+
+			  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen,
+					   &acv) == TCL_OK)
+			    {
+			      if(*deriv)
+				{
+				  free(*deriv);
+				}
+			      if(!(*deriv = calloc(acvlen, sizeof(double))))
+				{
+				  Tcl_Free((char *) acv);
+				  ay_status = AY_EOMEM;
+				  goto cleanup;
+				}
+			      for(j = 0; j < acvlen; j++)
+				{
+				  tcl_status = Tcl_GetDouble(ay_interp,
+							acv[j], &(*deriv)[j]);
+				  if(tcl_status != TCL_OK)
+				    {
+				      break;
+				    }
+				} /* for */
+			      Tcl_Free((char *) acv);
+			    } /* if */
+			  option_handled = AY_TRUE;
+			} /* if */
+		      break;
+		    case 'l':
+		      /* -sdlen_u/-sdlen_v */
+		      if(strlen(argv[i]) == 8)
+			{
+			  if(argv[i][7] == 'u')
+			    tcl_status = Tcl_GetDouble(ay_interp, argv[i+1],
+						       &sdlen_u);
+			  else
+			    tcl_status = Tcl_GetDouble(ay_interp, argv[i+1],
+						       &sdlen_v);
+			  option_handled = AY_TRUE;
+			}
+		      break;
+		    default:
+		      break;
+		    } /* switch */
+		} /* if */
 	      break;
 	    default:
 	      break;
@@ -520,6 +656,7 @@ ay_ipatch_copycb(void *src, void **dst)
 
   *dst = (void *)ipatch;
 
+  /* prevent cleanup code from doing something harmful */
   ipatch = NULL;
 
 cleanup:
@@ -1101,11 +1238,13 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Width",-1);
   to = Tcl_NewIntObj(ipatch->width);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Height",-1);
   to = Tcl_NewIntObj(ipatch->height);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Close_U",-1);
   to = Tcl_NewIntObj(ipatch->close_u);
@@ -1207,7 +1346,7 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
  ay_ipatch_object *ipatch = NULL;
  int i, a;
 
- if(!o)
+  if(!o)
    return AY_ENULL;
 
   if(!(ipatch = calloc(1, sizeof(ay_ipatch_object))))
