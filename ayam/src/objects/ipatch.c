@@ -27,13 +27,15 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  int tcl_status = TCL_OK;
  char fname[] = "crtipatch";
+ char dererror[] = "not enough derivs provided";
  char option_handled = AY_FALSE;
  int center = AY_FALSE, createmp = -1;
  int stride = 3, uorder = 4, vorder = 4, width = 4, height = 4;
  int uclosed = AY_FALSE, vclosed = AY_FALSE;
  int ukt = 0, vkt = 0, optnum = 0, i = 2, j = 0, k = 0;
  int deriv_u = AY_FALSE, deriv_v = AY_FALSE;
- int acvlen = 0;
+ int sdulen = 0, sdvlen = 0, edulen = 0, edvlen = 0;
+ int acvlen = 0, *dlen;
  char **acv = NULL;
  double *cv = NULL;
  double udx = 0.25, udy = 0.0, udz = 0.0;
@@ -229,9 +231,15 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 		      if(strlen(argv[i]) == 9)
 			{
 			  if(argv[i][8] == 'u')
-			    deriv = &ederiv_u;
+			    {
+			      deriv = &ederiv_u;
+			      dlen = &edulen;
+			    }
 			  else
-			    deriv = &ederiv_v;
+			    {
+			      deriv = &ederiv_v;
+			      dlen = &edvlen;
+			    }
 
 			  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen,
 					   &acv) == TCL_OK)
@@ -255,6 +263,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 				      break;
 				    }
 				} /* for */
+			      *dlen = acvlen;
 			      Tcl_Free((char *) acv);
 			    } /* if */
 			  option_handled = AY_TRUE;
@@ -302,9 +311,15 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 		      if(strlen(argv[i]) == 9)
 			{
 			  if(argv[i][8] == 'u')
-			    deriv = &sderiv_u;
+			    {
+			      deriv = &sderiv_u;
+			      dlen = &sdulen;
+			    }
 			  else
-			    deriv = &sderiv_v;
+			    {
+			      deriv = &sderiv_v;
+			      dlen = &sdvlen;
+			    }
 
 			  if(Tcl_SplitList(ay_interp, argv[i+1], &acvlen,
 					   &acv) == TCL_OK)
@@ -329,6 +344,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 				    }
 				} /* for */
 			      Tcl_Free((char *) acv);
+			      *dlen = acvlen;
 			    } /* if */
 			  option_handled = AY_TRUE;
 			} /* if */
@@ -378,24 +394,25 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 
     } /* while */
 
-  if(uorder <= 0)
-    {
-      uorder = 4;
-    }
-
-  if(vorder <= 0)
-    {
-      vorder = 4;
-    }
-
+  /* check and correct width/height/uorder/vorder */
   if(width <= 1)
     {
       width = 4;
     }
 
-  if(width < uorder)
+  if(uorder>0)
     {
-      uorder = width;
+      if(width < abs(uorder))
+	{
+	  uorder = width;
+	}
+    }
+  else
+    {
+      if(width < abs(uorder))
+	{
+	  uorder = -width;
+	}
     }
 
   if(height <= 1)
@@ -403,9 +420,19 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
       height = 4;
     }
 
-  if(height < vorder)
+  if(vorder > 0)
     {
-      vorder = height;
+      if(height < abs(vorder))
+	{
+	  vorder = height;
+	}
+    }
+  else
+    {
+      if(height < abs(vorder))
+	{
+	  vorder = -height;
+	}
     }
 
   if(cv)
@@ -413,11 +440,11 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
       /* check length of user provided control point array */
       if(acvlen/stride < width*height)
 	{
-	  if(acvlen>0)
+	  if(acvlen > 0)
 	    s[0] = cv[0];
-	  if(acvlen>1)
+	  if(acvlen > 1)
 	    s[1] = cv[1];
-	  if(acvlen>2)
+	  if(acvlen > 2)
 	    s[2] = cv[2];
 
 	  free(cv);
@@ -426,9 +453,22 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
-  if(!(ip = calloc(1,sizeof(ay_ipatch_object))))
+  /* check lengths of user provided derivatives arrays */
+  if((sderiv_u && (sdulen/stride < height)) ||
+     (ederiv_u && (edulen/stride < height)) ||
+     (sderiv_v && (sdvlen/stride < width)) ||
+     (ederiv_v && (edvlen/stride < width)))
     {
-      return AY_EOMEM;
+      ay_error(AY_ERROR, fname, dererror);
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
+
+  /* now create the ipatch */
+  if(!(ip = calloc(1, sizeof(ay_ipatch_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   ip->width = width;
@@ -458,12 +498,20 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ip->sdlen_v = sdlen_v;
   ip->edlen_v = edlen_v;
 
+  ip->derivs_u = deriv_u;
+  ip->derivs_v = deriv_v;
+
+  ip->sderiv_u = sderiv_u;
+  ip->ederiv_u = ederiv_u;
+  ip->sderiv_v = sderiv_v;
+  ip->ederiv_v = ederiv_v;
+
   if(!cv)
     {
       if(!(cv = calloc(width*height*stride,sizeof(double))))
 	{
-	  free(ip);
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       if(center)
@@ -511,11 +559,27 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
+  sderiv_u = NULL;
+  ederiv_u = NULL;
+  sderiv_v = NULL;
+  ederiv_v = NULL;
 
 cleanup:
 
   if(cv)
     free(cv);
+
+  if(sderiv_u)
+    free(sderiv_u);
+
+  if(ederiv_u)
+    free(ederiv_u);
+
+  if(sderiv_v)
+    free(sderiv_v);
+
+  if(ederiv_v)
+    free(ederiv_v);
 
   if(ay_status == AY_EOMEM)
     {
