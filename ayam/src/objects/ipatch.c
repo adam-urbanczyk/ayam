@@ -1152,12 +1152,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
      (new_ktype_v != ipatch->ktype_v))
     update = AY_TRUE;
 
-  if(new_order_u < 0)
-    new_order_u = 0;
-
-  if(new_order_v < 0)
-    new_order_v = 0;
-
   ipatch->order_u = new_order_u;
   ipatch->order_v = new_order_v;
 
@@ -1344,7 +1338,7 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(ipatch->ktype_v == AY_KTCHORDAL)
     to = Tcl_NewIntObj(0);
   else
-    if(ipatch->ktype_u == AY_KTCENTRI)
+    if(ipatch->ktype_v == AY_KTCENTRI)
       to = Tcl_NewIntObj(1);
     else
       to = Tcl_NewIntObj(2);
@@ -1787,10 +1781,10 @@ ay_ipatch_notifycb(ay_object *o)
     }
   else
     {
-      if(ip->width < 4)
+      if(ip->width < -ip->order_u)
 	np->uorder = ip->width;
       else
-	np->uorder = 4;
+	np->uorder = -ip->order_u;
       np->uknot_type = AY_KTNURB;
       ay_knots_createnp(np);
     } /* if */
@@ -1805,10 +1799,10 @@ ay_ipatch_notifycb(ay_object *o)
     }
   else
     {
-      if(ip->height < 4)
+      if(ip->height < -ip->order_v)
 	np->vorder = ip->height;
       else
-	np->vorder = 4;
+	np->vorder = -ip->order_v;
       np->vknot_type = AY_KTNURB;
       ay_knots_createnp(np);
     } /* if */
