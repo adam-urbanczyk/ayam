@@ -1058,9 +1058,11 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, ay_status_s = AY_OK, ay_status_e = AY_OK;
  char *n1 = "IPatchAttrData";
  char fname[] = "ipatch_setpropcb";
+ char rszerr[] = "Could not resize the patch.";
+ char rszerrd[] = "Could not resize the derivative(s).";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_ipatch_object *ipatch = NULL;
  int new_ktype_u, new_close_u, new_order_u, new_width;
@@ -1202,14 +1204,40 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      ipatch->width, ipatch->height,
 				      new_width);
 
-      if(ay_status)
-	ay_error(AY_ERROR,fname,"Could not resize patch!");
-      else
+      if(ipatch->sderiv_v)
 	{
-	  ipatch->width = new_width;
-	  update = AY_TRUE;
+	  ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_v), 3,
+					    ipatch->width, 1,
+					    new_width);
 	}
 
+      if(ipatch->ederiv_v)
+	{
+	  ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_v), 3,
+					    ipatch->width, 1,
+					    new_width);
+	}
+
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, fname, rszerr);
+	}
+      else
+	{
+	  if(ay_status_s || ay_status_e)
+	    {
+	      ay_error(AY_ERROR, fname, rszerrd);
+	      if(ipatch->sderiv_v)
+		free(ipatch->sderiv_v);
+	      ipatch->sderiv_v = NULL;
+	      if(ipatch->ederiv_v)
+		free(ipatch->ederiv_v);
+	      ipatch->ederiv_v = NULL;
+	      ipatch->derivs_v = AY_FALSE;
+	    }
+	  ipatch->width = new_width;
+	  update = AY_TRUE;
+	} /* if */
     } /* if */
 
   if(new_height != ipatch->height && (new_height > 1))
@@ -1223,15 +1251,41 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				      ipatch->width, ipatch->height,
 				      new_height);
 
+      if(ipatch->sderiv_u)
+	{
+	  ay_status_s = ay_npt_resizearrayw(&(ipatch->sderiv_u), 3,
+					    ipatch->height, 1,
+					    new_height);
+	}
+
+      if(ipatch->ederiv_u)
+	{
+	  ay_status_e = ay_npt_resizearrayw(&(ipatch->ederiv_u), 3,
+					    ipatch->height, 1,
+					    new_height);
+	}
+
       if(ay_status)
-	ay_error(AY_ERROR,fname,"Could not resize patch!");
+	{
+	  ay_error(AY_ERROR, fname, rszerr);
+	}
       else
 	{
+	  if(ay_status_s || ay_status_e)
+	    {
+	      ay_error(AY_ERROR, fname, rszerrd);
+	      if(ipatch->sderiv_u)
+		free(ipatch->sderiv_u);
+	      ipatch->sderiv_u = NULL;
+	      if(ipatch->ederiv_u)
+		free(ipatch->ederiv_u);
+	      ipatch->ederiv_u = NULL;
+	      ipatch->derivs_u = AY_FALSE;
+	    }
 	  ipatch->height = new_height;
 	  update = AY_TRUE;
-	}
+	} /* if */
     } /* if */
-
 
   ipatch->order_u = new_order_u;
   ipatch->order_v = new_order_v;
