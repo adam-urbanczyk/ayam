@@ -400,19 +400,14 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
       width = 4;
     }
 
-  if(uorder>0)
+  if(uorder < 2)
     {
-      if(width < abs(uorder))
-	{
-	  uorder = width;
-	}
+      uorder = 2;
     }
-  else
+
+  if(uorder > width)
     {
-      if(width < abs(uorder))
-	{
-	  uorder = -width;
-	}
+      uorder = (width < 4)?width:4;
     }
 
   if(height <= 1)
@@ -420,19 +415,14 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
       height = 4;
     }
 
-  if(vorder > 0)
+  if(vorder < 2)
     {
-      if(height < abs(vorder))
-	{
-	  vorder = height;
-	}
+      vorder = 2;
     }
-  else
+
+  if(vorder > height)
     {
-      if(height < abs(vorder))
-	{
-	  vorder = -height;
-	}
+      vorder = (height < 4)?height:4;
     }
 
   if(cv)
@@ -1072,8 +1062,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "IPatchAttrData";
  char fname[] = "ipatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_object *p = NULL;
- ay_nurbpatch_object *np = NULL;
  ay_ipatch_object *ipatch = NULL;
  int new_ktype_u, new_close_u, new_order_u, new_width;
  int new_ktype_v, new_close_v, new_order_v, new_height;
@@ -1151,9 +1139,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
      (new_ktype_u != ipatch->ktype_u)||
      (new_ktype_v != ipatch->ktype_v))
     update = AY_TRUE;
-
-  ipatch->order_u = new_order_u;
-  ipatch->order_v = new_order_v;
 
   switch(new_ktype_u)
     {
@@ -1247,6 +1232,30 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
+
+  ipatch->order_u = new_order_u;
+  ipatch->order_v = new_order_v;
+
+  if(ipatch->order_u < 2)
+    {
+      ipatch->order_u = 2;
+    }
+
+  if(ipatch->order_u > ipatch->width)
+    {
+      ipatch->order_u = (ipatch->width < 4)?ipatch->width:4;
+    }
+
+  if(ipatch->order_v < 2)
+    {
+      ipatch->order_v = 2;
+    }
+
+  if(ipatch->order_v > ipatch->height)
+    {
+      ipatch->order_v = (ipatch->height < 4)?ipatch->height:4;
+    }
+
   if(update)
     {
       ay_notify_force(o);
@@ -1255,20 +1264,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       ay_notify_parent();
     }
-
-  /* set new display mode/sampling tolerance */
-  p = ipatch->npatch;
-  while(p)
-    {
-      if(p->type == AY_IDNPATCH)
-	{
-	  np = (ay_nurbpatch_object *)p->refine;
-	  np->display_mode = ipatch->display_mode;
-	  np->glu_sampling_tolerance = ipatch->glu_sampling_tolerance;
-	}
-
-      p = p->next;
-    } /* while */
 
  return AY_OK;
 } /* ay_ipatch_setpropcb */
@@ -1781,10 +1776,7 @@ ay_ipatch_notifycb(ay_object *o)
     }
   else
     {
-      if(ip->width < -ip->order_u)
-	np->uorder = ip->width;
-      else
-	np->uorder = -ip->order_u;
+      np->uorder = 2;
       np->uknot_type = AY_KTNURB;
       ay_knots_createnp(np);
     } /* if */
@@ -1799,17 +1791,14 @@ ay_ipatch_notifycb(ay_object *o)
     }
   else
     {
-      if(ip->height < -ip->order_v)
-	np->vorder = ip->height;
-      else
-	np->vorder = -ip->order_v;
+      np->vorder = 2;
       np->vknot_type = AY_KTNURB;
       ay_knots_createnp(np);
     } /* if */
 
   ip->npatch = p;
 
-  /* copy sampling tolerance/mode attributes to caps and bevels */
+  /* copy sampling tolerance/mode attributes to NURBS patch(es) */
   if(ip->npatch)
     {
       p = ip->npatch;

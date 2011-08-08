@@ -11,28 +11,22 @@
 
 set IPatch 1
 
-proc init_IPatch { } {
-    global ay IPatch_props IPatchAttr IPatchAttrData
+# ipatch_getAttr:
+#  get Attributes from C context and build new PropertyGUI
+#
+proc ipatch_getAttr { } {
+    global ay ayprefs IPatchAttr IPatchAttrData
 
-    set IPatch_props { Transformations Attributes Material Tags IPatchAttr }
+    set oldfocus [focus]
 
-    array set IPatchAttr {
-	arr   IPatchAttrData
-	sproc ""
-	gproc ""
-	w     fIPatchAttr
+    catch {destroy $ay(pca).$IPatchAttr(w)}
+    set w [frame $ay(pca).$IPatchAttr(w)]
+    getProp
 
-    }
+    set ay(bok) $ay(appb)
 
-    array set IPatchAttrData {
-	Knot-Type_U 0
-	Knot-Type_V 0
-	DisplayMode 1
-	NPInfoBall "n/a"
-    }
 
     # create IPatchAttr-UI
-    set w [frame $ay(pca).$IPatchAttr(w)]
 
     addParam $w IPatchAttrData Width
     addParam $w IPatchAttrData Height
@@ -43,23 +37,55 @@ proc init_IPatch { } {
     addCheck $w IPatchAttrData Close_U
     addCheck $w IPatchAttrData Close_V
 
-    addMenu $w IPatchAttrData Knot-Type_U [list Chordal Centripetal Uniform]
+    addMenu $w IPatchAttrData Knot-Type_U\
+	[list Chordal Centripetal Uniform]
 
-    addMenu $w IPatchAttrData Knot-Type_V [list Chordal Centripetal Uniform]
+    addMenu $w IPatchAttrData Knot-Type_V\
+	[list Chordal Centripetal Uniform]
 
-    addCheck $w IPatchAttrData Derivatives_U
-    addParam $w IPatchAttrData SDLen_U
-    addParam $w IPatchAttrData EDLen_U
+    if { $IPatchAttrData(Order_U) > 2 } {
+	addCheck $w IPatchAttrData Derivatives_U
+	addParam $w IPatchAttrData SDLen_U
+	addParam $w IPatchAttrData EDLen_U
+    }
 
-    addCheck $w IPatchAttrData Derivatives_V
-    addParam $w IPatchAttrData SDLen_V
-    addParam $w IPatchAttrData EDLen_V
+    if { $IPatchAttrData(Order_V) > 2 } {
+	addCheck $w IPatchAttrData Derivatives_V
+	addParam $w IPatchAttrData SDLen_V
+	addParam $w IPatchAttrData EDLen_V
+    }
 
     addParam $w IPatchAttrData Tolerance
     addMenu $w IPatchAttrData DisplayMode $ay(npdisplaymodes)
 
     addText $w IPatchAttrData "Created NURBS Patch:"
     addInfo $w IPatchAttrData NPInfo
+
+    plb_setwin $w $oldfocus
+
+ return;
+}
+# ipatch_getAttr
+
+proc init_IPatch { } {
+    global ay IPatch_props IPatchAttr IPatchAttrData
+
+    set IPatch_props { Transformations Attributes Material Tags IPatchAttr }
+
+    array set IPatchAttr {
+	arr   IPatchAttrData
+	sproc ""
+	gproc ipatch_getAttr
+	w     fIPatchAttr
+
+    }
+
+    array set IPatchAttrData {
+	Knot-Type_U 0
+	Knot-Type_V 0
+	DisplayMode 1
+	NPInfoBall "n/a"
+    }
 
  return;
 }
