@@ -646,3 +646,113 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_ipt_interpuvtcmd */
+
+
+/** ay_ipt_crtderiv:
+ * create default derivative vectors
+ *
+ * @param[in] mode designates which vector to create
+ * @param[in,out] ip IPatch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
+{
+ int ay_status = AY_OK;
+ int stride = 3;
+ int i = 0, j = 0, a = 0, b = 0, c = 0, aoff = 0, boff = 0;
+ double *cv = NULL, *dv = NULL, t[3] = {0};
+ /*double len = 0.125;*/
+
+  if(!ip)
+    return AY_ENULL;
+
+  cv = ip->controlv;
+
+  switch(mode)
+    {
+    case 0:
+      /* sderiv_u */
+      if(!(ip->sderiv_u = calloc(ip->height*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      dv = ip->sderiv_u;
+      a = 0;
+      b = ip->height*stride;
+      j = ip->height;
+      aoff = stride;
+      boff = stride;
+      break;
+    case 1:
+      /* ederiv_u */
+      if(!(ip->ederiv_u = calloc(ip->height*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      dv = ip->ederiv_u;
+      a = (ip->width-1)*ip->height*stride;
+      b = a - ip->height*stride;
+      j = ip->height;
+      aoff = stride;
+      boff = stride;
+      break;
+    case 2:
+      /* sderiv_v */
+      if(!(ip->sderiv_v = calloc(ip->width*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      dv = ip->sderiv_v;
+      a = 0;
+      b = stride;
+      j = ip->height;
+      aoff = ip->height*stride;
+      boff = ip->height*stride;
+      break;
+    case 3:
+      /* ederiv_v */
+      if(!(ip->ederiv_v = calloc(ip->width*stride, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      dv = ip->ederiv_v;
+      a = (ip->height-1)*stride;
+      b = a-stride;
+      j = ip->height;
+      aoff = ip->height*stride;
+      boff = ip->height*stride;
+      break;
+    default:
+      break;
+    } /* switch */
+
+  if(dv)
+    {
+      c = 0;
+      for(i = 0; i < j; i++)
+	{
+	  t[0] = cv[b]   - cv[a];
+	  t[1] = cv[b+1] - cv[a+1];
+	  t[2] = cv[b+2] - cv[a+2];
+	  /*
+	  if(fabs(t[0]) > AY_EPSILON || fabs(t[1]) > AY_EPSILON ||
+	     fabs(t[2]) > AY_EPSILON)
+	    AY_V3SCAL(t, len);
+	  */
+	  memcpy(&(dv[c]), t, stride*sizeof(double));
+	  b += boff;
+	  a += aoff;
+	  c += stride;
+	}
+    } /* if */
+
+cleanup:
+
+ return ay_status;
+} /* ay_ipt_crtderiv */

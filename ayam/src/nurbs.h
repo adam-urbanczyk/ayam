@@ -129,6 +129,10 @@ int ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
 int ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** Create default derivative vectors.
+ */
+int ay_ipt_crtderiv(int mode, ay_ipatch_object *ip);
+
 
 /* knots.c */
 

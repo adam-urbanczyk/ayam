@@ -27,7 +27,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  int tcl_status = TCL_OK;
  char fname[] = "crtipatch";
- char dererror[] = "not enough derivs provided";
+ char dererror[] = "Not enough derivatives provided.";
  char option_handled = AY_FALSE;
  int center = AY_FALSE, createmp = -1;
  int stride = 3, uorder = 4, vorder = 4, width = 4, height = 4;
@@ -1133,7 +1133,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(ipatch->edlen_v));
 
-
   if((new_order_u != ipatch->order_u)||
      (new_order_v != ipatch->order_v)||
      (new_close_u != ipatch->close_u)||
@@ -1185,10 +1184,8 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(ipatch->display_mode));
 
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 
   /* apply changed values to patch */
 
@@ -1233,7 +1230,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      if(ipatch->ederiv_v)
 		free(ipatch->ederiv_v);
 	      ipatch->ederiv_v = NULL;
-	      ipatch->derivs_v = AY_FALSE;
 	    }
 	  ipatch->width = new_width;
 	  update = AY_TRUE;
@@ -1280,7 +1276,6 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      if(ipatch->ederiv_u)
 		free(ipatch->ederiv_u);
 	      ipatch->ederiv_u = NULL;
-	      ipatch->derivs_u = AY_FALSE;
 	    }
 	  ipatch->height = new_height;
 	  update = AY_TRUE;
@@ -1309,6 +1304,54 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       ipatch->order_v = (ipatch->height < 4)?ipatch->height:4;
     }
+
+  /**/
+  if(ipatch->derivs_u)
+    {
+      ay_status_s = AY_OK;
+      ay_status_e = AY_OK;
+      if(!ipatch->sderiv_u)
+	{
+	  ay_status_s = ay_ipt_crtderiv(0, ipatch);
+	}
+      if(!ipatch->ederiv_u)
+	{
+	  ay_status_e = ay_ipt_crtderiv(1, ipatch);
+	}
+      if(ay_status_s || ay_status_e)
+	{
+	  if(ipatch->sderiv_u)
+	    free(ipatch->sderiv_u);
+	  ipatch->sderiv_u = NULL;
+	  if(ipatch->ederiv_u)
+	    free(ipatch->ederiv_u);
+	  ipatch->derivs_u = AY_FALSE;
+	}
+    } /* if */
+
+  if(ipatch->derivs_v)
+    {
+      ay_status_s = AY_OK;
+      ay_status_e = AY_OK;
+      if(!ipatch->sderiv_v)
+	{
+	  ay_status_s = ay_ipt_crtderiv(2, ipatch);
+	}
+      if(!ipatch->ederiv_v)
+	{
+	  ay_status_e = ay_ipt_crtderiv(3, ipatch);
+	}
+      if(ay_status_s || ay_status_e)
+	{
+	  if(ipatch->sderiv_v)
+	    free(ipatch->sderiv_v);
+	  ipatch->sderiv_v = NULL;
+	  if(ipatch->ederiv_v)
+	    free(ipatch->ederiv_v);
+	  ipatch->ederiv_v = NULL;
+	  ipatch->derivs_v = AY_FALSE;
+	}
+    } /* if */
 
   if(update)
     {
