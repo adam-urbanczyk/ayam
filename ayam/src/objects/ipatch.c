@@ -16,6 +16,10 @@
 
 static char *ay_ipatch_name = "IPatch";
 
+void ay_ipatch_drawcp(ay_ipatch_object *ipatch);
+
+void ay_ipatch_drawders(ay_ipatch_object *ipatch);
+
 /* functions: */
 
 /* ay_ipatch_createcb:
@@ -736,24 +740,18 @@ cleanup:
 } /* ay_ipatch_copycb */
 
 
-/* ay_ipatch_drawcpcb:
+/* ay_ipatch_drawcp:
  *  internal helper function
  *  draw the control polygon
  */
-int
-ay_ipatch_drawcpcb(struct Togl *togl, ay_object *o)
+void
+ay_ipatch_drawcp(ay_ipatch_object *ipatch)
 {
- ay_ipatch_object *ipatch = NULL;
  double *ver = NULL;
  int i, j, a, width, height;
 
-  if(!o)
-    return AY_ENULL;
-
-  ipatch = (ay_ipatch_object *)o->refine;
-
   if(!ipatch)
-    return AY_ENULL;
+    return;
 
   width = ipatch->width;
   height = ipatch->height;
@@ -820,8 +818,98 @@ ay_ipatch_drawcpcb(struct Togl *togl, ay_object *o)
 	} /* for */
     } /* if */
 
- return AY_OK;
-} /* ay_ipatch_drawcpcb */
+ return;
+} /* ay_ipatch_drawcp */
+
+/* ay_ipatch_drawders:
+ *  internal helper function
+ *  draw the derivatives
+ */
+void
+ay_ipatch_drawders(ay_ipatch_object *ipatch)
+{
+ double *cv = NULL, *der = NULL;
+ int i, a, b, width, height;
+
+  if(!ipatch)
+    return;
+
+  width = ipatch->width;
+  height = ipatch->height;
+
+  cv = ipatch->controlv;
+
+  if(ipatch->derivs_u)
+    {
+      if(ipatch->sderiv_u)
+	{
+	  a = 0;
+	  b = 0;
+	  der = ipatch->sderiv_u;
+	  glBegin(GL_LINES);
+	  for(i = 0; i < height; i++)
+	    {
+	      glVertex3dv((GLdouble *)&cv[a]);
+	      glVertex3dv((GLdouble *)&der[b]);
+	      a += 3;
+	      b += 3;
+	    }
+	  glEnd();
+	} /* if */
+      if(ipatch->ederiv_v)
+	{
+	  a = (width-1)*height*3;
+	  b = 0;
+	  der = ipatch->ederiv_u;
+	  glBegin(GL_LINES);
+	  for(i = 0; i < height; i++)
+	    {
+	      glVertex3dv((GLdouble *)&cv[a]);
+	      glVertex3dv((GLdouble *)&der[b]);
+	      a += 3;
+	      b += 3;
+	    }
+	  glEnd();
+	} /* if */
+    } /* if */
+
+  if(ipatch->derivs_v)
+    {
+      if(ipatch->sderiv_v)
+	{
+	  a = 0;
+	  b = 0;
+	  der = ipatch->sderiv_v;
+	  
+	  glBegin(GL_LINES);
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3dv((GLdouble *)&cv[a]);
+	      glVertex3dv((GLdouble *)&der[b]);
+	      a += height*3;
+	      b += 3;
+	    }
+	  glEnd();
+	} /* if */
+      if(ipatch->ederiv_v)
+	{
+	  a = (height-1)*3;
+	  b = 0;
+	  der = ipatch->ederiv_v;
+	  glBegin(GL_LINES);
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3dv((GLdouble *)&cv[a]);
+	      glVertex3dv((GLdouble *)&der[b]);
+	      a += height*3;
+	      b += 3;
+	    }
+	  glEnd();
+	} /* if */
+    } /* if */
+
+ return;
+} /* ay_ipatch_drawders */
 
 
 /* ay_ipatch_drawcb:
@@ -848,7 +936,7 @@ ay_ipatch_drawcb(struct Togl *togl, ay_object *o)
   if(display_mode == 0)
     {
       /* Yes */
-      ay_ipatch_drawcpcb(togl, o);
+      ay_ipatch_drawcp(ipatch);
     }
   else
     {
@@ -860,6 +948,12 @@ ay_ipatch_drawcb(struct Togl *togl, ay_object *o)
 	  p = p->next;
 	} /* while */
     } /* if */
+
+  /* draw the derivatives */
+  if(ipatch->derivs_u || ipatch->derivs_v)
+    {
+      ay_ipatch_drawders(ipatch);
+    }
 
  return AY_OK;
 } /* ay_ipatch_drawcb */
@@ -915,6 +1009,63 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 
   /* draw arrows */
   ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
+
+  /* draw derivatives */
+  if(ipatch->derivs_u)
+    {
+      if(ipatch->sderiv_u)
+	{
+	  ver = ipatch->sderiv_u;
+	  glBegin(GL_POINTS);
+	  a = 0;
+	  for(i = 0; i < height; i++)
+	    {
+	      glVertex3dv((GLdouble *)&ver[a]);
+	      a += 3;
+	    }
+	  glEnd();
+	}
+      if(ipatch->ederiv_u)
+	{
+	  ver = ipatch->ederiv_u;
+	  glBegin(GL_POINTS);
+	  a = 0;
+	  for(i = 0; i < height; i++)
+	    {
+	      glVertex3dv((GLdouble *)&ver[a]);
+	      a += 3;
+	    }
+	  glEnd();
+	}
+    } /* if */
+
+  if(ipatch->derivs_v)
+    {
+      if(ipatch->sderiv_v)
+	{
+	  ver = ipatch->sderiv_v;
+	  glBegin(GL_POINTS);
+	  a = 0;
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3dv((GLdouble *)&ver[a]);
+	      a += 3;
+	    }
+	  glEnd();
+	}
+      if(ipatch->ederiv_v)
+	{
+	  ver = ipatch->ederiv_v;
+	  glBegin(GL_POINTS);
+	  a = 0;
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3dv((GLdouble *)&ver[a]);
+	      a += 3;
+	    }
+	  glEnd();
+	}
+    } /* if */
 
  return AY_OK;
 } /* ay_ipatch_drawhcb */

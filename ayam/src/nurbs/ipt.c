@@ -663,7 +663,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
  int stride = 3;
  int i = 0, j = 0, a = 0, b = 0, c = 0, aoff = 0, boff = 0;
  double *cv = NULL, *dv = NULL, t[3] = {0};
- /*double len = 0.125;*/
+ double len = 0.125;
 
   if(!ip)
     return AY_ENULL;
@@ -740,11 +740,15 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
 	  t[0] = cv[b]   - cv[a];
 	  t[1] = cv[b+1] - cv[a+1];
 	  t[2] = cv[b+2] - cv[a+2];
-	  /*
+	  
 	  if(fabs(t[0]) > AY_EPSILON || fabs(t[1]) > AY_EPSILON ||
 	     fabs(t[2]) > AY_EPSILON)
 	    AY_V3SCAL(t, len);
-	  */
+	  
+	  t[0] += cv[a];
+	  t[1] += cv[a+1];
+	  t[2] += cv[a+2];
+
 	  memcpy(&(dv[c]), t, stride*sizeof(double));
 	  b += boff;
 	  a += aoff;
