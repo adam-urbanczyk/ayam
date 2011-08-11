@@ -821,6 +821,7 @@ ay_ipatch_drawcp(ay_ipatch_object *ipatch)
  return;
 } /* ay_ipatch_drawcp */
 
+
 /* ay_ipatch_drawders:
  *  internal helper function
  *  draw the derivatives
@@ -856,7 +857,7 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	    }
 	  glEnd();
 	} /* if */
-      if(ipatch->ederiv_v)
+      if(ipatch->ederiv_u)
 	{
 	  a = (width-1)*height*3;
 	  b = 0;
@@ -1098,21 +1099,66 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(ipatch->width * ipatch->height,
-			       sizeof(double*))))
+      pe->num = ipatch->width * ipatch->height;
+
+      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+	{
+	  pe->num += 2*ipatch->height;
+	}
+
+      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+	{
+	  pe->num += 2*ipatch->width;
+	}
+
+      if(!(pe->coords = calloc(pe->num, sizeof(double*))))
 	return AY_EOMEM;
 
       for(i = 0; i < (ipatch->width*ipatch->height); i++)
 	{
-	  pe->coords[i] = &(ipatch->controlv[a]);
+	  pe->coords[j] = &(ipatch->controlv[a]);
+	  j++;
 	  a += 3;
 	}
 
-      pe->num = ipatch->width * ipatch->height;
+      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+	{
+	  a = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      pe->coords[j] = &(ipatch->sderiv_u[a]);
+	      j++;
+	      a += 3;
+	    }
+	  a = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      pe->coords[j] = &(ipatch->ederiv_u[a]);
+	      j++;
+	      a += 3;
+	    }
+	}
 
+      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+	{
+	  a = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      pe->coords[j] = &(ipatch->sderiv_v[a]);
+	      j++;
+	      a += 3;
+	    }
+	  a = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      pe->coords[j] = &(ipatch->ederiv_v[a]);
+	      j++;
+	      a += 3;
+	    }
+	}
       break;
     case 1:
-      /* selection based on a single point? */
+      /* selection based on a single point */
       control = ipatch->controlv;
 
       for(i = 0; i < (ipatch->width * ipatch->height); i++)
@@ -1129,6 +1175,73 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	  j += 3;
 	}
+
+      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+	{
+	  j = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      dist = AY_VLEN((p[0] - ipatch->sderiv_u[j]),
+			     (p[1] - ipatch->sderiv_u[j+1]),
+			     (p[2] - ipatch->sderiv_u[j+2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = &(ipatch->sderiv_u[j]);
+		  min_dist = dist;
+		}
+
+	      j += 3;
+	    } /* for */
+	  j = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      dist = AY_VLEN((p[0] - ipatch->ederiv_u[j]),
+			     (p[1] - ipatch->ederiv_u[j+1]),
+			     (p[2] - ipatch->ederiv_u[j+2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = &(ipatch->ederiv_u[j]);
+		  min_dist = dist;
+		}
+	      j += 3;
+	    } /* for */
+	} /* if */
+
+      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+	{
+	  j = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      dist = AY_VLEN((p[0] - ipatch->sderiv_v[j]),
+			     (p[1] - ipatch->sderiv_v[j+1]),
+			     (p[2] - ipatch->sderiv_v[j+2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = &(ipatch->sderiv_v[j]);
+		  min_dist = dist;
+		}
+
+	      j += 3;
+	    } /* for */
+	  j = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      dist = AY_VLEN((p[0] - ipatch->ederiv_v[j]),
+			     (p[1] - ipatch->ederiv_v[j+1]),
+			     (p[2] - ipatch->ederiv_v[j+2]));
+
+	      if(dist < min_dist)
+		{
+		  pecoord = &(ipatch->ederiv_v[j]);
+		  min_dist = dist;
+		}
+	      j += 3;
+	    } /* for */
+	} /* if */
+
 
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
@@ -1157,15 +1270,95 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-
 	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
 		return AY_EOMEM;
-	      pecoords[a] = &(control[j]);
+	      pecoords[a] = c;
 	      a++;
 	    } /* if */
 
 	  j += 3;
 	} /* for */
+
+      if(ipatch->derivs_u && ipatch->sderiv_u && ipatch->ederiv_u)
+	{
+	  j = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      c = &(ipatch->sderiv_u[j]);
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = c;
+		  a++;
+		} /* if */
+	      j += 3;
+	    } /* for */
+	  j = 0;
+	  for(i = 0; i < ipatch->height; i++)
+	    {
+	      c = &(ipatch->ederiv_u[j]);
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = c;
+		  a++;
+		} /* if */
+	      j += 3;
+	    } /* for */
+	} /* if */
+
+      if(ipatch->derivs_v && ipatch->sderiv_v && ipatch->ederiv_v)
+	{
+	  j = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      c = &(ipatch->sderiv_v[j]);
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = c;
+		  a++;
+		} /* if */
+	      j += 3;
+	    } /* for */
+	  j = 0;
+	  for(i = 0; i < ipatch->width; i++)
+	    {
+	      c = &(ipatch->ederiv_v[j]);
+
+	      /* test point c against the four planes in p */
+	      if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
+		 ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
+		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
+		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
+		{
+		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+		    return AY_EOMEM;
+		  pecoords[a] = c;
+		  a++;
+		} /* if */
+	      j += 3;
+	    } /* for */
+	} /* if */
 
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
@@ -1722,14 +1915,14 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&(ipatch->derivs_v));
   if(ipatch->derivs_v)
     {
-      if(!(ipatch->sderiv_v = calloc(ipatch->height*3, sizeof(double))))
+      if(!(ipatch->sderiv_v = calloc(ipatch->width*3, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
 
       a = 0;
-      for(i = 0; i < ipatch->height; i++)
+      for(i = 0; i < ipatch->width; i++)
 	{
 	  fscanf(fileptr, "%lg %lg %lg\n",
 		 &(ipatch->sderiv_v[a]),
@@ -1738,14 +1931,14 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
 	  a += 3;
 	}
 
-      if(!(ipatch->ederiv_v = calloc(ipatch->height*3, sizeof(double))))
+      if(!(ipatch->ederiv_v = calloc(ipatch->width*3, sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
 
       a = 0;
-      for(i = 0; i < ipatch->height; i++)
+      for(i = 0; i < ipatch->width; i++)
 	{
 	  fscanf(fileptr, "%lg %lg %lg\n",
 		 &(ipatch->ederiv_v[a]),
