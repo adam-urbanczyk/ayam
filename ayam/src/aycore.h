@@ -1056,7 +1056,7 @@ int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** center selected points
  */
-int ay_selp_center(ay_object *o, int mode);
+int ay_selp_center(ay_object *o, int mode, int dim);
 
 /** Tcl command to center all points of an object
  */

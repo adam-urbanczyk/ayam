@@ -952,6 +952,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "centerPnts", ay_selp_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "centerNC", ay_selp_centertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* undo.c */
   Tcl_CreateCommand(interp, "undo", ay_undo_undotcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
@@ -1071,9 +1075,6 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "centerNC", ay_nct_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "trimNC", ay_nct_trimtcmd,
@@ -1481,6 +1482,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "centerPnts", ay_selp_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "centerNC", ay_selp_centertcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
 
   /* NURBS */
 
@@ -1537,9 +1542,6 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
-		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-
-  Tcl_CreateCommand(interp, "centerNC", ay_nct_centertcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "trimNC", ay_nct_trimtcmd,
