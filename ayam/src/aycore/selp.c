@@ -273,19 +273,26 @@ ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_selp_center:
  *  center all selected points
- *  mode - control in which dimensions centering shall occur
+ *  mode - which center
+ *   0: minmax bbox
+ *   1: COG
+ *  dim - control in which dimensions centering shall occur
  *   0: all dimensions
  *   1: only x-y
  *   2: only y-z
  *   3: only x-z
  */
 int
-ay_selp_center(ay_object *o, int mode)
+ay_selp_center(ay_object *o, int mode, int dim)
 {
  int ay_status = AY_OK;
- double *p1, *p2, x, y, z;
- int i = 0, k;
+ double x, y, z;
+ double xmin = DBL_MAX, xmax = -DBL_MAX;
+ double ymin = DBL_MAX, ymax = -DBL_MAX;
+ double zmin = DBL_MAX, zmax = -DBL_MAX;
+ unsigned int i = 0, nump = 0, numpu = 0;
  ay_point *po = NULL;
+ double **pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -294,36 +301,93 @@ ay_selp_center(ay_object *o, int mode)
   if(!po)
     return AY_OK;
 
-  /* count selected points */
-  while(po)
+  switch(mode)
     {
-      i++;
-      po = po->next;
-    }
-
-  /* compute weighted sum of all coordinate values (points)
-     to be considered, omitting consecutive equal points */
-  po = o->selp;
-  x = po->point[0]/i;
-  y = po->point[1]/i;
-  z = po->point[2]/i;
-  p1 = po->point;
-  po = po->next;
-  for(k = 1; k < i; k++)
-    {
-      p2 = po->point;
-
-      /* XXXX What about other multiple points? Should we not rather
-	 build a list of unique points and iterate over that? */
-      if(!AY_V3COMP(p1,p2))
+    case 0:
+      /* compute min-max-bbox center */
+      while(po)
 	{
-	  x += (p2[0]/i);
-	  y += (p2[1]/i);
-	  z += (p2[2]/i);
+	  if(po->point[0] < xmin)
+	    xmin = po->point[0];
+	  if(po->point[0] > xmax)
+	    xmax = po->point[0];
+
+	  if(po->point[1] < ymin)
+	    ymin = po->point[1];
+	  if(po->point[1] > ymax)
+	    ymax = po->point[1];
+
+	  if(po->point[2] < zmin)
+	    zmin = po->point[2];
+	  if(po->point[2] > zmax)
+	    zmax = po->point[2];
+	  po = po->next;
 	}
-      p1 = p2;
-      po = po->next;
-    } /* for */
+      x = xmin+(xmax-xmin)*0.5;
+      y = ymin+(ymax-ymin)*0.5;
+      z = zmin+(zmax-zmin)*0.5;
+      break;
+    case 1:
+      /* compute COG */
+
+      /* first count selected points */
+      while(po)
+	{
+	  nump++;
+	  po = po->next;
+	}
+      if(!(pnts = calloc(nump, sizeof(double*))))
+	{
+	  return AY_EOMEM;
+	}
+      po = o->selp;
+      for(i = 0; i < nump; i++)
+	{
+	  pnts[i] = po->point;
+	  po = po->next;
+	}
+
+      if(nump > 1)
+	{
+	  qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
+	  /* calculate the number of unique points */
+	  numpu = nump;
+	  for(i = 0; i < nump-1; i++)
+	    {
+	      if(!ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
+		{
+		  numpu--;
+		}
+	    }
+	  /* for the special case of two equal points, make
+	     sure we have the first of the points as cog */
+	  x = (pnts[0])[0]/(double)numpu;
+	  y = (pnts[0])[1]/(double)numpu;
+	  z = (pnts[0])[2]/(double)numpu;
+	  /* calculate the cog */
+	  for(i = 1; i < nump; i++)
+	    {
+	      if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
+		{
+		  x += (pnts[i])[0]/(double)numpu;
+		  y += (pnts[i])[1]/(double)numpu;
+		  z += (pnts[i])[2]/(double)numpu;
+		}
+	    }
+	}
+      else
+	{
+	  /* just one point => this is the cog */
+	  x = (pnts[0])[0];
+	  y = (pnts[0])[1];
+	  z = (pnts[0])[2];
+	}
+
+      free(pnts);
+      break;
+    default:
+      break;
+    } /* switch */
 
   /* center points, by translating them */
   po = o->selp;
@@ -387,7 +451,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_point *oldpointsel = NULL;
  ay_object *o = NULL;
- int mode = 0;
+ int dim = 0, mode = 0;
 
   if(!sel)
     {
@@ -397,7 +461,13 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc > 1)
     {
-      tcl_status = Tcl_GetInt(interp, argv[1], &mode);
+      tcl_status = Tcl_GetInt(interp, argv[1], &dim);
+      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+    }
+
+  if(argc > 2)
+    {
+      tcl_status = Tcl_GetInt(interp, argv[2], &mode);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
@@ -409,20 +479,12 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
       oldpointsel = o->selp;
       o->selp = NULL;
 
-      /* center all points */
-      switch(o->type)
+      /* center all points */      
+      ay_status = ay_selp_selall(o);
+      if(!ay_status)
 	{
-	case AY_IDNCURVE:
-	  ay_status = ay_nct_center(mode, (ay_nurbcurve_object*)o->refine);
-	  break;
-	default:
-	  ay_status = ay_selp_selall(o);
-	  if(!ay_status)
-	    {
-	      ay_status = ay_selp_center(o, mode);
-	    }
-	  break;
-	} /* switch */
+	  ay_status = ay_selp_center(o, dim, mode);
+	}
 
       /* recover point selection */
       ay_selp_clear(o);
@@ -672,7 +734,7 @@ ay_selp_calccog(ay_point *pnts, double *cog)
 
 
 /* ay_selp_rem:
- *  
+ *
  */
 int
 ay_selp_rem(ay_object *o, unsigned int index)
@@ -718,7 +780,7 @@ ay_selp_rem(ay_object *o, unsigned int index)
 
 
 /* ay_selp_ins:
- *  
+ *
  */
 int
 ay_selp_ins(ay_object *o, unsigned int index, int addtoselp)
@@ -788,7 +850,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
     {
       if(stride == 4)
 	pe->rational = AY_TRUE;
- 
+
       pe->readonly = readonly;
     }
 
@@ -907,4 +969,4 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
     } /* switch */
 
  return AY_OK;
-} /* ay_sel_getpnts */
+} /* ay_selp_getpnts */
