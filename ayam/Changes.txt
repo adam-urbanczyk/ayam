@@ -1,4 +1,4 @@
-[1. Aug 2011] CVS-Head:
+[17. Aug 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -27,6 +27,8 @@ o Instance object points are not editable anymore due to currently
   unsolvable notification problems
 o moving the mouse pointer across the origin when scaling no longer
   leads to "broken" (very small) scale attributes
+o added setting the mark to selected points bounding box center
+  (shortcut <ab>)
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
