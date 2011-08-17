@@ -398,7 +398,8 @@ array set ayviewshortcuts {
     Stretch "T"
     About "a"
     CenterO "c"
-    CenterP "C"
+    CenterPC "C"
+    CenterPB "b"
     TransO "o"
     TransP "p"
 

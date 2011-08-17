@@ -999,7 +999,7 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
 
  Rotate               <$svsc(RotO)>
   about Mark, Center  <$svsc(RotO)$svsc(About)>, <$svsc(RotO)$svsc(CenterO)>
-  about Pnts Center   <$svsc(RotO)$svsc(CenterP)>
+  about Pnts Center   <$svsc(RotO)$svsc(CenterPB)>
  Scale (3D)           <$svsc(Scal3)>
  Scale (2D)           <$svsc(Scal2)>
  Stretch (2D)         <$svsc(Stretch)>
@@ -1008,13 +1008,13 @@ $w.ftext.text insert end "Modelling Actions (View Windows):
  Scale (1D,Z)         <$svsc(Scal2)$svsc(RestrictZ)>
  Scale 2D
   about Mark, Center  <$svsc(Scal2)$svsc(About)>, <$svsc(Scal2)$svsc(CenterO)>
-  about Pnts Center   <$svsc(Scal2)$svsc(CenterP)>
+  about Pnts Center   <$svsc(Scal2)$svsc(CenterPB)>
  Similar for other scale actions...
 
  Set Mark             <$svsc(About)>
   accept old Mark      <Return>
   set objs center      <$svsc(CenterO)>
-  set pnts center      <$svsc(CenterP)>
+  set pnts center      <$svsc(CenterPB)>
 
  Edit Points Direct   <$svsc(Edit)>
  Edit Points Numeric  <$svsc(EditN)>
@@ -1176,7 +1176,7 @@ proc shortcut_addescescbinding { w } {
 # shortcut_addescescbinding
 
 # shortcut_callcshelp:
-# 
+#
 proc shortcut_callcshelp { base tag } {
     global ayprefs
     if { [string first "file://" $ayprefs(Docs)] != -1 } {

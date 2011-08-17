@@ -1056,7 +1056,12 @@ int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** center selected points
  */
-int ay_selp_center(ay_object *o, int mode, int dim);
+int ay_selp_center(ay_point *p, int dim, double *center);
+
+
+/** get center of selected points
+ */
+int ay_selp_getcenter(ay_point *p, int mode, double *center);
 
 /** Tcl command to center all points of an object
  */
@@ -1646,7 +1651,7 @@ int ay_viewt_markfromsel(struct Togl *togl);
 
 /** set mark from selected points cog
  */
-int ay_viewt_markfromselp(struct Togl *togl);
+int ay_viewt_markfromselp(struct Togl *togl, int mode);
 
 /** save TIFF image file
  */

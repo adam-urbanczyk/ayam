@@ -77,7 +77,18 @@ proc actionBindCenter { w { nextaction "" } } {
     }
 
     # set mark from selected points center of gravity
-    bind $t $ayviewshortcuts(CenterP) {
+    bind $t $ayviewshortcuts(CenterPC) {
+	if { [string first ".view" %W] == 0 } {
+	    set w [winfo toplevel %W]
+	} else {
+	    set w %W
+	}
+	$w.f3D.togl mc
+	$w.f3D.togl setconf -cmark 2
+    }
+
+    # set mark from selected points bounding box center
+    bind $t $ayviewshortcuts(CenterPB) {
 	if { [string first ".view" %W] == 0 } {
 	    set w [winfo toplevel %W]
 	} else {
@@ -89,7 +100,8 @@ proc actionBindCenter { w { nextaction "" } } {
 
     if { $nextaction != "" } {
 	bind $t $ayviewshortcuts(CenterO) "+ $nextaction \$w.f3D.togl;"
-	bind $t $ayviewshortcuts(CenterP) "+ $nextaction \$w.f3D.togl;"
+	bind $t $ayviewshortcuts(CenterPC) "+ $nextaction \$w.f3D.togl;"
+	bind $t $ayviewshortcuts(CenterPB) "+ $nextaction \$w.f3D.togl;"
     }
 
  return;
@@ -1772,7 +1784,8 @@ proc actionClearKbd { w } {
     global ayviewshortcuts
 
     bind $w $ayviewshortcuts(CenterO) ""
-    bind $w $ayviewshortcuts(CenterP) ""
+    bind $w $ayviewshortcuts(CenterPC) ""
+    bind $w $ayviewshortcuts(CenterPB) ""
 
     bind $w <Key-Return> ""
 
