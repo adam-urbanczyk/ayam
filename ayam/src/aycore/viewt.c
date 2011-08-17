@@ -1038,19 +1038,19 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      if(ay_selection)
 		{
 		  Tcl_GetInt(interp, argv[i+1], &argi);
-
-		  if(argi == 0)
+		  switch(argi)
 		    {
+		    case 0:
 		      ay_status = ay_viewt_markfromsel(togl);
 		      if(ay_status)
 			{
 			  need_redraw = AY_FALSE;
 			  ay_error(AY_ERROR, fname, NULL);
 			}
-		    }
-		  else
-		    {
-		      ay_status = ay_viewt_markfromselp(togl);
+		    break;
+		    case 1:
+		    case 2:
+		      ay_status = ay_viewt_markfromselp(togl, argi-1);
 		      if(ay_status)
 			{
 			  need_redraw = AY_FALSE;
@@ -1063,7 +1063,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 			      ay_error(AY_ERROR, fname, NULL);
 			    }
 			}
-		    }
+		      break;
+		    default:
+		      break;
+		    } /* switch */
 		}
 	      else
 		{
@@ -2301,18 +2304,18 @@ ay_viewt_markfromsel(struct Togl *togl)
  *  set mark from selected points cog
  */
 int
-ay_viewt_markfromselp(struct Togl *togl)
+ay_viewt_markfromselp(struct Togl *togl, int mode)
 {
+ int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = NULL;
- ay_point *selp = NULL;
  ay_object *o = NULL;
  int height = Togl_Height(togl);
  double ttcog[3] = {0}, tcog[3] = {0}, cog[3] = {0};
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
- unsigned int i, numo = 0, nump = 0, numpu = 0;
- double **pnts = NULL;
+ unsigned int numo = 0;
+
 
   sel = ay_selection;
   while(sel)
@@ -2334,59 +2337,7 @@ ay_viewt_markfromselp(struct Togl *togl)
       o = sel->object;
       if(o->selp)
 	{
-	  selp = o->selp;
-	  nump = 0;
-	  while(selp)
-	    {
-	      nump++;
-	      selp = selp->next;
-	    }
-	  if(!(pnts = calloc(nump, sizeof(double*))))
-	    {
-	      return AY_EOMEM;
-	    }
-	  selp = o->selp;
-	  for(i = 0; i < nump; i++)
-	    {
-	      pnts[i] = selp->point;
-	      selp = selp->next;
-	    }
-
-	  if(nump > 1)
-	    {
-	      qsort(pnts, nump, sizeof(double*), ay_nct_cmppntp);
-	      /* calculate the number of unique points */
-	      numpu = nump;
-	      for(i = 0; i < nump-1; i++)
-		{
-		  if(!ay_nct_cmppntp(&(pnts[i]), &(pnts[i+1])))
-		    {
-		      numpu--;
-		    }
-		}
-	      /* for the special case of two equal points, make
-		 sure we have the first of the points in tcog */
-	      tcog[0] = (pnts[0])[0]/(double)numpu;
-	      tcog[1] = (pnts[0])[1]/(double)numpu;
-	      tcog[2] = (pnts[0])[2]/(double)numpu;
-	      /* calculate the cog */
-	      for(i = 1; i < nump; i++)
-		{
-		  if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
-		    {
-		      tcog[0] += (pnts[i])[0]/(double)numpu;
-		      tcog[1] += (pnts[i])[1]/(double)numpu;
-		      tcog[2] += (pnts[i])[2]/(double)numpu;
-		    }
-		}
-	    }
-	  else
-	    {
-	      memcpy(tcog, *pnts, 3*sizeof(double));
-	    }
-
-	  free(pnts);
-
+	  ay_status = ay_selp_getcenter(o->selp, mode, tcog);
 	  if(AY_ISTRAFO(o))
 	    {
 	      ay_trafo_creatematrix(o, mm);

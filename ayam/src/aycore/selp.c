@@ -273,78 +273,136 @@ ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_selp_center:
  *  center all selected points
- *  mode - which center
- *   0: minmax bbox
- *   1: COG
+ *  pnts - (selected) points to center
  *  dim - control in which dimensions centering shall occur
  *   0: all dimensions
  *   1: only x-y
  *   2: only y-z
  *   3: only x-z
+ *  center - center
  */
 int
-ay_selp_center(ay_object *o, int mode, int dim)
+ay_selp_center(ay_point *p, int dim, double *center)
 {
  int ay_status = AY_OK;
- double x, y, z;
+ ay_point *pnt = NULL;
+
+  if(!p || !center)
+    return AY_ENULL;
+
+  /* center points, by translating them */
+  pnt = p;
+  switch(dim)
+    {
+    case 0:
+      while(pnt)
+	{
+	  pnt->point[0] -= center[0];
+	  pnt->point[1] -= center[1];
+	  pnt->point[2] -= center[2];
+	  pnt = pnt->next;
+	}
+      break;
+    case 1:
+      while(pnt)
+	{
+	  pnt->point[0] -= center[0];
+	  pnt->point[1] -= center[1];
+	  pnt = pnt->next;
+	}
+      break;
+    case 2:
+      while(pnt)
+	{
+	  pnt->point[1] -= center[1];
+	  pnt->point[2] -= center[2];
+	  pnt = pnt->next;
+	}
+      break;
+    case 3:
+      while(pnt)
+	{
+	  pnt->point[0] -= center[0];
+	  pnt->point[2] -= center[2];
+	  pnt = pnt->next;
+	}
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return ay_status;
+} /* ay_selp_center */
+
+
+/* ay_selp_getcenter:
+ *  calculate center of selected points
+ *  pnts - (selected) points to center
+ *  mode - which center
+ *   0: minmax bbox
+ *   1: COG
+ *  center - center
+ */
+int
+ay_selp_getcenter(ay_point *p, int mode, double *center)
+{
+ int ay_status = AY_OK;
  double xmin = DBL_MAX, xmax = -DBL_MAX;
  double ymin = DBL_MAX, ymax = -DBL_MAX;
  double zmin = DBL_MAX, zmax = -DBL_MAX;
  unsigned int i = 0, nump = 0, numpu = 0;
- ay_point *po = NULL;
+ ay_point *pnt = NULL;
  double **pnts = NULL;
 
-  if(!o)
+  if(!p || !center)
     return AY_ENULL;
 
-  po = o->selp;
-  if(!po)
-    return AY_OK;
+  pnt = p;
 
   switch(mode)
     {
     case 0:
       /* compute min-max-bbox center */
-      while(po)
+      while(pnt)
 	{
-	  if(po->point[0] < xmin)
-	    xmin = po->point[0];
-	  if(po->point[0] > xmax)
-	    xmax = po->point[0];
+	  if(pnt->point[0] < xmin)
+	    xmin = pnt->point[0];
+	  if(pnt->point[0] > xmax)
+	    xmax = pnt->point[0];
 
-	  if(po->point[1] < ymin)
-	    ymin = po->point[1];
-	  if(po->point[1] > ymax)
-	    ymax = po->point[1];
+	  if(pnt->point[1] < ymin)
+	    ymin = pnt->point[1];
+	  if(pnt->point[1] > ymax)
+	    ymax = pnt->point[1];
 
-	  if(po->point[2] < zmin)
-	    zmin = po->point[2];
-	  if(po->point[2] > zmax)
-	    zmax = po->point[2];
-	  po = po->next;
+	  if(pnt->point[2] < zmin)
+	    zmin = pnt->point[2];
+	  if(pnt->point[2] > zmax)
+	    zmax = pnt->point[2];
+	  pnt = pnt->next;
 	}
-      x = xmin+(xmax-xmin)*0.5;
-      y = ymin+(ymax-ymin)*0.5;
-      z = zmin+(zmax-zmin)*0.5;
+      center[0] = xmin+(xmax-xmin)*0.5;
+      center[1] = ymin+(ymax-ymin)*0.5;
+      center[2] = zmin+(zmax-zmin)*0.5;
       break;
     case 1:
       /* compute COG */
 
       /* first count selected points */
-      while(po)
+      while(pnt)
 	{
 	  nump++;
-	  po = po->next;
+	  pnt = pnt->next;
 	}
       if(!(pnts = calloc(nump, sizeof(double*))))
 	{
 	  return AY_EOMEM;
 	}
-      po = o->selp;
+      pnt = p;
       for(i = 0; i < nump; i++)
 	{
-	  pnts[i] = po->point;
-	  po = po->next;
+	  pnts[i] = pnt->point;
+	  pnt = pnt->next;
 	}
 
       if(nump > 1)
@@ -361,26 +419,26 @@ ay_selp_center(ay_object *o, int mode, int dim)
 	    }
 	  /* for the special case of two equal points, make
 	     sure we have the first of the points as cog */
-	  x = (pnts[0])[0]/(double)numpu;
-	  y = (pnts[0])[1]/(double)numpu;
-	  z = (pnts[0])[2]/(double)numpu;
+	  center[0] = (pnts[0])[0]/(double)numpu;
+	  center[1] = (pnts[0])[1]/(double)numpu;
+	  center[2] = (pnts[0])[2]/(double)numpu;
 	  /* calculate the cog */
 	  for(i = 1; i < nump; i++)
 	    {
 	      if(ay_nct_cmppntp(&(pnts[i-1]), &(pnts[i])))
 		{
-		  x += (pnts[i])[0]/(double)numpu;
-		  y += (pnts[i])[1]/(double)numpu;
-		  z += (pnts[i])[2]/(double)numpu;
+		  center[0] += (pnts[i])[0]/(double)numpu;
+		  center[1] += (pnts[i])[1]/(double)numpu;
+		  center[2] += (pnts[i])[2]/(double)numpu;
 		}
 	    }
 	}
       else
 	{
 	  /* just one point => this is the cog */
-	  x = (pnts[0])[0];
-	  y = (pnts[0])[1];
-	  z = (pnts[0])[2];
+	  center[0] = (pnts[0])[0];
+	  center[1] = (pnts[0])[1];
+	  center[2] = (pnts[0])[2];
 	}
 
       free(pnts);
@@ -389,49 +447,8 @@ ay_selp_center(ay_object *o, int mode, int dim)
       break;
     } /* switch */
 
-  /* center points, by translating them */
-  po = o->selp;
-  switch(mode)
-    {
-    case 0:
-      while(po)
-	{
-	  po->point[0] -= x;
-	  po->point[1] -= y;
-	  po->point[2] -= z;
-	  po = po->next;
-	}
-      break;
-    case 1:
-      while(po)
-	{
-	  po->point[0] -= x;
-	  po->point[1] -= y;
-	  po = po->next;
-	}
-      break;
-    case 2:
-      while(po)
-	{
-	  po->point[1] -= y;
-	  po->point[2] -= z;
-	  po = po->next;
-	}
-      break;
-    case 3:
-      while(po)
-	{
-	  po->point[0] -= x;
-	  po->point[2] -= z;
-	  po = po->next;
-	}
-      break;
-    default:
-      break;
-    } /* switch */
-
  return ay_status;
-} /* ay_selp_center */
+} /* ay_selp_getcenter */
 
 
 /* ay_selp_centertcmd:
@@ -451,6 +468,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_point *oldpointsel = NULL;
  ay_object *o = NULL;
+ double center[3] = {0};
  int dim = 0, mode = 0;
 
   if(!sel)
@@ -483,7 +501,11 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_selp_selall(o);
       if(!ay_status)
 	{
-	  ay_status = ay_selp_center(o, dim, mode);
+	  ay_status = ay_selp_getcenter(o->selp, mode, center);
+	  if(!ay_status)
+	    {
+	      ay_status = ay_selp_center(o->selp, dim, center);
+	    }
 	}
 
       /* recover point selection */
