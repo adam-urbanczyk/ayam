@@ -36,9 +36,9 @@ given in the tutorials.
 
 This document has been written using the SGML-Tools (LinuxDoc) formatting
 system to generate files in a variety of text formats from one source file.
-There are HTML and PDF versions of this document prepared for you.
+There are HTML and PDF versions of this document prepared.
 
-In addition, you can use the provided SGML-source to generate other formats.
+In addition, one can use the provided SGML-source to generate other formats.
 </abstract>
 
 <toc>
@@ -255,7 +255,7 @@ The main window is split into three large areas:
 <p>
 The relative sizes of the three areas are managed by a so called paned
 geometry management. To change the relative size of the console,
-you may move your mouse pointer to the upper border of the console until
+move the mouse pointer to the upper border of the console until
 the pointer changes and then drag the border.
 The same goes for the right border of the objects section.
 
@@ -284,7 +284,7 @@ object called <tt/"Root"/ in the top level of the scene, even though the
 scene seems to be empty.
 See section <ref id="rootobj" name="Root Object"> for more
 information regarding this special object, and what it is good for.
-Note that you can not delete or copy this object.
+Note that one can not delete or copy this object.
 
 <bf/Object Tree View:/<label id="treeview">
 <p>
@@ -2895,9 +2895,19 @@ the same point: <tt/&lt;ra&gt;/, drag mouse, <tt/&lt;sa&gt;/,
 currently selected objects coordinate systems,
 <item><tt/&lt;C&gt;/ set the mark to the center of gravity of all
 currently selected points.
+<item><tt/&lt;b&gt;/ set the mark to the center of the bounding
+box of all currently selected points.
+The image below demonstrates the difference between the
+center of the bounding box and the center of gravity.
 </itemize>
 The marked point will be shown as a little red cross in the view window
-(see also the image above).
+(see also the image below).
+<p>
+<figure loc="ht">
+<eps file="pics/bbxvscog.ps" height="4cm">
+<img src="pics/bbxvscog.gif">
+<caption>Bounding Box Center Mark (left) and Center of Gravity Mark (right)</caption>
+</figure>
 <p>
 The mark may also directly be set using the corresponding view object
 property (see also section <ref id="vat" name="ViewAttrib Property">).
@@ -3577,6 +3587,8 @@ SDNPatch|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Root Object<label id="rootobj">
 <p>
@@ -8627,6 +8639,8 @@ There are some special modelling actions for Subdivision NURBS
 defined (see below) and there are PLY import/export facilities.
 Furthermore, there are two conversion operations that convert
 NURBS patch and PolyMesh objects to SDNPatch objects.
+Thus, SDMesh objects may be converted in two steps to SDNPatch
+objects, first to a PolyMesh then to the SDNPatch.
 <p>
 Please note that the plugin is still in experimental state,
 there is limited error checking and crashes may occur, if
