@@ -610,6 +610,8 @@ $m add cascade -menu $m.pnt -label "Points" -underline 0
 set sm [menu $m.pnt -tearoff 0]
 $sm add command -label "Select All Points" -command "selPnts -all; rV" \
     -underline 0
+$sm add command -label "Deselect All Points" -command "selPnts; rV" \
+    -underline 0
 $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
 $sm add command -label "Apply Trafo To All Points"\
