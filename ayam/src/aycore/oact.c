@@ -95,7 +95,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
  ay_point *point = NULL;
  static double oldwinx = 0.0, oldwiny = 0.0;
  static GLdouble m[16] = {0};
- static int restrict = 0;
+ static int rest = 0;
  double winx = 0.0, winy = 0.0;
  double dx = 0, dy = 0, dz = 0;
  double sdx = 0, sdy = 0, sdz = 0;
@@ -120,11 +120,11 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
       if(argc > 5)
 	{
 	  /* get restrict axis */
-	  Tcl_GetInt(interp, argv[5], &restrict);
+	  Tcl_GetInt(interp, argv[5], &rest);
 	}	      
       else
 	{
-	  restrict = 0;
+	  rest = 0;
 	}
     }
 
@@ -161,17 +161,17 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   if((view->type == AY_VTFRONT) || (view->type == AY_VTTRIM))
     {
       /* restrict to X? */
-      if(restrict == 1)
+      if(rest == 1)
 	{
 	  dy = 0.0;
 	}
       /* restrict to Y? */
-      if(restrict == 2)
+      if(rest == 2)
 	{
 	  dx = 0.0;
 	}
       /* restrict to Z? */
-      if(restrict == 3)
+      if(rest == 3)
 	{
 	  dx = 0.0;
 	  dy = 0.0;
@@ -188,17 +188,17 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   if(view->type == AY_VTSIDE)
     {
       /* restrict to Z? */
-      if(restrict == 3)
+      if(rest == 3)
 	{
 	  dy = 0.0;
 	}
       /* restrict to Y? */
-      if(restrict == 2)
+      if(rest == 2)
 	{
 	  dx = 0.0;
 	}
       /* restrict to X? */
-      if(restrict == 1)
+      if(rest == 1)
 	{
 	  dx = 0.0;
 	  dy = 0.0;
@@ -215,17 +215,17 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
   if(view->type == AY_VTTOP)
     {
       /* restrict to X? */
-      if(restrict == 1)
+      if(rest == 1)
 	{
 	  dy = 0.0;
 	}
       /* restrict to Z? */
-      if(restrict == 3)
+      if(rest == 3)
 	{
 	  dx = 0.0;
 	}
       /* restrict to Y? */
-      if(restrict == 2)
+      if(rest == 2)
 	{
 	  dx = 0.0;
 	  dy = 0.0;
