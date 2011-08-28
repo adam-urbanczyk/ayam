@@ -272,8 +272,9 @@ ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_selp_center:
- *  center all selected points
- *  pnts - (selected) points to center
+ *  center all selected points (readonly points will be
+ *  omitted silently)
+ *  p - (selected) points to center
  *  dim - control in which dimensions centering shall occur
  *   0: all dimensions
  *   1: only x-y
@@ -297,33 +298,45 @@ ay_selp_center(ay_point *p, int dim, double *center)
     case 0:
       while(pnt)
 	{
-	  pnt->point[0] -= center[0];
-	  pnt->point[1] -= center[1];
-	  pnt->point[2] -= center[2];
+	  if(!pnt->readonly)
+	    {
+	      pnt->point[0] -= center[0];
+	      pnt->point[1] -= center[1];
+	      pnt->point[2] -= center[2];
+	    }
 	  pnt = pnt->next;
 	}
       break;
     case 1:
       while(pnt)
 	{
-	  pnt->point[0] -= center[0];
-	  pnt->point[1] -= center[1];
+	  if(!pnt->readonly)
+	    {
+	      pnt->point[0] -= center[0];
+	      pnt->point[1] -= center[1];
+	    }
 	  pnt = pnt->next;
 	}
       break;
     case 2:
       while(pnt)
 	{
-	  pnt->point[1] -= center[1];
-	  pnt->point[2] -= center[2];
+	  if(!pnt->readonly)
+	    {
+	      pnt->point[1] -= center[1];
+	      pnt->point[2] -= center[2];
+	    }
 	  pnt = pnt->next;
 	}
       break;
     case 3:
       while(pnt)
 	{
-	  pnt->point[0] -= center[0];
-	  pnt->point[2] -= center[2];
+	  if(!pnt->readonly)
+	    {
+	      pnt->point[0] -= center[0];
+	      pnt->point[2] -= center[2];
+	    }
 	  pnt = pnt->next;
 	}
       break;
@@ -337,7 +350,7 @@ ay_selp_center(ay_point *p, int dim, double *center)
 
 /* ay_selp_getcenter:
  *  calculate center of selected points
- *  pnts - (selected) points to center
+ *  p - (selected) points to calculate the center from
  *  mode - which center
  *   0: minmax bbox
  *   1: COG
@@ -703,56 +716,6 @@ cleanup:
 
  return TCL_OK;
 } /* ay_selp_seltcmd */
-
-
-/* ay_selp_calccog:
- *  calc cog from selected points
- */
-void
-ay_selp_calccog(ay_point *pnts, double *cog)
-{
- unsigned int i, a = 0, numpoints = 0;
- ay_point *p = NULL;
- int stride = 3;
-
-  if(!pnts || !cog)
-    {
-      return;
-    }
-
-  p = pnts;
-  while(p)
-    {
-      numpoints++;
-      p = p->next;
-    }
-
-  /*
-  if(!(vbuf = calloc(numpoints, stride*sizeof(double))))
-    {
-      return;
-    }
-  */
-
-  p = pnts;
-  for(i = 0; i < numpoints; i++)
-    {
-      /* XXXX ToDo: check, whether point is alread in vbuf;
-	 only if not: copy point to vbuf and update cog */
-
-      cog[0] += p->point[0]/numpoints;
-      cog[1] += p->point[1]/numpoints;
-      cog[2] += p->point[2]/numpoints;
-
-      a += stride;
-      p = p->next;
-    }
-
-
-  /* free(vbuf); */
-
- return;
-} /* ay_selp_calccog */
 
 
 /* ay_selp_rem:

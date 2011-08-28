@@ -1077,10 +1077,6 @@ int ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices);
 int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/** calculate center of gravity from a number of points
- */
-void ay_selp_calccog(ay_point *pnts, double *cog);
-
 /** repair selected points indizes after point removal
  */
 int ay_selp_rem(ay_object *o, unsigned int index);
