@@ -396,7 +396,7 @@ ay_bevel_notifycb(ay_object *o)
  int ay_status = AY_OK;
  int mode = 0;
  ay_bevel_object *bevel = NULL;
- ay_object *npatch = NULL, *curve, *bcurve, *t = NULL;
+ ay_object *npatch = NULL, *curve = NULL, *bcurve = NULL, *t = NULL;
  ay_object *pobject1 = NULL, *pobject2 = NULL;
  int align = AY_FALSE, has_b = AY_FALSE, has_cap = AY_FALSE;
  int b_type, b_sense;
