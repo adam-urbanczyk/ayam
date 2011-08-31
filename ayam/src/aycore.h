@@ -28,7 +28,7 @@ int ay_bbc_get(ay_object *o, double *bbox);
  */
 int ay_clear_scene(void);
 
-/** Remove all objects from the scene.
+/** Tcl command to remove all objects from the scene.
  */
 int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -56,22 +56,23 @@ int ay_clevel_delall(void);
  */
 int ay_clevel_gotop();
 
-/** Change current level to the top level.
+/** Tcl command to change the current level to the top level.
  */
 int ay_clevel_gotoptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Change current level to the parent level.
+/** Tcl command to change the current level to the parent level.
  */
 int ay_clevel_gouptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Change current level to the child level of the first selected object.
+/** Tcl command to change the current level to the child level of the
+ *  first selected object.
  */
 int ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Get a string specification of the current level.
+/** Tcl command to get a string specification of the current level.
  */
 int ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -84,27 +85,28 @@ int ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* clipb.c */
 
-/** Copy selected objects to the object clipboard.
+/** Tcl command to copy selected objects to the object clipboard.
  */
 int ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Move selected objects to the object clipboard.
+/** Tcl command to move selected objects to the object clipboard.
  */
 int ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Copy the objects from the object clipboard to the scene.
+/** Tcl command to copy the objects from the object clipboard to the scene.
  */
 int ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Move the objects from the object clipboard to the scene.
+/** Tcl command to move the objects from the object clipboard to the scene.
  */
 int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Replace the selected objects with the objects from the object clipboard.
+/** Tcl command to replace the selected objects with the objects from the
+ *  object clipboard.
  */
 int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -147,7 +149,7 @@ int ay_convert_register(ay_convertcb  *convcb, unsigned int type_id);
  */
 int ay_convert_force(ay_object *o, int in_place);
 
-/** Convert selected objects.
+/** Tcl command to convert the selected objects.
  */
 int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -201,7 +203,7 @@ void ay_draw_cs(struct Togl *togl);
  */
 void ay_error(int code, char *where, char *what);
 
-/** Report an error to the user.
+/** Tcl command to report an error to the user.
  */
 int ay_error_tcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[]);
@@ -289,7 +291,7 @@ int ay_instt_wribiarchives(char *file, ay_object *o);
  */
 int ay_instt_resolve(ay_object *i);
 
-/** Resolve selected instances to normal objects.
+/** Tcl command to resolve selected instances to normal objects.
  */
 int ay_instt_resolvetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -303,7 +305,7 @@ int ay_instt_checkinstance(ay_object *o, ay_object *target,
  */
 int ay_instt_check(ay_object *o, ay_object *target);
 
-/** Find the master of the selected instance.
+/** Tcl command to find the master of the selected instance.
  */
 int ay_instt_getmastertcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -355,7 +357,7 @@ int ay_notify_force(ay_object *o);
  */
 int ay_notify_forceparent(ay_object *o, int silent);
 
-/** Enforce notification of selected objects.
+/** Tcl command to enforce notification of selected objects.
  */
 int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -474,7 +476,7 @@ int ay_object_create(unsigned int index, ay_object **o);
 int ay_object_createargs(unsigned int index, int argc, char **argv,
 			 ay_object **o);
 
-/** Create a new object and link it to the current level.
+/** Tcl command to create a new object and link it to the current level.
  */
 int ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -487,7 +489,7 @@ int ay_object_delete(ay_object *o);
  */
 int ay_object_deletemulti(ay_object *o);
 
-/** Delete selected objects.
+/** Tcl command to delete selected objects.
  */
 int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -508,7 +510,7 @@ char *ay_object_gettypename(unsigned int index);
  */
 char *ay_object_getname(ay_object *o);
 
-/** Set the name of the selected objects.
+/** Tcl command to set the name of the selected objects.
  */
 int ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -521,17 +523,17 @@ int ay_object_copy(ay_object *src, ay_object **dst);
  */
 int ay_object_copymulti(ay_object *src, ay_object **dst);
 
-/** Tcl command to inquire whether an object has children
+/** Tcl command to inquire whether an object has children.
  */
 int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/** Tcl command to get the type of an object
+/** Tcl command to get the type of an object.
  */
 int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Get the name of the selected object.
+/** Tcl command to get the name of the selected object.
  */
 int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -724,7 +726,7 @@ int ay_pomesht_tesselate(ay_pomesh_object *pomesh);
 int ay_pomesht_merge(int merge_pv_tags, ay_list_object *list,
 		     ay_object **result);
 
-/** Merge the selected polymesh objects.
+/** Tcl command to merge the selected polymesh objects.
  */
 int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -733,7 +735,7 @@ int ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals);
 
-/** Optimize the selected polymesh objects.
+/** Tcl command to optimize the selected polymesh objects.
  */
 int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -742,7 +744,7 @@ int ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_pomesht_tosdmesh(ay_pomesh_object *pomesh, ay_sdmesh_object **sdmesh);
 
-/** split off a face from a polymesh object 
+/** split off a face from a polymesh object
  */
 int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 			 ay_pomesh_object *target);
@@ -752,7 +754,7 @@ int ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
 int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 		     ay_pomesh_object **result);
 
-/** Split selected faces from selected polymesh objects.
+/** Tcl command to split selected faces from selected polymesh objects.
  */
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -1010,17 +1012,17 @@ int ay_sel_free(int clear_selflag);
  */
 int ay_sel_add(ay_object *o);
 
-/** Tcl command to set the selection
+/** Tcl command to set the selection.
  */
 int ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Tcl command to get the selection
+/** Tcl command to get the selection.
  */
 int ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Tcl command to silently select the last object in current level
+/** Tcl command to silently select the last object in current level.
  */
 int ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[]);
@@ -1040,7 +1042,7 @@ void ay_selp_clear(ay_object *o);
  */
 int ay_selp_selall(ay_object *o);
 
-/** Tcl command to apply object transformations to points
+/** Tcl command to apply object transformations to points.
  */
 int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -1049,7 +1051,7 @@ int ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_selp_invert(ay_object *o);
 
-/** Tcl command to invert the point selection of an object
+/** Tcl command to invert the point selection of an object.
  */
 int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1058,12 +1060,11 @@ int ay_selp_inverttcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_selp_center(ay_point *p, int dim, double *center);
 
-
 /** get center of selected points
  */
 int ay_selp_getcenter(ay_point *p, int mode, double *center);
 
-/** Tcl command to center all points of an object
+/** Tcl command to center all points of an object.
  */
 int ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -1072,7 +1073,7 @@ int ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_selp_sel(ay_object *o, unsigned int indiceslen, unsigned int *indices);
 
-/** Tcl command to manipulate the point selection
+/** Tcl command to manipulate the point selection.
  */
 int ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
@@ -1252,7 +1253,7 @@ void ay_tc_init(Tcl_Interp *interp);
  */
 int ay_tcmd_convdlist(char *vname, int *dllen, double **dl);
 
-/** Tcl command "revertC" to revert curves
+/** Tcl command to revert curves
  */
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
