@@ -24,10 +24,10 @@ per input line;
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>13. Mar 2011
+<date>31. Aug 2011
 
 <abstract>
-This is the documentation of Ayam 1.19 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.20 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -2936,15 +2936,7 @@ type will clear the mark.
 <p>
 The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
 for <em>t</em>ag points) may be applied to objects that support single
-point editing or read only points. Such objects usually
-draw their selectable points using small white or blue rectangular handles
-(when a modelling action is active):
-<p>
-<figure loc="ht">
-<eps file="pics/handles.ps" height="4cm">
-<img src="pics/handles.gif">
-<caption>Objects With Read Only And With Editable Points/Handles (right: NCircle, left: NCurve)</caption>
-</figure>
+point editing or read only points.
 <p>
 Selected points will be drawn in dark red when the select points modelling
 action or a modelling action that would modify the selected points is active:
@@ -3020,6 +3012,16 @@ To edit the points of an object three actions (<tt/"Edit"/,
 <tt/"Edit Weights"/, and <tt/"Numeric Point Edit"/) are available.
 All those actions may be applied to objects that support single point
 editing only.
+Such objects usually
+draw their selectable points using small white rectangular handles
+when a modelling action is active (see image below).
+<p>
+<figure loc="ht">
+<eps file="pics/handles.ps" height="5cm">
+<img src="pics/handles.gif">
+<caption>Objects With Read Only (left) and With Editable Points (right)</caption>
+</figure>
+<p>
 For an overview of the point edit actions see also the table below.
 <p>
 <table loc="ht">
@@ -3040,11 +3042,7 @@ Numeric Edit|<tt/&lt;E&gt;/|
 </tabular>
 <caption>Edit Actions Overview</caption>
 </table>
-<p>
-Objects mark themselves editable by drawing the editable points using
-small white rectangular handles if one of the single point editing actions
-is activated and the object is selected
-(see also section <ref id="selac" name="Selecting Points">).
+
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
@@ -3646,7 +3644,7 @@ pixel.
 
 <item><tt/"FilterFunc"/, function used to filter final pixel values.
 
-<item><tt/"FilterWidth"/, <tt/"FilterWidth"/ size of the filter.
+<item><tt/"FilterWidth"/, <tt/"FilterHeight"/ size of the pixel filter.
 
 <item><tt/"ExpGain"/, Exposure
 
@@ -5558,6 +5556,16 @@ with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
 pointers to already existing objects are required and where it is
 expected, that the instance reflects the master exactly, including
 its transformation attributes).
+<p>
+The extract curve/surface tools automatically add such a tag to the
+instances they create.
+<p>
+To create such a tag manually, select the Instance object and enter
+into the Ayam console:
+<code>
+addTag RP Transformations
+</code>
+.
 <p>
 This special case of an instance is sometimes also called reference.
 
@@ -9565,20 +9573,25 @@ Documentation on all those tags can be found in the sections above.
 <sect>NURBS Modelling Tools<label id="nmtool">
 <p>
 This section describes NURBS curve and surface related modelling
-tools. All tools are accessible via the <tt/"Tools"/ menu of the
+tools.
+
+<sect1>General Remarks
+<p>
+All NURBS modelling tools are accessible via the <tt/"Tools"/ menu of the
 main window. In addition, there are also corresponding scripting
 interface commands.
 <p>
 Many modifying tools work on multiple selected objects and execute
-the selected operation on all those selected objects in order
+the selected operation on all those selected objects in the order
 of their appearance in the current level.
 <p>
-Tools that take only NURBS curves or surfaces from the selection
+Tools that take only NURBS curves or only NURBS surfaces from the selection
 will warn if the selection contains objects of unsuitable type,
 but processing will continue.
 <p>
 In case of an error, however, the processing of multiple selected
-objects immediately stops.
+objects immediately stops possibly leaving modified <em>and</em>
+unmodified objects behind.
 <p>
 If an operation executed successfully on an object, the selected
 points will be removed from the object. Then the notification
@@ -9600,7 +9613,7 @@ control points in the XY plane. The control points
 are arranged in a circle of the given radius, centered around the origin.
 This gives the curve a circular appearance (see image above) but it
 is <em>not</em> a true circle:
-If few control points are used, the radius of the circular curve
+If only few control points are used, the radius of the circular curve
 is clearly smaller than the specified radius value (see the left curve
 in the image above).
 Furthermore, shape, parameterisation, and curvature of the
@@ -9901,7 +9914,8 @@ scripting interface command <ref id="scconcatnc" name="concatNC">.
 <figure loc="ht">
 <eps file="pics/splitnc.ps" height="4cm">
 <img src="pics/splitnc.gif">
-<caption>Split Tool (left: original curve, right: resulting split curves for t=0.5)</caption>
+<caption>Split Tool (left: original curve, right: resulting split curves
+for t=0.5)</caption>
 </figure>
 <itemize>
 <item>Arguments: The split curves tool takes a single NURBS curve from
@@ -9926,7 +9940,8 @@ scripting interface command <ref id="scsplitnc" name="splitNC">.
 <figure loc="ht">
 <eps file="pics/trimnc.ps" height="4cm">
 <img src="pics/trimnc.gif">
-<caption>Trim Tool (left: original curve, right: resulting trimmed curve for umin=0.1, umax=0.5)</caption>
+<caption>Trim Tool (left: original curve, right: resulting trimmed curve for
+umin=0.1, umax=0.5)</caption>
 </figure>
 <itemize>
 <item>Arguments: The trim curves tool takes all selected NURBS curves from
@@ -10043,7 +10058,8 @@ scripting interface command <ref id="scclampnc" name="clampNC">.
 <figure loc="ht">
 <eps file="pics/inskn.ps" height="4cm">
 <img src="pics/inskn.gif">
-<caption>Left: original curve, Right: a knot has been inserted 1 time at t=0.5</caption>
+<caption>Insert Knot Tool (left: original curve, right: a knot has been
+inserted 1 time at t=0.5)</caption>
 </figure>
 <itemize>
 <item>Arguments: The insert knot tool takes a number of NURBS curves from
@@ -10355,7 +10371,8 @@ scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 <figure loc="ht">
 <eps file="pics/insknnp.ps" height="5cm">
 <img src="pics/insknnp.gif">
-<caption>Left: original patch, Right: a knot has been inserted 1 time at t=0.5</caption>
+<caption>Patch Insert Knot Tool (left: original patch, right: a knot has been
+inserted 1 time at t=0.5)</caption>
 </figure>
 <itemize>
 <item>Arguments: The insert knot tool takes a number of NURBS patches from
@@ -11490,8 +11507,9 @@ uCR
 # select new object
 sL
 </code>
-In Script objects scripts the above example sequence would leave out
-the <tt/"uCR"/ command, as access to the GUI is blocked anyway:
+In Script objects scripts the above example command sequence would leave out
+the <tt/"uCR"/ command, as access to the GUI is blocked anyway in this
+context:
 <code>
 # create object
 crtOb NCurve
@@ -11521,13 +11539,13 @@ This command manipulates the point selection.
 <label id="scselpnts">
 selPnts &ndash; select points:
 <itemize>
- <item>Synopsis: <tt/"selPnts [-all|index1 index2 ...]"/
+ <item>Synopsis: <tt/"selPnts [-all | index1 index2 ...]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description:
  <itemize>
   <item>If called without arguments, this command deselects all points.
   <item>If the argument is <tt/"-all"/, this command selects all points.
-  <item>If the argument contains an index, the corresponding point will
+  <item>If the argument contains an index, the corresponding point(s) will
 be added to the selection; already selected points will not be deselected.
 The index is zero-based and always one dimensional (even
 for surfaces). Multiple indices may be provided.
@@ -11818,7 +11836,7 @@ default values.
 <label id="scapplytrafo">
 applyTrafo &ndash; apply transformations:
 <itemize>
- <item>Synopsis: <tt/"applyTrafo sel&verbar;all"/
+ <item>Synopsis: <tt/"applyTrafo sel | all"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: applies the transformations encoded in the
 transformation attributes of the selected objects to the points
@@ -11999,7 +12017,7 @@ See also section <ref id="insknt" name="The Insert Knot Tool">.
 <label id="scremknnc">
 remknNC &ndash; remove knot from NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"remknNC (u|-i ind) r [tol]"/
+ <item>Synopsis: <tt/"remknNC (u | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
@@ -12097,7 +12115,7 @@ See also section <ref id="swapuvt" name="The Swap UV Tool">.
 <label id="screscaleknnc">
 rescaleknNC &ndash; rescale knots of NURBS curves:
 <itemize>
- <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax|-d mindist]"/
+ <item>Synopsis: <tt/"rescaleknNC [-r rmin rmax | -d mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS curve(s)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
@@ -12258,7 +12276,7 @@ See also section <ref id="clanpt" name="The Patch Clamp Tool">.
 <label id="screscaleknnp">
 rescaleknNP &ndash; rescale knots of NURBS patches:
 <itemize>
- <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax|-d[u|v] mindist]"/
+ <item>Synopsis: <tt/"rescaleknNP [-r[u|v] rmin rmax | -d[u|v] mindist]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rescale the knot vector(s) of the selected NURBS patch(es)
 to the range <tt>[0.0, 1.0]</tt> (if no argument is present) or to the range
@@ -12321,7 +12339,7 @@ See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
 <label id="scremknunp">
 remknuNP &ndash; remove u knot from NURBS surface:
 <itemize>
- <item>Synopsis: <tt/"remknuNP (u|-i ind) r [tol]"/
+ <item>Synopsis: <tt/"remknuNP (u | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by u (u must be in the valid range of the knot vector
@@ -12342,7 +12360,7 @@ See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
 <label id="scremknvnp">
 remknvNP &ndash; remove v knot from NURBS surface:
 <itemize>
- <item>Synopsis: <tt/"remknvNP (v|-i ind) r [tol]"/
+ <item>Synopsis: <tt/"remknvNP (v | -i ind) r [tol]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove a knot at the position
 specified by v (v must be in the valid range of the knot vector
@@ -12469,7 +12487,7 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <label id="scsplitnp">
 splitNP &ndash; split NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"splitNP (u|v)"/
+ <item>Synopsis: <tt/"splitNP (u | v)"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Splits the selected NPatch objects into NURBS curves,
 along parametric dimension u or v.
@@ -12844,7 +12862,7 @@ Interface Bytestream (RIB):
 wrib &ndash; RIB export:
 <itemize>
  <item>Synopsis:
-<tt>"wrib filename [-image imagename] [-smonly|-selonly|-objonly]"</tt>
+<tt>"wrib filename [-image imagename] [-smonly | -selonly | -objonly]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: exports the current scene to a RIB file designated
 by <tt/"filename"/.
@@ -12945,7 +12963,7 @@ has child objects, otherwise it returns 0.
 <label id="scundo">
 undo:
 <itemize>
- <item>Synopsis: <tt>"undo [redo|save opname [0|1]|clear|rewind]"</tt>
+ <item>Synopsis: <tt>"undo [redo | save opname [0|1] | clear | rewind]"</tt>
  <item>Background: Yes, Undo: Yes, Safe: No
  <item>Description:
  <itemize>
@@ -13002,7 +13020,7 @@ used, the new object(s) will replace the old object(s).
 <label id="scforcenot">
 forceNot:
 <itemize>
- <item>Synopsis: <tt>"forceNot [mod|all]"</tt>
+ <item>Synopsis: <tt>"forceNot [mod | all]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or, if no object
@@ -15036,13 +15054,15 @@ NURBS curve providing objects to the exported file (This option does
 <em>not</em> influence the export of trim curves.);
 <item><tt>"WriteViews"</tt>: controls whether views should be exported as
 view points;
+
 <item><tt>"WriteParametrics"</tt>: toggles writing of the following
-tool objects as plain NURBS surface or higher level primitives:
+tool objects as plain NURBS surface or the following higher level
+primitives:
  <itemize>
  <item>Revolve as NurbsSwungSurface,
  <item>Swing as NurbsSwungSurface,
  <item>Sweep as NurbsSweptSurface,
- <item>Extrude as NurbsSweptSurface);
+ <item>Extrude as NurbsSweptSurface;
  </itemize>
 <item><tt>"ResolveInstances"</tt>: controls whether instance objects should
 be resolved to normal objects or exported as DEF/USE pairs, note that no
