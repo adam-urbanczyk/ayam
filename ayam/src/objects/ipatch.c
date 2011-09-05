@@ -2233,7 +2233,16 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->height > 2 && ip->order_v > 2)
     {
-      ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
+      if(ip->derivs_v)
+	{
+	  ay_status = ay_ipt_interpolatevd(np, ip->order_v, ip->ktype_v,
+			       ip->derivs_v-1, ip->sdlen_v, ip->edlen_v,
+					   ip->sderiv_v, ip->ederiv_v);
+	}
+      else
+	{
+	  ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
+	}
 
       if(ay_status)
 	goto cleanup;
