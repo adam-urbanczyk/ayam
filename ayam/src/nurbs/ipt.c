@@ -252,7 +252,7 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "ipt_interpolateu";
- int i, k, N, K, stride, ind, ind2, pu, num;
+ int i, k, N, K, stride, ind1, ind2, pu, num;
  double *uk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *U = NULL, *Q = NULL, total, d;
 
@@ -287,17 +287,17 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   /* calculate parameterization */
   for(i = 0; i < N; i++)
     {
-      ind = i*stride;
+      ind1 = i*stride;
       ind2 = i*stride;
       total = 0.0;
 
       for(k = 1; k < K; k++)
 	{
-	  ind += N*stride;
+	  ind1 += N*stride;
 
-	  v[0] = Pw[ind]   - Pw[ind2];
-	  v[1] = Pw[ind+1] - Pw[ind2+1];
-	  v[2] = Pw[ind+2] - Pw[ind2+2];
+	  v[0] = Pw[ind1]   - Pw[ind2];
+	  v[1] = Pw[ind1+1] - Pw[ind2+1];
+	  v[2] = Pw[ind1+2] - Pw[ind2+2];
 
 	  if(fabs(v[0]) > AY_EPSILON ||
 	     fabs(v[1]) > AY_EPSILON ||
@@ -370,13 +370,13 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   /* interpolate */
   for(i = 0; i < N; i++)
     {
-      ind = i*stride;
+      ind1 = i*stride;
       for(k = 0; k < K; k++)
 	{
-	  memcpy(&(Q[k*4]), &(Pw[ind]), stride*sizeof(double));
+	  memcpy(&(Q[k*4]), &(Pw[ind1]), stride*sizeof(double));
 	  if(stride != 4)
 	    Q[k*4+3] = 1.0;
-	  ind += N*stride;
+	  ind1 += N*stride;
 	} /* for */
 
       ay_status = ay_nb_GlobalInterpolation4D(K-1, Q, uk, U, pu);
@@ -384,11 +384,11 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
       if(ay_status)
 	{ free(cds); free(uk); free(U); free(Q); return ay_status; }
 
-      ind = i*stride;
+      ind1 = i*stride;
       for(k = 0; k < K; k++)
 	{
-	  memcpy(&(Pw[ind]), &(Q[k*stride]), stride*sizeof(double));
-	  ind += N*stride;
+	  memcpy(&(Pw[ind1]), &(Q[k*stride]), stride*sizeof(double));
+	  ind1 += N*stride;
 	} /* for */
     } /* for */
 
@@ -428,10 +428,10 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 {
  int ay_status = AY_OK;
  char fname[] = "ipt_interpolateud";
- int i, k, N, K, stride, ind, ind2, pu, num;
+ int i, k, N, K, stride, ind1, ind2, pu, num;
  double *uk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *U = NULL, *Qt = NULL, *Q = NULL, total, d;
- double ds[3] = {0,1,0}, de[3] = {0};
+ double ds[3] = {0}, de[3] = {0};
 
   if(!np || !sd || !ed)
     return AY_ENULL;
@@ -473,17 +473,17 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
   /* calculate parameterization */
   for(i = 0; i < N; i++)
     {
-      ind = i*stride;
+      ind1 = i*stride;
       ind2 = i*stride;
       total = 0.0;
 
       for(k = 1; k < np->width; k++)
 	{
-	  ind += N*stride;
+	  ind1 += N*stride;
 
-	  v[0] = Pw[ind]   - Pw[ind2];
-	  v[1] = Pw[ind+1] - Pw[ind2+1];
-	  v[2] = Pw[ind+2] - Pw[ind2+2];
+	  v[0] = Pw[ind1]   - Pw[ind2];
+	  v[1] = Pw[ind1+1] - Pw[ind2+1];
+	  v[2] = Pw[ind1+2] - Pw[ind2+2];
 
 	  if(fabs(v[0]) > AY_EPSILON ||
 	     fabs(v[1]) > AY_EPSILON ||
@@ -540,14 +540,14 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 
   for(i = 0; i < (np->width+1-pu); i++)
     {
-      ind = i+pu+1;
-      U[ind] = 0.0;
+      ind1 = i+pu+1;
+      U[ind1] = 0.0;
       for(k = i; k < (i+pu); k++)
 	{
-	  U[ind] += uk[k];
+	  U[ind1] += uk[k];
 	} /* for */
 
-      U[ind] /= pu;
+      U[ind1] /= pu;
     } /* for */
   for(i = 0; i <= pu; i++)
     U[i] = 0.0;
@@ -557,54 +557,54 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
   /* interpolate */
   for(i = 0; i < N; i++)
     {
-      ind = i*stride;
+      ind1 = i*stride;
 
       /* set up a sparse control vector */
       /* first point */
-      memcpy(Qt, &(Pw[ind]), stride*sizeof(double));
-      ind += N*stride;
+      memcpy(Qt, &(Pw[ind1]), stride*sizeof(double));
+      ind1 += N*stride;
 
       /* inner points */
       for(k = 2; k < K-2; k++)
 	{
-	  memcpy(&(Qt[k*4]), &(Pw[ind]), stride*sizeof(double));
-	  ind += N*stride;
+	  memcpy(&(Qt[k*4]), &(Pw[ind1]), stride*sizeof(double));
+	  ind1 += N*stride;
 	} /* for */
       /* last point */
-      memcpy(&(Qt[(K-1)*4]), &(Pw[ind]), stride*sizeof(double));
+      memcpy(&(Qt[(K-1)*4]), &(Pw[ind1]), stride*sizeof(double));
 
       /* derivatives */
       if(dmode)
 	{
 	  /* manual mode (peruse sd/ed) */
-	  ind = i*stride;
-	  ds[0] = sd[i*3] - Pw[ind];
-	  ds[1] = sd[i*3+1] - Pw[ind+1];
-	  ds[2] = sd[i*3+2] - Pw[ind+2];
+	  ind1 = i*stride;
+	  ds[0] = sd[i*3] - Pw[ind1];
+	  ds[1] = sd[i*3+1] - Pw[ind1+1];
+	  ds[2] = sd[i*3+2] - Pw[ind1+2];
 
-	  ind = (((np->width-1)*N)+i)*stride;
-	  de[0] = Pw[ind]   - ed[i*3];
-	  de[1] = Pw[ind+1] - ed[i*3+1];
-	  de[2] = Pw[ind+2] - ed[i*3+2];
+	  ind1 = (((np->width-1)*N)+i)*stride;
+	  de[0] = Pw[ind1]   - ed[i*3];
+	  de[1] = Pw[ind1+1] - ed[i*3+1];
+	  de[2] = Pw[ind1+2] - ed[i*3+2];
 	}
       else
 	{
 	  /* automatic mode (peruse sdlen/edlen) */
-	  ind = i*stride;
-	  ind2 = ind + N*stride;
+	  ind1 = i*stride;
+	  ind2 = ind1 + N*stride;
 
-	  ds[0] = Pw[ind2] - Pw[ind];
-	  ds[1] = Pw[ind2+1] - Pw[ind+1];
-	  ds[2] = Pw[ind2+2] - Pw[ind+2];
+	  ds[0] = Pw[ind2] - Pw[ind1];
+	  ds[1] = Pw[ind2+1] - Pw[ind1+1];
+	  ds[2] = Pw[ind2+2] - Pw[ind1+2];
 
 	  AY_V3SCAL(ds, sdlen)
 
-	  ind = (K-4)*N*stride;
-	  ind2 = ind + N*stride;
+	  ind1 = (K-4)*N*stride;
+	  ind2 = ind1 + N*stride;
 
-	  de[0] = Pw[ind2] - Pw[ind];
-	  de[1] = Pw[ind2+1] - Pw[ind+1];
-	  de[2] = Pw[ind2+2] - Pw[ind+2];
+	  de[0] = Pw[ind2] - Pw[ind1];
+	  de[1] = Pw[ind2+1] - Pw[ind1+1];
+	  de[2] = Pw[ind2+2] - Pw[ind1+2];
 
 	  AY_V3SCAL(de, edlen)	  
 	}
@@ -617,11 +617,11 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 	{ goto cleanup; }
 
       /* copy results back */
-      ind = i*stride;
+      ind1 = i*stride;
       for(k = 0; k < K; k++)
 	{
-	  memcpy(&(Q[ind]), &(Qt[k*stride]), stride*sizeof(double));
-	  ind += N*stride;
+	  memcpy(&(Q[ind1]), &(Qt[k*stride]), stride*sizeof(double));
+	  ind1 += N*stride;
 	} /* for */
     } /* for */
 
@@ -671,7 +671,7 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 {
  int ay_status = AY_OK;
  char fname[] = "ipt_interpolatev";
- int i, k, N, K, stride, ind, ind2, pv, num;
+ int i, k, N, K, stride, ind1, ind2, pv, num;
  double *vk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *V = NULL, total, d;
 
@@ -701,14 +701,14 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
   /* calculate parameterization */
   for(i = 0; i < K; i++)
     {
-      ind = (i*N)*stride;
+      ind1 = (i*N)*stride;
       total = 0.0;
       for(k = 1; k < N; k++)
 	{
-	  ind2 = ind+stride;
-	  v[0] = Pw[ind2]   - Pw[ind];
-	  v[1] = Pw[ind2+1] - Pw[ind+1];
-	  v[2] = Pw[ind2+2] - Pw[ind+2];
+	  ind2 = ind1+stride;
+	  v[0] = Pw[ind2]   - Pw[ind1];
+	  v[1] = Pw[ind2+1] - Pw[ind1+1];
+	  v[2] = Pw[ind2+2] - Pw[ind1+2];
 
 	  if(fabs(v[0]) > AY_EPSILON ||
 	     fabs(v[1]) > AY_EPSILON ||
@@ -731,7 +731,7 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 		}
 	      total += cds[k];
 	    }
-	  ind += stride;
+	  ind1 += stride;
 	} /* for */
 
       if(total < AY_EPSILON)
@@ -781,10 +781,10 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
   /* interpolate */
   for(i = 0; i < K; i++)
     {
-      ind = i*N*stride;
+      ind1 = i*N*stride;
 
       ay_status = ay_nb_GlobalInterpolation4D(N-1,
-			&(np->controlv[ind]), vk, V, pv);
+			&(np->controlv[ind1]), vk, V, pv);
 
       if(ay_status)
 	{ free(cds); free(vk); free(V); return ay_status; }
@@ -802,6 +802,7 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 
  return AY_OK;
 } /* ay_ipt_interpolatev */
+
 
 /** ay_ipt_interpolatevd:
  * interpolate NURBS patch along V (height) with end derivatives
@@ -825,10 +826,10 @@ ay_ipt_interpolatevd(ay_nurbpatch_object *np, int order, int ktype,
 {
  int ay_status = AY_OK;
  char fname[] = "ipt_interpolatevd";
- int i, k, N, K, stride, ind, ind2, pv, num;
+ int i, k, N, K, stride, ind, pv, num;
  double *vk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
  double *V = NULL, *Qt = NULL, *Q = NULL, total, d;
- double ds[3] = {0,1,0}, de[3] = {0};
+ double ds[3] = {0}, de[3] = {0};
 
   if(!np || !sd || !ed)
     return AY_ENULL;
