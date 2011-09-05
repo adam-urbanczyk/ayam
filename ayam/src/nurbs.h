@@ -120,11 +120,17 @@ int ay_ipt_revertv(ay_ipatch_object *ip);
  */
 int ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype);
 
+/** Interpolate NURBS patch with end derivatives in U direction.
+ */
+int ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
+			 int dmode, double sdlen, double edlen,
+			 double *sd, double *ed);
+
 /** Interpolate NURBS patch in V direction.
  */
 int ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
 
-/** Interpolate selected surfaces.
+/** Tcl command to interpolate selected surfaces.
  */
 int ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -452,7 +458,7 @@ int ay_nct_revert(ay_nurbcurve_object *curve);
 int ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv,
 		  int newknotvlen);
 
-/** Refine selected NURBS curves.
+/** Tcl command to refine selected NURBS curves.
  */
 int ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -465,7 +471,7 @@ int ay_nct_clampperiodic(ay_nurbcurve_object *curve);
  */
 int ay_nct_clamp(ay_nurbcurve_object *curve, int side);
 
-/** Clamp selected NURBS curves.
+/** Tcl command to clamp selected NURBS curves.
  */
 int ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
@@ -475,24 +481,24 @@ int ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_elevate(ay_nurbcurve_object *curve, int new_order);
 
 
-/** Elevate order of selected NURBS curves.
+/** Tcl command to elevate order of selected NURBS curves.
  */
 int ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Insert knot into selected NURBS curves.
+/** Tcl command to insert knot into selected NURBS curves.
  */
 int ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Collapse selected points of selected NURBS curves/patches to
- *  multiple points.
+/** Tcl command to collapse selected points of selected NURBS
+ *  curves/patches to multiple points.
  */
 int ay_nct_collapsetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Explode selected multiple points of selected NURBS curves/patches to
- *  single points.
+/** Tcl command to explode selected multiple points of selected NURBS 
+ *  curves/patches to single points.
  */
 int ay_nct_explodetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -510,12 +516,12 @@ int ay_nct_finducb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_nct_split(ay_object *src, double u, ay_object **result);
 
-/** Split selected NURBS curves.
+/** Tcl command to split selected NURBS curves.
  */
 int ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Concatenate selected NURBS curves.
+/** Tcl command to concatenate selected NURBS curves.
  */
 int ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -533,12 +539,12 @@ int ay_nct_crtncirclearc(double radius, double arc,
  */
 int ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve);
 
-/** Create a NURBS circle.
+/** Tcl command to create a NURBS circle.
  */
 int ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Create a NURBS rectangle.
+/** Tcl command to create a NURBS rectangle.
  */
 int ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -554,7 +560,7 @@ int ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
 int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 		      ay_nurbcurve_object **result);
 
-/** Create a circular B-Spline curve.
+/** Tcl command to create a circular B-Spline curve.
  */
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
@@ -599,7 +605,7 @@ int ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves);
  */
 int ay_nct_arrange(ay_object *o, ay_object *t, int rotate);
 
-/** Rescale the knot vectors of selected curves.
+/** Tcl command to rescale the knot vectors of selected curves.
  */
 int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
@@ -608,7 +614,7 @@ int ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 double ay_nct_getcurvature(ay_nurbcurve_object *c, double t);
 
-/** Create curvature plot curve.
+/** Tcl command to create a curvature plot curve.
  */
 int ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -640,12 +646,12 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_nct_toxy(ay_object *c);
 
-/** Rotate selected NURBS curves to XY plane.
+/** Tcl command to rotate selected NURBS curves to XY plane.
  */
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
-/** Make selected NURBS curves compatible.
+/** Tcl command to make selected NURBS curves compatible.
  */
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -664,12 +670,12 @@ int ay_nct_israt(ay_nurbcurve_object *curve);
  */
 int ay_nct_coarsen(ay_nurbcurve_object *curve);
 
-/** Coarsen selected NURBS curves.
+/** Tcl command to coarsen selected NURBS curves.
  */
 int ay_nct_coarsentcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Remove knot from selected NURBS curves.
+/** Tcl command to remove a knot from selected NURBS curves.
  */
 int ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -704,12 +710,12 @@ int ay_nct_cmppntp(const void *p1, const void *p2);
  */
 int ay_nct_estlen(ay_nurbcurve_object *nc, double *len);
 
-/** Estimate length of selected NURBS curves.
+/** Tcl command to estimate length of selected NURBS curves.
  */
 int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
 
-/** Reparameterise selected NURBS curves.
+/** Tcl command to reparameterise selected NURBS curves.
  */
 int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -758,7 +764,7 @@ int ay_npt_resizeh(ay_nurbpatch_object *np, int new_height);
  */
 int ay_npt_revertu(ay_nurbpatch_object *np);
 
-/** Revert selected surfaces in U direction.
+/** Tcl command to revert selected surfaces in U direction.
  */
 int ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -767,7 +773,7 @@ int ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_revertv(ay_nurbpatch_object *np);
 
-/** Revert selected surfaces in V direction.
+/** Tcl command to revert selected surfaces in V direction.
  */
 int ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
@@ -797,12 +803,12 @@ int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
  */
 int ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere);
 
-/** Create standard NURBS sphere (revolved half circle).
+/** Tcl command to create a standard NURBS sphere (revolved half circle).
  */
 int ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 			  int argc, char *argv[]);
 
-/** Create multi patch Cobbs NURBS sphere.
+/** Tcl command to create a multi patch Cobbs NURBS sphere.
  */
 int ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
@@ -817,7 +823,7 @@ int ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 int ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 			  ay_object **curves, ay_object ***last);
 
-/** Split NURBS patch to curves.
+/** Tcl command to split a NURBS patch to curves.
  */
 int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			     int argc, char *argv[]);
@@ -830,7 +836,7 @@ int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 			   ay_object **patch);
 
 
-/** Build NURBS patch from curves.
+/** Tcl command to build NURBS patch from curves.
  */
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
@@ -940,12 +946,12 @@ int ay_npt_elevateu(ay_nurbpatch_object *patch, int t);
  */
 int ay_npt_elevatev(ay_nurbpatch_object *patch, int t);
 
-/** Elevate U/V order of selected NURBS patches.
+/** Tcl command to elevate U/V order of selected NURBS patches.
  */
 int ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Swap U and V of selected surfaces.
+/** Tcl command to swap U and V of selected surfaces.
  */
 int ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -1006,7 +1012,7 @@ int ay_npt_istrimmed(ay_object *o, int mode);
  */
 int ay_npt_closeu(ay_nurbpatch_object *np);
 
-/** Close selected NURBS patches in U direction.
+/** Tcl command to close selected NURBS patches in U direction.
  */
 int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -1015,7 +1021,7 @@ int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_closev(ay_nurbpatch_object *np);
 
-/** Close selected NURBS patches in V direction.
+/** Tcl command to close selected NURBS patches in V direction.
  */
 int ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -1065,10 +1071,10 @@ int ay_npt_clampu(ay_nurbpatch_object *np, int side);
  */
 int ay_npt_clampv(ay_nurbpatch_object *np, int side);
 
-/** Clamp selected NURBS patches in U/V direction.
+/** Tcl command to clamp selected NURBS patches in U/V direction.
  */
 int ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
+		       int argc, char *argv[]);
 
 /** Rescale trim curves according to surface knot vector scaling.
  */
@@ -1076,17 +1082,17 @@ int ay_npt_rescaletrims(ay_object *trim,
 			int mode, double omin, double omax,
 			double nmin, double nmax);
 
-/** Rescale knots of selected NURBS patches.
+/** Tcl command to rescale knots of selected NURBS patches.
  */
 int ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/** Insert knots into selected NURBS patches (U direction).
+/** Tcl command to insert knots into selected NURBS patches (U direction).
  */
 int ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
-/** Insert knots into selected NURBS patches (V direction).
+/** Tcl command to insert knots into selected NURBS patches (V direction).
  */
 int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -1095,7 +1101,7 @@ int ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_splitu(ay_object *src, double u, ay_object **result);
 
-/** Split selected NURBS patches in U direction.
+/** Tcl command to split selected NURBS patches in U direction.
  */
 int ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -1104,7 +1110,7 @@ int ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_splitv(ay_object *src, double v, ay_object **result);
 
-/** Split selected NURBS patches in V direction.
+/** Tcl command to split selected NURBS patches in V direction.
  */
 int ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 		      int argc, char *argv[]);
@@ -1115,7 +1121,7 @@ int ay_npt_extractnp(ay_object *src, double umin, double umax,
 		     double vmin, double vmax, int relative,
 		     ay_object **result);
 
-/** Extract a sub surface from the selected NURBS patches.
+/** Tcl command to extract a sub surface from the selected NURBS patches.
  */
 int ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
@@ -1145,17 +1151,17 @@ int ay_npt_avglensu(double *cv, int width, int height, int stride,
 int ay_npt_avglensv(double *cv, int width, int height, int stride,
 		    double **avlens);
 
-/** Concatenate selected surfaces.
+/** Tcl command to concatenate selected surfaces.
  */
 int ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** Remove knot from selected surfaces.
+/** Tcl command to remove knot from selected surfaces.
  */
 int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Remove knot from selected surfaces.
+/** Tcl command to remove knot from selected surfaces.
  */
 int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
@@ -1243,7 +1249,8 @@ int ay_tess_npatch(ay_object *o,
 		   int use_vn, char *myn,
 		   ay_object **pm);
 
-/** Tesselate selected NURBS patches (convert to PolyMesh) with GLU.
+/** Tcl command to tesselate selected NURBS patches
+ *  (convert to PolyMesh) with GLU.
  */
 int ay_tess_npatchtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);

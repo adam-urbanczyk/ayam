@@ -44,13 +44,13 @@ proc ipatch_getAttr { } {
 	[list Chordal Centripetal Uniform]
 
     if { $IPatchAttrData(Order_U) > 2 } {
-	addCheck $w IPatchAttrData Derivatives_U
+	addMenu $w IPatchAttrData Derivatives_U [list None Automatic Manual]
 	addParam $w IPatchAttrData SDLen_U
 	addParam $w IPatchAttrData EDLen_U
     }
 
     if { $IPatchAttrData(Order_V) > 2 } {
-	addCheck $w IPatchAttrData Derivatives_V
+	addMenu $w IPatchAttrData Derivatives_V [list None Automatic Manual]
 	addParam $w IPatchAttrData SDLen_V
 	addParam $w IPatchAttrData EDLen_V
     }

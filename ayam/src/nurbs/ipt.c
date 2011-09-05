@@ -406,6 +406,254 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 } /* ay_ipt_interpolateu */
 
 
+/** ay_ipt_interpolateud:
+ * interpolate NURBS patch along U (width) with end derivatives
+ *
+ * @param[in,out] np NURBS patch object to interpolate
+ * @param[in] order desired interpolation order
+ * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ *            AY_KTCENTRI, or AY_KTUNIFORM)
+ * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * @param[in] sd start derivatives
+ * @param[in] ed end derivatives
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
+		     int dmode, double sdlen, double edlen,
+		     double *sd, double *ed)
+{
+ int ay_status = AY_OK;
+ char fname[] = "ipt_interpolateud";
+ int i, k, N, K, stride, ind, ind2, pu, num;
+ double *uk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
+ double *U = NULL, *Qt = NULL, *Q = NULL, total, d;
+ double ds[3] = {0,1,0}, de[3] = {0};
+
+  if(!np || !sd || !ed)
+    return AY_ENULL;
+
+  K = np->width+2;
+  N = np->height;
+  stride = 4;
+  Pw = np->controlv;
+  pu = order-1;
+  num = np->height;
+
+  if(!(uk = calloc(np->width, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(cds = calloc(np->width+1, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(U = calloc(K+np->uorder, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(Qt = calloc(K*stride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(Q = calloc(N*K*stride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  /* calculate parameterization */
+  for(i = 0; i < N; i++)
+    {
+      ind = i*stride;
+      ind2 = i*stride;
+      total = 0.0;
+
+      for(k = 1; k < np->width; k++)
+	{
+	  ind += N*stride;
+
+	  v[0] = Pw[ind]   - Pw[ind2];
+	  v[1] = Pw[ind+1] - Pw[ind2+1];
+	  v[2] = Pw[ind+2] - Pw[ind2+2];
+
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
+	    {
+	      if(ktype == AY_KTCENTRI)
+		{
+		  cds[k] = sqrt(AY_V3LEN(v));
+		}
+	      else
+		{
+		  if(ktype == AY_KTUNIFORM)
+		    {
+		      cds[k] = 0.01;
+		    }
+		  else
+		    {
+		      cds[k] = AY_V3LEN(v);
+		    }
+		}
+	      total += cds[k];
+	    }
+	  ind2 += N*stride;
+	} /* for */
+
+      if(total < AY_EPSILON)
+	{
+	  num--;
+	}
+      else
+	{
+	  d = 0.0;
+	  for(k = 1; k < np->width; k++)
+	    {
+	      d += cds[k];
+	      uk[k] += d/total;
+	    }
+	}
+    } /* for */
+
+  if(num == 0)
+    {
+      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
+
+  uk[0] = 0.0;
+  for(k = 1; k < np->width; k++)
+    {
+      uk[k] /= num;
+    }
+  uk[np->width-1] = 1.0;
+
+  for(i = 0; i < (np->width+1-pu); i++)
+    {
+      ind = i+pu+1;
+      U[ind] = 0.0;
+      for(k = i; k < (i+pu); k++)
+	{
+	  U[ind] += uk[k];
+	} /* for */
+
+      U[ind] /= pu;
+    } /* for */
+  for(i = 0; i <= pu; i++)
+    U[i] = 0.0;
+  for(i = K; i < (K+pu+1); i++)
+    U[i] = 1.0;
+
+  /* interpolate */
+  for(i = 0; i < N; i++)
+    {
+      ind = i*stride;
+
+      /* set up a sparse control vector */
+      /* first point */
+      memcpy(Qt, &(Pw[ind]), stride*sizeof(double));
+      ind += N*stride;
+
+      /* inner points */
+      for(k = 2; k < K-2; k++)
+	{
+	  memcpy(&(Qt[k*4]), &(Pw[ind]), stride*sizeof(double));
+	  ind += N*stride;
+	} /* for */
+      /* last point */
+      memcpy(&(Qt[(K-1)*4]), &(Pw[ind]), stride*sizeof(double));
+
+      /* derivatives */
+      if(dmode)
+	{
+	  /* manual mode (peruse sd/ed) */
+	  ind = i*stride;
+	  ds[0] = sd[i*3] - Pw[ind];
+	  ds[1] = sd[i*3+1] - Pw[ind+1];
+	  ds[2] = sd[i*3+2] - Pw[ind+2];
+
+	  ind = (((np->width-1)*N)+i)*stride;
+	  de[0] = Pw[ind]   - ed[i*3];
+	  de[1] = Pw[ind+1] - ed[i*3+1];
+	  de[2] = Pw[ind+2] - ed[i*3+2];
+	}
+      else
+	{
+	  /* automatic mode (peruse sdlen/edlen) */
+	  ind = i*stride;
+	  ind2 = ind + N*stride;
+
+	  ds[0] = Pw[ind2] - Pw[ind];
+	  ds[1] = Pw[ind2+1] - Pw[ind+1];
+	  ds[2] = Pw[ind2+2] - Pw[ind+2];
+
+	  AY_V3SCAL(ds, sdlen)
+
+	  ind = (K-4)*N*stride;
+	  ind2 = ind + N*stride;
+
+	  de[0] = Pw[ind2] - Pw[ind];
+	  de[1] = Pw[ind2+1] - Pw[ind+1];
+	  de[2] = Pw[ind2+2] - Pw[ind+2];
+
+	  AY_V3SCAL(de, edlen)	  
+	}
+
+      /* interpolate */
+      ay_status = ay_nb_GlobalInterpolation4DD(np->width-1, Qt, uk, U, pu,
+					       ds, de);
+
+      if(ay_status)
+	{ goto cleanup; }
+
+      /* copy results back */
+      ind = i*stride;
+      for(k = 0; k < K; k++)
+	{
+	  memcpy(&(Q[ind]), &(Qt[k*stride]), stride*sizeof(double));
+	  ind += N*stride;
+	} /* for */
+    } /* for */
+
+  if(np->uknotv)
+    free(np->uknotv);
+  np->uknotv = U;
+  np->uknot_type = AY_KTCUSTOM;
+  np->uorder = pu+1;
+  np->width = K;
+
+  free(np->controlv);
+  np->controlv = Q;
+
+  /* prevent cleanup code from doing something harmful */
+  U = NULL;
+  Q = NULL;
+
+cleanup:
+
+  if(uk)
+    free(uk);
+  if(cds)
+    free(cds);
+  if(U)
+    free(U);
+  if(Qt)
+    free(Qt);
+  if(Q)
+    free(Q);
+
+ return ay_status;
+} /* ay_ipt_interpolateud */
+
+
 /** ay_ipt_interpolatev:
  * interpolate NURBS patch along V (height)
  *
@@ -649,7 +897,8 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_ipt_crtderiv:
- * create default derivative vectors
+ * create default derivative vectors (from data points and
+ * sdlen/edlen parameters)
  *
  * @param[in] mode designates which vector to create
  * @param[in,out] ip IPatch object to process
@@ -685,6 +934,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       j = ip->height;
       aoff = stride;
       boff = stride;
+      len = ip->sdlen_u;
       break;
     case 1:
       /* ederiv_u */
@@ -699,6 +949,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       j = ip->height;
       aoff = stride;
       boff = stride;
+      len = ip->edlen_u;
       break;
     case 2:
       /* sderiv_v */
@@ -713,6 +964,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       j = ip->height;
       aoff = ip->height*stride;
       boff = ip->height*stride;
+      len = ip->sdlen_v;
       break;
     case 3:
       /* ederiv_v */
@@ -727,6 +979,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
       j = ip->height;
       aoff = ip->height*stride;
       boff = ip->height*stride;
+      len = ip->edlen_v;
       break;
     default:
       break;
@@ -740,11 +993,11 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
 	  t[0] = cv[b]   - cv[a];
 	  t[1] = cv[b+1] - cv[a+1];
 	  t[2] = cv[b+2] - cv[a+2];
-	  
+
 	  if(fabs(t[0]) > AY_EPSILON || fabs(t[1]) > AY_EPSILON ||
 	     fabs(t[2]) > AY_EPSILON)
 	    AY_V3SCAL(t, len);
-	  
+
 	  t[0] += cv[a];
 	  t[1] += cv[a+1];
 	  t[2] += cv[a+2];
@@ -753,7 +1006,7 @@ ay_ipt_crtderiv(int mode, ay_ipatch_object *ip)
 	  b += boff;
 	  a += aoff;
 	  c += stride;
-	}
+	} /* for */
     } /* if */
 
 cleanup:

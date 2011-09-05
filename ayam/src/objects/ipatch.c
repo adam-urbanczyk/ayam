@@ -840,7 +840,7 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 
   cv = ipatch->controlv;
 
-  if(ipatch->derivs_u)
+  if(ipatch->derivs_u > 1)
     {
       if(ipatch->sderiv_u)
 	{
@@ -874,7 +874,7 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	} /* if */
     } /* if */
 
-  if(ipatch->derivs_v)
+  if(ipatch->derivs_v > 1)
     {
       if(ipatch->sderiv_v)
 	{
@@ -951,7 +951,7 @@ ay_ipatch_drawcb(struct Togl *togl, ay_object *o)
     } /* if */
 
   /* draw the derivatives */
-  if(ipatch->derivs_u || ipatch->derivs_v)
+  if(ipatch->derivs_u > 1 || ipatch->derivs_v > 1)
     {
       ay_ipatch_drawders(ipatch);
     }
@@ -1012,7 +1012,7 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
   ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
 
   /* draw derivatives */
-  if(ipatch->derivs_u)
+  if(ipatch->derivs_u > 1)
     {
       if(ipatch->sderiv_u)
 	{
@@ -1040,7 +1040,7 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 	}
     } /* if */
 
-  if(ipatch->derivs_v)
+  if(ipatch->derivs_v > 1)
     {
       if(ipatch->sderiv_v)
 	{
@@ -2210,8 +2210,16 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->width > 2 && ip->order_u > 2)
     {
-      ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
-
+      if(ip->derivs_u)
+	{
+	  ay_status = ay_ipt_interpolateud(np, ip->order_u, ip->ktype_u,
+		               ip->derivs_u-1, ip->sdlen_u, ip->edlen_u,
+					   ip->sderiv_u, ip->ederiv_u);
+	}
+      else
+	{
+	  ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
+	}
       if(ay_status)
 	goto cleanup;
     }
