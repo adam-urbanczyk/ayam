@@ -126,6 +126,12 @@ int ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 			 int dmode, double sdlen, double edlen,
 			 double *sd, double *ed);
 
+/** Interpolate NURBS patch with end derivatives in U direction.
+ */
+int ay_ipt_interpolateudc(ay_nurbpatch_object *np, int order, int ktype,
+			  int dmode, double sdlen, double edlen,
+			  double *sd, double *ed);
+
 /** Interpolate NURBS patch in V direction.
  */
 int ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
