@@ -416,8 +416,8 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
  * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
  * @param[in] sdlen length of automatically generated start derivatives
  * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives
- * @param[in] ed end derivatives
+ * @param[in] sd start derivatives (may be NULL if dmode is 0)
+ * @param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -433,7 +433,7 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
  double *U = NULL, *Qt = NULL, *Q = NULL, total, d;
  double ds[3] = {0}, de[3] = {0};
 
-  if(!np || !sd || !ed)
+  if(!np || (dmode && (!sd || !ed)))
     return AY_ENULL;
 
   K = np->width+2;
@@ -598,7 +598,7 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 	  ds[1] = Pw[ind2+1] - Pw[ind1+1];
 	  ds[2] = Pw[ind2+2] - Pw[ind1+2];
 
-	  AY_V3SCAL(ds, sdlen)
+	  AY_V3SCAL(ds, sdlen);
 
 	  ind1 = (K-4)*N*stride;
 	  ind2 = ind1 + N*stride;
@@ -607,7 +607,7 @@ ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 	  de[1] = Pw[ind2+1] - Pw[ind1+1];
 	  de[2] = Pw[ind2+2] - Pw[ind1+2];
 
-	  AY_V3SCAL(de, edlen)	  
+	  AY_V3SCAL(de, edlen);
 	}
 
       /* interpolate */
@@ -668,8 +668,8 @@ cleanup:
  * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
  * @param[in] sdlen length of automatically generated start derivatives
  * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives
- * @param[in] ed end derivatives
+ * @param[in] sd start derivatives (may be NULL if dmode is 0)
+ * @param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -888,7 +888,7 @@ ay_ipt_interpolateudc(ay_nurbpatch_object *np, int order, int ktype,
 	  de[1] = Pw[ind2+1] - Pw[ind1+1];
 	  de[2] = Pw[ind2+2] - Pw[ind1+2];
 
-	  AY_V3SCAL(de, edlen)	  
+	  AY_V3SCAL(de, edlen);
 	}
 
       /* interpolate */
@@ -1096,8 +1096,8 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
  * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
  * @param[in] sdlen length of automatically generated start derivatives
  * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives
- * @param[in] ed end derivatives
+ * @param[in] sd start derivatives (may be NULL if dmode is 0)
+ * @param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1113,7 +1113,7 @@ ay_ipt_interpolatevd(ay_nurbpatch_object *np, int order, int ktype,
  double *V = NULL, *Qt = NULL, *Q = NULL, total, d;
  double ds[3] = {0}, de[3] = {0};
 
-  if(!np || !sd || !ed)
+  if(!np || (dmode && (!sd || !ed)))
     return AY_ENULL;
 
   K = np->height+2;
@@ -1266,14 +1266,14 @@ ay_ipt_interpolatevd(ay_nurbpatch_object *np, int order, int ktype,
 	  ds[1] = Pw[ind+5] - Pw[ind+1];
 	  ds[2] = Pw[ind+6] - Pw[ind+2];
 
-	  AY_V3SCAL(ds, sdlen)
+	  AY_V3SCAL(ds, sdlen);
 
 	  ind += (np->height-1)*stride;
 	  de[0] = Pw[ind]   - Pw[ind-4];
 	  de[1] = Pw[ind+1] - Pw[ind-3];
 	  de[2] = Pw[ind+2] - Pw[ind-2];
 
-	  AY_V3SCAL(de, edlen)	  
+	  AY_V3SCAL(de, edlen);
 	}
 
       /* interpolate */
@@ -1320,7 +1320,7 @@ cleanup:
 
 /** ay_ipt_interpolatevdc:
  * interpolate NURBS patch along V (height) with end derivatives
- * creates a closed surface (in U)
+ * creates a closed surface (in V)
  *
  * @param[in,out] np NURBS patch object to interpolate
  * @param[in] order desired interpolation order
@@ -1329,8 +1329,8 @@ cleanup:
  * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
  * @param[in] sdlen length of automatically generated start derivatives
  * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives
- * @param[in] ed end derivatives
+ * @param[in] sd start derivatives (may be NULL if dmode is 0)
+ * @param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1520,19 +1520,18 @@ ay_ipt_interpolatevdc(ay_nurbpatch_object *np, int order, int ktype,
       else
 	{
 	  /* automatic mode (peruse sdlen/edlen) */
-
 	  ds[0] = Pw[ind1+4] - Pw[ind1];
 	  ds[1] = Pw[ind1+5] - Pw[ind1+1];
 	  ds[2] = Pw[ind1+6] - Pw[ind1+2];
 
-	  AY_V3SCAL(ds, sdlen)
+	  AY_V3SCAL(ds, sdlen);
 
 	  ind2 = ind1 + (np->height-1)*stride;
 	  de[0] = Pw[ind1]   - Pw[ind2];
 	  de[1] = Pw[ind1+1] - Pw[ind2+1];
 	  de[2] = Pw[ind1+2] - Pw[ind2+2];
 
-	  AY_V3SCAL(de, edlen)	  
+	  AY_V3SCAL(de, edlen);
 	}
 
       /* interpolate */
