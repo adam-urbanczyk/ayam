@@ -126,7 +126,7 @@ int ay_ipt_interpolateud(ay_nurbpatch_object *np, int order, int ktype,
 			 int dmode, double sdlen, double edlen,
 			 double *sd, double *ed);
 
-/** Interpolate NURBS patch with end derivatives in U direction.
+/** Interpolate NURBS patch with end derivatives in U direction (closed).
  */
 int ay_ipt_interpolateudc(ay_nurbpatch_object *np, int order, int ktype,
 			  int dmode, double sdlen, double edlen,
@@ -141,6 +141,12 @@ int ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype);
 int ay_ipt_interpolatevd(ay_nurbpatch_object *np, int order, int ktype,
 			 int dmode, double sdlen, double edlen,
 			 double *sd, double *ed);
+
+/** Interpolate NURBS patch with end derivatives in V direction (closed).
+ */
+int ay_ipt_interpolatevdc(ay_nurbpatch_object *np, int order, int ktype,
+			  int dmode, double sdlen, double edlen,
+			  double *sd, double *ed);
 
 /** Tcl command to interpolate selected surfaces.
  */

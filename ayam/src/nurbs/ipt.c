@@ -685,7 +685,7 @@ ay_ipt_interpolateudc(ay_nurbpatch_object *np, int order, int ktype,
  double *U = NULL, *Qt = NULL, *Q = NULL, total, d;
  double ds[3] = {0}, de[3] = {0};
 
-  if(!np || !sd || !ed)
+  if(!np || (dmode && (!sd || !ed)))
     return AY_ENULL;
 
   K = np->width+3;
@@ -1316,6 +1316,265 @@ cleanup:
 
  return ay_status;
 } /* ay_ipt_interpolatevd */
+
+
+/** ay_ipt_interpolatevdc:
+ * interpolate NURBS patch along V (height) with end derivatives
+ * creates a closed surface (in U)
+ *
+ * @param[in,out] np NURBS patch object to interpolate
+ * @param[in] order desired interpolation order
+ * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ *            AY_KTCENTRI, or AY_KTUNIFORM)
+ * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * @param[in] sdlen length of automatically generated start derivatives
+ * @param[in] edlen length of automatically generated end derivatives
+ * @param[in] sd start derivatives
+ * @param[in] ed end derivatives
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_ipt_interpolatevdc(ay_nurbpatch_object *np, int order, int ktype,
+		      int dmode, double sdlen, double edlen,
+		      double *sd, double *ed)
+{
+ int ay_status = AY_OK;
+ char fname[] = "ipt_interpolatevdc";
+ int i, k, N, K, stride, ind1, ind2, pv, num;
+ double *vk = NULL, *cds = NULL, *Pw = NULL, v[3] = {0};
+ double *V = NULL, *Qt = NULL, *Q = NULL, total, d;
+ double ds[3] = {0}, de[3] = {0};
+
+  if(!np || (dmode && (!sd || !ed)))
+    return AY_ENULL;
+
+  K = np->height+3;
+  N = np->width;
+  stride = 4;
+  Pw = np->controlv;
+  pv = order-1;
+  num = np->width;
+
+  if(!(vk = calloc(np->height+1, sizeof(double))))
+    return AY_EOMEM;
+
+  if(!(cds = calloc(np->height+2, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(V = calloc(K+np->vorder, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(Qt = calloc(K*stride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  if(!(Q = calloc(N*K*stride, sizeof(double))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  ind1 = 0;
+  /* calculate parameterization */
+  for(i = 0; i < N; i++)
+    {
+      total = 0.0;
+
+      for(k = 1; k < np->height; k++)
+	{
+	  v[0] = Pw[ind1]   - Pw[ind1+4];
+	  v[1] = Pw[ind1+1] - Pw[ind1+5];
+	  v[2] = Pw[ind1+2] - Pw[ind1+6];
+
+	  if(fabs(v[0]) > AY_EPSILON ||
+	     fabs(v[1]) > AY_EPSILON ||
+	     fabs(v[2]) > AY_EPSILON)
+	    {
+	      if(ktype == AY_KTCENTRI)
+		{
+		  cds[k] = sqrt(AY_V3LEN(v));
+		}
+	      else
+		{
+		  if(ktype == AY_KTUNIFORM)
+		    {
+		      cds[k] = 0.01;
+		    }
+		  else
+		    {
+		      cds[k] = AY_V3LEN(v);
+		    }
+		}
+	      total += cds[k];
+	    }
+	  ind1 += stride;
+	} /* for */
+
+      ind1 = 0;
+      v[0] = Pw[ind1]   - Pw[ind1+4];
+      v[1] = Pw[ind1+1] - Pw[ind1+5];
+      v[2] = Pw[ind1+2] - Pw[ind1+6];
+
+      if(fabs(v[0]) > AY_EPSILON ||
+	 fabs(v[1]) > AY_EPSILON ||
+	 fabs(v[2]) > AY_EPSILON)
+	{
+	  if(ktype == AY_KTCENTRI)
+	    {
+	      cds[k] = sqrt(AY_V3LEN(v));
+	    }
+	  else
+	    {
+	      if(ktype == AY_KTUNIFORM)
+		{
+		  cds[k] = 0.01;
+		}
+	      else
+		{
+		  cds[k] = AY_V3LEN(v);
+		}
+	    }
+	  total += cds[k];
+	}
+
+      if(total < AY_EPSILON)
+	{
+	  num--;
+	}
+      else
+	{
+	  d = 0.0;
+	  for(k = 1; k < np->height+1; k++)
+	    {
+	      d += cds[k];
+	      vk[k] += d/total;
+	    }
+	}
+    } /* for */
+
+  if(num == 0)
+    {
+      ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
+      ay_status = AY_ERROR;
+      goto cleanup;
+    }
+
+  vk[0] = 0.0;
+  for(k = 1; k < np->height+1; k++)
+    {
+      vk[k] /= num;
+    }
+  vk[np->height] = 1.0;
+
+  for(i = 0; i < (np->height+2-pv); i++)
+    {
+      ind1 = i+pv+1;
+      V[ind1] = 0.0;
+      for(k = i; k < (i+pv); k++)
+	{
+	  V[ind1] += vk[k];
+	} /* for */
+
+      V[ind1] /= pv;
+    } /* for */
+  for(i = 0; i <= pv; i++)
+    V[i] = 0.0;
+  for(i = K; i < (K+pv+1); i++)
+    V[i] = 1.0;
+
+  /* interpolate */
+  for(i = 0; i < N; i++)
+    {
+      /* set up a sparse control vector */
+      /* first point */
+      ind1 = np->height*i*stride;
+      memcpy(Qt, &(Pw[ind1]), stride*sizeof(double));
+
+      /* inner points */
+      memcpy(&(Qt[8]), &(Pw[ind1+stride]), (K-3)*stride*sizeof(double));
+
+      /* last point */
+      memcpy(&(Qt[(K-1)*4]), &(Pw[ind1]), stride*sizeof(double));
+
+      /* derivatives */
+      if(dmode)
+	{
+	  /* manual mode (peruse sd/ed) */
+	  ds[0] = sd[i*3]   - Pw[ind1];
+	  ds[1] = sd[i*3+1] - Pw[ind1+1];
+	  ds[2] = sd[i*3+2] - Pw[ind1+2];
+
+	  de[0] = Pw[ind1]   - ed[i*3];
+	  de[1] = Pw[ind1+1] - ed[i*3+1];
+	  de[2] = Pw[ind1+2] - ed[i*3+2];
+	}
+      else
+	{
+	  /* automatic mode (peruse sdlen/edlen) */
+
+	  ds[0] = Pw[ind1+4] - Pw[ind1];
+	  ds[1] = Pw[ind1+5] - Pw[ind1+1];
+	  ds[2] = Pw[ind1+6] - Pw[ind1+2];
+
+	  AY_V3SCAL(ds, sdlen)
+
+	  ind2 = ind1 + (np->height-1)*stride;
+	  de[0] = Pw[ind1]   - Pw[ind2];
+	  de[1] = Pw[ind1+1] - Pw[ind2+1];
+	  de[2] = Pw[ind1+2] - Pw[ind2+2];
+
+	  AY_V3SCAL(de, edlen)	  
+	}
+
+      /* interpolate */
+      ay_status = ay_nb_GlobalInterpolation4DD(np->height, Qt, vk, V, pv,
+					       ds, de);
+
+      if(ay_status)
+	{ goto cleanup; }
+
+      /* copy results back */
+      memcpy(&(Q[i*K*stride]), Qt, K*stride*sizeof(double));
+    } /* for */
+
+  if(np->vknotv)
+    free(np->vknotv);
+  np->vknotv = V;
+  np->vknot_type = AY_KTCUSTOM;
+  np->vorder = pv+1;
+  np->height = K;
+
+  free(np->controlv);
+  np->controlv = Q;
+
+  /* prevent cleanup code from doing something harmful */
+  V = NULL;
+  Q = NULL;
+
+cleanup:
+
+  if(vk)
+    free(vk);
+  if(cds)
+    free(cds);
+  if(V)
+    free(V);
+  if(Qt)
+    free(Qt);
+  if(Q)
+    free(Q);
+
+ return ay_status;
+} /* ay_ipt_interpolatevdc */
 
 
 /** ay_ipt_interpuvtcmd:
