@@ -2210,15 +2210,28 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->width > 2 && ip->order_u > 2)
     {
-      if(ip->derivs_u)
+      if(ip->close_u)
 	{
-	  ay_status = ay_ipt_interpolateud(np, ip->order_u, ip->ktype_u,
-		               ip->derivs_u-1, ip->sdlen_u, ip->edlen_u,
+	  if(ip->derivs_u)
+	    a = ip->derivs_u-1;
+	  else
+	    a = 0;
+	  ay_status = ay_ipt_interpolateudc(np, ip->order_u, ip->ktype_u,
+		               a, ip->sdlen_u, ip->edlen_u,
 					   ip->sderiv_u, ip->ederiv_u);
 	}
       else
 	{
-	  ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
+	  if(ip->derivs_u)
+	    {
+	      ay_status = ay_ipt_interpolateud(np, ip->order_u, ip->ktype_u,
+		                    ip->derivs_u-1, ip->sdlen_u, ip->edlen_u,
+						ip->sderiv_u, ip->ederiv_u);
+	    }
+	  else
+	    {
+	      ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
+	    }
 	}
       if(ay_status)
 	goto cleanup;
@@ -2230,18 +2243,30 @@ ay_ipatch_notifycb(ay_object *o)
       ay_knots_createnp(np);
     } /* if */
 
-
   if(ip->height > 2 && ip->order_v > 2)
     {
-      if(ip->derivs_v)
+      if(ip->close_v)
 	{
-	  ay_status = ay_ipt_interpolatevd(np, ip->order_v, ip->ktype_v,
-			       ip->derivs_v-1, ip->sdlen_v, ip->edlen_v,
+	  if(ip->derivs_v)
+	    a = ip->derivs_v-1;
+	  else
+	    a = 0;
+	  ay_status = ay_ipt_interpolatevdc(np, ip->order_v, ip->ktype_v,
+		               a, ip->sdlen_v, ip->edlen_v,
 					   ip->sderiv_v, ip->ederiv_v);
 	}
       else
 	{
-	  ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
+	  if(ip->derivs_v)
+	    {
+	      ay_status = ay_ipt_interpolatevd(np, ip->order_v, ip->ktype_v,
+			           ip->derivs_v-1, ip->sdlen_v, ip->edlen_v,
+					       ip->sderiv_v, ip->ederiv_v);
+	    }
+	  else
+	    {
+	      ay_status = ay_ipt_interpolatev(np, ip->order_v, ip->ktype_v);
+	    }
 	}
 
       if(ay_status)
