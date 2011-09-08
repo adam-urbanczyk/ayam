@@ -859,7 +859,10 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	} /* if */
       if(ipatch->ederiv_u)
 	{
-	  a = (width-1)*height*3;
+	  if(ipatch->close_u)
+	    a = 0;
+	  else
+	    a = (width-1)*height*3;
 	  b = 0;
 	  der = ipatch->ederiv_u;
 	  glBegin(GL_LINES);
@@ -894,7 +897,10 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	} /* if */
       if(ipatch->ederiv_v)
 	{
-	  a = (height-1)*3;
+	  if(ipatch->close_u)
+	    a = 0;
+	  else
+	    a = (height-1)*3;
 	  b = 0;
 	  der = ipatch->ederiv_v;
 	  glBegin(GL_LINES);
@@ -2235,6 +2241,7 @@ ay_ipatch_notifycb(ay_object *o)
 	      ay_status = ay_ipt_interpolateu(np, ip->order_u, ip->ktype_u);
 	    }
 	}
+
       if(ay_status)
 	goto cleanup;
     }
