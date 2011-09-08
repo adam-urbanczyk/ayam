@@ -2210,15 +2210,17 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->width > 2 && ip->order_u > 2)
     {
+      /* interpolate along U */
       if(ip->close_u)
 	{
+	  /* if derivatives are not enabled, use automatic mode */
 	  if(ip->derivs_u)
 	    a = ip->derivs_u-1;
 	  else
 	    a = 0;
 	  ay_status = ay_ipt_interpolateudc(np, ip->order_u, ip->ktype_u,
-		               a, ip->sdlen_u, ip->edlen_u,
-					   ip->sderiv_u, ip->ederiv_u);
+					    a, ip->sdlen_u, ip->edlen_u,
+					    ip->sderiv_u, ip->ederiv_u);
 	}
       else
 	{
@@ -2245,15 +2247,17 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->height > 2 && ip->order_v > 2)
     {
+      /* interpolate along V */
       if(ip->close_v)
 	{
+	  /* if derivatives are not enabled, use automatic mode */
 	  if(ip->derivs_v)
 	    a = ip->derivs_v-1;
 	  else
 	    a = 0;
 	  ay_status = ay_ipt_interpolatevdc(np, ip->order_v, ip->ktype_v,
-		               a, ip->sdlen_v, ip->edlen_v,
-					   ip->sderiv_v, ip->ederiv_v);
+					    a, ip->sdlen_v, ip->edlen_v,
+					    ip->sderiv_v, ip->ederiv_v);
 	}
       else
 	{
