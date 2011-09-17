@@ -771,7 +771,7 @@ proc io_saveEnv {  } {
 	 # save scene changed status
 	 set temp $ay(sc)
 	 set ay_error 0
-	 saveScene $savefilename 1
+	 saveScene $savefilename
 
 	 if { $ay_error < 2 } {
 	     ayError 4 "saveEnv" "Done writing environment to:"
