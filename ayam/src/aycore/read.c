@@ -755,6 +755,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   if(!(fileptr = fopen(filename,"rb")))
     {
       ay_error(AY_EOPENFILE, fname, filename);
+      ay_prefs.save_rootviews = old_save_rv;
       return AY_ERROR;
     }
 
@@ -764,6 +765,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
     {
       fclose(fileptr);
       ay_error(ay_status, fname, filename);
+      ay_prefs.save_rootviews = old_save_rv;
       return AY_ERROR;
     }
 
