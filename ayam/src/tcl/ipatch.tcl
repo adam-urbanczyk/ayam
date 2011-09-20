@@ -25,9 +25,7 @@ proc ipatch_getAttr { } {
 
     set ay(bok) $ay(appb)
 
-
     # create IPatchAttr-UI
-
     addParam $w IPatchAttrData Width
     addParam $w IPatchAttrData Height
 
@@ -45,14 +43,18 @@ proc ipatch_getAttr { } {
 
     if { $IPatchAttrData(Order_U) > 2 } {
 	addMenu $w IPatchAttrData Derivatives_U [list None Automatic Manual]
-	addParam $w IPatchAttrData SDLen_U
-	addParam $w IPatchAttrData EDLen_U
+	if { $IPatchAttrData(Derivatives_U) > 0 } {
+	    addParam $w IPatchAttrData SDLen_U
+	    addParam $w IPatchAttrData EDLen_U
+	}
     }
 
     if { $IPatchAttrData(Order_V) > 2 } {
 	addMenu $w IPatchAttrData Derivatives_V [list None Automatic Manual]
-	addParam $w IPatchAttrData SDLen_V
-	addParam $w IPatchAttrData EDLen_V
+	if { $IPatchAttrData(Derivatives_V) > 0 } {
+	    addParam $w IPatchAttrData SDLen_V
+	    addParam $w IPatchAttrData EDLen_V
+	}
     }
 
     addParam $w IPatchAttrData Tolerance
@@ -67,6 +69,7 @@ proc ipatch_getAttr { } {
 }
 # ipatch_getAttr
 
+# initialize object type
 proc init_IPatch { } {
     global ay IPatch_props IPatchAttr IPatchAttrData
 
@@ -77,7 +80,6 @@ proc init_IPatch { } {
 	sproc ""
 	gproc ipatch_getAttr
 	w     fIPatchAttr
-
     }
 
     array set IPatchAttrData {
