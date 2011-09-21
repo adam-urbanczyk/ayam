@@ -5134,19 +5134,36 @@ change the <tt/"Width"/ from 4 to 7; this will lead to an additional
 control point inserted into every section of the original patch).
 
 <item><tt/"Order_U"/ and <tt/"Order_V"/ set the desired interpolation
-orders of the patch.
-In addition, if any of these parameters is set to zero, no interpolation
-will take place in the respective dimension.
+orders of the patch. If any of these values is set to 2, no explicit
+interpolation will take place in this dimension (the surface will
+implicitly interpolate the data points due to the low order).
+
+<item><tt/"Close_U"/ and <tt/"Close_V"/ allow to create closed
+surfaces in the respective dimension.
 
 <item><tt/"Knot-Type_U"/ and <tt/"Knot-Type_V"/ switches the parameterisation
-between <tt/"Chordal"/, <tt/"Centripetal"/, and <tt/"Uniform"/.
+between <tt/"Chordal"/ (default), <tt/"Centripetal"/, and <tt/"Uniform"/.
 The centripetal method generates a better parameterisation if the
 input data contains sharp turns.
 The uniform method generates worse parameterisations (that lead to
 wiggles and overshooting)
 in the general case but it might help in some edge cases.
 
+<item><tt/"Deriv_U"/ and <tt/"Deriv_V"/ toggle whether
+
+<itemize>
+<item><tt/"None"/: no end derivatives,
+
+<item><tt/"Automatic"/: automatically created (from data points)
+derivatives, scaled by the additional parameters
+<tt/"SDLen_U"/, <tt/"EDLen_U"/, <tt/"SDLen_V"/, and<tt/"EDLen_V"/,
+
+<item><tt/"Manual"/: completely manually controlled end derivatives
+(appearing as additional control points in point editing, if enabled)
 </itemize>
+should be used in the interpolation.
+</itemize>
+
 The next parameters control the appearance of the patch for display
 in Ayam:
 <itemize>
@@ -6687,10 +6704,6 @@ a width of 2 and a height of 10!
 The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 <p>
-You may convert the current skinned surface, the bevels, and the caps,
-if there are any, to ordinary NURBS patches using the main menu entry
-<tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the Skin object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -6822,7 +6835,6 @@ direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
 in the Ayam object tree view:
-<#if out=latex><x/needspace 8/</#if>
 <code>
 +-Gordon
  | U1(NCurve)
@@ -6837,19 +6849,21 @@ expensive. It involves (interpolated) skinning of the two sets of
 parameter curves, finding the intersection points of the two sets
 of parameter curves, interpolating the matrix of intersection points,
 making the three resulting surfaces compatible, and finally combining
-the three surfaces into the resulting Gordon surface. If you experience lags
+the three surfaces into the resulting Gordon surface. If there are lags
 while editing the parameter curves of a Gordon surface, consider
 switching to lazy notification.
 <p>
 In order to ease the computationally intensive intersection
-detection for Ayam you may specify a third argument (separated
+detection for Ayam one may specify a third argument (separated
 from the two sets of parameter curves by a second empty level object).
 This third argument should be a NURBS patch object that describes
 all intersection points (by its control points).
 If present, this intersection patch always takes precedence over the
 intersection points calculated internally.
-You may want to add a <tt>"NoExport"</tt> tag to this patch. The object
-hierarchy of a Gordon object using such a patch may look
+One may want to add a <tt>"NoExport"</tt> tag to this patch, to prevent
+it from appearing in RIB output.
+<p>
+The object hierarchy of a Gordon object using such a patch may look
 like this:
 <code>
 +-Gordon
@@ -6881,9 +6895,6 @@ is as follows:
 <p>
 The Gordon object watches the child objects and adapts to them
 automatically via the notification mechanism.
-<p>
-You may convert the current Gordon surface to an ordinary NURBS
-patch using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the Gordon object.
 <table loc="ht">
@@ -6923,6 +6934,19 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the Gordon surface, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+
+<sect2>Conversion Support
+<p>
+The Gordon surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+Gordon objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -6971,9 +6995,6 @@ and allows for bevels of differing width and height to be created.
 <p>
 The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
-<p>
-You may convert the current bevelled surface to an ordinary NURBS patch
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
@@ -7031,6 +7052,19 @@ of the <tt/"BevelAttr"/ property.
 To help in the exact configuration of the bevel, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
 
+<sect2>Conversion Support
+<p>
+The bevelled surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+Bevel objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>Cap Object<label id="capobj">
@@ -7082,9 +7116,6 @@ control polygon. Be careful when using weights!
 The Cap object watches the child objects and adapts to them automatically
 via the notification mechanism.
 <p>
-You may convert the current cap surface to an ordinary NURBS patch object
-using the main menu entry <tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the Cap object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -7109,6 +7140,19 @@ of the <tt/"CapAttr"/ property.
 <p>
 To help in the exact configuration of the cap, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
+
+<sect2>Conversion Support
+<p>
+The cap surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+Cap objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7151,9 +7195,6 @@ the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
 of type NCurve.
 <p>
-You may convert the current ICurve to an ordinary NURBS curve
-using the main menu entry <tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the ICurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -7179,7 +7220,7 @@ control points used by the interpolating NURBS curve, then the order is
 silently changed to match the number of control points.
 
 <item>The parameter <tt/"ParamType"/ switches the parameterisation
-between <tt/"Chordal"/, <tt/"Centripetal"/, and <tt/"Uniform"/.
+between <tt/"Chordal"/ (default), <tt/"Centripetal"/, and <tt/"Uniform"/.
 The centripetal method generates a better parameterisation if the
 input data contains sharp turns.
 The uniform method is available since Ayam 1.20 and generates
@@ -7213,6 +7254,15 @@ since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
 by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
 automatically from the desired order.
 
+<sect2>Conversion Support
+<p>
+The interpolating curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ICurve objects never appear in RIB output.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
@@ -7237,9 +7287,6 @@ internally anyway) and all other objects that work with
 the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
 able to work with an ACurve object instead of an object
 of type NCurve.
-<p>
-You may convert the current ACurve to an ordinary NURBS curve
-using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the ACurve object.
 <table loc="ht">
@@ -7302,6 +7349,15 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The approximating curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ACurve objects never appear in RIB output.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
@@ -7346,9 +7402,6 @@ a custom knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
 <p>
 Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
-<p>
-You may convert the current ConcatNC object to an ordinary NURBS curve
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
@@ -7402,6 +7455,15 @@ shape may be preserved completely.
 of the created NURBS curve.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The concatenated curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ConcatNC objects never appear in RIB output.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
@@ -7440,9 +7502,6 @@ attributes (since Ayam 1.19).
 <p>
 Note that the extraction of any curves currently completely ignores
 potentially present trimming information of the NPatch object.
-<p>
-You may convert the current ExtrNC object to an ordinary NURBS curve
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the ExtrNC object.
 <table loc="ht">
@@ -7516,6 +7575,15 @@ of the extracted NURBS curve.
 See section <ref id="ncattr" name="NCurveAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect2>Conversion Support
+<p>
+The extracted curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ExtrNC objects never appear in RIB output.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
@@ -7534,9 +7602,6 @@ centered at the origin with designated radius and start/end angles
 In order to revert the created NURBS curve, since Ayam 1.15,
 the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
 <tt/"TMax"/ -360.0 for a reverse full circle.
-<p>
-You may convert the current NCircle object to an ordinary NURBS curve
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the NCircle object.
 <table loc="ht">
@@ -7568,6 +7633,15 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
 of the created NURBS curve.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The circular curve/arc may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+NCircle objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7618,9 +7692,6 @@ attributes (since Ayam 1.19).
 <p>
 The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
 <p>
-You may convert the current OffsetNC object to an ordinary NURBS curve
-object using the main menu entry <tt>"Tools/Convert"</tt>.
-<p>
 The following table briefly lists some capabilities of the OffsetNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -7652,6 +7723,15 @@ of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
 of the created NURBS curve.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The offset curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+OffsetNC objects never appear in RIB output.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>ConcatNP (Concatenate NURBS Patches) Object<label id="concatnpobj">
@@ -7671,9 +7751,6 @@ another ConcatNP object (with possibly different parameters).
 Attributes like display mode and tolerance for the new concatenated patch
 are simply taken from the first parameter patch. Eventually present
 trim curves will currently <em>not</em> be honored properly.
-<p>
-You may convert the current ConcatNP object to an ordinary NURBS patch
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
@@ -7701,6 +7778,19 @@ and B-Spline knot vectors for the concatenated surface (in U direction).
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS patch.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The concatenated surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ConcatNP objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7737,9 +7827,6 @@ attributes (since Ayam 1.19).
 <p>
 Also note that eventually present trim curves will <em>not</em> be honored
 properly.
-<p>
-You may convert the current ExtrNP object to an ordinary NURBS patch
-using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the ExtrNP object.
 <table loc="ht">
@@ -7780,6 +7867,19 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 of the extracted NURBS surface.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+The extracted surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ExtrNP objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>OffsetNP (Offset NURBS Surfaces) Object<label id="offsetnpobj">
@@ -7797,9 +7897,6 @@ possible combination of closeness in the two dimensions) surfaces.
 Note that degenerate and rational surfaces are still not supported.
 The offset surface will always match the original surface in width/height,
 orders, and knots. See also the image above.
-<p>
-You may convert the current OffsetNP object to an ordinary NURBS patch
-object using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 As the geometry of the offset surface is completely defined by
 the master surface, OffsetNP objects do not support own transformation
@@ -7829,6 +7926,19 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
 of the created NURBS surface.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The offset surface may be converted to an ordinary NURBS patch using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+OffsetNP objects will be exported as NURBS patch primitives:
+<p>
+<tt>RiNuPatch(...);</tt>
+<p>
+PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -13710,9 +13820,10 @@ These abbreviated explanations were again taken from George W. Hart.
 <sect1>JavaScript Scripting Interface<label id="jsinterp">
 <p>
 This sections contains the documentation of the JavaScript scripting
-interface available after loading of the <tt>"jsinterp"</tt> plugin.
+interface which is available after loading of the <tt>"jsinterp"</tt>
+plugin.
 <p>
-The JavaScript scripting interface is available since Ayam 1.18 and
+The JavaScript scripting interface exists since Ayam 1.18 and
 is based on the Mozilla SpiderMonkey JavaScript engine.
 <p>
 Upon loading, the <tt>"jsinterp"</tt> plugin creates <em>one</em> JavaScript
@@ -13735,6 +13846,7 @@ provided the first line of the script is a comment that instructs Ayam to
 use the JavaScript interpreter:
 <code>
 /* Ayam, use: JavaScript */
+var a = 0;
 ...
 </code>
 
@@ -13764,10 +13876,16 @@ and <tt>"tclset"</tt>.
 <sect3>Converted Tcl Commands
 <p>
 The functionality of Ayam is accessible from JavaScript via a larger
-set of global functions, named as the corresponding Tcl commands
-(e.g. one may create Ayam objects in JavaScript using a function call
-like this: <tt>crtOb("NCircle");</tt>, or, with additional arguments:
-<tt>crtOb("NCircle", "-radius", 3.0);</tt>).
+set of global functions, named as the corresponding Tcl commands.
+One may e.g. create Ayam objects in JavaScript using a function call
+like this:
+<p>
+<tt>crtOb("NCircle");</tt>
+<p>, or, with additional arguments:
+<p>
+<tt>crtOb("NCircle", "-radius", 3.0);</tt>
+<p>.
+<p>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
 <ref id="sccomm" name="Index of Procedures and Commands">
