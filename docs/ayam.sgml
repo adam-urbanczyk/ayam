@@ -11294,6 +11294,36 @@ A value of 0 switches off interpolation along V.
   <item><tt/"-vkt"/: the V parameterisation type, must be one of
 0 &ndash; Chordal (default), 1 &ndash; Centripetal.
 
+  <item><tt/"-deriv_u"/: the end derivative mode for U, must be one of
+0 &ndash; None (default), 1 &ndash; Automatic, or 2 &ndash; Manual.
+In manual mode full derivative vectors must be provided via
+<tt/"-ederiv_u"/ <em>and</em> <tt/"-sderiv_u"/.
+  <item><tt/"-edlen_u"/: the length of automatically calculated end
+derivatives at end of patch in U (default 0.125).
+  <item><tt/"-sdlen_u"/: the length of automatically calculated end
+derivatives at start of patch in U (default 0.125).
+  <item><tt/"-ederiv_u"/: end derivatives for U at end of patch.
+The value of this option is a list of 3 by height floating point numbers. 
+There is no default value.
+  <item><tt/"-sderiv_u"/: end derivatives for U at start of patch.
+The value of this option is a list of 3 by height floating point numbers. 
+There is no default value.
+
+  <item><tt/"-deriv_v"/: the end derivative mode for V, must be one of
+0 &ndash; None (default), 1 &ndash; Automatic, or 2 &ndash; Manual.
+In manual mode full derivative vectors must be provided via
+<tt/"-ederiv_v"/ <em>and</em> <tt/"-sderiv_v"/.
+  <item><tt/"-edlen_u"/: the length of automatically calculated end
+derivatives at end of patch in U (default 0.125).
+  <item><tt/"-sdlen_u"/: the length of automatically calculated end
+derivatives at start of patch in U (default 0.125).
+  <item><tt/"-ederiv_u"/: end derivatives for U at end of patch.
+The value of this option is a list of 3 by height floating point numbers. 
+There is no default value.
+  <item><tt/"-sderiv_u"/: end derivatives for U at start of patch.
+The value of this option is a list of 3 by height floating point numbers. 
+There is no default value.
+
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
 option is a list of floating point numbers that describe the 3D
 non rational coordinates of the data points to be interpolated.
@@ -13842,7 +13872,6 @@ or from a file:
 <tscreen>
 <tt><bf>jsEval -f scriptfile.js</bf></tt>
 </tscreen>
-<p>
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
 use the JavaScript interpreter:
@@ -13851,7 +13880,6 @@ use the JavaScript interpreter:
 var a = 0;<newline>
 ...
 </tt></tscreen>
-
 Note that the JavaScript scripting context inherits the limitations
 of the calling Tcl context.
 For example, when running in a Script object,
@@ -13886,7 +13914,6 @@ or, with additional arguments:
 <tscreen><tt>
 crtOb("NCircle", "-radius", 3.0);
 </tt></tscreen>
-<p>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
 <ref id="sccomm" name="Index of Procedures and Commands">
@@ -13901,14 +13928,13 @@ in the next paragraph.
 <tt/<bf/tcleval://<label id="tcleval"><newline>
 Apart from Tcl commands converted to JavaScript functions, there is the
 global JavaScript function <tt>"tcleval"</tt>, that allows to evaluate
-Tcl scripts:
+arbitrary Tcl scripts:
 <tscreen><tt>
 var a = 42;<newline>
 a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
 tcleval("<bf>puts </bf>" + a);<newline>
-/* expected output: 42 5 */<newline>
+/* expected output: 42 5 */
 </tt></tscreen>
-
 The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript
@@ -13935,17 +13961,18 @@ The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e. all the work is done
 in the trace callback).
 <p>
-Even though it looks a perfect fit, tclvar() can not be used to
+Even though it looks a perfect fit,  <tt/"tclvar"/ can not be used to
 manage a property data array. Atleast not if the array contains components
 to be saved to Ayam scene files. This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
-tclvar() and the data from the scene file never arrives in the JavaScript
+<tt/"tclvar"/ and the data from the scene file never arrives in the JavaScript
 context.
 There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
 complete examples section below.
 
+<#if out=latex><x/newpage/</#if>
 <#if out=latex><x/phantomsection/</#if>
 
 <tt/<bf/tclset://<label id="tclset"><newline>
@@ -13967,8 +13994,8 @@ Note that the variable names may also point to Tcl array elements:
 <sect2>Data Conversion
 <p>
 When data is transferred from the Tcl to the JavaScript side
-(e.g. while converting return values of tcleval() or variable
-values linked via tclvar()),
+(e.g. while converting return values of <tt/"tcleval"/ or variable
+values linked via  <tt/"tclvar"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts,
 except for Booleans, which will be converted to integer values.
@@ -14018,14 +14045,15 @@ a.b = 3.14;<newline>
 tclset("a(b)", a.b);
 </tt></tscreen>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect2>Complete Examples
 <p>
 This section contains two complete examples for Script objects
 written in JavaScript.
 <p>
 For the first example use Script object type <tt/"Modify"/ and put a Sphere
-as child object of the Script object. The script will make sure, that the
-ZMin and ZMax parameters always match the radius.
+as child object of the Script object.
 <code>
 /* Ayam, use: JavaScript */
 tclvar("SphereAttrData");
@@ -14037,9 +14065,26 @@ if(SphereAttrData)
   setProp();
 }
 </code>
+The above script will make sure, that the ZMin and ZMax parameters of
+the Sphere object always match its radius.
+
+First, a link from the original Sphere object property data array
+<tt/"SphereAttrData"/ is established, so that when <tt/"getProp()"/
+(a converted Tcl Ayam command) is called, also the JavaScript
+object <tt/"SphereAttrData"/ is filled with meaningful data.
+The next line (the if) is a safety measure that prevents the script from
+failing if the child object of the Script object is not a Sphere
+object.
+Now the radius value is transferred back to Tcl directly into
+the property data array to the ZMin and ZMax entries respectively
+with the help of <tt/"tclset"/.
+Finally the modified property is transferred back to the Sphere object
+again with a converted Tcl Ayam command <tt/"setProp()"/.
+
+<#if out=latex><x/newpage/</#if>
 
 The next example shows, how to manage a property GUI in a JavaScript
-implemented script. Use Script object type <tt/"Create"/.
+implemented Script object script. Use Script object type <tt/"Create"/.
 <code>
 /* Ayam, use: JavaScript, save array: MyPropData */
 var MyPropData = new Object();
