@@ -43,7 +43,7 @@ proc ipatch_getAttr { } {
 
     if { $IPatchAttrData(Order_U) > 2 } {
 	addMenu $w IPatchAttrData Derivatives_U [list None Automatic Manual]
-	if { $IPatchAttrData(Derivatives_U) > 0 } {
+	if { $IPatchAttrData(Derivatives_U) == 1 } {
 	    addParam $w IPatchAttrData SDLen_U
 	    addParam $w IPatchAttrData EDLen_U
 	}
@@ -51,7 +51,7 @@ proc ipatch_getAttr { } {
 
     if { $IPatchAttrData(Order_V) > 2 } {
 	addMenu $w IPatchAttrData Derivatives_V [list None Automatic Manual]
-	if { $IPatchAttrData(Derivatives_V) > 0 } {
+	if { $IPatchAttrData(Derivatives_V) == 1 } {
 	    addParam $w IPatchAttrData SDLen_V
 	    addParam $w IPatchAttrData EDLen_V
 	}
