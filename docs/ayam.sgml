@@ -13834,36 +13834,38 @@ until Ayam exits.
 <p>
 To access the JavaScript functionality from the Tcl scripting interface,
 the <tt>"jsEval"</tt> command can be used to directly execute JavaScript
-code (in <em>italics</em>):
-<p>
-<tt>jsEval {</tt><em>var a = 0; a = a + 5.5; tclset("a", a);</em><tt/}/
-<p> or from a file:
-<p>
-<tt>jsEval -f scriptfile.js</tt>
+code (Tcl code in <bf>bold</bf>):
+<tscreen>
+<tt><bf>jsEval {</bf>var a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
+</tscreen>
+or from a file:
+<tscreen>
+<tt><bf>jsEval -f scriptfile.js</bf></tt>
+</tscreen>
 <p>
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
 use the JavaScript interpreter:
-<code>
-/* Ayam, use: JavaScript */
-var a = 0;
+<tscreen><tt>
+/* Ayam, use: JavaScript */<newline>
+var a = 0;<newline>
 ...
-</code>
+</tt></tscreen>
 
 Note that the JavaScript scripting context inherits the limitations
-of the calling Tcl context (see also section:
-<ref id="safeinterp" name="Safe Interpreter">).
+of the calling Tcl context.
 For example, when running in a Script object,
 the following code fails:
-<p>
-<em>tcleval("</em><tt>exit</tt><em>");</em>
-<p>
+<tscreen>
+<tt>tcleval("<bf>exit</bf>");</tt>
+</tscreen>
 it does not fail, when the calling context ist the main Tcl interpreter;
 one can e.g. type into the Ayam console:
-<p>
-<tt>jsEval {</tt><em>tcleval("</em><tt>exit</tt><em>");</em><tt>}</tt>
-<p>
-and Ayam quits.
+<tscreen>
+<tt><bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
+</tscreen>
+and Ayam quits (see also section:
+<ref id="safeinterp" name="Safe Interpreter">).
 
 <sect2>JavaScript Functions
 <p>
@@ -13873,56 +13875,60 @@ available in the Ayam JavaScript interpreter.
 Those are converted Tcl commands, <tt>"tcleval"</tt>, <tt>"tclvar"</tt>,
 and <tt>"tclset"</tt>.
 <p>
-<sect3>Converted Tcl Commands
-<p>
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands.
 One may e.g. create Ayam objects in JavaScript using a function call
 like this:
-<p>
-<tt>crtOb("NCircle");</tt>
-<p>, or, with additional arguments:
-<p>
-<tt>crtOb("NCircle", "-radius", 3.0);</tt>
-<p>.
+<tscreen><tt>
+crtOb("NCircle");
+</tt></tscreen>
+or, with additional arguments:
+<tscreen><tt>
+crtOb("NCircle", "-radius", 3.0);
+</tt></tscreen>
 <p>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
 <ref id="sccomm" name="Index of Procedures and Commands">
-for a complete list of those commands).
+for a more or less complete list of those commands).
 <p>
-Note that Tcl procedures are not available as global function, they
-can be called using tcleval() as documented in the next section.
+Note that many Tcl procedures are not available as global JavaScript
+function, but they can be called using <tt>"tcleval"</tt> as documented
+in the next paragraph.
 
-<sect3>tcleval<label id="tcleval">
-<p>
-Apart from commands converted to functions, there is the function
-<tt>"tcleval"</tt>, that allows to evaluate Tcl scripts:
-<code>
-var a = 42;
-a = tcleval("puts " + a + "; return 5;");
-tcleval("puts " + a);
-/* expected output: 42 5 */
-</code>
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tcleval://<label id="tcleval"><newline>
+Apart from Tcl commands converted to JavaScript functions, there is the
+global JavaScript function <tt>"tcleval"</tt>, that allows to evaluate
+Tcl scripts:
+<tscreen><tt>
+var a = 42;<newline>
+a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
+tcleval("<bf>puts </bf>" + a);<newline>
+/* expected output: 42 5 */<newline>
+</tt></tscreen>
 
 The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript
 according to the rules for data conversion as documented below.
-<p>
-<sect3>tclvar<label id="tclvar">
-<p>
-Using the function <tt>"tclvar"</tt> one may establish a link between
-a Tcl variable and a corresponding variable in the JavaScript context.
+
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tclvar://<label id="tclvar"><newline>
+Using the JavaScript function <tt>"tclvar"</tt> one may establish a
+link between a Tcl variable and a corresponding variable in the
+JavaScript context.
 The <tt>"tclvar"</tt> function establishes a write trace on the Tcl
 variable, so that changes on the Tcl side are always automatically
 reflected on the JavaScript side:
-<code>
-tclvar("a");
-tcleval("set a 42");
-tcleval("puts " + a);
+<tscreen><tt>
+tclvar("a");<newline>
+tcleval("<bf>set a 42</bf>");<newline>
+tcleval("<bf>puts </bf>" + a);<newline>
 /* expected output: 42 */
-</code>
+</tt></tscreen>
 Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write onto the Tcl variable.
 The Tcl variable, in turn, does not have to exist, when the
@@ -13934,22 +13940,25 @@ manage a property data array. Atleast not if the array contains components
 to be saved to Ayam scene files. This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
 the Tcl context) before the script can establish the write trace using
-tclvar() and the saved values never arrive in the JavaScript context.
+tclvar() and the data from the scene file never arrives in the JavaScript
+context.
 There is no easy way to get around this.
 A suggested way to manage a property data array is shown in the
 complete examples section below.
-<p>
-<sect3>tclset<label id="tclset">
-<p>
-The third function is <tt>"tclset"</tt> that efficiently sets
-Tcl variables from the JavaScript context.
+
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tclset://<label id="tclset"><newline>
+The third global JavaScript function is <tt>"tclset"</tt> that
+allows to efficiently set Tcl variables from the JavaScript context
+avoiding conversion to string data and back.
 For example:
-<code>
-var a = 3.3;
-var b = new Array(1, 3, 5);
-tclset("a", a);
+<tscreen><tt>
+var a = 3.3;<newline>
+var b = new Array(1, 3, 5);<newline>
+tclset("a", a);<newline>
 tclset("b", b);
-</code>
+</tt></tscreen>
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
 and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
 Note that the variable names may also point to Tcl array elements:
@@ -14003,20 +14012,20 @@ Array ((0, 1, 2))|List ({0 1 2})@<hline>
 </table>
 The transport/conversion of object properties (to e.g. associative array
 elements) can be arranged manually like this:
-<code>
-var a = new Object();
-a.b = 3.14;
+<tscreen><tt>
+var a = new Object();<newline>
+a.b = 3.14;<newline>
 tclset("a(b)", a.b);
-</code>
-
-<#if out=latex><x/newpage/</#if>
+</tt></tscreen>
 
 <sect2>Complete Examples
 <p>
-This section contains a complete example for a Script object
-written in JavaScript. Use Script object type <tt/"Modify"/ and put a Sphere
-as child object, the script will make sure, that ZMin and ZMax always
-match the radius.
+This section contains two complete examples for Script objects
+written in JavaScript.
+<p>
+For the first example use Script object type <tt/"Modify"/ and put a Sphere
+as child object of the Script object. The script will make sure, that the
+ZMin and ZMax parameters always match the radius.
 <code>
 /* Ayam, use: JavaScript */
 tclvar("SphereAttrData");
@@ -14028,7 +14037,6 @@ if(SphereAttrData)
   setProp();
 }
 </code>
-
 
 The next example shows, how to manage a property GUI in a JavaScript
 implemented script. Use Script object type <tt/"Create"/.
@@ -14059,6 +14067,28 @@ tclset("SphereAttrData(ZMin)", -MyPropData.MyItem);
 tclset("SphereAttrData(ZMax)", MyPropData.MyItem);
 setProp();
 </code>
+
+This example demonstrates how to manage property data using the
+JavaScript object variable <tt/"MyPropData"/. The property data
+can be saved to and read from Ayam scene files with the help of
+a mirroring array variable on the Tcl side (also named
+<tt/"MyPropData"/).
+To make this work properly, the initialisation of the JavaScript
+object must be constrained to the first script run: when the
+property data was read from a scene file, initialisation must
+not be run, instead the read data must be fetched from the Tcl
+context.
+This is what the first <tt/"if"/ statement, checking for existence
+of the mirroring Tcl array variable, in above example is all about.
+<p>
+Following this scheme of dual mirroring data structures on the
+Tcl and Javascript sides now follows the creation of the
+property GUI which is also constrained to just one script run
+by an <tt/"if"/ statement.
+<p>
+Following the GUI, a sphere object is created and parameterized
+according to the data in the property GUI, which is used as
+radius, zmin, and zmax value.
 
 <sect>Import and Export<label id="impex">
 <p>
