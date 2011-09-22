@@ -297,11 +297,11 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 		{
 		  /* -deriv_u/-deriv_v */
 		  if(argv[i][7] == 'u')
-		    tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1],
-						&deriv_u);
+		    tcl_status = Tcl_GetInt(ay_interp, argv[i+1],
+					    &deriv_u);
 		  else
-		    tcl_status = Tcl_GetBoolean(ay_interp, argv[i+1],
-						&deriv_v);
+		    tcl_status = Tcl_GetInt(ay_interp, argv[i+1],
+					    &deriv_v);
 		  option_handled = AY_TRUE;
 		}
 	      break;
@@ -447,8 +447,10 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 	}
     } /* if */
 
-  /* check lengths of user provided derivatives arrays */
-  if((sderiv_u && (sdulen/stride < height)) ||
+  /* check presence and lengths of user provided derivatives arrays */
+  if(((deriv_u == 2) && (!sderiv_u || !ederiv_u)) ||
+     ((deriv_v == 2) && (!sderiv_v || !ederiv_v)) ||
+     (sderiv_u && (sdulen/stride < height)) ||
      (ederiv_u && (edulen/stride < height)) ||
      (sderiv_v && (sdvlen/stride < width)) ||
      (ederiv_v && (edvlen/stride < width)))
@@ -1655,7 +1657,7 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ipatch->order_v = (ipatch->height < 4)?ipatch->height:4;
     }
 
-  /**/
+  /* create end derivative arrays */
   if(ipatch->derivs_u)
     {
       ay_status_s = AY_OK;
