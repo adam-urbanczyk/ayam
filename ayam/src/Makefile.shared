@@ -61,6 +61,7 @@ LD = $(CXX)
 # o add -DAYUSESLCARGS if you use libslcargs from BMRT
 #   _or_
 #   add -DAYUSESLXARGS if you use libslxargs from Aqsis
+# o add -DAYNORIDEFORM if your RIB writer has no support for RiDeformation
 # o add -DAYNOTEMPNAM if your system has no tempnam();
 #   (unlikely, but tempnam() is not ANSI)
 #   Note that the preference setting TmpDir will always be ignored then!

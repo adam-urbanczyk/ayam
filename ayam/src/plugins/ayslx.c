@@ -143,9 +143,10 @@ ayslx_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       c = strchr(c, ';');
     }
   SLX_SetPath(Tcl_DStringValue(&ds));
+  SLX_SetDSOPath(Tcl_DStringValue(&ds));
   Tcl_DStringFree(&ds);
 
-  if((SLX_SetShader(argv[1])) == -1)
+  if((SLX_SetShader(argv[1])) != 0)
     {
       ay_error(AY_ERROR, fname, "SLX_SetShader failed for:");
       ay_error(AY_ERROR, fname, argv[1]);
