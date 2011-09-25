@@ -31,11 +31,11 @@ static char *idr_idrtagname = "IDR";
 static char *idr_iidrtagtype;
 static char *idr_iidrtagname = "IIDR";
 
-/* internal IDR tag type used to specify important regions in image space */
+/* IDR tag type used to specify important regions in image space */
 static char *idr_ridrtagtype;
 static char *idr_ridrtagname = "RIDR";
 
-/* internal IDR tag type used to specify important regions in object space */
+/* IDR tag type used to specify important regions in object space */
 static char *idr_r3idrtagtype;
 static char *idr_r3idrtagname = "R3IDR";
 
@@ -593,6 +593,7 @@ idr_save_selected()
 		    return AY_EOMEM;
 		  strcpy(t->name, idr_ccidrtagname);
 		  t->type = idr_ccidrtagtype;
+		  t->is_intern = AY_TRUE;
 
 		  if(!(t->val = calloc(64, sizeof(char))))
 		    return AY_EOMEM;
@@ -671,6 +672,7 @@ idr_assign_impsel(void)
 	    return AY_EOMEM;
 	  strcpy(tnew->name, idr_iidrtagname);
 	  tnew->type = idr_iidrtagtype;
+	  tnew->is_intern = AY_TRUE;
 
 	  if(!(tnew->val = calloc(64, sizeof(char))))
 	    return AY_EOMEM;
@@ -863,6 +865,7 @@ idr_assign_impchanged(void)
 		return AY_EOMEM;
 	      strcpy(tnew->name, idr_cidrtagname);
 	      tnew->type = idr_cidrtagtype;
+	      tnew->is_intern = AY_TRUE;
 
 	      if(!(tnew->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
@@ -1199,7 +1202,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 	   } /* while */
 
 	 if(!tiidr)
-	   { /* create new iidrt tag */
+	   { /* create new iidr tag */
 
 	     if(!(tiidr = calloc(1, sizeof(ay_tag))))
 	       return AY_EOMEM;
@@ -1209,6 +1212,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 	       return AY_EOMEM;
 	     sprintf(tiidr->name, idr_iidrtagname);
 	     tiidr->type = idr_iidrtagtype;
+	     tiidr->is_intern = AY_TRUE;
 
 	     if(!(tiidr->val = calloc(64, sizeof(char))))
 	       return AY_EOMEM;
@@ -1219,7 +1223,6 @@ idr_copy_importance(ay_object *o, char *from_type)
 	     /* link new tag */
 	     tiidr->next = o->tags;
 	     o->tags = tiidr;
-
 	   }
 	 else
 	   { /* just copy data from idr to iidr */
@@ -1235,11 +1238,7 @@ idr_copy_importance(ay_object *o, char *from_type)
 
 	     sscanf(tidr->val, "%lg", &dtemp);
 	     sprintf(tiidr->val, "%g", dtemp);
-
-
 	   }
-
-
 
        } /* if */
 
@@ -1290,6 +1289,7 @@ idr_show_parts(struct Togl *togl, idr_picpart *partlist)
        return AY_EOMEM;
      sprintf(t->name, idr_ridrtagname);
      t->type = idr_ridrtagtype;
+     t->is_intern = AY_TRUE;
 
      if(!(t->val = calloc(64, sizeof(char))))
        return AY_EOMEM;
@@ -2951,6 +2951,7 @@ idr_getpartsfromimpreg(idr_picpart **partlist, struct Togl *togl,
 		return AY_EOMEM;
 	      strcpy(tnew->name, idr_iidrtagname);
 	      tnew->type = idr_iidrtagtype;
+	      tnew->is_intern = AY_TRUE;
 
 	      if(!(tnew->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
@@ -3060,6 +3061,7 @@ idr_getpartsfrom3dimpreg(idr_picpart **partlist, struct Togl *togl,
 		return AY_EOMEM;
 	      strcpy(tnew->name, idr_iidrtagname);
 	      tnew->type = idr_iidrtagtype;
+	      tnew->is_intern = AY_TRUE;
 
 	      if(!(tnew->val = calloc(64, sizeof(char))))
 		return AY_EOMEM;
@@ -4379,7 +4381,6 @@ Idr_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering IIDR tag type!");
       return TCL_OK;
     }
-  ay_status = ay_tags_temp(interp, idr_iidrtagname, 1, NULL);
 
   ay_status = ay_tags_register(interp, idr_ridrtagname, &idr_ridrtagtype);
   if(ay_status)
@@ -4401,7 +4402,6 @@ Idr_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering CIDR tag type!");
       return TCL_OK;
     }
-  ay_status = ay_tags_temp(interp, idr_cidrtagname, 1, NULL);
 
   ay_status = ay_tags_register(interp, idr_ccidrtagname, &idr_ccidrtagtype);
   if(ay_status)
@@ -4409,7 +4409,6 @@ Idr_Init(Tcl_Interp *interp)
       ay_error(AY_ERROR, fname, "Error registering CCIDR tag type!");
       return TCL_OK;
     }
-  ay_status = ay_tags_temp(interp, idr_ccidrtagname, 1, NULL);
 
   /* dirty hack! overwrite root-object drawing routine */
   arr = ay_drawcbt.arr;
