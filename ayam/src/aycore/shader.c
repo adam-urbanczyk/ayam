@@ -314,6 +314,7 @@ ay_shader_scanslxsarg(SLX_VISSYMDEF *symbol, Tcl_DString *ds)
 } /* ay_shader_scanslxsarg */
 #endif /* AYUSESLXARGS */
 
+
 /* ay_shader_scanslxtcmd:
  *  scan a shader compiled with aqsl with libslxargs
  */
@@ -329,7 +330,9 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
  int arraylen;
  Tcl_DString ds;
  char vname[] = "ayprefs(Shaders)";
+#ifdef WIN32
  char *c = NULL;
+#endif
 
   if(argc < 3)
     {
@@ -339,6 +342,8 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 #ifndef WIN32
   SLX_SetPath(Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
+  SLX_SetDSOPath(
+       Tcl_GetVar(ay_interp, vname, TCL_GLOBAL_ONLY|TCL_LEAVE_ERR_MSG));
 #else
   /* change all ; to : in shader search path */
   Tcl_DStringInit(&ds);
@@ -351,10 +356,11 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
       c = strchr(c, ';');
     }
   SLX_SetPath(Tcl_DStringValue(&ds));
+  SLX_SetDSOPath(Tcl_DStringValue(&ds));
   Tcl_DStringFree(&ds);
 #endif /* WIN32 */
 
-  if((SLX_SetShader(argv[1])) == -1)
+  if(SLX_SetShader(argv[1]) != 0)
     {
       ay_error(AY_ERROR, argv[0], "SLX_SetShader failed for:");
       ay_error(AY_ERROR, argv[0], argv[1]);
@@ -649,6 +655,7 @@ int
 ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 {
  int ay_status = AY_OK;
+ char fname[] = "shader_wrib";
  ay_shader_arg *sarg = NULL;
  RtToken *tokens = NULL;
  RtPointer *values = NULL;
@@ -744,12 +751,14 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
 	case AY_STIMAGER:
 	  RiImagerV(shader->name,count,tokens,values);
 	  break;
-/* XXXX RiDeformationV() is missing from BMRT2.6 libribout.a? */
-#ifndef AYUSEBMRTRIBOUT
+#ifndef AYNORIDEFORM
 	case AY_STTRANSFORMATION:
 	  RiDeformationV(shader->name,count,tokens,values);
 	  break;
 #endif
+	default:
+	  ay_error(AY_ERROR, fname, "Skipping shader of unknown type.");
+	  break;
 	}
 
       if(tokens)
