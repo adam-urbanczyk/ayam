@@ -1,4 +1,4 @@
-[17. Aug 2011] CVS-Head:
+[25. Sep 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -12,14 +12,15 @@ o reverting interpolating curves with custom derivatives (SF 3366276)
 o merging transformed PolyMeshes with normals (SF 3374188)
 o crash in surface knot insertion (SF 3376414)
 o views getting the wrong type temporarily (SF 3382382)
+o saving of the environment scene file (SF 3410856)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
 o added support for periodic surfaces to be created by Birail1
 o added object type "IPatch" for interpolating surfaces
 o added centripetal parameterization to surface interpolation
-o the surface interpolation can now cope with degenerate rows/columns
-  in the input data
+o the surface interpolation (e.g. in Sweep and Skin objects) is more robust,
+  (can now cope with degenerate rows/columns in the input data)
 o added uniform parameterization to ICurve
 o improved flashing of editable points for multiple selected objects
 o added object type Mirror (essentially a Clone in disguise)
@@ -44,6 +45,7 @@ o the ViewAttrib property GUI no longer unconditionally sets the mark,
 o zooming views via the keyboard is now reversible
 o the amounts of rotation and zooming per keyboard are now configurable
   via the ayamrc file
+o view resize menu entries now always work in external views
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
