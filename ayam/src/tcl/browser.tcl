@@ -43,6 +43,8 @@ proc browser_urlOpen {url} {
 		expr {
 		    [browser_findExecutable $mozilla browser] ||
 		    [browser_findExecutable firefox browser] ||
+		    [browser_findExecutable chromium browser] ||
+		    [browser_findExecutable chromium-browser browser] ||
 		    [browser_findExecutable epiphany browser] ||
 		    [browser_findExecutable mozilla browser] ||
 		    [browser_findExecutable galeon browser] ||
