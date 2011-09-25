@@ -348,15 +348,6 @@ proc viewTitle { w type action } {
 	} else {
 	    set confm $w.menubar.mconf
 	}
-
-	# manage resize entries
-	if { $type == "Persp" } {
-	    $confm entryconfigure 15 -state normal
-	    $confm entryconfigure 16 -state normal
-	} else {
-	    $confm entryconfigure 15 -state disabled
-	    $confm entryconfigure 16 -state disabled
-	}
     }
     # if
     if { $action != "" } { set oldaction $action }
