@@ -15,7 +15,7 @@
 # o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
 
-set procs {fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx}
+set procs {fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx fixtoc}
 
 proc fixheight { buf outfile } {
     global height
@@ -77,7 +77,7 @@ proc fixdocclass { buf outfile } {
     set index [ string first "documentclass" $buf ]
     if { $index > -1 } {
 	puts $outfile\
-       "\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}"
+	    "\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}\n\\usepackage\[tight\]\{shorttoc\}"
 	set found 1
     }
     return $found;
@@ -135,6 +135,21 @@ proc insinlinegfx { buf outfile } {
 	puts $outfile $buf
 	set found 1
     }
+    return $found;
+}
+
+
+proc fixtoc { buf outfile } {
+
+    set found 0
+    set index [ string first "tableofcontents" $buf ]
+    if { $index > -1 } {
+	puts $outfile "\\shorttoc{Overview}{1}\n\\newpage"
+	puts $outfile $buf
+
+	set found 1
+    }
+
     return $found;
 }
 
