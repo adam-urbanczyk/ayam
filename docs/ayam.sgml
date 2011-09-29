@@ -241,7 +241,7 @@ and views in detail.
 
 <sect1>Anatomy of the Main Window
 <p>
-The main window is split into three large areas:
+The main window is split into three major areas:
 <enum>
 <item>an area named <tt/"Objects:"/
 <item>an area labeled <tt/"Properties:"/
@@ -512,10 +512,10 @@ All property GUIs use more or less standardized GUI elements that are
 organized in list form. The lists may be scrolled if they get too long
 to fit into the window.
 <p>
-If the elements of the property GUI do not fit into the screen space
-that is defined by the current window size, Ayam will automatically
-resize the main window when you select a property. You can control
-this behaviour using the preference setting
+If Ayam is in floating windows GUI mode and the elements of the current
+property GUI do not fit into the screen space that is defined by the main
+window size, Ayam can automatically resize the window. This behaviour may
+be controlled using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
 <p>
 If an object and a property are selected and a different object is selected,
@@ -566,24 +566,25 @@ displacement shader) using <tt/"Paste to selected"/ in the
 Pasting a property to multiple selected objects does work too.
 This is a great way to apply e.g. a parameterised surface shader to
 a bigger number of material objects, without going the long way of
-setting a new shader and entering parameters for it for every object.
+setting a new shader and entering parameters for it for every material
+object.
 <p>
 Since you may not want to copy and paste whole properties all the time,
 you may even mark single parameters with a double click on the
-labels of the parameters. The marked parameters will then be preceded
+labels of the parameters. The selected parameters will then be preceded
 by an exclamation mark (!) in the property GUI.
 <p>
-If you now copy this property, all marked parameters will be omitted.
+If this property is then copied, all marked parameters will be omitted.
 <p>
-It is also possible to copy just the parameters you marked using
+It is also possible to copy just the selected parameters using
 <tt/"Copy Marked Prop"/.
 <p>
 A simple example for the property clipboard:
 <p>
 Our task is to give a big number of material objects the same color,
 but they already have different opacity settings. Copying the complete
-attribute property would destroy the opacity values. We can solve
-this by copying just the color attribute, but leave all other
+attribute property would destroy the individually adjusted opacity values.
+We can solve this by copying just the color attribute, but leave all other
 attributes as they are:
 <enum>
 <item>Change the color of a first material object using the
@@ -4306,6 +4307,11 @@ Furthermore, it is not necessary to enclose normal child objects
 CSG levels in primitive levels for RIB export. This is done by Ayam
 automatically where needed.
 
+<sect2>RIB Export
+<p>
+Level objects appear in RIB output as Transformation
+hierarchies.
+
 <sect1>Material Object<label id="materialobj">
 <p>
 Material objects are used to attach RiAttributes and shaders to
@@ -4392,6 +4398,38 @@ reside in the object clipboard.
 <item><tt/"Registered"/ displays whether this material may be
 connected to geometric objects, see the discussion about material names above.
 </itemize>
+
+<sect2>RIB Export
+<p>
+Material objects only appear in RIB output if connected to a
+geometric object (e.g. a Box).
+<p>
+The exact RIB statements used depend on the configuration of the
+material and the preference setting <tt>"RIB-Export/RIStandard"</tt>.
+<p>
+If all elements of the MaterialAttr property are left on their default
+values, only color and opacity will be written to the RIB:
+<p><tt>
+RiColor(...);<newline>
+RiOpacity(...);
+</tt><p>
+After the elements of the MaterialAttr property, the surface, displacement,
+interior, and exterior shaders (if attached to the material) will
+be exported, all shader parameters will be properly declared:
+<p><tt>
+RiDeclare("Ka", "float");<newline>
+...<newline>
+RiSurface("Ka", 0.9, ...);<newline>
+...
+</tt><p>
+After the material description custom RiAttributes and texture
+coordinates from tags will be exported.
+<p>
+No attempt is being made to re-order or sort objects in a level according
+to their attached materials, they will rather be exported in the order of
+their appearance in the level and thus each object with a material
+will also be prepended by a full material specification as described
+above.
 
 <sect1>Light Object<label id="lightobj">
 <p>
@@ -4912,7 +4950,6 @@ touching the length) Ayam will automatically add or remove control
 points to/from the curve so that the shape of the curve remains
 largely intact and the periodic extensions plausible.
 
-
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
 <figure loc="ht">
@@ -4945,6 +4982,10 @@ points (move them apart) after exploding to avoid that
 they automatically collapse to a multiple point again!
 You may also totally inhibit creation of multiple points for a
 NURBS curve using the attribute <tt/"CreateMP"/.
+
+<sect2>RIB Export
+<p>
+NCurve objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -5096,7 +5137,7 @@ NPatch objects will be exported as NURBS patch primitives:
 <p>
 <tt>RiNuPatch(...);</tt>
 <p>
-PV tags are supported.
+PV tags are supported, also trim curves may appear..
 
 <#if out=latex><x/newpage/</#if>
 
@@ -14084,7 +14125,8 @@ again with a converted Tcl Ayam command <tt/"setProp()"/.
 <#if out=latex><x/newpage/</#if>
 
 The next example shows, how to manage a property GUI in a JavaScript
-implemented Script object script. Use Script object type <tt/"Create"/.
+implemented Script object script. Use Script object type <tt/"Create"/
+and add a tag <tt/"NP MyProp"/ to see the property GUI.
 <code>
 /* Ayam, use: JavaScript, save array: MyPropData */
 var MyPropData = new Object();
