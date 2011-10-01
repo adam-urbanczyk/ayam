@@ -1,4 +1,4 @@
-[25. Sep 2011] CVS-Head:
+[1. Oct 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -13,6 +13,7 @@ o merging transformed PolyMeshes with normals (SF 3374188)
 o crash in surface knot insertion (SF 3376414)
 o views getting the wrong type temporarily (SF 3382382)
 o saving of the environment scene file (SF 3410856)
+o resize menu entries of external views are deactivated (SF 3414694)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -30,6 +31,7 @@ o moving the mouse pointer across the origin when scaling no longer
   leads to "broken" (very small) scale attributes
 o added setting the mark to selected points bounding box center
   (shortcut <ab>)
+o closed cubic interpolating curves now also use the EDLen parameter properly
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -45,7 +47,8 @@ o the ViewAttrib property GUI no longer unconditionally sets the mark,
 o zooming views via the keyboard is now reversible
 o the amounts of rotation and zooming per keyboard are now configurable
   via the ayamrc file
-o view resize menu entries now always work in external views
+o ICurve property GUI now only displays SDLen/EDLen entries when actually
+  used and the Derivatives entry is now, as for the IPatch, a menu
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
