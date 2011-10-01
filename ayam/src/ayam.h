@@ -516,11 +516,11 @@ typedef struct ay_ipatch_object_s {
   double sdlen_v; /**< length of auto generated start derivative */
   double edlen_v; /**< length of auto generated end derivative */
 
-  int derivs_u; /**< have end derivatives? */
+  int derivs_u; /**< end derivative mode (U) */
   double *sderiv_u; /**< start derivatives [height * 3] */
   double *ederiv_u; /**< end derivatives [height * 3] */
 
-  int derivs_v; /**< have end derivatives? */
+  int derivs_v; /**< end derivative mode (V) */
   double *sderiv_v; /**< start derivatives [width * 3] */
   double *ederiv_v; /**< end derivatives [width * 3] */
 

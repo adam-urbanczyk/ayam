@@ -21,6 +21,8 @@
  *  puts sanitized result vector into <scontrolv[<slength>]>;
  *  if scontrolv is NULL after this function run, controlv was
  *  already clean...
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_sanitize(int length, double *controlv,
@@ -68,12 +70,21 @@ ay_ict_sanitize(int length, double *controlv,
 
 
 /* ay_ict_interpolateC2C:
- *  C2 cubic interpolation of <length> 3D data points in <controlv>;
- *  <sdlen>, <edlen>: length of automatically generated end derivatives,
- *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
- *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
- *  <sderiv>, <ederiv>: user specified end derivatives,
- *  returns result (a NURBS curve) in <c>
+ *  Global C2 cubic interpolation.
+ *
+ * @param[in] length number of data points
+ * @param[in] controlv 3D data points [length*3]
+ * @param[in] sdlen length of automatically generated start derivative
+ * @param[in] edlen length of automatically generated end derivative
+ * @param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
+ * or KT_UNIFORM
+ * @param[in] have_end_derivs should sderiv / ederiv be used?
+ * @param[in] sderiv start derivative
+ * @param[in] sderiv end derivative
+
+ * @param[in,out] c result (a NURBS curve)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
@@ -130,23 +141,7 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
 
 	  a += 3;
 	} /* for */
-      /*
-	the old knot calculation was not really knot averaging
-	for(i = 0; i < 4; i++)
-	knotv[i] = 0.0;
 
-	j = 0;
-	knot = 0.0;
-	for(i = 4; i < nlength; i++)
-	{
-	knot += lengths[j]/totallength;
-	knotv[i] = knot;
-	j++;
-	}
-
-	for(i = nlength; i < nlength+4; i++)
-	knotv[i] = 1.0;
-      */
       if(!(vk = calloc(length+1, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
@@ -271,16 +266,19 @@ cleanup:
     free(ncv4D);
 
  return ay_status;
-} /* ay_ict_interpolateC2C */
+} /* ay_ict_interpolateC2CED */
 
 
 /* ay_ict_interpolateC2CClosed:
+ *  Global closed C2 cubic interpolation.
  *  Closed C2 cubic interpolation of <length> 3D data points in <controlv>;
  *  <sdlen>, <edlen>: length of automatically generated end derivatives,
  *  <param_type>: KT_CHORDAL or KT_CENTRI (parameterisation type),
  *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
  *  <sderiv>, <ederiv>: user specified end derivatives,
  *  returns result (a NURBS curve) in <c>
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
@@ -345,23 +343,7 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 
 	  a += 3;
 	} /* for */
-      /*
-	the old knot calculation was not really knot averaging
-	for(i = 0; i < 4; i++)
-	knotv[i] = 0.0;
 
-	j = 0;
-	knot = 0.0;
-	for(i = 4; i < nlength; i++)
-	{
-	knot += lengths[j]/totallength;
-	knotv[i] = knot;
-	j++;
-	}
-
-	for(i = nlength; i < nlength+4; i++)
-	knotv[i] = 1.0;
-      */
       if(!(vk = calloc(length+2, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
@@ -419,6 +401,12 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
       ncontrolv[3] = controlv[0] + v[0];
       ncontrolv[4] = controlv[1] + v[1];
       ncontrolv[5] = controlv[2] + v[2];
+
+      v[0] = controlv[3] - controlv[b];
+      v[1] = controlv[4] - controlv[b+1];
+      v[2] = controlv[5] - controlv[b+2];
+
+      AY_V3SCAL(v, edlen)
 
       ncontrolv[a]   = controlv[0] - v[0];
       ncontrolv[a+1] = controlv[1] - v[1];
@@ -494,6 +482,8 @@ cleanup:
  *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
  *  <sderiv>, <ederiv>: user specified end derivatives,
  *  returns result (a NURBS curve) in <c>
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
@@ -686,6 +676,8 @@ cleanup:
  *  <have_end_derivs>: should <sderiv>/<ederiv> be used?
  *  <sderiv>, <ederiv>: user specified end derivatives,
  *  returns result (a NURBS curve) in <c>
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_ict_interpolateG3DClosed(int iorder, int length, double sdlen, double edlen,

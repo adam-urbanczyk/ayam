@@ -795,10 +795,10 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
     return AY_EOMEM;
 
   if(!(R = calloc((n+1)*3, sizeof(double))))
-    return AY_EOMEM;
+    {free(abc); return AY_EOMEM;}
 
   if(!(dd = calloc(n+1, sizeof(double))))
-    return AY_EOMEM;
+    {free(abc); free(R); return AY_EOMEM;}
 
   a = 9;
   for(i = 3; i < n; i++)
