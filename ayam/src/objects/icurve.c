@@ -884,7 +884,8 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ICurveAttrData";
  char fname[] = "icurve_setpropcb";
- int new_length;
+ int a, old_deriv, new_length;
+ double *cv;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_icurve_object *icurve = NULL;
 
@@ -904,6 +905,7 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &new_length);
 
+  old_deriv = icurve->derivs;
   Tcl_SetStringObj(ton,"Derivatives",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(icurve->derivs));
@@ -950,6 +952,35 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  ay_error(AY_ERROR,fname,"Length must be > 2!");
 	}
     }
+
+  /* when switching from auto to manual, create manual
+     derivatives similar to the automatic ones */
+  if((old_deriv == 0) && (icurve->derivs == 1))
+    {
+      cv = icurve->controlv;
+      if(!icurve->type)
+	{
+	  icurve->sderiv[0] = cv[0]+(cv[3]-cv[0])*icurve->sdlen;
+	  icurve->sderiv[1] = cv[1]+(cv[4]-cv[1])*icurve->sdlen;
+	  icurve->sderiv[2] = cv[2]+(cv[5]-cv[2])*icurve->sdlen;
+
+	  a = (icurve->length-2)*3;
+	  icurve->ederiv[0] = cv[a+3]+(cv[a]-cv[a+3])*icurve->edlen;
+	  icurve->ederiv[1] = cv[a+4]+(cv[a+1]-cv[a+4])*icurve->edlen;
+	  icurve->ederiv[2] = cv[a+5]+(cv[a+2]-cv[a+5])*icurve->edlen;
+	}
+      else
+	{
+	  a = (icurve->length-1)*3;
+	  icurve->sderiv[0] = cv[0]+(cv[3]-cv[a])*icurve->sdlen;
+	  icurve->sderiv[1] = cv[1]+(cv[4]-cv[a+1])*icurve->sdlen;
+	  icurve->sderiv[2] = cv[2]+(cv[5]-cv[a+2])*icurve->sdlen;
+
+	  icurve->ederiv[0] = cv[0]-(cv[3]-cv[a])*icurve->edlen;
+	  icurve->ederiv[1] = cv[1]-(cv[4]-cv[a+1])*icurve->edlen;
+	  icurve->ederiv[2] = cv[2]-(cv[5]-cv[a+2])*icurve->edlen;
+	}
+    } /* if */
 
   o->modified = AY_TRUE;
 
