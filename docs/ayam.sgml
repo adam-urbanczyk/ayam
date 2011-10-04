@@ -3461,15 +3461,15 @@ geometric objects:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 Root|View+|No|N/A|No@<hline>
+View|NPatch|No|N/A|Yes@<hline>
+Camera|No|No|N/A|Yes@<hline>
+Light|No|No|N/A|Yes@<hline>
+Material|No|N/A|N/A|No@<hline>
 Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
 Clone|Any+|No|Children+|No*@<hline>
 Mirror|Any+|No|Children+|No*@<hline>
 Instance|No|No|Master|No*@<hline>
 Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
-View|NPatch|No|N/A|Yes@<hline>
-Camera|No|No|N/A|Yes@<hline>
-Material|No|N/A|N/A|No@<hline>
-Light|No|No|N/A|Yes@<hline>
 RiInc|No|No|N/A|No@<hline>
 RiProc|No|No|N/A|No@<hline>
 </tabular>
@@ -3703,6 +3703,8 @@ Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>View Object<label id="viewobj">
 <p>
 Every view window (see also section
@@ -3849,6 +3851,8 @@ disable undo for view actions, e.g. panning or zooming a view,
 these actions then also do not change the scene changed state.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Camera Object<label id="cameraobj">
 <p>
 Camera objects are used to temporarily save camera settings
@@ -3869,6 +3873,1012 @@ Camera|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>Camera Object Capabilities</caption>
 </table>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Light Object<label id="lightobj">
+<p>
+Light objects let you bring light into your scenes.
+<p>
+The behaviour of a light source object depends heavily on the type
+of the light source.
+There are currently four different light types available in Ayam:
+<tt/"Custom"/, <tt/"Point"/, <tt/"Distant"/ and <tt/"Spot"/.
+<p>
+Custom Lights:<label id="cul">
+<p>
+Light sources of type <tt/"Custom"/ use the attached light shader.
+<p>
+Note that Ayam is trying to guess from the names of the light shader
+arguments to draw the light.
+The names <tt/"from"/ and <tt/"to"/ denote location and destination
+of the light source. Those names should not be used for other things
+in the light shaders!
+<p>
+Point-, Distant-, and Spotlights:<label id="pdsl">
+<p>
+These (standard) light sources have well defined parameters that
+will be displayed in the <tt/"LightAttr"/ property.
+Please refer to the RenderMan documentation for more information
+about the standard light sources (see section
+<ref id="secref" name="references">).
+<p>
+In contrast to the light sources as defined in the RenderMan
+interface, Ayam light sources are always global by default. This
+means, regardless of the place of a light source in the scene
+hierarchy, it will always light all other objects (unless the
+<tt/"IsLocal"/ attribute is used).
+<p>
+Note that you can not preview the effect of a light source in
+shaded Ayam views, currently. However it is possible to estimate
+the effect of a spot light source by simply dropping it into
+a perspective view window, the view will then show you the objects
+lit by the spot.
+<p>
+The following table briefly lists some capabilities of the Light object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Light|Yes|No|N/A|Yes@<hline>
+</tabular>
+<caption>Light Object Capabilities</caption>
+</table>
+
+<sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
+<p>
+Depending on the type of the light source, the light attribute
+property contains different parameters. Parameters that
+are not displayed will not be used on RIB export, consequently.
+<p>
+Using <tt/"Type"/ you can change the type of the light source.
+When you change the type of a light source, the property GUI will
+be adapted to show only the options available for the new light
+source type, but only after you used the <tt/"Apply"/-button.
+<p>
+<tt/"IsOn"/ allows you to switch the light off or on. The default
+value is on.
+<p>
+<tt/"IsLocal"/ controls whether the light source should light
+just local objects (objects, that are defined in the same level
+in the scene hierarchy as the light source object or below it) or
+all objects in the scene.
+The default is off, all objects in the scene are lit!
+The <tt/"IsLocal"/ attribute is ignored for lights that are
+defined in the root level of the scene. Mind also that shadow maps
+will always contain shadows from all objects in the scene,
+regardless of the <tt/"IsLocal"/ attribute of the light source.
+<p>
+Using the light attribute <tt/"Shadows"/ you may determine
+whether the light source should cast shadows.
+The default is off, no shadows! Note that this option will not
+magically enable shadows on renderers that create shadows by
+shadow maps. It will merely be interpreted by raytracing
+renderers like BMRT.
+<p>
+The attribute <tt/"Samples"/ determines the number of times to sample
+an area light source, independent of pixel samples, the default value
+is 1. This attribute is available for custom lights only!
+<p>
+<tt/"UseSM"/ determines, whether shadow maps should be created
+and used for this light source. The resolution of the
+shadow map may be determined by the attribute <tt/"SMRes"/. If
+<tt/"SMRes"/ is 0, a default of 256 by 256 pixels will be used.
+These options are for renderers that do not support raytraced
+shadows like PRMan or Aqsis only.
+<p>
+For lights of type <tt/"Distant"/ the <tt/"Scale"/ attributes
+of the <tt/"Transformations"/ property of the light
+object may be used to scale the camera transformation
+used for the creation of the corresponding shadow map.
+Values of 1 for <tt/"Scale_X"/ and <tt/"Scale_Y"/ create
+a shadow map that is sized 1 by 1 units in world space.
+<p>
+All other parameters that may appear in the <tt/"LightAttr"/
+property are the standard parameters for the standard RenderMan
+light sources: distant, point, and spot:
+<itemize>
+<item><tt/"From"/ and <tt/"To"/ denote position and target of the light
+source as point in space. You may edit both points using standard
+point editing actions (see also section
+<ref id="iac" name="interactive actions">).
+<item><tt/"Color"/ is the color of the light emitted by the light source.
+<item><tt/"Intensity"/ is the intensity of the light emitted by the
+light source. Note that the standard point and spot lights have
+a quadratic falloff (with distance), that requires the intensity
+to be set to quite high values in order to achieve some
+illumination effect (e.g. around 30 for the standard distance of
+<tt/"From"/ and <tt/"To"/ of a spot light).
+<item><tt/"ConeAngle"/ is the angle of the beam of a spot light.
+<item><tt/"ConeDAngle"/ (cone delta angle) is the angle that determines a
+falloff area at the edge of the beam of a spot light.
+<item><tt/"BeamDistrib"/ (beam distribution) determines, how the light
+falls off in the beam of the spot light. Larger values result in narrower
+lit areas.
+</itemize>
+
+In order to ease the parameterisation of spot lights, you may drop the
+light source object onto a view object or into a view window
+(preferably one with a perspective viewing transformation and with equal
+width and height) to see what objects of the scene are actually lit
+by the light object.
+
+<sect2>Using ShadowMaps<label id="shadowmaps">
+<p>
+Using shadow maps requires the global preference setting
+<tt>"RIB-Export/ShadowMaps"</tt> to be switched on.
+Furthermore, for each light source for which a shadow map should be
+created, the attributes <tt/"IsOn"/ and <tt/"UseSM"/ have to be
+switched on.
+<p>
+<bf>Automatic Creation of ShadowMaps</bf>
+<p>
+If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
+<tt>"Automatic"</tt>,
+Ayam will create a special version of the RIB on export, that creates
+all shadow maps automatically upon rendering. This is done by rendering
+depth images from the position of every light source that casts shadows.
+Special light source shaders later pick up these depth images
+and calculate shadows.
+This approach implies, that the scene is rendered multiple times.
+To reduce the size of the RIB, the objects to be rendered
+are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
+This file is read from the main RIB several times via
+<tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
+also be rendered separately if the frame number is known.
+To help you picking the right frame number for the image (e.g.
+to re-render just the final image, when only a material setting was
+changed, and no shadow casting lights were moved and no shadow casting
+geometry was changed),
+a comment with the frame number of the last frame (the image) will be
+written as last statement to the RIB.
+<p>
+Because multiple files (RIBs and shadow maps) are used, it is suggested
+to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
+<tt>"Scenefile"</tt>. This will strip the leading absolute path component
+from the filenames so that you may move the exported scene from one
+system to another more easily.
+<p>
+Do not render directly from a view window to the display when the
+<tt/"ShadowMaps"/ <tt/"RIB-Export"/ preference option is set to
+<tt>"Automatic"</tt>.
+Your renderer may not write image files when the command line option
+to render directly to the display (-d for rendrib, or -fb for Aqsis) is
+in use. Consequently, this may also inhibit writing of the shadow maps,
+so that the resulting image will look wrong, or the renderer will render
+the shadow map to the display and simply stop.
+<p>
+<bf>Manual Creation of ShadowMaps</bf>
+<p>
+If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
+<tt>"Manual"</tt>,
+the exported scene will not render the shadow maps but rather
+expects them to be present already. You can create them manually
+(hence the name <tt>"Manual"</tt>) using the view menu entries
+<tt>"View/Create ShadowMap"</tt>, <tt>"View/Create All ShadowMaps"</tt>
+or the main menu entries
+<tt>"Special/RIB-Export/Create ShadowMap"</tt>,
+<tt>"Special/RIB-Export/Create All ShadowMaps"</tt>.
+The manual approach has the advantage, that the shadow maps will not
+be re-created each time you render the scene.
+<p>
+<bf>ShadowMap Types</bf>
+<p>
+Ayam supports three different methods for the creation of shadow maps
+for certain types of light sources: point, distant, and spot:
+<p>
+The point method is used with
+lights of type <tt>"Point"</tt> and custom lights that have a light
+shader argument named "from".
+Six shadow maps pointing in all possible axis aligned
+directions and named <tt>"&lt;rib&gt;.point&lt;num&gt;_&lt;dir&gt;.shd"</tt>
+(where <tt>"&lt;rib&gt;"</tt> is the name of the RIB,
+<tt>"&lt;num&gt;"</tt> is the number of the light source that makes
+use of shadow maps and <tt>"&lt;dir&gt;"</tt> is one of
+<tt/"x+"/, <tt/"x-"/, <tt/"y+"/, <tt/"y-"/, <tt/"z+"/, or <tt/"z-"/)
+will be created.
+<p>
+The distant method is used with lights of type <tt>"Distant"</tt>
+and custom lights that have a light
+shader argument named "from" and a light
+shader argument named "to".
+One shadow map is created and named
+<tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
+By default, the size of the shadow map is 1 by 1 units in world space,
+but this may be adapted using the scale transformation attributes of
+the light object.
+<p>
+The spot method is used with lights of type <tt>"Spot"</tt>
+and custom lights that have a light
+shader argument named "from", a light
+shader argument named "to", and a light shader argument named "coneangle".
+One shadow map is created and named
+<tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
+The spot method uses the cone angle (and additionally the delta cone
+angle, if present) argument to determine the size of the shadow map
+in world space.
+<p>
+If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
+<tt>"Point"</tt> is used, Ayam automatically changes the name of the
+exported light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
+and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
+will be parameterised to use the created shadow maps.
+If the light source is of type <tt>"Custom"</tt>, no automatic renaming
+and adjusting of the shader takes place. This means, you have
+to make sure that the shader really uses the shadow maps, by
+selecting the right shader and parameterising it accordingly.
+See the discussion above for the names of the shadow map files.
+Those file names, most probably, will have to be entered as parameter
+to the light shader.
+<p>
+For example, you will not get any shadows if you use a light source of
+type <tt/"Custom"/ with the normal <tt/"distantlight"/ shader attached,
+even though Ayam is able to create the necessary shadow maps. The
+normal <tt/"distantlight"/ shader just makes no use of the shadow maps.
+You have to manually switch to a shader that
+makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
+shadows.
+<p>
+<bf>ShadowMap Mini Tutorial</bf>
+<p>
+Here is a short example for a scene using a shadow map:
+<enum>
+<item>Go to the preferences (section <tt/"RIB-Export"/) and set
+<tt/"ShadowMaps"/ to <tt>"Automatic"</tt>.
+<item>Create two boxes.
+<item>Open the <tt/"Transformations"/ property of the second box.
+<item>Translate it by X: 0.0, Y: -1.0, Z: 0.0.
+<item>Scale it by X: 4.0, Y:1.0, Z:4.0.
+<item>Create a light source.
+<item>Open the <tt/"LightAttr"/ property.
+<item>Change the type to <tt/"Spot"/. Press <tt/"Apply"/.
+<item>Now change the parameters of the spot light to <tt/"IsOn"/: Yes,
+<tt/"Intensity"/: 18.0,
+<tt/"UseSM"/: Yes, <tt/"ConeAngle"/: 45.0, <tt/"BeamDistrib"/: 3.0,
+<tt/"From"/: -2, 2, 2, <tt/"To"/: 1, 0, -1;
+leave all other parameters at their default values.
+<item>Create a new view and make it perspective (Menu:
+<tt>"Type/Perspective"</tt>).
+<item>Export a RIB from that perspective view (Menu:
+<tt>"View/Export RIB"</tt>).
+<item>Render the RIB with a RenderMan compliant renderer, that uses
+shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
+</enum>
+
+This scene is distributed with Ayam as an example scene named
+<tt>"shadowmaps.ay"</tt>.
+<p>
+Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
+tag to your root object if shadow maps are in use. Other renderers might
+require additional tweaking using shadow bias RiOption tags.
+Please consult the documentation of your renderer on how to achieve
+the best results using shadow maps.
+
+<sect2>Using AreaLights<label id="alob">
+<p>
+The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
+and <tt/"Spot"/ have no own geometric extension in space.
+This means, shadows resulting from such light sources will have sharp
+borders which does not look too natural.
+Good looking soft shadows may be generated using area lights.
+<p>
+Area lights may be created by simply placing a single object as child
+object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
+shader attached:
+<code>
++-AreaLight(Light)
+ \ AreaLightGeometry(Sphere)
+</code>
+This child object determines the geometry, place, <em>and</em> extension
+of the light source.
+According to L. Gritz, Spheres and Cylinders work best as area light
+geometry for BMRT, because of special sampling code.
+<p>
+An example:
+<itemize>
+<item>Create a custom light object.
+<item>Assign the arealight light shader to it.
+<item>Create a sphere.
+<item>Drag and drop the sphere onto the Light object so that it becomes
+a child of the light object.
+<item>Transform the sphere object to your hearts content; the position
+and size of the object determines the position and size of the light source!
+</itemize>
+
+There is an example scene named <tt>"arealight.ay"</tt> distributed with
+Ayam.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Material Object<label id="materialobj">
+<p>
+Material objects are used to attach RiAttributes and shaders to
+geometric objects.
+<p>
+When geometric objects are dropped onto a material object using
+drag and drop in the tree view they will be connected to this
+material object.
+<p>
+While geometric objects are connected to a material object this material
+object may not be deleted.
+<p>
+The following table briefly lists some capabilities of the Material object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Material|No|N/A|N/A|No@<hline>
+</tabular>
+<caption>Material Object Capabilities</caption>
+</table>
+
+<sect2>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
+<p>
+Using this property standard and BMRT specific attributes may be set.
+Please refer to the documentation of the RenderMan interface
+and the documentation of BMRT for more detailed information about the
+RenderMan specific attributes.
+
+<itemize>
+<item><tt/"Color"/, the color of the object. If you set one of the
+entries to a negative value (e.g. -1), the color will not be set at all
+for this object.
+<item><tt/"Opacity"/, the opacity of the object, the default
+255 255 255 means the object is totally opaque. If you set one of the
+entries to a negative value (e.g. -1), the opacity will not be set at all
+for this object.
+<item><tt/"ShadingRate"/, determines how often shaders are evaluated for
+a sample.
+<item><tt/"Interpolation"/, determines how return values computed
+by the shaders are interpolated across a geometric primitive.
+<item><tt/"Sides"/, determines how many sides of the surface of a
+geometric primitive should be shaded.
+<item><tt/"BoundCoord"/, sets the coordinate system in which the
+displacement bound is expressed.
+<item><tt/"BoundVal"/, displacement bound value.
+<item><tt/"TrueDisp"/, toggles true displacements on or off. Default off.
+<item><tt/"CastShadows"/, determines how the object casts shadows:
+the default <tt/"Os"/ means the object casts shadows according to it's
+opacity; <tt/"None"/ object does not cast any shadows; <tt/"Opaque"/
+the object is completely opaque and casts shadows; <tt/"Shade"/
+the object has a complex opacity pattern determined by it's surface
+shader, that is used in shadow calculations.
+<item><tt/"Camera"/, <tt/"Reflection"/, and <tt/"Shadow"/ toggle
+visibility attributes.
+</itemize>
+
+<sect2>Surface, Displacement, Interior, Exterior Property<label id="matshader">
+<p>
+These properties let you define shaders for the material object, please
+refer to section <ref id="shd" name="Shader Properties">
+for information on how to deal with shader property GUIs.
+<p>
+Surface shaders may be used to procedurally encode lighting models and
+textures. Displacement shaders may procedurally deform the object while
+rendering. Interior and Exterior shaders are so called volume shaders
+that may be used to capture special optical effects, encoding how light
+is affected while passing through an object.
+
+<sect2>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
+<p>
+The MaterialAttr property contains attributes related to the
+management of material objects:
+<itemize>
+<item><tt/"Materialname"/ denotes the name of the material. Note
+that material names have to be unique in a scene. If two
+materials with the same name exist, only the first material
+created with this name is "registered" and thus may be connected
+to geometric objects.
+<item><tt/"Refcount"/ shows how many geometric objects are connected to
+(are of) this material. Note that connected or referring geometric objects
+not necessarily have to live in the scene, they may as well temporarily
+reside in the object clipboard.
+<item><tt/"Registered"/ displays whether this material may be
+connected to geometric objects, see the discussion about material names above.
+</itemize>
+
+<sect2>RIB Export
+<p>
+Material objects only appear in RIB output if connected to a
+geometric object (e.g. a Box).
+<p>
+The exact RIB statements used depend on the configuration of the
+material and the preference setting <tt>"RIB-Export/RIStandard"</tt>.
+<p>
+If all elements of the MaterialAttr property are left on their default
+values, only color and opacity will be written to the RIB:
+<tscreen><tt>
+RiColor(...);<newline>
+RiOpacity(...);
+</tt></tscreen>
+After the elements of the MaterialAttr property, the surface, displacement,
+interior, and exterior shaders (if attached to the material) will
+be exported, all shader parameters will be properly declared:
+<tscreen><tt>
+RiDeclare("Ka", "float");<newline>
+...<newline>
+RiSurface("Ka", 0.9, ...);<newline>
+...
+</tt></tscreen>
+After the material description custom RiAttributes and texture
+coordinates from tags will be exported.
+<p>
+No attempt is being made to re-order or sort objects in a level according
+to their attached materials, they will rather be exported in the order of
+their appearance in the level and thus each object with a material
+will also be prepended by a full material specification as described
+above.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Level Object<label id="levelobj">
+<p>
+Level objects may be used to build object hierarchies and perform CSG
+operations.
+<p>
+Ayam does not offer a layer concept, but by grouping objects using
+levels and the hide/show tools, layer functionality may be emulated
+to a certain extent.
+<p>
+Organizing the scene and working in levels also increases the speed
+of object tree updates, as only the current level and its sub-levels
+are subject to a tree update if the object hierarchy changes.
+<p>
+Note that child objects of a level inherit the levels transformations
+attributes and shaders. Inheritance of e.g. transformations means:
+If you have a NURBS patch in a level that is translated to (10,0,0),
+the origin of the local coordinate system of the NURBS patch
+will be situated at (10,0,0). If you decide to move the patch by a
+value of 5 in X direction by setting a corresponding value in the
+Transformations property of the patch object, the local coordinate
+system of the patch will be placed at (15,0,0) in world coordinates.
+<p>
+Note also that since Ayam 1.12, Level objects provide their child
+objects to their parent objects as a list. This means the following
+hierarchy is now valid:
+<code>
++-Skin
+ +-Level
+  | NCurve
+  | NCurve
+  | ICurve
+  \ NCurve
+</code>
+All NURBS curves and objects that may be converted to NURBS curves
+(in this example: the ICurve) will be provided to the Skin by the
+Level object. Transformation attributes of the Level will be added
+to the provided objects. Objects that do not provide the wanted
+type will be silently ignored.
+<p>
+The following table briefly lists some capabilities of the Level object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
+</tabular>
+<caption>Level Object Capabilities</caption>
+</table>
+
+<sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
+<p>
+Levels do not have many object type specific properties, you may just
+modify the type of the level using the attribute <tt/"Type"/.
+<p>
+Levels of type <tt/"Level"/ just group objects and inherit attributes.
+<p>
+Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
+are used to build CSG hierarchies. Additionally, they inherit attributes.
+Note that Ayam is currently not able to correctly display the results
+of CSG operations, all objects are always drawn completely, even though
+a CSG operation would cut parts away.
+<p>
+However, since Ayam 1.8 there is a plugin available that is able to
+preview the results of CSG operations, see also section
+<ref id="aycsg" name="CSG preview using the AyCSG plugin">.
+<p>
+The object hierarchy to cut away a part of a box using a sphere
+looks like this:
+<code>
++-Level_of_Type_Difference(Level)
+ | Box
+ \ Sphere
+</code>
+More than two objects may be arguments of a CSG operation:
+<code>
++-Level_of_Type_Difference(Level)
+ | Box
+ | Sphere
+ \ Sphere
+</code>
+In this example, the two spheres would cut away parts of the box.
+<p>
+New solid primitives may be created with levels of type <tt/"Primitive"/.
+<code>
++-Level_of_Type_Difference(Level)
+ +-Level_of_Type_Primitive(Level)
+ | | Sphere_blue
+ | \ Disk_red
+ \ Box_grey
+</code>
+In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
+is manually capped by a disk object. The two objects need to be placed
+into a level of type <tt/"Primitive"/ because each object alone is an
+open surface and therefore not a valid CSG primitive. Both objects that
+form the new primitive use a different material. In addition, a grey box
+cuts away a part from the multi colored hemisphere.
+The above CSG hierarchy is available as example scene file
+<tt/"multicolcsg.ay"/.
+<p>
+See also this image:
+<figure loc="ht">
+<eps file="pics/multicolcsg.ps" height="4cm">
+<img src="pics/multicolcsg.gif">
+<caption>Multicolor CSG Example</caption>
+</figure>
+<p>
+Note that Ayam is not able to check, whether your new primitive obeys
+the rule of total closeness. For instance, if the disk in the above
+example would not totally cap the sphere (this happens if the disk
+<tt/"ThetaMax"/ is not 360.0 or if it is not placed exactly at the
+sphere) Ayam would not complain upon RIB export.
+The rendered image would expose serious errors, however.
+<p>
+Furthermore, it is not necessary to enclose normal child objects
+(e.g. quadrics with the <tt/"Closed"/ attribute set to on) of
+CSG levels in primitive levels for RIB export. This is done by Ayam
+automatically where needed.
+
+<sect2>RIB Export
+<p>
+Level objects appear in RIB output as Transformation
+hierarchies.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Clone Object<label id="cloneobj">
+<p>
+<figure loc="ht">
+<eps file="pics/clone.ps" height="5cm">
+<img src="pics/clone.gif">
+<caption>Clone Object (blue) with Trajectory Curve (white)</caption>
+</figure>
+<p>
+The Clone object allows to easily create and control an arbitrary
+number of instances of a single object, hereafter called the cloned
+object.
+The instances can be transformed (each by a certain amount expressed
+as difference between two instances) or placed on a trajectory curve
+(see also the image above).
+<p>
+If a second object is present as child of the Clone object it is treated
+as trajectory (or path) curve automatically.
+The process of placing the clones on the trajectory is very similar
+to the sweeping operation
+(see also section <ref id="sweepobj" name="Sweep Object">).
+<p>
+Thus, the default object hierarchy of a Clone object looks like this:
+<code>
++-Clone
+ | Cloned-Object
+ \ [Trajectory(NCurve)]
+</code>
+If you use a trajectory curve to place the clones, you may want
+to hide the cloned object and also add a <tt/"NoExport"/ tag to it.
+Otherwise the original object will appear twice, on the trajectory and
+on its normal, untransformed, position. Note that the transformation
+attributes of the cloned object will be completely overwritten when
+placing the clones on the trajectory curve. If the cloned object has
+distinct scale or rotation attributes it should be put inside a level
+object like this:
+<code>
++-Clone
+ +-Level
+ |\ Cloned-Object with non-standard Scale/Rotation
+ \ Trajectory(NCurve)
+</code>
+<p>
+It is not possible to create clones from objects that may not
+be master objects of instance objects (e.g. light objects or
+material objects). However, (since Ayam 1.7) it is possible to use
+instances as parameter objects.
+<p>
+If an instance object is used as cloned object on a trajectory
+it can be placed in a level and the <tt/"NoExport"/ tag can
+be added to the level object (as adding tags to Instance objects is
+more involved), see the following hierarchy for an example:
+<code>
++-Clone
+ +-Level with NoExport tag
+ |\ Instance
+ \ Trajectory(NCurve)
+</code>
+<p>
+Since Ayam 1.20 the mirror facility of the Clone object is realized
+through the new Mirror object (see also
+section <ref id="mirrorobj" name="Mirror Object">).
+<p>
+The following table briefly lists some capabilities of the Clone object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Clone|Any+|No|Children+|No*@<hline>
+</tabular>
+<caption>Clone Object Capabilities</caption>
+</table>
+<p>
+The following attributes further control the cloning process:
+
+<sect2>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
+<p>
+<itemize>
+<item><tt/"NumClones"/ is the number of clones to create.
+<item><tt/"Rotate"/ is only used, if a trajectory curve is present.
+If it is enabled all clones will be aligned according to the normal of
+the trajectory curve.
+
+<item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
+<tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
+<tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
+those attributes control the transformation of the instances created by
+the Clone object. Note that the attributes specify difference values
+between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
+<tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous clone <tt/"n"/.
+It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
+and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
+to the previous clone. Note however, that the transformation attributes
+do not affect the first clone.
+<p>
+Since Ayam 1.13 the transformation attributes are also used if a trajectory
+curve is present.
+</itemize>
+The following table summarizes which transformation attributes are used
+in the respective clone modes.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|"><hline>
+<bf/Mode/|<bf/Use Child Transform/|<bf/Use CloneAttrib Transform/|<bf/Use Clone Transform/@<hline>
+Clone|No|Yes|Yes@<hline>
+Trajectory|Yes|Yes|Yes@<hline>
+Mirror|Yes|N/A|Yes@<hline>
+</tabular>
+<caption>Clone Parameterisation Examples</caption>
+</table>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Mirror Object<label id="mirrorobj">
+<p>
+<figure loc="ht">
+<eps file="pics/mirror.ps" height="4cm">
+<img src="pics/mirror.gif">
+<caption>Mirrored Object (blue) From Curve (white)</caption>
+</figure>
+<p>
+The Mirror object allows to easily create and control an arbitrary
+number of mirrored instances of a number of objects.
+<p>
+The original object(s)
+<em>and</em> their mirrored counterparts will be
+provided by the Mirror object to the respective parent object (normally,
+tool objects do not provide their unmodified children).
+Additionally, the order of the mirrored objects will be reversed so that
+it is possible to use a single Mirror object (with one or multiple NURBS
+curves as children) as parameter object of e.g. a Skin object:
+<code>
++-Skin
+ +-Mirror
+  \ NCurve
++-Skin
+ +-Mirror
+  | NCurve_1(NCurve)
+  | NCurve_2(NCurve)
+  \ NCurve_3(NCurve)
+</code>
+The first Skin object in the above example can only work, because also
+the unmodified NCurve is provided by the Mirror object. The second Skin
+object can only work properly, because the order of the provided objects
+is reversed, so that it gets to see the curves in the following sequence:
+<tt/"NCurve_1"/, <tt/"NCurve_2"/, <tt/"NCurve_3"/, <tt/"Mirrored_NCurve_3"/,
+<tt/"Mirrored_NCurve_2"/, <tt/"Mirrored_NCurve_1"/.
+<p>
+The following table briefly lists some capabilities of the Mirror object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Mirror|Any+|No|Children+|No*@<hline>
+</tabular>
+<caption>Mirror Object Capabilities</caption>
+</table>
+<p>
+The following attributes further control the mirror process:
+
+<sect2>MirrorAttr Property<label id="mirrorattr"><label id="mirrorattrprop">
+<p>
+<itemize>
+<item><tt/"Plane"/ allows to select the plane about which the mirroring
+should occur (YZ-, XZ-, or XY-plane).
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Instance Object<label id="instanceobj">
+<p>
+Instance objects help to save memory consumption in scenes with many
+similar or repeating objects or transport geometric data across the
+scene hierarchy.
+<p>
+The term instance is unfortunately misleading (and can be very confusing
+if you are accustomed to the terminology of object oriented programming),
+but it is the term that seems to be used and understood by most
+computer graphic artists. A better term would be link, as an instance
+object has the same basic properties as a link in a Unix file system.
+A link is just a pointer to an original file, the same goes for
+an instance object: it is just a pointer to an original object (here
+also called master object).
+A link can be placed anywhere on the file system,
+an instance object can be placed anywhere in the scene hierarchy, and
+additionally, it can be transformed.
+<p>
+Normally, the sole purpose of instance objects is to save space,
+in memory and on the disk. But in the tool object context, instances
+also serve as a means to transport geometric data across the scene
+hierarchy to make tool objects depend on each other (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
+Note that in the tool object context, instance objects are the only
+objects, that are subject to a second round of provision.
+<p>
+The amount of saved space can be very high, depending heavily on the
+actual scene and at what levels in the hierarchy instances are used.
+If there are no similar objects in the scene, however, one can hardly
+utilise instancing. Similar means "the same except for
+the transformation property" in this context.
+<p>
+Some simple rules for instancing:
+
+<itemize>
+<item>No instances may be created of objects of the following types:
+Root, View, Instance, Material, Light. Do not try to fool
+Ayam and create instances of levels that contain aforementioned
+types of objects, things will go awry!
+<item>It is allowed, however, to put some instances
+into a level object and create instances of this level
+(this is sometimes called hierarchical instancing).
+<item>But one may not put instances of a level into the very same
+level or one of its children (this would be recursive instancing,
+which is not supported by Ayam).
+<item>The original/master object may not be deleted from the scene
+as long as there are instances of that object in the scene or in the
+object clipboard.
+</itemize>
+
+If deleting of an object fails, and the error message
+complains about the reference counter not being zero, then
+the last rule was about to be violated. Clean the clipboard using
+the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
+or resolve all references first.
+<p>
+One can resolve an instance object at any time using
+the converter registered for objects of type <tt>Instance</tt> (simply
+select the instance object and use the menu entry
+<tt>"Tools/Convert"</tt>). To resolve all instance objects in a scene
+to normal objects, one can also use the main menu entry:
+<tt>"Special/Instances/Resolve all Instances"</tt>.
+<p>
+Ayam can also create instances for complete scenes automatically
+(see section <ref id="ai" name="Automatic Instancing">).
+<p>
+To easily find the master object of an instance, just select the
+instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
+<!--
+To find out, where in the scene instances of a master object
+exist, select the master object and use the main menu entry
+<tt>"Edit/Master"</tt>.
+-->
+<p>
+The following table briefly lists some capabilities of the Instance object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Instance|No|No|Master|No*@<hline>
+</tabular>
+<caption>Instance Object Capabilities</caption>
+</table>
+
+<sect2>Instances without Transformations (References)<label id="referencing">
+<p>
+Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
+in a special way:
+if the <tt>"Transformations"</tt> property is removed using a
+<tt>"RP"</tt> tag, the instance does not provide objects with
+an own set of transformation attributes (to ease hierarchy building
+with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
+pointers to already existing objects are required and where it is
+expected, that the instance reflects the master exactly, including
+its transformation attributes).
+<p>
+The extract curve/surface tools automatically add such a tag to the
+instances they create.
+<p>
+To create such a tag manually, select the Instance object and enter
+into the Ayam console:
+<code>
+addTag RP Transformations
+</code>
+.
+<p>
+This special case of an instance is sometimes also called reference.
+
+<sect2>Instances and the Object Clipboard
+<p>
+It is not possible to copy a master object and some instances
+of it, so that the new instances point to the newly created master.
+All copies of instance objects always point to the same original
+master object.
+<p>
+For example, when the following two objects are copied and pasted back to the
+scene
+<code>
+--NCurve   <-----
+                 |
+--Instance  -----
+</code>
+the following scene hierarchy results:
+<code>
+--NCurve   <-------
+                 | |
+--Instance  -----  |
+                   | !
+--NCurve           |
+                   |
+--Instance  -------
+</code>
+The new instance still points to the original master and <em>not</em>
+to the copy of the master.
+<p>
+It is possible to move masters and instances through the scene hierarchy
+using drag and drop in the tree view or using the clipboard with
+<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
+
+<sect2>RIB Export
+<p>
+The RIB export of instances does <em>not</em> use the RiInstance facility
+of the RenderMan interface, but rather the more flexible ReadArchive
+mechanism.
+<p>
+This means, every master object in the scene will be written
+in a separate archive (RIB file) on disk, and every instance will
+cause that archive file to be read when rendering the RIB file.
+You can change this behaviour using the RIB export preference setting
+<tt/"ResInstances"/: If <tt/"ResInstances"/ is enabled, all instances
+will be resolved temporarily to normal objects before being exported
+to RIB. The resulting RIB file will then be self contained.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Select Object<label id="selectobj">
+<p>
+The Select object, available since Ayam 1.14, may be used in hierarchies
+of tool objects to select one object from a list of provided objects.
+Since Ayam 1.16, also multiple objects and ranges (even decreasing
+ranges that lead to reversed orders) may be selected.
+<p>
+In the following example hierarchy, a single patch from multiple provided
+patches of the Sweep object (the swept surface, a bevel, or a cap)
+could be selected by the Select object and delivered upstream to
+the ExtrNC object.
+<code>
++-Sweep
++-Revolve
+ +-ExtrNC
+  +-Select
+   \ Instance_of_Sweep(Instance)
+</code>
+Note that this example just serves illustrative purposes; the hierarchy
+presented is not exactly useful, as the ExtrNC object has a selector
+facility built in. Consequently, the Select object should be used in
+scenarios, where a selector facility does not exist or is hard to
+implement, as e.g. in Script object scripts.
+<p>
+The following table briefly lists some capabilities of the Select object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
+</tabular>
+<caption>Select Object Capabilities</caption>
+</table>
+
+<sect2>SelectAttrib Property<label id="selectp"><label id="selectattribprop">
+<p>
+<itemize>
+<item><tt/"Indices"/ designates the object(s) to select. The index values
+are zero based. Multiple indices must be separated by <tt/","/, ranges
+can be specified like this <tt/"1-4"/, reversed ranges are allowed
+(<tt/"4-1"/) and will create an object list of reversed order. The special
+index <tt/"end"/ (or abbreviated <tt/"e"/) designates the last of all
+the provided objects.
+An index may appear multiple times, leading to multiple copies of the
+selected object to be delivered upstream.
+The index space spans over all provided objects of the desired type
+from all child objects. This means one can mix provided objects from
+multiple child objects of the Select object. Syntactically incorrect
+ranges and indices are silently ignored.
+<p>
+Examples:
+ <itemize>
+  <item><tt/"0,2"/ &ndash; delivers the first and third provided objects
+upstream;
+  <item><tt/"end-0"/ &ndash; delivers all provided objects in reversed order
+upstream;
+  <item><tt/"0,0,0"/ &ndash; delivers three copies of the first provided
+object upstream;
+  <item><tt/"0,4-end,1"/ &ndash; delivers the first, the fifth (if there are
+so many) up to the last, and the second object upstream.
+ </itemize>
+</itemize>
+
+<sect2>RIB Export
+<p>
+Select objects never appear in RIB output.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>RiInc Object<label id="riincobj">
+<p>
+RiInc objects may be used to include objects or whole scene parts into your
+scenes that, for some reason, are just available as a piece of RIB.
+<p>
+The following table briefly lists some capabilities of the RiInc object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+RiInc|No|No|N/A|No@<hline>
+</tabular>
+<caption>RiInc Object Capabilities</caption>
+</table>
+<p>
+The following attributes control the inclusion process:
+
+<sect2>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
+<p>
+<itemize>
+<item>Using <tt/"File"/ you specify the filename of the RIB to be included.
+<item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
+the size of a box, that will be drawn as a geometric representation of
+the RIB.
+</itemize>
+
+<sect1>RiProc Object<label id="riprocobj">
+<p>
+RiProc objects may be used to include procedural objects or external
+archives into your scenes.
+<p>
+The following table briefly lists some capabilities of the RiProc object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+RiProc|No|No|N/A|No@<hline>
+</tabular>
+<caption>RiProc Object Capabilities</caption>
+</table>
+<p>
+The following attributes control the RiProc object:
+
+<sect2>RiProcAttr Property<label id="riprocp"><label id="riprocattrprop">
+<p>
+<itemize>
+<item><tt/"Type"/ defines the type of the procedural object which is
+one of <tt/"DelayedReadArchive"/, <tt/"RunProgram"/, or
+<tt/"DynamicLoad"/.
+<item>Using <tt/"File"/ you specify the filename of the RIB archive,
+program, or dynamic shared object (depending on the type of the
+procedural object).
+<item>Using <tt/"Data"/ additional arguments may be supplied to
+procedural objects of type <tt/"RunProgram"/ and <tt/"DynamicLoad"/.
+<item><tt/"MinX"/, <tt/"MaxX"/, <tt/"MinY"/, <tt/"MaxY"/, <tt/"MinZ"/,
+and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
+the procedural will create or the archive contains.
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Box Object<label id="boxobj">
 <p>
@@ -4189,560 +5199,6 @@ default is (1, 0, 0.5).
 <item><tt/"ThetaMax"/ is the sweeping angle of the hyperboloid, default is 360.
 </itemize>
 
-<sect1>Level Object<label id="levelobj">
-<p>
-Level objects may be used to build object hierarchies and perform CSG
-operations.
-<p>
-Ayam does not offer a layer concept, but by grouping objects using
-levels and the hide/show tools, layer functionality may be emulated
-to a certain extent.
-<p>
-Organizing the scene and working in levels also increases the speed
-of object tree updates, as only the current level and its sub-levels
-are subject to a tree update if the object hierarchy changes.
-<p>
-Note that child objects of a level inherit the levels transformations
-attributes and shaders. Inheritance of e.g. transformations means:
-If you have a NURBS patch in a level that is translated to (10,0,0),
-the origin of the local coordinate system of the NURBS patch
-will be situated at (10,0,0). If you decide to move the patch by a
-value of 5 in X direction by setting a corresponding value in the
-Transformations property of the patch object, the local coordinate
-system of the patch will be placed at (15,0,0) in world coordinates.
-<p>
-Note also that since Ayam 1.12, Level objects provide their child
-objects to their parent objects as a list. This means the following
-hierarchy is now valid:
-<code>
-+-Skin
- +-Level
-  | NCurve
-  | NCurve
-  | ICurve
-  \ NCurve
-</code>
-All NURBS curves and objects that may be converted to NURBS curves
-(in this example: the ICurve) will be provided to the Skin by the
-Level object. Transformation attributes of the Level will be added
-to the provided objects. Objects that do not provide the wanted
-type will be silently ignored.
-<p>
-The following table briefly lists some capabilities of the Level object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
-</tabular>
-<caption>Level Object Capabilities</caption>
-</table>
-<p>
-
-<sect2>LevelAttr Property<label id="lep"><label id="levelattrprop">
-<p>
-Levels do not have many object type specific properties, you may just
-modify the type of the level using the attribute <tt/"Type"/.
-<p>
-Levels of type <tt/"Level"/ just group objects and inherit attributes.
-<p>
-Levels of type <tt/"Union"/, <tt/"Intersection"/, and <tt/"Difference"/
-are used to build CSG hierarchies. Additionally, they inherit attributes.
-Note that Ayam is currently not able to correctly display the results
-of CSG operations, all objects are always drawn completely, even though
-a CSG operation would cut parts away.
-<p>
-However, since Ayam 1.8 there is a plugin available that is able to
-preview the results of CSG operations, see also section
-<ref id="aycsg" name="CSG preview using the AyCSG plugin">.
-<p>
-The object hierarchy to cut away a part of a box using a sphere
-looks like this:
-<code>
-+-Level_of_Type_Difference(Level)
- | Box
- \ Sphere
-</code>
-More than two objects may be arguments of a CSG operation:
-<code>
-+-Level_of_Type_Difference(Level)
- | Box
- | Sphere
- \ Sphere
-</code>
-In this example, the two spheres would cut away parts of the box.
-<p>
-New solid primitives may be created with levels of type <tt/"Primitive"/.
-<code>
-+-Level_of_Type_Difference(Level)
- +-Level_of_Type_Primitive(Level)
- | | Sphere_blue
- | \ Disk_red
- \ Box_grey
-</code>
-In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
-is manually capped by a disk object. The two objects need to be placed
-into a level of type <tt/"Primitive"/ because each object alone is an
-open surface and therefore not a valid CSG primitive. Both objects that
-form the new primitive use a different material. In addition, a grey box
-cuts away a part from the multi colored hemisphere.
-The above CSG hierarchy is available as example scene file
-<tt/"multicolcsg.ay"/.
-<p>
-See also this image:
-<figure loc="ht">
-<eps file="pics/multicolcsg.ps" height="4cm">
-<img src="pics/multicolcsg.gif">
-<caption>Multicolor CSG Example</caption>
-</figure>
-<p>
-Note that Ayam is not able to check, whether your new primitive obeys
-the rule of total closeness. For instance, if the disk in the above
-example would not totally cap the sphere (this happens if the disk
-<tt/"ThetaMax"/ is not 360.0 or if it is not placed exactly at the
-sphere) Ayam would not complain upon RIB export.
-The rendered image would expose serious errors, however.
-<p>
-Furthermore, it is not necessary to enclose normal child objects
-(e.g. quadrics with the <tt/"Closed"/ attribute set to on) of
-CSG levels in primitive levels for RIB export. This is done by Ayam
-automatically where needed.
-
-<sect2>RIB Export
-<p>
-Level objects appear in RIB output as Transformation
-hierarchies.
-
-<sect1>Material Object<label id="materialobj">
-<p>
-Material objects are used to attach RiAttributes and shaders to
-geometric objects.
-<p>
-When geometric objects are dropped onto a material object using
-drag and drop in the tree view they will be connected to this
-material object.
-<p>
-While geometric objects are connected to a material object this material
-object may not be deleted.
-<p>
-The following table briefly lists some capabilities of the Material object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Material|No|N/A|N/A|No@<hline>
-</tabular>
-<caption>Material Object Capabilities</caption>
-</table>
-<p>
-
-<sect2>RiAttributes Property<label id="riattrs"><label id="riattributesprop">
-<p>
-Using this property standard and BMRT specific attributes may be set.
-Please refer to the documentation of the RenderMan interface
-and the documentation of BMRT for more detailed information about the
-RenderMan specific attributes.
-
-<itemize>
-<item><tt/"Color"/, the color of the object. If you set one of the
-entries to a negative value (e.g. -1), the color will not be set at all
-for this object.
-<item><tt/"Opacity"/, the opacity of the object, the default
-255 255 255 means the object is totally opaque. If you set one of the
-entries to a negative value (e.g. -1), the opacity will not be set at all
-for this object.
-<item><tt/"ShadingRate"/, determines how often shaders are evaluated for
-a sample.
-<item><tt/"Interpolation"/, determines how return values computed
-by the shaders are interpolated across a geometric primitive.
-<item><tt/"Sides"/, determines how many sides of the surface of a
-geometric primitive should be shaded.
-<item><tt/"BoundCoord"/, sets the coordinate system in which the
-displacement bound is expressed.
-<item><tt/"BoundVal"/, displacement bound value.
-<item><tt/"TrueDisp"/, toggles true displacements on or off. Default off.
-<item><tt/"CastShadows"/, determines how the object casts shadows:
-the default <tt/"Os"/ means the object casts shadows according to it's
-opacity; <tt/"None"/ object does not cast any shadows; <tt/"Opaque"/
-the object is completely opaque and casts shadows; <tt/"Shade"/
-the object has a complex opacity pattern determined by it's surface
-shader, that is used in shadow calculations.
-<item><tt/"Camera"/, <tt/"Reflection"/, and <tt/"Shadow"/ toggle
-visibility attributes.
-</itemize>
-
-<sect2>Surface, Displacement, Interior, Exterior Property<label id="matshader">
-<p>
-These properties let you define shaders for the material object, please
-refer to section <ref id="shd" name="Shader Properties">
-for information on how to deal with shader property GUIs.
-<p>
-Surface shaders may be used to procedurally encode lighting models and
-textures. Displacement shaders may procedurally deform the object while
-rendering. Interior and Exterior shaders are so called volume shaders
-that may be used to capture special optical effects, encoding how light
-is affected while passing through an object.
-
-<sect2>MaterialAttr Property<label id="matattr"><label id="materialattrprop">
-<p>
-The MaterialAttr property contains attributes related to the
-management of material objects:
-<itemize>
-<item><tt/"Materialname"/ denotes the name of the material. Note
-that material names have to be unique in a scene. If two
-materials with the same name exist, only the first material
-created with this name is "registered" and thus may be connected
-to geometric objects.
-<item><tt/"Refcount"/ shows how many geometric objects are connected to
-(are of) this material. Note that connected or referring geometric objects
-not necessarily have to live in the scene, they may as well temporarily
-reside in the object clipboard.
-<item><tt/"Registered"/ displays whether this material may be
-connected to geometric objects, see the discussion about material names above.
-</itemize>
-
-<sect2>RIB Export
-<p>
-Material objects only appear in RIB output if connected to a
-geometric object (e.g. a Box).
-<p>
-The exact RIB statements used depend on the configuration of the
-material and the preference setting <tt>"RIB-Export/RIStandard"</tt>.
-<p>
-If all elements of the MaterialAttr property are left on their default
-values, only color and opacity will be written to the RIB:
-<p><tt>
-RiColor(...);<newline>
-RiOpacity(...);
-</tt><p>
-After the elements of the MaterialAttr property, the surface, displacement,
-interior, and exterior shaders (if attached to the material) will
-be exported, all shader parameters will be properly declared:
-<p><tt>
-RiDeclare("Ka", "float");<newline>
-...<newline>
-RiSurface("Ka", 0.9, ...);<newline>
-...
-</tt><p>
-After the material description custom RiAttributes and texture
-coordinates from tags will be exported.
-<p>
-No attempt is being made to re-order or sort objects in a level according
-to their attached materials, they will rather be exported in the order of
-their appearance in the level and thus each object with a material
-will also be prepended by a full material specification as described
-above.
-
-<sect1>Light Object<label id="lightobj">
-<p>
-Light objects let you bring light into your scenes.
-<p>
-The behaviour of a light source object depends heavily on the type
-of the light source.
-There are currently four different light types available in Ayam:
-<tt/"Custom"/, <tt/"Point"/, <tt/"Distant"/ and <tt/"Spot"/.
-<p>
-Custom Lights:<label id="cul">
-<p>
-Light sources of type <tt/"Custom"/ use the attached light shader.
-<p>
-Note that Ayam is trying to guess from the names of the light shader
-arguments to draw the light.
-The names <tt/"from"/ and <tt/"to"/ denote location and destination
-of the light source. Those names should not be used for other things
-in the light shaders!
-<p>
-Point-, Distant-, and Spotlights:<label id="pdsl">
-<p>
-These (standard) light sources have well defined parameters that
-will be displayed in the <tt/"LightAttr"/ property.
-Please refer to the RenderMan documentation for more information
-about the standard light sources (see section
-<ref id="secref" name="references">).
-<p>
-In contrast to the light sources as defined in the RenderMan
-interface, Ayam light sources are always global by default. This
-means, regardless of the place of a light source in the scene
-hierarchy, it will always light all other objects (unless the
-<tt/"IsLocal"/ attribute is used).
-<p>
-Note that you can not preview the effect of a light source in
-shaded Ayam views, currently. However it is possible to estimate
-the effect of a spot light source by simply dropping it into
-a perspective view window, the view will then show you the objects
-lit by the spot.
-<p>
-The following table briefly lists some capabilities of the Light object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Light|Yes|No|N/A|Yes@<hline>
-</tabular>
-<caption>Light Object Capabilities</caption>
-</table>
-<p>
-
-<sect2>LightAttr Property<label id="lip"><label id="lightattrprop">
-<p>
-Depending on the type of the light source, the light attribute
-property contains different parameters. Parameters that
-are not displayed will not be used on RIB export, consequently.
-<p>
-Using <tt/"Type"/ you can change the type of the light source.
-When you change the type of a light source, the property GUI will
-be adapted to show only the options available for the new light
-source type, but only after you used the <tt/"Apply"/-button.
-<p>
-<tt/"IsOn"/ allows you to switch the light off or on. The default
-value is on.
-<p>
-<tt/"IsLocal"/ controls whether the light source should light
-just local objects (objects, that are defined in the same level
-in the scene hierarchy as the light source object or below it) or
-all objects in the scene.
-The default is off, all objects in the scene are lit!
-The <tt/"IsLocal"/ attribute is ignored for lights that are
-defined in the root level of the scene. Mind also that shadow maps
-will always contain shadows from all objects in the scene,
-regardless of the <tt/"IsLocal"/ attribute of the light source.
-<p>
-Using the light attribute <tt/"Shadows"/ you may determine
-whether the light source should cast shadows.
-The default is off, no shadows! Note that this option will not
-magically enable shadows on renderers that create shadows by
-shadow maps. It will merely be interpreted by raytracing
-renderers like BMRT.
-<p>
-The attribute <tt/"Samples"/ determines the number of times to sample
-an area light source, independent of pixel samples, the default value
-is 1. This attribute is available for custom lights only!
-<p>
-<tt/"UseSM"/ determines, whether shadow maps should be created
-and used for this light source. The resolution of the
-shadow map may be determined by the attribute <tt/"SMRes"/. If
-<tt/"SMRes"/ is 0, a default of 256 by 256 pixels will be used.
-These options are for renderers that do not support raytraced
-shadows like PRMan or Aqsis only.
-<p>
-For lights of type <tt/"Distant"/ the <tt/"Scale"/ attributes
-of the <tt/"Transformations"/ property of the light
-object may be used to scale the camera transformation
-used for the creation of the corresponding shadow map.
-Values of 1 for <tt/"Scale_X"/ and <tt/"Scale_Y"/ create
-a shadow map that is sized 1 by 1 units in world space.
-<p>
-All other parameters that may appear in the <tt/"LightAttr"/
-property are the standard parameters for the standard RenderMan
-light sources: distant, point, and spot:
-<itemize>
-<item><tt/"From"/ and <tt/"To"/ denote position and target of the light
-source as point in space. You may edit both points using standard
-point editing actions (see also section
-<ref id="iac" name="interactive actions">).
-<item><tt/"Color"/ is the color of the light emitted by the light source.
-<item><tt/"Intensity"/ is the intensity of the light emitted by the
-light source. Note that the standard point and spot lights have
-a quadratic falloff (with distance), that requires the intensity
-to be set to quite high values in order to achieve some
-illumination effect (e.g. around 30 for the standard distance of
-<tt/"From"/ and <tt/"To"/ of a spot light).
-<item><tt/"ConeAngle"/ is the angle of the beam of a spot light.
-<item><tt/"ConeDAngle"/ (cone delta angle) is the angle that determines a
-falloff area at the edge of the beam of a spot light.
-<item><tt/"BeamDistrib"/ (beam distribution) determines, how the light
-falls off in the beam of the spot light. Larger values result in narrower
-lit areas.
-</itemize>
-
-In order to ease the parameterisation of spot lights, you may drop the
-light source object onto a view object or into a view window
-(preferably one with a perspective viewing transformation and with equal
-width and height) to see what objects of the scene are actually lit
-by the light object.
-
-<sect2>Using ShadowMaps<label id="shadowmaps">
-<p>
-Using shadow maps requires the global preference setting
-<tt>"RIB-Export/ShadowMaps"</tt> to be switched on.
-Furthermore, for each light source for which a shadow map should be
-created, the attributes <tt/"IsOn"/ and <tt/"UseSM"/ have to be
-switched on.
-<p>
-<bf>Automatic Creation of ShadowMaps</bf>
-<p>
-If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
-<tt>"Automatic"</tt>,
-Ayam will create a special version of the RIB on export, that creates
-all shadow maps automatically upon rendering. This is done by rendering
-depth images from the position of every light source that casts shadows.
-Special light source shaders later pick up these depth images
-and calculate shadows.
-This approach implies, that the scene is rendered multiple times.
-To reduce the size of the RIB, the objects to be rendered
-are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
-This file is read from the main RIB several times via
-<tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
-also be rendered separately if the frame number is known.
-To help you picking the right frame number for the image (e.g.
-to re-render just the final image, when only a material setting was
-changed, and no shadow casting lights were moved and no shadow casting
-geometry was changed),
-a comment with the frame number of the last frame (the image) will be
-written as last statement to the RIB.
-<p>
-Because multiple files (RIBs and shadow maps) are used, it is suggested
-to change the preference setting <tt>"RIB-Export/RIBFile"</tt> to
-<tt>"Scenefile"</tt>. This will strip the leading absolute path component
-from the filenames so that you may move the exported scene from one
-system to another more easily.
-<p>
-Do not render directly from a view window to the display when the
-<tt/"ShadowMaps"/ <tt/"RIB-Export"/ preference option is set to
-<tt>"Automatic"</tt>.
-Your renderer may not write image files when the command line option
-to render directly to the display (-d for rendrib, or -fb for Aqsis) is
-in use. Consequently, this may also inhibit writing of the shadow maps,
-so that the resulting image will look wrong, or the renderer will render
-the shadow map to the display and simply stop.
-<p>
-<bf>Manual Creation of ShadowMaps</bf>
-<p>
-If the preference setting <tt>"RIB-Export/ShadowMaps"</tt> is set to
-<tt>"Manual"</tt>,
-the exported scene will not render the shadow maps but rather
-expects them to be present already. You can create them manually
-(hence the name <tt>"Manual"</tt>) using the view menu entries
-<tt>"View/Create ShadowMap"</tt>, <tt>"View/Create All ShadowMaps"</tt>
-or the main menu entries
-<tt>"Special/RIB-Export/Create ShadowMap"</tt>,
-<tt>"Special/RIB-Export/Create All ShadowMaps"</tt>.
-The manual approach has the advantage, that the shadow maps will not
-be re-created each time you render the scene.
-<p>
-<bf>ShadowMap Types</bf>
-<p>
-Ayam supports three different methods for the creation of shadow maps
-for certain types of light sources: point, distant, and spot:
-<p>
-The point method is used with
-lights of type <tt>"Point"</tt> and custom lights that have a light
-shader argument named "from".
-Six shadow maps pointing in all possible axis aligned
-directions and named <tt>"&lt;rib&gt;.point&lt;num&gt;_&lt;dir&gt;.shd"</tt>
-(where <tt>"&lt;rib&gt;"</tt> is the name of the RIB,
-<tt>"&lt;num&gt;"</tt> is the number of the light source that makes
-use of shadow maps and <tt>"&lt;dir&gt;"</tt> is one of
-<tt/"x+"/, <tt/"x-"/, <tt/"y+"/, <tt/"y-"/, <tt/"z+"/, or <tt/"z-"/)
-will be created.
-<p>
-The distant method is used with lights of type <tt>"Distant"</tt>
-and custom lights that have a light
-shader argument named "from" and a light
-shader argument named "to".
-One shadow map is created and named
-<tt>"&lt;rib&gt;.dist&lt;num&gt;.shd"</tt>.
-By default, the size of the shadow map is 1 by 1 units in world space,
-but this may be adapted using the scale transformation attributes of
-the light object.
-<p>
-The spot method is used with lights of type <tt>"Spot"</tt>
-and custom lights that have a light
-shader argument named "from", a light
-shader argument named "to", and a light shader argument named "coneangle".
-One shadow map is created and named
-<tt>"&lt;rib&gt;.spot&lt;num&gt;.shd"</tt>.
-The spot method uses the cone angle (and additionally the delta cone
-angle, if present) argument to determine the size of the shadow map
-in world space.
-<p>
-If a light object of type <tt>"Spot"</tt>, <tt>"Distant"</tt> or
-<tt>"Point"</tt> is used, Ayam automatically changes the name of the
-exported light shader to <tt>"shadowspot"</tt>, <tt>"shadowdistant"</tt>,
-and <tt>"shadowpoint"</tt> respectively. Additionally, the shader
-will be parameterised to use the created shadow maps.
-If the light source is of type <tt>"Custom"</tt>, no automatic renaming
-and adjusting of the shader takes place. This means, you have
-to make sure that the shader really uses the shadow maps, by
-selecting the right shader and parameterising it accordingly.
-See the discussion above for the names of the shadow map files.
-Those file names, most probably, will have to be entered as parameter
-to the light shader.
-<p>
-For example, you will not get any shadows if you use a light source of
-type <tt/"Custom"/ with the normal <tt/"distantlight"/ shader attached,
-even though Ayam is able to create the necessary shadow maps. The
-normal <tt/"distantlight"/ shader just makes no use of the shadow maps.
-You have to manually switch to a shader that
-makes use of the shadow maps (<tt/"shadowdistant"/ in this case) to get
-shadows.
-<p>
-<bf>ShadowMap Mini Tutorial</bf>
-<p>
-Here is a short example for a scene using a shadow map:
-<enum>
-<item>Go to the preferences (section <tt/"RIB-Export"/) and set
-<tt/"ShadowMaps"/ to <tt>"Automatic"</tt>.
-<item>Create two boxes.
-<item>Open the <tt/"Transformations"/ property of the second box.
-<item>Translate it by X: 0.0, Y: -1.0, Z: 0.0.
-<item>Scale it by X: 4.0, Y:1.0, Z:4.0.
-<item>Create a light source.
-<item>Open the <tt/"LightAttr"/ property.
-<item>Change the type to <tt/"Spot"/. Press <tt/"Apply"/.
-<item>Now change the parameters of the spot light to <tt/"IsOn"/: Yes,
-<tt/"Intensity"/: 18.0,
-<tt/"UseSM"/: Yes, <tt/"ConeAngle"/: 45.0, <tt/"BeamDistrib"/: 3.0,
-<tt/"From"/: -2, 2, 2, <tt/"To"/: 1, 0, -1;
-leave all other parameters at their default values.
-<item>Create a new view and make it perspective (Menu:
-<tt>"Type/Perspective"</tt>).
-<item>Export a RIB from that perspective view (Menu:
-<tt>"View/Export RIB"</tt>).
-<item>Render the RIB with a RenderMan compliant renderer, that uses
-shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
-</enum>
-
-This scene is distributed with Ayam as an example scene named
-<tt>"shadowmaps.ay"</tt>.
-<p>
-Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
-tag to your root object if shadow maps are in use. Other renderers might
-require additional tweaking using shadow bias RiOption tags.
-Please consult the documentation of your renderer on how to achieve
-the best results using shadow maps.
-
-<sect2>Using AreaLights<label id="alob">
-<p>
-The common idealized standard light sources <tt/"Point"/, <tt/"Distant"/
-and <tt/"Spot"/ have no own geometric extension in space.
-This means, shadows resulting from such light sources will have sharp
-borders which does not look too natural.
-Good looking soft shadows may be generated using area lights.
-<p>
-Area lights may be created by simply placing a single object as child
-object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
-shader attached:
-<code>
-+-AreaLight(Light)
- \ AreaLightGeometry(Sphere)
-</code>
-This child object determines the geometry, place, <em>and</em> extension
-of the light source.
-According to L. Gritz, Spheres and Cylinders work best as area light
-geometry for BMRT, because of special sampling code.
-<p>
-An example:
-<itemize>
-<item>Create a custom light object.
-<item>Assign the arealight light shader to it.
-<item>Create a sphere.
-<item>Drag and drop the sphere onto the Light object so that it becomes
-a child of the light object.
-<item>Transform the sphere object to your hearts content; the position
-and size of the object determines the position and size of the light source!
-</itemize>
-
-There is an example scene named <tt>"arealight.ay"</tt> distributed with
-Ayam.
-
 <#if out=latex><x/newpage/</#if>
 
 <sect1>NCurve (NURBS Curve) Object<label id="ncurveobj">
@@ -4985,7 +5441,599 @@ NURBS curve using the attribute <tt/"CreateMP"/.
 
 <sect2>RIB Export
 <p>
-NCurve objects never appear in RIB output.
+NCurve objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
+<p>
+The ICurve object creates a global interpolating NURBS curve from n
+3D non-rational ordered data points.
+The curve may be closed, the order of the curve may be configured,
+the parameterisation may be adapted, and end derivatives may be specified.
+The open versions create n+2 NURBS control points, and the closed ones n+3.
+<figure loc="!ht">
+<eps file="pics/icurves.ps" height="7cm">
+<img src="pics/icurves.gif">
+<caption>Different ICurves resulting from identical data point configurations
+(Upper Left: Open, Order 3; Upper Right: Open, Order 4; Lower Left: Closed, Order 3; Lower Right: Closed, Order 4)</caption>
+</figure>
+<p>
+The image above shows some interpolating curves, the left ones
+are of order 3 (quadratic curves), the right ones are of order 4 (cubic
+curves), the upper open, and the lower closed ones. The interpolation
+fidelity for the closed curves was tuned by adjusting the <tt/"SDLen"/
+and <tt/"EDLen"/ parameters (all set to 0.2), see also the discussion
+of the parameters below.
+<p>
+In all parameterisation modes, knot averaging will be used
+to determine the knot vector of the interpolating curve.
+<p>
+Note that the axis of symmetry for closed interpolating curves
+crosses the first data point (in contrast to open interpolating
+or closed approximating curves, where it crosses between the last
+and first data point).
+For example, the closed interpolating curves in the above example
+image are indeed both symmetric, but the axis of symmetry is crossing
+the first and third data point and is, thus, rotated by 45 degrees.
+<p>
+This object makes use of the provide mechanism. It marks itself
+as providing a NCurve object (it creates and uses NURBS curves
+internally anyway) and all other objects that work with
+the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
+able to work with an ICurve object instead of an object
+of type NCurve.
+<p>
+The following table briefly lists some capabilities of the ICurve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ICurve|No|No|NCurve|Yes@<hline>
+</tabular>
+<caption>ICurve Object Capabilities</caption>
+</table>
+<p>
+The following parameters control the interpolation process:
+
+<sect2>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
+<p>
+<itemize>
+<item>The <tt/"Type"/ parameter controls whether the interpolated
+curve should be open or closed.
+
+<item><tt/"Length"/ is the number of data points to interpolate.
+
+<item>The next parameter <tt/"Order"/ determines the desired order of the
+interpolating curve. If the specified order is bigger than the number of
+control points used by the interpolating NURBS curve, then the order is
+silently changed to match the number of control points.
+
+<item>The parameter <tt/"ParamType"/ switches the parameterisation
+between <tt/"Chordal"/ (default), <tt/"Centripetal"/, and <tt/"Uniform"/.
+The centripetal method generates a better parameterisation than
+the default (chordal) if the input data contains sharp turns.
+The uniform method is available since Ayam 1.20 and generates
+worse parameterisations (that lead to wiggles and overshooting)
+in the general case but it might help in some edge cases.
+
+<item><tt/"Derivatives"/ allows to choose between automatic and
+manual derivatives.
+
+
+If automatic derivatives are switched on, the direction of the derivatives
+will be determined from the first, second, second to last, and last
+data points for open curves and from the second and second to last data
+points for closed curves. In addition, the respective derivative
+vector will be scaled by <tt/"SDLen"/ and <tt/"EDLen"/.
+
+If manual dervivatives are is switched on, two more
+editable points appear in the single point editing modes. Those
+additional points directly control the derivatives in the
+endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
+<tt/"EDLen"/ do not influence those derivatives.
+
+<item>The parameters <tt/"SDLen"/ and <tt/"EDLen"/ are used to control
+the length of the first and last derivative (if automatically
+generated from the data points, i.e. when <tt/"Derivatives"/ above is
+switched to automatic).
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
+
+The parameters <tt/"Mode"/, <tt/"Closed"/, and <tt/"IParam"/ are gone
+since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
+by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
+automatically from the desired order.
+
+<sect2>Conversion Support
+<p>
+The interpolating curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ICurve objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
+<p>
+<figure loc="!ht">
+<eps file="pics/acurves.ps" height="7cm">
+<img src="pics/acurves.gif">
+<caption>Different ACurves (Upper Left: ALength 3, Order 3; Upper Right: ALength 4, Order 4; Lower Left: ALength 4, Order 4; Lower Right: ALength 6, Order 3)</caption>
+</figure>
+<p>
+The ACurve object, available since Ayam 1.15, creates an approximating
+NURBS curve with m control points from n 3D non-rational ordered data points
+(see image above).
+The number of data points must be higher than or equal to the number of
+control points used. The approximation algorithm used is a least
+squares approach. If the number of control points approach the number
+of data points, undesired wiggles in the output curve may occur.
+<p>
+This object makes use of the provide mechanism. It marks itself
+as providing a NCurve object (it creates and uses NURBS curves
+internally anyway) and all other objects that work with
+the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
+able to work with an ACurve object instead of an object
+of type NCurve.
+<p>
+The following table briefly lists some capabilities of the ACurve object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ACurve|No|No|NCurve|Yes@<hline>
+</tabular>
+<caption>ACurve Object Capabilities</caption>
+</table>
+<p>
+The following parameters control the approximation process:
+
+<sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
+<p>
+<itemize>
+<item>Using <tt/"Length"/ you determine the number of data points to
+approximate.
+
+<item>Using <tt/"ALength"/ you determine the number of (distinct)
+control points to use for the approximating NURBS curve.
+The total number of distinct control points must be smaller than or equal
+to the number of data points.
+
+<item>The curve can be closed with the parameter <tt/"Closed"/.
+For closed approximations, the total number of control points will
+be <tt/"ALength + Order - 1"/.
+The following table illustrates this relationship.
+
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Length/|<bf/ALength/|<bf/Order/|<bf/Closed/|<bf/Output Length/@<hline>
+10|5|3|No|5@<hline>
+10|5|3|Yes|8@<hline>
+10|4|4|Yes|8@<hline>
+5|4|3|No|4@<hline>
+5|4|3|Yes|7@<hline>
+</tabular>
+<caption>ACurve Parameterisation Examples</caption>
+</table>
+
+<item>For symmetric data point configurations, the approximating curve
+is not necessarily symmetric. With the parameter <tt/"Symmetric"/
+this can be enforced (see image below), albeit at the cost of about
+double runtime and a slightly worse parameterisation.
+<figure loc="!ht">
+<eps file="pics/acurve-sym.ps" height="4cm">
+<img src="pics/acurve-sym.gif">
+<caption>Left: asymmetric ACurve, Right: symmetric ACurve</caption>
+</figure>
+
+<item>The parameter <tt/"Order"/ specifies the desired order
+of the approximating NURBS curve. Currently, only orders higher than
+2 are supported.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
+
+<sect2>Conversion Support
+<p>
+The approximating curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ACurve objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
+<p>
+<figure loc="ht">
+<eps file="pics/ncircles.ps" height="5cm">
+<img src="pics/ncircles.gif">
+<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax 200)</caption>
+</figure>
+<p>
+The NCircle object is available since Ayam 1.12 and creates a
+circular NURBS curve or a circular arc in the XY plane
+centered at the origin with designated radius and start/end angles
+(see image above).
+<p>
+In order to revert the created NURBS curve, since Ayam 1.15,
+the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
+<tt/"TMax"/ -360.0 for a reverse full circle.
+<p>
+The following table briefly lists some capabilities of the NCircle object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+NCircle|No|No|NCurve|No*@<hline>
+</tabular>
+<caption>NCircle Object Capabilities</caption>
+</table>
+<p>
+The following section describes the parameters of the circle or
+arc.
+
+<sect2>NCircleAttr Property<label id="ncircleattrprop">
+<p>
+<itemize>
+<item><tt/"Radius"/ is the radius of the circle.
+
+<item><tt/"TMin"/ (ThetaMin) controls the starting angle of the circle
+or arc to be created. Negative values are allowed.
+
+<item><tt/"TMax"/ (ThetaMax) controls the end angle of the circle
+or arc to be created. Negative values are allowed.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
+
+<sect2>Conversion Support
+<p>
+The circular curve/arc may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+NCircle objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
+<p>
+<figure loc="ht">
+<eps file="pics/concatnc.ps" height="5cm">
+<img src="pics/concatnc.gif">
+<caption>ConcatNC Object (blue) from a Linear Curve and 3 Instances (white)</caption>
+</figure>
+<p>
+The ConcatNC object concatenates all child objects (which should be
+NURBS curves or provide NURBS curves) to a single NURBS curve. Since
+the ConcatNC object also provides a NURBS curve, it is possible to
+use it as child object for another ConcatNC object (with possibly
+different parameters) or as a parameter object for a tool object that
+works with NURBS curves such as Revolve or Extrude.
+<p>
+How does the concatenation process work?
+<p>
+First, the orders of all parameter curves will be elevated to the maximum
+order of all the parameter curves (see section
+<ref id="elevt" name="elevate tool"> for more information on elevation)
+and all curves will be clamped (see section
+<ref id="clat" name="clamp tool"> for more information on clamping).
+If <tt/"FillGaps"/ is enabled (see below), fillet curves will be
+created for every gap between the parameter curves of the ConcatNC object.
+If <tt/"Closed"/ and <tt/"FillGaps"/ are enabled, an additional fillet
+is created to close the curve.
+Then, the control points of all parameter curves and fillets are simply
+copied into a new big control point vector, without checking for double
+points. This means that for parameter curves that touch at their
+respective ends, atleast double control points in the new concatenated
+curve will result.
+<p>
+The knot sequence of the new concatenated curve will be of type
+<tt/"NURBS"/ or a custom knot vector will be computed (depending
+on the setting of <tt/"Knot-Type"/).
+If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
+will differ from the parameter curves if any of the parameter curves has
+a custom knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
+<tt/"Custom"/, the shape of the parameter curves will be preserved.
+<p>
+Attributes like display mode and tolerance for the new concatenated curve
+are simply taken from the first parameter curve.
+<p>
+The following table briefly lists some capabilities of the ConcatNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ConcatNC|NCurve*|No|NCurve|No*@<hline>
+</tabular>
+<caption>ConcatNC Object Capabilities</caption>
+</table>
+<p>
+The following parameters further control the concatenation process:
+
+<sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
+<p>
+<itemize>
+<item>Using <tt/"Closed"/ you may create a closed concatenated curve.
+If <tt/"FillGaps"/ (below) is enabled, an additional fillet will
+be created for the last and the first child curve to close
+the concatenated curve. If <tt/"FillGaps"/ (below) is not enabled,
+the concatenated curve will be closed with the same algorithm
+that is also used by the close curve tool (possibly changing
+the shape again!).
+
+<item><tt/"FillGaps"/, creates fillet curves for all gaps between
+the child curves of the ConcatNC object. The fillet curves will be
+cubic Bezier curves. The direction of the tangents in the endpoints of
+the fillets and the gap enclosing curves will match, so that the
+transition should be G1 continuous.
+
+<item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
+curve will be reversed.
+
+<item><tt/"FTLength"/ determines a scale factor for the tangent vectors
+of the fillets. A value of 1.0 leads to vectors that are as long as
+the matching vectors in the control point arrays of the original curves.
+A value of 0.3 is the default value. You may need to tweak this, if
+you experience discontinuities in the transitions between original
+curves and fillets, especially, if <tt/"Knot-Type"/ (see below) is set to
+<tt/"Custom"/.
+
+<item><tt/"Knot-Type"/ in fact toggles between two different modes
+of concatenation. If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
+with equidistant knots is generated, which leads to a concatenated curve,
+that does not exactly preserve the shape of the original curves.
+If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
+the knot vectors of the original curves, and thus, their
+shape may be preserved completely.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
+
+<sect2>Conversion Support
+<p>
+The concatenated curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ConcatNC objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
+<p>
+<figure loc="ht">
+<eps file="pics/extrnc.ps" height="5cm">
+<img src="pics/extrnc.gif">
+<caption>Extracted Curves (white) from Arbitrarily Shaped Surface (blue)</caption>
+</figure>
+<p>
+The ExtrNC object extracts a NURBS curve from a NURBS patch object,
+for use as parameter object for other tool objects, like e.g.
+Revolve (see image above).
+It also works with NURBS patch providing objects, so that
+the following example hierarchy is valid:
+<code>
+--NPatch
++-Skin
+ +-ExtrNC
+ |\ Instance_of_NPatch(Instance)
+ \ NCurve
+</code>
+Depending on the parameters of the ExtrNC object, the Skin object
+above will have one boundary in common with a boundary or an iso-curve
+of the NPatch object.
+Note that using an instance object of some other surface object
+(as shown in the above example) is in fact the recommended way of using
+the ExtrNC object. Therefore, the main menu entry
+<tt>"Tools/Create/ExtrNC"</tt>
+will automatically create an instance of the currently selected object
+and move it to the newly created ExtrNC object.
+<p>
+As the geometry of the extracted curve is completely defined by
+the master surface, ExtrNC objects do not support own transformation
+attributes (since Ayam 1.19).
+<p>
+Note that the extraction of any curves currently completely ignores
+potentially present trimming information of the NPatch object.
+<p>
+The following table briefly lists some capabilities of the ExtrNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+ExtrNC|NPatch|No|NCurve|No*@<hline>
+</tabular>
+<caption>ExtrNC Object Capabilities</caption>
+</table>
+<p>
+The extraction process is controlled by the following attributes:
+
+<sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
+<p>
+<itemize>
+<item><tt/"Side"/ controls which curve should be extracted from the
+surface.
+Available values are <tt/"U0"/, <tt/"Un"/: extract upper or lower
+boundary curve (along width); <tt/"V0"/, <tt/"Vn"/: extract left or right
+boundary curve (along height); <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1)
+extract curve along width and height respectively at specified parametric
+value (see below).
+<p>
+Since Ayam 1.13 it is also possible to extract the complete boundary
+curve of the patch (<tt/"Boundary"/).
+<p>
+Since Ayam 1.15 it is also possible to create a curve from the patch
+data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
+(simply the medium of all control points of a patch in the designated
+dimension). This option is useful to re-engineer swept surfaces, delivered
+as simple patches.
+<p>
+Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
+the extraction process just copies the respective boundary control points,
+which only works for clamped knot vectors. To extract a boundary from
+a surface with e.g. a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
+but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
+as <tt/"U"/ uses a different, more expensive, extraction process (which
+involves knot insertion).
+
+<item><tt/"Parameter"/ controls the parametric value in U or V
+direction in the parameter space of the NURBS patch object where the
+curve should be extracted. This parameter is only used when <tt/"Side"/
+is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
+on the knot vectors of the NURBS patch.
+
+<item><tt/"Relative"/ controls whether the parametric value should
+be interpreted in a relative way. If enabled, a parametric value of 0.5
+always extracts from the middle of the knot vector, regardless of the
+actual knot values, and the valid range for <tt/"Parameter"/ is
+then consequently 0.0-1.0.
+This option is available since Ayam 1.15.
+
+<item><tt/"Revert"/ immediately reverts the extracted curve.
+
+<item><tt/"CreatePVN"/ controls creation of a PV tag that contains
+the normals (derived from the surface control points) on the surface.
+This PV tag can then be used to control a 3D offset curve.
+
+<item><tt/"PatchNum"/ allows to select a patch from a list of
+patches delivered e.g. by a beveled Extrude object as child
+of the ExtrNC object.
+This way it is possible to extract a curve from a bevel or cap
+surface of e.g. said Extrude object.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the extracted NURBS curve.
+</itemize>
+<p>
+See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
+
+<sect2>Conversion Support
+<p>
+The extracted curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+ExtrNC objects never directly appear in RIB output (only indirectly as trim
+curve).
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
+<p>
+<figure loc="ht">
+<eps file="pics/offnc.ps" height="5cm">
+<img src="pics/offnc.gif">
+<caption>Offset Curves (white) from NURBS Curves (blue) with Offset 0.2, -0.2, and 0.3</caption>
+</figure>
+<p>
+The OffsetNC object, available since Ayam 1.14, creates offset curves from
+planar NURBS curves using four different algorithms.
+The offset curve will always match the original curve in type, length, order,
+and knots. See also the image above.
+<p>
+The available offset algorithms are:
+
+<bf/<tt/Point//<newline>
+offsets each control point along the normal derived from the surrounding
+control points; the offset curve created by this algorithm may come too
+near the original curve at sharp convex features whose exact forms are
+not preserved well either,
+
+<bf/<tt/Section//<newline>
+this algorithm offsets all control polygon sections in the direction of their
+normal and places new control points at intersection points of the lines
+defined by the offset sections; this algorithm is better in avoiding self
+intersections of the offset curve but the offset curve may be too far away
+from the original curve at sharp convex or concave features
+(regions of high curvature),
+
+<bf/<tt/Hybrid//<newline>
+available since Ayam 1.19, this algorithm offsets the curve two times using
+the Point and Section algorithms and then mixes the results so that the bad
+features of the two algorithms cancel out each other,
+
+<bf/<tt/3DPVN//<newline>
+Since Ayam 1.18 there is a fourth offsetting algorithm available, that
+creates true three dimensional offsets from non planar curves using
+a primitive variable tag that contains normal information for the curve
+(vertex normals). Such tags can be created manually or automatically
+e.g. when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
+<p>
+As the geometry of the offset curve is completely defined by
+the master curve, OffsetNC objects do not support own transformation
+attributes (since Ayam 1.19).
+<p>
+The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
+<p>
+The following table briefly lists some capabilities of the OffsetNC object.
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+OffsetNC|NCurve|No|NCurve|No*@<hline>
+</tabular>
+<caption>OffsetNC Object Capabilities</caption>
+</table>
+<p>
+The following parameters further control the offsetting process:
+
+<sect2>OffsetNCAttr Property<label id="offsetncp"><label id="offsetncattrprop">
+<p>
+<itemize>
+<item>The first parameter <tt/"Mode"/ determines, which algorithm
+to use for the offsetting process.
+
+<item>Using <tt/"Revert"/ you may revert the direction of the
+offset curve.
+
+<item><tt/"Offset"/ determines the distance between original curve and
+offset curve. Negative values are allowed.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+<itemize>
+<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
+of the created NURBS curve.
+</itemize>
+
+<sect2>Conversion Support
+<p>
+The offset curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+OffsetNC objects never directly appear in RIB output (only indirectly as trim
+curve).
 
 <#if out=latex><x/newpage/</#if>
 
@@ -5019,7 +6067,6 @@ NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>NPatch Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>NPatchAttr Property<label id="npattr"><label id="npatchattrprop">
 <p>
@@ -5134,10 +6181,10 @@ as trim curves.
 <sect2>RIB Export
 <p>
 NPatch objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
-PV tags are supported, also trim curves may appear..
+</tscreen>
+PV tags are supported and also trim curves may appear.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -5161,7 +6208,6 @@ IPatch|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>IPatch Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>IPatchAttr Property<label id=ipattr><label id="ipatchattrprop">
 <p>
@@ -5184,8 +6230,8 @@ surfaces in the respective dimension.
 
 <item><tt/"Knot-Type_U"/ and <tt/"Knot-Type_V"/ switches the parameterisation
 between <tt/"Chordal"/ (default), <tt/"Centripetal"/, and <tt/"Uniform"/.
-The centripetal method generates a better parameterisation if the
-input data contains sharp turns.
+The centripetal method generates a better parameterisation than
+the default (chordal) if the input data contains sharp turns.
 The uniform method generates worse parameterisations (that lead to
 wiggles and overshooting)
 in the general case but it might help in some edge cases.
@@ -5236,9 +6282,9 @@ using the main menu entry
 <sect2>RIB Export
 <p>
 IPatch objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -5263,7 +6309,6 @@ BPatch|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>BPatch Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>BPatchAttr Property<label id=bpattr><label id="bpatchattrprop">
 <p>
@@ -5284,9 +6329,9 @@ using the main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 BPatch objects will be exported as bilinear patch primitives:
-<p>
+<tscreen>
 <tt>RiPatch(RI_BILINEAR, ...);</tt>
-<p>
+</tscreen>
 PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -5314,7 +6359,6 @@ PatchMesh|No|Yes|NPatch|Yes@<hline>
 </tabular>
 <caption>PatchMesh Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>PatchMeshAttr Property<label id="pmattr"><label id="patchmeshattrprop">
 <p>
@@ -5369,9 +6413,9 @@ of basis type Catmull-Rom, Hermite or Custom.
 <sect2>RIB Export
 <p>
 PatchMesh objects will be exported as patch mesh primitives:
-<p>
+<tscreen>
 <tt>RiPatchMesh(...);</tt>
-<p>
+</tscreen>
 PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -5416,7 +6460,6 @@ PolyMesh|No|Yes|SDMesh|Yes@<hline>
 </tabular>
 <caption>PolyMesh Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>PolyMeshAttr Property<label id="pomattr"><label id="polymeshattrprop">
 <p>
@@ -5442,7 +6485,7 @@ T-junctions.
 <sect2>RIB Export
 <p>
 PolyMesh objects will be exported as RiPointsGeneralPolygons primitives
-(regardless whether the actual configuration would fit into a simpler
+(regardless of whether the actual configuration would fit into a simpler
 polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
 <p>
 PV tags are supported.
@@ -5494,7 +6537,6 @@ SDMesh|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>SDMesh Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>SDMeshAttr Property<label id="sdmattr"><label id="sdmeshattrprop">
 <p>
@@ -5523,330 +6565,15 @@ attribute is not zero and the <tt/"subdiv"/ plugin is loaded.
 <sect2>RIB Export
 <p>
 SDMesh objects will be exported as subdivision mesh primitives:
-<p>
+<tscreen>
 <tt>RiSubdivisionMesh(...);</tt>
-<p>
+</tscreen>
 PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Instance Object<label id="instanceobj">
-<p>
-Instance objects help to save memory consumption in scenes with many
-similar or repeating objects or transport geometric data across the
-scene hierarchy.
-<p>
-The term instance is unfortunately misleading (and can be very confusing
-if you are accustomed to the terminology of object oriented programming),
-but it is the term that seems to be used and understood by most
-computer graphic artists. A better term would be link, as an instance
-object has the same basic properties as a link in a Unix file system.
-A link is just a pointer to an original file, the same goes for
-an instance object: it is just a pointer to an original object (here
-also called master object).
-A link can be placed anywhere on the file system,
-an instance object can be placed anywhere in the scene hierarchy, and
-additionally, it can be transformed.
-<p>
-Normally, the sole purpose of instance objects is to save space,
-in memory and on the disk. But in the tool object context, instances
-also serve as a means to transport geometric data across the scene
-hierarchy to make tool objects depend on each other (see also section
-<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
-Note that in the tool object context, instance objects are the only
-objects, that are subject to a second round of provision.
-<p>
-The amount of saved space can be very high, depending heavily on the
-actual scene and at what levels in the hierarchy instances are used.
-If there are no similar objects in the scene, however, one can hardly
-utilise instancing. Similar means "the same except for
-the transformation property" in this context.
-<p>
-Some simple rules for instancing:
-
-<itemize>
-<item>No instances may be created of objects of the following types:
-Root, View, Instance, Material, Light. Do not try to fool
-Ayam and create instances of levels that contain aforementioned
-types of objects, things will go awry!
-<item>It is allowed, however, to put some instances
-into a level object and create instances of this level
-(this is sometimes called hierarchical instancing).
-<item>But one may not put instances of a level into the very same
-level or one of its children (this would be recursive instancing,
-which is not supported by Ayam).
-<item>The original/master object may not be deleted from the scene
-as long as there are instances of that object in the scene or in the
-object clipboard.
-</itemize>
-
-If deleting of an object fails, and the error message
-complains about the reference counter not being zero, then
-the last rule was about to be violated. Clean the clipboard using
-the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
-or resolve all references first.
-<p>
-One can resolve an instance object at any time using
-the converter registered for objects of type <tt>Instance</tt> (simply
-select the instance object and use the menu entry
-<tt>"Tools/Convert"</tt>). To resolve all instance objects in a scene
-to normal objects, one can also use the main menu entry:
-<tt>"Special/Instances/Resolve all Instances"</tt>.
-<p>
-Ayam can also create instances for complete scenes automatically
-(see section <ref id="ai" name="Automatic Instancing">).
-<p>
-To easily find the master object of an instance, just select the
-instance, then use the main menu entry: <tt>"Edit/Master"</tt>.
-<!--
-To find out, where in the scene instances of a master object
-exist, select the master object and use the main menu entry
-<tt>"Edit/Master"</tt>.
--->
-<p>
-The following table briefly lists some capabilities of the Instance object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Instance|No|No|Master|No*@<hline>
-</tabular>
-<caption>Instance Object Capabilities</caption>
-</table>
-
-<sect2>Instances without Transformations (References)<label id="referencing">
-<p>
-Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
-in a special way:
-if the <tt>"Transformations"</tt> property is removed using a
-<tt>"RP"</tt> tag, the instance does not provide objects with
-an own set of transformation attributes (to ease hierarchy building
-with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
-pointers to already existing objects are required and where it is
-expected, that the instance reflects the master exactly, including
-its transformation attributes).
-<p>
-The extract curve/surface tools automatically add such a tag to the
-instances they create.
-<p>
-To create such a tag manually, select the Instance object and enter
-into the Ayam console:
-<code>
-addTag RP Transformations
-</code>
-.
-<p>
-This special case of an instance is sometimes also called reference.
-
-<sect2>Instances and the Object Clipboard
-<p>
-It is not possible to copy a master object and some instances
-of it, so that the new instances point to the newly created master.
-All copies of instance objects always point to the same original
-master object.
-<p>
-For example, when the following two objects are copied and pasted back to the
-scene
-<code>
---NCurve   <-----
-                 |
---Instance  -----
-</code>
-the following scene hierarchy results:
-<code>
---NCurve   <-------
-                 | |
---Instance  -----  |
-                   | !
---NCurve           |
-                   |
---Instance  -------
-</code>
-The new instance still points to the original master and <em>not</em>
-to the copy of the master.
-<p>
-It is possible to move masters and instances through the scene hierarchy
-using drag and drop in the tree view or using the clipboard with
-<tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
-
-<sect2>RIB Export
-<p>
-The RIB export of instances does <em>not</em> use the RiInstance facility
-of the RenderMan interface, but rather the more flexible ReadArchive
-mechanism.
-<p>
-This means, every master object in the scene will be written
-in a separate archive (RIB file) on disk, and every instance will
-cause that archive file to be read when rendering the RIB file.
-You can change this behaviour using the RIB export preference setting
-<tt/"ResInstances"/: If <tt/"ResInstances"/ is enabled, all instances
-will be resolved temporarily to normal objects before being exported
-to RIB. The resulting RIB file will then be self contained.
 
 <#if out=latex><x/newpage/</#if>
-
-<sect1>Clone Object<label id="cloneobj">
-<p>
-<figure loc="ht">
-<eps file="pics/clone.ps" height="5cm">
-<img src="pics/clone.gif">
-<caption>Clone Object (blue) with Trajectory Curve (white)</caption>
-</figure>
-<p>
-The Clone object allows to easily create and control an arbitrary
-number of instances of a single object, hereafter called the cloned
-object.
-The instances can be transformed (each by a certain amount expressed
-as difference between two instances) or placed on a trajectory curve
-(see also the image above).
-<p>
-If a second object is present as child of the Clone object it is treated
-as trajectory (or path) curve automatically.
-The process of placing the clones on the trajectory is very similar
-to the sweeping operation
-(see also section <ref id="sweepobj" name="Sweep Object">).
-<p>
-Thus, the default object hierarchy of a Clone object looks like this:
-<code>
-+-Clone
- | Cloned-Object
- \ [Trajectory(NCurve)]
-</code>
-If you use a trajectory curve to place the clones, you may want
-to hide the cloned object and also add a <tt/"NoExport"/ tag to it.
-Otherwise the original object will appear twice, on the trajectory and
-on its normal, untransformed, position. Note that the transformation
-attributes of the cloned object will be completely overwritten when
-placing the clones on the trajectory curve. If the cloned object has
-distinct scale or rotation attributes it should be put inside a level
-object like this:
-<code>
-+-Clone
- +-Level
- |\ Cloned-Object with non-standard Scale/Rotation
- \ Trajectory(NCurve)
-</code>
-<p>
-It is not possible to create clones from objects that may not
-be master objects of instance objects (e.g. light objects or
-material objects). However, (since Ayam 1.7) it is possible to use
-instances as parameter objects.
-<p>
-If an instance object is used as cloned object on a trajectory
-it can be placed in a level and the <tt/"NoExport"/ tag can
-be added to the level object (as adding tags to Instance objects is
-more involved), see the following hierarchy for an example:
-<code>
-+-Clone
- +-Level with NoExport tag
- |\ Instance
- \ Trajectory(NCurve)
-</code>
-<p>
-Since Ayam 1.20 the mirror facility of the Clone object is realized
-through the new Mirror object (see also
-section <ref id="mirrorobj" name="Mirror Object">).
-<p>
-The following table briefly lists some capabilities of the Clone object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Any+|No|Children+|No*@<hline>
-</tabular>
-<caption>Clone Object Capabilities</caption>
-</table>
-<p>
-The following attributes further control the cloning process:
-
-<sect2>CloneAttr Property<label id="cloneattr"><label id="cloneattrprop">
-<p>
-<itemize>
-<item><tt/"NumClones"/ is the number of clones to create.
-<item><tt/"Rotate"/ is only used, if a trajectory curve is present.
-If it is enabled all clones will be aligned according to the normal of
-the trajectory curve.
-
-<item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
-<tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
-<tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
-those attributes control the transformation of the instances created by
-the Clone object. Note that the attributes specify difference values
-between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
-<tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous clone <tt/"n"/.
-It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
-and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
-to the previous clone. Note however, that the transformation attributes
-do not affect the first clone.
-<p>
-Since Ayam 1.13 the transformation attributes are also used if a trajectory
-curve is present.
-</itemize>
-The following table summarizes which transformation attributes are used
-in the respective clone modes.
-
-<table loc="ht">
-<tabular ca="|c|c|c|c|"><hline>
-<bf/Mode/|<bf/Use Child Transform/|<bf/Use CloneAttrib Transform/|<bf/Use Clone Transform/@<hline>
-Clone|No|Yes|Yes@<hline>
-Trajectory|Yes|Yes|Yes@<hline>
-Mirror|Yes|N/A|Yes@<hline>
-</tabular>
-<caption>Clone Parameterisation Examples</caption>
-</table>
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>Mirror Object<label id="mirrorobj">
-<p>
-<figure loc="ht">
-<eps file="pics/mirror.ps" height="4cm">
-<img src="pics/mirror.gif">
-<caption>Mirrored Object (blue) From Curve (white)</caption>
-</figure>
-<p>
-The Mirror object allows to easily create and control an arbitrary
-number of mirrored instances of a number of objects.
-<p>
-The original object(s)
-<em>and</em> their mirrored counterparts will be
-provided by the Mirror object to the respective parent object (normally,
-tool objects do not provide their unmodified children).
-Additionally, the order of the mirrored objects will be reversed so that
-it is possible to use a single Mirror object (with one or multiple NURBS
-curves as children) as parameter object of e.g. a Skin object:
-<code>
-+-Skin
- +-Mirror
-  \ NCurve
-+-Skin
- +-Mirror
-  | NCurve_1(NCurve)
-  | NCurve_2(NCurve)
-  \ NCurve_3(NCurve)
-</code>
-The first Skin object in the above example can only work, because also
-the unmodified NCurve is provided by the Mirror object. The second Skin
-object can only work properly, because the order of the provided objects
-is reversed, so that it gets to see the curves in the following sequence:
-<tt/"NCurve_1"/, <tt/"NCurve_2"/, <tt/"NCurve_3"/, <tt/"Mirrored_NCurve_3"/,
-<tt/"Mirrored_NCurve_2"/, <tt/"Mirrored_NCurve_1"/.
-<p>
-The following table briefly lists some capabilities of the Mirror object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Mirror|Any+|No|Children+|No*@<hline>
-</tabular>
-<caption>Mirror Object Capabilities</caption>
-</table>
-<p>
-The following attributes further control the mirror process:
-
-<sect2>MirrorAttr Property<label id="mirrorattr"><label id="mirrorattrprop">
-<p>
-<itemize>
-<item><tt/"Plane"/ allows to select the plane about which the mirroring
-should occur (YZ-, XZ-, or XY-plane).
-</itemize>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -5896,7 +6623,6 @@ Revolve|NCurve|Yes|NPatch+|No*@<hline>
 </tabular>
 <caption>Revolve Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
 <p>
@@ -5951,9 +6677,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Revolve objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
@@ -6018,7 +6744,6 @@ Extrude|NCurve+|Yes|NPatch+|No*@<hline>
 </tabular>
 <caption>Extrude Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>ExtrudeAttr Property<label id="extrattr"><label id="extrudeattrprop">
 <p>
@@ -6099,9 +6824,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Extrude objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
@@ -6152,7 +6877,6 @@ Swing|NCurve*|Yes|NPatch+|No*@<hline>
 </tabular>
 <caption>Swing Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>SwingAttr Property<label id="swingattrprop">
 <p>
@@ -6184,9 +6908,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Swing objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
@@ -6282,7 +7006,6 @@ Sweep|NCurve*|Yes|NPatch+|No*@<hline>
 </tabular>
 <caption>Sweep Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
@@ -6379,9 +7102,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Sweep objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: start bevel, start cap,
 end bevel, end cap.
@@ -6518,9 +7241,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Birail1 objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
@@ -6678,9 +7401,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Birail2 objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
@@ -6821,9 +7544,9 @@ same order as created upon conversion.
 <sect2>RIB Export
 <p>
 Skin objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
@@ -6984,9 +7707,9 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 Gordon objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -7101,9 +7824,9 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 Bevel objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -7190,588 +7913,10 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 Cap objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>ICurve (Interpolating Curve) Object<label id="icurveobj">
-<p>
-The ICurve object creates a global interpolating NURBS curve from n
-3D non-rational ordered data points.
-The curve may be closed, the order of the curve may be configured,
-the parameterisation may be adapted, and end derivatives may be specified.
-The open versions use n+2 NURBS control points, and the closed ones n+3.
-<figure loc="!ht">
-<eps file="pics/icurves.ps" height="7cm">
-<img src="pics/icurves.gif">
-<caption>Different ICurves resulting from identical data point configurations
-(Upper Left: Open, Order 3; Upper Right: Open, Order 4; Lower Left: Closed, Order 3; Lower Right: Closed, Order 4)</caption>
-</figure>
-<p>
-The image above shows some interpolating curves, the left ones
-are of order 3 (quadratic curves), the right ones are of order 4 (cubic
-curves), the upper open, and the lower closed ones. The interpolation
-fidelity for the closed curves was tuned by adjusting the <tt/"SDLen"/
-and <tt/"EDLen"/ parameters (all set to 0.2), see also the discussion
-of the parameters below.
-<p>
-In all parameterisation modes, knot averaging will be used
-to determine the knot vector of the interpolating curve.
-<p>
-Note that the axis of symmetry for closed interpolating curves
-crosses the first data point (in contrast to open interpolating
-or closed approximating curves, where it crosses between the last
-and first data point).
-For example, the closed interpolating curves in the above example
-image are indeed both symmetric, but the axis of symmetry is crossing
-the first and third data point and is, thus, rotated by 45 degrees.
-<p>
-This object makes use of the provide mechanism. It marks itself
-as providing a NCurve object (it creates and uses NURBS curves
-internally anyway) and all other objects that work with
-the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
-able to work with an ICurve object instead of an object
-of type NCurve.
-<p>
-The following table briefly lists some capabilities of the ICurve object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ICurve|No|No|NCurve|Yes@<hline>
-</tabular>
-<caption>ICurve Object Capabilities</caption>
-</table>
-<p>
-The following parameters control the interpolation process:
-
-<sect2>ICurveAttr Property<label id="icp"><label id="icurveattrprop">
-<p>
-<itemize>
-<item>The <tt/"Type"/ parameter controls whether the interpolated
-curve should be open or closed.
-
-<item><tt/"Length"/ is the number of data points to interpolate.
-
-<item>The next parameter <tt/"Order"/ determines the desired order of the
-interpolating curve. If the specified order is bigger than the number of
-control points used by the interpolating NURBS curve, then the order is
-silently changed to match the number of control points.
-
-<item>The parameter <tt/"ParamType"/ switches the parameterisation
-between <tt/"Chordal"/ (default), <tt/"Centripetal"/, and <tt/"Uniform"/.
-The centripetal method generates a better parameterisation if the
-input data contains sharp turns.
-The uniform method is available since Ayam 1.20 and generates
-worse parameterisations (that lead to wiggles and overshooting)
-in the general case but it might help in some edge cases.
-
-<item>The parameters <tt/"SDLen"/ and <tt/"EDLen"/ are used to control
-the length of the first and last derivative (if automatically
-generated from the data points, i.e. when <tt/"Derivatives"/ below is
-switched off).
-
-<item>If the parameter <tt/"Derivatives"/ is switched on, two more
-editable points appear in the single point editing modes. Those
-additional points directly control the derivatives in the
-endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
-<tt/"EDLen"/ do not influence those derivatives.
-If this parameter is switched off, the direction of the derivatives
-will be determined from the first, second, second to last, and last
-data points automatically.
-
-<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the created NURBS curve.
-</itemize>
-
-The parameters <tt/"Mode"/, <tt/"Closed"/, and <tt/"IParam"/ are gone
-since Ayam 1.16. <tt/"Closed"/ was replaced by <tt/"Type"/, <tt/"IParam"/
-by <tt/"SDLen"/ and <tt/"EDLen"/, and the <tt/"Mode"/ is now determined
-automatically from the desired order.
-
-<sect2>Conversion Support
-<p>
-The interpolating curve may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-ICurve objects never appear in RIB output.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>ACurve (Approximating Curve) Object<label id="acurveobj">
-<p>
-<figure loc="!ht">
-<eps file="pics/acurves.ps" height="7cm">
-<img src="pics/acurves.gif">
-<caption>Different ACurves (Upper Left: ALength 3, Order 3; Upper Right: ALength 4, Order 4; Lower Left: ALength 4, Order 4; Lower Right: ALength 6, Order 3)</caption>
-</figure>
-<p>
-The ACurve object, available since Ayam 1.15, creates an approximating
-NURBS curve with m control points from n 3D non-rational ordered data points
-(see image above).
-The number of data points must be higher than or equal to the number of
-control points used. The approximation algorithm used is a least
-squares approach. If the number of control points approach the number
-of data points, undesired wiggles in the output curve may occur.
-<p>
-This object makes use of the provide mechanism. It marks itself
-as providing a NCurve object (it creates and uses NURBS curves
-internally anyway) and all other objects that work with
-the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
-able to work with an ACurve object instead of an object
-of type NCurve.
-<p>
-The following table briefly lists some capabilities of the ACurve object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ACurve|No|No|NCurve|Yes@<hline>
-</tabular>
-<caption>ACurve Object Capabilities</caption>
-</table>
-<p>
-The following parameters control the approximation process:
-
-<sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
-<p>
-<itemize>
-<item>Using <tt/"Length"/ you determine the number of data points to
-approximate.
-
-<item>Using <tt/"ALength"/ you determine the number of (distinct)
-control points to use for the approximating NURBS curve.
-The total number of distinct control points must be smaller than or equal
-to the number of data points.
-
-<item>The curve can be closed with the parameter <tt/"Closed"/.
-For closed approximations, the total number of control points will
-be <tt/"ALength + Order - 1"/.
-The following table illustrates this relationship.
-
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Length/|<bf/ALength/|<bf/Order/|<bf/Closed/|<bf/Output Length/@<hline>
-10|5|3|No|5@<hline>
-10|5|3|Yes|8@<hline>
-10|4|4|Yes|8@<hline>
-5|4|3|No|4@<hline>
-5|4|3|Yes|7@<hline>
-</tabular>
-<caption>ACurve Parameterisation Examples</caption>
-</table>
-
-<item>For symmetric data point configurations, the approximating curve
-is not necessarily symmetric. With the parameter <tt/"Symmetric"/
-this can be enforced (see image below), albeit at the cost of about
-double runtime and a slightly worse parameterisation.
-<figure loc="!ht">
-<eps file="pics/acurve-sym.ps" height="4cm">
-<img src="pics/acurve-sym.gif">
-<caption>Left: asymmetric ACurve, Right: symmetric ACurve</caption>
-</figure>
-
-<item>The parameter <tt/"Order"/ specifies the desired order
-of the approximating NURBS curve. Currently, only orders higher than
-2 are supported.
-
-<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the created NURBS curve.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-The approximating curve may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-ACurve objects never appear in RIB output.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>ConcatNC (Concatenate NURBS Curves) Object<label id="concatncobj">
-<p>
-<figure loc="ht">
-<eps file="pics/concatnc.ps" height="5cm">
-<img src="pics/concatnc.gif">
-<caption>ConcatNC Object (blue) from a Linear Curve and 3 Instances (white)</caption>
-</figure>
-<p>
-The ConcatNC object concatenates all child objects (which should be
-NURBS curves or provide NURBS curves) to a single NURBS curve. Since
-the ConcatNC object also provides a NURBS curve, it is possible to
-use it as child object for another ConcatNC object (with possibly
-different parameters) or as a parameter object for a tool object that
-works with NURBS curves such as Revolve or Extrude.
-<p>
-How does the concatenation process work?
-<p>
-First, the orders of all parameter curves will be elevated to the maximum
-order of all the parameter curves (see section
-<ref id="elevt" name="elevate tool"> for more information on elevation)
-and all curves will be clamped (see section
-<ref id="clat" name="clamp tool"> for more information on clamping).
-If <tt/"FillGaps"/ is enabled (see below), fillet curves will be
-created for every gap between the parameter curves of the ConcatNC object.
-If <tt/"Closed"/ and <tt/"FillGaps"/ are enabled, an additional fillet
-is created to close the curve.
-Then, the control points of all parameter curves and fillets are simply
-copied into a new big control point vector, without checking for double
-points. This means that for parameter curves that touch at their
-respective ends, atleast double control points in the new concatenated
-curve will result.
-<p>
-The knot sequence of the new concatenated curve will be of type
-<tt/"NURBS"/ or a custom knot vector will be computed (depending
-on the setting of <tt/"Knot-Type"/).
-If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
-will differ from the parameter curves if any of the parameter curves has
-a custom knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
-<tt/"Custom"/, the shape of the parameter curves will be preserved.
-<p>
-Attributes like display mode and tolerance for the new concatenated curve
-are simply taken from the first parameter curve.
-<p>
-The following table briefly lists some capabilities of the ConcatNC object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve*|No|NCurve|No*@<hline>
-</tabular>
-<caption>ConcatNC Object Capabilities</caption>
-</table>
-<p>
-The following parameters further control the concatenation process:
-
-<sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
-<p>
-<itemize>
-<item>Using <tt/"Closed"/ you may create a closed concatenated curve.
-If <tt/"FillGaps"/ (below) is enabled, an additional fillet will
-be created for the last and the first child curve to close
-the concatenated curve. If <tt/"FillGaps"/ (below) is not enabled,
-the concatenated curve will be closed with the same algorithm
-that is also used by the close curve tool (possibly changing
-the shape again!).
-
-<item><tt/"FillGaps"/, creates fillet curves for all gaps between
-the child curves of the ConcatNC object. The fillet curves will be
-cubic Bezier curves. The direction of the tangents in the endpoints of
-the fillets and the gap enclosing curves will match, so that the
-transition should be G1 continuous.
-
-<item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
-curve will be reversed.
-
-<item><tt/"FTLength"/ determines a scale factor for the tangent vectors
-of the fillets. A value of 1.0 leads to vectors that are as long as
-the matching vectors in the control point arrays of the original curves.
-A value of 0.3 is the default value. You may need to tweak this, if
-you experience discontinuities in the transitions between original
-curves and fillets, especially, if <tt/"Knot-Type"/ (see below) is set to
-<tt/"Custom"/.
-
-<item><tt/"Knot-Type"/ in fact toggles between two different modes
-of concatenation. If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
-with equidistant knots is generated, which leads to a concatenated curve,
-that does not exactly preserve the shape of the original curves.
-If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
-the knot vectors of the original curves, and thus, their
-shape may be preserved completely.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the created NURBS curve.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-The concatenated curve may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-ConcatNC objects never appear in RIB output.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>ExtrNC (Extract NURBS Curve) Object<label id="extrncobj">
-<p>
-<figure loc="ht">
-<eps file="pics/extrnc.ps" height="5cm">
-<img src="pics/extrnc.gif">
-<caption>Extracted Curves (white) from Arbitrarily Shaped Surface (blue)</caption>
-</figure>
-<p>
-The ExtrNC object extracts a NURBS curve from a NURBS patch object,
-for use as parameter object for other tool objects, like e.g.
-Revolve (see image above).
-It also works with NURBS patch providing objects, so that
-the following example hierarchy is valid:
-<code>
---NPatch
-+-Skin
- +-ExtrNC
- |\ Instance_of_NPatch(Instance)
- \ NCurve
-</code>
-Depending on the parameters of the ExtrNC object, the Skin object
-above will have one boundary in common with a boundary or an iso-curve
-of the NPatch object.
-Note that using an instance object of some other surface object
-(as shown in the above example) is in fact the recommended way of using
-the ExtrNC object. Therefore, the main menu entry
-<tt>"Tools/Create/ExtrNC"</tt>
-will automatically create an instance of the currently selected object
-and move it to the newly created ExtrNC object.
-<p>
-As the geometry of the extracted curve is completely defined by
-the master surface, ExtrNC objects do not support own transformation
-attributes (since Ayam 1.19).
-<p>
-Note that the extraction of any curves currently completely ignores
-potentially present trimming information of the NPatch object.
-<p>
-The following table briefly lists some capabilities of the ExtrNC object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNC|NPatch|No|NCurve|No*@<hline>
-</tabular>
-<caption>ExtrNC Object Capabilities</caption>
-</table>
-<p>
-The extraction process is controlled by the following attributes:
-
-<sect2>ExtrNCAttr Property<label id="extrncp"><label id="extrncattrprop">
-<p>
-<itemize>
-<item><tt/"Side"/ controls which curve should be extracted from the
-surface.
-Available values are <tt/"U0"/, <tt/"Un"/: extract upper or lower
-boundary curve (along width); <tt/"V0"/, <tt/"Vn"/: extract left or right
-boundary curve (along height); <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1)
-extract curve along width and height respectively at specified parametric
-value (see below).
-<p>
-Since Ayam 1.13 it is also possible to extract the complete boundary
-curve of the patch (<tt/"Boundary"/).
-<p>
-Since Ayam 1.15 it is also possible to create a curve from the patch
-data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
-(simply the medium of all control points of a patch in the designated
-dimension). This option is useful to re-engineer swept surfaces, delivered
-as simple patches.
-<p>
-Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
-the extraction process just copies the respective boundary control points,
-which only works for clamped knot vectors. To extract a boundary from
-a surface with e.g. a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
-but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
-as <tt/"U"/ uses a different, more expensive, extraction process (which
-involves knot insertion).
-
-<item><tt/"Parameter"/ controls the parametric value in U or V
-direction in the parameter space of the NURBS patch object where the
-curve should be extracted. This parameter is only used when <tt/"Side"/
-is <tt/"U"/ or <tt/"V"/. The valid range of parameter values depends
-on the knot vectors of the NURBS patch.
-
-<item><tt/"Relative"/ controls whether the parametric value should
-be interpreted in a relative way. If enabled, a parametric value of 0.5
-always extracts from the middle of the knot vector, regardless of the
-actual knot values, and the valid range for <tt/"Parameter"/ is
-then consequently 0.0-1.0.
-This option is available since Ayam 1.15.
-
-<item><tt/"Revert"/ immediately reverts the extracted curve.
-
-<item><tt/"CreatePVN"/ controls creation of a PV tag that contains
-the normals (derived from the surface control points) on the surface.
-This PV tag can then be used to control a 3D offset curve.
-
-<item><tt/"PatchNum"/ allows to select a patch from a list of
-patches delivered e.g. by a beveled Extrude object as child
-of the ExtrNC object.
-This way it is possible to extract a curve from a bevel or cap
-surface of e.g. said Extrude object.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the extracted NURBS curve.
-</itemize>
-<p>
-See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
-
-<sect2>Conversion Support
-<p>
-The extracted curve may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-ExtrNC objects never appear in RIB output.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>NCircle (NURBS Circle) Object<label id="ncircleobj">
-<p>
-<figure loc="ht">
-<eps file="pics/ncircles.ps" height="5cm">
-<img src="pics/ncircles.gif">
-<caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax 200)</caption>
-</figure>
-<p>
-The NCircle object is available since Ayam 1.12 and creates a
-circular NURBS curve or a circular arc in the XY plane
-centered at the origin with designated radius and start/end angles
-(see image above).
-<p>
-In order to revert the created NURBS curve, since Ayam 1.15,
-the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
-<tt/"TMax"/ -360.0 for a reverse full circle.
-<p>
-The following table briefly lists some capabilities of the NCircle object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NCircle|No|No|NCurve|No*@<hline>
-</tabular>
-<caption>NCircle Object Capabilities</caption>
-</table>
-<p>
-The following section describes the parameters of the circle or
-arc.
-
-<sect2>NCircleAttr Property<label id="ncircleattrprop">
-<p>
-<itemize>
-<item><tt/"Radius"/ is the radius of the circle.
-
-<item><tt/"TMin"/ (ThetaMin) controls the starting angle of the circle
-or arc to be created. Negative values are allowed.
-
-<item><tt/"TMax"/ (ThetaMax) controls the end angle of the circle
-or arc to be created. Negative values are allowed.
-
-<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the created NURBS curve.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-The circular curve/arc may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-NCircle objects never appear in RIB output.
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>OffsetNC (Offset NURBS Curves) Object<label id="offsetncobj">
-<p>
-<figure loc="ht">
-<eps file="pics/offnc.ps" height="5cm">
-<img src="pics/offnc.gif">
-<caption>Offset Curves (white) from NURBS Curves (blue) with Offset 0.2, -0.2, and 0.3</caption>
-</figure>
-<p>
-The OffsetNC object, available since Ayam 1.14, creates offset curves from
-planar NURBS curves using four different algorithms.
-The offset curve will always match the original curve in type, length, order,
-and knots. See also the image above.
-<p>
-The available offset algorithms are:
-
-<bf/<tt/Point//<newline>
-offsets each control point along the normal derived from the surrounding
-control points; the offset curve created by this algorithm may come too
-near the original curve at sharp convex features whose exact forms are
-not preserved well either,
-
-<bf/<tt/Section//<newline>
-this algorithm offsets all control polygon sections in the direction of their
-normal and places new control points at intersection points of the lines
-defined by the offset sections; this algorithm is better in avoiding self
-intersections of the offset curve but the offset curve may be too far away
-from the original curve at sharp convex or concave features
-(regions of high curvature),
-
-<bf/<tt/Hybrid//<newline>
-available since Ayam 1.19, this algorithm offsets the curve two times using
-the Point and Section algorithms and then mixes the results so that the bad
-features of the two algorithms cancel out each other,
-
-<bf/<tt/3DPVN//<newline>
-Since Ayam 1.18 there is a fourth offsetting algorithm available, that
-creates true three dimensional offsets from non planar curves using
-a primitive variable tag that contains normal information for the curve
-(vertex normals). Such tags can be created manually or automatically
-e.g. when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
-<p>
-As the geometry of the offset curve is completely defined by
-the master curve, OffsetNC objects do not support own transformation
-attributes (since Ayam 1.19).
-<p>
-The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
-<p>
-The following table briefly lists some capabilities of the OffsetNC object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-OffsetNC|NCurve|No|NCurve|No*@<hline>
-</tabular>
-<caption>OffsetNC Object Capabilities</caption>
-</table>
-<p>
-The following parameters further control the offsetting process:
-
-<sect2>OffsetNCAttr Property<label id="offsetncp"><label id="offsetncattrprop">
-<p>
-<itemize>
-<item>The first parameter <tt/"Mode"/ determines, which algorithm
-to use for the offsetting process.
-
-<item>Using <tt/"Revert"/ you may revert the direction of the
-offset curve.
-
-<item><tt/"Offset"/ determines the distance between original curve and
-offset curve. Negative values are allowed.
-
-<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
-of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
-</itemize>
-<itemize>
-<item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
-of the created NURBS curve.
-</itemize>
-
-<sect2>Conversion Support
-<p>
-The offset curve may be converted to an ordinary NURBS curve using the
-main menu entry <tt>"Tools/Convert"</tt>.
-
-<sect2>RIB Export
-<p>
-OffsetNC objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7801,6 +7946,7 @@ ConcatNP|NPatch*|Yes|NPatch|No*@<hline>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
+<p>
 The following parameters further control the concatenation process:
 
 <sect2>ConcatNPAttr Property<label id="concatnpp"><label id="concatnpattrprop">
@@ -7828,9 +7974,9 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 ConcatNP objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -7916,9 +8062,9 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 ExtrNP objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -7976,9 +8122,9 @@ main menu entry <tt>"Tools/Convert"</tt>.
 <sect2>RIB Export
 <p>
 OffsetNP objects will be exported as NURBS patch primitives:
-<p>
+<tscreen>
 <tt>RiNuPatch(...);</tt>
-<p>
+</tscreen>
 PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
@@ -8070,61 +8216,48 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>RiInc Object<label id="riincobj">
+<sect1>Trim Object<label id="trimobj">
 <p>
-RiInc objects may be used to include objects or whole scene parts into your
-scenes that, for some reason, are just available as a piece of RIB.
+The Trim object, available since Ayam 1.16, may be used in hierarchies
+of tool objects to trim NURBS patch providing objects otherwise
+unavailable to trimming like e.g. a Revolve object.
+The first child of the Trim object is the NURBS patch providing object
+and the second object is the trim curve (defined in the parametric
+space of the NURBS surface). More curves and loops may follow.
+All curves must obey the rules for trimming as outlined in section
+<ref id="trim" name="Trim Curves">).
+The surface may already be trimmed and there may be multiple provided
+patches, however only one of them will be trimmed by the Trim object.
 <p>
-The following table briefly lists some capabilities of the RiInc object.
+The object hierarchy of a Trim object, thus, looks like this:
+<code>
++-Trim
+ | Surface(Revolve)
+ | Trim_1(NCurve)
+ +-[Trim_2(Level)
+ | | NCurve
+ | \ NCurve
+ | ...
+ \ Trim_n(ICurve)]
+</code>
+<p>
+The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiInc|No|No|N/A|No@<hline>
+Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
 </tabular>
-<caption>RiInc Object Capabilities</caption>
+<caption>Trim Object Capabilities</caption>
 </table>
 <p>
-The following attributes control the inclusion:
+The following parameters further control the trimming process:
 
-<sect2>RiIncAttr Property<label id="riincp"><label id="riincattrprop">
+<sect2>TrimAttrib Property<label id="trimp"><label id="trimattribprop">
 <p>
 <itemize>
-<item>Using <tt/"File"/ you specify the filename of the RIB to be included.
-<item><tt/"Width"/, <tt/"Height"/, and <tt/"Length"/ specify
-the size of a box, that will be drawn as a geometric representation of
-the RIB.
-</itemize>
-
-<sect1>RiProc Object<label id="riprocobj">
-<p>
-RiProc objects may be used to include procedural objects or external
-archives into your scenes.
-<p>
-The following table briefly lists some capabilities of the RiProc object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiProc|No|No|N/A|No@<hline>
-</tabular>
-<caption>RiProc Object Capabilities</caption>
-</table>
-<p>
-The following attributes control the RiProc object:
-
-<sect2>RiProcAttr Property<label id="riprocp"><label id="riprocattrprop">
-<p>
-<itemize>
-<item><tt/"Type"/ defines the type of the procedural object which is
-one of <tt/"DelayedReadArchive"/, <tt/"RunProgram"/, or
-<tt/"DynamicLoad"/.
-<item>Using <tt/"File"/ you specify the filename of the RIB archive,
-program, or dynamic shared object (depending on the type of the
-procedural object).
-<item>Using <tt/"Data"/ additional arguments may be supplied to
-procedural objects of type <tt/"RunProgram"/ and <tt/"DynamicLoad"/.
-<item><tt/"MinX"/, <tt/"MaxX"/, <tt/"MinY"/, <tt/"MaxY"/, <tt/"MinZ"/,
-and <tt/"MaxZ"/ specify the size of the bounding box of the objects that
-the procedural will create or the archive contains.
+<item><tt/"PatchNum"/ allows to select a patch, should the NURBS
+patch providing object deliver a list. This way, a bevel of an
+extrusion might be trimmed.
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -8501,116 +8634,6 @@ the two different trajectory curves):
 
 <#if out=latex><x/newpage/</#if>
 
-<sect1>Select Object<label id="selectobj">
-<p>
-The Select object, available since Ayam 1.14, may be used in hierarchies
-of tool objects to select one object from a list of provided objects.
-Since Ayam 1.16, also multiple objects and ranges (even decreasing
-ranges that lead to reversed orders) may be selected.
-<p>
-In the following example hierarchy, a single patch from multiple provided
-patches of the Sweep object (the swept surface, a bevel, or a cap)
-could be selected by the Select object and delivered upstream to
-the ExtrNC object.
-<code>
-+-Sweep
-+-Revolve
- +-ExtrNC
-  +-Select
-   \ Instance_of_Sweep(Instance)
-</code>
-Note that this example just serves illustrative purposes; the hierarchy
-presented is not exactly useful, as the ExtrNC object has a selector
-facility built in. Consequently, the Select object should be used in
-scenarios, where a selector facility does not exist or is hard to
-implement, as e.g. in Script object scripts.
-<p>
-The following table briefly lists some capabilities of the Select object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
-</tabular>
-<caption>Select Object Capabilities</caption>
-</table>
-
-<sect2>SelectAttrib Property<label id="selectp"><label id="selectattribprop">
-<p>
-<itemize>
-<item><tt/"Indices"/ designates the object(s) to select. The index values
-are zero based. Multiple indices must be separated by <tt/","/, ranges
-can be specified like this <tt/"1-4"/, reversed ranges are allowed
-(<tt/"4-1"/) and will create an object list of reversed order. The special
-index <tt/"end"/ (or abbreviated <tt/"e"/) designates the last of all
-the provided objects.
-An index may appear multiple times, leading to multiple copies of the
-selected object to be delivered upstream.
-The index space spans over all provided objects of the desired type
-from all child objects. This means one can mix provided objects from
-multiple child objects of the Select object. Syntactically incorrect
-ranges and indices are silently ignored.
-<p>
-Examples:
- <itemize>
-  <item><tt/"0,2"/ &ndash; delivers the first and third provided objects
-upstream;
-  <item><tt/"end-0"/ &ndash; delivers all provided objects in reversed order
-upstream;
-  <item><tt/"0,0,0"/ &ndash; delivers three copies of the first provided
-object upstream;
-  <item><tt/"0,4-end,1"/ &ndash; delivers the first, the fifth (if there are
-so many) up to the last, and the second object upstream.
- </itemize>
-</itemize>
-
-<#if out=latex><x/newpage/</#if>
-
-<sect1>Trim Object<label id="trimobj">
-<p>
-The Trim object, available since Ayam 1.16, may be used in hierarchies
-of tool objects to trim NURBS patch providing objects otherwise
-unavailable to trimming like e.g. a Revolve object.
-The first child of the Trim object is the NURBS patch providing object
-and the second object is the trim curve (defined in the parametric
-space of the NURBS surface). More curves and loops may follow.
-All curves must obey the rules for trimming as outlined in section
-<ref id="trim" name="Trim Curves">).
-The surface may already be trimmed and there may be multiple provided
-patches, however only one of them will be trimmed by the Trim object.
-<p>
-The object hierarchy of a Trim object, thus, looks like this:
-<code>
-+-Trim
- | Surface(Revolve)
- | Trim_1(NCurve)
- +-[Trim_2(Level)
- | | NCurve
- | \ NCurve
- | ...
- \ Trim_n(ICurve)]
-</code>
-<p>
-The following table briefly lists some capabilities of the Trim object.
-<table loc="ht">
-<tabular ca="|c|c|c|c|c|"><hline>
-<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
-</tabular>
-<caption>Trim Object Capabilities</caption>
-</table>
-<p>
-The following parameters further control the trimming process:
-
-<sect2>TrimAttrib Property<label id="trimp"><label id="trimattribprop">
-<p>
-<itemize>
-<item><tt/"PatchNum"/ allows to select a patch, should the NURBS
-patch providing object deliver a list. This way, a bevel of an
-extrusion might be trimmed.
-</itemize>
-
-<#if out=latex><x/newpage/</#if>
-
 <sect1>Custom Objects<label id="customobj">
 <p>
 Custom objects are plugins that extend the Ayam capabilities by
@@ -8823,7 +8846,6 @@ SDNPatch|No|Yes|PolyMesh|Yes@<hline>
 </tabular>
 <caption>SDNPatch Object Capabilities</caption>
 </table>
-<p>
 
 <sect2>SDNPatchAttr Property<label id=sdnpattr><label id="sdnpatchattrprop">
 <p>
@@ -8836,7 +8858,6 @@ the only valid values are currently 3, 5, and 7.
 <item><tt/"Level"/ is the subdivision level, a high level leads to
 many polygons and a smooth surface; useful values range from 0 to 5.
 </itemize>
-
 
 <sect2>SDNPatch Modelling Actions
 <p>
