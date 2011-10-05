@@ -2625,7 +2625,14 @@ user control this behaviour directly per view, <tt/&lt;o&gt;/ switches
 to object transformations and <tt/&lt;p&gt;/ to point transformations.
 These shortcuts can be used anytime, even in the middle of any other
 actions. If points are to be modified, a little red point will appear
-in the modelling mode icon in the view menu.
+in the modelling mode icon in the view menu as shown in the image
+below:
+<p>
+<figure loc="ht">
+<eps file="pics/trpnt.ps" height="4cm">
+<img src="pics/trpnt.gif">
+<caption>View Transforming Objects (left) and Points (right)</caption>
+</figure>
 
 <sect1>Moving Objects or Selected Points
 <p>
