@@ -1567,9 +1567,23 @@ Furthermore, the type of the view will be displayed in the upper left
 corner of the icon as letter F, S, T, or P for front, side, top, or
 perspective views, respectively. Views of type trim get no designating
 letter in the icon.
+See also the image below:
+<figure loc="ht">
+<eps file="pics/mmmenu.ps" height="4cm">
+<img src="pics/mmmenu.gif">
+<caption>Modelling Mode Icon Menu</caption>
+</figure>
+
 <p>
 The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
 drawing mode, drawing, shading, or drawing and shading.
+See also the image below:
+<figure loc="ht">
+<eps file="pics/dmmenu.ps" height="4cm">
+<img src="pics/dmmenu.gif">
+<caption>Drawing Mode Icon Menu</caption>
+</figure>
+
 <p>
 The <tt/"Grid"/ icon menu may be used to quickly change the current grid
 size:
@@ -1586,6 +1600,12 @@ and snapping to the grid.
 If a grid size other than 0.1, 0.25, 0.5, or 1.0 is in effect for the view,
 a generic icon (with a X instead of a number) will be displayed in the
 icon menu.
+See also the image below:
+<figure loc="ht">
+<eps file="pics/grmenu.ps" height="5.5cm">
+<img src="pics/grmenu.gif">
+<caption>Grid Icon Menu</caption>
+</figure>
 
 <sect1>View Window Shortcuts and Actions<label id="vwsc">
 <p>
@@ -6579,11 +6599,6 @@ PV tags are supported.
 
 <#if out=latex><x/newpage/</#if>
 
-
-<#if out=latex><x/newpage/</#if>
-
-<#if out=latex><x/newpage/</#if>
-
 <sect1>Revolve Object<label id="revolveobj">
 <p>
 <figure loc="ht">
@@ -8221,6 +8236,31 @@ borders of the bevel surfaces with high values for the bevel radius.
 See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 
+<sect2>Conversion Support
+<p>
+The extruded surfaces, the bevels, and the caps,
+may be converted to ordinary NURBS patches using the main menu entry
+<tt>"Tools/Convert"</tt>.
+<p>
+If bevels or caps are present, an enclosing Level object will be created
+and the caps follow the extruded surfaced in the following
+order: end bevel, end cap, start bevel, start cap.
+<p>
+The Text object provides a list of NURBS patch objects in the
+same order as created upon conversion.
+
+<sect2>RIB Export
+<p>
+Text objects will be exported as NURBS patch primitives:
+<tscreen>
+<tt>RiNuPatch(...);</tt>
+</tscreen>
+If caps or bevels are present, those follow as potentially trimmed
+NURBS patch primitives in the following order: end bevel, end cap,
+start bevel, start cap.
+<p>
+PV tags are currently not supported.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>Trim Object<label id="trimobj">
@@ -8266,6 +8306,19 @@ The following parameters further control the trimming process:
 patch providing object deliver a list. This way, a bevel of an
 extrusion might be trimmed.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The trimmed surface may be converted to an ordinary NURBS patche
+using the main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+Trim objects will be exported as NURBS patch primitives:
+<tscreen>
+<tt>RiNuPatch(...);</tt>
+</tscreen>
+PV tags are currently not supported.
 
 <#if out=latex><x/newpage/</#if>
 
