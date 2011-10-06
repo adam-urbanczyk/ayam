@@ -2208,7 +2208,7 @@ libribout.a does not create a RIB file at all, but immediately pipes the
 resulting byte stream into rendrib (the BMRT renderer) for rendering.
 The same goes for <tt/"rgl"/.
 Moreover, filenames that start with a pipe symbol <tt/"|"/ will
-cause the program behind the pipe symbol to be started by libribout
+cause the program after the pipe symbol to be started by libribout
 and the written RIB to be piped into. This works e.g.
 with Photorealistic RenderMan, try it out with <tt/"|render"/.
 In the latter cases of direct rendering, you will probably want to set
@@ -11095,6 +11095,11 @@ curve order, e.g. for a curve with 2 control points and order 2, specify
 an automatically created knot vector of the type specified by the
 <tt/"-kt"/ option above.
 
+  <item><tt/"-kn"/: the knot vector of the new curve. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-kv"/ option
+above.
+
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 4D euclidean
 rational (weight <em>not</em> multiplied in) coordinates of the control
@@ -11105,6 +11110,11 @@ automatically.
 To specify a complete control vector, this list should have curve length
 by 4 elements, e.g. for a curve of length 3, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0}"/.
+
+  <item><tt/"-cn"/: the control vector of the new curve. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
 
   <item><tt/"-dx"/: the value of this option specifies the distance
 of automatically created control points in the x dimension, default is 0.25.
@@ -11122,6 +11132,9 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
   <item><tt/"-createmp"/: The <tt/"-createmp"/ option toggles creation
 of multiple points. The default value is 0.
   </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb NCurve"//<newline>
@@ -11158,7 +11171,7 @@ If a value greater than the length is specified, the order will be made
 identical to the length value.
 
   <item><tt/"-pt"/: the parameter type of the new curve, must be one of
-0 &ndash; Chordal, 1 &ndash; Centripetal; default is 0.
+0 &ndash; Chordal, 1 &ndash; Centripetal, 2 &ndash Uniform; default is 0.
 
   <item><tt/"-cv"/: the control vector of the new curve. The value of this
 option is a list of floating point numbers that describe the 3D
@@ -11170,6 +11183,11 @@ To specify a complete
 control vector, this list should have curve length by 3 elements,
 e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
+
+  <item><tt/"-cn"/: the control vector of the new curve. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
 
   <item><tt/"-dx"/: the value of this option specifies the distance
 of automatically created control points in the x dimension, default is 0.25.
@@ -11209,6 +11227,9 @@ derivative of a direction taken from the last two control points
 and length specified by the <tt/"-edlen"/ option.
 
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb ICurve"//<newline>
@@ -11257,6 +11278,11 @@ control vector, this list should have curve length by 3 elements,
 e.g. for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
+  <item><tt/"-cn"/: the control vector of the new curve. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
+
   <item><tt/"-dx"/: the value of this option specifies the distance
 of automatically created control points in the x dimension, default is 0.25.
 
@@ -11271,6 +11297,9 @@ the new curve will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
 
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb ACurve -length 6"//<newline>
@@ -11309,6 +11338,11 @@ patch U order, e.g. for a patch with width 2 and U order 2, specify
 an automatically created knot vector of the type specified by the
 <tt/"-ukt"/ option above.
 
+  <item><tt/"-un"/: the U knot vector of the new patch. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-ukv"/ option
+above.
+
   <item><tt/"-vorder"/: order of the new patch in V parametric dimension,
 the order defaults to 4. If a value greater than the height is specified,
 the order will be made identical to the height value.
@@ -11326,6 +11360,11 @@ patch V order, e.g. for a patch with height 2 and V order 2, specify
 an automatically created knot vector of the type specified by the
 <tt/"-vkt"/ option above.
 
+  <item><tt/"-vn"/: the V knot vector of the new patch. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-vkv"/ option
+above.
+
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
 option is a list of floating point numbers that describe the 4D euclidean
 rational (weight <em>not</em> multiplied in) coordinates of the control
@@ -11337,6 +11376,11 @@ To specify a complete control vector, this list should have width by
 height by 4 elements,
 e.g. for a patch of width 2 and height 2, specify 16 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
+
+  <item><tt/"-cn"/: the control vector of the new patch. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
 
   <item><tt/"-udx"/: the value of this option specifies the distance
 of automatically created control points in the x dimension between points
@@ -11369,6 +11413,9 @@ This option is only in effect if no <tt/"-cv"/ option is specified.
   <item><tt/"-createmp"/: The <tt/"-createmp"/ option toggles creation
 of multiple points. The default value is 0.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb NPatch"//<newline>
@@ -11408,13 +11455,13 @@ the order defaults to 4. If a value greater than the width is specified,
 the order will be made identical to the width value.
 A value of 0 switches off interpolation along U.
   <item><tt/"-ukt"/: the U parameterisation type, must be one of
-0 &ndash; Chordal (default), 1 &ndash; Centripetal.
+0 &ndash; Chordal (default), 1 &ndash; Centripetal, 2 &ndash Uniform.
   <item><tt/"-vorder"/: order of the new patch in V parametric dimension,
 the order defaults to 4. If a value greater than the height is specified,
 the order will be made identical to the height value.
 A value of 0 switches off interpolation along V.
   <item><tt/"-vkt"/: the V parameterisation type, must be one of
-0 &ndash; Chordal (default), 1 &ndash; Centripetal.
+0 &ndash; Chordal (default), 1 &ndash; Centripetal, 2 &ndash Uniform.
 
   <item><tt/"-deriv_u"/: the end derivative mode for U, must be one of
 0 &ndash; None (default), 1 &ndash; Automatic, or 2 &ndash; Manual.
@@ -11457,6 +11504,11 @@ height by 3 elements,
 e.g. for a patch of width 2 and height 2, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0  2.0 1.0 0.0}"/.
 
+  <item><tt/"-cn"/: the control vector of the new patch. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
+
   <item><tt/"-udx"/: the value of this option specifies the distance
 of automatically created control points in the x dimension between points
 in a row (U parametric dimension, along width), default is 0.25.
@@ -11486,6 +11538,9 @@ the new patch will be centered. The default value is 0, no centering.
 This option is only in effect if no <tt/"-cv"/ option is specified.
 
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
+
 Examples:
 <enum>
 <item><bf/<tt/"crtOb IPatch"//<newline>
@@ -11533,8 +11588,9 @@ elements set to a sequence of integers so that the control points are
 used in the same order as specified via the <tt/"-cv"/ option
 (0, 1, 2, 3, &hellip;).
 
-  <item><tt/"-cv"/: The value of this option is a list of floating point
-numbers that describe the 3D (non rational) coordinates of the control
+  <item><tt/"-cv"/: the control points of the new mesh. The value of this
+option is a list of floating point numbers that describe the 3D
+(non rational) coordinates of the control
 points. The indices specified via the <tt/"-iverts"/ option point to
 this list. If the <tt/"-vnormals"/ option is 1, also vertex normals are
 specified in this list (directly following the coordinate values of each
@@ -11543,6 +11599,11 @@ This list must have a length of stride by the highest value in
 the list provided via the <tt/"-iverts"/ option.
 The default value of this option is an empty list, this implies that this
 option must be specified to create a non-empty PolyMesh object.
+
+  <item><tt/"-cn"/: the control points of the new mesh. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
 
   <item><tt/"-vnormals"/: determines whether vertex normals are present.
 The default value is 0 &ndash; no vertex normals are present.
@@ -11607,6 +11668,11 @@ This list must have a length of 3 multiplied by the highest value in
 the list provided via the <tt/"-verts"/ option.
 The default value of this option is an empty list, this implies that this
 option must be specified to create a non-empty SDMesh object.
+
+  <item><tt/"-cn"/: the control points of the new mesh. The value of
+this option is a variable name (with optional array and namespace specifier).
+The value of this variable must be compatible to the <tt/"-cv"/ option
+above.
 
   <item><tt/"-tags"/: the value of this option specifies a number of tags.
 It is therefore a list of positive integer values of arbitrary length.
@@ -13412,6 +13478,8 @@ Tcl and works only correctly for procedures, that end with
 a single <tt>"return;"</tt> statement.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Expression Support in Dialog Entries<label id="scexpdiag">
 <p>
 Various entries of dialogs for object creation and modelling tools
@@ -13421,7 +13489,7 @@ One can e.g. enter
 <code>
 $::u
 </code>
-instead of a knot value in the insert knot tool parameter dialog
+instead of a numeric knot value in the insert knot tool parameter dialog
 to infer the parametric value from the global variable u (that
 may have been set before using the find u modelling action) and
 insert a knot at the picked point.
@@ -13451,6 +13519,8 @@ then entering for the length in the create NURBS curve dialog:
 [incr ::myvar]
 </code>
 then pressing <tt/&lt;Ctrl+T&gt;/ multiple times.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Scripting Interface Examples
 <p>
@@ -13817,8 +13887,11 @@ select point action (shortcut <tt/&lt;t&gt;/) will automatically
 switch the view to point modelling so that the next modelling
 actions (e.g. move, via shortcut <tt/&lt;m&gt;/) will always
 transform the points, and not modify the objects transformations.
+Note that currently the switch to point modelling will also occur,
+if no points are actually selected, it is just the mouse click that counts.
 <p>
-Switch back to object modelling via shortcut <tt/&lt;o&gt;/.
+It is still possible to switch back to object modelling anytime
+via the keyboard shortcut <tt/&lt;o&gt;/.
 
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
@@ -16798,7 +16871,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <label id="index">
 <label id="index0">0
 <itemize>
-<item>2lcons: <ref id="twolconstcl" name="example/helper script">
+<item>2lcons.tcl: <ref id="twolconstcl" name="example/helper script">
 <item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
 <item>3DMF: <ref id="imp3dmf" name="3DMF (Apple) Import">,
@@ -16809,7 +16882,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <label id="indexa">A
 <itemize>
-<item>aac: <ref id="aactcl" name="example/helper script">
+<item>aac.tcl: <ref id="aactcl" name="example/helper script">
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
 <ref id="exprhino" name="3DM (Rhino) export option">
@@ -16827,7 +16900,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="vwsc" name="view action">
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
-<item>apnt: <ref id="apnttcl" name="example/helper script">
+<item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
 <item>Apply: <ref id="propgui" name="apply property GUI">
 <item>applyTrafo: <ref id="scapplytrafo" name="scripting interface command">
 <item>Archives: <ref id="rio" name="RenderMan interface option">
@@ -16918,7 +16991,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="coart" name="coarsen tool">
 <item>Collapse: <ref id="collt" name="Collapse tool">,
 <ref id="treecontm" name="tree context menu entry">
-<item>colfocus: <ref id="colfocustcl" name="example/helper script">
+<item>colfocus.tcl: <ref id="colfocustcl" name="example/helper script">
 <item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
 <ref id="lip" name="Light attribute">
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
@@ -17655,7 +17728,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="pmattr" name="PatchMesh attribute">,
 <ref id="ncattr" name="NCurve attribute">,
 <ref id="npattr" name="NPatch attribute">
-<item>tonpatch: <ref id="tonpatchtcl" name="example/helper script">
+<item>tonpatch.tcl: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
 <item>ToolBoxShrink: <ref id="hidprefs" name="hidden preference setting">
@@ -17665,7 +17738,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TopLevelLayers: <ref id="expdxfopt" name="DXF export option">,
 <ref id="exp3dmopt" name="3DM (Rhino) export option">,
 <ref id="expx3dopt" name="X3D (Web3D) export option">
-<item>topoly: <ref id="topolytcl" name="example/helper script">
+<item>topoly.tcl: <ref id="topolytcl" name="example/helper script">
 <item>Torus: <ref id="torusobj" name="Torus object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
 <item>TP: <ref id="tptag" name="tag type">
