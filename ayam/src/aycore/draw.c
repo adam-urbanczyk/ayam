@@ -449,16 +449,25 @@ ay_draw_grid(struct Togl *togl)
 	{
 	case AY_VTFRONT:
 	case AY_VTTRIM:
-	  gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
-		     &gwinx, &gwiny, &gwinz);
+	  if(GL_FALSE == gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+				    &gwinx, &gwiny, &gwinz))
+	    {
+	      return;
+	    }
 	  break;
 	case AY_VTSIDE:
-	  gluProject(0.0, view->grid, view->grid, mm, mp, vp,
-		     &gwinx, &gwiny, &gwinz);
+	  if(GL_FALSE == gluProject(0.0, view->grid, view->grid, mm, mp, vp,
+				    &gwinx, &gwiny, &gwinz))
+	    {
+	      return;
+	    }
 	  break;
 	case AY_VTTOP:
-	  gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
-		     &gwinx, &gwiny, &gwinz);
+	  if(GL_FALSE == gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
+				    &gwinx, &gwiny, &gwinz))
+	    {
+	      return;
+	    }
 	  break;
 	}
 
@@ -705,9 +714,12 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
       return;
     }
 
-  gluProject((GLdouble)from[0], (GLdouble)from[1],
-	     (GLdouble)from[2], mvm, pm, vp,
-	     &win2x, &win2y, &win2z);
+  if(GL_FALSE == gluProject((GLdouble)from[0], (GLdouble)from[1],
+			    (GLdouble)from[2], mvm, pm, vp,
+			    &win2x, &win2y, &win2z))
+    {
+      return;
+    }
 
   p1x = win1x+AY_POINTER;
   p1y = win1y+AY_POINTER;
