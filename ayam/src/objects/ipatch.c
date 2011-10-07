@@ -850,13 +850,13 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	  b = 0;
 	  der = ipatch->sderiv_u;
 	  glBegin(GL_LINES);
-	  for(i = 0; i < height; i++)
-	    {
-	      glVertex3dv((GLdouble *)&cv[a]);
-	      glVertex3dv((GLdouble *)&der[b]);
-	      a += 3;
-	      b += 3;
-	    }
+	   for(i = 0; i < height; i++)
+	     {
+	       glVertex3dv((GLdouble *)&cv[a]);
+	       glVertex3dv((GLdouble *)&der[b]);
+	       a += 3;
+	       b += 3;
+	     }
 	  glEnd();
 	} /* if */
       if(ipatch->ederiv_u)
@@ -868,13 +868,13 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	  b = 0;
 	  der = ipatch->ederiv_u;
 	  glBegin(GL_LINES);
-	  for(i = 0; i < height; i++)
-	    {
-	      glVertex3dv((GLdouble *)&cv[a]);
-	      glVertex3dv((GLdouble *)&der[b]);
-	      a += 3;
-	      b += 3;
-	    }
+	   for(i = 0; i < height; i++)
+	     {
+	       glVertex3dv((GLdouble *)&cv[a]);
+	       glVertex3dv((GLdouble *)&der[b]);
+	       a += 3;
+	       b += 3;
+	     }
 	  glEnd();
 	} /* if */
     } /* if */
@@ -886,15 +886,15 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	  a = 0;
 	  b = 0;
 	  der = ipatch->sderiv_v;
-	  
+
 	  glBegin(GL_LINES);
-	  for(i = 0; i < width; i++)
-	    {
-	      glVertex3dv((GLdouble *)&cv[a]);
-	      glVertex3dv((GLdouble *)&der[b]);
-	      a += height*3;
-	      b += 3;
-	    }
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&cv[a]);
+	       glVertex3dv((GLdouble *)&der[b]);
+	       a += height*3;
+	       b += 3;
+	     }
 	  glEnd();
 	} /* if */
       if(ipatch->ederiv_v)
@@ -906,13 +906,13 @@ ay_ipatch_drawders(ay_ipatch_object *ipatch)
 	  b = 0;
 	  der = ipatch->ederiv_v;
 	  glBegin(GL_LINES);
-	  for(i = 0; i < width; i++)
-	    {
-	      glVertex3dv((GLdouble *)&cv[a]);
-	      glVertex3dv((GLdouble *)&der[b]);
-	      a += height*3;
-	      b += 3;
-	    }
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&cv[a]);
+	       glVertex3dv((GLdouble *)&der[b]);
+	       a += height*3;
+	       b += 3;
+	     }
 	  glEnd();
 	} /* if */
     } /* if */
@@ -1009,11 +1009,11 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
   glPointSize((GLfloat)point_size);
 
   glBegin(GL_POINTS);
-  for(i=0; i<(width*height); i++)
-    {
-      glVertex3dv((GLdouble *)&ver[a]);
-      a += 3;
-    }
+   for(i=0; i<(width*height); i++)
+     {
+       glVertex3dv((GLdouble *)&ver[a]);
+       a += 3;
+     }
   glEnd();
 
   /* draw arrows */
@@ -1026,24 +1026,24 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 	{
 	  ver = ipatch->sderiv_u;
 	  glBegin(GL_POINTS);
-	  a = 0;
-	  for(i = 0; i < height; i++)
-	    {
-	      glVertex3dv((GLdouble *)&ver[a]);
-	      a += 3;
-	    }
+	   a = 0;
+	   for(i = 0; i < height; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 3;
+	     }
 	  glEnd();
 	}
       if(ipatch->ederiv_u)
 	{
 	  ver = ipatch->ederiv_u;
 	  glBegin(GL_POINTS);
-	  a = 0;
-	  for(i = 0; i < height; i++)
-	    {
-	      glVertex3dv((GLdouble *)&ver[a]);
-	      a += 3;
-	    }
+	   a = 0;
+	   for(i = 0; i < height; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 3;
+	     }
 	  glEnd();
 	}
     } /* if */
@@ -1054,24 +1054,24 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 	{
 	  ver = ipatch->sderiv_v;
 	  glBegin(GL_POINTS);
-	  a = 0;
-	  for(i = 0; i < width; i++)
-	    {
-	      glVertex3dv((GLdouble *)&ver[a]);
-	      a += 3;
-	    }
+	   a = 0;
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 3;
+	     }
 	  glEnd();
 	}
       if(ipatch->ederiv_v)
 	{
 	  ver = ipatch->ederiv_v;
 	  glBegin(GL_POINTS);
-	  a = 0;
-	  for(i = 0; i < width; i++)
-	    {
-	      glVertex3dv((GLdouble *)&ver[a]);
-	      a += 3;
-	    }
+	   a = 0;
+	   for(i = 0; i < width; i++)
+	     {
+	       glVertex3dv((GLdouble *)&ver[a]);
+	       a += 3;
+	     }
 	  glEnd();
 	}
     } /* if */

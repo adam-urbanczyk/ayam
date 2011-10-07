@@ -12,8 +12,15 @@
 
 #include "ayam.h"
 
-/* ict.c - interpolating curve tools */
+/* \file ict.c \brief interpolating curve tools */
 
+/* prototypes of functions local to this module: */
+
+int ay_ict_sanitize(int length, double *controlv,
+		    int *slength, double **scontrolv);
+
+
+/* functions: */
 
 /* ay_ict_sanitize:
  *  sanitize (remove consecutive duplicate points) from a vector
