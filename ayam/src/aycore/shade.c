@@ -98,7 +98,8 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 		   color[1] = (GLfloat)(mo->mat->colg/255.0);
 		   color[2] = (GLfloat)(mo->mat->colb/255.0);
 		   color[3] = (GLfloat)1.0;
-		   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+		   glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE,
+				color);
 		 } /* if */
 	     } /* if */
 	 } /* if */
@@ -112,8 +113,7 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
    if(ay_status)
      {
        ay_error(AY_ERROR, fname, "shade callback failed");
-       glPopMatrix();
-       return;
+       goto cleanup;
      }
 
    if(!o->hide_children)
@@ -125,6 +125,8 @@ ay_shade_object(struct Togl *togl, ay_object *o, int push_name)
 	   down = down->next;
 	 } /* while */
      } /* if */
+
+cleanup:
 
    if(push_name)
      {
@@ -203,6 +205,8 @@ ay_shade_view(struct Togl *togl)
       ay_draw_grid(togl);
     }
 
+  /* when drawing mode is shade+draw, set back the shaded
+     surfaces a bit so that we can draw on top later */
   if(view->shade > 1)
     {
 #ifdef GL_VERSION_1_1
@@ -249,8 +253,8 @@ ay_shade_view(struct Togl *togl)
     } /* if */
 
   if(sel)
-    { /* process the selected objects */
-
+    {
+      /* process the selected objects */
       glPushMatrix();
       if(!view->drawlevel)
 	{
@@ -279,8 +283,8 @@ ay_shade_view(struct Togl *togl)
 	  * probably removal of hidden bits. On the other hand, he
 	  * might not be able to reach all handles he wants to then,
 	  * when modelling in a shaded view. So, for now, hide the
-	  * handles in perspective views, as they are thought for
-	  * review, not modelling anyway
+	  * handles in perspective views, as those are thought for
+	  * review, not modelling anyway.
 	  */
 	  if(view->type != AY_VTPERSP)
 	    {
@@ -326,7 +330,7 @@ ay_shade_view(struct Togl *togl)
 		     }
 
 		  glPopMatrix();
-		}
+		} /* if */
 	      sel = sel->next;
 	    } /* while */
 
