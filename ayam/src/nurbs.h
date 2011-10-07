@@ -52,7 +52,7 @@ int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
 
 /* ict.c */
 
-/** Do a C2 cubic interpolation.
+/** Do a global C2 cubic interpolation.
  */
 int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  int param_type,
@@ -60,7 +60,7 @@ int ay_ict_interpolateC2C(int length, double sdlen, double edlen,
 			  double *controlv,
 			  ay_nurbcurve_object **c);
 
-/** Do a C2 cubic interpolation for a closed curve.
+/** Do a global C2 cubic interpolation for a closed curve.
  */
 int ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
 				int param_type,
@@ -650,7 +650,7 @@ int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
  */
 int ay_nct_makecompatible(ay_object *curves);
 
-/** Shift control points.
+/** Shift control points of a 1D (curve) control vector.
  */
 int ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv);
 
