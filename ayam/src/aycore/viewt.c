@@ -1736,6 +1736,7 @@ ay_viewt_updatemark(struct Togl *togl, int local)
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double dummy, mm[16], pm[16];
  int vp[4], height = Togl_Height(togl);
+ GLint gl_status = GL_TRUE;
 
   glGetIntegerv(GL_VIEWPORT, vp);
 
@@ -1747,25 +1748,38 @@ ay_viewt_updatemark(struct Togl *togl, int local)
     {
     case AY_VTFRONT:
     case AY_VTTRIM:
-      gluProject(view->markworld[0], view->markworld[1], 0, mm, pm, vp,
+      gl_status = gluProject(view->markworld[0], view->markworld[1], 0,
+			     mm, pm, vp,
 		 &view->markx, &view->marky, &dummy);
       break;
     case AY_VTSIDE:
-      gluProject(0, view->markworld[1], view->markworld[2], mm, pm, vp,
+      gl_status = gluProject(0, view->markworld[1], view->markworld[2],
+			     mm, pm, vp,
 		 &view->markx, &view->marky, &dummy);
       break;
     case AY_VTTOP:
-      gluProject(view->markworld[0], 0, view->markworld[2], mm, pm, vp,
+      gl_status = gluProject(view->markworld[0], 0, view->markworld[2],
+			     mm, pm, vp,
 		 &view->markx, &view->marky, &dummy);
       break;
     case AY_VTPERSP:
-      gluProject(view->markworld[0], view->markworld[1], view->markworld[2],
-		 mm, pm, vp,
-		 &view->markx, &view->marky, &dummy);
+      gl_status = gluProject(view->markworld[0],
+			     view->markworld[1],
+			     view->markworld[2],
+			     mm, pm, vp,
+			     &view->markx, &view->marky, &dummy);
       break;
     default:
       view->drawmark = AY_FALSE;
       break;
+    }
+
+  if(gl_status == GL_FALSE)
+    {
+      view->markx = 0;
+      view->marky = 0;
+      view->drawmark = AY_FALSE;
+      return AY_ERROR;
     }
 
   view->marky = height - view->marky;
@@ -1805,7 +1819,7 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 	    }
 	}
       o = o->next;
-    }
+    } /* while */
 
   Togl_MakeCurrent(togl);
 
@@ -1939,7 +1953,7 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
    ghy = view->grid/view->conv_y/2.0;
  double m[16] = {0};
  GLdouble mp[16], mm[16];
- GLint vp[4];
+ GLint vp[4], gl_status = GL_TRUE;
 
   if(view->grid != 0.0)
     {
@@ -1991,27 +2005,34 @@ ay_viewt_griddify(struct Togl *togl, double *winx, double *winy)
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0, 0.0, 0.0, mm, mp, vp, &refx, &refy, &refz);
+	  if(GL_FALSE == gluProject(0.0, 0.0, 0.0, mm, mp, vp,
+				    &refx, &refy, &refz))
+	    {
+	      return AY_ERROR;
+	    }
 	  refy = height-refy;
 	  switch(view->type)
 	    {
 	    case AY_VTFRONT:
 	    case AY_VTTRIM:
-	      gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
-			 &gridx, &gridy, &gridz);
+	      gl_status = gluProject(view->grid, view->grid, 0.0, mm, mp, vp,
+				     &gridx, &gridy, &gridz);
 	      gridy = height-gridy;
 	      break;
 	    case AY_VTSIDE:
-	      gluProject(0.0, view->grid, -view->grid, mm, mp, vp,
-			 &gridx, &gridy, &gridz);
+	      gl_status = gluProject(0.0, view->grid, -view->grid, mm, mp, vp,
+				     &gridx, &gridy, &gridz);
 	      gridy = height-gridy;
 	      break;
 	    case AY_VTTOP:
-	      gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
-			 &gridx, &gridy, &gridz);
+	      gl_status = gluProject(view->grid, 0.0, view->grid, mm, mp, vp,
+				     &gridx, &gridy, &gridz);
 	      break;
 	    }
-
+	  if(gl_status == GL_FALSE)
+	    {
+	      return AY_ERROR;
+	    }
 	  gridx = gridx-refx;
 	  gridy = -(gridy-refy);
 
@@ -2282,7 +2303,10 @@ ay_viewt_markfromsel(struct Togl *togl)
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
-  gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
+  if(GL_FALSE == gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz))
+    {
+      return AY_ERROR;
+    }
 
   view->markx = winx;
   view->marky = height-winy;
@@ -2315,7 +2339,6 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
  GLint vp[4];
  GLdouble mm[16], mp[16], winx, winy, winz;
  unsigned int numo = 0;
-
 
   sel = ay_selection;
   while(sel)
@@ -2372,7 +2395,10 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
   glPopMatrix();
 
-  gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz);
+  if(GL_FALSE == gluProject(cog[0],cog[1],cog[2],mm,mp,vp,&winx,&winy,&winz))
+    {
+      return AY_ERROR;
+    }
 
   view->markx = winx;
   view->marky = height-winy;

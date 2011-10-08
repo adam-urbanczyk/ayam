@@ -111,7 +111,9 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* if first argument is -start ... */
   if((argc >= 4) && argv[2][0] && (argv[2][1] == 's'))
@@ -121,7 +123,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  /* get restrict axis */
 	  Tcl_GetInt(interp, argv[5], &rest);
-	}	      
+	}
       else
 	{
 	  rest = 0;
@@ -130,7 +132,9 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* get real direction of current level coordinate system */
   glMatrixMode(GL_MODELVIEW);
@@ -353,7 +357,9 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
@@ -384,7 +390,10 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 	   glScaled(o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
 
 	  owiny = height-owiny;
 
@@ -541,7 +550,9 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
@@ -880,11 +891,15 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -902,13 +917,13 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  glPushMatrix();
 
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
@@ -917,8 +932,14 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(1.0,0.0,0.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]);
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(1.0,0.0,0.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]))
+	    {
+	      return TCL_OK;
+	    }
 
 	  owiny = height - owiny;
 	  vx[1] = height - vx[1];
@@ -1055,11 +1076,15 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -1076,21 +1101,28 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
 		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+		 }
+	     }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
 	   glScaled(o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,1.0,0.0,mm,mp,vp,&vy[0],&vy[1],&vy[2]);
+
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(0.0,1.0,0.0,mm,mp,vp,&vy[0],&vy[1],&vy[2]))
+	    {
+	      return TCL_OK;
+	    }
 
 	  vy[1] = height - vy[1];
 	  owiny = height - owiny;
@@ -1226,11 +1258,15 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -1247,21 +1283,27 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
 	   glScaled(o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,0.0,1.0,mm,mp,vp,&vz[0],&vz[1],&vz[2]);
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(0.0,0.0,1.0,mm,mp,vp,&vz[0],&vz[1],&vz[2]))
+	    {
+	      return TCL_OK;
+	    }
 
 	  vz[1] = height - vz[1];
 	  owiny = height - owiny;
@@ -1396,11 +1438,15 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -1417,20 +1463,23 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
 	   glScaled(o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
 
 	  owiny = height - owiny;
 
@@ -1571,11 +1620,15 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   glGetIntegerv(GL_VIEWPORT, vp);
   glGetDoublev(GL_PROJECTION_MATRIX, mp);
@@ -1592,20 +1645,23 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
 	   glMultMatrixd(m);
 	   glScaled(o->scalx, o->scaly, o->scalz);
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
 
 	  owiny = height - owiny;
 
@@ -1708,7 +1764,9 @@ ay_oact_str2Dcb(struct Togl *togl, int argc, char *argv[])
 				&d, &d, &d, &d);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   switch(view->type)
     {
@@ -1762,7 +1820,9 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
@@ -1776,7 +1836,9 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   ax = view->markx;
   ay = view->marky;
@@ -1796,7 +1858,6 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  glLoadIdentity();
 	  if(view->type != AY_VTTRIM)
 	    {
 	      if(ay_currentlevel->object != ay_root)
@@ -1812,9 +1873,14 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(1.0,0.0,0.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]);
-
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(1.0,0.0,0.0,mm,mp,vp,&vx[0],&vx[1],&vx[2]))
+	    {
+	      return TCL_OK;
+	    }
 	  owiny = height - owiny;
 	  vx[1] = height - vx[1];
 
@@ -1985,7 +2051,9 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
@@ -1999,7 +2067,9 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   ax = view->markx;
   ay = view->marky;
@@ -2019,14 +2089,13 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  glLoadIdentity();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
@@ -2035,9 +2104,14 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,1.0,0.0,mm,mp,vp,&vy[0],&vy[1],&vy[2]);
-
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(0.0,1.0,0.0,mm,mp,vp,&vy[0],&vy[1],&vy[2]))
+	    {
+	      return TCL_OK;
+	    }
 	  owiny = height - owiny;
 	  vy[1] = height - vy[1];
 
@@ -2208,7 +2282,9 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
@@ -2222,7 +2298,9 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   ax = view->markx;
   ay = view->marky;
@@ -2242,14 +2320,13 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
       if(o)
 	{
 	  glPushMatrix();
-	  glLoadIdentity();
-	  if(view->type != AY_VTTRIM)
-	    {
-	      if(ay_currentlevel->object != ay_root)
-		{
-		  ay_trafo_getall(ay_currentlevel->next);
-		}
-	    }
+	   if(view->type != AY_VTTRIM)
+	     {
+	       if(ay_currentlevel->object != ay_root)
+		 {
+		   ay_trafo_getall(ay_currentlevel->next);
+		 }
+	     }
 
 	   glTranslated(o->movx, o->movy, o->movz);
 	   ay_quat_torotmatrix(o->quat, m);
@@ -2258,9 +2335,14 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 
 	   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 	  glPopMatrix();
-	  gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz);
-	  gluProject(0.0,0.0,1.0,mm,mp,vp,&vz[0],&vz[1],&vz[2]);
-
+	  if(GL_FALSE == gluProject(0.0,0.0,0.0,mm,mp,vp,&owinx,&owiny,&owinz))
+	    {
+	      return TCL_OK;
+	    }
+	  if(GL_FALSE == gluProject(0.0,0.0,1.0,mm,mp,vp,&vz[0],&vz[1],&vz[2]))
+	    {
+	      return TCL_OK;
+	    }
 	  owiny = height - owiny;
 	  vz[1] = height - vz[1];
 
@@ -2425,7 +2507,9 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 				&winx, &winy, &oldwinx, &oldwiny);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
@@ -2439,7 +2523,9 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 
   /* bail out, as long as we stay in the same grid cell */
   if((oldwinx == winx) && (oldwiny == winy))
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   /* calculate scale factor from the relative lengths
      of the vectors (oldpickedpoint-mark) and (pickedpoint-mark) */
@@ -2613,7 +2699,9 @@ ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[])
 				&d, &d, &d, &d);
 
   if(ay_status)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   if(!view->drawmark)
     {
