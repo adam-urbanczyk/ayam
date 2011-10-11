@@ -828,7 +828,7 @@ proc restoreFocus { w } {
 	    catch {focus $w}
 	} else {
 	    resetFocus
-	} 
+	}
     }
 
  return;
@@ -898,6 +898,7 @@ proc pushSel { } {
     return;
 }
 # pushSel
+
 
 # popSel:
 #  pop the topmost selection from the selection stack and re-establish it

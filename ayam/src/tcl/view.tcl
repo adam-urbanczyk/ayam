@@ -451,7 +451,7 @@ proc viewSetGrid { view } {
 	global ay;\
 	$view mc;\
 	undo save SetGrid;\
-        if \{ \$ay(GridSize) != 0.0 \} \{\ 
+        if \{ \$ay(GridSize) != 0.0 \} \{\
 	  $view setconf -drawg 1 -ugrid 1 -grid \$ay(GridSize);\
         \} else \{\
 	  $view setconf -grid \$ay(GridSize);\
@@ -876,7 +876,7 @@ proc setViewAttr { } {
     global ay ViewAttribData pclip_reset
 
     set cw $ay(currentView)
-   
+
     set togl $ViewAttribData(togl)
 
     $togl mc
@@ -890,7 +890,7 @@ proc setViewAttr { } {
 	    set ViewAttribData(Width) $pclip_reset(Width)
 	    set ViewAttribData(Height) $pclip_reset(Height)
 	    ayError 2 "setViewAttr" "Can not resize internal views!"
-	} else {	
+	} else {
 	    $togl configure -width $ViewAttribData(Width)\
 		-height $ViewAttribData(Height)
 	    update
@@ -1092,7 +1092,7 @@ proc viewSetMModeIcon { w mode } {
 		$vimage put $col -to 2 2 4 6
 		$vimage put $col -to 6 6 8 10
 		$vimage put $col -to 7 2 8 4
-		$vimage put $col -to 2 8 3 10 
+		$vimage put $col -to 2 8 3 10
 	    }
 	    2 {
 		# T
@@ -1178,7 +1178,7 @@ proc viewSetMAIcon { w image balloon } {
 	    eval [subst "balloon_clear $w.$m"]
 	}
     }
-    
+
  return;
 }
 # viewSetMAIcon
