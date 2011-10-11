@@ -308,7 +308,7 @@ proc prefs_open {} {
     button $f.bok -text "Ok" -width 8 -command {
 	global ay ayprefs ayprefse
 
-	prefs_warnNeedRestart
+	prefs_warnNeedRestart 0
 
 	winAutoFocusOn
 
@@ -324,18 +324,23 @@ proc prefs_open {} {
 	rV
 	restoreFocus $ay(prefsFocus)
 	destroy .prefsw
+
+	prefs_warnNeedRestart 1
     }
 
     button $f.bap -text "Apply" -width 8 -command {
 	global ay ayprefs ayprefse
 
-	prefs_warnNeedRestart
+	prefs_warnNeedRestart 0
 
 	# copy array ayprefse to ayprefs
 	set avnames [array names ayprefs]
 	foreach j $avnames {
 	    set ayprefs($j) $ayprefse($j)
 	}
+
+	prefs_warnNeedRestart 1
+
 	prefs_set
 	rV
     }
@@ -675,22 +680,30 @@ proc prefs_setSamplingTolerance { plus } {
 # prefs_warnNeedRestart:
 #  warn user that restart is needed for his preference changes
 #  to take (full) effect
-proc prefs_warnNeedRestart {} {
+proc prefs_warnNeedRestart { warn } {
     global env ay ayprefs ayprefse
 
-    if { ($ayprefs(Locale) != $ayprefse(Locale)) ||
-	 ($ayprefs(SingleWindow) != $ayprefse(SingleWindow)) ||
-	 ($ayprefs(ToolBoxTrans) != $ayprefse(ToolBoxTrans)) ||
-	 ($ayprefs(RGTrans) != $ayprefse(RGTrans))
-     } {
-	set t "Need Restart!"
-	set m "Some of your changes need a restart of Ayam to take effect!"
-
-	if { $ayprefs(FixDialogTitles) == 1 } {
-	    set m "$t\n\n$m"
+    if { !$warn } {
+	if { ($ayprefs(Locale) != $ayprefse(Locale)) ||
+	     ($ayprefs(SingleWindow) != $ayprefse(SingleWindow)) ||
+	     ($ayprefs(ToolBoxTrans) != $ayprefse(ToolBoxTrans)) ||
+	     ($ayprefs(RGTrans) != $ayprefse(RGTrans))
+	 } {
+	    set ay(warnrestart) 1
+	} else {
+	    set ay(warnrestart) 0
 	}
+    } else {
+	if { $ay(warnrestart) } {
+	    set t "Need Restart!"
+	    set m "Some of your changes need a restart of Ayam to take effect!"
 
-	set answer [tk_messageBox -title $t -type ok -icon warning -message $m]
+	    if { $ayprefs(FixDialogTitles) == 1 } {
+		set m "$t\n\n$m"
+	    }
+	    set answer\
+		[tk_messageBox -title $t -type ok -icon warning -message $m]
+	}
     }
     # if
 
