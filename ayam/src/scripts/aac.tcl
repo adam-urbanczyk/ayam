@@ -226,20 +226,25 @@ proc aac_actionStr2DOb { w } {
 # aac_actionStr2DOb
 
 
+proc aac_toggle { } {
+    global ay
+    if { $ay(aac_enabled) } {
+	aac_disable
+    } else {
+	aac_enable
+    }
+}
+# aac_toggle
+
+
 if { $aac_enableonload } {
     aac_enable
 }
 
 catch { unset aac_enableonload }
 
-catch {
-    bind . $aac_hotkey {
-	if { $ay(aac_enabled) } {
-	    aac_disable
-	} else {
-	    aac_enable
-	}
-    }
-}
+catch { bind . $aac_hotkey aac_toggle }
+
+catch { shortcut_addviewbinding $aac_hotkey aac_toggle }
 
 # EOF
