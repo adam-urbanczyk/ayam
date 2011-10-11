@@ -1175,8 +1175,10 @@ proc shortcut_addescescbinding { w } {
 }
 # shortcut_addescescbinding
 
+
 # shortcut_callcshelp:
-#
+#  helper for shortcut_addcshelp below
+#  actually calls the web browser
 proc shortcut_callcshelp { base tag } {
     global ayprefs
     if { [string first "file://" $ayprefs(Docs)] != -1 } {
@@ -1202,3 +1204,22 @@ proc shortcut_addcshelp { w base tag } {
  return;
 }
 # shortcut_addcshelp
+
+
+# shortcut_addviewbinding:
+#  add a keyboard shortcut to all views
+proc shortcut_addviewbinding { k b } {
+
+    # arrange to bind to future views
+    set add "bind \$w "
+    append add $k " " $b
+    addToProc shortcut_view $add
+
+    # bind to current views
+    foreach v $ay(views) {
+	catch {bind $v $k $b}
+    }
+
+ return;
+}
+# shortcut_addviewbinding
