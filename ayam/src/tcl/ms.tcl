@@ -34,6 +34,23 @@ proc ms_init { lang } {
 # ms_init
 
 
+# ms_initmainlabels:
+#  initialize main labels that were created before we knew
+#  the current locale from ayamrc
+proc ms_initmainlabels { } {
+    global ay
+
+    catch { balloon_set $ay(plbl) [ms plb_label] }
+
+    catch { balloon_set $ay(olbl) [ms olb_label] }
+
+    catch { balloon_set $ay(treel) [ms tree_label] }
+
+ return;
+}
+# ms_initmainlabels
+
+
 # ms:
 #  return language specific string for GUI element <name>
 proc ms { name } {
@@ -204,6 +221,10 @@ ms_set en ayprefse_SMethod "Sampling method to be used for NURBS\nto PolyMesh\
 conversions."
 ms_set en ayprefse_SParam "Parameter of the sampling method for NURBS\nto\
 PolyMesh conversions."
+
+ms_set en plb_label "Double click this label\nto deselect property."
+ms_set en olb_label "Double click this label\nto switch to the tree."
+ms_set en tree_label "Double click this label\nto switch to the listbox."
 
 # Mops-Import
 ms_set en mopsi_options_ResetDM "Reset all DisplayMode attributes of\
@@ -401,6 +422,14 @@ ms_set de ayprefse_SParam "Parameter der Sampling-Methode, die für NURBS\
 zu\nPolyMesh Umwandlungen benutzt wird."
 
 
+ms_set de plb_label \
+"Diesen Text doppelclicken\num die Eigenschaft zu schließen."
+
+ms_set de olb_label "Diesen Text doppelclicken\num zum Baum zu wechseln."
+
+ms_set de tree_label "Diesen Text doppelclicken\num zur Liste zu wechseln."
+
+
 # Mops-Import
 ms_set de mopsi_options_ResetDM "Sollen alle DisplayMode-Attribute von\
 importierten Objekten\nauf \"Global\" zurückgesetzt werden?"
@@ -414,6 +443,8 @@ ms_set de objio_options_TessPoMesh "Wandelt alle PolyMesh-Objekte zu\
 Dreiecksnetzen."
 ms_set de objio_options_WriteCurves "Sollen NURBS Kurven exportiert werden?"
 
+
+
 #
 # fill "fr"-locale...
 ms_init fr
@@ -424,12 +455,10 @@ interne Shader."
 ms_set fr ayprefse_Locale "Langue des bulles d'aide.\
 \nLe changement prendra effet après le redémarrage d'Ayam!"
 
-#XXXX add french translation:
 #ms_set fr ayprefse_SingleWindow "Switch to single toplevel GUI?"
 
 ms_set fr ayprefse_AutoResize "Redéfinir la taille de la fenêtre principale\
 selon les propriétés par défaut."
-#XXXX add french translation:
 #ms_set fr ayprefse_AutoFocus "Move focus to window with mouse cursor?"
 
 ms_set fr ayprefse_TwmCompat "Votre gestionnaire de fenêtre est-il\
@@ -568,7 +597,10 @@ ms_set fr mopsi_options_ResetST "Réinitialiser à 0.0 tous les attributs\
 SamplingTolerance de tous\nles objets lors de l'importation depuis une scène\
 Mops?"
 
-#XXXX add french translation:
+#ms_set fr plb_label "Double click this label\nto deselect property."
+#ms_set fr olb_label "Double click this label\nto switch to the tree."
+#ms_set fr tree_label "Double click this label\nto switch to the listbox."
+
 # OBJ-Import/Export
 #ms_set fr objio_options_Selected "Export only selected object(s)."
 #ms_set fr objio_options_TessPoMesh "Tesselate all PolyMesh objects to\

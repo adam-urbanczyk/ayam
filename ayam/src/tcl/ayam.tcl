@@ -1262,6 +1262,9 @@ if { [info exists env(AYNOSPLASH)] } {
     }
 }
 
+# load localization resources
+ayam_loadscript ms
+
 # show splash screen
 ayam_loadscript win
 ayam_loadscript splash
@@ -1430,7 +1433,6 @@ pane .fu.fMain.fHier .fu.fMain.fProp -margins [list \
 ayam_loadscript run
 ayam_loadscript uie
 ayam_loadscript shortcut
-ayam_loadscript ms
 ayam_loadscript prop
 ayam_loadscript acurve
 ayam_loadscript bevel
@@ -2069,6 +2071,9 @@ if { $ay(ws) == "Aqua" } {
 
 puts stdout "The tip of the day is:"
 tipoftheDay
+
+# set some localized balloon texts
+ms_initmainlabels
 
 puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 
