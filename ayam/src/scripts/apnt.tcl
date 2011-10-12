@@ -162,20 +162,25 @@ proc apnt_actionTagP { w } {
 # apnt_actionTagP
 
 
+proc apnt_toggle { } {
+    global ay
+    if { $ay(apnt_enabled) } {
+	apnt_disable
+    } else {
+	apnt_enable
+    }
+}
+# apnt_toggle
+
+
 if { $apnt_enableonload } {
     apnt_enable
 }
 
 catch { unset apnt_enableonload }
 
-catch {
-    bind . $apnt_hotkey {
-	if { $ay(apnt_enabled) } {
-	    apnt_disable
-	} else {
-	    apnt_enable
-	}
-    }
-}
+catch { bind . $apnt_hotkey apnt_toggle }
+
+catch { shortcut_addviewbinding $apnt_hotkey apnt_toggle }
 
 # EOF
