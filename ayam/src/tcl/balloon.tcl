@@ -15,12 +15,12 @@
 
 # balloon timing depends on the _global_ ayprefs(Balloon)!
 
-
-#
-#
+# balloon_set:
+#  set balloon help text <text> to window <w>
 #
 proc balloon_set {w help} {
     global balloonwin balloontime ayprefs
+
     set balloonwin ""
     set balloontime $ayprefs(Balloon)
 
@@ -39,26 +39,26 @@ proc balloon_set {w help} {
 	if { \$balloonwin != \"\" } {
 	    set balloontime 100;
 	    set balloonwin \"\";
-	}
-	destroy %W.balloon;
+	}        
+	after 50 { destroy %W.balloon;
 	after cancel {set balloonwin %W ; balloon_show %W [list $help2] };
-	after 500 [list set balloontime \$ayprefs(Balloon)]"
+	after 500 [list set balloontime \$ayprefs(Balloon)] }"
 
  return;
 }
 # balloon_set
 
 
-#
-#
-#
+# balloon_show:
+#  actually shows the balloon help window as toplevel window
+#  without any decoration and with a light yellow background
 proc balloon_show {w arg} {
     global ayprefs ay
 
     if { $ayprefs(showtt) == 0 } { return; }
 
     # sanity check
-    if {[eval winfo containing  [winfo pointerxy .]] != $w} {return}
+    if { [eval winfo containing  [winfo pointerxy .]] != $w } { return; }
 
     # open the balloon window
     set top $w.balloon
@@ -72,9 +72,16 @@ proc balloon_show {w arg} {
     pack [message $top.txt -width 100c -fg black -bg lightyellow -text \
 	    [encoding convertfrom $arg]] 
 
-    # do not move off-screen
     set wmx [winfo rootx $w]
     set rw [winfo reqwidth $top.txt]
+
+    # move near the pointer
+    set px [winfo pointerx $w]
+    if { [expr $wmx + $rw] < [expr $px] } {
+	set wmx [expr $px - $rw - 10]
+    }
+
+    # do not move off-screen
     if { [expr $wmx + $rw] > [winfo screenwidth $top] } {
 	set wmx [expr $wmx - (([expr $wmx + $rw])-[winfo screenwidth $top])]
     }
@@ -90,9 +97,11 @@ proc balloon_show {w arg} {
 # balloon_show
 
 
-#
-#
-#
+# balloon_setsplit:
+#  set balloon help text <s> to window <w>
+#  in contrast to balloon_set above, the text is a
+#  list of e.g. path names that will be split here
+#  into a proper string for balloon_set
 proc balloon_setsplit { w s len } {
     global ay
     balloon_clear $w
@@ -113,13 +122,13 @@ proc balloon_setsplit { w s len } {
 	balloon_set $w $s2
 	balloon_show $w $s2
     }
-
+    # if
  return;
 }
 # balloon_setsplit
 
 
-#
+# balloon_clear:
 #
 #
 proc balloon_clear { w } {
@@ -131,3 +140,5 @@ proc balloon_clear { w } {
  return;
 }
 # balloon_clear
+
+# EOF
