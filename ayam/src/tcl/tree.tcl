@@ -845,7 +845,8 @@ if { !$::ayprefs(SingleWindow) } {
 
 # arrange for switching back to good old listbox
 bind $la <Double-ButtonPress-1> tree_toggle
-balloon_set $la "Double click here\nto switch to listbox"
+set ay(treel) $la
+balloon_set $la [ms tree_label]
 
 # pack widgets
 pack $fr -side top -expand yes -fill both

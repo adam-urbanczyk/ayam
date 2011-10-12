@@ -141,8 +141,8 @@ pack $f.s -in $f -side left -fill y -expand no
 
 # switch from listbox to tree
 bind $f.la <Double-1> tree_toggle
-
-balloon_set $f.la "Double click here\nto switch to tree"
+set ay(olbl) $f.la
+balloon_set $f.la [ms olb_label]
 
 # buttons
 frame $w.fb -highlightthickness 1

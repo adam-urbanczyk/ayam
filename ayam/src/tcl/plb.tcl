@@ -30,7 +30,8 @@ bind $w.la <Double-ButtonPress-1> {
     plb_update
     resetFocus
 }
-balloon_set $w.la "Double click here\nto deselect property"
+set ay(plbl) $w.la
+balloon_set $w.la [ms plb_label]
 
 # the properties listbox
 set f $w
