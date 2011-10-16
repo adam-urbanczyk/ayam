@@ -2491,3 +2491,67 @@ cleanup:
 
  return TCL_OK;
 } /* ay_viewt_saveimgtcb */
+
+
+/* ay_viewt_warpmouse:
+ *  arrange to warp the mouse to new coordinates
+ */
+void
+ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
+		   double *newwinx, double *newwiny)
+{
+ double winx, winy, dummy, /*rm[16],*/ mm[16], pm[16];
+ int vp[4], height = Togl_Height(togl);
+ GLint gl_status = GL_TRUE;
+ char *cmd = NULL, warpcmd[] = "warpMouse";
+
+  glGetIntegerv(GL_VIEWPORT, vp);
+
+  glGetDoublev(GL_PROJECTION_MATRIX, pm);
+
+  /* coord is in world space, no need to transform... */
+/*
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getall(ay_currentlevel->next);
+     }
+
+   glTranslated(o->movx, o->movy, o->movz);
+   ay_quat_torotmatrix(o->quat, rm);
+   glMultMatrixd(rm);
+   glScaled(o->scalx, o->scaly, o->scalz);
+  
+
+   glGetDoublev(GL_MODELVIEW_MATRIX, mm);
+
+  glPopMatrix();
+*/
+
+  ay_trafo_identitymatrix(mm);
+
+  gl_status = gluProject(coord[0], coord[1], coord[2],
+			 mm, pm, vp,
+			 &winx, &winy, &dummy);
+
+  if((cmd = calloc(TCL_DOUBLE_SPACE*2+12, sizeof(char))))
+    {
+      sprintf(cmd, "%s %lg %lg", warpcmd,
+	      winx-*newwinx,
+	      (height-winy)-*newwiny);
+
+      Tcl_Eval(ay_interp, cmd);
+
+      *newwinx = winx;
+      *newwiny = (height - winy);
+
+      free(cmd);
+    }
+
+ return;
+} /* ay_viewt_warpmouse */
+
+

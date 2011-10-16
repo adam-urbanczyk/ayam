@@ -1654,6 +1654,12 @@ int ay_viewt_markfromselp(struct Togl *togl, int mode);
  */
 int ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[]);
 
+/** warp mouse pointer to new position
+ */
+void ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
+			double *newwinx, double *newwiny);
+
+
 /* w32t.c */
 #ifdef WIN32
 

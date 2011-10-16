@@ -1440,6 +1440,31 @@ proc setMark { px {y 0} {z 0} } {
 # setMark
 
 
+##############################
+# warpMouse:
+# warp mouse pointer to new position
+proc warpMouse { dx dy } {
+    global ay
+
+    set w [winfo toplevel $ay(currentView)]
+
+    set x [expr [winfo pointerx $w] - [winfo rootx $w]]
+    set y [expr [winfo pointery $w] - [winfo rooty $w]]
+
+    set newx [expr $x + $dx]
+    set newy [expr $y + $dy]
+
+    # redirect all events to the tree widget so that no view receives
+    # stray <Motion> events caused by the warp
+    grab $ay(tree)
+    # do the warp
+    event generate $w <Motion> -warp 1 -x $newx -y $newy
+    # restore event processing
+    grab release $ay(tree)
+}
+# warpMouse
+
+
 # some code, that has to be executed in global context when this
 # module is sourced the first time (on application startup):
 
