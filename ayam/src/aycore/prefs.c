@@ -56,6 +56,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(ay_prefs.snap3d);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "AllowWarp", -1);
+  to = Tcl_NewIntObj(ay_prefs.allow_warp);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "ConvResetDisplay", -1);
   to = Tcl_NewIntObj(ay_prefs.conv_reset_display);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -393,6 +397,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "Snap3D", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.snap3d);
+
+  Tcl_SetStringObj(ton, "AllowWarp", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.allow_warp);
 
   Tcl_SetStringObj(ton, "ConvResetDisplay", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
