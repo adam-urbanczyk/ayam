@@ -32,6 +32,7 @@ array set ayprefs {
  EditSnaps 1
  GlobalMark 0
  Snap3D 0
+ AllowWarp 1
 
  Tolerance 30.0
  NPDisplayMode 2

@@ -1312,11 +1312,12 @@ typedef struct ay_preferences_s
 
   /* modelling prefs */
   int edit_snaps_to_grid; /**< edit points first snaps them to the grid? */
+  int snap3d; /**< snap points to the grid in 3D? */
+  int allow_warp;  /**< allow warping the mouse while snapping? */
   double pick_epsilon; /**< control point picking accuracy */
   int lazynotify; /**< control notification */
   int completenotify; /**< control complete notification */
   int undo_levels; /**< number of undo levels, -1 turns undo off */
-  int snap3d; /**< snap points to the grid in 3D? */
   int globalmark; /**< maintain a global mark? */
 
   /* RIB export prefs */

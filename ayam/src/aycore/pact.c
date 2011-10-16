@@ -1930,6 +1930,13 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  static GLdouble m[16] = {0};
  /*GLdouble mo[16] = {0};*/
  ay_object *o = NULL;
+ static int warp = AY_FALSE;
+
+  if(warp)
+    {
+      /* while in a (self initiated) warp, we do not process any events */
+      return TCL_OK;
+    }
 
   if(pact_objectslen == 0)
     return TCL_OK;
@@ -1941,32 +1948,32 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
 
-      glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
-      if(!view->aligned)
-	{
-	  ay_quat_toeuler(o->quat, euler);
-	  glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
-	  glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
-	  glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
-	}
-      glTranslated(-o->movx, -o->movy, -o->movz);
+       glScaled (1.0/o->scalx, 1.0/o->scaly, 1.0/o->scalz);
+       if(!view->aligned)
+	 {
+	   ay_quat_toeuler(o->quat, euler);
+	   glRotated(AY_R2D(euler[0]), 0.0, 0.0, 1.0);
+	   glRotated(AY_R2D(euler[1]), 0.0, 1.0, 0.0);
+	   glRotated(AY_R2D(euler[2]), 1.0, 0.0, 0.0);
+	 }
+       glTranslated(-o->movx, -o->movy, -o->movz);
 
-      if(!view->local)
-	{
-	  if(ay_currentlevel->object != ay_root)
-	    {
-	      ay_trafo_getalli(ay_currentlevel->next);
-	    }
-	}
-      else
-	{
-	  if(ay_currentlevel->object != ay_root)
-	    {
-	      ay_trafo_getallis(ay_currentlevel->next);
-	    }
-	}
+       if(!view->local)
+	 {
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getalli(ay_currentlevel->next);
+	     }
+	 }
+       else
+	 {
+	   if(ay_currentlevel->object != ay_root)
+	     {
+	       ay_trafo_getallis(ay_currentlevel->next);
+	     }
+	 }
 
-      glGetDoublev(GL_MODELVIEW_MATRIX, m);
+       glGetDoublev(GL_MODELVIEW_MATRIX, m);
       glPopMatrix();
 
       if(argc >= 4)
@@ -1976,7 +1983,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[3], &winx);
 	      Tcl_GetDouble(interp, argv[4], &winy);
 
-	      if(view->usegrid)
+	      if(view->usegrid && (view->grid != 0.0))
 		{
 		  ay_viewt_griddify(togl, &winx, &winy);
 		}
@@ -1988,9 +1995,13 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  Tcl_GetDouble(interp, argv[3], &winx);
 		  Tcl_GetDouble(interp, argv[4], &winy);
 
-		  if(view->usegrid)
+		  if(view->usegrid && (view->grid != 0.0))
 		    {
-		      ay_viewt_griddify(togl, &winx, &winy);
+		      if(!ay_prefs.edit_snaps_to_grid ||
+			 !ay_prefs.allow_warp)
+			{
+			  ay_viewt_griddify(togl, &winx, &winy);
+			}
 		    }
 
 		  oldwinx = winx;
@@ -1999,8 +2010,8 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  /* snap selected points to grid coordinates */
 		  if(pact_pe.coords)
 		    {
-		      if(view->usegrid && ay_prefs.edit_snaps_to_grid &&
-			 (view->grid != 0.0))
+		      if(view->usegrid && (view->grid != 0.0) &&
+			 ay_prefs.edit_snaps_to_grid)
 			{
 			  for(i = 0; i < pact_numcpo[j]; i++)
 			    {
@@ -2053,6 +2064,18 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 					    3*sizeof(double)))
 				    {
 				      o->modified = AY_TRUE;
+				      /* warp mouse to new coords */
+				      if(ay_prefs.allow_warp)
+					{
+					  warp = AY_TRUE;
+					  ay_viewt_warpmouse(togl, coords, o,
+							     &winx, &winy);
+
+					  oldwinx = winx;
+					  oldwiny = winy;
+
+					  warp = AY_FALSE;
+					}
 				    }
 				} /* if */
 			      if(!view->local)
