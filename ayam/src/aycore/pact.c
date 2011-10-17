@@ -1995,18 +1995,6 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  Tcl_GetDouble(interp, argv[3], &winx);
 		  Tcl_GetDouble(interp, argv[4], &winy);
 
-		  if(view->usegrid && (view->grid != 0.0))
-		    {
-		      if(!ay_prefs.edit_snaps_to_grid ||
-			 !ay_prefs.allow_warp)
-			{
-			  ay_viewt_griddify(togl, &winx, &winy);
-			}
-		    }
-
-		  oldwinx = winx;
-		  oldwiny = winy;
-
 		  /* snap selected points to grid coordinates */
 		  if(pact_pe.coords)
 		    {
@@ -2070,10 +2058,6 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 					  warp = AY_TRUE;
 					  ay_viewt_warpmouse(togl, coords, o,
 							     &winx, &winy);
-
-					  oldwinx = winx;
-					  oldwiny = winy;
-
 					  warp = AY_FALSE;
 					}
 				    }
@@ -2085,6 +2069,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 				} /* if */
 			      k++;
 			    } /* for */
+
 			  /* notify&redraw are only necessary if coords are
 			     really changed by the snap to grid operation */
 			  if(o->modified)
@@ -2094,8 +2079,17 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			      ay_notify_parent();
 			      ay_toglcb_display(togl);
 			    } /* if */
-			} /* if */
-		    } /* if */
+			} /* if grid */
+		    } /* if pecoords */
+
+		  if(view->usegrid && (view->grid != 0.0))
+		    {
+		      ay_viewt_griddify(togl, &winx, &winy);
+		    }
+
+		  oldwinx = winx;
+		  oldwiny = winy;
+
 		  return TCL_OK;
 		} /* if */
 	    } /* if */
