@@ -558,11 +558,13 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   ay_prefs.pick_epsilon = oldpickepsilon;
 
-  /* */
+  /* fill pact_pe with data from all selected points
+     from all selected objects */
   pact_pe.num = penumber;
   pact_pe.coords = pecoords;
   pact_pe.indices = peindices;
 
+  /* flash option given? */
   if(ay_selection && (argc > 4))
     {
       if(pact_objectslen > 0)
@@ -1926,7 +1928,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
  double winx = 0.0, winy = 0.0;
  double movX, movY, movZ, dx = 0.0, dy = 0.0, dz = 0.0, *coords = NULL;
  double euler[3] = {0}, uccoords[3] = {0};
- int i = 0, j, k = 0, redraw = AY_FALSE;
+ int i = 0, j, k = 0, start = AY_FALSE, redraw = AY_FALSE;
  static GLdouble m[16] = {0};
  /*GLdouble mo[16] = {0};*/
  ay_object *o = NULL;
@@ -1939,7 +1941,9 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
     }
 
   if(pact_objectslen == 0)
-    return TCL_OK;
+    {
+      return TCL_OK;
+    }
 
   for(j = 0; j < pact_objectslen; j++)
     {
@@ -1992,6 +1996,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	    {
 	      if(!strcmp(argv[2],"-start"))
 		{
+		  start = AY_TRUE;
 		  Tcl_GetDouble(interp, argv[3], &winx);
 		  Tcl_GetDouble(interp, argv[4], &winy);
 
@@ -2075,9 +2080,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 			  if(o->modified)
 			    {
 			      ay_pact_notify(o, j, k-pact_numcpo[j]);
-			      /*ay_notify_force(o);*/
-			      ay_notify_parent();
-			      ay_toglcb_display(togl);
+			      redraw = AY_TRUE;
 			    } /* if */
 			} /* if grid */
 		    } /* if pecoords */
@@ -2085,12 +2088,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  if(view->usegrid && (view->grid != 0.0))
 		    {
 		      ay_viewt_griddify(togl, &winx, &winy);
-		    }
-
-		  oldwinx = winx;
-		  oldwiny = winy;
-
-		  return TCL_OK;
+		    }		  
 		} /* if */
 	    } /* if */
 	}
@@ -2100,46 +2098,49 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 	  return TCL_OK;
 	} /* if */
 
-      dx = -(oldwinx - winx) * view->conv_x;
-      dy = (oldwiny - winy) * view->conv_y;
-
-      /* Side or Top view? */
-      if(view->type == AY_VTSIDE)
+      if(!start)
 	{
-	  dz = -dx;
-	  dx = 0.0;
-	}
+	  dx = -(oldwinx - winx) * view->conv_x;
+	  dy = (oldwiny - winy) * view->conv_y;
 
-      if(view->type == AY_VTTOP)
-	{
-	  dx = dx;
-	  dz = -dy;
-	  dy = 0.0;
-	}
-
-      movX = m[0]*dx+m[4]*dy+m[8]*dz;
-      movY = m[1]*dx+m[5]*dy+m[9]*dz;
-      movZ = m[2]*dx+m[6]*dy+m[10]*dz;
-
-      if(pact_pe.coords)
-	{
-	  for(i = 0; i < pact_numcpo[j]; i++)
+	  /* Side or Top view? */
+	  if(view->type == AY_VTSIDE)
 	    {
-	      coords = pact_pe.coords[k];
-	      k++;
-	      coords[0] += movX;
-	      coords[1] += movY;
-	      coords[2] += movZ;
-	    } /* for */
+	      dz = -dx;
+	      dx = 0.0;
+	    }
 
-	  if((fabs(movX) > AY_EPSILON)||
-	     (fabs(movY) > AY_EPSILON)||
-	     (fabs(movZ) > AY_EPSILON))
+	  if(view->type == AY_VTTOP)
 	    {
-	      ay_pact_notify(o, j, k-pact_numcpo[j]);
-	      redraw = AY_TRUE;
+	      dx = dx;
+	      dz = -dy;
+	      dy = 0.0;
+	    }
+
+	  movX = m[0]*dx+m[4]*dy+m[8]*dz;
+	  movY = m[1]*dx+m[5]*dy+m[9]*dz;
+	  movZ = m[2]*dx+m[6]*dy+m[10]*dz;
+
+	  if(pact_pe.coords)
+	    {
+	      for(i = 0; i < pact_numcpo[j]; i++)
+		{
+		  coords = pact_pe.coords[k];
+		  k++;
+		  coords[0] += movX;
+		  coords[1] += movY;
+		  coords[2] += movZ;
+		} /* for */
+
+	      if((fabs(movX) > AY_EPSILON)||
+		 (fabs(movY) > AY_EPSILON)||
+		 (fabs(movZ) > AY_EPSILON))
+		{
+		  ay_pact_notify(o, j, k-pact_numcpo[j]);
+		  redraw = AY_TRUE;
+		} /* if */
 	    } /* if */
-	} /* if */
+	} /* if !start */
     } /* for */
 
   oldwinx = winx;
@@ -2147,7 +2148,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
   if(redraw)
     {
-      if(!ay_prefs.lazynotify)
+      if(!ay_prefs.lazynotify || start)
 	{
 	  ay_notify_parent();
 	}
