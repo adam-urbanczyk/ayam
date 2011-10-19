@@ -2514,7 +2514,7 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
-  
+
    if(ay_currentlevel->object != ay_root)
      {
        ay_trafo_getall(ay_currentlevel->next);
@@ -2524,7 +2524,7 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
    ay_quat_torotmatrix(o->quat, rm);
    glMultMatrixd(rm);
    glScaled(o->scalx, o->scaly, o->scalz);
-  
+
 
    glGetDoublev(GL_MODELVIEW_MATRIX, mm);
 
@@ -2536,6 +2536,11 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
   gl_status = gluProject(coord[0], coord[1], coord[2],
 			 mm, pm, vp,
 			 &winx, &winy, &dummy);
+
+  if(gl_status == GL_FALSE)
+    {
+      return;
+    }
 
   if((cmd = calloc(TCL_DOUBLE_SPACE*2+12, sizeof(char))))
     {
