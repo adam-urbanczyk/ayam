@@ -1389,11 +1389,11 @@ proc actionEditP { w } {
 	%W mc
 	if { $ayprefs(FlashPoints) == 1 } {
 	    %W startpepac %x %y -flash
+	    %W pepac -start %x %y -flash
 	} else {
 	    %W startpepac %x %y
+	    %W pepac -start %x %y
 	}
-
-	%W pepac -start %x %y
     }
 
     bind $w <B1-Motion> {
