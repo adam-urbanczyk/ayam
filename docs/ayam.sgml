@@ -2117,9 +2117,8 @@ determined by the type of the view.
 <item><tt/"FlashPoints"/ controls flashing of editable points in
 the single point modelling actions when they would be modified by
 a click and drag action.
-Note that a change of this preference option takes effect after the
-current modelling action has been switched off and the single point
-editing has been activated (again).
+Note that a change of this preference option only takes effect for
+the next invocation of the single point editing modelling action.
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
 own mark (off, default), or whether there should be just one global
@@ -2128,7 +2127,7 @@ immediately lead to a global mark set in all windows, one rather
 needs to set a new mark that will then become global.
 
 <item><tt/"DefaultAction"/ determines the modelling action
-that should be active after a press of the <tt/&lt;Esc&gt;/ key
+that will be active after a press of the <tt/&lt;Esc&gt;/ key
 in a view window.
 
 <item><tt/"UndoLevels"/ determines the number of modelling steps
@@ -2976,8 +2975,20 @@ The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
 for <em>t</em>ag points) may be applied to objects that support single
 point editing or read only points.
 <p>
-Selected points will be drawn in dark red when the select points modelling
-action or a modelling action that would modify the selected points is active:
+To select or de-select a point it can directly be clicked upon
+or a rectangular region can be dragged with the mouse around the
+points in question.
+<p>
+Only points within a certain distance from the mouse pointer
+click position will be considered picked (see preference option
+<tt>"Modelling/PickEpsilon"</tt>).
+Points that would be picked will flash in a different color when
+the mouse pointer moves over them (this is also controlled by the
+preference option <tt>"Modelling/FlashPoints"</tt>).
+<p>
+Selected points will be drawn in dark red when the select points
+modelling action or a modelling action that would modify the selected
+points is active (see the following image).
 <p>
 <figure loc="ht">
 <eps file="pics/selpnts.ps" height="4cm">
@@ -2999,7 +3010,6 @@ Tag Points|<tt/&lt;t&gt;/|
 </tabular>
 <caption>Tag Action</caption>
 </table>
-<p>
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
 If the selected point is already in that list it will be removed from
@@ -3015,16 +3025,16 @@ are used.
 The point selection can also be inverted using the keyboard shortcut
 <tt/&lt;I&gt;/.
 <p>
-All three above shortcuts can be used anytime without interfering
+All three shortcuts above can be used anytime without interfering
 with any other active modelling actions.
 <p>
 Note that the list of selected points is not copied, if the object
 is copied using the clipboard. The selection is also not saved to
-Ayam scene files. Since Ayam 1.16, selected points survive undo/redo.
-However, the selection action iself is not an operation recorded
-in the undo buffer, thus cannot directly be undone.
+Ayam scene files. But since Ayam 1.16, selected points survive undo/redo.
+Furthermore note that the selection action iself is not an operation
+recorded in the undo buffer, thus cannot directly be undone.
 <p>
-The point selection does not interfere with single point modelling
+The point selection also does not interfere with single point modelling
 actions:
 It is perfectly legal to select some points, move them using
 the move action, then switch to single point editing, edit
@@ -3037,7 +3047,8 @@ One may also add a bigger number of points to the selection using a
 click and drag operation. All points that are inside the rectangular
 region defined by the click and drag will be added to the selection.
 In fact, this approach is the only way to safely add points to the
-selection that occlude each other.
+selection that occlude each other. Clicking always only adds/removes
+single points.
 <p>
 Since Ayam 1.16.1, holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
@@ -3052,13 +3063,22 @@ All those actions may be applied to objects that support single point
 editing only.
 Such objects usually
 draw their selectable points using small white rectangular handles
-when a modelling action is active (see image below).
+when a modelling action is active (see also the image below).
 <p>
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
 <img src="pics/handles.gif">
 <caption>Objects With Read Only (left) and With Editable Points (right)</caption>
 </figure>
+<p>
+In contrast to e.g. the move action, all point edit actions require the
+handle of the point to be picked directly.
+Only points within a certain distance from the mouse pointer click
+position will be considered picked (see preference option
+<tt>"Modelling/PickEpsilon"</tt>).
+Points that would be picked will flash in a different color when
+the mouse pointer moves over them (this is also controlled by the
+preference option <tt>"Modelling/FlashPoints"</tt>).
 <p>
 For an overview of the point edit actions see also the table below.
 <p>
@@ -3084,8 +3104,7 @@ Numeric Edit|<tt/&lt;E&gt;/|
 <itemize>
 <item>The modelling action <tt/"Edit"/ (shortcut: <tt/&lt;e&gt;/)
 works much like the move action, but it moves single points instead of
-objects. In contrast to the move action, you need to directly pick on
-the handle of the point you want to move. Since Ayam 1.18 it is possible
+objects. Since Ayam 1.18 it is possible
 to edit points of multiple selected objects (in former versions
 only points from the first selected object were considered).
 <p>
@@ -3094,6 +3113,16 @@ points that make up the multiple point, i.e. you can not move
 single points apart from a multiple point using the point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
+<p>
+If the preference option <tt>"Modelling/EditSnaps"</tt> is enabled,
+the picked point will be moved to the nearest grid coordinates first,
+otherwise the grid just controls the displacement for the edit
+action. The snapping can occur in 2D or 3D depending on the preference
+option <tt>"Modelling/Snap3D"</tt>.
+Moreover, while snapping a point, the mouse pointer will warp to
+the new position of the point (so that the user does not lose
+track of it). Warping the mouse pointer currently does not work on
+MacOSX Aqua.
 
 <item>The modelling action <tt/"Edit Weights"/ (shortcut: <tt/&lt;w&gt;/)
 changes the w coordinate of a single point by dragging the mouse left
@@ -3279,7 +3308,8 @@ The mark is set to the position of the picked point (see section
 <ref id="markac" name="Setting the Mark">
 for more information about the mark).
 Remember to exactly pick a point on the surface or nearby, otherwise
-the calculation may fail.
+the calculation may fail. As the icon suggests, this action works best
+in the shaded drawing mode.
 See also the table below.
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
@@ -13724,7 +13754,7 @@ Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
 icon button scheme with its constant button size. However,
 since Ayam 1.14, the procedure <tt/"toolbox_add"/ can be of
-considerable help (see the file <tt/"scripts/topoly.tcl"/
+considerable help (see the file <tt>"scripts/topoly.tcl"</tt>
 for an example).
 <p>
 Here is an example that adds two buttons to the bottom of the
@@ -16040,6 +16070,10 @@ should be picked or not (default: 5); this setting determines the size
 of a rectangular area around the picked point in pixels, all objects that
 are inside or touch this area are considered picked
 
+<item><tt/"AllowWarp"/: controls whether the mouse pointer should be
+moved to the new position of points snapped to the grid while editing
+(default: 1 &ndash; yes)
+
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30)
 
@@ -16049,16 +16083,20 @@ This is e.g. necessary for the Linux platform.
 
 <item><tt/"Prompt"/: controls the prompt for the Ayam console. If
 set to an empty string, a default of
-<code>
+<tscreen><tt>
 \[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
-</code>
+</tt></tscreen>
 will be used, which displays the name of the operations that you can
 undo and redo and the last component of the current
 directory of Ayam like this <tt>"[Undo:None/Redo:None].../scn&gt;"</tt>.
+
+
 You may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
-name of the current directory. If you want to display the value of a
-variable in the prompt (e.g. designating the current level in
-the scene hierarchy) you need to bind a write-trace to that variable.
+name of the current directory.
+
+If you want to display the value of a variable in the prompt (e.g.
+designating the current level in the scene hierarchy) you need to bind
+a write-trace to that variable.
 The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
 and may e.g. be established using a small script like this:
 <tt/"trace variable &lt;vname&gt; ayam_updateprompt"/.
@@ -16320,7 +16358,7 @@ See also section <ref id="impex" name="Import and Export">.
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
 <item>AyCSG &ndash; CSG rendering
-(see section <ref id="idr" name="CSG preview using the AyCSG plugin">),
+(see section <ref id="aycsg" name="CSG preview using the AyCSG plugin">),
 <item>IDR &ndash; Importance Driven Rendering
 (see section <ref id="idr" name="Importance Driven Rendering">),
 <item>aydnd &ndash; inter-application drag and drop
