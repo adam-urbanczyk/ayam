@@ -307,9 +307,9 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 
   if(old_o && pnt)
     {
-      if((pnt[0] == old_pnt[0]) &&
-	 (pnt[1] == old_pnt[1]) &&
-	 (pnt[2] == old_pnt[2]) &&
+      if((fabs(pnt[0] - old_pnt[0]) < AY_EPSILON) &&
+	 (fabs(pnt[1] - old_pnt[1]) < AY_EPSILON) &&
+	 (fabs(pnt[2] - old_pnt[2]) < AY_EPSILON) &&
 	 (old_o == o))
 	{
 	  old_is_new = AY_TRUE;
@@ -335,6 +335,9 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        /* clear old point? */
        if(old_o && !ignore_old)
 	 {
+	   /*
+	   printf("clearing %lg %lg %lg\n",old_pnt[0],old_pnt[1],old_pnt[2]);
+	   */
 	   glPushMatrix();
 	    glTranslated(old_o->movx, old_o->movy, old_o->movz);
 	    ay_quat_torotmatrix(old_o->quat, m);
@@ -352,8 +355,8 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
        /* draw new point? */
        if(pnt && o)
 	 {
+	   /*printf("flashing %lg %lg %lg\n",pnt[0],pnt[1],pnt[2]);*/
 	   glPushMatrix();
-	    glLoadIdentity();
 	    glTranslated(o->movx, o->movy, o->movz);
 	    ay_quat_torotmatrix(o->quat, m);
 	    glMultMatrixd((GLdouble*)m);
@@ -369,7 +372,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
 	 {
 	   old_o = NULL;
 	 }
-
+      glPopMatrix();
       glEnable(GL_DEPTH_TEST);
       /* the following line fixes problems with Intel
 	 onboard graphics (i915) */
@@ -379,7 +382,7 @@ ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o)
       glDrawBuffer(GL_BACK);
     } /* if */
 
-#endif
+#endif /* GL_VERSION_1_1 */
 
  return;
 } /* ay_pact_flashpoint */
@@ -397,16 +400,15 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  double winX = 0.0, winY = 0.0;
- /*  double pickepsilon = ay_prefs.pick_epsilon;*/
  double obj[3] = {0};
  ay_list_object *sel = ay_selection;
  int penumber = 0, *tmpi;
  unsigned int *peindices = NULL, *tmpu;
  double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
  ay_object **tmpo = NULL, *o = NULL;
- static ay_list_object *lastlevel = NULL;
- static double lscal = 0.0;
  GLdouble m[16];
+ static ay_list_object *lastlevel = NULL;
+ static double lscal = 1.0;
 
   if(pact_numcpo)
     free(pact_numcpo);
@@ -429,9 +431,9 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 
   if(lastlevel != ay_currentlevel)
     {
-
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
+       glLoadIdentity();
        if(ay_currentlevel->object != ay_root)
 	 {
 	   ay_trafo_getalls(ay_currentlevel->next);
@@ -443,7 +445,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
        if(fabs(m[10]) < lscal)
 	 lscal = fabs(m[10]);
       glPopMatrix();
-
+      /*printf("new lscal %lg\n",lscal);*/
       lastlevel = ay_currentlevel;
     } /* if */
 
@@ -453,6 +455,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
     {
       o = sel->object;
 
+      ay_viewt_wintoobj(togl, o, winX, winY,
+			&(obj[0]), &(obj[1]), &(obj[2]));
+
+      /* adapt pick epsilon to view zoom, level and object scale */
       mins = fabs(o->scalx);
 
       if(fabs(o->scaly) < mins)
@@ -461,25 +467,25 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       if(fabs(o->scalz) < mins)
 	mins = o->scalz;
 
-      ay_prefs.pick_epsilon = oldpickepsilon / lscal *
-	(view->conv_x/0.006) / mins;
+      ay_prefs.pick_epsilon = (oldpickepsilon * lscal * mins) /
+	(view->conv_x);
 
       /*printf("using pickepsilon %g\n", ay_prefs.pick_epsilon);*/
 
-      ay_viewt_wintoobj(togl, o, winX, winY,
-			&(obj[0]), &(obj[1]), &(obj[2]));
-
+      /* now try to pick points on object o */
       ay_status = ay_pact_getpoint(1, o, obj, &pact_pe);
 
+      /* see what have we got */
       if(!ay_status && pact_pe.coords && (!pact_pe.readonly))
 	{
-	  /* save coords */
+	  /* pick succeeded ...*/
+	  /* ...save coords */
 	  if(!(tmp = realloc(pecoords,
 			     (pact_pe.num + penumber)*sizeof(double*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      free(pecoords);
-	      return TCL_OK;
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -488,13 +494,13 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 		     pact_pe.num*sizeof(double*));
 	    }
 
-	  /* save indices */
+	  /* ...save indices */
 	  if(!(tmpu = realloc(peindices,
 			     (pact_pe.num + penumber)*sizeof(unsigned int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
 	      free(pecoords); free(peindices);
-	      return TCL_OK;
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -506,14 +512,15 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 		}
 	    }
 
+	  /* ...up the picked points count */
 	  penumber += pact_pe.num;
 
-	  /* remember number of picked points of current object */
+	  /* ...remember number of picked points of current object */
 	  if(!(tmpi = realloc(pact_numcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -521,12 +528,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	      pact_numcpo[pact_objectslen] = pact_pe.num;
 	    }
 
-	  /* remember rational state of current object */
+	  /* ...remember rational state of current object */
 	  if(!(tmpi = realloc(pact_ratcpo, (pact_objectslen+1)*
 			      sizeof(int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -534,12 +541,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	      pact_ratcpo[pact_objectslen] = pact_pe.rational;
 	    }
 
-	  /* remember pointer to current object */
+	  /* ...remember pointer to current object */
 	  if(!(tmpo = realloc(pact_objects, (pact_objectslen+1)*
 			      sizeof(ay_object*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      return TCL_OK;
+	      goto cleanup;
 	    }
 	  else
 	    {
@@ -548,15 +555,12 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 	    }
 
 	  pact_objectslen++;
-
 	} /* if */
 
       ay_pact_clearpointedit(&pact_pe);
 
       sel = sel->next;
     } /* while */
-
-  ay_prefs.pick_epsilon = oldpickepsilon;
 
   /* fill pact_pe with data from all selected points
      from all selected objects */
@@ -574,6 +578,10 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       else
 	ay_pact_flashpoint(AY_FALSE, pecoords?*pecoords:NULL, o);
     } /* if */
+
+cleanup:
+
+  ay_prefs.pick_epsilon = oldpickepsilon;
 
  return TCL_OK;
 } /* ay_pact_startpetcb */
@@ -2088,7 +2096,7 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 		  if(view->usegrid && (view->grid != 0.0))
 		    {
 		      ay_viewt_griddify(togl, &winx, &winy);
-		    }		  
+		    }
 		} /* if */
 	    } /* if */
 	}
