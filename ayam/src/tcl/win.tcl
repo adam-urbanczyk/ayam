@@ -282,7 +282,7 @@ proc winSetWMState { w state } {
 # winRestorePaneLayout:
 #  restore the pane layout for SingleWindow GUI mode
 proc winRestorePaneLayout { config } {
- global ayprefs
+    global ayprefs
 
     # from bottom to top
     # horizontal pane between console and hierarchy
@@ -295,6 +295,7 @@ proc winRestorePaneLayout { config } {
     pane_constrain . .__h2 .fu .fl height y 0\
      [lindex $ayprefs(PaneMargins) 0]
     pane_motion $vheight . .__h2 height y 1
+    update idletasks
 
     # horizontal pane between hierarchy and internal views
     if {[llength $config] > 2} {
@@ -306,6 +307,7 @@ proc winRestorePaneLayout { config } {
     pane_constrain . .__h1 .fv .fu height y 0\
      [lindex $ayprefs(PaneMargins) 1]
     pane_motion $vheight . .__h1 height y 1
+    update idletasks
 
     # from right to left
     # vertical pane between internal properties and internal view3
@@ -317,6 +319,7 @@ proc winRestorePaneLayout { config } {
     pane_constrain . .fu.fMain.__h2 .fu.fMain.fProp .fu.fMain.fview3\
      width x 0 [lindex $ayprefs(PaneMargins) 2]
     pane_motion $vwidth . .fu.fMain.__h2 width x 1
+    update idletasks
 
     # vertical pane between hierarchy and internal properties
     if {[llength $config] > 4} {
@@ -327,6 +330,7 @@ proc winRestorePaneLayout { config } {
     pane_constrain . .fu.fMain.__h1 .fu.fMain.fHier .fu.fMain.fProp\
      width x 1 [lindex $ayprefs(PaneMargins) 3]
     pane_motion $vwidth . .fu.fMain.__h1 width x 1
+    update idletasks
 
     # vertical pane between the internal views 1 and 2
     if {[llength $config] > 6} {
@@ -337,6 +341,7 @@ proc winRestorePaneLayout { config } {
     pane_constrain . .fv.fViews.__h1 .fv.fViews.fview1 .fv.fViews.fview2 \
      width x 0 [lindex $ayprefs(PaneMargins) 4]
     pane_motion $vwidth . .fv.fViews.__h1 width x 1
+    update idletasks
 
  return;
 }
