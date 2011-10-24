@@ -1,4 +1,4 @@
-[1. Oct 2011] CVS-Head:
+[24. Oct 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -32,6 +32,11 @@ o moving the mouse pointer across the origin when scaling no longer
 o added setting the mark to selected points bounding box center
   (shortcut <ab>)
 o closed cubic interpolating curves now also use the EDLen parameter properly
+o improved initial derivatives when switching from automatic to manual
+  derivatives for ICurves
+o improved snapping points from half grid coordinates to the grid by
+  introduction of a mouse pointer warping facility (not available on
+  MacOSX Aqua)
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -49,6 +54,8 @@ o the amounts of rotation and zooming per keyboard are now configurable
   via the ayamrc file
 o ICurve property GUI now only displays SDLen/EDLen entries when actually
   used and the Derivatives entry is now, as for the IPatch, a menu
+o improved tooltip placement and management
+o reset layout is more robust now
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
@@ -66,6 +73,7 @@ o getPnt/setPnt now support writing to/reading from lists of double
 o getPnt/setPnt now allow to get/set all control points of an object
 o getPnt no longer unconditionally writes to global variables
 o getPnt no longer requests a variable for w to be provided in "-eval" mode
+o scripts and plugins can now create their own view window keyboard shortcuts
 
 
 [16. Mar 2011] Ayam-1.19:
