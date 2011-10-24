@@ -2072,15 +2072,22 @@ contains modelling related settings:
 <itemize>
 <item><tt/"PickEpsilon"/ is used by the single point editing actions
 (see section <ref id="editac" name="Editing Points">)
-to determine which point (vertice) of an object has been selected.
+to determine which point of an object has been selected.
 A smaller <tt/"PickEpsilon"/ means more exact picking.
-The value of <tt/"PickEpsilon"/ should be positive. In older versions
-of Ayam (prior to 1.8), a value of 0.0 was allowed. This is no longer the
-case.
+The value of <tt/"PickEpsilon"/ should be positive and is expressed
+in terms of object coordinates, however, also the view zoom factor modifies
+the effective <tt/"PickEpsilon"/ value in a way that for zoomed-in views
+a smaller value will be used (and vice versa).
+
+
+In older versions of Ayam (prior to 1.8), a value of 0.0 was
+allowed and default. This is no longer the case, the new default
+value is 0.05.
 
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
 for the interactive modelling actions.
+
 
 Notification is the mechanism used to inform objects that rely
 on certain child objects (e.g. the Revolve tool object) about
