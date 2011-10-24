@@ -23,7 +23,7 @@ array set ayprefs {
  ListTypes 1
  MarkHidden 1
  AutoSavePrefs 1
- PickEpsilon 0.02
+ PickEpsilon 0.05
  PickTolerance 5.0
  UseMatColor 0
  HandleSize 6
