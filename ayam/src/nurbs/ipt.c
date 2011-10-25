@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* ipt.c - interpolating surface tools */
+/** \file ipt.c \brief interpolating surface tools */
 
 
 /** ay_ipt_getpntfromindex:
@@ -1588,16 +1588,16 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
+ int i = 1;
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- int interpolv = AY_FALSE, order = 0, ktype = AY_KTCHORDAL;
+ int interpolv = AY_FALSE, order = 4, ktype = AY_KTCHORDAL;
+ int closed = AY_FALSE;
+ double sdlen = 0.0, edlen = 0.0;
 
-  if(argc < 2)
-    {
-      ay_error(AY_EARGS, argv[0], "order");
-      return TCL_OK;
-    }
+  if(!strcmp(argv[0], "interpvNP"))
+    interpolv = AY_TRUE;
 
   if(!sel)
     {
@@ -1605,25 +1605,64 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  tcl_status = Tcl_GetInt(interp, argv[1], &order);
-  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-
-  if(order <= 2)
+  /* parse args */
+  while(i+1 < argc)
     {
-      ay_error(AY_ERROR, argv[0], "Parameter order must be > 2.");
-      return TCL_OK;
-    }
-
-  if(argc > 2)
-    {
-      tcl_status = Tcl_GetInt(interp, argv[2], &ktype);
-      AY_CHTCLERRRET(tcl_status, argv[0], interp);
-      if(ktype)
-	ktype = AY_KTCENTRI;
-    }
-
-  if(!strcmp(argv[0], "interpvNP"))
-    interpolv = AY_TRUE;
+      if(argv[i] && argv[i][0] != '\0')
+	{
+	  switch(argv[i][1])
+	    {
+	    case 'c':
+	      /* -closed */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &closed);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    case 'e':
+	      /* -edlen */
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &edlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    case 'o':
+	      /* -order */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      if(order <= 2)
+		{
+		  ay_error(AY_ERROR, argv[0], "Order must be > 2.");
+		  return TCL_OK;
+		}
+	      break;
+	    case 'k':
+	      /* -ktype */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &ktype);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      switch(ktype)
+		{
+		case 0:
+		  ktype = AY_KTCHORDAL;
+		  break;
+		case 1:
+		  ktype = AY_KTCENTRI;
+		  break;
+		case 2:
+		  ktype = AY_KTUNIFORM;
+		  break;
+		default:
+		  ktype = AY_KTCHORDAL;
+		  break;
+		} /* switch */
+	      break;
+	    case 's':
+	      /* -sdlen */
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &sdlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+	} /* if */
+      i += 2;
+    } /* while */
 
   while(sel)
     {
@@ -1632,10 +1671,38 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  patch = (ay_nurbpatch_object*)o->refine;
 
-	  if(interpolv)
-	    ay_status = ay_ipt_interpolatev(patch, order, ktype);
+	  if(closed)
+	    {
+	      if(interpolv)
+		ay_status = ay_ipt_interpolatevdc(patch, order, ktype,
+						  /*dmode*/0, sdlen, edlen,
+						  NULL, NULL);
+	      else
+		ay_status = ay_ipt_interpolateudc(patch, order, ktype,
+						  /*dmode*/0, sdlen, edlen,
+						  NULL, NULL);
+	    }
 	  else
-	    ay_status = ay_ipt_interpolateu(patch, order, ktype);
+	    {
+	      if(sdlen == 0.0 && edlen == 0.0)
+		{
+		  if(interpolv)
+		    ay_status = ay_ipt_interpolatev(patch, order, ktype);
+		  else
+		    ay_status = ay_ipt_interpolateu(patch, order, ktype);
+		}
+	      else
+		{
+		  if(interpolv)
+		    ay_status = ay_ipt_interpolatevd(patch, order, ktype,
+						  /*dmode*/0, sdlen, edlen,
+						  NULL, NULL);
+		  else
+		    ay_status = ay_ipt_interpolateud(patch, order, ktype,
+						  /*dmode*/0, sdlen, edlen,
+						  NULL, NULL);
+		}
+	    } /* if closed */
 
 	  if(!ay_status)
 	    {
