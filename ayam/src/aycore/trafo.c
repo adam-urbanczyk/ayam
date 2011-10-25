@@ -155,16 +155,21 @@ ay_trafo_getalli(ay_list_object *lo)
  double euler[3] = {0};
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
-
+    {
+      return;
+    }
 
   if((o != ay_root) && o->down)
     {
@@ -200,16 +205,20 @@ ay_trafo_getalls(ay_list_object *lo)
  ay_object *o = NULL;
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
     {
-    return;
+      return;
     }
 
   if(lo->next)
@@ -235,22 +244,26 @@ ay_trafo_getallis(ay_list_object *lo)
  ay_object *o = NULL;
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
-
+    {
+      return;
+    }
 
   if((o != ay_root) && o->down)
     {
       glScaled((GLdouble)(1.0/o->scalx), (GLdouble)(1.0/o->scaly),
 	       (GLdouble)(1.0/o->scalz));
-
     }
 
   if(lo->next)
@@ -272,15 +285,21 @@ ay_trafo_getallsr(ay_list_object *lo)
  double m[16] = {0};
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
+    {
+      return;
+    }
 
   if(lo->next)
    {
@@ -308,15 +327,21 @@ ay_trafo_getallisr(ay_list_object *lo)
  double euler[3] = {0};
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
+    {
+      return;
+    }
 
   if((o != ay_root) && o->down)
     {
@@ -352,15 +377,21 @@ ay_trafo_getallr(ay_list_object *lo)
  double m[16] = {0};
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
+    {
+      return;
+    }
 
   if(lo->next)
    {
@@ -387,15 +418,21 @@ ay_trafo_getallir(ay_list_object *lo)
  double euler[3] = {0};
 
   if(!lo)
-    return;
+    {
+      return;
+    }
 
   o = lo->object;
 
   if(!o)
-    return;
+    {
+      return;
+    }
 
   if(!o->inherit_trafos)
-    return;
+    {
+      return;
+    }
 
   if((o != ay_root) && o->down)
     {
@@ -435,10 +472,14 @@ ay_trafo_delegate(ay_object *o)
  double m[16] = {0}, v1[4] = {0};
 
   if(!o)
-    return AY_ENULL;
+    {
+      return AY_ENULL;
+    }
 
   if(!o->down)
-    return AY_ERROR;
+    {
+      return AY_ERROR;
+    }
 
   ay_quat_toeuler(o->quat, euler);
 
@@ -557,7 +598,9 @@ ay_trafo_applyall(ay_list_object *lo, ay_object *o, double *p)
  double rm[16];
 
   if(!o || !p)
-    return;
+    {
+      return;
+    }
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -586,7 +629,9 @@ ay_trafo_applyalli(ay_list_object *lo, ay_object *o, double *p)
  double euler[3] = {0};
 
   if(!o || !p)
-    return;
+    {
+      return;
+    }
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -616,6 +661,11 @@ void
 ay_trafo_copy(ay_object *src, ay_object *dst)
 {
 
+  if(!src || !dst) 
+    {
+      return;
+    }
+
   dst->movx = src->movx;
   dst->movy = src->movy;
   dst->movz = src->movz;
@@ -642,6 +692,11 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 {
  double euler[3];
 
+  if(!src || !dst) 
+    {
+      return;
+    }
+
   dst->movx += src->movx;
   dst->movy += src->movy;
   dst->movz += src->movz;
@@ -667,6 +722,11 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 void
 ay_trafo_defaults(ay_object *o)
 {
+
+  if(!o)
+    {
+      return;
+    }
 
   o->movx = 0.0;
   o->movy = 0.0;
@@ -737,7 +797,7 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		     int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
@@ -853,7 +913,7 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+		      int argc, char *argv[])
 {
  int tcl_status = TCL_OK;
  double dx = 0, dy = 0, dz = 0;
