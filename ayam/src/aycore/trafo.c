@@ -661,7 +661,7 @@ void
 ay_trafo_copy(ay_object *src, ay_object *dst)
 {
 
-  if(!src || !dst) 
+  if(!src || !dst)
     {
       return;
     }
@@ -692,7 +692,7 @@ ay_trafo_add(ay_object *src, ay_object *dst)
 {
  double euler[3];
 
-  if(!src || !dst) 
+  if(!src || !dst)
     {
       return;
     }
