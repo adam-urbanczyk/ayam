@@ -8,13 +8,14 @@ in the following points:
 per input line;
 
 2) to keep longer code examples on one page in page based output
-(i.e. LaTeX/PDF) use:
+   (i.e. LaTeX/PDF) use:
 <#if out=latex><x/needspace 8/</#if>
 
 3) likewise, enforce a new page with:
 <#if out=latex><x/newpage/</#if>
 
-4) for references in sections, prepend the label statement with
+4) for references in sections (not references to sections!),
+   prepend the label statement with
 <#if out=latex><x/phantomsection/</#if>
 .
  -->
@@ -3146,7 +3147,12 @@ single points that make up the multiple point.
 starts an intermediate point selection action and upon a click
 with the mouse opens a small window where you may change the
 coordinates of the selected editable point(s) by entering
-new coordinate values on the keyboard.
+new coordinate values on the keyboard (see image below).
+<figure loc="ht">
+<eps file="pics/numpnted.ps" height="3.5cm">
+<img src="pics/numpnted.gif">
+<caption>Numeric Point Edit Dialog</caption>
+</figure>
 Nothing will be changed unless the <tt/"Return"/ key is pressed
 in a coordinate entry field or the <tt/"Apply"/ button is used.
 In contrast to the normal point selection action, clicking on new
@@ -3465,6 +3471,7 @@ Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thins
 </tabular>
 <caption>Object Capabilities Template</caption>
 </table>
+
 The capabilities are:
 <itemize>
 <item><bf/Type/: the type name as displayed in the object tree view
@@ -3484,6 +3491,8 @@ must rather provide an object of the appropriate type (see also section
 <item><bf/Point Edit/: the object has editable points,
 * &ndash; read only points are supported.
 </itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 Example:
 <table loc="ht">
@@ -3668,14 +3677,18 @@ SDNPatch|No|Yes|PolyMesh|Yes@<hline>
 There is always exactly one Root object in the scene.
 This object is something special in that it can not be deleted
 or copied.
-The Root object holds options global to the scene like RiOptions,
+The Root object holds rendering options global to the scene like RiOptions,
 atmosphere and imager shaders. Furthermore, all currently open
 view windows are represented as child objects of the Root object.
 <p>
 If you hide the Root object, the little red/green/blue coordinate system
 will not be drawn in any view.
 <p>
-The global scene options are documented in the following sections.
+The Root object also aids in per-scene window geometry management
+using SaveMainGeom and SavePaneLayout tags (see also section
+<ref id="tags" name="Tags">.
+<p>
+The global scene rendering options are documented in the following sections.
 
 <sect2>RiOptions Property<label id="rio"><label id="rioptionsprop">
 <p>
@@ -3766,6 +3779,18 @@ they may e.g. be used to set a specific background color.
 Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
 optical effects like fog.
+
+<sect2>RIB Export
+<p>
+The Root object appears in RIB output in different places as collection
+of RenderMan Interface options and imager as well as atmosphere shaders.
+<p>
+The exact RIB statements used depend on the configuration of the
+object and the preference setting <tt>"RIB-Export/RIStandard"</tt>.
+<p>
+The Root object is the only object to support RiOptions, RiHider, and
+RiDisplay tags (see also section
+<ref id="tags" name="Tags">.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -3915,8 +3940,6 @@ disable undo for view actions, e.g. panning or zooming a view,
 these actions then also do not change the scene changed state.
 </itemize>
 
-<#if out=latex><x/newpage/</#if>
-
 <sect1>Camera Object<label id="cameraobj">
 <p>
 Camera objects are used to temporarily save camera settings
@@ -3937,6 +3960,10 @@ Camera|No|No|N/A|Yes@<hline>
 </tabular>
 <caption>Camera Object Capabilities</caption>
 </table>
+
+<sect2>RIB Export
+<p>
+Camera objects never appear in RIB output.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -12897,10 +12924,21 @@ See also section <ref id="extrnpt" name="The Extract Patch Tool">.
 <label id="scinterpunp">
 interpuNP &ndash; interpolate NURBS surface in u direction:
 <itemize>
- <item>Synopsis: <tt/"interpuNP order"/
+ <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
-in u direction with desired order (which must be higher than 2).
+in u direction with desired order and parameterisation type.
+Order defaults to 4 and must be higher than 2.
+The parameterisation type must be one of 0 &ndash; Chordal,
+1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
+The interpolation can create a closed surface but this will also increase
+the width of the resulting NURBS surface (the default is to
+create an open surface).
+Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
+to 0.0) the length of automatically created start/end derivatives
+can be adjusted. If any of these is not 0.0, a different interpolation
+algorithm will be used, which increases the width of the resulting NURBS
+surface.
 The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
@@ -12915,10 +12953,21 @@ The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <label id="scinterpvnp">
 interpvNP &ndash; interpolate NURBS surface in v direction:
 <itemize>
- <item>Synopsis: <tt/"interpvNP order"/
+ <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
-in v direction with desired order (which must be higher than 2).
+in v direction with desired order and parameterisation type.
+Order defaults to 4 and must be higher than 2.
+The parameterisation type must be one of 0 &ndash; Chordal,
+1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
+The interpolation can create a closed surface but this will also increase
+the height of the resulting NURBS surface (the default is to
+create an open surface).
+Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
+to 0.0) the length of automatically created start/end derivatives
+can be adjusted. If any of these is not 0.0, a different interpolation
+algorithm will be used, which increases the height of the resulting NURBS
+surface.
 The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
@@ -14051,7 +14100,7 @@ explain the operations in more detail:
 <table loc="p">
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
 <bf/Letter/|<bf/Name/|<bf/Description/@<hline>
-<tt/d/|dual|The dual of a polyhedron has a vertex for each face, and a face for each vertex, of the original polyhedron, e.g., dC=O.@<hline>
+<tt/d/|dual|The dual of a polyhedron has a vertex for each face, and a face for each vertex, of the original polyhedron, e.g. dC=O.@<hline>
 <tt/t/&thinsp;/&thinsp;<tt/t/<em/n/|truncate all&thinsp;/&thinsp;just <em/n/-fold vertices|Truncating a polyhedron cuts off each vertex, producing a new <em/n/-sided face for each <em/n/-fold vertex.@<hline>
 <tt/k/&thinsp;/&thinsp;<tt/k/<em/n/|kis all&thinsp;/&thinsp;just <em/n/-sided faces|The kis operation divides each <em/n/-sided face into <em/n/ triangles. A new vertex is added in the center of each face.@<hline>
 <tt/a/|ambo|The ambo operation can be thought of as truncating to the edge midpoints. It produces a polyhedron, aX, with one vertex for each edge of X.@<hline>
@@ -14070,7 +14119,7 @@ explain the operations in more detail:
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
 <bf/Letter/|<bf/Name/|<bf/Description/@<hline>
 <tt/r/|reflect|Changes a left-handed solid to right handed, or vice versa, but has no effect on a reflexible solid. So rC=C, but compare sC and rsC.@<hline>
-<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g., pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e., paX=apX.@<hline>
+<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g. pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e. paX=apX.@<hline>
 </tabular>
 <caption>Additional Operations</caption>
 </table>
