@@ -3211,12 +3211,18 @@ as long as the new data is not applied.
 
 <sect1>Snapping Points to the Grid<label id="snapac">
 <p>
+<figure loc="ht">
+<eps file="pics/snapgrpnt.ps" height="5cm">
+<img src="pics/snapgrpnt.gif">
+<caption>Snapping Points to the Grid</caption>
+</figure>
 Since Ayam 1.11 there are two actions available that let
 you snap points to the current grid of a view.
 The actions are initiated using the shortcuts <tt/&lt;g&gt;/
 and <tt/&lt;G&gt;/. If an object has selected (tagged)
 editable points, only those points will be snapped to the grid,
-otherwise all editable points of the object will be snapped to the grid.
+otherwise all editable points of the object will be snapped to the grid
+(see also the image above).
 If <tt/&lt;g&gt;/ is used, the snapping only occurs in
 the modelling plane associated with the view (i.e. in 2D).
 To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
@@ -3226,6 +3232,11 @@ This action can be used without affecting other active actions.
 
 <sect1>Snapping Points to the Mark<label id="snapmac">
 <p>
+<figure loc="ht">
+<eps file="pics/snapmrkpnt.ps" height="3cm">
+<img src="pics/snapmrkpnt.gif">
+<caption>Snapping Points to the Mark</caption>
+</figure>
 Since Ayam 1.18 the snap points to mark action is available.
 This action is initiated using the shortcut <tt/&lt;M&gt;/.
 All selected editable points of the selected objects are snapped to
@@ -3233,6 +3244,7 @@ the current mark coordinates (see section
 <ref id="markac" name="Setting the Mark">
 for more information about the mark).
 This action can be used without affecting other active actions.
+See also the image above.
 
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
