@@ -4579,14 +4579,15 @@ object like this:
 </code>
 <p>
 It is not possible to create clones from objects that may not
-be master objects of instance objects (e.g. light objects or
-material objects). However, (since Ayam 1.7) it is possible to use
-instances as parameter objects.
+be master objects of instance objects, e.g. it is not possible
+to clone light objects or material objects. However, (since Ayam 1.7)
+it is possible to use instances as parameter objects.
 <p>
 If an instance object is used as cloned object on a trajectory
 it can be placed in a level and the <tt/"NoExport"/ tag can
 be added to the level object (as adding tags to Instance objects is
 more involved), see the following hierarchy for an example:
+<#if out=latex><x/needspace 6/</#if>
 <code>
 +-Clone
  +-Level with NoExport tag
@@ -4597,6 +4598,7 @@ more involved), see the following hierarchy for an example:
 Since Ayam 1.20 the mirror facility of the Clone object is realized
 through the new Mirror object (see also
 section <ref id="mirrorobj" name="Mirror Object">).
+The mirror facility was integrated into the Clone object before.
 <p>
 The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
@@ -4615,7 +4617,8 @@ The following attributes further control the cloning process:
 <item><tt/"NumClones"/ is the number of clones to create.
 <item><tt/"Rotate"/ is only used, if a trajectory curve is present.
 If it is enabled all clones will be aligned according to the normal of
-the trajectory curve.
+the trajectory curve. Otherwise the rotation attributes will not be
+touched when placing the clone on the trajectory.
 
 <item><tt/"Translate_X"/, <tt/"Translate_Y"/, <tt/"Translate_Z"/,
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
@@ -4628,7 +4631,8 @@ It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
 and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
 to the previous clone. Note however, that the transformation attributes
 do not affect the first clone.
-<p>
+
+
 Since Ayam 1.13 the transformation attributes are also used if a trajectory
 curve is present.
 </itemize>
@@ -4644,6 +4648,19 @@ Mirror|Yes|N/A|Yes@<hline>
 </tabular>
 <caption>Clone Parameterisation Examples</caption>
 </table>
+
+<sect2>Conversion Support
+<p>
+The Clone object may be converted to ordinary objects using the
+main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+Upon conversion a Level object will be created, that contains the original
+object <em>and</em> the clones.
+
+<sect2>RIB Export
+<p>
+Clone objects appear in RIB output as a number of real
+objects, each with different transformation attributes.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -4699,6 +4716,19 @@ The following attributes further control the mirror process:
 <item><tt/"Plane"/ allows to select the plane about which the mirroring
 should occur (YZ-, XZ-, or XY-plane).
 </itemize>
+
+<sect2>Conversion Support
+<p>
+The Mirror object may be converted to ordinary objects using the
+main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+Upon conversion a Level object will be created, that contains the original
+objects and the mirrored counterparts (the latter in reverse order).
+
+<sect2>RIB Export
+<p>
+Mirror objects appear in RIB output as a number of real
+objects, each with different transformation attributes.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -4757,13 +4787,6 @@ complains about the reference counter not being zero, then
 the last rule was about to be violated. Clean the clipboard using
 the menu <tt>"Special/Clipboard/Paste (Move)"</tt> and delete
 or resolve all references first.
-<p>
-One can resolve an instance object at any time using
-the converter registered for objects of type <tt>Instance</tt> (simply
-select the instance object and use the menu entry
-<tt>"Tools/Convert"</tt>). To resolve all instance objects in a scene
-to normal objects, one can also use the main menu entry:
-<tt>"Special/Instances/Resolve all Instances"</tt>.
 <p>
 Ayam can also create instances for complete scenes automatically
 (see section <ref id="ai" name="Automatic Instancing">).
@@ -4839,6 +4862,16 @@ to the copy of the master.
 It is possible to move masters and instances through the scene hierarchy
 using drag and drop in the tree view or using the clipboard with
 <tt>"Edit/Cut"</tt> and then <tt>"Special/Clipboard/Paste (Move)"</tt>.
+
+<sect2>Conversion Support
+<p>
+An Instance object may be converted to an ordinary object using the
+main menu entry <tt>"Tools/Convert"</tt>.
+This process is also called resolving the instance.
+<p>
+To resolve all instance objects in a scene
+to normal objects, one can also use the main menu entry:
+<tt>"Special/Instances/Resolve all Instances"</tt>.
 
 <sect2>RIB Export
 <p>
@@ -16658,10 +16691,16 @@ achieved using the <tt>"GL_ARB_occlusion_query"</tt> or
 Once the AyCSG plugin is loaded successfully you can render the CSG
 preview in any view window using the keyboard shortcut
 <tt>&lt;Ctrl+Shift+c&gt;</tt> or using the new button in the menu
-bar of every view window. If you hold down <tt>&lt;Shift&gt;</tt>
+bar of every view window (see image below).
+If you hold down <tt>&lt;Shift&gt;</tt>
 while pressing the button the view will continually render CSG
 (the button stays pressed to signify this) until you click onto
 the button again.
+<figure loc="ht">
+<eps file="pics/aycsgic.ps" height="4cm">
+<img src="pics/aycsgic.gif">
+<caption>View With AyCSG Icon</caption>
+</figure>
 <p>
 The AyCSG plugin supports the following options, that are available
 through the main menu entry <tt>"Custom/AyCSG Preferences"</tt>:
