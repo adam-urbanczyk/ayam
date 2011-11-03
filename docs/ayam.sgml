@@ -1278,7 +1278,7 @@ additionally try to load the corresponding shader parsing plugin
 and rescan for compiled shaders. Note that in order for the
 <tt>"ScanShaders"</tt> feature to work properly the <tt>"Main/Shaders"</tt>
 and <tt>"Main/Plugins"</tt> preference settings have to be set correctly
-(see also section <ref id="prefmain" name="The Main Preferences">).
+(see also section <ref id="prefmain" name="Main Preferences">).
 
 <item><tt>"Scan Shaders"</tt> initiates the shader parsing with the
 built in shader parser or the currently loaded shader parsing plugin
@@ -1700,7 +1700,7 @@ objects will be displayed centered in the view window. This is handy
 to search for objects or if the user is simply lost in space.
 <p>
 Using the menu entry <tt/"Align to Parent"/ or the shortcut
-<tt/&lt;Ctrl+a&gt;/  (<tt/&lt;L&gt;/ for internal views)
+<tt/&lt;Ctrl+a&gt;/ (<tt/&lt;L&gt;/ for internal views)
 one can change the views camera settings so that it is aligned
 to the coordinate system of the currently selected object.
 This is handy for modelling in local coordinate systems
@@ -1924,7 +1924,7 @@ only be realized after the editor is closed.
 <p>
 The preferences are divided into five sections as follows.
 
-<sect2>The Main Preferences<label id="prefmain">
+<sect2>Main Preferences<label id="prefmain">
 <p>
 The <tt/"Main"/ section contains the most important application setup
 related preference settings.
@@ -1944,8 +1944,10 @@ The environment variable SHADERS will be adapted to match the contents
 of this preference setting, so that renderers started by Ayam see
 exactly the same shaders as Ayam through the <tt/"Shaders"/ preference
 setting.
-Note that this does of course not affect any renderers that are started
-outside the Ayam context.
+
+<p>
+Note that this option does of course not affect any renderers that are
+started outside the Ayam context.
 
 <item><tt/"Scan for Shaders!"/ initiates a rebuild of the internal
 shader database. All shaders in the directories specified by
@@ -1962,6 +1964,7 @@ settings.<label id="prefgui">
 <item><tt/"Locale"/, sets a language for the balloon help texts,
 the default value menu shows all currently available locales.
 
+<p>
 The value will have no effect until Ayam is restarted!
 
 <item><tt/"SingleWindow"/ toggles, whether Ayam should create just
@@ -1973,6 +1976,7 @@ by default.
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
 
+<p>
 This option is not available in the single window GUI mode.
 
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
@@ -1983,9 +1987,11 @@ of Ayam already has the focus. On some operating systems or window
 managers AutoFocus might not work at all. Furthermore, note that moving
 the focus to a window might also raise it.
 
+<p>
 In single window GUI mode, AutoFocus additionally manages the input
 focus of the internal views, tree view, property GUI, and console.
 
+<p>
 While the preference editor is open, AutoFocus is temporarily
 turned off and changes to the <tt/"AutoFocus"/ preference setting will
 only be realized after the preferences editor is closed.
@@ -1996,6 +2002,7 @@ fails to correctly remember the geometry of the main window between
 two invocations or if the main window jumps downward when properties
 are selected.
 
+<p>
 This option is not available on the Win32 platform and on MacOSX Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
@@ -2080,7 +2087,7 @@ in terms of object coordinates, however, also the view zoom factor modifies
 the effective <tt/"PickEpsilon"/ value in a way that for zoomed-in views
 a smaller value will be used (and vice versa).
 
-
+<p>
 In older versions of Ayam (prior to 1.8), a value of 0.0 was
 allowed and default. This is no longer the case, the new default
 value is 0.05.
@@ -2088,8 +2095,10 @@ value is 0.05.
 <item><tt/"LazyNotify"/ determines whether notification shall
 occur on all mouse movements or just on release of the mouse button,
 for the interactive modelling actions.
+This option may also be toggled easily using the keyboard shortcut
+<tt>&lt;F6&gt;</tt>.
 
-
+<p>
 Notification is the mechanism used to inform objects that rely
 on certain child objects (e.g. the Revolve tool object) about
 changes of their child objects, so that the parent can adapt
@@ -2103,7 +2112,7 @@ depending on references of changed objects takes place:
 <item><tt/"Never"/, for manual control of complete notification
 (manual complete notification can be carried out using the main
 menu entry <tt>"Tools/Force Notification"</tt>) or using the
-keyboard shortcut <tt>"F5"</tt>;
+keyboard shortcut <tt>&lt;F5&gt;</tt>;
 <item><tt/"Always"/, a complete notification is done whenever the
 normal notification is carried out;
 <item><tt/"Lazy"/, the complete notification runs
@@ -2160,20 +2169,38 @@ range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
 
+<p>
+Using the keyboard shortcuts <tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt>
+the GLU tolerance may also be set easily.
+
 <item><tt/"NPDisplayMode"/ sets the display mode for NURBS patches.
 Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
-Note that this setting just affects the drawing of patches if
-the view is not in shaded mode.
+
+<p>
+Note that this setting does not affect shaded patches.
+
+<p>
 Note also, that this setting has no effect for objects that override it
 using a local DisplayMode setting different from <tt/"Global"/.
+
+<p>
+Toggling between drawing of hulls and outlines may also be
+done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
+
+<p>
 Note that this setting has no effect for objects that override it
 using a local DisplayMode setting different from <tt/"Global"/.
+
+<p>
+Toggling between drawing of hulls and curves may also be
+done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
+
 
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
@@ -2184,7 +2211,7 @@ rendering.
 will be used when drawing or shading.
 </itemize>
 
-<sect2>The RIB-Export Preferences<label id="prefrib"><label id="prefrib-export">
+<sect2>RIB-Export Preferences<label id="prefrib"><label id="prefrib-export">
 <p>
 The <tt/"RIB-Export"/ section of the preferences contains settings that
 affect how RIBs are created.
@@ -2450,8 +2477,6 @@ by <tt/"SParamU"/ and the tesselation method
 <item><tt/"ParametricError"/
 ensures that the distance between the tesselated surface and the original
 surface is no point bigger than the value specified by <tt/"SParamU"/.
-Note that <tt/"SParamU"/ is expressed in object space units for the
-<tt/"PathLength"/ and <tt/"ParametricError"/ tesselation methods.
 <item><tt/"NormalizedDomainDistance"/
 ensures that the tesselation creates the same number of sample
 points (as given via <tt/"SParamU"/ and <tt/"SParamV"/) for any
@@ -2463,6 +2488,10 @@ height of the patch) to provide a better adaptation to complex patches.
 The tesselation methods,<tt/"NormalizedDomainDistance"/
 and <tt/"AdaptiveDomainDistance"/ are available since Ayam 1.9
 to overcome the limitations of the <tt/"DomainDistance"/ method.
+
+<p>
+Note that <tt/"SParamU"/ is expressed in object space units for the
+<tt/"PathLength"/ and <tt/"ParametricError"/ tesselation methods.
 
 <item><tt/"SParamU"/; is a parameter for the sampling method above.
 The default value for the sampling method <tt/"DomainDistance"/ is 10. Higher
@@ -4423,16 +4452,18 @@ to a certain extent.
 <p>
 Organizing the scene and working in levels also increases the speed
 of object tree updates, as only the current level and its sub-levels
-are subject to a tree update if the object hierarchy changes.
+are subject to a tree update if something in the object hierarchy changes.
 <p>
-Note that child objects of a level inherit the levels transformations
-attributes and shaders. Inheritance of e.g. transformations means:
+Note that child objects of a level inherit the levels transformations,
+material, attributes, and shaders. Inheritance of e.g. transformations
+means:<newline>
 If you have a NURBS patch in a level that is translated to (10,0,0),
 the origin of the local coordinate system of the NURBS patch
 will be situated at (10,0,0). If you decide to move the patch by a
 value of 5 in X direction by setting a corresponding value in the
 Transformations property of the patch object, the local coordinate
-system of the patch will be placed at (15,0,0) in world coordinates.
+system of the patch will be placed at (15,0,0) in world coordinates,
+i.e. the control point (1,0,0) will be at (16,0,0).
 <p>
 Note also that since Ayam 1.12, Level objects provide their child
 objects to their parent objects as a list. This means the following
@@ -4531,8 +4562,42 @@ automatically where needed.
 
 <sect2>RIB Export
 <p>
-Level objects appear in RIB output as Transformation
-hierarchies.
+The exact representation of a Level in RIB output depends on
+its type.
+<p>
+Normal Level objects appear in RIB output as Transformation
+hierarchies:
+<tscreen><tt>
+RiTransformBegin();<newline>
+ RiTranslate(&hellip;);<newline>
+ RiRotate(&hellip;);<newline>
+ RiScale(&hellip;);<newline>
+<newline>
+ &laquo;Children RIB output&raquo;<newline>
+<newline>
+RiTransformEnd();
+</tt></tscreen>
+
+<p>
+Level objects of type Union, Difference, or Intersection will
+additionally contain a call to SolidBegin, and each child will
+be properly declared as primitive, e.g.:
+<tscreen><tt>
+RiTransformBegin();<newline>
+ &laquo;Level Transformations&raquo;<newline>
+ RiSolidBegin(RI_DIFFERENCE);<newline>
+<newline>
+ RiSolidBegin(RI_PRIMITIVE);<newline>
+ &laquo;Child &num;1 RIB output&raquo;<newline>
+ RiSolidEnd();<newline>
+<newline>
+ RiSolidBegin(RI_PRIMITIVE);<newline>
+ &laquo;Child &num;2 RIB output&raquo;<newline>
+ RiSolidEnd();<newline>
+<newline>
+ RiSolidEnd();<newline>
+RiTransformEnd();
+</tt></tscreen>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -4661,6 +4726,10 @@ object <em>and</em> the clones.
 <p>
 Clone objects appear in RIB output as a number of real
 objects, each with different transformation attributes.
+<p>
+As the original objects will also appear in the RIB output,
+it is suggested to add a <tt/"NoExport"/ tag to the original
+if the Clone is in trajectory mode.
 
 <#if out=latex><x/newpage/</#if>
 
@@ -13474,6 +13543,9 @@ There are more codes defined (see ayam.h, look for Return/Error Codes)
 but they are not needed in the Tcl script context.
 Place should describe the procedure where the error occured.
 Detail is the string to be output.
+<item>Notes: The actual output in the Ayam console depends on the
+preference option <tt/"ErrorLevel"/ see section
+<ref id="prefmisc" name="Miscellaneous Preferences">.
 </itemize>
 
 <sect2>Miscellaneous<label id="scimisc">
@@ -14705,7 +14777,7 @@ RIB export is always available, it does not need a plugin to be loaded.
 The corresponding main menu entry is <tt>"File/Export/RenderMan RIB"</tt>
 and the corresponding keyboard shortcut is <tt/&lt;Ctrl+E&gt;/.
 To control the RIB export and rendering, many options exist that are
-documented in section <ref id="prefrib" name="RIB export preferences">.
+documented in section <ref id="prefrib" name="RIB-Export preferences">.
 <p>
 There are also some special ways to export RIBs available in the
 main menu: <tt>"Special/RIB-Export"</tt>; this is documented in
