@@ -262,7 +262,7 @@ on its name, then press <Ctrl+Shift+i> (Copy Marked Prop).}
 # standard shortcuts for main window
 array set aymainshortcuts {
     Quit "Ctrl-q"
-    New  "Ctrl-N"
+    New "Ctrl-N"
     Replace "Ctrl-o"
     Insert "Ctrl-i"
     SaveAs "Ctrl-S"
@@ -936,7 +936,7 @@ proc uCL { mode {addargs ""} } {
 
     if { $ay(lb) == 0 } {
 	# TreeView is active
-	set oldnodes [$ay(tree) nodes  $ay(CurrentLevel)]
+	set oldnodes [$ay(tree) nodes $ay(CurrentLevel)]
 
 	if { $mode == "cl" } {
 
@@ -980,7 +980,7 @@ proc uCR { } {
 
     if { $ay(lb) == 0 } {
 	# TreeView is active
-	set oldcount [llength [$ay(tree) nodes  $ay(CurrentLevel)]]
+	set oldcount [llength [$ay(tree) nodes $ay(CurrentLevel)]]
 	set l ""
 	getLevel l dummy
 
@@ -1538,6 +1538,8 @@ if { $ay(failsafe) == 0 } {
     } else {
 	puts stderr "Not found. Please save preferences."
     }
+} else {
+    puts stdout "Not sourcing ayamrc in fail safe mode..."
 }
 
 
@@ -1567,6 +1569,7 @@ proc ayam_updateprompt {n1 n2 op} {
 
 # set new prompt?
 if { $ayprefs(Prompt) != "" } {
+    # Yes:
     set .fl.con(-prompt) $ayprefs(Prompt)
     ayam_updateprompt dummy1 dummy2 dummy3
 }
@@ -1589,7 +1592,6 @@ if { $ayprefs(SingleWindow) } {
 
     set ayprefs(AutoResize) 0
 
-
     # create the main menu
     mmenu_open .fv
     update
@@ -1601,13 +1603,13 @@ if { $ayprefs(SingleWindow) } {
     # open internal toolbox
     toolbox_open .fv.fTools
 
-    # frame for internal views
-    frame .fv.fViews
-    pack .fv.fViews -in .fv -side top -fill both -expand yes
-
     foreach b $ay(toolbuttons) {
 	.fv.fTools.f.$b configure -takefocus 0
     }
+
+    # frame for internal views
+    frame .fv.fViews
+    pack .fv.fViews -in .fv -side top -fill both -expand yes
 
     # create first two (upper) internal views
     viewOpen 50 50 0 1
@@ -1828,7 +1830,7 @@ if { $ayprefs(SingleWindow) } {
 
 
 # load the working environment scene file
-if { ($ayprefs(EnvFile) != "") &&  ($ayprefs(LoadEnv) == 1) &&
+if { ($ayprefs(EnvFile) != "") && ($ayprefs(LoadEnv) == 1) &&
      ($ay(failsafe) == 0) && ($ay(noview) != 1) } {
     viewCloseAll
 
