@@ -1896,11 +1896,6 @@ extern char *ay_error_igntype;
 
 #define AY_V2SCAL(v,f) {(v[0])*=(f);(v[1])*=(f);}
 
-/* XXXX is this nesting dangerous? wrong? */
-#define AY_V3NORM(v) {AY_V3SCAL((v),(1.0/(AY_V3LEN(v))));}
-
-#define AY_V2NORM(v) {AY_V2SCAL((v),(1.0/(AY_V2LEN(v))));}
-
 #define AY_V3DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2])
 
 #define AY_V2DOT(v1,v2) (v1[0]*v2[0] + v1[1]*v2[1])
