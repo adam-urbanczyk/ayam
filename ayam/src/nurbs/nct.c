@@ -3349,7 +3349,12 @@ ay_nct_settype(ay_nurbcurve_object *nc)
 
 
 /* ay_nct_applytrafo:
+ *  apply transformations from object to all control points,
+ *  then reset the objects transformation attributes
  *
+ * @param[in] o NCurve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_applytrafo(ay_object *c)
@@ -3386,8 +3391,15 @@ ay_nct_applytrafo(ay_object *c)
 
 
 /* ay_nct_getpntfromindex:
- *  return the adress of the control point designated by <index>
- *  of the NURBS curve <curve> in <p>
+ * get address of a single control point from its indices
+ * (performing bounds checking)
+ *
+ * @param[in] patch NCurve object to process
+ * @param[in] indexu index of desired control point in U dimension (width)
+ * @param[in] indexv index of desired control point in V dimension (height)
+ * @param[in,out] p pointer to pointer where to store the resulting address
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
@@ -3608,7 +3620,7 @@ ay_nct_fillgap(int order, double tanlen,
 	       ay_object **result)
 {
  double p1[4], p2[4], p3[4], p4[4], n1[3], n2[3], l[3];
- double *U, *Pw, u, d, w;
+ double *U, *Pw, u, d, w, len;
  double *controlv = NULL;
  int n, p, numcontrol, i;
  ay_object *o = NULL;
@@ -3632,7 +3644,10 @@ ay_nct_fillgap(int order, double tanlen,
   AY_V3SCAL(p1, 1.0/w)
   p1[3] = 1.0;
   ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n1);
-  AY_V3NORM(n1)
+  /* normalize n1 */
+  len = AY_V3LEN(n1);
+  AY_V3SCAL(n1, 1.0/len);
+
   n = c2->length;
   p = c2->order-1;
   U = c2->knotv;
@@ -3643,7 +3658,9 @@ ay_nct_fillgap(int order, double tanlen,
   AY_V3SCAL(p2, 1.0/w)
   p2[3] = 1.0;
   ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n2);
-  AY_V3NORM(n2)
+  /* normalize n2 */
+  len = AY_V3LEN(n2);
+  AY_V3SCAL(n2, 1.0/len);
 
   /* first, check whether p1 and p2 are sufficiently different */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
@@ -5801,7 +5818,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
  double t1[2], t2[2], n[2];
  char *nname = ay_prefs.normalname;
  unsigned int vnlen = 0;
- double *vn = NULL;
+ double *vn = NULL, vlen;
 
   /* sanity check */
   if(!o || !nc)
@@ -5827,8 +5844,8 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
       n[1] = -t1[0];
 
       /* scale normal to be offset length */
-      AY_V2NORM(n);
-      AY_V2SCAL(n, offset);
+      vlen = AY_V2LEN(n);
+      AY_V2SCAL(n, offset/vlen);
 
       /* offset the line */
       newcv[0] = p1[0] + n[0];
@@ -5901,16 +5918,14 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  /* calc tangent of first original control polygon segment */
 	  t1[0] = p2[0] - p1[0];
 	  t1[1] = p2[1] - p1[1];
-	  /*
-	    AY_V2NORM(t1);
-	  */
+
 	  /* calc normal of first original control polygon segment */
 	  n[0] =  t1[1];
 	  n[1] = -t1[0];
 
 	  /* scale normal to be offset length */
-	  AY_V2NORM(n);
-	  AY_V2SCAL(n, offset);
+	  vlen = AY_V2LEN(n);
+	  AY_V2SCAL(n, offset/vlen);
 
 	  /* offset the first control polygon segment */
 	  p1s1[0] = p1[0] + n[0];
@@ -5963,8 +5978,8 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		  n[1] = -t2[0];
 
 		  /* scale normal to be offset length */
-		  AY_V2NORM(n);
-		  AY_V2SCAL(n, offset);
+		  vlen = AY_V2LEN(n);
+		  AY_V2SCAL(n, offset/vlen);
 
 		  /* offset the control polygon segment */
 		  p1s2[0] = p2[0] + n[0];

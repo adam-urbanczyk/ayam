@@ -3312,7 +3312,10 @@ x3dio_getquatfromvec(double *v, double *q)
   if(!v || !q)
    return AY_ENULL;
 
-  AY_V3NORM(v);
+  /* XXXX check v? */
+
+  len = AY_V3LEN(v);
+  AY_V3SCAL(v, 1.0/len);
 
   /*printf("vx:%g, vy:%g, vz:%g\n",v[0], v[1], v[2]);*/
 
@@ -6590,7 +6593,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 		     scew_element **transform_element)
 {
  char buffer[256];
- double axis[3] = {0}, angle = 0.0;
+ double axis[3] = {0}, angle = 0.0, len = 0.0;
 
   if(!element || !o || !transform_element)
     return AY_ENULL;
@@ -6622,7 +6625,9 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 	     fabs(axis[1]) > AY_EPSILON ||
 	     fabs(axis[2]) > AY_EPSILON)
 	    {
-	      AY_V3NORM(axis);
+	      len = AY_V3LEN(axis);
+	      AY_V3SCAL(axis, 1.0/len);
+
 	      angle = -2.0 * acos(o->quat[3]);
 
 	      sprintf(buffer, "%g %g %g %g", axis[0], axis[1], axis[2], angle);
