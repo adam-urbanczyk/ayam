@@ -1043,6 +1043,9 @@ ay_text_convertcb(ay_object *o, int in_place)
 	  npatch = npatch->next;
 	} /* while */
 
+      /* terminate level */
+      *next = ay_endlevel;
+
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
 
