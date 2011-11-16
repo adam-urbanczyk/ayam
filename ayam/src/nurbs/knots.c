@@ -1583,6 +1583,58 @@ ay_knots_revert(double *U, int Ulen)
 } /* ay_knots_revert */
 
 
+/** ay_knots_getdisc:
+ * get discontinuous parameteric values of a NURBS curve/surface
+ * (internal knots of a multiplicity equal to the order of the curve)
+ *
+ * @param[in] Ulen length of knot vector
+ * @param[in] U knot vector
+ * @param[in] order order of curve/surface
+ * @param[in,out] Udlen pointer where length of result will be stored
+ * @param[in,out] Ud pointer where a vector of parametric values
+ *                will be stored
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud)
+{
+ int ay_status = AY_OK;
+ int i, j = 0, k = 0;
+
+  if(!U || !Udlen || !Ud)
+    return AY_ENULL;
+
+  /* check the inner knots */
+  for(i = order; i < Ulen-1; i++)
+    {
+      if(fabs(U[i] - U[i+1]) < AY_EPSILON)
+	{
+	  j++;
+	}
+      else
+	{
+	  j = 0;
+	}
+
+      if(j == (order-1))
+	{
+	  if(!*Ud)
+	    {
+	      if(!(*Ud = calloc(Ulen, sizeof(double))))
+		return AY_EOMEM;
+	    }
+	  (*Ud)[k] = U[i];
+	  k++;
+	}
+    } /* for */
+
+  *Udlen = k;
+
+ return ay_status;
+} /* ay_knots_getdisc */
+
+
 /** ay_knots_init:
  *  initialize the knots module
  * \returns AY_OK on success, error code otherwise.
