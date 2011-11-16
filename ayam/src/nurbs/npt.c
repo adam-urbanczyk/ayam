@@ -5870,7 +5870,12 @@ cleanup:
 
 
 /* ay_npt_applytrafo:
+ *  apply transformations from object to all control points,
+ *  then reset the objects transformation attributes
  *
+ * @param[in] o NPatch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_applytrafo(ay_object *p)
@@ -5887,7 +5892,7 @@ ay_npt_applytrafo(ay_object *p)
 
   np = (ay_nurbpatch_object *)(p->refine);
 
-  /* get curves transformation-matrix */
+  /* get surfaces transformation-matrix */
   ay_trafo_creatematrix(p, m);
 
   stride = 4;
@@ -5907,8 +5912,15 @@ ay_npt_applytrafo(ay_object *p)
 
 
 /* ay_npt_getpntfromindex:
+* get address of a single control point from its indices
+ * (performing bounds checking)
  *
+ * @param[in] patch NPatch object to process
+ * @param[in] indexu index of desired control point in U dimension (width)
+ * @param[in] indexv index of desired control point in V dimension (height)
+ * @param[in,out] p pointer to pointer where to store the resulting address
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
@@ -11618,7 +11630,7 @@ ay_npt_avglensv(double *cv, int width, int height, int stride,
  */
 int
 ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
-		    int argc, char *argv[])
+		   int argc, char *argv[])
 {
  int ay_status, tcl_status;
  int i = 1, type = AY_CTOPEN, knot_type = AY_KTNURB;
@@ -11694,6 +11706,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
      (or not enough?) patches to concat */
   if(!patches)
     {
+      ay_error(AY_EWARN, argv[0], "Not enough patches to concat!");
       return TCL_OK;
     }
 
