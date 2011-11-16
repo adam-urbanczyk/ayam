@@ -248,6 +248,9 @@ int ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
  */
 int ay_knots_revert(double *U, int ulen);
 
+/** Get discontinuous parameteric values of a NURBS curve/surface.
+ */
+int ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud);
 
 /** Initialize the knots module.
  */
