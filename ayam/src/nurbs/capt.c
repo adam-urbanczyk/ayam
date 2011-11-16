@@ -16,11 +16,14 @@
 
 
 /* ay_capt_createfromcurve:
- *  create a cap surface from a single planar NURBS curve;
- *  the curve object will be moved to the new NURBS patch
- *  as trim curve
+ *  create a cap surface from planar NURBS curves;
+ *  the curve objects will be transformed and moved to
+ *  the new NURBS patch as trim curves
  *
- * @param[in,out] c NURBS curve object
+ * @param[in,out] c NURBS curve objects; multiple objects may
+ *  be provided as list of connected objects; the first curve
+ *  must be the outmost curve, all following curves define
+ *  holes
  * @param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
@@ -43,12 +46,12 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
   while(c)
     {
-      if(!c->type == AY_IDNCURVE)
-	return AY_ERROR;
+      if(c->type != AY_IDNCURVE)
+	{ ay_status = AY_ERROR; goto cleanup; }
 
       ay_status = ay_nct_toxy(c);
       if(ay_status)
-	return AY_ERROR;
+	{ ay_status = AY_ERROR; goto cleanup; }
 
       nc = (ay_nurbcurve_object *)(c->refine);
 
@@ -56,14 +59,10 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 	{
 	  firstmovx = c->movx;
 	  firstmovy = c->movy;
+	  ay_status = ay_npt_createnpatchobject(&npatch);
+	  if(ay_status)
+	    { goto cleanup; }
 
-	  if(!(npatch = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
-	  ay_object_defaults(npatch);
-	  npatch->type = AY_IDNPATCH;
-	  npatch->parent = AY_TRUE;
-	  npatch->inherit_trafos = AY_FALSE;
-	  npatch->hide_children = AY_TRUE;
 	  npatch->down = c;
 
 	  ay_trafo_copy(c, npatch);
@@ -73,14 +72,14 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
 	  /* calloc the new patch */
 	  if(!(np = calloc(1, sizeof(ay_nurbpatch_object))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
 	  npatch->refine = np;
 	  if(!(np->vknotv = calloc(4, sizeof(double))))
-	    { free(np); return AY_EOMEM; }
+	    { ay_status = AY_EOMEM; goto cleanup; }
 	  if(!(np->uknotv = calloc(4, sizeof(double))))
-	    { free(np); free(np->vknotv); return AY_EOMEM; }
+	    { ay_status = AY_EOMEM; goto cleanup; }
 	  if(!(np->controlv = calloc(4*4, sizeof(double))))
-	    { free(np); free(np->vknotv); free(np->uknotv); return AY_EOMEM; }
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  np->width = 2;
 	  np->height = 2;
@@ -189,6 +188,22 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
     } /* while */
 
   *cap = npatch;
+
+  /* prevent cleanup code from doing something harmful */
+  npatch = NULL;
+
+cleanup:
+
+  if(npatch)
+    {
+      if(npatch->refine)
+	ay_npt_destroy(npatch->refine);
+
+      /* prevent curves from being deleted here */
+      npatch->down = NULL;
+
+      ay_object_delete(npatch);
+    }
 
  return ay_status;
 } /* ay_capt_createfromcurve */
