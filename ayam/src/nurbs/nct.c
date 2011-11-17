@@ -3241,8 +3241,8 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
   j = m;
   while(!found && (wrap<2))
     {
-      if((fabs(cv[m*stride] != cv[j*stride]) > AY_EPSILON) &&
-	 (fabs(cv[m*stride+1] != cv[j*stride+1]) > AY_EPSILON))
+      if((fabs(cv[m*stride] - cv[j*stride]) > AY_EPSILON) &&
+	 (fabs(cv[m*stride+1] - cv[j*stride+1]) > AY_EPSILON))
 	{
 	  found = AY_TRUE;
 	}
