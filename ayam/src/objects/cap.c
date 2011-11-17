@@ -452,12 +452,17 @@ ay_cap_notifycb(ay_object *o)
 	    }
 	  else
 	    {
+	      ay_nct_applytrafo(*nextcurve);
+
 	      nextcurve = &((*nextcurve)->next);
 	    } /* if */
 	}
       else
 	{
 	  ay_object_copy(down, nextcurve);
+
+	  ay_nct_applytrafo(*nextcurve);
+
 	  nextcurve = &((*nextcurve)->next);
 	} /* if */
 
