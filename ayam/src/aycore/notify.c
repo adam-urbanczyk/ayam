@@ -166,14 +166,14 @@ ay_notify_parent(void)
 } /* ay_notify_parent */
 
 
-/* ay_notify_force:
+/* ay_notify_object:
  *  call notification callback of object o
  */
 int
 ay_notify_object(ay_object *o)
 {
  int ay_status = AY_OK;
- char fname[] = "notify_force";
+ char fname[] = "notify_object";
  ay_object *od = NULL;
  ay_voidfp *arr = NULL;
  ay_notifycb *cb = NULL;
@@ -233,7 +233,7 @@ ay_notify_object(ay_object *o)
     }
 
  return AY_OK;
-} /* ay_notify_force */
+} /* ay_notify_object */
 
 
 /* ay_notify_parentof:
