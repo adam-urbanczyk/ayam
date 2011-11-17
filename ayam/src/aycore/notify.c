@@ -236,14 +236,14 @@ ay_notify_object(ay_object *o)
 } /* ay_notify_force */
 
 
-/* ay_notify_forceparent:
+/* ay_notify_parentof:
  *  call notification callback of parents of object o
  */
 int
-ay_notify_forceparent(ay_object *o, int silent)
+ay_notify_parentof(ay_object *o, int silent)
 {
  int ay_status = AY_OK;
- char fname[] = "notify_forceparent";
+ char fname[] = "notify_parentof";
  ay_list_object *oldclevel = ay_currentlevel, *lev;
  int found = AY_FALSE;
 
@@ -298,7 +298,7 @@ ay_notify_forceparent(ay_object *o, int silent)
   ay_currentlevel = oldclevel;
 
  return AY_OK;
-} /* ay_notify_forceparent */
+} /* ay_notify_parentof */
 
 
 /* ay_notify_objecttcmd:

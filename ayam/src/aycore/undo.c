@@ -760,7 +760,7 @@ ay_undo_copy(ay_undo_object *uo)
     } /* while */
 
   if(notify_parent)
-    ay_status = ay_notify_forceparent(parent, AY_TRUE);
+    ay_status = ay_notify_parentof(parent, AY_TRUE);
 
  return AY_OK;
 } /* ay_undo_copy */
