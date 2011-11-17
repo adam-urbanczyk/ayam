@@ -1295,7 +1295,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     }
 
   /* re-create stess tesselation */
-  ay_status = ay_notify_force(o);
+  ay_status = ay_notify_object(o);
 
   ay_status = ay_notify_parent();
 
@@ -1656,7 +1656,7 @@ ay_ncurve_convertcb(ay_object *o, int in_place)
       b += 4;
     }
 
-  ay_notify_force(new);
+  ay_notify_object(new);
 
   if(!in_place)
     {

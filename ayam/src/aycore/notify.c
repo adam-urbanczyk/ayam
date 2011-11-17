@@ -90,7 +90,7 @@ ay_notify_parent(void)
 	{
 	  if(lev->next && lev->next->object && lev->next->object->modified)
 	    {
-	      ay_notify_force(lev->next->object);
+	      ay_notify_object(lev->next->object);
 	      ay_status = ay_notify_complete(lev->next->object);
 	      lev->next->object->modified = AY_FALSE;
 	    }
@@ -139,7 +139,7 @@ ay_notify_parent(void)
 	    {
 	      if(tag->type == ay_no_tagtype)
 		{
-		  ay_notify_force(((ay_btval*)tag->val)->payload);
+		  ay_notify_object(((ay_btval*)tag->val)->payload);
 		}
 	      tag = tag->next;
 	    }
@@ -170,7 +170,7 @@ ay_notify_parent(void)
  *  call notification callback of object o
  */
 int
-ay_notify_force(ay_object *o)
+ay_notify_object(ay_object *o)
 {
  int ay_status = AY_OK;
  char fname[] = "notify_force";
@@ -185,7 +185,7 @@ ay_notify_force(ay_object *o)
       od = o->down;
       while(od->next)
 	{
-	  ay_status = ay_notify_force(od);
+	  ay_status = ay_notify_object(od);
 	  od = od->next;
 	}
     }
@@ -217,7 +217,7 @@ ay_notify_force(ay_object *o)
     {
       if(tag->type == ay_no_tagtype)
 	{
-	  ay_notify_force(((ay_btval*)tag->val)->payload);
+	  ay_notify_object(((ay_btval*)tag->val)->payload);
 	}
       tag = tag->next;
     }
@@ -301,16 +301,16 @@ ay_notify_forceparent(ay_object *o, int silent)
 } /* ay_notify_forceparent */
 
 
-/* ay_notify_forcetcmd:
- *  force notification of selected objects or all objects
+/* ay_notify_objecttcmd:
+ *  Enforce notification of selected objects or all objects
  *  in the scene (if selection is empty)
- *  Implements the \a forceNot scripting interface command.
- *  See also the corresponding section in the \ayd{scforcenot}.
+ *  Implements the \a notifyOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scnotifyob}.
  *  \returns TCL_OK in any case.
  */
 int
-ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
-		    int argc, char *argv[])
+ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
+		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
  char notify_modified = AY_FALSE;
@@ -336,7 +336,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      if(o->modified)
 		{
-		  ay_status = ay_notify_force(o);
+		  ay_status = ay_notify_object(o);
 
 		  if(ay_status)
 		    {
@@ -350,7 +350,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  else
 	    {
-	      ay_status = ay_notify_force(o);
+	      ay_status = ay_notify_object(o);
 
 	      if(ay_status)
 		{
@@ -375,7 +375,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	    {
 	      if(sel->object->modified)
 		{
-		  ay_status = ay_notify_force(sel->object);
+		  ay_status = ay_notify_object(sel->object);
 
 		  if(ay_status)
 		    {
@@ -400,7 +400,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  else
 	    {
-	      ay_status = ay_notify_force(sel->object);
+	      ay_status = ay_notify_object(sel->object);
 
 	      if(ay_status)
 		{
@@ -431,7 +431,7 @@ ay_notify_forcetcmd(ClientData clientData, Tcl_Interp * interp,
     } /* if */
 
  return TCL_OK;
-} /* ay_notify_forcetcmd */
+} /* ay_notify_objecttcmd */
 
 
 /* ay_notify_findparents:
@@ -592,7 +592,7 @@ ay_notify_complete(ay_object *r)
 	  o->tags->val = (char*)o->tags->val - 1;
 	  if(o->tags->val == 0)
 	    {
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	      if(o->tags && (o->tags->type == ay_nc_tagtype))
 		{
 		  tag = o->tags;

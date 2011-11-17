@@ -463,7 +463,7 @@ dxfio_readarc(const class dimeState *state,
   newo->movy = center[1];
   newo->movz = center[2];
 
-  ay_status = ay_notify_force(newo);
+  ay_status = ay_notify_object(newo);
 
   // link the new arc into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
@@ -500,7 +500,7 @@ dxfio_readcircle(const class dimeState *state,
   newo->movy = circle->getCenter()[1];
   newo->movz = circle->getCenter()[2];
 
-  ay_status = ay_notify_force(newo);
+  ay_status = ay_notify_object(newo);
 
   // link the new circle into the scene hierarchy
   ay_status = dxfio_linkobject(newo);
@@ -564,7 +564,7 @@ dxfio_readellipse(const class dimeState *state,
 	}
     } // if
 
-  ay_status = ay_notify_force(newo);
+  ay_status = ay_notify_object(newo);
 
   // link the new circle/ellipse into the scene hierarchy
   ay_status = dxfio_linkobject(newo);

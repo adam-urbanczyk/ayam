@@ -4022,7 +4022,7 @@ x3dio_readcircle2d(scew_element *element)
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
   if(ay_status == AY_OK)
-    ay_notify_force(x3dio_lrobject);
+    ay_notify_object(x3dio_lrobject);
 
  return ay_status;
 } /* x3dio_readcircle2d */
@@ -4066,7 +4066,7 @@ x3dio_readarc2d(scew_element *element)
   ay_status = x3dio_linkobject(element, AY_IDNCIRCLE, (void*)&ncircle);
 
   if(ay_status == AY_OK)
-    ay_notify_force(x3dio_lrobject);
+    ay_notify_object(x3dio_lrobject);
 
  return ay_status;
 } /* x3dio_readarc2d */
@@ -4855,7 +4855,7 @@ x3dio_readnurbssweptsurface(scew_element *element)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -4948,7 +4948,7 @@ x3dio_readnurbsswungsurface(scew_element *element)
   ay_next = old_aynext;
   ay_object_link(o);
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_status = x3dio_readname(element, "DEF", o);
 
@@ -5159,7 +5159,7 @@ x3dio_readviewpoint(scew_element *element)
       v->zoom = fabs(tan((double)fov/2.0));
 
       /* notify also includes reshape() and additionally loads the BGImage */
-      ay_notify_force(last);
+      ay_notify_object(last);
 
       /* set window title */
       sprintf(command,

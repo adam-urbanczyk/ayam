@@ -115,7 +115,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  else
 	    {
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	    }
 	  break;
@@ -129,7 +129,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  else
 	    {
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	    }
 	  break;
@@ -143,7 +143,7 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 	    }
 	  else
 	    {
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	      o->modified = AY_TRUE;
 	    }
 	  break;
@@ -1122,7 +1122,7 @@ ay_tcmd_setallpoints(Tcl_Interp *interp, char *fname, char *vn,
 		}
 	    } /* if */
 
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
@@ -1443,7 +1443,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_trafo_apply3(p, mi);
 	    } /* if */
 
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	  o->modified = AY_TRUE;
 
 	  if(clear_selp)

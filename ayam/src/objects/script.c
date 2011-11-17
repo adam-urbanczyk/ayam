@@ -538,7 +538,7 @@ ay_script_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   sc->modified = AY_TRUE;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   o->modified = AY_TRUE;
 
@@ -1388,7 +1388,7 @@ ay_script_notifycb(ay_object *o)
 		      break;
 		    }
 
-		  ay_notify_force(*nexto);
+		  ay_notify_object(*nexto);
 
 		  if(down->next)
 		    ay_sel_add(*nexto);
@@ -1412,7 +1412,7 @@ ay_script_notifycb(ay_object *o)
 			      break;
 			    }
 
-			  ay_notify_force(*nexto);
+			  ay_notify_object(*nexto);
 
 			  ay_sel_add(*nexto);
 
@@ -1450,7 +1450,7 @@ ay_script_notifycb(ay_object *o)
 	    {
 	      if(sel->object->modified)
 		{
-		  ay_notify_force(sel->object);
+		  ay_notify_object(sel->object);
 		}
 	      sel = sel->next;
 	    }

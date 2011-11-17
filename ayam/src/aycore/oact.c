@@ -290,7 +290,7 @@ ay_oact_movetcb(struct Togl *togl, int argc, char *argv[])
 		} /* while */
 
 	      o->modified = AY_TRUE;
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	    }
 	}
       else
@@ -458,7 +458,7 @@ ay_oact_rottcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -797,7 +797,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1024,7 +1024,7 @@ ay_oact_sc1DXcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1206,7 +1206,7 @@ ay_oact_sc1DYcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1387,7 +1387,7 @@ ay_oact_sc1DZcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1554,7 +1554,7 @@ ay_oact_sc2Dcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1722,7 +1722,7 @@ ay_oact_sc3Dcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -1991,7 +1991,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -2222,7 +2222,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -2453,7 +2453,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -2636,7 +2636,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else
@@ -2871,7 +2871,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
 		    }
 
 		  o->modified = AY_TRUE;
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		} /* if */
 	    }
 	  else

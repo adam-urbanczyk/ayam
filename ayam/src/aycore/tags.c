@@ -928,7 +928,7 @@ ay_tags_reconnect(ay_object *o, char *tagtype, char *tagname)
 	  tag = tag->next;
 	} /* while */
 
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       o = o->next;
     } /* while */

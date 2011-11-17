@@ -351,7 +351,7 @@ int ay_notify_parent(void);
 
 /** call notification callback of object o
  */
-int ay_notify_force(ay_object *o);
+int ay_notify_object(ay_object *o);
 
 /** call notification callback of parents of object o
  */
@@ -359,8 +359,8 @@ int ay_notify_forceparent(ay_object *o, int silent);
 
 /** Tcl command to enforce notification of selected objects.
  */
-int ay_notify_forcetcmd(ClientData clientData, Tcl_Interp *interp,
-			int argc, char *argv[]);
+int ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /** find parents
  */

@@ -6213,7 +6213,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 
 	      /* re-create tesselation of patch */
-	      ay_notify_force(sel->object);
+	      ay_notify_object(sel->object);
 	    }
 	}
       else
@@ -7921,7 +7921,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_object(sel->object);
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
@@ -8039,7 +8039,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_object(sel->object);
 	  break;
 	default:
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
@@ -9184,7 +9184,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	}
       else
 	{
@@ -9615,7 +9615,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	  src->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(src);
+	  ay_notify_object(src);
 	} /* if */
 
       sel = sel->next;
@@ -9750,7 +9750,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  src->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_object(sel->object);
 	} /* if */
 
       sel = sel->next;
@@ -9960,7 +9960,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of original patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_object(sel->object);
 	}
       else
 	{
@@ -10189,7 +10189,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of original patch */
-	  ay_notify_force(sel->object);
+	  ay_notify_object(sel->object);
 	}
       else
 	{
@@ -11905,7 +11905,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	}
       else
 	{
@@ -12088,7 +12088,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of patch */
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	}
       else
 	{

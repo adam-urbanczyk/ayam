@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* \file ict.c \brief interpolating curve tools */
+/** \file ict.c \brief interpolating curve tools */
 
 /* prototypes of functions local to this module: */
 

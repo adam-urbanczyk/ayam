@@ -370,7 +370,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_error(AY_EWARN, fname, "Near should be smaller than far!");
     }
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
@@ -876,7 +876,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   /* was: ay_toglcb_reshape(v->togl);*/
   /* notify also includes reshape() and additionally loads the BGImage */
-  ay_notify_force(last);
+  ay_notify_object(last);
 
   /* set window title */
   if(vtemp.type == AY_VTFRONT)

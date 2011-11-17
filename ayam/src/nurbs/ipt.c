@@ -1717,7 +1717,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      o->modified = AY_TRUE;
 
 	      /* re-create tesselation of patch */
-	      ay_notify_force(o);
+	      ay_notify_object(o);
 	    }
 	  else
 	    {

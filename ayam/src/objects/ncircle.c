@@ -117,7 +117,7 @@ ay_ncircle_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = ncircle;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
 cleanup:
 
@@ -329,7 +329,7 @@ ay_ncircle_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   o->modified = AY_TRUE;
 

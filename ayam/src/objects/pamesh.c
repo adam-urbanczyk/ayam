@@ -711,7 +711,7 @@ ay_pamesh_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(update)
     {
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       o->modified = AY_TRUE;
 
