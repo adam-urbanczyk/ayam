@@ -868,7 +868,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  sel = sel->next;
 	} /* while */
-      ay_status = ay_notify_forceparent(o, AY_FALSE);
+      ay_status = ay_notify_parentof(o, AY_FALSE);
 
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
