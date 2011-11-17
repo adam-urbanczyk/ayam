@@ -203,25 +203,24 @@ ay_quat_toeuler(double q[4], double euler[3])
 
 
 /* ay_quat_slerp:
- *
+ *  Compute the spherical linear interpolation between
+ *  quaternions q1 and q2 at parameter t.
  */
-int
-ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
+void
+ay_quat_slerp(double t, double q1[4], double q2[4], double r[4])
 {
  double angle = 0.0, scale = 0.0, invscale = 0.0;
- double theta, invsintheta;
-
-  if(!r)
-    return AY_ENULL;
+ double theta, invsintheta, iq1[4];
 
   angle =  ay_quat_dot(q1, q2);
 
   if(angle < 0.0)
     {
-      q1[0] *= -1.0;
-      q1[1] *= -1.0;
-      q1[2] *= -1.0;
-      q1[3] *= -1.0;
+      iq1[0] = -q1[0];
+      iq1[1] = -q1[1];
+      iq1[2] = -q1[2];
+      iq1[3] = -q1[3];
+      q1 = iq1;
       angle *= -1.0;
     }
 
@@ -232,14 +231,14 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
 	  /* spherical interpolation */
 	  theta = acos(angle);
 	  invsintheta = 1.0 / sin(theta);
-	  scale = sin(theta * (1.0-time)) * invsintheta;
-	  invscale = sin(theta * time) * invsintheta;
+	  scale = sin(theta * (1.0-t)) * invsintheta;
+	  invscale = sin(theta * t) * invsintheta;
 	}
       else
 	{
 	  /* linear interploation */
-	  scale = 1.0 - time;
-	  invscale = time;
+	  scale = 1.0 - t;
+	  invscale = t;
 	}
     }
   else
@@ -249,8 +248,8 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
       q2[1] = q1[0];
       q2[2] = -q1[3];
       q2[3] = q1[2];
-      scale = sin(AY_PI * (0.5 - time));
-      invscale = sin(AY_PI * time);
+      scale = sin(AY_PI * (0.5 - t));
+      invscale = sin(AY_PI * t);
     } /* if */
 
   /**this = (q1*scale) + (q2*invscale);*/
@@ -259,13 +258,12 @@ ay_quat_slerp(double time, double q1[4], double q2[4], double *r)
   r[2] = (q1[2]*scale) + (q2[2]*invscale);
   r[3] = (q1[3]*scale) + (q2[3]*invscale);
 
- return AY_OK;
+ return;
 } /* ay_quat_slerp */
 
 
 /* ay_quat_dot:
- *  calculate dot product of two quaternions <q1> and <q2> (q1.q2)
- *  returns result
+ *  Calculate dot product of two quaternions <q1> and <q2> (q1.q2).
  */
 double
 ay_quat_dot(double q1[4], double q2[4])
@@ -276,7 +274,7 @@ ay_quat_dot(double q1[4], double q2[4])
 
 
 /* ay_quat_inv:
- *  calculate inverse of a quaternion
+ *  Calculate the inverse of quaternion q.
  */
 void
 ay_quat_inv(double q[4])
