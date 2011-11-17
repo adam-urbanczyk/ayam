@@ -2038,7 +2038,7 @@ mopsi_scene(Tcl_Interp *interp, char *filename, int insert)
   o = ay_root->next;
   while(o)
     {
-      ay_notify_force(o);
+      ay_notify_object(o);
       o = o->next;
     }
 

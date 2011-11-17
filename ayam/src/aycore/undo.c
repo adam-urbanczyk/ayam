@@ -746,7 +746,7 @@ ay_undo_copy(ay_undo_object *uo)
 
       if((c->type != AY_IDVIEW) && (c->type != AY_IDROOT))
 	{
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	  if(find_parent)
 	    {
 	      notify_parent = AY_TRUE;

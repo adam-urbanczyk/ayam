@@ -329,7 +329,7 @@ ay_disk_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   o->modified = AY_TRUE;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_notify_parent();
 

@@ -2919,7 +2919,7 @@ sdnpatch_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = sdnpatch;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
 cleanup:
 
@@ -3207,7 +3207,7 @@ sdnpatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   o->modified = AY_TRUE;
 
@@ -4340,7 +4340,7 @@ sdnpatch_convnp(int mode, ay_object *p, ay_object **result)
   sdnpatch_getcontrolvertices(sdnpatch);
 
   newo->modified = AY_TRUE;
-  ay_notify_force(newo);
+  ay_notify_object(newo);
 
   /* return result */
   *result = newo;
@@ -4522,7 +4522,7 @@ sdnpatch_convpo(int mode, ay_object *p, ay_object **result)
   sdnpatch_getcontrolvertices(sdnpatch);
 
   newo->modified = AY_TRUE;
-  ay_notify_force(newo);
+  ay_notify_object(newo);
 
   /* return result */
   *result = newo;
@@ -4668,7 +4668,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   o->refine = sdnpatch;
 
   o->modified = AY_TRUE;
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_status = ay_object_link(o);
 
@@ -4827,7 +4827,7 @@ sdnpatch_extrudefacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_pact_getpoint(3, o, NULL, NULL);
 
   o->modified = AY_TRUE;
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -4888,7 +4888,7 @@ sdnpatch_removefacetcmd(ClientData clientData, Tcl_Interp *interp,
       ay_selp_clear(o);
 
       o->modified = AY_TRUE;
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       ay_notify_parent();
     }
@@ -4961,7 +4961,7 @@ sdnpatch_mergefacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_selp_clear(o);
 
   o->modified = AY_TRUE;
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5031,7 +5031,7 @@ sdnpatch_connectfacetcmd(ClientData clientData, Tcl_Interp *interp,
   ay_selp_clear(o);
 
   o->modified = AY_TRUE;
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5177,7 +5177,7 @@ sdnpatch_editknottcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   o->modified = AY_TRUE;
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   ay_notify_parent();
 
@@ -5229,7 +5229,7 @@ sdnpatch_reverttcmd(ClientData clientData, Tcl_Interp *interp,
       ay_selp_clear(o);
 
       o->modified = AY_TRUE;
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       ay_notify_parent();
     }
@@ -5383,7 +5383,7 @@ sdnpatch_mergepatchtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_object_link(o);
 
       o->modified = AY_TRUE;
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       ay_notify_parent();
       newMesh = NULL;

@@ -532,7 +532,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  o->modified = AY_TRUE;
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	}
 
       sel = sel->next;

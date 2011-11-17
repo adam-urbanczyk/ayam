@@ -718,7 +718,10 @@ Tcl_AppInit(Tcl_Interp *interp)
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* notify.c */
-  Tcl_CreateCommand(interp, "forceNot", ay_notify_forcetcmd,
+  /* provided for scripting interface backwards compatibility */
+  Tcl_CreateCommand(interp, "forceNot", ay_notify_objecttcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "notifyOb", ay_notify_objecttcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* object.c */

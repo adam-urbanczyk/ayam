@@ -1025,7 +1025,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		    {
 		      if(o->refine == view)
 			{
-			  ay_notify_force(o);
+			  ay_notify_object(o);
 			}
 		      o = o->next;
 		    } /* while */
@@ -2180,7 +2180,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
     }
 
   /* notify also includes reshape() and additionally loads the BGImage */
-  ay_status = ay_notify_force(o);
+  ay_status = ay_notify_object(o);
 
   ay_status = ay_viewt_makecurtcb(view->togl, 0, NULL);
 

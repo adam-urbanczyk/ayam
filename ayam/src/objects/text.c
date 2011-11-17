@@ -335,7 +335,7 @@ ay_text_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   o->modified = AY_TRUE;
 
@@ -773,7 +773,7 @@ ay_text_notifycb(ay_object *o)
 		      ext.down = curve;
 		      extrude.npatch = NULL;
 		      extrude.caps_and_bevels = NULL;
-		      ay_notify_force(&ext);
+		      ay_notify_object(&ext);
 
 		      if(extrude.npatch)
 			{
@@ -839,7 +839,7 @@ ay_text_notifycb(ay_object *o)
 		  ext.down = curve;
 		  extrude.npatch = NULL;
 		  extrude.caps_and_bevels = NULL;
-		  ay_notify_force(&ext);
+		  ay_notify_object(&ext);
 
 		  if(extrude.npatch)
 		    {

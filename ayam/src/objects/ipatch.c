@@ -551,7 +551,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
 
   o->refine = (void *)ip;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
@@ -1707,7 +1707,7 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   if(update)
     {
-      ay_notify_force(o);
+      ay_notify_object(o);
 
       o->modified = AY_TRUE;
 

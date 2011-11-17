@@ -1462,7 +1462,7 @@ ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
  return TCL_OK;
 } /* ay_shader_settcmd */

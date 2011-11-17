@@ -863,7 +863,7 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 		}
 	      if(o->modified)
 		{
-		  ay_notify_force(o);
+		  ay_notify_object(o);
 		}
 	    } /* if */
 	  sel = sel->next;
@@ -1549,7 +1549,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  notify_parent = AY_TRUE;
 	  ay_selp_ins(o, (unsigned int)index, AY_FALSE);
-	  ay_status = ay_notify_force(o);
+	  ay_status = ay_notify_object(o);
 	  o->modified = AY_TRUE;
 	} /* if */
 
@@ -1864,7 +1864,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	{
 	  notify_parent = AY_TRUE;
 	  ay_selp_rem(o, (unsigned int)index);
-	  ay_status = ay_notify_force(o);
+	  ay_status = ay_notify_object(o);
 	  ay_selection->object->modified = AY_TRUE;
 	} /* if */
 
@@ -2324,7 +2324,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
 	      np = (ay_nurbpatch_object *)o->refine;
 	      np->is_rat = AY_FALSE;
 	    }
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	  notify_parent = AY_TRUE;
 	}
       else
@@ -2470,7 +2470,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
       if(o->modified)
 	{
-	  ay_notify_force(o);
+	  ay_notify_object(o);
 	  notify_parent = AY_TRUE;
 	}
       sel = sel->next;
@@ -2563,7 +2563,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 
 	       if(o->modified)
 		 {
-		   ay_notify_force(o);
+		   ay_notify_object(o);
 		   notify_parent = AY_TRUE;
 		 }
 	     }
@@ -2621,7 +2621,7 @@ ay_pact_notify(ay_object *o, int j, int k)
   o->selp = &tmpselp;
   o->modified = AY_TRUE;
 
-  ay_notify_force(o);
+  ay_notify_object(o);
 
   o->selp = oldselp;
 

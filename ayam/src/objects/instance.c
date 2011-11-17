@@ -961,7 +961,7 @@ ay_instance_notifycb(ay_object *o)
     {
       is_notify = AY_TRUE;
 
-      ay_notify_force(o->refine);
+      ay_notify_object(o->refine);
 
       /* notify parent? */
 
