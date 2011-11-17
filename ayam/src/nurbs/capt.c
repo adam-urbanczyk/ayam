@@ -12,18 +12,17 @@
 
 #include "ayam.h"
 
-/* capt.c NURBS cap creation tools */
-
+/** \file capt.c \brief cap creation tools */
 
 /* ay_capt_createfromcurve:
- *  create a cap surface from planar NURBS curves;
- *  the curve objects will be transformed and moved to
- *  the new NURBS patch as trim curves
+ *  create a cap surface from planar NURBS curves; the curve objects
+ *  will be transformed and moved to the new NURBS patch as trim curves
  *
- * @param[in,out] c NURBS curve objects; multiple objects may
+ * @param[in,out] c NURBS curve object(s); multiple objects may
  *  be provided as list of connected objects; the first curve
  *  must be the outmost curve, all following curves define
- *  holes
+ *  holes; the curve orientations will be detected and adjusted
+ *  properly
  * @param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
@@ -107,7 +106,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 	      i += stride;
 	    } /* while */
 
-	  /* clear trafo */
+	  /* clear curve trafo */
 	  ay_trafo_defaults(c);
 
 	  np->controlv[0] = minx;
@@ -133,7 +132,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
       else
 	{
 	  /* clear trafo */
-	  ay_trafo_defaults(c);
+	  ay_nct_applytrafo(c);
 	} /* if */
 
       ay_nct_getorientation(nc, &angle);
@@ -152,7 +151,6 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
 	  c->movx += 0.5;
 	  c->movy += 0.5;
-
 	}
       else
 	{
@@ -160,6 +158,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 	    {
 	      ay_nct_revert(nc);
 	    } /* if */
+
 	  trimmx = c->movx-firstmovx;
 	  trimmy = c->movy-firstmovy;
 
@@ -170,9 +169,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 
 	  c->movx += 0.5+(trimmx/fabs(maxx-minx));
 	  c->movy += 0.5+(trimmy/fabs(maxy-miny));
-
 	} /* if */
-
 
       if(!c->next)
 	{
@@ -187,6 +184,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
       first = AY_FALSE;
     } /* while */
 
+  /* return result */
   *cap = npatch;
 
   /* prevent cleanup code from doing something harmful */
