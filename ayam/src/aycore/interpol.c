@@ -104,7 +104,7 @@ ay_interpol_trafos(double p, ay_object *o1, ay_object *o2, ay_object *ta)
      (fabs(o2->quat[2] - o1->quat[2]) > AY_EPSILON) ||
      (fabs(o2->quat[3] - o1->quat[3]) > AY_EPSILON))
     {
-      ay_status = ay_quat_slerp(p, o1->quat, o2->quat, ta->quat);
+      ay_quat_slerp(p, o1->quat, o2->quat, ta->quat);
 
       ay_quat_toeuler(ta->quat, euler);
 

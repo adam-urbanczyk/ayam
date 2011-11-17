@@ -909,7 +909,7 @@ void ay_quat_toeuler(double q[4], double euler[3]);
 
 /** interpolate between two quaternions
  */
-int ay_quat_slerp(double time, double q1[4], double q2[4], double *r);
+void ay_quat_slerp(double t, double q1[4], double q2[4], double r[4]);
 
 /** calculate dot product of two quaternions
  */
