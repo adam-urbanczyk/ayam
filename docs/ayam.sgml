@@ -454,7 +454,7 @@ or last object in the current level,
 <item><tt/&lt;Left&gt;/ enters the parent level,
 
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
-all object in the current level. If the current level is the root level,
+all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 
 <item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
@@ -696,7 +696,7 @@ have keyboard shortcuts that are displayed in each entry.
 Note that the main menu keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
 console or in a property GUI element (i.e. a data entry field).
-Hit <tt>"Esc"</tt> to set the focus to the object selection
+Hit <tt>&lt;Esc&gt;</tt> to set the focus to the object selection
 widget and thus enable the main menu keyboard shortcuts.
 <p>
 One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
@@ -1343,34 +1343,34 @@ for various user interface elements (including the toolbox buttons).
 Many keyboard shortcuts of the main window have been discussed
 in the previous sections already but there are some more.
 <p>
+An important group of shortcuts is available on the function
+keys:<newline>
+<tt>&lt;F1&gt;</tt> has already been mentioned, it opens a
+web browser and displays the URL from the <tt>"Docs"</tt>
+preference setting.<newline>
+<tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt> lower and raise the global
+GLU sampling tolerance value respectively, allowing fast
+adjustment of the NURBS drawing/shading quality.<newline>
+<tt>&lt;F4&gt;</tt> toggles between display of NURBS control cage and
+true curves&thinsp;/&thinsp;surface outlines.<newline>
+<tt>&lt;F5&gt;</tt> rebuilds the object tree and issues a complete
+notification. It is therefore helpful to update the complete
+GUI after changes made to the scene using the scripting interface
+in the console.<newline>
+<tt>&lt;F6&gt;</tt> toggles lazy notification.
+<p>
+<tt>&lt;Ctrl+A&gt;</tt> is bound to the <tt>"Apply"</tt> and
+<tt>&lt;Ctrl+R&gt;</tt> to the <tt>"Reset"</tt> button of the
+property GUI.
+<p>
 Note that the main window keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
 console or in a property GUI element (i.e. a data entry field).
-Hit <tt>"Esc"</tt> to set the focus to the object selection
+Hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object selection
 widget and thus enable the main window keyboard shortcuts.
 <p>
 One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
-<p>
-An important group of shortcuts is available on the function
-keys: <tt>"F1"</tt> has already been mentioned, it opens a
-web browser and displays the URL from the <tt>"Docs"</tt>
-preference setting.
-<tt>"F2"</tt> and <tt>"F3"</tt> lower and raise the global
-GLU sampling tolerance value respectively, allowing fast
-adjustment of the NURBS drawing/shading quality.
-<tt>"F4"</tt> toggles between display of NURBS control cage and
-true curves/surfaces.
-<tt>"F5"</tt> rebuilds the object tree and issues a complete
-notification. It is therefore helpful to update the complete
-GUI after changes made to the scene using the scripting interface
-in the console.
-<tt>"F6"</tt> toggles lazy notification.
-<p>
-<tt>"Ctrl+A"</tt> is bound to the <tt>"Apply"</tt> and
-<tt>"Ctrl+R"</tt> to the <tt>"Reset"</tt> button of the
-property GUI.
-
 
 <sect1>Anatomy of a View<label id="viewwin">
 <p>
@@ -1857,8 +1857,8 @@ GUI mode. For more information about
 the actions see section <ref id="iac" name="Interactive Actions">.
 <p>
 When creating objects, holding down
-the <tt>"Ctrl"</tt> key while pressing the corresponding toolbox button
-will keep the objects selected.
+the <tt>&lt;Ctrl&gt;</tt> key while pressing the corresponding toolbox
+button will keep the objects selected.
 This is especially useful for objects that would move the currently
 selected objects to themselves as children (Level, Revolve, Skin etc.).
 <p>
@@ -13652,18 +13652,28 @@ used, the new object(s) will replace the old object(s).
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scforcenot">
-forceNot:
+<label id="scnotifyob">
+notifyOb:
 <itemize>
- <item>Synopsis: <tt>"forceNot [mod | all]"</tt>
+ <item>Synopsis: <tt>"notifyOb [-all | -modified | -parent]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: This command calls the registered notification
 callback for the selected object(s) and their parents, or, if no object
 is selected, for all objects of the scene.
-If the <tt>"mod"</tt> parameter is used, only modified objects
+
+<p>
+If the <tt>"-modified"</tt> parameter is used, only modified objects
 will be notified.
-If the <tt>"all"</tt> parameter is used, all objects
+<p>
+If the <tt>"-all"</tt> parameter is used, all objects
 will be notified regardless of the selection.
+<p>
+If the <tt>"-parent"</tt> parameter is used, only the current
+parent object of the current level will be notified.
+<p>
+Prior to Ayam 1.20 this command was named <tt>"forceNot"</tt>,
+the old name is still available for compatibility but its
+use is deprecated.
 </itemize>
 
 <p>
@@ -17358,7 +17368,6 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>FontName: <ref id="textattr" name="Text attribute">
 <item>forAll, forAllT: <ref id="scforall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
-<item>forceNot: <ref id="scforcenot" name="scripting interface command">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From: <ref id="camp" name="camera property">,
 <ref id="lip" name="Light attribute">
@@ -17569,6 +17578,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NewLoadsEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>newScene: <ref id="scnewscene" name="scripting interface command">
 <item>NoExport: <ref id="noexporttag" name="tag type">
+<item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
