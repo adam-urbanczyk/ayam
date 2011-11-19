@@ -25,7 +25,7 @@ proc actionEnd { n1 n2 op } {
 	# only initiate notification for modified objects
 	# this also avoids unneeded lengthy notification runs in
 	# view actions (view-rotate, view-move etc.)
-	forceNot -mod
+	notifyOb -mod
     }
 
  return;

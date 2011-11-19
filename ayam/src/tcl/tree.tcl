@@ -627,7 +627,7 @@ proc tree_move { } {
 		update
 		$ay(tree) see $node
 	    }
-	    forceNot all
+	    notifyOb -all
 	    plb_update
 	    rV
 	} else {
@@ -638,7 +638,7 @@ proc tree_move { } {
 	    set ay(SelectedLevel) $level
 	    tree_paintLevel $level
 	    tree_handleSelection
-	    forceNot all
+	    notifyOb -all
 	    plb_update
 	    rV
 	}

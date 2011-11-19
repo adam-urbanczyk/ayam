@@ -200,7 +200,7 @@ forAll 1 {
 
 goTop
 selOb
-forceNot
+notifyOb
 
 return;
 }

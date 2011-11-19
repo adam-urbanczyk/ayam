@@ -206,24 +206,24 @@ $m add cascade -menu $m.cu -label "Curve" -underline 0
 menu $m.cu -tearoff 0
 $m.cu add command -label "NURBCurve" -command {
     runTool {ay(nclen) ay(ncadda)} {"Length:" "AddArgs:"}\
-	"crtOb NCurve -length %0 %1; uCR; sL; forceNot; rV;"\
+	"crtOb NCurve -length %0 %1; uCR; sL; notifyOb; rV;"\
 	"Create NCurve"
 } -underline 4
 #  ^^^^^^^^^^^ => C
 $m.cu add command -label "ICurve" -command {
     runTool {ay(iclen) ay(ncadda)} { "Length:" "AddArgs:"}\
-	"crtOb ICurve -length %0 %1; uCR; sL; forceNot; rV;"\
+	"crtOb ICurve -length %0 %1; uCR; sL; notifyOb; rV;"\
 	"Create ICurve"
 } -underline 0
 $m.cu add command -label "ACurve" -command {
     runTool {ay(aclen) ay(ncadda)} { "Length:" "AddArgs:"}\
-	"crtOb ACurve -length %0 %1; uCR; sL; forceNot; rV;"\
+	"crtOb ACurve -length %0 %1; uCR; sL; notifyOb; rV;"\
 	"Create ACurve"
 } -underline 0
 $m.cu add command -label "NCircle" -command {
     runTool {ay(ncircradius) ay(ncirctmin) ay(ncirctmax)}\
 	{"Radius:" "TMin:" "TMax:"}\
-	"crtOb NCircle -radius %0 -tmin %1 -tmax %2; uCR; sL; forceNot; rV;"\
+	"crtOb NCircle -radius %0 -tmin %1 -tmax %2; uCR; sL; notifyOb; rV;"\
 	"Create NCircle"
 } -underline 3
 #  ^^^^^^^^^^^ => R
@@ -232,59 +232,59 @@ menu $m.su -tearoff 0
 $m.su add command -label "NURBPatch" -command {
     runTool {ay(npwidth) ay(npheight) ay(npadda)}\
 	{"Width:" "Height:" "AddArgs:"}\
-	"crtOb NPatch -width %0 -height %1 %2; uCR; sL; forceNot; rV;"\
+	"crtOb NPatch -width %0 -height %1 %2; uCR; sL; notifyOb; rV;"\
 	"Create NPatch"
 } -underline 0
 $m.su add command -label "IPatch" -command {
     runTool {ay(ipwidth) ay(ipheight) ay(ipadda)}\
 	{"Width:" "Height:" "AddArgs:"}\
-	"crtOb IPatch -width %0 -height %1 %2; uCR; sL; forceNot; rV;"\
+	"crtOb IPatch -width %0 -height %1 %2; uCR; sL; notifyOb; rV;"\
 	"Create IPatch"
 } -underline 0
 $m.su add command -label "BPatch" -command {
-    crtOb BPatch; uCR; sL; forceNot; rV;
+    crtOb BPatch; uCR; sL; notifyOb; rV;
 } -underline 0
 $m.su add command -label "PatchMesh" -command {
     runTool {ay(pmwidth) ay(pmheight)} {"Width:" "Height:"}\
-	"crtOb PatchMesh -width %0 -height %1; uCR; sL; forceNot; rV;"\
+	"crtOb PatchMesh -width %0 -height %1; uCR; sL; notifyOb; rV;"\
 	"Create PatchMesh"
 } -underline 0
 
 $m add cascade -menu $m.sl -label "Solid" -underline 4
 menu $m.sl -tearoff 0
 $m.sl add command -label "Box"\
-    -command "crtOb Box; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Box; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Sphere"\
-    -command "crtOb Sphere; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Sphere; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Disk"\
-    -command "crtOb Disk; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Disk; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Cone"\
-    -command "crtOb Cone; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Cone; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Cylinder"\
-    -command "crtOb Cylinder; uCR; sL; forceNot; rV;" -underline 1
+    -command "crtOb Cylinder; uCR; sL; notifyOb; rV;" -underline 1
 $m.sl add command -label "Torus"\
-    -command "crtOb Torus; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Torus; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Hyperboloid"\
-    -command "crtOb Hyperboloid; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Hyperboloid; uCR; sL; notifyOb; rV;" -underline 0
 $m.sl add command -label "Paraboloid"\
-    -command "crtOb Paraboloid;  uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Paraboloid;  uCR; sL; notifyOb; rV;" -underline 0
 
 $m add cascade -menu $m.csg -label "Level" -underline 0
 menu $m.csg -tearoff 0
 $m.csg add command -label "Level"\
-    -command "crtOb Level 1; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Level 1; uCR; sL; notifyOb; rV;" -underline 0
 $m.csg add separator
 $m.csg add command -label "Union"\
-    -command "crtOb Level 2; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Level 2; uCR; sL; notifyOb; rV;" -underline 0
 $m.csg add command -label "Intersection"\
-    -command "crtOb Level 4; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Level 4; uCR; sL; notifyOb; rV;" -underline 0
 $m.csg add command -label "Difference"\
-    -command "crtOb Level 3; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Level 3; uCR; sL; notifyOb; rV;" -underline 0
 $m.csg add separator
 $m.csg add command -label "Primitive"\
-    -command "crtOb Level 5; uCR; sL; forceNot; rV;" -underline 0
+    -command "crtOb Level 5; uCR; sL; notifyOb; rV;" -underline 0
 
-$m add command -label "Light" -command "crtOb Light; uCR; sL; forceNot; rV;"\
+$m add command -label "Light" -command "crtOb Light; uCR; sL; notifyOb; rV;"\
     -underline 1
 $m add separator
 $m add cascade -menu $m.cus -label "Custom Object" -underline 1
@@ -297,7 +297,7 @@ $m add command -label "View" \
     -underline 0
 $m add separator
 $m add command -label "Instance" \
-    -command "crtOb Instance; uCR; sL; forceNot; rV;" \
+    -command "crtOb Instance; uCR; sL; notifyOb; rV;" \
     -underline 1
 #    ^^^^^^^^^^^ => N
 $m add command -label "Clone" -command "level_crt Clone;" \
@@ -309,21 +309,21 @@ $m add command -label "Mirror" -command "level_crt Mirror;" \
 $m add command -label "Material" \
 	-command "material_createp;" -underline 0
 $m add command -label "Camera" \
-	-command "crtOb Camera; uCR; sL; forceNot; rV;" -underline 1
+	-command "crtOb Camera; uCR; sL; notifyOb; rV;" -underline 1
 $m add command -label "RiInc" \
-	-command "crtOb RiInc; uCR; sL; forceNot; rV;"
+	-command "crtOb RiInc; uCR; sL; notifyOb; rV;"
 $m add command -label "RiProc" \
-	-command "crtOb RiProc; uCR; sL; forceNot; rV;"
+	-command "crtOb RiProc; uCR; sL; notifyOb; rV;"
 $m add command -label "Script" \
-	-command "crtOb Script; uCR; sL; forceNot; rV;" \
+	-command "crtOb Script; uCR; sL; notifyOb; rV;" \
     -underline 5
 #    ^^^^^^^^^^^ => T
 $m add command -label "Select" \
-    -command "crtOb Select; uCR; sL; forceNot; rV;" \
+    -command "crtOb Select; uCR; sL; notifyOb; rV;" \
     -underline 1
 #    ^^^^^^^^^^^ => E
 $m add command -label "Text" \
-    -command "crtOb Text; uCR; sL; forceNot; rV;" \
+    -command "crtOb Text; uCR; sL; notifyOb; rV;" \
     -underline 2
 #    ^^^^^^^^^^^ => X
 
@@ -616,12 +616,12 @@ $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
 $sm add command -label "Apply Trafo To All Points"\
 	-command "undo save ApplyTr; applyTrafo all;\
-	plb_update; forceNot; rV" \
+	plb_update; notifyOb; rV" \
     -underline 0
 
 $sm add command -label "Apply Trafo To Selected Points"\
 	-command "undo save ApplyTr; applyTrafo sel;\
-	plb_update; forceNot; rV" \
+	plb_update; notifyOb; rV" \
     -underline 1
 
 $sm add command -label "Center All Points (3D)"\
@@ -654,12 +654,12 @@ menu $m.nc -tearoff 0
 $m.nc add command -label "Circular B-Spline" -command {
     runTool { ay(cbsprad) ay(cbsptmax) ay(cbspsec) ay(cbsporder) }\
 	{"Radius:" "Arc:" "Sections:" "Order:"}\
-	"crtClosedBS %2 %3 %1 %0; uCR; sL; forceNot; rV;"\
+	"crtClosedBS %2 %3 %1 %0; uCR; sL; notifyOb; rV;"\
 	"Create Closed B-Spline"
 } -underline 0
 $m.nc add command -label "NURBCircle" -command {
     runTool {ay(ncircradius) ay(ncircarc)} {"Radius:" "Arc:"}\
-	"crtNCircle -r %0 -a %1; uCR; sL; forceNot; rV;"\
+	"crtNCircle -r %0 -a %1; uCR; sL; notifyOb; rV;"\
 	"Create NURBCircle"
 } -underline 5
 $m.nc add command -label "TrimRect" -command {
@@ -685,11 +685,11 @@ $m.nc add command -label "ExtrNP" -command "level_crt ExtrNP \"\" -1;"
 
 $m.nc add command -label "NURBSphere" -command {
     runTool ay(nsphereradius) "Radius:"\
-	"crtNSphere -r %0; uCR; sL; forceNot; rV;"\
+	"crtNSphere -r %0; uCR; sL; notifyOb; rV;"\
 	"Create NURBSphere"
 } -underline 4
 $m.nc add command -label "NURBSphere2" -command {
-    crtNSphere2; uCR; sL; forceNot; rV
+    crtNSphere2; uCR; sL; notifyOb; rV
 }
 $m.nc add separator
 $m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
@@ -737,7 +737,7 @@ $m add command -label "Convert (In Place)" -command {
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 }
 $m add separator
-$m add command -label "Force Notification" -command "forceNot; rV" \
+$m add command -label "Force Notification" -command "notifyOb; rV" \
     -underline 0
 $m add separator
 $m add command -label "Highlight Material" -command "material_highlight" \
@@ -781,7 +781,7 @@ global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Paste Property to Selected"\
-    -command "pclip_pastetosel; forceNot; rV"
+    -command "pclip_pastetosel; notifyOb; rV"
 
 $m add cascade -menu $m.ins -label "Instances" -underline 0
 set sm [menu $m.ins -tearoff 0]

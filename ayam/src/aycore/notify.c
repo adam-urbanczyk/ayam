@@ -303,7 +303,7 @@ ay_notify_parentof(ay_object *o, int silent)
 
 /* ay_notify_objecttcmd:
  *  Enforce notification of selected objects or all objects
- *  in the scene (if selection is empty)
+ *  in the scene (if selection is empty).
  *  Implements the \a notifyOb scripting interface command.
  *  See also the corresponding section in the \ayd{scnotifyob}.
  *  \returns TCL_OK in any case.
@@ -319,22 +319,60 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
+  /* parse args (if any) */
   if(argc > 1)
     {
-      if(!strcmp(argv[1], "mod"))
-	notify_modified = AY_TRUE;
-      if(!strcmp(argv[1], "all"))
-	notify_all = AY_TRUE;
-    }
-
-  if((!sel) || (notify_all))
-    {
-      o = ay_root->next;
-      while(o)
+      if(argv[1][0] == '-')
 	{
-	  if(notify_modified)
+	  switch(argv[1][1])
 	    {
-	      if(o->modified)
+	    case 'a':
+	      /* -all */
+	      notify_all = AY_TRUE;
+	      break;
+	    case 'm':
+	      /* -modified */
+	      notify_modified = AY_TRUE;
+	      break;
+	    case 'p':
+	      /* -parent */
+	      notify_parent = AY_TRUE;
+	      break;
+	    default:
+	      ay_error(AY_EWARN, argv[0], "Unrecognized argument.");
+	      break;
+	    } /* switch */
+	} /* if */
+    } /* if */
+
+  if(notify_parent)
+    {
+      ay_notify_parent();
+    }
+  else
+    {
+      if((!sel) || (notify_all))
+	{
+	  o = ay_root->next;
+	  while(o)
+	    {
+	      if(notify_modified)
+		{
+		  if(o->modified)
+		    {
+		      ay_status = ay_notify_object(o);
+
+		      if(ay_status)
+			{
+			  ay_error(AY_ERROR, argv[0], NULL);
+			} /* if */
+
+		      o->modified = AY_FALSE;
+
+		      notify_parent = AY_TRUE;
+		    }
+		}
+	      else
 		{
 		  ay_status = ay_notify_object(o);
 
@@ -343,37 +381,48 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
 		      ay_error(AY_ERROR, argv[0], NULL);
 		    } /* if */
 
-		  o->modified = AY_FALSE;
-
 		  notify_parent = AY_TRUE;
 		}
-	    }
-	  else
+	      o = o->next;
+	    } /* while */
+
+	  if(notify_parent)
 	    {
-	      ay_status = ay_notify_object(o);
-
-	      if(ay_status)
-		{
-		  ay_error(AY_ERROR, argv[0], NULL);
-		} /* if */
-
-	      notify_parent = AY_TRUE;
+	      ay_notify_parent();
 	    }
-	  o = o->next;
-	} /* while */
-
-      if(notify_parent)
-	{
-	  ay_notify_parent();
 	}
-    }
-  else
-    {
-      while(sel)
+      else
 	{
-	  if(notify_modified)
+	  while(sel)
 	    {
-	      if(sel->object->modified)
+	      if(notify_modified)
+		{
+		  if(sel->object->modified)
+		    {
+		      ay_status = ay_notify_object(sel->object);
+
+		      if(ay_status)
+			{
+			  ay_error(AY_ERROR, argv[0], NULL);
+			} /* if */
+
+		      if(ay_prefs.completenotify)
+			{
+			  ay_status = ay_notify_complete(sel->object);
+			  if(ay_status)
+			    {
+			      ay_error(AY_ERROR, argv[0], NULL);
+			    } /* if */
+			}
+		      else
+			{
+			  notify_parent = AY_TRUE;
+			} /* if */
+
+		      sel->object->modified = AY_FALSE;
+		    } /* if */
+		}
+	      else
 		{
 		  ay_status = ay_notify_object(sel->object);
 
@@ -394,41 +443,17 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
 		    {
 		      notify_parent = AY_TRUE;
 		    } /* if */
-
-		  sel->object->modified = AY_FALSE;
 		} /* if */
-	    }
-	  else
+
+	      sel = sel->next;
+	    } /* while */
+
+	  if(!ay_prefs.completenotify && notify_parent)
 	    {
-	      ay_status = ay_notify_object(sel->object);
-
-	      if(ay_status)
-		{
-		  ay_error(AY_ERROR, argv[0], NULL);
-		} /* if */
-
-	      if(ay_prefs.completenotify)
-		{
-		  ay_status = ay_notify_complete(sel->object);
-		  if(ay_status)
-		    {
-		      ay_error(AY_ERROR, argv[0], NULL);
-		    } /* if */
-		}
-	      else
-		{
-		  notify_parent = AY_TRUE;
-		} /* if */
-	    } /* if */
-
-	  sel = sel->next;
-	} /* while */
-
-      if(!ay_prefs.completenotify && notify_parent)
-	{
-	  ay_notify_parent();
-	}
-    } /* if */
+	      ay_notify_parent();
+	    }
+	} /* if */
+    } /* if notify_parent */
 
  return TCL_OK;
 } /* ay_notify_objecttcmd */
