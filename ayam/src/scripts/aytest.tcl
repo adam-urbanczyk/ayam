@@ -63,7 +63,7 @@ proc aytest_selectGUI { } {
       aytest_runTests \[$w.f1.l1 curselection\];"
 
     button $f.bca -text "Cancel" -width 5 -command "\
-set ::cancelled 1;focus .;destroy $w;"
+      set ::cancelled 1;focus .;destroy $w;"
 
     pack $w.f1.l1 -side top -fill both -expand yes
 
@@ -197,7 +197,7 @@ foreach type $types {
     }
 
     puts $log "Notifying a $type ...\n"
-    forceNot
+    notifyOb
 
     puts $log "Selecting points of $type ...\n"
     selPnts -all
@@ -730,7 +730,7 @@ array set Revolve_1 {
 		crtClosedBS 4; hSL; movOb 1.25 0 0;
 	    }
 	};
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -754,7 +754,7 @@ lappend Revolve_1(vals) { 0 0 }
 # Revolve Variation #2
 array set Revolve_2 {
     precmd {goDown -1;crtOb NCurve;hSL;movOb 1 0 0;rotOb 0 0 90;
-	forceNot;goUp;hSL}
+	notifyOb;goUp;hSL}
     arr RevolveAttrData
     freevars {UpperCap LowerCap StartCap EndCap ThetaMax}
     UpperCap {0 1}
@@ -771,7 +771,7 @@ lappend Revolve_2(vals) { 0 0 }
 # Revolve Variation #3
 array set Revolve_3 {
     precmd {goDown -1;crtOb NCurve;hSL;movOb 1 0 0;rotOb 0 0 90;
-	forceNot;goUp;hSL}
+	notifyOb;goUp;hSL}
     arr RevolveAttrData
     freevars {UpperCap LowerCap StartCap EndCap ThetaMax Sections Order}
     UpperCap {0 1}
@@ -806,7 +806,7 @@ array set Extrude_1 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
 	    }
 	};
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -825,7 +825,7 @@ lappend Extrude_1(vals) { 1.0 }
 
 # Extrude Variation #2
 array set Extrude_2 {
-    precmd {goDown -1;crtClosedBS 4;hSL;movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    precmd {goDown -1;crtClosedBS 4;hSL;movOb 1.25 0.0 0.0;notifyOb;goUp;hSL}
     arr ExtrudeAttrData
     freevars {StartCap EndCap}
     StartCap {0 1}
@@ -842,7 +842,7 @@ lappend Extrude_2(vals) { 10.0 }
 
 # Extrude Variation #3
 array set Extrude_3 {
-    precmd {goDown -1;crtOb NCircle;hSL;movOb 1.25 0.0 0.0;forceNot;goUp;hSL}
+    precmd {goDown -1;crtOb NCircle;hSL;movOb 1.25 0.0 0.0;notifyOb;goUp;hSL}
     arr ExtrudeAttrData
     freevars {StartCap EndCap}
     StartCap {0 1}
@@ -866,7 +866,7 @@ array set Sweep_1 {
     precmd {
 	goDown -1;
 	crtOb NCurve; hSL; rotOb 0 0 90 ;
-	crtOb NCurve; forceNot; goUp; hSL
+	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr SweepAttrData
     freevars {Rotate Interpolate}
@@ -882,7 +882,7 @@ array set Sweep_2 {
     precmd {
 	goDown -1;
 	crtClosedBS 4; hSL; rotOb 0 90 0;
-	crtOb NCurve; forceNot; goUp; hSL
+	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr SweepAttrData
     freevars {Rotate Interpolate StartCap EndCap}
@@ -900,7 +900,7 @@ array set Sweep_3 {
     precmd {
 	goDown -1;
 	crtOb NCircle; hSL; rotOb 0 90 0;
-	crtOb NCurve; forceNot; goUp; hSL
+	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr SweepAttrData
     freevars {Rotate Interpolate StartCap EndCap}
@@ -924,7 +924,7 @@ array set Birail1_1 {
 	goDown -1;
 	crtOb NCurve; hSL; rotOb 0 0 -90;
 	crtOb NCurve; crtOb NCurve; hSL; movOb 0 0.75 0;
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr Birail1AttrData
     fixedvars { dummy }
@@ -941,7 +941,7 @@ array set Birail2_1 {
 	crtOb NCurve; hSL; rotOb 0 0 -90;
 	crtOb NCurve; crtOb NCurve; hSL; movOb 0 0.75 0;
 	crtOb NCurve; hSL; rotOb 0 0 -90; movOb 0.75 0 0;
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr Birail2AttrData
     fixedvars { dummy }
@@ -956,7 +956,7 @@ array set Gordon_1 {
     precmd {
 	goDown -1;
 	crtOb NCurve; hSL; rotOb 0 0 90 ;
-	crtOb NCurve; forceNot; goUp; hSL
+	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr GordonAttrData
     fixedvars { dummy }
@@ -970,7 +970,7 @@ array set Skin_1 {
     precmd {
 	goDown -1;
 	crtOb NCurve; hSL; movOb 0 1 0;
-	crtOb NCurve; forceNot; goUp; hSL
+	crtOb NCurve; notifyOb; goUp; hSL
     }
     arr SkinAttrData
     fixedvars { dummy }
@@ -982,7 +982,7 @@ array set Skin_2 {
     precmd {
 	goDown -1;
 	crtClosedBS 4; hSL; movOb 0 1 1;
-	crtClosedBS 4; forceNot; goUp; hSL
+	crtClosedBS 4; notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {StartCap EndCap}
@@ -1001,7 +1001,7 @@ array set Skin_3 {
 	crtClosedBS 4; hSL; movOb 0 3 3;
 	crtClosedBS 4; hSL; movOb 0 1 2;
 	crtClosedBS 4; hSL; movOb 0 1 0;
-	crtClosedBS 4; forceNot; goUp; hSL
+	crtClosedBS 4; notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {Interpolate StartCap EndCap Knot-Type_U Order_U}
@@ -1038,7 +1038,7 @@ array set Skin_4 {
 		crtClosedBS 4;
 	    }
 	}
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {StartCap EndCap}
@@ -1078,7 +1078,7 @@ array set Skin_5 {
 		crtClosedBS 4;hSL; rotOb -45 0 0;
 	    }
 	}
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr SkinAttrData
     freevars {Interpolate StartCap EndCap Knot-Type_U Order_U}
@@ -1116,7 +1116,7 @@ array set Cap_1 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
 	    }
 	};
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1144,7 +1144,7 @@ array set Bevel_1 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
 	    }
 	};
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1173,7 +1173,7 @@ array set ExtrNC_1 {
 		set ::NPatchAttrData(Knot-Type_V) 1; }
 	}
 	setProp;
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1201,7 +1201,7 @@ array set ExtrNP_1 {
     precmd {
 	goDown -1;
 	crtOb NPatch;
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1235,7 +1235,7 @@ array set OffsetNC_1 {
 		crtOb NCircle; hSL; movOb 1.25 0 0;
 	    }
 	};
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1260,7 +1260,7 @@ array set OffsetNP_1 {
     precmd {
 	goDown -1;
 	crtOb NPatch;
-	forceNot;
+	notifyOb;
 	goUp;
 	hSL
     }
@@ -1281,7 +1281,7 @@ array set ConcatNC_1 {
     precmd {
 	goDown -1;
 	crtOb NCurve; crtOb NCurve; hSL; movOb 1 0 0;
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr ConcatNCAttrData
     fixedvars { dummy }
@@ -1305,7 +1305,7 @@ array set ConcatNP_1 {
 		movOb 2 2 0;
 	    }
 	};
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr ConcatNPAttrData
     fixedvars { dummy }
@@ -1321,7 +1321,7 @@ array set Trim_1 {
     precmd {
 	goDown -1;
 	crtOb NPatch; crtOb NCircle; hSL; scalOb 0.5 0.5 1.0; movOb 0.5 0.5 0;
-	forceNot; goUp; hSL
+	notifyOb; goUp; hSL
     }
     arr TrimAttrData
     fixedvars { dummy }
@@ -1631,7 +1631,7 @@ if { [winfo exists $view2] } {
 }
 
 puts $log "Notify...\n"
-forceNot
+notifyOb
 
 puts $log "Select Pnts...\n"
 selPnts -all
