@@ -65,7 +65,7 @@ proc shortcut_fkeys { w } {
     bind $w <[repctrl $aymainshortcuts(Update)]>\
             {
 		ayError 4 $aymainshortcuts(Update) "Update!"
-		forceNot all; uS 1 1; rV;
+		notifyOb -all; uS 1 1; rV;
 	    }
 
  return;

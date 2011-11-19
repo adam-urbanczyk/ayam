@@ -66,7 +66,7 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     if { $keepsel <= 0 } {
 	goUp
 	set ay(ul) $ay(CurrentLevel)
-	uS; sL; forceNot; rV;
+	uS; sL; notifyOb; rV;
     } else {
 	# arrange to keep the old selection
 	if { $ay(lb) == 0 } {
@@ -113,7 +113,7 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 	# if
 
 	# update parent objects
-	forceNot
+	notifyOb
 
 	# redraw all views
 	rV
