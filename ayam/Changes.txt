@@ -1,4 +1,4 @@
-[24. Oct 2011] CVS-Head:
+[20. Nov 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -14,6 +14,7 @@ o crash in surface knot insertion (SF 3376414)
 o views getting the wrong type temporarily (SF 3382382)
 o saving of the environment scene file (SF 3410856)
 o resize menu entries of external views are deactivated (SF 3414694)
+o caps of transformed outlines/holes (SF 3439485)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -74,6 +75,9 @@ o getPnt/setPnt now allow to get/set all control points of an object
 o getPnt no longer unconditionally writes to global variables
 o getPnt no longer requests a variable for w to be provided in "-eval" mode
 o scripts and plugins can now create their own view window keyboard shortcuts
+o renamed "forceNot" command to more recognizable "notifyOb", for
+  compatibility with existing scripts, the old name still works
+o added "-parent" option to "notifyOb" command
 
 
 [16. Mar 2011] Ayam-1.19:
