@@ -478,7 +478,7 @@ ay_trafo_delegate(ay_object *o)
 
   if(!o->down)
     {
-      return AY_ERROR;
+      return AY_EWARN;
     }
 
   ay_quat_toeuler(o->quat, euler);
@@ -486,6 +486,10 @@ ay_trafo_delegate(ay_object *o)
   child = o->down;
   while(child)
     {
+      if(child == ay_endlevel)
+	{
+	  return AY_OK;
+	}
 
       if((o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
 	 (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
@@ -557,7 +561,12 @@ ay_trafo_delegate(ay_object *o)
 
 
 /* ay_trafo_delegatetcmd:
+ *  Delegate transformations of selected objects to their
+ *  respective child objects.
+ *  Implements the \a delegTrafo scripting interface command.
+ *  See also the corresponding section in the \ayd{scdelegtrafo}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
@@ -575,7 +584,7 @@ ay_trafo_delegatetcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       ay_status = ay_trafo_delegate(sel->object);
-      if(ay_status)
+      if(ay_status > 1)
 	{
 	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
@@ -750,7 +759,11 @@ ay_trafo_defaults(ay_object *o)
 
 
 /* ay_trafo_movobtcmd:
+ *  Translate selected objects.
+ *  Implements the \a movOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scmovob}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -793,7 +806,11 @@ ay_trafo_movobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_trafo_movpntstcmd:
+ *  Translate selected points.
+ *  Implements the \a movPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{scmovpnts}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
@@ -859,7 +876,11 @@ ay_trafo_movpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_trafo_scalobtcmd:
+ *  Scale selected objects.
+ *  Implements the \a scalOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scscalob}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -909,7 +930,11 @@ ay_trafo_scalobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_trafo_scalpntstcmd:
+ *  Scale selected points.
+ *  Implements the \a scalPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{scscalpnts}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
@@ -982,7 +1007,11 @@ ay_trafo_scalpntstcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_trafo_rotobtcmd:
+ *  Rotate selected objects.
+ *  Implements the \a rotOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scrotob}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
@@ -1044,7 +1073,11 @@ ay_trafo_rotobtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_trafo_rotpntstcmd:
+ *  Rotate selected points.
+ *  Implements the \a rotPnts scripting interface command.
+ *  See also the corresponding section in the \ayd{scrotpnts}.
  *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_trafo_rotpntstcmd(ClientData clientData, Tcl_Interp *interp,
