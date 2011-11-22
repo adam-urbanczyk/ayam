@@ -3308,6 +3308,7 @@ x3dio_getquatfromvec(double *v, double *q)
  double xylen = 0.0, zylen = 0.0, x = 0.0, z = 0.0;
  double q1[4] = {0}, q2[4] = {0}, quat[4] = {0};
  double xaxis[3] = {1.0, 0.0, 0.0}, zaxis[3] = {0.0, 0.0, 1.0};
+ double len;
 
   if(!v || !q)
    return AY_ENULL;
