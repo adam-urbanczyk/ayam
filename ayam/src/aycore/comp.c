@@ -690,22 +690,28 @@ ay_comp_ipatch(ay_object *o1, ay_object *o2)
      (i1->order_u != i2->order_u) ||
      (i1->order_v != i2->order_v) ||
      (i1->ktype_u != i2->ktype_u) ||
-     (i1->ktype_v != i2->ktype_v))
+     (i1->ktype_v != i2->ktype_v) ||
+     (i1->sdlen_u != i2->sdlen_u) ||
+     (i1->edlen_u != i2->edlen_u) ||
+     (i1->sdlen_v != i2->sdlen_v) ||
+     (i1->edlen_v != i2->edlen_v))
     return AY_FALSE;
 
   if(memcmp(i1->controlv, i2->controlv, 3*i1->width*i1->height*sizeof(double)))
     return AY_FALSE;
 
-  /*
-  if(memcmp(i1->sderiv, i2->sderiv, 3*sizeof(double)))
+  if(memcmp(i1->sderiv_u, i2->sderiv_u, 3*i1->height*sizeof(double)))
+    return AY_FALSE;
+  if(memcmp(i1->ederiv_u, i2->ederiv_u, 3*i1->height*sizeof(double)))
     return AY_FALSE;
 
-  if(memcmp(i1->ederiv, i2->ederiv, 3*sizeof(double)))
+  if(memcmp(i1->sderiv_v, i2->sderiv_v, 3*i1->width*sizeof(double)))
     return AY_FALSE;
-  */
+  if(memcmp(i1->ederiv_v, i2->ederiv_v, 3*i1->width*sizeof(double)))
+    return AY_FALSE;
+
  return AY_TRUE;
 } /* ay_comp_ipatch */
-
 
 
 /* ay_comp_acurve:
@@ -723,8 +729,7 @@ ay_comp_acurve(ay_object *o1, ay_object *o2)
      (i1->alength != i2->alength) ||
      (i1->closed != i2->closed) ||
      (i1->order != i2->order) ||
-     (i1->symmetric != i2->symmetric)
-     )
+     (i1->symmetric != i2->symmetric))
     return AY_FALSE;
 
   if(memcmp(i1->controlv, i2->controlv, 3*i1->length*sizeof(double)))
@@ -802,8 +807,7 @@ ay_comp_revolve(ay_object *o1, ay_object *o2)
      (r1->has_end_cap != r2->has_end_cap) ||
      (r1->thetamax != r2->thetamax) ||
      (r1->sections != r2->sections) ||
-     (r1->order != r2->order)
-     )
+     (r1->order != r2->order))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1380,6 +1384,8 @@ ay_comp_script(ay_object *o1, ay_object *o2)
   if(s1->script && s2->script && strcmp(s1->script, s2->script))
     return AY_FALSE;
 
+  /* XXXX add comparison of saved parameters */
+
  return AY_TRUE;
 } /* ay_comp_script */
 
@@ -1416,6 +1422,8 @@ ay_comp_extrnc(ay_object *o1, ay_object *o2)
   if((s1->side != s2->side) ||
      (s1->pnum != s2->pnum) ||
      (s1->revert != s2->revert) ||
+     (s1->relative != s2->relative) ||
+     (s1->create_pvn != s2->create_pvn) ||
      (s1->parameter != s2->parameter))
     return AY_FALSE;
 
@@ -1438,6 +1446,7 @@ ay_comp_extrnp(ay_object *o1, ay_object *o2)
      (s1->umax != s2->umax) ||
      (s1->vmin != s2->vmin) ||
      (s1->vmax != s2->vmax) ||
+     (s1->relative != s2->relative) ||
      (s1->pnum != s2->pnum))
     return AY_FALSE;
 
