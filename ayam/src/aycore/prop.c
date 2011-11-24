@@ -159,6 +159,9 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
+  if(quatstr)
+    free(quatstr);
+
  return TCL_OK;
 } /* ay_prop_gettrafotcmd */
 
