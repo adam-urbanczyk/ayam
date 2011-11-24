@@ -322,7 +322,7 @@ ay_clevel_godowntcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(argvi == 0)
 	    {
 	      /* ".." selected? -> go up instead! */
-	      return(ay_clevel_gouptcmd(clientData, interp, argc, argv));
+	      return ay_clevel_gouptcmd(clientData, interp, argc, argv);
 	    }
 	  j = 1;
 	}

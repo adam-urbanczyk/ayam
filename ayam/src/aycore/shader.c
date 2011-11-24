@@ -676,9 +676,9 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
       if(count)
 	{
 	  if(!(tokens = calloc(count, sizeof(RtToken))))
-	    return(AY_EOMEM);
+	    return AY_EOMEM;
 	  if(!(values = calloc(count, sizeof(RtToken))))
-	    { free(tokens); return(AY_EOMEM); }
+	    { free(tokens); return AY_EOMEM; }
 	}
 
       sarg = shader->arg;
