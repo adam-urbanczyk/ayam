@@ -512,7 +512,7 @@ ay_object_getname(ay_object *o)
   else
     name = ay_object_gettypename(o->type);
 
- return(name);
+ return name;
 } /* ay_object_getname */
 
 
@@ -773,7 +773,7 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
   typename = ay_object_gettypename(o->type);
   if(typename)
     {
-      Tcl_SetVar(interp, argv[1], typename, TCL_LEAVE_ERR_MSG );
+      Tcl_SetVar(interp, argv[1], typename, TCL_LEAVE_ERR_MSG);
     }
   else
     {
@@ -826,7 +826,7 @@ ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
   name = o->name;
   if(name)
     {
-      Tcl_SetVar(interp, argv[1], name, TCL_LEAVE_ERR_MSG );
+      Tcl_SetVar(interp, argv[1], name, TCL_LEAVE_ERR_MSG);
     }
 
  return TCL_OK;
