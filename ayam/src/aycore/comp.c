@@ -309,10 +309,17 @@ ay_comp_level(ay_object *o1, ay_object *o2)
 int
 ay_comp_disk(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_disk_object)))
+ ay_disk_object *d1, *d2;
+
+  d1 = (ay_disk_object *)o1->refine;
+  d2 = (ay_disk_object *)o2->refine;
+
+  if((d1->radius != d2->radius) ||
+     (d1->height != d2->height) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_disk */
 
 
@@ -322,10 +329,18 @@ ay_comp_disk(ay_object *o1, ay_object *o2)
 int
 ay_comp_cone(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_cone_object)))
+ ay_cone_object *d1, *d2;
+
+  d1 = (ay_cone_object *)o1->refine;
+  d2 = (ay_cone_object *)o2->refine;
+
+  if((d1->closed != d2->closed) ||
+     (d1->radius != d2->radius) ||
+     (d1->height != d2->height) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_cone */
 
 
@@ -335,10 +350,19 @@ ay_comp_cone(ay_object *o1, ay_object *o2)
 int
 ay_comp_cylinder(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_cylinder_object)))
+ ay_cylinder_object *d1, *d2;
+
+  d1 = (ay_cylinder_object *)o1->refine;
+  d2 = (ay_cylinder_object *)o2->refine;
+
+  if((d1->closed != d2->closed) ||
+     (d1->radius != d2->radius) ||
+     (d1->zmin != d2->zmin) ||
+     (d1->zmax != d2->zmax) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_cylinder */
 
 
@@ -348,10 +372,19 @@ ay_comp_cylinder(ay_object *o1, ay_object *o2)
 int
 ay_comp_sphere(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_sphere_object)))
+ ay_sphere_object *d1, *d2;
+
+  d1 = (ay_sphere_object *)o1->refine;
+  d2 = (ay_sphere_object *)o2->refine;
+
+  if((d1->closed != d2->closed) ||
+     (d1->radius != d2->radius) ||
+     (d1->zmin != d2->zmin) ||
+     (d1->zmax != d2->zmax) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_sphere */
 
 
@@ -361,10 +394,20 @@ ay_comp_sphere(ay_object *o1, ay_object *o2)
 int
 ay_comp_torus(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_torus_object)))
+ ay_torus_object *d1, *d2;
+
+  d1 = (ay_torus_object *)o1->refine;
+  d2 = (ay_torus_object *)o2->refine;
+
+  if((d1->closed != d2->closed) ||
+     (d1->majorrad != d2->majorrad) ||
+     (d1->minorrad != d2->minorrad) ||
+     (d1->phimin != d2->phimin) ||
+     (d1->phimax != d2->phimax) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_torus */
 
 
@@ -374,10 +417,19 @@ ay_comp_torus(ay_object *o1, ay_object *o2)
 int
 ay_comp_parab(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_paraboloid_object)))
+ ay_paraboloid_object *d1, *d2;
+
+  d1 = (ay_paraboloid_object *)o1->refine;
+  d2 = (ay_paraboloid_object *)o2->refine;
+
+  if((d1->closed != d2->closed) ||
+     (d1->rmax != d2->rmax) ||
+     (d1->zmin != d2->zmin) ||
+     (d1->zmax != d2->zmax) ||
+     (d1->thetamax != d2->thetamax))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_parab */
 
 
@@ -387,10 +439,22 @@ ay_comp_parab(ay_object *o1, ay_object *o2)
 int
 ay_comp_hyperb(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_hyperboloid_object)))
+ ay_hyperboloid_object *d1, *d2;
+
+  d1 = (ay_hyperboloid_object *)o1->refine;
+  d2 = (ay_hyperboloid_object *)o2->refine;
+
+  if(memcmp(d1->p1, d2->p1, 3*sizeof(double)))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+  if(memcmp(d1->p2, d2->p2, 3*sizeof(double)))
+    return AY_FALSE;
+
+  if((d1->closed != d2->closed) ||
+     (d1->thetamax != d2->thetamax))
+    return AY_FALSE;
+
+ return AY_TRUE;
 } /* ay_comp_hyperb */
 
 
@@ -400,10 +464,17 @@ ay_comp_hyperb(ay_object *o1, ay_object *o2)
 int
 ay_comp_box(ay_object *o1, ay_object *o2)
 {
-  if(memcmp(o1->refine, o2->refine, sizeof(ay_box_object)))
+ ay_box_object *d1, *d2;
+
+  d1 = (ay_box_object *)o1->refine;
+  d2 = (ay_box_object *)o2->refine;
+
+  if((d1->width != d2->width) ||
+     (d1->length != d2->length) ||
+     (d1->height != d2->height))
     return AY_FALSE;
-  else
-    return AY_TRUE;
+
+ return AY_TRUE;
 } /* ay_comp_box */
 
 
