@@ -319,6 +319,11 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
+  if(!strcmp(argv[0], "forceNot"))
+    {
+      ay_error(AY_EWARN, argv[0], "Command is deprecated, please use notifyOb instead.");
+    }
+
   /* parse args (if any) */
   if(argc > 1)
     {

@@ -484,6 +484,11 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
  double center[3] = {0};
  int dim = 0, mode = 0;
 
+  if(!strcmp(argv[0], "centerNC"))
+    {
+      ay_error(AY_EWARN, argv[0], "Command is deprecated, please use centerPnts instead.");
+    }
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
