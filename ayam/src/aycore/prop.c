@@ -88,7 +88,7 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 {
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- char *n1 = "transfPropData";
+ char *n1 = "transfPropData", *quatstr = NULL;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
 
   if(!sel)
@@ -96,6 +96,9 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
+  if(!(quatstr = calloc(TCL_DOUBLE_SPACE*4+10, sizeof(char))))
+    return TCL_OK;
 
   o = sel->object;
 
@@ -123,6 +126,17 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewDoubleObj(o->quat[3]);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "Quaternion", -1);
+  sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
+	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
+  to = Tcl_NewStringObj(quatstr, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
+	  o->quat[0], o->quat[1], o->quat[2], o->quat[3]);
+  to = Tcl_NewStringObj(quatstr, -1);
+  Tcl_SetStringObj(ton, "QuaternionBall", -1);
+
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_SetStringObj(ton, "Rotate_X", -1);
   to = Tcl_NewDoubleObj(o->rotx);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -144,7 +158,6 @@ ay_prop_gettrafotcmd(ClientData clientData, Tcl_Interp *interp,
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 
  return TCL_OK;
 } /* ay_prop_gettrafotcmd */
@@ -317,7 +330,6 @@ ay_prop_getattrtcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewIntObj(o->refcount);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -416,7 +428,6 @@ ay_prop_getmattcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(material->nameptr)
 	{
-
 	  matname = *(material->nameptr);
 	  to = Tcl_NewStringObj(matname, -1);
 	  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
