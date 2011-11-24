@@ -18,6 +18,10 @@ gproc getTrafo
 w     fTrafoAttr
 }
 
+array set transfPropData {
+    QuaternionBall "n/a"
+}
+
 # create Transformations-UI
 set w [frame $ay(pca).$Transformations(w)]
 addCommand $w c1 "Reset All!" {
@@ -52,17 +56,12 @@ addText $w e2 "Rotation:"
 addParam $w transfPropData Rotate_X
 addParam $w transfPropData Rotate_Y
 addParam $w transfPropData Rotate_Z
+addInfo $w transfPropData Quaternion
 
 addText $w e3 "Scale:"
 addParam $w transfPropData Scale_X
 addParam $w transfPropData Scale_Y
 addParam $w transfPropData Scale_Z
-
-addText $w e4 "Quaternion:"
-addParam $w transfPropData Quat0
-addParam $w transfPropData Quat1
-addParam $w transfPropData Quat2
-addParam $w transfPropData Quat3
 
 
 # Attributes property
