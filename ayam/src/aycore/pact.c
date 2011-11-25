@@ -410,6 +410,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  static ay_list_object *lastlevel = NULL;
  static double lscal = 1.0;
 
+  Togl_MakeCurrent(togl);
+
   if(pact_numcpo)
     free(pact_numcpo);
   pact_numcpo = NULL;
