@@ -1177,14 +1177,7 @@ proc editPointDialog { } {
     }
 
     catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Edit_Point"
-    wm iconname $w "Ayam"
-    if { ! $AYWITHAQUA } {
-	wm transient $w .
-    } else {
-	winMakeFloat $w
-    }
+    winDialog $w "Edit Point"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

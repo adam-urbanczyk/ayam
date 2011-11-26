@@ -88,10 +88,10 @@ proc tc_updateCanvas { ca } {
 #  update menu entries according to currently present tags
 #
 proc tc_updateMenu { } {
-    global ay tc tclist tcindex tcumsema
+    global ay tc tclist tcindex
 
     # protect against double invocation using a semaphore
-    if { $tcumsema == 1 } { return } else { set tcumsema 1 }
+    if { $ay(tcumsema) == 1 } { return } else { set ay(tcumsema) 1 }
 
     # get tc tags from currently selected object
     set names ""
@@ -206,7 +206,7 @@ proc tc_updateMenu { } {
 	bind .tcEditw <Enter> {tc_updateMenu}
     }
 
-    set tcumsema 0
+    set ay(tcumsema) 0
 
  return;
 }
@@ -217,23 +217,15 @@ proc tc_updateMenu { } {
 #  open the texture coordinate tag editor
 #
 proc tc_edit { } {
-    global ay tc tcumsema
+    global ay tc
 
     # unset semaphore
-    set tcumsema 0
+    set ay(tcumsema) 0
 
     winAutoFocusOff
 
     set w .tcEditw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Edit Texture Coordinates"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Texture Coordinates"
 
     # default values
     set values [list 0.0 0.0 1.0 0.0 0.0 1.0 1.0 1.0]
@@ -404,9 +396,9 @@ proc tc_edit { } {
     # dismiss button
     set f [frame $w.fb2]
     button $f.bd -text "Dismiss" -pady $ay(pady) -command {
-	global tclist tcindex tc tcumsema
+	global tclist tcindex tc
 	# clean up
-	unset tc tclist tcindex tcumsema
+	unset tc tclist tcindex
 	focus .
 	destroy .tcEditw
     }

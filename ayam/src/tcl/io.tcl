@@ -312,15 +312,8 @@ proc io_exportRIB { {expview "" } } {
     set ay(expRIBFocus) [focus]
 
     set w .exportRIBw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "RIB Export"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "RIB Export"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

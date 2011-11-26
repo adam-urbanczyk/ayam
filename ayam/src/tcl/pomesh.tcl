@@ -45,15 +45,8 @@ proc pomesh_merge { } {
     set pomeshmerge_options(oldfocus) [focus]
 
     set w .pomeshmerge
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Merge PolyMeshes"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Merge PolyMeshes"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -146,15 +139,8 @@ proc pomesh_optimize { } {
     set pomeshopt_options(oldfocus) [focus]
 
     set w .pomeshopt
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Optimize PolyMesh"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Optimize PolyMesh"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -230,15 +216,8 @@ proc pomesh_split { } {
     set pomeshspl_options(oldfocus) [focus]
 
     set w .pomeshspl
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Split PolyMesh"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Split PolyMesh"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

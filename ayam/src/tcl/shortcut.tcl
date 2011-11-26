@@ -910,16 +910,8 @@ proc shortcut_show { } {
 global ay aymainshortcuts ayviewshortcuts tcl_platform
 
 set w .ayscw
+winDialog $w "Ayam Shortcuts"
 
-catch {destroy $w}
-toplevel $w -class Ayam
-wm title $w "Ayam Shortcuts"
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient $w .
-}
 frame $w.ftext
 
 frame $w.fbutton

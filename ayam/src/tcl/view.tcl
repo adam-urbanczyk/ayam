@@ -369,15 +369,8 @@ proc viewSetFOV { view } {
     winAutoFocusOff
 
     set w .setFov
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Set FOV"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w [winfo toplevel $view]
-    }
+    winDialog $w "Set FOV"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -427,15 +420,8 @@ proc viewSetGrid { view } {
     winAutoFocusOff
 
     set w .setGrid
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Set GridSize"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w [winfo toplevel $view]
-    }
+    winDialog $w "Set GridSize"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -1320,19 +1306,7 @@ proc viewSetBGImage { view } {
     winAutoFocusOff
 
     set w .setBGI
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Set BGImage"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	if { $ayprefs(SingleWindow) == 1 } {
-	    wm transient $w .
-	} else {
-	    wm transient $w [winfo toplevel $view]
-	}
-    }
+    winDialog $w "Set BGImage"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

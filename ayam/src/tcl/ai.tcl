@@ -25,15 +25,8 @@ proc ai_open { } {
     set oldFocus [focus]
 
     set w .aiw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "AI Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "AI Options"
+
     set f [frame $w.fu -bd 2 -relief sunken]
 
     set ay(bca) $w.fl.bca

@@ -18,15 +18,8 @@ proc riattr_addp { } {
     set ay(addRiAttrFocus) [focus]
 
     set w .addRiAttrw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Add RiAttribute"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Add RiAttribute"
+
     set f [frame $w.f1]
     label $f.l -text "Attribute:"
     pack $f.l -in $f

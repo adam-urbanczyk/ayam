@@ -18,16 +18,8 @@ global ay tcl_version tk_version tcl_patchLevel tk_patchLevel tcl_platform
 winAutoFocusOff
 
 set w .aboutw
-# there can only be one
-catch {destroy $w}
-toplevel $w -class Ayam
-wm title $w "About Ayam"
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient .
-}
+winDialog $w "About Ayam"
+
 frame $w.ftext
 frame $w.fbutton
 

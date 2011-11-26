@@ -253,15 +253,8 @@ proc shader_setNew { win type stype } {
     set ay(oldSetShaderFocus) [focus]
 
     set w .setShaderw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Set Shader"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Set Shader"
+
     set f [frame $w.f1]
     listbox $f.lb -width 20 -height 10 -selectmode browse -activestyle none\
 	    -exportselection 0 -yscrollcommand {.setShaderw.f1.fsc.sc set}
