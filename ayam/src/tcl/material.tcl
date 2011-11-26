@@ -72,16 +72,8 @@ proc material_createp { } {
     set ay(createMFocus) [focus]
 
     set w .createMw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Create Material"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
-    
+    winDialog $w "Create Material"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

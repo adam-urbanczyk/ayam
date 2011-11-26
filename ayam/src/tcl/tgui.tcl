@@ -453,6 +453,8 @@ proc tgui_readtag { } {
 proc tgui_open { } {
     global ay ayprefs ay_error tgui_tessparam
 
+    winAutoFocusOff
+
     # deselect property
     $ay(plb) selection clear 0 end
     plb_update
@@ -460,16 +462,7 @@ proc tgui_open { } {
     undo save Tesselate
 
     set w .tguiw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Tesselation Parameters"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
-    wm withdraw $w
+    winDialog $w "Tesselation Parameters"
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
@@ -506,7 +499,6 @@ proc tgui_open { } {
 	    tgui_update
 	}
     }
-
 
     label $f.lr -text "100"
     entry $f.e -width 5
@@ -558,7 +550,6 @@ proc tgui_open { } {
     tgui_remtag
 
     # copy selected objects to internal buffer
-
     set ay_error ""
     tguiCmd in
     if { $ay_error > 1 } {
@@ -642,8 +633,6 @@ proc tgui_open { } {
     # establish "Help"-binding
     shortcut_addcshelp $w ayam-5.html tesst
 
-    wm deiconify $w
-
     tgui_block "User interaction is restricted by tesselation dialog!"
 
     tkwait window $w
@@ -653,6 +642,8 @@ proc tgui_open { } {
     after idle tgui_unblock
 
     after idle viewMouseToCurrent
+
+    winAutoFocusOn
 
  return;
 }

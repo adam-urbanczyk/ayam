@@ -226,21 +226,12 @@ global ay tagsPropData Tags
 winAutoFocusOff
 
 set w .addTag
-catch {destroy $w}
-toplevel $w -class Ayam
-
 if { $edit >= 0 } {
-    wm title $w "Edit Tag"
+    winDialog $w "Edit Tag"
 } else {
-    wm title $w "Add Tag"
+    winDialog $w "Add Tag"
 }
 
-wm iconname $w "Ayam"
-if { $ay(ws) == "Aqua" } {
-    winMakeFloat $w
-} else {
-    wm transient $w .
-}
 set f [frame $w.fu]
 label $f.lt -text "Type:" -width 6
 entry $f.e -width 30

@@ -18,15 +18,8 @@ proc riopt_addp { } {
     set ay(addRiOptFocus) [focus]
 
     set w .addRiOptw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Add RiOption"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Add RiOption"
+
     set f [frame $w.f1]
     label $f.l -text "Option:"
     pack $f.l -in $f

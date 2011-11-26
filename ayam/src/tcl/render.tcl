@@ -43,15 +43,7 @@ proc render_select { } {
     winAutoFocusOff
 
     set w .selRenw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w "Select Renderer"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Select Renderer"
 
     set f [frame $w.flb]
 

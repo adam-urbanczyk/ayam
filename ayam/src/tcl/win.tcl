@@ -34,17 +34,19 @@ proc winToMouse { w } {
 # winCenter:
 # center window w on screen (floating windows gui mode) or in the
 # middle of the main window (single window gui mode)
-proc winCenter { w {screen 0}} {
+proc winCenter { w {screen 0} } {
     global ayprefs
 
     wm withdraw $w
     update idletasks
 
     if { !$screen && $ayprefs(SingleWindow) } {
-	set x [expr [winfo width .]/2 - [winfo reqwidth $w]/2 \
-		   - [winfo vrootx [winfo parent $w]]]
-	set y [expr [winfo height .]/2 - [winfo reqheight $w]/2 \
-		   - [winfo vrooty [winfo parent $w]]]
+	set x [expr ([winfo rootx .] + [winfo width .]/2) \
+		   - [winfo reqwidth $w]/2 \
+		   - [winfo vrootx .]]
+	set y [expr ([winfo rooty .] + [winfo height .]/2) \
+		   - [winfo reqheight $w]/2 \
+		   - [winfo vrooty .]]
     } else {
 	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
 		   - [winfo vrootx [winfo parent $w]]]
@@ -383,3 +385,24 @@ proc winMakeFloat { w } {
  return;
 }
 # winMakeFloat
+
+
+##############################
+# winDialog:
+#  create a dialog window
+proc winDialog { w t } {
+    global ay
+
+    catch {destroy $w}
+    toplevel $w -class Ayam
+    wm title $w $t
+    wm iconname $w "Ayam"
+    if { $ay(ws) == "Aqua" } {
+	winMakeFloat $w
+    } else {
+	wm transient $w .
+    }
+
+ return;
+}
+# winDialog

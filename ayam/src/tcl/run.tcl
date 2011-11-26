@@ -29,15 +29,8 @@ proc runTool { argvars argstrings command title {advargs ""} } {
     winAutoFocusOff
     set oldFocus [focus]
     set w .rtw
-    catch {destroy $w}
-    toplevel $w -class Ayam
-    wm title $w $title
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w $title
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -252,21 +245,10 @@ proc runRenderer { cmd template } {
     set pids [list [pid $ioPipe]]
     lappend pids [pid $ioFid]
 
-    set w .render$ay(rnum)
-    catch {destroy $w}
-
     set oldFocus [focus]
 
-    toplevel $w -class Ayam
-    wm title $w "Render_$ay(rnum)"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	if { $ayprefs(RGTrans) == 1 } {
-	    wm transient $w .
-	}
-    }
+    set w .render$ay(rnum)
+    winDialog $w "Render_$ay(rnum)"
 
     set f [frame $w.f1 -border 10]
 
