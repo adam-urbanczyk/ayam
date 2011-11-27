@@ -400,8 +400,18 @@ proc viewSetFOV { view } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    winCenter $w
-    grab $w
+    # center dialog on screen or inside the view (if external)
+    set t [winfo toplevel $view]
+    if { $t != "." } {
+	wm transient $w $t
+	winCenter $w $t
+    } else {
+	winCenter $w
+    }
+
+    if { $ay(ws) != "Aqua" } {
+	grab $w
+    }
     focus $w.f1.fFOV.e
     tkwait window $w
 
@@ -449,7 +459,6 @@ proc viewSetGrid { view } {
 	focus $view;\
 	destroy .setGrid"
 
-
     button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
 	global ay;\
 	set ay(GridSize) $ay(GridSize);\
@@ -460,11 +469,19 @@ proc viewSetGrid { view } {
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
-    winCenter $w
-    global ay
+    # center dialog on screen or inside the view (if external)
+    set t [winfo toplevel $view]
+    if { $t != "." } {
+	wm transient $w $t
+	winCenter $w $t
+    } else {
+	winCenter $w
+    }
+
     if { $ay(ws) != "Aqua" } {
 	grab $w
     }
+
     focus $w.f1.fGridSize.e
     tkwait window $w
 
@@ -1346,8 +1363,19 @@ proc viewSetBGImage { view } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
-    winCenter $w
-    grab $w
+    # center dialog on screen or inside the view (if external)
+    set t [winfo toplevel $view]
+    if { $t != "." } {
+	wm transient $w $t
+	winCenter $w $t
+    } else {
+	winCenter $w
+    }
+
+    if { $ay(ws) != "Aqua" } {
+	grab $w
+    }
+
     focus $w.f1.fImageFile.e
     tkwait window $w
 
