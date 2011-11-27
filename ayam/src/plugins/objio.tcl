@@ -46,15 +46,7 @@ proc objio_export { } {
     }
 
     set w .objE
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "Export OBJ"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Export OBJ"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -160,15 +152,7 @@ proc objio_import { } {
     }
 
     set w .objI
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "Import OBJ"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Import OBJ"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

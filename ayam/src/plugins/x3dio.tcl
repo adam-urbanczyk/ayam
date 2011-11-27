@@ -55,15 +55,7 @@ proc x3dio_import { } {
     set ay_error ""
 
     set w .x3dio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "X3D Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "X3D Import"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -182,15 +174,7 @@ proc x3dio_export { } {
     set ay_error ""
 
     set w .x3dio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "X3D Export Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "X3D Export"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

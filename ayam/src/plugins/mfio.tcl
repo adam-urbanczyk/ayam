@@ -50,15 +50,8 @@ proc mfio_import { } {
     set ay_error ""
 
     set w .mfio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "3DMF Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "3DMF Import Options"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -161,15 +154,8 @@ proc mfio_export { } {
     set ay_error ""
 
     set w .mfio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "3DMF Export Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "3DMF Export Options"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

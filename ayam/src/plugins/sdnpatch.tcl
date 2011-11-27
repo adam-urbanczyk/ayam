@@ -130,15 +130,8 @@ proc plyio_import { } {
     set ay_error ""
 
     set w .plyio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "PLY Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "PLY Import"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -231,15 +224,8 @@ proc plyio_export { } {
     set ay_error ""
 
     set w .plyio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "PLY Export Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "PLY Export"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

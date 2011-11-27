@@ -120,11 +120,7 @@ proc aycsgPreferences { } {
     array set aycsg_options_save [array get aycsg_options]
 
     set w .aycsgprefs
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "AyCSG Preferences"
-    wm iconname $w "Ayam"
-    wm transient $w .
+    winDialog $w "AyCSG Preferences"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
