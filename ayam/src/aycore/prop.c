@@ -180,7 +180,7 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
  double yaxis[3] = {0.0,1.0,0.0};
  double zaxis[3] = {0.0,0.0,1.0};
  double quat[4], drot;
- int pasteProp = 0;
+ int pasteProp = 0, notify_parent = AY_FALSE;
 
   if(!sel)
     {
@@ -198,30 +198,63 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(toa, n1, -1);
   Tcl_SetStringObj(ton, "Translate_X", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(o->movx));
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+  if(dtemp != o->movx)
+    {
+      o->movx = dtemp;
+      notify_parent = AY_TRUE;
+    }
+
   Tcl_SetStringObj(ton, "Translate_Y", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp, to, &(o->movy));
+  Tcl_GetDoubleFromObj(interp, to, &dtemp);
+  if(dtemp != o->movy)
+    {
+      o->movy = dtemp;
+      notify_parent = AY_TRUE;
+    }
+
   Tcl_SetStringObj(ton, "Translate_Z", -1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &(o->movz));
+  Tcl_GetDoubleFromObj(interp,to, &dtemp);
+  if(dtemp != o->movz)
+    {
+      o->movz = dtemp;
+      notify_parent = AY_TRUE;
+    }
 
   Tcl_SetStringObj(ton, "Quat0", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  o->quat[0] = dtemp;
+  if(dtemp != o->quat[0])
+    {
+      o->quat[0] = dtemp;
+      notify_parent = AY_TRUE;
+    }
   Tcl_SetStringObj(ton, "Quat1", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  o->quat[1] = dtemp;
+  if(dtemp != o->quat[1])
+    {
+      o->quat[1] = dtemp;
+      notify_parent = AY_TRUE;
+    }
   Tcl_SetStringObj(ton, "Quat2", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  o->quat[2] = dtemp;
+  if(dtemp != o->quat[2])
+    {
+      o->quat[2] = dtemp;
+      notify_parent = AY_TRUE;
+    }
   Tcl_SetStringObj(ton, "Quat3", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
-  o->quat[3] = dtemp;
+  if(dtemp != o->quat[3])
+    {
+      o->quat[3] = dtemp;
+      notify_parent = AY_TRUE;
+    }
 
   Tcl_SetStringObj(ton, "Rotate_X", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -234,6 +267,7 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_axistoquat(xaxis, AY_D2R(drot), quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
+      notify_parent = AY_TRUE;
       o->rotx = dtemp;
     }
   Tcl_SetStringObj(ton, "Rotate_Y", -1);
@@ -247,6 +281,7 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_axistoquat(yaxis, AY_D2R(drot), quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
+      notify_parent = AY_TRUE;
       o->roty = dtemp;
     }
   Tcl_SetStringObj(ton, "Rotate_Z", -1);
@@ -260,6 +295,7 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_axistoquat(zaxis, AY_D2R(drot), quat);
 	  ay_quat_add(quat, o->quat, o->quat);
 	}
+      notify_parent = AY_TRUE;
       o->rotz = dtemp;
     }
 
@@ -275,24 +311,35 @@ ay_prop_settrafotcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
-    o->scalx = dtemp;
+    {
+      o->scalx = dtemp;
+      notify_parent = AY_TRUE;
+    }
   Tcl_SetStringObj(ton, "Scale_Y", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
-    o->scaly = dtemp;
+    {
+      o->scaly = dtemp;
+      notify_parent = AY_TRUE;
+    }
   Tcl_SetStringObj(ton, "Scale_Z", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &dtemp);
   if(dtemp != 0.0)
-    o->scalz = dtemp;
+    {
+      o->scalz = dtemp;
+      notify_parent = AY_TRUE;
+    }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
-  o->modified = AY_TRUE;
-
-  ay_notify_parent();
+  if(notify_parent)
+    {
+      o->modified = AY_TRUE;
+      ay_notify_parent();
+    }
 
  return TCL_OK;
 } /* ay_prop_settrafotcmd */
