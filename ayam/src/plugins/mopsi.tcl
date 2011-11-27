@@ -31,15 +31,8 @@ proc mopsi_import { } {
     }
 
     set w .mopi
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "Import Options"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

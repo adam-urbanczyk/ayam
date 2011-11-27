@@ -51,15 +51,7 @@ proc onio_import { } {
     set ay_error ""
 
     set w .onio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "OpenNURBS Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "OpenNURBS Import"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -169,15 +161,7 @@ proc onio_export { } {
     set ay_error ""
 
     set w .onio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "OpenNURBS Export Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "OpenNURBS Export"
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

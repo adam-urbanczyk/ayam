@@ -49,15 +49,8 @@ proc dxfio_import { } {
     set ay_error ""
 
     set w .dxfio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "DXF Import Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "DXF Import Options"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
@@ -163,15 +156,8 @@ proc dxfio_export { } {
     set ay_error ""
 
     set w .dxfio
-    catch {destroy $w}
-    toplevel $w -class ayam
-    wm title $w "DXF Export Options"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "DXF Export Options"
+
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 

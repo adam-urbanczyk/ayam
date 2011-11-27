@@ -52,15 +52,8 @@ proc idr_open {} {
     global ay idrprefs
 
     set w .idrw
-    catch {destroy $w}
-    toplevel $w
-    wm title $w "Ayam IDR"
-    wm iconname $w "Ayam"
-    if { $ay(ws) == "Aqua" } {
-	winMakeFloat $w
-    } else {
-	wm transient $w .
-    }
+    winDialog $w "IDR"
+
     set f [frame $w.fu -bd 2 -relief sunken]
     pack $f -in $w -side top -fill both -expand yes
 
