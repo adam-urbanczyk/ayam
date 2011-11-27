@@ -331,11 +331,11 @@ proc toolbox_open { {w .tbw} } {
 
 	    #####
 	    button $f.bnot -image ay_Notify_img -padx 0 -pady 0 -command {
-		forceNot; rV
+		notifyOb; rV
 	    }
 	    bind $f.bnot <Shift-ButtonPress-1> {
 		%W configure -relief sunken
-		forceNot all
+		notifyOb -all
 		rV
 		after 100 "%W configure -relief raised"
 		break;
@@ -483,7 +483,7 @@ proc toolbox_open { {w .tbw} } {
 		} else {
 		    eval crtOb NCurve -length $ay(nclen) $ay(ncadda);
 		}
-		uCR; sL; forceNot; rV;
+		uCR; sL; notifyOb; rV;
 	    }
 	    bind $f.bnc <Control-ButtonPress-1> {
 		%W configure -relief sunken
@@ -528,7 +528,7 @@ proc toolbox_open { {w .tbw} } {
 	    bind $f.bnci <Shift-ButtonPress-1> {
 		global  ay
 		%W configure -relief sunken
-		crtOb NCircle; uCR; sL; forceNot; rV;
+		crtOb NCircle; uCR; sL; notifyOb; rV;
 		after 100 "%W configure -relief raised"
 		break;
 	    }
@@ -544,7 +544,7 @@ proc toolbox_open { {w .tbw} } {
 		crtOb NCircle; uCR
 		pushSel
 		  hSL
-		  forceNot
+		  notifyOb
 		popSel
 		rV
 		after 100 "%W configure -relief raised"
@@ -770,9 +770,7 @@ proc toolbox_layout { {w ".tbw"} } {
     if { $ay(tblayoutsema) == 1 } {
 	return;
     } else {
-	update
 	set ay(tblayoutsema) 1
-	update
     }
 
     if { ! [winfo exists $w] } { return; }
@@ -780,6 +778,11 @@ proc toolbox_layout { {w ".tbw"} } {
     # to avoid being called too often, we temporarily remove the
     # configure binding
     bind $w <Configure> ""
+
+    # we also temporarily allow the enlargement of the toolbox frame
+    if { $w != ".tbw" } {
+	pack configure .fv.fTools -expand yes
+    }
 
     set size [winfo reqwidth $w.f.[lindex $ay(toolbuttons) 0]]
     set rows [expr round([winfo height $w] / $size)]
@@ -805,14 +808,16 @@ proc toolbox_layout { {w ".tbw"} } {
 	}
     }
 
+    # release old layout
     foreach button $ay(toolbuttons) {
 	grid forget $w.f.$button
     }
     pack forget $w.f
-    update
+
+    # create new grid layout
     set bi 0
-    for { set i 0 } { $i < $rows } { incr i} {
-	for { set j 0 } { $j < $columns } { incr j} {
+    for { set i 0 } { $i < $rows } { incr i } {
+	for { set j 0 } { $j < $columns } { incr j } {
 	    if { $bi < [llength $ay(toolbuttons)] } {
 		grid $w.f.[lindex $ay(toolbuttons) $bi] -row $i -column $j
 	    }
@@ -821,7 +826,6 @@ proc toolbox_layout { {w ".tbw"} } {
     }
     grid propagate $w.f yes
     pack $w.f -fill both -expand no
-    update
 
     # shrink-wrap the toplevel around buttons
     # (if the toolbox is in a separate toplevel window)
@@ -835,6 +839,11 @@ proc toolbox_layout { {w ".tbw"} } {
     set ay(tbw) [winfo width $w]
     set ay(tbh) [winfo height $w]
 
+    # disallow enlargement of the toolbox frame
+    if { $w != ".tbw" } {
+	pack configure .fv.fTools -expand no
+    }
+
     bind $w <Configure> {
 	if { $ay(tbw) != %w || $ay(tbh) != %h } {
 	    if { $ayprefs(SingleWindow) } {
@@ -845,9 +854,11 @@ proc toolbox_layout { {w ".tbw"} } {
 	}
     }
 
+    # before we can allow to call this procedure again
+    # we must make sure all changes are realized
     update
+
     set ay(tblayoutsema) 0
-    update
 
  return;
 }
