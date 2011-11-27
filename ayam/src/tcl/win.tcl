@@ -34,19 +34,21 @@ proc winToMouse { w } {
 # winCenter:
 # center window w on screen (floating windows gui mode) or in the
 # middle of the main window (single window gui mode)
-proc winCenter { w {screen 0} } {
+# or in the middle of the provided parent window (p);
+# if p is "-" w is centered on the screen
+proc winCenter { w {p "."} } {
     global ayprefs
 
     wm withdraw $w
     update idletasks
 
-    if { !$screen && $ayprefs(SingleWindow) } {
-	set x [expr ([winfo rootx .] + [winfo width .]/2) \
+    if { ($p != "-") && $ayprefs(SingleWindow) } {
+	set x [expr ([winfo rootx $p] + [winfo width $p]/2) \
 		   - [winfo reqwidth $w]/2 \
-		   - [winfo vrootx .]]
-	set y [expr ([winfo rooty .] + [winfo height .]/2) \
+		   - [winfo vrootx $p]]
+	set y [expr ([winfo rooty $p] + [winfo height $p]/2) \
 		   - [winfo reqheight $w]/2 \
-		   - [winfo vrooty .]]
+		   - [winfo vrooty $p]]
     } else {
 	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
 		   - [winfo vrootx [winfo parent $w]]]

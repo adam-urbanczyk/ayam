@@ -71,9 +71,9 @@ proc splash_open { } {
     # center the window
     if { ! $AYWITHAQUA } {
 	wm overrideredirect $w 1
-	winCenter $w 1
+	winCenter $w "-"
     } else {
-	after idle "winCenter $w 1"
+	after idle "winCenter $w \"-\""
     }
 
     # arrange automatic closing after x seconds
