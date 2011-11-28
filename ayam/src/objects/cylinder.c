@@ -594,7 +594,7 @@ ay_cylinder_writecb(FILE *fileptr, ay_object *o)
 
   cylinder = (ay_cylinder_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", cylinder->closed);
+  fprintf(fileptr, "%d\n", (int)cylinder->closed);
   fprintf(fileptr, "%g\n", cylinder->radius);
   fprintf(fileptr, "%g\n", cylinder->zmin);
   fprintf(fileptr, "%g\n", cylinder->zmax);

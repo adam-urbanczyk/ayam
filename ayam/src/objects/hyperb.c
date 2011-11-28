@@ -591,7 +591,7 @@ ay_hyperb_writecb(FILE *fileptr, ay_object *o)
 
   hyperb = (ay_hyperboloid_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", hyperb->closed);
+  fprintf(fileptr, "%d\n", (int)hyperb->closed);
   fprintf(fileptr, "%g %g %g\n", hyperb->p1[0], hyperb->p1[1], hyperb->p1[2]);
   fprintf(fileptr, "%g %g %g\n", hyperb->p2[0], hyperb->p2[1], hyperb->p2[2]);
   fprintf(fileptr, "%g\n", hyperb->thetamax);

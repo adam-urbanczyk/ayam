@@ -537,7 +537,7 @@ ay_cone_writecb(FILE *fileptr, ay_object *o)
 
   cone = (ay_cone_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", cone->closed);
+  fprintf(fileptr, "%d\n", (int)cone->closed);
   fprintf(fileptr, "%g\n", cone->radius);
   fprintf(fileptr, "%g\n", cone->height);
   fprintf(fileptr, "%g\n", cone->thetamax);
