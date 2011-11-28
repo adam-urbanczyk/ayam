@@ -587,7 +587,7 @@ ay_parab_writecb(FILE *fileptr, ay_object *o)
 
   parab = (ay_paraboloid_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", parab->closed);
+  fprintf(fileptr, "%d\n", (int)parab->closed);
   fprintf(fileptr, "%g\n", parab->rmax);
   fprintf(fileptr, "%g\n", parab->zmin);
   fprintf(fileptr, "%g\n", parab->zmax);

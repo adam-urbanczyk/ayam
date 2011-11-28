@@ -568,7 +568,7 @@ ay_torus_writecb(FILE *fileptr, ay_object *o)
 
   torus = (ay_torus_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", torus->closed);
+  fprintf(fileptr, "%d\n", (int)torus->closed);
   fprintf(fileptr, "%g\n", torus->majorrad);
   fprintf(fileptr, "%g\n", torus->minorrad);
   fprintf(fileptr, "%g\n", torus->phimin);

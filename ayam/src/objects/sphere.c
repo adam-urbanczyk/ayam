@@ -689,7 +689,7 @@ ay_sphere_writecb(FILE *fileptr, ay_object *o)
 
   sphere = (ay_sphere_object *)(o->refine);
 
-  fprintf(fileptr, "%d\n", sphere->closed);
+  fprintf(fileptr, "%d\n", (int)sphere->closed);
   fprintf(fileptr, "%g\n", sphere->radius);
   fprintf(fileptr, "%g\n", sphere->zmin);
   fprintf(fileptr, "%g\n", sphere->zmax);
