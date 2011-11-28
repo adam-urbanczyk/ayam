@@ -40,8 +40,8 @@ ay_concatnp_createcb(int argc, char *argv[], ay_object *o)
 
   new->knot_type = AY_KTNURB;
 
+  o->hide_children = AY_TRUE;
   o->parent = AY_TRUE;
-
   o->refine = new;
 
  return AY_OK;
@@ -276,9 +276,7 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   concatnp = (ay_concatnp_object *)(o->refine);
 
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Type",-1);
   to = Tcl_NewIntObj(concatnp->type);

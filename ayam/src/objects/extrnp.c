@@ -295,7 +295,6 @@ ay_extrnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   extrnp = (ay_extrnp_object *)(o->refine);
 
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
 
   Tcl_SetStringObj(ton,"UMin",-1);
@@ -402,7 +401,6 @@ ay_extrnp_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", extrnp->display_mode);
   fprintf(fileptr, "%g\n", extrnp->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", extrnp->relative);
-
 
  return AY_OK;
 } /* ay_extrnp_writecb */

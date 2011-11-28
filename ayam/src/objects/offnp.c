@@ -256,7 +256,6 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(offnp->mode));
 
-
   Tcl_SetStringObj(ton,"Offset",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(offnp->offset));
@@ -383,6 +382,15 @@ ay_offnp_writecb(FILE *fileptr, ay_object *o)
 int
 ay_offnp_wribcb(char *file, ay_object *o)
 {
+ ay_offnp_object *offnp = NULL;
+
+  if(!o)
+   return AY_ENULL;
+
+  offnp = (ay_offnp_object*)o->refine;
+
+  if(offnp->npatch)
+    ay_wrib_object(file, offnp->npatch);
 
  return AY_OK;
 } /* ay_offnp_wribcb */
@@ -650,9 +658,6 @@ ay_offnp_init(Tcl_Interp *interp)
   ay_status = ay_convert_register(ay_offnp_convertcb, AY_IDOFFNP);
 
   ay_status = ay_provide_register(ay_offnp_providecb, AY_IDOFFNP);
-
-  /* offnp objects may not be associated with materials */
-  ay_matt_nomaterial(AY_IDOFFNP);
 
  return ay_status;
 } /* ay_offnp_init */
