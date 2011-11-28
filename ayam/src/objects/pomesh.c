@@ -897,9 +897,7 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   pomesh = (ay_pomesh_object *)(o->refine);
 
   toa = Tcl_NewStringObj(n1, -1);
-
   ton = Tcl_NewStringObj(n1, -1);
-
 
   Tcl_SetStringObj(ton, "Type", -1);
   to = Tcl_NewIntObj(pomesh->type);
@@ -934,6 +932,7 @@ ay_pomesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_pomesh_object *pomesh = NULL;
  unsigned int total_loops = 0, total_verts = 0;
  unsigned int i, a;
@@ -944,11 +943,10 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
     { return AY_EOMEM; }
 
-
   fscanf(fileptr, "%d\n", &pomesh->type);
   fscanf(fileptr, "%u\n", &pomesh->npolys);
   if(!(pomesh->nloops = calloc(pomesh->npolys, sizeof(unsigned int))))
-    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   for(i = 0; i < pomesh->npolys; i++)
     {
       fscanf(fileptr, "%u\n", &(pomesh->nloops[i]));
@@ -956,7 +954,8 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%u\n", &total_loops);
   if(!(pomesh->nverts = calloc(total_loops, sizeof(unsigned int))))
-    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   for(i = 0; i < total_loops; i++)
     {
       fscanf(fileptr, "%u\n", &(pomesh->nverts[i]));
@@ -964,7 +963,8 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 
   fscanf(fileptr, "%u\n", &total_verts);
   if(!(pomesh->verts = calloc(total_verts, sizeof(unsigned int))))
-    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   for(i = 0; i < total_verts; i++)
     {
       fscanf(fileptr, "%u\n", &(pomesh->verts[i]));
@@ -976,7 +976,8 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 
   if(!(pomesh->controlv = calloc(pomesh->ncontrols * 3 + (pomesh->has_normals*
 				 pomesh->ncontrols * 3), sizeof(double))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(pomesh->has_normals)
     {
       a = 0;
@@ -1004,9 +1005,32 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
 	} /* for */
     } /* if */
 
+  /* return result */
   o->refine = pomesh;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  pomesh = NULL;
+
+cleanup:
+
+  if(pomesh)
+    {
+      if(pomesh->nloops)
+	free(pomesh->nloops);
+
+      if(pomesh->nverts)
+	free(pomesh->nverts);
+
+      if(pomesh->verts)
+	free(pomesh->verts);
+
+      if(pomesh->controlv)
+	free(pomesh->controlv);
+
+      free(pomesh);
+    }
+
+ return ay_status;
 } /* ay_pomesh_readcb */
 
 
@@ -1122,9 +1146,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
   if(pomesh->has_normals)
     {
       if(!(normals = calloc(pomesh->ncontrols, sizeof(RtPoint))))
-	{
-	  free(controls); return AY_EOMEM;
-	}
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
       a = 3;
       for(i = 0; i < pomesh->ncontrols; i++)
@@ -1138,12 +1160,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 
 
   if(!(nloops = calloc(pomesh->npolys, sizeof(RtInt))))
-    {
-      free(controls);
-      if(normals)
-	free(normals);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < pomesh->npolys; i++)
     {
@@ -1152,13 +1169,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     } /* for */
 
   if(!(nverts = calloc(total_loops, sizeof(RtInt))))
-    {
-      free(controls);
-      if(normals)
-	free(normals);
-      free(nloops);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < total_loops; i++)
     {
@@ -1167,13 +1178,7 @@ ay_pomesh_wribcb(char *file, ay_object *o)
     } /* for */
 
   if(!(verts = calloc(total_verts, sizeof(RtInt))))
-    {
-      free(controls);
-      if(normals)
-	free(normals);
-      free(nloops);
-      free(nverts);
-      return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < total_verts; i++)
     {
@@ -1197,10 +1202,10 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       if(pomesh->has_normals)
 	{
 	  if(!(tokens = calloc(pvc+2, sizeof(RtToken))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  if(!(parms = calloc(pvc+2, sizeof(RtPointer))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
@@ -1213,10 +1218,10 @@ ay_pomesh_wribcb(char *file, ay_object *o)
       else
 	{
 	  if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	    return AY_EOMEM;
+	    { ay_status = AY_EOMEM; goto cleanup; }
 
 	  tokens[0] = "P";
 	  parms[0] = (RtPointer)controls;
@@ -1235,17 +1240,27 @@ ay_pomesh_wribcb(char *file, ay_object *o)
 	}
 
       free(tokens);
+      tokens = NULL;
       free(parms);
+      parms = NULL;
     } /* if */
 
-
   /* clean up */
-  free(controls);
+cleanup:
+  if(controls)
+    free(controls);
   if(normals)
     free(normals);
-  free(nloops);
-  free(nverts);
-  free(verts);
+  if(nloops)
+    free(nloops);
+  if(nverts)
+    free(nverts);
+  if(verts)
+    free(verts);
+  if(tokens)
+    free(tokens);
+  if(parms)
+    free(parms);
 
  return ay_status;
 } /* ay_pomesh_wribcb */
