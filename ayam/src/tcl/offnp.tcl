@@ -7,14 +7,14 @@
 #
 # See the file License for details.
 
-# offnp.tcl - offset curves objects Tcl code
+# offnp.tcl - offset surfaces objects Tcl code
 
 set OffsetNP 1
 
 proc init_OffsetNP { } {
 global ay OffsetNP_props OffsetNPAttr OffsetNPAttrData
 
-set OffsetNP_props { Attributes Tags OffsetNPAttr }
+set OffsetNP_props { Attributes Material Tags OffsetNPAttr }
 
 array set OffsetNPAttr {
 arr   OffsetNPAttrData
