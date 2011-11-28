@@ -1479,7 +1479,7 @@ int ay_trafo_invmatrix4(double *m, double *mi);
 /** initialize transformation matrix m from transformation
  *  attributes of o
  */
-int ay_trafo_creatematrix(ay_object *o, double *m);
+void ay_trafo_creatematrix(ay_object *o, double *m);
 
 /** decompose transformation matrix m to transformation attributes of o
  */

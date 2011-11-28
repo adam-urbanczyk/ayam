@@ -1256,13 +1256,13 @@ ay_trafo_invmatrix4(double *m, double *mi)
  *  initialize transformation matrix <m> from transformation
  *  attributes of <o>
  */
-int
+void
 ay_trafo_creatematrix(ay_object *o, double *m)
 {
  double *q, mr[16];
 
   if(!o || !m)
-    return AY_ENULL;
+    return;
 
   memset(m, 0, 16*sizeof(double));
   m[0] = 1.0;
@@ -1303,7 +1303,7 @@ ay_trafo_creatematrix(ay_object *o, double *m)
   m[10] *= o->scalz;
   m[11] *= o->scalz;
 
- return AY_OK;
+ return;
 } /* ay_trafo_creatematrix */
 
 
