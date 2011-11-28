@@ -92,7 +92,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 		  numvals = strtok(NULL, tok);
 		  if(numvals)
 		    {
-		      sscanf(numvals, "%d", &n);
+		      sscanf(numvals, "%u", &n);
 		    }
 
 		  if(n > 0)
@@ -491,7 +491,7 @@ ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
   /* copy "name,detail,type," */
   Tcl_DStringAppend(&ds, (char*)t1->val, (int)(comma1-((char*)t1->val)));
 
-  sscanf(comma1, "%d", &n1);
+  sscanf(comma1, "%u", &n1);
 
   /* find the third comma in t2->val */
   comma2 = t2->val;
@@ -501,10 +501,10 @@ ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
   if(!comma2)
     { ay_status = AY_ERROR; goto cleanup; }
 
-  sscanf(comma2, "%d", &n2);
+  sscanf(comma2, "%u", &n2);
 
   /* calculate and copy new ndata (number of data elements) */
-  sprintf(buf, "%d", n1+n2);
+  sprintf(buf, "%u", n1+n2);
   Tcl_DStringAppend(&ds, buf, -1);
 
   /* copy data elements */
@@ -712,7 +712,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
   if(!c2)
     return AY_ERROR;
   c2++;
-  sscanf(c2, "%d", &count);
+  sscanf(c2, "%u", &count);
 
   /* find the data */
   c3 = strchr(c2, ',');
