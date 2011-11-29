@@ -41,6 +41,8 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
  ay_voidfp *arr = NULL;
  ay_providecb *cb = NULL;
 
+  if(!o)
+    return AY_ENULL;
 
   /* call the provide callback */
   arr = ay_providecbt.arr;

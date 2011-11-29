@@ -1424,7 +1424,6 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
     }
 
   /* compute total length and partial lengths */
-  j = 0;
   for(i = 0; i < Ulen-1; i++)
     {
       if(fabs(lens[i])>AY_EPSILON)
@@ -1584,7 +1583,7 @@ ay_knots_revert(double *U, int Ulen)
 
 
 /** ay_knots_getdisc:
- * get discontinuous parameteric values of a NURBS curve/surface
+ * get discontinuous parametric values of a NURBS curve/surface
  * (internal knots of a multiplicity equal to the order of the curve)
  *
  * @param[in] Ulen length of knot vector
