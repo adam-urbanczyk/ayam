@@ -817,7 +817,7 @@ ay_rrib_RiNuPatch(RtInt nu, RtInt uorder, RtFloat uknot[],
  RtFloat *pp = NULL, *pw = NULL;
  char *hvars[2] = {"P","Pw"};
 
-  memset(&np, '\0', sizeof(ay_nurbpatch_object));
+  memset(&np, 0, sizeof(ay_nurbpatch_object));
   np.glu_sampling_tolerance = 0.0;
   np.display_mode = 0;
   np.width = (int)nu;
@@ -2581,7 +2581,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
  RtFloat *pp = NULL, *pw = NULL;
  char *hvars[2] = {"P","Pw"};
 
-  memset(&pm, '\0', sizeof(ay_pamesh_object));
+  memset(&pm, 0, sizeof(ay_pamesh_object));
   pm.glu_sampling_tolerance = 0.0;
   pm.display_mode = 0;
   pm.npatch = NULL;
@@ -2773,7 +2773,7 @@ ay_rrib_RiPointsGeneralPolygons(RtInt npolys, RtInt nloops[],
  double *normalv = NULL;
  char *hvars[3] = {"P", "Pw", "N"};
 
-  memset(&pm, '\0', sizeof(ay_pomesh_object));
+  memset(&pm, 0, sizeof(ay_pomesh_object));
   pm.npolys = npolys;
 
   RibGetUserParameters(Ppw, PPWTBL_LAST, n, tokens, parms, tokensfound);
@@ -3373,7 +3373,7 @@ ay_rrib_RiSubdivisionMesh(RtToken scheme, RtInt nfaces,
  RtToken ccscheme = "catmull-clark", lscheme = "loop";
  char *hvars[2] = {"P", "Pw"};
 
-  memset(&sm, '\0', sizeof(ay_sdmesh_object));
+  memset(&sm, 0, sizeof(ay_sdmesh_object));
 
   if(!(strcmp(scheme, ccscheme)))
     sm.scheme = AY_SDSCATMULL;
@@ -5587,7 +5587,7 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_status = ay_tags_append(NULL, NULL);
 
   /* initialize global variables */
-  memset(&ay_rrib_co, '\0', sizeof(ay_object));
+  memset(&ay_rrib_co, 0, sizeof(ay_object));
   ay_object_defaults(&ay_rrib_co);
 
   ay_rrib_readinggprims = 0;

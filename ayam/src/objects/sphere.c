@@ -788,8 +788,8 @@ ay_sphere_wribcb(char *file, ay_object *o)
 	xmid = (RtFloat)(sqrt(radius*radius-zmid*zmid));
 
 	/* The Y coordinates need to be zero, so just clear everything. */
-	memset(P1, '\0', 16*sizeof(RtPoint));
-	memset(P2, '\0', 16*sizeof(RtPoint));
+	memset(P1, 0, 16*sizeof(RtPoint));
+	memset(P2, 0, 16*sizeof(RtPoint));
 
 	/* Calculate the patch from bottom to middle. */
 	P1[0][Z] = P1[1][Z] = P1[2][Z] = P1[3][Z] = zmin; /* height */
