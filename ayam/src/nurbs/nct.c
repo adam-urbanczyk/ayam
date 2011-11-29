@@ -1688,8 +1688,6 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  k = 0;
-
 	  k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 				 knots, &s);
 
@@ -2264,8 +2262,6 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 	    free(range);
 	  return AY_ERROR;
 	}
-
-      k = 0;
 
       k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 			     knots, &s);

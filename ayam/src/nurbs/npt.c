@@ -947,7 +947,7 @@ int
 ay_npt_wribtrimcurves(ay_object *o)
 {
  int ay_status = AY_OK;
- int curvecount = 0, k, a, b, c, totalcurves, totalcontrol, totalknots;
+ int k, a, b, c, totalcurves, totalcontrol, totalknots;
  RtInt nloops = 0, *ncurves, *order, *n;
  RtFloat *knot, *min, *max, *u, *v, *w;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
@@ -999,7 +999,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 
   trim = o->down;
 
-  curvecount = 0;
   totalcurves = 0;
   totalcontrol = 0;
   totalknots = 0;
@@ -1010,7 +1009,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 	{
 	case AY_IDNCURVE:
 	  totalcurves++;
-	  curvecount++;
 	  curve = (ay_nurbcurve_object *)(trim->refine);
 	  totalcontrol += curve->length;
 
@@ -1018,7 +1016,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 	  totalknots += curve->order;
 
 	  ncurves[nloops] = 1;
-	  curvecount = 0;
 	  nloops++;
 	  break;
 	case AY_IDLEVEL:
@@ -1046,7 +1043,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      if(curve)
 		{
 		  totalcurves++;
-		  curvecount++;
 
 		  totalcontrol += curve->length;
 
@@ -1054,7 +1050,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  totalknots += curve->order;
 
 		  ncurves[nloops] += 1;
-		  curvecount = 0;
 		} /* if */
 
 	      if(nc)
@@ -1075,7 +1070,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 	  if(nc)
 	    {
 	      totalcurves++;
-	      curvecount++;
 	      curve = (ay_nurbcurve_object *)(nc->refine);
 	      totalcontrol += curve->length;
 
@@ -1083,7 +1077,6 @@ ay_npt_wribtrimcurves(ay_object *o)
 	      totalknots += curve->order;
 
 	      ncurves[nloops] = 1;
-	      curvecount = 0;
 	      nloops++;
 	      ay_object_delete(nc);
 	    } /* if */
@@ -6914,7 +6907,7 @@ ay_npt_extractboundary(ay_object *o, int apply_trafo,
  int ay_status = AY_OK;
  ay_nurbcurve_object *u0 = NULL, *un = NULL, *v0 = NULL, *vn = NULL;
  ay_nurbpatch_object *np;
- ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c;
+ ay_object o0 = {0}, o1 = {0}, o2 = {0}, o3 = {0}, *c = NULL;
 
   if(!o || !result)
     return AY_ENULL;
@@ -9558,8 +9551,6 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  k = 0;
-
 	  k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
 				 knots, &s);
 
@@ -9692,8 +9683,6 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 		free(range);
 	      return TCL_OK;
 	    }
-
-	  k = 0;
 
 	  k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 				 knots, &s);
@@ -10015,8 +10004,6 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 	    free(range);
 	  return AY_ERROR;
 	}
-
-      k = 0;
 
       k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 			     knots, &s);
