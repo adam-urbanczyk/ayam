@@ -1094,7 +1094,7 @@ cleanup:
        ay_object_delete(curve);
    }
 
- return AY_OK;
+ return ay_status;
 } /* ay_revolve_crtside */
 
 
@@ -1104,10 +1104,11 @@ cleanup:
 int
 ay_revolve_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK, phase = 0;
  ay_revolve_object *revolve = NULL;
+ char fname[] = "revolve_notify";
  ay_object *curve = NULL, *pobject = NULL, *npatch = NULL;
  ay_nurbcurve_object *nc = NULL;
- int ay_status = AY_OK;
  int is_provided = AY_FALSE, mode = 0;
  double tolerance;
 
@@ -1141,15 +1142,17 @@ ay_revolve_notifycb(ay_object *o)
   revolve->end_cap = NULL;
 
   /* get curve to revolve */
-  if(!o->down)
+  if(!o->down || !o->down->next)
     return AY_OK;
+
   curve = o->down;
   if(curve->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject);
       if(!pobject)
 	{
-	  return AY_OK;
+	  ay_status = AY_ERROR;
+	  goto cleanup;
 	}
       else
 	{
@@ -1159,9 +1162,11 @@ ay_revolve_notifycb(ay_object *o)
     } /* if */
 
   /* revolve */
+  phase = 1;
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      ay_status = AY_EOMEM;
+      goto cleanup;
     }
 
   ay_object_defaults(npatch);
@@ -1172,7 +1177,7 @@ ay_revolve_notifycb(ay_object *o)
 			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
-    return ay_status;
+    goto cleanup;
 
   revolve->npatch = npatch;
 
@@ -1184,12 +1189,14 @@ ay_revolve_notifycb(ay_object *o)
   nc = (ay_nurbcurve_object *)curve->refine;
 
   /* create caps */
+  phase = 2;
   if(revolve->has_upper_cap)
     {
       ay_status = ay_revolve_crtcap(revolve, curve,
 				    nc->knotv[nc->length], AY_TRUE,
 				    &(revolve->upper_cap));
-
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
   if(revolve->has_lower_cap)
@@ -1197,25 +1204,31 @@ ay_revolve_notifycb(ay_object *o)
       ay_status = ay_revolve_crtcap(revolve, curve,
 				    nc->knotv[nc->order - 1], AY_FALSE,
 				    &(revolve->lower_cap));
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
   if(revolve->has_start_cap)
     {
       ay_status = ay_revolve_crtside(revolve, curve, 0.0,
 				     &(revolve->start_cap));
+      if(ay_status)
+	goto cleanup;
+
       if(revolve->start_cap)
 	revolve->start_cap->scalz *= -1.0;
-
     } /* if */
 
   if(revolve->has_end_cap)
     {
       ay_status = ay_revolve_crtside(revolve, curve, revolve->thetamax,
 				    &(revolve->end_cap));
-
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
-  /* remove provided object */
+cleanup:
+  /* remove provided object(s) */
   if(is_provided)
     {
       ay_object_deletemulti(pobject);
@@ -1227,7 +1240,26 @@ ay_revolve_notifycb(ay_object *o)
       ay_revolve_getpntcb(3, o, NULL, NULL);
     }
 
- return AY_OK;
+  if(ay_status)
+    {
+      switch(phase)
+	{
+	case 0:
+	  ay_error(AY_ERROR, fname, "Provide failed.");
+	  break;
+	case 1:
+	  ay_error(AY_ERROR, fname, "Revolve failed.");
+	  break;
+	case 2:
+	  ay_error(AY_EWARN, fname, "Cap creation failed.");
+	  ay_status = AY_OK;
+	  break;
+	default:
+	  break;
+	}
+    }
+
+ return ay_status;
 } /* ay_revolve_notifycb */
 
 
