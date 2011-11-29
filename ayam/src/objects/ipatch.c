@@ -738,7 +738,7 @@ cleanup:
       free(ipatch);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_ipatch_copycb */
 
 
@@ -788,7 +788,6 @@ ay_ipatch_drawcp(ay_ipatch_object *ipatch)
 	} /* for */
     } /* if */
 
-  a = 0;
   if(ipatch->close_u)
     {
       for(j = 0; j < height; j++)
@@ -1983,7 +1982,7 @@ cleanup:
       free(ipatch);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_ipatch_readcb */
 
 

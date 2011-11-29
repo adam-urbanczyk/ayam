@@ -509,8 +509,9 @@ ay_sweep_notifycb(ay_object *o)
  ay_object *npatch = NULL, *bevel = NULL, *start_cap = NULL, *end_cap = NULL;
  ay_object **nextcb;
  ay_nurbpatch_object *np = NULL;
+ char fname[] = "sweep_notify";
  int ay_status = AY_OK;
- int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
+ int is_provided[3] = {0}, mode = 0, phase = 0;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
  int startb_type, endb_type, startb_sense, endb_sense;
  double startb_radius, endb_radius;
@@ -552,7 +553,7 @@ ay_sweep_notifycb(ay_object *o)
       else
 	{
 	  curve1 = pobject1;
-	  got_c1 = AY_TRUE;
+	  is_provided[0] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -569,7 +570,7 @@ ay_sweep_notifycb(ay_object *o)
       else
 	{
 	  curve2 = pobject2;
-	  got_c2 = AY_TRUE;
+	  is_provided[1] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -582,7 +583,7 @@ ay_sweep_notifycb(ay_object *o)
 	  if(pobject3)
 	    {
 	      curve3 = pobject3;
-	      got_c3 = AY_TRUE;
+	      is_provided[2] = AY_TRUE;
 	    }
 	  else
 	    {
@@ -598,6 +599,7 @@ ay_sweep_notifycb(ay_object *o)
 		      &endb_sense);
 
   /* sweep */
+  phase = 1;
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
       ay_status = AY_EOMEM;
@@ -648,6 +650,7 @@ ay_sweep_notifycb(ay_object *o)
     mode;
 
   /* create bevels and caps */
+  phase = 2;
   if(!sweep->close && has_startb)
     {
       ay_object_defaults(&curve4);
@@ -810,8 +813,15 @@ ay_sweep_notifycb(ay_object *o)
     {
       if(sweep->interpolate)
 	{
+	  phase = 3;
 	  np = (ay_nurbpatch_object *)sweep->npatch->refine;
 	  ay_status = ay_ipt_interpolateu(np, np->uorder, AY_KTCHORDAL);
+	  if(ay_status)
+	    {
+	      ay_object_deletemulti(sweep->caps_and_bevels);
+	      sweep->caps_and_bevels = NULL;
+	      goto cleanup;
+	    }
 	}
     }
 
@@ -820,20 +830,21 @@ ay_sweep_notifycb(ay_object *o)
 
 cleanup:
   /* remove provided objects */
-  if(got_c1)
+  if(is_provided[0])
     {
-      ay_object_delete(pobject1);
+      ay_object_deletemulti(pobject1);
     }
 
-  if(got_c2)
+  if(is_provided[1])
     {
-      ay_object_delete(pobject2);
+      ay_object_deletemulti(pobject2);
     }
 
-  if(got_c3)
+  if(is_provided[2])
     {
-      ay_object_delete(pobject3);
+      ay_object_deletemulti(pobject3);
     }
+
   /* remove patch */
   if(npatch)
     {
@@ -845,6 +856,25 @@ cleanup:
   if(o->selp)
     {
       ay_sweep_getpntcb(3, o, NULL, NULL);
+    }
+
+  if(ay_status)
+    {
+      switch(phase)
+	{
+	case 1:
+	  ay_error(AY_ERROR, fname, "Sweep failed.");
+	  break;
+	case 2:
+	  ay_error(AY_EWARN, fname, "Bevel/Cap creation failed.");
+	  ay_status = AY_OK;
+	  break;
+	case 3:
+	  ay_error(AY_ERROR, fname, "Interpolation failed.");
+	  break;
+	default:
+	  break;
+	}
     }
 
  return ay_status;
