@@ -1029,9 +1029,10 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 int
 ay_swing_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK, phase = 0;
+ char fname[] = "swing_notify";
  ay_swing_object *swing = NULL;
  ay_object *cs = NULL, *tr = NULL, *pobject = NULL, *npatch = NULL;
- int ay_status = AY_OK;
  int provided_cs = AY_FALSE, provided_tr = AY_FALSE, mode = 0;
  double tolerance;
 
@@ -1098,6 +1099,7 @@ ay_swing_notifycb(ay_object *o)
     } /* if */
 
   /* swing */
+  phase = 1;
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
       ay_status =  AY_EOMEM;
@@ -1121,21 +1123,27 @@ ay_swing_notifycb(ay_object *o)
     mode;
 
   /* create caps */
+  phase = 2;
   if(swing->has_upper_cap)
     {
       ay_status = ay_swing_crtcap(swing, AY_TRUE, &(swing->upper_cap));
-
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
   if(swing->has_lower_cap)
     {
       ay_status = ay_swing_crtcap(swing, AY_FALSE, &(swing->lower_cap));
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
   if(swing->has_start_cap)
     {
       ay_status = ay_swing_crtside(swing, cs, tr, AY_TRUE,
 				   &(swing->start_cap));
+      if(ay_status)
+	goto cleanup;
       /*
       if(swing->start_cap)
 	swing->start_cap->scalz *= -1.0;
@@ -1146,26 +1154,47 @@ ay_swing_notifycb(ay_object *o)
     {
       ay_status = ay_swing_crtside(swing, cs, tr, AY_FALSE,
 				   &(swing->end_cap));
-
+      if(ay_status)
+	goto cleanup;
     } /* if */
 
 cleanup:
   /* remove provided object(s) */
   if(provided_cs && cs)
     {
-      ay_object_delete(cs);
+      ay_object_deletemulti(cs);
     }
   if(provided_tr && tr)
     {
-      ay_object_delete(tr);
+      ay_object_deletemulti(tr);
     }
+
   /* recover selected points */
   if(o->selp)
     {
       ay_swing_getpntcb(3, o, NULL, NULL);
     }
 
- return ay_status;
+  if(ay_status)
+    {
+      switch(phase)
+	{
+	case 0:
+	  ay_error(AY_ERROR, fname, "Provide failed.");
+	  break;
+	case 1:
+	  ay_error(AY_ERROR, fname, "Swing failed.");
+	  break;
+	case 2:
+	  ay_error(AY_EWARN, fname, "Cap creation failed.");
+	  ay_status = AY_OK;
+	  break;
+	default:
+	  break;
+	}
+    }
+
+ return AY_OK;
 } /* ay_swing_notifycb */
 
 
