@@ -496,9 +496,7 @@ ay_birail2_notifycb(ay_object *o)
  ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
  ay_object *bevel = NULL;
  int ay_status = AY_OK;
- int got_c1 = AY_FALSE, got_c2 = AY_FALSE;
- int got_c3 = AY_FALSE, got_c4 = AY_FALSE;
- int got_c5 = AY_FALSE;
+ int is_provided[5] = {0};
  int mode = 0;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
  int startb_type, endb_type, startb_sense, endb_sense;
@@ -539,7 +537,7 @@ ay_birail2_notifycb(ay_object *o)
       else
 	{
 	  curve1 = pobject1;
-	  got_c1 = AY_TRUE;
+	  is_provided[0] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -557,7 +555,7 @@ ay_birail2_notifycb(ay_object *o)
       else
 	{
 	  curve2 = pobject2;
-	  got_c2 = AY_TRUE;
+	  is_provided[1] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -575,7 +573,7 @@ ay_birail2_notifycb(ay_object *o)
       else
 	{
 	  curve3 = pobject3;
-	  got_c3 = AY_TRUE;
+	  is_provided[2] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -593,7 +591,7 @@ ay_birail2_notifycb(ay_object *o)
       else
 	{
 	  curve4 = pobject4;
-	  got_c4 = AY_TRUE;
+	  is_provided[3] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -606,7 +604,7 @@ ay_birail2_notifycb(ay_object *o)
 	  if(pobject5)
 	    {
 	      curve5 = pobject5;
-	      got_c5 = AY_TRUE;
+	      is_provided[4] = AY_TRUE;
 	    }
 	  else
 	    {
@@ -815,29 +813,29 @@ ay_birail2_notifycb(ay_object *o)
 
   /* remove provided objects */
 cleanup:
-  if(got_c1)
+  if(is_provided[0])
     {
-      ay_object_delete(pobject1);
+      ay_object_deletemulti(pobject1);
     }
 
-  if(got_c2)
+  if(is_provided[1])
     {
-      ay_object_delete(pobject2);
+      ay_object_deletemulti(pobject2);
     }
 
-  if(got_c3)
+  if(is_provided[2])
     {
-      ay_object_delete(pobject3);
+      ay_object_deletemulti(pobject3);
     }
 
-  if(got_c4)
+  if(is_provided[3])
     {
-      ay_object_delete(pobject4);
+      ay_object_deletemulti(pobject4);
     }
 
-  if(got_c5)
+  if(is_provided[4])
     {
-      ay_object_delete(pobject5);
+      ay_object_deletemulti(pobject5);
     }
 
   if(npatch)
@@ -851,7 +849,7 @@ cleanup:
       ay_birail2_getpntcb(3, o, NULL, NULL);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_birail2_notifycb */
 
 

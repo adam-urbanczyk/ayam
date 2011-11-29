@@ -1179,9 +1179,6 @@ cleanup:
     {
       switch(phase)
 	{
-	case 0:
-	  ay_error(AY_ERROR, fname, "Provide failed.");
-	  break;
 	case 1:
 	  ay_error(AY_ERROR, fname, "Swing failed.");
 	  break;

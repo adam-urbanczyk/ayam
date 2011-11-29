@@ -480,7 +480,7 @@ ay_birail1_notifycb(ay_object *o)
  ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
  ay_object *bevel = NULL;
  int ay_status = AY_OK;
- int got_c1 = AY_FALSE, got_c2 = AY_FALSE, got_c3 = AY_FALSE, mode = 0;
+ int is_provided[3] = {0}, mode = 0;
  int has_startb = AY_FALSE, has_endb = AY_FALSE;
  int startb_type, endb_type, startb_sense, endb_sense;
  double tolerance, startb_radius, endb_radius;
@@ -520,7 +520,7 @@ ay_birail1_notifycb(ay_object *o)
       else
 	{
 	  curve1 = pobject1;
-	  got_c1 = AY_TRUE;
+	  is_provided[0] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -538,7 +538,7 @@ ay_birail1_notifycb(ay_object *o)
       else
 	{
 	  curve2 = pobject2;
-	  got_c2 = AY_TRUE;
+	  is_provided[1] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -556,7 +556,7 @@ ay_birail1_notifycb(ay_object *o)
       else
 	{
 	  curve3 = pobject3;
-	  got_c3 = AY_TRUE;
+	  is_provided[2] = AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -767,19 +767,19 @@ ay_birail1_notifycb(ay_object *o)
 
 cleanup:
   /* remove provided objects */
-  if(got_c1)
+  if(is_provided[0])
     {
-      ay_object_delete(pobject1);
+      ay_object_deletemulti(pobject1);
     }
 
-  if(got_c2)
+  if(is_provided[1])
     {
-      ay_object_delete(pobject2);
+      ay_object_deletemulti(pobject2);
     }
 
-  if(got_c3)
+  if(is_provided[2])
     {
-      ay_object_delete(pobject3);
+      ay_object_deletemulti(pobject3);
     }
 
   if(npatch)
