@@ -625,7 +625,7 @@ ay_parab_wribcb(char *file, ay_object *o)
   else
     {
 
-      memset(patch, '\0', 16*sizeof(RtPoint));
+      memset(patch, 0, 16*sizeof(RtPoint));
 
       RiParaboloid((RtFloat)paraboloid->rmax,
 		   (RtFloat)paraboloid->zmin,
