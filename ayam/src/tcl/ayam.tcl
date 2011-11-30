@@ -1511,7 +1511,8 @@ if { $::AYNOSAFEINTERP == 0 } {
     safe_init aySafeInterp
 }
 
-if { $tcl_platform(platform) != "windows" } {
+if { ($tcl_platform(platform) != "windows") &&
+     ($ay(ws) != "Aqua") } {
     wm deiconify .
 }
 
@@ -2083,6 +2084,10 @@ puts stdout "Ayam-Startup-Sequence finished. Reconstruct the World!"
 set ay(startup) 0
 
 . configure -cursor {}
+
+if { $ay(ws) == "Aqua"} {
+    wm deiconify .
+}
 
 # Reconstruct the World!
 
