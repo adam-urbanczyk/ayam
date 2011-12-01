@@ -532,7 +532,7 @@ ay_skin_notifycb(ay_object *o)
 	}
       else
 	{
-	  ay_status = ay_provide_object(down, AY_IDNCURVE, &c);
+	  ay_provide_object(down, AY_IDNCURVE, &c);
 	} /* if */
 
       if(c)
@@ -564,27 +564,19 @@ ay_skin_notifycb(ay_object *o)
       goto cleanup;
     }
 
-  /* skin */
-  if(!(newo = calloc(1, sizeof(ay_object))))
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
-
-  ay_object_defaults(newo);
-  newo->type = AY_IDNPATCH;
-
   /* get bevel parameters */
   ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
 		      &startb_sense);
   ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
 		      &endb_sense);
 
-  /* create caps */
+  /* create bevels and caps */
   if(!has_startb && skin->has_start_cap)
     {
       c = NULL;
       ay_status = ay_object_copy(all_curves, &c);
+      if(!c)
+	goto cleanup;
       ay_trafo_defaults(c);
       ay_status = ay_capt_createfromcurve(c, nextcb);
       if(ay_status)
@@ -597,6 +589,8 @@ ay_skin_notifycb(ay_object *o)
     {
       c = NULL;
       ay_status = ay_object_copy(all_curves, &c);
+      if(!c)
+	goto cleanup;
       if(startb_sense)
 	{
 	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
@@ -626,7 +620,7 @@ ay_skin_notifycb(ay_object *o)
       *nextcb = bevel;
       nextcb = &(bevel->next);
 
-      /* create cap */
+      /* create cap from bevel */
       if(skin->has_start_cap)
 	{
 	  if(!(c = calloc(1, sizeof(ay_object))))
@@ -658,6 +652,8 @@ ay_skin_notifycb(ay_object *o)
     {
       c = NULL;
       ay_status = ay_object_copy(last, &c);
+      if(!c)
+	goto cleanup;
       ay_trafo_defaults(c);
       ay_status = ay_capt_createfromcurve(c, nextcb);
       if(ay_status)
@@ -671,6 +667,8 @@ ay_skin_notifycb(ay_object *o)
     {
       c = NULL;
       ay_status = ay_object_copy(last, &c);
+      if(!c)
+	goto cleanup;
       if(!endb_sense)
 	{
 	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
@@ -700,7 +698,7 @@ ay_skin_notifycb(ay_object *o)
       *nextcb = bevel;
       nextcb = &(bevel->next);
 
-      /* create cap */
+      /* create cap from bevel */
       if(skin->has_end_cap)
 	{
 	  if(!(c = calloc(1, sizeof(ay_object))))
@@ -728,15 +726,21 @@ ay_skin_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
+  /* skin */
+  if(!(newo = calloc(1, sizeof(ay_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  ay_object_defaults(newo);
+  newo->type = AY_IDNPATCH;
+
   c = all_curves;
   while(c)
     {
       /* apply transformation attributes to control points */
-      if((c->movx != 0.0) || (c->movy != 0.0) || (c->movz != 0.0) ||
-	 (c->rotx != 0.0) || (c->roty != 0.0) || (c->rotz != 0.0) ||
-	 (c->scalx != 1.0) || (c->scaly != 1.0) || (c->scalz != 1.0) ||
-	 (c->quat[0] != 0.0) || (c->quat[1] != 0.0) ||
-	 (c->quat[2] != 0.0) || (c->quat[3] != 1.0))
+      if(AY_ISTRAFO(c))
 	{
 	  ay_trafo_creatematrix(c, m);
 	  curve = (ay_nurbcurve_object *)c->refine;
@@ -750,7 +754,6 @@ ay_skin_notifycb(ay_object *o)
 
       c = c->next;
     } /* while */
-
 
   ay_status = ay_npt_skinu(all_curves, skin->uorder, skin->uknot_type,
 			   skin->interpolate,
@@ -784,12 +787,7 @@ ay_skin_notifycb(ay_object *o)
 
 cleanup:
   /* remove temporary curves */
-  while(all_curves)
-    {
-      c = all_curves->next;
-      ay_object_delete(all_curves);
-      all_curves = c;
-    }
+  ay_object_deletemulti(all_curves);
 
   /* recover selected points */
   if(o->selp)
