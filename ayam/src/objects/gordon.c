@@ -579,18 +579,14 @@ ay_gordon_notifycb(ay_object *o)
 	    }
 	  else
 	    {
-	      ay_status = ay_provide_object(down, AY_IDNCURVE, &c);
+	      ay_provide_object(down, AY_IDNCURVE, &c);
 	    } /* if */
 
 	  while(c)
 	    {
 	      /* immediately apply transformation attributes to
 		 control points */
-	      if((c->movx != 0.0) || (c->movy != 0.0) || (c->movz != 0.0) ||
-		 (c->rotx != 0.0) || (c->roty != 0.0) || (c->rotz != 0.0) ||
-		 (c->scalx != 1.0) || (c->scaly != 1.0) || (c->scalz != 1.0) ||
-		 (c->quat[0] != 0.0) || (c->quat[1] != 0.0) ||
-		 (c->quat[2] != 0.0) || (c->quat[3] != 1.0))
+	      if(AY_ISTRAFO(c))
 		{
 		  ay_trafo_creatematrix(c, m);
 		  curve = (ay_nurbcurve_object *)c->refine;
@@ -636,22 +632,15 @@ ay_gordon_notifycb(ay_object *o)
 		}
 	      else
 		{
-		  ay_status = ay_provide_object(down, AY_IDNPATCH, &inpatch);
+		  ay_provide_object(down, AY_IDNPATCH, &inpatch);
 		} /* if */
 
 	      if(inpatch)
 		{
 		  p = inpatch;
-		  if((p->movx != 0.0) || (p->movy != 0.0) ||
-		     (p->movz != 0.0) ||
-		     (p->rotx != 0.0) || (p->roty != 0.0) ||
-		     (p->rotz != 0.0) ||
-		     (p->scalx != 1.0) || (p->scaly != 1.0) ||
-		     (p->scalz != 1.0) ||
-		     (p->quat[0] != 0.0) || (p->quat[1] != 0.0) ||
-		     (p->quat[2] != 0.0) || (p->quat[3] != 1.0))
+		  if(AY_ISTRAFO(p))
 		    {
-		      ay_trafo_creatematrix(c, m);
+		      ay_trafo_creatematrix(p, m);
 		      patch = (ay_nurbpatch_object *)p->refine;
 		      a = 0;
 		      for(i = 0; i < patch->width*patch->height; i++)
@@ -756,24 +745,14 @@ ay_gordon_notifycb(ay_object *o)
 
 cleanup:
   /* remove temporary curves and intersection patch */
-  while(hcurves)
-    {
-      c = hcurves->next;
-      ay_object_delete(hcurves);
-      hcurves = c;
-    }
+  if(hcurves)
+    ay_object_deletemulti(hcurves);
 
-  while(vcurves)
-    {
-      c = vcurves->next;
-      ay_object_delete(vcurves);
-      vcurves = c;
-    }
+  if(vcurves)
+    ay_object_deletemulti(vcurves);
 
   if(inpatch)
-    {
-      ay_object_delete(inpatch);
-    }
+    ay_object_delete(inpatch);
 
   /* recover selected points */
   if(o->selp)
