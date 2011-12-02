@@ -524,8 +524,8 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
 	      ay_npt_resetdisplay(new);
 	    }
 
-
 	  /* immediately create and show the multiple points */
+	  np = (ay_nurbpatch_object *)new->refine;
 	  np->createmp = AY_TRUE;
 	  ay_npt_recreatemp(np);
 

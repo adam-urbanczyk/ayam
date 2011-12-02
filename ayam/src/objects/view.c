@@ -625,8 +625,7 @@ ay_view_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = view->to;
-	  min_dist = dist;
-
+	  /*min_dist = dist;*/
 	}
 
       if(!pecoord)

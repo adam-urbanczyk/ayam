@@ -452,7 +452,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = bpatch->p4;
-	  min_dist = dist;
+	  /*min_dist = dist;*/
 	}
 
       if(!pecoord)

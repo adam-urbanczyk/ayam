@@ -369,7 +369,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = camera->to;
-	  min_dist = dist;
+	  /*min_dist = dist;*/
 	}
 
       if(!pecoord)

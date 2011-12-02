@@ -253,7 +253,6 @@ ay_pamesh_drawcpcb(struct Togl *togl, ay_object *o)
 	} /* for */
     } /* if */
 
-  a = 0;
   if(pamesh->close_u)
     {
       for(j = 0; j < height; j++)

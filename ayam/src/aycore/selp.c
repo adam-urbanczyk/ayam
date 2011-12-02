@@ -217,8 +217,6 @@ ay_selp_invert(ay_object *o)
 	    {
 	      *last2 = p2->next;
 	      free(p2);
-	      /* XXXX should be unneeded, because of the break below: */
-	      p2 = *last2;
 	      break;
 	    }
 	  else
@@ -744,7 +742,6 @@ ay_selp_rem(ay_object *o, unsigned int index)
 	{
 	  *pp = p->next;
 	  free(p);
-	  p = *pp;
 	  break;
 	}
       pp = &(p->next);

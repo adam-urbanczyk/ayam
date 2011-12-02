@@ -741,7 +741,7 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    {
 	      pecoord = icurve->ederiv;
 	      peindex = icurve->length+1;
-	      min_dist = dist;
+	      /*min_dist = dist;*/
 	    }
 	}
 

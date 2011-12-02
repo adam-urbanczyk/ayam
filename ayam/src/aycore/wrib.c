@@ -630,7 +630,6 @@ ay_wrib_object(char *file, ay_object *o)
     {
       /* first, if the current object is a level object,
 	 write appropriate SolidBegin statements */
-      down = o->down;
       l = NULL;
       if(o->type == AY_IDLEVEL)
 	{

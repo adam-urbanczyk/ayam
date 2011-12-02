@@ -1032,7 +1032,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	      return AY_EOMEM;
 	    }
 
-	  i = 0;
 	  for(j = curve->order; j < curve->length-1; j++)
 	    {
 	      if(curve->knotv[j] != curve->knotv[j+1])
@@ -1163,7 +1162,6 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	    }
 
 	  /* count sections */
-	  i = 0;
 	  for(j = curve->order; j < curve->length-1; j++)
 	    {
 	      if(curve->knotv[j] != curve->knotv[j+1])

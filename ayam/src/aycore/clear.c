@@ -22,7 +22,7 @@ ay_clear_scene(void)
 {
  int ay_status = AY_OK;
  char fname[] = "clear_scene";
- ay_object *o = ay_root, *o2 = NULL;
+ ay_object *o = NULL, *o2 = NULL;
  ay_root_object *root = NULL;
  char *ucargs[3] = {0}, ucarg0[] = "undo", ucarg1[] = "clear";
 

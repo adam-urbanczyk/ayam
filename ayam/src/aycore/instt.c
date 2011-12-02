@@ -580,7 +580,6 @@ ay_instt_clearoidtags(ay_object *o)
     {
       if(o->tags)
 	{
-	  tag = o->tags;
 	  last = &(o->tags);
 	  tag = o->tags;
 	  while(tag)
@@ -925,7 +924,6 @@ ay_instt_check(ay_object *o, ay_object *target)
       down = o->down;
       while(down->next)
 	{
-	  res = AY_FALSE;
 	  if(down->down)
 	    {
 	      res = ay_instt_check(down, target);
