@@ -1,4 +1,4 @@
-[20. Nov 2011] CVS-Head:
+[2. Dec 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -15,6 +15,9 @@ o views getting the wrong type temporarily (SF 3382382)
 o saving of the environment scene file (SF 3410856)
 o resize menu entries of external views are deactivated (SF 3414694)
 o caps of transformed outlines/holes (SF 3439485)
+o view camera changing inadvertently when another view is changed (SF 3442122)
+o OffsetNP objects are missing from exported RIB files (SF 3445410)
+o Gordon objects with transformed intersection patches (SF 3448526)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -25,11 +28,11 @@ o the surface interpolation (e.g. in Sweep and Skin objects) is more robust,
   (can now cope with degenerate rows/columns in the input data)
 o added uniform parameterization to ICurve
 o improved flashing of editable points for multiple selected objects
-o added object type Mirror (essentially a Clone in disguise)
+o added object type "Mirror" (essentially a Clone in disguise)
 o Instance object points are not editable anymore due to currently
   unsolvable notification problems
 o moving the mouse pointer across the origin when scaling no longer
-  leads to "broken" (very small) scale attributes
+  leads to broken (i.e. very small) scale attributes
 o added setting the mark to selected points bounding box center
   (shortcut <ab>)
 o closed cubic interpolating curves now also use the EDLen parameter properly
@@ -38,6 +41,7 @@ o improved initial derivatives when switching from automatic to manual
 o improved snapping points from half grid coordinates to the grid by
   introduction of a mouse pointer warping facility (not available on
   MacOSX Aqua)
+o OffsetNP objects can now be associated with a material
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -57,6 +61,9 @@ o ICurve property GUI now only displays SDLen/EDLen entries when actually
   used and the Derivatives entry is now, as for the IPatch, a menu
 o improved tooltip placement and management
 o reset layout is more robust now
+o dialog window placement is now more robust wrt. multi monitor setups
+o removed "RGTrans" GUI preference option, all rendering GUI windows
+  are now always transient
 
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
