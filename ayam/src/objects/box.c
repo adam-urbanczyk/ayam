@@ -666,7 +666,7 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(*n)
 	{
 	  ay_trafo_copy(o, *n);
-	  n = &((*n)->next);
+	  /*n = &((*n)->next);*/
 	}
 
       /* copy eventually present TP tags */

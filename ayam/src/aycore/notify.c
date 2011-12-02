@@ -244,8 +244,8 @@ ay_notify_parentof(ay_object *o, int silent)
 {
  int ay_status = AY_OK;
  char fname[] = "notify_parentof";
- ay_list_object *oldclevel = ay_currentlevel, *lev;
  int found = AY_FALSE;
+ ay_list_object *oldclevel, *lev;
 
   if(!o)
     {

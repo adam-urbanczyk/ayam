@@ -1236,7 +1236,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       p = NULL;
       rational = AY_FALSE;
       clear_selp = AY_FALSE;
-      handled = AY_FALSE;
 
       switch(o->type)
 	{

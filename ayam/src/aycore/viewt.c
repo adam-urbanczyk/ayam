@@ -995,7 +995,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
      "-undrotx dummy -drotx 5" instead of "-undrotx -drotx 5" */
   while(i+1 < argc)
     {
-      rotx = 0.0; roty = 0.0; rotz = 0.0;
+      rotx = 0.0;
       Tcl_GetDouble(interp, argv[i+1], &argd);
 
       /* XXXX this code assumes, every argument is atleast 2 chars long! */
@@ -2227,10 +2227,7 @@ ay_viewt_markfromsel(struct Togl *togl)
   sel = ay_selection;
   while(sel)
     {
-      o = sel->object;
-
       numo++;
-
       sel = sel->next;
     } /* while */
 

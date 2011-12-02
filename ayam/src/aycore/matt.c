@@ -382,7 +382,6 @@ ay_matt_clearmaterialids(ay_object *o)
     {
       if(o->tags)
 	{
-	  tag = o->tags;
 	  last = &(o->tags);
 	  tag = o->tags;
 	  while(tag)
@@ -482,7 +481,6 @@ ay_matt_wrib(char *file, ay_mat_object *m)
 	case 2:
 	  str = camstr;
 	  break;
-
 	}
 
       dbound = (RtFloat)m->dbound_val;

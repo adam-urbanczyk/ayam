@@ -123,7 +123,6 @@ ay_cone_drawcb(struct Togl *togl, ay_object *o)
 
   radius = (GLdouble)(cone->radius);
   height = (GLdouble)(cone->height);
-  w = (GLdouble)(sqrt(2.0)*0.5);
 
   /* check, if cone is simple */
   if(cone->is_simple)

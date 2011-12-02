@@ -214,8 +214,6 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
   /* first, check whether we are moving instances into their masters */
   while(clip)
     {
-      instanceerr = AY_FALSE;
-
       instanceerr = ay_instt_check(clip, ay_currentlevel->object);
 
       if(instanceerr)
@@ -278,8 +276,6 @@ ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
   /* first, check whether we are moving instances into their masters */
   while(clip)
     {
-      instanceerr = AY_FALSE;
-
       instanceerr = ay_instt_check(clip, ay_currentlevel->object);
 
       if(instanceerr)
@@ -367,8 +363,6 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   /* first, check whether we would be moving instances into their masters */
   while(clip)
     {
-      instanceerr = AY_FALSE;
-
       instanceerr = ay_instt_check(clip, ay_currentlevel->object);
 
       if(instanceerr)

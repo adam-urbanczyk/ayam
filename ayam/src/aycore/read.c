@@ -387,24 +387,25 @@ ay_read_tags(FILE *fileptr, ay_object *o)
   if(!o)
     return AY_ENULL;
 
-  fscanf(fileptr,"%d\n",&tcount);
+  fscanf(fileptr, "%d\n", &tcount);
 
-  for(i=0;i<tcount;i++)
+  for(i = 0; i < tcount; i++)
     {
       tag = NULL;
       if(!(tag = calloc(1, sizeof(ay_tag))))
 	return AY_EOMEM;
 
-      ay_read_string(fileptr,&(tag->name));
+      ay_read_string(fileptr, &(tag->name));
 
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
 	{
 	  if(ay_prefs.wutag)
 	    ay_error(AY_EWARN, fname, "Tag type is not registered!");
 	}
-
-     if(entry)
-       tag->type = (char *)Tcl_GetHashValue(entry);
+      else
+	{
+	  tag->type = (char *)Tcl_GetHashValue(entry);
+	}
 
      ay_read_string(fileptr, (char**)(void*)&(tag->val));
 
@@ -412,7 +413,12 @@ ay_read_tags(FILE *fileptr, ay_object *o)
      if(!tag->val)
        {
 	 if(!(tag->val = calloc(1, sizeof(char))))
-	   return AY_EOMEM;
+	   {
+	     if(tag->name)
+	       free(tag->name);
+	     free(tag);
+	     return AY_EOMEM;
+	   }
 	 *((char*)tag->val) = '\0';
        }
 
@@ -426,6 +432,8 @@ ay_read_tags(FILE *fileptr, ay_object *o)
        }
 
 #ifdef AYNOSAFEINTERP
+     /* if there is no safe interpreter, disable all ANS/BNS tags
+	by manipulating their type */
      if(tag->type == ay_bns_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
@@ -449,7 +457,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-       }
+       } /* if */
      if(tag->type == ay_ans_tagtype)
        {
 	 Tcl_Eval(ay_interp, script_disable_cmd);
@@ -473,7 +481,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 	 Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
 	 Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-       }
+       } /* if */
 #endif /* AYNOSAFEINTERP */
      last = tag;
     } /* for */
