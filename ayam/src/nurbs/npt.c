@@ -5124,8 +5124,6 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
 	m[11]*curve->controlv[a+2] +
 	m[15]*curve->controlv[a+3];
 
-
-
       /* build a profile */
       controlv[b] = point[0];
       controlv[b+1] = point[1];
@@ -6159,7 +6157,7 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
  */
 int
 ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
-		   int argc, char *argv[])
+		     int argc, char *argv[])
 {
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -6188,7 +6186,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object *)sel->object->refine;
 
 	  if(elevatev)
-	    ay_status = ay_npt_elevateu(patch, t);
+	    ay_status = ay_npt_elevatev(patch, t);
 	  else
 	    ay_status = ay_npt_elevateu(patch, t);
 
@@ -11748,6 +11746,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
   if((argv[1][0] == '-') && (argv[1][1] == 'i'))
     {
       tcl_status = Tcl_GetInt(interp, argv[2], &j);
@@ -11809,13 +11808,14 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	     know the first of the possibly multiple knots (to correctly
 	     compute the current multiplicity) */
 	  i = 0;
-	  while((i<(patch->height+patch->uorder)) &&
+	  while((i<(patch->width+patch->uorder)) &&
 		(fabs(patch->uknotv[i]-u) > AY_EPSILON))
 	    {
 	      i++;
 	    }
 
-	  if(fabs(patch->uknotv[i]-u) >= AY_EPSILON)
+	  if((i == (patch->width+patch->uorder)) ||
+	     (fabs(patch->uknotv[i]-u) >= AY_EPSILON))
 	    {
 	      ay_error(AY_ERROR, argv[0], "Could not find knot to remove.");
 	      break;
@@ -11871,7 +11871,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* save results */
 	  patch->height -= r;
 
-	  free(patch->controlv );
+	  free(patch->controlv);
 	  free(patch->vknotv);
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
@@ -11937,6 +11937,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
+
   if((argv[1][0] == '-') && (argv[1][1] == 'i'))
     {
       tcl_status = Tcl_GetInt(interp, argv[2], &j);
@@ -11954,6 +11955,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       tcl_status = Tcl_GetDouble(interp, argv[1], &v);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
+
   i++;
   tcl_status = Tcl_GetInt(interp, argv[2], &r);
   AY_CHTCLERRRET(tcl_status, argv[0], interp);
@@ -12004,7 +12006,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      i++;
 	    }
 
-	  if(fabs(patch->vknotv[i]-v) >= AY_EPSILON)
+	  if((i == (patch->height+patch->vorder)) ||
+	     (fabs(patch->vknotv[i]-v) >= AY_EPSILON))
 	    {
 	      ay_error(AY_ERROR, argv[0], "Could not find knot to remove.");
 	      break;
@@ -12057,7 +12060,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* save results */
 	  patch->height -= r;
 
-	  free(patch->controlv );
+	  free(patch->controlv);
 	  free(patch->vknotv);
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
