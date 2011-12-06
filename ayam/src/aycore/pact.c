@@ -59,6 +59,8 @@ void ay_pact_flashpoint(int ignore_old, double *pnt, ay_object *o);
 
 int ay_pact_notify(ay_object *o, int j, int k);
 
+int ay_pact_multinc(ay_object *o);
+
 /* functions: */
 
 /* ay_pact_clearpointedit:
@@ -1865,7 +1867,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 	  notify_parent = AY_TRUE;
 	  ay_selp_rem(o, (unsigned int)index);
 	  ay_status = ay_notify_object(o);
-	  ay_selection->object->modified = AY_TRUE;
+	  o->modified = AY_TRUE;
 	} /* if */
 
       sel = sel->next;
@@ -2627,3 +2629,210 @@ ay_pact_notify(ay_object *o, int j, int k)
 
  return AY_OK;
 } /* ay_pact_notify */
+
+
+/* ay_pact_multiptcb:
+ *  manipulate multiplicity point action callback
+ *
+ */
+int
+ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ char fname[] = "multiply_point";
+ Tcl_Interp *interp = Togl_Interp(togl);
+ int decrease = AY_FALSE, notify_parent = AY_FALSE;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, fname, NULL);
+    }
+
+  if(argc > 1)
+    {
+      Tcl_GetInt(interp, argv[1], &decrease);
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->selp)
+	{
+	  switch(o->type)
+	    {
+	    case AY_IDNCURVE:
+	      if(!decrease)
+		ay_status = ay_pact_multinc(o);
+	      break;
+	    case AY_IDNPATCH:
+	      /*
+	      ay_status = ay_pact_multinp((ay_npatch_object *)
+					  (o->refine), decrease);
+	      */
+	      ay_status = AY_OK;
+	      break;
+
+	    default:
+	      ay_error(AY_EWTYPE, fname, "NCurve, NPatch");
+	      ay_status = AY_ERROR;
+	      break;
+	    }
+
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Error changing multiplicity.");
+	    }
+	  else
+	    {
+	      notify_parent = AY_TRUE;
+	      ay_status = ay_notify_object(o);
+	      o->modified = AY_TRUE;
+	    } /* if */
+	} /* if */
+      sel = sel->next;
+    } /* while */
+
+  if(notify_parent)
+    {
+      ay_status = ay_notify_parent();
+    }
+
+ return TCL_OK;
+} /* ay_pact_multiptcb */
+
+
+/* ay_pact_multinc:
+ *
+ */
+int
+ay_pact_multinc(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *nc = NULL;
+ ay_point *pnt1 = NULL, *pnt2 = NULL;
+ ay_point *opnt1;
+ int i, a, b, m, stride = 4;
+ int updatecv = AY_FALSE;
+ double *cv, *p1, *p2, *newcv = NULL;
+
+  nc = o->refine;
+  cv = nc->controlv;
+
+  /* copy the list of points to work on */
+  i = 0;
+  opnt1 = o->selp;
+  while(opnt1)
+    {
+      if(!(pnt2 = calloc(1, sizeof(ay_point))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      memcpy(pnt2, opnt1, sizeof(ay_point));
+
+      pnt2->next = pnt1;
+      pnt1 = pnt2;
+
+      i++;
+      opnt1 = opnt1->next;
+    } /* while */
+
+  while(pnt1)
+    {
+      p1 = &(cv[pnt1->index*stride]);
+      updatecv = AY_FALSE;
+
+      /* allocate new coordinate vector */
+      if(!(newcv = calloc((nc->length+1)*stride, sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      /* get current multiplicity of selected point */
+      m = 1;
+      p2 = p1+stride;
+      while(AY_V3COMP(p1, p2))
+	{
+	  p2 += stride;
+	  m++;
+	}
+
+      /* remove potential selected points that are pointing
+	 to the same coordinates */
+      if(m > 1)
+	{
+	  pnt2 = pnt1->next;
+	  while(pnt2)
+	    {
+	      p2 = pnt2->point;
+	      if(AY_V3COMP(p1, p2))
+		{
+		  pnt1->next = pnt2->next;
+		  free(pnt2);
+		  pnt2 = pnt1->next;
+		}
+	    } /* while */
+	} /* if */
+
+      /* if feasable, increase multiplicity of p1 */
+      if(m < (nc->order-1))
+	{
+	  a = 0;
+	  b = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      memcpy(&(newcv[a]), &(cv[b]), stride*sizeof(double));
+	      if(i == pnt1->index)
+		{
+		  a += stride;
+		  memcpy(&(newcv[a]), &(cv[b]), stride*sizeof(double));
+		}
+	      a += stride;
+	      b += stride;
+	    }
+	  nc->length++;
+	  updatecv = AY_TRUE;
+
+	  /* rewrite indices of trailing original selected points */
+	  opnt1 = o->selp;
+	  while(opnt1)
+	    {
+	      if(opnt1->index > pnt1->index)
+		opnt1->index++;
+	      opnt1 = opnt1->next;
+	    }
+	} /* if */
+
+      if(updatecv)
+	{
+	  free(nc->controlv);
+	  nc->controlv = newcv;
+	  newcv = NULL;
+	}
+
+      /* remove current selected point and
+	 advance to the next */
+      pnt2 = pnt1->next;
+      free(pnt1);
+      pnt1 = pnt2;
+    } /* while */
+
+cleanup:
+
+  while(pnt1)
+    {
+      pnt2 = pnt1->next;
+      free(pnt1);
+      pnt1 = pnt2;
+    }
+
+  /* update pointers in selected points */
+  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+
+  /* create new knot vectors */
+  ay_status = ay_knots_createnc(nc);
+
+  if(nc->createmp)
+    ay_nct_recreatemp(nc);
+
+ return ay_status;
+} /* ay_pact_multinc */

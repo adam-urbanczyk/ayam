@@ -416,6 +416,9 @@ array set ayviewshortcuts {
     FindU "u"
     FindUV "U"
 
+    IncMultP "asterisk"
+    DecMultP "slash"
+
     MoveV "v"
     MoveZV "V"
     RotV "R"
@@ -1511,8 +1514,7 @@ if { $::AYNOSAFEINTERP == 0 } {
     safe_init aySafeInterp
 }
 
-if { ($tcl_platform(platform) != "windows") &&
-     ($ay(ws) != "Aqua") } {
+if { ($ay(ws) != "Win32") && ($ay(ws) != "Aqua") } {
     wm deiconify .
 }
 
@@ -1562,7 +1564,7 @@ if { $ayprefs(NPDisplayMode) != 0 || $ayprefs(NCDisplayMode) != 0 } {
 }
 
 # ayam_updateprompt - print a first prompt after configuration change
-proc ayam_updateprompt {n1 n2 op} {
+proc ayam_updateprompt { n1 n2 op } {
     .fl.con delete end-1lines end
     Console:prompt .fl.con "\n"
 }
@@ -1885,6 +1887,7 @@ proc ayam_setscindicator { a1 a2 a3 } {
 	}
 	wm title . $s
     }
+ return;
 }
 # ayam_setscindicator
 
@@ -2085,7 +2088,7 @@ set ay(startup) 0
 
 . configure -cursor {}
 
-if { $ay(ws) == "Aqua"} {
+if { $ay(ws) == "Aqua" } {
     wm deiconify .
 }
 

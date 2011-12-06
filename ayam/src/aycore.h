@@ -711,6 +711,11 @@ int ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[]);
  */
 int ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[]);
 
+/** multiply selected points action
+ */
+int ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[]);
+
+
 /* pomesht.c */
 
 /** delete a polymesh object
