@@ -941,6 +941,7 @@ Tcl_AppInit(Tcl_Interp *interp)
 
   Togl_CreateCommand("snapmac", ay_pact_snaptomarkcb);
 
+  Togl_CreateCommand("multpac", ay_pact_multiptcb);
 
   /* selp.c */
   Tcl_CreateCommand(interp, "selPnts", ay_selp_seltcmd,

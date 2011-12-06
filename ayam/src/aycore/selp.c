@@ -40,6 +40,34 @@ ay_selp_clear(ay_object *o)
 } /* ay_selp_clear */
 
 
+/* ay_selp_copy:
+ *  copy list of selected points
+ */
+void
+ay_selp_copy(ay_point *pnt, ay_point **res)
+{
+ ay_point *newpnt = NULL;
+
+  if(!pnt || !res)
+    return;
+
+  while(pnt)
+    {
+      if(!(newpnt = calloc(1, sizeof(ay_point))))
+	return;
+
+      memcpy(newpnt, pnt, sizeof(ay_point));
+
+      newpnt->next = *res;
+      *res = newpnt;
+
+      pnt = pnt->next;
+    }
+
+ return;
+} /* ay_selp_copy */
+
+
 /* ay_selp_selall:
  *  select (tag) all points
  */

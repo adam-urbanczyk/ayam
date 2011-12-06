@@ -1753,6 +1753,26 @@ proc actionSnapToMarkO { w } {
 # actionSnapToMarkO
 
 
+#
+proc actionIncMultP { w } {
+    undo save IncMultP
+    $w multpac 0
+    rV
+ return;
+}
+# actionIncMultP
+
+
+#
+proc actionDecMultP { w } {
+    undo save DecMultP
+    $w multpac 1
+    rV
+ return;
+}
+# actionDecMultP
+
+
 #actionClearB1:
 # helper procedure to clear all bindings to mouse button 1;
 # all modeling actions call this before adding their bindings

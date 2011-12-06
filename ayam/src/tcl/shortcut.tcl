@@ -892,6 +892,10 @@ proc shortcut_viewactions { w } {
     bind $w <$ayviewshortcuts(FindU)> "actionFindU $w.f3D.togl"
     bind $w <$ayviewshortcuts(FindUV)> "actionFindUV $w.f3D.togl"
     bind $w <$ayviewshortcuts(SplitNC)> "actionSplitNC $w.f3D.togl"
+
+    bind $w <$ayviewshortcuts(IncMultP)> "actionIncMultP $w.f3D.togl"
+    bind $w <$ayviewshortcuts(DecMultP)> "actionDecMultP $w.f3D.togl"
+
     bind $w <$ayviewshortcuts(Pick)> "actionPick $w.f3D.togl"
 
     # allow plugins to define their own actions
