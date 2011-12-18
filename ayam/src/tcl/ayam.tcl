@@ -207,6 +207,8 @@ array set ayprefs {
 
  ConvResetDisplay 1
 
+ TagResetTagged 0
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
