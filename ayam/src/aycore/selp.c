@@ -541,7 +541,7 @@ ay_selp_centertcmd(ClientData clientData, Tcl_Interp *interp,
       oldpointsel = o->selp;
       o->selp = NULL;
 
-      /* center all points */      
+      /* center all points */
       ay_status = ay_selp_selall(o);
       if(!ay_status)
 	{
@@ -985,3 +985,63 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
  return AY_OK;
 } /* ay_selp_getpnts */
+
+
+/* ay_selp_selectmpnc:
+ *  properly select all multiple points of a NURBS curve
+ */
+void
+ay_selp_selectmpnc(ay_object *o)
+{
+ ay_point *p = NULL, **nextp = NULL, *newp = NULL;
+ ay_mpoint *mp = NULL;
+ ay_nurbcurve_object *nc;
+ int i, found;
+
+  if(!o || !o->type == AY_IDNCURVE)
+    return;
+
+  nc = (ay_nurbcurve_object *)o->refine;
+
+  if(nc->createmp)
+    {
+      mp = nc->mpoints;
+      while(mp)
+	{
+	  nextp = &(o->selp);
+	  for(i = 0; i < mp->multiplicity; i++)
+	    {
+	      p = o->selp;
+	      found = AY_FALSE;
+	      while(p)
+		{
+		  if(p->index == mp->indices[i])
+		    {
+		      /* advancing "nextp" ensures that we append
+			 new selected points right after the
+			 other already selected points of this
+			 multiple points */
+		      nextp = &(p->next);
+		      found = AY_TRUE;
+		      break;
+		    }
+		  p = p->next;
+		} /* while */
+	      if(!found)
+		{
+		  if(!(newp = calloc(1, sizeof(ay_point))))
+		    {
+		      return;
+		    }
+		  newp->next = *nextp;
+		  *nextp = newp;
+		  newp->point = mp->points[i];
+		  newp->index = mp->indices[i];
+		} /* if */
+	    } /* for */
+	  mp = mp->next;
+	} /* while */
+    } /* if */
+
+ return;
+} /* ay_selp_selectmpnc */
