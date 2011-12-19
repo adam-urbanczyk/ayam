@@ -2839,17 +2839,18 @@ cleanup:
       pnt1 = pnt2;
     }
 
-  /* add all points to */
-
-
   /* update pointers in selected points */
   ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 
   /* create new knot vectors */
   ay_status = ay_knots_createnc(nc);
 
+  /* re-create multiple points */
   if(nc->createmp)
     ay_nct_recreatemp(nc);
+
+  /* add all multiple points to point selection */
+  ay_selp_selectmpnc(o);
 
  return ay_status;
 } /* ay_pact_multincnc */
@@ -2923,13 +2924,17 @@ ay_pact_multdecnc(ay_object *o)
 	    }
 	  nc->length--;
 
-	  /* adjust indices of trailing points */
+	  /* adjust indices of trailing points and let
+	     the points point to the new coordinate vector
+	     so that we can continue to work with them */
 	  if(pnt2)
 	    {
 	      while(pnt2)
 		{
 		  if(pnt2->index > pnt1->index)
 		    pnt2->index--;
+
+		  pnt2->point = &(newcv[pnt2->index]);
 
 		  pnt2 = pnt2->next;
 		}
@@ -2962,6 +2967,7 @@ ay_pact_multdecnc(ay_object *o)
 
 cleanup:
 
+  /* remove the copy of selected points */
   while(pnt1)
     {
       pnt2 = pnt1->next;
