@@ -252,6 +252,11 @@ int ay_knots_revert(double *U, int ulen);
  */
 int ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud);
 
+/** Remove knot from a knot vector.
+ */
+int ay_knots_remove(unsigned int index, int order, int length, double **U);
+
+
 /** Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);

@@ -2748,7 +2748,7 @@ ay_pact_multincnc(ay_object *o)
       /* get current multiplicity of selected point */
       m = 1;
       p2 = p1+stride;
-      while(((pnt1->index + m) < nc->length) &&
+      while(((pnt1->index + m) < (unsigned int)nc->length) &&
 	     AY_V3COMP(p1, p2))
 	{
 	  p2 += stride;
@@ -2786,7 +2786,7 @@ ay_pact_multincnc(ay_object *o)
 	  for(i = 0; i < nc->length; i++)
 	    {
 	      memcpy(&(newcv[a]), &(cv[b]), stride*sizeof(double));
-	      if(i == pnt1->index)
+	      if((unsigned int)i == pnt1->index)
 		{
 		  a += stride;
 		  memcpy(&(newcv[a]), &(cv[b]), stride*sizeof(double));
@@ -2867,6 +2867,7 @@ ay_pact_multdecnc(ay_object *o)
  ay_point *pnt1 = NULL, *pnt2 = NULL;
  ay_point *opnt1;
  int i, a, b, m, stride = 4;
+ unsigned int j;
  double *cv, *p1, *p2, *newcv = NULL;
 
   nc = o->refine;
@@ -2897,7 +2898,7 @@ ay_pact_multdecnc(ay_object *o)
       /* get current multiplicity of selected point */
       m = 1;
       p2 = p1+stride;
-      while(((pnt1->index + m) < nc->length) &&
+      while(((pnt1->index + m) < (unsigned int)nc->length) &&
 	    AY_V3COMP(p1, p2))
 	{
 	  p2 += stride;
@@ -2913,9 +2914,10 @@ ay_pact_multdecnc(ay_object *o)
 
 	  a = 0;
 	  b = 0;
+	  j = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      if(i != pnt1->index)
+	      if((unsigned int)i != pnt1->index)
 		{
 		  memcpy(&(newcv[a]), &(cv[b]), stride*sizeof(double));
 		  a += stride;
@@ -2923,6 +2925,22 @@ ay_pact_multdecnc(ay_object *o)
 	      b += stride;
 	    }
 	  nc->length--;
+
+	  /* adjust order/length/knots */
+	  if(nc->knot_type == AY_KTBEZIER)
+	    nc->order--;
+
+	  if(nc->length < nc->order)
+	    nc->order = nc->length;
+
+	  if(nc->knot_type == AY_KTCUSTOM)
+	    {
+	      ay_status = ay_knots_remove(pnt1->index, nc->order,
+					  nc->length+1, &(nc->knotv));
+
+	      if(ay_status)
+		nc->knot_type = AY_KTNURB;
+	    }
 
 	  /* adjust indices of trailing points and let
 	     the points point to the new coordinate vector
@@ -2934,7 +2952,7 @@ ay_pact_multdecnc(ay_object *o)
 		  if(pnt2->index > pnt1->index)
 		    pnt2->index--;
 
-		  pnt2->point = &(newcv[pnt2->index]);
+		  pnt2->point = &(newcv[pnt2->index*stride]);
 
 		  pnt2 = pnt2->next;
 		}
@@ -2976,7 +2994,10 @@ cleanup:
     }
 
   /* create new knot vectors */
-  ay_status = ay_knots_createnc(nc);
+  if(nc->knot_type != AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_createnc(nc);
+    }
 
   if(nc->createmp)
     ay_nct_recreatemp(nc);
