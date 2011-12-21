@@ -1634,6 +1634,57 @@ ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud)
 } /* ay_knots_getdisc */
 
 
+/** ay_knots_remove:
+ *  Remove a knot related to a control point to be removed.
+ *  Only useful for custom knot vectors, where we can not simply
+ *  recompute a new knot vector from new parameters/control points.
+ *
+ * @param[in] index control point to be removed
+ * @param[in] order order of curve/surface
+ * @param[in] length (width/height) of curve (surface) prior to removal
+ * @param[in,out] U knot vector
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_knots_remove(unsigned int index, int order, int length, double **U)
+{
+ double *Un = NULL;
+ unsigned int i, j, r;
+
+ if(!U || !*U)
+   return AY_ENULL;
+
+  if(!(Un = calloc(order+length-1, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(index < (unsigned int)order)
+    r = order;
+  else
+    r = index+1;
+
+  if(r > (unsigned int)length)
+    r = (unsigned int)length;
+
+  j = 0;
+  for(i = 0; i < (unsigned int)length+order; i++)
+    {
+      if(i != r)
+	{
+	  Un[j] = (*U)[i];
+	  j++;
+	}
+    }
+
+  free(*U);
+  *U = Un;
+
+ return AY_OK;
+} /* ay_knots_remove */
+
+
 /** ay_knots_init:
  *  initialize the knots module
  * \returns AY_OK on success, error code otherwise.
