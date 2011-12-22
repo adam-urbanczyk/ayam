@@ -1685,6 +1685,64 @@ ay_knots_remove(unsigned int index, int order, int length, double **U)
 } /* ay_knots_remove */
 
 
+/** ay_knots_insert:
+ *  Insert a knot related to a control point to be inserted.
+ *  Only useful for custom knot vectors, where we can not simply
+ *  recompute a new knot vector from new parameters/control points.
+ *
+ * @param[in] index control point to be inserted
+ * @param[in] order order of curve/surface
+ * @param[in] length (width/height) of curve (surface) prior to insertion
+ * @param[in,out] U knot vector
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_knots_insert(unsigned int index, int order, int length, double **U)
+{
+ double *Un = NULL;
+ unsigned int i, j, r = 0;
+
+ if(!U || !*U)
+   return AY_ENULL;
+
+  if(!(Un = calloc(order+length+1, sizeof(double))))
+    {
+      return AY_EOMEM;
+    }
+
+  if(index < (unsigned int)order)
+    r = order-1;
+  else
+    if(r > (unsigned int)length)
+      r = (unsigned int)length;
+    else
+      r = index;
+
+  memcpy(Un, *U, (order-1)*sizeof(double));
+
+  j = order-1;
+  for(i = order-1; i < (unsigned int)length; i++)
+    {
+      Un[j] = (*U)[i];
+      j++;
+
+      if(i == r)
+	{
+	  Un[j] = (*U)[i] + (((*U)[i+1]-(*U)[i])/2.0);
+	  j++;
+	}
+    }
+
+  memcpy(&(Un[length+1]), &((*U)[length]), order*sizeof(double));
+
+  free(*U);
+  *U = Un;
+
+ return AY_OK;
+} /* ay_knots_insert */
+
+
 /** ay_knots_init:
  *  initialize the knots module
  * \returns AY_OK on success, error code otherwise.

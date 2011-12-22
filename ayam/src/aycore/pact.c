@@ -2794,7 +2794,21 @@ ay_pact_multincnc(ay_object *o)
 	      a += stride;
 	      b += stride;
 	    }
+
+	  /* adjust order/length/knots */
+	  if(nc->knot_type == AY_KTCUSTOM)
+	    {
+	      ay_status = ay_knots_insert(pnt1->index, nc->order,
+					  nc->length, &(nc->knotv));
+
+	      if(ay_status)
+		nc->knot_type = AY_KTNURB;
+	    }
+
 	  nc->length++;
+
+	  if(nc->knot_type == AY_KTBEZIER)
+	    nc->order++;
 
 	  /* rewrite indices of trailing selected points */
 	  opnt1 = o->selp;
@@ -2843,7 +2857,10 @@ cleanup:
   ay_status = ay_pact_getpoint(3, o, NULL, NULL);
 
   /* create new knot vectors */
-  ay_status = ay_knots_createnc(nc);
+  if(nc->knot_type != AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_createnc(nc);
+    }
 
   /* re-create multiple points */
   if(nc->createmp)
@@ -2924,22 +2941,29 @@ ay_pact_multdecnc(ay_object *o)
 		}
 	      b += stride;
 	    }
-	  nc->length--;
 
 	  /* adjust order/length/knots */
+	  if(nc->knot_type == AY_KTCUSTOM)
+	    {
+	      ay_status = ay_knots_remove(pnt1->index, nc->order,
+					  nc->length, &(nc->knotv));
+
+	      if(ay_status)
+		nc->knot_type = AY_KTNURB;
+	    }
+
+	  nc->length--;
+
 	  if(nc->knot_type == AY_KTBEZIER)
 	    nc->order--;
 
 	  if(nc->length < nc->order)
-	    nc->order = nc->length;
-
-	  if(nc->knot_type == AY_KTCUSTOM)
 	    {
-	      ay_status = ay_knots_remove(pnt1->index, nc->order,
-					  nc->length+1, &(nc->knotv));
-
-	      if(ay_status)
-		nc->knot_type = AY_KTNURB;
+	      nc->order = nc->length;
+	      if(nc->knot_type == AY_KTCUSTOM)
+		{
+		  nc->knot_type = AY_KTNURB;
+		}
 	    }
 
 	  /* adjust indices of trailing points and let
