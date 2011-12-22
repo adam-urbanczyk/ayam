@@ -256,6 +256,9 @@ int ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud);
  */
 int ay_knots_remove(unsigned int index, int order, int length, double **U);
 
+/** Insert knot into a knot vector.
+ */
+int ay_knots_insert(unsigned int index, int order, int length, double **U);
 
 /** Initialize the knots module.
  */
