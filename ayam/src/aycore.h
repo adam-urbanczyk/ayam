@@ -1096,9 +1096,9 @@ int ay_selp_ins(ay_object *o, unsigned int index, int addtoselp);
 int ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 		    int readonly, int arrlen, int stride, double *arr);
 
-/** properly select all multiple points of a NURBS curve
+/** properly select multiple points of a NURBS curve
  */
-void ay_selp_selectmpnc(ay_object *o);
+void ay_selp_selectmpnc(ay_object *o, int select_all);
 
 
 /* shade.c */

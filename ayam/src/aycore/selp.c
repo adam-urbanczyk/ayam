@@ -988,10 +988,14 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
 
 /* ay_selp_selectmpnc:
- *  properly select all multiple points of a NURBS curve
+ *  properly select all points of multiple points of a NURBS curve
+ *  if select_all is true all points of all multiple points
+ *  will be selected
+ *  if select_all is false only multiple points where there is already
+ *   a single point of it selected will be considered
  */
 void
-ay_selp_selectmpnc(ay_object *o)
+ay_selp_selectmpnc(ay_object *o, int select_all)
 {
  ay_point *p = NULL, **nextp = NULL, *newp = NULL;
  ay_mpoint *mp = NULL;
@@ -1009,36 +1013,65 @@ ay_selp_selectmpnc(ay_object *o)
       while(mp)
 	{
 	  nextp = &(o->selp);
-	  for(i = 0; i < mp->multiplicity; i++)
+
+	  if(!select_all)
 	    {
 	      p = o->selp;
 	      found = AY_FALSE;
-	      while(p)
+
+	      for(i = 0; i < mp->multiplicity; i++)
 		{
-		  if(p->index == mp->indices[i])
+		  p = o->selp;
+
+		  while(p)
 		    {
-		      /* advancing "nextp" ensures that we append
-			 new selected points right after the
-			 other already selected points of this
-			 multiple points */
-		      nextp = &(p->next);
-		      found = AY_TRUE;
+		      if(p->index == mp->indices[i])
+			{
+			  found = AY_TRUE;
+			  break;
+			}
+		      p = p->next;
+		    } /* while */
+		  if(found)
+		    {
 		      break;
-		    }
-		  p = p->next;
-		} /* while */
-	      if(!found)
+		    } /* if */
+		} /* for */
+	    } /* if */
+
+	  if(select_all || found)
+	    {
+	      for(i = 0; i < mp->multiplicity; i++)
 		{
-		  if(!(newp = calloc(1, sizeof(ay_point))))
+		  p = o->selp;
+		  found = AY_FALSE;
+		  while(p)
 		    {
-		      return;
-		    }
-		  newp->next = *nextp;
-		  *nextp = newp;
-		  newp->point = mp->points[i];
-		  newp->index = mp->indices[i];
-		} /* if */
-	    } /* for */
+		      if(p->index == mp->indices[i])
+			{
+			  /* advancing "nextp" ensures that we append
+			     new selected points right after the
+			     other already selected points of this
+			     multiple points */
+			  nextp = &(p->next);
+			  found = AY_TRUE;
+			  break;
+			}
+		      p = p->next;
+		    } /* while */
+		  if(!found)
+		    {
+		      if(!(newp = calloc(1, sizeof(ay_point))))
+			{
+			  return;
+			}
+		      newp->next = *nextp;
+		      *nextp = newp;
+		      newp->point = mp->points[i];
+		      newp->index = mp->indices[i];
+		    } /* if */
+		} /* for */
+	    } /* if */
 	  mp = mp->next;
 	} /* while */
     } /* if */
