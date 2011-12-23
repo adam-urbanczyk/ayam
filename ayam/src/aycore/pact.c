@@ -2867,7 +2867,7 @@ cleanup:
     ay_nct_recreatemp(nc);
 
   /* add all multiple points to point selection */
-  ay_selp_selectmpnc(o);
+  ay_selp_selectmpnc(o, AY_FALSE/*select_all*/);
 
  return ay_status;
 } /* ay_pact_multincnc */
