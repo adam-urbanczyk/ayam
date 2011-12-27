@@ -1,4 +1,4 @@
-[18. Dec 2011] CVS-Head:
+[27. Dec 2011] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -47,6 +47,7 @@ o added modelling actions to increase/decrease the multiplicity of
 o added hidden preference option "TagResetTagged" that controls whether
   invoking the tag (select) points action should clear the current point
   selection
+o improved curve splitting for curves with multiple knots
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
