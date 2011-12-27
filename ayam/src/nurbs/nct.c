@@ -14,8 +14,11 @@
 
 /** \file nct.c \brief NURBS curve tools */
 
-/* local variables: */
+/* prototypes of functions local to this module: */
+int ay_nct_splitdisc(ay_object *src, double u, ay_object **result);
 
+
+/* local variables: */
 char ay_nct_ncname[] = "NCurve";
 
 
@@ -2223,6 +2226,99 @@ cleanup:
 } /* ay_nct_finducb */
 
 
+/* ay_nct_splitdisc:
+ *  split NURBCurve object <src> at discontinuous parametric value <u>
+ *  into two curves;
+ *  modifies <src>, returns second curve in <result>.
+ */
+int
+ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL;
+ ay_nurbcurve_object *nc1 = NULL, *nc2 = NULL;
+ double *newcv1 = NULL, *newkv1 = NULL;
+ double *newcv2 = NULL, *newkv2 = NULL;
+ int i, stride = 4;
+ char fname[] = "splitdisc";
+
+  ay_status = ay_object_copy(src, &new);
+  if(ay_status)
+    return ay_status;
+
+  nc1 = (ay_nurbcurve_object *)src->refine;
+  nc1->knot_type = AY_KTCUSTOM;
+  nc1->type = AY_CTOPEN;
+
+  nc2 = (ay_nurbcurve_object *)new->refine;
+  nc2->knot_type = AY_KTCUSTOM;
+  nc2->type = AY_CTOPEN;
+
+  /* find knot */
+  for(i = 0; i < nc1->length+nc1->order; i++)
+    {
+      if(fabs(nc1->knotv[i] - u) < AY_EPSILON)
+	break;
+    }
+
+  nc2->length = nc1->length-i;
+  nc1->length = i;
+
+  /* create new controls/knots for first curve */
+  if( !(newcv1 = calloc(nc1->length*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(newcv1, nc1->controlv, nc1->length*stride*sizeof(double));
+
+  if(!(newkv1 = calloc(nc1->length+nc1->order,
+			 sizeof(double))))
+    { free(newcv1); return AY_EOMEM; }
+
+  memcpy(newkv1, nc1->knotv, (nc1->length+nc1->order)*sizeof(double));
+
+  /* create new controls/knots for second curve */
+  if( !(newcv2 = calloc(nc2->length*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(newcv2, &(nc1->controlv[i*stride]),
+	 nc2->length*stride*sizeof(double));
+
+  if(!(newkv2 = calloc(nc2->length+nc2->order,
+			 sizeof(double))))
+    { free(newcv2); return AY_EOMEM; }
+
+  memcpy(newkv2, &(nc1->knotv[nc1->length]),
+	 (nc2->length+nc2->order)*sizeof(double));
+
+  /* swap in new controls/knots */
+  free(nc1->controlv);
+  nc1->controlv = newcv1;
+
+  free(nc1->knotv);
+  nc1->knotv = newkv1;
+
+  ay_nct_recreatemp(nc1);
+
+  free(nc2->controlv);
+  nc2->controlv = newcv2;
+
+  free(nc2->knotv);
+  nc2->knotv = newkv2;
+
+  ay_nct_recreatemp(nc2);
+
+
+  new->selected = AY_FALSE;
+  new->modified = AY_TRUE;
+  src->modified = AY_TRUE;
+
+  /* return result */
+  *result = new;
+
+ return AY_OK;
+} /* ay_nct_splitdisc */
+
+
 /* ay_nct_split:
  *  split NURBCurve object <src> at parametric value <u> into two;
  *  modifies <src>, returns second curve in <result>.
@@ -2266,6 +2362,14 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
 			     knots, &s);
 
+      if(s == curve->order)
+	{
+	  return ay_nct_splitdisc(src, u, result);
+	}
+
+      if(s > curve->order)
+	return AY_ERROR;
+
       r = curve->order-1-s;
 
       curve->length += r;
@@ -2296,24 +2400,24 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 	  free(curve->knotv);
 	  curve->knotv = newknotv;
 	}
-      else
-	{
-	  /* can not insert knot at wanted position... */
-	  return AY_ERROR;
-	} /* if */
 
-      curve->knot_type = AY_KTCUSTOM;
       /* create two new curves */
       nc1 = curve;
+      nc1->knot_type = AY_KTCUSTOM;
       nc1->type = AY_CTOPEN;
       ay_status = ay_object_copy(src, &new);
 
-      /*XXXX check result*/
+      if(ay_status)
+	return ay_status;
 
       if(r != 0)
-	nc1len = k - (nc1->order-1) + 1 + (curve->order-1-s+r-1)/2 + 1;
+	{
+	  nc1len = k - (nc1->order-1) + 1 + (curve->order-1-s+r-1)/2 + 1;
+	}
       else
-	nc1len = k - (nc1->order-1) + 1;
+	{
+	  nc1len = k - (nc1->order-1) + 1;
+	}
 
       nc2 = (ay_nurbcurve_object*)new->refine;
       nc2->length = (nc1->length+1) - nc1len;
@@ -2360,8 +2464,6 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       ay_nct_recreatemp(nc1);
       ay_nct_recreatemp(nc2);
-
-      nc2->is_rat = nc1->is_rat;
 
       new->selected = AY_FALSE;
       new->modified = AY_TRUE;
