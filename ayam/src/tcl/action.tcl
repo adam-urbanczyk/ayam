@@ -1154,9 +1154,11 @@ proc editPointApply { } {
     # may be closed now, better check that...
     if { [winfo exists $array(window)] } {
 	undo save EditPntNum
+	set focusWin [focus]
 	$array(window) penpac -apply
 	rV
 	plb_update
+	after idle "focus $focusWin"
     } else {
 	ayError 2 "editPointApply" "Lost window to apply changes to!"
     }
@@ -1170,7 +1172,7 @@ proc editPointApply { } {
 # helper for actionEditNumP below
 # directly edit coordinates of points
 proc editPointDialog { } {
-    upvar #0 editPointArray array
+    upvar #0 editPntArr array
     global ay tcl_platform AYWITHAQUA
 
     set w .editPointDw
@@ -1266,9 +1268,9 @@ proc editPointDialog { } {
     button $f.bok -text "Apply" -width 5 -pady $ay(pady)\
 	-command editPointApply
     button $f.bca -text "Cancel" -width 5 -pady $ay(pady) -command "\
-	    global ay;\
-	    if { [winfo exists \$ay(currentView)] } {\
-	    focus \$ay(currentView) } else { resetFocus };\
+            global editPntArr;\
+	    if { \[winfo exists \$editPntArr(window)\] } {\
+	     focus \$editPntArr(window) } else { resetFocus };\
 	    destroy $w"
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
@@ -1752,6 +1754,8 @@ proc actionSnapToMarkO { w } {
     undo save SnapToMarkO
     $w snapmac 1
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionSnapToMarkO
@@ -1762,6 +1766,8 @@ proc actionIncMultP { w } {
     undo save IncMultP
     $w multpac 0
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionIncMultP
@@ -1772,6 +1778,8 @@ proc actionDecMultP { w } {
     undo save DecMultP
     $w multpac 1
     rV
+    plb_update
+    after idle "focus $w"
  return;
 }
 # actionDecMultP
