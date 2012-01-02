@@ -2725,7 +2725,6 @@ ay_pact_multincnc(ay_object *o)
   cv = nc->controlv;
 
   /* copy the list of points to work on */
-  i = 0;
   opnt1 = o->selp;
   while(opnt1)
     {
@@ -2737,7 +2736,6 @@ ay_pact_multincnc(ay_object *o)
       pnt2->next = pnt1;
       pnt1 = pnt2;
 
-      i++;
       opnt1 = opnt1->next;
     } /* while */
 
@@ -2745,34 +2743,25 @@ ay_pact_multincnc(ay_object *o)
     {
       p1 = &(cv[pnt1->index*stride]);
 
-      /* get current multiplicity of selected point */
-      m = 1;
-      p2 = p1+stride;
-      while(((pnt1->index + m) < (unsigned int)nc->length) &&
-	     AY_V3COMP(p1, p2))
-	{
-	  p2 += stride;
-	  m++;
-	}
-
       /* remove potential selected points that are pointing
-	 to the same coordinates */
-      if(m > 1)
+	 to the same coordinates and get current multiplicity of
+	 the selected point pnt1 */
+      m = 1;
+      pnt2 = pnt1->next;
+      while(pnt2)
 	{
-	  pnt2 = pnt1->next;
-	  while(pnt2)
+	  p2 = pnt2->point;
+	  if(AY_V3COMP(p1, p2))
 	    {
-	      p2 = pnt2->point;
-	      if(AY_V3COMP(p1, p2))
-		{
-		  pnt1->next = pnt2->next;
-		  free(pnt2);
-		  pnt2 = pnt1->next;
-		}
-	      else
-		break;
-	    } /* while */
-	} /* if */
+	      pnt1->next = pnt2->next;
+	      free(pnt2);
+	      pnt2 = pnt1->next;
+
+	      m++;
+	    }
+	  else
+	    break;
+	} /* while */
 
       /* if feasable, increase multiplicity of p1 */
       if(m < (nc->order-1))
@@ -2834,15 +2823,15 @@ ay_pact_multincnc(ay_object *o)
 	  free(nc->controlv);
 	  nc->controlv = newcv;
 	  cv = newcv;
-	  newcv = NULL;
-	} /* if */
+	  newcv = NULL;	  
+	} /* if m < order-1 */
 
       /* remove current selected point and
 	 advance to the next */
       pnt2 = pnt1->next;
       free(pnt1);
       pnt1 = pnt2;
-    } /* while */
+    } /* while pnt1 */
 
 cleanup:
 
