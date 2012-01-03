@@ -2823,7 +2823,7 @@ ay_pact_multincnc(ay_object *o)
 	  free(nc->controlv);
 	  nc->controlv = newcv;
 	  cv = newcv;
-	  newcv = NULL;	  
+	  newcv = NULL;
 	} /* if m < order-1 */
 
       /* remove current selected point and
@@ -2857,6 +2857,10 @@ cleanup:
 
   /* add all multiple points to point selection */
   ay_selp_selectmpnc(o, AY_FALSE/*select_all*/);
+
+  /* correct the curve type */
+  if(nc->type == AY_CTPERIODIC)
+    nc->type = AY_CTOPEN;
 
  return ay_status;
 } /* ay_pact_multincnc */
@@ -3012,8 +3016,12 @@ cleanup:
       ay_status = ay_knots_createnc(nc);
     }
 
+  /* re-create multiple points */
   if(nc->createmp)
     ay_nct_recreatemp(nc);
+
+  /* correct the curve type */
+  ay_nct_settype(nc);
 
  return ay_status;
 } /* ay_pact_multdecnc */
