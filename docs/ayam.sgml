@@ -3324,6 +3324,34 @@ Delete Points|<tt/&lt;d&gt;/|
 </table>
 <p>
 
+<sect1>Manipulating the Multiplicity of Points<label id="multac">
+<p>
+<figure loc="ht">
+<eps file="pics/edmult.ps" height="7cm">
+<img src="pics/edmult.gif">
+<caption>Successively Increasing the Multiplicity of Selected Points</caption>
+</figure>
+To manipulate the multiplicity of selected NURBS curve control
+points there are two modelling actions available.
+The actions are initiated using the shortcuts <tt>&lt;*&gt;</tt>
+(to increase the multiplicity) and <tt>&lt;/&gt;</tt>
+(to decrease the multiplicity).
+
+Increasing the multiplicity of a control point can be used to
+easily construct sharp corners and linear curve segments
+(see also the image above).
+
+The multiplicity of the selected control points will only be
+raised to the order of the curve and, conversely, never be
+decreased below 1. Trying to increase/decrease beyond those
+limits will not result in any error.
+
+The selected points stay selected, so that the actions can be
+applied multiple times.
+
+Both actions can be invoked anytime without breaking other
+actions.
+
 <sect1>Finding Points on Curves<label id="finduac">
 <p>
 The modelling action <tt/"FindU"/ (shortcut: <tt/&lt;u&gt;/)
