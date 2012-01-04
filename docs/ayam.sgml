@@ -50,8 +50,6 @@ This section contains general information about this manual and Ayam.
 
 <sect1>About this Manual
 <p>
-How should one read this manual?
-<p>
 Since this document is a reference manual, it is
 probably pointless to read it from the beginning to the end
 (except maybe for the next section, explaining the basics).
@@ -340,7 +338,7 @@ object(s).
 
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
-section <ref id="mmedit" name="main menu">.
+section <ref id="mmedit" name="Main Menu">.
 
 <item><tt>"Help on Object"</tt> displays the help of the selected
 object.
@@ -375,7 +373,6 @@ selected object(s).
 
 <item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
 selected object(s) (available since Ayam 1.18).
-
 </itemize>
 <p>
 If those shortcuts do not work you may need to move the keyboard
@@ -432,7 +429,7 @@ with the tree view (see above).
 
 <item><tt>"Copy Object", "Cut Object", "Paste Object", "Delete Object"</tt>
 are standard clipboard operations as documented in
-section <ref id="mmedit" name="main menu">.
+section <ref id="mmedit" name="Main Menu">.
 
 <item><tt>"Help on Object"</tt> displays the help of the selected
 object.
@@ -461,7 +458,6 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 since Ayam 1.11 and extend the selection up to the first
 or last object in the current level respectively.
 The root object, however, will always be omitted.
-
 </itemize>
 <p>
 If those shortcuts do not work you may need to move the keyboard
@@ -515,8 +511,8 @@ to fit into the window.
 <p>
 If Ayam is in floating windows GUI mode and the elements of the current
 property GUI do not fit into the screen space that is defined by the main
-window size, Ayam can automatically resize the window. This behaviour may
-be controlled using the preference setting
+window size, Ayam can automatically resize the main window. This behaviour
+may be controlled using the preference setting
 <tt/"AutoResize"/ (see section <ref id="prefs" name="Preferences">).
 <p>
 If an object and a property are selected and a different object is selected,
@@ -524,8 +520,9 @@ the property GUI that has the same index as the previously selected
 property in the properties listbox will be selected and shown. This is
 not necessarily a property of the same type!
 To avoid that or to clear the property GUI for fast browsing through the
-scene you may either double click on the "Properties" label or use the
-context menu of the properties listbox to de-select the current property.
+scene you may either double click on the "Properties" label, hit the
+<tt/&lt;Esc&gt;/ key three times, or use the context menu of the properties
+listbox to de-select the current property.
 <p>
 What properties exactly will be shown, and how the GUIs look alike
 depends on the selected object and the selected property.
@@ -688,7 +685,7 @@ appropriate documentation by the original author Jeffrey Hobbs
 (see the console context menu, that you may open with your right
 mouse button).
 
-<sect1>The Main Menu<label id="mm">
+<sect1>Main Menu<label id="mm">
 <p>
 This section discusses the main menu bar. Note that many menu entries
 have keyboard shortcuts that are displayed in each entry.
@@ -864,6 +861,7 @@ You can move objects out of the clipboard (clearing it) using the menu entry
 Also note that referenced objects, when moved into the clipboard with
 <tt/"Cut"/, can not be moved out of it using a simple <tt/"Paste"/, use
 <tt>"Special/Clipboard/Paste (Move)"</tt> instead!
+See also section <ref id="instclip" name="Instances and the Object Clipboard">.
 This operation cannot be undone!
 
 <item><tt/"Delete"/, removes the selected object(s) from the scene.
@@ -1045,7 +1043,8 @@ when a tool was started, e.g. to <tt/"Last (Revert U)"/ after the
 <tt/"Tools/Surface/Revert U"/-tool was used.
 The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/. To repeat
 the last used tool with the same set of parameters (and without opening
-the parameter dialog window again) <tt/&lt;Ctrl+T&gt;/ can be used.
+the parameter dialog window again) the shortcut <tt/&lt;Ctrl+T&gt;/ can
+be used instead.
 
 <item><tt/"Create"/, <tt/"Curve"/, and
 <tt/"Surface"/, are sub-menus with various NURBS based creation
@@ -1056,7 +1055,7 @@ and modelling tools, that are explained in depth in section
 <itemize>
 <item><tt/"Merge"/: merges all currently selected PolyMesh objects into
 a single PolyMesh object, without checking for doubly used points,
-loops, or faces. Normally, the currently selected PolyMesh objects will not
+loops, or faces. The currently selected PolyMesh objects will not
 be changed by this tool. But you may let the merge-tool delete them
 immediately after the merging operation, by enabling the
 <tt/"RemoveMerged"/-option.
@@ -1065,11 +1064,12 @@ If the <tt/"OptimizeNew"/-option is enabled, the <tt/"Optimize"/-tool
 newly created merged object as argument.
 
 <item><tt/"Split"/: splits the faces from the selected PolyMesh objects
-into a second PolyMesh object. The faces to be split off are selected
+off and into a second PolyMesh object. The faces to be split off are selected
 by selecting all their control points with the select points modelling
 action (see also section <ref id="selac" name="Selecting Points">).
-The original selected PolyMesh objects will be changed. The changes to
-the original objects cannot be undone. Since the split operation does not
+The original selected PolyMesh objects will be changed, the selected
+faces will be removed. The changes to the original objects cannot be
+undone. Since the split operation does not
 create optimized new objects, the <tt/"Optimize"/-tool (see below) may
 be started immediately after splitting using the <tt/"OptimizeNew"/-option.
 
@@ -1390,7 +1390,7 @@ The current modelling action, modelling mode, drawing mode and
 grid size are also displayed as a set of icons on the right hand
 side of the view menu bar.
 
-<sect1>The View Menu<label id="vm">
+<sect1>View Menu<label id="vm">
 <p>
 This section discusses the view menu bar. Note that many menu entries
 have keyboard shortcuts that are displayed in each entry.
@@ -2437,11 +2437,6 @@ related preferences:
 will add that file to the most recently used files list in the
 main menu for quick access.
 
-<item><tt/"RGTrans"/; controls whether the RenderUI-windows
-should be declared as a transient window of the main window.
-See the discussion of <tt/"ToolBoxTrans"/ above for more information
-about transient windows.
-
 <item><tt/"TclPrecision"/; this is the precision Tcl handles floating
 point numbers with. You may want to decrease this number to about 5
 if any numbers in the entry fields are represented in an exact, but also
@@ -2674,10 +2669,11 @@ Delete Points|<tt/&lt;d&gt;/|
 <p>
 Many modelling actions either work on objects transformation attributes
 or coordinates of selected points. Before Ayam 1.18 this was controlled
-implicitly by the point selection, if points were selected, they would
-be transformed. Since Ayam 1.18 there are two new
+implicitly by the point selection: if points were selected, they would
+be transformed instead of the object.
+Since Ayam 1.18 there are two new
 keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/) that let the
-user control this behaviour directly per view, <tt/&lt;o&gt;/ switches
+user control this behaviour directly per view: <tt/&lt;o&gt;/ switches
 to object transformations and <tt/&lt;p&gt;/ to point transformations.
 These shortcuts can be used anytime, even in the middle of any other
 actions. If points are to be modified, a little red point will appear
@@ -3009,7 +3005,7 @@ type will clear the mark.
 <sect1>Selecting/Tagging Points<label id="selac">
 <p>
 The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
-for <em>t</em>ag points) may be applied to objects that support single
+for <bf>t</bf>ag points) may be applied to objects that support single
 point editing or read only points.
 <p>
 To select or de-select a point it can directly be clicked upon
@@ -3056,8 +3052,7 @@ All points can be selected easily using the keyboard shortcut <tt/&lt;A&gt;/.
 <p>
 The list of selected points will not be deleted from the object until
 an explicit deselection is performed using the keyboard shortcut
-<tt/&lt;N&gt;/ or if certain modelling tools (e.g. inserting points)
-are used.
+<tt/&lt;N&gt;/ or if certain modelling tools are used.
 <p>
 The point selection can also be inverted using the keyboard shortcut
 <tt/&lt;I&gt;/.
@@ -3090,7 +3085,14 @@ single points.
 Since Ayam 1.16.1, holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
 region defined by the drag from the selection.
-
+<p>
+The exact behaviour of picking multiple points of a NURBS curve or surface
+depends on the attribute <tt/"CreateMP"/:<newline>
+If <tt/"CreateMP"/ is enabled, picking a multiple point will always
+select all points that make up the multiple point.<newline>
+If <tt/"CreateMP"/ is disabled, picking a multiple point will only
+select the first of the points that make up the multiple point
+(but one can use drag select to select all points nevertheless).
 
 <sect1>Editing Points<label id="editac">
 <p>
@@ -3098,9 +3100,9 @@ To edit the points of an object three actions (<tt/"Edit"/,
 <tt/"Edit Weights"/, and <tt/"Numeric Point Edit"/) are available.
 All those actions may be applied to objects that support single point
 editing only.
-Such objects usually
-draw their selectable points using small white rectangular handles
-when a modelling action is active (see also the image below).
+Such objects usually draw their selectable points using small white
+rectangular handles when a modelling action is active (see also the
+image below).
 <p>
 <figure loc="ht">
 <eps file="pics/handles.ps" height="5cm">
@@ -3231,11 +3233,11 @@ where the numeric point editing action is active, to update the coordinate
 values in the numeric point editing dialog.
 <p>
 Even though the dialog may display point coordinates in degraded
-accuracy (due to floating point to string conversion, see also
-the discussion of the <tt/"TclPrecision"/ preference option in
-section <ref id="prefmisc" name="Miscellaneous Preferences">),
+accuracy (due to floating point to string conversion)
 the original point data is unchanged and its accuracy is not affected
 as long as the new data is not applied.
+See also the discussion of the <tt/"TclPrecision"/ preference option in
+section <ref id="prefmisc" name="Miscellaneous Preferences">).
 </itemize>
 
 <sect1>Snapping Points to the Grid<label id="snapac">
@@ -3293,11 +3295,10 @@ may be applied to NURBS, interpolating, and approximating curves
 A new control point will be inserted in the curve right
 after the picked point. The new point will be inserted in the
 middle between the selected point and the next point, changing
-the shape of the curve. (It is also possible to insert control
+the shape of the curve. It is also possible to insert control
 points into certain types of NURBS curves without changing
-their shape using knot insertion;
-see also the insert knot tool section
-<ref id="insknt" name="The Insert Knot Tool">.)
+their shape using knot insertion; see also the insert knot tool section
+<ref id="insknt" name="Insert Knot Tool">.
 <p>
 The modelling action <tt/"Delete Point"/ (shortcut: <tt/&lt;d&gt;/)
 may be applied to NURBS, interpolating, and approximating curves
@@ -3521,8 +3522,9 @@ and understood by the <tt/"crtOb"/ scripting interface command;
 objects of the designated type),
 + &ndash; multiple child objects may be present (one or many),
 * &ndash; multiple child objects must be present (many),
-note that the type of the child object must not directly match, the child
-must rather provide an object of the appropriate type (see also section
+note that the type of the child object(s) does not need to match directly,
+the child(s) must rather provide an object of the appropriate type
+(see also section
 <ref id="toolobj" name="The Modelling Concept Tool-Objects">);
 <item><bf/Material/: the object can be associated with a material;
 <item><bf>Converts to/Provides</bf>: type of converted/provided objects
@@ -3646,7 +3648,7 @@ These objects modify existing curves or create new curves:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve*|No|NCurve|No*@<hline>
+ConcatNC|NCurve+|No|NCurve|No*@<hline>
 ExtrNC|NPatch|No|NCurve|No*@<hline>
 OffsetNC|NCurve|No|NCurve|No*@<hline>
 </tabular>
@@ -4901,7 +4903,7 @@ addTag RP Transformations
 <p>
 This special case of an instance is sometimes also called reference.
 
-<sect2>Instances and the Object Clipboard
+<sect2>Instances and the Object Clipboard<label id="instclip">
 <p>
 It is not possible to copy a master object and some instances
 of it, so that the new instances point to the newly created master.
@@ -5620,8 +5622,8 @@ largely intact and the periodic extensions plausible.
 </figure>
 <p>
 The NURBS curves of Ayam support so called multiple points.
-A multiple point is made of a number of different control points that have
-the same coordinates.
+A multiple point is made of a number of different control points
+that have the same coordinates.
 Modelling actions will always modify all the control points that
 make up a multiple point.
 Multiple points will be drawn with a bigger handle than normal points
@@ -5631,8 +5633,8 @@ points that make up a multiple point do not have to be consecutive
 (in the control point vector of the NURBS curve).
 Multiple points may be created using the collapse tool,
 and split up again using the explode tool (see sections
-<ref id="collt" name="The Collapse Tool"> and
-<ref id="explt" name="The Explode Tool"> for more information regarding
+<ref id="collt" name="Collapse Tool"> and
+<ref id="explt" name="Explode Tool"> for more information regarding
 those tools).
 Note that even though you might have exploded some multiple points
 Ayam will re-create them automatically on several occasions like reading
@@ -5971,7 +5973,7 @@ The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve*|No|NCurve|No*@<hline>
+ConcatNC|NCurve+|No|NCurve|No*@<hline>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
 </table>
@@ -6928,7 +6930,7 @@ level in the object hierarchy (the Z axis of the extrude
 object itself). The generating curves should lie in the XY plane of this
 coordinate system. If not, they will be squashed down to this plane!
 See section
-<ref id="toxyt" name="The To XY Tool"> for information on
+<ref id="toxyt" name="To XY Tool"> for information on
 how to easily achieve curves in the XY plane.
 <p>
 The dimensions and orders of the extruded surface(s) will be taken from the
@@ -7943,7 +7945,7 @@ available in Ayam since version 1.10.
 Note that the parameter curve of a Bevel object should be closed and
 planar to achieve best results;
 see section
-<ref id="toxyt" name="The To XY Tool"> for information on
+<ref id="toxyt" name="To XY Tool"> for information on
 how to easily achieve this. If the curve is closed or periodic,
 the appropriate curve type should be set in the curve object,
 otherwise the bevelled surface may expose defects.
@@ -8071,7 +8073,7 @@ looks like this:
 <p>
 Note that, in Trim mode, the curves have to be planar and defined in
 the XY plane; see section
-<ref id="toxyt" name="The To XY Tool"> for information on
+<ref id="toxyt" name="To XY Tool"> for information on
 how to easily achieve this.
 Furthermore, cap generation may fail, if the control points of the
 first curve have weights and the curve leaves the convex hull of the
@@ -9048,6 +9050,19 @@ You should use any tricks (like the curly braces
 in the expr-statement above) to speed up the expression.
 </itemize>
 
+<sect2>Conversion Support
+<p>
+Metaball objects may be converted to PolyMesh
+objects using the main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+Metaball objects will be exported as RiPointsGeneralPolygons primitives
+(regardless of whether the actual configuration would fit into a simpler
+polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+<p>
+PV tags are currently not supported.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>SDNPatch Object<label id="sdnpatchobj">
@@ -9148,6 +9163,19 @@ Note that the PolyMesh to SDNPatch conversion only accepts closed
 quadrilateral polygon meshes (Triangles are omitted) and expects
 an optimized mesh (i.e. adjacent faces should share the same vertices).
 
+<sect2>Conversion Support
+<p>
+SDNPatch objects may be converted to PolyMesh
+objects using the main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+SDNPatch objects will be exported as RiPointsGeneralPolygons primitives
+(regardless of whether the actual configuration would fit into a simpler
+polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+<p>
+PV tags are currently not supported.
+
 <#if out=latex><x/newpage/</#if>
 
 <sect1>Standard Properties<label id="stdprop">
@@ -9175,14 +9203,11 @@ object from the world origin in X (Y, Z) direction.
 of the rotation of the object around the X (Y, Z) axis.
 Read the next section for more information on how to use these
 entries. Read it!
+<item><tt/"Quaternion"/ the quaternion that is used to determine
+the orientation of the object in space.
 
 <item><tt/"Scale_X (_Y, _Z)"/ determines a scale factor that will be
 applied to the object in the direction of the local X (Y, Z) axis.
-
-<item><tt/"Quat0 (1, 2, 3)"/ the quaternion that is used to determine
-the orientation of the object in space. This quaternion is not here
-to be edited directly! The sole purpose of its appearance here
-is to allow copying and pasting of rotations.
 </itemize>
 
 The transformations are applied to the object in the following order:
@@ -9214,15 +9239,15 @@ But how do you get the three entries to do what you want?
 You either want to rotate the object around an axis by a given
 amount or you want to undo a rotation or undo all rotations.
 <p>
-Rotating an object is easy, simply add the amount about
+Rotating an object is easy, simply <em>add</em> the amount about
 which you want to rotate the object to the value currently
 displayed in the appropriate entry. If you want to rotate
 about 45 degrees about X and the x-angle entry displays a 30,
 enter 75.
-Then press the apply button.
+Then press the apply button.<newline>
 If you change multiple entries the rotations made will be
 in the order X (if changed) then Y (if changed) then Z (if changed).
-Do not change more than one entry at once until you exactly
+Do not change more than one entry at once unless you exactly
 know what you are doing.
 <p>
 Undoing a single rotation works in the same way, just use a subtraction
@@ -9232,9 +9257,12 @@ Undoing all rotations (resetting the object to its original state)
 is simple too: enter 0 for all three entries at once,
 then press apply.
 <p>
-If you want to copy the orientation of an object to other objects
-using the property clipboard, make sure that you select all Rotation and
-Quat property elements.
+If you want to copy just the orientation of an object to other objects
+using the property clipboard, mark/select all Translate and Scale
+property elements, then use <tt/"Edit/Copy Property"/.
+Just marking the Rotate elements and then using <tt/"Edit/Copy Marked Prop"/
+will <em>not</em> work, because the quaternion will not be copied
+properly.
 
 <sect2>Attributes Property<label id="attrs"><label id="attributesprop">
 <p>
@@ -9777,7 +9805,7 @@ the old syntax only allowed one parameter.
 <p>
 TP tags may be easily created using the tesselation GUI, that can
 be started with the main menu entry <tt>"Tools/Surface/Tesselate"</tt>
-(see also section <ref id="tesst" name="The Tesselation Tool">).
+(see also section <ref id="tesst" name="Tesselation Tool">).
 <p>
 <bf/Example/
 <p>
@@ -10018,7 +10046,7 @@ points will be removed from the object. Then the notification
 of the object will be run. The notification of the parent object(s)
 will be run after processing of all selected objects finished.
 
-<sect1>The Circular B-Spline Tool<label id="cbspt">
+<sect1>Circular B-Spline Tool<label id="cbspt">
 <p>
 <figure loc="ht">
 <eps file="pics/cbsps.ps" height="5cm">
@@ -10055,7 +10083,7 @@ points unless the order is 2 (see the right curve in the image above,
 which was created with an arc value of 180.0, 10 sections, and order 4).
 </itemize>
 
-<sect1>The NURBCircle Tool<label id="ncirct">
+<sect1>NURBCircle Tool<label id="ncirct">
 <p>
 <figure loc="ht">
 <eps file="pics/ncircle.ps" height="5cm">
@@ -10086,7 +10114,7 @@ The amount of movement determines the radius of the torus, whereas
 the radius of the circle determines the thickness.
 </itemize>
 
-<sect1>The TrimRect Tool<label id="trrt">
+<sect1>TrimRect Tool<label id="trrt">
 <p>
 <itemize>
 <item>Arguments: None
@@ -10109,7 +10137,7 @@ discussion of trim curves and how to use the rectangular curve created
 by the TrimRect tool.
 </itemize>
 
-<sect1>The NURBSphere Tool<label id="nspt">
+<sect1>NURBSphere Tool<label id="nspt">
 <p>
 <itemize>
 <item>Arguments: None.
@@ -10118,7 +10146,7 @@ and revolves it about the Y axis thus forming a sphere of radius 1.
 <item>Note: The NURBS curve is deleted afterwards.
 </itemize>
 
-<sect1>The NURBSphere2 Tool<label id="nsp2t">
+<sect1>NURBSphere2 Tool<label id="nsp2t">
 <p>
 <itemize>
 <item>Arguments: None.
@@ -10127,7 +10155,7 @@ consisting of six NURBS patches.
 <item>Note: The NURBS patches are of high order (5).
 </itemize>
 
-<sect1>The Revolve Tool<label id="revt">
+<sect1>Revolve Tool<label id="revt">
 <p>
 <itemize>
 <item>Arguments: The revolve tool takes the selected objects from
@@ -10144,7 +10172,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Extrude Tool<label id="extt">
+<sect1>Extrude Tool<label id="extt">
 <p>
 <itemize>
 <item>Arguments: The extrude tool takes the selected objects from
@@ -10162,7 +10190,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Sweep Tool<label id="swpt">
+<sect1>Sweep Tool<label id="swpt">
 <p>
 <itemize>
 <item>Arguments: The sweep tool takes the selected objects from
@@ -10180,7 +10208,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Cap Tool<label id="capt">
+<sect1>Cap Tool<label id="capt">
 <p>
 <itemize>
 <item>Arguments: The cap tool takes the selected objects from
@@ -10198,7 +10226,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Birail1 Tool<label id="bi1t">
+<sect1>Birail1 Tool<label id="bi1t">
 <p>
 <itemize>
 <item>Arguments: The birail1 tool takes the selected objects from
@@ -10217,7 +10245,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Birail2 Tool<label id="bi2t">
+<sect1>Birail2 Tool<label id="bi2t">
 <p>
 <itemize>
 <item>Arguments: The birail2 tool takes the selected objects from
@@ -10237,7 +10265,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Gordon Tool<label id="gort">
+<sect1>Gordon Tool<label id="gort">
 <p>
 <itemize>
 <item>Arguments: The gordon tool takes the selected objects from
@@ -10257,7 +10285,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Skin Tool<label id="skit">
+<sect1>Skin Tool<label id="skit">
 <p>
 <itemize>
 <item>Arguments: The skin tool takes the selected objects from
@@ -10276,7 +10304,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </itemize>
 
-<sect1>The Revert Tool<label id="revertt">
+<sect1>Revert Tool<label id="revertt">
 <p>
 <itemize>
 <item>Arguments: The revert tool takes all NCurve,
@@ -10303,7 +10331,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screvert" name="revertC">.
 </itemize>
 
-<sect1>The Concat Tool<label id="conct">
+<sect1>Concat Tool<label id="conct">
 <p>
 <itemize>
 <item>Arguments: The concat tool takes two NURBS curves from
@@ -10329,7 +10357,7 @@ scripting interface command <ref id="scconcatnc" name="concatNC">.
 -->
 </itemize>
 
-<sect1>The Split Tool<label id="splitt">
+<sect1>Split Tool<label id="splitt">
 <p>
 <figure loc="ht">
 <eps file="pics/splitnc.ps" height="4cm">
@@ -10355,7 +10383,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnc" name="splitNC">.
 </itemize>
 
-<sect1>The Trim Tool<label id="trimt">
+<sect1>Trim Tool<label id="trimt">
 <p>
 <figure loc="ht">
 <eps file="pics/trimnc.ps" height="4cm">
@@ -10374,7 +10402,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctrimnc" name="trimNC">.
 </itemize>
 
-<sect1>The Elevate Tool<label id="elevt">
+<sect1>Elevate Tool<label id="elevt">
 <p>
 <figure loc="ht">
 <eps file="pics/elevate.ps" height="4cm">
@@ -10395,7 +10423,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">.
 </itemize>
 
-<sect1>The Refine Tool<label id="refit">
+<sect1>Refine Tool<label id="refit">
 <p>
 <figure loc="ht">
 <eps file="pics/refine.ps" height="4cm">
@@ -10426,7 +10454,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
 </itemize>
 
-<sect1>The Coarsen Tool<label id="coart">
+<sect1>Coarsen Tool<label id="coart">
 <p>
 <figure loc="ht">
 <eps file="pics/coarsen.ps" height="4cm">
@@ -10448,7 +10476,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
 </itemize>
 
-<sect1>The Clamp Tool<label id="clat">
+<sect1>Clamp Tool<label id="clat">
 <p>
 <figure loc="ht">
 <eps file="pics/clampnc.ps" height="4cm">
@@ -10473,7 +10501,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scclampnc" name="clampNC">.
 </itemize>
 
-<sect1>The Insert Knot Tool<label id="insknt">
+<sect1>Insert Knot Tool<label id="insknt">
 <p>
 <figure loc="ht">
 <eps file="pics/inskn.ps" height="4cm">
@@ -10494,7 +10522,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scinsknnc" name="insknNC">.
 </itemize>
 
-<sect1>The Remove Knot Tool<label id="remknt">
+<sect1>Remove Knot Tool<label id="remknt">
 <p>
 <figure loc="ht">
 <eps file="pics/remkn.ps" height="4cm">
@@ -10521,7 +10549,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scremknnc" name="remknNC">.
 </itemize>
 
-<sect1>The Plot Curvature Tool<label id="plotcurt">
+<sect1>Plot Curvature Tool<label id="plotcurt">
 <p>
 <figure loc="ht">
 <eps file="pics/plotcur.ps" height="4cm">
@@ -10539,7 +10567,7 @@ number of data points and will be scaled to the specified width
 and by the specified height value. See also the image above.
 </itemize>
 
-<sect1>The Shift Closed Curve Tool<label id="shiftclc">
+<sect1>Shift Closed Curve Tool<label id="shiftclc">
 <p>
 <figure loc="ht">
 <eps file="pics/shiftclsbsp.ps" height="4cm">
@@ -10564,7 +10592,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scshiftc" name="shiftC">.
 </itemize>
 
-<sect1>The To XY Tool<label id="toxyt">
+<sect1>To XY Tool<label id="toxyt">
 <p>
 <figure loc="ht">
 <eps file="pics/toxy.ps" height="5cm">
@@ -10589,7 +10617,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctoxync" name="toXYNC">.
 </itemize>
 
-<sect1>The Make Compatible Tool<label id="makecompt">
+<sect1>Make Compatible Tool<label id="makecompt">
 <p>
 <figure loc="ht">
 <eps file="pics/makecomp.ps" height="4cm">
@@ -10610,7 +10638,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scmakecompnc" name="makeCompNC">.
 </itemize>
 
-<sect1>The Rescale Knots to Range Tool<label id="resckrt">
+<sect1>Rescale Knots to Range Tool<label id="resckrt">
 <p>
 <itemize>
 <item>Arguments: The rescale knots to range tool takes a number of
@@ -10625,7 +10653,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </itemize>
 
-<sect1>The Rescale Knots to Mindist Tool<label id="resckmt">
+<sect1>Rescale Knots to Mindist Tool<label id="resckmt">
 <p>
 <itemize>
 <item>Arguments: The rescale knots to mindist tool takes a number of
@@ -10641,7 +10669,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </itemize>
 
-<sect1>The Collapse Points Tool<label id="collt">
+<sect1>Collapse Points Tool<label id="collt">
 <p>
 <itemize>
 <item>Arguments: The collapse tool expects a selected NURBS curve
@@ -10653,7 +10681,7 @@ single multiple point, all points will get the coordinate values
 of the last tagged point.
 </itemize>
 
-<sect1>The Explode Points Tool<label id="explt">
+<sect1>Explode Points Tool<label id="explt">
 <p>
 <itemize>
 <item>Arguments: The explode tool expects a selected NURBS curve
@@ -10672,7 +10700,7 @@ edit the control points (move them apart) after exploding to avoid that
 they automatically collapse to a multiple point again!
 </itemize>
 
-<sect1>The Swap UV Tool<label id="swapuvt">
+<sect1>Swap UV Tool<label id="swapuvt">
 <p>
 <itemize>
 <item>Arguments: The swap uv tool takes a number of NURBS patches,
@@ -10684,7 +10712,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </itemize>
 
-<sect1>The Elevate UV Tool<label id="elevuvt">
+<sect1>Elevate UV Tool<label id="elevuvt">
 <p>
 <itemize>
 <item>Arguments: The elevate uv tool takes a number of NURBS patches from
@@ -10701,7 +10729,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scelevatevnp" name="elevatevNP">.
 </itemize>
 
-<sect1>The Revert U Tool<label id="revertut">
+<sect1>Revert U Tool<label id="revertut">
 <p>
 <itemize>
 <item>Arguments: The revert u tool takes a number of NURBS patches
@@ -10714,7 +10742,7 @@ of the corresponding knot vector.
 scripting interface command <ref id="screvertus" name="revertuS">.
 </itemize>
 
-<sect1>The Revert V Tool<label id="revertvt">
+<sect1>Revert V Tool<label id="revertvt">
 <p>
 <itemize>
 <item>Arguments: The revert v tool takes a number of NURBS patches
@@ -10727,7 +10755,7 @@ of the corresponding knot vector.
 scripting interface command <ref id="screvertvs" name="revertvS">.
 </itemize>
 
-<sect1>The Patch Clamp Tool<label id="clanpt">
+<sect1>Patch Clamp Tool<label id="clanpt">
 <p>
 <figure loc="ht">
 <eps file="pics/clampnp.ps" height="4cm">
@@ -10753,7 +10781,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scclampvnp" name="clampvNP">.
 </itemize>
 
-<sect1>The Patch Rescale Knots to Range Tool<label id="resckrnpt">
+<sect1>Patch Rescale Knots to Range Tool<label id="resckrnpt">
 <p>
 <itemize>
 <item>Arguments: The patch rescale knots to range tool takes a number of
@@ -10769,7 +10797,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </itemize>
 
-<sect1>The Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
+<sect1>Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
 <p>
 <itemize>
 <item>Arguments: The rescale knots to mindist tool takes a number of
@@ -10786,7 +10814,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </itemize>
 
-<sect1>The Patch Insert Knot Tool<label id="insknnpt">
+<sect1>Patch Insert Knot Tool<label id="insknnpt">
 <p>
 <figure loc="ht">
 <eps file="pics/insknnp.ps" height="5cm">
@@ -10809,7 +10837,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknvnp" name="insknvNP">.
 </itemize>
 
-<sect1>The Patch Remove Knot Tool<label id="remknts">
+<sect1>Patch Remove Knot Tool<label id="remknts">
 <p>
 <figure loc="ht">
 <eps file="pics/remknnp.ps" height="5cm">
@@ -10838,7 +10866,7 @@ See also the documentation of the corresponding scripting interface commands
 </itemize>
 
 
-<sect1>The Patch Split Tools<label id="splitnpt">
+<sect1>Patch Split Tools<label id="splitnpt">
 <p>
 <itemize>
 <item>Arguments: The patch split tools take a number of NURBS patches from
@@ -10860,7 +10888,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scsplitvnp" name="splitvNP">.
 </itemize>
 
-<sect1>The Extract Curve Tool<label id="extnct">
+<sect1>Extract Curve Tool<label id="extnct">
 <p>
 <itemize>
 <item>Arguments: The extract curve tool takes the first of the selected
@@ -10880,7 +10908,7 @@ See section <ref id="extrncobj" name="ExtrNC Object">
 for more information regarding the ExtrNC object.
 </itemize>
 
-<sect1>The Extract Patch Tool<label id="extrnpt">
+<sect1>Extract Patch Tool<label id="extrnpt">
 <p>
 <itemize>
 <item>Arguments: The extract patch tool takes the first of the selected
@@ -10903,7 +10931,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scextrnp" name="extrNP">.
 </itemize>
 
-<sect1>The Split to Curves Tool<label id="sptct">
+<sect1>Split to Curves Tool<label id="sptct">
 <p>
 <itemize>
 <item>Arguments: The split to curves tool takes a single NURBS patch from
@@ -10922,7 +10950,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnp" name="splitNP">.
 </itemize>
 
-<sect1>The Build from Curves Tool<label id="bfct">
+<sect1>Build from Curves Tool<label id="bfct">
 <p>
 <itemize>
 <item>Arguments: The build from curves tool takes a number of NURBS
@@ -10949,7 +10977,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
 </itemize>
 
-<sect1>The Tesselation Tool<label id="tesst">
+<sect1>Tesselation Tool<label id="tesst">
 <p>
 <figure loc="ht">
 <eps file="pics/tgui.ps" height="3cm">
@@ -12220,7 +12248,9 @@ pclip_copy/copyProp &ndash; copy a property to the property clipboard
 property from the currently selected
 object to the property clipboard.
 If mode is 0, omit all marked entries, if mode is 1 copy just
-marked entries.
+marked entries. Entries can also be marked programmatically
+by adding the respective entry names to the global array
+<tt/"pclip_omit"/.
 Note that you may call this procedure also using the shortcut
 <tt/"copyProp"/.
 </itemize>
@@ -12535,7 +12565,7 @@ In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
 Furthermore, curves with multiple knots in the end region(s) could not be
 clamped, this works ok now.
-See also section <ref id="clat" name="The Clamp Tool">.
+See also section <ref id="clat" name="Clamp Tool">.
 </itemize>
 
 <p>
@@ -12549,7 +12579,7 @@ elevateNC &ndash; elevate NURBS curve:
  <item>Description: Elevate the order of the selected NURBS curves
 without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
-See also section <ref id="elevt" name="The Elevate Tool">.
+See also section <ref id="elevt" name="Elevate Tool">.
 </itemize>
 
 <p>
@@ -12567,7 +12597,7 @@ the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the curve and n is the length of the curve.
 The knot type of the curves will always be changed to custom but
 the shape of the curves will not change!
-See also section <ref id="insknt" name="The Insert Knot Tool">.
+See also section <ref id="insknt" name="Insert Knot Tool">.
 </itemize>
 
 <p>
@@ -12591,7 +12621,7 @@ tol is specified. If tol is specified the new curve does not deviate
 from the original curve more than tol in any point on the curve.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original curve is left unchanged.
-See also section <ref id="remknt" name="The Remove Knot Tool">.
+See also section <ref id="remknt" name="Remove Knot Tool">.
 </itemize>
 
 <p>
@@ -12607,7 +12637,7 @@ without changing the shape of the curve with n new knots {u1 u2 un}.
 Or, if no list of new knots is given: add a new knot into each interval
 in the old knot vector.
 The knot type of the refined curve may be changed to <tt/"Custom"/.
-See also section <ref id="refit" name="The Refine Tool">.
+See also section <ref id="refit" name="Refine Tool">.
 </itemize>
 
 <p>
@@ -12620,7 +12650,7 @@ coarsenNC &ndash; coarsen NURBS curve:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove every second control point from the
 selected NURBS curves.
-See also section <ref id="coart" name="The Coarsen Tool">.
+See also section <ref id="coart" name="Coarsen Tool">.
 </itemize>
 
 <p>
@@ -12633,7 +12663,7 @@ revertC &ndash; revert curves:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected NURBS,
 interpolating, and approximating curves.
-See also section <ref id="revertt" name="The Revert Tool">.
+See also section <ref id="revertt" name="Revert Tool">.
 </itemize>
 
 <p>
@@ -12646,7 +12676,7 @@ revertuS &ndash; revert surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the u parametric dimension.
-See also section <ref id="revertut" name="The Revert U Tool">.
+See also section <ref id="revertut" name="Revert U Tool">.
 </itemize>
 
 <p>
@@ -12659,7 +12689,7 @@ revertvS &ndash; revert surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the v parametric dimension.
-See also section <ref id="revertvt" name="The Revert V Tool">.
+See also section <ref id="revertvt" name="Revert V Tool">.
 </itemize>
 
 <p>
@@ -12672,7 +12702,7 @@ swapuvS &ndash; swap dimensions of surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Swap the dimensions of the selected surfaces, thus
 exchanging width and height (without altering the shape of the surfaces).
-See also section <ref id="swapuvt" name="The Swap UV Tool">.
+See also section <ref id="swapuvt" name="Swap UV Tool">.
 </itemize>
 
 <p>
@@ -12695,7 +12725,7 @@ not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 <p>
 This operation does not change the shape of the curve.
-See also section <ref id="resckrt" name="The Rescale Knots to Range Tool">.
+See also section <ref id="resckrt" name="Rescale Knots to Range Tool">.
 </itemize>
 
 <p>
@@ -12709,7 +12739,7 @@ splitNC &ndash; split NURBS curve
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
-See also section <ref id="splitt" name="The Split Tool">.
+See also section <ref id="splitt" name="Split Tool">.
 </itemize>
 
 <p>
@@ -12727,7 +12757,7 @@ For a simple closed curve, shifting with i=1, the first control point will get
 the coordinates of the former last control point. This means, positive shifts
 occur in the direction of the curve. Note that for closed and periodic
 NURBS curves, the multiple points will be managed correctly.
-See also section <ref id="shiftclc" name="The Shift Closed Curve Tool">.
+See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 </itemize>
 
 <p>
@@ -12740,7 +12770,7 @@ toXYNC &ndash; move NURBS curve to XY plane
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: moves the control points of the selected NURBS curve
 objects to its XY plane.
-See also section <ref id="toxyt" name="The To XY Tool">.
+See also section <ref id="toxyt" name="To XY Tool">.
 </itemize>
 
 <p>
@@ -12753,7 +12783,7 @@ trimNC &ndash; trim NURBS curve
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
-See also section <ref id="trimt" name="The Trim Tool">.
+See also section <ref id="trimt" name="Trim Tool">.
 </itemize>
 
 <p>
@@ -12791,7 +12821,7 @@ makeCompNC &ndash; make NURBS curves compatible
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: makes the selected NURBS curves compatible
 i.e. of the same order and defined on the same knot vector.
-See also section <ref id="makecompt" name="The Make Compatible Tool">.
+See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
 
 <p>
@@ -12817,7 +12847,7 @@ In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
-See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+See also section <ref id="clanpt" name="Patch Clamp Tool">.
 </itemize>
 
 <p>
@@ -12843,7 +12873,7 @@ In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
-See also section <ref id="clanpt" name="The Patch Clamp Tool">.
+See also section <ref id="clanpt" name="Patch Clamp Tool">.
 </itemize>
 
 <p>
@@ -12867,9 +12897,9 @@ not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This operation does not change the shape of the patch.
 See also sections
-<ref id="resckrnpt" name="The Patch Rescale Knots to Range Tool">
+<ref id="resckrnpt" name="Patch Rescale Knots to Range Tool">
 and
-<ref id="resckmnpt" name="The Patch Rescale Knots to Mindist Tool">.
+<ref id="resckmnpt" name="Patch Rescale Knots to Mindist Tool">.
  <item>Example: <tt/"rescaleknNP -ru 0.2 0.3"/ scales the u knot vector
 of the selected NURBS patch objects to the new range (0.2, 0.3).
 </itemize>
@@ -12890,7 +12920,7 @@ p is the degree (order-1) of the patch in U direction and n is the
 width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
-See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
+See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
 <p>
@@ -12909,7 +12939,7 @@ p is the degree (order-1) of the patch in V direction and n is the
 height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change!
-See also section <ref id="insknnpt" name="The Patch Insert Knot Tool">.
+See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
 <p>
@@ -12931,7 +12961,7 @@ tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
-See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
+See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 </itemize>
 
 <p>
@@ -12953,7 +12983,7 @@ tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
-See also section <ref id="remknts" name="The Patch Remove Knot Tool">.
+See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 </itemize>
 
 <p>
@@ -12967,7 +12997,7 @@ elevateuNP &ndash; elevate NURBS surface in u direction:
  <item>Description: Elevate the u order of the selected NURBS surfaces
 without changing the shape of the surfaces by n.
 The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
-See also section <ref id="elevuvt" name="The Elevate UV Tool">.
+See also section <ref id="elevuvt" name="Elevate UV Tool">.
 </itemize>
 
 <p>
@@ -12981,7 +13011,7 @@ elevatevNP &ndash; elevate NURBS surface in v direction:
  <item>Description: Elevate the v order of the selected NURBS surfaces
 without changing the shape of the surfaces by n.
 The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
-See also section <ref id="elevuvt" name="The Elevate UV Tool">.
+See also section <ref id="elevuvt" name="Elevate UV Tool">.
 </itemize>
 
 <p>
@@ -12997,7 +13027,7 @@ at parametric value u.
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
-See also section <ref id="splitnpt" name="The Patch Split Tools">.
+See also section <ref id="splitnpt" name="Patch Split Tools">.
 </itemize>
 
 <p>
@@ -13013,7 +13043,7 @@ at parametric value v.
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
-See also section <ref id="splitnpt" name="The Patch Split Tools">.
+See also section <ref id="splitnpt" name="Patch Split Tools">.
 </itemize>
 
 <p>
@@ -13029,7 +13059,7 @@ objects. The extracted patch will be appended as new object to the
 current level of the scene. The sub-patch to be extracted is specified
 by the parametric values umin, umax,
 vmin, and vmax which have to be in the respective valid knot range.
-See also section <ref id="extrnpt" name="The Extract Patch Tool">.
+See also section <ref id="extrnpt" name="Extract Patch Tool">.
 </itemize>
 
 <p>
@@ -13101,7 +13131,7 @@ splitNP &ndash; split NURBS patch:
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Splits the selected NPatch objects into NURBS curves,
 along parametric dimension u or v.
-See also section <ref id="splitnpt" name="The Patch Split Tools">.
+See also section <ref id="splitnpt" name="Patch Split Tools">.
 </itemize>
 
 <p>
@@ -13113,7 +13143,7 @@ buildNP &ndash; build NURBS patch:
  <item>Synopsis: <tt/"buildNPatch"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Builds a NURBS patch from the selected NURBS curves.
-See also section <ref id="bfct" name="The Build from Curves Tool">.
+See also section <ref id="bfct" name="Build from Curves Tool">.
 </itemize>
 
 
@@ -14023,7 +14053,7 @@ The conversion will use the current parameters from the preference settings
 <tt/"SMethod"/, <tt/"SParamU"/, and <tt/"SParamV"/; <tt/"TP"/
 tags (if present) will override these parameters.
 TP tags may be created easily using the tesselation tool, see also
-section <ref id="tesst" name="The Tesselation Tool">.
+section <ref id="tesst" name="Tesselation Tool">.
 
 <sect2>Convert Everything to NURBS patches<label id="tonpatchtcl">
 <p>
@@ -14797,10 +14827,13 @@ Ayam can not only export scenes as RIB but also call various
 RenderMan renderers to directly render the exported RIB files to
 the screen or to an image file.
 Documentation on how to export/render directly from a view window
-can be found in section <ref id="vmview" name="The View Menu">.
+can be found in section <ref id="vmview" name="View Menu">.
 <p>
-RIB export is also possible using the scripting interface,
-see section <ref id="script" name="Scripting Interface">.
+Invoking RIB export is also possible using the scripting interface,
+see the section <ref id="scwrib" name="RIB export"> for more information.
+<p>
+RIB export always honors <tt/"NoExport"/ tags and the <tt/"HideChildren"/
+attribute.
 
 <sect1>Mops Import<label id="impmops">
 <p>
@@ -15793,7 +15826,8 @@ This section contains all information about Ayam not fitting elsewhere.
 
 <sect1>The Undo System<label id="undos">
 <p>
-Using the undo system, you may correct mistakes you made while modelling.
+With the help of the undo system, one may correct mistakes made while
+modelling.
 However, only modifications of objects can be undone. This includes changes
 made by modelling actions, changes made using property GUIs, but also
 changes to views (type changes or changes to the camera settings associated
@@ -17237,7 +17271,8 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
-<item>CreateMP: <ref id="ncattr" name="NCurve attribute">
+<item>CreateMP: <ref id="ncattr" name="NCurve attribute">,
+<ref id="npattr" name="NPatch attribute">
 <item>Create ShadowMap: <ref id="mmspecial" name="main menu entry">,
 <ref id="vmview" name="view menu entry">
 <item>crtClosedBS: <ref id="sccrtclosedbs" name="scripting interface command">
@@ -17758,7 +17793,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <ref id="revt" name="Revolve tool">
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
 <ref id="rio" name="RenderMan interface option">
-<item>RGTrans: <ref id="prefmisc" name="preference setting">
 <item>Rhino: <ref id="imprhino" name="3DM (Rhino) Import">,
 <ref id="exprhino" name="3DM (Rhino) Export">
 <item>RiAttribute: <ref id="riattrs" name="property">,
