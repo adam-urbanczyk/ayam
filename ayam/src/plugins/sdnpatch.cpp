@@ -2926,6 +2926,9 @@ cleanup:
   if(verts)
     free(verts);
 
+  if(edges)
+    free(edges);
+
   if(faces)
     free(faces);
 
