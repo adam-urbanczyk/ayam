@@ -447,11 +447,11 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	   {
 	     tag->type = ay_dbns_tagtype;
 	     tc = NULL;
-	     tc = realloc(tag->name, strlen(ay_dbns_tagname)+1*sizeof(char));
+	     tc = realloc(tag->name, (strlen(ay_dbns_tagname)+1)*sizeof(char));
 	     if(tc)
 	       {
 		 tag->name = tc;
-		 strcpy(tag->name,ay_dbns_tagname );
+		 strcpy(tag->name, ay_dbns_tagname);
 	       }
 	   }
 
@@ -471,11 +471,11 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	   {
 	     tag->type = ay_dans_tagtype;
 	     tc = NULL;
-	     tc = realloc(tag->name, strlen(ay_dans_tagname)+1*sizeof(char));
+	     tc = realloc(tag->name, (strlen(ay_dans_tagname)+1)*sizeof(char));
 	     if(tc)
 	       {
 		 tag->name = tc;
-		 strcpy(tag->name,ay_dans_tagname );
+		 strcpy(tag->name, ay_dans_tagname);
 	       }
 	   }
 
@@ -525,7 +525,7 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
       fscanf(fileptr,"%d", &(sarg->type));
       read = fgetc(fileptr);
       if(read == EOF)
-	return AY_ERROR;
+	{ free(sarg); return AY_ERROR; }
 
       switch(sarg->type)
 	{
@@ -548,8 +548,9 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 	  ay_read_string(fileptr, &((sarg->val).string));
 	  if(!((sarg->val).string))
 	    {
+	      /* if we did not read a string, create an empty one */
 	      if(!((sarg->val).string = calloc(1, sizeof(char))))
-		return AY_EOMEM;
+		{ free(sarg); return AY_EOMEM; }
 	    }
 	  break;
 	case AY_SAMATRIX:

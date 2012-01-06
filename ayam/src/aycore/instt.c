@@ -239,7 +239,7 @@ ay_instt_createorigids(ay_object *o)
 
 	      strcpy(tname,"OI");
 	      if(!(newtag = calloc(1,sizeof(ay_tag))))
-		return AY_EOMEM;
+		{ free(tname); return AY_EOMEM; }
 
 	      newtag->name = tname;
 	      newtag->val = tval;

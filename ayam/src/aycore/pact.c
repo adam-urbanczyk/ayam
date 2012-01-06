@@ -1162,6 +1162,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    {
 	      curve->length--;
+	      free(newcontrolv);
 	      return AY_EOMEM;
 	    }
 
@@ -1218,6 +1219,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  if(ay_status)
 	    {
 	      curve->length--;
+	      free(newcontrolv);
 	      return ay_status;
 	    }
 	}

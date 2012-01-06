@@ -340,13 +340,13 @@ ay_matt_creatematerialids(ay_object *o)
 	  strcpy(tname, "MI");
 
 	  if(!(newtag = calloc(1, sizeof(ay_tag))))
-	    return AY_EOMEM;
+	    { free(tname); return AY_EOMEM; }
 
 	  newtag->name = tname;
 
 	  mname = *(mat->nameptr);
 	  if(!(newtag->val = calloc(strlen(mname)+1, sizeof(char))))
-	    return AY_EOMEM;
+	    { free(tname); free(newtag); return AY_EOMEM; }
 	  strcpy(newtag->val, mname);
 	  newtag->type = ay_matt_mitagtype;
 	  newtag->next = o->tags;

@@ -513,7 +513,8 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	      /* add range to index array */
 	      tmp = NULL;
-	      if(!(tmp = realloc(sel->seli, i+(endindex-startindex))))
+	      if(!(tmp = realloc(sel->seli,
+				 (i+(endindex-startindex))*sizeof(int))))
 		{ ay_status = AY_EOMEM; goto cleanup; }
 	      sel->seli = tmp;
 	      /* increasing range */
@@ -536,7 +537,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      if(endindex == startindex)
 		{
 		  tmp = NULL;
-		  if(!(tmp = realloc(sel->seli, i+1)))
+		  if(!(tmp = realloc(sel->seli, (i+1)*sizeof(int))))
 		    { ay_status = AY_EOMEM; goto cleanup; }
 		  sel->seli = tmp;
 		  sel->seli[i] = startindex;
@@ -573,7 +574,7 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 	      /* add single index to index array */
 	      tmp = NULL;
-	      if(!(tmp = realloc(sel->seli, i+1)))
+	      if(!(tmp = realloc(sel->seli, (i+1)*sizeof(int))))
 		{ ay_status = AY_EOMEM; goto cleanup; }
 	      sel->seli = tmp;
 	      sel->seli[i] = index;

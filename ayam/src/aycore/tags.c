@@ -720,7 +720,6 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
     { return AY_EOMEM; }
   strcpy(tmp, str);
 
-
   *argc = 0;
   parval = NULL;
   partype = NULL;
@@ -744,9 +743,9 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 	    {
 	      /* we have all three needed components and thus
 		 may allocate memory for the new parameter */
-	      if(!(tokens = realloc(tokens, sizeof(RtToken))))
+	      if(!(tokens = realloc(tokens, (*argc+1)*sizeof(RtToken))))
 		{ free(tmp); return AY_EOMEM; }
-	      if(!(values = realloc(values, sizeof(RtPointer))))
+	      if(!(values = realloc(values, (*argc+1)*sizeof(RtPointer))))
 		{ free(tmp); return AY_EOMEM; }
 
 	      /* copy name */
@@ -812,7 +811,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  if(!(stemp = calloc(1, sizeof(RtString))))
 		    { free(tmp); return AY_EOMEM; }
 		  if(!(*stemp = calloc(strlen(parval)+1, sizeof(char))))
-		    { free(tmp); return AY_EOMEM; }
+		    { free(tmp); free(stemp); return AY_EOMEM; }
 		  strcpy(*stemp, parval);
 		  values[*argc] = (RtPointer)stemp;
 		  if(declare)

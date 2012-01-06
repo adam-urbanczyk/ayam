@@ -279,6 +279,8 @@ cleanup:
      free(npomesh);
      if(ncontrolv)
        free(ncontrolv);
+     if(nloops)
+       free(nloops);
      if(nverts)
        free(nverts);
      if(verts)
