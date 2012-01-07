@@ -462,14 +462,14 @@ ay_gordon_wribcb(char *file, ay_object *o)
   gordon = (ay_gordon_object*)o->refine;
 
   if(gordon->npatch)
-    ay_wrib_object(file, gordon->npatch);
+    ay_wrib_toolobject(file, gordon->npatch, o);
 
   if(gordon->caps_and_bevels)
     {
       b = gordon->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_object(file, b);
+	  ay_wrib_toolobject(file, b, o);
 	  b = b->next;
 	}
     }

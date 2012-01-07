@@ -353,7 +353,7 @@ ay_bevel_wribcb(char *file, ay_object *o)
   bevel = (ay_bevel_object*)o->refine;
 
   if(bevel->npatch)
-    ay_wrib_object(file, bevel->npatch);
+    ay_wrib_toolobject(file, bevel->npatch, o);
 
  return AY_OK;
 } /* ay_bevel_wribcb */

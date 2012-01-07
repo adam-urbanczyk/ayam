@@ -379,7 +379,7 @@ ay_concatnp_wribcb(char *file, ay_object *o)
   concatnp = (ay_concatnp_object*)o->refine;
 
   if(concatnp->npatch)
-    ay_wrib_object(file, concatnp->npatch);
+    ay_wrib_toolobject(file, concatnp->npatch, o);
 
  return AY_OK;
 } /* ay_concatnp_wribcb */

@@ -390,7 +390,7 @@ ay_offnp_wribcb(char *file, ay_object *o)
   offnp = (ay_offnp_object*)o->refine;
 
   if(offnp->npatch)
-    ay_wrib_object(file, offnp->npatch);
+    ay_wrib_toolobject(file, offnp->npatch, o);
 
  return AY_OK;
 } /* ay_offnp_wribcb */

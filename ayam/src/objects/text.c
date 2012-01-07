@@ -564,7 +564,7 @@ ay_text_wribcb(char *file, ay_object *o)
   p = text->npatch;
   while(p)
     {
-      ay_wrib_object(file, p);
+      ay_wrib_toolobject(file, p, o);
       p = p->next;
     }
 

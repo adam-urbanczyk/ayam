@@ -452,14 +452,14 @@ ay_sweep_wribcb(char *file, ay_object *o)
   sweep = (ay_sweep_object*)o->refine;
 
   if(sweep->npatch)
-    ay_wrib_object(file, sweep->npatch);
+    ay_wrib_toolobject(file, sweep->npatch, o);
 
   if(sweep->caps_and_bevels)
     {
       b = sweep->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_object(file, b);
+	  ay_wrib_toolobject(file, b, o);
 	  b = b->next;
 	}
     }

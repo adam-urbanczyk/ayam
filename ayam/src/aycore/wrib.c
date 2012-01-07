@@ -781,6 +781,75 @@ ay_wrib_object(char *file, ay_object *o)
 } /* ay_wrib_object */
 
 
+/* ay_wrib_toolobject:
+ *  export a sub-object from a tool object to a RIB file
+ *  temporarily replacing the (PV) tags from the sub-object
+ *  with the ones from the tool-object
+ */
+int
+ay_wrib_toolobject(char *file, ay_object *o, ay_object *t)
+{
+ int ay_status = AY_OK;
+ ay_tag *old_tags = NULL, *tag = NULL, *pvtags = NULL;
+ unsigned int i = 0;
+
+  if(!file || !o)
+    return AY_ENULL;
+
+  if(t && t->tags)
+    {
+      /* check the tags for PV tags */
+      tag = t->tags;
+      while(tag)
+	{
+	  if(tag->type == ay_pv_tagtype)
+	    i++;
+	  tag = tag->next;
+	}
+
+      if(i > 0)
+	{
+	  /* copy the PV tags temporarily into an array (pseudo-list)
+	     but without actually copying the tag values */
+	  if(!(pvtags = calloc(i, sizeof(ay_tag))))
+	    {
+	      return AY_EOMEM;
+	    }
+	  tag = t->tags;
+	  i = 0;
+	  while(tag)
+	    {
+	      if(tag->type == ay_pv_tagtype)
+		{
+		  (pvtags[i]).type = ay_pv_tagtype;
+		  /* no need to copy the name... */
+		  (pvtags[i]).val = tag->val;
+		  (pvtags[i]).next = &(pvtags[i+1]);
+		  i++;
+		}
+	      tag = tag->next;
+	    } /* while */
+	  /* terminate the pseudo-list */
+	  (pvtags[i-1]).next = NULL;
+	} /* if */
+
+      old_tags = o->tags;
+      o->tags = pvtags;
+      ay_status = ay_wrib_object(file, o);
+      o->tags = old_tags;
+
+      if(pvtags)
+	free(pvtags);
+    }
+  else
+    {
+      ay_status = ay_wrib_object(file, o);
+    } /* if */
+
+ return ay_status;
+} /* ay_wrib_toolobject */
+
+
 /* ay_wrib_displaytags:
  *  write display tags that are attached to the root object
  */

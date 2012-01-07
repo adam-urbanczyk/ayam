@@ -970,7 +970,7 @@ ay_script_wribcb(char *file, ay_object *o)
 	  mo = sc->cm_objects;
 	  while(mo->next)
 	    {
-	      ay_wrib_object(file, mo);
+	      ay_wrib_toolobject(file, mo, o);
 	      mo = mo->next;
 	    } /* while */
 	} /* if */
