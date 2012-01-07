@@ -420,7 +420,7 @@ ay_extrnp_wribcb(char *file, ay_object *o)
   extrnp = (ay_extrnp_object*)o->refine;
 
   if(extrnp->npatch)
-    ay_wrib_object(file, extrnp->npatch);
+    ay_wrib_toolobject(file, extrnp->npatch, o);
 
  return AY_OK;
 } /* ay_extrnp_wribcb */

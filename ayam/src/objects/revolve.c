@@ -473,19 +473,19 @@ ay_revolve_wribcb(char *file, ay_object *o)
   revolve = (ay_revolve_object*)o->refine;
 
   if(revolve->npatch)
-    ay_wrib_object(file, revolve->npatch);
+    ay_wrib_toolobject(file, revolve->npatch, o);
 
   if(revolve->upper_cap)
-    ay_wrib_object(file, revolve->upper_cap);
+    ay_wrib_toolobject(file, revolve->upper_cap, o);
 
   if(revolve->lower_cap)
-    ay_wrib_object(file, revolve->lower_cap);
+    ay_wrib_toolobject(file, revolve->lower_cap, o);
 
   if(revolve->start_cap)
-    ay_wrib_object(file, revolve->start_cap);
+    ay_wrib_toolobject(file, revolve->start_cap, o);
 
   if(revolve->end_cap)
-    ay_wrib_object(file, revolve->end_cap);
+    ay_wrib_toolobject(file, revolve->end_cap, o);
 
  return AY_OK;
 } /* ay_revolve_wribcb */

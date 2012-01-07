@@ -438,14 +438,14 @@ ay_birail2_wribcb(char *file, ay_object *o)
   birail2 = (ay_birail2_object*)o->refine;
 
   if(birail2->npatch)
-    ay_wrib_object(file, birail2->npatch);
+    ay_wrib_toolobject(file, birail2->npatch, o);
 
   if(birail2->caps_and_bevels)
     {
       b = birail2->caps_and_bevels;
       while(b)
 	{
-	  ay_wrib_object(file, b);
+	  ay_wrib_toolobject(file, b, o);
 	  b = b->next;
 	}
     }

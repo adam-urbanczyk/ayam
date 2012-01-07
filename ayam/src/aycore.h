@@ -1726,6 +1726,10 @@ int ay_wrib_trafos(ay_object *o);
  */
 int ay_wrib_object(char *file, ay_object *o);
 
+/** export a sub-object from a tool object to a RIB file
+ */
+int ay_wrib_toolobject(char *file, ay_object *o, ay_object *t);
+
 /** export a referenced object to a RIB file
  */
 int ay_wrib_refobject(char *file, ay_object *o);

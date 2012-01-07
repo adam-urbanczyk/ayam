@@ -437,19 +437,19 @@ ay_swing_wribcb(char *file, ay_object *o)
   swing = (ay_swing_object*)o->refine;
 
   if(swing->npatch)
-    ay_wrib_object(file, swing->npatch);
+    ay_wrib_toolobject(file, swing->npatch, o);
 
   if(swing->upper_cap)
-    ay_wrib_object(file, swing->upper_cap);
+    ay_wrib_toolobject(file, swing->upper_cap, o);
 
   if(swing->lower_cap)
-    ay_wrib_object(file, swing->lower_cap);
+    ay_wrib_toolobject(file, swing->lower_cap, o);
 
   if(swing->start_cap)
-    ay_wrib_object(file, swing->start_cap);
+    ay_wrib_toolobject(file, swing->start_cap, o);
 
   if(swing->end_cap)
-    ay_wrib_object(file, swing->end_cap);
+    ay_wrib_toolobject(file, swing->end_cap, o);
 
  return AY_OK;
 } /* ay_swing_wribcb */
