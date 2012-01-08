@@ -15,7 +15,7 @@ html:
 	cd html; ln -sf ../pics pics;cd ..
 	cp ayam.sgml html
 	cd html;sgml2html -D out=html -s 1 ayam.sgml;rm ayam.sgml;cd ..
-	./fixhtml.tcsh
+	/usr/bin/tclsh fixhtml.tcl
 	-cd html;../corrwh.pl;cd ..
 
 txt:
@@ -51,6 +51,7 @@ pdf3: pdf2
 
 
 pdf4:
+	-rm -f ayam.tex ayam.toc ayam.log ayam.aux ga
 	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
 	sgml2latex -p a4 -D out=latex -o tex ayaml.sgml
 	/bin/sh -c "sed -f sedsrc3 ayaml.tex > ayam.tex"
@@ -73,8 +74,8 @@ archive: html
 
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
-	rm -rf ayaml.sgml ayaml.tex ayaml.dvi ayaml.pdf ayaml.ps
-	rm -rf ayam.aux ayam.toc ayam.out
+	rm -rf ayam.aux ayam.toc ayam.log ayam.out
+	rm -rf ayaml.*
 	rm -rf docs
 
 .PHONY: html
