@@ -1190,13 +1190,11 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 		  // tesselate it
 
 		  // create new object (for the tesselated face)
-		  li = NULL;
 		  if(!(li = (ay_list_object*)
 		       calloc(1, sizeof(ay_list_object))))
 		    return AY_EOMEM;
-		  to = NULL;
 		  if(!(to = (ay_object*)calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM;
+		    {free(li); return AY_EOMEM;}
 		  li->object = to;
 
 		  ay_object_defaults(to);
@@ -1231,12 +1229,10 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	  // this face has more than one loop (hole(s)) => tesselate it
 
 	  // create new object (for the tesselated face)
-	  li = NULL;
 	  if(!(li = (ay_list_object*)calloc(1, sizeof(ay_list_object))))
 	    return AY_EOMEM;
-	  to = NULL;
 	  if(!(to = (ay_object*)calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
+	    {free(li); return AY_EOMEM;}
 	  li->object = to;
 
 	  ay_object_defaults(to);
@@ -2737,7 +2733,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 
 	      if(!(lo = (ay_object *) calloc(1, sizeof(ay_object))))
 		{
-		  return AY_EOMEM;
+		  free(level); return AY_EOMEM;
 		}
 	      ay_object_defaults(lo);
 	      lo->type = AY_IDLEVEL;
@@ -3289,7 +3285,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
     return AY_EOMEM;
   if(!(newlevel = (ay_level_object*)calloc(1, sizeof(ay_level_object))))
-    return AY_EOMEM;
+    {free(newo); return AY_EOMEM;}
 
   ay_object_defaults(newo);
   newo->type = AY_IDLEVEL;
