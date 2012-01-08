@@ -2860,9 +2860,11 @@ cleanup:
   /* add all multiple points to point selection */
   ay_selp_selectmpnc(o, AY_FALSE/*select_all*/);
 
-  /* correct the curve type */
+  /* correct the curve type? */
   if(nc->type == AY_CTPERIODIC)
-    nc->type = AY_CTOPEN;
+    {
+      ay_nct_settype(nc);
+    }
 
  return ay_status;
 } /* ay_pact_multincnc */
