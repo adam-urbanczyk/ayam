@@ -58,12 +58,12 @@ pdf4:
 	/bin/sh -c "sed -f sedsrc4 ayam.tex > ayaml.tex"
 	/usr/bin/tclsh fixpdftex.tcl ayaml.tex ayam.tex
 	pdflatex ayam.tex > ga
-	rm -f ayaml.sgml ayaml.tex
+	rm -f ayaml.* ga
 
 pdf5: pdf4
 	pdflatex ayam.tex > ga
 	pdflatex ayam.tex 
-	rm ayam.tex ayam.toc ayam.log ayam.aux ga
+	rm ayam.tex ayam.toc ayam.log ayam.aux ayam.out ga
 
 archive: html
 	mkdir -p docs/pics
