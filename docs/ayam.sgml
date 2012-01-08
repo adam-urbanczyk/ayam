@@ -348,16 +348,20 @@ Since Ayam 1.6 the scene may be navigated and objects may be selected
 using the keyboard alone:
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
-while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
-selection, but rather extend it in the respective direction,
+or next object.
+
+<item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
+selection, but rather extend it in the respective direction.
+<footnote>Since 1.7.</footnote>
 
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 
-<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
-since Ayam 1.11 and extend the selection up to the first
-or last object in the current level respectively.
+<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/
+extend the selection to the first or last object in the current
+level respectively.
+<footnote>Since 1.11.</footnote>
+
 The root object, however, will always be omitted.
 
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
@@ -372,7 +376,8 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 selected object(s).
 
 <item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
-selected object(s) (available since Ayam 1.18).
+selected object(s).
+<footnote>Since 1.18.</footnote>
 </itemize>
 <p>
 If those shortcuts do not work you may need to move the keyboard
@@ -384,9 +389,12 @@ Another way of moving the focus (and cleaning up the application state)
 is by using the <tt/&lt;Esc&gt;/ key:
 In property GUIs and the console, pressing <tt/&lt;Esc&gt;/ moves the focus
 away to the main window or object selection window.
-Since Ayam 1.15, pressing <tt/&lt;Esc&gt;/ twice in a view window
+
+Pressing <tt/&lt;Esc&gt;/ twice in a view window
 will also reset the focus to the main window/object selection
-window. Pressing <tt/&lt;Esc&gt;/ twice in the object selection
+window.
+<footnote>Since 1.15.</footnote>
+Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
 removal of the currently displayed property GUI) and change the
 current level to the root level.
@@ -439,12 +447,20 @@ Since Ayam 1.6 the scene may be navigated and objects may be selected
 using the keyboard alone:
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
-or next object, since Ayam 1.7 holding down the <tt/&lt;Shift&gt;/ key
-while pressing <tt/&lt;Up&gt;/ or <tt/&lt;Down&gt;/ will not move the
-selection, but rather extend it in the respective direction,
+or next object.
+
+<item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
+selection, but rather extend it in the respective direction.
+<footnote>Since 1.7.</footnote>
 
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
+
+<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ extend the selection
+to the first or last object in the current level respectively.
+<footnote>Since 1.11.</footnote>
+
+The root object, however, will always be omitted.
 
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
 
@@ -454,10 +470,6 @@ or last object in the current level,
 all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 
-<item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ are available
-since Ayam 1.11 and extend the selection up to the first
-or last object in the current level respectively.
-The root object, however, will always be omitted.
 </itemize>
 <p>
 If those shortcuts do not work you may need to move the keyboard
@@ -469,9 +481,12 @@ Another way of moving the focus (and cleaning up the application state)
 is by using the <tt/&lt;Esc&gt;/ key:
 In property GUIs and the console, pressing <tt/&lt;Esc&gt;/ moves the focus
 away to the main window or object selection window.
-Since Ayam 1.15, pressing <tt/&lt;Esc&gt;/ twice in a view window
+
+Pressing <tt/&lt;Esc&gt;/ twice in a view window
 will also reset the focus to the main window/object selection
-window. Pressing <tt/&lt;Esc&gt;/ twice in the object selection
+window.
+<footnote>Since 1.15.</footnote>
+Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
 removal of the currently displayed property GUI) and change the
 current level to the root level.
@@ -498,12 +513,13 @@ only one property may be selected.
 If a property is selected, the associated GUI will be shown in the
 appropriate area (on the right hand side).
 <p>
-Since Ayam 1.8 the keyboard may be used to select properties,
-just press one of the <tt/&lt;0&gt;/-<tt/&lt;9&gt;/ keys (most comfortably
+Also the keyboard may be used to select properties:
+just press one of the <tt/&lt;0&gt;-&lt;9&gt;/ keys (most comfortably
 using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
 selects the first property, which often contains the standard
 transformations.
+<footnote>Since 1.8</footnote>
 <p>
 All property GUIs use more or less standardized GUI elements that are
 organized in list form. The lists may be scrolled if they get too long
@@ -535,10 +551,11 @@ The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
 <tt/"Apply"/-button is pressed!
 <p>
-Since Ayam 1.8.3 holding down the <tt/"Shift"/ button while
+Holding down the <tt/"Shift"/ button while
 interacting with the property GUI or pressing <tt/"Return"/
-when entry widgets have the keyboard input focus will lead
+when entry widgets have the keyboard input focus will also lead
 to an instant apply.
+<footnote>Since 1.8.3.</footnote>
 <p>
 You can undo all changes to the arguments of a property that have been
 made after the last <tt/"Apply"/ operation with the <tt/"Reset"/-button.
@@ -719,9 +736,11 @@ for a more detailed discussion.
 <p>
 This operation cannot be undone!
 <p>
-Since Ayam 1.13 also files supported by any of the import plugins
-may be imported using this route. Note that this only works if the
-selected file has a file name extension. The appropriate plugin will
+Also files supported by any of the import plugins
+may be imported using this route.
+<footnote>Since 1.13.</footnote>
+Note that this only works if the selected file has a file name extension.
+The appropriate plugin will
 be loaded automatically (from the list of plugin directories in the
 preferences) if needed and the import options dialog of the plugin
 will be opened, with the <tt/"FileName"/ option already set.
@@ -740,8 +759,9 @@ for a more detailed discussion.
 <p>
 This operation cannot be undone!
 <p>
-Since Ayam 1.13 also files supported by any of the import plugins
+Also files supported by any of the import plugins
 may be imported using this route. See above (<tt/"Open"/).
+<footnote>Since 1.13.</footnote>
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 <p>
@@ -752,9 +772,10 @@ from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
 <p>
-Since Ayam 1.13 also files supported by any of the export plugins
+Also files supported by any of the export plugins
 may be exported using this route. Just pick a file name with the
 desired extension (see above, <tt/"Open"/).
+<footnote>Since 1.13.</footnote>
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (the scene file name is "unnamed") Ayam will ask for a file name first.
@@ -841,6 +862,8 @@ the preference setting <tt>"Main/AutoSavePrefs"</tt> is turned on)
 and quit the application.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="mmedit">
@@ -910,6 +933,8 @@ see also section <ref id="instanceobj" name="Instance Object">.
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="mmcreate">
@@ -924,26 +949,29 @@ Here are the entries of the <tt/Create/ menu:
 <item><tt/"NURBCurve"/, create a new NURBS curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="ncurveobj" name="NCurve Object">.
-Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb NCurve"/ command, as outlined in section
 <ref id="sccrtnc" name="Creating Objects">.
+<footnote>Since 1.19.</footnote>
 
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="icurveobj" name="ICurve Object">.
-Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb ICurve"/ command, as outlined in section
 <ref id="sccrtic" name="Creating Objects">.
+<footnote>Since 1.19.</footnote>
 
 <item><tt/"ACurve"/, create a new approximating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
 also section <ref id="acurveobj" name="ACurve Object">.
-Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb ACurve"/ command, as outlined in section
 <ref id="sccrtac" name="Creating Objects">.
+<footnote>Since 1.19.</footnote>
 
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
@@ -951,14 +979,17 @@ also section <ref id="ncircleobj" name="NCircle Object">.
 <item><tt/"NURBPatch"/, create a new NURBS patch. A small dialog box will
 pop up, where you may specify the width and height of the new patch. See
 also section <ref id="npatchobj" name="NPatch Object">.
-Since Ayam 1.19, this dialog also contains a <tt/"AddArgs"/ entry
+This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb NPatch"/ command, as outlined in section
 <ref id="sccrtnp" name="Creating Objects">.
+<footnote>Since 1.19.</footnote>
 
-<item><tt/"IPatch"/, create a new interpolating patch. A small dialog box will
-pop up, where you may specify the width and height of the new patch. See
-also section <ref id="ipatchobj" name="IPatch Object">.
+<item><tt/"IPatch"/, create a new interpolating patch.
+<footnote>Since 1.20.</footnote>
+A small dialog box will pop up, where you may specify the width and
+height of the new patch. See also section
+<ref id="ipatchobj" name="IPatch Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb IPatch"/ command, as outlined in section
@@ -1026,6 +1057,8 @@ also section <ref id="selectobj" name="Select Object">.
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
+<#if out=latex><x/newpage/</#if>
+
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="mmtools">
@@ -1036,9 +1069,11 @@ The entry fields in those dialogs support Tcl expressions as detailed
 in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
 The entries of the <tt/"Tools"/ menu are:
 <itemize>
-<item><tt/"Last (None)"/, this menu entry is available since Ayam 1.13.
-It allows quick access to the last used entry/tool in the <tt/"Tools"/
-menu hierarchy. The label of the entry will be changed appropriately
+<item><tt/"Last (None)"/, this menu entry allows quick access to the
+last used entry/tool in the <tt/"Tools"/ menu hierarchy.
+<footnote>Since 1.13.</footnote>
+
+The label of the entry will be changed appropriately
 when a tool was started, e.g. to <tt/"Last (Revert U)"/ after the
 <tt/"Tools/Surface/Revert U"/-tool was used.
 The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/. To repeat
@@ -1168,6 +1203,8 @@ with the keyboard shortcut <tt/&lt;Ctrl+l&gt;/.
 <label id="mmcustom">
 The <tt/"Custom"/ menu is initially empty. Custom objects and plugins,
 may create entries here.
+
+<#if out=latex><x/newpage/</#if>
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -1675,7 +1712,7 @@ Zoom View|<tt/&lt;V&gt;/|
 Rotate View|<tt/&lt;R&gt;/|
 <#if out=latex><x>inlinegfx pics/rotatevac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/rotatevac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>View Actions Overview</caption>
 </table>
@@ -1688,10 +1725,13 @@ If you have a wheel mouse and it is configured to send
 Mouse4 and Mouse5 button events, Ayam will zoom the view
 when you turn the wheel.
 <p>
-Since Ayam 1.15 one may cycle through the view types using
-<tt/&lt;PgUp&gt;/ and <tt/&lt;PgDown&gt;/ and (since Ayam 1.16)
-through drawing modes using <tt/&lt;Ctrl+PgUp&gt;/ and
-<tt/&lt;Ctrl+PgDown&gt;/.
+<tt/&lt;PgUp&gt;/ and <tt/&lt;PgDown&gt;/ allow to cycle through the view
+types.
+<footnote>Since 1.15.</footnote>
+<p>
+<tt/&lt;Ctrl+PgUp&gt;/ and <tt/&lt;Ctrl+PgDown&gt;/
+cycle through the drawing modes.
+<footnote>Since 1.16.</footnote>
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
 shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
@@ -1699,7 +1739,7 @@ one can change the views camera settings so that the selected
 objects will be displayed centered in the view window. This is handy
 to search for objects or if the user is simply lost in space.
 <p>
-Using the menu entry <tt/"Align to Parent"/ or the shortcut
+Using the menu entry <tt/"Align to Object"/ or the shortcut
 <tt/&lt;Ctrl+a&gt;/ (<tt/&lt;L&gt;/ for internal views)
 one can change the views camera settings so that it is aligned
 to the coordinate system of the currently selected object.
@@ -1708,8 +1748,10 @@ This is handy for modelling in local coordinate systems
 XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 <p>
-Since Ayam 1.18 one may also move through the scene hierarchy and
+It is also possible to move through the scene hierarchy and
 change the selection directly in view windows:
+<footnote>Since 1.18.</footnote>
+
 <itemize>
 <item><tt/&lt;Ctrl+4&gt;/, <tt/&lt;Ctrl+6&gt;/ (on the numeric keypad!)
 move up and down in the hierarchy respectively, also selecting the parent
@@ -1726,7 +1768,7 @@ extend the current selection to include the next or previous object.
 <sect1>Selecting Objects within a View<label id="objsel">
 <p>
 This section describes techniques that you can use for selecting
-one or more objects within a view.
+one or more objects within a view window with the mouse.
 <p>
 When the view windows action is <tt/"Pick"/ you can pick (select) objects
 that appear within this view with the mouse.
@@ -2393,9 +2435,9 @@ This option is not set for the official Ayam binaries.
 </itemize>
 
 Note that you can set many renderer related preferences at once using the
-select renderer tool via the main menu <tt>Special/Select Renderer</tt>
+select renderer tool via the main menu <tt>"Special/Select Renderer"</tt>
 (see also section <ref id="mmspecial" name="Special Menu">). In fact,
-using <tt>Special/Select Renderer</tt> first, then fine tuning your
+using <tt>"Special/Select Renderer"</tt> first, then fine tuning your
 renderer setup using the preferences editor is the suggested way to
 switch Ayam to a certain RenderMan renderer.
 
@@ -2658,7 +2700,7 @@ Edit Numeric|<tt/&lt;E&gt;/|
 Delete Points|<tt/&lt;d&gt;/|
 <#if out=latex><x>inlinegfx pics/deleteac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/deleteac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Modelling Actions Overview</caption>
 </table>
@@ -2719,7 +2761,7 @@ Move Y|<tt/&lt;my&gt;/|
 Move Z|<tt/&lt;mz&gt;/|
 <#if out=latex><x>inlinegfx pics/movezac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/movezac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Move Actions Overview</caption>
 </table>
@@ -2748,7 +2790,7 @@ objects will be changed by this action.
 Rotate|<tt/&lt;r&gt;/|
 <#if out=latex><x>inlinegfx pics/rotateac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/rotateac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Rotate Action</caption>
 </table>
@@ -2770,7 +2812,7 @@ See also the table below.
 Rotate About|<tt/&lt;ra&gt;/|
 <#if out=latex><x>inlinegfx pics/rotateaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/rotateaac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Rotate About Action</caption>
 </table>
@@ -2852,7 +2894,7 @@ Scale 1D Z|<tt/&lt;sz&gt;/|
 Stretch 2D|<tt/&lt;T&gt;/|
 <#if out=latex><x>inlinegfx pics/stretchac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/stretchac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Scaling Actions Overview</caption>
 </table>
@@ -2894,7 +2936,7 @@ Scale 1D Z About|<tt/&lt;sza&gt;/|
 Stretch 2D About|<tt/&lt;Ta&gt;/|
 <#if out=latex><x>inlinegfx pics/stretchaac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/stretchaac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Scaling About Actions Overview</caption>
 </table>
@@ -2947,7 +2989,7 @@ See also the table below.
 Set Mark|<tt/&lt;a&gt;/|
 <#if out=latex><x>inlinegfx pics/markac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/markac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Set Mark Action</caption>
 </table>
@@ -3039,7 +3081,7 @@ See also the table below.
 Tag Points|<tt/&lt;t&gt;/|
 <#if out=latex><x>inlinegfx pics/tagac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/tagac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Tag Action</caption>
 </table>
@@ -3135,7 +3177,7 @@ Edit Weights|<tt/&lt;w&gt;/|
 Numeric Edit|<tt/&lt;E&gt;/|
 <#if out=latex><x>inlinegfx pics/editdac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/editdac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Edit Actions Overview</caption>
 </table>
@@ -3318,7 +3360,7 @@ Insert Points|<tt/&lt;i&gt;/|
 Delete Points|<tt/&lt;d&gt;/|
 <#if out=latex><x>inlinegfx pics/deleteac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/deleteac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Insert/Delete Points Actions</caption>
 </table>
@@ -3373,7 +3415,7 @@ See also the table below.
 Find U|<tt/&lt;u&gt;/|
 <#if out=latex><x>inlinegfx pics/finduac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/finduac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Find Point on Curve Action</caption>
 </table>
@@ -3400,7 +3442,7 @@ See also the table below.
 Find UV|<tt/&lt;U&gt;/|
 <#if out=latex><x>inlinegfx pics/finduvac.png 0.7cm </x></#if>
 <#if out=html><img src="pics/finduvac.gif"></#if>
-@<hline>
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Find Point on Surface Action</caption>
 </table>
@@ -3537,7 +3579,8 @@ documented in tables like this:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type+/*|Yes/No*@<hline>
+Object Type|No/Object Type+/*|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type+/*|Yes/No*
+<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Object Capabilities Template</caption>
 </table>
@@ -3569,7 +3612,7 @@ Example:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|NCurve|Yes|NPatch+|No*@<hline>
+Revolve|NCurve|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Object Capabilities Example</caption>
 </table>
@@ -3615,7 +3658,7 @@ Mirror|Any+|No|Children+|No*@<hline>
 Instance|No|No|Master|No*@<hline>
 Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
 RiInc|No|No|N/A|No@<hline>
-RiProc|No|No|N/A|No@<hline>
+RiProc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Scene Organization</caption>
 </table>
@@ -3633,7 +3676,7 @@ Cone|No|Yes|NPatch+|No*@<hline>
 Cylinder|No|Yes|NPatch+|No*@<hline>
 Torus|No|Yes|NPatch+|No*@<hline>
 Paraboloid|No|Yes|NPatch+|No*@<hline>
-Hyperboloid|No|Yes|NPatch+|No*@<hline>
+Hyperboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>CSG/Solid Primitives</caption>
 </table>
@@ -3649,7 +3692,7 @@ generating tool objects:
 NCurve|No|No|N/A|Yes@<hline>
 ICurve|No|No|NCurve|Yes@<hline>
 ACurve|No|No|NCurve|Yes@<hline>
-NCircle|No|No|NCurve|No*@<hline>
+NCircle|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Freeform Curves</caption>
 </table>
@@ -3664,7 +3707,7 @@ These objects enable direct manipulation of freeform surfaces:
 NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
 IPatch|No|Yes|NPatch|Yes@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
-PatchMesh|No|Yes|NPatch|Yes@<hline>
+PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Freeform Surfaces</caption>
 </table>
@@ -3678,7 +3721,7 @@ These objects modify existing curves or create new curves:
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 ConcatNC|NCurve+|No|NCurve|No*@<hline>
 ExtrNC|NPatch|No|NCurve|No*@<hline>
-OffsetNC|NCurve|No|NCurve|No*@<hline>
+OffsetNC|NCurve|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Curve Tool Objects</caption>
 </table>
@@ -3705,7 +3748,7 @@ Text|No|Yes|NPatch+|No*@<hline>
 Trim|NPatch/NCurve+/Level+|Yes|NPatch|No*@<hline>
 ConcatNP|NPatch*|Yes|NPatch|No*@<hline>
 ExtrNP|NPatch|Yes|NPatch|No*@<hline>
-OffsetNP|NPatch|Yes|NPatch|No*@<hline>
+OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Surface Tool Objects</caption>
 </table>
@@ -3720,7 +3763,7 @@ paradigms to be included in Ayam scenes:
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 PolyMesh|No|Yes|SDMesh|Yes@<hline>
-SDMesh|No|Yes|PolyMesh|Yes@<hline>
+SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Polygonal and Subdivision Objects</caption>
 </table>
@@ -3736,7 +3779,7 @@ or define new object types via the custom object plugin mechanism.
 Script|Any+|No|Any|No*@<hline>
 MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
-SDNPatch|No|Yes|PolyMesh|Yes@<hline>
+SDNPatch|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
@@ -3924,7 +3967,7 @@ The following table briefly lists some capabilities of the View object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-View|NPatch|No|N/A|Yes@<hline>
+View|NPatch|No|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>View Object Capabilities</caption>
 </table>
@@ -4027,7 +4070,7 @@ The following table briefly lists some capabilities of the Camera object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Camera|No|No|N/A|Yes@<hline>
+Camera|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Camera Object Capabilities</caption>
 </table>
@@ -4081,7 +4124,7 @@ The following table briefly lists some capabilities of the Light object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Light|Yes|No|N/A|Yes@<hline>
+Light|Yes|No|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Light Object Capabilities</caption>
 </table>
@@ -4367,7 +4410,7 @@ The following table briefly lists some capabilities of the Material object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Material|No|N/A|N/A|No@<hline>
+Material|No|N/A|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Material Object Capabilities</caption>
 </table>
@@ -4516,7 +4559,7 @@ The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No@<hline>
+Level|Any+|Yes|N/A&thinsp;/&thinsp;Children+|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -4699,7 +4742,7 @@ The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Any+|No|Children+|No*@<hline>
+Clone|Any+|No|Children+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -4719,17 +4762,23 @@ touched when placing the clone on the trajectory.
 <tt/"Rotate_X"/, <tt/"Rotate_Y"/, <tt/"Rotate_Z"/,
 <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/,
 those attributes control the transformation of the instances created by
-the Clone object. Note that the attributes specify difference values
+the Clone object. These attributes specify difference values
 between two instances: the clone <tt/"n+1"/ is offset by <tt/"Translate_X"/,
 <tt/"Translate_Y"/, and <tt/"Translate_Z"/ from the previous clone <tt/"n"/.
 It is also rotated by <tt/"Rotate_X"/, <tt/"Rotate_Y"/, and <tt/"Rotate_Z"/
 and scaled by <tt/"Scale_X"/, <tt/"Scale_Y"/, <tt/"Scale_Z"/ in relation
-to the previous clone. Note however, that the transformation attributes
+to the previous clone.
+
+<p>
+Note however, that the transformation attributes
 do not affect the first clone.
 
+<p>
+The transformation attributes are also in effect if a trajectory
+curve is present, they will be applied after moving of the
+instance to the trajectory and rotating it.
+<footnote>Since 1.13.</footnote>
 
-Since Ayam 1.13 the transformation attributes are also used if a trajectory
-curve is present.
 </itemize>
 The following table summarizes which transformation attributes are used
 in the respective clone modes.
@@ -4739,7 +4788,7 @@ in the respective clone modes.
 <bf/Mode/|<bf/Use Child Transform/|<bf/Use CloneAttrib Transform/|<bf/Use Clone Transform/@<hline>
 Clone|No|Yes|Yes@<hline>
 Trajectory|Yes|Yes|Yes@<hline>
-Mirror|Yes|N/A|Yes@<hline>
+Mirror|Yes|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Clone Parameterisation Examples</caption>
 </table>
@@ -4773,6 +4822,7 @@ if the Clone is in trajectory mode.
 <p>
 The Mirror object allows to easily create and control an arbitrary
 number of mirrored instances of a number of objects.
+<footnote>Since 1.20.</footnote>
 <p>
 The original object(s)
 <em>and</em> their mirrored counterparts will be
@@ -4802,7 +4852,7 @@ The following table briefly lists some capabilities of the Mirror object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Mirror|Any+|No|Children+|No*@<hline>
+Mirror|Any+|No|Children+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Mirror Object Capabilities</caption>
 </table>
@@ -4902,7 +4952,7 @@ The following table briefly lists some capabilities of the Instance object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Instance|No|No|Master|No*@<hline>
+Instance|No|No|Master|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Instance Object Capabilities</caption>
 </table>
@@ -5016,7 +5066,7 @@ The following table briefly lists some capabilities of the Select object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No@<hline>
+Select|Any+|No|N/A&thinsp;/&thinsp;Children+|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Select Object Capabilities</caption>
 </table>
@@ -5065,7 +5115,7 @@ The following table briefly lists some capabilities of the RiInc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiInc|No|No|N/A|No@<hline>
+RiInc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>RiInc Object Capabilities</caption>
 </table>
@@ -5090,7 +5140,7 @@ The following table briefly lists some capabilities of the RiProc object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-RiProc|No|No|N/A|No@<hline>
+RiProc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>RiProc Object Capabilities</caption>
 </table>
@@ -5123,7 +5173,7 @@ The following table briefly lists some capabilities of the Box object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Box|No|Yes|NPatch*|No*@<hline>
+Box|No|Yes|NPatch*|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Box Object Capabilities</caption>
 </table>
@@ -5172,7 +5222,7 @@ The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sphere|No|Yes|NPatch+|No*@<hline>
+Sphere|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sphere Object Capabilities</caption>
 </table>
@@ -5211,7 +5261,7 @@ The following table briefly lists some capabilities of the Disk object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Disk|No|Yes|NPatch|No*@<hline>
+Disk|No|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Disk Object Capabilities</caption>
 </table>
@@ -5242,7 +5292,7 @@ The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cone|No|Yes|NPatch+|No*@<hline>
+Cone|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cone Object Capabilities</caption>
 </table>
@@ -5279,7 +5329,7 @@ The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cylinder|No|Yes|NPatch+|No*@<hline>
+Cylinder|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cylinder Object Capabilities</caption>
 </table>
@@ -5320,7 +5370,7 @@ The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Torus|No|Yes|NPatch+|No*@<hline>
+Torus|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Torus Object Capabilities</caption>
 </table>
@@ -5363,7 +5413,7 @@ The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Paraboloid|No|Yes|NPatch+|No*@<hline>
+Paraboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Paraboloid Object Capabilities</caption>
 </table>
@@ -5405,7 +5455,7 @@ The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Hyperboloid|No|Yes|NPatch+|No*@<hline>
+Hyperboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Hyperboloid Object Capabilities</caption>
 </table>
@@ -5456,7 +5506,7 @@ The following table briefly lists some capabilities of the NCurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NCurve|No|No|N/A|Yes@<hline>
+NCurve|No|No|N/A|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>NCurve Object Capabilities</caption>
 </table>
@@ -5724,7 +5774,7 @@ The following table briefly lists some capabilities of the ICurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ICurve|No|No|NCurve|Yes@<hline>
+ICurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ICurve Object Capabilities</caption>
 </table>
@@ -5825,7 +5875,7 @@ The following table briefly lists some capabilities of the ACurve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ACurve|No|No|NCurve|Yes@<hline>
+ACurve|No|No|NCurve|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ACurve Object Capabilities</caption>
 </table>
@@ -5855,7 +5905,7 @@ The following table illustrates this relationship.
 10|5|3|Yes|8@<hline>
 10|4|4|Yes|8@<hline>
 5|4|3|No|4@<hline>
-5|4|3|Yes|7@<hline>
+5|4|3|Yes|7<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ACurve Parameterisation Examples</caption>
 </table>
@@ -5915,7 +5965,7 @@ The following table briefly lists some capabilities of the NCircle object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NCircle|No|No|NCurve|No*@<hline>
+NCircle|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>NCircle Object Capabilities</caption>
 </table>
@@ -6001,7 +6051,7 @@ The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve+|No|NCurve|No*@<hline>
+ConcatNC|NCurve+|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
 </table>
@@ -6093,7 +6143,8 @@ and move it to the newly created ExtrNC object.
 <p>
 As the geometry of the extracted curve is completely defined by
 the master surface, ExtrNC objects do not support own transformation
-attributes (since Ayam 1.19).
+attributes.
+<footnote>Since 1.19.</footnote>
 <p>
 Note that the extraction of any curves currently completely ignores
 potentially present trimming information of the NPatch object.
@@ -6102,7 +6153,7 @@ The following table briefly lists some capabilities of the ExtrNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNC|NPatch|No|NCurve|No*@<hline>
+ExtrNC|NPatch|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ExtrNC Object Capabilities</caption>
 </table>
@@ -6233,7 +6284,7 @@ The following table briefly lists some capabilities of the OffsetNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-OffsetNC|NCurve|No|NCurve|No*@<hline>
+OffsetNC|NCurve|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>OffsetNC Object Capabilities</caption>
 </table>
@@ -6298,7 +6349,7 @@ The following table briefly lists some capabilities of the NPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NPatch|NCurve+/Level+|Yes|PolyMesh|Yes@<hline>
+NPatch|NCurve+/Level+|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>NPatch Object Capabilities</caption>
 </table>
@@ -6439,7 +6490,7 @@ The following table briefly lists some capabilities of the IPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-IPatch|No|Yes|NPatch|Yes@<hline>
+IPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>IPatch Object Capabilities</caption>
 </table>
@@ -6540,7 +6591,7 @@ The following table briefly lists some capabilities of the BPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-BPatch|No|Yes|NPatch|Yes@<hline>
+BPatch|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>BPatch Object Capabilities</caption>
 </table>
@@ -6590,7 +6641,7 @@ The following table briefly lists some capabilities of the PatchMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-PatchMesh|No|Yes|NPatch|Yes@<hline>
+PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>PatchMesh Object Capabilities</caption>
 </table>
@@ -6691,7 +6742,7 @@ The following table briefly lists some capabilities of the PolyMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-PolyMesh|No|Yes|SDMesh|Yes@<hline>
+PolyMesh|No|Yes|SDMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>PolyMesh Object Capabilities</caption>
 </table>
@@ -6768,7 +6819,7 @@ The following table briefly lists some capabilities of the SDMesh object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-SDMesh|No|Yes|PolyMesh|Yes@<hline>
+SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>SDMesh Object Capabilities</caption>
 </table>
@@ -6849,7 +6900,7 @@ The following table briefly lists some capabilities of the Revolve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|NCurve|Yes|NPatch+|No*@<hline>
+Revolve|NCurve|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Revolve Object Capabilities</caption>
 </table>
@@ -6970,7 +7021,7 @@ The following table briefly lists some capabilities of the Extrude object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Extrude|NCurve+|Yes|NPatch+|No*@<hline>
+Extrude|NCurve+|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Extrude Object Capabilities</caption>
 </table>
@@ -7103,7 +7154,7 @@ The following table briefly lists some capabilities of the Swing object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Swing|NCurve*|Yes|NPatch+|No*@<hline>
+Swing|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Swing Object Capabilities</caption>
 </table>
@@ -7232,7 +7283,7 @@ The following table briefly lists some capabilities of the Sweep object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sweep|NCurve*|Yes|NPatch+|No*@<hline>
+Sweep|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sweep Object Capabilities</caption>
 </table>
@@ -7311,7 +7362,7 @@ the Sweep object.
 0|5|4|6|4@<hline>
 0|6|5|7|5@<hline>
 4|6|5|5|4@<hline>
-10|6|5|11|4@<hline>
+10|6|5|11|4<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sweep Parameterisation Examples</caption>
 </table>
@@ -7393,7 +7444,7 @@ The following table briefly lists some capabilities of the Birail1 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail1|NCurve*|Yes|NPatch+|No*@<hline>
+Birail1|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail1 Object Capabilities</caption>
 </table>
@@ -7450,7 +7501,7 @@ the birail object.
 0|5|4|6|4@<hline>
 0|6|5|7|5@<hline>
 4|6|5|5|4@<hline>
-10|6|5|11|4@<hline>
+10|6|5|11|4<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail1 Parameterisation Examples</caption>
 </table>
@@ -7551,7 +7602,7 @@ The following table briefly lists some capabilities of the Birail2 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail2|NCurve*|Yes|NPatch+|No*@<hline>
+Birail2|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail2 Object Capabilities</caption>
 </table>
@@ -7610,7 +7661,7 @@ the birail object.
 0|5|4|6|4@<hline>
 0|6|5|7|5@<hline>
 4|6|5|5|4@<hline>
-10|6|5|11|4@<hline>
+10|6|5|11|4<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail2 Parameterisation Examples</caption>
 </table>
@@ -7702,7 +7753,7 @@ The following table briefly lists some capabilities of the Skin object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Skin|NCurve*|Yes|NPatch+|No*@<hline>
+Skin|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Skin Object Capabilities</caption>
 </table>
@@ -7894,7 +7945,7 @@ The following table briefly lists some capabilities of the Gordon object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Gordon|NCurve*/Level|Yes|NPatch+|No*@<hline>
+Gordon|NCurve*/Level|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Gordon Object Capabilities</caption>
 </table>
@@ -7994,7 +8045,7 @@ The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Bevel|NCurve+|Yes|NPatch|No*@<hline>
+Bevel|NCurve+|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
 </table>
@@ -8114,7 +8165,7 @@ The following table briefly lists some capabilities of the Cap object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cap|NCurve+|Yes|NPatch|No*@<hline>
+Cap|NCurve+|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cap Object Capabilities</caption>
 </table>
@@ -8172,7 +8223,7 @@ The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNP|NPatch*|Yes|NPatch|No*@<hline>
+ConcatNP|NPatch*|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
@@ -8249,7 +8300,7 @@ The following table briefly lists some capabilities of the ExtrNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ExtrNP|NPatch|Yes|NPatch|No*@<hline>
+ExtrNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ExtrNP Object Capabilities</caption>
 </table>
@@ -8323,7 +8374,7 @@ The following table briefly lists some capabilities of the OffsetNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-OffsetNP|NPatch|Yes|NPatch|No*@<hline>
+OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>OffsetNP Object Capabilities</caption>
 </table>
@@ -8388,7 +8439,7 @@ The following table briefly lists some capabilities of the Text object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Text|No|Yes|NPatch+|No*@<hline>
+Text|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Text Object Capabilities</caption>
 </table>
@@ -8500,7 +8551,7 @@ The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Trim|NPatch/NCurve+/Level+|Yes|NPatch|No@<hline>
+Trim|NPatch/NCurve+/Level+|Yes|NPatch|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Trim Object Capabilities</caption>
 </table>
@@ -8670,7 +8721,7 @@ The following table briefly lists some capabilities of the Script object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Any+|No|Any+|No*@<hline>
+Script|Any+|No|Any+|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
@@ -8962,7 +9013,7 @@ MetaComp objects.
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
 MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
-MetaComp|No|No|N/A|No@<hline>
+MetaComp|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>MetaObj/MetaComp Object Capabilities</caption>
 </table>
@@ -9123,7 +9174,7 @@ The following table briefly lists some capabilities of the SDNPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-SDNPatch|No|Yes|PolyMesh|Yes@<hline>
+SDNPatch|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>SDNPatch Object Capabilities</caption>
 </table>
@@ -11222,7 +11273,7 @@ exist:
 Transformations|transfPropData|getTrafo|setTrafo@<hline>
 Attributes|attrPropData|getAttr|setAttrp@<hline>
 Material|matPropData|getMat|setMat@<hline>
-Tags|tagsPropData|getTagsp|setTagsp@<hline>
+Tags|tagsPropData|getTagsp|setTagsp<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Property Arrays and Callbacks</caption>
 </table>
@@ -14295,7 +14346,7 @@ explain the operations in more detail:
 <tt/g/|gyro|The dual operation to s is g. g is like k but with the new edges connecting the face centers to the 1/3 points on the edges rather than the vertices.@<hline>
 <tt/b/|bevel|The bevel operation can be defined by bX=taX.@<hline>
 <tt/o/|ortho|Dual to e, oX=deX=jjX. oX has the effect of putting new vertices in the middle of each face of X and connecting them, with new edges, to the edge midpoints of X.@<hline>
-<tt/m/|meta|Dual to b, m is like k and o combined; new edges connect new vertices at the face centers to the old vertices and new vertices at the edge midpoints.@<hline>
+<tt/m/|meta|Dual to b, m is like k and o combined; new edges connect new vertices at the face centers to the old vertices and new vertices at the edge midpoints.<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Conway Notation Operations</caption>
 </table>
@@ -14304,7 +14355,7 @@ explain the operations in more detail:
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
 <bf/Letter/|<bf/Name/|<bf/Description/@<hline>
 <tt/r/|reflect|Changes a left-handed solid to right handed, or vice versa, but has no effect on a reflexible solid. So rC=C, but compare sC and rsC.@<hline>
-<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g. pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e. paX=apX.@<hline>
+<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g. pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e. paX=apX.<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Additional Operations</caption>
 </table>
@@ -14479,7 +14530,7 @@ Integer (2)|Integer (2)@<hline>
 Double (3.14)|Double (3.14)@<hline>
 String ("mystr")|String ("mystr")@<hline>
 List ({0 1 2})|Array ((0, 1, 2))@<hline>
-Array (mya(mye) = 0.1)|Object (mya.mye = 0.1)@<hline>
+Array (mya(mye) = 0.1)|Object (mya.mye = 0.1)<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Tcl to JavaScript Data Conversions</caption>
 </table>
@@ -14499,7 +14550,7 @@ See also the following table.
 Integer (2)|Integer (2)@<hline>
 Double (3.14)|Double (3.14)@<hline>
 String ("mystr")|String ("mystr")@<hline>
-Array ((0, 1, 2))|List ({0 1 2})@<hline>
+Array ((0, 1, 2))|List ({0 1 2})<#if out=latex>@<hline></#if>
 </tabular>
 <caption>JavaScript to Tcl Data Conversions</caption>
 </table>
@@ -14653,7 +14704,7 @@ Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
 
 Instances|Yes|No|No|No|No|No@<hline>
 
-CSG|Yes|No|No|No|No|No@<hline>
+CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Ayam Features Supported by Various Import Plugins</caption>
 </table>
@@ -14680,7 +14731,7 @@ Hierarchy|Yes|No|Yes|No|No|Yes@<hline>
 
 Instances|Yes|No|No|No|No|Yes@<hline>
 
-CSG|Yes|No|No|No|No|No@<hline>
+CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Ayam Features Supported by Various Export Formats</caption>
 </table>
@@ -14716,7 +14767,7 @@ from a different version should be considered unsupported.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
 <bf/Format/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
-Version|3.0|3.0|1.0|14|3.0|3.1@<hline>
+Version|3.0|3.0|1.0|14|3.0|3.1<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Supported File Format Versions Overview</caption>
 </table>
@@ -14955,7 +15006,7 @@ TRACE|BPatch@<hline>
 POLYLINE|NCurve&thinsp;/&thinsp;PolyMesh&thinsp;/&thinsp;NPatch@<hline>
 LWPOLYLINE|NCurve@<hline>
 SPLINE|NCurve@<hline>
-INSERT|Instance@<hline>
+INSERT|Instance<#if out=latex>@<hline></#if>
 </tabular>
 <caption>DXF Import Conversion Table</caption>
 </table>
@@ -15234,7 +15285,7 @@ Torus|Torus@<hline>
 NURBCurve|NCurve@<hline>
 NURBCurve2D|NCurve@<hline>
 NURBPatch|NPatch@<hline>
-Container|Level@<hline>
+Container|Level<#if out=latex>@<hline></#if>
 </tabular>
 <caption>3DMF (Apple) Import Conversion Table</caption>
 </table>
@@ -15412,7 +15463,7 @@ NurbsCurve|NCurve@<hline>
 NurbsSurface|NPatch@<hline>
 RevSurface|NPatch@<hline>
 SumSurface|NPatch@<hline>
-PlaneSurface|NPatch@<hline>
+PlaneSurface|NPatch<#if out=latex>@<hline></#if>
 </tabular>
 <caption>3DM (Rhino) Import Conversion Table</caption>
 </table>
@@ -15696,7 +15747,7 @@ NurbsSurface|NPatch|&ensp;|&ensp;@<hline>
 NurbsPatchsurface|NPatch|&ensp;|&ensp;@<hline>
 TrimmedNurbsPatchsurface|NPatch|&ensp;|&ensp;@<hline>
 NurbsSweptSurface|Sweep|&ensp;|&ensp;@<hline>
-NurbsSwungSurface|Swing|&ensp;|&ensp;@<hline>
+NurbsSwungSurface|Swing|&ensp;|&ensp;<#if out=latex>@<hline></#if>
 </tabular>
 <caption>X3D (Web3D) Import Conversion Table</caption>
 </table>
@@ -17185,7 +17236,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>ALength: <ref id="acp" name="ACurve attribute">
 <item>ALFileTypes, ALPlugins: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
-<item>Align to Parent: <ref id="vmconf" name="view menu entry">,
+<item>Align to Object: <ref id="vmconf" name="view menu entry">,
 <ref id="vwsc" name="view action">
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
@@ -18150,3 +18201,4 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 
 </article>
+
