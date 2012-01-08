@@ -1,4 +1,4 @@
-[27. Dec 2011] CVS-Head:
+[8. Jan 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -48,6 +48,7 @@ o added hidden preference option "TagResetTagged" that controls whether
   invoking the tag (select) points action should clear the current point
   selection
 o improved curve splitting for curves with multiple knots
+o improved focus handling of direct point edit action
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -71,6 +72,9 @@ o dialog window placement is now more robust wrt. multi monitor setups
 o removed "RGTrans" GUI preference option, all rendering GUI windows
   are now always transient
 
+Import/Export:
+o RIB export of tool objects now supports PV tags
+
 Scripts/Scripting Interface:
 o added "concatS" scripting command to concatenate surfaces
 o added "interpuNP"/"interpvNP" scripting commands to interpolate surfaces
@@ -88,9 +92,13 @@ o getPnt/setPnt now allow to get/set all control points of an object
 o getPnt no longer unconditionally writes to global variables
 o getPnt no longer requests a variable for w to be provided in "-eval" mode
 o scripts and plugins can now create their own view window keyboard shortcuts
-o renamed "forceNot" command to more recognizable "notifyOb", for
+o renamed "forceNot" command to more recognizable "notifyOb"; for
   compatibility with existing scripts, the old name still works
 o added "-parent" option to "notifyOb" command
+
+Documentation/Example Files:
+o historic information (i.e. when did a feature appear) are now presented
+  in a less obtrusive way (as footnotes)
 
 
 [16. Mar 2011] Ayam-1.19:
