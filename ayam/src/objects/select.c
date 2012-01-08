@@ -636,6 +636,9 @@ ay_select_providecb(ay_object *o, unsigned int type, ay_object **result)
 
 cleanup:
 
+  if(buf)
+    free(buf);
+
   if(allprovided)
     ay_object_deletemulti(allprovided);
 

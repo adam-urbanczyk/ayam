@@ -554,6 +554,7 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ay_notify_object(o);
 
   /* prevent cleanup code from doing something harmful */
+  ip = NULL;
   cv = NULL;
   sderiv_u = NULL;
   ederiv_u = NULL;
@@ -561,6 +562,9 @@ ay_ipatch_createcb(int argc, char *argv[], ay_object *o)
   ederiv_v = NULL;
 
 cleanup:
+
+  if(ip)
+    free(ip);
 
   if(cv)
     free(cv);

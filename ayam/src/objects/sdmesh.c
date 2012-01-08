@@ -774,9 +774,10 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_sdmesh_object *sdmesh = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c = NULL;
+ double *pecoord = NULL, **pecoords = NULL, **pecoordstmp;
+ double *control = NULL, *c = NULL;
  unsigned int i = 0, j = 0, a = 0;
- unsigned int *peindices = NULL, peindex = 0;
+ unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
  const int stride = 3;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -856,12 +857,26 @@ ay_sdmesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      if(!(peindices = realloc(peindices,
-				       (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
+	      if(!(peindicestmp = realloc(peindices,
+					  (a+1)*sizeof(unsigned int))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      peindices = peindicestmp;
 
 	      pecoords[a] = &(control[j]);
 	      peindices[a] = i;

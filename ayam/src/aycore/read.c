@@ -55,10 +55,10 @@ ay_read_string(FILE *fileptr, char **result)
       str[strlen(str)-1] = '\0';
     }
 
-  if(!(*result = calloc(strlen(str)+1,sizeof(char))))
+  if(!(*result = calloc(strlen(str)+1, sizeof(char))))
     {Tcl_DStringFree(&ds); return AY_EOMEM;}
 
-  strcpy(*result,str);
+  strcpy(*result, str);
 
   Tcl_DStringFree(&ds);
 
@@ -76,7 +76,7 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
  char readchar;
  int read, uc = 0, i = 0;
  Tcl_DString ds;
- Tcl_UniChar *unistring = NULL, *tmp;
+ Tcl_UniChar *unistring = NULL, *unistringtmp;
 
   Tcl_DStringInit(&ds);
   read = getc(fileptr);
@@ -96,9 +96,16 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
       if(read == ' ')
 	{
 	  sscanf(Tcl_DStringValue(&ds), "%d", &uc);
-	  tmp = unistring;
-	  if(!(unistring = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
-	    {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
+
+	  if(!(unistringtmp = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
+	    {
+	      if(unistring)
+		free(unistring);
+	      Tcl_DStringFree(&ds);
+	      return AY_EOMEM;
+	    }
+	  unistring = unistringtmp;
+
 	  unistring[i] = (Tcl_UniChar)uc;
 	  i++;
 	  Tcl_DStringFree(&ds);
@@ -113,9 +120,14 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
     } /* while */
 
   /* terminate unistring */
-  tmp = unistring;
-  if(!(unistring = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
-    {free(tmp); Tcl_DStringFree(&ds); return AY_EOMEM;}
+  if(!(unistringtmp = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
+    {
+      if(unistring)
+	free(unistring);
+      Tcl_DStringFree(&ds);
+      return AY_EOMEM;
+    }
+  unistring = unistringtmp;
   unistring[i] = (Tcl_UniChar)0;
   *result = unistring;
 

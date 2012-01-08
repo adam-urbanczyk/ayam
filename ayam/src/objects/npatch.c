@@ -1455,9 +1455,10 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_point *pnt = NULL, **lastpnt = NULL;
  ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
+ double *pecoord = NULL, **pecoords = NULL, **pecoordstmp;
+ double *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
- unsigned int *peindices = NULL, peindex = 0;
+ unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -1513,7 +1514,6 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-
       if(npatch->mpoints)
 	{
 	  mp = npatch->mpoints;
@@ -1547,7 +1547,6 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!found)
 	{
-
 	  if(!(pe->coords = calloc(1, sizeof(double*))))
 	    return AY_EOMEM;
 
@@ -1574,12 +1573,25 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      if(!(peindices = realloc(peindices,
+	      if(!(peindicestmp = realloc(peindices,
 				       (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      peindices = peindicestmp;
+
 	      pecoords[a] = &(control[j]);
 	      peindices[a] = i;
 	      a++;
@@ -2249,9 +2261,9 @@ ay_npatch_wribcb(char *file, ay_object *o)
   if((uknots = calloc(nu+uorder, sizeof(RtFloat))) == NULL)
     return AY_EOMEM;
   if((vknots = calloc(nv+vorder, sizeof(RtFloat))) == NULL)
-    return AY_EOMEM;
+    {free(uknots); return AY_EOMEM;}
   if((controls = calloc(nu*nv*(patch->is_rat?4:3), sizeof(RtFloat))) == NULL)
-    return AY_EOMEM;
+    {free(uknots); free(vknots); return AY_EOMEM;}
 
   a = 0;
   for(i = 0; i < nu+uorder; i++)
@@ -2335,7 +2347,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
 	return AY_EOMEM;
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	return AY_EOMEM;
+	{free(tokens); return AY_EOMEM;}
 
       if(patch->is_rat)
 	tokens[0] = "Pw";
