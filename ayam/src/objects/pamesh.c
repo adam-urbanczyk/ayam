@@ -393,7 +393,8 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_pamesh_object *pamesh = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
+ double *pecoord = NULL, **pecoords = NULL, **pecoordstmp = NULL;
+ double *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -420,7 +421,6 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	  pe->coords[i] = &(pamesh->controlv[a]);
 	  a += 4;
 	}
-
 
       pe->num = pamesh->width * pamesh->height;
 
@@ -472,9 +472,14 @@ ay_pamesh_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
 	      a++;
 	    } /* if */
@@ -1135,7 +1140,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 	return AY_EOMEM;
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	return AY_EOMEM;
+	{free(tokens); return AY_EOMEM;}
 
       tokens[0] = "Pw";
       parms[0] = (RtPointer)controls;

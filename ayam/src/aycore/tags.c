@@ -697,17 +697,21 @@ int
 ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		   RtPointer **valuesr)
 {
- char fname[] = "tags_parseplist", e1[] = "Missing value in parameter!";
+ int ay_status = AY_OK;
+ char fname[] = "tags_parseplist";
+ char e1[] = "Missing value in parameter!";
+ char e2[] = "Unknown parameter!";
  char *tmp = NULL, *parname = NULL, *partype = NULL, *parval = NULL;
  char *parval2 = NULL;
  char tok[] = ",";
+ int i, valueslen = 0, tokenslen = 0;
  RtInt *itemp;
  RtFloat *ftemp;
  RtPoint *ptemp;
  RtString *stemp;
  RtColor *ctemp;
- RtToken *tokens;
- RtPointer *values;
+ RtToken *tokens, *tokenstmp;
+ RtPointer *values, *valuestmp;
 
   if(!str || !argc || !tokensr || !valuesr)
     return AY_ENULL;
@@ -743,21 +747,23 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 	    {
 	      /* we have all three needed components and thus
 		 may allocate memory for the new parameter */
-	      if(!(tokens = realloc(tokens, (*argc+1)*sizeof(RtToken))))
-		{ free(tmp); return AY_EOMEM; }
-	      if(!(values = realloc(values, (*argc+1)*sizeof(RtPointer))))
-		{ free(tmp); return AY_EOMEM; }
-
+	      if(!(tokenstmp = realloc(tokens, (*argc+1)*sizeof(RtToken))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      tokens = tokenstmp;
+	      if(!(valuestmp = realloc(values, (*argc+1)*sizeof(RtPointer))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      values = valuestmp;
 	      /* copy name */
 	      if(!(tokens[*argc] = calloc(strlen(parname)+1, sizeof(char))))
-		    { free(tmp); return AY_EOMEM; }
+		{ ay_status = AY_EOMEM; goto cleanup; }
 	      strcpy(tokens[*argc], parname);
+	      tokenslen++;
 
 	      switch(*partype)
 		{
 		case 'i':
 		  if(!(itemp = calloc(1, sizeof(RtInt))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)itemp;
 		  sscanf(parval, "%d", itemp);
 		  if(declare)
@@ -765,7 +771,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'j':
 		  if(!(itemp = calloc(2, sizeof(RtInt))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)itemp;
 		  sscanf(parval, "%d", itemp);
 		  parval2 = strtok(NULL, tok);
@@ -783,7 +789,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'f':
 		  if(!(ftemp = calloc(1, sizeof(RtFloat))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)ftemp;
 		  sscanf(parval, "%f", ftemp);
 		  if(declare)
@@ -791,7 +797,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'g':
 		  if(!(ftemp = calloc(2, sizeof(RtFloat))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)ftemp;
 		  sscanf(parval, "%f", ftemp);
 		  parval2 = strtok(NULL, tok);
@@ -809,9 +815,11 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 's':
 		  if(!(stemp = calloc(1, sizeof(RtString))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
+
 		  if(!(*stemp = calloc(strlen(parval)+1, sizeof(char))))
-		    { free(tmp); free(stemp); return AY_EOMEM; }
+		    { free(stemp); ay_status = AY_EOMEM; goto cleanup; }
+
 		  strcpy(*stemp, parval);
 		  values[*argc] = (RtPointer)stemp;
 		  if(declare)
@@ -819,7 +827,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'p':
 		  if(!(ptemp = calloc(1, sizeof(RtPoint))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)ptemp;
 		  sscanf(parval, "%f", &((*ptemp)[0]));
 		  parval = strtok(NULL, tok);
@@ -845,7 +853,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		  break;
 		case 'c':
 		  if(!(ctemp = calloc(1, sizeof(RtColor))))
-		    { free(tmp); return AY_EOMEM; }
+		    { ay_status = AY_EOMEM; goto cleanup; }
 		  values[*argc] = (RtPointer)ctemp;
 		  sscanf(parval, "%f", &((*ctemp)[0]));
 		  parval = strtok(NULL, tok);
@@ -870,9 +878,12 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
 		    { RiDeclare(parname, "color"); }
 		  break;
 		default:
-		  break;
+		  ay_error(AY_ERROR, fname, e2);
+		  ay_status = AY_ERROR;
+		  goto cleanup;
 		} /* switch */
 
+	      valueslen++;
 	      *argc = *argc+1;
 
 	    } /* if(parval */
@@ -886,9 +897,35 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
   *tokensr = tokens;
   *valuesr = values;
 
+  /* prevent cleanup code from doing something harmful */
+  tokens = NULL;
+  values = NULL;
+
+cleanup:
+
+  if(tokens)
+    {
+      for(i = 0; i < tokenslen; i++)
+	{
+	  if(tokens[i])
+	    free(tokens[i]);
+	}
+      free(tokens);
+    }
+
+  if(values)
+    {
+      for(i = 0; i < valueslen; i++)
+	{
+	  if(values[i])
+	    free(values[i]);
+	}
+      free(values);
+    }
+
   free(tmp);
 
- return AY_OK;
+ return ay_status;
 } /* ay_tags_parseplist */
 
 

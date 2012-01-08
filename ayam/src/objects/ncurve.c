@@ -853,9 +853,10 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_point *pnt = NULL, **lastpnt = NULL;
  ay_mpoint *mp = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double **pecoords = NULL, *pecoord = NULL, *control = NULL, *c;
+ double **pecoords = NULL, *pecoord = NULL, **pecoordstmp;
+ double *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
- unsigned int *peindices = NULL, peindex = 0;
+ unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -941,7 +942,6 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
       if(!found)
 	{
-
 	  if(!(pe->coords = calloc(1, sizeof(double *))))
 	    return AY_EOMEM;
 
@@ -968,12 +968,26 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
+	      if(!(peindicestmp = realloc(peindices,
+					  (a+1)*sizeof(unsigned int))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  if(peindices)
+		    free(peindices);
+		  return AY_EOMEM;
+		}
+	      peindices = peindicestmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      if(!(peindices = realloc(peindices,
-				       (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
 	      pecoords[a] = &(control[j]);
 	      peindices[a] = i;
 	      a++;
@@ -1165,7 +1179,6 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose knot-list (create custom knot sequence) */
   if((ncurve->knot_type == AY_KTCUSTOM) && knots_modified)
     {
-      ay_error(AY_EOUTPUT, fname, "Checking new knots...");
       Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
@@ -1184,6 +1197,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       if(!(ay_status = ay_knots_check(new_length,new_order,knotc,nknotv)))
 	{
+	  ay_error(AY_EOUTPUT, fname, "Checking new knots... Ok.");
 	  /* the knots are ok */
 	  free(ncurve->knotv);
 	  ncurve->knotv = nknotv;
