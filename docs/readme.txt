@@ -1,4 +1,4 @@
-[readme.txt; 18. Nov 2009]
+[readme.txt; 8. Jan 2012]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
@@ -7,21 +7,21 @@ create a reference card.
 In order to build your own version of the documentation you need the
 following prerequisites:
 o make
-o tcsh in /bin (otherwise edit "fixhtml.tcsh")
 o sed
-o sgml-tools 1.0.9
+o tclsh in /usr/bin/ (otherwise edit the Makefile)
+o sgml-tools 1.0.9 or linuxdoc-tools
+
 if you want to build a PostScript version you, additionally, need
 o LaTeX
 o dvips
+
 if you want to build a PDF version you, additionally, need
 o dvipdf (not recommended) or pdflatex (recommended)
-
-If you are on Debian 3.0 (Woody) you, additionally, need:
-o tclsh in /usr/bin/ (otherwise edit "Makefile/pdf4:")
+o needspace.sty, shorttoc.sty, footmisc.sty
 
 Note: In order for HTML, PostScript, and PDF versions of the
 documentation to be created the sub directory "pics" must
-contain the pictures in GIF, EPS, and PNG format respectively.
+contain the pictures in GIF, EPS, _and_ PNG format respectively.
 
 To actually build the documentation (HTML and nice PDF) simply enter:
 >make
@@ -29,21 +29,37 @@ To actually build the documentation (HTML and nice PDF) simply enter:
 To build just the HTML version:
 >make html
 
+To re-create the style of footnotes of the official documentation
+find and change in your linuxdoc html "mapping" file:
+
+<footnote>      +       "<BLOCKQUOTE>"
+</footnote>             "</BLOCKQUOTE>"         +
+
+to
+
+<footnote>      +       "<SUB TITLE=\""
+</footnote>             "\">*</SUB>"            +
+
+
 To build the PostScript version:
 >make ps
+
+This will not work unless you create EPS files for all pictures first!
 
 To build a plain text version
 (beware, output misses a lot of formatting information):
 >make txt
 
 To build the real good looking PDF version:
->make pdf3
-
-If you are on Debian 3.0 (Woody) the pdf3-target will not work,
-use pdf5 instead!
+>make pdf5
 
 To build a simple and not good looking PDF version made with dvipdf:
 >make pdf
+
+If you want a footnote rule as in the official documentation, find
+and adapt linuxdoc-sgml.sty accordingly (comment out the
+"\let\footnoterule\relax"
+line with a %).
 
 ==============================================================================
 
