@@ -1110,12 +1110,11 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 		  /* this is not a triangle => tesselate it */
 
 		  /* create new object (for the tesselated face) */
-		  li = NULL;
 		  if(!(li = calloc(1, sizeof(ay_list_object))))
 		    return AY_EOMEM;
-		  to = NULL;
+
 		  if(!(to = calloc(1, sizeof(ay_object))))
-		    return AY_EOMEM;
+		    {free(li); return AY_EOMEM;}
 		  li->object = to;
 
 		  ay_object_defaults(to);
@@ -1150,12 +1149,11 @@ objio_writepomesh(FILE *fileptr, ay_object *o, double *m)
 	  /* this face has more than one loop (hole(s)) => tesselate it */
 
 	  /* create new object (for the tesselated face) */
-	  li = NULL;
 	  if(!(li = calloc(1, sizeof(ay_list_object))))
 	    return AY_EOMEM;
-	  to = NULL;
+
 	  if(!(to = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
+	    {free(li); return AY_EOMEM;}
 	  li->object = to;
 
 	  ay_object_defaults(to);
@@ -3176,7 +3174,7 @@ objio_readtrim(char *str, int hole)
 		    { ay_status = AY_EOMEM; goto cleanup; }
 		  lev->type = AY_LTLEVEL;
 		  if(!(l = calloc(1, sizeof(ay_object))))
-		    { ay_status = AY_EOMEM; goto cleanup; }
+		    { free(lev); ay_status = AY_EOMEM; goto cleanup; }
 		  ay_object_defaults(l);
 		  l->type = AY_IDLEVEL;
 		  l->parent = AY_TRUE;
