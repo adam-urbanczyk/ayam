@@ -1150,11 +1150,12 @@ ay_acurve_convertcb(ay_object *o, int in_place)
 
       if(new)
 	{
+	  nc = (ay_nurbcurve_object *)(new->refine);
+
 	  /* reset display mode and sampling tolerance
 	     of new curve to "global"? */
 	  if(!in_place && ay_prefs.conv_reset_display)
 	    {
-	      nc = (ay_nurbcurve_object *)(new->refine);
 	      nc->display_mode = 0;
 	      nc->glu_sampling_tolerance = 0.0;
 	    }

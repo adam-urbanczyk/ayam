@@ -786,6 +786,12 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
     } /* if */
 
+  if(!t)
+    {
+      ay_error(AY_ERROR, argv[0], NULL);
+      return TCL_OK;
+    }
+
   /* instance check, also check if views are to be moved */
   sel = ay_selection;
   while(sel)

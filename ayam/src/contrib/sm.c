@@ -807,7 +807,6 @@ ay_sm_wriballsm(char *file, char *objfile, ay_object *o,
 	} /* while */
 
   newtrafo = trafo;
-  trafo = trafo->next;
 
   free(newtrafo);
   free(shdname);

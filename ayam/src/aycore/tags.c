@@ -446,6 +446,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  /* pasting properties via property clipboard appends... */
 	  new = o->tags;
+	  next = &(o->tags);
 	  while(new)
 	    {
 	      next = &(new->next);
@@ -476,6 +477,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!(new->name = calloc(strlen(argv[index])+1, sizeof(char))))
 		{
+		  free(new);
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
@@ -483,6 +485,8 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!(new->val = calloc(strlen(argv[index+1])+1, sizeof(char))))
 		{
+		  free(new->name);
+		  free(new);
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}

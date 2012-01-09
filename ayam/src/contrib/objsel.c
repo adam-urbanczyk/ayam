@@ -125,7 +125,7 @@ void
 ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 {
   char fname[] = "objsel_process_hits";
-  char *node = NULL, *tmp = NULL;
+  char *node = NULL, *nodetmp, *tmp = NULL, *tmptmp;
   int i = 0;
   unsigned int size = 0;
   GLint *ptr = NULL;
@@ -216,14 +216,18 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
 	      if ((strlen (node) + strlen (tmp) + 10) > size)
 		{
 		  size += 256;
-		  node = (char*) realloc(node, (size_t)(size * sizeof (char)));
-		  if (!node)
+		  nodetmp = (char*) realloc(node,
+					    (size_t)(size * sizeof (char)));
+		  if (!nodetmp)
 		    {
-		      free (node);
-		      free (tmp);
+		      if(node)
+			free (node);
+		      if(tmp)
+			free (tmp);
 		      ay_error (AY_EOMEM, fname, NULL);
 		      return;
 		    }
+		  node = nodetmp;
 		}
 
 	      /* Adds the level number to the node */
@@ -252,15 +256,18 @@ ay_objsel_process_hits (GLint hits, GLuint buffer[], char *var)
   /* Verify that 'tmp' is big enough to store the Tcl command */
   if ((strlen (node) + strlen (var) + 16) > 256)
     {
-      tmp = (char*) realloc (tmp, (strlen (node) + strlen (var) + 16) *
+      tmptmp = (char*) realloc (tmp, (strlen (node) + strlen (var) + 16) *
 			     sizeof (char));
-      if (!tmp)
+      if (!tmptmp)
 	{
-	  free (node);
-	  free (tmp);
+	  if(node)
+	    free (node);
+	  if(tmp)
+	    free (tmp);
 	  ay_error (AY_EOMEM, fname, NULL);
 	  return;
 	}
+      tmp = tmptmp;
     }
 
   /* Store the result in the Tcl variable : node */
