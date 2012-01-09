@@ -416,25 +416,28 @@ ay_script_getsp(Tcl_Interp *interp, ay_script_object *sc)
 		{
 		  ay_status = AY_EOMEM;
 		}
-	      sc->paramslen = arrmembers;
-	      for(i = 0; i < arrmembers; i++)
+	      else
 		{
-		  arrmember = NULL;
-		  Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
-		  if(arrmember)
+		  sc->paramslen = arrmembers;
+		  for(i = 0; i < arrmembers; i++)
 		    {
-		      sc->params[i] =
+		      arrmember = NULL;
+		      Tcl_ListObjIndex(interp, arrmemberlist, i, &arrmember);
+		      if(arrmember)
+			{
+			  sc->params[i] =
 			Tcl_DuplicateObj(Tcl_ObjGetVar2(interp, toa, arrmember,
 						    TCL_GLOBAL_ONLY));
-		      Tcl_IncrRefCount(sc->params[i]);
-		      /**/
+			  Tcl_IncrRefCount(sc->params[i]);
+			  /**/
 #ifndef AYNOSAFEINTERP
-		      Tcl_ObjSetVar2(ay_safeinterp, toa, arrmember,
+			  Tcl_ObjSetVar2(ay_safeinterp, toa, arrmember,
 		      Tcl_ObjGetVar2(interp, toa, arrmember, TCL_GLOBAL_ONLY),
-				     TCL_GLOBAL_ONLY);
+					 TCL_GLOBAL_ONLY);
 #endif
-		    } /* if */
-		} /* for */
+			} /* if */
+		    } /* for */
+		} /* if */
 	    } /* if */
 	} /* if */
 

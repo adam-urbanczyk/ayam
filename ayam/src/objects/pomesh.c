@@ -518,12 +518,12 @@ ay_pomesh_copycb(void *src, void **dst)
 	}
       memcpy(pomesh->nloops, pomeshsrc->nloops,
 	     pomesh->npolys * sizeof(unsigned int));
-    }
 
-  for(i = 0; i < pomeshsrc->npolys; i++)
-    {
-      total_loops += pomeshsrc->nloops[i];
-    } /* for */
+      for(i = 0; i < pomeshsrc->npolys; i++)
+	{
+	  total_loops += pomeshsrc->nloops[i];
+	} /* for */
+    } /* if */
 
   /* copy nverts */
   if(pomeshsrc->nverts)
