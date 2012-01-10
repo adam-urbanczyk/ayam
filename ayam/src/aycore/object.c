@@ -351,11 +351,6 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_object_delete(o);
 	  if(ay_status)
 	    {
-	      /*
-	      ay_error(ay_status, argv[0], NULL);
-	      ay_object_link(o);
-	      return TCL_OK;
-	      */
 	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);
@@ -369,21 +364,21 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
+  /* free selection */
+  ay_sel_free(AY_FALSE);
+
   while(try_again)
     {
       ay_status = ay_object_delete(try_again->object);
       if(ay_status)
 	{
 	  ay_error(ay_status, argv[0], NULL);
-	  ay_object_link(o);
+	  ay_object_link(try_again->object);
 	}
       t = try_again->next;
       free(try_again);
       try_again = t;
     } /* while */
-
-  /* free selection */
-  ay_sel_free(AY_FALSE);
 
   ay_notify_parent();
 
@@ -429,43 +424,44 @@ ay_object_unlink(ay_object *o)
 {
  int ay_status = AY_OK;
  int done;
- ay_list_object *lev = ay_currentlevel;
- ay_object *clevel = NULL, *p, *p2;
+ ay_list_object *clevel = ay_currentlevel;
+ ay_object *clevelobj = NULL, *p1, *p2;
 
-  clevel = lev->object;
+  clevelobj = clevel->object;
 
   /* unlink first object of current level? */
-  if(clevel == o)
+  if(clevelobj == o)
     { /* yes */
-      p = lev->next->object;
-      p->down = o->next;
+      p1 = clevel->next->object;
+      p1->down = o->next;
       if(ay_next == &(o->next))
-	{ /* repair ay_next */
-	  ay_next = &(p->down);
+	{
+	  /* repair ay_next */
+	  ay_next = &(p1->down);
 	}
       ay_clevel_del();
       ay_clevel_add(o->next);
     }
   else
     { /* no */
-      p = clevel;
-      p2 = p;
-      p = p->next;
+      p1 = clevelobj;
+      p2 = p1;
+      p1 = p1->next;
       done = AY_FALSE;
-      while(p && !done)
+      while(p1 && !done)
 	{
-	  if(p == o)
+	  if(p1 == o)
 	    {
 	      p2->next = o->next;
 	      done = AY_TRUE;
 	      if(ay_next == &(o->next))
-		{ /* repair ay_next */
+		{
+		  /* repair ay_next */
 		  ay_next = &(p2->next);
 		}
-
 	    } /* if */
-	  p2 = p;
-	  p = p->next;
+	  p2 = p1;
+	  p1 = p1->next;
 	} /* while */
     } /* if */
 
