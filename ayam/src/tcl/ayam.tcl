@@ -209,6 +209,8 @@ array set ayprefs {
 
  TagResetTagged 0
 
+ ConsoleTakeFocus 1
+
  Docs "http://ayam.sourceforge.net/docs/"
  DailyTips {
 {Always click on drawn pixels, when picking vertices.}
@@ -1382,7 +1384,6 @@ pack .fl -in . -side bottom -fill both
 frame .fl.dummy
 console .fl.con -showmenu 0 -height 5 -width 60
 pack .fl.con -in .fl -expand 1 -fill both
-#.fl.con configure -takefocus 0
 
 # additional key/mouse bindings for the console
 bindtags .fl.con.console {.fl.con.console Console PostConsole .fl.con}
@@ -1581,6 +1582,11 @@ if { $ayprefs(Prompt) != "" } {
 # establish some standard-traces that update the prompt
 # (ay(uc) is set by the undo system)
 trace variable ay(uc) w ayam_updateprompt
+
+# exclude console from focus traversal via Tab
+if { $::ayprefs(ConsoleTakeFocus) == 0 } {
+    .fl.con.console configure -takefocus 0
+}
 
 # immediately switch to ListBox?
 if { $ayprefs(showtr) == 0 } {
