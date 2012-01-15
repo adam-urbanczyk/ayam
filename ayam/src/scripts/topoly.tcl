@@ -18,7 +18,7 @@ proc toPoly { } {
 	set t "Warning!"
 	set m "Save your scene first!"
 
-	if { $ayprefs(PrepDiaCap) == 1 } {
+	if { $ayprefs(FixDialogTitles) == 1 } {
 	    set m "$t\n\n$m"
 	}
 
