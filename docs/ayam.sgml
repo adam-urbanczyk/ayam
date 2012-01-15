@@ -1521,7 +1521,8 @@ Some preferences are outlined in greater detail in section
 <itemize>
 <item><tt/"Automatic Redraw"/, toggles whether the view should
 be redrawn, whenever the scene changes. If this is disabled,
-you can force a redraw using <tt>"View/Redraw"</tt>.
+you can force a redraw using the menu entry <tt>"View/Redraw"</tt>
+or the corresponding keyboard shortcut <tt/&lt;Ctrl+d&gt;/.
 
 <item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
 representation (<tt>"Drawing Mode/Draw"</tt>) or a shaded one
@@ -6964,7 +6965,9 @@ Revolve objects will be exported as NURBS patch primitives:
 If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7112,7 +7115,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7195,7 +7200,9 @@ Swing objects will be exported as NURBS patch primitives:
 If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7390,7 +7397,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: start bevel, start cap,
 end bevel, end cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7529,7 +7538,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7689,7 +7700,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7832,7 +7845,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7991,7 +8006,10 @@ Gordon objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8108,7 +8126,9 @@ Bevel objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8197,7 +8217,9 @@ Cap objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8258,7 +8280,9 @@ ConcatNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8346,7 +8370,9 @@ ExtrNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8406,7 +8432,9 @@ OffsetNP objects will be exported as NURBS patch primitives:
 <tscreen>
 <tt>RiNuPatch(...);</tt>
 </tscreen>
-PV tags are currently not supported.
+
+PV tags are supported.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8518,7 +8546,9 @@ If caps or bevels are present, those follow as potentially trimmed
 NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
-PV tags are currently not supported.
+PV tags are supported but all NURBS patch primitives will get
+the same set of tags.
+<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -14081,13 +14111,20 @@ bgconvert.tcl).
 
 <sect2>Repair Ayam<label id="repayam">
 <p>
-Since Ayam 1.8.2 an external Tcl script named <tt>"repairAyam.tcl"</tt> is
-provided that may be used to repair the application state of Ayam
+The external Tcl script <tt>"repairAyam.tcl"</tt>
+may be used to repair the application state of Ayam,
 should it be stuck e.g. in an endless loop of Tcl error messages.
+<footnote>Since 1.8.2.</footnote>
 <p>
 On Unix systems <tt>"repairAyam"</tt> may be started from any
-shell simply by typing <tt>"./repairAyam.tcl"</tt> or
-<tt>"wish repairAyam.tcl"</tt> (without the quotes)
+shell simply by typing
+<tscreen>
+./repairAyam.tcl
+</tscreen>
+or
+<tscreen>
+wish repairAyam.tcl
+</tscreen>
 on the command prompt; if the script detects that it is running on Unix
 and not in Ayam it will send itself to the Tcl interpreter Ayam is
 running in using the Tk send command. On Mac OS X Aqua (not X11!)
@@ -14095,29 +14132,42 @@ AppleScript events will be used instead of the Tk send command.
 If this does not work as expected <tt>"repairAyam.tcl"</tt> may still
 be run via the Ayam console (as on Win32).
 <p>
-On Win32 you have to start <tt>"repairAyam.tcl"</tt> from the Ayam console
-using the command: <tt>"source scripts/repairAyam.tcl"</tt> or using
-the consoles context menu: <tt>"Console/Load File"</tt>.
+On Win32 one has to start <tt>"repairAyam.tcl"</tt> from the Ayam console
+using the command:
+<tscreen>
+source scripts/repairAyam.tcl
+</tscreen>
+or via the consoles context menu: <tt>"Console/Load File"</tt>.
 <p>
 The script <tt>"repairAyam.tcl"</tt> should be considered a
-<em>last resort</em> to help you save your modified objects!
+<em>last resort</em> to help saving the current state of
+modified objects!
 <p>
 The script will close all views, clean up the application state variables,
 reset the mouse cursor and the console prompt, and try to update important
-main window widgets. Since Ayam 1.9 it will also clear the console and
+main window widgets.
+<p>
+Furthermore, the script will also clear the console and
 try to break potential endless loops running e.g. in the console or
 in script objects.
+<footnote>Since 1.9.</footnote>
 <p>
-After running <tt>"repairAyam.tcl"</tt> you should immediately save
-the scene (or just the important objects you were editing using
-<tt>"Special/Save Selected"</tt>) to a new file, not the scene file
-you were working with initially, and restart Ayam.
+After running <tt>"repairAyam.tcl"</tt> the scene (or the most
+important objects currently worked on) should be immediately
+saved to a new scene file, <em>not</em> the file currently loaded,
+using <tt>"File/Save As"</tt> or
+<tt>"Special/Save Selected"</tt>) and Ayam should be restarted
+afterwards.
+<p>
+Simply saving the scene using <tt>"File/Save"</tt> or <tt/&lt;Ctrl+s&gt;/
+should be avoided because views were possibly deleted.
 
 <sect2>Convert Everything to Polygons<label id="topolytcl">
 <p>
-Since Ayam 1.13 there ist a script named <tt>"topoly.tcl"</tt> that
+The script <tt>"topoly.tcl"</tt>
 recursively browses through the scene and converts everything
 to a polygonal representation.
+<footnote>Since 1.13.</footnote>
 <p>
 After running the script, there is a new button in the toolbox
 named <tt>"ToPolyMesh"</tt>. Additionally, there is a corresponding
@@ -14136,10 +14186,20 @@ section <ref id="tesst" name="Tesselation Tool">.
 
 <sect2>Convert Everything to NURBS patches<label id="tonpatchtcl">
 <p>
-Since Ayam 1.14 there ist a script named <tt>"tonpatch.tcl"</tt> that
+The script <tt>"tonpatch.tcl"</tt>
 recursively browses through the scene and converts everything
-to a NURBS patch representation (it flattens the tool object
-hierarchy).
+to a NURBS patch representation effectively flattening the tool object
+hierarchy.
+<footnote>Since 1.14.</footnote>
+<p>
+After running the script, there is a new button in the toolbox
+named <tt>"ToNPatch"</tt>. Additionally, there is a corresponding
+entry in the <tt>"Custom"</tt> main menu.
+Pressing the button or using the menu entry immediately starts the
+conversion process.
+<p>
+Since the changes of the conversion can not be undone, the conversion
+will not run if the scene contains unsaved changes.
 
 <sect2>Restrict the Console<label id="twolconstcl">
 <p>
@@ -14218,10 +14278,12 @@ via the keyboard shortcut <tt/&lt;o&gt;/.
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
-Since Ayam 1.15 there is an external Tcl script named <tt>"bgconvert.tcl"</tt>
-available that converts scene files from one 3D file format to another,
+The external Tcl script <tt>"bgconvert.tcl"</tt>
+converts scene files from one 3D file format to another,
 with the help of Ayam which is running in the background.
-In the most simple form, bgconvert may be used from a UNIX command line
+<footnote>Since 1.15.</footnote>
+<p>
+In the most simple form, bgconvert may be used from a Unix command line
 (or shell script) like this:
 <code>
 bgconvert.tcl infile.x3d outfile.dxf
@@ -14229,9 +14291,9 @@ bgconvert.tcl infile.x3d outfile.dxf
 The above command would load the X3D file <tt>"infile.x3d"</tt>
 into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
 <p>
-Ayam has to run already and the plugins required for the import and
-export processes need to be available and properly configured
-(check the <tt>"Plugins"</tt> preference setting).
+For a successfull conversion Ayam has to run and the plugins required
+for the import and export processes need to be available and properly
+configured (check the <tt>"Plugins"</tt> preference setting).
 The plugins necessary for the conversion will be loaded automatically.
 <p>
 Import and export options may also be given like this:
@@ -14804,6 +14866,8 @@ RiOptions and RiAttributes, shaders (except transformation
 shaders and without array arguments!), (since Ayam 1.7)
 arbitrary primitive variables (e.g. varying or vertex), and
 (since Ayam 1.9) procedural objects and delayed read archives.
+Texture coordinates will import as TC tags
+(see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
 (blobby models) and calls to the RenderMan Interface that are not
@@ -15524,7 +15588,7 @@ The onio plugin exports 3DM files of version 3.0.
 <sect2>Ayam Object and Properties Support
 <p>
 The export functionality of the onio plugin currently covers
-export of all boxes, quadrics, NURBS, instances, clones, script
+export of all boxes, quadrics, NURBS, polymeshes, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces.
 Even though export of planar cap surfaces of various
@@ -15539,7 +15603,6 @@ as would be necessary.
 Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
-Since Ayam 1.8.3, also PolyMesh objects may be exported.
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
 transformation attributes per object, the hierarchy of the Ayam scene
@@ -15768,9 +15831,11 @@ and thus the <tt>"creaseAngle"</tt> attribute will be fully ignored.
 Note however, that if normals are specified, e.g. for an
 <tt>"IndexedFaceSet"</tt> element, they will be imported correctly.
 <p>
-Furthermore, since Ayam 1.17, if normals, colors, or texture coordinates
+Furthermore, if normals, colors, or texture coordinates
 are provided to an element that imports as a PolyMesh (IndexedFaceSet
 and the likes) proper PV (primitive variable) tags will be created.
+<footnote>Since 1.17.</footnote>
+<p>
 If there is an index provided to the normals, colors, or texture coordinates,
 the relevant affected data (e.g. the vertex coordinates) will be expanded
 properly (as RenderMan does not support multiple different indices on the
@@ -16397,6 +16462,10 @@ The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
 and may e.g. be established using a small script like this:
 <tt/"trace variable &lt;vname&gt; ayam_updateprompt"/.
 
+<item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
+from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
+value is 1.
+
 <item><tt/"BackupExt"/: is the file name extension to be used for backup
 files. Default values are <tt>"&tilde;"</tt> for Unix and
 <tt>".bak"</tt> for Win32.
@@ -16741,7 +16810,9 @@ Note that before the automatic instantiation starts, all currently
 existing instances will be resolved!
 After instantiation some statistics will be displayed in the console.
 <p>
-Since Ayam 1.14, the instantiation obeys the object selection:
+Also note that the instantiation obeys the object selection:
+<footnote>Since 1.14.</footnote>
+<newline>
 instances are only created from the selected objects.
 If no objects are selected, instances are created from all objects
 in the current level and below.
@@ -17346,6 +17417,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
 <item>Console: <ref id="cons" name="what is">
+<item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
