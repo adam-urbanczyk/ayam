@@ -1249,9 +1249,10 @@ displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
-of the current level (and its child objects) to normal objects. Since
-Ayam 1.14, if objects are selected, only the selected objects will be
+of the current level (and its child objects) to normal objects.
+If objects are selected, only those selected objects will be
 processed.
+<footnote>Since 1.14.</footnote>
 
 <item><tt>"Instances/Automatic Instancing"</tt>, pops up a small dialog box,
 where you may parameterise and start the automatic instantiation
@@ -1693,9 +1694,10 @@ modelling mode, by holding down the <tt/&lt;Alt&gt;/-key.
 <item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
 zooms in and moving the mouse down zooms out.
 
-<item>Since Ayam 1.7 zooming the view into a rectangular region
+<item>Zooming the view into a rectangular region
 defined through a mouse drag is also possible in any
-modelling mode, when holding down the <tt/&lt;Shift&gt;/-key.
+modelling mode, by holding down the <tt/&lt;Shift&gt;/-key.
+<footnote>Since 1.7.</footnote>
 </itemize>
 See also the table below.
 <p>
@@ -2714,6 +2716,7 @@ Many modelling actions either work on objects transformation attributes
 or coordinates of selected points. Before Ayam 1.18 this was controlled
 implicitly by the point selection: if points were selected, they would
 be transformed instead of the object.
+<p>
 Since Ayam 1.18 there are two new
 keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/) that let the
 user control this behaviour directly per view: <tt/&lt;o&gt;/ switches
@@ -2728,6 +2731,10 @@ below:
 <img src="pics/trpnt.gif">
 <caption>View Transforming Objects (left) and Points (right)</caption>
 </figure>
+<p>
+See also the section
+<ref id="apnttcl" name="Automatic Point Actions">
+for a script, that, partially, brings back the old implicit behaviour.
 
 <sect1>Moving Objects or Selected Points
 <p>
@@ -2739,9 +2746,11 @@ Note that the objects/points will be moved in the XY-plane for
 Front-views, the ZY-plane for Side-views, and the XZ-plane
 for Top-views only, no matter how the view is rotated.
 <p>
-Since Ayam 1.17, the move action may be restricted to a certain
+The move action may be restricted to a certain
 axis, by pressing <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or <tt/&lt;z&gt;/
 right after the <tt/&lt;m&gt;/.
+<footnote>Since 1.17.</footnote>
+<p>
 For an overview of the move actions see also the table below.
 <p>
 <table loc="ht">
@@ -2832,6 +2841,11 @@ Translate_Y, or Translate_Z properties.
 <p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
+<p>
+See also the section
+<ref id="aactcl" name="Automatic About Center Actions">
+for a script, that modifies the rotate action to rotate
+about the current selections center automatically.
 
 <sect1>Scaling Objects or Selected Points<label id="scalac">
 <p>
@@ -2965,6 +2979,11 @@ a point and set the mark to it (shortcut <tt/&lt;C&gt;/).
 <p>
 To avoid degenerated coordinates due to roundoff errors
 it is highly suggested to use grids with this action.
+<p>
+See also the section
+<ref id="aactcl" name="Automatic About Center Actions">
+for a script, that modifies the scale actions to scale
+about the current selections center automatically.
 
 <sect1>Setting the Mark<label id="markac">
 <p>
@@ -3105,8 +3124,10 @@ with any other active modelling actions.
 <p>
 Note that the list of selected points is not copied, if the object
 is copied using the clipboard. The selection is also not saved to
-Ayam scene files. But since Ayam 1.16, selected points survive undo/redo.
-Furthermore note that the selection action iself is not an operation
+Ayam scene files. But selected points survive undo/redo.
+<footnote>Since 1.16.</footnote>
+<p>
+Furthermore, the selection action iself is not an operation
 recorded in the undo buffer, thus cannot directly be undone.
 <p>
 The point selection also does not interfere with single point modelling
@@ -3125,9 +3146,10 @@ In fact, this approach is the only way to safely add points to the
 selection that occlude each other. Clicking always only adds/removes
 single points.
 <p>
-Since Ayam 1.16.1, holding down the <tt/&lt;Ctrl&gt;/-key while
+Holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
 region defined by the drag from the selection.
+<footnote>Since 1.16.1.</footnote>
 <p>
 The exact behaviour of picking multiple points of a NURBS curve or surface
 depends on the attribute <tt/"CreateMP"/:<newline>
@@ -3242,8 +3264,10 @@ Using the small menu on top of the coordinate window one can
 determine whether editing takes place in local/object space or
 global/world space.
 <p>
-Since Ayam 1.18, this modelling action may affect
-multiple points of multiple selected objects.
+This modelling action may affect multiple points of multiple selected
+objects.
+<footnote>Since 1.18.</footnote>
+<p>
 Snapping points of different objects together is now possible too:
 Just select two objects, start numeric point editing (press <tt/&lt;E&gt;/),
 pick a point on the first object (where a point of the second object
@@ -3251,12 +3275,14 @@ should be snapped to), the point edit window opens, now drag select
 the point of the second object (do <em/not/ use a single click for
 selection as this would also load new coordinates) and press apply.
 <p>
-Since Ayam 1.18 the numeric point editing action also supports read only
+The numeric point editing action also supports read only
 points, their coordinates may be retrieved, but applying any values
 will have no effect.
+<footnote>Since 1.18.</footnote>
 <p>
-Since Ayam 1.20 single coordinate entry fields may be empty to
+Single coordinate entry fields may be empty to
 prevent a change of the corresponding coordinate value.
+<footnote>Since 1.20.</footnote>
 <p>
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e. you can not move
@@ -3264,8 +3290,11 @@ single points apart from a multiple point using the numeric point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
 <p>
-Notice that since Ayam 1.4 the numeric point editing dialog may stay
-open all the time. Furthermore, it is not necessary that the original
+Notice that the numeric point editing dialog may stay
+open all the time.
+<footnote>Since 1.4.</footnote>
+<p>
+Furthermore, it is not necessary that the original
 object stays selected while working with the numeric point edit dialog,
 you may select other objects to e.g. infer new point coordinates from
 their properties and apply them to the original object.
@@ -3290,8 +3319,10 @@ section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <img src="pics/snapgrpnt.gif">
 <caption>Snapping Points to the Grid</caption>
 </figure>
-Since Ayam 1.11 there are two actions available that let
-you snap points to the current grid of a view.
+There are two actions available for snapping points to the current
+grid of a view.
+<footnote>Since 1.11.</footnote>
+<p>
 The actions are initiated using the shortcuts <tt/&lt;g&gt;/
 and <tt/&lt;G&gt;/. If an object has selected (tagged)
 editable points, only those points will be snapped to the grid,
@@ -3311,23 +3342,31 @@ This action can be used without affecting other active actions.
 <img src="pics/snapmrkpnt.gif">
 <caption>Snapping Points to the Mark</caption>
 </figure>
-Since Ayam 1.18 the snap points to mark action is available.
+The snap points to mark action moves all selected points to
+the current mark.
+<footnote>Since 1.18.</footnote>
+<p>
 This action is initiated using the shortcut <tt/&lt;M&gt;/.
 All selected editable points of the selected objects are snapped to
 the current mark coordinates (see section
 <ref id="markac" name="Setting the Mark">
-for more information about the mark).
+for more information about the mark) immediately.
 This action can be used without affecting other active actions.
 See also the image above.
 
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
-Since Ayam 1.18 the snap objects to mark action is available.
+The snap objects to mark action moves all selected objects to
+the current mark.
+<footnote>Since 1.18.</footnote>
+<p>
 This action is initiated using the shortcut <tt/&lt;K&gt;/.
 All selected objects are snapped to the current
 mark coordinates (see section
 <ref id="markac" name="Setting the Mark">
-for more information about the mark).
+for more information about the mark) immediately, providing
+an easy way to move objects over long distances or to just put
+an object "here".
 This action can be used without affecting other active actions.
 
 <sect1>Inserting or Deleting Points<label id="insdelac">
@@ -3376,6 +3415,8 @@ Delete Points|<tt/&lt;d&gt;/|
 </figure>
 To manipulate the multiplicity of selected NURBS curve control
 points there are two modelling actions available.
+<footnote>Since 1.20.</footnote>
+<p>
 The actions are initiated using the shortcuts <tt>&lt;*&gt;</tt>
 (to increase the multiplicity) and <tt>&lt;/&gt;</tt>
 (to decrease the multiplicity).
@@ -3927,9 +3968,11 @@ If the type is "Top" the Up-vector corresponds to the world
 Z-axis, else the world Y-axis.
 The type of the view, additionally, determines the so called input plane
 of the view. Interactive modelling actions in a view are limited to that
-input plane (unless the view is switched to local modelling; available since
-Ayam 1.4; see also section
+input plane (unless the view is switched to local modelling;
+see also section
 <ref id="editlocal" name="Editing in Local Spaces">).
+<footnote>Since 1.4.</footnote>
+<p>
 The standard input planes are as following: Front &ndash; XY-plane,
 Side &ndash; ZY-plane, Top &ndash; XZ-plane, Trim &ndash; XY-plane.
 <p>
@@ -3958,11 +4001,12 @@ so that the user looks along the light to see what objects of the scene
 are lit by the light object (this works best with perspective views
 that have equal width and height).
 <p>
-Since Ayam 1.8 it is possible, to directly drag objects from the
-tree view to a view window, for geometric objects, the view then
+It is also possible, to directly drag objects from the
+tree view to a view window: for geometric objects, the view then
 performs a zoom to object operation, for cameras and light sources
 the views camera will be changed as if the object was dropped
 onto a view object in the tree view (see the above description).
+<footnote>Since 1.8.</footnote>
 <p>
 The following table briefly lists some capabilities of the View object.
 <table loc="ht">
@@ -6634,9 +6678,8 @@ PV tags are supported.
 The PatchMesh object may be used to model with bilinear and
 bicubic patch meshes.
 <p>
-Like NCurve objects, NPatch objects mark their last control point with
+Like NCurve objects, PatchMesh objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
-
 <p>
 The following table briefly lists some capabilities of the PatchMesh object.
 <table loc="ht">
@@ -6762,8 +6805,10 @@ else it is 0.
 
 <sect2>Conversion Support
 <p>
-Since Ayam 1.11, PolyMesh objects may be converted to SDMesh
+PolyMesh objects may be converted to SDMesh
 objects using the main menu entry <tt>"Tools/Convert"</tt>.
+<footnote>Since 1.11.</footnote>
+
 Note that no verification of the usability of the
 mesh as base mesh for a subdivision surface is carried out.
 Usually, such meshes have to be manifold and may not contain
@@ -6844,10 +6889,12 @@ defined.
 
 <sect2>Conversion Support
 <p>
-Since Ayam 1.11, SDMesh objects may be converted to PolyMesh
-objects. Note however that only the original unrefined control
+SDMesh objects may be converted to PolyMesh objects.
+<footnote>Since 1.11.</footnote>
+
+Note however that only the original unrefined control
 polygon (the base mesh) will be converted unless the <tt/"Level"/
-attribute is not zero and the <tt/"subdiv"/ plugin is loaded.
+attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
 
 <sect2>RIB Export
 <p>
@@ -6915,7 +6962,7 @@ RenderMan quadric.
 Since Ayam 1.8 the Revolve object supports a B-Spline mode,
 that may be enabled by setting the new parameter <tt/"Sections"/
 to a value higher than 0. In this mode, a circular B-Spline is
-used as basis for the surface of revolution, instead of the
+used as basis for the surface of revolution instead of the
 standard NURBS circle. Depending on the number of sections
 chosen, the surface of revolution does not exactly interpolate
 the parameter curve, but the surface may be edited more easily
@@ -14075,11 +14122,14 @@ management is carried out by the procedure <tt/"toolbox_layout"/.
 Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
 icon button scheme with its constant button size. However,
-since Ayam 1.14, the procedure <tt/"toolbox_add"/ can be of
-considerable help (see the file <tt>"scripts/topoly.tcl"</tt>
-for an example).
+the procedure <tt/"toolbox_add"/ can be of
+considerable help.
+<footnote>Since 1.14.</footnote>
 <p>
-Here is an example that adds two buttons to the bottom of the
+See also the script <tt>"scripts/topoly.tcl"</tt>
+for an example.
+<p>
+Here is another example that adds two buttons to the bottom of the
 toolbox spanning the whole window (this works best with the
 standard toolbox layout of 4 by 12 buttons used in the multi-window
 GUI configuration):
@@ -14203,7 +14253,7 @@ will not run if the scene contains unsaved changes.
 
 <sect2>Restrict the Console<label id="twolconstcl">
 <p>
-The script <tt>"2lcons.tcl"</tt> (for two line console), may be
+The script <tt>"2lcons.tcl"</tt> (for two line console) may be
 used to restrict the screen space occupied by the console.
 <p>
 Normally, the Ayam console is resized with the main window and
@@ -14214,7 +14264,7 @@ script.
 
 <sect2>Color the Focus Ring<label id="colfocustcl">
 <p>
-The script <tt>"colfocus.tcl"</tt> (for colored focus), may be
+The script <tt>"colfocus.tcl"</tt> (for colored focus) may be
 used to paint the focus ring in a more visible color.
 <p>
 After running the script, the focus ring will be painted in blue
@@ -14223,13 +14273,13 @@ tree) will be more easily recognizable.
 
 <sect2>Automatic About Center Actions<label id="aactcl">
 <p>
-The script <tt>"aac.tcl"</tt> (for automatic about center), may be
+The script <tt>"aac.tcl"</tt> (for automatic about center) may be
 used to switch all modelling actions to their about variants with
 the mark set to the center of the current selection automatically.
 <p>
 After running the script, invoking e.g. the scale 2D action using
 the shortcut <tt/&lt;s&gt;/ will:
-<enum>
+<itemize>
 <item>if the modelling mode is object,
 <enum>
 <item>set the mark to the center of all selected objects
@@ -14242,7 +14292,7 @@ the shortcut <tt/&lt;s&gt;/ will:
 <item>invoke the about variant of scale 2D
 </enum>
 (this is the equivalent of <tt/&lt;saC&gt;/)
-</enum>
+</itemize>
 
 The script modifies all rotate and scale actions (including their axis
 confined variants).
@@ -14260,7 +14310,7 @@ may still be set manually using <tt/&lt;a&gt;/.
 
 <sect2>Automatic Point Actions<label id="apnttcl">
 <p>
-The script <tt>"apnt.tcl"</tt> (for automatic point), may be
+The script <tt>"apnt.tcl"</tt> (for automatic point) may be
 used to switch the modelling mode of the current or all views
 to point modelling automatically after a point selection.
 <p>
@@ -14268,9 +14318,10 @@ After running the script, selecting (tagging) a point using the
 select point action (shortcut <tt/&lt;t&gt;/) will automatically
 switch the view to point modelling so that the next modelling
 actions (e.g. move, via shortcut <tt/&lt;m&gt;/) will always
-transform the points, and not modify the objects transformations.
+transform the points and not modify the objects transformations.
 Note that currently the switch to point modelling will also occur,
-if no points are actually selected, it is just the mouse click that counts.
+if no points are actually selected, it is just the mouse click that
+counts.
 <p>
 It is still possible to switch back to object modelling anytime
 via the keyboard shortcut <tt/&lt;o&gt;/.
