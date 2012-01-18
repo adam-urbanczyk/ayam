@@ -5,6 +5,8 @@ in the following points:
 
 1) Due to post processing, there must only be one
 <ref id="tag" name="secname">
+and also one
+<footnote></footnote>
 per input line;
 
 2) to keep longer code examples on one page in page based output
@@ -2086,6 +2088,7 @@ to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
 a semicolon (<tt/";"/) on Win32.
+If unsure about the correct syntax, just use the <tt/"Add"/ button.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
 objects or plugins. Those directories will e.g. be searched for
@@ -2104,6 +2107,7 @@ executable resides:
 </code>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
 by a semicolon (<tt/";"/) on Win32.
+If unsure about the correct syntax, just use the <tt/"Add"/ button.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
 HTML format.
@@ -2988,7 +2992,7 @@ about the current selections center automatically.
 <sect1>Setting the Mark<label id="markac">
 <p>
 <figure loc="ht">
-<eps file="pics/mark.ps" height="5cm">
+<eps file="pics/mark.ps" height="6.5cm">
 <img src="pics/mark.gif">
 <caption>Front View With Mark Set At 1,-1,0</caption>
 </figure>
@@ -3000,7 +3004,7 @@ The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
 This action is also active as intermediate action for e.g. rotate
 about, where the keyboard shortcuts <tt/&lt;r&gt;/
 and then <tt/&lt;a&gt;/ would be used in a sequence and after
-setting the mark, the rotate about action would be active.
+setting the mark, the rotate about action would take over.
 <p>
 See also the table below.
 <table loc="ht">
@@ -3245,7 +3249,7 @@ with the mouse opens a small window where you may change the
 coordinates of the selected editable point(s) by entering
 new coordinate values on the keyboard (see image below).
 <figure loc="ht">
-<eps file="pics/numpnted.ps" height="3.5cm">
+<eps file="pics/numpnted.ps" height="4.5cm">
 <img src="pics/numpnted.gif">
 <caption>Numeric Point Edit Dialog</caption>
 </figure>
@@ -5905,8 +5909,8 @@ The ACurve object, available since Ayam 1.15, creates an approximating
 NURBS curve with m control points from n 3D non-rational ordered data points
 (see image above).
 The number of data points must be higher than or equal to the number of
-control points used. The approximation algorithm used is a least
-squares approach. If the number of control points approach the number
+control points used. The approximation algorithm used is of the least
+squares variety. If the number of control points approaches the number
 of data points, undesired wiggles in the output curve may occur.
 <p>
 This object makes use of the provide mechanism. It marks itself
@@ -5957,8 +5961,8 @@ The following table illustrates this relationship.
 
 <item>For symmetric data point configurations, the approximating curve
 is not necessarily symmetric. With the parameter <tt/"Symmetric"/
-this can be enforced (see image below), albeit at the cost of about
-double runtime and a slightly worse parameterisation.
+a symmetric result can be enforced (see image below), albeit at the
+cost of about double runtime and a slightly worse parameterisation.
 <figure loc="!ht">
 <eps file="pics/acurve-sym.ps" height="4cm">
 <img src="pics/acurve-sym.gif">
@@ -10478,7 +10482,8 @@ will get the knot vector
 
 after reversal. This ensures that the shape of a NURBS curve does not
 change during reversal. Interpolating and approximating curves may
-change their shape.
+change their shape as the underlying interpolation/approximation
+algorithms are not direction-invariant.
 <item>Note: The direction of a curve is shown as
 a small arrow at the end of the curve.
 Eventually selected points will still be selected after this
@@ -11914,7 +11919,7 @@ creates the same patch as above in the XZ plane (ground plane).
 <item><bf/<tt/"crtOb IPatch -udy 0.25"//<newline>
 creates a sheared version of the standard IPatch in the XY plane.
 <item><bf/<tt/"crtOb IPatch -udy 0.25 -vdz 0.25"//<newline>
-creates a 3D sheared version of the standard Ipatch.
+creates a 3D sheared version of the standard IPatch.
 <item><bf/<tt/"crtOb IPatch -width 3 -height 3 -center 1 -udx 2 -vdy 2"//
 <newline>
 creates a centered patch with width 3, height 3, uorder 3, and vorder 3.
@@ -13276,6 +13281,20 @@ interpolate the old control point positions.
 The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 </itemize>
 
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scconcats">
+concatS &ndash; concatenate surfaces:
+<itemize>
+ <item>Synopsis: <tt/"concatS [-t t| -k k]"/
+ <item>Background: Yes, Undo: No, Safe: No
+ <item>Description: Concatenate the selected surface objects into a
+single NURBS patch. The option <tt/"-t"/ allows to set a surface type
+(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
+<tt/"-k"/ allows to set a knot type (default 1 - NURB).
+
+</itemize>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -17464,6 +17483,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Concat: <ref id="conct" name="Concat tool">
 <item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
 <item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
+<item>concatS: <ref id="scconcats" name="scripting interface command">
 <item>Cone: <ref id="mmcreate" name="main menu entry">,
 <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
