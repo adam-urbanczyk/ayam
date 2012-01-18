@@ -15,7 +15,7 @@
 # o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
 
-set procs {fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx fixtoc }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
 
 proc fixheight { buf outfile } {
     global height
@@ -37,6 +37,7 @@ proc fixheight { buf outfile } {
 
     return $found;
 }
+
 
 proc fixsection { buf outfile } {
     global rewriteItemize
@@ -80,8 +81,14 @@ proc fixdocclass { buf outfile } {
 	    "\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}\n\\usepackage\[tight\]\{shorttoc\}\n\\usepackage\[perpage,para\]\{footmisc\}"
 	set found 1
     }
+
+    # one shot...
+    set posn [lsearch -exact $::procs fixdocclass]
+    set ::procs [lreplace $::procs $posn $posn]
+
     return $found;
 }
+
 
 proc fixitemize { buf outfile } {
     global rewriteItemize
@@ -95,6 +102,7 @@ proc fixitemize { buf outfile } {
     return $found;
 }
 
+
 proc insnewpage { buf outfile } {
     set found 0
     if { [string first newpage $buf] > -1 } {
@@ -103,6 +111,7 @@ proc insnewpage { buf outfile } {
     }
     return $found;
 }
+
 
 proc insneedspace { buf outfile } {
     set found 0
@@ -150,8 +159,31 @@ proc fixtoc { buf outfile } {
 	set found 1
     }
 
+    # one shot...
+    set posn [lsearch -exact $::procs fixtoc]
+    set ::procs [lreplace $::procs $posn $posn]
+
     return $found;
 }
+
+
+proc fixhyperref { buf outfile } {
+    set found 0
+    set index [ string first "hyperref" $buf ]
+    if { $index > -1 } {
+	puts $outfile "\\usepackage\[colorlinks=true,urlcolor=blue,linkcolor=blue,breaklinks=true,hyperfootnotes=false\]\{hyperref\}"
+
+	set found 1
+    }
+
+    # one shot...
+    set posn [lsearch -exact $::procs fixhyperref]
+    set ::procs [lreplace $::procs $posn $posn]
+
+    return $found;
+}
+
+
 
 
 proc template { buf outfile } {
