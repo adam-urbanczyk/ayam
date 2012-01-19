@@ -43,6 +43,8 @@ addMenu $w ConcatNPAttrData Type [list Open Closed Periodic]
 addCheck $w ConcatNPAttrData Revert
 #addParam $w ConcatNPAttrData FTLength
 addMenu $w ConcatNPAttrData Knot-Type  [list B-Spline NURB]
+addString $w ConcatNPAttrData UVSelect
+
 addText $w  e0 "Resulting Patch:"
 addInfo $w ConcatNPAttrData NPInfo
 

@@ -311,7 +311,7 @@ ay_read_header(FILE *fileptr)
 
   if(!strcmp(version,"1.20"))
     {
-      ay_read_version = 14;
+      ay_read_version = 15;
       version_unknown = AY_FALSE;
     }
 
