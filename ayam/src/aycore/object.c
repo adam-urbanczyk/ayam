@@ -189,7 +189,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_object_delete:
- *  delete an objects
+ *  delete an object
  *  does not unlink the object!
  */
 int
@@ -351,8 +351,15 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_object_delete(o);
 	  if(ay_status)
 	    {
+	      /* could not delete the object, probably due to
+		 reference counter not zero; add the object
+		 to the try_again list and continue deleting
+		 objects in the hope that the user selected _all_
+		 instances and we can delete the master anyway
+		 in a second attempt */
 	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
 		{
+		  ay_sel_free(AY_FALSE);
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}
@@ -364,7 +371,10 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  /* free selection */
+  /* free selection, we _must_ do it now, because otherwise
+   * the ay_error() below can lead to the processing of Tcl
+   * events and a redraw that includes iterating over the
+   * list of selected objects that we just free()d => bummer! */
   ay_sel_free(AY_FALSE);
 
   while(try_again)
@@ -388,6 +398,8 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_object_link:
  *  link object <o> to scene structure
+ *  uses ay_next
+ *  properly maintains ay_next and ay_currentlevel
  */
 int
 ay_object_link(ay_object *o)
@@ -418,6 +430,7 @@ ay_object_link(ay_object *o)
 
 /* ay_object_unlink:
  *  unlink object o from scene, without deleting it!
+ *  properly maintains ay_next and ay_currentlevel
  */
 int
 ay_object_unlink(ay_object *o)
@@ -520,7 +533,7 @@ ay_object_getname(ay_object *o)
  */
 int
 ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+		      int argc, char *argv[])
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
@@ -569,6 +582,8 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_object_copy:
  *  copy object src to dst
+ *  this is a deep copy!
+ *  tags, material, attributes, and transformations are copied as well
  */
 int
 ay_object_copy(ay_object *src, ay_object **dst)
@@ -645,7 +660,7 @@ ay_object_copy(ay_object *src, ay_object **dst)
     }
 
   /* copy children */
-  if(src->down && src->down != ay_endlevel)
+  if(src->down && (src->down != ay_endlevel))
     {
       sub = src->down;
       next = &(new->down);
@@ -674,22 +689,22 @@ ay_object_copymulti(ay_object *src, ay_object **dst)
 {
  int ay_status = AY_OK;
 
- if(!src || !dst)
-   return AY_ENULL;
+  if(!src || !dst)
+    return AY_ENULL;
 
- while(src)
-   {
-     ay_status = ay_object_copy(src, dst);
-     if(ay_status|| !(*dst))
-       {
-	 return ay_status;
-       }
-     else
-       {
-	 dst = &((*dst)->next);
-       }
-     src = src->next;
-   } /* while */
+  while(src)
+    {
+      ay_status = ay_object_copy(src, dst);
+      if(ay_status|| !(*dst))
+	{
+	  return ay_status;
+	}
+      else
+	{
+	  dst = &((*dst)->next);
+	}
+      src = src->next;
+    } /* while */
 
  return AY_OK;
 } /* ay_object_copymulti */
