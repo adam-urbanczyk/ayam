@@ -63,6 +63,9 @@ ay_concatnp_deletecb(void *c)
 
   ay_object_delete(concatnp->npatch);
 
+  if(concatnp->uv_select)
+    free(concatnp->uv_select);
+
   free(concatnp);
 
  return AY_OK;
@@ -86,6 +89,15 @@ ay_concatnp_copycb(void *src, void **dst)
     return AY_EOMEM;
 
   memcpy(concatnp, src, sizeof(ay_concatnp_object));
+
+  if(concatnpsrc->uv_select)
+    {
+      if(!(concatnp->uv_select = calloc(strlen(concatnpsrc->uv_select)+1,
+					sizeof(char))))
+	{ free(select); return AY_EOMEM; }
+
+      strcpy(concatnp->uv_select, concatnpsrc->uv_select);
+    }
 
   /* copy npatch */
   ay_object_copy(concatnpsrc->npatch, &(concatnp->npatch));
@@ -215,9 +227,11 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  /*int ay_status = AY_OK;*/
  char *n1 = "ConcatNPAttrData";
- /*char fname[] = "concatnp_setpropcb";*/
+ char fname[] = "concatnp_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnp_object *concatnp = NULL;
+ char *string = NULL;
+ int stringlen;
 
   if(!o)
     return AY_ENULL;
@@ -247,6 +261,36 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"FTLength",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(concatnp->ftlength));
+
+  Tcl_SetStringObj(ton,"UVSelect",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  string = Tcl_GetStringFromObj(to, &stringlen);
+  if(!string)
+    {
+      ay_error(AY_ENULL, fname, NULL);
+      goto cleanup;
+    }
+
+  if(concatnp->uv_select)
+    {
+      free(concatnp->uv_select);
+      concatnp->uv_select = NULL;
+      o->modified = AY_TRUE;
+    }
+
+  if(stringlen > 0)
+    {
+      if(!(concatnp->uv_select = calloc(stringlen+1, sizeof(char))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  goto cleanup;
+	}
+      strcpy(concatnp->uv_select, string);
+
+      o->modified = AY_TRUE;
+    }
+
+cleanup:
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -303,6 +347,10 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  ton = Tcl_NewStringObj("UVSelect",-1);
+  to = Tcl_NewStringObj(concatnp->uv_select,-1);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   ay_prop_getnpinfo(interp, n1, concatnp->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -318,6 +366,8 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_concatnp_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
+ int read = 0;
  ay_concatnp_object *concatnp = NULL;
 
   if(!o)
@@ -333,8 +383,25 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &concatnp->knot_type);
 
   fscanf(fileptr, "%d\n", &concatnp->fillgaps);
-  fscanf(fileptr, "%lg\n", &concatnp->ftlength);
+  if(ay_read_version <= 14)
+    {
+      fscanf(fileptr, "%lg\n", &concatnp->ftlength);
+    }
+  else
+    {
+      /* Since Ayam 1.20: */
+      fscanf(fileptr, "%lg", &concatnp->ftlength);
+      read = fgetc(fileptr);
+      if(read == '\r')
+	fgetc(fileptr);
 
+      ay_status = ay_read_string(fileptr, &(concatnp->uv_select));
+      if(ay_status)
+	{
+	  free(select);
+	  return ay_status;
+	}
+    }
   o->refine = concatnp;
 
  return AY_OK;
@@ -360,6 +427,11 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", concatnp->fillgaps);
   fprintf(fileptr, "%g\n", concatnp->ftlength);
+
+  if(concatnp->uv_select)
+    fprintf(fileptr, "%s", concatnp->uv_select);
+
+  fprintf(fileptr, "\n");
 
  return AY_OK;
 } /* ay_concatnp_writecb */
@@ -455,7 +527,7 @@ ay_concatnp_notifycb(ay_object *o)
     }
 
   ay_status = ay_npt_concat(patches, concatnp->type, concatnp->knot_type,
-			    0, &concatnp->npatch);
+			    0, concatnp->uv_select, &concatnp->npatch);
 
   if(ay_status)
     {
