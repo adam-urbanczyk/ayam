@@ -873,8 +873,7 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 /** Concatenate NURBS patches.
  */
 int ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
-		  ay_object **result);
-
+		  char *uv, ay_object **result);
 
 /** Create surface of revolution.
  */

@@ -1668,7 +1668,10 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
   if(!o || !curves)
     return AY_ENULL;
 
-  patch = o->refine;
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  patch = (ay_nurbpatch_object *)o->refine;
   dstlen = patch->height;
   knots = dstlen + patch->vorder;
   stride = 4;
@@ -1771,7 +1774,10 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
   if(!o || !curves)
     return AY_ENULL;
 
-  patch = o->refine;
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  patch = (ay_nurbpatch_object *)o->refine;
   dstlen = patch->width;
   knots = dstlen + patch->uorder;
   stride = 4;
@@ -1821,11 +1827,11 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
       if(apply_trafo)
 	{
 	  /* apply transformation-matrix */
-	  k = 0;
-	  for(i = 0; i < dstlen; i++)
+	  j = 0;
+	  for(k = 0; k < dstlen; k++)
 	    {
-	      ay_trafo_apply3(&(controlv[k]), m);
-	      k += stride;
+	      ay_trafo_apply3(&(controlv[j]), m);
+	      j += stride;
 	    } /* for */
 	}
 
@@ -2179,14 +2185,14 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
-	      ay_object **result)
+	      char *uv, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *patches = NULL, *new = NULL, *tmp = NULL;
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
- int i = 0, ncurves = 0;
+ int i = 0, ncurves = 0, uvlen = 0;
 
   if(!o || !result)
     return AY_ENULL;
@@ -2194,9 +2200,20 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
   patches = o;
   nextcurve = &allcurves;
 
+  if(uv)
+    uvlen = strlen(uv);
+
   while(o)
     {
-      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+      if(uvlen > 0 && uvlen > i && uv[i] == 'v')
+	{
+	  ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+	}
+      else
+	{
+	  ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+	}
+      i++;
       o = o->next;
     }
 
@@ -2221,7 +2238,6 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 
   if(ay_status)
     goto cleanup;
-
 
   /* create fillets (or remove double boundary curves) */
   o = patches;
@@ -11622,6 +11638,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *patches = NULL, **next = NULL;
  ay_object *newo = NULL;
+ char *uv = NULL;
 
   /* parse args */
   if(argc > 2)
@@ -11650,6 +11667,11 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 			   "Parameter knot type must be >= 0.");
 		  return TCL_OK;
 		}
+	    }
+	  if(!strcmp(argv[i], "-u"))
+	    {
+	      if(argc > i)
+		uv = argv[i+1];
 	    }
 	  i += 2;
 	} /* while */
@@ -11695,7 +11717,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_concat(patches, type, knot_type, 0, &newo);
+  ay_status = ay_npt_concat(patches, type, knot_type, 0, uv, &newo);
 
   if(ay_status)
     {

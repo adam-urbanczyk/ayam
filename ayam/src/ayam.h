@@ -1124,6 +1124,8 @@ typedef struct ay_concatnp_object_s
   int fillgaps; /**< unused */
   double ftlength; /**< unused */
 
+  char *uv_select; /**< select direction for each parameter patch */
+
   /** cached NURBS patch representation */
   ay_object *npatch;
 
@@ -1674,7 +1676,7 @@ extern char *ay_error_igntype;
 #define AY_EOPT       22 /* missing or malformed option value */
 #define AY_EUOPT      23 /* unknown option */
 #define AY_EWTYPE     24 /* object is of wrong type */
-#define AY_ETYPE      30 /* type exists */
+#define AY_ETYPE      30 /* type already exists */
 #define AY_ENTYPE     31 /* type does not exist */
 #define AY_EREF       40 /* reference counter not zero */
 #define AY_ENULL      50 /* illegal zero pointer encountered */
@@ -1857,6 +1859,13 @@ extern char *ay_error_igntype;
 #define AY_WEST   3
 /*@}*/
 
+/** \name Great Planes */
+/*@{*/
+#define AY_XY  0
+#define AY_YZ  1
+#define AY_XZ  2
+/*@}*/
+
 /** \name Transcendent Tools */
 /*@{*/
 #ifdef M_PI
@@ -1951,11 +1960,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.19"
+#define AY_VERSIONSTR "1.20pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   19
+#define AY_VERSION   20
 #define AY_VERSIONMI 0
 /*@}*/
 
