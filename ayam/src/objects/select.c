@@ -80,14 +80,24 @@ ay_select_deletecb(void *c)
 int
 ay_select_copycb(void *src, void **dst)
 {
- ay_select_object *select = NULL;
+  ay_select_object *select = NULL, *selectsrc = NULL;
+
+  selectsrc = (ay_select_object *)src;
 
   if(!(select = calloc(1, sizeof(ay_select_object))))
     return AY_EOMEM;
 
   memcpy(select, src, sizeof(ay_select_object));
 
-  select->indices = NULL;
+  if(selectsrc->indices)
+    {
+      if(!(select->indices = calloc(strlen(selectsrc->indices)+1,
+				    sizeof(char))))
+	{ free(select); return AY_EOMEM; }
+
+      strcpy(select->indices, selectsrc->indices);
+    }
+
   select->seli = NULL;
 
   *dst = select;
@@ -300,7 +310,10 @@ ay_select_writecb(FILE *fileptr, ay_object *o)
 
   select = (ay_select_object *)(o->refine);
 
-  fprintf(fileptr, "0\n%s\n", select->indices);
+  if(select->indices)
+    fprintf(fileptr, "0\n%s\n", select->indices);
+  else
+    fprintf(fileptr, "0\n\n");
 
  return AY_OK;
 } /* ay_select_writecb */
