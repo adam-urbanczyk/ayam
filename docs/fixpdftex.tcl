@@ -80,11 +80,11 @@ proc fixdocclass { buf outfile } {
 	puts $outfile\
 	    "\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}\n\\usepackage\[tight\]\{shorttoc\}\n\\usepackage\[perpage,para\]\{footmisc\}"
 	set found 1
-    }
 
-    # one shot...
-    set posn [lsearch -exact $::procs fixdocclass]
-    set ::procs [lreplace $::procs $posn $posn]
+	# one shot...
+	set posn [lsearch -exact $::procs fixdocclass]
+	set ::procs [lreplace $::procs $posn $posn]
+    }
 
     return $found;
 }
@@ -157,11 +157,11 @@ proc fixtoc { buf outfile } {
 	puts $outfile $buf
 
 	set found 1
-    }
 
-    # one shot...
-    set posn [lsearch -exact $::procs fixtoc]
-    set ::procs [lreplace $::procs $posn $posn]
+	# one shot...
+	set posn [lsearch -exact $::procs fixtoc]
+	set ::procs [lreplace $::procs $posn $posn]
+    }
 
     return $found;
 }
@@ -174,11 +174,11 @@ proc fixhyperref { buf outfile } {
 	puts $outfile "\\usepackage\[colorlinks=true,urlcolor=blue,linkcolor=blue,breaklinks=true,hyperfootnotes=false\]\{hyperref\}"
 
 	set found 1
-    }
 
-    # one shot...
-    set posn [lsearch -exact $::procs fixhyperref]
-    set ::procs [lreplace $::procs $posn $posn]
+	# one shot...
+	set posn [lsearch -exact $::procs fixhyperref]
+	set ::procs [lreplace $::procs $posn $posn]
+    }
 
     return $found;
 }
