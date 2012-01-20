@@ -14806,10 +14806,12 @@ setting),
 Implicit loading means one can simply use the main menu entries
 <tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
 keyboard shortcuts) and specify a filename with the appropriate
-extension (e.g. <tt/".dxf"/). Ayam will automatically load the matching plugin
+extension (e.g. <tt/".dxf"/).
+<footnote>Since 1.13.</footnote>
+Ayam will automatically load the matching plugin
 (<tt/"dxfio"/) and open the import (or export) options dialog with
 the <tt/"FileName"/ option already set to the filename chosen before.
-This feature is available since Ayam 1.13 and requires that the
+This feature requires that the
 <tt/"Plugins"/ preferences are correctly set.
 </enum>
 
@@ -14845,15 +14847,17 @@ Not all features of Ayam are supported in the various export
 options. The following table gives an overview of the supported
 features per export file format.
 
+<#if out=latex><x/newpage/</#if>
+
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|c|c|"><hline>
 <bf/Feature/|<bf/RIB/|<bf/OBJ/|<bf/3DMF(Apple)/|<bf/DXF/|<bf/3DM(Rhino)/|<bf/X3D/@<hline>
 
-Quadrics|Yes|No<f><sup>1</sup></f>|Some<f><sup>4</sup></f>|No<f><sup>2</sup></f>|Some<f><sup>4</sup></f>|Some<f><sup>4</sup></f>@<hline>
+Quadrics|Yes|No<f><sup>a</sup></f>|Some<f><sup>d</sup></f>|No<f><sup>b</sup></f>|Some<f><sup>d</sup></f>|Some<f><sup>d</sup></f>@<hline>
 
-Trimmed NURBS|Yes|Yes|Yes|No<f><sup>2</sup></f>|Yes|Yes<f><sup>3</sup></f>@<hline>
+Trimmed NURBS|Yes|Yes|Yes|No<f><sup>b</sup></f>|Yes|Yes<f><sup>c</sup></f>@<hline>
 
-Parametrics|No<f><sup>1</sup></f>|No<f><sup>1</sup></f>|No<f><sup>1</sup></f>|No<f><sup>2</sup></f>|No<f><sup>1</sup></f>|Some<f><sup>5</sup></f>@<hline>
+Parametrics|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>a</sup></f>|No<f><sup>b</sup></f>|No<f><sup>a</sup></f>|Some<f><sup>e</sup></f>@<hline>
 
 Curves|No|Yes|Yes|Yes|Yes|Yes@<hline>
 
@@ -14867,14 +14871,11 @@ CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Ayam Features Supported by Various Export Formats</caption>
 </table>
-
-<enum>
-<item>will be converted to NURBS
-<item>will be converted to PolyMeshes
-<item>3D trimcurves exported as PolyLines
-<item>some quadrics are converted to NURBS (refer to plugin documentation)
-<item>some parametrics are converted to NURBS (refer to plugin documentation)
-</enum>
+<em>a:</em> will be converted to NURBS<newline>
+<em>b:</em> will be converted to PolyMeshes<newline>
+<em>c:</em> 3D trimcurves exported as PolyLines<newline>
+<em>d:</em> some quadrics are converted to NURBS (refer to plugin documentation)<newline>
+<em>e:</em> some parametrics are converted to NURBS (refer to plugin documentation)<newline>
 
 Note that a successful export of a 3D scene to a different application
 not only depends on Ayam but also on the quality of the importing
@@ -14933,9 +14934,12 @@ Furthermore, the plugin supports reading of CSG, object-instances,
 archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations!), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
-shaders and without array arguments!), (since Ayam 1.7)
-arbitrary primitive variables (e.g. varying or vertex), and
-(since Ayam 1.9) procedural objects and delayed read archives.
+shaders and without array arguments!), arbitrary primitive variables
+(e.g. varying or vertex)
+<footnote>Since 1.7.</footnote>
+, and procedural objects and delayed read archives
+<footnote>Since 1.9.</footnote>
+.
 Texture coordinates will import as TC tags
 (see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
 <p>
@@ -14948,9 +14952,11 @@ are silently ignored.
 Also note that for NURBS patches and bicubic patch meshes, points of type
 "P" will be promoted to "Pw". Points of type "Pz" are not supported
 by the plugin. Trimming of NURBS patches by clamping
-the knot ranges is also not supported (however, since Ayam 1.9 UMM/VMM
+the knot ranges is also not supported (however, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values).
+values
+<footnote>Since 1.9.</footnote>
+).
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
@@ -15262,9 +15268,11 @@ Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
 points (e.g. curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
-is not supported (however, since Ayam 1.9, proper UMM/VMM
+is not supported (however, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values).
+values
+<footnote>Since 1.9.</footnote>
+).
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
@@ -16065,8 +16073,10 @@ always one state of the scene that can be restored, plus, a potential
 undo operation can also always be undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
-in the default prompt of the Ayam console and, since Ayam 1.14, also in
-the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
+in the default prompt of the Ayam console and also in
+the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>
+<footnote>Since 1.14.</footnote>
+.
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
@@ -16805,11 +16815,15 @@ object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
-Since Ayam 1.3, the following plugins are provided to allow
-parsing of shaders: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
+The following plugins are provided to allow
+parsing of shaders
+<footnote>Since 1.3.</footnote>
+: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
-(since Ayam 1.6) <tt/"aysdr"/ for Pixie, and (since Ayam 1.11)
-<tt/"aygso"/ for Gelato.
+<tt/"aysdr"/ for Pixie
+<footnote>Since 1.6.</footnote>
+, and <tt/"aygso"/ for Gelato.
+<footnote>Since 1.11.</footnote>
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
