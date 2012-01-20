@@ -1,4 +1,4 @@
-[8. Jan 2012] CVS-Head:
+[20. Jan 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -49,6 +49,9 @@ o added hidden preference option "TagResetTagged" that controls whether
   selection
 o improved curve splitting for curves with multiple knots
 o improved focus handling of direct point edit action
+o added "UVSelect" option to ConcatNP object, this allows to determine
+  in which direction a single parameter patch should be split before
+  the concatenation
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
