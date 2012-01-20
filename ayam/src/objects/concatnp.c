@@ -94,7 +94,7 @@ ay_concatnp_copycb(void *src, void **dst)
     {
       if(!(concatnp->uv_select = calloc(strlen(concatnpsrc->uv_select)+1,
 					sizeof(char))))
-	{ free(select); return AY_EOMEM; }
+	{ free(concatnp); return AY_EOMEM; }
 
       strcpy(concatnp->uv_select, concatnpsrc->uv_select);
     }
@@ -398,10 +398,11 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
       ay_status = ay_read_string(fileptr, &(concatnp->uv_select));
       if(ay_status)
 	{
-	  free(select);
+	  free(concatnp);
 	  return ay_status;
 	}
     }
+
   o->refine = concatnp;
 
  return AY_OK;
