@@ -1512,7 +1512,7 @@ may be used to change the type of the view, which restrains the scope
 of certain modelling actions. See sections
 <ref id="viewobj" name="View Object">,
 <ref id="vwsc" name="View Window Shortcuts and Actions">, and
-<ref id="iac" name="Interactive Actions (Modelling)">
+<ref id="iac" name="Modelling Actions">
 for more information.
 
 <#if out=latex><x/phantomsection/</#if>
@@ -1861,13 +1861,14 @@ intersect this line are considered to be possible candidates for selection.
 </figure>
 
 <p>
-If your selection is ambiguous Ayam displays a window that contains a list of
+If the selection is ambiguous Ayam displays a window that contains a list of
 the possible candidates for selection. When you click a name in the list,
 the corresponding object is highlighted. Click <tt/"Ok"/ when you have
 determined which object to select or <tt/"Cancel"/ to close the list and keep
-the previous selection unchanged.
-Since Ayam 1.11 you can also use a double click in the list of selection
+the previous selection unchanged.<newline>
+It is also possible to use a double click in the list of selection
 candidates to select an object and immediately close the dialog.
+<footnote>Since 1.11.</footnote>
 <p>
 Notes:
 <itemize>
@@ -1901,7 +1902,7 @@ view windows, the buttons in the toolbox may switch to the modelling
 actions for all open views. This is the case if Ayam is in single window
 GUI mode <em>and</em> AutoFocus is enabled or if Ayam is in multi window
 GUI mode. For more information about
-the actions see section <ref id="iac" name="Interactive Actions">.
+the actions see section <ref id="iac" name="Modelling Actions">.
 <p>
 When creating objects, holding down
 the <tt>&lt;Ctrl&gt;</tt> key while pressing the corresponding toolbox
@@ -1976,9 +1977,9 @@ The preferences are divided into five sections as follows.
 The <tt/"Main"/ section contains the most important application setup
 related preference settings.
 <p>
-Since Ayam 1.14, unused settings will not be shown anymore, e.g. on the
+Note that unused settings will not be shown, e.g. on the
 Win32 platform, the <tt/"TwmCompat"/ setting will be hidden.
-
+<footnote>Since 1.14.</footnote>
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by a colon
 <tt/":"/ on Unix and by a semicolon <tt/";"/ on Win32) where Ayam looks
@@ -2075,11 +2076,12 @@ the scene using <tt>"File/New"</tt> (if the hidden preference option
 See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"Scripts"/ is a list of Tcl script files that will
-be executed on startup. Since Ayam 1.16, the scripts do <em>not</em>
-have to be specified with full path and filename anymore. Furthermore,
-the scripts and plugins directories (as specified using the
+be executed on startup. The scripts do <em>not</em>
+have to be specified with full path and filename.
+<footnote>Since 1.16.</footnote>
+Furthermore, the scripts and plugins directories (as specified using the
 <tt/"Plugins"/ option below) are automatically searched, and the tcl
-extension is automatically added, so that a setting
+file name extension is automatically added, so that a setting
 of <tt/"colfocus;loadayslx"/
 would load the colfocus script from the scripts directory and the
 ayslx shader parsing plugin from the plugins directory.
@@ -2550,7 +2552,7 @@ Smaller values lead to better quality and more tesselated polygons.
 <tt/"AdaptiveDomainDistance"/.
 </itemize>
 
-<sect>Interactive Actions (Modelling)<label id="iac">
+<sect>Modelling Actions<label id="iac">
 <p>
 Before invoking any modelling action you should select one or more
 objects using the object hierarchy in the main window, the pick action,
@@ -2721,10 +2723,11 @@ or coordinates of selected points. Before Ayam 1.18 this was controlled
 implicitly by the point selection: if points were selected, they would
 be transformed instead of the object.
 <p>
-Since Ayam 1.18 there are two new
-keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/) that let the
-user control this behaviour directly per view: <tt/&lt;o&gt;/ switches
-to object transformations and <tt/&lt;p&gt;/ to point transformations.
+There are now two keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/)
+that let the user control this behaviour directly per view:
+<footnote>Since 1.18.</footnote>
+<tt/&lt;o&gt;/ switches to object transformations and <tt/&lt;p&gt;/ to
+point transformations.
 These shortcuts can be used anytime, even in the middle of any other
 actions. If points are to be modified, a little red point will appear
 in the modelling mode icon in the view menu as shown in the image
@@ -5008,8 +5011,9 @@ Instance|No|No|Master|No*<#if out=latex>@<hline></#if>
 
 <sect2>Instances without Transformations (References)<label id="referencing">
 <p>
-Since Ayam 1.16, instance objects support the <tt>"RP"</tt> tag type
+Instance objects support the <tt>"RP"</tt> tag type
 in a special way:
+<footnote>Since 1.16.</footnote>
 if the <tt>"Transformations"</tt> property is removed using a
 <tt>"RP"</tt> tag, the instance does not provide objects with
 an own set of transformation attributes (to ease hierarchy building
@@ -5089,10 +5093,12 @@ to RIB. The resulting RIB file will then be self contained.
 
 <sect1>Select Object<label id="selectobj">
 <p>
-The Select object, available since Ayam 1.14, may be used in hierarchies
+The Select object may be used in hierarchies
 of tool objects to select one object from a list of provided objects.
-Since Ayam 1.16, also multiple objects and ranges (even decreasing
+<footnote>Since 1.14.</footnote>
+Also multiple objects and ranges (even decreasing
 ranges that lead to reversed orders) may be selected.
+<footnote>Since 1.16.</footnote>
 <p>
 In the following example hierarchy, a single patch from multiple provided
 patches of the Sweep object (the swept surface, a bevel, or a cap)
@@ -5105,7 +5111,7 @@ the ExtrNC object.
   +-Select
    \ Instance_of_Sweep(Instance)
 </code>
-Note that this example just serves illustrative purposes; the hierarchy
+Note that this example just serves illustrative purpose; the hierarchy
 presented is not exactly useful, as the ExtrNC object has a selector
 facility built in. Consequently, the Select object should be used in
 scenarios, where a selector facility does not exist or is hard to
@@ -5244,8 +5250,9 @@ direction of the Y axis of the objects coordinate system).
 <p>
 The box object will always be exported as six bilinear patches.
 <p>
-Since Ayam 1.8.2, a box object may be converted to three NURBS patches
+A box object may be converted to three NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
+<footnote>Since 1.8.2.</footnote>
 
 <sect1>Quadric Primitives<label id="qprim">
 <p>
@@ -5263,9 +5270,10 @@ This object will be exported as solid primitive or as
 simple sphere (depending on the <tt/"Closed"/ parameter
 of the SphereAttrib property) in RIBs.
 <p>
-Since Ayam 1.8.2, a sphere object may be converted to NURBS patches
+A sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
@@ -5302,9 +5310,10 @@ is 360).
 A disk, centered at the origin of the object coordinate system.
 This object will always be exported as simple disk in RIBs.
 <p>
-Since Ayam 1.8.2, a disk object may be converted to a NURBS patch
+A disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the disk.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Disk object.
 <table loc="ht">
@@ -5333,9 +5342,10 @@ This object will be exported as solid primitive or as
 simple cone (depending on the <tt/"Closed"/ parameter
 of the ConeAttrib property) in RIBs.
 <p>
-Since Ayam 1.8.2, a cone object may be converted to NURBS patches
+A cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
@@ -5370,9 +5380,10 @@ This object will be exported as solid primitive or as
 simple cylinder (depending on the <tt/"Closed"/ parameter
 of the RiCylinderAttr property) in RIBs.
 <p>
-Since Ayam 1.8.2, a cylinder object may be converted to NURBS patches
+A cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cylinder.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
@@ -5411,9 +5422,10 @@ This object will be exported as solid primitive or as
 simple torus (depending on the <tt/"Closed"/ parameter
 of the RiTorusAttr property) in RIBs.
 <p>
-Since Ayam 1.8.2, a torus object may be converted to NURBS patches
+A torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the torus.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
@@ -5454,9 +5466,10 @@ This object will be exported as solid primitive or as
 simple paraboloid (depending on the <tt/"Closed"/ parameter
 of the RiParaboloidAttr property) in RIBs.
 <p>
-Since Ayam 1.8.2, a paraboloid object may be converted to NURBS patches
+A paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the paraboloid.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
@@ -5496,9 +5509,10 @@ This object will be exported as solid primitive or as
 simple hyperboloid (depending on the <tt/"Closed"/ parameter
 of the RiHyperbAttr property) in RIBs.
 <p>
-Since Ayam 1.8.2, a hyperboloid object may be converted to NURBS patches
+A hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the hyperboloid.
+<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
@@ -14871,12 +14885,14 @@ CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Ayam Features Supported by Various Export Formats</caption>
 </table>
-<em>a:</em> will be converted to NURBS<newline>
-<em>b:</em> will be converted to PolyMeshes<newline>
-<em>c:</em> 3D trimcurves exported as PolyLines<newline>
-<em>d:</em> some quadrics are converted to NURBS (refer to plugin documentation)<newline>
-<em>e:</em> some parametrics are converted to NURBS (refer to plugin documentation)<newline>
 
+<quote><#if out=latex>&thinsp;<newline></#if>
+<f><sup>a</sup></f>&thinsp;: will be converted to NURBS<newline>
+<f><sup>b</sup></f>&thinsp;: will be converted to PolyMeshes<newline>
+<f><sup>c</sup></f>&thinsp;: 3D trimcurves exported as PolyLines<newline>
+<f><sup>d</sup></f>&thinsp;: some quadrics are converted to NURBS (refer to plugin documentation)<newline>
+<f><sup>e</sup></f>&thinsp;: some parametrics are converted to NURBS (refer to plugin documentation)<newline>
+</quote>
 Note that a successful export of a 3D scene to a different application
 not only depends on Ayam but also on the quality of the importing
 application. For instance, many applications claim to read files in the
@@ -14954,9 +14970,7 @@ Also note that for NURBS patches and bicubic patch meshes, points of type
 by the plugin. Trimming of NURBS patches by clamping
 the knot ranges is also not supported (however, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values
-<footnote>Since 1.9.</footnote>
-).
+values)<footnote>Since 1.9.</footnote>.
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
@@ -15270,9 +15284,7 @@ points (e.g. curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
 is not supported (however, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values
-<footnote>Since 1.9.</footnote>
-).
+values)<footnote>Since 1.9.</footnote>.
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
@@ -15358,11 +15370,12 @@ as if combined by the union operator.
 <p>
 The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
-Since Ayam 1.8.3, however, texture coordinates from primitive variable
-tags can be exported.
+However, texture coordinates from primitive variable
+tags can be exported.<footnote>Since 1.8.3.</footnote>
 <p>
-Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.
+UMM/VMM tags are used to trim the knot vectors of
+exported NURBS objects.<footnote>Since 1.9.</footnote>
+See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Light sources, as well as Cameras, and Views will not be exported.
 <p>
@@ -15669,17 +15682,20 @@ The export functionality of the onio plugin currently covers
 export of all boxes, quadrics, NURBS, polymeshes, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces.
+<p>
 Even though export of planar cap surfaces of various
-tool objects is supported, the export of general trimmed NURBS
+tool objects is fully supported, the export of general trimmed NURBS
 patches is not well supported. This is because of a missing feature
 (pushing up 2D trim curves to 3D curves for arbitrary NURBS
-surfaces) in the OpenNURBS toolkit. Since Ayam 1.9, a coarse
+surfaces) in the OpenNURBS toolkit. A coarse
 polygonal 3D representation of the 2D trim curves will be
-created automatically, so that now general trimmed NURBS patches
+created automatically, so that general trimmed NURBS patches
 may be exported, albeit with lower quality and bigger file size
 as would be necessary.
-Since Ayam 1.9, UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.
+<footnote>Since 1.9.</footnote>
+<p>
+UMM/VMM tags are used to trim the knot vectors of
+exported NURBS objects.<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
@@ -15687,9 +15703,10 @@ transformation attributes per object, the hierarchy of the Ayam scene
 will be squashed and all transformation attributes will be applied to
 the control points of the objects for export. CSG operations are fully
 ignored, all objects will be written as if combined by the union operator.
-Furthermore, all instance objects will be resolved to normal objects. All
-objects will be written to the first layer, the default layer (unless the
-<tt>"TopLevelLayers"</tt> option is used). Object names will be written
+Furthermore, all instance objects will be resolved to normal objects.
+<p>
+All objects will be written to the first layer, the default layer (unless
+the <tt>"TopLevelLayers"</tt> option is used). Object names will be exported
 as well. Names of level objects will be prepended to the names of their
 child objects. The object hierarchy:
 <code>
@@ -15914,12 +15931,12 @@ are provided to an element that imports as a PolyMesh (IndexedFaceSet
 and the likes) proper PV (primitive variable) tags will be created.
 <footnote>Since 1.17.</footnote>
 <p>
-If there is an index provided to the normals, colors, or texture coordinates,
-the relevant affected data (e.g. the vertex coordinates) will be expanded
-properly (as RenderMan does not support multiple different indices on the
-vertex related data).
+Moreover, of there is an index provided to the normals, colors, or
+texture coordinates, the relevant affected data (e.g. the vertex
+coordinates) will be expanded properly (as RenderMan does not support
+multiple different indices on the vertex related data).
 Note that currently the mere presence of an index will lead to this expansion,
-the index is not checked, whether it is identical to the vertex coordinate
+the index is not checked for, whether it is identical to the vertex coordinate
 index (and thus no expansion would be necessary).
 <p>
 The <tt>"DEF"</tt> attributes will be converted to object names
@@ -16527,20 +16544,27 @@ set to an empty string, a default of
 <tscreen><tt>
 \[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]&gt;
 </tt></tscreen>
-will be used, which displays the name of the operations that you can
+will be used, which displays the name of the operations that one can
 undo and redo and the last component of the current
-directory of Ayam like this <tt>"[Undo:None/Redo:None].../scn&gt;"</tt>.
+directory of Ayam like this:
+<tscreen><tt>
+[Undo:None/Redo:None].../scn&gt;
+</tt></tscreen>
+.
 
-
-You may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
+<p>
+One may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
 name of the current directory.
 
-If you want to display the value of a variable in the prompt (e.g.
-designating the current level in the scene hierarchy) you need to bind
-a write-trace to that variable.
+To display the value of a variable in the prompt (e.g.
+designating the current level in the scene hierarchy) a write-trace
+must be bound to that variable.
 The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
 and may e.g. be established using a small script like this:
-<tt/"trace variable &lt;vname&gt; ayam_updateprompt"/.
+<tscreen><tt>
+trace variable &lt;vname&gt; ayam_updateprompt
+</tt></tscreen>
+.
 
 <item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
 from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
@@ -16689,11 +16713,11 @@ of the uppermost horizontal pane (that divides the upper internal
 views from the hierarchy and the third view) is e.g. a bit larger
 so that the main menu may not be obscured easily (the corresponding
 value is 5.0). The default value for the console (20.0) leads to a
-small margin, so that the console may be shrunk to 2 or even 1 lines.
-The default values are
-<code>
+small margin, so that the console may be shrunk to 2 or even 1 lines
+of text. The default values are
+<tscreen><tt>
 {20.0 5.0 10.0 10.0 10.0}
-</code>
+</tt></tscreen>
 
 <item><tt/"PVTexCoordName"/, default name for texture coordinate PV
 tags, the default value is "st".
@@ -16707,11 +16731,11 @@ tags, the default value is "Cs".
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
 <p>
-Using your ayamrc file, you may also adapt the database of RiOptions and
-RiAttributes to your rendering system.
+With the ayamrc file, one may also adapt the database of RiOptions and
+RiAttributes to the current RenderMan rendering system.
 <p>
-You can then easily add those options and attributes
-to your scenes using tags and the main menu entries
+One can then easily add renderer specific options and attributes
+to the scenes using tags and the main menu entries
 <tt>"Special/Tags/Add RiOption"</tt> and
 <tt>"Special/Tags/Add RiAttribute"</tt>,
 see also sections
@@ -16720,7 +16744,9 @@ see also sections
 <p>
 The syntax for a new RiOption is quite simple as the following example shows:
 <code>
-set riopt(runtime) { { verbosity s { "silent" "normal" "stats" "debug" } } }
+set riopt(runtime) {
+ { verbosity s { "silent" "normal" "stats" "debug" } }
+}
 </code>
 This snippet sets the section <tt>"runtime"</tt> and adds a single
 option, <tt>"verbosity"</tt>, to it. The option is declared to be of type
@@ -16731,7 +16757,8 @@ To add another option to this section, say the option <tt>"op"</tt>
 which shall be an integer value you have to change the aforementioned
 snippet to:
 <code>
-set riopt(runtime) { { verbosity s { "silent" "normal" "stats" "debug"} }
+set riopt(runtime) {
+ { verbosity s { "silent" "normal" "stats" "debug"} }
  { op i }
 }
 </code>
@@ -17825,6 +17852,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="RiProc attribute">
 <item>Mirror: <ref id="mirrorobj" name="Mirror object">
+<item>Modelling: <ref id="iac" name="Modelling Actions">
 <item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
 <item>Move: <ref id="vwsc" name="view action">,
