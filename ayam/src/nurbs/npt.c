@@ -2207,12 +2207,22 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
     {
       if(o->type == AY_IDNPATCH)
 	{
-	  if(uvlen > 0 && uvlen > i && uv[i] == 'v')
+	  if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
 	    {
+	      if(uv[i] == 'V')
+		{
+		  ay_npt_revertv((ay_nurbpatch_object *)o->refine);
+		}
+
 	      ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  else
 	    {
+	      if(uvlen > 0 && uvlen > i && uv[i] == 'U')
+		{
+		  ay_npt_revertu((ay_nurbpatch_object *)o->refine);
+		}
+
 	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  i++;
