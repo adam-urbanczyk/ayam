@@ -2205,15 +2205,24 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 
   while(o)
     {
-      if(uvlen > 0 && uvlen > i && uv[i] == 'v')
+      if(o->type == AY_IDNPATCH)
 	{
-	  ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+	  if(uvlen > 0 && uvlen > i && uv[i] == 'v')
+	    {
+	      ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+	    }
+	  else
+	    {
+	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+	    }
+	  i++;
 	}
       else
 	{
-	  ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+	  /* */
+	  ay_status = ay_object_copy(o, nextcurve);
+	  nextcurve = &((*nextcurve)->next);
 	}
-      i++;
       o = o->next;
     }
 
@@ -11699,11 +11708,32 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_provide_object(o, AY_IDNPATCH, next);
-	  while(*next)
+	  if(ay_provide_object(o, AY_IDNPATCH, NULL) == AY_OK)
 	    {
-	      next = &((*next)->next);
+	      ay_provide_object(o, AY_IDNPATCH, next);
+	      while(*next)
+		{
+		  next = &((*next)->next);
+		}
 	    }
+	  else
+	    {
+	      if(o->type == AY_IDNCURVE)
+		{
+		  ay_status = ay_object_copy(o, next);
+		  if(ay_status)
+		    goto cleanup;
+		  next = &((*next)->next);
+		}
+	      else
+		{
+		  ay_provide_object(o, AY_IDNCURVE, next);
+		  while(*next)
+		    {
+		      next = &((*next)->next);
+		    }
+		} /* if */
+	    } /* if */
 	} /* if */
 
       sel = sel->next;
@@ -11731,7 +11761,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
 cleanup:
-  /* free list of temporary patches */
+  /* free list of temporary patches/curves */
   ay_object_deletemulti(patches);
 
  return TCL_OK;
