@@ -3074,8 +3074,8 @@ type will clear the mark.
 <sect1>Selecting/Tagging Points<label id="selac">
 <p>
 The modelling action <tt/"Select Points"/ (shortcut: <tt/&lt;t&gt;/;
-for <bf>t</bf>ag points) may be applied to objects that support single
-point editing or read only points.
+for <bf>t</bf>&thinsp;ag points) may be applied to objects that support
+single point editing or read only points.
 <p>
 To select or de-select a point it can directly be clicked upon
 or a rectangular region can be dragged with the mouse around the
@@ -3795,7 +3795,7 @@ Bevel|NCurve+|Yes|NPatch|No*@<hline>
 Cap|NCurve+|Yes|NPatch|No*@<hline>
 Text|No|Yes|NPatch+|No*@<hline>
 Trim|NPatch/NCurve+/Level+|Yes|NPatch|No*@<hline>
-ConcatNP|NPatch*|Yes|NPatch|No*@<hline>
+ConcatNP|NPatch*/NCurve*|Yes|NPatch|No*@<hline>
 ExtrNP|NPatch|Yes|NPatch|No*@<hline>
 OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
@@ -5013,7 +5013,6 @@ Instance|No|No|Master|No*<#if out=latex>@<hline></#if>
 <p>
 Instance objects support the <tt>"RP"</tt> tag type
 in a special way:
-<footnote>Since 1.16.</footnote>
 if the <tt>"Transformations"</tt> property is removed using a
 <tt>"RP"</tt> tag, the instance does not provide objects with
 an own set of transformation attributes (to ease hierarchy building
@@ -5021,6 +5020,7 @@ with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
 pointers to already existing objects are required and where it is
 expected, that the instance reflects the master exactly, including
 its transformation attributes).
+<footnote>Since 1.16.</footnote>
 <p>
 The extract curve/surface tools automatically add such a tag to the
 instances they create.
@@ -5703,8 +5703,9 @@ aforementioned types.
 created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
 
-<item><tt/"IsRat"/ informs you since Ayam 1.9, whether the curve
+<item><tt/"IsRat"/ informs you, whether the curve
 is rational (uses weight values different from 1.0).
+<footnote>Since 1.9.</footnote>
 </itemize>
 
 The GLU-parameters control the appearance of the curve when
@@ -5749,10 +5750,11 @@ consequently, the last three control points will be moved. In addition,
 if the current knot type of the curve is <tt/"NURB"/ or <tt/"Bezier"/
 it will be changed to <tt/"B-Spline"/ automatically.
 </itemize>
-Since Ayam 1.18, when changing the order of a periodic curve (and not
+When changing the order of a periodic curve (and not
 touching the length) Ayam will automatically add or remove control
 points to/from the curve so that the shape of the curve remains
 largely intact and the periodic extensions plausible.
+<footnote>Since 1.18.</footnote>
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
@@ -5919,9 +5921,10 @@ curve).
 <caption>Different ACurves (Upper Left: ALength 3, Order 3; Upper Right: ALength 4, Order 4; Lower Left: ALength 4, Order 4; Lower Right: ALength 6, Order 3)</caption>
 </figure>
 <p>
-The ACurve object, available since Ayam 1.15, creates an approximating
-NURBS curve with m control points from n 3D non-rational ordered data points
-(see image above).
+The ACurve object creates an approximating NURBS curve with m control
+points from n 3D non-rational ordered data points (see image above).
+<footnote>Since 1.15.</footnote>
+<p>
 The number of data points must be higher than or equal to the number of
 control points used. The approximation algorithm used is of the least
 squares variety. If the number of control points approaches the number
@@ -6015,14 +6018,15 @@ curve).
 <caption>Different NCircle Objects (l: default, m: TMax 180, r: Radius 0.5, TMax 200)</caption>
 </figure>
 <p>
-The NCircle object is available since Ayam 1.12 and creates a
-circular NURBS curve or a circular arc in the XY plane
-centered at the origin with designated radius and start/end angles
-(see image above).
+The NCircle object creates a circular NURBS curve or a circular arc in
+the XY plane centered at the origin with designated radius and start/end
+angles (see image above).
+<footnote>Since 1.12.</footnote>
 <p>
-In order to revert the created NURBS curve, since Ayam 1.15,
+In order to revert the created NURBS curve
 the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
 <tt/"TMax"/ -360.0 for a reverse full circle.
+<footnote>Since 1.15.</footnote>
 <p>
 The following table briefly lists some capabilities of the NCircle object.
 <table loc="ht">
@@ -6228,21 +6232,25 @@ The extraction process is controlled by the following attributes:
 <itemize>
 <item><tt/"Side"/ controls which curve should be extracted from the
 surface.
-Available values are <tt/"U0"/, <tt/"Un"/: extract upper or lower
-boundary curve (along width); <tt/"V0"/, <tt/"Vn"/: extract left or right
-boundary curve (along height); <tt/"U"/, <tt/"V"/ (available since Ayam 1.8.1)
+Available values are:
+<itemize>
+<item><tt/"U0"/, <tt/"Un"/: extract upper or lower
+boundary curve (along width);
+<item><tt/"V0"/, <tt/"Vn"/: extract left or right
+boundary curve (along height);
+<item> <tt/"U"/, <tt/"V"/
 extract curve along width and height respectively at specified parametric
 value (see below).
-<p>
-Since Ayam 1.13 it is also possible to extract the complete boundary
-curve of the patch (<tt/"Boundary"/).
-<p>
-Since Ayam 1.15 it is also possible to create a curve from the patch
-data that is the "middle axis" (<tt/"Middle_U"/, <tt/"Middle_V"/)
-(simply the medium of all control points of a patch in the designated
-dimension). This option is useful to re-engineer swept surfaces, delivered
+<footnote>Since 1.8.1.</footnote>
+<item><tt/"Boundary"/: extract the complete boundary curve of the patch.
+<footnote>Since 1.13.</footnote>
+<item><tt/"Middle_U"/, <tt/"Middle_V"/: create a curve from the patch
+data that is the "middle axis" (simply the medium of all control points
+of a patch in the designated dimension).
+<footnote>Since 1.15.</footnote><newline>
+This option is useful to re-engineer swept surfaces, delivered
 as simple patches.
-<p>
+</itemize>
 Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
 the extraction process just copies the respective boundary control points,
 which only works for clamped knot vectors. To extract a boundary from
@@ -6262,7 +6270,7 @@ be interpreted in a relative way. If enabled, a parametric value of 0.5
 always extracts from the middle of the knot vector, regardless of the
 actual knot values, and the valid range for <tt/"Parameter"/ is
 then consequently 0.0-1.0.
-This option is available since Ayam 1.15.
+<footnote>Since 1.15.</footnote>
 
 <item><tt/"Revert"/ immediately reverts the extracted curve.
 
@@ -6304,8 +6312,9 @@ curve).
 <caption>Offset Curves (white) from NURBS Curves (blue) with Offset 0.2, -0.2, and 0.3</caption>
 </figure>
 <p>
-The OffsetNC object, available since Ayam 1.14, creates offset curves from
-planar NURBS curves using four different algorithms.
+The OffsetNC object creates offset curves from planar NURBS curves using
+four different algorithms.
+<footnote>Since 1.14.</footnote><newline>
 The offset curve will always match the original curve in type, length, order,
 and knots. See also the image above.
 <p>
@@ -6326,9 +6335,10 @@ from the original curve at sharp convex or concave features
 (regions of high curvature),
 
 <bf/<tt/Hybrid//<newline>
-available since Ayam 1.19, this algorithm offsets the curve two times using
-the Point and Section algorithms and then mixes the results so that the bad
+this algorithm offsets the curve two times using the Point and Section
+algorithms and then mixes the results so that the bad
 features of the two algorithms cancel out each other,
+<footnote>Since 1.19.</footnote>
 
 <bf/<tt/3DPVN//<newline>
 Since Ayam 1.18 there is a fourth offsetting algorithm available, that
@@ -6339,7 +6349,8 @@ e.g. when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
 <p>
 As the geometry of the offset curve is completely defined by
 the master curve, OffsetNC objects do not support own transformation
-attributes (since Ayam 1.19).
+attributes.
+<footnote>Since 1.19.</footnote>
 <p>
 The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
 <p>
@@ -6403,10 +6414,10 @@ enough to achieve a certain shape.
 Like NCurve objects, NPatch objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
 <p>
-Since Ayam 1.10, NPatch objects also support the concept
-of multiple points, see section
+NPatch objects also support the concept of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
 for more information regarding this.
+<footnote>Since 1.10.</footnote>
 <p>
 The following table briefly lists some capabilities of the NPatch object.
 <table loc="ht">
@@ -6439,10 +6450,11 @@ please see section <ref id="ncattr" name="NCurveAttr">.
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this surface. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
-This option is available since Ayam 1.10.
+<footnote>Since 1.10.</footnote>
 
-<item><tt/"IsRat"/ informs you since Ayam 1.9, whether the patch
+<item><tt/"IsRat"/ informs you, whether the patch
 is rational (uses weight values different from 1.0).
+<footnote>Since 1.9.</footnote>
 </itemize>
 
 The next parameters control the appearance of the patch for display
@@ -6524,8 +6536,8 @@ aforementioned rules! When in doubt or while heavy modelling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 <p>
-Since Ayam 1.5 also NURBS curve providing objects are supported
-as trim curves.
+NURBS curve providing objects are also supported as trim curves.
+<footnote>Since 1.5.</footnote>
 
 <sect2>RIB Export
 <p>
@@ -7194,9 +7206,10 @@ the same set of tags.
 <caption>Swing Object (left: Curves, right: Resulting Swung Surface)</caption>
 </figure>
 <p>
-The Swing object, available since Ayam 1.14, forms a surface that results
-from rotating a NURBS curve (cross section or profile) around an axis while
+The Swing object forms a surface that results from rotating a NURBS curve
+(cross section or profile) around an axis while
 scaling it according to a second NURBS curve (trajectory or path).
+<footnote>Since 1.14.</footnote><newline>
 This process is sometimes also called <em>rotational sweep</em>.
 <p>
 The swing object has the generating NURBS curves as child objects
@@ -8296,9 +8309,14 @@ PV tags are supported.
 <caption>ConcatNP Object (white) From Two NURBS Patches (blue)</caption>
 </figure>
 <p>
-The ConcatNP object, available since Ayam 1.16, concatenates all child
-objects (which should be NURBS patches or provide NURBS patches) to
-a single NURBS patch (see image abovee). Since the ConcatNP object also
+The ConcatNP object concatenates all child objects, which should be NURBS
+patches or provide NURBS patches to a single NURBS patch (see also the
+image above).<footnote>Since 1.16.</footnote>
+
+Also NURBS curves or objects that provide NURBS curves can be used
+as parameter objects.<footnote>Since 1.20.</footnote>
+
+Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
 <p>
@@ -8310,7 +8328,7 @@ The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNP|NPatch*|Yes|NPatch|No*<#if out=latex>@<hline></#if>
+ConcatNP|NPatch*/NCurve*|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
