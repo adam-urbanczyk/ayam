@@ -510,12 +510,33 @@ ay_concatnp_notifycb(ay_object *o)
 	}
       else
 	{
-	  ay_provide_object(down, AY_IDNPATCH, next);
-	  while(*next)
+	  if(ay_provide_object(down, AY_IDNPATCH, NULL) == AY_OK)
 	    {
-	      next = &((*next)->next);
+	      ay_provide_object(down, AY_IDNPATCH, next);
+	      while(*next)
+		{
+		  next = &((*next)->next);
+		}
 	    }
-	}
+	  else
+	    {
+	      if(down->type == AY_IDNCURVE)
+		{
+		  ay_status = ay_object_copy(down, next);
+		  if(ay_status)
+		    goto cleanup;
+		  next = &((*next)->next);
+		}
+	      else
+		{
+		  ay_provide_object(down, AY_IDNCURVE, next);
+		  while(*next)
+		    {
+		      next = &((*next)->next);
+		    }
+		} /* if */
+	    } /* if */
+	} /* if */
 
       down = down->next;
     } /* while */
