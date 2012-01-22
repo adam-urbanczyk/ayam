@@ -1,4 +1,4 @@
-[readme.txt; 8. Jan 2012]
+[readme.txt; 22. Jan 2012]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
@@ -36,6 +36,11 @@ find and change in your linuxdoc html "mapping" file:
 </footnote>             "</BLOCKQUOTE>"         +
 
 to
+
+<footnote>      +       "<SMALL TITLE=\""
+</footnote>             "\">*</SMALL>"            +
+
+or
 
 <footnote>      +       "<SUB TITLE=\""
 </footnote>             "\">*</SUB>"            +
