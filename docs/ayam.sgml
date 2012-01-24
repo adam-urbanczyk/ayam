@@ -87,7 +87,7 @@ version: <tt/&lt;Ctrl+T&gt;/ will be used;
 set riopt(runtime) { a b }
 </code>
 <item>Object hierarchies:
-<code>
+<tscreen><verb>
 +-Parent_Object(Type)
  | First_Child_Object(Type)
  | Second_Child_Object(Type)
@@ -98,7 +98,7 @@ set riopt(runtime) { a b }
  |\ Last_Child_Object_of_Sub_Level(Type)
  \ Last_Child_Object(Type)
 +-Next_Parent_Object(Type)
-</code>
+</verb></tscreen>
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -2102,11 +2102,11 @@ to the directory where the Ayam executable resides.
 Thus, the default value "plugins" leads to Ayam searching for plugins
 in the directory "plugins" located in the directory, where the Ayam
 executable resides:
-<code>
+<tscreen><verb>
 .../ayam/bin/Ayam.exe
 .../ayam/bin/plugins/
 .../ayam/bin/plugins/ayslx.dll
-</code>
+</verb></tscreen>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
 by a semicolon (<tt/";"/) on Win32.
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
@@ -2409,9 +2409,9 @@ that parses the string contained in the variable named <tt/"string"/
 and puts the parsed progress number into a variable named <tt/"progress"/.
 Here is an example that works with Pixie-1.2.1, which outputs
 strings like <tt/"fish.rib (222):  - 10.00 percent"/:
-<code>
+<tscreen><verb>
 regexp -- {^.* - (\[0-9\]+)} string dummy percent
-</code>
+</verb></tscreen>
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
 (e.g. view menu entry <tt>"View/Create All ShadowMaps"</tt>),
@@ -3875,7 +3875,7 @@ view window instead.
 <item><tt/"StdDisplay"/, if this is enabled, a standard display
 statement will be written to the RIB, which looks like this:
 
-<code>Display "unnamed.tif" "file" "rgba"</code>
+<tscreen><verb>Display "unnamed.tif" "file" "rgba"</verb></tscreen>
 
 If you disable this option, be sure to add atleast one
 RiDisplay tag to the root object (see also section
@@ -4421,10 +4421,10 @@ Good looking soft shadows may be generated using area lights.
 Area lights may be created by simply placing a single object as child
 object of a <tt/"Custom"/ light object that has the <tt>"arealight"</tt>
 shader attached:
-<code>
+<tscreen><verb>
 +-AreaLight(Light)
  \ AreaLightGeometry(Sphere)
-</code>
+</verb></tscreen>
 This child object determines the geometry, place, <em>and</em> extension
 of the light source.
 According to L. Gritz, Spheres and Cylinders work best as area light
@@ -4593,14 +4593,14 @@ i.e. the control point (1,0,0) will be at (16,0,0).
 Note also that since Ayam 1.12, Level objects provide their child
 objects to their parent objects as a list. This means the following
 hierarchy is now valid:
-<code>
+<tscreen><verb>
 +-Skin
  +-Level
   | NCurve
   | NCurve
   | ICurve
   \ NCurve
-</code>
+</verb></tscreen>
 All NURBS curves and objects that may be converted to NURBS curves
 (in this example: the ICurve) will be provided to the Skin by the
 Level object. Transformation attributes of the Level will be added
@@ -4635,28 +4635,28 @@ preview the results of CSG operations, see also section
 <p>
 The object hierarchy to cut away a part of a box using a sphere
 looks like this:
-<code>
+<tscreen><verb>
 +-Level_of_Type_Difference(Level)
  | Box
  \ Sphere
-</code>
+</verb></tscreen>
 More than two objects may be arguments of a CSG operation:
-<code>
+<tscreen><verb>
 +-Level_of_Type_Difference(Level)
  | Box
  | Sphere
  \ Sphere
-</code>
+</verb></tscreen>
 In this example, the two spheres would cut away parts of the box.
 <p>
 New solid primitives may be created with levels of type <tt/"Primitive"/.
-<code>
+<tscreen><verb>
 +-Level_of_Type_Difference(Level)
  +-Level_of_Type_Primitive(Level)
  | | Sphere_blue
  | \ Disk_red
  \ Box_grey
-</code>
+</verb></tscreen>
 In this example an open sphere with <tt/"ThetaMax"/ 180.0 (a hemisphere)
 is manually capped by a disk object. The two objects need to be placed
 into a level of type <tt/"Primitive"/ because each object alone is an
@@ -4748,11 +4748,11 @@ to the sweeping operation
 (see also section <ref id="sweepobj" name="Sweep Object">).
 <p>
 Thus, the default object hierarchy of a Clone object looks like this:
-<code>
+<tscreen><verb>
 +-Clone
  | Cloned-Object
  \ [Trajectory(NCurve)]
-</code>
+</verb></tscreen>
 If you use a trajectory curve to place the clones, you may want
 to hide the cloned object and also add a <tt/"NoExport"/ tag to it.
 Otherwise the original object will appear twice, on the trajectory and
@@ -4761,12 +4761,12 @@ attributes of the cloned object will be completely overwritten when
 placing the clones on the trajectory curve. If the cloned object has
 distinct scale or rotation attributes it should be put inside a level
 object like this:
-<code>
+<tscreen><verb>
 +-Clone
  +-Level
  |\ Cloned-Object with non-standard Scale/Rotation
  \ Trajectory(NCurve)
-</code>
+</verb></tscreen>
 <p>
 It is not possible to create clones from objects that may not
 be master objects of instance objects, e.g. it is not possible
@@ -4778,12 +4778,12 @@ it can be placed in a level and the <tt/"NoExport"/ tag can
 be added to the level object (as adding tags to Instance objects is
 more involved), see the following hierarchy for an example:
 <#if out=latex><x/needspace 6/</#if>
-<code>
+<tscreen><verb>
 +-Clone
  +-Level with NoExport tag
  |\ Instance
  \ Trajectory(NCurve)
-</code>
+</verb></tscreen>
 <p>
 Since Ayam 1.20 the mirror facility of the Clone object is realized
 through the new Mirror object (see also
@@ -4883,7 +4883,7 @@ tool objects do not provide their unmodified children).
 Additionally, the order of the mirrored objects will be reversed so that
 it is possible to use a single Mirror object (with one or multiple NURBS
 curves as children) as parameter object of e.g. a Skin object:
-<code>
+<tscreen><verb>
 +-Skin
  +-Mirror
   \ NCurve
@@ -4892,7 +4892,7 @@ curves as children) as parameter object of e.g. a Skin object:
   | NCurve_1(NCurve)
   | NCurve_2(NCurve)
   \ NCurve_3(NCurve)
-</code>
+</verb></tscreen>
 The first Skin object in the above example can only work, because also
 the unmodified NCurve is provided by the Mirror object. The second Skin
 object can only work properly, because the order of the provided objects
@@ -5043,13 +5043,13 @@ master object.
 <p>
 For example, when the following two objects are copied and pasted back to the
 scene
-<code>
+<tscreen><verb>
 --NCurve   <-----
                  |
 --Instance  -----
-</code>
+</verb></tscreen>
 the following scene hierarchy results:
-<code>
+<tscreen><verb>
 --NCurve   <-------
                  | |
 --Instance  -----  |
@@ -5057,7 +5057,7 @@ the following scene hierarchy results:
 --NCurve           |
                    |
 --Instance  -------
-</code>
+</verb></tscreen>
 The new instance still points to the original master and <em>not</em>
 to the copy of the master.
 <p>
@@ -5104,13 +5104,13 @@ In the following example hierarchy, a single patch from multiple provided
 patches of the Sweep object (the swept surface, a bevel, or a cap)
 could be selected by the Select object and delivered upstream to
 the ExtrNC object.
-<code>
+<tscreen><verb>
 +-Sweep
 +-Revolve
  +-ExtrNC
   +-Select
    \ Instance_of_Sweep(Instance)
-</code>
+</verb></tscreen>
 Note that this example just serves illustrative purpose; the hierarchy
 presented is not exactly useful, as the ExtrNC object has a selector
 facility built in. Consequently, the Select object should be used in
@@ -6191,13 +6191,13 @@ for use as parameter object for other tool objects, like e.g.
 Revolve (see image above).
 It also works with NURBS patch providing objects, so that
 the following example hierarchy is valid:
-<code>
+<tscreen><verb>
 --NPatch
 +-Skin
  +-ExtrNC
  |\ Instance_of_NPatch(Instance)
  \ NCurve
-</code>
+</verb></tscreen>
 Depending on the parameters of the ExtrNC object, the Skin object
 above will have one boundary in common with a boundary or an iso-curve
 of the NPatch object.
@@ -7067,13 +7067,13 @@ The object has the generating NURBS curves as child objects,
 watches them and adapts to them automagically.
 <p>
 Consequently, the object hierarchy of an Extrude object may look like this:
-<code>
+<tscreen><verb>
 +-Extrude
  | Outline(NCurve)
  | [Hole_1(NCurve)
  | ...
  \ Hole_n(NCurve)]
-</code>
+</verb></tscreen>
 <p>
 The extrude object can generate caps, if the generating
 curves are closed. Cap generation may fail, if the outer
@@ -7217,11 +7217,11 @@ and watches their movements and adapts to them automagically.
 The first curve is the cross section, the second is the trajectory.
 <p>
 The object hierarchy of a Swing object, thus, looks like this:
-<code>
+<tscreen><verb>
 +-Swing
  | Cross_Section(NCurve)
  \ Trajectory(NCurve)
-</code>
+</verb></tscreen>
 <p>
 The swing operation will occur around the Y-axis.
 <p>
@@ -7304,12 +7304,12 @@ The first curve is the cross section, the second is the trajectory,
 and the third curve represents the scaling function.
 <p>
 The object hierarchy of a Sweep object, thus, looks like this:
-<code>
+<tscreen><verb>
 +-Sweep
  | Cross_Section(NCurve)
  | Trajectory(NCurve)
  \ [Scaling_Function(NCurve)]
-</code>
+</verb></tscreen>
 <p>
 Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
@@ -7492,12 +7492,12 @@ the same set of tags.
 The Birail1 object forms a surface by sweeping a cross section
 (or profile) curve along two so called rail curves.
 The object hierarchy of a Birail1 object, thus, looks like this:
-<code>
+<tscreen><verb>
 +-Birail1
  | Cross_Section(NCurve)
  | Rail1(NCurve)
  \ Rail2(NCurve)
-</code>
+</verb></tscreen>
 <p>
 When the cross section touches the rail curves in their respective starting
 points, the resulting surface will interpolate the rail curves.
@@ -7635,14 +7635,14 @@ The Birail2 object forms a surface by sweeping a cross section
 into a second cross section (or profile) curve. The morphing process
 may be controlled by a fifth parameter curve.
 The object hierarchy of a Birail2 object, thus, looks like this:
-<code>
+<tscreen><verb>
 +-Birail2
  | Cross_Section1(NCurve)
  | Rail1(NCurve)
  | Rail2(NCurve)
  | Cross_Section2(NCurve)
  \ [Interpolation_Control(NCurve)]
-</code>
+</verb></tscreen>
 <p>
 When the cross sections touch the rail curves in their respective starting
 points, the resulting surface will interpolate the rail curves.
@@ -7799,13 +7799,13 @@ parameter curves are used the skin forms a so called <em>ruled surface</em>.
 <p>
 The complete template for the Skin object hierarchy, consequently,
 looks like this:
-<code>
+<tscreen><verb>
 +-Skin
  | C_1(NCurve)
  | C_2(NCurve)
  | [...
  \ C_n(NCurve)]
-</code>
+</verb></tscreen>
 <p>
 Note that in contrast to the build from curves tool,
 the curves may be of arbitrary length and order. You may e.g.
@@ -7973,14 +7973,14 @@ direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
 in the Ayam object tree view:
-<code>
+<tscreen><verb>
 +-Gordon
  | U1(NCurve)
  | U2(NCurve)
  | Level
  | V1(NCurve)
  \ V2(NCurve)
-</code>
+</verb></tscreen>
 <p>
 The creation of a Gordon surface is computationally
 expensive. It involves (interpolated) skinning of the two sets of
@@ -8003,7 +8003,7 @@ it from appearing in RIB output.
 <p>
 The object hierarchy of a Gordon object using such a patch may look
 like this:
-<code>
+<tscreen><verb>
 +-Gordon
  | U1(NCurve)
  | U2(NCurve)
@@ -8012,11 +8012,11 @@ like this:
  | V2(NCurve)
  | Level
  \ Intersections(NPatch)
-</code>
+</verb></tscreen>
 <p>
 The complete template for the Gordon object hierarchy, consequently,
 is as follows:
-<code>
+<tscreen><verb>
 +-Gordon
  | U1(NCurve)
  | U2(NCurve)
@@ -8029,7 +8029,7 @@ is as follows:
  | Vn(NCurve)]
  | [Level
  \ Intersections(NPatch)]
-</code>
+</verb></tscreen>
 <p>
 The Gordon object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -8103,11 +8103,11 @@ The bevel object forms a bevelled surface from a single planar parameter
 curve. The bevel cross section shape may be defined by a second curve.
 Consequently, the template for the object hierarchy of a Bevel object
 looks like this:
-<code>
+<tscreen><verb>
 +-Bevel
  | NCurve
  \ [NCurve]
-</code>
+</verb></tscreen>
 <p>
 Bevels are also available as properties of different tool objects
 (e.g. Extrude or Sweep). In fact, Bevel objects use the same creation
@@ -8239,14 +8239,14 @@ the four sections (see the image above for an example).
 <p>
 Consequently, the template for the object hierarchy of a Cap object
 looks like this:
-<code>
+<tscreen><verb>
 +-Cap
  | Outline(NCurve)
  | [Hole1(NCurve)]
  +-[Hole2(Level)
   | Part1(NCurve)
   \ Part2(NCurve)]
-</code>
+</verb></tscreen>
 <p>
 Note that, in Trim mode, the curves have to be planar and defined in
 the XY plane; see section
@@ -8384,11 +8384,11 @@ objects (see image above).
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
 <!-- <#if out=latex><x/needspace 5/</#if> -->
-<code>
+<tscreen><verb>
 --NPatch
 +-ExtrNP
  \ Instance_of_NPatch(Instance)
-</code>
+</verb></tscreen>
 Note that using an instance object of some other surface object
 (as shown in the above example) is in fact the recommended way of using
 the ExtrNP object. Therefore, the main menu entry
@@ -8649,7 +8649,7 @@ The surface may already be trimmed and there may be multiple provided
 patches, however only one of them will be trimmed by the Trim object.
 <p>
 The object hierarchy of a Trim object, thus, looks like this:
-<code>
+<tscreen><verb>
 +-Trim
  | Surface(Revolve)
  | Trim_1(NCurve)
@@ -8658,7 +8658,7 @@ The object hierarchy of a Trim object, thus, looks like this:
  | \ NCurve
  | ...
  \ Trim_n(ICurve)]
-</code>
+</verb></tscreen>
 <p>
 The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
@@ -8861,11 +8861,11 @@ and act as an object of the type that the script created.
 If the script creates e.g. a NCurve object, the script object may
 be used as parameter object of a tool object that needs a NCurve,
 e.g. a Sweep:
-<code>
+<tscreen><verb>
 +-Sweep
  | Cross_Section(Script)
  \ Path(NCurve)
-</code>
+</verb></tscreen>
 If the newly created object has to be selected by the script code
 for further parameterisation purposes, the selection should be done
 using the scripting interface command <tt/"sL"/ (which performs
@@ -8903,12 +8903,12 @@ If the script object has e.g. a NCurve object as first child, the
 script object may be used as parameter object of a tool object that
 needs a NCurve, e.g. a Sweep:
 <#if out=latex><x/needspace 6/</#if>
-<code>
+<tscreen><verb>
 +-Sweep
  +-Cross_Section(Script)
  |\ NCurve
  \ Path(NCurve)
-</code>
+</verb></tscreen>
 A simple example script for a script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look
 like this:
@@ -9113,12 +9113,12 @@ object which is a child of the <tt>"MetaObj"</tt> object.
 <p>
 The complete template for the MetaObj object hierarchy, consequently,
 looks like this:
-<code>
+<tscreen><verb>
 +-MetaWorld(MetaObj)
  | C1(MetaComp)
  | [...
  \ Cn(MetaComp)]
-</code>
+</verb></tscreen>
 <p>
 The following table briefly lists some capabilities of the MetaObj and
 MetaComp objects.
@@ -9683,11 +9683,11 @@ integer value: "3", a string: "on", a color: "1,1,1" or a point:
 <bf/Example/
 <p>
 Some examples for valid RiAttribute tags:
-<code>
+<tscreen><verb>
 RiAttribute render,truedisplacement,i,1
 RiAttribute dice,numprobes,j,3,3
 RiAttribute radiosity,specularcolor,c,0.5,0.5,0.5
-</code>
+</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -9733,16 +9733,16 @@ to the new specified values.
 <p>
 <bf/Example/
 <p>
-<code>TC 0,0,10,0,0,10,10,10</code>
+<tscreen><verb>TC 0,0,10,0,0,10,10,10</verb></tscreen>
 Changes the texture coordinate space so that more and smaller tiles
 of a texture would be displayed on a primitive.
 
-<code>TC 0,0,0,1,1,0,1,1</code>
+<tscreen><verb>TC 0,0,0,1,1,0,1,1</verb></tscreen>
 Flips the texture coordinate space over two corners.
 A shader normally generating vertical stripes will create
 horizontal stripes now.
 
-<code>TC 0,1,0,0,1,1,1,0</code>
+<tscreen><verb>TC 0,1,0,0,1,1,1,0</verb></tscreen>
 Turns the texture coordinate space by 90 degrees.
 A shader normally generating vertical stripes will create
 horizontal stripes now.
@@ -9859,10 +9859,10 @@ consisting of <tt/"&lt;ndata&gt;"/ elements of type <tt/"&lt;type&gt;"/.
 <p>
 <bf/Examples/
 <p>
-<code>PV mycolor,constant,c,1,0,1,0</code>
+<tscreen><verb>PV mycolor,constant,c,1,0,1,0</verb></tscreen>
 adds a single color value (0,1,0), which is the same all over the primitive,
 the respective surface shader should have a parameter <tt/"color mycolor"/;
-<code>PV mys,varying,f,4,0.1,0.2,0.3,0.4</code>
+<tscreen><verb>PV mys,varying,f,4,0.1,0.2,0.3,0.4</verb></tscreen>
 could be used to add a distinct float value to each corner point of a
 four point NURBS patch (of order, width, and height 2),
 the respective surface shader should have a parameter
@@ -9903,7 +9903,7 @@ of triplets consisting of name, type, and value of a parameter.
 <p>
 A RiHider tag could look like this:
 <p>
-<code>RiHider hidden,depthfilter,s,midpoint</code>
+<tscreen><verb>RiHider hidden,depthfilter,s,midpoint</verb></tscreen>
 
 <sect2>RiDisplay Tag<label id="ridtag">
 <p>
@@ -9927,7 +9927,7 @@ of triplets consisting of name, type, and value of a parameter.
 <p>
 A RiDisplay tag to add output of the depth-buffer information to the
 file <tt/"imagez.tif"/ could look like this:
-<code>RiDisplay imagez.tif,file,z</code>
+<tscreen><verb>RiDisplay imagez.tif,file,z</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -10002,7 +10002,7 @@ be started with the main menu entry <tt>"Tools/Surface/Tesselate"</tt>
 <bf/Example/
 <p>
 A TP tag could look like this:
-<code>TP 1,0.5,0.6</code>
+<tscreen><verb>TP 1,0.5,0.6</verb></tscreen>
 
 <sect2>DC (Depth Complexity) Tag<label id="dctag">
 <p>
@@ -10020,7 +10020,7 @@ for more information regarding the depth complexity value.
 <bf/Example/
 <p>
 A DC tag (valid for e.g. a torus) could look like this:
-<code>DC 2</code>
+<tscreen><verb>DC 2</verb></tscreen>
 
 <sect2>NP (New Property) Tag<label id="nptag">
 <p>
@@ -10035,7 +10035,7 @@ property list box.
 <p>
 <bf/Example/
 <p>
-<code>NP Transformations</code>
+<tscreen><verb>NP Transformations</verb></tscreen>
 
 <sect2>RP (Remove Property) Tag<label id="rptag">
 <p>
@@ -10050,7 +10050,7 @@ and values may still be set using the scripting interface.
 <p>
 <bf/Example/
 <p>
-<code>RP Script</code>
+<tscreen><verb>RP Script</verb></tscreen>
 removes direct access to the Script property of a Script object.
 Ideally, the Script object also has a <tt/"NP"/ tag, to allow
 direct control of script parameters. This way, the user does not
@@ -10069,7 +10069,7 @@ of the object changed.
 <bf/Example/
 <p>
 A simple BNS tag could look like this:
-<code>BNS puts "notify callback about to fire"</code>
+<tscreen><verb>BNS puts "notify callback about to fire"</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -10107,7 +10107,7 @@ of the object changed.
 <bf/Example/
 <p>
 A simple ANS tag could look like this:
-<code>ANS puts "notify callback completed"</code>
+<tscreen><verb>ANS puts "notify callback completed"</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -10144,7 +10144,7 @@ modes do not honor those tags, but the RIB export does.
 <bf/Example/
 <p>
 An UMM tag could look like this:
-<code>UMM 0.4,0.6</code>
+<tscreen><verb>UMM 0.4,0.6</verb></tscreen>
 
 <sect2>BP (Bevel Parameters) Tag<label id="bptag">
 <p>
@@ -10164,7 +10164,7 @@ is either 0 or 1 and may be used to revert the bevel.
 <bf/Example/
 <p>
 A BP tag could look like this:
-<code>BP 0,0,0.1,0</code>
+<tscreen><verb>BP 0,0,0.1,0</verb></tscreen>
 
 <sect2>Internal Tags
 <p>
@@ -10354,10 +10354,10 @@ consisting of six NURBS patches.
 the selection.
 <item>Operation: The tool creates a Revolve object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve     ==>     +-Revolve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="revolveobj" name="Revolve Object">
 for more information regarding the revolve object.
 This tool uses the object clipboard to move the objects so that the
@@ -10371,11 +10371,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates an Extrude object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Extrude
 |-NCurve     ==>      |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the extrude object.
 This tool uses the object clipboard to move the objects so that the
@@ -10389,11 +10389,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Sweep object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Sweep
 |-NCurve     ==>      |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="sweepobj" name="Sweep Object">
 for more information regarding the Sweep object.
 This tool uses the object clipboard to move the objects so that the
@@ -10407,11 +10407,11 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Cap object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Cap
 |-NCurve     ==>      |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="capobj" name="Cap Object">
 for more information regarding the Cap object.
 This tool uses the object clipboard to move the objects so that the
@@ -10425,12 +10425,12 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Birail1 object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Birail1
 |-NCurve     ==>      |-NCurve
 |-NCurve              |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the Birail1 object.
 This tool uses the object clipboard to move the objects so that the
@@ -10444,13 +10444,13 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Birail2 object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Birail2
 |-NCurve              |-NCurve
 |-NCurve     ==>      |-NCurve
 |-NCurve              |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the Birail2 object.
 This tool uses the object clipboard to move the objects so that the
@@ -10464,13 +10464,13 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Gordon object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Gordon
 |-NCurve              |-NCurve
 |-NCurve     ==>      |-NCurve
 |-NCurve              |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="gordonobj" name="Gordon Object">
 for more information regarding the Gordon object.
 This tool uses the object clipboard to move the objects so that the
@@ -10484,12 +10484,12 @@ original clipboard contents are lost when this tool finishes.
 the selection.
 <item>Operation: The tool creates a Skin object, and moves
 the selected objects to it.
-<code>
+<tscreen><verb>
 |-NCurve             +-Skin
 |-NCurve     ==>      |-NCurve
 |-NCurve              |-NCurve
                       \-NCurve
-</code>
+</verb></tscreen>
 <item>Note: See section <ref id="skinobj" name="Skin Object">
 for more information regarding the Skin object.
 This tool uses the object clipboard to move the objects so that the
@@ -10531,11 +10531,11 @@ scripting interface command <ref id="screvert" name="revertC">.
 the selection.
 <item>Operation: The selected NURBS curves will be concatenated
 and a new third curve will be created.
-<code>
+<tscreen><verb>
 |-NCurve             |-NCurve
 |-NCurve     ==>     |-NCurve
                      |-NCurve
-</code>
+</verb></tscreen>
 <item>Note: If one of the curves has weights, the resulting curve
 will have weights too. If the knot type of the first curve
 is <tt/"Custom"/, it will be converted to <tt/"NURB"/, otherwise the
@@ -10565,10 +10565,10 @@ the selection and additionally requests a parametric value.
 new NURBS curves at the designated parametric value. The splitting process
 involves application of knot insertion, so that both new curves will
 get a custom knot vector.
-<code>
+<tscreen><verb>
 |-NCurve     ==>     |-NCurve
                      |-NCurve
-</code>
+</verb></tscreen>
 <item>Note: The original selected NURBS curve will be changed and
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
@@ -11068,10 +11068,10 @@ respectively).
 <item>Operation: The patches will be split at the parametric value t
 into two patches (in U or V parametric dimension, respectively) using
 knot insertion.
-<code>
+<tscreen><verb>
 |-NPatch     ==>     |-NPatch
                      |-NPatch
-</code>
+</verb></tscreen>
 <item>Note: The original patch will be modified and a new patch will be
 created.
 The point selection will be removed from the original object.
@@ -11088,11 +11088,11 @@ See also the documentation of the corresponding scripting interface commands
 objects from the selection.
 <item>Operation: The tool creates an instance the first of the selected
 objects then creates an ExtrNC object and moves the instance to it.
-<code>
+<tscreen><verb>
 |-NPatch             |-NPatch
              ==>     +-ExtrNC
                       \-Instance_of_NPatch(Instance)
-</code>
+</verb></tscreen>
 <item>Note: This tool uses the object clipboard to move the objects
 around so that the original clipboard contents are lost when this tool
 finishes.
@@ -11109,11 +11109,11 @@ objects from the selection.
 <item>Operation: The tool creates an instance from the first of the
 selected objects then creates an ExtrNP object and moves the
 instance to it.
-<code>
+<tscreen><verb>
 |-NPatch             |-NPatch
              ==>     +-ExtrNP
                       \-Instance_of_NPatch(Instance)
-</code>
+</verb></tscreen>
 <item>Note: This tool uses the object clipboard to move the objects
 around so that the original clipboard contents are lost when this tool
 finishes.
@@ -11131,13 +11131,13 @@ scripting interface command <ref id="scextrnp" name="extrNP">.
 the selection.
 <item>Operation: The selected NURBS patch will be split into NURBS curves,
 along direction U or V.
-<code>
+<tscreen><verb>
 |-NPatch             |-NPatch
                      |-NCurve
              ==>     |-NCurve
                      |-NCurve
                      |-NCurve
-</code>
+</verb></tscreen>
 <item>Note: The original NURBS patch object is not deleted.
 See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnp" name="splitNP">.
@@ -11158,13 +11158,13 @@ for numbers of two to four and four for bigger numbers of used curves.
 The knot type in U direction (Knot-Type_U) will always be NURB.
 Other parameters (Order_V, Knot-Type_V, Knots_V) are taken from
 the first curve.
-<code>
+<tscreen><verb>
 |-NCurve               |-NCurve
 |-NCurve               |-NCurve
 |-NCurve     ==>       |-NCurve
 |-NCurve               |-NCurve
                        |-NPatch
-</code>
+</verb></tscreen>
 <item>Note: The original NURBS curves objects are not deleted.
 See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
@@ -15545,7 +15545,7 @@ terse, when it comes to trim curves. There is no clearly defined way of
 saving trim curves in 3DMF 1.0. However, the method presented here is the
 only way that works with the free provided 3DMF parser.
 Trimmed NURBS patches will be written by Ayam like this:
-<code>
+<tscreen><verb>
 Container (
 	NURBPatch ( ...
         )
@@ -15560,7 +15560,7 @@ Container (
 	        )
         )
 )
-</code>
+</verb></tscreen>
 There will always be an enclosing container for a NURBS patch.
 If the patch is trimmed, after the transformations and attributes
 of the patch, a <tt/TrimCurves/ element will follow (which does
@@ -15727,11 +15727,11 @@ All objects will be written to the first layer, the default layer (unless
 the <tt>"TopLevelLayers"</tt> option is used). Object names will be exported
 as well. Names of level objects will be prepended to the names of their
 child objects. The object hierarchy:
-<code>
+<tscreen><verb>
 +-Arm(Level)
  | MySphere(Sphere)
  \ MyCylinder(Cylinder)
-</code>
+</verb></tscreen>
 for instance, leads to two objects in the Rhino file
 named <tt>"Arm/MySphere"</tt> and <tt>"Arm/MyCylinder"</tt>.
 <p>
@@ -16149,14 +16149,14 @@ The modelling concept Tool-Objects overcomes these drawbacks by
 transforming the revolve <em>tool</em> into a scene <em>object</em>.
 <p>
 The following example hierarchy shows two objects in a parent-child relation:
-<code>
+<tscreen><verb>
 +-Tool_Object(Revolve)
  |         ^
  |         :
  |   <Notification>
  |         :
  \ Parameter_Object(NCurve)
-</code>
+</verb></tscreen>
 The parent object is called <em>Tool-Object</em> and the child object is
 called <em>Parameter-Object</em>. There is a flow of information from the
 parameter object to the tool object. This information flow is controlled
@@ -16176,19 +16176,19 @@ leading to very small files that additionally contain a modelling history
 and capture design intent to a certain degree.
 <p>
 Tool objects may be parameter objects of other tool objects:
-<code>
+<tscreen><verb>
 +-Tool_Object(ExtrNP)
  +-Parameter_and_Tool_Object(Revolve)
   \ Parameter_Object(NCurve)
-</code>
+</verb></tscreen>
 and there may be more than one parameter object per tool object:
-<code>
+<tscreen><verb>
 +-Tool_Object(Skin)
  | Parameter_Object_1(NCurve)
  | Parameter_Object_2(NCurve)
  | ...
  \ Parameter_Object_n(NCurve)
-</code>
+</verb></tscreen>
 <p>
 Tool objects create new geometric objects from the information delivered
 by the parameter object(s) or they modify the parameter object(s) and
@@ -16196,12 +16196,12 @@ deliver them to their respective parent object.
 <p>
 The pure hierarchical dependency scheme may be broken up by instance objects:
 <#if out=latex><x/needspace 4/</#if>
-<code>
+<tscreen><verb>
 +-Tool_Object(Revolve)
  \ Parameter_Object(NCurve) --------------
 +-Tool_Object(Revolve)                    | !
  \ Parameter_Object(Instance_of_NCurve) <-
-</code>
+</verb></tscreen>
 In the scene above, the second Revolve tool object depends on the shape
 of the first parameter object. The Instance object transports the data
 from one part of the hierarchy to another.
@@ -16245,11 +16245,11 @@ Even property GUIs to let the user adjust tool parameters as they know it
 from the other Ayam objects can be added and different tools can be combined
 in single objects with normal script code for unmatched flexibility.
 But let us see a simple example first:
-<code>
+<tscreen><verb>
 +-Skin
  +-Script
   \ ExtrNC
-</code>
+</verb></tscreen>
 In the scene hierarchy above, the script object could be simply reverting the
 extracted curve with code like this:
 <code>
