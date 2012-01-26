@@ -2256,6 +2256,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	{
 	  /* must be a curve, just copy it... */
 	  ay_status = ay_object_copy(o, nextcurve);
+	  ay_nct_applytrafo(*nextcurve);
 	  nextcurve = &((*nextcurve)->next);
 	}
       o = o->next;
