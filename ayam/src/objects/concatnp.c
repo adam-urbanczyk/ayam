@@ -231,7 +231,7 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_concatnp_object *concatnp = NULL;
  char *string = NULL;
- int stringlen;
+ int stringlen, newknottype = 0;
 
   if(!o)
     return AY_ENULL;
@@ -255,8 +255,12 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Knot-Type",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->knot_type));
-  concatnp->knot_type++;
+  Tcl_GetIntFromObj(interp,to, &(newknottype));
+  newknottype++;
+  if(newknottype < AY_KTCUSTOM)
+    concatnp->knot_type = newknottype;
+  else
+    concatnp->knot_type = newknottype + 1;
 
   Tcl_SetStringObj(ton,"FillGaps",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -342,7 +346,10 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"Knot-Type",-1);
-  to = Tcl_NewIntObj(concatnp->knot_type-1);
+  if(concatnp->knot_type < AY_KTCUSTOM)
+    to = Tcl_NewIntObj(concatnp->knot_type-1);
+  else
+    to = Tcl_NewIntObj(concatnp->knot_type-2);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
