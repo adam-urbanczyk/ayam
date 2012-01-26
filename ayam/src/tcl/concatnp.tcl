@@ -39,6 +39,7 @@ NPInfoBall "N/A"
 set w [frame $ay(pca).$ConcatNPAttr(w)]
 
 addMenu $w ConcatNPAttrData Type [list Open Closed Periodic]
+addParam $w ConcatNPAttrData Order
 #addCheck $w ConcatNPAttrData FillGaps
 addCheck $w ConcatNPAttrData Revert
 #addParam $w ConcatNPAttrData FTLength

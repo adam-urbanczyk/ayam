@@ -861,7 +861,7 @@ int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 /** Build NURBS patch from curves.
  */
 int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
-			   int knot_type, int apply_trafo,
+			   int order, int knot_type, int apply_trafo,
 			   ay_object **patch);
 
 
@@ -872,7 +872,8 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Concatenate NURBS patches.
  */
-int ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
+int ay_npt_concat(ay_object *o, int type, int order,
+		  int knot_type, int fillet_type,
 		  char *uv, ay_object **result);
 
 /** Create surface of revolution.
