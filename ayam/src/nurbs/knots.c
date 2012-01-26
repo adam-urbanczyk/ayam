@@ -157,7 +157,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
       else
 	{
-	  /* periodic curves get periodic knot extensions */
+	  /* periodic surfaces get periodic knot extensions */
 	  for(i = 0; i < deg; i++)
 	    U[i] = U[i+(width-deg)] - 1.0;
 
@@ -262,7 +262,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	}
       else
 	{
-	  /* periodic curves get periodic knot extensions */
+	  /* periodic surfaces get periodic knot extensions */
 	  for(i = 0; i < deg; i++)
 	    V[i] = V[i+(height-deg)] - 1.0;
 
@@ -1652,8 +1652,8 @@ ay_knots_remove(unsigned int index, int order, int length, double **U)
  double *Un = NULL;
  unsigned int i, j, r;
 
- if(!U || !*U)
-   return AY_ENULL;
+  if(!U || !*U)
+    return AY_ENULL;
 
   if(!(Un = calloc(order+length-1, sizeof(double))))
     {
@@ -1703,8 +1703,8 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
  double *Un = NULL;
  unsigned int i, j, r = 0;
 
- if(!U || !*U)
-   return AY_ENULL;
+  if(!U || !*U)
+    return AY_ENULL;
 
   if(!(Un = calloc(order+length+1, sizeof(double))))
     {
