@@ -245,6 +245,10 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnp->type));
 
+  Tcl_SetStringObj(ton,"Order",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->order));
+
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnp->revert));
@@ -327,6 +331,11 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Order",-1);
+  to = Tcl_NewIntObj(concatnp->order);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Revert",-1);
   to = Tcl_NewIntObj(concatnp->revert);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -390,6 +399,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
   else
     {
       /* Since Ayam 1.20: */
+      fscanf(fileptr, "%d\n", &concatnp->order);
       fscanf(fileptr, "%lg", &concatnp->ftlength);
       read = fgetc(fileptr);
       if(read == '\r')
@@ -429,10 +439,12 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", concatnp->fillgaps);
   fprintf(fileptr, "%g\n", concatnp->ftlength);
 
+  fprintf(fileptr, "%d\n", concatnp->order);
   if(concatnp->uv_select)
     fprintf(fileptr, "%s", concatnp->uv_select);
 
   fprintf(fileptr, "\n");
+
 
  return AY_OK;
 } /* ay_concatnp_writecb */
@@ -548,7 +560,8 @@ ay_concatnp_notifycb(ay_object *o)
       return AY_OK;
     }
 
-  ay_status = ay_npt_concat(patches, concatnp->type, concatnp->knot_type,
+  ay_status = ay_npt_concat(patches, concatnp->type, concatnp->order,
+			    concatnp->knot_type,
 			    0, concatnp->uv_select, &concatnp->npatch);
 
   if(ay_status)

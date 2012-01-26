@@ -1948,7 +1948,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
-		       int knot_type, int apply_trafo,
+		       int order, int knot_type, int apply_trafo,
 		       ay_object **patch)
 {
  int ay_status = AY_OK;
@@ -1979,10 +1979,22 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 
   /* calculate patch parameters */
   newwidth = ncurves;
-  if(newwidth < 4)
-    newuorder = newwidth;
+
+  if(order == 0)
+    {
+      if(newwidth < 4)
+	newuorder = newwidth;
+      else
+	newuorder = 4;
+    }
   else
-    newuorder = 4;
+    {
+      if(order > newwidth)
+	newuorder = newwidth;
+      else
+	newuorder = order;
+    }
+
   newuknot_type = knot_type;
 
   if(type == AY_CTCLOSED)
@@ -2105,7 +2117,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = NULL, *curves = NULL, *new = NULL, **next = NULL;
  ay_object *o = NULL, *patch = NULL;
  ay_nurbcurve_object *nc = NULL;
- int length = 0, ncurves = 0;
+ int length = 0, ncurves = 0, order = 0;
 
   sel = ay_selection;
 
@@ -2154,7 +2166,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_status = ay_npt_buildfromcurves(curves, ncurves, AY_CTOPEN,
+  ay_status = ay_npt_buildfromcurves(curves, ncurves, AY_CTOPEN, order,
 				     AY_KTNURB, AY_TRUE, &patch);
 
   if(ay_status || !patch)
@@ -2184,7 +2196,8 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  *  returns resulting patch object in <result>
  */
 int
-ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
+ay_npt_concat(ay_object *o, int type, int order,
+	      int knot_type, int fillet_type,
 	      char *uv, ay_object **result)
 {
  int ay_status = AY_OK;
@@ -2214,6 +2227,12 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 		  ay_npt_revertv((ay_nurbpatch_object *)o->refine);
 		}
 
+	      if(order == 1)
+		{
+		  np = (ay_nurbpatch_object *)o->refine;
+		  order = np->vorder;
+		}
+
 	      ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  else
@@ -2223,18 +2242,24 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 		  ay_npt_revertu((ay_nurbpatch_object *)o->refine);
 		}
 
+	      if(order == 1)
+		{
+		  np = (ay_nurbpatch_object *)o->refine;
+		  order = np->uorder;
+		}
+
 	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  i++;
 	}
       else
 	{
-	  /* */
+	  /* must be a curve, just copy it... */
 	  ay_status = ay_object_copy(o, nextcurve);
 	  nextcurve = &((*nextcurve)->next);
 	}
       o = o->next;
-    }
+    } /* while */
 
   /* count the curves and build a list */
   nextlist = &curvelist;
@@ -2251,7 +2276,7 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
       nextlist = &((*nextlist)->next);
 
       curve = curve->next;
-    }
+    } /* while */
 
   ay_status = ay_nct_makecompatible(allcurves);
 
@@ -2282,12 +2307,11 @@ ay_npt_concat(ay_object *o, int type, int knot_type, int fillet_type,
 	    }
 
 	  o = o->next;
-	}
-    }
-
+	} /* while */
+    } /* if */
 
   /* build a new patch from the compatible curves */
-  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, knot_type,
+  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, order, knot_type,
 				     AY_FALSE, &new);
 
   if(ay_status)
@@ -2300,8 +2324,7 @@ cleanup:
 
   ay_object_deletemulti(allcurves);
 
-  /* XXXX delete list */
-
+  /* delete list */
   while(curvelist)
     {
       rem = curvelist;
@@ -11653,7 +11676,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status, tcl_status;
- int i = 1, type = AY_CTOPEN, knot_type = AY_KTNURB;
+ int i = 1, type = AY_CTOPEN, knot_type = AY_KTNURB, order = 0;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *patches = NULL, **next = NULL;
  ay_object *newo = NULL;
@@ -11672,6 +11695,17 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(type < 0)
 		{
 		  ay_error(AY_ERROR, argv[0], "Parameter type must be >= 0.");
+		  return TCL_OK;
+		}
+	    }
+	  if(!strcmp(argv[i], "-o"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(type < 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter order must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -11757,7 +11791,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_concat(patches, type, knot_type, 0, uv, &newo);
+  ay_status = ay_npt_concat(patches, type, order, knot_type, 0, uv, &newo);
 
   if(ay_status)
     {

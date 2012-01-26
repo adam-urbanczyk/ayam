@@ -1118,6 +1118,7 @@ typedef struct ay_extrnp_object_s
 typedef struct ay_concatnp_object_s
 {
   int type; /**< unused */
+  int order; /**< desired order in U direction */
   int revert; /**< revert created patch in U direction? */
   int knot_type; /**< knot type of created patch in U direction (AY_KT*) */
 
