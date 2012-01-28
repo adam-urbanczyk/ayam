@@ -157,7 +157,6 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
   /* XY-plane rings */
   for(i = 0; i <= 8; i++)
     {
-
       glBegin(GL_LINE_STRIP);
       angle = 0.0;
       for(j = 0; j <= 8; j++)
@@ -171,38 +170,35 @@ ay_torus_drawcb(struct Togl *togl, ay_object *o)
 
   if(torus->closed)
     {
-      if(fabs(torus->thetamax) != 360.0)
+      if(fabs(fabs(torus->thetamax) - 360.0) > AY_EPSILON ||
+	 fabs(fabs(torus->phimax - torus->phimin) - 360.0) > AY_EPSILON)
 	{
 	  /* ring at 0,0 */
-	  for(i = 0; i <= 8; i++)
+	  glBegin(GL_LINE_STRIP);
+	  angle = 0.0;
+	  for(j = 0; j <= 8; j++)
 	    {
-
-	      glBegin(GL_LINE_STRIP);
-	      angle = 0.0;
-	      for(j = 0; j <= 8; j++)
-		{
-		  glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
-		  angle += AY_D2R(thetadiff);
-		}
-	      glEnd();
+	      glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
+	      angle += AY_D2R(thetadiff);
 	    }
-
-	  /* caps */
-	  glBegin(GL_LINE_STRIP);
-	   glVertex3d(mar+P1[0], 0.0, P1[1]);
-	   glVertex3d(mar, 0.0, 0.0);
-	   glVertex3d(mar+P1[8*2], 0.0, P1[8*2+1]);
 	  glEnd();
 
-	  glRotated(thetamax,0.0,0.0,1.0);
-
-	  glBegin(GL_LINE_STRIP);
-	   glVertex3d(mar+P1[0], 0.0, P1[1]);
-	   glVertex3d(mar, 0.0, 0.0);
-	   glVertex3d(mar+P1[8*2], 0.0, P1[8*2+1]);
+	  /* connect ring with torus surface */
+	  glBegin(GL_LINES);
+	   angle = 0.0;
+	   for(j = 0; j <= 8; j++)
+	     {
+	       glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
+	       glVertex3d((mar+P1[0])*cos(angle), (mar+P1[0])*sin(angle),
+			  P1[1]);
+	       glVertex3d(mar*cos(angle), mar*sin(angle), 0.0);
+	       glVertex3d((mar+P1[8*2])*cos(angle), (mar+P1[8*2])*sin(angle),
+			  P1[8*2+1]);
+	       angle += AY_D2R(thetadiff);
+	     }
 	  glEnd();
-	}
-    }
+	} /* if */
+    } /* if */
 
  return AY_OK;
 } /* ay_torus_drawcb */
@@ -274,7 +270,8 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 
   if(torus->closed)
     {
-      if(fabs(torus->thetamax) != 360.0)
+      if(fabs(fabs(torus->thetamax) - 360.0) > AY_EPSILON ||
+	 fabs(fabs(torus->phimax - torus->phimin) - 360.0) > AY_EPSILON)
 	{
 	  /* rings at 0,0 */
 
@@ -339,7 +336,6 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 
 	} /* if */
     } /* if */
-
 
  return AY_OK;
 } /* ay_torus_shadecb */
@@ -494,7 +490,6 @@ ay_torus_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(torus->closed);
@@ -656,7 +651,6 @@ ay_torus_wribcb(char *file, ay_object *o)
 	   RiDisk((RtFloat)0.0, (RtFloat)torus->minorrad,
 		  (RtFloat)(torus->phimax - torus->phimin), RI_NULL);
 	  RiAttributeEnd();
-
 	} /* if */
     } /* if */
 
@@ -788,7 +782,6 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
  ay_disk_object disk = {0};
  ay_nurbpatch_object *np = NULL;
  ay_object *new = NULL, *newc = NULL, *newp = NULL, d = {0}, **n = NULL;
-
 
   if(!o)
     return AY_ENULL;
@@ -923,7 +916,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      /* copy from torus */
 	      memcpy(cv2, cv, np->height*stride*sizeof(double));
 	      cv = NULL;
-	      if(torus->thetamax < 0.0)
+	      if(torus->thetamax > 0.0)
 		{
 		  ay_status = ay_nb_CreateNurbsCircleArc(majorrad,
 							 0, thetamax,
@@ -1084,7 +1077,6 @@ ay_torus_convertcb(ay_object *o, int in_place)
     {
       ay_status = ay_torus_providecb(o, AY_IDNPATCH, &new);
     }
-
 
   /* second, link new object(s), or replace old object with it/them */
 
