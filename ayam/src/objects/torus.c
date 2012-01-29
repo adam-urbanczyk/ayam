@@ -1055,7 +1055,6 @@ ay_torus_convertcb(ay_object *o, int in_place)
       new->type = AY_IDLEVEL;
       new->parent = AY_TRUE;
       new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
 
       if(!(new->refine = calloc(1, sizeof(ay_level_object))))
 	{ free(new); return AY_EOMEM; }
