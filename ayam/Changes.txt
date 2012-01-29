@@ -1,4 +1,4 @@
-[20. Jan 2012] CVS-Head:
+[29. Jan 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -18,6 +18,7 @@ o caps of transformed outlines/holes (SF 3439485)
 o view camera changing inadvertently when another view is changed (SF 3442122)
 o OffsetNP objects are missing from exported RIB files (SF 3445410)
 o Gordon objects with transformed intersection patches (SF 3448526)
+o conversion of torii with phimin/phimax not on default fails (SF 3481314)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -52,6 +53,11 @@ o improved focus handling of direct point edit action
 o added "UVSelect" option to ConcatNP object, this allows to determine
   in which direction a single parameter patch should be split before
   the concatenation
+o ConcatNP objects now allow curve and curve providing objects to be
+  used as parameter objects, also in a mix with patches
+o added "Order" parameter to ConcatNP, that allows to specify the U order
+  of the concatenated surface
+o improved drawing of torii with phimin/phimax not on defaults
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
