@@ -1642,7 +1642,6 @@ ay_script_convertcb(ay_object *o, int in_place)
  ay_script_object *sc = NULL;
  ay_level_object *newl = NULL;
  ay_object *cmo = NULL, *new = NULL;
- int i = 0;
 
   if(!o)
     return AY_ENULL;
@@ -1668,8 +1667,6 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  o->type = AY_IDLEVEL;
 		  newl->type = AY_LTLEVEL;
 
-		  cmo = sc->cm_objects;
-
 		  /* remove current children (of the script object) */
 		  ay_status = ay_object_deletemulti(o->down);
 
@@ -1678,32 +1675,12 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  /* link created/modified objects as new
 		     children to the new level object */
 		  o->down = sc->cm_objects;
+		  sc->cm_objects = NULL;
 
 		  /* now free the script object */
+		  ay_script_deletecb(sc);
 
-		  /* free the script string */
-		  if(sc->script)
-		    free(sc->script);
-
-		  /* free compiled script */
-		  if(sc->cscript)
-		    {
-		      Tcl_DecrRefCount(sc->cscript);
-		      sc->cscript = NULL;
-		    }
-
-		  /* free saved parameters */
-		  if(sc->params)
-		    {
-		      for(i = 0; i < sc->paramslen; i++)
-			{
-			  Tcl_DecrRefCount(sc->params[i]);
-			}
-		      free(sc->params);
-		    }
-
-		  free(o->refine);
-
+		  /* complete transmogrification of o */
 		  o->refine = newl;
 		}
 	      else
@@ -1711,9 +1688,13 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  /* have just one object */
 		  cmo = sc->cm_objects;
 		  o->type = cmo->type;
-		  if(sc->script)
-		    free(sc->script);
-		  free(o->refine);
+		  
+		  sc->cm_objects = NULL;
+
+		  /* now free the script object */
+		  ay_script_deletecb(sc);
+
+		  /* complete transmogrification of o */
 		  o->refine = cmo->refine;
 		  ay_trafo_copy(cmo, o);
 		  o->parent = cmo->parent;
@@ -1784,7 +1765,6 @@ ay_script_providecb(ay_object *o, unsigned int type, ay_object **result)
 	case 2:
 	  if(sc->cm_objects)
 	    {
-	      npo = &po;
 	      cmo = sc->cm_objects;
 	      while(cmo && cmo->next)
 		{
