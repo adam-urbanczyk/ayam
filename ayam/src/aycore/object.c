@@ -221,7 +221,6 @@ ay_object_delete(ay_object *o)
 	{
 	  d = down;
 	  down = down->next;
-	  ay_status = AY_OK;
 	  ay_status = ay_object_delete(d);
 	  if(ay_status)
 	    {

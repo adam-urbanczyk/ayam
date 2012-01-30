@@ -884,9 +884,6 @@ ay_wrib_displaytags(void)
 	  len = strlen(val)+1;
 	  if(len > 1)
 	    {
-	      name = NULL;
-	      type = NULL;
-	      mode = NULL;
 	      if(!(name = calloc(len, sizeof(char))))
 		return;
 	      if(!(type = calloc(len, sizeof(char))))

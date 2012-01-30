@@ -56,7 +56,7 @@ ay_sel_add(ay_object *o)
   new_sel->object = o;
   o->selected = AY_TRUE;
 
-  if(ay_selection)
+  if(ay_selection && last_sel)
     last_sel->next = new_sel;
   else
     ay_selection = new_sel;

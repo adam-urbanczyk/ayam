@@ -585,7 +585,6 @@ ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest)
   if(source->type == AY_SASTRING)
     {
       /* copy string */
-      newval = NULL;
       if(!(newval = calloc(1, strlen(source->val.string)+1)))
 	{ free(newp->name); free(newp); return AY_EOMEM; }
       strcpy(newval, source->val.string);

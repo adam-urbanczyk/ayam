@@ -1405,7 +1405,6 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(o->selp)
 	    {
-	      newo = NULL;
 	      if(!(newo = calloc(1, sizeof(ay_object))))
 		{
 		  ay_error(AY_EOMEM, argv[0], NULL);

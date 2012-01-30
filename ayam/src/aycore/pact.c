@@ -263,7 +263,6 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	      if(!have_it && !multipledel)
 		{
 		  /* create new point object */
-		  newp = NULL;
 		  if(!(newp = calloc(1, sizeof(ay_point))))
 		    {
 		      ay_error(AY_EOMEM, fname, NULL);
@@ -2881,7 +2880,6 @@ ay_pact_multdecnc(ay_object *o)
  ay_point *pnt1 = NULL, *pnt2 = NULL;
  ay_point *opnt1;
  int i, a, b, m, stride = 4;
- unsigned int j;
  double *cv, *p1, *p2, *newcv = NULL;
 
   nc = o->refine;
@@ -2928,7 +2926,6 @@ ay_pact_multdecnc(ay_object *o)
 
 	  a = 0;
 	  b = 0;
-	  j = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
 	      if((unsigned int)i != pnt1->index)

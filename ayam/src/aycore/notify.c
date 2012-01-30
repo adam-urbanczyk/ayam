@@ -226,7 +226,6 @@ ay_notify_object(ay_object *o)
   tag = o->tags;
   while(tag)
     {
-
       if(tag->type == ay_ans_tagtype)
 	ay_ns_execute(o, tag->val);
       tag = tag->next;
@@ -519,6 +518,9 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	    {
 	      if(!(newt = calloc(1, sizeof(ay_tag))))
 		{
+		  if(newl)
+		    free(newl);
+		  *parents = NULL;
 		  return 0;
 		}
 	      newt->next = o->tags;

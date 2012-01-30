@@ -89,7 +89,6 @@ ay_selp_selall(ay_object *o)
 
   for(i = 0; i < pe.num; i++)
     {
-      newp = NULL;
       if(!(newp = calloc(1, sizeof(ay_point))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
@@ -1031,7 +1030,6 @@ ay_selp_selectmpnc(ay_object *o, int select_all)
 
 	  if(!select_all)
 	    {
-	      p = o->selp;
 	      found = AY_FALSE;
 
 	      for(i = 0; i < mp->multiplicity; i++)

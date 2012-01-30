@@ -269,7 +269,6 @@ ay_error(int code, char *where, char *what)
   if(last_message)
     {
       free(last_message);
-      last_message = NULL;
     }
   if(!(last_message = calloc(strlen(Tcl_DStringValue(&ds))+1, sizeof(char))))
     {
