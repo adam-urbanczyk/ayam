@@ -403,7 +403,6 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
   for(i = 0; i < tcount; i++)
     {
-      tag = NULL;
       if(!(tag = calloc(1, sizeof(ay_tag))))
 	return AY_EOMEM;
 
@@ -517,7 +516,6 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
   if(!result)
     return AY_ENULL;
 
-  shader = NULL;
   if(!(shader = calloc(1, sizeof(ay_shader))))
    return AY_EOMEM;
 
@@ -825,7 +823,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   ay_matt_connect(ay_root);
 
   /* clear Material ID tags from scene */
-  ay_status = ay_matt_clearmaterialids(ay_root);
+  ay_matt_clearmaterialids(ay_root);
 
   /* force rebuild of all objects, that rely on children */
   o = ay_root;

@@ -51,7 +51,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 	  if(tagvaltmp)
 	    {
 	      free(tagvaltmp);
-	      tagvaltmp = NULL;
 	    }
 
 	  if(!(tagvaltmp = calloc(1, strlen(tag->val)+1)))
@@ -106,7 +105,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 'f':
 			      Tcl_DStringAppend(&ds, "float", -1);
 
-			      ftemp = NULL;
 			      if(!(ftemp = calloc(n, sizeof(RtFloat))))
 				return AY_EOMEM;
 
@@ -128,7 +126,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 'g':
 			      Tcl_DStringAppend(&ds, "float[2]", -1);
 
-			      ftemp = NULL;
 			      if(!(ftemp = calloc(n, 2*sizeof(RtFloat))))
 				return AY_EOMEM;
 			      j = 0;
@@ -161,7 +158,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 's':
 			      Tcl_DStringAppend(&ds, "string", -1);
 
-			      ftemp = NULL;
 			      if(!(stemp = calloc(n, sizeof(RtString))))
 				return AY_EOMEM;
 
@@ -200,7 +196,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				default:
 				  break;
 				}
-			      ptemp = NULL;
+
 			      if(!(ptemp = calloc(n, sizeof(RtPoint))))
 				return AY_EOMEM;
 
@@ -240,7 +236,6 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 'c':
 			      Tcl_DStringAppend(&ds, "color", -1);
 
-			      ctemp = NULL;
 			      if(!(ctemp = calloc(n, sizeof(RtColor))))
 				return AY_EOMEM;
 
@@ -335,7 +330,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
       nexttag = &(tag->next);
       tag = tag->next;
     }
-  tag = NULL;
+
   if(!(tag = calloc(1, sizeof(ay_tag))))
     return AY_EOMEM;
 

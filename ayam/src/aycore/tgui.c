@@ -81,7 +81,6 @@ ay_tgui_open(void)
 	      ay_selp_clear(o);
 	    }
 
-	  new = NULL;
 	  if(!(new = calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
 	  *last = new;
@@ -96,7 +95,6 @@ ay_tgui_open(void)
 	  o->tags = NULL;
 
 	  /* we save a pointer to the original object in the scene */
-	  newl = NULL;
 	  if(!(newl = calloc(1, sizeof(ay_list_object))))
 	    return AY_EOMEM;
 	  *lastl = newl;
@@ -226,7 +224,6 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 						 use_vn, NULL,
 						 &tmp);
 
-		      newl = NULL;
 		      if(!(newl = calloc(1, sizeof(ay_list_object))))
 			return AY_EOMEM;
 		      newl->object = tmp;

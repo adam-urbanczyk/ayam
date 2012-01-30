@@ -663,7 +663,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(ay_prefs.logfile)
 	free(ay_prefs.logfile);
-      ay_prefs.logfile = NULL;
 
       if(!(ay_prefs.logfile = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
@@ -679,7 +678,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(ay_prefs.pprender)
 	free(ay_prefs.pprender);
-      ay_prefs.pprender = NULL;
 
       if(!(ay_prefs.pprender = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
@@ -730,7 +728,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(ay_prefs.texcoordname)
 	free(ay_prefs.texcoordname);
-      ay_prefs.texcoordname = NULL;
 
       if(!(ay_prefs.texcoordname = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
@@ -746,7 +743,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(ay_prefs.normalname)
 	free(ay_prefs.normalname);
-      ay_prefs.normalname = NULL;
 
       if(!(ay_prefs.normalname = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;
@@ -762,7 +758,6 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     {
       if(ay_prefs.colorname)
 	free(ay_prefs.colorname);
-      ay_prefs.colorname = NULL;
 
       if(!(ay_prefs.colorname = calloc(strlen(str)+1, sizeof(char))))
 	return AY_EOMEM;

@@ -424,7 +424,6 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
       free(dst->riopt);
     } /* if */
 
-  dst->riopt = NULL;
   if(!(dst->riopt = calloc(1, sizeof(ay_riopt))))
     return AY_EOMEM;
 
@@ -433,7 +432,6 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->textures)
     {
-      dstriopt->textures = NULL;
       if(!(dstriopt->textures = calloc(strlen(srcriopt->textures)+1,
 				       sizeof(char))))
 	return AY_EOMEM;
@@ -442,16 +440,14 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->shaders)
     {
-      dstriopt->shaders = NULL;
       if(!(dstriopt->shaders = calloc(strlen(srcriopt->shaders)+1,
-				       sizeof(char))))
+				      sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->shaders, srcriopt->shaders);
     }
 
   if(srcriopt->archives)
     {
-      dstriopt->archives = NULL;
       if(!(dstriopt->archives = calloc(strlen(srcriopt->archives)+1,
 				       sizeof(char))))
 	return AY_EOMEM;
@@ -460,9 +456,8 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->procedurals)
     {
-      dstriopt->procedurals = NULL;
       if(!(dstriopt->procedurals = calloc(strlen(srcriopt->procedurals)+1,
-				       sizeof(char))))
+					  sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->procedurals, srcriopt->procedurals);
     }
@@ -487,7 +482,6 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
   last = &(dst->selp);
   while(p)
     {
-      n = NULL;
       if(!(n = calloc(1, sizeof(ay_point))))
 	return AY_EOMEM;
 
@@ -1020,7 +1014,6 @@ ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
   while(down->next)
     {
       /* copy reference */
-      r = NULL;
       if(!(r = calloc(1, sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
@@ -1152,7 +1145,6 @@ ay_undo_save(int save_children)
   while(sel)
     {
       /* copy reference */
-      r = NULL;
       if(!(r = calloc(1, sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
@@ -1205,7 +1197,6 @@ ay_undo_save(int save_children)
   while(view->next)
     {
       /* copy reference */
-      r = NULL;
       if(!(r = calloc(1, sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
@@ -1281,7 +1272,6 @@ ay_undo_save(int save_children)
 	     a special object of type AY_IDLAST with empty reference */
 	  if(!prevselmarked)
 	    {
-	      r = NULL;
 	      if(!(r = calloc(1, sizeof(ay_list_object))))
 		{
 		  return AY_EOMEM;
@@ -1310,7 +1300,6 @@ ay_undo_save(int save_children)
 	    } /* if */
 
 	  /* copy reference */
-	  r = NULL;
 	  if(!(r = calloc(1, sizeof(ay_list_object))))
 	    {
 	      return AY_EOMEM;
@@ -1591,8 +1580,6 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(undo_saved_op)
 	    free(undo_saved_op);
-
-	  undo_saved_op = NULL;
 
 	  if(!(undo_saved_op = calloc(strlen(argv[2]) + 1,
 				      sizeof(char))))
