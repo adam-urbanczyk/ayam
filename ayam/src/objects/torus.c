@@ -275,8 +275,6 @@ ay_torus_shadecb(struct Togl *togl, ay_object *o)
 	{
 	  /* rings at 0,0 */
 
-	  phidiff = -AY_HALFPI;
-
 	  angle = 0.0;
 	  glBegin(GL_QUAD_STRIP);
 	  for(j = 0; j <= 8; j++)
@@ -725,8 +723,6 @@ ay_torus_notifycb(ay_object *o)
       mar = torus->majorrad;
       mir = torus->minorrad;
       thetamax = torus->thetamax;
-      thetadiff = (thetamax/8);
-
       phi = torus->phimax - torus->phimin;
       phidiff = AY_D2R(phi/8);
       thetadiff = AY_D2R(torus->thetamax/8);
