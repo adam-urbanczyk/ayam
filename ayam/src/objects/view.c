@@ -1354,7 +1354,6 @@ cleanup:
 int
 ay_view_dropcb(ay_object *o)
 {
- int ay_status = AY_OK;
  char fname[] = "view_drop";
  ay_list_object *sel = ay_selection;
  ay_object *s = NULL;
@@ -1394,7 +1393,7 @@ ay_view_dropcb(ay_object *o)
 		 objects are saved by each undo operation anyway */
 	      argv[1] = arg1;
 	      argv[2] = arg2;
-	      ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
+	      (void)ay_undo_undotcmd(NULL, ay_interp, 3, argv);
 
 	      /* ay_viewt_changetype(view, AY_VTPERSP); */
 
@@ -1455,7 +1454,7 @@ ay_view_dropcb(ay_object *o)
 	     objects are saved by each undo operation anyway */
 	  argv[1] = arg1;
 	  argv[2] = arg2;
-	  ay_status = ay_undo_undotcmd(NULL, ay_interp, 3, argv);
+	  (void)ay_undo_undotcmd(NULL, ay_interp, 3, argv);
 
 	  memcpy(view->from, camera->from, 3*sizeof(double));
 	  memcpy(view->to, camera->to, 3*sizeof(double));
