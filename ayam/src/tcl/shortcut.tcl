@@ -426,10 +426,10 @@ proc shortcut_view { w } {
 	bind $w <[repctrl $aymainshortcuts(Master)]> "$m invoke 16;break"
 
 	# object selection
-	bind $w <Shift-Up> "selAdd 0"
-	bind $w <Shift-Home> "selAdd 3"
-	bind $w <Home> "selNPFL 2"
-	bind $w <End> "selNPFL 3"
+	bind $w <Shift-Up> "selAdd 0; after idle \"focus %W\""
+	bind $w <Shift-Home> "selAdd 3; after idle \"focus %W\""
+	bind $w <Home> "selNPFL 2; after idle \"focus %W\""
+	bind $w <End> "selNPFL 3; after idle \"focus %W\""
     }
 
     # view window shortcuts
@@ -584,10 +584,14 @@ proc shortcut_view { w } {
 
 
     # object selection
-    bind $w <[repctrl $ayviewshortcuts(OSUp)]> "selNPFL 1"
-    bind $w <[repctrl $ayviewshortcuts(OSDown)]> "selNPFL 0"
-    bind $w <[repctrl $ayviewshortcuts(OSSUp)]> "selAdd 0"
-    bind $w <[repctrl $ayviewshortcuts(OSSDown)]> "selAdd 1"
+    bind $w <[repctrl $ayviewshortcuts(OSUp)]>\
+	"selNPFL 1; after idle \"focus %W\""
+    bind $w <[repctrl $ayviewshortcuts(OSDown)]>\
+	"selNPFL 0; after idle \"focus %W\""
+    bind $w <[repctrl $ayviewshortcuts(OSSUp)]>\
+	"selAdd 0; after idle \"focus %W\""
+    bind $w <[repctrl $ayviewshortcuts(OSSDown)]>\
+	"selAdd 1; after idle \"focus %W\"]"
     # scene hierarchy navigation
     bind $w <[repctrl $ayviewshortcuts(OSLeft)]> {
 	set oldfocus [focus]
@@ -600,7 +604,7 @@ proc shortcut_view { w } {
 	}
 	focus $widget
 	event generate $widget <Left>
-	focus $oldfocus
+	after idle "focus $oldfocus"
     }
 
     bind $w <[repctrl $ayviewshortcuts(OSRight)]> {
@@ -614,7 +618,7 @@ proc shortcut_view { w } {
 	}
 	focus $widget
 	event generate $widget <Right>
-	focus $oldfocus
+	after idle "focus $oldfocus"
     }
 
     # reset view camera
