@@ -1191,7 +1191,6 @@ aycsg_delegatetrafo(ay_object *o)
 	      else
 		{
 		  // no, create, fill, and link a new tag
-		  tag = NULL;
 		  if(!(tag = (ay_tag*)calloc(1, sizeof(ay_tag))))
 		    return AY_EOMEM;
 		  tag->type = aycsg_tm_tagtype;
@@ -1201,7 +1200,7 @@ aycsg_delegatetrafo(ay_object *o)
 		    }
 		  memcpy(tag->val, o->tags->val, 16*sizeof(double));
 		  tag->name = (char*)o->tags->name;
-		  tle = NULL;
+
 		  if(!(tle = (aycsg_taglistelem*)calloc(1,
 			       sizeof(aycsg_taglistelem))))
 		    {
@@ -1237,7 +1236,6 @@ aycsg_delegatetrafo(ay_object *o)
 	  else
 	    {
 	      // no, create, fill, and link a new tag
-	      tag = NULL;
 	      if(!(tag = (ay_tag*)calloc(1, sizeof(ay_tag))))
 		return AY_EOMEM;
 	      tag->type = aycsg_tm_tagtype;
@@ -1250,7 +1248,7 @@ aycsg_delegatetrafo(ay_object *o)
 		{
 		 tag->name = (char*)AY_TRUE;
 		}
-	      tle = NULL;
+
 	      if(!(tle = (aycsg_taglistelem*)calloc(1,
 			   sizeof(aycsg_taglistelem))))
 		{
