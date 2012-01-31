@@ -1688,7 +1688,6 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 
   for(i = 0; i < patch->width; i++)
     {
-      new = NULL;
       if(!(new = calloc(1, sizeof(ay_object))))
 	{
 	  return AY_EOMEM;
@@ -1696,7 +1695,6 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 
       new->type = AY_IDNCURVE;
 
-      knotv = NULL;
       if(!(knotv = calloc(knots, sizeof(double))))
 	{
 	  free(new);
@@ -1704,7 +1702,6 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 	}
       memcpy(knotv, patch->vknotv, (size_t)(knots*sizeof(double)));
 
-      controlv = NULL;
       if(!(controlv = calloc(stride*dstlen, sizeof(double))))
 	{
 	  free(new); free(knotv);
@@ -1794,7 +1791,6 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 
   for(i = 0; i < patch->height; i++)
     {
-      new = NULL;
       if(!(new = calloc(1, sizeof(ay_object))))
 	{
 	  return AY_EOMEM;
@@ -1802,7 +1798,6 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 
       new->type = AY_IDNCURVE;
 
-      knotv = NULL;
       if(!(knotv = calloc(knots, sizeof(double))))
 	{
 	  free(new);
@@ -1810,7 +1805,6 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 	}
       memcpy(knotv, patch->uknotv, (size_t)(knots*sizeof(double)));
 
-      controlv = NULL;
       if(!(controlv = calloc(stride*dstlen, sizeof(double))))
 	{
 	  free(new); free(knotv);
@@ -8804,12 +8798,10 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 	  rs = (patch->uorder - 1) - s;
 	  patch->width += rs;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -8859,12 +8851,10 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
 	  re = (patch->uorder - 1) - s;
 	  patch->width += re;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -8909,12 +8899,10 @@ ay_npt_clampu(ay_nurbpatch_object *patch, int side)
       break;
     }
 
-  newcontrolv = NULL;
   if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 			    sizeof(double))))
     return AY_EOMEM;
 
-  newknotv = NULL;
   if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
@@ -8996,12 +8984,10 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 	  rs = (patch->vorder - 1) - s;
 	  patch->height += rs;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -9051,12 +9037,10 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
 	  re = (patch->vorder - 1) - s;
 	  patch->height += re;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -9103,12 +9087,10 @@ ay_npt_clampv(ay_nurbpatch_object *patch, int side)
       break;
     }
 
-  newcontrolv = NULL;
   if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 			    sizeof(double))))
     return AY_EOMEM;
 
-  newknotv = NULL;
   if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
@@ -9858,11 +9840,10 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if(r != 0)
 	{
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    { return AY_EOMEM; }
-	  newknotv = NULL;
+
 	  if(!(newknotv = calloc(patch->width+patch->uorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -9895,11 +9876,10 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       np1->width = np1len;
 
-      newcontrolv = NULL;
       if(!(newcontrolv = calloc(np1->width*np1->height*stride,
 				sizeof(double))))
 	{ ay_object_delete(new); return AY_EOMEM; }
-      newknotv = NULL;
+
       if(!(newknotv = calloc(np1->width+np1->uorder, sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
@@ -10071,11 +10051,10 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if(r != 0)
 	{
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(patch->width*patch->height*stride,
 				    sizeof(double))))
 	    { return AY_EOMEM; }
-	  newknotv = NULL;
+
 	  if(!(newknotv = calloc(patch->height+patch->vorder, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -10108,11 +10087,10 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       oldnp1height = np1->height;
       np1->height = np1len;
 
-      newcontrolv = NULL;
       if(!(newcontrolv = calloc(np1->width*np1->height*stride,
 				sizeof(double))))
 	{ ay_object_delete(new); return AY_EOMEM; }
-      newknotv = NULL;
+
       if(!(newknotv = calloc(np1->height+np1->vorder, sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 

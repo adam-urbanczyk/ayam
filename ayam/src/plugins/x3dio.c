@@ -8064,10 +8064,8 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  /* user requested triangles only => tesselate it */
 
 		  /* create new object (for the tesselated face) */
-		  li = NULL;
 		  if(!(li = calloc(1, sizeof(ay_list_object))))
 		    { ay_status = AY_EOMEM; goto cleanup; }
-		  to = NULL;
 		  if(!(to = calloc(1, sizeof(ay_object))))
 		    { ay_status = AY_EOMEM; goto cleanup; }
 		  li->object = to;
@@ -8104,11 +8102,9 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	  /* this face has more than one loop (hole(s)) => tesselate it */
 
 	  /* create new object (for the tesselated face) */
-	  li = NULL;
 	  if(!(li = calloc(1, sizeof(ay_list_object))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
 
-	  to = NULL;
 	  if(!(to = calloc(1, sizeof(ay_object))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
 

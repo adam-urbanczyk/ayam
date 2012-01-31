@@ -583,7 +583,6 @@ idr_save_selected()
 		}
 	      else
 		{
-		  t = NULL;
 		  /* create new tag */
 		  if(!(t = calloc(1, sizeof(ay_tag))))
 		    return AY_EOMEM;
@@ -1856,7 +1855,6 @@ idr_wrib_scene(char *file, char *image, double importance, int exclude,
       if(pos)
 	{
 	  sprintf(objfile, "%s", file);
-	  pos = NULL;
 	  pos = strstr(objfile, ".rib");
 	  if(pos)
 	    sprintf(pos, "%s", ".obj.rib");
@@ -2150,7 +2148,6 @@ idr_optbbcombine(idr_picpart **part)
     }
 
   *part = NULL;
-  p = NULL;
   if(!(p = calloc(1, sizeof(idr_picpart))))
     return;
 

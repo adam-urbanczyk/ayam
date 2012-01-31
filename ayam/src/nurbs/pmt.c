@@ -249,13 +249,11 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
       for(j = 0; j < winv; j++)
 	{
 	  /* create new object */
-	  o = NULL;
 	  if(!(o = calloc(1, sizeof(ay_object))))
 	    return AY_EOMEM;
 	  ay_object_defaults(o);
 	  o->type = AY_IDNPATCH;
 
-	  cv = NULL;
 	  if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 	    {
 	      free(o);
@@ -435,13 +433,11 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	  for(j = 0; j < winv; j++)
 	    {
 	      /* create new object */
-	      o = NULL;
 	      if(!(o = calloc(1, sizeof(ay_object))))
 		return AY_EOMEM;
 	      ay_object_defaults(o);
 	      o->type = AY_IDNPATCH;
 
-	      cv = NULL;
 	      if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 		{
 		  free(o);

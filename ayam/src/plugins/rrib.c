@@ -963,7 +963,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
      if(ncurves[i] > 1)
        { /* read trim loop */
 	 /* create level */
-	 level = NULL;
 	 if(!(level = calloc(1, sizeof(ay_object))))
 	   return;
 	 ay_object_defaults(level);
@@ -1027,7 +1026,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	     nc->is_rat = ay_nct_israt(nc);
 
 	     /* link trimcurve */
-	     o = NULL;
 	     if(!(o = calloc(1, sizeof(ay_object))))
 	       return;
 	     ay_object_defaults(o);
@@ -1095,7 +1093,6 @@ ay_rrib_RiTrimCurve(RtInt nloops, RtInt ncurves[], RtInt order[],
 	 nc->is_rat = ay_nct_israt(nc);
 
 	 /* link trimcurve */
-	 o = NULL;
 	 if(!(o = calloc(1, sizeof(ay_object))))
 	   return;
 	 ay_object_defaults(o);
@@ -3903,7 +3900,6 @@ ay_rrib_readshader(char *sname, int stype,
 	  token = tokens[i];
 	}
 
-      p = NULL;
       p = RibFindMatch(ht, kRIB_HASH_VARIABLE,
 		       kRIB_UNKNOWNCLASS | kRIB_UNKNOWNTYPE,
 		       (void*)token);
@@ -3929,7 +3925,6 @@ ay_rrib_readshader(char *sname, int stype,
 		case kRIB_STRINGTYPE:
 		  sarg->type = AY_SASTRING;
 		  str = (RtString *)(parms[i]);
-		  stemp = NULL;
 		  if(!(stemp = calloc(strlen(*str)+1, sizeof(char))))
 		    {
 		      link = AY_FALSE;
@@ -3993,7 +3988,6 @@ ay_rrib_readshader(char *sname, int stype,
 	      /* link argument to shader */
 	      if(link)
 		{
-		  stemp = NULL;
 		  if(!(stemp = calloc(strlen(token)+1, sizeof(char))))
 		    {
 		      if(sarg->type == AY_SASTRING && sarg->val.string)
@@ -4380,7 +4374,6 @@ ay_rrib_readpvs(int n, RtToken tokens[], RtPointer parms[],
 
       if(!already_handled)
 	{
-	  nt = NULL;
 	  if(!(nt = calloc(1, sizeof(ay_tag))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
