@@ -15,7 +15,7 @@
 # o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
 
 proc fixheight { buf outfile } {
     global height
@@ -40,13 +40,14 @@ proc fixheight { buf outfile } {
 
 
 proc fixsection { buf outfile } {
-    global rewriteItemize
+    global rewriteLists
     set found 0
     set index [ string first "\\section\{" $buf ]
     if { $index > -1 } {
 	set index [ string first "section\{Index\}" $buf ]
 	if { $index > -1 } {
 	    puts $outfile "\\twocolumn \\section\{Index\} \{ \\footnotesize "
+	    set rewriteLists 1
 	} else {
 	    puts $outfile "\\newpage \\section\{"
 	    set index [ string first "\{" $buf ]
@@ -54,7 +55,6 @@ proc fixsection { buf outfile } {
 	    set out2 [ string range $buf $index end ]
 	    puts $outfile $out2
 	}
-	set rewriteItemize 1
 	set found 1
     }
 
@@ -90,13 +90,28 @@ proc fixdocclass { buf outfile } {
 }
 
 
+proc fixlist { buf outfile } {
+    global rewriteLists
+    set found 0
+    set index [ string first "\\begin\{list" $buf ]
+    if { ($index > -1) && $rewriteLists } {
+	puts $outfile\
+	    "\\begin\{list\}\{\}\{\\itemsep -0.5ex \\itemindent -2ex \\parsep 1ex\}"
+	set found 1
+    }
+    return $found;
+}
+
 proc fixitemize { buf outfile } {
-    global rewriteItemize
+    global rewriteLists
     set found 0
     set index [ string first "\\begin\{itemize" $buf ]
-    if { ($index > -1) && $rewriteItemize } {
+    if { ($index > -1) } {
 	puts $outfile\
 	    "\\begin\{itemize\}\\setlength\{\\itemsep\}\{-0.5ex\}"
+	if {  $rewriteLists } {
+	    puts $outfile "\\vspace\{-1.5ex\}"
+	}
 	set found 1
     }
     return $found;
@@ -194,7 +209,7 @@ proc template { buf outfile } {
 
 set infile [ open [lindex $argv 0] r ]
 set outfile [ open [lindex $argv 1] w ]
-set rewriteItemize 0
+set rewriteLists 0
 set height 0
 while { ![eof $infile] } {
     gets $infile buf

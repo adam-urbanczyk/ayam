@@ -146,7 +146,7 @@ n-level undo.
 <p>
 Since Ayam 1.12, dynamic loading of custom objects and certain plugins
 are also available on the Win32 platform (they were not available
-before)!
+before).
 <p>
 Ayam is primarily aimed at the Linux, IRIX, and Win32 platforms.
 On those platforms BMRT (Blue Moon Rendering Tools, a RenderMan
@@ -347,7 +347,7 @@ object.
 </itemize>
 <p>
 Since Ayam 1.6 the scene may be navigated and objects may be selected
-using the keyboard alone:
+using the keyboard alone:<label id="treesc">
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
 or next object.
@@ -446,7 +446,7 @@ object.
 </itemize>
 
 Since Ayam 1.6 the scene may be navigated and objects may be selected
-using the keyboard alone:
+using the keyboard alone:<label id="olbsc">
 <itemize>
 <item><tt/&lt;Up&gt;/ and <tt/&lt;Down&gt;/ move the selection to the previous
 or next object.
@@ -536,7 +536,7 @@ may be controlled using the preference setting
 If an object and a property are selected and a different object is selected,
 the property GUI that has the same index as the previously selected
 property in the properties listbox will be selected and shown. This is
-not necessarily a property of the same type!
+not necessarily a property of the same type.
 To avoid that or to clear the property GUI for fast browsing through the
 scene you may either double click on the "Properties" label, hit the
 <tt/&lt;Esc&gt;/ key three times, or use the context menu of the properties
@@ -551,7 +551,7 @@ Here are some general remarks about object properties:
 <p>
 The various things that may be changed using a property GUI
 will normally not be applied to the selected object until the
-<tt/"Apply"/-button is pressed!
+<tt/"Apply"/-button is pressed.
 <p>
 Holding down the <tt/"Shift"/ button while
 interacting with the property GUI or pressing <tt/"Return"/
@@ -618,12 +618,12 @@ hot key <tt/&lt;Ctrl+I&gt;/.
 
 <item>Paste the property using <tt/"Paste Property"/ or <tt/&lt;Ctrl+V&gt;/.
 
-<item>All done!
+<item>All done.
 </enum>
 <p>
 Special care must be taken when pasting incomplete properties to objects
 which do not have complete properties already. Do not paste an incomplete
-shader property to an object which does not already have the same shader!
+shader property to an object which does not already have the same shader.
 
 <sect2>The Console<label id="cons">
 <p>
@@ -653,7 +653,7 @@ focus and thus enable input.
 <p>
 An important thing to know is that the keyboard shortcuts for the
 various main menu entries do not work if the console has the input
-focus! Instead, other keyboard shortcuts (related to the console)
+focus. Instead, other keyboard shortcuts (related to the console)
 are in effect.
 How do you get out of this? Simply press <tt/&lt;Shift+Tab&gt;/ or
 <tt/&lt;Esc&gt;/ to move the focus away from the console and enable
@@ -724,18 +724,18 @@ One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 The <tt/"File"/ menu deals with standard file operations:
 <itemize>
 <item><tt/"New"/, clears the current scene (deletes all objects) and reloads
-the working environment (if the preference setting
-<tt>"Main/NewLoadsEnv"</tt> is enabled).
+the working environment.<newline>
 This operation cannot be undone!
 
 <item><tt/"Open"/, clears the current scene and closes all views,
-then loads a new scene from disk. All objects from the file
-will be read. Depending on the setting of
-<tt>"Preferences/Main/BakOnReplace"</tt>
-a backup copy of the file that is read will be made before loading.
-See section <ref id="opensf" name="Opening Scene Files">
-for a more detailed discussion.
+then loads a new scene from disk.
+
 <p>
+All objects from the file
+will be read. A backup copy of the file will be made before loading
+(depending on the preference setting <tt>"Main/BakOnReplace"</tt>).
+See section <ref id="opensf" name="Opening Scene Files">
+for a more detailed discussion.<newline>
 This operation cannot be undone!
 <p>
 Also files supported by any of the import plugins
@@ -750,15 +750,17 @@ Mind that in this case, no backup copy of the file will be made.
 See also section <ref id="impex" name="Import and Export">.
 
 <item><tt/"Insert"/, inserts the objects and views of an Ayam scene file
-into the current scene. All objects from the file will be read.
+into the current scene.
+
+<p>
+All objects from the file will be read.
 If the file to be inserted contains a Root or View objects, the new
 objects will be created in the top level of the scene.
 Otherwise, if just geometric objects are in the scene file (i.e. the file
 was created using <tt>"Special/Save Selected"</tt>), the new objects
 will be inserted in the current level of the scene.
 See section <ref id="insertsf" name="Inserting Scene Files">
-for a more detailed discussion.
-<p>
+for a more detailed discussion.<newline>
 This operation cannot be undone!
 <p>
 Also files supported by any of the import plugins
@@ -766,6 +768,7 @@ may be imported using this route. See above (<tt/"Open"/).
 <footnote>Since 1.13.</footnote>
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
+
 <p>
 All objects in the scene will be saved to the scene file, but
 if the current scene was loaded from a file without root object
@@ -781,6 +784,7 @@ desired extension (see above, <tt/"Open"/).
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (the scene file name is "unnamed") Ayam will ask for a file name first.
+
 <p>
 All objects in the scene will be saved to the scene file, but
 if the current scene was loaded from a file without root object
@@ -872,14 +876,19 @@ and quit the application.
 The <tt/"Edit"/ menu contains object and property clipboard
 operations, undo actions, and lets you open the preferences editor:
 <itemize>
-<item><tt/"Copy"/, copies the currently selected object(s) into the clipboard.
+<item><tt/"Copy"/, copies the currently selected object(s) into the
+clipboard.<newline>
 This operation cannot be undone!
 
-<item><tt/"Cut"/, moves the currently selected object(s) into the clipboard.
+<item><tt/"Cut"/, moves the currently selected object(s) into the
+clipboard.<newline>
 This operation cannot be undone!
 
 <item><tt/"Paste"/, copies the object(s) from the clipboard to the current
-level of the scene. Note that the content of the clipboard remains intact
+level of the scene.<newline>
+This operation cannot be undone!
+
+Note that the content of the clipboard remains intact
 after this operation, this means that you can paste multiple times!
 You can move objects out of the clipboard (clearing it) using the menu entry
 <tt>"Special/Clipboard/Paste (Move)"</tt>.
@@ -887,9 +896,10 @@ Also note that referenced objects, when moved into the clipboard with
 <tt/"Cut"/, can not be moved out of it using a simple <tt/"Paste"/, use
 <tt>"Special/Clipboard/Paste (Move)"</tt> instead!
 See also section <ref id="instclip" name="Instances and the Object Clipboard">.
-This operation cannot be undone!
+
 
 <item><tt/"Delete"/, removes the selected object(s) from the scene.
+<newline>
 This operation cannot be undone!
 
 <item><tt/"Select All"/, selects all objects in the current level
@@ -899,13 +909,13 @@ This operation cannot be undone!
 
 <item><tt/"Copy Property"/, copies the currently selected property of the
 currently selected object to the property clipboard (the property
-clipboard is completely independent from the normal object clipboard!).
+clipboard is completely independent from the normal object clipboard).
 Marked parameters will be omitted!
 
 <item><tt/"Copy Marked Prop"/, copies the currently marked parameters
 of the currently selected property of the
 currently selected object to the property clipboard (the property
-clipboard is completely independent from the normal object clipboard!).
+clipboard is completely independent from the normal object clipboard).
 
 <item><tt/"Paste Property"/, copies all property data from the property
 clipboard to the currently selected object(s). The data will get pasted
@@ -1006,7 +1016,6 @@ also section <ref id="patchmeshobj" name="PatchMesh Object">.
 <item><tt/"Solid"/, create a new solid primitive object, for use in CSG.
 <tt/"Box"/, <tt/"Sphere"/, <tt/"Disk"/, <tt/"Cone"/, <tt/"Cylinder"/,
 <tt/"Torus"/, <tt/"Hyperboloid"/ or <tt/"Paraboloid"/ may be selected.
-See also section <ref id="qprim" name="Quadric Primitives">.
 
 <item><tt/"Level"/, creates a new hierarchy object. <tt/"Level"/
 just groups objects, <tt/"Union"/, <tt/"Intersection"/,
@@ -1246,7 +1255,7 @@ or single object is replaced.
 <item><tt>"Clipboard/Paste Property to selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
-properties will take place! You may e.g. copy the settings from a
+properties will take place! One may e.g. copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
@@ -1378,10 +1387,7 @@ and trademark information.
 for various user interface elements (including the toolbox buttons).
 </itemize>
 
-<sect1>Main Window Keyboard Shortcuts
-<p>
-Many keyboard shortcuts of the main window have been discussed
-in the previous sections already but there are some more.
+<sect1>Main Window Keyboard Shortcuts<label id="mwsc">
 <p>
 An important group of shortcuts is available on the function
 keys:<newline>
@@ -1403,13 +1409,22 @@ in the console.<newline>
 <tt>&lt;Ctrl+R&gt;</tt> to the <tt>"Reset"</tt> button of the
 property GUI.
 <p>
+The object selection can be manipulated by the cursor keys,
+see also section
+<ref id="treesc" name="object tree shortcuts"> and section
+<ref id="olbsc" name="object list shortcuts">.
+<p>
+Many main menu entries have direct keyboard shortcuts, displayed
+directly in the menu entries,
+see also section <ref id="mm" name="main menu">.
+<p>
 Note that the main window keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
 console or in a property GUI element (i.e. a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object selection
 widget and thus enable the main window keyboard shortcuts.
 <p>
-One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
+One can adapt all these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 
 <sect1>Anatomy of a View<label id="viewwin">
@@ -1960,7 +1975,7 @@ apply all changes,
 program startup (these are not the factory defaults, to get back to
 the factory defaults, restart Ayam with the command line option
 <tt/"-failsafe"/ or use the main menu entry
-<tt>"Special/Reset Preferences"</tt>!),
+<tt>"Special/Reset Preferences"</tt>),
 
 <item><tt/"Cancel"/ to close the dialog without applying any changes.
 All changes done after the last press of <tt/"Apply"/ will be lost.
@@ -2286,7 +2301,7 @@ to select a different filename each time you export a RIB file.
 A file selection dialog will pop up, after the selection of the
 view to export.
 The same effect may be achieved by leaving <tt/"RIBFile"/ totally
-empty!
+empty.
 <p>
 If you set <tt/"RIBFile"/ to <tt/"rendrib"/,
 libribout.a does not create a RIB file at all, but immediately pipes the
@@ -2516,7 +2531,7 @@ sized pieces with regard to parametric space; <tt/"SParamU"/ and
 <tt/"SParamV"/ control the number of sampling points in U and V direction
 respectively per unit length.
 This leads to different numbers of samples for knot vectors
-of different length in parameter space!
+of different length in parameter space.
 <item>The tesselation method <tt/"PathLength"/ ensures that no edge of a
 polygon generated by the tesselation is longer than the value specified
 by <tt/"SParamU"/ and the tesselation method
@@ -4069,7 +4084,7 @@ surfaces. Note that the lighting is in no way an exact (or even similar)
 representation of the light information as specified with Light objects
 in the scene.
 Instead, a single light source, located at the camera origin
-(a headlight), will be used!
+(a headlight), will be used
 <tt/"ShadeAndDraw"/ combines surfaces and wireframes.
 
 <item><tt/"DrawSel"/ toggles drawing of selected objects. If this is
@@ -4150,7 +4165,7 @@ Note that Ayam is trying to guess from the names of the light shader
 arguments to draw the light.
 The names <tt/"from"/ and <tt/"to"/ denote location and destination
 of the light source. Those names should not be used for other things
-in the light shaders!
+in the light shaders.
 <p>
 Point-, Distant-, and Spotlights:<label id="pdsl">
 <p>
@@ -4199,7 +4214,7 @@ value is on.
 just local objects (objects, that are defined in the same level
 in the scene hierarchy as the light source object or below it) or
 all objects in the scene.
-The default is off, all objects in the scene are lit!
+The default is off, all objects in the scene are lit.
 The <tt/"IsLocal"/ attribute is ignored for lights that are
 defined in the root level of the scene. Mind also that shadow maps
 will always contain shadows from all objects in the scene,
@@ -4207,14 +4222,14 @@ regardless of the <tt/"IsLocal"/ attribute of the light source.
 <p>
 Using the light attribute <tt/"Shadows"/ you may determine
 whether the light source should cast shadows.
-The default is off, no shadows! Note that this option will not
+The default is off, no shadows. Note that this option will not
 magically enable shadows on renderers that create shadows by
 shadow maps. It will merely be interpreted by raytracing
 renderers like BMRT.
 <p>
 The attribute <tt/"Samples"/ determines the number of times to sample
 an area light source, independent of pixel samples, the default value
-is 1. This attribute is available for custom lights only!
+is 1. This attribute is available for custom lights only.
 <p>
 <tt/"UseSM"/ determines, whether shadow maps should be created
 and used for this light source. The resolution of the
@@ -4438,7 +4453,8 @@ An example:
 <item>Drag and drop the sphere onto the Light object so that it becomes
 a child of the light object.
 <item>Transform the sphere object to your hearts content; the position
-and size of the object determines the position and size of the light source!
+and size of the object determines the position and size of the light
+source.
 </itemize>
 
 There is an example scene named <tt>"arealight.ay"</tt> distributed with
@@ -5246,34 +5262,21 @@ direction of the Z axis of the objects coordinate system).
 direction of the Y axis of the objects coordinate system).
 </itemize>
 
-<sect2>RIB Export and Conversion
-<p>
-The box object will always be exported as six bilinear patches.
+<sect2>Conversion Support
 <p>
 A box object may be converted to three NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
 <footnote>Since 1.8.2.</footnote>
 
-<sect1>Quadric Primitives<label id="qprim">
+<sect2>RIB Export
 <p>
-<figure loc="ht">
-<eps file="pics/primitives.ps" height="7cm">
-<img src="pics/primitives.gif">
-<caption>Box, and Quadric Primitives</caption>
-</figure>
-<p>
+The box object will always be exported as six bilinear patches.
 
-<sect2>Sphere Object<label id="sphereobj">
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Sphere Object<label id="sphereobj">
 <p>
 A sphere, centered at the origin of the object coordinate system.
-This object will be exported as solid primitive or as
-simple sphere (depending on the <tt/"Closed"/ parameter
-of the SphereAttrib property) in RIBs.
-<p>
-A sphere object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the sphere.
-<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
@@ -5286,34 +5289,45 @@ Sphere|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a sphere:
 
-<sect3>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
+<sect2>SphereAttr Property<label id="spattr"><label id="sphereattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that if this option is in use and <tt/"ZMin"/, <tt/"ZMax"/ or
-<tt/"ThetaMax"/ have other than the default values,
-a single sphere will be written (in the worst case) as a
-CSG hierarchy of two spheres, two cylinders and eight disks!
-But it may be used in CSG operations, safely.
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the sphere
+may be used in CSG operations safely.
 <item><tt/"Radius"/ is the radius of the sphere, default is 1.
-<item><tt/"ZMin"/ may be used to chop the sphere off at a certain
-place at Z.
-<item><tt/"ZMax"/ may be used to chop the sphere off at a certain
-place at Z.
-<item><tt/"ThetaMax"/ is the sweeping angle of the sphere (the default value
-is 360).
+<item><tt/"ZMin"/ is the lower limit of the sphere on the Z axis,
+default is -1.
+<item><tt/"ZMax"/ is the upper limit of the sphere on the Z axis,
+default is 1.
+<item><tt/"ThetaMax"/ is the sweeping angle of the sphere in degrees, default
+is 360.
 </itemize>
 
-<sect2>Disk Object<label id="diskobj">
+<sect2>Conversion Support
 <p>
-A disk, centered at the origin of the object coordinate system.
-This object will always be exported as simple disk in RIBs.
-<p>
-A disk object may be converted to a NURBS patch
+A sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the disk.
+obeys all parameters of the sphere.
 <footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The sphere object appears in RIB output as simple
+<tscreen><tt>
+RiSphere(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/ or
+<tt/"ThetaMax"/ have other than the default values,
+as complex CSG hierarchy of at most two spheres, two cylinders, and
+eight disks.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Disk Object<label id="diskobj">
+<p>
+A disk in the XY plane, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Disk object.
 <table loc="ht">
@@ -5326,26 +5340,35 @@ Disk|No|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a disk:
 
-<sect3>DiskAttr Property<label id="dkp"><label id="diskattrprop">
+<sect2>DiskAttr Property<label id="dkp"><label id="diskattrprop">
 <p>
 <itemize>
 <item><tt/"Radius"/ is the radius of the disk, default is 1.
 <item><tt/"ZMin"/ displaces the disk along the Z axis, default is 0.
-<item><tt/"ThetaMax"/ is the sweeping angle of the disk, default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the disk in degrees,
+default is 360.
 </itemize>
 
-<sect2>Cone Object<label id="coneobj">
+<sect2>Conversion Support
+<p>
+A disk object may be converted to a NURBS patch
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the disk.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The disk object will always be exported as simple disk:
+<tscreen><tt>
+RiDisk(...);
+</tt></tscreen>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Cone Object<label id="coneobj">
 <p>
 A cone, centered at the origin of the object coordinate system,
-with the base at the XY plane.
-This object will be exported as solid primitive or as
-simple cone (depending on the <tt/"Closed"/ parameter
-of the ConeAttrib property) in RIBs.
-<p>
-A cone object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the cone.
-<footnote>Since 1.8.2.</footnote>
+with the base in the XY plane.
 <p>
 The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
@@ -5358,32 +5381,41 @@ Cone|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a cone:
 
-<sect3>ConeAttr Property<label id="cnp"><label id="coneattrprop">
+<sect2>ConeAttr Property<label id="cnp"><label id="coneattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that if this option is in use and
-<tt/"ThetaMax"/ has a different than the default value,
-a single cone will be written (in the worst case) as a
-CSG hierarchy of a cone, a disk and two polygons!
-But it may be used in CSG operations, safely.
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the cone
+may be used in CSG operations safely.
 <item><tt/"Radius"/ is the radius of the cone at the base, default is 1.
 <item><tt/"Height"/ is the height of the cone, default is 1.
-<item><tt/"ThetaMax"/ is the sweeping angle of the cone, default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the cone in degrees,
+default is 360.
 </itemize>
 
-<sect2>Cylinder Object<label id="cylinderobj">
+<sect2>Conversion Support
+<p>
+A cone object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the cone.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The cone object appears in RIB output as simple
+<tscreen><tt>
+RiCone(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"ThetaMax"/ has a different than
+the default value, as complex CSG hierarchy of at most one cone, one disk, and
+two polygons.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Cylinder Object<label id="cylinderobj">
 <p>
 A cylinder, centered at the origin of the object coordinate system.
-This object will be exported as solid primitive or as
-simple cylinder (depending on the <tt/"Closed"/ parameter
-of the RiCylinderAttr property) in RIBs.
-<p>
-A cylinder object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the cylinder.
-<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
@@ -5396,36 +5428,45 @@ Cylinder|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a cylinder:
 
-<sect3>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
+<sect2>CylinderAttr Property<label id="cyp"><label id="cylinderattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that if this option is in use and
-<tt/"ThetaMax"/ has a different than the default value,
-a single cylinder will be written (in the worst case) as a
-CSG hierarchy of a cylinder, two disks and two polygons!
-But it may be used in CSG operations, safely.
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the cylinder
+may be used in CSG operations safely.
 <item><tt/"Radius"/ is the radius of the cylinder, default is 1.
 <item><tt/"ZMin"/ determines the Z location of the base, default is -1.
 <item><tt/"ZMax"/ determines the Z location of the top, default is 1.
-<item><tt/"ThetaMax"/ is the sweeping angle of the cylinder, default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the cylinder in degrees,
+default is 360.
 </itemize>
 
-<sect2>Torus Object<label id="torusobj">
+<sect2>Conversion Support
+<p>
+A cylinder object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the cylinder.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The cylinder object appears in RIB output as simple
+<tscreen><tt>
+RiCylinder(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"ThetaMax"/ has a different than
+the default value, as complex CSG hierarchy of at most one cylinder, two disks,
+and two polygons.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Torus Object<label id="torusobj">
 <p>
 A torus, centered at the origin of the object coordinate system.
 A torus is a donut like shape, that results from sweeping
-a small circle ( that has been displaced along X sufficiently )
+a small circle (that has been displaced along X sufficiently)
 around the Z axis.
-This object will be exported as solid primitive or as
-simple torus (depending on the <tt/"Closed"/ parameter
-of the RiTorusAttr property) in RIBs.
-<p>
-A torus object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the torus.
-<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
@@ -5438,38 +5479,46 @@ Torus|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a torus:
 
-<sect3>TorusAttr Property<label id="top"><label id="torusattrprop">
+<sect2>TorusAttr Property<label id="top"><label id="torusattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that if this option is in use and
-<tt/"PhiMin"/, <tt/"PhiMax"/ or <tt/"ThetaMax"/ have different than the
-default values,
-a single torus will be written (in the worst case) as a
-CSG hierarchy of a torus, two disks and two hyperboloids!
-But it may be used in CSG operations, safely.
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the torus
+may be used in CSG operations safely.
 <item><tt/"MajorRad"/ is the radius of the torus, measured
 from the Z axis to the center of the swept smaller circle, default is 0.75.
 <item><tt/"MinorRad"/ is the radius of the swept circle, default is 0.25.
 <item><tt/"PhiMin"/ determines an angle to limit the swept circle,
-default is -180.
+default is 0.
 <item><tt/"PhiMax"/ determines an angle to limit the swept circle,
-default is 180.
-<item><tt/"ThetaMax"/ is the sweeping angle of the torus, default is 360.
+default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the torus in degrees,
+default is 360.
 </itemize>
 
-<sect2>Paraboloid Object<label id="paraboloidobj">
+<sect2>Conversion Support
+<p>
+A torus object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the torus.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The torus object appears in RIB output as simple
+<tscreen><tt>
+RiTorus(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"PhiMin"/, <tt/"PhiMax"/, or
+<tt/"ThetaMax"/ have different than the default values, as complex
+CSG hierarchy of at most one one torus, two disks, and two hyperboloids.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Paraboloid Object<label id="paraboloidobj">
 <p>
 A paraboloid, centered at the origin of the object coordinate system.
-This object will be exported as solid primitive or as
-simple paraboloid (depending on the <tt/"Closed"/ parameter
-of the RiParaboloidAttr property) in RIBs.
-<p>
-A paraboloid object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the paraboloid.
-<footnote>Since 1.8.2.</footnote>
 <p>
 The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
@@ -5482,37 +5531,48 @@ Paraboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a paraboloid:
 
-<sect3>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
+<sect2>ParaboloidAttr Property<label id="pap"><label id="paraboloidattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that if this option is in use and
-<tt/"ZMin"/, <tt/"ZMax"/ or <tt/"ThetaMax"/ have different
-than the default values,
-a single paraboloid will be written (in the worst case) as a
-CSG hierarchy of a paraboloid, two disks and two bicubic patches!
-But it may be used in CSG operations, safely.
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the paraboloid
+may be used in CSG operations safely.
 <item><tt/"RMax"/ is the radius of the paraboloid at a Z of <tt/"ZMax"/,
-default is 1.
-<item><tt/"ZMin"/ determines the Z location of the base, default is -1.
-<item><tt/"ZMax"/ determines the Z location of the top, default is 1.
-<item><tt/"ThetaMax"/ is the sweeping angle of the paraboloid, default is 360.
+the base of the paraboloid surface, default is 1.
+<item><tt/"ZMin"/ limits the paraboloid surface on the Z axis,
+must be positive, default is 0.
+<item><tt/"ZMax"/ limits the paraboloid surface on the Z axis and
+determines the Z location of the base, must be positive, default is 1.
+<item><tt/"ThetaMax"/ is the sweeping angle of the paraboloid in degrees,
+default is 360.
 </itemize>
 
-<sect2>Hyperboloid Object<label id="hyperboloidobj">
+<sect2>Conversion Support
+<p>
+A paraboloid object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the paraboloid.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The paraboloid object appears in RIB output as simple
+<tscreen><tt>
+RiParaboloid(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/ or
+<tt/"ThetaMax"/ have different than the default values, as complex
+CSG hierarchy of at most one paraboloid, two disks, and two bicubic patches.
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>Hyperboloid Object<label id="hyperboloidobj">
 <p>
 A hyperboloid, centered at the origin of the object coordinate system.
-This shape will be created by sweeping a line specified by two
-points in space around the Z axis.
-This object will be exported as solid primitive or as
-simple hyperboloid (depending on the <tt/"Closed"/ parameter
-of the RiHyperbAttr property) in RIBs.
-<p>
-A hyperboloid object may be converted to NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the hyperboloid.
-<footnote>Since 1.8.2.</footnote>
+The shape of the hyperboloid will be created by sweeping a line specified
+by two points in space around the Z axis. Thus, disk, cylinder, and cone are
+special cases of the hyperboloid.
 <p>
 The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
@@ -5525,27 +5585,44 @@ Hyperboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a hyperboloid:
 
-<sect3>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
+<sect2>HyperboloidAttr Property<label id="hyp"><label id="hyperboloidattrprop">
 <p>
 <itemize>
 <item><tt/"Closed"/ toggles whether the object should
-be automatically sealed (closed) when exported to RIB.
-Note that due to a bug in BMRT that is still present in V2.3.6
-this option does not work properly when
-<tt/"ThetaMax"/ has a different than the default value and the
-hyperboloid has no displacement shader. In fact, using a displacement
-shader with a km (amount of displacement) of 0.0 is a work-around
-for this bug (found by T. E. Burge).
-Also note that if this option is in use and
-<tt/"ThetaMax"/ has a different than the default value,
-a single hyperboloid will be written (in the worst case) as a
-CSG hierarchy of a hyperboloid, two disks and two bilinear patches!
+be automatically sealed (closed by matching cap surfaces).<newline>
+Only when this option is enabled, the hyperboloid
+may be used in CSG operations safely.
 <item><tt/"P1_X"/, <tt/"P1_Y"/ and <tt/"P1_Z"/, define point one,
 default is (0, 1, -0.5).
 <item><tt/"P2_X"/, <tt/"P2_Y"/ and <tt/"P2_Z"/, define point two,
 default is (1, 0, 0.5).
-<item><tt/"ThetaMax"/ is the sweeping angle of the hyperboloid, default is 360.
+<item><tt/"ThetaMax"/ is the sweeping angle of the hyperboloid in degrees,
+default is 360.
 </itemize>
+
+<sect2>Conversion Support
+<p>
+A hyperboloid object may be converted to NURBS patches
+using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
+obeys all parameters of the hyperboloid.
+<footnote>Since 1.8.2.</footnote>
+
+<sect2>RIB Export
+<p>
+The hyperboloid object appears in RIB output as simple
+<tscreen><tt>
+RiHyperboloid(...);
+</tt></tscreen>
+or, if <tt/"Closed"/ is enabled and <tt/"ThetaMax"/ has a different than
+the default value, as complex CSG hierarchy of at most one hyperboloid,
+two disks, and two bilinear patches.
+<p>
+Note that due to a bug in BMRT that is still present in V2.3.6
+the <tt/"Closed"/ option does not work properly when
+<tt/"ThetaMax"/ has a different than the default value and the
+hyperboloid has no displacement shader. In fact, using a displacement
+shader with a km (amount of displacement) of 0.0 is a work-around
+for this bug (found by T. E. Burge).
 
 <#if out=latex><x/newpage/</#if>
 
@@ -5695,7 +5772,7 @@ Chordal (lower) Knot Vectors</caption>
 <item><tt/"Knots"/ allows to enter own custom knot sequences.
 Note that <tt/"Knots"/ are not in use if <tt/"Knot-Type"/ (above)
 is of type <tt/"NURB"/, <tt/"B-Spline"/, <tt/"Bezier"/, <tt/"Chordal"/,
-or <tt/"Centripetal"/! Note also, that the content of this parameter
+or <tt/"Centripetal"/. Note also, that the content of this parameter
 will be overwritten, if the knot type is switched to any of the
 aforementioned types.
 
@@ -6528,16 +6605,25 @@ is present.
 <item>Trim curves may not intersect each other or themself.
 </itemize>
 Note that Ayam is not checking whether your trim curves
-follow these rules!
+follow these rules.
 <p>
 Warning: Certain OpenGL implementations may be easily crashed
 drawing trimmed NURBS patches with trims that do not follow the
-aforementioned rules! When in doubt or while heavy modelling,
+aforementioned rules. When in doubt or while heavy modelling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 <p>
 NURBS curve providing objects are also supported as trim curves.
 <footnote>Since 1.5.</footnote>
+
+<sect2>Conversion Support
+<p>
+A NPatch object may be converted to a PolyMesh object using the
+main menu entry <tt>"Tools/Convert"</tt>.
+<p>
+This process is also called tesselation and thus, the tesselation
+parameters from TP tags will be used in the conversion process (if present)
+(see also section <ref id="tptag" name="TP Tag">).
 
 <sect2>RIB Export
 <p>
@@ -6857,7 +6943,7 @@ PV tags are supported.
 <sect1>SDMesh Object<label id="sdmeshobj">
 <p>
 <figure loc="ht">
-<eps file="pics/sdmesh.ps" height="4cm">
+<eps file="pics/sdmesh.ps" height="6cm">
 <img src="pics/sdmesh.gif">
 <caption>SDMesh object with original polygonal mesh (blue)</caption>
 </figure>
@@ -6953,7 +7039,7 @@ The axis of revolution is always the Y axis of the coordinate system
 that is defined by the next higher level in the object hierarchy as
 seen from the curve object (this is the Y axis of the revolve object).
 The generating curve should lie in the XY plane of this
-coordinate system. If not, it will be squashed down to this plane!
+coordinate system. If not, it will be squashed down to this plane.
 <p>
 The following simple experiment should make the last
 statements more clear, during all steps watch the movements
@@ -7087,7 +7173,7 @@ The axis of the extrusion is always the Z axis of the coordinate
 system that is defined by the next higher
 level in the object hierarchy (the Z axis of the extrude
 object itself). The generating curves should lie in the XY plane of this
-coordinate system. If not, they will be squashed down to this plane!
+coordinate system. If not, they will be squashed down to this plane.
 See section
 <ref id="toxyt" name="To XY Tool"> for information on
 how to easily achieve curves in the XY plane.
@@ -7149,14 +7235,14 @@ All curves forming holes in the extruded object must be defined inside
 they may not intersect each other or themself and one can not have hole
 curves inside hole curves. If there are bevels and caps, allow extra
 spacing between the curves (for the bevels).
-Ayam will not check whether the parameter curves conform to these criteria!
+Ayam will not check whether the parameter curves conform to these criteria.
 <p>
 With the direction of the curve one decides the direction of the
 bevel as well (should it round outwards or inwards?).
 If the bevels of the holes look wrong try to revert the generating
 curves of the holes.
-Note that beveling does not work well with open curves. You should always
-use closed curves for beveling!
+Note that beveling does not work well with open curves. One should always
+use closed curves for beveling.
 Beveling may lead to self intersecting trim curves in sharp corners of an
 extrusion. Decrease the bevel radius or round the corners of the extruded
 curve (using insertion of additional control points) if cap generation
@@ -7313,8 +7399,8 @@ The object hierarchy of a Sweep object, thus, looks like this:
 <p>
 Note that the <tt/"Translate"/ attributes of the cross section curve
 will be fully ignored. All other transformation attributes
-(of cross section and trajectory!) will be used to determine
-place, orientation, and size of the Sweep object!
+(of cross section and trajectory) will be used to determine
+place, orientation, and size of the Sweep object.
 <p>
 The cross section curve has to be defined in the YZ-plane of the
 Sweep objects coordinate system but it also has to be defined in the
@@ -7835,7 +7921,7 @@ the curves are not, if the orders or knot vectors of the curves do not
 match.
 For example, a skinned patch from two curves of length 4 but one with
 order 4 and the other with order 2 will result in a patch with
-a width of 2 and a height of 10!
+a width of 2 and a height of 10.
 <p>
 The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
@@ -9603,7 +9689,7 @@ back using <tt>"Edit/Paste Property"</tt> after loading of the
 new default values.
 Beware! This works properly only, if you do not change the type of
 existing shader arguments and if no shader arguments are removed in
-the new version of the shader!
+the new version of the shader.
 <p>
 You can also just copy certain parameter values (shader arguments
 whose types do not change) by selecting them using double-clicks
@@ -9657,8 +9743,8 @@ This section documents all currently known tag types.
 <p>
 The tag type <tt/"RiAttribute"/ can be used to attach
 arbitrary RenderMan interface attributes to objects.
-This is handy if you use a renderer with lots of RiAttributes
-that differ from the standard RiAttributes.
+This is handy if a renderer with lots of RiAttributes
+that differ from the standard RiAttributes is in use.
 <p>
 <tt/"RiAttribute"/ tags attached to a geometric object override
 <tt/"RiAttribute"/ tags possibly attached to the material object of this
@@ -9703,10 +9789,10 @@ by editing the ayamrc file, see section
 <bf/Description/
 <p>
 The tag type <tt/"RiOption"/ can be used to attach arbitrary RenderMan
-interface options to objects. This is handy if you use a renderer with
-lots of RiOptions that differ from the standard RiOptions.
+interface options to the scene. This is handy if a renderer with
+lots of RiOptions that differ from the standard RiOptions is in use.
 However, they will be only used by the RIB exporter if they are attached
-to the <tt/"Root"/ object!
+to the <tt/"Root"/ object.
 The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
 <p>
 <bf/Notes/
@@ -9754,7 +9840,7 @@ horizontal stripes now.
 geometric object.
 <p>
 The exact behaviour of an object equipped with a <tt/"TC"/ tag
-depends heavily on the shader and its use of the texture coordinates!
+depends heavily on the shader and its use of the texture coordinates.
 <p>
 Note also that using <tt/"TC"/ tags you change the texture coordinates
 of entire primitives only, if you want to change the texture coordinates
@@ -9838,7 +9924,7 @@ For RIB export, proper <tt/"RiDeclare"/ statements will be created
 automatically by Ayam.
 <p>
 However, Ayam does not check, whether your shaders actually use the data
-from the <tt/"PV"/ tag!
+from the <tt/"PV"/ tag.
 <p>
 The syntax of the value string of a PV tag is as following:
 <p>
@@ -9884,7 +9970,7 @@ configuration of the geometric primitive is <em>not</em> checked by Ayam.
 Some RIB writing libraries, however, check the number and silently
 omit the primitive variable if there are mismatches. Check your
 RIB for the presence of the primitive variable after export,
-especially, if you are adding or editing PV tags manually!
+especially, if you are adding or editing PV tags manually.
 
 <sect2>RiHider Tag<label id="rihtag">
 <p>
@@ -10890,7 +10976,7 @@ or NPatchAttr property if all single control points of the multiple
 point(s) still have identical coordinate values (and the <tt/"CreateMP"/
 option of the curve or patch object is activated). You should immediately
 edit the control points (move them apart) after exploding to avoid that
-they automatically collapse to a multiple point again!
+they automatically collapse to a multiple point again.
 </itemize>
 
 <sect1>Swap UV Tool<label id="swapuvt">
@@ -11246,7 +11332,7 @@ easily modify the code Ayam consists of. This is, however, not
 recommended for good reasons (unless you read the Ayam source code
 and really know, what you are doing).
 So watch out for already existing procedures and commands when
-implementing your own!
+implementing your own.
 Using procedures and commands not listed in this documentation
 is dangerous too. Implementation and interfaces of those
 procedures and commands may change in future versions of Ayam without
@@ -11393,7 +11479,7 @@ Tags|tagsPropData|getTagsp|setTagsp<#if out=latex>@<hline></#if>
 </table>
 Note that this list is pretty much incomplete, however you can always
 infer such information using commands like <tt/"parray Tags"/ in the Ayam
-console!
+console.
 <p>
 See also section
 <ref id="sciprop" name="Manipulating Properties">
@@ -11963,7 +12049,7 @@ creates a centered patch with width 3, height 3, uorder 3, and vorder 3.
   <itemize>
 
   <item><tt/"-polys"/: the value of this option specifies the number of
-polygons/faces in the mesh. The number of polygons defaults to 0!
+polygons/faces in the mesh. The number of polygons defaults to 0.
 
   <item><tt/"-loops"/: the value of this option specifies the number of
 loops per polygon. It is therefore a list of positive integer values of a
@@ -12042,7 +12128,7 @@ scheme, it may be set to 0 &ndash; Catmull-Clark or 1 &ndash; Loop only.
 Default is 0.
 
   <item><tt/"-faces"/: the value of this option specifies the number of
-faces in the mesh. The number of polygons defaults to 0!
+faces in the mesh. The number of faces defaults to 0.
 
   <item><tt/"-nverts"/: the value of this option specifies the number of
 vertices per face. It is therefore a list of positive integer
@@ -12527,7 +12613,7 @@ rotOb &ndash; rotate objects:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected object(s) by dx degrees around the
 objects X axis, then by dy degrees around objects Y axis and then by dz degrees
-around the objects Z axis. Note the order of the rotations!
+around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -12543,7 +12629,7 @@ direction of the objects X axis, by a factor of dy in
 direction of the objects Y axis and by a factor of dz in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
-be changed to 1.0 silently!
+be changed to 1.0 silently.
 </itemize>
 
 <p>
@@ -12569,7 +12655,7 @@ rotPnts &ndash; rotate selected points:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected points by dx degrees around the
 objects X axis then by dy degrees around objects Y axis and then by dz degrees
-around the objects Z axis. Note the order of the rotations!
+around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -12585,7 +12671,7 @@ direction of the objects X axis, by a factor of dy in
 direction of the objects Y axis and by a factor of dz in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
-be changed to 1.0 silently!
+be changed to 1.0 silently.
 </itemize>
 
 <p>
@@ -12789,7 +12875,7 @@ of the selected curves) r times. The valid range is determined by
 the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the curve and n is the length of the curve.
 The knot type of the curves will always be changed to custom but
-the shape of the curves will not change!
+the shape of the curves will not change.
 See also section <ref id="insknt" name="Insert Knot Tool">.
 </itemize>
 
@@ -13112,7 +13198,7 @@ the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the patch in U direction and n is the
 width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
-the shape of the patches will not change!
+the shape of the patches will not change.
 See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
@@ -13131,7 +13217,7 @@ the current knot vector V as follows: <tt/V[p] <= v <= V[n]/, where
 p is the degree (order-1) of the patch in V direction and n is the
 height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
-the shape of the patches will not change!
+the shape of the patches will not change.
 See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
@@ -14242,7 +14328,7 @@ or via the consoles context menu: <tt>"Console/Load File"</tt>.
 <p>
 The script <tt>"repairAyam.tcl"</tt> should be considered a
 <em>last resort</em> to help saving the current state of
-modified objects!
+modified objects.
 <p>
 The script will close all views, clean up the application state variables,
 reset the mouse cursor and the console prompt, and try to update important
@@ -14966,9 +15052,9 @@ primitives:
 
 Furthermore, the plugin supports reading of CSG, object-instances,
 archives, light sources (including area-lights), arbitrary linear
-transformations (except shear transformations!), arbitrary
+transformations (except shear transformations), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
-shaders and without array arguments!), arbitrary primitive variables
+shaders and without array arguments), arbitrary primitive variables
 (e.g. varying or vertex)
 <footnote>Since 1.7.</footnote>
 , and procedural objects and delayed read archives
@@ -15016,7 +15102,7 @@ to all imported objects.
 to read. A value of -1 means, all frames are to be read. If you specify
 a frame number and this frame does not show up in the RIB as
 <tt/"FrameBegin &lt;yournumber&gt;"/ nothing will be
-imported!
+imported.
 <item><tt/"ReadCamera"/: if this is switched on, a Camera object will
 be created when the RIB plugin encounters a <tt/"WorldBegin"/. You may drag
 this camera object onto a perspective View object in Ayam after import
@@ -15329,7 +15415,8 @@ are vertices used by multiple faces
 objects should be merged as well if they are subject to automatic
 merging (see above).
 <item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
-be imported. This option does <em>not</em> influence the import of trim curves!
+be imported. This option does <em>not</em> influence the import of trim
+curves.
 <item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
 run along the border of a NURBS patch) will be imported if they are the
 only trim curves.
@@ -15787,7 +15874,7 @@ import scenes from the XML based X3D file format published by the Web3D
 Consortium. The XML parser used in this plugin is based on Expat and SCEW.
 <p>
 Binary and compressed versions of X3D, as well as VRML files are <em/not/
-supported! Only pure XML files are read by the <tt>"x3dio"</tt> plugin.
+supported. Only pure XML files are read by the <tt>"x3dio"</tt> plugin.
 <p>
 Start importing from a Web3D X3D file using the menu entry
 <tt>"File/Import/Web3D X3D"</tt>
@@ -15966,7 +16053,8 @@ The following options further control the X3D import process:
 <itemize>
 <item><tt>"FileName"</tt>: is the name of the X3D file to be imported
 <item><tt>"ReadCurves"</tt>: if this is disabled, no freeform curves will
-be imported. This option does <em>not</em> influence the import of trim curves!
+be imported. This option does <em>not</em> influence the import of trim
+curves.
 <item><tt>"ReadViewpoints"</tt>: controls whether viewpoints should
 be read as view, camera, or not at all.
 <item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
@@ -16445,7 +16533,7 @@ When the application is left the next time, or the main menu entry
 <tt>"File/Save Prefs"</tt> is invoked, a correct ayamrc file will be
 created again.
 All preference settings will be reset to factory defaults and all your
-edits will be lost, however!
+edits of the ayamrc file will be lost, however.
 <p>
 Another way to reset the ayamrc file is to simply delete the file manually
 or using the main menu entry <tt>"Special/Reset Preferences"</tt>.
@@ -16468,9 +16556,9 @@ You may adapt the keyboard shortcuts used in the GUI to your special
 needs using the ayamrc file. Note that if you do that, the GUI (the menu
 entries and the <tt>"Show Shortcuts"</tt> window) will adapt to your
 changes but certainly neither this documentation, nor the reference card
-(unless recreated using refcard.tcl), nor the tutorials!
+(unless recreated using refcard.tcl), nor the tutorials.
 <p>
-Ayam does not check for clashes in key bindings! This means, the last set
+Ayam does not check for clashes in key bindings. This means, the last set
 binding for a key will be used.
 <p>
 On Unix, the output of the program <tt/"xev"/ and the
@@ -16723,7 +16811,7 @@ The default value is 1 &ndash; yes.
 point values, used as a safety margin for the panes:
 console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
 property vs. hierarchy, upper-view-2 vs. upper-view-1 (in this
-order!).
+order).
 These values control the minimum size of a pane expressed in an
 inverse (1/x) and relative way:
 the smaller the number, the bigger the margin. The safety margin
@@ -16782,7 +16870,7 @@ set riopt(runtime) {
 </code>
 As you can see, it is not mandatory to provide default values.
 Be sure to correctly close all the curly braces, otherwise the next
-start of Ayam may fail!
+start of Ayam may fail.
 
 Available types of parameters are:
 <itemize>
@@ -16936,7 +17024,7 @@ Instantiation of grouping objects may drastically decrease
 the total number of objects in a scene.
 <p>
 Note that before the automatic instantiation starts, all currently
-existing instances will be resolved!
+existing instances will be resolved.<newline>
 After instantiation some statistics will be displayed in the console.
 <p>
 Also note that the instantiation obeys the object selection:
@@ -17008,7 +17096,7 @@ To start using IDR:
 Compare the rendering time with a full render from the view window.
 
 IDR requires that atleast the renderer of the second rendering pass
-honours RiMatte! Since rgl does not honour RiMatte, it is sometimes
+honours RiMatte. Since rgl does not honour RiMatte, it is sometimes
 necessary to simply exclude objects of different importance value.
 No wrong images are to be expected from this, as rgl does not calculate
 other than local lighting effects.
@@ -17043,7 +17131,7 @@ complexity (convexity) of a primitive must be known.
 The depth complexity of a primitive determines the maximum number
 of forward oriented surfaces any ray through this primitive would pass.
 A regular sphere has a depth complexity of 1, a torus of 2, but do
-not confuse depth complexity with genus, they are different values!
+not confuse depth complexity with genus, they are different values.
 A 3D representation of the letter A e.g. has a genus of
 1 but a depth complexity of 3.
 The depth complexity of a primitive can be stored in a <tt/"DC"/ tag.
@@ -17244,7 +17332,7 @@ mode at all.
 
 <sect1>How to join the fun<label id="fun">
 <p>
-Helping to make Ayam even better will spice up your life too!
+Helping to make Ayam even better will spice up your life too.
 Here is how to do it:
 <enum>
 <item>Write/translate tutorials.
@@ -17265,7 +17353,7 @@ or in the feature request tracker.
 <item>Donate money by registering ShellyLib.
 ShellyLibs source will be converted to a first high level custom object
 that creates objects of type seashell for Ayam. This object, however,
-will be Shareware!
+will be Shareware.
 </enum>
 
 Please do not implement custom objects like simple triangles or polygons.
@@ -17380,52 +17468,96 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 
 <sect>Index
 <p>
-<ref id="index0" name=" 0 ">
-<ref id="indexa" name=" A ">
-<ref id="indexb" name=" B ">
-<ref id="indexc" name=" C ">
-<ref id="indexd" name=" D ">
-<ref id="indexe" name=" E ">
-<ref id="indexf" name=" F ">
-<ref id="indexg" name=" G ">
-<ref id="indexh" name=" H ">
-<ref id="indexi" name=" I ">
-<ref id="indexj" name=" J ">
-<ref id="indexk" name=" K ">
-<ref id="indexl" name=" L ">
-<ref id="indexm" name=" M ">
-<ref id="indexn" name=" N ">
-<ref id="indexo" name=" O ">
-<ref id="indexp" name=" P ">
-<ref id="indexq" name=" Q ">
-<ref id="indexr" name=" R ">
-<ref id="indexs" name=" S ">
-<ref id="indext" name=" T ">
-<ref id="indexu" name=" U ">
-<ref id="indexv" name=" V ">
-<ref id="indexw" name=" W ">
-<ref id="indexx" name=" X ">
-<ref id="indexy" name=" Y ">
-<ref id="indexz" name=" Z ">
+Overview:
+<#if out=latex>
+<list>
+<item><tt/<bf/0// &ndash; page <pageref id="index0">
+<item><tt/<bf/A// &ndash; page <pageref id="indexa">
+<item><tt/<bf/B// &ndash; page <pageref id="indexb">
+<item><tt/<bf/C// &ndash; page <pageref id="indexc">
+<item><tt/<bf/D// &ndash; page <pageref id="indexd">
+<item><tt/<bf/E// &ndash; page <pageref id="indexe">
+<item><tt/<bf/F// &ndash; page <pageref id="indexf">
+<item><tt/<bf/G// &ndash; page <pageref id="indexg">
+<item><tt/<bf/H// &ndash; page <pageref id="indexh">
+<item><tt/<bf/I// &ndash; page <pageref id="indexi">
+<item><tt/<bf/J// &ndash; page <pageref id="indexj">
+<item><tt/<bf/K// &ndash; page <pageref id="indexk">
+<item><tt/<bf/L// &ndash; page <pageref id="indexl">
+<item><tt/<bf/M// &ndash; page <pageref id="indexm">
+<item><tt/<bf/N// &ndash; page <pageref id="indexn">
+<item><tt/<bf/O// &ndash; page <pageref id="indexo">
+<item><tt/<bf/P// &ndash; page <pageref id="indexp">
+<item><tt/<bf/Q// &ndash; page <pageref id="indexq">
+<item><tt/<bf/R// &ndash; page <pageref id="indexr">
+<item><tt/<bf/S// &ndash; page <pageref id="indexs">
+<item><tt/<bf/T// &ndash; page <pageref id="indext">
+<item><tt/<bf/U// &ndash; page <pageref id="indexu">
+<item><tt/<bf/V// &ndash; page <pageref id="indexv">
+<item><tt/<bf/W// &ndash; page <pageref id="indexw">
+<item><tt/<bf/X// &ndash; page <pageref id="indexx">
+<item><tt/<bf/Y// &ndash; page <pageref id="indexy">
+<item><tt/<bf/Z// &ndash; page <pageref id="indexz">
+</list>
+</#if>
+<#if out=html>
+<ref id="index0" name=" 0 ">&nbsp;
+<ref id="indexa" name=" A ">&nbsp;
+<ref id="indexb" name=" B ">&nbsp;
+<ref id="indexc" name=" C ">&nbsp;
+<ref id="indexd" name=" D ">&nbsp;
+<ref id="indexe" name=" E ">&nbsp;
+<ref id="indexf" name=" F ">&nbsp;
+<ref id="indexg" name=" G ">&nbsp;
+<ref id="indexh" name=" H ">&nbsp;
+<ref id="indexi" name=" I ">&nbsp;
+<ref id="indexj" name=" J ">&nbsp;
+<ref id="indexk" name=" K ">&nbsp;
+<ref id="indexl" name=" L ">&nbsp;
+<ref id="indexm" name=" M ">&nbsp;
+<ref id="indexn" name=" N ">&nbsp;
+<ref id="indexo" name=" O ">&nbsp;
+<ref id="indexp" name=" P ">&nbsp;
+<ref id="indexq" name=" Q ">&nbsp;
+<ref id="indexr" name=" R ">&nbsp;
+<ref id="indexs" name=" S ">&nbsp;
+<ref id="indext" name=" T ">&nbsp;
+<ref id="indexu" name=" U ">&nbsp;
+<ref id="indexv" name=" V ">&nbsp;
+<ref id="indexw" name=" W ">&nbsp;
+<ref id="indexx" name=" X ">&nbsp;
+<ref id="indexy" name=" Y ">&nbsp;
+<ref id="indexz" name=" Z ">&nbsp;
+</#if>
+Index:
 <p>
 <label id="index">
-<label id="index0">0
-<itemize>
+<label id="index0"><tt/<bf/0//
+<list>
 <item>2lcons.tcl: <ref id="twolconstcl" name="example/helper script">
-<item>3DM: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="exprhino" name="3DM (Rhino) Export">
-<item>3DMF: <ref id="imp3dmf" name="3DMF (Apple) Import">,
-<ref id="exp3dmf" name="3DM (Apple) Export">
+<item>3DM:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) Import">,
+<item><ref id="exprhino" name="3DM (Rhino) Export">
 </itemize>
+<item>3DMF:
+<itemize>
+<item><ref id="imp3dmf" name="3DMF (Apple) Import">,
+<item><ref id="exp3dmf" name="3DM (Apple) Export">
+</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexa">A
-<itemize>
+<label id="indexa"><tt/<bf/A//
+<list>
 <item>aac.tcl: <ref id="aactcl" name="example/helper script">
 <item>About: <ref id="mmhelp" name="main menu entry">
-<item>Accuracy: <ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="exprhino" name="3DM (Rhino) export option">
+<item>Accuracy:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="exprhino" name="3DM (Rhino) export option">
+</itemize>
 <item>ACurve: <ref id="acurveobj" name="ACurve object">
 <item>Action: <ref id="iac" name="interactive actions">
 <item>Active: <ref id="scriptattr" name="Script attribute">
@@ -17436,8 +17568,11 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>ALength: <ref id="acp" name="ACurve attribute">
 <item>ALFileTypes, ALPlugins: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
-<item>Align to Object: <ref id="vmconf" name="view menu entry">,
-<ref id="vwsc" name="view action">
+<item>Align to Object:
+<itemize>
+<item><ref id="vmconf" name="view menu entry">,
+<item><ref id="vwsc" name="view action">
+</itemize>
 <item>ANS: <ref id="anstag" name="tag type">
 <item>AntiAlias Lines: <ref id="vmconf" name="view menu entry">
 <item>apnt.tcl: <ref id="apnttcl" name="example/helper script">
@@ -17448,11 +17583,17 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Array: <ref id="cloneobj" name="Clone object">
 <item>AskScriptDisable: <ref id="hidprefs" name="hidden preference setting">
 <item>Atmosphere: <ref id="imager" name="property">
-<item>Attributes: <ref id="attrs" name="attributes property">,
-<ref id="riattrs" name="RenderMan/BMRT attributes property">
+<item>Attributes:
+<itemize>
+<item><ref id="attrs" name="attributes property">,
+<item><ref id="riattrs" name="RenderMan/BMRT attributes property">
+</itemize>
 <item>AUCommands: <ref id="hidprefs" name="hidden preference setting">
-<item>AutoCAD DXF: <ref id="impdxf" name="AutoCAD DXF import">,
-<ref id="expdxf" name="AutoCAD DXF export">
+<item>AutoCAD DXF:
+<itemize>
+<item><ref id="impdxf" name="AutoCAD DXF import">,
+<item><ref id="expdxf" name="AutoCAD DXF export">
+</itemize>
 <item>AutoFocus: <ref id="prefgui" name="preference setting">
 <item>Automatic Instancing: <ref id="mmspecial" name="main menu entry">
 <item>Automatic Redraw: <ref id="vmconf" name="view menu entry">
@@ -17461,27 +17602,29 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Attribute: <ref id="riatag" name="RiAttribute tag type">
 <item>ayamrc: <ref id="ayamrc" name="Ayamrc File">
 <item>ayError: <ref id="scayerror" name="scripting interface command">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexb">B
-<itemize>
+<label id="indexb"><tt/<bf/B//
+<list>
 <item>Background: <ref id="prefdraw" name="preference setting">
 <item>Background Image: <ref id="vat" name="View attribute">
 <item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BeamDistrib: <ref id="lip" name="Light attribute">
-<item>Bevel: <ref id="bevelobj" name="Bevel object">,
-<ref id="handb" name="using bevels">,
-<ref id="offsetncp" name="offset mode">
+<item>Bevel:
+<itemize>
+<item><ref id="bevelobj" name="Bevel object">,
+<item><ref id="handb" name="using bevels">,
+<item><ref id="offsetncp" name="offset mode">
+</itemize>
 <item>Bevel3D: <ref id="offsetncp" name="offset mode">
 <item>BevelRadius, BevelRevert, BevelType: <ref id="bevelp" name="Bevel attribute">
-<item>bgconvert: <ref id="bgconverttcl" name="example/helper script">
+<item>bgconvert.tcl: <ref id="bgconverttcl" name="example/helper script">
 <item>BGImage: <ref id="vat" name="View attribute">
-<item>bicubic/bilinear PatchMesh:
-<ref id="patchmeshobj" name="PatchMesh object">
+<item>bicubic/bilinear PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
 <item>Birail1: <ref id="birail1obj" name="Birail1 object">
 <item>Birail2: <ref id="birail2obj" name="Birail2 object">
 <item>BNS: <ref id="bnstag" name="tag type">
@@ -17493,58 +17636,85 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>Build: <ref id="bfct" name="build from curves tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexc">C
-<itemize>
+<label id="indexc"><tt/<bf/C//
+<list>
 <item>CalcBBS: <ref id="aycsg" name="AyCSG plugin option">
-<item>Camera: <ref id="cameraobj" name="Camera object">,
-<ref id="camp" name="view property">
+<item>Camera:
+<itemize>
+<item><ref id="cameraobj" name="Camera object">,
+<item><ref id="camp" name="view property">
+</itemize>
 <item>Cap: <ref id="capobj" name="Cap object">
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Center All Points: <ref id="mmspecial" name="main menu entry">
-<item>Circle: <ref id="ncirct" name="NURBS circle tool">,
-<ref id="ncircleobj" name="NCircle object">
-<item>Clamp: <ref id="clat" name="clamp curve tool">,
-<ref id="clanpt" name="clamp patch tool">
+<item>Circle:
+<itemize>
+<item><ref id="ncirct" name="NURBS circle tool">,
+<item><ref id="ncircleobj" name="NCircle object">
+</itemize>
+<item>Clamp:
+<itemize>
+<item><ref id="clat" name="clamp curve tool">,
+<item><ref id="clanpt" name="clamp patch tool">
+</itemize>
 <item>clampNC: <ref id="scclampnc" name="scripting interface command">
 <item>clampuNP: <ref id="scclampunp" name="scripting interface command">
 <item>clampvNP: <ref id="scclampvnp" name="scripting interface command">
 <item>Clipboard: <ref id="sciclip" name="scripting interface commands">
 <item>Clone: <ref id="cloneobj" name="Clone object">
 <item>Close: <ref id="treecontm" name="tree context menu entry">
-<item>Closed: <ref id="spattr" name="Sphere attribute">,
-<ref id="cnp" name="Cone attribute">,
-<ref id="cyp" name="Cylinder attribute">,
-<ref id="top" name="Torus attribute">,
-<ref id="pap" name="Paraboloid attribute">,
-<ref id="hyp" name="Hyperboloid attribute">,
-<ref id="ncattr" name="NCurve attribute">,
-<ref id="concatncp" name="ConcatNC attribute">
+<item>Closed:
+<itemize>
+<item><ref id="spattr" name="Sphere attribute">,
+<item><ref id="cnp" name="Cone attribute">,
+<item><ref id="cyp" name="Cylinder attribute">,
+<item><ref id="top" name="Torus attribute">,
+<item><ref id="pap" name="Paraboloid attribute">,
+<item><ref id="hyp" name="Hyperboloid attribute">,
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="concatncp" name="ConcatNC attribute">
+</itemize>
 <item>Closed B-Spline: <ref id="cbspt" name="closed B-Spline tool">
-<item>Close_U, Close_V: <ref id="pmattr" name="PatchMesh attribute">
-<item>coarsenNC: <ref id="sccoarsennc" name="scripting interface command">,
-<ref id="coart" name="coarsen tool">
-<item>Collapse: <ref id="collt" name="Collapse tool">,
-<ref id="treecontm" name="tree context menu entry">
+<item>Close_U, Close_V:
+<itemize>
+<item><ref id="pmattr" name="PatchMesh attribute">,
+<item><ref id="ipattr" name="IPatch attribute">
+</itemize>
+<item>coarsenNC:
+<itemize>
+<item><ref id="sccoarsennc" name="scripting interface command">,
+<item><ref id="coart" name="coarsen tool">
+</itemize>
+<item>Collapse:
+<itemize>
+<item><ref id="collt" name="Collapse tool">,
+<item><ref id="treecontm" name="tree context menu entry">
+</itemize>
 <item>colfocus.tcl: <ref id="colfocustcl" name="example/helper script">
-<item>Color: <ref id="riattrs" name="RenderMan/BMRT attribute">,
-<ref id="lip" name="Light attribute">
+<item>Color:
+<itemize>
+<item><ref id="riattrs" name="RenderMan/BMRT attribute">,
+<item><ref id="lip" name="Light attribute">
+</itemize>
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
-<item>Copy Property: <ref id="mmedit" name="main menu entry">,
-<ref id="propgui" name="copying properties">
+<item>Copy Property:
+<itemize>
+<item><ref id="mmedit" name="main menu entry">,
+<item><ref id="propgui" name="copying properties">
+</itemize>
 <item>Concat: <ref id="conct" name="Concat tool">
 <item>ConcatNC: <ref id="concatncobj" name="ConcatNC object">
 <item>ConcatNP: <ref id="concatnpobj" name="ConcatNP object">
 <item>concatS: <ref id="scconcats" name="scripting interface command">
-<item>Cone: <ref id="mmcreate" name="main menu entry">,
-<ref id="coneobj" name="Cone object">
+<item>Cone: <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
 <item>Console: <ref id="cons" name="what is">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
@@ -17552,30 +17722,42 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
-<item>CreateMP: <ref id="ncattr" name="NCurve attribute">,
-<ref id="npattr" name="NPatch attribute">
-<item>Create ShadowMap: <ref id="mmspecial" name="main menu entry">,
-<ref id="vmview" name="view menu entry">
+<item>CreateMP:
+<itemize>
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="npattr" name="NPatch attribute">
+</itemize>
+<item>Create ShadowMap:
+<itemize>
+<item><ref id="mmspecial" name="main menu entry">,
+<item><ref id="vmview" name="view menu entry">
+</itemize>
 <item>crtClosedBS: <ref id="sccrtclosedbs" name="scripting interface command">
 <item>crtNCircle: <ref id="sccrtncircle" name="scripting interface command">
 <item>crtNRect: <ref id="sccrtnrect" name="scripting interface command">
 <item>crtOb: <ref id="sccrtob" name="scripting interface command">
-<item>CSG: <ref id="levelobj" name="Level object">,
-<ref id="aycsg" name="AyCSG CSG preview plugin">
+<item>CSG:
+<itemize>
+<item><ref id="levelobj" name="Level object">,
+<item><ref id="aycsg" name="AyCSG CSG preview plugin">
+</itemize>
 <item>CursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
-<item>Custom: <ref id="cul" name="light type">,
-<ref id="mmcustom" name="custom menu">
+<item>Custom:
+<itemize>
+<item><ref id="cul" name="light type">,
+<item><ref id="mmcustom" name="custom menu">
+</itemize>
 <item>Custom Object: <ref id="customobj" name="what is">
 <item>Cut: <ref id="mmedit" name="main menu entry">
 <item>cutOb: <ref id="sccutob" name="scripting interface command">
 <item>Cylinder: <ref id="cylinderobj" name="Cylinder object">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexd">D
-<itemize>
+<label id="indexd"><tt/<bf/D//
+<list>
 <item>DANS: <ref id="anstag" name="tag type">
 <item>Data: <ref id="riprocp" name="RiProc attribute">
 <item>DC: <ref id="dctag" name="tag type">
@@ -17585,42 +17767,57 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Degree: <ref id="sdnpattr" name="SDNPatch attribute">
 <item>DelayedReadArchive: <ref id="riprocp" name="RiProc attribute">
 <item>delegTrafo: <ref id="scdelegtrafo" name="scripting interface command">
-<item>Delete: <ref id="mmedit" name="main menu entry">,
-<ref id="insdelac" name="delete points">
+<item>Delete:
+<itemize>
+<item><ref id="mmedit" name="main menu entry">,
+<item><ref id="insdelac" name="delete points">
+</itemize>
 <item>delOb: <ref id="scdelob" name="scripting interface command">
 <item>Derivatives: <ref id="icp" name="ICurve attribute">
+<item>Derivatives_U, Derivatives_V: <ref id="ipattr" name="IPatch attribute">
 <item>Difference: <ref id="levelobj" name="Level object">
 <item>Direct Editing: <ref id="editac" name="edit points">
 <item>Disk: <ref id="diskobj" name="Disk object">
 <item>Displacement: <ref id="matshader" name="shader">
 <item>Display: <ref id="ridtag" name="RiDisplay tag type">
-<item>DisplayMode: <ref id="npattr" name="NPatch attribute">,
-<ref id="pmattr" name="PatchMesh attribute">
+<item>DisplayMode:
+<itemize>
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="npattr" name="NPatch attribute">
+</itemize>
 <item>Distant: <ref id="pdsl" name="light type">
 <item>DBNS: <ref id="bnstag" name="tag type">
 <item>Docs: <ref id="prefgui" name="preference setting">
 <item>Double Size: <ref id="vmconf" name="view menu entry">
-<item>DrawGrid, DrawLevel, DrawSel, DrawBG:
-<ref id="vat" name="View attribute">
+<item>DrawGrid, DrawLevel, DrawSel, DrawBG: <ref id="vat" name="View attribute">
 <item>Draw BGImage: <ref id="vmconf" name="view menu entry">
 <item>Draw Grid: <ref id="vmconf" name="view menu entry">
 <item>Draw Level only: <ref id="vmconf" name="view menu entry">
 <item>Draw Object CS: <ref id="vmconf" name="view menu entry">
 <item>Draw Selection only: <ref id="vmconf" name="view menu entry">
 <item>DrawSub: <ref id="sdmattr" name="SDMesh attribute">
-<item>DXF: <ref id="impdxf" name="DXF import plugin">,
-<ref id="expdxf" name="DXF export plugin">
-<item>DynamicLoad: <ref id="riprocp" name="RiProc attribute">
+<item>DXF:
+<itemize>
+<item><ref id="impdxf" name="DXF import plugin">,
+<item><ref id="expdxf" name="DXF export plugin">
 </itemize>
+<item>DynamicLoad: <ref id="riprocp" name="RiProc attribute">
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexe">E
+<label id="indexe"><tt/<bf/E//
+<list>
+<item>Edit:
 <itemize>
-<item>Edit: <ref id="editac" name="edit points">,
-<ref id="mmedit" name="edit menu">
-<item>Edit Local: <ref id="vmconf" name="view menu entry">,
-<ref id="editlocal" name="Editing in Local Space">
+<item><ref id="editac" name="edit points">,
+<item><ref id="mmedit" name="edit menu">
+</itemize>
+<item>Edit Local:
+<itemize>
+<item><ref id="vmconf" name="view menu entry">,
+<item><ref id="editlocal" name="Editing in Local Space">
+</itemize>
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
 <item>Elevate: <ref id="elevt" name="elevate tool">
@@ -17628,12 +17825,15 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
 <item>EnableUndo: <ref id="vat" name="View attribute">
 <item>Enable Scripts: <ref id="mmspecial" name="main menu entry">
-<item>EndCap: <ref id="extrattr" name="Extrude attribute">,
-<ref id="rep" name="Revolve attribute">,
-<ref id="swp" name="Sweep attribute">,
-<ref id="skp" name="Skin attribute">,
-<ref id="birail1p" name="Birail1 attribute">,
-<ref id="birail2p" name="Birail2 attribute">
+<item>EndCap:
+<itemize>
+<item><ref id="extrattr" name="Extrude attribute">,
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="swp" name="Sweep attribute">,
+<item><ref id="skp" name="Skin attribute">,
+<item><ref id="birail1p" name="Birail1 attribute">,
+<item><ref id="birail2p" name="Birail2 attribute">
+</itemize>
 <item>EnvFile: <ref id="prefgui" name="preference setting">
 <item>Environment Variables: <ref id="envvars" name="Environment Variables">
 <item>Epsilon: <ref id="moattr" name="MetaObj attributes">
@@ -17644,33 +17844,48 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Expand: <ref id="treecontm" name="tree context menu entry">
 <item>ExpGain, ExpGamma: <ref id="rio" name="RenderMan interface option">
 <item>Explode: <ref id="explt" name="Explode tool">
-<item>Export: <ref id="exprhino" name="3DM (Rhino) export">,
-<ref id="exp3dmf" name="3DMF (Apple) export">,
-<ref id="expdxf" name="AutoCAD DXF Export">,
-<ref id="expwav" name="OBJ (Wavefront) export">,
-<ref id="exprib" name="RIB Export">,
-<ref id="impx3d" name="X3D Export">
+<item>Export:
+<itemize>
+<item><ref id="exprhino" name="3DM (Rhino) export">,
+<item><ref id="exp3dmf" name="3DMF (Apple) export">,
+<item><ref id="expdxf" name="AutoCAD DXF Export">,
+<item><ref id="expwav" name="OBJ (Wavefront) export">,
+<item><ref id="exprib" name="RIB Export">,
+<item><ref id="impx3d" name="X3D Export">
+</itemize>
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
 <item>Exterior: <ref id="matshader" name="shader">
-<item>ExtrNC: <ref id="extrncobj" name="ExtrNC object">,
-<ref id="extnct" name="extract curve tool">
-<item>ExtrNP: <ref id="extrnpobj" name="ExtrNP object">,
-<ref id="scextrnp" name="scripting interface command">,
-<ref id="extrnpt" name="extract patch tool">
-<item>Extrude: <ref id="extrudeobj" name="Extrude object">,
-<ref id="extt" name="Extrude tool">
+<item>ExtrNC:
+<itemize>
+<item><ref id="extrncobj" name="ExtrNC object">,
+<item><ref id="extnct" name="extract curve tool">
 </itemize>
+<item>ExtrNP:
+<itemize>
+<item><ref id="extrnpobj" name="ExtrNP object">,
+<item><ref id="scextrnp" name="scripting interface command">,
+<item><ref id="extrnpt" name="extract patch tool">
+</itemize>
+<item>Extrude:
+<itemize>
+<item><ref id="extrudeobj" name="Extrude object">,
+<item><ref id="extt" name="Extrude tool">
+</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexf">F
-<itemize>
+<label id="indexf"><tt/<bf/F//
+<list>
 <item>FAQ: <ref id="secref" name="Ayam FAQ WWW reference">
 <item>Far: <ref id="camp" name="camera property">
-<item>File: <ref id="mmfile" name="file menu">,
-<ref id="riincp" name="RiInc attribute">,
-<ref id="riprocp" name="RiProc attribute">
+<item>File:
+<itemize>
+<item><ref id="mmfile" name="file menu">,
+<item><ref id="riincp" name="RiInc attribute">,
+<item><ref id="riprocp" name="RiProc attribute">
+</itemize>
 <item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
@@ -17685,18 +17900,24 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>forAll, forAllT: <ref id="scforall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
-<item>From: <ref id="camp" name="camera property">,
-<ref id="lip" name="Light attribute">
-<item>From Camera: <ref id="mmspecial" name="main menu entry">,
-<ref id="vmconf" name="view menu entry">
+<item>From:
+<itemize>
+<item><ref id="camp" name="camera property">,
+<item><ref id="lip" name="Light attribute">
+</itemize>
+<item>From Camera:
+<itemize>
+<item><ref id="mmspecial" name="main menu entry">,
+<item><ref id="vmconf" name="view menu entry">
+</itemize>
 <item>Front: <ref id="vmtype" name="view menu entry">
 <item>FTLength: <ref id="concatncp" name="ConcatNC attribute">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexg">G
-<itemize>
+<label id="indexg"><tt/<bf/G//
+<list>
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
@@ -17708,43 +17929,56 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>goTop: <ref id="scgotop" name="scripting interface command">
 <item>Gordon: <ref id="gordonobj" name="Gordon object">
 <item>goUp: <ref id="scgoup" name="scripting interface command">
-<item>Grid: <ref id="vat" name="View attribute">
-<ref id="prefdraw" name="drawing preference setting">
+<item>Grid:
+<itemize>
+<item><ref id="vat" name="View attribute">,
+<item><ref id="prefdraw" name="drawing preference setting">
 </itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexh">H
-<itemize>
+<label id="indexh"><tt/<bf/H//
+<list>
 <item>Half Size: <ref id="vmconf" name="view menu entry">
 <item>HandleSize: <ref id="prefmodel" name="preference setting">
 <item>hasChild: <ref id="schaschild" name="scripting interface command">
-<item>Height: <ref id="rio" name="RenderMan interface option">,
-<ref id="bxp" name="Box attribute">,
-<ref id="cnp" name="Cone attribute">,
-<ref id="npattr" name="NPatch attribute">,
-<ref id="pmattr" name="PatchMesh attribute">,
-<ref id="extrattr" name="Extrude attribute">,
-<ref id="vat" name="View attribute">,
-<ref id="textattr" name="Text attribute">
-<item>Help: <ref id="mmhelp" name="main menu entry">,
-<ref id="schelp" name="scripting interface command">
+<item>Height:
+<itemize>
+<item><ref id="rio" name="RenderMan interface option">,
+<item><ref id="bxp" name="Box attribute">,
+<item><ref id="cnp" name="Cone attribute">,
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="ipattr" name="IPatch attribute">,
+<item><ref id="pmattr" name="PatchMesh attribute">,
+<item><ref id="extrattr" name="Extrude attribute">,
+<item><ref id="vat" name="View attribute">,
+<item><ref id="textattr" name="Text attribute">
+</itemize>
+<item>Help:
+<itemize>
+<item><ref id="mmhelp" name="main menu entry">,
+<item><ref id="schelp" name="scripting interface command">
+</itemize>
 <item>Help on object: <ref id="mmhelp" name="main menu entry">
 <item>Hidden Preferences: <ref id="hidprefs" name="hidden preference settings">
-<item>Hide: <ref id="mmtools" name="main menu entry">,
-<ref id="attrs" name="attribute">
+<item>Hide:
+<itemize>
+<item><ref id="mmtools" name="main menu entry">,
+<item><ref id="attrs" name="attribute">
+</itemize>
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>Hider: <ref id="rihtag" name="RiHider tag type">
 <item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>hSL: <ref id="schsl" name="scripting interface command">
 <item>Hyperboloid: <ref id="hyperboloidobj" name="Hyperboloid object">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexi">I
-<itemize>
+<label id="indexi"><tt/<bf/I//
+<list>
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name="ICurve object">
 <item>IDR: <ref id="idr" name="IDR plugin">
@@ -17753,16 +17987,22 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
-<item>Import: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="imp3dmf" name="3DMF (Apple) Import">,
-<ref id="impdxf" name="AutoCAD DXF Import">,
-<ref id="impmops" name="Mops Import">,
-<ref id="imprib" name="RIB Import">,
-<ref id="impwav" name="Wavefront OBJ Import">,
-<ref id="impx3d" name="X3D Import">
+<item>Import:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) Import">,
+<item><ref id="imp3dmf" name="3DMF (Apple) Import">,
+<item><ref id="impdxf" name="AutoCAD DXF Import">,
+<item><ref id="impmops" name="Mops Import">,
+<item><ref id="imprib" name="RIB Import">,
+<item><ref id="impwav" name="Wavefront OBJ Import">,
+<item><ref id="impx3d" name="X3D Import">
+</itemize>
 <item>Importance Driven Rendering: <ref id="idr" name="IDR plugin">
-<item>Insert: <ref id="mmfile" name="main menu entry">,
-<ref id="insdelac" name="insert points">
+<item>Insert:
+<itemize>
+<item><ref id="mmfile" name="main menu entry">,
+<item><ref id="insdelac" name="insert points">
+</itemize>
 <item>insknNC: <ref id="scinsknnc" name="scripting interface command">
 <item>insknuNP: <ref id="scinsknunp" name="scripting interface command">
 <item>insknvNP: <ref id="scinsknvnp" name="scripting interface command">
@@ -17772,10 +18012,13 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Instant Apply: <ref id="propgui" name="instant apply facility">
 <item>Intensity: <ref id="lip" name="Light attribute">
 <item>Interior: <ref id="matshader" name="shader">
-<item>Interpolation: <ref id="attrs" name="RenderMan/BMRT attribute">,
-<ref id="icurveobj" name="interpolating curve">,
-<ref id="swp" name="Sweep attribute">,
-<ref id="skp" name="Skin attribute">
+<item>Interpolation:
+<itemize>
+<item><ref id="attrs" name="RenderMan/BMRT attribute">,
+<item><ref id="icurveobj" name="interpolating curve">,
+<item><ref id="swp" name="Sweep attribute">,
+<item><ref id="skp" name="Skin attribute">
+</itemize>
 <item>InterpolCtrl: <ref id="birail2p" name="Birail2 attribute">
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
@@ -17783,89 +18026,140 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
-<item>IsRat: <ref id="ncattr" name="NCurve attribute">,
-<ref id="npattr" name="NPatch attribute">
+<item>IsRat:
+<itemize>
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="npattr" name="NPatch attribute">
 </itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexj">J
-<itemize>
+<label id="indexj"><tt/<bf/J//
+<list>
 <item>.
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexk">K
+<label id="indexk"><tt/<bf/K//
+<list>
+<item>kdialog.tcl: <ref id="kdialogtcl" name="example/helper script">
+<item>Keyboard Shortcuts:
 <itemize>
-<item>kdialog: <ref id="kdialogtcl" name="example/helper script">
+<item><ref id="mwsc" name="main window shortcuts">,
+<item><ref id="mm" name="main menu shortcuts">,
+<item><ref id="vwsc" name="view window shortcuts">,
+<item><ref id="vm" name="main menu shortcuts">,
+<item><ref id="treesc" name="object tree shortcuts">,
+<item><ref id="olbsc" name="object list shortcuts">,
+</itemize>
 <item>Knots: <ref id="ncattr" name="NCurve attribute">
-<item>Knot-Type: <ref id="ncattr" name="NCurve attribute">,
-<ref id="concatncp" name="ConcatNC attribute">,
-<ref id="concatnpp" name="ConcatNP attribute">
-<item>Knot-Type_U: <ref id="npattr" name="NPatch attribute">,
-<ref id="skp" name="Skin attribute">
-<item>Knot-Type_V: <ref id="npattr" name="NPatch attribute">
+<item>Knot-Type:
+<itemize>
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="concatncp" name="ConcatNC attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
 </itemize>
+<item>Knot-Type_U:
+<itemize>
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="ipattr" name="IPatch attribute">,
+<item><ref id="skp" name="Skin attribute">
+</itemize>
+<item>Knot-Type_V:
+<itemize>
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="ipattr" name="IPatch attribute">
+</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexl">L
-<itemize>
+<label id="indexl"><tt/<bf/L//
+<list>
 <item>Last (None): <ref id="mmtools" name="main menu entry">
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
-<item>Length: <ref id="bxp" name="Box attribute">,
-<ref id="ncattr" name="NCurve attribute">,
-<ref id="acp" name="ACurve attribute">,
-<ref id="icp" name="ICurve attribute">
-<item>Level: <ref id="levelobj" name="Level object">,
-<ref id="sdmattr" name="SDMesh attribute">,
-<ref id="sdnpattr" name="SDNPatch attribute">
-<item>Light: <ref id="lightobj" name="Light object">,
-<ref id="prefdraw" name="preference setting">
+<item>Length:
+<itemize>
+<item><ref id="bxp" name="Box attribute">,
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="acp" name="ACurve attribute">,
+<item><ref id="icp" name="ICurve attribute">
+</itemize>
+<item>Level:
+<itemize>
+<item><ref id="levelobj" name="Level object">,
+<item><ref id="sdmattr" name="SDMesh attribute">,
+<item><ref id="sdnpattr" name="SDNPatch attribute">
+</itemize>
+<item>Light:
+<itemize>
+<item><ref id="lightobj" name="Light object">,
+<item><ref id="prefdraw" name="preference setting">
+</itemize>
 <item>LightAttr: <ref id="lip" name="property">
 <item>LightShader: <ref id="lightobj" name="light">
 <item>LineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>ListTypes: <ref id="hidprefs" name="hidden preference setting">
 <item>LoadEnv: <ref id="hidprefs" name="hidden preference settings">
 <item>Load Plugin: <ref id="mmfile" name="main menu entry">
-<item>Local: <ref id="vat" name="View attribute">,
-<ref id="editlocal" name="Editing in Local Spaces">
+<item>Local:
+<itemize>
+<item><ref id="vat" name="View attribute">,
+<item><ref id="editlocal" name="Editing in Local Spaces">
+</itemize>
 <item>Locale: <ref id="prefgui" name="preference setting">
 <item>Loft: <ref id="skinobj" name="Skin object">
 <item>LogFile: <ref id="prefgui" name="preference setting">
 <item>Logging: <ref id="prefgui" name="preference setting">
 <item>LowerBevel: <ref id="extrattr" name="Extrude attribute">,
-<ref id="textattr" name="Text attribute">
-<item>LowerCap: <ref id="rep" name="Revolve attribute">,
-<ref id="textattr" name="Text attribute">
+<item><ref id="textattr" name="Text attribute">
+<item>LowerCap:
+<itemize>
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="textattr" name="Text attribute">
 </itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexm">M
-<itemize>
+<label id="indexm"><tt/<bf/M//
+<list>
 <item>MajorRad: <ref id="top" name="Torus attribute">
 <item>Make Compatible: <ref id="makecompt" name="NCurve tool">
 <item>Mark: <ref id="vat" name="View attribute">
 <item>MarkHidden: <ref id="hidprefs" name="hidden preference settings">
 <item>Master: <ref id="mmedit" name="edit menu entry">
-<item>Material: <ref id="materialobj" name="Material object">,
-<ref id="mmedit" name="edit menu entry">
-<item>Materialname: <ref id="matattr" name="attribute">,
-<ref id="matprop" name="material property attribute">
+<item>Material:
+<itemize>
+<item><ref id="materialobj" name="Material object">,
+<item><ref id="mmedit" name="edit menu entry">
+</itemize>
+<item>Materialname:
+<itemize>
+<item><ref id="matattr" name="attribute">,
+<item><ref id="matprop" name="material property attribute">
+</itemize>
 <item>MaxRayLevel: <ref id="rio" name="RenderMan interface option">
 <item>MaxTagLen: <ref id="hidprefs" name="hidden preference settings">
 <item>MaxX, MaxY, MaxZ: <ref id="riprocp" name="RiProc attribute">
-<item>Menu: <ref id="mm" name="main menu">,
-<ref id="vm" name="view menu">
+<item>Menu:
+<itemize>
+<item><ref id="mm" name="main menu">,
+<item><ref id="vm" name="view menu">,
+<item><ref id="treecontm" name="tree context menu">,
+<item><ref id="lbcontm" name="listbox context menu">
+</itemize>
 <item>Merge: <ref id="mmtools" name="Merge PolyMesh tool">
 <item>MergeFaces <ref id="impwav" name="Wavefront OBJ import option">
 <item>MergePVTags <ref id="impwav" name="Wavefront OBJ import option">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="MetaObj object">
 <item>MFIO Plugin:
-<ref id="imp3dmf" name="3DMF (Apple) import">,
-<ref id="exp3dmf" name="3DMF (Apple) export">
+<itemize>
+<item><ref id="imp3dmf" name="3DMF (Apple) import">,
+<item><ref id="exp3dmf" name="3DMF (Apple) export">
+</itemize>
 <item>MinorRad: <ref id="top" name="Torus attribute">
 <item>MinSamples, MaxSamples: <ref id="rio" name="RenderMan interface option">
 <item>MinX, MinY, MinZ: <ref id="riprocp" name="RiProc attribute">
@@ -17873,19 +18167,21 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Modelling: <ref id="iac" name="Modelling Actions">
 <item>Mode: <ref id="offsetncp" name="OffsetNC attribute">
 <item>Mops Import: <ref id="impmops" name="Import of Mops Scenes">
-<item>Move: <ref id="vwsc" name="view action">,
-<ref id="iac" name="modelling action">
+<item>Move:
+<itemize>
+<item><ref id="vwsc" name="view action">,
+<item><ref id="iac" name="modelling action">
+</itemize>
 <item>movOb: <ref id="scmovob" name="scripting interface command">
 <item>movPnts: <ref id="scmovpnts" name="scripting interface command">
 <item>Multiple Point: <ref id="ncurvemp" name="Multiple Points">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexn">N
-<itemize>
-<item>NCDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="ncattr" name="NCurve attribute">
+<label id="indexn"><tt/<bf/N//
+<list>
+<item>NCDisplayMode:<ref id="prefdraw" name="preference setting">
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
 <item>NCurve: <ref id="ncurveobj" name="NCurve object">
 <item>Near: <ref id="camp" name="camera property">
@@ -17898,8 +18194,7 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
-<item>NPDisplayMode: <ref id="prefdraw" name="preference setting">,
-<ref id="npattr" name="NPatch attribute">
+<item>NPDisplayMode:<ref id="prefdraw" name="preference setting">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -17907,43 +18202,63 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>NURBPatch: <ref id="npatchobj" name="NPatch object">
 <item>NURBS: <ref id="scinurbs" name="scripting interface commands">
 <item>NURBSphere: <ref id="nspt" name="NURBS sphere tool">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexo">O
-<itemize>
+<label id="indexo"><tt/<bf/O//
+<list>
 <item>ObeyNoExport: <ref id="exprhino" name="3DM (Rhino) export option">
-<item>OBJ: <ref id="impwav" name="Wavefront OBJ import">,
-<ref id="expwav" name="Wavefront OBJ export">
+<item>OBJ:
+<itemize>
+<item><ref id="impwav" name="Wavefront OBJ import">,
+<item><ref id="expwav" name="Wavefront OBJ export">
+</itemize>
 <item>Object: <ref id="prefdraw" name="preference setting">
 <item>Objectname: <ref id="attrs" name="attribute">
-<item>Objects: <ref id="obj" name="tree/listbox">,
-<ref id="objsel" name="selection within a view">
+<item>Objects:
+<itemize>
+<item><ref id="obj" name="tree/listbox">,
+<item><ref id="objsel" name="selection within a view">
+</itemize>
 <item>OffsetNC: <ref id="offsetncobj" name="OffsetNC object">
 <item>OffsetNP: <ref id="offsetnpobj" name="OffsetNP object">
 <item>OI: <ref id="oitt" name="tag type">
-<item>Open: <ref id="mmfile" name="main menu entry">,
-<ref id="treecontm" name="tree context menu entry">
-<item>OpenNURBS: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="exprhino" name="3DM (Rhino) Export">
+<item>Open:
+<itemize>
+<item><ref id="mmfile" name="main menu entry">,
+<item><ref id="treecontm" name="tree context menu entry">
+</itemize>
+<item>OpenNURBS:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) Import">,
+<item><ref id="exprhino" name="3DM (Rhino) Export">
+</itemize>
 <item>Optimize: <ref id="mmtools" name="Optimize PolyMesh tool">
 <item>OptimizeCoords: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeFaces: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>OptimizeNew: <ref id="mmtools" name="Merge PolyMesh tool option">
 <item>Option: <ref id="riotag" name="RiOption tag type">
-<item>Order: <ref id="ncattr" name="NCurve attribute">,
-<ref id="npattr" name="NPatch attribute">,
-<ref id="acp" name="ACurve attribute">,
-<ref id="icp" name="ICurve attribute">,
-<ref id="rep" name="Revolve attribute">
-<item>Order_U: <ref id="skp" name="Skin attribute">
+<item>Order:
+<itemize>
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="acp" name="ACurve attribute">,
+<item><ref id="icp" name="ICurve attribute">,
+<item><ref id="rep" name="Revolve attribute">
 </itemize>
+<item>Order_U:
+<itemize>
+<item><ref id="skp" name="Skin attribute">,
+<item><ref id="ipattr" name="IPatch attribute">
+</itemize>
+<item>Order_V: <ref id="ipattr" name="IPatch attribute">
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexp">P
-<itemize>
+<label id="indexp"><tt/<bf/P//
+<list>
 <item>P1, P2: <ref id="hyp" name="Hyperboloid attribute">
 <item>PaneMargins: <ref id="hidprefs" name="hidden preference setting">
 <item>Paraboloid: <ref id="paraboloidobj" name="Paraboloid object">
@@ -17955,9 +18270,12 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>Paste (Move): <ref id="mmspecial" name="main menu entry">
 <item>Paste Property: <ref id="mmedit" name="main menu entry">
 <item>PatchMesh: <ref id="patchmeshobj" name="PatchMesh object">
-<item>PatchNum: <ref id="extrncp" name="ExtrNC attribute">,
-<ref id="selectp" name="Select attribute">,
-<ref id="trimp" name="Trim attribute">
+<item>PatchNum:
+<itemize>
+<item><ref id="extrncp" name="ExtrNC attribute">,
+<item><ref id="selectp" name="Select attribute">,
+<item><ref id="trimp" name="Trim attribute">
+</itemize>
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
@@ -17971,8 +18289,11 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PolyMesh: <ref id="polymeshobj" name="PolyMesh object">
 <item>PolyOffset: <ref id="hidprefs" name="hidden preference setting">
 <item>PPRender: <ref id="prefrib" name="preference setting">
-<item>Preferences: <ref id="prefs" name="Preferences">,
-<ref id="hidprefs" name="hidden preference settings">
+<item>Preferences:
+<itemize>
+<item><ref id="prefs" name="Preferences">,
+<item><ref id="hidprefs" name="hidden preference settings">
+</itemize>
 <item>Procedurals: <ref id="rio" name="RenderMan interface option">
 <item>Prompt: <ref id="hidprefs" name="hidden preference setting">
 <item>Properties: <ref id="propgui" name="property GUI">
@@ -17983,65 +18304,92 @@ DXF (R) is a registered trademark of Autodesk, Inc.
 <item>PVTexCoordName: <ref id="hidprefs" name="hidden preference setting">
 <item>PVNormalName: <ref id="hidprefs" name="hidden preference setting">
 <item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexq">Q
-<itemize>
+<label id="indexq"><tt/<bf/Q//
+<list>
 <item>QuadAsBRep: <ref id="exprhino" name="3DM (Rhino) export option">
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
-<item>QuickDraw 3D Metafile: <ref id="imp3dmf" name="3DMF import">,
-<ref id="exp3dmf" name="3DMF export">
-<item>Quick Render: <ref id="vm" name="view menu entry">
+<item>QuickDraw 3D Metafile:
+<itemize>
+<item><ref id="imp3dmf" name="3DMF import">,
+<item><ref id="exp3dmf" name="3DMF export">
 </itemize>
+<item>Quick Render: <ref id="vm" name="view menu entry">
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexr">R
+<label id="indexr"><tt/<bf/R//
+<list>
+<item>Radius:
 <itemize>
-<item>Radius: <ref id="spattr" name="Sphere attribute">,
-<ref id="dkp" name="Disk attribute">,
-<ref id="cnp" name="Cone attribute">,
-<ref id="cyp" name="Cylinder attribute">,
-<ref id="ncircleattrprop" name="NCircle attribute">,
-<ref id="mcattr" name="MetaComp attribute">
+<item><ref id="spattr" name="Sphere attribute">,
+<item><ref id="dkp" name="Disk attribute">,
+<item><ref id="cnp" name="Cone attribute">,
+<item><ref id="cyp" name="Cylinder attribute">,
+<item><ref id="ncircleattrprop" name="NCircle attribute">,
+<item><ref id="mcattr" name="MetaComp attribute">
+</itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
-<item>ReadCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
-<ref id="imprhino" name="3DM (Rhino) import option">
+<item>ReadCurves:
+<itemize>
+<item><ref id="impwav" name="Wavefront OBJ import/export option">,
+<item><ref id="imprhino" name="3DM (Rhino) import option">
+</itemize>
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ReadLayers: <ref id="imprhino" name="3DM (Rhino) import option">
-<item>ReadSTrim: <ref id="impwav" name="Wavefront OBJ import/export option">,
-<ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="rribopt" name="RIB import option">,
-<ref id="impx3dopt" name="X3D import option">
+<item>ReadSTrim:
+<itemize>
+<item><ref id="impwav" name="Wavefront OBJ import/export option">,
+<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="rribopt" name="RIB import option">,
+<item><ref id="impx3dopt" name="X3D import option">
+</itemize>
 <item>Rebuild: <ref id="treecontm" name="tree context menu entry">
 <item>Rectangle: <ref id="trrt" name="TrimRect tool">
 <item>RedirectTcl: <ref id="prefmisc" name="preference setting">
-<item>Redo: <ref id="undos" name="The Undo System">,
-<ref id="mmedit" name="main menu entry">
-<item>Redraw: <ref id="vm" name="view menu entry">,
-<ref id="incds" name="speeding up">,
-<ref id="vat" name="View attribute">
+<item>Redo:
+<itemize>
+<item><ref id="undos" name="The Undo System">,
+<item><ref id="mmedit" name="main menu entry">
+</itemize>
+<item>Redraw:
+<itemize>
+<item><ref id="vm" name="view menu entry">,
+<item><ref id="incds" name="speeding up">,
+<item><ref id="vat" name="View attribute">
+</itemize>
 <item>Refcount: <ref id="attrs" name="attribute">
-<item>Reference Counter: <ref id="instanceobj" name="Instance Object">,
-<ref id="materialobj" name="Material Object">
+<item>Reference Counter:
+<itemize>
+<item><ref id="instanceobj" name="Instance Object">,
+<item><ref id="materialobj" name="Material Object">
+</itemize>
 <item>Reference: <ref id="referencing" name="Reference">
 <item>References: <ref id="secref" name="references">
-<item>refineNC: <ref id="screfinenc" name="scripting interface command">,
-<ref id="refit" name="refine tool">
-<item>Relative: <ref id="extrncp" name="ExtrNC attribute">,
-<ref id="extrnpp" name="ExtrNP attribute">
+<item>Refine: <ref id="refit" name="curve tool">
+<item>refineNC: <ref id="screfinenc" name="scripting interface command">
+<item>Relative:
+<itemize>
+<item><ref id="extrncp" name="ExtrNC attribute">,
+<item><ref id="extrnpp" name="ExtrNP attribute">
+</itemize>
 <item>remknNC: <ref id="scremknnc" name="scripting interface command">
 <item>remknuNP: <ref id="scremknunp" name="scripting interface command">
 <item>remknvNP: <ref id="scremknvnp" name="scripting interface command">
 <item>Remove Knot: <ref id="remknt" name="remove knot tool">
 <item>RemoveMerged: <ref id="mmtools" name="Merge PolyMesh tool option">
-<item>Render: <ref id="vm" name="view menu entry">,
-<ref id="prefrib" name="preference setting">
+<item>Render:
+<itemize>
+<item><ref id="vm" name="view menu entry">,
+<item><ref id="prefrib" name="preference setting">
+</itemize>
 <item>Renderer: <ref id="mmspecial" name="select a different renderer">
 <item>RenderMode: <ref id="prefrib" name="preference setting">
 <item>RenderPT, RenderUI: <ref id="prefrib" name="preference setting">
@@ -18053,64 +18401,91 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
 <item>rescaleknNC: <ref id="screscaleknnc" name="scripting interface command">
 <item>rescaleknNP: <ref id="screscaleknnp" name="scripting interface command">
-<item>RescaleKnots: <ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="imprib" name="RIB import option">,
-<ref id="impwav" name="Wavefront OBJ import option">,
+<item>RescaleKnots:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="imprib" name="RIB import option">,
+<item><ref id="impwav" name="Wavefront OBJ import option">
+</itemize>
 <item>Reset: <ref id="propgui" name="reset property GUI">
 <item>ResetDM, ResetST: <ref id="impmops" name="Mops import option">
 <item>Reset Preferences: <ref id="mmspecial" name="main menu entry">
 <item>ResInstances: <ref id="prefrib" name="preference setting">
 <item>Resolve all Instances: <ref id="mmspecial" name="main menu entry">
 <item>ResolveInstances: <ref id="expx3dopt" name="X3D (Web3D) export option">
-<item>Revert: <ref id="revertt" name="Revert tool">,
-<ref id="textattr" name="Text attribute">,
-<ref id="concatncp" name="ConcatNC attribute">,
-<ref id="offsetncp" name="OffsetNC attribute">,
-<ref id="extrncp" name="ExtrNC attribute">
+<item>Revert:
+<itemize>
+<item><ref id="revertt" name="Revert tool">,
+<item><ref id="textattr" name="Text attribute">,
+<item><ref id="concatncp" name="ConcatNC attribute">,
+<item><ref id="offsetncp" name="OffsetNC attribute">,
+<item><ref id="extrncp" name="ExtrNC attribute">
+</itemize>
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
 <item>revertC: <ref id="screvertc" name="scripting interface command">
-<item>RevertU, RevertV: <ref id="revertut" name="Revert U tool">,
-<ref id="revertvt" name="Revert V tool">
-<item>Revolve: <ref id="revolveobj" name="Revolve object">,
-<ref id="revt" name="Revolve tool">
+<item>RevertU, RevertV:
+<itemize>
+<item><ref id="revertut" name="Revert U tool">,
+<item><ref id="revertvt" name="Revert V tool">
+</itemize>
+<item>Revolve:
+<itemize>
+<item><ref id="revolveobj" name="Revolve object">,
+<item><ref id="revt" name="Revolve tool">
+</itemize>
 <item>RGBA_ONE, RGBA_MIN, RGBA_MAX, RGBA_Dither:
 <ref id="rio" name="RenderMan interface option">
-<item>Rhino: <ref id="imprhino" name="3DM (Rhino) Import">,
-<ref id="exprhino" name="3DM (Rhino) Export">
-<item>RiAttribute: <ref id="riattrs" name="property">,
-<ref id="riatag" name="tag type">,
-<ref id="rioptdb" name="RiOption and RiAttributes Database">
+<item>Rhino:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) Import">,
+<item><ref id="exprhino" name="3DM (Rhino) Export">
+</itemize>
+<item>RiAttribute:
+<itemize>
+<item><ref id="riattrs" name="property">,
+<item><ref id="riatag" name="tag type">,
+<item><ref id="rioptdb" name="RiOption and RiAttributes Database">
+</itemize>
 <item>RIB import: <ref id="imprib" name="RIB Import">
 <item>RIBFile: <ref id="prefrib" name="preference setting">
 <item>RiDisplay: <ref id="ridtag" name="tag type">
 <item>RiHider: <ref id="rihtag" name="tag type">
 <item>RiInc: <ref id="riincobj" name="RiInc object">
 <item>RiOption: <ref id="riotag" name="tag type">
-<item>RiOptions: <ref id="rio" name="RenderMan interface options property">,
-<ref id="rioptdb" name="RiOption and RiAttributes Database">
+<item>RiOptions:
+<itemize>
+<item><ref id="rio" name="RenderMan interface options property">,
+<item><ref id="rioptdb" name="RiOption and RiAttributes Database">
+</itemize>
 <item>RIStandard: <ref id="prefrib" name="preference setting">
 <item>RMax: <ref id="pap" name="Paraboloid attribute">
 <item>Roll: <ref id="camp" name="Camera attribute">
 <item>Root: <ref id="rootobj" name="Root object">
-<item>Rotate: <ref id="vwsc" name="view action">,
-<ref id="rotac" name="modelling action">,
-<ref id="swp" name="Sweep attribute">,
-<ref id="cloneattr" name="Clone attribute">
-<item>Rotation: <ref id="trap" name="transformations property">,
-<ref id="gimb" name="using the transformations property">
+<item>Rotate:
+<itemize>
+<item><ref id="vwsc" name="view action">,
+<item><ref id="rotac" name="modelling action">,
+<item><ref id="swp" name="Sweep attribute">,
+<item><ref id="cloneattr" name="Clone attribute">
+</itemize>
+<item>Rotation:
+<itemize>
+<item><ref id="trap" name="transformations property">,
+<item><ref id="gimb" name="using the transformations property">
+</itemize>
 <item>Rotational Sweep: <ref id="swingobj" name="Swing object">
 <item>rotOb: <ref id="scrotob" name="scripting interface command">
 <item>rotPnts: <ref id="scrotpnts" name="scripting interface command">
 <item>RP: <ref id="rptag" name="tag type">
-<item>Ruled surface: <ref id="skinobj" name="Skin object">,
+<item>Ruled surface: <ref id="skinobj" name="Skin object">
 <item>RunProgram: <ref id="riprocp" name="RiProc attribute">
 <item>rV: <ref id="scrv" name="scripting interface command">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexs">S
-<itemize>
+<label id="indexs"><tt/<bf/S//
+<list>
 <item>SafeAutoFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Samples: <ref id="lip" name="Light attribute">
 <item>Samples_X: <ref id="rio" name="RenderMan interface option">
@@ -18123,31 +18498,45 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SavePaneLayout: <ref id="savepanelayouttag" name="tag type">
 <item>SavePrefsGeom: <ref id="prefmisc" name="preference setting">
 <item>saveScene: <ref id="scsavescene" name="scripting interface command">
-<item>Scale: <ref id="trap" name="transformations property">,
-<ref id="scalac" name="modelling action">
-<item>ScaleFactor: <ref id="imprhino" name="3DM (Rhino) import option">,
-<ref id="exprhino" name="3DM (Rhino) export option">,
-<ref id="impwav" name="Wavefront OBJ import option">,
-<ref id="expwav" name="Wavefront OBJ export option">,
-<ref id="rribopt" name="RIB import option">
+<item>Scale:
+<itemize>
+<item><ref id="trap" name="transformations property">,
+<item><ref id="scalac" name="modelling action">
+</itemize>
+<item>ScaleFactor:
+<itemize>
+<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="exprhino" name="3DM (Rhino) export option">,
+<item><ref id="impwav" name="Wavefront OBJ import option">,
+<item><ref id="expwav" name="Wavefront OBJ export option">,
+<item><ref id="rribopt" name="RIB import option">
+</itemize>
 <item>scalOb <ref id="scscalob" name="scripting interface command">
 <item>scalPnts <ref id="scscalpnts" name="scripting interface command">
 <item>Scan Shaders: <ref id="mmspecial" name="main menu entry">
 <item>Scheme: <ref id="sdmattr" name="SDMesh attribute">
-<item>Script: <ref id="script" name="scripting interface">,
-<ref id="scriptobj" name="Script object">
+<item>Script:
+<itemize>
+<item><ref id="script" name="scripting interface">,
+<item><ref id="scriptobj" name="Script object">
+</itemize>
 <item>Scripts: <ref id="prefgui" name="preference setting">
 <item>SDLen: <ref id="icp" name="ICurve attribute">
 <item>SDMesh: <ref id="sdmeshobj" name="SDMesh object">
 <item>SDNPatch: <ref id="sdnpatchobj" name="SDNPatch object">
-<item>Sections: <ref id="swp" name="Sweep attribute">,
-<ref id="rep" name="Revolve attribute">,
-<ref id="birail1p" name="Birail1 attribute">,
-<ref id="birail2p" name="Birail2 attribute">
-<item>Select: <ref id="selectobj" name="Select object">
-<ref id="obj" name="select objects with the tree/listbox">,
-<ref id="objsel" name="select objects within a view">,
-<ref id="selac" name="select points">
+<item>Sections:
+<itemize>
+<item><ref id="swp" name="Sweep attribute">,
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="birail1p" name="Birail1 attribute">,
+<item><ref id="birail2p" name="Birail2 attribute">
+</itemize>
+<item>Select:<itemize>
+<item><ref id="selectobj" name="Select object">,
+<item><ref id="obj" name="select objects with the tree/listbox">,
+<item><ref id="objsel" name="select objects within a view">,
+<item><ref id="selac" name="select points">
+</itemize>
 <item>Select All: <ref id="mmedit" name="main menu entry">
 <item>Select None: <ref id="mmedit" name="main menu entry">
 <item>Selected Objects: <ref id="mmspecial" name="main menu entry">
@@ -18155,8 +18544,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>SelLineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>selOb: <ref id="scselob" name="scripting interface command">
-<item>SelXOR_R, SelXOR_G, SelXOR_B:
-<ref id="hidprefs" name="hidden preference setting">
+<item>SelXOR_R, SelXOR_G, SelXOR_B:<ref id="hidprefs" name="hidden preference setting">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
@@ -18164,30 +18552,45 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
-<item>Shade: <ref id="prefdraw" name="preference setting">,
-<ref id="vmconf" name="view menu entry">
+<item>Shade:
+<itemize>
+<item><ref id="prefdraw" name="preference setting">,
+<item><ref id="vmconf" name="view menu entry">
+</itemize>
 <item>Shader: <ref id="shd" name="properties">
 <item>Shader Parsing: <ref id="spplugins" name="shader parsing plugins">
-<item>Shaders: <ref id="prefmain" name="preference setting">,
-<ref id="rio" name="RenderMan interface option">,
-<ref id="scishaders" name="scripting interface commands">
+<item>Shaders:
+<itemize>
+<item><ref id="prefmain" name="preference setting">,
+<item><ref id="rio" name="RenderMan interface option">,
+<item><ref id="scishaders" name="scripting interface commands">
+</itemize>
 <item>ShadingRate: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>ShadowBias: <ref id="rio" name="RenderMan interface option">
-<item>ShadowMaps: <ref id="prefrib" name="preference setting">,
-<ref id="shadowmaps" name="using shadowmaps">
+<item>ShadowMaps:
+<itemize>
+<item><ref id="prefrib" name="preference setting">,
+<item><ref id="shadowmaps" name="using shadowmaps">
+</itemize>
 <item>Shadows: <ref id="lip" name="Light attribute">
 <item>Shift Closed Curve:
-<ref id="shiftclc" name="shift closed curve tool">
+<item><ref id="shiftclc" name="shift closed curve tool">
 <item>ShiftTab: <ref id="hidprefs" name="hidden preference setting">
 <item>Show: <ref id="mmtools" name="main menu entry">
 <item>Show All: <ref id="mmtools" name="main menu entry">
 <item>Show Shortcuts: <ref id="mmhelp" name="main menu entry">
 <item>Show Tooltips: <ref id="mmhelp" name="main menu entry">
-<item>Side: <ref id="vmtype" name="view menu entry">,
-<ref id="extrncp" name="ExtrNC attribute">
+<item>Side:
+<itemize>
+<item><ref id="vmtype" name="view menu entry">,
+<item><ref id="extrncp" name="ExtrNC attribute">
+</itemize>
 <item>SingleWindow: <ref id="prefmain" name="preference setting">
-<item>Skin: <ref id="skinobj" name="Skin object">,
-<ref id="skit" name="Skin tool">
+<item>Skin:
+<itemize>
+<item><ref id="skinobj" name="Skin object">,
+<item><ref id="skit" name="Skin tool">
+</itemize>
 <item>sL: <ref id="scsl" name="scripting interface command">
 <item>SMChangeShaders: <ref id="prefrib" name="preference setting">
 <item>SMethod: <ref id="prefmisc" name="preference setting">
@@ -18201,22 +18604,31 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SP: <ref id="scriptattrprop" name="Script object">
 <item>SParamU, SParamV: <ref id="prefmisc" name="preference setting">
 <item>Special: <ref id="mmspecial" name="special menu">
-<item>Sphere: <ref id="sphereobj" name="Sphere object">,
-<ref id="nspt" name="NURBS sphere tool">
-<item>Split: <ref id="sptct" name="split to curves tool">,
-<ref id="mmtools" name="split polymesh tool">
+<item>Sphere:
+<itemize>
+<item><ref id="sphereobj" name="Sphere object">,
+<item><ref id="nspt" name="NURBS sphere tool">
+</itemize>
+<item>Split:
+<itemize>
+<item><ref id="sptct" name="split to curves tool">,
+<item><ref id="mmtools" name="split polymesh tool">
+</itemize>
 <item>Split Curve: <ref id="splitncac" name="modelling action">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
 <item>splitNP: <ref id="scsplitnp" name="scripting interface command">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
-<item>StartCap: <ref id="extrattr" name="Extrude attribute">,
-<ref id="rep" name="Revolve attribute">,
-<ref id="swp" name="Sweep attribute">,
-<ref id="skp" name="Skin attribute">,
-<ref id="birail1p" name="Birail1 attribute">,
-<ref id="birail2p" name="Birail2 attribute">
+<item>StartCap:
+<itemize>
+<item><ref id="extrattr" name="Extrude attribute">,
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="swp" name="Sweep attribute">,
+<item><ref id="skp" name="Skin attribute">,
+<item><ref id="birail1p" name="Birail1 attribute">,
+<item><ref id="birail2p" name="Birail2 attribute">
+</itemize>
 <item>StdDisplay: <ref id="rio" name="RenderMan interface option">
 <item>Step_U, Step_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>StepSize: <ref id="moattr" name="MetaObj attributes">
@@ -18227,19 +18639,25 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
 <item>swapuvS <ref id="scswapuvs" name="scripting interface command">
-<item>Sweep: <ref id="sweepobj" name="Sweep object">,
-<ref id="swpt" name="Sweep tool">
+<item>Sweep:
+<itemize>
+<item><ref id="sweepobj" name="Sweep object">,
+<item><ref id="swpt" name="Sweep tool">
+</itemize>
 <item>Swing: <ref id="swingobj" name="Swing object">
 <item>Symmetric: <ref id="acp" name="ACurve attribute">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indext">T
-<itemize>
+<label id="indext"><tt/<bf/T//
+<list>
 <item>Tag: <ref id="prefdraw" name="preference setting">
-<item>Tags: <ref id="tags" name="tags property">,
-<ref id="scitags" name="scripting interface commands">
+<item>Tags:
+<itemize>
+<item><ref id="tags" name="tags property">,
+<item><ref id="scitags" name="scripting interface commands">
+</itemize>
 <item>TC: <ref id="tctag" name="tag type">
 <item>tcleval: <ref id="tcleval" name="JavaScript scripting interface function">
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
@@ -18249,28 +18667,39 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Text: <ref id="textobj" name="Text object">
 <item>Textures: <ref id="rio" name="RenderMan interface option">
-<item>Texture Coordinates: <ref id="tctag" name="tag type">,
-<ref id="tce" name="texture coordinate editor">
-<item>ThetaMax: <ref id="spattr" name="Sphere attribute">,
-<ref id="dkp" name="Disk attribute">,
-<ref id="cnp" name="Cone attribute">,
-<ref id="cyp" name="Cylinder attribute">,
-<ref id="top" name="Torus attribute">,
-<ref id="pap" name="Paraboloid attribute">,
-<ref id="hyp" name="Hyperboloid attribute">,
-<ref id="rep" name="Revolve attribute">
+<item>Texture Coordinates:
+<itemize>
+<item><ref id="tctag" name="tag type">,
+<item><ref id="tce" name="texture coordinate editor">
+</itemize>
+<item>ThetaMax:
+<itemize>
+<item><ref id="spattr" name="Sphere attribute">,
+<item><ref id="dkp" name="Disk attribute">,
+<item><ref id="cnp" name="Cone attribute">,
+<item><ref id="cyp" name="Cylinder attribute">,
+<item><ref id="top" name="Torus attribute">,
+<item><ref id="pap" name="Paraboloid attribute">,
+<item><ref id="hyp" name="Hyperboloid attribute">,
+<item><ref id="rep" name="Revolve attribute">
+</itemize>
 <item>Threshold: <ref id="moattr" name="MetaObj attributes">
 <item>TMin, TMax: <ref id="ncircleattrprop" name="NCircle attribute">
 <item>TmpDir: <ref id="prefgui" name="preference setting">
-<item>To: <ref id="camp" name="camera property">,
-<ref id="lip" name="Light attribute">
+<item>To:
+<itemize>
+<item><ref id="camp" name="camera property">,
+<item><ref id="lip" name="Light attribute">
+</itemize>
 <item>To Camera: <ref id="vmconf" name="view menu entry">
 <item>Toggle Toolbox: <ref id="mmspecial" name="main menu entry">
 <item>Toggle TreeView: <ref id="mmspecial" name="main menu entry">
-<item>Tolerance: <ref id="prefdraw" name="preference setting">,
-<ref id="pmattr" name="PatchMesh attribute">,
-<ref id="ncattr" name="NCurve attribute">,
-<ref id="npattr" name="NPatch attribute">
+<item>Tolerance:
+<itemize>
+<item><ref id="prefdraw" name="preference setting">,
+<item><ref id="ncattr" name="NCurve attribute">,
+<item><ref id="npattr" name="NPatch attribute">
+</itemize>
 <item>tonpatch.tcl: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
@@ -18278,9 +18707,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ToolBoxTrans: <ref id="hidprefs" name="hidden preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
 <item>Top: <ref id="vmtype" name="view menu entry">
-<item>TopLevelLayers: <ref id="expdxfopt" name="DXF export option">,
-<ref id="exp3dmopt" name="3DM (Rhino) export option">,
-<ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>TopLevelLayers:
+<itemize>
+<item><ref id="expdxfopt" name="DXF export option">,
+<item><ref id="exp3dmopt" name="3DM (Rhino) export option">,
+<item><ref id="expx3dopt" name="X3D (Web3D) export option">
+</itemize>
 <item>topoly.tcl: <ref id="topolytcl" name="example/helper script">
 <item>Torus: <ref id="torusobj" name="Torus object">
 <item>To XY: <ref id="toxyt" name="To XY tool">
@@ -18288,120 +18720,161 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Transformations: <ref id="trap" name="transformations property">
 <item>Translation: <ref id="trap" name="transformations property">
 <item>Tree View: <ref id="treeview" name="Tree View">
-<item>Trim: <ref id="trimobj" name="Trim object">,
-<ref id="vmtype" name="view menu entry">
+<item>Trim:
+<itemize>
+<item><ref id="trimobj" name="Trim object">,
+<item><ref id="vmtype" name="view menu entry">
+</itemize>
 <item>Trim Curve: <ref id="trim" name="using trim curves">
 <item>trimNC: <ref id="sctrimnc" name="scripting interface command">
 <item>TrimRect: <ref id="trrt" name="TrimRect tool">
 <item>TrueDisp: <ref id="attrs" name="RenderMan/BMRT attribute">
 <item>TwmCompat: <ref id="prefgui" name="preference setting">
-<item>Type: <ref id="levelobj" name="Level attribute">,
-<ref id="lip" name="Light attribute">,
-<ref id="pmattr" name="PatchMesh attribute">,
-<ref id="vat" name="View attribute">,
-<ref id="scriptattr" name="Script attribute">,
-<ref id="riprocp" name="RiProc attribute">,
-<ref id="capattrprop" name="Cap attribute">,
-<ref id="ncurveattrprop" name="NCurve attribute">,
-<ref id="icp" name="ICurve attribute">
+<item>Type:
+<itemize>
+<item><ref id="levelobj" name="Level attribute">,
+<item><ref id="lip" name="Light attribute">,
+<item><ref id="pmattr" name="PatchMesh attribute">,
+<item><ref id="vat" name="View attribute">,
+<item><ref id="scriptattr" name="Script attribute">,
+<item><ref id="riprocp" name="RiProc attribute">,
+<item><ref id="capattrprop" name="Cap attribute">,
+<item><ref id="ncurveattrprop" name="NCurve attribute">,
+<item><ref id="icp" name="ICurve attribute">
 </itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexu">U
-<itemize>
+<label id="indexu"><tt/<bf/U//
+<list>
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
 <item>UMM: <ref id="ummtag" name="tag type">
-<item>Undo: <ref id="undos" name="The Undo System">,
-<ref id="mmedit" name="main menu entry">,
-<ref id="scundo" name="scripting interface command">
+<item>Undo:
+<itemize>
+<item><ref id="undos" name="The Undo System">,
+<item><ref id="mmedit" name="main menu entry">,
+<item><ref id="scundo" name="scripting interface command">
+</itemize>
 <item>UndoLevels: <ref id="prefmodel" name="preference setting">
 <item>Union: <ref id="levelobj" name="Level object">
-<item>UpperBevel: <ref id="extrattr" name="Extrude attribute">,
-<ref id="textattr" name="Text attribute">
-<item>UpperCap: <ref id="rep" name="Revolve attribute">,
-<ref id="textattr" name="Text attribute">
+<item>UpperCap:
+<itemize>
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="textattr" name="Text attribute">
+</itemize>
 <item>Up Vector: <ref id="camp" name="camera property">
 <item>uS: <ref id="scus" name="scripting interface command">
-<item>useaqsisapp: <ref id="useaqsisapptcl" name="example/helper script">
-<item>UseGrid: <ref id="vat" name="View attribute">,
-<ref id="vmconf" name="view menu entry">
+<item>useaqsisapp.tcl: <ref id="useaqsisapptcl" name="example/helper script">
+<item>UseGrid:
+<itemize>
+<item><ref id="vat" name="View attribute">,
+<item><ref id="vmconf" name="view menu entry">
+</itemize>
 <item>UseInternalFD: <ref id="hidprefs" name="hidden preference setting">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
-<item>usepixie: <ref id="usepixietcl" name="example/helper script">
+<item>usepixie.tcl: <ref id="usepixietcl" name="example/helper script">
 <item>UseSM: <ref id="lip" name="Light attribute">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexv">V
-<itemize>
+<label id="indexv"><tt/<bf/V//
+<list>
 <item>Variance: <ref id="rio" name="RenderMan interface option">
-<item>View: <ref id="viewobj" name="object">,
-<ref id="viewwin" name="Anatomy of a View">
+<item>View:
+<itemize>
+<item><ref id="viewobj" name="View object">,
+<item><ref id="viewwin" name="Anatomy of a View">
+</itemize>
 <item>ViewAttrib: <ref id="vat" name="property">
 <item>VMM: <ref id="ummtag" name="tag type">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexw">W
-<itemize>
+<label id="indexw"><tt/<bf/W//
+<list>
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
-<item>Wavefront OBJ: <ref id="impwav" name="Wavefront OBJ import">,
-<ref id="expwav" name="Wavefront OBJ export">
+<item>Wavefront OBJ:
+<itemize>
+<item><ref id="impwav" name="Wavefront OBJ import">,
+<item><ref id="expwav" name="Wavefront OBJ export">
+</itemize>
 <item>Weight: <ref id="iac" name="single point weight editing">
 <item>WheelZoom: <ref id="hidprefs" name="hidden preference setting">
-<item>Width: <ref id="rio" name="RenderMan interface option">,
-<ref id="bxp" name="Box attribute">,
-<ref id="npattr" name="NPatch attribute">,
-<ref id="pmattr" name="PatchMesh attribute">,
-<ref id="vat" name="View attribute">
+<item>Width:
+<itemize>
+<item><ref id="rio" name="RenderMan interface option">,
+<item><ref id="bxp" name="Box attribute">,
+<item><ref id="npattr" name="NPatch attribute">,
+<item><ref id="ipattr" name="IPatch attribute">,
+<item><ref id="pmattr" name="PatchMesh attribute">,
+<item><ref id="vat" name="View attribute">
+</itemize>
 <item>withOb: <ref id="scwithob" name="scripting interface command">
 <item>wrib: <ref id="scwrib" name="scripting interface command">
-<item>WriteCurves: <ref id="impwav" name="Wavefront OBJ import/export option">,
-<ref id="exprhino" name="3DM (Rhino) export option">
+<item>WriteCurves:
+<itemize>
+<item><ref id="impwav" name="Wavefront OBJ import/export option">,
+<item><ref id="exprhino" name="3DM (Rhino) export option">
+</itemize>
 <item>WriteParametrics: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
-<item>WriteSelected: <ref id="exprhino" name="3DM (Rhino) export option">,
-<ref id="expwav" name="Wavefront OBJ export option">
+<item>WriteSelected:
+<itemize>
+<item><ref id="exprhino" name="3DM (Rhino) export option">,
+<item><ref id="expwav" name="Wavefront OBJ export option">
+</itemize>
 <item>WriteViews: <ref id="expx3dopt" name="X3D (Web3D) export option">
-</itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexx">X
+<label id="indexx"><tt/<bf/X//
+<list>
+<item>X3D:
 <itemize>
-<item>X3D: <ref id="impx3d" name="X3D (Web3D) Import">,
-<ref id="expx3d" name="X3D (Web3D) Export">
+<item><ref id="impx3d" name="X3D (Web3D) Import">,
+<item><ref id="expx3d" name="X3D (Web3D) Export">
 </itemize>
+</list>
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexy">Y
-<itemize>
+<label id="indexy"><tt/<bf/Y//
+<list>
 <item>.
-</itemize>
+</list>
 
 
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="indexz">Z
-<itemize>
+<label id="indexz"><tt/<bf/Z//
+<list>
 <item>Zap Ayam: <ref id="mmspecial" name="main menu entry">
-<item>zap: <ref id="zaptcl" name="example/helper script">
-<item>zdialog: <ref id="zdialogtcl" name="example/helper script">
-<item>ZMin, ZMax: <ref id="spattr" name="Sphere attribute">,
-<ref id="dkp" name="Disk attribute">,
-<ref id="cyp" name="Cylinder attribute">,
-<ref id="pap" name="Paraboloid attribute">
-<item>Zoom: <ref id="camp" name="camera property">,
-<ref id="vwsc" name="view action">
-<item>Zoom to Object: <ref id="vmconf" name="view menu entry">,
-<ref id="vwsc" name="view action">
+<item>zap.tcl: <ref id="zaptcl" name="example/helper script">
+<item>zdialog.tcl: <ref id="zdialogtcl" name="example/helper script">
+<item>ZMin, ZMax:
+<itemize>
+<item><ref id="spattr" name="Sphere attribute">,
+<item><ref id="dkp" name="Disk attribute">,
+<item><ref id="cyp" name="Cylinder attribute">,
+<item><ref id="pap" name="Paraboloid attribute">
 </itemize>
+<item>Zoom:
+<itemize>
+<item><ref id="camp" name="camera property">,
+<item><ref id="vwsc" name="view action">
+</itemize>
+<item>Zoom to Object:
+<itemize>
+<item><ref id="vmconf" name="view menu entry">,
+<item><ref id="vwsc" name="view action">
+</itemize>
+</list>
 
 </article>
 
