@@ -171,8 +171,9 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"crtClosedBS", jsinterp_wraptcmdargs, 0, 0, 0},
   {"rescaleknNC", jsinterp_wraptcmdargs, 0, 0, 0},
   /* curvPlot ? */
-  {"shiftClosedBS", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"shiftC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"toXYNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"toXYC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"makeCompNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"centerNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"trimNC", jsinterp_wraptcmdargs, 0, 0, 0},

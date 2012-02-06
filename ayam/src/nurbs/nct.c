@@ -1047,11 +1047,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  rs = (curve->order - 1) - s;
 	  curve->length += rs;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -1100,11 +1098,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  re = (curve->order - 1) - s;
 	  curve->length += re;
 
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
 	    return AY_EOMEM;
 
-	  newknotv = NULL;
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -1148,11 +1144,9 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
       break;
     }
 
-  newcontrolv = NULL;
   if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
     return AY_EOMEM;
 
-  newknotv = NULL;
   if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
@@ -2240,7 +2234,6 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
  double *newcv1 = NULL, *newkv1 = NULL;
  double *newcv2 = NULL, *newkv2 = NULL;
  int i, stride = 4;
- char fname[] = "splitdisc";
 
   ay_status = ay_object_copy(src, &new);
   if(ay_status)
@@ -2278,14 +2271,14 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
 
   /* create new controls/knots for second curve */
   if( !(newcv2 = calloc(nc2->length*stride, sizeof(double))))
-    return AY_EOMEM;
+    { free(newcv1); free(newkv1); return AY_EOMEM; }
 
   memcpy(newcv2, &(nc1->controlv[i*stride]),
 	 nc2->length*stride*sizeof(double));
 
   if(!(newkv2 = calloc(nc2->length+nc2->order,
 			 sizeof(double))))
-    { free(newcv2); return AY_EOMEM; }
+    { free(newcv1); free(newkv1); free(newcv2); return AY_EOMEM; }
 
   memcpy(newkv2, &(nc1->knotv[nc1->length]),
 	 (nc2->length+nc2->order)*sizeof(double));
@@ -2376,10 +2369,9 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       if(r > 0)
 	{
-	  newcontrolv = NULL;
 	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
 	    return AY_EOMEM;
-	  newknotv = NULL;
+
 	  if(!(newknotv = calloc(curve->length+curve->order,
 				 sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
@@ -2423,10 +2415,9 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc2->length = (nc1->length+1) - nc1len;
       nc1->length = nc1len;
 
-      newcontrolv = NULL;
       if(!(newcontrolv = calloc(nc1->length*stride, sizeof(double))))
 	{ ay_object_delete(new); return AY_EOMEM; }
-      newknotv = NULL;
+
       if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
@@ -4207,13 +4198,12 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(c)
 	{
-	  controlv = NULL;
 	  if(!(controlv = calloc((samples+1)*4, sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
-	  o = NULL;
+
 	  if(!(o = calloc(1, sizeof(ay_object))))
 	    {
 	      free(controlv);
@@ -4857,9 +4847,36 @@ ay_nct_shiftctcmd(ClientData clientData, Tcl_Interp *interp,
  return TCL_OK;
 } /* ay_nct_shiftctcmd */
 
+int
+ay_nct_getplane(int cvlen, int cvstride, double *cv)
+{
+#if 0
+ int plane = AY_XY;
 
-/* ay_nct_toxy :
- *  modify the planar NURBS curve <c>, so that it is defined in the XY plane
+  if(cvlen < 3 || cvstride <= 0 || !cv)
+    return -1;
+
+
+  /* try to get three "good" points,
+     they should not be equal and not be colinear
+     (i.e. span a triangle to get the orientation from */
+  tp1 = nc->controlv;
+  tp2 = &(nc->controlv[(cvlen/2)*stride]);
+
+  while(AY_V3COMP(tp1, tp2))
+    {
+
+    }
+
+
+ return plane;
+#endif
+ return 0;
+} /* ay_nct_getplane */
+
+
+/* ay_nct_toxy:
+ *  modify the planar curve <c>, so that it is defined in the XY plane
  *  by detecting the current orientation, adding the relevant rotation
  *  information to the transformation attributes and rotating the control
  *  points of the planar curve to the XY plane
@@ -4868,68 +4885,68 @@ int
 ay_nct_toxy(ay_object *c)
 {
  int ay_status = AY_OK;
+ ay_acurve_object *ac = NULL;
+ ay_icurve_object *ic = NULL;
  ay_nurbcurve_object *nc = NULL;
  double *p, *tp1, *tp2, *tp3, V1[3], V2[3], A[3], B[3];
+ double tcv[9];
  double Z[3] = {0,0,1};
  double angle, len, m[16], quat[4], euler[3];
- int i, stride = 4, have_good_points = AY_FALSE, max_tries = 0;
+ double *cv = NULL;
+ int cvlen = 0;
+ int i, stride = 4, have_good_points = AY_FALSE, num_tries = 0;
 
   if(!c)
     return AY_ENULL;
 
-  if(c->type != AY_IDNCURVE)
-    return AY_EWTYPE;
-
-  nc = (ay_nurbcurve_object *)c->refine;
-
-  if(nc->length < 3)
-    return AY_ERROR;
-
-  ay_trafo_identitymatrix(m);
-  ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
-
-  /* apply scale/translate matrix to all points */
-  p = nc->controlv;
-  for(i = 0; i < nc->length; i++)
+  switch(c->type)
     {
-      ay_trafo_apply3(p, m);
-      p += stride;
-    } /* for */
+    case AY_IDNCURVE:
+      nc = (ay_nurbcurve_object *)c->refine;
+      cv = nc->controlv;
+      cvlen = nc->length;
+      stride = 4;
+      break;
+    case AY_IDICURVE:
+      ic = (ay_icurve_object *)c->refine;
+      cv = ic->controlv;
+      cvlen = ic->length;
+      stride = 3;
+      break;
+    case AY_IDACURVE:
+      ac = (ay_acurve_object *)c->refine;
+      cv = ac->controlv;
+      cvlen = ac->length;
+      stride = 3;
+      break;
+    default:
+      return AY_EWTYPE;
+    }
 
-  c->scalx = 1.0;
-  c->scaly = 1.0;
-  c->scalz = 1.0;
+  if(cvlen < 3)
+    return AY_ERROR;
 
   /* try to get three "good" points,
      they should not be equal and not be colinear
      (i.e. span a triangle to get the orientation from */
-  tp1 = nc->controlv;
-  tp2 = &(nc->controlv[(nc->length/2)*stride]);
+  tp1 = cv;
+  tp2 = &(cv[(cvlen/2)*stride]);
+  tp3 = &(cv[(cvlen-2)*stride]);
 
   /* check, whether we, probably, operate on a closed B-Spline curve,
      if yes, we choose a different set of initial points */
-  p = &(nc->controlv[(nc->length-(nc->order-1))*stride]);
-  if(AY_V3COMP(tp1, p))
+  if(nc)
     {
-      /*printf("Detected closed BSpline!\n");*/
-      tp1 = &(nc->controlv[(nc->order/2)*stride]);
-      tp3 = &(nc->controlv[(nc->length-(nc->order/2))*stride]);
+      p = &(cv[(nc->length-(nc->order-1))*stride]);
+      if(AY_V3COMP(tp1, p))
+	{
+	  tp1 = &(cv[(nc->order/2)*stride]);
+	  tp3 = &(cv[(nc->length-(nc->order/2))*stride]);
+	}
     }
-  else
-    {
-      /*printf("Detected normal curve!\n");*/
-      tp3 = &(nc->controlv[(nc->length-2)*stride]);
-    }
-
-  /*
-    printf("first indices %d %d %d\n",
-    (tp1-nc->controlv)/stride,
-    (tp2-nc->controlv)/stride,
-    (tp3-nc->controlv)/stride);
-  */
 
   /* check and correct the points */
-  while(!have_good_points  && (max_tries < (nc->length/2)))
+  while(!have_good_points  && (num_tries < (cvlen/2)))
     {
       have_good_points = AY_TRUE;
       if(AY_V3COMP(tp1, tp2))
@@ -4967,17 +4984,26 @@ ay_nct_toxy(ay_object *c)
 	    }
 	} /* if */
 
-      max_tries++;
+      num_tries++;
     } /* while */
 
   if(!have_good_points)
     return AY_ERROR;
-  /*
-    printf("indices after correction %d %d %d\n",
-    (tp1-nc->controlv)/stride,
-    (tp2-nc->controlv)/stride,
-    (tp3-nc->controlv)/stride);
-  */
+
+  /* apply scale matrix to triangle points */
+  ay_trafo_identitymatrix(m);
+  ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
+
+  memcpy(tcv, tp1, 3*sizeof(double));
+  memcpy(&(tcv[3]), tp2, 3*sizeof(double));
+  memcpy(&(tcv[6]), tp2, 3*sizeof(double));
+
+  p = tcv;
+  for(i = 0; i < 3; i++)
+    {
+      ay_trafo_apply3(p, m);
+      p += 3;
+    } /* for */
 
   /* now we may calculate the orientation of the curve */
   AY_V3CROSS(A, V1, V2);
@@ -4993,35 +5019,38 @@ ay_nct_toxy(ay_object *c)
 	 XY plane already...*/
       return AY_OK;
     }
+
   AY_V3CROSS(B, A, Z);
   len = AY_V3LEN(B);
   AY_V3SCAL(B, (1.0/len));
 
-  /*printf("angle %g, B: %g %g %g\n",angle,B[0],B[1],B[2]);*/
-  if(angle > AY_EPSILON)
+  /* calculate rotation matrix */
+  ay_trafo_identitymatrix(m);
+
+  /*ay_trafo_translatematrix(-c->movx, -c->movy, -c->movz, m);*/
+  ay_trafo_rotatematrix(angle, B[0], B[1], B[2], m);
+  /*ay_trafo_translatematrix(c->movx, c->movy, c->movz, m);*/
+  ay_trafo_scalematrix(c->scalx, c->scaly, c->scalz, m);
+
+  /* apply rotation matrix to all points */
+  p = cv;
+  for(i = 0; i < cvlen; i++)
     {
-      /* calculate rotation matrix */
-      ay_trafo_identitymatrix(m);
-      /*ay_trafo_translatematrix(-c->movx, -c->movy, -c->movz, m);*/
-      ay_trafo_rotatematrix(angle, B[0], B[1], B[2], m);
-      /*ay_trafo_translatematrix(c->movx, c->movy, c->movz, m);*/
+      ay_trafo_apply3(p, m);
+      p += stride;
+    } /* for */
 
-      /* apply rotation matrix to all points */
-      p = nc->controlv;
-      for(i = 0; i < nc->length; i++)
-	{
-	  ay_trafo_apply3(p, m);
-	  p += stride;
-	} /* for */
+  /* calculate new transformation attributes */
+  ay_quat_axistoquat(B, AY_D2R(angle), quat);
+  ay_quat_add(c->quat, quat, c->quat);
+  ay_quat_toeuler(c->quat, euler);
+  c->rotx = AY_R2D(euler[0]);
+  c->roty = AY_R2D(euler[1]);
+  c->rotz = AY_R2D(euler[2]);
 
-      /* calculate new transformation attributes */
-      ay_quat_axistoquat(B, AY_D2R(angle), quat);
-      ay_quat_add(c->quat, quat, c->quat);
-      ay_quat_toeuler(c->quat, euler);
-      c->rotx = AY_R2D(euler[0]);
-      c->roty = AY_R2D(euler[1]);
-      c->rotz = AY_R2D(euler[2]);
-    } /* if */
+  c->scalx = 1.0;
+  c->scaly = 1.0;
+  c->scalz = 1.0;
 
  return ay_status;
 } /* ay_nct_toxy */
@@ -5051,7 +5080,8 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
   while(sel)
     {
       src = sel->object;
-      if(src->type != AY_IDNCURVE)
+      if((src->type != AY_IDNCURVE) && (src->type != AY_IDACURVE) &&
+	 (src->type != AY_IDICURVE))
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
 	}
