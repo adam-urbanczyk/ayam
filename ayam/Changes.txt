@@ -1,4 +1,4 @@
-[29. Jan 2012] CVS-Head:
+[6. Feb 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -19,6 +19,8 @@ o view camera changing inadvertently when another view is changed (SF 3442122)
 o OffsetNP objects are missing from exported RIB files (SF 3445410)
 o Gordon objects with transformed intersection patches (SF 3448526)
 o conversion of torii with phimin/phimax not on default fails (SF 3481314)
+o conversion of transformed quadrics with non-standard parameters (SF 3484008)
+o toXYNC resetting the scale attributes if an error occurs (SF 3485090)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -55,9 +57,11 @@ o added "UVSelect" option to ConcatNP object, this allows to determine
   the concatenation
 o ConcatNP objects now allow curve and curve providing objects to be
   used as parameter objects, also in a mix with patches
-o added "Order" parameter to ConcatNP, that allows to specify the U order
-  of the concatenated surface
+o added "Order" parameter to ConcatNP, that allows to specify the
+  desired U order of the concatenated surface
 o improved drawing of torii with phimin/phimax not on defaults
+o toXYNC can now work with ACurve and ICurve objects and is thus
+  renamed to toXYC (old command name still available but deprecated)
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -108,7 +112,7 @@ o added "-parent" option to "notifyOb" command
 Documentation/Example Files:
 o historic information (i.e. when did a feature appear) are now presented
   in a less obtrusive way (as footnotes)
-
+o improved layout of index, object trees, and code examples
 
 [16. Mar 2011] Ayam-1.19:
 =========================
