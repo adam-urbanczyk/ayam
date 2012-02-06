@@ -1075,7 +1075,11 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "shiftC", ay_nct_shiftctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* provided for scripting interface backwards compatibility */
   Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "toXYC", ay_nct_toxytcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
@@ -1542,7 +1546,11 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "shiftC", ay_nct_shiftctcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  /* provided for scripting interface backwards compatibility */
   Tcl_CreateCommand(interp, "toXYNC", ay_nct_toxytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "toXYC", ay_nct_toxytcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
