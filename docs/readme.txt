@@ -7,7 +7,6 @@ create a reference card.
 In order to build your own version of the documentation you need the
 following prerequisites:
 o make
-o sed
 o tclsh in /usr/bin/ (otherwise edit the Makefile)
 o sgml-tools 1.0.9 or linuxdoc-tools
 
@@ -45,6 +44,7 @@ or
 <footnote>      +       "<SUB TITLE=\""
 </footnote>             "\">*</SUB>"            +
 
+See also the provided file "html-mapping".
 
 To build the PostScript version:
 >make ps
@@ -55,16 +55,24 @@ To build a plain text version
 (beware, output misses a lot of formatting information):
 >make txt
 
-To build the real good looking PDF version:
->make pdf5
-
-To build a simple and not good looking PDF version made with dvipdf:
+To build the PDF version:
 >make pdf
 
-If you want a footnote rule as in the official documentation, find
+If you want a footnote rule as in the distributed PDF, find
 and adapt linuxdoc-sgml.sty accordingly (comment out the
 "\let\footnoterule\relax"
 line with a %).
+
+In addition, to improve the in-document hyperlinks, find and change in
+your linuxdoc latex2e "mapping" file:
+
+<ref>			"\\ref{[ID]} {([NAME])}"
+
+to 
+
+<ref>			"\\hyperref\[[ID]\]{\\ref*{[ID]} [NAME] (page \\pageref*{[ID]})}"
+
+See also the provided file "latex2e-mapping".
 
 ==============================================================================
 
