@@ -1,10 +1,7 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [18. Mar 2009]
+# Makefile [7. Jan 2012]
 # Makefile for the Ayam reference manual
-
-# on Debian3.0 (Woody) the pdf3 target does not work anymore,
-# use pdf5 instead
 
 all: html pdf5
 
@@ -40,37 +37,33 @@ pdf2:
 	/bin/sh -c "sed -f sedsrc2 ayaml.tex > ayam.tex"
 	/bin/sh -c "sed -f sedsrc3 ayam.tex > ayaml.tex"
 	mv ayaml.tex ayam.tex
-	pdflatex ayam.tex > ga
+	pdflatex ayam.tex > /dev/null
 	rm -f ayaml.sgml
 
 
 pdf3: pdf2
-	pdflatex ayam.tex > ga
-	pdflatex ayam.tex > ga
+	pdflatex ayam.tex > /dev/null
+	pdflatex ayam.tex > /dev/null
 	rm ayam.tex ayam.toc ayam.log ayam.aux
 
-
 pdf4:
-	-rm -f ayam.tex ayam.toc ayam.log ayam.aux ga
-	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
-	sgml2latex -p a4 -D out=latex -o tex ayaml.sgml
-	/bin/sh -c "sed -f sedsrc3 ayaml.tex > ayam.tex"
-	/bin/sh -c "sed -f sedsrc4 ayam.tex > ayaml.tex"
-	/usr/bin/tclsh fixpdftex.tcl ayaml.tex ayam.tex
-	pdflatex ayam.tex > ga
-	rm -f ayaml.* ga
+	-rm -f ayam.tex ayam.toc ayam.log ayam.aux
+	sgml2latex -p a4 -D out=latex -o tex ayam.sgml
+	/usr/bin/tclsh fixpdftex.tcl ayam.tex ayaml.tex
+	cp ayaml.tex ayam.tex
+	pdflatex ayam.tex > /dev/null
+	rm -f ayaml.*
 
 pdf5: pdf4
-	pdflatex ayam.tex > ga
-	pdflatex ayam.tex 
-	rm ayam.tex ayam.toc ayam.log ayam.aux ayam.out ga
+	pdflatex ayam.tex > /dev/null
+	pdflatex ayam.tex
+	rm ayam.tex ayam.toc ayam.log ayam.aux ayam.out
 
 archive: html
 	mkdir -p docs/pics
 	cp pics/*.gif docs/pics
 	cp html/*.html docs
 	tar czf aydocs.tgz docs
-
 
 clean:
 	rm -rf html ayam.tex ayam.dvi ayam.txt ayam.pdf ayam.ps
