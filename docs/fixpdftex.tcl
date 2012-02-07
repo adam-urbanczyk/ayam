@@ -77,8 +77,11 @@ proc fixdocclass { buf outfile } {
     set found 0
     set index [ string first "documentclass" $buf ]
     if { $index > -1 } {
-	puts $outfile\
-	    "\\documentclass\[a4paper,11pt\]\{article\}\n\\usepackage\{needspace\}\n\\usepackage\[tight\]\{shorttoc\}\n\\usepackage\[perpage,para\]\{footmisc\}"
+	puts $outfile "\\documentclass\[a4paper,11pt\]\{article\}"
+	puts $outfile "\\usepackage\{needspace\}"
+	puts $outfile "\\usepackage\[tight\]\{shorttoc\}"
+	puts $outfile "\\usepackage\[perpage,para\]\{footmisc\}"
+	puts $outfile "\\usepackage{times}"
 	set found 1
 
 	# one shot...
@@ -197,7 +200,6 @@ proc fixhyperref { buf outfile } {
 
     return $found;
 }
-
 
 
 
