@@ -3,7 +3,7 @@
 # Makefile [7. Jan 2012]
 # Makefile for the Ayam reference manual
 
-all: html pdf5
+all: html pdf
 
 
 html:
@@ -19,45 +19,19 @@ txt:
 	sgml2txt -D out=txt -f ayam.sgml
 
 ps:
-	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
 	sgml2latex -o ps ayaml.sgml
 	mv ayaml.ps ayam.ps
 	rm -f ayaml.sgml
 
 pdf:
-	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
-	sgml2latex -o dvi ayaml.sgml
-	dvi2pdf ayaml.dvi
-	mv ayaml.pdf ayam.pdf
-	rm -f ayaml.sgml ayaml.dvi
-
-pdf2:
-	/bin/sh -c "sed -f sedsrc ayam.sgml > ayaml.sgml"
-	sgml2latex -o tex ayaml.sgml
-	/bin/sh -c "sed -f sedsrc2 ayaml.tex > ayam.tex"
-	/bin/sh -c "sed -f sedsrc3 ayam.tex > ayaml.tex"
-	mv ayaml.tex ayam.tex
-	pdflatex ayam.tex > /dev/null
-	rm -f ayaml.sgml
-
-
-pdf3: pdf2
-	pdflatex ayam.tex > /dev/null
-	pdflatex ayam.tex > /dev/null
-	rm ayam.tex ayam.toc ayam.log ayam.aux
-
-pdf4:
 	-rm -f ayam.tex ayam.toc ayam.log ayam.aux
 	sgml2latex -p a4 -D out=latex -o tex ayam.sgml
 	/usr/bin/tclsh fixpdftex.tcl ayam.tex ayaml.tex
 	cp ayaml.tex ayam.tex
 	pdflatex ayam.tex > /dev/null
-	rm -f ayaml.*
-
-pdf5: pdf4
 	pdflatex ayam.tex > /dev/null
 	pdflatex ayam.tex
-	rm ayam.tex ayam.toc ayam.log ayam.aux ayam.out
+	rm ayaml.tex ayam.tex ayam.toc ayam.log ayam.aux ayam.out
 
 archive: html
 	mkdir -p docs/pics
