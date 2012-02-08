@@ -905,7 +905,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       j = 2;
       for(i = 0; i < height; i++)
 	{
-	  controlv[j] = h->p1[2] * controlv[j+1];
+	  controlv[j] = h->p1[2]/* * controlv[j+1]*/;
 	  j += stride;
 	}
       free(cv);

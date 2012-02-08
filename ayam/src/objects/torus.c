@@ -853,6 +853,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  n = &(new->next);
 
+	  /* disk shape caps at thetamin/thetamax */
 	  if(fabs(thetamax) != 360.0)
 	    {
 	      ay_object_defaults(&d);
@@ -899,6 +900,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 		}  /* if */
 	    } /* if */
 
+	  /* ring shape caps at phimin/phimax */
 	  if(fabs(phimax-phimin) < 360.0)
 	    {
 	      np = (ay_nurbpatch_object *)new->refine;
@@ -909,19 +911,19 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  goto cleanup;
 		}
 	      cv = np->controlv;
-	      /* copy from torus */
+	      /* copy from torus surface */
 	      memcpy(cv2, cv, np->height*stride*sizeof(double));
 	      cv = NULL;
 	      if(torus->thetamax > 0.0)
 		{
 		  ay_status = ay_nb_CreateNurbsCircleArc(majorrad,
-							 0, thetamax,
+							 -thetamax, 0,
 							 &height, &kn, &cv);
 		}
 	      else
 		{
 		  ay_status = ay_nb_CreateNurbsCircleArc(majorrad,
-							 thetamax, 0,
+							 0, -thetamax,
 							 &height, &kn, &cv);
 		}
 	      if(ay_status)
