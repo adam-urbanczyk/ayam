@@ -1240,22 +1240,22 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  np = (ay_nurbpatch_object *)new->refine;
 		  cv = np->controlv;
 
-		  j = 0; k = 0;
+		  j = 0; k = (np->height-1)*stride;
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
 		      j += stride; k += np->height*stride;
 		    }
 
-		  j = height*stride+1; k = 1;
+		  j = height*stride; k = 0;
 		  for(i = 0; i < height; i++)
 		    {
-		      /*Y*/
-		      cv2[j] = 0.0/*cv2[k]*/; /* 0.0 - fan shape */
+		      /*X = 0.0*/
+		      /*Y = 0.0*/
 		      /*Z*/
-		      cv2[j+1] = zmin;
+		      cv2[j+2] = cv2[k+2];
 		      /*W*/
-		      cv2[j+2] = 1.0;
+		      cv2[j+3] = 1.0;
 		      j += stride; k += stride;
 		    }
 
@@ -1295,24 +1295,11 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  cv2 = np->controlv;
 		  np = (ay_nurbpatch_object *)new->refine;
 
-		  j = 0; k = (np->height-1)*stride;
+		  j = 0; k = 0;
 		  for(i = 0; i < height; i++)
 		    {
 		      memcpy(&(cv2[j]), &(cv[k]), stride*sizeof(double));
 		      j += stride; k += (np->height*stride);
-		    }
-
-		  j = height*stride; k = 0;
-		  for(i = 0; i < height; i++)
-		    {
-		      /*X*/
-		      cv2[j] = 0.0/*cv2[k]*/; /* 0.0 - fan shape */
-		      /*Y*/
-		      cv2[j+1] = 0.0;
-		      /*Z*/
-		      cv2[j+2] = zmin;
-
-		      j += stride; k += stride;
 		    }
 
 		  /* prevent cleanup code from doing something harmful */
