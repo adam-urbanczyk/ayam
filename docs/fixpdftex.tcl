@@ -189,7 +189,8 @@ proc fixhyperref { buf outfile } {
     set found 0
     set index [ string first "hyperref" $buf ]
     if { $index > -1 } {
-	puts $outfile "\\usepackage\[colorlinks=true,urlcolor=blue,linkcolor=blue,breaklinks=true,hyperfootnotes=false\]\{hyperref\}"
+	puts $outfile "\\usepackage\[colorlinks=true,urlcolor=blue,breaklinks=true,hyperfootnotes=false\]\{hyperref\}"
+	puts $outfile "\\hypersetup\{linkcolor=\[rgb\]\{0,0,0.3\}\}"
 
 	set found 1
 
