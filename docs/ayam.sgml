@@ -5311,6 +5311,11 @@ A sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the sphere.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the sphere is closed, an enclosing Level object will be
+created and the caps follow the sphere in the following order:
+disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
+cap at thetamax.
 
 <sect2>RIB Export
 <p>
@@ -5318,7 +5323,7 @@ The sphere object appears in RIB output as simple
 <tscreen><tt>
 RiSphere(...);
 </tt></tscreen>
-or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/ or
+or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/, or
 <tt/"ThetaMax"/ have other than the default values,
 as complex CSG hierarchy of at most two spheres, two cylinders, and
 eight disks.
@@ -5400,6 +5405,11 @@ A cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cone.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the cone is closed, an enclosing Level object will be
+created and the caps follow the cone in the following order:
+disk-shaped cap at the base, cap at theta 0,
+cap at thetamax.
 
 <sect2>RIB Export
 <p>
@@ -5448,6 +5458,11 @@ A cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the cylinder.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the cylinder is closed, an enclosing Level object will be
+created and the caps follow the cylinder in the following order:
+disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
+cap at thetamax.
 
 <sect2>RIB Export
 <p>
@@ -5503,6 +5518,11 @@ A torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the torus.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the torus is closed, an enclosing Level object will be
+created and the caps follow the torus in the following order:
+disk-shaped cap at theta 0, disk-shaped cap at thetamax, ring-shaped
+cap at phimin 0, ring-shaped cap at phimax.
 
 <sect2>RIB Export
 <p>
@@ -5554,6 +5574,11 @@ A paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the paraboloid.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the paraboloid is closed, an enclosing Level object will be
+created and the caps follow the paraboloid in the following order:
+disk-shaped cap at zmin, disk-shaped cap at zmax, cap at theta 0,
+cap at thetamax.
 
 <sect2>RIB Export
 <p>
@@ -5606,6 +5631,11 @@ A hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
 obeys all parameters of the hyperboloid.
 <footnote>Since 1.8.2.</footnote>
+<p>
+If the hyperboloid is closed, an enclosing Level object will be
+created and the caps follow the hyperboloid in the following order:
+disk-shaped cap at P1, disk-shaped cap at P2, non-planar cap at theta 0,
+non-planar cap at thetamax.
 
 <sect2>RIB Export
 <p>
@@ -8399,17 +8429,20 @@ The ConcatNP object concatenates all child objects, which should be NURBS
 patches or provide NURBS patches to a single NURBS patch (see also the
 image above).<footnote>Since 1.16.</footnote>
 
+The concatenation simply splits all surfaces into curves, makes
+the curves compatible, and joins them to the concatenated surface.
+
 Also NURBS curves or objects that provide NURBS curves can be used
 as parameter objects.<footnote>Since 1.20.</footnote>
 
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
 another ConcatNP object (with possibly different parameters).
-<p>
+
 Attributes like display mode and tolerance for the new concatenated patch
 are simply taken from the first parameter patch. Eventually present
 trim curves will currently <em>not</em> be honored properly.
-<p>
+
 The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
@@ -8427,11 +8460,29 @@ The following parameters further control the concatenation process:
 <item>Using <tt/"Type"/, open, closed, or periodic concatenated patches may
 be created.
 
+<item><tt/"Order"/ is the desired order of the concatenated surface
+(in U direction), the default value (0) leads to a cubic surface.
+If the desired order is 1, the respective order from the first
+of the parameter surfaces is taken.
+If the desired order is higher than the number of curves, it will
+be lowered to the number of curves silently.
+
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 surface will be reversed (in U direction).
 
 <item>The <tt/"Knot-Type"/ parameter allows to choose between NURB
 and B-Spline knot vectors for the concatenated surface (in U direction).
+
+<item>The <tt/"UVSelect"/ option is a string that can be used to
+control the splitting direction for each parameter surface
+individually. Valid characters in this string are <tt/"u"/, <tt/"U"/,
+<tt/"v"/, and <tt/"V"/.
+The uppercase variants lead to a reverted surface.
+To connect two surfaces that share the same orientation "over a corner"
+one would e.g. need to set <tt/"UVSelect"/ to <tt/"uV"/.
+The default, an empty string, is equivalent to "u" for all
+patches.
+
 </itemize>
 <itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
@@ -18245,7 +18296,8 @@ Index:
 <item><ref id="npattr" name="NPatch attribute">,
 <item><ref id="acp" name="ACurve attribute">,
 <item><ref id="icp" name="ICurve attribute">,
-<item><ref id="rep" name="Revolve attribute">
+<item><ref id="rep" name="Revolve attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
 </itemize>
 <item>Order_U:
 <itemize>
@@ -18740,7 +18792,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="riprocp" name="RiProc attribute">,
 <item><ref id="capattrprop" name="Cap attribute">,
 <item><ref id="ncurveattrprop" name="NCurve attribute">,
-<item><ref id="icp" name="ICurve attribute">
+<item><ref id="icp" name="ICurve attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
 </itemize>
 </list>
 
@@ -18776,6 +18829,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>UseMatColor: <ref id="prefdraw" name="preference setting">
 <item>usepixie.tcl: <ref id="usepixietcl" name="example/helper script">
 <item>UseSM: <ref id="lip" name="Light attribute">
+<item>UVSelect: <ref id="concatnpp" name="ConcatNP attribute">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
