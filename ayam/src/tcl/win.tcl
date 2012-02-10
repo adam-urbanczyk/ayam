@@ -103,7 +103,7 @@ global ay ayprefs
 	set newgeom ""
 	append newgeom "+$x"
 	append newgeom "+$y"
-	wm geom $w $newgeom
+	catch {wm geom $w $newgeom}
     } else {
 	# new width specified => resize
 	if { $nx == "" } {
@@ -121,7 +121,7 @@ global ay ayprefs
 	    } else {
 		set newgeom "${width}x${height}"
 	    }
-	    wm geom $w $newgeom
+	    catch {wm geom $w $newgeom}
 	} else {
 	    # new width and position specified
 	    if { $nx != "" } { set x $nx }
@@ -147,7 +147,7 @@ global ay ayprefs
 	    append newgeom "+$x"
 	    append newgeom "+$y"
 
-	    wm geom $w $newgeom
+	    catch {wm geom $w $newgeom}
 	}
 	# if
     }
@@ -272,7 +272,7 @@ proc winSetWMState { w state } {
 
 		set border [expr $maxw - [winfo screenwidth $w]]
 
-		wm geometry $w [winfo screenwidth .]x${nh}+-${border}+0
+		catch {wm geometry $w [winfo screenwidth .]x${nh}+-${border}+0}
 	    }
 	}
     }
