@@ -171,7 +171,7 @@ array set ayprefs {
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
  UseInternalFD 0
- CursorEnd 1
+ ConsoleCursorEnd 1
 
  AddExtensions 0
 
