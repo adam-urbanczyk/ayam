@@ -1925,7 +1925,7 @@ bind Console $event {
 #XXXX
 global ayprefs
 
-if { $ayprefs(CursorEnd) } {
+if { $ayprefs(ConsoleCursorEnd) } {
     bind Console <FocusIn> {
 	%W mark set insert end
 
