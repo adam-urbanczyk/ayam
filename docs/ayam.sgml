@@ -8479,10 +8479,15 @@ individually. Valid characters in this string are <tt/"u"/, <tt/"U"/,
 <tt/"v"/, and <tt/"V"/.
 The uppercase variants lead to a reverted surface.
 To connect two surfaces that share the same orientation "over a corner"
-one would e.g. need to set <tt/"UVSelect"/ to <tt/"uV"/.
+one would e.g. need to set <tt/"UVSelect"/ to <tt/"uV"/
+(see also the image below).
 The default, an empty string, is equivalent to "u" for all
 patches.
-
+<figure loc="ht">
+<eps file="pics/concatnpuv.ps" height="5cm">
+<img src="pics/concatnpuv.gif">
+<caption>Concatenating two Surfaces with UVSelect == "uV"</caption>
+</figure>
 </itemize>
 <itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
@@ -13456,13 +13461,17 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <label id="scconcats">
 concatS &ndash; concatenate surfaces:
 <itemize>
- <item>Synopsis: <tt/"concatS [-t t| -k k]"/
+ <item>Synopsis: <tt/"concatS [-o order|-t type| -k knottype|-u uvselect]"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Concatenate the selected surface objects into a
-single NURBS patch. The option <tt/"-t"/ allows to set a surface type
+single NURBS patch. The option <tt/"-o"/ determines the desired order
+of the surface in U-direction. The option <tt/"-t"/ allows to set a
+surface type
 (0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
 <tt/"-k"/ allows to set a knot type (default 1 - NURB).
-
+Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
+See also section <ref id="concatnpp" name="ConcatNPAttr Property">
+for more information on these options.
 </itemize>
 
 <p>
@@ -16642,16 +16651,80 @@ The ayamrc file currently contains the following adjustable hidden
 preference settings:
 <itemize>
 
+<item><tt/"AddViewParams"/ allows to add custom parameters to the
+view OpenGL widget creation, like e.g. <tt/"-stereo true"/. The default
+value is <tt>""</tt> (empty string).
+
+<item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
+file name extensions and corresponding plugins that import and export
+files of the type designated by the file name extensions.
+
+<item><tt/"AllowWarp"/: controls whether the mouse pointer should be
+moved to the new position of points snapped to the grid while editing
+(default: 1 &ndash; yes).
+
+<item><tt/"AskScriptDisable"/ controls the warning dialog that
+appears if scenes with script objects or tags are loaded. The default
+value is 1 &ndash; yes, warn about script objects and tags.
+
+<item><tt/"AUCommands"/, commands that will be run in the console
+when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
+See also section <ref id="sciupd" name="Updating the GUI">.
+The default value is <tt>"uS;rV;"</tt>, leading to a complete
+update of the object hierarchy, the property GUI and all view
+windows.
+
+<item><tt/"BackupExt"/: is the file name extension to be used for backup
+files. Default values are <tt>"&tilde;"</tt> for Unix and
+<tt>".bak"</tt> for Win32.
+
 <item><tt/"Balloon"/: time in ms until the tooltip window appears
-(default: 1500 - 1.5s)
+(default: 1500 - 1.5s).
+
+<item><tt/"Cat"/: name of a program that can read from and write to
+a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
+(a setting of <tt>"cat"</tt> will be
+automatically replaced by <tt>"cat.exe"</tt> on Win32)
+
+<item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
+from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
+value is 1.
+
+<item><tt/"ConsoleCursorEnd"/, if switched
+on, the first click into the console will move the cursor to the input
+prompt, ready for command input, instead of moving the cursor to the
+point of the click. This option is enabled by default.
+
+<item><tt/"DailyTips"/: a list of strings that appear as tips
+on startup in the console (default: large).
 
 <item><tt/"EFlush"/: time in ms between two flushes of the error message
-buffer (default: 2000 - 2s)
+buffer (default: 2000 - 2s).
 
-<item><tt/"toolBoxList"/: a list of sections or groups of buttons
-describing the appearance of the toolbox window (default, using all
-available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
-nctools1 nctools2 camera misc}</tt>)
+<item><tt/"FixDialogTitles"/, this option prepends the title of a message box
+that is normally displayed in the window frame of the message box to the
+message in the box. This may be necessary because on some systems the title
+string might be displayed in an unreadable font or not at all.
+On Mac OS X Aqua (not X11!) this option is enabled by default.
+On all other systems this option is disabled by default.
+
+<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
+in the toolbox) that stay depressed when used. This option is disabled
+by default on all platforms.
+
+<item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
+on X11 (displaced menus do not stay open). This option is enabled
+by default and not used on the Win32 and Aqua platforms.
+
+<item><tt/"IconGamma"/: this setting may be used to adapt the contrast
+of all icons (in view menu and the toolbox) to your display gamma. If you
+are on a SGI it is recommended to set this to about "0.7". The default
+value <tt>""</tt> (empty string) leads to no changes of any icon images.
+
+<item><tt/"KeepNTmpFiles"/: how many
+incarnations of the scene in RIB form (which actually may be split
+in more than one file due to e.g. instances) created when directly
+rendering from a view window should be kept on disk (default: 5)
 
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
 a process id as argument (used by the Rendering GUI)
@@ -16660,41 +16733,56 @@ automatically replaced by <tt>"kill.exe"</tt> on Win32)
 On the Win32 platform you may also use an internal kill command
 <tt>"w32kill"</tt> that has been introduced in Ayam 1.4.
 
-<item><tt/"Cat"/: name of a program that can read from and write to
-a pipe (used by the Rendering GUI) (default: <tt>"cat"</tt>)
-(a setting of <tt>"cat"</tt> will be
-automatically replaced by <tt>"cat.exe"</tt> on Win32)
+<item><tt/"LineWidth"/, line width used for drawing the lines of
+unselected objects (blue lines in standard color configuration).
+The default value is 1.0. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
 
-<item><tt/"KeepNTmpFiles"/: how many
-incarnations of the scene in RIB form (which actually may be split
-in more than one file due to e.g. instances) created when directly
-rendering from a view window should be kept on disk (default: 5)
+<item><tt/"ListTypes"/ determines, whether the type of an
+object should be displayed in braces in the tree view or listbox.
+The default value is 1 &ndash; yes, list the types.
 
-<item><tt/"WarnPropPasteToSel"/: should
-<tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
-requester? (default: 1 &ndash; yes)
-
-<item><tt/"WarnUnknownTag"/ controls the warning messages for
-unknown tag types. (default: 1 &ndash; yes)
-
-<item><tt/"DailyTips"/: a list of strings that appear as tips
-on startup in the console (default: large)
-
-<item><tt/"PickTolerance"/: the tolerance used to determine whether an object
-should be picked or not (default: 5); this setting determines the size
-of a rectangular area around the picked point in pixels, all objects that
-are inside or touch this area are considered picked
-
-<item><tt/"AllowWarp"/: controls whether the mouse pointer should be
-moved to the new position of points snapped to the grid while editing
-(default: 1 &ndash; yes)
+<item><tt/"MarkHidden"/ determines, whether hidden objects
+should be marked (using a preceding exclamation mark)
+in the tree view or object listbox.
+The default value is 1 &ndash; yes, mark hidden objects.
 
 <item><tt/"MaxTagLen"/: the maximum number of characters to be displayed
 in the buttons in the Tag Property GUI (default: 30)
 
-<item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
-the work around for zombie processes created by the Rendering GUI.
-This is e.g. necessary for the Linux platform.
+<item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
+the scene file specified by <tt/"EnvFile"/ also when the scene is
+cleared using the main menu entry <tt>"File/New"</tt>.
+The default value is 1 &ndash; yes, load the environment file on
+<tt>"File/New"</tt>.
+
+<item><tt/"PaneMargins"/, is a list of currently five floating
+point values, used as a safety margin for the panes:
+console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
+property vs. hierarchy, upper-view-2 vs. upper-view-1 (in this
+order).
+These values control the minimum size of a pane expressed in an
+inverse (1/x) and relative way:
+the smaller the number, the bigger the margin. The safety margin
+of the uppermost horizontal pane (that divides the upper internal
+views from the hierarchy and the third view) is e.g. a bit larger
+so that the main menu may not be obscured easily (the corresponding
+value is 5.0). The default value for the console (20.0) leads to a
+small margin, so that the console may be shrunk to 2 or even 1 lines
+of text. The default values are
+<tscreen><tt>
+{20.0 5.0 10.0 10.0 10.0}
+</tt></tscreen>
+
+<item><tt/"PickTolerance"/: the tolerance used to determine whether an object
+should be picked or not (default: 5); this setting determines the size
+of a rectangular area around the picked point in pixels, all objects that
+are inside or touch this area are considered picked.
+
+<item><tt/"PolyOffset0"/, <tt/"PolyOffset1"/ two float values, that
+control the offsetting of shaded surfaces in the shade and draw
+drawing mode (so that the curves always appear on top of the surfaces).
+Default values are 1.0, 1.0.
 
 <item><tt/"Prompt"/: controls the prompt for the Ayam console. If
 set to an empty string, a default of
@@ -16723,47 +16811,14 @@ trace variable &lt;vname&gt; ayam_updateprompt
 </tt></tscreen>
 .
 
-<item><tt/"ConsoleTakeFocus"/: can be used to exclude the console
-from focus traversal via <tt/&lt;Tab&gt;/ when set to 0, the default
-value is 1.
+<item><tt/"PVTexCoordName"/, default name for texture coordinate PV
+tags, the default value is "st".
 
-<item><tt/"BackupExt"/: is the file name extension to be used for backup
-files. Default values are <tt>"&tilde;"</tt> for Unix and
-<tt>".bak"</tt> for Win32.
+<item><tt/"PVNormalName"/, default name for vertex normal PV
+tags, the default value is "N".
 
-<item><tt/"SelXOR_R"/, <tt/"SelXOR_G"/, <tt/"SelXOR_B"/: determine
-a color value that is used for drag selection rectangles.
-Note that the color is not used directly but combined with the
-color value of already drawn pixels by XOR. The default values
-are 255 for the red, 128 for the green, and 0 for the blue component.
-
-<item><tt/"IconGamma"/: this setting may be used to adapt the contrast
-of all icons (in view menu and the toolbox) to your display gamma. If you
-are on a SGI it is recommended to set this to about "0.7". The default
-value <tt>""</tt> (empty string) leads to no changes of any icon images.
-
-<item><tt/"AddViewParams"/ allows to add custom parameters to the
-view OpenGL widget creation, like e.g. <tt/"-stereo true"/. The default
-value is <tt>""</tt> (empty string).
-
-<item><tt/"AskScriptDisable"/ controls the warning dialog that
-appears if scenes with script objects or tags are loaded. The default
-value is 1 &ndash; yes, warn about script objects and tags.
-
-<item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
-on X11 (displaced menus do not stay open). This option is enabled
-by default and not used on the Win32 and Aqua platforms.
-
-<item><tt/"FixDialogTitles"/, this option prepends the title of a message box
-that is normally displayed in the window frame of the message box to the
-message in the box. This may be necessary because on some systems the title
-string might be displayed in an unreadable font or not at all.
-On Mac OS X Aqua (not X11!) this option is enabled by default.
-On all other systems this option is disabled by default.
-
-<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
-in the toolbox) that stay depressed when used. This option is disabled
-by default on all platforms.
+<item><tt/"PVColorName"/, default name for vertex color PV
+tags, the default value is "Cs".
 
 <item><tt/"SafeAutoFocus"/ disables AutoFocus
 (see section <ref id="prefgui" name="preference settings">)
@@ -16773,11 +16828,22 @@ where the window manager does only auto raise in conjunction with
 auto focus.
 This option is enabled by default on Win32.
 
-<item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
-of plugins. This option is only used on MacOSX/Aqua (not X11!), because
-there the normal file dialog will not enter application bundle directory
-structures. This option is enabled by default on MacOSX/Aqua and not
-used on any other platform.
+<item><tt/"SelLineWidth"/, line width used for drawing the lines of
+selected objects (white lines in standard color configuration).
+The default value is 1.0. Ayam is not checking, whether the specified
+value is supported by the OpenGL implementation used.
+
+<item><tt/"SelXOR_R"/, <tt/"SelXOR_G"/, <tt/"SelXOR_B"/: determine
+a color value that is used for drag selection rectangles.
+Note that the color is not used directly but combined with the
+color value of already drawn pixels by XOR. The default values
+are 255 for the red, 128 for the green, and 0 for the blue component.
+
+<item><tt/"ShiftTab"/, allows to set a specific keyboard symbol for
+systems where pressing the Shift together with the Tab key does not
+produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like e.g.
+"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
+this).
 
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
 on MacOSX/Aqua (not X11!) for specified mouse bindings (<tt/"SwapMBSC"/),
@@ -16788,64 +16854,10 @@ the same set of mouse bindings (the same ayamrc file) for X11 and
 Aqua without sacrificing user experience. The middle mouse button,
 by default, zooms the view, and the right one moves the view.
 
-<item><tt/"CursorEnd"/, if switched
-on, the first click into the console will move the cursor to the input
-prompt, ready for command input, instead of moving the cursor to the
-point of the click. This option is enabled by default.
-
-<item><tt/"LineWidth"/, line width used for drawing the lines of
-unselected objects (blue lines in standard color configuration).
-The default value is 1.0. Ayam is not checking, whether the specified
-value is supported by the OpenGL implementation used.
-
-<item><tt/"SelLineWidth"/, line width used for drawing the lines of
-selected objects (white lines in standard color configuration).
-The default value is 1.0. Ayam is not checking, whether the specified
-value is supported by the OpenGL implementation used.
-
-<item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
-file name extensions and corresponding plugins that import and export
-files of the type designated by the file name extensions.
-
-<item><tt/"AUCommands"/, commands that will be run in the console
-when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
-See also section <ref id="sciupd" name="Updating the GUI">.
-The default value is <tt>"uS;rV;"</tt>, leading to a complete
-update of the object hierarchy, the property GUI and all view
-windows.
-
-<item><tt/"PolyOffset0"/, <tt/"PolyOffset1"/ two float values, that
-control the offsetting of shaded surfaces in the shade and draw
-drawing mode (so that the curves always appear on top of the surfaces).
-Default values are 1.0, 1.0.
-
-<item><tt/"WheelZoom"/, a float value that controls the zoom factor,
-for the mouse wheel; default value is 0.5.
-
-<item><tt/"ShiftTab"/, allows to set a specific keyboard symbol for
-systems where pressing the Shift together with the Tab key does not
-produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like e.g.
-"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
-this).
-
-<item><tt/"ListTypes"/ determines, whether the type of an
-object should be displayed in braces in the tree view or listbox.
-The default value is 1 &ndash; yes, list the types.
-
-<item><tt/"MarkHidden"/ determines, whether hidden objects
-should be marked (using a preceding exclamation mark)
-in the tree view or object listbox.
-The default value is 1 &ndash; yes, mark hidden objects.
-
-<item><tt/"LoadEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ on startup.
-The default value is 1 &ndash; yes, load the environment file on startup.
-
-<item><tt/"NewLoadsEnv"/, if this is switched on, Ayam will load
-the scene file specified by <tt/"EnvFile"/ also when the scene is
-cleared using the main menu entry <tt>"File/New"</tt>.
-The default value is 1 &ndash; yes, load the environment file on
-<tt>"File/New"</tt>.
+<item><tt/"toolBoxList"/: a list of sections or groups of buttons
+describing the appearance of the toolbox window (default, using all
+available sections: <tt>{trafo trafo2 solids misco nurbs toolobjs points
+nctools1 nctools2 camera misc}</tt>)
 
 <item><tt>"ToolBoxShrink"</tt>, controls whether the toolbox window
 should shrink wrap around its contents after a resize operation.
@@ -16858,32 +16870,26 @@ task bar on Windows), and will always be iconified when the main window
 gets iconified. Not used in single window GUI mode. 
 The default value is 1 &ndash; yes.
 
-<item><tt/"PaneMargins"/, is a list of currently five floating
-point values, used as a safety margin for the panes:
-console vs. hierarchy, hierarchy vs. upper-views, lower-view vs. property,
-property vs. hierarchy, upper-view-2 vs. upper-view-1 (in this
-order).
-These values control the minimum size of a pane expressed in an
-inverse (1/x) and relative way:
-the smaller the number, the bigger the margin. The safety margin
-of the uppermost horizontal pane (that divides the upper internal
-views from the hierarchy and the third view) is e.g. a bit larger
-so that the main menu may not be obscured easily (the corresponding
-value is 5.0). The default value for the console (20.0) leads to a
-small margin, so that the console may be shrunk to 2 or even 1 lines
-of text. The default values are
-<tscreen><tt>
-{20.0 5.0 10.0 10.0 10.0}
-</tt></tscreen>
+<item><tt/"UseInternalFD"/ switches to an internal file dialog for loading
+of plugins. This option is only used on MacOSX/Aqua (not X11!), because
+there the normal file dialog will not enter application bundle directory
+structures. This option is enabled by default on MacOSX/Aqua and not
+used on any other platform.
 
-<item><tt/"PVTexCoordName"/, default name for texture coordinate PV
-tags, the default value is "st".
+<item><tt/"WarnPropPasteToSel"/: should
+<tt>"Special/Clipboard/Paste Property to Selected"</tt> raise a warning
+requester? (default: 1 &ndash; yes)
 
-<item><tt/"PVNormalName"/, default name for vertex normal PV
-tags, the default value is "N".
+<item><tt/"WarnUnknownTag"/ controls the warning messages for
+unknown tag types. (default: 1 &ndash; yes)
 
-<item><tt/"PVColorName"/, default name for vertex color PV
-tags, the default value is "Cs".
+<item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
+the work around for zombie processes created by the Rendering GUI.
+This is e.g. necessary for the Linux platform.
+
+<item><tt/"WheelZoom"/, a float value that controls the zoom factor,
+for the mouse wheel; default value is 0.5.
+
 </itemize>
 
 <sect2>RiOption and RiAttributes Database<label id="rioptdb">
@@ -17618,6 +17624,7 @@ Index:
 <item>AddViewParams: <ref id="hidprefs" name="hidden preference setting">
 <item>ALength: <ref id="acp" name="ACurve attribute">
 <item>ALFileTypes, ALPlugins: <ref id="hidprefs" name="hidden preference setting">
+<item>AllowWarp: <ref id="hidprefs" name="hidden preference setting">
 <item>Algorithm: <ref id="aycsg" name="AyCSG plugin option">
 <item>Align to Object:
 <itemize>
@@ -17663,6 +17670,7 @@ Index:
 <item>Background Image: <ref id="vat" name="View attribute">
 <item>BackupExt: <ref id="hidprefs" name="hidden preference setting">
 <item>BakOnReplace: <ref id="prefmain" name="preference setting">
+<item>Balloon: <ref id="hidprefs" name="hidden preference setting">
 <item>Basis_U, Basis_V: <ref id="pmattr" name="PatchMesh attribute">
 <item>BeamDistrib: <ref id="lip" name="Light attribute">
 <item>Bevel:
@@ -17701,6 +17709,7 @@ Index:
 </itemize>
 <item>Cap: <ref id="capobj" name="Cap object">
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
+<item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
 <item>CheckLights: <ref id="prefrib" name="preference setting">
 <item>Center All Points: <ref id="mmspecial" name="main menu entry">
@@ -17768,6 +17777,7 @@ Index:
 <item>Cone: <ref id="coneobj" name="Cone object">
 <item>ConeAngle, ConeDAngle: <ref id="lip" name="Light attribute">
 <item>Console: <ref id="cons" name="what is">
+<item>ConsoleCursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>ConsoleTakeFocus: <ref id="hidprefs" name="hidden preference setting">
 <item>Convert: <ref id="mmtools" name="main menu entry">
 <item>convOb: <ref id="scconvob" name="scripting interface command">
@@ -17792,7 +17802,6 @@ Index:
 <item><ref id="levelobj" name="Level object">,
 <item><ref id="aycsg" name="AyCSG CSG preview plugin">
 </itemize>
-<item>CursorEnd: <ref id="hidprefs" name="hidden preference setting">
 <item>Curvature: <ref id="plotcurt" name="plot curvature tool">
 <item>Custom:
 <itemize>
@@ -17871,6 +17880,7 @@ Index:
 </itemize>
 <item>EditSnaps: <ref id="prefmodel" name="preference setting">
 <item>EDLen: <ref id="icp" name="ICurve attribute">
+<item>EFlush: <ref id="hidprefs" name="hidden preference setting">
 <item>Elevate: <ref id="elevt" name="elevate tool">
 <item>elevateNC: <ref id="scelevatenc" name="scripting interface command">
 <item>Elevate UV: <ref id="elevuvt" name="elevate uv tool">
@@ -18105,6 +18115,8 @@ Index:
 <item><ref id="treesc" name="object tree shortcuts">,
 <item><ref id="olbsc" name="object list shortcuts">,
 </itemize>
+
+<item>Kill: <ref id="hidprefs" name="hidden preference setting">
 <item>Knots: <ref id="ncattr" name="NCurve attribute">
 <item>Knot-Type:
 <itemize>
@@ -18232,7 +18244,7 @@ Index:
 
 <label id="indexn"><tt/<bf/N//
 <list>
-<item>NCDisplayMode:<ref id="prefdraw" name="preference setting">
+<item>NCDisplayMode: <ref id="prefdraw" name="preference setting">
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
 <item>NCurve: <ref id="ncurveobj" name="NCurve object">
 <item>Near: <ref id="camp" name="camera property">
@@ -18245,7 +18257,7 @@ Index:
 <item>notifyOb: <ref id="scnotifyob" name="scripting interface command">
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
-<item>NPDisplayMode:<ref id="prefdraw" name="preference setting">
+<item>NPDisplayMode: <ref id="prefdraw" name="preference setting">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -18333,6 +18345,7 @@ Index:
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
 <item>Pick: <ref id="objsel" name="pick objects within a view">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
+<item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
 <item>Pivot: <ref id="rotaac" name="modelling action">
 <item>Plane: <ref id="mirrorattr" name="Mirror attribute">
 <item>Plot Curvature: <ref id="plotcurt" name="plot curvature tool">
@@ -18353,9 +18366,9 @@ Index:
 <item>Primitive Variable: <ref id="pvtag" name="tag type">
 <item>PRManSpec: <ref id="rio" name="RenderMan interface option">
 <item>PV: <ref id="pvtag" name="tag type">
-<item>PVTexCoordName: <ref id="hidprefs" name="hidden preference setting">
-<item>PVNormalName: <ref id="hidprefs" name="hidden preference setting">
 <item>PVColorName: <ref id="hidprefs" name="hidden preference setting">
+<item>PVNormalName: <ref id="hidprefs" name="hidden preference setting">
+<item>PVTexCoordName: <ref id="hidprefs" name="hidden preference setting">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
@@ -18390,15 +18403,22 @@ Index:
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
 <item>ReadCurves:
 <itemize>
+<item><ref id="impdxfopt" name="DXF import option">,
+<item><ref id="imp3dmfopt" name="3DMF (Apple) import option">,
 <item><ref id="impwav" name="Wavefront OBJ import/export option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">
+<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="impx3dopt" name="X3D import option">
 </itemize>
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
 ReadPartial: <ref id="rribopt" name="RIB import option">
-<item>ReadLayers: <ref id="imprhino" name="3DM (Rhino) import option">
+<item>ReadLayers:
+<itemize>
+<item><ref id="impdxfopt" name="DXF import option">,
+<item><ref id="imprhino" name="3DM (Rhino) import option">
+</itemize>
 <item>ReadSTrim:
 <itemize>
-<item><ref id="impwav" name="Wavefront OBJ import/export option">,
+<item><ref id="impwav" name="Wavefront OBJ import option">,
 <item><ref id="imprhino" name="3DM (Rhino) import option">,
 <item><ref id="rribopt" name="RIB import option">,
 <item><ref id="impx3dopt" name="X3D import option">
@@ -18455,6 +18475,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>rescaleknNP: <ref id="screscaleknnp" name="scripting interface command">
 <item>RescaleKnots:
 <itemize>
+<item><ref id="impdxfopt" name="DXF import option">,
 <item><ref id="imprhino" name="3DM (Rhino) import option">,
 <item><ref id="imprib" name="RIB import option">,
 <item><ref id="impwav" name="Wavefront OBJ import option">
@@ -18557,6 +18578,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>ScaleFactor:
 <itemize>
+<item><ref id="impdxfopt" name="DXF import option">,
+<item><ref id="expdxfopt" name="DXF export option">,
 <item><ref id="imprhino" name="3DM (Rhino) import option">,
 <item><ref id="exprhino" name="3DM (Rhino) export option">,
 <item><ref id="impwav" name="Wavefront OBJ import option">,
@@ -18583,7 +18606,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="birail1p" name="Birail1 attribute">,
 <item><ref id="birail2p" name="Birail2 attribute">
 </itemize>
-<item>Select:<itemize>
+<item>Select:
+<itemize>
 <item><ref id="selectobj" name="Select object">,
 <item><ref id="obj" name="select objects with the tree/listbox">,
 <item><ref id="objsel" name="select objects within a view">,
@@ -18596,7 +18620,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Selection: <ref id="prefdraw" name="preference setting">
 <item>SelLineWidth: <ref id="hidprefs" name="hidden preference setting">
 <item>selOb: <ref id="scselob" name="scripting interface command">
-<item>SelXOR_R, SelXOR_G, SelXOR_B:<ref id="hidprefs" name="hidden preference setting">
+<item>SelXOR_R, SelXOR_G, SelXOR_B: <ref id="hidprefs" name="hidden preference setting">
 <item>Set BGImage: <ref id="vmconf" name="view menu entry">
 <item>Set Gridsize: <ref id="vmconf" name="view menu entry">
 <item>Set FOV: <ref id="vmconf" name="view menu entry">
@@ -18755,6 +18779,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>tonpatch.tcl: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
+<item>toolBoxList: <ref id="hidprefs" name="hidden preference setting">
 <item>ToolBoxShrink: <ref id="hidprefs" name="hidden preference setting">
 <item>ToolBoxTrans: <ref id="hidprefs" name="hidden preference setting">
 <item>Tools: <ref id="mmtools" name="tools menu">
@@ -18850,6 +18875,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 
 <label id="indexw"><tt/<bf/W//
 <list>
+<item>Wait: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnPropPasteToSel: <ref id="hidprefs" name="hidden preference setting">
 <item>WarnUnknownTag: <ref id="hidprefs" name="hidden preference setting">
 <item>Wavefront OBJ:
