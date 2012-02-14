@@ -5670,7 +5670,7 @@ shaped surfaces using operations like extrude, revolve, sweep or skin.
 NURBS curves can be open or closed and used to emulate Bezier and
 B-Spline curves easily. In addition, for easier modelling, they
 support multiple points, as explained in section
-<ref id="ncurvemp" name="Multiple Points">).
+<ref id="ncurvemp" name="Multiple Points">.
 <p>
 The following table briefly lists some capabilities of the NCurve object.
 <table loc="ht">
@@ -6776,7 +6776,7 @@ PV tags are currently not supported.
 <p>
 A BPatch is a simple bilinear patch defined by four control
 points. BPatch objects are e.g. used internally to build box objects,
-see also <ref id="boxobj" name="Box Object">).
+see also <ref id="boxobj" name="Box Object">.
 <p>
 The following table briefly lists some capabilities of the BPatch object.
 <table loc="ht">
@@ -7105,22 +7105,26 @@ Using the parameter <tt/"ThetaMax"/ you can specify the
 sweeping angle of the revolution just like with an ordinary
 RenderMan quadric.
 <p>
-Since Ayam 1.8 the Revolve object supports a B-Spline mode,
-that may be enabled by setting the new parameter <tt/"Sections"/
-to a value higher than 0. In this mode, a circular B-Spline is
+The Revolve object also supports a B-Spline mode
+that may be enabled by setting the parameter <tt/"Sections"/
+to a value higher than 0.
+<footnote>Since 1.8.</footnote>
+In this mode, a circular B-Spline is
 used as basis for the surface of revolution instead of the
 standard NURBS circle. Depending on the number of sections
 chosen, the surface of revolution does not exactly interpolate
 the parameter curve, but the surface may be edited more easily
 after a possible conversion to an ordinary NURBS patch object,
 because the control points will not be rational if the revolved
-curve is also not rational.
+curve is also not rational.<newline>
 In addition to the number of sections, in B-Spline mode it is
 possible to control the order of the surface of revolution
 using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
 a standard value of 3 will be used.
-Note that since Ayam 1.18 also the B-Spline mode can realize arbitrary
-<tt/"ThetaMax"/ values (whereas one could only use 360.0 before).
+<p>
+Note that also the B-Spline mode can realize arbitrary
+<tt/"ThetaMax"/ values.
+<footnote>Since 1.18.</footnote>
 <p>
 The revolve object can automatically generate caps,
 which are trimmed NURBS patches. Using the parameters
@@ -7129,8 +7133,8 @@ you determine whether such caps should be
 generated, default is off (no caps).
 <p>
 If the side caps of a surface of revolution of an open
-curve are not created correctly, (GLU complains about
-"intersecting or misoriented trim curves"),
+curve are not created correctly, GLU complains about
+"intersecting or misoriented trim curves",
 try to revert the revolved curve.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -7444,12 +7448,16 @@ somehow).
 The scaling function is sampled for each section and the Y-component
 of the coordinates of the current curve point will be used as
 scale factor that is applied to the cross section in Y-direction.
-Since Ayam 1.13, the Z-component will be used to independently scale the
-cross section in Z-direction. In earlier versions the Y-component
-was used to scale both directions.
+<p>
+If any sample point of the scaling function has a Z-component different
+from zero, the Z-component will be used to independently scale the
+cross section in X-direction, otherwise the Y-component will be used
+to also scale the cross section in X-direction.
+<footnote>Since 1.13.</footnote>
+<p>
 This implies, that e.g. a scaling function that does nothing should be
 a linear curve from (0,1,1) to (1,1,1).
-Scale components that are less than or equal zero will be silently ignored.
+Scale components that are less than or equal to zero will be silently ignored.
 <p>
 <figure loc="ht">
 <eps file="pics/ssweep.ps" height="5cm">
@@ -7491,9 +7499,10 @@ Sweep|NCurve*|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 
 <sect2>SweepAttr Property<label id="swp"><label id="sweepattrprop">
 <p>
-Since Ayam 1.10 the <tt/"Type"/ attribute controls whether the
+The <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
 of the trajectory curve.
+<footnote>Since 1.10.</footnote>
 <p>
 If <tt/"Interpolation"/ is enabled, an additional interpolation
 will be run on the swept surface in U direction so that all section
@@ -8519,9 +8528,10 @@ PV tags are supported.
 <caption>Extracted Surface (white) from Arbitrarily Shaped Surface (blue)</caption>
 </figure>
 <p>
-The ExtrNP object, available since Ayam 1.14, extracts a NURBS patch from
+The ExtrNP object extracts a NURBS patch from
 another NURBS patch object, for use as parameter object for other tool
 objects (see image above).
+<footnote>Since 1.14.</footnote>
 <p>
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
@@ -8540,7 +8550,8 @@ and move it to the newly created ExtrNP object.
 <p>
 As the geometry of the extracted surface is completely defined by
 the master surface, ExtrNP objects do not support own transformation
-attributes (since Ayam 1.19).
+attributes.
+<footnote>Since 1.19.</footnote>
 <p>
 Also note that eventually present trim curves will <em>not</em> be honored
 properly.
@@ -8565,10 +8576,12 @@ is to be extracted. The valid range of parameter values depends
 on the knot vectors of the original surface.
 
 <item><tt/"Relative"/ controls whether the parametric values should
-be interpreted in a relative way. If enabled, a parametric value of 0.5
+be interpreted in a relative way.
+<footnote>Since 1.15.</footnote>
+If enabled, a parametric value of 0.5
 always extracts from the middle of the knot vector, regardless of the
 actual knot values, and the valid range for the parametric values is
-then consequently 0.0-1.0. This option is available since Ayam 1.15.
+then consequently 0.0-1.0.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
 patches delivered e.g. by a beveled extrude object as child
@@ -8609,17 +8622,22 @@ PV tags are supported.
 <caption>Offset Surface (white) from NURBS Surface (blue) with Offset 0.2</caption>
 </figure>
 <p>
-The OffsetNP object, available since Ayam 1.17, creates offset surfaces from
+The OffsetNP object creates offset surfaces from
 NURBS surfaces using a simple algorithm.
-Since Ayam 1.19 OffsetNP also works for closed and periodic (in any
-possible combination of closeness in the two dimensions) surfaces.
+<footnote>Since 1.17.</footnote>
+The offsetting also works for closed and periodic surfaces in any
+possible combinations in the two dimensions.
+<footnote>Since 1.19.</footnote>
+<p>
 Note that degenerate and rational surfaces are still not supported.
+<p>
 The offset surface will always match the original surface in width/height,
 orders, and knots. See also the image above.
 <p>
 As the geometry of the offset surface is completely defined by
 the master surface, OffsetNP objects do not support own transformation
-attributes (since Ayam 1.19).
+attributes.
+<footnote>Since 1.19.</footnote>
 <p>
 The following table briefly lists some capabilities of the OffsetNP object.
 <table loc="ht">
@@ -8779,14 +8797,15 @@ the same set of tags.
 
 <sect1>Trim Object<label id="trimobj">
 <p>
-The Trim object, available since Ayam 1.16, may be used in hierarchies
+The Trim object may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
 unavailable to trimming like e.g. a Revolve object.
+<footnote>Since 1.16.</footnote>
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
 space of the NURBS surface). More curves and loops may follow.
 All curves must obey the rules for trimming as outlined in section
-<ref id="trim" name="Trim Curves">).
+<ref id="trim" name="Trim Curves">.
 The surface may already be trimmed and there may be multiple provided
 patches, however only one of them will be trimmed by the Trim object.
 <p>
@@ -8847,10 +8866,11 @@ Those small embedded scripts may employ functionality from Tcl and
 the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
 <p>
-Since Ayam 1.18 Script objects may also use arbitrary, plugin provided,
+Script objects may also use arbitrary, plugin provided,
 scripting languages, like e.g. JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).
+<footnote>Since 1.18.</footnote>
 
 <sect2>Safe Interpreter<label id="safeinterp">
 <p>
@@ -9593,8 +9613,9 @@ then press apply.
 <p>
 If you want to copy just the orientation of an object to other objects
 using the property clipboard, mark/select all Translate and Scale
-property elements, then use <tt/"Edit/Copy Property"/.
-Just marking the Rotate elements and then using <tt/"Edit/Copy Marked Prop"/
+property elements, then use <tt>"Edit/Copy Property"</tt>.
+Just marking the Rotate elements and then using
+<tt>"Edit/Copy Marked Prop"</tt>
 will <em>not</em> work, because the quaternion will not be copied
 properly.
 
@@ -17206,7 +17227,7 @@ algorithm can decide what is inside and what is outside by looking
 at a single OpenGL primitive. For all quadric primitives of Ayam
 the winding order is always consistent. However, for NURBS patches
 the winding order depends on the orientation of the patch dimensions.
-If NURBS patches are used in CSG operations you, consequently, may
+If NURBS patches are used in CSG operations one, consequently, may
 need to revert the patches (e.g. using the <tt/"RevertU"/ tool,
 see <ref id="revertut" name="Revert U tool">).
 If the winding order of some of the primitives in a CSG hierarchy
