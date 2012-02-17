@@ -1,6 +1,6 @@
 # Emacs, this is -*- Mode: makefile -*-
 #
-# Makefile [7. Jan 2012]
+# Makefile [17. Feb 2012]
 # Makefile for the Ayam reference manual
 
 all: html pdf
@@ -12,7 +12,6 @@ html:
 	cd html; ln -sf ../pics pics;cd ..
 	cp ayam.sgml html
 	cd html;sgml2html -D out=html -s 1 ayam.sgml;rm ayam.sgml;cd ..
-	/usr/bin/tclsh fixhtml.tcl
 	-cd html;../corrwh.pl;cd ..
 
 txt:
