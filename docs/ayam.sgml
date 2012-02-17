@@ -248,6 +248,7 @@ The main window is split into three major areas:
 <item>an area labeled <tt/"Properties:"/
 <item>and a text widget (the so called "Console")
 </enum>
+<p>
 <figure loc="ht">
 <eps file="pics/main.ps" height="8cm">
 <img src="pics/main.gif">
@@ -295,7 +296,6 @@ Note that one can not delete or copy this object.
 <caption>Object Tree View</caption>
 </figure>
 <p>
-
 The object tree view is quite complex and may be slow on slow machines
 (of the Pentium 90 class), especially when dealing with scenes
 that contain many objects. This should not be a problem nowadays.
@@ -1625,22 +1625,22 @@ corner of the icon as letter F, S, T, or P for front, side, top, or
 perspective views, respectively. Views of type trim get no designating
 letter in the icon.
 See also the image below:
+<p>
 <figure loc="ht">
 <eps file="pics/mmmenu.ps" height="4cm">
 <img src="pics/mmmenu.gif">
 <caption>Modelling Mode Icon Menu</caption>
 </figure>
-
 <p>
 The <tt/"Drawing mode"/ icon menu may be used to quickly change the current
 drawing mode, drawing, shading, or drawing and shading.
 See also the image below:
+<p>
 <figure loc="ht">
 <eps file="pics/dmmenu.ps" height="4cm">
 <img src="pics/dmmenu.gif">
 <caption>Drawing Mode Icon Menu</caption>
 </figure>
-
 <p>
 The <tt/"Grid"/ icon menu may be used to quickly change the current grid
 size:
@@ -1658,6 +1658,7 @@ If a grid size other than 0.1, 0.25, 0.5, or 1.0 is in effect for the view,
 a generic icon (with a X instead of a number) will be displayed in the
 icon menu.
 See also the image below:
+<p>
 <figure loc="ht">
 <eps file="pics/grmenu.ps" height="5.5cm">
 <img src="pics/grmenu.gif">
@@ -1874,7 +1875,6 @@ intersect this line are considered to be possible candidates for selection.
 <img src="pics/ampick.gif">
 <caption>List of Ambiguous Candidates</caption>
 </figure>
-
 <p>
 If the selection is ambiguous Ayam displays a window that contains a list of
 the possible candidates for selection. When you click a name in the list,
@@ -1955,12 +1955,12 @@ when the main window gets iconified.
 
 <sect1>Preferences<label id="prefs">
 <p>
-
 <figure loc="ht">
 <eps file="pics/prefs.ps" height="8cm">
 <img src="pics/prefs.gif">
 <caption>Preferences Dialog</caption>
-</figure><p>
+</figure>
+<p>
 The preferences dialog may be opened using the main menu entry
 <tt>"Edit/Preferences"</tt> or the shortcut <tt/&lt;Ctrl+p&gt;/.
 <p>
@@ -2631,7 +2631,7 @@ For actions that modify the camera of a view please see section
 This section gives an overview over the various modelling actions.
 Note that a more complete collection of shortcuts is available as separate
 reference card document in the Ayam distribution.
-
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c||c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/|<bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
@@ -2798,7 +2798,6 @@ Move Z|<tt/&lt;mz&gt;/|
 <caption>Move Actions Overview</caption>
 </table>
 
-
 <sect1>Rotating Objects or Selected Points<label id="rotac">
 <p>
 Using the modelling action <tt/"Rotate"/ (shortcut: <tt/&lt;r&gt;/)
@@ -2826,7 +2825,6 @@ Rotate|<tt/&lt;r&gt;/|
 </tabular>
 <caption>Rotate Action</caption>
 </table>
-
 
 <sect1>Rotating Objects or Selected Points About a Point<label id="rotaac">
 <p>
@@ -3117,6 +3115,7 @@ The selected editable points may be modified subsequently using the
 modelling actions Move, Rotate, and Scale as discussed above when the
 view is switched to point transformations using the shortcut <tt/&lt;p&gt;/.
 See also the table below.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
@@ -3127,6 +3126,7 @@ Tag Points|<tt/&lt;t&gt;/|
 </tabular>
 <caption>Tag Action</caption>
 </table>
+<p>
 After the pick (the selection of a point), the picked point
 will be added to the list of selected points for the selected object.
 If the selected point is already in that list it will be removed from
@@ -3266,11 +3266,13 @@ starts an intermediate point selection action and upon a click
 with the mouse opens a small window where you may change the
 coordinates of the selected editable point(s) by entering
 new coordinate values on the keyboard (see image below).
+<p>
 <figure loc="ht">
 <eps file="pics/numpnted.ps" height="4.5cm">
 <img src="pics/numpnted.gif">
 <caption>Numeric Point Edit Dialog</caption>
 </figure>
+<p>
 Nothing will be changed unless the <tt/"Return"/ key is pressed
 in a coordinate entry field or the <tt/"Apply"/ button is used.
 In contrast to the normal point selection action, clicking on new
@@ -3341,6 +3343,7 @@ section <ref id="prefmisc" name="Miscellaneous Preferences">).
 <img src="pics/snapgrpnt.gif">
 <caption>Snapping Points to the Grid</caption>
 </figure>
+<p>
 There are two actions available for snapping points to the current
 grid of a view.
 <footnote>Since 1.11.</footnote>
@@ -3364,6 +3367,7 @@ This action can be used without affecting other active actions.
 <img src="pics/snapmrkpnt.gif">
 <caption>Snapping Points to the Mark</caption>
 </figure>
+<p>
 The snap points to mark action moves all selected points to
 the current mark.
 <footnote>Since 1.18.</footnote>
@@ -3426,7 +3430,6 @@ Delete Points|<tt/&lt;d&gt;/|
 </tabular>
 <caption>Insert/Delete Points Actions</caption>
 </table>
-<p>
 
 <sect1>Manipulating the Multiplicity of Points<label id="multac">
 <p>
@@ -3435,6 +3438,7 @@ Delete Points|<tt/&lt;d&gt;/|
 <img src="pics/edmult.gif">
 <caption>Successively Increasing the Multiplicity of Selected Points</caption>
 </figure>
+<p>
 To manipulate the multiplicity of selected NURBS curve control
 points there are two modelling actions available.
 <footnote>Since 1.20.</footnote>
@@ -3473,6 +3477,7 @@ for more information about the mark).
 Remember to exactly pick a point on the curve or nearby, otherwise
 the calculation may fail.
 See also the table below.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
@@ -3500,6 +3505,7 @@ Remember to exactly pick a point on the surface or nearby, otherwise
 the calculation may fail. As the icon suggests, this action works best
 in the shaded drawing mode.
 See also the table below.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|"><hline>
 <bf/Name/|<bf/Shortcut/|<bf/Icon/@<hline>
@@ -3564,13 +3570,13 @@ But let us get back to our local view.
 <p>
 To illustrate local views a little bit further, see the following example
 images:
-
+<p>
 <figure loc="ht">
 <eps file="pics/local-1.ps" height="5cm">
 <img src="pics/local-1.gif">
 <caption>Global Front View with Rotated Sweep</caption>
 </figure>
-
+<p>
 A Sweep object with a circular B-Spline curve as cross section (rotated
 about the y axis by 90 degrees) and a straight standard curve as trajectory.
 The Sweep itself is rotated about the z axis by 30 degrees. The view is a
@@ -3578,15 +3584,15 @@ front view, the cross section and trajectory are both selected.
 Note how inadequate the grid spacing would be to edit the trajectory curve
 (it is e.g. near impossible to edit the curve and keep
 it straight). 
-
+<p>
 Press <tt/&lt;l&gt;/.
-
+<p>
 <figure loc="ht">
 <eps file="pics/local-2.ps" height="5cm">
 <img src="pics/local-2.gif">
 <caption>Local (Level) Aligned View</caption>
 </figure>
-
+<p>
 The view has been switched to level-local using a single press of the
 <tt/&lt;l&gt;/ key (see the modelling mode icon, it is displaying a
 L in the lower right corner. The view is now aligned to the 30 degree
@@ -3594,15 +3600,15 @@ rotated space of the Sweep object (note the Root object coordinate
 system, it is tilted). The grid is also rotated (with respect to the
 root coordinate system) but now much more useful for editing the
 trajectory, in fact it is perfectly aligned to the trajectory.
-
+<p>
 Press <tt/&lt;l&gt;/ again.
-
+<p>
 <figure loc="ht">
 <eps file="pics/local-3.ps" height="5cm">
 <img src="pics/local-3.gif">
 <caption>Local (Object) Aligned View</caption>
 </figure>
-
+<p>
 Now the view is object-local and aligned to the first of the selected
 objects (the cross section curve), note again the modelling mode icon,
 it is now displaying a O in the lower right corner. As the selected
@@ -3640,6 +3646,7 @@ see section <ref id="tags" name="Tags">.
 <p>
 In the next sections general object capabilities will be briefly
 documented in tables like this:
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3673,6 +3680,7 @@ the child(s) must rather provide an object of the appropriate type
 <#if out=latex><x/newpage/</#if>
 
 Example:
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3708,6 +3716,7 @@ The object types are grouped by application in the following sections.
 <p>
 These objects help to organize the scene apart from
 geometric objects:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3730,6 +3739,7 @@ RiProc|No|No|N/A|No<#if out=latex>@<hline></#if>
 <sect2>CSG/Solid Primitives
 <p>
 These objects serve as geometric primitives in CSG hierarchies:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3745,11 +3755,11 @@ Hyperboloid|No|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 <caption>CSG/Solid Primitives</caption>
 </table>
 
-
 <sect2>Freeform Curves
 <p>
 These objects are mainly used as child objects for the surface
 generating tool objects:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3761,10 +3771,10 @@ NCircle|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 <caption>Freeform Curves</caption>
 </table>
 
-
 <sect2>Freeform Surfaces
 <p>
 These objects enable direct manipulation of freeform surfaces:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3776,10 +3786,10 @@ PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
 <caption>Freeform Surfaces</caption>
 </table>
 
-
 <sect2>Curve Tool Objects
 <p>
 These objects modify existing curves or create new curves:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3795,6 +3805,7 @@ OffsetNC|NCurve|No|NCurve|No*<#if out=latex>@<hline></#if>
 <sect2>Surface Tool Objects
 <p>
 These objects create freeform surfaces from curves or other surfaces:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3817,12 +3828,12 @@ OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 <caption>Surface Tool Objects</caption>
 </table>
 
-
 <sect2>Polygonal and Subdivision Objects
 <p>
 These objects complement the Ayam feature set and allow
 objects modelled in the polygonal or subdivision modelling
 paradigms to be included in Ayam scenes:
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -3832,11 +3843,11 @@ SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 <caption>Polygonal and Subdivision Objects</caption>
 </table>
 
-
 <sect2>Scripts and Plugins
 <p>
 These objects create/modify arbitrary other objects from scripts
 or define new object types via the custom object plugin mechanism.
+<p>
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4031,6 +4042,7 @@ onto a view object in the tree view (see the above description).
 <footnote>Since 1.8.</footnote>
 <p>
 The following table briefly lists some capabilities of the View object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4134,6 +4146,7 @@ in the tree view, the camera settings from the view will be copied
 to the camera object.
 <p>
 The following table briefly lists some capabilities of the Camera object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4188,6 +4201,7 @@ a perspective view window, the view will then show you the objects
 lit by the spot.
 <p>
 The following table briefly lists some capabilities of the Light object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4475,6 +4489,7 @@ While geometric objects are connected to a material object this material
 object may not be deleted.
 <p>
 The following table briefly lists some capabilities of the Material object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4624,6 +4639,7 @@ to the provided objects. Objects that do not provide the wanted
 type will be silently ignored.
 <p>
 The following table briefly lists some capabilities of the Level object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4683,6 +4699,7 @@ The above CSG hierarchy is available as example scene file
 <tt/"multicolcsg.ay"/.
 <p>
 See also this image:
+<p>
 <figure loc="ht">
 <eps file="pics/multicolcsg.ps" height="4cm">
 <img src="pics/multicolcsg.gif">
@@ -4807,6 +4824,7 @@ section <ref id="mirrorobj" name="Mirror Object">).
 The mirror facility was integrated into the Clone object before.
 <p>
 The following table briefly lists some capabilities of the Clone object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -4917,6 +4935,7 @@ is reversed, so that it gets to see the curves in the following sequence:
 <tt/"Mirrored_NCurve_2"/, <tt/"Mirrored_NCurve_1"/.
 <p>
 The following table briefly lists some capabilities of the Mirror object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5017,6 +5036,7 @@ exist, select the master object and use the main menu entry
 -->
 <p>
 The following table briefly lists some capabilities of the Instance object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5134,6 +5154,7 @@ scenarios, where a selector facility does not exist or is hard to
 implement, as e.g. in Script object scripts.
 <p>
 The following table briefly lists some capabilities of the Select object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5183,6 +5204,7 @@ RiInc objects may be used to include objects or whole scene parts into your
 scenes that, for some reason, are just available as a piece of RIB.
 <p>
 The following table briefly lists some capabilities of the RiInc object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5208,6 +5230,7 @@ RiProc objects may be used to include procedural objects or external
 archives into your scenes.
 <p>
 The following table briefly lists some capabilities of the RiProc object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5241,6 +5264,7 @@ the procedural will create or the archive contains.
 A solid box, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Box object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5279,6 +5303,7 @@ The box object will always be exported as six bilinear patches.
 A sphere, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Sphere object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5335,6 +5360,7 @@ eight disks.
 A disk in the XY plane, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Disk object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5376,6 +5402,7 @@ A cone, centered at the origin of the object coordinate system,
 with the base in the XY plane.
 <p>
 The following table briefly lists some capabilities of the Cone object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5428,6 +5455,7 @@ two polygons.
 A cylinder, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Cylinder object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5484,6 +5512,7 @@ a small circle (that has been displaced along X sufficiently)
 around the Z axis.
 <p>
 The following table briefly lists some capabilities of the Torus object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5541,6 +5570,7 @@ CSG hierarchy of at most one one torus, two disks, and two hyperboloids.
 A paraboloid, centered at the origin of the object coordinate system.
 <p>
 The following table briefly lists some capabilities of the Paraboloid object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5600,6 +5630,7 @@ by two points in space around the Z axis. Thus, disk, cylinder, and cone are
 special cases of the hyperboloid.
 <p>
 The following table briefly lists some capabilities of the Hyperboloid object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5673,6 +5704,7 @@ support multiple points, as explained in section
 <ref id="ncurvemp" name="Multiple Points">.
 <p>
 The following table briefly lists some capabilities of the NCurve object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -5910,6 +5942,7 @@ The ICurve object creates a global interpolating NURBS curve from n
 The curve may be closed, the order of the curve may be configured,
 the parameterisation may be adapted, and end derivatives may be specified.
 The open versions create n+2 NURBS control points, and the closed ones n+3.
+<p>
 <figure loc="!ht">
 <eps file="pics/icurves.ps" height="7cm">
 <img src="pics/icurves.gif">
@@ -5943,6 +5976,7 @@ able to work with an ICurve object instead of an object
 of type NCurve.
 <p>
 The following table briefly lists some capabilities of the ICurve object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6045,6 +6079,7 @@ able to work with an ACurve object instead of an object
 of type NCurve.
 <p>
 The following table briefly lists some capabilities of the ACurve object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6071,6 +6106,7 @@ For closed approximations, the total number of control points will
 be <tt/"ALength + Order - 1"/.
 The following table illustrates this relationship.
 
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Length/|<bf/ALength/|<bf/Order/|<bf/Closed/|<bf/Output Length/@<hline>
@@ -6082,11 +6118,13 @@ The following table illustrates this relationship.
 </tabular>
 <caption>ACurve Parameterisation Examples</caption>
 </table>
+<p>
 
 <item>For symmetric data point configurations, the approximating curve
 is not necessarily symmetric. With the parameter <tt/"Symmetric"/
 a symmetric result can be enforced (see image below), albeit at the
 cost of about double runtime and a slightly worse parameterisation.
+<p>
 <figure loc="!ht">
 <eps file="pics/acurve-sym.ps" height="4cm">
 <img src="pics/acurve-sym.gif">
@@ -6136,6 +6174,7 @@ the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
 <footnote>Since 1.15.</footnote>
 <p>
 The following table briefly lists some capabilities of the NCircle object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6222,6 +6261,7 @@ Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
 <p>
 The following table briefly lists some capabilities of the ConcatNC object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6324,6 +6364,7 @@ Note that the extraction of any curves currently completely ignores
 potentially present trimming information of the NPatch object.
 <p>
 The following table briefly lists some capabilities of the ExtrNC object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6462,6 +6503,7 @@ attributes.
 The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
 <p>
 The following table briefly lists some capabilities of the OffsetNC object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6527,6 +6569,7 @@ for more information regarding this.
 <footnote>Since 1.10.</footnote>
 <p>
 The following table briefly lists some capabilities of the NPatch object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6678,6 +6721,7 @@ of three dimensional and non rational data points (see also the
 image above).
 <p>
 The following table briefly lists some capabilities of the IPatch object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6779,6 +6823,7 @@ points. BPatch objects are e.g. used internally to build box objects,
 see also <ref id="boxobj" name="Box Object">.
 <p>
 The following table briefly lists some capabilities of the BPatch object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6828,6 +6873,7 @@ Like NCurve objects, PatchMesh objects mark their last control point with
 a small arrow. Note that the arrow points in the V direction (height).
 <p>
 The following table briefly lists some capabilities of the PatchMesh object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -6929,6 +6975,7 @@ merge tool (main menu <tt>"Tools/PolyMesh/Merge"</tt>) to merge
 many PolyMesh objects into a single PolyMesh object.
 <p>
 The following table briefly lists some capabilities of the PolyMesh object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7008,6 +7055,7 @@ surface. All that is shown in wireframe and shaded views is the original
 polygonal mesh.
 <p>
 The following table briefly lists some capabilities of the SDMesh object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7021,11 +7069,12 @@ SDMesh|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 The SDMeshAttr GUI just displays some information about the
 SDMesh object:
 <itemize>
-<item><tt/"Scheme"/, subdivision scheme, since Ayam 1.11 you
-may choose between Catmull-Clark and Loop.
+<item><tt/"Scheme"/, is the subdivision scheme, currently available
+schemes are Catmull-Clark and Loop.
+<footnote>Since 1.11.</footnote>
 <item><tt/"Level"/ is the number of subdivision steps that should
-be carried out when subdividing the mesh for preview (this needs
-the <tt/"subdiv"/ plugin).
+be carried out when subdividing the mesh for preview. This subdivision
+needs the <tt/"subdiv"/ plugin.
 <item><tt/"DrawSub"/ allows to switch between the control polygon
 and the subdivided polygon outlines when drawing the mesh.
 <item><tt/"NFaces"/, the number of faces.
@@ -7038,8 +7087,8 @@ defined.
 SDMesh objects may be converted to PolyMesh objects.
 <footnote>Since 1.11.</footnote>
 
-Note however that only the original unrefined control
-polygon (the base mesh) will be converted unless the <tt/"Level"/
+Note however that only the original, unrefined, control
+polygon (i.e. the base mesh) will be converted unless the <tt/"Level"/
 attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
 
 <sect2>RIB Export
@@ -7065,32 +7114,12 @@ The Revolve object forms a surface of revolution from a NURBS curve.
 The Revolve object has the generating NURBS curve as child object
 and watches its changes and adapts to it automagically.
 <p>
-The axis of revolution is always the Y axis of the coordinate system
-that is defined by the next higher level in the object hierarchy as
-seen from the curve object (this is the Y axis of the revolve object).
-The generating curve should lie in the XY plane of this
-coordinate system. If not, it will be squashed down to this plane.
-<p>
-The following simple experiment should make the last
-statements more clear, during all steps watch the movements
-of the revolution:
-
-<itemize>
-<item>Create a NURBS curve object and select it.
-<item>Create a Revolve tool object using the menu entry
-(<tt>"Tools/Create/Revolve"</tt>).
-<item>Select the Revolve object, and rotate it around Z. (The axis
-of the revolution changes. The generating NURBS curve, as child object,
-will also be rotated.)
-<item>Now enter the Revolve object, select the child curve and
-edit the control points (note how the surface of revolution changes).
-<item>Rotate the curve around Z (note how the surface of revolution changes).
-<item>Switch to a Side view, edit the generating curve here in Z
-direction only (the surface of revolution does not change).
-</itemize>
-
+The axis of revolution is always the Y axis.
+The parameter curve should be defined in the XY plane.
+If not, it will be squashed down to this plane before revolving it.
 <p>
 The following table briefly lists some capabilities of the Revolve object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7101,9 +7130,9 @@ Revolve|NCurve|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 
 <sect2>RevolveAttr Property<label id="rep"><label id="revolveattrprop">
 <p>
-Using the parameter <tt/"ThetaMax"/ you can specify the
-sweeping angle of the revolution just like with an ordinary
-RenderMan quadric.
+The parameter <tt/"ThetaMax"/ specifies the
+sweeping angle of the revolution just like for an ordinary
+RenderMan quadric primitive.
 <p>
 The Revolve object also supports a B-Spline mode
 that may be enabled by setting the parameter <tt/"Sections"/
@@ -7117,14 +7146,14 @@ the parameter curve, but the surface may be edited more easily
 after a possible conversion to an ordinary NURBS patch object,
 because the control points will not be rational if the revolved
 curve is also not rational.<newline>
-In addition to the number of sections, in B-Spline mode it is
-possible to control the order of the surface of revolution
-using the new parameter <tt/"Order"/. If <tt/"Order"/ is 0,
-a standard value of 3 will be used.
-<p>
 Note that also the B-Spline mode can realize arbitrary
 <tt/"ThetaMax"/ values.
 <footnote>Since 1.18.</footnote>
+<p>
+In addition to the number of sections, in B-Spline mode it is
+possible to control the order of the surface of revolution
+using the parameter <tt/"Order"/. If <tt/"Order"/ is 0,
+a standard value of 3 will be used.
 <p>
 The revolve object can automatically generate caps,
 which are trimmed NURBS patches. Using the parameters
@@ -7203,11 +7232,9 @@ with weights!
 <p>
 The sharp corners between caps and extrusion may be beveled.
 <p>
-The axis of the extrusion is always the Z axis of the coordinate
-system that is defined by the next higher
-level in the object hierarchy (the Z axis of the extrude
-object itself). The generating curves should lie in the XY plane of this
-coordinate system. If not, they will be squashed down to this plane.
+The axis of the extrusion is always the Z axis.
+The parameter curves should be defined in the XY plane.
+If not, they will be squashed down to this plane.
 See section
 <ref id="toxyt" name="To XY Tool"> for information on
 how to easily achieve curves in the XY plane.
@@ -7218,6 +7245,7 @@ will be 2, height and order in V direction are taken from the parameter
 curve.
 <p>
 The following table briefly lists some capabilities of the Extrude object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7253,7 +7281,8 @@ all other bevel supporting tool objects. The old options <tt/"LowerBevel"/,
 longer available. They were replaced with new dynamic tag creating
 bevel property GUI sections that are accessible through the new
 command entries <tt/"Add Start Bevel!"/ and <tt/"Add End Bevel!"/
-respectively. If one of those entries is used, a bevel parameter tag
+respectively. If one of those entries is used, a corresponding
+bevel parameter tag
 is created and more options will be made available in the property
 GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in
@@ -7354,6 +7383,7 @@ from the trajectory, height and order in V direction from the cross
 section.
 <p>
 The following table briefly lists some capabilities of the Swing object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7489,6 +7519,7 @@ script that automates creation and parameterisation of
 a suitable cross section curve.
 <p>
 The following table briefly lists some capabilities of the Sweep object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7511,6 +7542,7 @@ NURBS knot vector, the swept surface will then get a
 Chordal knot vector (calculated by knot averaging) and the
 swept surface will follow the trajectory more closely.
 See the image below for an example.
+<p>
 <figure loc="ht">
 <eps file="pics/sweepinterp.ps" height="5cm">
 <img src="pics/sweepinterp.gif">
@@ -7520,27 +7552,28 @@ See the image below for an example.
 The third parameter, <tt/"Sections"/, determines how many
 sections (in U direction) should be used, when generating the
 sweep NURBS patch. The sweep NURBS patch has sections+1 control
-points in U direction for open and closed sweep types, and sections+order
-control points for periodic sweep types.
-Since Ayam 1.13, also zero is a valid setting for the <tt/"Sections"/
-parameter and used as new default value. If <tt/"Sections"/ is zero
-the number of sections is directly derived from the length of the
-trajectory curve plus one (except for trajectory curves of length 2,
-where it is 1). See the table below for examples.
-<p>
+points in U direction for open and closed sweep types whereas
+sections+order control points will be created for periodic sweep types.
+<newline>
+Also zero is a valid setting for the <tt/"Sections"/
+parameter and used as default value.
+<footnote>Since 1.13.</footnote>
+If <tt/"Sections"/ is zero the number of sections is directly derived
+from the length of the trajectory curve plus one (except for trajectory
+curves of length 2, where it is 1). See the table below for examples.
+<newline>
 Consequently, if <tt/"Sections"/ is zero, for a standard NURBS curve of
 length 4, the number of sections used is 5 and the width of the created
 NURBS patch is 6, for a curve with just 2 control points, the number of
-sections used is 1 and the width of the resulting patch is 2.
-<p>
-If <tt/"Sections"/ is zero, the order of the sweep in U direction
+sections used is 1 and the width of the resulting patch is 2.<newline>
+Moreover, if <tt/"Sections"/ is zero, the order of the sweep in U direction
 is taken from the trajectory curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
 <p>
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
-this is the default.
+this enabled by default.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
@@ -7548,10 +7581,12 @@ Sweep on both ends.
 Note that this works properly only if the cross section
 curve is closed and planar (defined in the XY plane).
 <p>
-Since Ayam 1.10 bevels are available for sweeps.
-They are accessible through the new command entries <tt/"Add Start Bevel!"/
+Also bevels are available for sweeps.
+<footnote>Since 1.10.</footnote>
+They are accessible through the command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a bevel parameter tag is created and more options will be made available
+a corresponding bevel parameter tag is created and more options will be
+made available
 in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
@@ -7653,6 +7688,7 @@ The Birail1 object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
 The following table briefly lists some capabilities of the Birail1 object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7672,13 +7708,17 @@ of the birail curves.
 The parameter <tt/"Sections"/ determines how many
 sections (in U direction) should be used, when generating the
 birailed NURBS patch. The birailed NURBS patch always has sections+1 control
-points in U direction. Since Ayam 1.13, also zero is a valid setting for
-the <tt/"Sections"/ parameter and used as new default value.
+points in U direction.
+<newline>
+Also zero is a valid setting for
+the <tt/"Sections"/ parameter and used as default value.
+<footnote>Since 1.13.</footnote>
+<newline>
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
 where it is 1). See the table below for examples.
-<p>
-If <tt/"Sections"/ is zero, the order of the birail in U direction
+<newline>
+Moreover, if <tt/"Sections"/ is zero, the order of the birail in U direction
 is taken from the first rail curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
@@ -7692,8 +7732,9 @@ curve is closed and planar (e.g. defined in the XY plane).
 Since Ayam 1.10 bevels are available for birails.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a bevel parameter tag is created and more options will be made available
-in the property GUI to adjust the bevel parameters or remove the tag again.
+a corresponding bevel parameter tag is created and more options will be
+made available in the property GUI to adjust the bevel parameters or
+remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
 <p>
@@ -7807,12 +7848,14 @@ to the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve, unless the <tt/"InterpolCtrl"/
-option is used (which is available since Ayam 1.10).
+option is used.
+<footnote>Since 1.10.</footnote>
 <p>
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
 The following table briefly lists some capabilities of the Birail2 object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -7828,13 +7871,16 @@ The following parameters control the birailing process:
 The parameter <tt/"Sections"/ determines how many sections (in U direction)
 should be used, when generating the birailed NURBS patch. The birailed
 NURBS patch always has sections+1 control points in U direction.
-Since Ayam 1.13, also zero is a valid setting for
-the <tt/"Sections"/ parameter and used as new default value.
+<newline>
+Also zero is a valid setting for
+the <tt/"Sections"/ parameter and used as default value.
+<footnote>Since 1.13.</footnote>
+<newline>
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
 where it is 1). See the table below for examples.
-<p>
-If <tt/"Sections"/ is zero, the order of the birail in U direction
+<newline>
+Moreover, if <tt/"Sections"/ is zero, the order of the birail in U direction
 is taken from the first rail curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
 the order will be 2 and 3 respectively, in all other cases it will be 4.
@@ -7854,7 +7900,8 @@ curve is closed and planar (e.g. defined in the XY plane).
 Since Ayam 1.10 bevels are available for birails.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a bevel parameter tag is created and more options will be made available
+a corresponding bevel parameter tag is created and more options will be
+made available
 in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
@@ -7966,6 +8013,7 @@ The skin object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 <p>
 The following table briefly lists some capabilities of the Skin object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8014,7 +8062,8 @@ parameter curve.
 Since Ayam 1.10 bevels are available for skins.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
-a bevel parameter tag is created and more options will be made available
+a corresponding bevel parameter tag is created and more options will be
+made available
 in the property GUI to adjust the bevel parameters or remove the tag again.
 A more thorough discussion of those options is available in section
 <ref id="bevelp" name="BevelAttr Property">.
@@ -8160,6 +8209,7 @@ The Gordon object watches the child objects and adapts to them
 automatically via the notification mechanism.
 <p>
 The following table briefly lists some capabilities of the Gordon object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8263,6 +8313,7 @@ The Bevel object watches the child object and adapts to it automatically
 via the notification mechanism.
 <p>
 The following table briefly lists some capabilities of the Bevel object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8385,6 +8436,7 @@ The Cap object watches the child objects and adapts to them automatically
 via the notification mechanism.
 <p>
 The following table briefly lists some capabilities of the Cap object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8453,6 +8505,7 @@ are simply taken from the first parameter patch. Eventually present
 trim curves will currently <em>not</em> be honored properly.
 
 The following table briefly lists some capabilities of the ConcatNP object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8492,6 +8545,7 @@ one would e.g. need to set <tt/"UVSelect"/ to <tt/"uV"/
 (see also the image below).
 The default, an empty string, is equivalent to "u" for all
 patches.
+<p>
 <figure loc="ht">
 <eps file="pics/concatnpuv.ps" height="5cm">
 <img src="pics/concatnpuv.gif">
@@ -8557,6 +8611,7 @@ Also note that eventually present trim curves will <em>not</em> be honored
 properly.
 <p>
 The following table briefly lists some capabilities of the ExtrNP object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8640,6 +8695,7 @@ attributes.
 <footnote>Since 1.19.</footnote>
 <p>
 The following table briefly lists some capabilities of the OffsetNP object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8707,6 +8763,7 @@ You may convert the current Text object to ordinary NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the Text object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8822,6 +8879,7 @@ The object hierarchy of a Trim object, thus, looks like this:
 </verb></tscreen>
 <p>
 The following table briefly lists some capabilities of the Trim object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -8993,6 +9051,7 @@ there are example scene files using script objects in the
 <tt>"ayam/scn/scripts"</tt> directory.
 <p>
 The following table briefly lists some capabilities of the Script object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -9284,6 +9343,7 @@ looks like this:
 <p>
 The following table briefly lists some capabilities of the MetaObj and
 MetaComp objects.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -9446,6 +9506,7 @@ there is limited error checking and crashes may occur, if
 the special modelling actions are used.
 <p>
 The following table briefly lists some capabilities of the SDNPatch object.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
@@ -9935,14 +9996,13 @@ For that, the current texture coordinates are displayed as a black
 polygon in a canvas with regard to the original (default) values,
 that are displayed in gray.
 Small arrows point to positive s and t direction respectively.
-
+<p>
 <figure loc="ht">
 <eps file="pics/tce.ps" height="6cm">
 <img src="pics/tce.gif">
 <caption>Texture Coordinate Editor</caption>
 </figure>
 <p>
-
 The <tt/"RotateR"/ and <tt/"RotateL"/ buttons shift the coordinate
 values between the four points. This results in a 90 degree
 rotation of the texture space.
@@ -11544,6 +11604,7 @@ by the so called get-property callback.
 <p>
 The following global arrays and callbacks to get or set the data
 exist:
+<p>
 <table loc="ht">
 <tabular ca="|c|c|c|c|"><hline>
 <bf/property/|<bf/array/|<bf/get-property callback/|<bf/set-property callback/@<hline>
@@ -11554,6 +11615,7 @@ Tags|tagsPropData|getTagsp|setTagsp<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Property Arrays and Callbacks</caption>
 </table>
+<p>
 Note that this list is pretty much incomplete, however you can always
 infer such information using commands like <tt/"parray Tags"/ in the Ayam
 console.
@@ -14875,6 +14937,7 @@ produce accordingly nested lists).
 Unicode strings and objects of a type other than Array (e.g. Boolean) are
 currently not supported.
 See also the following table.
+<p>
 <table loc="ht">
 <tabular ca="|c|c|"><hline>
 <bf/JavaScript/|<bf/Tcl/@<hline>
@@ -14885,6 +14948,7 @@ Array ((0, 1, 2))|List ({0 1 2})<#if out=latex>@<hline></#if>
 </tabular>
 <caption>JavaScript to Tcl Data Conversions</caption>
 </table>
+<p>
 The transport/conversion of object properties (to e.g. associative array
 elements) can be arranged manually like this:
 <tscreen><tt>
@@ -17257,6 +17321,7 @@ If you hold down <tt>&lt;Shift&gt;</tt>
 while pressing the button the view will continually render CSG
 (the button stays pressed to signify this) until you click onto
 the button again.
+<p>
 <figure loc="ht">
 <eps file="pics/aycsgic.ps" height="4cm">
 <img src="pics/aycsgic.gif">

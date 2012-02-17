@@ -323,10 +323,10 @@
 
 % figures
 
-<figure>	+	"<FIGURE>"			+
-</figure>	+	"</FIGURE>"			+
+<figure>	+	"<CENTER>\n"	+
+</figure>	+	"</CENTER>\n"		+
 
-<eps>		+   	"<EPS FILE=\"[FILE]\">"  +
+<eps>		+   	""  +
 </eps>                	
             	
 <img>		+	"<IMG SRC=\"[SRC]\">"	+
@@ -335,15 +335,15 @@
 <ph>		+	"<PH VSPACE=\"[VSPACE]\">"	+
 </ph>	
 
-<caption>	+	"<CAPTION>"
-</caption>		"</CAPTION>" 	+
+<caption>		"</CENTER><P><CENTER><FONT SIZE=\"-1\">"
+</caption>		"</FONT></CENTER></P><P><CENTER>" 	
 
 % tables
 
-<table>		+ 	"<BR><CENTER>\n"	+
-</table>	+	"</CENTER><BR>\n"		+
+<table>		+ 	"<CENTER>\n"	+
+</table>	+	"</CENTER>\n"		+
 
-<tabular>	+ 	"<TABLE BORDER><TR><TD>\n"	+
+<tabular>	+ 	"<TABLE ALIGN=\"CENTER\" BORDER><TR><TD>\n"	+
 </tabular>	+	"</TD></TR></TABLE>\n"		+
 
 <rowsep>		"</TD></TR><TR><TD>"		+
