@@ -31,7 +31,7 @@ Revert 0
 Length 0
 Order 0
 Knot-Type 1
-TanLength 3.0
+FTLength 1.0
 NPInfoBall "N/A"
 }
 
@@ -40,9 +40,9 @@ set w [frame $ay(pca).$ConcatNPAttr(w)]
 
 addMenu $w ConcatNPAttrData Type [list Open Closed Periodic]
 addParam $w ConcatNPAttrData Order
-#addCheck $w ConcatNPAttrData FillGaps
 addCheck $w ConcatNPAttrData Revert
-#addParam $w ConcatNPAttrData FTLength
+addCheck $w ConcatNPAttrData FillGaps
+addParam $w ConcatNPAttrData FTLength
 addMenu $w ConcatNPAttrData Knot-Type  [list B-Spline NURB Chordal Centripetal]
 addString $w ConcatNPAttrData UVSelect
 

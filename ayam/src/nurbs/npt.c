@@ -2183,6 +2183,252 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_buildfromcurvestcmd */
 
 
+/* ay_npt_fillgap:
+ *  fill the gap between the patches <o1> and <o2>
+ *  with another NURBS patch (fillet)
+ */
+int
+ay_npt_fillgap(ay_object *o1, ay_object *o2,
+	       double tanlen, char *uv, ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *of1 = NULL, *of2 = NULL;
+ ay_nurbpatch_object *np1, *np2, *new;
+ double *cv1, *cv2, *ncv;
+ int i, a, b, c, stride = 4;
+
+  if(!o1 || !o2 || !result)
+    return AY_ENULL;
+
+  if((o1->type != AY_IDNPATCH) || (o2->type != AY_IDNPATCH))
+    return AY_ERROR;
+
+  np1 = (ay_nurbpatch_object *)o1->refine;
+  np2 = (ay_nurbpatch_object *)o2->refine;
+
+  if(AY_ISTRAFO(o1))
+    ay_npt_applytrafo(o1);
+
+  if(AY_ISTRAFO(o2))
+    ay_npt_applytrafo(o2);
+
+  if(uv)
+    {
+      if(uv[0] == 'v' || uv[0] == 'V')
+	{
+	  ay_status = ay_object_copy(o1, &of1);
+	  if(ay_status || !of1)
+	    goto cleanup;
+	  np1 = (ay_nurbpatch_object *)of1->refine;
+
+	  if(uv[0] == 'V')
+	    ay_npt_revertv(np1);
+
+	  ay_npt_swapuv(np1);
+	}
+      if(uv[0] != '\0' && (uv[1] == 'v' || uv[1] == 'V'))
+	{
+	  ay_object_copy(o2, &of2);
+	  if(ay_status || !of2)
+	    goto cleanup;
+	  np2 = (ay_nurbpatch_object *)of2->refine;
+
+	  if(uv[1] == 'V')
+	    ay_npt_revertv(np2);
+
+	  ay_npt_swapuv(np2);
+	}
+    } /* if */
+
+  if(np1->height != np2->height)
+    return AY_ERROR;
+
+  if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  new->uorder = 4;
+  new->uknot_type = AY_KTBEZIER;
+
+  if(!(new->uknotv = calloc(8, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  for(i = 4; i < 8; i++)
+    new->uknotv[i] = 1.0;
+
+  new->width = 4;
+
+  if(!(new->vknotv = calloc(np1->height+np1->vorder, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  memcpy(new->vknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
+  new->vorder = np1->vorder;
+  new->vknot_type = np1->vknot_type;
+  new->height = np1->height;
+
+  if(!(new->controlv = calloc(new->width*new->height*stride,
+			      sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  ncv = new->controlv;
+
+  /**/
+  cv1 = np1->controlv;
+  cv2 = np2->controlv;
+  memcpy(ncv, &(cv1[(np1->width-1)*np1->height*stride]),
+	 np1->height*stride*sizeof(double));
+
+  a = np1->height*stride;
+  b = (np1->width-2)*np1->height*stride;
+  c = (np1->width-1)*np1->height*stride;
+  for(i = 0; i < np1->height; i++)
+    {
+      ncv[a]   = cv1[c]+(cv1[c]-cv1[b])*tanlen;
+      ncv[a+1] = cv1[c+1]+(cv1[c+1]-cv1[b+1])*tanlen;
+      ncv[a+2] = cv1[c+2]+(cv1[c+2]-cv1[b+2])*tanlen;
+      ncv[a+3] = cv1[c+3]+(cv1[c+3]-cv1[b+3])/2.0;
+      a += stride;
+      b += stride;
+      c += stride;
+    }
+
+  b = np1->height*stride;
+  c = 0;
+  for(i = 0; i < np1->height; i++)
+    {
+      ncv[a]   = cv2[c]+(cv2[c]-cv2[b])*tanlen;
+      ncv[a+1] = cv2[c+1]+(cv2[c+1]-cv2[b+1])*tanlen;
+      ncv[a+2] = cv2[c+2]+(cv2[c+2]-cv2[b+2])*tanlen;
+      ncv[a+3] = cv2[c+3]+(cv2[c+3]-cv2[b+3])/2.0;
+      a += stride;
+      b += stride;
+      c += stride;
+    }
+
+  memcpy(&(ncv[(new->width-1)*new->height*stride]), cv2,
+	 np1->height*stride*sizeof(double));
+
+  /* return result */
+  ay_status = ay_npt_createnpatchobject(result);
+  if(ay_status || !*result)
+    goto cleanup;
+
+  (*result)->refine = new;
+
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
+
+cleanup:
+
+  if(of1)
+    ay_object_delete(of1);
+
+  if(of2)
+    ay_object_delete(of2);
+
+  if(new)
+    {
+      ay_npt_destroy(new);
+    }
+
+  return ay_status;
+} /* ay_npt_fillgap */
+
+
+/* ay_npt_fillgaps:
+ *  fill all the gaps between the patches in <o>
+ *  with another NURBS patch
+ */
+int
+ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
+		double ftlen, char *uv)
+{
+ int ay_status = AY_OK;
+ ay_object *fillet, *first, *last;
+ char *fuv, uv2[3] = {0};
+
+  first = o;
+  fuv = uv;
+  while(o)
+    {
+      fillet = NULL;
+      if((o->type == AY_IDNPATCH) && o->next &&
+	 (o->next->type == AY_IDNPATCH))
+	{
+	  ay_status = ay_npt_fillgap(o, o->next, ftlen, fuv, &fillet);
+
+	  if(ay_status)
+	    return ay_status;
+	  if(fillet)
+	    {
+	      fillet->selected = 1;
+	      fillet->next = o->next;
+	      o->next = fillet;
+	      o = fillet->next->next;
+	    }
+	  if(fuv)
+	    {
+	      if(*fuv != '\0')
+		{
+		  fuv++;
+		}
+	      else
+		{
+		  fuv = NULL;
+		}
+	    }
+	} /* if */
+      if(!fillet)
+	o = o->next;
+    } /* while */
+
+  if(type)
+    {
+      /* create fillet between last and first patch */
+      o = first;
+      if(uv)
+	uv2[1] = *uv;
+      fuv = uv;
+      while(o)
+	{
+	  if(o->type == AY_IDNPATCH)
+	    last = o;
+	  if(fuv && !o->selected)
+	    {
+	      if(*fuv != '\0')
+		{
+		  uv2[0] = *fuv;
+		  fuv++;
+		}
+	      else
+		{
+		  /* premature end of uv-select => use default 'u' */
+		  uv2[0] = 'u';
+		  fuv = NULL;
+		}
+	    } /* if */
+	  o = o->next;
+	} /* while */
+
+      fillet = NULL;
+      if(!uv)
+	fuv = NULL;
+      else
+	fuv = uv2;
+      ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
+
+      if(ay_status)
+	return ay_status;
+      if(fillet)
+	{
+	  fillet->selected = 1;
+	  fillet->next = last->next;
+	  last->next = fillet;
+	}
+
+    } /* if */
+
+ return ay_status;
+} /* ay_npt_fillgaps */
+
+
 /* ay_npt_concat:
  *  concatenate the patches in <o> by splitting them to
  *  curves, making the curves compatible, and building a
@@ -2191,7 +2437,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int
 ay_npt_concat(ay_object *o, int type, int order,
-	      int knot_type, int fillet_type,
+	      int knot_type, int fillet_type, double ftlen,
 	      char *uv, ay_object **result)
 {
  int ay_status = AY_OK;
@@ -2210,41 +2456,54 @@ ay_npt_concat(ay_object *o, int type, int order,
   if(uv)
     uvlen = strlen(uv);
 
+  if(fillet_type)
+    {
+      ay_status = ay_npt_fillgaps(o, type, fillet_type, ftlen, uv);
+    } /* if */
+
   while(o)
     {
       if(o->type == AY_IDNPATCH)
 	{
-	  if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
+	  if(o->selected)
 	    {
-	      if(uv[i] == 'V')
-		{
-		  ay_npt_revertv((ay_nurbpatch_object *)o->refine);
-		}
-
-	      if(order == 1)
-		{
-		  np = (ay_nurbpatch_object *)o->refine;
-		  order = np->vorder;
-		}
-
-	      ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+	      /* this is a fillet patch */
+	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  else
 	    {
-	      if(uvlen > 0 && uvlen > i && uv[i] == 'U')
+	      if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
 		{
-		  ay_npt_revertu((ay_nurbpatch_object *)o->refine);
-		}
+		  if(uv[i] == 'V')
+		    {
+		      ay_npt_revertv((ay_nurbpatch_object *)o->refine);
+		    }
 
-	      if(order == 1)
+		  if(order == 1)
+		    {
+		      np = (ay_nurbpatch_object *)o->refine;
+		      order = np->vorder;
+		    }
+
+		  ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+		}
+	      else
 		{
-		  np = (ay_nurbpatch_object *)o->refine;
-		  order = np->uorder;
-		}
+		  if(uvlen > 0 && uvlen > i && uv[i] == 'U')
+		    {
+		      ay_npt_revertu((ay_nurbpatch_object *)o->refine);
+		    }
 
-	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
-	    }
-	  i++;
+		  if(order == 1)
+		    {
+		      np = (ay_nurbpatch_object *)o->refine;
+		      order = np->uorder;
+		    }
+
+		  ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+		} /* if */
+	      i++;
+	    } /* if */
 	}
       else
 	{
@@ -2252,7 +2511,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  ay_status = ay_object_copy(o, nextcurve);
 	  ay_nct_applytrafo(*nextcurve);
 	  nextcurve = &((*nextcurve)->next);
-	}
+	} /* if */
       o = o->next;
     } /* while */
 
@@ -2273,6 +2532,7 @@ ay_npt_concat(ay_object *o, int type, int order,
       curve = curve->next;
     } /* while */
 
+  /* make all curves compatible */
   ay_status = ay_nct_makecompatible(allcurves);
 
   if(ay_status)
@@ -2280,7 +2540,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
   /* create fillets (or remove double boundary curves) */
   o = patches;
-  if(fillet_type != 0 && o->next)
+  if(0&& fillet_type != 0 && o->next)
     {
       curve = allcurves;
       np = (ay_nurbpatch_object *)o->refine;
@@ -11770,7 +12030,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_concat(patches, type, order, knot_type, 0, uv, &newo);
+  ay_status = ay_npt_concat(patches, type, order, knot_type, 0, 1.0, uv, &newo);
 
   if(ay_status)
     {

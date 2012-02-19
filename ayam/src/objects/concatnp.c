@@ -39,6 +39,7 @@ ay_concatnp_createcb(int argc, char *argv[], ay_object *o)
     }
 
   new->knot_type = AY_KTNURB;
+  new->ftlength = 1.0;
 
   o->hide_children = AY_TRUE;
   o->parent = AY_TRUE;
@@ -569,7 +570,8 @@ ay_concatnp_notifycb(ay_object *o)
 
   ay_status = ay_npt_concat(patches, concatnp->type, concatnp->order,
 			    concatnp->knot_type,
-			    0, concatnp->uv_select, &concatnp->npatch);
+			    concatnp->fillgaps, concatnp->ftlength,
+			    concatnp->uv_select, &concatnp->npatch);
 
   if(ay_status)
     {
