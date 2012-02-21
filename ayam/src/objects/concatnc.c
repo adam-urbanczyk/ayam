@@ -483,22 +483,15 @@ ay_concatnc_notifycb(ay_object *o)
     {
       /* create a custom knot vector, preserving parameter curve shapes */
 
-      ncurve = curves;
-
-      if(ncurve)
-	{
-	  nc = (ay_nurbcurve_object*)ncurve->refine;
-	  order = nc->order;
-	}
-
       while(ncurve)
 	{
+	  nc = (ay_nurbcurve_object*)ncurve->refine;
 	  ay_knots_rescaletorange(nc->length+nc->order, nc->knotv, 0.0, 1.0);
 	  ncurve = ncurve->next;
 	} /* while */
 
-      ay_status = ay_nct_fillgaps(concatnc->closed, order, concatnc->ftlength,
-				  curves);
+      ay_status = ay_nct_fillgaps(concatnc->closed, highest_order,
+				  concatnc->ftlength, curves);
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "Failed to create fillets!");
@@ -510,8 +503,8 @@ ay_concatnc_notifycb(ay_object *o)
 
       if(concatnc->fillgaps)
 	{
-	  ay_status = ay_nct_fillgaps(concatnc->closed, 4, concatnc->ftlength,
-				      curves);
+	  ay_status = ay_nct_fillgaps(concatnc->closed, highest_order,
+				      concatnc->ftlength, curves);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname, "Failed to create fillets!");
