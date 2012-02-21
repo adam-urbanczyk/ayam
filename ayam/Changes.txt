@@ -1,4 +1,4 @@
-[6. Feb 2012] CVS-Head:
+[21. Feb 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -59,9 +59,13 @@ o ConcatNP objects now allow curve and curve providing objects to be
   used as parameter objects, also in a mix with patches
 o added "Order" parameter to ConcatNP, that allows to specify the
   desired U order of the concatenated surface
+o added "FillGaps" and "FTLength" parameters to ConcatNP that
+  control the creation of fillets similiar to ConcatNC
 o improved drawing of torii with phimin/phimax not on defaults
 o toXYNC can now work with ACurve and ICurve objects and is thus
   renamed to toXYC (old command name still available but deprecated)
+o improved fillet creation of ConcatNC for parameter curve orders
+  different from 4
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
