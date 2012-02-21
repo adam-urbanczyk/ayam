@@ -3567,17 +3567,17 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
       o = o->next;
     } /* while */
 
+  if(closed && !fillgaps)
+    {
+      length++;
+    }
+
   /* take order, tolerance, and display_mode from first curve */
   o = curves;
   nc = (ay_nurbcurve_object *)o->refine;
   order = nc->order;
   glu_sampling_tolerance = nc->glu_sampling_tolerance;
   glu_display_mode = nc->display_mode;
-
-  if((order == 2) && closed && (knot_type == 0) && (!fillgaps))
-    {
-      length++;
-    }
 
   /* construct new knot vector */
   if(knot_type == 0)
@@ -3612,20 +3612,14 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 		}
 
 	      o = o->next;
-	      if(o)
+	      while(o && (o->type != AY_IDNCURVE))
+		o = o->next;
+
+	      if(o && (o->type == AY_IDNCURVE))
 		{
-		  if(o->name && !(strcmp(o->name, "Fillet")))
-		    {
-		      o = o->next;
-		      j += 2;
-		      k = 0;
-		    }
-		  else
-		    {
-		      nc = (ay_nurbcurve_object *)o->refine;
-		      k = nc->order;
-		      j++;
-		    }
+		  nc = (ay_nurbcurve_object *)o->refine;
+		  k = nc->order;
+		  j++;
 		}
 	    }
 	  else
@@ -3634,14 +3628,13 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 	    }
 	} /* while */
 
-      if(closed)
+      if(closed && !fillgaps)
 	{
 	  for(i = a; i < length+order; i++)
 	    {
 	      newknotv[i] = newknotv[a-1]+1;
 	    }
 	}
-
     } /* if */
 
   /* construct new control point vector */
@@ -3666,6 +3659,11 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 	}
       o = o->next;
     } /* while */
+
+  if(closed && !fillgaps)
+    {
+      memcpy(&(newcontrolv[(length-1)*4]), newcontrolv, 4 * sizeof(double));
+    }
 
   ay_status = ay_nct_create(order, length,
 			    ktype, newcontrolv, newknotv,
@@ -3711,11 +3709,10 @@ ay_nct_fillgap(int order, double tanlen,
  double p1[4], p2[4], p3[4], p4[4], n1[3], n2[3], l[3];
  double *U, *Pw, u, d, w, len;
  double *controlv = NULL;
- int n, p, numcontrol, i;
+ int n, p, numcontrol;
  ay_object *o = NULL;
- ay_nurbcurve_object *c = NULL;
+ ay_nurbcurve_object *nc = NULL;
  int ay_status = AY_OK;
- char *oname = "Fillet";
 
   if(!c1 || !c2 || !result)
     return AY_ENULL;
@@ -3772,64 +3769,51 @@ ay_nct_fillgap(int order, double tanlen,
   AY_V3SUB(p3, p1, n1)
   AY_V3SUB(p4, p2, n2)
 
-  /*numcontrol = (order>4?order:4)*4;*/
-  numcontrol = order;
+  if(order == 2)
+    numcontrol = 2;
+  else
+    numcontrol = 4;
 
   /* fill new controlv */
   if(!(controlv = calloc(numcontrol*4, sizeof(double))))
     return AY_EOMEM;
 
-  memcpy(&(controlv[0]), p1, 4*sizeof(double));
-
-  if(numcontrol > 2)
+  if(order == 2)
     {
-      memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+      memcpy(&(controlv[0]), p1, 4*sizeof(double));
+      memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
     }
-
-  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
-
-  if(numcontrol > 3)
+  else
     {
+      memcpy(&(controlv[0]), p1, 4*sizeof(double));
       memcpy(&(controlv[4]), p3, 4*sizeof(double));
+      memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+      memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
     }
 
-  if(numcontrol == 3)
-    {
-      AY_V3SUB(p4, p4, p3)
-      AY_V3SCAL(p4, 0.5)
-      AY_V3ADD(p1, p3, p4)
-      memcpy(&(controlv[4]), p1, 4*sizeof(double));
-    }
+  ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB, controlv,
+			    NULL, &nc);
+  if(ay_status)
+    { free(controlv); return AY_ERROR; }
 
-  if(numcontrol > 4)
+  /* elevate fillet to target order */
+  if(order > 4 && order > numcontrol)
     {
-      AY_V3SUB(p1, p4, p2)
-      d = AY_V3LEN(p1);
-      for(i = 1; i < (numcontrol - 4); i++)
+      ay_status = ay_nct_elevate(nc, order);
+
+      if(ay_status)
 	{
-	  memcpy(p3, p1, 4*sizeof(double));
-	  AY_V3SCAL(p3, i*(d/(numcontrol-3)))
-	  memcpy(&(controlv[(1 + i) * 4]), p3, 4*sizeof(double));
+	  ay_nct_destroy(nc); return AY_ERROR;
 	}
     }
 
   if(!(o = calloc(1, sizeof(ay_object))))
-    { free(controlv); return AY_EOMEM; }
+    { ay_nct_destroy(nc); return AY_EOMEM; }
 
   ay_object_defaults(o);
 
-  ay_status = ay_nct_create(numcontrol, order, AY_KTBEZIER, controlv,
-			    NULL, &c);
-  if(ay_status)
-    { free(o); free(controlv); return AY_ERROR; }
-
-  o->refine = c;
+  o->refine = nc;
   o->type = AY_IDNCURVE;
-
-  if(!(o->name = calloc(strlen(oname)+1, sizeof(char))))
-    { free(o); free(controlv); return AY_EOMEM; }
-
-  strcpy(o->name, oname);
 
   *result = o;
 
@@ -3889,7 +3873,7 @@ ay_nct_fillgaps(int closed, int order, double tanlen, ay_object *curves)
 	} /* if */
     } /* if */
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_fillgaps */
 
 
