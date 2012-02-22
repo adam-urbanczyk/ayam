@@ -6275,38 +6275,59 @@ The following parameters further control the concatenation process:
 <sect2>ConcatNCAttr Property<label id="concatncp"><label id="concatncattrprop">
 <p>
 <itemize>
-<item>Using <tt/"Closed"/ you may create a closed concatenated curve.
-If <tt/"FillGaps"/ (below) is enabled, an additional fillet will
+<item>Using <tt/"Closed"/ a closed concatenated curve may be created,
+even if the parameter curves do not touch.
+If also <tt/"FillGaps"/ (see below) is enabled, an additional fillet will
 be created for the last and the first child curve to close
-the concatenated curve. If <tt/"FillGaps"/ (below) is not enabled,
+the concatenated curve. If <tt/"FillGaps"/ is not enabled,
 the concatenated curve will be closed with the same algorithm
 that is also used by the close curve tool (possibly changing
-the shape again!).
-
-<item><tt/"FillGaps"/, creates fillet curves for all gaps between
-the child curves of the ConcatNC object. The fillet curves will be
-cubic Bezier curves. The direction of the tangents in the endpoints of
-the fillets and the gap enclosing curves will match, so that the
-transition should be G1 continuous.
+its shape).
 
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 curve will be reversed.
 
-<item><tt/"FTLength"/ determines a scale factor for the tangent vectors
-of the fillets. A value of 1.0 leads to vectors that are as long as
-the matching vectors in the control point arrays of the original curves.
-A value of 0.3 is the default value. You may need to tweak this, if
-you experience discontinuities in the transitions between original
-curves and fillets, especially, if <tt/"Knot-Type"/ (see below) is set to
-<tt/"Custom"/.
+<item><tt/"FillGaps"/ creates fillet curves for all gaps between
+the parameter curves of the ConcatNC object. No fillet will be created
+if the end points of two parameter curves match.
 
-<item><tt/"Knot-Type"/ in fact toggles between two different modes
-of concatenation. If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
+<p>
+The fillet curves will initially be created from four control
+points. The outer fillet control points are the parameter curve end points
+and the inner fillet control points will be positioned on the tangent
+of the respective parameter curve end point (see also the discussion
+of <tt/"FTLength"/ below). Thus, the transitions between parameter
+curve and fillet should be atleast G1 continuous.
+Degree elevation will be used to raise the degree of the fillet to
+that of the concatenated curve; this may introduce additional
+control points in the fillet but its shape does not change and the
+transition continuity is also not affected.
+
+If the order of the resulting concatenated curve is 2, only simple
+fillets, connecting the parameter curves by straight lines, will
+be generated.
+
+<item><tt/"FTLength"/ determines the distance of the inner fillet
+control points from their respective end points. This value can
+be adapted for smaller&thinsp;/&thinsp;larger gaps between parameter
+curves.
+
+<item><tt/"Knot-Type"/ sets the knot type of the concatenated curve:
+<itemize>
+<item>If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
 with equidistant knots is generated, which leads to a concatenated curve,
-that does not exactly preserve the shape of the original curves.
-If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
+that does not exactly preserve the shape of the original curves and
+all transitions between parameter curves are always smoothed out.
+
+<item>If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
-shape may be preserved completely.
+shape may be preserved completely. This applies also to discontinuities
+in transitions.
+
+<p>
+However, this comes at the price of internal knots with high multiplicity;
+such a curve is not differentiable in all places anymore.
+</itemize>
 </itemize>
 <itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
@@ -8526,8 +8547,26 @@ be created.
 (in U direction), the default value (0) leads to a cubic surface.
 If the desired order is 1, the respective order from the first
 of the parameter surfaces is taken.
-If the desired order is higher than the number of curves, it will
-be lowered to the number of curves silently.
+If the desired order is higher than the number of curves (i.e. the
+total number of control points of all surfaces in their desired
+directions), it will be lowered to the number of curves silently.
+
+<item><tt/"FillGaps"/ creates fillet surfaces for all gaps between
+the parameter surfaces of the ConcatNP object. No fillet will be created
+if the end curves of two parameter surfaces match or if parameter
+curves are present between the parameter surfaces in question.
+
+<p>
+Similar to the fillets for concatenated curves, the fillet surface
+will be constructed from four control points (in U direction).
+However, the tangent vectors will not be calculated directly, but
+instead derived from the respective control points.
+
+<item><tt/"FTLength"/ determines the distance of the inner fillet
+control points from their respective end points. This value can
+be adapted for smaller&thinsp;/&thinsp;larger gaps between parameter
+surfaces.
+
 
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 surface will be reversed (in U direction).
@@ -18033,7 +18072,11 @@ Index:
 <item><ref id="riincp" name="RiInc attribute">,
 <item><ref id="riprocp" name="RiProc attribute">
 </itemize>
-<item>FillGaps: <ref id="concatncp" name="ConcatNC attribute">
+<item>FillGaps:
+<itemize>
+<item><ref id="concatncp" name="ConcatNC attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
+</itemize>
 <item>FilterFunc: <ref id="rio" name="RenderMan interface option">
 <item>FilterWidth: <ref id="rio" name="RenderMan interface option">
 <item>FindU: <ref id="finduac" name="modelling action">
@@ -18058,7 +18101,11 @@ Index:
 <item><ref id="vmconf" name="view menu entry">
 </itemize>
 <item>Front: <ref id="vmtype" name="view menu entry">
-<item>FTLength: <ref id="concatncp" name="ConcatNC attribute">
+<item>FTLength:
+<itemize>
+<item><ref id="concatncp" name="ConcatNC attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
+</itemize>
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
