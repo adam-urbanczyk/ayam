@@ -3791,8 +3791,17 @@ ay_nct_fillgap(int order, double tanlen,
       memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
     }
 
-  ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB, controlv,
-			    NULL, &nc);
+  if(order == 3)
+    {
+      ay_status = ay_nct_create(3, numcontrol, AY_KTNURB, controlv,
+				NULL, &nc);
+    }
+  else
+    {
+      ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB, controlv,
+				NULL, &nc);
+    }
+
   if(ay_status)
     { free(controlv); return AY_ERROR; }
 
