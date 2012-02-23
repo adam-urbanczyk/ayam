@@ -409,6 +409,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
       /* Since Ayam 1.20: */
       fscanf(fileptr, "%d\n", &concatnp->order);
       fscanf(fileptr, "%lg", &concatnp->ftlength);
+
       read = fgetc(fileptr);
       if(read == '\r')
 	fgetc(fileptr);
@@ -445,14 +446,13 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", concatnp->knot_type);
 
   fprintf(fileptr, "%d\n", concatnp->fillgaps);
+  fprintf(fileptr, "%d\n", concatnp->order);
   fprintf(fileptr, "%g\n", concatnp->ftlength);
 
-  fprintf(fileptr, "%d\n", concatnp->order);
   if(concatnp->uv_select)
     fprintf(fileptr, "%s", concatnp->uv_select);
 
   fprintf(fileptr, "\n");
-
 
  return AY_OK;
 } /* ay_concatnp_writecb */

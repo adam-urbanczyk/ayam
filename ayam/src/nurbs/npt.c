@@ -2195,7 +2195,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
  ay_object *of1 = NULL, *of2 = NULL;
  ay_nurbpatch_object *np1, *np2, *new;
  double *cv1, *cv2, *ncv;
- int i, a, b, c, stride = 4;
+ double dist, v1[3], v2[3];
+ int i, a, b, c, d, stride = 4;
 
   if(!o1 || !o2 || !result)
     return AY_ENULL;
@@ -2247,13 +2248,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     { ay_status = AY_EOMEM; goto cleanup; }
 
   new->uorder = 4;
-  new->uknot_type = AY_KTBEZIER;
-
-  if(!(new->uknotv = calloc(8, sizeof(double))))
-    { ay_status = AY_EOMEM; goto cleanup; }
-  for(i = 4; i < 8; i++)
-    new->uknotv[i] = 1.0;
-
+  new->uknot_type = AY_KTNURB;
   new->width = 4;
 
   if(!(new->vknotv = calloc(np1->height+np1->vorder, sizeof(double))))
@@ -2261,46 +2256,105 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 
   memcpy(new->vknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
   new->vorder = np1->vorder;
-  new->vknot_type = np1->vknot_type;
   new->height = np1->height;
+
+  /* temporarily set the v knot type to custom so that createnp()
+     does not create a new knot vector for us (we copied it already) */
+  new->vknot_type = AY_KTCUSTOM;
+  ay_status = ay_knots_createnp(new);
+  new->vknot_type = np1->vknot_type;
 
   if(!(new->controlv = calloc(new->width*new->height*stride,
 			      sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   ncv = new->controlv;
 
-  /**/
+  /* calculate the control points */
   cv1 = np1->controlv;
   cv2 = np2->controlv;
   memcpy(ncv, &(cv1[(np1->width-1)*np1->height*stride]),
 	 np1->height*stride*sizeof(double));
-
-  a = np1->height*stride;
-  b = (np1->width-2)*np1->height*stride;
-  c = (np1->width-1)*np1->height*stride;
-  for(i = 0; i < np1->height; i++)
+  if(new->width > 2)
     {
-      ncv[a]   = cv1[c]+(cv1[c]-cv1[b])*tanlen;
-      ncv[a+1] = cv1[c+1]+(cv1[c+1]-cv1[b+1])*tanlen;
-      ncv[a+2] = cv1[c+2]+(cv1[c+2]-cv1[b+2])*tanlen;
-      ncv[a+3] = cv1[c+3]+(cv1[c+3]-cv1[b+3])/2.0;
-      a += stride;
-      b += stride;
-      c += stride;
-    }
+      a = np1->height*stride;
+      b = (np1->width-2)*np1->height*stride;
+      c = (np1->width-1)*np1->height*stride;
+      d = 0;
+      for(i = 0; i < np1->height; i++)
+	{
+	  v1[0] = (cv1[c]-cv1[b]);
+	  v1[1] = (cv1[c+1]-cv1[b+1]);
+	  v1[2] = (cv1[c+2]-cv1[b+2]);
 
-  b = np1->height*stride;
-  c = 0;
-  for(i = 0; i < np1->height; i++)
-    {
-      ncv[a]   = cv2[c]+(cv2[c]-cv2[b])*tanlen;
-      ncv[a+1] = cv2[c+1]+(cv2[c+1]-cv2[b+1])*tanlen;
-      ncv[a+2] = cv2[c+2]+(cv2[c+2]-cv2[b+2])*tanlen;
-      ncv[a+3] = cv2[c+3]+(cv2[c+3]-cv2[b+3])/2.0;
-      a += stride;
-      b += stride;
-      c += stride;
-    }
+	  dist = AY_V3LEN(v1);
+	  if(dist > AY_EPSILON)
+	    {
+	      AY_V3SCAL(v1, 1/dist);
+
+	      if(tanlen > 0)
+		{
+		  AY_V3SCAL(v1, tanlen);
+		}
+	      else
+		{
+		  v2[0] = (cv1[c]-cv2[d]);
+		  v2[1] = (cv1[c+1]-cv2[d+1]);
+		  v2[2] = (cv1[c+2]-cv2[d+2]);
+
+		  dist = AY_V3LEN(v2);
+		  AY_V3SCAL(v1, (dist*-tanlen));
+		  d += stride;
+		}
+	    }
+
+	  ncv[a]   = cv1[c]+v1[0];
+	  ncv[a+1] = cv1[c+1]+v1[1];
+	  ncv[a+2] = cv1[c+2]+v1[2];
+	  ncv[a+3] = cv1[c+3]+(cv1[c+3]-cv1[b+3])/2.0;
+	  a += stride;
+	  b += stride;
+	  c += stride;
+	}
+
+      b = np1->height*stride;
+      c = 0;
+      d = (np1->width-1)*np1->height*stride;
+      for(i = 0; i < np1->height; i++)
+	{
+	  v1[0] = (cv2[c]-cv2[b]);
+	  v1[1] = (cv2[c+1]-cv2[b+1]);
+	  v1[2] = (cv2[c+2]-cv2[b+2]);
+	  dist = AY_V3LEN(v1);
+	  if(dist > AY_EPSILON)
+	    {
+	      AY_V3SCAL(v1, 1/dist);
+
+	      if(tanlen > 0)
+		{
+		  AY_V3SCAL(v1, tanlen);
+		}
+	      else
+		{
+		  v2[0] = (cv2[c]-cv1[d]);
+		  v2[1] = (cv2[c+1]-cv1[d+1]);
+		  v2[2] = (cv2[c+2]-cv1[d+2]);
+
+		  dist = AY_V3LEN(v2);
+
+		  AY_V3SCAL(v1, (dist*-tanlen));
+		  d += stride;
+		}
+	    }
+
+	  ncv[a]   = cv2[c]+v1[0];
+	  ncv[a+1] = cv2[c+1]+v1[1];
+	  ncv[a+2] = cv2[c+2]+v1[2];
+	  ncv[a+3] = cv2[c+3]+(cv2[c+3]-cv2[b+3])/2.0;
+	  a += stride;
+	  b += stride;
+	  c += stride;
+	}
+    } /* if */
 
   memcpy(&(ncv[(new->width-1)*new->height*stride]), cv2,
 	 np1->height*stride*sizeof(double));
@@ -2349,6 +2403,8 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
   while(o)
     {
       fillet = NULL;
+      o->selected = 0;
+      /* only create a fillet between two patches */
       if((o->type == AY_IDNPATCH) && o->next &&
 	 (o->next->type == AY_IDNPATCH))
 	{
@@ -2358,9 +2414,12 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	    return ay_status;
 	  if(fillet)
 	    {
+	      /* mark as fillet */
 	      fillet->selected = 1;
+	      /* link fillet to list of patches */
 	      fillet->next = o->next;
 	      o->next = fillet;
+	      /* adjust o for next iteration */
 	      o = fillet->next->next;
 	    }
 	  if(fuv)
@@ -2382,6 +2441,8 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
   if(type)
     {
       /* create fillet between last and first patch */
+
+      /* find first and last patch and their uv-select parameters */
       o = first;
       if(uv)
 	uv2[1] = *uv;
@@ -2412,17 +2473,20 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	fuv = NULL;
       else
 	fuv = uv2;
+
+      /* create the fillet */
       ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
 
       if(ay_status)
 	return ay_status;
       if(fillet)
 	{
+	  /* mark as fillet */
 	  fillet->selected = 1;
+	  /* link fillet to list of patches */
 	  fillet->next = last->next;
 	  last->next = fillet;
 	}
-
     } /* if */
 
  return ay_status;
@@ -2467,7 +2531,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 	{
 	  if(o->selected)
 	    {
-	      /* this is a fillet patch */
+	      /* this is a fillet patch => do not consume
+		 a character from uvselect */
 	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  else
@@ -2566,8 +2631,8 @@ ay_npt_concat(ay_object *o, int type, int order,
     } /* if */
 
   /* build a new patch from the compatible curves */
-  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, order, knot_type,
-				     AY_FALSE, &new);
+  ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, order,
+				     knot_type, AY_FALSE, &new);
 
   if(ay_status)
     goto cleanup;
