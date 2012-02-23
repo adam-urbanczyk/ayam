@@ -156,7 +156,7 @@ the recommended renderer for Ayam.
 Despite of this, Ayam may be used on many more platforms with any
 RenderMan compliant renderer.
 <p>
-For platforms where BMRT is not available (e.g. FreeBSD or NetBSD), Ayam
+For platforms where BMRT is not available (e.g.~FreeBSD or NetBSD), Ayam
 may be compiled with code from the Affine Toolkit with limited
 functionality (see also the file INSTALL).
 In this case, no parsing of slc compiled shaders will be possible.
@@ -178,7 +178,7 @@ X-axis points to the right, the positive Y-axis points upwards
 and the Z-axis points outside the screen, to the user.
 <p>
 All coordinate values in Ayam are dimensionless. It is up to the
-user to define what a value of 1.0 means: e.g. one centimeter
+user to define what a value of 1.0 means: e.g.~one centimeter
 or one meter.
 <p>
 Due to the limited precision of floating point arithmetics used in Ayam,
@@ -189,7 +189,7 @@ NURBS curves and surfaces support rational coordinate values by
 allowing a fourth value (the weight) to be specified for each
 control point.
 In Ayam versions prior to 1.19 those weights were always multiplied
-with the coordinate values (i.e. homogenous rational coordinates)
+with the coordinate values (i.e.~homogenous rational coordinates)
 to allow faster drawing with OpenGL/GLU, which expects rational
 coordinate values to be delivered this way.
 But a negative side effect of this appproach was that modification
@@ -202,7 +202,7 @@ drawing or export purposes).
 Scene files from older versions are converted automatically to the
 new coordinate scheme when read by Ayam 1.19, but loading of scene files
 written by Ayam 1.19 into older versions of Ayam requires conversion
-(e.g. by means of a script).
+(e.g.~by means of a script).
 
 <sect>The Ayam GUI
 <p>
@@ -576,12 +576,12 @@ accomplish this easily using the <tt/&lt;Esc&gt;/ key.
 <p>
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste property values to different types
-of properties (e.g. pasting parameters from a surface shader to the
+of properties (e.g.~pasting parameters from a surface shader to the
 displacement shader) using <tt/"Paste to selected"/ in the
 <tt>"Special/Clipboard"</tt> sub-menu.
 <p>
 Pasting a property to multiple selected objects does work too.
-This is a great way to apply e.g. a parameterised surface shader to
+This is a great way to apply e.g.~a parameterised surface shader to
 a bigger number of material objects, without going the long way of
 setting a new shader and entering parameters for it for every material
 object.
@@ -711,7 +711,7 @@ have keyboard shortcuts that are displayed in each entry.
 <p>
 Note that the main menu keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
-console or in a property GUI element (i.e. a data entry field).
+console or in a property GUI element (i.e.~a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> to set the focus to the object selection
 widget and thus enable the main menu keyboard shortcuts.
 <p>
@@ -756,7 +756,7 @@ into the current scene.
 All objects from the file will be read.
 If the file to be inserted contains a Root or View objects, the new
 objects will be created in the top level of the scene.
-Otherwise, if just geometric objects are in the scene file (i.e. the file
+Otherwise, if just geometric objects are in the scene file (i.e.~the file
 was created using <tt>"Special/Save Selected"</tt>), the new objects
 will be inserted in the current level of the scene.
 See section <ref id="insertsf" name="Inserting Scene Files">
@@ -1085,7 +1085,7 @@ last used entry/tool in the <tt/"Tools"/ menu hierarchy.
 <footnote>Since 1.13.</footnote>
 
 The label of the entry will be changed appropriately
-when a tool was started, e.g. to <tt/"Last (Revert U)"/ after the
+when a tool was started, e.g.~to <tt/"Last (Revert U)"/ after the
 <tt/"Tools/Surface/Revert U"/-tool was used.
 The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/. To repeat
 the last used tool with the same set of parameters (and without opening
@@ -1181,9 +1181,9 @@ not be undone using the undo system.
 <item><tt/"Convert"/, starts the convert action that has been
 registered for the type of the selected object(s). The exact
 behaviour depends on the type of the selected object(s):
-a Revolve object will e.g. be converted to a level containing NURBS
+a Revolve object will e.g.~be converted to a level containing NURBS
 patches that make up the surface of revolution and the caps.
-This operation can not be undone, i.e. the newly created objects
+This operation can not be undone, i.e.~the newly created objects
 will not be removed, using the undo system.
 
 <item><tt/"Convert (In Place)"/, starts the convert action as
@@ -1194,7 +1194,7 @@ conversion above, can be undone.
 <item><tt/"Force Notification"/, force the notification callbacks of
 all selected objects (or all objects in the scene if no objects are
 selected) to be called. The notification callbacks are used by objects
-like e.g. Revolve to be informed about changes of their child
+like e.g.~Revolve to be informed about changes of their child
 objects to properly adapt to those changes.
 
 <item><tt/"Highlight Material"/, colours all objects of the same
@@ -1255,7 +1255,7 @@ or single object is replaced.
 <item><tt>"Clipboard/Paste Property to selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
-properties will take place! One may e.g. copy the settings from a
+properties will take place! One may e.g.~copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
@@ -1297,12 +1297,12 @@ main menu <tt>"File/Export/RenderMan RIB"</tt>.
 selected objects to a RIB. Note that instances will always be resolved,
 hidden objects and objects with <tt>"NoExport"</tt> tags are treated
 as on normal export operations, and light objects are simply ignored.
-Note also that the created RIB, since it e.g. lacks camera transformation
+Note also that the created RIB, since it e.g.~lacks camera transformation
 and WorldBegin/End directives, may not be rendered directly by a
 RenderMan compliant renderer (unless the renderer is really forgiving
 about mis-structured RIBs).
 The main use of this feature is to let you create RIBs that may be easily
-included in other RIBs using e.g. the ReadArchive directive.
+included in other RIBs using e.g.~the ReadArchive directive.
 
 <item><tt>"RIB-Export/Create ShadowMap"</tt>, creates the shadow maps
 from the currently selected light source.
@@ -1371,8 +1371,8 @@ the URL to display is taken from the <tt/"Docs"/ preference setting.
 <item><tt/"Help on object"/, opens a web browser and displays
 documentation about the currently selected type of object,
 the URL to display is derived from the <tt/"Docs"/ preference setting,
-this feature will not work with frame redirects e.g.
-<tt>"http://www.ayam3d.org/"</tt>; use
+this feature will not work with frame redirects
+e.g.~<tt>"http://www.ayam3d.org/"</tt>; use
 <tt>"http://ayam.sourceforge.net/docs/"</tt> or a <tt>"file:"</tt>-URL
 as base URL in the <tt/"Docs"/ preference setting instead!
 
@@ -1420,7 +1420,7 @@ see also section <ref id="mm" name="main menu">.
 <p>
 Note that the main window keyboard shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
-console or in a property GUI element (i.e. a data entry field).
+console or in a property GUI element (i.e.~a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> first to set the focus to the object selection
 widget and thus enable the main window keyboard shortcuts.
 <p>
@@ -1765,7 +1765,7 @@ Using the menu entry <tt/"Align to Object"/ or the shortcut
 one can change the views camera settings so that it is aligned
 to the coordinate system of the currently selected object.
 This is handy for modelling in local coordinate systems
-(e.g. when editing the control points of some planar curve defined in the
+(e.g.~when editing the control points of some planar curve defined in the
 XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 <p>
@@ -1992,13 +1992,13 @@ The preferences are divided into five sections as follows.
 The <tt/"Main"/ section contains the most important application setup
 related preference settings.
 <p>
-Note that unused settings will not be shown, e.g. on the
+Note that unused settings will not be shown, e.g.~on the
 Win32 platform, the <tt/"TwmCompat"/ setting will be hidden.
 <footnote>Since 1.14.</footnote>
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by a colon
 <tt/":"/ on Unix and by a semicolon <tt/";"/ on Win32) where Ayam looks
-for compiled shaders (e.g. files with the extension <tt/".slc"/ that
+for compiled shaders (e.g.~files with the extension <tt/".slc"/ that
 have been compiled with slc from BMRT). Using the <tt/"Add"/ button,
 you may easily add another path, simply press the button and select a
 file from the directory you want to add. Note that currently the
@@ -2108,7 +2108,7 @@ a semicolon (<tt/";"/) on Win32.
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
-objects or plugins. Those directories will e.g. be searched for
+objects or plugins. Those directories will e.g.~be searched for
 custom objects when unknown object types are encountered while reading
 Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
@@ -2130,7 +2130,7 @@ If unsure about the correct syntax, just use the <tt/"Add"/ button.
 HTML format.
 
 <item><tt/"TmpDir"/ is the directory, where temporary RIB files are
-created, e.g. when rendering directly from view windows.
+created, e.g.~when rendering directly from view windows.
 </itemize>
 
 The preference settings <tt/"ListTypes"/, <tt/"MarkHidden"/,
@@ -2166,7 +2166,7 @@ This option may also be toggled easily using the keyboard shortcut
 
 <p>
 Notification is the mechanism used to inform objects that rely
-on certain child objects (e.g. the Revolve tool object) about
+on certain child objects (e.g.~the Revolve tool object) about
 changes of their child objects, so that the parent can adapt
 to the child objects automagically
 (see also section
@@ -2309,8 +2309,8 @@ resulting byte stream into rendrib (the BMRT renderer) for rendering.
 The same goes for <tt/"rgl"/.
 Moreover, filenames that start with a pipe symbol <tt/"|"/ will
 cause the program after the pipe symbol to be started by libribout
-and the written RIB to be piped into. This works e.g.
-with Photorealistic RenderMan, try it out with <tt/"|render"/.
+and the written RIB to be piped into. This works e.g.~with
+Photorealistic RenderMan, try it out with <tt/"|render"/.
 In the latter cases of direct rendering, you will probably want to set
 up the RIB to render to the display (read leave the <tt/"Image"/
 preference setting empty.
@@ -2369,7 +2369,7 @@ as well, see section <ref id="shadowmaps" name="Using ShadowMaps">.
 If <tt/"ShadowMaps"/ is set to <tt/"Automatic"/, the
 exported RIBs will automatically render and use all shadow maps;
 if it is set to <tt/"Manual"/, the shadow maps will be rendered on
-user request only (e.g. using the view menu entry:
+user request only (e.g.~using the view menu entry:
 <tt>"View/Create All ShadowMaps"</tt>). <tt/"Manual"/ should be used,
 when rendering directly from view windows with shadow maps.
 
@@ -2378,8 +2378,8 @@ exported to RIB files.
 
 <item><tt/"RenderMode"/ allows to switch between two different methods
 of forcing a renderer to render to the screen (via a RiDisplay statement
-in the exported RIB, necessary for e.g. PRMan and RDC;
-or via a command line argument, e.g. <tt>-d</tt> for rendrib from BMRT).
+in the exported RIB, necessary for e.g.~PRMan and RDC;
+or via a command line argument, e.g.~<tt>-d</tt> for rendrib from BMRT).
 
 <item><tt/"QRender"/ determines the command that should be executed,
 upon quick rendering a view, <tt>%s</tt> denotes the name of the RIB file.
@@ -2429,7 +2429,7 @@ regexp -- {^.* - (\[0-9\]+)} string dummy percent
 </verb></tscreen>
 
 <item><tt/"SMRender"/, renderer to use for the rendering of shadow maps
-(e.g. view menu entry <tt>"View/Create All ShadowMaps"</tt>),
+(e.g.~view menu entry <tt>"View/Create All ShadowMaps"</tt>),
 see also section <ref id="shadowmaps" name="Using ShadowMaps">.
 <tt>%s</tt> denotes the name of the RIB file.
 
@@ -2584,7 +2584,7 @@ mode, the action will be started in the current internal view only
 (unless <tt/"AutoFocus"/ is enabled).
 <p>
 It is perfectly ok to start and work with many different actions at
-the same time in different views: you can have e.g. a view, where you move
+the same time in different views: you can have e.g.~a view, where you move
 objects, a second where you rotate objects and a third, where you pick
 objects. The layout, drawing style, and grids may also differ between
 the different views. Together with the feature, that you may change
@@ -2885,7 +2885,7 @@ XY in a Front-view, ZY in a Side-view, and XZ in a Top-view.
 It is also possible to restrict the scaling of objects or selected
 points to just one axis.
 For that one needs to press <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or
-<tt/&lt;z&gt;/ right after <tt/&lt;s&gt;/ (e.g. <tt/&lt;sx&gt;/ for
+<tt/&lt;z&gt;/ right after <tt/&lt;s&gt;/ (e.g.~<tt/&lt;sx&gt;/ for
 scale 1D about x).
 <p>
 Since Ayam 1.17, direct access to the 1D scale modelling actions
@@ -2941,7 +2941,7 @@ objects or the selected (tagged) points
 of the selected objects about a specific point in space.
 <p>
 To start a scale about action, invoke the normal scale action,
-then press <tt/&lt;a&gt;/ (e.g. <tt/&lt;sa&gt;/ for scale 2D about,
+then press <tt/&lt;a&gt;/ (e.g.~<tt/&lt;sa&gt;/ for scale 2D about,
 <tt/&lt;sya&gt;/ for scale 1D Y about).
 For an overview of the scale about actions see also the table below.
 <p>
@@ -3014,10 +3014,10 @@ about the current selections center automatically.
 </figure>
 <p>
 This action may be invoked to mark a point in space for perusal
-of other modelling actions that e.g. rotate or scale about a point.
+of other modelling actions that e.g.~rotate or scale about a point.
 <p>
 The keyboard shortcut to invoke the set mark action is <tt/&lt;a&gt;/.
-This action is also active as intermediate action for e.g. rotate
+This action is also active as intermediate action for e.g.~rotate
 about, where the keyboard shortcuts <tt/&lt;r&gt;/
 and then <tt/&lt;a&gt;/ would be used in a sequence and after
 setting the mark, the rotate about action would take over.
@@ -3080,7 +3080,7 @@ The mark can also be used to remember an important point in space
 and get back to it later using the pan to mark action
 (keyboard shortcut <tt/&lt;.&gt;/).
 <p>
-Finally, remember that certain operations like e.g. changing the view
+Finally, remember that certain operations like e.g.~changing the view
 type will clear the mark.
 
 
@@ -3197,7 +3197,7 @@ image below).
 <caption>Objects With Read Only (left) and With Editable Points (right)</caption>
 </figure>
 <p>
-In contrast to e.g. the move action, all point edit actions require the
+In contrast to e.g.~the move action, all point edit actions require the
 handle of the point to be picked directly.
 Only points within a certain distance from the mouse pointer click
 position will be considered picked (see preference option
@@ -3235,7 +3235,7 @@ to edit points of multiple selected objects (in former versions
 only points from the first selected object were considered).
 <p>
 If a multiple point is edited, this action modifies all single
-points that make up the multiple point, i.e. you can not move
+points that make up the multiple point, i.e.~you can not move
 single points apart from a multiple point using the point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
@@ -3309,7 +3309,7 @@ prevent a change of the corresponding coordinate value.
 <footnote>Since 1.20.</footnote>
 <p>
 If a multiple point is edited, this action modifies all single
-points that make up the multiple point, i.e. you can not move
+points that make up the multiple point, i.e.~you can not move
 single points apart from a multiple point using the numeric point
 edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
@@ -3320,7 +3320,7 @@ open all the time.
 <p>
 Furthermore, it is not necessary that the original
 object stays selected while working with the numeric point edit dialog,
-you may select other objects to e.g. infer new point coordinates from
+you may select other objects to e.g.~infer new point coordinates from
 their properties and apply them to the original object.
 Furthermore notice that the coordinate values displayed in the numeric
 point editing window will not update when the point is modified by
@@ -3354,7 +3354,7 @@ editable points, only those points will be snapped to the grid,
 otherwise all editable points of the object will be snapped to the grid
 (see also the image above).
 If <tt/&lt;g&gt;/ is used, the snapping only occurs in
-the modelling plane associated with the view (i.e. in 2D).
+the modelling plane associated with the view (i.e.~in 2D).
 To snap all three coordinate values to the grid use <tt/&lt;G&gt;/.
 Note that the snapping also occurs, if the view has the preference
 option <tt/"Use Grid"/ turned off.
@@ -3539,7 +3539,7 @@ plane of all modelling actions is constrained to the world
 XY-, ZY-, or XZ-plane (depending on the type of view used).
 <p>
 However, if a view is <em>aligned</em> and switched to <em>local</em>,
-one can also edit in local object space. This means one can e.g. edit a
+one can also edit in local object space. This means one can e.g.~edit a
 planar parameter curve of a skin object where both objects
 (curve and skin) are rotated and scaled arbitrarily
 and make sure that the parameter curve remains planar all the time.
@@ -3564,7 +3564,7 @@ the view using <tt/&lt;L&gt;/ (or <tt/&lt;Ctrl+a&gt;/ in external
 views). Since Ayam 1.18, the view is automatically aligned to the
 selected object or current level when cycling through the global/local
 modes. Manually aligning a view may still be necessary, if the camera
-of the view is e.g. changed by a view action (however, realigning is also
+of the view is e.g.~changed by a view action (however, realigning is also
 always possible by cycling the modelling mode three times).
 But let us get back to our local view.
 <p>
@@ -3582,7 +3582,7 @@ about the y axis by 90 degrees) and a straight standard curve as trajectory.
 The Sweep itself is rotated about the z axis by 30 degrees. The view is a
 front view, the cross section and trajectory are both selected.
 Note how inadequate the grid spacing would be to edit the trajectory curve
-(it is e.g. near impossible to edit the curve and keep
+(it is e.g.~near impossible to edit the curve and keep
 it straight). 
 <p>
 Press <tt/&lt;l&gt;/.
@@ -3692,7 +3692,7 @@ Revolve|NCurve|Yes|NPatch+|No*<#if out=latex>@<hline></#if>
 Explanation:
 <itemize>
 <item><bf/Type/: the Revolve object has the type name <tt/"Revolve"/,
-i.e. it can be created from scripts using the command <tt/"crtOb Revolve"/;
+i.e.~it can be created from scripts using the command <tt/"crtOb Revolve"/;
 <item><bf/Parent of/: the Revolve object has one NCurve (or NCurve providing
 object) as child;
 <item><bf/Material/: the Revolve object can be associated with a material;
@@ -3913,7 +3913,7 @@ RIBs created by the QuickRender and Render actions in view windows.
 The default 0.0 causes no setting in the RIB. If the variance is > 0.0
 no pixel samples setting will be written to the RIB. Various
 sources discourage the use of variance based sampling, because
-e.g. the number of samples actually taken (and therefore the rendering
+e.g.~the number of samples actually taken (and therefore the rendering
 time) might not easily be predicted anymore.
 
 <item><tt/"Samples_X"/, <tt/"Samples_Y"/ number of samples taken per
@@ -3963,7 +3963,7 @@ Root object, please refer to section
 for information on how to deal with shader property GUIs.
 <p>
 Imager shaders are executed once for every rendered pixel,
-they may e.g. be used to set a specific background color.
+they may e.g.~be used to set a specific background color.
 <p>
 Atmosphere shaders are volume shaders that
 may be used to implement global atmospheric
@@ -3992,7 +3992,7 @@ You can change camera settings, the type of the view,
 and other things related to the view using the properties of the view object.
 Note that deleting the object that represents a view, will not
 close the view window. You will just lose a way to configure it.
-Please, do not mess with the objects in other ways (e.g. copy them),
+Please, do not mess with the objects in other ways (e.g.~copy them),
 you are asking for trouble otherwise!
 <p>
 Each view is associated with a virtual camera.
@@ -4074,7 +4074,7 @@ around the axis that is defined by the points from and to.
 </itemize>
 
 Note that the up vector is not checked for erroneous values
-(e.g. pointing in the direction of from-to) when applying the changes
+(e.g.~pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
 <sect2>ViewAttrib Property<label id="vat"><label id="viewattribprop">
@@ -4119,7 +4119,7 @@ this image once when you apply the changes to the
 <tt/"ViewAttrib"/ property
 but reread
 the image file if the notification callback of the view object
-is invoked (e.g. using the main menu entry
+is invoked (e.g.~using the main menu entry
 <tt>"Tools/Force Notification"</tt>).
 
 <item><tt/"Mark"/ is the marked point (in world coordinates) for
@@ -4129,7 +4129,7 @@ the rotate and scale about modelling actions.
 entries above should be used as new mark coordinates.
 
 <item><tt/"EnableUndo"/ is switched on by default and allows to
-disable undo for view actions, e.g. panning or zooming a view,
+disable undo for view actions, e.g.~panning or zooming a view,
 these actions then also do not change the scene changed state.
 </itemize>
 
@@ -4272,7 +4272,7 @@ point editing actions (see also section
 light source. Note that the standard point and spot lights have
 a quadratic falloff (with distance), that requires the intensity
 to be set to quite high values in order to achieve some
-illumination effect (e.g. around 30 for the standard distance of
+illumination effect (e.g.~around 30 for the standard distance of
 <tt/"From"/ and <tt/"To"/ of a spot light).
 <item><tt/"ConeAngle"/ is the angle of the beam of a spot light.
 <item><tt/"ConeDAngle"/ (cone delta angle) is the angle that determines a
@@ -4311,8 +4311,8 @@ are written to a second RIB file named <tt>"&lt;scene&gt;.obj.rib"</tt>.
 This file is read from the main RIB several times via
 <tt>"ReadArchive"</tt>. The RIB contains multiple frames which may
 also be rendered separately if the frame number is known.
-To help you picking the right frame number for the image (e.g.
-to re-render just the final image, when only a material setting was
+To help you picking the right frame number for the image
+(e.g.~to re-render just the final image, when only a material setting was
 changed, and no shadow casting lights were moved and no shadow casting
 geometry was changed),
 a comment with the frame number of the last frame (the image) will be
@@ -4427,7 +4427,7 @@ leave all other parameters at their default values.
 <item>Export a RIB from that perspective view (Menu:
 <tt>"View/Export RIB"</tt>).
 <item>Render the RIB with a RenderMan compliant renderer, that uses
-shadow maps, e.g. Photorealistic RenderMan (prman) or Aqsis.
+shadow maps, e.g.~Photorealistic RenderMan (prman) or Aqsis.
 </enum>
 
 This scene is distributed with Ayam as an example scene named
@@ -4507,11 +4507,11 @@ RenderMan specific attributes.
 
 <itemize>
 <item><tt/"Color"/, the color of the object. If you set one of the
-entries to a negative value (e.g. -1), the color will not be set at all
+entries to a negative value (e.g.~-1), the color will not be set at all
 for this object.
 <item><tt/"Opacity"/, the opacity of the object, the default
 255 255 255 means the object is totally opaque. If you set one of the
-entries to a negative value (e.g. -1), the opacity will not be set at all
+entries to a negative value (e.g.~-1), the opacity will not be set at all
 for this object.
 <item><tt/"ShadingRate"/, determines how often shaders are evaluated for
 a sample.
@@ -4566,7 +4566,7 @@ connected to geometric objects, see the discussion about material names above.
 <sect2>RIB Export
 <p>
 Material objects only appear in RIB output if connected to a
-geometric object (e.g. a Box).
+geometric object (e.g.~a Box).
 <p>
 The exact RIB statements used depend on the configuration of the
 material and the preference setting <tt>"RIB-Export/RIStandard"</tt>.
@@ -4611,7 +4611,7 @@ of object tree updates, as only the current level and its sub-levels
 are subject to a tree update if something in the object hierarchy changes.
 <p>
 Note that child objects of a level inherit the levels transformations,
-material, attributes, and shaders. Inheritance of e.g. transformations
+material, attributes, and shaders. Inheritance of e.g.~transformations
 means:<newline>
 If you have a NURBS patch in a level that is translated to (10,0,0),
 the origin of the local coordinate system of the NURBS patch
@@ -4619,7 +4619,7 @@ will be situated at (10,0,0). If you decide to move the patch by a
 value of 5 in X direction by setting a corresponding value in the
 Transformations property of the patch object, the local coordinate
 system of the patch will be placed at (15,0,0) in world coordinates,
-i.e. the control point (1,0,0) will be at (16,0,0).
+i.e.~the control point (1,0,0) will be at (16,0,0).
 <p>
 Note also that since Ayam 1.12, Level objects provide their child
 objects to their parent objects as a list. This means the following
@@ -4714,7 +4714,7 @@ sphere) Ayam would not complain upon RIB export.
 The rendered image would expose serious errors, however.
 <p>
 Furthermore, it is not necessary to enclose normal child objects
-(e.g. quadrics with the <tt/"Closed"/ attribute set to on) of
+(e.g.~quadrics with the <tt/"Closed"/ attribute set to on) of
 CSG levels in primitive levels for RIB export. This is done by Ayam
 automatically where needed.
 
@@ -4802,7 +4802,7 @@ object like this:
 </verb></tscreen>
 <p>
 It is not possible to create clones from objects that may not
-be master objects of instance objects, e.g. it is not possible
+be master objects of instance objects, e.g.~it is not possible
 to clone light objects or material objects. However, (since Ayam 1.7)
 it is possible to use instances as parameter objects.
 <p>
@@ -4916,7 +4916,7 @@ provided by the Mirror object to the respective parent object (normally,
 tool objects do not provide their unmodified children).
 Additionally, the order of the mirrored objects will be reversed so that
 it is possible to use a single Mirror object (with one or multiple NURBS
-curves as children) as parameter object of e.g. a Skin object:
+curves as children) as parameter object of e.g.~a Skin object:
 <tscreen><verb>
 +-Skin
  +-Mirror
@@ -5052,7 +5052,7 @@ in a special way:
 if the <tt>"Transformations"</tt> property is removed using a
 <tt>"RP"</tt> tag, the instance does not provide objects with
 an own set of transformation attributes (to ease hierarchy building
-with e.g. <tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
+with e.g.~<tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
 pointers to already existing objects are required and where it is
 expected, that the instance reflects the master exactly, including
 its transformation attributes).
@@ -5151,7 +5151,7 @@ Note that this example just serves illustrative purpose; the hierarchy
 presented is not exactly useful, as the ExtrNC object has a selector
 facility built in. Consequently, the Select object should be used in
 scenarios, where a selector facility does not exist or is hard to
-implement, as e.g. in Script object scripts.
+implement, as e.g.~in Script object scripts.
 <p>
 The following table briefly lists some capabilities of the Select object.
 <p>
@@ -5730,7 +5730,7 @@ The type <tt/"Open"/ is for the standard open NURBS curve.
 If the type is <tt/"Closed"/, the first and last control point of
 the curve will be made identical. This will close the curve but
 without any guaranteed continuity.
-Such a closed curve will e.g. be created by the NURBS circle tool.
+Such a closed curve will e.g.~be created by the NURBS circle tool.
 It is important to know, that identical start/end control points
 alone can not guarantee that the curve is closed if the knot vector
 is not clamped. If in doubt, use the clamp tool or a knot vector
@@ -5796,7 +5796,7 @@ would be:
 The knot types <tt/"Chordal"/ and <tt/"Centripetal"/ will generate knot
 values whose distribution reflect the distances of the control points.
 This only works, if there are free knots in the knot vector,
-i.e. knots that are not subject to clamping or periodic extensions
+i.e.~knots that are not subject to clamping or periodic extensions
 (the default NURBS curve with 4 control points and order 4 has
 <em>none</em>).
 For open curves, the generated knot vector will be clamped, for periodic
@@ -5804,7 +5804,7 @@ curves, proper periodic extensions will be created.
 Those knot types are mainly useful for curves with unevenly distributed
 control points that will be sampled uniformly (in parametric space) later
 on and where it is expected, that the uniform sampling in parameter space
-results in evenly distributed sample points in coordinate space, e.g. if
+results in evenly distributed sample points in coordinate space, e.g.~if
 the curves are used as Sweep, Birail, or Clone trajectory, or surfaces
 are created from them that use implicit texture coordinates or a uniform
 tesselation strategy.
@@ -5871,7 +5871,7 @@ sum of the changed values should describe a valid NURBS curve.
 It is perfectly legal to change the length of the curve,
 it's order, and switch to a custom knot vector (be sure to actually
 enter a valid new knot vector) at once. Ayam will check your changes
-and fall back to certain default values if e.g. your knot sequence is wrong.
+and fall back to certain default values if e.g.~your knot sequence is wrong.
 Check the console for any messages after pressing the <tt/"Apply"/ button!
 <p>
 When the curve type is changed using the NCurveAttr property
@@ -5910,7 +5910,7 @@ Modelling actions will always modify all the control points that
 make up a multiple point.
 Multiple points will be drawn with a bigger handle than normal points
 (see image above).
-They may e.g. be used to create closed curves. Note that the control
+They may e.g.~be used to create closed curves. Note that the control
 points that make up a multiple point do not have to be consecutive
 (in the control point vector of the NURBS curve).
 Multiple points may be created using the collapse tool,
@@ -5971,7 +5971,7 @@ the first and third data point and is, thus, rotated by 45 degrees.
 This object makes use of the provide mechanism. It marks itself
 as providing a NCurve object (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
-the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
+the provide mechanism (e.g.~revolve, sweep, extrude, and skin) are
 able to work with an ICurve object instead of an object
 of type NCurve.
 <p>
@@ -6026,7 +6026,7 @@ endpoints of the interpolating curve. The parameters <tt/"SDLen"/ and
 
 <item>The parameters <tt/"SDLen"/ and <tt/"EDLen"/ are used to control
 the length of the first and last derivative (if automatically
-generated from the data points, i.e. when <tt/"Derivatives"/ above is
+generated from the data points, i.e.~when <tt/"Derivatives"/ above is
 switched to automatic).
 
 <item>See section <ref id="ncattr" name="NCurveAttr"> for a description
@@ -6074,7 +6074,7 @@ of data points, undesired wiggles in the output curve may occur.
 This object makes use of the provide mechanism. It marks itself
 as providing a NCurve object (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
-the provide mechanism (e.g. revolve, sweep, extrude, and skin) are
+the provide mechanism (e.g.~revolve, sweep, extrude, and skin) are
 able to work with an ACurve object instead of an object
 of type NCurve.
 <p>
@@ -6169,7 +6169,7 @@ angles (see image above).
 <footnote>Since 1.12.</footnote>
 <p>
 In order to revert the created NURBS curve
-the start/end angles may be used, e.g. <tt/"TMin"/ 0.0,
+the start/end angles may be used, e.g.~<tt/"TMin"/ 0.0,
 <tt/"TMax"/ -360.0 for a reverse full circle.
 <footnote>Since 1.15.</footnote>
 <p>
@@ -6232,22 +6232,24 @@ use it as child object for another ConcatNC object (with possibly
 different parameters) or as a parameter object for a tool object that
 works with NURBS curves such as Revolve or Extrude.
 <p>
-How does the concatenation process work?
-<p>
-First, the orders of all parameter curves will be elevated to the maximum
-order of all the parameter curves (see section
+The concatenation process works as follows:
+<enum>
+<item>The orders of all parameter curves will be elevated to the maximum
+order of all the parameter curves (see also section
 <ref id="elevt" name="elevate tool"> for more information on elevation)
-and all curves will be clamped (see section
+and all curves will be clamped (see also section
 <ref id="clat" name="clamp tool"> for more information on clamping).
-If <tt/"FillGaps"/ is enabled (see below), fillet curves will be
+<item>If the parameter <tt/"FillGaps"/ is enabled, fillet curves will be
 created for every gap between the parameter curves of the ConcatNC object.
 If <tt/"Closed"/ and <tt/"FillGaps"/ are enabled, an additional fillet
 is created to close the curve.
-Then, the control points of all parameter curves and fillets are simply
+<item>Now the control points of all parameter curves and fillets are simply
 copied into a new big control point vector, without checking for double
 points. This means that for parameter curves that touch at their
 respective ends, atleast double control points in the new concatenated
 curve will result.
+<item>If <tt/"Closed"/ is enabled, the curve will be closed.
+</enum>
 <p>
 The knot sequence of the new concatenated curve will be of type
 <tt/"NURBS"/ or a custom knot vector will be computed (depending
@@ -6259,7 +6261,9 @@ a custom knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
 <p>
 Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
-<p>
+
+<#if out=latex><x/newpage/</#if>
+
 The following table briefly lists some capabilities of the ConcatNC object.
 <p>
 <table loc="ht">
@@ -6315,18 +6319,19 @@ curves.
 <item><tt/"Knot-Type"/ sets the knot type of the concatenated curve:
 <itemize>
 <item>If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
-with equidistant knots is generated, which leads to a concatenated curve,
-that does not exactly preserve the shape of the original curves and
-all transitions between parameter curves are always smoothed out.
+with equidistant knots is generated, which leads to a concatenated curve
+that does not exactly preserve the shapes of the original curves.
+Furthermore, all transitions between parameter curves are always smoothed
+out.
 
 <item>If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
-shape may be preserved completely. This applies also to discontinuities
-in transitions.
+shapes may be preserved completely. This also applies to potential
+discontinuities in transitions.
 
 <p>
-However, this comes at the price of internal knots with high multiplicity;
-such a curve is not differentiable in all places anymore.
+However, this comes at the price of internal knots with high multiplicity.
+Note that such a curve is <em>not</em> differentiable in all places anymore.
 </itemize>
 </itemize>
 <itemize>
@@ -6355,8 +6360,8 @@ curve).
 </figure>
 <p>
 The ExtrNC object extracts a NURBS curve from a NURBS patch object,
-for use as parameter object for other tool objects, like e.g.
-Revolve (see image above).
+for use as parameter object for other tool objects, like
+e.g.~Revolve (see image above).
 It also works with NURBS patch providing objects, so that
 the following example hierarchy is valid:
 <tscreen><verb>
@@ -6423,7 +6428,7 @@ as simple patches.
 Note that if <tt/"Side"/ is <tt/"U0"/, <tt/"Un"/, <tt/"V0"/, or <tt/"Vn"/
 the extraction process just copies the respective boundary control points,
 which only works for clamped knot vectors. To extract a boundary from
-a surface with e.g. a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
+a surface with e.g.~a B-Spline knot vector, one should <em/not/ use <tt/"U0"/
 but <tt/"U"/ with <tt/"Parameter"/ set to 0.0 and <tt/"Relative"/ enabled
 as <tt/"U"/ uses a different, more expensive, extraction process (which
 involves knot insertion).
@@ -6448,10 +6453,10 @@ the normals (derived from the surface control points) on the surface.
 This PV tag can then be used to control a 3D offset curve.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
-patches delivered e.g. by a beveled Extrude object as child
+patches delivered e.g.~by a beveled Extrude object as child
 of the ExtrNC object.
 This way it is possible to extract a curve from a bevel or cap
-surface of e.g. said Extrude object.
+surface of e.g.~said Extrude object.
 </itemize>
 <itemize>
 <item>Finally, a <tt/"NCInfo"/ field informs about the actual configuration
@@ -6514,7 +6519,7 @@ Since Ayam 1.18 there is a fourth offsetting algorithm available, that
 creates true three dimensional offsets from non planar curves using
 a primitive variable tag that contains normal information for the curve
 (vertex normals). Such tags can be created manually or automatically
-e.g. when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
+e.g.~when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
 <p>
 As the geometry of the offset curve is completely defined by
 the master curve, OffsetNC objects do not support own transformation
@@ -6575,7 +6580,7 @@ curve).
 <caption>NURBS patch: surface (blue) from control polygon (white)</caption>
 </figure>
 <p>
-The NPatch object allows to model NURBS surfaces in a direct way, e.g. by
+The NPatch object allows to model NURBS surfaces in a direct way, e.g.~by
 modifying control points (see also the image above). Note that using
 NPatch objects should be seen as last resort, only to be used when the
 flexibility of all the NURBS surface creating tool objects is not high
@@ -6607,7 +6612,7 @@ settings:<p>
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 Similar to the <tt/"Length"/ parameter of the NCurve object, changes to
 <tt/"Width"/ or <tt/"Height"/ add or remove internal control points
-(i.e. to double the resolution of a 4 by 4 NURBS patch in U direction,
+(i.e.~to double the resolution of a 4 by 4 NURBS patch in U direction,
 change the <tt/"Width"/ from 4 to 7; this will lead to an additional
 control point inserted into every section of the original patch).
 
@@ -6758,7 +6763,7 @@ The IPatchAttr property contains the following elements:
 <item><tt/"Width"/ and <tt/"Height"/ control the dimensions of the patch.
 Similar to the <tt/"Length"/ parameter of the NCurve object, changes to
 <tt/"Width"/ or <tt/"Height"/ add or remove internal control points
-(i.e. to double the resolution of a 4 by 4 interpolating patch in U direction,
+(i.e.~to double the resolution of a 4 by 4 interpolating patch in U direction,
 change the <tt/"Width"/ from 4 to 7; this will lead to an additional
 control point inserted into every section of the original patch).
 
@@ -6840,7 +6845,7 @@ PV tags are currently not supported.
 </figure>
 <p>
 A BPatch is a simple bilinear patch defined by four control
-points. BPatch objects are e.g. used internally to build box objects,
+points. BPatch objects are e.g.~used internally to build box objects,
 see also <ref id="boxobj" name="Box Object">.
 <p>
 The following table briefly lists some capabilities of the BPatch object.
@@ -6945,7 +6950,7 @@ outlines of the patch (OutlinePatch). The default setting
 The patch mesh may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
 However, this does not work for all possible types of patch meshes
-(e.g. patch meshes with the basis types Catmull-Rom, Hermite, or
+(e.g.~patch meshes with the basis types Catmull-Rom, Hermite, or
 Custom can not be converted, currently).
 An internal NURBS patch representation is also in use when drawing
 the patch mesh (if the <tt/"DisplayMode"/ is not <tt/"ControlHull"/)
@@ -6971,7 +6976,7 @@ in Ayam scenes.
 <p>
 There are no special modelling actions for this type of object, but
 you may select and modify single points as you can do it with other
-object types, e.g. curves.
+object types, e.g.~curves.
 <p>
 The PolyMesh object is equivalent to the general points polygons
 primitive of the RenderMan interface. This means, each PolyMesh
@@ -7032,7 +7037,7 @@ T-junctions.
 <p>
 PolyMesh objects will be exported as RiPointsGeneralPolygons primitives
 (regardless of whether the actual configuration would fit into a simpler
-polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
 <p>
 PV tags are supported.
 
@@ -7052,7 +7057,7 @@ in Ayam scenes (see also the image above).
 <p>
 There are no special modelling actions for this type of object, but
 you may select and modify single points as you can do it with other
-object types, e.g. curves.
+object types, e.g.~curves.
 <p>
 The SDMesh object is equivalent to the Subdivision Mesh
 primitive of the RenderMan interface. This means, each SDMesh
@@ -7065,7 +7070,7 @@ subdivision schemes, but the scheme currently supported
 by most RenderMan compliant renderers is named "Catmull-Clark".
 <p>
 Tags may be specified for faces, edges, or vertices
-to control the subdivision process (e.g. to create sharp corners or edges
+to control the subdivision process (e.g.~to create sharp corners or edges
 in the resulting surface). All tags known from the RenderMan interface
 (hole, crease, corner, and interpolateboundary) are supported by Ayam,
 but they may currently not be changed by the user.
@@ -7109,7 +7114,7 @@ SDMesh objects may be converted to PolyMesh objects.
 <footnote>Since 1.11.</footnote>
 
 Note however that only the original, unrefined, control
-polygon (i.e. the base mesh) will be converted unless the <tt/"Level"/
+polygon (i.e.~the base mesh) will be converted unless the <tt/"Level"/
 attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
 
 <sect2>RIB Export
@@ -7231,7 +7236,7 @@ The extrude object forms an extrusion from a number of planar NURBS curves.
 <p>
 The first curve determines the outline and the other curves determine
 holes in the extrusion object. Holes may be used by objects that form
-e.g. letters.
+e.g.~letters.
 <p>
 The object has the generating NURBS curves as child objects,
 watches them and adapts to them automagically.
@@ -7490,7 +7495,7 @@ place, orientation, and size of the Sweep object.
 The cross section curve has to be defined in the YZ-plane of the
 Sweep objects coordinate system but it also has to be defined in the
 XY-plane of its own coordinate system. This means that a simple circular
-curve as e.g. created with the toolbox has to be rotated by 90 degrees
+curve as e.g.~created with the toolbox has to be rotated by 90 degrees
 around the Y-axis using its transformation attributes to follow these
 rules. Later editing of this curve has to be done in a Side view (or
 in an aligned local Front view, if the Sweep object itself is transformed
@@ -7506,7 +7511,7 @@ cross section in X-direction, otherwise the Y-component will be used
 to also scale the cross section in X-direction.
 <footnote>Since 1.13.</footnote>
 <p>
-This implies, that e.g. a scaling function that does nothing should be
+This implies, that e.g.~a scaling function that does nothing should be
 a linear curve from (0,1,1) to (1,1,1).
 Scale components that are less than or equal to zero will be silently ignored.
 <p>
@@ -7528,7 +7533,7 @@ trajectory.)
 the <tt/"Shift"/ key and select the other curve.)
 <item>Create the Sweep object using the toolbox.
 <item>Now you may enter the Sweep object and modify
-e.g. the second curve, the trajectory. (Press <tt/"e"/,
+e.g.~the second curve, the trajectory. (Press <tt/"e"/,
 then drag some control points around.)
 <item>To modify the cross section you would need to switch to a
 view of type <tt/"Side"/. (Use the <tt/&lt;Ctrl+s&gt;/ shortcut while
@@ -7748,7 +7753,7 @@ The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
 birailed surface on the respective end.
 Note that this only works properly if the cross section
-curve is closed and planar (e.g. defined in the XY plane).
+curve is closed and planar (e.g.~defined in the XY plane).
 <p>
 Since Ayam 1.10 bevels are available for birails.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
@@ -7916,7 +7921,7 @@ The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
 birailed surface on the respective end.
 Note that this only works properly if the cross section
-curve is closed and planar (e.g. defined in the XY plane).
+curve is closed and planar (e.g.~defined in the XY plane).
 <p>
 Since Ayam 1.10 bevels are available for birails.
 They are accessible through the new command entries <tt/"Add Start Bevel!"/
@@ -8001,8 +8006,8 @@ looks like this:
 </verb></tscreen>
 <p>
 Note that in contrast to the build from curves tool,
-the curves may be of arbitrary length and order. You may e.g.
-easily skin a curve of order 2 and length 6 with a second curve
+the curves may be of arbitrary length and order. One may e.g.~easily
+use a parameter curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points.
 If the curves are of different length or order, they will all be
@@ -8016,7 +8021,7 @@ adds another dimension of complexity. If you experience
 lags when editing the child curves of a skin object try to switch
 to lazy notification.
 Since Ayam 1.9, a skin object will also use all the curves of a
-tool object, that provides multiple curves, e.g. a clone object
+tool object, that provides multiple curves, e.g.~a clone object
 in mirror mode.
 <p>
 The direction of the parameter curves will be parallel to the v
@@ -8073,7 +8078,7 @@ The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be used
 to automatically create cap surfaces to close the skinned surface
 on both ends.
 Note that this works only if the respective curves are closed and
-planar (e.g. defined in the XY plane).
+planar (e.g.~defined in the XY plane).
 Furthermore, if the skin is not interpolating the respective parameter
 curves (this may be the case if the <tt/"Knot-Type_U"/ parameter is set
 to <tt/"B-Spline"/) the cap(s) will not be created in the right place.
@@ -8146,8 +8151,8 @@ Also note that this configuration is in fact equivalent to a Coons patch.
 <caption>Gordon Surface with Parameter Curves (white)</caption>
 </figure>
 <p>
-The curves may be of arbitrary length and order. You may e.g.
-use a curve of order 2 and length 6 with a second curve
+The curves may be of arbitrary length and order. One may e.g.~use
+a curve of order 2 and length 6 with a second curve
 of order 4 and length 4 and a third curve with order 3 and 5
 control points for the U parametric dimension. Note, however,
 that in the general case only non-rational curves can be used
@@ -8248,12 +8253,12 @@ If the parameter <tt/"WatchCurves"/ is switched on, Ayam will
 check for all four outer parameter curves, whether they touch in their
 endpoints. If not, the endpoints will be corrected. Note that this
 works only properly with clamped curves and objects that directly
-contain editable control points (i.e. it works with NCurve and ICurve
+contain editable control points (i.e.~it works with NCurve and ICurve
 objects, but not with Instance or ConcatNC objects). If Ayam can
 determine which curve was modified last, the other curve that should
 meet at the endpoint in question will be modified by <tt/"WatchCurves"/.
 If Ayam finds no information on modifications, the U curves take
-precedence (i.e. the V curves will be modified).
+precedence (i.e.~the V curves will be modified).
 <p>
 The parameters <tt/"Order_U"/ and <tt/"Order_V"/ determine the
 desired order of the resulting surface in U and V direction.
@@ -8306,9 +8311,9 @@ looks like this:
 </verb></tscreen>
 <p>
 Bevels are also available as properties of different tool objects
-(e.g. Extrude or Sweep). In fact, Bevel objects use the same creation
+(e.g.~Extrude or Sweep). In fact, Bevel objects use the same creation
 algorithm as bevel properties but offer increased flexibility in terms of
-e.g. material settings. Surfaces created from bevel properties always
+e.g.~material settings. Surfaces created from bevel properties always
 share the material settings of the tool object. In contrast, Bevel
 objects may have their own material settings. Bevel objects are
 available in Ayam since version 1.10.
@@ -8547,9 +8552,10 @@ be created.
 (in U direction), the default value (0) leads to a cubic surface.
 If the desired order is 1, the respective order from the first
 of the parameter surfaces is taken.
-If the desired order is higher than the number of curves (i.e. the
+If the desired order is higher than the number of curves (i.e.~the
 total number of control points of all surfaces in their desired
-directions), it will be lowered to the number of curves silently.
+directions plus the number of eventually present parameter curves),
+it will be lowered to the number of curves silently.
 
 <item><tt/"FillGaps"/ creates fillet surfaces for all gaps between
 the parameter surfaces of the ConcatNP object. No fillet will be created
@@ -8580,7 +8586,7 @@ individually. Valid characters in this string are <tt/"u"/, <tt/"U"/,
 <tt/"v"/, and <tt/"V"/.
 The uppercase variants lead to a reverted surface.
 To connect two surfaces that share the same orientation "over a corner"
-one would e.g. need to set <tt/"UVSelect"/ to <tt/"uV"/
+one would e.g.~need to set <tt/"UVSelect"/ to <tt/"uV"/
 (see also the image below).
 The default, an empty string, is equivalent to "u" for all
 patches.
@@ -8678,10 +8684,10 @@ actual knot values, and the valid range for the parametric values is
 then consequently 0.0-1.0.
 
 <item><tt/"PatchNum"/ allows to select a patch from a list of
-patches delivered e.g. by a beveled extrude object as child
+patches delivered e.g.~by a beveled extrude object as child
 of the ExtrNP object.
 This way it is possible to extract a patch from a bevel or cap
-surface of e.g. a Revolve object.
+surface of e.g.~a Revolve object.
 
 <item>See section <ref id="npattr" name="NPatchAttr"> for a description
 of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
@@ -8792,7 +8798,7 @@ As with the Extrude objects, caps and bevels may be created automatically.
 <p>
 Parsing of TrueType font descriptions is quite tricky. For the sake
 of brevity and ease of the implementation, Ayam does not support elaborate
-TrueType features like kerning tables, that e.g. control distances between
+TrueType features like kerning tables, that e.g.~control distances between
 certain letters (You are not going to typeset a book with Ayam anyway,
 aren't you?). Therefore you might experience wrong letter distances
 from time to time. If this happens, just create a Text object for each
@@ -8895,7 +8901,7 @@ the same set of tags.
 <p>
 The Trim object may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
-unavailable to trimming like e.g. a Revolve object.
+unavailable to trimming like e.g.~a Revolve object.
 <footnote>Since 1.16.</footnote>
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
@@ -8964,7 +8970,7 @@ the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
 <p>
 Script objects may also use arbitrary, plugin provided,
-scripting languages, like e.g. JavaScript, provided by the
+scripting languages, like e.g.~JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).
 <footnote>Since 1.18.</footnote>
@@ -8986,7 +8992,7 @@ cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
 source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
 auto_qualify, unknown (the missing unknown and autoloading facilities
 lead to further unavailability of commands normally available via
-autoloading, like e.g. parray, history).
+autoloading, like e.g.~parray, history).
 The puts command is available in a limited fashion: only access to
 the stdout and stderr channels is allowed.
 Ayam scripting interface commands that directly manipulate the user
@@ -8999,7 +9005,7 @@ in the safe interpreter
 In addition, access to global variables like env, ay, ayprefs
 is not allowed. In fact, the safe interpreter has a completely
 separate set of variables. Transfer of data between both interpreters
-must be arranged manually from the Ayam interpreter (e.g. scripts that
+must be arranged manually from the Ayam interpreter (e.g.~scripts that
 run in the Ayam console).
 <p>
 With the help of scripts, that run in the Ayam interpreter, more commands
@@ -9019,7 +9025,7 @@ or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <p>
 The script of a script object will be run each time the script is
 modified and each time the notification callback of the script object
-is called (e.g. because one of the children of the script object changed).
+is called (e.g.~because one of the children of the script object changed).
 As long as the script of a script object is executed, Ayam will
 not process any events except for checking whether the script emergency
 hotkey <tt/&lt;Ctrl+Shift+c&gt;/, that may also be used to
@@ -9031,7 +9037,7 @@ procedures and commands should <em>not</em> be used: uS, uCR, uCL,
 selOb, plb_update, undo!
 <p>
 Since Ayam 1.8.2 script objects may also create their own property
-GUIs for e.g. script parameters. This may be accomplished by adding
+GUIs for e.g.~script parameters. This may be accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
 management and property GUI creation.
@@ -9051,7 +9057,7 @@ script object developers fine grained control over what actually goes
 to the Ayam scene file.
 <p>
 Since Ayam 1.12 there is also a tag type to remove properties
-(<tt>"RP"</tt>). Using this tag, one can e.g. hide the actual script
+(<tt>"RP"</tt>). Using this tag, one can e.g.~hide the actual script
 code and block users from unintentionally changing it.
 <p>
 Since Ayam 1.15 script objects can have individual sets of parameters,
@@ -9072,7 +9078,7 @@ Since Ayam 1.18 Script objects may also use arbitrary, plugin provided,
 scripting languages. To switch to a different language, the first line
 of the script must be a comment (in the syntax of the other language)
 with the word <tt>"use:"</tt> followed by the language name, as
-provided by the corresponding plugin, e.g. for JavaScript the first line
+provided by the corresponding plugin, e.g.~for JavaScript the first line
 should look like this:
 <code>
 /* Ayam, use: JavaScript */
@@ -9118,9 +9124,9 @@ parameterise new objects. After running the script, the newly
 created object(s) will automatically be moved into the internal data
 structure of the script object. The script object will look like
 and act as an object of the type that the script created.
-If the script creates e.g. a NCurve object, the script object may
+If the script creates e.g.~a NCurve object, the script object may
 be used as parameter object of a tool object that needs a NCurve,
-e.g. a Sweep:
+e.g.~a Sweep:
 <tscreen><verb>
 +-Sweep
  | Cross_Section(Script)
@@ -9159,9 +9165,9 @@ one of the child objects of the script object, the
 <tt/"withOb"/ command may be used to accomplish this easily.
 The script object will look like and act as an object of the type
 of the first child object of the script object.
-If the script object has e.g. a NCurve object as first child, the
+If the script object has e.g.~a NCurve object as first child, the
 script object may be used as parameter object of a tool object that
-needs a NCurve, e.g. a Sweep:
+needs a NCurve, e.g.~a Sweep:
 <#if out=latex><x/needspace 6/</#if>
 <tscreen><verb>
 +-Sweep
@@ -9329,7 +9335,7 @@ the two different trajectory curves):
 <sect1>Custom Objects<label id="customobj">
 <p>
 Custom objects are plugins that extend the Ayam capabilities by
-defining totally new types of e.g. geometric objects. This may
+defining totally new types of e.g.~geometric objects. This may
 be done easily, because the Ayam core is written in a modelling
 paradigm independent way.
 <p>
@@ -9512,7 +9518,7 @@ objects using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 Metaball objects will be exported as RiPointsGeneralPolygons primitives
 (regardless of whether the actual configuration would fit into a simpler
-polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
 <p>
 PV tags are currently not supported.
 
@@ -9615,7 +9621,7 @@ objects (or PolyMesh providing objects) to SDNPatch objects.
 
 Note that the PolyMesh to SDNPatch conversion only accepts closed
 quadrilateral polygon meshes (Triangles are omitted) and expects
-an optimized mesh (i.e. adjacent faces should share the same vertices).
+an optimized mesh (i.e.~adjacent faces should share the same vertices).
 
 <sect2>Conversion Support
 <p>
@@ -9626,7 +9632,7 @@ objects using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 SDNPatch objects will be exported as RiPointsGeneralPolygons primitives
 (regardless of whether the actual configuration would fit into a simpler
-polygonal primitive of the RenderMan interface, e.g. a RiGeneralPolygon).
+polygonal primitive of the RenderMan interface, e.g.~a RiGeneralPolygon).
 <p>
 PV tags are currently not supported.
 
@@ -9685,7 +9691,7 @@ the object will first be rotated around X by x-angle degrees
 then around Y y-angle degrees then around Z z-angle degrees.
 In fact, no information about the order in which partial
 rotations occured may be derived from that three values.
-This implies, that e.g. the values 0 0 45 may denote
+This implies, that e.g.~the values 0 0 45 may denote
 a different orientation than the very same values
 0 0 45 (no joke)!
 <p>
@@ -9730,12 +9736,12 @@ in the object listbox or tree and may be written to RIB streams.
 It may also be excluded from RIB export.
 
 <item><tt/"HideChildren"/, if this attribute is set, the child objects
-of this object are not drawn. This attribute is e.g. used by
+of this object are not drawn. This attribute is e.g.~used by
 <tt/"NPatch"/ objects to prevent the trim curves from being drawn
 in normal views.
 
 <item><tt/"RefCount"/, just displays how many objects point to this
-object e.g. through master-instance or object-material relationships.
+object e.g.~through master-instance or object-material relationships.
 Objects with a reference count higher than zero may not be deleted.
 </itemize>
 
@@ -9768,8 +9774,8 @@ in the tree view.
 <label id="interiorprop"><label id="exteriorprop"><label id="lightshaderprop">
 <p>
 Shader properties are used to attach shaders of a certain type to objects.
-The name of the property contains the type of the shader, e.g.
-light shaders may be attached using a property named <tt/"LightShader"/ only.
+The name of the property contains the type of the shader, e.g.~light
+shaders may be attached using a property named <tt/"LightShader"/ only.
 Other types of shaders or shader properties available are: <tt/"Surface"/,
 <tt/"Displacement"/, <tt/"Interior"/, <tt/"Exterior"/, <tt/"Atmosphere"/,
 and <tt/"Imager"/.
@@ -9832,7 +9838,7 @@ float values, and because libslcargs is able to deliver the default
 values for a matrix (but not for an array!).
 <p>
 If Ayam has been compiled without a shader parsing library
-(e.g. without libslcargs), Ayam will parse XML files created
+(e.g.~without libslcargs), Ayam will parse XML files created
 by <tt/"sl2xml"/ from the K-3D project
 (see <tt>"http://www.k-3d.org/"</tt>)
 instead of compiled shaders.
@@ -9870,8 +9876,8 @@ the new version of the shader.
 <p>
 You can also just copy certain parameter values (shader arguments
 whose types do not change) by selecting them using double-clicks
-on the parameter names in the shader property GUI and then use e.g.
-<tt>"Edit/Copy Marked Prop"</tt>
+on the parameter names in the shader property GUI and then use
+e.g.~<tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
 
@@ -9879,7 +9885,7 @@ on the parameter names in the shader property GUI and then use e.g.
 <p>
 Use the <tt/"Tags"/ property to edit the tags of an object.
 <p>
-Tags provide an easy way to attach arbitrary information (e.g. additional
+Tags provide an easy way to attach arbitrary information (e.g.~additional
 RenderMan interface attributes, special attributes for plugins or even
 scripts) to objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.
@@ -9907,7 +9913,7 @@ Note that extensions and plugins may define their own types.
 
 <sect1>Tags<label id="tags">
 <p>
-Tags provide an easy way to attach arbitrary information (e.g. additional
+Tags provide an easy way to attach arbitrary information (e.g.~additional
 RenderMan interface attributes, special attributes for plugins or even
 scripts) to objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.
@@ -9933,13 +9939,13 @@ In order to create a tag of type RiAttribute, the type string must be
 <p>
 <tt/&lt;attrname&gt;,&lt;paramname&gt;,&lt;paramtype&gt;,&lt;param&gt;/
 <p>
-where attrname is the name of the attribute (e.g. "render") paramname
-is the name of the parameter (e.g. "displacementbound") paramtype is a
+where attrname is the name of the attribute (e.g.~"render") paramname
+is the name of the parameter (e.g.~"displacementbound") paramtype is a
 single character defining the type of the parameter (it may be one of
 <tt/f/ &ndash; float, <tt/g/ &ndash; float pair, <tt/i/ &ndash; integer,
 <tt/j/ &ndash; integer pair, <tt/s/ &ndash; string, <tt/c/ &ndash; color,
 <tt/p/ &ndash; point) and finally
-param is the value of the parameter itself (e.g. a float: "1.2", an
+param is the value of the parameter itself (e.g.~a float: "1.2", an
 integer value: "3", a string: "on", a color: "1,1,1" or a point:
 "0.4,0.5,1.0").
 <p>
@@ -10021,7 +10027,7 @@ depends heavily on the shader and its use of the texture coordinates.
 <p>
 Note also that using <tt/"TC"/ tags you change the texture coordinates
 of entire primitives only, if you want to change the texture coordinates
-of sub-primitives (e.g. of single control points of a NURBS patch)
+of sub-primitives (e.g.~of single control points of a NURBS patch)
 you would need to use a <tt/"PV"/ (Primitive Variable) tag instead.
 <p>
 To ease setting of <tt/"TC"/ tag values Ayam provides a special graphical
@@ -10063,7 +10069,7 @@ The <tt/"Load"/ and <tt/"Save"/ menu buttons allow you to:
 The xy coordinates of the four points of the selected BPatch
 will be interpreted as st coordinates.
 This allows for more complex transformations of the texture coordinates
-e.g. rotations about an angle of 45 degrees. For that just create a
+e.g.~rotations about an angle of 45 degrees. For that just create a
 BPatch object, rotate it accordingly, then load the coordinates into
 the texture coordinate editor.
 
@@ -10087,7 +10093,7 @@ while you model. The <tt/"Dismiss"/ button closes the dialog.
 <p>
 The tag type <tt/"PV"/ can be used to attach arbitrary data
 to geometric primitives and even sub-primitives.
-With the help of primitive variables you can e.g. attach your
+With the help of primitive variables you can e.g.~attach your
 own texture coordinates to a NURBS patch primitive or attach distinct
 colors to the faces or even to single vertices of a polygonal mesh.
 In the latter case, the data is properly interpolated by the RenderMan
@@ -10172,16 +10178,16 @@ A RiHider tag could look like this:
 <bf/Description/
 <p>
 The tag type <tt/"RiDisplay"/ can be used to add output files of
-different type (e.g. containing depth-buffer information)
+different type (e.g.~containing depth-buffer information)
 to the scene or to directly control the output format when rendering
 the exported scene with a RenderMan compliant renderer.
 RiDisplay tags have to be attached to the root object in order to be used.
 The syntax of a RiDisplay tag is as follows:
 <tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
-where name is e.g. a file or device name, type specifies the
-destination of the image data (e.g. screen or file), mode
+where name is e.g.~a file or device name, type specifies the
+destination of the image data (e.g.~screen or file), mode
 specifies which information should be stored or displayed
-(e.g. color values: rgb, or depth values: z),
+(e.g.~color values: rgb, or depth values: z),
 and <tt/"&lt;parameterlist&gt;"/ is a comma separated list
 of triplets consisting of name, type, and value of a parameter.
 <p>
@@ -10243,7 +10249,7 @@ internal windows.
 The tag type <tt/"TP"/ can be used to save tesselation parameters
 to objects of type <tt/"NPatch"/ (and objects that may be converted
 to <tt/"NPatch"/ objects). Those tesselation parameters
-will be used when the NPatch object is tesselated for e.g. a
+will be used when the NPatch object is tesselated for e.g.~a
 conversion to a PolyMesh object. The syntax of the TP tag is:
 <tt>"&lt;tmethod&gt;,&lt;tparamu&gt;,&lt;tparamv&gt;"</tt>
 where <tt/"&lt;tmethod&gt;"/ is an integer value between 1 and 3, describing
@@ -10281,7 +10287,7 @@ for more information regarding the depth complexity value.
 <p>
 <bf/Example/
 <p>
-A DC tag (valid for e.g. a torus) could look like this:
+A DC tag (valid for e.g.~a torus) could look like this:
 <tscreen><verb>DC 2</verb></tscreen>
 
 <sect2>NP (New Property) Tag<label id="nptag">
@@ -10325,7 +10331,7 @@ see the script (code), just a clean parameter GUI.
 The tag type <tt/"BNS"/ (before notify script) may be used to add scripts
 to an object, that will be run <em/before/ the notification callback of
 that object completed.
-The notification, in turn, will be executed because e.g. one of the children
+The notification, in turn, will be executed because e.g.~one of the children
 of the object changed.
 <p>
 <bf/Example/
@@ -10363,7 +10369,7 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 The tag type <tt/"ANS"/ (after notify script) may be used to add scripts
 to an object, that will be run <em/after/ the notification callback of
 that object completed.
-The notification, in turn, will be executed because e.g. one of the children
+The notification, in turn, will be executed because e.g.~one of the children
 of the object changed.
 <p>
 <bf/Example/
@@ -10549,11 +10555,11 @@ which was created with an arc value of 180.0, 10 sections, and order 4).
 <item>Operation: The NURBCircle tool creates a circular NURBS curve
 of desired radius and arc in the XY plane, centered around the origin.
 The order of the curve will be 3. The number of control points used
-differs according to the arc, e.g. 9 points for full circles,
+differs according to the arc, e.g.~9 points for full circles,
 5 for half circles,
 3 for a quarter circle.
 <item>Note: The NURBS curve created by the NURBCircle tool is rational
-(uses weights). This means, editing the curve (e.g. moving control points)
+(uses weights). This means, editing the curve (e.g.~moving control points)
 may lead to unpredicted results (the curve does not behave exactly
 as wished). Use a closed B-Spline created with the Circular B-Spline tool
 (see above) if you want to edit the curve further.
@@ -10994,7 +11000,7 @@ resulting curve does not deviate more than tol from the original curve
 in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (by entering -i index instead of a parametric
-value t, i.e. <tt/"-i 4"/ instead of <tt/"0.5"/).
+value t, i.e.~<tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original curve is left unchanged.
 <item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
@@ -11309,7 +11315,7 @@ resulting surfaces does not deviate more than tol from the original surfaces
 in any point. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
 index in the knot vector (by entering -i index instead of a parametric
-value t, i.e. <tt/"-i 4"/ instead of <tt/"0.5"/).
+value t, i.e.~<tt/"-i 4"/ instead of <tt/"0.5"/).
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
 <item>Note: If tol is <tt/"Inf"/ (infinity) the tool tries to work without
@@ -11472,7 +11478,7 @@ the currently selected method and parameter value to all selected
 objects. This tag can be evaluated later, when the respective
 objects are converted to PolyMesh objects. Since Ayam 1.11 also the
 conversion mechanism of objects keeps the <tt/"TP"/ tags intact, so
-that one may e.g. save tesselation parameters for a Sphere or a Revolve
+that one may e.g.~save tesselation parameters for a Sphere or a Revolve
 object. Upon conversion of the Sphere or Revolve object via a NURBS
 patch to a PolyMesh, the tesselation parameters will be retained.
 Mind that the <tt/"SaveToTag"/ option will be activated automatically
@@ -11497,8 +11503,8 @@ and their parameter(s).
 <sect>Scripting Interface<label id="script">
 <p>
 The Ayam scripting interface is mainly a number of Tcl procedures
-and Tcl commands that are also used internally by the application, e.g.
-the main menu entry <tt>"File/New"</tt> calls the
+and Tcl commands that are also used internally by the application,
+e.g.~the main menu entry <tt>"File/New"</tt> calls the
 scripting interface command <tt/"newScene"/ (among other commands).
 Using the scripting interface means to call these commands on
 your own possibly in a mix with standard Tcl script code.
@@ -11590,7 +11596,7 @@ command variants. See also section
 <p>
 The global array <tt/"ay"/ holds application state variables.
 Furthermore, you can find the paths to important widgets
-(e.g. the tree widget for the object hierarchy or the currently
+(e.g.~the tree widget for the object hierarchy or the currently
 active view) in this array.
 Use <tt/"parray ay"/ in the console to see what is there.
 More documentation to come.
@@ -11718,7 +11724,7 @@ be selected.
 Depending on the type, further arguments may (or have to) be given;
 some object types expect other objects to be selected upon creation.
 <p>
-All arguments consist of a option name part and a value part (i.e. it is
+All arguments consist of a option name part and a value part (i.e.~it is
 <tt/"-center 1"/ and <em/not/ <tt/"-center"/ and also <em/not/
 <tt/"-center=1"/).
 The option names can be abbreviated. Useful default and fallback
@@ -11753,7 +11759,7 @@ the knot type will always be set to 3 &ndash; Custom.
 
   <item><tt/"-kv"/: the knot vector of the new curve. The value of this
 option is a list of floating point numbers of length curve length plus
-curve order, e.g. for a curve with 2 control points and order 2, specify
+curve order, e.g.~for a curve with 2 control points and order 2, specify
 4 knots: <tt/"-kv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
 an automatically created knot vector of the type specified by the
 <tt/"-kt"/ option above.
@@ -11771,7 +11777,7 @@ This list may also only specify one point, which is then taken as starting
 point and DX/DY/DZ (see below) are used to create the missing control points
 automatically.
 To specify a complete control vector, this list should have curve length
-by 4 elements, e.g. for a curve of length 3, specify 12 values:
+by 4 elements, e.g.~for a curve of length 3, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -11844,7 +11850,7 @@ DX/DY/DZ (see below)
 are used to create the missing control points automatically.
 To specify a complete
 control vector, this list should have curve length by 3 elements,
-e.g. for a curve of length 3, specify 9 values:
+e.g.~for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -11938,7 +11944,7 @@ DX/DY/DZ (see below)
 are used to create the missing control points automatically.
 To specify a complete
 control vector, this list should have curve length by 3 elements,
-e.g. for a curve of length 3, specify 9 values:
+e.g.~for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -11996,7 +12002,7 @@ If a custom knot vector is specified using the <tt/"-ukv"/ option below,
 the knot type will always be set to 3 &ndash; Custom.
   <item><tt/"-ukv"/: the U knot vector of the new patch. The value of this
 option is a list of floating point numbers of length width plus
-patch U order, e.g. for a patch with width 2 and U order 2, specify
+patch U order, e.g.~for a patch with width 2 and U order 2, specify
 4 knots: <tt/"-ukv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
 an automatically created knot vector of the type specified by the
 <tt/"-ukt"/ option above.
@@ -12018,7 +12024,7 @@ If a custom knot vector is specified using the <tt/"-vkv"/ option below,
 the knot type will always be set to 3 &ndash; Custom.
   <item><tt/"-vkv"/: the V knot vector of the new patch. The value of this
 option is a list of floating point numbers of length height plus
-patch V order, e.g. for a patch with height 2 and V order 2, specify
+patch V order, e.g.~for a patch with height 2 and V order 2, specify
 4 knots: <tt/"-vkv {0.0 0.0 1.0 1.0}"/. The knot vector defaults to
 an automatically created knot vector of the type specified by the
 <tt/"-vkt"/ option above.
@@ -12037,7 +12043,7 @@ point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
 missing control points automatically.
 To specify a complete control vector, this list should have width by
 height by 4 elements,
-e.g. for a patch of width 2 and height 2, specify 16 values:
+e.g.~for a patch of width 2 and height 2, specify 16 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new patch. The value of
@@ -12164,7 +12170,7 @@ point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
 missing control points automatically.
 To specify a complete control vector, this list should have width by
 height by 3 elements,
-e.g. for a patch of width 2 and height 2, specify 12 values:
+e.g.~for a patch of width 2 and height 2, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0  2.0 1.0 0.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new patch. The value of
@@ -12349,7 +12355,7 @@ It is therefore a list of positive integer values of length:
 double number of tags. The even entries specify the number of integer and
 the odd entries the number of floating point arguments per tag.
 The content of this list is partially dictated by the <tt/"-tags"/
-option, e.g. a crease entry has atleast two integer arguments and one
+option, e.g.~a crease entry has atleast two integer arguments and one
 floating point argument.
 The default value of this option is list of proper length, with all
 elements set to zero (no tags have any arguments).
@@ -12506,7 +12512,7 @@ sL &ndash; select last object:
  <item>Background: No, Undo: No, Safe: Yes
  <item>Description: Select the last object in the current level
 and, if run in the Ayam interpreter, update the GUI.
-If run in the safe interpreter (e.g. from a Script objects script)
+If run in the safe interpreter (e.g.~from a Script objects script)
 this command will create a hidden selection.
 This command is often called in a sequence
 after creating a new object like this:
@@ -12928,8 +12934,8 @@ addTag:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Add a tag with type-string type and value-string
 value to the currently selected objects(s).
-It is legal to deliver <tt>""</tt> as value parameter. This is e.g.
-needed for the <tt/"NoExport"/ tag.
+It is legal to deliver <tt>""</tt> as value parameter. This is
+e.g.~needed for the <tt/"NoExport"/ tag.
 <item>Examples:
 <enum>
 <item><bf><tt>"addTag NoExport """</tt></bf><newline>
@@ -13069,7 +13075,7 @@ remknNC &ndash; remove knot from NURBS curve:
 specified by u (u must be in the valid range of the knot vector
 of the selected curve) r times from the curve. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e. use <tt/"remknNC -i 4 1"/ instead of
+index in the knot vector (i.e.~use <tt/"remknNC -i 4 1"/ instead of
 <tt/"remknNC 0.5 1"/).
 <p><p>
 Note that the
@@ -13277,7 +13283,7 @@ makeCompNC &ndash; make NURBS curves compatible
  <item>Synopsis: <tt/"makeCompNC"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: makes the selected NURBS curves compatible
-i.e. of the same order and defined on the same knot vector.
+i.e.~of the same order and defined on the same knot vector.
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
 
@@ -13411,7 +13417,7 @@ remknuNP &ndash; remove u knot from NURBS surface:
 specified by u (u must be in the valid range of the knot vector
 of the selected surface) r times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e. use <tt/"remknuNP -i 4 1"/ instead of
+index in the knot vector (i.e.~use <tt/"remknuNP -i 4 1"/ instead of
 <tt/"remknuNP 0.5 1"/). Note that the
 shape of the surface may be changed by this tool unless the parameter
 tol is specified. If tol is specified, the new surface does not deviate
@@ -13433,7 +13439,7 @@ remknvNP &ndash; remove v knot from NURBS surface:
 specified by v (v must be in the valid range of the knot vector
 of the selected surface) r times from the surface. Since Ayam 1.20
 the knot to remove may also be specified using its (zero based)
-index in the knot vector (i.e. use <tt/"remknvNP -i 4 1"/ instead of
+index in the knot vector (i.e.~use <tt/"remknvNP -i 4 1"/ instead of
 <tt/"remknvNP 0.5 1"/). Note that the
 shape of the surface may be changed by this tool unless the parameter
 tol is specified. If tol is specified, the new surface does not deviate
@@ -13627,7 +13633,7 @@ See also section <ref id="bfct" name="Build from Curves Tool">.
 Use these two commands to read or manipulate single points of arbitrary
 objects.
 Note that the exact arguments needed depend on the type of the selected
-object, e.g. manipulating the points of a NURBS curve requires just one
+object, e.g.~manipulating the points of a NURBS curve requires just one
 index parameter (indexu), whereas manipulating the points of a NURBS
 patch requires two index parameters (indexu and indexv) to be specified.
 
@@ -13882,20 +13888,20 @@ of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
 before the execution of command. Note that forAll will run
 slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g. the property context menu first.
+by de-selecting the property using e.g.~the property context menu first.
  <item>Deficiencies:
  <itemize>
   <item>A recursive forAll will
-e.g. also descend into NURBS patches (if they have trim curves) and apply
+e.g.~also descend into NURBS patches (if they have trim curves) and apply
 the command to the trim curves, which might not exactly be what you
 want. Use <tt>"forAllT"</tt> in this case.
   <item>The command will not have access to global arrays unless
-e.g. one of the following constructs is in use:
+e.g.~one of the following constructs is in use:
 <p><p>
 <tt>"forAll 0 &lcub; uplevel &num;0 &lcub; commands &rcub; &rcub;"</tt><p>
 <tt>"forAll 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
-hierarchy (e.g. deleting or inserting objects). The commands
+hierarchy (e.g.~deleting or inserting objects). The commands
 may just modify existing objects. Since Ayam 1.9 <tt>"forAll"</tt>
 correctly maintains the current selection.
  </itemize>
@@ -13913,19 +13919,19 @@ forAllT:
 additional type check. The command will not be executed if the type of the
 current object does not match the argument type. Note that forAllT will run
 slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g. the property context menu first.
+by de-selecting the property using e.g.~the property context menu first.
 <p><p>
 Note that the type strings will be converted to lowercase before
-comparison, so that it is legal to use forAllT e.g. this way:
+comparison, so that it is legal to use forAllT e.g.~this way:
 <p><tt>"forAllT ncurve 0 &lcub;puts $i&rcub;"</tt><p>
  <item>Deficiencies:
  <itemize>
   <item>The command will not have access to global arrays unless
-e.g. one of the following constructs is in use:<p>
+e.g.~one of the following constructs is in use:<p>
 <tt>"forAllT ncurve 0 &lcub;uplevel &num;0 &lcub;commands&rcub; &rcub;"</tt><p>
 <tt>"forAllT ncurve 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
-hierarchy (e.g. deleting or inserting objects). The commands
+hierarchy (e.g.~deleting or inserting objects). The commands
 may just modify existing objects. Since Ayam 1.9 <tt>"forAllT"</tt>
 correctly maintains the current selection.
  </itemize>
@@ -14115,7 +14121,7 @@ of the now following modelling operation <em>has</em> to be provided in
 a second argument (<tt/"opname"/).
 This name will be displayed in the default console prompt, to inform the
 user about which operation would be undone/redone, if undo/redo would be
-used (e.g. <tt>"[Undo:MoveObj/Redo:none].../bin&gt;"</tt>).
+used (e.g.~<tt>"[Undo:MoveObj/Redo:none].../bin&gt;"</tt>).
 Since Ayam 1.13, a third argument may be given, that controls whether
 all the children of the selected objects should also be saved. This may
 be needed if the modelling action that follows the undo save is about to
@@ -14203,7 +14209,7 @@ a single <tt>"return;"</tt> statement.
 Various entries of dialogs for object creation and modelling tools
 support Tcl variables and expressions.
 
-One can e.g. enter
+One can e.g.~enter
 <code>
 $::u
 </code>
@@ -14227,7 +14233,7 @@ typed values):
 Repeated calling of the tool without opening the dialog (using
 the keyboard shortcut <tt/&lt;Ctrl+T&gt;/), will execute the
 provided expression again.
-This means, one can e.g. create a number of curves with increasing
+This means, one can e.g.~create a number of curves with increasing
 length by entering into the Ayam console
 <code>
 set ::myvar 1
@@ -14397,7 +14403,7 @@ procedure.
 <p>
 Here is another example script that shows how you may add buttons
 to the toolbox.
-myImage should be an image created e.g. from a GIF file of
+myImage should be an image created e.g.~from a GIF file of
 the size 25 by 25 pixels.
 <code>
 global ay ayprefs
@@ -14482,7 +14488,7 @@ bgconvert.tcl).
 <p>
 The external Tcl script <tt>"repairAyam.tcl"</tt>
 may be used to repair the application state of Ayam,
-should it be stuck e.g. in an endless loop of Tcl error messages.
+should it be stuck e.g.~in an endless loop of Tcl error messages.
 <footnote>Since 1.8.2.</footnote>
 <p>
 On Unix systems <tt>"repairAyam"</tt> may be started from any
@@ -14517,7 +14523,7 @@ reset the mouse cursor and the console prompt, and try to update important
 main window widgets.
 <p>
 Furthermore, the script will also clear the console and
-try to break potential endless loops running e.g. in the console or
+try to break potential endless loops running e.g.~in the console or
 in script objects.
 <footnote>Since 1.9.</footnote>
 <p>
@@ -14596,7 +14602,7 @@ The script <tt>"aac.tcl"</tt> (for automatic about center) may be
 used to switch all modelling actions to their about variants with
 the mark set to the center of the current selection automatically.
 <p>
-After running the script, invoking e.g. the scale 2D action using
+After running the script, invoking e.g.~the scale 2D action using
 the shortcut <tt/&lt;s&gt;/ will:
 <itemize>
 <item>if the modelling mode is object,
@@ -14617,7 +14623,7 @@ The script modifies all rotate and scale actions (including their axis
 confined variants).
 <p>
 Note, that the mark is not reset to a new center, when the selection
-changes. After a selection change (e.g. by selecting points in a
+changes. After a selection change (e.g.~by selecting points in a
 different view) simply restart the action to transform about the
 new center.
 <p>
@@ -14636,7 +14642,7 @@ to point modelling automatically after a point selection.
 After running the script, selecting (tagging) a point using the
 select point action (shortcut <tt/&lt;t&gt;/) will automatically
 switch the view to point modelling so that the next modelling
-actions (e.g. move, via shortcut <tt/&lt;m&gt;/) will always
+actions (e.g.~move, via shortcut <tt/&lt;m&gt;/) will always
 transform the points and not modify the objects transformations.
 Note that currently the switch to point modelling will also occur,
 if no points are actually selected, it is just the mouse click that
@@ -14673,7 +14679,7 @@ bgconvert.tcl "infile.rib -p 1" outfile.dxf
 In the example above the <tt>"-p 1"</tt> option switches on reading
 of partial RIB files.
 Available options and their syntax may be inquired from the
-import and export plugin Tcl scripts (e.g. <tt>"plugins/rrib.tcl"</tt>).
+import and export plugin Tcl scripts (e.g.~<tt>"plugins/rrib.tcl"</tt>).
 
 <sect2>Access Core Functions from the Toolbox<label id="zaptcl">
 <p>
@@ -14768,7 +14774,7 @@ explain the operations in more detail:
 <table loc="p">
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
 <bf/Letter/|<bf/Name/|<bf/Description/@<hline>
-<tt/d/|dual|The dual of a polyhedron has a vertex for each face, and a face for each vertex, of the original polyhedron, e.g. dC=O.@<hline>
+<tt/d/|dual|The dual of a polyhedron has a vertex for each face, and a face for each vertex, of the original polyhedron, e.g.~dC=O.@<hline>
 <tt/t/&thinsp;/&thinsp;<tt/t/<em/n/|truncate all&thinsp;/&thinsp;just <em/n/-fold vertices|Truncating a polyhedron cuts off each vertex, producing a new <em/n/-sided face for each <em/n/-fold vertex.@<hline>
 <tt/k/&thinsp;/&thinsp;<tt/k/<em/n/|kis all&thinsp;/&thinsp;just <em/n/-sided faces|The kis operation divides each <em/n/-sided face into <em/n/ triangles. A new vertex is added in the center of each face.@<hline>
 <tt/a/|ambo|The ambo operation can be thought of as truncating to the edge midpoints. It produces a polyhedron, aX, with one vertex for each edge of X.@<hline>
@@ -14787,7 +14793,7 @@ explain the operations in more detail:
 <#if out=latex><tabular ca="|c|p{1.5cm}|p{11cm}|"><hline></#if><#unless out=latex><tabular ca="|c|c|c|"><hline></#unless>
 <bf/Letter/|<bf/Name/|<bf/Description/@<hline>
 <tt/r/|reflect|Changes a left-handed solid to right handed, or vice versa, but has no effect on a reflexible solid. So rC=C, but compare sC and rsC.@<hline>
-<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g. pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e. paX=apX.<#if out=latex>@<hline></#if>
+<tt/p/|propellor|Makes each n-gon face into a "propellor" of an n-gon surrounded by n quadrilaterals, e.g.~pT is the tetrahedrally stellated icosahedron. Try pkD and pt6kT. p is a self-dual operation, i.e., dpdX=pX and dpX=pdX, and p also commutes with a and j, i.e.~paX=apX.<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Additional Operations</caption>
 </table>
@@ -14837,7 +14843,7 @@ the following code fails:
 <tt>tcleval("<bf>exit</bf>");</tt>
 </tscreen>
 it does not fail, when the calling context ist the main Tcl interpreter;
-one can e.g. type into the Ayam console:
+one can e.g.~type into the Ayam console:
 <tscreen>
 <tt><bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
 </tscreen>
@@ -14854,7 +14860,7 @@ and <tt>"tclset"</tt>.
 <p>
 The functionality of Ayam is accessible from JavaScript via a larger
 set of global functions, named as the corresponding Tcl commands.
-One may e.g. create Ayam objects in JavaScript using a function call
+One may e.g.~create Ayam objects in JavaScript using a function call
 like this:
 <tscreen><tt>
 crtOb("NCircle");
@@ -14907,7 +14913,7 @@ tcleval("<bf>puts </bf>" + a);<newline>
 Mind that the corresponding variable on the JavaScript side does
 <em>not</em> exist until the first write onto the Tcl variable.
 The Tcl variable, in turn, does not have to exist, when the
-<tt>"tclvar"</tt> function is called (i.e. all the work is done
+<tt>"tclvar"</tt> function is called (i.e.~all the work is done
 in the trace callback).
 <p>
 Even though it looks a perfect fit,  <tt/"tclvar"/ can not be used to
@@ -14943,7 +14949,7 @@ Note that the variable names may also point to Tcl array elements:
 <sect2>Data Conversion
 <p>
 When data is transferred from the Tcl to the JavaScript side
-(e.g. while converting return values of <tt/"tcleval"/ or variable
+(e.g.~while converting return values of <tt/"tcleval"/ or variable
 values linked via  <tt/"tclvar"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts,
@@ -14968,12 +14974,12 @@ Array (mya(mye) = 0.1)|Object (mya.mye = 0.1)<#if out=latex>@<hline></#if>
 </table>
 
 When data is transferred from the JavaScript side to the Tcl side
-(e.g. as function argument), the following conversions are in
+(e.g.~as function argument), the following conversions are in
 effect:
 Scalar data types will be converted to their directly matching counterparts,
 Array objects will be converted to lists (nesting is allowed and will
 produce accordingly nested lists).
-Unicode strings and objects of a type other than Array (e.g. Boolean) are
+Unicode strings and objects of a type other than Array (e.g.~Boolean) are
 currently not supported.
 See also the following table.
 <p>
@@ -14988,7 +14994,7 @@ Array ((0, 1, 2))|List ({0 1 2})<#if out=latex>@<hline></#if>
 <caption>JavaScript to Tcl Data Conversions</caption>
 </table>
 <p>
-The transport/conversion of object properties (to e.g. associative array
+The transport/conversion of object properties (to e.g.~associative array
 elements) can be arranged manually like this:
 <tscreen><tt>
 var a = new Object();<newline>
@@ -15101,14 +15107,14 @@ Loading of an import/export plugin may be done in three different ways:
 <enum>
 <item><em>explicitly</em> via the main menu entry <tt>"File/Load Plugin"</tt>,
 <item><em>automatically</em> on application startup via a script (by adding
-e.g. <tt>"plugins/loaddxfio.tcl"</tt> to the <tt>"Scripts"</tt> preference
+e.g.~<tt>"plugins/loaddxfio.tcl"</tt> to the <tt>"Scripts"</tt> preference
 setting),
 <item><em>implicitly</em> via normal scene IO.
 <p>
 Implicit loading means one can simply use the main menu entries
 <tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
 keyboard shortcuts) and specify a filename with the appropriate
-extension (e.g. <tt/".dxf"/).
+extension (e.g.~<tt/".dxf"/).
 <footnote>Since 1.13.</footnote>
 Ayam will automatically load the matching plugin
 (<tt/"dxfio"/) and open the import (or export) options dialog with
@@ -15239,7 +15245,7 @@ archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
 shaders and without array arguments), arbitrary primitive variables
-(e.g. varying or vertex)
+(e.g.~varying or vertex)
 <footnote>Since 1.7.</footnote>
 , and procedural objects and delayed read archives
 <footnote>Since 1.9.</footnote>
@@ -15249,7 +15255,7 @@ Texture coordinates will import as TC tags
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
 (blobby models) and calls to the RenderMan Interface that are not
-so much useful for a RIB import like e.g. RiMakeTexture.
+so much useful for a RIB import like e.g.~RiMakeTexture.
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
@@ -15305,9 +15311,9 @@ existing materials in this level. This also works with material
 objects that exist before the RRIB plugin is invoked (as long as
 they reside in this special level).
 <item><tt/"ReadPartial"/, this option is useful if you want to
-import partial RIBs (e.g. archives) that do not
+import partial RIBs (e.g.~archives) that do not
 contain a <tt/"WorldBegin"/.
-Be careful with this option (i.e. use it only if reading of a RIB fails),
+Be careful with this option (i.e.~use it only if reading of a RIB fails),
 as it switches reading of all types of objects on, regardless of
 the RIB structure.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
@@ -15491,7 +15497,7 @@ Note that the entire Ayam scene is converted to a corresponding
 DXF model in memory before it is written to the DXF file.
 <p>
 Ayam only creates entities of type POLYLINE and SPLINE and misses very
-much information that could be saved to other formats (e.g. normals and
+much information that could be saved to other formats (e.g.~normals and
 texture coordinates). Therefore, the DXF export format should be avoided
 if possible.
 
@@ -15568,7 +15574,7 @@ statements: <tt>vp, cstype, deg, curv, curv2, surf, parm, trim, hole, end</tt>.
 <p>
 Freeform curves and surfaces of basis type bmatrix, cardinal and taylor
 are currently not supported. Also, import of special curves and
-points (e.g. curve on surface) is currently not supported. Furthermore,
+points (e.g.~curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
 is not supported (however, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
@@ -16212,7 +16218,7 @@ Instances of objects may be easily created again using Automatic Instancing
 <p>
 Normals will currently not be generated automatically for any X3D element
 and thus the <tt>"creaseAngle"</tt> attribute will be fully ignored.
-Note however, that if normals are specified, e.g. for an
+Note however, that if normals are specified, e.g.~for an
 <tt>"IndexedFaceSet"</tt> element, they will be imported correctly.
 <p>
 Furthermore, if normals, colors, or texture coordinates
@@ -16221,7 +16227,7 @@ and the likes) proper PV (primitive variable) tags will be created.
 <footnote>Since 1.17.</footnote>
 <p>
 Moreover, of there is an index provided to the normals, colors, or
-texture coordinates, the relevant affected data (e.g. the vertex
+texture coordinates, the relevant affected data (e.g.~the vertex
 coordinates) will be expanded properly (as RenderMan does not support
 multiple different indices on the vertex related data).
 Note that currently the mere presence of an index will lead to this expansion,
@@ -16274,10 +16280,10 @@ The export functionality of the x3dio plugin currently covers
 export of all boxes, quadrics, NURBS, PolyMeshes, instances, clones, script
 objects (of type <tt/"Create"/ or <tt/"Modify"/) and objects that
 may be converted to NURBS curves or surfaces or to PolyMeshes
-(e.g. SDMesh objects).
+(e.g.~SDMesh objects).
 <p>
 Some NURBS tool objects can be exported as parametric NURBS nodes,
-e.g. Sweep objects may be exported as NurbsSweptSurface nodes.
+e.g.~Sweep objects may be exported as NurbsSweptSurface nodes.
 <p>
 The scene hierarchy (level objects) will be converted to a
 matching transform node hierarchy.
@@ -16363,7 +16369,7 @@ changes to views (type changes or changes to the camera settings associated
 with a view).
 <p>
 It is currently <em>not</em> possible to undo any changes to the object
-hierarchy, including clipboard (e.g. cut, paste) and drag and drop
+hierarchy, including clipboard (e.g.~cut, paste) and drag and drop
 operations. If you delete an object, it is gone! If you, accidentally, move
 an object using drag and drop, undo will not help!
 <p>
@@ -16436,7 +16442,7 @@ by the so called <em>Notification</em> mechanism. The notification mechanism
 makes sure that whenever the parameter objects change, the tool object is
 informed so that it may adapt to the changes.
 For interactive modelling actions, the notification will be carried out
-while dragging the mouse or after release of the mouse button (i.e. after
+while dragging the mouse or after release of the mouse button (i.e.~after
 the modelling action finished),
 depending on the main preference setting <tt/"LazyNotify"/.
 <p>
@@ -16488,17 +16494,17 @@ Two other mechanisms exist, that help tool objects to get the information
 they need and to increase flexibility in hierarchy building and modelling:
 <em>Provision</em> and <em>Conversion</em>. Both mechanisms are quite similar
 and convert objects temporarily/transparently (provision) or finally
-(conversion) from one type to another, e.g. they convert an ICurve
+(conversion) from one type to another, e.g.~they convert an ICurve
 (interpolating curve) to a plain NCurve (NURBS curve).
 <p>
 Due to the provision mechanism, an ICurve object could be used instead
 of an NCurve as parameter object in all examples above easily.
 And with the help of the conversion mechanism, the Revolve
-tool objects could be converted to plain NPatch objects (e.g. for
+tool objects could be converted to plain NPatch objects (e.g.~for
 modelling operations not available to Revolve objects).
 <p>
 Note that instance objects are subject to a second round of provision,
-i.e. the master does not need to be of the wanted type but rather
+i.e.~the master does not need to be of the wanted type but rather
 provide the wanted type.
 <p>
 Even though, theoretically, every tool could be implemented as tool object,
@@ -16510,7 +16516,7 @@ to nearly full tool object capabilities through the employment of the concept
 of scripting objects
 (see section <ref id="scriptobj" name="Script Object">).
 <p>
-This can be done easily by e.g. creating script objects of type <tt/"Modify"/
+This can be done easily by e.g.~creating script objects of type <tt/"Modify"/
 that call those tools from their script (after possible conversion of the
 provided object(s) to a proper type, the tool may need to operate on).
 Even property GUIs to let the user adjust tool parameters as they know it
@@ -16588,7 +16594,7 @@ files entry in the file menu,
 <item> the scene changed state will be reset to "unchanged",
 <item> if a root object was read, a save views flag will be set,
 otherwise it will be cleared and following save operations will not save
-the root and any views (i.e. scene files without root and views
+the root and any views (i.e.~scene files without root and views
 stay scene files without root and views, even if new views
 are opened and parameterized).
 </enum>
@@ -16599,7 +16605,7 @@ When reading objects from a file:
 (except for the first three view objects in single window GUI mode,
 where only the configuration of the view objects read will be copied
 to the already existing view objects of the three internal views),
-<item> if one object is of a currently undefined type (i.e. defined
+<item> if one object is of a currently undefined type (i.e.~defined
 by a plugin), Ayam will derive a potential plugin name from the
 object type name and attempt to load the plugin, then scene reading
 continues,
@@ -16641,8 +16647,8 @@ before,
 <item> the current file name will not be changed,
 <item> the scene changed state will be set to "changed",
 <item> the save views flag will not be changed, this means that
-inserting a scene file without views into an empty scene (e.g.
-directly after application startup or after <tt>"File/New"</tt>)
+inserting a scene file without views into an empty scene
+(e.g.~directly after application startup or after <tt>"File/New"</tt>)
 and then saving the scene, will enrich the scene file with root
 and views (in contrast to loading this scene via <tt>"File/Open"</tt>).
 </enum>
@@ -16666,7 +16672,7 @@ instances to be connected to their respective masters and objects
 to their materials, when reading the scene file again,
 <item> then, all objects from the scene will be saved to the file;
 if the save views flag was cleared while reading the previous scene file,
-root and views will be omitted (i.e. scene files without root and views
+root and views will be omitted (i.e.~scene files without root and views
 stay scene files without root and views, even if new views
 are opened and parameterized),
 <item> if no errors occured during saving the file, the file name
@@ -16776,7 +16782,7 @@ preference settings:
 <itemize>
 
 <item><tt/"AddViewParams"/ allows to add custom parameters to the
-view OpenGL widget creation, like e.g. <tt/"-stereo true"/. The default
+view OpenGL widget creation, like e.g.~<tt/"-stereo true"/. The default
 value is <tt>""</tt> (empty string).
 
 <item><tt/"ALFileTypes"/, <tt/"ALPlugins"/ two lists that describe
@@ -16832,8 +16838,8 @@ string might be displayed in an unreadable font or not at all.
 On Mac OS X Aqua (not X11!) this option is enabled by default.
 On all other systems this option is disabled by default.
 
-<item><tt/"FixImageButtons"/, enables a workaround for buttons (e.g.
-in the toolbox) that stay depressed when used. This option is disabled
+<item><tt/"FixImageButtons"/, enables a workaround for buttons
+(e.g.~in the toolbox) that stay depressed when used. This option is disabled
 by default on all platforms.
 
 <item><tt/"FixX11Menu"/ enables a workaround for non-sticky menus
@@ -16847,7 +16853,7 @@ value <tt>""</tt> (empty string) leads to no changes of any icon images.
 
 <item><tt/"KeepNTmpFiles"/: how many
 incarnations of the scene in RIB form (which actually may be split
-in more than one file due to e.g. instances) created when directly
+in more than one file due to e.g.~instances) created when directly
 rendering from a view window should be kept on disk (default: 5)
 
 <item><tt/"Kill"/: name of a program that kills other processes and accepts
@@ -16889,7 +16895,7 @@ These values control the minimum size of a pane expressed in an
 inverse (1/x) and relative way:
 the smaller the number, the bigger the margin. The safety margin
 of the uppermost horizontal pane (that divides the upper internal
-views from the hierarchy and the third view) is e.g. a bit larger
+views from the hierarchy and the third view) is e.g.~a bit larger
 so that the main menu may not be obscured easily (the corresponding
 value is 5.0). The default value for the console (20.0) leads to a
 small margin, so that the console may be shrunk to 2 or even 1 lines
@@ -16922,14 +16928,14 @@ directory of Ayam like this:
 .
 
 <p>
-One may e.g. change this to <tt/"[pwd]&gt;"/ to see just the full path
+One may e.g.~change this to <tt/"[pwd]&gt;"/ to see just the full path
 name of the current directory.
 
-To display the value of a variable in the prompt (e.g.
-designating the current level in the scene hierarchy) a write-trace
+To display the value of a variable in the prompt (e.g.~designating
+the current level in the scene hierarchy) a write-trace
 must be bound to that variable.
 The write trace in turn must call the procedure <tt/"ayam_updateprompt"/
-and may e.g. be established using a small script like this:
+and may e.g.~be established using a small script like this:
 <tscreen><tt>
 trace variable &lt;vname&gt; ayam_updateprompt
 </tt></tscreen>
@@ -16965,8 +16971,8 @@ are 255 for the red, 128 for the green, and 0 for the blue component.
 
 <item><tt/"ShiftTab"/, allows to set a specific keyboard symbol for
 systems where pressing the Shift together with the Tab key does not
-produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like e.g.
-"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
+produce "&lt;Shift-Tab&gt;" (the default) but some other symbol like
+e.g.~"&lt;ISO_Left_Tab&gt;" (many, but not all, modern X11 systems often use
 this).
 
 <item><tt/"SwapMB"/, <tt/"SwapMBSC"/ allow to swap mouse buttons 2 and 3
@@ -17009,7 +17015,7 @@ unknown tag types. (default: 1 &ndash; yes)
 
 <item><tt/"Wait"/: set this to <tt/"waitPid"/ if you want to enable
 the work around for zombie processes created by the Rendering GUI.
-This is e.g. necessary for the Linux platform.
+This is e.g.~necessary for the Linux platform.
 
 <item><tt/"WheelZoom"/, a float value that controls the zoom factor,
 for the mouse wheel; default value is 0.5.
@@ -17193,7 +17199,7 @@ small dialog that pops up after selection of the menu entry
 <tt>"Special/Instances/Automatic Instancing"</tt>.
 <p>
 The algorithm is able to create instances of grouping objects
-too (objects with child objects, e.g. levels or tool-objects
+too (objects with child objects, e.g.~levels or tool-objects
 like revolve).
 However, in order for two grouping objects to be instantiated
 not only all child objects and the grouping objects
@@ -17248,7 +17254,7 @@ Assignment may take place manually (using IDR tags) or half-automatic
 by derivation of importance from currently selected or changed
 objects. To avoid inconsistency in the resulting images, importance
 values may be propagated between (geometrically or hierarchically) near
-objects, or between objects that are related (e.g. from a material to a
+objects, or between objects that are related (e.g.~from a material to a
 geometric object).
 <p>
 Parameterisation of the two rendering passes currently includes selection of
@@ -17266,12 +17272,12 @@ identical and hence need no re-rendering.
 
 To start using IDR:
 <enum>
-<item>load a scene (e.g. the cactus example scene),
+<item>load a scene (e.g.~the cactus example scene),
 <item>load the IDR plugin (menu <tt>"File/Load Plugin"</tt>),
 <item>open the IDR control window using the main menu
 <tt>"Custom/Open IDR"</tt>,
 <item>set the assign mode to <tt>"Selection"</tt>,
-<item>select an object in the scene (e.g. the object named <tt>"Pot"</tt>),
+<item>select an object in the scene (e.g.~the object named <tt>"Pot"</tt>),
 <item>then press the <tt>"Render!"</tt> button.
 </enum>
 Compare the rendering time with a full render from the view window.
@@ -17303,7 +17309,7 @@ by the OpenCSG library by Florian Kirsch. The OpenCSG library, currently,
 supports the Goldfeather and the SCS algorithm. The latter only works
 properly with convex primitives. Since both, Goldfeather and SCS, are
 image based rendering algorithms, there is no limit in geometric object
-types that may be used in CSG hierarchies. You may e.g. use Quadrics, NURBS,
+types that may be used in CSG hierarchies. You may e.g.~use Quadrics, NURBS,
 and Metaballs in every possible combination. You just have to make sure,
 that every CSG primitive describes a closed space.
 <p>
@@ -17313,10 +17319,10 @@ The depth complexity of a primitive determines the maximum number
 of forward oriented surfaces any ray through this primitive would pass.
 A regular sphere has a depth complexity of 1, a torus of 2, but do
 not confuse depth complexity with genus, they are different values.
-A 3D representation of the letter A e.g. has a genus of
+A 3D representation of the letter A e.g.~has a genus of
 1 but a depth complexity of 3.
 The depth complexity of a primitive can be stored in a <tt/"DC"/ tag.
-A torus would e.g. get a tag named <tt/"DC"/ with the value <tt/"2"/.
+A torus would e.g.~get a tag named <tt/"DC"/ with the value <tt/"2"/.
 If no <tt/"DC"/ tag is present for a primitive, a default value for
 the depth complexity of <tt/"1"/ will be used.
 If you fail to correctly specify the depth complexity, rendering
@@ -17331,7 +17337,7 @@ at a single OpenGL primitive. For all quadric primitives of Ayam
 the winding order is always consistent. However, for NURBS patches
 the winding order depends on the orientation of the patch dimensions.
 If NURBS patches are used in CSG operations one, consequently, may
-need to revert the patches (e.g. using the <tt/"RevertU"/ tool,
+need to revert the patches (e.g.~using the <tt/"RevertU"/ tool,
 see <ref id="revertut" name="Revert U tool">).
 If the winding order of some of the primitives in a CSG hierarchy
 is not right, the respective primitives will not be effective
@@ -17392,7 +17398,7 @@ errors may occur.
 depth complexity without calculating it. This is especially useful for the
 SCS algorithm where this strategy is applied at shape level, resulting in
 a O(n*k') algorithm (where k' <= k), without significant constant overhead.
-This strategy requires hardware occlusion queries, i.e., the OpenGL
+This strategy requires hardware occlusion queries, i.e.~the OpenGL
 extension <tt>"GL_ARB_occlusion_query"</tt> or
 <tt>"GL_NV_occlusion_query"</tt>.
 If this is enabled (and the <tt/"Algorithm"/ is set to Goldfeather),
@@ -17409,7 +17415,7 @@ on the creation of a view window using additional view parameters
 <ref id="hidprefs" name="hidden preference settings">).
 If stencil buffers are not enabled, Ayam will automatically add the
 relevant option to the preferences but this only has an effect on newly
-created view windows (i.e. you might also want to restart Ayam, if you
+created view windows (i.e.~you might also want to restart Ayam, if you
 switch to DCSampling).
 If <tt/"DCSampling"/ is enabled (and the <tt/"Algorithm"/ is set to
 Goldfeather), DC tags need <em>not</em> to be present as the
@@ -17446,7 +17452,7 @@ ControlHull display modes.
 <item>Switch the primary modelling view to draw just the selected
 object(s) or the current level.
 <item>Iconify views you do not need, they will not be redrawn then.
-<item>Switch off automatic redrawing of slow redrawing (e.g. shaded)
+<item>Switch off automatic redrawing of slow redrawing (e.g.~shaded)
 views, and control their redraw by pressing <tt/&lt;Ctrl+d&gt;/ manually.
 <item>Do not create unnecessary caps, they are trimmed NURBS patches
 that render very slowly.
@@ -17474,12 +17480,12 @@ deficiencies exist:
 <itemize>
 <item>Almost all strings in Ayam (scene file names, object names,
 material names) are restricted to be 7-bit ASCII. If the scene is
-not to be transported between platforms (e.g. between UNIX and Win32),
+not to be transported between platforms (e.g.~between UNIX and Win32),
 using 8-bit ASCII should be fine, however.
-<item>The maximum scene depth (i.e. the maximum number of nested levels)
+<item>The maximum scene depth (i.e.~the maximum number of nested levels)
 depends on the maximum stack size of the operating system Ayam is
 running on (due to the use of recursion almost everywhere when traversing
-the scene, e.g. for drawing purposes).
+the scene, e.g.~for drawing purposes).
 <item>Ayam internally operates on double precision math, however,
 no control over roundoff error in lengthy calculations exists.
 Saving of scene files only uses the precision dictated by the current
@@ -17494,13 +17500,13 @@ certain parts of objects.
 <item>Undo/Redo are not possible for scene structure changes.
 <item>In the user interface, colors are always represented as
 three 8-bit RGB values, even though the RenderMan interface allows
-e.g. for different color sample numbers or floating point samples
+e.g.~for different color sample numbers or floating point samples
 instead of integers to be used for colors.
-<item>There are no acceleration structures for e.g. drawing and object
+<item>There are no acceleration structures for e.g.~drawing and object
 tree updates. This limits the number of objects that Ayam can handle
 simultaneously without big lags in redraws or after scene structure
 changes to about 1000. However, Ayam objects should be high-level objects,
-not single polygons, anyway, i.e. one usually gets away with about 100
+not single polygons, anyway, i.e.~one usually gets away with about 100
 objects for moderately complex scenes, the Marsrakete uses just 62 objects.
 </itemize>
 
