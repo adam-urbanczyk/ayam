@@ -472,7 +472,7 @@ ay_concatnc_notifycb(ay_object *o)
   ncurve = curves;
   while(ncurve)
     {
-      ay_nct_applytrafo(ncurve);
+      ay_nct_applytrafo(ncurve);      
       ay_status = ay_nct_elevate((ay_nurbcurve_object *)(ncurve->refine),
 				 highest_order);
       ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine, 0);
@@ -481,7 +481,8 @@ ay_concatnc_notifycb(ay_object *o)
 
   if(concatnc->knot_type == 1)
     {
-      /* create a custom knot vector, preserving parameter curve shapes */
+      /* to create the custom knot vector, all parameter curve
+	 knots must be defined in the range (0.0-1.0) */
 
       while(ncurve)
 	{
@@ -489,7 +490,11 @@ ay_concatnc_notifycb(ay_object *o)
 	  ay_knots_rescaletorange(nc->length+nc->order, nc->knotv, 0.0, 1.0);
 	  ncurve = ncurve->next;
 	} /* while */
+    }
 
+  /* create fillets? */
+  if(concatnc->fillgaps)
+    {
       ay_status = ay_nct_fillgaps(concatnc->closed, highest_order,
 				  concatnc->ftlength, curves);
       if(ay_status)
@@ -497,21 +502,8 @@ ay_concatnc_notifycb(ay_object *o)
 	  ay_error(AY_ERROR, fname, "Failed to create fillets!");
 	}
     }
-  else
-    {
-      /* create a NURBS knot vector */
 
-      if(concatnc->fillgaps)
-	{
-	  ay_status = ay_nct_fillgaps(concatnc->closed, highest_order,
-				      concatnc->ftlength, curves);
-	  if(ay_status)
-	    {
-	      ay_error(AY_ERROR, fname, "Failed to create fillets!");
-	    }
-	}
-    } /* if */
-
+  /* count curves */
   ncurve = curves;
   while(ncurve)
     {
@@ -521,7 +513,6 @@ ay_concatnc_notifycb(ay_object *o)
 
   if(numcurves > 1)
     {
-
       ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
 					concatnc->fillgaps, curves,
 					&concatnc->ncurve);
@@ -532,7 +523,6 @@ ay_concatnc_notifycb(ay_object *o)
 	}
       else
 	{
-
 	  nc = (ay_nurbcurve_object*)concatnc->ncurve->refine;
 	  if(concatnc->revert)
 	    {
@@ -543,8 +533,7 @@ ay_concatnc_notifycb(ay_object *o)
 		} /* if */
 	    } /* if */
 
-	  if((!concatnc->fillgaps) && (!concatnc->knot_type == 1) &&
-	     concatnc->closed)
+	  if(concatnc->closed && (!concatnc->fillgaps))
 	    {
 	      ay_status = ay_nct_close(nc);
 	      if(ay_status)
@@ -552,7 +541,6 @@ ay_concatnc_notifycb(ay_object *o)
 		  ay_error(ay_status, fname, "Could not close curve!");
 		} /* if */
 	    } /* if */
-
 	} /* if */
     } /* if */
 
