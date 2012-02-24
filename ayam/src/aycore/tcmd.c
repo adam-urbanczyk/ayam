@@ -58,7 +58,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
 
   tcl_status = Tcl_ListObjGetElements(ay_interp, listPtr, dllen, &elemvPtr);
 
-  if(tcl_status != TCL_OK)
+  if((tcl_status != TCL_OK) || !elemvPtr)
     {
       return TCL_ERROR;
     }

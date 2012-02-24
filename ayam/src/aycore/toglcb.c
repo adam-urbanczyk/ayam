@@ -37,6 +37,7 @@ ay_toglcb_create(struct Togl *togl)
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
+      free(view);
       ay_error(AY_EOMEM, fname, NULL);
       return;
     }

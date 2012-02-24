@@ -848,11 +848,15 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	  if(!(Ubar = calloc((curve->length + curve->order + count),
 			     sizeof(double))))
 	    {
+	      if(!newknotv)
+		free(X);
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return AY_ERROR;
 	    }
 	  if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
 	    {
+	      if(!newknotv)
+		free(X);
 	      free(Ubar);
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return AY_ERROR;
@@ -5212,10 +5216,12 @@ ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
  double c1[4] = {0}, c2[4] = {0};
  double cp[3], temp, temp2;
  int t = 0;
- int n = curve->length+curve->order;
+ int n = 0;
 
   if(!curve || !point || !u)
     return;
+
+  n = curve->length+curve->order;
 
   *u = guess;
   U  = curve->knotv;

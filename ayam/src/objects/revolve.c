@@ -829,19 +829,17 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
   /* sanity check; cannot create caps for flat revolutions... */
   if(!closed && (fabs(PE[1]-PS[1]) < AY_EPSILON))
-    {
-      return AY_ERROR;
-    }
+    { ay_status = AY_ERROR; goto cleanup; }
 
   /* if the curve points downwards, we need to revert the trim */
-  if(PS[1]>PE[1])
+  if(PS[1] > PE[1])
     {
       revert = AY_TRUE;
     }
 
   /* create NURBS patch */
   if(!(cap = calloc(1, sizeof(ay_object))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
   ay_object_defaults(cap);
   cap->type = AY_IDNPATCH;
   cap->hide_children = AY_TRUE;
@@ -849,7 +847,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   cap->inherit_trafos = AY_FALSE;
 
   if(!(controlv = calloc(4*4, sizeof(double))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   /* calc minx, maxx, miny, maxy from curve */
   minx = miny = DBL_MAX;
@@ -911,11 +909,13 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 			    controlv, NULL, NULL,
 			    (ay_nurbpatch_object **)(void*)&(cap->refine));
   if(ay_status)
-    {goto cleanup;}
+    { goto cleanup; }
 
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
+
+  /* prevent cleanup code from doing something harmful */
   controlv = NULL;
 
   if(th != 0.0)
@@ -927,7 +927,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   /* create trimcurve(s) */
   ay_status = ay_object_copy(curve, &trim);
   if(ay_status)
-    {goto cleanup;}
+    { goto cleanup; }
 
   cap->down = trim;
 
@@ -984,7 +984,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
   if(!closed)
     {
       if(!(tloop = calloc(1, sizeof(ay_object))))
-	{ay_status = AY_EOMEM; goto cleanup;}
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
       ay_object_defaults(tloop);
       tloop->type = AY_IDLEVEL;
@@ -997,7 +997,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 
       /* create another trimcurve */
       if(!(trim = calloc(1, sizeof(ay_object))))
-	{ay_status = AY_EOMEM; goto cleanup;}
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
       ay_object_defaults(trim);
       trim->type = AY_IDNCURVE;
@@ -1006,7 +1006,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
       tloop->down->next = trim;
 
       if(!(controlv = calloc(4*4, sizeof(double))))
-	{ay_status = AY_EOMEM; goto cleanup;}
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
       nc = tloop->down->refine;
 
@@ -1031,14 +1031,13 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
 			     (ay_nurbcurve_object **)(void*)&(trim->refine));
 
       if(ay_status)
-	{
-	  goto cleanup;
-	}
+	{ goto cleanup; }
 
       ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
 	nc->glu_sampling_tolerance;
       ((ay_nurbcurve_object *)(trim->refine))->display_mode =
 	nc->display_mode;
+      /* prevent cleanup code from doing something harmful */
       controlv = NULL;
 
       if(revert)

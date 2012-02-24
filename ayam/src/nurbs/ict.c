@@ -265,6 +265,8 @@ cleanup:
     free(scontrolv);
   if(ncontrolv)
     free(ncontrolv);
+  if(knotv)
+    free(knotv);
   if(lengths)
     free(lengths);
   if(vk)

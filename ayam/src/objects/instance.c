@@ -790,7 +790,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
 
       /* copy data from original object via temp object to instance object */
       ay_status = ay_object_copy(orig, &temp);
-      if(ay_status)
+      if(ay_status || !temp)
 	return ay_status;
 
       memcpy(i, temp, sizeof(ay_object));
@@ -802,8 +802,8 @@ ay_instance_convertcb(ay_object *i, int in_place)
       /* free temporary object */
       if(temp->name)
 	free(temp->name);
-      if(temp)
-	free(temp);
+
+      free(temp);
 
       /* use transformation attributes from instance, not from original */
       if(!i->tags || !ay_instance_hasrptrafo(i))

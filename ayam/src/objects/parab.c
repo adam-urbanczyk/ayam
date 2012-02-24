@@ -120,7 +120,6 @@ ay_parab_drawcb(struct Togl *togl, ay_object *o)
   if(!parab)
     return AY_ENULL;
 
-
   hdiff = ((parab->zmax-parab->zmin)/4);
   thetadiff = AY_D2R(parab->thetamax/8);
   f = parab->rmax/(sqrt(parab->zmax));

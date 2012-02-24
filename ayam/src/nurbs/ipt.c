@@ -341,7 +341,7 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
   if(num == 0)
     {
       ay_error(AY_ERROR, fname, "Can not interpolate this patch.");
-      free(uk); free(cds); free(U); return AY_ERROR;
+      free(Q); free(uk); free(cds); free(U); return AY_ERROR;
     }
 
   uk[0] = 0.0;

@@ -774,8 +774,8 @@ ay_instt_resolve(ay_object *i)
   /* free temporary object */
   if(temp->name)
     free(temp->name);
-  if(temp)
-    free(temp);
+
+  free(temp);
 
   /* use transformation attributes from instance, not from original */
   i->movx = movx;
