@@ -1176,14 +1176,14 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
 			      (ay_nurbcurve_object **)(void*)&(newc->refine));
 
-	  ay_status = ay_npt_revolve(newc, -thetamax, 0, 0,
+	  ay_status = ay_npt_revolve(newc, thetamax, 0, 0,
 			       (ay_nurbpatch_object **)(void*)&(new->refine));
 
 
-	  ay_quat_axistoquat(xaxis, -AY_D2R(90.0), quat);
+	  ay_quat_axistoquat(xaxis, AY_D2R(90.0), quat);
 	  new->rotx += 90.0;
 	  ay_quat_add(new->quat, quat, new->quat);
-
+	  new->scaly *= -1.0;
 	  ay_npt_applytrafo(new);
 	  ay_trafo_copy(o, new);
 
