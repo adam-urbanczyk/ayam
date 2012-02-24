@@ -1086,25 +1086,28 @@ ay_npt_wribtrimcurves(ay_object *o)
     } /* while */
 
   if(!(order = calloc(totalcurves,sizeof(RtInt))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(n = calloc(totalcurves,sizeof(RtInt))))
-    { free(order); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(knot = calloc(totalknots,sizeof(RtFloat))))
-    { free(order); free(n); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(min = calloc(totalcurves,sizeof(RtFloat))))
-    { free(order); free(n); free(knot); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(max = calloc(totalcurves,sizeof(RtFloat))))
-    { free(order); free(n); free(knot); free(min); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(u = calloc(totalcontrol,sizeof(RtFloat))))
-    { free(order); free(n); free(knot); free(min); free(max);
-    return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(v = calloc(totalcontrol,sizeof(RtFloat))))
-    { free(order); free(n); free(knot); free(min); free(max); free(u);
-    return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   if(!(w = calloc(totalcontrol,sizeof(RtFloat))))
-    { free(order); free(n); free(knot); free(min); free(max); free(u);
-    free(v); return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   trim = o->down;
   a = 0;
@@ -1274,22 +1277,30 @@ ay_npt_wribtrimcurves(ay_object *o)
       trim = trim->next;
     } /* while */
 
-  if(nloops)
-    {
-      /* Finally, write the TrimCurves */
-      RiTrimCurve(nloops, ncurves, order, knot, min, max, n, u, v, w);
+  /* Finally, write the TrimCurves */
+  RiTrimCurve(nloops, ncurves, order, knot, min, max, n, u, v, w);
 
-      /* clean up the mess */
-      free(ncurves);
-      free(order);
-      free(knot);
-      free(min);
-      free(max);
-      free(n);
-      free(u);
-      free(v);
-      free(w);
-    } /* if */
+  /* clean up the mess */
+cleanup:
+
+  if(ncurves)
+    free(ncurves);
+  if(order)
+    free(order);
+  if(knot)
+    free(knot);
+  if(min)
+    free(min);
+  if(max)
+    free(max);
+  if(n)
+    free(n);
+  if(u)
+    free(u);
+  if(v)
+    free(v);
+  if(w)
+    free(w);
 
  return ay_status;
 } /* ay_npt_wribtrimcurves */
@@ -2297,6 +2308,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		}
 	      else
 		{
+		  /* negative tanlen
+		     => factor in patch distance */
 		  v2[0] = (cv1[c]-cv2[d]);
 		  v2[1] = (cv1[c+1]-cv2[d+1]);
 		  v2[2] = (cv1[c+2]-cv2[d+2]);
@@ -2304,8 +2317,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		  dist = AY_V3LEN(v2);
 		  AY_V3SCAL(v1, (dist*-tanlen));
 		  d += stride;
-		}
-	    }
+		} /* if */
+	    } /* if */
 
 	  ncv[a]   = cv1[c]+v1[0];
 	  ncv[a+1] = cv1[c+1]+v1[1];
@@ -2314,7 +2327,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  a += stride;
 	  b += stride;
 	  c += stride;
-	}
+	} /* for */
 
       b = np1->height*stride;
       c = 0;
@@ -2335,6 +2348,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 		}
 	      else
 		{
+		  /* negative tanlen
+		     => factor in patch distance */
 		  v2[0] = (cv2[c]-cv1[d]);
 		  v2[1] = (cv2[c+1]-cv1[d+1]);
 		  v2[2] = (cv2[c+2]-cv1[d+2]);
@@ -2343,8 +2358,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 
 		  AY_V3SCAL(v1, (dist*-tanlen));
 		  d += stride;
-		}
-	    }
+		} /* if */
+	    } /* if */
 
 	  ncv[a]   = cv2[c]+v1[0];
 	  ncv[a+1] = cv2[c+1]+v1[1];
@@ -2353,7 +2368,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  a += stride;
 	  b += stride;
 	  c += stride;
-	}
+	} /* for */
     } /* if */
 
   memcpy(&(ncv[(new->width-1)*new->height*stride]), cv2,
@@ -10585,7 +10600,9 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
     }
   else
     {
-      ay_object_copy(src, &copy);
+      ay_status = ay_object_copy(src, &copy);
+      if(ay_status || !copy)
+	return AY_ERROR;
       patch = (ay_nurbpatch_object*)copy->refine;
 
       if(relative)
