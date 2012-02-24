@@ -2213,10 +2213,17 @@ ay_ipatch_notifycb(ay_object *o)
 	}
     }
 
-  ay_npt_create(ip->order_u, ip->order_v, ip->width, ip->height,
-		AY_KTCUSTOM, AY_KTCUSTOM, cv, NULL, NULL, &np);
+  ay_status = ay_npt_create(ip->order_u, ip->order_v, ip->width, ip->height,
+			    AY_KTCUSTOM, AY_KTCUSTOM, cv, NULL, NULL, &np);
 
-  ay_npt_createnpatchobject(&p);
+  if(ay_status)
+    goto cleanup;
+
+  ay_status = ay_npt_createnpatchobject(&p);
+
+  if(ay_status || !p)
+    goto cleanup;
+
   p->refine = (void*)np;
 
   if(ip->width > 2 && ip->order_u > 2)

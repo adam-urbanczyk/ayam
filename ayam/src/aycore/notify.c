@@ -518,8 +518,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	    {
 	      if(!(newt = calloc(1, sizeof(ay_tag))))
 		{
-		  if(newl)
-		    free(newl);
+		  free(newl);
 		  *parents = NULL;
 		  return 0;
 		}
@@ -527,8 +526,7 @@ ay_notify_findparents(ay_object *o, ay_object *r, ay_list_object **parents)
 	      newt->type = ay_nc_tagtype;
 	      newt->is_intern = AY_TRUE;
 	      o->tags = newt;
-	    }
-
+	    } /* if */
 	} /* if */
     } /* if */
 

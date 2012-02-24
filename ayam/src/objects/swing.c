@@ -852,6 +852,13 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 			    controlv, NULL, NULL,
 			    (ay_nurbpatch_object **)(void*)&(cap->refine));
 
+  if(ay_status)
+    {
+      goto cleanup;
+    }
+
+  controlv = NULL;
+
   ((ay_nurbpatch_object *)cap->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)cap->refine)->display_mode = mode;
@@ -902,9 +909,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 
   /* sanity check; cannot create caps for flat swings... */
   if(fabs(P2[1]-P1[1]) < AY_EPSILON)
-    {
-      ay_object_delete(cap); return AY_ERROR;
-    }
+    { ay_status = AY_ERROR; goto cleanup; }
 
   /* P1 == (lower) cross section start */
   if(P1[1] < P2[1])
@@ -935,14 +940,15 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   ay_status = ay_nct_create(2, 4, AY_KTNURB,
 			    controlv, NULL,
 			    (ay_nurbcurve_object **)(void*)&(trim->refine));
+  if(ay_status)
+    goto cleanup;
 
-  if(trim->refine)
-    {
-      ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
-	cs->glu_sampling_tolerance;
-      ((ay_nurbcurve_object *)(trim->refine))->display_mode =
-	cs->display_mode;
-    }
+  ((ay_nurbcurve_object *)(trim->refine))->glu_sampling_tolerance =
+    cs->glu_sampling_tolerance;
+  ((ay_nurbcurve_object *)(trim->refine))->display_mode =
+    cs->display_mode;
+
+  controlv = NULL;
 
   /* fix orientation of trim */
   ay_nct_revert((ay_nurbcurve_object *)trim->refine);
@@ -995,7 +1001,10 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
   trim = NULL;
   tloop = NULL;
 
- cleanup:
+cleanup:
+
+  if(controlv)
+    free(controlv);
 
   if(cap)
     {

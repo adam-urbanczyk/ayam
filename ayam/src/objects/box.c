@@ -724,12 +724,12 @@ ay_box_convertcb(ay_object *o, int in_place)
 
   ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
 
-  ay_status = ay_box_providecb(o, AY_IDNPATCH, &new->down);
+  ay_status = ay_box_providecb(o, AY_IDNPATCH, &(new->down));
   if(ay_status)
     { free(new->refine); free(new); return ay_status; }
 
   t = new->down;
-  while(t->next)
+  while(t && t->next)
     {
       t = t->next;
     }
