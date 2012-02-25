@@ -176,10 +176,16 @@ $m add command -label "Copy Marked Prop" -command {pclip_copy 1}
 $m add command -label "Paste Property" -command {global ay;
 pclip_paste; set ay(sc) 1}
 $m add separator
-$m add command -label "Undo" -command {undo; uCL cl "0 1"; plb_update; rV}\
-    -underline 0
-$m add command -label "Redo" -command\
-    {undo redo; uCL cl "0 1"; plb_update; rV} -underline 0
+$m add command -label "Undo" -command {
+    set oldfocus [focus]
+    undo; uCL cl "0 1"; plb_update; rV;
+    after idle "focus $oldfocus"
+} -underline 0
+$m add command -label "Redo" -command {
+    set oldfocus [focus]
+    undo redo; uCL cl "0 1"; plb_update; rV;
+    after idle "focus $oldfocus"
+} -underline 0
 $m add separator
 $m add command -label "Material" -command {material_edit;} -underline 0
 $m add command -label "Master" -command {instance_edit;} -underline 1
