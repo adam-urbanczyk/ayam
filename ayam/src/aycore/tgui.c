@@ -213,8 +213,8 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 		  lastl = &polist;
 		  while(tmpnp)
 		    {
-		      /*if(o->type == AY_IDLEVEL)*/
-		      ay_npt_applytrafo(tmpnp);
+		      if(o->type == AY_IDLEVEL)
+			ay_npt_applytrafo(tmpnp);
 
 		      tmp = NULL;
 		      ay_status = ay_tess_npatch(tmpnp, smethod+1,
