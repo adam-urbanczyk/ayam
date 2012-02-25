@@ -7522,7 +7522,7 @@ Scale components that are less than or equal to zero will be silently ignored.
 </figure>
 <p>
 Here is a short example for the creation of a sweep:
-<itemize>
+<enum>
 <item>Create a circular B-Spline curve using the toolbox. (This will be our
 cross section.)
 <item>Rotate the curve by 90 degrees around the Y-axis. (Use the
@@ -7533,12 +7533,12 @@ trajectory.)
 the <tt/"Shift"/ key and select the other curve.)
 <item>Create the Sweep object using the toolbox.
 <item>Now you may enter the Sweep object and modify
-e.g.~the second curve, the trajectory. (Press <tt/"e"/,
+e.g.~the second curve, the trajectory. (Press <tt/&lt;e&gt;/,
 then drag some control points around.)
 <item>To modify the cross section you would need to switch to a
-view of type <tt/"Side"/. (Use the <tt/&lt;Ctrl+s&gt;/ shortcut while
-the view has the input focus.)
-</itemize>
+view of type <tt/"Side"/. (Use the views <tt/"Type"/ menu or
+the <tt/&lt;PgDwn&gt;/ keyboard shortcut while the view has the input focus.)
+</enum>
 
 Section <ref id="scexsweep" name="Easy Sweep"> has an example
 script that automates creation and parameterisation of
@@ -7769,7 +7769,9 @@ of the other two attributes <tt/"DisplayMode"/ and <tt/"Tolerance"/.
 <p>
 To help in the exact configuration of the birail, the <tt/"NPInfo"/
 field always displays the parameters of the created NURBS patch.
-<p>
+
+<#if out=latex><x/newpage/</#if>
+
 The following table shows some example parameter configurations for
 the birail object.
 
@@ -8571,8 +8573,16 @@ instead derived from the respective control points.
 <item><tt/"FTLength"/ determines the distance of the inner fillet
 control points from their respective end points. This value can
 be adapted for smaller&thinsp;/&thinsp;larger gaps between parameter
-surfaces.
-
+surfaces. If this parameter is negative, the distance between the
+two surfaces in the end points will be multiplied in so that a
+more pleasing fillet shape results in configurations where the
+distances vary a lot (see also the image below).
+<p>
+<figure loc="ht">
+<eps file="pics/concatnpfillets.ps" height="5cm">
+<img src="pics/concatnpfillets.gif">
+<caption>Concatenated Surfaces (blue) with Fillets (left: FTLength 0.3, right: FTLength -0.3</caption>
+</figure>
 
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 surface will be reversed (in U direction).
@@ -8588,7 +8598,7 @@ The uppercase variants lead to a reverted surface.
 To connect two surfaces that share the same orientation "over a corner"
 one would e.g.~need to set <tt/"UVSelect"/ to <tt/"uV"/
 (see also the image below).
-The default, an empty string, is equivalent to "u" for all
+The default, an empty string, is equivalent to <tt/"u"/ for all
 patches.
 <p>
 <figure loc="ht">
@@ -18631,7 +18641,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="textattr" name="Text attribute">,
 <item><ref id="concatncp" name="ConcatNC attribute">,
 <item><ref id="offsetncp" name="OffsetNC attribute">,
-<item><ref id="extrncp" name="ExtrNC attribute">
+<item><ref id="extrncp" name="ExtrNC attribute">,
+<item><ref id="concatnpp" name="ConcatNP attribute">
 </itemize>
 <item>RevertBevels: <ref id="textattr" name="Text attribute">
 <item>revertC: <ref id="screvertc" name="scripting interface command">
