@@ -1395,6 +1395,9 @@ ay_pomesh_convertcb(ay_object *o, int in_place)
   /* second, link new object(s), or replace old object with it/them */
   if(new && new->refine)
     {
+      
+      ay_trafo_copy(o, new);
+
       if(!in_place)
 	{
 	  ay_status = ay_object_link(new);

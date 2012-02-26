@@ -995,14 +995,11 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
       *result = new;
 
       /* realize transformations */
-      if(AY_ISTRAFO(o))
+      while(new)
 	{
-	  while(new)
-	    {
-	      ay_npt_applytrafo(new);
-	      ay_trafo_copy(o, new);
-	      new = new->next;
-	    }
+	  ay_npt_applytrafo(new);
+	  ay_trafo_copy(o, new);
+	  new = new->next;
 	}
 
       /* prevent cleanup code from doing something harmful */
