@@ -43,7 +43,8 @@ addParam $w ConcatNPAttrData Order
 addCheck $w ConcatNPAttrData Revert
 addCheck $w ConcatNPAttrData FillGaps
 addParam $w ConcatNPAttrData FTLength
-addMenu $w ConcatNPAttrData Knot-Type  [list B-Spline NURB Chordal Centripetal]
+addMenu $w ConcatNPAttrData Knot-Type\
+    [list B-Spline NURB Chordal Centripetal Custom]
 addString $w ConcatNPAttrData UVSelect
 
 addText $w  e0 "Resulting Patch:"
