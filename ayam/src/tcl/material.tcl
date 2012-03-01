@@ -96,9 +96,9 @@ proc material_createp { } {
 
 	if { $ay_error == 0 } {
 	    grab release .createMw
-	    restoreFocus $ay(createMFocus)
 	    destroy .createMw
-	    uCR; sL; rV;
+	    uCR; sL;
+	    restoreFocus $ay(createMFocus)
 	}
     }
 
@@ -139,6 +139,8 @@ proc material_edit { } {
 	return;
     }
 
+    set oldsel $sel
+
     getType type
     global ${type}_props
     eval set props \$${type}_props
@@ -165,7 +167,7 @@ proc material_edit { } {
 	if { $ay_error > 0 } { return; }
 	getProp
 	set newmaterial $MaterialAttrData(Materialname)
-	foreach obj $sel {
+	foreach obj $oldsel {
 	    selOb $obj
 	    getMat
 	    set matPropData(Materialname) $newmaterial
