@@ -2520,11 +2520,13 @@ ay_npt_concat(ay_object *o, int type, int order,
 	      char *uv, ay_object **result)
 {
  int ay_status = AY_OK;
- ay_object *patches = NULL, *new = NULL, *tmp = NULL;
+ ay_object *patches = NULL, *new = NULL;
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
- int i = 0, ncurves = 0, uvlen = 0;
+ int a = 0, i = 0, j = 0, k = 0, ncurves = 0, uvlen = 0;
+ double *newknotv = NULL;
+ int max_order = 0;
 
   if(!o || !result)
     return AY_ENULL;
@@ -2535,11 +2537,137 @@ ay_npt_concat(ay_object *o, int type, int order,
   if(uv)
     uvlen = strlen(uv);
 
+  /* create fillets */
   if(fillet_type)
     {
       ay_status = ay_npt_fillgaps(o, type, fillet_type, ftlen, uv);
     } /* if */
 
+  /* for custom knot vectors, elevate all patches to max_order
+     or order (whatever is higher) and make sure they are clamped */
+  if(knot_type == AY_KTCUSTOM)
+    {
+      /* get max order */
+      while(o)
+	{
+	  if(o->type == AY_IDNPATCH)
+	    {
+	      np = (ay_nurbpatch_object *)o->refine;
+	      if(o->selected)
+		{
+		  /* this is a fillet patch => do not consume
+		     a character from uvselect */
+		  if(np->uorder > max_order)
+		    max_order = np->uorder;
+		}
+	      else
+		{
+		  if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
+		    {
+		      if(np->vorder > max_order)
+			max_order = np->vorder;
+		    }
+		  else
+		    {
+		      if(np->uorder > max_order)
+			max_order = np->uorder;
+		    } /* if */
+		  i++;
+		} /* if */
+	    } /* if */
+	  o = o->next;
+	} /* while */
+
+      if(order < max_order)
+	order = max_order;
+      else
+	max_order = order;
+
+      /* elevate or clamp */
+      o = patches;
+      i = 0;
+      while(o)
+	{
+	  if(o->type == AY_IDNPATCH)
+	    {
+	      np = (ay_nurbpatch_object *)o->refine;
+	      if(o->selected)
+		{
+		  /* this is a fillet patch => do not consume
+		     a character from uvselect */
+		  if(np->uorder < max_order)
+		    {
+		      ay_status = ay_npt_elevateu(np, max_order-np->uorder);
+
+		      if(ay_status)
+			goto cleanup;
+		    }
+		  else
+		    {
+		      ay_status = ay_npt_clampu(np, 0);
+
+		      if(ay_status)
+			goto cleanup;
+		    }
+		  ay_status = ay_knots_rescaletorange(np->uorder,
+						      np->uknotv, 0, 1);
+		  if(ay_status)
+		    goto cleanup;
+		}
+	      else
+		{
+		  if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
+		    {
+		      if(np->vorder < max_order)
+			{
+			  ay_status = ay_npt_elevatev(np, max_order-np->vorder);
+
+			  if(ay_status)
+			    goto cleanup;
+			}
+		      else
+			{
+			  ay_status = ay_npt_clampv(np, 0);
+
+			  if(ay_status)
+			    goto cleanup;
+			}
+		      ay_status = ay_knots_rescaletorange(np->vorder,
+							  np->vknotv, 0, 1);
+		      if(ay_status)
+			goto cleanup;
+		    }
+		  else
+		    {
+		      if(np->uorder < max_order)
+			{
+			  ay_status = ay_npt_elevateu(np, max_order-np->uorder);
+
+			  if(ay_status)
+			    goto cleanup;
+			}
+		      else
+			{
+			  ay_status = ay_npt_clampu(np, 0);
+			  
+			  if(ay_status)
+			    goto cleanup;
+			}
+		      ay_status = ay_knots_rescaletorange(np->uorder,
+							  np->uknotv, 0, 1);
+		      if(ay_status)
+			goto cleanup;
+		    } /* if */
+		  i++;
+		} /* if */
+	    } /* if */
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+  /* (possibly) revert the patches and split them to curves */
+  o = patches;
+  i = 0;
   while(o)
     {
       if(o->type == AY_IDNPATCH)
@@ -2618,39 +2746,74 @@ ay_npt_concat(ay_object *o, int type, int order,
   if(ay_status)
     goto cleanup;
 
-  /* create fillets (or remove double boundary curves) */
-  o = patches;
-  if(0&& fillet_type != 0 && o->next)
-    {
-      curve = allcurves;
-      np = (ay_nurbpatch_object *)o->refine;
-      for(i = 0; i < np->width; i++)
-	{
-	  curve = curve->next;
-	}
-      o = o->next;
-      while(o)
-	{
-	  tmp = curve->next;
-	  curve->next = tmp->next;
-	  ay_object_delete(tmp);
-
-	  np = (ay_nurbpatch_object *)o->refine;
-	  for(i = 0; i < (np->width-1); i++)
-	    {
-	      curve = curve->next;
-	    }
-
-	  o = o->next;
-	} /* while */
-    } /* if */
-
   /* build a new patch from the compatible curves */
   ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, order,
 				     knot_type, AY_FALSE, &new);
 
   if(ay_status)
     goto cleanup;
+
+  /* create custom knot vector */
+  if(knot_type == AY_KTCUSTOM)
+    {
+      np = (ay_nurbpatch_object *)new->refine;
+      if(!(newknotv = calloc(np->width + np->uorder, sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      np->uknotv = newknotv;
+      a = order;
+      j = 0;
+      k = 0;
+      o = patches;
+      i = 0;
+
+      while(o)
+	{
+	  if(o->type == AY_IDNPATCH)
+	    {
+	      np = (ay_nurbpatch_object *)o->refine;
+	      if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
+		{
+		  k = np->vorder;
+		  for(i = k; i < np->height+np->vorder; i++)
+		    {
+		      newknotv[a] = np->vknotv[i]+j;
+		      a++;
+		    }
+		}	    
+	      else
+		{
+		  k = np->uorder;
+		  for(i = k; i < np->width+np->uorder; i++)
+		    {
+		      newknotv[a] = np->uknotv[i]+j;
+		      a++;
+		    }
+		}
+	      j++;
+	    }
+	  else
+	    {
+	      /* must be a curve => add a single knot */
+	      newknotv[a] = j;
+	      a++;
+	      j++;
+	    }
+	  o = o->next;
+	} /* while */
+
+      /* last knots */
+      if(type == AY_CTCLOSED && fillet_type == 0)
+	{
+	  np = (ay_nurbpatch_object *)new->refine;
+	  for(i = a; i < np->width+np->uorder; i++)
+	    {
+	      newknotv[i] = newknotv[a-1]+1;
+	    }
+	}
+    } /* if */
 
   /* return result */
   *result = new;
