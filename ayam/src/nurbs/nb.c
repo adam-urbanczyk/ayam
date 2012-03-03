@@ -2808,7 +2808,7 @@ cleanup:
 
   /* convert rational coordinates from homogeneous to euclidean style */
   a = 0;
-  for(i = 0; i < *nw*(h+1); i++)
+  for(i = 0; i < (*nw)*h; i++)
     {
       Qw[a]   /= Qw[a+3];
       Qw[a+1] /= Qw[a+3];
@@ -3210,12 +3210,16 @@ cleanup:
 
   /* convert rational coordinates from homogeneous to euclidean style */
   a = 0;
-  for(i = 0; i < (w+1)*(*nh); i++)
+  for(i = 0; i < w; i++)
     {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
+      a = i*tnh*stride;
+      for(j = 0; j < *nh; j++)
+	{
+	  Qw[a]   /= Qw[a+3];
+	  Qw[a+1] /= Qw[a+3];
+	  Qw[a+2] /= Qw[a+3];
+	  a += stride;
+	}
     }
 
  return ay_status;
