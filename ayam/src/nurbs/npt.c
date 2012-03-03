@@ -2588,7 +2588,7 @@ ay_npt_concat(ay_object *o, int type, int order,
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
  ay_list_object *curvelist, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
- int a = 0, i = 0, j = 0, k = 0, ncurves = 0, uvlen = 0;
+ int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
  double *newknotv = NULL;
  int max_order = 0;
 
@@ -2665,7 +2665,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 		      if(ay_status)
 			goto cleanup;
-		    }		  
+		    }
 		  ay_status = ay_knots_rescaletorange(np->uorder,
 						      np->uknotv, 0, 1);
 		  if(ay_status)
@@ -2706,7 +2706,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      else
 			{
 			  ay_status = ay_npt_clampu(np, 0);
-			  
+
 			  if(ay_status)
 			    goto cleanup;
 			}
@@ -2803,6 +2803,9 @@ ay_npt_concat(ay_object *o, int type, int order,
   if(ay_status)
     goto cleanup;
 
+  if((type == AY_CTCLOSED || type == AY_CTPERIODIC) && fillet_type)
+    type = AY_CTOPEN;
+
   /* build a new patch from the compatible curves */
   ay_status = ay_npt_buildfromcurves(curvelist, ncurves, type, order,
 				     knot_type, AY_FALSE, &new);
@@ -2831,24 +2834,26 @@ ay_npt_concat(ay_object *o, int type, int order,
 	  if(o->type == AY_IDNPATCH)
 	    {
 	      np = (ay_nurbpatch_object *)o->refine;
-	      if(uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
+	      if(!o->selected &&
+		 uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
 		{
 		  k = np->vorder;
-		  for(i = k; i < np->height+np->vorder; i++)
+		  for(l = k; l < np->height+np->vorder; l++)
 		    {
-		      newknotv[a] = np->vknotv[i]+j;
-		      a++;
-		    }
-		}	    
-	      else
-		{
-		  k = np->uorder;
-		  for(i = k; i < np->width+np->uorder; i++)
-		    {
-		      newknotv[a] = np->uknotv[i]+j;
+		      newknotv[a] = np->vknotv[l]+j;
 		      a++;
 		    }
 		}
+	      else
+		{
+		  k = np->uorder;
+		  for(l = k; l < np->width+np->uorder; l++)
+		    {
+		      newknotv[a] = np->uknotv[l]+j;
+		      a++;
+		    }
+		}
+	      i++;
 	      j++;
 	    }
 	  else
@@ -12240,9 +12245,10 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillet_type);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 
-	      if(type < 0)
+	      if(fillet_type < 0)
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter type must be >= 0.");
+		  ay_error(AY_ERROR, argv[0],
+			   "Parameter <fillet type> must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -12253,7 +12259,8 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(type < 0)
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter type must be >= 0.");
+		  ay_error(AY_ERROR, argv[0],
+			   "Parameter <type> must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -12264,7 +12271,8 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(type < 0)
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter order must be >= 0.");
+		  ay_error(AY_ERROR, argv[0],
+			   "Parameter <order> must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
@@ -12276,7 +12284,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(knot_type < 0)
 		{
 		  ay_error(AY_ERROR, argv[0],
-			   "Parameter knot type must be >= 0.");
+			   "Parameter <knot type> must be >= 0.");
 		  return TCL_OK;
 		}
 	    }
