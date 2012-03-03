@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2012 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -23,11 +23,14 @@
  * In contrast to the rest of Ayam, the interfaces in this module
  * follow the NURBS book more closely (to ease debugging of core
  * NURBS algorithms), which means that:
- * n is curve->length-1 or patch->width-1, m is is patch->height-1;
- * w is patch->width-1, h is patch->height-1;
- * p is curve->order-1 or patch->uorder-1, q is patch->vorder-1
- * P _and_ Pw are 1D arrays of doubles with four consecutive
- * doubles specifying a single (even non rational) control point
+ * o n is curve->length-1 or patch->width-1, m is is patch->height-1;
+ * o w is patch->width-1, h is patch->height-1;
+ * o p is curve->order-1 or patch->uorder-1, q is patch->vorder-1.
+ * Furthermore:
+ * o P _and_ Pw are 1D arrays of doubles with four consecutive
+ *   doubles specifying a single (even non rational) control point;
+ * o rational coordinates are to be specified in euclidean style
+ *   (weights not multiplied in).
  */
 
 
@@ -452,7 +455,7 @@ ay_nb_Bin(int maxn, int maxk, double *bin)
 
 
 /*
- * ay_nb_DegreeElevateCurve:
+ * ay_nb_DegreeElevateCurve4D:
  * Elevates the degree of curve: stride, n, p, U[], Pw[]
  * t times
  * nh: new length, Uh: new knots, Qw: new controls
@@ -460,15 +463,28 @@ ay_nb_Bin(int maxn, int maxk, double *bin)
  * and probably _resized_ according to nh after elevation!
  */
 int
-ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
-			 int t, int *nh, double *Uh, double *Qw)
+ay_nb_DegreeElevateCurve4D(int stride, int n, int p, double *U, double *Pw,
+			   int t, int *nh, double *Uh, double *Qw)
 {
+ int ay_status = AY_OK;
  int m, ph, ph2, bai, bai2, bal, ki, ki2, kj;
  int i, j, k, mpi, maxit, kind, cind, r, oldr, a, b, mh, mul;
  int s, save, first, last, tr, bi, bi2, lbz, rbz;
  double *bezalfs = NULL, *bpts = NULL, *ebpts = NULL;
  double *Nextbpts = NULL, *alfs = NULL, *bin = NULL;
  double ua, ub, numer, den, alf, bet, gam, inv;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  a = 0;
+  for(i = 0; i <= n; i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
+
+  *nh = n+1;
 
   m = n + p + 1;
 
@@ -477,28 +493,22 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
   bal = p + 1;
 
   if(!(bezalfs = calloc((p+t+1)*(p+1), sizeof(double))))
-    return AY_EOMEM;
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(bpts = calloc((p+1)*stride, sizeof(double))))
-    {free(bezalfs); return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(ebpts = calloc((p+t+1)*stride, sizeof(double))))
-    {free(bezalfs); free(bpts); return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(Nextbpts = calloc((p-1)*stride, sizeof(double))))
-    {free(bezalfs); free(bpts); free(ebpts);return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(alfs = calloc((p-1), sizeof(double))))
-    {
-      free(bezalfs); free(bpts); free(ebpts);
-      free(Nextbpts); return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(bin = calloc((ph+1)*(ph2+1), sizeof(double))))
-    {
-      free(bezalfs); free(bpts); free(ebpts);
-      free(Nextbpts); free(alfs); return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   ay_nb_Bin((ph+1), (ph2+1), bin);
 
@@ -763,14 +773,32 @@ ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
 
   *nh = mh-ph/*-1*/;
 
-  free(bezalfs);
-  free(bpts);
-  free(ebpts);
-  free(Nextbpts);
-  free(alfs);
-  free(bin);
+cleanup:
 
- return AY_OK;
+  if(bezalfs)
+    free(bezalfs);
+  if(bpts)
+    free(bpts);
+  if(ebpts)
+    free(ebpts);
+  if(Nextbpts)
+    free(Nextbpts);
+  if(alfs)
+    free(alfs);
+  if(bin)
+    free(bin);
+
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i < *nh; i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
+  return ay_status;
 } /* ay_nb_DegreeElevateCurve */
 
 
@@ -864,13 +892,13 @@ ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P)
 
 
 /*
- * ay_nb_CurveInsertKnot4D:
+ * ay_nb_InsertKnotCurve4D:
  *  insert knot u into rational curve (np, p, UP[], Pw[])
  *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!)
  *  nq: new length, UQ: new knots, Qw: new controls (both allocated outside!)
  */
 int
-ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
+ay_nb_InsertKnotCurve4D(int np, int p, double *UP, double *Pw, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Qw)
 {
@@ -903,13 +931,14 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
       Qw[i1+3] = Pw[i2+3];
     } /* for */
 
+  /* get work control points */
   for(i = 0; i <= (p-s); i++)
     {
       i1 = i*4;
       i2 = (k-p+i)*4;
-      Rw[i1] = Pw[i2];
-      Rw[i1+1] = Pw[i2+1];
-      Rw[i1+2] = Pw[i2+2];
+      Rw[i1] = Pw[i2] * Pw[i2+3];
+      Rw[i1+1] = Pw[i2+1] * Pw[i2+3];
+      Rw[i1+2] = Pw[i2+2] * Pw[i2+3];
       Rw[i1+3] = Pw[i2+3];
     } /* for */
 
@@ -929,16 +958,16 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
 	} /* for */
 
       i1 = L*4;
-      Qw[i1] = Rw[0];
-      Qw[i1+1] = Rw[1];
-      Qw[i1+2] = Rw[2];
+      Qw[i1] = Rw[0] / Rw[3];
+      Qw[i1+1] = Rw[1] / Rw[3];
+      Qw[i1+2] = Rw[2] / Rw[3];
       Qw[i1+3] = Rw[3];
 
       i1 = (k+r-j-s)*4;
       i2 = (p-j-s)*4;
-      Qw[i1] = Rw[i2];
-      Qw[i1+1] = Rw[i2+1];
-      Qw[i1+2] = Rw[i2+2];
+      Qw[i1] = Rw[i2] / Rw[i2+3];
+      Qw[i1+1] = Rw[i2+1] / Rw[i2+3];
+      Qw[i1+2] = Rw[i2+2] / Rw[i2+3];
       Qw[i1+3] = Rw[i2+3];
     } /* for */
 
@@ -946,9 +975,9 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
     {
       i1 = i*4;
       i2 = (i-L)*4;
-      Qw[i1] = Rw[i2];
-      Qw[i1+1] = Rw[i2+1];
-      Qw[i1+2] = Rw[i2+2];
+      Qw[i1] = Rw[i2] / Rw[i2+3];
+      Qw[i1+1] = Rw[i2+1] / Rw[i2+3];
+      Qw[i1+2] = Rw[i2+2] / Rw[i2+3];
       Qw[i1+3] = Rw[i2+3];
     } /* for */
 
@@ -960,17 +989,17 @@ ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
   for(i = k+1; i <= mp; i++) UQ[i+r] = UP[i];
 
  return AY_OK;
-} /* ay_nb_CurveInsertKnot4D */
+} /* ay_nb_InsertKnotCurve4D */
 
 
 /*
- * ay_nb_CurveInsertKnot3D:
+ * ay_nb_InsertKnotCurve3D:
  *  insert knot u into non-rational curve (np, p, UP[], P[])
  *  r times; k: knot span, s: already present knot multiplicity (np >= r+s!)
  *  nq: new length, UQ: new knots, Q: new controls (both allocated outside!)
  */
 int
-ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
+ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
 			int k, int s, int r, int *nq, double *UQ,
 			double *Q)
 {
@@ -1053,11 +1082,11 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
   for(i=k+1; i<=mp; i++) UQ[i+r] = UP[i];
 
  return AY_OK;
-} /* ay_nb_CurveInsertKnot3D */
+} /* ay_nb_InsertKnotCurve3D */
 
 
 /*
- * ay_nb_CurveRemoveKnot4D: (NURBS++)
+ * ay_nb_RemoveKnotCurve4D: (NURBS++)
  * remove knot r (with multiplicity s) num times from curve
  * (n, p, U, Pw) if new curve does not deviate <tol> distance from old
  * result: new controls Qw and knots Ubar (allocated outside!)
@@ -1065,7 +1094,7 @@ ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
  * Modifies U and Pw!
  */
 int
-ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
+ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 			int r, int s, int num, double *Ubar, double *Qw)
 {
  int i, j, k, ii, jj, off, t;
@@ -1236,7 +1265,7 @@ ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
   free(temp);
 
  return AY_OK;
-} /* ay_nb_CurveRemoveKnot4D */
+} /* ay_nb_RemoveKnotCurve4D */
 
 
 /*
@@ -2282,7 +2311,7 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
 
 /*
- * ay_nb_RefineKnotVectCurve:
+ * ay_nb_RefineKnotVectCurve4D:
  * original algorithm by Boehm and Prautzsch
  * refine the knot vector of the curve
  * (stride, n, p, U[], Pw[]) with the new knots in X[r];
@@ -2290,13 +2319,23 @@ ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
  * control points in Qw[n+r] both allocated outside!
  */
 void
-ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
-			  double *X, int r, double *Ubar, double *Qw)
+ay_nb_RefineKnotVectCurve4D(int stride, int n, int p, double *U, double *Pw,
+			    double *X, int r, double *Ubar, double *Qw)
 {
  int m, a, b;
  int i, j, k, l, ind;
  double alfa, td;
  int ti, tj;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  a = 0;
+  for(i = 0; i <= n; i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
 
   m = n+p+1;
 
@@ -2383,12 +2422,22 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
       k--;
     } /* for */
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i <= n+r; i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
  return;
-} /* ay_nb_RefineKnotVectCurve */
+} /* ay_nb_RefineKnotVectCurve4D */
 
 
 /*
- * ay_nb_DegreeElevateSurfU: (NURBS++)
+ * ay_nb_DegreeElevateSurfU4D: (NURBS++)
  * Elevates the degree of surface: stride, w, h, p, U[], Pw[]
  * t times along parametric dimension u
  * q, V[] do not have to be provided (no change in dimension v)
@@ -2398,9 +2447,9 @@ ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
  * and probably _resized_ according to nw after elevation!
  */
 int
-ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
-			 double *Pw, int t,
-			 int *nw, double *Uh, double *Qw)
+ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
+			   double *Pw, int t,
+			   int *nw, double *Uh, double *Qw)
 {
  int ay_status = AY_OK;
  int i, j, k;
@@ -2428,7 +2477,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
  double ub = 0.0;
  int r = -1;
  int oldr;
- int a = p;
+ int a = 0;
  int b = p+1;
  int cind = 1;
  int rbz, lbz = 1;
@@ -2439,6 +2488,18 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
  int tr;
  int ki, ki2;
 
+  /* convert rational coordinates from euclidean to homogeneous style */
+  for(i = 0; i < (w+1)*(h+1); i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
+
+  *nw = w+1;
+
+  a = p;
   h++;
 
   /* allocate temporary arrays */
@@ -2683,7 +2744,8 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
 	/* load the knot u=U[a] */
 	for(i = 0; i < ph-oldr; i++)
 	  {
-	    Uh[kind++] = ua;
+	    Uh[kind] = ua;
+	    kind++;
 	  }
       }
 
@@ -2730,6 +2792,7 @@ ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
   *nw = mh-ph;
 
 cleanup:
+
  if(bezalfs)
    free(bezalfs);
  if(bpts)
@@ -2743,12 +2806,22 @@ cleanup:
  if(bin)
    free(bin);
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i < *nw*(h+1); i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
  return ay_status;
-} /* ay_nb_DegreeElevateSurfU */
+} /* ay_nb_DegreeElevateSurfU4D */
 
 
 /*
- * ay_nb_DegreeElevateSurfV: (NURBS++)
+ * ay_nb_DegreeElevateSurfV4D: (NURBS++)
  * Elevates the degree of surface: stride, w, h, p, V[], Pw[]
  * t times along parametric dimension v
  * q, U[] do not have to be provided (no change in dimension u)
@@ -2758,9 +2831,9 @@ cleanup:
  * and probably _resized_ according to nh after elevation!
  */
 int
-ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
-			 double *Pw, int t,
-			 int *nh, double *Vh, double *Qw)
+ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
+			   double *Pw, int t,
+			   int *nh, double *Vh, double *Qw)
 {
  int ay_status = AY_OK;
  int i, j, k;
@@ -2789,7 +2862,7 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
  double vb = 0.0;
  int r = -1;
  int oldr;
- int a = p;
+ int a = 0;
  int b = p+1;
  int cind = 1;
  int rbz, lbz = 1;
@@ -2800,6 +2873,18 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
  int tr;
  int ki, ki2;
 
+  /* convert rational coordinates from euclidean to homogeneous style */
+  for(i = 0; i < (w+1)*(h+1); i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
+
+  *nh = h+1;
+
+  a = p;
   w++;
 
   /* allocate temporary arrays */
@@ -3058,7 +3143,8 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
 	/* load the knot u=U[a] */
 	for(i = 0; i < ph-oldr; i++)
 	  {
-	    Vh[kind++] = va;
+	    Vh[kind] = va;
+	    kind++;
 	  }
       }
 
@@ -3108,6 +3194,7 @@ ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
   *nh = mh-ph;
 
 cleanup:
+
  if(bezalfs)
    free(bezalfs);
  if(bpts)
@@ -3121,25 +3208,45 @@ cleanup:
  if(bin)
    free(bin);
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i < (w+1)*(*nh); i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
  return ay_status;
-} /* ay_nb_DegreeElevateSurfV */
+} /* ay_nb_DegreeElevateSurfV4D */
 
 
 /*
- * ay_nb_RefineKnotVectSurfU: (NURBS++)
+ * ay_nb_RefineKnotVectSurfU4D: (NURBS++)
  * Refine knot vector U of surface: stride, w, h, p, U[], Pw[]
  * with new knots in X[r], results in new knots in Ubar[wi+p+r] and new
  * control points in Qw[(wi+r)*(he)*stride], both allocated outside
  */
 int
-ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
-			  double *Pw, double *X, int r,
-			  double *Ubar, double *Qw)
+ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
+			    double *Pw, double *X, int r,
+			    double *Ubar, double *Qw)
 {
  int ay_status = AY_OK;
  double alpha;
  int m, n, a, b, i, j, k, l, ind, col;
  int i1, i2;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  a = 0;
+  for(i = 0; i < (w+1)*(h+1); i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
 
   m = w+p+1;
   n = w;
@@ -3238,25 +3345,45 @@ ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
       k--;
     } /* for */
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i < (w+r+1)*(h+1); i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
  return ay_status;
-} /* ay_nb_RefineKnotVectSurfU */
+} /* ay_nb_RefineKnotVectSurfU4D */
 
 
 /*
- * ay_nb_RefineKnotVectSurfV: (NURBS++)
+ * ay_nb_RefineKnotVectSurfV4D: (NURBS++)
  * Refine knot vector V of surface: stride, w, h, p, V[], Pw[]
  * with new knots in X[r], results in new knots in Vbar[he+p+r] and new
  * control points in Qw[(wi)*(he+r)*stride], both allocated outside
  */
 int
-ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
-			  double *Pw, double *X, int r,
-			  double *Vbar, double *Qw)
+ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
+			    double *Pw, double *X, int r,
+			    double *Vbar, double *Qw)
 {
  int ay_status = AY_OK;
  double alpha;
  int m, n, a, b, i, j, k, l, ind, row;
  int i1, i2, he = h+r+2;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  a = 0;
+  for(i = 0; i < (w+1)*(h+1); i++)
+    {
+      Pw[a]   *= Pw[a+3];
+      Pw[a+1] *= Pw[a+3];
+      Pw[a+2] *= Pw[a+3];
+      a += stride;
+    }
 
   m = h+p+1;
   n = h;
@@ -3357,8 +3484,18 @@ ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
       k--;
     } /* for */
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  a = 0;
+  for(i = 0; i < (w+1)*(h+r+1); i++)
+    {
+      Qw[a]   /= Qw[a+3];
+      Qw[a+1] /= Qw[a+3];
+      Qw[a+2] /= Qw[a+3];
+      a += stride;
+    }
+
  return ay_status;
-} /* ay_nb_RefineKnotVectSurfV */
+} /* ay_nb_RefineKnotVectSurfV4D */
 
 
 /*
@@ -3535,6 +3672,10 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	  i1 = i*stride;
 	  i2 = ((k-p+i)*h1+row)*stride;
 	  memcpy(&(Rw[i1]), &(Pw[i2]), stride*sizeof(double));
+	  /* convert euclidean rational to homogeneous */
+	  Rw[i1] *= Rw[i1+3];
+	  Rw[i1+1] *= Rw[i1+3];
+	  Rw[i1+2] *= Rw[i1+3];
 	}
       /* Insert the knot r times. */
       for(j = 1; j <= r; j++)
@@ -3556,11 +3697,19 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	  /*Qw[L][row] = Rw[0];*/
 	  i1 = (L*h1+row)*stride;
 	  memcpy(&(Qw[i1]), &(Rw[0]), stride*sizeof(double));
+	  /* convert homogeneous rational to euclidean */
+	  Qw[i1] /= Qw[i1+3];
+	  Qw[i1+1] /= Qw[i1+3];
+	  Qw[i1+2] /= Qw[i1+3];
 
 	  /*Qw[k+r-j-s][row] = Rw[p-j-s];*/
 	  i1 = ((k+r-j-s)*h1+row)*stride;
 	  i2 = (p-j-s)*stride;
 	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	  /* convert homogeneous rational to euclidean */
+	  Qw[i1] /= Qw[i1+3];
+	  Qw[i1+1] /= Qw[i1+3];
+	  Qw[i1+2] /= Qw[i1+3];
 
 	  /* Load the remaining control points. */
 	  for(i = L+1; i < k-s; i++)
@@ -3569,6 +3718,10 @@ ay_nb_InsertKnotSurfU(int stride, int w, int h, int p, double *UP, double *Pw,
 	      i1 = (i*h1+row)*stride;
 	      i2 = (i-L)*stride;
 	      memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	      /* convert homogeneous rational to euclidean */
+	      Qw[i1] /= Qw[i1+3];
+	      Qw[i1+1] /= Qw[i1+3];
+	      Qw[i1+2] /= Qw[i1+3];
 	    } /* for */
 	} /* for */
     } /* for */
@@ -3654,6 +3807,10 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	  i1 = i*stride;
 	  i2 = (col*h1+(k-q+i))*stride;
 	  memcpy(&(Rw[i1]), &(Pw[i2]), stride*sizeof(double));
+	  /* convert euclidean rational to homogeneous */
+	  Rw[i1] *= Rw[i1+3];
+	  Rw[i1+1] *= Rw[i1+3];
+	  Rw[i1+2] *= Rw[i1+3];
 	}
       /* Insert the knot r times. */
       for(j = 1; j <= r; j++)
@@ -3675,11 +3832,19 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	  /*Qw[col][L] = Rw[0];*/
 	  i1 = (col*nh+L)*stride;
 	  memcpy(&(Qw[i1]), &(Rw[0]), stride*sizeof(double));
+	  /* convert homogeneous rational to euclidean */
+	  Qw[i1] /= Qw[i1+3];
+	  Qw[i1+1] /= Qw[i1+3];
+	  Qw[i1+2] /= Qw[i1+3];
 
 	  /*Qw[col][k+r-j-s] = Rw[q-j-s];*/
 	  i1 = (col*nh+(k+r-j-s))*stride;
 	  i2 = (q-j-s)*stride;
 	  memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	  /* convert homogeneous rational to euclidean */
+	  Qw[i1] /= Qw[i1+3];
+	  Qw[i1+1] /= Qw[i1+3];
+	  Qw[i1+2] /= Qw[i1+3];
 
 	  /* Load the remaining control points. */
 	  for(i = L+1; i < k-s; i++)
@@ -3688,6 +3853,10 @@ ay_nb_InsertKnotSurfV(int stride, int w, int h, int q, double *VP, double *Pw,
 	      i1 = (col*nh+i)*stride;
 	      i2 = (i-L)*stride;
 	      memcpy(&(Qw[i1]), &(Rw[i2]), stride*sizeof(double));
+	      /* convert homogeneous rational to euclidean */
+	      Qw[i1] /= Qw[i1+3];
+	      Qw[i1+1] /= Qw[i1+3];
+	      Qw[i1+2] /= Qw[i1+3];
 	    } /* for */
 	} /* for */
     } /* for */
@@ -3726,7 +3895,7 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
       a = i*(h+1)*stride;
       b = i*(h+1-num)*stride;
       memcpy(Vbar, V, (h+q+2)*sizeof(double));
-      ay_status = ay_nb_CurveRemoveKnot4D(h, q, Vbar, &(Pw[a]), tol,
+      ay_status = ay_nb_RemoveKnotCurve4D(h, q, Vbar, &(Pw[a]), tol,
 					  r, s, num, Vbar, &(Qw[b]));
 
       if(ay_status)

@@ -864,9 +864,9 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	} /* if */
 
       /* fill Ubar & Qw */
-      ay_nb_RefineKnotVectCurve(4, curve->length-1, curve->order-1,
-				curve->knotv, curve->controlv,
-				X, count-1, Ubar, Qw);
+      ay_nb_RefineKnotVectCurve4D(4, curve->length-1, curve->order-1,
+				  curve->knotv, curve->controlv,
+				  X, count-1, Ubar, Qw);
 
       free(curve->knotv);
       curve->knotv = Ubar;
@@ -1057,7 +1057,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-rs-1,
+	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-rs-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, rs, &nq, newknotv, newcontrolv);
 
@@ -1108,7 +1108,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-re-1,
+	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-re-1,
 			 curve->order-1, curve->knotv, curve->controlv, u, k,
 			 s, re, &nq, newknotv, newcontrolv);
 
@@ -1222,7 +1222,7 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
     { free(newcontrolv); return AY_EOMEM; }
 
   /* insert knots at start */
-  ay_status = ay_nb_CurveInsertKnot4D(np-1, p, curve->knotv, curve->controlv,
+  ay_status = ay_nb_InsertKnotCurve4D(np-1, p, curve->knotv, curve->controlv,
                         curve->knotv[p], p, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
@@ -1233,7 +1233,7 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
     }
 
   /* insert knots at end (nq is now np+p-1!) */
-  ay_status = ay_nb_CurveInsertKnot4D(nq, p, newknotv, newcontrolv,
+  ay_status = ay_nb_InsertKnotCurve4D(nq, p, newknotv, newcontrolv,
 			newknotv[nq+1], nq, 0, p, &nq, newknotv, newcontrolv);
 
   if(ay_status)
@@ -1425,9 +1425,9 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
     }
 
   /* fill Uh & Qw */
-  ay_status = ay_nb_DegreeElevateCurve(4, curve->length-1,
-				       curve->order-1, curve->knotv,
-				       curve->controlv, t, &nh, Uh, Qw);
+  ay_status = ay_nb_DegreeElevateCurve4D(4, curve->length-1,
+					 curve->order-1, curve->knotv,
+					 curve->controlv, t, &nh, Uh, Qw);
 
   if(ay_status)
     {
@@ -1559,9 +1559,9 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* fill Uh & Qw */
-	  ay_status = ay_nb_DegreeElevateCurve(4, curve->length-1,
-			curve->order-1, curve->knotv,
-			curve->controlv, t, &nh, Uh, Qw);
+	  ay_status = ay_nb_DegreeElevateCurve4D(4, curve->length-1,
+					      curve->order-1, curve->knotv,
+					      curve->controlv, t, &nh, Uh, Qw);
 
 	  if(ay_status)
 	    {
@@ -1713,7 +1713,7 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
+	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
 
@@ -2380,7 +2380,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 				 sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
-	  ay_status = ay_nb_CurveInsertKnot4D(curve->length-r-1,
+	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-r-1,
 			  curve->order-1, curve->knotv, curve->controlv, u, k,
 			  s, r, &nq, newknotv, newcontrolv);
 
@@ -3519,6 +3519,70 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 } /* ay_nct_getpntfromindex */
 
 
+/* ay_nct_euctohom:
+ *  convert rational coordinates from euclidean to homogeneous style
+ *  for the NURBS curve <nc>
+ */
+int
+ay_nct_euctohom(ay_nurbcurve_object *nc)
+{
+ int stride = 4;
+ double *cv;
+ int i, a;
+
+  if(!nc)
+    return AY_ENULL;
+
+  if(!nc->is_rat)
+    return AY_OK;
+
+  cv = nc->controlv;
+
+  a = 0;
+  for(i = 0; i < nc->length; i++)
+    {
+      cv[a]   *= cv[a+3];
+      cv[a+1] *= cv[a+3];
+      cv[a+2] *= cv[a+3];
+      a += stride;
+    }
+
+ return AY_OK;
+} /* ay_nct_euctohom */
+
+
+/* ay_nct_homtoeuc:
+ *  convert rational coordinates from homogeneous to euclidean style
+ *  for the NURBS curve <nc>
+ */
+int
+ay_nct_homtoeuc(ay_nurbcurve_object *nc)
+{
+ int stride = 4;
+ double *cv;
+ int i, a;
+
+  if(!nc)
+    return AY_ENULL;
+
+  if(!nc->is_rat)
+    return AY_OK;
+
+  cv = nc->controlv;
+
+  a = 0;
+  for(i = 0; i < nc->length; i++)
+    {
+      cv[a]   /= cv[a+3];
+      cv[a+1] /= cv[a+3];
+      cv[a+2] /= cv[a+3];
+      a += stride;
+    }
+
+ return AY_OK;
+} /* ay_nct_homtoeuc */
+
+
 /* ay_nct_concatmultiple:
  *  concat multiple NURBS curves in curves to a new single
  *  curve, which is returned via result; order and knot type
@@ -4565,9 +4629,9 @@ ay_nct_makecompatible(ay_object *curves)
 	      return AY_EOMEM;
 	    }
 
-	  ay_status = ay_nb_DegreeElevateCurve(stride, curve->length-1,
-		       curve->order-1, curve->knotv, curve->controlv,
-		       t, &nh, Uh, Qw);
+	  ay_status = ay_nb_DegreeElevateCurve4D(stride, curve->length-1,
+			         curve->order-1, curve->knotv, curve->controlv,
+				 t, &nh, Uh, Qw);
 
 	  if(ay_status)
 	    {
@@ -5692,7 +5756,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* remove the knot */
-	  ay_status = ay_nb_CurveRemoveKnot4D(curve->length-1, curve->order-1,
+	  ay_status = ay_nb_RemoveKnotCurve4D(curve->length-1, curve->order-1,
 					      curve->knotv, curve->controlv,
 					      tol, i, s, r,
 					      newknotv, newcontrolv);
