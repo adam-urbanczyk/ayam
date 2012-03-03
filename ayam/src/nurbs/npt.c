@@ -248,6 +248,70 @@ ay_npt_resetdisplay(ay_object *o)
 } /* ay_npt_resetdisplay */
 
 
+/* ay_npt_euctohom:
+ *  convert rational coordinates from euclidean to homogeneous style
+ *  for the NURBS surface <np>
+ */
+int
+ay_npt_euctohom(ay_nurbpatch_object *np)
+{
+ int stride = 4;
+ double *cv;
+ int i, a;
+
+  if(!np)
+    return AY_ENULL;
+
+  if(!np->is_rat)
+    return AY_OK;
+
+  cv = np->controlv;
+
+  a = 0;
+  for(i = 0; i < np->width*np->height; i++)
+    {
+      cv[a]   *= cv[a+3];
+      cv[a+1] *= cv[a+3];
+      cv[a+2] *= cv[a+3];
+      a += stride;
+    }
+
+ return AY_OK;
+} /* ay_npt_euctohom */
+
+
+/* ay_npt_homtoeuc:
+ *  convert rational coordinates from homogeneous to euclidean style
+ *  for the NURBS surface <np>
+ */
+int
+ay_npt_homtoeuc(ay_nurbpatch_object *np)
+{
+ int stride = 4;
+ double *cv;
+ int i, a;
+
+  if(!np)
+    return AY_ENULL;
+
+  if(!np->is_rat)
+    return AY_OK;
+
+  cv = np->controlv;
+
+  a = 0;
+  for(i = 0; i < np->width*np->height; i++)
+    {
+      cv[a]   /= cv[a+3];
+      cv[a+1] /= cv[a+3];
+      cv[a+2] /= cv[a+3];
+      a += stride;
+    }
+
+ return AY_OK;
+} /* ay_npt_homtoeuc */
+
+
 /* ay_npt_resizearrayw:
  *  change width of a 2D control point array <controlvptr> with
  *  stride <stride>, width <width>, and height <height> to new
@@ -2601,14 +2665,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 		      if(ay_status)
 			goto cleanup;
-		    }
-		  else
-		    {
-		      ay_status = ay_npt_clampu(np, 0);
-
-		      if(ay_status)
-			goto cleanup;
-		    }
+		    }		  
 		  ay_status = ay_knots_rescaletorange(np->uorder,
 						      np->uknotv, 0, 1);
 		  if(ay_status)
@@ -6556,10 +6613,10 @@ ay_npt_elevateu(ay_nurbpatch_object *patch, int t)
     }
 
   /* fill Uh & Qw */
-  ay_status = ay_nb_DegreeElevateSurfU(4, patch->width-1,
-				       patch->height-1,
-				       patch->uorder-1, patch->uknotv,
-				       patch->controlv, t, &nw, Uh, Qw);
+  ay_status = ay_nb_DegreeElevateSurfU4D(4, patch->width-1,
+					 patch->height-1,
+					 patch->uorder-1, patch->uknotv,
+					 patch->controlv, t, &nw, Uh, Qw);
 
   if(ay_status)
     {
@@ -6650,10 +6707,10 @@ ay_npt_elevatev(ay_nurbpatch_object *patch, int t)
     }
 
   /* fill Vh & Qw */
-  ay_status = ay_nb_DegreeElevateSurfV(4, patch->width-1,
-				       patch->height-1,
-				       patch->vorder-1, patch->vknotv,
-				       patch->controlv, t, &nh, Vh, Qw);
+  ay_status = ay_nb_DegreeElevateSurfV4D(4, patch->width-1,
+					 patch->height-1,
+					 patch->vorder-1, patch->vknotv,
+					 patch->controlv, t, &nh, Vh, Qw);
 
   if(ay_status)
     {
@@ -12164,6 +12221,8 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *patches = NULL, **next = NULL;
  ay_object *newo = NULL;
+ double ftlen = 1.0;
+ int fillet_type = 0;
  char *uv = NULL;
 
   /* parse args */
@@ -12171,6 +12230,22 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(i+1 < argc)
 	{
+	  if(!strcmp(argv[i], "-fl"))
+	    {
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &ftlen);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(!strcmp(argv[i], "-ft"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &fillet_type);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+
+	      if(type < 0)
+		{
+		  ay_error(AY_ERROR, argv[0], "Parameter type must be >= 0.");
+		  return TCL_OK;
+		}
+	    }
 	  if(!strcmp(argv[i], "-t"))
 	    {
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &type);
@@ -12275,7 +12350,8 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ay_status = ay_npt_concat(patches, type, order, knot_type, 0, 1.0, uv, &newo);
+  ay_status = ay_npt_concat(patches, type, order, knot_type, fillet_type,
+			    ftlen, uv, &newo);
 
   if(ay_status)
     {

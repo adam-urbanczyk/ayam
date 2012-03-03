@@ -287,7 +287,7 @@ int ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc,
 
 /** Remove a knot from a NURBS curve.
  */
-int ay_nb_CurveRemoveKnot4D(int n, int p, double *U, double *Pw, double tol,
+int ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 			    int r, int s, int num, double *Ubar, double *Qw);
 
 /** Calculate binomial coefficients.
@@ -296,8 +296,9 @@ void ay_nb_Bin(int maxn, int maxk, double *bin);
 
 /** Elevate degree of a NURBS curve.
  */
-int ay_nb_DegreeElevateCurve(int stride, int n, int p, double *U, double *Pw,
-			     int t, int *nh, double *Uh, double *Qw);
+int ay_nb_DegreeElevateCurve4D(int stride, int n, int p,
+			       double *U, double *Pw,
+			       int t, int *nh, double *Uh, double *Qw);
 
 /** Solve tridiagonal equation system.
  */
@@ -305,13 +306,13 @@ int ay_nb_SolveTridiagonal(int n, double *Q, double *U, double *P);
 
 /** Insert knot into rational NURBS curve.
  */
-int ay_nb_CurveInsertKnot4D(int np, int p, double *UP, double *Pw, double u,
+int ay_nb_InsertKnotCurve4D(int np, int p, double *UP, double *Pw, double u,
 			    int k, int s, int r, int *nq, double *UQ,
 			    double *Qw);
 
 /** Insert knot into non-rational NURBS curve.
  */
-int ay_nb_CurveInsertKnot3D(int np, int p, double *UP, double *P, double u,
+int ay_nb_InsertKnotCurve3D(int np, int p, double *UP, double *P, double u,
 			    int k, int s, int r, int *nq, double *UQ,
 			    double *Q);
 
@@ -389,32 +390,33 @@ int ay_nb_CreateNurbsCircleArc(double r, double ths, double the,
 
 /** Refine knot vector of NURBS curve with a new vector.
  */
-void ay_nb_RefineKnotVectCurve(int stride, int n, int p, double *U, double *Pw,
-			       double *X, int r, double *Ubar, double *Qw);
+void ay_nb_RefineKnotVectCurve4D(int stride, int n, int p,
+				 double *U, double *Pw,
+				 double *X, int r, double *Ubar, double *Qw);
 
 /** Elevate degree of NURBS surface in U direction.
  */
-int ay_nb_DegreeElevateSurfU(int stride, int w, int h, int p, double *U,
-			     double *Pw, int t,
-			     int *nw, double *Uh, double *Qw);
+int ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
+			       double *Pw, int t,
+			       int *nw, double *Uh, double *Qw);
 
 /** Elevate degree of NURBS surface in V direction.
  */
-int ay_nb_DegreeElevateSurfV(int stride, int w, int h, int p, double *V,
-			     double *Pw, int t,
-			     int *nh, double *Vh, double *Qw);
+int ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
+			       double *Pw, int t,
+			       int *nh, double *Vh, double *Qw);
 
 /** Refine U knot vector of NURBS surface with a new vector.
  */
-int ay_nb_RefineKnotVectSurfU(int stride, int w, int h, int p, double *U,
-			      double *Pw, double *X, int r,
-			      double *Ubar, double *Qw);
+int ay_nb_RefineKnotVectSurfU4D(int stride, int w, int h, int p, double *U,
+				double *Pw, double *X, int r,
+				double *Ubar, double *Qw);
 
 /** Refine V knot vector of NURBS surface with a new vector.
  */
-int ay_nb_RefineKnotVectSurfV(int stride, int w, int h, int p, double *V,
-			      double *Pw, double *X, int r,
-			      double *Vbar, double *Qw);
+int ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
+				double *Pw, double *X, int r,
+				double *Vbar, double *Qw);
 
 /** Decompose NURBS curve into Bezier segments.
  */
@@ -749,6 +751,13 @@ int ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_reparamtcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Convert rational coordinates from euclidean to homogeneous style.
+*/
+int ay_nct_euctohom(ay_nurbcurve_object *nc);
+
+/** Convert rational coordinates from homogeneous to euclidean style.
+*/
+int ay_nct_homtoeuc(ay_nurbcurve_object *nc);
 
 /* npt.c */
 
@@ -1194,6 +1203,14 @@ int ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
+
+/** Convert rational coordinates from euclidean to homogeneous style.
+*/
+int ay_npt_euctohom(ay_nurbpatch_object *nc);
+
+/** Convert rational coordinates from homogeneous to euclidean style.
+*/
+int ay_npt_homtoeuc(ay_nurbpatch_object *nc);
 
 
 /* pmt.c */
