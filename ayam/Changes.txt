@@ -1,4 +1,4 @@
-[21. Feb 2012] CVS-Head:
+[4. Mar 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -21,6 +21,10 @@ o Gordon objects with transformed intersection patches (SF 3448526)
 o conversion of torii with phimin/phimax not on default fails (SF 3481314)
 o conversion of transformed quadrics with non-standard parameters (SF 3484008)
 o toXYNC resetting the scale attributes if an error occurs (SF 3485090)
+o operations on rational NURBS modify shapes (SF 3496743)
+o the application of static and dynamic code checking tools (splint, cppcheck,
+  clang, valgrind, mudflap, drmemory) lead to the discovery and fix of
+  numerous smaller bugs (mostly memory leaks in error cases)
 
 Modelling:
 o knot rescaling of NURBS curves/surfaces no longer requires custom knots
@@ -61,11 +65,15 @@ o added "Order" parameter to ConcatNP, that allows to specify the
   desired U order of the concatenated surface
 o added "FillGaps" and "FTLength" parameters to ConcatNP that
   control the creation of fillets similiar to ConcatNC
+o added custom knots to ConcatNP so that the shapes of parameter surfaces
+  can now be preserved exactly (similar to ConcatNC)
 o improved drawing of torii with phimin/phimax not on defaults
 o toXYNC can now work with ACurve and ICurve objects and is thus
   renamed to toXYC (old command name still available but deprecated)
 o improved fillet creation of ConcatNC for parameter curve orders
   different from 4
+o converted Sphere patches now have the same direction as other quadrics
+  to make it easier to combine them with ConcatNP
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -117,6 +125,7 @@ Documentation/Example Files:
 o historic information (i.e. when did a feature appear) are now presented
   in a less obtrusive way (as footnotes)
 o improved layout of index, object trees, and code examples
+
 
 [16. Mar 2011] Ayam-1.19:
 =========================
