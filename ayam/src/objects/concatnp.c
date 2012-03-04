@@ -38,8 +38,8 @@ ay_concatnp_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
-  new->knot_type = AY_KTNURB;
-  new->ftlength = 1.0;
+  new->knot_type = AY_KTCUSTOM;
+  new->ftlength = -0.3;
 
   o->hide_children = AY_TRUE;
   o->parent = AY_TRUE;
@@ -400,7 +400,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
   if(!(concatnp = calloc(1, sizeof(ay_concatnp_object))))
     { return AY_EOMEM; }
 
-  concatnp->ftlength = 0.3;
+  concatnp->ftlength = -0.3;
 
   fscanf(fileptr, "%d\n", &concatnp->type);
   fscanf(fileptr, "%d\n", &concatnp->revert);
@@ -605,7 +605,7 @@ ay_concatnp_notifycb(ay_object *o)
 
 cleanup:
 
-  /* free list of temporary curves */
+  /* free list of temporary patches/curves */
   if(patches)
     ay_object_deletemulti(patches);
 
