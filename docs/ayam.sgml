@@ -8549,6 +8549,9 @@ The following parameters further control the concatenation process:
 <itemize>
 <item>Using <tt/"Type"/, open, closed, or periodic concatenated patches may
 be created.
+If a closed surface is to be created and also <tt/"FillGaps"/ (see below) is
+enabled, an additional fillet will be created for the last and the first
+child curve to close the concatenated curve.
 
 <item><tt/"Order"/ is the desired order of the concatenated surface
 (in U direction), the default value (0) leads to a cubic surface.
@@ -8587,8 +8590,15 @@ distances vary a lot (see also the image below).
 <item>If <tt/"Revert"/ is enabled, the orientation of the concatenated
 surface will be reversed (in U direction).
 
-<item>The <tt/"Knot-Type"/ parameter allows to choose between NURB
-and B-Spline knot vectors for the concatenated surface (in U direction).
+<item>The <tt/"Knot-Type"/ parameter allows to choose a knot vector for
+the concatenated surface in U direction. Similar to the
+ConcatNC object, only <tt/"Custom"/ knots allow to preserve the shapes
+of the parameter surfaces completely but this comes at the price of multiple
+internal knots (see also <ref id="concatncp" name="ConcatNCAttr Property">).
+In addition, for <tt/"Custom"/ knots, all parameter surfaces will be
+elevated to a common maximum order or atleast be clamped in the
+respective direction prior to the splitting to curves but after
+the fillet creation.
 
 <item>The <tt/"UVSelect"/ option is a string that can be used to
 control the splitting direction for each parameter surface
@@ -8599,7 +8609,10 @@ To connect two surfaces that share the same orientation "over a corner"
 one would e.g.~need to set <tt/"UVSelect"/ to <tt/"uV"/
 (see also the image below).
 The default, an empty string, is equivalent to <tt/"u"/ for all
-patches.
+patches. Also incomplete strings lead to <tt/"u"/ for all remaining
+patches. There is no need to specify a value for fillets, those
+will always be created in a way that they can be split along the
+U direction.
 <p>
 <figure loc="ht">
 <eps file="pics/concatnpuv.ps" height="5cm">
