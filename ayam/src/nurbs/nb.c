@@ -789,13 +789,27 @@ cleanup:
     free(bin);
 
   /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i < *nh; i++)
+  if(ay_status == AY_OK)
     {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
+      a = 0;
+      for(i = 0; i < *nh; i++)
+	{
+	  Qw[a]   /= Qw[a+3];
+	  Qw[a+1] /= Qw[a+3];
+	  Qw[a+2] /= Qw[a+3];
+	  a += stride;
+	}
+    }
+  else
+    {
+      a = 0;
+      for(i = 0; i <= n; i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
+	  a += stride;
+	}
     }
 
   return ay_status;
@@ -2793,27 +2807,41 @@ ay_nb_DegreeElevateSurfU4D(int stride, int w, int h, int p, double *U,
 
 cleanup:
 
- if(bezalfs)
-   free(bezalfs);
- if(bpts)
-   free(bpts);
- if(ebpts)
-   free(ebpts);
- if(nextbpts)
-   free(nextbpts);
- if(alfas)
-   free(alfas);
- if(bin)
-   free(bin);
+  if(bezalfs)
+    free(bezalfs);
+  if(bpts)
+    free(bpts);
+  if(ebpts)
+    free(ebpts);
+  if(nextbpts)
+    free(nextbpts);
+  if(alfas)
+    free(alfas);
+  if(bin)
+    free(bin);
 
   /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i < (*nw)*h; i++)
+  if(ay_status == AY_OK)
     {
-      Qw[a]   /= Qw[a+3];
-      Qw[a+1] /= Qw[a+3];
-      Qw[a+2] /= Qw[a+3];
-      a += stride;
+      a = 0;
+      for(i = 0; i < (*nw)*h; i++)
+	{
+	  Qw[a]   /= Qw[a+3];
+	  Qw[a+1] /= Qw[a+3];
+	  Qw[a+2] /= Qw[a+3];
+	  a += stride;
+	}
+    }
+  else
+    {
+      a = 0;
+      for(i = 0; i < (*nw)*h; i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
+	  a += stride;
+	}
     }
 
  return ay_status;
@@ -3195,29 +3223,43 @@ ay_nb_DegreeElevateSurfV4D(int stride, int w, int h, int p, double *V,
 
 cleanup:
 
- if(bezalfs)
-   free(bezalfs);
- if(bpts)
-   free(bpts);
- if(ebpts)
-   free(ebpts);
- if(nextbpts)
-   free(nextbpts);
- if(alfas)
-   free(alfas);
- if(bin)
-   free(bin);
+  if(bezalfs)
+    free(bezalfs);
+  if(bpts)
+    free(bpts);
+  if(ebpts)
+    free(ebpts);
+  if(nextbpts)
+    free(nextbpts);
+  if(alfas)
+    free(alfas);
+  if(bin)
+    free(bin);
 
   /* convert rational coordinates from homogeneous to euclidean style */
-  a = 0;
-  for(i = 0; i < w; i++)
+  if(ay_status == AY_OK)
     {
-      a = i*tnh*stride;
-      for(j = 0; j < *nh; j++)
+      a = 0;
+      for(i = 0; i < w; i++)
 	{
-	  Qw[a]   /= Qw[a+3];
-	  Qw[a+1] /= Qw[a+3];
-	  Qw[a+2] /= Qw[a+3];
+	  a = i*tnh*stride;
+	  for(j = 0; j < *nh; j++)
+	    {
+	      Qw[a]   /= Qw[a+3];
+	      Qw[a+1] /= Qw[a+3];
+	      Qw[a+2] /= Qw[a+3];
+	      a += stride;
+	    }
+	}
+    }
+  else
+    {
+      a = 0;
+      for(i = 0; i < w*(*nh); i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
 	  a += stride;
 	}
     }
