@@ -450,7 +450,7 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
        if(fabs(m[10]) < lscal)
 	 lscal = fabs(m[10]);
       glPopMatrix();
-      /*printf("new lscal %lg\n",lscal);*/
+
       lastlevel = ay_currentlevel;
     } /* if */
 
@@ -472,10 +472,8 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
       if(fabs(o->scalz) < mins)
 	mins = o->scalz;
 
-      ay_prefs.pick_epsilon = (oldpickepsilon * lscal * mins) /
-	(view->conv_x);
-
-      /*printf("using pickepsilon %g\n", ay_prefs.pick_epsilon);*/
+      ay_prefs.pick_epsilon = oldpickepsilon * lscal * mins *
+	250 * view->conv_x;
 
       /* now try to pick points on object o */
       ay_status = ay_pact_getpoint(1, o, obj, &pact_pe);
