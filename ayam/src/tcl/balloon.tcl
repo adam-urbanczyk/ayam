@@ -94,7 +94,7 @@ proc balloon_show {w arg} {
 	}
     }
     # do not move off-screen
-    if { [expr $wmx + $rw] > [winfo screenwidth $top] } {
+    if { [expr $wmx + $rw] > $rb } {
 	set wmx [expr $wmx - (([expr $wmx + $rw])-[winfo screenwidth $top])]
     }
 
