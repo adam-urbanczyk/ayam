@@ -86,18 +86,25 @@ global ay ayprefs
 	if { $nx != "" } { set x $nx }
 	if { $ny != "" } { set y $ny }
 
-	# never move off screen
-	if { [expr abs($x)] >= [winfo screenwidth $w] } {
-	    set x 0
-	}
-	if { [expr abs($y)] >= [winfo screenheight $w] } {
-	    set y 0
-	}
-
-	# make decoration visible in all cases
-	if { ($ayprefs(TwmCompat) == 0) &&
-	     ($ay(ws) != "Win32") } {
-	    if { $y <= 5 } { incr y 10 }
+	# never move off-screen
+	set mw [lindex [wm maxsize $w] 0]
+	if { $mw <= [winfo screenwidth $w] } {
+	    # single monitor setup
+	    if { [expr abs($x)] >= [winfo screenwidth $w] } {
+		set x 20
+	    }
+	    if { [expr abs($y)] >= [winfo screenheight $w] } {
+		set y 20
+	    }
+	} else {
+	    # multi monitor setup
+	    # move to main window as fallback
+	    if { [expr abs($x)] >= $mw } {
+		set x [expr [winfo rootx .] + 20]
+	    }
+	    if { [expr abs($y)] >= $mw } {
+		set y [expr [winfo rooty .] + 20]
+	    }
 	}
 
 	set newgeom ""
@@ -130,17 +137,24 @@ global ay ayprefs
 	    if { $nh != "" } { set height $nh }
 
 	    # never move off screen
-	    if { [expr abs($x)] >= [winfo screenwidth $w] } {
-		set x 0
-	    }
-	    if { [expr abs($y)] >= [winfo screenheight $w] } {
-		set y 0
-	    }
-
-	    # make decoration visible in all cases
-	    if { ($ayprefs(TwmCompat) == 0) &&
-		 ( $ay(ws) != "Win32") } {
-		if { $y <= 5 } { incr y 10 }
+	    set mw [lindex [wm maxsize $w] 0]
+	    if { $mw <= [winfo screenwidth $w] } {
+		# single monitor setup
+		if { [expr abs($x)] >= [winfo screenwidth $w] } {
+		    set x 20
+		}
+		if { [expr abs($y)] >= [winfo screenheight $w] } {
+		    set y 20
+		}
+	    } else {
+		# multi monitor setup
+		# move to main window as fallback
+		if { [expr abs($x)] >= $mw } {
+		    set x [expr [winfo rootx .] + 20]
+		}
+		if { [expr abs($y)] >= $mw } {
+		    set y [expr [winfo rooty .] + 20]
+		}
 	    }
 
 	    set newgeom "${width}x${height}"
