@@ -106,12 +106,7 @@ proc prefs_open {} {
     # center window (if no saved geometry is available)
     update idletasks
     if { ($ayprefs(SavePrefsGeom) == 0) || ($ay(prefsgeom) == "") } {
-	set x [expr [winfo screenwidth $w]/2 - [winfo reqwidth $w]/2 \
-		- [winfo vrootx [winfo parent $w]]]
-	set y [expr [winfo screenheight $w]/2 - [winfo reqheight $w]/2 \
-		- [winfo vrooty [winfo parent $w]]]
-
-	winMoveOrResize $w "+${x}+${y}"
+	winCenter $w
     }
 
     # bind to close button of window decoration
