@@ -26,7 +26,7 @@ proc balloon_set {w help} {
 
     # 27.07.1999, #AmigaGER (IRCNet):
     # "<coto>Naja, tcl/tk ist eben geil :->"
-    # (realizing, that I implemented the browse-balloons-feature in < 5 min) 
+    # (realizing, that I implemented the browse-balloons-feature in < 5 min)
 
     regsub -all "%" $help "%%" help2
 
@@ -39,7 +39,7 @@ proc balloon_set {w help} {
 	if { \$balloonwin != \"\" } {
 	    set balloontime 100;
 	    set balloonwin \"\";
-	}        
+	}
 	after 50 { destroy %W.balloon;
 	after cancel {set balloonwin %W ; balloon_show %W [list $help2] };
 	after 500 [list set balloontime \$ayprefs(Balloon)] }"
@@ -70,7 +70,7 @@ proc balloon_show {w arg} {
 	wm overrideredirect $top 1
     }
     pack [message $top.txt -width 100c -fg black -bg lightyellow -text \
-	    [encoding convertfrom $arg]] 
+	    [encoding convertfrom $arg]]
 
     set wmx [winfo rootx $w]
     set rw [winfo reqwidth $top.txt]
@@ -81,6 +81,18 @@ proc balloon_show {w arg} {
 	set wmx [expr $px - $rw - 10]
     }
 
+    set tw [winfo toplevel $w]
+    set rb [expr $wmx + [winfo reqwidth $tw]]
+    set mw [lindex [wm maxsize $tw] 0]
+    if { $mw <= [winfo screenwidth $top] } {
+	# single monitor setup
+	set rb [winfo screenwidth $top]
+    } else {
+	# multi monitor setup
+	if { $mw < $rb } {
+	    set rb $mw
+	}
+    }
     # do not move off-screen
     if { [expr $wmx + $rw] > [winfo screenwidth $top] } {
 	set wmx [expr $wmx - (([expr $wmx + $rw])-[winfo screenwidth $top])]
@@ -106,8 +118,8 @@ proc balloon_setsplit { w s len } {
     global ay
     balloon_clear $w
     if {[string length $s] > $len } {
-	regsub -all $ay(separator) $s  "\n" s2 
-	
+	regsub -all $ay(separator) $s  "\n" s2
+
 	set ids [after info]
 	foreach id $ids {
 	    set script ""
