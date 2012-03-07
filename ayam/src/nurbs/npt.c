@@ -2271,7 +2271,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
  ay_nurbpatch_object *np1, *np2, *new;
  double *cv1, *cv2, *ncv;
  double dist, v1[3], v2[3];
- int i, a, b, c, d, stride = 4;
+ int i, a, b, c, d, stride = 4, is_eq;
 
   if(!o1 || !o2 || !result)
     return AY_ENULL;
@@ -2319,6 +2319,24 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
   if(np1->height != np2->height)
     return AY_ERROR;
 
+  /* check for matching borders */
+  cv1 = &(np1->controlv[(np1->width-1)*np1->height*stride]);
+  cv2 = np2->controlv;
+  is_eq = AY_TRUE;
+  for(i = 0; i < np1->height; i++)
+    {
+      if(!AY_V4COMP(cv1,cv2))
+	{
+	  is_eq = AY_FALSE;
+	  break;
+	}
+      cv1 += stride;
+      cv2 += stride;
+    }
+
+  if(is_eq)
+    return AY_OK;
+
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
@@ -2344,7 +2362,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     { ay_status = AY_EOMEM; goto cleanup; }
   ncv = new->controlv;
 
-  /* calculate the control points */
+  /* calculate the fillet control points */
   cv1 = np1->controlv;
   cv2 = np2->controlv;
   memcpy(ncv, &(cv1[(np1->width-1)*np1->height*stride]),
