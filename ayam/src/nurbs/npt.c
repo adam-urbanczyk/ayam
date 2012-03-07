@@ -2853,7 +2853,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      a++;
 		    }
 		}
-	      i++;
+	      if(!o->selected)
+		i++;
 	      j++;
 	    }
 	  else
