@@ -3532,7 +3532,7 @@ ay_nb_RefineKnotVectSurfV4D(int stride, int w, int h, int p, double *V,
 
   /* convert rational coordinates from homogeneous to euclidean style */
   a = 0;
-  for(i = 0; i < (w+1)*(h+r+1); i++)
+  for(i = 0; i < w*(h+r+1); i++)
     {
       Qw[a]   /= Qw[a+3];
       Qw[a+1] /= Qw[a+3];
