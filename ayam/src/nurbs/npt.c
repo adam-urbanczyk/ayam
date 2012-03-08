@@ -12776,6 +12776,331 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_remknvnptcmd */
 
 
+/** ay_npt_refineu:
+ *  refine a NURBS surface in direction u by inserting knots at
+ *  the right places,  thus not changing the shape of the surface
+ *
+ * @param[in] patch NURBS surface object to refine
+ * @param[in] newknotv vector of new knot values (may be NULL)
+ * @param[in] newknotvlen length of vector
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
+{
+ double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
+ int count = 0, i, j;
+ char fname[] = "npt_refineu";
+
+  if(!patch)
+    return AY_ENULL;
+
+  knotv = patch->uknotv;
+  if(newknotv)
+    {
+      if(newknotvlen == 0)
+	return AY_ERROR;
+
+      X = newknotv;
+    }
+
+  /* alloc X, new knotv & new controlv */
+  if(!X)
+    {
+      count = 0;
+      for(i = patch->uorder-1; i < patch->width; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    count++;
+	}
+
+      if(!(X = calloc(count, sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+
+      /* fill X (contains just the new u values) */
+      j = 0;
+
+      for(i = patch->uorder-1; i < patch->width; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    {
+	      X[j] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
+	      j++;
+	    }
+	} /* for */
+    }
+  else
+    {
+      count = newknotvlen;
+    } /* if */
+
+  if(!(Ubar = calloc((patch->width + patch->uorder + count),
+		     sizeof(double))))
+    {
+      free(X);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+  if(!(Qw = calloc((patch->width + count)*patch->height*4, sizeof(double))))
+    {
+      free(X); free(Ubar);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  /* fill Ubar & Qw */
+  ay_nb_RefineKnotVectSurfU4D(4, patch->width-1, patch->height-1,
+			      patch->uorder-1, patch->uknotv, patch->controlv,
+			      X, count-1, Ubar, Qw);
+
+  free(patch->uknotv);
+  patch->uknotv = Ubar;
+
+  free(patch->controlv);
+  patch->controlv = Qw;
+
+  if(!newknotv)
+    {
+      free(X);
+    }
+
+  patch->width += count;
+  if(newknotvlen > 0)
+    {
+      patch->uknot_type = AY_KTCUSTOM;
+    }
+  else
+    {
+      if(patch->uknot_type == AY_KTBEZIER)
+	patch->uknot_type = AY_KTNURB;
+    }
+
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original patch */
+  if(patch->mpoints)
+    ay_npt_recreatemp(patch);
+
+ return AY_OK;
+} /* ay_nct_refineu */
+
+
+/** ay_npt_refinev:
+ *  refine a NURBS surface in v direction by inserting knots at
+ *  the right places,  thus not changing the shape of the surface
+ *
+ * @param[in] patch NURBS surface object to refine
+ * @param[in] newknotv vector of new knot values (may be NULL)
+ * @param[in] newknotvlen length of vector
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
+{
+ double *X = NULL, *Vbar = NULL, *Qw = NULL, *knotv;
+ int count = 0, i, j;
+ char fname[] = "npt_refinev";
+
+  if(!patch)
+    return AY_ENULL;
+
+  knotv = patch->vknotv;
+  if(newknotv)
+    {
+      if(newknotvlen == 0)
+	return AY_ERROR;
+
+      X = newknotv;
+    }
+
+  /* alloc X, new knotv & new controlv */
+  if(!X)
+    {
+      count = 0;
+      for(i = patch->vorder-1; i < patch->height; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    count++;
+	}
+
+      if(!(X = calloc(count, sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+
+      /* fill X (contains just the new u values) */
+      j = 0;
+
+      for(i = patch->vorder-1; i < patch->height; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    {
+	      X[j] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
+	      j++;
+	    }
+	} /* for */
+    }
+  else
+    {
+      count = newknotvlen;
+    } /* if */
+
+  if(!(Vbar = calloc((patch->height + patch->vorder + count),
+		     sizeof(double))))
+    {
+      free(X);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+  if(!(Qw = calloc((patch->height + count)*patch->width*4, sizeof(double))))
+    {
+      free(X); free(Vbar);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+
+  /* fill Vbar & Qw */
+  ay_nb_RefineKnotVectSurfV4D(4, patch->width-1, patch->height-1,
+			      patch->vorder-1, patch->vknotv, patch->controlv,
+			      X, count-1, Vbar, Qw);
+
+  free(patch->vknotv);
+  patch->vknotv = Vbar;
+
+  free(patch->controlv);
+  patch->controlv = Qw;
+
+  if(!newknotv)
+    {
+      free(X);
+    }
+
+  patch->height += count;
+  if(newknotvlen > 0)
+    {
+      patch->vknot_type = AY_KTCUSTOM;
+    }
+  else
+    {
+      if(patch->vknot_type == AY_KTBEZIER)
+	patch->vknot_type = AY_KTNURB;
+    }
+
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original patch */
+  if(patch->mpoints)
+    ay_npt_recreatemp(patch);
+
+ return AY_OK;
+} /* ay_nct_refinev */
+
+
+/** ay_npt_refineuvtcmd:
+ *  Refine U/V direction of selected NURBS patches.
+ *  Implements the \a refineuNP and \a refinevNP scripting
+ *  interface commands.
+ *  See also the corresponding section in the \ayd{screfineunp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_list_object *sel = ay_selection;
+ ay_nurbpatch_object *patch = NULL;
+ int refinev = AY_FALSE;
+ int aknotc = 0, i;
+ double *X = NULL;
+ char **aknotv = NULL;
+
+  if(argc >= 2)
+    {
+      Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
+
+      if(!(X = calloc(aknotc, sizeof(double))))
+	{
+	  ay_error(AY_EOMEM,argv[0],NULL);
+	  if(aknotv)
+	    Tcl_Free((char *) aknotv);
+	  return TCL_OK;
+	}
+
+      for(i = 0; i < aknotc; i++)
+	{
+	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
+	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	} /* for */
+
+      Tcl_Free((char *) aknotv);
+      aknotv = NULL;
+    }
+
+  if(!strcmp(argv[0], "refinevNP"))
+    refinev = AY_TRUE;
+
+  while(sel)
+    {
+      if(sel->object->type == AY_IDNPATCH)
+	{
+	  patch = (ay_nurbpatch_object *)sel->object->refine;
+
+	  if(refinev)
+	    ay_status = ay_npt_refinev(patch, X, aknotc);
+	  else
+	    ay_status = ay_npt_refineu(patch, X, aknotc);
+
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Refine failed.");
+	      goto cleanup;
+	    }
+	  else
+	    {
+	      sel->object->modified = AY_TRUE;
+
+	      if(sel->object->selp)
+		{
+		  ay_selp_clear(sel->object);
+		}
+
+	      /* re-create tesselation of patch */
+	      ay_notify_object(sel->object);
+	    }
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+cleanup:
+
+  ay_notify_parent();
+
+  if(X)
+    {
+      free(X);
+    }
+
+  if(aknotv)
+    {
+      Tcl_Free((char *) aknotv);
+    }
+
+ return TCL_OK;
+} /* ay_npt_refineuvtcmd */
+
 /* templates */
 #if 0
 

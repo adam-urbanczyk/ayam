@@ -1212,6 +1212,20 @@ int ay_npt_euctohom(ay_nurbpatch_object *nc);
 */
 int ay_npt_homtoeuc(ay_nurbpatch_object *nc);
 
+/** Refine NURBS surface in U direction.
+*/
+int ay_npt_refineu(ay_nurbpatch_object *patch,
+		   double *newknotv, int newknotvlen);
+
+/** Refine NURBS surface in V direction.
+*/
+int ay_npt_refinev(ay_nurbpatch_object *patch,
+		   double *newknotv, int newknotvlen);
+
+/** Tcl command to refine the knots of selected surfaces.
+ */
+int ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
+			int argc, char *argv[]);
 
 /* pmt.c */
 
