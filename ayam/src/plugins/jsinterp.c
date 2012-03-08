@@ -187,6 +187,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   /* topoly? */
   {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"elevatevNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"refineuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"refinevNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"swapuvS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertuS", jsinterp_wraptcmd, 0, 0, 0},
   {"revertvS", jsinterp_wraptcmd, 0, 0, 0},
@@ -199,7 +201,10 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"insknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"splituNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"splitvNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remknuNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"remknvNP", jsinterp_wraptcmdargs, 0, 0, 0},
   {"extrNP", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"concatS", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"tcleval", jsinterp_wrapevalcmd, 0, 0, 0},
   {"tclvar", jsinterp_tclvar, 0, 0, 0},
