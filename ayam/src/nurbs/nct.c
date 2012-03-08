@@ -811,57 +811,38 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	      ay_error(AY_EOMEM, fname, NULL);
 	      return AY_ERROR;
 	    }
+	  /* fill X (contains just the new u values) */
+	  j = 0;
+	  for(i = curve->order-1; i < curve->length; i++)
+	    {
+	      if(knotv[i] != knotv[i+1])
+		{
+		  X[j] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
+		  j++;
+		}
+	    } /* for */
+	} /* if */
+      else
+	{
+	  count = newknotvlen;
 	} /* if */
 
       if(!(Ubar = calloc((curve->length + curve->order + count),
 			 sizeof(double))))
 	{
-	  free(X);
+	  if(!newknotv)
+	    free(X);
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
 	}
-      if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
+      if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
 	{
-	  free(X); free(Ubar);
+	  if(!newknotv)
+	    free(X);
+	  free(Ubar);
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
 	}
-
-      if(newknotv == NULL)
-	{
-	  /* fill X (contains just the new u values) */
-	  count = 0;
-
-	  for(i = curve->order-1; i < curve->length; i++)
-	    {
-	      if(knotv[i] != knotv[i+1])
-		{
-		  X[count] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
-		  count++;
-		}
-	    } /* for */
-	}
-      else
-	{
-	  count = newknotvlen;
-
-	  if(!(Ubar = calloc((curve->length + curve->order + count),
-			     sizeof(double))))
-	    {
-	      if(!newknotv)
-		free(X);
-	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  if(!(Qw = calloc((curve->length + count+2)*4, sizeof(double))))
-	    {
-	      if(!newknotv)
-		free(X);
-	      free(Ubar);
-	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_ERROR;
-	    }
-	} /* if */
 
       /* fill Ubar & Qw */
       ay_nb_RefineKnotVectCurve4D(4, curve->length-1, curve->order-1,
