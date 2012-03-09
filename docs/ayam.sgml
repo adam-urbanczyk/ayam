@@ -11213,6 +11213,28 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scelevatevnp" name="elevatevNP">.
 </itemize>
 
+<sect1>Refine Surface Tool<label id="refinest">
+<p>
+<figure loc="ht">
+<eps file="pics/refinenp.ps" height="4cm">
+<img src="pics/refinenp.gif">
+<caption>Successive Application of Refine Surface (U) Tool</caption>
+</figure>
+<itemize>
+<item>Arguments: The refine surface tool takes a number of NURBS patches from
+the selection.
+<item>Operation: The respective knot vectors of the selected NURBS patches
+will be refined without changing the shape of the patches. New control
+points will be added and the position of old control points may be
+changed in the progress.
+<item>Note: The respective knot type of the patch may
+be changed to <tt/"Custom"/.
+The point selection will be removed from the original object.
+See also the documentation of the corresponding scripting interface commands
+<ref id="screfineunp" name="refineuNP">, and
+<ref id="screfinevnp" name="refinevNP">.
+</itemize>
+
 <sect1>Revert U Tool<label id="revertut">
 <p>
 <itemize>
@@ -13475,6 +13497,34 @@ See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="screfineunp">
+refineuNP &ndash; refine NURBS surface in u direction:
+<itemize>
+ <item>Synopsis: <tt/"refineuNP"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Refine the selected NURBS surfaces in u direction
+without changing their shape.
+The u knot type of the refined surfaces may be changed to <tt/"Custom"/.
+See also section <ref id="refinest" name="Refine Surface Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="screfinevnp">
+refinevNP &ndash; refine NURBS surface in v direction:
+<itemize>
+ <item>Synopsis: <tt/"refinevNP"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Refine the selected NURBS surfaces in v direction
+without changing their shape.
+The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
+See also section <ref id="refinest" name="Refine Surface Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="scelevateunp">
 elevateuNP &ndash; elevate NURBS surface in u direction:
 <itemize>
@@ -13612,7 +13662,7 @@ The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <label id="scconcats">
 concatS &ndash; concatenate surfaces:
 <itemize>
- <item>Synopsis: <tt/"concatS [-o order|-t type| -k knottype|-u uvselect]"/
+ <item>Synopsis: <tt/"concatS [-o order | -t type | -k knottype | -u uvselect]"/
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Concatenate the selected surface objects into a
 single NURBS patch. The option <tt/"-o"/ determines the desired order
@@ -18607,8 +18657,14 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 </itemize>
 <item>Reference: <ref id="referencing" name="Reference">
 <item>References: <ref id="secref" name="references">
-<item>Refine: <ref id="refit" name="curve tool">
+<item>Refine:
+<itemize>
+<item><ref id="refit" name="curve tool">,
+<item><ref id="refinest" name="surface tool">
+</itemize>
 <item>refineNC: <ref id="screfinenc" name="scripting interface command">
+<item>refineuNP: <ref id="screfineunp" name="scripting interface command">
+<item>refinevNP: <ref id="screfinevnp" name="scripting interface command">
 <item>Relative:
 <itemize>
 <item><ref id="extrncp" name="ExtrNC attribute">,
