@@ -478,6 +478,19 @@ $m.npt add command -label "Close V" -command {
     undo save CloseVNP; closevNP; plb_update; rV
 }
 
+$m.npt add cascade -menu $m.npt.re -label "Refine" -underline 0
+menu $m.npt.re -tearoff 0
+
+$m.npt.re add command -label "Refine U" -command {
+    undo save RefineUNP; refineuNP; plb_update; rV
+}
+$m.npt.re add command -label "Refine V" -command {
+    undo save RefineVNP; refinevNP; plb_update; rV
+}
+$m.npt.re add command -label "Refine Both" -command {
+    undo save RefineNP; refineuNP; refinevNP; plb_update; rV
+}
+
 $m.npt add command -label "Split U" -command {
     runTool ay(splitu) {"Split at:"}\
 	"undo save SplitUNP; splituNP %0; uCR; sL; rV"\
@@ -495,10 +508,10 @@ $m.npt add cascade -menu $m.npt.cl -label "Clamp" -underline 0
 menu $m.npt.cl -tearoff 0
 
 $m.npt.cl add command -label "Clamp U" -command {
-    undo save ClampUNP; clampvNP; plb_update; rV
+    undo save ClampUNP; clampuNP; plb_update; rV
 }
 $m.npt.cl add command -label "Clamp V" -command {
-    undo save ClampVNP; clampuNP; plb_update; rV
+    undo save ClampVNP; clampvNP; plb_update; rV
 }
 $m.npt.cl add command -label "Clamp Both" -command {
     undo save ClampNP; clampuNP; clampvNP; plb_update; rV
@@ -989,6 +1002,7 @@ mmenu_addlume $ay(toolsmenu).nc
 mmenu_addlume $ay(toolsmenu).nct
 mmenu_addlume $ay(toolsmenu).nct.kn
 mmenu_addlume $ay(toolsmenu).npt
+mmenu_addlume $ay(toolsmenu).npt.re
 mmenu_addlume $ay(toolsmenu).npt.cl
 mmenu_addlume $ay(toolsmenu).npt.el
 mmenu_addlume $ay(toolsmenu).npt.in
