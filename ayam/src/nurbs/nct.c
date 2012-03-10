@@ -687,7 +687,7 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 } /* ay_nct_revert */
 
 
-/** ay_nct_refine:
+/** ay_nct_refinekn:
  *  refine a NURBS curve by inserting knots at the right places,
  *  thus not changing the shape of the curve
  *
@@ -698,11 +698,11 @@ ay_nct_revert(ay_nurbcurve_object *curve)
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
+ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 {
- double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv, *Q = NULL;
- int count = 0, i, j;
- char fname[] = "nct_refine";
+ double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
+ int count = 0, i, j, p;
+ char fname[] = "nct_refinekn";
 
   if(!curve)
     return AY_ENULL;
@@ -710,13 +710,128 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
   knotv = curve->knotv;
   if(newknotv)
     {
+      /* use provided new knots */
       if(newknotvlen == 0)
 	return AY_ERROR;
 
       X = newknotv;
+      count = newknotvlen;
+    }
+  else
+    {
+      /* calculate new knots */
+      start = curve->order-1;
+      end = curve->length;
+	    
+      if(curve->type == AY_CTPERIODIC)
+	{
+	  /* periodic curves get special treatment:
+	     do not insert knots that would change
+	     the multiple control points at the ends */
+	  start++;
+	  end--;
+	}
+
+      for(i = start; i < end; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    count++;
+	}
+
+      if(count == 0)
+	return AY_ERROR;
+
+      if(!(X = calloc(count, sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+      /* fill X (contains just the new u values) */
+      j = 0;
+      for(i = start; i < end; i++)
+	{
+	  if(knotv[i] != knotv[i+1])
+	    {
+	      X[j] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
+	      j++;
+	    }
+	} /* for */
+    } /* if */
+
+  if(!(Ubar = calloc((curve->length + curve->order + count),
+		     sizeof(double))))
+    {
+      if(!newknotv)
+	free(X);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
+    }
+  if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
+    {
+      if(!newknotv)
+	free(X);
+      free(Ubar);
+      ay_error(AY_EOMEM, fname, NULL);
+      return AY_ERROR;
     }
 
-  if((curve->type == AY_CTPERIODIC) && (X == NULL))
+  /* fill Ubar & Qw */
+  ay_nb_RefineKnotVectCurve4D(4, curve->length-1, curve->order-1,
+			      curve->knotv, curve->controlv,
+			      X, count-1, Ubar, Qw);
+
+  free(curve->knotv);
+  curve->knotv = Ubar;
+
+  free(curve->controlv);
+  curve->controlv = Qw;
+
+  if(!newknotv)
+    {
+      free(X);
+    }
+
+  curve->length += count;
+  if(newknotvlen > 0)
+    {
+      curve->knot_type = AY_KTCUSTOM;
+    }
+  else
+    {
+      if(curve->knot_type == AY_KTBEZIER)
+	curve->knot_type = AY_KTNURB;
+    }
+
+  /* since we do not create new multiple points
+     we only need to re-create them if there were
+     already multiple points in the original curve */
+  if(curve->mpoints)
+    ay_nct_recreatemp(curve);
+
+ return AY_OK;
+} /* ay_nct_refinekn */
+
+
+/** ay_nct_refinecv:
+ *  refine a NURBS curve by inserting control points at the right places,
+ *  changing the shape of the curve
+ *
+ * @param[in] curve NURBS curve object to refine
+ * @param[in] selp selected points
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
+{
+ double *Qw = NULL, *Q = NULL;
+ int count = 0, i, j;
+ char fname[] = "nct_refine";
+
+  if(!curve)
+    return AY_ENULL;
+
+  if(curve->type == AY_CTPERIODIC)
     {
       /* special case: curves marked periodic;
        * we keep the p multiple points at the ends
@@ -794,92 +909,9 @@ ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	    ay_nct_recreatemp(curve);
 	} /* if count */
     }
-  else
-    {
-      /* alloc X, new knotv & new controlv */
-      if(!X)
-	{
-	  count = 0;
-	  for(i = curve->order-1; i < curve->length; i++)
-	    {
-	      if(knotv[i] != knotv[i+1])
-		count++;
-	    }
-
-	  if(!(X = calloc(count, sizeof(double))))
-	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  /* fill X (contains just the new u values) */
-	  j = 0;
-	  for(i = curve->order-1; i < curve->length; i++)
-	    {
-	      if(knotv[i] != knotv[i+1])
-		{
-		  X[j] = knotv[i]+((knotv[i+1]-knotv[i])/2.0);
-		  j++;
-		}
-	    } /* for */
-	} /* if */
-      else
-	{
-	  count = newknotvlen;
-	} /* if */
-
-      if(!(Ubar = calloc((curve->length + curve->order + count),
-			 sizeof(double))))
-	{
-	  if(!newknotv)
-	    free(X);
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
-	}
-      if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
-	{
-	  if(!newknotv)
-	    free(X);
-	  free(Ubar);
-	  ay_error(AY_EOMEM, fname, NULL);
-	  return AY_ERROR;
-	}
-
-      /* fill Ubar & Qw */
-      ay_nb_RefineKnotVectCurve4D(4, curve->length-1, curve->order-1,
-				  curve->knotv, curve->controlv,
-				  X, count-1, Ubar, Qw);
-
-      free(curve->knotv);
-      curve->knotv = Ubar;
-
-      free(curve->controlv);
-      curve->controlv = Qw;
-
-      if(!newknotv)
-	{
-	  free(X);
-	}
-
-      curve->length += count;
-      if(newknotvlen > 0)
-	{
-	  curve->knot_type = AY_KTCUSTOM;
-	}
-      else
-	{
-	  if(curve->knot_type == AY_KTBEZIER)
-	    curve->knot_type = AY_KTNURB;
-	}
-
-      /* since we do not create new multiple points
-	 we only need to re-create them if there were
-	 already multiple points in the original curve */
-      if(curve->mpoints)
-	ay_nct_recreatemp(curve);
-    } /* if curve periodic */
 
  return AY_OK;
-} /* ay_nct_refine */
+} /* ay_nct_refinecv */
 
 
 /** ay_nct_refinetcmd:
@@ -930,7 +962,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
-	  ay_status = ay_nct_refine(curve, X, aknotc);
+	  ay_status = ay_nct_refinekn(curve, X, aknotc);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Refine operation failed.");
