@@ -484,10 +484,15 @@ int ay_nct_close(ay_nurbcurve_object *curve);
  */
 int ay_nct_revert(ay_nurbcurve_object *curve);
 
-/** Refine NURBS curve.
+/** Refine NURBS curve knots.
  */
-int ay_nct_refine(ay_nurbcurve_object *curve, double *newknotv,
-		  int newknotvlen);
+int ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv,
+		    int newknotvlen);
+
+/** Refine NURBS curve control points.
+ */
+int ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp);
+
 
 /** Tcl command to refine selected NURBS curves.
  */
