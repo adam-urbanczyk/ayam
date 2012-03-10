@@ -1,4 +1,4 @@
-[4. Mar 2012] CVS-Head:
+[10. Mar 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -74,6 +74,9 @@ o improved fillet creation of ConcatNC for parameter curve orders
   different from 4
 o converted Sphere patches now have the same direction as other quadrics
   to make it easier to combine them with ConcatNP
+o added tool (and corresponding scripting interface commands "refineuNP"/
+  "refinevNP") to refine NURBS surfaces
+o improved refinement of periodic curves
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
@@ -93,7 +96,8 @@ o ICurve property GUI now only displays SDLen/EDLen entries when actually
   used and the Derivatives entry is now, as for the IPatch, a menu
 o improved tooltip placement and management
 o reset layout is more robust now
-o dialog window placement is now more robust wrt. multi monitor setups
+o dialog window and balloon placement is now more robust wrt. multi
+  monitor setups
 o removed "RGTrans" GUI preference option, all rendering GUI windows
   are now always transient
 
