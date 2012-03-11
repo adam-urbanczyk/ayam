@@ -693,7 +693,7 @@ ay_nct_revert(ay_nurbcurve_object *curve)
  *
  * @param[in] curve NURBS curve object to refine
  * @param[in] newknotv vector of new knot values (may be NULL)
- * @param[in] newknotvlen length of vector
+ * @param[in] newknotvlen length of newknotv vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -701,7 +701,7 @@ int
 ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 {
  double *X = NULL, *Ubar = NULL, *Qw = NULL, *knotv;
- int count = 0, i, j, p;
+ int count = 0, i, j, start, end;
  char fname[] = "nct_refinekn";
 
   if(!curve)
@@ -722,7 +722,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       /* calculate new knots */
       start = curve->order-1;
       end = curve->length;
-	    
+
       if(curve->type == AY_CTPERIODIC)
 	{
 	  /* periodic curves get special treatment:
@@ -817,98 +817,167 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
  *  changing the shape of the curve
  *
  * @param[in] curve NURBS curve object to refine
- * @param[in] selp selected points
+ * @param[in] selp selected points that define a (single) region to refine
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 {
- double *Qw = NULL, *Q = NULL;
- int count = 0, i, j;
- char fname[] = "nct_refine";
+ int ay_status = AY_OK;
+ double *Qw = NULL, *Q = NULL, *U = NULL;
+ int start, end, count = 0, i, j;
+ char fname[] = "nct_refinecv";
 
   if(!curve)
     return AY_ENULL;
 
-  if(curve->type == AY_CTPERIODIC)
+  if(selp)
     {
-      /* special case: curves marked periodic;
-       * we keep the p multiple points at the ends
-       * and add new points into the other sections
-       * taking care of other multiple points...
-       */
-      /* first, count new points */
-      count = 0;
-      Q = curve->controlv;
-      for(i = curve->order-2; i < curve->length-(curve->order-1); i++)
+      /* adjust start/end to user provided selected points */
+      start = curve->length;
+      end = 0;
+      while(selp)
 	{
+	  if(start > selp->index)
+	    start = selp->index;
+	  if(end < selp->index)
+	    end = selp->index;
+
+	  selp = selp->next;
+	}
+    }
+  else
+    {
+      start = 0;
+      end = curve->length;
+      if(curve->type == AY_CTPERIODIC)
+	{
+	  /* special case: curves marked periodic;
+	   * we consider the last p multiple points to
+	   * not be free and add new points into all
+	   * the other sections, the last p points will
+	   * then be adjusted by ay_nct_close() to match
+	   * the first p points and everything will be fine
+	   */
+	  end -= (curve->order-1);
+	}
+    }
+
+  /* first, count new points... */
+  count = 0;
+  Q = curve->controlv;
+  for(i = start; i < end; i++)
+    {
+      /* ...taking care of multiple consecutive points, where we
+	 do not insert new points... */
+      if((fabs(Q[i*4]   - Q[(i+1)*4])   > AY_EPSILON) ||
+	 (fabs(Q[i*4+1] - Q[(i+1)*4+1]) > AY_EPSILON) ||
+	 (fabs(Q[i*4+2] - Q[(i+1)*4+2]) > AY_EPSILON))
+	{
+	  count++;
+	}
+    }
+
+  if(count)
+    {
+      /* allocate new control vector */
+      if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
+	{
+	  ay_error(AY_EOMEM, fname, NULL);
+	  return AY_ERROR;
+	}
+
+      /* copy first points */
+      if(start > 0)
+	memcpy(Qw, Q, start*4*sizeof(double));
+
+      /* copy old & create new points */
+      i = start;
+      j = start;
+      while(i < end)
+	{
+	  memcpy(&(Qw[j*4]), &(Q[i*4]), 4*sizeof(double));
+
 	  if((fabs(Q[i*4]   - Q[(i+1)*4])   > AY_EPSILON) ||
 	     (fabs(Q[i*4+1] - Q[(i+1)*4+1]) > AY_EPSILON) ||
 	     (fabs(Q[i*4+2] - Q[(i+1)*4+2]) > AY_EPSILON))
 	    {
-	      count++;
-	    }
-	}
+	      Qw[(j+1)*4] = Q[i*4] +
+		((Q[(i+1)*4] - Q[i*4])/2.0);
 
-      if(count)
-	{
-	  /* alloc new control vector */
-	  if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
-	    {
-	      ay_error(AY_EOMEM, fname, NULL);
-	      return AY_ERROR;
-	    }
+	      Qw[(j+1)*4+1] = Q[i*4+1] +
+		((Q[(i+1)*4+1] - Q[i*4+1])/2.0);
 
-	  /* copy first p points */
-	  memcpy(Qw, Q, (curve->order-1)*4*sizeof(double));
+	      Qw[(j+1)*4+2] = Q[i*4+2] +
+		((Q[(i+1)*4+2] - Q[i*4+2])/2.0);
 
-	  /* copy old & create new points */
-	  i = curve->order-2;
-	  j = curve->order-2;
-	  while(i < curve->length-(curve->order-1))
-	    {
-	      memcpy(&(Qw[j*4]), &(Q[i*4]), 4*sizeof(double));
+	      Qw[(j+1)*4+3] = Q[i*4+3] +
+		((Q[(i+1)*4+3] - Q[i*4+3])/2.0);
 
-	      if((fabs(Q[i*4]   - Q[(i+1)*4])   > AY_EPSILON) ||
-		 (fabs(Q[i*4+1] - Q[(i+1)*4+1]) > AY_EPSILON) ||
-		 (fabs(Q[i*4+2] - Q[(i+1)*4+2]) > AY_EPSILON))
-		{
-		  Qw[(j+1)*4] = Q[i*4] +
-		    ((Q[(i+1)*4] - Q[i*4])/2.0);
-
-		  Qw[(j+1)*4+1] = Q[i*4+1] +
-		    ((Q[(i+1)*4+1] - Q[i*4+1])/2.0);
-
-		  Qw[(j+1)*4+2] = Q[i*4+2] +
-		    ((Q[(i+1)*4+2] - Q[i*4+2])/2.0);
-
-		  Qw[(j+1)*4+3] = Q[i*4+3] +
-		    ((Q[(i+1)*4+3] - Q[i*4+3])/2.0);
-
-		  j++;
-		}
-
-	      i++;
 	      j++;
-	    } /* while */
+	    }
 
-	  /* copy last p points */
-	  memcpy(&(Qw[(curve->length+count-(curve->order-1))*4]),
-		 &(Q[(curve->length-(curve->order-1))*4]),
-		 (curve->order-1)*4*sizeof(double));
+	  i++;
+	  j++;
+	} /* while */
+
+      /* copy last points */
+      if(end < curve->length)
+	memcpy(&(Qw[(end+count)*4]),
+	       &(Q[end*4]),
+	       (curve->length-end)*4*sizeof(double));
+
+      /* create new knots */
+      if(curve->knot_type != AY_KTCUSTOM)
+	{
 
 	  curve->length += count;
 	  free(curve->controlv);
 	  curve->controlv = Qw;
 
-	  /* since we do not create new multiple points
-	     we only need to re-create them if there were
-	     already multiple points in the original curve */
-	  if(curve->mpoints)
-	    ay_nct_recreatemp(curve);
-	} /* if count */
-    }
+	  ay_knots_createnc(curve);
+	}
+      else
+	{
+	  if(!(U = calloc(curve->length+count+curve->order, sizeof(double))))
+	    return AY_ERROR;
+	  memcpy(U, curve->knotv, curve->order*sizeof(double));
+	  i = start;
+	  j = curve->order-1;
+	  while(i < end)
+	    {
+	      U[j] = curve->knotv[i+curve->order-1];
+	      j++;
+	      if((fabs(Q[i*4]   - Q[(i+1)*4])   > AY_EPSILON) ||
+		 (fabs(Q[i*4+1] - Q[(i+1)*4+1]) > AY_EPSILON) ||
+		 (fabs(Q[i*4+2] - Q[(i+1)*4+2]) > AY_EPSILON))
+		{
+		  U[j] = curve->knotv[i+curve->order-1] +
+      ((curve->knotv[i+curve->order] - curve->knotv[i+curve->order-1]) / 2.0);
+		  j++;
+		}
+	      i++;
+	    }
+	  memcpy(&(U[curve->length+count]), &(curve->knotv[curve->length]),
+		 curve->order*sizeof(double));
+	  free(curve->knotv);
+	  curve->knotv = U;
+
+	  curve->length += count;
+	  free(curve->controlv);
+	  curve->controlv = Qw;
+	}
+
+      if(curve->type == AY_CTPERIODIC)
+	ay_nct_close(curve);
+
+      /* since we do not create new multiple points
+	 we only need to re-create them if there were
+	 already multiple points in the original curve */
+      if(curve->mpoints)
+	ay_nct_recreatemp(curve);
+    } /* if count */
 
  return AY_OK;
 } /* ay_nct_refinecv */
@@ -929,30 +998,37 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  ay_nurbcurve_object *curve = NULL;
- int aknotc = 0, i;
+ int refine_cv = AY_FALSE, aknotc = 0, i;
  double *X = NULL;
  char **aknotv = NULL;
 
   if(argc > 1)
     {
-      Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
-
-      if(!(X = calloc(aknotc, sizeof(double))))
+      if(!strcmp(argv[1], "-cv"))
 	{
-	  ay_error(AY_EOMEM,argv[0],NULL);
-	  if(aknotv)
-	    Tcl_Free((char *) aknotv);
-	  return TCL_OK;
+	  refine_cv = AY_TRUE;
 	}
-
-      for(i = 0; i < aknotc; i++)
+      else
 	{
-	  tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
-	  AY_CHTCLERRGOT(tcl_status, argv[0], interp);
-	} /* for */
+	  Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
 
-      Tcl_Free((char *) aknotv);
-      aknotv = NULL;
+	  if(!(X = calloc(aknotc, sizeof(double))))
+	    {
+	      ay_error(AY_EOMEM,argv[0],NULL);
+	      if(aknotv)
+		Tcl_Free((char *) aknotv);
+	      return TCL_OK;
+	    }
+
+	  for(i = 0; i < aknotc; i++)
+	    {
+	      tcl_status = Tcl_GetDouble(interp, aknotv[i], &X[i]);
+	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
+	    } /* for */
+
+	  Tcl_Free((char *) aknotv);
+	  aknotv = NULL;
+	} /* if */
     } /* if */
 
   while(sel)
@@ -962,7 +1038,10 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
-	  ay_status = ay_nct_refinekn(curve, X, aknotc);
+	  if(refine_cv)
+	    ay_status = ay_nct_refinecv(curve, o->selp);
+	  else
+	    ay_status = ay_nct_refinekn(curve, X, aknotc);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, argv[0], "Refine operation failed.");
