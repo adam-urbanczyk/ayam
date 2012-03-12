@@ -824,9 +824,9 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 int
 ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 {
- int ay_status = AY_OK;
  double *Qw = NULL, *Q = NULL, *U = NULL;
- int start, end, count = 0, i, j;
+ int start, end, count = 0, i, j, k, l, npslen = 0;
+ int *nps = NULL;
  char fname[] = "nct_refinecv";
 
   if(!curve)
@@ -839,9 +839,9 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
       end = 0;
       while(selp)
 	{
-	  if(start > selp->index)
+	  if(start > (int)selp->index)
 	    start = selp->index;
-	  if(end < selp->index)
+	  if(end < (int)selp->index)
 	    end = selp->index;
 
 	  selp = selp->next;
@@ -863,6 +863,9 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	  end -= (curve->order-1);
 	}
     }
+
+  if(end >= curve->length)
+    end = curve->length-1;
 
   /* first, count new points... */
   count = 0;
@@ -922,11 +925,10 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	  j++;
 	} /* while */
 
-      /* copy last points */
-      if(end < curve->length)
-	memcpy(&(Qw[(end+count)*4]),
-	       &(Q[end*4]),
-	       (curve->length-end)*4*sizeof(double));
+      /* copy last point(s) */
+      memcpy(&(Qw[(end+count)*4]),
+	     &(Q[end*4]),
+	     (curve->length-end)*4*sizeof(double));
 
       /* create new knots */
       if(curve->knot_type != AY_KTCUSTOM)
@@ -940,27 +942,69 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	}
       else
 	{
-	  if(!(U = calloc(curve->length+count+curve->order, sizeof(double))))
-	    return AY_ERROR;
-	  memcpy(U, curve->knotv, curve->order*sizeof(double));
-	  i = start;
-	  j = curve->order-1;
-	  while(i < end)
+	  for(i = curve->order-1+start;
+	      i < curve->length-(curve->length-end-1); i++)
 	    {
-	      U[j] = curve->knotv[i+curve->order-1];
-	      j++;
-	      if((fabs(Q[i*4]   - Q[(i+1)*4])   > AY_EPSILON) ||
-		 (fabs(Q[i*4+1] - Q[(i+1)*4+1]) > AY_EPSILON) ||
-		 (fabs(Q[i*4+2] - Q[(i+1)*4+2]) > AY_EPSILON))
+	      if(fabs(curve->knotv[i]-curve->knotv[i+1]) > AY_EPSILON)
+		npslen++;
+	    }
+	  if(npslen == 0)
+	    {
+	      if(start > 0)
+		start--;
+	      if(end < (curve->length-1))
+		end++;
+	      for(i = curve->order-1+start;
+		  i < curve->length-(curve->length-end-1); i++)
 		{
-		  U[j] = curve->knotv[i+curve->order-1] +
-      ((curve->knotv[i+curve->order] - curve->knotv[i+curve->order-1]) / 2.0);
-		  j++;
+		  if(fabs(curve->knotv[i]-curve->knotv[i+1]) > AY_EPSILON)
+		    npslen++;
 		}
+	      if(npslen == 0)
+		{
+		  free(Qw);
+		  return AY_ERROR;
+		}
+	    }
+	  if(!(nps = calloc(npslen, sizeof(int))))
+	    return AY_ERROR;
+	  i = 0;
+	  j = 0;
+	  while(i < count)
+	    {
+	      nps[j]++;
+	      j++;
+	      if(j == npslen)
+		j = 0;
 	      i++;
 	    }
-	  memcpy(&(U[curve->length+count]), &(curve->knotv[curve->length]),
-		 curve->order*sizeof(double));
+
+	  if(!(U = calloc(curve->length+count+curve->order, sizeof(double))))
+	    return AY_ERROR;
+	  memcpy(U, curve->knotv, (curve->order-1+start)*sizeof(double));
+	  k = curve->order-1+start;
+	  l = 0;
+	  for(i = curve->order-1+start;
+	      i < curve->length-(curve->length-end-1); i++)
+	    {
+	      U[k] = curve->knotv[i];
+	      k++;
+	      while(fabs(curve->knotv[i]-curve->knotv[i+1]) < AY_EPSILON)
+		{
+		  U[k] = curve->knotv[i];
+		  k++;
+		  i++;
+		}
+	      for(j = 0; j < nps[l]; j++)
+		{
+		  U[k] = curve->knotv[i] +
+		    (j+1)*((curve->knotv[i+1] - curve->knotv[i])/(nps[l]+1));
+		  k++;
+		}
+	      l++;
+	    }
+	  memcpy(&(U[k]), &(curve->knotv[curve->length-(curve->length-end-1)]),
+	   ((curve->length+curve->order)-end-1)*sizeof(double));
 	  free(curve->knotv);
 	  curve->knotv = U;
 
