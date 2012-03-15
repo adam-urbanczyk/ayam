@@ -1013,79 +1013,11 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	    }
 	  j++;
 	} /* for */
-
-      if(!inserted)
-	{
-	  free(newcontrolv);
-	  curve->length--;
-	  ay_error(AY_ERROR, fname, "Cannot insert point here.");
-	  return AY_ERROR;
-	}
-
-      free(curve->controlv);
-      curve->controlv = newcontrolv;
-
-      if(curve->knot_type == AY_KTCUSTOM)
-	{
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
-	    {
-	      curve->length--;
-	      return AY_EOMEM;
-	    }
-
-	  for(j = curve->order; j < curve->length-1; j++)
-	    {
-	      if(curve->knotv[j] != curve->knotv[j+1])
-		{
-		  sections++;
-		}
-	    }
-
-	  section = sections*(*index)/(curve->length-1);
-
-	  k = 0; i = 0;
-	  for(j = 0; j < curve->length+curve->order-1; j++)
-	    {
-
-	      if((j >= curve->order-1) &&
-		 (curve->knotv[j] != curve->knotv[j+1]))
-		{
-		  newknotv[k] = curve->knotv[j];
-		  k++;
-		  if(i == section)
-		    {
-		      newknotv[k] = curve->knotv[j]+
-			((curve->knotv[j+1]-curve->knotv[j])/2.0);
-		      k++;
-		    }
-		  i++;
-		}
-	      else
-		{
-		  newknotv[k] = curve->knotv[j];
-		  k++;
-		}
-
-	    } /* for */
-
-	  free(curve->knotv);
-	  curve->knotv = newknotv;
-
-	  /*
-	  ay_error(AY_EWARN,fname, "Changed knot type to B-Spline.");
-	  curve->knot_type = AY_KTBSPLINE;
-	  */
-	}
-
-      if(curve->knot_type != AY_KTCUSTOM)
-	{
-	  ay_status = ay_knots_createnc(curve);
-	}
-      ay_status = ay_nct_close(curve);
     }
   else
     {
-      /* curve is not periodic */
+      /* curve is not periodic => employ special handling
+	 of the last point in the curve (extend the curve, if picked) */
       curve->length++;
       if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
 	{
@@ -1145,85 +1077,84 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	    } /* if */
 	  j++;
 	} /* for */
-
-      if(!inserted)
-	{
-	  free(newcontrolv);
-	  curve->length--;
-	  ay_error(AY_ERROR, fname, "Cannot insert point here.");
-	  return AY_ERROR;
-	}
-
-      if(curve->knot_type == AY_KTCUSTOM)
-	{
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
-	    {
-	      curve->length--;
-	      free(newcontrolv);
-	      return AY_EOMEM;
-	    }
-
-	  /* count sections */
-	  for(j = curve->order; j < curve->length-1; j++)
-	    {
-	      if(curve->knotv[j] != curve->knotv[j+1])
-		{
-		  sections++;
-		}
-	    }
-
-	  section = sections*(*index)/(curve->length-1);
-
-	  k = 0; i = 0;
-	  for(j = 0; j < curve->length+curve->order-2; j++)
-	    {
-	      if((j >= curve->order-1) &&
-		 (curve->knotv[j] != curve->knotv[j+1]))
-		{
-		  newknotv[k] = curve->knotv[j];
-		  k++;
-		  if(i == section)
-		    {
-		      newknotv[k] = curve->knotv[j]+
-			((curve->knotv[j+1]-curve->knotv[j])/2.0);
-		      k++;
-		    }
-		  i++;
-		}
-	      else
-		{
-		  newknotv[k] = curve->knotv[j];
-		  k++;
-		}
-
-	    } /* for */
-
-	  newknotv[curve->length+curve->order-1] =
-	    curve->knotv[curve->length+curve->order-2];
-
-	  free(curve->knotv);
-	  curve->knotv = newknotv;
-
-	  /*
-	    ay_error(AY_EWARN,fname, "Changed knot type to NURB.");
-	    curve->knot_type = AY_KTNURB;
-	  */
-	} /* if */
-
-      if(curve->knot_type != AY_KTCUSTOM)
-	{
-	  ay_status = ay_knots_createnc(curve);
-	  if(ay_status)
-	    {
-	      curve->length--;
-	      free(newcontrolv);
-	      return ay_status;
-	    }
-	}
-
-      free(curve->controlv);
-      curve->controlv = newcontrolv;
     } /* if */
+
+  if(!inserted)
+    {
+      free(newcontrolv);
+      curve->length--;
+      ay_error(AY_ERROR, fname, "Cannot insert point here.");
+      return AY_ERROR;
+    }
+
+  free(curve->controlv);
+  curve->controlv = newcontrolv;
+
+  if(curve->knot_type != AY_KTCUSTOM)
+    {
+      ay_status = ay_knots_createnc(curve);
+      if(ay_status)
+	{
+	  curve->length--;
+	  curve->controlv = oldcontrolv;
+	  free(newcontrolv);
+	  return ay_status;
+	}
+    }
+  else
+    {
+      /* create new custom knots */
+      if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	{
+	  curve->length--;
+	  curve->controlv = oldcontrolv;
+	  free(newcontrolv);
+	  return AY_EOMEM;
+	}
+
+      /* count sections */
+      for(j = curve->order; j < curve->length-1; j++)
+	{
+	  if(curve->knotv[j] != curve->knotv[j+1])
+	    {
+	      sections++;
+	    }
+	}
+
+      section = sections*(*index)/(curve->length-1);
+
+      k = 0; i = 0;
+      for(j = 0; j < curve->length+curve->order-2; j++)
+	{
+	  if((j >= curve->order-1) &&
+	     (curve->knotv[j] != curve->knotv[j+1]))
+	    {
+	      newknotv[k] = curve->knotv[j];
+	      k++;
+	      if(i == section)
+		{
+		  newknotv[k] = curve->knotv[j]+
+		    ((curve->knotv[j+1]-curve->knotv[j])/2.0);
+		  k++;
+		}
+	      i++;
+	    }
+	  else
+	    {
+	      newknotv[k] = curve->knotv[j];
+	      k++;
+	    }
+
+	} /* for */
+
+      newknotv[curve->length+curve->order-1] =
+	curve->knotv[curve->length+curve->order-2];
+
+      free(curve->knotv);
+      curve->knotv = newknotv;
+    } /* if */
+
+  (void) ay_nct_close(curve);
 
   ay_nct_recreatemp(curve);
 
