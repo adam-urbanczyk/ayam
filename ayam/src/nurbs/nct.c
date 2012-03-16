@@ -689,9 +689,11 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 
 /** ay_nct_refinekn:
  *  refine a NURBS curve by inserting knots at the right places,
- *  thus not changing the shape of the curve
+ *  thus not changing the shape of the curve;
+ *  if newknotv is NULL, a knot is inserted into every possible
+ *  place in the knot vector (multiple knots will not be changed)
  *
- * @param[in] curve NURBS curve object to refine
+ * @param[in,out] curve NURBS curve object to refine
  * @param[in] newknotv vector of new knot values (may be NULL)
  * @param[in] newknotvlen length of newknotv vector
  *
@@ -963,6 +965,9 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	      free(Qw);
 	      return AY_EOMEM;
 	    }
+	  /* distribute knots to sections */
+	  /* XXXX make the result more symmetric for cases of
+	     over-commitment (count>npslen) */
 	  i = 0;
 	  j = 0;
 	  while(i < count)
@@ -974,12 +979,18 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	      i++;
 	    }
 
+	  /* allocate and fill new knot vector */
 	  if(!(U = calloc(curve->length+curve->order+count, sizeof(double))))
 	    {
 	      free(Qw);
 	      return AY_EOMEM;
 	    }
+
+	  /* copy first knots */
 	  memcpy(U, curve->knotv, (start+1)*sizeof(double));
+
+	  /* copy middle knots and insert new knots with the
+	     help of the sections (nps) array */
 	  k = (start+1);
 	  l = 0;
 	  for(i = (start+1); i < (end+p); i++)
@@ -1001,10 +1012,12 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	      l++;
 	      if(l >= npslen)
 		break;
-	    }
+	    } /* for */
 
+	  /* copy remaining knots */
 	  memcpy(&(U[k]), &(curve->knotv[(end+p)]),
 		 ((curve->length+curve->order)-(end+p))*sizeof(double));
+
 	  free(curve->knotv);
 	  curve->knotv = U;
 
@@ -1013,7 +1026,7 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	  curve->controlv = Qw;
 
 	  free(nps);
-	}
+	} /* if custom */
 
       if(curve->type == AY_CTPERIODIC)
 	ay_nct_close(curve);
