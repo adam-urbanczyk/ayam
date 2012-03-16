@@ -816,8 +816,8 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
  *  refine a NURBS curve by inserting control points at the right places,
  *  changing the shape of the curve
  *
- * @param[in] curve NURBS curve object to refine
- * @param[in] selp selected points that define a (single) region to refine
+ * @param[in,out] curve NURBS curve object to refine
+ * @param[in,out] selp selected points that define a (single) region to refine
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -825,9 +825,10 @@ int
 ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 {
  double *Qw = NULL, *Q = NULL, *U = NULL;
- int start, end, count = 0, i, j, k, l, npslen = 0;
+ int start, end, count = 0, i, j, k, l, p, npslen = 0;
  int *nps = NULL;
  char fname[] = "nct_refinecv";
+ ay_point *endpnt = NULL;
 
   if(!curve)
     return AY_ENULL;
@@ -842,7 +843,10 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	  if(start > (int)selp->index)
 	    start = selp->index;
 	  if(end < (int)selp->index)
-	    end = selp->index;
+	    {
+	      end = selp->index;
+	      endpnt = selp;
+	    }
 
 	  selp = selp->next;
 	}
@@ -933,7 +937,6 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
       /* create new knots */
       if(curve->knot_type != AY_KTCUSTOM)
 	{
-
 	  curve->length += count;
 	  free(curve->controlv);
 	  curve->controlv = Qw;
@@ -942,32 +945,24 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	}
       else
 	{
-	  for(i = curve->order-1+start;
-	      i < curve->length-(curve->length-end-1); i++)
+	  /* count sections in start-end range */
+	  p = curve->order-1;
+	  for(i = start+1;
+	      i < end+p; i++)
 	    {
 	      if(fabs(curve->knotv[i]-curve->knotv[i+1]) > AY_EPSILON)
 		npslen++;
 	    }
 	  if(npslen == 0)
 	    {
-	      if(start > 0)
-		start--;
-	      if(end < (curve->length-1))
-		end++;
-	      for(i = curve->order-1+start;
-		  i < curve->length-(curve->length-end-1); i++)
-		{
-		  if(fabs(curve->knotv[i]-curve->knotv[i+1]) > AY_EPSILON)
-		    npslen++;
-		}
-	      if(npslen == 0)
-		{
-		  free(Qw);
-		  return AY_ERROR;
-		}
+	      free(Qw);
+	      return AY_ERROR;
 	    }
 	  if(!(nps = calloc(npslen, sizeof(int))))
-	    return AY_ERROR;
+	    {
+	      free(Qw);
+	      return AY_EOMEM;
+	    }
 	  i = 0;
 	  j = 0;
 	  while(i < count)
@@ -979,13 +974,15 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	      i++;
 	    }
 
-	  if(!(U = calloc(curve->length+count+curve->order, sizeof(double))))
-	    return AY_ERROR;
-	  memcpy(U, curve->knotv, (curve->order-1+start)*sizeof(double));
-	  k = curve->order-1+start;
+	  if(!(U = calloc(curve->length+curve->order+count, sizeof(double))))
+	    {
+	      free(Qw);
+	      return AY_EOMEM;
+	    }
+	  memcpy(U, curve->knotv, (start+1)*sizeof(double));
+	  k = (start+1);
 	  l = 0;
-	  for(i = curve->order-1+start;
-	      i < curve->length-(curve->length-end-1); i++)
+	  for(i = (start+1); i < (end+p); i++)
 	    {
 	      U[k] = curve->knotv[i];
 	      k++;
@@ -1002,15 +999,20 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 		  k++;
 		}
 	      l++;
+	      if(l >= npslen)
+		break;
 	    }
-	  memcpy(&(U[k]), &(curve->knotv[curve->length-(curve->length-end-1)]),
-	   ((curve->length+curve->order)-end-1)*sizeof(double));
+
+	  memcpy(&(U[k]), &(curve->knotv[(end+p)]),
+		 ((curve->length+curve->order)-(end+p))*sizeof(double));
 	  free(curve->knotv);
 	  curve->knotv = U;
 
 	  curve->length += count;
 	  free(curve->controlv);
 	  curve->controlv = Qw;
+
+	  free(nps);
 	}
 
       if(curve->type == AY_CTPERIODIC)
@@ -1021,6 +1023,12 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	 already multiple points in the original curve */
       if(curve->mpoints)
 	ay_nct_recreatemp(curve);
+
+      if(endpnt)
+	{
+	  endpnt->index += count;
+	}
+
     } /* if count */
 
  return AY_OK;
@@ -1095,18 +1103,32 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(o->selp)
 		{
-		  ay_selp_clear(o);
-		}
+		  if(refine_cv)
+		    {
+		      if(!o->selp->next)
+			{
+			  ay_selp_clear(o);
+			}
+		      else
+			{
+			  ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+			}
+		    }
+		  else
+		    {
+		      ay_selp_clear(o);
+		    } /* if */
+		} /* if */
 	      o->modified = AY_TRUE;
 
 	      /* re-create tesselation of curve */
 	      ay_notify_object(sel->object);
-	    }
+	    } /* if */
 	}
       else
 	{
 	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
-	}
+	} /* if */
 
       sel = sel->next;
     } /* while */
