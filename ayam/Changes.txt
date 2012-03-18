@@ -1,4 +1,4 @@
-[10. Mar 2012] CVS-Head:
+[18. Mar 2012] CVS-Head:
 ========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
@@ -76,7 +76,9 @@ o converted Sphere patches now have the same direction as other quadrics
   to make it easier to combine them with ConcatNP
 o added tool (and corresponding scripting interface commands "refineuNP"/
   "refinevNP") to refine NURBS surfaces
-o improved refinement of periodic curves
+o improved refinement of periodic curves (they are refined on their
+  complete length now)
+o improved handling of custom knots for the insert/delete point actions
 
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
