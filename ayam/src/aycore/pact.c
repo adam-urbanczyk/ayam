@@ -942,7 +942,7 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
  char fname[] = "insert_pointnc";
  int i = 0, j = 0, k = 0;
  double *newcontrolv = NULL, *oldcontrolv = NULL, *newknotv = NULL;
- int inserted, sections = 0, section;
+ int inserted, section;
 
   if(!curve || !index)
     return AY_ENULL;
@@ -1092,6 +1092,10 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 
   if(curve->knot_type != AY_KTCUSTOM)
     {
+      /* adjust order for Bezier curves */
+      if(curve->knot_type == AY_KTBEZIER)
+	curve->order++;
+
       ay_status = ay_knots_createnc(curve);
       if(ay_status)
 	{
@@ -1112,43 +1116,49 @@ ay_pact_insertnc(ay_nurbcurve_object *curve, int *index,
 	  return AY_EOMEM;
 	}
 
-      /* count sections */
-      for(j = curve->order; j < curve->length-1; j++)
+      if(*index == (curve->length-2))
+	section = (*index);
+      else
+	section = (*index)+1;
+
+      if(curve->order > 2)
+	for(j = section; j < section+(curve->order-1); j++)
+	  {
+	    if(fabs(curve->knotv[j] - curve->knotv[j+1]) < AY_EPSILON)
+	      {
+		section++;
+	      }
+	    else
+	      break;
+	  }
+
+      /* if section is too large, we probably appended
+	 a point to the curve or a serious error occured
+	 so we rather try to insert a knot into the last
+	 section of the original knot vector */
+      if(section >= (curve->length+curve->order-2))
 	{
-	  if(curve->knotv[j] != curve->knotv[j+1])
+	  for(j = 0; j < curve->length+curve->order-2; j++)
 	    {
-	      sections++;
+	      if(fabs(curve->knotv[j] - curve->knotv[j+1]) > AY_EPSILON)
+		{
+		  section = j;
+		}
 	    }
 	}
 
-      section = sections*(*index)/(curve->length-1);
-
-      k = 0; i = 0;
-      for(j = 0; j < curve->length+curve->order-2; j++)
+      k = 0;
+      for(j = 0; j < curve->length+curve->order-1; j++)
 	{
-	  if((j >= curve->order-1) &&
-	     (curve->knotv[j] != curve->knotv[j+1]))
+	  newknotv[k] = curve->knotv[j];
+	  k++;
+	  if(j == section)
 	    {
-	      newknotv[k] = curve->knotv[j];
-	      k++;
-	      if(i == section)
-		{
-		  newknotv[k] = curve->knotv[j]+
-		    ((curve->knotv[j+1]-curve->knotv[j])/2.0);
-		  k++;
-		}
-	      i++;
-	    }
-	  else
-	    {
-	      newknotv[k] = curve->knotv[j];
+	      newknotv[k] = curve->knotv[j]+
+		((curve->knotv[j+1]-curve->knotv[j])/2.0);
 	      k++;
 	    }
-
 	} /* for */
-
-      newknotv[curve->length+curve->order-1] =
-	curve->knotv[curve->length+curve->order-2];
 
       free(curve->knotv);
       curve->knotv = newknotv;
@@ -1529,14 +1539,13 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
       return AY_ERROR;
     }
 
-  if((curve->type) &&
+  if((curve->type == AY_CTPERIODIC) &&
      (*index > (curve->length-curve->order)))
     {
       *index = curve->order-(curve->length-(*index))-1;
     }
 
-  /* create new curve */
-
+  /* create new control points */
   curve->length--;
   if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
     {
@@ -1564,6 +1573,7 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
   free(curve->controlv);
   curve->controlv = newcontrolv;
 
+  /* adjust order for Bezier curves */
   if(curve->knot_type == AY_KTBEZIER)
     curve->order--;
 
@@ -1579,16 +1589,23 @@ ay_pact_deletenc(ay_nurbcurve_object *curve, int *index,
 	  return AY_EOMEM;
 	}
 
-      memcpy(newknotv, curve->knotv, (curve->length)*sizeof(double));
-      memcpy(&(newknotv[curve->length]),
-	     &(curve->knotv[curve->length+1]),
-	     curve->order*sizeof(double));
-      /*
-	for(i=0;i<curve->length+curve->order;i++)
+      /* find the knot that answers most for the removed
+	 control point *index */
+      k = *index+1;
+      if(curve->order > 3)
+	k += ((curve->order-1)/2);
+
+      /* copy knots, omitting the kth */
+      j = 0;
+      for(i = 0; i < curve->length+curve->order+1; i++)
 	{
-	newknotv[i] = curve->knotv[i];
+	  if(i != k)
+	    {
+	      newknotv[j] = curve->knotv[i];
+	      j++;
+	    }
 	}
-      */
+
       free(curve->knotv);
       curve->knotv = newknotv;
     }
