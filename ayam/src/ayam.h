@@ -1122,8 +1122,8 @@ typedef struct ay_concatnp_object_s
   int revert; /**< revert created patch in U direction? */
   int knot_type; /**< knot type of created patch in U direction (AY_KT*) */
 
-  int fillgaps; /**< unused */
-  double ftlength; /**< unused */
+  int fillgaps; /**< create fillets? */
+  double ftlength; /**< length of fillet end tangents */
 
   char *uv_select; /**< select direction for each parameter patch */
 
@@ -1961,7 +1961,7 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.20pre"
+#define AY_VERSIONSTR "1.20"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
