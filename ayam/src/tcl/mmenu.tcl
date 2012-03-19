@@ -377,16 +377,24 @@ $m.nct add command -label "Trim" -command {
 	"undo save TrimNC; trimNC %0 %1; plb_update; rV"\
 	"Trim Curve"
 }
-$m.nct add command -label "Refine" -command { undo save Refine; refineNC;
-                                              plb_update; rV }
+
+$m.nct add command -label "Refine" -command { undo save Refine;
+    refineNC -cv; plb_update; rV }
+
 $m.nct add command -label "Coarsen" -command { undo save Coarsen; coarsenNC;
                                               plb_update; rV }
-$m.nct add command -label "Refine with" -command {
+
+
+$m.nct add command -label "Refine Knots" -command { undo save RefineKn;
+    refineNC; plb_update; rV }
+
+$m.nct add command -label "Refine Knots with" -command {
     getProp; set ay(okn) $::NCurveAttrData(Knots);
     runTool [list ay(okn) ay(refinekn)] {"Old Knots:" "New Knots:"}\
 	"undo save Refine; refineNC \{%1\}; plb_update; rV"\
         "Refine Curve"
 }
+
 $m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
                                              plb_update; rV }
 $m.nct add command -label "Elevate" -command {
@@ -791,7 +799,7 @@ $m add command -label "Convert (In Place)" -command {
     global ay
     set ay(need_undo_clear) 0
     forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
-    if { $::ay(need_undo_clear) == 0 } { undo save Convert }
+    if { $ay(need_undo_clear) == 0 } { undo save Convert }
     convOb -inplace; update
     if { $ay(need_undo_clear) } { undo clear }
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
