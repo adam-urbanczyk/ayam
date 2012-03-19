@@ -10509,8 +10509,8 @@ tools.
 <sect1>General Remarks
 <p>
 All NURBS modelling tools are accessible via the <tt/"Tools"/ menu of the
-main window. In addition, there are also corresponding scripting
-interface commands.
+main window or the toolbox. In addition, there are also corresponding
+scripting interface commands.
 <p>
 Many modifying tools work on multiple selected objects and execute
 the selected operation on all those selected objects in the order
@@ -10910,12 +10910,41 @@ scripting interface command <ref id="scelevatenc" name="elevateNC">.
 <sect1>Refine Tool<label id="refit">
 <p>
 <figure loc="ht">
-<eps file="pics/refine.ps" height="4cm">
-<img src="pics/refine.gif">
+<eps file="pics/refinecv.ps" height="4cm">
+<img src="pics/refinecv.gif">
 <caption>Successive Application of Refine Tool</caption>
 </figure>
 <itemize>
 <item>Arguments: The refine tool takes a number of NURBS curves from
+the selection.
+<item>Operation: The selected NURBS curves will be refined by inserting
+a control point in the middle of each control point interval, changing
+the shape of the curve. The original control points will not be changed.
+For periodic curves, no control points will be inserted in the last p
+intervals, this allows to maintain the periodicity, see also the
+image below where a periodic curve of length 9 (8 sections) has been
+refined, resulting in a periodic curve of length 15 (not 17).
+<figure loc="ht">
+<eps file="pics/refinepe.ps" height="4cm">
+<img src="pics/refinepe.gif">
+<caption>Refining a Periodic Curve</caption>
+</figure>
+If there are selected points, only the intervals between the first
+and the last selected point are refined.
+<item>
+See also the documentation of the corresponding
+scripting interface command <ref id="screfinenc" name="refineNC">.
+</itemize>
+
+<sect1>Refine Knots Tool<label id="refknit">
+<p>
+<figure loc="ht">
+<eps file="pics/refine.ps" height="4cm">
+<img src="pics/refine.gif">
+<caption>Successive Application of Refine Knots Tool</caption>
+</figure>
+<itemize>
+<item>Arguments: The refine knots tool takes a number of NURBS curves from
 the selection.
 <item>Operation: The knot vectors of the selected NURBS curves will be
 refined by inserting a knot in the middle of each inner knot interval
@@ -10926,14 +10955,6 @@ not change in type. See the image above for an example of a
 successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
-If you want to refine a curve with new control points and not
-change the position of existing control points, use the NCAttribute
-property GUI instead (simply increase the length of the curve
-by oldlength-1).
-Also note that for periodic curves the refine tool just inserts
-control points into all control point intervals except for the
-first (last) p intervals (where p is the degree of the curve).
-The shape of the curve will be changed in this case.
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
 </itemize>
@@ -11226,7 +11247,7 @@ the selection.
 <item>Operation: The respective knot vectors of the selected NURBS patches
 will be refined without changing the shape of the patches. New control
 points will be added and the position of old control points may be
-changed in the progress.
+changed in the progress (see also the image above).
 <item>Note: The respective knot type of the patch may
 be changed to <tt/"Custom"/.
 The point selection will be removed from the original object.
@@ -13138,13 +13159,13 @@ See also section <ref id="remknt" name="Remove Knot Tool">.
 <label id="screfinenc">
 refineNC &ndash; refine NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"refineNC [{u1 u2 un}]"/
+ <item>Synopsis: <tt/"refineNC [-cv | {u1 u2 un}]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Refine the knot vector of the selected NURBS curve
-without changing the shape of the curve with n new knots {u1 u2 un}.
-Or, if no list of new knots is given: add a new knot into each interval
+without changing the shape of the curve with n new knots {u1 u2 un}
+or refine the control vector (if <tt/"-cv"/ option is given).
+If no list of new knots is given a new knot is inserted into each interval
 in the old knot vector.
-The knot type of the refined curve may be changed to <tt/"Custom"/.
 See also section <ref id="refit" name="Refine Tool">.
 </itemize>
 
@@ -18662,6 +18683,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="refit" name="curve tool">,
 <item><ref id="refinest" name="surface tool">
 </itemize>
+<item>Refine Knots: <ref id="refknit" name="Refine Knots Tool">
 <item>refineNC: <ref id="screfinenc" name="scripting interface command">
 <item>refineuNP: <ref id="screfineunp" name="scripting interface command">
 <item>refinevNP: <ref id="screfinevnp" name="scripting interface command">
