@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2012 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -139,7 +139,6 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
  ay_nurbcurve_object *nc = NULL;
  double *pnts = NULL, *p1, *p2;
  double point_size = ay_prefs.handle_size;
- /*double m[16];*/
 
   if(!o)
     return AY_ENULL;
@@ -151,7 +150,6 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
 
-
       /* get and draw read only points */
       pnts = nc->controlv;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
@@ -160,34 +158,23 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
       glPointSize((GLfloat)point_size);
 
       glBegin(GL_POINTS);
-      for(i = 0; i <nc->length; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i <nc->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)&pnts[a]);
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
 
-      /* get first/last control points */
+      /* get last and second to last control points */
       p1 = &(nc->controlv[nc->length*4-8]);
       p2 = p1+4;
 
       /* draw arrow */
-      /*
-      glPushMatrix();
-        c = concatnc->ncurve;
-	glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
-	ay_quat_torotmatrix(c->quat, m);
-	glMultMatrixd((GLdouble*)m);
-	glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-      */
-        ay_draw_arrow(togl, p1, p2);
-      /*
-      glPopMatrix();
-      */
-    }
+      ay_draw_arrow(togl, p1, p2);
+    } /* if */
 
  return AY_OK;
 } /* ay_concatnc_drawhcb */
@@ -288,7 +275,6 @@ ay_concatnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   toa = Tcl_NewStringObj(n1,-1);
 
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Closed",-1);
   to = Tcl_NewIntObj(concatnc->closed);
@@ -425,7 +411,7 @@ ay_concatnc_notifycb(ay_object *o)
  ay_concatnc_object *concatnc = NULL;
  ay_object *down = NULL, *ncurve = NULL, *curves = NULL, **next = NULL;
  ay_nurbcurve_object *nc = NULL;
- int numcurves = 0, order = 0, highest_order = 0;
+ int numcurves = 0, highest_order = 0;
 
   if(!o)
     return AY_ENULL;
@@ -472,7 +458,7 @@ ay_concatnc_notifycb(ay_object *o)
   ncurve = curves;
   while(ncurve)
     {
-      ay_nct_applytrafo(ncurve);      
+      ay_nct_applytrafo(ncurve);
       ay_status = ay_nct_elevate((ay_nurbcurve_object *)(ncurve->refine),
 				 highest_order);
       ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine, 0);
@@ -530,8 +516,8 @@ ay_concatnc_notifycb(ay_object *o)
 	      if(ay_status)
 		{
 		  ay_error(ay_status, fname, "Could not revert curve!");
-		} /* if */
-	    } /* if */
+		}
+	    }
 
 	  if(concatnc->closed && (!concatnc->fillgaps))
 	    {
@@ -539,8 +525,8 @@ ay_concatnc_notifycb(ay_object *o)
 	      if(ay_status)
 		{
 		  ay_error(ay_status, fname, "Could not close curve!");
-		} /* if */
-	    } /* if */
+		}
+	    }
 	} /* if */
     } /* if */
 
@@ -604,8 +590,8 @@ ay_concatnc_convertcb(ay_object *o, int in_place)
 	    {
 	      ay_status = ay_object_replace(new, o);
 	    }
-	}
-    }
+	} /* if */
+    } /* if */
 
  return ay_status;
 } /* ay_concatnc_convertcb */
@@ -647,7 +633,7 @@ ay_concatnc_providecb(ay_object *o, unsigned int type, ay_object **result)
 	{
 	  return AY_ERROR;
 	}
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_concatnc_providecb */
