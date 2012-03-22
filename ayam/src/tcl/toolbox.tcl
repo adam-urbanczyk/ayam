@@ -145,12 +145,12 @@ proc toolbox_open { {w .tbw} } {
 		"edit weights <[remkpkr $ayviewshortcuts(WeightE)]>"
 
 	    ######
-	    button $f.bedd -image ay_EditD_img -padx 0 -pady 0 -command {
-		toolbox_startaction actionDEditP
+	    button $f.bedd -image ay_EditN_img -padx 0 -pady 0 -command {
+		toolbox_startaction actionEditNumP
 	    }
 
 	    balloon_set $f.bedd\
-	  "directly edit coordinates <[remkpkr $ayviewshortcuts(EditD)]>"
+	  "edit points numeric <[remkpkr $ayviewshortcuts(EditN)]>"
 	    ######
 	    button $f.sel -image ay_Tag_img -padx 0 -pady 0 -command {
 		toolbox_startaction actionTagP

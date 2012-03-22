@@ -1308,7 +1308,7 @@ proc actionEditNumP { w } {
     global ayprefs ayviewshortcuts
 
     viewTitle $w "" "Edit_Points_Num"
-    viewSetMAIcon $w ay_EditD_img "Edit_Points_Num"
+    viewSetMAIcon $w ay_EditN_img "Edit_Points_Num"
 
     actionClearB1 $w
 
