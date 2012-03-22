@@ -339,9 +339,10 @@ bind $f.ca <Key-Escape> "resetFocus;break"
 
 pack $f.ca -in $f -side left -fill both -expand yes
 
+# the property GUI scrollbar
 scrollbar $f.s -command { global ay; $ay(pca) yview } -takefocus 0
 set ay(pcas) $f.s
-pack $f.s -in $f -side left -fill y
+pack $f.s -in $f -side right -fill y
 
 
 pack $w.fArg.fca -in $w.fArg -side top -fill both -expand yes
