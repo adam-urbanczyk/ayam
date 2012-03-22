@@ -4510,6 +4510,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 		 double *intersection)
 {
  int ay_status = AY_OK;
+#if 0
  double *bu = NULL, *bv = NULL; /* Bezier segment arrays */
  double *su, *sv;
  double cuminx, cumaxx, cvminx, cvmaxx;
@@ -4664,7 +4665,7 @@ ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
 
   /* compare x component */
 
-
+#endif
  return ay_status;
 } /* ay_nct_intersect */
 
@@ -5431,7 +5432,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
   if(src)
-    ay_status = ay_object_deletemulti(src);
+    (void) ay_object_deletemulti(src);
 
  return TCL_OK;
 } /* ay_nct_makecomptcmd */
@@ -6393,7 +6394,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 		  */
 
 		  /* prepare next iteration */
-		  p1 = p2;
+		  /*p1 = p2;*/
 		  p2 = p3;
 
 		  memcpy(t1, t2, 2*sizeof(double));
@@ -6768,7 +6769,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
   if(o->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(sel->object, AY_IDNCURVE, &po);
-      if(po)
+      if(!ay_status && po)
 	{
 	  curve = (ay_nurbcurve_object *)po->refine;
 	}

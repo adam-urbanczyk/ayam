@@ -1012,8 +1012,9 @@ ay_npt_wribtrimcurves(ay_object *o)
 {
  int ay_status = AY_OK;
  int k, a, b, c, totalcurves, totalcontrol, totalknots;
- RtInt nloops = 0, *ncurves, *order, *n;
- RtFloat *knot, *min, *max, *u, *v, *w;
+ RtInt nloops = 0, *ncurves = NULL, *order = NULL, *n = NULL;
+ RtFloat *knot = NULL, *min = NULL, *max = NULL;
+ RtFloat *u = NULL, *v = NULL, *w = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_nurbcurve_object *curve = NULL;
  double m[16];
@@ -1223,7 +1224,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 	    {
 	      loop = trim->down;
 
-	      while(loop->next)
+	      while(loop && loop->next)
 		{
 		  nc = NULL;
 
@@ -1287,7 +1288,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 
 		  if(nc)
 		    {
-		      ay_object_delete(nc);
+		      (void)ay_object_deletemulti(nc);
 		    }
 
 		  loop = loop->next;
@@ -1333,7 +1334,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 		  knot[c] = (RtFloat)curve->knotv[k];
 		  c++;
 		} /* for */
-	      ay_object_delete(nc);
+	      (void) ay_object_deletemulti(nc);
 	    } /* if */
 	  break;
 	} /* switch */
@@ -2000,6 +2001,8 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      next = curves->next;
 	      ay_trafo_copy(src, curves);
 	      ay_status = ay_object_link(curves);
+	      if(ay_status)
+		(void)ay_object_delete(curves);
 	      curves = next;
 	    }
 	} /* if */
@@ -2268,7 +2271,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 {
  int ay_status = AY_OK;
  ay_object *of1 = NULL, *of2 = NULL;
- ay_nurbpatch_object *np1, *np2, *new;
+ ay_nurbpatch_object *np1, *np2, *new = NULL;
  double *cv1, *cv2, *ncv;
  double dist, v1[3], v2[3];
  int i, a, b, c, d, stride = 4, is_eq;
@@ -2355,6 +2358,8 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
      does not create a new knot vector for us (we copied it already) */
   new->vknot_type = AY_KTCUSTOM;
   ay_status = ay_knots_createnp(new);
+  if(ay_status)
+    goto cleanup;
   new->vknot_type = np1->vknot_type;
 
   if(!(new->controlv = calloc(new->width*new->height*stride,
@@ -2492,7 +2497,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 		double ftlen, char *uv)
 {
  int ay_status = AY_OK;
- ay_object *fillet, *first, *last;
+ ay_object *fillet, *first = NULL, *last = NULL;
  char *fuv, uv2[3] = {0};
 
   first = o;
@@ -2604,7 +2609,7 @@ ay_npt_concat(ay_object *o, int type, int order,
  int ay_status = AY_OK;
  ay_object *patches = NULL, *new = NULL;
  ay_object *curve = NULL, *allcurves = NULL, **nextcurve = NULL;
- ay_list_object *curvelist, **nextlist = NULL, *rem;
+ ay_list_object *curvelist = NULL, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
  int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
  double *newknotv = NULL;
@@ -2792,6 +2797,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 	{
 	  /* must be a curve, just copy it... */
 	  ay_status = ay_object_copy(o, nextcurve);
+	  if(ay_status)
+	    goto cleanup;
 	  ay_nct_applytrafo(*nextcurve);
 	  nextcurve = &((*nextcurve)->next);
 	} /* if */
@@ -2843,7 +2850,6 @@ ay_npt_concat(ay_object *o, int type, int order,
       np->uknotv = newknotv;
       a = order;
       j = 0;
-      k = 0;
       o = patches;
       i = 0;
 

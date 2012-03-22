@@ -202,7 +202,6 @@ ay_stess_FindMultiplePoints(int n, int p, double *U, double *P,
 
       if(eq)
 	{
-	  t = NULL;
 	  if(!(t = realloc(*V, ((*m)+1)*sizeof(double))))
 	    {
 	      if(*V)
@@ -241,7 +240,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 
   if(!(N = calloc(p+1, sizeof(double))))
     return AY_EOMEM;
-  /*  
+  /*
   ay_status = ay_stess_FindMultiplePoints(n, p, U, Pw, 2, is_rat, 4, &mc, &V);
   */
   *Clen = ((4 + n) * qf);
