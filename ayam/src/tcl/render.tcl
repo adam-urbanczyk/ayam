@@ -84,7 +84,11 @@ proc render_select { } {
     button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
 	global ay ayprefs
 
-	set sel [.selRenw.flb.li curselection]
+	set sel ""
+	catch {set sel [.selRenw.flb.li curselection]}
+
+	if { $sel != "" } {
+
 	set splugin ""
 
 	switch $sel {
@@ -331,6 +335,8 @@ proc render_select { } {
 	ayError 4 "Renderer_Select" "Now using \"$newr\" to render."
 
 	set ay(srr) $sel
+
+        }
 
 	focus .
 	grab release .selRenw
