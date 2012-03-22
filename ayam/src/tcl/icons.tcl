@@ -205,12 +205,12 @@ thayInAJlpSm6QmdSAFU5BWGHZoIKQIYMPaKv+Gzl/w9s2si9BtcNs7R9bh47GZbgCVcShUgElsw
 WRMBBYtVFBEAOw}
 image create photo ay_EditW_img -format GIF -data $imgdata
 
-# EditD
+# EditN
 set imgdata {\
 R0lGODdhGQAZAMIAAAAAAL28vLy9vby8vL29vLy8vby9vAAAACwAAAAAGQAZAAADWji6rGGtQQCi
 jVRVvRcgTbeNmgcETFYOpKoVobdmHSvEc07mL2uWlJYKAHOtUpjaZcm0KJuXJxQzbUqrvsp1GsRG
 veDksxsaBs/odJozNrLDSxicAZkvUCh7AgA7}
-image create photo ay_EditD_img -format GIF -data $imgdata
+image create photo ay_EditN_img -format GIF -data $imgdata
 
 # Tag
 set imgdata {\
