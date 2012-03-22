@@ -121,7 +121,7 @@ ay_nb_LUDecompose(int n, double *A, int *pivot)
 
   free(elem);
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_nb_LUDecompose */
 
 
@@ -138,12 +138,10 @@ int
 ay_nb_LUInvert(int n, double *inv, int *pivot)
 {
  double ten, *work = NULL;
- int i, j, k, l = 0, kb, kp1, nm1, coln;
+ int i, j, k, l = 0, kb, kp1, nm1;
 
   if(!(work = calloc(n, sizeof(double))))
     return AY_EOMEM;
-
-  coln = n;
 
   nm1 = n - 1;
 
@@ -369,7 +367,7 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
   qq[5] = /*(U[d+1]/d)**/D1[1];
   qq[6] = /*(U[d+1]/d)**/D1[2];
   qq[7] = 1.0;
-  ind = n+2;
+  /*ind = n+2;*/
   qq[(n+1)*4] = /*((1.0-U[ind])/d)**/D2[0];
   qq[((n+1)*4)+1] = /*((1.0-U[ind])/d)**/D2[1];
   qq[((n+1)*4)+2] = /*((1.0-U[ind])/d)**/D2[2];
@@ -812,7 +810,7 @@ cleanup:
 	}
     }
 
-  return ay_status;
+ return ay_status;
 } /* ay_nb_DegreeElevateCurve */
 
 
@@ -3239,7 +3237,6 @@ cleanup:
   /* convert rational coordinates from homogeneous to euclidean style */
   if(ay_status == AY_OK)
     {
-      a = 0;
       for(i = 0; i < w; i++)
 	{
 	  a = i*tnh*stride;
