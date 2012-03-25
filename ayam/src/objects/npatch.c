@@ -1006,7 +1006,6 @@ ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
       glEnd();
     }
 
-  a = 0;
   for(j = 0; j < height; j++)
     {
       a = j * 4;
