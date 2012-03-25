@@ -2,8 +2,8 @@
 Version=1.0
 Type=Application
 Name=Ayam
-Exec=/usr/local/ayam/bin/ayam.sh 
-Icon=/usr/local/ayam/lib/ayam_icon_32.png
+Exec=/usr/local/ayam/bin/ayam.sh %F
+Icon=/usr/local/ayam/bin/ayam_icon_32.png
 Comment=3D Modelling Application for the RenderMan Interface
 Categories=Graphics;
 MimeType=application/ayam;
