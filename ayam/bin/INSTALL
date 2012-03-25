@@ -1,4 +1,4 @@
-[INSTALL, 5. Dec 2006]
+[INSTALL, 25. Mar 2012]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -14,31 +14,51 @@ Contents:
 1. General Installation Instructions
 ------------------------------------
 
-To install Ayam into your system edit the Makefile to your liking
-switch to root and do a:
+To install Ayam into your system switch to root, cd to ayam/bin and enter:
 >make install
-you can uninstall Ayam as well using:
->make uninstall
 
-By default, Ayam will install to /usr/local/ayam.
+By default, Ayam will install to "/usr/local/ayam".
 It will create some sub-directories there, namely:
-/usr/local/ayam/bin for the executable,
-/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
-/usr/local/ayam/doc for the documentation.
+/usr/local/ayam/bin for the executable, plugins, and scripts,
+/usr/local/ayam/doc for the documentation, and
+/usr/local/ayam/scn for the example scenes.
 
 You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
-Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
-environment variable, otherwise Ayam might not be able to load the plugins.
+Use ayam.sh to start the application or be sure to add "." or
+"/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+environment variable. Otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/lib/Makefile uninstall
+>make -f /usr/local/ayam/bin/Makefile uninstall
+
+The Makefile may be adapted on systems where "/usr/local/ayam" is not
+a feasible prefix directory, just change the PREFIX variable.
+Note that PREFIX must end in an Ayam specific directory; spreading the
+executables, plugins, Tcl scripts, documentation, and example scenes across
+the file system is not supported.
 
 To check what installing/uninstalling will do to your system use
 >make -n install
 or
 >make -n uninstall
 first.
+
+Ayam also integrates with Unix desktop environments.
+To install a system wide applications menu entry, enter:
+>make sysmenu
+
+To install a system wide file type, enter:
+>make sysftype
+
+To add a desktop launcher to the current users desktop, enter:
+>make desktop
+
+If Ayam was installed to a user specific directory (e.g. on systems
+without root access), the following two targets add a user application
+menu entry and file type:
+>make menu
+>make ftype
 
 
 2. Linux Specific Information
