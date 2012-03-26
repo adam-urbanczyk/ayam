@@ -270,9 +270,9 @@ objio_writencurve(FILE *fileptr, ay_object *o, double *m)
     {
       if(nc->is_rat)
 	{
-	  pw[0] = p2[0]/p2[3];
-	  pw[1] = p2[1]/p2[3];
-	  pw[2] = p2[2]/p2[3];
+	  pw[0] = p2[0];
+	  pw[1] = p2[1];
+	  pw[2] = p2[2];
 	  AY_APTRAN3(p1,pw,m)
 	  p1[3] = p2[3];
 	  p1 += stride;
@@ -3220,9 +3220,9 @@ cleanup:
 /* objio_fixnpatch:
  *  fix row/column major order in np controlv (from Wavefront to Ayam style);
  *  additionally, set the is_rat attribute
- *  (optionally) de-multiplying the weights for rational vertices
- *  (optionally) multiply the weights in for rational vertices, and
- *  try to detect the knot type
+ *  (optionally) de-multiplying the weights for rational vertices,
+ *  (optionally) rescaling the knot vector to safe distances, and
+ *  trying to detect the knot type
  */
 int
 objio_fixnpatch(ay_nurbpatch_object *np)
