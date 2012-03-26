@@ -2308,7 +2308,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 	} // for
     } // if
 
-  // convert from homogenous to euclidean
+  // convert from homogeneous to euclidean
   // (de-multiply the weights)
   a = 0;
   for(i = 0; i < width; i++)
@@ -2317,10 +2317,11 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
 	{
 	  if(controlv[a+3] != 1.0)
 	    {
-	      controlv[a]   *= controlv[a+3];
-	      controlv[a+1] *= controlv[a+3];
-	      controlv[a+2] *= controlv[a+3];
+	      controlv[a]   /= controlv[a+3];
+	      controlv[a+1] /= controlv[a+3];
+	      controlv[a+2] /= controlv[a+3];
 	    }
+	  a += 4;
 	} // for
     } // for
 
@@ -2476,7 +2477,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	} // for
     } // if
 
-  // convert from homogenous to euclidean
+  // convert from homogeneous to euclidean
   // (de-multiply the weights)
   a = 0;
   for(i = 0; i < length; i++)
@@ -2487,6 +2488,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
 	  controlv[a+1] /= controlv[a+3];
 	  controlv[a+2] /= controlv[a+3];
 	}
+      a += 4;
     } // for
 
   // copy the knot vector
