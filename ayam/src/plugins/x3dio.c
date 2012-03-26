@@ -7254,7 +7254,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   /* decode potentially present PV tags */
   if(o->tags)
     {
-     
+
       tag = o->tags;
       while(tag)
 	{
@@ -7338,7 +7338,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
   if(have_texcoords)
     {
-     
+
       texcoord_element = scew_element_add(patch_element, "TextureCoordinate");
       scew_element_add_attr_pair(texcoord_element, "point", texcoordstring);
 
@@ -8020,7 +8020,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
 	  tag = tag->next;
 	} /* while */
-     
+
     } /* if */
 
   /* write faces */
