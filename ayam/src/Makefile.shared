@@ -784,7 +784,7 @@ desktop:
 
 # add Gnome/KDE/... user menu shortcut
 menu:
-	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > ~/.local/share/ayam.desktop
+	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > ~/.local/share/applications/ayam.desktop
 
 # add Gnome/KDE/... systemwide menu shortcut
 sysmenu:
