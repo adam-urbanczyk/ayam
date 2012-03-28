@@ -772,23 +772,28 @@ uninstall:
 	-rm -rf $(LIBDIR)
 	-rm -rf $(DOCDIR)
 	-rm -rf $(SCNDIR)
+	-xdg-desktop-icon uninstall ayam.desktop
 	-xdg-mime uninstall $(BINDIR)/ayam-filetype.xml
 	-rm -f  $(BINDIR)/ayam-filetype.xml
 	-rm -f /usr/share/applications/ayam.desktop
 	-rm -f ~/.local/share/ayam.desktop
-	-rm -f ~/Desktop/ayam.desktop
 	-rm -f $(BINDIR)/Makefile
 
+# add Gnome/KDE/... user desktop shortcut
 desktop:
-	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > ~/Desktop/ayam.desktop
+	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > $(BINDIR)/ayam.desktop
+	-chmod 755 $(BINDIR)/ayam.desktop
+	-xdg-desktop-icon install --novendor $(BINDIR)/ayam.desktop
 
 # add Gnome/KDE/... user menu shortcut
 menu:
 	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > ~/.local/share/applications/ayam.desktop
+	-chmod 755 ~/.local/share/applications/ayam.desktop
 
 # add Gnome/KDE/... systemwide menu shortcut
 sysmenu:
 	-sed -e "s:/usr/local/ayam:$(PREFIX):g" $(BINDIR)/ayam-desktop.desktop > /usr/share/applications/ayam.desktop
+	-chmod 755 /usr/share/applications/ayam.desktop
 
 # add Gnome/KDE/... file type
 filetype:
