@@ -1,5 +1,5 @@
-[18. Mar 2012] CVS-Head:
-========================
+[20. Mar 2012] Ayam-1.20:
+=========================
 Bug Fixes:
 o the weights of the Cobb NURBS sphere are wrong (SF 3287828)
 o Tcl error when applying the ViewAttrib property (SF 3295757)
@@ -78,6 +78,8 @@ o added tool (and corresponding scripting interface commands "refineuNP"/
   "refinevNP") to refine NURBS surfaces
 o improved refinement of periodic curves (they are refined on their
   complete length now)
+o added region support to refine curve tool: a region to refine can be
+  specified by selected points
 o improved handling of custom knots for the insert/delete point actions
 
 GUI:
@@ -131,6 +133,11 @@ Documentation/Example Files:
 o historic information (i.e. when did a feature appear) are now presented
   in a less obtrusive way (as footnotes)
 o improved layout of index, object trees, and code examples
+
+Installation:
+o there are now Makefile targets to integrate Ayam with a Unix desktop
+  environment (e.g. Gnome and KDE) via desktop shortcut, menu entry,
+  and file type
 
 
 [16. Mar 2011] Ayam-1.19:
