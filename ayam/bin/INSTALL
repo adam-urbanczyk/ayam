@@ -25,7 +25,7 @@ It will create some sub-directories there, namely:
 
 You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
 Use ayam.sh to start the application or be sure to add "." or
-"/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+"/usr/local/ayam/bin/plugins" to your LD_LIBRARY_PATH
 environment variable. Otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
@@ -45,6 +45,8 @@ or
 first.
 
 Ayam also integrates with Unix desktop environments.
+The next steps need the xdg-utils from the Portland project to be installed.
+
 To install a system wide applications menu entry, enter:
 >make sysmenu
 

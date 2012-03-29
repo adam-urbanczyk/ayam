@@ -680,7 +680,7 @@ install:
 	$(INSTALL) ayam $(BINDIR)
 	cp -R tcl $(BINDIR)
 	chmod -R 0755 $(BINDIR)/tcl
-	cp ../lib/ayam-splash.gif $(BINDIR)/tcl
+	$(INSTALL) ../lib/ayam-splash.gif $(BINDIR)/tcl
 	$(INSTALL) ../bin/ayam.sh $(BINDIR)
 	$(INSTALL) ../bin/ayam-desktop.desktop $(BINDIR)
 	$(INSTALL) ../bin/ayam-filetype.xml $(BINDIR)

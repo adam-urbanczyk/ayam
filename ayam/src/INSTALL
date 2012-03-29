@@ -1,4 +1,4 @@
-INSTALL [26. Oct 2010]
+INSTALL [29. Mar 2012]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -136,22 +136,22 @@ Now ayamsh should be compiled and ready for a test run.
 1.3 Step 3 - Installation
 -------------------------
 
-If all went fine, you can now install Ayam:
+If all went fine, you can now install Ayam, switch to root and enter:
 >make install
 
 By default, Ayam will install into /usr/local/ayam.
 It will create some sub-directories there, namely:
-/usr/local/ayam/bin for the executable,
-/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
-/usr/local/ayam/doc for the documentation.
+/usr/local/ayam/bin for the executable, plugins, and scripts,
+/usr/local/ayam/doc for the documentation, and
+/usr/local/ayam/scn for the example scenes.
 
 You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
-Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+Be sure to also add "." or "/usr/local/ayam/plugins" to your LD_LIBRARY_PATH
 environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/lib/Makefile uninstall
+>make -f /usr/local/ayam/bin/Makefile uninstall
 
 The installation procedure also creates a shell script named "ayam",
 that calls "ayamsh" the right way, so that after installation you can
@@ -161,9 +161,25 @@ start Ayam by typing:
 To check what installing/uninstalling will do to your system use
 >make -n install
 or
->make -n -f /usr/local/ayam/lib/Makefile uninstall
+>make -n -f /usr/local/ayam/bin/Makefile uninstall
 first.
 
+Ayam also integrates with Unix desktop environments.
+The next steps need the xdg-utils from the Portland project to be installed.
+
+To install a system wide applications menu entry, enter:
+>make sysmenu
+
+The next commands should not be run as root!
+
+To add a desktop launcher to the current users desktop, enter:
+>make desktop
+
+If Ayam was installed to a user specific directory (e.g. on systems
+without root access), the following two targets add a user application
+menu entry and file type:
+>make menu
+>make filetype
 
 2. Compiling a Wrapped Standalone Version of Ayam
 -------------------------------------------------
@@ -279,28 +295,46 @@ Now Ayam should be compiled and ready for a test run.
 2.3 Step 3 - Installation
 -------------------------
 
-If all went fine, you can now install Ayam:
+If all went fine, you can now install Ayam, switch to root and enter:
 >make install
 
 By default, Ayam will install into /usr/local/ayam.
 It will create some sub-directories there, namely:
-/usr/local/ayam/bin for the executable,
-/usr/local/ayam/lib for the plugins and accompanying Tcl files, and
-/usr/local/ayam/doc for the documentation.
+/usr/local/ayam/bin for the executable, plugins, and scripts,
+/usr/local/ayam/doc for the documentation, and
+/usr/local/ayam/scn for the example scenes.
 
 You may want to add "/usr/local/ayam/bin" to your PATH environment variable.
-Be sure to also add "." or "/usr/local/ayam/lib" to your LD_LIBRARY_PATH
+Use ayam.sh to start the application or be sure to also add "." or
+"/usr/local/ayam/bin/plugins" to your LD_LIBRARY_PATH
 environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/lib/Makefile uninstall
+>make -f /usr/local/ayam/bin/Makefile uninstall
 
 To check what installing/uninstalling will do to your system use
 >make -n install
 or
->make -n -f /usr/local/ayam/lib/Makefile uninstall
+>make -n -f /usr/local/ayam/bin/Makefile uninstall
 first.
+
+Ayam also integrates with Unix desktop environments.
+The next steps need the xdg-utils from the Portland project to be installed.
+
+To install a system wide applications menu entry, enter:
+>make sysmenu
+
+The next commands should not be run as root!
+
+To add a desktop launcher to the current users desktop, enter:
+>make desktop
+
+If Ayam was installed to a user specific directory (e.g. on systems
+without root access), the following two targets add a user application
+menu entry and file type:
+>make menu
+>make filetype
 
 
 3. Additional Targets (Compiling Plugins)
