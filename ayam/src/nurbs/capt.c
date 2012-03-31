@@ -135,7 +135,7 @@ ay_capt_createfromcurve(ay_object *c, ay_object **cap)
 	  ay_nct_applytrafo(c);
 	} /* if */
 
-      ay_nct_getorientation(nc, &angle);
+      ay_nct_getorientation(nc, 4, &angle);
 
       if(first)
 	{

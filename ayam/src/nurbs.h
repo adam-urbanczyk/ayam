@@ -603,7 +603,8 @@ int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Calculate orientation of NURBS curve.
  */
-int ay_nct_getorientation(ay_nurbcurve_object *curve, double *oangle);
+int ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
+			  double *oangle);
 
 /** Check NURBS curve closeness.
  */

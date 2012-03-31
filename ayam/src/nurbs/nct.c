@@ -3420,133 +3420,46 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_nct_getorientation:
  *  return a negative value if curve is ccw (or cw? :)
- *  this is my third attempt on (and a complete rewrite of) this routine
- *  this time with support from the c.g.algorithms FAQ and sample
- *  code from Joseph O'Rourke from:
- *  ftp://cs.smith.edu/pub/code/polyorient.C
+ *  this is my fourth attempt on (and a complete rewrite of) this routine
+ *  this time with support from Paul Bourke
  */
 int
-ay_nct_getorientation(ay_nurbcurve_object *curve, double *orient)
+ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
 {
- double minx, miny;
- int i, j, n, m, stride, found, wrap;
- double *cv = NULL, a[2], b[2], c[2];
+ int i, j, k;
+ double *cv = NULL, A = 0.0;
  char fname[] = "nct_getorientation";
 
   if(!curve || !orient)
     return AY_ENULL;
 
   cv = curve->controlv;
-  n = curve->length;
-  if(n <= 2)
+  if(curve->length <= 2)
     {
       ay_error(AY_EWARN, fname, "Need more than 2 control points.");
       return AY_ERROR;
     }
 
-  minx = cv[0];
-  miny = cv[1];
-
-  stride = 4;
-  j = stride;
-  m = 0;
+  j = 0;
+  k = stride;
   for(i = 0; i < curve->length-1; i++)
     {
-      if((cv[j+1] < miny) || ((cv[j+1] == miny) && (cv[j] < minx)))
+      if((fabs(cv[j]-cv[k]) > AY_EPSILON) ||
+	 (fabs(cv[j+1]-cv[k+2]) > AY_EPSILON))
 	{
-	  minx = cv[j];
-	  miny = cv[j+1];
-	  m = i+1;
-	} /* if */
-
+	  A += cv[j]*cv[k+1]-cv[k]*cv[j+1];
+	}
       j += stride;
+      k += stride;
     } /* for */
 
-  if(m >= curve->length)
-    m = 0;
-
-  found = AY_FALSE;
-  wrap = 0;
-  j = m;
-  while(!found && (wrap<2))
+  if(fabs(A) < AY_EPSILON)
     {
-      if((fabs(cv[m*stride] - cv[j*stride]) > AY_EPSILON) &&
-	 (fabs(cv[m*stride+1] - cv[j*stride+1]) > AY_EPSILON))
-	{
-	  found = AY_TRUE;
-	}
-      else
-	{
-	  if(j<(n-1))
-	    {
-	      j++;
-	    }
-	  else
-	    {
-	      j = 0;
-	      wrap++;
-	    }
-	}
-    } /* while */
-
-  if(found)
-    {
-      c[0] = cv[j*stride];
-      c[1] = cv[j*stride+1];
-    }
-  else
-    {
-      ay_error(AY_ERROR, fname, "Could not determine 3 different points.");
+      ay_error(AY_ERROR, fname, "Could not determine orientation.");
       return AY_ERROR;
     }
 
-  found = AY_FALSE;
-  wrap = 0;
-  j = m;
-  while(!found && (wrap<2))
-    {
-      if((fabs(cv[m*stride] - cv[j*stride]) > AY_EPSILON) &&
-	 (fabs(cv[m*stride+1] - cv[j*stride+1]) > AY_EPSILON))
-	{
-	  found = AY_TRUE;
-	}
-      else
-	{
-	  if(j > 0)
-	    {
-	      j--;
-	    }
-	  else
-	    {
-	      j = n-1;
-	      wrap++;
-	    }
-	}
-    } /* while */
-
-  if(found)
-    {
-      a[0] = cv[j*stride];
-      a[1] = cv[j*stride+1];
-    }
-  else
-    {
-      ay_error(AY_ERROR, fname, "Could not determine 3 different points.");
-      return AY_ERROR;
-    }
-
-  b[0] = cv[m*stride];
-  b[1] = cv[m*stride+1];
-
-
-  *orient = a[0] * b[1] - a[1] * b[0] +
-            a[1] * c[0] - a[0] * c[1] +
-            b[0] * c[1] - c[0] * b[1];
-
-  /*
-  printf("%g %g|%g %g|%g %g => %g\n",
-	 a[0], a[1], b[0], b[1], c[0], c[1], *orient);
-  */
+  *orient = A;
 
  return AY_OK;
 } /* ay_nct_getorientation */
