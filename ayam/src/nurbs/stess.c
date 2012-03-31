@@ -921,7 +921,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
  double *tmp = NULL;
  int i, j, numtrims = 0, *tls, *tds, loop_empty, ti, stride;
  ay_object *d = NULL, *dd = NULL, *loop = NULL;
- ay_nurbcurve_object *c = NULL;
+ ay_nurbcurve_object *c = NULL, l = {0};
  double mm[16];
 
   /* count trimloops */
@@ -996,7 +996,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 		    {
 		      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 		      AY_APTRAN3(p2, p1, mm)
-		      memcpy(&(dtmp[j*stride]), p2, 3*sizeof(double));
+		      memcpy(&(dtmp[j*stride]), p2, 2*sizeof(double));
 		      if(c->is_rat)
 			dtmp[j*stride+2] = c->controlv[j*4+3];
 		    }
@@ -1036,9 +1036,10 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	  if(!loop_empty)
 	    {
 	      /* get orientation of trimloop */
-	      /* XXXX fake here a new c based on tls tts...*/
+	      l.length = tls[i];
+	      l.controlv = tts[i];
 	      angle = 0.0;
-	      ay_nct_getorientation(c, &angle);
+	      ay_nct_getorientation(&l, 2, &angle);
 	      if(angle < 0.0)
 		tds[i] = 1;
 
@@ -1073,7 +1074,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	    {
 	      memcpy(p1, &(c->controlv[j*4]), 4*sizeof(double));
 	      AY_APTRAN3(p2, p1, mm)
-	      memcpy(&(dtmp[j*stride]), p2, stride*sizeof(double));
+	      memcpy(&(dtmp[j*stride]), p2, 2*sizeof(double));
 	      if(c->is_rat)
 		dtmp[j*stride+2] = c->controlv[j*4+3];
 	    }
@@ -1086,7 +1087,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
 	  /* get orientation of trimloop */
 	  angle = 0.0;
-	  ay_nct_getorientation(c, &angle);
+	  ay_nct_getorientation(c, 4, &angle);
 	  if(angle < 0.0)
 	    tds[i] = 1;
 
@@ -2441,16 +2442,16 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
   st = p->stess;
 
   ay_status = ay_stess_TessTrimCurves(o, qf,
-				      &st->tcslen, &st->tcs,
-				      &st->tcslens, &st->tcsdirs);
+				      &(st->tcslen), &(st->tcs),
+				      &(st->tcslens), &(st->tcsdirs));
 
   if(ay_status)
     goto cleanup;
 
   ay_status = ay_stess_TessTrimmedNPU(o, qf, st->tcslen, st->tcs,
 				      st->tcslens, st->tcsdirs,
-				      &first_loop_cw, &st->ud, &st->vd,
-				      &st->upslen, &st->ups);
+				      &first_loop_cw, &(st->ud), &(st->vd),
+				      &(st->upslen), &(st->ups));
 
   if(ay_status)
     goto cleanup;
@@ -2459,7 +2460,8 @@ ay_stess_TessTrimmedNP(ay_object *o, int qf)
 
   ay_status = ay_stess_TessTrimmedNPV(o, qf, st->tcslen, st->tcs,
 				      st->tcslens, st->tcsdirs,
-				      first_loop_cw, &st->vpslen, &st->vps);
+				      first_loop_cw,
+				      &(st->vpslen), &(st->vps));
 
   if(ay_status)
     goto cleanup;
