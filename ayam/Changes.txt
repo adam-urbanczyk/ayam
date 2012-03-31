@@ -1,3 +1,8 @@
+[31. Mar 2012] CVS-Head:
+========================
+Bug Fixes:
+o "Reset Transformation" does not clear the Quaternion display
+
 [20. Mar 2012] Ayam-1.20:
 =========================
 Bug Fixes:
@@ -42,7 +47,7 @@ o moving the mouse pointer across the origin when scaling no longer
   leads to broken (i.e. very small) scale attributes
 o added setting the mark to selected points bounding box center
   (shortcut <ab>)
-o closed cubic interpolating curves now also use the EDLen parameter properly
+o closed cubic interpolating curves now also use the "EDLen" parameter properly
 o improved initial derivatives when switching from automatic to manual
   derivatives for ICurves
 o improved snapping points from half grid coordinates to the grid by
@@ -68,8 +73,8 @@ o added "FillGaps" and "FTLength" parameters to ConcatNP that
 o added custom knots to ConcatNP so that the shapes of parameter surfaces
   can now be preserved exactly (similar to ConcatNC)
 o improved drawing of torii with phimin/phimax not on defaults
-o toXYNC can now work with ACurve and ICurve objects and is thus
-  renamed to toXYC (old command name still available but deprecated)
+o "toXYNC" can now work with ACurve and ICurve objects and is thus
+  renamed to "toXYC" (old command name still available but deprecated)
 o improved fillet creation of ConcatNC for parameter curve orders
   different from 4
 o converted Sphere patches now have the same direction as other quadrics
@@ -85,10 +90,14 @@ o improved handling of custom knots for the insert/delete point actions
 GUI:
 o the property GUIs of Birail1, Birail2, Extrude, Gordon, Skin, Sweep,
   and Text objects are now properly saved (the data is not applied) for
-  AddBevel/RemoveBevel
+  "AddBevel"/"RemoveBevel"
 o renamed direct point edit action to numeric point edit
 o empty fields are now allowed in the numeric point edit dialog to allow
   "no change" for the respective coordinate
+o the "Transformations" property now displays the Quaternion in a single
+  non-editable info element
+o "Tools/Surface" and "Tools/Curve" menus have been cleaned up by
+  introduction of more sub-menus
 o the numeric point edit dialog now supports scripts and variable accesses
   in the entry fields
 o the ViewAttrib property GUI no longer unconditionally sets the mark,
@@ -96,12 +105,11 @@ o the ViewAttrib property GUI no longer unconditionally sets the mark,
 o zooming views via the keyboard is now reversible
 o the amounts of rotation and zooming per keyboard are now configurable
   via the ayamrc file
-o ICurve property GUI now only displays SDLen/EDLen entries when actually
-  used and the Derivatives entry is now, as for the IPatch, a menu
-o improved tooltip placement and management
+o ICurve property GUI now only displays "SDLen"/"EDLen" entries when actually
+  used and the "Derivatives" entry is now, as for the IPatch object, a menu
 o reset layout is more robust now
-o dialog window and balloon placement is now more robust wrt. multi
-  monitor setups
+o improved tooltip and dialog window placement and management especially
+  on multi monitor setups
 o removed "RGTrans" GUI preference option, all rendering GUI windows
   are now always transient
 
@@ -119,11 +127,11 @@ o added "-i" option to all knot removal commands to specify a knot by
 o renamed "shiftClosedBS" to "shiftC" command, "shiftC" can now also
   shift/cycle normal closed NURBS curves, ICurve, and ACurve objects
 o improved range error reporting (now printing the valid range)
-o getPnt/setPnt now support writing to/reading from lists of double
+o "getPnt"/"setPnt" now support writing to/reading from lists of double
   values (without double-string conversion i.e. without loss of precision)
-o getPnt/setPnt now allow to get/set all control points of an object
-o getPnt no longer unconditionally writes to global variables
-o getPnt no longer requests a variable for w to be provided in "-eval" mode
+o "getPnt"/"setPnt" now allow to get/set all control points of an object
+o "getPnt" no longer unconditionally writes to global variables
+o "getPnt" no longer requests a variable for w to be provided in "-eval" mode
 o scripts and plugins can now create their own view window keyboard shortcuts
 o renamed "forceNot" command to more recognizable "notifyOb"; for
   compatibility with existing scripts, the old name still works
