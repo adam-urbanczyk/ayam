@@ -43,6 +43,9 @@ set transfPropData(Quat0) 0.0
 set transfPropData(Quat1) 0.0
 set transfPropData(Quat2) 0.0
 set transfPropData(Quat3) 1.0
+
+set transfPropData(Quaternion) "\[0, 0, 0, 1\]"
+
 setTrafo
 rV
 }
