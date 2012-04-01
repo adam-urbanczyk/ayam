@@ -3445,7 +3445,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
   for(i = 0; i < curve->length-1; i++)
     {
       if((fabs(cv[j]-cv[k]) > AY_EPSILON) ||
-	 (fabs(cv[j+1]-cv[k+2]) > AY_EPSILON))
+	 (fabs(cv[j+1]-cv[k+1]) > AY_EPSILON))
 	{
 	  A += cv[j]*cv[k+1]-cv[k]*cv[j+1];
 	}
