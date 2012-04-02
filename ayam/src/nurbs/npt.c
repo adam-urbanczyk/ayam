@@ -2522,7 +2522,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	      fillet->next = o->next;
 	      o->next = fillet;
 	      /* adjust o for next iteration */
-	      o = fillet->next->next;
+	      o = fillet->next;
 	    }
 	  if(fuv)
 	    {
