@@ -2572,7 +2572,14 @@ ay_npatch_notifycb(ay_object *o)
     }
 
   if(display_mode < 3)
-    return AY_OK;
+    {
+      if(npatch->no)
+	gluDeleteNurbsRenderer(npatch->no);
+
+      npatch->no = gluNewNurbsRenderer();
+
+      return AY_OK;
+    }
 
   if(npatch->glu_sampling_tolerance != 0.0)
     {
