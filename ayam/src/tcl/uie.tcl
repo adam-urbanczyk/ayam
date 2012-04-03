@@ -153,7 +153,9 @@ proc addParam { w prop name {def {}} } {
 	-takefocus 0 -highlightthickness 0
     set mb ""
     if { $def != {} } {
-	set mb [menubutton $f.b3 -pady 2 -bd $bw -text "Def" -takefocus 0\
+	set mbs [expr [winfo reqheight $f.b2] - 2]
+	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
+		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
@@ -305,7 +307,8 @@ proc updateColor { w prop name button } {
     set gname ${prop}(${name}_G)
     set bname ${prop}(${name}_B)
 
-    set newcolor [tk_chooseColor -initialcolor [$button cget -background]]
+    set newcolor [tk_chooseColor -parent [winfo toplevel $w]\
+		      -initialcolor [$button cget -background]]
     if { $newcolor != "" } {
 	$button configure -background $newcolor
 
@@ -458,8 +461,10 @@ proc addColor { w prop name {def {}}} {
 
     set mb ""
     if { $def != {} } {
-	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
-		-highlightthickness 0 -relief raised -menu $f.b3.m]
+	set mbs [expr [winfo reqheight $f.b1] - 2]
+	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
+		    -image ay_Triangle_img -takefocus 0\
+		    -highlightthickness 0 -relief raised -menu $f.b3.m]
 	if { $tcl_platform(platform) == "windows" } {
 	    $mb configure -pady 0
 	}
@@ -755,7 +760,9 @@ proc addString { w prop name  {def {}}} {
 
     set mb ""
     if { $def != {} } {
-	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
+	set mbs [expr [winfo reqheight $f.e] - 2]
+	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
+		    -image ay_Triangle_img -takefocus 0\
 		-highlightthickness 0 -relief raised -menu $f.b3.m]
 	if { $tcl_platform(platform) == "windows" } {
 	    $mb configure -pady 0
@@ -826,7 +833,8 @@ proc addFileT { w prop name ftypes {def {}} } {
 	    global $prop;
             winAutoFocusOff;
 	    set filen \[$f.e get\];
-	    set filen \[tk_getOpenFile -filetypes {$ftypes} -parent .\
+	    set filen \[tk_getOpenFile -filetypes {$ftypes}\
+                        -parent [winfo toplevel $w]\
 	                -title \"Set File:\"];
             winAutoFocusOn;
 	    if { \$filen != \"\" } {
@@ -851,7 +859,8 @@ proc addSFileT { w prop name ftypes {def {}} } {
 	    global $prop;
             winAutoFocusOff;
 	    set filen \[$f.e get\];
-            set filen \[tk_getSaveFile -filetypes {$ftypes} -parent .\
+            set filen \[tk_getSaveFile -filetypes {$ftypes}\
+                        -parent [winfo toplevel $w]\
 		        -title \"Set File:\"];
             winAutoFocusOn;
 	    if { \$filen != \"\" } {
@@ -914,7 +923,8 @@ proc addFile { w prop name {def {}} } {
 	global $prop;
         winAutoFocusOff;
 	set filen \[$f.e get\];
-	set filen \[tk_getOpenFile -parent . -title \"Set File:\"];
+	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
+                     -title \"Set File:\"];
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	    $f.e delete 0 end;
@@ -929,8 +939,10 @@ proc addFile { w prop name {def {}} } {
 
     set mb ""
     if { $def != {} } {
-	set mb [menubutton $f.b3 -pady 1 -bd $bw -text "Def" -takefocus 0\
-		-highlightthickness 0 -relief raised -menu $f.b3.m]
+	set mbs [expr [winfo reqheight $f.b] - 2]
+	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
+		    -image ay_Triangle_img -takefocus 0\
+		    -highlightthickness 0 -relief raised -menu $f.b3.m]
 	if { $tcl_platform(platform) == "windows" } {
 	    $mb configure -pady 0
 	}
@@ -1019,7 +1031,8 @@ proc addMDir { w prop name } {
 	set filen \[$f.e get\];
 	global ay;
 	set sep \$ay(separator);
-	set filen \[tk_getOpenFile -title \"Select File:\"\];
+	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
+                     -title \"Select File:\"\];
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
@@ -1099,7 +1112,8 @@ proc addMFile { w prop name } {
 	set filen \[$f.e get\];
 	global ay;
 	set sep \$ay(separator);
-	set filen \[tk_getOpenFile -title \"Select File:\"\];
+	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
+                     -title \"Select File:\"\];
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	 if { \$${prop}($name) != \"\" } {
