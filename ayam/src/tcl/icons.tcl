@@ -760,4 +760,8 @@ B21BBA+I0CTTZkgAQXfHOlSYeA6LxSgQVK2aZEHCEwoSJFjkSNKIsJIAhADg
 kFIlS5UkW65saWElzJgua+rkoBNlEk2bKVPyLDkk6NCWPGkSXWohCAA7}
 image create photo ay_FindUV_img -format GIF -data $imgdata
 
+# Triangle
+set imgdata {\
+R0lGODlhCwALAIABAAAAAP///yH5BAEKAAEALAAAAAALAAsAAAIPjI+pq+D/DoxoLnqZ3rwAADs=}
+image create photo ay_Triangle_img -format GIF -data $imgdata
 catch {unset imgdata}

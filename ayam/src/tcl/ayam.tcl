@@ -1440,6 +1440,7 @@ pane .fu.fMain.fHier .fu.fMain.fProp -margins [list \
 ayam_loadscript run
 ayam_loadscript uie
 ayam_loadscript shortcut
+ayam_loadscript icons
 ayam_loadscript prop
 ayam_loadscript acurve
 ayam_loadscript bevel
@@ -1493,7 +1494,6 @@ ayam_loadscript pclip
 ayam_loadscript control
 ayam_loadscript tmp
 ayam_loadscript render
-ayam_loadscript icons
 ayam_loadscript action
 ayam_loadscript vmenu
 ayam_loadscript view
