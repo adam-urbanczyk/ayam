@@ -21,6 +21,8 @@ w     fCloneAttr
 
 array set CloneAttrData {
     NumClones 1
+    Quaternion "\[0, 0, 0, 1\]"
+    QuaternionBall "n/a"
 }
 
 set w [frame $ay(pca).$CloneAttr(w)]
@@ -36,14 +38,9 @@ addText $w e2 "Rotation:"
 addParam $w CloneAttrData Rotate_X
 addParam $w CloneAttrData Rotate_Y
 addParam $w CloneAttrData Rotate_Z
+addInfo $w CloneAttrData Quaternion
 
 addText $w e3 "Scale:"
 addParam $w CloneAttrData Scale_X
 addParam $w CloneAttrData Scale_Y
 addParam $w CloneAttrData Scale_Z
-
-addText $w e4 "Quaternion:"
-addParam $w CloneAttrData Quat0
-addParam $w CloneAttrData Quat1
-addParam $w CloneAttrData Quat2
-addParam $w CloneAttrData Quat3

@@ -66,6 +66,8 @@ ay_clone_createcb(int argc, char *argv[], ay_object *o)
       new->scalz = 1.0;
 
       new->quat[3] = 1.0;
+
+      new->numclones = 1;
     }
 
   o->parent = AY_TRUE;
@@ -413,6 +415,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_GetDoubleFromObj(interp, to, &dtemp);
       if(dtemp != 0.0)
 	clone->scalz = dtemp;
+
     } /* if */
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -433,7 +436,7 @@ ay_clone_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- char *n1 = "CloneAttrData";
+ char *n1 = "CloneAttrData", *quatstr = NULL;
  char *n2 = "MirrorAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_clone_object *clone = NULL;
@@ -458,6 +461,8 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       toa = Tcl_NewStringObj(n1,-1);
       ton = Tcl_NewStringObj(n1,-1);
 
+      if(!(quatstr = calloc(TCL_DOUBLE_SPACE*4+10, sizeof(char))))
+	return TCL_OK;
 
       Tcl_SetStringObj(ton,"NumClones",-1);
       to = Tcl_NewIntObj(clone->numclones);
@@ -499,6 +504,17 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
 
+      Tcl_SetStringObj(ton, "Quaternion", -1);
+      sprintf(quatstr, "[%.2lg, %.2lg, %.2lg, %.2lg]",
+	      clone->quat[0], clone->quat[1], clone->quat[2], clone->quat[3]);
+      to = Tcl_NewStringObj(quatstr, -1);
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
+      sprintf(quatstr, "[%lg, %lg, %lg, %lg]",
+	      clone->quat[0], clone->quat[1], clone->quat[2], clone->quat[3]);
+      to = Tcl_NewStringObj(quatstr, -1);
+      Tcl_SetStringObj(ton, "QuaternionBall", -1);
+
       Tcl_SetStringObj(ton, "Rotate_X", -1);
       to = Tcl_NewDoubleObj(clone->rotx);
       Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
@@ -524,6 +540,8 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       to = Tcl_NewDoubleObj(clone->scalz);
       Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
 		     TCL_GLOBAL_ONLY);
+
+      free(quatstr);
     } /* if */
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
