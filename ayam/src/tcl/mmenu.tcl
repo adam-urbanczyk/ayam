@@ -683,12 +683,12 @@ $sm add command -label "Deselect All Points" -command "selPnts; rV" \
 $sm add command -label "Invert Selection" -command "invPnts; rV" \
     -underline 0
 $sm add command -label "Apply Trafo To All Points"\
-	-command "undo save ApplyTr; applyTrafo all;\
+	-command "undo save ApplyTr; applyTrafo;\
 	plb_update; notifyOb; rV" \
     -underline 0
 
 $sm add command -label "Apply Trafo To Selected Points"\
-	-command "undo save ApplyTr; applyTrafo sel;\
+	-command "undo save ApplyTr; applyTrafo -sel;\
 	plb_update; notifyOb; rV" \
     -underline 1
 
