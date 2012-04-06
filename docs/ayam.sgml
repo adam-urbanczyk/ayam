@@ -27,7 +27,7 @@ per input line;
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>31. Aug 2011
+<date>20. Mar 2012
 
 <abstract>
 This is the documentation of Ayam 1.20 &ndash; a free 3D modelling environment
@@ -9059,15 +9059,18 @@ GUI of Ayam should be avoided. In particular, the following
 procedures and commands should <em>not</em> be used: uS, uCR, uCL,
 selOb, plb_update, undo!
 <p>
-Since Ayam 1.8.2 script objects may also create their own property
-GUIs for e.g.~script parameters. This may be accomplished by adding
+Script objects may also create their own property
+GUIs for e.g.~script parameters.
+<footnote>Since 1.8.2.</footnote>
+This may be accomplished by adding
 tags of type <tt>"NP"</tt> with the name of the new property as
 value to the script object. The script itself is responsible for data
 management and property GUI creation.
 <p>
-Since Ayam 1.9 the parameters set via a new property GUI may be
+The parameters set via a such a property GUI may be
 comfortably saved with scene files by just adding the following
 comment as first line to the script:
+<footnote>Since 1.9.</footnote>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -9079,13 +9082,16 @@ from the <tt>"SP"</tt> list (see below) will be considered, which gives
 script object developers fine grained control over what actually goes
 to the Ayam scene file.
 <p>
-Since Ayam 1.12 there is also a tag type to remove properties
-(<tt>"RP"</tt>). Using this tag, one can e.g.~hide the actual script
+There is also a tag type to remove properties
+(<tt>"RP"</tt>).
+<footnote>Since 1.12.</footnote>
+Using this tag, one can e.g.~hide the actual script
 code and block users from unintentionally changing it.
 <p>
-Since Ayam 1.15 script objects can have individual sets of parameters,
+Script objects can have individual sets of parameters,
 so that multiple copies of a script object can be used (without individual
 parameters all copies would share the same parameter values).
+<footnote>Since 1.15.</footnote>
 For this, the new variable <tt>"SP"</tt> in the script data array
 contains a list of parameter names in that array that are individual
 (not shared by all copies of the script object).
@@ -9097,8 +9103,10 @@ When a script is running, the current level is the child level of the
 respective script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished.
 <p>
-Since Ayam 1.18 Script objects may also use arbitrary, plugin provided,
-scripting languages. To switch to a different language, the first line
+Script objects may also use arbitrary, plugin provided,
+scripting languages.
+<footnote>Since 1.18.</footnote>
+To switch to a different language, the first line
 of the script must be a comment (in the syntax of the other language)
 with the word <tt>"use:"</tt> followed by the language name, as
 provided by the corresponding plugin, e.g.~for JavaScript the first line
@@ -9319,6 +9327,7 @@ The complete script is also available as example script file
 In addition, a second example demonstrates the scene traversal and
 hierarchy building capabilities available to script objects since
 Ayam 1.16.
+
 Create a script object, and add two children to it, a box and a
 NURBS curve (order 2, knot type: chordal works best). Then add the following
 script to the script object:
@@ -10930,7 +10939,12 @@ refined, resulting in a periodic curve of length 15 (not 17).
 <caption>Refining a Periodic Curve</caption>
 </figure>
 If there are selected points, only the intervals between the first
-and the last selected point are refined.
+and the last selected point are refined, see also the image below.
+<figure loc="ht">
+<eps file="pics/refinesel.ps" height="4cm">
+<img src="pics/refinesel.gif">
+<caption>Refining a Selected Region</caption>
+</figure>
 <item>
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
@@ -11119,7 +11133,7 @@ the world coordinate system in the middle).
 <item>Note: A reverse operation, apart from undo, would be to apply the
 current transformation attributes to the control points of the curves.
 See also the documentation of the corresponding
-scripting interface command <ref id="sctoxync" name="toXYNC">.
+scripting interface command <ref id="sctoxyc" name="toXYC">.
 </itemize>
 
 <sect1>Make Compatible Tool<label id="makecompt">
@@ -12944,14 +12958,16 @@ default values.
 <label id="scapplytrafo">
 applyTrafo &ndash; apply transformations:
 <itemize>
- <item>Synopsis: <tt/"applyTrafo sel | all"/
+ <item>Synopsis: <tt/"applyTrafo [-sel]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: applies the transformations encoded in the
-transformation attributes of the selected objects to the points
-(either all points, or just the selected ones if there are any)
-of those objects.
-Additionally, the transformations of the selected objects will
-be reset to the default values.
+transformation attributes of the selected objects to their points.
+Either all points (default) or just the selected ones (if the option
+<tt/"-sel"/ is given) are modified.
+It is no error, if an object has no points at all or if the points
+are readonly.
+Additionally, if any points of an object are modified, the transformations
+of this object will be reset to the default values.
 </itemize>
 
 <sect2>Manipulating Shaders<label id="scishaders">
@@ -12970,6 +12986,10 @@ object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
 or <tt/"interior"/. If varname is not given, the shader in question
 is deleted from the object instead.
+Otherwise, varname points to an associative array that contains
+the data (arguments) of the shader. Example content may be created
+with the <tt/"shaderGet"/ command below. The data is <em>not</em> checked
+against the internal shader database for correctness or completeness.
 </itemize>
 
 <p>
@@ -12983,8 +13003,8 @@ shaderGet:
  <item>Description: Get the shader of type shadertype for the selected
 object. Type may be one of <tt/"surface"/, <tt/"displacement"/,
 <tt/"light"/, <tt/"imager"/, <tt/"atmosphere"/, <tt/"exterior"/
-or <tt/"interior"/. The shader will be written to an array
-pointed to by varname.
+or <tt/"interior"/. The shader data will be written to an associative
+array pointed to by varname.
 </itemize>
 
 <sect2>Manipulating Tags<label id="scitags">
@@ -13292,10 +13312,10 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sctoxync">
-toXYNC &ndash; move NURBS curve to XY plane
+<label id="sctoxyc"><label id="sctoxync">
+toXYC &ndash; move NURBS curve to XY plane
 <itemize>
- <item>Synopsis: <tt/"toXYNC"/
+ <item>Synopsis: <tt/"toXYC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: moves the control points of the selected NURBS curve
 objects to its XY plane.
