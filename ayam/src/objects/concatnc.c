@@ -336,6 +336,12 @@ ay_concatnc_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr, "%lg\n", &concatnc->ftlength);
     }
 
+  if(ay_read_version < 15)
+    {
+      if(concatnc->knot_type == 1)
+	concatnc->fillgaps = AY_TRUE;
+    }
+
   o->refine = concatnc;
 
  return AY_OK;
