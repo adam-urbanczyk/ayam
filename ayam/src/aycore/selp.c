@@ -103,6 +103,7 @@ ay_selp_selall(ay_object *o)
 	  newp->index = pe.indices[i];
 	}
       newp->rational = pe.rational;
+      newp->readonly = pe.readonly;
     } /* for */
 
   ay_pact_clearpointedit(&pe);
@@ -127,21 +128,23 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_point *bak = NULL, *p = NULL;
- int all = AY_FALSE;
+ int all = AY_TRUE;
  double m[16];
 
- if(argc < 2)
-   {
-     ay_error(AY_EARGS, argv[0], "sel|all");
-     return TCL_OK;
-   }
+  if(argc > 2)
+    {
+      ay_error(AY_EARGS, argv[0], "[-sel]");
+      return TCL_OK;
+    }
 
- if(!strcmp(argv[1], "all"))
-   all = AY_TRUE;
+  if((argc > 1) && !strcmp(argv[1], "-sel"))
+    all = AY_FALSE;
 
   while(sel)
     {
       o = sel->object;
+      /* so that we may use continue */
+      sel = sel->next;
 
       if(all)
 	{
@@ -150,42 +153,30 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = ay_selp_selall(o);
 	  if(ay_status)
 	    {
+	      /* object has no points? */
 	      ay_selp_clear(o);
 	      o->selp = bak;
-	      return TCL_OK;
+	      continue;
 	    }
 	}
 
-      /* create trafo */
-      ay_trafo_creatematrix(o, m);
-
-      /* transform points */
-      p = o->selp;
-      while(p)
+      if(o->selp && !o->selp->readonly)
 	{
-	  ay_trafo_apply3(p->point, m);
+	  /* create trafo */
+	  ay_trafo_creatematrix(o, m);
 
-	  p = p->next;
+	  /* transform points */
+	  p = o->selp;
+	  while(p)
+	    {
+	      ay_trafo_apply3(p->point, m);
+
+	      p = p->next;
+	    }
+
+	  /* clear trafo */
+	  ay_trafo_defaults(o);
 	}
-
-      /* clear trafo */
-      o->movx = 0.0;
-      o->movy = 0.0;
-      o->movz = 0.0;
-
-      o->rotx = 0.0;
-      o->roty = 0.0;
-      o->rotz = 0.0;
-
-      o->scalx = 1.0;
-      o->scaly = 1.0;
-      o->scalz = 1.0;
-
-
-      o->quat[0] = 0.0;
-      o->quat[1] = 0.0;
-      o->quat[2] = 0.0;
-      o->quat[3] = 1.0;
 
       /* restore old selected points */
       if(all)
@@ -194,7 +185,6 @@ ay_selp_applytrafotcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->selp = bak;
 	}
 
-      sel = sel->next;
     } /* while */
 
  return TCL_OK;
@@ -880,6 +870,7 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
       for(i = 0; i < arrlen; i++)
 	{
 	  pe->coords[i] = &(arr[a]);
+
 	  pe->indices[i] = i;
 	  a += stride;
 	}
