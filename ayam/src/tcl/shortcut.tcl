@@ -1209,6 +1209,7 @@ proc shortcut_addcshelp { w base tag } {
 # shortcut_addviewbinding:
 #  add a keyboard shortcut to all views
 proc shortcut_addviewbinding { k b } {
+    global ay
 
     # arrange to bind to future views
     set add "bind \$w "
