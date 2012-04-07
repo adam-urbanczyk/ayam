@@ -2268,8 +2268,6 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
   ay_nb_CurvePoint4D(c->length-1, c->order-1, c->knotv,
 		     c->controlv, *u, point);
 
-
-
   ay_trafo_invmatrix4(m, mi);
 
   ay_trafo_apply4(point, mi);
@@ -6660,12 +6658,29 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL, *po = NULL;
  double len;
+ int apply_trafo = 0, i = 1;
  Tcl_Obj *to = NULL, *ton = NULL;
 
   /* parse args */
-  if(argc < 2)
+  if(argc > 1)
     {
-      ay_error(AY_EARGS, argv[0], "vname");
+      if(!strcmp(argv[1],"-trafo"))
+	{
+	  apply_trafo = 1;
+	  i++;
+	}
+      /*
+      if(!strcmp(argv[2],"-world"))
+	{
+	  apply_trafo = 2;
+	  i++;
+	}
+      */
+    }
+
+  if(argc < i)
+    {
+      ay_error(AY_EARGS, argv[0], "[-trafo] vname");
       return TCL_OK;
     }
 
@@ -6675,7 +6690,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  ton = Tcl_NewStringObj(argv[1], -1);
+  ton = Tcl_NewStringObj(argv[i], -1);
 
   /* get curve to work on */
   o = sel->object;
@@ -6697,6 +6712,18 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       curve = (ay_nurbcurve_object *)o->refine;
     }
 
+  if(apply_trafo)
+    {
+      if(!po)	
+	ay_status = ay_object_copy(o, &po);
+
+      if(ay_status || !po)
+	goto cleanup;
+
+      ay_nct_applytrafo(po);
+      curve = (ay_nurbcurve_object *)po->refine;
+    }
+
   /* get len */
   ay_status = ay_nct_estlen(curve, &len);
 
@@ -6704,7 +6731,6 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
     goto cleanup;
 
   /* put len into Tcl context */
-
   to = Tcl_NewDoubleObj(len);
   Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
 
