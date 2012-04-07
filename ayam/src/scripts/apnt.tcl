@@ -28,13 +28,19 @@ set apnt_hotkey "<F12>"
 # apnt_enable:
 #  enable the apnt functionality by replacing some action procs
 proc apnt_enable { } {
-    global ay
+    global ay ayviewshortcuts
 
     # rename original procs to safety
     rename actionTagP o_actionTagP
 
     # establish modified procs
     rename apnt_actionTagP actionTagP
+
+    # also bind to select all/none points shortcuts
+    shortcut_addviewbinding <[repctrl $ayviewshortcuts(SelAllP)]>\
+	"\{selPnts -all; rV; apnt_setmode; break\}"
+    shortcut_addviewbinding <[repctrl $ayviewshortcuts(DeSelect)]>\
+	"\{selPnts; rV; apnt_setmode 0; break\}"
 
     set ay(apnt_enabled) 1
 
@@ -48,13 +54,19 @@ proc apnt_enable { } {
 # apnt_disable:
 #  disable the apnt functionality by replacing some action procs
 proc apnt_disable { } {
-    global ay
+    global ay ayviewshortcuts
 
     # rename modified procs to safety
     rename actionTagP apnt_actionTagP
 
     # establish original procs
     rename o_actionTagP actionTagP
+
+    # also establish old bindings to select all/none points shortcuts
+    shortcut_addviewbinding <[repctrl $ayviewshortcuts(SelAllP)]>\
+	"selPnts -all; rV;break"
+    shortcut_addviewbinding <[repctrl $ayviewshortcuts(DeSelect)]>\
+	"selPnts; rV;break"
 
     set ay(apnt_enabled) 0
 
@@ -66,19 +78,19 @@ proc apnt_disable { } {
 
 
 # apnt_setmode:
-#  manage point modelling mode
-proc apnt_setmode { } {
+#  set point modelling mode
+proc apnt_setmode { {onoff 1} } {
 
     if { $::apnt_scope == 0 } {
 	set w [winfo parent [winfo parent $::ay(currentView)]]
 	
-	viewSetPMode $w 1
+	viewSetPMode $w $onoff
     } else {
 	set oldcw $::ay(currentView)
 
 	foreach view $::ay(views) {
 	    ${view}.f3D.togl mc
-	    viewSetPMode $view 1
+	    viewSetPMode $view $onoff
 	}
 
 	$oldcw mc
@@ -87,7 +99,6 @@ proc apnt_setmode { } {
  return;
 }
 # apnt_setmode
-
 
 #
 proc apnt_actionTagP { w } {
