@@ -20,6 +20,16 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+
+/* type definitions local to this module: */
+
+typedef struct luainterp_cscript_t
+{
+  size_t size;
+  void *data;
+} luainterp_cscript;
+
+
 /* prototypes of functions local to this module: */
 
 /** error reporting wrapper function */
@@ -34,7 +44,7 @@ int luainterp_wraptclcmd(lua_State *L);
 /** Lua function to wrap the Tcl eval command */
 int luainterp_wrapevalcmd(lua_State *L);
 
-/** variable trace procedure to transport a Tcl variable to JavaScript */
+/** variable trace procedure to transport a Tcl variable to Lua */
 char *luainterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
 			     char *name1, char *name2, int flags);
 
@@ -380,6 +390,9 @@ luainterp_wrapevalcmd(lua_State *L)
 } /* luainterp_wrapevalcmd */
 
 
+/* luainterp_convtableds:
+ *  helper function to convert a Lua table (array) to a Tcl dynamic string
+ */
 int
 luainterp_convtableds(lua_State *L, int i, char **result)
 {
@@ -407,10 +420,8 @@ luainterp_convtableds(lua_State *L, int i, char **result)
 	case LUA_TTABLE:
 	  Tcl_DStringAppend(&ds, "{", 1);
 	  ay_status = luainterp_convtableds(L, -1, &valstr);
-
 	  if(ay_status)
 	    goto cleanup;
-
 	  Tcl_DStringAppend(&ds, valstr, -1);
 	  Tcl_DStringAppend(&ds, "}", 1);
 	  Tcl_DStringAppend(&ds, " ", 1);
@@ -444,6 +455,9 @@ cleanup:
 } /* luainterp_convtableds */
 
 
+/* luainterp_convtableobj:
+ *  helper function to convert a Lua table (array) to a Tcl list object
+ */
 int
 luainterp_convtableobj(lua_State *L, int i, Tcl_Obj **result)
 {
@@ -481,7 +495,9 @@ luainterp_convtableobj(lua_State *L, int i, Tcl_Obj **result)
 	} /* switch */
 
       if(to)
-	Tcl_ListObjAppendElement(NULL, *result, to);
+	{
+	  Tcl_ListObjAppendElement(NULL, *result, to);
+	}
 
       /* get next array elem */
       lua_pop(L, 1);
@@ -499,8 +515,8 @@ cleanup:
 } /* luainterp_convtableobj */
 
 
-/* luainterp_wraptcmd:
- *  Lua function to wrap a simple Tcl command
+/* luainterp_wraptclcmd:
+ *  Lua function to wrap a Tcl command in a generic way
  */
 int
 luainterp_wraptclcmd(lua_State *L)
@@ -615,8 +631,8 @@ luainterp_vartraceproc(ClientData clientData, Tcl_Interp *interp,
   if(name2)
     {
       /* Tcl array => Lua table */
-      lua_getglobal(L, name2);
-      if(lua_isnil(L, -1))
+      lua_getglobal(L, name1);
+      if(lua_isnil(L, -1) || !lua_istable(L, -1))
 	{
 	  /* table does not exist (yet) => create it */
 	  lua_pop(L, 1);
@@ -644,7 +660,7 @@ cleanup:
 
 /* luainterp_tclvar:
  *  Lua function to establish an automatic connection
- *  between a Tcl var and a Lua variable
+ *  between a Tcl variable and a Lua variable
  */
 int
 luainterp_tclvar(lua_State *L)
@@ -852,12 +868,6 @@ cleanup:
 } /* luainterp_evaltcmd */
 
 
-typedef struct luainterp_cscript_t
-{
-  size_t size;
-  void *data;
-} luainterp_cscript;
-
 /*
 lua_Writer
 */
@@ -1002,7 +1012,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 
 
 /* Luainterp_Init:
- *  initialize JavaScript interpreter plugin
+ *  initialize Lua interpreter plugin
  *  note: this function _must_ be capitalized exactly this way
  *  regardless of the filename of the shared object (see: man n load)!
  */
@@ -1066,7 +1076,7 @@ Luainterp_Init(Tcl_Interp *interp)
       return TCL_OK;
     }
 
-  /* register all functions */
+  /* register all Lua functions */
   while(1)
     {
       if(luainterplib[i].name != NULL)
