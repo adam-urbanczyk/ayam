@@ -370,6 +370,11 @@ JSDIR = ../../../sdk/js/src
 JSINC = -I $(JSDIR) -I $(JSDIR)/Linux_All_DBG.OBJ -DXP_UNIX
 JSLIB = -L $(JSDIR)/Linux_All_DBG.OBJ -ljs
 
+# LuaInterp Plugin
+LUADIR = ../../../sdk/lua-5.2.0/src
+LUAINC = -I $(LUADIR)
+LUALIB = -L $(LUADIR) -llua
+
 
 AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $(AFFINEINC) $(AQSISINC) $(TIFFINC)
 
@@ -648,6 +653,10 @@ jsinterp.so:
 	$(CC) -c $(CFLAGS) plugins/jsinterp.c -o plugins/jsinterp.o $(AYINC) $(JSINC)
 	$(CC) $(SHLFLAGS) plugins/jsinterp.o -o plugins/jsinterp.so $(JSLIB)
 
+luainterp.so:
+	$(CC) -c $(CFLAGS) plugins/luainterp.c -o plugins/luainterp.o $(AYINC) $(LUAINC)
+	$(CC) $(SHLFLAGS) plugins/luainterp.o -o plugins/luainterp.so $(LUALIB)
+
 
 plugins/ayerror.o:
 	$(CC) -c $(CFLAGS) plugins/ayerror.c -o plugins/ayerror.o $(TCLINC)
@@ -742,6 +751,8 @@ install:
 	-$(INSTALL) plugins/loadsubdiv.tcl $(LIBDIR)
 	-$(INSTALL) plugins/jsinterp.so $(LIBDIR)
 	-$(INSTALL) plugins/loadjsinterp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/luainterp.so $(LIBDIR)
+	-$(INSTALL) plugins/loadluainterp.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)

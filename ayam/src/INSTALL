@@ -574,6 +574,7 @@ Load it via menu entry "File/Load Plugin".
 Use it via menu entry "File/Import/Web3D X3D" and "File/Export/Web3D X3D",
 respectively.
 
+
 3.11 SDNPatch (Subdivision NURBS) Plugin
 ----------------------------------------
 
@@ -590,6 +591,7 @@ then type:
 
 Load it via menu entry "File/Load Plugin".
 Use it via menu entry "Create/Custom/SDNPatch" and "Custom/SDNPatch".
+
 
 3.12 jsinterp (JavaScript Scripting) Plugin
 -------------------------------------------
@@ -609,7 +611,27 @@ Use it via the jsEval command or a Script object where the first line is
 a JavaScript comment:
 /* Ayam, use: JavaScript */
 
-3.13 Installing/Uninstalling Ayam
+
+3.13 luainterp (Lua Scripting) Plugin
+-------------------------------------------
+
+Additional prerequisites to compile the jsinterp plugin are:
+Lua V5.2.0 ( get it from http://www.lua.org/ )
+
+In order to compile the plugin, adapt the following variables
+in the Ayam Makefile:
+LUADIR, LUAINC, LUALIB
+
+then type:
+>make luainterp.so
+
+Load it via menu entry "File/Load Plugin".
+Use it via the luaEval command or a Script object where the first line is
+a Lua comment:
+-- Ayam, use: Lua
+
+
+3.14 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
