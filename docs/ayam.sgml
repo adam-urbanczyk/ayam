@@ -706,10 +706,10 @@ mouse button).
 
 <sect1>Main Menu<label id="mm">
 <p>
-This section discusses the main menu bar. Note that many menu entries
-have keyboard shortcuts that are displayed in each entry.
+This section discusses the main menu bar.
 <p>
-Note that the main menu keyboard shortcuts only work if the main window
+Note that many menu entries have keyboard shortcuts that are displayed
+in each entry. But those shortcuts only work if the main window
 has the keyboard input focus <em>and</em> the input focus is not in the
 console or in a property GUI element (i.e.~a data entry field).
 Hit <tt>&lt;Esc&gt;</tt> to set the focus to the object selection
@@ -718,6 +718,10 @@ widget and thus enable the main menu keyboard shortcuts.
 One can adapt these shortcuts using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
 <p>
+Another way of navigating the menu is via the <tt/"Menu"/ or
+<tt/"Alt"/ key, pressed together with the various underlined characters
+in the menu entries.
+
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="mmfile">
@@ -794,7 +798,7 @@ See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
 
 <item><tt>"Import/"</tt>, since Ayam 1.13 this sub menu is initially
-empty. You need to load a plugin first to gain to the menu entries
+empty. You need to load a plugin first to gain access to the menu entries
 described here.
 
 <item><tt>"Import/Apple 3DMF"</tt>, import a scene from the Apple
@@ -1447,12 +1451,18 @@ side of the view menu bar.
 
 <sect1>View Menu<label id="vm">
 <p>
-This section discusses the view menu bar. Note that many menu entries
+This section discusses the view menu bar.
+<p>
+Note that many menu entries
 have keyboard shortcuts that are displayed in each entry.
-Those view menu keyboard shortcuts only work if the view window
+But those shortcuts only work if the view window
 has the keyboard input focus.
 The shortcuts are adaptable using the <tt>"ayamrc"</tt> file
 (see section <ref id="ayamrc" name="Ayamrc File">).
+<p>
+Another way of navigating the menu is via the <tt/"Menu"/ or
+<tt/"Alt"/ key, pressed together with the various underlined characters
+in the menu entries.
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -3585,7 +3595,7 @@ Note how inadequate the grid spacing would be to edit the trajectory curve
 (it is e.g.~near impossible to edit the curve and keep
 it straight). 
 <p>
-Press <tt/&lt;l&gt;/.
+&raquo;&thinsp;Press <tt/&lt;l&gt;/.
 <p>
 <figure loc="ht">
 <eps file="pics/local-2.ps" height="5cm">
@@ -3601,7 +3611,7 @@ system, it is tilted). The grid is also rotated (with respect to the
 root coordinate system) but now much more useful for editing the
 trajectory, in fact it is perfectly aligned to the trajectory.
 <p>
-Press <tt/&lt;l&gt;/ again.
+&raquo;&thinsp;Press <tt/&lt;l&gt;/ again.
 <p>
 <figure loc="ht">
 <eps file="pics/local-3.ps" height="5cm">
@@ -8516,13 +8526,15 @@ PV tags are supported.
 <p>
 The ConcatNP object concatenates all child objects, which should be NURBS
 patches or provide NURBS patches to a single NURBS patch (see also the
-image above).<footnote>Since 1.16.</footnote>
+image above).
+<footnote>Since 1.16.</footnote>
 
 The concatenation simply splits all surfaces into curves, makes
 the curves compatible, and joins them to the concatenated surface.
 
 Also NURBS curves or objects that provide NURBS curves can be used
-as parameter objects.<footnote>Since 1.20.</footnote>
+as parameter objects.
+<footnote>Since 1.20.</footnote>
 
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
@@ -8551,7 +8563,7 @@ The following parameters further control the concatenation process:
 be created.
 If a closed surface is to be created and also <tt/"FillGaps"/ (see below) is
 enabled, an additional fillet will be created for the last and the first
-child curve to close the concatenated curve.
+child surface to close the concatenated surface.
 
 <item><tt/"Order"/ is the desired order of the concatenated surface
 (in U direction), the default value (0) leads to a cubic surface.
@@ -8751,11 +8763,12 @@ NURBS surfaces using a simple algorithm.
 The offsetting also works for closed and periodic surfaces in any
 possible combinations in the two dimensions.
 <footnote>Since 1.19.</footnote>
-<p>
-Note that degenerate and rational surfaces are still not supported.
+However, note that degenerate and rational surfaces are still not supported.
 <p>
 The offset surface will always match the original surface in width/height,
 orders, and knots. See also the image above.
+Trim curves are copied verbatim from the parameter surface to the
+offset surface.
 <p>
 As the geometry of the offset surface is completely defined by
 the master surface, OffsetNP objects do not support own transformation
@@ -8968,7 +8981,7 @@ extrusion might be trimmed.
 
 <sect2>Conversion Support
 <p>
-The trimmed surface may be converted to an ordinary NURBS patche
+The trimmed surface may be converted to an ordinary NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>.
 
 <sect2>RIB Export
@@ -9949,8 +9962,11 @@ Tags provide an easy way to attach arbitrary information (e.g.~additional
 RenderMan interface attributes, special attributes for plugins or even
 scripts) to objects. A tag consists of two strings, one defining the type
 and one defining the value of the tag.
+Tags may be manipulated via the tags property GUI (see
+section <ref id="tagsprop" name="Tags Property">)
+or the scripting interface.
 <p>
-This section documents all currently known tag types.
+The following sections documents all currently known tag types.
 
 <sect2>RiAttribute Tag<label id="riatag">
 <p>
@@ -10009,6 +10025,13 @@ lots of RiOptions that differ from the standard RiOptions is in use.
 However, they will be only used by the RIB exporter if they are attached
 to the <tt/"Root"/ object.
 The syntax is similar to the <tt/"RiAttribute"/ tag type, see above.
+<p>
+<bf/Example/
+<p>
+<tscreen><verb>
+RiOption radiosity,steps,i,16
+RiOption shadow,bias0,f,0.01
+</verb></tscreen>
 <p>
 <bf/Notes/
 <p>
@@ -10177,6 +10200,11 @@ in Ayam 1.17.
 Not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
 are: SDMesh, PolyMesh, PatchMesh, NPatch, and BPatch.
+Most tool objects that internally create NPatch objects also support PV tags.
+<footnote>Since 1.20.</footnote>
+Mind that the same set of tags
+will be used for all surfaces that make up the tool object, e.g.
+the swept surface, the bevels, and the caps.
 <p>
 Furthermore, the number of data elements, which depends on the
 detail or storage class, the type of geometric primitive, and the
@@ -11856,8 +11884,9 @@ points.
 This list may also only specify one point, which is then taken as starting
 point and DX/DY/DZ (see below) are used to create the missing control points
 automatically.
-To specify a complete control vector, this list should have curve length
-by 4 elements, e.g.~for a curve of length 3, specify 12 values:
+To specify a complete control vector, this list should have
+length&thinsp;&middot;&thinsp;4 elements, e.g.~for a curve of length 3,
+specify 12 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -11929,8 +11958,8 @@ only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
 are used to create the missing control points automatically.
 To specify a complete
-control vector, this list should have curve length by 3 elements,
-e.g.~for a curve of length 3, specify 9 values:
+control vector, this list should have curve length&thinsp;&middot;&thinsp;3
+elements, e.g.~for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -12023,8 +12052,8 @@ only specify one point, which is then taken as starting point and
 DX/DY/DZ (see below)
 are used to create the missing control points automatically.
 To specify a complete
-control vector, this list should have curve length by 3 elements,
-e.g.~for a curve of length 3, specify 9 values:
+control vector, this list should have curve length&thinsp;&middot;&thinsp;3
+elements, e.g.~for a curve of length 3, specify 9 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0}"/.
 
   <item><tt/"-cn"/: the control vector of the new curve. The value of
@@ -12121,8 +12150,8 @@ points.
 This list may also only specify one point, which is then taken as starting
 point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
 missing control points automatically.
-To specify a complete control vector, this list should have width by
-height by 4 elements,
+To specify a complete control vector, this list should have
+width&thinsp;&middot;&thinsp;height&thinsp;&middot;4 elements,
 e.g.~for a patch of width 2 and height 2, specify 16 values:
 <tt/"-cv {0.0 0.0 0.0 1.0  1.0 0.0 0.0 1.0  2.0 0.0 0.0 1.0  2.0 1.0 0.0 1.0}"/.
 
@@ -12221,25 +12250,29 @@ derivatives at end of patch in U (default 0.125).
   <item><tt/"-sdlen_u"/: the length of automatically calculated end
 derivatives at start of patch in U (default 0.125).
   <item><tt/"-ederiv_u"/: end derivatives for U at end of patch.
-The value of this option is a list of 3 by height floating point numbers. 
+The value of this option is a list of 3&thinsp;&middot;&thinsp;height
+floating point numbers.
 There is no default value.
   <item><tt/"-sderiv_u"/: end derivatives for U at start of patch.
-The value of this option is a list of 3 by height floating point numbers. 
+The value of this option is a list of 3&thinsp;&middot;&thinsp;height
+floating point numbers.
 There is no default value.
 
   <item><tt/"-deriv_v"/: the end derivative mode for V, must be one of
 0 &ndash; None (default), 1 &ndash; Automatic, or 2 &ndash; Manual.
 In manual mode full derivative vectors must be provided via
 <tt/"-ederiv_v"/ <em>and</em> <tt/"-sderiv_v"/.
-  <item><tt/"-edlen_u"/: the length of automatically calculated end
-derivatives at end of patch in U (default 0.125).
-  <item><tt/"-sdlen_u"/: the length of automatically calculated end
-derivatives at start of patch in U (default 0.125).
-  <item><tt/"-ederiv_u"/: end derivatives for U at end of patch.
-The value of this option is a list of 3 by height floating point numbers. 
+  <item><tt/"-edlen_v"/: the length of automatically calculated end
+derivatives at end of patch in V (default 0.125).
+  <item><tt/"-sdlen_v"/: the length of automatically calculated end
+derivatives at start of patch in V (default 0.125).
+  <item><tt/"-ederiv_v"/: end derivatives for V at end of patch.
+The value of this option is a list of 3&thinsp;&middot;&thinsp;width
+floating point numbers.
 There is no default value.
-  <item><tt/"-sderiv_u"/: end derivatives for U at start of patch.
-The value of this option is a list of 3 by height floating point numbers. 
+  <item><tt/"-sderiv_v"/: end derivatives for V at start of patch.
+The value of this option is a list of 3&thinsp;&middot;&thinsp;width
+floating point numbers.
 There is no default value.
 
   <item><tt/"-cv"/: the control vector of the new patch. The value of this
@@ -12248,8 +12281,8 @@ non rational coordinates of the data points to be interpolated.
 This list may also only specify one point, which is then taken as starting
 point and UDX/UDY/UDZ and VDX/VDY/VDZ (see below) are used to create the
 missing control points automatically.
-To specify a complete control vector, this list should have width by
-height by 3 elements,
+To specify a complete control vector, this list should have
+width&thinsp;&middot;&thinsp;height&thinsp;&middot;&thinsp;3 elements,
 e.g.~for a patch of width 2 and height 2, specify 12 values:
 <tt/"-cv {0.0 0.0 0.0  1.0 0.0 0.0  2.0 0.0 0.0  2.0 1.0 0.0}"/.
 
@@ -13341,10 +13374,13 @@ See also section <ref id="trimt" name="Trim Tool">.
 <label id="scestlennc">
 estlenNC &ndash; estimate length of NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"estlenNC varname"/
+ <item>Synopsis: <tt/"estlenNC [-trafo] varname"/
  <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: estimate the length of the currently selected curve
-and put the result into the designated variable.
+ <item>Description: estimate the length of the currently selected NURBS curve
+or NURBS curve providing object and put the result into the designated variable.
+If the optional parameter <tt/"-trafo"/ is given, the transformation
+attributes of the curve will be applied to the control points for the
+length estimation.
 </itemize>
 
 <p>
@@ -14741,11 +14777,11 @@ changes. After a selection change (e.g.~by selecting points in a
 different view) simply restart the action to transform about the
 new center.
 <p>
-To temporarily disable the modified behaviour, the <tt/&lt;F11&gt;/
-key can be used.
-<p>
 To rotate or scale about a different point than the center, the mark
 may still be set manually using <tt/&lt;a&gt;/.
+<p>
+To temporarily disable the modified behavior, the global keyboard
+shortcut <tt/&lt;F11&gt;/ can be used.
 
 <sect2>Automatic Point Actions<label id="apnttcl">
 <p>
@@ -14762,9 +14798,16 @@ Note that currently the switch to point modelling will also occur,
 if no points are actually selected, it is just the mouse click that
 counts.
 <p>
-It is still possible to switch back to object modelling anytime
+Selecting all points via the keyboard shortcut <tt/&lt;A&gt;/
+will switch to point modelling and de-selecting all points via
+<tt/&lt;N&gt;/ will switch to object modelling.
+<footnote>Since 1.21.</footnote>
+<p>
+It is also still possible to switch back to object modelling anytime
 via the keyboard shortcut <tt/&lt;o&gt;/.
-
+<p>
+To temporarily disable the modified behavior, the global keyboard
+shortcut <tt/&lt;F12&gt;/ can be used.
 
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
@@ -15025,12 +15068,13 @@ tcleval("<bf>puts </bf>" + a);<newline>
 /* expected output: 42 */
 </tt></tscreen>
 Mind that the corresponding variable on the JavaScript side does
-<em>not</em> exist until the first write onto the Tcl variable.
+<em>not</em> exist until the first write operation on the Tcl variable
+occurs.
 The Tcl variable, in turn, does not have to exist, when the
 <tt>"tclvar"</tt> function is called (i.e.~all the work is done
 in the trace callback).
 <p>
-Even though it looks a perfect fit,  <tt/"tclvar"/ can not be used to
+Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
 manage a property data array. Atleast not if the array contains components
 to be saved to Ayam scene files. This is, because upon reading a scene
 file with such saved array items, the items will be read (and put into
@@ -15058,13 +15102,16 @@ tclset("b", b);
 sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
 and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
 Note that the variable names may also point to Tcl array elements:
-<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>.
+<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
+or contain name-space specifiers
+<tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
+.
 
 <sect2>Data Conversion
 <p>
 When data is transferred from the Tcl to the JavaScript side
 (e.g.~while converting return values of <tt/"tcleval"/ or variable
-values linked via  <tt/"tclvar"/),
+values linked via <tt/"tclvar"/),
 the following conversions are in effect:
 Scalar data types will be converted to their directly matching counterparts,
 except for Booleans, which will be converted to integer values.
@@ -15200,6 +15247,297 @@ of the mirroring Tcl array variable, in above example is all about.
 <p>
 Following this scheme of dual mirroring data structures on the
 Tcl and Javascript sides now follows the creation of the
+property GUI which is also constrained to just one script run
+by an <tt/"if"/ statement.
+<p>
+Following the GUI, a sphere object is created and parameterized
+according to the data in the property GUI, which is used as
+radius, zmin, and zmax value.
+
+<sect1>Lua Scripting Interface<label id="luainterp">
+<p>
+This sections contains the documentation of the Lua scripting
+interface which is available after loading of the <tt>"luainterp"</tt>
+plugin.
+<footnote>Since 1.21.</footnote>
+<p>
+Upon loading, the <tt>"luainterp"</tt> plugin creates <em>one</em> Lua
+context that lives (with all variables and objects defined therein)
+until Ayam exits.
+
+<sect2>Accessing Lua from Tcl and Script Objects
+<p>
+To access the Lua functionality from the Tcl scripting interface,
+the <tt>"luaEval"</tt> command can be used to directly execute Lua
+code (Tcl code in <bf>bold</bf>):
+<tscreen>
+<tt><bf>luaEval {</bf>a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
+</tscreen>
+or from a file:
+<tscreen>
+<tt><bf>luaEval -f scriptfile.lua</bf></tt>
+</tscreen>
+Furthermore, Script object scripts may also be implemented in Lua,
+provided the first line of the script is a comment that instructs Ayam to
+use the Lua interpreter:
+<tscreen><tt>
+<f/--/ Ayam, use: Lua<newline>
+a = 0;<newline>
+...
+</tt></tscreen>
+Note that the Lua scripting context inherits the limitations
+of the calling Tcl context.
+For example, when running in a Script object,
+the following code fails:
+<tscreen>
+<tt>tcleval("<bf>exit</bf>");</tt>
+</tscreen>
+it does not fail, when the calling context ist the main Tcl interpreter;
+one can e.g.~type into the Ayam console:
+<tscreen>
+<tt><bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
+</tscreen>
+and Ayam quits (see also section:
+<ref id="safeinterp" name="Safe Interpreter">).
+
+<sect2>Lua Functions
+<p>
+This subsection informs about the global functions additionally
+available in the Ayam Lua interpreter.
+<p>
+Those are converted Tcl commands, <tt>"tcleval"</tt>, <tt>"tclvar"</tt>,
+and <tt>"tclset"</tt>.
+<p>
+The functionality of Ayam is accessible from Lua via a larger
+set of global functions, named as the corresponding Tcl commands.
+One may e.g.~create Ayam objects in Lua using a function call
+like this:
+<tscreen><tt>
+crtOb("NCircle");
+</tt></tscreen>
+or, with additional arguments:
+<tscreen><tt>
+crtOb("NCircle", "-radius", 3.0);
+</tt></tscreen>
+In general, all commands available in the safe Ayam Tcl interpreter are also
+available as converted function (refer to section
+<ref id="sccomm" name="Index of Procedures and Commands">
+for a more or less complete list of those commands).
+<p>
+Note that Tcl procedures are not available as global Lua function,
+but they can be called using <tt>"tcleval"</tt> as documented
+in the next paragraph.
+
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tcleval://<label id="luatcleval"><newline>
+Apart from Tcl commands converted to Lua functions, there is the
+global Lua function <tt>"tcleval"</tt>, that allows to evaluate
+arbitrary Tcl scripts:
+<tscreen><tt>
+a = 42;<newline>
+a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>");<newline>
+tcleval("<bf>puts </bf>" ..&ensp;a);<newline>
+<f/--/ expected output:&ensp;42 5
+</tt></tscreen>
+The <tt>"tcleval"</tt> function provides access to all the
+functionality of Ayam that is just available as a Tcl procedure.
+Note that return values are properly transferred back to Lua
+according to the rules for data conversion as documented below.
+
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tclvar://<label id="luatclvar"><newline>
+Using the Lua function <tt>"tclvar"</tt> one may establish a
+link between a Tcl variable and a corresponding variable in the
+Lua context.
+The <tt>"tclvar"</tt> function establishes a write trace on the Tcl
+variable, so that changes on the Tcl side are always automatically
+reflected on the Lua side:
+<tscreen><tt>
+tclvar("a");<newline>
+tcleval("<bf>set a 42</bf>");<newline>
+tcleval("<bf>puts </bf>" ..&ensp;a);<newline>
+<f/--/ expected output:&ensp;42
+</tt></tscreen>
+Mind that the corresponding variable on the Lua side does
+<em>not</em> exist until the first write operation onto the Tcl
+variable occurs.
+The Tcl variable, in turn, does not have to exist, when the
+<tt>"tclvar"</tt> function is called (i.e.~all the work is done
+in the trace callback).
+<p>
+Even though it looks a perfect fit, <tt/"tclvar"/ can not be used to
+manage a property data array. Atleast not if the array contains components
+to be saved to Ayam scene files. This is, because upon reading a scene
+file with such saved array items, the items will be read (and put into
+the Tcl context) before the script can establish the write trace using
+<tt/"tclvar"/ and the data from the scene file never arrives in the Lua
+context.
+There is no easy way to get around this.
+A suggested way to manage a property data array is shown in the
+complete examples section below.
+
+<#if out=latex><x/newpage/</#if>
+<#if out=latex><x/phantomsection/</#if>
+
+<tt/<bf/tclset://<label id="luatclset"><newline>
+The third global Lua function is <tt>"tclset"</tt> that
+allows to efficiently set Tcl variables from the Lua context
+avoiding conversion to string data and back.
+For example:
+<tscreen><tt>
+a = 3.3;<newline>
+b = {1, 3, 5};<newline>
+tclset("a", a);<newline>
+tclset("b", b);
+</tt></tscreen>
+sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
+and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
+Note that the variable names may also point to Tcl array elements:
+<tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
+or contain name-space specifiers
+<tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
+.
+
+<sect2>Data Conversion
+<p>
+When data is transferred from the Tcl to the Lua side
+(e.g.~while converting return values of <tt/"tcleval"/ or variable
+values linked via  <tt/"tclvar"/),
+the following conversions are in effect:
+Scalar data types will be converted to their directly matching counterparts.
+Lists will be converted to array-tables (nesting is allowed and will
+produce accordingly nested tables).
+Associative arrays will be converted to tables with properly named keys.
+Unicode strings are currently not supported.
+See also the table below.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/Tcl/|<bf/Lua/@<hline>
+Boolean (true, false)|Boolean (true, false)@<hline>
+Integer (2)|Integer (2)@<hline>
+Double (3.14)|Double (3.14)@<hline>
+String ("mystr")|String ("mystr")@<hline>
+List ({0 1 2})|Array ({0, 1, 2})@<hline>
+Array (mya(mye) = 0.1)|Table (mya.mye = 0.1)<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Tcl to Lua Data Conversions</caption>
+</table>
+
+When data is transferred from the Lua side to the Tcl side
+(e.g.~as function argument), the following conversions are in
+effect:
+Scalar data types will be converted to their directly matching counterparts,
+array-tables will be converted to lists (nesting is allowed and will
+produce accordingly nested lists). Sparse and mixed tables are currently not
+supported.
+Unicode strings are also currently not supported.
+See also the following table.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|"><hline>
+<bf/Lua/|<bf/Tcl/@<hline>
+Boolean (true, false)|Boolean (true, false)@<hline>
+Integer (2)|Integer (2)@<hline>
+Double (3.14)|Double (3.14)@<hline>
+String ("mystr")|String ("mystr")@<hline>
+Array ({0, 1, 2})|List ({0 1 2})<#if out=latex>@<hline></#if>
+</tabular>
+<caption>Lua to Tcl Data Conversions</caption>
+</table>
+<p>
+The transport/conversion of table entrys (to e.g.~associative array
+elements) can be arranged manually like this:
+<tscreen><tt>
+a.b = 3.14;<newline>
+tclset("a(b)", a.b);
+</tt></tscreen>
+
+<#if out=latex><x/newpage/</#if>
+
+<sect2>Complete Examples
+<p>
+This section contains two complete examples for Script objects
+written in Lua.
+<p>
+For the first example use Script object type <tt/"Modify"/ and put a Sphere
+as child object of the Script object.
+<code>
+-- Ayam, use: Lua
+tclvar("SphereAttrData");
+getProp();
+if(SphereAttrData)
+{
+  tclset("SphereAttrData(ZMin)", -SphereAttrData.Radius);
+  tclset("SphereAttrData(ZMax)", SphereAttrData.Radius);
+  setProp();
+}
+</code>
+The above script will make sure, that the ZMin and ZMax parameters of
+the Sphere object always match its radius.
+
+First, a link from the original Sphere object property data array
+<tt/"SphereAttrData"/ is established, so that when <tt/"getProp()"/
+(a converted Tcl Ayam command) is called, also the Lua
+object <tt/"SphereAttrData"/ is filled with meaningful data.
+The next line (the if) is a safety measure that prevents the script from
+failing if the child object of the Script object is not a Sphere
+object.
+Now the radius value is transferred back to Tcl directly into
+the property data array to the ZMin and ZMax entries respectively
+with the help of <tt/"tclset"/.
+Finally the modified property is transferred back to the Sphere object
+again with a converted Tcl Ayam command <tt/"setProp()"/.
+
+<#if out=latex><x/newpage/</#if>
+
+The next example shows, how to manage a property GUI in a Lua
+implemented Script object script. Use Script object type <tt/"Create"/
+and add a tag <tt/"NP MyProp"/ to see the property GUI.
+<code>
+-- Ayam, use: Lua, save array: MyPropData
+if(!tcleval("info exists MyPropData;"))
+{
+  -- initial script run (but not when loaded from scene file!)
+  MyPropData.MyItem = tcleval("set MyPropData(MyItem) 1.0;");
+  tcleval("set MyPropData(SP) {MyItem};");
+}
+else
+{
+  -- all following script runs (and also when loaded from scene file!)
+  MyPropData.MyItem = tcleval("set MyPropData(MyItem);");
+}
+if(!tcleval("info exists MyPropGUI;"))
+{
+  tcleval("set ::phw [addPropertyGUI MyProp \"\" \"\"];");
+  tcleval("addParam $::phw MyPropData MyItem;");
+}
+crtOb("Sphere");
+sL();
+getProp();
+tclset("SphereAttrData(Radius)", MyPropData.MyItem);
+tclset("SphereAttrData(ZMin)", -MyPropData.MyItem);
+tclset("SphereAttrData(ZMax)", MyPropData.MyItem);
+setProp();
+</code>
+
+This example demonstrates how to manage property data using the
+Lua object variable <tt/"MyPropData"/. The property data
+can be saved to and read from Ayam scene files with the help of
+a mirroring array variable on the Tcl side (also named
+<tt/"MyPropData"/).
+To make this work properly, the initialisation of the Lua
+object must be constrained to the first script run: when the
+property data was read from a scene file, initialisation must
+not be run, instead the read data must be fetched from the Tcl
+context.
+This is what the first <tt/"if"/ statement, checking for existence
+of the mirroring Tcl array variable, in above example is all about.
+<p>
+Following this scheme of dual mirroring data structures on the
+Tcl and Lua sides now follows the creation of the
 property GUI which is also constrained to just one script run
 by an <tt/"if"/ statement.
 <p>
@@ -15378,7 +15716,8 @@ Also note that for NURBS patches and bicubic patch meshes, points of type
 by the plugin. Trimming of NURBS patches by clamping
 the knot ranges is also not supported (however, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values)<footnote>Since 1.9.</footnote>.
+values).
+<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
@@ -15692,7 +16031,8 @@ points (e.g.~curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
 is not supported (however, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values)<footnote>Since 1.9.</footnote>.
+values).
+<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
@@ -15780,10 +16120,12 @@ as if combined by the union operator.
 The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
 However, texture coordinates from primitive variable
-tags can be exported.<footnote>Since 1.8.3.</footnote>
+tags can be exported.
+<footnote>Since 1.8.3.</footnote>
 <p>
 UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.<footnote>Since 1.9.</footnote>
+exported NURBS objects.
+<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Light sources, as well as Cameras, and Views will not be exported.
@@ -16104,7 +16446,8 @@ as would be necessary.
 <footnote>Since 1.9.</footnote>
 <p>
 UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.<footnote>Since 1.9.</footnote>
+exported NURBS objects.
+<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
@@ -16501,9 +16844,8 @@ undo operation can also always be undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
 in the default prompt of the Ayam console and also in
-the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>
+the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
 <footnote>Since 1.14.</footnote>
-.
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
@@ -17236,6 +17578,8 @@ See also section <ref id="impex" name="Import and Export">.
 <itemize>
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
+<item>luainterp &ndash; Lua scripting interface
+(see section <ref id="luainterp" name="Lua Scripting Interface">),
 <item>AyCSG &ndash; CSG rendering
 (see section <ref id="aycsg" name="CSG preview using the AyCSG plugin">),
 <item>IDR &ndash; Importance Driven Rendering
@@ -18351,7 +18695,7 @@ Index:
 
 <label id="indexj"><tt/<bf/J//
 <list>
-<item>.
+<item>JavaScript: <ref id="jsinterp" name="JavaScript Scripting Interface">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
@@ -18436,6 +18780,7 @@ Index:
 <item><ref id="rep" name="Revolve attribute">,
 <item><ref id="textattr" name="Text attribute">
 </itemize>
+<item>Lua: <ref id="luainterp" name="Lua Scripting Interface">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
@@ -18996,10 +19341,22 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="scitags" name="scripting interface commands">
 </itemize>
 <item>TC: <ref id="tctag" name="tag type">
-<item>tcleval: <ref id="tcleval" name="JavaScript scripting interface function">
+<item>tcleval:
+<itemize>
+<item><ref id="tcleval" name="JavaScript scripting interface function">,
+<item><ref id="luatcleval" name="Lua scripting interface function">
+</itemize>
 <item>TclPrecision: <ref id="prefmisc" name="preference setting">
-<item>tclset: <ref id="tclset" name="JavaScript scripting interface function">
-<item>tclvar: <ref id="tclvar" name="JavaScript scripting interface function">
+<item>tclset:
+<itemize>
+<item><ref id="tclset" name="JavaScript scripting interface function">,
+<item><ref id="luatcleval" name="Lua scripting interface function">
+</itemize>
+<item>tclvar:
+<itemize>
+<item><ref id="tclvar" name="JavaScript scripting interface function">
+<item><ref id="luatcleval" name="Lua scripting interface function">
+</itemize>
 <item>Tesselate: <ref id="tesst" name="tesselation tool">
 <item>TessPoMesh <ref id="expwav" name="Wavefront OBJ export option">
 <item>Text: <ref id="textobj" name="Text object">
