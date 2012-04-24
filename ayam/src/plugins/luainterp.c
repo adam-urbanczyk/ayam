@@ -982,29 +982,32 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
   else
     {
       /* execute... */
-      luainterp_interp = interp;
-      cscript.data = Tcl_GetByteArrayFromObj(*cscriptobj,
-					     (int*)&(cscript.size));
-
-      lua_status = lua_load(L, &luainterp_readcompiledchunk, &cscript,
-			    "script", "b");
-
-      if(lua_status)
+      if(*cscriptobj)
 	{
-	  luainterp_interp = NULL;
-	  luainterp_error();
-	  return TCL_ERROR;
-	}
+	  luainterp_interp = interp;
+	  cscript.data = Tcl_GetByteArrayFromObj(*cscriptobj,
+						 (int*)&(cscript.size));
 
-      lua_status = lua_pcall(L, 0, 0, 0);
-      if(lua_status)
-	{
-	  luainterp_interp = NULL;
-	  luainterp_error();
-	  return TCL_ERROR;
-	}
+	  lua_status = lua_load(L, &luainterp_readcompiledchunk, &cscript,
+				"script", "b");
 
-      luainterp_interp = NULL;
+	  if(lua_status)
+	    {
+	      luainterp_interp = NULL;
+	      luainterp_error();
+	      return TCL_ERROR;
+	    }
+
+	  lua_status = lua_pcall(L, 0, 0, 0);
+	  if(lua_status)
+	    {
+	      luainterp_interp = NULL;
+	      luainterp_error();
+	      return TCL_ERROR;
+	    }
+
+	  luainterp_interp = NULL;
+	} /* if */
     } /* if */
 
  return TCL_OK;
