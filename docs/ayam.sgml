@@ -15452,7 +15452,7 @@ The transport/conversion of table entrys (to e.g.~associative array
 elements) can be arranged manually like this:
 <tscreen><tt>
 a.b = 3.14;<newline>
-tclset("a(b)", a.b);
+tclset("a(b)", a.b)
 </tt></tscreen>
 
 <#if out=latex><x/newpage/</#if>
@@ -15466,14 +15466,13 @@ For the first example use Script object type <tt/"Modify"/ and put a Sphere
 as child object of the Script object.
 <code>
 -- Ayam, use: Lua
-tclvar("SphereAttrData");
-getProp();
-if(SphereAttrData)
-{
-  tclset("SphereAttrData(ZMin)", -SphereAttrData.Radius);
-  tclset("SphereAttrData(ZMax)", SphereAttrData.Radius);
-  setProp();
-}
+tclvar("SphereAttrData")
+getProp()
+if SphereAttrData then
+  tclset("SphereAttrData(ZMin)", -SphereAttrData.Radius)
+  tclset("SphereAttrData(ZMax)", SphereAttrData.Radius)
+  setProp()
+end
 </code>
 The above script will make sure, that the ZMin and ZMax parameters of
 the Sphere object always match its radius.
@@ -15498,29 +15497,31 @@ implemented Script object script. Use Script object type <tt/"Create"/
 and add a tag <tt/"NP MyProp"/ to see the property GUI.
 <code>
 -- Ayam, use: Lua, save array: MyPropData
-if(!tcleval("info exists MyPropData;"))
-{
+
+if tcleval("info exists MyPropData;") == 0 then
   -- initial script run (but not when loaded from scene file!)
-  MyPropData.MyItem = tcleval("set MyPropData(MyItem) 1.0;");
-  tcleval("set MyPropData(SP) {MyItem};");
-}
+  MyPropData = {}
+  MyPropData.MyItem = tcleval("set MyPropData(MyItem) 1.0;")
+  tcleval("set MyPropData(SP) {MyItem};")
 else
-{
   -- all following script runs (and also when loaded from scene file!)
-  MyPropData.MyItem = tcleval("set MyPropData(MyItem);");
-}
-if(!tcleval("info exists MyPropGUI;"))
-{
-  tcleval("set ::phw [addPropertyGUI MyProp \"\" \"\"];");
-  tcleval("addParam $::phw MyPropData MyItem;");
-}
-crtOb("Sphere");
-sL();
-getProp();
-tclset("SphereAttrData(Radius)", MyPropData.MyItem);
-tclset("SphereAttrData(ZMin)", -MyPropData.MyItem);
-tclset("SphereAttrData(ZMax)", MyPropData.MyItem);
-setProp();
+  MyPropData = {}
+  MyPropData.MyItem = tcleval("set MyPropData(MyItem);")
+end
+
+if tcleval("info exists MyPropGUI;") == 0 then
+  -- create property GUI "MyProp"
+  tcleval("set ::phw [addPropertyGUI MyProp \"\" \"\"];")
+  tcleval("addParam $::phw MyPropData MyItem;")
+end
+
+crtOb("Sphere")
+sL()
+getProp()
+tclset("SphereAttrData(Radius)", MyPropData.MyItem)
+tclset("SphereAttrData(ZMin)", -MyPropData.MyItem)
+tclset("SphereAttrData(ZMax)", MyPropData.MyItem)
+setProp()
 </code>
 
 This example demonstrates how to manage property data using the
