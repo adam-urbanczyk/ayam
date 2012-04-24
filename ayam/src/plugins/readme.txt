@@ -1,4 +1,4 @@
-[readme.txt - 20. Oct 2011]
+[readme.txt - 24. Apr 2012]
 
 This directory contains a collection of various plugins for Ayam.
 
@@ -46,6 +46,7 @@ Scripting Language Plugins
 --------------------------
 
 jsinterp - JavaScript plugin
+luainterp - Lua plugin
 
 
 Misc
