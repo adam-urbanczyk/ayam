@@ -364,7 +364,7 @@ extend the selection to the first or last object in the current
 level respectively.
 <footnote>Since 1.11.</footnote>
 
-The root object, however, will always be omitted.
+The Root object, however, will always be omitted.
 
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
 
@@ -462,7 +462,7 @@ or last object in the current level,
 to the first or last object in the current level respectively.
 <footnote>Since 1.11.</footnote>
 
-The root object, however, will always be omitted.
+The Root object, however, will always be omitted.
 
 <item><tt/&lt;Right&gt;/ enters the (first) selected object,
 
@@ -775,8 +775,8 @@ may be imported using this route. See above (<tt/"Open"/).
 
 <p>
 All objects in the scene will be saved to the scene file, but
-if the current scene was loaded from a file without root object
-(and thus without view windows), root and views will be omitted
+if the current scene was loaded from a file without Root object
+(and thus without view windows), Root and views will be omitted
 from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
 for a more detailed discussion.
@@ -791,7 +791,7 @@ desired extension (see above, <tt/"Open"/).
 
 <p>
 All objects in the scene will be saved to the scene file, but
-if the current scene was loaded from a file without root object
+if the current scene was loaded from a file without Root object
 (and thus without view windows), root and views will be omitted
 from the saved scene file as well.
 See section <ref id="savesf" name="Saving Scene Files">
@@ -907,7 +907,7 @@ See also section <ref id="instclip" name="Instances and the Object Clipboard">.
 This operation cannot be undone!
 
 <item><tt/"Select All"/, selects all objects in the current level
-(except for the root object).
+(except for the Root object).
 
 <item><tt/"Select None"/, de-selects all currently selected objects.
 
@@ -1177,7 +1177,7 @@ the preference setting <tt>"RIB-Export/ExcludeHidden"</tt> is
 activated.
 
 <item><tt/"Show All"/ and <tt/"Hide All"/ set and unset the <tt/"Hide"/
-attribute of all objects in the scene (including the root object
+attribute of all objects in the scene (including the Root object
 and all views!) regardles of the currently selected objects (and
 without changing the current selection). These operations can
 not be undone using the undo system.
@@ -1232,19 +1232,19 @@ with their materials. It is also possible to save instance objects
 without their master objects. This will lead to errors while loading
 such a scene later on.
 
-<item><tt/"Save Environment"/, saves the root object and all
+<item><tt/"Save Environment"/, saves the Root object and all
 views to a so called environment scene file, which is read
-on program startup and <tt>"File/New"</tt>.
+automatically on program startup and <tt>"File/New"</tt>.
 Initially, the file requester that asks for the name
 of the new environment uses the value of the preference
 setting <tt>"Main/EnvFile"</tt>. Note that there will be no
 check whether loading of that environment on next start up is
-enabled in the preferences. Note also, that using <tt/"Save Environment"/
-you can just save environment files that contain the root object
-and all views. If you want to include geometric objects in your
-environment or if you want to exclude the root object and just
-save views you have to use <tt>"File/Save"</tt> or
-<tt>"Special/Save Selected as"</tt> respectively.
+enabled in the preferences. Note also, that the files saved
+using <tt/"Save Environment"/ just contain the Root object
+and all views. In order to include geometric objects in the
+environment or to exclude the Root object and just save view
+objects use <tt>"File/Save"</tt> or <tt>"Special/Save Selected as"</tt>
+respectively.
 
 <item><tt>"Clipboard/Paste (move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
@@ -1259,7 +1259,7 @@ or single object is replaced.
 <item><tt>"Clipboard/Paste Property to selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
-properties will take place! One may e.g.~copy the settings from a
+properties will take place! This way one may e.g.~copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
 of both shaders have the same names and types).
 
@@ -1291,7 +1291,7 @@ currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">).
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
 currently selected camera object. The size of the rendered image will
-be taken from the RiOptions of the root object. If they are zero,
+be taken from the RiOptions of the Root object. If they are zero,
 default values of 400 pixels width and 300 pixels height will be used.
 The type of the projection written will be perspective.
 Otherwise the RIB looks exactly the same as if exported via
@@ -1549,7 +1549,7 @@ Some preferences are outlined in greater detail in section
 <itemize>
 <item><tt/"Automatic Redraw"/, toggles whether the view should
 be redrawn, whenever the scene changes. If this is disabled,
-you can force a redraw using the menu entry <tt>"View/Redraw"</tt>
+a redraw can be enforced using the menu entry <tt>"View/Redraw"</tt>
 or the corresponding keyboard shortcut <tt/&lt;Ctrl+d&gt;/.
 
 <item><tt/"Drawing Mode"/ determines whether the view should draw a wireframe
@@ -1794,119 +1794,6 @@ select the next or previous object.
 <item><tt/&lt;Ctrl+Shift+2&gt;/, <tt/&lt;Ctrl+Shift+8&gt;/
 (on the numeric keypad!)
 extend the current selection to include the next or previous object.
-</itemize>
-
-<sect1>Selecting Objects within a View<label id="objsel">
-<p>
-This section describes techniques that you can use for selecting
-one or more objects within a view window with the mouse.
-<p>
-When the view windows action is <tt/"Pick"/ you can pick (select) objects
-that appear within this view with the mouse.
-You can invoke this action by pressing <tt/&lt;P&gt;/
-or make this action the default action using the preference
-setting <tt>"Modelling/DefaultAction"</tt>. If picking is the
-default action, it will be automatically enabled when any other
-action is broken using <tt/&lt;Esc&gt;/.
-
-<sect2>Selecting Individual Objects<label id="oneobjsel">
-<p>
-Selecting objects within a view is a straightforward operation that uses
-standard methods. You will use the following two selection operations most
-frequently:
-
-<itemize>
-<item>To select a single object within a view, move the cursor to the object
-and click mouse button 1 (the leftmost one).
-Once you select an object, any objects previously
-selected are unselected automatically.
-
-<item>To select an additional object, move the cursor to the object and
-<tt/&lt;Control&gt;/+Click (again with the leftmost mouse button).
-Previously selected objects remain selected, and
-the newly picked object is added to the selection. Notice that the picked item
-must belong to the same level as the previously selected objects. An
-alternative method for selecting multiple objects is to drag a rectangle
-around them. For more information see
-<ref id="mulobjsel" name="Drag-selecting Multiple Objects">
-</itemize>
-
-<sect2>Drag-selecting Multiple Objects<label id="mulobjsel">
-<p>
-You can select multiple objects using the <tt/&lt;Control&gt;/+Click method
-described in section <ref id="oneobjsel" name="Selecting Individual Objects">.
-An additional method for selecting multiple objects is to drag a rectangle
-around those objects. However only objects that belong to the current level
-can be picked within a drag-selection. If you want to select multiple objects
-that belong to another level you must change the current level by either
-selecting it in the tree/listbox or by picking one object from that level
-on a view.
-<p>
-The procedure for drag-selecting multiple objects also uses a standard method:
-
-<enum>
-<item>Imagine a rectangle that encloses only the objects you want to select.
-
-<item>Click at one corner of the rectangle and, while continuing to press the
-mouse button, drag until you have enclosed all the objects.
-
-<item>Release the mouse button. All the valid objects inside or crossing the
-rectangle are selected and any objects previously selected are unselected
-automatically.
-</enum>
-
-<p>
-Note that if you press <tt/&lt;Control&gt;/ during the drag-selection, objects
-that are enclosed by the rectangle will be added to the current selection
-instead of replacing it.
-
-<sect2>Ambiguous Picking<label id="ambobjsel">
-<p>
-In some cases Ayam is unable to differentiate between the objects you have
-selected and other nearby or related objects. This ambiguity can arise as
-follows:
-
-<itemize>
-<item>Imagine a small square surrounding the cursor. When you click an object,
-any other valid objects that fall inside this square are also considered to
-be possible selections. For example, if you select an item that is positioned
-very close to another one, Ayam may consider both items to be possible
-selections.
-
-<item>If your model is three-dimensional (which is likely to happen),
-imagine a line that is perpendicular to the screen and that passes through
-the cursor and into the model. When you pick an object, any objects that
-intersect this line are considered to be possible candidates for selection.
-</itemize>
-
-<p>
-<figure loc="ht">
-<eps file="pics/ampick.ps" height="3cm">
-<img src="pics/ampick.gif">
-<caption>List of Ambiguous Candidates</caption>
-</figure>
-<p>
-If the selection is ambiguous Ayam displays a window that contains a list of
-the possible candidates for selection. When you click a name in the list,
-the corresponding object is highlighted. Click <tt/"Ok"/ when you have
-determined which object to select or <tt/"Cancel"/ to close the list and keep
-the previous selection unchanged.<newline>
-It is also possible to use a double click in the list of selection
-candidates to select an object and immediately close the dialog.
-<footnote>Since 1.11.</footnote>
-<p>
-Notes:
-<itemize>
-<item>While the list of ambiguous candidates is opened you can not pick other
-objects within the views.
-
-<item>It is possible to use the <tt/"Zoom to Object"/ action (shortcut
-<tt/&lt;O&gt;/) while the ambiguous select listbox is open to get
-a better view of the temporarily selected object.
-
-<item>The tolerance used to determine whether an object should be picked
-or not can be adjusted (see <tt/"PickTolerance"/ in
-<ref id="hidprefs" name="Hidden Preference Settings">).
 </itemize>
 
 <sect1>The Toolbox Window<label id="toolb">
@@ -2597,9 +2484,9 @@ It is perfectly ok to start and work with many different actions at
 the same time in different views: you can have e.g.~a view, where you move
 objects, a second where you rotate objects and a third, where you pick
 objects. The layout, drawing style, and grids may also differ between
-the different views. Together with the feature, that you may change
-the selection while actions are active and even pan and zoom views
-(using the rightmost and middle mouse buttons respectively) while
+the different views. Together with the feature, that the selection may be
+changed while actions are active and even panning and zooming of views
+is possible (using the rightmost and middle mouse buttons respectively) while
 actions are active and without breaking them, this is the key to
 unsurpassed flexibility in modelling using Ayam.
 <p>
@@ -2609,7 +2496,7 @@ The default action for all views, which is also in effect after
 use of the <tt/&lt;Esc&gt;/ key, is <tt/"None"/ or <tt/"Pick"/
 (depending on the preference setting <tt>"Modelling/DefaultAction"</tt>).
 See section
-<ref id="objsel" name="Selecting Objects within a View">
+<ref id="objsel" name="Selecting Objects by Picking">
 for more information about picking objects.
 <p>
 Note that the modelling actions are not available in perspective views.
@@ -2767,6 +2654,128 @@ below:
 See also the section
 <ref id="apnttcl" name="Automatic Point Actions">
 for a script, that, partially, brings back the old implicit behaviour.
+
+<sect1>Selecting Objects by Picking<label id="objsel">
+<p>
+This section describes techniques one can use for selecting
+one or more objects within a view window with the mouse.
+<p>
+When the view windows action is <tt/"Pick"/, objects
+that appear within this view can be selected with the mouse.
+This action may be invoked by pressing <tt/&lt;P&gt;/
+or by making this action the default action using the preference
+setting <tt>"Modelling/DefaultAction"</tt>. If picking is the
+default action, it will be automatically enabled when any other
+action is broken using <tt/&lt;Esc&gt;/.
+
+<sect2>Selecting Individual Objects<label id="oneobjsel">
+<p>
+Selecting objects within a view is a straightforward operation that uses
+standard methods. You will use the following two selection operations most
+frequently:
+
+<itemize>
+<item>To select a single object within a view, move the cursor to the object
+and click mouse button 1 (the leftmost one).
+Once you select an object, any objects previously
+selected are unselected automatically.
+
+<item>To select an additional object, move the cursor to the object and
+<tt/&lt;Control&gt;/+Click (again with the leftmost mouse button).
+Previously selected objects remain selected, and
+the newly picked object is added to the selection. Notice that the picked item
+must belong to the same level as the previously selected objects. An
+alternative method for selecting multiple objects is to drag a rectangle
+around them. For more information see
+<ref id="mulobjsel" name="Drag-selecting Multiple Objects">
+</itemize>
+
+Note that the Root object and View objects can not be pick-selected at all.
+
+<sect2>Drag-selecting Multiple Objects<label id="mulobjsel">
+<p>
+You can select multiple objects using the <tt/&lt;Control&gt;/+Click method
+described in section <ref id="oneobjsel" name="Selecting Individual Objects">.
+An additional method for selecting multiple objects is to drag a rectangle
+around those objects. However only objects that belong to the current level
+can be picked within a drag-selection. If you want to select multiple objects
+that belong to another level you must change the current level by either
+selecting it in the tree/listbox or by picking one object from that level
+on a view.
+<p>
+The procedure for drag-selecting multiple objects also uses a standard method:
+
+<enum>
+<item>Imagine a rectangle that encloses only the objects you want to select.
+
+<item>Click at one corner of the rectangle and, while continuing to press the
+mouse button, drag until you have enclosed all the objects.
+
+<item>Release the mouse button. All the valid objects inside or crossing the
+rectangle are selected and any objects previously selected are unselected
+automatically.
+</enum>
+
+<p>
+Note that if you press <tt/&lt;Control&gt;/ during the drag-selection, objects
+that are enclosed by the rectangle will be added to the current selection
+instead of replacing it.
+
+<sect2>Ambiguous Picking<label id="ambobjsel">
+<p>
+In some cases Ayam is unable to differentiate between the objects you have
+selected and other nearby or related objects. This ambiguity can arise as
+follows:
+
+<itemize>
+<item>Imagine a small square surrounding the cursor. When you click an object,
+any other valid objects that fall inside this square are also considered to
+be possible selections. For example, if you select an item that is positioned
+very close to another one, Ayam may consider both items to be possible
+selections.
+
+<item>If your model is three-dimensional (which is likely to happen),
+imagine a line that is perpendicular to the screen and that passes through
+the cursor and into the model. When you pick an object, any objects that
+intersect this line are considered to be possible candidates for selection.
+</itemize>
+
+If the selection is ambiguous Ayam displays a window that contains a list of
+the possible candidates for selection (see image below).
+When you click a name in the list,
+the corresponding object is highlighted. Click <tt/"Ok"/ when you have
+determined which object to select or <tt/"Cancel"/ to close the list and keep
+the previous selection unchanged.
+<p>
+<figure loc="ht">
+<eps file="pics/ampick.ps" height="3cm">
+<img src="pics/ampick.gif">
+<caption>List of Picking Candidates</caption>
+</figure>
+<p>
+It is also possible to use a double click in the list of selection
+candidates to select an object and immediately close the dialog
+window. Moreover, as the list of candidates immediately gets the
+keyboard focus, one can also use the cursor keys and <tt/&lt;Enter&gt;/ to
+select the object.
+<footnote>Since 1.11.</footnote>
+<p>
+Notes:
+<itemize>
+<item>While the list of ambiguous candidates is opened one can not pick other
+objects within the views.
+
+<item>It is possible to use the <tt/"Zoom to Object"/ action (shortcut
+<tt/&lt;O&gt;/) while the ambiguous select listbox is open to get
+a better view of the temporarily selected object.
+
+<item>The tolerance used to determine whether an object should be picked
+or not can be adjusted (see <tt/"PickTolerance"/ in
+<ref id="hidprefs" name="Hidden Preference Settings">).
+
+</itemize>
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Moving Objects or Selected Points
 <p>
@@ -3077,8 +3086,7 @@ property (see also section <ref id="vat" name="ViewAttrib Property">).
 Another way of setting the mark is via the <tt/"FindU"/ special action
 for curves
 (see also section <ref id="finduac" name="Finding Points on Curves">)
-or the <tt/"FindUV"/ special action
-for surfaces
+or the <tt/"FindUV"/ special action for surfaces
 (see also section <ref id="finduvac" name="Finding Points on Surfaces">)
 .
 <p>
@@ -3914,7 +3922,7 @@ statement will be written to the RIB, which looks like this:
 <tscreen><verb>Display "unnamed.tif" "file" "rgba"</verb></tscreen>
 
 If you disable this option, be sure to add atleast one
-RiDisplay tag to the root object (see also section
+RiDisplay tag to the Root object (see also section
 <ref id="ridtag" name="RiDisplay Tag">), otherwise your RIB will
 not contain a RiDisplay statement. This option has no effect on
 RIBs created by the QuickRender and Render actions in view windows.
@@ -3997,7 +4005,7 @@ RiDisplay tags (see also section
 <p>
 Every view window (see also section
 <ref id="viewwin" name="Anatomy of a View">)
-has a corresponding view object as a child object of the root object.
+has a corresponding view object as a child object of the Root object.
 You can change camera settings, the type of the view,
 and other things related to the view using the properties of the view object.
 Note that deleting the object that represents a view, will not
@@ -4444,7 +4452,7 @@ This scene is distributed with Ayam as an example scene named
 <tt>"shadowmaps.ay"</tt>.
 <p>
 Note that for Aqsis you should add a RiHider hidden,depthfilter,s,midpoint
-tag to your root object if shadow maps are in use. Other renderers might
+tag to your Root object if shadow maps are in use. Other renderers might
 require additional tweaking using shadow bias RiOption tags.
 Please consult the documentation of your renderer on how to achieve
 the best results using shadow maps.
@@ -6084,7 +6092,7 @@ of data points, undesired wiggles in the output curve may occur.
 This object makes use of the provide mechanism. It marks itself
 as providing a NCurve object (it creates and uses NURBS curves
 internally anyway) and all other objects that work with
-the provide mechanism (e.g.~revolve, sweep, extrude, and skin) are
+the provide mechanism (e.g.~Revolve, Sweep, Extrude, and Skin) are
 able to work with an ACurve object instead of an object
 of type NCurve.
 <p>
@@ -6103,10 +6111,10 @@ The following parameters control the approximation process:
 <sect2>ACurveAttr Property<label id="acp"><label id="acurveattrprop">
 <p>
 <itemize>
-<item>Using <tt/"Length"/ you determine the number of data points to
+<item><tt/"Length"/ determines the number of data points to
 approximate.
 
-<item>Using <tt/"ALength"/ you determine the number of (distinct)
+<item><tt/"ALength"/ is the number of (distinct)
 control points to use for the approximating NURBS curve.
 The total number of distinct control points must be smaller than or equal
 to the number of data points.
@@ -9006,7 +9014,7 @@ the Tcl scripting interface of Ayam
 (see also section <ref id="script" name="Scripting Interface">).
 <p>
 Script objects may also use arbitrary, plugin provided,
-scripting languages, like e.g.~JavaScript, provided by the
+scripting languages, like JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
 <ref id="jsinterp" name="JavaScript Scripting Interface">).
 <footnote>Since 1.18.</footnote>
@@ -9182,15 +9190,15 @@ using the scripting interface command <tt/"sL"/ (which performs
 a hidden selection in the safe interpreter context).
 Consequently, the most simple example script for a script object
 of type <tt/"Create"/ looks like this:
-<code>
+<tscreen><verb>
 crtOb NCurve
-</code>
+</verb></tscreen>
 Or, with further parameterisation
-<code>
+<tscreen><verb>
 crtOb NCurve
 sL
 setProperty NCurveAttr(Order) 2
-</code>
+</verb></tscreen>
 
  <item><tt/"Modify"/, if the script object has child objects,
 these child objects will be temporarily moved into the internal data
@@ -9220,17 +9228,16 @@ needs a NCurve, e.g.~a Sweep:
  \ Path(NCurve)
 </verb></tscreen>
 A simple example script for a script object of type <tt/"Modify"/ that
-needs a single NURBS curve as child object may look
-like this:
-<code>
+needs a single NURBS curve as child object may look like this:
+<tscreen><verb>
 revertC
-</code>
+</verb></tscreen>
 Note: In order to make this work for objects providing NURBS curves
 (interpolating curves or instances of NURBS curves) the code has to
 look like this:
-<code>
+<tscreen><verb>
 convOb -inplace; revertC
-</code>
+</verb></tscreen>
 </itemize>
 
 <item><tt/"Script"/ is the script code. The corresponding widget
@@ -10241,7 +10248,7 @@ The tag type <tt/"RiDisplay"/ can be used to add output files of
 different type (e.g.~containing depth-buffer information)
 to the scene or to directly control the output format when rendering
 the exported scene with a RenderMan compliant renderer.
-RiDisplay tags have to be attached to the root object in order to be used.
+RiDisplay tags have to be attached to the Root object in order to be used.
 The syntax of a RiDisplay tag is as follows:
 <tt/"&lt;name&gt;,&lt;type&gt;,&lt;mode&gt;,&lt;parameterlist&gt;"/,
 where name is e.g.~a file or device name, type specifies the
@@ -10282,9 +10289,9 @@ time (even if <tt/"NoExport"/ tags are added to all instances).
 The tag type <tt/"SaveMainGeom"/ can be used to save the geometry
 of the main window and the toolbox window (if open) to a scene
 file. For that the scene saving code checks for the presence of
-a <tt/"SaveMainGeom"/ tag for the root object and fills it with
+a <tt/"SaveMainGeom"/ tag for the Root object and fills it with
 the current geometry information. The scene reading code checks
-for the presence of a <tt/"SaveMainGeom"/ tag for the root object
+for the presence of a <tt/"SaveMainGeom"/ tag for the Root object
 after replacing a scene and re-establishes the geometries of
 main and toolbox window.
 
@@ -10296,9 +10303,9 @@ The tag type <tt/"SavePaneLayout"/ can be used to save the relative
 sizes of the internal windows of the main window when Ayam runs in
 the single window GUI mode to a scene file.
 For that the scene saving code checks for the presence of
-a <tt/"SavePaneLayout"/ tag for the root object and fills it with
+a <tt/"SavePaneLayout"/ tag for the Root object and fills it with
 the current geometry information. The scene reading code checks
-for the presence of a <tt/"SavePaneLayout"/ tag for the root object
+for the presence of a <tt/"SavePaneLayout"/ tag for the Root object
 after replacing a scene and re-establishes the geometries of the
 internal windows.
 
@@ -17038,7 +17045,7 @@ the scene, the instance will be removed,
 information stored in <tt/"MI"/ tags; if no matching material can
 be found, the connection will not be established,
 <item> a complete notification will be run,
-<item> if the file contains a root object with <tt/"SaveMainGeom"/
+<item> if the file contains a Root object with <tt/"SaveMainGeom"/
 and/or <tt/"SavePaneLayout"/ tags, the respective window/widget
 geometries from the tags will be re-established,
 <item> if no errors occurred during reading, the current scene name
@@ -17049,7 +17056,7 @@ single, maybe even unintentional, press of <tt/&lt;Ctrl+s&gt;/),
 <item> the file name will be put to the first most recently used
 files entry in the file menu,
 <item> the scene changed state will be reset to "unchanged",
-<item> if a root object was read, a save views flag will be set,
+<item> if a Root object was read, a save views flag will be set,
 otherwise it will be cleared and following save operations will not save
 the root and any views (i.e.~scene files without root and views
 stay scene files without root and views, even if new views
@@ -17221,7 +17228,7 @@ into the Ayam console.
 Now you can activate the new top level window and type on your keyboard
 while the Ayam console prints the names of the keys.
 <p>
-For your convenience, the special string <tt/"Ctrl"/ will be replaced by
+For convenience, the special string <tt/"Ctrl"/ will be replaced by
 <tt/"Control"/ before a shortcut is handed to the <tt/bind/ command.
 <p>
 Example:
@@ -18881,7 +18888,7 @@ Index:
 <item>Objects:
 <itemize>
 <item><ref id="obj" name="tree/listbox">,
-<item><ref id="objsel" name="selection within a view">
+<item><ref id="obandprp" name="object types">
 </itemize>
 <item>OffsetNC: <ref id="offsetncobj" name="OffsetNC object">
 <item>OffsetNP: <ref id="offsetnpobj" name="OffsetNP object">
@@ -18942,7 +18949,7 @@ Index:
 <item>PatchSamples: <ref id="rio" name="RenderMan interface option">
 <item>Perspective: <ref id="vmtype" name="view menu entry">
 <item>PhiMin, PhiMax: <ref id="top" name="Torus attribute">
-<item>Pick: <ref id="objsel" name="pick objects within a view">
+<item>Pick: <ref id="objsel" name="selecting objects by picking">
 <item>PickEpsilon: <ref id="prefmodel" name="preference setting">
 <item>PickTolerance: <ref id="hidprefs" name="hidden preference setting">
 <item>Pivot: <ref id="rotaac" name="modelling action">
