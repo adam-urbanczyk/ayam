@@ -954,6 +954,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 	{
 	  /* compilation failed */
 	  luainterp_error();
+	  interp->errorLine = (int)luainterp_errorline;
 	  return TCL_ERROR;
 	}
 
@@ -961,6 +962,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
       if(lua_status)
 	{
 	  luainterp_error();
+	  interp->errorLine = (int)luainterp_errorline;
 	  return TCL_ERROR;
 	}
 
@@ -995,6 +997,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 	    {
 	      luainterp_interp = NULL;
 	      luainterp_error();
+	      interp->errorLine = (int)luainterp_errorline;
 	      return TCL_ERROR;
 	    }
 
@@ -1003,6 +1006,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
 	    {
 	      luainterp_interp = NULL;
 	      luainterp_error();
+	      interp->errorLine = (int)luainterp_errorline;
 	      return TCL_ERROR;
 	    }
 

@@ -1221,6 +1221,12 @@ ay_script_notifycb(ay_object *o)
   old_aynext = ay_next;
   ay_next = &(o->down);
 
+  if(ay_currentview)
+    {
+      old_rdmode = ay_currentview->redraw;
+      ay_currentview->redraw = AY_FALSE;
+    }
+
   /* clean transformation attributes if no NP Transformations
      tag is present */
   if(!o->tags || !ay_script_hasnptrafo(o))
@@ -1260,6 +1266,8 @@ ay_script_notifycb(ay_object *o)
 	{
 	  /* JavaScript/Lua/... */
 	  result = sc->cb(interp, sc->script, AY_TRUE, &(sc->cscript));
+	  if(result == TCL_ERROR)
+	    goto resenv;
 	}
       else
 	{
@@ -1277,12 +1285,6 @@ ay_script_notifycb(ay_object *o)
 	  sc->modified = AY_FALSE;
 	}
     } /* if */
-
-  if(ay_currentview)
-    {
-      old_rdmode = ay_currentview->redraw;
-      ay_currentview->redraw = AY_FALSE;
-    }
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
 
