@@ -32,14 +32,73 @@ array set ScriptAttrData {
 }
 # array ScriptAttrData
 
+proc resizeHandle:ButtonPress-1 {win resizeWin X Y} {
+    upvar #0 _resizeHandle$win ar
+    set ar(startX) $X
+    set ar(startY) $Y
+    set ar(oldWidth) [$resizeWin cget -width]
+    set ar(oldHeight) [$resizeWin cget -height]
+}
+
+proc resizeHandle:B1-Motion {win resizeWin X Y} {
+    upvar #0 _resizeHandle$win ar
+    set xDiff [expr {$X - $ar(startX)}]
+    set yDiff [expr {$Y - $ar(startY)}]
+
+    set newWidth [expr {$ar(oldWidth) + $xDiff / $ar(cw)}]
+    set newHeight [expr {$ar(oldHeight) + $yDiff / $ar(ch)}]
+    
+    if {$newWidth < 2 || $newHeight < 2} {
+	return
+    }
+    if { $newWidth != $ar(oldWidth) || $newHeight != $ar(oldHeight) } {
+	$resizeWin conf -width $newWidth -height $newHeight
+	after idle "resizeHandle:PlaceHandle $win $resizeWin"
+    }
+}
+
+proc resizeHandle:PlaceHandle {win resizeWin} {
+    set x [expr [winfo x $resizeWin]+[winfo width $resizeWin]-3]
+    set y [expr [winfo y $resizeWin]+[winfo height $resizeWin]-3]
+    place $win -in [winfo parent $win] -anchor se -x $x -y $y
+}
+
+proc resizeHandle:Destroy {win} {
+    upvar #0 _resizeHandle$win ar
+    #catch because this may not be set
+    catch {array unset ar}
+}
+
+proc resizeHandle:Create {win resizeWin args} {
+    upvar #0 _resizeHandle$win ar
+    eval label [concat $win $args -image ay_Resizehandle_img]
+    resizeHandle:PlaceHandle $win $resizeWin
+    bind $win <ButtonPress-1> \
+	"resizeHandle:ButtonPress-1 $win $resizeWin %X %Y"
+    bind $win <B1-Motion> \
+	"resizeHandle:B1-Motion $win $resizeWin  %X %Y"
+    bind $win <ButtonRelease-1> \
+	"resizeHandle:PlaceHandle $win $resizeWin"
+    bind $win <Destroy> "resizeHandle:Destroy $win"
+
+    set font [$win cget -font]
+    set ar(cw) [expr [font measure $font "A"]]
+    set ar(ch) [font metrics $font -linespace]
+
+    return $win
+}
+
 # create ScriptAttr-UI:
 set w [frame $ay(pca).$ScriptAttr(w)]
 addCheck $w ScriptAttrData Active
 addMenu $w ScriptAttrData Type [list Run Create Modify]
-pack [text $w.tScript -width 60 -height 60]
+pack [text $w.tScript -undo 1 -width 60 -height 60]
 set t $w.tScript
 eval [subst "bindtags $t \{$t Text all\}"]
 bind $t <Key-Escape> "resetFocus;break"
+
+# create resize handle for text widget
+resizeHandle:Create $w.rsh $t
 
 # create popup menu
 set m [menu $t.popup -tearoff 0]
@@ -132,6 +191,9 @@ proc getScriptp { } {
     if { $errrange != "" } {
 	eval [subst "$t tag add errtag $errrange"]
     }
+
+    resizeHandle:PlaceHandle $ay(pca).$ScriptAttr(w).rsh \
+     $ay(pca).$ScriptAttr(w).tScript
 
  return;
 }
