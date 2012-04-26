@@ -28,7 +28,7 @@ array set rArray {
 # want another object among the candidates to be retained. This function allows
 # the user to reconsider (hence the name) the selected candidate.
 proc reconsider { Selection } {
-    global rArray ay
+    global rArray ay ayprefs
     
     set w .reconsider
 
@@ -61,11 +61,12 @@ proc reconsider { Selection } {
 
     # if we get shuffled under, silently go away after 0.5s
     # XXXX add warning message for the user, if this happens?
-    bind $w <Visibility> {
-	if { ("%s" == "VisibilityPartiallyObscured") ||\
-	     ("%s" == "VisibilityFullyObscured") } {
-	    bind %W <Visibility> {}
-	    after 500 {.reconsider.f2.bca invoke}
+    if { $ayprefs(AutoCloseDialogs) == 1 } {
+	bind $w <Visibility> {
+	    if { "%s" == "VisibilityFullyObscured" } {
+		bind %W <Visibility> {}
+		after 500 {catch {.reconsider.f2.bca invoke}}
+	    }
 	}
     }
 

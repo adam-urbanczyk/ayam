@@ -167,6 +167,7 @@ array set ayprefs {
  FixFlashPoints 0
 
  SafeAutoFocus 1
+ AutoCloseDialogs 0
 
  SwapMB 0
  SwapMBSC { "ayviewshortcuts(MoveVButton)" "ayviewshortcuts(ZoomVButton)" }
