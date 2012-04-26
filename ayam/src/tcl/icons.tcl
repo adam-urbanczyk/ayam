@@ -764,4 +764,11 @@ image create photo ay_FindUV_img -format GIF -data $imgdata
 set imgdata {\
 R0lGODlhCwALAIABAAAAAP///yH5BAEKAAEALAAAAAALAAsAAAIPjI+pq+D/DoxoLnqZ3rwAADs=}
 image create photo ay_Triangle_img -format GIF -data $imgdata
+
+# Resize handle
+set imgdata {\
+R0lGODlhDgAOAIABAAAAAP///yH5BAEAAAEALAAAAAAOAA4AAAIXjI+pywbQzou0Shjm0tr662Bd
+JpbfVwAAOw==}
+image create photo ay_Resizehandle_img -format GIF -data $imgdata
+
 catch {unset imgdata}
