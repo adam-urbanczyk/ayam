@@ -1,14 +1,25 @@
-[4. Apr 2012] CVS-Head:
+[27. Apr 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
 o all even ConcatNP fillet patches are missing (SF 3514939)
+o pick candidates dialog disappears after resize (SF 3522093)
 
 GUI:
 o default value menu buttons of property GUI elements now display a triangle
   instead of a label "Def"
 o CloneAttr property now also displays the Quaternion in abbreviated fashion
+o added internal resize widget to script text editor of Script object
+
+Scripts/Scripting Interface:
+o "applyTrafo" command now applies the transformations to all points by default
+  and it is more robust wrt. non-editable points and objects without points
+o the "estlenNC" command now supports an optional parameter "-trafo" that
+  controls whether the transformation attributes should be applied to the curve
+o the "apnt" script now also binds to the select all/no points shortcuts
+  to enable/disable the point modelling mode
+o added luainterp plugin to support the Lua scripting language
 
 
 [20. Mar 2012] Ayam-1.20:
