@@ -149,17 +149,6 @@ sfcurve_drawcb(struct Togl *togl, ay_object *o)
 } /* sfcurve_drawcb */
 
 
-/* sfcurve_shadecb:
- *  shade (display in an Ayam view window) callback function of sfcurve object
- */
-int
-sfcurve_shadecb(struct Togl *togl, ay_object *o)
-{
-
- return AY_OK;
-} /* sfcurve_shadecb */
-
-
 /* sfcurve_setpropcb:
  *  set property (from Tcl to C context) callback function of sfcurve object
  */
@@ -167,6 +156,7 @@ int
 sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
  int ay_status = AY_OK;
+ char fname[] = "sfcurve_setpropcb";
  char *n1 = "SfCurveAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  sfcurve_object *sfcurve = NULL;
@@ -181,27 +171,33 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Sections",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &sfcurve->sections);
+  Tcl_GetIntFromObj(interp, to, &sfcurve->sections);
+
+  if(sfcurve->sections<2)
+    {
+      ay_error(AY_ERROR, fname, "sections must be >1");
+      sfcurve->sections = 2;
+    }
 
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &sfcurve->order);
+  Tcl_GetIntFromObj(interp ,to, &sfcurve->order);
 
   Tcl_SetStringObj(ton,"M",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sfcurve->m);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->m);
 
   Tcl_SetStringObj(ton,"N1",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sfcurve->n1);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n1);
 
   Tcl_SetStringObj(ton,"N2",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sfcurve->n2);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n2);
 
   Tcl_SetStringObj(ton,"N3",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetDoubleFromObj(interp,to, &sfcurve->n3);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->n3);
 
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -451,10 +447,11 @@ sfcurve_notifycb(ay_object *o)
 
   sfcurve = (sfcurve_object *)(o->refine);
 
-  /* create new super ellipse curve */
+  /* remove old NURBS curve */
   ay_object_delete(sfcurve->ncurve);
   sfcurve->ncurve = NULL;
 
+  /* create new NURBS curve */
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
       ay_status = AY_EOMEM;
@@ -480,7 +477,6 @@ sfcurve_notifycb(ay_object *o)
 
   delta = (2*AY_PI)/sfcurve->sections;
   a = 0;
-
   for(i = 0; i < sfcurve->sections; i++)
     {
       r = pow((pow(fabs(cos(sfcurve->m*angle/4.0)), sfcurve->n2) +
@@ -643,11 +639,11 @@ Sfcurve_Init(Tcl_Interp *interp)
 				sfcurve_deletecb,
 				sfcurve_copycb,
 				sfcurve_drawcb,
-				NULL, /* no points to edit */
-				sfcurve_shadecb,
+				NULL, /* no points to draw */
+				NULL, /* no surface */
 				sfcurve_setpropcb,
 				sfcurve_getpropcb,
-				NULL, /* No Picking! */
+				NULL, /* no points to pick */
 				sfcurve_readcb,
 				sfcurve_writecb,
 				sfcurve_wribcb,
