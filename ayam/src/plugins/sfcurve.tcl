@@ -32,6 +32,8 @@ addParam $w SfCurveAttrData M
 addParam $w SfCurveAttrData N1
 addParam $w SfCurveAttrData N2
 addParam $w SfCurveAttrData N3
+addParam $w SfCurveAttrData TMin
+addParam $w SfCurveAttrData TMax
 addParam $w SfCurveAttrData Sections
 
 addParam $w SfCurveAttrData Order
