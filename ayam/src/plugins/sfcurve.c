@@ -21,8 +21,11 @@ static unsigned int sfcurve_id;
 typedef struct sfcurve_object_s
 {
   double m, n1, n2, n3;
+  double tmin, tmax;
+
   int sections;
   int order;
+
   ay_object *ncurve;
   int display_mode;
   double glu_sampling_tolerance;
@@ -60,6 +63,9 @@ sfcurve_createcb(int argc, char *argv[], ay_object *o)
 
   sfcurve->sections = 9;
   sfcurve->order = 3;
+
+  sfcurve->tmin = 0.0;
+  sfcurve->tmax = 360.0;
 
   o->refine = sfcurve;
 
@@ -199,6 +205,21 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &sfcurve->n3);
 
+  Tcl_SetStringObj(ton,"TMin",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->tmin);
+
+  Tcl_SetStringObj(ton,"TMax",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &sfcurve->tmax);
+
+  if(fabs(sfcurve->tmax-sfcurve->tmin)<AY_EPSILON)
+    {
+      ay_error(AY_ERROR, fname, "tmin must be different from tmax");
+      sfcurve->tmin = 0.0;
+      sfcurve->tmax = 360.0;
+    }
+
   Tcl_SetStringObj(ton, "Tolerance", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &(sfcurve->glu_sampling_tolerance));
@@ -263,6 +284,14 @@ sfcurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewDoubleObj(sfcurve->n3);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"TMin",-1);
+  to = Tcl_NewDoubleObj(sfcurve->tmin);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"TMax",-1);
+  to = Tcl_NewDoubleObj(sfcurve->tmax);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(sfcurve->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -301,6 +330,8 @@ sfcurve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&sfcurve->n1);
   fscanf(fileptr,"%lg\n",&sfcurve->n2);
   fscanf(fileptr,"%lg\n",&sfcurve->n3);
+  fscanf(fileptr,"%lg\n",&sfcurve->tmin);
+  fscanf(fileptr,"%lg\n",&sfcurve->tmax);
 
   fscanf(fileptr,"%lg\n",&(sfcurve->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(sfcurve->display_mode));
@@ -331,6 +362,9 @@ sfcurve_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", sfcurve->n1);
   fprintf(fileptr, "%g\n", sfcurve->n2);
   fprintf(fileptr, "%g\n", sfcurve->n3);
+
+  fprintf(fileptr, "%g\n", sfcurve->tmin);
+  fprintf(fileptr, "%g\n", sfcurve->tmax);
 
   fprintf(fileptr, "%g\n", sfcurve->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", sfcurve->display_mode);
@@ -440,7 +474,7 @@ sfcurve_notifycb(ay_object *o)
  ay_object *ncurve = NULL;
  double *cv = NULL;
  int stride = 4, i, a;
- double r, angle = 0.0, delta;
+ double r, angle, delta;
 
   if(!o)
     return AY_ENULL;
@@ -475,8 +509,10 @@ sfcurve_notifycb(ay_object *o)
       goto cleanup;
     }
 
-  delta = (2*AY_PI)/sfcurve->sections;
+  delta = (AY_D2R(sfcurve->tmax-sfcurve->tmin))/sfcurve->sections;
+  angle = sfcurve->tmin;
   a = 0;
+
   for(i = 0; i < sfcurve->sections; i++)
     {
       r = pow((pow(fabs(cos(sfcurve->m*angle/4.0)), sfcurve->n2) +
@@ -488,8 +524,8 @@ sfcurve_notifycb(ay_object *o)
       cv[a+3] = 1.0;
       a += stride;
       angle += delta;
-
     } /* for */
+
   memcpy(&(cv[a]), cv, stride*sizeof(double));
 
   nc->controlv = cv;
