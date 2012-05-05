@@ -1,4 +1,4 @@
-INSTALL [29. Mar 2012]
+INSTALL [5. May 2012]
 
 Compilation Instructions for Ayam
 ---------------------------------
@@ -19,7 +19,7 @@ source distribution.
 Contents:
 1. Compiling a Shared Version of Ayam
 2. Compiling a Wrapped Standalone Version of Ayam
-3. Additional Targets (Compiling Plugins)
+3. Additional Targets (Compiling Plugins/Fill MacOSX Application Bundle)
 4. Compile Time Configuration Options
 
 1. Compiling a Shared Version of Ayam
@@ -607,7 +607,7 @@ then type:
 >make jsinterp.so
 
 Load it via menu entry "File/Load Plugin".
-Use it via the jsEval command or a Script object where the first line is
+Use it via the "jsEval" command or a Script object where the first line is
 a JavaScript comment:
 /* Ayam, use: JavaScript */
 
@@ -626,9 +626,18 @@ then type:
 >make luainterp.so
 
 Load it via menu entry "File/Load Plugin".
-Use it via the luaEval command or a Script object where the first line is
+Use it via the "luaEval" command or a Script object where the first line is
 a Lua comment:
 -- Ayam, use: Lua
+
+
+3.15 Superformula Curve Plugin
+------------------------------
+
+In order to compile the plugin, type:
+>make sfcurve.so
+
+Load it via menu entry "File/Load Plugin".
 
 
 3.14 Installing/Uninstalling Ayam
@@ -668,7 +677,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.14 Creating an application bundle on MacOSX
+3.15 Creating an application bundle on MacOSX
 ---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
