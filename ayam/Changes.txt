@@ -1,4 +1,4 @@
-[27. Apr 2012] CVS-Head:
+[5. May 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -20,6 +20,9 @@ o the "estlenNC" command now supports an optional parameter "-trafo" that
 o the "apnt" script now also binds to the select all/no points shortcuts
   to enable/disable the point modelling mode
 o added luainterp plugin to support the Lua scripting language
+
+Plugins:
+o added plugin that creates superformula curves
 
 
 [20. Mar 2012] Ayam-1.20:
