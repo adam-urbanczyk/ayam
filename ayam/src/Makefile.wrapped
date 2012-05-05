@@ -394,6 +394,8 @@ MF3DOBJS = MF3D/mf3d.o\
 
 CSPHEREOBJS = plugins/csphere.o
 
+SFCURVEOBJS = plugins/sfcurve.o
+
 IDROBJS = plugins/idr.o
 
 METAOBJS = contrib/meta/metaobj.o \
@@ -535,7 +537,7 @@ AYINC = -I. -IMF3D -Icontrib $(TOGLINC) $(TCLINC) $(TKINC) $(BMRTINC) $(GLINC) $
 
 all: wrappedayam
 
-plugins: csphere.so mfio.so metaobj.so mopsi.so
+plugins: csphere.so sfcurve.so mfio.so metaobj.so mopsi.so
 
 wrapMain.o: wrapMain.c
 	$(CC) -c $(CFLAGS) wrapMain.c -I$(WRAPDIR) -I$(WRAPDIR)/libz $(TCLINC) $(TKINC)
@@ -575,6 +577,9 @@ aycsg.so: $(AYCSGOBJS) $(OPENCSGOBJS)
 
 csphere.so: $(CSPHEREOBJS)
 	$(CC) $(SHLFLAGS) $(CSPHEREOBJS) -o plugins/csphere.so
+
+sfcurve.so: $(SFCURVEOBJS)
+	$(CC) $(SHLFLAGS) $(SFCURVEOBJS) -o plugins/sfcurve.so
 
 idr.so: $(IDROBJS)
 	$(CC) $(SHLFLAGS) $(IDROBJS) -o plugins/idr.so $(TIFFLIB)
@@ -748,6 +753,8 @@ install:
 	-$(INSTALL) plugins/loadjsinterp.tcl $(LIBDIR)
 	-$(INSTALL) plugins/luainterp.so $(LIBDIR)
 	-$(INSTALL) plugins/loadluainterp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sfcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
 	-$(INSTALL) Makefile $(BINDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
