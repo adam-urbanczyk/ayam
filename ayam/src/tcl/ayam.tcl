@@ -861,6 +861,11 @@ if { $tcl_platform(platform) == "windows" } {
 
 	# Aqua always sends Shift-Tab
 	set ayprefs(ShiftTab) "<Shift-Tab>"
+    } else {
+	# X11 specific settings:
+	# improve dialog box appearance
+	option add *Dialog.msg.font {Times 12}
+	option add *Dialog.msg.wrapLength 6i
     }
     # if
 
@@ -902,7 +907,7 @@ if { ($ay(ws) != "Aqua") && ($tcl_platform(os) == "Darwin") } {
 # fix Shift-Tab binding
 if { ( $tcl_platform(platform) != "windows" ) && ( ! $AYWITHAQUA ) } {
     if { $tcl_version > 8.3 } {
-	tk::unsupported::ExposePrivateCommand tkTabToWindow
+	catch {tk::unsupported::ExposePrivateCommand tkTabToWindow}
     }
     catch {bind all <ISO_Left_Tab> { tkTabToWindow [tk_focusPrev %W] }}
 }
@@ -923,7 +928,7 @@ if { [string length [array names env AYAMRC]] != 0 } {
     set ay(ayamrc) "$env(AYAMRC)"
 } else {
     if { $tcl_platform(platform) == "windows" } {
-# if envvar HOME is not set (Win95?), use TEMP
+	# if envvar HOME is not set (Win95?), use TEMP
 	if { [string length [array names env HOME]] == 0 } {
 	    set ay(ayamrc) "$env(TEMP)/ayamrc"
 	} else {
