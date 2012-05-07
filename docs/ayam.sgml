@@ -1690,7 +1690,7 @@ Keyboard shortcuts directly modifying the camera, that is associated
 with the view window, are:
 <itemize>
 <item><tt/&lt;Left&gt;/, <tt/&lt;Up&gt;/, <tt/&lt;Right&gt;/,
-<tt/&lt;Down&gt;/ rotate viewer around origin.
+<tt/&lt;Down&gt;/ rotate viewer around the current camera aim point.
 
 <item><tt/&lt;Shift+Left&gt;/, <tt/&lt;Shift+Up&gt;/, <tt/&lt;Shift+Right&gt;/,
 <tt/&lt;Shift+Down&gt;/ pan the view.
@@ -5634,7 +5634,7 @@ The paraboloid object appears in RIB output as simple
 <tscreen><tt>
 RiParaboloid(...);
 </tt></tscreen>
-or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/ or
+or, if <tt/"Closed"/ is enabled and <tt/"ZMin"/, <tt/"ZMax"/, or
 <tt/"ThetaMax"/ have different than the default values, as complex
 CSG hierarchy of at most one paraboloid, two disks, and two bicubic patches.
 
@@ -7594,22 +7594,24 @@ See the image below for an example.
 </figure>
 <p>
 The third parameter, <tt/"Sections"/, determines how many
-sections (in U direction) should be used, when generating the
+control points (in U direction) should be used, when generating the
 sweep NURBS patch. The sweep NURBS patch has sections+1 control
-points in U direction for open and closed sweep types whereas
-sections+order control points will be created for periodic sweep types.
+points in U direction for open and closed sweeps whereas
+sections+order control points will be created for periodic sweeps.
 <newline>
-Also zero is a valid setting for the <tt/"Sections"/
-parameter and used as default value.
+Zero is a valid setting for the <tt/"Sections"/ parameter and used as
+default value.
 <footnote>Since 1.13.</footnote>
-If <tt/"Sections"/ is zero the number of sections is directly derived
-from the length of the trajectory curve plus one (except for trajectory
-curves of length 2, where it is 1). See the table below for examples.
+In this case the number of sections is directly derived from the length
+of the trajectory curve plus one (except for trajectory curves of length
+2, where the number of sections is 1).
 <newline>
-Consequently, if <tt/"Sections"/ is zero, for a standard NURBS curve of
+For example, if <tt/"Sections"/ is zero, for a standard NURBS curve of
 length 4, the number of sections used is 5 and the width of the created
 NURBS patch is 6, for a curve with just 2 control points, the number of
-sections used is 1 and the width of the resulting patch is 2.<newline>
+sections used is 1 and the width of the resulting patch is 2.
+See the table below for more examples.
+<newline>
 Moreover, if <tt/"Sections"/ is zero, the order of the sweep in U direction
 is taken from the trajectory curve. Otherwise, the order of the created
 patch depends on the number of sections as follows: for 1 and 2 sections
@@ -7617,7 +7619,7 @@ the order will be 2 and 3 respectively, in all other cases it will be 4.
 <p>
 If <tt/"Rotate"/ is enabled, the cross sections will be
 rotated so that they are always perpendicular to the trajectory,
-this enabled by default.
+this option is enabled by default.
 <p>
 The attributes <tt/"StartCap"/ and <tt/"EndCap"/ may be
 used to automatically create cap surfaces, that close the
@@ -15110,7 +15112,7 @@ sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
 and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
 Note that the variable names may also point to Tcl array elements:
 <tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
-or contain name-space specifiers
+or contain namespace specifiers
 <tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
 .
 
@@ -15403,7 +15405,7 @@ sets the Tcl variable <tt>"a"</tt> to the floating point value 3.3,
 and <tt>"b"</tt> to a list of integer values (<tt>"{ 1 3 5 }"</tt>).
 Note that the variable names may also point to Tcl array elements:
 <tt>"tclset("SphereAttrData(Radius)", 1.2);"</tt>
-or contain name-space specifiers
+or contain namespace specifiers
 <tt>"tclset("::MyNameSpace::Radius", 1.2);"</tt>
 .
 
@@ -18747,6 +18749,7 @@ Index:
 <label id="indexl"><tt/<bf/L//
 <list>
 <item>Last (None): <ref id="mmtools" name="main menu entry">
+<item>Lathe: <ref id="revolveobj" name="Revolve object">
 <item>LazyNotify: <ref id="prefmodel" name="preference setting">
 <item>Length:
 <itemize>
