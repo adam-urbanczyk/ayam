@@ -137,7 +137,7 @@ Quicktime 3D Metafile (3DMF) export and import.
 <item>Custom objects that may freely implement their representations
 (using OpenGL and RIB) and even small GUIs to edit their type specific
 parameters may be written by the user and dynamically loaded at runtime.
-<item>Scripting interfaces: Tcl, JavaScript.
+<item>Scripting interfaces: Tcl, JavaScript, Lua.
 <item>Script objects.
 <item>Miscellaneous: (automatic) instancing, arbitrary number of modelling
 views, object clipboard, independent property clipboard, console,
@@ -3872,7 +3872,8 @@ or define new object types via the custom object plugin mechanism.
 Script|Any+|No|Any|No*@<hline>
 MetaObj|MetaComp+|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
-SDNPatch|No|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
+SDNPatch|No|Yes|PolyMesh|Yes@<hline>
+SfCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Scripts and Plugins</caption>
 </table>
@@ -5081,10 +5082,9 @@ instances they create.
 <p>
 To create such a tag manually, select the Instance object and enter
 into the Ayam console:
-<code>
-addTag RP Transformations
-</code>
-.
+<tscreen><tt>
+&raquo;&thinsp;addTag RP Transformations
+</tt></tscreen>
 <p>
 This special case of an instance is sometimes also called reference.
 
@@ -9397,15 +9397,80 @@ A simple example of a custom object is the CSphere, which implements
 a simple sphere and has a new property named <tt/"CSphereAttr"/.
 This property contains all parameters of a simple RenderMan Interface
 quadric sphere. A more complex example would be the MetaObj custom
-object. It is possible, but not planned for now, to integrate
-the T-Spline modelling paradigm into Ayam this way.
+object. Via custom objects it is possible, but not planned for now,
+to integrate the hierarchical or T-Spline modelling paradigms into
+Ayam.
 <p>
 Since a custom object has total control over properties and representations,
-you should refer to the documentation of the respective custom object for
+please refer to the documentation of the respective custom object for
 more information regarding its properties.
 <p>
-One custom object is already distributed with Ayam. This Metaball
-custom object is documented in the next section:
+Several custom object plugins are already distributed with Ayam. Those
+are documented in the next sections:
+
+<#if out=latex><x/newpage/</#if>
+
+<sect1>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
+<p>
+The SfCurve object creates a superformula curve from four parameters
+named m, n1, n2, and n3.
+The curve is always closed; the number of control points and order of
+the curve may be configured.
+<p>
+<figure loc="!ht">
+<eps file="pics/sfcurve.ps" height="5cm">
+<img src="pics/sfcurve.gif">
+<caption>Superformula Curve from Parameters 10, 22, -11, 3</caption>
+</figure>
+<p>
+The following table briefly lists some capabilities of the SfCurve object.
+<p>
+<table loc="ht">
+<tabular ca="|c|c|c|c|c|"><hline>
+<bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
+SfCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
+</tabular>
+<caption>SfCurve Object Capabilities</caption>
+</table>
+<p>
+The following parameters control the curve:
+
+<sect2>SfCurveAttr Property<label id="sfcurveattrprop">
+<p>
+<itemize>
+<item>The parameters <tt/"M"/, <tt/"N1"/, <tt/"N2"/, and <tt/"N3"/
+control the superformula.
+
+<item><tt/"TMin"/ is the start angle.
+<item><tt/"TMax"/ is the end angle.
+
+<p>
+Note that the angle defined by <tt/"TMin"/ and <tt/"TMax"/ may
+actually be larger than 360, as can be seen in the image below:
+<p>
+<figure loc="!ht">
+<eps file="pics/sfcurvetmax.ps" height="5cm">
+<img src="pics/sfcurvetmax.gif">
+<caption>Superformula Curve with TMax 1440</caption>
+</figure>
+<p>
+<item><tt/"Sections"/ is the number of sample points.
+
+<item><tt/"Order"/ is the desired order of the curve.
+
+<item>See section <ref id="ncattr" name="NCurveAttr"> for a description
+of the parameters: <tt/"Tolerance"/ and <tt/"DisplayMode"/.
+</itemize>
+
+<sect2>Conversion Support
+<p>
+The superformula curve may be converted to an ordinary NURBS curve using the
+main menu entry <tt>"Tools/Convert"</tt>.
+
+<sect2>RIB Export
+<p>
+SfCurve objects never directly appear in RIB output (only indirectly as trim
+curve).
 
 <#if out=latex><x/newpage/</#if>
 
@@ -14827,9 +14892,10 @@ with the help of Ayam which is running in the background.
 <p>
 In the most simple form, bgconvert may be used from a Unix command line
 (or shell script) like this:
-<code>
-bgconvert.tcl infile.x3d outfile.dxf
-</code>
+<tscreen><tt>
+&raquo;&thinsp;bgconvert.tcl infile.x3d outfile.dxf
+</tt></tscreen>
+<p>
 The above command would load the X3D file <tt>"infile.x3d"</tt>
 into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
 <p>
@@ -14839,11 +14905,13 @@ configured (check the <tt>"Plugins"</tt> preference setting).
 The plugins necessary for the conversion will be loaded automatically.
 <p>
 Import and export options may also be given like this:
-<code>
-bgconvert.tcl "infile.rib -p 1" outfile.dxf
-</code>
+<tscreen><tt>
+&raquo;&thinsp;bgconvert.tcl "infile.rib -p 1" outfile.dxf
+</tt></tscreen>
+<p>
 In the example above the <tt>"-p 1"</tt> option switches on reading
 of partial RIB files.
+<p>
 Available options and their syntax may be inquired from the
 import and export plugin Tcl scripts (e.g.~<tt>"plugins/rrib.tcl"</tt>).
 
@@ -14912,7 +14980,8 @@ Since Ayam 1.18 there is a complete example script for the JavaScript
 scripting interface distributed as <tt>"polyhedron.js"</tt> which
 creates polyhedrons from Conway notations.
 The script is based on the online Polyhedron VRML generator by
-George W. Hart.
+George W. Hart:<newline>
+<tt>http://www.georgehart.com/virtual-polyhedra/conway_notation.html</tt>
 <p>
 This script must be used in a Script object of type <tt/"Create"/.
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
@@ -14987,11 +15056,11 @@ To access the JavaScript functionality from the Tcl scripting interface,
 the <tt>"jsEval"</tt> command can be used to directly execute JavaScript
 code (Tcl code in <bf>bold</bf>):
 <tscreen>
-<tt><bf>jsEval {</bf>var a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
+<tt>&raquo;&thinsp;<bf>jsEval {</bf>var a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
 </tscreen>
 or from a file:
 <tscreen>
-<tt><bf>jsEval -f scriptfile.js</bf></tt>
+<tt>&raquo;&thinsp;<bf>jsEval -f scriptfile.js</bf></tt>
 </tscreen>
 Furthermore, Script object scripts may also be implemented in JavaScript,
 provided the first line of the script is a comment that instructs Ayam to
@@ -15040,7 +15109,7 @@ available as converted function (refer to section
 <ref id="sccomm" name="Index of Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
-Note that many Tcl procedures are not available as global JavaScript
+Note that Tcl procedures are not available as global JavaScript
 function, but they can be called using <tt>"tcleval"</tt> as documented
 in the next paragraph.
 
@@ -15049,7 +15118,7 @@ in the next paragraph.
 <tt/<bf/tcleval://<label id="tcleval"><newline>
 Apart from Tcl commands converted to JavaScript functions, there is the
 global JavaScript function <tt>"tcleval"</tt>, that allows to evaluate
-arbitrary Tcl scripts:
+arbitrary Tcl scripts, delivered as string argument:
 <tscreen><tt>
 var a = 42;<newline>
 a = tcleval("<bf>puts </bf>" + a + "<bf>; return 5;</bf>");<newline>
@@ -15060,6 +15129,8 @@ The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript
 according to the rules for data conversion as documented below.
+However, due to the conversion to string data, the overhead of
+such a call is considerable.
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -15280,11 +15351,11 @@ To access the Lua functionality from the Tcl scripting interface,
 the <tt>"luaEval"</tt> command can be used to directly execute Lua
 code (Tcl code in <bf>bold</bf>):
 <tscreen>
-<tt><bf>luaEval {</bf>a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
+<tt>&raquo;&thinsp;<bf>luaEval {</bf>a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
 </tscreen>
 or from a file:
 <tscreen>
-<tt><bf>luaEval -f scriptfile.lua</bf></tt>
+<tt>&raquo;&thinsp;<bf>luaEval -f scriptfile.lua</bf></tt>
 </tscreen>
 Furthermore, Script object scripts may also be implemented in Lua,
 provided the first line of the script is a comment that instructs Ayam to
@@ -15342,7 +15413,7 @@ in the next paragraph.
 <tt/<bf/tcleval://<label id="luatcleval"><newline>
 Apart from Tcl commands converted to Lua functions, there is the
 global Lua function <tt>"tcleval"</tt>, that allows to evaluate
-arbitrary Tcl scripts:
+arbitrary Tcl scripts, delivered as string argument:
 <tscreen><tt>
 a = 42;<newline>
 a = tcleval("<bf>puts </bf>" ..&ensp;a ..&ensp;"<bf>; return 5;</bf>");<newline>
@@ -15353,6 +15424,8 @@ The <tt>"tcleval"</tt> function provides access to all the
 functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to Lua
 according to the rules for data conversion as documented below.
+However, due to the conversion to string data, the overhead of
+such a call is considerable.
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -18044,7 +18117,7 @@ to Realistic Computer Graphics by Steve Upstill (Addison-Wesley,
 Musgrave, Peachey, Perlin, and Worley (Academic Press, 1994)
 </itemize>
 
-WWW resources:
+WWW resources related to Ayam:
 <itemize>
 <item>If you are reading this document from a local file system,
 maybe an updated version is available from the internet:
@@ -18052,10 +18125,12 @@ maybe an updated version is available from the internet:
 <item>Ayam Tutorial #1:
 <tt>http://www.ayam3d.org/tut1/tutorial1.html</tt>
 <item>The Ayam FAQ: <tt>http://www.ayam3d.org/faq.html</tt>
+</itemize>
+
+WWW resources related to RenderMan:
+<itemize>
 <item>The RenderMan Repository: <tt>http://www.renderman.org/</tt>
 <item>The RenderMan Academy: <tt>http://www.rendermanacademy.com/</tt>
-<item>George W. Hart, Virtual Polyhedra<newline>
-<tt>http://www.georgehart.com/virtual-polyhedra/conway_notation.html</tt>
 </itemize>
 
 <sect1>Acknowledgements
@@ -19245,6 +19320,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>setPnt: <ref id="scsetpnt" name="scripting interface command">
 <item>setPrefs: <ref id="scsetprefs" name="scripting interface command">
 <item>setProperty: <ref id="scsetproperty" name="scripting interface command">
+<item>SfCurve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Shade:
 <itemize>
 <item><ref id="prefdraw" name="preference setting">,
@@ -19328,6 +19404,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Stretch: <ref id="scalac" name="stretch object">
 <item>String: <ref id="textattr" name="Text attribute">
 <item>Subdivision Mesh: <ref id="sdmeshobj" name="SDMesh object">
+<item>Superformula Curve: <ref id="sfcurveobj" name="SfCurve object">
 <item>Surface: <ref id="matshader" name="shader">
 <item>SwapMB: <ref id="hidprefs" name="hidden preference setting">
 <item>Swap UV: <ref id="swapuvt" name="swap uv tool">
