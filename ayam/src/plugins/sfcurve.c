@@ -155,6 +155,79 @@ sfcurve_drawcb(struct Togl *togl, ay_object *o)
 } /* sfcurve_drawcb */
 
 
+/* sfcurve_drawhcb:
+ *  draw handles callback function of sfcurve object
+ */
+int
+sfcurve_drawhcb(struct Togl *togl, ay_object *o)
+{
+ sfcurve_object *sfcurve = NULL;
+ ay_nurbcurve_object *ncurve = NULL;
+ double *cv = NULL;
+ double point_size = ay_prefs.handle_size;
+ int i, a = 0, stride = 4;
+
+  if(!o)
+    return AY_ENULL;
+
+  sfcurve = (sfcurve_object *)o->refine;
+
+  if(!sfcurve)
+    return AY_ENULL;
+
+  if(sfcurve->ncurve)
+    {
+      ncurve = sfcurve->ncurve->refine;
+      cv = ncurve->controlv;
+
+      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		(GLfloat)ay_prefs.obb);
+
+      glPointSize((GLfloat)point_size);
+
+      glBegin(GL_POINTS);
+       for(i = 0; i < ncurve->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)&cv[a]);
+	   a += stride;
+	 }
+      glEnd();
+
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+    } /* if */
+
+ return AY_OK;
+} /* sfcurve_drawhcb */
+
+/* sfcurve_getpntcb:
+ *  get point (editing and selection) callback function of sfcurve object
+ */
+int
+sfcurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
+{
+ sfcurve_object *sfcurve = NULL;
+ ay_nurbcurve_object *ncurve = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sfcurve = (sfcurve_object *)o->refine;
+
+  if(sfcurve->ncurve)
+    {
+      ncurve = (ay_nurbcurve_object*)sfcurve->ncurve->refine;
+      return ay_selp_getpnts(mode, o, p, pe, 1,
+		       ncurve->length, 4, ncurve->controlv);
+    }
+  else
+    {
+      return AY_OK;
+    }
+
+} /* sfcurve_getpntcb */
+
+
 /* sfcurve_setpropcb:
  *  set property (from Tcl to C context) callback function of sfcurve object
  */
@@ -675,11 +748,11 @@ Sfcurve_Init(Tcl_Interp *interp)
 				sfcurve_deletecb,
 				sfcurve_copycb,
 				sfcurve_drawcb,
-				NULL, /* no points to draw */
+				sfcurve_drawhcb,
 				NULL, /* no surface */
 				sfcurve_setpropcb,
 				sfcurve_getpropcb,
-				NULL, /* no points to pick */
+				sfcurve_getpntcb,
 				sfcurve_readcb,
 				sfcurve_writecb,
 				sfcurve_wribcb,
