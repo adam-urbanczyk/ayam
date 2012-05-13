@@ -9413,9 +9413,25 @@ are documented in the next sections:
 <sect1>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
 <p>
 The SfCurve object creates a superformula curve from four parameters
-named m, n1, n2, and n3.
-The curve is always closed; the number of control points and order of
-the curve may be configured.
+named m, n1, n2, and n3 (see also the image below).
+The superformula is a generalization of the superellipse; in polar
+coordinates it is defined as:
+<#if out=latex>
+<eq>
+r(t) = (cos(<fr><nu/m<rf/&middot;/t/<de/4/</fr>)<sup/n2/ +
+        sin(<fr><nu/m<rf/&middot;/t/<de/4/</fr>)<sup/n3/)
+        <sup/-<fr><nu/1/<de/n1/</fr>/
+</eq>
+</#if>
+<#if out=html>
+<tscreen><dm>
+r(t) = (cos((m&middot;t)/4)<sup/n2/ + sin((m&middot;t)/4)<sup/n3/)<sup>-(1/n1)</sup>
+</dm></tscreen>
+</#if>
+where r is the radius and t the angle. The SfCurve object allows
+to specify start and end values for t as well as the number of
+sample points inbetween.<newline>
+The generated NURBS curve is always closed, but the order may be configured.
 <p>
 <figure loc="!ht">
 <eps file="pics/sfcurve.ps" height="5cm">
@@ -9454,7 +9470,11 @@ actually be larger than 360, as can be seen in the image below:
 <caption>Superformula Curve with TMax 1440</caption>
 </figure>
 <p>
+Also note that e.g. setting <tt/"TMin"/ to 1 and <tt/"TMax"/ to 361
+may deliver better results than using the default values.
+
 <item><tt/"Sections"/ is the number of sample points.
+Curves with sharp features may need high values of about 100.
 
 <item><tt/"Order"/ is the desired order of the curve.
 
