@@ -20,15 +20,16 @@ static unsigned int sfcurve_id;
 
 typedef struct sfcurve_object_s
 {
-  double m, n1, n2, n3;
-  double tmin, tmax;
+  double m, n1, n2, n3; /**< superformula parameters */
+  double tmin, tmax; /**< minimum/maximum angles */
 
-  int sections;
-  int order;
+  int sections; /**< number of control points to create */
+  int order; /**< desired order of NURBS curve to create */
 
-  ay_object *ncurve;
-  int display_mode;
-  double glu_sampling_tolerance;
+  ay_object *ncurve; /**< cached NURBS curve */
+
+  int display_mode; /**< drawing quality */
+  double glu_sampling_tolerance; /**< drawing mode */
 } sfcurve_object;
 
 
@@ -200,6 +201,7 @@ sfcurve_drawhcb(struct Togl *togl, ay_object *o)
  return AY_OK;
 } /* sfcurve_drawhcb */
 
+
 /* sfcurve_getpntcb:
  *  get point (editing and selection) callback function of sfcurve object
  */
@@ -286,9 +288,9 @@ sfcurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp, to, &sfcurve->tmax);
 
-  if(fabs(sfcurve->tmax-sfcurve->tmin)<AY_EPSILON)
+  if(fabs(sfcurve->tmax-sfcurve->tmin) < AY_EPSILON)
     {
-      ay_error(AY_ERROR, fname, "tmin must be different from tmax");
+      ay_error(AY_ERROR, fname, "TMin must be different from TMax");
       sfcurve->tmin = 0.0;
       sfcurve->tmax = 360.0;
     }
@@ -446,18 +448,6 @@ sfcurve_writecb(FILE *fileptr, ay_object *o)
 } /* sfcurve_writecb */
 
 
-/* sfcurve_wribcb:
- *  RIB export callback function of sfcurve object
- *  (code taken from Affine)
- */
-int
-sfcurve_wribcb(char *file, ay_object *o)
-{
-
- return AY_OK;
-} /* sfcurve_wribcb */
-
-
 /* sfcurve_bbccb:
  *  bounding box calculation callback function of sfcurve object
  */
@@ -506,7 +496,7 @@ sfcurve_bbccb(ay_object *o, double *bbox, int *flags)
 	    zmax = controlv[a+2];
 
 	  a += 4;
-	}
+	} /* for */
 
       /* P1 */
       bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
@@ -755,7 +745,7 @@ Sfcurve_Init(Tcl_Interp *interp)
 				sfcurve_getpntcb,
 				sfcurve_readcb,
 				sfcurve_writecb,
-				sfcurve_wribcb,
+				NULL, /* no RIB export */
 				sfcurve_bbccb,
 				&sfcurve_id);
 
