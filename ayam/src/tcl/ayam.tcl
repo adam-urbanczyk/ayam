@@ -123,7 +123,7 @@ array set ayprefs {
  mainGeom ""
  mainState "normal"
  toolBoxGeom ""
- LoadEnv 1
+ LoadEnv 0
  EnvFile "~/.ayam2view.ay"
  EFlush 2000
  mru {}
