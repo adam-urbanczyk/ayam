@@ -772,7 +772,7 @@ proc addString { w prop name  {def {}}} {
 	}
 
 	if { $ay(ws) == "Aqua" } {
-	    $f.mb configure -height 14
+	    $mb configure -height 14
 	}
 
 	set m [menu $mb.m -tearoff 0]
