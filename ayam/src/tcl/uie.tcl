@@ -157,6 +157,9 @@ proc addParam { w prop name {def {}} } {
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
+	if { $ay(ws) == "Aqua" } {
+	    $mb configure -height 14
+	}
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
@@ -181,8 +184,8 @@ proc addParam { w prop name {def {}} } {
 	}
     }
 
-    global tcl_platform
-    if { $tcl_platform(platform) == "windows" } {
+
+    if { $ay(ws) == "Win32" } {
 	pack $f.l -in $f -side left
 	pack $f.b1 -in $f -side left -pady 0 -fill x -expand no
 	pack $f.e -in $f -side left -pady 0 -fill both -expand yes
@@ -195,7 +198,7 @@ proc addParam { w prop name {def {}} } {
 	pack $f.l $f.b1 -in $f -side left -fill x -expand no
 	pack $f.e -in $f -side left -fill x -expand yes
 	pack $f.b2 -in $f -side left -fill x -expand no
-	if { $mb != "" } { pack $mb -side left -fill x -expand no}
+	if { $mb != "" } { pack $mb -side left -fill x -expand no }
     }
     pack $f -in $w -side top -fill x
 
@@ -435,8 +438,7 @@ proc addColor { w prop name {def {}}} {
 	set bcolor "#000000"
     }
 
-    global tcl_platform
-    if { $tcl_platform(platform) == "windows" } {
+    if { $ay(ws) == "Win32" } {
 	button $f.b1 -pady 1 -background $bcolor\
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw -width 3
@@ -447,7 +449,8 @@ proc addColor { w prop name {def {}}} {
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw
 	} else {
-	button $f.b1 -pady 1 -background $bcolor\
+	    # X11
+	    button $f.b1 -pady 1 -background $bcolor\
 		-command "updateColor $w $prop $name $f.b1"\
 		-bd $bw
 	}
@@ -465,10 +468,12 @@ proc addColor { w prop name {def {}}} {
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
-	if { $tcl_platform(platform) == "windows" } {
+	if { $ay(ws) == "Win32" } {
 	    $mb configure -pady 0
 	}
-
+	if { $ay(ws) == "Aqua" } {
+	    $mb configure -height 14
+	}
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label "$val"\
@@ -558,9 +563,7 @@ proc addCheck { w prop name } {
 	balloon_set $f.l ${name}
     }
 
-    global tcl_platform
-
-    if { $tcl_platform(platform) == "windows" } {
+    if { $ay(ws) == "Win32" } {
 	# damn windows
 	set ff [frame $f.fcb -highlightthickness 1]
 	set cb [checkbutton $ff.cb -image emptyimg -variable ${prop}(${name})\
@@ -607,8 +610,7 @@ proc addCheck { w prop name } {
 	bind $cb <Key-Return> "$ay(bok) invoke;break"
 	catch {bind $cb <Key-KP_Enter> "$ay(bok) invoke;break"}
 
-	if { $tcl_platform(platform) == "windows" ||
-             $ay(ws) == "Aqua" } {
+	if { $ay(ws) == "Win32" || $ay(ws) == "Aqua" } {
 	    bind $ff <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
 	}
@@ -647,7 +649,7 @@ proc addMenuB { w prop name help elist } {
 #
 #
 proc addMenu { w prop name elist } {
-    global $prop ay ayprefs tcl_platform
+    global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -674,12 +676,12 @@ proc addMenu { w prop name elist } {
     bind $f.mb <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.mb <Key-KP_Enter> "$::ay(bok) invoke;break"}
 
-    if { $tcl_platform(platform) == "windows" } {
+    if { $ay(ws) == "Win32" } {
 	$f.mb configure -pady 1
     }
 
-    if {$ay(ws) == "Aqua" } {
-	$f.mb configure -pady 2 -width 12
+    if { $ay(ws) == "Aqua" } {
+	$f.mb configure -pady 2 -width 1
     }
 
     set m [menu $f.mb.m -tearoff 0]
@@ -730,7 +732,7 @@ proc addStringB { w prop name help {def {}} } {
 #
 #
 proc addString { w prop name  {def {}}} {
-    global $prop ay ayprefs tcl_platform
+    global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -764,9 +766,15 @@ proc addString { w prop name  {def {}}} {
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		-highlightthickness 0 -relief raised -menu $f.b3.m]
-	if { $tcl_platform(platform) == "windows" } {
+
+	if { $ay(ws) == "Win32" } {
 	    $mb configure -pady 0
 	}
+
+	if { $ay(ws) == "Aqua" } {
+	    $f.mb configure -height 14
+	}
+
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
@@ -891,7 +899,7 @@ proc addFileB { w prop name help {def {}} } {
 #
 #
 proc addFile { w prop name {def {}} } {
-    global $prop ay ayprefs tcl_platform AYWITHAQUA
+    global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -933,7 +941,7 @@ proc addFile { w prop name {def {}} } {
 	    set ${prop}($name) \$filen;
         }"
 
-    if { $AYWITHAQUA } {
+    if { $ay(ws) == "Aqua" } {
 	$f.b configure -padx 6
     }
 
@@ -943,11 +951,12 @@ proc addFile { w prop name {def {}} } {
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
-	if { $tcl_platform(platform) == "windows" } {
+	if { $ay(ws) == "Win32" } {
 	    $mb configure -pady 0
 	}
-	if { $AYWITHAQUA } {
+	if { $ay(ws) == "Aqua" } {
 	    $f.b3 configure -pady 2
+	    $mb configure -height 14
 	}
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
@@ -964,7 +973,7 @@ proc addFile { w prop name {def {}} } {
     pack $f.b -in $f -side left -fill x -expand no
 
     if { $mb != "" } {
-	if { $tcl_platform(platform) == "windows" } {
+	if { $ay(ws) == "Win32" } {
 	    pack $mb -side right -fill both -expand no
 	} else {
 	    pack $mb -side right -fill x -expand no
@@ -994,7 +1003,7 @@ proc addMDirB { w prop name help } {
 #
 #
 proc addMDir { w prop name } {
-    global $prop ay ayprefs AYWITHAQUA
+    global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -1045,7 +1054,7 @@ proc addMDir { w prop name } {
 	  eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
 	};"
 
-    if { $AYWITHAQUA } {
+    if { $ay(ws) == "Aqua" } {
 	$f.b configure -padx 6
     }
 
@@ -1075,7 +1084,7 @@ proc addMFileB { w prop name help } {
 #
 #
 proc addMFile { w prop name } {
-    global $prop ay ayprefs AYWITHAQUA
+    global $prop ay ayprefs
 
     if { [winfo toplevel $w] == "." } {
 	set escapecmd "resetFocus;break"
@@ -1126,7 +1135,7 @@ proc addMFile { w prop name } {
          eval balloon_setsplit $f.e \[list \$${prop}($name)\] 15;
         };"
 
-    if { $AYWITHAQUA } {
+    if { $ay(ws) == "Aqua" } {
 	$f.b configure -padx 6
     }
 
