@@ -767,6 +767,7 @@ proc io_saveEnv {  } {
 	 saveScene $savefilename
 
 	 if { $ay_error < 2 } {
+
 	     ayError 4 "saveEnv" "Done writing environment to:"
 	     ayError 4 "saveEnv" "$savefilename"
 
@@ -792,7 +793,12 @@ proc io_saveEnv {  } {
 		 } else {
 		     set ayprefs(EnvFile) $savefilename
 		     set ayprefse(EnvFile) $savefilename
+		     set ayprefs(LoadEnv) 1
+		     set ayprefse(LoadEnv) 1
 		 }
+	     } else {
+		 set ayprefs(LoadEnv) 1
+		 set ayprefse(LoadEnv) 1
 	     }
 	 } else {
 	     ayError 2 "saveEnv" "There were errors while writing:"

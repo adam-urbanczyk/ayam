@@ -17,6 +17,11 @@ proc prefs_set {} {
     set tcl_precision $ayprefs(TclPrecision)
     set env(SHADERS) $ayprefs(Shaders)
     setPrefs
+
+    if { $ayprefs(EnvFile) != "" } {
+	set ayprefs(LoadEnv) 1
+    }
+
  return;
 }
 # prefs_set
