@@ -1,16 +1,20 @@
-[5. May 2012] CVS-Head:
+[17. May 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
 o all even ConcatNP fillet patches are missing (SF 3514939)
 o pick candidates dialog disappears after resize (SF 3522093)
+o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
 
 GUI:
 o default value menu buttons of property GUI elements now display a triangle
-  instead of a label "Def"
+  instead of the text label "Def"
 o CloneAttr property now also displays the Quaternion in abbreviated fashion
 o added internal resize widget to script text editor of Script object
+o improved dialog box appearance on X11
+o the shaders preference setting GUI element now allows to directly
+  choose directories
 
 Scripts/Scripting Interface:
 o "applyTrafo" command now applies the transformations to all points by default
@@ -22,7 +26,7 @@ o the "apnt" script now also binds to the select all/no points shortcuts
 o added luainterp plugin to support the Lua scripting language
 
 Plugins:
-o added plugin that creates superformula curves
+o added plugin "sfcurve" that creates superformula curves
 
 
 [20. Mar 2012] Ayam-1.20:
