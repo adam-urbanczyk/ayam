@@ -9,11 +9,23 @@
 
 # io.tcl - scene io helper procedures
 
+# io_checkType:
+#  check, whether the provided file is an Ayam scene file
+#
+proc io_checkType { filename } {
+    if { [string first "Ayam" [gets [open $filename "r"]]] == 0 } {
+	return 1;
+    }
+ return 0;
+}
+# io_checkType
+
+
 # io_replaceScene:
 # clear scene, then read new scene file
 #
 proc io_replaceScene { {newfilename ""} } {
-    global ay ayprefs tcl_platform
+    global ay ayprefs
 
     winAutoFocusOff
 
@@ -33,7 +45,7 @@ proc io_replaceScene { {newfilename ""} } {
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
 	    {"All files" *}}]
 
-	if { $tcl_platform(os) != "Darwin" } {
+	if { $ay(ws) != "Aqua" } {
 	    set newfilename [tk_getOpenFile -filetypes $types -parent .\
 				 -initialfile [file tail $filename]\
 				 -initialdir $dirname\
@@ -133,7 +145,7 @@ proc io_replaceScene { {newfilename ""} } {
 #  insert a scene
 #
 proc io_insertScene { {ifilename ""} } {
-    global ay ayprefs tcl_platform
+    global ay ayprefs
 
     winAutoFocusOff
 
@@ -152,7 +164,7 @@ proc io_insertScene { {ifilename ""} } {
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
 	    {"All files" *}}]
 
-	if { $tcl_platform(os) != "Darwin" } {
+	if { $ay(ws) != "Aqua" } {
 	    set ifilename [tk_getOpenFile -filetypes $types -parent .\
 			       -initialfile [file tail $filename]\
 			       -initialdir $dirname\
@@ -223,7 +235,7 @@ proc io_insertScene { {ifilename ""} } {
 #  save a scene file
 #
 proc io_saveScene { ask selected } {
-    global ay ayprefs tcl_platform
+    global ay ayprefs
 
     winAutoFocusOff
 
@@ -243,7 +255,7 @@ proc io_saveScene { ask selected } {
 	    {"Supported Files" {$ayprefs(ALFileTypes)}}
 	    {"All files" *}}]
 
-	if { $tcl_platform(os) != "Darwin" } {
+	if { $ay(ws) != "Aqua" } {
 	    set filename [tk_getSaveFile -filetypes $types -parent .\
 		    -initialfile [file tail $filename]\
 		    -initialdir $dirname -title "Save scene to:"]
@@ -702,7 +714,6 @@ set answer [tk_messageBox -title $t -type okcancel -icon warning -message $m]
 	    winAutoFocusOn
 
 	    if { $answer == "cancel" } {
-
 		return 1;
 	    } else {
 		return 0;
@@ -928,7 +939,7 @@ proc io_exportRIBfC { } {
 #  export shadow map RIB and render all shadow maps
 #
 proc io_RenderSM { all } {
-    global env ayprefs ay tcl_platform ay_error
+    global ayprefs ay ay_error
 
     if { $ayprefs(ShadowMaps) != 2 } {
 
@@ -944,7 +955,7 @@ proc io_RenderSM { all } {
 	}
 
 	set answer [tk_messageBox -title $t -type okcancel -icon warning\
-		-message $m]
+		     -message $m]
 
 	winAutoFocusOn
 
@@ -1264,7 +1275,7 @@ proc io_exit { } {
             catch { prefs_save }
         }
 
-        puts "Good Bye!"
+        puts "Good bye!"
         update
         if { $AYENABLEFEXIT == 1 } {
             fastExit
