@@ -1093,17 +1093,16 @@ proc addMDir { w prop name } {
      -command "\
 	global $prop ay;
         winAutoFocusOff;
-	set filen \[$f.e get\];
-	global ay;
-	set sep \$ay(separator);
         if { \$ay(ws) != \"Aqua\" } {
-	  set dir \[tk_chooseDirectory -parent [winfo toplevel $w]\];
+	  set dir \[tk_chooseDirectory -parent [winfo toplevel $w]\
+                     -initialdir \[pwd\]\];
         } else {
 	  set dir \[tk_chooseDirectory\];
         };
         winAutoFocusOn;
 	if { \${dir} != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
+	      set sep \$ay(separator);
 	      set ${prop}($name) \$${prop}($name)\${sep}\${dir};
 	  } else {
 	      set ${prop}($name) \${dir};
