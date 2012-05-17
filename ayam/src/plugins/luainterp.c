@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2010 by Randolf Schultz
+ * Ayam is copyrighted 1998-2012 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -26,7 +26,7 @@
 typedef struct luainterp_cscript_t
 {
   size_t size;
-  void *data;
+  char *data;
 } luainterp_cscript;
 
 
@@ -71,7 +71,7 @@ char luainterp_version_ma[] = AY_VERSIONSTR;
 char luainterp_version_mi[] = AY_VERSIONSTRMI;
 
 /** language id */
-char *luainterp_langtype = NULL;
+char *luainterp_langid = NULL;
 
 static lua_State *L = NULL;
 
@@ -194,7 +194,7 @@ static const struct luaL_Reg luainterplib [] = {
 /** current Tcl interpreter */
 static Tcl_Interp *luainterp_interp;
 
-/** \name Tcl_Obj types (for data conversion in luainterp_objtoval()) */
+/** \name Tcl_Obj types (for data conversion in luainterp_pushobj()) */
 /*@{*/
 static Tcl_ObjType *luainterp_BooleanType = NULL;
 static Tcl_ObjType *luainterp_ByteArrayType = NULL;
@@ -987,7 +987,7 @@ luainterp_evalcb(Tcl_Interp *interp, char *script, int compile,
       if(*cscriptobj)
 	{
 	  luainterp_interp = interp;
-	  cscript.data = Tcl_GetByteArrayFromObj(*cscriptobj,
+	  cscript.data = (char*)Tcl_GetByteArrayFromObj(*cscriptobj,
 						 (int*)&(cscript.size));
 
 	  lua_status = lua_load(L, &luainterp_readcompiledchunk, &cscript,
@@ -1068,7 +1068,7 @@ Luainterp_Init(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* Register Lua language. */
-  ay_status = ay_tcmd_registerlang("Lua", &luainterp_langtype);
+  ay_status = ay_tcmd_registerlang("Lua", &luainterp_langid);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Failed to register language.");
@@ -1076,14 +1076,14 @@ Luainterp_Init(Tcl_Interp *interp)
     }
 
   ay_status = ay_table_additem(&ay_sevalcbt, (ay_voidfp)luainterp_evalcb,
-			       (int)luainterp_langtype);
+			       (int)luainterp_langid);
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Failed to register evaluation callback.");
       return TCL_OK;
     }
 
-  /* register all Lua functions */
+  /* Register all Lua functions. */
   while(1)
     {
       if(luainterplib[i].name != NULL)
