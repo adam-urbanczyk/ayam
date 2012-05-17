@@ -1102,11 +1102,11 @@ proc addMDir { w prop name } {
 	  set dir \[tk_chooseDirectory\];
         };
         winAutoFocusOn;
-	if { \$filen != \"\" } {
+	if { \${dir} != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
 	      set ${prop}($name) \$${prop}($name)\${sep}\${dir};
 	  } else {
-	      set ${prop}($name) \$dir;
+	      set ${prop}($name) \${dir};
 	  };
 	  entryViewEnd $f.e;
 	  update;
