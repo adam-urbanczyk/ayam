@@ -279,7 +279,7 @@ proc prefs_open {} {
     addText $fw e0 "Errors:"
     addCheckB $fw ayprefse RedirectTcl [ms ayprefse_RedirectTcl]
     addCheckB $fw ayprefse Logging [ms ayprefse_Logging]
-    addStringB $fw ayprefse LogFile [ms ayprefse_LogFile]
+    addSFileB $fw ayprefse LogFile [ms ayprefse_LogFile]
     addMenuB $fw ayprefse ErrorLevel [ms ayprefse_ErrorLevel]\
 	    {Silence Errors Warnings All}
     addText $fw e2 "UI:"

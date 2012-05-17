@@ -7,7 +7,8 @@
 #
 # See the file License for details.
 
-# User Interface Elements for Property GUIs and Preferences
+# User Interface Elements for Property GUIs, Preferences, Tool Dialogs,
+# and Import/Export Dialogs
 
 
 # uie_fixEntry:
@@ -183,7 +184,6 @@ proc addParam { w prop name {def {}} } {
 		"after idle {$ay(bok) invoke}"
 	}
     }
-
 
     if { $ay(ws) == "Win32" } {
 	pack $f.l -in $f -side left
@@ -838,12 +838,17 @@ proc addFileT { w prop name ftypes {def {}} } {
     addFile $w $prop $name $def
     set f $w.f${name}
     $f.b configure -command "
-	    global $prop;
+	    global $prop ay;
             winAutoFocusOff;
 	    set filen \[$f.e get\];
-	    set filen \[tk_getOpenFile -filetypes {$ftypes}\
-                        -parent [winfo toplevel $w]\
-	                -title \"Set File:\"];
+            if { \$ay(ws) != \"Aqua\" } {
+	      set filen \[tk_getOpenFile -filetypes {$ftypes}\
+                          -parent [winfo toplevel $w]\
+	                  -title \"Set File:\"];
+            } else {
+	      set filen \[tk_getOpenFile -filetypes {$ftypes}\
+	                  -title \"Set File:\"];
+            };
             winAutoFocusOn;
 	    if { \$filen != \"\" } {
 		$f.e delete 0 end;
@@ -864,12 +869,17 @@ proc addSFileT { w prop name ftypes {def {}} } {
     addFile $w $prop $name $def
     set f $w.f${name}
     $f.b configure -command "\
-	    global $prop;
+	    global $prop ay;
             winAutoFocusOff;
 	    set filen \[$f.e get\];
-            set filen \[tk_getSaveFile -filetypes {$ftypes}\
-                        -parent [winfo toplevel $w]\
-		        -title \"Set File:\"];
+            if { \$ay(ws) != \"Aqua\" } {
+              set filen \[tk_getSaveFile -filetypes {$ftypes}\
+                          -parent [winfo toplevel $w]\
+		          -title \"Set File:\"];
+            } else {
+              set filen \[tk_getSaveFile -filetypes {$ftypes}\
+		          -title \"Set File:\"];
+            };
             winAutoFocusOn;
 	    if { \$filen != \"\" } {
 		$f.e delete 0 end;
@@ -881,6 +891,48 @@ proc addSFileT { w prop name ftypes {def {}} } {
  return;
 }
 # addSFileT
+
+#
+#
+#
+proc addSFile { w prop name {def {}} } {
+
+    addFile $w $prop $name $def
+    set f $w.f${name}
+    $f.b configure -command "\
+	    global $prop ay;
+            winAutoFocusOff;
+	    set filen \[$f.e get\];
+            if { \$ay(ws) != \"Aqua\" } {
+              set filen \[tk_getSaveFile -parent [winfo toplevel $w]\
+		          -title \"Set File:\"];
+            } else {
+              set filen \[tk_getSaveFile -title \"Set File:\"];
+            };
+            winAutoFocusOn;
+	    if { \$filen != \"\" } {
+		$f.e delete 0 end;
+		$f.e insert 0 \$filen;
+		entryViewEnd $f.e;
+		set ${prop}($name) \$filen;
+	    }"
+
+ return;
+}
+# addSFile
+
+#
+#
+#
+proc addSFileB { w prop name help {def {}} } {
+
+    addSFile $w $prop $name $def
+
+    balloon_set $w.f${name}.l "${name}:\n${help}"
+
+ return;
+}
+# addSFileB
 
 #
 #
@@ -928,11 +980,15 @@ proc addFile { w prop name {def {}} } {
     }
     button $f.b -text "Set" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
-	global $prop;
+	global $prop ay;
         winAutoFocusOff;
 	set filen \[$f.e get\];
-	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
-                     -title \"Set File:\"];
+        if { \$ay(ws) != \"Aqua\" } {
+  	  set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
+                       -title \"Set File:\"];
+        } else {
+  	  set filen \[tk_getOpenFile -title \"Set File:\"];
+        };
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	    $f.e delete 0 end;
@@ -1035,19 +1091,22 @@ proc addMDir { w prop name } {
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
-	global $prop;
+	global $prop ay;
         winAutoFocusOff;
 	set filen \[$f.e get\];
 	global ay;
 	set sep \$ay(separator);
-	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
-                     -title \"Select File:\"\];
+        if { \$ay(ws) != \"Aqua\" } {
+	  set dir \[tk_chooseDirectory -parent [winfo toplevel $w]\];
+        } else {
+	  set dir \[tk_chooseDirectory\];
+        };
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	  if { \$${prop}($name) != \"\" } {
-	      set ${prop}($name) \$${prop}($name)\$sep\[file dirname \$filen\];
+	      set ${prop}($name) \$${prop}($name)\${sep}\${dir};
 	  } else {
-	      set ${prop}($name) \[file dirname \$filen\];
+	      set ${prop}($name) \$dir;
 	  };
 	  entryViewEnd $f.e;
 	  update;
@@ -1116,13 +1175,17 @@ proc addMFile { w prop name } {
 
     button $f.b -text "Add" -width 4 -bd $bw -padx 0 -pady 0 -takefocus 0\
      -command "\
-	global $prop;
+	global $prop ay;
         winAutoFocusOff;
 	set filen \[$f.e get\];
 	global ay;
 	set sep \$ay(separator);
-	set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
+        if { \$ay(ws) != \"Aqua\" } {
+	  set filen \[tk_getOpenFile -parent [winfo toplevel $w]\
                      -title \"Select File:\"\];
+        } else {
+	  set filen \[tk_getOpenFile -title \"Select File:\"\];
+        };
         winAutoFocusOn;
 	if { \$filen != \"\" } {
 	 if { \$${prop}($name) != \"\" } {
