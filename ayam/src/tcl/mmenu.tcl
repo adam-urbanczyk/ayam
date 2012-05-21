@@ -404,7 +404,7 @@ $m.nct add command -label "Elevate" -command {
 }
 
 
-$m.nct add cascade -menu $m.npt.kn -label "Knots" -underline 0
+$m.nct add cascade -menu $m.nct.kn -label "Knots" -underline 0
 menu $m.nct.kn -tearoff 0
 
 $m.nct.kn add command -label "Insert Knot" -command {
