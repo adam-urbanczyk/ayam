@@ -428,6 +428,7 @@ AYAMOBJS = aycore/bbc.o\
 	aycore/wrib.o\
 	aycore/write.o\
 	nurbs/act.o\
+	nurbs/bevelt.o\
 	nurbs/capt.o\
 	nurbs/ict.o\
 	nurbs/ipt.o\

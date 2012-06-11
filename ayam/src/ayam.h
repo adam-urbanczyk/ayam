@@ -147,6 +147,20 @@ typedef struct ay_btval_s
   void *payload; /**< binary tag value of size size */
 } ay_btval;
 
+
+/** bevel parameter helper */
+typedef struct ay_bparam_s
+{
+  int states[4];
+  int types[4];
+  int dirs[4];
+  int bcaps[4];
+  double radii[4];
+  int extrncsides[4];
+  double extrncparams[4];
+} ay_bparam;
+
+
 /** transformation attributes */
 typedef struct ay_trafo_s
 {
@@ -1002,16 +1016,15 @@ typedef struct ay_sweep_object_s
 typedef struct ay_swing_object_s
 {
   int has_upper_cap; /**< create upper cap? */
-  ay_object *upper_cap; /**< cached upper cap */
   int has_lower_cap; /**< create lower cap? */
-  ay_object *lower_cap; /**< cached lower cap */
   int has_start_cap; /**< create start cap? */
-  ay_object *start_cap; /**< cached start cap */
   int has_end_cap; /**< create end cap? */
-  ay_object *end_cap; /**< cached end cap */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
+
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
@@ -1117,7 +1130,7 @@ typedef struct ay_extrnp_object_s
 /** Concatenate surfaces object */
 typedef struct ay_concatnp_object_s
 {
-  int type; /**< unused */
+  int type; /**< open, closed, or periodic patch in U direction? (AY_CT*) */
   int order; /**< desired order in U direction */
   int revert; /**< revert created patch in U direction? */
   int knot_type; /**< knot type of created patch in U direction (AY_KT*) */
@@ -1175,13 +1188,14 @@ typedef struct ay_script_object_s
   char *script; /**< the script text (Tcl) */
   int active; /**< activate/run the script? (0 - Inactive, 1 - Active) */
   int type; /**< type of script (0 - Run, 1 - Create, 2 - Modify) */
+
   ay_object *cm_objects; /**< created or modified objects */
 
   int modified; /**< need to recompile the script? */
   Tcl_Obj *cscript; /**< cached compiled script */
 
   int paramslen; /**< number of saved script parameters */
-  Tcl_Obj **params; /**< save script parameters */
+  Tcl_Obj **params; /**< saved script parameters */
 
   double *pnts; /**< read only points [pntslen*4] (created on request) */
   unsigned int pntslen; /**< number of read only points */
@@ -1379,7 +1393,7 @@ typedef struct ay_preferences_s
 
   /* error handling */
   char onerror; /**< what to do if errors occur? 0 stop, 1 continue */
-  char errorlevel; /**< what to output to the console? 0 nothing, ... 3 all */
+  char errorlevel; /**< what to output to the console? 0 nothing - 3 all */
   int writelog; /**< write error messages to a log file? */
   char *logfile; /**< file name of log file */
 
@@ -1534,7 +1548,7 @@ extern Tcl_HashTable ay_tagtypesht;
 /** table of registered script languages */
 extern Tcl_HashTable ay_languagesht;
 
-/* \name function pointer tables (object callbacks) */
+/** \name function pointer tables (object callbacks) */
 /*@{*/
 /** all registered create callbacks */
 extern ay_ftable ay_createcbt;
@@ -1961,11 +1975,11 @@ extern char *ay_error_igntype;
 
 /** \name Version Strings and Numbers */
 /*@{*/
-#define AY_VERSIONSTR "1.20"
+#define AY_VERSIONSTR "1.21pre"
 #define AY_VERSIONSTRMI "0"
 
 #define AY_VERSIONMA 1
-#define AY_VERSION   20
+#define AY_VERSION   21
 #define AY_VERSIONMI 0
 /*@}*/
 
