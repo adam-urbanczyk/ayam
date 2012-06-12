@@ -1,7 +1,7 @@
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
- * Ayam is copyrighted 1998-2001 by Randolf Schultz
+ * Ayam is copyrighted 1998-2012 by Randolf Schultz
  * (randolf.schultz@gmail.com) and others.
  *
  * All rights reserved.
@@ -12,9 +12,11 @@
 
 #include "ayam.h"
 
-/** \file capt.c \brief cap creation tools */
+/** \file bevelt.c \brief bevel creation tools */
 
-int ay_bevelt_findbevelcurve(int i, ay_object **c);
+/* prototypes of functions local to this module: */
+
+int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
 int ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
 		      ay_nurbpatch_object **bevel);
@@ -23,11 +25,16 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 		     ay_nurbpatch_object **bevel);
 
 
-/* ay_bevelt_gettags:
- *
+/* functions: */
+
+/** ay_bevelt_parsetags:
+ * Parse all "BP" tags into a ay_bparam (bevel param) struct.
+ * 
+ * @param[in] tag list of tags to parse
+ * @param[in,out] params pointer to bevel param struct
  */
 void
-ay_bevelt_gettags(ay_tag *tag, ay_bparam *params)
+ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 {
  int where, type, dir, cap;
  double radius;
@@ -59,7 +66,7 @@ ay_bevelt_gettags(ay_tag *tag, ay_bparam *params)
     } /* while */
 
  return;
-} /* ay_bevelt_gettags */
+} /* ay_bevelt_parsetags */
 
 
 /* ay_bevelt_addbevels:
@@ -84,6 +91,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
       if(bparams->states[i])
 	{
 	  ay_object_defaults(&c);
+	  ay_trafo_defaults(&c);
 	  c.type = AY_IDNCURVE;
 	  ay_status = ay_npt_extractnc(o, bparams->extrncsides[i],
 				       bparams->extrncparams[i],
@@ -141,6 +149,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(caps[i] && !bparams->bcaps[i])
 	    {
 	      ay_object_defaults(&c);
+	      ay_trafo_defaults(&c);
 	      c.type = AY_IDNCURVE;
 
 	      /* extract the right curve */
@@ -701,10 +710,16 @@ cleanup:
 
 
 /** ay_bevelt_findbevelcurve:
- *
+ * Find a curve object in the current toplevel level "Bevels"
+ * for use as bevel cross section curve.
+ * 
+ * @param[in] index index of bevel curve
+ * @param[in,out] c resulting curve
+ * 
+ * @return AY_OK on success, error code otherwise.
  */
 int
-ay_bevelt_findbevelcurve(int i, ay_object **c)
+ay_bevelt_findbevelcurve(int index, ay_object **c)
 {
  int ay_status = AY_ERROR;
  int j;
@@ -723,12 +738,12 @@ ay_bevelt_findbevelcurve(int i, ay_object **c)
 	  j = 1;
 	  while(o)
 	    {
-	      if(i == j)
+	      if(index == j)
 		{
 		  *c = o;
 		  return AY_OK;
 		}
-	      i++;
+	      j++;
 	      o = o->next;
 	    } /* while */
 	} /* if */

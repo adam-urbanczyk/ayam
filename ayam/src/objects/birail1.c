@@ -563,7 +563,7 @@ ay_birail1_notifycb(ay_object *o)
   if(o->tags)
     {
       memset(&bparams, 0, sizeof(ay_bparam));
-      ay_bevelt_gettags(o->tags, &bparams);
+      ay_bevelt_parsetags(o->tags, &bparams);
     }
 
   /* do the birail */
