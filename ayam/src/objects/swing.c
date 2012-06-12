@@ -61,17 +61,11 @@ ay_swing_deletecb(void *c)
   if(swing->npatch)
     ay_object_delete(swing->npatch);
 
-  if(swing->upper_cap)
-    ay_object_delete(swing->upper_cap);
-
-  if(swing->lower_cap)
-    ay_object_delete(swing->lower_cap);
-
-  if(swing->start_cap)
-    ay_object_delete(swing->start_cap);
-
-  if(swing->end_cap)
-    ay_object_delete(swing->end_cap);
+  if(swing->caps_and_bevels)
+    {
+      ay_object_deletemulti(swing->caps_and_bevels);
+      swing->caps_and_bevels = NULL;
+    }
 
   free(swing);
 
@@ -101,18 +95,12 @@ ay_swing_copycb(void *src, void **dst)
   /* copy npatch */
   ay_object_copy(swingsrc->npatch, &(swing->npatch));
 
-  /* copy upper cap */
-  ay_object_copy(swingsrc->upper_cap, &(swing->upper_cap));
+  /* copy caps and bevels */
+  swing->caps_and_bevels = NULL;
 
-  /* copy lower cap */
-  ay_object_copy(swingsrc->lower_cap, &(swing->lower_cap));
-
-  /* copy start cap */
-  ay_object_copy(swingsrc->start_cap, &(swing->start_cap));
-
-  /* copy end cap */
-  ay_object_copy(swingsrc->end_cap, &(swing->end_cap));
-
+  if(swingsrc->caps_and_bevels)
+    ay_object_copymulti(swingsrc->caps_and_bevels,
+			&(swing->caps_and_bevels));
 
   *dst = (void *)swing;
 
@@ -127,6 +115,7 @@ int
 ay_swing_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_swing_object *swing = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -139,17 +128,15 @@ ay_swing_drawcb(struct Togl *togl, ay_object *o)
   if(swing->npatch)
     ay_draw_object(togl, swing->npatch, AY_TRUE);
 
-  if(swing->upper_cap)
-    ay_draw_object(togl, swing->upper_cap, AY_TRUE);
-
-  if(swing->lower_cap)
-    ay_draw_object(togl, swing->lower_cap, AY_TRUE);
-
-  if(swing->start_cap)
-    ay_draw_object(togl, swing->start_cap, AY_TRUE);
-
-  if(swing->end_cap)
-    ay_draw_object(togl, swing->end_cap, AY_TRUE);
+  if(swing->caps_and_bevels)
+    {
+      b = swing->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_swing_drawcb */
@@ -162,6 +149,7 @@ int
 ay_swing_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_swing_object *swing = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -174,17 +162,15 @@ ay_swing_shadecb(struct Togl *togl, ay_object *o)
   if(swing->npatch)
     ay_shade_object(togl, swing->npatch, AY_FALSE);
 
-  if(swing->upper_cap)
-    ay_shade_object(togl, swing->upper_cap, AY_FALSE);
-
-  if(swing->lower_cap)
-    ay_shade_object(togl, swing->lower_cap, AY_FALSE);
-
-  if(swing->start_cap)
-    ay_shade_object(togl, swing->start_cap, AY_FALSE);
-
-  if(swing->end_cap)
-    ay_shade_object(togl, swing->end_cap, AY_FALSE);
+  if(swing->caps_and_bevels)
+    {
+      b = swing->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_swing_shadecb */
@@ -430,6 +416,7 @@ int
 ay_swing_wribcb(char *file, ay_object *o)
 {
  ay_swing_object *swing = NULL;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -439,17 +426,15 @@ ay_swing_wribcb(char *file, ay_object *o)
   if(swing->npatch)
     ay_wrib_toolobject(file, swing->npatch, o);
 
-  if(swing->upper_cap)
-    ay_wrib_toolobject(file, swing->upper_cap, o);
-
-  if(swing->lower_cap)
-    ay_wrib_toolobject(file, swing->lower_cap, o);
-
-  if(swing->start_cap)
-    ay_wrib_toolobject(file, swing->start_cap, o);
-
-  if(swing->end_cap)
-    ay_wrib_toolobject(file, swing->end_cap, o);
+  if(swing->caps_and_bevels)
+    {
+      b = swing->caps_and_bevels;
+      while(b)
+	{
+	  ay_wrib_toolobject(file, b, o);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_swing_wribcb */
@@ -1042,6 +1027,7 @@ ay_swing_notifycb(ay_object *o)
  char fname[] = "swing_notify";
  ay_swing_object *swing = NULL;
  ay_object *cs = NULL, *tr = NULL, *pobject = NULL, *npatch = NULL;
+ ay_object **nextcb;
  int provided_cs = AY_FALSE, provided_tr = AY_FALSE, mode = 0;
  double tolerance;
 
@@ -1053,26 +1039,18 @@ ay_swing_notifycb(ay_object *o)
   mode = swing->display_mode;
   tolerance = swing->glu_sampling_tolerance;
 
+  nextcb = &(swing->caps_and_bevels);
+
   /* remove old objects */
   if(swing->npatch)
     ay_object_delete(swing->npatch);
   swing->npatch = NULL;
-
-  if(swing->upper_cap)
-    ay_object_delete(swing->upper_cap);
-  swing->upper_cap = NULL;
-
-  if(swing->lower_cap)
-    ay_object_delete(swing->lower_cap);
-  swing->lower_cap = NULL;
-
-  if(swing->start_cap)
-    ay_object_delete(swing->start_cap);
-  swing->start_cap = NULL;
-
-  if(swing->end_cap)
-    ay_object_delete(swing->end_cap);
-  swing->end_cap = NULL;
+ 
+  if(swing->caps_and_bevels)
+    {
+      ay_object_deletemulti(swing->caps_and_bevels);
+      swing->caps_and_bevels = NULL;
+    }
 
   /* get curve to swing */
   if(!o->down || !o->down->next)
@@ -1135,34 +1113,35 @@ ay_swing_notifycb(ay_object *o)
   phase = 2;
   if(swing->has_upper_cap)
     {
-      ay_status = ay_swing_crtcap(swing, AY_TRUE, &(swing->upper_cap));
+      ay_status = ay_swing_crtcap(swing, AY_TRUE, nextcb);
       if(ay_status)
 	goto cleanup;
+      nextcb = &((*nextcb)->next);
     } /* if */
 
   if(swing->has_lower_cap)
     {
-      ay_status = ay_swing_crtcap(swing, AY_FALSE, &(swing->lower_cap));
+      ay_status = ay_swing_crtcap(swing, AY_FALSE, nextcb);
       if(ay_status)
 	goto cleanup;
+      nextcb = &((*nextcb)->next);
     } /* if */
 
   if(swing->has_start_cap)
     {
-      ay_status = ay_swing_crtside(swing, cs, tr, AY_TRUE,
-				   &(swing->start_cap));
+      ay_status = ay_swing_crtside(swing, cs, tr, AY_TRUE, nextcb);
       if(ay_status)
 	goto cleanup;
       /*
       if(swing->start_cap)
 	swing->start_cap->scalz *= -1.0;
       */
+      nextcb = &((*nextcb)->next);
     } /* if */
 
   if(swing->has_end_cap)
     {
-      ay_status = ay_swing_crtside(swing, cs, tr, AY_FALSE,
-				   &(swing->end_cap));
+      ay_status = ay_swing_crtside(swing, cs, tr, AY_FALSE, nextcb);
       if(ay_status)
 	goto cleanup;
     } /* if */
@@ -1250,59 +1229,8 @@ ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  p = p->next;
 	} /* while */
 
-      /* copy caps */
-      p = r->upper_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->lower_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->start_cap;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      p = r->end_cap;
+      /* copy caps and bevels */
+      p = r->caps_and_bevels;
       while(p)
 	{
 	  ay_status = ay_object_copy(p, t);
@@ -1338,6 +1266,7 @@ ay_swing_convertcb(ay_object *o, int in_place)
  int ay_status = AY_OK;
  ay_swing_object *r = NULL;
  ay_object *new = NULL, **next = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -1346,7 +1275,7 @@ ay_swing_convertcb(ay_object *o, int in_place)
 
   r = (ay_swing_object *) o->refine;
 
-  if((r->upper_cap) || (r->lower_cap) || (r->start_cap) || (r->end_cap))
+  if(r->caps_and_bevels)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -1381,71 +1310,25 @@ ay_swing_convertcb(ay_object *o, int in_place)
 	      (*next)->down = ay_endlevel;
 	      next = &((*next)->next);
 	    }
+
+	  b = r->caps_and_bevels;
+	  while(b)
+	    {
+	      ay_status = ay_object_copy(b, next);
+	      if(*next)
+		{
+		  /* reset display mode and sampling tolerance
+		     of new patch to "global"? */
+		  if(!in_place && ay_prefs.conv_reset_display)
+		    {
+		      ay_npt_resetdisplay(*next);
+		    }
+
+		  next = &((*next)->next);
+		}
+	      b = b->next;
+	    } /* while */
 	} /* if */
-
-      if(r->upper_cap)
-	{
-	  ay_status = ay_object_copy(r->upper_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->lower_cap)
-	{
-	  ay_status = ay_object_copy(r->lower_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->start_cap)
-	{
-	  ay_status = ay_object_copy(r->start_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->end_cap)
-	{
-	  ay_status = ay_object_copy(r->end_cap, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      next = &((*next)->next);
-	    }
-	}
 
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new->down);
