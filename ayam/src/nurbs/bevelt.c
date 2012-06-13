@@ -74,7 +74,7 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
  */
 int
 ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
-		    int *bevels, ay_object **dst)
+		    ay_object **dst)
 {
  int ay_status = AY_OK;
  int i, j;

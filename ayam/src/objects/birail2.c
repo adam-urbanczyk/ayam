@@ -492,15 +492,14 @@ ay_birail2_notifycb(ay_object *o)
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *curve4 = NULL, *pobject3 = NULL, *pobject4 = NULL;
  ay_object *curve5 = NULL, *pobject5 = NULL;
- ay_object bccurve = {0};
  ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
  ay_object *bevel = NULL;
+ ay_bparam bparams;
  int ay_status = AY_OK;
+ int caps[4] = {0};
  int is_provided[5] = {0};
  int mode = 0;
- int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double tolerance, startb_radius, endb_radius;
+ double tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -614,25 +613,26 @@ ay_birail2_notifycb(ay_object *o)
     } /* if */
 
   /* get bevel parameters */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-		      &endb_sense);
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
 
+  /* do the birail */
   ay_status = ay_npt_createnpatchobject(&npatch);
   if(ay_status)
     {
       goto cleanup;
     }
 
-  /* do the birail */
   ay_status = ay_npt_birail2(curve1, curve2, curve3, curve4, curve5,
 			     birail2->sections, AY_FALSE/*birail2->close*/,
 			     birail2->interpolctrl,
 			     (ay_nurbpatch_object **)(void*)&(npatch->refine),
-			     has_startb?AY_FALSE:birail2->has_start_cap,
+			     bparams.states[0]?AY_FALSE:birail2->has_start_cap,
 			     &start_cap,
-			     has_endb?AY_FALSE:birail2->has_end_cap,
+			     bparams.states[1]?AY_FALSE:birail2->has_end_cap,
 			     &end_cap);
 
   if(ay_status)
@@ -654,148 +654,25 @@ ay_birail2_notifycb(ay_object *o)
   /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
+  /* create/add bevels */
+  if(o->tags)
+    {
+      caps[0] = birail2->has_start_cap;
+      caps[1] = birail2->has_end_cap;
+
+      bparams.dirs[0] = !bparams.dirs[0];
+      bparams.extrncsides[0] = 2;
+      bparams.extrncsides[1] = 3;
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, birail2->npatch,
+				      nextcb);
+    }
+
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail2->npatch->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)birail2->npatch->refine)->display_mode =
     mode;
-
-  /* create bevels and caps */
-  if(/*!birail2->close &&*/ has_startb)
-    {
-      ay_object_defaults(&bccurve);
-      bccurve.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(birail2->npatch, 3, 0.0, AY_FALSE, AY_FALSE,
-				   AY_FALSE, NULL,
-		    (ay_nurbcurve_object**)(void*)&(bccurve.refine));
-
-      if(ay_status)
-	goto cleanup;
-
-      ((ay_nurbcurve_object*)bccurve.refine)->type =
-	((ay_nurbcurve_object*)curve1->refine)->type;
-
-      if(!startb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(bccurve.refine));
-	}
-
-      bevel = NULL;
-      ay_status = ay_npt_createnpatchobject(&bevel);
-      if(ay_status)
-	{
-	  goto cleanup;
-	}
-
-      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &bccurve,
-			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_nct_destroy((ay_nurbcurve_object*)bccurve.refine);
-      bccurve.refine = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap */
-      if(birail2->has_start_cap)
-	{
-	  curve5 = NULL;
-	  if(!(curve5 = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(curve5);
-	  curve5->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-
-    } /* if */
-
-  if(/*!birail2->close &&*/ has_endb)
-    {
-      memset(&bccurve, 0, sizeof(ay_object));
-      ay_object_defaults(&bccurve);
-      bccurve.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(birail2->npatch, 2, 0.0, AY_FALSE, AY_FALSE,
-				   AY_FALSE, NULL,
-		    (ay_nurbcurve_object**)(void*)&(bccurve.refine));
-
-      if(ay_status)
-	goto cleanup;
-
-      ((ay_nurbcurve_object*)bccurve.refine)->type =
-	((ay_nurbcurve_object*)curve1->refine)->type;
-
-      if(endb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(bccurve.refine));
-	}
-
-      bevel = NULL;
-      ay_status = ay_npt_createnpatchobject(&bevel);
-      if(ay_status)
-	{
-	  goto cleanup;
-	}
-
-      ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &bccurve,
-			       (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_nct_destroy((ay_nurbcurve_object*)bccurve.refine);
-      bccurve.refine = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap */
-      if(birail2->has_end_cap)
-	{
-	  curve5 = NULL;
-	  if(!(curve5 = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(curve5);
-	  curve5->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-    } /* if */
 
   /* copy sampling tolerance/mode attributes to caps and bevels */
   if(birail2->caps_and_bevels)
