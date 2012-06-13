@@ -474,7 +474,7 @@ int
 ay_birail1_notifycb(ay_object *o)
 {
  ay_birail1_object *birail1 = NULL;
- int caps[4] = {0}, bevels[4] = {0};
+ int caps[4] = {0};
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
  ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
@@ -560,9 +560,9 @@ ay_birail1_notifycb(ay_object *o)
     } /* if */
 
   /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
   if(o->tags)
     {
-      memset(&bparams, 0, sizeof(ay_bparam));
       ay_bevelt_parsetags(o->tags, &bparams);
     }
 
@@ -578,9 +578,9 @@ ay_birail1_notifycb(ay_object *o)
       ay_status = ay_npt_birail1(curve1, curve2, curve3,
 			   birail1->sections, birail1->type,
 			   (ay_nurbpatch_object **)(void*)&(npatch->refine),
-			   bparams.states[2]?AY_FALSE:birail1->has_start_cap,
+			   bparams.states[0]?AY_FALSE:birail1->has_start_cap,
 			   &start_cap,
-			   bparams.states[3]?AY_FALSE:birail1->has_end_cap,
+			   bparams.states[1]?AY_FALSE:birail1->has_end_cap,
 			   &end_cap);
     }
   else
@@ -620,7 +620,7 @@ ay_birail1_notifycb(ay_object *o)
       bparams.extrncsides[1] = 3;
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch,
-				      bevels, nextcb);
+				      nextcb);
     }
 
   /* copy sampling tolerance/mode attributes over to birail */

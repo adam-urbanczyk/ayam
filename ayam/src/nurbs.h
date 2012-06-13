@@ -44,7 +44,7 @@ int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
 void ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params);
 
 int ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
-			int *bevels, ay_object **dst);
+			ay_object **dst);
 
 
 /* capt.c */
