@@ -77,10 +77,10 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, j;
+ int i;
  ay_object c = {0};
  ay_object *bevel = NULL, *bevelcurve;
- ay_object **next = dst;
+ ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
 
   if(!bparams || !o || !dst)
@@ -93,6 +93,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  ay_object_defaults(&c);
 	  ay_trafo_defaults(&c);
 	  c.type = AY_IDNCURVE;
+
 	  ay_status = ay_npt_extractnc(o, bparams->extrncsides[i],
 				       bparams->extrncparams[i],
 				       AY_FALSE, AY_FALSE,
@@ -148,41 +149,28 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  /* create cap from bevel */
 	  if(caps[i] && !bparams->bcaps[i])
 	    {
-	      ay_object_defaults(&c);
-	      ay_trafo_defaults(&c);
-	      c.type = AY_IDNCURVE;
-
-	      /* extract the right curve */
-	      j = 0;
-	      switch(i)
+	      if(!(extrcurve = calloc(1, sizeof(ay_object))))
 		{
-		case 0:
-		case 2:
-		  j = 0;
-		  break;
-		case 1:
-		case 3:
-		  j = 1;
-		  break;
-		default:
-		  j = 0;
-		  break;
+		  ay_status = AY_EOMEM;
+		  goto cleanup;
 		}
+	      ay_object_defaults(extrcurve);
+	      extrcurve->type = AY_IDNCURVE;
 
-	      ay_status = ay_npt_extractnc(bevel, j, 0.0, AY_FALSE, AY_FALSE,
+	      ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
 					   AY_FALSE, NULL,
-				   (ay_nurbcurve_object**)(void*)&(c.refine));
+			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
 
 	      if(ay_status)
 		goto cleanup;
 
-	      ay_status = ay_capt_createfromcurve(&c, nextcap);
-
-	      ay_nct_destroy((ay_nurbcurve_object*)c.refine);
-	      c.refine = NULL;
+	      ay_status = ay_capt_createfromcurve(extrcurve, nextcap);
 
 	      if(ay_status)
-		goto cleanup;
+		{
+		  ay_object_deletemulti(extrcurve);
+		  goto cleanup;
+		}
 
 	      nextcap = &((*nextcap)->next);
 	    } /* if */
