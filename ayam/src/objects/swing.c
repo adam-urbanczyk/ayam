@@ -735,7 +735,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
       curve->type = AY_IDNCURVE;
       curve->refine = nc;
 
-      ay_status = ay_capt_createfromcurve(curve, o);
+      ay_status = ay_capt_crttrimcap(curve, o);
       return ay_status;
     }
 

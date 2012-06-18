@@ -29,7 +29,7 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
 /** ay_bevelt_parsetags:
  * Parse all "BP" tags into a ay_bparam (bevel param) struct.
- * 
+ *
  * @param[in] tag list of tags to parse
  * @param[in,out] params pointer to bevel param struct
  */
@@ -164,7 +164,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
-	      ay_status = ay_capt_createfromcurve(extrcurve, nextcap);
+	      ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
 
 	      if(ay_status)
 		{
@@ -700,10 +700,10 @@ cleanup:
 /** ay_bevelt_findbevelcurve:
  * Find a curve object in the current toplevel level "Bevels"
  * for use as bevel cross section curve.
- * 
+ *
  * @param[in] index index of bevel curve
  * @param[in,out] c resulting curve
- * 
+ *
  * @return AY_OK on success, error code otherwise.
  */
 int

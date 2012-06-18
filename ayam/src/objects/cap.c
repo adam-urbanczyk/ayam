@@ -477,10 +477,21 @@ ay_cap_notifycb(ay_object *o)
 
   /* the pobject points now to copies of the curves for which
      the cap should be created (and we may mess with it) */
-  if(cap->type == 0)
-    ay_status = ay_capt_createfromcurve(pobject, &(cap->npatch));
-  else
-    ay_status = ay_capt_createfromnpcurve(pobject, &(cap->npatch));
+  switch(cap->type)
+    {
+    case 0:
+      ay_status = ay_capt_crttrimcap(pobject, &(cap->npatch));
+      break;
+    case 1:
+      ay_status = ay_capt_crtsimplecap(pobject, &(cap->npatch));
+      break;
+    case 2:
+      ay_status = ay_capt_crtgordoncap(pobject, &(cap->npatch));
+      break;
+    default:
+      ay_status = AY_ERROR;
+      break;
+    } /* switch */
 
   if(ay_status)
     {

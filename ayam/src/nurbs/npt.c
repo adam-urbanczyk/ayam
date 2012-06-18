@@ -3562,7 +3562,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      curve = NULL;
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
-	      ay_status = ay_capt_createfromcurve(curve, start_cap);
+	      ay_status = ay_capt_crttrimcap(curve, start_cap);
 	      if(*start_cap)
 		{
 		  /* transform cap */
@@ -3628,7 +3628,7 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      curve = NULL;
 	      ay_status = ay_object_copy(o1, &curve);
 	      ay_trafo_defaults(curve);
-	      ay_status = ay_capt_createfromcurve(curve, end_cap);
+	      ay_status = ay_capt_crttrimcap(curve, end_cap);
 	      if(*end_cap)
 		{
 		  /* transform cap */
@@ -4327,7 +4327,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	  curve = NULL;
 	  ay_status = ay_object_copy(o1, &curve);
 	  /*ay_trafo_defaults(curve);*/
-	  ay_status = ay_capt_createfromcurve(curve, start_cap);
+	  ay_status = ay_capt_crttrimcap(curve, start_cap);
 	  /* transform cap */
 	  if(*start_cap)
 	    {
@@ -4356,7 +4356,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	      ay_trafo_apply3(&(tc->controlv[j*stride]), mi);
 	    } /* for */
 
-	  ay_status = ay_capt_createfromcurve(curve, end_cap);
+	  ay_status = ay_capt_crttrimcap(curve, end_cap);
 
 	  if(!*end_cap)
 	    {
@@ -5286,7 +5286,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       curve = NULL;
       ay_status = ay_object_copy(o1, &curve);
       /*ay_trafo_defaults(curve);*/
-      ay_status = ay_capt_createfromcurve(curve, start_cap);
+      ay_status = ay_capt_crttrimcap(curve, start_cap);
       /* transform cap */
       if(*start_cap)
 	{
@@ -5306,7 +5306,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       curve = NULL;
       ay_status = ay_object_copy(o4, &curve);
       /*ay_trafo_defaults(curve);*/
-      ay_status = ay_capt_createfromcurve(curve, end_cap);
+      ay_status = ay_capt_crttrimcap(curve, end_cap);
       if(!*end_cap)
 	{
 	  ay_object_delete(curve);
@@ -12142,6 +12142,16 @@ cleanup:
 
 /* ay_npt_avglensu:
  *  Compute average control point distances in U direction.
+ *
+ * @param[in] cv control points [width*height*stride]
+ * @param[in] width width of cv
+ * @param[in] height height of cv
+ * @param[in] stride stride in cv
+ * @param[in,out] avlens resulting average distances [width-1]
+ *  avlens[0] is the average distance of column0 to column1
+ *  avlens[1] the average distance of column1 to column2...
+ * 
+ * @return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_avglensu(double *cv, int width, int height, int stride,
@@ -12189,6 +12199,16 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 
 /* ay_npt_avglensv:
  *  Compute average control point distances in V direction.
+ *
+ * @param[in] cv control points [width*height*stride]
+ * @param[in] width width of cv
+ * @param[in] height height of cv
+ * @param[in] stride stride in cv
+ * @param[in,out] avlens resulting average distances [height-1]
+ *  avlens[0] is the average distance of row0 to row1
+ *  avlens[1] the average distance of row1 to row2...
+ * 
+ * @return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_avglensv(double *cv, int width, int height, int stride,

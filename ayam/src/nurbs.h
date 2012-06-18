@@ -49,13 +49,17 @@ int ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 /* capt.c */
 
-/** Create cap from (planar) curve.
+/** Create simple cap from (convex) curve.
  */
-int ay_capt_createfromcurve(ay_object *c, ay_object **cap);
+int ay_capt_crtsimplecap(ay_object *c, ay_object **cap);
 
-/** Create cap from non planar curve.
+/** Create trim cap from (planar) curve(s).
  */
-int ay_capt_createfromnpcurve(ay_object *c, ay_object **cap);
+int ay_capt_crttrimcap(ay_object *c, ay_object **cap);
+
+/** Create gordon cap from non planar curve.
+ */
+int ay_capt_crtgordoncap(ay_object *c, ay_object **cap);
 
 
 /* ict.c */
