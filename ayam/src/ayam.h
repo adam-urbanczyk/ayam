@@ -1038,6 +1038,8 @@ typedef struct ay_birail1_object_s
   int sections; /**< number of sections in the birailed surface (U) */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
+  int has_r1_cap; /**< create cap at rail1? */
+  int has_r2_cap; /**< create cap at rail2? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1857,6 +1859,15 @@ extern char *ay_error_igntype;
 #define AY_PRTDREADA  0 /**< Delayed Read Archive */
 #define AY_PRTRUNPROG 1 /**< Run Program */
 #define AY_PRTDYNLOAD 2 /**< Dynamic Load */
+/*@}*/
+
+/** \name Cap Types */
+/*@{*/
+#define AY_CATNONE  0 /**< No Cap */
+#define AY_CATTRIM 1 /**< Trim Cap */
+#define AY_CATSIMPLE 2 /**< Simple Cap */
+#define AY_CATSIMPLEINT 3 /**< Simple Cap Integrated*/
+#define AY_CATGORDON 4 /**< Gordon Cap */
 /*@}*/
 
 

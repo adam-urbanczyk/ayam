@@ -14,7 +14,116 @@
 
 /** \file capt.c \brief cap creation tools */
 
-/* ay_capt_createfromcurve:
+/** ay_capt_crtsimplecap:
+ *  create a simple cap surface from a single NURBS curve
+ *
+ * @param[in,out] c NURBS curve object
+ * @param[in,out] cap new NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
+{
+ int ay_status = AY_OK;
+ ay_object *npatch = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ ay_nurbpatch_object *np = NULL;
+ double knotv[4] = {0.0,0.0,1.0,1.0};
+ int a, i = 0, stride = 4;
+ double m[4] = {0};
+
+  if(!c || !cap)
+    return AY_ENULL;
+
+  if(c->type != AY_IDNCURVE)
+    { ay_status = AY_ERROR; goto cleanup; }
+
+  nc = (ay_nurbcurve_object *)(c->refine);
+
+  ay_status = ay_npt_createnpatchobject(&npatch);
+  if(ay_status)
+    { goto cleanup; }
+
+  ay_trafo_copy(c, npatch);
+
+  /* calloc the new patch */
+  if(!(np = calloc(1, sizeof(ay_nurbpatch_object))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  npatch->refine = np;
+
+  np->width = 2;
+  np->height = nc->length;
+  np->uorder = 2;
+  np->vorder = nc->order;
+
+  if(!(np->vknotv = calloc(nc->length+nc->order, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(np->uknotv = calloc(4, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(np->controlv = calloc(np->width*np->height*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  memcpy(np->uknotv, knotv, 4*sizeof(double));
+  memcpy(np->vknotv, nc->knotv, (nc->length+nc->order)*sizeof(double));
+
+  memcpy(np->controlv, nc->controlv, nc->length*stride*sizeof(double));
+
+  ay_status = ay_npt_extractmiddlepoint(nc->controlv, nc->length,
+					1, 4, 0, 1, m);
+
+  if(ay_status)
+    goto cleanup;
+
+  a = nc->length*stride;
+  for(i = 0; i < nc->length; i++)
+    {
+      memcpy(&(np->controlv[a]), m, 4*sizeof(double));
+      a += stride;
+    }
+
+  /* return result */
+  *cap = npatch;
+
+  /* prevent cleanup code from doing something harmful */
+  npatch = NULL;
+
+cleanup:
+
+  if(npatch)
+    {
+      if(npatch->refine)
+	ay_npt_destroy(npatch->refine);
+
+      ay_object_delete(npatch);
+    }
+
+ return ay_status;
+} /* ay_capt_crtsimplecap */
+
+
+/** ay_capt_crtsimplecapint:
+ *  create a simple cap surface from a single NURBS curve
+ *
+ * @param[in] side integration place
+ * @param[in] s NURBS surface object for integration
+ * @param[in,out] c NURBS curve object
+ * @param[in,out] cap new NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c, ay_object **cap)
+{
+ int ay_status = AY_OK;
+
+cleanup:
+
+ return ay_status;
+} /* ay_capt_crtsimplecapint */
+
+
+/** ay_capt_crttrimcap:
  *  create a cap surface from planar NURBS curves; the curve objects
  *  will be transformed and moved to the new NURBS patch as trim curves
  *
@@ -28,7 +137,7 @@
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_createfromcurve(ay_object *c, ay_object **cap)
+ay_capt_crttrimcap(ay_object *c, ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *npatch = NULL;
@@ -204,14 +313,14 @@ cleanup:
     }
 
  return ay_status;
-} /* ay_capt_createfromcurve */
+} /* ay_capt_crttrimcap */
 
 
-/* ay_capt_createfromnpcurve:
+/** ay_capt_crtgordoncap:
  *  create a cap surface from a single non-planar NURBS curve
  *  by splitting the outline into four pieces, arranging the
- *  pieces and building a Gordon surface from them (thanks to
- *  "the reverse" for inspiration);
+ *  pieces properly and building a Gordon surface from them
+ *  (thanks to "the reverse" for inspiration);
  *  the curve object will be modified (split)!
  *
  *  XXXX allow parameterisation of split points and desired surface orders
@@ -222,7 +331,7 @@ cleanup:
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_createfromnpcurve(ay_object *c, ay_object **cap)
+ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *c1 = NULL, *c2 = NULL, *c3 = NULL, *c4 = NULL, *new = NULL;
@@ -326,4 +435,77 @@ cleanup:
     ay_object_delete(c4);
 
  return ay_status;
-} /* ay_capt_createfromnpcurve */
+} /* ay_capt_crtgordoncap */
+
+
+/* ay_capt_addcaps:
+ *
+ */
+int
+ay_capt_addcaps(int *caps, ay_object *o, ay_object **dst)
+{
+ int ay_status = AY_OK;
+ int i;
+ ay_object *extrcurve = NULL;
+ ay_object *allcaps = NULL, **nextcap = &allcaps;
+
+  if(!caps || !o || !dst)
+    return AY_ENULL;
+
+  if(o->type != AY_IDNPATCH)
+   return AY_ERROR;
+
+  for(i = 0; i < 4; i++)
+    {
+      if(caps[i])
+	{
+	  if(!(extrcurve = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  ay_object_defaults(extrcurve);
+	  extrcurve->type = AY_IDNCURVE;
+
+	  ay_status = ay_npt_extractnc(o, i, 0.0, AY_FALSE, AY_FALSE,
+				       AY_FALSE, NULL,
+			  (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  switch(caps[i])
+	    {
+	    case 1:
+	      ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
+	      break;
+	    case 2:
+	      ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
+	      break;
+	    case 3:
+	      ay_status = ay_capt_crtsimplecapint(i, o, extrcurve, nextcap);
+	      break;
+	    case 4:
+	      ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
+	      break;
+	    default:
+	      ay_status = AY_ERROR;
+	      goto cleanup;
+	    } /* switch */
+
+	  if(ay_status)
+	    {
+	      ay_object_deletemulti(extrcurve);
+	      goto cleanup;
+	    }
+
+	  nextcap = &((*nextcap)->next);
+	} /* if */
+    } /* for */
+
+  *dst = allcaps;
+
+cleanup:
+
+ return ay_status;
+} /* ay_capt_addcaps */

@@ -578,7 +578,7 @@ ay_skin_notifycb(ay_object *o)
       if(!c)
 	goto cleanup;
       ay_trafo_defaults(c);
-      ay_status = ay_capt_createfromcurve(c, nextcb);
+      ay_status = ay_capt_crttrimcap(c, nextcb);
       if(ay_status)
 	goto cleanup;
       ay_trafo_copy(all_curves, *nextcb);
@@ -639,7 +639,7 @@ ay_skin_notifycb(ay_object *o)
 	  if(ay_status)
 	    goto cleanup;
 
-	  ay_status = ay_capt_createfromcurve(c, nextcb);
+	  ay_status = ay_capt_crttrimcap(c, nextcb);
 
 	  if(ay_status)
 	    goto cleanup;
@@ -655,7 +655,7 @@ ay_skin_notifycb(ay_object *o)
       if(!c)
 	goto cleanup;
       ay_trafo_defaults(c);
-      ay_status = ay_capt_createfromcurve(c, nextcb);
+      ay_status = ay_capt_crttrimcap(c, nextcb);
       if(ay_status)
 	goto cleanup;
       ay_trafo_copy(last, *nextcb);
@@ -717,7 +717,7 @@ ay_skin_notifycb(ay_object *o)
 	  if(ay_status)
 	    goto cleanup;
 
-	  ay_status = ay_capt_createfromcurve(c, nextcb);
+	  ay_status = ay_capt_crttrimcap(c, nextcb);
 
 	  if(ay_status)
 	    goto cleanup;
