@@ -619,10 +619,10 @@ ay_extrude_notifycb(ay_object *o)
 		{
 		  if(endb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_status = ay_npt_bevel(endb_type,
-					   endb_radius,
-					   AY_FALSE,
-					   c,
+		  ay_status = ay_bevelt_create(endb_type,
+					       endb_radius,
+					       AY_FALSE,
+					       c,
 			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
 		  if(endb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
@@ -771,10 +771,10 @@ ay_extrude_notifycb(ay_object *o)
 		{
 		  if(startb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
-		  ay_status = ay_npt_bevel(startb_type,
-					   startb_radius,
-					   AY_FALSE,
-					   c,
+		  ay_status = ay_bevelt_create(startb_type,
+					       startb_radius,
+					       AY_FALSE,
+					       c,
 			     (ay_nurbpatch_object **)(void*)&(bevel->refine));
 		  if(startb_sense)
 		    ay_nct_revert((ay_nurbcurve_object *)(c->refine));
