@@ -46,6 +46,15 @@ void ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params);
 int ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 			ay_object **dst);
 
+/** Create bevel surface.
+ */
+int ay_bevelt_create(int type, double radius, int align, ay_object *o,
+		     ay_nurbpatch_object **bevel);
+
+/** Create bevel surface from cross section bevel curve.
+ */
+int ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
+		      ay_nurbpatch_object **bevel);
 
 /* capt.c */
 
@@ -968,15 +977,6 @@ int ay_npt_extrude(double height, ay_object *o,
 int ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 				   double *P, int a, double *T);
 
-/** Create bevel surface.
- */
-int ay_npt_bevel(int type, double radius, int align, ay_object *o,
-		 ay_nurbpatch_object **bevel);
-
-/** Create bevel surface from cross section bevel curve.
- */
-int ay_npt_bevelc(double radius, int capped, ay_object *o1, ay_object *o2,
-		  ay_nurbpatch_object **bevel);
 
 /** Create cap surface.
  */

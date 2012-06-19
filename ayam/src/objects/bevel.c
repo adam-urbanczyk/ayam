@@ -497,7 +497,7 @@ ay_bevel_notifycb(ay_object *o)
   npatch->inherit_trafos = AY_FALSE;
   if(!bcurve)
     {
-      ay_status = ay_npt_bevel(b_type, b_radius, align, curve,
+      ay_status = ay_bevelt_create(b_type, b_radius, align, curve,
 			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
     }
   else
@@ -506,7 +506,7 @@ ay_bevel_notifycb(ay_object *o)
 	{
 	  has_cap = AY_TRUE;
 	}
-      ay_status = ay_npt_bevelc(b_radius, has_cap, curve, bcurve,
+      ay_status = ay_bevelt_createc(b_radius, has_cap, curve, bcurve,
 			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
     }
   if(ay_status)

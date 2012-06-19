@@ -608,7 +608,7 @@ ay_skin_notifycb(ay_object *o)
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
       ay_nct_applytrafo(c);
-      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, c,
+      ay_status = ay_bevelt_create(startb_type, startb_radius, AY_TRUE, c,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_object_delete(c);
@@ -686,7 +686,7 @@ ay_skin_notifycb(ay_object *o)
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
       ay_nct_applytrafo(c);
-      ay_status = ay_npt_bevel(endb_type, endb_radius*-1.0, AY_TRUE, c,
+      ay_status = ay_bevelt_create(endb_type, endb_radius*-1.0, AY_TRUE, c,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_object_delete(c);

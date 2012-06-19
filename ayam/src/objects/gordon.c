@@ -727,8 +727,8 @@ ay_gordon_notifycb(ay_object *o)
 	  bevel->type = AY_IDNPATCH;
 	  bevel->parent = AY_TRUE;
 	  bevel->inherit_trafos = AY_FALSE;
-	  ay_status = ay_npt_bevel(b_type, b_radius, AY_TRUE,
-				   &bcurve,
+	  ay_status = ay_bevelt_create(b_type, b_radius, AY_TRUE,
+				       &bcurve,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
 	  ay_nct_destroy((ay_nurbcurve_object*)bcurve.refine);

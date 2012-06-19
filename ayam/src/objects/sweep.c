@@ -681,7 +681,8 @@ ay_sweep_notifycb(ay_object *o)
       bevel->type = AY_IDNPATCH;
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
-      ay_status = ay_npt_bevel(startb_type, startb_radius, AY_TRUE, &curve4,
+      ay_status = ay_bevelt_create(startb_type, startb_radius,
+				   AY_TRUE, &curve4,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
@@ -753,7 +754,8 @@ ay_sweep_notifycb(ay_object *o)
       bevel->type = AY_IDNPATCH;
       bevel->parent = AY_TRUE;
       bevel->inherit_trafos = AY_FALSE;
-      ay_status = ay_npt_bevel(endb_type, endb_radius, AY_TRUE, &curve4,
+      ay_status = ay_bevelt_create(endb_type, endb_radius,
+				   AY_TRUE, &curve4,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
       ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
