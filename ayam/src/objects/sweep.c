@@ -712,7 +712,7 @@ ay_sweep_notifycb(ay_object *o)
 	  if(ay_status)
 	    goto cleanup;
 
-	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
+	  ay_status = ay_capt_crttrimcap(curve5, nextcb);
 
 	  if(ay_status)
 	    goto cleanup;
@@ -785,7 +785,7 @@ ay_sweep_notifycb(ay_object *o)
 	  if(ay_status)
 	    goto cleanup;
 
-	  ay_status = ay_capt_createfromcurve(curve5, nextcb);
+	  ay_status = ay_capt_crttrimcap(curve5, nextcb);
 
 	  if(ay_status)
 	    goto cleanup;
