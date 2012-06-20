@@ -8798,7 +8798,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
  scew_element *shape_element = NULL;
  scew_element *swing_element = NULL;
  scew_element *curve_element = NULL;
- ay_object *c = NULL, *d = NULL;
+ ay_object *c = NULL, *d = NULL, *e = NULL;
  ay_nurbcurve_object *cs;
 
   if(!element || !o)
@@ -8880,18 +8880,13 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   scew_element_add_attr_pair(curve_element, "containerField",
 			     "trajectoryCurve");
 
-  /* write the caps */
-  if(swing->upper_cap)
-    x3dio_writenpatchobj(shape_element, swing->upper_cap);
-
-  if(swing->lower_cap)
-    x3dio_writenpatchobj(shape_element, swing->lower_cap);
-
-  if(swing->start_cap)
-    x3dio_writenpatchobj(shape_element, swing->start_cap);
-
-  if(swing->end_cap)
-    x3dio_writenpatchobj(shape_element, swing->end_cap);
+  /* write the caps and bevels */
+  e = swing->caps_and_bevels;
+  while(e)
+    {
+      x3dio_writenpatchobj(shape_element, e);
+      e = e->next;
+    }
 
 
   /* cleanup */
