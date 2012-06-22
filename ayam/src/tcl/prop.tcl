@@ -201,6 +201,8 @@ if { [llength $alltags] > 0 } {
     eval [subst "setTags $alltags"]
 }
 
+notifyOb
+rV
 }
 # setTagsp
 
