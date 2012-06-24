@@ -296,7 +296,7 @@ Now Ayam should be compiled and ready for a test run.
 -------------------------
 
 If all went fine, you can now install Ayam, switch to root and enter:
->make install
+> make install
 
 By default, Ayam will install into /usr/local/ayam.
 It will create some sub-directories there, namely:
@@ -311,30 +311,33 @@ environment variable, otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/bin/Makefile uninstall
+> make -f /usr/local/ayam/bin/Makefile uninstall
 
 To check what installing/uninstalling will do to your system use
->make -n install
+> make -n install
 or
->make -n -f /usr/local/ayam/bin/Makefile uninstall
+> make -n -f /usr/local/ayam/bin/Makefile uninstall
 first.
 
 Ayam also integrates with Unix desktop environments.
 The next steps need the xdg-utils from the Portland project to be installed.
 
 To install a system wide applications menu entry, enter:
->make sysmenu
+root> make sysmenu
 
 The next commands should not be run as root!
 
-To add a desktop launcher to the current users desktop, enter:
->make desktop
-
 If Ayam was installed to a user specific directory (e.g. on systems
-without root access), the following two targets add a user application
-menu entry and file type:
->make menu
->make filetype
+without root access) use the menu target instead of sysmenu:
+user> make menu
+
+To add a desktop launcher to the current users desktop, enter:
+user> make desktop
+
+To create a file type on the current users desktop:
+user> make filetype
+
+Some desktop environments require a restart to let these changes take effect!
 
 
 3. Additional Targets (Compiling Plugins)
