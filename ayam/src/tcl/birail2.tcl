@@ -22,36 +22,11 @@ proc birail2_getAttr { } {
     set w [frame $ay(pca).$Birail2Attr(w)]
     getProp
 
-    set tagnames ""
-    set tagvalues ""
-    getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues
-
     set ay(bok) $ay(appb)
 
     #addCheck $w Birail2AttrData Close
     addParam $w Birail2AttrData Sections
     addCheck $w Birail2AttrData InterpolCtrl
-    addCheck $w Birail2AttrData StartCap
-    addCheck $w Birail2AttrData EndCap
-
-    if { $BevelTags(HasLeftBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 2 Birail2AttrData"
-	addMenu $w BevelTags SBType $ay(bevelmodes)
-	addParam $w BevelTags SBRadius
-	addCheck $w BevelTags SBRevert
-    } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 2 Birail2AttrData"
-    }
-
-    if { $BevelTags(HasRightBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 3 Birail2AttrData"
-	addMenu $w BevelTags EBType $ay(bevelmodes)
-	addParam $w BevelTags EBRadius
-	addCheck $w BevelTags EBRevert
-    } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 3 Birail2AttrData"
-    }
 
     addParam $w Birail2AttrData Tolerance
     addMenu $w Birail2AttrData DisplayMode $ay(npdisplaymodes)
@@ -66,35 +41,27 @@ proc birail2_getAttr { } {
 }
 # birail2_getAttr
 
-
-proc birail2_setAttr { } {
-
-    bevel_setTags
-    setProp
-
- return;
-}
-# birail2_setAttr
-
 set Birail2 1
 
 proc init_Birail2 { } {
 global ay Birail2_props Birail2Attr Birail2AttrData
 
-set Birail2_props { Transformations Attributes Material Tags Birail2Attr }
+set Birail2_props { Transformations Attributes Material Tags Caps Bevels Birail2Attr }
 
 
 array set Birail2Attr {
 arr   Birail2AttrData
-sproc birail2_setAttr
+sproc ""
 gproc birail2_getAttr
 w     fBirail2Attr
-
 }
 
 array set Birail2AttrData {
 DisplayMode 1
 NPInfoBall "n/a"
+BoundaryNames {"Start" "End"}
+StartCap 0
+EndCap 0
 }
 return;
 }
