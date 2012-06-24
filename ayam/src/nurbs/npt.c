@@ -4007,14 +4007,11 @@ cleanup:
  */
 int
 ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-	       int closed, ay_nurbpatch_object **birail1,
-	       int has_start_cap, ay_object **start_cap,
-	       int has_end_cap, ay_object **end_cap)
+	       int closed, ay_nurbpatch_object **birail1)
 {
  int ay_status = AY_OK;
- ay_object *curve = NULL;
  ay_nurbpatch_object *new = NULL;
- ay_nurbcurve_object *cs, *r1, *r2, *tc;
+ ay_nurbcurve_object *cs, *r1, *r2;
  double *controlv = NULL;
  int i = 0, j = 0, a = 0, stride;
  double u, p1[4], p2[4], p5[4], p6[4], p7[4], p8[4];
@@ -4027,8 +4024,7 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double *cscv = NULL, *r1cv = NULL, *r2cv = NULL;
  double scalx, scaly, scalz;
 
-  if(!o1 || !o2 || !o3 || !birail1 ||
-     (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
+  if(!o1 || !o2 || !o3 || !birail1)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -4319,51 +4315,6 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
       memcpy(&(controlv[sections*cs->length*stride]), controlv,
 	     cs->length*stride*sizeof(double));
     }
-  else
-    {
-      /* create start cap */
-      if(has_start_cap)
-	{
-	  curve = NULL;
-	  ay_status = ay_object_copy(o1, &curve);
-	  /*ay_trafo_defaults(curve);*/
-	  ay_status = ay_capt_crttrimcap(curve, start_cap);
-	  /* transform cap */
-	  if(*start_cap)
-	    {
-	      /*ay_trafo_copy(o1, *start_cap);*/
-	      /* fix direction for aycsg */
-	      (*start_cap)->scalz *= -1.0;
-	    }
-	  else
-	    {
-	      ay_object_delete(curve);
-	    } /* if */
-	} /* if */
-
-      /* create end-cap (if birail is not closed) */
-      if(has_end_cap)
-	{
-	  curve = NULL;
-	  ay_status = ay_object_copy(o1, &curve);
-	  tc = (ay_nurbcurve_object*)curve->refine;
-	  ay_trafo_creatematrix(curve, mcs);
-	  ay_trafo_defaults(curve);
-
-	  for(j = 0; j < tc->length; j++)
-	    {
-	      ay_trafo_apply3(&(tc->controlv[j*stride]), mcs);
-	      ay_trafo_apply3(&(tc->controlv[j*stride]), mi);
-	    } /* for */
-
-	  ay_status = ay_capt_crttrimcap(curve, end_cap);
-
-	  if(!*end_cap)
-	    {
-	      ay_object_delete(curve);
-	    }
-	} /* if */
-    } /* if */
 
   new->is_rat = ay_npt_israt(new);
   ay_npt_setuvtypes(new);

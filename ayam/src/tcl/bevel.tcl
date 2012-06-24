@@ -10,14 +10,14 @@
 # bevel.tcl - bevel tags processing Tcl code and Bevel object code
 
 
-proc bevel_parseTags { tagnames tagvalues } {
+proc bevel_parseTags { tagnames tagvalues bnames } {
     global BevelTags
 
     array set BevelTags {
-	HasStartBevel 0
-	HasEndBevel 0
-	HasLeftBevel 0
-	HasRightBevel 0
+	Bevel0 0
+	Bevel1 0
+	Bevel2 0
+	Bevel3 0
     }
 
     if { [llength $tagnames] == 0 } { return; }
@@ -31,26 +31,13 @@ proc bevel_parseTags { tagnames tagvalues } {
 	    set tagvalue [lindex $tagvalues $i]
 	    set bplace -1
 	    scan $tagvalue "%d," bplace
-	    if { $bplace == 0 } {
-		set BevelTags(HasStartBevel) 1
-		scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(SBType) \
-			BevelTags(SBRadius) BevelTags(SBRevert)
-	    }
-	    if { $bplace == 1 } {
-		set BevelTags(HasEndBevel) 1
-		scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(EBType) \
-			BevelTags(EBRadius) BevelTags(EBRevert)
-	    }
-	    if { $bplace == 2 } {
-		set BevelTags(HasLeftBevel) 1
-		scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(LBType) \
-			BevelTags(LBRadius) BevelTags(LBRevert)
-	    }
-	    if { $bplace == 3 } {
-		set BevelTags(HasRightBevel) 1
-		scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(RBType) \
-			BevelTags(RBRadius) BevelTags(RBRevert)
-	    }
+
+	    set BevelTags(Bevel${bplace}) 1
+
+	    set bname [lindex $bnames $bplace]
+
+	    scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(${bname}Type) \
+			BevelTags(${bname}Radius) BevelTags(${bname}Revert)
 	}
 	# if
     }
@@ -61,7 +48,7 @@ proc bevel_parseTags { tagnames tagvalues } {
 # bevel_parseTags
 
 
-proc bevel_setTags { } {
+proc bevel_setTags { bnames } {
     global BevelTags
 
     set newtags ""
@@ -84,26 +71,16 @@ proc bevel_setTags { } {
     }
     # if
 
-    if { $BevelTags(HasStartBevel) } {
-	lappend newtags BP
-	lappend newtags [format "0,%d,%f,%d" $BevelTags(SBType)\
-		$BevelTags(SBRadius) $BevelTags(SBRevert)]
+    set i 0
+    foreach bname $bnames {
+	if { $BevelTags(Bevel${i}) } {
+	    lappend newtags BP
+	    lappend newtags [format "%d,%d,%f,%d" $i $BevelTags(${bname}Type)\
+		$BevelTags(${bname}Radius) $BevelTags(${bname}Revert)]
+	}
+	incr i
     }
-    if { $BevelTags(HasEndBevel) } {
-	lappend newtags BP
-	lappend newtags [format "1,%d,%f,%d" $BevelTags(EBType)\
-		$BevelTags(EBRadius) $BevelTags(EBRevert)]
-    }
-    if { $BevelTags(HasLeftBevel) } {
-	lappend newtags BP
-	lappend newtags [format "2,%d,%f,%d" $BevelTags(LBType)\
-		$BevelTags(LBRadius) $BevelTags(LBRevert)]
-    }
-    if { $BevelTags(HasRightBevel) } {
-	lappend newtags BP
-	lappend newtags [format "3,%d,%f,%d" $BevelTags(RBType)\
-		$BevelTags(RBRadius) $BevelTags(RBRevert)]
-    }
+    # foreach
 
     if { $newtags != "" } {
 	eval [subst "setTags $newtags"]
@@ -116,37 +93,21 @@ proc bevel_setTags { } {
 # bevel_setTags
 
 
-proc bevel_add { place arr } {
+proc bevel_add { bplace arr } {
     global ay BevelTags $arr
 
-    # set up array
-    if { $place == 0 } {
-	set BevelTags(HasStartBevel) 1
-	set BevelTags(SBType) 0
-	set BevelTags(SBRadius) 0.1
-	set BevelTags(SBRevert) 0
-    }
-    if { $place == 1 } {
-	set BevelTags(HasEndBevel) 1
-	set BevelTags(EBType) 0
-	set BevelTags(EBRadius) 0.1
-	set BevelTags(EBRevert) 0
-    }
-    if { $place == 2 } {
-	set BevelTags(HasLeftBevel) 1
-	set BevelTags(LBType) 0
-	set BevelTags(LBRadius) 0.1
-	set BevelTags(LBRevert) 0
-    }
-    if { $place == 3 } {
-	set BevelTags(HasRightBevel) 1
-	set BevelTags(RBType) 0
-	set BevelTags(RBRadius) 0.1
-	set BevelTags(RBRevert) 0
-    }
+    eval set bnames \$${arr}(BoundaryNames)
+    set bname [lindex $bnames $bplace]
+
+    # switch the bevel
+    set BevelTags(Bevel${bplace}) 1
+    # set up some default values
+    set BevelTags(${bname}Type) 0
+    set BevelTags(${bname}Radius) 0.1
+    set BevelTags(${bname}Revert) 0
 
     # create tags
-    bevel_setTags
+    bevel_setTags $bnames
 
     # apply changes to object
     if { $ay(shiftcommand) == 1 } {
@@ -177,25 +138,16 @@ proc bevel_add { place arr } {
 # bevel_add
 
 
-proc bevel_rem { place arr } {
+proc bevel_rem { bplace arr } {
     global ay BevelTags $arr
 
-    # set up array
-    if { $place == 0 } {
-	set BevelTags(HasStartBevel) 0
-    }
-    if { $place == 1 } {
-	set BevelTags(HasEndBevel) 0
-    }
-    if { $place == 2 } {
-	set BevelTags(HasLeftBevel) 0
-    }
-    if { $place == 3 } {
-	set BevelTags(HasRightBevel) 0
-    }
+    eval set bnames \$${arr}(BoundaryNames)
+
+    # switch the bevel
+    set BevelTags(Bevel${bplace}) 0
 
     # create tags
-    bevel_setTags
+    bevel_setTags $bnames
 
     # apply changes to object?
     if { $ay(shiftcommand) == 1 } {
@@ -244,6 +196,7 @@ array set BevelAttr {
 
 array set BevelAttrData {
     DisplayMode 1
+    BoundaryNames {"Bevel"}
 }
 
 return;
@@ -264,18 +217,12 @@ proc bevel_getAttr { } {
     set w [frame $ay(pca).$BevelAttr(w)]
     getProp
 
-    set BevelTags(SBType) 0
-    set BevelTags(SBRadius) 0.1
-    set BevelTags(SBRevert) 0
+    set bnames $BevelAttrData(BoundaryNames)
 
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues
-
-    set BevelTags(BevelType) $BevelTags(SBType)
-    set BevelTags(BevelRadius) $BevelTags(SBRadius)
-    set BevelTags(BevelRevert) $BevelTags(SBRevert)
+    bevel_parseTags $tagnames $tagvalues $bnames
 
     set ay(bok) $ay(appb)
 
@@ -295,17 +242,101 @@ proc bevel_getAttr { } {
 
 
 proc bevel_setAttr { } {
-    global BevelTags
+    global BevelAttrData
 
-    set BevelTags(HasStartBevel) 1
-    set BevelTags(SBType) $BevelTags(BevelType)
-    set BevelTags(SBRadius) $BevelTags(BevelRadius)
-    set BevelTags(SBRevert) $BevelTags(BevelRevert)
-    update
-    bevel_setTags
-    update
+    bevel_setTags $BevelAttrData(BoundaryNames)
+
     setProp
 
  return;
 }
 # bevel_setAttr
+
+#
+# Bevels property as e.g. used by Birail1 tool object
+#
+
+array set Bevels {
+arr   BevelsData
+sproc bevel_setBevels
+gproc bevel_getBevels
+w     fBevels
+}
+
+proc bevel_getBevels { } {
+    global ay BevelTags Bevels BevelsData
+
+    set oldfocus [focus]
+
+    # remove old, create new Bevels-UI
+    catch {destroy $ay(pca).$Bevels(w)}
+    set w [frame $ay(pca).$Bevels(w)]
+
+    set ay(bok) $ay(appb)
+
+    getProp
+
+    set type ""
+    getType type
+    if { $type != "" } {
+	global ${type}AttrData
+
+	eval set bnames \$${type}AttrData(BoundaryNames)
+
+	set tagnames ""
+	set tagvalues ""
+	getTags tagnames tagvalues
+	bevel_parseTags $tagnames $tagvalues $bnames
+
+	set i 0
+	foreach bname $bnames {
+	    if { $BevelTags(Bevel${i}) } {
+		set str "Remove "
+		append str $bname
+		append str " Bevel!"
+		set cmd "bevel_rem "
+		append cmd $i
+		append cmd " ${type}AttrData"
+		addCommand $w c$i $str $cmd
+		addMenu $w BevelTags ${bname}Type $ay(bevelmodes)
+		addParam $w BevelTags ${bname}Radius
+		addCheck $w BevelTags ${bname}Revert
+	    } else {
+		set str "Add "
+		append str $bname
+		append str " Bevel!"
+		set cmd "bevel_add "
+		append cmd $i
+		append cmd " ${type}AttrData"
+		addCommand $w c$i $str $cmd
+	    }
+
+	    incr i
+	}
+
+    }
+    # if
+
+    # add UI to property canvas
+    plb_setwin $w $oldfocus
+
+ return;
+}
+# bevel_getBevels
+
+
+proc bevel_setBevels { } {
+
+    set type ""
+    getType type
+    if { $type != "" } {
+	global ${type}AttrData
+	eval set bnames \$${type}AttrData(BoundaryNames)
+	bevel_setTags $bnames
+
+	setProp
+    }
+
+ return;
+}
+# bevel_setBevels

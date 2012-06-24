@@ -62,6 +62,10 @@ int ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
  */
 int ay_capt_crtsimplecap(ay_object *c, ay_object **cap);
 
+/** Create simple cap from (convex) curve and integrate it into the surface.
+ */
+int ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c);
+
 /** Create trim cap from (planar) curve(s).
  */
 int ay_capt_crttrimcap(ay_object *c, ay_object **cap);
@@ -69,6 +73,11 @@ int ay_capt_crttrimcap(ay_object *c, ay_object **cap);
 /** Create gordon cap from non planar curve.
  */
 int ay_capt_crtgordoncap(ay_object *c, ay_object **cap);
+
+/** Create all caps for a surface.
+ */
+int ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o,
+		    ay_object **dst);
 
 
 /* ict.c */
@@ -938,9 +947,7 @@ int ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3,
 /** Create birailed surface from three curves.
  */
 int ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		   int closed, ay_nurbpatch_object **birail1,
-		   int has_start_cap, ay_object **start_cap,
-		   int has_end_cap, ay_object **end_cap);
+		   int closed, ay_nurbpatch_object **birail1);
 
 /** Create periodic birailed surface from three curves.
  */

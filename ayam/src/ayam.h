@@ -156,8 +156,6 @@ typedef struct ay_bparam_s
   int dirs[4];
   int bcaps[4];
   double radii[4];
-  int extrncsides[4];
-  double extrncparams[4];
 } ay_bparam;
 
 

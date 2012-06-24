@@ -279,6 +279,14 @@ ay_birail1_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail1->has_end_cap));
 
+  Tcl_SetStringObj(ton,"R1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(birail1->has_r1_cap));
+
+  Tcl_SetStringObj(ton,"R2Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(birail1->has_r2_cap));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail1->display_mode));
@@ -338,6 +346,16 @@ ay_birail1_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"R1Cap",-1);
+  to = Tcl_NewIntObj(birail1->has_r1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"R2Cap",-1);
+  to = Tcl_NewIntObj(birail1->has_r2_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(birail1->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -378,6 +396,12 @@ ay_birail1_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&birail1->display_mode);
   fscanf(fileptr,"%lg\n",&birail1->glu_sampling_tolerance);
 
+  if(ay_read_version >= 16)
+    {
+      fscanf(fileptr,"%d\n",&birail1->has_r1_cap);
+      fscanf(fileptr,"%d\n",&birail1->has_r2_cap);
+    }
+
   o->refine = birail1;
 
  return AY_OK;
@@ -403,6 +427,9 @@ ay_birail1_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", birail1->has_end_cap);
   fprintf(fileptr, "%d\n", birail1->display_mode);
   fprintf(fileptr, "%g\n", birail1->glu_sampling_tolerance);
+
+  fprintf(fileptr, "%d\n", birail1->has_r1_cap);
+  fprintf(fileptr, "%d\n", birail1->has_r2_cap);
 
  return AY_OK;
 } /* ay_birail1_writecb */
@@ -477,7 +504,7 @@ ay_birail1_notifycb(ay_object *o)
  int caps[4] = {0};
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *pobject3 = NULL;
- ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
+ ay_object *npatch = NULL, **nextcb;
  ay_object *bevel = NULL;
  ay_bparam bparams;
  int ay_status = AY_OK;
@@ -569,19 +596,13 @@ ay_birail1_notifycb(ay_object *o)
   /* do the birail */
   ay_status = ay_npt_createnpatchobject(&npatch);
   if(ay_status)
-    {
-      goto cleanup;
-    }
+    goto cleanup;
 
   if(birail1->type < 2)
     {
       ay_status = ay_npt_birail1(curve1, curve2, curve3,
 			   birail1->sections, birail1->type,
-			   (ay_nurbpatch_object **)(void*)&(npatch->refine),
-			   bparams.states[0]?AY_FALSE:birail1->has_start_cap,
-			   &start_cap,
-			   bparams.states[1]?AY_FALSE:birail1->has_end_cap,
-			   &end_cap);
+			   (ay_nurbpatch_object **)(void*)&(npatch->refine));
     }
   else
     {
@@ -593,35 +614,30 @@ ay_birail1_notifycb(ay_object *o)
   if(ay_status)
     goto cleanup;
 
-  if(start_cap)
-    {
-      *nextcb = start_cap;
-      nextcb = &(start_cap->next);
-    }
-  if(end_cap)
-    {
-      *nextcb = end_cap;
-      nextcb = &(end_cap->next);
-    }
-
   birail1->npatch = npatch;
 
   /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
+  /* create/add caps */
+  caps[0] = birail1->has_r1_cap;
+  caps[1] = birail1->has_r2_cap;
+  caps[2] = birail1->has_start_cap;
+  caps[3] = birail1->has_end_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, birail1->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
   /* create/add bevels */
-  if((birail1->type < 2) && o->tags)
-    {
-      caps[0] = birail1->has_start_cap;
-      caps[1] = birail1->has_end_cap;
+  bparams.dirs[2] = !bparams.dirs[2];
 
-      bparams.dirs[0] = !bparams.dirs[0];
-      bparams.extrncsides[0] = 2;
-      bparams.extrncsides[1] = 3;
-
-      ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch,
-				      nextcb);
-    }
+  ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
 
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_sampling_tolerance =
