@@ -42,3 +42,43 @@ addInfo $w CapAttrData NPInfo
 return;
 }
 # init_Cap
+
+
+array set Caps {
+arr   CapsData
+sproc ""
+gproc cap_getCaps
+w     fCaps
+}
+
+proc cap_getCaps {} {
+    global ay Caps CapsData
+
+    set oldfocus [focus]
+
+    # remove old, create new Caps-UI
+    catch {destroy $ay(pca).$Caps(w)}
+    set w [frame $ay(pca).$Caps(w)]
+
+    getProp
+
+    set type ""
+    getType type
+    if { $type != "" } {
+	global ${type}AttrData
+
+	eval set capnames \$${type}AttrData(BoundaryNames)
+	foreach capname $capnames {
+	    addMenu $w ${type}AttrData ${capname}Cap \
+		[list Off Trim Simple SimpleInt Gordon]
+	}
+
+    }
+    # if
+
+    # add UI to property canvas
+    plb_setwin $w $oldfocus
+
+ return;
+}
+# cap_getCaps

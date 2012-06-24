@@ -57,6 +57,9 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
   np->uorder = 2;
   np->vorder = nc->order;
 
+  np->uknot_type = AY_KTNURB;
+  np->vknot_type = nc->knot_type;
+
   if(!(np->vknotv = calloc(nc->length+nc->order, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(np->uknotv = calloc(4, sizeof(double))))
@@ -82,6 +85,8 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
       a += stride;
     }
 
+  ay_npt_setuvtypes(np);
+
   /* return result */
   *cap = npatch;
 
@@ -104,20 +109,105 @@ cleanup:
 
 /** ay_capt_crtsimplecapint:
  *  create a simple cap surface from a single NURBS curve
+ *  and integrate it into the NURBS surface
  *
  * @param[in] side integration place
- * @param[in] s NURBS surface object for integration
+ * @param[in,out] s NURBS surface object for integration
  * @param[in,out] c NURBS curve object
- * @param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c, ay_object **cap)
+ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 {
  int ay_status = AY_OK;
+ ay_object *cap = NULL, *o = NULL, *oldnext;
+ ay_nurbpatch_object *np = NULL;
+ char *uv = NULL, uvs[][4] = {"Uu","uU","vu","Vu"};
+ int knottype = AY_KTCUSTOM, order = 0;
+
+  if(!s || !c)
+    return AY_ENULL;
+
+  if(!s->type == AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object*)s->refine;
+
+  ay_status = ay_capt_crtsimplecap(c, &cap);
+
+  if(ay_status)
+    goto cleanup;
+
+  switch(side)
+    {
+    case 0:
+    case 1:
+      if(np->vorder != 2)
+	{
+	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
+				      np->vorder-2);
+	}
+      order = np->vorder;
+      knottype = np->vknot_type;
+      break;
+    case 2:
+    case 3:
+      if(np->uorder != 2)
+	{
+	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
+				      np->uorder-2);
+	}
+      order = np->uorder;
+      knottype = np->uknot_type;
+      break;
+    } /* switch */
+
+  if(ay_status)
+    goto cleanup;
+
+  uv = uvs[side];
+
+  oldnext = s->next;
+  s->next = cap;
+
+#if 0
+  switch(knottype)
+    {
+    AY_KTBEZIER:
+      break;
+    AY_KTBSPLINE:
+      break;
+    AY_KTNURB:
+      break;
+
+    default:
+      break;
+    }
+#endif
+
+  knottype = AY_KTCUSTOM;
+
+  ay_status = ay_npt_concat(s, 0, order, knottype, 0, 0.0, uv,
+			    &o);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* replace old patch with new */
+  ay_npt_destroy(s->refine);
+  s->refine = o->refine;
+  o->refine = NULL;
+  ay_object_delete(o);
+
+  s->next = oldnext;
+
+  /* copy transformations/tags? */
 
 cleanup:
+
+  if(cap)
+    ay_object_delete(cap);
 
  return ay_status;
 } /* ay_capt_crtsimplecapint */
@@ -438,18 +528,24 @@ cleanup:
 } /* ay_capt_crtgordoncap */
 
 
-/* ay_capt_addcaps:
+/** ay_capt_addcaps:
+ * Create cap surfaces for a NURBS surface.
  *
+ * @param[in] caps designates which caps to create
+ * @param[in] o NURBS patch object
+ * @param[in,out] cap list of new NURBS patch objects (the caps)
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_addcaps(int *caps, ay_object *o, ay_object **dst)
+ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 {
  int ay_status = AY_OK;
  int i;
  ay_object *extrcurve = NULL;
- ay_object *allcaps = NULL, **nextcap = &allcaps;
+ ay_object *cap = NULL, **nextcap = dst;
 
-  if(!caps || !o || !dst)
+  if(!caps || !bparams || !o || !dst)
     return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
@@ -457,7 +553,7 @@ ay_capt_addcaps(int *caps, ay_object *o, ay_object **dst)
 
   for(i = 0; i < 4; i++)
     {
-      if(caps[i])
+      if(caps[i] && !bparams->states[i])
 	{
 	  if(!(extrcurve = calloc(1, sizeof(ay_object))))
 	    {
@@ -472,21 +568,24 @@ ay_capt_addcaps(int *caps, ay_object *o, ay_object **dst)
 			  (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
 
 	  if(ay_status)
-	    goto cleanup;
+	    {
+	      free(extrcurve);
+	      goto cleanup;
+	    }
 
 	  switch(caps[i])
 	    {
 	    case 1:
-	      ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
+	      ay_status = ay_capt_crttrimcap(extrcurve, &cap);
 	      break;
 	    case 2:
-	      ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
+	      ay_status = ay_capt_crtsimplecap(extrcurve, &cap);
 	      break;
 	    case 3:
-	      ay_status = ay_capt_crtsimplecapint(i, o, extrcurve, nextcap);
+	      ay_status = ay_capt_crtsimplecapint(i, o, extrcurve);
 	      break;
 	    case 4:
-	      ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
+	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
 	      break;
 	    default:
 	      ay_status = AY_ERROR;
@@ -499,11 +598,13 @@ ay_capt_addcaps(int *caps, ay_object *o, ay_object **dst)
 	      goto cleanup;
 	    }
 
-	  nextcap = &((*nextcap)->next);
+	  if(cap)
+	    {
+	      *nextcap = cap;
+	      nextcap = &(cap->next);
+	    }
 	} /* if */
     } /* for */
-
-  *dst = allcaps;
 
 cleanup:
 

@@ -94,8 +94,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  ay_trafo_defaults(&c);
 	  c.type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(o, bparams->extrncsides[i],
-				       bparams->extrncparams[i],
+	  ay_status = ay_npt_extractnc(o, i,
+				       0.0,
 				       AY_FALSE, AY_FALSE,
 				       AY_FALSE, NULL,
 				   (ay_nurbcurve_object**)(void*)&(c.refine));
@@ -135,7 +135,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 					    bparams->bcaps[i],
 					    &c, bevelcurve,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-	    }
+	    } /* if */
 
 	  ay_nct_destroy((ay_nurbcurve_object*)c.refine);
 	  c.refine = NULL;

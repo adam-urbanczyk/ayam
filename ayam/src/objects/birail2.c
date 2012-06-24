@@ -660,9 +660,7 @@ ay_birail2_notifycb(ay_object *o)
       caps[0] = birail2->has_start_cap;
       caps[1] = birail2->has_end_cap;
 
-      bparams.dirs[0] = !bparams.dirs[0];
-      bparams.extrncsides[0] = 2;
-      bparams.extrncsides[1] = 3;
+      bparams.dirs[2] = !bparams.dirs[2];
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, birail2->npatch,
 				      nextcb);

@@ -465,8 +465,8 @@ ay_bevel_notifycb(ay_object *o)
   /* check curves rotation attributes; only allow align operation,
      if curve is not rotated, because otherwise the transformations
      would not be treated correctly in ay_npt_bevel() */
-  if((curve->quat[0] == 0.0) &&(curve->quat[1] == 0.0) &&
-     (curve->quat[2] == 0.0) &&(curve->quat[3] == 1.0))
+  if((curve->quat[0] == 0.0) && (curve->quat[1] == 0.0) &&
+     (curve->quat[2] == 0.0) && (curve->quat[3] == 1.0))
     {
       align = AY_TRUE;
     }
