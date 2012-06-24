@@ -41,15 +41,6 @@ proc birail1_getAttr { } {
 # birail1_getAttr
 
 
-proc birail1_setAttr { } {
-
-    bevel_setTags
-    setProp
-
- return;
-}
-# birail1_setAttr
-
 set Birail1 1
 
 proc init_Birail1 { } {
@@ -59,7 +50,7 @@ set Birail1_props { Transformations Attributes Material Tags Caps Bevels Birail1
 
 array set Birail1Attr {
 arr   Birail1AttrData
-sproc birail1_setAttr
+sproc ""
 gproc birail1_getAttr
 w     fBirail1Attr
 }
