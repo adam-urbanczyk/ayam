@@ -1005,7 +1005,7 @@ ay_selp_selectmpnc(ay_object *o, int select_all)
  ay_point *p = NULL, **nextp = NULL, *newp = NULL;
  ay_mpoint *mp = NULL;
  ay_nurbcurve_object *nc;
- int i, found;
+ int i, found = AY_FALSE;
 
   if(!o || !o->type == AY_IDNCURVE)
     return;
