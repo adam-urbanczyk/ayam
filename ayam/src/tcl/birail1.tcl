@@ -9,38 +9,6 @@
 
 # birail1.tcl - Birail1 objects Tcl code
 
-# birail1_getAttr:
-#  get Attributes from C context and build new PropertyGUI
-#
-proc birail1_getAttr { } {
-    global ay Birail1Attr Birail1AttrData BevelTags
-
-    set oldfocus [focus]
-
-    # remove old, create new Birail1Attr-UI
-    catch {destroy $ay(pca).$Birail1Attr(w)}
-    set w [frame $ay(pca).$Birail1Attr(w)]
-    getProp
-
-    set ay(bok) $ay(appb)
-
-    addMenu $w Birail1AttrData Type [list Open Closed Periodic]
-    addParam $w Birail1AttrData Sections
-
-    addParam $w Birail1AttrData Tolerance
-    addMenu $w Birail1AttrData DisplayMode $ay(npdisplaymodes)
-
-    addText $w Birail1AttrData "Created NURBS Patch:"
-    addInfo $w Birail1AttrData NPInfo
-
-    # add UI to property canvas
-    plb_setwin $w $oldfocus
-
- return;
-}
-# birail1_getAttr
-
-
 set Birail1 1
 
 proc init_Birail1 { } {
@@ -51,7 +19,7 @@ set Birail1_props { Transformations Attributes Material Tags Caps Bevels Birail1
 array set Birail1Attr {
 arr   Birail1AttrData
 sproc ""
-gproc birail1_getAttr
+gproc ""
 w     fBirail1Attr
 }
 
@@ -65,6 +33,18 @@ EndCap 0
 R1Cap 0
 R2Cap 0
 }
+
+set w [frame $ay(pca).$Birail1Attr(w)]
+
+addMenu $w Birail1AttrData Type [list Open Closed Periodic]
+addParam $w Birail1AttrData Sections
+
+addParam $w Birail1AttrData Tolerance
+addMenu $w Birail1AttrData DisplayMode $ay(npdisplaymodes)
+
+addText $w Birail1AttrData "Created NURBS Patch:"
+addInfo $w Birail1AttrData NPInfo
+
 return;
 }
 # init_Birail1

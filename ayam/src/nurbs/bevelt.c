@@ -39,12 +39,16 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
  int where, type, dir, cap;
  double radius;
 
+  if(!params)
+    return;
+
   while(tag)
     {
       if(tag->type == ay_bp_tagtype)
 	{
 	  if(tag->val)
 	    {
+	      params->has_bevels = AY_TRUE;
 	      where = -1;
 	      type = 0;
 	      radius = 0.1;
@@ -735,7 +739,8 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 	      o = o->next;
 	    } /* while */
 	} /* if */
-      o = o->next;
+      if(o)
+	o = o->next;
     } /* while */
 
  return ay_status;

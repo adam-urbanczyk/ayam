@@ -9,38 +9,6 @@
 
 # birail2.tcl - Birail2 objects Tcl code
 
-# birail2_getAttr:
-#  get Attributes from C context and build new PropertyGUI
-#
-proc birail2_getAttr { } {
-    global ay Birail2Attr Birail2AttrData BevelTags
-
-    set oldfocus [focus]
-
-    # remove old, create new Birail2Attr-UI
-    catch {destroy $ay(pca).$Birail2Attr(w)}
-    set w [frame $ay(pca).$Birail2Attr(w)]
-    getProp
-
-    set ay(bok) $ay(appb)
-
-    #addCheck $w Birail2AttrData Close
-    addParam $w Birail2AttrData Sections
-    addCheck $w Birail2AttrData InterpolCtrl
-
-    addParam $w Birail2AttrData Tolerance
-    addMenu $w Birail2AttrData DisplayMode $ay(npdisplaymodes)
-
-    addText $w Birail2AttrData "Created NURBS Patch:"
-    addInfo $w Birail2AttrData NPInfo
-
-    # add UI to property canvas
-    plb_setwin $w $oldfocus
-
- return;
-}
-# birail2_getAttr
-
 set Birail2 1
 
 proc init_Birail2 { } {
@@ -52,17 +20,32 @@ set Birail2_props { Transformations Attributes Material Tags Caps Bevels Birail2
 array set Birail2Attr {
 arr   Birail2AttrData
 sproc ""
-gproc birail2_getAttr
+gproc ""
 w     fBirail2Attr
 }
 
 array set Birail2AttrData {
 DisplayMode 1
 NPInfoBall "n/a"
-BoundaryNames {"Start" "End"}
+BoundaryNames { "Start" "End" "R1" "R2" }
 StartCap 0
 EndCap 0
+R1Cap 0
+R2Cap 0
 }
+
+set w [frame $ay(pca).$Birail2Attr(w)]
+
+#addCheck $w Birail2AttrData Close
+addParam $w Birail2AttrData Sections
+addCheck $w Birail2AttrData InterpolCtrl
+
+addParam $w Birail2AttrData Tolerance
+addMenu $w Birail2AttrData DisplayMode $ay(npdisplaymodes)
+
+addText $w Birail2AttrData "Created NURBS Patch:"
+addInfo $w Birail2AttrData NPInfo
+
 return;
 }
 # init_Birail2

@@ -151,6 +151,7 @@ typedef struct ay_btval_s
 /** bevel parameter helper */
 typedef struct ay_bparam_s
 {
+  int has_bevels;
   int states[4];
   int types[4];
   int dirs[4];
@@ -998,6 +999,8 @@ typedef struct ay_sweep_object_s
   int sections; /**< desired number of sections (0 - automatic) */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
+  int has_left_cap; /**< create left cap? */
+  int has_right_cap; /**< create right cap? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1058,6 +1061,8 @@ typedef struct ay_birail2_object_s
   int interpolctrl;  /**< use interpolation control curve? */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
+  int has_r1_cap; /**< create cap at rail1? */
+  int has_r2_cap; /**< create cap at rail2? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
