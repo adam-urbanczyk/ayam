@@ -81,9 +81,12 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
   a = nc->length*stride;
   for(i = 0; i < nc->length; i++)
     {
-      memcpy(&(np->controlv[a]), m, 4*sizeof(double));
+      memcpy(&(np->controlv[a]), m, 3*sizeof(double));
+      np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
       a += stride;
     }
+
+  np->is_rat = nc->is_rat;
 
   ay_npt_setuvtypes(np);
 
