@@ -934,15 +934,13 @@ int ay_npt_swing(ay_object *o1, ay_object *o2,
 /** Create swept surface.
  */
 int ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		 int rotate, int closed, ay_nurbpatch_object **sweep,
-		 int has_start_cap, ay_object **start_cap,
-		 int has_end_cap, ay_object **end_cap);
+		 int rotate, int closed, ay_nurbpatch_object **sweep);
 
 /** Create periodic swept surface.
  */
-int ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3,
+int ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3,
 		       int sections, int rotate,
-		       ay_nurbpatch_object **closedsweep);
+		       ay_nurbpatch_object **sweep);
 
 /** Create birailed surface from three curves.
  */
@@ -960,9 +958,7 @@ int ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 int ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 		   ay_object *o5,
 		   int sections, int closed, int fullinterpolctrl,
-		   ay_nurbpatch_object **birail2,
-		   int has_start_cap, ay_object **start_cap,
-		   int has_end_cap, ay_object **end_cap);
+		   ay_nurbpatch_object **birail2);
 
 /** Create loft/skinned surface.
  */

@@ -3269,12 +3269,9 @@ cleanup:
  */
 int
 ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-	     int rotate, int closed, ay_nurbpatch_object **sweep,
-	     int has_start_cap, ay_object **start_cap,
-	     int has_end_cap, ay_object **end_cap)
+	     int rotate, int closed, ay_nurbpatch_object **sweep)
 {
  int ay_status = AY_OK;
- ay_object *curve = NULL, o = {0};
  ay_nurbpatch_object *new = NULL;
  ay_nurbcurve_object *tr, *cs, *sf = NULL;
  double *controlv = NULL;
@@ -3286,16 +3283,10 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double A[3] = {0.0,0.0,0.0};
  double len = 0.0, plen = 0.0, plensf = 0.0;
  double m[16] = {0}, mi[16] = {0}, mcs[16], mtr[16];
- double mr[16], quat[4] = {0}, axisrot[4] = {0};
+ double mr[16], axisrot[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL;
 
   if(!o1 || !o2 || !sweep)
-    return AY_ENULL;
-
-  if(has_start_cap && !start_cap)
-    return AY_ENULL;
-
-  if(has_end_cap && !end_cap)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -3404,12 +3395,12 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   if(ay_status)
     { goto cleanup; }
 
-
   if(cs->knot_type == AY_KTCUSTOM)
     {
       memcpy(new->vknotv,cs->knotv,(cs->length+cs->order)*sizeof(double));
     }
 
+  /* get first point/derivative on trajectory */
   ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
 		     tr->knotv[tr->order-1], p1);
 
@@ -3552,139 +3543,6 @@ ay_npt_sweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 	{
 	  ay_trafo_apply3(&(controlv[i*cs->length*stride+j*stride]), mi);
 	} /* for */
-
-
-      /* create caps (if sweep is not closed) */
-      if(i == 0)
-	{
-	  if(has_start_cap && !closed)
-	    {
-	      curve = NULL;
-	      ay_status = ay_object_copy(o1, &curve);
-	      ay_trafo_defaults(curve);
-	      ay_status = ay_capt_crttrimcap(curve, start_cap);
-	      if(*start_cap)
-		{
-		  /* transform cap */
-		  /* move it */
-		  ay_nb_CurvePoint4D(tr->length-1,tr->order-1,tr->knotv,
-				     trcv, tr->knotv[tr->order-1], p2);
-		  ay_trafo_copy(o1, *start_cap);
-		  (*start_cap)->movx = p2[0];
-		  (*start_cap)->movy = p2[1];
-		  (*start_cap)->movz = p2[2];
-		  /* apply scaling function (if present) */
-		  if(o3)
-		    {
-		      u = sf->knotv[sf->order-1];
-		      ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
-					 sfcv, u, p3);
-		      p3[1] = fabs(p3[1]);
-		      p3[2] = fabs(p3[2]);
-		      if(p3[1] > AY_EPSILON)
-			{
-			  (*start_cap)->scaly *= p3[1];
-			}
-		      if(sfis3d)
-			{
-			  if(p3[2] > AY_EPSILON)
-			    {
-			      (*start_cap)->scalx *= p3[2];
-			    }
-			}
-		      else
-			{
-			  if(p3[1] > AY_EPSILON)
-			    {
-			      (*start_cap)->scalx *= p3[1];
-			    }
-			}
-		    } /* if */
-		  /* fix direction for aycsg */
-		  (*start_cap)->scalz *= -1.0;
-		  /* rotate it */
-		  if(rotate)
-		    {
-		      if(fabs(axisrot[0]) > AY_EPSILON)
-			{
-			  ay_quat_axistoquat(&(axisrot[1]),
-					     AY_D2R(-axisrot[0]),
-					     quat);
-			  ay_quat_add(quat, (*start_cap)->quat,
-				      (*start_cap)->quat);
-			} /* if */
-		    } /* if */
-		}
-	      else
-		{
-		  ay_object_delete(curve);
-		} /* if */
-	    } /* if */
-	} /* if */
-      if(i == sections)
-	{
-	  if(has_end_cap && !closed)
-	    {
-	      curve = NULL;
-	      ay_status = ay_object_copy(o1, &curve);
-	      ay_trafo_defaults(curve);
-	      ay_status = ay_capt_crttrimcap(curve, end_cap);
-	      if(*end_cap)
-		{
-		  /* transform cap */
-		  memcpy((*end_cap)->quat,o1->quat,4*sizeof(double));
-		  (*end_cap)->scalx = o1->scalx;
-		  (*end_cap)->scaly = o1->scaly;
-		  (*end_cap)->scalz = o1->scalz;
-
-		  /* move it */
-		  ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv,
-				     trcv, tr->knotv[tr->length], p2);
-		  (*end_cap)->movx = p2[0];
-		  (*end_cap)->movy = p2[1];
-		  (*end_cap)->movz = p2[2];
-		  /* apply scaling function (if present) */
-		  if(o3)
-		    {
-		      u = sf->knotv[sf->length];
-		      ay_nb_CurvePoint4D(sf->length-1, sf->order-1, sf->knotv,
-					 sfcv, u, p3);
-		      p3[1] = fabs(p3[1]);
-		      p3[2] = fabs(p3[2]);
-		      if(p3[1] > AY_EPSILON)
-			{
-			  (*end_cap)->scaly *= p3[1];
-			}
-		      if(sfis3d)
-			{
-			  if(p3[2] > AY_EPSILON)
-			    {
-			      (*end_cap)->scalx *= p3[2];
-			    }
-			}
-		      else
-			{
-			  if(p3[1] > AY_EPSILON)
-			    {
-			      (*end_cap)->scalx *= p3[1];
-			    }
-			}
-		    } /* if */
-		  /* rotate it */
-		  if(rotate)
-		    {
-		      ay_trafo_decomposematrix(mr, &o);
-		      ay_quat_inv(o.quat);
-		      ay_quat_add(o.quat, (*end_cap)->quat,
-				  (*end_cap)->quat);
-		    } /* if */
-		}
-	      else
-		{
-		  ay_object_delete(curve);
-		} /* if */
-	    } /* if */
-	} /* if */
     } /* for i = 0; i <= sections; i++ */
 
   new->is_rat = ay_npt_israt(new);
@@ -3715,20 +3573,19 @@ cleanup:
 } /* ay_npt_sweep */
 
 
-/* ay_npt_closedsweep:
+/* ay_npt_sweepperiodic:
  *  Sweep cross section <o1> along path <o2> possibly rotating it,
  *  so that it is always perpendicular to the path, possibly
  *  scaling it by a factor derived from the difference of the
  *  y and z coordinates of scaling curve <o3> to the y and z values 1.0.
  *  In contrast to ay_npt_sweep() above, this function creates a
- *  periodic patch (in the direction of the trajectory) and should
- *  probably rather be called ay_npt_periodicsweep().
+ *  periodic patch (in the direction of the trajectory).
  *  Rotation code derived from J. Bloomenthals "Reference Frames"
  *  (Graphic Gems I).
  */
 int
-ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
-		   int rotate, ay_nurbpatch_object **closedsweep)
+ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
+		     int rotate, ay_nurbpatch_object **sweep)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *new = NULL;
@@ -3744,7 +3601,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
  double mr[16], axisrot[4] = {0};
  double *cscv = NULL, *trcv = NULL, *sfcv = NULL;
 
-  if(!o1 || !o2 || !closedsweep)
+  if(!o1 || !o2 || !sweep)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -3976,7 +3833,7 @@ ay_npt_closedsweep(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
   ay_npt_setuvtypes(new);
 
   /* return result */
-  *closedsweep = new;
+  *sweep = new;
 
   /* prevent cleanup code from doing something harmful */
   new = NULL;
@@ -3997,7 +3854,7 @@ cleanup:
     }
 
  return ay_status;
-} /* ay_npt_closedsweep */
+} /* ay_npt_sweepperiodic */
 
 
 /* ay_npt_birail1:
@@ -4683,9 +4540,7 @@ int
 ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 	       ay_object *o5,
 	       int sections, int closed, int fullinterpolctrl,
-	       ay_nurbpatch_object **birail2,
-	       int has_start_cap, ay_object **start_cap,
-	       int has_end_cap, ay_object **end_cap)
+	       ay_nurbpatch_object **birail2)
 {
  int ay_status = AY_OK;
  ay_object *curve = NULL;
@@ -4709,8 +4564,7 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
   stride = 4;
 
-  if(!o1 || !o2 || !o3 || !o4 || !birail2 ||
-     (has_start_cap && !start_cap) || (has_end_cap && !end_cap))
+  if(!o1 || !o2 || !o3 || !o4 || !birail2)
     return AY_ENULL;
 
   if((o1->type != AY_IDNCURVE) || (o2->type != AY_IDNCURVE) ||
@@ -5230,39 +5084,6 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       memcpy(T0, T1, 3*sizeof(double));
       lent0 = lent1;
     } /* for */
-
-  /* create start cap (if birail is not closed) */
-  if(has_start_cap && !closed)
-    {
-      curve = NULL;
-      ay_status = ay_object_copy(o1, &curve);
-      /*ay_trafo_defaults(curve);*/
-      ay_status = ay_capt_crttrimcap(curve, start_cap);
-      /* transform cap */
-      if(*start_cap)
-	{
-	  /*ay_trafo_copy(o1, *start_cap);*/
-	  /* fix direction for aycsg */
-	  (*start_cap)->scalz *= -1.0;
-	}
-      else
-	{
-	  ay_object_delete(curve);
-	} /* if */
-    } /* if */
-
-  /* create end-cap (if birail is not closed) */
-  if(has_end_cap && !closed)
-    {
-      curve = NULL;
-      ay_status = ay_object_copy(o4, &curve);
-      /*ay_trafo_defaults(curve);*/
-      ay_status = ay_capt_crttrimcap(curve, end_cap);
-      if(!*end_cap)
-	{
-	  ay_object_delete(curve);
-	}
-    } /* if */
 
   new->is_rat = ay_npt_israt(new);
   ay_npt_setuvtypes(new);

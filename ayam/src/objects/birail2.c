@@ -283,6 +283,14 @@ ay_birail2_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail2->has_end_cap));
 
+  Tcl_SetStringObj(ton,"R1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(birail2->has_r1_cap));
+
+  Tcl_SetStringObj(ton,"R2Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(birail2->has_r2_cap));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(birail2->display_mode));
@@ -492,7 +500,7 @@ ay_birail2_notifycb(ay_object *o)
  ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
  ay_object *curve3 = NULL, *curve4 = NULL, *pobject3 = NULL, *pobject4 = NULL;
  ay_object *curve5 = NULL, *pobject5 = NULL;
- ay_object *npatch = NULL, **nextcb, *start_cap = NULL, *end_cap = NULL;
+ ay_object *npatch = NULL, **nextcb;
  ay_object *bevel = NULL;
  ay_bparam bparams;
  int ay_status = AY_OK;
@@ -629,37 +637,32 @@ ay_birail2_notifycb(ay_object *o)
   ay_status = ay_npt_birail2(curve1, curve2, curve3, curve4, curve5,
 			     birail2->sections, AY_FALSE/*birail2->close*/,
 			     birail2->interpolctrl,
-			     (ay_nurbpatch_object **)(void*)&(npatch->refine),
-			     bparams.states[0]?AY_FALSE:birail2->has_start_cap,
-			     &start_cap,
-			     bparams.states[1]?AY_FALSE:birail2->has_end_cap,
-			     &end_cap);
+			     (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
     goto cleanup;
-
-  if(start_cap)
-    {
-      *nextcb = start_cap;
-      nextcb = &(start_cap->next);
-    }
-  if(end_cap)
-    {
-      *nextcb = end_cap;
-      nextcb = &(end_cap->next);
-    }
 
   birail2->npatch = npatch;
 
   /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
-  /* create/add bevels */
-  if(o->tags)
-    {
-      caps[0] = birail2->has_start_cap;
-      caps[1] = birail2->has_end_cap;
+  /* create/add caps */
+  caps[0] = birail2->has_r1_cap;
+  caps[1] = birail2->has_r2_cap;
+  caps[2] = birail2->has_start_cap;
+  caps[3] = birail2->has_end_cap;
 
+  ay_status = ay_capt_addcaps(caps, &bparams,  birail2->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
       bparams.dirs[2] = !bparams.dirs[2];
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, birail2->npatch,

@@ -289,6 +289,14 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->has_end_cap));
 
+  Tcl_SetStringObj(ton,"LeftCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(sweep->has_left_cap));
+
+  Tcl_SetStringObj(ton,"RightCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(sweep->has_right_cap));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->display_mode));
@@ -356,6 +364,16 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"EndCap",-1);
   to = Tcl_NewIntObj(sweep->has_end_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"LeftCap",-1);
+  to = Tcl_NewIntObj(sweep->has_left_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"RightCap",-1);
+  to = Tcl_NewIntObj(sweep->has_right_cap);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -502,19 +520,15 @@ ay_sweep_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_sweep_notifycb(ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_sweep_object *sweep = NULL;
- ay_object *curve1 = NULL, *curve2 = NULL, *pobject1 = NULL, *pobject2 = NULL;
- ay_object *curve3 = NULL, *pobject3 = NULL;
- ay_object curve4 = {0}, *curve5;
- ay_object *npatch = NULL, *bevel = NULL, *start_cap = NULL, *end_cap = NULL;
+ ay_object *curve1 = NULL, *curve2 = NULL, *curve3 = NULL;
+ ay_object *pobject1 = NULL, *pobject2 = NULL, *pobject3 = NULL;
+ ay_object *npatch = NULL, *bevel = NULL;
  ay_object **nextcb;
  ay_nurbpatch_object *np = NULL;
- char fname[] = "sweep_notify";
- int ay_status = AY_OK;
- int is_provided[3] = {0}, mode = 0, phase = 0;
- int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double startb_radius, endb_radius;
+ int is_provided[3] = {0}, mode = 0, caps[4] = {0};
+ ay_bparam bparams;
  double tolerance;
 
   if(!o)
@@ -593,13 +607,13 @@ ay_sweep_notifycb(ay_object *o)
     } /* if */
 
   /* get bevel parameters */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-		      &endb_sense);
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
 
   /* sweep */
-  phase = 1;
   if(!(npatch = calloc(1, sizeof(ay_object))))
     {
       ay_status = AY_EOMEM;
@@ -614,187 +628,65 @@ ay_sweep_notifycb(ay_object *o)
       /* open or simple closed sweep */
       ay_status = ay_npt_sweep(curve1, curve2, curve3,
 			       sweep->sections, sweep->rotate, sweep->close,
-			     (ay_nurbpatch_object **)(void*)&(npatch->refine),
-			       has_startb?AY_FALSE:sweep->has_start_cap,
-			       &start_cap,
-			       has_endb?AY_FALSE:sweep->has_end_cap,
-			       &end_cap);
-      if(start_cap)
-	{
-	  *nextcb = start_cap;
-	  nextcb = &(start_cap->next);
-	}
-      if(end_cap)
-	{
-	  *nextcb = end_cap;
-	  nextcb = &(end_cap->next);
-	}
+			     (ay_nurbpatch_object **)(void*)&(npatch->refine));
     }
   else
     {
       /* periodic sweep */
-      ay_status = ay_npt_closedsweep(curve1, curve2, curve3,
-				     sweep->sections, sweep->rotate,
+      ay_status = ay_npt_sweepperiodic(curve1, curve2, curve3,
+				       sweep->sections, sweep->rotate,
 			    (ay_nurbpatch_object **)(void*)&(npatch->refine));
     }
 
   if(ay_status)
-    goto cleanup;
+    {
+      goto cleanup;
+    }
+
+  /* interpolate the swept surface */
+  if(sweep->interpolate)
+    {
+      np = (ay_nurbpatch_object *)npatch->refine;
+      ay_status = ay_ipt_interpolateu(np, np->uorder, AY_KTCHORDAL);
+      if(ay_status)
+	{
+	  goto cleanup;
+	}
+    }
 
   sweep->npatch = npatch;
 
+  /* prevent cleanup code from doing something harmful */
+  npatch = NULL;
+
+  /* create/add caps */
+  caps[0] = sweep->has_left_cap;
+  caps[1] = sweep->has_right_cap;
+  caps[2] = sweep->has_start_cap;
+  caps[3] = sweep->has_end_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, sweep->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[2] = !bparams.dirs[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, sweep->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
   /* copy sampling tolerance/mode over to new objects */
-  ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
+  ((ay_nurbpatch_object *)sweep->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)npatch->refine)->display_mode =
+  ((ay_nurbpatch_object *)sweep->npatch->refine)->display_mode =
     mode;
-
-  /* create bevels and caps */
-  phase = 2;
-  if(!sweep->close && has_startb)
-    {
-      ay_object_defaults(&curve4);
-      curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(sweep->npatch, 2, 0.0, AY_FALSE, AY_FALSE,
-				   AY_FALSE, NULL,
-		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
-
-      if(ay_status)
-	goto cleanup;
-
-      ((ay_nurbcurve_object*)curve4.refine)->type =
-	((ay_nurbcurve_object*)curve1->refine)->type;
-
-      if(!startb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
-	}
-
-      bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
-      ay_status = ay_bevelt_create(startb_type, startb_radius,
-				   AY_TRUE, &curve4,
-			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
-      curve4.refine = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap */
-      if(sweep->has_start_cap)
-	{
-	  if(!(curve5 = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(curve5);
-	  curve5->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_crttrimcap(curve5, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-
-    } /* if */
-
-  if(!sweep->close && has_endb)
-    {
-      memset(&curve4, 0, sizeof(ay_object));
-      ay_object_defaults(&curve4);
-      curve4.type = AY_IDNCURVE;
-      ay_status = ay_npt_extractnc(sweep->npatch, 3, 0.0, AY_FALSE, AY_FALSE,
-				   AY_FALSE, NULL,
-		    (ay_nurbcurve_object**)(void*)&(curve4.refine));
-
-      if(ay_status)
-	goto cleanup;
-
-      ((ay_nurbcurve_object*)curve4.refine)->type =
-	((ay_nurbcurve_object*)curve1->refine)->type;
-
-      if(endb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(curve4.refine));
-	}
-
-      bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
-      ay_status = ay_bevelt_create(endb_type, endb_radius,
-				   AY_TRUE, &curve4,
-			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_nct_destroy((ay_nurbcurve_object*)curve4.refine);
-      curve4.refine = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap */
-      if(sweep->has_end_cap)
-	{
-	  curve5 = NULL;
-	  if(!(curve5 = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(curve5);
-	  curve5->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-			     (ay_nurbcurve_object**)(void*)&(curve5->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_crttrimcap(curve5, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-    } /* if */
 
   /* copy sampling tolerance/mode attributes to caps and bevels */
   if(sweep->caps_and_bevels)
@@ -809,26 +701,6 @@ ay_sweep_notifycb(ay_object *o)
 	  bevel = bevel->next;
 	}
     }
-
-  /* interpolate the swept surface */
-  if(sweep->npatch)
-    {
-      if(sweep->interpolate)
-	{
-	  phase = 3;
-	  np = (ay_nurbpatch_object *)sweep->npatch->refine;
-	  ay_status = ay_ipt_interpolateu(np, np->uorder, AY_KTCHORDAL);
-	  if(ay_status)
-	    {
-	      ay_object_deletemulti(sweep->caps_and_bevels);
-	      sweep->caps_and_bevels = NULL;
-	      goto cleanup;
-	    }
-	}
-    }
-
-  /* prevent cleanup code from doing something harmful */
-  npatch = NULL;
 
 cleanup:
   /* remove provided objects */
@@ -858,25 +730,6 @@ cleanup:
   if(o->selp)
     {
       ay_sweep_getpntcb(3, o, NULL, NULL);
-    }
-
-  if(ay_status)
-    {
-      switch(phase)
-	{
-	case 1:
-	  ay_error(AY_ERROR, fname, "Sweep failed.");
-	  break;
-	case 2:
-	  ay_error(AY_EWARN, fname, "Bevel/Cap creation failed.");
-	  ay_status = AY_OK;
-	  break;
-	case 3:
-	  ay_error(AY_ERROR, fname, "Interpolation failed.");
-	  break;
-	default:
-	  break;
-	}
     }
 
  return ay_status;
