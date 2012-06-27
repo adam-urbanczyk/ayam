@@ -1,4 +1,4 @@
-[17. May 2012] CVS-Head:
+[27. Jun 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -6,6 +6,9 @@ o crash when removing wrong trim curves from patches (SF 3514206)
 o all even ConcatNP fillet patches are missing (SF 3514939)
 o pick candidates dialog disappears after resize (SF 3522093)
 o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
+
+Modelling:
+o added cap type "Simple"
 
 GUI:
 o default value menu buttons of property GUI elements now display a triangle
@@ -15,6 +18,8 @@ o added internal resize widget to script text editor of Script object
 o improved dialog box appearance on X11
 o the shaders preference setting GUI element now allows to directly
   choose directories
+o the Tags property GUI now issues notification when applied
+o there is now a dialog for the management of property GUIs via NP/RP tags
 
 Scripts/Scripting Interface:
 o "applyTrafo" command now applies the transformations to all points by default
