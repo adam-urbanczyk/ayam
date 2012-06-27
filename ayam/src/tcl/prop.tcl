@@ -551,6 +551,7 @@ proc prop_addrem { } {
 		    if { $tagname == "RP" } {
 			if { $tagval == $AddRemProp(Property) } {
 			    set remtag 1
+			    set havetag 1
 			}
 		    }
 
