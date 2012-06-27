@@ -861,8 +861,18 @@ $sm add command -label "Automatic Instancing" -command "ai_open" \
 $m add cascade -menu $m.tag -label "Tags" -underline 0
 set sm [menu $m.tag -tearoff 0]
 $sm add command -label "Add RiOption" -command "riopt_addp" -underline 6
+# o
 $sm add command -label "Add RiAttribute" -command "riattr_addp" -underline 6
+# a
 $sm add command -label "Edit TexCoords" -command "tc_edit" -underline 5
+# t
+$sm add command -label "Add Property" -command "plb_addremprop " -underline 4
+# p
+$sm add command -label "Remove Property" -command "plb_addremprop 1"\
+ -underline 0
+# r
+
+
 
 #$m add command -label "Create ShadowMaps" -command "riopt_addp"
 

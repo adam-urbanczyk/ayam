@@ -670,3 +670,88 @@ proc plb_setwin { w {fw ""} } {
  return;
 }
 # plb_setwin
+
+
+
+proc plb_addremprop { {rem 0} } {
+    global ay AddRemProp
+
+    winAutoFocusOff
+
+    set ay(addPropFocus) [focus]
+
+    set w .addPropw
+    if { $rem } {
+	set title "Remove"
+    } else {
+	set title "Add"
+    }
+    append title " Property"
+    winDialog $w $title
+
+    array set AddRemProp {
+	Property ""
+    }
+
+    set AddRemProp(Operation) $rem
+
+    set f [frame $w.f1]
+    pack $f -in $w
+    if { $AddRemProp(Operation) == 1 } {
+	# remove
+	set props ""
+	forAll 0 {
+	    getType type
+	    if { ! info exists ${type}_props } {
+		eval ${type}_init
+	    }
+	    foreach prop ${type}_props {
+		set allprops($prop) 1
+	    }
+	}
+	set props [lsort [array names allprops]]
+
+    } else {
+	# add
+	set props [list Caps Bevels]
+    }
+
+    set ay(bca) $w.f3.bca
+    set ay(bok) $w.f3.bok
+
+    addString $f AddRemProp Property $props
+
+    # buttons
+    set f [frame $w.f3]
+    button $f.bok -text "Ok" -pady $ay(pady) -width 5 -command {
+	prop_addrem
+	grab release .addPropw
+	restoreFocus $ay(addPropFocus)
+        destroy .addPropw
+    }
+    # ok
+
+    button $f.bca -text "Cancel" -pady $ay(pady) -width 5 -command "\
+	grab release $w;\
+	restoreFocus $ay(addPropFocus);\
+        destroy $w"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x -expand no
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+    bind $w <Key-Return> "$f.bok invoke"
+    catch { bind $w <Key-KP_Enter> "$f.bok invoke" }
+
+    # center window
+    winCenter $w
+
+    grab $w
+    tkwait window $w
+    winAutoFocusOn
+
+ return;
+}
+# plb_addremprop

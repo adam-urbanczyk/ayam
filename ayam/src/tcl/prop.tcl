@@ -515,3 +515,101 @@ proc markPropModified { name1 name2 op } {
 }
 # markPropModified
 
+
+# prop_addrem:
+#  add or remove a property from all selected objects by
+#  management of their NP/RP tags
+#
+proc prop_addrem { } {
+    global AddRemProp
+
+    if { $AddRemProp(Property) != "" } {
+	forAll 0 {
+	    global AddRemProp
+
+	    set tagnames ""
+	    set tagvalues ""
+
+	    getTags tagnames tagvalues
+
+	    if { $AddRemProp(Operation) == 0 } {
+		# add property
+		set havetag 0
+
+		set l [llength $tagnames]
+		for {set i 0} {$i < $l} {incr i} {
+		    set tagname [lindex $tagnames $i]
+		    set tagval [lindex $tagvalues $i]
+		    set remtag 0
+
+		    if { $tagname == "NP" } {
+			if { $tagval == $AddRemProp(Property) } {
+			    set havetag 1
+			}
+		    }
+
+		    if { $tagname == "RP" } {
+			if { $tagval == $AddRemProp(Property) } {
+			    set remtag 1
+			}
+		    }
+
+		    if { ! $remtag } {
+			lappend newtags $tagname
+			lappend newtags $tagval
+		    }
+		}
+		# for
+
+		if { $havetag == 0 } {
+		    lappend newtags "NP"
+		    lappend newtags $AddRemProp(Property)
+		}
+
+	    } else {
+		# rem property (add RP tag)
+		set havetag 0
+
+		set l [llength $tagnames]
+		for {set i 0} {$i < $l} {incr i} {
+		    set tagname [lindex $tagnames $i]
+		    set tagval [lindex $tagvalues $i]
+		    set remtag 0
+
+		    if { $tagname == "NP" } {
+			if { $tagval == $AddRemProp(Property) } {
+			    set remtag 1
+			    set havetag 1
+			}
+		    }
+
+		    if { $tagname == "RP" } {
+			if { $tagval == $AddRemProp(Property) } {
+			    set havetag 1
+			}
+		    }
+
+		    if { ! $remtag } {
+			lappend newtags $tagname
+			lappend newtags $tagval
+		    }
+		}
+		# for
+
+		if { $havetag == 0 } {
+		    lappend newtags "RP"
+		    lappend newtags $AddRemProp(Property)
+		}
+
+	    }
+	    # if
+
+	    eval [subst "setTags $newtags"]
+	}
+	# forAll
+    }
+    # if
+
+ return;
+}
+# prop_addrem
