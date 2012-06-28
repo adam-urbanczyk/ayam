@@ -281,6 +281,8 @@ proc bevel_getBevels { } {
     if { $type != "" } {
 	global ${type}AttrData
 
+	if { [info exists ${type}AttrData(BoundaryNames)] } {
+
 	eval set bnames \$${type}AttrData(BoundaryNames)
 
 	set tagnames ""
@@ -313,6 +315,9 @@ proc bevel_getBevels { } {
 
 	    incr i
 	}
+    } else {
+	addText $w e1 "Not supported here!"
+    }
 
     }
     # if

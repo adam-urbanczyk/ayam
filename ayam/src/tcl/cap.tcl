@@ -67,12 +67,17 @@ proc cap_getCaps {} {
     if { $type != "" } {
 	global ${type}AttrData
 
-	eval set capnames \$${type}AttrData(BoundaryNames)
-	foreach capname $capnames {
-	    addMenu $w ${type}AttrData ${capname}Cap \
-		[list Off Trim Simple SimpleInt Gordon]
-	}
+	if { [info exists ${type}AttrData(BoundaryNames)] } {
 
+	    eval set capnames \$${type}AttrData(BoundaryNames)
+	    foreach capname $capnames {
+		addMenu $w ${type}AttrData ${capname}Cap \
+	     [list "Off      " "Trim     " "Simple   " "SimpleInt" "Gordon   "]
+	    }
+	} else {
+	    addText $w e1 "Not supported here!"
+	}
+	# if
     }
     # if
 

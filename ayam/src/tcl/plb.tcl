@@ -173,6 +173,11 @@ $m add command -label "Paste Property" -command {
     pclip_paste
     set ay(sc) 1
 }
+
+$m add separator
+$m add command -label "Add Property" -command "plb_addremprop"
+$m add command -label "Remove Property" -command "plb_addremprop 1"
+
 $m add separator
 $m add command -label "Help on Property" -command {
     global ay
@@ -672,7 +677,9 @@ proc plb_setwin { w {fw ""} } {
 # plb_setwin
 
 
-
+# plb_addremprop:
+# open a dialog where the user can add/remove properties
+# (realized via NP/RP tags)
 proc plb_addremprop { {rem 0} } {
     global ay AddRemProp
 
@@ -697,24 +704,62 @@ proc plb_addremprop { {rem 0} } {
 
     set f [frame $w.f1]
     pack $f -in $w
+
+    set props ""
+    global AllProps
     if { $AddRemProp(Operation) == 1 } {
-	# remove
-	set props ""
+
+	# remove operation, compile list of
+	# candidates for removal
+	array set AllProps {}
 	forAll 0 {
+	    global AllProps
 	    getType type
-	    if { ! info exists ${type}_props } {
+
+	    if { ! [info exists ::${type}_props] } {
 		eval ${type}_init
 	    }
-	    foreach prop ${type}_props {
-		set allprops($prop) 1
+	    eval set props \$::${type}_props
+	    foreach prop $props {
+		set AllProps($prop) 1
 	    }
-	}
-	set props [lsort [array names allprops]]
 
+	    set tagnames ""
+	    set tagvalues ""
+	    getTags tagnames tagvalues
+	    set l [llength $tagnames]
+	    for {set j 0} {$j < $l} {incr j} {
+		set tagname [lindex $tagnames $j]
+		if { $tagname == "NP" } {
+		    set AllProps([lindex $tagvalues $j]) 1
+		}
+	    }
+	    # for
+	}
+	# forAll
     } else {
-	# add
-	set props [list Caps Bevels]
+	# add operation, compile list of
+	# candidates for addition
+	array set AllProps { Caps 1 Bevels 1}
+	forAll 0 {
+	    global AllProps
+	    set tagnames ""
+	    set tagvalues ""
+	    getTags tagnames tagvalues
+	    set l [llength $tagnames]
+	    for {set j 0} {$j < $l} {incr j} {
+		set tagname [lindex $tagnames $j]
+		if { $tagname == "RP" } {
+		    set AllProps([lindex $tagvalues $j]) 1
+		}
+	    }
+	    # for
+	}
+	# forAll
     }
+    # if
+
+    set props [lsort [array names AllProps]]
 
     set ay(bca) $w.f3.bca
     set ay(bok) $w.f3.bok
