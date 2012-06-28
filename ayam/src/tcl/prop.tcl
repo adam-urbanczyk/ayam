@@ -519,7 +519,8 @@ proc markPropModified { name1 name2 op } {
 # prop_addrem:
 #  add or remove a property from all selected objects by
 #  management of their NP/RP tags
-#
+#  The global AddRemProp array is used to transfer the parameters
+#  (actual operation mode, new property name) for this operation.
 proc prop_addrem { } {
     global AddRemProp
 
@@ -537,9 +538,9 @@ proc prop_addrem { } {
 		set havetag 0
 
 		set l [llength $tagnames]
-		for {set i 0} {$i < $l} {incr i} {
-		    set tagname [lindex $tagnames $i]
-		    set tagval [lindex $tagvalues $i]
+		for {set j 0} {$j < $l} {incr j} {
+		    set tagname [lindex $tagnames $j]
+		    set tagval [lindex $tagvalues $j]
 		    set remtag 0
 
 		    if { $tagname == "NP" } {
@@ -572,9 +573,9 @@ proc prop_addrem { } {
 		set havetag 0
 
 		set l [llength $tagnames]
-		for {set i 0} {$i < $l} {incr i} {
-		    set tagname [lindex $tagnames $i]
-		    set tagval [lindex $tagvalues $i]
+		for {set j 0} {$j < $l} {incr j} {
+		    set tagname [lindex $tagnames $j]
+		    set tagval [lindex $tagvalues $j]
 		    set remtag 0
 
 		    if { $tagname == "NP" } {
