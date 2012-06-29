@@ -633,11 +633,14 @@ ay_birail1_notifycb(ay_object *o)
     nextcb = &((*nextcb)->next);
 
   /* create/add bevels */
-  bparams.dirs[2] = !bparams.dirs[2];
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[2] = !bparams.dirs[2];
 
-  ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch, nextcb);
-  if(ay_status)
-    goto cleanup;
+      ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
 
   /* copy sampling tolerance/mode attributes over to birail */
   ((ay_nurbpatch_object *)birail1->npatch->refine)->glu_sampling_tolerance =
