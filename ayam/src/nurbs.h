@@ -919,7 +919,7 @@ int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_npt_concat(ay_object *o, int type, int order,
 		  int knot_type, int fillet_type, double ftlen,
-		  char *uv, ay_object **result);
+		  int compatible, char *uv, ay_object **result);
 
 /** Create surface of revolution.
  */

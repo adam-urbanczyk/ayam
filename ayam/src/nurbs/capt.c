@@ -124,9 +124,9 @@ int
 ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 {
  int ay_status = AY_OK;
- ay_object *cap = NULL, *o = NULL, *oldnext;
+ ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *np = NULL;
- char *uv = NULL, uvs[][4] = {"Uu","uU","vu","Vu"};
+ char *uv = NULL, uvs[][4] = {"uu","Uu","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
 
   if(!s || !c)
@@ -142,10 +142,29 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
   if(ay_status)
     goto cleanup;
 
+  uv = uvs[side];
+
+  oldnext = s->next;
+
   switch(side)
     {
     case 0:
+      cc = cap;
+      cap->next = s;
+      s->next = NULL;
+
+      if(np->vorder != 2)
+	{
+	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
+				      np->vorder-2);
+	}
+      order = np->vorder;
+      knottype = np->vknot_type;
+      break;
     case 1:
+      cc = s;
+      s->next = cap;
+
       if(np->vorder != 2)
 	{
 	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
@@ -155,7 +174,22 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
       knottype = np->vknot_type;
       break;
     case 2:
+      cc = cap;
+      cap->next = s;
+      s->next = NULL;
+
+      if(np->uorder != 2)
+	{
+	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
+				      np->uorder-2);
+	}
+      order = np->uorder;
+      knottype = np->uknot_type;
+      break;
     case 3:
+      cc = s;
+      s->next = cap;
+
       if(np->uorder != 2)
 	{
 	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
@@ -168,11 +202,6 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 
   if(ay_status)
     goto cleanup;
-
-  uv = uvs[side];
-
-  oldnext = s->next;
-  s->next = cap;
 
 #if 0
   switch(knottype)
@@ -191,7 +220,7 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 
   knottype = AY_KTCUSTOM;
 
-  ay_status = ay_npt_concat(s, 0, order, knottype, 0, 0.0, uv,
+  ay_status = ay_npt_concat(cc, 0, order, knottype, 0, 0.0, AY_TRUE, uv,
 			    &o);
 
   if(ay_status)

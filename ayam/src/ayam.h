@@ -1143,6 +1143,7 @@ typedef struct ay_concatnp_object_s
   int fillgaps; /**< create fillets? */
   double ftlength; /**< length of fillet end tangents */
 
+  int compat; /**< are the parameter surfaces compatible already? */
   char *uv_select; /**< select direction for each parameter patch */
 
   /** cached NURBS patch representation */

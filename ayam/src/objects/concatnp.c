@@ -274,6 +274,10 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(concatnp->ftlength));
 
+  Tcl_SetStringObj(ton,"Compatible",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->compat));
+
   Tcl_SetStringObj(ton,"UVSelect",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
@@ -375,6 +379,11 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewStringObj(concatnp->uv_select,-1);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Compatible",-1);
+  to = Tcl_NewIntObj(concatnp->compat);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   ay_prop_getnpinfo(interp, n1, concatnp->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -429,6 +438,12 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
 	}
     }
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21: */
+      fscanf(fileptr, "%d\n", &concatnp->compat);
+    }
+
   o->refine = concatnp;
 
  return AY_OK;
@@ -460,6 +475,8 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
     fprintf(fileptr, "%s", concatnp->uv_select);
 
   fprintf(fileptr, "\n");
+
+  fprintf(fileptr, "%d\n", concatnp->compat);
 
  return AY_OK;
 } /* ay_concatnp_writecb */
@@ -578,6 +595,7 @@ ay_concatnp_notifycb(ay_object *o)
   ay_status = ay_npt_concat(patches, concatnp->type, concatnp->order,
 			    concatnp->knot_type,
 			    concatnp->fillgaps, concatnp->ftlength,
+			    concatnp->compat,
 			    concatnp->uv_select, &concatnp->npatch);
 
   if(ay_status)
