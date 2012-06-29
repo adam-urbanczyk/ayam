@@ -2604,7 +2604,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 int
 ay_npt_concat(ay_object *o, int type, int order,
 	      int knot_type, int fillet_type, double ftlen,
-	      char *uv, ay_object **result)
+	      int compatible, char *uv, ay_object **result)
 {
  int ay_status = AY_OK;
  ay_object *patches = NULL, *new = NULL;
@@ -2689,7 +2689,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      if(ay_status)
 			goto cleanup;
 		    }
-		  ay_status = ay_knots_rescaletorange(np->uorder,
+		  ay_status = ay_knots_rescaletorange(np->width+np->uorder,
 						      np->uknotv, 0, 1);
 		  if(ay_status)
 		    goto cleanup;
@@ -2712,7 +2712,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 			  if(ay_status)
 			    goto cleanup;
 			}
-		      ay_status = ay_knots_rescaletorange(np->vorder,
+		      ay_status = ay_knots_rescaletorange(np->height+np->vorder,
 							  np->vknotv, 0, 1);
 		      if(ay_status)
 			goto cleanup;
@@ -2733,7 +2733,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 			  if(ay_status)
 			    goto cleanup;
 			}
-		      ay_status = ay_knots_rescaletorange(np->uorder,
+		      ay_status = ay_knots_rescaletorange(np->width+np->uorder,
 							  np->uknotv, 0, 1);
 		      if(ay_status)
 			goto cleanup;
@@ -2823,7 +2823,8 @@ ay_npt_concat(ay_object *o, int type, int order,
     } /* while */
 
   /* make all curves compatible */
-  ay_status = ay_nct_makecompatible(allcurves);
+  if(!compatible)
+    ay_status = ay_nct_makecompatible(allcurves);
 
   if(ay_status)
     goto cleanup;
@@ -11532,7 +11533,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL, *patches = NULL, **next = NULL;
  ay_object *newo = NULL;
  double ftlen = 1.0;
- int fillet_type = 0;
+ int fillet_type = 0, compat = AY_FALSE;
  char *uv = NULL;
 
   /* parse args */
@@ -11540,6 +11541,11 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(i+1 < argc)
 	{
+	  if(!strcmp(argv[i], "-c"))
+	    {
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &compat);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
 	  if(!strcmp(argv[i], "-fl"))
 	    {
 	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &ftlen);
@@ -11664,7 +11670,7 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   ay_status = ay_npt_concat(patches, type, order, knot_type, fillet_type,
-			    ftlen, uv, &newo);
+			    ftlen, compat, uv, &newo);
 
   if(ay_status)
     {

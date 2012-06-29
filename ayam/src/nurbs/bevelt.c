@@ -168,7 +168,24 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
-	      ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
+	      switch(caps[i])
+		{
+		case 1:
+		  ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
+		  break;
+		case 2:
+		  ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
+		  break;
+		case 3:
+		  ay_status = ay_capt_crtsimplecapint(3, bevel, extrcurve);
+		  break;
+		case 4:
+		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
+		  break;
+		default:
+		  ay_status = AY_ERROR;
+		  goto cleanup;
+		} /* switch */
 
 	      if(ay_status)
 		{

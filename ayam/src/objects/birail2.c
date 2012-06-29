@@ -355,6 +355,16 @@ ay_birail2_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"R1Cap",-1);
+  to = Tcl_NewIntObj(birail2->has_r1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"R2Cap",-1);
+  to = Tcl_NewIntObj(birail2->has_r2_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(birail2->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -400,6 +410,13 @@ ay_birail2_readcb(FILE *fileptr, ay_object *o)
       fscanf(fileptr, "%d\n", &birail2->interpolctrl);
     }
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21 */
+      fscanf(fileptr, "%d\n", &birail2->has_r1_cap);
+      fscanf(fileptr, "%d\n", &birail2->has_r2_cap);
+    }
+
   o->refine = birail2;
 
  return AY_OK;
@@ -426,6 +443,9 @@ ay_birail2_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", birail2->display_mode);
   fprintf(fileptr, "%g\n", birail2->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", birail2->interpolctrl);
+
+  fprintf(fileptr, "%d\n", birail2->has_r1_cap);
+  fprintf(fileptr, "%d\n", birail2->has_r2_cap);
 
  return AY_OK;
 } /* ay_birail2_writecb */
@@ -667,6 +687,8 @@ ay_birail2_notifycb(ay_object *o)
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, birail2->npatch,
 				      nextcb);
+      if(ay_status)
+	goto cleanup;
     }
 
   /* copy sampling tolerance/mode attributes over to birail */
