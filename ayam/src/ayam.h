@@ -1146,6 +1146,14 @@ typedef struct ay_concatnp_object_s
   int compat; /**< are the parameter surfaces compatible already? */
   char *uv_select; /**< select direction for each parameter patch */
 
+  int has_u0_cap; /**< create cap at u start? */
+  int has_u1_cap; /**< create cap at u end? */
+  int has_v0_cap; /**< create cap at v start? */
+  int has_v1_cap; /**< create cap at v end? */
+
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
+
   /** cached NURBS patch representation */
   ay_object *npatch;
 
@@ -1160,7 +1168,7 @@ typedef struct ay_offnp_object_s
   int mode; /**< unused */
   double offset; /**< offset/distance value */
 
-  int has_u0_cap; /**< create cap at u end? */
+  int has_u0_cap; /**< create cap at u start? */
   int has_u1_cap; /**< create cap at u end? */
   int has_v0_cap; /**< create cap at v start? */
   int has_v1_cap; /**< create cap at v end? */

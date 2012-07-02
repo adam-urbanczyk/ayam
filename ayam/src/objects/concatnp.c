@@ -67,6 +67,12 @@ ay_concatnp_deletecb(void *c)
   if(concatnp->uv_select)
     free(concatnp->uv_select);
 
+  if(concatnp->caps_and_bevels)
+    {
+      ay_object_deletemulti(concatnp->caps_and_bevels);
+      concatnp->caps_and_bevels = NULL;
+    }
+
   free(concatnp);
 
  return AY_OK;
@@ -103,6 +109,11 @@ ay_concatnp_copycb(void *src, void **dst)
   /* copy npatch */
   ay_object_copy(concatnpsrc->npatch, &(concatnp->npatch));
 
+  concatnp->caps_and_bevels = NULL;
+
+  if(concatnpsrc->caps_and_bevels)
+    ay_object_copymulti(concatnpsrc->caps_and_bevels, &(concatnp->caps_and_bevels));
+
   *dst = (void *)concatnp;
 
  return AY_OK;
@@ -115,16 +126,27 @@ ay_concatnp_copycb(void *src, void **dst)
 int
 ay_concatnp_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_concatnp_object *cc = NULL;
+ ay_concatnp_object *concatnp = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_concatnp_object *)o->refine;
+  concatnp = (ay_concatnp_object *)o->refine;
 
-  if(cc->npatch)
+  if(concatnp->npatch)
     {
-      ay_draw_object(togl, cc->npatch, AY_TRUE);
+      ay_draw_object(togl, concatnp->npatch, AY_TRUE);
+    }
+
+  if(concatnp->caps_and_bevels)
+    {
+      b = concatnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
     }
 
  return AY_OK;
@@ -137,16 +159,27 @@ ay_concatnp_drawcb(struct Togl *togl, ay_object *o)
 int
 ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
 {
- ay_concatnp_object *cc = NULL;
+ ay_concatnp_object *concatnp = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_concatnp_object *)o->refine;
+  concatnp = (ay_concatnp_object *)o->refine;
 
-  if(cc->npatch)
+  if(concatnp->npatch)
     {
-      ay_shade_object(togl, cc->npatch, AY_FALSE);
+      ay_shade_object(togl, concatnp->npatch, AY_FALSE);
+    }
+
+  if(concatnp->caps_and_bevels)
+    {
+      b = concatnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
     }
 
  return AY_OK;
@@ -278,6 +311,22 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnp->compat));
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->has_u0_cap));
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->has_u1_cap));
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->has_v0_cap));
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(concatnp->has_v1_cap));
+
   Tcl_SetStringObj(ton,"UVSelect",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
@@ -384,6 +433,26 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_NewIntObj(concatnp->has_u0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_NewIntObj(concatnp->has_u1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_NewIntObj(concatnp->has_v0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_NewIntObj(concatnp->has_v1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   ay_prop_getnpinfo(interp, n1, concatnp->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -442,6 +511,10 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
     {
       /* Since Ayam 1.21: */
       fscanf(fileptr, "%d\n", &concatnp->compat);
+      fscanf(fileptr,"%d\n",&concatnp->has_u0_cap);
+      fscanf(fileptr,"%d\n",&concatnp->has_u1_cap);
+      fscanf(fileptr,"%d\n",&concatnp->has_v0_cap);
+      fscanf(fileptr,"%d\n",&concatnp->has_v1_cap);
     }
 
   o->refine = concatnp;
@@ -478,6 +551,11 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", concatnp->compat);
 
+  fprintf(fileptr, "%d\n", concatnp->has_u0_cap);
+  fprintf(fileptr, "%d\n", concatnp->has_u1_cap);
+  fprintf(fileptr, "%d\n", concatnp->has_v0_cap);
+  fprintf(fileptr, "%d\n", concatnp->has_v1_cap);
+
  return AY_OK;
 } /* ay_concatnp_writecb */
 
@@ -489,6 +567,7 @@ int
 ay_concatnp_wribcb(char *file, ay_object *o)
 {
  ay_concatnp_object *concatnp = NULL;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -497,6 +576,13 @@ ay_concatnp_wribcb(char *file, ay_object *o)
 
   if(concatnp->npatch)
     ay_wrib_toolobject(file, concatnp->npatch, o);
+
+  b = concatnp->caps_and_bevels;
+  while(b)
+    {
+      ay_wrib_object(file, b);
+      b = b->next;
+    }
 
  return AY_OK;
 } /* ay_concatnp_wribcb */
@@ -530,14 +616,31 @@ ay_concatnp_notifycb(ay_object *o)
  ay_concatnp_object *concatnp = NULL;
  ay_object *down = NULL, *patches = NULL, **next = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_object *bevel = NULL, **nextcb;
+ ay_bparam bparams;
+ int mode, caps[4] = {0};
+ double tolerance;
 
   if(!o)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *)(o->refine);
+
+  mode = concatnp->display_mode;
+  tolerance = concatnp->glu_sampling_tolerance;
+
+  nextcb = &(concatnp->caps_and_bevels);
+
+  /* remove old objects */
   if(concatnp->npatch)
     ay_object_delete(concatnp->npatch);
   concatnp->npatch = NULL;
+
+  if(concatnp->caps_and_bevels)
+    {
+      ay_object_deletemulti(concatnp->caps_and_bevels);
+      concatnp->caps_and_bevels = NULL;
+    }
 
   /* get child objects */
   down = o->down;
@@ -606,10 +709,8 @@ ay_concatnp_notifycb(ay_object *o)
     {
       np = (ay_nurbpatch_object*)concatnp->npatch->refine;
 
-      np->glu_sampling_tolerance =
-	((ay_nurbpatch_object*)patches->refine)->glu_sampling_tolerance;
-      np->display_mode =
-	((ay_nurbpatch_object*)patches->refine)->display_mode;
+      np->glu_sampling_tolerance = tolerance;
+      np->display_mode = mode;
 
       if(concatnp->revert)
 	{
@@ -620,6 +721,50 @@ ay_concatnp_notifycb(ay_object *o)
 	    } /* if */
 	} /* if */
     } /* if */
+
+
+  /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
+
+  /* create/add caps */
+  caps[0] = concatnp->has_v0_cap;
+  caps[1] = concatnp->has_v1_cap;
+  caps[2] = concatnp->has_u0_cap;
+  caps[3] = concatnp->has_u1_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, concatnp->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[2] = !bparams.dirs[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, concatnp->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  if(concatnp->caps_and_bevels)
+    {
+      bevel = concatnp->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
+    }
 
 cleanup:
 
@@ -644,42 +789,93 @@ int
 ay_concatnp_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_concatnp_object *cc = NULL;
- ay_object *new = NULL;
+ ay_concatnp_object *concatnp = NULL;
+ ay_object *new = NULL, **next = NULL;
+ ay_object *b;
  ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cc = (ay_concatnp_object *) o->refine;
+  concatnp = (ay_concatnp_object *) o->refine;
 
-  if(cc->npatch)
+  if(concatnp->caps_and_bevels)
     {
-      ay_status = ay_object_copy(cc->npatch, &new);
-      if(new)
-	{
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(!in_place && ay_prefs.conv_reset_display)
-	    {
-	      ay_npt_resetdisplay(new);
-	    }
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
 
-	  /* immediately create and show the multiple points */
-	  np = (ay_nurbpatch_object *)new->refine;
-	  np->createmp = AY_TRUE;
-	  ay_npt_recreatemp(np);
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      next = &(new->down);
+
+      if(concatnp->npatch)
+	{
+	  ay_status = ay_object_copy(concatnp->npatch, next);
+	  if(*next)
+	    {
+	      (*next)->hide_children = AY_TRUE;
+	      (*next)->parent = AY_TRUE;
+	      (*next)->down = ay_endlevel;
+	      next = &((*next)->next);
+	    }
+	}
+
+      b = concatnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_status = ay_object_copy(b, next);
+	  if(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	  b = b->next;
+	} /* while */
+
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new->down);
+
+      *next = ay_endlevel;
+    }
+  else
+    {
+      if(concatnp->npatch)
+	{
+	  ay_status = ay_object_copy(concatnp->npatch, &new);
 
 	  ay_trafo_copy(o, new);
+	} /* if */
+    } /* if */
 
-	  if(!in_place)
-	    {
-	      ay_status = ay_object_link(new);
-	    }
-	  else
-	    {
-	      ay_status = ay_object_replace(new, o);
-	    }
+  if(new)
+    {
+      /* reset display mode and sampling tolerance
+	 of new patch to "global"? */
+      if(!in_place && ay_prefs.conv_reset_display)
+	{
+	  ay_npt_resetdisplay(new);
+	}
+
+      /* immediately create and show the multiple points */
+      np = (ay_nurbpatch_object *)new->refine;
+      np->createmp = AY_TRUE;
+      ay_npt_recreatemp(np);
+
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_status = ay_object_replace(new, o);
 	}
     } /* if */
 
@@ -695,7 +891,8 @@ ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  char *fname = "concatnp_providecb";
- ay_concatnp_object *cc = NULL;
+ ay_concatnp_object *concatnp = NULL;
+ ay_object **t = NULL, *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -708,25 +905,48 @@ ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  cc = (ay_concatnp_object *) o->refine;
+  concatnp = (ay_concatnp_object *) o->refine;
 
   if(type == AY_IDNPATCH)
     {
-      if(cc->npatch)
+      if(concatnp->npatch)
 	{
-	  ay_status = ay_object_copy(cc->npatch, result);
-	  if(ay_status)
+	  ay_status = ay_object_copy(concatnp->npatch, result);
+	  if(ay_status || !*result)
 	    {
 	      ay_error(ay_status, fname, NULL);
 	      return AY_ERROR;
 	    }
 	  ay_trafo_copy(o, *result);
+
+	  t = &((*result)->next);
+
+	  /* copy caps and bevels */
+	  p = concatnp->caps_and_bevels;
+	  while(p)
+	    {
+	      ay_status = ay_object_copy(p, t);
+	      if(ay_status)
+		{
+		  ay_error(ay_status, fname, NULL);
+		  return AY_ERROR;
+		}
+
+	      ay_npt_applytrafo(*t);
+	      ay_trafo_copy(o, *t);
+
+	      t = &((*t)->next);
+	      p = p->next;
+	    } /* while */
+
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, *result);
 	}
       else
 	{
 	  return AY_ERROR;
 	}
-    }
+    } /* if */
 
  return ay_status;
 } /* ay_concatnp_providecb */
