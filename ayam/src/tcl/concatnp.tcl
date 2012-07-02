@@ -14,7 +14,7 @@ set ConcatNP 1
 proc init_ConcatNP { } {
 global ay ConcatNP_props ConcatNPAttr ConcatNPAttrData
 
-set ConcatNP_props { Transformations Attributes Tags ConcatNPAttr }
+set ConcatNP_props { Transformations Attributes Tags Caps Bevels ConcatNPAttr }
 
 array set ConcatNPAttr {
 arr   ConcatNPAttrData
@@ -33,6 +33,7 @@ Order 0
 Knot-Type 1
 FTLength 1.0
 NPInfoBall "N/A"
+BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 
 # create ConcatNPAttr-UI
