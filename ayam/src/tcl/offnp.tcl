@@ -14,7 +14,7 @@ set OffsetNP 1
 proc init_OffsetNP { } {
 global ay OffsetNP_props OffsetNPAttr OffsetNPAttrData
 
-set OffsetNP_props { Attributes Material Tags OffsetNPAttr }
+set OffsetNP_props { Attributes Material Tags Caps Bevels OffsetNPAttr }
 
 array set OffsetNPAttr {
 arr   OffsetNPAttrData
@@ -27,6 +27,7 @@ array set OffsetNPAttrData {
 Mode 1
 DisplayMode 0
 NPInfoBall "N/A"
+BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 # create UI
 set w [frame $ay(pca).$OffsetNPAttr(w)]
