@@ -64,6 +64,12 @@ ay_offnp_deletecb(void *c)
   if(offnp->npatch)
     ay_object_delete(offnp->npatch);
 
+  if(offnp->caps_and_bevels)
+    {
+      ay_object_deletemulti(offnp->caps_and_bevels);
+      offnp->caps_and_bevels = NULL;
+    }
+
   free(offnp);
 
  return AY_OK;
