@@ -94,6 +94,11 @@ ay_offnp_copycb(void *src, void **dst)
       ay_object_copy(offnpsrc->npatch, &(offnp->npatch));
     }
 
+  offnp->caps_and_bevels = NULL;
+
+  if(offnpsrc->caps_and_bevels)
+    ay_object_copymulti(offnpsrc->caps_and_bevels, &(offnp->caps_and_bevels));
+
   *dst = (void *)offnp;
 
  return AY_OK;
@@ -107,6 +112,7 @@ int
 ay_offnp_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_offnp_object *offnp = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -119,6 +125,16 @@ ay_offnp_drawcb(struct Togl *togl, ay_object *o)
   if(offnp->npatch)
     ay_draw_object(togl, offnp->npatch, AY_TRUE);
 
+  if(offnp->caps_and_bevels)
+    {
+      b = offnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_draw_object(togl, b, AY_TRUE);
+	  b = b->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_offnp_drawcb */
 
@@ -130,6 +146,7 @@ int
 ay_offnp_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_offnp_object *offnp = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -141,6 +158,16 @@ ay_offnp_shadecb(struct Togl *togl, ay_object *o)
 
   if(offnp->npatch)
     ay_shade_object(togl, offnp->npatch, AY_FALSE);
+
+  if(offnp->caps_and_bevels)
+    {
+      b = offnp->caps_and_bevels;
+      while(b)
+	{
+	  ay_shade_object(togl, b, AY_FALSE);
+	  b = b->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_offnp_shadecb */
@@ -260,6 +287,22 @@ ay_offnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(offnp->offset));
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(offnp->has_u0_cap));
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(offnp->has_u1_cap));
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(offnp->has_v0_cap));
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(offnp->has_v1_cap));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(offnp->display_mode));
@@ -310,6 +353,26 @@ ay_offnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_NewIntObj(offnp->has_u0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_NewIntObj(offnp->has_u1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_NewIntObj(offnp->has_v0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_NewIntObj(offnp->has_v1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(offnp->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -348,6 +411,15 @@ ay_offnp_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr, "%d\n", &offnp->display_mode);
   fscanf(fileptr, "%lg\n", &offnp->glu_sampling_tolerance);
 
+  if(ay_read_version >= 16)
+    {
+      /* Since Ayam 1.21 */
+      fscanf(fileptr,"%d\n",&offnp->has_u0_cap);
+      fscanf(fileptr,"%d\n",&offnp->has_u1_cap);
+      fscanf(fileptr,"%d\n",&offnp->has_v0_cap);
+      fscanf(fileptr,"%d\n",&offnp->has_v1_cap);
+    }
+
   o->refine = offnp;
 
  return AY_OK;
@@ -371,6 +443,11 @@ ay_offnp_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", offnp->offset);
   fprintf(fileptr, "%d\n", offnp->display_mode);
   fprintf(fileptr, "%g\n", offnp->glu_sampling_tolerance);
+
+  fprintf(fileptr, "%d\n", offnp->has_u0_cap);
+  fprintf(fileptr, "%d\n", offnp->has_u1_cap);
+  fprintf(fileptr, "%d\n", offnp->has_v0_cap);
+  fprintf(fileptr, "%d\n", offnp->has_v1_cap);
 
  return AY_OK;
 } /* ay_offnp_writecb */
@@ -433,7 +510,10 @@ ay_offnp_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_offnp_object *offnp = NULL;
  ay_object *down = NULL, *npatch = NULL, *newo = NULL;
+ ay_object *bevel = NULL, **nextcb;
+ ay_bparam bparams;
  int mode, provided = AY_FALSE;
+ int caps[4] = {0};
  double tolerance;
 
   if(!o)
@@ -443,6 +523,8 @@ ay_offnp_notifycb(ay_object *o)
 
   mode = offnp->display_mode;
   tolerance = offnp->glu_sampling_tolerance;
+
+  nextcb = &(offnp->caps_and_bevels);
 
   /* remove old objects */
   if(offnp->npatch)
@@ -509,6 +591,49 @@ ay_offnp_notifycb(ay_object *o)
 
   /* prevent cleanup code from doing something harmful */
   newo = NULL;
+
+  /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
+
+  /* create/add caps */
+  caps[0] = offnp->has_v0_cap;
+  caps[1] = offnp->has_v1_cap;
+  caps[2] = offnp->has_u0_cap;
+  caps[3] = offnp->has_u1_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, offnp->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[2] = !bparams.dirs[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, offnp->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  if(offnp->caps_and_bevels)
+    {
+      bevel = offnp->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
+    }
 
 cleanup:
 
