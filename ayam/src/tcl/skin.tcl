@@ -9,85 +9,13 @@
 
 # skin.tcl - Skin objects Tcl code
 
-set Skin_props { Transformations Attributes Material Tags SkinAttr }
-
-
-# skin_getAttr:
-#  get Attributes from C context and build new PropertyGUI
-#
-proc skin_getAttr { } {
-    global ay SkinAttr SkinAttrData BevelTags
-
-    set oldfocus [focus]
-
-    # remove old, create new SkinAttr-UI
-    catch {destroy $ay(pca).$SkinAttr(w)}
-    set w [frame $ay(pca).$SkinAttr(w)]
-    getProp
-
-    set tagnames ""
-    set tagvalues ""
-    getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues
-
-    set ay(bok) $ay(appb)
-
-    addCheck $w SkinAttrData Interpolate
-    addParam $w SkinAttrData Order_U
-    addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
-    addCheck $w SkinAttrData StartCap
-    addCheck $w SkinAttrData EndCap
-
-    if { $BevelTags(HasStartBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 SkinAttrData"
-	addMenu $w BevelTags SBType $ay(bevelmodes)
-	addParam $w BevelTags SBRadius
-	addCheck $w BevelTags SBRevert
-    } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 SkinAttrData"
-    }
-
-    if { $BevelTags(HasEndBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 SkinAttrData"
-	addMenu $w BevelTags EBType $ay(bevelmodes)
-	addParam $w BevelTags EBRadius
-	addCheck $w BevelTags EBRevert
-    } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 1 SkinAttrData"
-    }
-
-    addParam $w SkinAttrData Tolerance
-    addMenu $w SkinAttrData DisplayMode $ay(npdisplaymodes)
-
-    addText $w SkinAttrData "Created NURBS Patch:"
-    addInfo $w SkinAttrData NPInfo
-
-    # add UI to property canvas
-    plb_setwin $w $oldfocus
-
- return;
-}
-# skin_getAttr
-
-
-# skin_setAttr:
-#
-#
-proc skin_setAttr { } {
-
-    bevel_setTags
-    setProp
-
- return;
-}
-# skin_setAttr
+set Skin_props { Transformations Attributes Material Tags Caps Bevels SkinAttr }
 
 array set SkinAttr {
 arr   SkinAttrData
-sproc skin_setAttr
-gproc skin_getAttr
+sproc ""
+gproc ""
 w     fSkinAttr
-
 }
 
 array set SkinAttrData {
@@ -95,4 +23,17 @@ Interpolate 0
 DisplayMode 1
 Knot-Type_U 1
 NPInfoBall "n/a"
+BoundaryNames { "Start" "End" "Left" "Right" }
 }
+
+set w [frame $ay(pca).$SkinAttr(w)]
+
+addCheck $w SkinAttrData Interpolate
+addParam $w SkinAttrData Order_U
+addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]
+
+addParam $w SkinAttrData Tolerance
+addMenu $w SkinAttrData DisplayMode $ay(npdisplaymodes)
+
+addText $w SkinAttrData "Created NURBS Patch:"
+addInfo $w SkinAttrData NPInfo
