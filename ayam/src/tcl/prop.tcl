@@ -571,7 +571,6 @@ proc prop_addrem { } {
 	    } else {
 		# rem property (add RP tag)
 		set havetag 0
-
 		set l [llength $tagnames]
 		for {set j 0} {$j < $l} {incr j} {
 		    set tagname [lindex $tagnames $j]
@@ -605,8 +604,11 @@ proc prop_addrem { } {
 
 	    }
 	    # if
-
-	    eval [subst "setTags $newtags"]
+	    if { [info exists newtags] } {
+		eval [subst "setTags $newtags"]
+	    } else {
+		delTags all
+	    }
 	}
 	# forAll
     }
