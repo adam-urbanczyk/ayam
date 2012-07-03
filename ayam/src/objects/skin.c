@@ -282,6 +282,14 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(skin->has_end_cap));
 
+  Tcl_SetStringObj(ton,"LeftCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(skin->has_left_cap));
+
+  Tcl_SetStringObj(ton,"RightCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(skin->has_right_cap));
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(skin->display_mode));
@@ -347,6 +355,16 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"LeftCap",-1);
+  to = Tcl_NewIntObj(skin->has_left_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"RightCap",-1);
+  to = Tcl_NewIntObj(skin->has_right_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(skin->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -389,6 +407,13 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&skin->display_mode);
   fscanf(fileptr,"%lg\n",&skin->glu_sampling_tolerance);
 
+  if(ay_read_version >= 16)
+    {
+      /* Since Ayam 1.21 */
+      fscanf(fileptr,"%d\n",&skin->has_left_cap);
+      fscanf(fileptr,"%d\n",&skin->has_right_cap);
+    }
+
   o->refine = skin;
 
  return AY_OK;
@@ -415,6 +440,9 @@ ay_skin_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", skin->has_end_cap);
   fprintf(fileptr, "%d\n", skin->display_mode);
   fprintf(fileptr, "%g\n", skin->glu_sampling_tolerance);
+
+  fprintf(fileptr, "%d\n", skin->has_left_cap);
+  fprintf(fileptr, "%d\n", skin->has_right_cap);
 
  return AY_OK;
 } /* ay_skin_writecb */
@@ -491,10 +519,10 @@ ay_skin_notifycb(ay_object *o)
  ay_object *down = NULL, *c = NULL, *last = NULL, *all_curves = NULL;
  ay_object *newo = NULL, **nextcb;
  ay_object *bevel = NULL;
+ ay_bparam bparams;
  int mode = 0, count = 0, i, a;
- int has_startb = AY_FALSE, has_endb = AY_FALSE;
- int startb_type, endb_type, startb_sense, endb_sense;
- double startb_radius, endb_radius, m[16] = {0}, tolerance;
+ int caps[4] = {0};
+ double m[16] = {0}, tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -564,169 +592,7 @@ ay_skin_notifycb(ay_object *o)
       goto cleanup;
     }
 
-  /* get bevel parameters */
-  ay_npt_getbeveltags(o, 0, &has_startb, &startb_type, &startb_radius,
-		      &startb_sense);
-  ay_npt_getbeveltags(o, 1, &has_endb, &endb_type, &endb_radius,
-		      &endb_sense);
-
-  /* create bevels and caps */
-  if(!has_startb && skin->has_start_cap)
-    {
-      c = NULL;
-      ay_status = ay_object_copy(all_curves, &c);
-      if(!c)
-	goto cleanup;
-      ay_trafo_defaults(c);
-      ay_status = ay_capt_crttrimcap(c, nextcb);
-      if(ay_status)
-	goto cleanup;
-      ay_trafo_copy(all_curves, *nextcb);
-      nextcb = &((*nextcb)->next);
-    } /* if */
-
-  if(has_startb)
-    {
-      c = NULL;
-      ay_status = ay_object_copy(all_curves, &c);
-      if(!c)
-	goto cleanup;
-      if(startb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
-	}
-
-      bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
-      ay_nct_applytrafo(c);
-      ay_status = ay_bevelt_create(startb_type, startb_radius, AY_TRUE, c,
-			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_object_delete(c);
-      c = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap from bevel */
-      if(skin->has_start_cap)
-	{
-	  if(!(c = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(c);
-	  c->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-				  (ay_nurbcurve_object**)(void*)&(c->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_crttrimcap(c, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-    } /* if */
-
-  if(!has_endb && skin->has_end_cap)
-    {
-      c = NULL;
-      ay_status = ay_object_copy(last, &c);
-      if(!c)
-	goto cleanup;
-      ay_trafo_defaults(c);
-      ay_status = ay_capt_crttrimcap(c, nextcb);
-      if(ay_status)
-	goto cleanup;
-      ay_trafo_copy(last, *nextcb);
-      (*nextcb)->scalz *= -1.0;
-      nextcb = &((*nextcb)->next);
-    } /* if */
-
-  if(has_endb)
-    {
-      c = NULL;
-      ay_status = ay_object_copy(last, &c);
-      if(!c)
-	goto cleanup;
-      if(!endb_sense)
-	{
-	  ay_nct_revert((ay_nurbcurve_object*)(c->refine));
-	}
-
-      bevel = NULL;
-      if(!(bevel = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(bevel);
-      bevel->type = AY_IDNPATCH;
-      bevel->parent = AY_TRUE;
-      bevel->inherit_trafos = AY_FALSE;
-      ay_nct_applytrafo(c);
-      ay_status = ay_bevelt_create(endb_type, endb_radius*-1.0, AY_TRUE, c,
-			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
-
-      ay_object_delete(c);
-      c = NULL;
-
-      if(ay_status)
-	goto cleanup;
-
-      *nextcb = bevel;
-      nextcb = &(bevel->next);
-
-      /* create cap from bevel */
-      if(skin->has_end_cap)
-	{
-	  if(!(c = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-
-	  ay_object_defaults(c);
-	  c->type = AY_IDNCURVE;
-
-	  ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
-				  (ay_nurbcurve_object**)(void*)&(c->refine));
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  ay_status = ay_capt_crttrimcap(c, nextcb);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  nextcb = &((*nextcb)->next);
-	} /* if */
-    } /* if */
-
-  /* skin */
+  /* do the skin */
   if(!(newo = calloc(1, sizeof(ay_object))))
     {
       ay_status = AY_EOMEM;
@@ -764,12 +630,45 @@ ay_skin_notifycb(ay_object *o)
       goto cleanup;
     }
 
-  /* copy sampling tolerance/mode over to new objects */
   skin->npatch = newo;
 
-  ((ay_nurbpatch_object *)newo->refine)->glu_sampling_tolerance =
+  /* prevent cleanup code from doing something harmful */
+  newo = NULL;
+
+  /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
+
+  /* create/add caps */
+  caps[0] = skin->has_left_cap;
+  caps[1] = skin->has_right_cap;
+  caps[2] = skin->has_start_cap;
+  caps[3] = skin->has_end_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, skin->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[2] = !bparams.dirs[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, skin->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  /* copy sampling tolerance/mode over to new objects */
+  ((ay_nurbpatch_object *)skin->npatch->refine)->glu_sampling_tolerance =
     tolerance;
-  ((ay_nurbpatch_object *)newo->refine)->display_mode =
+  ((ay_nurbpatch_object *)skin->npatch->refine)->display_mode =
     mode;
 
   if(skin->caps_and_bevels)
