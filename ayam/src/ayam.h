@@ -1084,6 +1084,8 @@ typedef struct ay_skin_object_s
   double uknotv; /**< desired knot vector in U direction */
   int has_start_cap; /**< create start cap? */
   int has_end_cap; /**< create end cap? */
+  int has_left_cap; /**< create left cap? */
+  int has_right_cap; /**< create right cap? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
