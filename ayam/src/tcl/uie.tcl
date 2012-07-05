@@ -668,8 +668,15 @@ proc addMenu { w prop name elist } {
 	balloon_set $f.l ${name}
     }
 
+    set l 0
+    foreach i $elist {
+	if { [string length $i] > $l } {
+	    set l [string length $i]
+	}
+    }
+
     menubutton $f.mb -text Eimer -menu $f.mb.m -relief raised -bd $bw\
-	    -padx 0 -pady 1 -takefocus 1 -highlightthickness 1
+	    -padx 0 -pady 1 -takefocus 1 -width $l -highlightthickness 1
 
     eval [subst "bindtags $f.mb \{$f.mb pge Menubutton all\}"]
     bind $f.mb <Key-Escape> $escapecmd
