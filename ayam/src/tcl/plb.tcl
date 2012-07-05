@@ -696,8 +696,17 @@ proc plb_addremprop { {rem 0} } {
     append title " Property"
     winDialog $w $title
 
-    array set AddRemProp {
-	Property ""
+    if { ! [info exists AddRemProp] } {
+	array set AddRemProp {
+	    Property ""
+	}
+    }
+
+    if { $rem == 1 } {
+	set lb $ay(plb)
+	if { [$lb size] > 1 } {
+	    set AddRemProp(Property) [$lb get [$lb curselection]]
+	}
     }
 
     set AddRemProp(Operation) $rem
