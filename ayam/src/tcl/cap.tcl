@@ -43,7 +43,8 @@ return;
 }
 # init_Cap
 
-
+# as the cap type data is to be saved in the object type specific
+# property arrays, using setProp is sufficient
 array set Caps {
 arr   CapsData
 sproc ""
@@ -51,7 +52,11 @@ gproc cap_getCaps
 w     fCaps
 }
 
-proc cap_getCaps {} {
+# cap_getCaps:
+# get caps data from object and create a new property GUI,
+# the Caps property GUI is dynamic, as boundary names may
+# differ between object types
+proc cap_getCaps { } {
     global ay Caps CapsData
 
     set oldfocus [focus]
@@ -72,7 +77,7 @@ proc cap_getCaps {} {
 	    eval set capnames \$${type}AttrData(BoundaryNames)
 	    foreach capname $capnames {
 		addMenu $w ${type}AttrData ${capname}Cap \
-	     [list "Off      " "Trim     " "Simple   " "SimpleInt" "Gordon   "]
+	     [list "Off" "Trim" "Simple" "SimpleInt" "Gordon"]
 	    }
 	} else {
 	    addText $w e1 "Not supported here!"
