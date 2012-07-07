@@ -14,8 +14,7 @@ set Hyperboloid 1
 proc init_Hyperboloid { } {
 global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
 
-set Hyperboloid_props { Transformations Attributes Material Tags
-    HyperboloidAttr }
+set Hyperboloid_props { Transformations Attributes Material Tags HyperboloidAttr }
 
 
 array set HyperboloidAttr {

@@ -14,8 +14,7 @@ set Sweep 1
 proc init_Sweep { } {
 global ay Sweep_props SweepAttr SweepAttrData
 
-set Sweep_props { Transformations Attributes Material Tags Caps Bevels
-    SweepAttr }
+set Sweep_props { Transformations Attributes Material Tags Caps Bevels SweepAttr }
 
 array set SweepAttr {
 arr   SweepAttrData
