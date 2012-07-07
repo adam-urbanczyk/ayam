@@ -21,7 +21,6 @@ arr   TrimAttrData
 sproc ""
 gproc ""
 w     fTrimAttr
-
 }
 
 array set TrimAttrData {
@@ -30,7 +29,7 @@ PatchNum 0
 
 # create TrimAttr-UI
 set w [frame $ay(pca).$TrimAttr(w)]
-
+addVSpace $w s1 2
 addParam $w TrimAttrData PatchNum
 
 return;

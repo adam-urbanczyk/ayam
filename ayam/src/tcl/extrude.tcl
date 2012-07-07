@@ -32,6 +32,7 @@ proc extrude_getAttr { } {
 
     set ay(bok) $ay(appb)
 
+    addVSpace $w s1 2
     addParam $w ExtrudeAttrData Height
     addCheck $w ExtrudeAttrData StartCap
     addCheck $w ExtrudeAttrData EndCap

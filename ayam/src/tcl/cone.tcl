@@ -26,7 +26,7 @@ w     fConeAttr
 
 # create ConeAttr-UI
 set w [frame $ay(pca).$ConeAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w ConeAttrData Closed
 addParam $w ConeAttrData Radius
 addParam $w ConeAttrData Height

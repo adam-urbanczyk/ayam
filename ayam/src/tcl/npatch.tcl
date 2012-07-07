@@ -9,15 +9,14 @@
 
 # npatch.tcl - NURBS patchs objects Tcl code
 
-set NPatch_props { Transformations Attributes Material Tags NPatchAttr }
-
+set NPatch_props { Transformations Attributes Material Tags Caps Bevels
+    NPatchAttr }
 
 array set NPatchAttr {
 arr   NPatchAttrData
 sproc ""
 gproc ""
 w     fNPatchAttr
-
 }
 
 array set NPatchAttrData {
@@ -28,11 +27,12 @@ Knots_U ""
 Knots_U-Modified 0
 Knots_V ""
 Knots_V-Modified 0
+BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 
 # create NPatchAttr-UI
 set w [frame $ay(pca).$NPatchAttr(w)]
-
+addVSpace $w s1 2
 addParam $w NPatchAttrData Width
 addParam $w NPatchAttrData Height
 addParam $w NPatchAttrData Order_U

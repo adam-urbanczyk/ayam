@@ -25,7 +25,6 @@ arr   RiAttrData
 sproc setRiAttrp
 gproc ""
 w     fRiAttr
-
 }
 
 array set RiAttrData {
@@ -37,7 +36,7 @@ array set RiAttrData {
 
 # create RiAttributes-UI
 set w [frame $ay(pca).$RiAttributes(w)]
-
+addVSpace $w s1 2
 addColor $w RiAttrData Color
 addColor $w RiAttrData Opacity
 

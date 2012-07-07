@@ -30,7 +30,7 @@ NCInfoBall "N/A"
 }
 # create UI
 set w [frame $ay(pca).$OffsetNCAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w OffsetNCAttrData Mode [list "Point" "Section" "Hybrid" "3DPVN"]
 addCheck $w OffsetNCAttrData Revert
 addParam $w OffsetNCAttrData Offset

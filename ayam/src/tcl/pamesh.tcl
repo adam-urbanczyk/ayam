@@ -21,7 +21,6 @@ arr   PatchMeshAttrData
 sproc ""
 gproc pamesh_getAttr
 w     fPatchMeshAttr
-
 }
 
 array set PatchMeshAttrData {
@@ -56,7 +55,7 @@ proc pamesh_getAttr { } {
     getProp
 
     set ay(bok) $ay(appb)
-
+    addVSpace $w s1 2
     addMenu $w PatchMeshAttrData Type [list Bilinear Bicubic]
     addParam $w PatchMeshAttrData Width
     addParam $w PatchMeshAttrData Height

@@ -21,7 +21,6 @@ arr   ExtrNCAttrData
 sproc ""
 gproc ""
 w     fExtrNCAttr
-
 }
 
 array set ExtrNCAttrData {
@@ -31,9 +30,7 @@ NCInfoBall "N/A"
 }
 # create ExtrNCAttr-UI
 set w [frame $ay(pca).$ExtrNCAttr(w)]
-
-
-
+addVSpace $w s1 2
 addMenu $w ExtrNCAttrData Side\
     [list U0 Un V0 Vn U V Boundary Middle_U Middle_V]
 addParam $w ExtrNCAttrData Parameter

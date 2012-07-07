@@ -27,6 +27,7 @@ proc light_getAttr { } {
     set ay(bok) $ay(appb)
 
     # create new UI
+    addVSpace $w s1 2
     addMenu $w LightAttrData Type {Custom Point Distant Spot}
     addCheck $w LightAttrData IsOn
     addCheck $w LightAttrData IsLocal
@@ -104,6 +105,5 @@ arr   ay_shader
 sproc light_setShader
 gproc light_getShader
 w     fLightShader
-
 }
 

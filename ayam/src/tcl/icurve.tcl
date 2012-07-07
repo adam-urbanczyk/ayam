@@ -26,6 +26,7 @@ proc icurve_getAttr { } {
     set ay(bok) $ay(appb)
 
     # create ICurveAttr-UI
+    addVSpace $w s1 2
     addMenu $w ICurveAttrData Type [list "Open" "Closed" ]
     addParam $w ICurveAttrData Length
     addParam $w ICurveAttrData Order

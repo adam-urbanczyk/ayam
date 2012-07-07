@@ -27,7 +27,7 @@ BoundaryNames { "Start" "End" "Left" "Right" }
 }
 
 set w [frame $ay(pca).$SkinAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w SkinAttrData Interpolate
 addParam $w SkinAttrData Order_U
 addMenu $w SkinAttrData Knot-Type_U [list Bezier B-Spline NURB Custom]

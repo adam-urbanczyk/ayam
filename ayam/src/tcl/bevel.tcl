@@ -226,6 +226,7 @@ proc bevel_getAttr { } {
 
     set ay(bok) $ay(appb)
 
+    addVSpace $w s1 2
     addMenu $w BevelTags BevelType $ay(bevelmodes)
     addParam $w BevelTags BevelRadius
     addCheck $w BevelTags BevelRevert

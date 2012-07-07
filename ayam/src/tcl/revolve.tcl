@@ -21,7 +21,6 @@ arr   RevolveAttrData
 sproc ""
 gproc ""
 w     fRevolveAttr
-
 }
 
 array set RevolveAttrData {
@@ -30,7 +29,7 @@ NPInfoBall "n/a"
 }
 # create RevolveAttr-UI
 set w [frame $ay(pca).$RevolveAttr(w)]
-
+addVSpace $w s1 2
 addParam $w RevolveAttrData ThetaMax
 addParam $w RevolveAttrData Sections
 addParam $w RevolveAttrData Order

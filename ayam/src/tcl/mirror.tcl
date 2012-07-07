@@ -25,6 +25,6 @@ array set MirrorAttrData {
 
 # create MirrorAttr-UI
 set w [frame $ay(pca).$MirrorAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w MirrorAttrData Plane [list "YZ-Plane" "XZ-Plane"\
 				      "XY-Plane" ]

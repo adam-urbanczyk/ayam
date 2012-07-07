@@ -21,12 +21,11 @@ arr   TorusAttrData
 sproc ""
 gproc ""
 w     fTorusAttr
-
 }
 
 # create TorusAttr-UI
 set w [frame $ay(pca).$TorusAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w TorusAttrData Closed
 addParam $w TorusAttrData MajorRad
 addParam $w TorusAttrData MinorRad

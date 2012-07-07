@@ -17,7 +17,6 @@ arr   NCurveAttrData
 sproc ""
 gproc ""
 w     fNCurveAttr
-
 }
 
 array set NCurveAttrData {
@@ -32,7 +31,7 @@ trace variable NCurveAttrData(Knots) w markPropModified
 
 # create NCurveAttr-UI
 set w [frame $ay(pca).$NCurveAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w NCurveAttrData Type [list Open Closed Periodic]
 addParam $w NCurveAttrData Length
 addParam $w NCurveAttrData Order

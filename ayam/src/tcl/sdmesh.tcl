@@ -21,7 +21,6 @@ arr   SDMeshAttrData
 sproc ""
 gproc ""
 w     fSDMeshAttr
-
 }
 
 array set SDMeshAttrData {
@@ -29,7 +28,7 @@ Scheme 0
 }
 # create SDMeshAttr-UI
 set w [frame $ay(pca).$SDMeshAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w SDMeshAttrData Scheme {Catmull-Clark Loop}
 addParam $w SDMeshAttrData Level
 addCheck $w SDMeshAttrData DrawSub

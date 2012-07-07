@@ -26,7 +26,7 @@ array set CloneAttrData {
 }
 
 set w [frame $ay(pca).$CloneAttr(w)]
-
+addVSpace $w s1 2
 addParam $w CloneAttrData NumClones
 addCheck $w CloneAttrData Rotate
 addText $w e1 "Translation:"

@@ -21,7 +21,6 @@ arr   SelectAttrData
 sproc ""
 gproc ""
 w     fSelectAttr
-
 }
 
 array set SelectAttrData {
@@ -30,6 +29,7 @@ Indices 0
 
 # create SelectAttr-UI
 set w [frame $ay(pca).$SelectAttr(w)]
+addVSpace $w s1 2
 addString $w SelectAttrData Indices
 
 return;

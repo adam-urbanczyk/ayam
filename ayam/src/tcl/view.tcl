@@ -1521,7 +1521,7 @@ array set ViewAttribData {
 }
 
 set w [frame $ay(pca).$ViewAttrib(w)]
-
+addVSpace $w s1 2
 addMenu $w ViewAttribData Type [list Front Side Top Persp Trim]
 
 addText $w e1 "Window:"

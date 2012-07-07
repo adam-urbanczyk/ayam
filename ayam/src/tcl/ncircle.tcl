@@ -21,7 +21,6 @@ arr   NCircleAttrData
 sproc ""
 gproc ""
 w     fNCircleAttr
-
 }
 
 array set NCircleAttrData {
@@ -31,7 +30,7 @@ NCInfoBall "N/A"
 
 # create NCircleAttr-UI
 set w [frame $ay(pca).$NCircleAttr(w)]
-
+addVSpace $w s1 2
 addParam $w NCircleAttrData Radius
 addParam $w NCircleAttrData TMin
 addParam $w NCircleAttrData TMax

@@ -82,6 +82,10 @@ bind $f.li <<ListboxSelect>> {
     # resize main window
     plb_resize
 
+    if { [$ay(pca) cget -height] < $ } {
+
+    }
+
     # manage property clipboard
     if { [array exists pclip_omit] } {
 	unset pclip_omit
@@ -261,7 +265,7 @@ set ay(pca) $f.ca
 # the window as:
 # $f.ca itemconfigure 1 -window .ca.f1
 set ay(pw) [frame $f.ca.w -width 100 ]
-$f.ca create window 5 5 -anchor nw -window $ay(pw)
+$f.ca create window 5 0 -anchor nw -window $ay(pw)
 set width [expr [winfo reqwidth $ay(pw)] + 10]
 $ay(pca) configure -width $width
 
@@ -717,7 +721,6 @@ proc plb_addremprop { {rem 0} } {
     set props ""
     global AllProps
     if { $AddRemProp(Operation) == 1 } {
-
 	# remove operation, compile list of
 	# candidates for removal
 	array set AllProps {}
@@ -804,6 +807,7 @@ proc plb_addremprop { {rem 0} } {
 
     grab $w
     tkwait window $w
+
     winAutoFocusOn
 
  return;

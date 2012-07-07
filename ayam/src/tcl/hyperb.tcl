@@ -14,7 +14,8 @@ set Hyperboloid 1
 proc init_Hyperboloid { } {
 global ay Hyperboloid_props HyperboloidAttr HyperbAttrData
 
-set Hyperboloid_props { Transformations Attributes Material Tags HyperboloidAttr }
+set Hyperboloid_props { Transformations Attributes Material Tags
+    HyperboloidAttr }
 
 
 array set HyperboloidAttr {
@@ -22,11 +23,11 @@ arr   HyperbAttrData
 sproc ""
 gproc ""
 w     fHyperboloidAttr
-
 }
 
 # create HyperboloidAttr-UI
 set w [frame $ay(pca).$HyperboloidAttr(w)]
+addVSpace $w s1 2
 addCheck $w HyperbAttrData Closed
 addParam $w HyperbAttrData ThetaMax
 addText $w e1 "Point 1:"

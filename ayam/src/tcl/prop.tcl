@@ -24,6 +24,7 @@ array set transfPropData {
 
 # create Transformations-UI
 set w [frame $ay(pca).$Transformations(w)]
+addVSpace $w s1 2
 addCommand $w c1 "Reset All!" {
 global transfPropData
 undo save ResetTrafos
@@ -89,6 +90,7 @@ w     fAttrAttr
 
 # create Attributes-UI
 set w [frame $ay(pca).$Attributes(w)]
+addVSpace $w s1 2
 addString $w attrPropData Objectname
 addCheck $w attrPropData Hide
 addCheck $w attrPropData HideChildren
@@ -106,6 +108,7 @@ w     fMatAttr
 }
 # create Material-UI
 set w [frame $ay(pca).$Material(w)]
+addVSpace $w s1 2
 addCommand $w c1 "Clear Material!" {
     undo save ClrMat
     global matPropData; set matPropData(Materialname) ""
@@ -138,6 +141,7 @@ set ay(bok) $ay(appb)
 # create Tags-UI
 catch {destroy $ay(pca).$Tags(w)}
 set w [frame $ay(pca).$Tags(w)]
+addVSpace $w s1 2
 addCommand $w c0 "Remove all Tags!" {undo save RemTags;delTags all;plb_update}
 
 set bw 1
@@ -521,6 +525,7 @@ proc markPropModified { name1 name2 op } {
 #  management of their NP/RP tags
 #  The global AddRemProp array is used to transfer the parameters
 #  (actual operation mode, new property name) for this operation.
+#  see: plb_addremprop
 proc prop_addrem { } {
     global AddRemProp
 

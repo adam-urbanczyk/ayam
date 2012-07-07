@@ -90,6 +90,7 @@ proc resizeHandle:Create {win resizeWin args} {
 
 # create ScriptAttr-UI:
 set w [frame $ay(pca).$ScriptAttr(w)]
+addVSpace $w s1 2
 addCheck $w ScriptAttrData Active
 addMenu $w ScriptAttrData Type [list Run Create Modify]
 pack [text $w.tScript -undo 1 -width 60 -height 60]

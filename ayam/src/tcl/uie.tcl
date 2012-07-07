@@ -1368,6 +1368,18 @@ proc addProgress { w prop name } {
 # addProgress
 
 
+#
+#
+#
+proc addVSpace { w name h } {
+    set f [frame $w.f${name}]
+    set l [label $w.f${name}.${name} -height $h -image ay_Empty_img]
+    pack $l -in $f
+    pack $f -in $w -side top -fill x
+ return;
+}
+#
+
 # addPropertyGUI:
 #  create frame and global property management array
 #

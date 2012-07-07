@@ -11,13 +11,11 @@
 
 set Level_props { Transformations Attributes Material Tags LevelAttr }
 
-
 array set LevelAttr {
 arr   LevelAttrData
 sproc ""
 gproc ""
 w     fLevelAttr
-
 }
 
 array set LevelAttrData {
@@ -26,6 +24,7 @@ Type 0
 
 # create LevelAttr-UI
 set w [frame $ay(pca).$LevelAttr(w)]
+addVSpace $w s1 2
 addMenu $w LevelAttrData Type {Level Union Difference Intersection Primitive }
 
 # level_crt:
