@@ -553,6 +553,12 @@ ay_npatch_deletecb(void *c)
   /* free multiple points */
   ay_npt_clearmp(npatch);
 
+  if(npatch->caps_and_bevels)
+    {
+      ay_object_deletemulti(npatch->caps_and_bevels);
+      npatch->caps_and_bevels = NULL;
+    }
+
   /* free gluNurbsRenderer */
   if(npatch->no)
     gluDeleteNurbsRenderer(npatch->no);
@@ -622,6 +628,12 @@ ay_npatch_copycb(void *src, void **dst)
     {
       ay_npt_recreatemp(npatch);
     }
+
+  npatch->caps_and_bevels = NULL;
+
+  if(npatchsrc->caps_and_bevels)
+    ay_object_copymulti(npatchsrc->caps_and_bevels,
+			&(npatch->caps_and_bevels));
 
   /* XXXX manage tesselation */
   npatch->stess = NULL;
@@ -1032,6 +1044,7 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *npatch = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -1061,6 +1074,13 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
       ay_npatch_drawstesscb(togl, o);
       break;
     } /* switch */
+
+  b = npatch->caps_and_bevels;
+  while(b)
+    {
+      ay_draw_object(togl, b, AY_TRUE);
+      b = b->next;
+    }
 
  return AY_OK;
 } /* ay_npatch_drawcb */
@@ -1368,6 +1388,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *npatch = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -1390,6 +1411,13 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
     {
       ay_npatch_shadestesscb(togl, o);
     } /* if */
+
+  b = npatch->caps_and_bevels;
+  while(b)
+    {
+      ay_shade_object(togl, b, AY_FALSE);
+      b = b->next;
+    }
 
  return AY_OK;
 } /* ay_npatch_shadecb */
@@ -1647,7 +1675,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int new_uorder, new_width, new_uknot_type, uknots_modified = 0;
  int new_vorder, new_height, new_vknot_type, vknots_modified = 0;
  double *nknotv = NULL, *olduknotv = NULL, *oldvknotv = NULL;
- int updateKnots = AY_FALSE, updateMPs = AY_TRUE;
+ int update = AY_FALSE, updateKnots = AY_FALSE, updateMPs = AY_TRUE;
  int knotc, i;
  char **knotv;
 
@@ -1704,9 +1732,41 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &vknots_modified);
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(npatch->has_u0_cap != i)
+    {
+      npatch->has_u0_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(npatch->has_u1_cap != i)
+    {
+      npatch->has_u1_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(npatch->has_v0_cap != i)
+    {
+      npatch->has_v0_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(npatch->has_v1_cap != i)
+    {
+      npatch->has_v1_cap = i;
+      update = AY_TRUE;
+    }
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
-
 
   /* apply changed values to patch */
 
@@ -1946,6 +2006,13 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_npt_recreatemp(npatch);
     }
 
+  if(update)
+    {
+      ay_notify_object(o);
+
+      o->modified = AY_TRUE;
+    }
+
   ay_status = ay_notify_parent();
 
  return AY_OK;
@@ -2060,6 +2127,26 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_NewIntObj(npatch->has_u0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_NewIntObj(npatch->has_u1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_NewIntObj(npatch->has_v0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_NewIntObj(npatch->has_v1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -2153,6 +2240,15 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   ay_npt_recreatemp(npatch);
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21: */
+      fscanf(fileptr,"%d\n",&npatch->has_u0_cap);
+      fscanf(fileptr,"%d\n",&npatch->has_u1_cap);
+      fscanf(fileptr,"%d\n",&npatch->has_v0_cap);
+      fscanf(fileptr,"%d\n",&npatch->has_v1_cap);
+    }
+
   npatch->is_rat = ay_npt_israt(npatch);
 
   /* Prior to 1.19 Ayam used pre-multiplied rational coordinates... */
@@ -2222,6 +2318,11 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", npatch->createmp);
 
+  fprintf(fileptr, "%d\n", npatch->has_u0_cap);
+  fprintf(fileptr, "%d\n", npatch->has_u1_cap);
+  fprintf(fileptr, "%d\n", npatch->has_v0_cap);
+  fprintf(fileptr, "%d\n", npatch->has_v1_cap);
+
  return AY_OK;
 } /* ay_npatch_writecb */
 
@@ -2234,6 +2335,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
+ ay_object *cb;
  double umind, umaxd, vmind, vmaxd, w;
  RtInt nu, nv, uorder, vorder;
  RtFloat *uknots = NULL, *vknots = NULL, umin, umax, vmin, vmax;
@@ -2378,6 +2480,13 @@ ay_npatch_wribcb(char *file, ay_object *o)
   free(uknots);
   free(vknots);
   free(controls);
+
+  cb = patch->caps_and_bevels;
+  while(cb)
+    {
+      ay_wrib_object(file, cb);
+      cb = cb->next;
+    }
 
  return ay_status;
 } /* ay_npatch_wribcb */
@@ -2550,13 +2659,26 @@ ay_npatch_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
- int display_mode = ay_prefs.np_display_mode;
+ ay_object *bevel = NULL, **nextcb;
+ ay_bparam bparams;
+ int display_mode = ay_prefs.np_display_mode, mode, caps[4] = {0};
  int qf = ay_prefs.stess_qf;
+ double tolerance;
 
   if(!o)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
+  mode = npatch->display_mode;
+  tolerance = npatch->glu_sampling_tolerance;
+
+  nextcb = &(npatch->caps_and_bevels);
+
+  if(npatch->caps_and_bevels)
+    {
+      ay_object_deletemulti(npatch->caps_and_bevels);
+      npatch->caps_and_bevels = NULL;
+    }
 
   if((npatch->uknot_type > AY_KTCUSTOM) ||
      (npatch->vknot_type > AY_KTCUSTOM))
@@ -2564,6 +2686,51 @@ ay_npatch_notifycb(ay_object *o)
       ay_status = ay_knots_createnp(npatch);
       if(ay_status)
 	return ay_status;
+    }
+
+  /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
+
+  /* create/add caps */
+  caps[0] = npatch->has_u0_cap;
+  caps[1] = npatch->has_u1_cap;
+  caps[2] = npatch->has_v0_cap;
+  caps[3] = npatch->has_v1_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, o, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[1] = !bparams.dirs[1];
+      bparams.dirs[2] = !bparams.dirs[2];
+      bparams.radii[2] = -bparams.radii[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, o, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  if(npatch->caps_and_bevels)
+    {
+      bevel = npatch->caps_and_bevels;
+      while(bevel)
+	{
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (bevel->refine))->display_mode = mode;
+	  bevel = bevel->next;
+	}
     }
 
   if(npatch->display_mode != 0)
@@ -2595,6 +2762,7 @@ ay_npatch_notifycb(ay_object *o)
 
   npatch->tessqf = qf;
 
+cleanup:
  return ay_status;
 } /* ay_npatch_notifycb */
 

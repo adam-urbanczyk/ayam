@@ -622,6 +622,12 @@ ay_ipatch_deletecb(void *c)
   if(ipatch->npatch)
     ay_object_deletemulti(ipatch->npatch);
 
+  if(ipatch->caps_and_bevels)
+    {
+      ay_object_deletemulti(ipatch->caps_and_bevels);
+      ipatch->caps_and_bevels = NULL;
+    }
+
   free(ipatch);
 
  return AY_OK;
@@ -717,6 +723,12 @@ ay_ipatch_copycb(void *src, void **dst)
     {
       ay_object_copymulti(ipatchsrc->npatch, &(ipatch->npatch));
     }
+
+  ipatch->caps_and_bevels = NULL;
+
+  if(ipatchsrc->caps_and_bevels)
+    ay_object_copymulti(ipatchsrc->caps_and_bevels,
+			&(ipatch->caps_and_bevels));
 
   *dst = (void *)ipatch;
 
@@ -967,6 +979,16 @@ ay_ipatch_drawcb(struct Togl *togl, ay_object *o)
       ay_ipatch_drawders(ipatch);
     }
 
+  if(ipatch->caps_and_bevels)
+    {
+      p = ipatch->caps_and_bevels;
+      while(p)
+	{
+	  ay_draw_object(togl, p, AY_TRUE);
+	  p = p->next;
+	}
+    }
+
  return AY_OK;
 } /* ay_ipatch_drawcb */
 
@@ -988,6 +1010,16 @@ ay_ipatch_shadecb(struct Togl *togl, ay_object *o)
       ay_shade_object(togl, p, AY_FALSE);
       p = p->next;
     } /* while */
+
+  if(ipatch->caps_and_bevels)
+    {
+      p = ipatch->caps_and_bevels;
+      while(p)
+	{
+	  ay_shade_object(togl, p, AY_FALSE);
+	  p = p->next;
+	}
+    }
 
  return AY_OK;
 } /* ay_ipatch_shadecb */
@@ -1422,7 +1454,7 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  ay_ipatch_object *ipatch = NULL;
  int new_ktype_u, new_close_u, new_order_u, new_width;
  int new_ktype_v, new_close_v, new_order_v, new_height;
- int update = AY_FALSE;
+ int i, update = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -1538,6 +1570,39 @@ ay_ipatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(ipatch->display_mode));
+
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(ipatch->has_u0_cap != i)
+    {
+      ipatch->has_u0_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(ipatch->has_u1_cap != i)
+    {
+      ipatch->has_u1_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(ipatch->has_v0_cap != i)
+    {
+      ipatch->has_v0_cap = i;
+      update = AY_TRUE;
+    }
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(ipatch->has_v1_cap != i)
+    {
+      ipatch->has_v1_cap = i;
+      update = AY_TRUE;
+    }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
@@ -1832,6 +1897,26 @@ ay_ipatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"U0Cap",-1);
+  to = Tcl_NewIntObj(ipatch->has_u0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"U1Cap",-1);
+  to = Tcl_NewIntObj(ipatch->has_u1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V0Cap",-1);
+  to = Tcl_NewIntObj(ipatch->has_v0_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"V1Cap",-1);
+  to = Tcl_NewIntObj(ipatch->has_v1_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   ay_prop_getnpinfo(interp, n1, ipatch->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -1962,6 +2047,15 @@ ay_ipatch_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&(ipatch->glu_sampling_tolerance));
   fscanf(fileptr,"%d\n",&(ipatch->display_mode));
 
+  if(ay_read_version >= 15)
+    {
+      /* Since Ayam 1.21: */
+      fscanf(fileptr,"%d\n",&ipatch->has_u0_cap);
+      fscanf(fileptr,"%d\n",&ipatch->has_u1_cap);
+      fscanf(fileptr,"%d\n",&ipatch->has_v0_cap);
+      fscanf(fileptr,"%d\n",&ipatch->has_v1_cap);
+    }
+
   o->refine = ipatch;
 
   /* prevent cleanup code from doing something harmful */
@@ -2071,6 +2165,11 @@ ay_ipatch_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", ipatch->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", ipatch->display_mode);
 
+  fprintf(fileptr, "%d\n", ipatch->has_u0_cap);
+  fprintf(fileptr, "%d\n", ipatch->has_u1_cap);
+  fprintf(fileptr, "%d\n", ipatch->has_v0_cap);
+  fprintf(fileptr, "%d\n", ipatch->has_v1_cap);
+
  return AY_OK;
 } /* ay_ipatch_writecb */
 
@@ -2090,6 +2189,13 @@ ay_ipatch_wribcb(char *file, ay_object *o)
 
   ipatch = (ay_ipatch_object*)(o->refine);
   p = ipatch->npatch;
+  while(p)
+    {
+      ay_wrib_object(file, p);
+      p = p->next;
+    }
+
+  p = ipatch->caps_and_bevels;
   while(p)
     {
       ay_wrib_object(file, p);
@@ -2175,10 +2281,12 @@ int
 ay_ipatch_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
- int i, j, a, b, mode;
+ int i, j, a, b, mode, caps[4] = {0};
  ay_object *p = NULL;
  ay_ipatch_object *ip = NULL;
  ay_nurbpatch_object *np = NULL;
+ ay_object *bevel = NULL, **nextcb;
+ ay_bparam bparams;
  double tolerance, *cv = NULL;
 
   if(!o)
@@ -2189,10 +2297,18 @@ ay_ipatch_notifycb(ay_object *o)
   mode = ip->display_mode;
   tolerance = ip->glu_sampling_tolerance;
 
+  nextcb = &(ip->caps_and_bevels);
+
   if(ip->npatch)
     {
       ay_object_deletemulti(ip->npatch);
       ip->npatch = NULL;
+    }
+
+  if(ip->caps_and_bevels)
+    {
+      ay_object_deletemulti(ip->caps_and_bevels);
+      ip->caps_and_bevels = NULL;
     }
 
   if(!(cv = calloc(ip->width*ip->height*4, sizeof(double))))
@@ -2305,20 +2421,59 @@ ay_ipatch_notifycb(ay_object *o)
   ip->npatch = p;
 
   /* copy sampling tolerance/mode attributes to NURBS patch(es) */
-  if(ip->npatch)
+  p = ip->npatch;
+  while(p)
     {
-      p = ip->npatch;
-      while(p)
+      if(p->type == AY_IDNPATCH)
 	{
-	  if(p->type == AY_IDNPATCH)
-	    {
-	      ((ay_nurbpatch_object *)
-	       (p->refine))->glu_sampling_tolerance = tolerance;
-	      ((ay_nurbpatch_object *)
-	       (p->refine))->display_mode = mode;
-	    }
-	  p = p->next;
+	  ((ay_nurbpatch_object *)
+	   (p->refine))->glu_sampling_tolerance = tolerance;
+	  ((ay_nurbpatch_object *)
+	   (p->refine))->display_mode = mode;
 	}
+      p = p->next;
+    }
+
+  /* get bevel parameters */
+  memset(&bparams, 0, sizeof(ay_bparam));
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+    }
+
+  /* create/add caps */
+  caps[0] = ip->has_u0_cap;
+  caps[1] = ip->has_u1_cap;
+  caps[2] = ip->has_v0_cap;
+  caps[3] = ip->has_v1_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, ip->npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
+  while(*nextcb)
+    nextcb = &((*nextcb)->next);
+
+  /* create/add bevels */
+  if(bparams.has_bevels)
+    {
+      bparams.dirs[1] = !bparams.dirs[1];
+      bparams.dirs[2] = !bparams.dirs[2];
+      bparams.radii[2] = -bparams.radii[2];
+
+      ay_status = ay_bevelt_addbevels(&bparams, caps, ip->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+    }
+
+  bevel = ip->caps_and_bevels;
+  while(bevel)
+    {
+      ((ay_nurbpatch_object *)
+       (bevel->refine))->glu_sampling_tolerance = tolerance;
+      ((ay_nurbpatch_object *)
+       (bevel->refine))->display_mode = mode;
+      bevel = bevel->next;
     }
 
   /* prevent cleanup code from doing something harmful */
@@ -2341,7 +2496,7 @@ ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  char fname[] = "ipatch_providecb";
- ay_ipatch_object *pm = NULL;
+ ay_ipatch_object *ip = NULL;
  ay_object *new = NULL, **t = NULL, *p = NULL;
 
   if(!o)
@@ -2355,16 +2510,16 @@ ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  pm = (ay_ipatch_object *) o->refine;
+  ip = (ay_ipatch_object *) o->refine;
 
   if(type == AY_IDNPATCH)
     {
       t = &(new);
 
-      if(!pm->npatch)
+      if(!ip->npatch)
 	return AY_ERROR;
 
-      p = pm->npatch;
+      p = ip->npatch;
       while(p)
 	{
 	  ay_status = ay_object_copy(p, t);
@@ -2374,6 +2529,24 @@ ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      return AY_ERROR;
 	    }
 	  ay_trafo_copy(o, *t);
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
+	  /* copy caps and bevels */
+      p = ip->caps_and_bevels;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+
+	  ay_npt_applytrafo(*t);
+	  ay_trafo_copy(o, *t);
+
 	  t = &((*t)->next);
 	  p = p->next;
 	} /* while */
@@ -2402,8 +2575,12 @@ ay_ipatch_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   ipatch = (ay_ipatch_object *) o->refine;
+
+  if(!ipatch->npatch)
+    return AY_OK;
+
   p = ipatch->npatch;
-  if(p && p->next)
+  if(p->next || ipatch->caps_and_bevels)
     {
       ay_status = ay_object_create(AY_IDLEVEL, &new);
 
@@ -2425,9 +2602,6 @@ ay_ipatch_convertcb(ay_object *o, int in_place)
 		      ay_npt_resetdisplay(*next);
 		    }
 
-		  /* copy eventually present TP tags */
-		  ay_npt_copytptag(o, *next);
-
 		  (*next)->parent = AY_TRUE;
 		  (*next)->down = ay_endlevel;
 
@@ -2436,13 +2610,19 @@ ay_ipatch_convertcb(ay_object *o, int in_place)
 	      p = p->next;
 	    } /* while */
 
-	  if(!new->down)
+	  p = ipatch->caps_and_bevels;
+	  while(p)
 	    {
-	      ay_object_delete(new);
-	      new = NULL;
-	      ay_status = AY_ERROR;
-	    }
+	      ay_status = ay_object_copy(p, next);
+	      if(*next)
+		{
+		  next = &((*next)->next);
+		}
+	      p = p->next;
+	    } /* while */
 
+	  /* copy eventually present TP tags */
+	  ay_npt_copytptag(o, new->down);
 	} /* if */
     }
   else
@@ -2466,8 +2646,6 @@ ay_ipatch_convertcb(ay_object *o, int in_place)
 	    } /* if */
 	} /* if */
     } /* if */
-
-  /* second, link new objects, or replace old objects with them */
 
   if(new)
     {

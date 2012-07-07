@@ -495,6 +495,11 @@ typedef struct ay_nurbpatch_object_s
   double *vknotv; /**< v knot vector [height + vorder]*/
   /*double *texv;*/ /* unused */
 
+  int has_u0_cap; /**< create cap at u start? */
+  int has_u1_cap; /**< create cap at u end? */
+  int has_v0_cap; /**< create cap at v start? */
+  int has_v1_cap; /**< create cap at v end? */
+
   GLUnurbsObj *no; /**< GLU NURBS object */
 
   double glu_sampling_tolerance; /**< drawing quality */
@@ -503,6 +508,9 @@ typedef struct ay_nurbpatch_object_s
   /* stess */
   int tessqf; /**< cached tesselation quality */
   ay_stess *stess; /**< cached tesselation */
+
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
 
   /* multiple points */
   int createmp; /**< create multiple points? */
@@ -537,8 +545,16 @@ typedef struct ay_ipatch_object_s {
   double *sderiv_v; /**< start derivatives [width * 3] */
   double *ederiv_v; /**< end derivatives [width * 3] */
 
+  int has_u0_cap; /**< create cap at u start? */
+  int has_u1_cap; /**< create cap at u end? */
+  int has_v0_cap; /**< create cap at v start? */
+  int has_v1_cap; /**< create cap at v end? */
+
   /** cached NURBS patch representation */
   ay_object *npatch;
+
+  /** cached caps and bevel objects */
+  ay_object *caps_and_bevels;
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */
