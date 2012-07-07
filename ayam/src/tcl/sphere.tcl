@@ -21,12 +21,11 @@ arr   SphereAttrData
 sproc ""
 gproc ""
 w     fSphereAttr
-
 }
 
 # create SphereAttr-UI
 set w [frame $ay(pca).$SphereAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w SphereAttrData Closed
 addParam $w SphereAttrData Radius
 addParam $w SphereAttrData ZMin

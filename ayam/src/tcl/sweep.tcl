@@ -14,14 +14,14 @@ set Sweep 1
 proc init_Sweep { } {
 global ay Sweep_props SweepAttr SweepAttrData
 
-set Sweep_props { Transformations Attributes Material Tags Caps Bevels SweepAttr }
+set Sweep_props { Transformations Attributes Material Tags Caps Bevels
+    SweepAttr }
 
 array set SweepAttr {
 arr   SweepAttrData
 sproc ""
 gproc ""
 w     fSweepAttr
-
 }
 
 array set SweepAttrData {
@@ -36,7 +36,7 @@ RightCap 0
 }
 
 set w [frame $ay(pca).$SweepAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w SweepAttrData Type [list Open Closed Periodic]
 addCheck $w SweepAttrData Rotate
 addCheck $w SweepAttrData Interpolate

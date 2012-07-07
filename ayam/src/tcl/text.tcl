@@ -30,7 +30,7 @@ proc text_getAttr { } {
     bevel_parseTags $tagnames $tagvalues
 
     set ay(bok) $ay(appb)
-
+    addVSpace $w s1 2
     addFile $w TextAttrData FontName
     addString $w TextAttrData String
     addParam $w TextAttrData Height

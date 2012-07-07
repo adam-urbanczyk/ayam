@@ -524,6 +524,8 @@ if { $type == "exterior" } { set stype "volume" }
 
 set ay(bok) $ay(appb)
 
+addVSpace $w s1 2
+
 addCommand $w c1 "Set new shader!" "shader_setNew $w $type $stype"
 
 addCommand $w c2 "Delete shader!" "undo save DelShader; shaderSet $type;\

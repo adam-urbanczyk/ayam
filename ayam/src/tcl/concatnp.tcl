@@ -21,7 +21,6 @@ arr   ConcatNPAttrData
 sproc ""
 gproc ""
 w     fConcatNPAttr
-
 }
 
 array set ConcatNPAttrData {
@@ -33,12 +32,11 @@ Order 0
 Knot-Type 1
 FTLength 1.0
 NPInfoBall "N/A"
-BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 
 # create ConcatNPAttr-UI
 set w [frame $ay(pca).$ConcatNPAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w ConcatNPAttrData Type [list Open Closed Periodic]
 addParam $w ConcatNPAttrData Order
 addCheck $w ConcatNPAttrData Revert

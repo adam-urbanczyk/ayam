@@ -37,7 +37,7 @@ NCInfoBall "N/A"
 
 # create ConcatNCAttr-UI
 set w [frame $ay(pca).$ConcatNCAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w ConcatNCAttrData Closed
 addCheck $w ConcatNCAttrData FillGaps
 addCheck $w ConcatNCAttrData Revert

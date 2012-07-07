@@ -32,6 +32,7 @@ proc gordon_getAttr { } {
 
     set ay(bok) $ay(appb)
 
+    addVSpace $w s1 2
     addCheck $w GordonAttrData WatchCurves
     addParam $w GordonAttrData Order_U
     addParam $w GordonAttrData Order_V

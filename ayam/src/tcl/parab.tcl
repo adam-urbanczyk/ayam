@@ -21,12 +21,11 @@ arr   ParabAttrData
 sproc ""
 gproc ""
 w     fParaboloidAttr
-
 }
 
 # create ParaboloidAttr-UI
 set w [frame $ay(pca).$ParaboloidAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w ParabAttrData Closed
 addParam $w ParabAttrData RMax
 addParam $w ParabAttrData ZMin

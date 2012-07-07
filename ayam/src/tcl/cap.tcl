@@ -65,6 +65,8 @@ proc cap_getCaps { } {
     catch {destroy $ay(pca).$Caps(w)}
     set w [frame $ay(pca).$Caps(w)]
 
+    addVSpace $w s1 2
+
     getProp
 
     set type ""

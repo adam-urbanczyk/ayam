@@ -21,7 +21,6 @@ arr   ExtrNPAttrData
 sproc ""
 gproc ""
 w     fExtrNPAttr
-
 }
 
 array set ExtrNPAttrData {
@@ -33,7 +32,7 @@ VMin 1.0
 }
 # create ExtrNPAttr-UI
 set w [frame $ay(pca).$ExtrNPAttr(w)]
-
+addVSpace $w s1 2
 addParam $w ExtrNPAttrData UMin
 addParam $w ExtrNPAttrData UMax
 addParam $w ExtrNPAttrData VMin

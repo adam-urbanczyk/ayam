@@ -31,7 +31,7 @@ BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 # create UI
 set w [frame $ay(pca).$OffsetNPAttr(w)]
-
+addVSpace $w s1 2
 addMenu $w OffsetNPAttrData Mode [list "Normal" "Section" ]
 
 addParam $w OffsetNPAttrData Offset

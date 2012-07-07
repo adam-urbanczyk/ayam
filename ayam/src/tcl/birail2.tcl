@@ -35,7 +35,7 @@ R2Cap 0
 }
 
 set w [frame $ay(pca).$Birail2Attr(w)]
-
+addVSpace $w s1 2
 #addCheck $w Birail2AttrData Close
 addParam $w Birail2AttrData Sections
 addCheck $w Birail2AttrData InterpolCtrl

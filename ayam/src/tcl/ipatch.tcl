@@ -26,6 +26,7 @@ proc ipatch_getAttr { } {
     set ay(bok) $ay(appb)
 
     # create IPatchAttr-UI
+    addVSpace $w s1 2
     addParam $w IPatchAttrData Width
     addParam $w IPatchAttrData Height
 
@@ -73,7 +74,8 @@ proc ipatch_getAttr { } {
 proc init_IPatch { } {
     global ay IPatch_props IPatchAttr IPatchAttrData
 
-    set IPatch_props { Transformations Attributes Material Tags IPatchAttr }
+    set IPatch_props { Transformations Attributes Material Tags Caps Bevels
+	IPatchAttr }
 
     array set IPatchAttr {
 	arr   IPatchAttrData
@@ -87,6 +89,7 @@ proc init_IPatch { } {
 	Knot-Type_V 0
 	DisplayMode 1
 	NPInfoBall "n/a"
+	BoundaryNames { "U0" "U1" "V0" "V1" }
     }
 
  return;

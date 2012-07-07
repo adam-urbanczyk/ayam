@@ -31,7 +31,7 @@ NCInfoBall "N/A"
 }
 # create ACurveAttr-UI
 set w [frame $ay(pca).$ACurveAttr(w)]
-
+addVSpace $w s1 2
 addParam $w ACurveAttrData Length
 addParam $w ACurveAttrData ALength
 addCheck $w ACurveAttrData Closed

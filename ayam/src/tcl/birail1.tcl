@@ -35,7 +35,7 @@ R2Cap 0
 }
 
 set w [frame $ay(pca).$Birail1Attr(w)]
-
+addVSpace $w s1 2
 addMenu $w Birail1AttrData Type [list Open Closed Periodic]
 addParam $w Birail1AttrData Sections
 

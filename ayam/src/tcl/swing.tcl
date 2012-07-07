@@ -21,7 +21,6 @@ arr   SwingAttrData
 sproc ""
 gproc ""
 w     fSwingAttr
-
 }
 
 array set SwingAttrData {
@@ -30,7 +29,7 @@ NPInfoBall "n/a"
 }
 # create SwingAttr-UI
 set w [frame $ay(pca).$SwingAttr(w)]
-
+addVSpace $w s1 2
 addCheck $w SwingAttrData UpperCap
 addCheck $w SwingAttrData LowerCap
 addCheck $w SwingAttrData StartCap

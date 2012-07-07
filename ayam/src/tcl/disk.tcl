@@ -21,21 +21,17 @@ arr   DiskAttrData
 sproc ""
 gproc ""
 w     fDiskAttr
-
 }
 
 # create DiskAttr-UI
 set w [frame $ay(pca).$DiskAttr(w)]
-
-
+addVSpace $w s1 2
 addParam $w DiskAttrData Radius
 addParam $w DiskAttrData Height
 addParam $w DiskAttrData ThetaMax
 
 array set DiskAttrData {
-
 Radius 1.0
-
 Height 0.0
 ThetaMax 1.0
 }
