@@ -2571,6 +2571,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_providecb";*/
+ ay_object *cb = NULL, **next = NULL;
+ ay_nurbpatch_object *npatch = NULL;
  ay_tag *tag = NULL;
  int use_tc = AY_FALSE, use_vc = AY_FALSE, use_vn = AY_FALSE;
  int smethod = ay_prefs.smethod;
@@ -2578,6 +2580,8 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(!o)
     return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)(o->refine);
 
   if(!result)
     {
@@ -2589,7 +2593,6 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDPOMESH)
     {
-
       /* infer parameters from (eventually present) TP tag */
       tag = o->tags;
       while(tag)
@@ -2607,12 +2610,26 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
 				 result);
 
-      /* copy transformation attributes */
+
       if(*result)
 	{
+	  /* copy transformation attributes */
 	  ay_trafo_copy(o, *result);
-	}
 
+	  /* process caps and bevels */
+	  next = &((*result)->next);
+	  cb = npatch->caps_and_bevels;
+	  while(cb)
+	    {
+	      ay_status = ay_npatch_providecb(cb, type, next);
+	      if(ay_status)
+		return ay_status;
+	      if(!*next)
+		return AY_ENULL;
+	      next = &((*next)->next);
+	      cb = cb->next;
+	    } /* while */
+	} /* if */
     } /* if */
 
  return ay_status;
@@ -2627,12 +2644,42 @@ ay_npatch_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_convertcb";*/
- ay_object *new = NULL;
+ ay_object *new = NULL, *c = NULL;
+ ay_nurbpatch_object *npatch = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  ay_status = ay_npatch_providecb(o, AY_IDPOMESH, &new);
+  npatch = (ay_nurbpatch_object *)(o->refine);
+
+  if(npatch->caps_and_bevels)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      ay_status = ay_npatch_providecb(o, AY_IDPOMESH, &(new->down));
+
+      /* terminate the level */
+      c = new->down;
+      while(c->next)
+	c=c->next;
+      c->next = ay_endlevel;
+    }
+  else
+    {
+      ay_status = ay_npatch_providecb(o, AY_IDPOMESH, &new);
+    }
 
   if(new)
     {
