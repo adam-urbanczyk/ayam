@@ -339,7 +339,7 @@ proc bevel_setBevels { } {
 	global ${type}AttrData
 	eval set bnames \$${type}AttrData(BoundaryNames)
 	bevel_setTags $bnames
-
+	set ${type}AttrData(BevelsChanged) 1
 	setProp
     }
 

@@ -1764,6 +1764,16 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       npatch->has_v1_cap = i;
       update = AY_TRUE;
     }
+  Tcl_SetStringObj(ton,"BevelsChanged",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(i)
+    {
+      update = AY_TRUE;
+
+      to = Tcl_NewIntObj(0);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
