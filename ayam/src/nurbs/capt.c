@@ -126,7 +126,7 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *np = NULL;
- char *uv = NULL, uvs[][4] = {"uu","Uu","Uu","uu"};
+ char *uv = NULL, uvs[][4] = {"uv","uv","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
 
   if(!s || !c)
@@ -149,9 +149,8 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
   switch(side)
     {
     case 0:
-      cc = cap;
-      cap->next = s;
-      s->next = NULL;
+      cc = s;
+      s->next = cap;
 
       if(np->vorder != 2)
 	{
