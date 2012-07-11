@@ -201,6 +201,48 @@ ay_tgui_update(Tcl_Interp *interp, int argc, char *argv[])
 				     use_vc, NULL,
 				     use_vn, NULL,
 				     &tmp);
+	  /* process caps and bevels (if any) */
+	  tmpnp = ((ay_nurbpatch_object*)o->refine)->caps_and_bevels;
+	  if(tmpnp)
+	    {
+	      lastl = &polist;
+
+	      if(!(newl = calloc(1, sizeof(ay_list_object))))
+		return AY_EOMEM;
+	      newl->object = tmp;
+	      *lastl = newl;
+	      lastl = &(newl->next);
+
+	      while(tmpnp)
+		{
+		  tmp = NULL;
+		  ay_status = ay_tess_npatch(tmpnp, smethod+1,
+					     sparamu, sparamv,
+					     use_tc, NULL,
+					     use_vc, NULL,
+					     use_vn, NULL,
+					     &tmp);
+
+		  if(!(newl = calloc(1, sizeof(ay_list_object))))
+		    return AY_EOMEM;
+		  newl->object = tmp;
+		  *lastl = newl;
+		  lastl = &(newl->next);
+
+		  tmpnp = tmpnp->next;
+		}
+
+	      tmp = NULL;
+	      ay_status = ay_pomesht_merge(AY_FALSE, polist, &tmp);
+
+	      while(polist)
+		{
+		  newl = polist;
+		  polist = newl->next;
+		  ay_object_delete(newl->object);
+		  free(newl);
+		} /* while */
+	    } /* if */
 	}
       else
 	{
