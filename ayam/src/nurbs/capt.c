@@ -611,6 +611,8 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	      break;
 	    case 2:
 	      ay_status = ay_capt_crtsimplecap(extrcurve, &cap);
+	      if(!ay_status && (i > 1))
+		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
 	    case 3:
 	      ay_status = ay_capt_crtsimplecapint(i, o, extrcurve);
