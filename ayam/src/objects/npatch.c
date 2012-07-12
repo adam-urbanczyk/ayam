@@ -2762,6 +2762,9 @@ ay_npatch_notifycb(ay_object *o)
   if(ay_status)
     goto cleanup;
 
+  npatch = (ay_nurbpatch_object *)(o->refine);
+  nextcb = &(npatch->caps_and_bevels);
+
   while(*nextcb)
     nextcb = &((*nextcb)->next);
 
@@ -2776,6 +2779,8 @@ ay_npatch_notifycb(ay_object *o)
       if(ay_status)
 	goto cleanup;
     }
+
+  npatch = (ay_nurbpatch_object *)(o->refine);
 
   if(npatch->caps_and_bevels)
     {

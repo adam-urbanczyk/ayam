@@ -27,6 +27,7 @@ Knots_U-Modified 0
 Knots_V ""
 Knots_V-Modified 0
 BoundaryNames { "U0" "U1" "V0" "V1" }
+BevelsChanged 0
 }
 
 # create NPatchAttr-UI
