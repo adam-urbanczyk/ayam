@@ -126,7 +126,7 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *np = NULL;
- char *uv = NULL, uvs[][4] = {"uv","uv","Uu","uu"};
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};;
  int knottype = AY_KTCUSTOM, order = 0;
 
   if(!s || !c)
@@ -145,25 +145,13 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
   uv = uvs[side];
 
   oldnext = s->next;
+  cc = s;
+  s->next = cap;
 
   switch(side)
     {
     case 0:
-      cc = s;
-      s->next = cap;
-
-      if(np->vorder != 2)
-	{
-	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
-				      np->vorder-2);
-	}
-      order = np->vorder;
-      knottype = np->vknot_type;
-      break;
     case 1:
-      cc = s;
-      s->next = cap;
-
       if(np->vorder != 2)
 	{
 	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
@@ -173,22 +161,7 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
       knottype = np->vknot_type;
       break;
     case 2:
-      cc = cap;
-      cap->next = s;
-      s->next = NULL;
-
-      if(np->uorder != 2)
-	{
-	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
-				      np->uorder-2);
-	}
-      order = np->uorder;
-      knottype = np->uknot_type;
-      break;
     case 3:
-      cc = s;
-      s->next = cap;
-
       if(np->uorder != 2)
 	{
 	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
@@ -224,6 +197,17 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 
   if(ay_status)
     goto cleanup;
+
+  /* correct orientation of concatenated surface */
+  if(side < 2)
+    ay_npt_swapuv(o->refine);
+
+  if(side == 0)
+    ay_npt_revertv(o->refine);
+
+  if(side == 2)
+    ay_npt_revertu(o->refine);
+
 
   /* replace old patch with new */
   ay_npt_destroy(s->refine);
@@ -586,6 +570,8 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
     {
       if(caps[i] && !bparams->states[i])
 	{
+	  cap = NULL;
+
 	  if(!(extrcurve = calloc(1, sizeof(ay_object))))
 	    {
 	      ay_status = AY_EOMEM;
