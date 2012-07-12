@@ -32,6 +32,7 @@ Order 0
 Knot-Type 1
 FTLength 1.0
 NPInfoBall "N/A"
+BoundaryNames { "U0" "U1" "V0" "V1" }
 }
 
 # create ConcatNPAttr-UI
