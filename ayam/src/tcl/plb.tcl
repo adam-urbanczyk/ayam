@@ -268,6 +268,7 @@ set ay(pw) [frame $f.ca.w -width 100 ]
 $f.ca create window 5 0 -anchor nw -window $ay(pw)
 set width [expr [winfo reqwidth $ay(pw)] + 10]
 $ay(pca) configure -width $width
+$f.ca create line 0 0 2 0 -fill [$f.ca cget -background]
 
 # mouse-wheel bindings
 bind . <ButtonPress-4> {
