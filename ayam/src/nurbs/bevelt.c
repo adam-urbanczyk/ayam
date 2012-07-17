@@ -342,6 +342,12 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
       /* adjust orientation of curve (next sections only work properly,
 	 when curve is planar in XY plane) */
       ay_status = ay_nct_toxy(o);
+      if(ay_status)
+	{
+	  free(patch); free(controlv); free(uknotv); free(vknotv);
+	  free(tccontrolv);
+	  return ay_status;
+	}
       a = 0;
       for(i = 0; i < patch->width; i++)
 	{
@@ -760,8 +766,9 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
     case 1:
       if(np->vorder > bevel->uorder)
 	{
-
 	  ay_status = ay_npt_elevateu(bevel, np->vorder-bevel->uorder);
+	  if(ay_status)
+	    goto cleanup;
 	}
       order = np->vorder;
       knottype = np->vknot_type;
@@ -771,6 +778,8 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
       if(np->uorder > bevel->uorder)
 	{
 	  ay_status = ay_npt_elevateu(bevel, np->uorder-bevel->uorder);
+	  if(ay_status)
+	    goto cleanup;
 	}
       order = np->uorder;
       knottype = np->uknot_type;
