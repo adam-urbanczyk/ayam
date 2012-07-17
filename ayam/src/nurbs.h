@@ -53,7 +53,7 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
 /** Create bevel surface from cross section bevel curve.
  */
-int ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
+int ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 		      ay_nurbpatch_object **bevel);
 
 /* capt.c */

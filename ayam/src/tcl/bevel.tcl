@@ -36,8 +36,9 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 
 	    set bname [lindex $bnames $bplace]
 
-	    scan $tagvalue "%d,%d,%lg,%d" dummy BevelTags(${bname}Type) \
-			BevelTags(${bname}Radius) BevelTags(${bname}Revert)
+	    scan $tagvalue "%d,%d,%lg,%d,%d" dummy BevelTags(${bname}Type) \
+		BevelTags(${bname}Radius) BevelTags(${bname}Revert) \
+		BevelTags(${bname}Integrate)
 	}
 	# if
     }
@@ -75,8 +76,11 @@ proc bevel_setTags { bnames } {
     foreach bname $bnames {
 	if { $BevelTags(Bevel${i}) } {
 	    lappend newtags BP
-	    lappend newtags [format "%d,%d,%f,%d" $i $BevelTags(${bname}Type)\
-		$BevelTags(${bname}Radius) $BevelTags(${bname}Revert)]
+	    lappend newtags [format "%d,%d,%f,%d,%d" $i\
+				 $BevelTags(${bname}Type)\
+				 $BevelTags(${bname}Radius)\
+				 $BevelTags(${bname}Revert)\
+				 $BevelTags(${bname}Integrate)]
 	}
 	incr i
     }
@@ -105,6 +109,7 @@ proc bevel_add { bplace arr } {
     set BevelTags(${bname}Type) 0
     set BevelTags(${bname}Radius) 0.1
     set BevelTags(${bname}Revert) 0
+    set BevelTags(${bname}Integrate) 0
 
     # create tags
     bevel_setTags $bnames
@@ -304,6 +309,7 @@ proc bevel_getBevels { } {
 		addMenu $w BevelTags ${bname}Type $ay(bevelmodes)
 		addParam $w BevelTags ${bname}Radius
 		addCheck $w BevelTags ${bname}Revert
+		addCheck $w BevelTags ${bname}Integrate
 	    } else {
 		set str "Add "
 		append str $bname
