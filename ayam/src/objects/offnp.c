@@ -620,10 +620,10 @@ ay_offnp_notifycb(ay_object *o)
     }
 
   /* create/add caps */
-  caps[0] = offnp->has_v0_cap;
-  caps[1] = offnp->has_v1_cap;
-  caps[2] = offnp->has_u0_cap;
-  caps[3] = offnp->has_u1_cap;
+  caps[0] = offnp->has_u0_cap;
+  caps[1] = offnp->has_u1_cap;
+  caps[2] = offnp->has_v0_cap;
+  caps[3] = offnp->has_v1_cap;
 
   ay_status = ay_capt_addcaps(caps, &bparams, offnp->npatch, nextcb);
   if(ay_status)
@@ -870,7 +870,6 @@ ay_offnp_init(Tcl_Interp *interp)
 				    ay_offnp_wribcb,
 				    ay_offnp_bbccb,
 				    AY_IDOFFNP);
-
 
   ay_status = ay_notify_register(ay_offnp_notifycb, AY_IDOFFNP);
 
