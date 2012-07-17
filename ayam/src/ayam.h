@@ -155,7 +155,7 @@ typedef struct ay_bparam_s
   int states[4];
   int types[4];
   int dirs[4];
-  int bcaps[4];
+  int integrate[4];
   double radii[4];
 } ay_bparam;
 

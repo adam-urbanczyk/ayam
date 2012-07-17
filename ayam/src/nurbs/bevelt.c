@@ -18,12 +18,7 @@
 
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
-int ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
-		      ay_nurbpatch_object **bevel);
-
-int ay_bevelt_create(int type, double radius, int align, ay_object *o,
-		     ay_nurbpatch_object **bevel);
-
+int ay_bevelt_integrate(int side, ay_object *s, ay_object *b);
 
 /* functions: */
 
@@ -36,7 +31,7 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 void
 ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 {
- int where, type, dir, cap;
+ int where, type, dir, integrate;
  double radius;
 
   if(!params)
@@ -53,16 +48,16 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 	      type = 0;
 	      radius = 0.1;
 	      dir = 0;
-	      cap = 0;
+	      integrate = 0;
 	      sscanf(tag->val, "%d,%d,%lg,%d,%d", &where, &type,
-		     &radius, &dir, &cap);
+		     &radius, &dir, &integrate);
 	      if(where >= 0 && where < 4)
 		{
 		  params->states[where] = 1;
 		  params->types[where] = type;
 		  params->radii[where] = radius;
 		  params->dirs[where] = dir;
-		  params->bcaps[where] = cap;
+		  params->integrate[where] = integrate;
 		}
 	    } /* if */
 	} /* if */
@@ -135,9 +130,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
-	      ay_status = ay_bevelt_createc(bparams->radii[i],
-					    bparams->bcaps[i],
-					    &c, bevelcurve,
+	      ay_status = ay_bevelt_createc(bparams->radii[i], &c, bevelcurve,
 			      (ay_nurbpatch_object**)(void*)&(bevel->refine));
 	    } /* if */
 
@@ -147,11 +140,19 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(ay_status)
 	    goto cleanup;
 
-	  *next = bevel;
-	  next = &(bevel->next);
+	  if(bparams->integrate[i])
+	    {
+	      ay_bevelt_integrate(i, o, bevel);
+	      ay_object_delete(bevel);
+	    }
+	  else
+	    {
+	      *next = bevel;
+	      next = &(bevel->next);
+	    }
 
 	  /* create cap from bevel */
-	  if(caps[i] && !bparams->bcaps[i])
+	  if(caps[i] && !bparams->integrate[i])
 	    {
 	      if(!(extrcurve = calloc(1, sizeof(ay_object))))
 		{
@@ -556,7 +557,7 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
  *  capped: create capped bevel (0, 1)?
  */
 int
-ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
+ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 		  ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
@@ -564,7 +565,6 @@ ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
  ay_nurbcurve_object *offcurve1 = NULL, *offcurve2 = NULL;
  ay_nurbcurve_object *bcurve = NULL;
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
- double middle[4] = {0}, ud = 0.0;
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
 
   if(!o1 || !o2 || !bevel)
@@ -580,22 +580,19 @@ ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
 
   bcurve = (ay_nurbcurve_object *)o2->refine;
 
-  if(!(controlv = calloc((bcurve->length+capped)*curve->length*stride,
-			 sizeof(double))))
+  if(!(controlv = calloc(bcurve->length*curve->length*stride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* copy custom knots */
   if(bcurve->knot_type == AY_KTCUSTOM)
     {
-      if(!(uknotv = calloc(bcurve->length+capped+bcurve->order,
-			   sizeof(double))))
+      if(!(uknotv = calloc(bcurve->length+bcurve->order, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(uknotv, bcurve->knotv, bcurve->length+bcurve->order);
     }
   if(curve->knot_type == AY_KTCUSTOM)
     {
-      if(!(vknotv = calloc(curve->length+curve->order,
-			   sizeof(double))))
+      if(!(vknotv = calloc(curve->length+curve->order, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(vknotv, curve->knotv, curve->length+curve->order);
     }
@@ -641,51 +638,8 @@ ay_bevelt_createc(double radius, int capped, ay_object *o1, ay_object *o2,
       c += stride;
     } /* for */
 
-  /* cap loops */
-  if(capped)
-    {
-      ay_status = ay_npt_extractmiddlepoint(curve->controlv, curve->length,
-					    1, 4, 0, 1, middle);
-      if(ay_status)
-	{ goto cleanup; }
-
-      /* access last point in bevel curve */
-      c -= stride;
-
-      /* fill cap control points */
-      for(i = 0; i < capped; i++)
-	{
-	  b = 0;
-	  for(j = 0; j < curve->length; j++)
-	    {
-	      /* XXXX add support for capped>1 here */
-	      controlv[a]   = middle[0];
-	      controlv[a+1] = middle[1];
-	      controlv[a+2] = radius*bcurve->controlv[c+1];
-	      controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
-	      a += stride;
-	    }
-	}
-      /* extend knots */
-      if(uknotv)
-	{
-	  ud = (bcurve->knotv[bcurve->length] -
-		bcurve->knotv[bcurve->length-1])/(capped+1);
-	  for(i = 0; i < capped; i++)
-	    {
-	      uknotv[bcurve->length+i] =
-		uknotv[bcurve->length-1] + ud;
-	      ud += ud;
-	    }
-	  /* copy last knots to right place */
-	  memcpy(&(uknotv[bcurve->length+capped]),
-		 &(bcurve->knotv[bcurve->length]),
-		 bcurve->order*sizeof(double));
-	}
-    } /* if */
-
   ay_status = ay_npt_create(bcurve->order, curve->order,
-			    bcurve->length+capped, curve->length,
+			    bcurve->length, curve->length,
 			    bcurve->knot_type, curve->knot_type,
 			    controlv, uknotv, vknotv,
 			    bevel);
@@ -762,3 +716,100 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 
  return ay_status;
 } /* ay_bevelt_findbevelcurve */
+
+
+/** ay_bevelt_integrate:
+ *  integrate a bevel into a NURBS surface
+ *
+ * @param[in] side integration place
+ * @param[in,out] s NURBS surface object for integration
+ * @param[in,out] b bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
+{
+ int ay_status = AY_OK;
+ ay_object *sb = NULL, *o = NULL, *oldnext;
+ ay_nurbpatch_object *np = NULL, *bevel = NULL;
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};;
+ int knottype = AY_KTCUSTOM, order = 0;
+
+  if(!s || !b)
+    return AY_ENULL;
+
+  if((s->type != AY_IDNPATCH) || (b->type != AY_IDNPATCH))
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object*)s->refine;
+  bevel = (ay_nurbpatch_object*)b->refine;
+
+  if(ay_status)
+    goto cleanup;
+
+  uv = uvs[side];
+
+  oldnext = s->next;
+  sb = s;
+  s->next = b;
+
+  switch(side)
+    {
+    case 0:
+    case 1:
+      if(np->vorder > bevel->uorder)
+	{
+
+	  ay_status = ay_npt_elevateu(bevel, np->vorder-bevel->uorder);
+	}
+      order = np->vorder;
+      knottype = np->vknot_type;
+      break;
+    case 2:
+    case 3:
+      if(np->uorder > bevel->uorder)
+	{
+	  ay_status = ay_npt_elevateu(bevel, np->uorder-bevel->uorder);
+	}
+      order = np->uorder;
+      knottype = np->uknot_type;
+      break;
+    } /* switch */
+
+  if(ay_status)
+    goto cleanup;
+
+  knottype = AY_KTCUSTOM;
+
+  ay_status = ay_npt_concat(sb, 0, order, knottype, 0, 0.0, AY_TRUE, uv,
+			    &o);
+
+  if(ay_status)
+    goto cleanup;
+
+  /* correct orientation of concatenated surface */
+  if(side < 2)
+    ay_npt_swapuv(o->refine);
+
+  if(side == 0)
+    ay_npt_revertv(o->refine);
+
+  if(side == 2)
+    ay_npt_revertu(o->refine);
+
+
+  /* replace old patch with new */
+  ay_npt_destroy(s->refine);
+  s->refine = o->refine;
+  o->refine = NULL;
+  ay_object_delete(o);
+
+  s->next = oldnext;
+
+  /* copy transformations/tags? */
+
+cleanup:
+
+ return ay_status;
+} /* ay_bevelt_integrate */
