@@ -2071,7 +2071,6 @@ ay_pact_petcb(struct Togl *togl, int argc, char *argv[])
 
 	  if(view->type == AY_VTTOP)
 	    {
-	      dx = dx;
 	      dz = -dy;
 	      dy = 0.0;
 	    }

@@ -229,17 +229,22 @@ ay_object_delete(ay_object *o)
 	} /* while */
     } /* if */
 
-  arr = ay_deletecbt.arr;
-  cb = (ay_deletecb *)(arr[o->type]);
-  if(cb)
-    ay_status = cb(o->refine);
+  if(o->refine)
+    {
+      arr = ay_deletecbt.arr;
+      cb = (ay_deletecb *)(arr[o->type]);
+      if(cb)
+	ay_status = cb(o->refine);
 
-  if(ay_status)
-    return ay_status;
+      if(ay_status)
+	return ay_status;
+    }
 
   /* delete selected points */
   if(o->selp)
-    ay_selp_clear(o);
+    {
+      ay_selp_clear(o);
+    }
 
   /* see if other objects point to us via NO tags; remove those tags */
   tag = o->tags;

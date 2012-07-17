@@ -383,6 +383,8 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
   if(src->imager)
     {
       ay_status = ay_shader_copy(src->imager, &(dst->imager));
+      if(ay_status)
+	return ay_status;
     }
 
   if(dst->atmosphere)
@@ -394,6 +396,8 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
   if(src->atmosphere)
     {
       ay_status = ay_shader_copy(src->atmosphere, &(dst->atmosphere));
+      if(ay_status)
+	return ay_status;
     }
 
   /* copy RiOptions */
@@ -429,6 +433,10 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   memcpy(dst->riopt, src->riopt, sizeof(ay_riopt));
   dstriopt = dst->riopt;
+  dstriopt->textures = NULL;
+  dstriopt->shaders = NULL;
+  dstriopt->archives = NULL;
+  dstriopt->procedurals = NULL;
 
   if(srcriopt->textures)
     {
@@ -518,6 +526,10 @@ ay_undo_copytags(ay_object *src, ay_object *dst)
 	{
 	  newtagptr = &((*newtagptr)->next);
 	  *newtagptr = NULL;
+	}
+      else
+	{
+	  return ay_status;
 	}
       tag = tag->next;
     }
@@ -837,7 +849,7 @@ ay_undo_undo(void)
 
 
 /* ay_undo_rewind:
- *
+ *  undo the last "undo save" operation
  */
 int
 ay_undo_rewind(void)
@@ -889,7 +901,6 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
  ay_voidfp *arr = NULL;
  ay_copycb *cb = NULL;
  ay_view_object *srcview = NULL, *dstview = NULL;
- ay_root_object *root = NULL;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -919,7 +930,11 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
       srcview = (ay_view_object *)(src->refine);
 
       if(!(new->refine = calloc(1, sizeof(ay_view_object))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+
       dstview = (ay_view_object *)(new->refine);
 
       memcpy(dstview, srcview, sizeof(ay_view_object));
@@ -931,24 +946,26 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	  if(!(dstview->bgimage = calloc(strlen(srcview->bgimage)+1,
 					 sizeof(char))))
 	    {
-	      return AY_EOMEM;
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
 	    }
 
 	  strcpy(dstview->bgimage, srcview->bgimage);
 	}
       break;
     case AY_IDROOT:
-      root = (ay_root_object *)(src->refine);
-
       if(!(new->refine = calloc(1, sizeof(ay_root_object))))
-	return AY_EOMEM;
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
 
       ay_status = ay_undo_copyroot((ay_root_object *)(src->refine),
 				   (ay_root_object *)(new->refine));
 
       if(ay_status)
 	{
-	  return ay_status;
+	  goto cleanup;
 	}
       break;
     case AY_IDINSTANCE:
@@ -963,8 +980,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname, "copy callback failed");
-	  free(new);
-	  return AY_ERROR;
+	  goto cleanup;
 	}
       break;
     } /* switch */
@@ -974,8 +990,8 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     {
       if(!(new->name = calloc(strlen(src->name)+1, sizeof(char))))
 	{
-	  free(new);
-	  return AY_EOMEM;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       strcpy(new->name, src->name);
@@ -983,15 +999,40 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 
   /* copy tags */
   if(src->tags)
-    ay_status = ay_undo_copytags(src, new);
+    {
+      ay_status = ay_undo_copytags(src, new);
+
+      if(ay_status)
+	{
+	  goto cleanup;
+	}
+    }
 
   /* copy selected points */
   if(src->selp)
-    ay_status = ay_undo_copyselp(src, new);
+    {
+      ay_status = ay_undo_copyselp(src, new);
+
+      if(ay_status)
+	{
+	  goto cleanup;
+	}
+    }
 
   new->modified = AY_TRUE;
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  new = NULL;
+
+cleanup:
+
+  if(new)
+    {
+      new->mat = NULL;
+      ay_object_delete(new);
+    }
+
+ return ay_status;
 } /* ay_undo_copysave */
 
 
@@ -1668,4 +1709,3 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_undo_undotcmd */
-
