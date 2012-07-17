@@ -112,7 +112,8 @@ ay_concatnp_copycb(void *src, void **dst)
   concatnp->caps_and_bevels = NULL;
 
   if(concatnpsrc->caps_and_bevels)
-    ay_object_copymulti(concatnpsrc->caps_and_bevels, &(concatnp->caps_and_bevels));
+    ay_object_copymulti(concatnpsrc->caps_and_bevels,
+			&(concatnp->caps_and_bevels));
 
   *dst = (void *)concatnp;
 
@@ -139,14 +140,11 @@ ay_concatnp_drawcb(struct Togl *togl, ay_object *o)
       ay_draw_object(togl, concatnp->npatch, AY_TRUE);
     }
 
-  if(concatnp->caps_and_bevels)
+  b = concatnp->caps_and_bevels;
+  while(b)
     {
-      b = concatnp->caps_and_bevels;
-      while(b)
-	{
-	  ay_draw_object(togl, b, AY_TRUE);
-	  b = b->next;
-	}
+      ay_draw_object(togl, b, AY_TRUE);
+      b = b->next;
     }
 
  return AY_OK;
@@ -172,14 +170,11 @@ ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
       ay_shade_object(togl, concatnp->npatch, AY_FALSE);
     }
 
-  if(concatnp->caps_and_bevels)
+  b = concatnp->caps_and_bevels;
+  while(b)
     {
-      b = concatnp->caps_and_bevels;
-      while(b)
-	{
-	  ay_shade_object(togl, b, AY_FALSE);
-	  b = b->next;
-	}
+      ay_shade_object(togl, b, AY_FALSE);
+      b = b->next;
     }
 
  return AY_OK;
@@ -722,7 +717,6 @@ ay_concatnp_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
-
   /* get bevel parameters */
   memset(&bparams, 0, sizeof(ay_bparam));
   if(o->tags)
@@ -731,10 +725,10 @@ ay_concatnp_notifycb(ay_object *o)
     }
 
   /* create/add caps */
-  caps[0] = concatnp->has_v0_cap;
-  caps[1] = concatnp->has_v1_cap;
-  caps[2] = concatnp->has_u0_cap;
-  caps[3] = concatnp->has_u1_cap;
+  caps[0] = concatnp->has_u0_cap;
+  caps[1] = concatnp->has_u1_cap;
+  caps[2] = concatnp->has_v0_cap;
+  caps[3] = concatnp->has_v1_cap;
 
   ay_status = ay_capt_addcaps(caps, &bparams, concatnp->npatch, nextcb);
   if(ay_status)
@@ -746,7 +740,9 @@ ay_concatnp_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
+      bparams.dirs[1] = !bparams.dirs[1];
       bparams.dirs[2] = !bparams.dirs[2];
+      bparams.radii[2] = -bparams.radii[2];
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, concatnp->npatch, nextcb);
       if(ay_status)
@@ -798,6 +794,9 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
     return AY_ENULL;
 
   concatnp = (ay_concatnp_object *) o->refine;
+
+  if(!concatnp->npatch)
+    return AY_OK;
 
   if(concatnp->caps_and_bevels)
     {
