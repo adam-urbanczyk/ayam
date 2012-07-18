@@ -1401,7 +1401,8 @@ ay_comp_bevel(ay_object *o1, ay_object *o2)
   s1 = (ay_bevel_object *)o1->refine;
   s2 = (ay_bevel_object *)o2->refine;
 
-  if((s1->has_cap != s2->has_cap))
+  if((s1->has_start_cap != s2->has_start_cap) &&
+     (s1->has_end_cap != s2->has_end_cap))
     return AY_FALSE;
 
  return AY_TRUE;
