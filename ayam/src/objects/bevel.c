@@ -72,6 +72,12 @@ ay_bevel_deletecb(void *c)
   if(bevel->npatch)
     ay_object_delete(bevel->npatch);
 
+  if(bevel->caps)
+    {
+      ay_object_deletemulti(bevel->caps);
+      bevel->caps = NULL;
+    }
+
   free(bevel);
 
  return AY_OK;
@@ -101,6 +107,11 @@ ay_bevel_copycb(void *src, void **dst)
   if(bevelsrc->npatch)
     ay_object_copymulti(bevelsrc->npatch, &(bevel->npatch));
 
+  bevel->caps = NULL;
+
+  if(bevelsrc->caps)
+    ay_object_copymulti(bevelsrc->caps, &(bevel->caps));
+
   *dst = (void *)bevel;
 
  return AY_OK;
@@ -114,6 +125,7 @@ int
 ay_bevel_drawcb(struct Togl *togl, ay_object *o)
 {
  ay_bevel_object *bevel = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -126,6 +138,13 @@ ay_bevel_drawcb(struct Togl *togl, ay_object *o)
   if(bevel->npatch)
     ay_draw_object(togl, bevel->npatch, AY_TRUE);
 
+  b = bevel->caps;
+  while(b)
+    {
+      ay_draw_object(togl, b, AY_TRUE);
+      b = b->next;
+    }
+
  return AY_OK;
 } /* ay_bevel_drawcb */
 
@@ -137,6 +156,7 @@ int
 ay_bevel_shadecb(struct Togl *togl, ay_object *o)
 {
  ay_bevel_object *bevel = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
@@ -148,6 +168,13 @@ ay_bevel_shadecb(struct Togl *togl, ay_object *o)
 
   if(bevel->npatch)
     ay_shade_object(togl, bevel->npatch, AY_FALSE);
+
+  b = bevel->caps;
+  while(b)
+    {
+      ay_shade_object(togl, b, AY_FALSE);
+      b = b->next;
+    }
 
  return AY_OK;
 } /* ay_bevel_shadecb */
@@ -248,6 +275,14 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(bevel->glu_sampling_tolerance));
 
+  Tcl_SetStringObj(ton,"StartCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(bevel->has_start_cap));
+
+  Tcl_SetStringObj(ton,"EndCap",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &(bevel->has_end_cap));
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -289,6 +324,16 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"StartCap",-1);
+  to = Tcl_NewIntObj(bevel->has_start_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton,"EndCap",-1);
+  to = Tcl_NewIntObj(bevel->has_end_cap);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -313,6 +358,13 @@ ay_bevel_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&bevel->display_mode);
   fscanf(fileptr,"%lg\n",&bevel->glu_sampling_tolerance);
 
+  if(ay_read_version >= 16)
+    {
+      /* Since Ayam 1.21 */
+      fscanf(fileptr,"%d\n",&bevel->has_start_cap);
+      fscanf(fileptr,"%d\n",&bevel->has_end_cap);
+    }
+
   o->refine = bevel;
 
  return AY_OK;
@@ -335,6 +387,9 @@ ay_bevel_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", bevel->display_mode);
   fprintf(fileptr, "%g\n", bevel->glu_sampling_tolerance);
 
+  fprintf(fileptr, "%d\n", bevel->has_start_cap);
+  fprintf(fileptr, "%d\n", bevel->has_end_cap);
+
  return AY_OK;
 } /* ay_bevel_writecb */
 
@@ -346,6 +401,7 @@ int
 ay_bevel_wribcb(char *file, ay_object *o)
 {
  ay_bevel_object *bevel;
+ ay_object *b;
 
   if(!o)
    return AY_ENULL;
@@ -354,6 +410,13 @@ ay_bevel_wribcb(char *file, ay_object *o)
 
   if(bevel->npatch)
     ay_wrib_toolobject(file, bevel->npatch, o);
+
+  b = bevel->caps;
+  while(b)
+    {
+      ay_wrib_object(file, b);
+      b = b->next;
+    }
 
  return AY_OK;
 } /* ay_bevel_wribcb */
@@ -397,9 +460,11 @@ ay_bevel_notifycb(ay_object *o)
  int mode = 0;
  ay_bevel_object *bevel = NULL;
  ay_object *npatch = NULL, *curve = NULL, *bcurve = NULL, *t = NULL;
- ay_object *pobject1 = NULL, *pobject2 = NULL;
+ ay_object *pobject1 = NULL, *pobject2 = NULL, **nextcb;
+ ay_bparam bparams = {0};
  int align = AY_FALSE, has_b = AY_FALSE;
  int b_type, b_sense;
+ int caps[4] = {0};
  double b_radius, tolerance;
 
   if(!o)
@@ -410,10 +475,18 @@ ay_bevel_notifycb(ay_object *o)
   mode = bevel->display_mode;
   tolerance = bevel->glu_sampling_tolerance;
 
+  nextcb = &(bevel->caps);
+
   /* remove old objects */
   if(bevel->npatch)
     ay_object_delete(bevel->npatch);
   bevel->npatch = NULL;
+
+  if(bevel->caps)
+    {
+      ay_object_deletemulti(bevel->caps);
+      bevel->caps = NULL;
+    }
 
   /* get curve to bevel */
   if(!o->down)
@@ -508,6 +581,14 @@ ay_bevel_notifycb(ay_object *o)
   if(ay_status)
     goto cleanup;
 
+  /* create/add caps */
+  caps[2] = bevel->has_start_cap;
+  caps[3] = bevel->has_end_cap;
+
+  ay_status = ay_capt_addcaps(caps, &bparams, npatch, nextcb);
+  if(ay_status)
+    goto cleanup;
+
   /* copy sampling tolerance/mode over to new objects */
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
@@ -563,7 +644,7 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  char fname[] = "bevel_providecb";
  ay_bevel_object *s = NULL;
- ay_object *new = NULL, **t = NULL;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -595,6 +676,24 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_trafo_copy(o, *t);
       t = &((*t)->next);
 
+      /* copy caps and bevels */
+      p = s->caps;
+      while(p)
+	{
+	  ay_status = ay_object_copy(p, t);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, NULL);
+	      return AY_ERROR;
+	    }
+
+	  ay_npt_applytrafo(*t);
+	  ay_trafo_copy(o, *t);
+
+	  t = &((*t)->next);
+	  p = p->next;
+	} /* while */
+
       /* copy eventually present TP tags */
       ay_npt_copytptag(o, new);
 
@@ -612,42 +711,100 @@ int
 ay_bevel_convertcb(ay_object *o, int in_place)
 {
  int ay_status = AY_OK;
- ay_bevel_object *r = NULL;
- ay_object *new = NULL;
+ ay_bevel_object *s = NULL;
+ ay_object *new = NULL, **next = NULL;
+ ay_object *b;
 
   if(!o)
     return AY_ENULL;
 
-  r = (ay_bevel_object *) o->refine;
+  s = (ay_bevel_object *) o->refine;
 
-  if(r->npatch)
+  if(s->caps)
     {
-      ay_status = ay_object_copy(r->npatch, &new);
-      if(new)
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      next = &(new->down);
+
+      if(s->npatch)
 	{
-	  ay_trafo_copy(o, new);
-
-	  if(!new->down)
-	    new->down = ay_endlevel;
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(!in_place && ay_prefs.conv_reset_display)
+	  ay_status = ay_object_copy(s->npatch, next);
+	  if(*next)
 	    {
-	      ay_npt_resetdisplay(new);
+	      (*next)->hide_children = AY_TRUE;
+	      (*next)->parent = AY_TRUE;
+	      (*next)->down = ay_endlevel;
+	      next = &((*next)->next);
 	    }
+	}
 
-	  if(!in_place)
+      if(s->caps)
+	{
+	  b = s->caps;
+	  while(b)
 	    {
-	      ay_status = ay_object_link(new);
-	    }
-	  else
+	      ay_status = ay_object_copy(b, next);
+	      if(*next)
+		{
+		  next = &((*next)->next);
+		}
+	      b = b->next;
+	    } /* while */
+	} /* if */
+
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new->down);
+
+      *next = ay_endlevel;
+    }
+  else
+    {
+      if(s->npatch)
+	{
+	  ay_status = ay_object_copy(s->npatch, &new);
+	  if(new)
 	    {
-	      ay_status = ay_object_replace(new, o);
+	      ay_trafo_copy(o, new);
+
+	      if(!new->down)
+		new->down = ay_endlevel;
+
+	      /* copy eventually present TP tags */
+	      ay_npt_copytptag(o, new);
+
+	      /* reset display mode and sampling tolerance
+		 of new patch to "global"? */
+	      if(!in_place && ay_prefs.conv_reset_display)
+		{
+		  ay_npt_resetdisplay(new);
+		}
+
 	    } /* if */
+	} /* if */
+    } /* if */
+
+  /* second, link new objects, or replace old objects with them */
+  if(new)
+    {
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_object_replace(new, o);
 	} /* if */
     } /* if */
 

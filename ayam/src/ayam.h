@@ -890,10 +890,14 @@ typedef struct ay_cap_object_s
 /** Bevel surface object */
 typedef struct ay_bevel_object_s
 {
-  int has_cap; /**< add cap surface? */
+  int has_start_cap; /**< add cap surface? */
+  int has_end_cap; /**< add cap surface? */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
+
+  /** cached cap objects */
+  ay_object *caps;
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */

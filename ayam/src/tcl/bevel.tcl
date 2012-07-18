@@ -190,7 +190,7 @@ set Bevel 1
 proc init_Bevel { } {
 global ay Bevel_props BevelAttr BevelAttrData
 
-set Bevel_props { Transformations Attributes Material Tags BevelAttr }
+set Bevel_props { Transformations Attributes Material Tags Caps BevelAttr }
 
 array set BevelAttr {
     arr   BevelAttrData
@@ -201,7 +201,7 @@ array set BevelAttr {
 
 array set BevelAttrData {
     DisplayMode 1
-    BoundaryNames {"Bevel"}
+    BoundaryNames {"Start" "End"}
 }
 
 return;
@@ -222,12 +222,10 @@ proc bevel_getAttr { } {
     set w [frame $ay(pca).$BevelAttr(w)]
     getProp
 
-    set bnames $BevelAttrData(BoundaryNames)
-
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues $bnames
+    bevel_parseTags $tagnames $tagvalues Bevel
 
     set ay(bok) $ay(appb)
 
@@ -248,15 +246,17 @@ proc bevel_getAttr { } {
 
 
 proc bevel_setAttr { } {
-    global BevelAttrData
+    global BevelAttrData BevelTags
 
-    bevel_setTags $BevelAttrData(BoundaryNames)
+    set BevelTags(BevelIntegrate) 0
+    bevel_setTags Bevel
 
     setProp
 
  return;
 }
 # bevel_setAttr
+
 
 #
 # Bevels property as e.g. used by Birail1 tool object
