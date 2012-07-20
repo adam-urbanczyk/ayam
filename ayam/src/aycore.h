@@ -154,6 +154,11 @@ int ay_convert_force(ay_object *o, int in_place);
 int ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
+/** helper for tool objects that convert to NURBS surfaces with caps/bevels
+ */
+int ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb,
+			 int in_place);
+
 
 /* draw.c */
 

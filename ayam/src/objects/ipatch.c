@@ -2567,99 +2567,14 @@ ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_ipatch_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_ipatch_object *ipatch = NULL;
- ay_object *p = NULL, *new = NULL, **next = NULL;
+ ay_ipatch_object *ip = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  ipatch = (ay_ipatch_object *) o->refine;
+  ip = (ay_ipatch_object *) o->refine;
 
-  if(!ipatch->npatch)
-    return AY_OK;
-
-  p = ipatch->npatch;
-  if(p->next || ipatch->caps_and_bevels)
-    {
-      ay_status = ay_object_create(AY_IDLEVEL, &new);
-
-      if(new)
-	{
-	  next = &(new->down);
-
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  ay_trafo_copy(o, *next);
-
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-
-		  (*next)->parent = AY_TRUE;
-		  (*next)->down = ay_endlevel;
-
-		  next = &((*next)->next);
-		} /* if */
-	      p = p->next;
-	    } /* while */
-
-	  p = ipatch->caps_and_bevels;
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  next = &((*next)->next);
-		}
-	      p = p->next;
-	    } /* while */
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new->down);
-	} /* if */
-    }
-  else
-    {
-      if(p)
-	{
-	  ay_status = ay_object_copy(p, &new);
-	  if(new)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(new);
-		}
-
-	      ay_trafo_copy(o, new);
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-	    } /* if */
-	} /* if */
-    } /* if */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_status = ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, ip->npatch, ip->caps_and_bevels, in_place);
 } /* ay_ipatch_convertcb */
 
 

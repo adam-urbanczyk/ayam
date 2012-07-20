@@ -710,105 +710,14 @@ ay_bevel_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_bevel_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_bevel_object *s = NULL;
- ay_object *new = NULL, **next = NULL;
- ay_object *b;
+ ay_bevel_object *b = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  s = (ay_bevel_object *) o->refine;
+  b = (ay_bevel_object *) o->refine;
 
-  if(s->caps)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, next);
-	  if(*next)
-	    {
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(s->caps)
-	{
-	  b = s->caps;
-	  while(b)
-	    {
-	      ay_status = ay_object_copy(b, next);
-	      if(*next)
-		{
-		  next = &((*next)->next);
-		}
-	      b = b->next;
-	    } /* while */
-	} /* if */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-      *next = ay_endlevel;
-    }
-  else
-    {
-      if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, &new);
-	  if(new)
-	    {
-	      ay_trafo_copy(o, new);
-
-	      if(!new->down)
-		new->down = ay_endlevel;
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(new);
-		}
-
-	    } /* if */
-	} /* if */
-    } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, b->npatch, b->caps, in_place);
 } /* ay_bevel_convertcb */
 
 

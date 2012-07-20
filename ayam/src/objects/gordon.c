@@ -840,119 +840,14 @@ ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_gordon_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_gordon_object *r = NULL;
- ay_object *new = NULL, **next = NULL, *b;
+ ay_gordon_object *g = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
+  g = (ay_gordon_object *) o->refine;
 
-  r = (ay_gordon_object *) o->refine;
-
-  if(!r->npatch)
-    return AY_OK;
-
-  if(r->caps_and_bevels)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(r->caps_and_bevels)
-	{
-	  b = r->caps_and_bevels;
-	  while(b)
-	    {
-	      ay_status = ay_object_copy(b, next);
-	      if(*next)
-		{
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(!in_place && ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-
-		  next = &((*next)->next);
-		}
-	      b = b->next;
-	    } /* while */
-	} /* if */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-      *next = ay_endlevel;
-    }
-  else
-    {
-      ay_status = ay_object_copy(r->npatch, &new);
-      if(new)
-	{
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(!in_place && ay_prefs.conv_reset_display)
-	    {
-	      ay_npt_resetdisplay(new);
-	    }
-
-	  ay_trafo_copy(o, new);
-	  new->hide_children = AY_TRUE;
-	  new->parent = AY_TRUE;
-	  new->down = ay_endlevel;
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-	}
-   } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, g->npatch, g->caps_and_bevels, in_place);
 } /* ay_gordon_convertcb */
 
 
