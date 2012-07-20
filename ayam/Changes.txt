@@ -1,9 +1,9 @@
-[9. Jul 2012] CVS-Head:
+[20. Jul 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
-o all even ConcatNP fillet patches are missing (SF 3514939)
+o some ConcatNP fillet patches are missing (SF 3514939)
 o pick candidates dialog disappears after resize (SF 3522093)
 o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
 
@@ -12,7 +12,12 @@ o added cap type "Simple"
 o added cap type "SimpleInt" for simple caps that integrate into the surface
   to be capped
 o added "Compatible" option to ConcatNP objects, to allow prevention of
-  unwanted modifications of already compatible parameter surfaces
+  unwanted modifications for already compatible parameter surfaces
+o added bevel option "Integrate" to combine the bevel with the parameter
+  surface
+o Cap and Bevel options are now controlled via own property GUIs
+o Caps and Bevels are now available for many more object types,
+  e.g. IPatch, NPatch, ConcatNP, Birail1, Birail2, Skin...
 
 GUI:
 o default value menu buttons of property GUI elements now display a triangle
