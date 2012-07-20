@@ -111,7 +111,7 @@ lappend types NCurve ICurve ACurve NCircle
 
 lappend types NPatch IPatch BPatch PatchMesh
 
-lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
+lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2  Gordon
 
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 
@@ -129,10 +129,12 @@ lappend nopnttypes Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 
 lappend nopnttypes Clone Mirror Script Text
 
-# these types do not support conversion:
+# these types do not support conversion (or flag errors upon conversion
+# attempts, when empty):
 set noconvtypes ""
 lappend noconvtypes Camera Light Material RiInc RiProc Select
-
+lappend noconvtypes Bevel Birail1 Birail2 ConcatNP Gordon
+lappend noconvtypes Skin Sweep Swing
 
 set view1 ""
 if { [winfo exists .fv.fViews.fview1.f3D.togl] } {
@@ -568,7 +570,7 @@ lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
 
 set types {}
-lappend types Box Sphere Cylinder Disk Cone
+lappend types Box Sphere Cylinder Disk Cone Paraboloid Torus Hyperboloid
 #set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
