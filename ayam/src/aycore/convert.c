@@ -122,3 +122,99 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
  return TCL_OK;
 } /* ay_convert_forcetcmd */
+
+
+/* ay_convert_nptoolobj:
+ *  helper for tool objects that convert to a NURBS patch
+ *  plus caps/bevels
+ */
+int
+ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL, **next = NULL;
+ ay_object *b;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o || !p)
+    return AY_ENULL;
+
+  if(cb)
+    {
+      if(!(new = calloc(1, sizeof(ay_object))))
+	{ return AY_EOMEM; }
+
+      ay_object_defaults(new);
+      new->type = AY_IDLEVEL;
+      new->parent = AY_TRUE;
+      new->inherit_trafos = AY_TRUE;
+      ay_trafo_copy(o, new);
+
+      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
+	{ free(new); return AY_EOMEM; }
+
+      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
+
+      next = &(new->down);
+
+      ay_status = ay_object_copy(p, next);
+      if(*next)
+	{
+	  (*next)->hide_children = AY_TRUE;
+	  (*next)->parent = AY_TRUE;
+	  (*next)->down = ay_endlevel;
+
+	  next = &((*next)->next);
+	}
+
+      b = cb;
+      while(b)
+	{
+	  ay_status = ay_object_copy(b, next);
+	  if(*next)
+	    {
+	      next = &((*next)->next);
+	    }
+	  b = b->next;
+	} /* while */
+
+      /* copy eventually present TP tags */
+      ay_npt_copytptag(o, new->down);
+
+      /* terminate the level */
+      *next = ay_endlevel;
+    }
+  else
+    {
+      ay_status = ay_object_copy(p, &new);
+
+      ay_trafo_copy(o, new);
+    } /* if */
+
+  if(new)
+    {
+      /* reset display mode and sampling tolerance
+	 of new patch to "global"? */
+      if(!in_place && ay_prefs.conv_reset_display)
+	{
+	  ay_npt_resetdisplay(new);
+	}
+
+      /* immediately create and show the multiple points */
+      np = (ay_nurbpatch_object *)new->refine;
+      np->createmp = AY_TRUE;
+      ay_npt_recreatemp(np);
+
+      /* link the new object(s) to the scene */
+      if(!in_place)
+	{
+	  ay_status = ay_object_link(new);
+	}
+      else
+	{
+	  ay_status = ay_object_replace(new, o);
+	}
+    } /* if */
+
+ return ay_status;
+} /* ay_convert_nptoolobj */

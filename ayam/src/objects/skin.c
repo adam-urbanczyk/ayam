@@ -777,97 +777,14 @@ ay_skin_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_skin_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
  ay_skin_object *s = NULL;
- ay_object *new = NULL, **next = NULL;
- ay_object *b;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
-
   s = (ay_skin_object *) o->refine;
 
-  if(s->caps_and_bevels)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, next);
-	  if(*next)
-	    {
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	}
-
-      if(s->caps_and_bevels)
-	{
-	  b = s->caps_and_bevels;
-	  while(b)
-	    {
-	      ay_status = ay_object_copy(b, next);
-	      if(*next)
-		{
-		  next = &((*next)->next);
-		}
-	      b = b->next;
-	    } /* while */
-	} /* if */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-      *next = ay_endlevel;
-    }
-  else
-    {
-       if(s->npatch)
-	{
-	  ay_status = ay_object_copy(s->npatch, &new);
-	  ay_trafo_copy(o, new);
-	  new->hide_children = AY_TRUE;
-	  new->parent = AY_TRUE;
-	  new->down = ay_endlevel;
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-	}
-    } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, s->npatch, s->caps_and_bevels, in_place);
 } /* ay_skin_convertcb */
 
 

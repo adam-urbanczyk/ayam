@@ -784,101 +784,14 @@ cleanup:
 int
 ay_concatnp_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_concatnp_object *concatnp = NULL;
- ay_object *new = NULL, **next = NULL;
- ay_object *b;
- ay_nurbpatch_object *np = NULL;
+ ay_concatnp_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  concatnp = (ay_concatnp_object *) o->refine;
+  c = (ay_concatnp_object *) o->refine;
 
-  if(!concatnp->npatch)
-    return AY_OK;
-
-  if(concatnp->caps_and_bevels)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(concatnp->npatch)
-	{
-	  ay_status = ay_object_copy(concatnp->npatch, next);
-	  if(*next)
-	    {
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	}
-
-      b = concatnp->caps_and_bevels;
-      while(b)
-	{
-	  ay_status = ay_object_copy(b, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	  b = b->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-      *next = ay_endlevel;
-    }
-  else
-    {
-      if(concatnp->npatch)
-	{
-	  ay_status = ay_object_copy(concatnp->npatch, &new);
-
-	  ay_trafo_copy(o, new);
-	} /* if */
-    } /* if */
-
-  if(new)
-    {
-      /* reset display mode and sampling tolerance
-	 of new patch to "global"? */
-      if(!in_place && ay_prefs.conv_reset_display)
-	{
-	  ay_npt_resetdisplay(new);
-	}
-
-      /* immediately create and show the multiple points */
-      np = (ay_nurbpatch_object *)new->refine;
-      np->createmp = AY_TRUE;
-      ay_npt_recreatemp(np);
-
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_status = ay_object_replace(new, o);
-	}
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, c->npatch, c->caps_and_bevels, in_place);
 } /* ay_concatnp_convertcb */
 
 
