@@ -844,6 +844,11 @@ int ay_provide_register(ay_providecb  *provcb, unsigned int type_id);
  */
 int ay_provide_object(ay_object *o, unsigned int type, ay_object **result);
 
+/** helper for tool objects that provide NURBS surfaces with caps/bevels
+ */
+int ay_provide_nptoolobj(ay_object *o, unsigned int type,
+			 ay_object *npatch, ay_object *cb,
+			 ay_object **result);
 
 /* pv.c */
 

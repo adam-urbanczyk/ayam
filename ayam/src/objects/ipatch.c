@@ -2494,70 +2494,14 @@ cleanup:
 int
 ay_ipatch_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "ipatch_providecb";
- ay_ipatch_object *ip = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_ipatch_object *i = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
+  i = (ay_ipatch_object *) o->refine;
 
-  ip = (ay_ipatch_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!ip->npatch)
-	return AY_ERROR;
-
-      p = ip->npatch;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-	  /* copy caps and bevels */
-      p = ip->caps_and_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, i->npatch, i->caps_and_bevels, result);
 } /* ay_ipatch_providecb */
 
 

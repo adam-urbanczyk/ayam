@@ -682,68 +682,14 @@ cleanup:
 int
 ay_offnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "offnp_providecb";
- ay_offnp_object *s = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_offnp_object *b = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    } /* if */
+  b = (ay_offnp_object *) o->refine;
 
-  s = (ay_offnp_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!s->npatch)
-	return AY_ERROR;
-
-      /* copy offnp */
-      ay_status = ay_object_copy(s->npatch, t);
-      if(ay_status)
-	{
-	  ay_error(ay_status, fname, NULL);
-	  return AY_ERROR;
-	}
-
-      ay_trafo_copy(o, *t);
-
-      t = &((*t)->next);
-
-      /* copy caps and bevels */
-      p = s->caps_and_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, b->npatch, b->caps_and_bevels, result);
 } /* ay_offnp_providecb */
 
 
@@ -753,97 +699,14 @@ ay_offnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_offnp_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_offnp_object *r = NULL;
- ay_object *new = NULL, **next = NULL;
- ay_object *b;
+ ay_offnp_object *b = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
-  r = (ay_offnp_object *) o->refine;
+  b = (ay_offnp_object *) o->refine;
 
-  if(r->caps_and_bevels)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, next);
-	  if(*next)
-	    {
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-	      next = &((*next)->next);
-	    }
-	}
-
-      b = r->caps_and_bevels;
-      while(b)
-	{
-	  ay_status = ay_object_copy(b, next);
-	  if(*next)
-	    {
-	      next = &((*next)->next);
-	    }
-	  b = b->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-      *next = ay_endlevel;
-    }
-  else
-    {
-      if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, &new);
-
-	  ay_trafo_copy(o, new);
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-	} /* if */
-    } /* if */
-
-  /* second, link new object, or replace old object with it */
-  if(new)
-    {
-      /* reset display mode and sampling tolerance
-	 of new patch to "global"? */
-      if(!in_place && ay_prefs.conv_reset_display)
-	{
-	  ay_npt_resetdisplay(new);
-	}
-
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, b->npatch, b->caps_and_bevels, in_place);
 } /* ay_offnp_convertcb */
 
 
