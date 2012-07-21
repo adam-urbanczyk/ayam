@@ -158,6 +158,12 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
       next = &(new->down);
 
       ay_status = ay_object_copy(p, next);
+      if(ay_status)
+	{
+	  ay_object_deletemulti(new);
+	  return AY_ERROR;
+	}
+
       if(*next)
 	{
 	  (*next)->hide_children = AY_TRUE;
@@ -171,6 +177,11 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
       while(b)
 	{
 	  ay_status = ay_object_copy(b, next);
+	  if(ay_status)
+	    {
+	      ay_object_deletemulti(new);
+	      return AY_ERROR;
+	    }
 	  if(*next)
 	    {
 	      next = &((*next)->next);
@@ -187,7 +198,11 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
   else
     {
       ay_status = ay_object_copy(p, &new);
-
+      if(ay_status)
+	{
+	  ay_object_deletemulti(new);
+	  return AY_ERROR;
+	}
       ay_trafo_copy(o, new);
     } /* if */
 
