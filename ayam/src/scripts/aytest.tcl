@@ -133,7 +133,7 @@ lappend nopnttypes Clone Mirror Script Text
 # attempts, when empty):
 set noconvtypes ""
 lappend noconvtypes Camera Light Material RiInc RiProc Select
-lappend noconvtypes Bevel Birail1 Birail2 ConcatNP Gordon
+lappend noconvtypes Bevel Birail1 Birail2 ConcatNP OffsetNP Gordon
 lappend noconvtypes Skin Sweep Swing
 
 set view1 ""
@@ -1295,7 +1295,7 @@ array set ConcatNC_1 {
 array set ConcatNP_1 {
     precmd {
 	goDown -1;
-	crtOb NPatch; crtOb NPatch; hSL; 
+	crtOb NPatch; crtOb NPatch; hSL;
 	switch $l {
 	    0 {
 		movOb 1 0 0;
@@ -1337,6 +1337,7 @@ set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
 lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
 
 lappend types Trim
+
 
 puts -nonewline "Testing "
 foreach type $types {
@@ -1792,6 +1793,7 @@ proc aytest_var { type } {
 		  set ::aytest_result 1
 		  return;
 	      }
+	      selOb 0
 	  } else {
 	      # no, there are no free variables
 
@@ -1800,21 +1802,29 @@ proc aytest_var { type } {
 	      if { [info exists ::${type}_${i}(postcmd)] } {
 		  eval \$::${type}_${i}(postcmd)
 	      }
-
-	      if { ! $::aytestprefs(KeepObjects) } {
-		  delOb
-	      }
 	  }
 	  # if
 	  incr l
 
+	  if { ! $::aytestprefs(KeepObjects) } {
+	      delOb
+	  }
+
 	  goUp
+
+	  if { ! $::aytestprefs(KeepObjects) } {
+	      hSL;delOb
+	  }
       }
       # foreach
       rV
       incr i
 
       goUp
+
+      if { ! $::aytestprefs(KeepObjects) } {
+	  hSL;delOb
+      }
   }
   # while
 
