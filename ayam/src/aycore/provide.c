@@ -85,9 +85,8 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
 } /* ay_provide_object */
 
 
-
 /* ay_provide_nptoolobj:
- *  provide callback function of bevel object
+ *  helper for tool objects that provide NURBS surfaces with caps/bevels
  */
 int
 ay_provide_nptoolobj(ay_object *o, unsigned int type,
