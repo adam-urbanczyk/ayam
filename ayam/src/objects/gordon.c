@@ -770,67 +770,14 @@ cleanup:
 int
 ay_gordon_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "gordon_providecb";
- ay_gordon_object *s = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_gordon_object *g = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
+  g = (ay_gordon_object *) o->refine;
 
-  s = (ay_gordon_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!s->npatch)
-	return AY_ERROR;
-
-      /* copy gordon */
-      ay_status = ay_object_copy(s->npatch, t);
-      if(ay_status)
-	{
-	  ay_error(ay_status, fname, NULL);
-	  return AY_ERROR;
-	}
-      ay_trafo_copy(o, *t);
-
-      t = &((*t)->next);
-
-      /* copy caps and bevels */
-      p = s->caps_and_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, g->npatch, g->caps_and_bevels, result);
 } /* ay_gordon_providecb */
 
 

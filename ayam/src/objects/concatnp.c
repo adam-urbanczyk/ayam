@@ -778,6 +778,23 @@ cleanup:
 } /* ay_concatnp_notifycb */
 
 
+/* ay_concatnp_providecb:
+ *  provide callback function of concatnp object
+ */
+int
+ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
+{
+ ay_concatnp_object *c = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  c = (ay_concatnp_object *) o->refine;
+
+ return ay_provide_nptoolobj(o, type, c->npatch, c->caps_and_bevels, result);
+} /* ay_concatnp_providecb */
+
+
 /* ay_concatnp_convertcb:
  *  convert callback function of concatnp object
  */
@@ -793,75 +810,6 @@ ay_concatnp_convertcb(ay_object *o, int in_place)
 
  return ay_convert_nptoolobj(o, c->npatch, c->caps_and_bevels, in_place);
 } /* ay_concatnp_convertcb */
-
-
-/* ay_concatnp_providecb:
- *  provide callback function of concatnp object
- */
-int
-ay_concatnp_providecb(ay_object *o, unsigned int type, ay_object **result)
-{
- int ay_status = AY_OK;
- char *fname = "concatnp_providecb";
- ay_concatnp_object *concatnp = NULL;
- ay_object **t = NULL, *p = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
-
-  concatnp = (ay_concatnp_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      if(concatnp->npatch)
-	{
-	  ay_status = ay_object_copy(concatnp->npatch, result);
-	  if(ay_status || !*result)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, *result);
-
-	  t = &((*result)->next);
-
-	  /* copy caps and bevels */
-	  p = concatnp->caps_and_bevels;
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, t);
-	      if(ay_status)
-		{
-		  ay_error(ay_status, fname, NULL);
-		  return AY_ERROR;
-		}
-
-	      ay_npt_applytrafo(*t);
-	      ay_trafo_copy(o, *t);
-
-	      t = &((*t)->next);
-	      p = p->next;
-	    } /* while */
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, *result);
-	}
-      else
-	{
-	  return AY_ERROR;
-	}
-    } /* if */
-
- return ay_status;
-} /* ay_concatnp_providecb */
 
 
 /* ay_concatnp_init:

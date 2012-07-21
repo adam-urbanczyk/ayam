@@ -83,3 +83,70 @@ ay_provide_object(ay_object *o, unsigned int type, ay_object **result)
 
  return AY_OK;
 } /* ay_provide_object */
+
+
+
+/* ay_provide_nptoolobj:
+ *  provide callback function of bevel object
+ */
+int
+ay_provide_nptoolobj(ay_object *o, unsigned int type,
+		     ay_object *npatch, ay_object *cb,
+		     ay_object **result)
+{
+ int ay_status = AY_OK;
+ ay_object *new = NULL, **t = NULL, *p = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  if(!result)
+    {
+      if(type == AY_IDNPATCH)
+	return AY_OK;
+      else
+	return AY_ERROR;
+    }
+
+  if(type != AY_IDNPATCH)
+    return AY_OK;
+
+  if(!npatch)
+    return AY_ERROR;
+
+  t = &(new);
+
+  /* copy surface */
+  ay_status = ay_object_copy(npatch, t);
+  if(ay_status)
+    {
+      return AY_ERROR;
+    }
+  ay_trafo_copy(o, *t);
+  t = &((*t)->next);
+
+  /* copy caps and bevels */
+  p = cb;
+  while(p)
+    {
+      ay_status = ay_object_copy(p, t);
+      if(ay_status)
+	{
+	  ay_object_deletemulti(new);
+	  return AY_ERROR;
+	}
+
+      ay_npt_applytrafo(*t);
+      ay_trafo_copy(o, *t);
+
+      t = &((*t)->next);
+      p = p->next;
+    } /* while */
+
+      /* copy eventually present TP tags */
+  ay_npt_copytptag(o, new);
+
+  *result = new;
+
+ return ay_status;
+} /* ay_provide_nptoolobj */

@@ -1189,71 +1189,14 @@ cleanup:
 int
 ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "swing_providecb";
- ay_swing_object *r = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_birail1_object *b = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
+  b = (ay_birail1_object *) o->refine;
 
-  r = (ay_swing_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!r->npatch)
-	return AY_ERROR;
-
-      /* copy swung surface */
-      p = r->npatch;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, *t);
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy caps and bevels */
-      p = r->caps_and_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, b->npatch, b->caps_and_bevels, result);
 } /* ay_swing_providecb */
 
 
