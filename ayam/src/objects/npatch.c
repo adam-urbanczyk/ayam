@@ -2719,7 +2719,7 @@ ay_npatch_notifycb(ay_object *o)
  ay_object *bevel = NULL, **nextcb;
  ay_bparam bparams;
  int display_mode = ay_prefs.np_display_mode, mode, caps[4] = {0};
- int qf = ay_prefs.stess_qf;
+ int i, qf = ay_prefs.stess_qf;
  double tolerance;
 
   if(!o)
@@ -2750,6 +2750,10 @@ ay_npatch_notifycb(ay_object *o)
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
+
+      /* silently avoid bevel integration */
+      for(i = 0; i < 4; i++)
+	bparams.integrate[i] = 0;
     }
 
   /* create/add caps */
@@ -2757,6 +2761,11 @@ ay_npatch_notifycb(ay_object *o)
   caps[1] = npatch->has_u1_cap;
   caps[2] = npatch->has_v0_cap;
   caps[3] = npatch->has_v1_cap;
+
+  /* silently avoid cap integration */
+  for(i = 0; i < 4; i++)
+    if(caps[i] == 3)
+      caps[i] = 2;
 
   ay_status = ay_capt_addcaps(caps, &bparams, o, nextcb);
   if(ay_status)
