@@ -974,72 +974,14 @@ ay_extrude_notifycb(ay_object *o)
 int
 ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "extrude_providecb";
  ay_extrude_object *e = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
-
   e = (ay_extrude_object *) o->refine;
 
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!e->npatch)
-	return AY_ERROR;
-
-      /* copy extrusion(s) */
-      p = e->npatch;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  ay_trafo_copy(o, *t);
-	  (*t)->down = ay_endlevel;
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy caps and bevels */
-      p = e->caps_and_bevels;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-
-	  ay_npt_applytrafo(*t);
-	  ay_trafo_copy(o, *t);
-
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, e->npatch, e->caps_and_bevels, result);
 } /* ay_extrude_providecb */
 
 
@@ -1049,122 +991,14 @@ ay_extrude_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_extrude_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_extrude_object *r = NULL;
- ay_object *new = NULL, *p = NULL, **next = NULL;
+ ay_extrude_object *e = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
+  e = (ay_extrude_object *) o->refine;
 
-  r = (ay_extrude_object *) o->refine;
-
-  if(r->caps_and_bevels || (r->npatch && r->npatch->next))
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(r->npatch)
-	{
-	  p = r->npatch;
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(!in_place && ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-		  (*next)->parent = AY_TRUE;
-		  (*next)->down = ay_endlevel;
-		  next = &((*next)->next);
-		}
-	      p = p->next;
-	    } /* while */
-	} /* if */
-
-      if(r->caps_and_bevels)
-	{
-	  p = r->caps_and_bevels;
-	  while(p)
-	    {
-	      ay_status = ay_object_copy(p, next);
-	      if(*next)
-		{
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(!in_place && ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-
-		  next = &((*next)->next);
-		}
-	      p = p->next;
-	    } /* while */
-	} /* if */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-      *next = ay_endlevel;
-    }
-  else
-    {
-       if(r->npatch)
-	{
-	  ay_status = ay_object_copy(r->npatch, &new);
-	  if(new)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(new);
-		}
-
-	      ay_trafo_copy(o, new);
-	      new->hide_children = AY_TRUE;
-	      new->parent = AY_TRUE;
-	      new->down = ay_endlevel;
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, new);
-	    }
-	} /* if */
-    } /* if */
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, e->npatch, e->caps_and_bevels, in_place);
 } /* ay_extrude_convertcb */
 
 
