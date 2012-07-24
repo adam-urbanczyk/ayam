@@ -194,7 +194,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  goto cleanup;
 		}
 
-	      nextcap = &((*nextcap)->next);
+	      if(nextcap)
+		nextcap = &((*nextcap)->next);
 	    } /* if */
 	} /* if */
     } /* for */

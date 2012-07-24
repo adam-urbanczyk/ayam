@@ -649,7 +649,7 @@ ay_selp_seltcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
-      if((argv[1][0] == '-'))
+      if(argv[1][0] == '-')
 	{
 	  /* -all */
 	  if(argv[1][1] == 'a')

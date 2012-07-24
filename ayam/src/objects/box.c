@@ -733,7 +733,8 @@ ay_box_convertcb(ay_object *o, int in_place)
     {
       t = t->next;
     }
-  t->next = ay_endlevel;
+  if(t)
+    t->next = ay_endlevel;
 
   /* second, link new objects, or replace old object with them */
 

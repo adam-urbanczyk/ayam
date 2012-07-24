@@ -514,6 +514,8 @@ ay_clone_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	      clone->quat[0], clone->quat[1], clone->quat[2], clone->quat[3]);
       to = Tcl_NewStringObj(quatstr, -1);
       Tcl_SetStringObj(ton, "QuaternionBall", -1);
+      Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG |
+		     TCL_GLOBAL_ONLY);
 
       Tcl_SetStringObj(ton, "Rotate_X", -1);
       to = Tcl_NewDoubleObj(clone->rotx);
