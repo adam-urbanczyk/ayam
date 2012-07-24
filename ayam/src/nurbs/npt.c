@@ -2586,9 +2586,16 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	  /* mark as fillet */
 	  fillet->selected = 1;
 	  /* link fillet to list of patches */
-	  fillet->next = last->next;
-	  last->next = fillet;
-	}
+	  if(last)
+	    {
+	      fillet->next = last->next;
+	      last->next = fillet;
+	    }
+	  else
+	    {
+	      ay_object_delete(fillet);
+	    }
+	} /* if */
     } /* if */
 
  return ay_status;
@@ -4150,7 +4157,6 @@ ay_npt_birail1(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
       /* save rail vector for next iteration */
       memcpy(T0, T1, 3*sizeof(double));
-      lent0 = lent1;
     } /* for */
 
   if(closed)
@@ -4495,7 +4501,6 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 
       /* save rail vector for next iteration */
       memcpy(T0, T1, 3*sizeof(double));
-      lent0 = lent1;
     } /* for */
 
 
@@ -5083,7 +5088,6 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
 
       /* save rail vector for next iteration */
       memcpy(T0, T1, 3*sizeof(double));
-      lent0 = lent1;
     } /* for */
 
   new->is_rat = ay_npt_israt(new);
@@ -11411,7 +11415,7 @@ cleanup:
  * @param[in,out] avlens resulting average distances [width-1]
  *  avlens[0] is the average distance of column0 to column1
  *  avlens[1] the average distance of column1 to column2...
- * 
+ *
  * @return AY_OK on success, error code otherwise.
  */
 int
@@ -11468,7 +11472,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  * @param[in,out] avlens resulting average distances [height-1]
  *  avlens[0] is the average distance of row0 to row1
  *  avlens[1] the average distance of row1 to row2...
- * 
+ *
  * @return AY_OK on success, error code otherwise.
  */
 int
