@@ -1288,6 +1288,14 @@ currently selected object(s) (see <ref id="riatag" name="RiAttribute Tag">).
 <item><tt>"Tags/Edit TexCoords"</tt>, opens the texture coordinates editor.
 (see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
 
+<item><tt>"Tags/Add Property"</tt>, opens a dialog where <tt/"NP"/
+tags can be managed easily for all selected objects
+(see also section <ref id="nptag" name="NP (New Property) Tag">).
+
+<item><tt>"Tags/Remove Property"</tt>, opens a dialog where <tt/"RP"/
+tags can be managed easily for all selected objects
+(see also section <ref id="rptag" name="RP (Remove Property) Tag">).
+
 <item><tt>"RIB-Export/From Camera"</tt>, writes a complete RIB of
 the current scene with the camera transformations taken from the
 currently selected camera object. The size of the rendered image will
@@ -10737,7 +10745,7 @@ they may need to move two points.
 See also section <ref id="ncurvemp" name="Multiple Points">.
 
 A NURBS circle created by this tool can be used to easily create a
-NURBS-torus by moving the circle along X a bit and then revolving it.
+NURBS torus by moving the circle along X a bit and then revolving it.
 The amount of movement determines the radius of the torus, whereas
 the radius of the circle determines the thickness.
 </descrip>
@@ -10799,6 +10807,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="revolveobj" name="Revolve Object">
 for more information regarding the revolve object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10817,6 +10826,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="extrudeobj" name="Extrude Object">
 for more information regarding the extrude object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10853,6 +10863,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="capobj" name="Cap Object">
 for more information regarding the Cap object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10872,6 +10883,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail1obj" name="Birail1 Object">
 for more information regarding the Birail1 object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10892,6 +10904,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="birail2obj" name="Birail2 Object">
 for more information regarding the Birail2 object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10912,6 +10925,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="gordonobj" name="Gordon Object">
 for more information regarding the Gordon object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -10931,6 +10945,7 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="skinobj" name="Skin Object">
 for more information regarding the Skin object.
+
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
@@ -11005,14 +11020,14 @@ for t=0.5)</caption>
 <tag/Arguments/ The split curves tool takes a single NURBS curve from
 the selection and additionally requests a parametric value.
 <tag/Operation/ The selected NURBS curve will be split into two
-new NURBS curves at the designated parametric value. The splitting process
+NURBS curves at the designated parametric value. The splitting process
 involves application of knot insertion, so that both new curves will
 get a custom knot vector.
 <tscreen><verb>
 |-NCurve     ==>     |-NCurve
                      |-NCurve
 </verb></tscreen>
-<tag/Notes/ The original selected NURBS curve will be changed and
+<tag/Notes/ The original selected NURBS curve object will be changed and
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
 
@@ -11368,6 +11383,9 @@ on how to select (tag) control points).
 <tag/Operation/ The selected control points will be made a
 single multiple point, all points will get the coordinate values
 of the last tagged point.
+
+
+The point selection will be removed from the original objects.
 </descrip>
 
 <sect1>Explode Points Tool<label id="explt">
@@ -11379,14 +11397,15 @@ or NURBS patch and a number of selected (tagged) multiple points
 on how to select (tag) control points).
 <tag/Operation/ The points forming the selected multiple points will
 be made to simple points again and may be edited separately.
-<tag/Notes/ Even though you might have exploded some multiple points
-Ayam will re-create them on several occasions like reading
-of a scene, inserting/deleting points, and applying the NCurveAttr
-or NPatchAttr property if all single control points of the multiple
-point(s) still have identical coordinate values (and the <tt/"CreateMP"/
-option of the curve or patch object is activated). You should immediately
-edit the control points (move them apart) after exploding to avoid that
-they automatically collapse to a multiple point again.
+<tag/Notes/ The control points should immediately be edited (i.e. moved
+apart) after exploding, to avoid that they automatically collapse to a
+multiple point again, as Ayam will re-create the multiple points on
+several occasions like reading of a scene, inserting/deleting points,
+or applying the NCurveAttr/NPatchAttr property if all single control
+points of the multiple point(s) still have identical coordinate values
+(and the <tt/"CreateMP"/ option of the curve or patch object is activated).
+
+The point selection will be removed from the original objects.
 </descrip>
 
 <sect1>Swap UV Tool<label id="swapuvt">
@@ -11397,6 +11416,9 @@ BPatch, or PatchMesh objects from the selection.
 <tag/Operation/ The U and V dimension of the selected objects will
 be swapped (width and height will be exchanged) without altering the
 shape of the patches.
+<tag/Notes/
+The point selection will be removed from the original object.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </descrip>
@@ -11588,7 +11610,6 @@ knots will be removed.
 If <it/tol/ is <tt/"Inf"/ (infinity) the specified knot will be removed
 regardless of potential surface changes.
 
-<p>
 The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding scripting interface commands
