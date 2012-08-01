@@ -706,7 +706,7 @@ ay_torus_notifycb(ay_object *o)
 {
  ay_torus_object *torus = NULL;
  double *pnts = NULL;
- double phi, mar, mir, thetamax;
+ double phi, mar, mir;
  double phidiff, thetadiff, pangle, tangle;
  double P1[2] = {0};
  int i = 0, j = 0, a = 0;
@@ -722,7 +722,6 @@ ay_torus_notifycb(ay_object *o)
 
       mar = torus->majorrad;
       mir = torus->minorrad;
-      thetamax = torus->thetamax;
       phi = torus->phimax - torus->phimin;
       phidiff = AY_D2R(phi/8);
       thetadiff = AY_D2R(torus->thetamax/8);

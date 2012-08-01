@@ -1179,7 +1179,7 @@ cleanup:
 	}
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_swing_notifycb */
 
 

@@ -1174,9 +1174,10 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 	  ti = (ii-1)*4;
 	  tj = (jj+1)*4;
 
-	  if((fabs(temp[ti]   - temp[tj]) < AY_EPSILON) &&
-	     (fabs(temp[ti]   - temp[tj]) < AY_EPSILON) &&
-	     (fabs(temp[ti]   - temp[tj]) < AY_EPSILON))
+	  if((tol == 0.0) &&
+             (fabs(temp[ti] - temp[tj]) <= AY_EPSILON/100) &&
+	     (fabs(temp[ti] - temp[tj]) <= AY_EPSILON/100) &&
+	     (fabs(temp[ti] - temp[tj]) <= AY_EPSILON/100))
 	    {
 	      remflag = 1;
 	    }
@@ -1196,12 +1197,13 @@ ay_nb_RemoveKnotCurve4D(int n, int p, double *U, double *Pw, double tol,
 	  alfi = (u-U[i])/(U[i+ord+t]-U[i]);
 	  ti = (ii+t+1)*4;
 	  tj = (ii-1)*4;
-	  if((fabs(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj])) <
-	      AY_EPSILON) &&
-	     (fabs(Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1])) <
-	      AY_EPSILON) &&
-	     (fabs(Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2])) <
-	      AY_EPSILON))
+	  if((tol == 0.0) &&
+	     (fabs(Pw[i*4]   - (alfi*temp[ti]+(1.0-alfi)*temp[tj])) <=
+	      AY_EPSILON/100) &&
+	     (fabs(Pw[i*4+1] - (alfi*temp[ti+1]+(1.0-alfi)*temp[tj+1])) <=
+	      AY_EPSILON/100) &&
+	     (fabs(Pw[i*4+2] - (alfi*temp[ti+2]+(1.0-alfi)*temp[tj+2])) <=
+	      AY_EPSILON/100))
 	    {
 	      remflag = 1;
 	    }
@@ -3642,6 +3644,8 @@ ay_nb_DecomposeCurve(int stride, int n, int p, double *U, double *Pw,
 	  b = b+1;
 	}
     } /* while */
+
+  free(alphas);
 
  return AY_OK;
 } /* ay_nb_DecomposeCurve */

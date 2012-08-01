@@ -1305,6 +1305,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  /* prevent cleanup code from doing something harmful */
 		  np = NULL;
 		  cv = NULL;
+		  cv2 = NULL;
 		} /* if */
 	    } /* if */
 	} /* if */
@@ -1324,6 +1325,9 @@ cleanup:
 
   if(cv)
     free(cv);
+
+  if(cv2)
+    free(cv2);
 
   if(kn)
     free(kn);

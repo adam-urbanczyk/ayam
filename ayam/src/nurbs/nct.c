@@ -982,6 +982,7 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	  /* allocate and fill new knot vector */
 	  if(!(U = calloc(curve->length+curve->order+count, sizeof(double))))
 	    {
+	      free(nps);
 	      free(Qw);
 	      return AY_EOMEM;
 	    }
@@ -2608,10 +2609,12 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc2->knotv = NULL;
 
       if(!(nc2->controlv = calloc(nc2->length*stride, sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_EOMEM; }
 
       if(!(nc2->knotv = calloc(nc2->length+nc2->order, sizeof(double))))
-	{ ay_object_delete(new); free(nc2->controlv); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  free(nc2->controlv); return AY_EOMEM; }
 
       memcpy(nc2->controlv,&(nc1->controlv[(nc1->length-1)*stride]),
 	     nc2->length*stride*sizeof(double));
@@ -3149,7 +3152,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!(curve->knotv = calloc(7, sizeof(double))))
     {
-      free(o); free(curve); free(curve->controlv);
+      free(o); free(curve->controlv); free(curve);
       ay_error(AY_EOMEM, argv[0], NULL);
       return TCL_OK;
     }
@@ -5071,7 +5074,7 @@ ay_nct_toxy(ay_object *c)
     return AY_ERROR;
 
   /* try to get three "good" points,
-     they should not be equal and not be colinear
+     they should not be equal and not be collinear
      (i.e. span a triangle to get the orientation from */
   tp1 = cv;
   tp2 = &(cv[(cvlen/2)*stride]);
@@ -5323,6 +5326,8 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDNCURVE)
 	{
 	  nc = (ay_nurbcurve_object*)o->refine;
+	  if(!p)
+	    goto cleanup;
 	  o->refine = p->refine;
 	  p->refine = nc;
 	  /* update pointers to controlv;
@@ -6714,7 +6719,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(apply_trafo)
     {
-      if(!po)	
+      if(!po)
 	ay_status = ay_object_copy(o, &po);
 
       if(ay_status || !po)

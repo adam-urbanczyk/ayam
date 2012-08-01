@@ -117,7 +117,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
     {
       /* copy ASCII val */
       if(!(new->val = calloc(1, strlen(source->val)+1)))
-	{ free(new); free(new->name); return AY_EOMEM; }
+	{ free(new->name); free(new); return AY_EOMEM; }
       strcpy(new->val, source->val);
     }
 
@@ -556,6 +556,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(!(new->val = calloc(strlen(argv[2])+1, sizeof(char))))
 	{
+	  free(new->name); free(new);
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}

@@ -233,12 +233,14 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
   if(winu == 0)
     {
+      free(ncv);
       ay_error(AY_ERROR, fname,
 	       "Not enough control points in u direction.");
       return AY_ERROR;
     }
   if(winv == 0)
     {
+      free(ncv);
       ay_error(AY_ERROR, fname,
 	       "Not enough control points in v direction.");
       return AY_ERROR;

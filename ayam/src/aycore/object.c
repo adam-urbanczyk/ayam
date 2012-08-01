@@ -364,6 +364,12 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	      if(!(*next_try_again = calloc(1, sizeof(ay_list_object))))
 		{
 		  ay_sel_free(AY_FALSE);
+		  while(try_again)
+		    {
+		      t = try_again->next;
+		      free(try_again);
+		      try_again = t;
+		    } /* while */
 		  ay_error(AY_EOMEM, argv[0], NULL);
 		  return TCL_OK;
 		}

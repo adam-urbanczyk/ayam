@@ -9750,10 +9750,12 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if(!(np2->controlv = calloc(np2->width*np2->height*stride,
 				  sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_EOMEM; }
 
       if(!(np2->uknotv = calloc(np2->width+np2->uorder, sizeof(double))))
-	{ ay_object_delete(new); free(np2->controlv); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  free(np2->controlv); return AY_EOMEM; }
 
       memcpy(np2->controlv,
 	     &(np1->controlv[((np1->width-1)*np2->height)*stride]),
@@ -9968,10 +9970,12 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if(!(np2->controlv = calloc(np2->width*np2->height*stride,
 				  sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_EOMEM; }
 
       if(!(np2->vknotv = calloc(np2->height+np2->vorder, sizeof(double))))
-	{ ay_object_delete(new); free(np2->controlv); return AY_EOMEM; }
+	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  free(np2->controlv); return AY_EOMEM; }
 
       a = 0;
       b = (np1->height-1)*stride;
@@ -10801,17 +10805,10 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
     return AY_EOMEM;
 
   if(!(copyrow = calloc(patch->height, sizeof(char))))
-    {
-      free(newcv);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   if(!(copycol = calloc(patch->width, sizeof(char))))
-    {
-      free(newcv);
-      free(copyrow);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < patch->width; i++)
@@ -10902,31 +10899,20 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 	} /* for */
     } /* for */
 
-
   /* copy knot vectors */
   if(patch->uknot_type == AY_KTCUSTOM)
     {
       if(!(newukv = calloc(patch->width+patch->uorder, sizeof(double))))
-	{
-	  free(newcv);
-	  free(copyrow);
-	  free(copycol);
-	  return AY_EOMEM;
-	}
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
       memcpy(newukv, patch->uknotv,
 	     (patch->width+patch->vorder)*sizeof(double));
     }
   if(patch->vknot_type == AY_KTCUSTOM)
     {
       if(!(newvkv = calloc(patch->height+patch->vorder, sizeof(double))))
-	{
-	  if(newukv)
-	    free(newukv);
-	  free(newcv);
-	  free(copyrow);
-	  free(copycol);
-	  return AY_EOMEM;
-	}
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
       memcpy(newvkv, patch->vknotv,
 	     (patch->height+patch->vorder)*sizeof(double));
     }
@@ -10936,16 +10922,22 @@ ay_npt_offset(ay_object *o, int mode, double offset, ay_nurbpatch_object **np)
 			    patch->uknot_type, patch->vknot_type,
 			    newcv, newukv, newvkv, np);
 
+cleanup:
+
   if(ay_status || !*np)
     {
-      free(newcv);
-      free(copyrow);
-      free(copycol);
+      if(newcv)
+	free(newcv);
       if(newukv)
 	free(newukv);
       if(newvkv)
 	free(newvkv);
     }
+
+  if(copyrow)
+    free(copyrow);
+  if(copycol)
+    free(copycol);
 
  return ay_status;
 } /* ay_npt_offset */

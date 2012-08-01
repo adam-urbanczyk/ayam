@@ -643,10 +643,10 @@ ay_skin_notifycb(ay_object *o)
     }
 
   /* create/add caps */
-  caps[0] = skin->has_left_cap;
-  caps[1] = skin->has_right_cap;
-  caps[2] = skin->has_start_cap;
-  caps[3] = skin->has_end_cap;
+  caps[0] = skin->has_start_cap;
+  caps[1] = skin->has_end_cap;
+  caps[2] = skin->has_left_cap;
+  caps[3] = skin->has_right_cap;
 
   ay_status = ay_capt_addcaps(caps, &bparams, skin->npatch, nextcb);
   if(ay_status)
@@ -658,6 +658,7 @@ ay_skin_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
+      bparams.radii[2] = -bparams.radii[2];
       bparams.dirs[2] = !bparams.dirs[2];
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, skin->npatch, nextcb);
