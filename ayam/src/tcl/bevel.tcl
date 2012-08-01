@@ -36,9 +36,14 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 
 	    set bname [lindex $bnames $bplace]
 
-	    scan $tagvalue "%d,%d,%lg,%d,%d" dummy BevelTags(${bname}Type) \
+	    scan $tagvalue "%d,%d,%lg,%d,%d" dummy type \
 		BevelTags(${bname}Radius) BevelTags(${bname}Revert) \
 		BevelTags(${bname}Integrate)
+	    if { $type < 0 } {
+		set BevelTags(${bname}Type) [expr 2 + (-$type)]
+	    } else {
+		set BevelTags(${bname}Type) $type
+	    }
 	}
 	# if
     }
@@ -76,8 +81,13 @@ proc bevel_setTags { bnames } {
     foreach bname $bnames {
 	if { $BevelTags(Bevel${i}) } {
 	    lappend newtags BP
+	    set type $BevelTags(${bname}Type)
+	    if { $type > 2 } {
+		set type [expr 2 - $type]
+	    }
+puts "newtype: $type"
 	    lappend newtags [format "%d,%d,%f,%d,%d" $i\
-				 $BevelTags(${bname}Type)\
+				 $type\
 				 $BevelTags(${bname}Radius)\
 				 $BevelTags(${bname}Revert)\
 				 $BevelTags(${bname}Integrate)]
@@ -131,7 +141,7 @@ proc bevel_add { bplace arr } {
 	# update property GUI (temporarily destroys the property GUI state)
 	plb_update
 
-	# restore  property GUI state
+	# restore property GUI state
 	foreach name [array names $arr] {
 	    eval set ${arr}($name) {$savearray($name)}
 	}
@@ -171,7 +181,7 @@ proc bevel_rem { bplace arr } {
 	# update property GUI (temporarily destroys the property GUI state)
 	plb_update
 
-	# restore  property GUI state
+	# restore property GUI state
 	foreach name [array names $arr] {
 	    eval set ${arr}($name) {$savearray($name)}
 	}
@@ -230,7 +240,7 @@ proc bevel_getAttr { } {
     set ay(bok) $ay(appb)
 
     addVSpace $w s1 2
-    addMenu $w BevelTags BevelType $ay(bevelmodes)
+    addMenu $w BevelTags BevelType $ay(bevelmodeswc)
     addParam $w BevelTags BevelRadius
     addCheck $w BevelTags BevelRevert
 
@@ -306,7 +316,7 @@ proc bevel_getBevels { } {
 		append cmd $i
 		append cmd " ${type}AttrData"
 		addCommand $w c$i $str $cmd
-		addMenu $w BevelTags ${bname}Type $ay(bevelmodes)
+		addMenu $w BevelTags ${bname}Type $ay(bevelmodeswc)
 		addParam $w BevelTags ${bname}Radius
 		addCheck $w BevelTags ${bname}Revert
 		addCheck $w BevelTags ${bname}Integrate
@@ -352,3 +362,45 @@ proc bevel_setBevels { } {
  return;
 }
 # bevel_setBevels
+
+
+proc bevel_updateCustomBevels { } {
+    global ay
+    set ay(bevelmodeswc) $ay(bevelmodes)
+    goTop
+    getLevel names types
+    set i 0
+    foreach name $names {
+	if { [string first "Bevels" $name] == 0 } {
+	    if { [lindex $types $i] eq "Level" } {
+		goDown $i
+		getLevel cnames ctypes
+		set j 0
+		foreach ctype $ctypes {
+		    if { $ctype eq "NCurve" } {
+			set cname [lindex $cnames $j]
+			if { [string first "(" $cname] > 0 } {
+			    set index [string first "(" $cname]
+			    incr index -1
+			    lappend ay(bevelmodeswc)\
+				[string range $cname 0 $index]
+			} else {
+			    lappend ay(bevelmodeswc) $cname
+			}
+		    }
+		    # if
+		    incr j
+		}
+		# foreach
+	    }
+	    # if
+	}
+	# if
+	incr i
+    }
+    # foreach
+    goTop
+    uS
+ return;
+}
+# bevel_updateCustomBevels

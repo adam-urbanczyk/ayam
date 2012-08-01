@@ -568,6 +568,12 @@ ay_bevel_notifycb(ay_object *o)
   npatch->type = AY_IDNPATCH;
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
+
+  if(!bcurve && (b_type < 0))
+    {
+      ay_bevelt_findbevelcurve(-b_type, &bcurve);
+    }
+
   if(!bcurve)
     {
       ay_status = ay_bevelt_create(b_type, b_radius, align, curve,

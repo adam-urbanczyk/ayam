@@ -593,7 +593,8 @@ array set ay {
  transformationshaders ""
  npdisplaymodes { "Global" "ControlHull" "OutlinePolygon (GLU)" "OutlinePatch (GLU)" "OutlinePatch (STESS)" }
  ncdisplaymodes { "Global" "ControlHull" "CurveAndHull (GLU)" "Curve (GLU)" "CurveAndHull (STESS)" "Curve (STESS)" }
- bevelmodes { "Round" "Linear" "Ridge" "RoundCapped" "LinearCapped" }
+ bevelmodes { "Round" "Linear" "Ridge" }
+ bevelmodeswc { "Round" "Linear" "Ridge" }
  prefssection Main
  GridSize 1.0
  FOV 45.0
