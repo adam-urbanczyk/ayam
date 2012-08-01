@@ -56,6 +56,10 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 int ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 		      ay_nurbpatch_object **bevel);
 
+/** Find cross section bevel curve.
+ */
+int ay_bevelt_findbevelcurve(int index, ay_object **c);
+
 /* capt.c */
 
 /** Create simple cap from (convex) curve.

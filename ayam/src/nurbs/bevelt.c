@@ -16,8 +16,6 @@
 
 /* prototypes of functions local to this module: */
 
-int ay_bevelt_findbevelcurve(int index, ay_object **c);
-
 int ay_bevelt_integrate(int side, ay_object *s, ay_object *b);
 
 /* functions: */
