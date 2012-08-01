@@ -316,7 +316,8 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
       break;
     default:
       /* XXXX issue proper error message */
-      break;
+      free(patch);
+      return AY_ERROR;
     } /* switch */
 
   if(!(vknotv = calloc(curve->length+curve->order,sizeof(double))))

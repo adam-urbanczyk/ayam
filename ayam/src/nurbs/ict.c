@@ -481,6 +481,8 @@ cleanup:
     free(lengths);
   if(vk)
     free(vk);
+  if(knotv)
+    free(knotv);
   if(ncv4D)
     free(ncv4D);
 
@@ -1159,7 +1161,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
       new = new_length - curve->length;
 
       if(!(newpersec = calloc((curve->length-1), sizeof(int))))
-	return AY_EOMEM;
+	{free(ncontrolv); return AY_EOMEM;}
       cv = curve->controlv;
 
       while(new)

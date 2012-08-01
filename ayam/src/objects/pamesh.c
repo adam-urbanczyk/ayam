@@ -1137,10 +1137,10 @@ ay_pamesh_wribcb(char *file, ay_object *o)
     {
       /* Yes, we have primitive variables. */
       if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
-	return AY_EOMEM;
+	{free(controls); return AY_EOMEM;}
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	{free(tokens); return AY_EOMEM;}
+	{free(controls); free(tokens); return AY_EOMEM;}
 
       tokens[0] = "Pw";
       parms[0] = (RtPointer)controls;
@@ -1159,6 +1159,7 @@ ay_pamesh_wribcb(char *file, ay_object *o)
       free(tokens);
       free(parms);
     } /* if */
+
   free(controls);
 
  return ay_status;

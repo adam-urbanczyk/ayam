@@ -640,7 +640,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      i++;
 	      o = o->next;
 	    }
-	  if(o->next && o->parent)
+	  if(o && o->next && o->parent)
 	    {
 	      /* all is well => descend for next level index */
 	      ay_status = ay_clevel_add(o);

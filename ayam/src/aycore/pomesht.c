@@ -866,14 +866,14 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
 
   if(!(new->controlv = (double *)calloc(1, pomesh->ncontrols * stride *
 					sizeof(double))))
-    { free(new); free(new->verts); return AY_EOMEM; }
+    { free(new->verts); free(new); return AY_EOMEM; }
 
   phash = (ay_pomesht_hash *)calloc(1, sizeof(ay_pomesht_hash));
   phash->T = total_verts/5;		/* hashtablesize */
   phash->c = 1024;
 
   if(ay_pomesht_inithash(phash) == AY_EOMEM)
-    { free(new); free(new->verts); free(new->controlv); return AY_EOMEM; }
+    { free(new->verts); free(new->controlv); free(new); return AY_EOMEM; }
 
   dp = 0;
 

@@ -1040,7 +1040,7 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
       new = new_length - curve->length;
 
       if(!(newpersec = calloc((curve->length-1), sizeof(int))))
-	return AY_EOMEM;
+	{free(ncontrolv); return AY_EOMEM;}
       cv = curve->controlv;
 
       while(new)

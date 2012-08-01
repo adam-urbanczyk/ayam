@@ -2213,7 +2213,7 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
       if(!(npatch->vknotv =
 	   calloc((npatch->height + npatch->vorder), sizeof(double))))
-	{ free(npatch); free(npatch->uknotv); return AY_EOMEM; }
+	{ free(npatch->uknotv); free(npatch); return AY_EOMEM; }
 
       for(i=0; i<(npatch->height + npatch->vorder); i++)
 	fscanf(fileptr,"%lg\n",&(npatch->vknotv[i]));
@@ -2370,11 +2370,11 @@ ay_npatch_wribcb(char *file, ay_object *o)
   vorder = (RtInt)patch->vorder;
 
   if((uknots = calloc(nu+uorder, sizeof(RtFloat))) == NULL)
-    return AY_EOMEM;
+    {ay_status = AY_EOMEM; goto cleanup;}
   if((vknots = calloc(nv+vorder, sizeof(RtFloat))) == NULL)
-    {free(uknots); return AY_EOMEM;}
+    {ay_status = AY_EOMEM; goto cleanup;}
   if((controls = calloc(nu*nv*(patch->is_rat?4:3), sizeof(RtFloat))) == NULL)
-    {free(uknots); free(vknots); return AY_EOMEM;}
+    {ay_status = AY_EOMEM; goto cleanup;}
 
   a = 0;
   for(i = 0; i < nu+uorder; i++)
@@ -2455,10 +2455,10 @@ ay_npatch_wribcb(char *file, ay_object *o)
     {
       /* Yes, we have primitive variables. */
       if(!(tokens = calloc(pvc+1, sizeof(RtToken))))
-	return AY_EOMEM;
+	{ay_status = AY_EOMEM; goto cleanup;}
 
       if(!(parms = calloc(pvc+1, sizeof(RtPointer))))
-	{free(tokens); return AY_EOMEM;}
+	{free(tokens); ay_status = AY_EOMEM; goto cleanup;}
 
       if(patch->is_rat)
 	tokens[0] = "Pw";
@@ -2487,16 +2487,21 @@ ay_npatch_wribcb(char *file, ay_object *o)
       free(parms);
     } /* if */
 
-  free(uknots);
-  free(vknots);
-  free(controls);
-
   cb = patch->caps_and_bevels;
   while(cb)
     {
       ay_wrib_object(file, cb);
       cb = cb->next;
     }
+
+cleanup:
+
+  if(uknots)
+    free(uknots);
+  if(vknots)
+    free(vknots);
+  if(controls)
+    free(controls);
 
  return ay_status;
 } /* ay_npatch_wribcb */
