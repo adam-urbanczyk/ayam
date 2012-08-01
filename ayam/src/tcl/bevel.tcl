@@ -85,7 +85,7 @@ proc bevel_setTags { bnames } {
 	    if { $type > 2 } {
 		set type [expr 2 - $type]
 	    }
-puts "newtype: $type"
+
 	    lappend newtags [format "%d,%d,%f,%d,%d" $i\
 				 $type\
 				 $BevelTags(${bname}Radius)\
@@ -364,6 +364,9 @@ proc bevel_setBevels { } {
 # bevel_setBevels
 
 
+# bevel_updateCustomBevels:
+#  manage the list of bevel types available e.g. via the "StartType"
+#  menu component in the "Bevels" property GUI
 proc bevel_updateCustomBevels { } {
     global ay
     set ay(bevelmodeswc) $ay(bevelmodes)
