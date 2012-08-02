@@ -224,15 +224,13 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
  double uknots_round[6] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.0};
  double uknots_linear[4] = {0.0, 0.0, 1.0, 1.0};
  double uknots_ridge[8] = {0.0, 0.0, 0.0, 0.25, 0.75, 1.0, 1.0, 1.0};
- double uknots_round_cap[8] = {0.0, 0.0, 0.0, 1.0, 1.0, 1.5, 1.5, 1.5};
- double uknots_linear_cap[5] = {0.0, 0.0, 0.75, 1.0, 1.0};
  /* vknots are taken from curve! */
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
  double x, y, z, w;
  double tangent[3] = {0}, normal[3] = {0}, zaxis[3] = {0.0, 0.0, -1.0};
  double ww = sqrt(2.0)/2.0, displacex, displacey;
  int i = 0, j = 0, a = 0, b = 0, k = 0;
- double m[16], point[4] = {0}, middle[4] = {0};
+ double m[16], point[4] = {0};
 
   if(!o || !bevel)
     return AY_ENULL;
@@ -284,32 +282,6 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 	patch->width = 5;
 	patch->uknot_type = AY_KTCUSTOM;
 	patch->is_rat = AY_TRUE;
-      }
-      break;
-    case 3:
-      {
-	if(!(controlv = calloc(5*4*curve->length, sizeof(double))))
-	  { free(patch); return AY_EOMEM; }
-	if(!(uknotv = calloc(8, sizeof(double))))
-	  { free(patch); free(controlv); return AY_EOMEM; }
-	memcpy(uknotv, uknots_round_cap, 8*sizeof(double));
-	patch->uorder = 3;
-	patch->width = 5;
-	patch->uknot_type = AY_KTCUSTOM;
-	patch->is_rat = AY_TRUE;
-      }
-      break;
-    case 4:
-      {
-	if(!(controlv = calloc(4*3*curve->length, sizeof(double))))
-	  { free(patch); return AY_EOMEM; }
-	if(!(uknotv = calloc(5, sizeof(double))))
-	  { free(patch); free(controlv); return AY_EOMEM; }
-	memcpy(uknotv, uknots_linear_cap, 5*sizeof(double));
-	patch->uorder = 2;
-	patch->width = 3;
-	patch->uknot_type = AY_KTNURB;
-	patch->is_rat = curve->is_rat;
       }
       break;
     default:
@@ -485,43 +457,6 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
       b += 4;
     } /* for */
-
-  /* transform cap loops */
-  if(type > 2)
-    {
-      /* calculate middle point, curve->type tells how many control
-	 points should be considered */
-      ay_status = ay_npt_extractmiddlepoint(curve->controlv, curve->length,
-					    1, 4, 0, 1, middle);
-
-      middle[2] = controlv[b-2];
-    } /* if */
-
-  if(type == 3)
-    {
-      memcpy(&(controlv[b]), &(controlv[b-(curve->length*4)]),
-	     curve->length*4*sizeof(double));
-      b += (curve->length*4);
-
-      /* now set complete last loop to middle point */
-      for(k = 0; k < curve->length; k++)
-	{
-	  memcpy(&(controlv[b]), middle, 3*sizeof(double));
-	  controlv[b+3] = 1.0;
-	  b += 4;
-	}
-    } /* if */
-
-  if(type == 4)
-    {
-      /* now set complete last loop to middle point */
-      for(k = 0; k < curve->length; k++)
-	{
-	  memcpy(&(controlv[b]), middle, 3*sizeof(double));
-	  controlv[b+3] = 1.0;
-	  b += 4;
-	}
-    } /* if */
 
   /* re-process first loop? */
   if(align)
