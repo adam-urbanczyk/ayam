@@ -567,8 +567,10 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  static ay_list_object *ocl = NULL;
+ static ay_object **oay_next = NULL;
  ay_list_object *tcl;
- ay_object *o = ay_root;
+ ay_object **tay_next = NULL;
+ ay_object *o = ay_root, *t;
  int i, lindex = 0;
  char *lc = NULL; /* level component */
 
@@ -587,6 +589,10 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	  tcl = ay_currentlevel;
 	  ay_currentlevel = ocl;
 	  ocl = tcl;
+
+	  tay_next = ay_next;
+	  ay_next = oay_next;
+	  oay_next = tay_next;
 	}
       else
 	{
@@ -598,6 +604,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       /* first, save current level, for a potential "cl -" */
+      oay_next = ay_next;
       ocl = ay_currentlevel;
       ay_currentlevel = NULL;
       ay_status = ay_clevel_dup(ocl);
@@ -616,12 +623,21 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      lc += 3;
 	    } /* while */
 	  o = ay_currentlevel->object;
+	  t = o;
 	}
       else
 	{
 	  /* no, absolute level */
 	  ay_status = ay_clevel_delall();
+	  t = ay_root;
 	} /* if */
+
+      ay_next = &(t->next);
+      while(t->next)
+	{
+	  ay_next = &(t->next);
+	  t = t->next;
+	}
 
       /* get first number */
       while(*lc != '\0' && !isdigit(*lc))
@@ -649,6 +665,7 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_error(AY_ERROR, argv[0], NULL);
 		  return TCL_OK;
 		}
+	      ay_next = &(o->down);
 	      o = o->down;
 	      ay_status = ay_clevel_add(o);
 	      if(ay_status)
@@ -656,6 +673,13 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_clevel_del();
 		  ay_error(AY_ERROR, argv[0], NULL);
 		  return TCL_OK;
+		}
+
+	      t = o;
+	      while(t->next)
+		{
+		  ay_next = &(t->next);
+		  t = t->next;
 		}
 	    }
 	  else
@@ -666,10 +690,13 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
 	      free(ay_currentlevel);
 	      ay_currentlevel = ocl;
 	      ocl = NULL;
+	      ay_next = oay_next;
+	      oay_next = NULL;
 	      /* report error */
 	      ay_error(AY_ERROR, argv[0], "could not find level");
 	      return TCL_OK;
 	    } /* if */
+
 	  /* jump over the index number that we just processed */
 	  while(*lc != '\0' && isdigit(*lc))
 	    {
