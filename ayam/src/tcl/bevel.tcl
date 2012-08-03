@@ -11,7 +11,7 @@
 
 
 proc bevel_parseTags { tagnames tagvalues bnames } {
-    global BevelTags
+    global ay BevelTags
 
     array set BevelTags {
 	Bevel0 0
@@ -40,7 +40,8 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 		BevelTags(${bname}Radius) BevelTags(${bname}Revert) \
 		BevelTags(${bname}Integrate)
 	    if { $type < 0 } {
-		set BevelTags(${bname}Type) [expr 2 + (-$type)]
+		set l [expr [llength $ay(bevelmodes)] - 1]
+		set BevelTags(${bname}Type) [expr $l + (-$type)]
 	    } else {
 		set BevelTags(${bname}Type) $type
 	    }
@@ -55,7 +56,7 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 
 
 proc bevel_setTags { bnames } {
-    global BevelTags
+    global ay BevelTags
 
     set newtags ""
     set oldtagnames ""
@@ -82,8 +83,9 @@ proc bevel_setTags { bnames } {
 	if { $BevelTags(Bevel${i}) } {
 	    lappend newtags BP
 	    set type $BevelTags(${bname}Type)
-	    if { $type > 2 } {
-		set type [expr 2 - $type]
+	    set l [expr [llength $ay(bevelmodes)] - 1]
+	    if { $type > $l } {
+		set type [expr $l - $type]
 	    }
 
 	    lappend newtags [format "%d,%d,%f,%d,%d" $i\
@@ -230,6 +232,9 @@ proc bevel_getAttr { } {
     # remove old, create new BevelAttr-UI
     catch {destroy $ay(pca).$BevelAttr(w)}
     set w [frame $ay(pca).$BevelAttr(w)]
+
+    bevel_updateCustomBevels
+
     getProp
 
     set tagnames ""
@@ -289,6 +294,8 @@ proc bevel_getBevels { } {
     set w [frame $ay(pca).$Bevels(w)]
 
     set ay(bok) $ay(appb)
+
+    bevel_updateCustomBevels
 
     getProp
 
@@ -370,7 +377,7 @@ proc bevel_setBevels { } {
 proc bevel_updateCustomBevels { } {
     global ay
     set ay(bevelmodeswc) $ay(bevelmodes)
-    goTop
+    cl :
     getLevel names types
     set i 0
     foreach name $names {
@@ -402,8 +409,7 @@ proc bevel_updateCustomBevels { } {
 	incr i
     }
     # foreach
-    goTop
-    uS
+    cl -
  return;
 }
 # bevel_updateCustomBevels
