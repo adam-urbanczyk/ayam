@@ -1124,7 +1124,8 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_ipatch_object *ipatch = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, *control = NULL, *c;
+ double *pecoord = NULL, **pecoords = NULL, **pecoordstmp;
+ double *control = NULL, *c;
  int i = 0, j = 0, a = 0, found = AY_FALSE;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -1313,8 +1314,14 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
+
 	      pecoords[a] = c;
 	      a++;
 	    } /* if */
@@ -1335,8 +1342,14 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
+		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		    {
+		      if(pecoords)
+			free(pecoords);
+		      return AY_EOMEM;
+		    }
+		  pecoords = pecoordstmp;
+
 		  pecoords[a] = c;
 		  a++;
 		} /* if */
@@ -1353,8 +1366,14 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
+		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		    {
+		      if(pecoords)
+			free(pecoords);
+		      return AY_EOMEM;
+		    }
+		  pecoords = pecoordstmp;
+
 		  pecoords[a] = c;
 		  a++;
 		} /* if */
@@ -1376,8 +1395,14 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
 
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
+		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		    {
+		      if(pecoords)
+			free(pecoords);
+		      return AY_EOMEM;
+		    }
+		  pecoords = pecoordstmp;
+
 		  pecoords[a] = c;
 		  a++;
 		} /* if */
@@ -1394,8 +1419,14 @@ ay_ipatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 		 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 		 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 		{
-		  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		    return AY_EOMEM;
+		  if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		    {
+		      if(pecoords)
+			free(pecoords);
+		      return AY_EOMEM;
+		    }
+		  pecoords = pecoordstmp;
+
 		  pecoords[a] = c;
 		  a++;
 		} /* if */

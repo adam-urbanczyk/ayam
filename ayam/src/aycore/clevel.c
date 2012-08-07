@@ -608,6 +608,15 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
       ocl = ay_currentlevel;
       ay_currentlevel = NULL;
       ay_status = ay_clevel_dup(ocl);
+      if(ay_status)
+	{
+	  ay_clevel_delall();
+	  ay_clevel_del();
+	  ay_next = oay_next;
+	  ay_currentlevel = ocl;
+	  ay_error(AY_ERROR, argv[0], "Could not save current level.");
+	  return TCL_OK;
+	}
 
       /* now, change to new level */
       lc = argv[1];
