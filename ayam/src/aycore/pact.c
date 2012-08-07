@@ -487,7 +487,6 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 			     (pact_pe.num + penumber)*sizeof(double*))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      free(pecoords);
 	      goto cleanup;
 	    }
 	  else
@@ -502,7 +501,6 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 			     (pact_pe.num + penumber)*sizeof(unsigned int))))
 	    {
 	      ay_error(AY_EOMEM, fname, NULL);
-	      free(pecoords); free(peindices);
 	      goto cleanup;
 	    }
 	  else
@@ -576,15 +574,28 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
     {
       if(pact_objectslen > 0)
 	o = pact_objects[0];
+      else
+	o = NULL;
       if(argc > 5)
 	ay_pact_flashpoint(AY_TRUE, pecoords?*pecoords:NULL, o);
       else
 	ay_pact_flashpoint(AY_FALSE, pecoords?*pecoords:NULL, o);
     } /* if */
 
+  pecoords = NULL;
+  peindices = NULL;
+
 cleanup:
 
   ay_prefs.pick_epsilon = oldpickepsilon;
+
+  if(ay_status)
+    {
+      if(pecoords)
+	free(pecoords);
+      if(peindices)
+	free(peindices);
+    }
 
  return TCL_OK;
 } /* ay_pact_startpetcb */
