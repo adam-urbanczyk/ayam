@@ -383,8 +383,9 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_bpatch_object *bpatch = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, **pecoordstmp, *c = NULL;
+ double *pecoord = NULL, **ctmp, *c = NULL;
  int i, j, a;
+ unsigned int *itmp, peindex = 0;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -405,10 +406,18 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(4, sizeof(double*))))
 	return AY_EOMEM;
 
+      if(!(pe->indices = calloc(4, sizeof(unsigned int))))
+	return AY_EOMEM;
+
       pe->coords[0] = bpatch->p1;
       pe->coords[1] = bpatch->p2;
       pe->coords[2] = bpatch->p3;
       pe->coords[3] = bpatch->p4;
+
+      pe->indices[0] = 0;
+      pe->indices[1] = 1;
+      pe->indices[2] = 2;
+      pe->indices[3] = 3;
 
       pe->num = 4;
       break;
@@ -422,6 +431,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = bpatch->p1;
+	  peindex = 0;
 	  min_dist = dist;
 	}
 
@@ -432,6 +442,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = bpatch->p2;
+	  peindex = 1;
 	  min_dist = dist;
 	}
 
@@ -442,6 +453,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = bpatch->p3;
+	  peindex = 2;
 	  min_dist = dist;
 	}
 
@@ -452,6 +464,7 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = bpatch->p4;
+	  peindex = 3;
 	  /*min_dist = dist;*/
 	}
 
@@ -461,7 +474,11 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(!(pe->coords = calloc(1, sizeof(double*))))
 	return AY_EOMEM;
 
+      if(!(pe->indices = calloc(1, sizeof(unsigned int))))
+	return AY_EOMEM;
+
       pe->coords[0] = pecoord;
+      pe->indices[0] = peindex;
       pe->num = 1;
       break;
     case 2:
@@ -485,25 +502,21 @@ ay_bpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
-		{
-		  if(pecoords)
-		    free(pecoords);
-		  return AY_EOMEM;
-		}
-	      pecoords = pecoordstmp;
+	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pe->coords = ctmp;
+	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+	      pe->indices = itmp;
 
-	      pecoords[a] = &(c[0]);
+	      pe->coords[a] = &(c[0]);
+	      pe->indices[a] = i;
 	      a++;
 	    } /* if */
 
 	  j += 4;
 	} /* for */
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      pe->coords = pecoords;
       pe->num = a;
       break;
     case 3:
