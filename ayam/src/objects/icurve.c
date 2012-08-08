@@ -645,11 +645,11 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_icurve_object *icurve = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, **pecoordstmp;
+ double *pecoord = NULL, **ctmp;
  double *control = NULL, *c = NULL;
  int i = 0, j = 0, a = 0;
  const int stride = 3;
- unsigned int *peindices = NULL, *peindicestmp, peindex = 0;
+ unsigned int *itmp, peindex = 0;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -773,30 +773,15 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pe->coords = ctmp;
+	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+	      pe->indices = itmp;
 
-	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
-		{
-		  if(pecoords)
-		    free(pecoords);
-		  if(peindices)
-		    free(peindices);
-		  return AY_EOMEM;
-		}
-	      pecoords = pecoordstmp;
-
-	      if(!(peindicestmp = realloc(peindices,
-				       (a+1)*sizeof(unsigned int))))
-		{
-		  if(pecoords)
-		    free(pecoords);
-		  if(peindices)
-		    free(peindices);
-		  return AY_EOMEM;
-		}
-	      peindices = peindicestmp;
-
-	      pecoords[a] = &(control[j]);
-	      peindices[a] = i;
+	      pe->coords[a] = &(control[j]);
+	      pe->indices[a] = i;
 	      a++;
 	    } /* if */
 
@@ -813,14 +798,15 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pe->coords = ctmp;
+	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+	      pe->indices = itmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      if(!(peindices = realloc(peindices,
-				       (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
-	      pecoords[a] = icurve->sderiv;
-	      peindices[a] = icurve->length;
+	      pe->coords[a] = icurve->sderiv;
+	      pe->indices[a] = icurve->length;
 	      a++;
 	    } /* if */
 
@@ -832,23 +818,19 @@ ay_icurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
+	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
+		return AY_EOMEM;
+	      pe->coords = ctmp;
+	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
+		return AY_EOMEM;
+	      pe->indices = itmp;
 
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
-	      if(!(peindices = realloc(peindices,
-				       (a+1)*sizeof(unsigned int))))
-		return AY_EOMEM;
-	      pecoords[a] = icurve->ederiv;
-	      peindices[a] = icurve->length+1;
+	      pe->coords[a] = icurve->ederiv;
+	      pe->indices[a] = icurve->length+1;
 	      a++;
 	    } /* if */
 	} /* if */
 
-      if(!pecoords)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      pe->coords = pecoords;
-      pe->indices = peindices;
       pe->num = a;
 
       break;
