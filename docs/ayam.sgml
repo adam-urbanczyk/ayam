@@ -8363,8 +8363,6 @@ Since Ayam 1.19 the bevel object supports a second parameter curve
 that defines the bevels cross section shape. It should run from
 0,0 to 1,1. If present, the type parameter is ignored (with one
 notable exception) as the shape of the bevel is defined by the second curve.
-If the type is <tt/"RoundCapped"/ or <tt/"LinearCapped"/ the bevel
-will be extended to a cap.
 Note that even if the curve should end at 1,1, this is not mandatory
 and allows for bevels of differing width and height to be created.
 <p>
@@ -8395,18 +8393,15 @@ the creation of the bevelled surface:
 
  <item><tt/"Ridge"/ a more complex ridged surface,
 
- <item><tt/"RoundCapped"/ a quarter circle followed by a cap made by placing
-a single point in the center of the last bevel profile and extending the
-beveled surface to this point,
-
- <item><tt/"LinearCapped"/ a straight bevel followed by a cap made by placing
-a single point in the center of the last bevel profile and extending the
-beveled surface to this point.
+ <item>Any curves defined in a global level named <tt/"Bevels"/
+also appear as potential bevel type. Those curves should follow
+the rules layed out above for the second parameter curve.
  </itemize>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
-lead to degenerated NURBS surfaces. If applied shaders or textures
-look wrong, consider creation of real cap surfaces instead.
+are no longer available
+<footnote>Since Ayam 1.21.</footnote>,
+use the <tt/"Caps"/ property to create caps.
 
 <item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
 from the top of the parameter curve. Note that the size of the bevel is
@@ -8652,6 +8647,14 @@ U direction.
 <img src="pics/concatnpuv.gif">
 <caption>Concatenating two Surfaces with UVSelect == "uV"</caption>
 </figure>
+
+<item><tt/"Compatible"/ controls whether the curves should be
+made compatible before the concatenated surface is built from
+them. If this option is turned off (the default), the curves
+are made compatible. Turn this option on if the surfaces to be
+concatenated are already compatible and their knot vectors are unclamped.
+The output surface will then also be unclamped (in V direction).
+
 </itemize>
 <itemize>
 <item>Finally, a <tt/"NPInfo"/ field informs about the actual configuration
@@ -9424,7 +9427,7 @@ are documented in the next sections:
 <sect1>SfCurve (Superformula Curve) Object<label id="sfcurveobj">
 <p>
 The SfCurve object creates a superformula curve from four parameters
-named m, n1, n2, and n3 (see also the image below).
+named <tt/m/, <tt/n1/, <tt/n2/, and <tt/n3/ (see also the image below).
 The superformula is a generalization of the superellipse; in polar
 coordinates it is defined as:
 <#if out=latex>
@@ -9442,7 +9445,8 @@ r(t) = (cos((m&middot;t)/4)<sup/n2/ + sin((m&middot;t)/4)<sup/n3/)<sup>-(1/n1)</
 where r is the radius and t the angle. The SfCurve object allows
 to specify start and end values for t as well as the number of
 sample points inbetween.<newline>
-The generated NURBS curve is always closed, but the order may be configured.
+The generated NURBS curve is always closed, but the order may be configured
+freely.
 <p>
 <figure loc="!ht">
 <eps file="pics/sfcurve.ps" height="5cm">
@@ -10040,6 +10044,35 @@ on the parameter names in the shader property GUI and then use
 e.g.~<tt>"Edit/Copy Marked Prop"</tt>
 (see also the description of the property clipboard in section
 <ref id="propgui" name="Properties">).
+
+<sect2>Caps Property<label id="capsprop">
+<p>
+Many tool object have a <tt/"Caps"/ property to easily close the
+created surface.
+<p>
+The type option of the Caps property is also available for the
+Cap object (see section <ref id="capp" name="CapAttr Property">
+for more information on the available cap types).
+<p>
+In addition, the Caps property allows to integrate caps of type
+<tt/"Simple"/ with the surface of the tool object
+(after the potential integration of bevels).
+<p>
+The exact names of the options available in this property are
+object type specific as each objects boundary names are different.
+
+<sect2>Bevels Property<label id="bevelsprop">
+<p>
+Many tool object have a <tt/"Bevels"/ property to easily round the
+otherwise sharp borders of the created surface.
+<p>
+Many options of the Bevels property are also available for the
+Bevel object (see also <ref id="bevelp" name="BevelAttr Property">).
+In addition to those options, the Bevels property allows to integrate
+the created bevel surface with the surface of the tool object.
+<p>
+The exact names of the options available in this property are
+object type specific as each objects boundary names are different.
 
 <sect2>Tags Property<label id="tagsprop">
 <p>
@@ -17776,7 +17809,7 @@ aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
 See also section <ref id="spplugins" name="Shader Parsing Plugins">.
 
 <item>custom objects:<newline>
-metaobj, sdnpatch, csphere.
+metaobj, sdnpatch, sfcurve, csphere.
 
 See also section <ref id="customobj" name="Custom Objects">.
 
@@ -18478,6 +18511,7 @@ Index:
 <item>Bevel:
 <itemize>
 <item><ref id="bevelobj" name="Bevel object">,
+<item><ref id="bevelsprop" name="Bevels Property">,
 <item><ref id="handb" name="using bevels">,
 <item><ref id="offsetncp" name="offset mode">
 </itemize>
@@ -18509,7 +18543,10 @@ Index:
 <item><ref id="cameraobj" name="Camera object">,
 <item><ref id="camp" name="view property">
 </itemize>
-<item>Cap: <ref id="capobj" name="Cap object">
+<itemize>
+<item>Cap: <ref id="capobj" name="Cap object">,
+<item><ref id="capsprop" name="Caps Property">
+</itemize>
 <item>CastShadows: <ref id="riattrs" name="RenderMan/BMRT attribute">
 <item>Cat: <ref id="hidprefs" name="hidden preference setting">
 <item>Chamfer: <ref id="bevelobj" name="Bevel object">,
@@ -18564,6 +18601,7 @@ Index:
 <item><ref id="riattrs" name="RenderMan/BMRT attribute">,
 <item><ref id="lip" name="Light attribute">
 </itemize>
+<item>Compatible: <ref id="concatnpp" name="ConcatNP attribute">
 <item>CompleteNotify: <ref id="prefmodel" name="preference setting">
 <item>copOb: <ref id="sccopob" name="scripting interface command">
 <item>Copy: <ref id="mmedit" name="main menu entry">
