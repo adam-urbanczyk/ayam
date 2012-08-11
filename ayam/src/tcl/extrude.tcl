@@ -28,7 +28,7 @@ proc extrude_getAttr { } {
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues
+    bevel_parseTags $tagnames $tagvalues $ExtrudeAttrData(BoundaryNames)
 
     set ay(bok) $ay(appb)
 
@@ -37,20 +37,20 @@ proc extrude_getAttr { } {
     addCheck $w ExtrudeAttrData StartCap
     addCheck $w ExtrudeAttrData EndCap
 
-    if { $BevelTags(HasStartBevel) } {
+    if { $BevelTags(Bevel0) } {
 	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 ExtrudeAttrData"
-	addMenu $w BevelTags SBType $ay(bevelmodes)
-	addParam $w BevelTags SBRadius
-	addCheck $w BevelTags SBRevert
+	addMenu $w BevelTags StartType $ay(bevelmodes)
+	addParam $w BevelTags StartRadius
+	addCheck $w BevelTags StartRevert
     } else {
 	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 ExtrudeAttrData"
     }
 
-    if { $BevelTags(HasEndBevel) } {
+    if { $BevelTags(Bevel1) } {
 	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 ExtrudeAttrData"
-	addMenu $w BevelTags EBType $ay(bevelmodes)
-	addParam $w BevelTags EBRadius
-	addCheck $w BevelTags EBRevert
+	addMenu $w BevelTags EndType $ay(bevelmodes)
+	addParam $w BevelTags EndRadius
+	addCheck $w BevelTags EndRevert
     } else {
 	addCommand $w c2 "Add End Bevel!" "bevel_add 1 ExtrudeAttrData"
     }
@@ -68,7 +68,7 @@ proc extrude_getAttr { } {
 
 proc extrude_setAttr { } {
 
-    bevel_setTags
+    bevel_setTags $::ExtrudeAttrData(BoundaryNames)
     setProp
 
  return;
@@ -86,4 +86,5 @@ array set ExtrudeAttr {
 array set ExtrudeAttrData {
     DisplayMode 1
     BevelType 0
+    BoundaryNames { "Start" "End" }
 }
