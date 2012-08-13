@@ -1656,6 +1656,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  char *n1 = "NPatchAttrData";
  char fname[] = "npatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ ay_object *b;
  ay_nurbpatch_object *npatch = NULL;
  int new_uorder, new_width, new_uknot_type, uknots_modified = 0;
  int new_vorder, new_height, new_vknot_type, vknots_modified = 0;
@@ -2006,6 +2007,18 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_notify_object(o);
 
       o->modified = AY_TRUE;
+    }
+  else
+    {
+      b = npatch->caps_and_bevels;
+      while(b)
+	{
+	  ((ay_nurbpatch_object *) (b->refine))->glu_sampling_tolerance =
+	    npatch->glu_sampling_tolerance;
+	  ((ay_nurbpatch_object *) (b->refine))->display_mode =
+	    npatch->display_mode; 
+	  b = b->next;
+	}
     }
 
   ay_status = ay_notify_parent();
