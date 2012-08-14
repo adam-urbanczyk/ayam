@@ -590,6 +590,12 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	      goto cleanup;
 	    }
 
+	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)extrcurve->refine))
+	    {
+	      ay_object_deletemulti(extrcurve);
+	      continue;
+	    }
+
 	  switch(caps[i])
 	    {
 	    case 1:
