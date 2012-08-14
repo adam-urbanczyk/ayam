@@ -3752,7 +3752,6 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-	      tmpc = NULL;
 	      tmpc = (double**)realloc(pe->coords,
 			(pe->num+1) * sizeof(double*));
 	      if(tmpc)
@@ -3762,7 +3761,6 @@ sdnpatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
 	      pe->coords[pe->num] = c;
 
-	      tmpi = NULL;
 	      tmpi = (unsigned int*)realloc(pe->indices,
 			(pe->num+1) * sizeof(unsigned int));
 	      if(tmpi)
