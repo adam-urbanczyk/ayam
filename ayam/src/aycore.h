@@ -111,6 +111,10 @@ int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
+/** Tcl command to move the selected objects around in the current level.
+ */
+int ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
 
 /* comp.c */
 

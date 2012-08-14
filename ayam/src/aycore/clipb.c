@@ -439,3 +439,108 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_clipb_replacetcmd */
+
+
+/* ay_clipb_hmovtcmd:
+ *  Implements the \a upOb scripting interface command.
+ *  See also the corresponding section in the \ayd{scupob}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ ay_list_object *sel = ay_selection;
+ ay_object *s1, *s2, *l, *t, **before;
+
+  if(argv[0][0] == 'u')
+    {
+      while(sel)
+	{
+	  s1 = sel->object;
+
+	  if(s1 == ay_currentlevel->object)
+	    continue;
+
+	  if(ay_currentlevel->object == ay_root)
+	    before = &(ay_root->next);
+	  else
+	    before = &(ay_currentlevel->next->object->next);
+
+	  l = ay_currentlevel->object;
+	  while(l)
+	    {
+	      if(l->next == s1)
+		{
+		  s2 = s1;
+		  while(l->next && sel->next && sel->next->object == l->next)
+		    {
+		      s2 = s2->next;
+		      l = l->next;
+		      sel = sel->next;
+		    }
+
+		  /* swap l->next and l (move up s1-s2 one object)*/
+		  *before = s1;
+		  t = s2->next;
+		  s2->next = l;
+		  l->next = t;
+		  if(l == ay_currentlevel->object)
+		    ay_currentlevel->object = s1;
+		  break;
+		}
+	      before = &(l->next);
+	      l = l->next;
+	    } /* while */
+	  sel = sel->next;
+	} /* while */
+    }
+  else
+    {
+      while(sel)
+	{
+	  s1 = sel->object;
+
+	  if(ay_currentlevel->object == ay_root)
+	    before = &(ay_root->next);
+	  else
+	    before = &(ay_currentlevel->next->object->next);
+
+	  l = ay_currentlevel->object;
+	  while(l && (l->next != ay_endlevel))
+	    {
+	      if(l == s1 && l->next)
+		{
+		  s2 = s1;
+		  while(l->next && sel->next && sel->next->object == l->next)
+		    {
+		      s2 = s2->next;
+		      l = l->next;
+		      sel = sel->next;
+		    }
+		  /* swap l->next and l (move down s1-s2 one object)*/
+		  *before = l->next;
+		  t = l->next->next;
+		  l->next->next = s1;
+		  s2->next = t;
+		  if(s1 == ay_currentlevel->object)
+		    ay_currentlevel->object = l;
+		  break;
+		}
+	      before = &(l->next);
+	      l = l->next;
+	    } /* while */
+	  sel = sel->next;
+	} /* while */
+    } /* if */
+
+  l = ay_currentlevel->object;
+  while(l && l->next)
+    {
+      ay_next = &(l->next);
+      l = l->next;
+    }
+
+ return TCL_OK;
+} /* ay_clipb_hmovtcmd */
