@@ -8503,9 +8503,14 @@ The following parameters control the cap creation process:
 
 <sect2>CapAttr Property<label id="capp"><label id="capattrprop">
 <p>
-The attribute <tt/"Type"/ determines whether a trimmed NURBS surface
-should be created (type <tt/"Trim"/), or an untrimmed Gordon surface
-(type <tt/"Gordon"/), see also the general discussion about the cap
+The attribute <tt/"Type"/ allows to select one of the following
+cap creation methods:
+<itemize>
+<item><tt/"Trim"/): a trimmed NURBS surface,
+<item><tt/"Simple"/): a simple cap,
+<item><tt/"Gordon"/): an untrimmed Gordon surface
+</itemize>
+See also the general discussion about the cap
 object above.
 <p>
 See section <ref id="npattr" name="NPatchAttr"> for a description
@@ -10034,11 +10039,11 @@ changes, simply copy the shader property using the property clipboard
 you load the new default values and paste the property
 back using <tt>"Edit/Paste Property"</tt> after loading of the
 new default values.
-Beware! This works properly only, if you do not change the type of
-existing shader arguments and if no shader arguments are removed in
+Beware! This works properly only, if the type of existing shader arguments
+does not change and if no shader arguments are removed in
 the new version of the shader.
 <p>
-You can also just copy certain parameter values (shader arguments
+One can also just copy certain parameter values (shader arguments
 whose types do not change) by selecting them using double-clicks
 on the parameter names in the shader property GUI and then use
 e.g.~<tt>"Edit/Copy Marked Prop"</tt>
@@ -10050,29 +10055,32 @@ e.g.~<tt>"Edit/Copy Marked Prop"</tt>
 Many tool object have a <tt/"Caps"/ property to easily close the
 created surface.
 <p>
-The type option of the Caps property is also available for the
-Cap object (see section <ref id="capp" name="CapAttr Property">
+The exact names of the attributes available in this property are
+object type specific as each object types boundary names are different:
+the boundary names of a Skin object are e.g. <tt/"Left"/, <tt/"Right"/,
+<tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
+are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
+<p>
+For each boundary a menu button will appear that allows to set the
+corresponding cap type (see section <ref id="capp" name="CapAttr Property">
 for more information on the available cap types).
 <p>
-In addition, the Caps property allows to integrate caps of type
-<tt/"Simple"/ with the surface of the tool object
-(after the potential integration of bevels).
-<p>
-The exact names of the options available in this property are
-object type specific as each objects boundary names are different.
+In addition, the Caps property allows to create caps that integrate with
+the surface of the tool object (after the potential integration of bevels)
+via the cap type <tt/"SimpleInt"/.
 
 <sect2>Bevels Property<label id="bevelsprop">
 <p>
 Many tool object have a <tt/"Bevels"/ property to easily round the
 otherwise sharp borders of the created surface.
 <p>
-Many options of the Bevels property are also available for the
+Many attributes of the Bevels property are also available for the
 Bevel object (see also <ref id="bevelp" name="BevelAttr Property">).
-In addition to those options, the Bevels property allows to integrate
+In addition to those attributes, the Bevels property allows to integrate
 the created bevel surface with the surface of the tool object.
 <p>
-The exact names of the options available in this property are
-object type specific as each objects boundary names are different.
+The exact names of the attributes available in this property are
+object type specific as each object types boundary names are different.
 
 <sect2>Tags Property<label id="tagsprop">
 <p>
@@ -15205,13 +15213,14 @@ until Ayam exits.
 
 <sect2>Accessing JavaScript from Tcl and Script Objects
 <p>
-To access the JavaScript functionality from the Tcl scripting interface,
-the <tt>"jsEval"</tt> command can be used to directly execute JavaScript
-code (Tcl code in <bf>bold</bf>):
+The JavaScript functionality may be accessed from the Tcl scripting interface
+via the <tt>"jsEval"</tt> command. The command can be used either to
+directly execute JavaScript code provided via the commands argument
+(Tcl code in <bf>bold</bf>):
 <tscreen>
 <tt>&raquo;&thinsp;<bf>jsEval {</bf>var a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
 </tscreen>
-or from a file:
+or to execute JavaScript code from a file:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>jsEval -f scriptfile.js</bf></tt>
 </tscreen>
@@ -15230,8 +15239,9 @@ the following code fails:
 <tscreen>
 <tt>tcleval("<bf>exit</bf>");</tt>
 </tscreen>
-it does not fail, when the calling context ist the main Tcl interpreter;
-one can e.g.~type into the Ayam console:
+because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
+The command will not fail, when the calling context ist the main Tcl
+interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
 <tt><bf>jsEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
 </tscreen>
@@ -15283,7 +15293,8 @@ functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to JavaScript
 according to the rules for data conversion as documented below.
 However, due to the conversion to string data, the overhead of
-such a call is considerable.
+such a call is considerable and data transport should be arranged
+by other means, see below.
 
 <#if out=latex><x/phantomsection/</#if>
 
@@ -15500,13 +15511,14 @@ until Ayam exits.
 
 <sect2>Accessing Lua from Tcl and Script Objects
 <p>
-To access the Lua functionality from the Tcl scripting interface,
-the <tt>"luaEval"</tt> command can be used to directly execute Lua
-code (Tcl code in <bf>bold</bf>):
+The Lua functionality may be accessed from the Tcl scripting interface
+via the <tt>"luaEval"</tt> command. The command can be used either to
+directly execute Lua code provided via the commands argument
+(Tcl code in <bf>bold</bf>):
 <tscreen>
 <tt>&raquo;&thinsp;<bf>luaEval {</bf>a = 0; a = a + 5.5; tclset("a", a);<bf>}</bf></tt>
 </tscreen>
-or from a file:
+or to execute Lua code from a file:
 <tscreen>
 <tt>&raquo;&thinsp;<bf>luaEval -f scriptfile.lua</bf></tt>
 </tscreen>
@@ -15525,8 +15537,9 @@ the following code fails:
 <tscreen>
 <tt>tcleval("<bf>exit</bf>");</tt>
 </tscreen>
-it does not fail, when the calling context ist the main Tcl interpreter;
-one can e.g.~type into the Ayam console:
+because the Tcl command <tt/"exit"/ is not available in the safe interpreter.
+The command will not fail, when the calling context ist the main Tcl
+interpreter; one can e.g.~type into the Ayam console:
 <tscreen>
 <tt><bf>luaEval {</bf>tcleval("<bf>exit</bf>");<bf/}/</tt>
 </tscreen>
@@ -15578,7 +15591,8 @@ functionality of Ayam that is just available as a Tcl procedure.
 Note that return values are properly transferred back to Lua
 according to the rules for data conversion as documented below.
 However, due to the conversion to string data, the overhead of
-such a call is considerable.
+such a call is considerable and data transport should be arranged
+by other means, see below.
 
 <#if out=latex><x/phantomsection/</#if>
 
