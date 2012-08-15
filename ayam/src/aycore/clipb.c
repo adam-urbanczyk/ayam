@@ -525,6 +525,8 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		      l = l->next;
 		      sel = sel->next;
 		    }
+		  if(l->next == ay_endlevel)
+		    break;
 		  /* swap l->next and l (move down s1-s2 one object)*/
 		  if(s1 == ay_currentlevel->object)
 		    {ay_currentlevel->object = s2->next;}
