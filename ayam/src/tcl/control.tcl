@@ -911,3 +911,58 @@ proc popSel { } {
     return;
 }
 # popSel
+
+
+# selMUD:
+#  move the selected object(s) up or down in the current level
+#
+proc selMUD { up } {
+    global ay
+    if { $ay(lb) == 0 } {
+	# tree
+
+	set w  $ay(tree)
+	set sel ""
+	set sel [$w selection get]
+	if { $sel ne "" } {
+	    if { $up == 1 } {
+		upOb
+		if { $ay(CurrentLevel) == "root" } {
+		    set first 1
+		} else {
+		    set first 0
+		}
+	    } else {
+		downOb
+		getLevel -l ll
+		if { $ay(CurrentLevel) == "root" } {
+		    incr ll -1
+		}
+	    }
+	    $w selection clear
+	    uCL cl
+	    foreach s $sel {
+		set i [string range $s [expr [string last ":" $s]+1] end]
+		if { $up } {
+		    if { $i > $first } {
+			incr i -1
+			set s [string range $s 0 [string last ":" $s]]
+			append s $i
+		    }
+		} else {
+		    if { $i < $ll } {
+			incr i
+			set s [string range $s 0 [string last ":" $s]]
+			append s $i
+		    }
+		}
+
+		$w selection add $s
+	    }
+	}
+    } else {
+	# listbox
+
+    }
+}
+# selMUD
