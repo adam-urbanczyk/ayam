@@ -460,13 +460,16 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  s1 = sel->object;
 
-	  if(s1 == ay_currentlevel->object)
-	    continue;
+	  if(s1 == ay_root)
+	    break;
 
 	  if(ay_currentlevel->object == ay_root)
 	    before = &(ay_root->next);
 	  else
-	    before = &(ay_currentlevel->next->object->next);
+	    before = &(ay_currentlevel->next->object->down);
+
+	  if(*before == s1)
+	    break;
 
 	  l = ay_currentlevel->object;
 	  while(l)
@@ -502,10 +505,13 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  s1 = sel->object;
 
+	  if(s1 == ay_root)
+	    break;
+
 	  if(ay_currentlevel->object == ay_root)
 	    before = &(ay_root->next);
 	  else
-	    before = &(ay_currentlevel->next->object->next);
+	    before = &(ay_currentlevel->next->object->down);
 
 	  l = ay_currentlevel->object;
 	  while(l && (l->next != ay_endlevel))
@@ -520,12 +526,12 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		      sel = sel->next;
 		    }
 		  /* swap l->next and l (move down s1-s2 one object)*/
+		  if(s1 == ay_currentlevel->object)
+		    {ay_currentlevel->object = s2->next;}
 		  *before = l->next;
 		  t = l->next->next;
 		  l->next->next = s1;
 		  s2->next = t;
-		  if(s1 == ay_currentlevel->object)
-		    ay_currentlevel->object = l;
 		  break;
 		}
 	      before = &(l->next);
