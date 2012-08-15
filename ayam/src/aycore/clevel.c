@@ -423,32 +423,57 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  ay_object *o = ay_currentlevel->object;
- char *name = NULL;
- char *typename = NULL;
+ char *name;
+ char *typename;
  Tcl_DString ds;
+ int count = 0;
+ Tcl_Obj *to = NULL, *toa = NULL;
 
   /* check args */
-  if(argc != 3)
+  if(argc < 2)
     {
-      ay_error(AY_EARGS, argv[0], "varname varname");
+      ay_error(AY_EARGS, argv[0], "[-l] varname [varname]");
+      return TCL_OK;
+    }
+
+  if(!o)
+    {
+      ay_error(AY_ENULL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  if(argv[1][0] == '-' && argv[1][1] == 'l')
+    {
+      /* just count the objects in the current level */
+      while(o->next)
+	{
+	  count++;
+	  o = o->next;
+	}
+
+      toa = Tcl_NewStringObj(argv[2], -1);
+      to = Tcl_NewIntObj(count);
+      Tcl_ObjSetVar2(interp, toa, NULL, to, TCL_LEAVE_ERR_MSG);
+
       return TCL_OK;
     }
 
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
-  Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
+  if(argc > 1)
+    Tcl_SetVar(interp, argv[2], "", TCL_LEAVE_ERR_MSG);
 
   if(ay_currentlevel->object != ay_root)
     {
       Tcl_SetVar(interp, argv[1], "..",
 		 TCL_APPEND_VALUE | TCL_LEAVE_ERR_MSG);
-      Tcl_SetVar(interp, argv[2], "..",
-		 TCL_APPEND_VALUE | TCL_LEAVE_ERR_MSG);
+      if(argc > 1)
+	Tcl_SetVar(interp, argv[2], "..",
+		   TCL_APPEND_VALUE | TCL_LEAVE_ERR_MSG);
     }
 
   /* o->next because we silently discard the ever present EndLevel object */
   while(o->next)
     {
-      name = NULL;
       name = ay_object_getname(o);
 
       if(name)
@@ -521,17 +546,19 @@ ay_clevel_gettcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	} /* if */
 
-      typename = NULL;
-      typename = ay_object_gettypename(o->type);
-      if(typename)
+      if(argc > 1)
 	{
-	  Tcl_SetVar(interp, argv[2], typename, TCL_APPEND_VALUE |
-		     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
-	}
-      else
-	{
-	  ay_error(AY_ENULL, argv[0], NULL);
-	  return TCL_OK;
+	  typename = ay_object_gettypename(o->type);
+	  if(typename)
+	    {
+	      Tcl_SetVar(interp, argv[2], typename, TCL_APPEND_VALUE |
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
+	    }
+	  else
+	    {
+	      ay_error(AY_ENULL, argv[0], NULL);
+	      return TCL_OK;
+	    }
 	}
 
       o = o->next;
