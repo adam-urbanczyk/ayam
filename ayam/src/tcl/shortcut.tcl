@@ -284,7 +284,6 @@ proc shortcut_main { w } {
     bind $w <End> "selNPFL 3"
 
     bind $w <Alt-Key-Up> {selMUD 1;break}
-
     bind $w <Alt-Key-Down> {selMUD 0;break}
 
     bind $w <space> {

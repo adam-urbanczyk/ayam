@@ -918,29 +918,39 @@ proc popSel { } {
 #
 proc selMUD { up } {
     global ay
+
     if { $ay(lb) == 0 } {
 	# tree
-
 	set w  $ay(tree)
 	set sel ""
 	set sel [$w selection get]
 	if { $sel ne "" } {
+	    set s [lindex $sel 0]
+	    set i [string range $s [expr [string last ":" $s]+1] end]
+	    if { $ay(CurrentLevel) == "root" && $i == 0} { return; }
 	    if { $up == 1 } {
 		upOb
 		if { $ay(CurrentLevel) == "root" } {
 		    set first 1
+		    if { $i == 0 || $i == 1 } { return; }
 		} else {
 		    set first 0
+		    if { $i == 0 } { return; }
 		}
 	    } else {
 		downOb
 		getLevel -l ll
+		set s [lindex $sel end]
+		set i [string range $s [expr [string last ":" $s]+1] end]
 		if { $ay(CurrentLevel) == "root" } {
 		    incr ll -1
+		    if { $i == $ll } { return; }
+		} else {
+		    if { $i == [expr $ll - 1] } { return; }
 		}
 	    }
 	    $w selection clear
-	    uCL cl
+	    uS 0
 	    foreach s $sel {
 		set i [string range $s [expr [string last ":" $s]+1] end]
 		if { $up } {
@@ -962,7 +972,32 @@ proc selMUD { up } {
 	}
     } else {
 	# listbox
-
+	set w  $ay(olb)
+	set sel ""
+	set sel [$w curselection]
+	if { $sel ne "" } {
+	    set i [lindex $sel 0]
+	    if { $i == 0} { return; }
+	    if { $up == 1 } {
+		if { $i == 1 } { return; }
+		upOb
+	    } else {
+		set ll [expr [$w index end]-1]
+		set i [lindex $sel end]
+		if { $i == $ll } { return; }
+		downOb
+	    }
+	    $w selection clear 0 end
+	    uS 0
+	    foreach i $sel {
+		if { $up } {
+		    incr i -1
+		} else {
+		    incr i
+		}
+		$w selection set $i
+	    }
+	}
     }
 }
 # selMUD
