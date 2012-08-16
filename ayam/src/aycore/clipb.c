@@ -454,8 +454,15 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  ay_object *s1, *s2, *l, *t, **before;
 
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
   if(argv[0][0] == 'u')
     {
+      /* move object upwards */
       while(sel)
 	{
 	  s1 = sel->object;
@@ -501,6 +508,21 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     {
+      /* move object downwards */
+      while(sel->next)
+	{
+	  sel = sel->next;
+	}
+      l = ay_currentlevel->object;
+      while(l->next != ay_endlevel)
+	{
+	  l = l->next;
+	}
+
+      if(sel->object == l)
+	return TCL_OK;
+
+      sel = ay_selection;
       while(sel)
 	{
 	  s1 = sel->object;

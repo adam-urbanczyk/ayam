@@ -86,6 +86,12 @@ bind $f.li <End> "selNPFL 3;break"
 
 bind $f.li <Right> "$f.b;uS;break"
 
+
+bind $f.li <Alt-Key-Up> {selMUD 1;break}
+
+bind $f.li <Alt-Key-Down> {selMUD 0;break}
+
+
 # initial focus management (plb_update/plb_focus change this again)
 if { !$::ayprefs(SingleWindow) } {
     bind $f.li <Key-Tab> "focus .fl.con.console;break"
