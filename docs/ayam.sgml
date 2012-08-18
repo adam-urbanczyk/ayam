@@ -380,6 +380,13 @@ selected object(s).
 <item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
 selected object(s).
 <footnote>Since 1.18.</footnote>
+
+<item><tt/&lt;Alt-Up&gt;/ and <tt/&lt;Alt-Down&gt;/ move the
+selected objects in the current level in the respective direction,
+unless the root object is selected and unless the first object is
+selected for up-movement or the last object for down-movement.
+<footnote>Since 1.21.</footnote>
+
 </itemize>
 <p>
 If those shortcuts do not work you may need to move the keyboard
@@ -471,6 +478,12 @@ The Root object, however, will always be omitted.
 <item><tt/&lt;Ctrl+a&gt;/ and <tt/&lt;Ctrl+n&gt;/ select or de-select
 all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
+
+<item><tt/&lt;Alt-Up&gt;/ and <tt/&lt;Alt-Down&gt;/ move the
+selected objects in the current level in the respective direction,
+unless the root object is selected and unless the first object is
+selected for up-movement or the last object for down-movement.
+<footnote>Since 1.21.</footnote>
 
 </itemize>
 <p>
