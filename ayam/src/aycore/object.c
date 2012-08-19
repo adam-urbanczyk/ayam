@@ -774,13 +774,13 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
     }
-
-  Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
   while(sel)
     {
