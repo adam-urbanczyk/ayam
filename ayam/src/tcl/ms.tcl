@@ -94,7 +94,7 @@ ms_set en ayprefse_Docs "An URL that points to the documentation."
 ms_set en ayprefse_TmpDir "A path where temporary files are to be saved."
 
 ms_set en ayprefse_PickEpsilon "Maximum allowed distance from picked point\
-to editable point;\n0.0 means nearest point wins."
+to editable point."
 ms_set en ayprefse_HandleSize "Size of the handles of editable points."
 ms_set en ayprefse_LazyNotify "Notify parent objects about changes just on\
 mouse up?"

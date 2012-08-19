@@ -716,7 +716,6 @@ if { $tcl_platform(platform) == "windows" } {
     set ayprefs(TmpDir) "$env(TEMP)"
     regsub -all {\\} $ayprefs(TmpDir) {/} ayprefs(TmpDir)
     set ayprefs(EnvFile) "~/2view.ay"
-    set ayprefs(PickEpsilon) 0.0
 
     # Windows users surely expect this
     set ayprefs(AddExtensions) 1
