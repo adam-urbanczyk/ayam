@@ -759,13 +759,19 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_object_haschildtcmd */
 
 
+/* ay_object_gettypeornametcmd:
+ *  Implements the \a getName scripting interface command.
+ *  See also the corresponding section in the \ayd{scgetname}.
+ *
+ *  \returns TCL_OK in any case.
+ */
 int
-ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
+ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
+			    int argc, char *argv[])
 {
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
- char *typename = NULL;
+ char *typeorname = NULL;
 
   /* check args */
   if(argc != 2)
@@ -792,70 +798,37 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      typename = ay_object_gettypename(o->type);
-      if(typename)
+      if(argv[0][3] == 'N')
 	{
-	  Tcl_SetVar(interp, argv[1], typename, TCL_APPEND_VALUE |
+	  typeorname = o->name;
+	}
+      else
+	{
+	  typeorname = ay_object_gettypename(o->type);
+	}
+
+      if(typeorname)
+	{
+	  Tcl_SetVar(interp, argv[1], typeorname, TCL_APPEND_VALUE |
 		     TCL_LIST_ELEMENT);
 	}
       else
 	{
-	  ay_error(AY_ENULL, argv[0], NULL);
-	  return TCL_OK;
+	  if(argv[0][3] == 'N')
+	    {
+	      ay_error(AY_EWARN, argv[0], "Object has no name.");
+	    }
+	  else
+	    {
+	      ay_error(AY_ENULL, argv[0], NULL);
+	      return TCL_OK;
+	    }
 	}
       sel = sel->next;
     }
 
  return TCL_OK;
-} /* ay_object_gettypetcmd */
-
-
-/* ay_object_getnametcmd:
- *  Implements the \a getName scripting interface command.
- *  See also the corresponding section in the \ayd{scgetname}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[])
-{
- ay_object *o = NULL;
- ay_list_object *sel = ay_selection;
- char *name = NULL;
-
-  /* check args */
-  if(argc != 2)
-    {
-      ay_error(AY_EARGS, argv[0], "varname");
-      return TCL_OK;
-    }
-
-  if(!sel)
-    {
-      ay_error(AY_ENOSEL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  o = sel->object;
-
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
-
-  Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
-
-  name = NULL;
-  name = o->name;
-  if(name)
-    {
-      Tcl_SetVar(interp, argv[1], name, TCL_LEAVE_ERR_MSG);
-    }
-
- return TCL_OK;
-} /* ay_object_getnametcmd */
+} /* ay_object_gettypeornametcmd */
 
 
 /* ay_object_crtendlevel:

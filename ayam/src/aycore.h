@@ -537,15 +537,10 @@ int ay_object_copymulti(ay_object *src, ay_object **dst);
 int ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/** Tcl command to get the type of an object.
+/** Tcl command to get the type or name of an object.
  */
-int ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
-
-/** Tcl command to get the name of the selected object.
- */
-int ay_object_getnametcmd(ClientData clientData, Tcl_Interp *interp,
-			  int argc, char *argv[]);
+int ay_object_gettypeornametcmd(ClientData clientData, Tcl_Interp *interp,
+				int argc, char *argv[]);
 
 /** create level terminator object
  */
