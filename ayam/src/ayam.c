@@ -743,10 +743,10 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "hasChild", ay_object_haschildtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getType", ay_object_gettypetcmd,
+  Tcl_CreateCommand(interp, "getType", ay_object_gettypeornametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getName", ay_object_getnametcmd,
+  Tcl_CreateCommand(interp, "getName", ay_object_gettypeornametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* pomesht.c */
@@ -1373,10 +1373,10 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "hasChild", ay_object_haschildtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getType", ay_object_gettypetcmd,
+  Tcl_CreateCommand(interp, "getType", ay_object_gettypeornametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "getName", ay_object_getnametcmd,
+  Tcl_CreateCommand(interp, "getName", ay_object_gettypeornametcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* pomesht.c */
