@@ -337,7 +337,7 @@ addCommand $w c1 "Remove all Tags" {delTags all;plb_update}
 #
 proc getProperty { property varName } {
 upvar $varName vname
-global ay curtypes ay_error
+global ay ay_error
 
     # decode arrayname from property argument
     set arrayname [string range $property 0 \
@@ -347,72 +347,55 @@ global ay curtypes ay_error
 		       [expr [string first "(" $property]+1] \
 		       [expr [string first ")" $property]-1]]
 
-    # check object selection, XXXX should we?
-    if { 0 } {
-    set index ""
-    if { $ay(lb) == 1 } {
-	set index [$ay(olb) curselection]
-    } else {
-	set index [$ay(tree) selection get]
-    }
-    if { [llength $index] != 1 } {
-	return;
-    }
-    }
-
-    # get object type
-    set type ""
-    if { $ay(lb) == 1 } {
-	set type [lindex $curtypes $index]
-    } else {
-	set oldayerror $ay_error
-	getType type
-	set ay_error $oldayerror
-    }
-    if { $type == "" || $type == ".." } {
+    getType types
+    if { $types == "" } {
 	ayError 2 "getProperty" "Could not get type of object."
 	return;
     }
+    set obj 0
+    foreach type $types {
+	withOb $obj {
+	    # get list of properties of selected object
+	    global ${type}_props
+	    eval [subst "set props {\$${type}_props}"]
 
-    # get list of properties of selected object
-    global ${type}_props
-    eval [subst "set props {\$${type}_props}"]
-
-    # also get properties from NP tags
-    set tn ""
-    getTags tn tv
-    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
-	set i 0
-	foreach tag $tn {
-	    if { [lindex $tn $i] == "NP" } {
-		lappend props [lindex $tv $i]
+	    # also get properties from NP tags
+	    set tn ""
+	    getTags tn tv
+	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+		set i 0
+		foreach tag $tn {
+		    if { [lindex $tn $i] == "NP" } {
+			lappend props [lindex $tv $i]
+		    }
+		    incr i
+		}
+		# foreach
 	    }
-	    incr i
+	    # if
+
+	    # check presence of wanted property for selected object
+	    set propindex ""
+	    catch {set propindex [lsearch $props $arrayname]}
+	    if { $propindex == -1 } {
+		ayError 2 "getProperty" "Could not find property: $arrayname."
+		return;
+	    }
+
+	    # get property data
+	    global $arrayname
+	    set getprocp ""
+	    eval [subst "set getprocp \$${arrayname}(gproc)"]
+	    if { $getprocp != "" } { $getprocp } else { getProp }
+
+	    # fill value to variable
+	    eval [subst "set arr \$${arrayname}(arr)"]
+	    global $arr
+	    set pvarname ${arr}($propname)
+	    eval [subst "lappend vname \{\$$pvarname\}"]
 	}
-	# foreach
+	incr obj
     }
-    # if
-
-    # check presence of wanted property for selected object
-    set propindex ""
-    catch {set propindex [lsearch $props $arrayname]}
-    if { $propindex == -1 } {
-	ayError 2 "getProperty" "Could not find property: $arrayname."
-	return;
-    }
-
-    # get property data
-    global $arrayname
-    set getprocp ""
-    eval [subst "set getprocp \$${arrayname}(gproc)"]
-    if { $getprocp != "" } { $getprocp } else { getProp }
-
-    # fill value to variable
-    eval [subst "set arr \$${arrayname}(arr)"]
-    global $arr
-    set pvarname ${arr}($propname)
-    eval [subst "set vname \{\$$pvarname\}"]
-
  return;
 }
 # getProperty
@@ -432,77 +415,60 @@ global ay curtypes ay_error
 		       [expr [string first "(" $property]+1] \
 		       [expr [string first ")" $property]-1]]
 
-    # check object selection, XXXX should we?
-    if { 0 } {
-    set index ""
-    if { $ay(lb) == 1 } {
-	set index [$ay(olb) curselection]
-    } else {
-	set index [$ay(tree) selection get]
-    }
-    if { [llength $index] != 1 } {
-	return;
-    }
-    }
-
-    # get object type
-    set type ""
-    if { $ay(lb) == 1 } {
-	set type [lindex $curtypes $index]
-    } else {
-	set oldayerror $ay_error
-	getType type
-	set ay_error $oldayerror
-    }
-    if { $type == "" || $type == ".." } {
+    getType types
+    if { $types == "" } {
 	ayError 2 "setProperty" "Could not get type of object."
 	return;
     }
+    set obj 0
+    foreach type $types {
+	withOb $obj {
+	    # get list of properties of selected object
+	    global ${type}_props
+	    eval [subst "set props {\$${type}_props}"]
 
-    # get list of properties of selected object
-    global ${type}_props
-    eval [subst "set props {\$${type}_props}"]
-
-    # also get properties from NP tags
-    set tn ""
-    getTags tn tv
-    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
-	set i 0
-	foreach tag $tn {
-	    if { [lindex $tn $i] == "NP" } {
-		lappend props [lindex $tv $i]
+	    # also get properties from NP tags
+	    set tn ""
+	    getTags tn tv
+	    if { ($tn != "") && ([ string first NP $tn ] != -1) } {
+		set i 0
+		foreach tag $tn {
+		    if { [lindex $tn $i] == "NP" } {
+			lappend props [lindex $tv $i]
+		    }
+		    incr i
+		}
+		# foreach
 	    }
-	    incr i
+	    # if
+
+	    # check presence of wanted property for selected object
+	    set propindex ""
+	    catch {set propindex [lsearch $props $arrayname]}
+	    if { $propindex == -1 } {
+		ayError 2 "setProperty" "Could not find property: $arrayname."
+		return;
+	    }
+
+	    # get property data
+	    global $arrayname
+	    set getprocp ""
+	    eval [subst "set getprocp \$${arrayname}(gproc)"]
+	    if { $getprocp != "" } { $getprocp } else { getProp }
+
+	    # modify property data
+	    eval [subst "set arr \$${arrayname}(arr)"]
+	    global $arr
+	    set pvarname ${arr}($propname)
+	    eval [subst "set $pvarname \{\$newValue\}"]
+
+	    # set property data
+	    set setprocp ""
+	    eval [subst "set setprocp \$${arrayname}(sproc)"]
+	    if { $setprocp != "" } { $setprocp } else { setProp }
 	}
-	# foreach
+	incr obj
     }
-    # if
-
-    # check presence of wanted property for selected object
-    set propindex ""
-    catch {set propindex [lsearch $props $arrayname]}
-    if { $propindex == -1 } {
-	ayError 2 "setProperty" "Could not find property: $arrayname."
-	return;
-    }
-
-    # get property data
-    global $arrayname
-    set getprocp ""
-    eval [subst "set getprocp \$${arrayname}(gproc)"]
-    if { $getprocp != "" } { $getprocp } else { getProp }
-
-    # modify property data
-    eval [subst "set arr \$${arrayname}(arr)"]
-    global $arr
-    set pvarname ${arr}($propname)
-    eval [subst "set $pvarname \{\$newValue\}"]
-
-    # set property data
-    set setprocp ""
-    eval [subst "set setprocp \$${arrayname}(sproc)"]
-    if { $setprocp != "" } { $setprocp } else { setProp }
-
  return;
 }
 # setProperty
