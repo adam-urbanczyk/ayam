@@ -241,7 +241,6 @@ proc forAllT_tree { type recursive command } {
 		    return -1;
 	    }
         }
-
     }
 
  return;
@@ -641,7 +640,6 @@ proc selAdd { ud } {
 
     }
     # if tree or lb
-
  return;
 }
 # selAdd
@@ -651,6 +649,7 @@ proc selAdd { ud } {
 proc selNPFL { npfl } {
     global ay
     if { $ay(lb) == 0 } {
+	# Tree is active
 	if { $ay(treeselectsema) == 1 } {
 	    bell; return;
 	} else {
@@ -778,7 +777,6 @@ proc selNPFL { npfl } {
 		# select last
 		set sel $last
 	    }
-
 	}
 	# if
 
@@ -806,13 +804,11 @@ proc selNPFL { npfl } {
 #
 proc resetFocus { } {
     global ay
-
     if { $ay(lb) == 0 } {
 	catch {focus $ay(tree)}
     } else {
 	catch {focus $ay(olb)}
     }
-
  return;
 }
 # resetFocus
@@ -820,7 +816,6 @@ proc resetFocus { } {
 
 #
 proc restoreFocus { w } {
-
     if { $w == "" } {
 	resetFocus;
     } else {
@@ -830,7 +825,6 @@ proc restoreFocus { w } {
 	    resetFocus
 	}
     }
-
  return;
 }
 # restoreFocus
@@ -844,16 +838,13 @@ proc mouseWatch { onoff ws } {
 		$w configure -cursor "watch"
 	    }
 	}
-	# foreach
     } else {
 	foreach w $ws {
 	    if { [winfo exists $w] } {
 		$w configure -cursor {}
 	    }
 	}
-	# foreach
     }
-    # if
  return;
 }
 # mouseWatch
@@ -966,7 +957,6 @@ proc selMUD { up } {
 			append s $i
 		    }
 		}
-
 		$w selection add $s
 	    }
 	}
@@ -999,5 +989,6 @@ proc selMUD { up } {
 	    }
 	}
     }
+ return;
 }
 # selMUD
