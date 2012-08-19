@@ -279,8 +279,7 @@ ms_set de ayprefse_TmpDir "Verzeichnis für temporäre Dateien."
 
 # Modeling
 ms_set de ayprefse_PickEpsilon "Größte erlaubte Entfernung zwischen\
-\nausgewähltem und editierbaren Punkt;\
-\n0.0: es wird immer der nächste Punkt gewählt."
+\nausgewähltem und editierbaren Punkt."
 ms_set de ayprefse_HandleSize "Größe der editierbaren Punkte."
 ms_set de ayprefse_LazyNotify "Sollen Elternobjekte über Änderungen an den\
 \nKindobjekten nur am Ende einer Modellieraktion\nbenachrichtigt werden?"
@@ -479,7 +478,7 @@ ms_set fr ayprefse_TmpDir "Chemin vers le dossier de sauvegarde des fichiers\
 temporaire."
 
 ms_set fr ayprefse_PickEpsilon "Distance maximale autorisée du point\
-sélectionné vers le point éditable;\n0.0 signifie le point le plus proche."
+sélectionné vers le point éditable."
 ms_set fr ayprefse_HandleSize "Taille des pognées des points éditables."
 ms_set fr ayprefse_LazyNotify "Notifier les objets parent à propos des\
 changement simplement au survol de souris?"
