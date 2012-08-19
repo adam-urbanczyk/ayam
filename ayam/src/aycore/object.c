@@ -780,26 +780,30 @@ ay_object_gettypetcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  o = sel->object;
-
-  if(!o)
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
-    }
-
   Tcl_SetVar(interp, argv[1], "", TCL_LEAVE_ERR_MSG);
 
-  typename = NULL;
-  typename = ay_object_gettypename(o->type);
-  if(typename)
+  while(sel)
     {
-      Tcl_SetVar(interp, argv[1], typename, TCL_LEAVE_ERR_MSG);
-    }
-  else
-    {
-      ay_error(AY_ENULL, argv[0], NULL);
-      return TCL_OK;
+      o = sel->object;
+
+      if(!o)
+	{
+	  ay_error(AY_ENULL, argv[0], NULL);
+	  return TCL_OK;
+	}
+
+      typename = ay_object_gettypename(o->type);
+      if(typename)
+	{
+	  Tcl_SetVar(interp, argv[1], typename, TCL_APPEND_VALUE |
+		     TCL_LIST_ELEMENT);
+	}
+      else
+	{
+	  ay_error(AY_ENULL, argv[0], NULL);
+	  return TCL_OK;
+	}
+      sel = sel->next;
     }
 
  return TCL_OK;
