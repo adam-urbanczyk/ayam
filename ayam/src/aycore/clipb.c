@@ -443,7 +443,9 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_clipb_hmovtcmd:
  *  Implements the \a upOb scripting interface command.
+ *  Also implements the \a downOb scripting interface command.
  *  See also the corresponding section in the \ayd{scupob}.
+ *  See also the corresponding section in the \ayd{scdownob}.
  *
  *  \returns TCL_OK in any case.
  */

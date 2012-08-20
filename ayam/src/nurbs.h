@@ -41,8 +41,12 @@ int ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p);
 
 /* bevelt.c */
 
+/** Parse BP (BevelParameter) tags.
+ */
 void ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params);
 
+/** Add bevels to a surface object.
+ */
 int ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 			ay_object **dst);
 
