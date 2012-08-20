@@ -760,7 +760,9 @@ ay_object_haschildtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_object_gettypeornametcmd:
- *  Implements the \a getName scripting interface command.
+ *  Implements the \a getType scripting interface command.
+ *  Also implements the \a getName scripting interface command.
+ *  See also the corresponding section in the \ayd{scgettype}.
  *  See also the corresponding section in the \ayd{scgetname}.
  *
  *  \returns TCL_OK in any case.

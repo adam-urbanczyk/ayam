@@ -151,12 +151,12 @@ typedef struct ay_btval_s
 /** bevel parameter helper */
 typedef struct ay_bparam_s
 {
-  int has_bevels;
-  int states[4];
-  int types[4];
-  int dirs[4];
-  int integrate[4];
-  double radii[4];
+  int has_bevels; /**< is any of the states != 0? */
+  int states[4]; /**< state of each boundaries bevel (0 - off, 1 - on) */
+  int types[4]; /**< type of bevel (round, linear, ridge, - => custom) */
+  int dirs[4]; /**< direction of bevel (0 - inwards, 1 - outwards) */
+  int integrate[4]; /**< integrate bevel into surface (0 - no, 1 - yes)? */
+  double radii[4]; /**< radius of bevel */
 } ay_bparam;
 
 
