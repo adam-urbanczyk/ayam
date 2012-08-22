@@ -5612,7 +5612,8 @@ ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 	    } /* if */
 
 	  i2 = b*stride;
-	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+	  if((fabs(P[i1] - P[i2]) > AY_EPSILON) ||
+	     (fabs(P[i1+1] - P[i2+1]) > AY_EPSILON))
 	    {
 	      found = AY_TRUE;
 	    }
@@ -5646,7 +5647,8 @@ ay_npt_gettangentfromcontrol2D(int ctype, int n, int p, int stride,
 	    } /* if */
 
 	  i2 = b*stride;
-	  if((P[i1] != P[i2]) || (P[i1+1] != P[i2+1]))
+	  if((fabs(P[i1] - P[i2]) > AY_EPSILON) ||
+	     (fabs(P[i1+1] - P[i2+1]) > AY_EPSILON))
 	    {
 	      found = AY_TRUE;
 	    }
