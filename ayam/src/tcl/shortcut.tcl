@@ -646,6 +646,13 @@ proc shortcut_view { w } {
 	viewSetPMode $w 0
 	break
     }
+    bind $w <Double-[repctrl $ayviewshortcuts(TransO)]> {
+	foreach view $ay(views) {
+	    ${view}.f3D.togl mc
+	    viewSetPMode $view 0
+	}
+	break
+    }
 
     bind $w <[repctrl $ayviewshortcuts(TransP)]> {
 	if { [string first ".view" %W] != 0 } {
@@ -655,6 +662,13 @@ proc shortcut_view { w } {
 	}
 	$w.f3D.togl mc
 	viewSetPMode $w 1
+	break
+    }
+    bind $w <Double-[repctrl $ayviewshortcuts(TransP)]> {
+	foreach view $ay(views) {
+	    ${view}.f3D.togl mc
+	    viewSetPMode $view 1
+	}
 	break
     }
 
