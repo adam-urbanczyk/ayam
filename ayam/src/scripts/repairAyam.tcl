@@ -56,13 +56,15 @@ catch [viewCloseAll]
 # reset important global variables and semaphors
 set ::ay(Views) ""
 set ::ay(currentView) ""
-set ::ay(cviewsema) 0
 catch [cS]
-set ::ay(plblock) 0
 set ::ay(droplock) 0
+set ::ay(plblock) 0
 set ::ay(sellock) 0
 set ::ay(selmudlock) 0
+set ::ay(sstlock) 0
+set ::ay(tblock) 0
 set ::ay(treelock) 0
+set ::ay(viewlock) 0
 update
 catch [plb_update]
 catch [goTop]
