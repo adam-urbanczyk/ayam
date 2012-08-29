@@ -58,9 +58,11 @@ set ::ay(Views) ""
 set ::ay(currentView) ""
 set ::ay(cviewsema) 0
 catch [cS]
-set ::ay(PlbUpdateSema) 0
-set ::ay(treeselectsema) 0
-set ::ay(listselectsema) 0
+set ::ay(plblock) 0
+set ::ay(droplock) 0
+set ::ay(sellock) 0
+set ::ay(selmudlock) 0
+set ::ay(treelock) 0
 update
 catch [plb_update]
 catch [goTop]
