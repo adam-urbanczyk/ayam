@@ -639,8 +639,8 @@ proc prefs_toggleSurfaceWire { } {
 proc prefs_setSamplingTolerance { plus } {
     global ay ayprefs ayprefse aymainshortcuts
 
-    if { $ay(sstsema) == 0 } {
-	set ay(sstsema) 1
+    if { $ay(sstlock) == 0 } {
+	set ay(sstlock) 1
 	update
 	if { $plus == 1 } {
 	    if { $ayprefs(Tolerance) < 90 } {
@@ -660,16 +660,13 @@ proc prefs_setSamplingTolerance { plus } {
 		set ayprefse(Tolerance) $newval
 		ayError 4 $aymainshortcuts(SetSTL)\
 			"SamplingTolerance set to ${newval}."
-
 		setPrefs
 		update
 		rV
 	    }
-
 	}
 	# if
-
-	set ay(sstsema) 0
+	set ay(sstlock) 0
     }
     # if
 

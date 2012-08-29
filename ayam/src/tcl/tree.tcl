@@ -17,7 +17,7 @@ set ay(tree) ""
 #set ay(ObjectBar) ""
 #set ay(NoteBook) ""
 
-set ay(DropActive) "0"
+set ay(droplock) 0
 set ay(CurrentLevel) ""
 set ay(SelectedLevel) ""
 
@@ -92,16 +92,14 @@ proc tree_blockUI { } {
 # The nodes are named this way: root:<index in root level>[:<index2>[: ... ]]
 proc tree_update { node } {
     global ay
-    if { $ay(TreeUpdateSema) == 1 } {
+    if { $ay(treelock) == 1 } {
 	# inform the currently running update process, that we have some
 	# more changes to the scene to consider
 	set ay(ExtraTreeUpdate) 1
 	return
     } else {
-	set ay(TreeUpdateSema) 1
+	set ay(treelock) 1
     }
-
-    #puts "tree_update $node"
 
     # update may take some time, take measures:
     # after 0.1s we block the UI and make the
@@ -141,7 +139,7 @@ proc tree_update { node } {
     }
     . configure -cursor {}
 
-    set ay(TreeUpdateSema) 0
+    set ay(treelock) 0
 
     if { $ay(ExtraTreeUpdate) == 1 } {
 	set ay(ExtraTreeUpdate) 0
@@ -193,10 +191,10 @@ proc tree_paintLevel { node } {
 proc tree_selectItem { redraw tree node } {
     global ay
 
-    if { $ay(treeselectsema) == 1 } {
+    if { $ay(sellock) == 1 } {
 	bell; return;
     } else {
-	set ay(treeselectsema) 1
+	set ay(sellock) 1
     }
 
     set ay(ts) 1;
@@ -222,7 +220,7 @@ proc tree_selectItem { redraw tree node } {
 	}
     }
 
-    set ay(treeselectsema) 0
+    set ay(sellock) 0
 
  return;
 }
@@ -234,10 +232,10 @@ proc tree_selectItem { redraw tree node } {
 proc tree_toggleSelection { tree node } {
     global ay
 
-    if { $ay(treeselectsema) == 1 } {
+    if { $ay(sellock) == 1 } {
 	bell; return;
     } else {
-	set ay(treeselectsema) 1
+	set ay(sellock) 1
     }
 
     set ay(ts) 1;
@@ -279,7 +277,7 @@ proc tree_toggleSelection { tree node } {
 	rV
     }
 
-    set ay(treeselectsema) 0
+    set ay(sellock) 0
 
  return;
 }
@@ -291,12 +289,12 @@ proc tree_toggleSelection { tree node } {
 proc tree_multipleSelection { tree node } {
     global ay
 
-    if { $ay(treeselectsema) == 1 } {
+    if { $ay(sellock) == 1 } {
 	bell; return;
     } else {
-	set ay(treeselectsema) 1
+	set ay(sellock) 1
     }
-
+    while { 1 } {
     set ay(ts) 1;
     set SelectedLevel $ay(SelectedLevel)
 
@@ -304,21 +302,18 @@ proc tree_multipleSelection { tree node } {
 
     if { [llength $nlist] != "1" } {
 	ayError 1 "multipleSelection" "Select a single object first!"
-	set ay(treeselectsema) 0
-	return;
+	break;
     }
 
     if { [lsearch $nlist $node] != -1 } {
 	ayError 1 "multipleSelection" "Select a different object!"
-	set ay(treeselectsema) 0
-	return;
+	break;
     }
 
     set parent [$tree parent $node]
     if { $parent != $SelectedLevel } {
 	ayError 1 "multipleSelection" "Can not select from different levels!"
-	set ay(treeselectsema) 0
-	return;
+	break;
     }
 
     set index1 [$tree index $nlist]
@@ -344,7 +339,9 @@ proc tree_multipleSelection { tree node } {
     $tree bindText <ButtonPress-1> ""
     $tree bindText <ButtonRelease-1> "tree_selectItem 1 $tree"
 
-    set ay(treeselectsema) 0
+    break;
+    }
+    set ay(sellock) 0
 
  return;
 }
@@ -356,10 +353,10 @@ proc tree_multipleSelection { tree node } {
 proc tree_selectLast { } {
     global ay
 
-    if { $ay(treeselectsema) == 1 } {
+    if { $ay(sellock) == 1 } {
 	bell; return;
     } else {
-	set ay(treeselectsema) 1
+	set ay(sellock) 1
     }
 
     # ay(ts) is triggered, whenever a true selection
@@ -371,7 +368,7 @@ proc tree_selectLast { } {
     }
     set ay(ts) 0
 
-    set ay(treeselectsema) 0
+    set ay(sellock) 0
 
  return;
 }
@@ -403,8 +400,8 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
     # this semaphor avoids being called multiple times
     # in case the user moves the mouse shortly after
     # release of the mouse button (Bug in BWidgets?)
-    if { $ay(DropActive) == 0 } {
-	set ay(DropActive) 1
+    if { $ay(droplock) == 0 } {
+	set ay(droplock) 1
 
 	set pos [lindex $droppos 0]
 	set parent "root"
@@ -413,10 +410,9 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	set selection [$ay(tree) selection get]
 
 	if { $selection == "" } {
-	    set ay(DropActive) 0
+	    set ay(droplock) 0
 	    return;
 	}
-
 	if { $pos == "node" } {
 	    set parent [lindex $droppos 1]
 	    set position -1
@@ -430,14 +426,14 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	    if { $selection != "root:0" } {
 		ayError 2 tree_drop "Can not place objects here!"
 	    }
-	    set ay(DropActive) 0
+	    set ay(droplock) 0
 	    return;
 	}
 	# reject dropping of objects just before root (replacing
 	# root as first object in the top level)
 	if { $parent == "root" && $position == "0" } {
 	    ayError 2 tree_drop "Can not place objects here!"
-	    set ay(DropActive) 0
+	    set ay(droplock) 0
 	    return;
 	}
 
@@ -447,13 +443,13 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 	    # prevent moving of the root object
 	    if { $data == "root:0" } {
 		ayError 2 tree_drop "Can not move root!"
-		set ay(DropActive) 0
+		set ay(droplock) 0
 		return;
 	    }
 	    # prevent moving of objects into their own childs
 	    while { $parent != "root" } {
 		if { [lsearch $selection $parent] != "-1" } {
-		    ayError 2 tree_drop "Can not place selected objects here!"
+		    ayError 2 tree_drop "Can not place objects here!"
 		    set err 1
 		}
 		if { [$ay(tree) exists $parent] } {
@@ -465,11 +461,11 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 		set ay(DndDestination) $droppos
 		tree_move
 	    }
-	    set ay(DropActive) 0
+	    set ay(droplock) 0
 	} else {
 	    # XXXX unused
 	    # create object via objectbar
-	    set ay(DropActive) "1"
+	    set ay(droplock) 1
 	    set newnode ""
 	    set i [string first "img" $data ]
 	    set otype [string range $data 0 [expr $i-1]]
@@ -490,8 +486,7 @@ proc tree_drop { tree from droppos currentoperation datatype data } {
 		}
 		#tree_selectItem 1 $ay(tree) $newnode
 	    }
-	    set ay(DropActive) 0
-
+	    set ay(droplock) 0
 	}
     } else {
 	# XXXX eliminate this warning, it appears too often?
@@ -811,7 +806,7 @@ catch {bind $tree <Key-Next> "$tree yview scroll 1 pages; break"}
 # and not on a node
 bind $tree <ButtonRelease-1> "+\
  global ay;\
- if { \$ay(treeselectsema) == 0 } {\
+ if { \$ay(sellock) == 0 } {\
  after 10 { tree_selectLast }; };\
  focus \$ay(tree)"
 
@@ -932,7 +927,7 @@ bind $ay(tree) <Escape> {
 set ay(CurrentLevel) "root"
 set ay(SelectedLevel) "root"
 tree_paintLevel "root"
-set ay(DropActive) 0
+set ay(droplock) 0
 
 #Tree::finsert
 #  A faster tree "insert", placed here to avoid trouble
@@ -1001,7 +996,7 @@ proc tree_toggle { } {
 	set ay(CurrentLevel) "root"
 	set ay(SelectedLevel) "root"
 	tree_paintLevel "root"
-	set ay(DropActive) 0
+	set ay(droplock) 0
 	if { $ay(need_redraw) == 1 } {
 	    rV
 	}

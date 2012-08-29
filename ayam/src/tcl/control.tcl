@@ -444,19 +444,19 @@ proc unrenameWhileFor { } {
 # extend selection in tree or listbox
 proc selAdd { ud } {
     global ay
+    if { $ay(sellock) == 1 } {
+	bell; return;
+    } else {
+	set ay(sellock) 1
+    }
+    while { 1 } {
     if { $ay(lb) == 0 } {
 	# Tree
-	if { $ay(treeselectsema) == 1 } {
-	    bell; return;
-	} else {
-	    set ay(treeselectsema) 1
-	}
-
 	set tree $ay(tree)
 	set cl $ay(CurrentLevel)
 	set sel [$tree selection get]
+	if { [llength $sel] == 0 } { break; }
 	set newsel 0
-	if { [llength $sel] == 0 } { return; }
 	if { $ud == 0 } {
 	    # -> extend to previous
 	    set node [lindex $sel 0]
@@ -510,6 +510,7 @@ proc selAdd { ud } {
 		set newsel 1
 		incr k
 	    }
+	    # while
 	}
 	# if
 	if { $ud == 4 } {
@@ -528,6 +529,7 @@ proc selAdd { ud } {
 		set newsel 1
 		incr k
 	    }
+	    # while
 	}
 	# if
 
@@ -545,24 +547,12 @@ proc selAdd { ud } {
 		rV
 	    }
 	}
-
-	set ay(treeselectsema) 0
-
+	# if
     } else {
 	# Listbox
-
-	#if { [focus -displayof .] == $ay(olb) } { return; }
-
-	if { $ay(listselectsema) == 1 } {
-	    bell; return;
-	} else {
-	    set ay(listselectsema) 1
-	}
-
 	set lb $ay(olb)
-	set sel ""
 	set sel [$lb curselection]
-	if { [llength $sel] == 0 } { return; }
+	if { [llength $sel] == 0 } { break; }
 	if { $ud == 0 } {
 	    # Up -> extend to previous
 	    set first [lindex $sel 0]
@@ -575,8 +565,8 @@ proc selAdd { ud } {
 		if { $ay(need_redraw) == 1 } {
 		    rV
 		}
-		# if
 	    }
+	    # if
 	}
 	# if
 	if { $ud == 1 } {
@@ -592,6 +582,7 @@ proc selAdd { ud } {
 		    rV
 		}
 	    }
+	    # if
 	}
 	# if
 	if { $ud == 3 } {
@@ -610,8 +601,6 @@ proc selAdd { ud } {
 		if { $ay(need_redraw) == 1 } {
 		    rV
 		}
-		# if
-
 	    }
 	    # if
 	}
@@ -635,11 +624,11 @@ proc selAdd { ud } {
 	    }
 	}
 	# if
-
-	set ay(listselectsema) 0
-
     }
     # if tree or lb
+  break;
+  }
+ set ay(sellock) 0
  return;
 }
 # selAdd
@@ -648,18 +637,15 @@ proc selAdd { ud } {
 # select Next or Previous or First or Last object in tree or listbox
 proc selNPFL { npfl } {
     global ay
+    if { $ay(sellock) == 1 } {
+	bell; return;
+    } else {
+	set ay(sellock) 1
+    }
     if { $ay(lb) == 0 } {
 	# Tree is active
-	if { $ay(treeselectsema) == 1 } {
-	    bell; return;
-	} else {
-	    set ay(treeselectsema) 1
-	}
-
 	set tree $ay(tree)
 	set cl $ay(CurrentLevel)
-
-	set sel ""
 	set sel [$tree selection get]
 	set lastn [lindex [$tree nodes $cl] end]
 	set i [string last ":" $lastn]
@@ -715,21 +701,9 @@ proc selNPFL { npfl } {
 		rV
 	    }
 	}
-
-	set ay(treeselectsema) 0
-
     } else {
 	# ListBox is active
-
-	if { $ay(listselectsema) == 1 } {
-	    bell; return;
-	} else {
-	    set ay(listselectsema) 1
-	}
-
-	#if { [focus -displayof .] == $ay(olb) } { return; }
 	set lb $ay(olb)
-	set sel ""
 	set sel [$lb curselection]
 	set last [$lb index end]
 	incr last -1
@@ -792,9 +766,11 @@ proc selNPFL { npfl } {
 	    # if
 	}
 	# if
-	set ay(listselectsema) 0
+
     }
     # if
+
+ set ay(sellock) 0
 
  return;
 }
@@ -909,7 +885,12 @@ proc popSel { } {
 #
 proc selMUD { up } {
     global ay
-
+    if { $ay(selmudlock) == 1 } {
+	bell; return;
+    } else {
+	set ay(selmudlock) 1
+    }
+    while { 1 } {
     if { $ay(lb) == 0 } {
 	# tree
 	set w  $ay(tree)
@@ -918,15 +899,15 @@ proc selMUD { up } {
 	if { $sel ne "" } {
 	    set s [lindex $sel 0]
 	    set i [string range $s [expr [string last ":" $s]+1] end]
-	    if { $ay(CurrentLevel) == "root" && $i == 0} { return; }
+	    if { $ay(CurrentLevel) == "root" && $i == 0} { break; }
 	    if { $up == 1 } {
 		upOb
 		if { $ay(CurrentLevel) == "root" } {
 		    set first 1
-		    if { $i == 0 || $i == 1 } { return; }
+		    if { $i == 0 || $i == 1 } { break; }
 		} else {
 		    set first 0
-		    if { $i == 0 } { return; }
+		    if { $i == 0 } { break; }
 		}
 	    } else {
 		downOb
@@ -935,9 +916,9 @@ proc selMUD { up } {
 		set i [string range $s [expr [string last ":" $s]+1] end]
 		if { $ay(CurrentLevel) == "root" } {
 		    incr ll -1
-		    if { $i == $ll } { return; }
+		    if { $i == $ll } { break; }
 		} else {
-		    if { $i == [expr $ll - 1] } { return; }
+		    if { $i == [expr $ll - 1] } { break; }
 		}
 	    }
 	    $w selection clear
@@ -967,14 +948,14 @@ proc selMUD { up } {
 	set sel [$w curselection]
 	if { $sel ne "" } {
 	    set i [lindex $sel 0]
-	    if { $i == 0} { return; }
+	    if { $i == 0} { break; }
 	    if { $up == 1 } {
-		if { $i == 1 } { return; }
+		if { $i == 1 } { break; }
 		upOb
 	    } else {
 		set ll [expr [$w index end]-1]
 		set i [lindex $sel end]
-		if { $i == $ll } { return; }
+		if { $i == $ll } { break; }
 		downOb
 	    }
 	    $w selection clear 0 end
@@ -989,6 +970,9 @@ proc selMUD { up } {
 	    }
 	}
     }
+    break;
+    }
+    set ay(selmudlock) 0
  return;
 }
 # selMUD
