@@ -12952,24 +12952,28 @@ getProperty &ndash; get single property value
  <item>Description: This command gets a single property element
 named elemname from the property named propname of the currently
 selected object and writes the result into the variable named varname.
- <item>Notes: In contrast to many other helper commands, the variable
-varname does not have to be global.
-This command runs more slowly than calling the appropriate get-procedure and
-accessing the data array that is associated with a property
-directly, especially if multiple values are to be fetched.
+Multiple selected objects are supported and lead to a list of values
+produced in the output variable.
+<footnote>Since 1.21.</footnote>
+ <item>Notes: This command runs more slowly than calling the appropriate
+get-procedure and accessing the data array that is associated with the
+property in question directly, especially if multiple values are to be
+fetched.
+However, the name of the data array and the appropriate procedure
+are inferred automatically and errors are catched and reported.
 See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be retrieved in the variable <tt/"r"/ easily using the command
 <tscreen><verb>getProperty SphereAttr(Radius) r</verb></tscreen>
-</itemize>
 In contrast to using <tt/"getProperty"/, here is an equivalent example for the
 direct (fast) access of property values:
-<code>
+<tscreen><verb>
 getProp
 set r $::SphereAttrData(Radius)
-</code>
+</verb></tscreen>
 See also section
 <ref id="ayproparr" name="Global Property Management and Data Arrays">.
+</itemize>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -12982,24 +12986,28 @@ setProperty &ndash; set single property value
  <item>Description: This command sets a single property element
 named elemname of the property named propname for the currently
 selected object to the new value given in value.
+Multiple selected objects are supported.
+<footnote>Since 1.21.</footnote>
  <item>Notes: This command runs more slowly than accessing the data array
 that is associated with a property and calling the appropriate set-procedure
 directly, especially if multiple values are to be set.
+However, the name of the data array and the appropriate procedure
+are inferred automatically and errors are catched and reported.
 See below for more information regarding direct access of property values.
  <item>Example: Given that a single Sphere object is selected, its
 radius may be set to the new value <tt/"3.0"/ easily using the command
 <tscreen><verb>setProperty SphereAttr(Radius) 3.0</verb></tscreen>
-</itemize>
-<p>
+
 In contrast to using <tt/"setProperty"/, here is an equivalent example for the
 direct (fast) access of property values:
-<code>
+<tscreen><verb>
 getProp
 set SphereAttrData(Radius) 3.0
 setProp
-</code>
+</verb></tscreen>
 See also section
 <ref id="ayproparr" name="Global Property Management and Data Arrays">.
+</itemize>
 
 <sect2>Clipboard Operations<label id="sciclip">
 <p>
@@ -14892,11 +14900,11 @@ should it be stuck e.g.~in an endless loop of Tcl error messages.
 On Unix systems <tt>"repairAyam"</tt> may be started from any
 shell simply by typing
 <tscreen>
-./repairAyam.tcl
+&raquo;&thinsp;./repairAyam.tcl
 </tscreen>
 or
 <tscreen>
-wish repairAyam.tcl
+&raquo;&thinsp;wish repairAyam.tcl
 </tscreen>
 on the command prompt; if the script detects that it is running on Unix
 and not in Ayam it will send itself to the Tcl interpreter Ayam is
@@ -14908,7 +14916,7 @@ be run via the Ayam console (as on Win32).
 On Win32 one has to start <tt>"repairAyam.tcl"</tt> from the Ayam console
 using the command:
 <tscreen>
-source scripts/repairAyam.tcl
+&raquo;&thinsp;source scripts/repairAyam.tcl
 </tscreen>
 or via the consoles context menu: <tt>"Console/Load File"</tt>.
 <p>
@@ -14987,17 +14995,18 @@ script.
 
 <sect2>Color the Focus Ring<label id="colfocustcl">
 <p>
-The script <tt>"colfocus.tcl"</tt> (for colored focus) may be
+The script <tt>"colfocus.tcl"</tt> (for <bf/col/ored <bf/focus/) may be
 used to paint the focus ring in a more visible color.
 <p>
 After running the script, the focus ring will be painted in blue
-(instead of black): focussed sub-windows (views, console, object
-tree) will be more easily recognizable.
+(instead of black): focused sub-windows (views, console, object
+tree) will be more easily recognizable. Other colors may be used
+by editing the script.
 
 <sect2>Automatic About Center Actions<label id="aactcl">
 <p>
-The script <tt>"aac.tcl"</tt> (for automatic about center) may be
-used to switch all modelling actions to their about variants with
+The script <tt>"aac.tcl"</tt> (for <bf/a/utomatic <bf/a/bout <bf/c/enter)
+may be used to switch all modelling actions to their about variants with
 the mark set to the center of the current selection automatically.
 <p>
 After running the script, invoking e.g.~the scale 2D action using
@@ -15033,9 +15042,9 @@ shortcut <tt/&lt;F11&gt;/ can be used.
 
 <sect2>Automatic Point Actions<label id="apnttcl">
 <p>
-The script <tt>"apnt.tcl"</tt> (for automatic point) may be
-used to switch the modelling mode of the current or all views
-to point modelling automatically after a point selection.
+The script <tt>"apnt.tcl"</tt> (for <bf/a/utomatic <bf/p/oi<bf/nt/) may be
+used to switch the modelling mode to point modelling automatically
+after a point selection.
 <p>
 After running the script, selecting (tagging) a point using the
 select point action (shortcut <tt/&lt;t&gt;/) will automatically
