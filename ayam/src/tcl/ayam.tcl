@@ -584,7 +584,6 @@ array set ay {
  views ""
  zapped ""
  currentView ""
- cviewsema 0
  viewtypenames { Front Side Top Persp Trim }
  surfaceshaders ""
  displacementshaders ""
@@ -640,23 +639,25 @@ array set ay {
  extrnpvmax 1.0
  ts 0
  ul ""
- TreeUpdateSema 0
- treeselectsema 0
- listselectsema 0
  ExtraTreeUpdate 0
+ plblock 0
+ sellock 0
+ selmudlock 0
+ sstlock 0
+ tblock 0
+ treelock 0
+ viewlock 0
  co ""
  cm ""
  im ""
  em ""
  rnum 0
  sc 0
- tblayoutsema 0
  LastSelection ""
  sext ""
  locales { en de fr }
  ScanShaders 0
  need_redraw 1
- sstsema 0
  mouseup 0
  gl_ver ""
  gl_ven ""

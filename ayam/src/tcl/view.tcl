@@ -497,9 +497,7 @@ proc viewSetGrid { view } {
 proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     global ay ayprefs
 
-    update
-    set ay(cviewsema) 1
-    update
+    set ay(viewlock) 1
 
     # calculate view name
     if { [llength $ay(views)] == 0 } {
@@ -621,9 +619,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
     # switch modelling mode menu to an own (widget dependent) image
     viewSetMModeIcon $w 0
 
-    update
-    set ay(cviewsema) 0
-    update
+    set ay(viewlock) 0
 
  return;
 }
@@ -655,10 +651,8 @@ proc viewBind { w } {
     # internal bindings
     bind $w <Enter> {
 	global ay ayprefs
-	if { $ay(cviewsema) != 1 } {
-	    update
-	    set ay(cviewsema) 1
-	    update
+	if { $ay(viewlock) != 1 } {
+	    set ay(viewlock) 1
 
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
@@ -669,9 +663,7 @@ proc viewBind { w } {
 	    set ay(currentView) $w.f3D.togl
 	    $w.f3D.togl configure -cursor left_ptr
 
-	    update
-	    set ay(cviewsema) 0
-	    update
+	    set ay(viewlock) 0
 	}
 	#if
 
@@ -688,10 +680,8 @@ proc viewBind { w } {
 
     bind $w <$ayviewshortcuts(RotMod)-Enter> {
 	global ay ayprefs ayviewshortcuts
-	if { $ay(cviewsema) != 1 } {
-	    update
-	    set ay(cviewsema) 1
-	    update
+	if { $ay(viewlock) != 1 } {
+	    set ay(viewlock) 1
 
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
@@ -702,9 +692,7 @@ proc viewBind { w } {
 	    set ay(currentView) $w.f3D.togl
 	    $w.f3D.togl configure -cursor exchange
 
-	    update
-	    set ay(cviewsema) 0
-	    update
+	    set ay(viewlock) 0
 	}
 	#if
 
@@ -721,10 +709,8 @@ proc viewBind { w } {
 
     bind $w <$ayviewshortcuts(ZoomRMod)-Enter> {
 	global ay ayprefs ayviewshortcuts
-	if { $ay(cviewsema) != 1 } {
-	    update
-	    set ay(cviewsema) 1
-	    update
+	if { $ay(viewlock) != 1 } {
+	    set ay(viewlock) 1
 
 	    if { [string first ".view" %W] == 0 } {
 		set w [winfo toplevel %W]
@@ -735,9 +721,7 @@ proc viewBind { w } {
 	    set ay(currentView) $w.f3D.togl
 	    $w.f3D.togl configure -cursor sizing
 
-	    update
-	    set ay(cviewsema) 0
-	    update
+	    set ay(viewlock) 0
 	}
 	#if
 
@@ -809,9 +793,6 @@ proc viewClose { w } {
 	return;
     }
 
-    set ay(draw) 0
-    update
-
     # first remove bindings that could accidentally fire while closing
     bind $w <Enter> ""
     bind $w <Motion> ""
@@ -839,9 +820,6 @@ proc viewClose { w } {
 
     # clear undo buffer
     undo clear
-
-    set ay(draw) 1
-    update
 
  return;
 }
@@ -887,7 +865,6 @@ proc setViewAttr { } {
     if { $ViewAttribData(Width) != $pclip_reset(Width) ||
 	 $ViewAttribData(Height) != $pclip_reset(Height) } {
 
-
 	if { [string first ".view" $togl] != 0 } {
 	    # XXXX insert special handling for internal views
 	    set ViewAttribData(Width) $pclip_reset(Width)
@@ -898,7 +875,6 @@ proc setViewAttr { } {
 		-height $ViewAttribData(Height)
 	    update
 	}
-
     }
     # if
 

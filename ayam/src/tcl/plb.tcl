@@ -9,12 +9,6 @@
 
 # plb.tcl - procedures for managing the properties listbox and display
 
-# Global Variables:
-
-set ay(PlbUpdateSema) 0
-
-# Procedures:
-
 # plb_open:
 #
 #
@@ -385,10 +379,10 @@ proc plb_update { } {
     global tcl_platform AYWITHAQUA
 
     # protect against double updates
-    if { $ay(PlbUpdateSema) == 1 } {
+    if { $ay(plblock) == 1 } {
 	return
     } else {
-	set ay(PlbUpdateSema) 1
+	set ay(plblock) 1
     }
 
     set index ""
@@ -439,7 +433,7 @@ proc plb_update { } {
 	}
 
 	if { $type == "" } {
-	    set ay(PlbUpdateSema) 0
+	    set ay(plblock) 0
 	    return;
 	}
 
@@ -521,7 +515,7 @@ proc plb_update { } {
 
     after idle {$ay(pca) configure -scrollregion [$ay(pca) bbox all]}
 
-    set ay(PlbUpdateSema) 0
+    set ay(plblock) 0
 
     return;
 }

@@ -767,13 +767,13 @@ proc toolbox_open { {w .tbw} } {
 proc toolbox_layout { {w ".tbw"} } {
     global ay ayprefs
 
-    if { $ay(tblayoutsema) == 1 } {
+    if { $ay(tblock) == 1 } {
 	return;
     } else {
-	set ay(tblayoutsema) 1
+	set ay(tblock) 1
     }
 
-    if { ! [winfo exists $w] } { return; }
+    if { ! [winfo exists $w] } { set tblock 0; return; }
 
     # to avoid being called too often, we temporarily remove the
     # configure binding
@@ -858,7 +858,7 @@ proc toolbox_layout { {w ".tbw"} } {
     # we must make sure all changes are realized
     update
 
-    set ay(tblayoutsema) 0
+    set ay(tblock) 0
 
  return;
 }
