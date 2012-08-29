@@ -1,4 +1,4 @@
-[16. Aug 2012] CVS-Head:
+[29. Aug 2012] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -6,6 +6,7 @@ o crash when removing wrong trim curves from patches (SF 3514206)
 o some ConcatNP fillet patches are missing (SF 3514939)
 o pick candidates dialog disappears after resize (SF 3522093)
 o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
+o getProperty/setProperty when listbox is active (SF 3559398)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to allow prevention of
@@ -33,6 +34,8 @@ o there is now a dialog for the management of property GUIs via NP/RP tags
   (new main menu entries: "Special/Tags/Add Property" and "Remove Property")
 o objects can now be moved easily in the current level using the new
   keyboard shortcuts <Alt-Up>/<Alt-Down>
+o added keyboard shortcuts to switch all views to point/object modelling
+  (<pp> and <oo> respectively)
 
 Scripts/Scripting Interface:
 o "applyTrafo" command now applies the transformations to all points by default
@@ -42,6 +45,9 @@ o the "estlenNC" command now supports an optional parameter "-trafo" that
 o the "apnt" script now also binds to the select all/no points shortcuts
   to enable/disable the point modelling mode
 o added luainterp plugin to support the Lua scripting language
+o getProperty/setProperty no longer need a correctly updated current level
+  in the Tcl GUI context (object listbox/tree)
+o getProperty/setProperty now also work with multiple selected objects
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
