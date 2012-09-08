@@ -674,7 +674,7 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
  int ay_status = AY_OK;
  ay_object *sb = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *np = NULL, *bevel = NULL;
- char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};;
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
 
   if(!s || !b)

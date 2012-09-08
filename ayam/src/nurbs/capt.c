@@ -126,7 +126,7 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
  ay_nurbpatch_object *np = NULL;
- char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};;
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
 
   if(!s || !c)
