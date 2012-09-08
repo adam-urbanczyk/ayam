@@ -186,7 +186,10 @@ proc apnt_toggle { } {
 
 if { $apnt_enableonload } {
     apnt_enable
+} else {
+    set ::ay(apnt_enabled) 0
 }
+
 
 catch { unset apnt_enableonload }
 

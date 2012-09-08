@@ -239,6 +239,8 @@ proc aac_toggle { } {
 
 if { $aac_enableonload } {
     aac_enable
+} else {
+    set ::ay(aac_enabled) 0
 }
 
 catch { unset aac_enableonload }
