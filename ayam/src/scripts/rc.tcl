@@ -27,7 +27,7 @@ proc rc_rebind { view } {
     ${view}.f3D.togl mc
 
     set w $view
-    
+
     if { $ay(cVType) != 3 } {
 	# reverse binding
 
@@ -104,6 +104,7 @@ proc rc_enable { } {
 
     addToProc viewCycleType "rc_rebind \$w"
     addToProc viewSetType "rc_rebind \$w"
+    addToProc setViewAttr "rc_rebind \[winfo parent \[winfo parent \$togl\]\]"
 
     set ay(rc_enabled) 1
 
@@ -140,6 +141,7 @@ proc rc_toggle { } {
 
 if { $rc_enableonload } {
     rc_enable
+    addToProc viewBind "rc_rebind \$w"
 } else {
     set ::ay(rc_enabled) 0
 }
