@@ -844,7 +844,13 @@ proc addToProc { procedure addition } {
     append newprocbody "\nreturn;\n"
     # overwrite procedure
     if { [info args $procedure] != "" } {
-	set newargs [list [info args $procedure]]
+	foreach arg [info args $procedure] {
+	    if {[info default $procedure $arg def]} {
+		lappend newargs [list $arg $def]
+	    } else {
+		lappend newargs $arg
+	    }
+	}
     } else {
 	set newargs { }
     }
