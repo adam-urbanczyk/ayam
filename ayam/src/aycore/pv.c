@@ -89,6 +89,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 		  Tcl_DStringAppend(&ds, " ", -1);
 
 		  numvals = strtok(NULL, tok);
+		  n = 0;
 		  if(numvals)
 		    {
 		      sscanf(numvals, "%u", &n);
@@ -337,7 +338,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
   tag->type = ay_pv_tagtype;
 
   if(!(tag->name = calloc(3, sizeof(char))))
-    return AY_EOMEM;
+    { free(tag); return AY_EOMEM; }
   strcpy(tag->name, "PV");
 
   Tcl_DStringInit(&ds);
@@ -436,7 +437,7 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 
   if(!(tag->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
 			 sizeof(char))))
-    return AY_EOMEM;
+    { free(tag->name); free(tag); return AY_EOMEM; }
   strcpy(tag->val, Tcl_DStringValue(&ds));
 
   Tcl_DStringFree(&ds);

@@ -258,7 +258,7 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 
 	  if(!(cv = calloc(evwinwidth*evwinheight*4, sizeof(double))))
 	    {
-	      free(o);
+	      free(ncv); free(o);
 	      return AY_EOMEM;
 	    }
 

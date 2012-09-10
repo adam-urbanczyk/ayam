@@ -327,7 +327,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_camera_object *camera = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  ay_point *pnt = NULL, **lastpnt = NULL;
- double *pecoord = NULL, **pecoords = NULL, *c;
+ double *pecoord = NULL, **pecoords = NULL, **ctmp, *c;
  int a;
 
   if(!o || ((mode != 3) && (!p || !pe)))
@@ -393,8 +393,9 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	{
 
-	  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+	  if(!(ctmp = realloc(pecoords, (a+1)*sizeof(double *))))
 	    return AY_EOMEM;
+	  pecoords = ctmp;
 	  pecoords[a] = c;
 	  a++;
 	} /* if */
@@ -407,8 +408,9 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	{
 
-	  if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
+	  if(!(ctmp = realloc(pecoords, (a+1)*sizeof(double *))))
 	    return AY_EOMEM;
+	  pecoords = ctmp;
 	  pecoords[a] = c;
 	  a++;
 	} /* if */
