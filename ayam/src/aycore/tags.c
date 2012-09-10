@@ -529,16 +529,17 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  /* we first try to resolve the tag type */
+  if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[1])))
+    {
+      if(ay_prefs.wutag)
+	ay_error(AY_EWARN, argv[0], "Tag type is not registered!");
+    }
+
   while(sel)
     {
       o = sel->object;
 
-      /* we first try to resolve the tag type */
-      if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, argv[1])))
-	{
-	  if(ay_prefs.wutag)
-	    ay_error(AY_EWARN, argv[0], "Tag type is not registered!");
-	}
       if(!(new = calloc(1, sizeof(ay_tag))))
 	{
 	  ay_error(AY_EOMEM, argv[0], NULL);
@@ -546,6 +547,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       if(!(new->name = calloc(strlen(argv[1])+1, sizeof(char))))
 	{
+	  free(new);
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
