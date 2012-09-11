@@ -577,6 +577,7 @@ ay_sdmesh_deletecb(void *c)
 int
 ay_sdmesh_copycb(void *src, void **dst)
 {
+ int ay_status = AY_OK;
  ay_sdmesh_object *sdmesh = NULL, *sdmeshsrc = NULL;
  unsigned int i, total_verts = 0, total_intargs = 0, total_floatargs = 0;
 
@@ -604,7 +605,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   if(sdmeshsrc->nverts)
     {
       if(!(sdmesh->nverts = calloc(sdmeshsrc->nfaces, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->nverts, sdmeshsrc->nverts,
 	     sdmeshsrc->nfaces * sizeof(unsigned int));
 
@@ -618,7 +619,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   if(sdmeshsrc->verts)
     {
       if(!(sdmesh->verts = calloc(total_verts, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->verts, sdmeshsrc->verts,
 	     total_verts * sizeof(unsigned int));
     }
@@ -627,12 +628,12 @@ ay_sdmesh_copycb(void *src, void **dst)
   if(sdmeshsrc->tags)
     {
       if(!(sdmesh->tags = calloc(sdmeshsrc->ntags, sizeof(int))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->tags, sdmeshsrc->tags,
 	     sdmeshsrc->ntags * sizeof(int));
 
       if(!(sdmesh->nargs = calloc(2 * sdmeshsrc->ntags, sizeof(unsigned int))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->nargs, sdmeshsrc->nargs,
 	     2 * sdmeshsrc->ntags * sizeof(unsigned int));
 
@@ -643,12 +644,12 @@ ay_sdmesh_copycb(void *src, void **dst)
 	} /* for */
 
       if(!(sdmesh->intargs = calloc(total_intargs, sizeof(int))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->intargs, sdmeshsrc->intargs,
 	     total_intargs * sizeof(int));
 
       if(!(sdmesh->floatargs = calloc(total_floatargs, sizeof(double))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->floatargs, sdmeshsrc->floatargs,
 	     total_floatargs * sizeof(double));
     } /* if */
@@ -658,14 +659,38 @@ ay_sdmesh_copycb(void *src, void **dst)
     {
       if(!(sdmesh->controlv = calloc(3 * sdmeshsrc->ncontrols,
 				     sizeof(double))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->controlv, sdmeshsrc->controlv,
 	     3 * sdmesh->ncontrols * sizeof(double));
     }
 
   *dst = (void *)sdmesh;
 
- return AY_OK;
+  sdmesh = NULL;
+
+cleanup:
+
+  if(sdmesh)
+    {
+      if(sdmesh->nverts)
+	free(sdmesh->nverts);
+      if(sdmesh->verts)
+	free(sdmesh->verts);
+      if(sdmesh->tags)
+	free(sdmesh->tags);
+      if(sdmesh->nargs)
+	free(sdmesh->nargs);
+      if(sdmesh->intargs)
+	free(sdmesh->intargs);
+      if(sdmesh->floatargs)
+	free(sdmesh->floatargs);
+      if(sdmesh->controlv)
+	free(sdmesh->controlv);
+
+      free(sdmesh);
+    }
+
+ return ay_status;
 } /* ay_sdmesh_copycb */
 
 
@@ -1013,6 +1038,7 @@ ay_sdmesh_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 int
 ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 {
+ int ay_status = AY_OK;
  ay_sdmesh_object *sdmesh = NULL;
  unsigned int total_verts = 0, total_intargs = 0, total_floatargs = 0;
  unsigned int i, a;
@@ -1028,7 +1054,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 
   /* read nverts */
   if(!(sdmesh->nverts = calloc(sdmesh->nfaces, sizeof(unsigned int))))
-    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   for(i = 0; i < sdmesh->nfaces; i++)
     {
       fscanf(fileptr, "%u\n", &(sdmesh->nverts[i]));
@@ -1037,7 +1063,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   /* read verts */
   fscanf(fileptr, "%u\n", &total_verts);
   if(!(sdmesh->verts = calloc(total_verts, sizeof(unsigned int))))
-    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }    { return AY_EOMEM; }
   for(i = 0; i < total_verts; i++)
     {
       fscanf(fileptr, "%u\n", &(sdmesh->verts[i]));
@@ -1048,14 +1074,14 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   if(sdmesh->ntags > 0)
     {
       if(!(sdmesh->tags = calloc(sdmesh->ntags, sizeof(int))))
-	{ return AY_EOMEM; }
+	{ ay_status = AY_EOMEM; goto cleanup; }
       for(i = 0; i < sdmesh->ntags; i++)
 	{
 	  fscanf(fileptr, "%d\n", &(sdmesh->tags[i]));
 	}
 
       if(!(sdmesh->nargs = calloc(2 * sdmesh->ntags, sizeof(unsigned int))))
-	{ return AY_EOMEM; }
+	{ ay_status = AY_EOMEM; goto cleanup; }
       for(i = 0; i < (2 * sdmesh->ntags); i++)
 	{
 	  fscanf(fileptr, "%u\n", &(sdmesh->nargs[i]));
@@ -1063,7 +1089,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 
       fscanf(fileptr, "%u\n", &total_intargs);
       if(!(sdmesh->intargs = calloc(total_intargs, sizeof(int))))
-	{ return AY_EOMEM; }
+	{ ay_status = AY_EOMEM; goto cleanup; }
       for(i = 0; i < total_intargs; i++)
 	{
 	  fscanf(fileptr, "%d\n", &(sdmesh->intargs[i]));
@@ -1071,7 +1097,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 
       fscanf(fileptr, "%u\n", &total_floatargs);
       if(!(sdmesh->floatargs = calloc(total_floatargs, sizeof(double))))
-	{ return AY_EOMEM; }
+	{ ay_status = AY_EOMEM; goto cleanup; }
       for(i = 0; i < total_floatargs; i++)
 	{
 	  fscanf(fileptr, "%lg\n", &(sdmesh->floatargs[i]));
@@ -1082,7 +1108,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%u\n", &sdmesh->ncontrols);
 
   if(!(sdmesh->controlv = calloc(sdmesh->ncontrols * 3, sizeof(double))))
-    {return AY_EOMEM;}
+    { ay_status = AY_EOMEM; goto cleanup; }
 
   a = 0;
   for(i = 0; i < sdmesh->ncontrols; i++)
@@ -1101,7 +1127,31 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
 
   o->refine = sdmesh;
 
- return AY_OK;
+ sdmesh = NULL;
+
+cleanup:
+
+  if(sdmesh)
+    {
+      if(sdmesh->nverts)
+	free(sdmesh->nverts);
+      if(sdmesh->verts)
+	free(sdmesh->verts);
+      if(sdmesh->tags)
+	free(sdmesh->tags);
+      if(sdmesh->nargs)
+	free(sdmesh->nargs);
+      if(sdmesh->intargs)
+	free(sdmesh->intargs);
+      if(sdmesh->floatargs)
+	free(sdmesh->floatargs);
+      if(sdmesh->controlv)
+	free(sdmesh->controlv);
+
+      free(sdmesh);
+    }
+
+ return ay_status;
 } /* ay_sdmesh_readcb */
 
 

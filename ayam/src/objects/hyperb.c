@@ -933,7 +933,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       if(ay_status)
-	return ay_status;
+	{ free(controlv); return ay_status; }
 
       memcpy(&(controlv[height*stride]), cv, height*stride*sizeof(double));
       j = height*stride+2;
