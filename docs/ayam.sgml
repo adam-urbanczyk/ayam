@@ -15066,6 +15066,19 @@ via the keyboard shortcut <tt/&lt;o&gt;/.
 To temporarily disable the modified behavior, the global keyboard
 shortcut <tt/&lt;F12&gt;/ can be used.
 
+<sect2>Revert Cursor Key Behavior<label id="rctcl">
+<p>
+The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/cursor) may be
+used to get more useful cursor key behavior in primary modelling
+views (parallel views).
+<p>
+After running the script, the keyboard shortcuts for rotating
+and panning in parallel views are swapped, e.g. just pressing
+<tt/&lt;Left&gt;/ key will then pan the view, instead of rotating it.
+<p>
+The shortcuts will be swapped again, when the view changes
+type to <tt/"Perspective"/.
+
 <sect2>Use Ayam as Command Line Converter<label id="bgconverttcl">
 <p>
 The external Tcl script <tt>"bgconvert.tcl"</tt>
@@ -19287,6 +19300,7 @@ Index:
 <item><ref id="mcattr" name="MetaComp attribute">
 </itemize>
 <item>RadSteps: <ref id="rio" name="RenderMan interface option">
+<item>rc.tcl: <ref id="rctcl" name="example/helper script">
 <item>ReadCurves:
 <itemize>
 <item><ref id="impdxfopt" name="DXF import option">,
