@@ -728,7 +728,7 @@ ay_swing_crtside(ay_swing_object *swing, ay_object *cso, ay_object *tro,
 				   AY_TRUE, AY_FALSE, NULL,
 				   &nc);
 
-      if(!nc)
+      if(ay_status || !nc)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
       ay_object_defaults(curve);
