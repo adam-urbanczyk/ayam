@@ -518,14 +518,13 @@ ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 /* ay_shader_free:
  *  free a shader and associated arguments
  */
-int
+void
 ay_shader_free(ay_shader *shader)
 {
- int ay_status = AY_OK;
  ay_shader_arg *arg = NULL, *argtmp = NULL;
 
   if(!shader)
-    return AY_OK;
+    return;
 
   if(shader->arg)
     {
@@ -556,7 +555,7 @@ ay_shader_free(ay_shader *shader)
   /* finally, delete the shader*/
   free(shader);
 
- return ay_status;
+ return;
 } /* ay_shader_free */
 
 

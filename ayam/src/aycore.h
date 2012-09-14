@@ -1147,7 +1147,7 @@ int ay_shader_scanslxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** delete a shader
  */
-int ay_shader_free(ay_shader *shader);
+void ay_shader_free(ay_shader *shader);
 
 /** copy a shader argument
  */

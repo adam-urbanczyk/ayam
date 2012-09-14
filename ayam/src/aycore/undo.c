@@ -1,4 +1,3 @@
-
 /*
  * Ayam, a free 3D modeler for the RenderMan interface.
  *
@@ -274,25 +273,25 @@ ay_undo_copymat(ay_mat_object *src, ay_mat_object *dst)
 
   if(dst->sshader)
     {
-      ay_status = ay_shader_free(dst->sshader);
+      ay_shader_free(dst->sshader);
       dst->sshader = NULL;
     }
 
   if(dst->dshader)
     {
-      ay_status = ay_shader_free(dst->dshader);
+      ay_shader_free(dst->dshader);
       dst->dshader = NULL;
     }
 
   if(dst->ishader)
     {
-      ay_status = ay_shader_free(dst->ishader);
+      ay_shader_free(dst->ishader);
       dst->ishader = NULL;
     }
 
   if(dst->eshader)
     {
-      ay_status = ay_shader_free(dst->eshader);
+      ay_shader_free(dst->eshader);
       dst->eshader = NULL;
     }
 
@@ -376,7 +375,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(dst->imager)
     {
-      ay_status = ay_shader_free(dst->imager);
+      ay_shader_free(dst->imager);
       dst->imager = NULL;
     }
 
@@ -389,7 +388,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(dst->atmosphere)
     {
-      ay_status = ay_shader_free(dst->atmosphere);
+      ay_shader_free(dst->atmosphere);
       dst->atmosphere = NULL;
     }
 

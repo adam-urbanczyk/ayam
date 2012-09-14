@@ -1307,13 +1307,12 @@ RtVoid
 ay_rrib_RiAtmosphere(RtToken name,
 		     RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
 
   if(root->atmosphere)
-    ay_status = ay_shader_free(root->atmosphere);
+    ay_shader_free(root->atmosphere);
   root->atmosphere = NULL;
 
   ay_rrib_readshader(name, AY_STATMOSPHERE, n, tokens, parms,
@@ -1698,10 +1697,9 @@ RtVoid
 ay_rrib_RiDisplacement(RtToken name,
 		       RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
 
   if(ay_rrib_cattributes->dshader)
-    ay_status = ay_shader_free(ay_rrib_cattributes->dshader);
+    ay_shader_free(ay_rrib_cattributes->dshader);
   ay_rrib_cattributes->dshader = NULL;
 
   ay_rrib_readshader(name, AY_STDISPLACEMENT, n, tokens, parms,
@@ -1793,10 +1791,9 @@ RtVoid
 ay_rrib_RiExterior(RtToken name,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
 
   if(ay_rrib_cattributes->eshader)
-    ay_status = ay_shader_free(ay_rrib_cattributes->eshader);
+    ay_shader_free(ay_rrib_cattributes->eshader);
   ay_rrib_cattributes->eshader = NULL;
 
   ay_rrib_readshader(name, AY_STEXTERIOR, n, tokens, parms,
@@ -2000,13 +1997,12 @@ RtVoid
 ay_rrib_RiImager(RtToken name,
 		 RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
  ay_root_object *root = NULL;
 
   root = (ay_root_object *)ay_root->refine;
 
   if(root->imager)
-    ay_status = ay_shader_free(root->imager);
+    ay_shader_free(root->imager);
   root->imager = NULL;
 
   ay_rrib_readshader(name, AY_STIMAGER, n, tokens, parms,
@@ -2030,10 +2026,9 @@ RtVoid
 ay_rrib_RiInterior(RtToken name,
 		   RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
 
   if(ay_rrib_cattributes->ishader)
-    ay_status = ay_shader_free(ay_rrib_cattributes->ishader);
+    ay_shader_free(ay_rrib_cattributes->ishader);
   ay_rrib_cattributes->ishader = NULL;
 
   ay_rrib_readshader(name, AY_STINTERIOR, n, tokens, parms,
@@ -3340,10 +3335,9 @@ RtVoid
 ay_rrib_RiSurface(RtToken name,
 		  RtInt n, RtToken tokens[], RtPointer parms[])
 {
- int ay_status = AY_OK;
 
   if(ay_rrib_cattributes->sshader)
-    ay_status = ay_shader_free(ay_rrib_cattributes->sshader);
+    ay_shader_free(ay_rrib_cattributes->sshader);
   ay_rrib_cattributes->sshader = NULL;
 
   ay_rrib_readshader(name, AY_STSURFACE, n, tokens, parms,

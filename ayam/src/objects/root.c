@@ -653,6 +653,11 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 	  root->atmosphere = NULL;
 	}
       ay_status = ay_read_shader(fileptr, &(root->atmosphere));
+      if(ay_status)
+	{
+	  ay_shader_free(root->atmosphere);
+	  root->atmosphere = NULL;
+	}
     }
 
   /* read Imager */
@@ -665,6 +670,11 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 	  root->imager = NULL;
 	}
       ay_status = ay_read_shader(fileptr, &(root->imager));
+      if(ay_status)
+	{
+	  ay_shader_free(root->imager);
+	  root->imager = NULL;
+	}
     }
 
   if(ay_read_version >= 5)
@@ -929,17 +939,17 @@ ay_root_wribcb(char *file, ay_object *o)
 		 (RtPointer)(&riopt->textures), RI_NULL);
 
     if(riopt->shaders)
-      if((riopt->textures)[0] != '\0')
+      if((riopt->shaders)[0] != '\0')
 	RiOption((RtToken)"searchpath", (RtToken)"shader",
 		 (RtPointer)(&riopt->shaders), RI_NULL);
 
     if(riopt->archives)
-      if((riopt->textures)[0] != '\0')
+      if((riopt->archives)[0] != '\0')
 	RiOption((RtToken)"searchpath", (RtToken)"archive",
 		 (RtPointer)(&riopt->archives), RI_NULL);
 
     if(riopt->procedurals)
-      if((riopt->textures)[0] != '\0')
+      if((riopt->procedurals)[0] != '\0')
 	RiOption((RtToken)"searchpath", (RtToken)"procedural",
 		 (RtPointer)(&riopt->procedurals), RI_NULL);
 
