@@ -381,7 +381,7 @@ selected object(s).
 selected object(s).
 <footnote>Since 1.18.</footnote>
 
-<item><tt/&lt;Alt-Up&gt;/ and <tt/&lt;Alt-Down&gt;/ move the
+<item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
 selected for up-movement or the last object for down-movement.
@@ -479,7 +479,7 @@ The Root object, however, will always be omitted.
 all objects in the current level. If the current level is the root level,
 the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 
-<item><tt/&lt;Alt-Up&gt;/ and <tt/&lt;Alt-Down&gt;/ move the
+<item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
 selected for up-movement or the last object for down-movement.
