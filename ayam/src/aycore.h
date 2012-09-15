@@ -612,15 +612,11 @@ void ay_matt_init(Tcl_Interp *interp);
  */
 int ay_matt_registermaterial(char *name, ay_mat_object *mat);
 
-/** check, whether material name is registered
- */
-int ay_matt_isregistered(char *name);
-
 /** de-register material
  */
 int ay_matt_deregister(char *name);
 
-/** get material object from name
+/** get registered material object from name
  */
 int ay_matt_getmaterial(char *name, ay_mat_object **material);
 

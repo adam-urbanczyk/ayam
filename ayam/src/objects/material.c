@@ -100,8 +100,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 int
 ay_material_deletecb(void *c)
 {
- ay_mat_object *material = NULL;
- char *name = NULL;
+ ay_mat_object *material = NULL, *regmaterial = NULL;
 
   if(!c)
     return AY_ENULL;
@@ -109,40 +108,29 @@ ay_material_deletecb(void *c)
   material = (ay_mat_object *)(c);
 
   if(material->sshader)
-    {
-      ay_shader_free(material->sshader);
-      material->sshader = NULL;
-    }
-  if(material->dshader)
-    {
-      ay_shader_free(material->dshader);
-      material->dshader = NULL;
-    }
-  if(material->ishader)
-    {
-      ay_shader_free(material->ishader);
-      material->ishader = NULL;
-    }
-  if(material->eshader)
-    {
-      ay_shader_free(material->eshader);
-      material->eshader = NULL;
-    }
+    ay_shader_free(material->sshader);
 
+  if(material->dshader)
+    ay_shader_free(material->dshader);
+
+  if(material->ishader)
+    ay_shader_free(material->ishader);
+
+  if(material->eshader)
+    ay_shader_free(material->eshader);
+
+  /* remove all references to this material */
+  ay_matt_removerefs(ay_root, material);
+
+  ay_matt_removerefs(ay_clipboard, material);
+
+  /* handle material (de)registration */
   if(material->nameptr)
     {
-      name = *material->nameptr;
-      if(ay_matt_isregistered(name))
-	{
-	  /* remove all references to this material */
-	  ay_matt_removerefs(ay_root, material);
+      ay_matt_getmaterial(*material->nameptr, &regmaterial);
 
-	  ay_matt_removerefs(ay_clipboard, material);
-
-	  /* additionally, de-register this material */
-	  if(name)
-	    ay_matt_deregister(name);
-	}
+      if(regmaterial == material)
+	ay_matt_deregister(*material->nameptr);
     }
 
   free(material);
@@ -265,8 +253,8 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  /*int ay_status = AY_OK;*/
  char *n1 = "RiAttrData", *n2 = "MaterialAttrData";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
- ay_mat_object *material = NULL, *oldmat = NULL;
- int newname_status = AY_OK, oldname_status = AY_OK;
+ ay_mat_object *material = NULL, *regmaterial = NULL;
+ int newname_status = AY_OK;
  char *newname = NULL, *oldname = NULL, *string = NULL;
  int stringlen = 0;
  char fname[] = "setmaterial";
@@ -370,30 +358,20 @@ ay_material_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   if(newname != NULL)
     {
       /* Is the new name different from the old one? */
-      if(strcmp(newname, oldname))
+      if((!oldname && newname) || strcmp(newname, oldname))
 	{
 	  /* Yes, register new name. */
 	  newname_status = ay_matt_registermaterial(newname, material);
 	  if(!newname_status)
 	    {
 	      /* New name is successfully registered! */
-
-	      /* Now correctly dispose the old name. */
-	      if(oldname)
-		oldname_status = ay_matt_isregistered(oldname);
-	      else
-		oldname_status = AY_FALSE;
-
-	      if(oldname_status != AY_FALSE)
+	      /* de-register oldname;
+		 but only if this really is the registered material
+		 object (there can be materials with the same name) */
+	      ay_matt_getmaterial(oldname, &regmaterial);
+	      if(regmaterial == material)
 		{
-		  /* old name is already registered, de-register it;
-		     but only if this really is the registered material
-		     object (there can be materials with the same name) */
-		  ay_matt_getmaterial(oldname, &oldmat);
-		  if(oldmat == material)
-		    {
-		      ay_matt_deregister(oldname);
-		    }
+		  ay_matt_deregister(oldname);
 		}
 
 	      if(o->name)
@@ -608,24 +586,32 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
   if(has_shader)
     {
       ay_status = ay_read_shader(fileptr, &material->sshader);
+      if(ay_status)
+	goto cleanup;
     }
   has_shader = 0;
   fscanf(fileptr,"%d\n",&has_shader);
   if(has_shader)
     {
       ay_status = ay_read_shader(fileptr, &material->dshader);
+      if(ay_status)
+	goto cleanup;
     }
   has_shader = 0;
   fscanf(fileptr,"%d\n",&has_shader);
   if(has_shader)
     {
       ay_status = ay_read_shader(fileptr, &material->ishader);
+      if(ay_status)
+	goto cleanup;
     }
   has_shader = 0;
   fscanf(fileptr,"%d\n",&has_shader);
   if(has_shader)
     {
       ay_status = ay_read_shader(fileptr, &material->eshader);
+      if(ay_status)
+	goto cleanup;
     }
 
   if(ay_read_version >= 4)
@@ -642,22 +628,26 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
       ay_status = ay_matt_registermaterial(o->name, material);
 
       if(ay_status)
-	{      
+	{
 	  /* could not register material under its original name */
-	  /* try to rename it (append a number) */
-	  if(!(newname = calloc(strlen(o->name)+TCL_INTEGER_SPACE+2,
+	  /* try to rename it (by appending a number) */
+	  if((newname = calloc(strlen(o->name)+TCL_INTEGER_SPACE+2,
 				sizeof(char))))
-	    { return AY_EOMEM; }
-
-	  while(ay_status && (newindex < INT_MAX))
 	    {
-	      sprintf(newname, "%s-%d", o->name, newindex);
-	      ay_status = ay_matt_registermaterial(newname, material);
-	      newindex++;
+	      while(ay_status && (newindex < INT_MAX))
+		{
+		  sprintf(newname, "%s-%d", o->name, newindex);
+		  ay_status = ay_matt_registermaterial(newname, material);
+		  newindex++;
+		}
+	    }
+	  else
+	    {
+	      ay_status = AY_EOMEM;
 	    }
 
 	  if(ay_status)
-	    {      
+	    {
 	      ay_error(AY_ERROR, fname, "Could not register material:");
 	      ay_error(AY_ERROR, fname, o->name);
 	    }
@@ -665,15 +655,21 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
 	    {
 	      free(o->name);
 	      o->name = newname;
-	      ay_error(AY_EWARN, fname, "Renamed material:");
+	      ay_error(AY_EWARN, fname, "Renamed material to:");
 	      ay_error(AY_EWARN, fname, o->name);
 	    }
 	} /* if */
     } /* if */
 
   o->refine = material;
+  material = NULL;
 
- return AY_OK;
+cleanup:
+
+  if(material)
+    ay_material_deletecb(material);
+
+ return ay_status;
 } /* ay_material_readcb */
 
 
