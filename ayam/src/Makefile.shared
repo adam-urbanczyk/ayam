@@ -547,6 +547,8 @@ Ayam.app: ayamsh
 	-cp plugins/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp contrib/meta/*.so ../bin/Ayam.app/Contents/MacOS/plugins
 	-cp contrib/meta/*.tcl ../bin/Ayam.app/Contents/MacOS/plugins
+	-mkdir ../bin/Ayam.app/Contents/MacOS/scripts
+	-cp scripts/*.tcl ../bin/Ayam.app/Contents/MacOS/scripts
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs
 	-cp ../doc/html/*.html ../bin/Ayam.app/Contents/Resources/docs/
 	-mkdir ../bin/Ayam.app/Contents/Resources/docs/pics
