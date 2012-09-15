@@ -572,6 +572,8 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  char fname[] = "material_read";
  int has_shader = 0;
+ char *newname;
+ int newindex = 2;
 
   if(!o)
     return AY_ENULL;
@@ -638,13 +640,36 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
   if(material->registered)
     {
       ay_status = ay_matt_registermaterial(o->name, material);
-    }
 
-  if(ay_status)
-    {
-      ay_error(AY_ERROR, fname, "Could not register material:");
-      ay_error(AY_ERROR, fname, o->name);
-    }
+      if(ay_status)
+	{      
+	  /* could not register material under its original name */
+	  /* try to rename it (append a number) */
+	  if(!(newname = calloc(strlen(o->name)+TCL_INTEGER_SPACE+2,
+				sizeof(char))))
+	    { return AY_EOMEM; }
+
+	  while(ay_status && (newindex < INT_MAX))
+	    {
+	      sprintf(newname, "%s-%d", o->name, newindex);
+	      ay_status = ay_matt_registermaterial(newname, material);
+	      newindex++;
+	    }
+
+	  if(ay_status)
+	    {      
+	      ay_error(AY_ERROR, fname, "Could not register material:");
+	      ay_error(AY_ERROR, fname, o->name);
+	    }
+	  else
+	    {
+	      free(o->name);
+	      o->name = newname;
+	      ay_error(AY_EWARN, fname, "Renamed material:");
+	      ay_error(AY_EWARN, fname, o->name);
+	    }
+	} /* if */
+    } /* if */
 
   o->refine = material;
 
