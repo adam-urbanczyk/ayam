@@ -1,5 +1,5 @@
-[29. Aug 2012] CVS-Head:
-=======================
+[15. Sep 2012] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -29,25 +29,29 @@ o added internal resize widget to script text editor of Script object
 o improved dialog box appearance on X11
 o the shaders preference setting GUI element now allows to directly
   choose directories
-o the Tags property GUI now issues notification when applied
+o the Tags property GUI now issues a proper notification when applied
 o there is now a dialog for the management of property GUIs via NP/RP tags
   (new main menu entries: "Special/Tags/Add Property" and "Remove Property")
 o objects can now be moved easily in the current level using the new
   keyboard shortcuts <Alt-Up>/<Alt-Down>
 o added keyboard shortcuts to switch all views to point/object modelling
   (<pp> and <oo> respectively)
+o when loading scenes, material objects are now automatically renamed when
+  an initial attempt to register the material fails (the material is already
+  present under this name)
 
 Scripts/Scripting Interface:
+o added luainterp plugin to support the Lua scripting language
 o "applyTrafo" command now applies the transformations to all points by default
   and it is more robust wrt. non-editable points and objects without points
 o the "estlenNC" command now supports an optional parameter "-trafo" that
   controls whether the transformation attributes should be applied to the curve
 o the "apnt" script now also binds to the select all/no points shortcuts
   to enable/disable the point modelling mode
-o added luainterp plugin to support the Lua scripting language
 o getProperty/setProperty no longer need a correctly updated current level
-  in the Tcl GUI context (object listbox/tree)
+  in the Tcl GUI context (object listbox or tree)
 o getProperty/setProperty now also work with multiple selected objects
+o added script "rc" that swaps cursor key bindings in parallel views
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
