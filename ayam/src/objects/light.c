@@ -478,7 +478,7 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  ay_shader_arg *sarg = NULL;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **pecoords = NULL, *c;
+ double *pecoord = NULL, **pecoords = NULL, **pecoordstmp, *c;
  int has_from = 0, has_to = 0, a = 0;
  unsigned int numpts = 0;
 
@@ -616,9 +616,13 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
 	      pecoords[a] = c;
 	      a++;
 	    } /* if */
@@ -633,9 +637,13 @@ ay_light_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	    {
-
-	      if(!(pecoords = realloc(pecoords, (a+1)*sizeof(double *))))
-		return AY_EOMEM;
+	      if(!(pecoordstmp = realloc(pecoords, (a+1)*sizeof(double *))))
+		{
+		  if(pecoords)
+		    free(pecoords);
+		  return AY_EOMEM;
+		}
+	      pecoords = pecoordstmp;
 	      pecoords[a] = c;
 	      a++;
 	    } /* if */
