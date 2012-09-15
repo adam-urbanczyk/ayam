@@ -67,31 +67,6 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
 } /* ay_matt_registermaterial */
 
 
-/* ay_matt_isregistered:
- *  checks whether material name <name>
- *  is registered in the material database;
- *  returns AY_TRUE if it is registerd and AY_FALSE if not
- */
-int
-ay_matt_isregistered(char *name)
-{
- Tcl_HashEntry *entry = NULL;
- Tcl_HashTable *ht = &ay_matt_ptr_ht;
-
-  if(!name)
-    return AY_FALSE;
-
-  entry = Tcl_FindHashEntry(ht, name);
-
-  if(!entry)
-    {
-      return AY_FALSE; /* name is not registered */
-    }
-
- return AY_TRUE;
-} /* ay_matt_isregistered */
-
-
 /* ay_matt_deregister:
  *  de-register material name <name> from the material database
  */
