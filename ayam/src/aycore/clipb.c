@@ -183,7 +183,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
     o->next = NULL;
 
   /* free selection */
-  ay_status = ay_sel_free(AY_TRUE);
+  ay_sel_free(AY_TRUE);
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)
@@ -324,7 +324,6 @@ int
 ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
  ay_object *clip = ay_clipboard, *clipend = NULL;
  ay_object **presel, *selend;
  int instanceerr = AY_FALSE;
@@ -424,11 +423,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   /* free selection */
-  ay_status = ay_sel_free(AY_TRUE);
-  if(ay_status)
-    {
-      ay_error(ay_status, argv[0], NULL);
-    }
+  ay_sel_free(AY_TRUE);
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)

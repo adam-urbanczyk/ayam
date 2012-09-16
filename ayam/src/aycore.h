@@ -622,15 +622,15 @@ int ay_matt_getmaterial(char *name, ay_mat_object **material);
 
 /** remove all material references
  */
-int ay_matt_removeallrefs(ay_object *o);
+void ay_matt_removeallrefs(ay_object *o);
 
 /** remove all references to given material
  */
-int ay_matt_removerefs(ay_object *o, ay_mat_object *material);
+void ay_matt_removerefs(ay_object *o, ay_mat_object *material);
 
 /** remove material references from clipboard
  */
-int ay_matt_removecliprefs(ay_object *o);
+void ay_matt_removecliprefs(ay_object *o);
 
 /** Connect objects to the appropriate material objects (using MI tags).
  */
@@ -1016,7 +1016,7 @@ int ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh);
 
 /** clear the selection
  */
-int ay_sel_free(int clear_selflag);
+void ay_sel_free(int clear_selflag);
 
 /** add object to selection
  */

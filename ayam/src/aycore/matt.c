@@ -35,7 +35,6 @@ static char *ay_matt_mitagname = "MI";
 int
 ay_matt_registermaterial(char *name, ay_mat_object *mat)
 {
- int ay_status = AY_OK;
  int new_item = 0;
  Tcl_HashEntry *entry = NULL;
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
@@ -63,7 +62,7 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
       Tcl_SetHashValue(entry, (char*)mat);
     }
 
- return ay_status;
+ return AY_OK;
 } /* ay_matt_registermaterial */
 
 
@@ -73,7 +72,6 @@ ay_matt_registermaterial(char *name, ay_mat_object *mat)
 int
 ay_matt_deregister(char *name)
 {
- int ay_status = AY_OK;
  Tcl_HashEntry *entry = NULL;
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
 
@@ -89,7 +87,7 @@ ay_matt_deregister(char *name)
       Tcl_DeleteHashEntry(entry);
     }
 
- return ay_status;
+ return AY_OK;
 } /* ay_matt_deregister */
 
 
@@ -99,7 +97,6 @@ ay_matt_deregister(char *name)
 int
 ay_matt_getmaterial(char *name, ay_mat_object **material)
 {
- int ay_status = AY_OK;
  Tcl_HashEntry *entry = NULL;
  Tcl_HashTable *ht = &ay_matt_ptr_ht;
 
@@ -115,7 +112,7 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
       *material = (ay_mat_object *)Tcl_GetHashValue(entry);
     }
 
- return ay_status;
+ return AY_OK;
 } /* ay_matt_getmaterial */
 
 
@@ -123,14 +120,13 @@ ay_matt_getmaterial(char *name, ay_mat_object **material)
  *  _recursively_ remove all references to all material objects from
  *  all objects besides and beneath <o>
  */
-int
+void
 ay_matt_removeallrefs(ay_object *o)
 {
- int ay_status = AY_OK;
  ay_mat_object *m = NULL;
 
   if(!o)
-    return AY_ENULL;
+    return;
 
   while(o)
     {
@@ -148,13 +144,13 @@ ay_matt_removeallrefs(ay_object *o)
 
       if(o->down)
 	{
-	  ay_status = ay_matt_removeallrefs(o->down);
+	  ay_matt_removeallrefs(o->down);
 	} /* if */
 
       o = o->next;
     } /* while */
 
- return ay_status;
+ return;
 } /* ay_matt_removeallrefs */
 
 
@@ -162,14 +158,13 @@ ay_matt_removeallrefs(ay_object *o)
  *  _recursively_ remove all references to material object <material>
  *  from all objects besides and beneath <o>
  */
-int
+void
 ay_matt_removerefs(ay_object *o, ay_mat_object *material)
 {
- int ay_status = AY_OK;
  ay_mat_object *m = NULL;
 
   if(!o || !material)
-    return AY_OK;
+    return;
 
   while(o)
     {
@@ -187,26 +182,26 @@ ay_matt_removerefs(ay_object *o, ay_mat_object *material)
 
       if(o->down)
 	{
-	  ay_status = ay_matt_removerefs(o->down, material);
+	  ay_matt_removerefs(o->down, material);
 	}
 
       o = o->next;
     }
 
- return ay_status;
+ return;
 } /* ay_matt_removerefs */
 
 
 /* ay_matt_removecliprefs:
  *  used by ay_clear_scene(); see there for description
  */
-int
+void
 ay_matt_removecliprefs(ay_object *o)
 {
- int ay_status = AY_OK;
+ ay_mat_object *regmaterial = NULL;
 
   if(!o)
-    return AY_ENULL;
+    return;
 
   while(o->next)
     {
@@ -214,18 +209,20 @@ ay_matt_removecliprefs(ay_object *o)
 	{
 	  ay_matt_removerefs(ay_clipboard, (ay_mat_object *)o->refine);
 
-	  ay_matt_deregister(o->name);
+	  ay_matt_getmaterial(o->name, &regmaterial);
+	  if(regmaterial == (ay_mat_object *)o->refine)
+	    ay_matt_deregister(o->name);
 	}
 
       if(o->down)
 	{
-	  ay_status = ay_matt_removecliprefs(o->down);
+	  ay_matt_removecliprefs(o->down);
 	}
 
       o = o->next;
     }
 
- return ay_status;
+ return;
 } /* ay_matt_removecliprefs */
 
 

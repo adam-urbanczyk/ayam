@@ -20,7 +20,7 @@
  *  additionally clears the selected flag from
  *  previously selected objects, if clear_selflag is AY_TRUE
  */
-int
+void
 ay_sel_free(int clear_selflag)
 {
  ay_list_object *sel = ay_selection, *seln = NULL;
@@ -36,7 +36,7 @@ ay_sel_free(int clear_selflag)
 
   ay_selection = NULL;
 
- return AY_OK;
+ return;
 } /* ay_sel_free */
 
 
