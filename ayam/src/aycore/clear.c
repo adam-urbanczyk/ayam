@@ -46,10 +46,10 @@ ay_clear_scene(void)
    *    them while delete operation is in progress, which
    *    would make crash us badly)
    */
-  ay_status = ay_matt_removecliprefs(ay_root);
+  ay_matt_removecliprefs(ay_root);
 
   /* remove all references from normal objects to material objects */
-  ay_status = ay_matt_removeallrefs(ay_root);
+  ay_matt_removeallrefs(ay_root);
 
   /* remove all objects now, no unlink necessary */
   o = o->next;
@@ -70,13 +70,9 @@ ay_clear_scene(void)
   ay_root->next = o;
 
   /* clear selection */
-  ay_status = ay_sel_free(AY_FALSE);
-  if(ay_status)
-    {
-      return ay_status;
-    }
+  ay_sel_free(AY_FALSE);
 
-  /* clear clevel */
+  /* clear current level */
   ay_clevel_gotop();
 
   /* free shaders from root object */
