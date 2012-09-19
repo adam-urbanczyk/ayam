@@ -1724,6 +1724,10 @@ camera (From and To) to the view type dependend default values.
 <item><tt/&lt;.&gt;/ pans the view to the mark.
 </itemize>
 
+See section <ref id="rctcl" name="Revert Cursor Key Behavior">
+for a script that swaps the cursor key bindings in parallel
+views.
+
 Interactive actions modifying the camera, that is associated with the
 view window, are:
 <itemize>
@@ -9070,9 +9074,10 @@ cd, encoding, exec, exit, fconfigure, file, glob, load, open, pwd, socket,
 source, unload; auto_exec_ok, auto_import, auto_load, auto_load_index,
 auto_qualify, unknown (the missing unknown and autoloading facilities
 lead to further unavailability of commands normally available via
-autoloading, like e.g.~parray, history).
+autoloading, like e.g.~parray, history).<newline>
 The puts command is available in a limited fashion: only access to
 the stdout and stderr channels is allowed.
+<p>
 Ayam scripting interface commands that directly manipulate the user
 interface are also not available (uS, rV etc.). Please refer to the
 documentation of the scripting interface commands about their availability
@@ -9096,8 +9101,8 @@ If you do so, for security reasons, if scene files containing script
 objects are loaded, Ayam will raise a warning dialog, offering to
 temporarily disable all script objects that will be read. The script
 objects will be disabled using the <tt/"Active"/ script object property
-and may be enabled after careful inspection of the script code manually
-or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
+and may be enabled again after careful inspection of the script code
+manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>Script Object Usage
 <p>
@@ -9106,7 +9111,7 @@ modified and each time the notification callback of the script object
 is called (e.g.~because one of the children of the script object changed).
 As long as the script of a script object is executed, Ayam will
 not process any events except for checking whether the script emergency
-hotkey <tt/&lt;Ctrl+Shift+c&gt;/, that may also be used to
+hotkey <tt/&lt;Ctrl+C&gt;/, that may also be used to
 escape from infinite loops in the Ayam console, is pressed.
 Calling commands and procedures that lead to the processing of
 events or that are slow because they manipulate or update the
@@ -9117,10 +9122,12 @@ selOb, plb_update, undo!
 Script objects may also create their own property
 GUIs for e.g.~script parameters.
 <footnote>Since 1.8.2.</footnote>
-This may be accomplished by adding
-tags of type <tt>"NP"</tt> with the name of the new property as
-value to the script object. The script itself is responsible for data
+This may be accomplished by adding tags of type <tt>"NP"</tt> with the
+name of the new property as value to the script object (menu entry
+<tt>"Special/Tags/Add Property"</tt>).
+The script itself is responsible for data
 management and property GUI creation.
+
 <p>
 The parameters set via a such a property GUI may be
 comfortably saved with scene files by just adding the following
@@ -17317,7 +17324,7 @@ file format version,
 <item> the file will be read with all objects,
 <item> all instances will be connected to their masters using the
 information stored in <tt/"OI"/ tags; if a master can not be found in
-the scene, the instance will be removed,
+the scene, the respective instance object(s) will be removed,
 <item> all objects will be connected to their materials using the
 information stored in <tt/"MI"/ tags; if no matching material can
 be found, the connection will not be established,
@@ -17354,9 +17361,11 @@ continues,
 it; if this registration fails (because there is already a material
 with that name registered; this material can <em>only</em> be in the
 clipboard, as all other objects were deleted before opening the file),
-the material object will be created, but objects from the file will
-not be be linked to the material object from the file, but to the
-material object that was already registered before,
+the material object read will be renamed by appending a number, and the
+registration is attempted again, those steps will be repeated until
+successful; prior to version 1.21,
+Ayam did not attempt to rename the material and other objects were
+then connected to the already existing material,
 <item> if loading of an object fails, Ayam skips to the next object
 and continues to read from the file.
 </enum>
@@ -17376,15 +17385,16 @@ also be the new current level in any case (after reading),
 <item> if a material is missing from the file, and a matching (by name)
 material exists in the scene, the objects will be connected to this
 material,
-<item> view windows will be opened for every view object,
+<item> view windows will be opened for every view object read,
 <item> the current directory will only be changed during the file
 read operation,
 <item> if a material object is read, Ayam will immediately register
 it; if this registration fails (because there is already a material
-with that name registered), the material object will be created, but
-objects from the file will not be be linked to the material object
-from the file, but to the material object that was already registered
-before,
+with that name registered), the material object read will be renamed by
+appending a number, and the registration is attempted again, those
+steps will be repeated until successful; prior to version 1.21,
+Ayam did not attempt to rename the material and other objects were
+then connected to the already existing material,
 <item> the current file name will not be changed,
 <item> the scene changed state will be set to "changed",
 <item> the save views flag will not be changed, this means that
