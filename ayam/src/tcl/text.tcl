@@ -27,7 +27,7 @@ proc text_getAttr { } {
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues
+    bevel_parseTags $tagnames $tagvalues $TextAttrData(BoundaryNames)
 
     set ay(bok) $ay(appb)
     addVSpace $w s1 2
@@ -38,22 +38,22 @@ proc text_getAttr { } {
     addCheck $w TextAttrData UpperCap
     addCheck $w TextAttrData LowerCap
 
-    if { $BevelTags(HasStartBevel) } {
-	addCommand $w c1 "Remove Start Bevel!" "bevel_rem 0 TextAttrData"
-	addMenu $w BevelTags SBType $ay(bevelmodes)
-	addParam $w BevelTags SBRadius
-	addCheck $w BevelTags SBRevert
+    if { $BevelTags(Bevel0) } {
+	addCommand $w c1 "Remove Lower Bevel!" "bevel_rem 0 TextAttrData"
+	addMenu $w BevelTags LowerType $ay(bevelmodes)
+	addParam $w BevelTags LowerRadius
+	addCheck $w BevelTags LowerRevert
     } else {
-	addCommand $w c1 "Add Start Bevel!" "bevel_add 0 TextAttrData"
+	addCommand $w c1 "Add Lower Bevel!" "bevel_add 0 TextAttrData"
     }
 
-    if { $BevelTags(HasEndBevel) } {
-	addCommand $w c2 "Remove End Bevel!" "bevel_rem 1 TextAttrData"
-	addMenu $w BevelTags EBType $ay(bevelmodes)
-	addParam $w BevelTags EBRadius
-	addCheck $w BevelTags EBRevert
+    if { $BevelTags(Bevel1) } {
+	addCommand $w c2 "Remove Upper Bevel!" "bevel_rem 1 TextAttrData"
+	addMenu $w BevelTags UpperType $ay(bevelmodes)
+	addParam $w BevelTags UpperRadius
+	addCheck $w BevelTags UpperRevert
     } else {
-	addCommand $w c2 "Add End Bevel!" "bevel_add 1 TextAttrData"
+	addCommand $w c2 "Add Upper Bevel!" "bevel_add 1 TextAttrData"
     }
 
     addParam $w TextAttrData Tolerance
@@ -72,7 +72,7 @@ proc text_getAttr { } {
 #
 proc text_setAttr { } {
 
-    bevel_setTags
+    bevel_setTags $::TextAttrData(BoundaryNames)
     setProp
 
  return;
@@ -89,6 +89,8 @@ array set TextAttr {
 
 array set TextAttrData {
     DisplayMode 1
+    BevelType 0
+    BoundaryNames { "Lower" "Upper" }
 }
 
 
