@@ -12,7 +12,7 @@
 set Script 1
 
 proc init_Script { } {
-global ay ayprefs Script_props ScriptAttr ScriptAttrData 
+global ay ayprefs Script_props ScriptAttr ScriptAttrData
 
 set Script_props { Attributes Tags ScriptAttr }
 
@@ -47,7 +47,7 @@ proc resizeHandle:B1-Motion {win resizeWin X Y} {
 
     set newWidth [expr {$ar(oldWidth) + $xDiff / $ar(cw)}]
     set newHeight [expr {$ar(oldHeight) + $yDiff / $ar(ch)}]
-    
+
     if {$newWidth < 2 || $newHeight < 2} {
 	return
     }
@@ -58,14 +58,16 @@ proc resizeHandle:B1-Motion {win resizeWin X Y} {
 }
 
 proc resizeHandle:PlaceHandle {win resizeWin} {
+puts "placehandle $win $resizeWin"
     set x [expr [winfo x $resizeWin]+[winfo width $resizeWin]-3]
     set y [expr [winfo y $resizeWin]+[winfo height $resizeWin]-3]
+
     place $win -in [winfo parent $win] -anchor se -x $x -y $y
 }
 
 proc resizeHandle:Destroy {win} {
     upvar #0 _resizeHandle$win ar
-    #catch because this may not be set
+    # catch, because ar may not be set
     catch {array unset ar}
 }
 
@@ -193,8 +195,8 @@ proc getScriptp { } {
 	eval [subst "$t tag add errtag $errrange"]
     }
 
-    resizeHandle:PlaceHandle $ay(pca).$ScriptAttr(w).rsh \
-     $ay(pca).$ScriptAttr(w).tScript
+    after idle "resizeHandle:PlaceHandle $ay(pca).$ScriptAttr(w).rsh \
+      $ay(pca).$ScriptAttr(w).tScript"
 
  return;
 }
