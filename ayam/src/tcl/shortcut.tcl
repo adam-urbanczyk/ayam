@@ -144,9 +144,11 @@ proc shortcut_main { w } {
     bind $w <[repctrl $aymainshortcuts(Master)]> "$m invoke 16;break"
     $m entryconfigure 16 -accelerator [remkpkr $aymainshortcuts(Master)]
 
+    bind $w <[repctrl $aymainshortcuts(Search)]> "$m invoke 18;break"
+    $m entryconfigure 18 -accelerator [remkpkr $aymainshortcuts(Search)]
 
-    bind $w <[repctrl $aymainshortcuts(Prefs)]> "$m invoke 18;break"
-    $m entryconfigure 18 -accelerator [remkpkr $aymainshortcuts(Prefs)]
+    bind $w <[repctrl $aymainshortcuts(Prefs)]> "$m invoke 20;break"
+    $m entryconfigure 20 -accelerator [remkpkr $aymainshortcuts(Prefs)]
 
     set m $ay(toolsmenu)
     bind $w <[repctrl $aymainshortcuts(LastTool)]> "$m invoke 0;break"

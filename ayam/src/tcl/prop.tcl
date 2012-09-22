@@ -339,6 +339,8 @@ proc getProperty { property varName } {
 upvar $varName vname
 global ay ay_error
 
+    set vname ""
+
     # decode arrayname from property argument
     set arrayname [string range $property 0 \
 		       [expr [string first "(" $property]-1]]
