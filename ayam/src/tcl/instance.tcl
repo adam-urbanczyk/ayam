@@ -25,12 +25,17 @@ proc instance_edit { } {
     }
 
     # we only work with one object
-    #selOb $sel
-    update
+    # => trim selection
+    if { [llength $sel] > 1 } {
+	selOb [lindex $sel 1]
+    }
+
     set type ""
     getType type
     if { $type != "Instance" } {
 	ayError 2 editMaster "Object is not an instance!"
+	# restore original selection
+	selOb $sel
 	return;
     }
 
@@ -89,6 +94,8 @@ proc instance_edit { } {
 	plb_update
     } else {
 	ayError 2 editMaster "Could not find master object!"
+	# restore original selection
+	selOb $sel
     }
     # if
 

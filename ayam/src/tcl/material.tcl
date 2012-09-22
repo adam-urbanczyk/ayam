@@ -140,12 +140,20 @@ proc material_edit { } {
 
     set oldsel $sel
 
+    # we only work with one object
+    # => trim selection
+    if { [llength $sel] > 1 } {
+	selOb [lindex $sel 1]
+    }
+
     getType type
     global ${type}_props
     eval set props \$${type}_props
 
     if { [lsearch -exact $props Material]  == -1 } {
 	ayError 2 editMaterial "Object may not be associated with a material!"
+	# restore original selection
+	selOb $sel
 	return;
     }
 
@@ -161,9 +169,14 @@ proc material_edit { } {
 	set ay_error 0
 	material_createp
 
+	if { $ay_error > 0 } {
+	    # restore original selection
+	    selOb $sel
+	    return;
+	}
+
 	# if a new material has been created by the user
-	# we link it to the object(s) and select it again for editing
-	if { $ay_error > 0 } { return; }
+	# we link it to all the originally selected object(s)
 	getProp
 	set newmaterial $MaterialAttrData(Materialname)
 	foreach obj $oldsel {
@@ -172,7 +185,7 @@ proc material_edit { } {
 	    set matPropData(Materialname) $newmaterial
 	    setMat
 	}
-	# select the material again
+	# select the newly created material again for editing
 	sL;rV
 
     } else {
@@ -243,6 +256,8 @@ proc material_edit { } {
 	
 	} else {
 	    ayError 2 matEdit "Could not find material ${mat}!"
+	    # restore original selection
+	    selOb $sel
 	}
 	# if
     }
