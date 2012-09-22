@@ -15,6 +15,46 @@
 /* clipb.c - functions for the object clipboard */
 
 
+/* ay_clipb_clear:
+ *  Properly clears the clipboard.
+ *
+ *  \returns AY_OK if successful, AY_ERROR otherwise.
+ */
+int
+ay_clipb_clear()
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL, *t = NULL;
+ char fname[] = "clipb_clear";
+  /* first, delete all instance objects */
+  ay_object_deleteinstances(&ay_clipboard);
+
+  /* now delete all normal objects */
+  t = ay_clipboard;
+  while(t)
+    {
+      o = t;
+      t = t->next;
+      ay_clipboard = t;
+      ay_undo_clearobj(o);
+      ay_status = ay_object_delete(o);
+      if(ay_status)
+	{
+	  ay_clipboard = o;
+	  ay_error(AY_ERROR, fname, "Could not clear clipboard!");
+	  ay_error(AY_ERROR, fname,
+		   "Maybe there are referenced objects in it?");
+	  ay_error(AY_ERROR, fname,
+		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
+	  return AY_ERROR;
+	}
+    }
+  ay_clipboard = NULL;
+
+ return AY_OK;
+} /* ay_clipb_clear */
+
+
 /* ay_clipb_copytcmd:
  *  Implements the \a copOb scripting interface command.
  *  See also the corresponding section in the \ayd{sccopob}.
@@ -26,8 +66,9 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_object *clip = NULL, *o = NULL, *t = NULL;
+ ay_object **next = NULL, *t = NULL;
  ay_list_object *sel = ay_selection;
+ int append = AY_FALSE;
 
   if(!sel)
     {
@@ -35,52 +76,31 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* clear old clipboard */
-  /* first, delete all instance objects */
-  ay_object_deleteinstances(&ay_clipboard);
-  clip = ay_clipboard;
-  /* now delete all normal objects */
-  while(clip)
+  if(argc > 1)
+    append = AY_TRUE;
+
+  next = &(ay_clipboard);
+
+  if(!append)
+    {
+      /* clear old clipboard */
+      if(ay_clipb_clear())
+	return TCL_OK;
+    }
+  else
     {
       t = ay_clipboard;
-      o = clip;
-      clip = clip->next;
-      ay_clipboard = clip;
-      ay_undo_clearobj(o);
-      ay_status = ay_object_delete(o);
-      if(ay_status)
+      while(t)
 	{
-	  ay_clipboard = t;
-	  ay_error(AY_ERROR, argv[0], "Could not clear clipboard!");
-	  ay_error(AY_ERROR, argv[0],
-		   "Maybe there are referenced objects in it?");
-	  ay_error(AY_ERROR, argv[0],
-		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
-	  return TCL_OK;
+	  next = &(t->next);
+	  t = t->next;
 	}
     }
-  ay_clipboard = NULL;
 
-  /* copy object(s) */
-  o = sel->object;
-  ay_status = ay_object_copy(o, &ay_clipboard);
-
-  if(ay_status)
-    {
-      ay_error(ay_status, argv[0], NULL);
-      ay_clipboard = NULL;
-      return TCL_OK;
-    }
-
-  clip = ay_clipboard;
-
-  sel = sel->next;
-
+  /* copy objects */
   while(sel)
     {
-      o = sel->object;
-
-      ay_status = ay_object_copy(o, &(clip->next));
+      ay_status = ay_object_copy(sel->object, next);
 
       if(ay_status)
 	{
@@ -88,7 +108,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      clip = clip->next;
+      next = &((*next)->next);
       sel = sel->next;
     } /* while */
 
@@ -109,7 +129,8 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
- ay_object *o = NULL, *clip = NULL, *t = NULL;
+ ay_object **next = NULL, *t = NULL;
+ int append = AY_FALSE;
 
   if(!sel)
     {
@@ -133,57 +154,49 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  sel = ay_selection;
+  if(argc > 1)
+    append = AY_TRUE;
 
-  /* clear old clipboard */
+  next = &(ay_clipboard);
 
-  /* first, delete all instance objects */
-  ay_object_deleteinstances(&ay_clipboard);
-  clip = ay_clipboard;
-
-  /* now delete all normal objects */
-  while(clip)
+  if(!append)
+    {
+      /* clear old clipboard */
+      if(ay_clipb_clear())
+	return TCL_OK;
+    }
+  else
     {
       t = ay_clipboard;
-      o = clip;
-      clip = clip->next;
-      ay_clipboard = clip;
-      ay_undo_clearobj(o);
-      ay_status = ay_object_delete(o);
-      if(ay_status)
+      while(t)
 	{
-	  ay_clipboard = t;
-	  ay_error(AY_ERROR, argv[0], "Could not clear clipboard!");
-	  ay_error(AY_ERROR, argv[0],
-		   "Maybe there are referenced objects in it?");
-	  ay_error(AY_ERROR, argv[0],
-		   "Use menu: \"Special/Clipboard/Paste (Move)\" first!");
-	  return TCL_OK;
-	} /* if */
-    } /* while */
-  ay_clipboard = NULL;
+	  next = &(t->next);
+	  t = t->next;
+	}
+    }
+  sel = ay_selection;
 
   /* cut objects to clipboard */
   if(sel)
     ay_clipboard = sel->object;
 
-  o = NULL;
   while(sel)
     {
+
       ay_status = ay_object_unlink(sel->object);
-      if(o)
-	o->next = sel->object;
-      o = sel->object;
+      if(!ay_status)
+	{
+	  *next = sel->object;
+	  next = &((*next)->next);
+	  /* terminate clipboard hierarchy properly */
+	  *next = NULL;
+	}
 
       sel = sel->next;
     } /* while */
 
-  /* terminate clipboard hierarchy properly */
-  if(o)
-    o->next = NULL;
-
   /* free selection */
-  ay_sel_free(AY_TRUE);
+  ay_sel_free(/*clear_selflag=*/AY_TRUE);
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)
@@ -423,7 +436,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
   /* free selection */
-  ay_sel_free(AY_TRUE);
+  ay_sel_free(/*clear_selflag=*/AY_TRUE);
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)
