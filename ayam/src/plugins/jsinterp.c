@@ -245,11 +245,13 @@ jsinterp_error(JSContext *cx, const char *message, JSErrorReport *report)
     {
       ay_error(AY_ENULL, fname, NULL);
     }
+  else
+    {
+      sprintf(buf, "JS line %u", (unsigned int) report->lineno);
+      ay_error(AY_ERROR, buf, message);
 
-  sprintf(buf, "JS line %u", (unsigned int) report->lineno);
-  ay_error(AY_ERROR, buf, message);
-
-  jsinterp_errorline = (unsigned int) report->lineno;
+      jsinterp_errorline = (unsigned int) report->lineno;
+    }
 
  return;
 } /* jsinterp_error */
