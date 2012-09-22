@@ -294,6 +294,7 @@ array set aymainshortcuts {
     Redo "Ctrl-y"
     Material "Ctrl-m"
     Master "Ctrl-M"
+    Search "Ctrl-f"
     Prefs "Ctrl-p"
 
     Help "F1"

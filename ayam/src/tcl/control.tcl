@@ -982,3 +982,212 @@ proc selMUD { up } {
  return;
 }
 # selMUD
+
+
+# searchObjects:
+#  highlights tree nodes of objects of same material (colouring them red)
+#  needs a selected material or normal object from which the material
+#  name to search for is derived
+proc searchObjects { } {
+    global ay SearchObjects
+
+    # check, whether tree view is open
+    if { $ay(lb) != 0 } {
+	ayError 2 searchObjects "Search only works for the tree view!"
+	return;
+    }
+
+    winAutoFocusOff
+
+    set oldFocus [focus]
+
+    set w .searchw
+    winDialog $w "Search Objects"
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) $w.fb.bca
+    set ay(bok) $w.fb.bok
+
+    # check/save original selection
+    set sel ""
+    getSel sel
+
+    set name ""
+    set type ""
+    set mat ""
+    if { $sel != "" } {
+	# trim selection
+	if { [llength $sel] > 1 } {
+	    selOb [lindex $sel 1]
+	}
+
+	# get name/type/material of first selected object
+	getName name
+	getType type
+
+	if { $type == "Material" } {
+	    global MaterialAttrData
+	    getProp
+	    set mat $MaterialAttrData(Materialname)
+	} else {
+	    global ${type}_props
+	    if { [lsearch ${type}_props Material] != -1 } {
+		getMat
+		set mat $matPropData(Materialname)
+	    }
+	}
+	# restore original selection
+	selOb $sel
+    }
+    # if
+
+    # build example expressions
+    if { $name != "" } {
+	lappend expressions "\$name == \"$name\""
+    }
+    if { $type != "" } {
+	lappend expressions "\$type == \"$type\""
+    }
+    if { $mat != "" } {
+	lappend expressions "\$mat == \"$mat\""
+    }
+
+    lappend expressions "\$SphereAttr(Radius) == 1.0"
+    lappend expressions "\[myProc\]"
+
+    if { ![info exists SearchObjects(Action)] } {
+	set  SearchObjects(Action) "Highlight"
+    }
+
+    # complete dialog GUI
+    addString $w.f1 SearchObjects Expression $expressions
+    addString $w.f1 SearchObjects Action {Highlight Select Copy Cut Delete}
+
+    set f [frame $w.fb]
+
+    button $f.bok -text "Ok" -width 5 -command {
+
+	# compile expression
+	if { [string first "\$" $SearchObjects(Expression)] == 0 } {
+	    # variable comparison
+	    if { [string first "\$name" $SearchObjects(Expression)] == 0 } {
+		# object name comparison
+		set cx "getName name;expr \{"
+		append cx $SearchObjects(Expression)
+		append cx "\}"
+	    } else {
+	    if { [string first "\$type" $SearchObjects(Expression)] == 0 } {
+		# object type comparison
+		set cx "getType type;expr \{"
+		append cx $SearchObjects(Expression)
+		append cx "\}"
+	    } else {
+	    if { [string first "\$mat" $SearchObjects(Expression)] == 0 } {
+		# object material comparison
+                set cx "global matPropData;"
+		append cx "set matPropData(Materialname) \"\";getMat;expr \{ "
+		append cx "\$matPropData(Materialname)"
+		set sindex [string first " " $SearchObjects(Expression)]
+		append cx [string range $SearchObjects(Expression) $sindex end]
+		append cx " \}"
+	    } else {
+		# arbitrary variable, probably a property value comparison like
+		# SphereAttr(Radius) == 1
+		# => create an expression like
+		# getProperty SphereAttr(Radius) val; expr $val == 1.0
+		set index [string first ")" $SearchObjects(Expression)]
+		if { $index != -1 } {
+		    set sindex [string first " " $SearchObjects(Expression)]
+		    set cx "getProperty "
+		    append cx \
+			[string range $SearchObjects(Expression) 1 $index]
+		    append cx " val;expr \{ \$val"
+		    append cx \
+			[string range $SearchObjects(Expression) $sindex end]
+		    append cx "\}"
+		}
+	    }
+	    }
+	    }
+	    set SearchObjects(cx) $cx
+	} else {
+	    # procedure call
+	    set SearchObjects(cx) $SearchObjects(Expression)
+	}
+
+	# compile action
+
+	set aid [after 500 {mouseWatch 1 {. .tbw}}]
+
+	# save old selection state
+	set SearchObjects(oldclevel) $ay(CurrentLevel)
+	set SearchObjects(oldslevel) $ay(SelectedLevel)
+	set SearchObjects(oldselection) [$ay(tree) selection get]
+	# go to top level and clear selection
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	goTop
+	$ay(tree) selection clear
+	selOb
+
+	set SearchObjects(numfound) 0
+	# now go find the objects
+	forAll 1 {
+	    global ay SearchObjects
+	    if { [eval $SearchObjects(cx)] } {
+		    # found an object
+		    incr SearchObjects(numfound)
+		    # execute action
+		    if { $SearchObjects(Action) eq "Highlight" } {
+			tree_openTree $ay(tree) $ay(CurrentLevel)
+			set ti [ expr $i - 1 ]
+			$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
+			    -fill red
+		    }
+		    # highlight
+
+		}
+		# if
+
+	    # catch
+	}
+	# forAll
+
+	ayError 4 searchObjects "Done. Found $SearchObjects(numfound) objects."
+
+	# re-establish old selection
+	set ay(CurrentLevel) $SearchObjects(oldclevel)
+	set ay(SelectedLevel) $SearchObjects(oldslevel)
+	$ay(tree) selection set $SearchObjects(oldselection)
+	tree_handleSelection
+	plb_update
+
+	mouseWatch 0 {. .tbw}
+	catch {after cancel $aid}
+    }
+    # ok
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+      grab release $w;\
+      restoreFocus $oldFocus;\
+      destroy $w"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    winCenter $w
+    grab $w
+    focus $w.f1.fExpression.e
+    tkwait window $w
+
+    winAutoFocusOn
+
+ return;
+}
+# searchObjects
