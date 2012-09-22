@@ -24,8 +24,9 @@ int
 ay_clipb_clear()
 {
  int ay_status = AY_OK;
- ay_object *o = NULL, *t = NULL;
  char fname[] = "clipb_clear";
+ ay_object *o = NULL, *t = NULL;
+
   /* first, delete all instance objects */
   ay_object_deleteinstances(&ay_clipboard);
 
@@ -83,7 +84,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!append)
     {
-      /* clear old clipboard */
+      /* clear old clipboard content */
       if(ay_clipb_clear())
 	return TCL_OK;
     }
@@ -161,7 +162,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!append)
     {
-      /* clear old clipboard */
+      /* clear old clipboard content */
       if(ay_clipb_clear())
 	return TCL_OK;
     }
@@ -174,12 +175,10 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 	  t = t->next;
 	}
     }
+
   sel = ay_selection;
 
   /* cut objects to clipboard */
-  if(sel)
-    ay_clipboard = sel->object;
-
   while(sel)
     {
 
