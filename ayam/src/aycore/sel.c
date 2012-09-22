@@ -219,8 +219,7 @@ ay_sel_getseltcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  to = Tcl_NewIntObj(i);
 	  Tcl_ObjSetVar2(interp,toa,NULL,to,TCL_APPEND_VALUE |
-			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG |
-			 TCL_GLOBAL_ONLY);
+			 TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG);
 	}
       i++;
       o = o->next;
