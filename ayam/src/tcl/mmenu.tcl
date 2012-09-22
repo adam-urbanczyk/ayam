@@ -809,9 +809,6 @@ $m add command -label "Convert (In Place)" -command {
 $m add separator
 $m add command -label "Force Notification" -command "notifyOb; rV" \
     -underline 0
-$m add separator
-$m add command -label "Highlight Material" -command "material_highlight" \
-    -underline 2
 
 if { ! $AYWITHAQUA } {
     pack $w.fMenu.tool -in $w.fMenu -side left
