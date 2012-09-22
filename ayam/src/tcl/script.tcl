@@ -58,7 +58,6 @@ proc resizeHandle:B1-Motion {win resizeWin X Y} {
 }
 
 proc resizeHandle:PlaceHandle {win resizeWin} {
-puts "placehandle $win $resizeWin"
     set x [expr [winfo x $resizeWin]+[winfo width $resizeWin]-3]
     set y [expr [winfo y $resizeWin]+[winfo height $resizeWin]-3]
 
