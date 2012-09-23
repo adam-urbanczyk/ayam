@@ -148,6 +148,9 @@ proc material_edit { } {
 
     getType type
     global ${type}_props
+    if { ! [info exists ${type}_props] } {
+	init_${type}
+    }
     eval set props \$${type}_props
 
     if { [lsearch -exact $props Material]  == -1 } {

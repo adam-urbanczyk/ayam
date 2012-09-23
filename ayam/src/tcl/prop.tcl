@@ -359,6 +359,9 @@ global ay ay_error
 	withOb $obj {
 	    # get list of properties of selected object
 	    global ${type}_props
+	    if { ! [info exists ${type}_props] } {
+		init_${type}
+	    }
 	    eval [subst "set props {\$${type}_props}"]
 
 	    # also get properties from NP tags
@@ -427,6 +430,9 @@ global ay curtypes ay_error
 	withOb $obj {
 	    # get list of properties of selected object
 	    global ${type}_props
+	    if { ! [info exists ${type}_props] } {
+		init_${type}
+	    }
 	    eval [subst "set props {\$${type}_props}"]
 
 	    # also get properties from NP tags

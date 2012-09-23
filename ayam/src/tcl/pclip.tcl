@@ -112,6 +112,9 @@ proc pclip_paste { } {
 	    }
 
 	    global ${type}_props
+	    if { ! [info exists ${type}_props] } {
+		init_${type}
+	    }
 	    eval [subst "set list \{\$${type}_props\}"]
 
 	    set index [lsearch -exact $list $pclip_prop ]
@@ -181,6 +184,9 @@ proc pclip_pastetosel { } {
 	    getType type
 	}
 	global ${type}_props
+	if { ! [info exists ${type}_props] } {
+	    init_${type}
+	}
 	eval [subst "set list \{\$${type}_props\}"]
 
 	set index [lsearch -exact $list $pclip_prop ]
