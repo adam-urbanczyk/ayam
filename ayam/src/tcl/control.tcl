@@ -1033,6 +1033,9 @@ proc searchObjects { } {
 	    set mat $MaterialAttrData(Materialname)
 	} else {
 	    global ${type}_props
+	    if { ! [info exists ${type}_props] } {
+		init_${type}
+	    }
 	    if { [lsearch ${type}_props Material] != -1 } {
 		getMat
 		set mat $matPropData(Materialname)
