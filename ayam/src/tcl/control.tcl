@@ -1066,12 +1066,20 @@ proc searchObjects { } {
 
     # complete dialog GUI
     addString $w.f1 SearchObjects Expression $expressions
-    addString $w.f1 SearchObjects Action {Highlight Select Copy Cut Delete}
+    addString $w.f1 SearchObjects Action {Highlight Copy Cut Delete}
+    addMenu $w SearchObjects Scope {All Selected Level}
+    addCheck $w SearchObjects ClearHighlight
+    addCheck $w SearchObjects ClearClipboard
 
     set f [frame $w.fb]
 
-    button $f.bok -text "Ok" -width 5 -command {
-
+    button $f.bok -text "Ok" -width 5 -command {	
+	if { $SearchObjects(ClearHighlight) } {
+	    tree_paintTree root
+	}
+	if { $SearchObjects(ClearClipboard) } {
+	    clearClip
+	}
 	# compile expression
 	if { [string first "\$" $SearchObjects(Expression)] == 0 } {
 	    # variable comparison
@@ -1148,9 +1156,9 @@ proc searchObjects { } {
 			set ti [ expr $i - 1 ]
 			$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
 			    -fill red
-		    }
+			$ay(tree) see ${ay(CurrentLevel)}:$ti
 		    # highlight
-
+		    }
 		}
 		# if
 
@@ -1194,3 +1202,8 @@ proc searchObjects { } {
  return;
 }
 # searchObjects
+
+array set SearchObjects {
+Scope All
+ClearHighlight 1
+}

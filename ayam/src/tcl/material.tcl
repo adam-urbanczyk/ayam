@@ -83,7 +83,7 @@ proc material_createp { } {
     addString $w.f1 aydd Name
 
     set f [frame $w.f2]
-    button $f.bok -text "Ok" -width 5 -command { 
+    button $f.bok -text "Ok" -width 5 -command {
 	global ay aydd ayprefs ay_error
 
 	# replace all whitespace by underscores
@@ -244,19 +244,23 @@ proc material_edit { } {
 	    # if
 
 	    if { $ay(lb) == 0 } {
+		# TreeView is active
 		selOb $matobject
 		$ay(tree) selection set ${matlevel}:$matobject
 		$ay(tree) see ${matlevel}:$matobject
-		tree_paintLevel ${matlevel}
+		tree_paintLevel $matlevel
+		set ay(CurrentLevel) $matlevel
+		set ay(SelectedLevel) $matlevel
 		update
 	    } else {
+		# ListBox is active
 		uS
 		selOb $matobject
 		$ay(olb) selection set [expr $matobject + 1]
 	    }
 	    # if
 	    plb_update
-	
+
 	} else {
 	    ayError 2 matEdit "Could not find material ${mat}!"
 	    # restore original selection

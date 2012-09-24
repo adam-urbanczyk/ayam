@@ -210,23 +210,20 @@ proc shortcut_main { w } {
 	if { $ay(lb) == 0 } {
 	    set tree $ay(tree)
 	    set cl $ay(CurrentLevel)
-
 	    if { $cl == "root" } {
 		break
 	    }
 	    set i [string last ":" $cl]
 	    set newcl [string range $cl 0 [expr ${i}-1]]
-	    tree_paintLevel $newcl
 	    goUp
-	    set ay(CurrentLevel) $newcl
 	    set ay(SelectedLevel) $newcl
 	    $tree selection set $cl
 	    $tree see $cl
 	    treeSelect $cl
 	    tree_paintLevel $newcl
+	    set ay(CurrentLevel) $newcl
 	    plb_update
 	    rV
-
 	} else {
 	    $ay(olbbup) invoke
 	    break
@@ -258,16 +255,14 @@ proc shortcut_main { w } {
 	    }
 	    $tree itemconfigure $sel -open 1
 	    goDown
-	    set ay(CurrentLevel) $sel
 	    set ay(SelectedLevel) $sel
-	    tree_paintLevel $cl
 	    $tree selection set ${sel}:0
 	    $tree see ${sel}:0
 	    treeSelect ${sel}:0
 	    tree_paintLevel $sel
+	    set ay(CurrentLevel) $sel
 	    plb_update
 	    rV
-
 	} else {
 	    $ay(olbbdwn) invoke
 	    break
