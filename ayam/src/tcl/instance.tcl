@@ -76,12 +76,16 @@ proc instance_edit { } {
 	# if
 	set o [lindex $mo end]
 	if { $ay(lb) == 0 } {
+	    # TreeView is active
 	    selOb $o
 	    $ay(tree) selection set ${node}:$o
 	    $ay(tree) see ${node}:$o
-	    tree_paintLevel ${node}
+	    tree_paintLevel $node
+	    set ay(CurrentLevel) $node
+	    set ay(SelectedLevel) $node
 	    update
 	} else {
+	    # ListBox is active
 	    uS
 	    selOb $o
 	    if { $len > 1 } {

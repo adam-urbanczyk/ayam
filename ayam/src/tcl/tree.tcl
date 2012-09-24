@@ -154,36 +154,69 @@ proc tree_update { node } {
 
 
 #tree_paintLevel:
-# paint the current selected level black
-# paint the rest in darkgrey
-proc tree_paintLevel { node } {
+# paint the level designated by <level> in black
+# paint the current level in darkgrey
+# should be called when the current level changes,
+# but _before_ ay(CurrentLevel) is set
+# does not change highlighted items
+proc tree_paintLevel { level } {
     global ay
 
-    set CurrentLevel $ay(CurrentLevel)
-
-    if { $CurrentLevel != "" } {
-	set nlist [$ay(tree) nodes $CurrentLevel]
+    if { $ay(CurrentLevel) != "" } {
+	set nlist [$ay(tree) nodes $ay(CurrentLevel)]
 	foreach n $nlist {
-	    set old [$ay(tree) itemcget $n -fill]
-	    if { $old == "black" } {
+	    set col [$ay(tree) itemcget $n -fill]
+	    if { $col == "black" } {
 		$ay(tree) itemconfigure $n -fill darkgrey
 	    }
 	}
     }
-    set CurrentLevel $node
-    set nlist [$ay(tree) nodes $CurrentLevel]
+
+    set nlist [$ay(tree) nodes $level]
     foreach n $nlist {
-	set old [$ay(tree) itemcget $n -fill]
-	if { $old == "darkgrey" } {
+	set col [$ay(tree) itemcget $n -fill]
+	if { $col == "darkgrey" } {
 	    $ay(tree) itemconfigure $n -fill black
 	}
     }
 
-    set ay(CurrentLevel) $CurrentLevel
-
  return;
 }
 # tree_paintLevel
+
+
+#tree_paintTree:
+# recursively paint the current selected level black
+# paint the rest in darkgrey
+# also resets highlights
+proc tree_paintTree { level } {
+    global ay
+
+    set nodes [$ay(tree) nodes $level]
+
+    if { $level == $ay(CurrentLevel) } {
+	foreach node $nodes {
+	    set col [$ay(tree) itemcget $node -fill]
+	    if { $col != "black" } {
+		$ay(tree) itemconfigure $node -fill black
+	    }
+	}
+    } else {
+	foreach node $nodes {
+	    set col [$ay(tree) itemcget $node -fill]
+	    if { $col != "darkgrey" } {
+		$ay(tree) itemconfigure $node -fill darkgrey
+	    }
+	}
+    }
+
+    foreach node $nodes {
+	tree_paintTree $node
+    }
+
+ return;
+}
+# tree_paintTree
 
 
 #tree_selectItem
@@ -200,9 +233,7 @@ proc tree_selectItem { redraw tree node } {
     set ay(ts) 1;
     set nlist [$tree selection get]
     $ay(tree) selection clear
-    #treeSelect ""
     $ay(tree) selection set $node
-    #tree_handleSelection
     if { [lsearch $nlist $node] == "-1" } {
 	$tree selection set $node
 	set ay(SelectedLevel) [$tree parent $node]
@@ -382,6 +413,7 @@ proc tree_handleSelection { } {
 
     if { $ay(SelectedLevel) != $ay(CurrentLevel) } {
 	tree_paintLevel $ay(SelectedLevel)
+	set ay(CurrentLevel) $ay(SelectedLevel)
     }
     set nlist [$ay(tree) selection get]
     eval [subst "treeSelect $nlist"]
@@ -596,7 +628,6 @@ proc tree_move { } {
 	    tree_openTree $ay(tree) $newclevel
 	    $ay(tree) selection clear
 	    tree_handleSelection
-	    tree_paintLevel $newclevel
 
 	    set sel ""
 	    set nodes [$ay(tree) nodes $newclevel]
@@ -631,7 +662,6 @@ proc tree_move { } {
 	    set level [$ay(tree) parent [lindex $old_selection 0]]
 	    set ay(CurrentLevel) $level
 	    set ay(SelectedLevel) $level
-	    tree_paintLevel $level
 	    tree_handleSelection
 	    notifyOb -all
 	    plb_update
@@ -645,7 +675,6 @@ proc tree_move { } {
 	set level [$ay(tree) parent [lindex $old_selection 0]]
 	set ay(CurrentLevel) $level
 	set ay(SelectedLevel) $level
-	tree_paintLevel $level
 	tree_handleSelection
 	plb_update
     }

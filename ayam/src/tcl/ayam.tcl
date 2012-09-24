@@ -990,6 +990,7 @@ proc uCL { mode {addargs ""} } {
 # uCR: an optimized "update Selection" just for the
 # case of newly created objects (CR); just adds new nodes
 # to the current level of the tree
+# currently only handles flat nodes (without children)
 proc uCR { } {
     global ay
 
@@ -1041,8 +1042,6 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 
     if { $ay(lb) == 1 } {
 	# ListBox is active
-	global curlevel curtypes
-
 	set lb $ay(olb)
 
 	if { $maintain_selection } {
@@ -1085,19 +1084,14 @@ proc uS { {update_prop "" } {maintain_selection "" } } {
 	if { $ay(SelectedLevel) != "" } {
 	    if { [$ay(tree) exists $ay(SelectedLevel)] } {
 		tree_openTree $ay(tree) $ay(SelectedLevel)
-		tree_paintLevel $ay(SelectedLevel)
 	    } else {
 		set ay(SelectedLevel) "root"
-		set ay(CurrentLevel) "root"
-		update
-		tree_paintLevel $ay(SelectedLevel)
 	    }
-	    update
 	} else {
 	    set ay(SelectedLevel) "root"
-	    update
-	    tree_paintLevel $ay(SelectedLevel)
 	}
+	tree_paintLevel $ay(SelectedLevel)
+	set ay(CurrentLevel) $ay(SelectedLevel)
 
 	if { $maintain_selection && ($sel != "") } {
 	    eval $t selection set $sel
@@ -1156,11 +1150,6 @@ proc cS { } {
     } else {
 	# TreeView is active
 	$ay(tree) selection clear
-
-	if { $ay(CurrentLevel) == "root" } {
-	    tree_paintLevel "root"
-	}
-
 	treeSelect
     }
 
