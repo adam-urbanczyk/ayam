@@ -685,6 +685,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "copOb", ay_clipb_copytcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "clearClip", ay_clipb_copytcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "cutOb", ay_clipb_cuttcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1335,6 +1338,9 @@ ay_safeinit(Tcl_Interp *interp)
   */
   /* clipb.c */
   Tcl_CreateCommand(interp, "copOb", ay_clipb_copytcmd,
+		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "clearClip", ay_clipb_copytcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "cutOb", ay_clipb_cuttcmd,
