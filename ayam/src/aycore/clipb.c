@@ -71,6 +71,12 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
  ay_list_object *sel = ay_selection;
  int append = AY_FALSE;
 
+   if(!strcmp(argv[0], "clearClip"))
+     {
+       ay_status = ay_clipb_clear();
+       return TCL_OK;
+     }
+
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
