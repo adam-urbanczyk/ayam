@@ -847,6 +847,10 @@ $sm add command -label "Paste (Move)" -command {pasmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
+$sm add command -label "Copy (add)" -command {copOb -add}
+$sm add command -label "Cut (add)" -command {cutOb -add}
+$sm add command -label "Clear" -command "clearClip"
+$sm add separator
 $sm add command -label "Paste Property to Selected"\
     -command "pclip_pastetosel; notifyOb; rV"
 
