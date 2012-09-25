@@ -1,4 +1,4 @@
-[15. Sep 2012] CVS-Head:
+[25. Sep 2012] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -7,6 +7,8 @@ o some ConcatNP fillet patches are missing (SF 3514939)
 o pick candidates dialog disappears after resize (SF 3522093)
 o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
 o getProperty/setProperty when listbox is active (SF 3559398)
+o deleting the copy of a material de-registers original material (SF 3568001)
+o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to allow prevention of
@@ -39,6 +41,11 @@ o added keyboard shortcuts to switch all views to point/object modelling
 o when loading scenes, material objects are now automatically renamed when
   an initial attempt to register the material fails (the material is already
   present under this name)
+o removed the highlight material feature
+o added a search facility that allows to search for objects given user
+  defined criteria, like e.g. names, types, materials, property values;
+  found objects can just be highlighted in the object tree, cut or copied to
+  the clipboard, or arbitrary commands can be executed on them
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -52,6 +59,10 @@ o getProperty/setProperty no longer need a correctly updated current level
   in the Tcl GUI context (object listbox or tree)
 o getProperty/setProperty now also work with multiple selected objects
 o added script "rc" that swaps cursor key bindings in parallel views
+o getSel no longer unconditionally writes to global variables
+o added command "clearClip" to clear the clipboard
+o added option "-add" to "copOb" and "cutOb" commands to allow collecting
+  objects in the clipboard
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
