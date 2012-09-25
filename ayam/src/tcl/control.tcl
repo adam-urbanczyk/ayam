@@ -1049,12 +1049,18 @@ proc searchObjects { } {
     # build example expressions
     if { $name != "" } {
 	lappend expressions "\$name == \"$name\""
+    } else {
+	lappend expressions "\$name == \"name\""
     }
     if { $type != "" } {
 	lappend expressions "\$type == \"$type\""
+    } else {
+	lappend expressions "\$type == \"type\""
     }
     if { $mat != "" } {
 	lappend expressions "\$mat == \"$mat\""
+    } else {
+	lappend expressions "\$mat == \"matname\""
     }
 
     lappend expressions "\$SphereAttr(Radius) == 1.0"
@@ -1066,7 +1072,7 @@ proc searchObjects { } {
 
     # complete dialog GUI
     addString $w.f1 SearchObjects Expression $expressions
-    addString $w.f1 SearchObjects Action {Highlight Copy Cut Delete}
+    addString $w.f1 SearchObjects Action {Highlight Copy Cut "\[myProc\]"}
     addMenu $w SearchObjects Scope {All Selected Level}
     addCheck $w SearchObjects ClearHighlight
     addCheck $w SearchObjects ClearClipboard
@@ -1136,12 +1142,18 @@ proc searchObjects { } {
 	set SearchObjects(oldclevel) $ay(CurrentLevel)
 	set SearchObjects(oldslevel) $ay(SelectedLevel)
 	set SearchObjects(oldselection) [$ay(tree) selection get]
-	# go to top level and clear selection
-	set ay(CurrentLevel) "root"
-	set ay(SelectedLevel) "root"
-	goTop
-	$ay(tree) selection clear
-	selOb
+	# go to top level?
+	if { $SearchObjects(Scope) == "All" } {
+	    set ay(CurrentLevel) "root"
+	    set ay(SelectedLevel) "root"
+	    goTop
+	}
+	# clear selection (i.e. work on all objects regardless
+	# of their current selection state)?
+	if {  $SearchObjects(Scope) != "Selected" } {
+	    $ay(tree) selection clear
+	    selOb
+	}
 
 	set SearchObjects(numfound) 0
 	# now go find the objects
@@ -1151,14 +1163,26 @@ proc searchObjects { } {
 		    # found an object
 		    incr SearchObjects(numfound)
 		    # execute action
-		    if { $SearchObjects(Action) eq "Highlight" } {
-			tree_openTree $ay(tree) $ay(CurrentLevel)
-			set ti [ expr $i - 1 ]
-			$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
-			    -fill red
-			$ay(tree) see ${ay(CurrentLevel)}:$ti
-		    # highlight
+		    switch $SearchObjects(Action) {
+			"Highlight" {
+			    tree_openTree $ay(tree) $ay(CurrentLevel)
+			    set ti [ expr $i - 1 ]
+			    $ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
+				-fill red
+			    $ay(tree) see ${ay(CurrentLevel)}:$ti
+			    # highlight
+			}
+			"Copy" {
+			    copOb -add
+			}
+			"Cut" {
+			    cutOb -add
+			}
+			default {
+			    eval $SearchObjects(Action)
+			}
 		    }
+		    # switch
 		}
 		# if
 
