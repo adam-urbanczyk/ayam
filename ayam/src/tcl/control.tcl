@@ -68,8 +68,7 @@ proc forAll_tree { recursive command } {
 	    return -1;
 	}
     }
-
-
+    # foreach
  return;
 }
 # forAll_tree
@@ -1072,8 +1071,8 @@ proc searchObjects { } {
 
     # complete dialog GUI
     addString $w.f1 SearchObjects Expression $expressions
-    addString $w.f1 SearchObjects Action {Highlight Copy Cut "\[myProc\]"}
-    addMenu $w SearchObjects Scope {All Selected Level}
+    addString $w.f1 SearchObjects Action {Highlight Copy "\[myProc\]"}
+    addMenu $w SearchObjects Scope {All Selection Level}
     addCheck $w SearchObjects ClearHighlight
     addCheck $w SearchObjects ClearClipboard
 
@@ -1082,6 +1081,7 @@ proc searchObjects { } {
     button $f.bok -text "Ok" -width 5 -command {	
 	if { $SearchObjects(ClearHighlight) } {
 	    tree_paintTree root
+	    set SearchObjects(nodes) ""
 	}
 	if { $SearchObjects(ClearClipboard) } {
 	    clearClip
@@ -1134,8 +1134,6 @@ proc searchObjects { } {
 	    set SearchObjects(cx) $SearchObjects(Expression)
 	}
 
-	# compile action
-
 	set aid [after 500 {mouseWatch 1 {. .tbw}}]
 
 	# save old selection state
@@ -1150,7 +1148,7 @@ proc searchObjects { } {
 	}
 	# clear selection (i.e. work on all objects regardless
 	# of their current selection state)?
-	if {  $SearchObjects(Scope) != "Selected" } {
+	if {  $SearchObjects(Scope) != "Selection" } {
 	    $ay(tree) selection clear
 	    selOb
 	}
@@ -1160,33 +1158,29 @@ proc searchObjects { } {
 	forAll 1 {
 	    global ay SearchObjects
 	    if { [eval $SearchObjects(cx)] } {
-		    # found an object
-		    incr SearchObjects(numfound)
-		    # execute action
-		    switch $SearchObjects(Action) {
-			"Highlight" {
-			    tree_openTree $ay(tree) $ay(CurrentLevel)
-			    set ti [ expr $i - 1 ]
-			    $ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
-				-fill red
-			    $ay(tree) see ${ay(CurrentLevel)}:$ti
-			    # highlight
-			}
-			"Copy" {
-			    copOb -add
-			}
-			"Cut" {
-			    cutOb -add
-			}
-			default {
-			    eval $SearchObjects(Action)
-			}
+		# found an object
+		incr SearchObjects(numfound)
+		# execute action
+		switch $SearchObjects(Action) {
+		    "Highlight" {
+			tree_openTree $ay(tree) $ay(CurrentLevel)
+			set ti [ expr $i - 1 ]
+			$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
+			    -fill red
+			$ay(tree) see ${ay(CurrentLevel)}:$ti
+			lappend SearchObjects(nodes)\
+			    ${ay(CurrentLevel)}:$ti
 		    }
-		    # switch
+		    "Copy" {
+			copOb -add
+		    }
+		    default {
+			eval $SearchObjects(Action)
+		    }
 		}
-		# if
-
-	    # catch
+		# switch
+	    }
+	    # if
 	}
 	# forAll
 
