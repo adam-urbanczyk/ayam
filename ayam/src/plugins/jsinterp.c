@@ -111,6 +111,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"pasOb", jsinterp_wraptcmd, 0, 0, 0},
   {"pasmovOb", jsinterp_wraptcmd, 0, 0, 0},
   {"repOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"clearClip", jsinterp_wraptcmd, 0, 0, 0},
   {"convOb", jsinterp_wraptcmd, 0, 0, 0},
   {"goTop", jsinterp_wraptcmd, 0, 0, 0},
   {"goUp", jsinterp_wraptcmd, 0, 0, 0},

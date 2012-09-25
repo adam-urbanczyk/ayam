@@ -90,6 +90,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"pasOb", luainterp_wraptclcmd},
       {"pasmovOb", luainterp_wraptclcmd},
       {"repOb", luainterp_wraptclcmd},
+      {"clearClip", luainterp_wraptclcmd},
       {"convOb", luainterp_wraptclcmd},
       {"goTop", luainterp_wraptclcmd},
       {"goUp", luainterp_wraptclcmd},
