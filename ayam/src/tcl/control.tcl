@@ -1016,10 +1016,12 @@ proc searchObjects { } {
     set name ""
     set type ""
     set mat ""
+    set master ""
+
     if { $sel != "" } {
 	# trim selection
 	if { [llength $sel] > 1 } {
-	    selOb [lindex $sel 1]
+	    selOb [lindex $sel 0]
 	}
 
 	# get name/type/material of first selected object
@@ -1039,7 +1041,19 @@ proc searchObjects { } {
 		getMat
 		set mat $matPropData(Materialname)
 	    }
+	    if { $type == "Instance" } {
+		getMaster master
+		set SearchObjects(master) $master
+	    } else {
+		getAttr
+		if { $::attrPropData(RefCount) > 0 } {
+		    set SearchObjects(master) \
+			[lindex [$ay(tree) selection get] 0]
+		    set master $SearchObjects(master)
+		}
+	    }
 	}
+
 	# restore original selection
 	selOb $sel
     }
@@ -1048,20 +1062,32 @@ proc searchObjects { } {
     # build example expressions
     if { $name != "" } {
 	lappend expressions "\$name == \"$name\""
-    } else {
-	lappend expressions "\$name == \"name\""
     }
     if { $type != "" } {
 	lappend expressions "\$type == \"$type\""
-    } else {
-	lappend expressions "\$type == \"type\""
     }
     if { $mat != "" } {
 	lappend expressions "\$mat == \"$mat\""
-    } else {
+    }
+    if { $master != "" } {
+	if { $type == "Instance" } {
+	    lappend expressions "OtherInstances"
+	} else {
+	    lappend expressions "Instances"
+	}
+    }
+    if { $type == "Instance" } {
+	lappend expressions "Master"
+    }
+    if { $name == "" } {
+	lappend expressions "\$name == \"name\""
+    }
+    if { $type == "" } {
+	lappend expressions "\$type == \"type\""
+    }
+    if { $mat == "" } {
 	lappend expressions "\$mat == \"matname\""
     }
-
     lappend expressions "\$SphereAttr(Radius) == 1.0"
     lappend expressions "\[myProc\]"
 
@@ -1078,7 +1104,7 @@ proc searchObjects { } {
 
     set f [frame $w.fb]
 
-    button $f.bok -text "Ok" -width 5 -command {	
+    button $f.bok -text "Ok" -width 5 -command {
 	if { $SearchObjects(ClearHighlight) } {
 	    tree_paintTree root
 	    set SearchObjects(nodes) ""
@@ -1130,8 +1156,22 @@ proc searchObjects { } {
 	    }
 	    set SearchObjects(cx) $cx
 	} else {
+	    if { [string first "Master" $SearchObjects(Expression)] == 0 } {
+		set cx "set j \$i;incr j -1;"
+		append cx "expr \{ \"$SearchObjects(master)\" == "
+		append cx "\"\$::ay(CurrentLevel):\$j\" \}"
+		set SearchObjects(cx) $cx
+	    } else {
+	    if { [string first "Instances" $SearchObjects(Expression)] != -1 } {
+		set cx "getType type; if \{ \$type == \"Instance\" \} \{"
+		append cx "getMaster m; expr \{ \"\$m\" == "
+		append cx "\"$SearchObjects(master)\" \} \}"
+		set SearchObjects(cx) $cx
+	    } else {
 	    # procedure call
 	    set SearchObjects(cx) $SearchObjects(Expression)
+	}
+	}
 	}
 
 	set aid [after 500 {mouseWatch 1 {. .tbw}}]
@@ -1141,14 +1181,14 @@ proc searchObjects { } {
 	set SearchObjects(oldslevel) $ay(SelectedLevel)
 	set SearchObjects(oldselection) [$ay(tree) selection get]
 	# go to top level?
-	if { $SearchObjects(Scope) == "All" } {
+	if { $SearchObjects(Scope) == 0 } {
 	    set ay(CurrentLevel) "root"
 	    set ay(SelectedLevel) "root"
 	    goTop
 	}
 	# clear selection (i.e. work on all objects regardless
 	# of their current selection state)?
-	if {  $SearchObjects(Scope) != "Selection" } {
+	if { $SearchObjects(Scope) != "Selection" } {
 	    $ay(tree) selection clear
 	    selOb
 	}
