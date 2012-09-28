@@ -984,9 +984,10 @@ proc selMUD { up } {
 
 
 # searchObjects:
-#  highlights tree nodes of objects of same material (colouring them red)
-#  needs a selected material or normal object from which the material
-#  name to search for is derived
+#  object search facility
+#  finds objects matching user defined expressions
+#  and highlights them in the object tree view or
+#  executes user defined actions on them
 proc searchObjects { } {
     global ay SearchObjects
 
@@ -1060,6 +1061,12 @@ proc searchObjects { } {
     # if
 
     # build example expressions
+    if { $master != "" || $type == "Instance" } {
+	lappend expressions "Instances"
+    }
+    if { $type == "Instance" } {
+	lappend expressions "Master"
+    }
     if { $name != "" } {
 	lappend expressions "\$name == \"$name\""
     }
@@ -1068,16 +1075,6 @@ proc searchObjects { } {
     }
     if { $mat != "" } {
 	lappend expressions "\$mat == \"$mat\""
-    }
-    if { $master != "" } {
-	if { $type == "Instance" } {
-	    lappend expressions "OtherInstances"
-	} else {
-	    lappend expressions "Instances"
-	}
-    }
-    if { $type == "Instance" } {
-	lappend expressions "Master"
     }
     if { $name == "" } {
 	lappend expressions "\$name == \"name\""
@@ -1089,7 +1086,7 @@ proc searchObjects { } {
 	lappend expressions "\$mat == \"matname\""
     }
     lappend expressions "\$SphereAttr(Radius) == 1.0"
-    lappend expressions "\[myProc\]"
+    lappend expressions "myProc"
 
     if { ![info exists SearchObjects(Action)] } {
 	set  SearchObjects(Action) "Highlight"
@@ -1182,13 +1179,15 @@ proc searchObjects { } {
 	set SearchObjects(oldselection) [$ay(tree) selection get]
 	# go to top level?
 	if { $SearchObjects(Scope) == 0 } {
+	    # scope == "All"
 	    set ay(CurrentLevel) "root"
 	    set ay(SelectedLevel) "root"
 	    goTop
 	}
 	# clear selection (i.e. work on all objects regardless
 	# of their current selection state)?
-	if { $SearchObjects(Scope) != "Selection" } {
+	if { $SearchObjects(Scope) != 1 } {
+	    # scope != "Selection"
 	    $ay(tree) selection clear
 	    selOb
 	}
