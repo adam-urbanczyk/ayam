@@ -41,63 +41,70 @@ proc updateParam { w prop name op } {
     if { [string is integer $oldval] || [string is double $oldval] } {
 
 	set newval $oldval
-
-	if {$op == "*2"} {
-	    set newval [expr $oldval * 2]
-	} elseif { $op == "/2"} {
-	    set newval [expr $oldval / 2]
-	} elseif { $op == "+0.1" } {
-
-	    set ta $oldval
-	    set tb 1.0
-	    set done 0
-	    while { ! $done } {
-		if { [expr abs($oldval)] <= 1.0 } {
-		    if { [expr abs(int($ta) - $ta)] == 0.0 } {
-			set done 1
+	switch $op {
+	    "*2" {
+		set newval [expr $oldval * 2]
+	    }
+	    "/2" {
+		set newval [expr $oldval / 2]
+	    }
+	    "+1" {
+		set newval [expr $oldval + 1]
+	    }
+	    "-1" {
+		set newval [expr $oldval - 1]
+	    }
+	    "+0.1" {
+		set ta $oldval
+		set tb 1.0
+		set done 0
+		while { ! $done } {
+		    if { [expr abs($oldval)] <= 1.0 } {
+			if { [expr abs(int($ta) - $ta)] == 0.0 } {
+			    set done 1
+			} else {
+			    set tb [expr $tb/10.0]
+			    set ta [expr $ta*10.0]
+			}
 		    } else {
-			set tb [expr $tb/10.0]
-			set ta [expr $ta*10.0]
-		    }
-		} else {
-		    if { [expr abs($ta)] < 100.0 } {
-			set done 1
-		    } else {
-			set tb [expr $tb*10.0]
-			set ta [expr $ta/10.0]
+			if { [expr abs($ta)] < 100.0 } {
+			    set done 1
+			} else {
+			    set tb [expr $tb*10.0]
+			    set ta [expr $ta/10.0]
+			}
 		    }
 		}
+		set newval [expr $oldval + $tb]
 	    }
-	    set newval [expr $oldval + $tb]
-
-	} elseif { $op == "-0.1" } {
-
-	    set ta $oldval
-	    set tb 1.0
-	    set done 0
-	    while { ! $done } {
-		if { [expr abs($oldval)] <= 1.0 } {
-		    if { [expr abs(int($ta) - $ta)] == 0.0 } {
-			set done 1
+	    "-0.1" {
+		set ta $oldval
+		set tb 1.0
+		set done 0
+		while { ! $done } {
+		    if { [expr abs($oldval)] <= 1.0 } {
+			if { [expr abs(int($ta) - $ta)] == 0.0 } {
+			    set done 1
+			} else {
+			    set tb [expr $tb/10.0]
+			    set ta [expr $ta*10.0]
+			}
 		    } else {
-			set tb [expr $tb/10.0]
-			set ta [expr $ta*10.0]
-		    }
-		} else {
-		    if { [expr abs($ta)] < 100.0 } {
-			set done 1
-		    } else {
-			set tb [expr $tb*10.0]
-			set ta [expr $ta/10.0]
+			if { [expr abs($ta)] < 100.0 } {
+			    set done 1
+			} else {
+			    set tb [expr $tb*10.0]
+			    set ta [expr $ta/10.0]
+			}
 		    }
 		}
+		set newval [expr $oldval - $tb]
 	    }
-	    set newval [expr $oldval - $tb]
 	}
-
+	# switch op
 	set ${prop}(${name}) $newval
     }
-
+    # if isinteger || isdouble
  return;
 }
 # updateParam
@@ -139,22 +146,31 @@ proc addParam { w prop name {def {}} } {
 
     bind $f.l <Double-ButtonPress-1> "pclip_toggleomit $f.l $name"
 
-    button $f.b1 -pady 1 -bd $bw -text "/2"\
-	-command "updateParam $w $prop $name /2"\
-	-takefocus 0 -highlightthickness 0
-
     set e [entry $f.e -width 8 -textvariable ${prop}(${name}) -bd $bw]
     eval [subst "bindtags $f.e \{$f.e pge Entry all\}"]
     bind $f.e <Key-Escape> $escapecmd
 
     uie_fixEntry $f.e
 
-    button $f.b2 -pady 1 -bd $bw -text "*2"\
+    set font [$e cget -font]
+    set wi [expr [font measure $font "WW"]]
+    set he [expr [winfo reqheight $e] - 6]
+
+    button $f.b1 -pady 1 -bd $bw -wi $wi -he $he -image ay_TriangleL_img\
+	-command "updateParam $w $prop $name /2"\
+	-takefocus 0 -highlightthickness 0
+
+    button $f.b2 -pady 1 -bd $bw -wi $wi -he $he -image ay_TriangleR_img\
 	-command "updateParam $w $prop $name *2"\
 	-takefocus 0 -highlightthickness 0
+
     set mb ""
     if { $def != {} } {
-	set mbs [expr [winfo reqheight $f.b2] - 2]
+	if { $ay(ws) == "Win32" } {
+	    set mbs [expr [winfo reqheight $f.b2] + 2]
+	} else {
+	    set mbs [expr [winfo reqheight $f.b2] - 2]
+	}
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
@@ -168,8 +184,11 @@ proc addParam { w prop name {def {}} } {
 	}
     }
 
-    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
-    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
+    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -1;break"
+    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +1;break"
+
+    bind $f.b1 <Control-Shift-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
+    bind $f.b2 <Control-Shift-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
@@ -187,9 +206,9 @@ proc addParam { w prop name {def {}} } {
 
     if { $ay(ws) == "Win32" } {
 	pack $f.l -in $f -side left
-	pack $f.b1 -in $f -side left -pady 0 -fill x -expand no
+	pack $f.b1 -in $f -side left -pady 0 -fill both -expand no
 	pack $f.e -in $f -side left -pady 0 -fill both -expand yes
-	pack $f.b2 -in $f -side left -pady 0 -fill x -expand no
+	pack $f.b2 -in $f -side left -pady 0 -fill both -expand no
 	if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand no}
     } else {
 	$f.b1 configure -highlightthickness 1
