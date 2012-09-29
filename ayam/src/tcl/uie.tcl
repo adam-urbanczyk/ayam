@@ -156,7 +156,7 @@ proc addParam { w prop name {def {}} } {
     set wi [expr [font measure $font "WW"]]
     set he [expr [winfo reqheight $e] - 6]
     if { $ay(ws) == "Aqua" } {
-	incr mbs -5
+	incr he -5
     }
     button $f.b1 -bd $bw -wi $wi -he $he -image ay_TriangleL_img\
 	-command "updateParam $w $prop $name /2"\
@@ -181,7 +181,7 @@ proc addParam { w prop name {def {}} } {
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
 
 	if { $ay(ws) == "Aqua" } {
-	    $mb conf -height [$f.b2 cget height]
+	    $mb conf -height [$f.b2 cget -height]
 	}
 
 	set m [menu $mb.m -tearoff 0]
