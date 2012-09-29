@@ -10,7 +10,6 @@
 # User Interface Elements for Property GUIs, Preferences, Tool Dialogs,
 # and Import/Export Dialogs
 
-
 # uie_fixEntry:
 #
 #
@@ -26,7 +25,6 @@ proc uie_fixEntry { w } {
  return;
 }
 # uie_fixEntry
-
 
 #
 #
@@ -58,6 +56,15 @@ proc updateParam { w prop name op } {
 		set ta $oldval
 		set tb 1.0
 		set done 0
+		if { [expr abs($oldval)] >= 1.0 &&
+		     [expr abs($oldval)] <= 10.0 } {
+		    if { [string is integer $oldval] } {
+			set tb 1
+		    } else {
+			set tb 0.1
+		    }
+		    set done 1
+		}
 		while { ! $done } {
 		    if { [expr abs($oldval)] <= 1.0 } {
 			if { [expr abs(int($ta) - $ta)] == 0.0 } {
@@ -75,12 +82,25 @@ proc updateParam { w prop name op } {
 			}
 		    }
 		}
-		set newval [expr $oldval + $tb]
+		if { [string is integer $oldval] } {
+		    set newval [expr int($oldval + $tb)]
+		} else {
+		    set newval [expr $oldval + $tb]
+		}
 	    }
 	    "m01" {
 		set ta $oldval
 		set tb 1.0
 		set done 0
+		if { [expr abs($oldval)] >= 1.0 &&
+		     [expr abs($oldval)] <= 10.0 } {
+		    if { [string is integer $oldval] } {
+			set tb 1
+		    } else {
+			set tb 0.1
+		    }
+		    set done 1
+		}
 		while { ! $done } {
 		    if { [expr abs($oldval)] <= 1.0 } {
 			if { [expr abs(int($ta) - $ta)] == 0.0 } {
@@ -98,7 +118,11 @@ proc updateParam { w prop name op } {
 			}
 		    }
 		}
-		set newval [expr $oldval - $tb]
+		if { [string is integer $oldval] } {
+		    set newval [expr int($oldval - $tb)]
+		} else {
+		    set newval [expr $oldval - $tb]
+		}
 	    }
 	}
 	# switch op
@@ -151,6 +175,7 @@ proc addParam { w prop name {def {}} } {
     bind $f.e <Key-Escape> $escapecmd
 
     uie_fixEntry $f.e
+    bind $f.e <Double-ButtonPress-1> "$f.e selection range 0 end; break"
 
     set font [$e cget -font]
     set wi [expr [font measure $font "WW"]]
@@ -191,13 +216,11 @@ proc addParam { w prop name {def {}} } {
 	}
     }
 
-    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name m1;break"
-    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name p1;break"
+    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name m01;break"
+    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name p01;break"
 
-    bind $f.b1 <Control-Shift-ButtonPress-1>\
-	"updateParam $w $prop $name m01;break"
-    bind $f.b2 <Control-Shift-ButtonPress-1>\
-	"updateParam $w $prop $name p01;break"
+    bind $f.b1 <Alt-ButtonPress-1> "updateParam $w $prop $name m1;break"
+    bind $f.b2 <Alt-ButtonPress-1> "updateParam $w $prop $name p1;break"
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
@@ -1404,7 +1427,6 @@ proc addProgress { w prop name } {
 }
 # addProgress
 
-
 #
 #
 #
@@ -1415,7 +1437,7 @@ proc addVSpace { w name h } {
     pack $f -in $w -side top -fill x
  return;
 }
-#
+# addVSpace
 
 # addPropertyGUI:
 #  create frame and global property management array
