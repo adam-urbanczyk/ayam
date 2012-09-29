@@ -760,10 +760,23 @@ B21BBA+I0CTTZkgAQXfHOlSYeA6LxSgQVK2aZEHCEwoSJFjkSNKIsJIAhADg
 kFIlS5UkW65saWElzJgua+rkoBNlEk2bKVPyLDkk6NCWPGkSXWohCAA7}
 image create photo ay_FindUV_img -format GIF -data $imgdata
 
-# Triangle
+# Triangles
+# down
 set imgdata {\
 R0lGODlhCwALAIABAAAAAP///yH5BAEKAAEALAAAAAALAAsAAAIPjI+pq+D/DoxoLnqZ3rwAADs=}
 image create photo ay_Triangle_img -format GIF -data $imgdata
+
+# left
+set imgdata {\
+R0lGODlhCwALAIABAEFBQf///yH5BAEKAAEALAAAAAALAAsAAAITjI95oMsNIowPUaluC3TzCnlJ
+AQA7}
+image create photo ay_TriangleL_img -format GIF -data $imgdata
+
+# right
+set imgdata {\
+R0lGODlhCwALAIABAEFBQf///yH5BAEKAAEALAAAAAALAAsAAAISjI8ImbBs3GNyqkol1Ns2CB4F
+ADs=}
+image create photo ay_TriangleR_img -format GIF -data $imgdata
 
 # Resize handle
 set imgdata {\
