@@ -48,13 +48,13 @@ proc updateParam { w prop name op } {
 	    "/2" {
 		set newval [expr $oldval / 2]
 	    }
-	    "+1" {
+	    "p1" {
 		set newval [expr $oldval + 1]
 	    }
-	    "-1" {
+	    "m1" {
 		set newval [expr $oldval - 1]
 	    }
-	    "+0.1" {
+	    "p01" {
 		set ta $oldval
 		set tb 1.0
 		set done 0
@@ -77,7 +77,7 @@ proc updateParam { w prop name op } {
 		}
 		set newval [expr $oldval + $tb]
 	    }
-	    "-0.1" {
+	    "m01" {
 		set ta $oldval
 		set tb 1.0
 		set done 0
@@ -155,28 +155,35 @@ proc addParam { w prop name {def {}} } {
     set font [$e cget -font]
     set wi [expr [font measure $font "WW"]]
     set he [expr [winfo reqheight $e] - 6]
-
-    button $f.b1 -pady 1 -bd $bw -wi $wi -he $he -image ay_TriangleL_img\
+    if { $ay(ws) == "Aqua" } {
+	incr mbs -5
+    }
+    button $f.b1 -bd $bw -wi $wi -he $he -image ay_TriangleL_img\
 	-command "updateParam $w $prop $name /2"\
 	-takefocus 0 -highlightthickness 0
 
-    button $f.b2 -pady 1 -bd $bw -wi $wi -he $he -image ay_TriangleR_img\
+    button $f.b2 -bd $bw -wi $wi -he $he -image ay_TriangleR_img\
 	-command "updateParam $w $prop $name *2"\
 	-takefocus 0 -highlightthickness 0
 
     set mb ""
     if { $def != {} } {
-	if { $ay(ws) == "Win32" } {
-	    set mbs [expr [winfo reqheight $f.b2] + 2]
-	} else {
-	    set mbs [expr [winfo reqheight $f.b2] - 2]
+	set mbs [expr [winfo reqheight $f.b2] - 2]
+	if { $ay(ws) == "Aqua" } {
+	    incr mbs -8
 	}
+	if { $ay(ws) == "Win32" } {
+	    incr mbs 4
+	}
+
 	set mb [menubutton $f.b3 -height $mbs -width $mbs -bd $bw\
 		    -image ay_Triangle_img -takefocus 0\
 		    -highlightthickness 0 -relief raised -menu $f.b3.m]
+
 	if { $ay(ws) == "Aqua" } {
-	    $mb configure -height 14
+	    $mb conf -height [$f.b2 cget height]
 	}
+
 	set m [menu $mb.m -tearoff 0]
 	foreach val $def {
 	    $m add command -label $val\
@@ -184,11 +191,13 @@ proc addParam { w prop name {def {}} } {
 	}
     }
 
-    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name -1;break"
-    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name +1;break"
+    bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name m1;break"
+    bind $f.b2 <Control-ButtonPress-1> "updateParam $w $prop $name p1;break"
 
-    bind $f.b1 <Control-Shift-ButtonPress-1> "updateParam $w $prop $name -0.1;break"
-    bind $f.b2 <Control-Shift-ButtonPress-1> "updateParam $w $prop $name +0.1;break"
+    bind $f.b1 <Control-Shift-ButtonPress-1>\
+	"updateParam $w $prop $name m01;break"
+    bind $f.b2 <Control-Shift-ButtonPress-1>\
+	"updateParam $w $prop $name p01;break"
 
     if { ! $ay(iapplydisable) } {
 	global aymainshortcuts
@@ -206,18 +215,26 @@ proc addParam { w prop name {def {}} } {
 
     if { $ay(ws) == "Win32" } {
 	pack $f.l -in $f -side left
-	pack $f.b1 -in $f -side left -pady 0 -fill both -expand no
-	pack $f.e -in $f -side left -pady 0 -fill both -expand yes
-	pack $f.b2 -in $f -side left -pady 0 -fill both -expand no
-	if { $mb != "" } { pack $mb -side left -pady 0 -fill both -expand no}
+	pack $f.b1 -in $f -side left -pady 1 -fill both -expand no
+	pack $f.e -in $f -side left -pady 1 -fill both -expand yes
+	pack $f.b2 -in $f -side left -pady 1 -fill both -expand no
+	if { $mb != "" } { pack $mb -side left -pady 1 -fill both -expand no}
     } else {
-	$f.b1 configure -highlightthickness 1
-	$f.b2 configure -highlightthickness 1
-	if { $def != {} } { $mb configure -highlightthickness 1 }
-	pack $f.l $f.b1 -in $f -side left -fill x -expand no
+	if { $ay(ws) != "Aqua" } {
+	    $f.b1 configure -highlightthickness 1
+	    $f.b2 configure -highlightthickness 1
+	    if { $mb != "" } { $mb configure -highlightthickness 1 }
+	}
+	pack $f.l -in $f -side left -fill x -expand no
+	pack $f.b1 -in $f -side left -fill x -expand no
 	pack $f.e -in $f -side left -fill x -expand yes
 	pack $f.b2 -in $f -side left -fill x -expand no
-	if { $mb != "" } { pack $mb -side left -fill x -expand no }
+	if { $mb != "" } {
+	    pack $mb -side left -fill x -expand no;
+	    if { $ay(ws) == "Aqua" } {
+		pack conf $mb -anchor n
+	    }
+	}
     }
     pack $f -in $w -side top -fill x
 
@@ -695,7 +712,8 @@ proc addMenu { w prop name elist } {
     }
 
     menubutton $f.mb -text Eimer -menu $f.mb.m -relief raised -bd $bw\
-	    -padx 0 -pady 1 -takefocus 1 -width $l -highlightthickness 1
+	-padx 0 -pady 1 -takefocus 1 -width $l -highlightthickness 1\
+	-indicatoron 1
 
     eval [subst "bindtags $f.mb \{$f.mb pge Menubutton all\}"]
     bind $f.mb <Key-Escape> $escapecmd
