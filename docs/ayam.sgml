@@ -590,7 +590,8 @@ accomplish this easily using the <tt/&lt;Esc&gt;/ key.
 A property may be copied and pasted to another object, see the
 <tt/"Edit"/ menu. You can also paste property values to different types
 of properties (e.g.~pasting parameters from a surface shader to the
-displacement shader) using <tt/"Paste to selected"/ in the
+displacement shader, or pasting a radius value from a sphere to a disk)
+using <tt/"Paste to selected"/ in the
 <tt>"Special/Clipboard"</tt> sub-menu.
 <p>
 Pasting a property to multiple selected objects does work too.
@@ -958,6 +959,9 @@ the material will be linked to <em>all</em> currently selected objects
 currently selected instance object and selects it for editing,
 see also section <ref id="instanceobj" name="Instance Object">.
 
+<item><tt/"Search"/, opens the object search dialog,
+see also section <ref id="objsearch" name="Object Search">.
+
 <item><tt/"Preferences"/, opens the preferences dialog (see section
 <ref id="prefs" name="Preferences"> for more information).
 </itemize>
@@ -1214,22 +1218,12 @@ selected) to be called. The notification callbacks are used by objects
 like e.g.~Revolve to be informed about changes of their child
 objects to properly adapt to those changes.
 
-<item><tt/"Highlight Material"/, colours all objects of the same
-material in red color in the tree view. This tool expects a selected
-material object or a normal object that has a material attached.
-It will not work for material objects that are not registered or
-have no normal objects that refer to them. It will also not work
-for objects that have no material assigned. If the reference counter
-of a material object is not zero, but <tt/"Highlight Material"/
-reports 0 objects found, the referring objects probably reside
-in the object clipboard. You can clear the color from the tree view
-with the keyboard shortcut <tt/&lt;Ctrl+l&gt;/.
 </itemize>
 
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="mmcustom">
-The <tt/"Custom"/ menu is initially empty. Custom objects and plugins,
+The <tt/"Custom"/ menu is initially empty. Custom objects and plugins
 may create entries here.
 
 <#if out=latex><x/newpage/</#if>
@@ -1259,7 +1253,7 @@ environment or to exclude the Root object and just save view
 objects use <tt>"File/Save"</tt> or <tt>"Special/Save Selected as"</tt>
 respectively.
 
-<item><tt>"Clipboard/Paste (move)"</tt>, moves objects from the clipboard
+<item><tt>"Clipboard/Paste (Move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
 
@@ -1268,13 +1262,18 @@ object(s) with the object clipboard content, moving the replaced
 objects into the clipboard. If multiple objects are selected
 in non consecutive sequences, only the first consecutive sequence
 or single object is replaced.
-
-<item><tt>"Clipboard/Paste Property to selected"</tt> paste the property
+<item><tt>"Clipboard/Copy (Add)"</tt>, copies the selected objects
+to the clipboard without cleaning it beforehand.
+<item><tt>"Clipboard/Cut (Add)"</tt>, moves the selected objects
+to the clipboard without cleaning it beforehand.
+<item><tt>"Clipboard/Clear"</tt>, clears the object clipboard.
+<item><tt>"Clipboard/Paste Property to Selected"</tt> paste the property
 from the property clipboard to the currently selected
 property of the currently selected object. No type check of the
 properties will take place! This way one may e.g.~copy the settings from a
 displacement shader to a surface shader (as long as the copied arguments
-of both shaders have the same names and types).
+of both shaders have the same names and types) or copy a radius value
+from a sphere to a cylinder.
 
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
@@ -1874,6 +1873,104 @@ the toolbox window can be made transient.
 It will then (depending on the window manager or its configuration)
 get a different or no decoration, no icon, and will always be iconified
 when the main window gets iconified.
+
+<sect1>Object Search<label id="objsearch">
+<p>
+The object search facility allows to find objects in the scene hierarchy
+according to user defined criteria and highlight them in the tree view
+or execute arbitrary actions on them.
+
+As the object search is based on the <tt/"forAll"/ scripting interface
+command, certain restrictions apply:<newline>
+the action must not change the scene hierarchy, i.e. one must not
+delete, cut, or create objects in the actions. Changing the objects
+themselves, even converting them in-place, however, is allowed.
+See also section
+<ref id="scifall" name="Applying Commands to a Number of Objects">.
+
+Note, that the search dialog is not closed immediately after a search,
+this allows multiple search actions with possibly refined parameters.
+
+The following special search expressions are defined:
+<descrip>
+<tag/type/ find objects of a certain type, for example
+<tscreen>
+<tt>$type == "Sphere"</tt>
+</tscreen>
+finds all spheres.
+<tag/name/ find objects of a certain name, for example
+<tscreen>
+<tt>$name == "objname"</tt>
+</tscreen>
+finds all objects with the name <tt/objname/.
+<tag/material name/ find objects of a certain material, for example
+<tscreen>
+<tt>$mat == "matname"</tt>
+</tscreen>
+finds all objects with the material <tt/matname/.
+<tag/property value/ find objects with a certain property value, for example
+<tscreen>
+<tt>$SphereAttr(Radius) == 0.5</tt>
+</tscreen>
+finds all spheres with radius 0.5.
+<tag/Master/ find the master of the currently selected instance.
+<tag/Instances/ find all instances of the currently selected master, or
+if the currently selected object is an instance, find all instances
+with the same master.
+<tag/procedure call/ find objects for which a procedure or command returns 1,
+for example
+<tscreen>
+<tt>hasChild</tt>
+</tscreen>
+finds all objects that have children.
+</descrip>
+
+The default value menu of the <tt/"Expression"/ entry is pre-seeded with
+meaningful entries when the search dialog is opened.
+What exactly appears in this menu is controlled by the first of the
+selected objects.
+For instance, if the selected object is a material, the material entry
+will contain the material name fetched from this object and will be one
+of the first entries, so that searching for objects of this material is
+just a matter of two clicks.
+If the object is an instance, the first two entries in this menu will
+be <tt/"Master"/ and <tt/"Instances"/.
+
+The following special actions are defined:
+<descrip>
+<tag/Highlight/
+All found objects will be colored in the object tree.
+Highlighted objects stay highlighted until the tree view is updated
+completely (e.g. via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially,
+for instance after drag and drop or object clipoard operations.
+<tag/Collect/
+The node names of the found objects
+will be collected in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
+This list can then be used for post-processing by scripts without
+the restrictions imposed by the <tt>"forAll"</tt> command.
+<tag/Copy/
+The found objects will be added to the clipboard.
+<tag/Delete/
+The node names of the found objects will be collected, then the list of
+objects will be processed so that delete is safe, then the objects
+will be deleted from the scene.
+</descrip>
+In addition to these special actions, a command/procedure call, like e.g.
+<tt>"convOb -inplace"</tt> can also be specified as action.
+
+Using the parameter <tt/"Scope"/ the area of the search may be limited to just
+the selected objects and their children (<tt/"Selection"/) or all objects of
+the current level regardless of selection but again including all children
+(<tt/"Level"/).<newline>
+By default (when scope is "All"), all objects in the scene are processed,
+even if the current level is not the root level.
+
+If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
+on, the highlights and the object clipboard are cleared before a search
+starts respectively.
+
+The special action <tt/"Highlight"/ also collects the found node names
+in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
 
 <sect1>Preferences<label id="prefs">
 <p>
@@ -18937,7 +19034,6 @@ Index:
 </itemize>
 <item>Hide All: <ref id="mmtools" name="main menu entry">
 <item>Hider: <ref id="rihtag" name="RiHider tag type">
-<item>Highlight Material: <ref id="mmtools" name="main menu entry">
 <item>Hole: <ref id="handb" name="using holes">
 <item>hSL: <ref id="schsl" name="scripting interface command">
 <item>Hyperboloid: <ref id="hyperboloidobj" name="Hyperboloid object">
