@@ -982,14 +982,209 @@ proc selMUD { up } {
 }
 # selMUD
 
+# lreverse:
+# returns the given list in reverse order
+proc lreverse { in } {
+    set out ""
+    foreach elem $in {
+	set out [linsert $out 0 $elem]
+    }
+ return $out;
+}
+# lreverse
+
+# searchOb:
+# find objects according to the given expression and execute the
+# given action on them
+proc searchOb { expression action {gui 0} } {
+    global ay ObjectSearch
+
+    if { $ObjectSearch(ClearHighlight) } {
+	tree_paintTree root
+	set ObjectSearch(nodes) ""
+    }
+    if { $ObjectSearch(ClearClipboard) } {
+	clearClip
+    }
+
+    # compile expression
+    if { [string first "\$" $ObjectSearch(Expression)] == 0 } {
+	# variable comparison
+	if { [string first "\$name" $ObjectSearch(Expression)] == 0 } {
+	    # object name comparison
+	    set cx "getName name;expr \{"
+	    append cx $ObjectSearch(Expression)
+	    append cx "\}"
+	} elseif { [string first "\$type" $ObjectSearch(Expression)] == 0 } {
+	    # object type comparison
+	    set cx "getType type;expr \{"
+	    append cx $ObjectSearch(Expression)
+	    append cx "\}"
+	} elseif { [string first "\$mat" $ObjectSearch(Expression)] == 0 } {
+	    # object material comparison
+	    set cx "global matPropData;"
+	    append cx "set matPropData(Materialname) \"\";getMat;expr \{ "
+	    append cx "\$matPropData(Materialname)"
+	    set sindex [string first " " $ObjectSearch(Expression)]
+	    append cx [string range $ObjectSearch(Expression) $sindex end]
+	    append cx " \}"
+	} else {
+	    # arbitrary variable, probably a property value comparison like
+	    # SphereAttr(Radius) == 1
+	    # => create an expression like
+	    # getProperty SphereAttr(Radius) val; expr $val == 1.0
+	    set index [string first ")" $ObjectSearch(Expression)]
+	    if { $index != -1 } {
+		set sindex [string first " " $ObjectSearch(Expression)]
+		set cx "getProperty "
+		append cx \
+		    [string range $ObjectSearch(Expression) 1 $index]
+		append cx " val;expr \{ \$val"
+		append cx \
+		    [string range $ObjectSearch(Expression) $sindex end]
+		append cx "\}"
+	    }
+	}
+	set ObjectSearch(cx) $cx
+    } else {
+	# expression is not a variable comparison
+	if { [string first "Master" $ObjectSearch(Expression)] == 0 } {
+	    set cx "set j \$i;incr j -1;"
+	    append cx "expr \{ \"$ObjectSearch(master)\" == "
+	    append cx "\"\$::ay(CurrentLevel):\$j\" \}"
+	    set ObjectSearch(cx) $cx
+	} elseif { [string first "Instances" $ObjectSearch(Expression)]
+		   == 0 } {
+	    set cx "getType type; if \{ \$type == \"Instance\" \} \{"
+	    append cx "getMaster m; expr \{ \"\$m\" == "
+	    append cx "\"$ObjectSearch(master)\" \} \}"
+	    set ObjectSearch(cx) $cx
+	} else {
+	    # expression is a procedure call
+	    set ObjectSearch(cx) $ObjectSearch(Expression)
+	}
+    }
+
+    # save old selection state
+    set ObjectSearch(oldclevel) $ay(CurrentLevel)
+    set ObjectSearch(oldslevel) $ay(SelectedLevel)
+    set ObjectSearch(oldselection) [$ay(tree) selection get]
+    # go to top level?
+    if { $ObjectSearch(Scope) == 0 } {
+	# scope == "All"
+	set ay(CurrentLevel) "root"
+	set ay(SelectedLevel) "root"
+	goTop
+    }
+    # clear selection (i.e. work on all objects regardless
+    # of their current selection state)?
+    if { $ObjectSearch(Scope) != 1 } {
+	# scope != "Selection"
+	$ay(tree) selection clear
+	selOb
+    }
+
+    set ObjectSearch(numfound) 0
+    # now go find the objects
+    forAll 1 {
+	global ay ObjectSearch
+	if { [eval $ObjectSearch(cx)] } {
+	    # found an object
+	    incr ObjectSearch(numfound)
+	    # execute action
+	    switch $ObjectSearch(Action) {
+		"Highlight" {
+		    tree_openTree $ay(tree) $ay(CurrentLevel)
+		    set ti [ expr $i - 1 ]
+		    $ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
+			-fill red
+		    $ay(tree) see ${ay(CurrentLevel)}:$ti
+		    lappend ObjectSearch(nodes)\
+			${ay(CurrentLevel)}:$ti
+		}
+		"Copy" {
+		    copOb -add
+		}
+		"Collect" -
+		"Delete" {
+		    set ti [ expr $i - 1 ]
+		    lappend ObjectSearch(nodes)\
+			${ay(CurrentLevel)}:$ti
+		}
+		default {
+		    eval $ObjectSearch(Action)
+		}
+	    }
+	    # switch
+	}
+	# if
+    }
+    # forAll
+
+    ayError 4 searchObjects "Done. Found $ObjectSearch(numfound) objects."
+
+    set l [llength $ObjectSearch(nodes)]
+    if { $ObjectSearch(Action) == "Collect" } {
+	ayError 4 searchObjects
+	"Found nodes collected in ObjectSearch(nodes)."
+    }
+    if { $ObjectSearch(Action) == "Delete" && $l > 0 } {
+	# arrange for nodes in a level to be in reverse order
+	# so that we may delete nodes one by one without changing
+	# the existing indices of the remaining nodes;
+	# furthermore, should parents _and_ their (even indirect)
+	# children be in the list of nodes, arrange for the children
+	# to be removed from the list, as the corresponding objects
+	# will be removed when deleting the respective parent anyway
+	if { $l > 1 } {
+	    set nodes [lreverse $ObjectSearch(nodes)]
+	    set i 0
+	    while { $i < $l } {
+		set i1 [expr $i + 1]
+		set n [lindex $nodes $i]
+		set n1 [lindex $nodes $i1]
+		if { [regexp -all {:} $n] < [regexp -all {:} $n1] } {
+		    # n is higher in the hierarchy than n1,
+		    # but is n indeed a (even indirect) parent of n1?
+		    if { [string eq -length [string length $n] $n $n1] } {
+			# yes, remove n1 (the child) from the list
+			set nodes [lreplace $nodes $i1 $i1]
+		    }
+		}
+		incr i
+	    }
+	} else {
+	    set nodes $ObjectSearch(nodes)
+	}
+	foreach node $nodes {
+	    treeSelect $node
+	    catch {delOb}
+	}
+	# no use even trying to re-establish the old selection, as
+	# the indices in ObjectSearch(oldselection) are probably
+	# wrong now...
+	uS
+    } else {
+	# re-establish old selection
+	set ay(CurrentLevel) $ObjectSearch(oldclevel)
+	set ay(SelectedLevel) $ObjectSearch(oldslevel)
+	$ay(tree) selection set $ObjectSearch(oldselection)
+	tree_handleSelection
+	plb_update
+    }
+
+  return;
+}
+# searchOb
+
 
 # searchObjects:
 #  object search facility
 #  finds objects matching user defined expressions
 #  and highlights them in the object tree view or
 #  executes user defined actions on them
-proc searchObjects { } {
-    global ay SearchObjects
+proc objectsearch_open { } {
+    global ay ObjectSearch
 
     # check, whether tree view is open
     if { $ay(lb) != 0 } {
@@ -1044,13 +1239,13 @@ proc searchObjects { } {
 	    }
 	    if { $type == "Instance" } {
 		getMaster master
-		set SearchObjects(master) $master
+		set ObjectSearch(master) $master
 	    } else {
 		getAttr
 		if { $::attrPropData(RefCount) > 0 } {
-		    set SearchObjects(master) \
+		    set ObjectSearch(master) \
 			[lindex [$ay(tree) selection get] 0]
-		    set master $SearchObjects(master)
+		    set master $ObjectSearch(master)
 		}
 	    }
 	}
@@ -1088,149 +1283,24 @@ proc searchObjects { } {
     lappend expressions "\$SphereAttr(Radius) == 1.0"
     lappend expressions "myProc"
 
-    if { ![info exists SearchObjects(Action)] } {
-	set  SearchObjects(Action) "Highlight"
+    if { ![info exists ObjectSearch(Action)] } {
+	set  ObjectSearch(Action) "Highlight"
     }
 
     # complete dialog GUI
-    addString $w.f1 SearchObjects Expression $expressions
-    addString $w.f1 SearchObjects Action {Highlight Copy "\[myProc\]"}
-    addMenu $w SearchObjects Scope {All Selection Level}
-    addCheck $w SearchObjects ClearHighlight
-    addCheck $w SearchObjects ClearClipboard
+    addString $w.f1 ObjectSearch Expression $expressions
+    addString $w.f1 ObjectSearch Action\
+	{Highlight Collect Copy Delete "\[myProc\]"}
+    addMenu $w ObjectSearch Scope {All Selection Level}
+    addCheck $w ObjectSearch ClearHighlight
+    addCheck $w ObjectSearch ClearClipboard
 
     set f [frame $w.fb]
 
     button $f.bok -text "Ok" -width 5 -command {
-	if { $SearchObjects(ClearHighlight) } {
-	    tree_paintTree root
-	    set SearchObjects(nodes) ""
-	}
-	if { $SearchObjects(ClearClipboard) } {
-	    clearClip
-	}
-	# compile expression
-	if { [string first "\$" $SearchObjects(Expression)] == 0 } {
-	    # variable comparison
-	    if { [string first "\$name" $SearchObjects(Expression)] == 0 } {
-		# object name comparison
-		set cx "getName name;expr \{"
-		append cx $SearchObjects(Expression)
-		append cx "\}"
-	    } else {
-	    if { [string first "\$type" $SearchObjects(Expression)] == 0 } {
-		# object type comparison
-		set cx "getType type;expr \{"
-		append cx $SearchObjects(Expression)
-		append cx "\}"
-	    } else {
-	    if { [string first "\$mat" $SearchObjects(Expression)] == 0 } {
-		# object material comparison
-                set cx "global matPropData;"
-		append cx "set matPropData(Materialname) \"\";getMat;expr \{ "
-		append cx "\$matPropData(Materialname)"
-		set sindex [string first " " $SearchObjects(Expression)]
-		append cx [string range $SearchObjects(Expression) $sindex end]
-		append cx " \}"
-	    } else {
-		# arbitrary variable, probably a property value comparison like
-		# SphereAttr(Radius) == 1
-		# => create an expression like
-		# getProperty SphereAttr(Radius) val; expr $val == 1.0
-		set index [string first ")" $SearchObjects(Expression)]
-		if { $index != -1 } {
-		    set sindex [string first " " $SearchObjects(Expression)]
-		    set cx "getProperty "
-		    append cx \
-			[string range $SearchObjects(Expression) 1 $index]
-		    append cx " val;expr \{ \$val"
-		    append cx \
-			[string range $SearchObjects(Expression) $sindex end]
-		    append cx "\}"
-		}
-	    }
-	    }
-	    }
-	    set SearchObjects(cx) $cx
-	} else {
-	    if { [string first "Master" $SearchObjects(Expression)] == 0 } {
-		set cx "set j \$i;incr j -1;"
-		append cx "expr \{ \"$SearchObjects(master)\" == "
-		append cx "\"\$::ay(CurrentLevel):\$j\" \}"
-		set SearchObjects(cx) $cx
-	    } else {
-	    if { [string first "Instances" $SearchObjects(Expression)] != -1 } {
-		set cx "getType type; if \{ \$type == \"Instance\" \} \{"
-		append cx "getMaster m; expr \{ \"\$m\" == "
-		append cx "\"$SearchObjects(master)\" \} \}"
-		set SearchObjects(cx) $cx
-	    } else {
-	    # procedure call
-	    set SearchObjects(cx) $SearchObjects(Expression)
-	}
-	}
-	}
-
 	set aid [after 500 {mouseWatch 1 {. .tbw}}]
 
-	# save old selection state
-	set SearchObjects(oldclevel) $ay(CurrentLevel)
-	set SearchObjects(oldslevel) $ay(SelectedLevel)
-	set SearchObjects(oldselection) [$ay(tree) selection get]
-	# go to top level?
-	if { $SearchObjects(Scope) == 0 } {
-	    # scope == "All"
-	    set ay(CurrentLevel) "root"
-	    set ay(SelectedLevel) "root"
-	    goTop
-	}
-	# clear selection (i.e. work on all objects regardless
-	# of their current selection state)?
-	if { $SearchObjects(Scope) != 1 } {
-	    # scope != "Selection"
-	    $ay(tree) selection clear
-	    selOb
-	}
-
-	set SearchObjects(numfound) 0
-	# now go find the objects
-	forAll 1 {
-	    global ay SearchObjects
-	    if { [eval $SearchObjects(cx)] } {
-		# found an object
-		incr SearchObjects(numfound)
-		# execute action
-		switch $SearchObjects(Action) {
-		    "Highlight" {
-			tree_openTree $ay(tree) $ay(CurrentLevel)
-			set ti [ expr $i - 1 ]
-			$ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
-			    -fill red
-			$ay(tree) see ${ay(CurrentLevel)}:$ti
-			lappend SearchObjects(nodes)\
-			    ${ay(CurrentLevel)}:$ti
-		    }
-		    "Copy" {
-			copOb -add
-		    }
-		    default {
-			eval $SearchObjects(Action)
-		    }
-		}
-		# switch
-	    }
-	    # if
-	}
-	# forAll
-
-	ayError 4 searchObjects "Done. Found $SearchObjects(numfound) objects."
-
-	# re-establish old selection
-	set ay(CurrentLevel) $SearchObjects(oldclevel)
-	set ay(SelectedLevel) $SearchObjects(oldslevel)
-	$ay(tree) selection set $SearchObjects(oldselection)
-	tree_handleSelection
-	plb_update
+	searchOb $ObjectSearch(Expression) $ObjectSearch(Action) 1
 
 	mouseWatch 0 {. .tbw}
 	catch {after cancel $aid}
@@ -1258,9 +1328,9 @@ proc searchObjects { } {
 
  return;
 }
-# searchObjects
+# objectsearch_open
 
-array set SearchObjects {
+array set ObjectSearch {
 Scope All
 ClearHighlight 1
 }
