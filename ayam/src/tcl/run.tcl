@@ -70,6 +70,7 @@ proc runTool { argvars argstrings command title {advargs ""} } {
 	bind $f2.e <Key-Escape> ".rtw.f2.bca invoke;break"
 	bind $f2.e <Key-Return> ".rtw.f2.bok invoke;break"
 	catch {bind $f2.e <Key-KP_Enter> ".rtw.f2.bok invoke;break"}
+	bind $f2.e <Double-ButtonPress-1> "$f2.e selection range 0 end; break"
 	uie_fixEntry $f2.e
 
 	# fill current value of $i into the entry
