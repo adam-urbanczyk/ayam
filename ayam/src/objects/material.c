@@ -120,9 +120,12 @@ ay_material_deletecb(void *c)
     ay_shader_free(material->eshader);
 
   /* remove all references to this material */
-  ay_matt_removerefs(ay_root, material);
+  if(*(material->refcountptr))
+    {
+      ay_matt_removerefs(ay_root, material);
 
-  ay_matt_removerefs(ay_clipboard, material);
+      ay_matt_removerefs(ay_clipboard, material);
+    }
 
   /* handle material (de)registration */
   if(material->nameptr)
