@@ -1084,8 +1084,8 @@ proc searchOb { expression action {gui 0} } {
 	selOb
     }
 
-    set ObjectSearch(numfound) 0
     # now go find the objects
+    set ObjectSearch(numfound) 0
     forAll 1 {
 	global ay ObjectSearch
 	if { [eval $ObjectSearch(cx)] } {
@@ -1097,7 +1097,7 @@ proc searchOb { expression action {gui 0} } {
 		    tree_openTree $ay(tree) $ay(CurrentLevel)
 		    set ti [ expr $i - 1 ]
 		    $ay(tree) itemconfigure ${ay(CurrentLevel)}:$ti\
-			-fill red
+			-fill $ObjectSearch(HighlightColor)
 		    $ay(tree) see ${ay(CurrentLevel)}:$ti
 		    lappend ObjectSearch(nodes)\
 			${ay(CurrentLevel)}:$ti
@@ -1121,12 +1121,13 @@ proc searchOb { expression action {gui 0} } {
     }
     # forAll
 
-    ayError 4 searchObjects "Done. Found $ObjectSearch(numfound) objects."
+    if { $gui != 0 } {
+	ayError 4 searchOb "Done. Found $ObjectSearch(numfound) objects."
+    }
 
     set l [llength $ObjectSearch(nodes)]
-    if { $ObjectSearch(Action) == "Collect" } {
-	ayError 4 searchObjects
-	"Found nodes collected in ObjectSearch(nodes)."
+    if { $gui != 0 && $ObjectSearch(Action) == "Collect" } {
+	ayError 4 searchOb "Nodes collected in ObjectSearch(nodes)."
     }
     if { $ObjectSearch(Action) == "Delete" && $l > 0 } {
 	# arrange for nodes in a level to be in reverse order
@@ -1291,6 +1292,7 @@ proc objectsearch_open { } {
     addString $w.f1 ObjectSearch Expression $expressions
     addString $w.f1 ObjectSearch Action\
 	{Highlight Collect Copy Delete "\[myProc\]"}
+    addColor $w ObjectSearch HighlightColor
     addMenu $w ObjectSearch Scope {All Selection Level}
     addCheck $w ObjectSearch ClearHighlight
     addCheck $w ObjectSearch ClearClipboard
@@ -1298,6 +1300,9 @@ proc objectsearch_open { } {
     set f [frame $w.fb]
 
     button $f.bok -text "Ok" -width 5 -command {
+	set ObjectSearch(HighlightColor) [format "#%02x%02x%02x"\
+	  $ObjectSearch(HighlightColor_R) $ObjectSearch(HighlightColor_G)\
+	  $ObjectSearch(HighlightColor_B)]
 	set aid [after 500 {mouseWatch 1 {. .tbw}}]
 
 	searchOb $ObjectSearch(Expression) $ObjectSearch(Action) 1
@@ -1333,4 +1338,8 @@ proc objectsearch_open { } {
 array set ObjectSearch {
 Scope All
 ClearHighlight 1
+HighlightColor_R 180
+HighlightColor_G 0
+HighlightColor_B 0
+HighlightColor #b40000
 }
