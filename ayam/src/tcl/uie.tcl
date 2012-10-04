@@ -214,6 +214,8 @@ proc addParam { w prop name {def {}} } {
 	    $m add command -label $val\
 		-command "global $prop; $e delete 0 end; $e insert end $val;"
 	}
+	bind $f.e <Key-F10> "$f.b3.m post \[winfo rootx $mb\]\
+         \[winfo rooty $mb\];tk_menuSetFocus $f.b3.m;break"
     }
 
     bind $f.b1 <Control-ButtonPress-1> "updateParam $w $prop $name m01;break"
@@ -546,6 +548,8 @@ proc addColor { w prop name {def {}}} {
 	     updateColorFromE $w $prop $name $f.b1"
 	}
 	# foreach
+	bind $f <Key-F10> "$f.b3.m post \[winfo rootx $mb\]\
+         \[winfo rooty $mb\];tk_menuSetFocus $f.b3.m;break"
     }
     # if
 
@@ -853,6 +857,8 @@ proc addString { w prop name  {def {}}} {
 	    bind $mb <${aymainshortcuts(IApplyMod)}-ButtonRelease-1>\
 		"after idle {$ay(bok) invoke}"
 	}
+	bind $f.e <Key-F10> "$f.b3.m post \[winfo rootx $mb\]\
+         \[winfo rooty $mb\];tk_menuSetFocus $f.b3.m;break"
     }
 
     pack $f.l -in $f -side left -fill x
@@ -1088,6 +1094,8 @@ proc addFile { w prop name {def {}} } {
 	                      $e insert end \{$val\};"
 	}
 	# foreach
+	bind $f.e <Key-F10> "$f.b3.m post \[winfo rootx $mb\]\
+         \[winfo rooty $mb\];tk_menuSetFocus $f.b3.m;break"
     }
     # if
 
