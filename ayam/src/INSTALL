@@ -181,6 +181,10 @@ menu entry and file type:
 >make menu
 >make filetype
 
+Some desktop environments require a restart to let these changes take effect!
+
+
+
 2. Compiling a Wrapped Standalone Version of Ayam
 -------------------------------------------------
 
@@ -338,6 +342,7 @@ To create a file type on the current users desktop:
 user> make filetype
 
 Some desktop environments require a restart to let these changes take effect!
+
 
 
 3. Additional Targets (Compiling Plugins)
@@ -634,7 +639,7 @@ a Lua comment:
 -- Ayam, use: Lua
 
 
-3.15 Superformula Curve Plugin
+3.14 Superformula Curve Plugin
 ------------------------------
 
 In order to compile the plugin, type:
@@ -643,7 +648,7 @@ In order to compile the plugin, type:
 Load it via menu entry "File/Load Plugin".
 
 
-3.14 Installing/Uninstalling Ayam
+3.15 Installing/Uninstalling Ayam
 ---------------------------------
 
 Use
@@ -680,7 +685,7 @@ to make clean but not remove the objects that never change,
 like Apples mf3d code and Affines sribw code.
 
 
-3.15 Creating an application bundle on MacOSX
+3.16 Creating an application bundle on MacOSX
 ---------------------------------------------
 
 Since Ayam 1.9, the Ayam source distribution contains a skeleton
@@ -724,6 +729,7 @@ Note that the application bundle targets only work properly for the Aqua
 version of Ayam and that the Aqua version of Ayam will not respond to any
 MacOSX AppleScript application events unless started from the application
 bundle.
+
 
 
 4. Compile Time Configuration Options
