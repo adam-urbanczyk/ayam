@@ -300,10 +300,10 @@ proc olb_update { } {
 proc olb_select { } {
     global ay
 
-    if { $ay(listselectsema) == 1 } {
+    if { $ay(sellock) == 1 } {
 	bell; return;
     } else {
-	set ay(listselectsema) 1
+	set ay(sellock) 1
     }
 
     set lb $ay(olb)
@@ -317,7 +317,7 @@ proc olb_select { } {
 	rV
     }
 
-    set ay(listselectsema) 0
+    set ay(sellock) 0
 
  return;
 }
