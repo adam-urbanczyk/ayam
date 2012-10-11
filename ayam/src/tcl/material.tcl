@@ -9,8 +9,7 @@
 
 # material.tcl - material objects Tcl code
 
-set Material_props { RiAttributes Tags Surface Displacement Interior\
-	Exterior MaterialAttr }
+set Material_props { RiAttributes Tags Surface Displacement Interior Exterior MaterialAttr }
 
 # RiAttributes Property:
 
