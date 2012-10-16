@@ -2748,6 +2748,8 @@ ay_npatch_notifycb(ay_object *o)
 	return ay_status;
     }
 
+  ay_npt_setuvtypes(npatch);
+
   /* get bevel parameters */
   memset(&bparams, 0, sizeof(ay_bparam));
   if(o->tags)

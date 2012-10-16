@@ -47,7 +47,7 @@ void ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
 
 int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 		     ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
-		     double *result);
+		     int store_tangents, double *result);
 
 /* functions: */
 
@@ -5537,7 +5537,10 @@ ay_npt_extrude(double height, ay_object *o, ay_nurbpatch_object **extrusion)
 	m[9]*curve->controlv[a+2] +
 	m[13]*curve->controlv[a+3];
 
-      point[2] = 0.0;
+      point[2] = m[2]*curve->controlv[a] +
+	m[6]*curve->controlv[a+1] +
+	m[10]*curve->controlv[a+2] +
+	m[14]*curve->controlv[a+3];
 
       point[3] = m[3]*curve->controlv[a] +
 	m[7]*curve->controlv[a+1] +
@@ -7327,7 +7330,12 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
   /* calculate curve normals */
   if(create_pvn)
     {
-      if(!(nv = calloc(nc->length*3, sizeof(double))))
+      if(create_pvn == 2)
+	stride = 9;
+      else
+	stride = 3;
+
+      if(!(nv = calloc(nc->length*stride, sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       if(np->utype == AY_CTCLOSED)
@@ -7348,32 +7356,36 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, i, 0, gnducb, gndvcb, &(nv[a]));
-	      a += 3;
+	      ay_npt_getnormal(np, i, 0, gnducb, gndvcb, (create_pvn==2),
+			       &(nv[a]));
+	      a += stride;
 	    }
 	  break;
 	case 1:
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, i, np->width, gnducb, gndvcb, &(nv[a]));
-	      a += 3;
+	      ay_npt_getnormal(np, i, np->width, gnducb, gndvcb,
+			       (create_pvn==2), &(nv[a]));
+	      a += stride;
 	    }
 	  break;
 	case 2:
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, 0, i, gnducb, gndvcb, &(nv[a]));
-	      a += 3;
+	      ay_npt_getnormal(np, 0, i, gnducb, gndvcb, (create_pvn==2),
+			       &(nv[a]));
+	      a += stride;
 	    }
 	  break;
 	case 3:
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, np->height, i, gnducb, gndvcb, &(nv[a]));
-	      a += 3;
+	      ay_npt_getnormal(np, np->height, i, gnducb, gndvcb,
+			       (create_pvn==2), &(nv[a]));
+	      a += stride;
 	    }
 	  break;
 	case 4:
@@ -7398,8 +7410,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  b = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(&npt, i, a, gnducb, gndvcb, &(nv[b]));
-	      b += 3;
+	      ay_npt_getnormal(&npt, i, a, gnducb, gndvcb, (create_pvn==2),
+			       &(nv[b]));
+	      b += stride;
 	    }
 	  break;
 	case 5:
@@ -7424,8 +7437,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  b = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(&npt, a, i, gnducb, gndvcb, &(nv[b]));
-	      b += 3;
+	      ay_npt_getnormal(&npt, a, i, gnducb, gndvcb, (create_pvn==2),
+			       &(nv[b]));
+	      b += stride;
 	    }
 	  break;
 	default:
@@ -8172,7 +8186,7 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np)
   else
     {
       np->utype = AY_CTOPEN;
-      for(i = 0; i < np->height; i++)
+      for(i = 0; i < np->height-1; i++)
 	{
 	  s = &(np->controlv[i*stride]);
 	  e = s+((np->width-1)*np->height*stride);
@@ -8196,7 +8210,7 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np)
   else
     {
       np->vtype = AY_CTOPEN;
-      for(i = 0; i < np->width; i++)
+      for(i = 0; i < np->width-1; i++)
 	{
 	  s = &(np->controlv[i*np->height*stride]);
 	  e = s+(np->height*stride);
@@ -10951,11 +10965,12 @@ cleanup:
 int
 ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 		 ay_npt_gndcb *gnducb, ay_npt_gndcb *gndvcb,
-		 double *result)
+		 int store_tangents, double *result)
 {
  double *p0, *p1, *p2, *p3, *p4;
  int nnormals = 0, stride = 4;
  double normal1[3] = {0}, normal2[3] = {0};
+ double tangentu[3] = {0}, tangentv[3] = {0};
 
   if(!np || !gnducb || !gndvcb || !result)
     return AY_ENULL;
@@ -11030,6 +11045,34 @@ ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
   /* return result */
   if(nnormals > 0)
     memcpy(result, normal1, 3*sizeof(double));
+
+  if(store_tangents)
+    {
+      if(p1 && p3)
+	{
+	  AY_V3SUB(tangentu, p3, p1);
+	}
+      else
+	{
+	  if(p1)
+	    AY_V3SUB(tangentu, p0, p1);
+	  if(p3)
+	    AY_V3SUB(tangentu, p3, p0);
+	}
+      memcpy(result+3, tangentu, 3*sizeof(double));
+      if(p2 && p4)
+	{
+	  AY_V3SUB(tangentv, p4, p2);
+	}
+      else
+	{
+	  if(p2)
+	    AY_V3SUB(tangentv, p0, p2);
+	  if(p4)
+	    AY_V3SUB(tangentv, p4, p0);
+	}
+      memcpy(result+6, tangentv, 3*sizeof(double));
+    }
 
  return AY_OK;
 } /* ay_npt_getnormal */
