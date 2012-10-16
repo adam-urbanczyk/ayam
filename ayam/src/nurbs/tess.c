@@ -1499,11 +1499,17 @@ ay_tess_npatch(ay_object *o,
   ay_status = ay_tess_tristopomesh(to.tris, AY_TRUE, have_vc, have_tc,
 				   myst, mycs, &new);
 
+  if(ay_status)
+    goto cleanup;
+
   /* immediately optimize the polymesh (remove multiply used vertices) */
-  if(!have_tc && !have_vc)
+  if(new && !have_tc && !have_vc)
     {
       ay_status = ay_pomesht_optimizecoords((ay_pomesh_object*)new->refine,
 					    AY_FALSE);
+
+      if(ay_status)
+	goto cleanup;
     }
 
   /* return result */
