@@ -216,9 +216,12 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
 	}
 
       /* immediately create and show the multiple points */
-      np = (ay_nurbpatch_object *)new->refine;
-      np->createmp = AY_TRUE;
-      ay_npt_recreatemp(np);
+      if(new->type == AY_IDNPATCH)
+	{
+	  np = (ay_nurbpatch_object *)new->refine;
+	  np->createmp = AY_TRUE;
+	  ay_npt_recreatemp(np);
+	}
 
       /* link the new object(s) to the scene */
       if(!in_place)
