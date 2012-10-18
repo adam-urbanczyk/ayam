@@ -10743,7 +10743,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
     {
       /* dir == AY_SOUTH */
       offset = stride;
-      if(j == np->height-np->vorder)
+      if(j > np->height-np->vorder)
 	{
 	  /* wrap around */
 	  p2 = p - ((np->height-np->vorder) * stride);

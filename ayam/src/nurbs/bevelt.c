@@ -14,64 +14,22 @@
 
 /** \file bevelt.c \brief bevel creation tools */
 
-static ay_object *ay_bevelt_curves[3] = {0};
-
 /* prototypes of functions local to this module: */
 
 int ay_bevelt_integrate(int side, ay_object *s, ay_object *b);
 
-void ay_bevelt_createcurve(int index);
+void ay_bevelt_createbevelcurve(int index);
 
-int ay_bevelt_createc3d(double radius, ay_object *o1, ay_object *o2,
-			double *pvn, ay_nurbpatch_object **bevel);
+int ay_bevelt_createc3d(double radius, int revert,
+			ay_object *o1, ay_object *o2,
+			double *n, double *t, ay_nurbpatch_object **bevel);
+
+/* global variables: */
+
+/** standard bevel curves */
+static ay_object *ay_bevelt_curves[3] = {0};
 
 /* functions: */
-
-/** ay_bevelt_parsetags:
- * Parse all "BP" tags into a ay_bparam (bevel param) struct.
- *
- * @param[in] tag list of tags to parse
- * @param[in,out] params pointer to bevel param struct
- */
-void
-ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
-{
- int where, type, dir, integrate;
- double radius;
-
-  if(!params)
-    return;
-
-  while(tag)
-    {
-      if(tag->type == ay_bp_tagtype)
-	{
-	  if(tag->val)
-	    {
-	      params->has_bevels = AY_TRUE;
-	      where = -1;
-	      type = 0;
-	      radius = 0.1;
-	      dir = 0;
-	      integrate = 0;
-	      sscanf(tag->val, "%d,%d,%lg,%d,%d", &where, &type,
-		     &radius, &dir, &integrate);
-	      if(where >= 0 && where < 4)
-		{
-		  params->states[where] = 1;
-		  params->types[where] = type;
-		  params->radii[where] = radius;
-		  params->dirs[where] = dir;
-		  params->integrate[where] = integrate;
-		}
-	    } /* if */
-	} /* if */
-      tag = tag->next;
-    } /* while */
-
- return;
-} /* ay_bevelt_parsetags */
-
 
 /* ay_bevelt_addbevels:
  *
@@ -82,9 +40,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 {
  int ay_status = AY_OK;
  int i;
- double *pvn = NULL;
+ double *normals = NULL, *tangents = NULL;
  ay_object c = {0};
- ay_object *bevel = NULL, *bevelcurve;
+ ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
 
@@ -99,19 +57,15 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  ay_trafo_defaults(&c);
 	  c.type = AY_IDNCURVE;
 
-	  ay_status = ay_npt_extractnc(o, i,
-				       0.0,
-				       AY_FALSE, AY_FALSE,
-				       2, &pvn,
+	  ay_status = ay_npt_extractnc(o, /*side=*/i,
+				       /*param=*/0.0,
+				       /*relative=*/AY_FALSE,
+				       /*apply_trafo=*/AY_FALSE,
+				       /*create_pvn=*/2, &normals,
 				   (ay_nurbcurve_object**)(void*)&(c.refine));
 
 	  if(ay_status)
 	    goto cleanup;
-
-	  if(bparams->dirs[i])
-	    {
-	      ay_nct_revert((ay_nurbcurve_object*)(c.refine));
-	    }
 
 	  bevel = NULL;
 	  ay_status = ay_npt_createnpatchobject(&bevel);
@@ -128,7 +82,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		{
 		  if(ay_bevelt_curves[bparams->types[i]] == NULL)
 		    {
-		      ay_bevelt_createcurve(bparams->types[i]);
+		      ay_bevelt_createbevelcurve(bparams->types[i]);
 		    }
 		  bevelcurve = ay_bevelt_curves[bparams->types[i]];
 		}
@@ -141,19 +95,24 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	      if(ay_status)
 		goto cleanup;
-
 	    } /* if */
 
-	  ay_status = ay_bevelt_createc3d(bparams->radii[i], &c, bevelcurve,
-					  pvn,
+	  if(i < 2)
+	    tangents = &(normals[3]);
+	  else
+	    tangents =  &(normals[6]);
+
+	  ay_status = ay_bevelt_createc3d(bparams->radii[i], bparams->dirs[i],
+					  &c, bevelcurve,
+					  normals, tangents,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
 	  ay_nct_destroy((ay_nurbcurve_object*)c.refine);
 	  c.refine = NULL;
 
-	  if(pvn)
-	    free(pvn);
-	  pvn = NULL;
+	  if(normals)
+	    free(normals);
+	  normals = NULL;
 
 	  if(ay_status || !bevel->refine)
 	    {
@@ -225,11 +184,57 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 cleanup:
 
-  if(pvn)
-    free(pvn);
+  if(normals)
+    free(normals);
 
  return ay_status;
 } /* ay_bevelt_addbevels */
+
+
+/** ay_bevelt_parsetags:
+ * Parse all "BP" tags into a ay_bparam (bevel param) struct.
+ *
+ * @param[in] tag list of tags to parse
+ * @param[in,out] params pointer to bevel param struct
+ */
+void
+ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
+{
+ int where, type, dir, integrate;
+ double radius;
+
+  if(!params)
+    return;
+
+  while(tag)
+    {
+      if(tag->type == ay_bp_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      params->has_bevels = AY_TRUE;
+	      where = -1;
+	      type = 0;
+	      radius = 0.1;
+	      dir = 0;
+	      integrate = 0;
+	      sscanf(tag->val, "%d,%d,%lg,%d,%d", &where, &type,
+		     &radius, &dir, &integrate);
+	      if(where >= 0 && where < 4)
+		{
+		  params->states[where] = 1;
+		  params->types[where] = type;
+		  params->radii[where] = radius;
+		  params->dirs[where] = dir;
+		  params->integrate[where] = integrate;
+		}
+	    } /* if */
+	} /* if */
+      tag = tag->next;
+    } /* while */
+
+ return;
+} /* ay_bevelt_parsetags */
 
 
 /* ay_bevelt_create:
@@ -521,7 +526,6 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
  *  0,0 to 1,1: bevel rounds inwards, or
  *  0,0 to 0,-1: bevel rounds outwards;
  *  radius: radius of the bevel (-DBL_MAX, DBL_MAX);
- *  capped: create capped bevel (0, 1)?
  */
 int
 ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
@@ -668,14 +672,13 @@ cleanup:
 /* ay_bevelt_createc3d:
  *  create a 3D bevel in <bevel> from a NURB curve <o1>;
  *  <o2> defines the cross section of the bevel, it should run from
- *  0,0 to 1,1: bevel rounds inwards, or
- *  0,0 to 0,-1: bevel rounds outwards;
+ *   0,0 to 1,1: bevel rounds inwards, or
+ *   0,0 to 0,-1: bevel rounds outwards;
  *  radius: radius of the bevel (-DBL_MAX, DBL_MAX);
- *  capped: create capped bevel (0, 1)?
  */
 int
-ay_bevelt_createc3d(double radius, ay_object *o1, ay_object *o2,
-		    double *pvn, ay_nurbpatch_object **bevel)
+ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
+		    double *n, double *t, ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
@@ -724,7 +727,7 @@ ay_bevelt_createc3d(double radius, ay_object *o1, ay_object *o2,
       b = 0;
       for(j = 0; j < curve->length; j++)
 	{
-	  memcpy(v1, &(pvn[j*9]), 3*sizeof(double));
+	  memcpy(v1, &(n[j*9]), 3*sizeof(double));
 	  if(fabs(bcurve->controlv[c]) > AY_EPSILON ||
 	     fabs(bcurve->controlv[c+1]) > AY_EPSILON)
 	    {
@@ -742,9 +745,16 @@ ay_bevelt_createc3d(double radius, ay_object *o1, ay_object *o2,
 		  angle = AY_R2D(acos(v2[0]/AY_V2LEN(v2)));
 		  if(v2[1] < 0.0)
 		    angle = 360.0-angle;
+
 		  ay_trafo_identitymatrix(m);
-		  ay_trafo_rotatematrix(angle,
-				    pvn[j*9+6], pvn[j*9+7], pvn[j*9+8], m);
+
+		  if(!revert)
+		    ay_trafo_rotatematrix(angle,
+					  -t[j*9], -t[j*9+1], -t[j*9+2], m);
+		  else
+		    ay_trafo_rotatematrix(angle,
+					  t[j*9], t[j*9+1], t[j*9+2], m);
+
 		  ay_trafo_apply3(v1, m);
 		}
 	    }
@@ -789,52 +799,6 @@ cleanup:
 
  return ay_status;
 } /* ay_bevelt_createc3d */
-
-
-/** ay_bevelt_findbevelcurve:
- * Find a curve object in the current toplevel level "Bevels"
- * for use as bevel cross section curve.
- *
- * @param[in] index index of bevel curve
- * @param[in,out] c resulting curve
- *
- * @return AY_OK on success, error code otherwise.
- */
-int
-ay_bevelt_findbevelcurve(int index, ay_object **c)
-{
- int ay_status = AY_ERROR;
- int j;
- ay_object *o;
-
-  if(!c)
-    return AY_ENULL;
-
-  o = ay_root;
-
-  while(o)
-    {
-      if(o->type == AY_IDLEVEL && o->name && !strcmp(o->name, "Bevels"))
-	{
-	  o = o->down;
-	  j = 1;
-	  while(o)
-	    {
-	      if(index == j)
-		{
-		  *c = o;
-		  return AY_OK;
-		}
-	      j++;
-	      o = o->next;
-	    } /* while */
-	} /* if */
-      if(o)
-	o = o->next;
-    } /* while */
-
- return ay_status;
-} /* ay_bevelt_findbevelcurve */
 
 
 /** ay_bevelt_integrate:
@@ -937,8 +901,61 @@ cleanup:
 } /* ay_bevelt_integrate */
 
 
+/** ay_bevelt_findbevelcurve:
+ * Find a curve object in the current toplevel level named "Bevels"
+ * for use as bevel cross section curve.
+ *
+ * @param[in] index index of bevel curve
+ * @param[in,out] c resulting curve
+ *
+ * @return AY_OK on success, error code otherwise.
+ */
+int
+ay_bevelt_findbevelcurve(int index, ay_object **c)
+{
+ int ay_status = AY_ERROR;
+ int j;
+ ay_object *o;
+
+  if(!c)
+    return AY_ENULL;
+
+  o = ay_root;
+
+  while(o)
+    {
+      if(o->type == AY_IDLEVEL && o->name && !strcmp(o->name, "Bevels"))
+	{
+	  o = o->down;
+	  j = 1;
+	  while(o)
+	    {
+	      if(index == j)
+		{
+		  *c = o;
+		  return AY_OK;
+		}
+	      j++;
+	      o = o->next;
+	    } /* while */
+	} /* if */
+      if(o)
+	o = o->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_bevelt_findbevelcurve */
+
+
+/** ay_bevelt_createbevelcurve:
+ *  Create a standard bevel cross section curve (fills the
+ *  curve object into the global array ay_bevelt_curves).
+ *
+ * @param[in] index type of bevel curve to create:
+ *  0 - round, 1 - linear, 2 - ridge
+ */
 void
-ay_bevelt_createcurve(int index)
+ay_bevelt_createbevelcurve(int index)
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
@@ -1036,4 +1053,4 @@ cleanup:
     free(knotv);
 
  return;
-} /* ay_bevelt_createcurve */
+} /* ay_bevelt_createbevelcurve */
