@@ -7365,7 +7365,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, i, np->width, gnducb, gndvcb,
+	      ay_npt_getnormal(np, i, np->height-1, gnducb, gndvcb,
 			       (create_pvn==2), &(nv[a]));
 	      a += stride;
 	    }
@@ -7383,7 +7383,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, np->height, i, gnducb, gndvcb,
+	      ay_npt_getnormal(np, np->width-1, i, gnducb, gndvcb,
 			       (create_pvn==2), &(nv[a]));
 	      a += stride;
 	    }
@@ -8186,7 +8186,7 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np)
   else
     {
       np->utype = AY_CTOPEN;
-      for(i = 0; i < np->height-1; i++)
+      for(i = 0; i < np->height; i++)
 	{
 	  s = &(np->controlv[i*stride]);
 	  e = s+((np->width-1)*np->height*stride);
@@ -8210,10 +8210,10 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np)
   else
     {
       np->vtype = AY_CTOPEN;
-      for(i = 0; i < np->width-1; i++)
+      for(i = 0; i < np->width; i++)
 	{
 	  s = &(np->controlv[i*np->height*stride]);
-	  e = s+(np->height*stride);
+	  e = s+((np->height-1)*stride);
 
 	  if(!AY_V4COMP(s, e))
 	    {
@@ -10661,7 +10661,7 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
   if(dir == AY_EAST)
     {
       offset = stride*np->height;
-      if(i == np->width-1)
+      if(i > np->width-np->uorder)
 	{
 	  /* wrap around */
 	  p2 = p - ((np->width-np->uorder) * np->height * stride);
@@ -10675,7 +10675,7 @@ ay_npt_gndup(char dir, ay_nurbpatch_object *np, int i, double *p,
     {
       /* dir == AY_WEST */
       offset = -stride*np->height;
-      if(i == 0)
+      if(i < np->uorder)
 	{
 	  /* wrap around */
 	  p2 = p + ((np->width-np->uorder) * np->height * stride);
@@ -10729,7 +10729,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
   if(dir == AY_NORTH)
     {
       offset = -stride;
-      if(j == 0)
+      if(j < np->vorder)
 	{
 	  /* wrap around */
 	  p2 = p + ((np->height-np->vorder) * stride);
@@ -10743,7 +10743,7 @@ ay_npt_gndvp(char dir, ay_nurbpatch_object *np, int j, double *p,
     {
       /* dir == AY_SOUTH */
       offset = stride;
-      if(j == np->height-1)
+      if(j == np->height-np->vorder)
 	{
 	  /* wrap around */
 	  p2 = p - ((np->height-np->vorder) * stride);
