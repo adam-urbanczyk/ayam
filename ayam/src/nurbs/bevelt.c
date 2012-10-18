@@ -100,7 +100,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(i < 2)
 	    tangents = &(normals[3]);
 	  else
-	    tangents =  &(normals[6]);
+	    tangents = &(normals[6]);
 
 	  ay_status = ay_bevelt_createc3d(bparams->radii[i], bparams->dirs[i],
 					  &c, bevelcurve,
@@ -728,6 +728,9 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
       for(j = 0; j < curve->length; j++)
 	{
 	  memcpy(v1, &(n[j*9]), 3*sizeof(double));
+	  /* normalize normal vector */
+	  len = AY_V3LEN(v1);
+	  AY_V3SCAL(v1, 1.0/len);
 	  if(fabs(bcurve->controlv[c]) > AY_EPSILON ||
 	     fabs(bcurve->controlv[c+1]) > AY_EPSILON)
 	    {
@@ -762,7 +765,7 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
 	    {
 	      memset(v1, 0, 3*sizeof(double));
 	    }
-
+	  /* offset along scaled/rotated normal vector */
 	  controlv[a]   = curve->controlv[b]   + v1[0];
 	  controlv[a+1] = curve->controlv[b+1] + v1[1];
 	  controlv[a+2] = curve->controlv[b+2] + v1[2];
