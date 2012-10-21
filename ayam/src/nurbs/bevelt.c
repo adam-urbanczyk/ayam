@@ -39,12 +39,14 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i;
+ int i, j, is_planar = AY_TRUE;
  double *normals = NULL, *tangents = NULL;
- ay_object c = {0};
+ double *cv = NULL;
+ ay_object c = {0}, *cp = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
+ ay_nurbcurve_object *nc = NULL;
 
   if(!bparams || !o || !dst)
     return AY_ENULL;
@@ -53,6 +55,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
     {
       if(bparams->states[i])
 	{
+	  is_planar = AY_TRUE;
 	  ay_object_defaults(&c);
 	  ay_trafo_defaults(&c);
 	  c.type = AY_IDNCURVE;
@@ -64,7 +67,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 				       /*create_pvn=*/2, &normals,
 				   (ay_nurbcurve_object**)(void*)&(c.refine));
 
-	  if(ay_status)
+	  if(ay_status || !c.refine)
 	    goto cleanup;
 
 	  bevel = NULL;
@@ -97,18 +100,75 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		goto cleanup;
 	    } /* if */
 
-	  if(i < 2)
-	    tangents = &(normals[3]);
-	  else
-	    tangents = &(normals[6]);
+	  /* to check the planarity we rotate a copy of
+	     the curve to the xy-plane and see if any
+	     z-coordinates are different */
+	  ay_status = ay_object_copy(&c, &cp);
 
-	  ay_status = ay_bevelt_createc3d(bparams->radii[i], bparams->dirs[i],
-					  &c, bevelcurve,
-					  normals, tangents,
+	  if(ay_status || !cp)
+	    goto cleanup;
+
+	  ay_status = ay_nct_toxy(cp);
+
+	  if(!ay_status)
+	    {
+	      nc = (ay_nurbcurve_object *)cp->refine;
+	      cv = nc->controlv;
+	      for(j = 0; j < nc->length-1; j++)
+		{
+		  if(fabs(cv[j*4+2]-cv[(j+1)*4+2]) > AY_EPSILON*2)
+		    {
+		      is_planar = AY_FALSE;
+		      break;
+		    }
+		}
+	    }
+	  else
+	    {
+	      /* nct_toxy() failed, maybe it is a linear curve,
+		 in any case, it is not planar... */
+	      is_planar = AY_FALSE;
+	    }
+
+	  if(is_planar)
+	    {
+	      if(bparams->dirs[i])
+		{
+		  ay_nct_revert((ay_nurbcurve_object *)cp->refine);
+		}
+
+	      ay_status = ay_bevelt_createc(bparams->radii[i],
+					    cp, bevelcurve,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+
+	      /* rotate bevel created from rotated curve (cp)
+		 back to the original curve orientation */
+	      if(!ay_status && bevel->refine)
+		{
+		  ay_trafo_copy(cp, bevel);
+		  ay_npt_applytrafo(bevel);
+		}
+	    }
+	  else
+	    {
+	      if(i < 2)
+		tangents = &(normals[3]);
+	      else
+		tangents = &(normals[6]);
+
+	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
+					      bparams->dirs[i],
+					      &c, bevelcurve,
+					      normals, tangents,
+			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+	    }
 
 	  ay_nct_destroy((ay_nurbcurve_object*)c.refine);
 	  c.refine = NULL;
+
+	  if(cp)
+	    ay_object_delete(cp);
+	  cp = NULL;
 
 	  if(normals)
 	    free(normals);
@@ -533,7 +593,7 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
- ay_nurbcurve_object *offcurve1 = NULL, *offcurve2 = NULL;
+ ay_nurbcurve_object *offcurve;
  ay_nurbcurve_object *bcurve = NULL;
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
@@ -579,59 +639,25 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
   c = stride;
   for(i = 1; i < bcurve->length; i++)
     {
-      if(0)
+      ay_status = ay_nct_offset(o1, 1, -radius*bcurve->controlv[c],
+				&offcurve);
+      if(ay_status)
+	{ goto cleanup; }
+
+      b = 0;
+      for(j = 0; j < curve->length; j++)
 	{
-	  ay_status = ay_nct_offset(o1, 0, -radius*bcurve->controlv[c],
-				    &offcurve1);
-	  if(ay_status)
-	    { goto cleanup; }
+	  controlv[a]   = offcurve->controlv[b];
+	  controlv[a+1] = offcurve->controlv[b+1];
+	  controlv[a+2] = curve->controlv[b+2]+radius*bcurve->controlv[c+1];
+	  controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
+	  a += stride;
+	  b += stride;
+	} /* for */
 
-	  ay_status = ay_nct_offset(o1, 1, -radius*bcurve->controlv[c],
-				    &offcurve2);
-	  if(ay_status)
-	    { goto cleanup; }
+      ay_nct_destroy(offcurve);
+      offcurve = NULL;
 
-	  b = 0;
-	  for(j = 0; j < curve->length; j++)
-	    {
-	      controlv[a]   =
-		(offcurve1->controlv[b]+offcurve2->controlv[b])/2.0;
-	      controlv[a+1] =
-		(offcurve1->controlv[b+1]+offcurve2->controlv[b+1])/2.0;
-	      controlv[a+2] = radius*bcurve->controlv[c+1];
-	      controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
-	      a += stride;
-	      b += stride;
-	    } /* for */
-
-	  ay_nct_destroy(offcurve1);
-	  offcurve1 = NULL;
-
-	  ay_nct_destroy(offcurve2);
-	  offcurve2 = NULL;
-	}
-      else
-	{
-	  ay_status = ay_nct_offset(o1, 3, -radius,
-				    &offcurve1);
-	  if(ay_status)
-	    { goto cleanup; }
-
-	  b = 0;
-	  for(j = 0; j < curve->length; j++)
-	    {
-	      controlv[a]   = offcurve1->controlv[b];
-	      controlv[a+1] = offcurve1->controlv[b+1];
-	      controlv[a+2] = offcurve1->controlv[b+2];
-	      controlv[a+3] = curve->controlv[b+3]*bcurve->controlv[c+3];
-	      a += stride;
-	      b += stride;
-	    } /* for */
-
-	  ay_nct_destroy(offcurve1);
-	  offcurve1 = NULL;
-
-	}
       c += stride;
     } /* for */
 
@@ -660,10 +686,8 @@ cleanup:
     free(vknotv);
   if(tccontrolv)
     free(tccontrolv);
-  if(offcurve1)
-    ay_nct_destroy(offcurve1);
-  if(offcurve2)
-    ay_nct_destroy(offcurve2);
+  if(offcurve)
+    ay_nct_destroy(offcurve);
 
  return ay_status;
 } /* ay_bevelt_createc */
