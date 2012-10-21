@@ -537,7 +537,10 @@ if { ($ay(sext) == "") && !$AYUSESLCARGS && !$AYUSESLXARGS } {
     addCommand $w c3 "Default Values!" "shader_setDefaults $type;"
 }
 
-if { $ay_shader(Name) == "" } { return; }
+if { $ay_shader(Name) == "" } {
+    plb_setwin $w ""
+    return;
+}
 
 addText $w e1 $ay_shader(Name)
 
@@ -701,7 +704,6 @@ proc shader_getAtm { } {
 proc shader_setAtm { } {
 
     shaderSet atmosphere ay_shader
-
 
  return;
 }
