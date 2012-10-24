@@ -280,6 +280,10 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewStringObj(ay_prefs.normalname, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "PVTangentName", -1);
+  to = Tcl_NewStringObj(ay_prefs.tangentname, -1);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "PVColorName", -1);
   to = Tcl_NewStringObj(ay_prefs.colorname, -1);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -748,6 +752,21 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	return AY_EOMEM;
 
       strcpy(ay_prefs.normalname, str);
+    } /* if */
+
+  Tcl_SetStringObj(ton, "PVTangentName", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.tangentname)
+	free(ay_prefs.tangentname);
+
+      if(!(ay_prefs.tangentname = calloc(strlen(str)+1, sizeof(char))))
+	return AY_EOMEM;
+
+      strcpy(ay_prefs.tangentname, str);
     } /* if */
 
   Tcl_SetStringObj(ton, "PVColorName", -1);

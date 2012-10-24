@@ -755,7 +755,8 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* prepare result */
 	  *data = fa;
 	}
-      *datalen = count;
+      if(datalen)
+	*datalen = count;
       break;
     case 'g':
       if(type == 0)
@@ -800,7 +801,8 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* prepare result */
 	  *data = fa;
 	}
-      *datalen = count;
+      if(datalen)
+	*datalen = count;
       break;
     case 'c':
     case 'p':
@@ -855,7 +857,8 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	  /* prepare result */
 	  *data = fa;
 	}
-      *datalen = count;
+      if(datalen)
+	*datalen = count;
     break;
     default:
       return AY_ERROR;

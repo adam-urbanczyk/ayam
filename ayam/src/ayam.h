@@ -1125,7 +1125,7 @@ typedef struct ay_extrnc_object_s
   int pnum; /**< select patch from multiple provided */
   int revert; /**< revert extracted curve? */
   int relative; /**< interpret parameter value in relative way? */
-  int create_pvn; /**< create PV tag with normals? */
+  int extractnt; /**< extract normals/tangents? */
   double parameter; /**< parameter value (u/v) */
 
   /** cached NURBS curve representation */
@@ -1478,6 +1478,7 @@ typedef struct ay_preferences_s
   /* PV tag names */
   char *texcoordname; /**< default name for texture coordinate PV tags */
   char *normalname; /**< default name for vertex normal PV tags */
+  char *tangentname; /**< default name for vertex tangent PV tags */
   char *colorname; /**< default name for vertex color PV tags */
 
 } ay_preferences;
@@ -1700,6 +1701,8 @@ extern char *ay_no_tagtype;
 extern char *ay_no_tagname;
 extern char *ay_nm_tagtype;
 extern char *ay_nm_tagname;
+extern char *ay_nt_tagtype;
+extern char *ay_nt_tagname;
 /*@}*/
 
 /** \name Generic Error Message Strings */

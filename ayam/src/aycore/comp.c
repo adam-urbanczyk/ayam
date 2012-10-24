@@ -1424,7 +1424,7 @@ ay_comp_extrnc(ay_object *o1, ay_object *o2)
      (s1->pnum != s2->pnum) ||
      (s1->revert != s2->revert) ||
      (s1->relative != s2->relative) ||
-     (s1->create_pvn != s2->create_pvn) ||
+     (s1->extractnt != s2->extractnt) ||
      (s1->parameter != s2->parameter))
     return AY_FALSE;
 

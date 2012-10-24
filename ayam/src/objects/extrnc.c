@@ -246,9 +246,9 @@ ay_extrnc_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(extrnc->revert));
 
-  Tcl_SetStringObj(ton,"CreatePVN",-1);
+  Tcl_SetStringObj(ton,"Extract",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(extrnc->create_pvn));
+  Tcl_GetIntFromObj(interp,to, &(extrnc->extractnt));
 
   Tcl_SetStringObj(ton,"Relative",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -314,8 +314,8 @@ ay_extrnc_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"CreatePVN",-1);
-  to = Tcl_NewIntObj(extrnc->create_pvn);
+  Tcl_SetStringObj(ton,"Extract",-1);
+  to = Tcl_NewIntObj(extrnc->extractnt);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
@@ -379,7 +379,7 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 14)
     {
-      fscanf(fileptr, "%d\n", &extrnc->create_pvn);
+      fscanf(fileptr, "%d\n", &extrnc->extractnt);
     }
 
   o->refine = extrnc;
@@ -408,7 +408,7 @@ ay_extrnc_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", extrnc->pnum);
   fprintf(fileptr, "%d\n", extrnc->revert);
   fprintf(fileptr, "%d\n", extrnc->relative);
-  fprintf(fileptr, "%d\n", extrnc->create_pvn);
+  fprintf(fileptr, "%d\n", extrnc->extractnt);
 
  return AY_OK;
 } /* ay_extrnc_writecb */
@@ -463,8 +463,10 @@ ay_extrnc_notifycb(ay_object *o)
  ay_extrnc_object *extrnc = NULL;
  ay_object *npatch = NULL, *pobject = NULL;
  ay_object *ncurve = NULL;
- int mode, pnum, provided = AY_FALSE;
- double *pvn = NULL, tolerance;
+ ay_tag *newtag = NULL;
+ ay_btval *newval = NULL;
+ int i, mode, pnum, provided = AY_FALSE, stride = 3, freepvnt = AY_TRUE;
+ double t[3] = {0}, *pvnt = NULL, tolerance;
 
   if(!o)
     return AY_ENULL;
@@ -534,20 +536,58 @@ ay_extrnc_notifycb(ay_object *o)
   ncurve->type = AY_IDNCURVE;
 
   ay_status = ay_npt_extractnc(npatch, extrnc->side, extrnc->parameter,
-			       extrnc->relative, AY_FALSE, extrnc->create_pvn,
-			       &pvn,
+			       extrnc->relative, AY_FALSE, extrnc->extractnt,
+			       &pvnt,
 			  (ay_nurbcurve_object **)(void*)(&(ncurve->refine)));
 
   if(ay_status || !ncurve->refine)
     {
       goto cleanup;
     }
-  if(pvn)
+  if(pvnt)
     {
-      ay_pv_add(ncurve, ay_prefs.normalname, "varying", 2,
-		((ay_nurbcurve_object *)(ncurve->refine))->length,
-		3, (void*)pvn);
-      free(pvn);
+      if(extrnc->extractnt > 1)
+	{
+	  if(!(newtag = calloc(1, sizeof(ay_tag))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  if(!(newval = calloc(1, sizeof(ay_btval))))
+	    {
+	      free(newtag);
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  newval->size =
+	    ((ay_nurbcurve_object *)(ncurve->refine))->length * 9 *
+	    sizeof(double);
+	  newval->payload = pvnt;
+	  newtag->type = ay_nt_tagtype;
+	  newtag->is_binary = AY_TRUE;
+	  newtag->val = newval;
+	  if(extrnc->side == 2 || extrnc->side == 3 || extrnc->side == 5)
+	    {
+	      for(i = 0;
+		  i < ((ay_nurbcurve_object *)(ncurve->refine))->length;
+	          i++)
+		{
+		  memcpy(t, &(pvnt[i*9+6]), 3*sizeof(double));
+		  memcpy(&(pvnt[i*9+6]), &(pvnt[i*9+3]), 3*sizeof(double));
+		  memcpy(&(pvnt[i*9+3]), t, 3*sizeof(double));
+		}
+	    }
+	  newtag->next = ncurve->tags;
+	  ncurve->tags = newtag;
+	  freepvnt = AY_FALSE;
+	}
+      else
+	{
+	  stride = 9;
+	  ay_pv_add(ncurve, ay_prefs.normalname, "varying", 2,
+		    ((ay_nurbcurve_object *)(ncurve->refine))->length,
+		    stride, (void*)pvnt);
+	}
     }
   if(extrnc->revert)
     {
@@ -571,6 +611,9 @@ ay_extrnc_notifycb(ay_object *o)
   ncurve = NULL;
 
 cleanup:
+
+  if(pvnt && freepvnt)
+    free(pvnt);
 
   if(ncurve)
     {

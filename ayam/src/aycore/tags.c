@@ -83,7 +83,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   if(!source || !dest)
     return AY_ENULL;
 
-  if(!source->name || !source->val)
+  if(!source->val)
     return AY_ERROR;
 
   if(!(new = calloc(1,sizeof(ay_tag))))
@@ -95,9 +95,12 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   new->next = NULL;
 
   /* copy name */
-  if(!(new->name = calloc(1, strlen(source->name)+1)))
-    { free(new); return AY_EOMEM; }
-  strcpy(new->name, source->name);
+  if(source->name)
+    {
+      if(!(new->name = calloc(1, strlen(source->name)+1)))
+	{ free(new); return AY_EOMEM; }
+      strcpy(new->name, source->name);
+    }
 
   if(source->is_binary)
     {
@@ -107,7 +110,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
       memcpy(new->val, source->val, sizeof(ay_btval));
       if(((ay_btval*)new->val)->size)
 	{
-	  nbt = ((ay_btval*)new->val);
+	  nbt = (ay_btval*)new->val;
 	  if(!(nbt->payload = calloc(1, nbt->size)))
 	    {free(new->val); free(new); free(new->name); return AY_EOMEM; }
 	  memcpy(nbt->payload, ((ay_btval*)source->val)->payload, nbt->size);
@@ -144,7 +147,7 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
   newtagptr = &(dst->tags);
   while(tag)
     {
-      if(!tag->is_intern && !tag->is_binary)
+      if(!tag->is_intern)
 	{
 	  ay_status = ay_tags_copy(tag, newtagptr);
 	  if(ay_status == AY_OK)

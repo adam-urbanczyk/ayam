@@ -192,6 +192,10 @@ char *ay_nm_tagtype;
 
 char *ay_nm_tagname = "NM";
 
+char *ay_nt_tagtype;
+
+char *ay_nt_tagname = "NT";
+
 
 static char *ay_log = "/tmp/ay.log";
 

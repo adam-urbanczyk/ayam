@@ -460,12 +460,15 @@ ay_bevel_notifycb(ay_object *o)
  int mode = 0;
  ay_bevel_object *bevel = NULL;
  ay_object *npatch = NULL, *curve = NULL, *bcurve = NULL, *t = NULL;
+ ay_object *alignedcurve = NULL;
  ay_object *pobject1 = NULL, *pobject2 = NULL, **nextcb;
  ay_bparam bparams = {0};
- int align = AY_FALSE, has_b = AY_FALSE;
+ ay_tag *tag = NULL;
+ int is_planar = AY_TRUE, has_b = AY_FALSE;
  int b_type, b_sense;
- int caps[4] = {0};
+ int caps[4] = {0}, nstride, tstride, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
+ double *normals = NULL, *tangents = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -535,15 +538,6 @@ ay_bevel_notifycb(ay_object *o)
 	}
     }
 
-  /* check curves rotation attributes; only allow align operation,
-     if curve is not rotated, because otherwise the transformations
-     would not be treated correctly in ay_npt_bevel() */
-  if((curve->quat[0] == 0.0) && (curve->quat[1] == 0.0) &&
-     (curve->quat[2] == 0.0) && (curve->quat[3] == 1.0))
-    {
-      align = AY_TRUE;
-    }
-
   /* get bevel parameters */
   ay_npt_getbeveltags(o, 0, &has_b, &b_type, &b_radius, &b_sense);
   if(!has_b)
@@ -551,11 +545,6 @@ ay_bevel_notifycb(ay_object *o)
       ay_status = AY_ERROR;
       goto cleanup;
     }
-
-  if(b_sense)
-    {
-      ay_nct_revert((ay_nurbcurve_object*)curve->refine);
-    } /* if */
 
   /* create bevel */
   if(!(npatch = calloc(1, sizeof(ay_object))))
@@ -569,23 +558,73 @@ ay_bevel_notifycb(ay_object *o)
   npatch->parent = AY_TRUE;
   npatch->inherit_trafos = AY_FALSE;
 
-  if(!bcurve && (b_type < 0))
+  if(!bcurve)
     {
       ay_bevelt_findbevelcurve(-b_type, &bcurve);
     }
 
-  if(!bcurve)
+  if(bcurve)
     {
-      ay_status = ay_bevelt_create(b_type, b_radius, align, curve,
+      ay_nct_isplanar(curve, &alignedcurve, &is_planar);
+      if(is_planar)
+	{
+	  if(b_sense)
+	    {
+	      ay_nct_revert((ay_nurbcurve_object*)alignedcurve->refine);
+	    } /* if */
+
+	  ay_status = ay_bevelt_createc(b_radius, alignedcurve, bcurve,
 			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
+
+	}
+      else
+	{
+	  /* get normals and tangents from PV tags */
+	  tag = curve->tags;
+	  while(tag)
+	    {
+	      if(tag->type == ay_nt_tagtype)
+		{
+		  normals = ((ay_btval*)tag->val)->payload;
+		  tangents = &(normals[3]);
+		  nstride = 9;
+		  tstride = 9;
+		  break;
+		}
+	      if(ay_pv_checkndt(tag, ay_prefs.normalname, "varying", "p"))
+		{
+		  ay_pv_convert(tag, 0, NULL, (void**)&normals);
+		  nstride = 3;
+		  tag = tag->next;
+		  freen = AY_TRUE;
+		  continue;
+		}
+	      if(ay_pv_checkndt(tag, ay_prefs.tangentname, "varying", "p"))
+		{
+		  ay_pv_convert(tag, 0, NULL, (void**)&tangents);
+		  tstride = 3;
+		  freet = AY_TRUE;
+		  break;
+		}
+		tag = tag->next;
+	    } /* while */
+	  if(!normals || !tangents)
+	    goto cleanup;
+	  ay_status = ay_bevelt_createc3d(b_radius, b_sense, curve, bcurve,
+					  normals, nstride, tangents, tstride,
+			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
+	}
+
+      if(alignedcurve)
+	ay_object_delete(alignedcurve);
+
+      if(ay_status)
+	goto cleanup;
     }
   else
     {
-      ay_status = ay_bevelt_createc(b_radius, curve, bcurve,
-			   (ay_nurbpatch_object**)(void*)&(npatch->refine));
+      goto cleanup;
     }
-  if(ay_status)
-    goto cleanup;
 
   /* create/add caps */
   caps[2] = bevel->has_start_cap;
@@ -601,11 +640,7 @@ ay_bevel_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
-  /* copy transformations, if align was not used */
-  if(!align)
-    {
-      ay_trafo_copy(curve, npatch);
-    }
+  ay_trafo_copy(curve, npatch);
 
   bevel->npatch = npatch;
   npatch = NULL;
@@ -630,6 +665,12 @@ cleanup:
     {
       ay_object_delete(npatch);
     }
+
+  if(normals && freen)
+    free(normals);
+
+  if(tangents && freet)
+    free(tangents);
 
   /* recover selected points */
   if(o->selp)
