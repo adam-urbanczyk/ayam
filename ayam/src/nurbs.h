@@ -60,6 +60,14 @@ int ay_bevelt_create(int type, double radius, int align, ay_object *o,
 int ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 		      ay_nurbpatch_object **bevel);
 
+/** Create bevel surface from 3D curve and cross section bevel curve.
+ */
+int ay_bevelt_createc3d(double radius, int revert,
+			ay_object *o1, ay_object *o2,
+			double *n, int nstride,
+			double *t, int tstride,
+			ay_nurbpatch_object **bevel);
+
 /** Find cross section bevel curve.
  */
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
@@ -803,6 +811,11 @@ int ay_nct_euctohom(ay_nurbcurve_object *nc);
 */
 int ay_nct_homtoeuc(ay_nurbcurve_object *nc);
 
+/** Check planarity of curve.
+*/
+void ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar);
+
+
 /* npt.c */
 
 /** Create NURBS patch object.
@@ -1057,8 +1070,8 @@ int ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
 /** Extract curve from patch.
  */
 int ay_npt_extractnc(ay_object *npatch, int side, double param, int relative,
-		     int apply_trafo, int create_pvn,
-		     double **pvn,
+		     int apply_trafo, int extractnt,
+		     double **pvnt,
 		     ay_nurbcurve_object **result);
 
 /** Check whether any weight is != 1.0.

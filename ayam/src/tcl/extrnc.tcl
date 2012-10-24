@@ -27,6 +27,7 @@ array set ExtrNCAttrData {
 Side 1
 DisplayMode 1
 NCInfoBall "N/A"
+Extract 0
 }
 # create ExtrNCAttr-UI
 set w [frame $ay(pca).$ExtrNCAttr(w)]
@@ -37,7 +38,7 @@ addParam $w ExtrNCAttrData Parameter
 addCheck $w ExtrNCAttrData Relative
 addParam $w ExtrNCAttrData PatchNum
 addCheck $w ExtrNCAttrData Revert
-addCheck $w ExtrNCAttrData CreatePVN
+addMenu $w ExtrNCAttrData Extract [list Nothing Normals "Normals&Tangents"]
 
 addParam $w ExtrNCAttrData Tolerance
 addMenu $w ExtrNCAttrData DisplayMode $ay(ncdisplaymodes)

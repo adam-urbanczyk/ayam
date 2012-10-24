@@ -7060,12 +7060,13 @@ ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
  *   vector?; this parameter is ignored for the extraction of boundary curves
  *  apply_trafo: this parameter controls whether trafos of <o> should be
  *   copied to the curve, or applied to the control points of the curve
- *  create_pvn: should the normals be calculated and stored in a PV tag?
+ *  extractnt: should the normals/tangents be calculated and stored in
+ *   PV tags?; 0 - no, 1 - normals, 2 - normals and tangents
  */
 int
 ay_npt_extractnc(ay_object *o, int side, double param, int relative,
-		 int apply_trafo, int create_pvn,
-		 double **pvn,
+		 int apply_trafo, int extractnt,
+		 double **pvnt,
 		 ay_nurbcurve_object **result)
 {
  int ay_status = AY_OK;
@@ -7077,7 +7078,6 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
  int stride = 4, i, a, b, k = 0, s = 0, r = 0;
  ay_npt_gndcb *gnducb = ay_npt_gndu;
  ay_npt_gndcb *gndvcb = ay_npt_gndv;
-
 
   if(!o || !result)
     return AY_ENULL;
@@ -7328,9 +7328,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
     }
 
   /* calculate curve normals */
-  if(create_pvn)
+  if(extractnt)
     {
-      if(create_pvn == 2)
+      if(extractnt == 2)
 	stride = 9;
       else
 	stride = 3;
@@ -7356,7 +7356,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, i, 0, gnducb, gndvcb, (create_pvn==2),
+	      ay_npt_getnormal(np, i, 0, gnducb, gndvcb, (extractnt==2),
 			       &(nv[a]));
 	      a += stride;
 	    }
@@ -7366,7 +7366,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  for(i = 0; i < nc->length; i++)
 	    {
 	      ay_npt_getnormal(np, i, np->height-1, gnducb, gndvcb,
-			       (create_pvn==2), &(nv[a]));
+			       (extractnt==2), &(nv[a]));
 	      a += stride;
 	    }
 	  break;
@@ -7374,7 +7374,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(np, 0, i, gnducb, gndvcb, (create_pvn==2),
+	      ay_npt_getnormal(np, 0, i, gnducb, gndvcb, (extractnt==2),
 			       &(nv[a]));
 	      a += stride;
 	    }
@@ -7384,7 +7384,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  for(i = 0; i < nc->length; i++)
 	    {
 	      ay_npt_getnormal(np, np->width-1, i, gnducb, gndvcb,
-			       (create_pvn==2), &(nv[a]));
+			       (extractnt==2), &(nv[a]));
 	      a += stride;
 	    }
 	  break;
@@ -7410,7 +7410,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  b = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(&npt, i, a, gnducb, gndvcb, (create_pvn==2),
+	      ay_npt_getnormal(&npt, i, a, gnducb, gndvcb, (extractnt==2),
 			       &(nv[b]));
 	      b += stride;
 	    }
@@ -7437,7 +7437,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
 	  b = 0;
 	  for(i = 0; i < nc->length; i++)
 	    {
-	      ay_npt_getnormal(&npt, a, i, gnducb, gndvcb, (create_pvn==2),
+	      ay_npt_getnormal(&npt, a, i, gnducb, gndvcb, (extractnt==2),
 			       &(nv[b]));
 	      b += stride;
 	    }
@@ -7456,7 +7456,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
   /* return result */
   *result = nc;
   if(nv)
-    *pvn = nv;
+    *pvnt = nv;
 
   /* prevent cleanup code from doing something harmful */
   nc = NULL;

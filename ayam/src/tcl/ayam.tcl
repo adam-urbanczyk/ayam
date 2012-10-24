@@ -204,6 +204,7 @@ array set ayprefs {
 
  PVTexCoordName "st"
  PVNormalName "N"
+ PVTangentName "T"
  PVColorName "Cs"
 
  ConvResetDisplay 1

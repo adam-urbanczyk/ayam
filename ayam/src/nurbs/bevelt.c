@@ -20,10 +20,6 @@ int ay_bevelt_integrate(int side, ay_object *s, ay_object *b);
 
 void ay_bevelt_createbevelcurve(int index);
 
-int ay_bevelt_createc3d(double radius, int revert,
-			ay_object *o1, ay_object *o2,
-			double *n, double *t, ay_nurbpatch_object **bevel);
-
 /* global variables: */
 
 /** standard bevel curves */
@@ -39,14 +35,12 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, j, is_planar = AY_TRUE;
+ int i, is_planar = AY_TRUE;
  double *normals = NULL, *tangents = NULL;
- double *cv = NULL;
  ay_object c = {0}, *cp = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
- ay_nurbcurve_object *nc = NULL;
 
   if(!bparams || !o || !dst)
     return AY_ENULL;
@@ -78,21 +72,16 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    }
 
 	  bevelcurve = NULL;
-
 	  if(bparams->types[i] >= 0)
 	    {
 	      if(bparams->types[i] < 3)
 		{
-		  if(ay_bevelt_curves[bparams->types[i]] == NULL)
-		    {
-		      ay_bevelt_createbevelcurve(bparams->types[i]);
-		    }
-		  bevelcurve = ay_bevelt_curves[bparams->types[i]];
+		  ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
+						       &bevelcurve);
 		}
 	    }
 	  else
 	    {
-	      bevelcurve = NULL;
 	      ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
 						   &bevelcurve);
 
@@ -100,35 +89,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		goto cleanup;
 	    } /* if */
 
-	  /* to check the planarity we rotate a copy of
-	     the curve to the xy-plane and see if any
-	     z-coordinates are different */
-	  ay_status = ay_object_copy(&c, &cp);
-
-	  if(ay_status || !cp)
-	    goto cleanup;
-
-	  ay_status = ay_nct_toxy(cp);
-
-	  if(!ay_status)
-	    {
-	      nc = (ay_nurbcurve_object *)cp->refine;
-	      cv = nc->controlv;
-	      for(j = 0; j < nc->length-1; j++)
-		{
-		  if(fabs(cv[j*4+2]-cv[(j+1)*4+2]) > AY_EPSILON*2)
-		    {
-		      is_planar = AY_FALSE;
-		      break;
-		    }
-		}
-	    }
-	  else
-	    {
-	      /* nct_toxy() failed, maybe it is a linear curve,
-		 in any case, it is not planar... */
-	      is_planar = AY_FALSE;
-	    }
+	  cp = NULL;
+	  ay_nct_isplanar(&c, &cp, &is_planar);
 
 	  if(is_planar)
 	    {
@@ -159,7 +121,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
 					      bparams->dirs[i],
 					      &c, bevelcurve,
-					      normals, tangents,
+					      normals, 9, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 	    }
 
@@ -702,7 +664,9 @@ cleanup:
  */
 int
 ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
-		    double *n, double *t, ay_nurbpatch_object **bevel)
+		    double *n, int nstride,
+		    double *t, int tstride,
+		    ay_nurbpatch_object **bevel)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
@@ -751,7 +715,7 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
       b = 0;
       for(j = 0; j < curve->length; j++)
 	{
-	  memcpy(v1, &(n[j*9]), 3*sizeof(double));
+	  memcpy(v1, &(n[j*nstride]), 3*sizeof(double));
 	  /* normalize normal vector */
 	  len = AY_V3LEN(v1);
 	  AY_V3SCAL(v1, 1.0/len);
@@ -777,10 +741,10 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
 
 		  if(!revert)
 		    ay_trafo_rotatematrix(angle,
-					  -t[j*9], -t[j*9+1], -t[j*9+2], m);
+                       -t[j*tstride], -t[j*tstride+1], -t[j*tstride+2], m);
 		  else
 		    ay_trafo_rotatematrix(angle,
-					  t[j*9], t[j*9+1], t[j*9+2], m);
+			t[j*tstride], t[j*tstride+1], t[j*tstride+2], m);
 
 		  ay_trafo_apply3(v1, m);
 		}
@@ -947,29 +911,39 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
   if(!c)
     return AY_ENULL;
 
-  o = ay_root;
-
-  while(o)
+  if(index <= 0)
     {
-      if(o->type == AY_IDLEVEL && o->name && !strcmp(o->name, "Bevels"))
+      if(ay_bevelt_curves[abs(index)] == NULL)
 	{
-	  o = o->down;
-	  j = 1;
-	  while(o)
-	    {
-	      if(index == j)
-		{
-		  *c = o;
-		  return AY_OK;
-		}
-	      j++;
-	      o = o->next;
-	    } /* while */
-	} /* if */
-      if(o)
-	o = o->next;
-    } /* while */
+	  ay_bevelt_createbevelcurve(abs(index));
+	}
+      *c = ay_bevelt_curves[abs(index)];
+    }
+  else
+    {      
+      o = ay_root;
 
+      while(o)
+	{
+	  if(o->type == AY_IDLEVEL && o->name && !strcmp(o->name, "Bevels"))
+	    {
+	      o = o->down;
+	      j = 1;
+	      while(o)
+		{
+		  if(index == j)
+		    {
+		      *c = o;
+		      return AY_OK;
+		    }
+		  j++;
+		  o = o->next;
+		} /* while */
+	    } /* if */
+	  if(o)
+	    o = o->next;
+	} /* while */
+    }
  return ay_status;
 } /* ay_bevelt_findbevelcurve */
 

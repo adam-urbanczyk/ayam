@@ -668,7 +668,6 @@ ay_nct_revert(ay_nurbcurve_object *curve)
       curve->controlv[j+2] = curve->controlv[i+2];
       curve->controlv[i+2] = dtemp;
 
-
       dtemp = curve->controlv[j+3];
       curve->controlv[j+3] = curve->controlv[i+3];
       curve->controlv[i+3] = dtemp;
@@ -1425,6 +1424,10 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
   free(newcontrolv);
 
   free(newknotv);
+
+  /* correct curve type */
+  if(curve->type == AY_CTPERIODIC)
+    curve->type = AY_CTCLOSED;
 
  return AY_OK;
 } /* ay_nct_clampperiodic */
@@ -6857,6 +6860,57 @@ cleanup:
  return TCL_OK;
 } /* ay_nct_reparamtcmd */
 
+void
+ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
+{
+ int ay_status;
+ ay_object *tmp = NULL; 
+ ay_nurbcurve_object *nc;
+ double *cv;
+ int i, stride = 4;
+
+  if(!c || !is_planar)
+    return;
+
+  /* to check the planarity we rotate a copy of
+     the curve to the xy-plane and see if any
+     z-coordinates are different */
+  ay_status = ay_object_copy(c, &tmp);
+
+  if(ay_status || !tmp)
+    return;
+
+  *is_planar = AY_TRUE;
+
+  ay_status = ay_nct_toxy(tmp);
+
+  if(!ay_status)
+    {
+      nc = (ay_nurbcurve_object *)tmp->refine;
+      cv = nc->controlv;
+      for(i = 0; i < nc->length-1; i++)
+	{
+	  if(fabs(cv[i*stride+2]-cv[(i+1)*stride+2]) > AY_EPSILON*2)
+	    {
+	      *is_planar = AY_FALSE;
+	      break;
+	    }
+	}
+    }
+  else
+    {
+      /* ay_nct_toxy() failed, maybe it is a linear curve,
+	 in any case, it is not planar... */
+      is_planar = AY_FALSE;
+    }
+
+  if(cp)
+    *cp = tmp;
+  else
+    ay_object_delete(tmp);
+
+ return;
+} /* ay_nct_isplanar */
 
 /* templates */
 #if 0
