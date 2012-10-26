@@ -56,7 +56,7 @@ ay_material_createcb(int argc, char *argv[], ay_object *o)
 	  return AY_ERROR;
 	}
 
-      if(!(o->name = calloc(stringlen+1, sizeof(char))))
+      if(!(o->name = malloc((stringlen+1) * sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  free(material);
@@ -120,7 +120,7 @@ ay_material_deletecb(void *c)
     ay_shader_free(material->eshader);
 
   /* remove all references to this material */
-  if(*(material->refcountptr))
+  if(material->refcountptr && *(material->refcountptr))
     {
       ay_matt_removerefs(ay_root, material);
 
@@ -154,7 +154,7 @@ ay_material_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(material = calloc(1, sizeof(ay_mat_object))))
+  if(!(material = malloc(sizeof(ay_mat_object))))
     return AY_EOMEM;
 
   memcpy(material, src, sizeof(ay_mat_object));

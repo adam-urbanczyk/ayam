@@ -189,7 +189,7 @@ ay_bpatch_copycb(void *src, void **dst)
 {
  ay_bpatch_object *bpatch = NULL;
 
-  if(!(bpatch = calloc(1, sizeof(ay_bpatch_object))))
+  if(!(bpatch = malloc(sizeof(ay_bpatch_object))))
     return AY_EOMEM;
 
   memcpy(bpatch, src, sizeof(ay_bpatch_object));

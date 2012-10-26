@@ -93,7 +93,7 @@ ay_light_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(light = calloc(1, sizeof(ay_light_object))))
+  if(!(light = malloc(sizeof(ay_light_object))))
     return AY_EOMEM;
 
   memcpy(light, src, sizeof(ay_light_object));

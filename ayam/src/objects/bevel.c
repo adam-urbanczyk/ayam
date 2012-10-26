@@ -97,7 +97,7 @@ ay_bevel_copycb(void *src, void **dst)
 
   bevelsrc = (ay_bevel_object *)src;
 
-  if(!(bevel = calloc(1, sizeof(ay_bevel_object))))
+  if(!(bevel = malloc(sizeof(ay_bevel_object))))
     return AY_EOMEM;
 
   memcpy(bevel, src, sizeof(ay_bevel_object));

@@ -648,7 +648,7 @@ ay_ipatch_copycb(void *src, void **dst)
 
   ipatchsrc = (ay_ipatch_object *)src;
 
-  if(!(ipatch = calloc(1, sizeof(ay_ipatch_object))))
+  if(!(ipatch = malloc(sizeof(ay_ipatch_object))))
     return AY_EOMEM;
 
   memcpy(ipatch, src, sizeof(ay_ipatch_object));
@@ -656,7 +656,7 @@ ay_ipatch_copycb(void *src, void **dst)
   ipatch->controlv = NULL;
 
   /* copy controlv */
-  if(!(ipatch->controlv = calloc(3 * ipatch->width * ipatch->height,
+  if(!(ipatch->controlv = malloc(3 * ipatch->width * ipatch->height *
 				 sizeof(double))))
     {
       ay_status = AY_EOMEM;
@@ -668,7 +668,7 @@ ay_ipatch_copycb(void *src, void **dst)
   /* copy derivatives */
   if(ipatch->derivs_u)
     {
-      if(!(ipatch->sderiv_u = calloc(3 * ipatch->height,
+      if(!(ipatch->sderiv_u = malloc(3 * ipatch->height *
 				     sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
@@ -677,7 +677,7 @@ ay_ipatch_copycb(void *src, void **dst)
       memcpy(ipatch->sderiv_u, ipatchsrc->sderiv_u,
 	     3 * ipatch->height * sizeof(double));
 
-      if(!(ipatch->ederiv_u = calloc(3 * ipatch->height,
+      if(!(ipatch->ederiv_u = malloc(3 * ipatch->height *
 				     sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
@@ -694,7 +694,7 @@ ay_ipatch_copycb(void *src, void **dst)
 
   if(ipatch->derivs_v)
     {
-      if(!(ipatch->sderiv_v = calloc(3 * ipatch->width,
+      if(!(ipatch->sderiv_v = malloc(3 * ipatch->width *
 				     sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
@@ -703,7 +703,7 @@ ay_ipatch_copycb(void *src, void **dst)
       memcpy(ipatch->sderiv_v, ipatchsrc->sderiv_v,
 	     3 * ipatch->width * sizeof(double));
 
-      if(!(ipatch->ederiv_v = calloc(3 * ipatch->width,
+      if(!(ipatch->ederiv_v = malloc(3 * ipatch->width *
 				     sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;

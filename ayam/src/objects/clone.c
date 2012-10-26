@@ -121,7 +121,7 @@ ay_clone_copycb(void *src, void **dst)
 
   clonesrc = (ay_clone_object *)src;
 
-  if(!(clone = calloc(1, sizeof(ay_clone_object))))
+  if(!(clone = malloc(sizeof(ay_clone_object))))
     return AY_EOMEM;
 
   memcpy(clone, src, sizeof(ay_clone_object));

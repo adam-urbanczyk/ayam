@@ -143,7 +143,7 @@ ay_pamesh_copycb(void *src, void **dst)
 
   pameshsrc = (ay_pamesh_object *)src;
 
-  if(!(pamesh = calloc(1, sizeof(ay_pamesh_object))))
+  if(!(pamesh = malloc(sizeof(ay_pamesh_object))))
     return AY_EOMEM;
 
   memcpy(pamesh, src, sizeof(ay_pamesh_object));
@@ -153,7 +153,7 @@ ay_pamesh_copycb(void *src, void **dst)
   pamesh->vbasis = NULL;
 
   /* copy controlv */
-  if(!(pamesh->controlv = calloc(4 * pamesh->width * pamesh->height,
+  if(!(pamesh->controlv = malloc(4 * pamesh->width * pamesh->height *
 				 sizeof(double))))
     {
       free(pamesh);
@@ -165,7 +165,7 @@ ay_pamesh_copycb(void *src, void **dst)
   /* copy ubasis */
   if(pameshsrc->ubasis)
     {
-      if(!(pamesh->ubasis = calloc(16, sizeof(double))))
+      if(!(pamesh->ubasis = malloc(16 * sizeof(double))))
 	{
 	  free(pamesh->controlv);
 	  free(pamesh);
@@ -177,7 +177,7 @@ ay_pamesh_copycb(void *src, void **dst)
   /* copy vbasis */
   if(pameshsrc->vbasis)
     {
-      if(!(pamesh->vbasis = calloc(16, sizeof(double))))
+      if(!(pamesh->vbasis = malloc(16 * sizeof(double))))
 
 	{
 	  if(pamesh->ubasis)

@@ -80,7 +80,7 @@ ay_trim_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(trim = calloc(1, sizeof(ay_trim_object))))
+  if(!(trim = malloc(sizeof(ay_trim_object))))
     return AY_EOMEM;
 
   memcpy(trim, src, sizeof(ay_trim_object));

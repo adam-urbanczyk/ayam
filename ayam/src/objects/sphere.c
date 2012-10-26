@@ -88,7 +88,7 @@ ay_sphere_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(sphere = calloc(1, sizeof(ay_sphere_object))))
+  if(!(sphere = malloc(sizeof(ay_sphere_object))))
     return AY_EOMEM;
 
   memcpy(sphere, src, sizeof(ay_sphere_object));

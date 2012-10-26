@@ -74,7 +74,7 @@ ay_level_copycb(void *src, void **dst)
 {
  ay_level_object *level = NULL;
 
-  if(!(level = calloc(1, sizeof(ay_level_object))))
+  if(!(level = malloc(sizeof(ay_level_object))))
     return AY_EOMEM;
 
   memcpy(level, src, sizeof(ay_level_object));

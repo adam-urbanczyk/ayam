@@ -586,7 +586,7 @@ ay_sdmesh_copycb(void *src, void **dst)
 
   sdmeshsrc = (ay_sdmesh_object *)src;
 
-  if(!(sdmesh = calloc(1, sizeof(ay_sdmesh_object))))
+  if(!(sdmesh = malloc(sizeof(ay_sdmesh_object))))
     return AY_EOMEM;
 
   memcpy(sdmesh, src, sizeof(ay_sdmesh_object));
@@ -604,7 +604,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   /* copy nverts */
   if(sdmeshsrc->nverts)
     {
-      if(!(sdmesh->nverts = calloc(sdmeshsrc->nfaces, sizeof(unsigned int))))
+      if(!(sdmesh->nverts = malloc(sdmeshsrc->nfaces * sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->nverts, sdmeshsrc->nverts,
 	     sdmeshsrc->nfaces * sizeof(unsigned int));
@@ -618,7 +618,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   /* copy verts */
   if(sdmeshsrc->verts)
     {
-      if(!(sdmesh->verts = calloc(total_verts, sizeof(unsigned int))))
+      if(!(sdmesh->verts = malloc(total_verts * sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->verts, sdmeshsrc->verts,
 	     total_verts * sizeof(unsigned int));
@@ -627,12 +627,12 @@ ay_sdmesh_copycb(void *src, void **dst)
   /* copy tags and their args */
   if(sdmeshsrc->tags)
     {
-      if(!(sdmesh->tags = calloc(sdmeshsrc->ntags, sizeof(int))))
+      if(!(sdmesh->tags = malloc(sdmeshsrc->ntags * sizeof(int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->tags, sdmeshsrc->tags,
 	     sdmeshsrc->ntags * sizeof(int));
 
-      if(!(sdmesh->nargs = calloc(2 * sdmeshsrc->ntags, sizeof(unsigned int))))
+      if(!(sdmesh->nargs = malloc(2 * sdmeshsrc->ntags * sizeof(unsigned int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->nargs, sdmeshsrc->nargs,
 	     2 * sdmeshsrc->ntags * sizeof(unsigned int));
@@ -643,12 +643,12 @@ ay_sdmesh_copycb(void *src, void **dst)
 	  total_floatargs += sdmeshsrc->nargs[i+1];
 	} /* for */
 
-      if(!(sdmesh->intargs = calloc(total_intargs, sizeof(int))))
+      if(!(sdmesh->intargs = malloc(total_intargs * sizeof(int))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->intargs, sdmeshsrc->intargs,
 	     total_intargs * sizeof(int));
 
-      if(!(sdmesh->floatargs = calloc(total_floatargs, sizeof(double))))
+      if(!(sdmesh->floatargs = malloc(total_floatargs * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->floatargs, sdmeshsrc->floatargs,
 	     total_floatargs * sizeof(double));
@@ -657,7 +657,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   /* copy controlv */
   if(sdmeshsrc->controlv)
     {
-      if(!(sdmesh->controlv = calloc(3 * sdmeshsrc->ncontrols,
+      if(!(sdmesh->controlv = malloc(3 * sdmeshsrc->ncontrols *
 				     sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(sdmesh->controlv, sdmeshsrc->controlv,

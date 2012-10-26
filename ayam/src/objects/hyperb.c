@@ -86,7 +86,7 @@ ay_hyperb_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(h = calloc(1, sizeof(ay_hyperboloid_object))))
+  if(!(h = malloc(sizeof(ay_hyperboloid_object))))
     return AY_EOMEM;
 
   memcpy(h, src, sizeof(ay_hyperboloid_object));

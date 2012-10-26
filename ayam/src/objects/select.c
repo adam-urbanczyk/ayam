@@ -84,14 +84,14 @@ ay_select_copycb(void *src, void **dst)
 
   selectsrc = (ay_select_object *)src;
 
-  if(!(select = calloc(1, sizeof(ay_select_object))))
+  if(!(select = malloc(sizeof(ay_select_object))))
     return AY_EOMEM;
 
   memcpy(select, src, sizeof(ay_select_object));
 
   if(selectsrc->indices)
     {
-      if(!(select->indices = calloc(strlen(selectsrc->indices)+1,
+      if(!(select->indices = malloc((strlen(selectsrc->indices)+1) *
 				    sizeof(char))))
 	{ free(select); return AY_EOMEM; }
 

@@ -92,14 +92,14 @@ ay_concatnp_copycb(void *src, void **dst)
 
   concatnpsrc = (ay_concatnp_object *)src;
 
-  if(!(concatnp = calloc(1, sizeof(ay_concatnp_object))))
+  if(!(concatnp = malloc(sizeof(ay_concatnp_object))))
     return AY_EOMEM;
 
   memcpy(concatnp, src, sizeof(ay_concatnp_object));
 
   if(concatnpsrc->uv_select)
     {
-      if(!(concatnp->uv_select = calloc(strlen(concatnpsrc->uv_select)+1,
+      if(!(concatnp->uv_select = malloc((strlen(concatnpsrc->uv_select)+1)*
 					sizeof(char))))
 	{ free(concatnp); return AY_EOMEM; }
 

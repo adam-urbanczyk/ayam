@@ -88,7 +88,7 @@ ay_birail2_copycb(void *src, void **dst)
 
   birail2src = (ay_birail2_object *)src;
 
-  if(!(birail2 = calloc(1, sizeof(ay_birail2_object))))
+  if(!(birail2 = malloc(sizeof(ay_birail2_object))))
     return AY_EOMEM;
 
   memcpy(birail2, src, sizeof(ay_birail2_object));

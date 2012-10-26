@@ -88,7 +88,7 @@ ay_skin_copycb(void *src, void **dst)
 
   skinsrc = (ay_skin_object *)src;
 
-  if(!(skin = calloc(1, sizeof(ay_skin_object))))
+  if(!(skin = malloc(sizeof(ay_skin_object))))
     return AY_EOMEM;
 
   memcpy(skin, src, sizeof(ay_skin_object));
@@ -658,9 +658,10 @@ ay_skin_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
+      /*
       bparams.radii[2] = -bparams.radii[2];
       bparams.dirs[2] = !bparams.dirs[2];
-
+      */
       ay_status = ay_bevelt_addbevels(&bparams, caps, skin->npatch, nextcb);
       if(ay_status)
 	goto cleanup;

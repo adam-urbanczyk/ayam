@@ -89,7 +89,7 @@ ay_offnp_copycb(void *src, void **dst)
 
   offnpsrc = (ay_offnp_object *)src;
 
-  if(!(offnp = calloc(1, sizeof(ay_offnp_object))))
+  if(!(offnp = malloc(sizeof(ay_offnp_object))))
     return AY_EOMEM;
 
   memcpy(offnp, src, sizeof(ay_offnp_object));

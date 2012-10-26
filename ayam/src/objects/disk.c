@@ -86,7 +86,7 @@ ay_disk_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(disk = calloc(1, sizeof(ay_disk_object))))
+  if(!(disk = malloc(sizeof(ay_disk_object))))
     return AY_EOMEM;
 
   memcpy(disk, src, sizeof(ay_disk_object));

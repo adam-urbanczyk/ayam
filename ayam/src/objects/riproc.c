@@ -76,7 +76,7 @@ ay_riproc_copycb(void *src, void **dst)
 
   srcr = (ay_riproc_object*) src;
 
-  if(!(riproc = calloc(1, sizeof(ay_riproc_object))))
+  if(!(riproc = malloc(sizeof(ay_riproc_object))))
     return AY_EOMEM;
 
   memcpy(riproc, src, sizeof(ay_riproc_object));
@@ -86,7 +86,7 @@ ay_riproc_copycb(void *src, void **dst)
   /* copy file */
   if(srcr->file)
     {
-      if(!(riproc->file = calloc(strlen(srcr->file)+1, sizeof(char))))
+      if(!(riproc->file = malloc((strlen(srcr->file)+1) * sizeof(char))))
 	{
 	  free(riproc);
 	  return AY_EOMEM;
@@ -98,7 +98,7 @@ ay_riproc_copycb(void *src, void **dst)
   /* copy data */
   if(srcr->data)
     {
-      if(!(riproc->data = calloc(strlen(srcr->data)+1, sizeof(char))))
+      if(!(riproc->data = malloc((strlen(srcr->data)+1) * sizeof(char))))
 	{
 	  if(riproc->file)
 	    free(riproc->file);

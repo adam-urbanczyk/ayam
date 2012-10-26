@@ -85,7 +85,7 @@ ay_extrnp_copycb(void *src, void **dst)
 
   extrnpsrc = (ay_extrnp_object *)src;
 
-  if(!(extrnp = calloc(1, sizeof(ay_extrnp_object))))
+  if(!(extrnp = malloc(sizeof(ay_extrnp_object))))
     return AY_EOMEM;
 
   memcpy(extrnp, src, sizeof(ay_extrnp_object));

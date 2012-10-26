@@ -354,7 +354,7 @@ ay_undo_copyview(ay_view_object *src, ay_view_object *dst)
   /* copy BGImage */
   if(src->bgimage)
     {
-      if(!(dst->bgimage = calloc(strlen(src->bgimage)+1, sizeof(char))))
+      if(!(dst->bgimage = malloc((strlen(src->bgimage)+1) * sizeof(char))))
 	{
 	  return AY_EOMEM;
 	}
@@ -427,7 +427,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
       free(dst->riopt);
     } /* if */
 
-  if(!(dst->riopt = calloc(1, sizeof(ay_riopt))))
+  if(!(dst->riopt = malloc(sizeof(ay_riopt))))
     return AY_EOMEM;
 
   memcpy(dst->riopt, src->riopt, sizeof(ay_riopt));
@@ -439,7 +439,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->textures)
     {
-      if(!(dstriopt->textures = calloc(strlen(srcriopt->textures)+1,
+      if(!(dstriopt->textures = malloc((strlen(srcriopt->textures)+1)*
 				       sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->textures, srcriopt->textures);
@@ -447,7 +447,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->shaders)
     {
-      if(!(dstriopt->shaders = calloc(strlen(srcriopt->shaders)+1,
+      if(!(dstriopt->shaders = malloc((strlen(srcriopt->shaders)+1)*
 				      sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->shaders, srcriopt->shaders);
@@ -455,7 +455,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->archives)
     {
-      if(!(dstriopt->archives = calloc(strlen(srcriopt->archives)+1,
+      if(!(dstriopt->archives = malloc((strlen(srcriopt->archives)+1)*
 				       sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->archives, srcriopt->archives);
@@ -463,7 +463,7 @@ ay_undo_copyroot(ay_root_object *src, ay_root_object *dst)
 
   if(srcriopt->procedurals)
     {
-      if(!(dstriopt->procedurals = calloc(strlen(srcriopt->procedurals)+1,
+      if(!(dstriopt->procedurals = malloc((strlen(srcriopt->procedurals)+1)*
 					  sizeof(char))))
 	return AY_EOMEM;
       strcpy(dstriopt->procedurals, srcriopt->procedurals);
@@ -489,7 +489,7 @@ ay_undo_copyselp(ay_object *src, ay_object *dst)
   last = &(dst->selp);
   while(p)
     {
-      if(!(n = calloc(1, sizeof(ay_point))))
+      if(!(n = malloc(sizeof(ay_point))))
 	return AY_EOMEM;
 
       memcpy(n, p, sizeof(ay_point));
@@ -586,7 +586,7 @@ ay_undo_copy(ay_undo_object *uo)
 	    }
 	  if(c->name)
 	    {
-	      if(!(o->name = calloc(strlen(c->name)+1, sizeof(char))))
+	      if(!(o->name = malloc((strlen(c->name)+1) * sizeof(char))))
 		return AY_EOMEM;
 	      strcpy(o->name, c->name);
 	    }
@@ -673,7 +673,7 @@ ay_undo_copy(ay_undo_object *uo)
 	    {
 	      ay_matt_registermaterial(c->name,
 				       (ay_mat_object *)(o->refine));
-	      if(!(o->name = calloc(strlen(c->name)+1, sizeof(char))))
+	      if(!(o->name = malloc((strlen(c->name)+1) * sizeof(char))))
 		return AY_EOMEM;
 	      strcpy(o->name, c->name);
 	    }
@@ -905,10 +905,8 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     return AY_ENULL;
 
   /* copy generic object */
-  if(!(new = calloc(1, sizeof(ay_object))))
+  if(!(new = malloc(sizeof(ay_object))))
     return AY_EOMEM;
-
-  *dst = new;
 
   memcpy(new, src, sizeof(ay_object));
   /* danger! links point to original hierarchy */
@@ -928,7 +926,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     case AY_IDVIEW:
       srcview = (ay_view_object *)(src->refine);
 
-      if(!(new->refine = calloc(1, sizeof(ay_view_object))))
+      if(!(new->refine = malloc(sizeof(ay_view_object))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -942,7 +940,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
       /* copy BGImage */
       if(srcview->bgimage)
 	{
-	  if(!(dstview->bgimage = calloc(strlen(srcview->bgimage)+1,
+	  if(!(dstview->bgimage = malloc((strlen(srcview->bgimage)+1)*
 					 sizeof(char))))
 	    {
 	      ay_status = AY_EOMEM;
@@ -953,7 +951,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	}
       break;
     case AY_IDROOT:
-      if(!(new->refine = calloc(1, sizeof(ay_root_object))))
+      if(!(new->refine = malloc(sizeof(ay_root_object))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -987,7 +985,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
   /* copy name */
   if(src->name)
     {
-      if(!(new->name = calloc(strlen(src->name)+1, sizeof(char))))
+      if(!(new->name = malloc((strlen(src->name)+1) * sizeof(char))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -1019,6 +1017,8 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
     }
 
   new->modified = AY_TRUE;
+
+  *dst = new;
 
   /* prevent cleanup code from doing something harmful */
   new = NULL;
@@ -1142,7 +1142,7 @@ ay_undo_save(int save_children)
       /* to avoid, that the user gets (after an undo/redo)
        * into an old sequence of changed states using
        * redo after a save, we clear the undo buffer
-       * now partially from the current slot to the top
+       * now partially from the current slot to the last
        */
       if((undo_last_op == 0) || (undo_last_op == 1))
 	{
@@ -1333,6 +1333,8 @@ ay_undo_save(int save_children)
 		} /* if */
 
 	      lastr = r;
+
+	      /* explicitly _not_ setting r->object to mark the separator */
 
 	      markprevsel->type = AY_IDLAST;
 	      *nexto = markprevsel;
@@ -1621,7 +1623,7 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(undo_saved_op)
 	    free(undo_saved_op);
 
-	  if(!(undo_saved_op = calloc(strlen(argv[2]) + 1,
+	  if(!(undo_saved_op = malloc((strlen(argv[2]) + 1) *
 				      sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);

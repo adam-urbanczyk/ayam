@@ -162,7 +162,7 @@ ay_ncircle_copycb(void *src, void **dst)
 
   ncirclesrc = (ay_ncircle_object *)src;
 
-  if(!(ncircle = calloc(1, sizeof(ay_ncircle_object))))
+  if(!(ncircle = malloc(sizeof(ay_ncircle_object))))
     return AY_EOMEM;
 
   memcpy(ncircle, src, sizeof(ay_ncircle_object));

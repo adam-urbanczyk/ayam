@@ -87,7 +87,7 @@ ay_cone_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(cone = calloc(1, sizeof(ay_cone_object))))
+  if(!(cone = malloc(sizeof(ay_cone_object))))
     return AY_EOMEM;
 
   memcpy(cone, src, sizeof(ay_cone_object));

@@ -89,7 +89,7 @@ ay_sweep_copycb(void *src, void **dst)
 
   sweepsrc = (ay_sweep_object *)src;
 
-  if(!(sweep = calloc(1, sizeof(ay_sweep_object))))
+  if(!(sweep = malloc(sizeof(ay_sweep_object))))
     return AY_EOMEM;
 
   memcpy(sweep, src, sizeof(ay_sweep_object));

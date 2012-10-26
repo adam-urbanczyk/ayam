@@ -351,13 +351,13 @@ ay_acurve_copycb(void *src, void **dst)
 
   acurvesrc = (ay_acurve_object *)src;
 
-  if(!(acurve = calloc(1, sizeof(ay_acurve_object))))
+  if(!(acurve = malloc(sizeof(ay_acurve_object))))
     return AY_EOMEM;
 
   memcpy(acurve, src, sizeof(ay_acurve_object));
 
   /* copy controlv */
-  if(!(acurve->controlv = calloc(3 * acurve->length, sizeof(double))))
+  if(!(acurve->controlv = malloc(3 * acurve->length * sizeof(double))))
     {
       free(acurve);
       return AY_EOMEM;

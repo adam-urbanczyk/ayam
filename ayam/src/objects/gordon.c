@@ -90,7 +90,7 @@ ay_gordon_copycb(void *src, void **dst)
 
   gordonsrc = (ay_gordon_object *)src;
 
-  if(!(gordon = calloc(1, sizeof(ay_gordon_object))))
+  if(!(gordon = malloc(sizeof(ay_gordon_object))))
     return AY_EOMEM;
 
   memcpy(gordon, src, sizeof(ay_gordon_object));

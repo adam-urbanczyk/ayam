@@ -81,7 +81,7 @@ ay_riinc_copycb(void *src, void **dst)
 
   srcr = (ay_riinc_object*) src;
 
-  if(!(riinc = calloc(1, sizeof(ay_riinc_object))))
+  if(!(riinc = malloc(sizeof(ay_riinc_object))))
     return AY_EOMEM;
 
   memcpy(riinc, src, sizeof(ay_riinc_object));
@@ -90,7 +90,7 @@ ay_riinc_copycb(void *src, void **dst)
   /* copy file name */
   if(srcr->file)
     {
-      if(!(riinc->file = calloc(strlen(srcr->file)+1, sizeof(char))))
+      if(!(riinc->file = malloc((strlen(srcr->file)+1) * sizeof(char))))
 	{
 	  free(riinc);
 	  return AY_EOMEM;

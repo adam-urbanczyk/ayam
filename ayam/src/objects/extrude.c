@@ -88,7 +88,7 @@ ay_extrude_copycb(void *src, void **dst)
 
   extrudesrc = (ay_extrude_object *)src;
 
-  if(!(extrude = calloc(1, sizeof(ay_extrude_object))))
+  if(!(extrude = malloc(sizeof(ay_extrude_object))))
     return AY_EOMEM;
 
   memcpy(extrude, src, sizeof(ay_extrude_object));
