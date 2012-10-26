@@ -86,11 +86,10 @@ ay_swing_copycb(void *src, void **dst)
 
   swingsrc = (ay_swing_object *)src;
 
-  if(!(swing = calloc(1, sizeof(ay_swing_object))))
+  if(!(swing = malloc(sizeof(ay_swing_object))))
     return AY_EOMEM;
 
   memcpy(swing, src, sizeof(ay_swing_object));
-
 
   /* copy npatch */
   ay_object_copy(swingsrc->npatch, &(swing->npatch));

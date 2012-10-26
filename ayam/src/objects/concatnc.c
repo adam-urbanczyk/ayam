@@ -81,7 +81,7 @@ ay_concatnc_copycb(void *src, void **dst)
 
   concatncsrc = (ay_concatnc_object *)src;
 
-  if(!(concatnc = calloc(1, sizeof(ay_concatnc_object))))
+  if(!(concatnc = malloc(sizeof(ay_concatnc_object))))
     return AY_EOMEM;
 
   memcpy(concatnc, src, sizeof(ay_concatnc_object));

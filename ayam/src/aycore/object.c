@@ -577,7 +577,7 @@ ay_object_setnametcmd(ClientData clientData, Tcl_Interp *interp,
 	  return TCL_OK;
 	}
 
-      if(!(o->name = calloc(strlen(argv[1])+1, sizeof(char))))
+      if(!(o->name = malloc(strlen((argv[1])+1) * sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
@@ -617,10 +617,8 @@ ay_object_copy(ay_object *src, ay_object **dst)
     }
 
   /* copy generic object */
-  if(!(new = calloc(1, sizeof(ay_object))))
+  if(!(new = malloc(sizeof(ay_object))))
     return AY_EOMEM;
-
-  *dst = new;
 
   memcpy(new, src, sizeof(ay_object));
   /* danger! links point to original hierarchy */
@@ -649,7 +647,7 @@ ay_object_copy(ay_object *src, ay_object **dst)
   /* copy name */
   if(src->name)
     {
-      if(!(new->name = calloc(strlen(src->name)+1, sizeof(char))))
+      if(!(new->name = malloc((strlen(src->name)+1) * sizeof(char))))
 	{
 	  free(new);
 	  return AY_EOMEM;
@@ -686,6 +684,8 @@ ay_object_copy(ay_object *src, ay_object **dst)
 
   new->modified = AY_TRUE;
   new->selected = AY_FALSE;
+
+  *dst = new;
 
  return AY_OK;
 } /* ay_object_copy */

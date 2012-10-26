@@ -569,14 +569,14 @@ ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest)
  ay_shader_arg *newp = NULL;
  char *newval;
 
-  if(!(newp = calloc(1, sizeof(ay_shader_arg))))
+  if(!(newp = malloc(sizeof(ay_shader_arg))))
     return AY_EOMEM;
 
   memcpy(newp, source, sizeof(ay_shader_arg));
   /* danger! links point to original hierachy */
 
   /* copy name */
-  if(!(newval = calloc(1, strlen(source->name)+1)))
+  if(!(newval = malloc((strlen(source->name)+1)*sizeof(char))))
     { free(newp); return AY_EOMEM; }
   strcpy(newval, source->name);
   newp->name = newval;
@@ -584,7 +584,7 @@ ay_shader_copyarg(ay_shader_arg *source, ay_shader_arg **dest)
   if(source->type == AY_SASTRING)
     {
       /* copy string */
-      if(!(newval = calloc(1, strlen(source->val.string)+1)))
+      if(!(newval = malloc((strlen(source->val.string)+1)*sizeof(char))))
 	{ free(newp->name); free(newp); return AY_EOMEM; }
       strcpy(newval, source->val.string);
       newp->val.string = newval;
@@ -607,18 +607,17 @@ ay_shader_copy(ay_shader *source, ay_shader **dest)
  ay_shader_arg *p = NULL, **newp;
  char *newval = NULL;
 
-  if(!(news = calloc(1,sizeof(ay_shader))))
+  if(!(news = malloc(sizeof(ay_shader))))
     return AY_EOMEM;
 
   memcpy(news, source, sizeof(ay_shader));
   /* danger! links point to original hierachy */
 
   /* copy name */
-  if(!(newval = calloc(1, strlen(source->name)+1)))
+  if(!(newval = malloc((strlen(source->name)+1)*sizeof(char))))
     { free(news); return AY_EOMEM; }
   strcpy(newval, source->name);
   news->name = newval;
-
 
   /* copy parameters */
   if(source->arg)

@@ -79,7 +79,7 @@ ay_cap_copycb(void *src, void **dst)
 
   capsrc = (ay_cap_object *)src;
 
-  if(!(cap = calloc(1, sizeof(ay_cap_object))))
+  if(!(cap = malloc(sizeof(ay_cap_object))))
     return AY_EOMEM;
 
   memcpy(cap, src, sizeof(ay_cap_object));

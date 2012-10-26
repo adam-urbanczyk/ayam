@@ -498,7 +498,7 @@ ay_pomesh_copycb(void *src, void **dst)
   else
     stride = 3;
 
-  if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))
+  if(!(pomesh = malloc(sizeof(ay_pomesh_object))))
     return AY_EOMEM;
 
   memcpy(pomesh, src, sizeof(ay_pomesh_object));
@@ -511,7 +511,7 @@ ay_pomesh_copycb(void *src, void **dst)
   /* copy nloops */
   if(pomeshsrc->nloops)
     {
-      if(!(pomesh->nloops = calloc(pomeshsrc->npolys, sizeof(unsigned int))))
+      if(!(pomesh->nloops = malloc(pomeshsrc->npolys * sizeof(unsigned int))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -528,7 +528,7 @@ ay_pomesh_copycb(void *src, void **dst)
   /* copy nverts */
   if(pomeshsrc->nverts)
     {
-      if(!(pomesh->nverts = calloc(total_loops, sizeof(unsigned int))))
+      if(!(pomesh->nverts = malloc(total_loops * sizeof(unsigned int))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -545,7 +545,7 @@ ay_pomesh_copycb(void *src, void **dst)
   /* copy verts */
   if(pomeshsrc->verts)
     {
-      if(!(pomesh->verts = calloc(total_verts, sizeof(unsigned int))))
+      if(!(pomesh->verts = malloc(total_verts * sizeof(unsigned int))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -557,7 +557,7 @@ ay_pomesh_copycb(void *src, void **dst)
   /* copy controlv */
   if(pomeshsrc->controlv)
     {
-      if(!(pomesh->controlv = calloc(stride * pomeshsrc->ncontrols,
+      if(!(pomesh->controlv = malloc(stride * pomeshsrc->ncontrols *
 				     sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;

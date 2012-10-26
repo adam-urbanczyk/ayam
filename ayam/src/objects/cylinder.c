@@ -88,7 +88,7 @@ ay_cylinder_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(cylinder = calloc(1, sizeof(ay_cylinder_object))))
+  if(!(cylinder = malloc(sizeof(ay_cylinder_object))))
     return AY_EOMEM;
 
   memcpy(cylinder, src, sizeof(ay_cylinder_object));

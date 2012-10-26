@@ -144,7 +144,7 @@ ay_script_copycb(void *src, void **dst)
 
   scsrc = (ay_script_object *)src;
 
-  if(!(scdst = calloc(1, sizeof(ay_script_object))))
+  if(!(scdst = malloc(sizeof(ay_script_object))))
     return AY_EOMEM;
 
   memcpy(scdst, scsrc, sizeof(ay_script_object));
@@ -156,7 +156,7 @@ ay_script_copycb(void *src, void **dst)
   scdst->params = NULL;
   if(scdst->paramslen)
     {
-      if(!(scdst->params = calloc(scdst->paramslen, sizeof(Tcl_Obj*))))
+      if(!(scdst->params = malloc(scdst->paramslen * sizeof(Tcl_Obj*))))
 	{
 	  free(scdst);
 	  return AY_EOMEM;
@@ -171,7 +171,7 @@ ay_script_copycb(void *src, void **dst)
   /* copy script string */
   if(scsrc->script)
     {
-      if(!(scdst->script = calloc(strlen(scsrc->script)+1, sizeof(char))))
+      if(!(scdst->script = malloc((strlen(scsrc->script)+1) * sizeof(char))))
 	{
 	  if(scdst->params)
 	    free(scdst->params);

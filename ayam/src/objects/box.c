@@ -81,7 +81,7 @@ ay_box_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(box = calloc(1, sizeof(ay_box_object))))
+  if(!(box = malloc(sizeof(ay_box_object))))
     return AY_EOMEM;
 
   memcpy(box, src, sizeof(ay_box_object));

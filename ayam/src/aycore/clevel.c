@@ -73,13 +73,15 @@ ay_clevel_add(ay_object *o)
 {
  ay_list_object *lev = NULL;
 
-  if(!(lev = calloc(1, sizeof(ay_list_object))))
+  if(!(lev = malloc(sizeof(ay_list_object))))
     return AY_EOMEM;
 
   lev->object = o;
 
   if(ay_currentlevel)
     lev->next = ay_currentlevel;
+  else
+    lev->next = NULL;
 
   ay_currentlevel = lev;
 

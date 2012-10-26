@@ -87,7 +87,7 @@ ay_parab_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(parab = calloc(1, sizeof(ay_paraboloid_object))))
+  if(!(parab = malloc(sizeof(ay_paraboloid_object))))
     return AY_EOMEM;
 
   memcpy(parab, src, sizeof(ay_paraboloid_object));

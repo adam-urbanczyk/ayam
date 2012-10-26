@@ -94,11 +94,10 @@ ay_revolve_copycb(void *src, void **dst)
 
   revolvesrc = (ay_revolve_object *)src;
 
-  if(!(revolve = calloc(1, sizeof(ay_revolve_object))))
+  if(!(revolve = malloc(sizeof(ay_revolve_object))))
     return AY_EOMEM;
 
   memcpy(revolve, src, sizeof(ay_revolve_object));
-
 
   /* copy npatch */
   ay_object_copy(revolvesrc->npatch, &(revolve->npatch));
@@ -114,7 +113,6 @@ ay_revolve_copycb(void *src, void **dst)
 
   /* copy end cap */
   ay_object_copy(revolvesrc->end_cap, &(revolve->end_cap));
-
 
   *dst = (void *)revolve;
 

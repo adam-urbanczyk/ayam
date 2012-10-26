@@ -432,7 +432,7 @@ ay_ncurve_copycb(void *src, void **dst)
 
   ncurvesrc = (ay_nurbcurve_object *)src;
 
-  if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
+  if(!(ncurve = malloc(sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
 
   memcpy(ncurve, src, sizeof(ay_nurbcurve_object));
@@ -444,7 +444,7 @@ ay_ncurve_copycb(void *src, void **dst)
 
   /* copy knots */
   kl = ncurve->order + ncurve->length;
-  if(!(ncurve->knotv = calloc(kl, sizeof(double))))
+  if(!(ncurve->knotv = malloc(kl * sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -452,7 +452,7 @@ ay_ncurve_copycb(void *src, void **dst)
   memcpy(ncurve->knotv, ncurvesrc->knotv, kl * sizeof(double));
 
   /* copy controlv */
-  if(!(ncurve->controlv = calloc(4 * ncurve->length, sizeof(double))))
+  if(!(ncurve->controlv = malloc(4 * ncurve->length * sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -463,7 +463,7 @@ ay_ncurve_copycb(void *src, void **dst)
   /* copy tessv */
   if(ncurvesrc->tessv)
     {
-      if(!(ncurve->tessv = calloc(3 * ncurve->tesslen, sizeof(double))))
+      if(!(ncurve->tessv = malloc(3 * ncurve->tesslen * sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;

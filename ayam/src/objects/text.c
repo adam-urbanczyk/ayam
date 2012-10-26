@@ -89,7 +89,7 @@ ay_text_copycb(void *src, void **dst)
   tsrc = (ay_text_object *)src;
   tdst = (ay_text_object *)dst;
 
-  if(!(tdst = calloc(1, sizeof(ay_text_object))))
+  if(!(tdst = malloc(sizeof(ay_text_object))))
     return AY_EOMEM;
 
   memcpy(tdst, tsrc, sizeof(ay_text_object));
@@ -103,7 +103,7 @@ ay_text_copycb(void *src, void **dst)
 
   if(tsrc->fontname)
     {
-      if(!(tdst->fontname = calloc(strlen(tsrc->fontname)+1, sizeof(char))))
+      if(!(tdst->fontname = malloc((strlen(tsrc->fontname)+1) * sizeof(char))))
 	{
 	  free(tdst);
 	  return AY_EOMEM;
@@ -113,7 +113,7 @@ ay_text_copycb(void *src, void **dst)
 
   if(tsrc->unistring)
     {
-      if(!(tdst->unistring = calloc(Tcl_UniCharLen(tsrc->unistring)+1,
+      if(!(tdst->unistring = malloc((Tcl_UniCharLen(tsrc->unistring)+1) *
 				    sizeof(Tcl_UniChar))))
 	{
 	  if(tdst->fontname)
@@ -124,7 +124,6 @@ ay_text_copycb(void *src, void **dst)
 
       memcpy(tdst->unistring, tsrc->unistring,
 	     Tcl_UniCharLen(tsrc->unistring)*sizeof(Tcl_UniChar));
-
     }
 
   *dst = tdst;

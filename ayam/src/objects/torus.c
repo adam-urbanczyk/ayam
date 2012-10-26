@@ -88,7 +88,7 @@ ay_torus_copycb(void *src, void **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  if(!(torus = calloc(1, sizeof(ay_torus_object))))
+  if(!(torus = malloc(sizeof(ay_torus_object))))
     return AY_EOMEM;
 
   memcpy(torus, src, sizeof(ay_torus_object));

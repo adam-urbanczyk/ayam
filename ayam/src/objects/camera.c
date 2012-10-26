@@ -73,7 +73,7 @@ ay_camera_copycb(void *src, void **dst)
 {
  ay_camera_object *camera = NULL;
 
-  if(!(camera = calloc(1, sizeof(ay_camera_object))))
+  if(!(camera = malloc(sizeof(ay_camera_object))))
     return AY_EOMEM;
 
   memcpy(camera, src, sizeof(ay_camera_object));

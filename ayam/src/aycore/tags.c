@@ -86,7 +86,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   if(!source->val)
     return AY_ERROR;
 
-  if(!(new = calloc(1,sizeof(ay_tag))))
+  if(!(new = malloc(sizeof(ay_tag))))
     return AY_EOMEM;
 
   memcpy(new, source, sizeof(ay_tag));
@@ -97,7 +97,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   /* copy name */
   if(source->name)
     {
-      if(!(new->name = calloc(1, strlen(source->name)+1)))
+      if(!(new->name = malloc((strlen(source->name)+1)*sizeof(char))))
 	{ free(new); return AY_EOMEM; }
       strcpy(new->name, source->name);
     }
@@ -105,13 +105,13 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   if(source->is_binary)
     {
       /* copy binary val */
-      if(!(new->val = calloc(1, sizeof(ay_btval))))
+      if(!(new->val = malloc(sizeof(ay_btval))))
 	{ free(new); free(new->name); return AY_EOMEM; }
       memcpy(new->val, source->val, sizeof(ay_btval));
       if(((ay_btval*)new->val)->size)
 	{
 	  nbt = (ay_btval*)new->val;
-	  if(!(nbt->payload = calloc(1, nbt->size)))
+	  if(!(nbt->payload = malloc(nbt->size)))
 	    {free(new->val); free(new); free(new->name); return AY_EOMEM; }
 	  memcpy(nbt->payload, ((ay_btval*)source->val)->payload, nbt->size);
 	}
@@ -119,7 +119,7 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
   else
     {
       /* copy ASCII val */
-      if(!(new->val = calloc(1, strlen(source->val)+1)))
+      if(!(new->val = malloc((strlen(source->val)+1)*sizeof(char))))
 	{ free(new->name); free(new); return AY_EOMEM; }
       strcpy(new->val, source->val);
     }
@@ -323,14 +323,14 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 	      new->type = (char *)Tcl_GetHashValue(entry);
 	    }
 	  /* create new tag */
-	  if(!(new->name = calloc(strlen(argv[3])+1, sizeof(char))))
+	  if(!(new->name = malloc((strlen(argv[3])+1) * sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
 	  strcpy(new->name, argv[3]);
 
-	  if(!(new->val = calloc(strlen(argv[4])+1, sizeof(char))))
+	  if(!(new->val = malloc((strlen(argv[4])+1) * sizeof(char))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
@@ -478,7 +478,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		  new->type = (char *)Tcl_GetHashValue(entry);
 		}
 
-	      if(!(new->name = calloc(strlen(argv[index])+1, sizeof(char))))
+	      if(!(new->name = malloc((strlen(argv[index])+1) * sizeof(char))))
 		{
 		  free(new);
 		  ay_error(AY_EOMEM, argv[0], NULL);
@@ -486,7 +486,7 @@ ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      strcpy(new->name, argv[index]);
 
-	      if(!(new->val = calloc(strlen(argv[index+1])+1, sizeof(char))))
+	      if(!(new->val = malloc((strlen(argv[index+1])+1) * sizeof(char))))
 		{
 		  free(new->name);
 		  free(new);
@@ -548,7 +548,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_error(AY_EOMEM, argv[0], NULL);
 	  return TCL_OK;
 	}
-      if(!(new->name = calloc(strlen(argv[1])+1, sizeof(char))))
+      if(!(new->name = malloc((strlen(argv[1])+1) * sizeof(char))))
 	{
 	  free(new);
 	  ay_error(AY_EOMEM, argv[0], NULL);
@@ -559,7 +559,7 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
       if(entry)
 	new->type = (char *)Tcl_GetHashValue(entry);
 
-      if(!(new->val = calloc(strlen(argv[2])+1, sizeof(char))))
+      if(!(new->val = malloc((strlen(argv[2])+1) * sizeof(char))))
 	{
 	  free(new->name); free(new);
 	  ay_error(AY_EOMEM, argv[0], NULL);
@@ -730,7 +730,7 @@ ay_tags_parseplist(char *str, int declare, RtInt *argc, RtToken **tokensr,
     return AY_OK;
 
   /* make a copy of str, so that we may parse it using strtok() */
-  if(!(tmp = calloc(1, strlen(str)+1)))
+  if(!(tmp = malloc((strlen(str)+1)*sizeof(char))))
     { return AY_EOMEM; }
   strcpy(tmp, str);
 
@@ -1026,7 +1026,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
       newnotag->type = ay_no_tagtype;
       newnotag->is_intern = AY_TRUE;
       newnotag->is_binary = AY_TRUE;
-      if(!(newnotag->val = calloc(1, sizeof(ay_btval))))
+      if(!(newnotag->val = malloc(sizeof(ay_btval))))
 	{
 	  free(newnotag);
 	  return AY_EOMEM;
@@ -1043,7 +1043,7 @@ ay_tags_addnonm(ay_object *o, ay_object *m)
       newnmtag->type = ay_nm_tagtype;
       newnmtag->is_intern = AY_TRUE;
       newnmtag->is_binary = AY_TRUE;
-      if(!(newnmtag->val = calloc(1, sizeof(ay_btval))))
+      if(!(newnmtag->val = malloc(sizeof(ay_btval))))
 	{
 	  free(newnmtag);
 	  ay_tags_free(newnotag);

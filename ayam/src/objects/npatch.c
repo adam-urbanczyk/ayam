@@ -588,7 +588,7 @@ ay_npatch_copycb(void *src, void **dst)
 
   npatchsrc = (ay_nurbpatch_object *)src;
 
-  if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
+  if(!(npatch = malloc(sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
 
   memcpy(npatch, src, sizeof(ay_nurbpatch_object));
@@ -597,7 +597,7 @@ ay_npatch_copycb(void *src, void **dst)
 
   /* copy knots */
   kl = npatch->uorder + npatch->width;
-  if(!(npatch->uknotv = calloc(kl, sizeof(double))))
+  if(!(npatch->uknotv = malloc(kl * sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -605,7 +605,7 @@ ay_npatch_copycb(void *src, void **dst)
   memcpy(npatch->uknotv, npatchsrc->uknotv, kl * sizeof(double));
 
   kl = npatch->vorder + npatch->height;
-  if(!(npatch->vknotv = calloc(kl, sizeof(double))))
+  if(!(npatch->vknotv = malloc(kl * sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
@@ -613,7 +613,7 @@ ay_npatch_copycb(void *src, void **dst)
   memcpy(npatch->vknotv, npatchsrc->vknotv, kl * sizeof(double));
 
   /* copy controlv */
-  if(!(npatch->controlv = calloc(4 * npatch->width * npatch->height,
+  if(!(npatch->controlv = malloc(4 * npatch->width * npatch->height *
 				 sizeof(double))))
     {
       ay_status = AY_EOMEM;
@@ -2016,7 +2016,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	  ((ay_nurbpatch_object *) (b->refine))->glu_sampling_tolerance =
 	    npatch->glu_sampling_tolerance;
 	  ((ay_nurbpatch_object *) (b->refine))->display_mode =
-	    npatch->display_mode; 
+	    npatch->display_mode;
 	  b = b->next;
 	}
     }
@@ -2785,9 +2785,10 @@ ay_npatch_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
+      bparams.radii[0] = -bparams.radii[0];
+      bparams.radii[1] = -bparams.radii[1];
       bparams.dirs[1] = !bparams.dirs[1];
       bparams.dirs[2] = !bparams.dirs[2];
-      bparams.radii[2] = -bparams.radii[2];
 
       ay_status = ay_bevelt_addbevels(&bparams, caps, o, nextcb);
       if(ay_status)
