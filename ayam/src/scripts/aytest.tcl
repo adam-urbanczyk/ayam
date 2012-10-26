@@ -133,7 +133,7 @@ lappend nopnttypes Clone Mirror Script Text
 # attempts, when empty):
 set noconvtypes ""
 lappend noconvtypes Camera Light Material RiInc RiProc Select
-lappend noconvtypes Bevel Birail1 Birail2 ConcatNP OffsetNP Gordon
+lappend noconvtypes Bevel Birail1 Birail2 ConcatNP Extrude OffsetNP Gordon
 lappend noconvtypes Skin Sweep Swing
 
 set view1 ""
@@ -244,6 +244,19 @@ set angles {-360 -359 -271 -270 -269 -181 -180 -179 -91 -90 -89 -1 1 89 90 91 17
 # also some harmless float values
 set floatvals {-1000 -100 -20 -2.5 -2 -1.5 -1.0 -0.9 -0.1 0.1 0.9 1.0 1.5 2 2.5 20 100 1000}
 
+# Every object variation array contains the following components:
+#  precmd - commands to run after object creation but before variation
+#  valcmd - command to rule out invalid combinations of parameters
+#  postcmd - actual commands to test the implementation
+#  arr - array to put all variable data into
+#  fixedvars - list of fixed variables in array arr
+#  vals - list of value sets for all variables in fixedvars
+#  freevars - list of free variables in array arr
+#             (their values will be automatically
+#              varied by a cartesian product!)
+# for every free variable, another entry (named like the variable itself)
+# exists, that contains the valid variable values, from which the cartesian
+# product is built
 
 #############
 # Box
@@ -1344,7 +1357,7 @@ foreach type $types {
     puts $log "Testing $type ...\n"
 
     puts -nonewline "${type}, "
-
+    update
     aytest_var $type
 }
 # foreach
@@ -1666,8 +1679,9 @@ hSL
 #  (Cartesian product of a list of lists)
 #  original author: Eric Boudaillier;
 #  create cartesian product of a list of lists,
-#  run cmd for every combination, example:
+#  run cmd for every combination, synopsis:
 #  forall var1 list1 var2 list2 [varn listn] cmd
+#  example:
 #  forall a {1 2 3} b {3 4} {puts "$a $b"}
 #  =>
 #  1 3
@@ -1696,20 +1710,6 @@ proc forall {args} {
 #  test object variations
 #  ToDo: make final body command configurable
 proc aytest_var { type } {
-
-# Every object variation array contains the following components:
-#  precmd - commands to run after object creation but before variation
-#  valcmd - command to rule out invalid combinations of parameters
-#  postcmd - actual commands to test the implementation
-#  arr - array to put all variable data into
-#  fixedvars - list of fixed variables in array arr
-#  vals - list of value sets for all variables in fixedvars
-#  freevars - list of free variables in array arr
-#             (their values will be automatically
-#              varied by a cartesian product!)
-# for every free variable, another entry (named like the variable itself)
-# exists, that contains the valid variable values, from which the cartesian
-# product is built
 
   set i 1
   while {[info exists ::${type}_$i]} {
