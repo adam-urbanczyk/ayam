@@ -37,77 +37,73 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
  int ay_status = AY_OK;
  int i, is_planar = AY_TRUE;
  double *normals = NULL, *tangents = NULL;
- ay_object c = {0}, *cp = NULL;
+ ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
  ay_object *allcaps = NULL, **nextcap = &allcaps;
+ ay_nurbpatch_object *np = NULL;
 
   if(!bparams || !o || !dst)
     return AY_ENULL;
+
+  if(o->type != AY_IDNPATCH)
+    return AY_ERROR;
+
+  np = (ay_nurbpatch_object*)o->refine;
 
   for(i = 0; i < 4; i++)
     {
       if(bparams->states[i])
 	{
 	  is_planar = AY_TRUE;
-	  ay_object_defaults(&c);
-	  ay_trafo_defaults(&c);
-	  c.type = AY_IDNCURVE;
+	  ay_object_defaults(&curve);
+	  ay_trafo_defaults(&curve);
+	  curve.type = AY_IDNCURVE;
 
 	  ay_status = ay_npt_extractnc(o, /*side=*/i,
 				       /*param=*/0.0,
 				       /*relative=*/AY_FALSE,
 				       /*apply_trafo=*/AY_FALSE,
-				       /*create_pvn=*/2, &normals,
-				   (ay_nurbcurve_object**)(void*)&(c.refine));
+				       /*extractnt=*/2, &normals,
+			       (ay_nurbcurve_object**)(void*)&(curve.refine));
 
-	  if(ay_status || !c.refine)
+	  if(ay_status || !curve.refine)
 	    goto cleanup;
 
 	  bevel = NULL;
 	  ay_status = ay_npt_createnpatchobject(&bevel);
-	  if(ay_status)
-	    {
-	      goto cleanup;
-	    }
+	  if(ay_status || !bevel)
+	    goto cleanup;
 
 	  bevelcurve = NULL;
-	  if(bparams->types[i] >= 0)
-	    {
-	      if(bparams->types[i] < 3)
-		{
-		  ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
-						       &bevelcurve);
-		}
-	    }
+	  ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
+					       &bevelcurve);
+
+	  if(ay_status || !bevelcurve)
+	    goto cleanup;
+
+	  alignedcurve = NULL;
+	  if(bparams->force3d[i])
+	    is_planar = AY_FALSE;
 	  else
-	    {
-	      ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
-						   &bevelcurve);
-
-	      if(ay_status)
-		goto cleanup;
-	    } /* if */
-
-	  cp = NULL;
-	  ay_nct_isplanar(&c, &cp, &is_planar);
+	    ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
 
 	  if(is_planar)
 	    {
 	      if(bparams->dirs[i])
 		{
-		  ay_nct_revert((ay_nurbcurve_object *)cp->refine);
+		  ay_nct_revert((ay_nurbcurve_object *)alignedcurve->refine);
 		}
 
 	      ay_status = ay_bevelt_createc(bparams->radii[i],
-					    cp, bevelcurve,
+					    alignedcurve, bevelcurve,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 
-	      /* rotate bevel created from rotated curve (cp)
+	      /* rotate bevel created from aligned curve
 		 back to the original curve orientation */
 	      if(!ay_status && bevel->refine)
 		{
-		  ay_trafo_copy(cp, bevel);
+		  ay_trafo_copy(alignedcurve, bevel);
 		  ay_npt_applytrafo(bevel);
 		}
 	    }
@@ -120,17 +116,17 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
 					      bparams->dirs[i],
-					      &c, bevelcurve,
+					      &curve, bevelcurve,
 					      normals, 9, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
 	    }
 
-	  ay_nct_destroy((ay_nurbcurve_object*)c.refine);
-	  c.refine = NULL;
+	  ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
+	  curve.refine = NULL;
 
-	  if(cp)
-	    ay_object_delete(cp);
-	  cp = NULL;
+	  if(alignedcurve)
+	    ay_object_delete(alignedcurve);
+	  alignedcurve = NULL;
 
 	  if(normals)
 	    free(normals);
@@ -190,11 +186,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  goto cleanup;
 		} /* switch */
 
-	      if(ay_status)
+	      if(caps[i] != 1)
 		{
-		  ay_object_deletemulti(extrcurve);
-		  goto cleanup;
+		  ay_object_delete(extrcurve);
 		}
+	      
+	      if(ay_status)
+		goto cleanup;
 
 	      if(nextcap)
 		nextcap = &((*nextcap)->next);
@@ -222,7 +220,7 @@ cleanup:
 void
 ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 {
- int where, type, dir, integrate;
+ int where, type, dir, integrate, force3d;
  double radius;
 
   if(!params)
@@ -240,8 +238,9 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 	      radius = 0.1;
 	      dir = 0;
 	      integrate = 0;
-	      sscanf(tag->val, "%d,%d,%lg,%d,%d", &where, &type,
-		     &radius, &dir, &integrate);
+	      force3d = 0;
+	      sscanf(tag->val, "%d,%d,%lg,%d,%d,%d", &where, &type,
+		     &radius, &dir, &integrate, &force3d);
 	      if(where >= 0 && where < 4)
 		{
 		  params->states[where] = 1;
@@ -249,6 +248,7 @@ ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
 		  params->radii[where] = radius;
 		  params->dirs[where] = dir;
 		  params->integrate[where] = integrate;
+		  params->force3d[where] = force3d;
 		}
 	    } /* if */
 	} /* if */
@@ -894,7 +894,9 @@ cleanup:
 
 /** ay_bevelt_findbevelcurve:
  * Find a curve object in the current toplevel level named "Bevels"
- * for use as bevel cross section curve.
+ * for use as bevel cross section curve. If the index provided is
+ * <= 0, the matching standard bevel curve will be returned instead
+ * of a curve from the "Bevels" level.
  *
  * @param[in] index index of bevel curve
  * @param[in,out] c resulting curve
@@ -918,9 +920,10 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 	  ay_bevelt_createbevelcurve(abs(index));
 	}
       *c = ay_bevelt_curves[abs(index)];
+      ay_status = AY_OK;
     }
   else
-    {      
+    {
       o = ay_root;
 
       while(o)
@@ -943,7 +946,8 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 	  if(o)
 	    o = o->next;
 	} /* while */
-    }
+    } /* if */
+
  return ay_status;
 } /* ay_bevelt_findbevelcurve */
 
