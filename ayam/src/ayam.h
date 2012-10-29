@@ -157,6 +157,7 @@ typedef struct ay_bparam_s
   int dirs[4]; /**< direction of bevel (0 - inwards, 1 - outwards) */
   int integrate[4]; /**< integrate bevel into surface (0 - no, 1 - yes)? */
   double radii[4]; /**< radius of bevel */
+  int force3d[4]; /**< enforce 3D mode? (0 - no, 1 - yes) */
 } ay_bparam;
 
 
@@ -1342,6 +1343,10 @@ typedef struct ay_view_object_s
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
+  /*
+  GLuint display_list;
+  int action_state;
+  */
 } ay_view_object;
 
 

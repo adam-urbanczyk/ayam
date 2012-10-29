@@ -36,9 +36,9 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 
 	    set bname [lindex $bnames $bplace]
 
-	    scan $tagvalue "%d,%d,%lg,%d,%d" dummy type \
+	    scan $tagvalue "%d,%d,%lg,%d,%d,%d" dummy type \
 		BevelTags(${bname}Radius) BevelTags(${bname}Revert) \
-		BevelTags(${bname}Integrate)
+		BevelTags(${bname}Integrate) BevelTags(${bname}Force3D)
 	    if { $type < 0 } {
 		set l [expr [llength $ay(bevelmodes)] - 1]
 		set BevelTags(${bname}Type) [expr $l + (-$type)]
@@ -88,11 +88,12 @@ proc bevel_setTags { bnames } {
 		set type [expr $l - $type]
 	    }
 
-	    lappend newtags [format "%d,%d,%f,%d,%d" $i\
+	    lappend newtags [format "%d,%d,%f,%d,%d,%d" $i\
 				 $type\
 				 $BevelTags(${bname}Radius)\
 				 $BevelTags(${bname}Revert)\
-				 $BevelTags(${bname}Integrate)]
+				 $BevelTags(${bname}Integrate)\
+				 $BevelTags(${bname}Force3D)]
 	}
 	incr i
     }
@@ -122,6 +123,7 @@ proc bevel_add { bplace arr } {
     set BevelTags(${bname}Radius) 0.1
     set BevelTags(${bname}Revert) 0
     set BevelTags(${bname}Integrate) 0
+    set BevelTags(${bname}Force3D) 0
 
     # create tags
     bevel_setTags $bnames
@@ -240,14 +242,15 @@ proc bevel_getAttr { } {
     set tagnames ""
     set tagvalues ""
     getTags tagnames tagvalues
-    bevel_parseTags $tagnames $tagvalues Bevel
+    bevel_parseTags $tagnames $tagvalues ""
 
     set ay(bok) $ay(appb)
 
     addVSpace $w s1 2
-    addMenu $w BevelTags BevelType $ay(bevelmodeswc)
-    addParam $w BevelTags BevelRadius
-    addCheck $w BevelTags BevelRevert
+    addMenu $w BevelTags Type $ay(bevelmodeswc)
+    addParam $w BevelTags Radius
+    addCheck $w BevelTags Revert
+    addCheck $w BevelTags Force3D
 
     addParam $w BevelAttrData Tolerance
     addMenu $w BevelAttrData DisplayMode $ay(npdisplaymodes)
@@ -263,8 +266,9 @@ proc bevel_getAttr { } {
 proc bevel_setAttr { } {
     global BevelAttrData BevelTags
 
-    set BevelTags(BevelIntegrate) 0
-    bevel_setTags Bevel
+    set BevelTags(Integrate) 0
+
+    bevel_setTags [list ""]
 
     setProp
 
@@ -327,6 +331,7 @@ proc bevel_getBevels { } {
 		addParam $w BevelTags ${bname}Radius
 		addCheck $w BevelTags ${bname}Revert
 		addCheck $w BevelTags ${bname}Integrate
+		addCheck $w BevelTags ${bname}Force3D
 	    } else {
 		set str "Add "
 		append str $bname

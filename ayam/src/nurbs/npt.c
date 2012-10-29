@@ -7134,8 +7134,6 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       goto cleanup;
     } /* switch */
 
-  ay_trafo_creatematrix(o, m);
-
   if(!(nc->knotv = calloc(nc->length+nc->order, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
@@ -7318,6 +7316,8 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
   /* apply trafos */
   if(apply_trafo)
     {
+      ay_trafo_creatematrix(o, m);
+
       cv = nc->controlv;
       b = 0;
       for(i = 0; i < nc->length; i++)
