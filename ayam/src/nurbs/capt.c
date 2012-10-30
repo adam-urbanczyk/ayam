@@ -592,7 +592,7 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 
 	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)extrcurve->refine))
 	    {
-	      ay_object_deletemulti(extrcurve);
+	      ay_object_delete(extrcurve);
 	      continue;
 	    }
 
@@ -614,14 +614,13 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	      break;
 	    default:
 	      ay_status = AY_ERROR;
-	      goto cleanup;
 	    } /* switch */
 
+	  if(caps[i] != 1)
+	    ay_object_delete(extrcurve);
+
 	  if(ay_status)
-	    {
-	      ay_object_deletemulti(extrcurve);
-	      goto cleanup;
-	    }
+	    goto cleanup;
 
 	  if(cap)
 	    {
