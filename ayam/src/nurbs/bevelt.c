@@ -70,6 +70,12 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(ay_status || !curve.refine)
 	    goto cleanup;
 
+	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)curve.refine))
+	    {
+	      ay_nct_destroy(curve.refine);
+	      continue;
+	    }
+
 	  bevel = NULL;
 	  ay_status = ay_npt_createnpatchobject(&bevel);
 	  if(ay_status || !bevel)
@@ -167,6 +173,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
+	      if(ay_nct_isdegen(
+			    (ay_nurbcurve_object*)(void*)extrcurve->refine))
+		{
+		  ay_object_delete(extrcurve);
+		  continue;
+		}
+
 	      switch(caps[i])
 		{
 		case 1:
@@ -183,7 +196,6 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  break;
 		default:
 		  ay_status = AY_ERROR;
-		  goto cleanup;
 		} /* switch */
 
 	      if(caps[i] != 1)
@@ -543,11 +555,15 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
 
 /* ay_bevelt_createc:
- *  create a bevel in <bevel> from a planar closed NURB curve <o1>;
- *  <o2> defines the cross section of the bevel, it should run from
- *  0,0 to 1,1: bevel rounds inwards, or
- *  0,0 to 0,-1: bevel rounds outwards;
- *  radius: radius of the bevel (-DBL_MAX, DBL_MAX);
+ *   Create a bevel.
+ *
+ * @param[in] radius width/height of the bevel (may be negative)
+ * @param[in] o1 curve on which the bevel is constructed (usually
+ * a border extracted from a surface)
+ * @param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
+ * @param[in,out] b resulting bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
@@ -655,12 +671,21 @@ cleanup:
 } /* ay_bevelt_createc */
 
 
-/* ay_bevelt_createc3d:
- *  create a 3D bevel in <bevel> from a NURB curve <o1>;
- *  <o2> defines the cross section of the bevel, it should run from
- *   0,0 to 1,1: bevel rounds inwards, or
- *   0,0 to 0,-1: bevel rounds outwards;
- *  radius: radius of the bevel (-DBL_MAX, DBL_MAX);
+/** ay_bevelt_createc3d:
+ *   Create a 3D bevel.
+ *
+ * @param[in] radius width/height of the bevel (may be negative)
+ * @param[in] revert direction of bevel (0 - inwards, 1 - outwards)
+ * @param[in] o1 curve on which the bevel is constructed (usually
+ * a border extracted from a surface)
+ * @param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
+ * @param[in] n array of normals
+ * @param[in] nstride stride in normals array
+ * @param[in] t array of tangents
+ * @param[in] tstride stride in tangents array
+ * @param[in,out] b resulting bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
@@ -675,7 +700,7 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
  double angle, len, v1[3] = {0}, v2[2] = {0}, m[16] = {0};
 
-  if(!o1 || !o2 || !bevel)
+  if(!o1 || !o2 || !n || !t || !bevel)
     return AY_ENULL;
 
   if(o1->type != AY_IDNCURVE)
