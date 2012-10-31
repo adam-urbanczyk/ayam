@@ -951,7 +951,7 @@ ay_undo_copysave(ay_object *src, ay_object **dst)
 	}
       break;
     case AY_IDROOT:
-      if(!(new->refine = malloc(sizeof(ay_root_object))))
+      if(!(new->refine = calloc(1, sizeof(ay_root_object))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -1054,11 +1054,12 @@ ay_undo_savechildren(ay_object *o, ay_undo_object *uo,
   while(down->next)
     {
       /* copy reference */
-      if(!(r = calloc(1, sizeof(ay_list_object))))
+      if(!(r = malloc(sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
 	}
 
+      r->next = NULL;
       if(uo->references)
 	{
 	  (*lastr)->next = r;
@@ -1185,11 +1186,12 @@ ay_undo_save(int save_children)
   while(sel)
     {
       /* copy reference */
-      if(!(r = calloc(1, sizeof(ay_list_object))))
+      if(!(r = malloc(sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
 	}
 
+      r->next = NULL;
       if(uo->references)
 	{
 	  lastr->next = r;
@@ -1227,21 +1229,16 @@ ay_undo_save(int save_children)
     } /* while */
 
   /* now we save all views */
-
-  /* omit view objects? */
-  /*
-   if(ay_prefs.undoviews)
-     {
-  */
   view = ay_root->down;
   while(view->next)
     {
       /* copy reference */
-      if(!(r = calloc(1, sizeof(ay_list_object))))
+      if(!(r = malloc(sizeof(ay_list_object))))
 	{
 	  return AY_EOMEM;
 	}
 
+      r->next = NULL;
       if(uo->references)
 	{
 	  lastr->next = r;
@@ -1265,9 +1262,6 @@ ay_undo_save(int save_children)
       nexto = &((*nexto)->next);
       view = view->next;
     } /* while */
-  /*
-   }
-  */
 
   /* now, we save certain objects from previous undo state _again_
    * (if not saved in this state already); this is, because the
@@ -1312,7 +1306,7 @@ ay_undo_save(int save_children)
 	     a special object of type AY_IDLAST with empty reference */
 	  if(!prevselmarked)
 	    {
-	      if(!(r = calloc(1, sizeof(ay_list_object))))
+	      if(!(r = malloc(sizeof(ay_list_object))))
 		{
 		  return AY_EOMEM;
 		}
@@ -1323,6 +1317,7 @@ ay_undo_save(int save_children)
 		  return AY_EOMEM;
 		}
 
+	      r->next = NULL;
 	      if(uo->references)
 		{
 		  lastr->next = r;
@@ -1334,7 +1329,8 @@ ay_undo_save(int save_children)
 
 	      lastr = r;
 
-	      /* explicitly _not_ setting r->object to mark the separator */
+	      /* mark the separator */
+	      r->object = NULL;
 
 	      markprevsel->type = AY_IDLAST;
 	      *nexto = markprevsel;
@@ -1342,11 +1338,12 @@ ay_undo_save(int save_children)
 	    } /* if */
 
 	  /* copy reference */
-	  if(!(r = calloc(1, sizeof(ay_list_object))))
+	  if(!(r = malloc(sizeof(ay_list_object))))
 	    {
 	      return AY_EOMEM;
 	    }
 
+	  r->next = NULL;
 	  if(uo->references)
 	    {
 	      lastr->next = r;
@@ -1640,14 +1637,26 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	} /* if */
       ay_status = ay_undo_save(save_children);
-      uc++;
+      if(ay_status)
+	{
+	  ay_error(AY_ERROR, argv[0], "undo save failed");
+	  ay_undo_clearuo(&(undo_buffer[uc]));
+	  free(undo_saved_op);
+	  undo_saved_op = NULL;
+	  return TCL_OK;
+	}
+      else
+	{
+	  uc++;
+	  /* set undo prompt */
+	  if(undo_saved_op)
+	    Tcl_SetVar2(interp, a, n3, undo_saved_op,
+			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+	  Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG |
+		      TCL_GLOBAL_ONLY);
+	}
       /* set scene changed flag */
       Tcl_SetVar2(interp, a, n, v, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      /* set undo prompt */
-      if(undo_saved_op)
-	Tcl_SetVar2(interp, a, n3, undo_saved_op,
-		    TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-      Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       undo_saved_op = NULL;
       break;
     case 3:
