@@ -593,6 +593,8 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
 /** ay_nct_close:
  *  close a NURBS curve, or make it periodic (according to
  *  the current value of the type field)
+ *  If closing fails because there are not enough control
+ *  points in the curve, the curve type will be reset to "open".
  *
  * @param[in] curve NURBS curve object to close
  *
@@ -611,8 +613,16 @@ ay_nct_close(ay_nurbcurve_object *curve)
     {
     case AY_CTCLOSED:
       /* close curve */
-      end = &(curve->controlv[(curve->length*4)-4]);
-      memcpy(end, curve->controlv, 4*sizeof(double));
+      if(curve->length > 2)
+	{
+	  end = &(curve->controlv[(curve->length*4)-4]);
+	  memcpy(end, curve->controlv, 4*sizeof(double));
+	}
+      else
+	{
+	  curve->type = AY_CTOPEN;
+	  ay_status = AY_ERROR;
+	} /* if */
       break;
     case AY_CTPERIODIC:
       /* make curve periodic */
@@ -624,7 +634,7 @@ ay_nct_close(ay_nurbcurve_object *curve)
       else
 	{
 	  curve->type = AY_CTOPEN;
-	  return AY_ERROR;
+	  ay_status = AY_ERROR;
 	} /* if */
       break;
     default:
