@@ -595,14 +595,14 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
   /* copy custom knots */
   if(bcurve->knot_type == AY_KTCUSTOM)
     {
-      if(!(uknotv = calloc(bcurve->length+bcurve->order, sizeof(double))))
+      if(!(uknotv = malloc((bcurve->length+bcurve->order) * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(uknotv, bcurve->knotv,
 	     (bcurve->length+bcurve->order)*sizeof(double));
     }
   if(curve->knot_type == AY_KTCUSTOM)
     {
-      if(!(vknotv = calloc(curve->length+curve->order, sizeof(double))))
+      if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(vknotv, curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));
@@ -719,14 +719,14 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
   /* copy custom knots */
   if(bcurve->knot_type == AY_KTCUSTOM)
     {
-      if(!(uknotv = calloc(bcurve->length+bcurve->order, sizeof(double))))
+      if(!(uknotv = malloc((bcurve->length+bcurve->order) * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(uknotv, bcurve->knotv,
 	     (bcurve->length+bcurve->order)*sizeof(double));
     }
   if(curve->knot_type == AY_KTCUSTOM)
     {
-      if(!(vknotv = calloc(curve->length+curve->order, sizeof(double))))
+      if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
       memcpy(vknotv, curve->knotv,
 	     (curve->length+curve->order)*sizeof(double));

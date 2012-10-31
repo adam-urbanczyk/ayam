@@ -60,11 +60,11 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
   np->uknot_type = AY_KTNURB;
   np->vknot_type = nc->knot_type;
 
-  if(!(np->vknotv = calloc(nc->length+nc->order, sizeof(double))))
+  if(!(np->vknotv = malloc((nc->length+nc->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(np->uknotv = calloc(4, sizeof(double))))
+  if(!(np->uknotv = malloc(4 * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(np->controlv = calloc(np->width*np->height*stride, sizeof(double))))
+  if(!(np->controlv = malloc(np->width*np->height*stride * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(np->uknotv, knotv, 4*sizeof(double));
@@ -287,9 +287,9 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
 	  if(!(np = calloc(1, sizeof(ay_nurbpatch_object))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
 	  npatch->refine = np;
-	  if(!(np->vknotv = calloc(4, sizeof(double))))
+	  if(!(np->vknotv = malloc(4 * sizeof(double))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
-	  if(!(np->uknotv = calloc(4, sizeof(double))))
+	  if(!(np->uknotv = malloc(4 * sizeof(double))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
 	  if(!(np->controlv = calloc(4*4, sizeof(double))))
 	    { ay_status = AY_EOMEM; goto cleanup; }
