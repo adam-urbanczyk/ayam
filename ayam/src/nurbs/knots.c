@@ -41,11 +41,11 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 
   if(patch->uknot_type != AY_KTCUSTOM)
     {
-      /* calloc new knot-arrays */
-      if(!(U = calloc(uknot_count, sizeof(double))))
+      /* allocate new knot-array */
+      if(!(U = malloc(uknot_count * sizeof(double))))
 	return AY_EOMEM;
 
-      /* free old knot-arrays */
+      /* free old knot-array */
       if(patch->uknotv != NULL)
 	free(patch->uknotv);
 
@@ -54,7 +54,8 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 
   if(patch->vknot_type != AY_KTCUSTOM)
     {
-      if(!(V = calloc(vknot_count, sizeof(double))))
+      /* allocate new knot-array */
+      if(!(V = malloc(vknot_count * sizeof(double))))
 	{
 	  if(U)
 	    {
@@ -63,6 +64,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	    }
 	  return AY_EOMEM;
 	}
+      /* free old knot-array */
       if(patch->vknotv != NULL)
 	free(patch->vknotv);
 
@@ -304,8 +306,8 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 
   knot_count = length + order;
 
-  /* calloc new knot-arrays */
-  if((U = calloc(knot_count, sizeof(double))) == NULL)
+  /* allocate new knot-array */
+  if((U = malloc(knot_count * sizeof(double))) == NULL)
     return AY_EOMEM;
 
   /* free old knot-array */
@@ -538,7 +540,7 @@ ay_knots_rescaletorange(int n, double *knotv, double rmin, double rmax)
   else
     len = max - min;
 
-  if(!(tmpknv = calloc(n, sizeof(double))))
+  if(!(tmpknv = malloc(n * sizeof(double))))
     return AY_EOMEM;
 
   memcpy(tmpknv, knotv, n*sizeof(double));
@@ -762,7 +764,7 @@ ay_knots_mergenp(ay_nurbpatch_object *patch,
 
   /* sanity check */
   if(!patch || (!Ubar && !Vbar))
-    return AY_EOMEM;
+    return AY_ENULL;
 
   if(Ubar)
     {
@@ -1112,7 +1114,7 @@ ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
     return AY_ERROR;
  */
 
-  if(!(nknotv = calloc(knotvlen-count, sizeof(double))))
+  if(!(nknotv = malloc((knotvlen-count) * sizeof(double))))
     return AY_EOMEM;
 
   memcpy(nknotv, knotv, order*sizeof(double));
@@ -1153,12 +1155,12 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
     return AY_ENULL;
 
   /* get some memory */
-  if(!(vk = calloc(Qlen, sizeof(double))))
+  if(!(vk = malloc(Qlen * sizeof(double))))
     {
       return AY_EOMEM;
     }
 
-  if(!(lens = calloc(Qlen-1, sizeof(double))))
+  if(!(lens = malloc((Qlen-1) * sizeof(double))))
     {
       free(vk);
       return AY_EOMEM;
@@ -1239,12 +1241,12 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
     return AY_ENULL;
 
   /* get some memory */
-  if(!(vk = calloc(Qlen, sizeof(double))))
+  if(!(vk = malloc(Qlen * sizeof(double))))
     {
       return AY_EOMEM;
     }
 
-  if(!(lens = calloc(Qlen-1, sizeof(double))))
+  if(!(lens = malloc((Qlen-1) * sizeof(double))))
     {
       free(vk);
       return AY_EOMEM;
@@ -1339,7 +1341,7 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
     }
 
   /* get some memory */
-  if(!(vk = calloc(Ulen, sizeof(double))))
+  if(!(vk = malloc(Ulen * sizeof(double))))
     {
       return AY_EOMEM;
     }
@@ -1418,7 +1420,7 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
     }
 
   /* get some memory */
-  if(!(vk = calloc(Ulen, sizeof(double))))
+  if(!(vk = malloc(Ulen * sizeof(double))))
     {
       return AY_EOMEM;
     }
@@ -1461,6 +1463,66 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
  return AY_OK;
 } /* ay_knots_centriparamnp */
+
+
+/** ay_knots_isclamped:
+ *  determine whether a knot vector is clamped
+ *
+ * @param[in] side side to check (0 - both, 1 - start, 2 - end)
+ * @param[in] order order of the curve/surface
+ * @param[in] U knot vector
+ * @param[in] Ulen length of knot vector
+ * @param[in] eps maximum distance of equal knots
+ *
+ * \returns AY_TRUE if knot vector is clamped on designated side(s)
+ *  otherwise, and in error, return AY_FALSE
+ */
+int
+ay_knots_isclamped(unsigned int side, unsigned int order,
+		   double *U, unsigned int Ulen,
+		   double eps)
+{
+ unsigned int i = 0;
+ int is_clamped = AY_TRUE;
+
+  if(Ulen < 2 || !U)
+    return AY_FALSE;
+
+  if(side == 0)
+    {
+      is_clamped = ay_knots_isclamped(1, order, U, Ulen, eps);
+      if(is_clamped)
+	is_clamped = ay_knots_isclamped(2, order, U, Ulen, eps);
+    }
+
+  if(side == 1)
+    {
+      /* check first order intervals */
+      for(i = 1; i < order; i++)
+	{
+	  if(fabs(U[i+1]-U[i]) > eps)
+	    {
+	      is_clamped = AY_FALSE;
+	      break;
+	    }
+	}
+    }
+
+  if(side == 2)
+    {
+      /* check last order intervals */
+      for(i = Ulen-2; i >= (Ulen-order); i--)
+	{
+	  if(fabs(U[i+1] - U[i]) > eps)
+	    {
+	      is_clamped = AY_FALSE;
+	      break;
+	    }
+	}
+    }
+
+ return is_clamped;
+} /* ay_knots_isclamped */
 
 
 /** ay_knots_classify:
@@ -1561,7 +1623,7 @@ ay_knots_revert(double *U, int Ulen)
   if(!U)
     return AY_ENULL;
 
-  if(!(Ut = calloc(Ulen, sizeof(double))))
+  if(!(Ut = malloc(Ulen * sizeof(double))))
     return AY_EOMEM;
 
   Ut[0] = U[0];
@@ -1655,7 +1717,7 @@ ay_knots_remove(unsigned int index, int order, int length, double **U)
   if(!U || !*U)
     return AY_ENULL;
 
-  if(!(Un = calloc(order+length-1, sizeof(double))))
+  if(!(Un = malloc((order+length-1) * sizeof(double))))
     {
       return AY_EOMEM;
     }
@@ -1706,7 +1768,7 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
   if(!U || !*U)
     return AY_ENULL;
 
-  if(!(Un = calloc(order+length+1, sizeof(double))))
+  if(!(Un = malloc((order+length+1) * sizeof(double))))
     {
       return AY_EOMEM;
     }
