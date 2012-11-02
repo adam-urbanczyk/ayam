@@ -285,6 +285,12 @@ int ay_knots_chordparamnp(int dir, double *Q, int width, int height,
 int ay_knots_centriparamnp(int dir, double *Q, int width, int height,
 			   int stride, double **U);
 
+/** Determine whether a knot vector is clamped.
+ */
+int ay_knots_isclamped(unsigned int side, unsigned int order,
+		       double *U, unsigned int Ulen,
+		       double eps);
+
 /** Classify a knot vector (returns AY_KT*).
  */
 int ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,

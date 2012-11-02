@@ -27,16 +27,25 @@ static ay_object *ay_bevelt_curves[3] = {0};
 
 /* functions: */
 
-/* ay_bevelt_addbevels:
+/** ay_bevelt_addbevels:
+ *  Add bevel surfaces to the sides of a NURBS surface.
  *
+ * @param[in] bparams bevel creation parameters
+ * @param[in] caps cap creation parameters
+ * @param[in,out] o NURBS surface object (may be modified
+ *  if the integrate parameter of a bevel is set)
+ * @param[in,out] dst resulting bevel and cap NURBS surface objects
+ *  (may be empty if all bevels are integrated into the surface)
+ *
+ * @return AY_OK on success, error code otherwise.
  */
 int
 ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, is_planar = AY_TRUE;
- double *normals = NULL, *tangents = NULL;
+ int i, is_planar = AY_TRUE, side = 0;
+ double param = 0.0, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
  ay_object **next = dst, *extrcurve = NULL;
@@ -59,10 +68,50 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  ay_object_defaults(&curve);
 	  ay_trafo_defaults(&curve);
 	  curve.type = AY_IDNCURVE;
+	  param = 0.0;
+	  switch(i)
+	    {
+	    case 0:
+	      if(ay_knots_isclamped(/*side=*/1, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 0;
+	      else
+		side = 4;
+	      break;
+	    case 1:
+	      if(ay_knots_isclamped(/*side=*/2, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 1;
+	      else
+		{
+		  side = 4;
+		  param = 1.0;
+		}
+	      break;
+	    case 2:
+	      if(ay_knots_isclamped(/*side=*/1, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 2;
+	      else
+		side = 5;
+	      break;
+	    case 3:
+	      if(ay_knots_isclamped(/*side=*/2, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 3;
+	      else
+		{
+		  side = 5;
+		  param = 1.0;
+		}
+	      break;
+	    default:
+	      break;
+	    } /* switch */
 
-	  ay_status = ay_npt_extractnc(o, /*side=*/i,
-				       /*param=*/0.0,
-				       /*relative=*/AY_FALSE,
+	  normals = NULL;
+	  ay_status = ay_npt_extractnc(o, side, param,
+				       /*relative=*/AY_TRUE,
 				       /*apply_trafo=*/AY_FALSE,
 				       /*extractnt=*/2, &normals,
 			       (ay_nurbcurve_object**)(void*)&(curve.refine));
@@ -73,6 +122,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)curve.refine))
 	    {
 	      ay_nct_destroy(curve.refine);
+	      if(normals)
+		free(normals);
 	      continue;
 	    }
 
@@ -202,7 +253,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		{
 		  ay_object_delete(extrcurve);
 		}
-	      
+
 	      if(ay_status)
 		goto cleanup;
 
@@ -224,10 +275,10 @@ cleanup:
 
 
 /** ay_bevelt_parsetags:
- * Parse all "BP" tags into a ay_bparam (bevel param) struct.
+ * Parse all "BP" tags into a ay_bparam (bevel parameter) struct.
  *
  * @param[in] tag list of tags to parse
- * @param[in,out] params pointer to bevel param struct
+ * @param[in,out] params pointer to bevel parameter struct
  */
 void
 ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
