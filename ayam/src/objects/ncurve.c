@@ -621,9 +621,9 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
   knot_count = length + order;
 
-  if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
+  if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((controls = calloc(length*(ncurve->is_rat?4:3),
+  if((controls = malloc(length*(ncurve->is_rat?4:3) *
 			sizeof(GLfloat))) == NULL)
     { free(knots); knots = NULL; return AY_EOMEM; }
 
@@ -873,9 +873,9 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(ncurve->length, sizeof(double*))))
+      if(!(pe->coords = malloc(ncurve->length * sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indices = calloc(ncurve->length, sizeof(unsigned int))))
+      if(!(pe->indices = malloc(ncurve->length * sizeof(unsigned int))))
 	return AY_EOMEM;
 
       for(i = 0; i < ncurve->length; i++)
@@ -1018,7 +1018,7 @@ ay_ncurve_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  char *n1 = "NCurveAttrData";
  char fname[] = "ncurve_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -1165,7 +1165,7 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
-      if(!(nknotv = calloc(knotc, sizeof(double))))
+      if(!(nknotv = malloc(knotc * sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
@@ -1174,12 +1174,14 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
       for(i = 0; i < knotc; i++)
 	{
-	  Tcl_GetDouble(interp,knotv[i],&nknotv[i]);
+	  tcl_status = Tcl_GetDouble(interp,knotv[i],&nknotv[i]);
+	  if(tcl_status != TCL_OK)
+	    break;
 	} /* for */
 
-      if(!(ay_status = ay_knots_check(new_length,new_order,knotc,nknotv)))
+      if((tcl_status == TCL_OK) &&
+	 !(ay_status = ay_knots_check(new_length,new_order,knotc,nknotv)))
 	{
-	  ay_error(AY_EOUTPUT, fname, "Checking new knots... Ok.");
 	  /* the knots are ok */
 	  free(ncurve->knotv);
 	  ncurve->knotv = nknotv;
@@ -1195,8 +1197,8 @@ ay_ncurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	{
 	  /* the knots are wrong */
-
 	  /* first, tell the user what went wrong */
+	  ay_error(AY_EOUTPUT, fname, "Checking new knots...");
 	  ay_knots_printerr(fname, ay_status);
 
 	  /* get rid of user supplied knots */

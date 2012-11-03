@@ -809,11 +809,11 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
   uknot_count = width + uorder;
   vknot_count = height + vorder;
 
-  if((uknots = calloc(uknot_count, sizeof(GLfloat))) == NULL)
+  if((uknots = malloc(uknot_count * sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((vknots = calloc(vknot_count, sizeof(GLfloat))) == NULL)
+  if((vknots = malloc(vknot_count * sizeof(GLfloat))) == NULL)
     { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = calloc(width*height*(npatch->is_rat?4:3),
+  if((controls = malloc(width*height*(npatch->is_rat?4:3) *
 			sizeof(GLfloat))) == NULL)
     {
       free(uknots); uknots = NULL; free(vknots); vknots = NULL;
@@ -1220,11 +1220,11 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   uknot_count = width + uorder;
   vknot_count = height + vorder;
 
-  if((uknots = calloc(uknot_count, sizeof(GLfloat))) == NULL)
+  if((uknots = malloc(uknot_count * sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((vknots = calloc(vknot_count, sizeof(GLfloat))) == NULL)
+  if((vknots = malloc(vknot_count * sizeof(GLfloat))) == NULL)
     { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = calloc(width*height*(npatch->is_rat?4:3),
+  if((controls = malloc(width*height*(npatch->is_rat?4:3) *
 				      sizeof(GLfloat))) == NULL)
     {
       free(uknots); uknots = NULL; free(vknots); vknots = NULL;
@@ -1503,10 +1503,10 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     case 0:
       /* select all points */
 
-      if(!(pe->coords = calloc(npatch->width * npatch->height,
+      if(!(pe->coords = malloc(npatch->width * npatch->height *
 					 sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indices = calloc(npatch->width * npatch->height,
+      if(!(pe->indices = malloc(npatch->width * npatch->height *
 					 sizeof(unsigned int))))
 	return AY_EOMEM;
 
@@ -1652,7 +1652,7 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 int
 ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  char *n1 = "NPatchAttrData";
  char fname[] = "npatch_setpropcb";
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
@@ -1897,24 +1897,26 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose uknot-list (create custom knot sequence) */
   if((npatch->uknot_type == AY_KTCUSTOM) && uknots_modified)
     {
-      ay_error(AY_EOUTPUT, fname, "Checking new knots for U...");
       Tcl_SplitList(interp, Tcl_GetVar2(interp, n1, "Knots_U",
 					TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
-      if(!(nknotv = calloc(knotc, sizeof(double))))
+      if(!(nknotv = malloc(knotc * sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
 	  return AY_ERROR;
 	}
-
+      tcl_status = TCL_OK;
       for(i = 0; i < knotc; i++)
 	{
-	  Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
+	  tcl_status = Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
+	  if(tcl_status != TCL_OK)
+	    break;
 	} /* for */
 
-      if(!(ay_status = ay_knots_check(new_width, new_uorder, knotc, nknotv)))
+      if((tcl_status == TCL_OK) &&
+	 !(ay_status = ay_knots_check(new_width, new_uorder, knotc, nknotv)))
 	{
 	  /* the knots are ok */
 	  free(npatch->uknotv);
@@ -1923,8 +1925,8 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	{
 	  /* the knots are wrong */
-
-	  /* first, tell the user what went wrong */
+	  /* tell the user what went wrong */
+	  ay_error(AY_EOUTPUT, fname, "Checking new knots for U...");
 	  ay_knots_printerr(fname, ay_status);
 
 	  /* get rid of user supplied knots */
@@ -1949,24 +1951,27 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   /* decompose vknot-list (create custom knot sequence) */
   if((npatch->vknot_type == AY_KTCUSTOM) && vknots_modified)
     {
-      ay_error(AY_EOUTPUT, fname, "Checking new knots for V...");
       Tcl_SplitList(interp,Tcl_GetVar2(interp, n1, "Knots_V",
 				       TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY),
 		    &knotc, &knotv);
 
-      if(!(nknotv = calloc(knotc, sizeof(double))))
+      if(!(nknotv = malloc(knotc * sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  Tcl_Free((char *) knotv);
 	  return AY_ERROR;
 	}
 
+      tcl_status = TCL_OK;
       for(i = 0; i < knotc; i++)
 	{
-	  Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
+	  tcl_status = Tcl_GetDouble(interp, knotv[i], &nknotv[i]);
+	  if(tcl_status != TCL_OK)
+	    break;
 	} /* for */
 
-      if(!(ay_status = ay_knots_check(new_height, new_vorder, knotc, nknotv)))
+      if((tcl_status == TCL_OK) &&
+	 !(ay_status = ay_knots_check(new_height, new_vorder, knotc, nknotv)))
 	{
 	  /* the knots are ok */
 	  free(npatch->vknotv);
@@ -1975,7 +1980,8 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       else
 	{
 	  /* the knots are wrong */
-	  /* first, tell the user what went wrong */
+	  /* tell the user what went wrong */
+	  ay_error(AY_EOUTPUT, fname, "Checking new knots for V...");
 	  ay_knots_printerr(fname, ay_status);
 
 	  /* get rid of user supplied knots */
@@ -2002,7 +2008,7 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
       ay_npt_recreatemp(npatch);
     }
 
-  if(update)
+  if(update || o->modified)
     {
       ay_notify_object(o);
 
