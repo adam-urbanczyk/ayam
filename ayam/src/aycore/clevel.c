@@ -157,6 +157,7 @@ ay_clevel_gotop()
   return ay_status;
 } /* ay_clevel_gotop */
 
+
 /* ay_clevel_gotoptcmd:
  *  Implements the \a goTop scripting interface command.
  *  See also the corresponding section in the \ayd{scgotop}.
@@ -633,6 +634,12 @@ ay_clevel_cltcmd(ClientData clientData, Tcl_Interp *interp,
   else
     {
       /* first, save current level, for a potential "cl -" */
+      while(ocl)
+	{
+	  tcl = ocl->next;
+	  free(ocl);
+	  ocl = tcl;
+	}
       oay_next = ay_next;
       ocl = ay_currentlevel;
       ay_currentlevel = NULL;
