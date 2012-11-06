@@ -428,30 +428,14 @@ ay_cap_notifycb(ay_object *o)
 
   /* get parameter curve(s) */
   if(!o->down)
-    return AY_OK;
+    goto cleanup;
   down = o->down;
   while(down->next)
     {
       if(down->type != AY_IDNCURVE)
 	{
 	  ay_status = ay_provide_object(down, AY_IDNCURVE, nextcurve);
-	  if(!(*nextcurve))
-	    {
-	      /* XXXX convert NPatch to curve here later */
-#if 0
-	      if(down->type == AY_IDNPATCH)
-		{
-		  /* get info which curve from tag */
-		  ay_status = ay_nct_createfrompatch(down, 3, 0, AY_FALSE,
-						     nextcurve);
-		  if(nextcurve)
-		    {
-		      nextcurve = &((*nextcurve)->next);
-		    } /* if */
-		} /* if */
-#endif
-	    }
-	  else
+	  if(*nextcurve)
 	    {
 	      ay_nct_applytrafo(*nextcurve);
 
@@ -472,7 +456,7 @@ ay_cap_notifycb(ay_object *o)
 
   if(!pobject)
     {
-      return AY_OK;
+      goto cleanup;
     } /* if */
 
   /* the pobject points now to copies of the curves for which
@@ -496,7 +480,7 @@ ay_cap_notifycb(ay_object *o)
   if(ay_status)
     {
       ay_object_deletemulti(pobject);
-      return ay_status;
+      goto cleanup;
     }
 
   if(cap->npatch)
@@ -507,10 +491,14 @@ ay_cap_notifycb(ay_object *o)
 	cap->display_mode;
     }
 
+cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_cap_getpntcb(3, o, NULL, NULL);
+      if(cap->npatch)
+	ay_cap_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return AY_OK;
@@ -646,4 +634,3 @@ ay_cap_init(Tcl_Interp *interp)
 
  return ay_status;
 } /* ay_cap_init */
-

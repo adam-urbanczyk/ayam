@@ -501,7 +501,7 @@ ay_bevel_notifycb(ay_object *o)
       ay_status = ay_provide_object(curve, AY_IDNCURVE, &pobject1);
       if(!pobject1)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -680,7 +680,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_bevel_getpntcb(3, o, NULL, NULL);
+      if(bevel->npatch)
+	ay_bevel_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

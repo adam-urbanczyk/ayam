@@ -534,14 +534,14 @@ ay_birail1_notifycb(ay_object *o)
 
   /* get curves to birail1 */
   if(!o->down)
-    return AY_OK;
+    goto cleanup;
   curve1 = o->down;
   if(curve1->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(curve1, AY_IDNCURVE, &pobject1);
       if(!pobject1)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -687,7 +687,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_birail1_getpntcb(3, o, NULL, NULL);
+      if(birail1->npatch)
+	ay_birail1_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

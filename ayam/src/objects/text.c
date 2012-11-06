@@ -685,7 +685,7 @@ ay_text_notifycb(ay_object *o)
 
   if(!text->fontname || text->fontname[0] == '\0' ||
      !text->unistring || text->unistring[0] == 0)
-    return AY_OK;
+    goto cleanup;
 
   ext.type = AY_IDEXTRUDE;
 
@@ -985,7 +985,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_text_getpntcb(3, o, NULL, NULL);
+      if(text->npatch)
+	ay_text_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

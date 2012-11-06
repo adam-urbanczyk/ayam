@@ -629,7 +629,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_extrnc_getpntcb(3, o, NULL, NULL);
+      if(extrnc->ncurve)
+	ay_extrnc_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

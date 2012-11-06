@@ -483,9 +483,9 @@ ay_extrnp_notifycb(ay_object *o)
 
   /* get patch to extract the npatch from */
   if(!o->down)
-    return AY_OK;
+    goto cleanup;
   if(!o->down->next)
-    return AY_OK;
+    goto cleanup;
 
   n = o->down;
   if(n->type != AY_IDNPATCH)
@@ -493,7 +493,7 @@ ay_extrnp_notifycb(ay_object *o)
       ay_status = ay_provide_object(n, AY_IDNPATCH, &pobject);
       if(!pobject)
 	{
-	  return AY_OK;
+	  goto cleanup;
 	}
       else
 	{
@@ -559,7 +559,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_extrnp_getpntcb(3, o, NULL, NULL);
+      if(extrnp->npatch)
+	ay_extrnp_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;
@@ -696,4 +699,3 @@ ay_extrnp_init(Tcl_Interp *interp)
 
  return ay_status;
 } /* ay_extrnp_init */
-

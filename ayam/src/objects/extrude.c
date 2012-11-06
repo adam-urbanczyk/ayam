@@ -539,9 +539,7 @@ ay_extrude_notifycb(ay_object *o)
   if(!o)
     return AY_OK;
 
-  ext = o->refine;
-  if(!ext)
-    return AY_OK;
+  ext = (ay_extrude_object*)o->refine;
 
   /* ok, something changed below, we have to rebuild the extrusion(s) */
 
@@ -641,7 +639,7 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
 	      if(ay_status)
-		return ay_status;
+		goto cleanup;
 
 	      /* work around error with rotated curves */
 	      ay_nct_applytrafo(trim);
@@ -668,7 +666,10 @@ ay_extrude_notifycb(ay_object *o)
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
-			return AY_EOMEM;
+			{
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
 		      memcpy(curve->controlv,&(patch->controlv[
 				(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
@@ -721,7 +722,11 @@ ay_extrude_notifycb(ay_object *o)
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
-			return AY_EOMEM;
+			{
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
+
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
@@ -792,7 +797,7 @@ ay_extrude_notifycb(ay_object *o)
 	    {
 	      ay_status = ay_object_copy(c, &trim);
 	      if(ay_status)
-		return ay_status;
+		goto cleanup;
 
 	      /* work around error with rotated curves */
 	      ay_nct_applytrafo(trim);
@@ -822,7 +827,10 @@ ay_extrude_notifycb(ay_object *o)
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
-			return AY_EOMEM;
+			{
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
@@ -876,7 +884,10 @@ ay_extrude_notifycb(ay_object *o)
 		      curve->controlv = NULL;
 		      if(!(curve->controlv =
 			   calloc(4*curve->length, sizeof(double))))
-			return AY_EOMEM;
+			{
+			  ay_status = AY_EOMEM;
+			  goto cleanup;
+			}
 		      memcpy(curve->controlv,&(patch->controlv[
 					(patch->width-1)*4*patch->height]),
 			     4*curve->length*sizeof(double));
@@ -951,17 +962,19 @@ ay_extrude_notifycb(ay_object *o)
 	    display_mode = display_mode;
 	  ((ay_nurbpatch_object *)bevel->refine)->
 	    glu_sampling_tolerance = tolerance;
-	  /*
-	    ay_status = ay_npt_revertu((ay_nurbpatch_object*)(bevel->refine));
-	  */
+
 	  bevel = bevel->next;
 	} /* while */
     } /* if */
 
+cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_extrude_getpntcb(3, o, NULL, NULL);
+      if(ext->npatch)
+	ay_extrude_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;
@@ -1035,4 +1048,3 @@ ay_extrude_init(Tcl_Interp *interp)
 
  return ay_status;
 } /* ay_extrude_init */
-

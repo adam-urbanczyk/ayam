@@ -440,9 +440,7 @@ ay_offnc_notifycb(ay_object *o)
 
   /* get ncurve to offset */
   if(!o->down)
-    return AY_OK;
-  if(!o->down->next)
-    return AY_OK;
+    goto cleanup;
 
   down = o->down;
   if(down->type != AY_IDNCURVE)
@@ -450,7 +448,7 @@ ay_offnc_notifycb(ay_object *o)
       ay_status = ay_provide_object(down, AY_IDNCURVE, &ncurve);
       if(!ncurve)
 	{
-	  return AY_ERROR;
+	  goto cleanup;
 	}
       else
 	{
@@ -522,7 +520,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_offnc_getpntcb(3, o, NULL, NULL);
+      if(offnc->ncurve)
+	ay_offnc_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

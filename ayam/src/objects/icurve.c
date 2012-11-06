@@ -883,7 +883,7 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ICurveAttrData";
  char fname[] = "icurve_setpropcb";
- int a, old_deriv, new_length;
+ int a, old_deriv, new_length, new_order;
  double *cv;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_icurve_object *icurve = NULL;
@@ -911,7 +911,7 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(icurve->order));
+  Tcl_GetIntFromObj(interp,to, &new_order);
 
   Tcl_SetStringObj(ton,"SDLen",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -950,6 +950,14 @@ ay_icurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_ERROR,fname,"Length must be > 2!");
 	}
+    }
+
+  if(new_order != icurve->order)
+    {
+      if(new_order > 2)
+	icurve->order = new_order;
+      else
+	ay_error(AY_ERROR,fname,"Order must be > 2!");
     }
 
   /* when switching from auto to manual, create manual

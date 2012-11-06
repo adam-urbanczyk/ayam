@@ -493,7 +493,6 @@ int
 ay_ncircle_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
- char fname[] = "ncircle_notify";
  ay_ncircle_object *ncircle = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *ncurve = NULL;
@@ -510,7 +509,10 @@ ay_ncircle_notifycb(ay_object *o)
   ncircle->ncurve = NULL;
 
   if(!(nc = calloc(1, sizeof(ay_nurbcurve_object))))
-    return AY_EOMEM;
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
 
   if(ncircle->tmin > ncircle->tmax)
     {
@@ -527,8 +529,7 @@ ay_ncircle_notifycb(ay_object *o)
     }
 
   if(ay_status)
-    { free(nc); return ay_status; }
-
+    goto cleanup;
 
   nc->order = 3;
   nc->knot_type = AY_KTCUSTOM;
@@ -536,28 +537,36 @@ ay_ncircle_notifycb(ay_object *o)
   nc->display_mode = ncircle->display_mode;
   nc->glu_sampling_tolerance = ncircle->glu_sampling_tolerance;
 
-  if(!(ncurve = calloc(1, sizeof(ay_object))))
-    {
-      ay_nct_destroy(nc);
-      ay_error(AY_EOMEM, fname, NULL);
-      return AY_ERROR;
-    }
-
-  ncurve->type = AY_IDNCURVE;
-  ay_object_defaults(ncurve);
-  ncurve->refine = nc;
-
   if(revert)
     ay_nct_revert(nc);
 
   ay_nct_settype(nc);
 
+  if(!(ncurve = calloc(1, sizeof(ay_object))))
+    {
+      ay_status = AY_EOMEM;
+      goto cleanup;
+    }
+
+  ncurve->type = AY_IDNCURVE;
+  ay_object_defaults(ncurve);
+  ncurve->refine = nc;
+  nc = NULL;
+
   ncircle->ncurve = ncurve;
+
+cleanup:
+
+  if(nc)
+    ay_nct_destroy(nc);
 
   /* recover selected points */
   if(o->selp)
     {
-      ay_ncircle_getpntcb(3, o, NULL, NULL);
+      if(ncircle->ncurve)
+	ay_ncircle_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return AY_OK;

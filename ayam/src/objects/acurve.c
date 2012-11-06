@@ -648,7 +648,7 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
  int ay_status = AY_OK;
  char *n1 = "ACurveAttrData";
  char fname[] = "acurve_setpropcb";
- int new_length;
+ int new_length, new_order;
  Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
  ay_acurve_object *acurve = NULL;
 
@@ -678,7 +678,7 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   Tcl_SetStringObj(ton,"Order",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(acurve->order));
+  Tcl_GetIntFromObj(interp,to, &new_order);
 
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -701,6 +701,14 @@ ay_acurve_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 	{
 	  ay_error(AY_ERROR, fname, "Length must be > 2!");
 	}
+    }
+
+  if(new_order != acurve->order)
+    {
+      if(new_order > 1)
+	acurve->order = new_order;
+      else
+	ay_error(AY_ERROR,fname,"Order must be > 1!");
     }
 
   /* check (and correct?) approximation length */
