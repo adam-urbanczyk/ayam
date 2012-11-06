@@ -547,7 +547,7 @@ ay_skin_notifycb(ay_object *o)
 
   /* get curves to skin */
   if(!o->down)
-    return AY_OK;
+    goto cleanup;
   down = o->down;
 
   while(down->next)
@@ -693,7 +693,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_skin_getpntcb(3, o, NULL, NULL);
+      if(skin->npatch)
+	ay_skin_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

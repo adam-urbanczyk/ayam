@@ -547,7 +547,7 @@ ay_gordon_notifycb(ay_object *o)
 
   /* get parameter curves */
   if(!o->down)
-    return AY_OK;
+    goto cleanup;
 
   if(gordon->wcc)
     ay_status = ay_npt_gordonwc(o);
@@ -757,7 +757,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_gordon_getpntcb(3, o, NULL, NULL);
+      if(gordon->npatch)
+	ay_gordon_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;

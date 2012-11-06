@@ -1140,7 +1140,7 @@ ay_revolve_notifycb(ay_object *o)
 
   /* get curve to revolve */
   if(!o->down || !o->down->next)
-    return AY_OK;
+    goto cleanup;
 
   curve = o->down;
   if(curve->type != AY_IDNCURVE)
@@ -1234,7 +1234,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_revolve_getpntcb(3, o, NULL, NULL);
+      if(revolve->npatch)
+	ay_revolve_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
   if(ay_status)

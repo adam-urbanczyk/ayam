@@ -544,7 +544,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_concatnc_getpntcb(3, o, NULL, NULL);
+      if(concatnc->ncurve)
+	ay_concatnc_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return ay_status;
@@ -681,4 +684,3 @@ ay_concatnc_init(Tcl_Interp *interp)
 
  return ay_status;
 } /* ay_concatnc_init */
-

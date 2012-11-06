@@ -1053,7 +1053,7 @@ ay_swing_notifycb(ay_object *o)
 
   /* get curve to swing */
   if(!o->down || !o->down->next)
-    return AY_OK;
+    goto cleanup;
   cs = o->down;
   if(cs->type != AY_IDNCURVE)
     {
@@ -1099,7 +1099,10 @@ ay_swing_notifycb(ay_object *o)
 			  (ay_nurbpatch_object **)(void*)&(npatch->refine));
 
   if(ay_status)
-    return ay_status;
+    {
+      free(npatch);
+      goto cleanup;
+    }
 
   swing->npatch = npatch;
 
@@ -1159,7 +1162,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_swing_getpntcb(3, o, NULL, NULL);
+      if(swing->npatch)
+	ay_swing_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
   if(ay_status)

@@ -687,7 +687,7 @@ ay_concatnp_notifycb(ay_object *o)
      (or not enough?) patches to concat */
   if(!patches)
     {
-      return AY_OK;
+      goto cleanup;
     }
 
   ay_status = ay_npt_concat(patches, concatnp->type, concatnp->order,
@@ -771,7 +771,10 @@ cleanup:
   /* recover selected points */
   if(o->selp)
     {
-      ay_concatnp_getpntcb(3, o, NULL, NULL);
+      if(concatnp->npatch)
+	ay_concatnp_getpntcb(3, o, NULL, NULL);
+      else
+	ay_selp_clear(o);
     }
 
  return AY_OK;
