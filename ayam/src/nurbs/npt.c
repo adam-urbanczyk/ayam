@@ -2079,17 +2079,21 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
   newvorder = nc->order;
   newvknots = newheight + newvorder;
   newvknot_type = nc->knot_type;
-  if(!(newvknotv = calloc(newvknots, sizeof(double))))
+  if(nc->knot_type == AY_KTCUSTOM)
     {
-      return AY_EOMEM;
-    }
+      if(!(newvknotv = calloc(newvknots, sizeof(double))))
+	{
+	  return AY_EOMEM;
+	}
 
-  memcpy(newvknotv, nc->knotv, (size_t)(newvknots*sizeof(double)));
+      memcpy(newvknotv, nc->knotv, (size_t)(newvknots*sizeof(double)));
+    }
 
   /* create new patch */
   if(!(new = calloc(1, sizeof(ay_object))))
     {
-      free(newvknotv);
+      if(newvknotv)
+	free(newvknotv);
       return AY_EOMEM;
     }
 
@@ -2101,7 +2105,9 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 
   if(!(newcontrolv = calloc(newwidth*newheight*4, sizeof(double))))
     {
-      free(newvknotv); free(new);
+      if(newvknotv)
+	free(newvknotv);
+      free(new);
       return AY_EOMEM;
     }
 
@@ -2159,7 +2165,10 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 
   if(ay_status)
     {
-      free(new); free(newvknotv); free(newcontrolv);
+      free(new);
+      if(newvknotv)
+	free(newvknotv);
+      free(newcontrolv);
       return ay_status;
     }
 
@@ -2219,8 +2228,8 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(!(new = calloc(1, sizeof(ay_list_object))))
 		{
-		  /* XXXX fix leak! */
-		  return TCL_OK;
+		  ay_error(AY_EOMEM, argv[0], NULL);
+		  goto cleanup;
 		}
 
 	      new->object = o;
@@ -2243,11 +2252,14 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(ay_status || !patch)
     {
-      ay_error(AY_ERROR, argv[0], "Build failed.");
+      ay_error(AY_ERROR, argv[0], "Build from curves failed.");
+    }
+  else
+    {
+      ay_object_link(patch);
     }
 
-  if(patch)
-    ay_object_link(patch);
+cleanup:
 
   /* free list */
   while(curves)
