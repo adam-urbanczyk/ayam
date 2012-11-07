@@ -15,6 +15,37 @@ array set aytestprefs {
     KeepFiles 0
 }
 
+# aytest_handleLBS:
+#  handle selection of tests in select GUI listbox
+#  (fill and enable/disable second listbox accordingly)
+proc aytest_handleLBS { w } {
+    set sel [$w curselection]
+    set tw [winfo toplevel $w]
+    if { [llength $sel] == 1 } {
+	# allow selection and item management
+	$tw.fu.fr.l1 conf -state normal
+	# fill listbox with items from test
+	$tw.fu.fr.l1 delete 0 end
+	$tw.fu.fr.l1 insert end "All"
+	incr sel
+	eval set items \$::aytest_${sel}items
+	foreach item $items {
+	    $tw.fu.fr.l1 insert end $item
+	}
+	$tw.fu.fr.l1 selection set 0
+    } else {
+	# clear listbox
+	$tw.fu.fr.l1 delete 0 end
+	$tw.fu.fr.l1 insert end "All"
+	$tw.fu.fr.l1 selection set 0
+	# disallow further selection
+	$tw.fu.fr.l1 conf -state disabled
+    }
+ return;
+}
+# aytest_handleLBS
+
+
 # aytest_selectGUI:
 #  create the aytest user interface
 #
@@ -34,16 +65,20 @@ proc aytest_selectGUI { } {
 	wm transient $w .
     }
 
-    set f [frame $w.f1]
+    set f [frame $w.fu]
     pack $f -in $w -side top -fill x
 
-    set ay(bca) $w.f2.bca
-    set ay(bok) $w.f2.bok
+    set ay(bca) $w.fl.bca
+    set ay(bok) $w.fl.bok
+
+    # test management widgets
+    set f [frame $w.fu.fl]
 
     # listbox for test selection
-    addText $w.f1 e0 "Select Test:"
+    addText $f e0 "Select Test:"
 
-    set lb [listbox $w.f1.l1 -selectmode multiple]
+    set lb [listbox $f.l1 -exportselection 0\
+		-selectmode multiple -activestyle none]
 
     $lb insert end "Test 1 - Default Object Callbacks"
     $lb insert end "Test 2 - Valid Solid Object Variations"
@@ -52,22 +87,42 @@ proc aytest_selectGUI { } {
     $lb insert end "Test 5 - Modelling Tools"
     $lb insert end "Test 6 - All Solid Object Variations"
 
-    # preferences
+    bind $lb <<ListboxSelect>> "aytest_handleLBS %W"
+
+    pack $f.l1 -side top -fill both -expand yes
+
+    # test preferences
     set f [frame $w.fp]
     addCheck $f aytestprefs KeepObjects
     addCheck $f aytestprefs KeepFiles
 
-    set f [frame $w.f2]
+    pack $w.fp -side top -fill x -expand yes
+    pack $w.fu.fl -side left -fill both -expand yes
+
+    set f [frame $w.fu.fr]
+
+    # listbox for test item selection
+    addText $f e0 "Select Item:"
+
+    set lb [listbox $f.l1 -exportselection 0\
+		-selectmode multiple -activestyle none]
+
+    $lb insert end "All"
+    $lb selection set 0
+    $lb conf -state disabled
+
+    pack $f.l1 -side top -fill both -expand yes
+
+    pack $w.fu.fr -side left -fill both -expand yes
+
+    # ok/cancel buttons
+    set f [frame $w.fl]
 
     button $f.bok -text "Ok" -width 5 -command "\
-      aytest_runTests \[$w.f1.l1 curselection\];"
+   aytest_runTests \[$w.fu.fl.l1 curselection\] \[$w.fu.fr.l1 curselection\];"
 
     button $f.bca -text "Cancel" -width 5 -command "\
       set ::cancelled 1;focus .;destroy $w;"
-
-    pack $w.f1.l1 -side top -fill both -expand yes
-
-    pack $w.fp -side top -fill x -expand yes
 
     pack $f.bok $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
@@ -81,7 +136,7 @@ proc aytest_selectGUI { } {
 
     winCenter $w
     grab $w
-    focus $w.f1.l1
+    focus $w.fu.fl.l1
     tkwait window $w
 
     winAutoFocusOn
@@ -98,28 +153,10 @@ proc aytest_selectGUI { } {
 #
 # Test 1 - Default object callbacks
 #
-proc aytest_1 { } {
+proc aytest_1 { types } {
+set ::types $types
 uplevel #0 {
-
 puts $log "Testing default object callbacks...\n"
-
-# set up types to test
-set types ""
-lappend types Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
-
-lappend types NCurve ICurve ACurve NCircle
-
-lappend types NPatch IPatch BPatch PatchMesh
-
-lappend types Revolve Extrude Sweep Swing Skin Birail1 Birail2  Gordon
-
-lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
-
-lappend types Trim Text
-
-lappend types Camera Light Material RiInc RiProc Script Select
-
-lappend types Clone Mirror
 
 # these types do not support getPnt (when empty):
 set nopnttypes ""
@@ -232,7 +269,8 @@ foreach type $types {
 #
 # Test 2 - Valid Solid Object Variations
 #
-proc aytest_2 { } {
+proc aytest_2 { types } {
+set ::types $types
 uplevel #0 {
 
 puts $log "Testing valid solid object variations ...\n"
@@ -581,9 +619,6 @@ lappend Torus_1(vals) { 1.0 0.5 180.0 360.0 }
 
 # XXXX TODO: add torus variations for phimin/phimax
 
-
-set types {}
-lappend types Box Sphere Cylinder Disk Cone Paraboloid Torus Hyperboloid
 #set types Sphere
 foreach type $types {
     puts $log "Testing $type ...\n"
@@ -601,7 +636,8 @@ puts -nonewline "\n"
 #
 # Test 3 - Valid NURBS Object Variations
 #
-proc aytest_3 { } {
+proc aytest_3 { types } {
+set ::types $types
 uplevel #0 {
 
 puts $log "Testing valid NURBS object variations ...\n"
@@ -699,9 +735,7 @@ set NPatch_2(valcmd) {
 
 # ToDo: NPatch with Custom knots
 
-set types {}
-lappend types NCurve NPatch
-
+###
 foreach type $types {
     puts $log "Testing $type ...\n"
 
@@ -719,7 +753,8 @@ puts -nonewline "\n"
 #
 # Test 4 - Valid Tool Object Variations
 #
-proc aytest_4 { } {
+proc aytest_4 { types } {
+set ::types $types
 uplevel #0 {
 
 puts $log "Testing valid tool object variations ...\n"
@@ -1343,15 +1378,7 @@ array set Trim_1 {
     vals { {0} }
 }
 
-
-
-set types { Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon }
-
-lappend types Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
-
-lappend types Trim
-
-
+###
 puts -nonewline "Testing "
 foreach type $types {
     puts $log "Testing $type ...\n"
@@ -1370,7 +1397,8 @@ puts -nonewline "\n"
 #
 # Test 5 - Modelling Tools
 #
-proc aytest_5 { } {
+proc aytest_5 { actions } {
+set ::actions $actions
 uplevel #0 {
 
 # test modelling tools
@@ -1384,7 +1412,8 @@ puts $log "Testing modelling tools ...\n"
 #
 # Test 6 - All Solid Object Variations
 #
-proc aytest_6 { } {
+proc aytest_6 { types } {
+set ::types $types
 uplevel #0 {
 
 puts $log "Testing all solid object variations (Errors expected!) ...\n"
@@ -1551,9 +1580,7 @@ set Torus_1(MinorRad) $floatvals
 set Torus_1(PhiMin) $angles
 set Torus_1(PhiMax) $angles
 
-
-set types { Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus }
-
+###
 foreach type $types {
     global aytest_result
     puts $log "Testing $type ...\n"
@@ -1843,7 +1870,7 @@ proc aytest_var { type } {
 # aytest_runTests:
 #  actually run all tests selected in the GUI
 #
-proc aytest_runTests { tests } {
+proc aytest_runTests { tests items } {
     global ayprefs
 
     . configure -cursor watch
@@ -1855,6 +1882,19 @@ proc aytest_runTests { tests } {
     update
 
     set ::aytest_result 0
+
+    set test [lindex $tests 0]
+    incr test
+    if { [lindex $items 0] == 0 } {
+	eval set items \$::aytest_${test}items
+    } else {
+	eval set allitems \$::aytest_${test}items
+	foreach item $items {
+	    incr item -1
+	    lappend newitems [lindex $allitems $item]
+	}
+	set items $newitems
+    }
 
     foreach test $tests {
 	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
@@ -1869,7 +1909,7 @@ proc aytest_runTests { tests } {
 
 	puts "Running Test $test..."
 
-	catch {aytest_$test}
+	catch {aytest_$test $items}
 
 	close $::log
 
@@ -1891,6 +1931,48 @@ proc aytest_runTests { tests } {
 }
 # aytest_runTests
 
+###
 
-# start the GUI
+# set up types to test in test #1
+set items {}
+lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
+lappend items NCurve ICurve ACurve NCircle
+lappend items NPatch IPatch BPatch PatchMesh
+lappend items Revolve Extrude Sweep Swing Skin Birail1 Birail2  Gordon
+lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
+lappend items Trim Text
+lappend items Camera Light Material RiInc RiProc Script Select
+lappend items Clone Mirror
+
+set aytest_1items $items
+
+# set up types to test in test #2
+set items {}
+lappend items Box Sphere Cylinder Disk Cone Paraboloid Torus Hyperboloid
+set aytest_2items $items
+
+# set up types to test in test #3
+set items {}
+lappend items NCurve NPatch
+set aytest_3items $items
+
+# set up types to test in test #4
+set items {}
+lappend items Revolve Extrude Sweep Swing Skin Birail1 Birail2 Gordon
+lappend items Cap Bevel ExtrNC ExtrNP OffsetNC OffsetNP ConcatNC ConcatNP
+lappend items Trim
+set aytest_4items $items
+
+# set up actions to test in test #5
+set items {}
+set aytest_5items $items
+
+# set up types to test in test #6
+set items {}
+lappend items Box Sphere Cylinder Cone Disk Hyperboloid Paraboloid Torus
+set aytest_6items $items
+
+###
+
+# everything is set, start the GUI
 aytest_selectGUI
