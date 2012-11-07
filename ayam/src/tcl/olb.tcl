@@ -27,7 +27,7 @@ set ay(olb) $f.li
 listbox $f.li -width 14 -height 10 -selectmode extended\
 	-highlightthickness 0\
 	-yscrollcommand {global ay; $ay(olbs) set}\
-	-exportselection 0
+	-exportselection 0 -activestyle none
 
 bind $f.li <Double-ButtonPress-1> {
     global ay
