@@ -3861,11 +3861,25 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
 
 /* ay_nct_fillgap:
- *  create a fillet curve between the last point of curve c1
- *  and the first point of curve c2; the fillet will be a simple
- *  <order> point Bezier curve with tangents matching the tangents
- *  of endpoints of the curves c1/c2, tangent length will be scaled
- *  additionally by <tanlen>
+ *  create a fillet curve between the last point of curve <c1>
+ *  and the first point of curve <c2>; if <order> is 2, a simple linear
+ *  curve will be created, else if tanlen is != 0.0 the fillet
+ *  will be a four point NURBS curve with internal points matching the
+ *  tangents of endpoints of the curves c1/c2 (the tangent lengths will
+ *  be scaled additionally by <tanlen> before placing the internal
+ *  control points), resulting in a G1 continous fillet;
+ *  if tanlen is 0.0, global interpolation will be used to create
+ *  a fillet curve with exactly matching tangents, resulting in a C1
+ *  continous fillet; both, G1 and C1, fillets will finally be
+ *  elevated to the desired order
+ *
+ * @param[in] order desired order of fillet curve
+ * @param[in] tanlen if != 0.0, scale of tangents
+ * @param[in] c1 first curve
+ * @param[in] c2 second curve
+ * @param[in] result fillet curve
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_fillgap(int order, double tanlen,
@@ -3883,13 +3897,13 @@ ay_nct_fillgap(int order, double tanlen,
   if(!c1 || !c2 || !result)
     return AY_ENULL;
 
+  /* get coordinates of the last point of c1 and first point of c2
+     as well as the first derivative in those points */
   n = c1->length;
   p = c1->order-1;
   U = c1->knotv;
   Pw = c1->controlv;
 
-  /* get coordinates of the first and last point of the curve
-     as well as the first derivative in those points */
   u = U[n];
   ay_nb_CurvePoint4D(n-1, p, U, Pw, u, p1);
   w = p1[3];
@@ -3908,7 +3922,7 @@ ay_nct_fillgap(int order, double tanlen,
   p2[3] = 1.0;
   ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n2);
 
-  /* first, check whether p1 and p2 are sufficiently different */
+  /* check whether p1 and p2 are sufficiently different */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
      (fabs(p1[1] - p2[1]) < AY_EPSILON) &&
      (fabs(p1[2] - p2[2]) < AY_EPSILON))
@@ -3920,6 +3934,7 @@ ay_nct_fillgap(int order, double tanlen,
   if(tanlen == 0.0 && order > 2)
     {
       /* create C1 fillet by interpolation */
+
       AY_V3SCAL(n1, -1.0)
       AY_V3SCAL(n1, 0.25)
       AY_V3SCAL(n2, 0.25)
@@ -3932,16 +3947,17 @@ ay_nct_fillgap(int order, double tanlen,
       memcpy(Pw, p1, 3*sizeof(double));
       memcpy(&(Pw[3]), p2, 3*sizeof(double));
       ay_status = ay_ict_interpolateG3D(/*iorder=*/3, /*length=*/2,
-					0.0, 0.0, AY_TRUE, AY_KTCHORDAL,
-					Pw, p3, p4,
-					&nc);
+	  /*sdlen=*/0.0, /*edlen=*/0.0, /*have_end_derivs=*/AY_TRUE,
+	  /*param_type=*/AY_KTCHORDAL, /*controlv=*/Pw,
+	  /*sderiv=*/p3, /*ederiv=*/p4, &nc);
       free(Pw);
       if(ay_status || !nc)
 	return AY_ERROR;
 
+      /* elevate fillet to target order */
       if(order > 3)
 	{
-	  ay_status = ay_nct_elevate(nc, order);
+	  ay_status = ay_nct_elevate(nc, /*new_order=*/order);
 	  if(ay_status)
 	    {
 	      ay_nct_destroy(nc);
@@ -3951,11 +3967,14 @@ ay_nct_fillgap(int order, double tanlen,
     }
   else
     {
+      /* create simple G1 fillet */
+
       /* normalize n1 */
       len = AY_V3LEN(n1);
       AY_V3SCAL(n1, 1.0/len);
 
       AY_V3SCAL(n1, -1.0)
+
       /* normalize n2 */
       len = AY_V3LEN(n2);
       AY_V3SCAL(n2, 1.0/len);
@@ -3982,14 +4001,14 @@ ay_nct_fillgap(int order, double tanlen,
       if(order == 2)
 	{
 	  memcpy(&(controlv[0]), p1, 4*sizeof(double));
-	  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
+	  memcpy(&(controlv[4]), p2, 4*sizeof(double));
 	}
       else
 	{
 	  memcpy(&(controlv[0]), p1, 4*sizeof(double));
 	  memcpy(&(controlv[4]), p3, 4*sizeof(double));
-	  memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
-	  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
+	  memcpy(&(controlv[8]), p4, 4*sizeof(double));
+	  memcpy(&(controlv[12]), p2, 4*sizeof(double));
 	}
 
       if(order == 3)
@@ -4007,9 +4026,9 @@ ay_nct_fillgap(int order, double tanlen,
 	{ free(controlv); return AY_ERROR; }
 
       /* elevate fillet to target order */
-      if(order > 4 && order > numcontrol)
+      if(order > 4)
 	{
-	  ay_status = ay_nct_elevate(nc, order);
+	  ay_status = ay_nct_elevate(nc, /*new_order=*/order);
 	  if(ay_status)
 	    {
 	      ay_nct_destroy(nc);
