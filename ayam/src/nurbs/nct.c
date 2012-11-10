@@ -3896,9 +3896,6 @@ ay_nct_fillgap(int order, double tanlen,
   AY_V3SCAL(p1, 1.0/w)
   p1[3] = 1.0;
   ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n1);
-  /* normalize n1 */
-  len = AY_V3LEN(n1);
-  AY_V3SCAL(n1, 1.0/len);
 
   n = c2->length;
   p = c2->order-1;
@@ -3910,9 +3907,6 @@ ay_nct_fillgap(int order, double tanlen,
   AY_V3SCAL(p2, 1.0/w)
   p2[3] = 1.0;
   ay_nb_ComputeFirstDer4D(n-1, p, U, Pw, u, n2);
-  /* normalize n2 */
-  len = AY_V3LEN(n2);
-  AY_V3SCAL(n2, 1.0/len);
 
   /* first, check whether p1 and p2 are sufficiently different */
   if((fabs(p1[0] - p2[0]) < AY_EPSILON) &&
@@ -3923,67 +3917,112 @@ ay_nct_fillgap(int order, double tanlen,
       return AY_OK;
     }
 
-  AY_V3SCAL(n1, -1.0)
-
-  p3[3] = 1.0;
-  p4[3] = 1.0;
-
-  AY_V3SUB(l, p2, p1)
-  d = AY_V3LEN(l);
-  AY_V3SCAL(n1, d*tanlen)
-  AY_V3SCAL(n2, d*tanlen)
-  AY_V3SUB(p3, p1, n1)
-  AY_V3SUB(p4, p2, n2)
-
-  if(order == 2)
-    numcontrol = 2;
-  else
-    numcontrol = 4;
-
-  /* fill new controlv */
-  if(!(controlv = calloc(numcontrol*4, sizeof(double))))
-    return AY_EOMEM;
-
-  if(order == 2)
+  if(tanlen == 0.0 && order > 2)
     {
-      memcpy(&(controlv[0]), p1, 4*sizeof(double));
-      memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
-    }
-  else
-    {
-      memcpy(&(controlv[0]), p1, 4*sizeof(double));
-      memcpy(&(controlv[4]), p3, 4*sizeof(double));
-      memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
-      memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
-    }
+      /* create C1 fillet by interpolation */
+      AY_V3SCAL(n1, -1.0)
+      AY_V3SCAL(n1, 0.25)
+      AY_V3SCAL(n2, 0.25)
+      AY_V3SUB(p3, p1, n1)
+      AY_V3SUB(p4, p2, n2)
 
-  if(order == 3)
-    {
-      ay_status = ay_nct_create(3, numcontrol, AY_KTNURB, controlv,
-				NULL, &nc);
-    }
-  else
-    {
-      ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB, controlv,
-				NULL, &nc);
-    }
+      if(!(Pw = malloc(2*3*sizeof(double))))
+	return AY_EOMEM;
 
-  if(ay_status)
-    { free(controlv); return AY_ERROR; }
+      memcpy(Pw, p1, 3*sizeof(double));
+      memcpy(&(Pw[3]), p2, 3*sizeof(double));
+      ay_status = ay_ict_interpolateG3D(/*iorder=*/3, /*length=*/2,
+					0.0, 0.0, AY_TRUE, AY_KTCHORDAL,
+					Pw, p3, p4,
+					&nc);
+      free(Pw);
+      if(ay_status || !nc)
+	return AY_ERROR;
 
-  /* elevate fillet to target order */
-  if(order > 4 && order > numcontrol)
-    {
-      ay_status = ay_nct_elevate(nc, order);
-
-      if(ay_status)
+      if(order > 3)
 	{
-	  ay_nct_destroy(nc); return AY_ERROR;
+	  ay_status = ay_nct_elevate(nc, order);
+	  if(ay_status)
+	    {
+	      ay_nct_destroy(nc);
+	      return AY_ERROR;
+	    }
 	}
     }
+  else
+    {
+      /* normalize n1 */
+      len = AY_V3LEN(n1);
+      AY_V3SCAL(n1, 1.0/len);
+
+      AY_V3SCAL(n1, -1.0)
+      /* normalize n2 */
+      len = AY_V3LEN(n2);
+      AY_V3SCAL(n2, 1.0/len);
+
+      p3[3] = 1.0;
+      p4[3] = 1.0;
+
+      AY_V3SUB(l, p2, p1)
+      d = AY_V3LEN(l);
+      AY_V3SCAL(n1, d*tanlen)
+      AY_V3SCAL(n2, d*tanlen)
+      AY_V3SUB(p3, p1, n1)
+      AY_V3SUB(p4, p2, n2)
+
+      if(order == 2)
+	numcontrol = 2;
+      else
+	numcontrol = 4;
+
+      /* fill new controlv */
+      if(!(controlv = calloc(numcontrol*4, sizeof(double))))
+	return AY_EOMEM;
+
+      if(order == 2)
+	{
+	  memcpy(&(controlv[0]), p1, 4*sizeof(double));
+	  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
+	}
+      else
+	{
+	  memcpy(&(controlv[0]), p1, 4*sizeof(double));
+	  memcpy(&(controlv[4]), p3, 4*sizeof(double));
+	  memcpy(&(controlv[(numcontrol-2)*4]), p4, 4*sizeof(double));
+	  memcpy(&(controlv[(numcontrol-1)*4]), p2, 4*sizeof(double));
+	}
+
+      if(order == 3)
+	{
+	  ay_status = ay_nct_create(3, numcontrol, AY_KTNURB, controlv,
+				    NULL, &nc);
+	}
+      else
+	{
+	  ay_status = ay_nct_create(numcontrol, numcontrol, AY_KTNURB,
+				    controlv, NULL, &nc);
+	}
+
+      if(ay_status)
+	{ free(controlv); return AY_ERROR; }
+
+      /* elevate fillet to target order */
+      if(order > 4 && order > numcontrol)
+	{
+	  ay_status = ay_nct_elevate(nc, order);
+	  if(ay_status)
+	    {
+	      ay_nct_destroy(nc);
+	      return AY_ERROR;
+	    }
+	}
+    } /* if tanlen == 0.0 */
 
   if(!(o = calloc(1, sizeof(ay_object))))
-    { ay_nct_destroy(nc); return AY_EOMEM; }
+    {
+      ay_nct_destroy(nc);
+      return AY_EOMEM;
+    }
 
   ay_object_defaults(o);
 
@@ -6874,7 +6913,7 @@ void
 ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
 {
  int ay_status;
- ay_object *tmp = NULL; 
+ ay_object *tmp = NULL;
  ay_nurbcurve_object *nc;
  double *cv;
  int i, stride = 4;
