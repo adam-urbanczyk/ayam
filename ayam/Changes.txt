@@ -1,5 +1,5 @@
-[4. Oct 2012] CVS-Head:
-========================
+[11. Nov 2012] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -9,6 +9,7 @@ o file dialogs freeze Ayam on Aqua when called from other dialog (SF 3527583)
 o getProperty/setProperty when listbox is active (SF 3559398)
 o deleting the copy of a material de-registers original material (SF 3568001)
 o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
+o clamping a periodic curve does not reset the curve type (SF 3579550)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -16,11 +17,16 @@ o added "Compatible" option to ConcatNP objects, to prevent unwanted
 o added cap type "Simple"
 o added cap type "SimpleInt" for simple caps that integrate into the surface
   to be capped
-o added bevel option "Integrate" to combine the bevel with the parameter
-  surface
+o added bevel option "Integrate" to combine the bevel with the surface
+  to be beveled
 o Cap and Bevel options are now controlled via own property GUIs
 o Caps and Bevels are now available for many more object types,
   e.g. IPatch, NPatch, ConcatNP, Birail1, Birail2, Skin...
+o added 3D bevel mode controlled via normals and tangents e.g. extracted
+  from a surface by an ExtrNC object
+o added C1 fillets based on global interpolation with end derivatives to
+  the ConcatNC object (C1 mode is activated by setting the FTLength parameter
+  to 0.0)
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -30,7 +36,7 @@ o revamped design of parameter property GUI user interface element
    the text labels "/2" and "*2" respectively)
 o added internal resize widget to script text editor of Script object
 o improved dialog box appearance on X11
-o the "CloneAttr" property now also displays the Quaternion in abbreviated
+o the "CloneAttr" property now also displays the quaternion in abbreviated
   fashion
 o the shaders preference setting GUI element now allows to directly
   choose directories
@@ -45,29 +51,30 @@ o when loading scenes, material objects are now automatically renamed when
   the initial attempt to register the material fails (this happens when
   the material is already present in the scene under this name)
 o removed the highlight material feature
-o added a search facility that allows to search for objects given user
-  defined criteria, like e.g. names, types, materials, property values;
-  found objects can just be highlighted in the object tree, or arbitrary
+o added a search facility that allows to search for objects given criteria
+  like e.g. names, types, materials, property values;
+  the found objects can just be highlighted in the object tree, or arbitrary
   commands can be executed on them
 o in property GUIs and dialogs, <F10> now opens the default value
   option menu of the current element
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
-o "applyTrafo" command now applies the transformations to all points by default
-  and it is more robust wrt. non-editable points and objects without points
+o the "applyTrafo" command now applies the transformations to all points by
+  default and is more robust wrt. non-editable points and objects without points
 o the "estlenNC" command now supports an optional parameter "-trafo" that
   controls whether the transformation attributes should be applied to the curve
 o the "apnt" script now also binds to the select all/no points shortcuts
   to enable/disable the point modelling mode
-o getProperty/setProperty no longer need a correctly updated current level
+o "getProperty"/"setProperty" no longer need a correctly updated current level
   in the Tcl GUI context (object listbox or tree)
-o getProperty/setProperty now also work with multiple selected objects
+o "getProperty"/"setProperty" now also work with multiple selected objects
 o added script "rc" that swaps cursor key bindings in parallel views
 o the "getSel" command no longer unconditionally writes to global variables
 o added command "clearClip" to clear the clipboard
 o added option "-add" to "copOb" and "cutOb" commands to allow collecting
   objects in the clipboard
+o the aytest.tcl script now allows more fine grained test selection per GUI
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
