@@ -622,7 +622,7 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *curve = NULL;
- ay_nurbcurve_object *offcurve;
+ ay_nurbcurve_object *offcurve = NULL;
  ay_nurbcurve_object *bcurve = NULL;
  double *uknotv = NULL, *vknotv = NULL, *controlv = NULL, *tccontrolv = NULL;
  int stride = 4, i = 0, j = 0, a = 0, b = 0, c = 0;
@@ -915,7 +915,6 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
 	    goto cleanup;
 	}
       order = np->vorder;
-      knottype = np->vknot_type;
       break;
     case 2:
     case 3:
@@ -926,7 +925,6 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
 	    goto cleanup;
 	}
       order = np->uorder;
-      knottype = np->uknot_type;
       break;
     } /* switch */
 
