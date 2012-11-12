@@ -263,7 +263,7 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 	      if(!have_it && !multipledel)
 		{
 		  /* create new point object */
-		  if(!(newp = calloc(1, sizeof(ay_point))))
+		  if(!(newp = malloc(sizeof(ay_point))))
 		    {
 		      ay_error(AY_EOMEM, fname, NULL);
 		      return TCL_OK;
@@ -276,6 +276,10 @@ ay_pact_seltcb(struct Togl *togl, int argc, char *argv[])
 		  if(pe.indices)
 		    {
 		      newp->index = pe.indices[i];
+		    }
+		  else
+		    {
+		      newp->index = 0;
 		    }
 
 		  newp->rational = pe.rational;
@@ -2985,140 +2989,3 @@ cleanup:
 
  return ay_status;
 } /* ay_pact_multdecnc */
-
-
-/* ay_pact_getpntarr:
- *  get point (editing and selection) callback function of acurve object
- */
-int
-ay_pact_getpntarr(int mode, ay_object *o, double *p, ay_pointedit *pe,
-		  unsigned int cvlen, double *cv, int stride, int israt)
-{
-
- ay_point *pnt = NULL, **lastpnt = NULL;
- double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
- double *pecoord = NULL, **ctmp;
- double *control = NULL, *c = NULL;
- unsigned int i = 0, j = 0, a = 0;
- unsigned int *itmp, peindex = 0;
-
-  if(min_dist == 0.0)
-    min_dist = DBL_MAX;
-
-  if(pe)
-    pe->rational = israt;
-
-  switch(mode)
-    {
-    case 0:
-      /* select all points */
-      if(!(pe->coords = calloc(cvlen, sizeof(double*))))
-	return AY_EOMEM;
-      if(!(pe->indices = calloc(cvlen, sizeof(unsigned int))))
-	return AY_EOMEM;
-
-      for(i = 0; i < cvlen; i++)
-	{
-	  pe->coords[i] = &(cv[a]);
-	  pe->indices[i] = i;
-	  a += stride;
-	}
-
-      pe->num = cvlen;
-      break;
-    case 1:
-      /* selection based on a single point */
-
-      for(i = 0; i < cvlen; i++)
-	{
-	  dist = AY_VLEN((p[0] - cv[j]),
-			 (p[1] - cv[j+1]),
-			 (p[2] - cv[j+2]));
-
-	  if(dist < min_dist)
-	    {
-	      pecoord = &(cv[j]);
-	      peindex = i;
-	      min_dist = dist;
-	    }
-
-	  j += stride;
-	} /* for */
-
-      if(!pecoord)
-	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
-
-      if(!(pe->coords = calloc(1, sizeof(double*))))
-	return AY_EOMEM;
-
-      if(!(pe->indices = calloc(1, sizeof(unsigned int))))
-	return AY_EOMEM;
-
-      pe->coords[0] = pecoord;
-      pe->indices[0] = peindex;
-      pe->num = 1;
-      break;
-    case 2:
-      /* selection based on planes */
-      j = 0;
-      a = 0;
-      for(i = 0; i < cvlen; i++)
-	{
-	  c = &(cv[j]);
-
-	  /* test point c against the four planes in p */
-	  if(((p[0]*c[0] + p[1]*c[1] + p[2]*c[2] + p[3]) < 0.0) &&
-	     ((p[4]*c[0] + p[5]*c[1] + p[6]*c[2] + p[7]) < 0.0) &&
-	     ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
-	     ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
-	    {
-
-	      if(!(ctmp = realloc(pe->coords, (a+1)*sizeof(double *))))
-		{
-		  return AY_EOMEM;
-		}
-	      pe->coords = ctmp;
-	      if(!(itmp = realloc(pe->indices, (a+1)*sizeof(unsigned int))))
-		{
-		  return AY_EOMEM;
-		}
-	      pe->indices = itmp;
-
-	      pe->coords[a] = &(control[j]);
-	      pe->indices[a] = i;
-	      a++;
-	    } /* if */
-
-	  j += stride;
-	} /* for */
-
-      pe->num = a;
-
-      break;
-    case 3:
-      /* rebuild from o->selp */
-      pnt = o->selp;
-      lastpnt = &o->selp;
-      while(pnt)
-	{
-	  if(pnt->index < cvlen)
-	    {
-	      pnt->point = &(cv[pnt->index*stride]);
-	      pnt->rational = israt;
-	      lastpnt = &(pnt->next);
-	      pnt = pnt->next;
-	    }
-	  else
-	    {
-	      *lastpnt = pnt->next;
-	      free(pnt);
-	      pnt = *lastpnt;
-	    }
-	} /* while */
-      break;
-    default:
-      break;
-    } /* switch */
-
- return AY_OK;
-} /* ay_pact_getpntarr */
