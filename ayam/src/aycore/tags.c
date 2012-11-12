@@ -106,13 +106,13 @@ ay_tags_copy(ay_tag *source, ay_tag **dest)
     {
       /* copy binary val */
       if(!(new->val = malloc(sizeof(ay_btval))))
-	{ free(new); free(new->name); return AY_EOMEM; }
+	{ free(new->name); free(new); return AY_EOMEM; }
       memcpy(new->val, source->val, sizeof(ay_btval));
       if(((ay_btval*)new->val)->size)
 	{
 	  nbt = (ay_btval*)new->val;
 	  if(!(nbt->payload = malloc(nbt->size)))
-	    {free(new->val); free(new); free(new->name); return AY_EOMEM; }
+	    { free(new->val); free(new->name); free(new); return AY_EOMEM; }
 	  memcpy(nbt->payload, ((ay_btval*)source->val)->payload, nbt->size);
 	}
     }
