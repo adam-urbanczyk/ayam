@@ -409,7 +409,11 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	{
 
 	  if(!(ctmp = realloc(pecoords, (a+1)*sizeof(double *))))
-	    return AY_EOMEM;
+	    {
+	      if(pecoords)
+		free(pecoords);
+	      return AY_EOMEM;
+	    }
 	  pecoords = ctmp;
 	  pecoords[a] = c;
 	  a++;
