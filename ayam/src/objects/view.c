@@ -838,6 +838,12 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 	  viewnum--;
 	}
 
+      if(!last)
+	{
+	  /* could not find the view object */
+	  return AY_ERROR;
+	}
+
       /* set up the internal view */
       ay_status = ay_viewt_setupintview(ay_read_viewnum, last, &vtemp);
 
