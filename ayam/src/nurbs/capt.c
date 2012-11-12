@@ -158,7 +158,6 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 				      np->vorder-2);
 	}
       order = np->vorder;
-      knottype = np->vknot_type;
       break;
     case 2:
     case 3:
@@ -168,7 +167,6 @@ ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
 				      np->uorder-2);
 	}
       order = np->uorder;
-      knottype = np->uknot_type;
       break;
     } /* switch */
 
