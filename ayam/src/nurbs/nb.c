@@ -309,7 +309,6 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
  double t, *A = NULL, *U, *N = NULL;
  double *qq = NULL, *xx = NULL;
 
-
   if(!(A = calloc((n+3)*(n+3), sizeof(double))))
     return AY_EOMEM;
 
@@ -339,7 +338,7 @@ ay_nb_GlobalInterpolation4DD(int n, double *Q, double *ub, double *Uc, int d,
 	  A[ind] = N[j];
 	}
       k++;
-  }
+    }
 
   A[0] = 1.0;
   A[(n+3)] = -1.0;
@@ -1592,7 +1591,7 @@ ay_nb_SurfacePoint3D(int n, int m, int p, int q, double *U, double *V,
       for(k = 0 ; k <= p; k++)
 	{
 	  /* was: temp = temp + Nu[k]*P[indu+k][indv]; */
-	  i = (((indu+k)*(m+1))+indv)*3;
+	  i = (((indu+k)*(m+1))+indv)*4;
 	  temp[0] += Nu[k]*P[i];
 	  temp[1] += Nu[k]*P[i+1];
 	  temp[2] += Nu[k]*P[i+2];
@@ -1735,7 +1734,7 @@ ay_nb_ComputeFirstDer3D(int n, int p, double *U, double *P, double u,
 
   for(j = 0; j <= p; j++)
     {
-      r = (span-p+j)*3;
+      r = (span-p+j)*4;
 
       C1[0] = C1[0] + nders[(p+1)+j] * P[r];
       C1[1] = C1[1] + nders[(p+1)+j] * P[r+1];
@@ -1772,7 +1771,7 @@ ay_nb_ComputeSecDer3D(int n, int p, double *U, double *P, double u,
 
   for(j=0;j<=p;j++)
     {
-      r = (span-p+j)*3;
+      r = (span-p+j)*4;
 
       C2[0] = C2[0] + nders[((p+1)*2)+j] * P[r];
       C2[1] = C2[1] + nders[((p+1)*2)+j] * P[r+1];
