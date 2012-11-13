@@ -53,7 +53,7 @@ ay_selp_copy(ay_point *pnt, ay_point **res)
 
   while(pnt)
     {
-      if(!(newpnt = calloc(1, sizeof(ay_point))))
+      if(!(newpnt = malloc(sizeof(ay_point))))
 	return;
 
       memcpy(newpnt, pnt, sizeof(ay_point));
@@ -89,7 +89,7 @@ ay_selp_selall(ay_object *o)
 
   for(i = 0; i < pe.num; i++)
     {
-      if(!(newp = calloc(1, sizeof(ay_point))))
+      if(!(newp = malloc(sizeof(ay_point))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
@@ -101,6 +101,10 @@ ay_selp_selall(ay_object *o)
       if(pe.indices)
 	{
 	  newp->index = pe.indices[i];
+	}
+      else
+	{
+	  newp->index = 0;
 	}
       newp->rational = pe.rational;
       newp->readonly = pe.readonly;
@@ -422,7 +426,7 @@ ay_selp_getcenter(ay_point *p, int mode, double *center)
 	  nump++;
 	  pnt = pnt->next;
 	}
-      if(!(pnts = calloc(nump, sizeof(double*))))
+      if(!(pnts = malloc(nump * sizeof(double*))))
 	{
 	  return AY_EOMEM;
 	}
@@ -862,9 +866,9 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(arrlen, sizeof(double*))))
+      if(!(pe->coords = malloc(arrlen * sizeof(double*))))
 	return AY_EOMEM;
-      if(!(pe->indices = calloc(arrlen, sizeof(unsigned int))))
+      if(!(pe->indices = malloc(arrlen * sizeof(unsigned int))))
 	return AY_EOMEM;
 
       for(i = 0; i < arrlen; i++)
@@ -900,10 +904,10 @@ ay_selp_getpnts(int mode, ay_object *o, double *p, ay_pointedit *pe,
 
       if(!found)
 	{
-	  if(!(pe->coords = calloc(1, sizeof(double *))))
+	  if(!(pe->coords = malloc(sizeof(double *))))
 	    return AY_EOMEM;
 
-	  if(!(pe->indices = calloc(1, sizeof(unsigned int))))
+	  if(!(pe->indices = malloc(sizeof(unsigned int))))
 	    return AY_EOMEM;
 
 	  pe->coords[0] = pecoord;
