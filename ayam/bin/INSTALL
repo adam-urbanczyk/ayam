@@ -1,4 +1,4 @@
-[INSTALL, 25. Mar 2012]
+[INSTALL, 14. Nov 2012]
 
 Installation Instructions for Ayam (Unix only).
 
@@ -15,7 +15,7 @@ Contents:
 ------------------------------------
 
 To install Ayam into your system switch to root, cd to ayam/bin and enter:
->make install
+> make install
 
 By default, Ayam will install to "/usr/local/ayam".
 It will create some sub-directories there, namely:
@@ -30,7 +30,7 @@ environment variable. Otherwise Ayam might not be able to load the plugins.
 
 The installation procedure will also install the current Makefile,
 that may be used to uninstall Ayam again, e.g. using:
->make -f /usr/local/ayam/bin/Makefile uninstall
+> make -f /usr/local/ayam/bin/Makefile uninstall
 
 The Makefile may be adapted on systems where "/usr/local/ayam" is not
 a feasible prefix directory, just change the PREFIX variable.
@@ -39,27 +39,30 @@ executables, plugins, Tcl scripts, documentation, and example scenes across
 the file system is not supported.
 
 To check what installing/uninstalling will do to your system use
->make -n install
+> make -n install
 or
->make -n uninstall
+> make -n uninstall
 first.
 
 Ayam also integrates with Unix desktop environments.
 The next steps need the xdg-utils from the Portland project to be installed.
 
 To install a system wide applications menu entry, enter:
->make sysmenu
+root> make sysmenu
 
 The next commands should not be run as root!
 
-To add a desktop launcher to the current users desktop, enter:
->make desktop
-
 If Ayam was installed to a user specific directory (e.g. on systems
-without root access), the following two targets add a user application
-menu entry and file type:
->make menu
->make filetype
+without root access) use the menu target instead of sysmenu:
+user> make menu
+
+To add a desktop launcher to the current users desktop, enter:
+user> make desktop
+
+To create a file type on the current users desktop:
+user> make filetype
+
+Some desktop environments require a restart to let these changes take effect!
 
 
 2. Linux Specific Information
@@ -67,7 +70,7 @@ menu entry and file type:
 
 o The shader parsing plugins in this release were compiled with the
   following versions of the renderers: ayslo3d: 3Delight 2.0.2,
-  ayslx: Aqsis 0.9.0, aysdr: Pixie 1.3.3, ayso: RDC 3.3.5,
+  ayslx: Aqsis 1.8.1, aysdr: Pixie 1.3.3, ayso: RDC 3.3.5,
   ayslo: PRMan 11.5
 
 
@@ -89,16 +92,7 @@ o The shader parsing plugins in this release were compiled with the
 4. Mac OS X (X11) Specific Information
 --------------------------------------
 
-o The Mac OS X binary of Ayam was compiled on the SourceForge compile farm
-  on Mac OS X 10.1 using X11. Therefore, you need X11 to run this binary.
-o Because BMRT is not available on Mac OS X, this binary has been compiled
-  without libslcargs and will scan .xml shader description files created
-  by sl2xml from the K-3D project only (if no shader parsing plugin is
-  loaded).
-o At the moment, the only shader parsing plugins available on Mac OS X are
-  ayslo3d and aysdr. The ayslo3d plugin was compiled with 3Delight 2.0.0.
-  The aysdr plugin was compiled with Pixie 1.3.3, with object files kindly
-  provided by George Harker.
+o Before starting the X11 version of Ayam on MacOSX you need to start X11.
 o On Mac OS X there is currently no aycsg plug-in. You may safely ignore the
   warnings about a missing aycsg.so file, that occur during the installation.
 
