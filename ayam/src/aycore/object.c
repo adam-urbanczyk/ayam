@@ -610,10 +610,12 @@ ay_object_copy(ay_object *src, ay_object **dst)
   if(!src || !dst)
     return AY_ENULL;
 
-  /* refuse to copy the endlevel terminator */
+  /* silently avoid to really copy the endlevel terminator object;
+     instead, just copy the reference */
   if(src == ay_endlevel)
     {
       *dst = ay_endlevel;
+      return AY_OK;
     }
 
   /* copy generic object */
