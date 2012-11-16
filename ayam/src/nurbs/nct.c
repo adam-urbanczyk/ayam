@@ -3865,7 +3865,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  *  and the first point of curve <c2>; if <order> is 2, a simple linear
  *  curve will be created, else if tanlen is != 0.0 the fillet
  *  will be a four point NURBS curve with internal points matching the
- *  tangents of endpoints of the curves c1/c2 (the tangent lengths will
+ *  tangents of the endpoints of the curves c1/c2 (the tangents will
  *  be scaled additionally by <tanlen> before placing the internal
  *  control points), resulting in a G1 continous fillet;
  *  if tanlen is 0.0, global interpolation will be used to create
@@ -3874,7 +3874,8 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  *  elevated to the desired order
  *
  * @param[in] order desired order of fillet curve
- * @param[in] tanlen if != 0.0, scale of tangents
+ * @param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
+ *  of the distance between last point in c1 and first point in c2
  * @param[in] c1 first curve
  * @param[in] c2 second curve
  * @param[in] result fillet curve
@@ -4343,6 +4344,9 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
     return 0.0;
 
   if((t < c->knotv[0]) || (t > c->knotv[c->length+c->order-1]))
+    return 0.0;
+
+  if(c->order < 3)
     return 0.0;
 
   ay_nb_ComputeFirstDer4D(c->length, c->order-1, c->knotv, c->controlv, t,
