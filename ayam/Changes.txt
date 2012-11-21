@@ -1,5 +1,5 @@
-[11. Nov 2012] CVS-Head:
-=======================
+[21. Nov 2012] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -10,6 +10,7 @@ o getProperty/setProperty when listbox is active (SF 3559398)
 o deleting the copy of a material de-registers original material (SF 3568001)
 o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
 o clamping a periodic curve does not reset the curve type (SF 3579550)
+o crash when computing the curvature of a linear curve (SF 3588209)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -27,6 +28,7 @@ o added 3D bevel mode controlled via normals and tangents e.g. extracted
 o added C1 fillets based on global interpolation with end derivatives to
   the ConcatNC object (C1 mode is activated by setting the FTLength parameter
   to 0.0)
+o improved offset curves of closed curves in section mode
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
