@@ -3,15 +3,18 @@
 The SGML syntax in this document deviates from Linuxdoc-SGML
 in the following points:
 
-1) Due to post processing, there must only be one
+1) Due to post processing, there must be only one
 <ref id="tag" name="secname">
-and also one
+and also only one
 <footnote></footnote>
 per input line;
 
 2) to keep longer code examples on one page in page based output
    (i.e. LaTeX/PDF) use:
 <#if out=latex><x/needspace 8/</#if>
+<code>
+code example of 6 lines text (needs another 2 for the upper/lower lines)
+</code>
 
 3) likewise, enforce a new page with:
 <#if out=latex><x/newpage/</#if>
@@ -52,9 +55,10 @@ This section contains general information about this manual and Ayam.
 
 <sect1>About this Manual
 <p>
-Since this document is a reference manual, it is
+As this document is a reference manual, it is
 probably pointless to read it from the beginning to the end
-(except maybe for the next section, explaining the basics).
+(except maybe for the next section, explaining the basics of the
+user interface).
 Instead, just look up the documentation of the things you are interested
 in via the table of contents or the index. Cross references will then
 guide you to other important parts of the documentation.
@@ -63,16 +67,17 @@ Again: this manual has a rather large index, please use it
 <p>
 This document is organized in the following way:
 <p>
-After this first section, the user interface of Ayam is introduced and
-basic handling instructions for the application are given in the second
-section.
-In the third section all interactive modelling actions are documented.
+After this first introductory section, the user interface of Ayam is
+introduced and basic handling instructions for the application are
+given in the second section.<newline>
+In the third section all interactive modelling actions are documented.<newline>
 The fourth section details all object types and object properties,
 followed by documentation on all NURBS modelling tools in the fifth
-section.
+section.<newline>
 In the sixth section the Tcl scripting interface is explained and the
 following seventh section has all information about the import and export
-plugins. The eighth section is the dreaded miscellaneous section that
+plugins.<newline>
+The eighth section is the dreaded miscellaneous section that
 contains documentation not fitting elsewhere.
 <p>
 In this manual, the following typographic conventions are used:
@@ -99,6 +104,8 @@ set riopt(runtime) { a b }
  \ Last_Child_Object(Type)
 +-Next_Parent_Object(Type)
 </verb></tscreen>
+<item>Commands:<newline>
+&raquo;&thinsp;command arguments
 </itemize>
 
 <#if out=latex><x/newpage/</#if>
@@ -113,7 +120,7 @@ distributed under the modified BSD licence (no advertisement clause).
 Ayam is in development since 1997 and was formerly known as
 <tt>"The Mops"</tt>. Ayam formed the software base of the
 authors PhD work. New versions of Ayam were released in
-approximately half year intervals.
+approximately half year intervals since.
 
 <sect2>Features Overview
 <p>
@@ -208,6 +215,22 @@ written by Ayam 1.19 into older versions of Ayam requires conversion
 <p>
 This section describes the user interface of Ayam.
 <p>
+Until Ayam 1.14 all windows were always separate top level windows &ndash;
+a so called <em>floating windows GUI mode</em>. Since
+version 1.14, a new GUI mode is available where the main window, three view
+windows and the toolbox are integrated in one top level window. This mode
+is called <em>single window GUI mode</em>, see also the image above.
+The new single window GUI mode is enabled by default. All sub windows are
+in panes, the space occupied by a sub window may be adjusted by dragging
+the mouse at the borderlines of the panes. The number of views is not
+limited to three, albeit all extra views will become extra top level windows.
+<p>
+<figure loc="ht">
+<eps file="pics/swin.ps" height="12cm">
+<img src="pics/swin.gif">
+<caption>Single Window GUI Mode</caption>
+</figure>
+<p>
 The user interface of Ayam is split into three types of windows:
 a main window, a toolbox and an arbitrary number of view windows.
 The main window displays the object hierarchy and allows to edit
@@ -216,29 +239,8 @@ objects and starting of modelling actions and tools. The modelling
 actions are then carried out in view windows, where also the scene
 is displayed.
 <p>
-The whole application with all open windows may be iconified (zapped) using
-the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows iconified by zap
-is de-iconified, all other windows iconified by zap will be de-iconified
-as well.
-<p>
-<figure loc="ht">
-<eps file="pics/swin.ps" height="12cm">
-<img src="pics/swin.gif">
-<caption>Single Window GUI Mode</caption>
-</figure>
-<p>
-Until Ayam 1.14 all windows, main, toolbox, and views were always single
-top level windows &ndash; a so called floating windows GUI mode. Since
-version 1.14, a new GUI mode is available where the main window, three view
-windows and the toolbox are integrated in one top level window. This mode
-is called single window GUI mode, see also the image above.
-The new single window GUI mode is enabled by default. All sub windows are
-in panes, the space occupied by a sub window may be adjusted by dragging
-the mouse at the borderlines of the panes. The number of views is not
-limited to three, albeit all extra views will become extra top level windows.
-<p>
-The next sections document the three types of windows, main, toolbox,
-and views in detail.
+The next sections document the three types of windows (main, toolbox,
+and views) in detail.
 
 <sect1>Anatomy of the Main Window
 <p>
@@ -1438,6 +1440,11 @@ see also section
 <ref id="treesc" name="object tree shortcuts"> and section
 <ref id="olbsc" name="object list shortcuts">.
 <p>
+The whole application with all open windows may be iconified (zapped) using
+the shortcut <tt/&lt;Ctrl+Z&gt;/. If any of the windows iconified by zap
+is de-iconified, all other windows iconified by zap will be de-iconified
+as well.
+<p>
 Many main menu entries have direct keyboard shortcuts, displayed
 directly in the menu entries,
 see also section <ref id="mm" name="main menu">.
@@ -1936,13 +1943,15 @@ just a matter of two clicks.
 If the object is an instance, the first two entries in this menu will
 be <tt/"Master"/ and <tt/"Instances"/.
 
+During a search, for every object that matches the given expression
+the object will be selected and an action will be executed.
 The following special actions are defined:
 <descrip>
 <tag/Highlight/
 All found objects will be colored in the object tree.
 Highlighted objects stay highlighted until the tree view is updated
-completely (e.g. via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially,
-for instance after drag and drop or object clipoard operations.
+completely (e.g. via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
+(for instance after drag and drop or object clipoard operations).
 <tag/Collect/
 The node names of the found objects
 will be collected in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
@@ -1956,9 +1965,13 @@ objects will be processed so that delete is safe, then the objects
 will be deleted from the scene.
 </descrip>
 In addition to these special actions, a command/procedure call, like e.g.
-<tt>"convOb -inplace"</tt> can also be specified as action.
+<tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
+specified as action.
 
-Using the parameter <tt/"Scope"/ the area of the search may be limited to just
+The option <tt/"HighlightColor"/ defines the color to be used by the
+<tt/"Highlight"/ action.
+
+Using the parameter <tt/"Scope"/ the search may be limited to just
 the selected objects and their children (<tt/"Selection"/) or all objects of
 the current level regardless of selection but again including all children
 (<tt/"Level"/).<newline>
@@ -6396,11 +6409,13 @@ curve will result.
 <p>
 The knot sequence of the new concatenated curve will be of type
 <tt/"NURBS"/ or a custom knot vector will be computed (depending
-on the setting of <tt/"Knot-Type"/).
+on the setting of <tt/"Knot-Type"/).<newline>
 If <tt/"Knot-Type"/ is <tt/"NURBS"/, the shape of the concatenated curve
 will differ from the parameter curves if any of the parameter curves has
-a custom knot vector with non equidistant knots. If <tt/"Knot-Type"/ is
-<tt/"Custom"/, the shape of the parameter curves will be preserved.
+a custom knot vector with non equidistant knots.<newline>
+If <tt/"Knot-Type"/ is <tt/"Custom"/, the shape of the parameter curves
+will be preserved, but the knot vector will then contain internal multiple
+knots.
 <p>
 Attributes like display mode and tolerance for the new concatenated curve
 are simply taken from the first parameter curve.
@@ -6459,6 +6474,10 @@ control points from their respective end points. This value can
 be adapted for smaller&thinsp;/&thinsp;larger gaps between parameter
 curves.
 
+If the <tt/"FTLength"/ parameter is 0.0, C1 continuous fillets will
+be created by global curve interpolation instead of the G1 fillets
+outlined above.
+
 <item><tt/"Knot-Type"/ sets the knot type of the concatenated curve:
 <itemize>
 <item>If <tt/"Knot-Type"/ is <tt/"NURB"/ a simple knot vector
@@ -6469,12 +6488,14 @@ out.
 
 <item>If <tt/"Knot-Type"/ is <tt/"Custom"/, the knot vector is composed from
 the knot vectors of the original curves, and thus, their
-shapes may be preserved completely. This also applies to potential
-discontinuities in transitions.
-
+shapes may be preserved completely. Note, that potential discontinuities
+of any level, even gaps between the parameter curves are also fully
+preserved.
 <p>
-However, this comes at the price of internal knots with high multiplicity.
-Note that such a curve is <em>not</em> differentiable in all places anymore.
+However, this comes at the price of internal multiple knots. A problem
+with these knots is, that the resulting curve is <em>not</em> differentiable
+in these places anymore, which in turn can be problematic for operations
+like sweeps.
 </itemize>
 </itemize>
 <itemize>
