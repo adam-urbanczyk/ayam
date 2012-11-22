@@ -15,6 +15,12 @@
 /** \file nct.c \brief NURBS curve tools */
 
 /* prototypes of functions local to this module: */
+int ay_nct_offsetsection(ay_object *o, double offset,
+			 ay_nurbcurve_object **nc);
+
+int ay_nct_offsetsectionclosed(ay_object *o, double offset,
+			       ay_nurbcurve_object **nc);
+
 int ay_nct_splitdisc(ay_object *src, double u, ay_object **result);
 
 
@@ -104,7 +110,7 @@ ay_nct_create(int order, int length, int knot_type,
 /** ay_nct_destroy:
  *  gracefully destroy a NURBS curve object
  *
- * @param[in] curve NURBS curve object to destroy
+ * @param[in,out] curve NURBS curve object to destroy
  */
 void
 ay_nct_destroy(ay_nurbcurve_object *curve)
@@ -3540,10 +3546,10 @@ ay_nct_settype(ay_nurbcurve_object *nc)
 
 
 /* ay_nct_applytrafo:
- *  apply transformations from object to all control points,
+ *  applies transformations from object to all control points,
  *  then reset the objects transformation attributes
  *
- * @param[in] o NCurve object to process
+ * @param[in,out] c object of type NCurve to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3582,8 +3588,8 @@ ay_nct_applytrafo(ay_object *c)
 
 
 /* ay_nct_getpntfromindex:
- * get address of a single control point from its indices
- * (performing bounds checking)
+ *  get address of a single control point from its indices
+ *  (performing bounds checking)
  *
  * @param[in] patch NCurve object to process
  * @param[in] indexu index of desired control point in U dimension (width)
@@ -3619,7 +3625,10 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 
 /* ay_nct_euctohom:
  *  convert rational coordinates from euclidean to homogeneous style
- *  for the NURBS curve <nc>
+ *
+ * @param[in,out] nc NURBS curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_euctohom(ay_nurbcurve_object *nc)
@@ -3651,7 +3660,10 @@ ay_nct_euctohom(ay_nurbcurve_object *nc)
 
 /* ay_nct_homtoeuc:
  *  convert rational coordinates from homogeneous to euclidean style
- *  for the NURBS curve <nc>
+ *
+ * @param[in,out] nc NURBS curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_homtoeuc(ay_nurbcurve_object *nc)
@@ -6160,16 +6172,15 @@ int
 ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 {
  int ay_status = AY_OK;
- int i, j, k, stride = 4;
+ int i, stride = 4;
  double tangent[3] = {0}, normal[3] = {0}, *newcv = NULL, *newkv = NULL;
  double zaxis[3] = {0.0,0.0,1.0};
  ay_nurbcurve_object *curve = NULL;
  ay_nurbcurve_object *offcurve1 = NULL;
  ay_nurbcurve_object *offcurve2 = NULL;
  ay_tag *tag = NULL;
- int p1len, p2len, p3len;
- double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
- double t1[2], t2[2], n[2];
+ double *p1, *p2;
+ double t1[2], n[2];
  char *nname = ay_prefs.normalname;
  unsigned int vnlen = 0;
  double *vn = NULL, vlen;
@@ -6218,21 +6229,21 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    offset corner points according to normals derived
 	    from surrounding control points
 	  */
-	  for(j = 0; j < curve->length; j++)
+	  for(i = 0; i < curve->length; i++)
 	    {
 
 	      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
 					     curve->order-1, 4,
-					     curve->controlv, j,
+					     curve->controlv, i,
 					     tangent);
 
 	      AY_V3CROSS(normal, tangent, zaxis);
 	      AY_V3SCAL(normal, offset);
 
-	      newcv[j*stride]   = curve->controlv[j*stride]   + normal[0];
-	      newcv[j*stride+1] = curve->controlv[j*stride+1] + normal[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2];
-	      newcv[j*stride+3] = curve->controlv[j*stride+3];
+	      newcv[i*stride]   = curve->controlv[i*stride]   + normal[0];
+	      newcv[i*stride+1] = curve->controlv[i*stride+1] + normal[1];
+	      newcv[i*stride+2] = curve->controlv[i*stride+2];
+	      newcv[i*stride+3] = curve->controlv[i*stride+3];
 
 	    } /* for */
 	  break;
@@ -6245,193 +6256,9 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    {
 	      return ay_nct_offsetsectionclosed(o, offset, nc);
 	    }
-
-	  p1 = &(curve->controlv[0]);
-	  po = &(curve->controlv[curve->length*stride]);
-	  /* get length of p1 (count multiple points) */
-	  pt = p1+stride;
-	  p1len = 1;
-	  while((pt != po) && (AY_V2COMP(p1, pt)))
-	    {
-	      p1len++;
-	      pt += stride;
-	    }
-
-	  if(pt == po)
-	    {
-	      /* this curve, apparently, has no sections
-		 (is degenerated to one point) */
-	      free(newcv);
-	      return AY_ERROR;
-	    }
-
-	  p2 = pt;
-	  pt = p2+stride;
-	  p2len = 1;
-	  while((pt != po) && (AY_V2COMP(p2, pt)))
-	    {
-	      p2len++;
-	      pt += stride;
-	    }
-
-	  /* calc tangent of first original control polygon segment */
-	  t1[0] = p2[0] - p1[0];
-	  t1[1] = p2[1] - p1[1];
-
-	  /* calc normal of first original control polygon segment */
-	  n[0] =  t1[1];
-	  n[1] = -t1[0];
-
-	  /* scale normal to be offset length */
-	  vlen = AY_V2LEN(n);
-	  AY_V2SCAL(n, offset/vlen);
-
-	  /* offset the first control polygon segment */
-	  p1s1[0] = p1[0] + n[0];
-	  p1s1[1] = p1[1] + n[1];
-
-	  p2s1[0] = p2[0] + n[0];
-	  p2s1[1] = p2[1] + n[1];
-
-	  /* first point of offset curves control polygon */
-	  for(i = 0; i < p1len; i++)
-	    {
-	      newcv[i*stride]   = p1s1[0];
-	      newcv[i*stride+1] = p1s1[1];
-	    }
-
-	  /* special case: curve has one section and multiple
-	     points at the beginning _and_ at the end */
-	  if((p1len+p2len) == curve->length)
-	    {
-	      for(i = p1len; i < p1len+p2len; i++)
-		{
-		  newcv[i*stride]   = p2s1[0];
-		  newcv[i*stride+1] = p2s1[1];
-		}
-	    }
-
-	  if((p1len+p2len) < curve->length)
-	    {
-	      j = p1len;
-	      while((j+p2len) < curve->length)
-		{
-		  p3 = &(curve->controlv[(j+p2len)*stride]);
-		  p3len = 1;
-		  if((j+p2len) < (curve->length-1))
-		    {
-		      pt = p3+stride;
-		      while((pt != po) && (AY_V2COMP(p3, pt)))
-			{
-			  p3len++;
-			  pt += stride;
-			}
-		    }
-
-		  /* calc tangent of next original control polygon segment */
-		  t2[0] = p3[0]-p2[0];
-		  t2[1] = p3[1]-p2[1];
-
-		  /* calc normal of next original control polygon segment */
-		  n[0] =  t2[1];
-		  n[1] = -t2[0];
-
-		  /* scale normal to be offset length */
-		  vlen = AY_V2LEN(n);
-		  AY_V2SCAL(n, offset/vlen);
-
-		  /* offset the control polygon segment */
-		  p1s2[0] = p2[0] + n[0];
-		  p1s2[1] = p2[1] + n[1];
-
-		  p2s2[0] = p3[0] + n[0];
-		  p2s2[1] = p3[1] + n[1];
-
-		  /* intersect two offset segments, intersection is new cv */
-		  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2,
-					       &(newcv[j*stride])))
-		    {
-		      /*
-		       * if the intersection failed (e.g. due to collinear
-		       * segments) we simply pick one of the inner segment
-		       * points
-		       */
-		      for(k = 0; k < p2len; k++)
-			{
-			  memcpy(&(newcv[(j+k)*stride]), p2s1,
-				 2*sizeof(double));
-			}
-		    }
-		  else
-		    {
-		      if(p2len > 1)
-			{
-			  for(k = 1; k < p2len; k++)
-			    {
-			      memcpy(&(newcv[(j+k)*stride]),
-				     &(newcv[j*stride]),
-				     2*sizeof(double));
-			    }
-			}
-		    }
-
-		  /*
-		   * XXXX the next block is a "replacement" for the
-		   * intersection test, that is faster, but delivers
-		   * sub-optimal offset quality (collisions occur)
-		   */
-		  /*
-		    AY_V2NORM(t2);
-		    for(i = 0; i < p2len; i++)
-		    {
-		    newcv[(j+i)*stride]   = p2s1[0]+((p1s2[0]-p2s1[0])/2.0);
-		    newcv[(j+i)*stride+1] = p2s1[1]+((p1s2[1]-p2s1[1])/2.0);
-		    }
-		  */
-
-		  /* prepare next iteration */
-		  /*p1 = p2;*/
-		  p2 = p3;
-
-		  memcpy(t1, t2, 2*sizeof(double));
-		  memcpy(p1s1, p1s2, 2*sizeof(double));
-		  memcpy(p2s1, p2s2, 2*sizeof(double));
-
-		  j += p2len;
-		  p2len = p3len;
-		} /* while */
-
-	      /* last point of offset curves control polygon */
-	      for(i = 0; i < p3len; i++)
-		{
-		  newcv[(j+i)*stride]   = p2s2[0];
-		  newcv[(j+i)*stride+1] = p2s2[1];
-		}
-
-	    } /* if */
-
-	  /* set weights */
-	  if(curve->is_rat)
-	    {
-	      for(j = 0; j < curve->length; j++)
-		{
-		  newcv[j*stride+3] = curve->controlv[j*stride+3];
-		}
-	    }
 	  else
 	    {
-	      for(j = 0; j < curve->length; j++)
-		{
-		  newcv[j*stride+3] = 1.0;
-		}
-	    } /* if */
-
-	  /* another special case: curve is periodic */
-	  if((curve->type == AY_CTPERIODIC) && (curve->order > 2))
-	    {
-	      j = (curve->length-(curve->order-1))*stride;
-	      memcpy(&(newcv[j]), &(newcv[0]),
-		     (curve->order-1)*stride*sizeof(double));
+	      return ay_nct_offsetsection(o, offset, nc);
 	    }
 	  break;
 	case 2:
@@ -6447,17 +6274,17 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  if(ay_status)
 	    { goto cleanup; }
 
-	  for(j = 0; j < curve->length; j++)
+	  for(i = 0; i < curve->length; i++)
 	    {
-	      p1 = &(offcurve1->controlv[j*stride]);
-	      p2 = &(offcurve2->controlv[j*stride]);
+	      p1 = &(offcurve1->controlv[i*stride]);
+	      p2 = &(offcurve2->controlv[i*stride]);
 	      n[0] = (p1[0]+p2[0])/2.0;
 	      n[1] = (p1[1]+p2[1])/2.0;
 
-	      newcv[j*stride]   = n[0];
-	      newcv[j*stride+1] = n[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2];
-	      newcv[j*stride+3] = curve->controlv[j*stride+3];
+	      newcv[i*stride]   = n[0];
+	      newcv[i*stride+1] = n[1];
+	      newcv[i*stride+2] = curve->controlv[i*stride+2];
+	      newcv[i*stride+3] = curve->controlv[i*stride+3];
 	    } /* for */
 	  break;
 	case 3:
@@ -6480,14 +6307,14 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	      ay_status = AY_ERROR;
 	      goto cleanup;
 	    }
-	  for(j = 0; j < curve->length; j++)
+	  for(i = 0; i < curve->length; i++)
 	    {
-	      p1 = &(vn[j*3]);
+	      p1 = &(vn[i*3]);
 	      AY_V3SCAL(p1, offset);
-	      newcv[j*stride]   = curve->controlv[j*stride]   + p1[0];
-	      newcv[j*stride+1] = curve->controlv[j*stride+1] + p1[1];
-	      newcv[j*stride+2] = curve->controlv[j*stride+2] + p1[2];
-	      newcv[j*stride+3] = curve->controlv[j*stride+3];
+	      newcv[i*stride]   = curve->controlv[i*stride]   + p1[0];
+	      newcv[i*stride+1] = curve->controlv[i*stride+1] + p1[1];
+	      newcv[i*stride+2] = curve->controlv[i*stride+2] + p1[2];
+	      newcv[i*stride+3] = curve->controlv[i*stride+3];
 	    } /* for */
 	  break;
 	default:
@@ -6498,7 +6325,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 
   if(curve->knot_type == AY_KTCUSTOM)
     {
-      if(!(newkv = calloc(curve->length+curve->order, sizeof(double))))
+      if(!(newkv = malloc((curve->length+curve->order)*sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -6532,6 +6359,242 @@ cleanup:
 } /* ay_nct_offset */
 
 
+/** ay_nct_offsetsection:
+ *  create offset curve of open/periodic curve in section mode
+ *
+ * @param[in] o NURBS curve object to offset
+ * @param[in] offset offset distance
+ * @param[in,out] nc offset curve
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_offsetsection(ay_object *o, double offset,
+		     ay_nurbcurve_object **nc)
+{
+ int ay_status = AY_OK;
+ int i, j, k, stride = 4;
+ double *newcv = NULL, *newkv = NULL;
+ ay_nurbcurve_object *curve = NULL;
+ int p1len, p2len, p3len;
+ double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
+ double t1[2], t2[2], n[2];
+ double *vn = NULL, vlen;
+
+  /* sanity check */
+  if(!o || !nc)
+    return AY_ENULL;
+
+  curve = (ay_nurbcurve_object*)o->refine;
+
+  if(!(newcv = calloc(curve->length*stride, sizeof(double))))
+    return AY_EOMEM;
+
+  p1 = &(curve->controlv[0]);
+  po = &(curve->controlv[curve->length*stride]);
+  /* get length of p1 (count multiple points) */
+  pt = p1+stride;
+  p1len = 1;
+  while((pt != po) && (AY_V2COMP(p1, pt)))
+    {
+      p1len++;
+      pt += stride;
+    }
+
+  if(pt == po)
+    {
+      /* this curve, apparently, has no sections
+	 (is degenerated to one point) */
+      free(newcv);
+      return AY_ERROR;
+    }
+
+  p2 = pt;
+  pt = p2+stride;
+  p2len = 1;
+  while((pt != po) && (AY_V2COMP(p2, pt)))
+    {
+      p2len++;
+      pt += stride;
+    }
+
+  /* calc tangent of first original control polygon segment */
+  t1[0] = p2[0] - p1[0];
+  t1[1] = p2[1] - p1[1];
+
+  /* calc normal of first original control polygon segment */
+  n[0] =  t1[1];
+  n[1] = -t1[0];
+
+  /* scale normal to be offset length */
+  vlen = AY_V2LEN(n);
+  AY_V2SCAL(n, offset/vlen);
+
+  /* offset the first control polygon segment */
+  p1s1[0] = p1[0] + n[0];
+  p1s1[1] = p1[1] + n[1];
+
+  p2s1[0] = p2[0] + n[0];
+  p2s1[1] = p2[1] + n[1];
+
+  /* first point of offset curves control polygon */
+  for(i = 0; i < p1len; i++)
+    {
+      newcv[i*stride]   = p1s1[0];
+      newcv[i*stride+1] = p1s1[1];
+    }
+
+  /* special case: curve has one section and multiple
+     points at the beginning _and_ at the end */
+  if((p1len+p2len) == curve->length)
+    {
+      for(i = p1len; i < p1len+p2len; i++)
+	{
+	  newcv[i*stride]   = p2s1[0];
+	  newcv[i*stride+1] = p2s1[1];
+	}
+    }
+
+  if((p1len+p2len) < curve->length)
+    {
+      j = p1len;
+      while((j+p2len) < curve->length)
+	{
+	  p3 = &(curve->controlv[(j+p2len)*stride]);
+	  p3len = 1;
+	  if((j+p2len) < (curve->length-1))
+	    {
+	      pt = p3+stride;
+	      while((pt != po) && (AY_V2COMP(p3, pt)))
+		{
+		  p3len++;
+		  pt += stride;
+		}
+	    }
+
+	  /* calc tangent of next original control polygon segment */
+	  t2[0] = p3[0]-p2[0];
+	  t2[1] = p3[1]-p2[1];
+
+	  /* calc normal of next original control polygon segment */
+	  n[0] =  t2[1];
+	  n[1] = -t2[0];
+
+	  /* scale normal to be offset length */
+	  vlen = AY_V2LEN(n);
+	  AY_V2SCAL(n, offset/vlen);
+
+	  /* offset the control polygon segment */
+	  p1s2[0] = p2[0] + n[0];
+	  p1s2[1] = p2[1] + n[1];
+
+	  p2s2[0] = p3[0] + n[0];
+	  p2s2[1] = p3[1] + n[1];
+
+	  /* intersect two offset segments, intersection is new cv */
+	  if(!ay_geom_intersectlines2D(p1s1, t1, p1s2, t2,
+				       &(newcv[j*stride])))
+	    {
+	      /*
+	       * if the intersection failed (e.g. due to collinear
+	       * segments) we simply pick one of the inner segment
+	       * points
+	       */
+	      for(k = 0; k < p2len; k++)
+		{
+		  memcpy(&(newcv[(j+k)*stride]), p2s1,
+			 2*sizeof(double));
+		}
+	    }
+	  else
+	    {
+	      if(p2len > 1)
+		{
+		  for(k = 1; k < p2len; k++)
+		    {
+		      memcpy(&(newcv[(j+k)*stride]),
+			     &(newcv[j*stride]),
+			     2*sizeof(double));
+		    }
+		}
+	    }
+
+	  /* prepare next iteration */
+	  /*p1 = p2;*/
+	  p2 = p3;
+
+	  memcpy(t1, t2, 2*sizeof(double));
+	  memcpy(p1s1, p1s2, 2*sizeof(double));
+	  memcpy(p2s1, p2s2, 2*sizeof(double));
+
+	  j += p2len;
+	  p2len = p3len;
+	} /* while */
+
+      /* last point of offset curves control polygon */
+      for(i = 0; i < p3len; i++)
+	{
+	  newcv[(j+i)*stride]   = p2s2[0];
+	  newcv[(j+i)*stride+1] = p2s2[1];
+	}
+
+    } /* if */
+
+  /* set weights */
+  if(curve->is_rat)
+    {
+      for(j = 0; j < curve->length; j++)
+	{
+	  newcv[j*stride+3] = curve->controlv[j*stride+3];
+	}
+    }
+  else
+    {
+      for(j = 0; j < curve->length; j++)
+	{
+	  newcv[j*stride+3] = 1.0;
+	}
+    } /* if */
+
+  /* another special case: curve is periodic */
+  if((curve->type == AY_CTPERIODIC) && (curve->order > 2))
+    {
+      j = (curve->length-(curve->order-1))*stride;
+      memcpy(&(newcv[j]), &(newcv[0]),
+	     (curve->order-1)*stride*sizeof(double));
+    }
+
+
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(newkv = malloc((curve->length+curve->order)*sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(newkv, curve->knotv, (curve->length+curve->order)*sizeof(double));
+    }
+
+  ay_status = ay_nct_create(curve->order, curve->length, curve->knot_type,
+			    newcv, newkv, nc);
+
+cleanup:
+
+  if(ay_status || !nc)
+    {
+      if(newcv)
+	free(newcv);
+      if(newkv)
+	free(newkv);
+    }
+
+  if(vn)
+    free(vn);
+
+ return ay_status;
+} /* ay_nct_offsetsectionclosed */
+
+
 /** ay_nct_offsetsectionclosed:
  *  create offset curve of closed curve in section mode
  *
@@ -6549,8 +6612,6 @@ ay_nct_offsetsectionclosed(ay_object *o, double offset,
  int i, j, k, stride = 4;
  double *newcv = NULL, *newkv = NULL;
  ay_nurbcurve_object *curve = NULL;
- ay_nurbcurve_object *offcurve1 = NULL;
- ay_nurbcurve_object *offcurve2 = NULL;
  int p1len, p2len, p3len;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
  double t1[2], t2[2], n[2];
@@ -6781,7 +6842,7 @@ ay_nct_offsetsectionclosed(ay_object *o, double offset,
 
   if(curve->knot_type == AY_KTCUSTOM)
     {
-      if(!(newkv = calloc(curve->length+curve->order, sizeof(double))))
+      if(!(newkv = malloc((curve->length+curve->order)*sizeof(double))))
 	{
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
@@ -6804,12 +6865,6 @@ cleanup:
 
   if(vn)
     free(vn);
-
-  if(offcurve1)
-    ay_nct_destroy(offcurve1);
-
-  if(offcurve2)
-    ay_nct_destroy(offcurve2);
 
  return ay_status;
 } /* ay_nct_offsetsectionclosed */
