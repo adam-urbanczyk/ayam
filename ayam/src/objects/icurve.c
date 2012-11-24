@@ -274,6 +274,11 @@ ay_icurve_createcb(int argc, char *argv[], ay_object *o)
       length = 4;
     }
 
+  if(order < 3)
+    {
+      order = 4;
+    }
+
   if(fabs(sdlen) < AY_EPSILON)
     {
       sdlen = 0.125;
