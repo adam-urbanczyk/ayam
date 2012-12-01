@@ -400,6 +400,8 @@ ay_trim_notifycb(ay_object *o)
 	    } /* while */
 
 	  *next = ay_endlevel;
+
+	  ay_notify_object(npatch);
 	} /* if */
     } /* if */
 
