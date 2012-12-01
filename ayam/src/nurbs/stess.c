@@ -233,7 +233,7 @@ ay_stess_CurvePoints2D(int n, int p, double *U, double *Pw, int is_rat, int qf,
 		       int *Clen, double **C)
 {
  int span, j, k, l, m, mc = 0, vi, incu, mc1 = 0, mc2 = 0;
- double *N = NULL, Cw[3], *Ct = NULL, u, ud, u1, *V;
+ double *N = NULL, Cw[3], *Ct = NULL, u, ud, u1, *V = NULL;
 
   if(!U || !Pw || !Clen || !C)
     return AY_ENULL;
@@ -1114,7 +1114,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
 cleanup:
   if(tts)
-    free(tts); 
+    free(tts);
   if(tls)
     free(tls);
   if(td)
@@ -1134,37 +1134,7 @@ int
 ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
  ay_stess_uvp *p1, *p2, *p3;
- int done = AY_FALSE, inserted = 0, count = 0, toggle = 0;
-
-  p2 = b;
-  while(p2)
-    {
-      if(toggle)
-	toggle = 0;
-      else
-	toggle = 1;
-
-      count++;
-      p2 = p2->next;
-    } /* while */
-
-  /* never insert uneven numbers of points! */
-  if(toggle)
-    {
-      /*
-	printf("Uneven number of trimloop points detected!\n");
-      */
-
-      /* free b */
-      while(b)
-	{
-	  p2 = b->next;
-	  free(b);
-	  b = p2;
-	}
-
-      return AY_OK;
-    } /* if */
+ int done = AY_FALSE, inserted = 0;
 
   while(!done)
     {
@@ -1178,9 +1148,18 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	      if(p2)
 		{
 		  if(p2->v == p1->v)
-		    { /* Danger! Check for intersecting trimloops: */
+		    {
+		      /* Danger! Check for intersecting trimloops: */
 		      if(p1->type == 1)
-			return AY_ERROR; /* XXXX early exit! */
+			{
+			  while(b)
+			    {
+			      p2 = b->next;
+			      free(b);
+			      b = p2;
+			    }
+			  return AY_ERROR; /* XXXX early exit! */
+			}
 
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to a wanted uv-point;
@@ -1249,37 +1228,7 @@ int
 ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 {
  ay_stess_uvp *p1, *p2, *p3;
- int done = AY_FALSE, inserted = 0, count = 0, toggle = 0;
-
-  p2 = b;
-  while(p2)
-    {
-      if(toggle)
-	toggle = 0;
-      else
-	toggle = 1;
-
-      count++;
-      p2 = p2->next;
-    } /* while */
-
-  /* never insert uneven numbers of points! */
-  if(toggle)
-    {
-      /*
-	printf("Uneven number of trimloop points detected!\n");
-      */
-
-      /* free b */
-      while(b)
-	{
-	  p2 = b->next;
-	  free(b);
-	  b = p2;
-	}
-
-      return AY_OK;
-    } /* if */
+ int done = AY_FALSE, inserted = 0;
 
   while(!done)
     {
@@ -1295,7 +1244,15 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		  if(p2->u == p1->u)
 		    { /* Danger! Check for intersecting trimloops: */
 		      if(p1->type == 1)
-			return AY_ERROR; /* XXXX early exit! */
+			{
+			  while(b)
+			    {
+			      p2 = b->next;
+			      free(b);
+			      b = p2;
+			    }
+			  return AY_ERROR; /* XXXX early exit! */
+			}
 
 		      /* We, accidentally, have here a trimloop
 		       * point that is identical to a wanted uv-point;
@@ -1355,6 +1312,43 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 
  return AY_OK;
 } /* ay_stess_MergeVVectors */
+
+
+/* ay_stess_ClassifyTCPoint:
+ *  rule out trim-loop points where the loop just touches the
+ *  uv-line
+ */
+int
+ay_stess_ClassifyTCPoint(double *tc, int tclen, int i, double u)
+{
+ int left, right;
+
+  if(i == 0)
+    {
+      left = tclen-2;
+    }
+  else
+    {
+      left = i-1;
+    }
+
+  if(i == tclen-1)
+    {
+      right = 1;
+    }
+  else
+    {
+      right = i+1;
+    }
+
+  if((tc[left*2]-u > AY_EPSILON) && (tc[right*2]-u > AY_EPSILON))
+    return AY_FALSE;
+
+  if((u-tc[left*2] > AY_EPSILON) && (u-tc[right*2] > AY_EPSILON))
+    return AY_FALSE;
+
+ return AY_TRUE;
+} /* ay_stess_ClassifyTCPoint */
 
 
 /* ay_stess_TessTrimmedNPU:
@@ -1445,26 +1439,35 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 
 	      for(l = 0; l < (tcslens[k]-1); l++)
 		{
-		  /* pre-select trimloop section */
 		  ind = l*2;
+		  if(fabs(tt[ind]-u) < AY_EPSILON)
+		    {		      
+		      if(ay_stess_ClassifyTCPoint(tt, tcslens[k], l, u))
+			{
+			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			    {
+			      return AY_EOMEM;
+			    }
+			  newuvp->type = 1;
+			  newuvp->dir = tcsdirs[k];
+			  newuvp->u = tt[ind];
+			  newuvp->v = tt[ind+1];
+			  *olduvp = newuvp;
+			  olduvp = &(newuvp->next);
+			}
+		    }
+		  else
 		  if(((tt[ind] <= u) && (tt[ind+2] >= u)) ||
 		     ((tt[ind] >= u) && (tt[ind+2] <= u)))
 		    {
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
-		      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]),
+		      if((ay_stess_IntersectLines2D(&(tt[ind]),
+						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
-			{ /* u-line intersects with trimcurve */
-
-			  /* test commented out, because it will make
-			     problems with uvp-types */
-
-			  /* check whether ipoint is farther away enough
-			     from current v, v+vd */
-			  /* if((fabs(ipoint[1] - v) > AY_STESSEPSILON) &&
-			     (fabs(ipoint[1] - (v+vd)) > AY_STESSEPSILON))
-			     {*/ /* yes it is */
+			{
+			  /* u-line intersects with trimcurve */
 			  /* add new point */
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
@@ -1476,7 +1479,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 			  newuvp->v = ipoint[1];
 			  *olduvp = newuvp;
 			  olduvp = &(newuvp->next);
-			  /*		    }*/ /* if */
 			} /* if */
 		    } /* if */
 		} /* for */
@@ -1488,30 +1490,18 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
       /* merge vectors */
       if(trimuvp)
 	{
-	  ay_status = AY_OK;
 	  ay_status = ay_stess_MergeUVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
 		       "Intersecting or misoriented trimcurves!");
 
-	      if(trimuvp)
-		{
-		  uvpptr = trimuvp;
-		  while(uvpptr)
-		    {
-		      uvpptr2 = uvpptr->next;
-		      free(uvpptr);
-		      uvpptr = uvpptr2;
-		    }
-		} /* if */
 	      return AY_ERROR;
 	    } /* if */
 	} /* if */
 
       u += ud;
     } /* for */
-
 
   /* remove unwanted uvps */
   first_loop = 1;
@@ -1737,24 +1727,34 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 		{
 		  /* pre-select trimloop section */
 		  ind = l*2;
+		  if(fabs(tt[ind]-v) < AY_EPSILON)
+		    {		      
+		      if(ay_stess_ClassifyTCPoint(tt+1, tcslens[k], l, v))
+			{
+			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
+			    {
+			      return AY_EOMEM;
+			    }
+			  newuvp->type = 1;
+			  newuvp->dir = tcsdirs[k];
+			  newuvp->u = tt[ind];
+			  newuvp->v = tt[ind+1];
+			  *olduvp = newuvp;
+			  olduvp = &(newuvp->next);
+			}
+		    }
+		  else
 		  if(((tt[ind+1] <= v) && (tt[ind+2+1] >= v)) ||
 		     ((tt[ind+1] >= v) && (tt[ind+2+1] <= v)))
 		    {
 		      ipoint[0] = 0.0;
 		      ipoint[1] = 0.0;
 
-		      if((ay_stess_IntersectLines2D(&(tt[ind]), &(tt[ind+2]),
+		      if((ay_stess_IntersectLines2D(&(tt[ind]),
+						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
-			{ /* u-line intersects with trimcurve */
-
-			  /* test commented out, because it will make
-			     problems with uvp-types */
-
-			  /* check whether ipoint is farther away enough
-			     from current v, v+vd */
-			  /* if((fabs(ipoint[1] - v) > AY_STESSEPSILON) &&
-			     (fabs(ipoint[1] - (v+vd)) > AY_STESSEPSILON))
-			     {*/ /* yes it is */
+			{
+			  /* u-line intersects with trimcurve */
 			  /* add new point */
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
 			    {
@@ -1766,7 +1766,6 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 			  newuvp->v = ipoint[1];
 			  *olduvp = newuvp;
 			  olduvp = &(newuvp->next);
-			  /*		    }*/ /* if */
 			} /* if */
 		    } /* if */
 		} /* for */
@@ -1778,23 +1777,12 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
       /* merge vectors */
       if(trimuvp)
 	{
-	  ay_status = AY_OK;
 	  ay_status = ay_stess_MergeVVectors(uvps[i], trimuvp);
 	  if(ay_status)
 	    {
 	      ay_error(AY_ERROR, fname,
 		       "Intersecting or misoriented trimcurves!");
 
-	      if(trimuvp)
-		{
-		  uvpptr = trimuvp;
-		  while(uvpptr)
-		    {
-		      uvpptr2 = uvpptr->next;
-		      free(uvpptr);
-		      uvpptr = uvpptr2;
-		    }
-		}
 	      return AY_ERROR;
 	    }
 	}
@@ -2479,7 +2467,7 @@ cleanup:
       ay_stess_destroy(p);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_stess_TessTrimmedNP */
 
 
@@ -2490,7 +2478,7 @@ cleanup:
 int
 ay_stess_TessNP(ay_object *o, int qf)
 {
- int ay_status = AY_OK;
+ int ay_status = AY_ERROR;
  /*char fname[] = "stess_TessNP";*/
  ay_nurbpatch_object *npatch;
 
@@ -2507,10 +2495,12 @@ ay_stess_TessNP(ay_object *o, int qf)
       /* this is a nontrivially trimmed NURBS patch */
       ay_status = ay_stess_TessTrimmedNP(o, qf);
     }
-  else
+
+  if(ay_status == AY_ERROR)
     {
-      /* this is an untrimmed or trivially trimmed NURBS patch,
-         we can safely ignore potentially present trim curves... */
+      /* trimmed tesselation failed or
+	 this is an untrimmed or trivially trimmed NURBS patch,
+         where we can safely ignore potentially present trim curves... */
       if(npatch->stess)
 	{
 	  ay_stess_destroy(npatch);
