@@ -159,7 +159,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 /** ay_npt_destroy:
  *   gracefully destroy a NURBS patch object
  *
- * @param[in] patch NURBS patch object to destroy
+ * @param[in,out] patch NURBS patch object to destroy
  */
 void
 ay_npt_destroy(ay_nurbpatch_object *patch)
@@ -229,7 +229,7 @@ ay_npt_createnpatchobject(ay_object **result)
 /** ay_npt_resetdisplay:
  *   reset the display attributes of a NURBS patch
  *
- * @param[in] o NURBS patch object to reset
+ * @param[in,out] o NURBS patch object to reset
  */
 void
 ay_npt_resetdisplay(ay_object *o)
@@ -250,7 +250,10 @@ ay_npt_resetdisplay(ay_object *o)
 
 /* ay_npt_euctohom:
  *  convert rational coordinates from euclidean to homogeneous style
- *  for the NURBS surface <np>
+ *
+ * @param[in,out] np NURBS patch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_euctohom(ay_nurbpatch_object *np)
@@ -282,7 +285,10 @@ ay_npt_euctohom(ay_nurbpatch_object *np)
 
 /* ay_npt_homtoeuc:
  *  convert rational coordinates from homogeneous to euclidean style
- *  for the NURBS surface <np>
+ *
+ * @param[in,out] np NURBS patch object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_homtoeuc(ay_nurbpatch_object *np)
@@ -2273,9 +2279,19 @@ cleanup:
 } /* ay_npt_buildfromcurvestcmd */
 
 
-/* ay_npt_fillgap:
- *  fill the gap between the patches <o1> and <o2>
+/** ay_npt_fillgap:
+ *  fill the gap between the patches \a o1 and \a o2
  *  with another NURBS patch (fillet)
+ *
+ * @param[in] o1 first NURBS patch object
+ * @param[in] o2 second NURBS patch object
+ * @param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
+ *  of the distance between last point in c1 and first point in c2
+ * @param[in] uv specification of which sides of the patches to connect
+ *  may be NULL, in which case the patches are connected via un(o1)-u0(o2)
+ * @param[in,out] result fillet patch
+ *
+ * @return AY_OK on success, error code otherwise.
  */
 int
 ay_npt_fillgap(ay_object *o1, ay_object *o2,
@@ -5786,10 +5802,10 @@ cleanup:
 
 
 /* ay_npt_applytrafo:
- *  apply transformations from object to all control points,
+ *  applies transformations from object to all control points,
  *  then reset the objects transformation attributes
  *
- * @param[in] o NPatch object to process
+ * @param[in,out] p object of type NPatch to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -5828,8 +5844,8 @@ ay_npt_applytrafo(ay_object *p)
 
 
 /* ay_npt_getpntfromindex:
-* get address of a single control point from its indices
- * (performing bounds checking)
+ *  get address of a single control point from its indices
+ *  (performing bounds checking)
  *
  * @param[in] patch NPatch object to process
  * @param[in] indexu index of desired control point in U dimension (width)
@@ -10477,7 +10493,7 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
 	      return;
 	    }
 	  j--;
-	}
+	} /* while */
     }
   else
     {
@@ -10507,7 +10523,7 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
 	      return;
 	    }
 	  j++;
-	}
+	} /* while */
     } /* if */
 
   *dp = p2;
@@ -10540,12 +10556,30 @@ ay_npt_gnduc(char dir, ay_nurbpatch_object *np, int i, double *p,
       if(i == np->width-1)
 	{
 	  /* wrap around */
+	  i = 1;
 	  p2 = p - ((np->width-2) * np->height * stride);
 	}
       else
 	{
 	  p2 = p + offset;
 	}
+
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we fall off the patch */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 += offset;
+
+	  /* degeneracy checks */
+	  if(p == p2 || i == np->width-2)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  i++;
+	} /* while */
     }
   else
     {
@@ -10554,29 +10588,31 @@ ay_npt_gnduc(char dir, ay_nurbpatch_object *np, int i, double *p,
       if(i == 0)
 	{
 	  /* wrap around */
+	  i = np->width-2;
 	  p2 = p + ((np->width-2) * np->height * stride);
 	}
       else
 	{
 	  p2 = p + offset;
 	}
-    }
 
-  /* apply offset to p2 until p2 points to
-     a different control point than p
-     (in terms of their coordinate values)
-     or we get to p again */
-  while(AY_V4COMP(p, p2))
-    {
-      p2 += offset;
-
-      /* degeneracy check */
-      if(p == p2)
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we fall off the patch */
+      while(AY_V4COMP(p, p2))
 	{
-	  *dp = NULL;
-	  return;
-	}
-    } /* while */
+	  p2 += offset;
+
+	  /* degeneracy checks */
+	  if(p == p2 || i == 1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  i--;
+	} /* while */
+    } /* if */
 
   *dp = p2;
 
@@ -10614,6 +10650,23 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
 	{
 	  p2 = p + offset;
 	}
+
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we fall off the patch */
+      while(AY_V4COMP(p, p2))
+	{
+	  p2 += offset;
+
+	  /* degeneracy check */
+	  if(p == p2 || j == 1)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  j--;
+	} /* while */
     }
   else
     {
@@ -10628,23 +10681,24 @@ ay_npt_gndvc(char dir, ay_nurbpatch_object *np, int j, double *p,
 	{
 	  p2 = p + offset;
 	}
-    }
 
-  /* apply offset to p2 until p2 points to
-     a different control point than p
-     (in terms of their coordinate values)
-     or we get to p again */
-  while(AY_V4COMP(p, p2))
-    {
-      p2 += offset;
-
-      /* degeneracy check */
-      if(p == p2)
+      /* apply offset to p2 until p2 points to
+	 a different control point than p
+	 (in terms of their coordinate values)
+	 or we get to p again or we fall off the patch */
+      while(AY_V4COMP(p, p2))
 	{
-	  *dp = NULL;
-	  return;
-	}
-    } /* while */
+	  p2 += offset;
+
+	  /* degeneracy check */
+	  if(p == p2 || j == np->height-2)
+	    {
+	      *dp = NULL;
+	      return;
+	    }
+	  j++;
+	} /* while */
+    } /* if */
 
   *dp = p2;
 
