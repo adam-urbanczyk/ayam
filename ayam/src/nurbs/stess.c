@@ -1149,9 +1149,15 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 		{
 		  if(p2->v == p1->v)
 		    {
-		      /* Danger! Check for intersecting trimloops: */
-		      if(p1->type == 1)
+		      /* We, accidentally, have here a trimloop
+		       * point that is identical to another point;
+		       * if the other point is a uv-point we transmogrify
+		       * the uv-point to a trimloop point and delete the
+		       * original trimloop point!
+		       */
+		      if((p1->type == 1) && (p1->dir != p2->dir))
 			{
+			  /* intersecting trimcurves */
 			  while(b)
 			    {
 			      p2 = b->next;
@@ -1161,15 +1167,6 @@ ay_stess_MergeUVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 			  return AY_ERROR; /* XXXX early exit! */
 			}
 
-		      /* We, accidentally, have here a trimloop
-		       * point that is identical to a wanted uv-point;
-		       * we therefore have to transmogrify the uv-point to
-		       * a trimloop point and delete the original trimloop
-		       * point!
-		       */
-		      /*
-		      printf("Transmogrifying point!\n");
-		      */
 		      p1->type = 1;
 		      p1->dir = p2->dir;
 		      p3 = p2->next;
@@ -1242,9 +1239,16 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 	      if(p2)
 		{
 		  if(p2->u == p1->u)
-		    { /* Danger! Check for intersecting trimloops: */
-		      if(p1->type == 1)
+		    {
+		      /* We, accidentally, have here a trimloop
+		       * point that is identical to another point;
+		       * if the other point is a uv-point we transmogrify
+		       * the uv-point to a trimloop point and delete the
+		       * original trimloop point!
+		       */
+		      if((p1->type == 1) && (p1->dir != p2->dir))
 			{
+			  /* intersecting trimcurves */
 			  while(b)
 			    {
 			      p2 = b->next;
@@ -1254,15 +1258,6 @@ ay_stess_MergeVVectors(ay_stess_uvp *a, ay_stess_uvp *b)
 			  return AY_ERROR; /* XXXX early exit! */
 			}
 
-		      /* We, accidentally, have here a trimloop
-		       * point that is identical to a wanted uv-point;
-		       * we therefore have to transmogrify the uv-point to
-		       * a trimloop point and delete the original trimloop
-		       * point!
-		       */
-		      /*
-		      fprintf(stderr,"Transmogrifying point!\n");
-		      */
 		      p1->type = 1;
 		      p1->dir = p2->dir;
 		      p3 = p2->next;
@@ -1445,9 +1440,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 		  if((fabs(tt[ind]-u) < AY_EPSILON) &&
 		     (tt[ind+1] >= v) && (tt[ind+1] < v+vd))
 		    {
-		      /*
-		      printf("touching point at uv:%lg,%lg\n",u,v);
-		      */
 		      if(ay_stess_ClassifyTCPoint(tt, tcslens[k], l, u))
 			{
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
@@ -1473,9 +1465,6 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 						    &(tt[ind+2]),
 						    p3, p4, ipoint)))
 			{
-			  /*
-		      printf("intersecting point at uv:%lg,%lg\n",u,v);
-			  */
 			  /* u-line intersects with trimcurve */
 			  /* add new point */
 			  if(!(newuvp = calloc(1, sizeof(ay_stess_uvp))))
@@ -1512,7 +1501,7 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
 	{
 	  /* remove unwanted lines (all lines that contain
 	     no trimloop points) */
-	  if(!first_loop_cw)
+	  if(first_loop_cw)
 	    {
 	      uvpptr = uvps[i];
 	      while(uvpptr)
@@ -1529,9 +1518,9 @@ ay_stess_TessTrimmedNPU(ay_object *o, int qf,
     } /* for */
 
   /* remove unwanted uvps */
-  first_loop = 1;
   for(i = 0; i < Cn; i++)
     {
+      first_loop = 1;
       olduvp = &(uvps[i]);
       uvpptr = uvps[i];
 
@@ -1780,7 +1769,7 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
 	{
 	  /* remove unwanted lines (all lines that contain
 	     no trimloop points) */
-	  if(!first_loop_cw)
+	  if(first_loop_cw)
 	    {
 	      uvpptr = uvps[i];
 	      while(uvpptr)
@@ -1797,9 +1786,9 @@ ay_stess_TessTrimmedNPV(ay_object *o, int qf,
     } /* for */
 
   /* remove unwanted uvps */
-  first_loop = AY_TRUE;
   for(i = 0; i < Cm; i++)
     {
+      first_loop = AY_TRUE;
       olduvp = &(uvps[i]);
       uvpptr = uvps[i];
 
