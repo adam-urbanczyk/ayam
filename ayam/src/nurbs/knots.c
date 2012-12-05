@@ -220,7 +220,7 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
     case AY_KTCENTRI:
 
       deg = vorder-1;
-
+      ub = NULL;
       if(patch->uknot_type == AY_KTCHORDAL)
 	ay_knots_chordparamnp(1, patch->controlv, width, height, 4, &ub);
       else
