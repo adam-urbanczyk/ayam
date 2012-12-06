@@ -222,7 +222,7 @@ AQSISRI2RIB =
 # If you use the libribout from BMRT2.x (x >= 5), do _not_ link with
 # libslcargs (leave SLCARGSLIB empty), as its functionality is already
 # present in libribout (in any case, keep -DAYUSESLCARGS set in CFLAGS above)!
-BMRTDIR = ../../BMRT2.5
+BMRTDIR = ../../BMRT2.6
 BMRTINC = -I$(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
 # if you use BMRT libribout and not Affine:
