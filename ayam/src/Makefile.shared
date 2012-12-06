@@ -88,24 +88,22 @@ CFLAGS = -O -DAYUSEAFFINE
 # MacOSX with Aqua:
 #CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST
 # MacOSX with Aqua (universal binary, support for older MacOSX):
-CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2
+#CFLAGS = -O -DAYWITHAQUA -DAYUSEAFFINE -DAYENABLEFEXIT -DUSE_NON_CONST -arch ppc -arch i386 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.2
 # MacOSX with X11:
 #CFLAGS = -O -DAYUSEAFFINE -DAYENABLEFEXIT
 
 # ld flag to switch to static linking
 # IRIX:
-#LDSWSTATIC = -static
+LDSWSTATIC = -static
 # Linux:
-LDSWSTATIC = -Wl,-Bstatic
 #LDSWSTATIC = -Wl,-Bstatic
 # MacOSX:
 #LDSWSTATIC =
 
 # ld flag to switch to dynamic linking
 # IRIX:
-#LDSWDYNAMIC = -dynamic
+LDSWDYNAMIC = -dynamic
 # Linux:
-LDSWDYNAMIC = -Wl,-Bdynamic
 #LDSWDYNAMIC = -Wl,-Bdynamic
 # MacOSX:
 #LDSWDYNAMIC =
@@ -148,7 +146,7 @@ TIFFLIB = -ltiff
 
 # Tcl/Tk
 # Tcl directory
-TCLDIR = ../../tcl8.2.2
+TCLDIR = ../../tcl8.4.19
 #TCLDIR = ../../tcl8.0
 
 # Tcl includes
@@ -158,7 +156,7 @@ TCLINC = -I$(TCLDIR)/generic
 
 # Tcl library
 # link options for linking with Tcl library
-TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
+TCLLIB = -L$(TCLDIR)/unix -ltcl8.4
 #TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
 # if you have an installed Tcl/Tk, you probably just want:
 #TCLLIB = -ltcl
@@ -167,7 +165,7 @@ TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
 
 # Tk sources directory
 # Note: You really need the Tk _sources_ in order to compile Ayam!
-TKDIR = ../../tk8.2.2
+TKDIR = ../../tk8.4.19
 #TKDIR = ../../tk8.0
 
 # Tk includes
@@ -177,7 +175,7 @@ TKINC = -I$(TKDIR)/generic -I$(TKDIR)/unix
 
 # Tk library
 # link options for linking with Tk library
-TKLIB = -L$(TKDIR)/unix -ltk8.2
+TKLIB = -L$(TKDIR)/unix -ltk8.4
 #TKLIB = -L$(TKDIR)/unix -ltk8.0
 # if you have an installed Tcl/Tk, you probably just want:
 #TKLIB = -ltk
