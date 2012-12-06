@@ -344,7 +344,7 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
   if(!controlv)
     return AY_ENULL;
 
-  if(!(ncontrolv = calloc(height*new_width*stride,sizeof(double))))
+  if(!(ncontrolv = malloc(height*new_width*stride*sizeof(double))))
     return AY_EOMEM;
 
   if(new_width < width)
@@ -488,7 +488,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
   if(!controlv)
     return AY_ENULL;
 
-  if(!(ncontrolv = calloc(width*new_height*stride,sizeof(double))))
+  if(!(ncontrolv = malloc(width*new_height*stride*sizeof(double))))
     return AY_EOMEM;
 
   if(new_height < height)
@@ -614,7 +614,7 @@ ay_npt_swaparray(double **controlvptr, int stride,
   if(!controlvptr || !(*controlvptr))
     return AY_ENULL;
 
-  if(!(ncontrolv = calloc(width*height*stride, sizeof(double))))
+  if(!(ncontrolv = malloc(width*height*stride*sizeof(double))))
     return AY_EOMEM;
 
   for(i = 0; i < width; i++)
@@ -954,9 +954,9 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 
   knot_count = length + order;
 
-  if((knots = calloc(knot_count, sizeof(GLfloat))) == NULL)
+  if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
     return AY_EOMEM;
-  if((controls = calloc(length*(curve->is_rat?3:2),
+  if((controls = malloc(length*(curve->is_rat?3:2)*
 			sizeof(GLfloat))) == NULL)
     { free(knots); knots = NULL; return AY_EOMEM; }
 
@@ -1065,7 +1065,7 @@ ay_npt_wribtrimcurves(ay_object *o)
     return AY_OK;
 
   /* count curves per loop */
-  if(!(ncurves = calloc(nloops, sizeof(RtInt))))
+  if(!(ncurves = malloc(nloops * sizeof(RtInt))))
     return AY_EOMEM;
 
   trim = o->down;
@@ -1090,6 +1090,7 @@ ay_npt_wribtrimcurves(ay_object *o)
 	  nloops++;
 	  break;
 	case AY_IDLEVEL:
+	  ncurves[nloops] = 0;
 	  loop = trim->down;
 	  while(loop->next)
 	    {
@@ -1156,28 +1157,28 @@ ay_npt_wribtrimcurves(ay_object *o)
       trim = trim->next;
     } /* while */
 
-  if(!(order = calloc(totalcurves,sizeof(RtInt))))
+  if(!(order = malloc(totalcurves*sizeof(RtInt))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(n = calloc(totalcurves,sizeof(RtInt))))
+  if(!(n = malloc(totalcurves*sizeof(RtInt))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(knot = calloc(totalknots,sizeof(RtFloat))))
+  if(!(knot = malloc(totalknots*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(min = calloc(totalcurves,sizeof(RtFloat))))
+  if(!(min = malloc(totalcurves*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(max = calloc(totalcurves,sizeof(RtFloat))))
+  if(!(max = malloc(totalcurves*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(u = calloc(totalcontrol,sizeof(RtFloat))))
+  if(!(u = malloc(totalcontrol*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(v = calloc(totalcontrol,sizeof(RtFloat))))
+  if(!(v = malloc(totalcontrol*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(w = calloc(totalcontrol,sizeof(RtFloat))))
+  if(!(w = malloc(totalcontrol*sizeof(RtFloat))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   trim = o->down;
@@ -1392,7 +1393,7 @@ ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere)
  double t = 0.0, d = 0.0;
  int i, a;
 
-  if(!(controls = calloc(100, sizeof(double))))
+  if(!(controls = malloc(100 * sizeof(double))))
     return AY_EOMEM;
 
   t = sqrt(3.0);
@@ -1777,19 +1778,18 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
 
       new->type = AY_IDNCURVE;
 
-      if(!(knotv = calloc(knots, sizeof(double))))
+      if(!(knotv = malloc(knots * sizeof(double))))
 	{
 	  free(new);
 	  return AY_EOMEM;
 	}
       memcpy(knotv, patch->vknotv, (size_t)(knots*sizeof(double)));
 
-      if(!(controlv = calloc(stride*dstlen, sizeof(double))))
+      if(!(controlv = malloc(stride*dstlen*sizeof(double))))
 	{
 	  free(new); free(knotv);
 	  return AY_EOMEM;
 	}
-
       memcpy(controlv, &(patch->controlv[i*dstlen*stride]),
 	     (size_t)(stride*dstlen*sizeof(double)));
 
@@ -1880,14 +1880,14 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
 
       new->type = AY_IDNCURVE;
 
-      if(!(knotv = calloc(knots, sizeof(double))))
+      if(!(knotv = malloc(knots * sizeof(double))))
 	{
 	  free(new);
 	  return AY_EOMEM;
 	}
       memcpy(knotv, patch->uknotv, (size_t)(knots*sizeof(double)));
 
-      if(!(controlv = calloc(stride*dstlen, sizeof(double))))
+      if(!(controlv = malloc(stride*dstlen*sizeof(double))))
 	{
 	  free(new); free(knotv);
 	  return AY_EOMEM;
@@ -2087,7 +2087,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
   newvknot_type = nc->knot_type;
   if(nc->knot_type == AY_KTCUSTOM)
     {
-      if(!(newvknotv = calloc(newvknots, sizeof(double))))
+      if(!(newvknotv = malloc(newvknots * sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -2109,7 +2109,7 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
   new->hide_children = AY_TRUE;
   new->down = ay_endlevel;
 
-  if(!(newcontrolv = calloc(newwidth*newheight*4, sizeof(double))))
+  if(!(newcontrolv = malloc(newwidth*newheight*4*sizeof(double))))
     {
       if(newvknotv)
 	free(newvknotv);
@@ -2375,7 +2375,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
   new->uknot_type = AY_KTNURB;
   new->width = 4;
 
-  if(!(new->vknotv = calloc(np1->height+np1->vorder, sizeof(double))))
+  if(!(new->vknotv = malloc((np1->height+np1->vorder) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(new->vknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
@@ -2390,7 +2390,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
     goto cleanup;
   new->vknot_type = np1->vknot_type;
 
-  if(!(new->controlv = calloc(new->width*new->height*stride,
+  if(!(new->controlv = malloc(new->width*new->height*stride*
 			      sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   ncv = new->controlv;
@@ -3002,7 +3002,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     return AY_EOMEM;
 
-  if(!(uknotv = calloc(curve->length+curve->order, sizeof(double))))
+  if(!(uknotv = malloc((curve->length+curve->order)*sizeof(double))))
     {
       free(new);
       return AY_EOMEM;
@@ -3020,7 +3020,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
     {
       new->height = sections+(order-1);
       knot_count = new->height+order;
-      if(!(V = calloc(knot_count, sizeof(double))))
+      if(!(V = malloc(knot_count * sizeof(double))))
 	{
 	  ay_npt_destroy(new);
 	  return AY_EOMEM;
@@ -3053,7 +3053,7 @@ ay_npt_revolve(ay_object *o, double arc, int sections, int order,
 	}
     } /* if */
 
-  if(!(new->controlv = calloc(new->height*new->width*4,
+  if(!(new->controlv = malloc(new->height*new->width*4*
 			      sizeof(double))))
     {
       ay_npt_destroy(new);
@@ -3170,7 +3170,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   tr = (ay_nurbcurve_object *)(o2->refine);
 
   /* apply trafos to cross-section curves controlv */
-  if(!(cscv = calloc(cs->length * stride, sizeof(double))))
+  if(!(cscv = malloc(cs->length * stride * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   memcpy(cscv, cs->controlv, cs->length * stride * sizeof(double));
 
@@ -3184,7 +3184,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
     }
 
   /* apply trafos to trajectory curves controlv */
-  if(!(trcv = calloc(tr->length * stride, sizeof(double))))
+  if(!(trcv = malloc(tr->length * stride * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   memcpy(trcv, tr->controlv, tr->length * stride * sizeof(double));
 
@@ -3200,7 +3200,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   if(!(new = calloc(1, sizeof(ay_nurbpatch_object))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  if(!(new->uknotv = calloc(tr->length+tr->order, sizeof(double))))
+  if(!(new->uknotv = malloc((tr->length + tr->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(new->uknotv, tr->knotv, (tr->length+tr->order)*sizeof(double));
@@ -3208,7 +3208,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   new->uknot_type = tr->knot_type;
   new->width = tr->length;
 
-  if(!(new->vknotv = calloc(cs->length+cs->order, sizeof(double))))
+  if(!(new->vknotv = malloc((cs->length + cs->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   memcpy(new->vknotv, cs->knotv, (cs->length+cs->order)*sizeof(double));
@@ -3216,7 +3216,7 @@ ay_npt_swing(ay_object *o1, ay_object *o2,
   new->vknot_type = cs->knot_type;
   new->height = cs->length;
 
-  if(!(new->controlv = calloc(cs->length*tr->length, stride*sizeof(double))))
+  if(!(new->controlv = malloc((cs->length*tr->length*stride*sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* fill controlv */
