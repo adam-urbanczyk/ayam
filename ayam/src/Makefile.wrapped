@@ -72,7 +72,7 @@ MKDIR = mkdir -p
 # o add -DAYNOSAFEINTERP if you want scripts in Script objects and NS tags
 #   to be run in the main interpreter (not recommended for security reasons)
 
-CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
+CFLAGS = -O -DAYWRAPPED -DAYUSEAFFINE
 # IRIX (-DAYIRIXBUG is needed by ncurve.c to work around a bug in libGLU):
 #CFLAGS = -O -fullwarn -woff 1048 -DAYWRAPPED -DAYIRIXBUG -DAYUSESLCARGS -DAYUSEBMRTRIBOUT
 # Linux:
@@ -84,18 +84,16 @@ CFLAGS = -O2 -DAYWRAPPED -DAYUSESLCARGS -DAYUSEBMRTRIBOUT -DAYENABLEWAIT
 
 # ld flag to switch to static linking
 # IRIX:
-#LDSWSTATIC = -static
+LDSWSTATIC = -static
 # Linux:
-LDSWSTATIC = -Wl,-Bstatic
 #LDSWSTATIC = -Wl,-Bstatic
 # MacOSX:
 #LDSWSTATIC =
 
 # ld flag to switch to dynamic linking
 # IRIX:
-#LDSWDYNAMIC = -dynamic
+LDSWDYNAMIC = -dynamic
 # Linux:
-LDSWDYNAMIC = -Wl,-Bdynamic
 #LDSWDYNAMIC = -Wl,-Bdynamic
 # MacOSX:
 #LDSWDYNAMIC =
@@ -104,9 +102,9 @@ LDSWDYNAMIC = -Wl,-Bdynamic
 # (gcc needs -rdynamic to allow shared objects access to global symbols)
 # (gcc needs -nodefaultlibs to allow libstdc++ be compiled statically)
 # IRIX:
-#EXLDFLAGS =
+EXLDFLAGS =
 # Linux:
-EXLDFLAGS = -rdynamic -nodefaultlibs
+#EXLDFLAGS = -rdynamic -nodefaultlibs
 # MacOSX:
 #EXLDFLAGS = -flat_namespace -undefined suppress
 
@@ -130,31 +128,30 @@ TIFFLIB = -ltiff
 
 # Tcl/Tk
 # Tcl directory
-TCLDIR = ../../tcl8.2.2
-#TCLDIR = ../../tcl8.0
+TCLDIR = ../../tcl8.4.19
+#TCLDIR = ../../tcl8.2
 
 # Tcl includes
 TCLINC = -I$(TCLDIR)/generic
 
 # Tcl library
 # link options for linking with Tcl library
-TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
-#TCLLIB = -L$(TCLDIR)/unix -ltcl8.0
+TCLLIB = -L$(TCLDIR)/unix -ltcl8.4
+#TCLLIB = -L$(TCLDIR)/unix -ltcl8.2
 #TCLLIB = -ltcl
 
 # Tk sources directory
 # Note: You really need the Tk sources in order to compile Ayam!
-TKDIR = ../../tk8.2.2
-#TKDIR = ../../tk8.0
-#TKDIR = /home/randi/work/tk8.0/generic
+TKDIR = ../../tk8.4.19
+#TKDIR = ../../tk8.2
 
 # Tk includes
 TKINC = -I$(TKDIR)/generic -I$(TKDIR)/unix
 
 # Tk library
 # link options for linking with Tk library
-TKLIB = -L$(TKDIR)/unix -ltk8.2
-#TKLIB = -L$(TKDIR)/unix -ltk8.0
+TKLIB = -L$(TKDIR)/unix -ltk8.4
+#TKLIB = -L$(TKDIR)/unix -ltk8.2
 #TCLLIB = -ltk
 
 
@@ -168,10 +165,10 @@ X11LIBS = -L/usr/X11R6/lib -lXmu -lXext -lX11
 # where is ributil.h?
 AFFINEINC = -I./affine/include
 # if you do not use Affine as BMRT libribout replacement:
-AFFINEOBJS = 
+#AFFINEOBJS = 
 # if you use affine as BMRT libribout replacement
 # (add -DAYUSEAFFINE to CFLAGS above!):
-#AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
+AFFINEOBJS = ./affine/src/write.o ./affine/src/constant.o
 
 
 # Aqsis
@@ -197,9 +194,9 @@ BMRTDIR = ../../BMRT2.6
 BMRTINC = -I$(BMRTDIR)/include
 BMRTLIBDIR = $(BMRTDIR)/lib
 # if you use BMRT libribout and not Affine:
-RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
+#RIBOUTLIB = -L$(BMRTLIBDIR) -lribout
 # if you use Affine or Aqsis libri2rib as BMRT libribout replacement:
-#RIBOUTLIB =
+RIBOUTLIB =
 # if you do not use libslcargs from BMRT:
 SLCARGSLIB =
 # if you use Affine as BMRT libribout replacement and libslcargs from BMRT:
