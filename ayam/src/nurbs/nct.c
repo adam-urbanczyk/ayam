@@ -494,7 +494,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
   if(new_length == curve->length)
     return AY_OK;
 
-  if(!(ncontrolv = calloc(4*new_length, sizeof(double))))
+  if(!(ncontrolv = malloc(4*new_length*sizeof(double))))
     return AY_EOMEM;
 
   if(new_length < curve->length)
@@ -758,7 +758,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       if(count == 0)
 	return AY_ERROR;
 
-      if(!(X = calloc(count, sizeof(double))))
+      if(!(X = malloc(count*sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
@@ -775,7 +775,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 	} /* for */
     } /* if */
 
-  if(!(Ubar = calloc((curve->length + curve->order + count),
+  if(!(Ubar = malloc((curve->length + curve->order + count) *
 		     sizeof(double))))
     {
       if(!newknotv)
@@ -783,7 +783,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
+  if(!(Qw = malloc((curve->length + count)*4*sizeof(double))))
     {
       if(!newknotv)
 	free(X);
@@ -906,7 +906,7 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
   if(count)
     {
       /* allocate new control vector */
-      if(!(Qw = calloc((curve->length + count)*4, sizeof(double))))
+      if(!(Qw = malloc((curve->length + count)*4*sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  return AY_ERROR;
@@ -995,7 +995,7 @@ ay_nct_refinecv(ay_nurbcurve_object *curve, ay_point *selp)
 	    }
 
 	  /* allocate and fill new knot vector */
-	  if(!(U = calloc(curve->length+curve->order+count, sizeof(double))))
+	  if(!(U = malloc((curve->length+curve->order+count)*sizeof(double))))
 	    {
 	      free(nps);
 	      free(Qw);
@@ -1093,7 +1093,7 @@ ay_nct_refinetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  Tcl_SplitList(interp, argv[1], &aknotc, &aknotv);
 
-	  if(!(X = calloc(aknotc, sizeof(double))))
+	  if(!(X = malloc(aknotc*sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM,argv[0],NULL);
 	      if(aknotv)
@@ -1238,10 +1238,10 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  rs = (curve->order - 1) - s;
 	  curve->length += rs;
 
-	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	  if(!(newcontrolv = malloc(curve->length*stride*sizeof(double))))
 	    return AY_EOMEM;
 
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
 	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-rs-1,
@@ -1289,10 +1289,10 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
 	  re = (curve->order - 1) - s;
 	  curve->length += re;
 
-	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	  if(!(newcontrolv = malloc(curve->length*stride*sizeof(double))))
 	    return AY_EOMEM;
 
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
 	  ay_status = ay_nb_InsertKnotCurve4D(curve->length-re-1,
@@ -1335,10 +1335,10 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
       break;
     }
 
-  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+  if(!(newcontrolv = malloc(curve->length*stride*sizeof(double))))
     return AY_EOMEM;
 
-  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
   switch(side)
@@ -1402,10 +1402,10 @@ ay_nct_clampperiodic(ay_nurbcurve_object *curve)
   nq = np+(p*2);
 
   /* get some fresh memory to work on */
-  if(!(newcontrolv = calloc(nq*stride, sizeof(double))))
+  if(!(newcontrolv = malloc(nq*stride*sizeof(double))))
     return AY_EOMEM;
 
-  if(!(newknotv = calloc(nq+curve->order, sizeof(double))))
+  if(!(newknotv = malloc((nq+curve->order)*sizeof(double))))
     { free(newcontrolv); return AY_EOMEM; }
 
   /* insert knots at start */
@@ -1600,14 +1600,14 @@ ay_nct_elevate(ay_nurbcurve_object *curve, int new_order)
     } /* if */
 
   /* alloc new knotv & new controlv */
-  if(!(Uh = calloc((curve->length + curve->length*t +
-		    curve->order + t),
+  if(!(Uh = malloc((curve->length + curve->length*t +
+		    curve->order + t) *
 		   sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       return AY_ERROR;
     }
-  if(!(Qw = calloc((curve->length + curve->length*t)*4,
+  if(!(Qw = malloc((curve->length + curve->length*t)*4*
 		   sizeof(double))))
     {
       free(Uh);
@@ -1734,14 +1734,14 @@ ay_nct_elevatetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* alloc new knotv & new controlv */
-	  if(!(Uh = calloc((curve->length + curve->length*t +
-			    curve->order + t),
+	  if(!(Uh = malloc((curve->length + curve->length*t +
+			    curve->order + t) *
 			     sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
-	  if(!(Qw = calloc((curve->length + curve->length*t)*4,
+	  if(!(Qw = malloc((curve->length + curve->length*t)*4*
 			   sizeof(double))))
 	    {
 	      free(Uh);
@@ -1892,12 +1892,12 @@ ay_nct_insertkntcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  curve->length += r;
 
-	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	  if(!(newcontrolv = malloc(curve->length*stride*sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    {
 	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
@@ -2451,26 +2451,24 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
   nc1->length = i;
 
   /* create new controls/knots for first curve */
-  if( !(newcv1 = calloc(nc1->length*stride, sizeof(double))))
+  if( !(newcv1 = malloc(nc1->length*stride*sizeof(double))))
     return AY_EOMEM;
 
   memcpy(newcv1, nc1->controlv, nc1->length*stride*sizeof(double));
 
-  if(!(newkv1 = calloc(nc1->length+nc1->order,
-			 sizeof(double))))
+  if(!(newkv1 = malloc((nc1->length+nc1->order)*sizeof(double))))
     { free(newcv1); return AY_EOMEM; }
 
   memcpy(newkv1, nc1->knotv, (nc1->length+nc1->order)*sizeof(double));
 
   /* create new controls/knots for second curve */
-  if( !(newcv2 = calloc(nc2->length*stride, sizeof(double))))
+  if( !(newcv2 = malloc(nc2->length*stride*sizeof(double))))
     { free(newcv1); free(newkv1); return AY_EOMEM; }
 
   memcpy(newcv2, &(nc1->controlv[i*stride]),
 	 nc2->length*stride*sizeof(double));
 
-  if(!(newkv2 = calloc(nc2->length+nc2->order,
-			 sizeof(double))))
+  if(!(newkv2 = malloc((nc2->length+nc2->order)*sizeof(double))))
     { free(newcv1); free(newkv1); free(newcv2); return AY_EOMEM; }
 
   memcpy(newkv2, &(nc1->knotv[nc1->length]),
@@ -2562,10 +2560,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       if(r > 0)
 	{
-	  if(!(newcontrolv = calloc(curve->length*stride, sizeof(double))))
+	  if(!(newcontrolv = malloc(curve->length*stride*sizeof(double))))
 	    return AY_EOMEM;
 
-	  if(!(newknotv = calloc(curve->length+curve->order,
+	  if(!(newknotv = malloc((curve->length+curve->order)*
 				 sizeof(double))))
 	    { free(newcontrolv); return AY_EOMEM; }
 
@@ -2608,10 +2606,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc2->length = (nc1->length+1) - nc1len;
       nc1->length = nc1len;
 
-      if(!(newcontrolv = calloc(nc1->length*stride, sizeof(double))))
+      if(!(newcontrolv = malloc(nc1->length*stride*sizeof(double))))
 	{ ay_object_delete(new); return AY_EOMEM; }
 
-      if(!(newknotv = calloc(nc1->length+nc1->order, sizeof(double))))
+      if(!(newknotv = malloc((nc1->length+nc1->order)*sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
       memcpy(newcontrolv,nc1->controlv,nc1->length*stride*sizeof(double));
@@ -2627,11 +2625,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       free(nc2->knotv);
       nc2->knotv = NULL;
 
-      if(!(nc2->controlv = calloc(nc2->length*stride, sizeof(double))))
+      if(!(nc2->controlv = malloc((nc2->length*stride)*sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  return AY_EOMEM; }
 
-      if(!(nc2->knotv = calloc(nc2->length+nc2->order, sizeof(double))))
+      if(!(nc2->knotv = malloc((nc2->length+nc2->order)*sizeof(double))))
 	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  free(nc2->controlv); return AY_EOMEM; }
 
@@ -2798,7 +2796,7 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
   controlv1 = nc1->controlv;
   controlv2 = nc2->controlv;
 
-  if(!(newcontrolv = calloc(nc1->length*4+nc2->length*4, sizeof(double))))
+  if(!(newcontrolv = malloc((nc1->length*4+nc2->length*4)*sizeof(double))))
     {
       ay_error(AY_EOMEM, argv[0], NULL);
       free(o);
@@ -2897,9 +2895,9 @@ ay_nct_crtncircle(double radius, ay_nurbcurve_object **curve)
 
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
-  if(!(controlv = calloc(9*4, sizeof(double))))
+  if(!(controlv = malloc(9*4*sizeof(double))))
     { free(new); return AY_EOMEM; }
-  if(!(knotv = calloc(12, sizeof(double))))
+  if(!(knotv = malloc(12*sizeof(double))))
     { free(new); free(controlv); return AY_EOMEM; }
 
   new->order = 3;
@@ -2996,9 +2994,9 @@ ay_nct_crtnhcircle(double radius, ay_nurbcurve_object **curve)
 
   if(!(new = calloc(1, sizeof(ay_nurbcurve_object))))
     return AY_EOMEM;
-  if(!(controlv = calloc(5*4, sizeof(double))))
+  if(!(controlv = malloc(5*4*sizeof(double))))
     { free(new); return AY_EOMEM; }
-  if(!(knotv = calloc(12, sizeof(double))))
+  if(!(knotv = malloc(8*sizeof(double))))
     { free(new); free(controlv); return AY_EOMEM; }
 
   new->order = 3;
@@ -3161,7 +3159,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!(curve->controlv = calloc(20, sizeof(double))))
+  if(!(curve->controlv = malloc(20*sizeof(double))))
     {
       free(o);
       free(curve);
@@ -3169,7 +3167,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  if(!(curve->knotv = calloc(7, sizeof(double))))
+  if(!(curve->knotv = malloc(7*sizeof(double))))
     {
       free(o); free(curve->controlv); free(curve);
       ay_error(AY_EOMEM, argv[0], NULL);
@@ -3191,18 +3189,23 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
     {
       curve->controlv[0] = patch->uknotv[0];
       curve->controlv[1] = patch->vknotv[0];
+      curve->controlv[2] = 0.0;
       curve->controlv[3] = 1.0;
       curve->controlv[4] = patch->uknotv[patch->width+patch->uorder-1];
       curve->controlv[5] = patch->vknotv[0];
+      curve->controlv[6] = 0.0;
       curve->controlv[7] = 1.0;
       curve->controlv[8] = patch->uknotv[patch->width+patch->uorder-1];
       curve->controlv[9] = patch->vknotv[patch->height+patch->vorder-1];
+      curve->controlv[10] = 0.0;
       curve->controlv[11] = 1.0;
       curve->controlv[12] = patch->uknotv[0];
       curve->controlv[13] = patch->vknotv[patch->height+patch->vorder-1];
+      curve->controlv[14] = 0.0;
       curve->controlv[15] = 1.0;
       curve->controlv[16] = patch->uknotv[0];
       curve->controlv[17] = patch->vknotv[0];
+      curve->controlv[18] = 0.0;
       curve->controlv[19] = 1.0;
     }
   else
@@ -3283,7 +3286,7 @@ ay_nct_crtcircbspcv(int sections, double radius, double arc, int order,
 
   if(!*result)
     {
-      if(!(controlv = calloc(len*4, sizeof(double))))
+      if(!(controlv = malloc(len*4*sizeof(double))))
 	{
 	  return AY_EOMEM;
 	}
@@ -3766,7 +3769,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     {
       ktype = AY_KTCUSTOM;
 
-      if(!(newknotv = calloc(length + order, sizeof(double))))
+      if(!(newknotv = malloc((length + order) * sizeof(double))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  free(newo);
@@ -3816,7 +3819,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
     } /* if */
 
   /* construct new control point vector */
-  if(!(newcontrolv = calloc(length * 4, sizeof(double))))
+  if(!(newcontrolv = malloc(length * 4 * sizeof(double))))
     {
       ay_error(AY_EOMEM, fname, NULL);
       free(newo);
@@ -3872,7 +3875,7 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 } /* ay_nct_concatmultiple */
 
 
-/* ay_nct_fillgap:
+/** ay_nct_fillgap:
  *  create a fillet curve between the last point of curve <c1>
  *  and the first point of curve <c2>; if <order> is 2, a simple linear
  *  curve will be created, else if tanlen is != 0.0 the fillet
@@ -3886,8 +3889,11 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  *  elevated to the desired order
  *
  * @param[in] order desired order of fillet curve
- * @param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
- *  of the distance between last point in c1 and first point in c2
+ * @param[in] tanlen
+ *  if > 0.0, scale of tangents, expressed as ratio
+ *  of the distance between last point in c1 and first point in c2;
+ *  if < 0.0, scale of tangents, expressed directly (the provided
+ *  value is negated before use, -0.1 => 0.1)
  * @param[in] c1 first curve
  * @param[in] c2 second curve
  * @param[in] result fillet curve
@@ -3986,6 +3992,7 @@ ay_nct_fillgap(int order, double tanlen,
       len = AY_V3LEN(n1);
       AY_V3SCAL(n1, 1.0/len);
 
+      /* flip n1 */
       AY_V3SCAL(n1, -1.0)
 
       /* normalize n2 */
@@ -3995,10 +4002,18 @@ ay_nct_fillgap(int order, double tanlen,
       p3[3] = 1.0;
       p4[3] = 1.0;
 
-      AY_V3SUB(l, p2, p1)
-      d = AY_V3LEN(l);
-      AY_V3SCAL(n1, d*tanlen)
-      AY_V3SCAL(n2, d*tanlen)
+      if(tanlen > 0.0)
+	{
+          AY_V3SUB(l, p2, p1)
+          d = AY_V3LEN(l);
+	  AY_V3SCAL(n1, d*tanlen)
+	  AY_V3SCAL(n2, d*tanlen)
+	}
+      else
+	{
+	  AY_V3SCAL(n1, -tanlen)
+	  AY_V3SCAL(n2, -tanlen)
+	}
       AY_V3SUB(p3, p1, n1)
       AY_V3SUB(p4, p2, n2)
 
@@ -4008,7 +4023,7 @@ ay_nct_fillgap(int order, double tanlen,
 	numcontrol = 4;
 
       /* fill new controlv */
-      if(!(controlv = calloc(numcontrol*4, sizeof(double))))
+      if(!(controlv = malloc(numcontrol*4*sizeof(double))))
 	return AY_EOMEM;
 
       if(order == 2)
@@ -4048,7 +4063,7 @@ ay_nct_fillgap(int order, double tanlen,
 	      return AY_ERROR;
 	    }
 	}
-    } /* if tanlen == 0.0 */
+    } /* if tanlen != 0.0 */
 
   if(!(o = calloc(1, sizeof(ay_object))))
     {
@@ -4163,7 +4178,7 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
   /* apply all transformations to trajectory curves controlv */
   tr = (ay_nurbcurve_object *)(t->refine);
-  if(!(trcv = calloc(tr->length*stride, sizeof(double))))
+  if(!(trcv = malloc(tr->length*stride*sizeof(double))))
     { return AY_EOMEM; }
   memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
 
@@ -4789,13 +4804,13 @@ ay_nct_makecompatible(ay_object *curves)
 	  t = max_order - curve->order;
 
 	  /* alloc new knotv & new controlv */
-	  if(!(Uh = calloc((curve->length + curve->length*t +
-			    curve->order + t),
+	  if(!(Uh = malloc((curve->length + curve->length*t +
+			    curve->order + t) *
 			   sizeof(double))))
 	    {
 	      return AY_EOMEM;
 	    }
-	  if(!(Qw = calloc((curve->length + curve->length*t)*4,
+	  if(!(Qw = malloc((curve->length + curve->length*t)*4*
 			   sizeof(double))))
 	    {
 	      free(Uh);
@@ -4918,7 +4933,7 @@ ay_nct_shiftarr(int dir, int stride, int cvlen, double *cv)
 
   if(stride > 4)
     {
-      if(!(t = calloc(stride, sizeof(double))))
+      if(!(t = malloc(stride*sizeof(double))))
 	return AY_EOMEM;
     }
   else
@@ -5623,7 +5638,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	}
 
       /* coarsen control points */
-      if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
+      if(!(newcontrolv = malloc(newlength*stride*sizeof(double))))
 	{
 	  if(newknotv)
 	    free(newknotv);
@@ -5678,7 +5693,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
 	}
 
       /* coarsen control points */
-      if(!(newcontrolv = calloc(newlength*stride, sizeof(double))))
+      if(!(newcontrolv = malloc(newlength*stride*sizeof(double))))
 	{
 	  if(newknotv)
 	    free(newknotv);
@@ -5918,12 +5933,12 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	      r = s;
 	    }
 
-	  if(!(newcontrolv = calloc(curve->length*4, sizeof(double))))
+	  if(!(newcontrolv = malloc(curve->length*4*sizeof(double))))
 	    {
 	      ay_error(AY_EOMEM, argv[0], NULL);
 	      return TCL_OK;
 	    }
-	  if(!(newknotv = calloc(curve->length+curve->order, sizeof(double))))
+	  if(!(newknotv = malloc((curve->length+curve->order)*sizeof(double))))
 	    {
 	      free(newcontrolv);
 	      ay_error(AY_EOMEM, argv[0], NULL);
@@ -6994,7 +7009,7 @@ ay_nct_estlen(ay_nurbcurve_object *nc, double *len)
 
   if(nc->length != nc->order)
     {
-      if(!(Qw = calloc(nc->order*stride,sizeof(double))))
+      if(!(Qw = malloc(nc->order*stride*sizeof(double))))
 	return AY_EOMEM;
 
       freeQw = AY_TRUE;
