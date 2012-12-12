@@ -1,4 +1,4 @@
-[21. Nov 2012] CVS-Head:
+[12. Dec 2012] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -28,7 +28,11 @@ o added 3D bevel mode controlled via normals and tangents e.g. extracted
 o added C1 fillets based on global interpolation with end derivatives to
   the ConcatNC object (C1 mode is activated by setting the FTLength parameter
   to 0.0)
+o negative ConcatNC FTLength parameters values are now interpreted in absolute
+  coordinates
 o improved offset curves of closed curves in section mode
+o Skin objects no longer modify (e.g. clamp) the parameter curves when
+  they are already compatible
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -77,6 +81,8 @@ o added command "clearClip" to clear the clipboard
 o added option "-add" to "copOb" and "cutOb" commands to allow collecting
   objects in the clipboard
 o the aytest.tcl script now allows more fine grained test selection per GUI
+o material objects can no longer be renamed via "nameOb" (as this command
+  does not update the material registry)
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
