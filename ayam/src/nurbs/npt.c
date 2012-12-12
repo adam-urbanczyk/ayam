@@ -5176,9 +5176,17 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
   if(!curves || !skin)
     return AY_ENULL;
 
-  ay_status = ay_nct_makecompatible(curves);
+  i = AY_TRUE;
+  ay_status = ay_nct_iscompatible(curves, &i); 
   if(ay_status)
     {goto cleanup;}
+
+  if(!i)
+    {
+      ay_status = ay_nct_makecompatible(curves);
+      if(ay_status)
+	{goto cleanup;}
+    }
 
   o = curves;
   while(o)
@@ -5343,9 +5351,17 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
   if(!curves || !skin)
     return AY_ENULL;
 
-  ay_status = ay_nct_makecompatible(curves);
+  i = AY_TRUE;
+  ay_status = ay_nct_iscompatible(curves, &i); 
   if(ay_status)
     {goto cleanup;}
+
+  if(!i)
+    {
+      ay_status = ay_nct_makecompatible(curves);
+      if(ay_status)
+	{goto cleanup;}
+    }
 
   o = curves;
   while(o)
@@ -6963,106 +6979,95 @@ cleanup:
 
 
 /* ay_npt_extractmiddlepoint:
- *  helper to extract one point of the middle axis curve from a NURBS patch
- *  control matrix with control points: <cv>, <width>, <height>, <stride>
- *  along dimension <side> (0 - u, 1 - v) at control mesh position <index>,
- *  outputs resulting point in <result>
  */
 int
-ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
-			  int index, int side,
-			  double *result)
+ay_npt_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
+			  double **tcv, double *result)
 {
  int ay_status = AY_OK;
- int a, i, j;
- double *tcv = NULL;
+ int stride = 4, a, i, j;
+ double *p = NULL, *t = NULL;
+ double minmax[6];
+
+  if(!result)
+    return AY_ENULL;
 
   memset(result, 0, 4*sizeof(double));
 
-  if(side == 0)
+  if(mode == 0)
     {
-      if(!(tcv = malloc(height*stride*sizeof(double))))
-	return AY_EOMEM;
-      a = index*height*stride;
-      for(i = 0; i < height; i++)
+      minmax[0] = DBL_MAX;
+      minmax[1] = -DBL_MAX;
+      minmax[2] = DBL_MAX;
+      minmax[3] = -DBL_MAX;
+      minmax[4] = DBL_MAX;
+      minmax[5] = -DBL_MAX;
+      p = cv;
+      for(i = 0; i < cvlen; i++)
 	{
-	  memcpy(&(tcv[i*stride]), &(cv[a]), stride*sizeof(double));
-	  a += stride;
-	}
+	  if(p[0] < minmax[0])
+	    minmax[0] = p[0];
+	  if(p[0] > minmax[1])
+	    minmax[1] = p[0];
 
-      qsort(tcv, height, stride*sizeof(double), ay_nct_cmppnt);
+	  if(p[1] < minmax[2])
+	    minmax[2] = p[1];
+	  if(p[1] > minmax[3])
+	    minmax[3] = p[1];
 
-      a = 0;
-      i = 0;
-      j = height;
-      while(i < height)
-	{
-	  result[0] += tcv[a];
-	  result[1] += tcv[a+1];
-	  result[2] += tcv[a+2];
-	  result[3] += tcv[a+3];
+	  if(p[2] < minmax[4])
+	    minmax[4] = p[2];
+	  if(p[2] > minmax[5])
+	    minmax[5] = p[2];
 
-	  /* skip over sequence of equal points */
-	  if((i < (height-1)) &&
-	     !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
-	    {
-	      do
-		{
-		  i++;
-		  a += stride;
-		  j--;
-		}
-	      while((i < (height-1)) &&
-		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))));
-	    }
+	  p += cvstride;
+	} /* for */
 
-	  i++;
-	  a += stride;
-	} /* while */
-
-      result[0] /= j;
-      result[1] /= j;
-      result[2] /= j;
-      result[3] /= j;
-
-      free(tcv);
+      result[0] = minmax[0]+((minmax[1]-minmax[0])*0.5);
+      result[1] = minmax[2]+((minmax[3]-minmax[2])*0.5);
+      result[2] = minmax[4]+((minmax[5]-minmax[4])*0.5);
     }
   else
     {
-      if(!(tcv = malloc(width*stride*sizeof(double))))
-	return AY_EOMEM;
+      /* mode != 0 */
+      if(!tcv)
+	return AY_ENULL;
 
-      a = index*stride;
-      for(i = 0; i < width; i++)
+      if(!*tcv)
+	if(!(*tcv = malloc(cvlen*stride*sizeof(double))))
+	  return AY_EOMEM;
+      t = *tcv;
+      p = cv;
+      for(i = 0; i < cvlen; i++)
 	{
-	  memcpy(&(tcv[i*stride]), &(cv[a]), stride*sizeof(double));
-	  a += height*stride;
+	  memcpy(&(t[i*stride]), p, stride*sizeof(double));
+	  p += cvstride;
 	}
 
-      qsort(tcv, width, stride*sizeof(double), ay_nct_cmppnt);
+      qsort(t, cvlen, stride*sizeof(double), ay_nct_cmppnt);
 
       a = 0;
       i = 0;
-      j = width;
-      while(i < width)
+      j = cvlen;
+      while(i < cvlen)
 	{
-	  result[0] += tcv[a];
-	  result[1] += tcv[a+1];
-	  result[2] += tcv[a+2];
-	  result[3] += tcv[a+3];
+	  result[0] += t[a];
+	  result[1] += t[a+1];
+	  result[2] += t[a+2];
+	  result[3] += t[a+3];
 
 	  /* skip over sequence of equal points */
-	  if((i < (width-1)) &&
-	     !ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))))
+	  if((i < (cvlen-1)) &&
+	     !ay_nct_cmppnt((void*)(&(t[a])),(void*)(&(t[a+stride]))))
 	    {
 	      do
 		{
-		  j--;
 		  i++;
 		  a += stride;
+		  j--;
 		}
-	      while((i < (width-1)) &&
-		!ay_nct_cmppnt((void*)(&(tcv[a])),(void*)(&(tcv[a+stride]))));
+	      while((i < (cvlen-1)) &&
+		!ay_nct_cmppnt((void*)(&(t[a])),(void*)(&(t[a+stride]))));
 	    }
 
 	  i++;
@@ -7073,8 +7078,6 @@ ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
       result[1] /= j;
       result[2] /= j;
       result[3] /= j;
-
-      free(tcv);
     } /* if */
 
  return ay_status;
@@ -7322,8 +7325,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       /* middle u */
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_npt_extractmiddlepoint(np->controlv, np->width, np->height,
-				    stride, i, 0, &cv[i*stride]);
+	  ay_npt_extractmiddlepoint(0, &(np->controlv[i*np->height*stride]),
+				    np->height, 4,
+				    NULL, &cv[i*stride]);
 	  if(!np->is_rat)
 	    cv[i*stride+3] = 1.0;
 	}
@@ -7333,8 +7337,9 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       /* middle v */
       for(i = 0; i < nc->length; i++)
 	{
-	  ay_npt_extractmiddlepoint(np->controlv, np->width, np->height,
-				    stride, i, 1, &cv[i*stride]);
+	  ay_npt_extractmiddlepoint(0, &(np->controlv[i*stride]),
+				    np->width, np->height*stride,
+				    NULL, &cv[i*stride]);
 	  if(!np->is_rat)
 	    cv[i*stride+3] = 1.0;
 	}

@@ -72,8 +72,8 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
 
   memcpy(np->controlv, nc->controlv, nc->length*stride*sizeof(double));
 
-  ay_status = ay_npt_extractmiddlepoint(nc->controlv, nc->length,
-					1, 4, 0, 1, m);
+  ay_status = ay_npt_extractmiddlepoint(0, nc->controlv, nc->length,
+					stride, NULL, m);
 
   if(ay_status)
     goto cleanup;
