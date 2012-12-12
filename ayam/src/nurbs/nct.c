@@ -2266,22 +2266,6 @@ ay_nct_findu(struct Togl *togl, ay_object *o,
 	}
     } /* for */
 
-  /* unfortunately, ay_nb_FinduFromPoint() does not converge well...
-
-  if(guess <= c->knotv[c->order-1])
-    guess = U[1];
-
-  if(guess > c->knotv[c->length])
-    guess = c->knotv[c->length];
-
-
-  ay_nb_FinduFromPoint(c, point, guess, maxtry, e1, e2, u);
-
-
-  if((*u <= c->knotv[c->order-1]) || (*u > c->knotv[c->length]))
-    { free(cp); return AY_ERROR; }
-  */
-
   winXY[0] = winx;
   winXY[1] = winy;
 
@@ -4702,6 +4686,10 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
  * Checks the curve objects for compatibility (whether or not they
  * are defined on the same knot vector).
  *
+ * @param[in] curves a number of NURBS curve objects
+ * @param[in,out] result is set to AY_TRUE if the curves are compatible,
+ *  AY_FALSE else
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -4734,7 +4722,7 @@ ay_nct_iscompatible(ay_object *curves, int *result)
 	  *result = AY_FALSE;
 	  return AY_OK;
 	}
-           
+
       if(curve1->knot_type != curve2->knot_type)
 	{
 	  *result = AY_FALSE;
@@ -5517,116 +5505,6 @@ cleanup:
 } /* ay_nct_makecomptcmd */
 
 
-/* ay_nct_findufrompoint:
- *
- */
-void
-ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
-		      double guess, int max_try, double e1, double e2,
-		      double *u)
-{
- double un = 0.0;
- double *U = NULL;
- double *p = point, c[4] = {0}, cd[4] = {0}, cdd[4] = {0};
- double c1[4] = {0}, c2[4] = {0};
- double cp[3], temp, temp2;
- int t = 0;
- int n = 0;
-
-  if(!curve || !point || !u)
-    return;
-
-  n = curve->length+curve->order;
-
-  *u = guess;
-  U  = curve->knotv;
-
-  if(*u < U[0])
-    *u = U[0];
-  if(*u > U[n-1])
-    *u = U[n-1];
-
-  /* XXXX while ( 1 ) ! */
-  while(1)
-    {
-      t++;
-      if(t > max_try)
-	{
-	  return;
-	}
-
-      ay_nb_CurvePoint4D(curve->length-1, curve->order-1, curve->knotv,
-			 curve->controlv, *u, c);
-
-      ay_nb_ComputeFirstDer4D(curve->length-1, curve->order-1,
-			      curve->knotv, curve->controlv, *u, cd);
-
-      ay_nb_ComputeSecDer4D(curve->length-1, curve->order-1,
-			    curve->knotv, curve->controlv, *u, cdd);
-
-      AY_V3SUB(cp,c,p)
-      AY_V3MUL(c1,cp,cp)
-      if(AY_V3LEN(c1) < (e1*e1))
-	{
-	  return;
-	}
-
-      AY_V3SUB(cp,c,p)
-      AY_V3MUL(c2,cd,cp)
-      c2[0] = fabs(c2[0]);
-      c2[1] = fabs(c2[1]);
-      c2[2] = fabs(c2[2]);
-
-      if(fabs(cd[0])*fabs(cp[0]))
-	c2[0] = fabs(c2[0]) / (fabs(cd[0])*fabs(cp[0]));
-      else
-	c2[0] = 0.0;
-      if(fabs(cd[1])*fabs(cp[1]))
-	c2[1] = fabs(c2[1]) / (fabs(cd[1])*fabs(cp[1]));
-      else
-	c2[1] = 0.0;
-      if(fabs(cd[2])*fabs(cp[2]))
-	c2[2] = fabs(c2[2]) / (fabs(cd[2])*fabs(cp[2]));
-      else
-	c2[2] = 0.0;
-
-      if(AY_V3LEN(c2) < e2)
-	{
-	  return;
-	}
-
-      AY_V3MUL(c1,cd,cp)
-      temp = AY_V3LEN(c1);
-
-      AY_V3MUL(c1,cd,cd)
-      c2[0] = cdd[0]*cp[0]+c1[0];
-      c2[1] = cdd[1]*cp[1]+c1[1];
-      c2[2] = cdd[2]*cp[2]+c1[2];
-      temp2 = AY_V3LEN(c2);
-
-      un = *u - temp/temp2;
-
-      if(un < U[0]) un = U[0];
-      if(un > U[n-1]) un = U[n-1];
-
-      cd[0] *= (un - *u);
-      cd[1] *= (un - *u);
-      cd[2] *= (un - *u);
-      AY_V3MUL(c2, cd, cd)
-      if(AY_V3LEN(c2) < (e1*e1))
-	{
-	  return;
-	}
-
-      *u = un;
-
-    } /* while 1 */
-
-  /* XXXX never reached anyway... */
-  /* return;*/
-} /* ay_nct_findufrompoint */
-
-
 /** ay_nct_israt:
  *  Check whether curve is rational.
  *
@@ -5656,7 +5534,11 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 
 
 /* ay_nct_coarsen:
+ *  Reduces the resolution of a NURBS curve.
  *
+ * @param[in,out] curve NURBS curve object to be coarsened
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_coarsen(ay_nurbcurve_object *curve)
@@ -5664,7 +5546,7 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
  int ay_status = AY_OK;
  char fname[] = "nct_coarsen";
  double *newcontrolv = NULL, *newknotv = NULL;
- int i, a, b, stride = 4, newlength, p, t;
+ int stride = 4, i, a, b, newlength, p, t;
 
   if(!curve)
     return AY_ENULL;

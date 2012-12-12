@@ -749,12 +749,6 @@ int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
-/** Unused.
- */
-void ay_nct_findufrompoint(ay_nurbcurve_object *curve, double *point,
-			   double guess, int max_try, double e1, double e2,
-			   double *u);
-
 /** Check whether any weight is != 1.0.
  */
 int ay_nct_israt(ay_nurbcurve_object *curve);
