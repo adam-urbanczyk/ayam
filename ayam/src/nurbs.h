@@ -717,6 +717,10 @@ int ay_nct_intersect(ay_nurbcurve_object *cu, ay_nurbcurve_object *cv,
  */
 int ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections);
 
+/** Check a number of curves for compatibility.
+ */
+int ay_nct_iscompatible(ay_object *curves, int *result);
+
 /** Make a number of curves compatible.
  */
 int ay_nct_makecompatible(ay_object *curves);
@@ -1069,9 +1073,8 @@ int ay_npt_extractboundary(ay_object *o, int apply_trafo,
 
 /** Extract middle point.
  */
-int ay_npt_extractmiddlepoint(double *cv, int width, int height, int stride,
-			      int index, int side,
-			      double *result);
+int ay_npt_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
+			      double **tcv, double *result);
 
 /** Extract curve from patch.
  */

@@ -4698,6 +4698,67 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
 } /* ay_nct_intersectca */
 
 
+/** ay_nct_iscompatible:
+ * Checks the curve objects for compatibility (whether or not they
+ * are defined on the same knot vector).
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_iscompatible(ay_object *curves, int *result)
+{
+ ay_object *o1, *o2;
+ ay_nurbcurve_object *curve1 = NULL, *curve2 = NULL;
+
+  if(!curves)
+    return AY_ENULL;
+
+  *result = AY_TRUE;
+
+  o1 = curves;
+
+  while(o1->next)
+    {
+      o2 = o1->next;
+      curve1 = (ay_nurbcurve_object *) o1->refine;
+      curve2 = (ay_nurbcurve_object *) o2->refine;
+
+      if(curve1->length != curve2->length)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+
+      if(curve1->order != curve2->order)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+           
+      if(curve1->knot_type != curve2->knot_type)
+	{
+	  *result = AY_FALSE;
+	  return AY_OK;
+	}
+      /* only need to compare the knots for non-uniform knot
+	 vectors (given that we already compared length and order...) */
+      if(curve1->knot_type >= AY_KTCUSTOM)
+	{
+	  if(memcmp(curve1->knotv, curve2->knotv,
+		    (curve1->length+curve1->order)*sizeof(double)))
+	    {
+	      *result = AY_FALSE;
+	      return AY_OK;
+	    }
+	}
+
+      o1 = o1->next;
+    } /* while */
+
+ return AY_OK;
+} /* ay_nct_iscompatible */
+
+
 /** ay_nct_makecompatible:
  *  make a number of curves compatible i.e. of the same order
  *  and defined on the same knot vector
