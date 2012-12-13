@@ -4723,21 +4723,11 @@ ay_nct_iscompatible(ay_object *curves, int *result)
 	  return AY_OK;
 	}
 
-      if(curve1->knot_type != curve2->knot_type)
+      if(memcmp(curve1->knotv, curve2->knotv,
+		(curve1->length+curve1->order)*sizeof(double)))
 	{
 	  *result = AY_FALSE;
 	  return AY_OK;
-	}
-      /* only need to compare the knots for non-uniform knot
-	 vectors (given that we already compared length and order...) */
-      if(curve1->knot_type >= AY_KTCUSTOM)
-	{
-	  if(memcmp(curve1->knotv, curve2->knotv,
-		    (curve1->length+curve1->order)*sizeof(double)))
-	    {
-	      *result = AY_FALSE;
-	      return AY_OK;
-	    }
 	}
 
       o1 = o1->next;
