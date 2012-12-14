@@ -50,3 +50,21 @@ addInfo $w SweepAttrData NPInfo
 return;
 }
 # init_Sweep
+
+
+# sweep_rotcross:
+#  helper for Sweep creation; rotates the cross section to YZ plane
+proc sweep_rotcross { } {
+    global transfPropData
+    goDown -1
+    selOb 0
+    getTrafo
+    if { $transfPropData(Rotate_Y) == 0.0 } {
+	rotOb 0 90 0
+	notifyOb
+	rV
+    }
+    goUp
+ return;
+}
+# sweep_rotcross

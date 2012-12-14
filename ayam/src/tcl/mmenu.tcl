@@ -764,7 +764,8 @@ $m.nc add command -label "NURBSphere2" -command {
 $m.nc add separator
 $m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
 $m.nc add command -label "Extrude" -command "level_crt Extrude;" -underline 0
-$m.nc add command -label "Sweep" -command "level_crt Sweep;" -underline 1
+$m.nc add command -label "Sweep" -command\
+    "level_crt Sweep; sweep_rotcross" -underline 1
 $m.nc add command -label "Swing" -command "level_crt Swing;" -underline 4
 $m.nc add command -label "Cap" -command "level_crt Cap;" -underline 1
 $m.nc add command -label "Bevel" -command "level_crt Bevel;" -underline 2
@@ -847,8 +848,8 @@ $sm add command -label "Paste (Move)" -command {pasmovOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
-$sm add command -label "Copy (add)" -command {copOb -add}
-$sm add command -label "Cut (add)" -command {cutOb -add}
+$sm add command -label "Copy (Add)" -command {copOb -add}
+$sm add command -label "Cut (Add)" -command {cutOb -add}
 $sm add command -label "Clear" -command "clearClip"
 $sm add separator
 $sm add command -label "Paste Property to Selected"\
