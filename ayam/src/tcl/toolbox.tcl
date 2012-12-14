@@ -606,12 +606,14 @@ proc toolbox_open { {w .tbw} } {
 	    }
 	    #####
 	    button $f.bswp -image ay_Sweep_img -padx 0 -pady 0 -command {
-		level_crt Sweep;
+		level_crt Sweep
+		sweep_rotcross
 	    }
 	    balloon_set $f.bswp "create Sweep"
 	    bind $f.bswp <Control-ButtonPress-1> {
 		%W configure -relief sunken
 		level_crt Sweep "" 1
+		sweep_rotcross
 		after 100 "%W configure -relief raised"
 		break;
 	    }
