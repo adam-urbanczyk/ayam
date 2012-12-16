@@ -766,7 +766,8 @@ $m.nc add command -label "Revolve" -command "level_crt Revolve;" -underline 0
 $m.nc add command -label "Extrude" -command "level_crt Extrude;" -underline 0
 $m.nc add command -label "Sweep" -command\
     "level_crt Sweep; sweep_rotcross" -underline 1
-$m.nc add command -label "Swing" -command "level_crt Swing;" -underline 4
+$m.nc add command -label "Swing" -command\
+    "level_crt Swing; swing_rotcross;" -underline 4
 $m.nc add command -label "Cap" -command "level_crt Cap;" -underline 1
 $m.nc add command -label "Bevel" -command "level_crt Bevel;" -underline 2
 $m.nc add command -label "Birail1" -command "level_crt Birail1;" -underline 6

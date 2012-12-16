@@ -44,3 +44,33 @@ addInfo $w SwingAttrData NPInfo
 return;
 }
 # init_Swing
+
+
+# swing_rotcross:
+#  helper for Swing creation; rotates the cross section to YZ plane
+#  and the trajectory to the XZ plane
+proc swing_rotcross { } {
+    global transfPropData
+    goDown -1
+    selOb 0
+    getTrafo
+    set rotated 0
+    if { $transfPropData(Rotate_Y) == 0.0 } {
+	rotOb 0 90 0
+	set rotated 1
+    }
+    selOb 1
+    getTrafo
+    if { $transfPropData(Rotate_X) == 0.0 } {
+	rotOb 90 0 0
+	set rotated 1
+    }
+    if { $rotated } {
+	notifyOb
+	rV
+    }
+    goUp
+    sL
+ return;
+}
+# swing_rotcross
