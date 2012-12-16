@@ -65,6 +65,7 @@ proc sweep_rotcross { } {
 	rV
     }
     goUp
+    sL
  return;
 }
 # sweep_rotcross
