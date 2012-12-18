@@ -54,6 +54,8 @@ proc fixsection { buf outfile } {
 	    incr index
 	    set out2 [ string range $buf $index end ]
 	    puts $outfile $out2
+	    puts $outfile "\\setstretch\{1.1\}"
+
 	}
 	set found 1
     }
@@ -79,9 +81,11 @@ proc fixdocclass { buf outfile } {
     if { $index > -1 } {
 	puts $outfile "\\documentclass\[a4paper,11pt\]\{article\}"
 	puts $outfile "\\usepackage\{needspace\}"
+	puts $outfile "\\usepackage\{setspace\}"
 	puts $outfile "\\usepackage\[tight\]\{shorttoc\}"
 	puts $outfile "\\usepackage\[perpage,para\]\{footmisc\}"
 	puts $outfile "\\usepackage{times}"
+	puts $outfile "\\usepackage{bm}"
 	set found 1
 
 	# one shot...
@@ -110,10 +114,13 @@ proc fixitemize { buf outfile } {
     set found 0
     set index [ string first "\\begin\{itemize" $buf ]
     if { ($index > -1) } {
-	puts $outfile\
-	    "\\begin\{itemize\}\\setlength\{\\itemsep\}\{-0.5ex\}"
 	if {  $rewriteLists } {
+	puts $outfile\
+     "\\begin\{itemize\}\\setstretch\{0.95\}\\setlength\{\\itemsep\}\{0.5ex\}"
 	    puts $outfile "\\vspace\{-1.5ex\}"
+	} else {
+	puts $outfile\
+     "\\begin\{itemize\}\\setstretch\{0.95\}\\setlength\{\\itemsep\}\{1ex\}\\setlength\{\\parsep\}\{1ex\}"
 	}
 	set found 1
     }
