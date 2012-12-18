@@ -1,0 +1,69 @@
+<!-- This is a DTD, but will be read as -*- sgml -*-   -->
+<!-- ================================================= -->
+<!-- $Id: isoent,v 1.1 2012/12/18 21:46:33 randolf Exp $ 
+
+     This is dtd/isoent for SGML-Tools.
+
+     Initial revision June 23st, 1997, by B. Kreimeier
+
+     $Log: isoent,v $
+     Revision 1.1  2012/12/18 21:46:33  randolf
+     initial revision
+
+     Revision 1.1.1.1  2001/05/24 15:57:41  sano
+     linuxdoc-tools 0.96
+     This is re-imported because of cvs repository is lost
+     due to HDD trouble
+
+     Revision 0.1.0.1  2000/05/13 14:59:57  sano
+     Initial release of Linuxdoc-Tools
+
+     Revision 1.1  1997/07/09 13:27:16  cg
+     * Completely new DTD setup by Bernd (BK).
+
+
+                                                       -->
+<!-- ================================================= -->
+<!-- Revision Comments                                 -->
+<!-- BK/97/06/22: installed 0.99.12, applied changes
+     made for new entity mapping.                      -->
+<!-- ================================================= -->
+
+
+<!-- ================================================= -->
+<!-- ISO entities                                      -->
+<!-- ================================================= -->
+
+
+<!ENTITY % ISOdia PUBLIC
+  "ISO 8879:1986//ENTITIES Diacritical Marks//EN">
+%ISOdia;
+
+<!ENTITY % ISOgrk3 PUBLIC
+  "ISO 8879:1986//ENTITIES Greek Symbols//EN">
+%ISOgrk3;
+
+<!ENTITY % ISOlat1 PUBLIC
+  "ISO 8879:1986//ENTITIES Added Latin 1//EN">
+%ISOlat1;
+
+<!ENTITY % ISOnum PUBLIC
+  "ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN">
+%ISOnum;
+
+<!ENTITY % ISOpub PUBLIC
+  "ISO 8879:1986//ENTITIES Publishing//EN">
+%ISOpub;
+
+<!ENTITY % ISOtech PUBLIC
+  "ISO 8879:1986//ENTITIES General Technical//EN">
+%ISOtech;
+
+
+<!-- ================================================= -->
+<!-- end of dtd/isoent                                 -->
+<!--
+     Local Variables:
+     mode: sgml
+     End:                                              -->
+<!-- ================================================= -->
