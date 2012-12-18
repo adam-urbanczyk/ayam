@@ -1,0 +1,62 @@
+[aleph ]	$\aleph$
+[and   ]	$\land$
+[ang90 ]	\{ang90\}
+[angsph]	\{angsph\}
+[ap    ]	$\approx$
+[becaus]	\{becaus\}
+[bottom]	$\perp$
+[cap   ]	$\cap$
+[cong  ]	$\cong$
+[conint]	$\oint$
+[cup   ]	$\cup$
+[equiv ]	$\equiv$
+[exist ]	$\exists$
+[forall]	$\forall$
+[fnof  ]	$f$
+[ge    ]	$\geq$
+[iff   ]	iff.
+[infin ]	$\infty$
+[int   ]	$\int$
+[isin  ]	$\in$
+[lang  ]	$\langle$
+[lArr  ]	$\Leftarrow$
+[le    ]	$\leq$
+[minus ]	$-$
+[mnplus]	$\mp$
+[nabla ]	$\nabla$
+[ne    ]	$\not=$
+[ni    ]	$\ni$
+[or    ]	$\vee$
+[par   ]	$\parallel$
+[part  ]	$\partial$
+[permil]	\{permil\}
+[perp  ]	$\perp$
+[prime ]	$^\prime$
+[Prime ]	$^{\prime\prime}$
+[prop  ]	$\propto$
+[radic ]	$\surd$
+[rang  ]	$\rangle$
+[rArr  ]	$\Rightarrow$
+[sim   ]	$\sim$
+[sime  ]	$\simeq$
+[square]	\{square\}
+[sub   ]	$\subset$
+[sube  ]	$\subseteq$
+[sup   ]	$\supset$
+[supe  ]	$\supseteq$
+[there4]	\{there4\}
+[Verbar]	$\Vert$
+[angst ]	\AA{}
+[bernou]	$\cal B$
+[compfn]	$\circ$
+[Dot   ]	\"{}
+[DotDot]	\{DotDot\}
+[hamilt]	$\cal H$
+[lagran]	$\cal L$
+[lowast]	{\textstyle\ast}
+[notin ]	$\not\in$
+[order ]	\{order\}
+[phmmat]	$\cal M$
+[tdot  ]	\{tdot\}
+[tprime]	$^{\prime\prime\prime}$
+[wedgeq]	\{wedgeq\}
