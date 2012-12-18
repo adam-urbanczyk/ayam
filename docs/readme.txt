@@ -1,4 +1,4 @@
-[readme.txt; 22. Jan 2012]
+[readme.txt; 18. Dec 2012]
 
 This directory contains the sources (SGML and pictures) for the main
 Ayam documentation (the Ayam reference manual) and a Tcl-script to
@@ -73,6 +73,8 @@ to
 <ref>			"\\hyperref\[[ID]\]{\\ref*{[ID]} [NAME] (page \\pageref*{[ID]})}"
 
 See also the provided file "latex2e-mapping".
+
+Also employ the isoent and ISOtech.2tex files.
 
 ==============================================================================
 
