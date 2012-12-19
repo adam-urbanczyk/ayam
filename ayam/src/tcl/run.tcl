@@ -249,7 +249,13 @@ proc runRenderer { cmd template } {
     set oldFocus [focus]
 
     set w .render$ay(rnum)
-    winDialog $w "Render_$ay(rnum)"
+    set t "Render_$ay(rnum)"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1 -border 10]
 

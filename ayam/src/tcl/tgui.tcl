@@ -462,7 +462,8 @@ proc tgui_open { } {
     undo save Tesselate
 
     set w .tguiw
-    winDialog $w "Tesselation Parameters"
+    set t "Tesselation Parameters"
+    winDialog $w $t
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
@@ -471,6 +472,10 @@ proc tgui_open { } {
     pack $f -in $w -side top -fill x
 
     set tgui_tessparam(LazyUpdate) $ayprefs(LazyNotify)
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f tgui_tessparam $t
+    }
 
     addInfo $f tgui_tessparam NumTriangles
     addCheck $f tgui_tessparam LazyUpdate

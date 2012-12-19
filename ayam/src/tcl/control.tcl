@@ -1185,7 +1185,7 @@ proc searchOb { expression action {gui 0} } {
 #  and highlights them in the object tree view or
 #  executes user defined actions on them
 proc objectsearch_open { } {
-    global ay ObjectSearch
+    global ay ayprefs ObjectSearch
 
     # check, whether tree view is open
     if { $ay(lb) != 0 } {
@@ -1198,13 +1198,18 @@ proc objectsearch_open { } {
     set oldFocus [focus]
 
     set w .searchw
-    winDialog $w "Search Objects"
+    set t "Search Objects"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
     set ay(bca) $w.fb.bca
     set ay(bok) $w.fb.bok
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f ObjectSearch $t
+    }
 
     # check/save original selection
     set sel ""

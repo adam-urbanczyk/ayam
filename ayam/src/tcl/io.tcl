@@ -317,14 +317,20 @@ proc io_saveScene { ask selected } {
 #
 #
 proc io_exportRIB { {expview "" } } {
-    global ay
+    global ay ayprefs
 
     winAutoFocusOff
 
     set ay(expRIBFocus) [focus]
 
     set w .exportRIBw
-    winDialog $w "RIB Export"
+    set t "RIB Export"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

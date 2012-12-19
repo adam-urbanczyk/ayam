@@ -1173,7 +1173,7 @@ proc editPointApply { } {
 # directly edit coordinates of points
 proc editPointDialog { } {
     upvar #0 editPntArr array
-    global ay tcl_platform AYWITHAQUA
+    global ay ayprefs tcl_platform AYWITHAQUA
 
     set w .editPointDw
 
@@ -1183,7 +1183,13 @@ proc editPointDialog { } {
     }
 
     catch {destroy $w}
-    winDialog $w "Edit Point"
+    set t "Edit Point"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x

@@ -63,22 +63,24 @@ addCheck $w RiAttrData Shadow
 #  asks for a new material name, checks it and
 #  finally creates the new material object
 proc material_createp { } {
-    global ay ay_error
+    global ay ayprefs ay_error
 
     winAutoFocusOff
 
     set ay(createMFocus) [focus]
 
     set w .createMw
-    winDialog $w "Create Material"
+    set t "Create Material"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
-
-    addText $w.f1 e0 "Create Material:"
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $w.f1 e0 "Create Material:"
+    }
     addString $w.f1 aydd Name
 
     set f [frame $w.f2]

@@ -217,7 +217,7 @@ proc tc_updateMenu { } {
 #  open the texture coordinate tag editor
 #
 proc tc_edit { } {
-    global ay tc
+    global ay ayprefs tc
 
     # unset semaphore
     set ay(tcumsema) 0
@@ -225,7 +225,13 @@ proc tc_edit { } {
     winAutoFocusOff
 
     set w .tcEditw
-    winDialog $w "Texture Coordinates"
+    set t "Texture Coordinates"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     # default values
     set values [list 0.0 0.0 1.0 0.0 0.0 1.0 1.0 1.0]

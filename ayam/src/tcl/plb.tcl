@@ -680,7 +680,7 @@ proc plb_setwin { w {fw ""} } {
 # open a dialog where the user can add/remove properties
 # (realized via NP/RP tags)
 proc plb_addremprop { {rem 0} } {
-    global ay AddRemProp
+    global ay ayprefs AddRemProp
 
     winAutoFocusOff
 
@@ -771,6 +771,9 @@ proc plb_addremprop { {rem 0} } {
     set ay(bca) $w.f3.bca
     set ay(bok) $w.f3.bok
 
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $title
+    }
     addString $f AddRemProp Property $props
 
     # buttons

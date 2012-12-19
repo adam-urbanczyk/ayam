@@ -18,21 +18,24 @@ array set aiprefs {
 #  open the AI Options dialogue
 #
 proc ai_open { } {
-    global ay aiprefs
+    global ay ayprefs aiprefs
 
     winAutoFocusOff
 
     set oldFocus [focus]
 
     set w .aiw
-    winDialog $w "AI Options"
+    set t "AI Options"
+    winDialog $w $t
 
     set f [frame $w.fu -bd 2 -relief sunken]
 
     set ay(bca) $w.fl.bca
     set ay(bok) $w.fl.bok
 
-    addText $f e1 "AI Options:"
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
     addCheck $f aiprefs IgnoreTags
     addCheck $f aiprefs IgnoreMat
 

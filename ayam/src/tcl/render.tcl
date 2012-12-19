@@ -43,12 +43,14 @@ proc render_select { } {
     winAutoFocusOff
 
     set w .selRenw
-    winDialog $w "Select Renderer"
+    set t "Select Renderer"
+    winDialog $w $t
 
     set f [frame $w.flb]
-
-    label $f.l -text "Select Renderer:"
-    pack $f.l -in $f -side top
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	label $f.l -text $t
+	pack $f.l -in $f -side top
+    }
 
     # scrollbar
     scrollbar $f.sc -command "$f.li yview" -takefocus 0
