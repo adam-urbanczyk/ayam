@@ -11,14 +11,20 @@
 # This file has a pendant named riattr.tcl!
 
 proc riopt_addp { } {
-    global ay
+    global ay ayprefs
 
     winAutoFocusOff
 
     set ay(addRiOptFocus) [focus]
 
     set w .addRiOptw
-    winDialog $w "Add RiOption"
+    set t "Add RiOption"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1]
     label $f.l -text "Option:"

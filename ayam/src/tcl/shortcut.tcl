@@ -929,10 +929,16 @@ proc shortcut_viewactions { w } {
 #shortcut_show:
 # display all current shortcuts in a separate top level window
 proc shortcut_show { } {
-global ay aymainshortcuts ayviewshortcuts tcl_platform
+global ay ayprefs aymainshortcuts ayviewshortcuts tcl_platform
 
 set w .ayscw
-winDialog $w "Ayam Shortcuts"
+set t "Ayam Shortcuts"
+winDialog $w $t
+
+if { $ayprefs(FixDialogTitles) == 1 } {
+    pack [frame $w.fl] -in $w -side top   
+    pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+}
 
 frame $w.ftext
 

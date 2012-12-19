@@ -231,17 +231,21 @@ proc editTagshelper { index } {
 # addTagp:
 #  used to edit and add tags
 proc addTagp { {edit -1} } {
-global ay tagsPropData Tags
+global ay ayprefs tagsPropData Tags
 
 winAutoFocusOff
 
 set w .addTag
 if { $edit >= 0 } {
-    winDialog $w "Edit Tag"
+    set t "Edit Tag"
 } else {
-    winDialog $w "Add Tag"
+    set t "Add Tag"
 }
-
+winDialog $w $t
+if { $ayprefs(FixDialogTitles) == 1 } {
+    pack [frame $w.fl] -in $w -side top   
+    pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+}
 set f [frame $w.fu]
 label $f.lt -text "Type:" -width 6
 entry $f.e -width 30

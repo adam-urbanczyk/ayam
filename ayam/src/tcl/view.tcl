@@ -364,12 +364,13 @@ proc viewTitle { w type action } {
 # viewSetFOV:
 #  set the Field Of View of a view
 proc viewSetFOV { view } {
-    global ay
+    global ay ayprefs
 
     winAutoFocusOff
 
     set w .setFov
-    winDialog $w "Set FOV"
+    set t "Set FOV"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -378,6 +379,10 @@ proc viewSetFOV { view } {
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f ay $t
+    }
 
     addParam $f ay FOV
 
@@ -425,12 +430,13 @@ proc viewSetFOV { view } {
 ##############################
 # viewSetGrid:
 proc viewSetGrid { view } {
-    global ay
+    global ay ayprefs
 
     winAutoFocusOff
 
     set w .setGrid
-    winDialog $w "Set GridSize"
+    set t "Set GridSize"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -439,6 +445,10 @@ proc viewSetGrid { view } {
 
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f ay $t
+    }
 
     addParam $f ay GridSize [list 0.001 0.01 0.1 0.25 0.5 1 10]
 
@@ -1286,7 +1296,6 @@ proc viewSetPMode { w on } {
 # viewSetPMode
 
 
-
 ##############################
 # viewSetBGImage:
 proc viewSetBGImage { view } {
@@ -1299,7 +1308,8 @@ proc viewSetBGImage { view } {
     winAutoFocusOff
 
     set w .setBGI
-    winDialog $w "Set BGImage"
+    set t "Set BGImage"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -1307,7 +1317,10 @@ proc viewSetBGImage { view } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
-    addText $f t1 "Select TIFF"
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f ay $t
+    }
+
     addFileT $f ay ImageFile \
 	{ {"TIF" ".tif"} {"TIFF" ".tiff"} {"All files" *} }
 

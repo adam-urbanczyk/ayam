@@ -214,7 +214,7 @@ proc shader_cycSel { w k l } {
 proc shader_setNew { win type stype } {
     upvar #0 ${type}ShaderData sArgArray
 
-    global env prefs ay ay_error AYUSESLCARGS AYUSESLXARGS
+    global env ay ayprefs ay_error AYUSESLCARGS AYUSESLXARGS
 
     eval "set shaders \$ay(${stype}shaders)"
     if { ($ay(sext) == "") && !$AYUSESLCARGS && !$AYUSESLXARGS } {
@@ -253,7 +253,13 @@ proc shader_setNew { win type stype } {
     set ay(oldSetShaderFocus) [focus]
 
     set w .setShaderw
-    winDialog $w "Set Shader"
+    set t "Set Shader"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1]
     listbox $f.lb -width 20 -height 10 -selectmode browse -activestyle none\

@@ -38,14 +38,15 @@ uplevel #0 { array set pomeshmerge_options {
 #
 #
 proc pomesh_merge { } {
-    global ay ay_error pomeshmerge_options
+    global ay ayprefs ay_error pomeshmerge_options
 
     winAutoFocusOff
 
     set pomeshmerge_options(oldfocus) [focus]
 
     set w .pomeshmerge
-    winDialog $w "Merge PolyMeshes"
+    set t "Merge PolyMeshes"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -53,6 +54,9 @@ proc pomesh_merge { } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
     addCheck $f pomeshmerge_options RemoveMerged
     addCheck $f pomeshmerge_options OptimizeNew
     addCheck $f pomeshmerge_options MergePVTags
@@ -132,14 +136,15 @@ uplevel #0 { array set pomeshopt_options {
 #
 #
 proc pomesh_optimize { } {
-    global ay ay_error pomeshopt_options
+    global ay ayprefs ay_error pomeshopt_options
 
     winAutoFocusOff
 
     set pomeshopt_options(oldfocus) [focus]
 
     set w .pomeshopt
-    winDialog $w "Optimize PolyMesh"
+    set t "Optimize PolyMesh"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -147,6 +152,9 @@ proc pomesh_optimize { } {
     set ay(bca) $w.f2.bca
     set ay(bok) $w.f2.bok
 
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
     addCheck $f pomeshopt_options OptimizeCoords
     addCheck $f pomeshopt_options IgnoreNormals
     addCheck $f pomeshopt_options OptimizeFaces
@@ -209,14 +217,15 @@ uplevel #0 { array set pomeshspl_options {
 #
 #
 proc pomesh_split { } {
-    global ay ay_error pomeshspl_options
+    global ay ayprefs ay_error pomeshspl_options
 
     winAutoFocusOff
 
     set pomeshspl_options(oldfocus) [focus]
 
     set w .pomeshspl
-    winDialog $w "Split PolyMesh"
+    set t "Split PolyMesh"
+    winDialog $w $t
 
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
@@ -225,6 +234,9 @@ proc pomesh_split { } {
     set oldappb $ay(appb)
     set ay(appb) $w.f2.bok
 
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
     addCheck $f pomeshspl_options Optimize
 
     set f [frame $w.f2]

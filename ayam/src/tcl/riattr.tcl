@@ -11,14 +11,20 @@
 # This file has a pendant named riopt.tcl!
 
 proc riattr_addp { } {
-    global ay
+    global ay ayprefs
 
     winAutoFocusOff
 
     set ay(addRiAttrFocus) [focus]
 
     set w .addRiAttrw
-    winDialog $w "Add RiAttribute"
+    set t "Add RiAttribute"
+    winDialog $w $t
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	pack [frame $w.fl] -in $w -side top   
+	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
+    }
 
     set f [frame $w.f1]
     label $f.l -text "Attribute:"
