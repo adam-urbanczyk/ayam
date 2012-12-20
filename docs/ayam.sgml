@@ -1893,35 +1893,47 @@ The object search facility allows to find objects in the scene hierarchy
 according to user defined criteria and highlight them in the tree view
 or execute arbitrary actions on them (see also the image above).
 
-As the object search is based on the <tt/"forAll"/ scripting interface
-command, certain restrictions apply:<newline>
-the action must not change the scene hierarchy, i.e. one must not
-delete, cut, or create objects in the actions. Changing the objects
-themselves, even converting them in-place, however, is allowed.
-See also section
-<ref id="scifall" name="Applying Commands to a Number of Objects">.
-
 Note, that the search dialog is not closed immediately after a search,
 this allows multiple search actions with possibly refined parameters.
 
+The first two options <tt/"Expression"/ and <tt/"Action"/ let the
+user specify which objects to find and what to do with them, they
+are explained in depth in the respective sections below.
+
+The option <tt/"HighlightColor"/ defines the color to be used by the
+<tt/"Highlight"/ action.
+
+Using the parameter <tt/"Scope"/ the search may be limited to just
+the selected objects and their children (<tt/"Selection"/) or all objects of
+the current level regardless of selection but again including all children
+(<tt/"Level"/).<newline>
+By default (when scope is "All"), all objects in the scene are processed,
+even if the current level is not the root level.
+
+If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
+on, the highlights and the object clipboard are cleared before a search
+starts respectively.
+
+<sect2>Search Expressions
+<p>
 The following special search expressions are defined:
 <descrip>
-<tag/type/ find objects of a certain type, for example
+<tag/Type/ find objects of a certain type, for example
 <tscreen>
 <tt>$type == "Sphere"</tt>
 </tscreen>
 finds all spheres.
-<tag/name/ find objects of a certain name, for example
+<tag/Name/ find objects of a certain name, for example
 <tscreen>
 <tt>$name == "objname"</tt>
 </tscreen>
 finds all objects with the name <tt/objname/.
-<tag/material name/ find objects of a certain material, for example
+<tag/Material Name/ find objects of a certain material, for example
 <tscreen>
 <tt>$mat == "matname"</tt>
 </tscreen>
 finds all objects with the material <tt/matname/.
-<tag/property value/ find objects with a certain property value, for example
+<tag/Property Value/ find objects with a certain property value, for example
 <tscreen>
 <tt>$SphereAttr(Radius) == 0.5</tt>
 </tscreen>
@@ -1930,7 +1942,7 @@ finds all spheres with radius 0.5.
 <tag/Instances/ find all instances of the currently selected master, or
 if the currently selected object is an instance, find all instances
 with the same master.
-<tag/procedure call/ find objects for which a procedure or command returns 1,
+<tag/Procedure Call/ find objects for which a procedure or command returns 1,
 for example
 <tscreen>
 <tt>hasChild</tt>
@@ -1949,6 +1961,8 @@ just a matter of two clicks.
 If the object is an instance, the first two entries in this menu will
 be <tt/"Master"/ and <tt/"Instances"/.
 
+<sect2>Search Actions
+<p>
 During a search, for every object that matches the given expression
 the object will be selected and an action will be executed.
 The following special actions are defined:
@@ -1973,20 +1987,13 @@ will be deleted from the scene.
 In addition to these special actions, a command/procedure call, like e.g.
 <tt>convOb -inplace</tt> or <tt>addTag NoExport ""</tt> can also be
 specified as action.
-
-The option <tt/"HighlightColor"/ defines the color to be used by the
-<tt/"Highlight"/ action.
-
-Using the parameter <tt/"Scope"/ the search may be limited to just
-the selected objects and their children (<tt/"Selection"/) or all objects of
-the current level regardless of selection but again including all children
-(<tt/"Level"/).<newline>
-By default (when scope is "All"), all objects in the scene are processed,
-even if the current level is not the root level.
-
-If the options <tt/"ClearHighlight"/ or <tt/"ClearClipboard"/ are switched
-on, the highlights and the object clipboard are cleared before a search
-starts respectively.
+However, as the object search is based on the <tt/"forAll"/ scripting
+interface command, certain restrictions apply:<newline>
+the action must not change the scene hierarchy, i.e. one must not
+delete, cut, or create objects in the command/procedure call. Changing the
+objects themselves, even converting them in-place, however, is allowed.
+See also section
+<ref id="scifall" name="Applying Commands to a Number of Objects">.
 
 The special action <tt/"Highlight"/ also collects the found node names
 in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
