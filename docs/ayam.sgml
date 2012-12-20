@@ -1883,9 +1883,15 @@ when the main window gets iconified.
 
 <sect1>Object Search<label id="objsearch">
 <p>
+<figure loc="ht">
+<eps file="pics/objsearch.ps" height="4.5cm">
+<img src="pics/objsearch.gif">
+<caption>Object Search Dialog</caption>
+</figure>
+<p>
 The object search facility allows to find objects in the scene hierarchy
 according to user defined criteria and highlight them in the tree view
-or execute arbitrary actions on them.
+or execute arbitrary actions on them (see also the image above).
 
 As the object search is based on the <tt/"forAll"/ scripting interface
 command, certain restrictions apply:<newline>
@@ -3818,9 +3824,9 @@ The capabilities are:
 and understood by the <tt/"crtOb"/ scripting interface command;
 <item><bf/Parent of/: the object is a parent object (can have child
 objects of the designated type),
-<f><sup>+</sup></f> &ndash; multiple child objects may be present
+<f/<sup/+// &ndash; multiple child objects may be present
 (one or many),
-<f><sup>&lowast;</sup></f> &ndash; multiple child objects must be
+<f/<sup/&lowast;// &ndash; multiple child objects must be
 present (many), note that the type of the child object(s) does not
 need to match directly, the child(s) must rather provide an object
 of the appropriate type (see also section
@@ -3828,8 +3834,8 @@ of the appropriate type (see also section
 <item><bf/Material/: the object can be associated with a material;
 <item><bf>Converts to/Provides</bf>: type of converted/provided objects
 (Children means, the provided objects of the children are delivered upstream),
-<f><sup>+</sup></f> &ndash; multiple objects may be provided (one or many),
-<f><sup>&lowast;</sup></f> &ndash; multiple objects will be provided (many);
+<f/<sup/+// &ndash; multiple objects may be provided (one or many),
+<f/<sup/&lowast;// &ndash; multiple objects will be provided (many);
 <item><bf/Point Edit/: the object has editable points,
 * &ndash; read only points are supported.
 </itemize>
@@ -3841,7 +3847,7 @@ Example:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|NCurve|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Revolve|NCurve|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Object Capabilities Example</caption>
 </table>
@@ -3877,16 +3883,16 @@ geometric objects:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Root|View<f><sup>+</sup></f>|No|N/A|No@<hline>
+Root|View<f/<sup/+//|No|N/A|No@<hline>
 View|NPatch|No|N/A|Yes@<hline>
 Camera|No|No|N/A|Yes@<hline>
 Light|No|No|N/A|Yes@<hline>
 Material|No|N/A|N/A|No@<hline>
-Level|Any<f><sup>+</sup></f>|Yes|N/A&thinsp;/&thinsp;Children<f><sup>+</sup></f>|No@<hline>
-Clone|Any<f><sup>+</sup></f>|No|Children<f><sup>+</sup></f>|No*@<hline>
-Mirror|Any<f><sup>+</sup></f>|No|Children<f><sup>+</sup></f>|No*@<hline>
+Level|Any<f/<sup/+//|Yes|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No@<hline>
+Clone|Any<f/<sup/+//|No|Children<f/<sup/+//|No*@<hline>
+Mirror|Any<f/<sup/+//|No|Children<f/<sup/+//|No*@<hline>
 Instance|No|No|Master|No*@<hline>
-Select|Any<f><sup>+</sup></f>|No|N/A&thinsp;/&thinsp;Children<f><sup>+</sup></f>|No@<hline>
+Select|Any<f/<sup/+//|No|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No@<hline>
 RiInc|No|No|N/A|No@<hline>
 RiProc|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
@@ -3900,14 +3906,14 @@ These objects serve as geometric primitives in CSG hierarchies:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Box|No|Yes|NPatch<f><sup>&lowast;</sup></f>|No*@<hline>
-Sphere|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
+Box|No|Yes|NPatch<f/<sup/&lowast;//|No*@<hline>
+Sphere|No|Yes|NPatch<f/<sup/+//|No*@<hline>
 Disk|No|Yes|NPatch|No*@<hline>
-Cone|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Cylinder|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Torus|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Paraboloid|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Hyperboloid|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Cone|No|Yes|NPatch<f/<sup/+//|No*@<hline>
+Cylinder|No|Yes|NPatch<f/<sup/+//|No*@<hline>
+Torus|No|Yes|NPatch<f/<sup/+//|No*@<hline>
+Paraboloid|No|Yes|NPatch<f/<sup/+//|No*@<hline>
+Hyperboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>CSG/Solid Primitives</caption>
 </table>
@@ -3935,7 +3941,7 @@ These objects enable direct manipulation of freeform surfaces:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NPatch|NCurve<f><sup>+</sup></f>/Level<f><sup>+</sup></f>|Yes|PolyMesh|Yes@<hline>
+NPatch|NCurve<f/<sup/+///Level<f/<sup/+//|Yes|PolyMesh|Yes@<hline>
 IPatch|No|Yes|NPatch|Yes@<hline>
 BPatch|No|Yes|NPatch|Yes@<hline>
 PatchMesh|No|Yes|NPatch|Yes<#if out=latex>@<hline></#if>
@@ -3950,7 +3956,7 @@ These objects modify existing curves or create new curves:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve<f><sup>+</sup></f>|No|NCurve|No*@<hline>
+ConcatNC|NCurve<f/<sup/+//|No|NCurve|No*@<hline>
 ExtrNC|NPatch|No|NCurve|No*@<hline>
 OffsetNC|NCurve|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
@@ -3966,19 +3972,19 @@ These objects create freeform surfaces from curves or other surfaces:
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|NCurve|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Extrude|NCurve<f><sup>+</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Swing|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Sweep|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Birail1|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Birail2|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Skin|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Gordon|NCurve<f><sup>&lowast;</sup></f>/Level|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Bevel|NCurve<f><sup>+</sup></f>|Yes|NPatch|No*@<hline>
-Cap|NCurve<f><sup>+</sup></f>|Yes|NPatch|No*@<hline>
-Text|No|Yes|NPatch<f><sup>+</sup></f>|No*@<hline>
-Trim|NPatch/NCurve<f><sup>+</sup></f>/Level<f><sup>+</sup></f>|Yes|NPatch|No*@<hline>
-ConcatNP|NPatch<f><sup>&lowast;</sup></f>/NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch|No*@<hline>
+Revolve|NCurve|Yes|NPatch<f/<sup/+//|No*@<hline>
+Extrude|NCurve<f/<sup/+//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Swing|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Birail1|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Birail2|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Skin|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*@<hline>
+Gordon|NCurve<f/<sup/&lowast;///Level|Yes|NPatch<f/<sup/+//|No*@<hline>
+Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*@<hline>
+Cap|NCurve<f/<sup/+//|Yes|NPatch|No*@<hline>
+Text|No|Yes|NPatch<f/<sup/+//|No*@<hline>
+Trim|NPatch/NCurve<f/<sup/+///Level<f/<sup/+//|Yes|NPatch|No*@<hline>
+ConcatNP|NPatch<f/<sup/&lowast;///NCurve<f/<sup/&lowast;//|Yes|NPatch|No*@<hline>
 ExtrNP|NPatch|Yes|NPatch|No*@<hline>
 OffsetNP|NPatch|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
@@ -4008,8 +4014,8 @@ or define new object types via the custom object plugin mechanism.
 <table loc="!ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Any<f><sup>+</sup></f>|No|Any|No*@<hline>
-MetaObj|MetaComp<f><sup>+</sup></f>|Yes|PolyMesh|No@<hline>
+Script|Any<f/<sup/+//|No|Any|No*@<hline>
+MetaObj|MetaComp<f/<sup/+//|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No@<hline>
 SDNPatch|No|Yes|PolyMesh|Yes@<hline>
 SfCurve|No|No|NCurve|No*<#if out=latex>@<hline></#if>
@@ -4804,7 +4810,7 @@ The following table briefly lists some capabilities of the Level object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Level|Any<f><sup>+</sup></f>|Yes|N/A&thinsp;/&thinsp;Children<f><sup>+</sup></f>|No<#if out=latex>@<hline></#if>
+Level|Any<f/<sup/+//|Yes|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Level Object Capabilities</caption>
 </table>
@@ -4989,7 +4995,7 @@ The following table briefly lists some capabilities of the Clone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Clone|Any<f><sup>+</sup></f>|No|Children<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Clone|Any<f/<sup/+//|No|Children<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Clone Object Capabilities</caption>
 </table>
@@ -5100,7 +5106,7 @@ The following table briefly lists some capabilities of the Mirror object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Mirror|Any<f><sup>+</sup></f>|No|Children<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Mirror|Any<f/<sup/+//|No|Children<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Mirror Object Capabilities</caption>
 </table>
@@ -5320,7 +5326,7 @@ The following table briefly lists some capabilities of the Select object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Select|Any<f><sup>+</sup></f>|No|N/A&thinsp;/&thinsp;Children<f><sup>+</sup></f>|No<#if out=latex>@<hline></#if>
+Select|Any<f/<sup/+//|No|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Select Object Capabilities</caption>
 </table>
@@ -5430,7 +5436,7 @@ The following table briefly lists some capabilities of the Box object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Box|No|Yes|NPatch<f><sup>&lowast;</sup></f>|No*<#if out=latex>@<hline></#if>
+Box|No|Yes|NPatch<f/<sup/&lowast;//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Box Object Capabilities</caption>
 </table>
@@ -5469,7 +5475,7 @@ The following table briefly lists some capabilities of the Sphere object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sphere|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Sphere|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sphere Object Capabilities</caption>
 </table>
@@ -5568,7 +5574,7 @@ The following table briefly lists some capabilities of the Cone object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cone|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Cone|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cone Object Capabilities</caption>
 </table>
@@ -5621,7 +5627,7 @@ The following table briefly lists some capabilities of the Cylinder object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cylinder|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Cylinder|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cylinder Object Capabilities</caption>
 </table>
@@ -5678,7 +5684,7 @@ The following table briefly lists some capabilities of the Torus object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Torus|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Torus|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Torus Object Capabilities</caption>
 </table>
@@ -5736,7 +5742,7 @@ The following table briefly lists some capabilities of the Paraboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Paraboloid|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Paraboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Paraboloid Object Capabilities</caption>
 </table>
@@ -5796,7 +5802,7 @@ The following table briefly lists some capabilities of the Hyperboloid object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Hyperboloid|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Hyperboloid|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Hyperboloid Object Capabilities</caption>
 </table>
@@ -6433,7 +6439,7 @@ The following table briefly lists some capabilities of the ConcatNC object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNC|NCurve<f><sup>+</sup></f>|No|NCurve|No*<#if out=latex>@<hline></#if>
+ConcatNC|NCurve<f/<sup/+//|No|NCurve|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNC Object Capabilities</caption>
 </table>
@@ -6769,7 +6775,7 @@ The following table briefly lists some capabilities of the NPatch object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-NPatch|NCurve<f><sup>+</sup></f>/Level<f><sup>+</sup></f>|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
+NPatch|NCurve<f/<sup/+///Level<f/<sup/+//|Yes|PolyMesh|Yes<#if out=latex>@<hline></#if>
 </tabular>
 <caption>NPatch Object Capabilities</caption>
 </table>
@@ -7319,7 +7325,7 @@ The following table briefly lists some capabilities of the Revolve object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Revolve|NCurve|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Revolve|NCurve|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Revolve Object Capabilities</caption>
 </table>
@@ -7445,7 +7451,7 @@ The following table briefly lists some capabilities of the Extrude object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Extrude|NCurve<f><sup>+</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Extrude|NCurve<f/<sup/+//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Extrude Object Capabilities</caption>
 </table>
@@ -7583,7 +7589,7 @@ The following table briefly lists some capabilities of the Swing object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Swing|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Swing|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Swing Object Capabilities</caption>
 </table>
@@ -7719,7 +7725,7 @@ The following table briefly lists some capabilities of the Sweep object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Sweep|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Sweep Object Capabilities</caption>
 </table>
@@ -7890,7 +7896,7 @@ The following table briefly lists some capabilities of the Birail1 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail1|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Birail1|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail1 Object Capabilities</caption>
 </table>
@@ -8059,7 +8065,7 @@ The following table briefly lists some capabilities of the Birail2 object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Birail2|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Birail2|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Birail2 Object Capabilities</caption>
 </table>
@@ -8217,7 +8223,7 @@ The following table briefly lists some capabilities of the Skin object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Skin|NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Skin|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Skin Object Capabilities</caption>
 </table>
@@ -8413,7 +8419,7 @@ The following table briefly lists some capabilities of the Gordon object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Gordon|NCurve<f><sup>&lowast;</sup></f>/Level|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Gordon|NCurve<f/<sup/&lowast;///Level|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Gordon Object Capabilities</caption>
 </table>
@@ -8515,7 +8521,7 @@ The following table briefly lists some capabilities of the Bevel object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Bevel|NCurve<f><sup>+</sup></f>|Yes|NPatch|No*<#if out=latex>@<hline></#if>
+Bevel|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Bevel Object Capabilities</caption>
 </table>
@@ -8635,7 +8641,7 @@ The following table briefly lists some capabilities of the Cap object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Cap|NCurve<f><sup>+</sup></f>|Yes|NPatch|No*<#if out=latex>@<hline></#if>
+Cap|NCurve<f/<sup/+//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Cap Object Capabilities</caption>
 </table>
@@ -8711,7 +8717,7 @@ The following table briefly lists some capabilities of the ConcatNP object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-ConcatNP|NPatch<f><sup>&lowast;</sup></f>/NCurve<f><sup>&lowast;</sup></f>|Yes|NPatch|No*<#if out=latex>@<hline></#if>
+ConcatNP|NPatch<f/<sup/&lowast;///NCurve<f/<sup/&lowast;//|Yes|NPatch|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>ConcatNP Object Capabilities</caption>
 </table>
@@ -9018,7 +9024,7 @@ The following table briefly lists some capabilities of the Text object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Text|No|Yes|NPatch<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Text|No|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Text Object Capabilities</caption>
 </table>
@@ -9134,7 +9140,7 @@ The following table briefly lists some capabilities of the Trim object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Trim|NPatch/NCurve<f><sup>+</sup></f>/Level<f><sup>+</sup></f>|Yes|NPatch|No<#if out=latex>@<hline></#if>
+Trim|NPatch/NCurve<f/<sup/+///Level<f/<sup/+//|Yes|NPatch|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Trim Object Capabilities</caption>
 </table>
@@ -9317,7 +9323,7 @@ The following table briefly lists some capabilities of the Script object.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Script|Any<f><sup>+</sup></f>|No|Any<f><sup>+</sup></f>|No*<#if out=latex>@<hline></#if>
+Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 </tabular>
 <caption>Script Object Capabilities</caption>
 </table>
@@ -9695,7 +9701,7 @@ MetaComp objects.
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-MetaObj|MetaComp<f><sup>+</sup></f>|Yes|PolyMesh|No@<hline>
+MetaObj|MetaComp<f/<sup/+//|Yes|PolyMesh|No@<hline>
 MetaComp|No|No|N/A|No<#if out=latex>@<hline></#if>
 </tabular>
 <caption>MetaObj/MetaComp Object Capabilities</caption>
