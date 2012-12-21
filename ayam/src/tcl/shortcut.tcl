@@ -1226,6 +1226,21 @@ proc shortcut_addcshelp { w base tag } {
 # shortcut_addcshelp
 
 
+# shortcut_calltlhelp:
+#  call context sensitive help of toplevel window
+#  for the provided window
+proc shortcut_calltlhelp { w } {
+    set w [winfo toplevel $w]
+    set b ""
+    catch {set b [bind $w <F1>]}
+    if { $b != "" } {
+	eval $b
+    }
+ return;
+}
+# shortcut_calltlhelp
+
+
 # shortcut_addviewbinding:
 #  add a keyboard shortcut to all views
 proc shortcut_addviewbinding { k b } {

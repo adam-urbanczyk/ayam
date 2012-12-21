@@ -1329,6 +1329,9 @@ proc objectsearch_open { } {
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
 
+    # establish "Help"-binding
+    shortcut_addcshelp $w ayam-2.html objsearch
+
     winCenter $w
     grab $w
     focus $w.f1.fExpression.e
