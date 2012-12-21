@@ -1,4 +1,4 @@
-[12. Dec 2012] CVS-Head:
+[21. Dec 2012] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -33,6 +33,8 @@ o negative ConcatNC FTLength parameters values are now interpreted in absolute
 o improved offset curves of closed curves in section mode
 o Skin objects no longer modify (e.g. clamp) the parameter curves when
   they are already compatible
+o creating Sweep and Swing objects now automatically rotates parameter curves
+  defined in the XY plane (the default) to the appropriate plane
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -63,6 +65,8 @@ o added a search facility that allows to search for objects given criteria
   commands can be executed on them
 o in property GUIs and dialogs, <F10> now opens the default value
   option menu of the current element
+o the help keyboard binding (<F1>) now also works in all property GUI
+  and dialog entry fields and other user interface elements
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -81,7 +85,7 @@ o added command "clearClip" to clear the clipboard
 o added option "-add" to "copOb" and "cutOb" commands to allow collecting
   objects in the clipboard
 o the aytest.tcl script now allows more fine grained test selection per GUI
-o material objects can no longer be renamed via "nameOb" (as this command
+o Material objects can no longer be renamed via "nameOb" (as this command
   does not update the material registry)
 
 Plugins:
