@@ -22,6 +22,8 @@ proc uie_fixEntry { w } {
 	bind $w <Shift-Tab> {focus [tk_focusPrev %W];plb_focus;break}
     }
 
+    bind $w <F1> "shortcut_calltlhelp %W"
+
  return;
 }
 # uie_fixEntry
@@ -520,7 +522,7 @@ proc addColor { w prop name {def {}}} {
 
     eval [subst "bindtags $f.b1 \{$f.b1 pge Button all\}"]
     bind $f.b1 <Key-Escape> $escapecmd
-
+    bind $f.b1 <F1> "shortcut_calltlhelp %W"
     bind $f.b1 <Visibility> "updateColorFromE $w $prop $name $f.b1"
 
     set mb ""
@@ -642,6 +644,7 @@ proc addCheck { w prop name } {
 
 	eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	bind $ff.cb <Key-Escape> $escapecmd
+	bind $ff.cb <F1> "shortcut_calltlhelp %W"
     } else {
 	if { $ay(ws) == "Aqua" } {
 	    # also Aqua gets its "Extrawurst"
@@ -654,6 +657,7 @@ proc addCheck { w prop name } {
 
 	    eval [subst "bindtags $ff.cb \{$ff.cb pge Checkbutton all\}"]
 	    bind $ff.cb <Key-Escape> $escapecmd
+	    bind $ff.cb <F1> "shortcut_calltlhelp %W"
 	} else {
 	    # generic (X11) implementation
 	    set cb [checkbutton $f.cb -variable ${prop}(${name}) -bd $bw\
@@ -662,7 +666,8 @@ proc addCheck { w prop name } {
 	    pack $f.cb -in $f -side left -fill x -expand yes
 
 	    eval [subst "bindtags $f.cb \{$f.cb pge Checkbutton all\}"]
-	    bind $f.cb <Key-Escape> $escapecmd
+	    bind $f.cb <Key-Escape> $escapecmd	    
+	    bind $f.cb <F1> "shortcut_calltlhelp %W"
 	}
     }
 
@@ -746,6 +751,8 @@ proc addMenu { w prop name elist } {
     bind $f.mb <Key-Escape> $escapecmd
     bind $f.mb <Key-Return> "$::ay(bok) invoke;break"
     catch {bind $f.mb <Key-KP_Enter> "$::ay(bok) invoke;break"}
+
+    bind $f.mb <F1> "shortcut_calltlhelp %W"
 
     if { $ay(ws) == "Win32" } {
 	$f.mb configure -pady 1
@@ -1317,6 +1324,7 @@ proc addCommand { w name text command } {
     button $f.b -text $text -bd $bw -command $command -pady 0
     eval [subst "bindtags $f.b \{$f.b pge Button all\}"]
     bind $f.b <Key-Escape> $escapecmd
+    bind $f.b <F1> "shortcut_calltlhelp %W"
 
     if { ! $ay(iapplydisable) } {
 	bind $f.b <Shift-1> "global ay; set ay(shiftcommand) 1;"
