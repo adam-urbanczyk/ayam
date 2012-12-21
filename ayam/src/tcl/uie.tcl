@@ -666,7 +666,7 @@ proc addCheck { w prop name } {
 	    pack $f.cb -in $f -side left -fill x -expand yes
 
 	    eval [subst "bindtags $f.cb \{$f.cb pge Checkbutton all\}"]
-	    bind $f.cb <Key-Escape> $escapecmd	    
+	    bind $f.cb <Key-Escape> $escapecmd
 	    bind $f.cb <F1> "shortcut_calltlhelp %W"
 	}
     }

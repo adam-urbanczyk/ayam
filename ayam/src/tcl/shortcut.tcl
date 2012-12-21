@@ -936,7 +936,7 @@ set t "Ayam Shortcuts"
 winDialog $w $t
 
 if { $ayprefs(FixDialogTitles) == 1 } {
-    pack [frame $w.fl] -in $w -side top   
+    pack [frame $w.fl] -in $w -side top
     pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
 }
 
@@ -1233,8 +1233,13 @@ proc shortcut_calltlhelp { w } {
     set w [winfo toplevel $w]
     set b ""
     catch {set b [bind $w <F1>]}
-    if { $b != "" } {
-	eval $b
+    set i 1
+    # use while to protect from 'called break outside of a loop'-error
+    while { $i } {
+	if { $b != "" } {
+	    eval $b
+	}
+	set i 0
     }
  return;
 }
@@ -1255,7 +1260,6 @@ proc shortcut_addviewbinding { k b } {
     foreach v $ay(views) {
 	catch {bind $v $k $b}
     }
-
  return;
 }
 # shortcut_addviewbinding
