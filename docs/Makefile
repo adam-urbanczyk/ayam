@@ -13,6 +13,7 @@ html:
 	cp ayam.sgml html
 	cd html;sgml2html -D out=html -s 1 ayam.sgml;rm ayam.sgml;cd ..
 	-cd html;../corrwh.pl;cd ..
+	tclsh insover.tcl
 
 txt:
 	sgml2txt -D out=txt -f ayam.sgml
@@ -43,5 +44,8 @@ clean:
 	rm -rf ayam.aux ayam.toc ayam.log ayam.out
 	rm -rf ayaml.*
 	rm -rf docs
+
+tags:
+	etags --language=none --regex=@emacs.tags ayam.sgml
 
 .PHONY: html
