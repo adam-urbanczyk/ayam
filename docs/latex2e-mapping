@@ -482,7 +482,7 @@
 <tabular>	+	"\\begin{center}\n"
 			"\\begin{tabular}{[ca]}"	+
 </tabular>	+	"\\end{tabular}\n"
-			"\\end{center}"		+
+			"\\end{center}\\vspace{-2ex}"		+
 
 <rowsep>		"\\\\ "		+
 </rowsep>
