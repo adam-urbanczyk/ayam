@@ -10,18 +10,16 @@
 # shortcut.tcl - procedures to establish key bindings
 
 
-# repctrl - replace "Ctrl" by "Control"
-#
-#
+# repctrl:
+#  helper to replace "Ctrl" by "Control"
 proc repctrl { string } {
     regsub -all "Ctrl" $string "Control" string
     return $string
 }
+# repctrl
 
-
-# remkpkr - remove "KeyPress-"/"KeyRelease-"
-#
-#
+# remkpkr:
+#  helper to remove "KeyPress-"/"KeyRelease-"
 proc remkpkr { string } {
     regsub -all "KeyPress-" $string "" string
     regsub -all "KeyRelease-" $string "" string
@@ -105,10 +103,8 @@ proc shortcut_main { w } {
     $m entryconfigure 19\
 	    -accelerator [remkpkr $aymainshortcuts(MRU4)]
 
-
     bind $w <[repctrl $aymainshortcuts(Quit)]> "$m invoke 21;break"
     $m entryconfigure 21 -accelerator [remkpkr $aymainshortcuts(Quit)]
-
 
     bind $w <[repctrl $aymainshortcuts(Apply)]> "$ay(appb) invoke;break"
     bind $w <[repctrl $aymainshortcuts(Reset)]> "$ay(rstb) invoke;break"
@@ -379,20 +375,6 @@ proc shortcut_main { w } {
  return;
 }
 # shortcut_main
-
-
-# shortcut_toolbox:
-# Setup special Keybindings for the toolbox
-# XXXX currently unused
-#
-proc shortcut_toolbox { w } {
-    global ay ayviewshortcuts aymainshortcuts
-
-    set m $ay(editmenu)
-    bind $w <[repctrl $aymainshortcuts(Undo)]> "$m invoke 9"
-    bind $w <[repctrl $aymainshortcuts(Redo)]> "$m invoke 10"
-}
-# shortcut_toolbox
 
 
 # shortcut_view:
@@ -1233,13 +1215,12 @@ proc shortcut_calltlhelp { w } {
     set w [winfo toplevel $w]
     set b ""
     catch {set b [bind $w <F1>]}
-    set i 1
     # use while to protect from 'called break outside of a loop'-error
-    while { $i } {
+    while { 1 } {
 	if { $b != "" } {
 	    eval $b
 	}
-	set i 0
+	break
     }
  return;
 }
