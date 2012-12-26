@@ -532,6 +532,10 @@ int ay_nct_resize(ay_nurbcurve_object *curve, int new_length);
  */
 int ay_nct_close(ay_nurbcurve_object *curve);
 
+/** Revert array.
+ */
+int ay_nct_revertarr(double *cv, int cvlen, int stride);
+
 /** Revert NURBS curve.
  */
 int ay_nct_revert(ay_nurbcurve_object *curve);
