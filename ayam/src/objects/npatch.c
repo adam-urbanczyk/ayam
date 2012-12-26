@@ -2790,12 +2790,7 @@ ay_npatch_notifycb(ay_object *o)
 
   /* create/add bevels */
   if(bparams.has_bevels)
-    {
-      bparams.radii[0] = -bparams.radii[0];
-      bparams.radii[1] = -bparams.radii[1];
-      bparams.dirs[1] = !bparams.dirs[1];
-      bparams.dirs[2] = !bparams.dirs[2];
-
+    {     
       ay_status = ay_bevelt_addbevels(&bparams, caps, o, nextcb);
       if(ay_status)
 	goto cleanup;

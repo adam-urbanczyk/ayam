@@ -10,7 +10,7 @@
 # bevel.tcl - bevel tags processing Tcl code and Bevel object code
 
 
-proc bevel_parseTags { tagnames tagvalues bnames } {
+proc bevel_parseTags { tagnames tagvalues bnames {bids ""} } {
     global ay BevelTags
 
     array set BevelTags {
@@ -31,6 +31,10 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 	    set tagvalue [lindex $tagvalues $i]
 	    set bplace -1
 	    scan $tagvalue "%d," bplace
+
+	    if { $bids != "" } {
+		set bplace [lindex $bids $bplace]
+	    }
 
 	    set BevelTags(Bevel${bplace}) 1
 
@@ -55,7 +59,7 @@ proc bevel_parseTags { tagnames tagvalues bnames } {
 # bevel_parseTags
 
 
-proc bevel_setTags { bnames } {
+proc bevel_setTags { bnames {bids ""} } {
     global ay BevelTags
 
     set newtags ""
@@ -80,7 +84,12 @@ proc bevel_setTags { bnames } {
 
     set i 0
     foreach bname $bnames {
-	if { $BevelTags(Bevel${i}) } {
+	if { $bids != "" } {
+	    set j [lindex $bids $i]
+	} else {
+	    set j $i
+	}
+	if { $BevelTags(Bevel${j}) } {
 	    lappend newtags BP
 	    set type $BevelTags(${bname}Type)
 	    set l [expr [llength $ay(bevelmodes)] - 1]
@@ -88,7 +97,7 @@ proc bevel_setTags { bnames } {
 		set type [expr $l - $type]
 	    }
 
-	    lappend newtags [format "%d,%d,%f,%d,%d,%d" $i\
+	    lappend newtags [format "%d,%d,%f,%d,%d,%d" $j\
 				 $type\
 				 $BevelTags(${bname}Radius)\
 				 $BevelTags(${bname}Revert)\
@@ -312,10 +321,14 @@ proc bevel_getBevels { } {
 
 	eval set bnames \$${type}AttrData(BoundaryNames)
 
+	set bids ""
+	if { [info exists ${type}AttrData(BoundaryIDs)] } {
+	    eval set bids \$${type}AttrData(BoundaryIDs)
+	}
 	set tagnames ""
 	set tagvalues ""
 	getTags tagnames tagvalues
-	bevel_parseTags $tagnames $tagvalues $bnames
+	bevel_parseTags $tagnames $tagvalues $bnames $bids
 
 	set i 0
 	foreach bname $bnames {
@@ -366,7 +379,11 @@ proc bevel_setBevels { } {
     if { $type != "" } {
 	global ${type}AttrData
 	eval set bnames \$${type}AttrData(BoundaryNames)
-	bevel_setTags $bnames
+	set bids ""
+	if { [info exists ${type}AttrData(BoundaryIDs)] } {
+	    eval set bids \$${type}AttrData(BoundaryIDs)
+	}
+	bevel_setTags $bnames $bids
 	set ${type}AttrData(BevelsChanged) 1
 	setProp
     }

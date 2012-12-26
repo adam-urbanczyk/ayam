@@ -684,8 +684,6 @@ ay_birail2_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      bparams.dirs[2] = !bparams.dirs[2];
-
       ay_status = ay_bevelt_addbevels(&bparams, caps, birail2->npatch,
 				      nextcb);
       if(ay_status)

@@ -27,7 +27,8 @@ w     fBirail2Attr
 array set Birail2AttrData {
 DisplayMode 1
 NPInfoBall "n/a"
-BoundaryNames { "Start" "End" "R1" "R2" }
+BoundaryNames { "Start" "End" "Left" "Right" }
+BoundaryIDs { 2 3 0 1 }
 StartCap 0
 EndCap 0
 R1Cap 0

@@ -147,6 +147,22 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	  if(is_planar)
 	    {
+	      /* 2D bevel */
+	      if(i == 0)
+		{
+		  bparams->dirs[i] = !bparams->dirs[i];
+		  bparams->radii[i] = -bparams->radii[i];
+		}
+	      if(i == 1)
+		{
+		  //bparams->radii[i] = -bparams->radii[i];
+		}
+	      if(i == 2)
+		{
+		  bparams->dirs[i] = !bparams->dirs[i];
+		  bparams->radii[i] = -bparams->radii[i];
+		}
+
 	      if(bparams->dirs[i])
 		{
 		  ay_nct_revert((ay_nurbcurve_object *)alignedcurve->refine);
@@ -166,10 +182,24 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    }
 	  else
 	    {
+	      /* 3D bevel */
 	      if(i < 2)
 		tangents = &(normals[3]);
 	      else
 		tangents = &(normals[6]);
+	      if(i == 0)
+		{
+		  bparams->dirs[i] = !bparams->dirs[i];
+		  bparams->radii[i] = -bparams->radii[i];
+		}
+	      if(i == 1)
+		{
+		  bparams->radii[i] = -bparams->radii[i];
+		}
+	      if(i == 2)
+		{
+		  bparams->dirs[i] = !bparams->dirs[i];
+		}
 
 	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
 					      bparams->dirs[i],
