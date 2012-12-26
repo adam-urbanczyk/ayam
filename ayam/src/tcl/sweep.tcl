@@ -28,6 +28,7 @@ Type 0
 DisplayMode 1
 NPInfoBall "n/a"
 BoundaryNames { "Start" "End" "Left" "Right" }
+BoundaryIDs { 2 3 0 1 }
 StartCap 0
 EndCap 0
 LeftCap 0

@@ -23,7 +23,8 @@ Interpolate 0
 DisplayMode 1
 Knot-Type_U 1
 NPInfoBall "n/a"
-BoundaryNames { "Left" "Right" "Start" "End" }
+BoundaryNames { "Start" "End" "Left" "Right" }
+BoundaryIDs { 2 3 0 1 }
 }
 
 set w [frame $ay(pca).$SkinAttr(w)]
