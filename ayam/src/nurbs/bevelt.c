@@ -148,16 +148,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(is_planar)
 	    {
 	      /* 2D bevel */
-	      if(i == 0)
-		{
-		  bparams->dirs[i] = !bparams->dirs[i];
-		  bparams->radii[i] = -bparams->radii[i];
-		}
-	      if(i == 1)
-		{
-		  //bparams->radii[i] = -bparams->radii[i];
-		}
-	      if(i == 2)
+	      if(i == 0 || i == 2)
 		{
 		  bparams->dirs[i] = !bparams->dirs[i];
 		  bparams->radii[i] = -bparams->radii[i];
