@@ -6499,16 +6499,12 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	    j = 0;
 	    for(k = 1; k < p1len; k++)
 	      {
-		memcpy(&(newcv[(j+k)*stride]),
-		       newcv,
-		       2*sizeof(double));
+		memcpy(&(newcv[(j+k)*stride]), newcv, 2*sizeof(double));
 	      }
 	    j = curve->length-1;
 	    for(k = 0; k < p3len; k++)
 	      {
-		memcpy(&(newcv[j*stride]),
-		       newcv,
-		       2*sizeof(double));
+		memcpy(&(newcv[j*stride]), newcv, 2*sizeof(double));
 		j--;
 	      }
 	  } /* if */
@@ -6552,8 +6548,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	       */
 	      for(k = 0; k < p1len; k++)
 		{
-		  memcpy(&(newcv[(j+k)*stride]), p2s1,
-			 2*sizeof(double));
+		  memcpy(&(newcv[k*stride]), p2s1, 2*sizeof(double));
 		}
 	    }
 	  else
@@ -6563,9 +6558,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 		{
 		  for(k = 1; k < p1len; k++)
 		    {
-		      memcpy(&(newcv[(j+k)*stride]),
-			     &(newcv[j*stride]),
-			     2*sizeof(double));
+		      memcpy(&(newcv[k*stride]), newcv, 2*sizeof(double));
 		    }
 		}
 	    } /* if */
@@ -6618,8 +6611,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	       */
 	      for(k = 0; k < p2len; k++)
 		{
-		  memcpy(&(newcv[(j+k)*stride]), p2s1,
-			 2*sizeof(double));
+		  memcpy(&(newcv[(j+k)*stride]), p2s1, 2*sizeof(double));
 		}
 	    }
 	  else
@@ -6628,8 +6620,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
 		{
 		  for(k = 1; k < p2len; k++)
 		    {
-		      memcpy(&(newcv[(j+k)*stride]),
-			     &(newcv[j*stride]),
+		      memcpy(&(newcv[(j+k)*stride]), &(newcv[j*stride]),
 			     2*sizeof(double));
 		    }
 		}
@@ -6678,8 +6669,9 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	     (curve->order-1)*stride*sizeof(double));
     }
 
+
   if(curve->type == AY_CTCLOSED ||
-     (curve->type == AY_CTPERIODIC) && (curve->order == 2)))
+     ((curve->type == AY_CTPERIODIC) && (curve->order == 2)))
     {
       j = (curve->length-1)*stride;
       memcpy(&(newcv[j]), &(newcv[0]),
