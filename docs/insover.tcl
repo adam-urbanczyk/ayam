@@ -25,6 +25,6 @@ close $infile
 close $outfile
 
 file copy -force html/ayam.html.tmp html/ayam.html
-file delete -force html/ayam.html.tm
+file delete -force html/ayam.html.tmp
 
 return;
