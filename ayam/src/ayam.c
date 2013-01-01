@@ -1095,6 +1095,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "toXYC", ay_nct_toxytcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "isCompNC", ay_nct_iscomptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
@@ -1573,6 +1576,9 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "toXYC", ay_nct_toxytcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "isCompNC", ay_nct_iscomptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "makeCompNC", ay_nct_makecomptcmd,
