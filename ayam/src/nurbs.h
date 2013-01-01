@@ -748,6 +748,11 @@ int ay_nct_toxy(ay_object *c);
 int ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+/** Tcl command to check compatibility of the selected NURBS curves.
+ */
+int ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
 /** Tcl command to make selected NURBS curves compatible.
  */
 int ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,

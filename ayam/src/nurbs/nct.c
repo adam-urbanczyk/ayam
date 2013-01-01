@@ -5441,6 +5441,79 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_toxytcmd */
 
 
+/* ay_nct_iscomptcmd:
+ * Check selected NURBS curves for compatibility.
+ *
+ *  \returns 1 if the selected curves are compatible.
+ */
+int
+ay_nct_iscomptcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL, *curves = NULL;
+ ay_list_object *sel = NULL;
+ int comp = AY_FALSE, i = 0;
+
+  if(!ay_selection)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  sel = ay_selection;
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type == AY_IDNCURVE)
+	i++;
+      sel = sel->next;
+    }
+
+  if(i > 1)
+    {
+      curves = malloc(i*sizeof(ay_object));
+
+      i = 0;
+      sel = ay_selection;
+      while(sel)
+	{
+	  o = sel->object;
+	  if(o->type == AY_IDNCURVE)
+	    {
+	      (curves[i]).refine = o->refine;
+	      (curves[i]).next = &(curves[i+1]);
+	      i++;
+	    }
+	  sel = sel->next;
+	}
+      (curves[i-1]).next = NULL;
+
+      ay_status = ay_nct_iscompatible(curves, &comp);
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0], "Could not check the curves.");
+	}
+      if(comp)
+	{
+	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	}
+      else
+	{
+	  Tcl_SetResult(interp, "0", TCL_VOLATILE);
+	}
+
+      free(curves);
+    }
+  else
+    {
+      ay_error(AY_ERROR, argv[0], "Not enough curves selected.");
+    } /* if */
+
+ return TCL_OK;
+} /* ay_nct_iscomptcmd */
+
+
 /** ay_nct_makecomptcmd:
  *  Make selected NURBS curves compatible.
  *  Implements the \a makeCompNC scripting interface command.
@@ -5453,6 +5526,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
+ int is_comp = AY_FALSE, force = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_nurbcurve_object *nc = NULL;
  ay_object *o = NULL, *p = NULL, *src = NULL, **nxt = NULL;
@@ -5461,6 +5535,14 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
       return TCL_OK;
+    }
+
+  if(argc > 1)
+    {
+      if((argv[1][0] == '-') && (argv[1][0] == 'f'))
+	{
+	  force = AY_TRUE;
+	}
     }
 
   /* make copies of all curves */
@@ -5490,6 +5572,19 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_ERROR, argv[0], "Please select atleast two NURBS curves.");
       goto cleanup;
+    } /* if */
+
+  if(!force)
+    {
+      ay_status = ay_nct_iscompatible(src, &is_comp);
+      if(ay_status)
+	{
+	  ay_error(ay_status, argv[0],
+		   "Could not check the curves, assuming incompatibility.");
+	  is_comp = AY_FALSE;
+	}
+      if(is_comp)
+	goto cleanup;
     } /* if */
 
   /* try to make the copies compatible */
@@ -6150,10 +6245,13 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  *
  * @param[in] o NURBS curve object to offset
  * @param[in] mode offset mode:
- *            - 0: point mode
- *            - 1: section mode
- *            - 2: hybrid mode
- *            - 3: 3D PV N mode
+ *            - 0: point mode (offset points along normals derived from
+ *                 surrounding control points)
+ *            - 1: section mode (calculate offset points from the intersection
+ *                 of the surrounding sections)
+ *            - 2: hybrid mode (mix result of point and section mode)
+ *            - 3: 3D PV N mode (offset points according to normals
+ *                 delivered as primitive variable)
  * @param[in] offset offset distance
  * @param[in,out] nc offset curve
  *
@@ -6222,7 +6320,6 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  */
 	  for(i = 0; i < curve->length; i++)
 	    {
-
 	      ay_npt_gettangentfromcontrol2D(curve->type, curve->length,
 					     curve->order-1, 4,
 					     curve->controlv, i,
@@ -6235,7 +6332,6 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	      newcv[i*stride+1] = curve->controlv[i*stride+1] + normal[1];
 	      newcv[i*stride+2] = curve->controlv[i*stride+2];
 	      newcv[i*stride+3] = curve->controlv[i*stride+3];
-
 	    } /* for */
 	  break;
 	case 1:
@@ -6273,7 +6369,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	case 3:
 	  /*
 	    "3DPVN" mode:
-	    offset points according to normal delivered as primitive variable
+	    offset points according to normals delivered as primitive variable
 	  */
 	  tag = o->tags;
 	  while(tag)
@@ -6303,7 +6399,6 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	default:
 	  break;
 	} /* switch */
-
     } /* if */
 
   if(curve->knot_type == AY_KTCUSTOM)
@@ -6344,6 +6439,8 @@ cleanup:
 
 /** ay_nct_offsetsection:
  *  create offset curve of open/periodic curve in section mode
+ *  (calculate offset points from the intersection of the
+ *  surrounding sections)
  *
  * @param[in] o NURBS curve object to offset
  * @param[in] offset offset distance
@@ -6643,7 +6740,6 @@ ay_nct_offsetsection(ay_object *o, double offset,
 	  newcv[(j+i)*stride]   = p2s2[0];
 	  newcv[(j+i)*stride+1] = p2s2[1];
 	}
-
     } /* if */
 
   /* set weights */
@@ -6665,17 +6761,14 @@ ay_nct_offsetsection(ay_object *o, double offset,
   if((curve->type == AY_CTPERIODIC) && (curve->order > 2))
     {
       j = (curve->length-(curve->order-1))*stride;
-      memcpy(&(newcv[j]), &(newcv[0]),
-	     (curve->order-1)*stride*sizeof(double));
+      memcpy(&(newcv[j]), newcv, (curve->order-1)*stride*sizeof(double));
     }
-
 
   if(curve->type == AY_CTCLOSED ||
      ((curve->type == AY_CTPERIODIC) && (curve->order == 2)))
     {
       j = (curve->length-1)*stride;
-      memcpy(&(newcv[j]), &(newcv[0]),
-	     stride*sizeof(double));
+      memcpy(&(newcv[j]), newcv, stride*sizeof(double));
     }
 
   if(curve->knot_type == AY_KTCUSTOM)
