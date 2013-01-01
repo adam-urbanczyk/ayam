@@ -1254,11 +1254,9 @@ and all views. In order to include geometric objects in the
 environment or to exclude the Root object and just save view
 objects use <tt>"File/Save"</tt> or <tt>"Special/Save Selected as"</tt>
 respectively.
-
 <item><tt>"Clipboard/Paste (Move)"</tt>, moves objects from the clipboard
 back to the scene (clearing the clipboard). This is the only way to
 get referenced objects out of the clipboard.
-
 <item><tt>"Clipboard/Replace"</tt>, replaces the currently selected
 object(s) with the object clipboard content, moving the replaced
 objects into the clipboard. If multiple objects are selected
@@ -9220,7 +9218,7 @@ interface are also not available (uS, rV etc.). Please refer to the
 documentation of the scripting interface commands about their availability
 in the safe interpreter
 (see section
-<ref id="sccomm" name="Index of Procedures and Commands">).
+<ref id="sccomm" name="Procedures and Commands">).
 <p>
 In addition, access to global variables like env, ay, ayprefs
 is not allowed. In fact, the safe interpreter has a completely
@@ -10257,12 +10255,18 @@ from the object.
 <item><tt/"Remove Tag!"/ is a menu, that allows you
 to select and remove a single tag from the object.
 
-<item><tt/"Add Tag!"/ opens a small dialog box, where you
-may enter a new tag type and value. Once you press the <tt/"Ok"/
-button, a new entry will be added to the tags property, displaying
-the new tag. Just click on the entry to get back to the dialog,
-to remove the tag using <tt/"Clear"/ then <tt/"Ok"/, or to change
-the type or value of the tag.
+<item><tt/"Add Tag!"/ opens a small dialog window, where you
+may enter a new tag type and value (see also the image below).
+Once you press the <tt/"Ok"/ button, a new entry will be added to the
+tags property, displaying the new tag. Just click on the entry to get
+back to the dialog, to remove the tag using <tt/"Clear"/ then <tt/"Ok"/,
+or to change the type or value of the tag.
+<p>
+<figure loc="ht">
+<eps file="pics/addmodtag.ps" height="2.5cm">
+<img src="pics/addmodtag.gif">
+<caption>Add Property Dialog</caption>
+</figure>
 </itemize>
 <p>
 The next sub-sections describe the tag types currently available in Ayam
@@ -12173,7 +12177,7 @@ scripting interface.
 Since Ayam 1.16, the global property management array may be created
 easily using the new scripting interface command <tt/"addPropertyGUI"/.
 
-<sect1>Index of Procedures and Commands<label id="sccomm">
+<sect1>Procedures and Commands<label id="sccomm">
 <p>
 This section provides documentation on the most important
 scripting interface commands and procedures of Ayam sorted
@@ -13160,27 +13164,31 @@ These commands operate the object clipboard:
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="sccopob">
-copOb &ndash; copy object:
+copOb &ndash; copy object(s):
 <itemize>
- <item>Synopsis: <tt/"copOb"/
+ <item>Synopsis: <tt/"copOb [-append]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Copy the selected object(s) to the object clipboard.
+If the option <tt/"-append"/ is used, the clipboard will not be cleared
+before this operation.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="sccutob">
-cutOb &ndash; cut object:
+cutOb &ndash; cut object(s):
 <itemize>
- <item>Synopsis: <tt/"cutOb"/
+ <item>Synopsis: <tt/"cutOb [-append]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Move the selected object(s) into the object clipboard.
+If the option <tt/"-append"/ is used, the clipboard will not be cleared
+before this operation.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scpasob">
-pasOb &ndash; paste object:
+pasOb &ndash; paste object(s):
 <itemize>
  <item>Synopsis: <tt/"pasOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
@@ -13190,25 +13198,47 @@ clipboard to the current level.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="screpob">
+repOb &ndash; replace clipboard content with selected object(s):
+<itemize>
+ <item>Synopsis: <tt/"repOb"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Swap all objects from the object clipboard
+with the currently selected object(s). If multiple objects are selected
+in non consecutive sequences, only the first consecutive sequence
+or single object is replaced.
+</itemize>
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="scdelob">
-delOb &ndash; delete object:
+delOb &ndash; delete object(s):
 <itemize>
  <item>Synopsis: <tt/"delOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Delete the selected object(s) from the scene.
+This operation fails for master objects (objects with instances/references).
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="sccmovob"><label id="scpasmovob">
-pasmovOb &ndash; paste (move) object:
+pasmovOb &ndash; paste (move) object(s):
 <itemize>
  <item>Synopsis: <tt/"pasmovOb"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Move the objects from the object
-clipboard to the current level.
+clipboard to the current level. This is the reverse of the
+<tt/"cutOb"/ command.
 </itemize>
 
+The object clipboard commands fail for root and view objects.
+As <tt/"copOb"/ and <tt/"cutOb"/ may need to clear the object clipboard,
+they can also fail if master objects (objects with instances/references)
+are currently inside the object clipboard.
+Furthermore, the object clipboard commands check whether or not the
+result would be an illegal instance configuration (master of a level inside
+this level) and also fail if this is the case.
 <p>
 The following commands operate the property clipboard,
 which is totally independent from the object clipboard.
@@ -15448,7 +15478,7 @@ crtOb("NCircle", "-radius", 3.0);
 </tt></tscreen>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
-<ref id="sccomm" name="Index of Procedures and Commands">
+<ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
 Note that Tcl procedures are not available as global JavaScript
@@ -15746,7 +15776,7 @@ crtOb("NCircle", "-radius", 3.0);
 </tt></tscreen>
 In general, all commands available in the safe Ayam Tcl interpreter are also
 available as converted function (refer to section
-<ref id="sccomm" name="Index of Procedures and Commands">
+<ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
 Note that Tcl procedures are not available as global Lua function,
@@ -19522,6 +19552,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Reparameterise: <ref id="screparamnc" name="scripting interface command">
 <item>Replace: <ref id="mmspecial" name="main menu entry">
 <item>replaceScene: <ref id="screplacescene" name="scripting interface command">
+<item>repOb: <ref id="screpob" name="scripting interface command">
 <item>Rescale Knots to Mindist: <ref id="resckmt" name="NURBCurve tool">
 <item>Rescale Knots to Range: <ref id="resckrt" name="NURBCurve tool">
 <item>rescaleknNC: <ref id="screscaleknnc" name="scripting interface command">
