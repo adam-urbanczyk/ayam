@@ -1063,7 +1063,7 @@ ay_sdmesh_readcb(FILE *fileptr, ay_object *o)
   /* read verts */
   fscanf(fileptr, "%u\n", &total_verts);
   if(!(sdmesh->verts = calloc(total_verts, sizeof(unsigned int))))
-    { ay_status = AY_EOMEM; goto cleanup; }    { return AY_EOMEM; }
+    { ay_status = AY_EOMEM; goto cleanup; }
   for(i = 0; i < total_verts; i++)
     {
       fscanf(fileptr, "%u\n", &(sdmesh->verts[i]));
