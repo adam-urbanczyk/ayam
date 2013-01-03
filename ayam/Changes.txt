@@ -1,5 +1,5 @@
-[21. Dec 2012] CVS-Head:
-========================
+[3. Jan 2013] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -35,6 +35,11 @@ o Skin objects no longer modify (e.g. clamp) the parameter curves when
   they are already compatible
 o creating Sweep and Swing objects now automatically rotates parameter curves
   defined in the XY plane (the default) to the appropriate plane
+o new objects will now be created at the mark (if the new preference
+  option "CreateAtMark" is enabled (default: yes)
+o the mark may now be set by double-clicking with the right mouse button
+o if the mark is set in a view, the respective z coordinate of the mark is
+  no longer set to zero (when the preference option "GlobalMark" is activated)
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -91,6 +96,8 @@ o Material objects can no longer be renamed via "nameOb" (as this command
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
 
+Documentation/Example Files:
+o added an overview to the table of contents
 
 [20. Mar 2012] Ayam-1.20:
 =========================
