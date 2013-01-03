@@ -30,8 +30,8 @@ array set ayprefs {
  LazyNotify 0
  CompleteNotify 1
  EditSnaps 1
- GlobalMark 0
- CreateAtMark 0
+ GlobalMark 1
+ CreateAtMark 1
  Snap3D 0
  AllowWarp 1
 
