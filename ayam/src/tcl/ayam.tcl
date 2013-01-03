@@ -31,6 +31,7 @@ array set ayprefs {
  CompleteNotify 1
  EditSnaps 1
  GlobalMark 0
+ CreateAtMark 0
  Snap3D 0
  AllowWarp 1
 
@@ -459,6 +460,7 @@ array set ayviewshortcuts {
 
     SnapMark "M"
     SnapMarkO "K"
+    SetMark "Double-3"
 
     Hide "h"
     Show "H"

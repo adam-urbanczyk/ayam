@@ -521,15 +521,19 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_object_create(AY_IDLEVEL, &ay_root->next)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   ay_endlevel = ay_root->next;
+
   /* create terminating level object in views level */
   ay_root->down = ay_root->next;
 
+  /* next object will be created as sibling of ay_root */
   ay_next = &(ay_root->next);
 
-
+  /* current level is the root level */
   ay_currentlevel = NULL;
-  ay_status = ay_clevel_add(NULL);
-  ay_status = ay_clevel_add(ay_root);
+  if((ay_status = ay_clevel_add(NULL)))
+    return ay_status;
+  if((ay_status = ay_clevel_add(ay_root)))
+    return ay_status;
 
   ay_currentview = NULL;
   ay_selection = NULL;
@@ -626,7 +630,8 @@ ay_init(Tcl_Interp *interp)
 
   ay_prefs.save_rootviews = AY_TRUE;
 
-  ay_prefs.globalmark = AY_FALSE;
+  ay_prefs.globalmark = AY_TRUE;
+  ay_prefs.createatmark = AY_TRUE;
 
  return ay_status;
 } /* ay_init */
