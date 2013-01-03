@@ -1281,21 +1281,30 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		  view->drawmark = AY_TRUE;
 
 		  ay_viewt_wintoworld(togl, view->markx, view->marky,
-				      &(view->markworld[0]),
-				      &(view->markworld[1]),
-				      &(view->markworld[2]));
+				      &(temp[0]),
+				      &(temp[1]),
+				      &(temp[2]));
 
 		  switch(view->type)
 		    {
 		    case AY_VTFRONT:
 		    case AY_VTTRIM:
-		      view->markworld[2] = 0.0;
+		      view->markworld[0] = temp[0];
+		      view->markworld[1] = temp[1];
+		      if(!ay_prefs.globalmark)
+			view->markworld[2] = 0.0;
 		      break;
 		    case AY_VTSIDE:
-		      view->markworld[0] = 0.0;
+		      if(!ay_prefs.globalmark)
+			view->markworld[0] = 0.0;
+		      view->markworld[1] = temp[1];
+		      view->markworld[2] = temp[2];
 		      break;
 		    case AY_VTTOP:
-		      view->markworld[1] = 0.0;
+		      view->markworld[0] = temp[0];
+		      if(!ay_prefs.globalmark)
+			view->markworld[1] = 0.0;
+		      view->markworld[2] = temp[2];
 		      break;
 		    default:
 		      /* XXXX output proper error message */

@@ -196,6 +196,7 @@ proc prefs_open {} {
     addCheckB $fw ayprefse Snap3D [ms ayprefse_Snap3D]
     addCheckB $fw ayprefse FlashPoints [ms ayprefse_FlashPoints]
     addCheckB $fw ayprefse GlobalMark [ms ayprefse_GlobalMark]
+    addCheckB $fw ayprefse CreateAtMark [ms ayprefse_CreateAtMark]
 
     set l $ay(defactions)
     addMenuB $fw ayprefse DefaultAction [ms ayprefse_DefaultAction] $l

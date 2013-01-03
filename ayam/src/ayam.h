@@ -1343,10 +1343,10 @@ typedef struct ay_view_object_s
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
-  /*
+  
   GLuint display_list;
   int action_state;
-  */
+  
 } ay_view_object;
 
 
@@ -1385,6 +1385,7 @@ typedef struct ay_preferences_s
   int completenotify; /**< control complete notification */
   int undo_levels; /**< number of undo levels, -1 turns undo off */
   int globalmark; /**< maintain a global mark? */
+  int createatmark; /**< create objects at the mark? */
 
   /* RIB export prefs */
   int resolveinstances; /**< resolve all instances for RIB export? */

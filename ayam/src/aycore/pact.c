@@ -2473,7 +2473,11 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
       return TCL_OK;
     }
 
-  Tcl_GetInt(interp, argv[2], &mode);
+  if(argc == -1)
+    mode = 1;
+  else
+    if(argc > 1)
+      Tcl_GetInt(interp, argv[2], &mode);
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -2554,7 +2558,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 
   glPopMatrix();
 
-  if(notify_parent)
+  if(notify_parent && (argc != -1))
     ay_status = ay_notify_parent();
 
  return TCL_OK;
