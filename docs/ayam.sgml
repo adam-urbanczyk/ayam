@@ -2248,10 +2248,15 @@ Note that a change of this preference option only takes effect for
 the next invocation of the single point editing modelling action.
 
 <item><tt/"GlobalMark"/ toggles whether each view should manage its
-own mark (off, default), or whether there should be just one global
-mark (on). Note that enabling this preference setting will not
+own mark (off), or whether there should be just one global
+mark (on, default<footnote>Since 1.21.</footnote>).
+Note that enabling this preference setting will not
 immediately lead to a global mark set in all windows, one rather
 needs to set a new mark that will then become global.
+
+<item><tt/"CreateAtMark"/ controls whether or not new objects
+are to be created at the current mark position (default: yes).
+<footnote>Since 1.21.</footnote>
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that will be active after a press of the <tt/&lt;Esc&gt;/ key
@@ -3202,7 +3207,15 @@ Set Mark|<tt/&lt;a&gt;/|
 <p>
 A single click with the mouse sets the mark. If grids are active in
 the view, the mark will be snapped to the nearest grid coordinates.
-Additionally, when this action is active, the following keyboard
+Note, that, using a mouse click, one is only able to specify two
+dimensional mark coordinates. Therefore, in versions prior to 1.21 the
+third coordinate was always set to zero upon a click. If the preference
+option <tt>"Modelling/GlobalMark"</tt> is enabled, the third coordinate
+is not reset anymore. This way one can define all three coordinates of
+the mark by clicking two times in appropriate views, e.g. first in a
+front view for x and y and second in a side view for z.
+<p>
+Additionally, when the set mark action is active, the following keyboard
 shortcuts are available:
 <itemize>
 <item><tt/&lt;Return&gt;/ accept the current mark (useful, if one
@@ -3227,8 +3240,12 @@ The marked point will be shown as a little red cross in the view window
 <caption>Bounding Box Center Mark (left) and Center of Gravity Mark (right)</caption>
 </figure>
 <p>
-The mark may also directly be set using the corresponding view object
+The mark may also directly be manipulated using the corresponding view object
 property (see also section <ref id="vat" name="ViewAttrib Property">).
+<p>
+Since Ayam 1.21, the mark may also be set without activating the
+set mark action and without interfering with other modelling actions
+by double clicking with the rightmost mouse button.
 <p>
 Another way of setting the mark is via the <tt/"FindU"/ special action
 for curves
@@ -3237,16 +3254,14 @@ or the <tt/"FindUV"/ special action for surfaces
 (see also section <ref id="finduvac" name="Finding Points on Surfaces">)
 .
 <p>
-Also note, that, using a mouse click, one is only able to specify two
-dimensional mark coordinates (the third coordinate is always
-set to zero).
-<p>
 The mark can also be used to remember an important point in space
 and get back to it later using the pan to mark action
 (keyboard shortcut <tt/&lt;.&gt;/).
 <p>
+The current mark can be cleared by pressing <tt/&lt;D&gt;/ anytime.
+<p>
 Finally, remember that certain operations like e.g.~changing the view
-type will clear the mark.
+type will also clear the mark.
 
 
 <sect1>Selecting/Tagging Points<label id="selac">
@@ -8658,9 +8673,9 @@ The following parameters control the cap creation process:
 The attribute <tt/"Type"/ allows to select one of the following
 cap creation methods:
 <itemize>
-<item><tt/"Trim"/): a trimmed NURBS surface,
-<item><tt/"Simple"/): a simple cap,
-<item><tt/"Gordon"/): an untrimmed Gordon surface
+<item><tt/"Trim"/: a trimmed NURBS surface,
+<item><tt/"Simple"/: a simple cap,
+<item><tt/"Gordon"/: an untrimmed Gordon surface
 </itemize>
 See also the general discussion about the cap
 object above.
@@ -10265,7 +10280,7 @@ or to change the type or value of the tag.
 <figure loc="ht">
 <eps file="pics/addmodtag.ps" height="2.5cm">
 <img src="pics/addmodtag.gif">
-<caption>Add Property Dialog</caption>
+<caption>Add/Edit Tag  Dialog</caption>
 </figure>
 </itemize>
 <p>
@@ -18849,6 +18864,7 @@ Index:
 <item>convOb: <ref id="scconvob" name="scripting interface command">
 <item>Coons Patch: <ref id="gordonobj" name="Gordon object">
 <item>Create: <ref id="mmcreate" name="create menu">
+<item>CreateAtMark: <ref id="prefmodel" name="preference setting">
 <item>CreateMP:
 <itemize>
 <item><ref id="ncattr" name="NCurve attribute">,
