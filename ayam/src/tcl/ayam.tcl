@@ -461,6 +461,7 @@ array set ayviewshortcuts {
     SnapMark "M"
     SnapMarkO "K"
     SetMark "Double-3"
+    ClearMark "D"
 
     Hide "h"
     Show "H"
