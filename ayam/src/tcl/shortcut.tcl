@@ -901,6 +901,9 @@ proc shortcut_viewactions { w } {
     bind $w.f3D.togl <[repctrl $ayviewshortcuts(SetMark)]>\
      "$w.f3D.togl mc; $w.f3D.togl setconf -mark %x %y"
 
+    bind $w <[repctrl $ayviewshortcuts(ClearMark)]>\
+     "$w.f3D.togl mc; $w.f3D.togl setconf -mark n"
+
     # allow plugins to define their own actions
     foreach customkey $ay(customkeys) {
 	catch { bind $w [lindex $customkey 0] [lindex $customkey 1] }
