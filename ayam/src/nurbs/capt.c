@@ -544,7 +544,10 @@ cleanup:
 /** ay_capt_addcaps:
  * Create cap surfaces for a NURBS surface.
  *
- * @param[in] caps designates which caps to create
+ * @param[in] caps designates which caps to create (and their types)
+ * @param[in] bparams bevel parameters, if a bevel is to be created
+ *  at the corresponding boundary, we do not create the cap here but
+ *  later when creating the bevel
  * @param[in] o NURBS patch object
  * @param[in,out] cap list of new NURBS patch objects (the caps)
  *
@@ -554,15 +557,19 @@ int
 ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 {
  int ay_status = AY_OK;
- int i;
+ int i, side;
+ double param = 0.0;
  ay_object *extrcurve = NULL;
  ay_object *cap = NULL, **nextcap = dst;
+ ay_nurbpatch_object *np = NULL;
 
   if(!caps || !bparams || !o || !dst)
     return AY_ENULL;
 
   if(o->type != AY_IDNPATCH)
    return AY_ERROR;
+
+  np = (ay_nurbpatch_object*)o->refine;
 
   for(i = 0; i < 4; i++)
     {
@@ -577,9 +584,51 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	    }
 	  ay_object_defaults(extrcurve);
 	  extrcurve->type = AY_IDNCURVE;
+	  param = 0.0;
+	  switch(i)
+	    {
+	    case 0:
+	      if(ay_knots_isclamped(/*side=*/1, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 0;
+	      else
+		side = 4;
+	      break;
+	    case 1:
+	      if(ay_knots_isclamped(/*side=*/2, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 1;
+	      else
+		{
+		  side = 4;
+		  param = 1.0;
+		}
+	      break;
+	    case 2:
+	      if(ay_knots_isclamped(/*side=*/1, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 2;
+	      else
+		side = 5;
+	      break;
+	    case 3:
+	      if(ay_knots_isclamped(/*side=*/2, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 3;
+	      else
+		{
+		  side = 5;
+		  param = 1.0;
+		}
+	      break;
+	    default:
+	      break;
+	    } /* switch */
 
-	  ay_status = ay_npt_extractnc(o, i, 0.0, AY_FALSE, AY_FALSE,
-				       AY_FALSE, NULL,
+	  ay_status = ay_npt_extractnc(o, side, param,
+				       /*relative=*/AY_TRUE,
+				       /*apply_trafo=*/AY_FALSE,
+				       /*extractnt=*/AY_FALSE, NULL,
 			  (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
 
 	  if(ay_status)
