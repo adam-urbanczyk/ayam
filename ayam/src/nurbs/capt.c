@@ -17,8 +17,8 @@
 /** ay_capt_crtsimplecap:
  *  create a simple cap surface from a single NURBS curve
  *
- * @param[in,out] c NURBS curve object
- * @param[in,out] cap new NURBS patch object
+ * \param[in,out] c NURBS curve object
+ * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -114,9 +114,9 @@ cleanup:
  *  create a simple cap surface from a single NURBS curve
  *  and integrate it into the NURBS surface
  *
- * @param[in] side integration place
- * @param[in,out] s NURBS surface object for integration
- * @param[in,out] c NURBS curve object
+ * \param[in] side integration place
+ * \param[in,out] s NURBS surface object for integration
+ * \param[in,out] c NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -230,12 +230,12 @@ cleanup:
  *  create a cap surface from planar NURBS curves; the curve objects
  *  will be transformed and moved to the new NURBS patch as trim curves
  *
- * @param[in,out] c NURBS curve object(s); multiple objects may
+ * \param[in,out] c NURBS curve object(s); multiple objects may
  *  be provided as list of connected objects; the first curve
  *  must be the outmost curve, all following curves define
  *  holes; the curve orientations will be detected and adjusted
  *  properly
- * @param[in,out] cap new NURBS patch object
+ * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -420,16 +420,16 @@ cleanup:
 
 
 /** ay_capt_crtgordoncap:
- *  create a cap surface from a single non-planar NURBS curve
- *  by splitting the outline into four pieces, arranging the
- *  pieces properly and building a Gordon surface from them
- *  (thanks to "the reverse" for inspiration);
- *  the curve object will be modified (split)!
+ * Create a cap surface from a single non-planar NURBS curve
+ * by splitting the outline into four pieces, arranging the
+ * pieces properly and building a Gordon surface from them
+ * (thanks to "the reverse" for inspiration);
+ * the curve object will be modified (split)!
  *
  *  XXXX allow parameterisation of split points and desired surface orders
  *
- * @param[in,out] c NURBS curve object
- * @param[in,out] cap new NURBS patch object
+ * \param[in,out] c NURBS curve object
+ * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -544,12 +544,12 @@ cleanup:
 /** ay_capt_addcaps:
  * Create cap surfaces for a NURBS surface.
  *
- * @param[in] caps designates which caps to create (and their types)
- * @param[in] bparams bevel parameters, if a bevel is to be created
+ * \param[in] caps designates which caps to create (and their types)
+ * \param[in] bparams bevel parameters, if a bevel is to be created
  *  at the corresponding boundary, we do not create the cap here but
  *  later when creating the bevel
- * @param[in] o NURBS patch object
- * @param[in,out] cap list of new NURBS patch objects (the caps)
+ * \param[in] o NURBS patch object
+ * \param[in,out] cap list of new NURBS patch objects (the caps)
  *
  * \returns AY_OK on success, error code otherwise.
  */

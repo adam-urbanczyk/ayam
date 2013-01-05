@@ -1098,7 +1098,6 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 	     stride*sizeof(double));
 
       free(newpersec);
-
     } /* if */
 
   free(curve->controlv);

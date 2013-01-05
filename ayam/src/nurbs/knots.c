@@ -432,7 +432,7 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
  *   returns:
  *   o 0 - the knots are ok
  *   o 1 - too few knots
- *   o 2 - too much knots
+ *   o 2 - too many knots
  *   o 3 - knot multiplicity too high
  *   o 4 - decreasing knots
  *   returns -1 if NULL pointer is delivered
@@ -490,7 +490,7 @@ ay_knots_printerr(char *location, int errcode)
       ay_error(AY_ERROR, location, "Knot sequence has too few knots!");
       break;
     case 2:
-      ay_error(AY_ERROR, location, "Knot sequence has too much knots!");
+      ay_error(AY_ERROR, location, "Knot sequence has too many knots!");
       break;
     case 3:
       ay_error(AY_ERROR, location, "Knot multiplicity higher than order!");
@@ -1135,12 +1135,12 @@ ay_knots_coarsen(int order, int knotvlen, double *knotv, int count,
 
 
 /** ay_knots_chordparam:
- *  create chordal parameterization from points
+ * Create chordal parameterization from points.
  *
- * @param[in] Q vector of points
- * @param[in] Qlen number of points in Q
- * @param[in] stride stride (difference between points) in Q
- * @param[in,out] U vector of parameters
+ * \param[in] Q vector of points
+ * \param[in] Qlen number of points in Q
+ * \param[in] stride stride (difference between points) in Q
+ * \param[in,out] U vector of parameters
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1221,12 +1221,12 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
 
 
 /** ay_knots_centriparam:
- *  create centripetal parameterization from points
+ * Create centripetal parameterization from points.
  *
- * @param[in] Q vector of points
- * @param[in] Qlen number of points in Q
- * @param[in] stride stride (difference between points) in Q
- * @param[in,out] U vector of parameters
+ * \param[in] Q vector of points
+ * \param[in] Qlen number of points in Q
+ * \param[in] stride stride (difference between points) in Q
+ * \param[in,out] U vector of parameters
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1307,14 +1307,14 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
 
 
 /** ay_knots_chordparamnp:
- *  create chordal parameterization from points of a surface
+ * Create chordal parameterization from points of a surface.
  *
- * @param[in] dir direction to consider (0 - U, 1 - V)
- * @param[in] Q vector of points
- * @param[in] width width of surface
- * @param[in] height height of surface
- * @param[in] stride stride (difference between points) in Q
- * @param[in,out] U vector of parameters
+ * \param[in] dir direction to consider (0 - U, 1 - V)
+ * \param[in] Q vector of points
+ * \param[in] width width of surface
+ * \param[in] height height of surface
+ * \param[in] stride stride (difference between points) in Q
+ * \param[in,out] U vector of parameters
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1386,14 +1386,14 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
 
 
 /** ay_knots_centriparamnp:
- *  create centripetal parameterization from points of a surface
+ * Create centripetal parameterization from points of a surface.
  *
- * @param[in] dir direction to consider (0 - U, 1 - V)
- * @param[in] Q vector of points
- * @param[in] width width of surface
- * @param[in] height height of surface
- * @param[in] stride stride (difference between points) in Q
- * @param[in,out] U vector of parameters
+ * \param[in] dir direction to consider (0 - U, 1 - V)
+ * \param[in] Q vector of points
+ * \param[in] width width of surface
+ * \param[in] height height of surface
+ * \param[in] stride stride (difference between points) in Q
+ * \param[in,out] U vector of parameters
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1466,16 +1466,16 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
 
 /** ay_knots_isclamped:
- *  determine whether a knot vector is clamped
+ * Determine whether a knot vector is clamped.
  *
- * @param[in] side side to check (0 - both, 1 - start, 2 - end)
- * @param[in] order order of the curve/surface
- * @param[in] U knot vector
- * @param[in] Ulen length of knot vector
- * @param[in] eps maximum distance of equal knots
+ * \param[in] side side to check (0 - both, 1 - start, 2 - end)
+ * \param[in] order order of the curve/surface
+ * \param[in] U knot vector
+ * \param[in] Ulen length of knot vector
+ * \param[in] eps maximum distance of equal knots
  *
  * \returns AY_TRUE if knot vector is clamped on designated side(s)
- *  otherwise, and in error, return AY_FALSE
+ *  otherwise, and in error, returns AY_FALSE
  */
 int
 ay_knots_isclamped(unsigned int side, unsigned int order,
@@ -1526,12 +1526,12 @@ ay_knots_isclamped(unsigned int side, unsigned int order,
 
 
 /** ay_knots_classify:
- *  determine the type of a knot vector
+ * Determine the type of a knot vector.
  *
- * @param[in] order order of the curve/surface
- * @param[in] U knot vector
- * @param[in] Ulen length of knot vector
- * @param[in] eps maximum distance of equal knots
+ * \param[in] order order of the curve/surface
+ * \param[in] U knot vector
+ * \param[in] Ulen length of knot vector
+ * \param[in] eps maximum distance of equal knots
  *
  * \returns knot vector type (AY_KTCUSTOM in error)
  */
@@ -1606,10 +1606,10 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 
 
 /** ay_knots_revert:
- *  revert a knot vector
+ * Revert a knot vector.
  *
- * @param[in] U knot vector
- * @param[in] Ulen length of knot vector
+ * \param[in] U knot vector
+ * \param[in] Ulen length of knot vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1648,11 +1648,11 @@ ay_knots_revert(double *U, int Ulen)
  * get discontinuous parametric values of a NURBS curve/surface
  * (internal knots of a multiplicity equal to the order of the curve)
  *
- * @param[in] Ulen length of knot vector
- * @param[in] U knot vector
- * @param[in] order order of curve/surface
- * @param[in,out] Udlen pointer where length of result will be stored
- * @param[in,out] Ud pointer where a vector of parametric values
+ * \param[in] Ulen length of knot vector
+ * \param[in] U knot vector
+ * \param[in] order order of curve/surface
+ * \param[in,out] Udlen pointer where length of result will be stored
+ * \param[in,out] Ud pointer where a vector of parametric values
  *                will be stored
  *
  * \returns AY_OK on success, error code otherwise.
@@ -1697,14 +1697,14 @@ ay_knots_getdisc(int Ulen, double *U, int order, int *Udlen, double **Ud)
 
 
 /** ay_knots_remove:
- *  Remove a knot related to a control point to be removed.
- *  Only useful for custom knot vectors, where we can not simply
- *  recompute a new knot vector from new parameters/control points.
+ * Remove a knot related to a control point to be removed.
+ * Only useful for custom knot vectors, where we can not simply
+ * recompute a new knot vector from new parameters/control points.
  *
- * @param[in] index control point to be removed
- * @param[in] order order of curve/surface
- * @param[in] length (width/height) of curve (surface) prior to removal
- * @param[in,out] U knot vector
+ * \param[in] index control point to be removed
+ * \param[in] order order of curve/surface
+ * \param[in] length length (width/height) of curve (surface) prior to removal
+ * \param[in,out] U knot vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1748,14 +1748,14 @@ ay_knots_remove(unsigned int index, int order, int length, double **U)
 
 
 /** ay_knots_insert:
- *  Insert a knot related to a control point to be inserted.
- *  Only useful for custom knot vectors, where we can not simply
- *  recompute a new knot vector from new parameters/control points.
+ * Insert a knot related to a control point to be inserted.
+ * Only useful for custom knot vectors, where we can not simply
+ * recompute a new knot vector from new parameters/control points.
  *
- * @param[in] index control point to be inserted
- * @param[in] order order of curve/surface
- * @param[in] length (width/height) of curve (surface) prior to insertion
- * @param[in,out] U knot vector
+ * \param[in] index control point to be inserted
+ * \param[in] order order of curve/surface
+ * \param[in] length length (width/height) of curve (surface) prior to insertion
+ * \param[in,out] U knot vector
  *
  * \returns AY_OK on success, error code otherwise.
  */

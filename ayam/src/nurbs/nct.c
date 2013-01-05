@@ -30,14 +30,14 @@ char ay_nct_ncname[] = "NCurve";
 /** ay_nct_create:
  *  create a NURBS curve object
  *
- * @param[in] order Order of new curve (2 - 10, unchecked)
- * @param[in] length Length of new curve (2 - 1000, unchecked)
- * @param[in] knot_type Knot type of new curve (AY_KT*)
- * @param[in] controlv Pointer to control points [length*stride]
+ * \param[in] order Order of new curve (2 - 10, unchecked)
+ * \param[in] length Length of new curve (2 - 1000, unchecked)
+ * \param[in] knot_type Knot type of new curve (AY_KT*)
+ * \param[in] controlv Pointer to control points [length*stride]
  *            may be NULL
- * @param[in] knotv Pointer to knots [length+order]
+ * \param[in] knotv Pointer to knots [length+order]
  *            may be NULL
- * @param[in,out] curveptr new NURBS curve object
+ * \param[in,out] curveptr new NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -107,7 +107,7 @@ ay_nct_create(int order, int length, int knot_type,
 /** ay_nct_destroy:
  *  gracefully destroy a NURBS curve object
  *
- * @param[in,out] curve NURBS curve object to destroy
+ * \param[in,out] curve NURBS curve object to destroy
  */
 void
 ay_nct_destroy(ay_nurbcurve_object *curve)
@@ -143,7 +143,7 @@ ay_nct_destroy(ay_nurbcurve_object *curve)
 /** ay_nct_clearmp:
  *  delete all mpoints from curve
  *
- * @param[in] curve NURBS curve object
+ * \param[in] curve NURBS curve object
  */
 void
 ay_nct_clearmp(ay_nurbcurve_object *curve)
@@ -175,7 +175,7 @@ ay_nct_clearmp(ay_nurbcurve_object *curve)
 /** ay_nct_recreatemp:
  *  recreate mpoints of curve from identical control points
  *
- * @param[in] curve NURBS curve object
+ * \param[in] curve NURBS curve object
  */
 void
 ay_nct_recreatemp(ay_nurbcurve_object *c)
@@ -278,7 +278,7 @@ cleanup:
 /** ay_nct_collapseselp:
  *  collapse selected points of NURBS curve
  *
- * @param[in] o NURBS curve object
+ * \param[in] o NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -389,7 +389,7 @@ ay_nct_collapseselp(ay_object *o)
 /** ay_nct_explodemp:
  *  explode selected mpoints of NURBS curve
  *
- * @param[in] o NURBS curve object
+ * \param[in] o NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -470,8 +470,8 @@ ay_nct_explodemp(ay_object *o)
 /** ay_nct_resize:
  *  resize a NURBS curve
  *
- * @param[in] curve NURBS curve object
- * @param[in] new_length new length of curve
+ * \param[in] curve NURBS curve object
+ * \param[in] new_length new length of curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -599,7 +599,7 @@ ay_nct_resize(ay_nurbcurve_object *curve, int new_length)
  *  If closing fails because there are not enough control
  *  points in the curve, the curve type will be reset to "open".
  *
- * @param[in] curve NURBS curve object to close
+ * \param[in] curve NURBS curve object to close
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -651,7 +651,7 @@ ay_nct_close(ay_nurbcurve_object *curve)
 /** ay_nct_revert:
  *  revert a NURBS curve
  *
- * @param[in] curve NURBS curve object to revert
+ * \param[in] curve NURBS curve object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -702,9 +702,9 @@ ay_nct_revert(ay_nurbcurve_object *curve)
 /** ay_nct_revertarr:
  *  revert an array
  *
- * @param[in,out] cv
- * @param[in] cvlen
- * @param[in] stride
+ * \param[in,out] cv
+ * \param[in] cvlen
+ * \param[in] stride
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -742,9 +742,9 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
  *  if newknotv is NULL, a knot is inserted into every possible
  *  place in the knot vector (multiple knots will not be changed)
  *
- * @param[in,out] curve NURBS curve object to refine
- * @param[in] newknotv vector of new knot values (may be NULL)
- * @param[in] newknotvlen length of newknotv vector
+ * \param[in,out] curve NURBS curve object to refine
+ * \param[in] newknotv vector of new knot values (may be NULL)
+ * \param[in] newknotvlen length of newknotv vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -867,8 +867,8 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
  *  refine a NURBS curve by inserting control points at the right places,
  *  changing the shape of the curve
  *
- * @param[in,out] curve NURBS curve object to refine
- * @param[in,out] selp selected points that define a (single) region to refine
+ * \param[in,out] curve NURBS curve object to refine
+ * \param[in,out] selp selected points that define a (single) region to refine
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1217,8 +1217,8 @@ cleanup:
 /** ay_nct_clamp:
  *  clamp NURBS curve, it is safe to call this with half clamped curves
  *
- * @param[in] curve NURBS curve object to clamp
- * @param[in] side side to clamp:
+ * \param[in] curve NURBS curve object to clamp
+ * \param[in] side side to clamp:
  *             - 0: clamp both sides
  *             - 1: clamp only start
  *             - 2: clamp only end
@@ -1417,7 +1417,7 @@ ay_nct_clamp(ay_nurbcurve_object *curve, int side)
  *  fast clamp for curves with periodic knot vectors (e.g. AY_KTBSPLINE),
  *  always clamps both ends
  *
- * @param[in] curve NURBS curve object to clamp
+ * \param[in] curve NURBS curve object to clamp
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1566,8 +1566,8 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_elevate:
  *  elevate NURBS curve to new order
  *
- * @param[in] curve NURBS curve object to elevate
- * @param[in] new_order new order
+ * \param[in] curve NURBS curve object to elevate
+ * \param[in] new_order new order
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3510,7 +3510,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
  *  Check whether or not a NURBS curve is closed by computing and
  *  and comparing the end points.
  *
- * @param[in,out] nc object of type NCurve to process
+ * \param[in,out] nc object of type NCurve to process
  *
  * \returns AY_TRUE if the curve is closed, AY_FALSE if not (and in error)
  */
@@ -3544,7 +3544,7 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
  *  set the type attribute according to the actual configuration
  *  of a NURBS curve
  *
- * @param[in,out] nc object of type NCurve to process
+ * \param[in,out] nc object of type NCurve to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3579,7 +3579,7 @@ ay_nct_settype(ay_nurbcurve_object *nc)
  *  applies transformations from object to all control points,
  *  then reset the objects transformation attributes
  *
- * @param[in,out] c object of type NCurve to process
+ * \param[in,out] c object of type NCurve to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3621,10 +3621,10 @@ ay_nct_applytrafo(ay_object *c)
  *  get address of a single control point from its indices
  *  (performing bounds checking)
  *
- * @param[in] patch NCurve object to process
- * @param[in] indexu index of desired control point in U dimension (width)
- * @param[in] indexv index of desired control point in V dimension (height)
- * @param[in,out] p pointer to pointer where to store the resulting address
+ * \param[in] patch NCurve object to process
+ * \param[in] indexu index of desired control point in U dimension (width)
+ * \param[in] indexv index of desired control point in V dimension (height)
+ * \param[in,out] p pointer to pointer where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3656,7 +3656,7 @@ ay_nct_getpntfromindex(ay_nurbcurve_object *curve, int index, double **p)
 /** ay_nct_euctohom:
  *  convert rational coordinates from euclidean to homogeneous style
  *
- * @param[in,out] nc NURBS curve object to process
+ * \param[in,out] nc NURBS curve object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3691,7 +3691,7 @@ ay_nct_euctohom(ay_nurbcurve_object *nc)
 /** ay_nct_homtoeuc:
  *  convert rational coordinates from homogeneous to euclidean style
  *
- * @param[in,out] nc NURBS curve object to process
+ * \param[in,out] nc NURBS curve object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -3915,15 +3915,15 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
  *  continous fillet; both, G1 and C1, fillets will finally be
  *  elevated to the desired order
  *
- * @param[in] order desired order of fillet curve
- * @param[in] tanlen
+ * \param[in] order desired order of fillet curve
+ * \param[in] tanlen
  *  if > 0.0, scale of tangents, expressed as ratio
  *  of the distance between last point in c1 and first point in c2;
  *  if < 0.0, scale of tangents, expressed directly (the provided
  *  value is negated before use, -0.1 => 0.1)
- * @param[in] c1 first curve
- * @param[in] c2 second curve
- * @param[in] result fillet curve
+ * \param[in] c1 first curve
+ * \param[in] c2 second curve
+ * \param[in] result fillet curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -4729,8 +4729,8 @@ ay_nct_intersectca(ay_object *cu, ay_object *cv, double *intersections)
  * Checks the curve objects for compatibility (whether or not they
  * are defined on the same knot vector).
  *
- * @param[in] curves a number of NURBS curve objects
- * @param[in,out] result is set to AY_TRUE if the curves are compatible,
+ * \param[in] curves a number of NURBS curve objects
+ * \param[in,out] result is set to AY_TRUE if the curves are compatible,
  *  AY_FALSE else
  *
  * \returns AY_OK on success, error code otherwise.
@@ -4784,7 +4784,7 @@ ay_nct_iscompatible(ay_object *curves, int *result)
  *  make a number of curves compatible i.e. of the same order
  *  and defined on the same knot vector
  *
- * @param[in,out] curves a number of NURBS curve objects
+ * \param[in,out] curves a number of NURBS curve objects
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -4995,10 +4995,10 @@ cleanup:
 /** ay_nct_shiftarr:
  *  shift the control points of a 1D (curve) control vector
  *
- * @param[in] dir direction of the shift (0: left, 1: right)
- * @param[in] stride size of a point
- * @param[in] cvlen number of points in control vector
- * @param[in,out] cv control vector
+ * \param[in] dir direction of the shift (0: left, 1: right)
+ * \param[in] stride size of a point
+ * \param[in] cvlen number of points in control vector
+ * \param[in,out] cv control vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -5636,7 +5636,7 @@ cleanup:
 /** ay_nct_israt:
  *  Check whether curve is rational.
  *
- * @param[in] curve NURBS curve to check
+ * \param[in] curve NURBS curve to check
  *
  * \returns AY_TRUE if curve is rational, AY_FALSE else.
  */
@@ -5664,7 +5664,7 @@ ay_nct_israt(ay_nurbcurve_object *curve)
 /* ay_nct_coarsen:
  *  Reduces the resolution of a NURBS curve.
  *
- * @param[in,out] curve NURBS curve object to be coarsened
+ * \param[in,out] curve NURBS curve object to be coarsened
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6071,9 +6071,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_trim:
  *  trim NURBS curve (cut off pieces at start and/or end)
  *
- * @param[in] curve NURBS curve to trim
- * @param[in] umin new minimum knot value
- * @param[in] umax new maximum knot value
+ * \param[in] curve NURBS curve to trim
+ * \param[in] umin new minimum knot value
+ * \param[in] umax new maximum knot value
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6215,7 +6215,7 @@ ay_nct_trimtcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_isdegen:
  *  check curve for degeneracy (all points equal)
  *
- * @param[in] curve NURBS curve to check
+ * \param[in] curve NURBS curve to check
  *
  * \returns AY_TRUE if curve is degenerate, AY_FALSE else.
  */
@@ -6243,8 +6243,8 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
 /** ay_nct_offset:
  *  create offset curve
  *
- * @param[in] o NURBS curve object to offset
- * @param[in] mode offset mode:
+ * \param[in] o NURBS curve object to offset
+ * \param[in] mode offset mode:
  *            - 0: point mode (offset points along normals derived from
  *                 surrounding control points)
  *            - 1: section mode (calculate offset points from the intersection
@@ -6252,8 +6252,8 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  *            - 2: hybrid mode (mix result of point and section mode)
  *            - 3: 3D PV N mode (offset points according to normals
  *                 delivered as primitive variable)
- * @param[in] offset offset distance
- * @param[in,out] nc offset curve
+ * \param[in] offset offset distance
+ * \param[in,out] nc offset curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6442,9 +6442,9 @@ cleanup:
  *  (calculate offset points from the intersection of the
  *  surrounding sections)
  *
- * @param[in] o NURBS curve object to offset
- * @param[in] offset offset distance
- * @param[in,out] nc offset curve
+ * \param[in] o NURBS curve object to offset
+ * \param[in] offset offset distance
+ * \param[in,out] nc offset curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -6456,7 +6456,7 @@ ay_nct_offsetsection(ay_object *o, double offset,
  int i, j, k, stride = 4;
  double *newcv = NULL, *newkv = NULL;
  ay_nurbcurve_object *curve = NULL;
- int p1len, p2len, p3len;
+ int p1len, p2len, p3len = 0;
  double *p1, *p2, *p3, *pt, *po, p1s1[2], p2s1[2], p1s2[2], p2s2[2];
  double t1[2], t2[2], n[2];
  double *vn = NULL, vlen;
@@ -6803,8 +6803,8 @@ cleanup:
 
 /** ay_nct_cmppnt:
  *  compare two points (helper for qsort)
- * @param[in] p1 points to point 1
- * @param[in] p2 points to point 2
+ * \param[in] p1 points to point 1
+ * \param[in] p2 points to point 2
  *
  * \returns
  *   - 0  the points are equal
@@ -6842,8 +6842,8 @@ ay_nct_cmppnt(const void *p1, const void *p2)
 
 /** ay_nct_cmppntp:
  *  compare two points given as pointers (helper for qsort)
- * @param[in] p1 points to pointer to point 1
- * @param[in] p2 points to pointer to point 2
+ * \param[in] p1 points to pointer to point 1
+ * \param[in] p2 points to pointer to point 2
  *
  * \returns
  *   - 0  the points are equal
@@ -6882,8 +6882,8 @@ ay_nct_cmppntp(const void *p1, const void *p2)
 /** ay_nct_estlen:
  *  estimate length of NURBS curve
  *
- * @param[in] nc NURBS curve object
- * @param[in,out] len estimated length
+ * \param[in] nc NURBS curve object
+ * \param[in,out] len estimated length
  *
  * \returns AY_OK on success, error code otherwise.
  */

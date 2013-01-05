@@ -54,19 +54,19 @@ int ay_npt_getnormal(ay_nurbpatch_object *np, int i, int j,
 /** ay_npt_create:
  *  Create a NURBS patch object.
  *
- * @param[in] uorder Order of new patch in U direction (2 - 10, unchecked)
- * @param[in] vorder Order of new patch in V direction (2 - 10, unchecked)
- * @param[in] width Width of new patch (U direction) (2 - 100, unchecked)
- * @param[in] height Height of new patch (V direction) (2 - 100, unchecked)
- * @param[in] uknot_type Knot type of new patch in U direction (AY_KT*)
- * @param[in] vknot_type Knot type of new patch in V direction (AY_KT*)
- * @param[in] controlv Pointer to control points [width*height*stride]
+ * \param[in] uorder Order of new patch in U direction (2 - 10, unchecked)
+ * \param[in] vorder Order of new patch in V direction (2 - 10, unchecked)
+ * \param[in] width Width of new patch (U direction) (2 - 100, unchecked)
+ * \param[in] height Height of new patch (V direction) (2 - 100, unchecked)
+ * \param[in] uknot_type Knot type of new patch in U direction (AY_KT*)
+ * \param[in] vknot_type Knot type of new patch in V direction (AY_KT*)
+ * \param[in] controlv Pointer to control points [width*height*stride]
  *            may be NULL
- * @param[in] uknotv Pointer to knots [width+uorder]
+ * \param[in] uknotv Pointer to knots [width+uorder]
  *            may be NULL unless uknot_type is AY_KTCUSTOM
- * @param[in] vknotv Pointer to knots [height+vorder]
+ * \param[in] vknotv Pointer to knots [height+vorder]
  *            may be NULL unless vknot_type is AY_KTCUSTOM
- * @param[in,out] patchptr new NURBS patch object
+ * \param[in,out] patchptr new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -159,7 +159,7 @@ ay_npt_create(int uorder, int vorder, int width, int height,
 /** ay_npt_destroy:
  *   gracefully destroy a NURBS patch object
  *
- * @param[in,out] patch NURBS patch object to destroy
+ * \param[in,out] patch NURBS patch object to destroy
  */
 void
 ay_npt_destroy(ay_nurbpatch_object *patch)
@@ -199,7 +199,7 @@ ay_npt_destroy(ay_nurbpatch_object *patch)
  *   properly create and set up an ay_object structure to be used
  *   with a NURBS patch object
  *
- * @param[in,out] result new Ayam object
+ * \param[in,out] result new Ayam object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -229,12 +229,12 @@ ay_npt_createnpatchobject(ay_object **result)
 /** ay_npt_resetdisplay:
  *   reset the display attributes of a NURBS patch
  *
- * @param[in,out] o NURBS patch object to reset
+ * \param[in,out] o NURBS patch object to reset
  */
 void
 ay_npt_resetdisplay(ay_object *o)
 {
-  ay_nurbpatch_object *patch;
+ ay_nurbpatch_object *patch;
 
   if(!o || !o->type == AY_IDNPATCH)
     return;
@@ -251,7 +251,7 @@ ay_npt_resetdisplay(ay_object *o)
 /* ay_npt_euctohom:
  *  convert rational coordinates from euclidean to homogeneous style
  *
- * @param[in,out] np NURBS patch object to process
+ * \param[in,out] np NURBS patch object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -286,7 +286,7 @@ ay_npt_euctohom(ay_nurbpatch_object *np)
 /* ay_npt_homtoeuc:
  *  convert rational coordinates from homogeneous to euclidean style
  *
- * @param[in,out] np NURBS patch object to process
+ * \param[in,out] np NURBS patch object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -690,7 +690,7 @@ ay_npt_swapuv(ay_nurbpatch_object *np)
 /** ay_npt_revertu:
  *  revert control vector and knots of NURBS patch in u dimension
  *
- * @param[in] patch NURBS patch object to revert
+ * \param[in,out] patch NURBS patch object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -717,7 +717,7 @@ ay_npt_revertu(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->uknot_type >= AY_KTCUSTOM)
     {
-      ay_knots_revert(np->uknotv, np->width+np->uorder);
+      ay_status = ay_knots_revert(np->uknotv, np->width+np->uorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -807,7 +807,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_npt_revertv:
  *  revert control vector of NURBS patch in v dimension
  *
- * @param[in] patch NURBS patch object to revert
+ * \param[in] patch NURBS patch object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -836,7 +836,7 @@ ay_npt_revertv(ay_nurbpatch_object *np)
   /* revert knots */
   if(np->vknot_type >= AY_KTCUSTOM)
     {
-      ay_knots_revert(np->vknotv, np->height+np->vorder);
+      ay_status = ay_knots_revert(np->vknotv, np->height+np->vorder);
     } /* if */
 
   /* since we do not create new multiple points
@@ -2283,13 +2283,13 @@ cleanup:
  *  fill the gap between the patches \a o1 and \a o2
  *  with another NURBS patch (fillet)
  *
- * @param[in] o1 first NURBS patch object
- * @param[in] o2 second NURBS patch object
- * @param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
+ * \param[in] o1 first NURBS patch object
+ * \param[in] o2 second NURBS patch object
+ * \param[in] tanlen if != 0.0, scale of tangents, expressed as ratio
  *  of the distance between last point in c1 and first point in c2
- * @param[in] uv specification of which sides of the patches to connect
+ * \param[in] uv specification of which sides of the patches to connect
  *  may be NULL, in which case the patches are connected via un(o1)-u0(o2)
- * @param[in,out] result fillet patch
+ * \param[in,out] result fillet patch
  *
  * @return AY_OK on success, error code otherwise.
  */
@@ -5177,7 +5177,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, &i); 
+  ay_status = ay_nct_iscompatible(curves, &i);
   if(ay_status)
     {goto cleanup;}
 
@@ -5352,7 +5352,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
     return AY_ENULL;
 
   i = AY_TRUE;
-  ay_status = ay_nct_iscompatible(curves, &i); 
+  ay_status = ay_nct_iscompatible(curves, &i);
   if(ay_status)
     {goto cleanup;}
 
@@ -5825,7 +5825,7 @@ cleanup:
  *  applies transformations from object to all control points,
  *  then reset the objects transformation attributes
  *
- * @param[in,out] p object of type NPatch to process
+ * \param[in,out] p object of type NPatch to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -5867,10 +5867,10 @@ ay_npt_applytrafo(ay_object *p)
  *  get address of a single control point from its indices
  *  (performing bounds checking)
  *
- * @param[in] patch NPatch object to process
- * @param[in] indexu index of desired control point in U dimension (width)
- * @param[in] indexv index of desired control point in V dimension (height)
- * @param[in,out] p pointer to pointer where to store the resulting address
+ * \param[in] patch NPatch object to process
+ * \param[in] indexu index of desired control point in U dimension (width)
+ * \param[in] indexv index of desired control point in V dimension (height)
+ * \param[in,out] p pointer to pointer where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -11524,11 +11524,11 @@ cleanup:
 /* ay_npt_avglensu:
  *  Compute average control point distances in U direction.
  *
- * @param[in] cv control points [width*height*stride]
- * @param[in] width width of cv
- * @param[in] height height of cv
- * @param[in] stride stride in cv
- * @param[in,out] avlens resulting average distances [width-1]
+ * \param[in] cv control points [width*height*stride]
+ * \param[in] width width of cv
+ * \param[in] height height of cv
+ * \param[in] stride stride in cv
+ * \param[in,out] avlens resulting average distances [width-1]
  *  avlens[0] is the average distance of column0 to column1
  *  avlens[1] the average distance of column1 to column2...
  *
@@ -11582,11 +11582,11 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
 /* ay_npt_avglensv:
  *  Compute average control point distances in V direction.
  *
- * @param[in] cv control points [width*height*stride]
- * @param[in] width width of cv
- * @param[in] height height of cv
- * @param[in] stride stride in cv
- * @param[in,out] avlens resulting average distances [height-1]
+ * \param[in] cv control points [width*height*stride]
+ * \param[in] width width of cv
+ * \param[in] height height of cv
+ * \param[in] stride stride in cv
+ * \param[in,out] avlens resulting average distances [height-1]
  *  avlens[0] is the average distance of row0 to row1
  *  avlens[1] the average distance of row1 to row2...
  *
@@ -12194,9 +12194,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  *  refine a NURBS surface in direction u by inserting knots at
  *  the right places, thus not changing the shape of the surface
  *
- * @param[in] patch NURBS surface object to refine
- * @param[in] newknotv vector of new knot values (may be NULL)
- * @param[in] newknotvlen length of vector
+ * \param[in] patch NURBS surface object to refine
+ * \param[in] newknotv vector of new knot values (may be NULL)
+ * \param[in] newknotvlen length of vector
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -12307,9 +12307,9 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
  *  refine a NURBS surface in v direction by inserting knots at
  *  the right places, thus not changing the shape of the surface
  *
- * @param[in] patch NURBS surface object to refine
- * @param[in] newknotv vector of new knot values (may be NULL)
- * @param[in] newknotvlen length of vector
+ * \param[in] patch NURBS surface object to refine
+ * \param[in] newknotv vector of new knot values (may be NULL)
+ * \param[in] newknotvlen length of vector
  *
  * \returns AY_OK on success, error code otherwise.
  */

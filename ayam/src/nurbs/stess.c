@@ -2038,7 +2038,11 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
       u2 = stess->ups[i+1];
 
       if(!u1 || !u2 || !u1->next || !u2->next)
+	{
+	  if(i==1)
+	    printf("hier\n");
 	continue;
+	}
 
       glBegin(GL_TRIANGLE_STRIP);
       glNormal3dv((GLdouble*)&((u1->C)[3]));
@@ -2137,8 +2141,11 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 			u1 = u1->next;
 
 		      if(!u1)
+			{
+	  if(i==1)
+	    printf("hier\n");
 			break;
-
+			}
 		      if(fabs(u1->v - u2->v) < stess->vd)
 			{
 			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
@@ -2151,8 +2158,11 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 			u2 = u2->next;
 
 		      if(!u2)
+			{
+	  if(i==1)
+	    printf("hier\n");
 			break;
-
+			}
 		      if(fabs(u1->v - u2->v) < stess->vd)
 			{
 			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
@@ -2168,8 +2178,11 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 			u2 = u2->next;
 
 		      if(!u2)
+			{
+	  if(i==1)
+	    printf("hier\n");
 			break;
-
+			}
 		      if(fabs(u1->v - u2->v) < stess->vd)
 			{
 			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
@@ -2182,8 +2195,11 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 			u1 = u1->next;
 
 		      if(!u1)
+			{
+	  if(i==1)
+	    printf("hier\n");
 			break;
-
+			}
 		      if(fabs(u1->v - u2->v) < stess->vd)
 			{
 			  if((int)(u1->v/stess->vd) == (int)(u2->v/stess->vd))
@@ -2207,6 +2223,8 @@ ay_stess_ShadeTrimmedSurface(ay_object *o)
 	      if(!u1 || !u2)
 		{
 		  glBegin(GL_TRIANGLE_STRIP);
+	  if(i==1)
+	    printf("hier\n");
 		  break;
 		}
 
