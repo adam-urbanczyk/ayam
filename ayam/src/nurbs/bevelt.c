@@ -28,16 +28,16 @@ static ay_object *ay_bevelt_curves[3] = {0};
 /* functions: */
 
 /** ay_bevelt_addbevels:
- *  Add bevel surfaces to the sides of a NURBS surface.
+ * Add bevel surfaces to the sides of a NURBS surface.
  *
- * @param[in] bparams bevel creation parameters
- * @param[in] caps cap creation parameters
- * @param[in,out] o NURBS surface object (may be modified
+ * \param[in] bparams bevel creation parameters
+ * \param[in] caps cap creation parameters
+ * \param[in,out] o NURBS surface object (may be modified
  *  if the integrate parameter of a bevel is set)
- * @param[in,out] dst resulting bevel and cap NURBS surface objects
+ * \param[in,out] dst resulting bevel and cap NURBS surface objects
  *  (may be empty if all bevels are integrated into the surface)
  *
- * @return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
@@ -298,8 +298,8 @@ cleanup:
 /** ay_bevelt_parsetags:
  * Parse all "BP" tags into a ay_bparam (bevel parameter) struct.
  *
- * @param[in] tag list of tags to parse
- * @param[in,out] params pointer to bevel parameter struct
+ * \param[in] tag list of tags to parse
+ * \param[in,out] params pointer to bevel parameter struct
  */
 void
 ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params)
@@ -626,14 +626,14 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 } /* ay_bevelt_create */
 
 
-/* ay_bevelt_createc:
- *   Create a bevel.
+/** ay_bevelt_createc:
+ * Create a bevel.
  *
- * @param[in] radius width/height of the bevel (may be negative)
- * @param[in] o1 curve on which the bevel is constructed (usually
- * a border extracted from a surface)
- * @param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
- * @param[in,out] b resulting bevel object
+ * \param[in] radius width/height of the bevel (may be negative)
+ * \param[in] o1 curve on which the bevel is constructed (usually
+ *  a border extracted from a surface)
+ * \param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
+ * \param[in,out] b resulting bevel object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -744,18 +744,18 @@ cleanup:
 
 
 /** ay_bevelt_createc3d:
- *   Create a 3D bevel.
+ * Create a 3D bevel.
  *
- * @param[in] radius width/height of the bevel (may be negative)
- * @param[in] revert direction of bevel (0 - inwards, 1 - outwards)
- * @param[in] o1 curve on which the bevel is constructed (usually
- * a border extracted from a surface)
- * @param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
- * @param[in] n array of normals
- * @param[in] nstride stride in normals array
- * @param[in] t array of tangents
- * @param[in] tstride stride in tangents array
- * @param[in,out] b resulting bevel object
+ * \param[in] radius width/height of the bevel (may be negative)
+ * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
+ * \param[in] o1 curve on which the bevel is constructed (usually
+ *  a border extracted from a surface)
+ * \param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
+ * \param[in] n array of normals
+ * \param[in] nstride stride in normals array
+ * \param[in] t array of tangents
+ * \param[in] tstride stride in tangents array
+ * \param[in,out] b resulting bevel object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -890,11 +890,11 @@ cleanup:
 
 
 /** ay_bevelt_integrate:
- *  integrate a bevel into a NURBS surface
+ * Integrate a bevel into a NURBS surface.
  *
- * @param[in] side integration place
- * @param[in,out] s NURBS surface object for integration
- * @param[in,out] b bevel object
+ * \param[in] side integration place
+ * \param[in,out] s NURBS surface object for integration
+ * \param[in,out] b bevel object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -915,9 +915,6 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
 
   np = (ay_nurbpatch_object*)s->refine;
   bevel = (ay_nurbpatch_object*)b->refine;
-
-  if(ay_status)
-    goto cleanup;
 
   uv = uvs[side];
 
@@ -948,9 +945,6 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
       order = np->uorder;
       break;
     } /* switch */
-
-  if(ay_status)
-    goto cleanup;
 
   knottype = AY_KTCUSTOM;
 
@@ -993,10 +987,10 @@ cleanup:
  * <= 0, the matching standard bevel curve will be returned instead
  * of a curve from the "Bevels" level.
  *
- * @param[in] index index of bevel curve
- * @param[in,out] c resulting curve
+ * \param[in] index index of bevel curve
+ * \param[in,out] c resulting curve
  *
- * @return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_bevelt_findbevelcurve(int index, ay_object **c)
@@ -1048,10 +1042,10 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 
 
 /** ay_bevelt_createbevelcurve:
- *  Create a standard bevel cross section curve (fills the
- *  curve object into the global array ay_bevelt_curves).
+ * Create a standard bevel cross section curve (fills the
+ * curve object into the global array ay_bevelt_curves).
  *
- * @param[in] index type of bevel curve to create:
+ * \param[in] index type of bevel curve to create:
  *  0 - round, 1 - linear, 2 - ridge
  */
 void

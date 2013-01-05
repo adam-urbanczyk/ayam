@@ -76,20 +76,20 @@ ay_ict_sanitize(int length, double *controlv,
 } /* ay_ict_sanitize */
 
 
-/* ay_ict_interpolateC2C:
- *  Global C2 cubic curve interpolation.
+/** ay_ict_interpolateC2C:
+ * Global C2 cubic curve interpolation.
  *
- * @param[in] length number of data points
- * @param[in] sdlen length of automatically generated start derivative
- * @param[in] edlen length of automatically generated end derivative
- * @param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- * or KT_UNIFORM)
- * @param[in] have_end_derivs should sderiv / ederiv be used?
- * @param[in] sderiv start derivative
- * @param[in] sderiv end derivative
- * @param[in] controlv vector of 3D data points [length*3]
-
- * @param[in,out] c result (a NURBS curve)
+ * \param[in] length number of data points
+ * \param[in] sdlen length of automatically generated start derivative
+ * \param[in] edlen length of automatically generated end derivative
+ * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
+ *            or KT_UNIFORM)
+ * \param[in] have_end_derivs should sderiv / ederiv be used?
+ * \param[in] sderiv start derivative
+ * \param[in] sderiv end derivative
+ * \param[in] controlv vector of 3D data points [length*3]
+ *
+ * \param[in,out] c result (a NURBS curve)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -278,20 +278,20 @@ cleanup:
 } /* ay_ict_interpolateC2C */
 
 
-/* ay_ict_interpolateC2CClosed:
- *  Global closed C2 cubic curve interpolation.
+/** ay_ict_interpolateC2CClosed:
+ * Global closed C2 cubic curve interpolation.
  *
- * @param[in] length number of data points
- * @param[in] sdlen length of automatically generated start derivative
- * @param[in] edlen length of automatically generated end derivative
- * @param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- * or KT_UNIFORM)
- * @param[in] have_end_derivs should sderiv / ederiv be used?
- * @param[in] sderiv start derivative
- * @param[in] sderiv end derivative
- * @param[in] controlv vector of 3D data points [length*3]
+ * \param[in] length number of data points
+ * \param[in] sdlen length of automatically generated start derivative
+ * \param[in] edlen length of automatically generated end derivative
+ * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
+ *            or KT_UNIFORM)
+ * \param[in] have_end_derivs should sderiv / ederiv be used?
+ * \param[in] sderiv start derivative
+ * \param[in] sderiv end derivative
+ * \param[in] controlv vector of 3D data points [length*3]
  *
- * @param[in,out] c result (a NURBS curve)
+ * \param[in,out] c result (a NURBS curve)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -490,21 +490,22 @@ cleanup:
 } /* ay_ict_interpolateC2CClosed */
 
 
-/* ay_ict_interpolateG3D:
- *  Global curve interpolation.
+/** ay_ict_interpolateG3D:
+ *   Global curve interpolation.
  *
- * @param[in] desired order of interpolation
- * (for order == 4, rather use interpolateC2C() above!)
- * @param[in] length number of data points
- * @param[in] sdlen length of automatically generated start derivative
- * @param[in] edlen length of automatically generated end derivative
- * @param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- * or KT_UNIFORM)
- * @param[in] have_end_derivs should sderiv / ederiv be used?
- * @param[in] sderiv start derivative
- * @param[in] sderiv end derivative
- * @param[in] controlv vector of 3D data points [length*3]
- * @param[in,out] c result (a NURBS curve)
+ * \param[in] iorder desired order of interpolation
+ *            (for order == 4, rather use interpolateC2C() above!)
+ * \param[in] length number of data points
+ * \param[in] sdlen length of automatically generated start derivative
+ * \param[in] edlen length of automatically generated end derivative
+ * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
+ *            or KT_UNIFORM)
+ * \param[in] have_end_derivs should sderiv / ederiv be used?
+ * \param[in] sderiv start derivative
+ * \param[in] sderiv end derivative
+ * \param[in] controlv vector of 3D data points [length*3]
+ *
+ * \param[in,out] c result (a NURBS curve)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -690,21 +691,22 @@ cleanup:
 } /* ay_ict_interpolateG3D */
 
 
-/* ay_ict_interpolateG3DClosed:
- *  Global closed curve interpolation.
+/** ay_ict_interpolateG3DClosed:
+ *   Global closed curve interpolation.
  *
- * @param[in] desired order of interpolation
- * (for order == 4, rather use ay_ict_interpolateC2CClosed() above!)
- * @param[in] length number of data points
- * @param[in] sdlen length of automatically generated start derivative
- * @param[in] edlen length of automatically generated end derivative
- * @param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
- * or KT_UNIFORM)
- * @param[in] have_end_derivs should sderiv / ederiv be used?
- * @param[in] sderiv start derivative
- * @param[in] sderiv end derivative
- * @param[in] controlv vector of 3D data points [length*3]
- * @param[in,out] c result (a NURBS curve)
+ * \param[in] desired order of interpolation
+ *            (for order == 4, rather use ay_ict_interpolateC2CClosed() above!)
+ * \param[in] length number of data points
+ * \param[in] sdlen length of automatically generated start derivative
+ * \param[in] edlen length of automatically generated end derivative
+ * \param[in] param_type parameterisation type (KT_CHORDAL, KT_CENTRI,
+ *            or KT_UNIFORM)
+ * \param[in] have_end_derivs should sderiv / ederiv be used?
+ * \param[in] sderiv start derivative
+ * \param[in] sderiv end derivative
+ * \param[in] controlv vector of 3D data points [length*3]
+ *
+ * \param[in,out] c result (a NURBS curve)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1123,11 +1125,11 @@ ay_ict_dumb_interpolate(double iparam, int closed, int length,
 }*//* ay_ict_dumb_interpolate */
 
 
-/* ay_ict_resize:
- *  resize an interpolating curve
+/** ay_ict_resize:
+ *    Resize an interpolating curve.
  *
- * @param[in,out] curve interpolating curve to revert
- * @param[in] new_length desired new length
+ * \param[in,out] curve interpolating curve to revert
+ * \param[in] new_length desired new length
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1149,7 +1151,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
   if(new_length < curve->length)
     {
       a = 0;
-      for(i=0; i<new_length; i++)
+      for(i = 0; i < new_length; i++)
 	{
 	  memcpy(&ncontrolv[a], &(curve->controlv[a]), 3*sizeof(double));
 	  a+=3;
@@ -1231,10 +1233,10 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 } /* ay_ict_resize */
 
 
-/* ay_ict_revert:
- *  revert an interpolating curve
+/** ay_ict_revert:
+ *   Revert an interpolating curve.
  *
- * @param[in,out] curve interpolating curve to revert
+ * \param[in,out] curve interpolating curve to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1283,12 +1285,12 @@ ay_ict_revert(ay_icurve_object *curve)
 
 
 /** ay_ict_getpntfromindex:
- * get address of a single control point from its indices
- * (performing bounds checking)
+ *   Get address of a single control point from its indices
+ *   (performing bounds checking).
  *
- * @param[in] patch interpolating curve object to process
- * @param[in] index index of desired control point
- * @param[in,out] p pointer to pointer where to store the resulting address
+ * \param[in] patch interpolating curve object to process
+ * \param[in] index index of desired control point
+ * \param[in,out] p pointer to pointer where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
  */
