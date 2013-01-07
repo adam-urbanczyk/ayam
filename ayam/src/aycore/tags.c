@@ -28,16 +28,17 @@ ay_tags_free(ay_tag *tag)
   if(tag->name)
     free(tag->name);
 
-  if(tag->is_binary)
-    {
-      if(((ay_btval*)tag->val)->size)
-	{
-	  free(((ay_btval*)tag->val)->payload);
-	}
-    }
-
   if(tag->val)
-    free(tag->val);
+    {
+      if(tag->is_binary)
+	{
+	  if(((ay_btval*)tag->val)->size)
+	    {
+	      free(((ay_btval*)tag->val)->payload);
+	    }
+	}
+      free(tag->val);
+    }
 
   free(tag);
 
@@ -630,8 +631,12 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_gettcmd */
 
 
-/* ay_tags_hastcmd:
- * 
+/** ay_tags_hastcmd:
+ * check for existence of a tag
+ *  Implements the \a hasTag scripting interface command.
+ *  See also the corresponding section in the \ayd{schastag}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
