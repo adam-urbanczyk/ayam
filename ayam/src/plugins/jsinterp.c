@@ -140,6 +140,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"setTags", jsinterp_wraptcmdargs, 0, 0, 0},
   {"addTag", jsinterp_wraptcmdargs, 0, 0, 0},
   {"getTags", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hasTag", jsinterp_wraptcmdargs, 0, 0, 0},
   {"delTags", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"getPnt", jsinterp_wraptcmdargs, 0, 0, 0},

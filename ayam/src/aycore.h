@@ -1220,6 +1220,11 @@ int ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
 
+/** Tcl command to check for existence of a tag
+ */
+int ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
+		    int argc, char *argv[]);
+
 /** Tcl command to delete tags from an object
  */
 int ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
