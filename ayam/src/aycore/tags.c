@@ -630,6 +630,47 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_gettcmd */
 
 
+/* ay_tags_hastcmd:
+ * 
+ */
+int
+ay_tags_hastcmd(ClientData clientData, Tcl_Interp *interp,
+		int argc, char *argv[])
+{
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ ay_tag *tag = NULL;
+
+  if(argc < 2)
+    {
+      ay_error(AY_EARGS, argv[0], "name");
+      return TCL_OK;
+    }
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  o = sel->object;
+  tag = o->tags;
+  while(tag)
+    {
+      if(!ay_comp_strcase(tag->name, argv[1]))
+	{
+	  Tcl_SetResult(interp, "1", TCL_VOLATILE);
+	  return TCL_OK;
+	}
+      tag = tag->next;
+    }
+
+  Tcl_SetResult(interp, "0", TCL_VOLATILE);
+
+ return TCL_OK;
+} /* ay_tags_hastcmd */
+
+
 /* ay_tags_deletetcmd:
  *  delete all tags of the selected object(s)
  */
