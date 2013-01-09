@@ -187,8 +187,6 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = index;
   ay_object_defaults(o);
 
-  ay_object_placemark(o);
-
   arr = ay_createcbt.arr;
   cb = (ay_createcb *)(arr[index]);
   if(cb)
@@ -199,6 +197,11 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
       ay_error(ay_status, argv[0], "Create callback failed!");
       free(o);
       return TCL_OK;
+    }
+
+  if(!o->parent)
+    {
+      ay_object_placemark(o);
     }
 
   /* for potential parent objects, create endlevel terminator */
