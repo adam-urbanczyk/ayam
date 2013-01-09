@@ -476,6 +476,10 @@ int ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[]);
  */
 void ay_object_defaults(ay_object *o);
 
+/** place object o at the current mark
+ */
+void ay_object_placemark(ay_object *o);
+
 /** create an object
  */
 int ay_object_create(unsigned int index, ay_object **o);

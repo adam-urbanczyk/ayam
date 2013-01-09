@@ -3078,6 +3078,7 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
+  ay_object_placemark(o);
 
   /* we create the nurbcurve-object */
   if(argc < 2)
@@ -3148,6 +3149,7 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
+  ay_object_placemark(o);
 
   if(sel && (sel->object->type == AY_IDNPATCH))
     {
@@ -3438,6 +3440,7 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 
   o->type = AY_IDNCURVE;
   ay_object_defaults(o);
+  ay_object_placemark(o);
 
   ay_status = ay_nct_crtcircbsp(sections, radius, arc, order,
 				(ay_nurbcurve_object**)(void*)&(o->refine));
@@ -6252,7 +6255,7 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
  *            - 2: hybrid mode (mix result of point and section mode)
  *            - 3: 3D PV N mode (offset points according to normals
  *                 delivered as primitive variable)
- * \param[in] offset offset distance
+ * \param[in] offset desired offset distance
  * \param[in,out] nc offset curve
  *
  * \returns AY_OK on success, error code otherwise.
@@ -6803,6 +6806,7 @@ cleanup:
 
 /** ay_nct_cmppnt:
  *  compare two points (helper for qsort)
+ *
  * \param[in] p1 points to point 1
  * \param[in] p2 points to point 2
  *

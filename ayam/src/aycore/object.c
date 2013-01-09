@@ -35,6 +35,33 @@ ay_object_defaults(ay_object *o)
 } /* ay_object_defaults */
 
 
+/* ay_object_placemark:
+ *  move object to the mark
+ */
+void
+ay_object_placemark(ay_object *o)
+{
+ ay_list_object tsel = {0}, *osel;
+
+  if(!o)
+    return;
+
+  /* move object to the mark? */
+  if(ay_prefs.createatmark && ay_currentview)
+    {
+      /* fake single object selection for snaptomarkcb() */
+      osel = ay_selection;
+      tsel.object = o;
+      ay_selection = &tsel;
+
+      ay_pact_snaptomarkcb(ay_currentview->togl, -1, NULL);
+      ay_selection = osel;
+    }
+
+ return;
+} /* ay_object_placemark */
+
+
 /* ay_object_create:
  *  create an object by calling the object type specific create callback
  */
@@ -134,7 +161,6 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
  Tcl_HashEntry *entry = NULL;
  ay_createcb *cb = NULL;
  ay_object *o = NULL;
- ay_list_object tsel = {0}, *osel;
  char *a = "ay", *n = "sc", *v = "1";
 
   if(argc < 2)
@@ -161,17 +187,7 @@ ay_object_createtcmd(ClientData clientData, Tcl_Interp *interp,
   o->type = index;
   ay_object_defaults(o);
 
-  /* move object to the mark? */
-  if(ay_prefs.createatmark && ay_currentview)
-    {
-      /* fake single object selection for snaptomarkcb() */
-      osel = ay_selection;
-      tsel.object = o;
-      ay_selection = &tsel;
-
-      ay_pact_snaptomarkcb(ay_currentview->togl, -1, NULL);
-      ay_selection = osel;
-    }
+  ay_object_placemark(o);
 
   arr = ay_createcbt.arr;
   cb = (ay_createcb *)(arr[index]);

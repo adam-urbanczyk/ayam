@@ -805,7 +805,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_npt_revertv:
- *  revert control vector of NURBS patch in v dimension
+ *  revert control vector and knots of NURBS patch in v dimension
  *
  * \param[in] patch NURBS patch object to revert
  *
@@ -851,8 +851,8 @@ ay_npt_revertv(ay_nurbpatch_object *np)
 
 /** ay_npt_revertvtcmd:
  *  Revert selected surfaces in V direction.
- *  Implements the \a revertuS scripting interface command.
- *  See also the corresponding section in the \ayd{screvertus}.
+ *  Implements the \a revertvS scripting interface command.
+ *  See also the corresponding section in the \ayd{screvertvs}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -1632,6 +1632,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 
   o->type = AY_IDNPATCH;
   ay_object_defaults(o);
+  ay_object_placemark(o);
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
   o->down = ay_endlevel;
@@ -1689,6 +1690,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
       new->type = AY_IDNPATCH;
       ay_object_defaults(new);
+      ay_object_placemark(new);
       new->parent = AY_TRUE;
       new->hide_children = AY_TRUE;
       new->down = ay_endlevel;
@@ -7549,10 +7551,20 @@ ay_npt_israt(ay_nurbpatch_object *np)
 } /* ay_npt_israt */
 
 
-/* ay_npt_isboundcurve:
- *  helper for ay_npt_istrimmed() below
- *  check, whether curve <o> runs along the bounds <b1>, <b2>, <b3>, or <b4>
- *  returns AY_TRUE or AY_FALSE in <result>
+/** ay_npt_isboundcurve:
+ * Check whether curve is boundary.
+ *  (helper for ay_npt_istrimmed() below)
+ *
+ * \param[in] o curve to check
+ * \param[in] b1 parametric value of left boundary (u0)
+ * \param[in] b2 parametric value of right boundary (un)
+ * \param[in] b3 parametric value of lower boundary (v0)
+ * \param[in] b4 parametric value of upper boundary (vn)
+ *
+ * \param[in,out] result AY_TRUE if each section is on exactly one
+ *                boundary else AY_FALSE
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
@@ -7677,11 +7689,14 @@ cleanup:
 } /* ay_npt_isboundcurve */
 
 
-/* ay_npt_istrimmed:
- *  mode: 0 - check if non-trivially trimmed:
- *        returns: AY_FALSE in error and if trivially trimmed
- *                 AY_TRUE if non-trivially trimmed
- *        Does not work well for degenerate patches.
+/** ay_npt_istrimmed:
+ * Check whether NURBS patch is trimmed.
+ * Does not work well for degenerate patches.
+ *
+ * \param[in] mode operation mode: 0 - check if non-trivially trimmed
+ *
+ * \returns AY_FALSE in error and if trivially trimmed,
+ *          AY_TRUE if non-trivially trimmed
  */
 int
 ay_npt_istrimmed(ay_object *o, int mode)
@@ -9366,9 +9381,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			   "Could not rescale u-knots.");
 		  break;
 		}
-
 	      src->modified = AY_TRUE;
-
 	    } /* if */
 
 	  if(dim == 0 || dim == 2)
@@ -9422,7 +9435,6 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 			   "Could not rescale v-knots.");
 		}
 	      src->modified = AY_TRUE;
-
 	    } /* if */
 	} /* if */
       sel = sel->next;

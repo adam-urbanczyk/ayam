@@ -30,8 +30,8 @@ addMenu $w LevelAttrData Type {Level Union Difference Intersection Primitive }
 # level_crt:
 #
 #
-proc level_crt { objtype {crtargs "" } {keepsel 0} } {
-    global ay ay_error selected
+proc level_crt { objtype {crtargs "" } {keepsel 0} {atmark 0} } {
+    global ay ayprefs ay_error selected
     set selected ""
     getSel selected
     if { $selected == "" } { ayError 20 "${objtype}_crt" ""; return; }
@@ -46,6 +46,13 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 	addTag RP Transformations
     }
 
+    set restorePrefs 0
+    if { $atmark == 0  && $ayprefs(CreateAtMark) == 1 } {
+	set ayprefs(CreateAtMark) 0
+	setPrefs
+	set restorePrefs 1
+    }
+
     # now create the level object
     set ay_error 0
     if { $crtargs != "" } {
@@ -54,6 +61,11 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
 	crtOb $objtype
     }
     if { $ay_error } { return; }
+
+    if { $restorePrefs == 1 } {
+	set ayprefs(CreateAtMark) 1
+	setPrefs
+    }
 
     # move the instance/selected object to the new level object
     cutOb
@@ -65,7 +77,7 @@ proc level_crt { objtype {crtargs "" } {keepsel 0} } {
     if { $keepsel <= 0 } {
 	goUp
 	set ay(ul) $ay(CurrentLevel)
-	uS; sL; notifyOb; rV;
+	uS; sL;	notifyOb; rV;
     } else {
 	# arrange to keep the old selection
 	if { $ay(lb) == 0 } {
