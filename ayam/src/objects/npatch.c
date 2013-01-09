@@ -501,6 +501,8 @@ ay_npatch_createcb(int argc, char *argv[], ay_object *o)
       npatch->createmp = AY_TRUE;
     }
 
+  ay_object_placemark(o);
+
   /* prevent cleanup code from doing something harmful */
   cv = NULL;
   ukv = NULL;
