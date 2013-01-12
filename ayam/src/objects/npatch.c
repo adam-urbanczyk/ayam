@@ -29,7 +29,7 @@ int ay_npatch_shadestesscb(struct Togl *togl, ay_object *o);
 int ay_npatch_shadeglucb(struct Togl *togl, ay_object *o);
 
 /* Export trim curves to RIB. */
-int ay_npt_wribtrimcurves(ay_object *o);
+int ay_npatch_wribtrimcurves(ay_object *o);
 
 /* functions: */
 
@@ -748,12 +748,6 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	}
     } /* if */
 
-#if 0
-  else
-    {
-      ay_npatch_drawglucb(togl, o);
-    } /* if */
-#endif
  return AY_OK;
 } /* ay_npatch_drawstesscb */
 
@@ -913,7 +907,7 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
   /* propagate changes to trimcurve walking code also to:
-     shadecb(), nurbs/npt.c/wribtrimcurves(), and
+     shadecb(), wribtrimcurves(), and
      nurbs/npt.c/ay_npt_topolymesh()! */
 
   /* draw trimcurves */
@@ -931,7 +925,6 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 	      gluEndTrim(npatch->no);
 	      break;
 	    case AY_IDLEVEL:
-	      /* XXXX check, whether level is of type trimloop? */
 	      loop = trim->down;
 	      if(loop && loop->next)
 		{
@@ -1163,12 +1156,7 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
 	  ay_status = ay_stess_ShadeTrimmedSurface(o);
 	}
     }
-#if 0
-  else
-    {
-      ay_npatch_shadeglucb(togl, o);
-    } /* if */
-#endif
+
  return AY_OK;
 } /* ay_npatch_shadestesscb */
 
@@ -2349,6 +2337,7 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
 
 
 /* ay_npatch_wribtrimcurves
+ *  internal helper function
  *  export trim curves to RIB
  */
 int
@@ -2363,7 +2352,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
  ay_nurbcurve_object *curve = NULL;
  double m[16];
  double x, y, z, w2;
-
+ int valid_loop;
   if(!o)
     return AY_OK;
 
@@ -2382,8 +2371,31 @@ ay_npatch_wribtrimcurves(ay_object *o)
 	  nloops++;
 	  break;
 	case AY_IDLEVEL:
-	  /* XXXX this check should be more restrictive! */
+	  valid_loop = AY_FALSE;
 	  if(trim->down && trim->down->next)
+	    {
+	      loop = trim->down;
+	      while(loop)
+		{
+		  if(loop->type == AY_IDNCURVE)
+		    {
+		      valid_loop = AY_TRUE;
+		      break;
+		    }
+		  else
+		    {
+		      nc = NULL;
+		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
+		      if(nc)
+			{
+			  valid_loop = AY_TRUE;
+			  break;
+			}
+		    }
+		  loop = loop->next;
+		} /* while */
+	    } /* if */
+	  if(valid_loop)
 	    nloops++;
 	  break;
 	default:
@@ -2428,6 +2440,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
 	  nloops++;
 	  break;
 	case AY_IDLEVEL:
+	  valid_loop = AY_FALSE;
 	  ncurves[nloops] = 0;
 	  loop = trim->down;
 	  while(loop->next)
@@ -2452,6 +2465,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
 
 	      if(curve)
 		{
+		  valid_loop = AY_TRUE;
 		  totalcurves++;
 
 		  totalcontrol += curve->length;
@@ -2470,8 +2484,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
 	      loop = loop->next;
 	    } /* while */
 
-	  /* XXXX this check should be more restrictive! */
-	  if(trim->down)
+	  if(valid_loop)
 	    nloops++;
 	  break;
 	default:
@@ -2736,7 +2749,7 @@ ay_npatch_wribcb(char *file, ay_object *o)
   if(!o)
     return AY_OK;
 
-  if(o->down)
+  if(o->down && o->down->next)
     {
       ay_status = ay_npatch_wribtrimcurves(o);
     }
