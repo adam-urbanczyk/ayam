@@ -219,6 +219,7 @@ ay_npt_createnpatchobject(ay_object **result)
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
   o->inherit_trafos = AY_FALSE;
+  o->down = ay_endlevel;
 
   *result = o;
 
@@ -807,7 +808,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_npt_revertv:
  *  revert control vector and knots of NURBS patch in v dimension
  *
- * \param[in] patch NURBS patch object to revert
+ * \param[in,out] patch NURBS patch object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1624,25 +1625,21 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* while */
     } /* if */
 
-  if(!(o = calloc(1, sizeof(ay_object))))
+  ay_status = ay_npt_createnpatchobject(&o);
+
+  if(ay_status || !o)
     {
-      ay_error(AY_EOMEM, argv[0], NULL);
+      ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
 
-  o->type = AY_IDNPATCH;
-  ay_object_defaults(o);
   ay_object_placemark(o);
-  o->parent = AY_TRUE;
-  o->hide_children = AY_TRUE;
-  o->down = ay_endlevel;
 
   ay_status = ay_npt_crtnsphere(radius,
 				(ay_nurbpatch_object **)(void*)&(o->refine));
   if(ay_status)
     {
-      ay_object_delete(o->down);
-      free(o);
+      ay_object_delete(o);
       ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
@@ -1682,18 +1679,16 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
   for(i = 0; i < 6; i++)
     {
-      if(!(new = calloc(1, sizeof(ay_object))))
+      new = NULL;
+      ay_status = ay_npt_createnpatchobject(&new);
+
+      if(ay_status || !new)
 	{
-	  ay_error(AY_EOMEM, argv[0], NULL);
+	  ay_error(ay_status, argv[0], NULL);
 	  return TCL_OK;
 	}
 
-      new->type = AY_IDNPATCH;
-      ay_object_defaults(new);
       ay_object_placemark(new);
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
-      new->down = ay_endlevel;
 
       ay_status = ay_npt_crtcobbsphere(
 			(ay_nurbpatch_object **)(void*)&(new->refine));
@@ -2098,18 +2093,13 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
     }
 
   /* create new patch */
-  if(!(new = calloc(1, sizeof(ay_object))))
+  ay_status = ay_npt_createnpatchobject(&new);
+  if(ay_status || !new)
     {
       if(newvknotv)
 	free(newvknotv);
-      return AY_EOMEM;
+      return ay_status;
     }
-
-  new->type = AY_IDNPATCH;
-  ay_object_defaults(new);
-  new->parent = AY_TRUE;
-  new->hide_children = AY_TRUE;
-  new->down = ay_endlevel;
 
   if(!(newcontrolv = malloc(newwidth*newheight*4*sizeof(double))))
     {

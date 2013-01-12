@@ -899,10 +899,6 @@ int ay_npt_swapuv(ay_nurbpatch_object *np);
  */
 int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
 
-/** Export trim curves to RIB.
- */
-int ay_npt_wribtrimcurves(ay_object *o);
-
 /** Create Cobbs NURBS sphere patch.
  */
 int ay_npt_crtcobbsphere(ay_nurbpatch_object **cobbsphere);
