@@ -128,17 +128,15 @@ ay_concatnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_concatnc_shadecb */
 
 
-/* ay_concatnc_drawhcb:
- *  draw handles (in an Ayam view window) callback function of concatnc object
+/* ay_concatnc_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of
+ *  concatnc object
  */
 int
-ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
+ay_concatnc_drawacb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
  ay_concatnc_object *concatnc = NULL;
  ay_nurbcurve_object *nc = NULL;
- double *pnts = NULL, *p1, *p2;
- double point_size = ay_prefs.handle_size;
 
   if(!o)
     return AY_ENULL;
@@ -150,15 +148,47 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
       /* get NURBS curve */
       nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
 
-      /* get and draw read only points */
+      /* draw arrow */
+      ay_draw_arrow(togl, &(nc->controlv[nc->length*4-8]),
+		    &(nc->controlv[nc->length*4-4]));
+    }
+
+  return AY_OK;
+} /* ay_concatnc_drawacb */
+
+
+/* ay_concatnc_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of concatnc object
+ */
+int
+ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_concatnc_object *concatnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ double *pnts = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
+
+  if(!o)
+    return AY_ENULL;
+
+  concatnc = (ay_concatnc_object *)o->refine;
+
+  if(concatnc && concatnc->ncurve)
+    {
+      /* get NURBS curve */
+      nc = (ay_nurbcurve_object *)concatnc->ncurve->refine;
+
       pnts = nc->controlv;
+
+      /* draw read only points */
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
-       for(i = 0; i <nc->length; i++)
+       for(i = 0; i < nc->length; i++)
 	 {
 	   glVertex3dv((GLdouble *)&pnts[a]);
 	   a += 4;
@@ -167,13 +197,6 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
-
-      /* get last and second to last control points */
-      p1 = &(nc->controlv[nc->length*4-8]);
-      p2 = p1+4;
-
-      /* draw arrow */
-      ay_draw_arrow(togl, p1, p2);
     } /* if */
 
  return AY_OK;
@@ -672,6 +695,7 @@ ay_concatnc_init(Tcl_Interp *interp)
 				    ay_concatnc_bbccb,
 				    AY_IDCONCATNC);
 
+  ay_status = ay_draw_registerdacb(ay_concatnc_drawacb, AY_IDCONCATNC);
 
   ay_status = ay_notify_register(ay_concatnc_notifycb, AY_IDCONCATNC);
 

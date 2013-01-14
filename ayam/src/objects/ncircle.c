@@ -210,6 +210,35 @@ ay_ncircle_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncircle_shadecb */
 
 
+/* ay_ncircle_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of
+ *  ncircle object
+ */
+int
+ay_ncircle_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_ncircle_object *ncircle = NULL;
+ ay_nurbcurve_object *curve = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  ncircle = (ay_ncircle_object *) o->refine;
+
+  if(ncircle && ncircle->ncurve)
+    {
+      /* get NURBS curve */
+      curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+
+      /* draw arrow */
+      ay_draw_arrow(togl, &(curve->controlv[curve->length*4-8]),
+		    &(curve->controlv[curve->length*4-4]));
+    }
+
+ return AY_OK;
+} /* ay_ncircle_drawacb */
+
+
 /* ay_ncircle_drawhcb:
  *  draw handles (in an Ayam view window) callback function of ncircle object
  */
@@ -219,9 +248,7 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_ncircle_object *ncircle = NULL;
  ay_nurbcurve_object *curve = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
- double *p1, *p2;
+ /*double point_size = ay_prefs.handle_size;*/
 
   if(!o)
     return AY_ENULL;
@@ -230,25 +257,19 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 
   if(ncircle && ncircle->ncurve)
     {
-      /* get NURBS curve and its first/last control points */
+      /* get NURBS curve */
       curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
-      p1 = &(curve->controlv[curve->length*4-8]);
-      p2 = p1+4;
-
-      /* draw arrow */
-      ay_draw_arrow(togl, p1, p2);
 
       /* draw read only points */
-      pnts = curve->controlv;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
       for(i = 0; i < curve->length; i++)
 	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
+	  glVertex3dv((GLdouble *)&(curve->controlv[a]));
 	  a += 4;
 	}
       glEnd();
@@ -688,6 +709,8 @@ ay_ncircle_init(Tcl_Interp *interp)
 				    AY_IDNCIRCLE);
 
 
+  ay_status = ay_draw_registerdacb(ay_ncircle_drawacb, AY_IDNCIRCLE);
+
   ay_status = ay_notify_register(ay_ncircle_notifycb, AY_IDNCIRCLE);
 
   ay_status = ay_convert_register(ay_ncircle_convertcb, AY_IDNCIRCLE);
@@ -699,4 +722,3 @@ ay_ncircle_init(Tcl_Interp *interp)
 
  return ay_status;
 } /* ay_ncircle_init */
-

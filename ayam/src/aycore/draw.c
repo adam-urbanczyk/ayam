@@ -16,6 +16,9 @@ unsigned int ay_current_glname = 0;
 
 /* draw.c - functions for drawing a scene using OpenGL */
 
+int ay_draw_annos(struct Togl *togl, int draw_offset);
+
+
 /* ay_draw_object:
  *  draw a single object o (and children) in view togl
  *  o if selected is AY_FALSE, selected objects
@@ -55,7 +58,7 @@ ay_draw_object(struct Togl *togl, ay_object *o, int selected)
      {
        if(view->drawobjectcs)
 	 {
-	   ay_draw_cs(togl);
+	   ay_draw_cs(togl, 0);
 	 }
      }
 
@@ -112,6 +115,368 @@ ay_draw_view(struct Togl *togl, int draw_offset)
  int ay_status = AY_OK;
  char fname[] = "draw_view";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_list_object *sel = ay_selection;
+ ay_object *o = ay_root;
+ ay_voidfp *arr = NULL;
+ ay_drawcb *cb = NULL;
+ ay_point *point = NULL;
+ double m[16];
+
+  glDisable(GL_LIGHTING);
+  glMatrixMode(GL_MODELVIEW);
+
+  if(!draw_offset)
+    {
+      if(view->dirty)
+	{
+	  ay_toglcb_reshape(togl);
+	  view->dirty = AY_FALSE;
+	}
+
+      if(view->drawbgimage)
+	{
+	  ay_draw_bgimage(togl);
+	}
+
+      /* draw grid */
+      if(view->drawgrid)
+	{
+	  ay_draw_grid(togl);
+	}
+    }
+
+  /* draw bounds of parametric space of current NURBS patch */
+  if(view->type == AY_VTTRIM)
+    {
+      ay_draw_trimview();
+    }
+
+  /* enable anti-aliasing for lines */
+  if(view->antialiaslines)
+    {
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glEnable(GL_LINE_SMOOTH);
+    }
+
+  if(view->drawlevel || view->type == AY_VTTRIM)
+    {
+      o = ay_currentlevel->object;
+      glPushMatrix();
+      if(ay_currentlevel->object != ay_root)
+	{
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
+    }
+
+  /* set color for deselected objects */
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
+
+  if(ay_prefs.linewidth != 1.0)
+    glLineWidth((GLfloat)ay_prefs.linewidth);
+
+  /* draw unselected objects */
+  if(!view->drawsel)
+    {
+      while(o->next)
+	{
+	  ay_draw_object(togl, o, AY_FALSE);
+	  o = o->next;
+	} /* while */
+    } /* if */
+
+  /* draw selected objects */
+  if(sel)
+    {
+      /* set color for selected objects */
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+
+      if(ay_prefs.sellinewidth != 1.0)
+	glLineWidth((GLfloat)ay_prefs.sellinewidth/*1.6f*/);
+
+      glPushMatrix();
+      if(!view->drawlevel)
+	{
+	  if(ay_currentlevel->object != ay_root)
+	    {
+	      ay_trafo_getall(ay_currentlevel->next);
+	    }
+	}
+      /* let selected objects appear "on top" of current drawing */
+      if(!draw_offset)
+	{
+	  glDisable(GL_DEPTH_TEST);
+	}
+      else
+	{
+	  glDepthRange(0.0, 0.99999);
+	  glDepthFunc(GL_LEQUAL);
+	} /* if */
+
+       while(sel)
+	 {
+	   ay_draw_object(togl, sel->object, AY_TRUE);
+	   sel = sel->next;
+	 } /* while */
+
+      if(!draw_offset)
+	{
+	  glEnable(GL_DEPTH_TEST);
+	}
+      else
+	{
+	  glDepthRange(0.0, 1.0);
+	  glDepthFunc(GL_LESS);
+	} /* if */
+
+      glLineWidth((GLfloat)ay_prefs.linewidth/*1.0f*/);
+
+      /* draw handles of selected objects */
+      if(view->drawhandles)
+	{
+	  /* let all handles appear "on top" of current drawing;     */
+	  /* we cannot use the glDisable(GL_DEPTH_TEST);-method here */
+	  /* because we need the Z-values for vertice picking...     */
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glClear(GL_DEPTH_BUFFER_BIT);
+	    }
+
+	  /* set size of points */
+	  glPointSize((GLfloat)ay_prefs.handle_size);
+
+	  arr = ay_drawhcbt.arr;
+	  sel = ay_selection;
+
+	  while(sel)
+	    {
+	      o = sel->object;
+
+	      if(!o->hide)
+		{
+		  glPushMatrix();
+
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
+
+		   cb = (ay_drawcb *)(arr[o->type]);
+
+		   if(cb)
+		     {
+		       ay_status = cb(togl, o);
+		       if(ay_status)
+			 {
+			   ay_error(ay_status, fname,
+				    "draw handle callback failed");
+			 }
+		     }
+
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+
+	  /* draw selected points */
+
+	  /* let those be "on top" of all points */
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glDisable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 0.99998);
+	      glDepthFunc(GL_LEQUAL);
+	    }
+
+	  /* set color for selected points */
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
+
+	  sel = ay_selection;
+	  while(sel)
+	    {
+	      o = sel->object;
+
+	      if(!o->hide && o->selp)
+		{
+		  glPushMatrix();
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
+
+		   point = o->selp;
+		   glBegin(GL_POINTS);
+		    while(point)
+		      {
+			glVertex3d((GLdouble)point->point[0],
+				   (GLdouble)point->point[1],
+				   (GLdouble)point->point[2]);
+			point = point->next;
+		      }
+		   glEnd();
+
+		  glPopMatrix();
+		}
+	      sel = sel->next;
+	    } /* while */
+
+	  /* set color for selected objects */
+	  glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		    (GLfloat)ay_prefs.seb);
+
+	  if(view->type != AY_VTPERSP)
+	    {
+	      glEnable(GL_DEPTH_TEST);
+	    }
+	  else
+	    {
+	      glDepthRange(0.0, 1.0);
+	      glDepthFunc(GL_LESS);
+	    }
+	} /* if */
+      glPopMatrix();
+    } /* if */
+
+  ay_status = ay_draw_annos(togl, draw_offset);
+
+  if(draw_offset)
+    glDepthRange(0.0, 1.0);
+
+  if(view->drawlevel || view->type == AY_VTTRIM)
+    {
+      glMatrixMode(GL_MODELVIEW);
+      glPopMatrix();
+    }
+
+  if(view->antialiaslines)
+    {
+      glDisable(GL_BLEND);
+      glDisable(GL_LINE_SMOOTH);
+    }
+
+ return AY_OK;
+} /* ay_draw_view */
+
+
+int
+ay_draw_annos(struct Togl *togl, int draw_offset)
+{
+ int ay_status = AY_OK;
+ char fname[] = "draw_annos";
+ ay_voidfp *arr = NULL;
+ ay_drawcb *cb = NULL;
+ ay_object *o = ay_root;
+ ay_list_object *sel = ay_selection;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int width = Togl_Width(togl), height = Togl_Height(togl);
+
+  arr = ay_drawacbt.arr;
+  sel = ay_selection;
+
+  if(!o->hide)
+    {
+      cb = (ay_drawcb *)(arr[o->type]);
+
+      if(cb)
+	{
+	  if(o->selected)
+	    glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		      (GLfloat)ay_prefs.seb);
+	  else
+	    glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		      (GLfloat)ay_prefs.obb);
+
+	  ay_status = cb(togl, o);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname,
+		       "draw annotation callback failed");
+	    }
+	}
+    } /* if */
+
+  if(view->drawhandles)
+    {
+      /* set color for selected objects */
+      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		(GLfloat)ay_prefs.seb);
+
+      while(sel)
+	{
+	  o = sel->object;
+      
+	  if(!o->hide)
+	    {
+	      cb = (ay_drawcb *)(arr[o->type]);
+
+	      if(cb)
+		{
+		  ay_status = cb(togl, o);
+		  if(ay_status)
+		    {
+		      ay_error(ay_status, fname,
+			       "draw annotation callback failed");
+		    }
+		}
+	    }
+	  sel = sel->next;
+	} /* while */
+    } /* if */
+
+  if(!draw_offset)
+    {
+      /* draw marked point in space */
+      if(view->drawmark)
+	{
+	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+		    (GLfloat)ay_prefs.tpb);
+	  glDisable(GL_DEPTH_TEST);
+	  glMatrixMode(GL_PROJECTION);
+	  glPushMatrix();
+	   glLoadIdentity();
+	   glOrtho(0, width, 0, height, 0.0, 1.0);
+	   glMatrixMode(GL_MODELVIEW);
+	   glPushMatrix();
+	    glLoadIdentity();
+	    glTranslated(((int)view->markx)+0.375,
+			 (height-((int)view->marky))+0.375,
+			 0.0);
+	    glBegin(GL_LINES);
+	     glVertex2i(-4, 0);
+	     glVertex2i(5, 0);
+	     glVertex2i(0, -4);
+	     glVertex2i(0, 5);
+	    glEnd();
+	   glPopMatrix();
+	   glMatrixMode(GL_PROJECTION);
+	  glPopMatrix();
+	  glEnable(GL_DEPTH_TEST);
+	} /* if */
+    } /* if */
+
+ return AY_OK;
+} /* ay_draw_annos */
+
+
+/* ay_draw_viewdl:
+ *  draw a view
+ */
+int
+ay_draw_viewdl(struct Togl *togl, int draw_offset)
+{
+ int ay_status = AY_OK;
+ char fname[] = "draw_view";
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o = ay_root;
@@ -140,6 +505,18 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       if(view->drawgrid)
 	{
 	  ay_draw_grid(togl);
+	}
+
+      if(view->display_list != 0)
+	{
+	  if(view->action_state == 1)
+	    glNewList(view->display_list, GL_COMPILE);
+	  else
+	    if(view->action_state == 2)
+	      {
+		glCallList(view->display_list);
+		return AY_OK;
+	      }
 	}
     }
 
@@ -391,8 +768,17 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glDisable(GL_LINE_SMOOTH);
     }
 
+  if(view->display_list != 0)
+    {
+      if(view->action_state == 1)
+	{
+	  glEndList();
+	  glCallList(view->display_list);
+	}
+    }
+
  return AY_OK;
-} /* ay_draw_view */
+} /* ay_draw_viewdl */
 
 
 /* ay_draw_grid:
@@ -1093,100 +1479,121 @@ ay_draw_rectangle(int winwidth, int winheight,
  *  coded and labelled axes
  */
 void
-ay_draw_cs(struct Togl *togl)
+ay_draw_cs(struct Togl *togl, int mode)
 {
  GLdouble mvm[16], pm[16];
  GLdouble win1x, win1y, win1z, win2x, win2y, win2z, win3x, win3y, win3z;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  GLint vp[4];
 
-  glGetFloatv(GL_CURRENT_COLOR, color);
+ if(mode == 0)
+   {
+     glGetFloatv(GL_CURRENT_COLOR, color);
 
-  /* draw */
-  glBegin(GL_LINES);
-   glColor3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
-   glColor3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
-   glColor3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
-   glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
-  glEnd();
+     /* draw */
+     glBegin(GL_LINES);
+      glColor3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
+      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
+      glVertex3f((GLfloat)1.0, (GLfloat)0.0, (GLfloat)0.0);
+      glColor3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
+      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
+      glVertex3f((GLfloat)0.0, (GLfloat)1.0, (GLfloat)0.0);
+      glColor3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
+      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)0.0);
+      glVertex3f((GLfloat)0.0, (GLfloat)0.0, (GLfloat)1.0);
+     glEnd();
 
-  glColor4fv(color);
+     glColor4fv(color);
+   }
+ else
+   {
+     glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
+     glGetDoublev(GL_PROJECTION_MATRIX, pm);
+     glGetIntegerv(GL_VIEWPORT, vp);
+     if(GL_FALSE == gluProject((GLdouble)1.0, (GLdouble)0.0,
+			       (GLdouble)0.0, mvm, pm, vp,
+			       &win1x, &win1y, &win1z))
+       {
+	 return;
+       }
+     if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)1.0,
+			       (GLdouble)0.0, mvm, pm, vp,
+			       &win2x, &win2y, &win2z))
+       {
+	 return;
+       }
+     if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)0.0,
+			       (GLdouble)1.0, mvm, pm, vp,
+			       &win3x, &win3y, &win3z))
+       {
+	 return;
+       }
 
-  glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
-  glGetDoublev(GL_PROJECTION_MATRIX, pm);
-  glGetIntegerv(GL_VIEWPORT, vp);
-  if(GL_FALSE == gluProject((GLdouble)1.0, (GLdouble)0.0,
-			    (GLdouble)0.0, mvm, pm, vp,
-			    &win1x, &win1y, &win1z))
-    {
-      return;
-    }
-  if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)1.0,
-			    (GLdouble)0.0, mvm, pm, vp,
-			    &win2x, &win2y, &win2z))
-    {
-      return;
-    }
-  if(GL_FALSE == gluProject((GLdouble)0.0, (GLdouble)0.0,
-			    (GLdouble)1.0, mvm, pm, vp,
-			    &win3x, &win3y, &win3z))
-    {
-      return;
-    }
+     glMatrixMode(GL_PROJECTION);
+     glPushMatrix();
+      glLoadIdentity();
+      glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
 
-  glMatrixMode(GL_PROJECTION);
-  glPushMatrix();
-   glLoadIdentity();
-   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
-
-   glMatrixMode(GL_MODELVIEW);
-   glPushMatrix();
-    glLoadIdentity();
-    glTranslated(((int)win1x)+6+0.375, ((int)win1y)+0.375, 0.0);
-    /* draw X */
-    glBegin(GL_LINE_STRIP);
-     glVertex2i(-3, -3);
-     glVertex2i(0, 0);
-     glVertex2i(-4, 4);
-    glEnd();
-    glBegin(GL_LINE_STRIP);
-     glVertex2i(3, 3);
-     glVertex2i(0, 0);
-     glVertex2i(4, -4);
-    glEnd();
-    glLoadIdentity();
-    glTranslated(((int)win2x)+6+0.375, ((int)win2y)+0.375, 0.0);
-    /* draw Y */
-    glBegin(GL_LINES);
-     glVertex2i(0, 0);
-     glVertex2i(-4, 4);
-     glVertex2i(0, 0);
-     glVertex2i(4, 4);
-     glVertex2i(0, 0);
-     glVertex2i(-4, -4);
-    glEnd();
-    glLoadIdentity();
-    glTranslated(((int)win3x)+6+0.375, ((int)win3y)+0.375, 0.0);
-    /* draw Z */
-    glBegin(GL_LINE_STRIP);
-     glVertex2i(0, 0);
-     glVertex2i(-3, -3);
-     glVertex2i(4, -3);
-    glEnd();
-    glBegin(GL_LINE_STRIP);
-     glVertex2i(0, 0);
-     glVertex2i(3, 3);
-     glVertex2i(-4, 3);
-    glEnd();
-    glPopMatrix();
-   glMatrixMode(GL_PROJECTION);
-   glPopMatrix();
-  glMatrixMode(GL_MODELVIEW);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+       glLoadIdentity();
+       glTranslated(((int)win1x)+6+0.375, ((int)win1y)+0.375, 0.0);
+       /* draw X */
+       glBegin(GL_LINE_STRIP);
+        glVertex2i(-3, -3);
+	glVertex2i(0, 0);
+	glVertex2i(-4, 4);
+       glEnd();
+       glBegin(GL_LINE_STRIP);
+        glVertex2i(3, 3);
+	glVertex2i(0, 0);
+	glVertex2i(4, -4);
+       glEnd();
+       glLoadIdentity();
+       glTranslated(((int)win2x)+6+0.375, ((int)win2y)+0.375, 0.0);
+       /* draw Y */
+       glBegin(GL_LINES);
+        glVertex2i(0, 0);
+	glVertex2i(-4, 4);
+	glVertex2i(0, 0);
+	glVertex2i(4, 4);
+	glVertex2i(0, 0);
+	glVertex2i(-4, -4);
+       glEnd();
+       glLoadIdentity();
+       glTranslated(((int)win3x)+6+0.375, ((int)win3y)+0.375, 0.0);
+       /* draw Z */
+       glBegin(GL_LINE_STRIP);
+        glVertex2i(0, 0);
+	glVertex2i(-3, -3);
+	glVertex2i(4, -3);
+       glEnd();
+       glBegin(GL_LINE_STRIP);
+        glVertex2i(0, 0);
+	glVertex2i(3, 3);
+	glVertex2i(-4, 3);
+       glEnd();
+      glPopMatrix();
+      glMatrixMode(GL_PROJECTION);
+     glPopMatrix();
+     glMatrixMode(GL_MODELVIEW);
+   } /* if */
 
  return;
 } /* ay_draw_cs */
+
+
+/* ay_draw_registerdacb:
+ *  register the draw annotation callback dacb for
+ *  objects of type type_id
+ */
+int
+ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
+{
+ int ay_status = AY_OK;
+
+  /* register notify callback */
+  ay_status = ay_table_additem(&ay_drawacbt, (ay_voidfp)dacb, type_id);
+
+ return ay_status;
+} /* ay_draw_registerdacb */

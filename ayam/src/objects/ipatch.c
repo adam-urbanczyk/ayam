@@ -1025,6 +1025,28 @@ ay_ipatch_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ipatch_shadecb */
 
 
+/* ay_ipatch_drawacb:
+ *  draw handles (in an Ayam view window) callback function of ipatch object
+ */
+int
+ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
+{
+ int width = 0, height = 0;
+ ay_ipatch_object *ipatch = (ay_ipatch_object *) o->refine;
+ GLdouble *ver = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
+
+  width = ipatch->width;
+  height = ipatch->height;
+
+  ver = ipatch->controlv;
+
+  /* draw arrow */
+  ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
+  return AY_OK;
+} /* ay_ipatch_drawacb */
+
+
 /* ay_ipatch_drawhcb:
  *  draw handles (in an Ayam view window) callback function of ipatch object
  */
@@ -1034,14 +1056,16 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
  int width = 0, height = 0, i = 0, a = 0;
  ay_ipatch_object *ipatch = (ay_ipatch_object *) o->refine;
  GLdouble *ver = NULL;
- double point_size = ay_prefs.handle_size;
+ /*double point_size = ay_prefs.handle_size;*/
 
   width = ipatch->width;
   height = ipatch->height;
 
   ver = ipatch->controlv;
 
-  glPointSize((GLfloat)point_size);
+  /* draw points */
+
+  /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
    for(i=0; i<(width*height); i++)
@@ -1050,9 +1074,6 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
        a += 3;
      }
   glEnd();
-
-  /* draw arrows */
-  ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
 
   /* draw derivatives */
   if(ipatch->derivs_u > 1)
@@ -2576,6 +2597,8 @@ ay_ipatch_init(Tcl_Interp *interp)
 				    ay_ipatch_wribcb,
 				    ay_ipatch_bbccb,
 				    AY_IDIPATCH);
+
+  ay_status = ay_draw_registerdacb(ay_ipatch_drawacb, AY_IDIPATCH);
 
   ay_status = ay_notify_register(ay_ipatch_notifycb, AY_IDIPATCH);
 

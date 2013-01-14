@@ -132,6 +132,34 @@ ay_extrnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_extrnc_shadecb */
 
 
+/* ay_extrnc_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of extrnc object
+ */
+int
+ay_extrnc_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_extrnc_object *extrnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  extrnc = (ay_extrnc_object *)o->refine;
+
+  if(extrnc && extrnc->ncurve)
+    {
+      /* get NURBS curve */
+      nc = (ay_nurbcurve_object *)extrnc->ncurve->refine;
+
+      /* draw arrow */
+      ay_draw_arrow(togl, &(nc->controlv[nc->length*4-8]),
+		    &(nc->controlv[nc->length*4-4]));
+    }
+
+ return AY_OK;
+} /* ay_extrnc_drawacb */
+
+
 /* ay_extrnc_drawhcb:
  *  draw handles (in an Ayam view window) callback function of extrnc object
  */
@@ -141,8 +169,8 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_extrnc_object *extrnc = NULL;
  ay_nurbcurve_object *nc = NULL;
- double *pnts = NULL, *p1, *p2;
- double point_size = ay_prefs.handle_size;
+ double *pnts = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
 
   if(!o)
     return AY_ENULL;
@@ -159,7 +187,7 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
        for(i = 0; i <nc->length; i++)
@@ -171,13 +199,6 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
-
-      /* get first/last control points */
-      p1 = &(nc->controlv[nc->length*4-8]);
-      p2 = p1+4;
-
-      /* draw arrow */
-      ay_draw_arrow(togl, p1, p2);
     } /* if */
 
  return AY_OK;
@@ -763,6 +784,7 @@ ay_extrnc_init(Tcl_Interp *interp)
 				    ay_extrnc_bbccb,
 				    AY_IDEXTRNC);
 
+  ay_status = ay_draw_registerdacb(ay_extrnc_drawacb, AY_IDEXTRNC);
 
   ay_status = ay_notify_register(ay_extrnc_notifycb, AY_IDEXTRNC);
 

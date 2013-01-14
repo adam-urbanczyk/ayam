@@ -134,6 +134,46 @@ ay_offnc_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_offnc_shadecb */
 
 
+/* ay_offnc_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of offnc object
+ */
+int
+ay_offnc_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_offnc_object *offnc = NULL;
+ ay_nurbcurve_object *nc = NULL;
+ ay_object *c = NULL;
+ double m[16];
+
+  if(!o)
+    return AY_ENULL;
+
+  offnc = (ay_offnc_object *)o->refine;
+
+  if(offnc && offnc->ncurve)
+    {
+      /* get NURBS curve */
+      nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
+
+      /* draw arrow */
+      glPushMatrix();
+       c = offnc->ncurve;
+       glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
+		    (GLdouble)c->movz);
+       ay_quat_torotmatrix(c->quat, m);
+       glMultMatrixd((GLdouble*)m);
+       glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
+		(GLdouble)c->scalz);
+
+       ay_draw_arrow(togl, &(nc->controlv[nc->length*4-8]),
+		     &(nc->controlv[nc->length*4-4]));
+      glPopMatrix();
+    }
+
+ return AY_OK;
+} /* ay_offnc_drawacb */
+
+
 /* ay_offnc_drawhcb:
  *  draw handles (in an Ayam view window) callback function of offnc object
  */
@@ -144,9 +184,8 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
  ay_offnc_object *offnc = NULL;
  ay_nurbcurve_object *nc = NULL;
  ay_object *c = NULL;
- double *pnts = NULL, *p1, *p2;
  double m[16];
- double point_size = ay_prefs.handle_size;
+ /*double point_size = ay_prefs.handle_size;*/
 
   if(!o)
     return AY_ENULL;
@@ -155,36 +194,31 @@ ay_offnc_drawhcb(struct Togl *togl, ay_object *o)
 
   if(offnc && offnc->ncurve)
     {
-      /* get NURBS curve and its last control points */
+      /* get NURBS curve */
       nc = (ay_nurbcurve_object *)offnc->ncurve->refine;
-      p1 = &(nc->controlv[nc->length*4-8]);
-      p2 = p1+4;
-
-      /* draw arrow */
-      glPushMatrix();
-       c = offnc->ncurve;
-       glTranslated((GLdouble)c->movx, (GLdouble)c->movy, (GLdouble)c->movz);
-       ay_quat_torotmatrix(c->quat, m);
-       glMultMatrixd((GLdouble*)m);
-       glScaled((GLdouble)c->scalx, (GLdouble)c->scaly, (GLdouble)c->scalz);
-
-       ay_draw_arrow(togl, p1, p2);
-      glPopMatrix();
 
       /* draw read only points */
-      pnts = nc->controlv;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
+      glPushMatrix();
+       c = offnc->ncurve;
+       glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
+		    (GLdouble)c->movz);
+       ay_quat_torotmatrix(c->quat, m);
+       glMultMatrixd((GLdouble*)m);
+       glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
+		(GLdouble)c->scalz);
 
-      glBegin(GL_POINTS);
-      for(i = 0; i < nc->length; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
-      glEnd();
+       glBegin(GL_POINTS);
+        for(i = 0; i < nc->length; i++)
+	  {
+	    glVertex3dv((GLdouble *)&(nc->controlv[a]));
+	    a += 4;
+	  }
+	glEnd();
+      glPopMatrix();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
@@ -654,6 +688,7 @@ ay_offnc_init(Tcl_Interp *interp)
 				    ay_offnc_bbccb,
 				    AY_IDOFFNC);
 
+  ay_status = ay_draw_registerdacb(ay_offnc_drawacb, AY_IDOFFNC);
 
   ay_status = ay_notify_register(ay_offnc_notifycb, AY_IDOFFNC);
 

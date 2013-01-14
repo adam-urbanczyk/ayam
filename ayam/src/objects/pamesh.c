@@ -351,34 +351,57 @@ ay_pamesh_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_pamesh_shadecb */
 
 
-/* ay_ncurve_drawhcb:
+/* ay_pamesh_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of pamesh object
+ */
+int
+ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
+{
+ int width = 0, height = 0;
+ ay_pamesh_object *pm;
+ GLdouble *ver = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  pm = (ay_pamesh_object *)o->refine;
+
+  width = pm->width;
+  height = pm->height;
+
+  ver = pm->controlv;
+
+  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
+
+ return AY_OK;
+} /* ay_pamesh_drawacb */
+
+
+/* ay_pamesh_drawhcb:
  *  draw handles (in an Ayam view window) callback function of pamesh object
  */
 int
 ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0, i = 0, a = 0;
- ay_pamesh_object *patch = (ay_pamesh_object *) o->refine;
+ ay_pamesh_object *pm = (ay_pamesh_object *) o->refine;
  GLdouble *ver = NULL;
- double point_size = ay_prefs.handle_size;
+ /*double point_size = ay_prefs.handle_size;*/
 
-  width = patch->width;
-  height = patch->height;
+  width = pm->width;
+  height = pm->height;
 
-  ver = patch->controlv;
+  ver = pm->controlv;
 
-  glPointSize((GLfloat)point_size);
+  /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
-  for(i=0; i<(width*height); i++)
-    {
-      glVertex3dv((GLdouble *)&ver[a]);
-      a += 4;
-    }
+   for(i=0; i<(width*height); i++)
+     {
+       glVertex3dv((GLdouble *)&ver[a]);
+       a += 4;
+     }
   glEnd();
-
-  /* draw arrows */
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
 
  return AY_OK;
 } /* ay_pamesh_drawhcb */
@@ -1450,6 +1473,8 @@ ay_pamesh_init(Tcl_Interp *interp)
 				    ay_pamesh_wribcb,
 				    ay_pamesh_bbccb,
 				    AY_IDPAMESH);
+
+  ay_status = ay_draw_registerdacb(ay_pamesh_drawacb, AY_IDPAMESH);
 
   ay_status = ay_notify_register(ay_pamesh_notifycb, AY_IDPAMESH);
 

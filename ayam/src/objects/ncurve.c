@@ -794,30 +794,47 @@ ay_ncurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_ncurve_shadecb */
 
 
+/* ay_ncurve_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of ncurve object
+ */
+int
+ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
+ GLdouble *ver = NULL;
+
+  ver = curve->controlv;
+
+  ay_draw_arrow(togl, &(ver[curve->length*4-8]),
+		&(ver[curve->length*4-4]));
+
+ return AY_OK;
+} /* ay_ncurve_drawacb */
+
+
 /* ay_ncurve_drawhcb:
  *  draw handles (in an Ayam view window) callback function of ncurve object
  */
 int
 ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 {
- int length = 0, i = 0, a = 0;
+ int i = 0, a = 0;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
  ay_mpoint *mp = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
 
-  length = curve->length;
-
   ver = curve->controlv;
 
+  /* draw points */
   /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
-  for(i=0; i<length; i++)
-    {
-      glVertex3dv((GLdouble *)&ver[a]);
-      a += 4;
-    }
+   for(i = 0; i < curve->length; i++)
+     {
+       glVertex3dv((GLdouble *)&ver[a]);
+       a += 4;
+     }
   glEnd();
 
   /* draw mpoints */
@@ -835,9 +852,6 @@ ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
       glEnd();
       glPointSize((GLfloat)point_size);
     }
-
-  /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*4-8]), &(ver[curve->length*4-4]));
 
  return AY_OK;
 } /* ay_ncurve_drawhcb */
@@ -1745,6 +1759,8 @@ ay_ncurve_init(Tcl_Interp *interp)
 				    NULL, /* no RIB export */
 				    ay_ncurve_bbccb,
 				    AY_IDNCURVE);
+
+  ay_status = ay_draw_registerdacb(ay_ncurve_drawacb, AY_IDNCURVE);
 
   ay_status = ay_convert_register(ay_ncurve_convertcb, AY_IDNCURVE);
 
