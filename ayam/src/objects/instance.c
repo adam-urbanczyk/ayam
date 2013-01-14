@@ -943,9 +943,7 @@ int
 ay_instance_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
-#if 0
- static int is_notify = AY_FALSE;
-#endif
+
   if(!o)
     return AY_OK;
 
@@ -954,20 +952,6 @@ ay_instance_notifycb(ay_object *o)
     {
       ay_instance_getpntcb(3, o, NULL, NULL);
     }
-
-  /* */
-#if 0
-  if(!is_notify)
-    {
-      is_notify = AY_TRUE;
-
-      ay_notify_object(o->refine);
-
-      /* notify parent? */
-
-      is_notify = AY_FALSE;
-    }
-#endif
 
  return ay_status;
 } /* ay_instance_notifycb */
