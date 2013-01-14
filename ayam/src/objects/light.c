@@ -16,6 +16,10 @@
 
 static char *ay_light_name = "Light";
 
+/* prototypes of functions local to this module */
+
+void ay_light_getfromto(ay_light_object *light, double *from, double *to,
+			int *has_from, int *has_to);
 /* functions: */
 
 /* ay_light_createcb:
@@ -116,59 +120,25 @@ ay_light_copycb(void *src, void **dst)
 } /* ay_light_copycb */
 
 
-/* ay_light_drawcb:
- *  draw (display in an Ayam view window) callback function of light object
- */
-int
-ay_light_drawcb(struct Togl *togl, ay_object *o)
+void
+ay_light_getfromto(ay_light_object *light, double *from, double *to,
+		   int *has_from, int *has_to)
 {
- ay_light_object *light = NULL;
  ay_shader *shader = NULL;
  ay_shader_arg *sarg = NULL;
- GLdouble from[3] = {0};
- GLdouble to[3] = {0};
- double radius = 0.0, len = 0.0, vd[3] = {0}, va[3] = {0}, vn[3] = {0};
- double quat[4] = {0}, rm[16];
- int has_from = 0, has_to = 0, i, a;
- double c1[24] = {0};
- GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f};
-
-  if(!o)
-    return AY_ENULL;
-
-  light = (ay_light_object *)o->refine;
-
-  if(!light)
-    return AY_ENULL;
-
-
-  if(!o->selected)
-    {
-      /* save current color */
-      glGetFloatv(GL_CURRENT_COLOR, oldcolor);
-      /* set color for lights */
-      glColor3f((GLfloat)ay_prefs.lir, (GLfloat)ay_prefs.lig,
-		(GLfloat)ay_prefs.lib);
-    }
 
   switch(light->type)
     {
     case AY_LITPOINT:
-      has_from = AY_TRUE;
-      from[0] = light->tfrom[0];
-      from[1] = light->tfrom[1];
-      from[2] = light->tfrom[2];
+      *has_from = AY_TRUE;
+      memcpy(from, light->tfrom, 3*sizeof(double));
       break;
     case AY_LITSPOT:
     case AY_LITDISTANT:
-      has_from = AY_TRUE;
-      from[0] = light->tfrom[0];
-      from[1] = light->tfrom[1];
-      from[2] = light->tfrom[2];
-      has_to = AY_TRUE;
-      to[0] = light->tto[0];
-      to[1] = light->tto[1];
-      to[2] = light->tto[2];
+      *has_from = AY_TRUE;
+      memcpy(from, light->tfrom, 3*sizeof(double));
+      *has_to = AY_TRUE;
+      memcpy(to, light->tto, 3*sizeof(double));
       break;
     case AY_LITCUSTOM:
       if(light->lshader)
@@ -181,7 +151,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	      if((!ay_comp_strcase(sarg->name, "from")) &&
 		 (sarg->type == AY_SAPOINT))
 		{
-		  has_from = AY_TRUE;
+		  *has_from = AY_TRUE;
 		  from[0] = sarg->val.point[0];
 		  from[1] = sarg->val.point[1];
 		  from[2] = sarg->val.point[2];
@@ -189,7 +159,7 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 	      if((!ay_comp_strcase(sarg->name, "to")) &&
 		 (sarg->type == AY_SAPOINT))
 		{
-		  has_to = AY_TRUE;
+		  *has_to = AY_TRUE;
 		  to[0] = sarg->val.point[0];
 		  to[1] = sarg->val.point[1];
 		  to[2] = sarg->val.point[2];
@@ -202,27 +172,61 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
       break;
     } /* switch */
 
+ return;
+} /* ay_light_getfromto */
+
+
+/* ay_light_drawcb:
+ *  draw (display in an Ayam view window) callback function of light object
+ */
+int
+ay_light_drawcb(struct Togl *togl, ay_object *o)
+{
+ ay_light_object *light = NULL;
+ double from[3] = {0}, to[3] = {0};
+ double radius = 0.0, len = 0.0, vd[3] = {0}, va[3] = {0}, vn[3] = {0};
+ double quat[4] = {0}, rm[16];
+ int i, a, has_from = AY_FALSE, has_to = AY_FALSE;
+ double c1[24] = {0};
+ GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f};
+
+  if(!o)
+    return AY_ENULL;
+
+  light = (ay_light_object *)o->refine;
+
+  if(!light)
+    return AY_ENULL;
+
+  if(!o->selected)
+    {
+      /* save current color */
+      glGetFloatv(GL_CURRENT_COLOR, oldcolor);
+      /* set color for lights */
+      glColor3f((GLfloat)ay_prefs.lir, (GLfloat)ay_prefs.lig,
+		(GLfloat)ay_prefs.lib);
+    }
+
+  ay_light_getfromto(light, from, to, &has_from, &has_to);
+
   if(has_from)
     {
-      glBegin(GL_LINES);
-      glVertex3d(from[0]-(1.0/o->scalx),from[1],from[2]);
-      glVertex3d(from[0]+(1.0/o->scalx),from[1],from[2]);
-      glVertex3d(from[0],from[1]-(1.0/o->scaly),from[2]);
-      glVertex3d(from[0],from[1]+(1.0/o->scaly),from[2]);
-      glVertex3d(from[0],from[1],from[2]-(1.0/o->scalz));
-      glVertex3d(from[0],from[1],from[2]+(1.0/o->scalz));
-      glEnd();
-
       if(has_to)
 	{
 	  glBegin(GL_LINES);
-	  glVertex3d(from[0],from[1],from[2]);
-	  glVertex3d(to[0],to[1],to[2]);
+	   glVertex3d(from[0],from[1],from[2]);
+	   glVertex3d(to[0],to[1],to[2]);
 	  glEnd();
-
-	  /* draw direction pointer */
-	  ay_draw_arrow(togl, from, to);
 	}
+
+      glBegin(GL_LINES);
+       glVertex3d(from[0]-(1.0/o->scalx),from[1],from[2]);
+       glVertex3d(from[0]+(1.0/o->scalx),from[1],from[2]);
+       glVertex3d(from[0],from[1]-(1.0/o->scaly),from[2]);
+       glVertex3d(from[0],from[1]+(1.0/o->scaly),from[2]);
+       glVertex3d(from[0],from[1],from[2]-(1.0/o->scalz));
+       glVertex3d(from[0],from[1],from[2]+(1.0/o->scalz));
+      glEnd();
     }
 
   if(light->type == AY_LITSPOT)
@@ -235,18 +239,17 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 
       if(len > AY_EPSILON)
 	{
-
 	  radius = tan(light->cone_angle)*len;
 	  if(fabs(radius) < AY_EPSILON)
 	    radius = 1.0;
 
 	  a = 0;
-	  for(i=0;i<8;i++)
+	  for(i = 0; i < 8; i++)
 	    {
 	      c1[a]   = to[0];
 	      c1[a+1] = to[1];
 	      c1[a+2] = to[2];
-	      a+=3;
+	      a += 3;
 	    }
 
 	  if(fabs(vd[0]) > AY_EPSILON)
@@ -312,32 +315,32 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 
 	  /* apply matrix to all normals */
 	  a = 3;
-	  for(i=0;i<7;i++)
+	  for(i = 0; i  <7; i++)
 	    {
-	      ay_trafo_apply3(vn,rm);
+	      ay_trafo_apply3(vn, rm);
 	      c1[a]   += vn[0];
 	      c1[a+1] += vn[1];
 	      c1[a+2] += vn[2];
-	      a+=3;
+	      a += 3;
 	    }
 
 	  /* draw */
 	  a = 0;
 	  glBegin(GL_LINES);
-	  for(i=0;i<4;i++)
+	  for(i = 0; i < 4; i++)
 	    {
-	      glVertex3d(from[0],from[1],from[2]);
-	      glVertex3d(c1[a],c1[a+1],c1[a+2]);
-	      a+=6;
+	      glVertex3d(from[0], from[1], from[2]);
+	      glVertex3d(c1[a], c1[a+1], c1[a+2]);
+	      a += 6;
 	    }
 	  glEnd();
 
 	  a = 0;
 	  glBegin(GL_LINE_LOOP);
-	  for(i=0;i<8;i++)
+	  for(i = 0; i < 8; i++)
 	    {
-	      glVertex3d(c1[a],c1[a+1],c1[a+2]);
-	      a+=3;
+	      glVertex3d(c1[a], c1[a+1], c1[a+2]);
+	      a += 3;
 	    }
 	  glEnd();
 	} /* if */
@@ -353,18 +356,17 @@ ay_light_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_light_drawcb */
 
 
-/* ay_light_drawhcb:
- *  draw handles (in an Ayam view window) callback function of light object
+/* ay_light_drawacb:
+ *  draw annotations (display in an Ayam view window) callback function
+ *  of light object
  */
 int
-ay_light_drawhcb(struct Togl *togl, ay_object *o)
+ay_light_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_light_object *light = NULL;
- ay_shader *shader = NULL;
- ay_shader_arg *sarg = NULL;
- GLdouble from[3] = {0};
- GLdouble to[3] = {0};
- int has_from = 0, has_to = 0;
+ double from[3] = {0}, to[3] = {0};
+ GLfloat oldcolor[4] = {0.0f,0.0f,0.0f,0.0f};
+ int has_from = AY_FALSE, has_to = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -374,60 +376,52 @@ ay_light_drawhcb(struct Togl *togl, ay_object *o)
   if(!light)
     return AY_ENULL;
 
-  if(light->type == AY_LITCUSTOM)
+  if(!o->selected)
     {
-      if(light->lshader)
-	{
-	  shader = light->lshader;
-
-	  sarg = shader->arg;
-	  while(sarg)
-	    {
-	      if((!ay_comp_strcase(sarg->name,"from")) &&
-		 (sarg->type == AY_SAPOINT))
-		{
-		  has_from = AY_TRUE;
-		  from[0] = sarg->val.point[0];
-		  from[1] = sarg->val.point[1];
-		  from[2] = sarg->val.point[2];
-		}
-	      if((!ay_comp_strcase(sarg->name,"to")) &&
-		 (sarg->type == AY_SAPOINT))
-		{
-		  has_to = AY_TRUE;
-		  to[0] = sarg->val.point[0];
-		  to[1] = sarg->val.point[1];
-		  to[2] = sarg->val.point[2];
-		}
-	      sarg = sarg->next;
-	    } /* while */
-	} /* if */
+      /* save current color */
+      glGetFloatv(GL_CURRENT_COLOR, oldcolor);
+      /* set color for lights */
+      glColor3f((GLfloat)ay_prefs.lir, (GLfloat)ay_prefs.lig,
+		(GLfloat)ay_prefs.lib);
     }
-  else
+
+  ay_light_getfromto(light, from, to, &has_from, &has_to);
+
+  if(has_from && has_to)
     {
-      switch(light->type)
-	{
-	case AY_LITPOINT:
-	  has_from = AY_TRUE;
-	  from[0] = light->tfrom[0];
-	  from[1] = light->tfrom[1];
-	  from[2] = light->tfrom[2];
-	  break;
-	case AY_LITDISTANT:
-	case AY_LITSPOT:
-	  has_from = AY_TRUE;
-	  from[0] = light->tfrom[0];
-	  from[1] = light->tfrom[1];
-	  from[2] = light->tfrom[2];
-	  has_to = AY_TRUE;
-	  to[0] = light->tto[0];
-	  to[1] = light->tto[1];
-	  to[2] = light->tto[2];
-	  break;
-	default:
-	  break;
-	} /* switch */
-    } /* if */
+      /* draw direction pointer */
+      ay_draw_arrow(togl, from, to);
+    }
+
+  if(!o->selected)
+    {
+      /* restore old color */
+      glColor3f(oldcolor[0], oldcolor[1], oldcolor[2]);
+    }
+
+ return AY_OK;
+} /* ay_light_drawacb */
+
+
+/* ay_light_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of light object
+ */
+int
+ay_light_drawhcb(struct Togl *togl, ay_object *o)
+{
+ ay_light_object *light = NULL;
+ double from[3] = {0}, to[3] = {0};
+ int has_from = AY_FALSE, has_to = AY_FALSE;
+
+  if(!o)
+    return AY_ENULL;
+
+  light = (ay_light_object *)o->refine;
+
+  if(!light)
+    return AY_ENULL;
+
+  ay_light_getfromto(light, from, to, &has_from, &has_to);
 
   if(has_from)
     {
@@ -1046,65 +1040,15 @@ ay_light_bbccb(ay_object *o, double *bbox, int *flags)
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double from[3] = {0};
  double to[3] = {0};
- int has_from = 0, has_to = 0;
+ int has_from = AY_FALSE, has_to = AY_FALSE;
  ay_light_object *light = NULL;
- ay_shader *shader = NULL;
- ay_shader_arg *sarg = NULL;
 
   if(!o || !bbox || !flags)
     return AY_ENULL;
 
   light = (ay_light_object *)o->refine;
 
-  switch(light->type)
-    {
-    case AY_LITPOINT:
-      has_from = AY_TRUE;
-      from[0] = light->tfrom[0];
-      from[1] = light->tfrom[1];
-      from[2] = light->tfrom[2];
-      break;
-    case AY_LITSPOT:
-    case AY_LITDISTANT:
-      has_from = AY_TRUE;
-      from[0] = light->tfrom[0];
-      from[1] = light->tfrom[1];
-      from[2] = light->tfrom[2];
-      has_to = AY_TRUE;
-      to[0] = light->tto[0];
-      to[1] = light->tto[1];
-      to[2] = light->tto[2];
-      break;
-    case AY_LITCUSTOM:
-      if(light->lshader)
-	{
-	  shader = light->lshader;
-
-	  sarg = shader->arg;
-	  while(sarg)
-	    {
-	      if((!ay_comp_strcase(sarg->name,"from")) &&
-		 (sarg->type == AY_SAPOINT))
-		{
-		  has_from = AY_TRUE;
-		  from[0] = sarg->val.point[0];
-		  from[1] = sarg->val.point[1];
-		  from[2] = sarg->val.point[2];
-		}
-	      if((!ay_comp_strcase(sarg->name,"to")) &&
-		 (sarg->type == AY_SAPOINT))
-		{
-		  has_to = AY_TRUE;
-		  to[0] = sarg->val.point[0];
-		  to[1] = sarg->val.point[1];
-		  to[2] = sarg->val.point[2];
-		}
-	      sarg = sarg->next;
-	    } /* while */
-	} /* if */
-      break;
-
-    } /* switch */
+  ay_light_getfromto(light, from, to, &has_from, &has_to);
 
   if(has_from)
     {
@@ -1253,6 +1197,8 @@ ay_light_init(Tcl_Interp *interp)
 				    NULL, /* no RIB export */
 				    ay_light_bbccb,
 				    AY_IDLIGHT);
+
+  ay_status = ay_draw_registerdacb(ay_light_drawacb, AY_IDLIGHT);
 
   ay_status = ay_notify_register(ay_light_notifycb, AY_IDLIGHT);
 

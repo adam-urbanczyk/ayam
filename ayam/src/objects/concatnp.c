@@ -181,17 +181,15 @@ ay_concatnp_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_concatnp_shadecb */
 
 
-/* ay_concatnp_drawhcb:
- *  draw handles (in an Ayam view window) callback function of concatnp object
+/* ay_concatnp_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of
+ *  concatnp object
  */
 int
-ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
+ay_concatnp_drawacb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
  ay_concatnp_object *concatnp = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
- ay_nurbpatch_object *patch = NULL;
+ ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -200,19 +198,49 @@ ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
 
   if(concatnp->npatch)
     {
-      patch = (ay_nurbpatch_object *)concatnp->npatch->refine;
-      pnts = patch->controlv;
+      np = (ay_nurbpatch_object *)concatnp->npatch->refine;
+
+      /* draw arrow */
+      ay_draw_arrow(togl, &(np->controlv[np->width*np->height*4-8]),
+		    &(np->controlv[np->width*np->height*4-4]));
+    }
+
+  return AY_OK;
+} /* ay_concatnp_drawacb */
+
+
+/* ay_concatnp_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of concatnp object
+ */
+int
+ay_concatnp_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_concatnp_object *concatnp = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  concatnp = (ay_concatnp_object *) o->refine;
+
+  if(concatnp->npatch)
+    {
+      np = (ay_nurbpatch_object *)concatnp->npatch->refine;
+
+      /* draw read only points */
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
-      for(i = 0; i < patch->width*patch->height; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < np->width*np->height; i++)
+	 {
+	   glVertex3dv((GLdouble *)&(np->controlv[a]));
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
@@ -839,6 +867,8 @@ ay_concatnp_init(Tcl_Interp *interp)
 				    ay_concatnp_bbccb,
 				    AY_IDCONCATNP);
 
+
+  ay_status = ay_draw_registerdacb(ay_concatnp_drawacb, AY_IDCONCATNP);
 
   ay_status = ay_notify_register(ay_concatnp_notifycb, AY_IDCONCATNP);
 

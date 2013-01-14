@@ -58,6 +58,8 @@ ay_ftable ay_drawcbt;
 
 ay_ftable ay_drawhcbt;
 
+ay_ftable ay_drawacbt;
+
 ay_ftable ay_shadecbt;
 
 ay_ftable ay_getpropcbt;
@@ -248,6 +250,9 @@ ay_init(Tcl_Interp *interp)
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_table_init(&ay_drawhcbt)))
+    { ay_error(ay_status, fname, NULL); return AY_ERROR; }
+
+  if((ay_status = ay_table_init(&ay_drawacbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
   if((ay_status = ay_table_init(&ay_shadecbt)))

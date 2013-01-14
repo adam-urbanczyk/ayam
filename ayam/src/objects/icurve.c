@@ -594,27 +594,55 @@ ay_icurve_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_icurve_shadecb */
 
 
-/* ay_icurve_drawhcb:
- *  draw handles (in an Ayam view window) callback function of icurve object
+/* ay_icurve_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of icurve object
  */
 int
-ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
+ay_icurve_drawacb(struct Togl *togl, ay_object *o)
 {
- int length = 0, i = 0, a = 0;
+ int length = 0;
  ay_icurve_object *icurve = NULL;
  GLdouble *ver = NULL;
- double point_size = ay_prefs.handle_size;
+ /*double point_size = ay_prefs.handle_size;*/
 
   icurve = (ay_icurve_object *) o->refine;
   length = icurve->length;
 
   ver = icurve->controlv;
 
-  glPointSize((GLfloat)point_size);
+  /* draw arrow */
+  if(icurve->type)
+    ay_draw_arrow(togl, &(ver[icurve->length*3-3]), &(ver[0]));
+  else
+    ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
+		  &(ver[icurve->length*3-3]));
+  
+  /* draw deriv arrows? */
+ return AY_OK;
+} /* ay_icurve_drawacb */
+
+
+/* ay_icurve_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of icurve object
+ */
+int
+ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
+{
+ int i = 0, a = 0;
+ ay_icurve_object *icurve = NULL;
+ GLdouble *ver = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
+
+  icurve = (ay_icurve_object *) o->refine;
+
+  ver = icurve->controlv;
+
+  /* draw points */
+  /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
    /* draw control points */
-   for(i = 0; i < length; i++)
+   for(i = 0; i < icurve->length; i++)
      {
        glVertex3dv((GLdouble *)&ver[a]);
        a += 3;
@@ -627,15 +655,6 @@ ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
        glVertex3dv((GLdouble *)&icurve->ederiv);
      }
   glEnd();
-
-  /* draw arrow */
-  if(icurve->type)
-    ay_draw_arrow(togl, &(ver[icurve->length*3-3]), &(ver[0]));
-  else
-    ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
-		  &(ver[icurve->length*3-3]));
-
-  /* draw deriv arrows? */
 
  return AY_OK;
 } /* ay_icurve_drawhcb */
@@ -1518,6 +1537,7 @@ ay_icurve_init(Tcl_Interp *interp)
 				    ay_icurve_bbccb,
 				    AY_IDICURVE);
 
+  ay_status = ay_draw_registerdacb(ay_icurve_drawacb, AY_IDICURVE);
 
   ay_status = ay_notify_register(ay_icurve_notifycb, AY_IDICURVE);
 

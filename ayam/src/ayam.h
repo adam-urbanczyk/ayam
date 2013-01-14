@@ -1343,7 +1343,7 @@ typedef struct ay_view_object_s
   /** alternative display callback, for plugins that like to take
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
-  
+
   GLuint display_list;
   int action_state;
   
@@ -1611,6 +1611,8 @@ extern ay_ftable ay_copycbt;
 extern ay_ftable ay_drawcbt;
 /** all registered draw handles callbacks */
 extern ay_ftable ay_drawhcbt;
+/** all registered draw annotations callbacks */
+extern ay_ftable ay_drawacbt;
 /** all registered shade callbacks */
 extern ay_ftable ay_shadecbt;
 /** all registered get properties callbacks */

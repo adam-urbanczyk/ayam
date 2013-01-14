@@ -203,7 +203,11 @@ void ay_draw_rectangle(int winwidth, int winheight,
 
 /** draw a coordinate system (three color coded axes)
  */
-void ay_draw_cs(struct Togl *togl);
+void ay_draw_cs(struct Togl *togl, int mode);
+
+/** register draw annotations callback
+ */
+int ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id);
 
 
 /* error.c */

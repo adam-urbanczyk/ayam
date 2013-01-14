@@ -148,6 +148,33 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_extrnp_shadecb */
 
 
+/* ay_extrnp_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of extrnp object
+ */
+int
+ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_extrnp_object *extrnp = NULL;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  extrnp = (ay_extrnp_object *) o->refine;
+
+  if(extrnp->npatch)
+    {
+      np = (ay_nurbpatch_object *)extrnp->npatch->refine;
+
+      /* draw arrow */
+      ay_draw_arrow(togl, &(np->controlv[np->width*np->height*4-8]),
+		    &(np->controlv[np->width*np->height*4-4]));
+    }
+
+  return AY_OK;
+} /* ay_extrnp_drawacb */
+
+
 /* ay_extrnp_drawhcb:
  *  draw handles (in an Ayam view window) callback function of extrnp object
  */
@@ -157,8 +184,8 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_extrnp_object *extrnp = NULL;
  double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
- ay_nurbpatch_object *patch = NULL;
+ /*double point_size = ay_prefs.handle_size;*/
+ ay_nurbpatch_object *np = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -167,19 +194,21 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 
   if(extrnp->npatch)
     {
-      patch = (ay_nurbpatch_object *)extrnp->npatch->refine;
-      pnts = patch->controlv;
+      np = (ay_nurbpatch_object *)extrnp->npatch->refine;
+
+      /* draw read only points */
+      pnts = np->controlv;
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
+      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
-      for(i = 0; i < patch->width*patch->height; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < np->width*np->height; i++)
+	 {
+	   glVertex3dv((GLdouble *)&pnts[a]);
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
@@ -690,6 +719,7 @@ ay_extrnp_init(Tcl_Interp *interp)
 				    ay_extrnp_bbccb,
 				    AY_IDEXTRNP);
 
+  ay_status = ay_draw_registerdacb(ay_extrnp_drawacb, AY_IDEXTRNP);
 
   ay_status = ay_notify_register(ay_extrnp_notifycb, AY_IDEXTRNP);
 

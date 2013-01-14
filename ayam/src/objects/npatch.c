@@ -1418,6 +1418,28 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_shadecb */
 
 
+/* ay_npatch_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of npatch object
+ */
+int
+ay_npatch_drawacb(struct Togl *togl, ay_object *o)
+{
+ int width = 0, height = 0;
+ ay_nurbpatch_object *patch = (ay_nurbpatch_object *)o->refine;
+ GLdouble *ver = NULL;
+
+  width = patch->width;
+  height = patch->height;
+
+  ver = patch->controlv;
+
+  /* draw arrow */
+  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
+
+ return AY_OK;
+} /* ay_npatch_drawacb */
+
+
 /* ay_npatch_drawhcb:
  *  draw handles (in an Ayam view window) callback function of npatch object
  */
@@ -1425,7 +1447,7 @@ int
 ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0, i = 0, a = 0;
- ay_nurbpatch_object *patch = (ay_nurbpatch_object *) o->refine;
+ ay_nurbpatch_object *patch = (ay_nurbpatch_object *)o->refine;
  ay_mpoint *mp = NULL;
  GLdouble *ver = NULL;
  double point_size = ay_prefs.handle_size;
@@ -1435,14 +1457,15 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 
   ver = patch->controlv;
 
+  /* draw points */
   /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
-  for(i = 0; i < (width * height); i++)
-    {
-      glVertex3dv((GLdouble *)&ver[a]);
-      a += 4;
-    }
+   for(i = 0; i < (width * height); i++)
+     {
+       glVertex3dv((GLdouble *)&ver[a]);
+       a += 4;
+     }
   glEnd();
 
   /* draw mpoints */
@@ -1450,18 +1473,15 @@ ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
     {
       glPointSize((GLfloat)(point_size*1.25));
       glBegin(GL_POINTS);
-      mp = patch->mpoints;
-      while(mp)
-	{
-	  glVertex3dv((GLdouble *)(mp->points[0]));
-	  mp = mp->next;
-	}
+       mp = patch->mpoints;
+       while(mp)
+	 {
+	   glVertex3dv((GLdouble *)(mp->points[0]));
+	   mp = mp->next;
+	 }
       glEnd();
       glPointSize((GLfloat)point_size);
     }
-
-  /* draw arrows */
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
 
  return AY_OK;
 } /* ay_npatch_drawhcb */
@@ -3256,6 +3276,7 @@ ay_npatch_init(Tcl_Interp *interp)
 				    ay_npatch_wribcb,
 				    ay_npatch_bbccb,
 				    AY_IDNPATCH);
+  ay_status = ay_draw_registerdacb(ay_npatch_drawacb, AY_IDNPATCH);
 
   ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
 

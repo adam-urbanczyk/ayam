@@ -104,23 +104,21 @@ ay_camera_drawcb(struct Togl *togl, ay_object *o)
   glLoadIdentity();
 
   glBegin(GL_LINES);
-  glVertex3d((GLdouble)camera->from[0],(GLdouble)camera->from[1],
-	     (GLdouble)camera->from[2]);
-  glVertex3d((GLdouble)camera->to[0],(GLdouble)camera->to[1],
-	     (GLdouble)camera->to[2]);
+   glVertex3d((GLdouble)camera->from[0],(GLdouble)camera->from[1],
+	      (GLdouble)camera->from[2]);
+   glVertex3d((GLdouble)camera->to[0],(GLdouble)camera->to[1],
+	      (GLdouble)camera->to[2]);
   glEnd();
-
-  ay_draw_arrow(togl, camera->from, camera->to);
 
  return AY_OK;
 } /* ay_camera_drawcb */
 
 
-/* ay_camera_drawhcb:
- *  draw handles (in an Ayam view window) callback function of camera object
+/* ay_camera_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of camera object
  */
 int
-ay_camera_drawhcb(struct Togl *togl, ay_object *o)
+ay_camera_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_camera_object *camera = NULL;
 
@@ -135,12 +133,38 @@ ay_camera_drawhcb(struct Togl *togl, ay_object *o)
   /* ignore transformation */
   glLoadIdentity();
 
-      /* draw */
+  /* draw arrow */
+  ay_draw_arrow(togl, camera->from, camera->to);
+
+ return AY_OK;
+} /* ay_camera_drawacb */
+
+
+/* ay_camera_drawhcb:
+ *  draw handles (in an Ayam view window) callback function of camera object
+ */
+int
+ay_camera_drawhcb(struct Togl *togl, ay_object *o)
+{
+ ay_camera_object *camera = NULL;
+
+  if(!togl || !o)
+    return AY_ENULL;
+
+  camera = (ay_camera_object *)o->refine;
+
+  if(!camera)
+    return AY_ENULL;
+
+  /* ignore transformation */
+  glLoadIdentity();
+
+  /* draw points */
   glBegin(GL_POINTS);
-  glVertex3d((GLdouble)camera->from[0],(GLdouble)camera->from[1],
-	     (GLdouble)camera->from[2]);
-  glVertex3d((GLdouble)camera->to[0],(GLdouble)camera->to[1],
-	     (GLdouble)camera->to[2]);
+   glVertex3d((GLdouble)camera->from[0],(GLdouble)camera->from[1],
+	      (GLdouble)camera->from[2]);
+   glVertex3d((GLdouble)camera->to[0],(GLdouble)camera->to[1],
+	      (GLdouble)camera->to[2]);
   glEnd();
 
  return AY_OK;
@@ -425,7 +449,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       pe->rational = AY_FALSE;
       pe->coords = pecoords;
       pe->num = a;
-      
+
       break;
     case 3:
       pnt = o->selp;
@@ -714,6 +738,7 @@ ay_camera_init(Tcl_Interp *interp)
 				    ay_camera_bbccb,
 				    AY_IDCAMERA);
 
+  ay_status = ay_draw_registerdacb(ay_camera_drawacb, AY_IDCAMERA);
 
   /* register drop callback */
   ay_status = ay_tree_registerdrop(ay_camera_dropcb, AY_IDCAMERA);

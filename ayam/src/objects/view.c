@@ -102,13 +102,39 @@ ay_view_drawcb(struct Togl *togl, ay_object *o)
        glVertex3d((GLdouble)view->to[0],(GLdouble)view->to[1],
 		  (GLdouble)view->to[2]);
       glEnd();
-
-      ay_draw_arrow(togl, view->from, view->to);
-
     }
 
  return AY_OK;
 } /* ay_view_drawcb */
+
+
+/* ay_view_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of view object
+ */
+int
+ay_view_drawacb(struct Togl *togl, ay_object *o)
+{
+ ay_view_object *view = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  view = (ay_view_object *)o->refine;
+
+  if(!view)
+    return AY_ENULL;
+
+  /* never draw in own view */
+  if(view->togl != togl)
+    {
+      /* ignore transformation */
+      glLoadIdentity();
+
+      ay_draw_arrow(togl, view->from, view->to);
+    }
+
+ return AY_OK;
+} /* ay_view_drawacb */
 
 
 /* ay_view_drawhcb:
@@ -1261,7 +1287,7 @@ ay_view_notifycb(ay_object *o)
       _TIFFfree(image);
 
     } /* if */
-	  
+
   if(view->bgknotv)
     free(view->bgknotv);
   view->bgknotv = NULL;
@@ -1320,7 +1346,7 @@ ay_view_notifycb(ay_object *o)
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
 	    }
-	  
+
 	  for(i=0;i<np->width;i++)
 	    {
 	      for(j=0;j<np->height;j++)
@@ -1519,6 +1545,8 @@ ay_view_init(Tcl_Interp *interp)
 
   Tcl_SetVar(interp, "propertyList", "ViewAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  ay_status = ay_draw_registerdacb(ay_view_drawacb, AY_IDVIEW);
 
   ay_status = ay_notify_register(ay_view_notifycb, AY_IDVIEW);
 
