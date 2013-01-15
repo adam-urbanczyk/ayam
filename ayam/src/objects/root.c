@@ -152,23 +152,26 @@ ay_root_drawcb(struct Togl *togl, ay_object *o)
   glLoadIdentity();
 
   /* draw coordinate system */
-  ay_draw_cs(togl);
+  ay_draw_cs(togl, 0);
 
  return AY_OK;
 } /* ay_root_drawcb */
 
 
-/* ay_root_drawhcb:
- *  draw handles (in an Ayam view window) callback function of root object
+/* ay_root_drawacb:
+ *  draw annotations (in an Ayam view window) callback function of root object
  */
 int
-ay_root_drawhcb(struct Togl *togl, ay_object *o)
+ay_root_drawacb(struct Togl *togl, ay_object *o)
 {
+
   if(!o)
     return AY_ENULL;
 
+  ay_draw_cs(togl, 1);
+
  return AY_OK;
-} /* ay_root_drawhcb */
+} /* ay_root_drawacb */
 
 
 /* ay_root_shadecb:
@@ -1015,7 +1018,7 @@ ay_root_init(Tcl_Interp *interp)
 				    ay_root_deletecb,
 				    ay_root_copycb,
 				    ay_root_drawcb,
-				    NULL, /* no handles! */
+				    NULL, /* no handles */
 				    NULL, /* no shading! */
 				    ay_root_setpropcb,
 				    ay_root_getpropcb,
@@ -1025,6 +1028,8 @@ ay_root_init(Tcl_Interp *interp)
 				    ay_root_wribcb,
 				    ay_root_bbccb,
 				    AY_IDROOT);
+
+  ay_status = ay_draw_registerdacb(ay_root_drawacb, AY_IDROOT);
 
   Tcl_SetVar(interp, "propertyList", "RootAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
