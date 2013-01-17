@@ -709,7 +709,10 @@ ay_object_copy(ay_object *src, ay_object **dst)
       while(sub)
 	{
 	  if((ay_status = ay_object_copy(sub, next)))
-	    return ay_status;
+	    {
+	      ay_object_delete(new);
+	      return ay_status;
+	    }
 	  next = &((*next)->next);
 
 	  sub = sub->next;
