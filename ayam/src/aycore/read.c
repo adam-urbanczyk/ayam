@@ -20,49 +20,36 @@
 int
 ay_read_string(FILE *fileptr, char **result)
 {
- int ay_status = AY_OK;
  char readchar, *str;
  int read;
  Tcl_DString ds;
 
   Tcl_DStringInit(&ds);
-  read = getc(fileptr);
 
-  if(read == EOF)
-    {Tcl_DStringFree(&ds); return AY_EUEOF;}
-
-  if((char)read == '\n')
-    {Tcl_DStringFree(&ds); return AY_OK;}
-
-  while((char)read != '\n')
+  do
     {
-      readchar = (char)read;
-
-      Tcl_DStringAppend(&ds, &readchar, 1);
       read = getc(fileptr);
 
       if(read == EOF)
 	{Tcl_DStringFree(&ds); return AY_EUEOF;}
 
+      readchar = (char)read;
+      if((char)read != '\r')
+	Tcl_DStringAppend(&ds, &readchar, 1);
     }
-
-  Tcl_DStringAppend(&ds,"\0", 1);
+  while((char)read != '\n');
 
   str = Tcl_DStringValue(&ds);
+  str[Tcl_DStringLength(&ds)-1] = '\0';
 
-  if(str[strlen(str)-1] == '\r')
-    {
-      str[strlen(str)-1] = '\0';
-    }
-
-  if(!(*result = calloc(strlen(str)+1, sizeof(char))))
+  if(!(*result = malloc((Tcl_DStringLength(&ds)+1)*sizeof(char))))
     {Tcl_DStringFree(&ds); return AY_EOMEM;}
 
   strcpy(*result, str);
 
   Tcl_DStringFree(&ds);
 
- return ay_status;
+ return AY_OK;
 } /* ay_read_string */
 
 
@@ -98,12 +85,7 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 	  sscanf(Tcl_DStringValue(&ds), "%d", &uc);
 
 	  if(!(unistringtmp = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
-	    {
-	      if(unistring)
-		free(unistring);
-	      Tcl_DStringFree(&ds);
-	      return AY_EOMEM;
-	    }
+	    { ay_status = AY_EOMEM; goto cleanup; }
 	  unistring = unistringtmp;
 
 	  unistring[i] = (Tcl_UniChar)uc;
@@ -115,21 +97,24 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
       read = getc(fileptr);
 
       if(read == EOF)
-	{Tcl_DStringFree(&ds); return AY_EUEOF;}
+	{ ay_status = AY_EUEOF; goto cleanup; }
 
     } /* while */
 
   /* terminate unistring */
   if(!(unistringtmp = realloc(unistring, (i+1)*sizeof(Tcl_UniChar))))
-    {
-      if(unistring)
-	free(unistring);
-      Tcl_DStringFree(&ds);
-      return AY_EOMEM;
-    }
+    { ay_status = AY_EOMEM; goto cleanup; }
+
   unistring = unistringtmp;
   unistring[i] = (Tcl_UniChar)0;
   *result = unistring;
+  unistring = NULL;
+
+cleanup:
+
+  if(unistring)
+    free(unistring);
+  Tcl_DStringFree(&ds);
 
  return ay_status;
 } /* ay_read_unistring */
@@ -141,26 +126,17 @@ ay_read_unistring(FILE *fileptr, Tcl_UniChar **result)
 int
 ay_read_skip(FILE *fileptr)
 {
- int ay_status = AY_OK;
  int read;
 
-  read = getc(fileptr);
-
-  if(read == EOF)
-    {return AY_EEOF;}
-
-  if((char)read == '\a')
-    {return AY_OK;}
-
-  while((char)read != '\a')
+  do
     {
       read = getc(fileptr);
-
       if(read == EOF)
 	return AY_EEOF;
     }
+  while((char)read != '\a');
 
- return ay_status;
+ return AY_OK;
 } /* ay_read_skip */
 
 
@@ -185,7 +161,13 @@ ay_read_header(FILE *fileptr)
       return AY_EFORMAT;
     }
 
-  ay_read_string(fileptr, &version);
+  ay_status = ay_read_string(fileptr, &version);
+
+  if(ay_status)
+    {
+      free(nbuffer);
+      return ay_status;
+    }
 
   ay_read_version = 1;
 
@@ -377,7 +359,7 @@ ay_read_attributes(FILE *fileptr, ay_object *o)
   if(read == EOF)
     return AY_ERROR;
 
-  ay_read_string(fileptr, &(o->name));
+  ay_status = ay_read_string(fileptr, &(o->name));
 
  return ay_status;
 } /* ay_read_attributes */
@@ -412,7 +394,10 @@ ay_read_tags(FILE *fileptr, ay_object *o)
       if(!(tag = calloc(1, sizeof(ay_tag))))
 	return AY_EOMEM;
 
-      ay_read_string(fileptr, &(tag->name));
+      ay_status = ay_read_string(fileptr, &(tag->name));
+
+      if(ay_status)
+	{ free(tag); return ay_status; }
 
       if(!(entry = Tcl_FindHashEntry(&ay_tagtypesht, tag->name)))
 	{
@@ -424,20 +409,10 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 	  tag->type = (char *)Tcl_GetHashValue(entry);
 	}
 
-     ay_read_string(fileptr, (char**)(void*)&(tag->val));
+     ay_status = ay_read_string(fileptr, (char**)(void*)&(tag->val));
 
-     /* do not create tags with NULL pointers */
-     if(!tag->val)
-       {
-	 if(!(tag->val = calloc(1, sizeof(char))))
-	   {
-	     if(tag->name)
-	       free(tag->name);
-	     free(tag);
-	     return AY_EOMEM;
-	   }
-	 *((char*)tag->val) = '\0';
-       }
+      if(ay_status)
+	{ free(tag->name); free(tag); return ay_status; }
 
      if(!o->tags)
        {
@@ -508,7 +483,7 @@ ay_read_tags(FILE *fileptr, ay_object *o)
 
 
 /* ay_read_shader:
- *  XXXX leaks memory in low-mem situation
+ *
  */
 int
 ay_read_shader(FILE *fileptr, ay_shader **result)
@@ -525,23 +500,29 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
   if(!(shader = calloc(1, sizeof(ay_shader))))
    return AY_EOMEM;
 
-  ay_read_string(fileptr,&(shader->name));
+  ay_status = ay_read_string(fileptr,&(shader->name));
+
+  if(ay_status)
+    { free(shader); return ay_status; }
 
   fscanf(fileptr,"%d\n", &(shader->type));
   fscanf(fileptr,"%d\n", &argcount);
 
   prevargptr = &(shader->arg);
 
-  for(j=0; j < argcount; j++)
+  for(j = 0; j < argcount; j++)
     {
       if(!(sarg = calloc(1, sizeof(ay_shader_arg))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      ay_read_string(fileptr, &(sarg->name));
+      ay_status = ay_read_string(fileptr, &(sarg->name));
+      if(ay_status)
+	{ free(sarg); goto cleanup;}
+
       fscanf(fileptr,"%d", &(sarg->type));
       read = fgetc(fileptr);
       if(read == EOF)
-	{ free(sarg); return AY_ERROR; }
+	{ free(sarg->name); free(sarg); ay_status = AY_ERROR; goto cleanup; }
 
       switch(sarg->type)
 	{
@@ -561,13 +542,9 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 	  fscanf(fileptr,"%g\n", &((sarg->val).scalar));
 	  break;
 	case AY_SASTRING:
-	  ay_read_string(fileptr, &((sarg->val).string));
-	  if(!((sarg->val).string))
-	    {
-	      /* if we did not read a string, create an empty one */
-	      if(!((sarg->val).string = calloc(1, sizeof(char))))
-		{ free(sarg); return AY_EOMEM; }
-	    }
+	  ay_status = ay_read_string(fileptr, &((sarg->val).string));
+	  if(ay_status)
+	    { free(sarg->name); free(sarg); goto cleanup; }
 	  break;
 	case AY_SAMATRIX:
 	  for(i = 0; i < 15; i++)
@@ -580,10 +557,16 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
 
       *prevargptr = sarg;
       prevargptr = &(sarg->next);
-
     } /* for */
 
   *result = shader;
+
+  shader = NULL;
+
+cleanup:
+
+  if(shader)
+    ay_shader_free(shader);
 
  return ay_status;
 } /* ay_read_shader */
@@ -628,7 +611,9 @@ ay_read_object(FILE *fileptr)
   if(has_name)
     {
       /* get name */
-      ay_read_string(fileptr, &(type_name));
+      ay_status = ay_read_string(fileptr, &(type_name));
+      if(ay_status)
+	{ ay_object_delete(o); return ay_status; }
 
       /* is the type name registered? */
       if((entry = Tcl_FindHashEntry(&ay_otypesht, type_name)))
@@ -675,8 +660,12 @@ ay_read_object(FILE *fileptr)
     }
 
   ay_status = ay_read_attributes(fileptr, o);
+  if(ay_status)
+    { ay_object_delete(o); return ay_status; }
 
   ay_status = ay_read_tags(fileptr, o);
+  if(ay_status)
+    { ay_object_delete(o); return ay_status; }
 
   /* inform object to read that there follow children;
      this, currently, is only interesting for views */
@@ -703,23 +692,13 @@ ay_read_object(FILE *fileptr)
     {
       if(ay_status == AY_EDONOTLINK)
 	{
-	  if(o->name)
-	    free(o->name);
-	  if(o->tags)
-	    ay_tags_delall(o);
-	  free(o);
-	  o = NULL;
+	  ay_object_delete(o);
 	  return AY_OK;
 	}
       else
 	{
 	  ay_error(ay_status, fname, "read callback failed");
-	  if(o->name)
-	    free(o->name);
-	  if(o->tags)
-	    ay_tags_delall(o);
-	  free(o);
-	  o = NULL;
+	  ay_object_delete(o);
 	  return ay_status;
 	} /* if */
     } /* if */
@@ -820,7 +799,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
   /* link instance objects to their originals */
   /* clear hashtable of oid ptrs */
   ay_instt_createoidht(NULL);
-  /* build it */
+  /* build new hashtable */
   ay_instt_createoidht(ay_root->next);
   /* link instance objects to their originals */
   ay_instt_connect(ay_root->next, &(ay_root->next));
