@@ -2546,7 +2546,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 	   p[0] = view->markworld[0];
 	   p[1] = view->markworld[1];
 	   p[2] = view->markworld[2];
-	   ay_trafo_apply4(p, mi);
+	   ay_trafo_apply3(p, mi);
 	   o->movx = p[0];
 	   o->movy = p[1];
 	   o->movz = p[2];
