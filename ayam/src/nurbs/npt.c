@@ -219,7 +219,6 @@ ay_npt_createnpatchobject(ay_object **result)
   o->parent = AY_TRUE;
   o->hide_children = AY_TRUE;
   o->inherit_trafos = AY_FALSE;
-  o->down = ay_endlevel;
   *result = o;
 
  return AY_OK;
