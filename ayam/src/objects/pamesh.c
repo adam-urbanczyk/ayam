@@ -1187,9 +1187,6 @@ ay_pamesh_wribcb(char *file, ay_object *o)
 int
 ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 {
- double xmin, xmax, ymin, ymax, zmin, zmax;
- double *controlv = NULL;
- int i, a;
  ay_pamesh_object *pamesh = NULL;
 
   if(!o || !bbox || !flags)
@@ -1197,55 +1194,8 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
-  controlv = pamesh->controlv;
-
-  xmin = controlv[0];
-  xmax = xmin;
-  ymin = controlv[1];
-  ymax = ymin;
-  zmin = controlv[2];
-  zmax = zmin;
-
-  a = 0;
-  for(i = 0; i < pamesh->width*pamesh->height; i++)
-    {
-      if(controlv[a] < xmin)
-	xmin = controlv[a];
-      if(controlv[a] > xmax)
-	xmax = controlv[a];
-
-      if(controlv[a+1] < ymin)
-	ymin = controlv[a+1];
-      if(controlv[a+1] > ymax)
-	ymax = controlv[a+1];
-
-      if(controlv[a+2] < zmin)
-	zmin = controlv[a+2];
-      if(controlv[a+2] > zmax)
-	zmax = controlv[a+2];
-
-      a += 4;
-    }
-
-  /* P1 */
-  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
-  /* P2 */
-  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
-  /* P3 */
-  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
-  /* P4 */
-  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
-
-  /* P5 */
-  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
-  /* P6 */
-  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
-  /* P7 */
-  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
-  /* P8 */
-  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
-
- return AY_OK;
+ return ay_bbc_fromarr(pamesh->controlv, pamesh->width*pamesh->height,
+		       3, bbox);
 } /* ay_pamesh_bbccb */
 
 

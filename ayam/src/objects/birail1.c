@@ -398,6 +398,7 @@ ay_birail1_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 16)
     {
+      /* since 1.21 */
       fscanf(fileptr,"%d\n",&birail1->has_r1_cap);
       fscanf(fileptr,"%d\n",&birail1->has_r2_cap);
     }

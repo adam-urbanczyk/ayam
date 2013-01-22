@@ -380,10 +380,10 @@ ay_acurve_copycb(void *src, void **dst)
 int
 ay_acurve_drawcb(struct Togl *togl, ay_object *o)
 {
- ay_acurve_object *acurve = NULL;
+ ay_acurve_object *acurve;
  ay_nurbcurve_object *ncurve = NULL;
  int display_mode = ay_prefs.nc_display_mode;
- int length = 0, i = 0, a = 0, drawch = AY_FALSE;
+ int i, a, drawch = AY_FALSE;
 
   if(!o)
     return AY_ENULL;
@@ -440,11 +440,10 @@ ay_acurve_drawcb(struct Togl *togl, ay_object *o)
     } /* switch */
 
   if(drawch)
-    {
-      length = acurve->length;
+    {      
       a = 0;
       glBegin(GL_LINE_STRIP);
-      for(i = 0; i < length; i++)
+      for(i = 0; i < acurve->length; i++)
 	{
 	  glVertex3dv((GLdouble *)&(acurve->controlv[a]));
 	  a += 3;
@@ -473,8 +472,8 @@ ay_acurve_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 {
- ay_acurve_object *curve = NULL;
- GLdouble *ver = NULL;
+ ay_acurve_object *curve;
+ GLdouble *ver;
 
   curve = (ay_acurve_object *) o->refine;
 
@@ -494,9 +493,9 @@ ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_acurve_object *curve = NULL;
- GLdouble *ver = NULL;
+ int a, i;
+ ay_acurve_object *curve;
+ GLdouble *ver;
  /*double point_size = ay_prefs.handle_size;*/
 
   curve = (ay_acurve_object *) o->refine;
@@ -508,6 +507,7 @@ ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
   /*glPointSize((GLfloat)point_size);*/
 
   glBegin(GL_POINTS);
+   a = 0;
    for(i = 0; i < curve->length; i++)
      {
        glVertex3dv((GLdouble *)&ver[a]);
@@ -930,9 +930,6 @@ ay_acurve_wribcb(char *file, ay_object *o)
 int
 ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
 {
- double xmin, xmax, ymin, ymax, zmin, zmax;
- double *controlv = NULL;
- int i, a;
  ay_acurve_object *acurve = NULL;
 
   if(!o || !bbox || !flags)
@@ -940,55 +937,7 @@ ay_acurve_bbccb(ay_object *o, double *bbox, int *flags)
 
   acurve = (ay_acurve_object *)o->refine;
 
-  controlv = acurve->controlv;
-
-  xmin = controlv[0];
-  xmax = xmin;
-  ymin = controlv[1];
-  ymax = ymin;
-  zmin = controlv[2];
-  zmax = zmin;
-
-  a = 0;
-  for(i = 0; i < acurve->length; i++)
-    {
-      if(controlv[a] < xmin)
-	xmin = controlv[a];
-      if(controlv[a] > xmax)
-	xmax = controlv[a];
-
-      if(controlv[a+1] < ymin)
-	ymin = controlv[a+1];
-      if(controlv[a+1] > ymax)
-	ymax = controlv[a+1];
-
-      if(controlv[a+2] < zmin)
-	zmin = controlv[a+2];
-      if(controlv[a+2] > zmax)
-	zmax = controlv[a+2];
-
-      a += 3;
-    }
-
-  /* P1 */
-  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
-  /* P2 */
-  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
-  /* P3 */
-  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
-  /* P4 */
-  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
-
-  /* P5 */
-  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
-  /* P6 */
-  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
-  /* P7 */
-  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
-  /* P8 */
-  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
-
- return AY_OK;
+ return ay_bbc_fromarr(acurve->controlv, acurve->length, 3, bbox);
 } /* ay_acurve_bbccb */
 
 

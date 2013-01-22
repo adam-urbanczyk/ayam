@@ -663,7 +663,7 @@ ay_swing_crtcap(ay_swing_object *swing, int upper,
   trim = NULL;
   tloop = NULL;
 
- cleanup:
+cleanup:
 
   if(cap)
     {
@@ -1044,7 +1044,7 @@ ay_swing_notifycb(ay_object *o)
   if(swing->npatch)
     ay_object_delete(swing->npatch);
   swing->npatch = NULL;
- 
+
   if(swing->caps_and_bevels)
     {
       ay_object_deletemulti(swing->caps_and_bevels);

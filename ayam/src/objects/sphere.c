@@ -472,9 +472,7 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
   if(!sphere->pnts)
     {
       if(!(pnts = calloc(AY_PSPHERE*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
+	{ return AY_EOMEM; }
       sphere->pnts = pnts;
       ay_sphere_notifycb(o);
     }
@@ -507,7 +505,6 @@ int
 ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_sphere_object *sphere = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -516,11 +513,8 @@ ay_sphere_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!sphere->pnts)
     {
-      if(!(pnts = calloc(AY_PSPHERE*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      sphere->pnts = pnts;
+      if(!(sphere->pnts = calloc(AY_PSPHERE*3, sizeof(double))))
+	return AY_EOMEM;
       ay_sphere_notifycb(o);
     }
 
@@ -646,8 +640,9 @@ ay_sphere_readcb(FILE *fileptr, ay_object *o)
 {
  ay_sphere_object *sphere = NULL;
  int itemp = 0;
- if(!o)
-   return AY_ENULL;
+
+  if(!o)
+    return AY_ENULL;
 
   if(!(sphere = calloc(1, sizeof(ay_sphere_object))))
     { return AY_EOMEM; }
@@ -891,11 +886,21 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 
   sphere = (ay_sphere_object *)o->refine;
 
+  if(!sphere->is_simple)
+    {
+      if(!sphere->pnts)
+	{
+	  if(!(sphere->pnts = calloc(AY_PSPHERE*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_sphere_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(sphere->pnts, AY_PSPHERE, 3, bbox);
+    }
+
   r = sphere->radius;
   zmi = sphere->zmin;
   zma = sphere->zmax;
-
-  /* XXXX does not take into account ThetaMax! */
 
   /* P1 */
   bbox[0] = -r; bbox[1] = r; bbox[2] = zma;
@@ -925,10 +930,10 @@ ay_sphere_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_sphere_notifycb(ay_object *o)
 {
- ay_sphere_object *sphere = NULL;
- double *pnts = NULL;
- double radius = 0.0, w = 0.0, zmin, zmax, rmin, rmax;
- int i = 0, a = 0;
+ ay_sphere_object *sphere;
+ double *pnts;
+ double radius, w, zmin, zmax, rmin, rmax;
+ int i, a;
  double thetadiff, angle, hh;
 
   if(!o)
@@ -936,12 +941,10 @@ ay_sphere_notifycb(ay_object *o)
 
   sphere = (ay_sphere_object *)o->refine;
 
-  radius = sphere->radius;
-
-  w = (sqrt(2.0)*0.5);
-
   if(sphere->pnts)
     {
+      radius = sphere->radius;
+      w = (sqrt(2.0)*0.5);
       pnts = sphere->pnts;
 
       if(fabs(sphere->zmin) < sphere->radius)
@@ -962,36 +965,46 @@ ay_sphere_notifycb(ay_object *o)
 
       hh = zmin + ((zmax - zmin) / 2.0);
 
+      memset(&(pnts[0]), 0, AY_PSPHERE*3*sizeof(double));
+
       pnts[2] = zmin;
       pnts[5] = hh;
       pnts[8] = zmax;
 
       if(sphere->is_simple)
 	{
+	  /* lower ring */
 	  memset(&(pnts[9]), 0, 9*3*sizeof(double));
-	  memset(&(pnts[63]), 0, 9*3*sizeof(double));
 
+	  /* middle ring */
 	  pnts[36] = radius;
+	  pnts[37] = 0.0;
 
 	  pnts[39] = radius*w;
 	  pnts[40] = -radius*w;
 
+	  pnts[42] = 0.0;
 	  pnts[43] = -radius;
 
 	  pnts[45] = -radius*w;
 	  pnts[46] = -radius*w;
 
 	  pnts[48] = -radius;
+	  pnts[49] = 0.0;
 
 	  pnts[51] = -radius*w;
 	  pnts[52] = radius*w;
 
+	  pnts[54] = 0.0;
 	  pnts[55] = radius;
 
 	  pnts[57] = radius*w;
 	  pnts[58] = radius*w;
 
 	  memcpy(&(pnts[60]),&(pnts[36]),3*sizeof(double));
+
+	  /* upper ring */
+ 	  memset(&(pnts[63]), 0, 9*3*sizeof(double));
 	}
       else
 	{
@@ -1059,14 +1072,12 @@ ay_sphere_notifycb(ay_object *o)
 	  pnts[a] = zmin;
 	  a += 3;
 	} /* for */
-
       /* middle ring */
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = hh;
 	  a += 3;
 	} /* for */
-
       /* upper ring */
       for(i = 0; i <= 8; i++)
 	{
@@ -1088,11 +1099,11 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
  int ay_status = AY_OK;
  int i, j, k, height, stride = 4;
  double *cv = NULL, *cv2 = NULL, *kn = NULL;
- double phimax, phimin, rmax, rmin, thetamax, zmin, zmax, radius;
  double xaxis[3] = {1.0, 0.0, 0.0}, quat[4] = {0};
- ay_sphere_object *sphere = NULL;
+ double phimax, phimin, rmax, rmin, thetamax, zmin, zmax, radius;
+ ay_nurbpatch_object *np;
+ ay_sphere_object *sphere;
  ay_disk_object disk = {0};
- ay_nurbpatch_object *np = NULL;
  ay_object *new = NULL, *newc = NULL, *newp = NULL, d = {0}, **n = NULL;
 
   if(!o)
@@ -1110,25 +1121,16 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDNPATCH)
     {
-
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
       new->down = ay_endlevel;
 
       radius = sphere->radius;
       if(sphere->is_simple)
 	{
-	  ay_status = ay_npt_crtnsphere(radius,
-                              (ay_nurbpatch_object **)(void*)&(new->refine));
+	  if((ay_status = ay_npt_crtnsphere(radius,
+			      (ay_nurbpatch_object **)(void*)&(new->refine))))
+	    goto cleanup;
 	  ay_trafo_copy(o, new);
 	}
       else
@@ -1158,11 +1160,9 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	      phimin = -AY_HALFPI;
 	    }
 
-	  ay_status = ay_nb_CreateNurbsCircleArc(sphere->radius,
+	  if((ay_status = ay_nb_CreateNurbsCircleArc(sphere->radius,
 					      AY_R2D(phimin), AY_R2D(phimax),
-					      &height, &kn, &cv);
-
-	  if(ay_status)
+						     &height, &kn, &cv)))
 	    goto cleanup;
 
 	  if(!(newc = calloc(1, sizeof(ay_object))))
@@ -1173,12 +1173,13 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  newc->type = AY_IDNCURVE;
 	  ay_object_defaults(newc);
 
-	  ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
-			      (ay_nurbcurve_object **)(void*)&(newc->refine));
+	  if((ay_status = ay_nct_create(3, height, AY_KTCUSTOM, cv, kn,
+			     (ay_nurbcurve_object **)(void*)&(newc->refine))))
+	    goto cleanup;
 
-	  ay_status = ay_npt_revolve(newc, thetamax, 0, 0,
-			       (ay_nurbpatch_object **)(void*)&(new->refine));
-
+	  if((ay_status = ay_npt_revolve(newc, thetamax, 0, 0,
+			      (ay_nurbpatch_object **)(void*)&(new->refine))))
+	    goto cleanup;
 
 	  ay_quat_axistoquat(xaxis, AY_D2R(90.0), quat);
 	  new->rotx += 90.0;
@@ -1205,7 +1206,8 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  disk.radius = rmin;
 		  disk.height = sphere->zmin;
 		  disk.thetamax = sphere->thetamax;
-		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if((ay_status = ay_provide_object(&d, AY_IDNPATCH, n)))
+		    goto cleanup;
 		  if(*n)
 		    {
 		      n = &((*n)->next);
@@ -1222,7 +1224,8 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  disk.radius = rmax;
 		  disk.height = sphere->zmax;
 		  disk.thetamax = sphere->thetamax;
-		  ay_provide_object(&d, AY_IDNPATCH, n);
+		  if((ay_status = ay_provide_object(&d, AY_IDNPATCH, n)))
+		    goto cleanup;
 		  if(*n)
 		    {
 		      n = &((*n)->next);
@@ -1266,30 +1269,24 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		    }
 		  memcpy(kn, np->uknotv, (height+3)*sizeof(double));
 
-		  if(!(newp = calloc(1, sizeof(ay_object))))
-		    {
-		      ay_status = AY_EOMEM;
-		      goto cleanup;
-		    }
-
-		  ay_object_defaults(newp);
+		  if((ay_status = ay_npt_createnpatchobject(&newp)))
+		    goto cleanup;
 		  ay_trafo_copy(o, newp);
-		  newp->type = AY_IDNPATCH;
-		  newp->inherit_trafos = AY_FALSE;
-		  newp->parent = AY_TRUE;
-		  newp->hide_children = AY_TRUE;
 		  newp->down = ay_endlevel;
 
-		  ay_npt_create(2, 3, 2, height, AY_KTNURB, AY_KTCUSTOM,
-				cv2, NULL, kn,
-			      (ay_nurbpatch_object**)(void*)&(newp->refine));
+		  if((ay_status = ay_npt_create(2, 3, 2, height,
+						AY_KTNURB, AY_KTCUSTOM,
+						cv2, NULL, kn,
+			      (ay_nurbpatch_object**)(void*)&(newp->refine))))
+		    goto cleanup;
 
 		  kn = NULL;
 		  *n = newp;
 		  n = &((*n)->next);
 
 		  /* side cap (at theta=ThetaMax) */
-		  ay_object_copy(newp, n);
+		  if((ay_status = ay_object_copy(newp, n)))
+		    goto cleanup;
 
 		  np = (ay_nurbpatch_object *)((*n)->refine);
 		  cv2 = np->controlv;
@@ -1303,7 +1300,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 		    }
 
 		  /* prevent cleanup code from doing something harmful */
-		  np = NULL;
 		  cv = NULL;
 		  cv2 = NULL;
 		} /* if */
@@ -1311,7 +1307,7 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -1319,7 +1315,6 @@ ay_sphere_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* prevent cleanup code from doing something harmful */
       new = NULL;
     } /* if */
-
 
 cleanup:
 
@@ -1334,12 +1329,12 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
   if(newc)
     {
-      ay_object_delete(newc);
+      (void)ay_object_delete(newc);
     }
 
  return ay_status;

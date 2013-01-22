@@ -418,8 +418,10 @@ ay_revolve_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&revolve->has_end_cap);
   fscanf(fileptr,"%d\n",&revolve->display_mode);
   fscanf(fileptr,"%lg\n",&revolve->glu_sampling_tolerance);
+
   if(ay_read_version >= 7)
     {
+      /* since 1.8 */
       fscanf(fileptr,"%d\n",&revolve->sections);
       fscanf(fileptr,"%d\n",&revolve->order);
     }
@@ -625,7 +627,7 @@ ay_revolve_crtcap(ay_revolve_object *revolve, ay_object *curve,
 	{
 	  ay_status = ay_nct_crtncircle(1.0,
 			   (ay_nurbcurve_object **)(void*)&(trim->refine));
-	}      
+	}
     }
   else
     {

@@ -261,7 +261,6 @@ int
 ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_box_object *box = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -270,11 +269,8 @@ ay_box_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!box->pnts)
     {
-      if(!(pnts = calloc(8*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      box->pnts = pnts;
+      if(!(box->pnts = calloc(8*3, sizeof(double))))
+	return AY_EOMEM;
       ay_box_notifycb(o);
     }
 
@@ -626,21 +622,13 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
 
-      ay_object_defaults(new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
       new->down = ay_endlevel;
-
       ay_trafo_copy(o, new);
       new->refine = np;
+
       n = &(new->next);
 
       /* create upper cap */
@@ -670,13 +658,12 @@ ay_box_providecb(ay_object *o, unsigned int type, ay_object **result)
 	}
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
 
       controlv = NULL; np = NULL; new = NULL;
-
     } /* if */
 
 
@@ -690,7 +677,7 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
  return ay_status;

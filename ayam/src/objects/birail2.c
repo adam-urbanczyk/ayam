@@ -407,6 +407,7 @@ ay_birail2_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 9)
     {
+      /* since 1.10 */
       fscanf(fileptr, "%d\n", &birail2->interpolctrl);
     }
 

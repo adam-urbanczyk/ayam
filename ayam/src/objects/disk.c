@@ -21,7 +21,6 @@ int ay_disk_notifycb(ay_object *o);
 /* number of read only points */
 #define AY_PDISK 10
 
-
 /* functions: */
 
 /* ay_disk_createcb:
@@ -153,7 +152,6 @@ ay_disk_drawcb(struct Togl *togl, ay_object *o)
       return AY_OK;
     }
 
-
   thetadiff = AY_D2R(disk->thetamax/8);
 
   angle = 0.0;
@@ -262,7 +260,6 @@ int
 ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_disk_object *disk = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -271,11 +268,8 @@ ay_disk_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!disk->pnts)
     {
-      if(!(pnts = calloc(AY_PDISK*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      disk->pnts = pnts;
+      if(!(disk->pnts = calloc(AY_PDISK*3, sizeof(double))))
+	return AY_EOMEM;
       ay_disk_notifycb(o);
     }
 
@@ -465,10 +459,20 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 
   disk = (ay_disk_object *)o->refine;
 
+  if(!disk->is_simple)
+    {
+      if(!disk->pnts)
+	{
+	  if(!(disk->pnts = calloc(AY_PDISK*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_disk_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(disk->pnts, AY_PDISK, 3, bbox);
+    }
+
   r = disk->radius;
   h = disk->height;
-
-  /* XXXX does not take into account ThetaMax! */
 
   /* P1 */
   bbox[0] = -r; bbox[1] = r; bbox[2] = h;
@@ -498,54 +502,56 @@ ay_disk_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_disk_notifycb(ay_object *o)
 {
- ay_disk_object *disk = NULL;
- double *pnts = NULL;
- double radius = 0.0, w = 0.0;
- int i = 0, a = 0;
- double thetadiff = 0.0, angle = 0.0;
+ ay_disk_object *disk;
+ double *pnts;
+ double radius, w;
+ int i, a;
+ double thetadiff, angle;
 
   if(!o)
     return AY_ENULL;
 
   disk = (ay_disk_object *)o->refine;
 
-  radius = disk->radius;
-
-  w = (sqrt(2.0)*0.5);
-
   if(disk->pnts)
     {
+      radius = disk->radius;
+      w = (sqrt(2.0)*0.5);
+
       pnts = disk->pnts;
       if(disk->is_simple)
 	{
 	  pnts[3] = radius;
+	  pnts[4] = 0.0;
 
 	  pnts[6] = radius*w;
 	  pnts[7] = -radius*w;
 
+	  pnts[9] = 0.0;
 	  pnts[10] = -radius;
 
 	  pnts[12] = -radius*w;
 	  pnts[13] = -radius*w;
 
 	  pnts[15] = -radius;
+	  pnts[16] = 0.0;
 
 	  pnts[18] = -radius*w;
 	  pnts[19] = radius*w;
 
+	  pnts[21] = 0.0;
 	  pnts[22] = radius;
 
 	  pnts[24] = radius*w;
 	  pnts[25] = radius*w;
 
 	  a = 2;
-	  for(i = 0; i < 9; i++)
+	  for(i = 0; i <= 9; i++)
 	    {
 	      pnts[a] = disk->height;
 	      a += 3;
 	    } /* for */
-
-	  memcpy(&(pnts[27]),&(pnts[3]),3*sizeof(double));
+	  memcpy(&(pnts[27]), &(pnts[3]), 3*sizeof(double));
 	}
       else
 	{
@@ -553,7 +559,7 @@ ay_disk_notifycb(ay_object *o)
 	  angle = 0.0;
 	  pnts[2] = disk->height;
 	  a = 3;
-	  for(i = 0; i <= 8; i++)
+	  for(i = 0; i < 9; i++)
 	    {
 	      pnts[a] = cos(angle)*radius;
 	      pnts[a+1] = sin(angle)*radius;
@@ -639,24 +645,15 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
-      new->down = ay_endlevel;
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
 
       ay_trafo_copy(o, new);
+      new->down = ay_endlevel;
       new->refine = np;
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -664,7 +661,6 @@ ay_disk_providecb(ay_object *o, unsigned int type, ay_object **result)
       /* prevent cleanup code from doing something harmful */
       vk = NULL; controlv = NULL; np = NULL; new = NULL;
     } /* if */
-
 
 cleanup:
 
@@ -682,7 +678,7 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
  return ay_status;

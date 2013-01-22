@@ -682,6 +682,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 5)
     {
+      /* since 1.6 */
       fscanf(fileptr,"%d", &riopt->use_std_display);
       read = fgetc(fileptr);
 
@@ -713,6 +714,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 10)
     {
+      /* since 1.13 */
       fscanf(fileptr,"%lg\n",&riopt->FilterWidth);
       fscanf(fileptr,"%lg\n",&riopt->FilterHeight);
     }

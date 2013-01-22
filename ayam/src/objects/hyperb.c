@@ -398,7 +398,6 @@ int
 ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_hyperboloid_object *h = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -407,11 +406,8 @@ ay_hyperb_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!h->pnts)
     {
-      if(!(pnts = calloc(AY_PHYPERB*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      h->pnts = pnts;
+      if(!(h->pnts = calloc(AY_PHYPERB*3, sizeof(double))))
+	return AY_EOMEM;
       ay_hyperboloid_notifycb(o);
     }
 
@@ -710,6 +706,18 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 
   h = (ay_hyperboloid_object *)o->refine;
 
+  if(fabs(h->thetamax) != 360.0)
+    {
+      if(!h->pnts)
+	{
+	  if(!(h->pnts = calloc(AY_PHYPERB*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_hyperboloid_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(h->pnts, AY_PHYPERB, 3, bbox);
+    }
+
   if((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2])>AY_EPSILON)
     rmi = sqrt((h->p1[0]*h->p1[0])+(h->p1[2]*h->p1[2]));
   if((h->p2[0]*h->p2[0])+(h->p2[2]*h->p2[2]))
@@ -718,8 +726,6 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
   zma = h->p2[1];
 
   r = rmi>rma?rmi:rma;
-
-  /* XXXX does not take into account ThetaMax! */
 
   /* P1 */
   bbox[0] = -r; bbox[1] = r; bbox[2] = zma;
@@ -749,12 +755,12 @@ ay_hyperb_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_hyperboloid_notifycb(ay_object *o)
 {
- ay_hyperboloid_object *h = NULL;
- double *pnts = NULL;
+ ay_hyperboloid_object *h;
+ double *pnts;
  double rmin = 0.0, rmid = 0.0, rmax = 0.0;
  double amin = 0.0, amid = 0.0, amax = 0.0;
  double thetadiff, angle, p3[3];
- int i = 0, a = 0;
+ int i, a;
 
   if(!o)
     return AY_ENULL;
@@ -950,18 +956,10 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
 
-      ay_object_defaults(new);
       ay_trafo_copy(o, new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
       new->down = ay_endlevel;
 
       new->refine = np;
@@ -1040,7 +1038,7 @@ ay_hyperboloid_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -1065,7 +1063,7 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
  return ay_status;

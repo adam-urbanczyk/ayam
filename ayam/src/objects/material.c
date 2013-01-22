@@ -619,6 +619,7 @@ ay_material_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 4)
     {
+      /* since 1.4 */
       fscanf(fileptr,"%d\n",&material->sides);
     }
 

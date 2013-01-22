@@ -416,7 +416,6 @@ int
 ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_cylinder_object *cylinder = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -425,11 +424,8 @@ ay_cylinder_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!cylinder->pnts)
     {
-      if(!(pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      cylinder->pnts = pnts;
+      if(!(cylinder->pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
+	return AY_EOMEM;
       ay_cylinder_notifycb(o);
     }
 
@@ -749,6 +745,18 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 
   cylinder = (ay_cylinder_object *)o->refine;
 
+  if(!cylinder->is_simple)
+    {
+      if(!cylinder->pnts)
+	{
+	  if(!(cylinder->pnts = calloc(AY_PCYLINDER*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_cylinder_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(cylinder->pnts, AY_PCYLINDER, 3, bbox);
+    }
+
   r = cylinder->radius;
   zmi = cylinder->zmin;
   zma = cylinder->zmax;
@@ -783,10 +791,10 @@ ay_cylinder_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_cylinder_notifycb(ay_object *o)
 {
- ay_cylinder_object *cylinder = NULL;
- double *pnts = NULL;
- double radius = 0.0, w = 0.0;
- int i = 0, a = 0;
+ ay_cylinder_object *cylinder;
+ double *pnts;
+ double radius, w;
+ int i, a;
  double thetadiff, angle, hh;
 
   if(!o)
@@ -794,12 +802,11 @@ ay_cylinder_notifycb(ay_object *o)
 
   cylinder = (ay_cylinder_object *)o->refine;
 
-  radius = cylinder->radius;
-
-  w = (sqrt(2.0)*0.5);
-
   if(cylinder->pnts)
     {
+      radius = cylinder->radius;
+      w = (sqrt(2.0)*0.5);
+
       pnts = cylinder->pnts;
 
       hh = cylinder->zmin + ((cylinder->zmax - cylinder->zmin) / 2.0);
@@ -812,20 +819,24 @@ ay_cylinder_notifycb(ay_object *o)
 	{
 	  /* lower ring */
 	  pnts[9] = radius;
+	  pnts[10] = 0.0;
 
 	  pnts[12] = radius*w;
 	  pnts[13] = -radius*w;
 
+	  pnts[15] = 0.0;
 	  pnts[16] = -radius;
 
 	  pnts[18] = -radius*w;
 	  pnts[19] = -radius*w;
 
 	  pnts[21] = -radius;
+	  pnts[22] = 0.0;
 
 	  pnts[24] = -radius*w;
 	  pnts[25] = radius*w;
 
+	  pnts[27] = 0.0;
 	  pnts[28] = radius;
 
 	  pnts[30] = radius*w;
@@ -863,7 +874,6 @@ ay_cylinder_notifycb(ay_object *o)
 	  a += 3;
 	} /* for */
       /* middle ring */
-
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = hh;
@@ -947,26 +957,15 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	  j += stride;
 	}
 
-      ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
-				controlv, NULL, vk, &np);
-
-      if(ay_status)
+      if((ay_status = ay_npt_create(2, 3, 2, height, AY_KTBEZIER, AY_KTCUSTOM,
+				    controlv, NULL, vk, &np)))
 	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
 
-      ay_object_defaults(new);
       ay_trafo_copy(o, new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
       new->down = ay_endlevel;
-
       new->refine = np;
 
       if(cylinder->closed)
@@ -1016,7 +1015,7 @@ ay_cylinder_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -1041,7 +1040,7 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
  return ay_status;

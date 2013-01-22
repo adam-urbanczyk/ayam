@@ -400,6 +400,7 @@ ay_extrnp_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 12)
     {
+      /* since 1.15 */
       fscanf(fileptr, "%d\n", &extrnp->relative);
     }
 
