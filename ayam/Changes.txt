@@ -1,4 +1,4 @@
-[3. Jan 2013] CVS-Head:
+[22. Jan 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -11,6 +11,7 @@ o deleting the copy of a material de-registers original material (SF 3568001)
 o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
 o clamping a periodic curve does not reset the curve type (SF 3579550)
 o crash when computing the curvature of a linear curve (SF 3588209)
+o read only points of quadrics after thetamax changes (SF 3601813)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -35,8 +36,9 @@ o Skin objects no longer modify (e.g. clamp) the parameter curves when
   they are already compatible
 o creating Sweep and Swing objects now automatically rotates parameter curves
   defined in the XY plane (the default) to the appropriate plane
-o new objects will now be created at the mark (if the new preference
-  option "CreateAtMark" is enabled (default: yes)
+o new objects will now be created at the mark, if the new preference
+  option "CreateAtMark" is enabled (default: yes) and if the objects
+  are not potential parent objects
 o the mark may now be set by double-clicking with the right mouse button
 o if the mark is set in a view, the respective z coordinate of the mark is
   no longer set to zero (when the preference option "GlobalMark" is activated)
@@ -92,12 +94,16 @@ o added option "-add" to "copOb" and "cutOb" commands to allow collecting
 o the aytest.tcl script now allows more fine grained test selection per GUI
 o Material objects can no longer be renamed via "nameOb" (as this command
   does not update the material registry)
+o the "makeCompNC" command no longer unconditionally clamps the parameter
+  curves (unless the new option "-force" is given)
+o added command "hasTag" to quickly check for the existence of a tag
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
 
 Documentation/Example Files:
 o added an overview to the table of contents
+
 
 [20. Mar 2012] Ayam-1.20:
 =========================
