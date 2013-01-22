@@ -269,6 +269,7 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 13)
     {
+      /* since 1.16 */
       fscanf(fileptr, "%d", &tmpi);
 
       read = fgetc(fileptr);

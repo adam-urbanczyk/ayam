@@ -393,7 +393,6 @@ int
 ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_torus_object *torus = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -402,11 +401,8 @@ ay_torus_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!torus->pnts)
     {
-      if(!(pnts = calloc(AY_PTORUS*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      torus->pnts = pnts;
+      if(!(torus->pnts = calloc(AY_PTORUS*3, sizeof(double))))
+	return AY_EOMEM;
       ay_torus_notifycb(o);
     }
 
@@ -670,11 +666,21 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 
   t = (ay_torus_object *)o->refine;
 
+  if((fabs(t->thetamax) != 360.0) || (fabs(t->phimax-t->phimin) != 360.0))
+    {
+      if(!t->pnts)
+	{
+	  if(!(t->pnts = calloc(AY_PTORUS*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_torus_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(t->pnts, AY_PTORUS, 3, bbox);
+    }
+
   r = t->majorrad+t->minorrad;
   zmi = -(t->minorrad);
   zma = t->minorrad;
-
-  /* XXXX does not take into account ThetaMax! */
 
   /* P1 */
   bbox[0] = -r; bbox[1] = r; bbox[2] = zma;
@@ -704,12 +710,12 @@ ay_torus_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_torus_notifycb(ay_object *o)
 {
- ay_torus_object *torus = NULL;
- double *pnts = NULL;
+ ay_torus_object *torus;
+ double *pnts;
  double phi, mar, mir;
  double phidiff, thetadiff, pangle, tangle;
- double P1[2] = {0};
- int i = 0, j = 0, a = 0;
+ double P1[2];
+ int i, j, a;
 
   if(!o)
     return AY_ENULL;
@@ -727,6 +733,7 @@ ay_torus_notifycb(ay_object *o)
       thetadiff = AY_D2R(torus->thetamax/8);
 
       tangle = 0.0;
+      a = 0;
       for(i = 0; i <= 8; i++)
 	{
 	  pnts[a] = cos(tangle)*mar;
@@ -754,7 +761,6 @@ ay_torus_notifycb(ay_object *o)
 	    } /* for */
 	  pangle += phidiff;
 	} /* for */
-
     } /* if */
 
  return AY_OK;
@@ -793,18 +799,9 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 
   if(type == AY_IDNPATCH)
     {
+      if((ay_status = ay_npt_createnpatchobject(&new)))
+	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
       new->down = ay_endlevel;
 
       majorrad = torus->majorrad;
@@ -939,20 +936,11 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 		  j += stride; k += stride;
 		}
 
-	      if(!(newp = calloc(1, sizeof(ay_object))))
-		{
-		  ay_status = AY_EOMEM;
-		  goto cleanup;
-		}
-
-	      ay_object_defaults(newp);
-	      newp->type = AY_IDNPATCH;
-	      newp->inherit_trafos = AY_FALSE;
-	      newp->parent = AY_TRUE;
-	      newp->hide_children = AY_TRUE;
-	      newp->down = ay_endlevel;
+	      if((ay_status = ay_npt_createnpatchobject(&newp)))
+		goto cleanup;
 
 	      ay_trafo_copy(new, newp);
+	      newp->down = ay_endlevel;
 
 	      if((ay_status = ay_npt_create(2, 3, 2, height,
 				     AY_KTNURB, AY_KTCUSTOM,
@@ -988,7 +976,7 @@ ay_torus_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -1018,17 +1006,17 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
   if(newc)
     {
-      ay_object_delete(newc);
+      (void)ay_object_delete(newc);
     }
 
   if(newp)
     {
-      ay_object_delete(newp);
+      (void)ay_object_delete(newp);
     }
 
  return ay_status;

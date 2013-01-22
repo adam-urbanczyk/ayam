@@ -323,6 +323,7 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 10)
     {
+      /* since 1.13 */
       fscanf(fileptr,"%d\n",&cap->type);
     }
 

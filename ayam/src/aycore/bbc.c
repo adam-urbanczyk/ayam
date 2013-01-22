@@ -198,3 +198,65 @@ ay_bbc_get(ay_object *o, double *bbox)
 
  return AY_OK;
 } /* ay_bbc_get */
+
+
+/* ay_bbc_fromarr:
+ *  bounding box calculation from control point array
+ */
+int
+ay_bbc_fromarr(double *arr, int len, int stride, double *bbox)
+{
+ double xmin, xmax, ymin, ymax, zmin, zmax;
+ int i, a;
+
+  if(!arr || !bbox)
+    return AY_ENULL;
+
+  xmin = arr[0];
+  xmax = xmin;
+  ymin = arr[1];
+  ymax = ymin;
+  zmin = arr[2];
+  zmax = zmin;
+
+  a = 0;
+  for(i = 0; i < len; i++)
+    {
+      if(arr[a] < xmin)
+	xmin = arr[a];
+      if(arr[a] > xmax)
+	xmax = arr[a];
+
+      if(arr[a+1] < ymin)
+	ymin = arr[a+1];
+      if(arr[a+1] > ymax)
+	ymax = arr[a+1];
+
+      if(arr[a+2] < zmin)
+	zmin = arr[a+2];
+      if(arr[a+2] > zmax)
+	zmax = arr[a+2];
+
+      a += stride;
+    }
+
+  /* P1 */
+  bbox[0] = xmin; bbox[1] = ymax; bbox[2] = zmax;
+  /* P2 */
+  bbox[3] = xmin; bbox[4] = ymax; bbox[5] = zmin;
+  /* P3 */
+  bbox[6] = xmax; bbox[7] = ymax; bbox[8] = zmin;
+  /* P4 */
+  bbox[9] = xmax; bbox[10] = ymax; bbox[11] = zmax;
+
+  /* P5 */
+  bbox[12] = xmin; bbox[13] = ymin; bbox[14] = zmax;
+  /* P6 */
+  bbox[15] = xmin; bbox[16] = ymin; bbox[17] = zmin;
+  /* P7 */
+  bbox[18] = xmax; bbox[19] = ymin; bbox[20] = zmin;
+  /* P8 */
+  bbox[21] = xmax; bbox[22] = ymin; bbox[23] = zmax;
+
+ return AY_OK;
+} /* ay_bbc_fromarr */

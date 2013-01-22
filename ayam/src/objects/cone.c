@@ -367,7 +367,6 @@ int
 ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 {
  ay_cone_object *cone = NULL;
- double *pnts = NULL;
 
   if(!o)
     return AY_ENULL;
@@ -376,11 +375,8 @@ ay_cone_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 
   if(!cone->pnts)
     {
-      if(!(pnts = calloc(AY_PCONE*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
-      cone->pnts = pnts;
+      if(!(cone->pnts = calloc(AY_PCONE*3, sizeof(double))))
+	return AY_EOMEM;
       ay_cone_notifycb(o);
     }
 
@@ -669,10 +665,20 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 
   cone = (ay_cone_object *)o->refine;
 
+  if(!cone->is_simple)
+    {
+      if(!cone->pnts)
+	{
+	  if(!(cone->pnts = calloc(AY_PCONE*3, sizeof(double))))
+	    { return AY_EOMEM; }
+	  ay_cone_notifycb(o);
+	}
+
+      return ay_bbc_fromarr(cone->pnts, AY_PCONE, 3, bbox);
+    }
+
   r = cone->radius;
   h = cone->height;
-
-  /* XXXX does not take into account ThetaMax! */
 
   /* P1 */
   bbox[0] = -r; bbox[1] = r; bbox[2] = h;
@@ -702,10 +708,10 @@ ay_cone_bbccb(ay_object *o, double *bbox, int *flags)
 int
 ay_cone_notifycb(ay_object *o)
 {
- ay_cone_object *cone = NULL;
- double *pnts = NULL;
- double radius = 0.0, w = 0.0;
- int i = 0, a = 0;
+ ay_cone_object *cone;
+ double *pnts;
+ double radius, w;
+ int i, a;
  double thetadiff, angle;
 
   if(!o)
@@ -713,30 +719,34 @@ ay_cone_notifycb(ay_object *o)
 
   cone = (ay_cone_object *)o->refine;
 
-  radius = cone->radius;
-
-  w = (sqrt(2.0)*0.5);
-
   if(cone->pnts)
     {
+      radius = cone->radius;
+
+      w = (sqrt(2.0)*0.5);
+
       pnts = cone->pnts;
       if(cone->is_simple)
 	{
 	  pnts[3] = radius;
+	  pnts[4] = 0.0;
 
 	  pnts[6] = radius*w;
 	  pnts[7] = -radius*w;
 
+	  pnts[9] = 0.0;
 	  pnts[10] = -radius;
 
 	  pnts[12] = -radius*w;
 	  pnts[13] = -radius*w;
 
 	  pnts[15] = -radius;
+	  pnts[16] = 0.0;
 
 	  pnts[18] = -radius*w;
 	  pnts[19] = radius*w;
 
+	  pnts[21] = 0.0;
 	  pnts[22] = radius;
 
 	  pnts[24] = radius*w;
@@ -835,22 +845,11 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
       if(ay_status)
 	goto cleanup;
 
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-
-      ay_object_defaults(new);
-      ay_trafo_copy(o, new);
-      new->type = AY_IDNPATCH;
-      new->inherit_trafos = AY_FALSE;
-      new->parent = AY_TRUE;
-      new->hide_children = AY_TRUE;
-      new->down = ay_endlevel;
-
-      if(ay_status)
+      if((ay_status = ay_npt_createnpatchobject(&new)))
 	goto cleanup;
+
+      ay_trafo_copy(o, new);
+      new->down = ay_endlevel;
 
       new->refine = np;
 
@@ -891,7 +890,7 @@ ay_cone_providecb(ay_object *o, unsigned int type, ay_object **result)
 	} /* if */
 
       /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
+      (void)ay_npt_copytptag(o, new);
 
       /* return result */
       *result = new;
@@ -916,7 +915,7 @@ cleanup:
 
   if(new)
     {
-      ay_object_deletemulti(new);
+      (void)ay_object_deletemulti(new);
     }
 
  return ay_status;

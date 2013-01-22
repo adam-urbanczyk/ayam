@@ -385,21 +385,25 @@ ay_extrnc_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 8)
     {
+      /* since 1.9 */
       fscanf(fileptr, "%d\n", &extrnc->pnum);
     }
 
   if(ay_read_version >= 10)
     {
+      /* since 1.13 */
       fscanf(fileptr, "%d\n", &extrnc->revert);
     }
 
   if(ay_read_version >= 12)
     {
+      /* since 1.15 */
       fscanf(fileptr, "%d\n", &extrnc->relative);
     }
 
   if(ay_read_version >= 14)
     {
+      /* since 1.19 */
       fscanf(fileptr, "%d\n", &extrnc->extractnt);
     }
 

@@ -516,6 +516,7 @@ ay_camera_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 4)
     {
+      /* since 1.4 */
       fscanf(fileptr,"%lg\n", &camera->nearp);
       fscanf(fileptr,"%lg\n", &camera->farp);
     }

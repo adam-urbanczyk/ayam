@@ -21,6 +21,10 @@
  */
 int ay_bbc_get(ay_object *o, double *bbox);
 
+/** bounding box calculation from control point array
+ */
+int ay_bbc_fromarr(double *arr, int len, int stride, double *bbox);
+
 
 /* clear.c */
 

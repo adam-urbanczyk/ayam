@@ -813,6 +813,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 2)
     {
+      /* since 1.2 */
       ay_status = ay_read_string(fileptr, &(vtemp.bgimage));
       if(ay_status)
 	{
@@ -823,27 +824,32 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 4)
     {
+      /* since 1.4 */
       fscanf(fileptr,"%lg\n", &vtemp.nearp);
       fscanf(fileptr,"%lg\n", &vtemp.farp);
     }
 
   if(ay_read_version >= 8)
     {
+      /* since 1.9 */
       fscanf(fileptr,"%d\n", &vtemp.drawobjectcs);
     }
 
   if(ay_read_version >= 10)
     {
+      /* since 1.13 */
       fscanf(fileptr,"%d\n", &vtemp.antialiaslines);
     }
 
   if(ay_read_version >= 11)
     {
+      /* since 1.14 */
       fscanf(fileptr,"%d\n", &vtemp.isicon);
     }
 
   if(ay_read_version >= 14)
     {
+      /* since 1.19 */
       fscanf(fileptr,"%d\n", &vtemp.enable_undo);
     }
   else

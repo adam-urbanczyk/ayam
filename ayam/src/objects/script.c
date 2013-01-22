@@ -725,6 +725,7 @@ ay_script_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 8)
     {
+      /* since 1.9 */
       if(sc->script)
 	{
 	  fscanf(fileptr, "%d\n", &arrmembers);

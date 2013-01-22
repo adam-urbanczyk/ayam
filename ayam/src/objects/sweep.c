@@ -420,6 +420,7 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version > 3)
     {
+      /* since 1.4 */
       fscanf(fileptr,"%d\n",&sweep->close);
     }
 

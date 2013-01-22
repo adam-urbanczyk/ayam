@@ -956,6 +956,7 @@ ay_light_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version >= 5)
     {
+      /* since 1.6 */
       fscanf(fileptr,"%d\n",&light->local);
     }
 
