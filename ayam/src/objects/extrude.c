@@ -183,11 +183,10 @@ ay_extrude_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_extrude_object *extrude = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
- ay_nurbpatch_object *patch = NULL;
+ int i;
+ double *pnts;
+ ay_extrude_object *extrude;
+ ay_nurbpatch_object *patch;
 
   if(!o)
     return AY_ENULL;
@@ -198,17 +197,16 @@ ay_extrude_drawhcb(struct Togl *togl, ay_object *o)
     {
       patch = (ay_nurbpatch_object *)extrude->npatch->refine;
       pnts = patch->controlv;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < patch->width*patch->height; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < (patch->width*patch->height); i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,

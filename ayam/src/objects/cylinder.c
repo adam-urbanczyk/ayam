@@ -368,15 +368,14 @@ ay_cylinder_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_cylinder_object *cylinder = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
+ int i;
+ double *pnts;
+ ay_cylinder_object *cylinder;
 
-  cylinder = (ay_cylinder_object *) o->refine;
+  if(!o)
+    return AY_ENULL;
 
-  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	    (GLfloat)ay_prefs.obb);
+  cylinder = (ay_cylinder_object *)o->refine;
 
   if(!cylinder->pnts)
     {
@@ -392,13 +391,14 @@ ay_cylinder_drawhcb(struct Togl *togl, ay_object *o)
       pnts = cylinder->pnts;
     }
 
-  glPointSize((GLfloat)point_size);
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   glBegin(GL_POINTS);
    for(i = 0; i < AY_PCYLINDER; i++)
      {
-       glVertex3dv((GLdouble *)&pnts[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
   glEnd();
 

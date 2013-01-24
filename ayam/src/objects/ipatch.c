@@ -1043,7 +1043,8 @@ ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
 
   /* draw arrow */
   ay_draw_arrow(togl, &(ver[width*height*3-6]), &(ver[width*height*3-3]));
-  return AY_OK;
+
+ return AY_OK;
 } /* ay_ipatch_drawacb */
 
 
@@ -1053,25 +1054,23 @@ ay_ipatch_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
 {
- int width = 0, height = 0, i = 0, a = 0;
- ay_ipatch_object *ipatch = (ay_ipatch_object *) o->refine;
- GLdouble *ver = NULL;
- /*double point_size = ay_prefs.handle_size;*/
+ int i;
+ double *pnts;
+ ay_ipatch_object *ipatch;
 
-  width = ipatch->width;
-  height = ipatch->height;
+  if(!o)
+    return AY_ENULL;
 
-  ver = ipatch->controlv;
+  ipatch = (ay_ipatch_object *) o->refine;
+
+  pnts = ipatch->controlv;
 
   /* draw points */
-
-  /*glPointSize((GLfloat)point_size);*/
-
   glBegin(GL_POINTS);
-   for(i=0; i<(width*height); i++)
+   for(i = 0; i < (ipatch->width*ipatch->height); i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
   glEnd();
 
@@ -1080,25 +1079,23 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
     {
       if(ipatch->sderiv_u)
 	{
-	  ver = ipatch->sderiv_u;
+	  pnts = ipatch->sderiv_u;
 	  glBegin(GL_POINTS);
-	   a = 0;
-	   for(i = 0; i < height; i++)
+	   for(i = 0; i < ipatch->height; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
-	       a += 3;
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 3;
 	     }
 	  glEnd();
 	}
       if(ipatch->ederiv_u)
 	{
-	  ver = ipatch->ederiv_u;
+	  pnts = ipatch->ederiv_u;
 	  glBegin(GL_POINTS);
-	   a = 0;
-	   for(i = 0; i < height; i++)
+	   for(i = 0; i < ipatch->height; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
-	       a += 3;
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 3;
 	     }
 	  glEnd();
 	}
@@ -1108,25 +1105,23 @@ ay_ipatch_drawhcb(struct Togl *togl, ay_object *o)
     {
       if(ipatch->sderiv_v)
 	{
-	  ver = ipatch->sderiv_v;
+	  pnts = ipatch->sderiv_v;
 	  glBegin(GL_POINTS);
-	   a = 0;
-	   for(i = 0; i < width; i++)
+	   for(i = 0; i < ipatch->width; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
-	       a += 3;
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 3;
 	     }
 	  glEnd();
 	}
       if(ipatch->ederiv_v)
 	{
-	  ver = ipatch->ederiv_v;
+	  pnts = ipatch->ederiv_v;
 	  glBegin(GL_POINTS);
-	   a = 0;
-	   for(i = 0; i < width; i++)
+	   for(i = 0; i < ipatch->width; i++)
 	     {
-	       glVertex3dv((GLdouble *)&ver[a]);
-	       a += 3;
+	       glVertex3dv((GLdouble *)pnts);
+	       pnts += 3;
 	     }
 	  glEnd();
 	}

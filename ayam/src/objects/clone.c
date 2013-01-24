@@ -197,7 +197,6 @@ int
 ay_clone_drawhcb(struct Togl *togl, ay_object *o)
 {
  ay_clone_object *cc = NULL;
- double point_size = ay_prefs.handle_size;
  unsigned int i = 0, a = 0;
 
   if(!o)
@@ -216,14 +215,12 @@ ay_clone_drawhcb(struct Togl *togl, ay_object *o)
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < cc->pntslen; i++)
-	{
-	  glVertex3dv((GLdouble *)&cc->pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < cc->pntslen; i++)
+	 {
+	   glVertex3dv((GLdouble *)&cc->pnts[a]);
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,

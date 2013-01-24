@@ -190,9 +190,9 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_text_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_text_object *text = NULL;
- double point_size = ay_prefs.handle_size;
- unsigned int i = 0, a = 0;
+ unsigned int i;
+ double *pnts;
+ ay_text_object *text;
 
   if(!o)
     return AY_ENULL;
@@ -207,17 +207,17 @@ ay_text_drawhcb(struct Togl *togl, ay_object *o)
 
   if(text->pnts)
     {
+      pnts = text->pnts;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < text->pntslen; i++)
-	{
-	  glVertex3dv((GLdouble *)&text->pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < text->pntslen; i++)
+	 {
+	   glVertex3dv((GLdouble *)text->pnts);
+	   pnts += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,

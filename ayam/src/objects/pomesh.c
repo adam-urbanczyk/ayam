@@ -665,11 +665,10 @@ ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_pomesh_object *pomesh = NULL;
- GLdouble *ver = NULL;
- double point_size = ay_prefs.handle_size;
- unsigned int i = 0;
- int stride = 0;
+ unsigned int i;
+ int stride;
+ double *pnts;
+ ay_pomesh_object *pomesh;
 
   if(!o)
     return AY_ENULL;
@@ -681,16 +680,14 @@ ay_pomesh_drawhcb(struct Togl *togl, ay_object *o)
   else
     stride = 3;
 
-  ver = pomesh->controlv;
-
-  glPointSize((GLfloat)point_size);
+  pnts = pomesh->controlv;
 
   glBegin(GL_POINTS);
-  for(i = 0; i < pomesh->ncontrols; i++)
-    {
-      glVertex3dv(ver);
-      ver += stride;
-    }
+   for(i = 0; i < pomesh->ncontrols; i++)
+     {
+       glVertex3dv((GLdouble*)pnts);
+       pnts += stride;
+     }
   glEnd();
 
  return AY_OK;

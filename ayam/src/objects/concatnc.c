@@ -167,7 +167,6 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
  ay_concatnc_object *concatnc = NULL;
  ay_nurbcurve_object *nc = NULL;
  double *pnts = NULL;
- /*double point_size = ay_prefs.handle_size;*/
 
   if(!o)
     return AY_ENULL;
@@ -184,8 +183,6 @@ ay_concatnc_drawhcb(struct Togl *togl, ay_object *o)
       /* draw read only points */
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
-
-      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
        for(i = 0; i < nc->length; i++)

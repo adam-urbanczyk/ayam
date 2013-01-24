@@ -245,10 +245,10 @@ ay_ncircle_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_ncircle_object *ncircle = NULL;
- ay_nurbcurve_object *curve = NULL;
- /*double point_size = ay_prefs.handle_size;*/
+ int i;
+ double *pnts;
+ ay_ncircle_object *ncircle;
+ ay_nurbcurve_object *curve;
 
   if(!o)
     return AY_ENULL;
@@ -259,19 +259,18 @@ ay_ncircle_drawhcb(struct Togl *togl, ay_object *o)
     {
       /* get NURBS curve */
       curve = (ay_nurbcurve_object *)ncircle->ncurve->refine;
+      pnts = curve->controlv;
 
       /* draw read only points */
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      /*glPointSize((GLfloat)point_size);*/
-
       glBegin(GL_POINTS);
-      for(i = 0; i < curve->length; i++)
-	{
-	  glVertex3dv((GLdouble *)&(curve->controlv[a]));
-	  a += 4;
-	}
+       for(i = 0; i < curve->length; i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,

@@ -383,23 +383,25 @@ ay_pamesh_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_pamesh_drawhcb(struct Togl *togl, ay_object *o)
 {
- int width = 0, height = 0, i = 0, a = 0;
- ay_pamesh_object *pm = (ay_pamesh_object *) o->refine;
- GLdouble *ver = NULL;
- /*double point_size = ay_prefs.handle_size;*/
+ int width, height, i;
+ double *pnts;
+ ay_pamesh_object *pm;
+
+  if(!o)
+    return AY_ENULL;
+
+  pm = (ay_pamesh_object *) o->refine;
 
   width = pm->width;
   height = pm->height;
 
-  ver = pm->controlv;
-
-  /*glPointSize((GLfloat)point_size);*/
+  pnts = pm->controlv;
 
   glBegin(GL_POINTS);
-   for(i=0; i<(width*height); i++)
+   for(i = 0; i < (width*height); i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 4;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 4;
      }
   glEnd();
 

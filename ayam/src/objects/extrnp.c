@@ -181,11 +181,10 @@ ay_extrnp_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_extrnp_object *extrnp = NULL;
- double *pnts = NULL;
- /*double point_size = ay_prefs.handle_size;*/
- ay_nurbpatch_object *np = NULL;
+ int i;
+ double *pnts;
+ ay_extrnp_object *extrnp;
+ ay_nurbpatch_object *np;
 
   if(!o)
     return AY_ENULL;
@@ -198,16 +197,15 @@ ay_extrnp_drawhcb(struct Togl *togl, ay_object *o)
 
       /* draw read only points */
       pnts = np->controlv;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
-
-      /*glPointSize((GLfloat)point_size);*/
 
       glBegin(GL_POINTS);
        for(i = 0; i < np->width*np->height; i++)
 	 {
-	   glVertex3dv((GLdouble *)&pnts[a]);
-	   a += 4;
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
 	 }
       glEnd();
 

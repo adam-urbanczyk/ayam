@@ -151,7 +151,6 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_cap_object *cap = NULL;
  double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
  ay_nurbpatch_object *patch = NULL;
 
   if(!o)
@@ -166,14 +165,12 @@ ay_cap_drawhcb(struct Togl *togl, ay_object *o)
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < patch->width*patch->height; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < patch->width*patch->height; i++)
+	 {
+	   glVertex3dv((GLdouble *)&pnts[a]);
+	   a += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,

@@ -627,24 +627,20 @@ ay_icurve_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_icurve_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_icurve_object *icurve = NULL;
- GLdouble *ver = NULL;
- /*double point_size = ay_prefs.handle_size;*/
+ int i;
+ double *pnts;
+ ay_icurve_object *icurve;
 
   icurve = (ay_icurve_object *) o->refine;
 
-  ver = icurve->controlv;
-
-  /* draw points */
-  /*glPointSize((GLfloat)point_size);*/
+  pnts = icurve->controlv;
 
   glBegin(GL_POINTS);
    /* draw control points */
    for(i = 0; i < icurve->length; i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
 
    /* draw deriv endpoints */

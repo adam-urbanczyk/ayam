@@ -322,12 +322,8 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
  int i = 0, a = 0;
  ay_cone_object *cone = NULL;
  double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
 
   cone = (ay_cone_object *) o->refine;
-
-  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	    (GLfloat)ay_prefs.obb);
 
   if(!cone->pnts)
     {
@@ -343,7 +339,8 @@ ay_cone_drawhcb(struct Togl *togl, ay_object *o)
       pnts = cone->pnts;
     }
 
-  glPointSize((GLfloat)point_size);
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   glBegin(GL_POINTS);
    for(i = 0; i < AY_PCONE; i++)

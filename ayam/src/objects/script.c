@@ -281,9 +281,9 @@ ay_script_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_script_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_script_object *sc = NULL;
- double point_size = ay_prefs.handle_size;
- unsigned int i = 0, a = 0;
+ unsigned int i;
+ double *pnts;
+ ay_script_object *sc;
 
   if(!o)
     return AY_ENULL;
@@ -304,17 +304,17 @@ ay_script_drawhcb(struct Togl *togl, ay_object *o)
 
   if(sc->pnts)
     {
+      pnts = sc->pnts;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < sc->pntslen; i++)
-	{
-	  glVertex3dv((GLdouble *)&sc->pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < sc->pntslen; i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
