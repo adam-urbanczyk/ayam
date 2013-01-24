@@ -261,7 +261,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
 		  break;
 		case 3:
-		  ay_status = ay_capt_crtsimplecapint(3, bevel, extrcurve);
+		  ay_status = ay_capt_crtsimplecapint(extrcurve, 3, bevel);
 		  break;
 		case 4:
 		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
