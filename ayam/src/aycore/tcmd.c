@@ -521,7 +521,6 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
  char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)| -all varname)";
- char *range = NULL;
  Tcl_Obj *to = NULL, *ton = NULL;
  int lflags =  TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
    TCL_PARSE_PART1;
@@ -632,9 +631,9 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < nc->knotv[nc->order-1]) ||
 		 (u > nc->knotv[nc->length]))
 		{
-		  ay_error_formatdrange(nc->knotv[nc->order-1],
-					nc->knotv[nc->length], &range);
-		  ay_error(AY_ERANGE, argv[0], range);
+		  ay_status = ay_error_reportdrange(argv[0], "\"u\"",
+						    nc->knotv[nc->order-1],
+						    nc->knotv[nc->length]);
 		  goto cleanup;
 		}
 
@@ -716,20 +715,18 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < np->uknotv[np->uorder-1]) ||
 		 (u > np->uknotv[np->width]))
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
-		  ay_error_formatdrange(np->uknotv[np->uorder-1],
-					np->uknotv[np->width], &range);
-		  ay_error(AY_ERANGE, argv[0], range);
+		  ay_status = ay_error_reportdrange(argv[0], "\"u\"",
+						    np->uknotv[np->uorder-1],
+						    np->uknotv[np->width]);
 		  goto cleanup;
 		}
 
 	      if((v < np->vknotv[np->vorder-1]) ||
 		 (v > np->vknotv[np->height]))
 		{
-		  ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
-		  ay_error_formatdrange(np->vknotv[np->vorder-1],
-					np->vknotv[np->height], &range);
-		  ay_error(AY_ERANGE, argv[0], range);
+		  ay_status = ay_error_reportdrange(argv[0], "\"v\"",
+						    np->vknotv[np->vorder-1],
+						    np->vknotv[np->height]);
 		  goto cleanup;
 		}
 
@@ -1010,7 +1007,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
       if(freepo)
 	{
 	  if(po)
-	    ay_object_deletemulti(po);
+	    (void)ay_object_deletemulti(po);
 	} /* if */
 
       sel = sel->next;
@@ -1021,16 +1018,13 @@ cleanup:
   if(freepo)
     {
       if(po)
-	ay_object_deletemulti(po);
+	(void)ay_object_deletemulti(po);
     } /* if */
 
   if(clear_selp)
     {
       o->selp = old_selp;
     }
-
-  if(range)
-    free(range);
 
  return TCL_OK;
 } /* ay_tcmd_getpointtcmd */

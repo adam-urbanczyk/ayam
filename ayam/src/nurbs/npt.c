@@ -5502,30 +5502,15 @@ ay_npt_getpntfromindex(ay_nurbpatch_object *patch, int indexu, int indexv,
 {
  int stride = 4;
  char fname[] = "npt_getpntfromindex";
- char *range = NULL;
 
   if(!patch || !p)
     return AY_ENULL;
 
   if(indexu >= patch->width || indexu < 0)
-    {
-      ay_error(AY_ERROR, fname, "Index u out of range.");
-      ay_error_formatirange(0, patch->width-1, &range);
-      ay_error(AY_ERANGE, fname, range);
-      if(range)
-	free(range);
-      return AY_ERROR;
-    }
+    return ay_error_reportirange(fname, "\"indexu\"", 0, patch->width-1);
 
   if(indexv >= patch->height || indexv < 0)
-    {
-      ay_error(AY_ERROR, fname, "Index v out of range.");
-      ay_error_formatirange(0, patch->height-1, &range);
-      ay_error(AY_ERANGE, fname, range);
-      if(range)
-	free(range);
-      return AY_ERROR;
-    }
+    return ay_error_reportirange(fname, "\"indexv\"", 0, patch->height-1);
 
   *p = &(patch->controlv[(indexu*patch->height+indexv)*stride]);
 
@@ -9083,7 +9068,6 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double u, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
- char *range = NULL;
 
   if(argc < 3)
     {
@@ -9123,12 +9107,9 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((u < knots[patch->uorder-1]) || (u > knots[patch->width]))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Parameter u out of range.");
-	      ay_error_formatdrange(knots[patch->uorder-1],
-				    knots[patch->width], &range);
-	      ay_error(AY_ERANGE, argv[0], range);
-	      if(range)
-		free(range);
+	      (void)ay_error_reportdrange(argv[0], "\"u\"",
+					  knots[patch->uorder-1],
+					  knots[patch->width]);
 	      return TCL_OK;
 	    }
 
@@ -9216,7 +9197,6 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch = NULL;
  double v, *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, s = 0, r = 0;
- char *range = NULL;
 
   if(argc < 3)
     {
@@ -9256,12 +9236,9 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if((v < knots[patch->vorder-1]) || (v > knots[patch->height]))
 	    {
-	      ay_error(AY_ERROR, argv[0], "Parameter v out of range.");
-	      ay_error_formatdrange(knots[patch->vorder-1],
-				    knots[patch->height], &range);
-	      ay_error(AY_ERANGE, argv[0], range);
-	      if(range)
-		free(range);
+	      (void)ay_error_reportdrange(argv[0], "\"v\"",
+					  knots[patch->vorder-1],
+					  knots[patch->height]);
 	      return TCL_OK;
 	    }
 
@@ -9346,7 +9323,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
  ay_nurbpatch_object *np1 = NULL, *np2 = NULL;
  double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
- char fname[] = "npt_splitu", *range = NULL;
+ char fname[] = "npt_splitu";
 
   if(!src || !result)
     return AY_ENULL;
@@ -9363,14 +9340,8 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       knots = patch->uknotv;
 
       if((u <= knots[0/*patch->uorder...?*/]) || (u >= knots[patch->width]))
-	{
-	  ay_error(AY_ERROR, fname, "Parameter u out of range.");
-	  ay_error_formatdrange(knots[0], knots[patch->width], &range);
-	  ay_error(AY_ERANGE, fname, range);
-	  if(range)
-	    free(range);
-	  return AY_ERROR;
-	}
+	return ay_error_reportdrange(fname, "\"u\"",
+				     knots[0], knots[patch->width]);
 
       k = 0;
 
@@ -9561,7 +9532,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
  double *knots = NULL, *newcontrolv = NULL, *newknotv = NULL;
  int stride = 4, k = 0, r = 0, s = 0, np1len = 0;
  int i, a, b, oldnp1height;
- char fname[] = "npt_splitv", *range = NULL;
+ char fname[] = "npt_splitv";
 
   if(!src || !result)
     return AY_ENULL;
@@ -9578,14 +9549,8 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       knots = patch->vknotv;
 
       if((v <= knots[0/*patch->vorder...?*/]) || (v >= knots[patch->height]))
-	{
-	  ay_error(AY_ERROR, fname, "Parameter v out of range.");
-	  ay_error_formatdrange(knots[0], knots[patch->height], &range);
-	  ay_error(AY_ERANGE, fname, range);
-	  if(range)
-	    free(range);
-	  return AY_ERROR;
-	}
+	return ay_error_reportdrange(fname, "\"v\"",
+				     knots[0], knots[patch->height]);
 
       k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 			     knots, &s);
@@ -9787,7 +9752,6 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
  int ay_status = AY_OK;
  ay_object *copy = NULL, *np1 = NULL, *np2 = NULL;
  ay_nurbpatch_object *patch = NULL;
- char *range = NULL;
  char fname[] = "npt_extractnp", split_errmsg[] = "Split failed.";
  double uv, uvmin, uvmax;
 
@@ -9833,26 +9797,15 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
       /* check parameters */
       if((umin < patch->uknotv[patch->uorder-1]) ||
 	 (umax > patch->uknotv[patch->width]))
-	{
-	  ay_error(AY_ERROR, fname, "Parameters umin/umax out of range.");
-	  ay_error_formatdrange(patch->uknotv[patch->uorder-1],
-				patch->uknotv[patch->width], &range);
-	  ay_error(AY_ERANGE, fname, range);
-	  if(range)
-	    free(range);
-	  return AY_ERROR;
-	}
+	  return ay_error_reportdrange(fname, "\"umin/umax\"",
+				       patch->uknotv[patch->uorder-1],
+				       patch->uknotv[patch->width]);
+
       if((vmin < patch->vknotv[patch->vorder-1]) ||
 	 (vmax > patch->vknotv[patch->height]))
-	{
-	  ay_error(AY_ERROR, fname, "Parameters vmin/vmax out of range.");
-	  ay_error_formatdrange(patch->vknotv[patch->vorder-1],
-				patch->vknotv[patch->height], &range);
-	  ay_error(AY_ERANGE, fname, range);
-	  if(range)
-	    free(range);
-	  return AY_ERROR;
-	}
+	  return ay_error_reportdrange(fname, "\"vmin/vmax\"",
+				       patch->vknotv[patch->vorder-1],
+				       patch->vknotv[patch->height]);
 
       /* split off areas outside umin/umax/vmin/vmax */
       /* note that this approach supports e.g. umin to be exactly uknotv[0]
@@ -11460,7 +11413,6 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- char *range = NULL;
  int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double u = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
 
@@ -11522,12 +11474,8 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(j >= (patch->width+patch->uorder))
 		{
-		  ay_error(AY_ERROR, argv[0], "Index out of range.");
-		  ay_error_formatirange(0,
-					patch->width+patch->uorder, &range);
-		  ay_error(AY_ERANGE, argv[0], range);
-		  if(range)
-		    free(range);
+		  (void)ay_error_reportirange(argv[0], "\"index\"", 0,
+					      patch->width+patch->uorder-1);
 		  break;
 		}
 	      u = patch->uknotv[j];
@@ -11651,7 +11599,6 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
  ay_nurbpatch_object *patch = NULL;
  ay_list_object *sel = ay_selection;
- char *range = NULL;
  int have_index = AY_FALSE, i = 1, j = 0, r = 0, s = 0;
  double v = 0.0, tol = DBL_MAX, *newcontrolv = NULL, *newknotv = NULL;
 
@@ -11714,12 +11661,8 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(j >= (patch->height+patch->vorder))
 		{
-		  ay_error(AY_ERROR, argv[0], "Index out of range.");
-		  ay_error_formatirange(0,
-					patch->height+patch->vorder, &range);
-		  ay_error(AY_ERANGE, argv[0], range);
-		  if(range)
-		    free(range);
+		  (void)ay_error_reportirange(argv[0], "\"index\"", 0,
+					      patch->height+patch->vorder-1);
 		  break;
 		}
 	      v = patch->vknotv[j];

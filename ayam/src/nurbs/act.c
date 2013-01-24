@@ -1008,8 +1008,13 @@ cleanup:
 } /* ay_act_leastSquaresClosed */
 
 
-/* ay_act_resize:
- *  resize an approximating curve
+/** ay_ict_resize:
+ * Resize an approximating curve.
+ *
+ * \param[in,out] curve approximating curve to revert
+ * \param[in] new_length desired new length
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_act_resize(ay_acurve_object *curve, int new_length)
@@ -1109,8 +1114,12 @@ ay_act_resize(ay_acurve_object *curve, int new_length)
 } /* ay_act_resize */
 
 
-/* ay_act_revert:
- *  revert an approximating curve
+/** ay_act_revert:
+ * Revert an approximating curve.
+ *
+ * \param[in,out] curve approximating curve to revert
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_act_revert(ay_acurve_object *curve)
@@ -1146,28 +1155,27 @@ ay_act_revert(ay_acurve_object *curve)
 } /* ay_act_revert */
 
 
-/* ay_act_getpntfromindex:
- *  return the adress of the control point designated by <index>
- *  of the approximating curve <curve> in <p>
+/** ay_act_getpntfromindex:
+ * Get address of a single control point from its indices
+ * (performing bounds checking).
+ *
+ * \param[in] curve approximating curve object to process
+ * \param[in] index index of desired control point
+ * \param[in,out] p pointer to pointer where to store the resulting address
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_act_getpntfromindex(ay_acurve_object *curve, int index, double **p)
 {
  int stride = 3;
- char fname[] = "act_getpntfromindex", *range = NULL;
+ char fname[] = "act_getpntfromindex";
 
   if(!curve || !p)
     return AY_ENULL;
 
   if(index >= curve->length || index < 0)
-    {
-      ay_error(AY_ERROR, fname, "index out of range");
-      ay_error_formatirange(0, curve->length-1, &range);
-      ay_error(AY_ERANGE, fname, range);
-      if(range)
-	free(range);
-      return AY_ERROR;
-    }
+    return ay_error_reportirange(fname, "\"index\"", 0, curve->length-1);
 
   *p = &(curve->controlv[index*stride]);
 
