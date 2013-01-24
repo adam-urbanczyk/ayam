@@ -168,7 +168,7 @@ ay_error(int code, char *where, char *what)
       Tcl_DStringAppend(&ds, "Wrong file format!", -1);
       break;
     case AY_ERANGE:
-      Tcl_DStringAppend(&ds, "Argument out of range, should be: ", -1);
+      Tcl_DStringAppend(&ds, "Parameter out of range: ", -1);
       break;
     case AY_ENOSEL:
       Tcl_DStringAppend(&ds, "No object(s) selected!", -1);
@@ -341,46 +341,70 @@ ay_error_glucb(GLenum err)
 } /* ay_error_glucb */
 
 
-/* ay_error_formatdrange:
- *  format double range string
+/* ay_error_reportdrange:
+ *  format and output double range error
  */
-void
-ay_error_formatdrange(double lb, double ub, char **detail)
+int
+ay_error_reportdrange(char *fname, char *pname, double lb, double ub)
 {
  char *msg = NULL;
 
-  if(!detail)
-    return;
+  if(pname)
+    {
+      if((msg = calloc(strlen(pname)+TCL_DOUBLE_SPACE*2+64, sizeof(char))))
+	sprintf(msg, "Parameter %s out of range, should be [%lg, %lg].",
+		pname, lb, ub);
+    }
+  else
+    {
+      if((msg = calloc(TCL_DOUBLE_SPACE*2+64, sizeof(char))))
+	sprintf(msg, "Parameter out of range, should be [%lg, %lg].",
+		lb, ub);
+    }
 
-  if((msg = calloc(TCL_DOUBLE_SPACE*2+10, sizeof(char))))
-    sprintf(msg, "[%lg, %lg].", lb, ub);
+  if(msg)
+    ay_error(AY_ERROR, fname, msg);
+  else
+    ay_error(AY_ERANGE, fname, pname);
 
-  /* return result */
-  *detail = msg;
+  if(msg)
+    free(msg);
 
- return;
-} /* ay_error_formatdrange */
+ return AY_ERANGE;
+} /* ay_error_reportdrange */
 
 
-/* ay_error_formatirange:
- *  format integer range string
+/* ay_error_reportirange:
+ *  format and output integer range error
  */
-void
-ay_error_formatirange(int lb, int ub, char **detail)
+int
+ay_error_reportirange(char *fname, char *pname, int lb, int ub)
 {
  char *msg = NULL;
 
-  if(!detail)
-    return;
+  if(pname)
+    {
+      if((msg = calloc(strlen(pname)+TCL_INTEGER_SPACE*2+64, sizeof(char))))
+	sprintf(msg, "Parameter %s out of range, should be [%d, %d].",
+		pname, lb, ub);
+    }
+  else
+    {
+      if((msg = calloc(TCL_INTEGER_SPACE*2+64, sizeof(char))))
+	sprintf(msg, "Parameter out of range, should be [%d, %d].",
+		lb, ub);
+    }
 
-  if((msg = calloc(TCL_INTEGER_SPACE*2+10, sizeof(char))))
-    sprintf(msg, "[%d, %d].", lb, ub);
+  if(msg)
+    ay_error(AY_ERROR, fname, msg);
+  else
+    ay_error(AY_ERANGE, fname, pname);
 
-  /* return result */
-  *detail = msg;
+  if(msg)
+    free(msg);
 
- return;
-} /* ay_error_formatirange */
+ return AY_ERANGE;
+} /* ay_error_reportirange */
 
 
 /* ay_error_getglerrortcmd:

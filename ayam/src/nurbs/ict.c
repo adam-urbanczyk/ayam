@@ -491,7 +491,7 @@ cleanup:
 
 
 /** ay_ict_interpolateG3D:
- *   Global curve interpolation.
+ * Global curve interpolation.
  *
  * \param[in] iorder desired order of interpolation
  *            (for order == 4, rather use interpolateC2C() above!)
@@ -692,7 +692,7 @@ cleanup:
 
 
 /** ay_ict_interpolateG3DClosed:
- *   Global closed curve interpolation.
+ * Global closed curve interpolation.
  *
  * \param[in] desired order of interpolation
  *            (for order == 4, rather use ay_ict_interpolateC2CClosed() above!)
@@ -1126,7 +1126,7 @@ ay_ict_dumb_interpolate(double iparam, int closed, int length,
 
 
 /** ay_ict_resize:
- *    Resize an interpolating curve.
+ * Resize an interpolating curve.
  *
  * \param[in,out] curve interpolating curve to revert
  * \param[in] new_length desired new length
@@ -1234,7 +1234,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 
 
 /** ay_ict_revert:
- *   Revert an interpolating curve.
+ * Revert an interpolating curve.
  *
  * \param[in,out] curve interpolating curve to revert
  *
@@ -1285,10 +1285,10 @@ ay_ict_revert(ay_icurve_object *curve)
 
 
 /** ay_ict_getpntfromindex:
- *   Get address of a single control point from its indices
- *   (performing bounds checking).
+ * Get address of a single control point from its indices
+ * (performing bounds checking).
  *
- * \param[in] patch interpolating curve object to process
+ * \param[in] curve interpolating curve object to process
  * \param[in] index index of desired control point
  * \param[in,out] p pointer to pointer where to store the resulting address
  *
@@ -1304,14 +1304,7 @@ ay_ict_getpntfromindex(ay_icurve_object *curve, int index, double **p)
     return AY_ENULL;
 
   if(index > (curve->length+1) || index < 0)
-    {
-      ay_error(AY_ERROR, fname, "index out of range");
-      ay_error_formatirange(0, curve->length+1, &range);
-      ay_error(AY_ERANGE, fname, range);
-      if(range)
-	free(range);
-      return AY_ERROR;
-    }
+    return ay_error_reportirange(fname, "\"index\"", 0, curve->length+1);
 
   if(index < curve->length)
     {
