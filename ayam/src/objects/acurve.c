@@ -473,15 +473,14 @@ int
 ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_acurve_object *curve;
- GLdouble *ver;
+ double *ver;
 
-  curve = (ay_acurve_object *) o->refine;
+  curve = (ay_acurve_object *)o->refine;
 
   ver = curve->controlv;
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[curve->length*3-6]),
-		&(ver[curve->length*3-3]));
+  ay_draw_arrow(togl, &(ver[curve->length*3-6]), &(ver[curve->length*3-3]));
 
  return AY_OK;
 } /* ay_acurve_drawacb */
@@ -493,25 +492,23 @@ ay_acurve_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_acurve_drawhcb(struct Togl *togl, ay_object *o)
 {
- int a, i;
+ int i;
+ double *pnts;
  ay_acurve_object *curve;
- GLdouble *ver;
- /*double point_size = ay_prefs.handle_size;*/
 
-  curve = (ay_acurve_object *) o->refine;
+  if(!o)
+    return AY_ENULL;
 
-  ver = curve->controlv;
+  curve = (ay_acurve_object *)o->refine;
+
+  pnts = curve->controlv;
 
   /* draw points */
-
-  /*glPointSize((GLfloat)point_size);*/
-
   glBegin(GL_POINTS);
-   a = 0;
    for(i = 0; i < curve->length; i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
   glEnd();
 
@@ -1071,7 +1068,6 @@ ay_acurve_notifycb(ay_object *o)
         free(controlv2);
     } /* if(symmetric */
 
-
   ay_status = ay_nct_create(acurve->order, aclen, AY_KTCUSTOM,
 			    controlv, knotv,
 			   (ay_nurbcurve_object **)(void*)&(ncurve->refine));
@@ -1115,7 +1111,7 @@ ay_acurve_convertcb(ay_object *o, int in_place)
   if(!o)
     return AY_ENULL;
 
-  ac = (ay_acurve_object *) o->refine;
+  ac = (ay_acurve_object *)o->refine;
 
   if(ac->ncurve)
     {
@@ -1176,7 +1172,7 @@ ay_acurve_providecb(ay_object *o, unsigned int type, ay_object **result)
 	return AY_ERROR;
     }
 
-  ac = (ay_acurve_object *) o->refine;
+  ac = (ay_acurve_object *)o->refine;
 
   if(type == AY_IDNCURVE)
     {

@@ -459,15 +459,11 @@ ay_sphere_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_sphere_object *sphere = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
+ int i;
+ double *pnts;
+ ay_sphere_object *sphere;
 
   sphere = (ay_sphere_object *) o->refine;
-
-  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	    (GLfloat)ay_prefs.obb);
 
   if(!sphere->pnts)
     {
@@ -481,13 +477,14 @@ ay_sphere_drawhcb(struct Togl *togl, ay_object *o)
       pnts = sphere->pnts;
     }
 
-  glPointSize((GLfloat)point_size);
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   glBegin(GL_POINTS);
    for(i = 0; i < AY_PSPHERE; i++)
      {
-       glVertex3dv((GLdouble *)&pnts[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
   glEnd();
 

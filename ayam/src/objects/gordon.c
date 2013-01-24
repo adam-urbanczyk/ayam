@@ -184,11 +184,10 @@ ay_gordon_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_gordon_object *gordon = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
- ay_nurbpatch_object *patch = NULL;
+ int i;
+ double *pnts;
+ ay_gordon_object *gordon;
+ ay_nurbpatch_object *patch;
 
   if(!o)
     return AY_ENULL;
@@ -199,17 +198,16 @@ ay_gordon_drawhcb(struct Togl *togl, ay_object *o)
     {
       patch = (ay_nurbpatch_object *)gordon->npatch->refine;
       pnts = patch->controlv;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      glPointSize((GLfloat)point_size);
-
       glBegin(GL_POINTS);
-      for(i = 0; i < patch->width*patch->height; i++)
-	{
-	  glVertex3dv((GLdouble *)&pnts[a]);
-	  a += 4;
-	}
+       for(i = 0; i < patch->width*patch->height; i++)
+	 {
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
+	 }
       glEnd();
 
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
@@ -746,13 +744,13 @@ ay_gordon_notifycb(ay_object *o)
 cleanup:
   /* remove temporary curves and intersection patch */
   if(hcurves)
-    ay_object_deletemulti(hcurves);
+    (void)ay_object_deletemulti(hcurves);
 
   if(vcurves)
-    ay_object_deletemulti(vcurves);
+    (void)ay_object_deletemulti(vcurves);
 
   if(inpatch)
-    ay_object_delete(inpatch);
+    (void)ay_object_delete(inpatch);
 
   /* recover selected points */
   if(o->selp)

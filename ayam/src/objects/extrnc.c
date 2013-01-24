@@ -166,11 +166,10 @@ ay_extrnc_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_extrnc_object *extrnc = NULL;
- ay_nurbcurve_object *nc = NULL;
- double *pnts = NULL;
- /*double point_size = ay_prefs.handle_size;*/
+ int i;
+ double *pnts;
+ ay_extrnc_object *extrnc;
+ ay_nurbcurve_object *nc;
 
   if(!o)
     return AY_ENULL;
@@ -184,16 +183,15 @@ ay_extrnc_drawhcb(struct Togl *togl, ay_object *o)
 
       /* get and draw read only points */
       pnts = nc->controlv;
+
       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		(GLfloat)ay_prefs.obb);
 
-      /*glPointSize((GLfloat)point_size);*/
-
       glBegin(GL_POINTS);
-       for(i = 0; i <nc->length; i++)
+       for(i = 0; i < nc->length; i++)
 	 {
-	   glVertex3dv((GLdouble *)&pnts[a]);
-	   a += 4;
+	   glVertex3dv((GLdouble *)pnts);
+	   pnts += 4;
 	 }
       glEnd();
 

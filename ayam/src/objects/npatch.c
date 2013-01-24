@@ -1446,29 +1446,29 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_npatch_drawhcb(struct Togl *togl, ay_object *o)
 {
- int width = 0, height = 0, i = 0, a = 0;
- ay_nurbpatch_object *patch = (ay_nurbpatch_object *)o->refine;
- ay_mpoint *mp = NULL;
- GLdouble *ver = NULL;
+ int i;
+ double *pnts;
  double point_size = ay_prefs.handle_size;
+ ay_mpoint *mp;
+ ay_nurbpatch_object *patch;
 
-  width = patch->width;
-  height = patch->height;
+  if(!o)
+    return AY_ENULL;
 
-  ver = patch->controlv;
+  patch = (ay_nurbpatch_object *)o->refine;
 
-  /* draw points */
-  /*glPointSize((GLfloat)point_size);*/
+  pnts = patch->controlv;
 
+  /* draw normal points */
   glBegin(GL_POINTS);
-   for(i = 0; i < (width * height); i++)
+   for(i = 0; i < (patch->width * patch->height); i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 4;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 4;
      }
   glEnd();
 
-  /* draw mpoints */
+  /* draw multiple points */
   if(patch->mpoints)
     {
       glPointSize((GLfloat)(point_size*1.25));

@@ -764,25 +764,22 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_sdmesh_drawhcb(struct Togl *togl, ay_object *o)
 {
- ay_sdmesh_object *sdmesh = NULL;
- GLdouble *ver = NULL;
- double point_size = ay_prefs.handle_size;
- unsigned int i = 0;
+ unsigned int i;
+ double *pnts;
+ ay_sdmesh_object *sdmesh;
 
   if(!o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *)(o->refine);
 
-  ver = sdmesh->controlv;
-
-  glPointSize((GLfloat)point_size);
+  pnts = sdmesh->controlv;
 
   glBegin(GL_POINTS);
    for(i = 0; i < sdmesh->ncontrols; i++)
      {
-       glVertex3dv(ver);
-       ver += 3;
+       glVertex3dv((GLdouble*)pnts);
+       pnts += 3;
      }
   glEnd();
 

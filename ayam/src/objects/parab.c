@@ -362,22 +362,19 @@ ay_parab_shadecb(struct Togl *togl, ay_object *o)
 int
 ay_parab_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_paraboloid_object *parab = NULL;
- double *pnts = NULL;
- double point_size = ay_prefs.handle_size;
+ int i;
+ double *pnts;
+ ay_paraboloid_object *parab;
+
+  if(!o)
+    return AY_ENULL;
 
   parab = (ay_paraboloid_object *) o->refine;
-
-  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-	    (GLfloat)ay_prefs.obb);
 
   if(!parab->pnts)
     {
       if(!(pnts = calloc(AY_PPARAB*3, sizeof(double))))
-	{
-	  return AY_EOMEM;
-	}
+	return AY_EOMEM;
       parab->pnts = pnts;
       ay_paraboloid_notifycb(o);
     }
@@ -386,13 +383,14 @@ ay_parab_drawhcb(struct Togl *togl, ay_object *o)
       pnts = parab->pnts;
     }
 
-  glPointSize((GLfloat)point_size);
+  glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+	    (GLfloat)ay_prefs.obb);
 
   glBegin(GL_POINTS);
    for(i = 0; i < AY_PPARAB; i++)
      {
-       glVertex3dv((GLdouble *)&pnts[a]);
-       a += 3;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 3;
      }
   glEnd();
 
@@ -810,7 +808,7 @@ ay_paraboloid_notifycb(ay_object *o)
 	  pnts[a] = cos(angle)*rmax;
 	  pnts[a+1] = sin(angle)*rmax;
 	  pnts[a+2] = zmax;
-	  
+
 	  a += 3;
 	  angle += thetadiff;
 	} /* for */

@@ -225,12 +225,11 @@ ay_offnp_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_object *c = NULL;
- ay_offnp_object *offnp = NULL;
- ay_nurbpatch_object *np = NULL;
- /*double point_size = ay_prefs.handle_size;*/
- double m[16];
+ int i;
+ double *pnts, m[16];
+ ay_object *c;
+ ay_offnp_object *offnp;
+ ay_nurbpatch_object *np;
 
   if(!o)
     return AY_ENULL;
@@ -241,12 +240,8 @@ ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
     {
       /* get NURBS patch */
       np = (ay_nurbpatch_object *)offnp->npatch->refine;
+      pnts = np->controlv;
 
-      /* draw read only points */
-      glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
-		(GLfloat)ay_prefs.obb);
-
-      /*glPointSize((GLfloat)point_size);*/
       glPushMatrix();
        c = offnp->npatch;
        glTranslated((GLdouble)c->movx, (GLdouble)c->movy,
@@ -256,17 +251,21 @@ ay_offnp_drawhcb(struct Togl *togl, ay_object *o)
        glScaled((GLdouble)c->scalx, (GLdouble)c->scaly,
 		(GLdouble)c->scalz);
 
+       /* draw read only points */
+       glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
+		 (GLfloat)ay_prefs.obb);
+
        glBegin(GL_POINTS);
         for(i = 0; i < np->width*np->height; i++)
 	  {
-	    glVertex3dv((GLdouble *)&(np->controlv[a]));
-	    a += 4;
+	    glVertex3dv((GLdouble *)pnts);
+	    pnts += 4;
 	  }
 	glEnd();
-      glPopMatrix();
 
-      glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
-		(GLfloat)ay_prefs.seb);
+	glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
+		  (GLfloat)ay_prefs.seb);
+      glPopMatrix();
     }
 
  return AY_OK;

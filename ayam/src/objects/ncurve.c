@@ -801,7 +801,7 @@ int
 ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
- GLdouble *ver = NULL;
+ double *ver = NULL;
 
   ver = curve->controlv;
 
@@ -818,37 +818,39 @@ ay_ncurve_drawacb(struct Togl *togl, ay_object *o)
 int
 ay_ncurve_drawhcb(struct Togl *togl, ay_object *o)
 {
- int i = 0, a = 0;
- ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
- ay_mpoint *mp = NULL;
- GLdouble *ver = NULL;
+ int i;
+ double *pnts;
  double point_size = ay_prefs.handle_size;
+ ay_mpoint *mp;
+ ay_nurbcurve_object *curve;
 
-  ver = curve->controlv;
+  if(!o)
+    return AY_ENULL;
 
-  /* draw points */
-  /*glPointSize((GLfloat)point_size);*/
+  curve = (ay_nurbcurve_object *) o->refine;
 
+  pnts = curve->controlv;
+
+  /* draw normal points */
   glBegin(GL_POINTS);
    for(i = 0; i < curve->length; i++)
      {
-       glVertex3dv((GLdouble *)&ver[a]);
-       a += 4;
+       glVertex3dv((GLdouble *)pnts);
+       pnts += 4;
      }
   glEnd();
 
-  /* draw mpoints */
+  /* draw multiple points */
   if(curve->mpoints)
     {
-
       glPointSize((GLfloat)(point_size*1.25));
       glBegin(GL_POINTS);
-      mp = curve->mpoints;
-      while(mp)
-	{
-	  glVertex3dv((GLdouble *)(mp->points[0]));
-	  mp = mp->next;
-	}
+       mp = curve->mpoints;
+       while(mp)
+	 {
+	   glVertex3dv((GLdouble *)(mp->points[0]));
+	   mp = mp->next;
+	 }
       glEnd();
       glPointSize((GLfloat)point_size);
     }
