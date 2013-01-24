@@ -17,7 +17,7 @@
 /** ay_capt_crtsimplecap:
  *  create a simple cap surface from a single NURBS curve
  *
- * \param[in,out] c NURBS curve object
+ * \param[in] c NURBS curve object
  * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
@@ -114,14 +114,14 @@ cleanup:
  *  create a simple cap surface from a single NURBS curve
  *  and integrate it into the NURBS surface
  *
+ * \param[in] c NURBS curve object
  * \param[in] side integration place
  * \param[in,out] s NURBS surface object for integration
- * \param[in,out] c NURBS curve object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecapint(int side, ay_object *s, ay_object *c)
+ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s)
 {
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
@@ -654,7 +654,7 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
 	    case 3:
-	      ay_status = ay_capt_crtsimplecapint(i, o, extrcurve);
+	      ay_status = ay_capt_crtsimplecapint(extrcurve, i, o);
 	      break;
 	    case 4:
 	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
