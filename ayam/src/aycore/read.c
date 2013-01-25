@@ -39,6 +39,9 @@ ay_read_string(FILE *fileptr, char **result)
     }
   while((char)read != '\n');
 
+  if(Tcl_DStringLength(&ds) <= 1)
+    {Tcl_DStringFree(&ds); return AY_OK;}
+
   str = Tcl_DStringValue(&ds);
   str[Tcl_DStringLength(&ds)-1] = '\0';
 

@@ -260,15 +260,15 @@ ay_notify_parentof(ay_object *o, int silent)
 
   ay_currentlevel = NULL;
 
-  ay_status = ay_clevel_add(NULL);
-  if(ay_status)
-    return ay_status;
+  if((ay_status = ay_clevel_add(NULL)))
+    {
+      goto cleanup;
+    }
 
-  ay_status = ay_clevel_add(ay_root);
-  if(ay_status)
+  if((ay_status = ay_clevel_add(ay_root)))
     {
       ay_clevel_del();
-      return ay_status;
+      goto cleanup;
     }
 
   ay_status = ay_clevel_find(ay_root->next, o, &found);
@@ -279,7 +279,7 @@ ay_notify_parentof(ay_object *o, int silent)
 	{
 	  ay_error(AY_ERROR, fname, "object not found in scene");
 	} /* if */
-      return AY_OK; /* XXXX early exit! */
+      goto cleanup;
     } /* if */
 
   if(ay_currentlevel->next && ay_currentlevel->next->object)
@@ -294,9 +294,11 @@ ay_notify_parentof(ay_object *o, int silent)
       ay_currentlevel = lev;
     }
 
+cleanup:
+
   ay_currentlevel = oldclevel;
 
- return AY_OK;
+ return ay_status;
 } /* ay_notify_parentof */
 
 
