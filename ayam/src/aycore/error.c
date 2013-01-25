@@ -270,13 +270,17 @@ ay_error(int code, char *where, char *what)
     {
       free(last_message);
     }
-  if(!(last_message = malloc((strlen(Tcl_DStringValue(&ds))+1)*sizeof(char))))
-    {
-      fprintf(stderr,"Ayam: Cannot handle error message; out of memory!\n");
-      return;
-    }
-  strcpy(last_message, Tcl_DStringValue(&ds));
 
+  if(Tcl_DStringValue(&ds))
+    {
+      if(!(last_message = malloc((strlen(Tcl_DStringValue(&ds))+1) *
+				 sizeof(char))))
+	{
+	  fprintf(stderr,"Ayam: Cannot handle error message; out of memory!\n");
+	  return;
+	}
+      strcpy(last_message, Tcl_DStringValue(&ds));
+    }
   Tcl_DStringFree(&ds);
 
 set_ay_error:

@@ -33,22 +33,17 @@ ay_clevel_find(ay_object *c, ay_object *o, int *found)
 	{
 	  if(c->down)
 	    {
-	      ay_status = ay_clevel_add(c);
-	      if(ay_status)
-		break;
-	      ay_status = ay_clevel_add(c->down);
-	      if(ay_status)
-		break;
 	      ay_status = ay_clevel_find(c->down, o, found);
 	      if(ay_status)
 		break;
-	      if(!(*found))
+	      if(*found)
 		{
-		  ay_clevel_del();
-		  ay_clevel_del();
-		}
-	      else
-		{
+		  ay_status = ay_clevel_add(c);
+		  if(ay_status)
+		    break;
+		  ay_status = ay_clevel_add(c->down);
+		  if(ay_status)
+		    break;
 		  return AY_OK;
 		}
 	    } /* if */
