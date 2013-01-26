@@ -1331,14 +1331,17 @@ ay_knots_chordparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      ay_npt_avglensv(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
     {
-      ay_npt_avglensu(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
       Ulen = width;
     }
+
+  if(!lens)
+    return AY_ERROR;
 
   /* get some memory */
   if(!(vk = malloc(Ulen * sizeof(double))))
@@ -1410,14 +1413,17 @@ ay_knots_centriparamnp(int dir, double *Q, int width, int height, int stride,
 
   if(dir)
     {
-      ay_npt_avglensv(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensv(Q, width, height, stride, &lens);
       Ulen = height;
     }
   else
     {
-      ay_npt_avglensu(Q, width, height, stride, &lens);
+      (void)ay_npt_avglensu(Q, width, height, stride, &lens);
       Ulen = width;
     }
+
+  if(!lens)
+    return AY_ERROR;
 
   /* get some memory */
   if(!(vk = malloc(Ulen * sizeof(double))))
@@ -1608,7 +1614,7 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
 /** ay_knots_revert:
  * Revert a knot vector.
  *
- * \param[in] U knot vector
+ * \param[in,out] U knot vector
  * \param[in] Ulen length of knot vector
  *
  * \returns AY_OK on success, error code otherwise.

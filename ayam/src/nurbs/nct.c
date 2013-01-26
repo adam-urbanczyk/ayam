@@ -723,11 +723,11 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
   while(i < j)
     {
       for(k = 0; k < stride; k++)
-
-      dtemp = cv[j+k];
-      cv[j+k] = cv[i+k];
-      cv[i+k] = dtemp;
-
+	{
+	  dtemp = cv[j+k];
+	  cv[j+k] = cv[i+k];
+	  cv[i+k] = dtemp;
+	}
       i += stride;
       j -= stride;
     } /* while */
@@ -2465,7 +2465,7 @@ ay_nct_splitdisc(ay_object *src, double u, ay_object **result)
   nc1->length = i;
 
   /* create new controls/knots for first curve */
-  if( !(newcv1 = malloc(nc1->length*stride*sizeof(double))))
+  if(!(newcv1 = malloc(nc1->length*stride*sizeof(double))))
     return AY_EOMEM;
 
   memcpy(newcv1, nc1->controlv, nc1->length*stride*sizeof(double));
@@ -6322,6 +6322,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	    "Section" mode:
 	    offset control polygon sections
 	  */
+	  free(newcv);
 	  return ay_nct_offsetsection(o, offset, nc);
 	case 2:
 	  /*
