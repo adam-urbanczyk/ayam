@@ -1072,10 +1072,7 @@ ay_icurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_NewIntObj(icurve->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  if(icurve->ncurve)
-    {
-      ay_prop_getncinfo(interp, n1, icurve->ncurve);
-    }
+  ay_prop_getncinfo(interp, n1, icurve->ncurve);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
