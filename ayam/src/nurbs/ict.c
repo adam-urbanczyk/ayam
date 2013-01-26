@@ -118,6 +118,9 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
       length = slength;
     }
 
+  if(length <= 1)
+    { ay_status = AY_ERROR; goto cleanup; }
+
   nlength = length + 2;
 
   if(!(ncontrolv = calloc(nlength*3, sizeof(double))))
@@ -532,6 +535,9 @@ ay_ict_interpolateG3D(int iorder, int length, double sdlen, double edlen,
       controlv = scontrolv;
       length = slength;
     }
+
+  if(length <= 1)
+    { ay_status = AY_ERROR; goto cleanup; }
 
   nlength = length+2;
 
