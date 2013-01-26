@@ -514,10 +514,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
       /* Since Ayam 1.20: */
       fscanf(fileptr, "%d\n", &concatnp->order);
       fscanf(fileptr, "%lg", &concatnp->ftlength);
-
       read = fgetc(fileptr);
-      if(read == '\r')
-	fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(concatnp->uv_select));
       if(ay_status)
