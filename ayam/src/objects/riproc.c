@@ -344,8 +344,7 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&riproc->minz);
   fscanf(fileptr,"%lg",&riproc->maxz);
   read = fgetc(fileptr);
-  if(read == '\r')
-    fgetc(fileptr);
+
   ay_status = ay_read_string(fileptr, &(riproc->file));
   if(ay_status)
     {

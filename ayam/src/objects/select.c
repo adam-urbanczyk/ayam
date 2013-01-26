@@ -271,10 +271,8 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.16 */
       fscanf(fileptr, "%d", &tmpi);
-
       read = fgetc(fileptr);
-      if(read == '\r')
-	fgetc(fileptr);
+
       ay_status = ay_read_string(fileptr, &(select->indices));
       if(ay_status)
 	{

@@ -34,8 +34,8 @@ ay_read_string(FILE *fileptr, char **result)
 	{Tcl_DStringFree(&ds); return AY_EUEOF;}
 
       readchar = (char)read;
-      if((char)read != '\r')
-	Tcl_DStringAppend(&ds, &readchar, 1);
+
+      Tcl_DStringAppend(&ds, &readchar, 1);
     }
   while((char)read != '\n');
 
@@ -503,7 +503,7 @@ ay_read_shader(FILE *fileptr, ay_shader **result)
   if(!(shader = calloc(1, sizeof(ay_shader))))
    return AY_EOMEM;
 
-  ay_status = ay_read_string(fileptr,&(shader->name));
+  ay_status = ay_read_string(fileptr, &(shader->name));
 
   if(ay_status)
     { free(shader); return ay_status; }

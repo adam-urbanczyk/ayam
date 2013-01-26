@@ -612,9 +612,6 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d",&riopt->PatchSamples);
   read = fgetc(fileptr);
 
-  if(read == '\r')
-    fgetc(fileptr);
-
   ay_status = ay_read_string(fileptr, &(riopt->textures));
   if(ay_status)
     {
@@ -685,9 +682,6 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
       /* since 1.6 */
       fscanf(fileptr,"%d", &riopt->use_std_display);
       read = fgetc(fileptr);
-
-      if(read == '\r')
-	fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(riopt->procedurals));
       if(ay_status)
