@@ -23,7 +23,7 @@ int ay_ict_sanitize(int length, double *controlv,
 /* functions: */
 
 /* ay_ict_sanitize:
- *  sanitize (remove consecutive duplicate points) from a vector
+ *  sanitize (remove consecutive duplicate points) a vector
  *  of 3D data points in <controlv[<length>]>;
  *  puts sanitized result vector into <scontrolv[<slength>]>;
  *  if scontrolv is NULL after this function run, controlv was
@@ -1134,7 +1134,7 @@ ay_ict_dumb_interpolate(double iparam, int closed, int length,
 /** ay_ict_resize:
  * Resize an interpolating curve.
  *
- * \param[in,out] curve interpolating curve to revert
+ * \param[in,out] curve interpolating curve to process
  * \param[in] new_length desired new length
  *
  * \returns AY_OK on success, error code otherwise.
@@ -1242,7 +1242,7 @@ ay_ict_resize(ay_icurve_object *curve, int new_length)
 /** ay_ict_revert:
  * Revert an interpolating curve.
  *
- * \param[in,out] curve interpolating curve to revert
+ * \param[in,out] curve interpolating curve to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1296,7 +1296,7 @@ ay_ict_revert(ay_icurve_object *curve)
  *
  * \param[in] curve interpolating curve object to process
  * \param[in] index index of desired control point
- * \param[in,out] p pointer to pointer where to store the resulting address
+ * \param[in,out] p address where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
  */
