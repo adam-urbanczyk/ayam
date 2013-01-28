@@ -457,7 +457,7 @@ typedef struct ay_stess_s {
   /* untrimmed patch */
   int tessw; /**< number of tesselated points in U dimension */
   int tessh; /**< number of tesselated points in V dimension */
-  double *tessv; /**< tesselated points [tessw*tessh] */
+  double *tessv; /**< tesselated points and normals [tessw*tessh*6] */
 
   /* trimmed patch */
   int upslen; /**< number of arrays of tesselated points (U) */
@@ -502,6 +502,7 @@ typedef struct ay_nurbpatch_object_s
   int has_v1_cap; /**< create cap at v end? */
 
   GLUnurbsObj *no; /**< GLU NURBS object */
+  float *fltcv;
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */

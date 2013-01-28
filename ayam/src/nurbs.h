@@ -1277,6 +1277,11 @@ int ay_npt_refinev(ay_nurbpatch_object *patch,
 int ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[]);
 
+/** Get all normals from control points.
+ */
+void ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n);
+
+
 /* pmt.c */
 
 /** Convert patchmesh to NURBS patch.

@@ -12090,6 +12090,40 @@ cleanup:
  return TCL_OK;
 } /* ay_npt_refineuvtcmd */
 
+
+void
+ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
+{
+ int a, i, j;
+ ay_npt_gndcb *gnducb = ay_npt_gndu;
+ ay_npt_gndcb *gndvcb = ay_npt_gndv;
+
+  if(np->utype == AY_CTCLOSED)
+    gnducb = ay_npt_gnduc;
+  else
+    if(np->utype == AY_CTPERIODIC)
+      gnducb = ay_npt_gndup;
+
+  if(np->vtype == AY_CTCLOSED)
+    gndvcb = ay_npt_gndvc;
+  else
+    if(np->vtype == AY_CTPERIODIC)
+      gndvcb = ay_npt_gndvp;
+
+  a = 0;
+  for(i = 0; i < np->width; i++)
+    {
+      for(j = 0; j < np->height; j++)
+	{
+	  ay_npt_getnormal(np, i, j, gnducb, gndvcb, 0, &(n[a]));
+	  a += 3;
+	}
+    }
+
+ return;
+} /* ay_npt_getcvnormals */
+
+
 /* templates */
 #if 0
 
