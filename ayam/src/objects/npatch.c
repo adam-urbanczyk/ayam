@@ -18,15 +18,17 @@ static char *ay_npatch_name = "NPatch";
 
 /* prototypes of functions local to this module: */
 
-int ay_npatch_drawstesscb(struct Togl *togl, ay_object *o);
+int ay_npatch_drawstess(struct Togl *togl, ay_object *o);
 
-int ay_npatch_drawglucb(struct Togl *togl, ay_object *o);
+int ay_npatch_drawglu(struct Togl *togl, ay_object *o);
 
-int ay_npatch_drawchcb(struct Togl *togl, ay_object *o);
+int ay_npatch_drawch(struct Togl *togl, ay_object *o);
 
-int ay_npatch_shadestesscb(struct Togl *togl, ay_object *o);
+int ay_npatch_shadestess(struct Togl *togl, ay_object *o);
 
-int ay_npatch_shadeglucb(struct Togl *togl, ay_object *o);
+int ay_npatch_shadeglu(struct Togl *togl, ay_object *o);
+
+int ay_npatch_shadech(struct Togl *togl, ay_object *o);
 
 /* Export trim curves to RIB. */
 int ay_npatch_wribtrimcurves(ay_object *o);
@@ -570,6 +572,9 @@ ay_npatch_deletecb(void *c)
   if(npatch->no)
     gluDeleteNurbsRenderer(npatch->no);
 
+  if(npatch->fltcv)
+    free(npatch->fltcv);
+
   /* free tesselation */
   if(npatch->stess)
     ay_stess_destroy(npatch);
@@ -601,6 +606,7 @@ ay_npatch_copycb(void *src, void **dst)
   memcpy(npatch, src, sizeof(ay_nurbpatch_object));
 
   npatch->no = NULL;
+  npatch->fltcv = NULL;
 
   /* copy knots */
   kl = npatch->uorder + npatch->width;
@@ -667,12 +673,12 @@ cleanup:
 } /* ay_npatch_copycb */
 
 
-/* ay_npatch_drawstesscb:
+/* ay_npatch_drawstess:
  *  internal helper function
  *  draw the patch using STESS
  */
 int
-ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
+ay_npatch_drawstess(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_drawstesscb";*/
@@ -703,7 +709,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
       o->modified = AY_FALSE;
     } /* if */
 
-  if(!npatch->stess)
+  if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
     {
       ay_status = ay_stess_TessNP(o, qf);
       if(ay_status)
@@ -720,7 +726,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
       for(i = 0; i < tessw; i++)
 	{
 	  glBegin(GL_LINE_STRIP);
-	  for(j = 0;  j < tessh; j++)
+	  for(j = 0; j < tessh; j++)
 	    {
 	      glVertex3dv(&(tessv[a]));
 	      a += 6;
@@ -728,7 +734,7 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
 	  glEnd();
 	} /* for */
 
-      for(j = 0;  j < tessh; j++)
+      for(j = 0; j < tessh; j++)
 	{
 	  a = j * 6;
 	  glBegin(GL_LINE_STRIP);
@@ -749,26 +755,95 @@ ay_npatch_drawstesscb(struct Togl *togl, ay_object *o)
     } /* if */
 
  return AY_OK;
-} /* ay_npatch_drawstesscb */
+} /* ay_npatch_drawstess */
 
 
-/* ay_npatch_drawglucb:
+/* ay_npatch_cacheflt
+ *  internal helper function
+ *  cache knots and control vertices as floats (for GLU)
+ */
+int
+ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
+{
+ int uorder, vorder, width, height;
+ int uknot_count, vknot_count, i, a, b;
+ float *flt;
+ double w;
+
+  uorder = npatch->uorder;
+  vorder = npatch->vorder;
+  width = npatch->width;
+  height = npatch->height;
+
+  uknot_count = width + uorder;
+  vknot_count = height + vorder;
+
+  if(npatch->fltcv)
+    free(npatch->fltcv);
+
+  if(!(npatch->fltcv = malloc((width*height*(npatch->is_rat?4:3)+
+			      uknot_count+vknot_count)*
+			      sizeof(float))))
+    return AY_EOMEM;
+
+  flt = npatch->fltcv;
+  for(i = 0; i < uknot_count; i++)
+    {
+      flt[i] = (GLfloat)npatch->uknotv[i];
+    }
+  a = uknot_count;
+  for(i = 0; i < vknot_count; i++)
+    {
+      flt[a] = (GLfloat)npatch->vknotv[i];
+      a++;
+    }
+  a = 0;
+  b = uknot_count+vknot_count;
+  if(npatch->is_rat)
+    {
+      for(i = 0; i < width*height; i++)
+	{
+	  w = npatch->controlv[a+3];
+	  flt[b] = (GLfloat)(npatch->controlv[a]*w);
+	  a++; b++;
+	  flt[b] = (GLfloat)(npatch->controlv[a]*w);
+	  a++; b++;
+	  flt[b] = (GLfloat)(npatch->controlv[a]*w);
+	  a++; b++;
+	  flt[b] = (GLfloat)npatch->controlv[a];
+	  a++; b++;
+	}
+    }
+  else
+    {
+      for(i = 0; i < width*height; i++)
+	{
+	  flt[b] = (GLfloat)npatch->controlv[a];
+	  a++; b++;
+	  flt[b] = (GLfloat)npatch->controlv[a];
+	  a++; b++;
+	  flt[b] = (GLfloat)npatch->controlv[a];
+	  a+=2; b++;
+	}
+    }
+
+ return AY_OK;
+} /* ay_npatch_cacheflt */
+
+
+/* ay_npatch_drawglu:
  *  internal helper function
  *  draw the patch using GLU
  */
 int
-ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
+ay_npatch_drawglu(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
- int uorder = 0, vorder = 0, width = 0, height = 0;
- int uknot_count = 0, vknot_count = 0, i = 0, a = 0, b = 0;
+ int uorder, vorder, width, height, uknot_count, vknot_count;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
- static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  int display_mode = ay_prefs.np_display_mode;
- /* int cache = ay_prefs.glu_cache_float;*/
- double w;
 
   if(!o)
     return AY_ENULL;
@@ -778,26 +853,23 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(controls)
-    {
-      free(controls);
-      controls = NULL;
-    }
-  if(uknots)
-    {
-      free(uknots);
-      uknots = NULL;
-    }
-  if(vknots)
-    {
-      free(vknots);
-      vknots = NULL;
-    }
-
   uorder = npatch->uorder;
   vorder = npatch->vorder;
   width = npatch->width;
   height = npatch->height;
+
+  uknot_count = width + uorder;
+  vknot_count = height + vorder;
+
+  if(!npatch->fltcv)
+    {
+      ay_npatch_cacheflt(npatch);
+    }
+
+  if(!npatch->fltcv)
+    {
+      return AY_ERROR;
+    }
 
   if(npatch->glu_sampling_tolerance > 0.0)
     sampling_tolerance = npatch->glu_sampling_tolerance;
@@ -807,60 +879,6 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       display_mode = npatch->display_mode-1;
     }
 
-  uknot_count = width + uorder;
-  vknot_count = height + vorder;
-
-  if((uknots = malloc(uknot_count * sizeof(GLfloat))) == NULL)
-    return AY_EOMEM;
-  if((vknots = malloc(vknot_count * sizeof(GLfloat))) == NULL)
-    { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = malloc(width*height*(npatch->is_rat?4:3) *
-			sizeof(GLfloat))) == NULL)
-    {
-      free(uknots); uknots = NULL; free(vknots); vknots = NULL;
-      return AY_EOMEM;
-    }
-
-  a = 0;
-  for(i = 0; i < uknot_count; i++)
-    {
-      uknots[a] = (GLfloat)npatch->uknotv[a];
-      a++;
-    }
-  a = 0;
-  for(i = 0; i < vknot_count; i++)
-    {
-      vknots[a] = (GLfloat)npatch->vknotv[a];
-      a++;
-    }
-  a = 0;
-  if(npatch->is_rat)
-    {
-      for(i = 0; i < width*height; i++)
-	{
-	  w = npatch->controlv[b+3];
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	}
-    }
-  else
-    {
-      for(i = 0; i < width*height; i++)
-	{
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b+=2;
-	}
-    }
 #ifdef AYWITHAQUA
   glPushAttrib((GLbitfield) GL_POLYGON_BIT);
 #endif /* AYWITHAQUA */
@@ -872,9 +890,6 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
 	{
-	  free(uknots); uknots = NULL;
-	  free(vknots); vknots = NULL;
-	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
 #ifndef AYWITHAQUA
@@ -898,11 +913,11 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 
   gluNurbsProperty(npatch->no, GLU_CULLING, GL_TRUE);
 
-  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
-		  (GLint)vknot_count, vknots,
+  gluNurbsSurface(npatch->no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+		  (GLint)vknot_count, (GLfloat*)&(npatch->fltcv[uknot_count]),
 		  (GLint)height*(npatch->is_rat?4:3),
 		  (GLint)(npatch->is_rat?4:3),
-		  controls,
+		  (GLfloat*)&(npatch->fltcv[uknot_count+vknot_count]),
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
@@ -980,15 +995,15 @@ ay_npatch_drawglucb(struct Togl *togl, ay_object *o)
 #endif /* AYWITHAQUA */
 
  return AY_OK;
-} /* ay_npatch_drawglucb */
+} /* ay_npatch_drawglu */
 
 
-/* ay_npatch_drawchcb:
+/* ay_npatch_drawch:
  *  internal helper function
  *  draw the control hull of the patch
  */
 int
-ay_npatch_drawchcb(struct Togl *togl, ay_object *o)
+ay_npatch_drawch(struct Togl *togl, ay_object *o)
 {
  ay_nurbpatch_object *npatch = NULL;
  double *ver = NULL;
@@ -1062,16 +1077,18 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
   switch(display_mode)
     {
     case 0: /* ControlHull */
-      ay_npatch_drawchcb(togl, o);
+      ay_npatch_drawch(togl, o);
       break;
     case 1: /* OutlinePolygon (GLU) */
-      ay_npatch_drawglucb(togl, o);
+      ay_npatch_drawglu(togl, o);
       break;
     case 2: /* OutlinePatch (GLU) */
-      ay_npatch_drawglucb(togl, o);
+      ay_npatch_drawglu(togl, o);
       break;
     case 3: /* OutlinePatch (STESS) */
-      ay_npatch_drawstesscb(togl, o);
+      ay_npatch_drawstess(togl, o);
+      break;
+    default:
       break;
     } /* switch */
 
@@ -1086,12 +1103,70 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 } /* ay_npatch_drawcb */
 
 
-/* ay_npatch_shadestesscb:
+/* ay_npatch_shadech:
+ *  internal helper function
+ *  shade the patch control polygon
+ */
+int
+ay_npatch_shadech(struct Togl *togl, ay_object *o)
+{
+ int a, b, c, d, i, j;
+ ay_nurbpatch_object *npatch;
+
+  if(!o)
+    return AY_ENULL;
+
+  npatch = (ay_nurbpatch_object *)o->refine;
+
+  if(!npatch)
+    return AY_ENULL;
+
+  if(npatch->stess && npatch->stess->tessw != -1)
+    ay_stess_destroy(npatch);
+
+  if(!npatch->stess)
+    {
+      if(!(npatch->stess = calloc(1, sizeof(ay_stess))))
+	return AY_EOMEM;
+      if(!(npatch->stess->tessv = calloc(npatch->width*npatch->height*3,
+					 sizeof(double))))
+	{free(npatch->stess); npatch->stess = NULL; return AY_EOMEM;}
+
+      ay_npt_getcvnormals(npatch, npatch->stess->tessv);
+      npatch->stess->tessw = -1;
+    } /* if */
+
+  for(i = 0; i < npatch->width-1; i++)
+    {
+      a = i*npatch->height*4;
+      b = a+(npatch->height*4);
+      c = i*npatch->height*3;
+      d = c+(npatch->height*3);
+      glBegin(GL_QUAD_STRIP);
+       for(j = 0; j < npatch->height; j++)
+	 {
+	   glNormal3dv(&(npatch->stess->tessv[c]));
+	   glVertex3dv(&(npatch->controlv[a]));
+	   glNormal3dv(&(npatch->stess->tessv[d]));
+	   glVertex3dv(&(npatch->controlv[b]));
+	   a += 4;
+	   b += 4;
+	   c += 3;
+	   d += 3;
+	 } /* for */
+      glEnd();
+    } /* for */
+
+ return AY_OK;
+} /* ay_npatch_shadech */
+
+
+/* ay_npatch_shadestess:
  *  internal helper function
  *  shade the patch using STESS
  */
 int
-ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
+ay_npatch_shadestess(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
@@ -1121,7 +1196,7 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
       o->modified = AY_FALSE;
     } /* if */
 
-  if(!npatch->stess)
+  if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
     {
       ay_status = ay_stess_TessNP(o, qf);
     }
@@ -1137,7 +1212,7 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
       for(i = 0; i < tessw-1; i++)
 	{
 	  glBegin(GL_QUAD_STRIP);
-	  for(j = 0;  j < tessh; j++)
+	  for(j = 0; j < tessh; j++)
 	    {
 	      glNormal3dv(&(tessv[a+3]));
 	      glVertex3dv(&(tessv[a]));
@@ -1158,24 +1233,21 @@ ay_npatch_shadestesscb(struct Togl *togl, ay_object *o)
     }
 
  return AY_OK;
-} /* ay_npatch_shadestesscb */
+} /* ay_npatch_shadestess */
 
 
-/* ay_npatch_shadeglucb:
+/* ay_npatch_shadeglu:
  *  internal helper function
  *  shade the patch using GLU
  */
 int
-ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
+ay_npatch_shadeglu(struct Togl *togl, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
- int uorder = 0, vorder = 0, width = 0, height = 0;
- int uknot_count = 0, vknot_count = 0, i = 0, a = 0, b = 0;
+ int uorder, vorder, width, height, uknot_count, vknot_count;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
- static GLfloat *uknots = NULL, *vknots = NULL, *controls = NULL;
  ay_object *trim = NULL, *loop = NULL, *nc = NULL;
- double w;
 
   if(!o)
     return AY_ENULL;
@@ -1185,23 +1257,14 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  /*if(npatch->display_mode > 2)
-    return(ay_npatch_shadestesscb(togl, o));*/
+  if(!npatch->fltcv)
+    {
+      ay_npatch_cacheflt(npatch);
+    }
 
-  if(controls)
+  if(!npatch->fltcv)
     {
-      free(controls);
-      controls = NULL;
-    }
-  if(uknots)
-    {
-      free(uknots);
-      uknots = NULL;
-    }
-  if(vknots)
-    {
-      free(vknots);
-      vknots = NULL;
+      return AY_ERROR;
     }
 
   uorder = npatch->uorder;
@@ -1209,63 +1272,11 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   width = npatch->width;
   height = npatch->height;
 
-  if(npatch->glu_sampling_tolerance > 0.0)
-    sampling_tolerance = npatch->glu_sampling_tolerance;
-
   uknot_count = width + uorder;
   vknot_count = height + vorder;
 
-  if((uknots = malloc(uknot_count * sizeof(GLfloat))) == NULL)
-    return AY_EOMEM;
-  if((vknots = malloc(vknot_count * sizeof(GLfloat))) == NULL)
-    { free(uknots); uknots = NULL; return AY_EOMEM; }
-  if((controls = malloc(width*height*(npatch->is_rat?4:3) *
-				      sizeof(GLfloat))) == NULL)
-    {
-      free(uknots); uknots = NULL; free(vknots); vknots = NULL;
-      return AY_EOMEM;
-    }
-
-  a = 0;
-  for(i = 0; i < uknot_count; i++)
-    {
-      uknots[a] = (GLfloat)npatch->uknotv[a];
-      a++;
-    }
-  a = 0;
-  for(i = 0; i < vknot_count; i++)
-    {
-      vknots[a] = (GLfloat)npatch->vknotv[a];
-      a++;
-    }
-  a = 0;
-  if(npatch->is_rat)
-    {
-      for(i = 0; i < width*height; i++)
-	{
-	  w = npatch->controlv[b+3];
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(npatch->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	}
-    }
-  else
-    {
-      for(i = 0; i < width*height; i++)
-	{
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)npatch->controlv[b];
-	  a++; b+=2;
-	}
-    }
+  if(npatch->glu_sampling_tolerance > 0.0)
+    sampling_tolerance = npatch->glu_sampling_tolerance;
 
 #ifndef AYWITHAQUA
   if(!npatch->no)
@@ -1274,9 +1285,6 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
       npatch->no = gluNewNurbsRenderer();
       if(npatch->no == NULL)
 	{
-	  free(uknots); uknots = NULL;
-	  free(vknots); vknots = NULL;
-	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
 #ifndef AYWITHAQUA
@@ -1295,11 +1303,11 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
   /*gluNurbsProperty(npatch->no, GLU_AUTO_LOAD_MATRIX, GL_FALSE);*/
   gluNurbsProperty(npatch->no, GLU_CULLING, GL_TRUE);
 
-  gluNurbsSurface(npatch->no, (GLint)uknot_count, uknots,
-		  (GLint)vknot_count, vknots,
+  gluNurbsSurface(npatch->no, (GLint)uknot_count, (GLfloat*)npatch->fltcv,
+		  (GLint)vknot_count, (GLfloat*)&(npatch->fltcv[uknot_count]),
 		  (GLint)height*(npatch->is_rat?4:3),
 		  (GLint)(npatch->is_rat?4:3),
-		  controls,
+		  (GLfloat*)&(npatch->fltcv[uknot_count+vknot_count]),
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
@@ -1372,7 +1380,7 @@ ay_npatch_shadeglucb(struct Togl *togl, ay_object *o)
 #endif /* AYWITHAQUA */
 
  return AY_OK;
-} /* ay_npatch_shadeglucb */
+} /* ay_npatch_shadeglu */
 
 
 /* ay_npatch_shadecb:
@@ -1382,7 +1390,7 @@ int
 ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
- ay_nurbpatch_object *npatch = NULL;
+ ay_nurbpatch_object *npatch;
  ay_object *b;
 
   if(!o)
@@ -1398,14 +1406,23 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
       display_mode = npatch->display_mode-1;
     }
 
-  if((display_mode < 3) /*|| (o->down && o->down->next)*/)
+  switch(display_mode)
     {
-      ay_npatch_shadeglucb(togl, o);
-    }
-  else
-    {
-      ay_npatch_shadestesscb(togl, o);
-    } /* if */
+    case 0: /* ControlHull */
+      ay_npatch_shadech(togl, o);
+      break;
+    case 1: /* OutlinePolygon (GLU) */
+      ay_npatch_shadeglu(togl, o);
+      break;
+    case 2: /* OutlinePatch (GLU) */
+      ay_npatch_shadeglu(togl, o);
+      break;
+    case 3: /* OutlinePatch (STESS) */
+      ay_npatch_shadestess(togl, o);
+      break;
+    default:
+      break;
+    } /* switch */
 
   b = npatch->caps_and_bevels;
   while(b)
@@ -1426,15 +1443,15 @@ ay_npatch_drawacb(struct Togl *togl, ay_object *o)
 {
  int width = 0, height = 0;
  ay_nurbpatch_object *patch = (ay_nurbpatch_object *)o->refine;
- GLdouble *ver = NULL;
+ double *cv = NULL;
 
   width = patch->width;
   height = patch->height;
 
-  ver = patch->controlv;
+  cv = patch->controlv;
 
   /* draw arrow */
-  ay_draw_arrow(togl, &(ver[width*height*4-8]), &(ver[width*height*4-4]));
+  ay_draw_arrow(togl, &(cv[width*height*4-8]), &(cv[width*height*4-4]));
 
  return AY_OK;
 } /* ay_npatch_drawacb */
@@ -1517,7 +1534,6 @@ ay_npatch_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-
       if(!(pe->coords = malloc(npatch->width * npatch->height *
 					 sizeof(double*))))
 	return AY_EOMEM;
@@ -2199,7 +2215,6 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
   if(!(npatch = calloc(1, sizeof(ay_nurbpatch_object))))
     { return AY_EOMEM; }
 
-
   fscanf(fileptr,"%d\n",&npatch->width);
   fscanf(fileptr,"%d\n",&npatch->height);
   fscanf(fileptr,"%d\n",&npatch->uorder);
@@ -2218,9 +2233,9 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
       npatch->uknotv = NULL;
       if(!(npatch->uknotv =
 	   calloc((npatch->width + npatch->uorder), sizeof(double))))
-	{ free(npatch); return AY_EOMEM; }
+	{ ay_npt_destroy(npatch); return AY_EOMEM; }
 
-      for(i=0; i<(npatch->width + npatch->uorder); i++)
+      for(i = 0; i < (npatch->width + npatch->uorder); i++)
 	fscanf(fileptr,"%lg\n",&(npatch->uknotv[i]));
     }
 
@@ -2232,27 +2247,24 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
       if(!(npatch->vknotv =
 	   calloc((npatch->height + npatch->vorder), sizeof(double))))
-	{ free(npatch->uknotv); free(npatch); return AY_EOMEM; }
+	{ ay_npt_destroy(npatch); return AY_EOMEM; }
 
-      for(i=0; i<(npatch->height + npatch->vorder); i++)
+      for(i = 0; i < (npatch->height + npatch->vorder); i++)
 	fscanf(fileptr,"%lg\n",&(npatch->vknotv[i]));
     }
 
   if(!(npatch->controlv = calloc(npatch->width*npatch->height*4,
 				 sizeof(double))))
-    {
-      free(npatch->uknotv); free(npatch->vknotv); free(npatch);
-      return AY_EOMEM;
-    }
+    { ay_npt_destroy(npatch); return AY_EOMEM; }
 
   a = 0;
-  for(i=0; i < npatch->width*npatch->height; i++)
+  for(i = 0; i < (npatch->width*npatch->height); i++)
     {
-      fscanf(fileptr,"%lg %lg %lg %lg\n",&(npatch->controlv[a]),
+      fscanf(fileptr,"%lg %lg %lg %lg\n", &(npatch->controlv[a]),
 	     &(npatch->controlv[a+1]),
 	     &(npatch->controlv[a+2]),
 	     &(npatch->controlv[a+3]));
-      a+=4;
+      a += 4;
     }
 
   fscanf(fileptr,"%lg\n",&(npatch->glu_sampling_tolerance));
@@ -3093,10 +3105,6 @@ ay_npatch_notifycb(ay_object *o)
     return AY_ENULL;
 
   npatch = (ay_nurbpatch_object *)(o->refine);
-  mode = npatch->display_mode;
-  tolerance = npatch->glu_sampling_tolerance;
-
-  nextcb = &(npatch->caps_and_bevels);
 
   if(npatch->caps_and_bevels)
     {
@@ -3136,28 +3144,30 @@ ay_npatch_notifycb(ay_object *o)
     if(caps[i] == 3)
       caps[i] = 2;
 
+  nextcb = &(npatch->caps_and_bevels);
   ay_status = ay_capt_addcaps(caps, &bparams, o, nextcb);
   if(ay_status)
     goto cleanup;
 
-  npatch = (ay_nurbpatch_object *)(o->refine);
-  nextcb = &(npatch->caps_and_bevels);
-
-  while(*nextcb)
-    nextcb = &((*nextcb)->next);
-
   /* create/add bevels */
   if(bparams.has_bevels)
     {
+      nextcb = &(npatch->caps_and_bevels);
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+
       ay_status = ay_bevelt_addbevels(&bparams, caps, o, nextcb);
       if(ay_status)
 	goto cleanup;
     }
 
-  npatch = (ay_nurbpatch_object *)(o->refine);
-
+  /* copy display modes over to the caps&bevels */
   if(npatch->caps_and_bevels)
     {
+      mode = npatch->display_mode;
+      tolerance = npatch->glu_sampling_tolerance;
+
       bevel = npatch->caps_and_bevels;
       while(bevel)
 	{
@@ -3169,36 +3179,54 @@ ay_npatch_notifycb(ay_object *o)
 	}
     }
 
-  if(npatch->display_mode != 0)
+  /* manage the GLU NURBS renderer */
+  if(npatch->no)
+    gluDeleteNurbsRenderer(npatch->no);
+  npatch->no = NULL;
+
+  /* manage cached float data */
+  if(npatch->fltcv)
     {
-      display_mode = npatch->display_mode-1;
+      free(npatch->fltcv);
+      npatch->fltcv = NULL;
     }
 
-  if(display_mode < 3)
-    {
-      if(npatch->no)
-	gluDeleteNurbsRenderer(npatch->no);
-
-      npatch->no = gluNewNurbsRenderer();
-
-      return AY_OK;
-    }
-
-  if(npatch->glu_sampling_tolerance != 0.0)
-    {
-      qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
-    }
-
+  /* manage the cached tesselation */
   if(npatch->stess)
     {
       ay_stess_destroy(npatch);
     }
 
-  ay_status = ay_stess_TessNP(o, qf);
+  if(npatch->display_mode != 0)
+    {
+      display_mode = npatch->display_mode-1;
+    }
 
-  npatch->tessqf = qf;
+  switch(display_mode)
+    {
+    case 0:
+      break;
+    case 1:
+    case 2:
+      npatch->no = gluNewNurbsRenderer();
+      break;
+    case 3:
+    case 4:
+      if(npatch->glu_sampling_tolerance != 0.0)
+	{
+	  qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
+	}
+
+      ay_status = ay_stess_TessNP(o, qf);
+
+      npatch->tessqf = qf;
+      break;
+    default:
+      break;
+    } /* switch */
 
 cleanup:
+
  return ay_status;
 } /* ay_npatch_notifycb */
 
@@ -3226,6 +3254,7 @@ ay_npatch_init(Tcl_Interp *interp)
 				    ay_npatch_wribcb,
 				    ay_npatch_bbccb,
 				    AY_IDNPATCH);
+
   ay_status = ay_draw_registerdacb(ay_npatch_drawacb, AY_IDNPATCH);
 
   ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
