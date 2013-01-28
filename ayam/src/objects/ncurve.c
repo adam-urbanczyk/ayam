@@ -407,6 +407,9 @@ ay_ncurve_deletecb(void *c)
   if(ncurve->no)
     gluDeleteNurbsRenderer(ncurve->no);
 
+  if(ncurve->fltcv)
+    free(ncurve->fltcv);
+
   /* free (simple) tesselation */
   if(ncurve->tessv)
     free(ncurve->tessv);
@@ -438,6 +441,7 @@ ay_ncurve_copycb(void *src, void **dst)
   memcpy(ncurve, src, sizeof(ay_nurbcurve_object));
 
   ncurve->no = NULL;
+  ncurve->fltcv = NULL;
   ncurve->knotv = NULL;
   ncurve->controlv = NULL;
   ncurve->tessv = NULL;
@@ -588,10 +592,10 @@ int
 ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 {
  ay_nurbcurve_object *ncurve = NULL;
- int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
+ int order, length, knot_count, i, a, b;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  double w;
- static GLfloat *knots = NULL, *controls = NULL;
+ float *flt;
 
   if(!o)
     return AY_ENULL;
@@ -601,18 +605,6 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  if(controls)
-    {
-      free(controls);
-      controls = NULL;
-    }
-
-  if(knots)
-    {
-      free(knots);
-      knots = NULL;
-    }
-
   order = ncurve->order;
   length = ncurve->length;
 
@@ -621,46 +613,49 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
   knot_count = length + order;
 
-  if((knots = malloc(knot_count * sizeof(GLfloat))) == NULL)
-    return AY_EOMEM;
-  if((controls = malloc(length*(ncurve->is_rat?4:3) *
-			sizeof(GLfloat))) == NULL)
-    { free(knots); knots = NULL; return AY_EOMEM; }
+  if(!ncurve->fltcv)
+    {
+      if((ncurve->fltcv = malloc((knot_count+length*(ncurve->is_rat?4:3)) *
+				 sizeof(GLfloat))) == NULL)
+	{ return AY_EOMEM; }
+      flt = ncurve->fltcv;
 
-  a = 0;
-  for(i = 0; i < knot_count; i++)
-    {
-      knots[a] = (GLfloat)ncurve->knotv[a];
-      a++;
-    }
-  a = 0;
-  if(ncurve->is_rat)
-    {
-      for(i = 0; i < length; i++)
+      for(i = 0; i < knot_count; i++)
 	{
-	  w = ncurve->controlv[b+3];
-	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)(ncurve->controlv[b]*w);
-	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	} /* for */
+	  flt[i] = (GLfloat)ncurve->knotv[i];
+	}
+      a = knot_count;
+      b = 0;
+      if(ncurve->is_rat)
+	{
+	  for(i = 0; i < length; i++)
+	    {
+	      w = ncurve->controlv[b+3];
+	      flt[a] = (GLfloat)(ncurve->controlv[b]*w);
+	      a++; b++;
+	      flt[a] = (GLfloat)(ncurve->controlv[b]*w);
+	      a++; b++;
+	      flt[a] = (GLfloat)(ncurve->controlv[b]*w);
+	      a++; b++;
+	      flt[a] = (GLfloat)ncurve->controlv[b];
+	      a++; b++;
+	    } /* for */
+	}
+      else
+	{
+	  for(i = 0; i < length; i++)
+	    {
+	      flt[a] = (GLfloat)ncurve->controlv[b];
+	      a++; b++;
+	      flt[a] = (GLfloat)ncurve->controlv[b];
+	      a++; b++;
+	      flt[a] = (GLfloat)ncurve->controlv[b];
+	      a++; b+=2;
+	    } /* for */
+	} /* if */
     }
   else
-    {
-      for(i = 0; i < length; i++)
-	{
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b++;
-	  controls[a] = (GLfloat)ncurve->controlv[b];
-	  a++; b+=2;
-	} /* for */
-    } /* if */
+    flt = ncurve->fltcv;
 
 #ifndef AYWITHAQUA
   if(!ncurve->no)
@@ -669,8 +664,6 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       ncurve->no = gluNewNurbsRenderer();
       if(ncurve->no == NULL)
 	{
-	  free(knots); knots = NULL;
-	  free(controls); controls = NULL;
 	  return AY_EOMEM;
 	}
 #ifndef AYWITHAQUA
@@ -689,8 +682,8 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 
    gluNurbsProperty(ncurve->no, GLU_CULLING, GL_TRUE);
 
-   gluNurbsCurve(ncurve->no, (GLint)knot_count, knots,
-		 (GLint)(ncurve->is_rat?4:3), controls,
+   gluNurbsCurve(ncurve->no, (GLint)knot_count,  (GLfloat*)flt,
+		 (GLint)(ncurve->is_rat?4:3), (GLfloat*)&(flt[knot_count]),
 		 (GLint)ncurve->order,
 		 (ncurve->is_rat?GL_MAP1_VERTEX_4:GL_MAP1_VERTEX_3));
 

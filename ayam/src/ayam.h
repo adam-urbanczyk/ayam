@@ -428,6 +428,7 @@ typedef struct ay_nurbcurve_object_s
   int display_mode; /**< drawing mode */
 
   GLUnurbsObj *no; /**< GLU NURBS object */
+  float *fltcv; /**< cached float data for GLU */
 
   /* stess */
   int tesslen; /**< number of points in tesselation */
@@ -502,7 +503,7 @@ typedef struct ay_nurbpatch_object_s
   int has_v1_cap; /**< create cap at v end? */
 
   GLUnurbsObj *no; /**< GLU NURBS object */
-  float *fltcv;
+  float *fltcv; /**< cached float data for GLU */
 
   double glu_sampling_tolerance; /**< drawing quality */
   int display_mode; /**< drawing mode */

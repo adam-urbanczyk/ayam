@@ -18,6 +18,8 @@ static char *ay_npatch_name = "NPatch";
 
 /* prototypes of functions local to this module: */
 
+void ay_npatch_cacheflt(ay_nurbpatch_object *npatch);
+
 int ay_npatch_drawstess(struct Togl *togl, ay_object *o);
 
 int ay_npatch_drawglu(struct Togl *togl, ay_object *o);
@@ -762,7 +764,7 @@ ay_npatch_drawstess(struct Togl *togl, ay_object *o)
  *  internal helper function
  *  cache knots and control vertices as floats (for GLU)
  */
-int
+void
 ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
 {
  int uorder, vorder, width, height;
@@ -784,7 +786,7 @@ ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
   if(!(npatch->fltcv = malloc((width*height*(npatch->is_rat?4:3)+
 			      uknot_count+vknot_count)*
 			      sizeof(float))))
-    return AY_EOMEM;
+    return;
 
   flt = npatch->fltcv;
   for(i = 0; i < uknot_count; i++)
@@ -827,7 +829,7 @@ ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
 	}
     }
 
- return AY_OK;
+ return;
 } /* ay_npatch_cacheflt */
 
 
