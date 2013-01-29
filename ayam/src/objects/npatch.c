@@ -20,17 +20,17 @@ static char *ay_npatch_name = "NPatch";
 
 void ay_npatch_cacheflt(ay_nurbpatch_object *npatch);
 
-int ay_npatch_drawstess(struct Togl *togl, ay_object *o);
+int ay_npatch_drawstess(ay_object *o);
 
-int ay_npatch_drawglu(struct Togl *togl, ay_object *o);
+int ay_npatch_drawglu(ay_object *o);
 
-int ay_npatch_drawch(struct Togl *togl, ay_object *o);
+int ay_npatch_drawch(ay_nurbpatch_object *npatch);
 
-int ay_npatch_shadestess(struct Togl *togl, ay_object *o);
+int ay_npatch_shadestess(ay_object *o);
 
-int ay_npatch_shadeglu(struct Togl *togl, ay_object *o);
+int ay_npatch_shadeglu(ay_object *o);
 
-int ay_npatch_shadech(struct Togl *togl, ay_object *o);
+int ay_npatch_shadech(ay_nurbpatch_object *npatch);
 
 /* Export trim curves to RIB. */
 int ay_npatch_wribtrimcurves(ay_object *o);
@@ -680,35 +680,26 @@ cleanup:
  *  draw the patch using STESS
  */
 int
-ay_npatch_drawstess(struct Togl *togl, ay_object *o)
+ay_npatch_drawstess(ay_object *o)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_drawstesscb";*/
- ay_nurbpatch_object *npatch = NULL;
  int a, i, j, tessw, tessh;
  double *tessv = NULL;
  int qf = ay_prefs.stess_qf;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
   if(npatch->glu_sampling_tolerance != 0.0)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
 
-  if(o->modified || (npatch->tessqf != qf))
+  if(npatch->tessqf != qf)
     {
       if(npatch->stess)
 	{
 	  ay_stess_destroy(npatch);
 	}
-      o->modified = AY_FALSE;
     } /* if */
 
   if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
@@ -838,22 +829,13 @@ ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
  *  draw the patch using GLU
  */
 int
-ay_npatch_drawglu(struct Togl *togl, ay_object *o)
+ay_npatch_drawglu(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *npatch = NULL;
  int uorder, vorder, width, height, uknot_count, vknot_count;
- GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
- ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  int display_mode = ay_prefs.np_display_mode;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
+ GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
   uorder = npatch->uorder;
   vorder = npatch->vorder;
@@ -877,9 +859,7 @@ ay_npatch_drawglu(struct Togl *togl, ay_object *o)
     sampling_tolerance = npatch->glu_sampling_tolerance;
 
   if(npatch->display_mode != 0)
-    {
-      display_mode = npatch->display_mode-1;
-    }
+    display_mode = npatch->display_mode-1;
 
 #ifdef AYWITHAQUA
   glPushAttrib((GLbitfield) GL_POLYGON_BIT);
@@ -923,68 +903,10 @@ ay_npatch_drawglu(struct Togl *togl, ay_object *o)
 		  (GLint)npatch->uorder, (GLint)npatch->vorder,
 		  (npatch->is_rat?GL_MAP2_VERTEX_4:GL_MAP2_VERTEX_3));
 
-  /* propagate changes to trimcurve walking code also to:
-     shadecb(), wribtrimcurves(), and
-     nurbs/npt.c/ay_npt_topolymesh()! */
-
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
-      trim = o->down;
-      ay_errno = AY_OK;
-      while(trim->next)
-	{
-	  switch(trim->type)
-	    {
-	    case AY_IDNCURVE:
-	      gluBeginTrim(npatch->no);
-	       ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
-	      gluEndTrim(npatch->no);
-	      break;
-	    case AY_IDLEVEL:
-	      loop = trim->down;
-	      if(loop && loop->next)
-		{
-		  gluBeginTrim(npatch->no);
-		  while(loop->next)
-		    {
-
-		      if(loop->type == AY_IDNCURVE)
-			{
-			  ay_status = ay_npt_drawtrimcurve(togl, loop,
-							   npatch->no);
-			}
-		      else
-			{
-			  nc = NULL;
-			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
-							&nc);
-			  if(nc)
-			    {
-			      ay_status = ay_npt_drawtrimcurve(togl, nc,
-							       npatch->no);
-			      ay_object_delete(nc);
-			    } /* if */
-			} /* if */
-		      loop = loop->next;
-		    } /* while */
-		  gluEndTrim(npatch->no);
-		} /* if */
-	      break;
-	    default:
-	      nc = NULL;
-	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
-	      if(nc)
-		{
-		  gluBeginTrim(npatch->no);
-		   ay_status = ay_npt_drawtrimcurve(togl, nc, npatch->no);
-		  gluEndTrim(npatch->no);
-		  ay_object_delete(nc);
-		}
-	      break;
-	    } /* switch */
-	  trim = trim->next;
-	} /* while */
+      ay_status = ay_npt_drawtrimcurves(o);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -1005,31 +927,22 @@ ay_npatch_drawglu(struct Togl *togl, ay_object *o)
  *  draw the control hull of the patch
  */
 int
-ay_npatch_drawch(struct Togl *togl, ay_object *o)
+ay_npatch_drawch(ay_nurbpatch_object *npatch)
 {
- ay_nurbpatch_object *npatch = NULL;
- double *ver = NULL;
+ double *cv;
  int i, j, a, width, height;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
 
   width = npatch->width;
   height = npatch->height;
 
-  ver = npatch->controlv;
+  cv = npatch->controlv;
   a = 0;
   for(i = 0; i < width; i++)
     {
       glBegin(GL_LINE_STRIP);
 	for(j = 0; j < height; j++)
 	  {
-	    glVertex3dv((GLdouble *)&ver[a]);
+	    glVertex3dv((GLdouble *)&cv[a]);
 	    a += 4;
 	  }
       glEnd();
@@ -1042,7 +955,7 @@ ay_npatch_drawch(struct Togl *togl, ay_object *o)
       glBegin(GL_LINE_STRIP);
 	for(i = 0; i < width; i++)
 	  {
-	    glVertex3dv((GLdouble *)&ver[a]);
+	    glVertex3dv((GLdouble *)&cv[a]);
 
 	    a += (4 * height);
 	  }
@@ -1060,7 +973,7 @@ int
 ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
- ay_nurbpatch_object *npatch = NULL;
+ ay_nurbpatch_object *npatch;
  ay_object *b;
 
   if(!o)
@@ -1079,16 +992,16 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
   switch(display_mode)
     {
     case 0: /* ControlHull */
-      ay_npatch_drawch(togl, o);
+      ay_npatch_drawch(npatch);
       break;
     case 1: /* OutlinePolygon (GLU) */
-      ay_npatch_drawglu(togl, o);
+      ay_npatch_drawglu(o);
       break;
     case 2: /* OutlinePatch (GLU) */
-      ay_npatch_drawglu(togl, o);
+      ay_npatch_drawglu(o);
       break;
     case 3: /* OutlinePatch (STESS) */
-      ay_npatch_drawstess(togl, o);
+      ay_npatch_drawstess(o);
       break;
     default:
       break;
@@ -1110,18 +1023,9 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
  *  shade the patch control polygon
  */
 int
-ay_npatch_shadech(struct Togl *togl, ay_object *o)
+ay_npatch_shadech(ay_nurbpatch_object *npatch)
 {
  int a, b, c, d, i, j;
- ay_nurbpatch_object *npatch;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
 
   if(npatch->stess && npatch->stess->tessw != -1)
     ay_stess_destroy(npatch);
@@ -1168,34 +1072,25 @@ ay_npatch_shadech(struct Togl *togl, ay_object *o)
  *  shade the patch using STESS
  */
 int
-ay_npatch_shadestess(struct Togl *togl, ay_object *o)
+ay_npatch_shadestess(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *npatch = NULL;
  int qf = ay_prefs.stess_qf;
  int a, b, i, j, tessw, tessh;
  double *tessv = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
   if(npatch->glu_sampling_tolerance != 0.0)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
 
-  if(o->modified || (npatch->tessqf != qf))
+  if(npatch->tessqf != qf)
     {
       if(npatch->stess)
 	{
 	  ay_stess_destroy(npatch);
 	}
-      o->modified = AY_FALSE;
     } /* if */
 
   if(!npatch->stess || (npatch->stess && npatch->stess->tessw == -1))
@@ -1243,21 +1138,12 @@ ay_npatch_shadestess(struct Togl *togl, ay_object *o)
  *  shade the patch using GLU
  */
 int
-ay_npatch_shadeglu(struct Togl *togl, ay_object *o)
+ay_npatch_shadeglu(ay_object *o)
 {
  int ay_status = AY_OK;
- ay_nurbpatch_object *npatch = NULL;
  int uorder, vorder, width, height, uknot_count, vknot_count;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
- ay_object *trim = NULL, *loop = NULL, *nc = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  npatch = (ay_nurbpatch_object *)o->refine;
-
-  if(!npatch)
-    return AY_ENULL;
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
   if(!npatch->fltcv)
     {
@@ -1316,62 +1202,7 @@ ay_npatch_shadeglu(struct Togl *togl, ay_object *o)
   /* draw trimcurves */
   if(o->down && o->down->next)
     {
-      trim = o->down;
-      ay_errno = AY_OK;
-      while(trim->next)
-	{
-	  switch(trim->type)
-	    {
-	    case AY_IDNCURVE:
-	      gluBeginTrim(npatch->no);
-	       ay_status = ay_npt_drawtrimcurve(togl, trim, npatch->no);
-	      gluEndTrim(npatch->no);
-	      break;
-	    case AY_IDLEVEL:
-	      /* XXXX check, whether level is of type trimloop? */
-	      loop = trim->down;
-	      if(loop && loop->next)
-		{
-		  gluBeginTrim(npatch->no);
-		  while(loop->next)
-		    {
-
-		      if(loop->type == AY_IDNCURVE)
-			{
-			  ay_status = ay_npt_drawtrimcurve(togl, loop,
-							   npatch->no);
-			}
-		      else
-			{
-			  nc = NULL;
-			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
-							&nc);
-			  if(nc)
-			    {
-			      ay_status = ay_npt_drawtrimcurve(togl, nc,
-							       npatch->no);
-			      ay_object_delete(nc);
-			    } /* if */
-			} /* if */
-		      loop = loop->next;
-		    } /* while */
-		  gluEndTrim(npatch->no);
-		} /* if */
-	      break;
-	    default:
-	      nc = NULL;
-	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
-	      if(nc)
-		{
-		  gluBeginTrim(npatch->no);
-		   ay_status = ay_npt_drawtrimcurve(togl, nc, npatch->no);
-		  gluEndTrim(npatch->no);
-		  ay_object_delete(nc);
-		}
-	      break;
-	    } /* switch */
-	  trim = trim->next;
-	} /* while */
+      ay_status = ay_npt_drawtrimcurves(o);
     } /* if */
 
   gluEndSurface(npatch->no);
@@ -1411,16 +1242,16 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
   switch(display_mode)
     {
     case 0: /* ControlHull */
-      ay_npatch_shadech(togl, o);
+      ay_npatch_shadech(npatch);
       break;
     case 1: /* OutlinePolygon (GLU) */
-      ay_npatch_shadeglu(togl, o);
+      ay_npatch_shadeglu(o);
       break;
     case 2: /* OutlinePatch (GLU) */
-      ay_npatch_shadeglu(togl, o);
+      ay_npatch_shadeglu(o);
       break;
     case 3: /* OutlinePatch (STESS) */
-      ay_npatch_shadestess(togl, o);
+      ay_npatch_shadestess(o);
       break;
     default:
       break;
@@ -3218,8 +3049,6 @@ ay_npatch_notifycb(ay_object *o)
 	{
 	  qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
 	}
-
-      ay_status = ay_stess_TessNP(o, qf);
 
       npatch->tessqf = qf;
       break;

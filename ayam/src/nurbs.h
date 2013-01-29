@@ -895,9 +895,13 @@ int ay_npt_swaparray(double **controlvptr, int stride,
  */
 int ay_npt_swapuv(ay_nurbpatch_object *np);
 
-/** Draw trim curves using GLU.
+/** Draw a single trim curve using GLU.
  */
-int ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no);
+int ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no);
+
+/** Draw all trim curves using GLU.
+ */
+int ay_npt_drawtrimcurves(ay_object *o);
 
 /** Create Cobbs NURBS sphere patch.
  */

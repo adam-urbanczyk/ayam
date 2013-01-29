@@ -923,10 +923,10 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_drawtrimcurve:
- *  draw trimcurves with GLU
+ *  draw a single trimcurve with GLU
  */
 int
-ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
+ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 {
  int order = 0, length = 0, knot_count = 0, i = 0, a = 0, b = 0;
  ay_nurbcurve_object *curve = (ay_nurbcurve_object *) o->refine;
@@ -1007,6 +1007,72 @@ ay_npt_drawtrimcurve(struct Togl *togl, ay_object *o, GLUnurbsObj *no)
 
  return AY_OK;
 } /* ay_npt_drawtrimcurve */
+
+
+/* ay_npt_drawtrimcurves:
+ *  draw all trimcurves with GLU
+ */
+int
+ay_npt_drawtrimcurves(ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_object *trim = NULL, *loop = NULL, *nc = NULL;
+ ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
+
+  trim = o->down;
+  while(trim->next)
+    {
+      switch(trim->type)
+	{
+	case AY_IDNCURVE:
+	  gluBeginTrim(npatch->no);
+	  ay_status = ay_npt_drawtrimcurve(trim, npatch->no);
+	  gluEndTrim(npatch->no);
+	  break;
+	case AY_IDLEVEL:
+	  /* XXXX check, whether level is of type trimloop? */
+	  loop = trim->down;
+	  if(loop && loop->next)
+	    {
+	      gluBeginTrim(npatch->no);
+	      while(loop->next)
+		{
+		  if(loop->type == AY_IDNCURVE)
+		    {
+		      ay_status = ay_npt_drawtrimcurve(loop, npatch->no);
+		    }
+		  else
+		    {
+		      nc = NULL;
+		      ay_status = ay_provide_object(loop, AY_IDNCURVE, &nc);
+		      if(nc)
+			{
+			  ay_status = ay_npt_drawtrimcurve(nc, npatch->no);
+			  (void)ay_object_delete(nc);
+			} /* if */
+		    } /* if */
+		  loop = loop->next;
+		} /* while */
+	      gluEndTrim(npatch->no);
+	    } /* if */
+	  break;
+	default:
+	  nc = NULL;
+	  ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
+	  if(nc)
+	    {
+	      gluBeginTrim(npatch->no);
+	      ay_status = ay_npt_drawtrimcurve(nc, npatch->no);
+	      gluEndTrim(npatch->no);
+	      (void)ay_object_delete(nc);
+	    }
+	  break;
+	} /* switch */
+      trim = trim->next;
+    } /* while */
+
+ return ay_status;
+} /* ay_npt_drawtrimcurves */
 
 
 /* ay_npt_crtcobbsphere:

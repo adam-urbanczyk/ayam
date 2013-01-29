@@ -1101,7 +1101,6 @@ ay_tess_npatch(ay_object *o,
  GLfloat *vcolors4 = NULL;
  unsigned int texcoordlen, vcolorlen, vnormallen;
  char have_tc = AY_FALSE, have_vc = AY_FALSE, have_vn = AY_FALSE;
- ay_object *trim = NULL, *loop = NULL, *nc = NULL;
  ay_tag *tag = NULL;
  ay_tess_object to = {0};
  double p1[3], p2[3], p3[3], p4[3], n1[3], n2[3], n3[3], n4[3];
@@ -1427,61 +1426,7 @@ ay_tess_npatch(ay_object *o,
   /* put trimcurves */
   if(o->down && o->down->next)
     {
-      trim = o->down;
-
-      while(trim->next)
-	{
-	  switch(trim->type)
-	    {
-	    case AY_IDNCURVE:
-	      gluBeginTrim(npatch->no);
-	       ay_status = ay_npt_drawtrimcurve(NULL, trim, npatch->no);
-	      gluEndTrim(npatch->no);
-	      break;
-	    case AY_IDLEVEL:
-	      /* XXXX check, whether level is of type trimloop? */
-	      loop = trim->down;
-	      if(loop && loop->next)
-		{
-		  gluBeginTrim(npatch->no);
-		  while(loop->next)
-		    {
-		      if(loop->type == AY_IDNCURVE)
-			{
-			  ay_status = ay_npt_drawtrimcurve(NULL, loop,
-							   npatch->no);
-			}
-		      else
-			{
-			  nc = NULL;
-			  ay_status = ay_provide_object(loop, AY_IDNCURVE,
-							&nc);
-			  if(nc)
-			    {
-			      ay_status = ay_npt_drawtrimcurve(NULL, nc,
-							       npatch->no);
-			      ay_object_delete(nc);
-			    } /* if */
-			} /* if */
-		      loop = loop->next;
-		    } /* while */
-		  gluEndTrim(npatch->no);
-		} /* if */
-	      break;
-	    default:
-	      nc = NULL;
-	      ay_status = ay_provide_object(trim, AY_IDNCURVE, &nc);
-	      if(nc)
-		{
-		  gluBeginTrim(npatch->no);
-		   ay_status = ay_npt_drawtrimcurve(NULL, nc, npatch->no);
-		  gluEndTrim(npatch->no);
-		  ay_object_delete(nc);
-		}
-	      break;
-	    } /* switch */
-	  trim = trim->next;
-	} /* while */
+      ay_status = ay_npt_drawtrimcurves(o);
     } /* if */
 
   gluEndSurface(npatch->no);

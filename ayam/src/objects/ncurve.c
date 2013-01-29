@@ -16,11 +16,11 @@
 
 static char *ay_ncurve_name = "NCurve";
 
-int ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o);
+int ay_ncurve_drawstess(ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_drawglucb(struct Togl *togl, ay_object *o);
+int ay_ncurve_drawglu(ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_drawchcb(struct Togl *togl, ay_object *o);
+int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
 /* functions: */
 
@@ -428,7 +428,7 @@ ay_ncurve_copycb(void *src, void **dst)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *ncurve = NULL, *ncurvesrc = NULL;
- int kl;
+ int knot_count;
 
   if(!src || !dst)
     return AY_ENULL;
@@ -445,15 +445,16 @@ ay_ncurve_copycb(void *src, void **dst)
   ncurve->knotv = NULL;
   ncurve->controlv = NULL;
   ncurve->tessv = NULL;
+  ncurve->tesslen = 0;
 
   /* copy knots */
-  kl = ncurve->order + ncurve->length;
-  if(!(ncurve->knotv = malloc(kl * sizeof(double))))
+  knot_count = ncurve->order + ncurve->length;
+  if(!(ncurve->knotv = malloc(knot_count * sizeof(double))))
     {
       ay_status = AY_EOMEM;
       goto cleanup;
     }
-  memcpy(ncurve->knotv, ncurvesrc->knotv, kl * sizeof(double));
+  memcpy(ncurve->knotv, ncurvesrc->knotv, knot_count * sizeof(double));
 
   /* copy controlv */
   if(!(ncurve->controlv = malloc(4 * ncurve->length * sizeof(double))))
@@ -463,18 +464,6 @@ ay_ncurve_copycb(void *src, void **dst)
     }
   memcpy(ncurve->controlv, ncurvesrc->controlv,
 	 4 * ncurve->length * sizeof(double));
-
-  /* copy tessv */
-  if(ncurvesrc->tessv)
-    {
-      if(!(ncurve->tessv = malloc(3 * ncurve->tesslen * sizeof(double))))
-	{
-	  ay_status = AY_EOMEM;
-	  goto cleanup;
-	}
-      memcpy(ncurve->tessv, ncurvesrc->tessv,
-	     3 * ncurve->tesslen * sizeof(double));
-    }
 
   /* copy mpoints */
   ncurve->mpoints = NULL;
@@ -506,26 +495,17 @@ cleanup:
 } /* ay_ncurve_copycb */
 
 
-/* ay_ncurve_drawstesscb:
+/* ay_ncurve_drawstess:
  *  internal helper function
  *  draw the curve using STESS
  */
 int
-ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
+ay_ncurve_drawstess(ay_nurbcurve_object *ncurve)
 {
  int ay_status = AY_OK;
  int a = 0, i, tesslen, tstride;
  double *tessv;
  int qf = ay_prefs.stess_qf;
- ay_nurbcurve_object *ncurve = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  ncurve = (ay_nurbcurve_object *)o->refine;
-
-  if(!ncurve)
-    return AY_ENULL;
 
   if(ncurve->order == 2)
     {
@@ -535,12 +515,12 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
     }
   else
     {
-      if(ncurve->glu_sampling_tolerance != 0.0)
+      if(ncurve->glu_sampling_tolerance > 0.0)
 	{
 	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
 	}
 
-      if(o->modified || (ncurve->tessqf != qf))
+      if(ncurve->tessqf != qf)
 	{
 	  if(ncurve->tessv)
 	    {
@@ -548,7 +528,6 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
 	      ncurve->tessv = NULL;
 	      ncurve->tesslen = 0;
 	    }
-	  o->modified = AY_FALSE;
 	}
 
       tesslen = 0;
@@ -581,29 +560,20 @@ ay_ncurve_drawstesscb(struct Togl *togl, ay_object *o)
     } /* if */
 
  return AY_OK;
-} /* ay_ncurve_drawstesscb */
+} /* ay_ncurve_drawstess */
 
 
-/* ay_ncurve_drawglucb:
+/* ay_ncurve_drawglu:
  *  internal helper function
  *  draw the curve using GLU
  */
 int
-ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
+ay_ncurve_drawglu(ay_nurbcurve_object *ncurve)
 {
- ay_nurbcurve_object *ncurve = NULL;
  int order, length, knot_count, i, a, b;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
  double w;
  float *flt;
-
-  if(!o)
-    return AY_ENULL;
-
-  ncurve = (ay_nurbcurve_object *)o->refine;
-
-  if(!ncurve)
-    return AY_ENULL;
 
   order = ncurve->order;
   length = ncurve->length;
@@ -670,7 +640,7 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
       } /* if */
 #endif /* !AYWITHAQUA */
 
-	gluNurbsCallback(ncurve->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
+  gluNurbsCallback(ncurve->no, GLU_ERROR, AYGLUCBTYPE ay_error_glucb);
   gluBeginCurve(ncurve->no);
 
 #ifdef AYIRIXBUG
@@ -695,26 +665,17 @@ ay_ncurve_drawglucb(struct Togl *togl, ay_object *o)
 #endif /* AYWITHAQUA */
 
  return AY_OK;
-} /* ay_ncurve_drawglucb */
+} /* ay_ncurve_drawglu */
 
 
-/* ay_ncurve_drawchcb:
+/* ay_ncurve_drawch:
  *  internal helper function
  *  draw the control hull of the curve
  */
 int
-ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
+ay_ncurve_drawch(ay_nurbcurve_object *ncurve)
 {
  int a, i;
- ay_nurbcurve_object *ncurve = NULL;
-
-  if(!o)
-    return AY_ENULL;
-
-  ncurve = (ay_nurbcurve_object *)o->refine;
-
-  if(!ncurve)
-    return AY_ENULL;
 
   a = 0;
   glBegin(GL_LINE_STRIP);
@@ -726,7 +687,7 @@ ay_ncurve_drawchcb(struct Togl *togl, ay_object *o)
   glEnd();
 
  return AY_OK;
-} /* ay_ncurve_drawchcb */
+} /* ay_ncurve_drawch */
 
 
 /* ay_ncurve_drawcb:
@@ -754,21 +715,21 @@ ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
   switch(display_mode)
     {
     case 0: /* ControlHull */
-      ay_ncurve_drawchcb(togl, o);
+      ay_ncurve_drawch(ncurve);
       break;
     case 1: /* CurveAndHull (GLU) */
-      ay_ncurve_drawchcb(togl, o);
-      ay_ncurve_drawglucb(togl, o);
+      ay_ncurve_drawch(ncurve);
+      ay_ncurve_drawglu(ncurve);
       break;
     case 2: /* Curve (GLU) */
-      ay_ncurve_drawglucb(togl, o);
+      ay_ncurve_drawglu(ncurve);
       break;
     case 3: /* CurveAndHull (STESS) */
-      ay_ncurve_drawchcb(togl, o);
-      ay_ncurve_drawstesscb(togl, o);
+      ay_ncurve_drawch(ncurve);
+      ay_ncurve_drawstess(ncurve);
       break;
     case 4: /* Curve (STESS) */
-      ay_ncurve_drawstesscb(togl, o);
+      ay_ncurve_drawstess(ncurve);
       break;
     } /* switch */
 
@@ -1327,9 +1288,7 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   ncurve = (ay_nurbcurve_object *)(o->refine);
 
   toa = Tcl_NewStringObj(n1,-1);
-
   ton = Tcl_NewStringObj(n1,-1);
-
 
   Tcl_SetStringObj(ton,"Length",-1);
   to = Tcl_NewIntObj(ncurve->length);
@@ -1360,7 +1319,6 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_SetStringObj(ton,"Knots",-1);
   for(i = 0; i < ncurve->length+ncurve->order; i++)
     {
-
       to = Tcl_NewDoubleObj((ncurve->knotv)[i]);
 
       Tcl_ObjSetVar2(interp,toa,ton,to,TCL_APPEND_VALUE |
@@ -1413,7 +1371,6 @@ ay_ncurve_readcb(FILE *fileptr, ay_object *o)
 
   if(!(ncurve = calloc(1, sizeof(ay_nurbcurve_object))))
     { return AY_EOMEM; }
-
 
   fscanf(fileptr,"%d\n",&ncurve->length);
   fscanf(fileptr,"%d\n",&ncurve->order);
@@ -1635,8 +1592,6 @@ ay_ncurve_notifycb(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_nurbcurve_object *ncurve = NULL;
- int display_mode = ay_prefs.nc_display_mode;
- int qf = ay_prefs.stess_qf;
 
   if(!o)
     return AY_ENULL;
@@ -1650,31 +1605,12 @@ ay_ncurve_notifycb(ay_object *o)
 	return ay_status;
     }
 
-  if(ncurve->display_mode != 0)
+  if(ncurve->tessv)
     {
-      display_mode = ncurve->display_mode-1;
+      free(ncurve->tessv);
+      ncurve->tessv = NULL;
+      ncurve->tesslen = 0;
     }
-
-  if(display_mode < 3)
-    return AY_OK;
-
-  if(ncurve->order != 2)
-    {
-      if(ncurve->glu_sampling_tolerance != 0.0)
-	{
-	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
-	}
-      if(ncurve->tessv)
-	{
-	  free(ncurve->tessv);
-	  ncurve->tessv = NULL;
-	}
-
-      ay_status = ay_stess_CurvePoints3D(ncurve->length, ncurve->order-1,
-			 ncurve->knotv, ncurve->controlv, ncurve->is_rat, qf,
-		         &ncurve->tesslen, &ncurve->tessv);
-      ncurve->tessqf = qf;
-    } /* if */
 
  return AY_OK;
 } /* ay_ncurve_notifycb */
