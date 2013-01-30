@@ -73,9 +73,9 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
     }
 
   k = 0;
-  for(i=0;i<(width);i++)
+  for(i = 0; i < width; i++)
     {
-      for(j=0;j<(height);j++)
+      for(j = 0; j < height; j++)
 	{
 	  cv[k]   = (double)i*dx;
 	  cv[k+1] = (double)j*dx;
@@ -83,7 +83,6 @@ ay_pamesh_createcb(int argc, char *argv[], ay_object *o)
 	  k += 4;
 	}
     }
-
 
   p->controlv = cv;
   o->refine = (void *)p;
@@ -900,7 +899,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 	  free(pamesh);
 	  return AY_EOMEM;
 	}
-      for(i=0; i < 16; i++)
+      for(i = 0; i < 16; i++)
 	{
 	  fscanf(fileptr, "%lg\n", &(pamesh->vbasis[i]));
 	}
@@ -915,7 +914,7 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
 	  free(pamesh);
 	  return AY_EOMEM;
 	}
-      for(i=0; i < 16; i++)
+      for(i = 0; i < 16; i++)
 	{
 	  fscanf(fileptr, "%lg\n", &(pamesh->vbasis[i]));
 	}
@@ -933,13 +932,13 @@ ay_pamesh_readcb(FILE *fileptr, ay_object *o)
     }
 
   a = 0;
-  for(i=0; i < pamesh->width*pamesh->height; i++)
+  for(i = 0; i < pamesh->width*pamesh->height; i++)
     {
       fscanf(fileptr,"%lg %lg %lg %lg\n",&(pamesh->controlv[a]),
 	     &(pamesh->controlv[a+1]),
 	     &(pamesh->controlv[a+2]),
 	     &(pamesh->controlv[a+3]));
-      a+=4;
+      a += 4;
     }
 
   fscanf(fileptr,"%lg\n",&(pamesh->glu_sampling_tolerance));
@@ -977,21 +976,21 @@ ay_pamesh_writecb(FILE *fileptr, ay_object *o)
 
   if(pamesh->btype_u == AY_BTCUSTOM)
     {
-      for(i=0; i < 16; i++)
+      for(i = 0; i < 16; i++)
 	{
 	  fprintf(fileptr, "%g\n", pamesh->ubasis[i]);
 	}
     }
   if(pamesh->btype_v == AY_BTCUSTOM)
     {
-      for(i=0; i < 16; i++)
+      for(i = 0; i < 16; i++)
 	{
 	  fprintf(fileptr, "%g\n", pamesh->vbasis[i]);
 	}
     }
 
   a = 0;
-  for(i=0;i<pamesh->width*pamesh->height;i++)
+  for(i = 0; i < pamesh->width*pamesh->height; i++)
     {
       fprintf(fileptr,"%g %g %g %g\n", pamesh->controlv[a],
 	      pamesh->controlv[a+1],
@@ -1197,7 +1196,7 @@ ay_pamesh_bbccb(ay_object *o, double *bbox, int *flags)
   pamesh = (ay_pamesh_object *)o->refine;
 
  return ay_bbc_fromarr(pamesh->controlv, pamesh->width*pamesh->height,
-		       3, bbox);
+		       4, bbox);
 } /* ay_pamesh_bbccb */
 
 
