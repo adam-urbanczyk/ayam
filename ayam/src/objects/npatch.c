@@ -609,6 +609,7 @@ ay_npatch_copycb(void *src, void **dst)
 
   npatch->no = NULL;
   npatch->fltcv = NULL;
+  npatch->stess = NULL;
 
   /* copy knots */
   kl = npatch->uorder + npatch->width;
@@ -650,9 +651,7 @@ ay_npatch_copycb(void *src, void **dst)
     ay_object_copymulti(npatchsrc->caps_and_bevels,
 			&(npatch->caps_and_bevels));
 
-  /* XXXX manage tesselation */
-  npatch->stess = NULL;
-
+  /* return result */
   *dst = (void *)npatch;
 
   /* prevent cleanup code from doing something harmful */
@@ -2781,7 +2780,7 @@ ay_npatch_bbccb(ay_object *o, double *bbox, int *flags)
   *flags = 1;
 
  return ay_bbc_fromarr(npatch->controlv, npatch->width*npatch->height,
-		       3, bbox);
+		       4, bbox);
 } /* ay_npatch_bbccb */
 
 
@@ -2895,7 +2894,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
       /* terminate the level */
       c = new->down;
       while(c->next)
-	c=c->next;
+	c = c->next;
       c->next = ay_endlevel;
     }
   else
