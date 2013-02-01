@@ -924,6 +924,11 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_npt_drawtrimcurve:
  *  draw a single trimcurve with GLU
+ *
+ * \param[in] o NURBS curve object (a trim curve)
+ * \param[in] no GLU NURBS Renderer object of associated NURBS patch object
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
@@ -1011,6 +1016,10 @@ ay_npt_drawtrimcurve(ay_object *o, GLUnurbsObj *no)
 
 /* ay_npt_drawtrimcurves:
  *  draw all trimcurves with GLU
+ *
+ * \param[in] o NURBS patch object with trim curves
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_drawtrimcurves(ay_object *o)
@@ -1652,7 +1661,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object *src = NULL, *curves = NULL, *next = NULL;
- int u = 0;
+ int i = 1, apply_trafo = AY_FALSE, u = 0;
 
   if(!sel)
     {
@@ -1660,15 +1669,31 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
-  /* parse args */
-  if(argc != 2)
+  if(argc > 1)
     {
-      ay_error(AY_EARGS, argv[0], "u|v");
-      return TCL_OK;
-    }
-
-  if(!strcmp(argv[1], "u"))
-    u = 1;
+      /* parse args */
+      while(i < argc)
+	{
+	  if(argv[i] && argv[i][0] == '-')
+	    {
+	      switch(argv[i][1])
+		{
+		case 'a':
+		  apply_trafo = AY_TRUE;
+		  break;
+		case 'u':
+		  u = 1;
+		  break;
+		case 'v':
+		  u = 2;
+		  break;
+		default:
+		  break;
+		}
+	    } /* if */
+	  i++;
+	} /* while */
+    } /* if */
 
   while(sel)
     {
@@ -1683,11 +1708,13 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(u)
 	    {
-	      ay_status = ay_npt_splittocurvesu(src, AY_TRUE, &curves, NULL);
+	      ay_status = ay_npt_splittocurvesu(src, apply_trafo,
+						&curves, NULL);
 	    }
 	  else
 	    {
-	      ay_status = ay_npt_splittocurvesv(src, AY_TRUE, &curves, NULL);
+	      ay_status = ay_npt_splittocurvesv(src, apply_trafo,
+						&curves, NULL);
 	    } /* if */
 
 	  if(ay_status || !curves)
@@ -1698,7 +1725,8 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	  while(curves)
 	    {
 	      next = curves->next;
-	      ay_trafo_copy(src, curves);
+	      if(!apply_trafo)
+		ay_trafo_copy(src, curves);
 	      ay_status = ay_object_link(curves);
 	      if(ay_status)
 		(void)ay_object_delete(curves);
