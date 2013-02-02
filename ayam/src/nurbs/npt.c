@@ -1436,12 +1436,12 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_crtnsphere2tcmd */
 
 
-/* ay_npt_splittocurvesu:
- *  split NURBS patch object <o> into curves along u
+/* ay_npt_breakintocurvesu:
+ *  breakin NURBS patch object <o> into curves along u
  */
 int
-ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
-		      ay_object **curves, ay_object ***last)
+ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
+			ay_object **curves, ay_object ***last)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
@@ -1535,15 +1535,15 @@ ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
     }
 
  return ay_status;
-} /* ay_npt_splittocurvesu */
+} /* ay_npt_breakintocurvesu */
 
 
-/* ay_npt_splittocurvesv:
- *  split NURBS patch object <o> into curves along v
+/* ay_npt_breakintocurvesv:
+ *  breakin NURBS patch object <o> into curves along v
  */
 int
-ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
-		      ay_object **curves, ay_object ***last)
+ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
+			ay_object **curves, ay_object ***last)
 {
  int ay_status = AY_OK;
  ay_nurbpatch_object *patch = NULL;
@@ -1642,21 +1642,21 @@ ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
     }
 
  return ay_status;
-} /* ay_npt_splittocurvesv */
+} /* ay_npt_breakintocurvesv */
 
 
-/** ay_npt_splittocurvestcmd:
+/** ay_npt_breakintocurvestcmd:
  *  Split the selected NURBS surfaces to curves.
- *  Tcl interface for splittocurvesu() and splittocurvesv() above
+ *  Tcl interface for breakintocurvesu() and breakintocurvesv() above
  *
- *  Implements the \a splitNP scripting interface command.
- *  See also the corresponding section in the \ayd{scsplitnp}.
+ *  Implements the \a breakNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scbreaknp}.
  *
  *  \returns TCL_OK in any case.
  */
 int
-ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
-			 int argc, char *argv[])
+ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
@@ -1708,18 +1708,18 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(u)
 	    {
-	      ay_status = ay_npt_splittocurvesu(src, apply_trafo,
+	      ay_status = ay_npt_breakintocurvesu(src, apply_trafo,
 						&curves, NULL);
 	    }
 	  else
 	    {
-	      ay_status = ay_npt_splittocurvesv(src, apply_trafo,
+	      ay_status = ay_npt_breakintocurvesv(src, apply_trafo,
 						&curves, NULL);
 	    } /* if */
 
 	  if(ay_status || !curves)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Split failed.");
+	      ay_error(AY_ERROR, argv[0], "Break failed.");
 	    }
 
 	  while(curves)
@@ -1738,7 +1738,7 @@ ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
     } /* while */
 
  return TCL_OK;
-} /* ay_npt_splittocurvestcmd */
+} /* ay_npt_breakintocurvestcmd */
 
 
 /* ay_npt_buildfromcurves:
@@ -2347,7 +2347,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 
 
 /* ay_npt_concat:
- *  concatenate the patches in <o> by splitting them to
+ *  concatenate the patches in <o> by breaking them to
  *  curves, making the curves compatible, and building a
  *  new patch from the compatible curves
  *  returns resulting patch object in <result>
@@ -2496,7 +2496,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	} /* while */
     } /* if */
 
-  /* (possibly) revert the patches and split them to curves */
+  /* (possibly) revert the patches and break them to curves */
   o = patches;
   i = 0;
   while(o)
@@ -2507,7 +2507,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 	    {
 	      /* this is a fillet patch => do not consume
 		 a character from uvselect */
-	      ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+	      ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 	    }
 	  else
 	    {
@@ -2524,7 +2524,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      order = np->vorder;
 		    }
 
-		  ay_npt_splittocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+		  ay_npt_breakintocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
 		}
 	      else
 		{
@@ -2539,7 +2539,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      order = np->uorder;
 		    }
 
-		  ay_npt_splittocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+		  ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
 		} /* if */
 	      i++;
 	    } /* if */

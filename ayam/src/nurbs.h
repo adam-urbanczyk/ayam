@@ -921,20 +921,20 @@ int ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[]);
 
-/** Split NURBS patch to curves along U.
+/** Break NURBS patch into curves along U.
  */
-int ay_npt_splittocurvesu(ay_object *o, int apply_trafo,
-			  ay_object **curves, ay_object ***last);
+int ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
+			    ay_object **curves, ay_object ***last);
 
-/** Split NURBS patch to curves along V.
+/** Break NURBS patch into curves along V.
  */
-int ay_npt_splittocurvesv(ay_object *o, int apply_trafo,
-			  ay_object **curves, ay_object ***last);
+int ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
+			    ay_object **curves, ay_object ***last);
 
-/** Tcl command to split a NURBS patch to curves.
+/** Tcl command to break a NURBS patch into curves.
  */
-int ay_npt_splittocurvestcmd(ClientData clientData, Tcl_Interp *interp,
-			     int argc, char *argv[]);
+int ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
+			       int argc, char *argv[]);
 
 
 /** Build NURBS patch from curves.

@@ -184,7 +184,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
 
   {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
   {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
-  {"splitNP", jsinterp_wraptcmd, 0, 0, 0},
+  {"breakNP", jsinterp_wraptcmd, 0, 0, 0},
   {"buildNP", jsinterp_wraptcmd, 0, 0, 0},
   /* topoly? */
   {"elevateuNP", jsinterp_wraptcmdargs, 0, 0, 0},

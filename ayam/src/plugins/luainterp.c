@@ -163,7 +163,7 @@ static const struct luaL_Reg luainterplib [] = {
 
       {"crtNSphere", luainterp_wraptclcmd},
       {"crtNSphere2", luainterp_wraptclcmd},
-      {"splitNP", luainterp_wraptclcmd},
+      {"breakNP", luainterp_wraptclcmd},
       {"buildNP", luainterp_wraptclcmd},
       /* topoly? */
       {"elevateuNP", luainterp_wraptclcmd},
