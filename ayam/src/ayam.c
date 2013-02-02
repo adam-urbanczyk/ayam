@@ -526,6 +526,8 @@ ay_init(Tcl_Interp *interp)
   if((ay_status = ay_object_create(AY_IDLEVEL, &ay_root->next)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
   ay_endlevel = ay_root->next;
+  ay_endlevel->parent = AY_FALSE;
+  ay_endlevel->down = NULL;
 
   /* create terminating level object in views level */
   ay_root->down = ay_root->next;
@@ -1129,7 +1131,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "crtNSphere2", ay_npt_crtnsphere2tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitNP", ay_npt_splittocurvestcmd,
+  Tcl_CreateCommand(interp, "breakNP", ay_npt_breakintocurvestcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
@@ -1614,7 +1616,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "crtNSphere2", ay_npt_crtnsphere2tcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "splitNP", ay_npt_splittocurvestcmd,
+  Tcl_CreateCommand(interp, "breakNP", ay_npt_breakintocurvestcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "buildNP", ay_npt_buildfromcurvestcmd,
