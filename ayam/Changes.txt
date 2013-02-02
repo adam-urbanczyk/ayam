@@ -1,4 +1,4 @@
-[22. Jan 2013] CVS-Head:
+[2. Feb 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -40,8 +40,9 @@ o new objects will now be created at the mark, if the new preference
   option "CreateAtMark" is enabled (default: yes) and if the objects
   are not potential parent objects
 o the mark may now be set by double-clicking with the right mouse button
-o if the mark is set in a view, the respective z coordinate of the mark is
-  no longer set to zero (when the preference option "GlobalMark" is activated)
+o if the mark is set by clicking into a view, the respective z coordinate of
+  the mark is no longer set to zero (when the preference option "GlobalMark"
+  is activated); this allows to set a 3D mark using two clicks in two views
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -96,7 +97,12 @@ o Material objects can no longer be renamed via "nameOb" (as this command
   does not update the material registry)
 o the "makeCompNC" command no longer unconditionally clamps the parameter
   curves (unless the new option "-force" is given)
+o added command "isCompNC" to check curves for compatibility
 o added command "hasTag" to quickly check for the existence of a tag
+o renamed "splitNP" command to "breakNP" to avoid confusion with the real
+  surface splitting commands "splituNP" and "splitvNP"
+o the "breakNP" command options now need a "-" and the command now supports
+  "-a" for "apply transformations"
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
