@@ -97,11 +97,8 @@ proc npatch_break { } {
 	    append cmd " -v"
 	}
 	set ay_error ""
-
 	eval $cmd
-
-	uCR; rV
-
+	uCR; rV; set ay(sc) 1
 	if { $ay_error > 1 } {
 	    ayError 2 "Break" "There were errors while breaking!"
 	}
@@ -122,6 +119,8 @@ proc npatch_break { } {
     # Esc-key && close via window decoration == Cancel button
     bind $w <Escape> "$f.bca invoke"
     wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    shortcut_addcshelp $w ayam-5.html breaknpt
 
     winCenter $w
     grab $w
