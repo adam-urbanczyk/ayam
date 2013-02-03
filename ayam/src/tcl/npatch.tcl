@@ -55,3 +55,83 @@ addMenu $w NPatchAttrData DisplayMode $ay(npdisplaymodes)
 trace variable NPatchAttrData(Knots_U) w markPropModified
 trace variable NPatchAttrData(Knots_V) w markPropModified
 
+# npatch_break:
+#
+#
+proc npatch_break { } {
+    global ay ayprefs ay_error npatchbrk_options
+
+    if { ! [info exists npatchbrk_options] } {
+	set npatchbrk_options(Direction) 0
+    }
+
+    winAutoFocusOff
+
+    set npatchbrk_options(oldfocus) [focus]
+
+    set w .npatchbrk
+    set t "Break NPatch"
+    winDialog $w $t
+
+    set f [frame $w.f1]
+    pack $f -in $w -side top -fill x
+
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
+
+    if { $ayprefs(FixDialogTitles) == 1 } {
+	addText $f e1 $t
+    }
+
+    addMenu $f npatchbrk_options Direction {"U" "V"}
+    addCheck $f npatchbrk_options ApplyTrafo
+
+    set f [frame $w.f2]
+    button $f.bok -text "Ok" -width 5 -command {
+	global ay_error npatchbrk_options
+	set cmd "breakNP"
+	if { $npatchbrk_options(ApplyTrafo) == 1 } {
+	    append cmd " -a"
+	}
+	if { $npatchbrk_options(Direction) == 1 } {
+	    append cmd " -v"
+	}
+	set ay_error ""
+
+	eval $cmd
+
+	uCR; rV
+
+	if { $ay_error > 1 } {
+	    ayError 2 "Break" "There were errors while breaking!"
+	}
+
+	grab release .npatchbrk
+	restoreFocus $npatchbrk_options(oldfocus)
+	destroy .npatchbrk
+    }
+
+    button $f.bca -text "Cancel" -width 5 -command "\
+	    grab release .npatchbrk;\
+	    restoreFocus $npatchbrk_options(oldfocus);\
+	    destroy .npatchbrk"
+
+    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    pack $f -in $w -side bottom -fill x
+
+    # Esc-key && close via window decoration == Cancel button
+    bind $w <Escape> "$f.bca invoke"
+    wm protocol $w WM_DELETE_WINDOW "$f.bca invoke"
+
+    winCenter $w
+    grab $w
+    focus $w.f2.bok
+    tkwait window $w
+
+    winAutoFocusOn
+
+    after idle viewMouseToCurrent
+
+ return;
+}
+# npatch_break

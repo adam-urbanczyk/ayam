@@ -656,12 +656,8 @@ $m.npt add separator
 $m.npt add command -label "Collapse Points" -command {collMP; rV; set ay(sc) 1}
 $m.npt add command -label "Explode Points" -command {explMP; rV; set ay(sc) 1}
 $m.npt add separator
-$m.npt add command -label "Split to Curves (u)" -command {
-    splitNP u; uS; sL; rV; set ay(sc) 1
-}
-$m.npt add command -label "Split to Curves (v)" -command {
-    splitNP v; uS; sL; rV; set ay(sc) 1
-}
+$m.npt add command -label "Break into Curves" -command npatch_break
+
 $m.npt add command -label "Build from Curves" -command {
     buildNP; uCR; sL; rV; set ay(sc) 1
 }
