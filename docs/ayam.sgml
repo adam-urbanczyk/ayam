@@ -1278,8 +1278,10 @@ from a sphere to a cylinder.
 <item><tt>"Instances/Resolve all Instances"</tt>, converts all instances
 of the current level (and its child objects) to normal objects.
 If objects are selected, only those selected objects will be
-processed.
-<footnote>Since 1.14.</footnote>
+processed.<footnote>Since 1.14.</footnote>
+In contrast to converting the selected Instance objects, this operation
+does not stop until no Instances are left in the processed object
+hierarchies.
 
 <item><tt>"Instances/Automatic Instancing"</tt>, pops up a small dialog box,
 where you may parameterise and start the automatic instantiation
@@ -8717,7 +8719,7 @@ patches or provide NURBS patches to a single NURBS patch (see also the
 image above).
 <footnote>Since 1.16.</footnote>
 
-The concatenation simply splits all surfaces into curves, makes
+The concatenation simply breaks all surfaces into curves, makes
 the curves compatible, and joins them to the concatenated surface.
 
 Also NURBS curves or objects that provide NURBS curves can be used
@@ -11908,13 +11910,17 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scextrnp" name="extrNP">.
 </descrip>
 
-<sect1>Split to Curves Tool<label id="sptct">
+<sect1>Patch Break into Curves Tool<label id="breaknpt">
 <p>
 <descrip>
-<tag/Arguments/ The split to curves tool takes a single NURBS patch from
-the selection.
-<tag/Operation/ The selected NURBS patch will be split into NURBS curves,
-along direction U or V.
+<tag/Arguments/ The break into curves tool takes all NURBS patches from
+the selection and requests a direction parameter.
+<tag/Operation/ The selected NURBS patches will be broken into NURBS curves,
+along direction U or V. If the option <tt/"ApplyTrafo"/ is set,
+the transformations of the NPatch objects will be applied to the
+control points and the NCurve objects will be created with default
+transformation attributes, otherwise the NCurve objects will get the
+transformation attributes of the respective NPatch.
 <tscreen><verb>
 |-NPatch             |-NPatch
                      |-NCurve
@@ -11924,10 +11930,10 @@ along direction U or V.
 </verb></tscreen>
 <tag/Notes/ The original NURBS patch object is not deleted.
 See also the documentation of the corresponding
-scripting interface command <ref id="scsplitnp" name="splitNP">.
+scripting interface command <ref id="scbreaknp" name="breakNP">.
 </descrip>
 
-<sect1>Build from Curves Tool<label id="bfct">
+<sect1>Build from Curves Tool<label id="buildnpt">
 <p>
 <descrip>
 <tag/Arguments/ The build from curves tool takes a number of NURBS
@@ -14200,14 +14206,18 @@ for more information on these options.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scsplitnp">
-splitNP &ndash; split NURBS patch:
+<label id="scbreaknp">
+breakNP &ndash; break NURBS patch into curves:
 <itemize>
- <item>Synopsis: <tt/"splitNP (u | v)"/
- <item>Background: Yes, Undo: No, Safe: No
- <item>Description: Splits the selected NPatch objects into NURBS curves,
-along parametric dimension u or v.
-See also section <ref id="splitnpt" name="Patch Split Tools">.
+ <item>Synopsis: <tt/"breakNP [-a|-u|-v]"/
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: Breaks the selected NPatch objects into NURBS curves,
+along parametric dimension u or v. If the option <tt/"-a"/ is given,
+the transformations of the NPatch objects will be applied to the
+control points and the NCurve objects will be created with default
+transformation attributes, otherwise the NCurve objects will get the
+transformation attributes of the respective NPatch.
+See also section <ref id="breaknpt" name="Patch Break into Curves Tool">.
 </itemize>
 
 <p>
@@ -14216,10 +14226,10 @@ See also section <ref id="splitnpt" name="Patch Split Tools">.
 <label id="scbuildnp">
 buildNP &ndash; build NURBS patch:
 <itemize>
- <item>Synopsis: <tt/"buildNPatch"/
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Synopsis: <tt/"buildNP"/
+ <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Builds a NURBS patch from the selected NURBS curves.
-See also section <ref id="bfct" name="Build from Curves Tool">.
+See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
 
 
@@ -18769,8 +18779,10 @@ Index:
 <item>Box: <ref id="boxobj" name="Box object">
 <item>BP: <ref id="bptag" name="tag type">
 <item>BPatch: <ref id="bpatchobj" name="BPatch object">
+<item>Break: <ref id="breaknpt" name="break into curves tool">
+<item>breakNP: <ref id="scbreaknp" name="scripting interface command">
 <item>BType_U, BType_V: <ref id="pmattr" name="PatchMesh attribute">
-<item>Build: <ref id="bfct" name="build from curves tool">
+<item>Build: <ref id="buildnpt" name="build from curves tool">
 <item>buildNP: <ref id="scbuildnp" name="scripting interface command">
 </list>
 
@@ -19792,14 +19804,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="sphereobj" name="Sphere object">,
 <item><ref id="nspt" name="NURBS sphere tool">
 </itemize>
-<item>Split:
-<itemize>
-<item><ref id="sptct" name="split to curves tool">,
-<item><ref id="mmtools" name="split polymesh tool">
-</itemize>
 <item>Split Curve: <ref id="splitncac" name="modelling action">
+<item>Split Polymesh: <ref id="mmtools" name="split polymesh tool">
 <item>splitNC: <ref id="scsplitnc" name="scripting interface command">
-<item>splitNP: <ref id="scsplitnp" name="scripting interface command">
 <item>splituNP: <ref id="scsplitunp" name="scripting interface command">
 <item>splitvNP: <ref id="scsplitvnp" name="scripting interface command">
 <item>Spot: <ref id="pdsl" name="light type">
