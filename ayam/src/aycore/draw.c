@@ -16,7 +16,7 @@ unsigned int ay_current_glname = 0;
 
 /* draw.c - functions for drawing a scene using OpenGL */
 
-int ay_draw_annos(struct Togl *togl, int draw_offset);
+void ay_draw_annos(struct Togl *togl, int draw_offset);
 
 
 /* ay_draw_object:
@@ -347,7 +347,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glPopMatrix();
     } /* if */
 
-  ay_status = ay_draw_annos(togl, draw_offset);
+  ay_draw_annos(togl, draw_offset);
 
   if(draw_offset)
     glDepthRange(0.0, 1.0);
@@ -368,74 +368,107 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 } /* ay_draw_view */
 
 
-int
+void
 ay_draw_annos(struct Togl *togl, int draw_offset)
 {
  int ay_status = AY_OK;
  char fname[] = "draw_annos";
- ay_voidfp *arr = NULL;
- ay_drawcb *cb = NULL;
- ay_object *o = ay_root;
- ay_list_object *sel = ay_selection;
+ ay_voidfp *arr;
+ ay_drawcb *cb;
+ ay_object *o;
+ ay_list_object *sel;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  int width = Togl_Width(togl), height = Togl_Height(togl);
+ int draw_root = AY_TRUE;
+ double m[16];
 
   arr = ay_drawacbt.arr;
-  sel = ay_selection;
 
-  if(!o->hide)
+  if(ay_root->hide || view->drawsel)
+    draw_root = AY_FALSE;
+  else
+    if(view->drawlevel && ay_currentlevel->object != ay_root)
+      draw_root = AY_FALSE;
+
+  /* draw the root annotations (coordinate system) */
+  if(draw_root)
     {
-      cb = (ay_drawcb *)(arr[o->type]);
+      cb = (ay_drawcb *)(arr[ay_root->type]);
 
       if(cb)
 	{
-	  if(o->selected)
+	  if(ay_root->selected)
 	    glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		      (GLfloat)ay_prefs.seb);
 	  else
 	    glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 		      (GLfloat)ay_prefs.obb);
 
-	  ay_status = cb(togl, o);
+	  ay_status = cb(togl, ay_root);
 	  if(ay_status)
 	    {
-	      ay_error(ay_status, fname,
-		       "draw annotation callback failed");
+	      ay_error(ay_status, fname, "draw annotation callback failed");
 	    }
-	}
+	} /* if cb */
     } /* if */
 
+  /* draw the annotations of all selected objects */
   if(view->drawhandles)
     {
       /* set color for selected objects */
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
 
+      glMatrixMode(GL_MODELVIEW);
+
+      if(ay_currentlevel->object != ay_root)
+	{
+	  glPushMatrix();
+	  glLoadIdentity();
+	  ay_trafo_getall(ay_currentlevel->next);
+	}
+
+      sel = ay_selection;
       while(sel)
 	{
 	  o = sel->object;
-      
+
 	  if(!o->hide)
 	    {
 	      cb = (ay_drawcb *)(arr[o->type]);
 
 	      if(cb)
 		{
-		  ay_status = cb(togl, o);
-		  if(ay_status)
-		    {
-		      ay_error(ay_status, fname,
-			       "draw annotation callback failed");
-		    }
-		}
-	    }
+		  glPushMatrix();
+		   glTranslated((GLdouble)o->movx, (GLdouble)o->movy,
+				(GLdouble)o->movz);
+		   ay_quat_torotmatrix(o->quat, m);
+		   glMultMatrixd((GLdouble*)m);
+		   glScaled((GLdouble)o->scalx, (GLdouble)o->scaly,
+			    (GLdouble)o->scalz);
+
+		   ay_status = cb(togl, o);
+		   if(ay_status)
+		     {
+		       ay_error(ay_status, fname,
+				"draw annotation callback failed");
+		     }
+		  glPopMatrix();
+		} /* if cb */
+	    } /* if !hidden */
 	  sel = sel->next;
 	} /* while */
-    } /* if */
 
+      if(ay_currentlevel->object != ay_root)
+	{
+	  glPopMatrix();
+	}
+
+    } /* if drawhandles */
+
+  /* draw marked point in space */
   if(!draw_offset)
     {
-      /* draw marked point in space */
       if(view->drawmark)
 	{
 	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
@@ -464,7 +497,7 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
 	} /* if */
     } /* if */
 
- return AY_OK;
+ return;
 } /* ay_draw_annos */
 
 
@@ -854,6 +887,11 @@ ay_draw_grid(struct Togl *togl)
 	    {
 	      return;
 	    }
+	  break;
+	default:
+	  gwinx = 0.0;
+	  gwiny = 0.0;
+	  gwinz = 0.0;
 	  break;
 	}
 
