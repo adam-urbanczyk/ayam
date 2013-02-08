@@ -696,7 +696,6 @@ array set ay {
  startup 1
  customkeys {}
  lasttool ""
- draw_nurbs 1
  cVPnts 0
  cVDrawMark 0
 }

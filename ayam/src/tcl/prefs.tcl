@@ -601,6 +601,14 @@ proc prefs_toggleLazyNotification { } {
 proc prefs_toggleSurfaceWire { } {
     global ay ayprefs ayprefse aymainshortcuts
 
+    if {![info exists ay(draw_nurbs)]} {
+	if { $ayprefs(NPDisplayMode) == 0 && $ayprefs(NCDisplayMode) == 0 } {
+	   set ay(draw_nurbs) 0
+	} else {
+	    set ay(draw_nurbs) 1
+	}
+    }
+
     if { $ay(draw_nurbs) == 0 } {
 	if { $ayprefs(NPDisplayMode) != 2 || $ayprefs(NCDisplayMode) != 2 } {
 	    set ayprefse(NPDisplayMode) 2
