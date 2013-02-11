@@ -64,6 +64,7 @@ int x3dio_mergeinlinedefs = AY_TRUE;
 
 int x3dio_tesspomesh = AY_FALSE;
 int x3dio_writecurves = AY_TRUE;
+int x3dio_writewires = AY_FALSE;
 int x3dio_writeviews = AY_TRUE;
 int x3dio_writeparam = AY_FALSE;
 int x3dio_resolveinstances = AY_FALSE;
@@ -301,6 +302,8 @@ int x3dio_writetrimcurve(scew_element *element, ay_object *o);
 int x3dio_writetrimloop(scew_element *element, ay_object *o);
 
 int x3dio_writenpatchobj(scew_element *element, ay_object *o);
+
+int x3dio_writenpwire(scew_element *element, ay_object *o);
 
 int x3dio_writenpconvertibleobj(scew_element *element, ay_object *o);
 
@@ -7251,16 +7254,17 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
+  if(x3dio_writewires)
+    return x3dio_writenpwire(element, o);
+
   /* decode potentially present PV tags */
   if(o->tags)
     {
-
       tag = o->tags;
       while(tag)
 	{
 	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
-
 	      ay_status = x3dio_copypv(tag, &texcoordstring);
 	      if(ay_status == AY_OK)
 		{
@@ -7335,13 +7339,10 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 			  copystride, v);
 
   /* write texture coordinates */
-
   if(have_texcoords)
     {
-
       texcoord_element = scew_element_add(patch_element, "TextureCoordinate");
       scew_element_add_attr_pair(texcoord_element, "point", texcoordstring);
-
     } /* if */
 
   /* write trim curves*/
@@ -7373,6 +7374,264 @@ cleanup:
 
  return ay_status;
 } /* x3dio_writenpatchobj */
+
+
+/* x3dio_writenpwire:
+ *
+ */
+int
+x3dio_writenpwire(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_nurbpatch_object *np;
+ char buf[64], *attr = NULL, *tmp;
+ int a, b, j, m, n, p, q;
+ int ulines, vlines, fulines, fvlines, spanu, spanv;
+ int *spanus, *spanvs, *fspanus, *fspanvs;
+ double *P, *U, *V, *Nu, *Nv, *fd1, *fd2, *Ct;
+ double l, u, v, ud, fud, vd, fvd;
+ double N[3] = {0}, fder[9] = {0};
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *line_element = NULL;
+ scew_element *coord_element = NULL;
+
+  if(!element || !o || !o->refine)
+    return AY_ENULL;
+
+  np = (ay_nurbpatch_object *)o->refine;
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  P = np->controlv;
+  U = np->uknotv;
+  V = np->vknotv;
+  n = np->width;
+  m = np->height;
+  ulines = np->width-(np->uorder/2);
+  fulines = ulines*3;
+  vlines = np->height-(np->vorder/2);
+  fvlines = vlines*3;
+  p = np->uorder-1;
+  q = np->vorder-1;
+  ud = (U[n] - U[p]) / (ulines - 1);
+  fud = (U[n] - U[p]) / (fulines - 1);
+  vd = (V[m] - V[q]) / (vlines - 1);
+  fvd = (V[m] - V[q]) / (fvlines - 1);
+
+  if(!(Ct = malloc((fulines>fvlines?fulines:fvlines)*3*sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  if(!(spanus = malloc((ulines+vlines)*sizeof(int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  spanvs = spanus + ulines;
+  if(!(fspanus = malloc((fulines+fvlines)*sizeof(int))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  fspanvs = fspanus + fulines;
+  if(!(Nu = calloc(p+1+q+1, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  Nv = Nu + (p+1);
+
+  /* employ linear variants of FindSpan() as they are much faster
+     than a binary search; especially, since we calculate
+     spans for all parameters in order */
+#if 0
+  /* coarse lines */
+  u = U[p];
+  spanu = p;
+  for(a = 0; a < ulines-1; a++)
+    {
+      if(u > U[p+1])
+	{
+	  while(u > U[spanu+1])
+	    {
+	      spanu++;
+	    }
+	}
+      spanus[a] = spanu;
+
+      u += ud;
+    }
+  spanus[a] = spanus[a-1];
+
+  v = V[q];
+  spanv = q;
+  for(a = 0; a < vlines-1; a++)
+    {
+      if(v > V[q+1])
+	{
+	  while(v > V[spanv+1])
+	    {
+	      spanv++;
+	    }
+	}
+      spanvs[a] = spanv;
+      v += vd;
+    }
+  spanvs[a] = spanvs[a-1];
+
+  /* fine lines */
+  u = U[p];
+  spanu = p;
+  for(a = 0; a < fulines-1; a++)
+    {
+      if(u > U[p+1])
+	{
+	  while(u > U[spanu+1])
+	    {
+	      spanu++;
+	    }
+	}
+      fspanus[a] = spanu;
+
+      u += fud;
+    }
+  fspanus[a] = fspanus[a-1];
+
+  v = V[q];
+  spanv = q;
+  for(a = 0; a < fvlines-1; a++)
+    {
+      if(v > V[q+1])
+	{
+	  while(v > V[spanv+1])
+	    {
+	      spanv++;
+	    }
+	}
+      fspanvs[a] = spanv;
+      v += fvd;
+    }
+  fspanvs[a] = fspanvs[a-1];
+#endif
+
+  if(!(attr = malloc((sprintf(buf, " %d", fvlines-1)*fvlines+5)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  for(a = 0; a < fvlines; a++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+    } /* for */
+  memcpy(tmp, " -1", 4*sizeof(char));
+
+
+  /* v-lines */
+  u = U[p];
+  for(a = 0; a < ulines; a++)
+    {
+      spanu = spanus[a];
+      /*ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);*/
+
+      v = V[q];
+      j = 0;
+      for(b = 0; b < fvlines; b++)
+	{
+	  spanv = fspanvs[b];
+	  /*ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);*/
+
+	  /* calculate point and normal */
+	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(N, fd2, fd1);
+	  l = AY_V3LEN(N);
+	  if(fabs(l) > AY_EPSILON)
+	    AY_V3SCAL(N, 1.0/l);
+	  /* offset point along normal */
+	  AY_V3SCAL(N, 0.01);
+	  Ct[j]   = fder[0]+N[0];
+	  Ct[j+1] = fder[1]+N[1];
+	  Ct[j+2] = fder[2]+N[2];
+
+	  j += 3;
+	  v += fvd;
+	} /* for */
+
+      line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+      scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+      /* write coordinates */
+      coord_element = scew_element_add(line_element, "Coordinate");
+      x3dio_writedoublepoints(coord_element, "point", 3, fvlines,
+			      3, Ct);
+
+      u += ud;
+    } /* for */
+
+  /* u-lines */
+  if(attr)
+    free(attr);
+  if(!(attr = malloc((sprintf(buf, " %d", fulines-1)*fulines+5)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  for(a = 0; a < fulines; a++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+    } /* for */
+  memcpy(tmp, " -1", 4*sizeof(char));
+
+  v = V[q];
+  for(a = 0; a < vlines; a++)
+    {
+      spanv = spanvs[a];
+      //ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);
+
+      u = U[p];
+      j = 0;
+      for(b = 0; b < fulines; b++)
+	{
+	  spanu = fspanus[b];
+	  //ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);
+
+	  /* calculate point and normal */
+	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  fd1 = &(fder[3]);
+	  fd2 = &(fder[6]);
+	  AY_V3CROSS(N, fd2, fd1);
+	  l = AY_V3LEN(N);
+	  if(fabs(l) > AY_EPSILON)
+	    AY_V3SCAL(N, 1.0/l);
+	  /* offset point along normal */
+	  AY_V3SCAL(N, 0.01);
+	  Ct[j]   = fder[0]+N[0];
+	  Ct[j+1] = fder[1]+N[1];
+	  Ct[j+2] = fder[2]+N[2];
+
+	  j += 3;
+	  u += fud;
+	} /* for */
+
+      line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+      scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+      /* write coordinates */
+      coord_element = scew_element_add(line_element, "Coordinate");
+      x3dio_writedoublepoints(coord_element, "point", 3, fulines,
+			      3, Ct);
+
+      v += vd;
+    } /* for */
+
+cleanup:
+
+  if(Ct)
+    free(Ct);
+  if(spanus)
+    free(spanus);
+  if(fspanus)
+    free(fspanus);
+  if(Nu)
+    free(Nu);
+  if(attr)
+    free(attr);
+
+ return ay_status;
+} /* x3dio_writenpwire */
 
 
 /* x3dio_writenpconvertibleobj:
@@ -8164,7 +8423,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       if(po->has_normals)
 	{
 	  normal_element = scew_element_add(ifs_element, "Normal");
-	  x3dio_writedoublepoints(normal_element, "point", 3, po->ncontrols,
+	  x3dio_writedoublepoints(normal_element, "vector", 3, po->ncontrols,
 				  6, &(po->controlv[3]));
 	}
       else
@@ -8372,7 +8631,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
 				 buffer);
 
       /* field of view */
-      tmp = (atan(view->zoom)*180.0)/AY_PI*2.0;
+      tmp = atan(view->zoom)*2.0;
       x3dio_writedoubleattrib(vp_element, "fieldOfView", &tmp);
 
    } /* if */
@@ -9401,6 +9660,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-r"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_resolveinstances);
+	}
+      else
+      if(!strcmp(argv[i], "-w"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writewires);
 	}
       i += 2;
     } /* while */
