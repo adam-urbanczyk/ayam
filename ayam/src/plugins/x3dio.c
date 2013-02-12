@@ -49,6 +49,9 @@ char *x3dio_mn_tagtype = NULL;
 char *x3dio_mn_tagname = "MN";
 
 
+char *x3dio_truestring = "true";
+char *x3dio_falsestring = "false";
+
 /* current transformation */
 x3dio_trafostate *x3dio_ctrafos = NULL;
 
@@ -442,13 +445,13 @@ x3dio_readbool(scew_element *element, char *attrname, int *res)
       str = scew_attribute_value(attr);
       if(str)
 	{
-	  if(!strcmp(str, "true"))
+	  if(!strcmp(str, x3dio_truestring))
 	    {
 	      *res = 1;
 	    }
 	  else
 	    {
-	      if(!strcmp(str, "false"))
+	      if(!strcmp(str, x3dio_falsestring))
 		{
 		  *res = 0;
 		}
@@ -936,7 +939,7 @@ x3dio_readboolvec(scew_element *element, char *attrname,
 		  break;
 		}
 
-	      if(strcmp("true", p))
+	      if(strcmp(x3dio_truestring, p))
 		{
 		  *ip = AY_FALSE;
 		}
@@ -1894,8 +1897,6 @@ x3dio_readindexedfaceset(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  /* XXXX read coord field! */
-
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
   if(coordlen == 0)
@@ -2006,8 +2007,6 @@ x3dio_readindexedtriangleset(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  /* XXXX read coord field! */
-
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
   if(coordlen == 0)
@@ -2098,8 +2097,6 @@ x3dio_readindexedquadset(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  /* XXXX read coord field! */
-
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
   if(coordlen == 0)
@@ -2189,8 +2186,6 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
-
-  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -2309,8 +2304,6 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
-
-  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -2433,8 +2426,6 @@ x3dio_readindexedlineset(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  /* XXXX read coord field! */
-
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
   if(coordlen == 0)
@@ -2538,8 +2529,6 @@ x3dio_readlineset(scew_element *element)
 
   if(!element)
     return AY_ENULL;
-
-  /* XXXX read coord field! */
 
   ay_status = x3dio_readcoords(element, &coordlen, &coords);
 
@@ -5172,6 +5161,7 @@ x3dio_readviewpoint(scew_element *element)
 
       Tcl_Eval(ay_interp, update_cmd);
 
+      /* establish keyboard shortcuts and mouse bindings */
       sprintf(command,"global ay;viewBind [lindex $ay(views) end]");
       Tcl_Eval(ay_interp, command);
 
@@ -6898,26 +6888,24 @@ x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
       switch(dim)
 	{
 	case 1:
-	  sprintf(buf, "%g ", value[a]);
+	  buflen = sprintf(buf, "%g ", value[a]);
 	  break;
 	case 2:
-	  sprintf(buf, "%g %g, ", value[a], value[a+1]);
+	  buflen = sprintf(buf, "%g %g, ", value[a], value[a+1]);
 	  break;
 	case 3:
-	  sprintf(buf, "%g %g %g, ", value[a], value[a+1], value[a+2]);
+	  buflen = sprintf(buf, "%g %g %g, ", value[a], value[a+1],
+			   value[a+2]);
 	  break;
 	case 4:
-	  sprintf(buf, "%g %g %g %g, ", value[a], value[a+1], value[a+2],
-		  value[a+3]);
+	  buflen = sprintf(buf, "%g %g %g %g, ", value[a], value[a+1],
+			   value[a+2], value[a+3]);
 	  break;
 	default:
 	  return AY_ERROR;
 	  break;
 	} /* switch */
 
-      buflen = strlen(buf);
-
-      tmp = NULL;
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
 	  free(attr);
@@ -6955,11 +6943,8 @@ x3dio_writeweights(scew_element *element, char *name,
 
   for(i = 0; i < length; i++)
     {
-      sprintf(buf, "%g ", value[a+3]);
+      buflen = sprintf(buf, "%g ", value[a+3]);
 
-      buflen = strlen(buf);
-
-      tmp = NULL;
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
 	  free(attr);
@@ -6996,12 +6981,8 @@ x3dio_writeknots(scew_element *element, char *name,
 
   for(i = 0; i < length; i++)
     {
+      buflen = sprintf(buf, "%g ", value[i]);
 
-      sprintf(buf, "%g ", value[i]);
-
-      buflen = strlen(buf);
-
-      tmp = NULL;
       if(!(tmp = realloc(attr, (totalbuflen+buflen+1)*sizeof(char))))
 	{
 	  free(attr);
@@ -7329,8 +7310,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
   if(p->is_rat)
     {
-      x3dio_writeweights(patch_element, "weight", p->width*p->height,
-			 v);
+      x3dio_writeweights(patch_element, "weight", p->width*p->height, v);
     }
 
   /* write coordinates */
@@ -7403,9 +7383,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
-
-  /* write shape */
-  shape_element = scew_element_add(transform_element, "Shape");
 
   P = np->controlv;
   U = np->uknotv;
@@ -7517,7 +7494,6 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
     } /* for */
   memcpy(tmp, " -1", 4*sizeof(char));
 
-
   /* v-lines */
   u = U[p];
   for(a = 0; a < ulines; a++)
@@ -7533,7 +7509,10 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  /*ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);*/
 
 	  /* calculate point and normal */
-	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  if(np->is_rat)
+	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  else
+	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);
 	  AY_V3CROSS(N, fd2, fd1);
@@ -7549,6 +7528,8 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  j += 3;
 	  v += fvd;
 	} /* for */
+
+      shape_element = scew_element_add(transform_element, "Shape");
 
       line_element = scew_element_add(shape_element, "IndexedLineSet");
 
@@ -7588,7 +7569,10 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  //ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);
 
 	  /* calculate point and normal */
-	  ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  if(np->is_rat)
+	    ay_nb_CompFirstDerSurf4D(n-1, m-1, p, q, U, V, P, u, v, fder);
+	  else
+	    ay_nb_CompFirstDerSurf3D(n-1, m-1, p, q, U, V, P, u, v, fder);
 	  fd1 = &(fder[3]);
 	  fd2 = &(fder[6]);
 	  AY_V3CROSS(N, fd2, fd1);
@@ -7604,6 +7588,8 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  j += 3;
 	  u += fud;
 	} /* for */
+
+      shape_element = scew_element_add(transform_element, "Shape");
 
       line_element = scew_element_add(shape_element, "IndexedLineSet");
 
@@ -8079,9 +8065,9 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
       if(!cylinder->closed)
 	{
 	  scew_element_add_attr_pair(cylinder_element, "bottom",
-				     "false");
+				     x3dio_falsestring);
 	  scew_element_add_attr_pair(cylinder_element, "top",
-				     "false");
+				     x3dio_falsestring);
 	}
     }
   else
@@ -8144,7 +8130,7 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
       if(!cone->closed)
 	{
 	  scew_element_add_attr_pair(cone_element, "bottom",
-				     "false");
+				     x3dio_falsestring);
 	}
     }
   else
@@ -8298,10 +8284,8 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
 		  for(k = 0; k < po->nverts[q]; k++)
 		    {
-		      sprintf(buf, " %d", po->verts[r]);
-		      buflen = strlen(buf);
+		      buflen = sprintf(buf, " %d", po->verts[r]);
 
-		      tmp = NULL;
 		      if(!(tmp = realloc(attr,
 					 (totalbuflen+buflen+1)*sizeof(char))))
 			{ ay_status = AY_EOMEM; goto cleanup; }
@@ -8406,8 +8390,13 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
       if(po->has_normals)
 	{
-	  scew_element_add_attr_pair(ifs_element, "normalPerVertex", "true");
+	  scew_element_add_attr_pair(ifs_element, "normalPerVertex",
+				     x3dio_truestring);
 	} /* if */
+
+      /* XXXX make this configurable? */
+      scew_element_add_attr_pair(ifs_element, "ccw", x3dio_falsestring);
+      scew_element_add_attr_pair(ifs_element, "solid", x3dio_falsestring);
 
       /* write control points */
       if(po->has_normals)
@@ -8791,13 +8780,14 @@ x3dio_writelight(scew_element *element, ay_object *o)
       /* local/global state */
       if(light->local)
 	{
-	  scew_element_add_attr_pair(light_element, "global", "false");
+	  scew_element_add_attr_pair(light_element, "global",
+				     x3dio_falsestring);
 	}
 
       /* is_on state */
       if(!light->on)
 	{
-	  scew_element_add_attr_pair(light_element, "on", "false");
+	  scew_element_add_attr_pair(light_element, "on", x3dio_falsestring);
 	}
     } /* if */
 
