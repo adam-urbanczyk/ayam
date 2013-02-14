@@ -1,4 +1,4 @@
-[2. Feb 2013] CVS-Head:
+[14. Feb 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -12,6 +12,8 @@ o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
 o clamping a periodic curve does not reset the curve type (SF 3579550)
 o crash when computing the curvature of a linear curve (SF 3588209)
 o read only points of quadrics after thetamax changes (SF 3601813)
+o X3D export of fieldOfView parameter (SF 3604133)
+o X3D export of PolyMesh normals (SF 3604132)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
