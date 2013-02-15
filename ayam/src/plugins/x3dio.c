@@ -9552,6 +9552,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   root = scew_tree_add_root(tree, "X3D");
 
   attribute = scew_attribute_create("profile", "Full");
+  scew_element_add_attr(root, attribute);
   attribute = scew_attribute_create("version", "3.0");
   scew_element_add_attr(root, attribute);
 
