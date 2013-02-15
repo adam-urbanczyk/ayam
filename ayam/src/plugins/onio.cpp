@@ -349,6 +349,8 @@ int
 onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
 {
  int ay_status = AY_OK;
+ ay_object *c;
+ ay_nurbpatch_object *np;
  ON_NurbsSurface *p_n = NULL;
 
   if(!o || !p_m || !m)
@@ -373,6 +375,16 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
 
       onio_writename(o, mo);
     } // if
+
+
+  /* write the caps and bevels */
+  np = (ay_nurbpatch_object *)o->refine;
+  c = np->caps_and_bevels;
+  while(c)
+    {
+      ay_status = onio_writenpatch(c, p_m, m);
+      c = c->next;
+    }
 
  return ay_status;
 } // onio_writenpatch
