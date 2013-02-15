@@ -656,8 +656,8 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
- float *dummy = NULL, *fp;
- unsigned int i;
+ float *tmp = NULL, *fp;
+ unsigned int i, j = 0;
 
   if(!element || !attrname || !len || !res)
     return AY_ENULL;
@@ -672,14 +672,30 @@ x3dio_readfloatpoints(scew_element *element, char *attrname,
       if(str)
 	{
 	  p = str;
+	  /* count words */
 	  while(*p != '\0')
 	    {
-	      if(!(dummy = realloc(*res, (*len+1)*dim*sizeof(float))))
+	      if(*p == ' ' || *p == ',')
+		j++;
+	      p++;
+	    }
+	  if(!(*res = malloc(j*sizeof(float))))
+	    return AY_EOMEM;
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(j < (*len+1)*dim)
 		{
-		  /* XXXX early exit, memory leak? */
-		  return AY_EOMEM;
+		  if(!(tmp = realloc(*res, (*len+1)*dim*sizeof(float))))
+		    {
+		      if(*res)
+			free(*res);
+		      *res = NULL;
+		      *len = 0;
+		      return AY_EOMEM;
+		    }
+		  *res = tmp;
 		}
-	      *res = dummy;
 	      fp = &((*res)[(*len)*dim]);
 	      (*len)++;
 
@@ -737,8 +753,8 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
- double *dummy = NULL, *fp;
- unsigned int i;
+ double *tmp = NULL, *fp;
+ unsigned int i, j = 0;
 
   if(!element || !attrname || !len || !res)
     return AY_ENULL;
@@ -753,14 +769,30 @@ x3dio_readdoublepoints(scew_element *element, char *attrname,
       if(str)
 	{
 	  p = str;
+	  /* count words */
 	  while(*p != '\0')
 	    {
-	      if(!(dummy = realloc(*res, (*len+1)*dim*sizeof(double))))
+	      if(*p == ' ' || *p == ',')
+		j++;
+	      p++;
+	    }
+	  if(!(*res = malloc(j*sizeof(double))))
+	    return AY_EOMEM;
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(j < (*len+1)*dim)
 		{
-		  /* XXXX early exit, memory leak? */
-		  return AY_EOMEM;
+		  if(!(tmp = realloc(*res, (*len+1)*dim*sizeof(double))))
+		    {
+		      if(*res)
+			free(*res);
+		      *res = NULL;
+		      *len = 0;
+		      return AY_EOMEM;
+		    }
+		  *res = tmp;
 		}
-	      *res = dummy;
 	      fp = &((*res)[(*len)*dim]);
 	      (*len)++;
 
@@ -819,7 +851,8 @@ x3dio_readindex(scew_element *element, char *attrname,
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
- int *dummy = NULL, *ip;
+ int *tmp = NULL, *ip;
+ unsigned int j = 0;
 
   if(!element || !attrname || !len || !res)
     return AY_ENULL;
@@ -834,14 +867,30 @@ x3dio_readindex(scew_element *element, char *attrname,
       if(str)
 	{
 	  p = str;
+	  /* count words */
 	  while(*p != '\0')
 	    {
-	      if(!(dummy = realloc(*res, (*len+1)*sizeof(int))))
+	      if(*p == ' ' || *p == ',')
+		j++;
+	      p++;
+	    }
+	  if(!(*res = malloc(j*sizeof(int))))
+	    return AY_EOMEM;
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(j < (*len+1))
 		{
-		  /* XXXX early exit, memory leak? */
-		  return AY_EOMEM;
+		  if(!(tmp = realloc(*res, (*len+1)*sizeof(int))))
+		    {
+		      if(*res)
+			free(*res);
+		      *res = NULL;
+		      *len = 0;
+		      return AY_EOMEM;
+		    }
+		  *res = tmp;
 		}
-	      *res = dummy;
 	      ip = &((*res)[(*len)]);
 	      (*len)++;
 
@@ -899,7 +948,8 @@ x3dio_readboolvec(scew_element *element, char *attrname,
 {
  scew_attribute *attr = NULL;
  const XML_Char *str = NULL, *p;
- int *dummy = NULL, *ip;
+ int *tmp = NULL, *ip;
+ unsigned int j = 0;
 
   if(!element || !attrname || !len || !res)
     return AY_ENULL;
@@ -914,14 +964,30 @@ x3dio_readboolvec(scew_element *element, char *attrname,
       if(str)
 	{
 	  p = str;
+	  /* count words */
 	  while(*p != '\0')
 	    {
-	      if(!(dummy = realloc(*res, (*len+1)*sizeof(int))))
+	      if(*p == ' ' || *p == ',')
+		j++;
+	      p++;
+	    }
+	  if(!(*res = malloc(j*sizeof(int))))
+	    return AY_EOMEM;
+	  p = str;
+	  while(*p != '\0')
+	    {
+	      if(j < (*len+1))
 		{
-		  /* XXXX early exit, memory leak? */
-		  return AY_EOMEM;
+		  if(!(tmp = realloc(*res, (*len+1)*sizeof(int))))
+		    {
+		      if(*res)
+			free(*res);
+		      *res = NULL;
+		      *len = 0;
+		      return AY_EOMEM;
+		    }
+		  *res = tmp;
 		}
-	      *res = dummy;
 	      ip = &((*res)[(*len)]);
 	      (*len)++;
 
@@ -7219,7 +7285,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  char *tcname = ay_prefs.texcoordname;
  ay_object *down = NULL;
- ay_nurbpatch_object *p;
+ ay_nurbpatch_object *np;
  unsigned int i, j, stride = 4, copystride = 3;
  int have_texcoords = AY_FALSE;
  char *texcoordstring = NULL;
@@ -7260,7 +7326,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 	} /* while */
     } /* if */
 
-  p = (ay_nurbpatch_object *)o->refine;
+  np = (ay_nurbpatch_object *)o->refine;
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -7281,41 +7347,41 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
       patch_element = scew_element_add(shape_element, "NurbsPatchSurface");
     }
 
-  x3dio_writeintattrib(patch_element, "uOrder", &p->uorder);
-  x3dio_writeintattrib(patch_element, "vOrder", &p->vorder);
-  x3dio_writeintattrib(patch_element, "uDimension", &p->width);
-  x3dio_writeintattrib(patch_element, "vDimension", &p->height);
+  x3dio_writeintattrib(patch_element, "uOrder", &np->uorder);
+  x3dio_writeintattrib(patch_element, "vOrder", &np->vorder);
+  x3dio_writeintattrib(patch_element, "uDimension", &np->width);
+  x3dio_writeintattrib(patch_element, "vDimension", &np->height);
 
-  x3dio_writeknots(patch_element, "uKnot", p->width+p->uorder, p->uknotv);
-  x3dio_writeknots(patch_element, "vKnot", p->height+p->vorder, p->vknotv);
+  x3dio_writeknots(patch_element, "uKnot", np->width+np->uorder, np->uknotv);
+  x3dio_writeknots(patch_element, "vKnot", np->height+np->vorder, np->vknotv);
 
   /* fix row/column major order */
-  if(p->is_rat)
+  if(np->is_rat)
     {
       copystride = 4;
     }
-  if(!(v = calloc(p->width * p->height * copystride, sizeof(double))))
+  if(!(v = calloc(np->width * np->height * copystride, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   p1 = v;
-  for(i = 0; i < (unsigned)p->height; i++)
+  for(i = 0; i < (unsigned)np->height; i++)
     {
-      p2 = &(p->controlv[i*stride]);
-      for(j = 0; j < (unsigned)p->width; j++)
+      p2 = &(np->controlv[i*stride]);
+      for(j = 0; j < (unsigned)np->width; j++)
 	{
 	  memcpy(p1, p2, copystride*sizeof(double));
 	  p1 += copystride;
-	  p2 += p->height*stride;
+	  p2 += np->height*stride;
 	} /* for */
     } /* for */
 
-  if(p->is_rat)
+  if(np->is_rat)
     {
-      x3dio_writeweights(patch_element, "weight", p->width*p->height, v);
+      x3dio_writeweights(patch_element, "weight", np->width*np->height, v);
     }
 
   /* write coordinates */
   coord_element = scew_element_add(patch_element, "Coordinate");
-  x3dio_writedoublepoints(coord_element, "point", 3, p->width*p->height,
+  x3dio_writedoublepoints(coord_element, "point", 3, np->width*np->height,
 			  copystride, v);
 
   /* write texture coordinates */
@@ -7344,6 +7410,14 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 	} /* while */
     } /* if */
 
+  /* write the caps and bevels */
+  down = np->caps_and_bevels;
+  while(down)
+    {
+      x3dio_writenpatchobj(transform_element, down);
+      down = down->next;
+    }
+
 cleanup:
 
   if(v)
@@ -7363,9 +7437,10 @@ int
 x3dio_writenpwire(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
+ ay_object *c;
  ay_nurbpatch_object *np;
  char buf[64], *attr = NULL, *tmp;
- int a, b, j, m, n, p, q;
+ int a, b, i, j, m, n, p, q;
  int ulines, vlines, fulines, fvlines, spanu, spanv;
  int *spanus, *spanvs, *fspanus, *fspanvs;
  double *P, *U, *V, *Nu, *Nv, *fd1, *fd2, *Ct;
@@ -7389,12 +7464,26 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   V = np->vknotv;
   n = np->width;
   m = np->height;
-  ulines = np->width-(np->uorder/2);
-  fulines = ulines*3;
-  vlines = np->height-(np->vorder/2);
-  fvlines = vlines*3;
   p = np->uorder-1;
   q = np->vorder-1;
+
+  u = U[p];
+  ulines = 1;
+  for(a = p; a < n; a++)
+    {
+      if(U[a] != U[a+1])
+	ulines++;
+    }
+  fulines = ulines*3;
+  v = V[q];
+  vlines = 1;
+  for(a = q; a < m; a++)
+    {
+      if(V[a] != V[a+1])
+	vlines++;
+    }
+  fvlines = vlines*3;
+
   ud = (U[n] - U[p]) / (ulines - 1);
   fud = (U[n] - U[p]) / (fulines - 1);
   vd = (V[m] - V[q]) / (vlines - 1);
@@ -7496,17 +7585,18 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
   /* v-lines */
   u = U[p];
+  i = p;
   for(a = 0; a < ulines; a++)
     {
-      spanu = spanus[a];
-      /*ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);*/
+      /*spanu = spanus[a];
+      ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);*/
 
       v = V[q];
       j = 0;
       for(b = 0; b < fvlines; b++)
 	{
-	  spanv = fspanvs[b];
-	  /*ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);*/
+	  /*spanv = fspanvs[b];
+	  ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);*/
 
 	  /* calculate point and normal */
 	  if(np->is_rat)
@@ -7539,8 +7629,12 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       coord_element = scew_element_add(line_element, "Coordinate");
       x3dio_writedoublepoints(coord_element, "point", 3, fvlines,
 			      3, Ct);
-
-      u += ud;
+      do
+	{
+	  i++;
+	}
+      while((U[i] == U[i+1]) && i < n);
+      u = U[i];
     } /* for */
 
   /* u-lines */
@@ -7556,17 +7650,18 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   memcpy(tmp, " -1", 4*sizeof(char));
 
   v = V[q];
+  i = q;
   for(a = 0; a < vlines; a++)
     {
-      spanv = spanvs[a];
-      //ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);
+      /*spanv = spanvs[a];
+	ay_nb_DersBasisFuns(spanv, v, q, 1, V, Nv);*/
 
       u = U[p];
       j = 0;
       for(b = 0; b < fulines; b++)
 	{
-	  spanu = fspanus[b];
-	  //ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);
+	  /*spanu = fspanus[b];
+	    ay_nb_DersBasisFuns(spanu, u, p, 1, U, Nu);*/
 
 	  /* calculate point and normal */
 	  if(np->is_rat)
@@ -7600,8 +7695,21 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       x3dio_writedoublepoints(coord_element, "point", 3, fulines,
 			      3, Ct);
 
-      v += vd;
+      do
+	{
+	  i++;
+	}
+      while((V[i] == V[i+1]) && i < m);
+      v = V[i];
     } /* for */
+
+  /* write the caps and bevels */
+  c = np->caps_and_bevels;
+  while(c)
+    {
+      x3dio_writenpwire(transform_element, c);
+      c = c->next;
+    }
 
 cleanup:
 
@@ -8902,16 +9010,16 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   /* write the caps */
   if(rev->upper_cap)
-    x3dio_writenpatchobj(shape_element, rev->upper_cap);
+    x3dio_writenpatchobj(transform_element, rev->upper_cap);
 
   if(rev->lower_cap)
-    x3dio_writenpatchobj(shape_element, rev->lower_cap);
+    x3dio_writenpatchobj(transform_element, rev->lower_cap);
 
   if(rev->start_cap)
-    x3dio_writenpatchobj(shape_element, rev->start_cap);
+    x3dio_writenpatchobj(transform_element, rev->start_cap);
 
   if(rev->end_cap)
-    x3dio_writenpatchobj(shape_element, rev->end_cap);
+    x3dio_writenpatchobj(transform_element, rev->end_cap);
 
 
   /* cleanup */
@@ -9018,12 +9126,11 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
   scew_element_add_attr_pair(curve_element, "containerField",
 			     "trajectoryCurve");
 
-
   /* write the caps and bevels */
   e = swp->caps_and_bevels;
   while(e)
     {
-      x3dio_writenpatchobj(shape_element, e);
+      x3dio_writenpatchobj(transform_element, e);
       e = e->next;
     }
 
@@ -9133,10 +9240,9 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   e = swing->caps_and_bevels;
   while(e)
     {
-      x3dio_writenpatchobj(shape_element, e);
+      x3dio_writenpatchobj(transform_element, e);
       e = e->next;
     }
-
 
   /* cleanup */
   ay_object_deletemulti(c);
@@ -9260,7 +9366,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
   e = ext->caps_and_bevels;
   while(e)
     {
-      x3dio_writenpatchobj(shape_element, e);
+      x3dio_writenpatchobj(transform_element, e);
       e = e->next;
     }
 
@@ -9445,6 +9551,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 
   root = scew_tree_add_root(tree, "X3D");
 
+  attribute = scew_attribute_create("profile", "Full");
   attribute = scew_attribute_create("version", "3.0");
   scew_element_add_attr(root, attribute);
 
