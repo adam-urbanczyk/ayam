@@ -238,14 +238,14 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
     } /* for */
 
   a = 0;
-  for(i=0;i<width+(signed)o->uOrder;i++)
+  for(i = 0;i < width+(signed)o->uOrder;i++)
     {
       uknotv[a] = (o->uKnots)[a];
       a++;
     } /* for */
 
   a = 0;
-  for(i=0;i<height+(signed)o->vOrder;i++)
+  for(i = 0;i < height+(signed)o->vOrder;i++)
     {
       vknotv[a] = (o->vKnots)[a];
       a++;
@@ -378,7 +378,7 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
     } /* for */
 
   a = 0;
-  for(i=0;i<length+(signed)o->order;i++)
+  for(i = 0;i < length+(signed)o->order;i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
@@ -461,7 +461,7 @@ ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
     } /* for */
 
   a = 0;
-  for(i=0;i<length+(signed)o->order;i++)
+  for(i = 0;i < length+(signed)o->order;i++)
     {
       knotv[a] = (o->knots)[a];
       a++;
@@ -1894,7 +1894,7 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
   ay_trafo_creatematrix(o, m);
 
   a = 0; b = 0;
-  for(i=0; i<curve->length; i++)
+  for(i = 0; i < curve->length; i++)
     {
       x = curve->controlv[b];
       b++;
@@ -1913,7 +1913,7 @@ ay_mfio_writetrimcurve(MF3D_FilePtr fileptr, ay_object *o)
     } /* for */
 
   a = 0;
-  for(i=0; i<curve->length+curve->order; i++)
+  for(i = 0; i < curve->length+curve->order; i++)
     {
       (mf3do.knots)[a] = curve->knotv[a];
       a++;
@@ -1945,7 +1945,7 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
  MF3DTrimCurvesObj tco = {0};
  MF3DErr status = kMF3DNoErr;	/* temporary result code */
  ay_nurbpatch_object *patch = (ay_nurbpatch_object*)(o->refine);
- ay_object *trim, *down;
+ ay_object *trim, *down, *c;
 
   /* write enclosing container */
   ay_status = ay_mfio_writecntr(fileptr);
@@ -1970,9 +1970,9 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
     { free(mf3do.points); free(mf3do.vKnots); return AY_EOMEM; }
 
   a = 0; b = 0;
-  for(i=0; i<patch->width; i++)
+  for(i = 0; i < patch->width; i++)
     {
-      for(j=0; j<patch->height; j++)
+      for(j = 0; j < patch->height; j++)
 	{
 	  (mf3do.points)[a].x = patch->controlv[b++];
 	  (mf3do.points)[a].y = patch->controlv[b++];
@@ -1984,14 +1984,14 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
     } /* for */
 
   a = 0;
-  for(i=0; i<patch->width+patch->uorder; i++)
+  for(i = 0; i < patch->width+patch->uorder; i++)
     {
       (mf3do.uKnots)[a] = patch->uknotv[a];
       a++;
     } /* for */
 
   a = 0;
-  for(i=0; i<patch->height+patch->vorder; i++)
+  for(i = 0; i < patch->height+patch->vorder; i++)
     {
       (mf3do.vKnots)[a] = patch->vknotv[a];
       a++;
@@ -2062,6 +2062,14 @@ ay_mfio_writenurbpatch(MF3D_FilePtr fileptr, ay_object *o)
 
   /* close container */
   ay_status = ay_mfio_writeecntr(fileptr);
+
+  /* write the caps and bevels */
+  c = patch->caps_and_bevels;
+  while(c)
+    {
+      ay_mfio_writenurbpatch(fileptr, c);
+      c = c->next;
+    }
 
  return ay_status;
 } /* ay_mfio_writenurbpatch */

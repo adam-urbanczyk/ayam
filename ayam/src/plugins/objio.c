@@ -640,6 +640,7 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
 {
  int ay_status = AY_OK;
  char *tcname = ay_prefs.texcoordname;
+ ay_object *c;
  ay_nurbpatch_object *np;
  double *v = NULL, *p1, *p2, pw[3];
  double umin, umax, vmin, vmax;
@@ -772,6 +773,14 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
     {
       objio_writetrimids(fileptr, o->down);
     } /* if */
+
+  /* write the caps and bevels */
+  c = np->caps_and_bevels;
+  while(c)
+    {
+      objio_writenpatch(fileptr, c, m);
+      c = c->next;
+    }
 
 cleanup:
 

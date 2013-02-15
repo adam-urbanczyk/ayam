@@ -9766,7 +9766,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       i += 2;
     } /* while */
-
+  x3dio_writewires = 1;
   ay_status = x3dio_writescene(argv[1], selected, toplevellayers);
 
  return TCL_OK;
