@@ -81,6 +81,8 @@ proc fixdocclass { buf outfile } {
     if { $index > -1 } {
 	puts $outfile "\\documentclass\[a4paper,11pt\]\{article\}"
 	puts $outfile "\\usepackage\{needspace\}"
+	puts $outfile "\\usepackage\{array\}"
+	puts $outfile "\\setlength\{\\extrarowheight\}\{2pt\}"
 	puts $outfile "\\usepackage\{setspace\}"
 	puts $outfile "\\usepackage\[tight\]\{shorttoc\}"
 	puts $outfile "\\usepackage\[perpage,para\]\{footmisc\}"
