@@ -3834,7 +3834,7 @@ documented in tables like this:
 <table loc="ht">
 <tabular ca="|c|c|c|c|c|"><hline>
 <bf/Type/|<bf/Parent of/|<bf/Material/|<bf>Converts to&thinsp;/&thinsp;Provides</bf>|<bf/Point Edit/@<hline>
-Object Type|No/Object Type<f><sup>+/&lowast;</sup></f>|Yes/No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type<f><sup>+/&lowast;</sup></f>|Yes/No*
+Object Type|No/Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No|N/A&thinsp;/&thinsp;Children&thinsp;/&thinsp;Object Type<f><sup>+/&lowast;</sup></f>|Yes&thinsp;/&thinsp;No*
 <#if out=latex>@<hline></#if>
 </tabular>
 <caption>Object Capabilities Template</caption>
@@ -4060,8 +4060,9 @@ If you hide the Root object, the little red/green/blue coordinate system
 will not be drawn in any view.
 <p>
 The Root object also aids in per-scene window geometry management
-using SaveMainGeom and SavePaneLayout tags (see also section
-<ref id="tags" name="Tags">.
+using SaveMainGeom and SavePaneLayout tags (see also sections
+<ref id="savemaingeomtag" name="SaveMainGeom"> and
+<ref id="savepanelayouttag" name="SavePaneLayout">).
 <p>
 The global scene rendering options are documented in the following sections.
 
@@ -8226,9 +8227,9 @@ Since Ayam 1.9, a skin object will also use all the curves of a
 tool object, that provides multiple curves, e.g.~a clone object
 in mirror mode.
 <p>
-The direction of the parameter curves will be parallel to the v
+The direction of the parameter curves will be parallel to the V
 dimension (height) of the skinned surface. The number of the parameter
-curves will define the u dimension (width) of the skinned surface.
+curves will define the U dimension (width) of the skinned surface.
 <p>
 Also note that the resulting patch may be quite complex, even though
 the curves are not, if the orders or knot vectors of the curves do not
@@ -8370,7 +8371,7 @@ respective end points.
 The Gordon object has the generating NURBS curves as child objects
 and watches their changes and adapts to them automagically.
 Separation of the two sets of curves has to be done using an
-empty level object. The first set of curves determines the u
+empty level object. The first set of curves determines the U
 direction and the second set of curves the V direction of the
 Gordon surface. For the example surface in the image above, the
 child objects of the Gordon object would have to look like this
@@ -9038,7 +9039,7 @@ aren't you?). Therefore you might experience wrong letter distances
 from time to time. If this happens, just create a Text object for each
 letter, and arrange the objects as you like.
 <p>
-You may convert the current Text object to ordinary NURBS patches
+The Text object can be converted to ordinary NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>.
 <p>
 The following table briefly lists some capabilities of the Text object.
@@ -11691,7 +11692,7 @@ See also the documentation of the corresponding scripting interface commands
 <tag/Arguments/ The revert u tool takes a number of NURBS patches
 or BPatch or PatchMesh objects from the selection.
 <tag/Operation/ The control point arrays of the selected objects
-will be reversed in the u dimension (width).
+will be reversed in the U dimension (width).
 For NURBS patches this tool also reverts the relative knot distances
 of the corresponding knot vector.
 <tag/Notes/ See also the documentation of the corresponding
@@ -12015,7 +12016,7 @@ more closely or from different viewing angles.
 The initial values of the
 parameter slider bounds may be changed by simply entering values
 that are out of bounds into the respective entry widget, then pressing the
-<tt/&lt;Tab&gt;/ key. The resolution of the slider is calculated
+<tt/&lt;Tab&gt;/ key. Range and resolution of the slider will be calculated
 automatically from the resolution of the value entered in the entry
 widget.
 </descrip>
@@ -14026,7 +14027,7 @@ See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="screfineunp">
-refineuNP &ndash; refine NURBS surface in u direction:
+refineuNP &ndash; refine NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"refineuNP"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14040,7 +14041,7 @@ See also section <ref id="refinest" name="Refine Surface Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="screfinevnp">
-refinevNP &ndash; refine NURBS surface in v direction:
+refinevNP &ndash; refine NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"refinevNP"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14054,7 +14055,7 @@ See also section <ref id="refinest" name="Refine Surface Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scelevateunp">
-elevateuNP &ndash; elevate NURBS surface in u direction:
+elevateuNP &ndash; elevate NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"elevateuNP n"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14068,7 +14069,7 @@ See also section <ref id="elevuvt" name="Elevate UV Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scelevatevnp">
-elevatevNP &ndash; elevate NURBS surface in v direction:
+elevatevNP &ndash; elevate NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"elevatevNP n"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14130,7 +14131,7 @@ See also section <ref id="extrnpt" name="Extract Patch Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scinterpunp">
-interpuNP &ndash; interpolate NURBS surface in u direction:
+interpuNP &ndash; interpolate NURBS surface in U direction:
 <itemize>
  <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14159,7 +14160,7 @@ The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scinterpvnp">
-interpvNP &ndash; interpolate NURBS surface in v direction:
+interpvNP &ndash; interpolate NURBS surface in V direction:
 <itemize>
  <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
@@ -14194,7 +14195,7 @@ concatS &ndash; concatenate surfaces:
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: Concatenate the selected surface objects into a
 single NURBS patch. The option <tt/"-o"/ determines the desired order
-of the surface in U-direction. The option <tt/"-t"/ allows to set a
+of the surface in U direction. The option <tt/"-t"/ allows to set a
 surface type
 (0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
 <tt/"-k"/ allows to set a knot type (default 1 - NURB).
@@ -14212,7 +14213,7 @@ breakNP &ndash; break NURBS patch into curves:
  <item>Synopsis: <tt/"breakNP [-a|-u|-v]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Breaks the selected NPatch objects into NURBS curves,
-along parametric dimension u or v. If the option <tt/"-a"/ is given,
+along parametric dimension U or V. If the option <tt/"-a"/ is given,
 the transformations of the NPatch objects will be applied to the
 control points and the NCurve objects will be created with default
 transformation attributes, otherwise the NCurve objects will get the
@@ -17679,9 +17680,9 @@ also possible with the help of the scripting interface by manipulating
 the global <tt/"ayprefs"/ array. The following example leads to a reset
 of the tolerance preference setting to the factory default for the
 <em>next</em> start of Ayam.
-<code>
-unset ayprefs(Tolerance)
-</code>
+<tscreen><tt>
+&raquo;&thinsp;unset ayprefs(Tolerance)
+</tt></tscreen>
 
 <sect2>Changing Keyboard Shortcuts
 <p>
@@ -17699,10 +17700,9 @@ manual page for the <tt/"bind"/ command of Tk provide helpful
 information about which strings may be used to describe
 key presses.
 You can also directly use the Ayam console to infer key names, just enter:
-<code>
-toplevel .keytest
-bind .keytest <Key> {puts %K}
-</code>
+<tscreen><tt>
+&raquo;&thinsp;toplevel .keytest; bind .keytest &lt;Key&gt; {puts %K}
+</tt></tscreen>
 into the Ayam console.
 Now you can activate the new top level window and type on your keyboard
 while the Ayam console prints the names of the keys.
@@ -18012,16 +18012,16 @@ start of Ayam may fail.
 
 Available types of parameters are:
 <itemize>
-<item>i: a scalar integer value
-<item>j: a pair of integer values
-<item>f: a scalar float value
-<item>g: a pair of float values
-<item>s: a string value
+<item>i: a scalar integer value,
+<item>j: a pair of integer values,
+<item>f: a scalar float value,
+<item>g: a pair of float values,
+<item>s: a string value,
 <item>p: a point in space (simply three float values), the default
 values (if provided) are three float values in curly braces, such as
-<tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
+<tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>,
 <item>c: a color, the default values (if provided) are three float
-values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>
+values in curly braces, such as <tt>{{0.0 0.0 0.0}{1.0 1.0 1.0}}</tt>.
 </itemize>
 
 <sect1>Environment Variables<label id="envvars">
@@ -18036,11 +18036,11 @@ This section documents the environment variables used by Ayam.
 <tt>"TmpDir"</tt> preference setting (used on Win32 if no ayamrc file exists,
 that specifies <tt>"TmpDir"</tt>).
 <item><tt>"AYNOSPLASH"</tt>: if this variable is set to 1, the splash
-screen will not be shown
+screen will not be shown.
 <item><tt>"BROWSER"</tt>: filename of the preferred WWW browser (used to
-display the documentation URL)
+display the documentation URL).
 <item><tt>"NETSCAPE"</tt>: (if <tt>"BROWSER"</tt> does not exist) filename
-of the Netscape WWW browser (used to display the documentation URL)
+of the Netscape WWW browser (used to display the documentation URL).
 <item><tt>"SHADERS"</tt>: initial value of <tt>"Shaders"</tt> preference
 setting (used if no ayamrc file exists).
 </itemize>
@@ -18050,26 +18050,24 @@ setting (used if no ayamrc file exists).
 This section serves as a overview of the various plugins available
 in Ayam.
 <p>
-There are currently four major types of plugins for Ayam: shader parsing
-plugins, custom objects, import/export plugins, and modelling helper
-plugins:
-<enum>
-<item>shader parsing plugins:<newline>
+There are currently four major types of plugins for Ayam:
+<descrip>
+<tag/shader parsing plugins/
 aysdr, ayslb, ayslc, ayslo, ayslo3d, ayslx, ayso.
 
 See also section <ref id="spplugins" name="Shader Parsing Plugins">.
 
-<item>custom objects:<newline>
+<tag/custom objects/
 metaobj, sdnpatch, sfcurve, csphere.
 
 See also section <ref id="customobj" name="Custom Objects">.
 
-<item>import/export plugins:<newline>
+<tag>import/export plugins</tag>
 dxfio, mfio, mopsi, objio, onio, rrib, x3dio.
 
 See also section <ref id="impex" name="Import and Export">.
 
-<item>modelling helper plugins:
+<tag/modelling helper plugins/
 <itemize>
 <item>jsinterp &ndash; JavaScript scripting interface
 (see section <ref id="jsinterp" name="JavaScript Scripting Interface">),
@@ -18079,12 +18077,12 @@ See also section <ref id="impex" name="Import and Export">.
 (see section <ref id="aycsg" name="CSG preview using the AyCSG plugin">),
 <item>IDR &ndash; Importance Driven Rendering
 (see section <ref id="idr" name="Importance Driven Rendering">),
-<item>aydnd &ndash; inter-application drag and drop
+<item>aydnd &ndash; inter-application drag and drop,
 <item>subdiv &ndash; Catmull-Clark and Loop subdivision for the SDMesh
 object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 </itemize>
 
-</enum>
+</descrip>
 
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
@@ -18350,7 +18348,8 @@ errors may occur.
 <tt/"OcclusionQuery"/: Uses occlusion queries to profit implicitly from
 depth complexity without calculating it. This is especially useful for the
 SCS algorithm where this strategy is applied at shape level, resulting in
-a O(n&middot;k') algorithm (where k' <= k), without significant constant overhead.
+a O(n&middot;k<f/'/) algorithm (where k<f/'/ <= k), without significant
+constant overhead.
 This strategy requires hardware occlusion queries, i.e.~the OpenGL
 extension <tt>"GL_ARB_occlusion_query"</tt> or
 <tt>"GL_NV_occlusion_query"</tt>.
