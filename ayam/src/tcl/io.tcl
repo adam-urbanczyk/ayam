@@ -328,7 +328,7 @@ proc io_exportRIB { {expview "" } } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
@@ -439,6 +439,16 @@ proc io_exportRIB { {expview "" } } {
 # io_exportRIB
 
 
+proc loadPlugin { pname } {
+    if { [file exists $pname] } {
+	io_lc $pname
+    } else {
+	io_lcAuto $pname
+    }
+ return;
+}
+
+
 # io_lc - load custom object:
 #
 #
@@ -462,40 +472,36 @@ proc io_lc { filename } {
 # io_lcAuto - automatically load custom object:
 #
 #
-proc io_lcAuto {  } {
+proc io_lcAuto { name } {
     global ay ayprefs
 
-    set name [string tolower $ay(autoload)].$ay(soext)
+    set soname [string tolower $name].$ay(soext)
 
     set paths [split "$ayprefs(Plugins)" $ay(separator)]
 
-    set origwd [pwd]
+    set owd [pwd]
 
     cd [file dirname [info nameofexecutable]]
 
     foreach path $paths {
-	set filename [file join $path $name]
+	set filename [file join $path $soname]
 	set sopath [file dirname $filename]
 	if { ("$sopath" != "") && [file exists $sopath] } {
-	    set oldwd [pwd]
 	    cd $sopath
-	    catch {load $name}
-	    cd $oldwd
+	    set success [catch {load $soname}]
+	    cd $owd
 	} else {
-	    catch {load $filename}
+	    set success [catch {load $filename}]
 	}
 
-	set co $ay(co)
-
-	foreach o $ay(co) {
-	    if { $o == $ay(autoload) } { return; }
+	if { $success == 0 } {
+	    break;
 	}
-	# foreach
 
     }
     # foreach
 
-    cd $origwd
+    cd $owd
 
  return;
 }

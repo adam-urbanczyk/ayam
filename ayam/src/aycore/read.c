@@ -583,13 +583,14 @@ ay_read_object(FILE *fileptr)
 {
  char fname[] = "read_object";
  int ay_status = AY_OK;
- int type = 0, has_name = 0, has_child = 0, read = 0;
+ int type = 0, has_typename = 0, has_child = 0, read = 0;
  ay_object *o = NULL;
  ay_tag tag = {0};
  ay_voidfp *arr = NULL;
  ay_readcb *cb = NULL;
- char *type_name = NULL, err[255], autoload[] = "io_lcAuto";
+ char *typename = NULL;
  Tcl_HashEntry *entry = NULL;
+ Tcl_DString ds;
 
   if(feof(fileptr))
     return AY_EEOF;
@@ -606,49 +607,51 @@ ay_read_object(FILE *fileptr)
   ay_object_defaults(o);
 
   /* get type of object */
-  fscanf(fileptr, "%d", &has_name);
+  fscanf(fileptr, "%d", &has_typename);
   read = fgetc(fileptr);
   if(read == EOF)
     return AY_ERROR;
 
-  if(has_name)
+  if(has_typename)
     {
-      /* get name */
-      ay_status = ay_read_string(fileptr, &(type_name));
+      /* get type name */
+      ay_status = ay_read_string(fileptr, &(typename));
       if(ay_status)
 	{ ay_object_delete(o); return ay_status; }
 
       /* is the type name registered? */
-      if((entry = Tcl_FindHashEntry(&ay_otypesht, type_name)))
+      if((entry = Tcl_FindHashEntry(&ay_otypesht, typename)))
 	{
 	  /* yes */
-	  /* get type_id of name */
+	  /* get type id of name */
 	  type = (int) Tcl_GetHashValue(entry);
 	}
       else
 	{
 	  /* no */
-	  /* autoload custom object with matching name */
-	  Tcl_SetVar2(ay_interp, "ay", "autoload", type_name,
-		      TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-	  Tcl_Eval(ay_interp, autoload);
+	  /* try to autoload the custom object/plugin */
+	  Tcl_DStringInit(&ds);
+	  Tcl_DStringAppend(&ds, "loadPlugin ", -1);
+	  Tcl_DStringAppend(&ds, typename, -1);
+	  Tcl_Eval(ay_interp, Tcl_DStringValue(&ds));
+	  Tcl_DStringFree(&ds);
 
 	  /* check again whether type name is registered */
-	  if((entry = Tcl_FindHashEntry(&ay_otypesht, type_name)))
+	  if((entry = Tcl_FindHashEntry(&ay_otypesht, typename)))
 	    {
+	      /* yes */
+	      /* get type id of name */
 	      type = (int) Tcl_GetHashValue(entry);
 	    }
 	  else
 	    {
-	      sprintf(err, "Unknown object type: %s", type_name);
-	      ay_error(AY_ERROR, fname, err);
-	      free(type_name);
-	      free(o);
+	      ay_error(AY_ENTYPE, fname, typename);
+	      free(typename);
+	      ay_object_delete(o);
 	      return AY_OK;
 	    } /* if */
 	} /* if */
-      free(type_name);
+      free(typename);
     }
   else
     {
