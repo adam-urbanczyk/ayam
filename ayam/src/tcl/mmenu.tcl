@@ -841,7 +841,7 @@ $m add command -label "Save Environment" -command "io_saveEnv" \
 
 $m add cascade -menu $m.clp -label "Clipboard" -underline 0
 set sm [menu $m.clp -tearoff 0]
-$sm add command -label "Paste (Move)" -command {pasmovOb; cS;
+$sm add command -label "Paste (Move)" -command {pasOb -move; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0

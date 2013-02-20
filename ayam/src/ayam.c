@@ -710,7 +710,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "pasOb", ay_clipb_pastetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_movetcmd,
+  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_pastetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
@@ -1370,7 +1370,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "pasOb", ay_clipb_pastetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_movetcmd,
+  Tcl_CreateCommand(interp, "pasmovOb", ay_clipb_pastetcmd,
 		     (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "repOb", ay_clipb_replacetcmd,
