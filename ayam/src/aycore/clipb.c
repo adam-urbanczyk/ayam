@@ -283,7 +283,7 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
 
     } /* while */
-    
+
   if(move)
     {
       ay_clipboard = NULL;
