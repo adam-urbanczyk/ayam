@@ -13108,7 +13108,7 @@ and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
 
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
-Since Ayam 1.9 two new commands are implemented that ease
+Since Ayam 1.9 two procedures are implemented that ease
 the manipulation of property values from the scripting interface:
 
 <p>
@@ -13118,14 +13118,14 @@ the manipulation of property values from the scripting interface:
 getProperty &ndash; get single property value
 <itemize>
  <item>Synopsis: <tt/"getProperty propname(elemname) varname"/
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: This command gets a single property element
+ <item>Background: Yes, Undo: No, Safe: Yes, Type: Procedure
+ <item>Description: This procedure gets a single property element
 named elemname from the property named propname of the currently
 selected object and writes the result into the variable named varname.
 Multiple selected objects are supported and lead to a list of values
 produced in the output variable.
 <footnote>Since 1.21.</footnote>
- <item>Notes: This command runs more slowly than calling the appropriate
+ <item>Notes: This procedure runs more slowly than calling the appropriate
 get-procedure and accessing the data array that is associated with the
 property in question directly, especially if multiple values are to be
 fetched.
@@ -13152,13 +13152,13 @@ See also section
 setProperty &ndash; set single property value
 <itemize>
  <item>Synopsis: <tt/"setProperty propname(elemname) value"/
- <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: This command sets a single property element
+ <item>Background: Yes, Undo: Yes, Safe: Yes, Type: Procedure
+ <item>Description: This procedure sets a single property element
 named elemname of the property named propname for the currently
 selected object to the new value given in value.
 Multiple selected objects are supported.
 <footnote>Since 1.21.</footnote>
- <item>Notes: This command runs more slowly than accessing the data array
+ <item>Notes: This procedure runs more slowly than accessing the data array
 that is associated with a property and calling the appropriate set-procedure
 directly, especially if multiple values are to be set.
 However, the name of the data array and the appropriate procedure
@@ -13209,13 +13209,14 @@ before this operation.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scpasob">
+<label id="scpasob"><label id="sccmovob"><label id="scpasmovob">
 pasOb &ndash; paste object(s):
 <itemize>
- <item>Synopsis: <tt/"pasOb"/
+ <item>Synopsis: <tt/"pasOb [-move]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Copy the selected object(s) from the object
-clipboard to the current level.
+clipboard to the current level. If the option <tt/"-move"/ is given,
+the objects are moved and not copied.
 </itemize>
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13244,20 +13245,12 @@ This operation fails for master objects (objects with instances/references).
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="sccmovob"><label id="scpasmovob">
-pasmovOb &ndash; paste (move) object(s):
-<itemize>
- <item>Synopsis: <tt/"pasmovOb"/
- <item>Background: Yes, Undo: No, Safe: Yes
- <item>Description: Move the objects from the object
-clipboard to the current level. This is the reverse of the
-<tt/"cutOb"/ command.
-</itemize>
-
-The object clipboard commands fail for root and view objects.
+Most of the object clipboard commands fail for root and view objects.
+<p>
 As <tt/"copOb"/ and <tt/"cutOb"/ may need to clear the object clipboard,
 they can also fail if master objects (objects with instances/references)
 are currently inside the object clipboard.
+<p>
 Furthermore, the object clipboard commands check whether or not the
 result would be an illegal instance configuration (master of a level inside
 this level) and also fail if this is the case.
@@ -13268,33 +13261,30 @@ which is totally independent from the object clipboard.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scpclip_copy"><label id="sccopyprop">
-pclip_copy/copyProp &ndash; copy a property to the property clipboard
+copyProp &ndash; copy a property to the property clipboard
 <itemize>
- <item>Synopsis: <tt/"pclip_copy mode"/ or <tt/"copyProp mode"/
- <item>Background: Yes, Undo: No, Safe: No
- <item>Description: Copy the currently selected
-property from the currently selected
-object to the property clipboard.
-If mode is 0, omit all marked entries, if mode is 1 copy just
-marked entries. Entries can also be marked programmatically
-by adding the respective entry names to the global array
+ <item>Synopsis: <tt/"copyProp [mode]"/
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
+ <item>Description: Copy the currently selected property from the
+currently selected object to the property clipboard.
+If mode is 0 (default), all marked entries will be omitted.
+If mode is 1 only the marked entries will be copied.
+Property entries are usually marked by double clicks
+on the respective entry labels but they can also be marked programmatically
+by adding the respective property element names to the global array
 <tt/"pclip_omit"/.
-Note that you may call this procedure also using the shortcut
-<tt/"copyProp"/.
 </itemize>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scpclip_paste"><label id="scpasteprop">
-pclip_paste/pasteProp &ndash; paste a property
+pasteProp &ndash; paste a property
 <itemize>
- <item>Synopsis: <tt/"pclip_paste"/ or <tt/"pasteProp"/
- <item>Background: Yes, Undo: Yes, Safe: No
+ <item>Synopsis: <tt/"pasteProp"/
+ <item>Background: Yes, Undo: Yes, Safe: No, Type: Procedure
  <item>Description: Copy the property from the property clipboard
 to the currently selected object.
-Note that you may call this procedure also using the shortcut
-<tt/"pasteProp"/.
 </itemize>
 
 <sect2>Hierarchy Operations<label id="scihier">
@@ -14348,7 +14338,7 @@ These commands update various parts of the Ayam user interface:
 rV &ndash; redraw all views:
 <itemize>
  <item>Synopsis: <tt/"rV"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No, Undo: No, Safe: No, Type: Procedure
  <item>Description: Redraws all currently open views, except for
 iconified views and views where automatic redraw has been turned off.
 </itemize>
@@ -14360,7 +14350,7 @@ iconified views and views where automatic redraw has been turned off.
 uS &ndash; update select:
 <itemize>
  <item>Synopsis: <tt/"uS [update_prop maintain_selection]"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No, Undo: No, Safe: No, Type: Procedure
  <item>Description: Update the object listbox or tree view after a change
 to the object hierarchy.
 <p>
@@ -14396,7 +14386,7 @@ the command <tt/"uCL cl"/ may be used instead of <tt/"uS"/.
 uCL &ndash; update current level:
 <itemize>
  <item>Synopsis: <tt/"uCL mode [args]"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No, Undo: No, Safe: No, Type: Procedure
  <item>Description: Update only the current level of the object listbox
 or tree view after changes. See also the discussion of <tt/"uS"/ above.
 The parameter <tt/"mode"/ may be "cl" or "cs", where "cl" is the normal
@@ -14423,7 +14413,7 @@ the current level. See also the discussion of <tt/"uS"/ above.
 plb_update &ndash; property listbox update:
 <itemize>
  <item>Synopsis: <tt/"plb_update"/
- <item>Background: No, Undo: No, Safe: No
+ <item>Background: No, Undo: No, Safe: No, Type: Procedure
  <item>Description: Clear the current property GUI, ask the currently
 selected object for a list of properties and insert them in the
 property listbox, then rebuild the property GUI of the property
@@ -14466,12 +14456,15 @@ the changes take effect.
 <sect2>Custom Objects<label id="scicust">
 <p>
 This command manages custom objects (plugins):
-<p><label id="scio_lc">
-io_lc &ndash; load custom:
+<p><label id="scio_lc"><label id="scloadPlugin">
+loadPlugin &ndash; load custom:
 <itemize>
- <item>Synopsis: <tt/"io_lc filename"/
- <item>Background: No, Undo: No, Safe: No
- <item>Description: Load the custom object (plugin) from file filename.
+ <item>Synopsis: <tt/"loadPlugin name"/
+ <item>Background: No, Undo: No, Safe: No, Type: Procedure
+ <item>Description: Load a custom object (plugin). If name is a complete
+filename and the designated file exists, it will be loaded directly.
+Otherwise, the file to load will be searched for in the list of configured
+plugin directories (see <tt/"Plugins"/ preference setting).
 Note that it is currently not possible to unload a custom object from
 Ayam.
 </itemize>
@@ -14487,7 +14480,7 @@ to a number of objects, forAll and forAllT:
 forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll recursive command"</tt>
- <item>Background: depends, Undo: depends, Safe: No
+ <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
  <item>Description: The forAll command executes command for all
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
@@ -14520,7 +14513,7 @@ correctly maintains the current selection.
 forAllT:
 <itemize>
  <item>Synopsis: <tt>"forAllT type recursive command"</tt>
- <item>Background: depends, Undo: depends, Safe: No
+ <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
  <item>Description: forAllT works the same way as forAll, with an
 additional type check. The command will not be executed if the type of the
 current object does not match the argument type. Note that forAllT will run
@@ -14800,7 +14793,7 @@ use is deprecated.
 addToProc:
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
- <item>Background: Yes, Undo: No, Safe: No
+ <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
  <item>Description: This command adds the code from addition to
 the procedure procedure.
  <item>Note: This command uses the introspection facilities of
@@ -17101,19 +17094,14 @@ supported.
 Unsupported X3D elements will be silently ignored. Prototyping and
 dynamic scenes as well as scripts are not supported.
 <p>
-Shape elements that contain more than one geometric elements as child
-objects will be imported as level objects with the child objects using
-the default transformations and the level object using the current
-transformation attributes.
-<p>
 The following table comprehensively lists the supported Web3D
 X3D primitives and their Ayam counterparts that will be created
 upon import.
 <p>
 <table loc="!ht">
-<tabular ca="|c|c|c|c|"><hline>
+<tabular ca="|c|c||c|c|"><hline>
 <bf/X3D Primitive/|<bf/Ayam Object/|<bf/X3D Primitive/|<bf/Ayam Object/@<hline>
-<em/Geometry3D:/|&ensp;|<em/CAD:/|&ensp; @<hline>
+<em/Geometry3D:/|&ensp;|<em/CAD:/|&ensp;@<hline>
 Box|Box|QuadSet|PolyMesh@<hline>
 Sphere|Sphere|IndexedQuadSet|PolyMesh@<hline>
 Cylinder|Cylinder|CADLayer|Level@<hline>
@@ -17160,7 +17148,7 @@ Instances of objects may be easily created again using Automatic Instancing
 <p>
 Normals will currently not be generated automatically for any X3D element
 and thus the <tt>"creaseAngle"</tt> attribute will be fully ignored.
-Note however, that if normals are specified, e.g.~for an
+Note however, that if normals are specified explicitly, e.g.~for an
 <tt>"IndexedFaceSet"</tt> element, they will be imported correctly.
 <p>
 Furthermore, if normals, colors, or texture coordinates
