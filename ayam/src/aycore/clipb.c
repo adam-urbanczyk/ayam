@@ -125,8 +125,8 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_clipb_cuttcmd:
  *  move currently selected objects to the clipboard
- *  Implements the \a movOb scripting interface command.
- *  See also the corresponding section in the \ayd{scmovob}.
+ *  Implements the \a cutOb scripting interface command.
+ *  See also the corresponding section in the \ayd{sccutob}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -187,7 +187,6 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
   /* cut objects to clipboard */
   while(sel)
     {
-
       ay_status = ay_object_unlink(sel->object);
       if(!ay_status)
 	{
@@ -215,7 +214,7 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_clipb_pastetcmd:
- *  paste objects from the clipboard to the current level
+ *  copy/move objects from the clipboard to the current level
  *  Implements the \a pasOb scripting interface command.
  *  See also the corresponding section in the \ayd{scpasob}.
  *
@@ -226,8 +225,12 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
- ay_object *ins = NULL, *clip = ay_clipboard;
- int instanceerr = AY_FALSE;
+ ay_object *tmp = NULL, *clip = ay_clipboard;
+ int move = AY_FALSE, instanceerr = AY_FALSE;
+
+  if(!strcmp(argv[0], "pasmovOb") || (argc > 0 && argv[1] &&
+				     !strcmp(argv[1], "-move")))
+    move = AY_TRUE;
 
   /* first, check whether we are moving instances into their masters */
   while(clip)
@@ -246,24 +249,45 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
   clip = ay_clipboard;
   while(clip)
     {
-      ay_status = ay_object_copy(clip, &ins);
-      if(ay_status)
+      if(move)
 	{
-	  ay_error(ay_status, argv[0], NULL);
-	  return TCL_OK;
-	}
+	  tmp = clip->next;
 
-      ay_status = ay_object_link(ins);
+	  ay_status = ay_object_link(clip);
+
+	  clip = tmp;
+	}
+      else
+	{
+	  ay_status = ay_object_copy(clip, &tmp);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, argv[0], NULL);
+	      return TCL_OK;
+	    }
+
+	  ay_status = ay_object_link(tmp);
+
+	  clip = clip->next;
+	} /* if */
+
       if(ay_status)
 	{
 	  /* oops, could not link object */
 	  ay_error(ay_status, argv[0], NULL);
-	  ay_status = ay_object_delete(ins);
+	  if(!move)
+	    {
+	      (void)ay_object_delete(tmp);
+	    }
 	  return TCL_OK;
 	} /* if */
 
-      clip = clip->next;
     } /* while */
+    
+  if(move)
+    {
+      ay_clipboard = NULL;
+    }
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)
@@ -274,61 +298,6 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_clipb_pastetcmd */
-
-
-/* ay_clipb_movetcmd:
- *  move objects from the clipboard to the current level
- *  Implements the \a pasmovOb scripting interface command.
- *  See also the corresponding section in the \ayd{scpasmovob}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
-		  int argc, char *argv[])
-{
- int ay_status = AY_OK;
- ay_object *next = NULL, *clip = ay_clipboard;
- int instanceerr = AY_FALSE;
-
-  /* first, check whether we are moving instances into their masters */
-  while(clip)
-    {
-      instanceerr = ay_instt_check(clip, ay_currentlevel->object);
-
-      if(instanceerr)
-	{
-	  ay_error(AY_ERROR, argv[0], "Recursive instances would result!");
-	  return TCL_OK;
-	}
-      clip = clip->next;
-    } /* while */
-
-  clip = ay_clipboard;
-  while(clip)
-    {
-      next = clip->next;
-      ay_status = ay_object_link(clip);
-      if(ay_status)
-	{
-	  /* oops, could not link object */
-	  ay_error(ay_status, argv[0], NULL);
-	  return TCL_OK;
-	}
-      clip = next;
-    } /* while */
-
-  ay_clipboard = NULL;
-
-  /* notify parent object about changes */
-  if(ay_currentlevel->next && ay_currentlevel->next->object)
-    {
-      ay_currentlevel->next->object->modified = AY_TRUE;
-    }
-  ay_notify_parent();
-
- return TCL_OK;
-} /* ay_clipb_movetcmd */
 
 
 /* ay_clipb_replacetcmd:

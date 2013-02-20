@@ -99,15 +99,10 @@ int ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 int ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
-/** Tcl command to copy the objects from the object clipboard to the scene.
+/** Tcl command to copy/move the objects from the object clipboard to the scene.
  */
 int ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
-
-/** Tcl command to move the objects from the object clipboard to the scene.
- */
-int ay_clipb_movetcmd(ClientData clientData, Tcl_Interp *interp,
-		      int argc, char *argv[]);
 
 /** Tcl command to replace the selected objects with the objects from the
  *  object clipboard.
