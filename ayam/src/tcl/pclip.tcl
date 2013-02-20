@@ -25,7 +25,7 @@ set pclip_prop ""
 # to be omitted by the next copy property action
 proc pclip_toggleomit { label varnames } {
     global pclip_omit pclip_omit_label
-    set oldlabel [$label cget -text] 
+    set oldlabel [$label cget -text]
 
     if { [string first "!" $oldlabel ] == -1 } {
 	set name "!$oldlabel"
@@ -42,22 +42,22 @@ proc pclip_toggleomit { label varnames } {
 	    unset pclip_omit($i)
 	}
     }
-
+ return;
 }
 # pclip_toggleomit
 
 
 # pclip_copy:
 # copy current property to property clipboard
-# if mode == 0: _omitting_ all marked entities
+# if mode == 0 (default): _omitting_ all marked entities
 # else copying _just_ the marked entities
-proc pclip_copy { mode } {
+proc pclip_copy { { mode 0 } } {
     global ay pclip_prop pclip_omit
     upvar #0 pclip_clipboard clipboard
 
     set lb $ay(plb)
     set index [$lb curselection]
-    
+
     if { $index == "" } {
 	puts stderr "pclip_copy: No property selected!"
 	return;
@@ -77,14 +77,15 @@ proc pclip_copy { mode } {
 	    if { ! [info exists pclip_omit($i)] } {
 		eval [subst "set clipboard\(\$i\) \{\$$arr\(\$i\)\}"]
 	    }
-	}   
+	}
     } else {
 	foreach i $avnames {
 	    if { [info exists pclip_omit($i)] } {
 		eval [subst "set clipboard\(\$i\) \{\$$arr\(\$i\)\}"]
-	    } 
+	    }
 	}
     }
+ return;
 }
 # pclip_copy
 
@@ -147,6 +148,7 @@ proc pclip_paste { } {
     } else {
 	puts stderr "pclip_paste: Property clipboard is empty!"
     }
+ return;
 }
 # pclip_paste
 
