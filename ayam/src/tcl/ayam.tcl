@@ -869,7 +869,9 @@ if { $tcl_platform(platform) == "windows" } {
     } else {
 	# X11 specific settings:
 	# improve dialog box appearance
-	option add *Dialog.msg.font {Times 12}
+	if { [option get . Ayam Font] == "" } {
+	    option add *Dialog.msg.font {Times 12}
+	}
 	option add *Dialog.msg.wrapLength 6i
     }
     # if
