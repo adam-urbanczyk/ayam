@@ -281,16 +281,18 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    }
 				} /* for */
 			      parms[start] = (RtPointer)ctemp;
+
+			      /* sneak in the opacity */
 			      start++;
 			      (*added)++;
-			      /* sneak in the opacity */
-			      Tcl_DStringInit(&dso);
-			      Tcl_DStringAppend(&dso, pvstorage, -1);
-			      Tcl_DStringAppend(&dso, " color", -1);
 			      if(declare)
 				{
+				  Tcl_DStringInit(&dso);
+				  Tcl_DStringAppend(&dso, pvstorage, -1);
+				  Tcl_DStringAppend(&dso, " color", -1);
 				  RiDeclare(ay_prefs.opacityname,
-					    Tcl_DStringValue(&ds));
+					    Tcl_DStringValue(&dso));
+				  Tcl_DStringFree(&dso);
 				}
 			      if(!(tokens[start] = calloc(strlen(
 				      ay_prefs.opacityname)+1, sizeof(char))))
@@ -298,6 +300,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			      strcpy(tokens[start], pvname);
 			      parms[start] = (RtPointer)otemp;
 			      break;
+
 			    default:
 			      /* XXXX issue error message? */
 			      /* ...unsupported type encountered */
