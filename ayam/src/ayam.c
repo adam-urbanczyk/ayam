@@ -600,40 +600,26 @@ ay_init(Tcl_Interp *interp)
   strcpy(ay_prefs.logfile, ay_log);
 
   if(!(ay_prefs.pprender = calloc(3+1, sizeof(char))))
-    {
-      free(ay_prefs.logfile);
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
   strcpy(ay_prefs.pprender, "rgl");
 
 
   /* PV tag names */
   if(!(ay_prefs.texcoordname = calloc(2+1, sizeof(char))))
-    {
-      free(ay_prefs.logfile);
-      free(ay_prefs.pprender);
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
   strcpy(ay_prefs.texcoordname, "st");
 
   if(!(ay_prefs.normalname = calloc(1+1, sizeof(char))))
-    {
-      free(ay_prefs.logfile);
-      free(ay_prefs.pprender);
-      free(ay_prefs.texcoordname);
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
   strcpy(ay_prefs.normalname, "N");
 
   if(!(ay_prefs.colorname = calloc(2+1, sizeof(char))))
-    {
-      free(ay_prefs.logfile);
-      free(ay_prefs.pprender);
-      free(ay_prefs.texcoordname);
-      free(ay_prefs.normalname);
-      return AY_EOMEM;
-    }
+    return AY_EOMEM;
   strcpy(ay_prefs.colorname, "Cs");
+
+  if(!(ay_prefs.opacityname = calloc(2+1, sizeof(char))))
+    return AY_EOMEM;
+  strcpy(ay_prefs.opacityname, "Os");
 
   ay_prefs.save_rootviews = AY_TRUE;
 
@@ -1330,6 +1316,7 @@ Tcl_SetVar(interp, "AYNOSAFEINTERP", "0", TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* Tcl_AppInit */
+
 
 /* ay_safeinit:
  *  initialize the safe interpreter by creating some commands

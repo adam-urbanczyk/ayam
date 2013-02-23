@@ -677,7 +677,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.logfile);
 
       if(!(ay_prefs.logfile = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.logfile, str);
     }
@@ -692,11 +695,13 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.pprender);
 
       if(!(ay_prefs.pprender = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.pprender, str);
     } /* if */
-
 
   Tcl_SetStringObj(ton, "SMethod", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -742,7 +747,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.texcoordname);
 
       if(!(ay_prefs.texcoordname = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.texcoordname, str);
     } /* if */
@@ -757,7 +765,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.normalname);
 
       if(!(ay_prefs.normalname = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.normalname, str);
     } /* if */
@@ -772,7 +783,10 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.tangentname);
 
       if(!(ay_prefs.tangentname = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.tangentname, str);
     } /* if */
@@ -787,10 +801,33 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
 	free(ay_prefs.colorname);
 
       if(!(ay_prefs.colorname = calloc(strlen(str)+1, sizeof(char))))
-	return AY_EOMEM;
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
 
       strcpy(ay_prefs.colorname, str);
     } /* if */
+
+  Tcl_SetStringObj(ton, "PVOpacityName", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  str = Tcl_GetStringFromObj(to, NULL);
+
+  if(str)
+    {
+      if(ay_prefs.opacityname)
+	free(ay_prefs.opacityname);
+
+      if(!(ay_prefs.opacityname = calloc(strlen(str)+1, sizeof(char))))
+	{
+	  ay_error(AY_EOMEM, argv[0], NULL);
+	  goto cleanup;
+	}
+
+      strcpy(ay_prefs.opacityname, str);
+    } /* if */
+
+cleanup:
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
