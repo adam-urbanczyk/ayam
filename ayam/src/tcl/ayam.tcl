@@ -207,6 +207,7 @@ array set ayprefs {
  PVNormalName "N"
  PVTangentName "T"
  PVColorName "Cs"
+ PVOpacityName "Os"
 
  ConvResetDisplay 1
 

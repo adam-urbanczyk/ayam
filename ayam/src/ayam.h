@@ -1488,6 +1488,7 @@ typedef struct ay_preferences_s
   char *normalname; /**< default name for vertex normal PV tags */
   char *tangentname; /**< default name for vertex tangent PV tags */
   char *colorname; /**< default name for vertex color PV tags */
+  char *opacityname; /**< default name for vertex opacity PV tags */
 
 } ay_preferences;
 
