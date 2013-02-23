@@ -35,9 +35,9 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  RtFloat *ftemp;
  RtString *stemp;
  RtPoint *ptemp;
- RtColor *ctemp;
+ RtColor *ctemp, *otemp;
  char fname[] = "pv_filltokpar", e1[] = "Missing data value in PV-tag!";
- Tcl_DString ds;
+ Tcl_DString ds, dso;
 
   if(!o)
     return AY_ENULL;
@@ -53,7 +53,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 	      free(tagvaltmp);
 	    }
 
-	  if(!(tagvaltmp = calloc(1, strlen(tag->val)+1)))
+	  if(!(tagvaltmp = malloc((strlen(tag->val)+1)*sizeof(char))))
 	    { return AY_EOMEM; }
 	  strcpy(tagvaltmp, tag->val);
 
@@ -67,7 +67,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 	      pvvalue = NULL;
 	      pvtype = NULL;
 	      pvstorage = NULL;
-	      if(!(tokens[start] = calloc(strlen(pvname)+1, sizeof(char))))
+	      if(!(tokens[start] = malloc((strlen(pvname)+1)*sizeof(char))))
 		return AY_EOMEM;
 	      strcpy(tokens[start], pvname);
 
@@ -106,7 +106,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 'f':
 			      Tcl_DStringAppend(&ds, "float", -1);
 
-			      if(!(ftemp = calloc(n, sizeof(RtFloat))))
+			      if(!(ftemp = malloc(n*sizeof(RtFloat))))
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
@@ -127,7 +127,7 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 'g':
 			      Tcl_DStringAppend(&ds, "float[2]", -1);
 
-			      if(!(ftemp = calloc(n, 2*sizeof(RtFloat))))
+			      if(!(ftemp = malloc(n*2*sizeof(RtFloat))))
 				return AY_EOMEM;
 			      j = 0;
 			      for(i = 0; i < n; i++)
@@ -159,15 +159,15 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 			    case 's':
 			      Tcl_DStringAppend(&ds, "string", -1);
 
-			      if(!(stemp = calloc(n, sizeof(RtString))))
+			      if(!(stemp = malloc(n*sizeof(RtString))))
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
 				{
 				  if(pvvalue)
 				    {
-				      if(!(stemp[i] = calloc(strlen(pvvalue)+1,
-							     sizeof(char))))
+				      if(!(stemp[i] = malloc(
+					 (strlen(pvvalue)+1)*sizeof(char))))
 					return AY_EOMEM;
 				      strcpy(stemp[i], pvvalue);
 				      pvvalue = strtok(NULL, tok);
@@ -198,71 +198,81 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				  break;
 				}
 
-			      if(!(ptemp = calloc(n, sizeof(RtPoint))))
+			      if(!(ptemp = malloc(n*sizeof(RtPoint))))
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
 				{
-				  if(pvvalue)
+				  for(j = 0; j < 3; j++)
 				    {
-				      sscanf(pvvalue, "%f", &((ptemp[i])[0]));
+				      if(pvvalue)
+					{
+				      sscanf(pvvalue, "%f", &((ptemp[i])[j]));
 				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
-				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
-				  if(pvvalue)
-				    {
-				      sscanf(pvvalue, "%f", &((ptemp[i])[1]));
-				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
-				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
-				  if(pvvalue)
-				    {
-				      sscanf(pvvalue, "%f", &((ptemp[i])[2]));
-				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
-				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
-				} /* for */
+					}
+				      else
+					{
+					  ay_error(AY_EWARN, fname, e1);
+					}
+				    } /* for j */
+				} /* for i */
 			      parms[start] = (RtPointer)ptemp;
 			      break;
 
 			    case 'c':
 			      Tcl_DStringAppend(&ds, "color", -1);
 
-			      if(!(ctemp = calloc(n, sizeof(RtColor))))
+			      if(!(ctemp = malloc(n*sizeof(RtColor))))
 				return AY_EOMEM;
 
 			      for(i = 0; i < n; i++)
 				{
-				  if(pvvalue)
+				  for(j = 0; j < 3; j++)
 				    {
-				      sscanf(pvvalue, "%f", &((ctemp[i])[0]));
+				      if(pvvalue)
+					{
+				      sscanf(pvvalue, "%f", &((ctemp[i])[j]));
 				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
+					}
+				      else
+					{
+					  ay_error(AY_EWARN, fname, e1);
+					}
+				    } /* for j */
+				} /* for i */
+			      parms[start] = (RtPointer)ctemp;
+			      break;
+
+			    case 'd':
+			      Tcl_DStringAppend(&ds, "color", -1);
+
+			      if(!(ctemp = malloc(n*sizeof(RtColor))))
+				return AY_EOMEM;
+
+			      if(!(otemp = malloc(n*sizeof(RtColor))))
+				return AY_EOMEM;
+
+			      for(i = 0; i < n; i++)
+				{
+				  for(j = 0; j < 3; j++)
 				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
-				  if(pvvalue)
-				    {
-				      sscanf(pvvalue, "%f", &((ctemp[i])[1]));
+				      if(pvvalue)
+					{
+				      sscanf(pvvalue, "%f", &((ctemp[i])[j]));
 				      pvvalue = strtok(NULL, tok);
-				    }
-				  else
-				    {
-				      ay_error(AY_EWARN, fname, e1);
-				    }
+					}
+				      else
+					{
+					  ay_error(AY_EWARN, fname, e1);
+					}
+				    } /* for j */
+				  /* read the opacity */
 				  if(pvvalue)
 				    {
-				      sscanf(pvvalue, "%f", &((ctemp[i])[2]));
+				      sscanf(pvvalue, "%f", &((otemp[i])[0]));
+				      /* expand to RenderMan opacity style */
+				      otemp[i][1] = otemp[i][0];
+				      otemp[i][2] = otemp[i][0];
 				      pvvalue = strtok(NULL, tok);
 				    }
 				  else
@@ -271,8 +281,23 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
 				    }
 				} /* for */
 			      parms[start] = (RtPointer)ctemp;
+			      start++;
+			      (*added)++;
+			      /* sneak in the opacity */
+			      Tcl_DStringInit(&dso);
+			      Tcl_DStringAppend(&dso, pvstorage, -1);
+			      Tcl_DStringAppend(&dso, " color", -1);
+			      if(declare)
+				{
+				  RiDeclare(ay_prefs.opacityname,
+					    Tcl_DStringValue(&ds));
+				}
+			      if(!(tokens[start] = calloc(strlen(
+				      ay_prefs.opacityname)+1, sizeof(char))))
+				return AY_EOMEM;
+			      strcpy(tokens[start], pvname);
+			      parms[start] = (RtPointer)otemp;
 			      break;
-
 			    default:
 			      /* XXXX issue error message? */
 			      /* ...unsupported type encountered */
@@ -367,6 +392,10 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
       /* color */
       Tcl_DStringAppend(&ds, "c", -1);
       break;
+    case 6:
+      /* color+opacity */
+      Tcl_DStringAppend(&ds, "d", -1);
+      break;
 
     default:
       break;
@@ -431,11 +460,22 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 	  Tcl_DStringAppend(&ds, tmp, -1);
 	}
       break;
+    case 6:
+      /* color+opacity */
+      for(i = 0; i < datalen*stride; i += stride)
+	{
+	  sprintf(tmp, ",%f,%f,%f,%f", ((float*)data)[i],
+		  ((float*)data)[i+1],
+		  ((float*)data)[i+2],
+		  ((float*)data)[i+3]);
+	  Tcl_DStringAppend(&ds, tmp, -1);
+	}
+      break;
     default:
       break;
     } /* switch */
 
-  if(!(tag->val = calloc(strlen(Tcl_DStringValue(&ds))+1,
+  if(!(tag->val = malloc((strlen(Tcl_DStringValue(&ds))+1)*
 			 sizeof(char))))
     { free(tag->name); free(tag); return AY_EOMEM; }
   strcpy(tag->val, Tcl_DStringValue(&ds));
@@ -514,7 +554,7 @@ ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
   Tcl_DStringAppend(&ds, comma2, -1);
 
   /* copy collected string to new tag */
-  if(!(nt->val = calloc(Tcl_DStringLength(&ds)+1,
+  if(!(nt->val = malloc((Tcl_DStringLength(&ds)+1)*
 			sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
   strcpy(nt->val, Tcl_DStringValue(&ds));
@@ -578,7 +618,7 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
     {
       return AY_TRUE;
     }
-  
+
  return AY_FALSE;
 } /* ay_pv_cmpndt */
 
@@ -601,7 +641,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
     return AY_FALSE;
 
   c = t->val;
- 
+
   if(!c)
     return AY_FALSE;
 
@@ -625,9 +665,9 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 	    {
 	      return AY_TRUE;
 	    }
-	}
-    }
-  
+	} /* if */
+    } /* if */
+
  return AY_FALSE;
 } /* ay_pv_checkndt */
 
@@ -669,6 +709,61 @@ ay_pv_getdetail(ay_tag *t, char **detail)
 
  return result;
 } /* ay_pv_getdetail */
+
+
+/* ay_pv_gettype:
+ *  returns type from the PV tag <t>
+ *  returns -1 on error
+ */
+int
+ay_pv_gettype(ay_tag *t)
+{
+ char *c;
+ int result = -1;
+
+  if(!t || !t->type || !t->val || (t->type != ay_pv_tagtype))
+    return result;
+
+  c = strchr(t->val, ',');
+
+  if(!c)
+    return result;
+
+  c++;
+
+  c = strchr(t->val, ',');
+
+  c++;
+
+  switch(*c)
+    {
+    case 'f':
+      result = 0;
+      break;
+    case 'g':
+      result = 1;
+      break;
+    case 'c':
+      result = 2;
+      break;
+    case 'p':
+      result = 3;
+      break;
+    case 'n':
+      result = 4;
+      break;
+    case 'v':
+      result = 5;
+      break;
+    case 'd':
+      result = 6;
+      break;
+    default:
+      break;
+    } /* switch */
+
+ return result;
+} /* ay_pv_gettype */
 
 
 /* ay_pv_convert:
@@ -722,7 +817,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 0)
 	{
 	  /* allocate memory */
-	  if(!(da = calloc(count, sizeof(double))))
+	  if(!(da = malloc(count*sizeof(double))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -740,7 +835,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 1)
 	{
 	  /* allocate memory */
-	  if(!(fa = calloc(count, sizeof(float))))
+	  if(!(fa = malloc(count*sizeof(float))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -762,7 +857,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 0)
 	{
 	  /* allocate memory */
-	  if(!(da = calloc(2*count, sizeof(double))))
+	  if(!(da = malloc(2*count*sizeof(double))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -783,7 +878,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 1)
 	{
 	  /* allocate memory */
-	  if(!(fa = calloc(2*count, sizeof(float))))
+	  if(!(fa = malloc(2*count*sizeof(float))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -804,6 +899,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(datalen)
 	*datalen = count;
       break;
+
     case 'c':
     case 'p':
     case 'n':
@@ -811,7 +907,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 0)
 	{
 	  /* allocate memory */
-	  if(!(da = calloc(3*count, sizeof(double))))
+	  if(!(da = malloc(3*count*sizeof(double))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -836,7 +932,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(type == 1)
 	{
 	  /* allocate memory */
-	  if(!(fa = calloc(3*count, sizeof(float))))
+	  if(!(fa = malloc(3*count*sizeof(float))))
 	    return AY_EOMEM;
 	  /* parse data and fill memory */
 	  do
@@ -845,6 +941,66 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
 	      if(cc != 3)
 		{ay_status = AY_ERROR; goto cleanup;}
 	      i+=3;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = fa;
+	}
+      if(datalen)
+	*datalen = count;
+    break;
+    case 'd':
+      if(type == 0)
+	{
+	  /* allocate memory */
+	  if(!(da = malloc(4*count*sizeof(double))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      cc = sscanf(c3, ",%lg,%lg,%lg,%lg",
+			  &(da[i]), &(da[i+1]), &(da[i+2]), &(da[i+3]));
+	      if(cc != 4)
+		{ay_status = AY_ERROR; goto cleanup;}
+	      i+=4;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
+	      c3++;
+	    }
+	  while((c3 = strchr(c3, ',')));
+	  /* prepare result */
+	  *data = da;
+	}
+      if(type == 1)
+	{
+	  /* allocate memory */
+	  if(!(fa = malloc(4*count*sizeof(float))))
+	    return AY_EOMEM;
+	  /* parse data and fill memory */
+	  do
+	    {
+	      cc = sscanf(c3, ",%f,%f,%f,%f",
+			  &(fa[i]), &(fa[i+1]), &(fa[i+2]), &(fa[i+3]));
+	      if(cc != 4)
+		{ay_status = AY_ERROR; goto cleanup;}
+	      i += 4;
+	      c3++;
+	      if(!(c3 = strchr(c3, ',')))
+		break;
 	      c3++;
 	      if(!(c3 = strchr(c3, ',')))
 		break;
@@ -925,7 +1081,7 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
       if((sdalen == 0) || (tdalen == 0) || (sdalen != tdalen))
 	{ ay_status = AY_ERROR; goto cleanup; }
 
-      if(!(st = calloc(2*sdalen, sizeof(float))))
+      if(!(st = malloc(2*sdalen*sizeof(float))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       j = 0;
@@ -1045,6 +1201,10 @@ ay_pv_count(ay_object *o)
       if(tag->type == ay_pv_tagtype)
 	{
 	  count++;
+	  /* 'd' counts twice because we expand it into Cs and Os
+	     upon RIB export */
+	  if(ay_pv_gettype(tag) == 6)
+	    count++;
 	}
       tag = tag->next;
     }
