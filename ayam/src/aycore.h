@@ -881,6 +881,10 @@ int ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
  */
 int ay_pv_getdetail(ay_tag *t, char **detail);
 
+/** return a PV tags type
+ */
+int ay_pv_gettype(ay_tag *t);
+
 /** convert PV tag data to value array
  */
 int ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data);
@@ -889,9 +893,9 @@ int ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data);
  */
 int ay_pv_getst(ay_object *o, char *mys, char *myt, void **data);
 
-/** get vertex colors from PV tag
+/** get vertex colors from object
  */
-int ay_pv_getvc(ay_object *o, int stride, char *myc, void **data);
+int ay_pv_getvc(ay_object *o, char *myc, int stride, void **data);
 
 /** count PV tags of object o
  */

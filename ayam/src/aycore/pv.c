@@ -607,6 +607,7 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
   if(!c1 || !c2)
     return AY_FALSE;
 
+  /* get the third comma in t1->val */
   for(i = 0; i < 3; i++)
     {
       c1 = strchr(c1, ',');
@@ -617,6 +618,8 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
       c1++;
     }
 
+  /* now compare the strings up to the third comma in t1->val,
+     i.e. compare name, detail, and type */
   if(!strncmp((char*)t1->val, (char*)t2->val, (c1 - (char*)t1->val)))
     {
       return AY_TRUE;
@@ -648,7 +651,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
   if(!c)
     return AY_FALSE;
 
-  if(strstr(c, name) == c)
+  if(!strcmp(c, name))
     {
       c = strchr(c, ',');
       if(!c)
@@ -656,7 +659,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 
       c++;
 
-      if(strstr(c, detail) == c)
+      if(!strcmp(c, detail))
 	{
 	  c = strchr(c, ',');
 	  if(!c)
@@ -664,10 +667,8 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 
 	  c++;
 
-	  if(strstr(c, type) == c)
-	    {
-	      return AY_TRUE;
-	    }
+	  if(!strcmp(c, type))
+	    return AY_TRUE;
 	} /* if */
     } /* if */
 
@@ -695,16 +696,16 @@ ay_pv_getdetail(ay_tag *t, char **detail)
 
   c++;
 
-  if(strcmp(c, "constant"))
+  if(!strcmp(c, "constant"))
     result = 0;
-
-  if(strcmp(c, "uniform"))
+  else
+  if(!strcmp(c, "uniform"))
     result = 1;
-
-  if(strcmp(c, "vertex"))
+  else
+  if(!strcmp(c, "vertex"))
     result = 2;
-
-  if(strcmp(c, "varying"))
+  else
+  if(!strcmp(c, "varying"))
     result = 3;
 
   if(detail)
@@ -856,6 +857,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(datalen)
 	*datalen = count;
       break;
+
     case 'g':
       if(type == 0)
 	{
@@ -959,6 +961,7 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(datalen)
 	*datalen = count;
     break;
+
     case 'd':
       if(type == 0)
 	{
@@ -1019,8 +1022,9 @@ ay_pv_convert(ay_tag *tag, int type, unsigned int *datalen, void **data)
       if(datalen)
 	*datalen = count;
     break;
+
     default:
-      return AY_ERROR;
+      ay_status = AY_ERROR;
       break;
     } /* switch */
 
@@ -1060,13 +1064,13 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
     {
       if(tag->type == ay_pv_tagtype)
 	{
-	  if(!strncmp(tag->val, mys, strlen(mys)))
+	  if(!strcmp(tag->val, mys))
 	    {
 	      stag = tag;
 	      if(ttag)
 		break;
 	    }
-	  if(!strncmp(tag->val, myt, strlen(myt)))
+	  if(!strcmp(tag->val, myt))
 	    {
 	      ttag = tag;
 	      if(stag)
@@ -1115,18 +1119,26 @@ cleanup:
 } /* ay_pv_getst */
 
 
-/* ay_pv_getvc:
- *  get vertex colors
+/** ay_pv_getvc:
+ *  get vertex colors from PV tag
+ *
+ * \param[in] o object to get the vertex colors from
+ * \param[in] myc name of PV tag
+ * \param[in] stride desired output stride
+ * \param[in,out] data vertex colors
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
+ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
 {
  int ay_status = AY_OK;
  ay_tag *tag = NULL, *ctag = NULL;
  float *cda = NULL;
  float *vc = NULL;
+ int pvtype = -1;
  unsigned int cdalen = 0;
- unsigned int i, j = 0;
+ unsigned int cdastride = 3, i, j = 0, k = 0;
 
   if(!o || !myc || !data)
     return AY_ENULL;
@@ -1136,7 +1148,7 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
     {
       if(tag->type == ay_pv_tagtype)
 	{
-	  if(!strncmp(tag->val, myc, strlen(myc)))
+	  if(!strcmp(tag->val, myc))
 	    {
 	      ctag = tag;
 		break;
@@ -1147,33 +1159,54 @@ ay_pv_getvc(ay_object *o, int stride, char *myc, void **data)
 
   if(ctag)
     {
+      pvtype = ay_pv_gettype(ctag);
+      if(pvtype != 2 && pvtype != 6)
+	{
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+
+      /* see if we can convert the tag data directly */
+      if((pvtype == 6) && (stride == 4))
+	{
+	  /* yes */
+	  ay_pv_convert(ctag, 1, &cdalen, data);
+	  goto cleanup;
+	}
+
+      if((pvtype == 2) && (stride == 3))
+	{
+	  /* yes */
+	  ay_pv_convert(ctag, 1, &cdalen, data);
+	  goto cleanup;
+	}
+
+      /* can not convert directly, need to expand/reduce */
       ay_pv_convert(ctag, 1, &cdalen, (void**)(void*)&cda);
 
       if(cdalen == 0)
 	{ ay_status = AY_ERROR; goto cleanup; }
 
-      if(!(vc = calloc(stride*cdalen, sizeof(float))))
+      if(!(vc = malloc(stride*cdalen*sizeof(float))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      if(ay_pv_gettype(ctag) == 6)
+	cdastride = 4;
 
       for(i = 0; i < cdalen; i++)
 	{
-	  memcpy(&(vc[i]), &(cda[i]), 3*sizeof(float));
-	  /*
-	  vc[i] = cda[i];
-	  vc[i+1] = cda[i+1];
-	  vc[i+2] = cda[i+2];
-	  */
+	  memcpy(&(vc[k]), &(cda[j]), 3*sizeof(float));
+
 	  if(stride > 3)
 	    {
-	      vc[i+3] = 1.0;
-	      /* XXXX
-		 vc[i+3] = oda[i+3];
-	      */
+	      vc[k+3] = 1.0;
 	    }
 
-	  j += stride;
+	  k += stride;
+	  j += cdastride;
 	} /* for */
 
+      /* return result */
       *data = vc;
     } /* if */
 
@@ -1186,8 +1219,12 @@ cleanup:
 } /* ay_pv_getvc */
 
 
-/* ay_pv_count:
- *  count PV tags of object <o>
+/** ay_pv_count:
+ *  count PV tags of an object
+ *
+ * \param[in] o object to process
+ *
+ * \returns number of PV tags
  */
 int
 ay_pv_count(ay_object *o)
