@@ -619,7 +619,7 @@ ay_pv_cmpndt(ay_tag *t1, ay_tag *t2)
     }
 
   /* now compare the strings up to the third comma in t1->val,
-     i.e. compare name, detail, and type */
+     i.e. compare their names, details, and types */
   if(!strncmp((char*)t1->val, (char*)t2->val, (c1 - (char*)t1->val)))
     {
       return AY_TRUE;
@@ -676,9 +676,13 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 } /* ay_pv_checkndt */
 
 
-/* ay_pv_getdetail:
- *  returns detail from the PV tag <t>
- *  returns -1 on error
+/** ay_pv_getdetail:
+ *  returns detail from a PV tag
+ *
+ *  \param[in] t tag to analyze
+ *  \param[in,out] detail pointer to detail string found, may be NULL
+ *
+ *  \returns -1 on error, the detail encoded in an integer else
  */
 int
 ay_pv_getdetail(ay_tag *t, char **detail)
@@ -715,9 +719,12 @@ ay_pv_getdetail(ay_tag *t, char **detail)
 } /* ay_pv_getdetail */
 
 
-/* ay_pv_gettype:
- *  returns type from the PV tag <t>
- *  returns -1 on error
+/** ay_pv_gettype:
+ *  returns data type from a PV tag
+ *
+ *  \param[in] t tag to analyze
+ *
+ *  \returns -1 on error, the data type encoded in an integer else
  */
 int
 ay_pv_gettype(ay_tag *t)
@@ -1121,16 +1128,20 @@ cleanup:
 
 /** ay_pv_getvc:
  *  get vertex colors from PV tag
+ *  is able to work with PV tags of type 'c' and 'd'
+ *  and expands/reduces the data accordingly
  *
  * \param[in] o object to get the vertex colors from
  * \param[in] myc name of PV tag
  * \param[in] stride desired output stride
+ * \param[in,out] datalen length of data (in tuples)
  * \param[in,out] data vertex colors
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
+ay_pv_getvc(ay_object *o, char *myc, int stride, unsigned int *datalen,
+	    void **data)
 {
  int ay_status = AY_OK;
  ay_tag *tag = NULL, *ctag = NULL;
@@ -1140,7 +1151,7 @@ ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
  unsigned int cdalen = 0;
  unsigned int cdastride = 3, i, j = 0, k = 0;
 
-  if(!o || !myc || !data)
+  if(!o || !myc || !datalen || !data)
     return AY_ENULL;
 
   tag = o->tags;
@@ -1170,14 +1181,14 @@ ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
       if((pvtype == 6) && (stride == 4))
 	{
 	  /* yes */
-	  ay_pv_convert(ctag, 1, &cdalen, data);
+	  ay_status = ay_pv_convert(ctag, 1, datalen, data);
 	  goto cleanup;
 	}
 
       if((pvtype == 2) && (stride == 3))
 	{
 	  /* yes */
-	  ay_pv_convert(ctag, 1, &cdalen, data);
+	  ay_status = ay_pv_convert(ctag, 1, datalen, data);
 	  goto cleanup;
 	}
 
@@ -1190,8 +1201,10 @@ ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
       if(!(vc = malloc(stride*cdalen*sizeof(float))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      if(ay_pv_gettype(ctag) == 6)
-	cdastride = 4;
+      if(pvtype == 6)
+	{
+	  cdastride = 4;
+	}
 
       for(i = 0; i < cdalen; i++)
 	{
@@ -1208,6 +1221,7 @@ ay_pv_getvc(ay_object *o, char *myc, int stride, void **data)
 
       /* return result */
       *data = vc;
+      *datalen = cdalen;
     } /* if */
 
 cleanup:

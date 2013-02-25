@@ -895,7 +895,8 @@ int ay_pv_getst(ay_object *o, char *mys, char *myt, void **data);
 
 /** get vertex colors from object
  */
-int ay_pv_getvc(ay_object *o, char *myc, int stride, void **data);
+int ay_pv_getvc(ay_object *o, char *myc, int stride,
+		unsigned int *datalen, void **data);
 
 /** count PV tags of object o
  */
