@@ -70,7 +70,10 @@ int x3dio_writecurves = AY_TRUE;
 int x3dio_writewires = AY_FALSE;
 int x3dio_writeviews = AY_TRUE;
 int x3dio_writeparam = AY_FALSE;
+int x3dio_writex3dom = AY_FALSE;
 int x3dio_resolveinstances = AY_FALSE;
+
+char *x3dio_x3domtemplate = "x3dom-template.xhtml";
 
 unsigned int x3dio_allobjcnt = 0;
 unsigned int x3dio_curobjcnt = 0;
@@ -263,6 +266,9 @@ int x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 /****************************************************************************/
 
 /* low-level export support functions */
+scew_element* x3dio_findelement(scew_element const* parent,
+				XML_Char const* name);
+
 unsigned int x3dio_count(ay_object *o);
 
 int x3dio_registerwritecb(char *name, x3dio_writecb *cb);
@@ -341,7 +347,9 @@ int x3dio_writeswingobj(scew_element *element, ay_object *o);
 int x3dio_writeextrudeobj(scew_element *element, ay_object *o);
 
 /* export */
+
 int x3dio_writeobject(scew_element *element, ay_object *o, int count);
+
 
 int x3dio_writescene(char *filename, int selected, int toplevellayers);
 
@@ -6660,11 +6668,7 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 
   *transform_element = scew_element_add(element, "Transform");
 
-  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
-     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
-     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
-     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+  if(AY_ISTRAFO(o))
     {
 
       /* process translation */
@@ -7430,6 +7434,30 @@ cleanup:
 } /* x3dio_writenpatchobj */
 
 
+/* x3dio_writewiremat:
+ *
+ */
+int
+x3dio_writewiremat(scew_element *shape_element)
+{
+ char buf[128];
+ scew_element *app_element = NULL;
+ scew_element *mat_element = NULL;
+
+  if(!shape_element)
+    return AY_ENULL;
+
+  app_element = scew_element_add(shape_element, "Appearance");
+  mat_element = scew_element_add(app_element, "Material");
+
+  sprintf(buf, "%g %g %g", ay_prefs.obr, ay_prefs.obg, ay_prefs.obb);
+
+  scew_element_add_attr_pair(mat_element, "emissiveColor", buf);
+
+ return AY_OK;
+} /* x3dio_writewiremat */
+
+
 /* x3dio_writenpwire:
  *
  */
@@ -7440,12 +7468,14 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
  ay_object *c;
  ay_nurbpatch_object *np;
  char buf[64], *attr = NULL, *tmp;
- int a, b, i, j, m, n, p, q;
+ int a, b, i, j, k, m, n, p, q;
  int ulines, vlines, fulines, fvlines, spanu, spanv;
  int *spanus, *spanvs, *fspanus, *fspanvs;
+ int idxsize = 0;
  double *P, *U, *V, *Nu, *Nv, *fd1, *fd2, *Ct;
  double l, u, v, ud, fud, vd, fvd;
  double N[3] = {0}, fder[9] = {0};
+ double offset = 0.005;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
@@ -7474,7 +7504,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       if(U[a] != U[a+1])
 	ulines++;
     }
-  fulines = ulines*3;
+  fulines = ulines*4;
   v = V[q];
   vlines = 1;
   for(a = q; a < m; a++)
@@ -7482,15 +7512,17 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       if(V[a] != V[a+1])
 	vlines++;
     }
-  fvlines = vlines*3;
+  fvlines = vlines*4;
 
   ud = (U[n] - U[p]) / (ulines - 1);
   fud = (U[n] - U[p]) / (fulines - 1);
   vd = (V[m] - V[q]) / (vlines - 1);
   fvd = (V[m] - V[q]) / (fvlines - 1);
 
-  if(!(Ct = malloc((fulines>fvlines?fulines:fvlines)*3*sizeof(double))))
+  if(!(Ct = malloc((fulines>fvlines?fulines:fvlines)*3*2*sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
+
+#if 0
   if(!(spanus = malloc((ulines+vlines)*sizeof(int))))
     { ay_status = AY_EOMEM; goto cleanup; }
   spanvs = spanus + ulines;
@@ -7504,7 +7536,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   /* employ linear variants of FindSpan() as they are much faster
      than a binary search; especially, since we calculate
      spans for all parameters in order */
-#if 0
+
   /* coarse lines */
   u = U[p];
   spanu = p;
@@ -7574,10 +7606,16 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
   fspanvs[a] = fspanvs[a-1];
 #endif
 
-  if(!(attr = malloc((sprintf(buf, " %d", fvlines-1)*fvlines+5)*sizeof(char))))
+  idxsize = sprintf(buf, " %d", (fvlines*2));
+  if(!(attr = malloc((idxsize*fvlines*2+10)*sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
   tmp = attr;
   for(a = 0; a < fvlines; a++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+    } /* for */
+  tmp += sprintf(tmp, " -1");
+  for(a = fvlines; a < fvlines*2; a++)
     {
       tmp += sprintf(tmp, " %d", a);
     } /* for */
@@ -7593,6 +7631,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       v = V[q];
       j = 0;
+      k = fvlines*3;
       for(b = 0; b < fvlines; b++)
 	{
 	  /*spanv = fspanvs[b];
@@ -7610,16 +7649,21 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  if(fabs(l) > AY_EPSILON)
 	    AY_V3SCAL(N, 1.0/l);
 	  /* offset point along normal */
-	  AY_V3SCAL(N, 0.01);
+	  AY_V3SCAL(N, offset);
 	  Ct[j]   = fder[0]+N[0];
 	  Ct[j+1] = fder[1]+N[1];
 	  Ct[j+2] = fder[2]+N[2];
-
+	  Ct[k]   = fder[0]-N[0];
+	  Ct[k+1] = fder[1]-N[1];
+	  Ct[k+2] = fder[2]-N[2];
 	  j += 3;
+	  k += 3;
 	  v += fvd;
 	} /* for */
 
       shape_element = scew_element_add(transform_element, "Shape");
+
+      x3dio_writewiremat(shape_element);
 
       line_element = scew_element_add(shape_element, "IndexedLineSet");
 
@@ -7627,7 +7671,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       /* write coordinates */
       coord_element = scew_element_add(line_element, "Coordinate");
-      x3dio_writedoublepoints(coord_element, "point", 3, fvlines,
+      x3dio_writedoublepoints(coord_element, "point", 3, fvlines*2,
 			      3, Ct);
       do
 	{
@@ -7637,13 +7681,20 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
       u = U[i];
     } /* for */
 
-  /* u-lines */
   if(attr)
     free(attr);
-  if(!(attr = malloc((sprintf(buf, " %d", fulines-1)*fulines+5)*sizeof(char))))
+
+  /* u-lines */
+  idxsize = sprintf(buf, " %d", (fulines*2));
+  if(!(attr = malloc((idxsize*fulines*2+10)*sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
   tmp = attr;
   for(a = 0; a < fulines; a++)
+    {
+      tmp += sprintf(tmp, " %d", a);
+    } /* for */
+  tmp += sprintf(tmp, " -1");
+  for(a = fulines; a < fulines*2; a++)
     {
       tmp += sprintf(tmp, " %d", a);
     } /* for */
@@ -7658,6 +7709,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       u = U[p];
       j = 0;
+      k = fulines*3;
       for(b = 0; b < fulines; b++)
 	{
 	  /*spanu = fspanus[b];
@@ -7675,16 +7727,21 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 	  if(fabs(l) > AY_EPSILON)
 	    AY_V3SCAL(N, 1.0/l);
 	  /* offset point along normal */
-	  AY_V3SCAL(N, 0.01);
+	  AY_V3SCAL(N, offset);
 	  Ct[j]   = fder[0]+N[0];
 	  Ct[j+1] = fder[1]+N[1];
 	  Ct[j+2] = fder[2]+N[2];
-
+	  Ct[k]   = fder[0]-N[0];
+	  Ct[k+1] = fder[1]-N[1];
+	  Ct[k+2] = fder[2]-N[2];
 	  j += 3;
+	  k += 3;
 	  u += fud;
 	} /* for */
 
       shape_element = scew_element_add(transform_element, "Shape");
+
+      x3dio_writewiremat(shape_element);
 
       line_element = scew_element_add(shape_element, "IndexedLineSet");
 
@@ -7692,7 +7749,7 @@ x3dio_writenpwire(scew_element *element, ay_object *o)
 
       /* write coordinates */
       coord_element = scew_element_add(line_element, "Coordinate");
-      x3dio_writedoublepoints(coord_element, "point", 3, fulines,
+      x3dio_writedoublepoints(coord_element, "point", 3, fulines*2,
 			      3, Ct);
 
       do
@@ -7715,12 +7772,14 @@ cleanup:
 
   if(Ct)
     free(Ct);
+  /*
   if(spanus)
     free(spanus);
   if(fspanus)
     free(fspanus);
   if(Nu)
     free(Nu);
+  */
   if(attr)
     free(attr);
 
@@ -9506,6 +9565,35 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 } /* x3dio_writeobject */
 
 
+/* x3dio_findelement:
+ * _Recursively_ find the element <name> in the XML tree below <parent>.
+ */
+scew_element*
+x3dio_findelement(scew_element const* parent, XML_Char const* name)
+{
+ scew_element* next_element = NULL, *result;
+
+  if(name == NULL)
+    {
+      return NULL;
+    }
+
+  next_element = scew_element_next(parent, 0);
+  while (next_element)
+    {
+      if(!strcmp(scew_element_name(next_element), name))
+	return next_element;
+
+      if((result = x3dio_findelement(next_element, name)))
+	return result;
+
+      next_element = scew_element_next(parent, next_element);
+    }
+
+ return NULL;
+} /* x3dio_findelement */
+
+
 /* x3dio_writescene:
  *
  */
@@ -9514,28 +9602,24 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 {
  int ay_status = AY_OK;
  char fname[] = "x3dio_writescene";
+ char errstr[256];
  ay_object *o = ay_root->next, *d = NULL;
  ay_list_object *sel = NULL;
+ scew_error errcode;
+ scew_parser *parser = NULL;
  scew_tree *tree = NULL;
  scew_element *root = NULL;
  scew_element *scene_element = NULL;
  scew_element *cadlayer_element = NULL;
  scew_attribute *attribute = NULL;
-
-  if(selected)
-    {
-      o = ay_currentlevel->object;
-    }
-
-  if(!o)
-    return AY_ENULL;
+ enum XML_Error expat_code;
 
   if(!filename)
     return AY_ENULL;
 
   /* create and initialize hashtable for DEFs */
   if(!(x3dio_defs_ht = calloc(1, sizeof(Tcl_HashTable))))
-    return TCL_OK;
+    return AY_EOMEM;
   Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
   /* clear potentially present MN tags from scene */
@@ -9544,19 +9628,67 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   /* reset object number counter */
   ay_status = x3dio_writename(NULL, NULL, 0);
 
-  /* create in-memory XML tree */
-  tree = scew_tree_create();
+  if(!x3dio_writex3dom)
+    {
+      /* create in-memory XML tree */
+      tree = scew_tree_create();
 
-  scew_tree_set_xml_preamble(tree, "DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.0//EN\"   \"http://www.web3d.org/specifications/x3d-3.0.dtd\"");
+      scew_tree_set_xml_preamble(tree, "DOCTYPE X3D PUBLIC \"ISO//Web3D//DTD X3D 3.0//EN\"   \"http://www.web3d.org/specifications/x3d-3.0.dtd\"");
 
-  root = scew_tree_add_root(tree, "X3D");
+      root = scew_tree_add_root(tree, "X3D");
 
-  attribute = scew_attribute_create("profile", "Full");
-  scew_element_add_attr(root, attribute);
-  attribute = scew_attribute_create("version", "3.0");
-  scew_element_add_attr(root, attribute);
+      attribute = scew_attribute_create("profile", "Full");
+      scew_element_add_attr(root, attribute);
+      attribute = scew_attribute_create("version", "3.0");
+      scew_element_add_attr(root, attribute);
 
-  scene_element = scew_element_add(root, "Scene");
+      scene_element = scew_element_add(root, "Scene");
+    }
+  else
+    {
+      /* write x3dom scene i.e. augment an existig template file
+	 with the current scene */
+
+      /* initialize XML parser */
+      parser = scew_parser_create();
+
+      scew_parser_ignore_whitespaces(parser, 1);
+
+      /* load an XML (X3D) file */
+      if(!scew_parser_load_file(parser, x3dio_x3domtemplate))
+	{
+	  errcode = scew_error_code();
+	  sprintf(errstr, "Unable to load file (error #%d: %s)\n",
+		  errcode,
+		  scew_error_string(errcode));
+	  if(x3dio_errorlevel > 0)
+	    ay_error(AY_ERROR, fname, errstr);
+	  if(errcode == scew_error_expat)
+	    {
+	      expat_code = scew_error_expat_code(parser);
+	      sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
+		      expat_code,
+		      scew_error_expat_line(parser),
+		      scew_error_expat_column(parser),
+		      scew_error_expat_string(expat_code));
+	      if(x3dio_errorlevel > 0)
+		ay_error(AY_ERROR, fname, errstr);
+	    }
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	} /* if */
+
+      tree = scew_parser_tree(parser);
+      root = scew_tree_root(tree);
+      scene_element = x3dio_findelement(root, "Scene");
+      if(!scene_element)
+	{
+	  if(x3dio_errorlevel > 0)
+	    ay_error(AY_ERROR, fname, "Could not find the <Scene> element.");
+	  ay_status = AY_ERROR;
+	  goto cleanup;
+	}
+    } /* if */
 
   ay_trafo_identitymatrix(tm);
 
@@ -9585,6 +9717,14 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       o = ay_root->next;
     } /* if */
 
+  if(selected)
+    {
+      o = ay_currentlevel->object;
+    }
+
+  if(!o)
+    return AY_ENULL;
+
   /* count objects to be exported */
   if(!selected)
     {
@@ -9592,6 +9732,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
     }
   else
     {
+      x3dio_allobjcnt = 0;
       sel = ay_selection;
       while(sel)
 	{
@@ -9679,6 +9820,8 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       ay_status = AY_EOPENFILE;
     }
 
+cleanup:
+
   /* free the in-memory XML tree */
   scew_tree_free(tree);
 
@@ -9686,6 +9829,11 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 
   /* clear potentially present MN tags from scene */
   ay_status = x3dio_clearmntags(ay_root);
+
+  if(x3dio_writex3dom)
+    {
+      scew_parser_free(parser);
+    }
 
  return ay_status;
 } /* x3dio_writescene */
@@ -9735,7 +9883,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &toplevellayers);
 	}
       else
-      if(!strcmp(argv[i], "-p"))
+      if(!strcmp(argv[i], "-t"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_tesspomesh);
 	}
@@ -9750,7 +9898,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_writeviews);
 	}
       else
-      if(!strcmp(argv[i], "-x"))
+      if(!strcmp(argv[i], "-p"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_writeparam);
 	}
@@ -9764,9 +9912,14 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_writewires);
 	}
+      else
+      if(!strcmp(argv[i], "-x"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writex3dom);
+	}
       i += 2;
     } /* while */
-  x3dio_writewires = 1;
+
   ay_status = x3dio_writescene(argv[1], selected, toplevellayers);
 
  return TCL_OK;
