@@ -21,8 +21,10 @@ uplevel #0 { array set x3dio_options {
     ObeyNoExport 1
     IgnoreHidden 1
     WriteCurves 1
+    WriteWires 0
     WriteViews 1
     WriteParametrics 0
+    WriteX3dom 0
     ResolveInstances 0
     RescaleKnots 0.0
     TopLevelLayers 0
@@ -203,8 +205,10 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteCurves
     addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options WriteParametrics
+    addCheck $f x3dio_options WriteWires
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
+    addCheck $f x3dio_options WriteX3dom
     addProgress $f x3dio_options Progress
 
     set f [frame $w.f2]
@@ -226,8 +230,9 @@ proc x3dio_export { } {
 	    -i $x3dio_options(IgnoreHidden)\
 	    -l $x3dio_options(TopLevelLayers)\
 	    -f $x3dio_options(ScaleFactor)\
-	    -x $x3dio_options(WriteParametrics)\
-	    -r $x3dio_options(ResolveInstances)
+	    -p $x3dio_options(WriteParametrics)\
+	    -w $x3dio_options(WriteWires)\
+	    -x $x3dio_options(WriteX3dom)\
 
 	cd $oldcd
 	update
