@@ -1349,8 +1349,7 @@ proc io_importScene { filename } {
 	    set import_proc "${plugin}_import"
 	    #
 	    if { ! [info exists $import_proc] } {
-		set ay(autoload) $plugin
-		io_lcAuto
+		io_lcAuto $plugin
 	    }
 	    # XXXX import options array
 	    set option_array "${plugin}_options"
@@ -1409,8 +1408,7 @@ proc io_exportScene { filename } {
 	    set export_proc "${plugin}_export"
 	    #
 	    if { ! [info exists $export_proc] } {
-		set ay(autoload) $plugin
-		io_lcAuto
+		io_lcAuto $plugin
 	    }
 	    # XXXX export options array
 	    set option_array "${plugin}_options"

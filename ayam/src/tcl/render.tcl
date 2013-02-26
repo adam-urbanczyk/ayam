@@ -328,8 +328,7 @@ proc render_select { } {
 
 	if { $ay(ScanShaders) == 1 } {
 	    if { $splugin != "" } {
-		set ay(autoload) $splugin
-		io_lcAuto
+		io_lcAuto $splugin
 	    }
 	    shader_scanAll
 	}
