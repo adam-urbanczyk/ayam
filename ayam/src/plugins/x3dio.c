@@ -147,7 +147,8 @@ int x3dio_readtexcoords(scew_element *element, unsigned int *len, float **res);
 
 int x3dio_readnormals(scew_element *element, unsigned int *len, double **res);
 
-int x3dio_readcolors(scew_element *element, unsigned int *len, float **res);
+int x3dio_readcolors(scew_element *element, int *stride, unsigned int *len,
+		     float **res);
 
 int x3dio_readname(scew_element *element, const XML_Char *attn,
 		   ay_object *obj);
@@ -1241,15 +1242,11 @@ x3dio_readnormals(scew_element *element, unsigned int *len, double **res)
  *  read the colors therein into <len> and <res>
  */
 int
-x3dio_readcolors(scew_element *element, unsigned int *len, float **res)
+x3dio_readcolors(scew_element *element, int *stride, unsigned int *len, float **res)
 {
  int ay_status = AY_OK;
  scew_element *child = NULL;
  const char *element_name = NULL;
- /*
- float *cv = NULL;
- unsigned int i;
- */
 
   if(!element || !len || !res)
     return AY_ENULL;
@@ -1265,44 +1262,28 @@ x3dio_readcolors(scew_element *element, unsigned int *len, float **res)
 	  /* read data */
 	  ay_status = x3dio_readfloatpoints(child, "color", 3, len, res);
 
-	  return AY_OK; /* XXXX early exit! */
+	  *stride = 3;
+
+	  goto cleanup;
 	} /* if */
 
-      /* XXXX add support for ColorRGBA */
-#if 0
       if(!strcmp(element_name, "ColorRGBA"))
 	{
 	  /* process USE attribute */
 	  ay_status = x3dio_processuse(&child);
 
 	  /* read data */
-	  ay_status = x3dio_readfloatpoints(child, "color", 4, len, cv);
+	  ay_status = x3dio_readfloatpoints(child, "color", 4, len, res);
 
-	  if(*len)
-	    {
-	      if(!(*res = calloc((*len)*3, sizeof(float))))
-		{
-		  if(cv)
-		    free(cv);
-		  return AY_EOMEM;
-		}
-	      for(i = 0; i < (*len*4); i += 4)
-		{
-		  (*res)[i]   = cv[i];
-		  (*res)[i+1] = cv[i+1];
-		  (*res)[i+2] = cv[i+2];
-		  /* XXXX what to do with alpha? */
-		  /*(*res)[i] = cv[i];*/
-		}
+	  *stride = 4;
 
-	      if(cv)
-		free(cv);
-	    } /* if */
-
-#endif
+	  goto cleanup;
+	} /* if */
     } /* while */
 
-  return AY_OK;
+cleanup:
+
+ return ay_status;
 } /* x3dio_readcolors */
 
 
@@ -1657,7 +1638,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
  char *nname = ay_prefs.normalname;
  char *cname = ay_prefs.colorname;
  ay_pomesh_object *pomesh = NULL;
- int vertnormal = AY_TRUE, vertcolor = AY_TRUE;
+ int colorstride = 0, vertnormal = AY_TRUE, vertcolor = AY_TRUE;
  unsigned int normallen = 0, normalilen = 0;
  unsigned int colorlen = 0, colorilen = 0;
  unsigned int texcoordlen = 0, texcoordilen = 0;
@@ -1690,7 +1671,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     }
 
   /* get colors */
-  ay_status = x3dio_readcolors(element, &colorlen, &colors);
+  ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
   if(colorlen > 0)
     {
       ay_status = x3dio_readindex(element, "colorIndex", AY_TRUE,
@@ -1738,7 +1719,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 		    better rewrite/expand the normals
 		    so that every face gets its own distinct value
 		  */
-		  if(!(expandednormals = calloc(3*pomesh->npolys,
+		  if(!(expandednormals = malloc(3*pomesh->npolys*
 						sizeof(double))))
 		    { goto cleanup; }
 		  for(i = 0; i < pomesh->npolys; i++)
@@ -1758,7 +1739,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    }
 	}
 
-      if(!(expandedcontrols = calloc(stride*totalverts, sizeof(double))))
+      if(!(expandedcontrols = malloc(stride*totalverts*sizeof(double))))
 	{ goto cleanup; }
 
       for(i = 0; i < totalverts; i++)
@@ -1778,39 +1759,50 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	  if(expandcolors)
 	    {
 	      /* vertex colors */
-	      if(!(expandedcolors = calloc(3*totalverts, sizeof(float))))
+	      if(!(expandedcolors = malloc(colorstride*totalverts*
+					   sizeof(float))))
 		{ goto cleanup; }
 	      if(colorilen > 0)
 		{
 		  for(i = 0; i < totalverts; i++)
 		    {
-		      memcpy(&(expandedcolors[i*3]),
-			     &(colors[pomesh->verts[i]*3]),
-			     3*sizeof(float));
+		      memcpy(&(expandedcolors[i*colorstride]),
+			     &(colors[pomesh->verts[i]*colorstride]),
+			     colorstride*sizeof(float));
 		    }
 		}
 	      else
 		{
 		  for(i = 0; i < totalverts; i++)
 		    {
-		      memcpy(&(expandedcolors[i*3]),
-			     &(colors[colori[i]*3]),
-			     3*sizeof(float));
+		      memcpy(&(expandedcolors[i*colorstride]),
+			     &(colors[colori[i]*colorstride]),
+			     colorstride*sizeof(float));
 		    }
 		}
-	      ay_pv_add(o, cname, "varying", 5, totalverts, 3, expandedcolors);
+	      if(colorstride == 3)
+		ay_pv_add(o, cname, "varying", 5, totalverts, 3,
+			  expandedcolors);
+	      else
+		ay_pv_add(o, cname, "varying", 6, totalverts, 4,
+			  expandedcolors);
 	    }
 	  else
 	    {
 	      /* face colors */
-	      ay_pv_add(o, cname, "uniform", 5, pomesh->npolys, 3, colors);
+	      if(colorstride == 3)
+		ay_pv_add(o, cname, "uniform", 5, pomesh->npolys, 3,
+			  colors);
+	      else
+		ay_pv_add(o, cname, "uniform", 6, pomesh->npolys, 4,
+			  colors);
 	    }
 	} /* if */
 
       /* process texcoords */
       if(texcoordlen > 0)
 	{
-	  if(!(expandedtexcoords = calloc(2*totalverts, sizeof(float))))
+	  if(!(expandedtexcoords = malloc(2*totalverts*sizeof(float))))
 	    { goto cleanup; }
 	  if(texcoordilen > 0)
 	    {
@@ -1853,8 +1845,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      /* vertex normals */
 	      /* no need to check for an index, we ruled that out already */
-	      if(!(expandedcontrols = calloc(6*pomesh->ncontrols,
-				     sizeof(double))))
+	      if(!(expandedcontrols = malloc(6*pomesh->ncontrols*
+					     sizeof(double))))
 		{ goto cleanup; }
 	      for(i = 0; i < pomesh->npolys; i++)
 		{
@@ -1878,7 +1870,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 		    better rewrite/expand the normals
 		    so that every face gets its own distinct value
 		  */
-		  if(!(expandednormals = calloc(3*pomesh->npolys,
+		  if(!(expandednormals = malloc(3*pomesh->npolys*
 						sizeof(double))))
 		    { goto cleanup; }
 		  for(i = 0; i < pomesh->npolys; i++)
@@ -1906,8 +1898,12 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	    {
 	      /* vertex colors */
 	      /* no need to check for an index, we ruled that out already */
-	      ay_pv_add(o, cname, "varying", 5,
-			pomesh->ncontrols, 3, colors);
+	      if(colorstride == 3)
+		ay_pv_add(o, cname, "varying", 5,
+			  pomesh->ncontrols, 3, colors);
+	      else
+		ay_pv_add(o, cname, "varying", 6,
+			  pomesh->ncontrols, 4, colors);
 	    }
 	  else
 	    {
@@ -1919,23 +1915,29 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 		    better rewrite/expand the colors
 		    so that every face gets its own distinct value
 		  */
-		  if(!(expandedcolors = calloc(3*pomesh->npolys,
+		  if(!(expandedcolors = malloc(colorstride*pomesh->npolys*
 					       sizeof(float))))
 		    { goto cleanup; }
 		  for(i = 0; i < pomesh->npolys; i++)
 		    {
-		      memcpy(&(expandedcolors[i*3]), &(colors[colori[i]*3]),
-			     3*sizeof(float));
+		      memcpy(&(expandedcolors[i*colorstride]),
+			     &(colors[colori[i]*colorstride]),
+			     colorstride*sizeof(float));
 		    }
-
-		  ay_pv_add(o, cname, "uniform", 5,
-			    pomesh->npolys, 3, expandedcolors);
+		  if(colorstride == 3)
+		    ay_pv_add(o, cname, "uniform", 5,
+			      pomesh->npolys, 3, expandedcolors);
+		  else
+		    ay_pv_add(o, cname, "uniform", 6,
+			      pomesh->npolys, 4, expandedcolors);
 		}
 	      else
 		{
 		  /* no color index */
-		  ay_pv_add(o, cname, "uniform", 5,
-			    colorlen, 3, colors);
+		  if(colorstride == 3)
+		    ay_pv_add(o, cname, "uniform", 5, colorlen, 3, colors);
+		  else
+		    ay_pv_add(o, cname, "uniform", 6, colorlen, 4, colors);
 		}
 	    }
 	} /* if */
@@ -1949,7 +1951,6 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     } /* if */
 
 cleanup:
-
 
  return;
 } /* x3dio_readnct */
@@ -2036,6 +2037,9 @@ x3dio_readindexedfaceset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      if(ay_status)
+	goto cleanup;
 
       /* read/process normals, colors, and texture coordinates */
       x3dio_readnct(element, x3dio_lrobject, totalverts);
@@ -2127,6 +2131,9 @@ x3dio_readindexedtriangleset(scew_element *element)
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+      if(ay_status)
+	goto cleanup;
+
       /* read/process normals, colors, and texture coordinates */
       x3dio_readnct(element, x3dio_lrobject, totalverts);
 
@@ -2216,6 +2223,9 @@ x3dio_readindexedquadset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      if(ay_status)
+	goto cleanup;
 
       /* read/process normals, colors, and texture coordinates */
       x3dio_readnct(element, x3dio_lrobject, totalverts);
@@ -2334,6 +2344,9 @@ x3dio_readindexedtrianglestripset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      if(ay_status)
+	goto cleanup;
 
       /* read/process normals, colors, and texture coordinates */
       x3dio_readnct(element, x3dio_lrobject, pomesh.npolys*3);
@@ -2454,6 +2467,9 @@ x3dio_readindexedtrianglefanset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      if(ay_status)
+	goto cleanup;
 
       /* read/process normals, colors, and texture coordinates */
       x3dio_readnct(element, x3dio_lrobject, pomesh.npolys*3);
@@ -2688,8 +2704,8 @@ x3dio_readtrianglefanset(scew_element *element)
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  unsigned int fancountslen = 0;
- int *fancounts = NULL;
- int normalPerVertex = AY_FALSE;
+ int colorstride, *fancounts = NULL;
+ int normalPerVertex = AY_FALSE, colorPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
  float *texcoords = NULL, *colors = NULL;
  unsigned int i, j, k, l, totalverts = 0;
@@ -2715,7 +2731,9 @@ x3dio_readtrianglefanset(scew_element *element)
       ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
       /* get colors */
-      ay_status = x3dio_readcolors(element, &colorlen, &colors);
+      ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
+
+      ay_status = x3dio_readbool(element, "colorPerVertex", &colorPerVertex);
 
       /* get texture coordinates */
       ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
@@ -2794,11 +2812,26 @@ x3dio_readtrianglefanset(scew_element *element)
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+      if(ay_status)
+	goto cleanup;
+
       /* process colors */
       if(colorlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
-		    pomesh.ncontrols, 3, colors);
+	  if(colorPerVertex)
+	    if(colorstride == 3)
+	      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+			pomesh.ncontrols, 3, colors);
+	    else
+	      ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+			pomesh.ncontrols, 4, colors);
+	  else
+	    if(colorstride == 3)
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+			pomesh.ncontrols, 3, colors);
+	    else
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+			pomesh.ncontrols, 4, colors);
 	}
 
       /* process texcoords */
@@ -2855,7 +2888,7 @@ x3dio_readtrianglestripset(scew_element *element)
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
  unsigned int stripcountslen = 0;
  int *stripcounts = NULL;
- int normalPerVertex = AY_FALSE;
+ int colorstride = 0, colorPerVertex = AY_FALSE, normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
  float *texcoords = NULL, *colors = NULL;
  unsigned int i, j, k, l, totalverts = 0;
@@ -2881,7 +2914,9 @@ x3dio_readtrianglestripset(scew_element *element)
       ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
       /* get colors */
-      ay_status = x3dio_readcolors(element, &colorlen, &colors);
+      ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
+
+      ay_status = x3dio_readbool(element, "colorPerVertex", &colorPerVertex);
 
       /* get texture coordinates */
       ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
@@ -2959,11 +2994,27 @@ x3dio_readtrianglestripset(scew_element *element)
 
       /* copy object to the Ayam scene */
       ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
+
+      if(ay_status)
+	goto cleanup;
+
       /* process colors */
       if(colorlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
-		    pomesh.ncontrols, 3, colors);
+	  if(colorPerVertex)
+	    if(colorstride == 3)
+	      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+			pomesh.ncontrols, 3, colors);
+	    else
+	      ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+			pomesh.ncontrols, 4, colors);
+	  else
+	    if(colorstride == 3)
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+			pomesh.ncontrols, 3, colors);
+	    else
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+			pomesh.ncontrols, 4, colors);
 	}
 
       /* process texcoords */
@@ -3018,7 +3069,7 @@ x3dio_readtriangleset(scew_element *element)
  char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
- int normalPerVertex = AY_FALSE;
+ int colorstride = 0, colorPerVertex = AY_FALSE, normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
  float *texcoords = NULL, *colors = NULL;
  unsigned int i, totalverts = 0;
@@ -3039,7 +3090,9 @@ x3dio_readtriangleset(scew_element *element)
   ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
   /* get colors */
-  ay_status = x3dio_readcolors(element, &colorlen, &colors);
+  ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
+
+  ay_status = x3dio_readbool(element, "colorPerVertex", &colorPerVertex);
 
   /* get texture coordinates */
   ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
@@ -3101,11 +3154,26 @@ x3dio_readtriangleset(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+  if(ay_status)
+    goto cleanup;
+
   /* process colors */
   if(colorlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
-		pomesh.ncontrols, 3, colors);
+      if(colorPerVertex)
+	if(colorstride == 3)
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+		    pomesh.ncontrols, 3, colors);
+	else
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+		    pomesh.ncontrols, 4, colors);
+      else
+	if(colorstride == 3)
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+		    pomesh.ncontrols, 3, colors);
+	else
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+		    pomesh.ncontrols, 4, colors);
     }
 
   /* process texcoords */
@@ -3116,7 +3184,7 @@ x3dio_readtriangleset(scew_element *element)
     }
 
 
- cleanup:
+cleanup:
   if(coords)
     free(coords);
 
@@ -3156,7 +3224,7 @@ x3dio_readquadset(scew_element *element)
  char *cname = ay_prefs.colorname;
  ay_pomesh_object pomesh = {0};
  unsigned int coordlen = 0, normallen = 0, colorlen = 0, texcoordlen = 0;
- int normalPerVertex = AY_FALSE;
+ int colorstride = 0, colorPerVertex = AY_FALSE, normalPerVertex = AY_FALSE;
  double *coords = NULL, *normals = NULL;
  float *texcoords = NULL, *colors = NULL;
  unsigned int i, totalverts = 0;
@@ -3177,7 +3245,9 @@ x3dio_readquadset(scew_element *element)
   ay_status = x3dio_readbool(element, "normalPerVertex", &normalPerVertex);
 
   /* get colors */
-  ay_status = x3dio_readcolors(element, &colorlen, &colors);
+  ay_status = x3dio_readcolors(element, &colorstride, &colorlen, &colors);
+
+  ay_status = x3dio_readbool(element, "colorPerVertex", &colorPerVertex);
 
   /* get texture coordinates */
   ay_status = x3dio_readtexcoords(element, &texcoordlen, &texcoords);
@@ -3239,11 +3309,26 @@ x3dio_readquadset(scew_element *element)
   /* copy object to the Ayam scene */
   ay_status = x3dio_linkobject(element, AY_IDPOMESH, (void*)&pomesh);
 
+  if(ay_status)
+    goto cleanup;
+
   /* process colors */
   if(colorlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
-		pomesh.ncontrols, 3, colors);
+      if(colorPerVertex)
+	if(colorstride == 3)
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+		    pomesh.ncontrols, 3, colors);
+	else
+	  ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+		    pomesh.ncontrols, 4, colors);
+      else
+	if(colorstride == 3)
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+		    pomesh.ncontrols, 3, colors);
+	else
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+		    pomesh.ncontrols, 4, colors);
     }
 
   /* process texcoords */
@@ -7452,7 +7537,7 @@ x3dio_writewiremat(scew_element *shape_element)
 
   sprintf(buf, "%g %g %g", ay_prefs.obr, ay_prefs.obg, ay_prefs.obb);
 
-  scew_element_add_attr_pair(mat_element, "emissiveColor", buf);
+  scew_element_add_attr_pair(mat_element, "diffuseColor", buf);
 
  return AY_OK;
 } /* x3dio_writewiremat */
