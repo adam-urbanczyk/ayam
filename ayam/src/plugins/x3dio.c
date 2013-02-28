@@ -8443,6 +8443,8 @@ x3dio_copypv(ay_tag *src, char **dst)
     }
 
   /* return result */
+  if(*dst)
+    free(*dst);
   *dst = tmp;
 
  return AY_OK;
@@ -8457,14 +8459,13 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 {
  int ay_status = AY_OK;
  /*char fname[] = "x3dio_writepomesh";*/
- char *tcname = ay_prefs.texcoordname;
  ay_object *to = NULL;
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *po;
  unsigned int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
- int have_texcoords = AY_FALSE;
- char *texcoordstring = NULL;
+ int have_texcoords = AY_FALSE, have_facenormals = AY_FALSE;
+ char *texcoordstring = NULL, *normalstring = NULL;
  ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
@@ -8496,13 +8497,11 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   /* decode potentially present PV tags */
   if(o->tags)
     {
-
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
+	  if(ay_pv_checkndt(tag, ay_prefs.texcoordname, "varying", "g"))
 	    {
-
 	      ay_status = x3dio_copypv(tag, &texcoordstring);
 	      if(ay_status == AY_OK)
 		{
@@ -8513,7 +8512,18 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  /* XXXX report error (PV format error)? */
 		}
 	    }
-
+	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "constant", "n"))
+	    {
+	      ay_status = x3dio_copypv(tag, &normalstring);
+	      if(ay_status == AY_OK)
+		{
+		  have_facenormals = AY_TRUE;
+		}
+	      else
+		{
+		  /* XXXX report error (PV format error)? */
+		}
+	    }
 
 	  tag = tag->next;
 	} /* while */
@@ -8640,12 +8650,6 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
     {
       scew_element_add_attr_pair(ifs_element, "coordIndex", attr);
 
-      if(po->has_normals)
-	{
-	  scew_element_add_attr_pair(ifs_element, "normalPerVertex",
-				     x3dio_truestring);
-	} /* if */
-
       /* XXXX make this configurable? */
       scew_element_add_attr_pair(ifs_element, "ccw", x3dio_falsestring);
       scew_element_add_attr_pair(ifs_element, "solid", x3dio_falsestring);
@@ -8670,9 +8674,17 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       else
 	{
 	  /* face normals from PV tag */
+	  if(have_facenormals)
+	    {
+	      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
+					     x3dio_falsestring);
 
+	      normal_element = scew_element_add(ifs_element,
+					      "Normal");
 
-
+	      scew_element_add_attr_pair(normal_element, "vector",
+					 texcoordstring);
+	    }
 	}
 
       /* write texture coordinates */
@@ -8683,7 +8695,6 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
 	  scew_element_add_attr_pair(texcoord_element, "point",
 				     texcoordstring);
-
 	}
 
     } /* if */
@@ -8727,6 +8738,9 @@ cleanup:
 
   if(texcoordstring)
     free(texcoordstring);
+
+  if(normalstring)
+    free(normalstring);
 
  return ay_status;
 } /* x3dio_writepomeshobj */
