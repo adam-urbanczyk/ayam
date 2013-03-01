@@ -30,10 +30,10 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 
 <author>Randolf Schultz <tt>(randolf.schultz@gmail.com)</tt>
 
-<date>20. Mar 2012
+<date>22. Feb 2013
 
 <abstract>
-This is the documentation of Ayam 1.20 &ndash; a free 3D modelling environment
+This is the documentation of Ayam 1.21 &ndash; a free 3D modelling environment
 for the RenderMan interface.
 
 Please note, that this document is a reference manual,
@@ -1971,7 +1971,7 @@ The following special actions are defined:
 All found objects will be colored in the object tree.
 Highlighted objects stay highlighted until the tree view is updated
 completely (e.g. via the keyboard shortcut <tt>&lt;F5&gt;</tt>) or partially
-(for instance after drag and drop or object clipoard operations).
+(for instance after drag and drop or object clipboard operations).
 <tag/Collect/
 The node names of the found objects
 will be collected in the Tcl list <tt>"ObjectSearch(nodes)"</tt>.
@@ -12202,10 +12202,10 @@ easily using the new scripting interface command <tt/"addPropertyGUI"/.
 <sect1>Procedures and Commands<label id="sccomm">
 <p>
 This section provides documentation on the most important
-scripting interface commands and procedures of Ayam sorted
+scripting interface procedures and commands of Ayam sorted
 by category.
 <p>
-All commands are documented in the following scheme:
+All procedures and commands are documented in the following scheme:
 <itemize>
  <item><bf/Synopsis:/ <tt/"command param1 param2 [optionalparam1]"/
 (syntax of the command and its parameters),
@@ -13108,9 +13108,9 @@ and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
 
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
-Since Ayam 1.9 two procedures are implemented that ease
-the manipulation of property values from the scripting interface:
-
+These procedures allow easy access to object properties from the
+scripting interface:
+<footnote>Since 1.9.</footnote>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -13245,17 +13245,18 @@ This operation fails for master objects (objects with instances/references).
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-Most of the object clipboard commands fail for root and view objects.
+Note that most of the object clipboard commands fail for root and view
+objects.
 <p>
 As <tt/"copOb"/ and <tt/"cutOb"/ may need to clear the object clipboard,
 they can also fail if master objects (objects with instances/references)
 are currently inside the object clipboard.
 <p>
-Furthermore, the object clipboard commands check whether or not the
+Furthermore, the object clipboard commands check whether or not their
 result would be an illegal instance configuration (master of a level inside
 this level) and also fail if this is the case.
 <p>
-The following commands operate the property clipboard,
+The following procedures operate the property clipboard,
 which is totally independent from the object clipboard.
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -13338,7 +13339,7 @@ movOb &ndash; move objects:
  <item>Synopsis: <tt/"movOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Move the selected object(s) by dx in direction of the
-objects X axis, by dy in direction of the objects Y axis and by dz in
+objects X axis, by dy in direction of the objects Y axis, and by dz in
 direction of the objects Z axis.
 </itemize>
 
@@ -13351,8 +13352,8 @@ rotOb &ndash; rotate objects:
  <item>Synopsis: <tt/"rotOb dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected object(s) by dx degrees around the
-objects X axis, then by dy degrees around objects Y axis and then by dz degrees
-around the objects Z axis. Note the order of the rotations.
+objects X axis, then by dy degrees around objects Y axis, and finally by
+dz degrees around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -13365,7 +13366,7 @@ scalOb &ndash; scale objects:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Scale the selected object(s) by a factor of dx in
 direction of the objects X axis, by a factor of dy in
-direction of the objects Y axis and by a factor of dz in
+direction of the objects Y axis, and by a factor of dz in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
@@ -13380,7 +13381,7 @@ movPnts &ndash; move selected points:
  <item>Synopsis: <tt/"movPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Move the selected points by dx in direction of the
-objects X axis, by dy in direction of the objects Y axis and by dz in
+objects X axis, by dy in direction of the objects Y axis, and by dz in
 direction of the objects Z axis.
 </itemize>
 
@@ -13393,8 +13394,8 @@ rotPnts &ndash; rotate selected points:
  <item>Synopsis: <tt/"rotPnts dx dy dz"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Rotate the selected points by dx degrees around the
-objects X axis then by dy degrees around objects Y axis and then by dz degrees
-around the objects Z axis. Note the order of the rotations.
+objects X axis then by dy degrees around objects Y axi,s and finally
+by dz degrees around the objects Z axis. Note the order of the rotations.
 </itemize>
 
 <p>
@@ -13407,7 +13408,7 @@ scalPnts &ndash; scale selected points:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Scale the selected points by a factor of dx in
 direction of the objects X axis, by a factor of dy in
-direction of the objects Y axis and by a factor of dz in
+direction of the objects Y axis, and by a factor of dz in
 direction of the objects Z axis.
 <item>Note: A scale factor of zero is generally a bad idea and thus will
 be changed to 1.0 silently.
@@ -13421,7 +13422,7 @@ delegTrafo &ndash; delegate transformations:
 <itemize>
  <item>Synopsis: <tt/"delegTrafo"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: delegates the transformations associated
+ <item>Description: Delegates the transformations associated
 with the selected objects to their child objects. Additionally,
 the transformations of the selected objects will be reset to the
 default values.
@@ -14330,7 +14331,7 @@ patch object to <tt/"0.0 0.2 0.3 1.0"/.
 
 <sect2>Updating the GUI<label id="sciupd">
 <p>
-These commands update various parts of the Ayam user interface:
+These procedures update various parts of the Ayam user interface:
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -14365,7 +14366,7 @@ the tree widget and rebuilds it, which can be a very time consuming
 operation (depending on the complexity of the scene). There are some
 options to speed this process up:
  <itemize>
- <item>If there were just changes to the current level (and below)
+ <item>If there were just changes to the current level (and below),
 the global array entry <tt/"ay(ul)"/ (UpdateLevel) may be set
 to the current level before calling <tt/"uS"/. This will not remove
 and update the complete scene but just the part below <tt/"ay(ul)"/.
@@ -14431,6 +14432,7 @@ may also be used without commands on the command line.
 By default, the <tt/"AUCommands"/ are <tt/"uS; rV;"/, leading to
 updated object tree, property GUI, and views.
 
+
 <sect2>Managing Preferences<label id="sciprefs">
 <p>
 These commands manage preferences data:
@@ -14469,9 +14471,10 @@ Note that it is currently not possible to unload a custom object from
 Ayam.
 </itemize>
 
+
 <sect2>Applying Commands to a Number of Objects<label id="scifall">
 <p>
-There are two commands that help to apply arbitrary commands
+There are two procedures that help to apply arbitrary commands
 to a number of objects, forAll and forAllT:
 <p>
 <#if out=latex><x/phantomsection/</#if>
@@ -14481,7 +14484,7 @@ forAll:
 <itemize>
  <item>Synopsis: <tt>"forAll recursive command"</tt>
  <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
- <item>Description: The forAll command executes command for all
+ <item>Description: The forAll procedure executes command for all
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected. If recursive
 is 1 then forAll will recurse into every object (if it has child objects)
@@ -14536,6 +14539,7 @@ correctly maintains the current selection.
  </itemize>
 </itemize>
 
+
 <sect2>Scene IO<label id="scio">
 <p>
 These commands help to load scenes from and save them to Ayam scene
@@ -14584,6 +14588,7 @@ saveScene:
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: saves the current scene to filename.
 </itemize>
+
 
 <sect2>RIB Export<label id="scribex">
 <p>
@@ -14650,7 +14655,7 @@ compression of repeated messages, and logging.
 Code should be one of: 1: warning, 2:
 error, 3: flush messages, 4: unspecified output.
 There are more codes defined (see ayam.h, look for Return/Error Codes)
-but they are not needed in the Tcl script context.
+but they are generally not needed in the Tcl script context.
 Place should describe the procedure where the error occured.
 Detail is the string to be output.
 <item>Notes: The actual output in the Ayam console depends on the
@@ -14794,9 +14799,9 @@ addToProc:
 <itemize>
  <item>Synopsis: <tt>"addToProc procedure addition"</tt>
  <item>Background: Yes, Undo: No, Safe: No, Type: Procedure
- <item>Description: This command adds the code from addition to
+ <item>Description: This procedure adds the code from addition to
 the procedure procedure.
- <item>Note: This command uses the introspection facilities of
+ <item>Note: This procedure uses the introspection facilities of
 Tcl and works only correctly for procedures, that end with
 a single <tt>"return;"</tt> statement.
 </itemize>
@@ -15500,7 +15505,7 @@ available as converted function (refer to section
 <ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
-Note that Tcl procedures are not available as global JavaScript
+Note that Tcl procedures are generally not available as global JavaScript
 function, but they can be called using <tt>"tcleval"</tt> as documented
 in the next paragraph.
 
@@ -15798,7 +15803,7 @@ available as converted function (refer to section
 <ref id="sccomm" name="Procedures and Commands">
 for a more or less complete list of those commands).
 <p>
-Note that Tcl procedures are not available as global Lua function,
+Note that Tcl procedures are generally not available as global Lua function,
 but they can be called using <tt>"tcleval"</tt> as documented
 in the next paragraph.
 
@@ -16118,16 +16123,17 @@ CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 <f><sup>e</sup></f>&thinsp;: some parametrics are converted to NURBS (refer to plugin documentation)<newline>
 </quote>
 Note that a successful export of a 3D scene to a different application
-not only depends on Ayam but also on the quality of the importing
+not only depends on Ayam but also on the importing
 application. For instance, many applications claim to read files in the
 Wavefront OBJ format but only import polygonal data or, even worse, only
 triangles from such files. By default, Ayam tries to preserve as much
-information as possible in the respective export format leading to the
+information as possible in the respective export format leading e.g. to the
 use of NURBS in Wavefront OBJ files.
 Consequently, to successfully transfer an Ayam scene to a different
-application, in some cases you may need to convert the NURBS objects in
-the Ayam scene to polygonal geometry before export. There is a script
-provided that helps you doing this (<tt>"topoly.tcl"</tt>, see also section
+application, in some cases, manual conversion of the NURBS objects in
+the Ayam scene to polygonal geometry may be necessary.
+There is a script provided that helps in doing this (<tt>"topoly.tcl"</tt>,
+see also section
 <ref id="topolytcl" name="Convert Everything to Polygons">).
 <p>
 Ayam is not perfect either, as in most import options material and
@@ -16150,12 +16156,12 @@ in detail.
 
 <sect1>RenderMan Interface Bytestream (RIB) Import<label id="imprib">
 <p>
-Using the RRIB (for <bf/R/ead <bf/RIB/) plugin you may import RenderMan
-Interface Bytestreams of version 3.0 into Ayam.
+Using the <tt/"rrib"/ (for <bf/R/ead <bf/RIB/) plugin RenderMan
+Interface Bytestreams of version 3.0 can be imported into Ayam.
 Start importing a RIB using the menu entry
 <tt>"File/Import/RenderMan RIB"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"rrib"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+rrib plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 <sect2>RIB Primitive Support
@@ -16262,7 +16268,7 @@ no scaling.
 RenderMan Interface Bytestream (RIB) export is the most important export
 module of Ayam and in fact justifies its existence. All features of the
 Ayam object and scene structure are supported (hierarchy, CSG, instances,
-materials, lights).
+materials, lights etc.).
 Furthermore, Ayam also supports direct rendering from view windows,
 rendering in multiple passes for shadow maps, and permanent previews
 (where a RenderMan renderer is directly coupled to an Ayam view window).
@@ -16331,8 +16337,8 @@ Motion, Kongsberg SIM AS, Norway).
 <p>
 Start importing a DXF file using the main menu entry
 <tt>"File/Import/AutoCAD DXF"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"dxfio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+dxfio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 Note that the entire DXF file is read into memory before any geometry is
@@ -16420,8 +16426,8 @@ The <tt>"dxfio"</tt> plugin allows to export Ayam scenes to AutoCAD DXF
 <p>
 Start exporting to a DXF file using the main menu entry
 <tt>"File/Export/AutoCAD DXF"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"dxfio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+dxfio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 Note that the entire Ayam scene is converted to a corresponding
@@ -16487,11 +16493,11 @@ to DXF entities; from 50 to 100 percent, Dime is writing the DXF file.
 <sect1>Wavefront OBJ Import<label id="impwav">
 <p>
 Since Ayam 1.8.3 a Wavefront OBJ (version 3.0) import facility is available
-and since Ayam 1.13 it is a plugin (objio) that needs to be loaded
+and since Ayam 1.13 it is a plugin (<tt/"objio"/) that needs to be loaded
 before import.
 The corresponding main menu entry is <tt>"File/Import/Wavefront OBJ"</tt>
-(if this menu entry is not available, you have to load the <tt>"objio"</tt>
-plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
+(if this menu entry is not available, the objio plugin must be loaded
+using the menu entry <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Wavefront OBJ Statement Support
 <p>
@@ -16560,10 +16566,10 @@ assumes a fixed medium line length of 28 characters.
 <p>
 Since Ayam 1.7, it is possible to export scenes or objects to the Wavefront
 OBJ format (version 3.0). Since Ayam 1.13, Wavefront OBJ export is a plugin
-(objio) that needs to be loaded before export.
+(<tt/"objio"/) that needs to be loaded before export.
 The corresponding main menu entry is <tt>"File/Export/Wavefront OBJ"</tt>
-(if this menu entry is not available, you have to load the <tt>"objio"</tt>
-plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
+(if this menu entry is not available, the objio plugin must be loaded
+using the menu entry <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Ayam Object and Properties Support
 <p>
@@ -16630,20 +16636,20 @@ to the Wavefront OBJ file.
 
 <sect1>3DMF (Apple) Import<label id="imp3dmf">
 <p>
-Using the MFIO plugin you may import scenes from the 3DMF format
+Using the <tt/"mfio"/ plugin scenes may be imported from the 3DMF format
 (QuickDraw 3D Metafile)
 from Apple with the help of a free 3DMF parser created
 by Duet Development Corp. and distributed by Apple.
 Start importing a 3DMF file using the menu entry
 <tt>"File/Import/Apple 3DMF"</tt> (if this menu entry is not available,
-you have to load the <tt>"mfio"</tt> plugin using the menu entry
+the mfio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
-The MFIO plugin only supports the 3DMF version 1.0!
+The mfio plugin only supports the 3DMF version 1.0!
 
 <sect2>3DMF Primitive and Attribute Support
 <p>
-The MFIO plugin supports import of the following geometric primitives:
+The mfio plugin supports import of the following geometric primitives:
 <itemize>
 <item>Polyline, Triangle, TriGrid, Polygon, general Polygon, Box,
 <item>NURBS curve, NURBS surface (with trim curves),
@@ -16712,19 +16718,19 @@ The default value 0.0 means no scaling.
 
 <sect1>3DMF (Apple) Export<label id="exp3dmf">
 <p>
-Using the MFIO plugin you may export scenes to the 3DMF format
+Using the <tt/"mfio"/ plugin scenes may be exported to the 3DMF format
 (QuickDraw 3D Metafile)
 from Apple with the help of a free 3DMF parser created by Duet
 Development Corp. and distributed by Apple. Start exporting to a
 3DMF file using the menu entry <tt>"File/Export/Apple 3DMF"</tt>
-(if this menu entry is not available, you have to load the <tt>"mfio"</tt>
-plugin using the menu entry <tt>"File/Load Plugin"</tt> first).
+(if this menu entry is not available, the mfio plugin must be loaded
+using the menu entry <tt>"File/Load Plugin"</tt> first).
 <p>
-The MFIO plugin only supports the 3DMF version 1.0!
+The mfio plugin only supports the 3DMF version 1.0!
 
 <sect2>Ayam Object and Properties Support
 <p>
-The MFIO export supports the following geometric objects:
+The mfio export supports the following geometric objects:
 <itemize>
 <item>NURBS curve and NURBS surface (with trim curves) including all
 NURBS curve/surface providing objects, such as ICurve, Skin etc.,
@@ -16753,7 +16759,8 @@ not available.
 <p>
 The 3DMF file format specification for version 1.0 is unfortunately very
 terse, when it comes to trim curves. There is no clearly defined way of
-saving trim curves in 3DMF 1.0. However, the method presented here is the
+specifying them in conjunction with their respective NURBS surface.
+Furthermore, the method presented here is the
 only way that works with the free provided 3DMF parser.
 Trimmed NURBS patches will be written by Ayam like this:
 <tscreen><verb>
@@ -16772,18 +16779,21 @@ Container (
         )
 )
 </verb></tscreen>
-There will always be an enclosing container for a NURBS patch.
-If the patch is trimmed, after the transformations and attributes
-of the patch, a <tt/TrimCurves/ element will follow (which does
-<em>not</em> contain the trim curves but is empty). The trim curves follow
-now as 2D NURBS curves (simple trims) or container objects (trim loops)
-with 2D NURBS curves until the end of the enclosing container. The
-transformation attributes of the trim curves will be applied to the NURBS
-curve control points for export (there will be no transformations or
-attributes for the trim curve elements).
+<enum>
+<item>There will always be an enclosing <tt/Container/ for a NURBS patch.
+<item>If the patch is trimmed, after the <tt/NURBPatch/ or potentially present
+transformations and attributes of the patch, a <tt/TrimCurves/ element
+will follow (which does <em>not</em> contain the trim curves but is empty).
+<item>The trim curves follow now as 2D NURBS curves (<tt/NURBCurve2D/ objects
+for simple trims) or <tt/Container/ objects (for trim loops) with
+multiple 2D NURBS curves until the end of the enclosing container.
+<item>The transformation attributes of the trim curves will be applied to
+the NURBS curve control points for export (there will be no transformations
+or attributes for the trim curve elements).
+</enum>
 <p>
 The Ayam 3DMF import expects the trim curves to be delivered in this
-manner.
+manner and can then indeed read them accurately.
 
 <sect2>3DMF Export Options<label id="exp3dmfopt">
 <p>
@@ -16803,15 +16813,15 @@ no curves will be written to the exported 3DMF file. This option does
 
 <sect1>3DM (Rhino) Import<label id="imprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin named onio that may import
+Since version 1.8.2 Ayam contains a plugin named <tt/"onio"/ that may import
 scenes from the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio &ndash; <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start importing from a Rhino 3DM file using the menu entry
 <tt>"File/Import/Rhino 3DM"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"onio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+onio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 The onio plugin only supports import of 3DM files of version 3.0
@@ -16892,15 +16902,15 @@ to Ayam objects.
 
 <sect1>3DM (Rhino) Export<label id="exprhino">
 <p>
-Since version 1.8.2 Ayam contains a plugin named onio that exports scenes
-to the Rhino 3DM file format using the OpenNURBS toolkit
+Since version 1.8.2 Ayam contains a plugin named <tt/"onio"/ that exports
+scenes to the Rhino 3DM file format using the OpenNURBS toolkit
 (hence the name of the plugin onio &ndash; <bf/O/pen<bf/N/URBS <bf/IO/)
 by Robert McNeel & Associates.
 <p>
 Start exporting to a Rhino 3DM file using the menu entry
 <tt>"File/Export/Rhino 3DM"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"onio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+onio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 The onio plugin exports 3DM files of version 3.0.
@@ -16999,17 +17009,17 @@ import scenes from the XML based X3D file format published by the Web3D
 Consortium. The XML parser used in this plugin is based on Expat and SCEW.
 <p>
 Binary and compressed versions of X3D, as well as VRML files are <em/not/
-supported. Only pure XML files are read by the <tt>"x3dio"</tt> plugin.
+supported. Only pure XML files are read by the x3dio plugin.
 <p>
 Start importing from a Web3D X3D file using the menu entry
 <tt>"File/Import/Web3D X3D"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"x3dio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+x3dio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 <p>
 <sect2>X3D Element Support
 <p>
-The import functionality of the <tt>"x3dio"</tt> plugin currently covers
+The import functionality of the x3dio plugin currently covers
 import of the following X3D elements (grouped by components):
 <itemize>
 <item><bf/Geometry3D:/
@@ -17194,14 +17204,14 @@ from 50 to 100 percent the x3dio plugin is creating Ayam objects.
 
 <sect1>X3D (Web3D) Export<label id="expx3d">
 <p>
-Since version 1.13 Ayam provides a plugin named x3dio that exports
+Since version 1.13 Ayam provides a plugin named <tt>"x3dio"</tt> that exports
 scenes to the XML based X3D file format published by the Web3D Consortium.
 The XML parser used in this plugin is based on Expat and SCEW.
 <p>
 Start exporting to a X3D file using the menu entry
 <tt>"File/Export/Web3D (X3D)"</tt>
-(if this menu entry is not available, you have to load the
-<tt>"x3dio"</tt> plugin using the menu entry
+(if this menu entry is not available, the
+x3dio plugin must be loaded using the menu entry
 <tt>"File/Load Plugin"</tt> first).
 
 <sect2>Ayam Object and Properties Support
@@ -19308,7 +19318,7 @@ Index:
 <item>MergeFaces <ref id="impwav" name="Wavefront OBJ import option">
 <item>MergePVTags <ref id="impwav" name="Wavefront OBJ import option">
 <item>MetaObj, MetaComp: <ref id="metaobjobj" name="MetaObj object">
-<item>MFIO Plugin:
+<item>mfio Plugin:
 <itemize>
 <item><ref id="imp3dmf" name="3DMF (Apple) import">,
 <item><ref id="exp3dmf" name="3DMF (Apple) export">
