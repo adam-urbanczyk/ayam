@@ -14,8 +14,9 @@
 # o all sections start on a new page (newpage)
 # o labels in sections (using hyperref phantomsection)
 # o inline graphics (icons in tables)
+# o improve itemize/enumerate environments line spread and paragraph distance
 
-set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
+set procs { fixheight fixsection fixenddoc fixdocclass fixitemize fixenum fixlist insnewpage insneedspace insphantomsection insinlinegfx fixtoc fixhyperref }
 
 proc fixheight { buf outfile } {
     global height
@@ -121,8 +122,19 @@ proc fixitemize { buf outfile } {
 	    puts $outfile "\\vspace\{-1.5ex\}"
 	} else {
 	puts $outfile\
-     "\\begin\{itemize\}\\setstretch\{0.95\}\\setlength\{\\itemsep\}\{1ex\}\\setlength\{\\parsep\}\{1ex\}"
+     "\\begin\{itemize\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
 	}
+	set found 1
+    }
+    return $found;
+}
+
+proc fixenum { buf outfile } {
+    set found 0
+    set index [ string first "\\begin\{enumerate" $buf ]
+    if { ($index > -1) } {
+	puts $outfile\
+     "\\begin\{enumerate\}\\setstretch\{1\}\\setlength\{\\itemsep\}\{0.33ex\}\\setlength\{\\parsep\}\{1ex\}"
 	set found 1
     }
     return $found;
