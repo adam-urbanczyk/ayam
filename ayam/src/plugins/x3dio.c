@@ -335,6 +335,8 @@ int x3dio_writeconeobj(scew_element *element, ay_object *o);
 
 int x3dio_writepomeshobj(scew_element *element, ay_object *o);
 
+int x3dio_writepomeshwire(scew_element *element, ay_object *o);
+
 int x3dio_writeview(scew_element *element, ay_object *o);
 
 int x3dio_writelight(scew_element *element, ay_object *o);
@@ -8742,8 +8744,226 @@ cleanup:
   if(normalstring)
     free(normalstring);
 
+  if(x3dio_writewires)
+    ay_status = x3dio_writepomeshwire(element, o);
+
  return ay_status;
 } /* x3dio_writepomeshobj */
+
+
+/* x3dio_writepomeshwire:
+ *
+ */
+int
+x3dio_writepomeshwire(scew_element *element, ay_object *o)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object *po;
+ int stride;
+ unsigned int a, b, c, i, j, k, l = 0, m = 0, n = 0;
+ scew_element *transform_element = NULL;
+ scew_element *shape_element = NULL;
+ scew_element *line_element = NULL;
+ scew_element *coord_element = NULL;
+ char buf[256];
+ char *attr = NULL, *tmp;
+ unsigned int idxsize = 0;
+ int *vals = NULL;
+ double offset = 0.005, len, *v1, *v2, *v3, t1[3], t2[3], normal[3];
+ double *mean_normals = NULL, *offset_cv = NULL;
+
+  if(!element || !o)
+   return AY_ENULL;
+
+  po = (ay_pomesh_object *)o->refine;
+
+  if(!po->has_normals)
+    {
+      if(!(vals = calloc(po->ncontrols, sizeof(int))))
+	return AY_EOMEM;
+
+      if(!(mean_normals = malloc(po->ncontrols*3*sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
+      stride = 3;
+      for(i = 0; i < po->npolys; i++)
+	{
+	  if(po->nloops[l] > 0)
+	    {
+	      for(k = 0; k < po->nverts[m]; k++)
+		{
+		  a = po->verts[n++];
+		  vals[a]++;
+		}
+	      m++;
+	      for(j = 1; j < po->nloops[l]; j++)
+		{
+		  a = po->verts[n++];
+		  vals[a] = 1;
+		  n += po->nverts[m];
+		  m++;
+		}
+	    } /* if */
+	  l++;
+	} /* for */
+      l = 0; m = 0; n = 0;
+      for(i = 0; i < po->npolys; i++)
+	{
+	  if(po->nloops[l] > 0)
+	    {
+	      /* calculate face normal */
+	      a = po->verts[n];
+	      v1 = &(po->controlv[po->verts[n]*stride]);
+	      v2 = &(po->controlv[po->verts[n+1]*stride]);
+	      v3 = &(po->controlv[po->verts[n+2]*stride]);
+	      AY_V3SUB(t1, v1, v2)
+	      AY_V3SUB(t2, v1, v3)
+	      AY_V3CROSS(normal, t1, t2)
+
+	      for(k = 0; k < po->nverts[m]; k++)
+		{
+		  a = po->verts[n++];
+
+		  /* calc/update mean normal */
+		  mean_normals[a*stride]   += normal[0]/vals[a];
+		  mean_normals[a*stride+1] += normal[1]/vals[a];
+		  mean_normals[a*stride+2] += normal[2]/vals[a];
+		}
+	      m++;
+	      for(j = 1; j < po->nloops[l]; j++)
+		{
+		  for(k = 0; k < po->nverts[m]; k++)
+		    {
+		      a = po->verts[n++];
+		      memcpy(&(mean_normals[a]),normal,3*sizeof(double));
+		    }
+		  m++;
+		}
+	    } /* if */
+	  l++;
+	} /* for */
+    }
+  else
+    {
+      /* just use the already present vertex normals */
+      stride = 6;
+      mean_normals = &(po->controlv[3]);
+    } /* if */
+
+  if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+
+  a = 0;
+  b = 0;
+  c = 0;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      v1 = &(mean_normals[c]);
+
+      /* scale mean normal to offset length */
+      len = AY_V3LEN(v1);
+      if(fabs(len) > AY_EPSILON)
+	{
+	  AY_V3SCAL(v1, 1.0/len*offset);
+	}
+
+      /* offset control points */
+      offset_cv[a]   = po->controlv[b]   + mean_normals[c];
+      offset_cv[a+1] = po->controlv[b+1] + mean_normals[c+1];
+      offset_cv[a+2] = po->controlv[b+2] + mean_normals[c+2];
+
+      offset_cv[a+3] = po->controlv[b]   - mean_normals[c];
+      offset_cv[a+4] = po->controlv[b+1] - mean_normals[c+1];
+      offset_cv[a+5] = po->controlv[b+2] - mean_normals[c+2];      
+
+      a += 6;
+      b += stride;
+      c += 3;
+    } /* for */
+
+  /* write transform */
+  ay_status = x3dio_writetransform(element, o, &transform_element);
+
+  /* write shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  x3dio_writewiremat(shape_element);
+
+  line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+  /* calculate size of index */
+  l = 0; m = 0; n = 0;
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      idxsize += sprintf(buf, " %d", po->verts[n++]);
+	    }
+	  idxsize += sprintf(buf, " %d", po->verts[n-k]);
+	  /* add " -1" */
+	  idxsize += 3;
+	  m++;
+	}
+      l++;
+    } /* for */
+
+  /* generate index */
+  if(!(attr = malloc((idxsize+10)*sizeof(char))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+  tmp = attr;
+  l = 0; m = 0; n = 0;
+  for(i = 0; i < po->npolys; i++)
+    {
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      tmp += sprintf(tmp, " %d", po->verts[n++]);
+	    }
+	  tmp += sprintf(tmp, " %d", po->verts[n-k]);
+	  tmp += sprintf(tmp, " -1");
+	  m++;
+	}
+      l++;
+    } /* for */
+
+  scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+  /* write coordinates */
+  coord_element = scew_element_add(line_element, "Coordinate");
+  x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
+			  6, offset_cv);
+
+  /* write another shape */
+  shape_element = scew_element_add(transform_element, "Shape");
+
+  x3dio_writewiremat(shape_element);
+
+  line_element = scew_element_add(shape_element, "IndexedLineSet");
+
+  scew_element_add_attr_pair(line_element, "coordIndex", attr);
+
+
+  /* write coordinates */
+  coord_element = scew_element_add(line_element, "Coordinate");
+  x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
+			  6, &(offset_cv[3]));
+
+
+  if(po->has_normals)
+    mean_normals = NULL;
+
+cleanup:
+
+  if(vals)
+    free(vals);
+  if(mean_normals)
+    free(mean_normals);
+
+ return ay_status;
+} /* x3dio_writepomeshwire */
 
 
 /* x3dio_writeview:
