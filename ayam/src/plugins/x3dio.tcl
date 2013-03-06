@@ -23,6 +23,7 @@ uplevel #0 { array set x3dio_options {
     WriteCurves 1
     WriteWires 0
     WriteViews 1
+    WriteMaterials 1
     WriteParametrics 0
     WriteX3dom 0
     ResolveInstances 0
@@ -206,6 +207,7 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options WriteParametrics
     addCheck $f x3dio_options WriteWires
+    addCheck $f x3dio_options WriteMaterials
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
     addCheck $f x3dio_options WriteX3dom
@@ -229,6 +231,7 @@ proc x3dio_export { } {
 	    -o $x3dio_options(ObeyNoExport)\
 	    -i $x3dio_options(IgnoreHidden)\
 	    -l $x3dio_options(TopLevelLayers)\
+	    -m $x3dio_options(WriteMaterials)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -p $x3dio_options(WriteParametrics)\
 	    -w $x3dio_options(WriteWires)\
