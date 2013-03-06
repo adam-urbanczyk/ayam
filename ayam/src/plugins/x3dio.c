@@ -70,6 +70,7 @@ int x3dio_writecurves = AY_TRUE;
 int x3dio_writewires = AY_FALSE;
 int x3dio_writeviews = AY_TRUE;
 int x3dio_writeparam = AY_FALSE;
+int x3dio_writemat = AY_FALSE;
 int x3dio_writex3dom = AY_FALSE;
 int x3dio_resolveinstances = AY_FALSE;
 
@@ -300,7 +301,7 @@ int x3dio_writeweights(scew_element *element, char *name,
 int x3dio_writeknots(scew_element *element, char *name,
 		     unsigned int length, double *value);
 
-int x3dio_writencurve(scew_element *element, ay_nurbcurve_object *c);
+int x3dio_writencurve(scew_element *element, int dim, ay_nurbcurve_object *c);
 
 /* export callback functions */
 int x3dio_writencurveobj(scew_element *element, ay_object *o);
@@ -340,6 +341,8 @@ int x3dio_writepomeshwire(scew_element *element, ay_object *o);
 int x3dio_writeview(scew_element *element, ay_object *o);
 
 int x3dio_writelight(scew_element *element, ay_object *o);
+
+int x3dio_writematerial(scew_element *shape_element, ay_object *o);
 
 int x3dio_writerevolveobj(scew_element *element, ay_object *o);
 
@@ -7162,7 +7165,7 @@ x3dio_writeknots(scew_element *element, char *name,
  *
  */
 int
-x3dio_writencurve(scew_element *element, ay_nurbcurve_object *c)
+x3dio_writencurve(scew_element *element, int dim, ay_nurbcurve_object *c)
 {
  scew_element *curve_element = NULL;
  scew_element *coord_element = NULL;
@@ -7171,7 +7174,10 @@ x3dio_writencurve(scew_element *element, ay_nurbcurve_object *c)
     return AY_ENULL;
 
   /* now write the curve */
-  curve_element = scew_element_add(element, "NurbsCurve");
+  if(dim == 2)
+    curve_element = scew_element_add(element, "NurbsCurve2D");
+  else
+    curve_element = scew_element_add(element, "NurbsCurve");
 
   x3dio_writeintattrib(curve_element, "order", &c->order);
 
@@ -7184,7 +7190,7 @@ x3dio_writencurve(scew_element *element, ay_nurbcurve_object *c)
 
   coord_element = scew_element_add(curve_element, "Coordinate");
 
-  x3dio_writedoublepoints(coord_element, "point", 3, c->length,
+  x3dio_writedoublepoints(coord_element, "point", dim, c->length,
 			  4, c->controlv);
 
  return AY_OK;
@@ -7216,7 +7222,7 @@ x3dio_writencurveobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
-  ay_status = x3dio_writencurve(shape_element, c);
+  ay_status = x3dio_writencurve(shape_element, 3, c);
 
  return AY_OK;
 } /* x3dio_writencurveobj */
@@ -7427,6 +7433,9 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
 
   /* now write the patch */
   if(o->down && o->down->next)
@@ -8193,6 +8202,9 @@ x3dio_writeboxobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
+
   /* now write the box */
   box_element = scew_element_add(shape_element, "Box");
 
@@ -8243,6 +8255,9 @@ x3dio_writesphereobj(scew_element *element, ay_object *o)
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+      if(x3dio_writemat)
+	x3dio_writematerial(shape_element, o);
 
       /* now write the sphere */
       sphere_element = scew_element_add(shape_element, "Sphere");
@@ -8305,6 +8320,9 @@ x3dio_writecylinderobj(scew_element *element, ay_object *o)
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+      if(x3dio_writemat)
+	x3dio_writematerial(shape_element, o);
 
       /* now write the cylinder */
       cylinder_element = scew_element_add(shape_element, "Cylinder");
@@ -8371,6 +8389,9 @@ x3dio_writeconeobj(scew_element *element, ay_object *o)
 
       /* write name to shape element */
       ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+      if(x3dio_writemat)
+	x3dio_writematerial(shape_element, o);
 
       /* now write the cone */
       cone_element = scew_element_add(shape_element, "Cone");
@@ -9281,6 +9302,30 @@ x3dio_writelight(scew_element *element, ay_object *o)
 } /* x3dio_writelight */
 
 
+/* x3dio_writematerial:
+ *
+ */
+int
+x3dio_writematerial(scew_element *shape_element, ay_object *o)
+{
+ scew_element *appearance_element = NULL;
+ scew_element *material_element = NULL;
+
+  if(!shape_element || !o)
+    return AY_ENULL;
+
+  /* write appearance */
+  appearance_element = scew_element_add(shape_element, "Appearance");
+
+  /* write material */
+  material_element = scew_element_add(appearance_element, "Material");
+
+  scew_element_add_attr_pair(material_element, "diffuseColor", "1 1 1");
+
+ return AY_OK;
+} /* x3dio_writematerial */
+
+
 /* x3dio_writerevolveobj:
  *
  */
@@ -9295,7 +9340,6 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
  scew_element *curve_element = NULL;
  ay_object *c = NULL;
  ay_nurbcurve_object *cs, *circle = NULL;
- int i, a, stride = 4;
  double radius = 1.0;
 
   if(!element || !o)
@@ -9303,9 +9347,6 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   if(!o->down || !o->down->next)
     return AY_ERROR;
-
-  if(!x3dio_writeparam)
-    return x3dio_writenpconvertibleobj(element, o);
 
   rev = (ay_revolve_object*)o->refine;
 
@@ -9320,6 +9361,9 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
 
   /* write swing element */
   swing_element = scew_element_add(shape_element, "NurbsSwungSurface");
@@ -9342,7 +9386,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   cs = (ay_nurbcurve_object*)c->refine;
 
   /* write cross section curve */
-  x3dio_writencurve(swing_element, cs);
+  x3dio_writencurve(swing_element, 2, cs);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(swing_element, NULL);
@@ -9366,16 +9410,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
       return AY_ERROR;
     }
 
-  /* flip circle/arc to xz plane */
-  a = 0;
-  for(i = 0; i < circle->length; i++)
-    {
-      circle->controlv[a+2] = circle->controlv[a+1];
-      circle->controlv[a+1] = 0.0;
-      a += stride;
-    }
-
-  x3dio_writencurve(swing_element, circle);
+  x3dio_writencurve(swing_element, 2, circle);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(swing_element, NULL);
@@ -9403,7 +9438,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
   /* cleanup */
   ay_nct_destroy(circle);
 
-  ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c);
 
  return AY_OK;
 } /* x3dio_writerevolveobj */
@@ -9444,6 +9479,9 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
+
   /* write sweep element */
   sweep_element = scew_element_add(shape_element, "NurbsSweptSurface");
 
@@ -9464,8 +9502,10 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   cs = (ay_nurbcurve_object*)c->refine;
 
+  /* TODO rotate cross section to XY for proper 2D export */
+
   /* write cross section curve */
-  x3dio_writencurve(sweep_element, cs);
+  x3dio_writencurve(sweep_element, 2, cs);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(sweep_element, NULL);
@@ -9494,7 +9534,7 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   cs = (ay_nurbcurve_object*)d->refine;
 
-  x3dio_writencurve(sweep_element, cs);
+  x3dio_writencurve(sweep_element, 3, cs);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(sweep_element, NULL);
@@ -9513,8 +9553,8 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
     }
 
   /* cleanup */
-  ay_object_deletemulti(c);
-  ay_object_deletemulti(d);
+  (void)ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(d);
 
  return AY_OK;
 } /* x3dio_writesweepobj */
@@ -9575,8 +9615,10 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   cs = (ay_nurbcurve_object*)c->refine;
 
+  /* TODO rotate cross section to XY for proper 2D export */
+
   /* write cross section curve */
-  x3dio_writencurve(swing_element, cs);
+  x3dio_writencurve(swing_element, 2, cs);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(swing_element, NULL);
@@ -9584,7 +9626,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
   /* and add a containerField attribute */
   scew_element_add_attr_pair(curve_element, "containerField", "profileCurve");
 
-  /* write trajectory curve */
+  /* get trajectory curve */
   if(o->down->next->type != AY_IDNCURVE)
     {
       ay_provide_object(o->down->next, AY_IDNCURVE, &d);
@@ -9604,7 +9646,8 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   cs = (ay_nurbcurve_object*)d->refine;
 
-  x3dio_writencurve(swing_element, cs);
+  /* write trajectory curve */
+  x3dio_writencurve(swing_element, 2, cs);
 
   /* get the curve element we just wrote */
   curve_element = scew_element_next(swing_element, NULL);
@@ -9623,8 +9666,8 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
     }
 
   /* cleanup */
-  ay_object_deletemulti(c);
-  ay_object_deletemulti(d);
+  (void)ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(d);
 
  return AY_OK;
 } /* x3dio_writeswingobj */
@@ -9683,6 +9726,9 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
 
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
+
   d = o->down;
   while(d->next)
     {
@@ -9714,7 +9760,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
       cs = (ay_nurbcurve_object*)c->refine;
 
       /* write cross section curve */
-      x3dio_writencurve(sweep_element, cs);
+      x3dio_writencurve(sweep_element, 2, cs);
 
       /* get the curve element we just wrote */
       curve_element = scew_element_next(sweep_element, NULL);
@@ -9724,7 +9770,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 				 "profileCurve");
 
       /* write trajectory curve */
-      x3dio_writencurve(sweep_element, tr);
+      x3dio_writencurve(sweep_element, 3, tr);
 
       /* get the curve element we just wrote */
       curve_element = scew_element_next(sweep_element, NULL);
@@ -9890,7 +9936,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 scew_element*
 x3dio_findelement(scew_element const* parent, XML_Char const* name)
 {
- scew_element* next_element = NULL, *result;
+ scew_element *next_element = NULL, *result;
 
   if(name == NULL)
     {
@@ -10181,6 +10227,9 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writecurves = AY_TRUE;
   x3dio_writeviews = AY_TRUE;
   x3dio_writeparam = AY_FALSE;
+  x3dio_writewires = AY_FALSE;
+  x3dio_writemat = AY_FALSE;
+  x3dio_writex3dom = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
   x3dio_scalefactor = 1.0;
   x3dio_errorlevel = ay_prefs.errorlevel;
@@ -10220,6 +10269,11 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-p"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_writeparam);
+	}
+      else
+      if(!strcmp(argv[i], "-m"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writemat);
 	}
       else
       if(!strcmp(argv[i], "-r"))
