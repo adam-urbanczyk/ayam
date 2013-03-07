@@ -13842,6 +13842,18 @@ of the curve will be changed to <tt/"Custom"/.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="sciscompnc">
+isCompNC:
+<itemize>
+ <item>Synopsis: <tt>"isCompNC"</tt>
+ <item>Background: Yes, Undo: No, Safe: Yes
+ <item>Description: This command returns 1 if the selected NURBS curves
+are compatible (i.e. defined on the same knot vector), otherwise it returns 0.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="scmakecompnc">
 makeCompNC &ndash; make NURBS curves compatible
 <itemize>
@@ -19182,6 +19194,7 @@ Index:
 <item>Intersection: <ref id="levelobj" name="Level object">
 <item>Invert Selection: <ref id="mmspecial" name="main menu entry">
 <item>IPatch: <ref id="ipatchobj" name="IPatch object">
+<item>isCompNC: <ref id="sciscompnc" name="scripting interface command">
 <item>IsLocal: <ref id="lip" name="Light attribute">
 <item>IsoLevel: <ref id="moattr" name="MetaObj attribute">
 <item>IsOn: <ref id="lip" name="Light attribute">
