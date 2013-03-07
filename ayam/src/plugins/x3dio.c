@@ -280,7 +280,7 @@ int x3dio_copypv(ay_tag *src, char **dst);
 int x3dio_writetransform(scew_element *element, ay_object *o,
 			 scew_element **transform_element);
 
-int x3dio_clearmntags(ay_object *o);
+void x3dio_clearmntags(ay_object *o);
 
 int x3dio_writename(scew_element *element, ay_object *o, int trafo);
 
@@ -6807,14 +6807,14 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 /* x3dio_clearmntags:
  * _recursively_ clear all MN tags from <o> its siblings and children
  */
-int
+void
 x3dio_clearmntags(ay_object *o)
 {
  int ay_status = AY_OK;
  ay_tag *tag = NULL, **last = NULL;
 
   if(!o)
-    return AY_OK;
+    return;
 
   while(o)
     {
@@ -6841,16 +6841,12 @@ x3dio_clearmntags(ay_object *o)
 	} /* if */
 
       if(o->down)
-	ay_status = x3dio_clearmntags(o->down);
-
-      /* XXXX break recursion on all errors? */
-      if(ay_status)
-	return ay_status;
+	x3dio_clearmntags(o->down);
 
       o = o->next;
     } /* while */
 
- return ay_status;
+ return;
 } /* x3dio_clearmntags */
 
 
@@ -6860,6 +6856,7 @@ x3dio_clearmntags(ay_object *o)
 int
 x3dio_writename(scew_element *element, ay_object *o, int trafo)
 {
+ int ay_status = AY_OK;
  char *newname = NULL, *number = NULL;
  unsigned int len, i;
  static unsigned int count = 0;
@@ -6872,14 +6869,16 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
     }
 
   /* write name as DEF */
-  if(o->name && (strlen(o->name) > 1))
+  if(o->name && (o->name[0] != '\0'))
     {
       /* check, whether we already use this DEF */
       if(AY_ERROR == x3dio_adddef(o->name, element))
 	{
 	  /* DEF is already used, create a new name */
 	  len = strlen(o->name);
-	  newname = calloc(len+65, sizeof(char));
+	  if(!(newname = malloc((len+65)*sizeof(char))))
+	    return AY_EOMEM;
+
 	  memcpy(newname, o->name, len);
 	  number = newname+len;
 	  i = 2;
@@ -6901,7 +6900,9 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
       if(!x3dio_resolveinstances && o->refcount)
 	{
 	  count++;
-	  newname = calloc(65, sizeof(char));
+	  if(!(newname = malloc(65*sizeof(char))))
+	    return AY_EOMEM;
+
 	  sprintf(newname, "Master_%u", count);
 
 	  /* check, whether we already use this DEF */
@@ -6924,17 +6925,20 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
     {
       /*  add a MN (MasterName) tag */
       if(!(tag = calloc(1, sizeof(ay_tag))))
-	return AY_EOMEM;
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
       if(newname)
 	{
-	  if(!(tag->val = calloc(strlen(newname)+1, sizeof(char))))
-	    return AY_EOMEM;
+	  if(!(tag->val = malloc((strlen(newname)+1)*sizeof(char))))
+	    { free(tag); ay_status = AY_EOMEM; goto cleanup; }
+
 	  memcpy(tag->val, newname, strlen(newname)*sizeof(char));
 	}
       else
 	{
-	  if(!(tag->val = calloc(strlen(o->name)+1, sizeof(char))))
-	    return AY_EOMEM;
+	  if(!(tag->val = malloc((strlen(o->name)+1)*sizeof(char))))
+	    { free(tag); ay_status = AY_EOMEM; goto cleanup; }
+
 	  memcpy(tag->val, o->name, strlen(o->name)*sizeof(char));
 	}
 
@@ -6946,10 +6950,12 @@ x3dio_writename(scew_element *element, ay_object *o, int trafo)
       o->tags = tag;
     }
 
+cleanup:
+
   if(newname)
     free(newname);
 
- return AY_OK;
+ return ay_status;
 } /* x3dio_writename */
 
 
@@ -7029,7 +7035,7 @@ x3dio_writedoublevecattrib(scew_element *element, char *name, unsigned int dim,
 
 
 /* x3dio_writedoublepoints:
- *
+ * TODO: use TCL_DOUBLE_SPACE for better initial estimation of allocation
  */
 int
 x3dio_writedoublepoints(scew_element *element, char *name, unsigned int dim,
@@ -9988,10 +9994,10 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
   /* clear potentially present MN tags from scene */
-  ay_status = x3dio_clearmntags(ay_root);
+  x3dio_clearmntags(ay_root);
 
   /* reset object number counter */
-  ay_status = x3dio_writename(NULL, NULL, 0);
+  (void)x3dio_writename(NULL, NULL, 0);
 
   if(!x3dio_writex3dom)
     {
@@ -10193,7 +10199,7 @@ cleanup:
   Tcl_DeleteHashTable(x3dio_defs_ht);
 
   /* clear potentially present MN tags from scene */
-  ay_status = x3dio_clearmntags(ay_root);
+  x3dio_clearmntags(ay_root);
 
   if(x3dio_writex3dom)
     {
