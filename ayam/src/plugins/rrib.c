@@ -4099,6 +4099,21 @@ ay_rrib_readparams(int n, RtToken tokens[], RtPointer parms[],
 	      pnt = (RtPoint *)(parms[i]);
 	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		      (float)((*pnt)[2]));
+	      valstr = valbuf;
+	      break;
+	    case kRIB_VECTORTYPE:
+	      typechar = 'v';
+	      pnt = (RtPoint *)(parms[i]);
+	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		      (float)((*pnt)[2]));
+	      valstr = valbuf;
+	      break;
+	    case kRIB_NORMALTYPE:
+	      typechar = 'n';
+	      pnt = (RtPoint *)(parms[i]);
+	      sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		      (float)((*pnt)[2]));
+	      valstr = valbuf;
 	      break;
 	    default:
 	      typechar = 'u';
@@ -4164,6 +4179,7 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 
   if(!(n->name = calloc(strlen(tagname)+1, sizeof(char))))
     {
+      free(n);
       return;
     }
 
@@ -4230,6 +4246,21 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 	  pnt = (RtPoint *)(parms[i]);
 	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
 		  (float)((*pnt)[2]));
+	  valstr = valbuf;
+	  break;
+	case kRIB_VECTORTYPE:
+	  typechar = 'v';
+	  pnt = (RtPoint *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		  (float)((*pnt)[2]));
+	  valstr = valbuf;
+	  break;
+	case kRIB_NORMALTYPE:
+	  typechar = 'n';
+	  pnt = (RtPoint *)(parms[i]);
+	  sprintf(valbuf,"%f,%f,%f", (float)((*pnt)[0]),(float)((*pnt)[1]),
+		  (float)((*pnt)[2]));
+	  valstr = valbuf;
 	  break;
 	default:
 	  ay_error(AY_ERROR, fname,
@@ -4306,7 +4337,6 @@ ay_rrib_readtag(char *tagtype, char *tagname, char *name,
 	  n->next = *destination;
 	  *destination = n;
 	}
-
     }
   else
     {
