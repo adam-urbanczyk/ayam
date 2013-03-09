@@ -6810,7 +6810,6 @@ x3dio_writetransform(scew_element *element, ay_object *o,
 void
 x3dio_clearmntags(ay_object *o)
 {
- int ay_status = AY_OK;
  ay_tag *tag = NULL, **last = NULL;
 
   if(!o)
@@ -7175,29 +7174,57 @@ x3dio_writencurve(scew_element *element, int dim, ay_nurbcurve_object *c)
 {
  scew_element *curve_element = NULL;
  scew_element *coord_element = NULL;
+ char buf[64];
 
   if(!c)
     return AY_ENULL;
 
-  /* now write the curve */
-  if(dim == 2)
-    curve_element = scew_element_add(element, "NurbsCurve2D");
-  else
-    curve_element = scew_element_add(element, "NurbsCurve");
-
-  x3dio_writeintattrib(curve_element, "order", &c->order);
-
-  x3dio_writeknots(curve_element, "knot", c->length+c->order, c->knotv);
-
-  if(c->is_rat)
+  if(c->order == 2)
     {
-      x3dio_writeweights(curve_element, "weight", c->length, c->controlv);
+      /* write the curve as PolyLine2D/LineSet */
+      if(dim == 2)
+	{
+	  curve_element = scew_element_add(element, "Polyline2D");
+
+	  x3dio_writedoublepoints(curve_element, "lineSegments", dim,
+				  c->length, 4, c->controlv);
+	}
+      else
+	{
+	  curve_element = scew_element_add(element, "LineSet");
+
+	  sprintf(buf, "%d", c->length);
+
+	  scew_element_add_attr_pair(curve_element, "vertexCount", buf);
+
+	  coord_element = scew_element_add(curve_element, "Coordinate");
+
+	  x3dio_writedoublepoints(coord_element, "point", dim, c->length,
+				  4, c->controlv);
+	}
     }
+  else
+    {
+      /* write the curve as NurbsCurve */
+      if(dim == 2)
+	curve_element = scew_element_add(element, "NurbsCurve2D");
+      else
+	curve_element = scew_element_add(element, "NurbsCurve");
 
-  coord_element = scew_element_add(curve_element, "Coordinate");
+      x3dio_writeintattrib(curve_element, "order", &c->order);
 
-  x3dio_writedoublepoints(coord_element, "point", dim, c->length,
-			  4, c->controlv);
+      x3dio_writeknots(curve_element, "knot", c->length+c->order, c->knotv);
+
+      if(c->is_rat)
+	{
+	  x3dio_writeweights(curve_element, "weight", c->length, c->controlv);
+	}
+
+      coord_element = scew_element_add(curve_element, "Coordinate");
+
+      x3dio_writedoublepoints(coord_element, "point", dim, c->length,
+			      4, c->controlv);
+    }
 
  return AY_OK;
 } /* x3dio_writencurve */
@@ -7328,24 +7355,34 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
     }
 
   /* now write the curve */
-  curve_element = scew_element_add(element, "NurbsCurve2D");
-
-  x3dio_writeintattrib(curve_element, "order", &nc->order);
-
-  x3dio_writeknots(curve_element, "knot", nc->length+nc->order, nc->knotv);
-
-  if(nc->is_rat)
+  if(nc->order == 2)
     {
-      x3dio_writeweights(curve_element, "weight", nc->length, nc->controlv);
-    }
+      curve_element = scew_element_add(element, "ContourPolyline2D");
 
-  coord_element = scew_element_add(curve_element, "Coordinate");
-  x3dio_writedoublepoints(coord_element, "point", 2, nc->length, 4,
-			  nc->controlv);
+      x3dio_writedoublepoints(curve_element, "controlPoint", 2,
+			      nc->length, 4, nc->controlv);
+    }
+  else
+    {
+      curve_element = scew_element_add(element, "NurbsCurve2D");
+
+      x3dio_writeintattrib(curve_element, "order", &nc->order);
+
+      x3dio_writeknots(curve_element, "knot", nc->length+nc->order, nc->knotv);
+
+      if(nc->is_rat)
+	{
+	  x3dio_writeweights(curve_element, "weight", nc->length, nc->controlv);
+	}
+
+      coord_element = scew_element_add(curve_element, "Coordinate");
+      x3dio_writedoublepoints(coord_element, "point", 2, nc->length, 4,
+			      nc->controlv);
+    }
 
   if(c)
     {
-      ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c);
     }
 
  return ay_status;
@@ -8901,7 +8938,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
       offset_cv[a+3] = po->controlv[b]   - mean_normals[c];
       offset_cv[a+4] = po->controlv[b+1] - mean_normals[c+1];
-      offset_cv[a+5] = po->controlv[b+2] - mean_normals[c+2];      
+      offset_cv[a+5] = po->controlv[b+2] - mean_normals[c+2];
 
       a += 6;
       b += stride;
