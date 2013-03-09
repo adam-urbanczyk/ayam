@@ -61,8 +61,6 @@ void ay_pomesht_tcbCombineN(GLdouble c[3], void *d[4], GLfloat w[4],
 
 void ay_pomesht_ManageCombined(void *data);
 
-void ay_pomesht_setautonormal(double *v1, double *v2, double *v3);
-
 int ay_pomesht_inithash(ay_pomesht_hash *hash);
 
 void ay_pomesht_destroyhash(ay_pomesht_hash *hash);
@@ -207,38 +205,6 @@ ay_pomesht_ManageCombined(void *data)
 } /* ay_pomesht_ManageCombined */
 
 
-/* ay_pomesht_setautonormal:
- *
- */
-void
-ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
-{
- double t1[3], t2[3];
- GLdouble n[3];
-
-  AY_V3SUB(t1, v1, v2)
-  AY_V3SUB(t2, v1, v3)
-  AY_V3CROSS(n, t1, t2)
-
-  /* the next fragment should be unneeded, because we enable
-     GL_NORMALIZE in ay_toglcb_create */
-
-  /*
-  AY_V3NORM(n)
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-  */
-   glNormal3dv(n);
-  /*
-  glPopMatrix();
-  */
-
- return;
-} /* ay_pomesht_setautonormal */
-
-
 /* ay_pomesht_tesselate:
  *  tesselate PolyMesh <pomesh> into triangles and draw them
  *  immediately using OpenGL
@@ -246,68 +212,94 @@ ay_pomesht_setautonormal(double *v1, double *v2, double *v3)
 int
 ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 {
+ int ay_status = AY_OK;
  unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  unsigned int a;
  int stride = 0;
  GLUtesselator *tess = NULL;
+ double *fn = NULL;
 
   if(pomesh->has_normals)
-    stride = 6;
+    {
+      stride = 6;
+    }
   else
-    stride = 3;
+    {
+      stride = 3;
+      if(pomesh->face_normals)
+	{
+	  fn = pomesh->face_normals;
+	}
+      else
+	{
+	  /* generate and cache face normals */
+	  if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+	    return ay_status;
+
+	  pomesh->face_normals = fn;
+	}
+    }
 
   for(i = 0; i < pomesh->npolys; i++)
     {
       /* is this polygon a simple triangle? */
       if((pomesh->nloops[i] == 1) && (pomesh->nverts[m] == 3))
 	{
+	  /* is triangle */
 	  if(!pomesh->has_normals)
 	    {
-	      ay_pomesht_setautonormal(&pomesh->controlv[pomesh->verts[n] *
-							stride],
-				       &pomesh->controlv[pomesh->verts[n+1] *
-							stride],
-				       &pomesh->controlv[pomesh->verts[n+2] *
-							stride]);
+	      glNormal3dv(&(fn[i*3]));
+	      glBegin(GL_TRIANGLES);
+	      a = pomesh->verts[n++];
+	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	      a = pomesh->verts[n++];
+	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	      a = pomesh->verts[n++];
+	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	      glEnd();
+	      n += 3;
 	    }
-
-	  glBegin(GL_TRIANGLES);
-	   a = pomesh->verts[n++];
-	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	   a = pomesh->verts[n++];
-	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	   a = pomesh->verts[n++];
-	   if(pomesh->has_normals)
-	     glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	  glEnd();
-
+	  else
+	    {
+	      glBegin(GL_TRIANGLES);
+	       a = pomesh->verts[n++];
+	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       a = pomesh->verts[n++];
+	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       a = pomesh->verts[n++];
+	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	      glEnd();
+	    }
+	  n += 3;
 	  m++;
 	  l++;
 	}
       else
 	{
-
+	  /* quad or general polygon */
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
 	  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN, AYGLUCBTYPE ay_pomesht_tcbBegin);
-
+	  gluTessCallback(tess, GLU_TESS_BEGIN,
+			  AYGLUCBTYPE ay_pomesht_tcbBegin);
 
 	  if(!pomesh->has_normals)
 	    {
-	      gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_pomesht_tcbVertex);
-	      gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_pomesht_tcbCombine);
+	      gluTessCallback(tess, GLU_TESS_VERTEX,
+			      AYGLUCBTYPE ay_pomesht_tcbVertex);
+	      gluTessCallback(tess, GLU_TESS_COMBINE,
+			      AYGLUCBTYPE ay_pomesht_tcbCombine);
 	    }
 	  else
 	    {
-	      gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_pomesht_tcbVertexN);
-	      gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_pomesht_tcbCombineN);
+	      gluTessCallback(tess, GLU_TESS_VERTEX,
+			      AYGLUCBTYPE ay_pomesht_tcbVertexN);
+	      gluTessCallback(tess, GLU_TESS_COMBINE,
+			      AYGLUCBTYPE ay_pomesht_tcbCombineN);
 	    } /* if */
 
 	  gluTessCallback(tess, GLU_TESS_END, AYGLUCBTYPE ay_pomesht_tcbEnd);
@@ -315,28 +307,26 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/
 	  gluBeginPolygon(tess);
-	  if(!pomesh->has_normals)
-	    {
-	  ay_pomesht_setautonormal(&pomesh->controlv[pomesh->verts[n]*stride],
-				  &pomesh->controlv[pomesh->verts[n+1]*stride],
-				 &pomesh->controlv[pomesh->verts[n+2]*stride]);
-	    }
+	   if(!pomesh->has_normals)
+	     {
+	       glNormal3dv(&(fn[i*3]));
+	     }
 
-	  for(j = 0; j < pomesh->nloops[l]; j++)
-	    {
-	      /*gluTessBeginContour(tess);*/
-	      for(k = 0; k < pomesh->nverts[m]; k++)
-		{
-		  a = pomesh->verts[n++];
-		  gluTessVertex(tess,
-				(GLdouble*)(&(pomesh->controlv[a*stride])),
-				(GLdouble*)(&(pomesh->controlv[a*stride])));
-		} /* for */
-	      /*gluTessEndContour(tess);*/
-	      gluNextContour(tess, GLU_INTERIOR);
-	      m++;
-	    } /* for */
-	  /*      gluTessEndPolygon(tess);*/
+	   for(j = 0; j < pomesh->nloops[l]; j++)
+	     {
+	       /*gluTessBeginContour(tess);*/
+	       for(k = 0; k < pomesh->nverts[m]; k++)
+		 {
+		   a = pomesh->verts[n++];
+		   gluTessVertex(tess,
+				 (GLdouble*)(&(pomesh->controlv[a*stride])),
+				 (GLdouble*)(&(pomesh->controlv[a*stride])));
+		 } /* for */
+	       /*gluTessEndContour(tess);*/
+	       gluNextContour(tess, GLU_INTERIOR);
+	       m++;
+	     } /* for */
+	   /*      gluTessEndPolygon(tess);*/
 	  gluEndPolygon(tess);
 	  gluDeleteTess(tess);
 	  /* free combined vertices */
@@ -465,7 +455,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
     }
   if(!(npm->controlv = calloc(stride * total_controls, sizeof(double))))
     {
-      free(no); free(npm);  free(npm->nloops); free(npm->nverts);
+      free(no); free(npm); free(npm->nloops); free(npm->nverts);
       free(npm->verts); return AY_EOMEM;
     }
 
@@ -646,7 +636,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
  *  \returns TCL_OK in any case.
  */
 int
-ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -947,7 +937,7 @@ ay_pomesht_optimizecoords(ay_pomesh_object *pomesh, int ignore_normals)
  *  \returns TCL_OK in any case.
  */
 int
-ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_pomesht_optimizetcmd(ClientData clientData, Tcl_Interp *interp,
 			int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -1449,3 +1439,73 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
  return TCL_OK;
 } /* ay_pomesht_splittcmd */
+
+
+/** ay_pomesht_genfacenormals:
+ *  Generate face normals for arbitrary PolyMesh using Newell's method
+ *  which is more robust than a simple cross product.
+ */
+int
+ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
+{
+ unsigned int i, j, k, l = 0, m = 0, n = 0;
+ double *fn = NULL, *normals = NULL;
+ double *v1, *v2, len;
+ int stride = 3;
+
+  if(!po || !result)
+    return AY_ENULL;
+
+  if(po->npolys == 0)
+    return AY_ERROR;
+
+  if(!(normals = calloc(3*po->npolys, sizeof(double))))
+    return AY_EOMEM;
+  fn = normals;
+
+  if(po->has_normals)
+    stride = 6;
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[l] > 0 && po->nverts[m] > 2)
+	{
+	  for(k = 0; k < po->nverts[m]-1; k++)
+	    {
+	      v1 = &(po->controlv[po->verts[n+k]*stride]);
+	      v2 = &(po->controlv[po->verts[n+k+1]*stride]);
+
+	      fn[0] += (v1[1] - v2[1]) * (v1[2] + v2[2]);
+	      fn[1] += (v1[2] - v2[2]) * (v1[0] + v2[0]);
+	      fn[2] += (v1[0] - v2[0]) * (v1[1] + v2[1]);
+	    }
+	  
+	  v1 = &(po->controlv[po->verts[n+k]*stride]);
+	  v2 = &(po->controlv[po->verts[n]*stride]);
+	  fn[0] += (v1[1] - v2[1]) * (v1[2] + v2[2]);
+	  fn[1] += (v1[2] - v2[2]) * (v1[0] + v2[0]);
+	  fn[2] += (v1[0] - v2[0]) * (v1[1] + v2[1]);
+	  
+	  len = AY_V3LEN(fn);
+	  if(len > AY_EPSILON)
+	    AY_V3SCAL(fn, 1.0/len);
+	} /* if */
+
+      /* advance the indices for next poly */
+      for(j = 0; j < po->nloops[l]; j++)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      n++;
+	    }
+	  m++;
+	}
+      fn += 3;
+      l++;
+    } /* for */
+
+  /* return result */
+  *result = normals;
+
+ return AY_OK;
+} /* ay_pomesht_genfacenormals */
