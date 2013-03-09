@@ -230,9 +230,8 @@ proc pomesh_split { } {
     set f [frame $w.f1]
     pack $f -in $w -side top -fill x
 
-    set ay(cancelb) $w.f2.bca
-    set oldappb $ay(appb)
-    set ay(appb) $w.f2.bok
+    set ay(bca) $w.f2.bca
+    set ay(bok) $w.f2.bok
 
     if { $ayprefs(FixDialogTitles) == 1 } {
 	addText $f e1 $t

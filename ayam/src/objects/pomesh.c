@@ -471,6 +471,10 @@ ay_pomesh_deletecb(void *c)
   if(pomesh->controlv)
     free(pomesh->controlv);
 
+  /* free normals */
+  if(pomesh->face_normals)
+    free(pomesh->face_normals);
+
   free(pomesh);
 
  return AY_OK;
@@ -507,6 +511,7 @@ ay_pomesh_copycb(void *src, void **dst)
   pomesh->nverts = NULL;
   pomesh->verts = NULL;
   pomesh->controlv = NULL;
+  pomesh->face_normals = NULL;
 
   /* copy nloops */
   if(pomeshsrc->nloops)
@@ -565,6 +570,19 @@ ay_pomesh_copycb(void *src, void **dst)
 	}
       memcpy(pomesh->controlv, pomeshsrc->controlv,
 	     stride * pomesh->ncontrols * sizeof(double));
+    }
+
+  /* copy the face normals */
+  if(pomeshsrc->face_normals)
+    {
+      if(!(pomesh->face_normals = malloc(3 * pomeshsrc->npolys *
+					 sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(pomesh->controlv, pomeshsrc->controlv,
+	     3 * pomeshsrc->npolys * sizeof(double));
     }
 
   *dst = (void *)pomesh;
@@ -930,7 +948,7 @@ ay_pomesh_readcb(FILE *fileptr, ay_object *o)
  unsigned int total_loops = 0, total_verts = 0;
  unsigned int i, a;
 
- if(!o)
+  if(!o)
    return AY_ENULL;
 
   if(!(pomesh = calloc(1, sizeof(ay_pomesh_object))))

@@ -771,6 +771,7 @@ int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
+int ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result);
 
 /* prefs.c */
 

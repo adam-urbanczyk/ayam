@@ -600,6 +600,7 @@ typedef struct ay_pomesh_object_s {
   unsigned int ncontrols; /**< total number of control points */
   int has_normals; /**< vertex normals? 0 - No, stride=3; 1 - Yes, stride=6 */
   double *controlv; /**< control points [ncontrols * stride] */
+  double *face_normals; /**< face normals [npolys * 3] */
 } ay_pomesh_object;
 
 
