@@ -1552,3 +1552,65 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
 
  return AY_OK;
 } /* ay_pomesht_genfacenormals */
+
+
+
+/* ay_pomesht_genfntcmd:
+
+ *  Implements the \a genfnPo scripting interface command.
+ *  See also the corresponding section in the \ayd{scgenfnpo}.
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
+		     int argc, char *argv[])
+{
+ int ay_status = AY_OK;
+ ay_object *o = NULL;
+ ay_list_object *sel = ay_selection;
+ ay_pomesh_object *pomesh;
+ double *fn = NULL;
+ char *nname = ay_prefs.normalname;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+
+      if(o->type == AY_IDPOMESH)
+	{
+	  pomesh = (ay_pomesh_object *)o->refine;
+
+	  fn = pomesh->face_normals;
+	  if(!fn)
+	    {	      
+	      if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+		{
+		  ay_error(ay_status, argv[0], NULL);
+		  return TCL_OK;
+		}
+	    }
+
+	  ay_pv_add(o, nname, "uniform", 2, pomesh->npolys, 3, fn);
+
+	  if(!pomesh->face_normals)
+	    free(fn);
+	}
+      else
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_pomesht_genfntcmd */
+
