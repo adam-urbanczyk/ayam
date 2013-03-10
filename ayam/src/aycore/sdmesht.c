@@ -30,10 +30,9 @@ void ay_sdmesht_tcbEnd(void);
 void ay_sdmesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4],
 			   void **out);
 
-
 void ay_sdmesht_ManageCombined(void *data);
 
-void ay_sdmesht_setautonormal(double *v1, double *v2, double *v3);
+int ay_sdmesht_genfacenormals(ay_sdmesh_object *sd, double **result);
 
 
 /* functions */
@@ -148,9 +147,24 @@ ay_sdmesht_setautonormal(double *v1, double *v2, double *v3)
 int
 ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 {
+ int ay_status = AY_OK;
  unsigned int i = 0, k = 0, m = 0, n = 0;
  unsigned int a;
  GLUtesselator *tess = NULL;
+ double *fn = NULL;
+
+  if(sdmesh->face_normals)
+    {
+      fn = sdmesh->face_normals;
+    }
+  else
+    {
+      /* generate and cache face normals */
+      if((ay_status = ay_sdmesht_genfacenormals(sdmesh, &fn)))
+	return ay_status;
+
+      sdmesh->face_normals = fn;
+    }
 
   for(i = 0; i < sdmesh->nfaces; i++)
     {
@@ -158,9 +172,7 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
       if(sdmesh->nverts[m] == 3)
 	{
 	  /* Yes. */
-	  ay_sdmesht_setautonormal(&sdmesh->controlv[sdmesh->verts[n] * 3],
-				   &sdmesh->controlv[sdmesh->verts[n+1] * 3],
-				   &sdmesh->controlv[sdmesh->verts[n+2] * 3]);
+	  glNormal3dv(&(fn[i*3]));
 
 	  glBegin(GL_TRIANGLES);
 	   a = sdmesh->verts[n++];
@@ -186,10 +198,7 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/
 	  gluBeginPolygon(tess);
-
-	  ay_sdmesht_setautonormal(&sdmesh->controlv[sdmesh->verts[n] * 3],
-				   &sdmesh->controlv[sdmesh->verts[n+1] * 3],
-				   &sdmesh->controlv[sdmesh->verts[n+2] * 3]);
+	  glNormal3dv(&(fn[i*3]));
 
 	  for(k = 0; k < sdmesh->nverts[m]; k++)
 	    {
@@ -289,3 +298,32 @@ cleanup:
 
  return ay_status;
 } /* ay_sdmesht_topolymesh */
+
+
+/** ay_sdmesht_genfacenormals:
+ *  Generate face normals for SDMesh
+ */
+int
+ay_sdmesht_genfacenormals(ay_sdmesh_object *sd, double **result)
+{
+ int ay_status = AY_OK;
+ ay_pomesh_object po = {0};
+ unsigned int i;
+
+ if(!(po.nloops = malloc(sd->nfaces * sizeof(unsigned int))))
+    return AY_EOMEM;
+  for(i = 0; i < sd->nfaces; i++)
+    po.nloops[i] = 1;
+
+  po.npolys = sd->nfaces;
+  po.nverts = sd->nverts;
+  po.verts = sd->verts;
+  po.controlv = sd->controlv;
+
+  ay_status = ay_pomesht_genfacenormals(&po, result);
+
+  if(po.nloops)
+    free(po.nloops);
+
+ return ay_status;
+} /* ay_sdmesht_genfacenormals */

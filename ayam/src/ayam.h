@@ -620,11 +620,13 @@ typedef struct ay_sdmesh_object_s {
   unsigned int ncontrols; /**< total number of control points */
   double *controlv; /**< control points [ncontrols * 3] */
 
-  unsigned int level;  /**< subdivide to which level? */
-  char drawsub;  /**< draw subdivided mesh (1) or control mesh (0)? */
+  unsigned int level; /**< subdivide to which level? */
+  char drawsub; /**< draw subdivided mesh (1) or control mesh (0)? */
 
   /** cached (subdivided) PolyMesh representation */
   ay_object *pomesh;
+
+  double *face_normals; /**< cached face normals */
 } ay_sdmesh_object;
 
 

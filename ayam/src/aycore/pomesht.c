@@ -90,6 +90,8 @@ ay_pomesht_destroy(ay_pomesh_object *pomesh)
     free(pomesh->verts);
   if(pomesh->controlv)
     free(pomesh->controlv);
+  if(pomesh->face_normals)
+    free(pomesh->face_normals);
   free(pomesh);
 
  return AY_OK;
@@ -106,7 +108,6 @@ ay_pomesht_tcbBegin(GLenum prim)
 
 void
 ay_pomesht_tcbVertex(void *data)
-
 {
   glVertex3dv((GLdouble *)data);
 } /* ay_pomesht_tcbVertex */
@@ -114,7 +115,6 @@ ay_pomesht_tcbVertex(void *data)
 
 void
 ay_pomesht_tcbVertexN(void *data)
-
 {
   glNormal3dv(((GLdouble *)data)+3);
   glVertex3dv((GLdouble *)data);
@@ -133,8 +133,8 @@ ay_pomesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
 {
  GLdouble *nv = NULL;
 
- if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*3)))
-   return;
+  if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*3)))
+    return;
 
   nv[0] = c[0];
   nv[1] = c[1];
@@ -152,8 +152,8 @@ ay_pomesht_tcbCombineN(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
 {
  GLdouble *nv = NULL;
 
- if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*6)))
-   return;
+  if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*6)))
+    return;
 
   nv[0] = c[0];
   nv[1] = c[1];
@@ -248,16 +248,15 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	  /* is triangle */
 	  if(!pomesh->has_normals)
 	    {
-	      glNormal3dv(&(fn[i*3]));
 	      glBegin(GL_TRIANGLES);
-	      a = pomesh->verts[n++];
-	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	      a = pomesh->verts[n++];
-	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	      a = pomesh->verts[n++];
-	      glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       glNormal3dv(&(fn[i*3]));
+	       a = pomesh->verts[n++];
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       a = pomesh->verts[n++];
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       a = pomesh->verts[n++];
+	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
 	      glEnd();
-	      n += 3;
 	    }
 	  else
 	    {
@@ -273,7 +272,6 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
 	      glEnd();
 	    }
-	  n += 3;
 	  m++;
 	  l++;
 	}
@@ -681,8 +679,8 @@ int
 ay_pomesht_inithash(ay_pomesht_hash *hash)
 {
 
-  hash->table = (ay_pomesht_htentry **)calloc(1, sizeof(ay_pomesht_htentry *) *
-					      hash->T);
+  hash->table = (ay_pomesht_htentry **)calloc(1,
+				    sizeof(ay_pomesht_htentry *)*hash->T);
   if(hash->table)
     return AY_OK;
   else
@@ -1479,13 +1477,13 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
 	      fn[1] += (v1[2] - v2[2]) * (v1[0] + v2[0]);
 	      fn[2] += (v1[0] - v2[0]) * (v1[1] + v2[1]);
 	    }
-	  
+
 	  v1 = &(po->controlv[po->verts[n+k]*stride]);
 	  v2 = &(po->controlv[po->verts[n]*stride]);
 	  fn[0] += (v1[1] - v2[1]) * (v1[2] + v2[2]);
 	  fn[1] += (v1[2] - v2[2]) * (v1[0] + v2[0]);
 	  fn[2] += (v1[0] - v2[0]) * (v1[1] + v2[1]);
-	  
+
 	  len = AY_V3LEN(fn);
 	  if(len > AY_EPSILON)
 	    AY_V3SCAL(fn, 1.0/len);

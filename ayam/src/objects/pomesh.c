@@ -581,7 +581,7 @@ ay_pomesh_copycb(void *src, void **dst)
 	  ay_status = AY_EOMEM;
 	  goto cleanup;
 	}
-      memcpy(pomesh->controlv, pomeshsrc->controlv,
+      memcpy(pomesh->face_normals, pomeshsrc->face_normals,
 	     3 * pomeshsrc->npolys * sizeof(double));
     }
 
@@ -602,6 +602,8 @@ cleanup:
 	free(pomesh->verts);
       if(pomesh->controlv)
 	free(pomesh->controlv);
+      if(pomesh->face_normals)
+	free(pomesh->face_normals);
       free(pomesh);
     }
 
@@ -667,6 +669,9 @@ ay_pomesh_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   pomesh = (ay_pomesh_object *)(o->refine);
+
+  if(!pomesh)
+    return AY_ENULL;
 
   if(1/*o->modified*/)
     {
@@ -1308,6 +1313,19 @@ int
 ay_pomesh_notifycb(ay_object *o)
 {
   /* int ay_status = AY_OK;*/
+ ay_pomesh_object *pomesh = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  pomesh = (ay_pomesh_object *) o->refine;
+
+  if(!pomesh)
+    return AY_ENULL;
+
+  if(pomesh->face_normals)
+    free(pomesh->face_normals);
+  pomesh->face_normals = NULL;
 
  return AY_OK;
 } /* ay_pomesh_notifycb */
