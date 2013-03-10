@@ -8578,7 +8578,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 		  /* XXXX report error (PV format error)? */
 		}
 	    }
-	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "constant", "n"))
+	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "uniform", "n"))
 	    {
 	      ay_status = x3dio_copypv(tag, &normalstring);
 	      if(ay_status == AY_OK)
@@ -8749,7 +8749,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 					      "Normal");
 
 	      scew_element_add_attr_pair(normal_element, "vector",
-					 texcoordstring);
+					 normalstring);
 	    }
 	}
 
@@ -8833,8 +8833,8 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
  char *attr = NULL, *tmp;
  unsigned int idxsize = 0;
  int *vals = NULL;
- double offset = 0.005, len, *v1, *v2, *v3, t1[3], t2[3], normal[3];
- double *mean_normals = NULL, *offset_cv = NULL;
+ double offset = 0.005, len, *v1, *normal;
+ double *fn = NULL, *mean_normals = NULL, *offset_cv = NULL;
 
   if(!element || !o)
    return AY_ENULL;
@@ -8870,30 +8870,32 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	    } /* if */
 	  l++;
 	} /* for */
+
+      fn = po->face_normals;
+      if(!fn)
+	{
+	  if((ay_status = ay_pomesht_genfacenormals(po, &fn)))
+	    goto cleanup;
+	}
+
       l = 0; m = 0; n = 0;
       for(i = 0; i < po->npolys; i++)
 	{
 	  if(po->nloops[l] > 0)
 	    {
-	      /* calculate face normal */
-	      a = po->verts[n];
-	      v1 = &(po->controlv[po->verts[n]*stride]);
-	      v2 = &(po->controlv[po->verts[n+1]*stride]);
-	      v3 = &(po->controlv[po->verts[n+2]*stride]);
-	      AY_V3SUB(t1, v1, v2)
-	      AY_V3SUB(t2, v1, v3)
-	      AY_V3CROSS(normal, t1, t2)
-
+	      normal = &(fn[i]);
 	      for(k = 0; k < po->nverts[m]; k++)
 		{
 		  a = po->verts[n++];
 
-		  /* calc/update mean normal */
+		  /* calc/update mean normal of outer loops vertices */
 		  mean_normals[a*stride]   += normal[0]/vals[a];
 		  mean_normals[a*stride+1] += normal[1]/vals[a];
 		  mean_normals[a*stride+2] += normal[2]/vals[a];
 		}
 	      m++;
+	      /* the vertices of the inner loops just get the
+		 face normal */
 	      for(j = 1; j < po->nloops[l]; j++)
 		{
 		  for(k = 0; k < po->nverts[m]; k++)
@@ -8906,6 +8908,9 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	    } /* if */
 	  l++;
 	} /* for */
+
+      if(!po->face_normals)
+	free(fn);
     }
   else
     {

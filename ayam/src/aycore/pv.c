@@ -651,7 +651,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
   if(!c)
     return AY_FALSE;
 
-  if(!strcmp(c, name))
+  if(!strncmp(c, name, strlen(name)))
     {
       c = strchr(c, ',');
       if(!c)
@@ -659,7 +659,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 
       c++;
 
-      if(!strcmp(c, detail))
+      if(!strncmp(c, detail, strlen(detail)))
 	{
 	  c = strchr(c, ',');
 	  if(!c)
@@ -667,7 +667,7 @@ ay_pv_checkndt(ay_tag *t, const char *name, const char *detail,
 
 	  c++;
 
-	  if(!strcmp(c, type))
+	  if(!strncmp(c, type, strlen(type)))
 	    return AY_TRUE;
 	} /* if */
     } /* if */
@@ -700,16 +700,16 @@ ay_pv_getdetail(ay_tag *t, char **detail)
 
   c++;
 
-  if(!strcmp(c, "constant"))
+  if(!strncmp(c, "constant", 8))
     result = 0;
   else
-  if(!strcmp(c, "uniform"))
+   if(!strncmp(c, "uniform", 7))
     result = 1;
   else
-  if(!strcmp(c, "vertex"))
+   if(!strncmp(c, "vertex", 6))
     result = 2;
   else
-  if(!strcmp(c, "varying"))
+   if(!strncmp(c, "varying", 7))
     result = 3;
 
   if(detail)
@@ -1071,13 +1071,13 @@ ay_pv_getst(ay_object *o, char *mys, char *myt, void **data)
     {
       if(tag->type == ay_pv_tagtype)
 	{
-	  if(!strcmp(tag->val, mys))
+	  if(!strncmp(tag->val, mys, strlen(mys)))
 	    {
 	      stag = tag;
 	      if(ttag)
 		break;
 	    }
-	  if(!strcmp(tag->val, myt))
+	  if(!strncmp(tag->val, myt, strlen(myt)))
 	    {
 	      ttag = tag;
 	      if(stag)
@@ -1159,7 +1159,7 @@ ay_pv_getvc(ay_object *o, char *myc, int stride, unsigned int *datalen,
     {
       if(tag->type == ay_pv_tagtype)
 	{
-	  if(!strcmp(tag->val, myc))
+	  if(!strncmp(tag->val, myc, strlen(myc)))
 	    {
 	      ctag = tag;
 		break;
