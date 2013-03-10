@@ -110,37 +110,6 @@ ay_sdmesht_ManageCombined(void *data)
 } /* ay_sdmesht_ManageCombined */
 
 
-/* ay_sdmesht_setautonormal:
- *
- */
-void
-ay_sdmesht_setautonormal(double *v1, double *v2, double *v3)
-{
- double t1[3], t2[3];
- GLdouble n[3];
-
-  AY_V3SUB(t1, v1, v2)
-  AY_V3SUB(t2, v1, v3)
-  AY_V3CROSS(n, t1, t2)
-
-  /* the next fragment should be unneeded, because we enable
-     GL_NORMALIZE in ay_toglcb_create */
-
-  /*
-  AY_V3NORM(n)
-
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-   glLoadIdentity();
-  */
-   glNormal3dv(n);
-  /*
-  glPopMatrix();
-  */
- return;
-} /* ay_sdmesht_setautonormal */
-
-
 /* ay_sdmesht_tesselate:
  *
  */
@@ -172,9 +141,8 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
       if(sdmesh->nverts[m] == 3)
 	{
 	  /* Yes. */
-	  glNormal3dv(&(fn[i*3]));
-
 	  glBegin(GL_TRIANGLES);
+	   glNormal3dv(&(fn[i*3]));
 	   a = sdmesh->verts[n++];
 	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
 	   a = sdmesh->verts[n++];
@@ -189,27 +157,32 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
-	  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
-	  gluTessCallback(tess, GLU_TESS_BEGIN, AYGLUCBTYPE ay_sdmesht_tcbBegin);
-	  gluTessCallback(tess, GLU_TESS_VERTEX, AYGLUCBTYPE ay_sdmesht_tcbVertex);
-	  gluTessCallback(tess, GLU_TESS_END, AYGLUCBTYPE ay_sdmesht_tcbEnd);
-	  gluTessCallback(tess, GLU_TESS_COMBINE, AYGLUCBTYPE ay_sdmesht_tcbCombine);
+	  gluTessCallback(tess, GLU_TESS_ERROR,
+			  AYGLUCBTYPE ay_error_glucb);
+	  gluTessCallback(tess, GLU_TESS_BEGIN,
+			  AYGLUCBTYPE ay_sdmesht_tcbBegin);
+	  gluTessCallback(tess, GLU_TESS_VERTEX,
+			  AYGLUCBTYPE ay_sdmesht_tcbVertex);
+	  gluTessCallback(tess, GLU_TESS_END,
+			  AYGLUCBTYPE ay_sdmesht_tcbEnd);
+	  gluTessCallback(tess, GLU_TESS_COMBINE,
+			  AYGLUCBTYPE ay_sdmesht_tcbCombine);
 
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/
 	  gluBeginPolygon(tess);
-	  glNormal3dv(&(fn[i*3]));
+	   glNormal3dv(&(fn[i*3]));
 
-	  for(k = 0; k < sdmesh->nverts[m]; k++)
-	    {
-	      a = sdmesh->verts[n++];
-	      gluTessVertex(tess,
-			    (GLdouble*)(&(sdmesh->controlv[a * 3])),
-			    (GLdouble*)(&(sdmesh->controlv[a * 3])));
-	    }
+	   for(k = 0; k < sdmesh->nverts[m]; k++)
+	     {
+	       a = sdmesh->verts[n++];
+	       gluTessVertex(tess,
+			     (GLdouble*)(&(sdmesh->controlv[a * 3])),
+			     (GLdouble*)(&(sdmesh->controlv[a * 3])));
+	     }
 
-	  /* GLU 1.2 only: */
-	  /*gluTessEndPolygon(tess);*/
+	   /* GLU 1.2 only: */
+	   /*gluTessEndPolygon(tess);*/
 	  gluEndPolygon(tess);
 	  gluDeleteTess(tess);
 
