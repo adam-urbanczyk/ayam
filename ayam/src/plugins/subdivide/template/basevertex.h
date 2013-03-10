@@ -1,5 +1,5 @@
 // -*- Mode: c++ -*-
-// $Id: basevertex.h,v 1.1 2011/01/01 16:48:38 randolf Exp $
+// $Id: basevertex.h,v 1.2 2013/03/10 11:50:50 randolf Exp $
 // $Source: /home/randi/bak/ayam/src/plugins/subdivide/template/basevertex.h,v $
 
 /* Subdivide V2.0
@@ -46,7 +46,7 @@ public:
   BaseVertex(const BaseVertex& ) { die(); }
   BaseVertex& operator=(const BaseVertex& ) { die(); return *this; }
 
-  virtual ~BaseVertex() { delete _pos; }
+  virtual ~BaseVertex() { delete[] _pos; }
   void copyValue(const BaseVertex& v) { setPos(v.getPos()); }
   void copyValue(const BaseVertex& v, int d) { setPos(v.getPos(d)); }
 
