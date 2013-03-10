@@ -771,7 +771,14 @@ int ay_pomesht_split(ay_pomesh_object *pomesh, ay_point *pnts,
 int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 			 int argc, char *argv[]);
 
+/** generate face normals for a polymesh object
+ */
 int ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result);
+
+/** Tcl command to create face normal PV tags for the selected polymesh objects.
+ */
+int ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
+			 int argc, char *argv[]);
 
 /* prefs.c */
 
