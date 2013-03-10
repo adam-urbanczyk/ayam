@@ -242,46 +242,90 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 
   for(i = 0; i < pomesh->npolys; i++)
     {
-      /* is this polygon a simple triangle? */
-      if((pomesh->nloops[i] == 1) && (pomesh->nverts[m] == 3))
+      /* is this polygon a simple triangle or quad? */
+      if((pomesh->nloops[i] == 1) && (pomesh->nverts[m] < 5))
 	{
-	  /* is triangle */
-	  if(!pomesh->has_normals)
+	  switch(pomesh->nverts[m])
 	    {
-	      glBegin(GL_TRIANGLES);
-	       glNormal3dv(&(fn[i*3]));
-	       a = pomesh->verts[n++];
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	       a = pomesh->verts[n++];
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	       a = pomesh->verts[n++];
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	      glEnd();
-	    }
-	  else
-	    {
+	    case 0:
+	      break;
+	    case 1:
+	      n++;
+	      break;
+	    case 2:
+	      n += 2;
+	      break;
+	    case 3:
+	      /* is triangle */
 	      glBegin(GL_TRIANGLES);
 	       a = pomesh->verts[n++];
-	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	       a = pomesh->verts[n++];
-	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
-	       a = pomesh->verts[n++];
-	       glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
-	       glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+	       if(pomesh->has_normals)
+		 {
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		 }
+	       else
+		 {
+		   glNormal3dv(&(fn[i*3]));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		 }
 	      glEnd();
-	    }
+	      break;
+	    case 4:
+	      /* is quad */
+	      glBegin(GL_QUADS);
+	       a = pomesh->verts[n++];
+	       if(pomesh->has_normals)
+		 {
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glNormal3dv((GLdouble*)(&(pomesh->controlv[a*stride+3])));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		 }
+	       else
+		 {
+		   glNormal3dv(&(fn[i*3]));
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		   a = pomesh->verts[n++];
+		   glVertex3dv((GLdouble*)(&(pomesh->controlv[a*stride])));
+		 }
+	      glEnd();
+	      break;
+	    default:
+	      break;
+	    } /* switch */
 	  m++;
 	  l++;
 	}
       else
 	{
-	  /* quad or general polygon */
+	  /* general polygon */
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
 
-	  gluTessCallback(tess, GLU_TESS_ERROR, AYGLUCBTYPE ay_error_glucb);
+	  gluTessCallback(tess, GLU_TESS_ERROR,
+			  AYGLUCBTYPE ay_error_glucb);
 	  gluTessCallback(tess, GLU_TESS_BEGIN,
 			  AYGLUCBTYPE ay_pomesht_tcbBegin);
 
@@ -300,7 +344,8 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 			      AYGLUCBTYPE ay_pomesht_tcbCombineN);
 	    } /* if */
 
-	  gluTessCallback(tess, GLU_TESS_END, AYGLUCBTYPE ay_pomesht_tcbEnd);
+	  gluTessCallback(tess, GLU_TESS_END,
+			  AYGLUCBTYPE ay_pomesht_tcbEnd);
 
 	  /* GLU 1.2 only: */
 	  /*gluTessBeginPolygon(tess, NULL);*/

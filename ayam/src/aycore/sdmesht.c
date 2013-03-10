@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* sdmesht.c -  SubdivisionMesh object tools */
+/* sdmesht.c - SubdivisionMesh object tools */
 
 typedef struct ay_sdmesht_listobject_s
 {
@@ -47,7 +47,6 @@ ay_sdmesht_tcbBegin(GLenum prim)
 
 void
 ay_sdmesht_tcbVertex(void *data)
-
 {
   glVertex3dv((GLdouble *)data);
 } /* ay_sdmesht_tcbVertex */
@@ -65,8 +64,8 @@ ay_sdmesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
 {
  GLdouble *nv = NULL;
 
- if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*3)))
-   return;
+  if(!(nv = (GLdouble *) malloc(sizeof(GLdouble)*3)))
+    return;
 
   nv[0] = c[0];
   nv[1] = c[1];
@@ -76,6 +75,7 @@ ay_sdmesht_tcbCombine(GLdouble c[3], void *d[4], GLfloat w[4], void **out)
   ay_sdmesht_ManageCombined((void*)nv);
 
   *out = nv;
+
  return;
 } /* ay_sdmesht_tcbCombine */
 
@@ -137,10 +137,17 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 
   for(i = 0; i < sdmesh->nfaces; i++)
     {
-      /* Is this face a simple triangle? */
-      if(sdmesh->nverts[m] == 3)
+      switch(sdmesh->nverts[m])
 	{
-	  /* Yes. */
+	case 0:
+	  break;
+	case 1:
+	  n++;
+	  break;
+	case 2:
+	  n += 2;
+	  break;
+	case 3:
 	  glBegin(GL_TRIANGLES);
 	   glNormal3dv(&(fn[i*3]));
 	   a = sdmesh->verts[n++];
@@ -150,9 +157,21 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 	   a = sdmesh->verts[n++];
 	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
 	  glEnd();
-	}
-      else
-	{
+	  break;
+	case 4:
+	  glBegin(GL_QUADS);
+	   glNormal3dv(&(fn[i*3]));
+	   a = sdmesh->verts[n++];
+	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
+	   a = sdmesh->verts[n++];
+	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
+	   a = sdmesh->verts[n++];
+	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
+	   a = sdmesh->verts[n++];
+	   glVertex3dv((GLdouble*)(&(sdmesh->controlv[a*3])));
+	  glEnd();
+	  break;
+	default:
 	  /* No, we need to tesselate this face. */
 	  if(!(tess = gluNewTess()))
 	    return AY_EOMEM;
@@ -188,7 +207,8 @@ ay_sdmesht_tesselate(ay_sdmesh_object *sdmesh)
 
 	  /* free combined vertices */
 	  ay_sdmesht_ManageCombined(NULL);
-	} /* if */
+	  break;
+	} /* switch */
       m++;
     } /* for */
 
@@ -216,18 +236,18 @@ ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh)
     { ay_status = AY_EOMEM; goto cleanup; }
 
   /* copy control points */
-  if(!(ncontrolv = calloc(sdmesh->ncontrols, 3*sizeof(double))))
+  if(!(ncontrolv = malloc(sdmesh->ncontrols * 3 * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   npomesh->controlv = ncontrolv;
   npomesh->ncontrols = sdmesh->ncontrols;
 
-  memcpy(ncontrolv, sdmesh->controlv, sdmesh->ncontrols*3*sizeof(double));
+  memcpy(ncontrolv, sdmesh->controlv, sdmesh->ncontrols * 3 * sizeof(double));
 
   /* copy faces */
-  if(!(nloops = calloc(sdmesh->nfaces, sizeof(unsigned int))))
+  if(!(nloops = malloc(sdmesh->nfaces * sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(nverts = calloc(sdmesh->nfaces, sizeof(unsigned int))))
+  if(!(nverts = malloc(sdmesh->nfaces * sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < sdmesh->nfaces; i++)
@@ -237,7 +257,7 @@ ay_sdmesht_topolymesh(ay_sdmesh_object *sdmesh, ay_pomesh_object **pomesh)
       totalverts += sdmesh->nverts[i];
     }
 
-  if(!(verts = calloc(totalverts, sizeof(unsigned int))))
+  if(!(verts = malloc(totalverts * sizeof(unsigned int))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
   for(i = 0; i < totalverts; i++)
@@ -274,7 +294,7 @@ cleanup:
 
 
 /** ay_sdmesht_genfacenormals:
- *  Generate face normals for SDMesh
+ *  Generate face normals for SDMesh.
  */
 int
 ay_sdmesht_genfacenormals(ay_sdmesh_object *sd, double **result)
@@ -283,8 +303,9 @@ ay_sdmesht_genfacenormals(ay_sdmesh_object *sd, double **result)
  ay_pomesh_object po = {0};
  unsigned int i;
 
- if(!(po.nloops = malloc(sd->nfaces * sizeof(unsigned int))))
+  if(!(po.nloops = malloc(sd->nfaces * sizeof(unsigned int))))
     return AY_EOMEM;
+
   for(i = 0; i < sd->nfaces; i++)
     po.nloops[i] = 1;
 
