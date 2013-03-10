@@ -36,7 +36,7 @@ int Subdiv_Init(Tcl_Interp *interp);
 // functions:
 
 /* subdiv_notifycb:
- *  notification callback function of sdmesh object
+ *  replacement notification callback function of sdmesh object
  */
 int
 subdiv_notifycb(ay_object *o)
@@ -54,6 +54,10 @@ subdiv_notifycb(ay_object *o)
     return AY_ENULL;
 
   sdmesh = (ay_sdmesh_object *) o->refine;
+
+  if(sdmesh->face_normals)
+    free(sdmesh->face_normals);
+  sdmesh->face_normals = NULL;
 
   if(sdmesh->level == 0)
     {

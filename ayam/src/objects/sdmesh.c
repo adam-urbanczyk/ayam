@@ -562,6 +562,9 @@ ay_sdmesh_deletecb(void *c)
   if(sdmesh->controlv)
     free(sdmesh->controlv);
 
+  if(sdmesh->face_normals)
+    free(sdmesh->face_normals);
+
   if(sdmesh->pomesh)
     ay_object_delete(sdmesh->pomesh);
 
@@ -598,6 +601,7 @@ ay_sdmesh_copycb(void *src, void **dst)
   sdmesh->intargs = NULL;
   sdmesh->floatargs = NULL;
   sdmesh->controlv = NULL;
+  sdmesh->face_normals = NULL;
 
   sdmesh->pomesh = NULL;
 
@@ -664,6 +668,19 @@ ay_sdmesh_copycb(void *src, void **dst)
 	     3 * sdmesh->ncontrols * sizeof(double));
     }
 
+  /* copy the face normals */
+  if(sdmeshsrc->face_normals)
+    {
+      if(!(sdmesh->face_normals = malloc(3 * sdmeshsrc->nfaces *
+					 sizeof(double))))
+	{
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
+	}
+      memcpy(sdmesh->face_normals, sdmeshsrc->face_normals,
+	     3 * sdmeshsrc->nfaces * sizeof(double));
+    }
+
   *dst = (void *)sdmesh;
 
   sdmesh = NULL;
@@ -686,6 +703,8 @@ cleanup:
 	free(sdmesh->floatargs);
       if(sdmesh->controlv)
 	free(sdmesh->controlv);
+      if(sdmesh->face_normals)
+	free(sdmesh->face_normals);
 
       free(sdmesh);
     }
@@ -750,7 +769,7 @@ ay_sdmesh_shadecb(struct Togl *togl, ay_object *o)
       ay_shade_object(togl, sdmesh->pomesh, AY_FALSE);
     }
   else
-    {
+    {      
       ay_status = ay_sdmesht_tesselate(sdmesh);
     }
 
@@ -1502,6 +1521,16 @@ int
 ay_sdmesh_notifycb(ay_object *o)
 {
   /* int ay_status = AY_OK;*/
+ ay_sdmesh_object *sdmesh = NULL;
+
+  if(!o)
+    return AY_ENULL;
+
+  sdmesh = (ay_sdmesh_object *) o->refine;
+
+  if(sdmesh->face_normals)
+    free(sdmesh->face_normals);
+  sdmesh->face_normals = NULL;
 
  return AY_OK;
 } /* ay_sdmesh_notifycb */
@@ -1581,7 +1610,6 @@ ay_sdmesh_init(Tcl_Interp *interp)
 				    AY_IDSDMESH);
 
     ay_status = ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
-
 
  return ay_status;
 } /* ay_sdmesh_init */
