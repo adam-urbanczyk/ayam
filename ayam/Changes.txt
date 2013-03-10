@@ -1,5 +1,5 @@
-[14. Feb 2013] CVS-Head:
-=======================
+[10. Mar 2013] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -12,8 +12,10 @@ o shaders searchpath RiOption is not set in exported RIBs (SF 3568003)
 o clamping a periodic curve does not reset the curve type (SF 3579550)
 o crash when computing the curvature of a linear curve (SF 3588209)
 o read only points of quadrics after thetamax changes (SF 3601813)
-o X3D export of fieldOfView parameter (SF 3604133)
+o X3D export of fieldOfView viewpoint attribute (SF 3604133)
 o X3D export of PolyMesh normals (SF 3604132)
+o X3D element misses mandatory profile specification (SF 3604137)
+o X3D export of tool objects caps and bevels (SF 3604907)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -35,7 +37,7 @@ o negative ConcatNC FTLength parameters values are now interpreted in absolute
   coordinates
 o improved offset curves of closed curves in section mode
 o Skin objects no longer modify (e.g. clamp) the parameter curves when
-  they are already compatible
+  the curves are already compatible
 o creating Sweep and Swing objects now automatically rotates parameter curves
   defined in the XY plane (the default) to the appropriate plane
 o new objects will now be created at the mark, if the new preference
@@ -45,6 +47,10 @@ o the mark may now be set by double-clicking with the right mouse button
 o if the mark is set by clicking into a view, the respective z coordinate of
   the mark is no longer set to zero (when the preference option "GlobalMark"
   is activated); this allows to set a 3D mark using two clicks in two views
+o improved face normal generation for PolyMesh and SDMesh objects through
+  application of the Newell normal algorithm
+o caching the face normals for PolyMesh and SDMesh objects leads to much
+  faster redraw of these objects
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -105,6 +111,15 @@ o renamed "splitNP" command to "breakNP" to avoid confusion with the real
   surface splitting commands "splituNP" and "splitvNP"
 o the "breakNP" command options now need a "-" and the command now supports
   "-a" for "apply transformations"
+o added support for another PV tag data type ('d'), that stores RGBA
+  colors and is expanded properly to Cs _and_ Os upon RIB export
+
+Import/Export:
+o X3D export now has a special mode to inject the exported X3D scene
+  into a XHTML template file
+o X3D export of NURBS surfaces and PolyMesh objects now support the export
+  of a wireframe
+o X3D export of NURBS curves of order 2 now creates Polyline primitives
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
