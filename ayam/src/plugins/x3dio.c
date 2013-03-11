@@ -8860,7 +8860,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
   if(!po->has_normals)
     {
-      if(!(centroids = calloc(po->npolys*3*sizeof(double), sizeof(int))))
+      if(!(centroids = calloc(po->npolys*3, sizeof(double))))
 	return AY_EOMEM;
 
       if(!(weighted_normals = calloc(po->ncontrols*3, sizeof(double))))
