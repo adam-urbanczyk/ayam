@@ -8490,7 +8490,7 @@ x3dio_copypv(ay_tag *src, char **dst)
 	}
     }
 
-  len = strlen(src->val);
+  len = strlen(srcptr);
   if(!(tmp = calloc(len+1, sizeof(char))))
     {
       return AY_EOMEM;
@@ -8860,10 +8860,10 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
   if(!po->has_normals)
     {
-      if(!(centroids = calloc(po->ncontrols*3*sizeof(double), sizeof(int))))
+      if(!(centroids = calloc(po->npolys*3*sizeof(double), sizeof(int))))
 	return AY_EOMEM;
 
-      if(!(weighted_normals = malloc(po->ncontrols*3*sizeof(double))))
+      if(!(weighted_normals = calloc(po->ncontrols*3, sizeof(double))))
 	{ay_status = AY_EOMEM; goto cleanup;}
 
       stride = 3;
@@ -8909,7 +8909,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 		  cd[0] = po->controlv[a]   - centroids[i*3];
 		  cd[1] = po->controlv[a+1] - centroids[i*3+1];
 		  cd[2] = po->controlv[a+2] - centroids[i*3+2];
-		  
+
 		  len = AY_V3LEN(cd);
 		  if(len > AY_EPSILON)
 		    cw = 1.0/(len*len);
@@ -8926,7 +8926,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 		{
 		  for(k = 0; k < po->nverts[m]; k++)
 		    {
-		      a = po->verts[n++];
+		      a = po->verts[n++]*3;
 		      memcpy(&(weighted_normals[a]),normal,3*sizeof(double));
 		    }
 		  m++;
