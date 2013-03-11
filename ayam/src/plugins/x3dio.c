@@ -5524,7 +5524,7 @@ x3dio_readinline(scew_element *element)
 
 	  filename = strchr(str, '"');
 
-	  if(!strcmp("file:", str))
+	  if(!strncmp("file:", str, 5))
 	    {
 	      /* "file://host.name/path/filename" */
 	      filename = strchr(str, ':');
@@ -8531,6 +8531,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  unsigned int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
  int have_texcoords = AY_FALSE, have_facenormals = AY_FALSE;
+ int idxsize = 0;
  char *texcoordstring = NULL, *normalstring = NULL;
  ay_tag *tag;
  scew_element *transform_element = NULL;
@@ -8540,7 +8541,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  scew_element *normal_element = NULL;
  scew_element *texcoord_element = NULL;
  char buf[256];
- char *attr = NULL, *tmp;
+ char *attr = NULL, *nattr = NULL, *tmp;
  size_t buflen = 0, totalbuflen = 0;
 
   if(!element || !o)
@@ -8556,6 +8557,9 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
 
   /* write the IndexedFaceSet element */
   ifs_element = scew_element_add(shape_element, "IndexedFaceSet");
@@ -8745,13 +8749,23 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
 					     x3dio_falsestring);
 
-	      normal_element = scew_element_add(ifs_element,
-					      "Normal");
+	      idxsize = sprintf(buf, " %d", po->npolys);
+	      if(!(nattr = malloc((idxsize*po->npolys+10)*sizeof(char))))
+		{ ay_status = AY_EOMEM; goto cleanup; }
+	      tmp = nattr;
+	      for(i = 0; i < po->npolys; i++)
+		{
+		  tmp += sprintf(tmp, " %d", i);
+		}
+
+	      scew_element_add_attr_pair(ifs_element, "normalIndex", nattr);
+
+	      normal_element = scew_element_add(ifs_element, "Normal");
 
 	      scew_element_add_attr_pair(normal_element, "vector",
 					 normalstring);
-	    }
-	}
+	    } /* if */
+	} /* if */
 
       /* write texture coordinates */
       if(have_texcoords)
@@ -8802,6 +8816,9 @@ cleanup:
   if(attr)
     free(attr);
 
+  if(nattr)
+    free(nattr);
+
   if(texcoordstring)
     free(texcoordstring);
 
@@ -8832,9 +8849,9 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
  char buf[256];
  char *attr = NULL, *tmp;
  unsigned int idxsize = 0;
- int *vals = NULL;
+ double *centroids = NULL, cd[3], cw;
  double offset = 0.005, len, *v1, *normal;
- double *fn = NULL, *mean_normals = NULL, *offset_cv = NULL;
+ double *fn = NULL, *weighted_normals = NULL, *offset_cv = NULL;
 
   if(!element || !o)
    return AY_ENULL;
@@ -8843,10 +8860,10 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
   if(!po->has_normals)
     {
-      if(!(vals = calloc(po->ncontrols, sizeof(int))))
+      if(!(centroids = calloc(po->ncontrols*3*sizeof(double), sizeof(int))))
 	return AY_EOMEM;
 
-      if(!(mean_normals = malloc(po->ncontrols*3*sizeof(double))))
+      if(!(weighted_normals = malloc(po->ncontrols*3*sizeof(double))))
 	{ay_status = AY_EOMEM; goto cleanup;}
 
       stride = 3;
@@ -8856,14 +8873,14 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	    {
 	      for(k = 0; k < po->nverts[m]; k++)
 		{
-		  a = po->verts[n++];
-		  vals[a]++;
+		  a = po->verts[n++]*3;
+		  centroids[i*3]   += (po->controlv[a]   / po->nverts[m]);
+		  centroids[i*3+1] += (po->controlv[a+1] / po->nverts[m]);
+		  centroids[i*3+2] += (po->controlv[a+2] / po->nverts[m]);
 		}
 	      m++;
 	      for(j = 1; j < po->nloops[l]; j++)
 		{
-		  a = po->verts[n++];
-		  vals[a] = 1;
 		  n += po->nverts[m];
 		  m++;
 		}
@@ -8883,15 +8900,24 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	{
 	  if(po->nloops[l] > 0)
 	    {
-	      normal = &(fn[i]);
+	      normal = &(fn[i*3]);
+	      /* calc/update weighted normal of outer loops vertices */
 	      for(k = 0; k < po->nverts[m]; k++)
 		{
-		  a = po->verts[n++];
+		  a = po->verts[n++]*3;
 
-		  /* calc/update mean normal of outer loops vertices */
-		  mean_normals[a*stride]   += normal[0]/vals[a];
-		  mean_normals[a*stride+1] += normal[1]/vals[a];
-		  mean_normals[a*stride+2] += normal[2]/vals[a];
+		  cd[0] = po->controlv[a]   - centroids[i*3];
+		  cd[1] = po->controlv[a+1] - centroids[i*3+1];
+		  cd[2] = po->controlv[a+2] - centroids[i*3+2];
+		  
+		  len = AY_V3LEN(cd);
+		  if(len > AY_EPSILON)
+		    cw = 1.0/(len*len);
+		  else
+		    cw = 0.0;
+		  weighted_normals[a]   += normal[0]*cw;
+		  weighted_normals[a+1] += normal[1]*cw;
+		  weighted_normals[a+2] += normal[2]*cw;
 		}
 	      m++;
 	      /* the vertices of the inner loops just get the
@@ -8901,7 +8927,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 		  for(k = 0; k < po->nverts[m]; k++)
 		    {
 		      a = po->verts[n++];
-		      memcpy(&(mean_normals[a]),normal,3*sizeof(double));
+		      memcpy(&(weighted_normals[a]),normal,3*sizeof(double));
 		    }
 		  m++;
 		}
@@ -8916,7 +8942,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
     {
       /* just use the already present vertex normals */
       stride = 6;
-      mean_normals = &(po->controlv[3]);
+      weighted_normals = &(po->controlv[3]);
     } /* if */
 
   if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
@@ -8927,7 +8953,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
   c = 0;
   for(i = 0; i < po->ncontrols; i++)
     {
-      v1 = &(mean_normals[c]);
+      v1 = &(weighted_normals[c]);
 
       /* scale mean normal to offset length */
       len = AY_V3LEN(v1);
@@ -8937,13 +8963,13 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 	}
 
       /* offset control points */
-      offset_cv[a]   = po->controlv[b]   + mean_normals[c];
-      offset_cv[a+1] = po->controlv[b+1] + mean_normals[c+1];
-      offset_cv[a+2] = po->controlv[b+2] + mean_normals[c+2];
+      offset_cv[a]   = po->controlv[b]   + weighted_normals[c];
+      offset_cv[a+1] = po->controlv[b+1] + weighted_normals[c+1];
+      offset_cv[a+2] = po->controlv[b+2] + weighted_normals[c+2];
 
-      offset_cv[a+3] = po->controlv[b]   - mean_normals[c];
-      offset_cv[a+4] = po->controlv[b+1] - mean_normals[c+1];
-      offset_cv[a+5] = po->controlv[b+2] - mean_normals[c+2];
+      offset_cv[a+3] = po->controlv[b]   - weighted_normals[c];
+      offset_cv[a+4] = po->controlv[b+1] - weighted_normals[c+1];
+      offset_cv[a+5] = po->controlv[b+2] - weighted_normals[c+2];
 
       a += 6;
       b += stride;
@@ -9014,22 +9040,21 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
   scew_element_add_attr_pair(line_element, "coordIndex", attr);
 
-
   /* write coordinates */
   coord_element = scew_element_add(line_element, "Coordinate");
   x3dio_writedoublepoints(coord_element, "point", 3, po->ncontrols,
 			  6, &(offset_cv[3]));
 
-
-  if(po->has_normals)
-    mean_normals = NULL;
-
 cleanup:
 
-  if(vals)
-    free(vals);
-  if(mean_normals)
-    free(mean_normals);
+  if(po->has_normals)
+    weighted_normals = NULL;
+
+  if(centroids)
+    free(centroids);
+
+  if(weighted_normals)
+    free(weighted_normals);
 
  return ay_status;
 } /* x3dio_writepomeshwire */
@@ -9642,6 +9667,9 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   /* write name to shape element */
   ay_status = x3dio_writename(shape_element, o, AY_FALSE);
+
+  if(x3dio_writemat)
+    x3dio_writematerial(shape_element, o);
 
   /* write swing element */
   swing_element = scew_element_add(shape_element, "NurbsSwungSurface");
