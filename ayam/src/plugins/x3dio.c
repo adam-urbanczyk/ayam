@@ -75,6 +75,8 @@ int x3dio_writex3dom = AY_FALSE;
 int x3dio_resolveinstances = AY_FALSE;
 
 char *x3dio_x3domtemplate = "x3dom-template.xhtml";
+int x3dio_x3domwidth = 0;
+int x3dio_x3domheight = 0;
 
 unsigned int x3dio_allobjcnt = 0;
 unsigned int x3dio_curobjcnt = 0;
@@ -4834,7 +4836,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	      /* discard simple trim */
 	      if(is_bound)
 		{
-		  ay_object_deletemulti(o->down);
+		  (void)ay_object_deletemulti(o->down);
 		  x3dio_lrobject = NULL;
 		}
 	    } /* if */
@@ -7309,7 +7311,7 @@ x3dio_writencconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  ay_status = ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c);
 
  return ay_status;
 } /* x3dio_writencconvertibleobj */
@@ -7971,7 +7973,7 @@ x3dio_writenpconvertibleobj(scew_element *element, ay_object *o)
       t = t->next;
     } /* while */
 
-  ay_status = ay_object_deletemulti(c);
+  (void)ay_object_deletemulti(c);
 
  return ay_status;
 } /* x3dio_writenpconvertibleobj */
@@ -9066,6 +9068,7 @@ cleanup:
 int
 x3dio_writeview(scew_element *element, ay_object *o)
 {
+ struct Togl *togl;
  ay_view_object *view;
  ay_camera_object *camera;
  char buffer[128];
@@ -9202,6 +9205,9 @@ x3dio_writeview(scew_element *element, ay_object *o)
       /* field of view */
       tmp = atan(view->zoom)*2.0;
       x3dio_writedoubleattrib(vp_element, "fieldOfView", &tmp);
+      togl = view->togl;
+      x3dio_x3domwidth = Togl_Width(togl);
+      x3dio_x3domheight =  Togl_Height(togl);
 
    } /* if */
 
@@ -9479,7 +9485,7 @@ x3dio_writerevolveobj(scew_element *element, ay_object *o)
 
   if(!circle)
     {
-      ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c);
       return AY_ERROR;
     }
 
@@ -9599,7 +9605,7 @@ x3dio_writesweepobj(scew_element *element, ay_object *o)
 
   if(!d)
     {
-      ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c);
       return AY_ERROR;
     }
 
@@ -9714,7 +9720,7 @@ x3dio_writeswingobj(scew_element *element, ay_object *o)
 
   if(!d)
     {
-      ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c);
       return AY_ERROR;
     }
 
@@ -9857,7 +9863,7 @@ x3dio_writeextrudeobj(scew_element *element, ay_object *o)
 				 "trajectoryCurve");
 
       /* cleanup */
-      ay_object_deletemulti(c);
+      (void)ay_object_deletemulti(c);
 
       d = d->next;
     } /* while */
@@ -9987,7 +9993,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 
 	  if(c)
 	    {
-	      ay_object_deletemulti(c);
+	      (void)ay_object_deletemulti(c);
 	      i = -1;
 	      break;
 	    }
@@ -10043,7 +10049,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 {
  int ay_status = AY_OK;
  char fname[] = "x3dio_writescene";
- char errstr[256];
+ char buf[256];
  ay_object *o = ay_root->next, *d = NULL;
  ay_list_object *sel = NULL;
  scew_error errcode;
@@ -10052,6 +10058,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
  scew_element *root = NULL;
  scew_element *scene_element = NULL;
  scew_element *cadlayer_element = NULL;
+ scew_element *x3d_element = NULL;
  scew_attribute *attribute = NULL;
  enum XML_Error expat_code;
 
@@ -10099,21 +10106,21 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       if(!scew_parser_load_file(parser, x3dio_x3domtemplate))
 	{
 	  errcode = scew_error_code();
-	  sprintf(errstr, "Unable to load file (error #%d: %s)\n",
+	  sprintf(buf, "Unable to load file (error #%d: %s)\n",
 		  errcode,
 		  scew_error_string(errcode));
 	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, errstr);
+	    ay_error(AY_ERROR, fname, buf);
 	  if(errcode == scew_error_expat)
 	    {
 	      expat_code = scew_error_expat_code(parser);
-	      sprintf(errstr, "Expat error #%d (line %d, column %d): %s\n",
+	      sprintf(buf, "Expat error #%d (line %d, column %d): %s\n",
 		      expat_code,
 		      scew_error_expat_line(parser),
 		      scew_error_expat_column(parser),
 		      scew_error_expat_string(expat_code));
 	      if(x3dio_errorlevel > 0)
-		ay_error(AY_ERROR, fname, errstr);
+		ay_error(AY_ERROR, fname, buf);
 	    }
 	  ay_status = AY_ERROR;
 	  goto cleanup;
@@ -10253,6 +10260,25 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       o = o->next;
     } /* while */
 
+  /* write width/height from last view to X3D element (for x3dom) */
+  if(x3dio_writex3dom)
+    {
+      root = scew_tree_root(tree);
+      x3d_element = x3dio_findelement(root, "X3D");
+      if(x3d_element)
+	{
+	  sprintf(buf, "%d", x3dio_x3domwidth);
+	  scew_element_add_attr_pair(x3d_element, "width", buf);
+	  sprintf(buf, "%d", x3dio_x3domheight);
+	  scew_element_add_attr_pair(x3d_element, "height", buf);
+	}
+      else
+	{
+	  if(x3dio_errorlevel > 0)
+	    ay_error(AY_ERROR, fname, "Could not find the <X3D> element.");
+	}
+    }
+
   /* write out the in-memory XML tree */
   if(!scew_writer_tree_file(tree, filename))
     {
@@ -10260,6 +10286,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 	ay_error(AY_EOPENFILE, fname, filename);
       ay_status = AY_EOPENFILE;
     }
+
 
 cleanup:
 
@@ -10309,6 +10336,8 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_resolveinstances = AY_FALSE;
   x3dio_scalefactor = 1.0;
   x3dio_errorlevel = ay_prefs.errorlevel;
+  x3dio_x3domwidth = 0;
+  x3dio_x3domheight = 0;
 
   while(i+1 < argc)
     {
