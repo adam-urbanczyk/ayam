@@ -67,7 +67,8 @@ int x3dio_mergeinlinedefs = AY_TRUE;
 
 int x3dio_tesspomesh = AY_FALSE;
 int x3dio_writecurves = AY_TRUE;
-int x3dio_writewires = AY_FALSE;
+int x3dio_writepowires = AY_FALSE;
+int x3dio_writenpwires = AY_FALSE;
 int x3dio_writeviews = AY_TRUE;
 int x3dio_writeparam = AY_FALSE;
 int x3dio_writemat = AY_FALSE;
@@ -7443,7 +7444,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  if(x3dio_writewires)
+  if(x3dio_writenpwires)
     return x3dio_writenpwire(element, o);
 
   /* decode potentially present PV tags */
@@ -8827,7 +8828,7 @@ cleanup:
   if(normalstring)
     free(normalstring);
 
-  if(x3dio_writewires)
+  if(x3dio_writepowires)
     ay_status = x3dio_writepomeshwire(element, o);
 
  return ay_status;
@@ -8843,7 +8844,7 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
  int ay_status = AY_OK;
  ay_pomesh_object *po;
  int stride;
- unsigned int a, b, c, i, j, k, l = 0, m = 0, n = 0;
+ unsigned int a, b, i, j, k, l = 0, m = 0, n = 0;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *line_element = NULL;
@@ -8939,44 +8940,63 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
 
       if(!po->face_normals)
 	free(fn);
+
+      if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+
+      a = 0;
+      b = 0;
+      for(i = 0; i < po->ncontrols; i++)
+	{
+	  v1 = &(weighted_normals[b]);
+
+	  /* scale mean normal to offset length */
+	  len = AY_V3LEN(v1);
+	  if(fabs(len) > AY_EPSILON)
+	    {
+	      AY_V3SCAL(v1, 1.0/len*offset);
+	    }
+
+	  /* offset control points */
+	  offset_cv[a]   = po->controlv[b]   + weighted_normals[b];
+	  offset_cv[a+1] = po->controlv[b+1] + weighted_normals[b+1];
+	  offset_cv[a+2] = po->controlv[b+2] + weighted_normals[b+2];
+
+	  offset_cv[a+3] = po->controlv[b]   - weighted_normals[b];
+	  offset_cv[a+4] = po->controlv[b+1] - weighted_normals[b+1];
+	  offset_cv[a+5] = po->controlv[b+2] - weighted_normals[b+2];
+
+	  a += 6;
+	  b += 3;
+	} /* for */
     }
   else
     {
       /* just use the already present vertex normals */
       stride = 6;
       weighted_normals = &(po->controlv[3]);
-    } /* if */
 
-  if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
-    {ay_status = AY_EOMEM; goto cleanup;}
+      if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
 
-  a = 0;
-  b = 0;
-  c = 0;
-  for(i = 0; i < po->ncontrols; i++)
-    {
-      v1 = &(weighted_normals[c]);
-
-      /* scale mean normal to offset length */
-      len = AY_V3LEN(v1);
-      if(fabs(len) > AY_EPSILON)
+      a = 0;
+      for(i = 0; i < po->ncontrols; i++)
 	{
-	  AY_V3SCAL(v1, 1.0/len*offset);
-	}
+	  v1 = &(weighted_normals[a]);
 
-      /* offset control points */
-      offset_cv[a]   = po->controlv[b]   + weighted_normals[c];
-      offset_cv[a+1] = po->controlv[b+1] + weighted_normals[c+1];
-      offset_cv[a+2] = po->controlv[b+2] + weighted_normals[c+2];
+	  /* offset control points */
+	  offset_cv[a]   = po->controlv[a]   + weighted_normals[a];
+	  offset_cv[a+1] = po->controlv[a+1] + weighted_normals[a+1];
+	  offset_cv[a+2] = po->controlv[a+2] + weighted_normals[a+2];
 
-      offset_cv[a+3] = po->controlv[b]   - weighted_normals[c];
-      offset_cv[a+4] = po->controlv[b+1] - weighted_normals[c+1];
-      offset_cv[a+5] = po->controlv[b+2] - weighted_normals[c+2];
+	  offset_cv[a+3] = po->controlv[a]   - weighted_normals[a];
+	  offset_cv[a+4] = po->controlv[a+1] - weighted_normals[a+1];
+	  offset_cv[a+5] = po->controlv[a+2] - weighted_normals[a+2];
 
-      a += 6;
-      b += stride;
-      c += 3;
-    } /* for */
+	  a += 6;
+	} /* for */
+
+    } /* if */
 
   /* write transform */
   ay_status = x3dio_writetransform(element, o, &transform_element);
@@ -10330,7 +10350,8 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writecurves = AY_TRUE;
   x3dio_writeviews = AY_TRUE;
   x3dio_writeparam = AY_FALSE;
-  x3dio_writewires = AY_FALSE;
+  x3dio_writenpwires = AY_FALSE;
+  x3dio_writepowires = AY_FALSE;
   x3dio_writemat = AY_FALSE;
   x3dio_writex3dom = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
@@ -10386,9 +10407,14 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
 	  sscanf(argv[i+1], "%d", &x3dio_resolveinstances);
 	}
       else
-      if(!strcmp(argv[i], "-w"))
+      if(!strcmp(argv[i], "-wp"))
 	{
-	  sscanf(argv[i+1], "%d", &x3dio_writewires);
+	  sscanf(argv[i+1], "%d", &x3dio_writepowires);
+	}
+      else
+      if(!strcmp(argv[i], "-wn"))
+	{
+	  sscanf(argv[i+1], "%d", &x3dio_writenpwires);
 	}
       else
       if(!strcmp(argv[i], "-x"))
