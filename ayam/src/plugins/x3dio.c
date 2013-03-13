@@ -8973,27 +8973,42 @@ x3dio_writepomeshwire(scew_element *element, ay_object *o)
   else
     {
       /* just use the already present vertex normals */
-      stride = 6;
-      weighted_normals = &(po->controlv[3]);
+      weighted_normals = po->controlv;
 
       if(!(offset_cv = calloc(po->ncontrols*6, sizeof(double))))
 	{ay_status = AY_EOMEM; goto cleanup;}
 
       a = 0;
+      b = 3;
       for(i = 0; i < po->ncontrols; i++)
 	{
-	  v1 = &(weighted_normals[a]);
+	  v1 = &(weighted_normals[b]);
+	  len = AY_V3LEN(v1);
+	  if(fabs(len) > AY_EPSILON)
+	    {
+	      memcpy(cd, v1, 3*sizeof(double));
+	      if((fabs(len) > 1.0+AY_EPSILON) || (fabs(len) < 1.0-AY_EPSILON))
+		{
+		  /* need to normalize */
+		  AY_V3SCAL(cd, 1.0/len*offset);
+		}
+	      else
+		{
+		  AY_V3SCAL(cd, offset);
+		}
 
-	  /* offset control points */
-	  offset_cv[a]   = po->controlv[a]   + weighted_normals[a];
-	  offset_cv[a+1] = po->controlv[a+1] + weighted_normals[a+1];
-	  offset_cv[a+2] = po->controlv[a+2] + weighted_normals[a+2];
+	      /* offset control points */
+	      offset_cv[a]   = po->controlv[a]   + cd[0];
+	      offset_cv[a+1] = po->controlv[a+1] + cd[1];
+	      offset_cv[a+2] = po->controlv[a+2] + cd[2];
 
-	  offset_cv[a+3] = po->controlv[a]   - weighted_normals[a];
-	  offset_cv[a+4] = po->controlv[a+1] - weighted_normals[a+1];
-	  offset_cv[a+5] = po->controlv[a+2] - weighted_normals[a+2];
+	      offset_cv[a+3] = po->controlv[a]   - cd[0];
+	      offset_cv[a+4] = po->controlv[a+1] - cd[1];
+	      offset_cv[a+5] = po->controlv[a+2] - cd[2];
+	    } /* if */
 
 	  a += 6;
+	  b += 6;
 	} /* for */
 
     } /* if */
