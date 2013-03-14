@@ -9202,7 +9202,15 @@ x3dio_writeview(scew_element *element, ay_object *o)
 
 	      x3dio_writedoublevecattrib(vp_element, "orientation", 4, quat);
 	    } /* if */
-	}
+
+	  if(fabs(view->to[0]) > AY_EPSILON ||
+	     fabs(view->to[1]) > AY_EPSILON || 
+	     fabs(view->to[2]) > AY_EPSILON)
+	    {
+	      x3dio_writedoublevecattrib(vp_element, "centerOfRotation",
+					 3, view->to);
+	    }
+	} /* if */
       /* XXXX issue error/warning? */
       /*
 	else
@@ -9240,10 +9248,12 @@ x3dio_writeview(scew_element *element, ay_object *o)
       /* field of view */
       tmp = atan(view->zoom)*2.0;
       x3dio_writedoubleattrib(vp_element, "fieldOfView", &tmp);
+
+      /* remember view window dimensions for later
+	 inclusion in x3dom file */
       togl = view->togl;
       x3dio_x3domwidth = Togl_Width(togl);
       x3dio_x3domheight =  Togl_Height(togl);
-
    } /* if */
 
  if(o->type == AY_IDCAMERA)
