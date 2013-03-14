@@ -1699,6 +1699,7 @@ int ay_viewt_saveimgtcb(struct Togl *togl, int argc, char *argv[]);
 void ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
 			double *newwinx, double *newwiny);
 
+void ay_viewt_init();
 
 /* w32t.c */
 #ifdef WIN32

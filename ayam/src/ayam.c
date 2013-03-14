@@ -324,6 +324,9 @@ ay_init(Tcl_Interp *interp)
   /* initialize wrib module */
   ay_wrib_init(interp);
 
+  /* initialize view management module */
+  ay_viewt_init();
+
   /* initialize tree module */
   ay_tree_init(interp);
 
