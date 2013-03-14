@@ -18,7 +18,36 @@
 #include <unistd.h>
 #endif
 
-/* viewt.c - view tools */
+/* viewt.c - view management tools */
+
+
+/* global variables: */
+
+static Tcl_Obj *ayobj = NULL;
+static Tcl_Obj *cvredrawobj = NULL;
+static Tcl_Obj *cvdmodeobj = NULL;
+static Tcl_Obj *cvdrawselobj = NULL;
+static Tcl_Obj *cvdrawlevelobj = NULL;
+static Tcl_Obj *cvdrawocsobj = NULL;
+static Tcl_Obj *cvaalinesobj = NULL;
+static Tcl_Obj *cvdrawbgobj = NULL;
+static Tcl_Obj *cvdrawgridobj = NULL;
+static Tcl_Obj *cvusegridobj = NULL;
+static Tcl_Obj *cvmmodeobj = NULL;
+static Tcl_Obj *cvgridsizeobj = NULL;
+static Tcl_Obj *cvfovobj = NULL;
+static Tcl_Obj *cvtypeobj = NULL;
+static Tcl_Obj *cvbgimageobj = NULL;
+static Tcl_Obj *cvfromxobj = NULL;
+static Tcl_Obj *cvfromyobj = NULL;
+static Tcl_Obj *cvfromzobj = NULL;
+static Tcl_Obj *cvtoxobj = NULL;
+static Tcl_Obj *cvtoyobj = NULL;
+static Tcl_Obj *cvtozobj = NULL;
+static Tcl_Obj *cvzoomobj = NULL;
+static Tcl_Obj *cvpntsobj = NULL;
+static Tcl_Obj *cvdrawmarkobj = NULL;
+static Tcl_Obj *cvundoobj = NULL;
 
 /* functions: */
 
@@ -94,7 +123,6 @@ ay_viewt_setupprojection(struct Togl *togl)
 
   /* XXXX set light0 at cam-pos? */
   glPushMatrix();
-   /*  glLoadIdentity();*/
    glRotated(view->rotz, 0.0, 0.0, 1.0);
    glRotated(view->roty, 0.0, 1.0, 0.0);
    glRotated(view->rotx, 1.0, 0.0, 0.0);
@@ -644,8 +672,7 @@ int
 ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
 {
  Tcl_Interp *interp = ay_interp;
- char *n1="ay";
- Tcl_Obj *to = NULL, *toa = NULL, *ton = NULL;
+ Tcl_Obj *to = NULL;
  ay_view_object *view = NULL;
 
   view = (ay_view_object *)Togl_GetClientData(togl);
@@ -656,105 +683,101 @@ ay_viewt_makecurtcb(struct Togl *togl, int argc, char *argv[])
 
   ay_currentview = view;
 
-  toa = Tcl_NewStringObj(n1, -1);
-  ton = Tcl_NewStringObj("cVRedraw", -1);
   to = Tcl_NewIntObj(view->redraw);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvredrawobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDMode", -1);
   to = Tcl_NewIntObj(view->shade);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdmodeobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawSel", -1);
   to = Tcl_NewIntObj(view->drawsel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawselobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawLevel", -1);
   to = Tcl_NewIntObj(view->drawlevel);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawlevelobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawOCS", -1);
   to = Tcl_NewIntObj(view->drawobjectcs);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawocsobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVAALines", -1);
   to = Tcl_NewIntObj(view->antialiaslines);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvaalinesobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawBG", -1);
   to = Tcl_NewIntObj(view->drawbgimage);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawbgobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawGrid", -1);
   to = Tcl_NewIntObj(view->drawgrid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawgridobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVUseGrid", -1);
   to = Tcl_NewIntObj(view->usegrid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvusegridobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVMMode", -1);
   to = Tcl_NewIntObj(view->local);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvmmodeobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVGridSize", -1);
   to = Tcl_NewDoubleObj(view->grid);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvgridsizeobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVFOV", -1);
   to = Tcl_NewDoubleObj((atan(view->zoom)*180.0)/AY_PI*2.0);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvfovobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVType", -1);
   to = Tcl_NewIntObj(view->type);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvtypeobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVBGImage", -1);
   to = Tcl_NewStringObj(view->bgimage, -1);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvbgimageobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVFromX", -1);
   to = Tcl_NewDoubleObj(view->from[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvfromxobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVFromY", -1);
   to = Tcl_NewDoubleObj(view->from[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvfromyobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVFromZ", -1);
   to = Tcl_NewDoubleObj(view->from[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvfromzobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVToX", -1);
   to = Tcl_NewDoubleObj(view->to[0]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvtoxobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVToY", -1);
   to = Tcl_NewDoubleObj(view->to[1]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvtoyobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVToZ", -1);
   to = Tcl_NewDoubleObj(view->to[2]);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvtozobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVZoom", -1);
   to = Tcl_NewDoubleObj(view->zoom);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvzoomobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVPnts", -1);
   to = Tcl_NewIntObj(view->transform_points);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvpntsobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVDrawMark", -1);
   to = Tcl_NewIntObj(view->drawmark);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ayobj, cvdrawmarkobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton, "cVUndo", -1);
   to = Tcl_NewIntObj(view->enable_undo);
-  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
-  Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
+  Tcl_ObjSetVar2(interp, ayobj, cvundoobj, to, TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
 
  return TCL_OK;
 } /* ay_viewt_makecurtcb */
@@ -1494,9 +1517,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[i+1], &(view->markworld[0]));
 	      Tcl_GetDouble(interp, argv[i+2], &(view->markworld[1]));
 	      Tcl_GetDouble(interp, argv[i+3], &(view->markworld[2]));
-
 	      view->drawmark = AY_TRUE;
-
 	      need_updatemark = AY_TRUE;
 	    }
 	  break;
@@ -1570,11 +1591,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-updroty"))
 	    {
+	      printf("UPDROTY\n");
 	      /* reset rotx,rotz; recalc roty */
 	      view->rotx = 0.0;
 	      view->roty = 0.0;
 	      view->rotz = 0.0;
-
 	      temp[0] = view->to[0] - view->from[0];
 	      temp[1] = view->to[2] - view->from[2];
 	      view->roty = 180.0 + AY_R2D(atan2(temp[0], temp[1]));
@@ -2127,7 +2148,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 	}
       if(v)
 	{
-	  /* call callback */
+	  /* call drop callback */
 	  if(cb)
 	    {
 	      ay_status = cb(v);
@@ -2181,7 +2202,7 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
   view->bgimage = NULL;
   if(vtemp->bgimage)
     {
-      if((view->bgimage = calloc(strlen(vtemp->bgimage)+1,sizeof(char))))
+      if((view->bgimage = malloc((strlen(vtemp->bgimage)+1)*sizeof(char))))
 	{
 	  strcpy(view->bgimage, vtemp->bgimage);
 	  view->bgimagedirty = AY_TRUE;
@@ -2566,3 +2587,38 @@ ay_viewt_warpmouse(struct Togl *togl, double *coord, ay_object *o,
 } /* ay_viewt_warpmouse */
 
 
+/* ay_viewt_init:
+ *  Initialize this module.
+ *
+ */
+void
+ay_viewt_init(void)
+{
+  ayobj = Tcl_NewStringObj("ay",-1);
+  cvredrawobj = Tcl_NewStringObj("cVRedraw",-1);
+  cvdmodeobj = Tcl_NewStringObj("cVDMode",-1);
+  cvdrawselobj = Tcl_NewStringObj("cVDrawSel",-1);
+  cvdrawlevelobj = Tcl_NewStringObj("cVDrawLevel",-1);
+  cvdrawocsobj = Tcl_NewStringObj("cVDrawOCS",-1);
+  cvaalinesobj = Tcl_NewStringObj("cVAALines",-1);
+  cvdrawbgobj = Tcl_NewStringObj("cVDrawBG",-1);
+  cvdrawgridobj = Tcl_NewStringObj("cVDrawGrid",-1);
+  cvusegridobj = Tcl_NewStringObj("cVUseGrid",-1);
+  cvmmodeobj = Tcl_NewStringObj("cVMMode",-1);
+  cvgridsizeobj = Tcl_NewStringObj("cVGridSize",-1);
+  cvfovobj = Tcl_NewStringObj("cVFOV",-1);
+  cvtypeobj = Tcl_NewStringObj("cVType",-1);
+  cvbgimageobj = Tcl_NewStringObj("cVBGImage",-1);
+  cvfromxobj = Tcl_NewStringObj("cVFromX",-1);
+  cvfromyobj = Tcl_NewStringObj("cVFromY",-1);
+  cvfromzobj = Tcl_NewStringObj("cVFromZ",-1);
+  cvtoxobj  = Tcl_NewStringObj("cVToX",-1);
+  cvtoyobj = Tcl_NewStringObj("cVToY",-1);
+  cvtozobj = Tcl_NewStringObj("cVToZ",-1);
+  cvzoomobj = Tcl_NewStringObj("cVZoom",-1);
+  cvpntsobj = Tcl_NewStringObj("cVPnts",-1);
+  cvdrawmarkobj = Tcl_NewStringObj("cVDrawMark",-1);
+  cvundoobj = Tcl_NewStringObj("cVUndo",-1);
+
+ return;
+} /* ay_viewt_init */
