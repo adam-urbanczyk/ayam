@@ -775,10 +775,15 @@ int ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result);
 
-/** Tcl command to create face normal PV tags for the selected polymesh objects.
+/** generate smooth normals for a polymesh object
  */
-int ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
-			 int argc, char *argv[]);
+int ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result);
+
+/** Tcl command to create smooth vertex normals or face normal PV tags
+ *  for the selected polymesh objects.
+ */
+int ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
+			   int argc, char *argv[]);
 
 /* prefs.c */
 

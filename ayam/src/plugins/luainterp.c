@@ -102,6 +102,8 @@ static const struct luaL_Reg luainterplib [] = {
       {"mergePo", luainterp_wraptclcmd},
       {"optiPo", luainterp_wraptclcmd},
       {"splitPo", luainterp_wraptclcmd},
+      {"genfnPo", luainterp_wraptclcmd},
+      {"gensnPo", luainterp_wraptclcmd},
 
       {"setProp", luainterp_wraptclcmd},
       {"getProp", luainterp_wraptclcmd},
