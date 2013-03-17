@@ -1554,22 +1554,173 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
 } /* ay_pomesht_genfacenormals */
 
 
+/** ay_pomesht_gensmoothnormals:
+ *  Generate smooth normals for arbitrary PolyMesh using weighted
+ *  mean face normals. Weighting is done via centroid distance, which
+ *  takes both, face area and face shape, into account.
+ */
+int
+ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
+{
+ int ay_status = AY_OK;
+ unsigned int a, b, i, j, k, l = 0, m = 0, n = 0;
+ double *newcv, *centroids, cd[3], cw;
+ double len, *fn = NULL, *normal;
 
-/* ay_pomesht_genfntcmd:
+  if(!po)
+    return AY_ENULL;
 
+  if(po->npolys == 0)
+    return AY_ERROR;
+
+  if(!po->has_normals)
+    {
+      if(!(newcv = calloc(po->ncontrols*6, sizeof(double))))
+	{ay_status = AY_EOMEM; goto cleanup;}
+      a = 0;
+      b = 0;
+      for(i = 0; i < po->ncontrols; i++)
+	{
+	  memcpy(&(newcv[a]), &(po->controlv[b]), 3*sizeof(double));
+	  a += 6;
+	  b += 3;
+	}
+    }
+  else
+    {
+      /* arrange to overwrite existing vertex normals */
+      newcv = po->controlv;
+    }
+
+  fn = po->face_normals;
+  if(!fn)
+    {
+      if((ay_status = ay_pomesht_genfacenormals(po, &fn)))
+	goto cleanup;
+    }
+
+  if(!(centroids = calloc(po->npolys*3, sizeof(double))))
+    {ay_status = AY_EOMEM; goto cleanup;}
+
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[l] > 0)
+	{
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      a = po->verts[n++]*6;
+	      centroids[i*3]   += (newcv[a]   / po->nverts[m]);
+	      centroids[i*3+1] += (newcv[a+1] / po->nverts[m]);
+	      centroids[i*3+2] += (newcv[a+2] / po->nverts[m]);
+	    }
+	  m++;
+	  for(j = 1; j < po->nloops[l]; j++)
+	    {
+	      n += po->nverts[m];
+	      m++;
+	    }
+	} /* if */
+      l++;
+    } /* for */
+
+  l = 0; m = 0; n = 0;
+  for(i = 0; i < po->npolys; i++)
+    {
+      if(po->nloops[l] > 0)
+	{
+	  normal = &(fn[i*3]);
+	  /* calc/update weighted normal of outer loops vertices */
+	  for(k = 0; k < po->nverts[m]; k++)
+	    {
+	      a = po->verts[n++]*6;
+
+	      cd[0] = newcv[a]   - centroids[i*3];
+	      cd[1] = newcv[a+1] - centroids[i*3+1];
+	      cd[2] = newcv[a+2] - centroids[i*3+2];
+
+	      len = AY_V3LEN(cd);
+	      if(len > AY_EPSILON)
+		cw = 1.0/(len*len);
+	      else
+		cw = 0.0;
+
+	      newcv[a+3] += normal[0]*cw;
+	      newcv[a+4] += normal[1]*cw;
+	      newcv[a+5] += normal[2]*cw;
+	    }
+	  m++;
+	  /* the vertices of the inner loops just get the
+	     face normal */
+	  for(j = 1; j < po->nloops[l]; j++)
+	    {
+	      for(k = 0; k < po->nverts[m]; k++)
+		{
+		  a = po->verts[n++]*6+3;
+		  memcpy(&(newcv[a]), normal, 3*sizeof(double));
+		}
+	      m++;
+	    }
+	} /* if */
+      l++;
+    } /* for */
+
+  /* normalize */
+  a = 3;
+  for(i = 0; i < po->ncontrols; i++)
+    {
+      normal = &(newcv[a]);
+      len = AY_V3LEN(normal);
+      if(fabs(len)>AY_EPSILON)
+	AY_V3SCAL(normal, 1.0/len);
+      a += 6;
+    }
+
+  /* return result */
+  if(result)
+    {
+      *result = newcv;
+    }
+  else
+    {
+      po->controlv = newcv;
+      po->has_normals = AY_TRUE;
+    }
+
+  newcv = NULL;
+
+cleanup:
+
+  if(newcv)
+    free(newcv);
+
+  if(fn)
+    free(fn);
+
+  if(centroids)
+    free(centroids);
+
+ return AY_OK;
+} /* ay_pomesht_gensmoothnormals */
+
+
+/* ay_pomesht_gennormtcmd:
+ * Generate normals for all selected PoMesh objects.
  *  Implements the \a genfnPo scripting interface command.
+ *  Also implements the \a gensnPo scripting interface command.
  *  See also the corresponding section in the \ayd{scgenfnpo}.
+ *  See also the corresponding section in the \ayd{scgensnpo}.
  *  \returns TCL_OK in any case.
  */
 int
-ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[])
+ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[])
 {
  int ay_status = AY_OK;
  ay_object *o = NULL;
  ay_list_object *sel = ay_selection;
  ay_pomesh_object *pomesh;
  double *fn = NULL;
+ int smooth = AY_FALSE;
  char *nname = ay_prefs.normalname;
 
   if(!sel)
@@ -1578,6 +1729,9 @@ ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  if(!strcmp(argv[0], "gensnPo"))
+    smooth = AY_TRUE;
+
   while(sel)
     {
       o = sel->object;
@@ -1585,21 +1739,31 @@ ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
       if(o->type == AY_IDPOMESH)
 	{
 	  pomesh = (ay_pomesh_object *)o->refine;
-
-	  fn = pomesh->face_normals;
-	  if(!fn)
-	    {	      
-	      if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+	  if(smooth)
+	    {
+	      if((ay_status = ay_pomesht_gensmoothnormals(pomesh, NULL)))
 		{
 		  ay_error(ay_status, argv[0], NULL);
 		  return TCL_OK;
 		}
 	    }
+	  else
+	    {
+	      fn = pomesh->face_normals;
+	      if(!fn)
+		{
+		  if((ay_status = ay_pomesht_genfacenormals(pomesh, &fn)))
+		    {
+		      ay_error(ay_status, argv[0], NULL);
+		      return TCL_OK;
+		    }
+		}
 
-	  ay_pv_add(o, nname, "uniform", 2, pomesh->npolys, 3, fn);
+	      ay_pv_add(o, nname, "uniform", 2, pomesh->npolys, 3, fn);
 
-	  if(!pomesh->face_normals)
-	    free(fn);
+	      if(!pomesh->face_normals)
+		free(fn);
+	    }
 	}
       else
 	{
@@ -1612,5 +1776,5 @@ ay_pomesht_genfntcmd(ClientData clientData, Tcl_Interp *interp,
   ay_notify_parent();
 
  return TCL_OK;
-} /* ay_pomesht_genfntcmd */
+} /* ay_pomesht_gennormtcmd */
 

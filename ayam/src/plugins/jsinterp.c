@@ -123,6 +123,8 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},
   {"splitPo", jsinterp_wraptcmd, 0, 0, 0},
+  {"genfnPo", jsinterp_wraptcmd, 0, 0, 0},
+  {"gensnPo", jsinterp_wraptcmd, 0, 0, 0},
 
   {"setProp", jsinterp_wraptcmd, 0, 0, 0},
   {"getProp", jsinterp_wraptcmd, 0, 0, 0},

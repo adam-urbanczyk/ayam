@@ -764,7 +764,9 @@ Tcl_AppInit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "splitPo", ay_pomesht_splittcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  Tcl_CreateCommand(interp, "genfnPo", ay_pomesht_genfntcmd,
+  Tcl_CreateCommand(interp, "genfnPo", ay_pomesht_gennormtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "gensnPo", ay_pomesht_gennormtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* prop.c */
@@ -1405,7 +1407,9 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
   Tcl_CreateCommand(interp, "splitPo", ay_pomesht_splittcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
-  Tcl_CreateCommand(interp, "genfnPo", ay_pomesht_genfntcmd,
+  Tcl_CreateCommand(interp, "genfnPo", ay_pomesht_gennormtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+  Tcl_CreateCommand(interp, "gensnPo", ay_pomesht_gennormtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   /* prop.c */
