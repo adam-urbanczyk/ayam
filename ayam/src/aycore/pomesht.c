@@ -1485,8 +1485,15 @@ ay_pomesht_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_pomesht_genfacenormals:
- *  Generate face normals for arbitrary PolyMesh using Newell's method
+ *  Generate face normals for an arbitrary PolyMesh using Newell's method
  *  which is more robust than a simple cross product.
+ *
+ *  The generated normal vectors will be normalized.
+ *
+ * \param[in] po PoMesh object to generate the normals for
+ * \param[in,out] result where to store the normals, may be NULL
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
@@ -1529,6 +1536,7 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
 	  fn[1] += (v1[2] - v2[2]) * (v1[0] + v2[0]);
 	  fn[2] += (v1[0] - v2[0]) * (v1[1] + v2[1]);
 
+	  /* normalize */
 	  len = AY_V3LEN(fn);
 	  if(len > AY_EPSILON)
 	    AY_V3SCAL(fn, 1.0/len);
@@ -1555,9 +1563,23 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
 
 
 /** ay_pomesht_gensmoothnormals:
- *  Generate smooth normals for arbitrary PolyMesh using weighted
- *  mean face normals. Weighting is done via centroid distance, which
- *  takes both, face area and face shape, into account.
+ *  Generate smooth vertex normals for an arbitrary PolyMesh using weighted
+ *  mean face normals. Weighting is done via vertex-centroid distance,
+ *  which takes both, face area and face shape, into account.
+ *  Inner loop (hole) vertices will get the respective face normals.
+ *
+ *  If the \a result parameter is NULL, the generated normals will be
+ *  stored in the PoMesh object.
+ *  Otherwise, the array returned via \a result will contain the vertex
+ *  coordinates and generated normals in the same layout as normally
+ *  used by the PoMesh object.
+ *
+ *  The generated normal vectors will be normalized.
+ *
+ * \param[in,out] po PoMesh object to generate the normals for
+ * \param[in,out] result where to store the normals, may be NULL
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
@@ -1573,7 +1595,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
   if(po->npolys == 0)
     return AY_ERROR;
 
-  if(!po->has_normals)
+  if(!po->has_normals || result)
     {
       if(!(newcv = calloc(po->ncontrols*6, sizeof(double))))
 	{ay_status = AY_EOMEM; goto cleanup;}
@@ -1647,7 +1669,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
 	      newcv[a+3] += normal[0]*cw;
 	      newcv[a+4] += normal[1]*cw;
 	      newcv[a+5] += normal[2]*cw;
-	    }
+	    } /* for */
 	  m++;
 	  /* the vertices of the inner loops just get the
 	     face normal */
@@ -1670,7 +1692,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
     {
       normal = &(newcv[a]);
       len = AY_V3LEN(normal);
-      if(fabs(len)>AY_EPSILON)
+      if(fabs(len) > AY_EPSILON)
 	AY_V3SCAL(normal, 1.0/len);
       a += 6;
     }
@@ -1682,6 +1704,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
     }
   else
     {
+      free(po->controlv);
       po->controlv = newcv;
       po->has_normals = AY_TRUE;
     }
@@ -1763,7 +1786,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(!pomesh->face_normals)
 		free(fn);
-	    }
+	    } /* if */
 	}
       else
 	{

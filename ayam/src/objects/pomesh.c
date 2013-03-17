@@ -621,6 +621,7 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
  int stride = 0;
  unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  unsigned int a;
+ double p[3];
 
   if(!o)
     return AY_ENULL;
@@ -647,6 +648,23 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 	} /* for */
       l++;
     } /* for */
+
+  if(pomesh->has_normals)
+    {
+      glBegin(GL_LINES);
+      a = 0;
+      for(i = 0; i < pomesh->ncontrols; i++)
+	{
+	  glVertex3dv((GLdouble*)(&(pomesh->controlv[a])));
+	  memcpy(p, &(pomesh->controlv[a]), 3*sizeof(double));
+	  p[0] += pomesh->controlv[a+3]*0.1;
+	  p[1] += pomesh->controlv[a+4]*0.1;
+	  p[2] += pomesh->controlv[a+5]*0.1;
+	  glVertex3dv((GLdouble*)p);
+	  a += 6;
+	}
+      glEnd();
+    }
 
  return AY_OK;
 } /* ay_pomesh_drawcb */
