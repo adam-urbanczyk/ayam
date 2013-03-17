@@ -648,7 +648,7 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 	} /* for */
       l++;
     } /* for */
-
+#if 0
   if(pomesh->has_normals)
     {
       glBegin(GL_LINES);
@@ -665,7 +665,7 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
 	}
       glEnd();
     }
-
+#endif
  return AY_OK;
 } /* ay_pomesh_drawcb */
 
