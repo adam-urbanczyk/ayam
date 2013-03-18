@@ -669,6 +669,11 @@ menu $m.pm -tearoff 0
 $m.pm add command -label "Merge" -command { pomesh_merge } -underline 0
 $m.pm add command -label "Split" -command { pomesh_split } -underline 0
 $m.pm add command -label "Optimize" -command { pomesh_optimize } -underline 0
+$m.pm add separator
+$m.pm add command -label "Gen. Face Normals" -command { genfnPo }\
+    -underline 0
+$m.pm add command -label "Gen. Smooth Normals" -command { gensnPo }\
+    -underline 0
 
 $m add separator
 
