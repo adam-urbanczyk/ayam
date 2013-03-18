@@ -3088,7 +3088,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
   // link texture coordinates as PV tags
   if(texc)
     {
-      ay_status = ay_pv_add(newo, tcname, "varying", 4,
+      ay_status = ay_pv_add(newo, tcname, "varying", "g",
 			    p_m->m_T.Capacity(), 2, (void*)texc);
     }
 

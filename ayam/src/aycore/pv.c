@@ -341,15 +341,15 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  *  add a PV tag to object <o>
  */
 int
-ay_pv_add(ay_object *o, char *name, char *detail, int type,
+ay_pv_add(ay_object *o, char *name, char *detail, char *type,
 	  int datalen, int stride, void *data)
 {
  ay_tag *tag = NULL, **nexttag;
  Tcl_DString ds;
- int i;
+ int i, len;
  char tmp[255];
 
-  if(!o || !name || !detail || !data)
+  if(!o || !name || !detail || !type || !data)
     return AY_ENULL;
 
   nexttag = &(o->tags);
@@ -371,115 +371,61 @@ ay_pv_add(ay_object *o, char *name, char *detail, int type,
 
   Tcl_DStringInit(&ds);
   Tcl_DStringAppend(&ds, name, -1);
-  Tcl_DStringAppend(&ds, ",", -1);
+  Tcl_DStringAppend(&ds, ",", 1);
   Tcl_DStringAppend(&ds, detail, -1);
-  Tcl_DStringAppend(&ds, ",", -1);
-
-  switch(type)
-    {
-    case 0:
-    case 1:
-      /* float */
-      Tcl_DStringAppend(&ds, "f", -1);
-      break;
-    case 2:
-    case 3:
-      /* point */
-      Tcl_DStringAppend(&ds, "p", -1);
-      break;
-    case 4:
-      /* float[2] */
-      Tcl_DStringAppend(&ds, "g", -1);
-      break;
-    case 5:
-      /* color */
-      Tcl_DStringAppend(&ds, "c", -1);
-      break;
-    case 6:
-      /* color+opacity */
-      Tcl_DStringAppend(&ds, "d", -1);
-      break;
-
-    default:
-      break;
-    } /* switch */
+  Tcl_DStringAppend(&ds, ",", 1);
+  Tcl_DStringAppend(&ds, type, 1);
 
   sprintf(tmp, ",%d", datalen);
   Tcl_DStringAppend(&ds, tmp, -1);
 
-  switch(type)
+  switch(type[0])
     {
-    case 0:
+    case 'f':
       /* float */
       for(i = 0; i < datalen*stride; i += stride)
 	{
-	  sprintf(tmp, ",%f", (float)(((double*)data)[i]));
-	  Tcl_DStringAppend(&ds, tmp, -1);
+	  len = sprintf(tmp, ",%f", ((float*)data)[i]);
+	  Tcl_DStringAppend(&ds, tmp, len);
 	}
       break;
-    case 1:
-      /* float */
-      for(i = 0; i < datalen*stride; i += stride)
-	{
-	  sprintf(tmp, ",%f", ((float*)data)[i]);
-	  Tcl_DStringAppend(&ds, tmp, -1);
-	}
-      break;
-    case 2:
-      /* point */
-      for(i = 0; i < datalen*stride; i += stride)
-	{
-	  sprintf(tmp, ",%f,%f,%f", (float)(((double*)data)[i]),
-		  (float)(((double*)data)[i+1]),
-		  (float)(((double*)data)[i+2]));
-	  Tcl_DStringAppend(&ds, tmp, -1);
-	}
-      break;
-    case 3:
-      /* point */
-      for(i = 0; i < datalen*stride; i += stride)
-	{
-	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
-		  ((float*)data)[i+1],
-		  ((float*)data)[i+2]);
-	  Tcl_DStringAppend(&ds, tmp, -1);
-	}
-      break;
-    case 4:
+    case 'g':
       /* float[2] */
       for(i = 0; i < datalen*stride; i += stride)
 	{
-	  sprintf(tmp, ",%f,%f", ((float*)data)[i], ((float*)data)[i+1]);
-	  Tcl_DStringAppend(&ds, tmp, -1);
+	  len = sprintf(tmp, ",%f,%f", ((float*)data)[i], ((float*)data)[i+1]);
+	  Tcl_DStringAppend(&ds, tmp, len);
 	}
       break;
-    case 5:
-      /* color */
+    case 'p':
+    case 'v':
+    case 'n':
+    case 'c':
+      /* point/vector/normal/color */
       for(i = 0; i < datalen*stride; i += stride)
 	{
-	  sprintf(tmp, ",%f,%f,%f", ((float*)data)[i],
-		  ((float*)data)[i+1],
-		  ((float*)data)[i+2]);
-	  Tcl_DStringAppend(&ds, tmp, -1);
+	  len = sprintf(tmp, ",%f,%f,%f", (float)(((double*)data)[i]),
+		  (float)(((double*)data)[i+1]),
+		  (float)(((double*)data)[i+2]));
+	  Tcl_DStringAppend(&ds, tmp, len);
 	}
       break;
-    case 6:
+    case 'd':
       /* color+opacity */
       for(i = 0; i < datalen*stride; i += stride)
 	{
-	  sprintf(tmp, ",%f,%f,%f,%f", ((float*)data)[i],
+	  len = sprintf(tmp, ",%f,%f,%f,%f", ((float*)data)[i],
 		  ((float*)data)[i+1],
 		  ((float*)data)[i+2],
 		  ((float*)data)[i+3]);
-	  Tcl_DStringAppend(&ds, tmp, -1);
+	  Tcl_DStringAppend(&ds, tmp, len);
 	}
       break;
     default:
       break;
     } /* switch */
 
-  if(!(tag->val = malloc((strlen(Tcl_DStringValue(&ds))+1)*
-			 sizeof(char))))
+  if(!(tag->val = malloc((Tcl_DStringLength(&ds)+1)*sizeof(char))))
     { free(tag->name); free(tag); return AY_EOMEM; }
   strcpy(tag->val, Tcl_DStringValue(&ds));
 
@@ -557,8 +503,7 @@ ay_pv_merge(ay_tag *t1, ay_tag *t2, ay_tag **mt)
   Tcl_DStringAppend(&ds, comma2, -1);
 
   /* copy collected string to new tag */
-  if(!(nt->val = malloc((Tcl_DStringLength(&ds)+1)*
-			sizeof(char))))
+  if(!(nt->val = malloc((Tcl_DStringLength(&ds)+1)*sizeof(char))))
     { ay_status = AY_EOMEM; goto cleanup; }
   strcpy(nt->val, Tcl_DStringValue(&ds));
 

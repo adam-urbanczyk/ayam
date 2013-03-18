@@ -1736,12 +1736,12 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(double));
 		    }
 
-		  ay_pv_add(o, nname, "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", "n",
 			    pomesh->npolys, 3, expandednormals);
 		}
 	      else
 		{
-		  ay_pv_add(o, nname, "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", "n",
 			    pomesh->npolys, 3, normals);
 		}
 	    }
@@ -1789,20 +1789,20 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 		    }
 		}
 	      if(colorstride == 3)
-		ay_pv_add(o, cname, "varying", 5, totalverts, 3,
+		ay_pv_add(o, cname, "varying", "c", totalverts, 3,
 			  expandedcolors);
 	      else
-		ay_pv_add(o, cname, "varying", 6, totalverts, 4,
+		ay_pv_add(o, cname, "varying", "d", totalverts, 4,
 			  expandedcolors);
 	    }
 	  else
 	    {
 	      /* face colors */
 	      if(colorstride == 3)
-		ay_pv_add(o, cname, "uniform", 5, pomesh->npolys, 3,
+		ay_pv_add(o, cname, "uniform", "c", pomesh->npolys, 3,
 			  colors);
 	      else
-		ay_pv_add(o, cname, "uniform", 6, pomesh->npolys, 4,
+		ay_pv_add(o, cname, "uniform", "d", pomesh->npolys, 4,
 			  colors);
 	    }
 	} /* if */
@@ -1832,7 +1832,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 
 		}
 	    }
-	  ay_pv_add(o, tcname, "varying", 4,
+	  ay_pv_add(o, tcname, "varying", "g",
 		    totalverts, 2, expandedtexcoords);
 	} /* if */
 
@@ -1888,13 +1888,13 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     3*sizeof(double));
 		    }
 
-		  ay_pv_add(o, nname, "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", "n",
 			    pomesh->npolys, 3, expandednormals);
 		}
 	      else
 		{
 		  /* no normal index */
-		  ay_pv_add(o, nname, "uniform", 2,
+		  ay_pv_add(o, nname, "uniform", "n",
 			    pomesh->npolys, 3, normals);
 		}
 	    }
@@ -1907,10 +1907,10 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	      /* vertex colors */
 	      /* no need to check for an index, we ruled that out already */
 	      if(colorstride == 3)
-		ay_pv_add(o, cname, "varying", 5,
+		ay_pv_add(o, cname, "varying", "c",
 			  pomesh->ncontrols, 3, colors);
 	      else
-		ay_pv_add(o, cname, "varying", 6,
+		ay_pv_add(o, cname, "varying", "d",
 			  pomesh->ncontrols, 4, colors);
 	    }
 	  else
@@ -1933,19 +1933,19 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 			     colorstride*sizeof(float));
 		    }
 		  if(colorstride == 3)
-		    ay_pv_add(o, cname, "uniform", 5,
+		    ay_pv_add(o, cname, "uniform", "c",
 			      pomesh->npolys, 3, expandedcolors);
 		  else
-		    ay_pv_add(o, cname, "uniform", 6,
+		    ay_pv_add(o, cname, "uniform", "d",
 			      pomesh->npolys, 4, expandedcolors);
 		}
 	      else
 		{
 		  /* no color index */
 		  if(colorstride == 3)
-		    ay_pv_add(o, cname, "uniform", 5, colorlen, 3, colors);
+		    ay_pv_add(o, cname, "uniform", "c", colorlen, 3, colors);
 		  else
-		    ay_pv_add(o, cname, "uniform", 6, colorlen, 4, colors);
+		    ay_pv_add(o, cname, "uniform", "d", colorlen, 4, colors);
 		}
 	    }
 	} /* if */
@@ -1953,7 +1953,7 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
       if(texcoordlen > 0)
 	{
 	  /* no need to check for an index, we ruled that out already */
-	  ay_pv_add(o, tcname, "varying", 4,
+	  ay_pv_add(o, tcname, "varying", "g",
 		    pomesh->ncontrols, 2, texcoords);
 	} /* if */
     } /* if */
@@ -2828,24 +2828,24 @@ x3dio_readtrianglefanset(scew_element *element)
 	{
 	  if(colorPerVertex)
 	    if(colorstride == 3)
-	      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+	      ay_pv_add(x3dio_lrobject, cname, "varying", "c",
 			pomesh.ncontrols, 3, colors);
 	    else
-	      ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+	      ay_pv_add(x3dio_lrobject, cname, "varying", "d",
 			pomesh.ncontrols, 4, colors);
 	  else
 	    if(colorstride == 3)
-	      ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", "c",
 			pomesh.ncontrols, 3, colors);
 	    else
-	      ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", "d",
 			pomesh.ncontrols, 4, colors);
 	}
 
       /* process texcoords */
       if(texcoordlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
+	  ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 		    pomesh.ncontrols, 2, texcoords);
 	}
 
@@ -3011,24 +3011,24 @@ x3dio_readtrianglestripset(scew_element *element)
 	{
 	  if(colorPerVertex)
 	    if(colorstride == 3)
-	      ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+	      ay_pv_add(x3dio_lrobject, cname, "varying", "c",
 			pomesh.ncontrols, 3, colors);
 	    else
-	      ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+	      ay_pv_add(x3dio_lrobject, cname, "varying", "d",
 			pomesh.ncontrols, 4, colors);
 	  else
 	    if(colorstride == 3)
-	      ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", "c",
 			pomesh.ncontrols, 3, colors);
 	    else
-	      ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+	      ay_pv_add(x3dio_lrobject, cname, "uniform", "d",
 			pomesh.ncontrols, 4, colors);
 	}
 
       /* process texcoords */
       if(texcoordlen > 0)
 	{
-	  ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
+	  ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 		    pomesh.ncontrols, 2, texcoords);
 	}
 
@@ -3170,24 +3170,24 @@ x3dio_readtriangleset(scew_element *element)
     {
       if(colorPerVertex)
 	if(colorstride == 3)
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", "c",
 		    pomesh.ncontrols, 3, colors);
 	else
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", "d",
 		    pomesh.ncontrols, 4, colors);
       else
 	if(colorstride == 3)
-	  ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", "c",
 		    pomesh.ncontrols, 3, colors);
 	else
-	  ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", "d",
 		    pomesh.ncontrols, 4, colors);
     }
 
   /* process texcoords */
   if(texcoordlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
+      ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 		pomesh.ncontrols, 2, texcoords);
     }
 
@@ -3325,24 +3325,24 @@ x3dio_readquadset(scew_element *element)
     {
       if(colorPerVertex)
 	if(colorstride == 3)
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", "c",
 		    pomesh.ncontrols, 3, colors);
 	else
-	  ay_pv_add(x3dio_lrobject, cname, "varying", 6,
+	  ay_pv_add(x3dio_lrobject, cname, "varying", "d",
 		    pomesh.ncontrols, 4, colors);
       else
 	if(colorstride == 3)
-	  ay_pv_add(x3dio_lrobject, cname, "uniform", 5,
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", "c",
 		    pomesh.ncontrols, 3, colors);
 	else
-	  ay_pv_add(x3dio_lrobject, cname, "uniform", 6,
+	  ay_pv_add(x3dio_lrobject, cname, "uniform", "d",
 		    pomesh.ncontrols, 4, colors);
     }
 
   /* process texcoords */
   if(texcoordlen > 0)
     {
-      ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
+      ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 		pomesh.ncontrols, 2, texcoords);
     }
 
@@ -4789,7 +4789,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
       /* add texture coordinates as PV tags */
       if(tclen > 0)
 	{
-	  ay_status = ay_pv_add(x3dio_lrobject, tcname, "varying", 4,
+	  ay_status = ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 				tclen, 2, tc);
 
 	} /* if */
@@ -9204,7 +9204,7 @@ x3dio_writeview(scew_element *element, ay_object *o)
 	    } /* if */
 
 	  if(fabs(view->to[0]) > AY_EPSILON ||
-	     fabs(view->to[1]) > AY_EPSILON || 
+	     fabs(view->to[1]) > AY_EPSILON ||
 	     fabs(view->to[2]) > AY_EPSILON)
 	    {
 	      x3dio_writedoublevecattrib(vp_element, "centerOfRotation",
