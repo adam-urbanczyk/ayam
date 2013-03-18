@@ -1569,10 +1569,11 @@ ay_pomesht_genfacenormals(ay_pomesh_object *po, double **result)
  *  Inner loop (hole) vertices will get the respective face normals.
  *
  *  If the \a result parameter is NULL, the generated normals will be
- *  stored in the PoMesh object.
+ *  stored in the PoMesh object. Already existing vertex normals will
+ *  be destroyed.
  *  Otherwise, the array returned via \a result will contain the vertex
  *  coordinates and generated normals in the same layout as normally
- *  used by the PoMesh object.
+ *  used by the PoMesh object. The PoMesh itself will not be changed.
  *
  *  The generated normal vectors will be normalized.
  *
@@ -1782,7 +1783,7 @@ ay_pomesht_gennormtcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		}
 
-	      ay_pv_add(o, nname, "uniform", 2, pomesh->npolys, 3, fn);
+	      ay_pv_add(o, nname, "uniform", "n", pomesh->npolys, 3, fn);
 
 	      if(!pomesh->face_normals)
 		free(fn);

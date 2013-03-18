@@ -874,7 +874,7 @@ int ay_pv_filltokpar(ay_object *o, int declare, int start,
 
 /** add PV tag to an object
  */
-int ay_pv_add(ay_object *o, char *name, char *detail, int type,
+int ay_pv_add(ay_object *o, char *name, char *detail, char *type,
 	      int datalen, int stride, void *data);
 
 /** merge two PV tags into one

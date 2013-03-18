@@ -2473,7 +2473,7 @@ objio_readface(char *str, int lastlinewasface)
 
       if(texv)
 	{
-	  ay_status = ay_pv_add(&t, tcname, "varying", 4,
+	  ay_status = ay_pv_add(&t, tcname, "varying", "g",
 				texvlen, 2, texv);
 	}
 
@@ -3522,7 +3522,7 @@ objio_readend(void)
       /* add texture coordinates (as PV tags) */
       if(objio_texturev)
 	{
-	  ay_status = ay_pv_add(o, tcname, "varying", 4,
+	  ay_status = ay_pv_add(o, tcname, "varying", "g",
 				objio_texturevlen, 1, objio_texturev);
 	}
 
