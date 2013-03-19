@@ -2546,10 +2546,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       stride = 4;
       knots = curve->knotv;
 
-      if((u <= knots[0/*curve->order-2*/]) || (u >= knots[curve->length]))
+      if((u <= knots[curve->order-1]) || (u >= knots[curve->length]))
 	{
 	  return ay_error_reportdrange(fname, "\"u\"",
-				       knots[0], knots[curve->length]);
+				knots[curve->order-1], knots[curve->length]);
 	}
 
       k = ay_nb_FindSpanMult(curve->length-1, curve->order-1, u,
@@ -5429,7 +5429,9 @@ ay_nct_toxytcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_nct_iscomptcmd:
- * Check selected NURBS curves for compatibility.
+ *  Check selected NURBS curves for compatibility.
+ *  Implements the \a isCompNC scripting interface command.
+ *  See also the corresponding section in the \ayd{sciscompnc}.
  *
  *  \returns 1 if the selected curves are compatible.
  */
@@ -6358,7 +6360,7 @@ ay_nct_offset(ay_object *o, int mode, double offset, ay_nurbcurve_object **nc)
 	  tag = o->tags;
 	  while(tag)
 	    {
-	      if(ay_pv_checkndt(tag, nname, "varying", "p"))
+	      if(ay_pv_checkndt(tag, nname, "varying", "n"))
 		{
 		  ay_pv_convert(tag, 0, &vnlen, (void**)(void*)&vn);
 		  break;
