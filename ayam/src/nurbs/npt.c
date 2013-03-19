@@ -1437,7 +1437,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_breakintocurvesu:
- *  breakin NURBS patch object <o> into curves along u
+ *  break NURBS patch object <o> into curves along u
  */
 int
 ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
@@ -1539,7 +1539,7 @@ ay_npt_breakintocurvesu(ay_object *o, int apply_trafo,
 
 
 /* ay_npt_breakintocurvesv:
- *  breakin NURBS patch object <o> into curves along v
+ *  break NURBS patch object <o> into curves along v
  */
 int
 ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
@@ -1646,7 +1646,7 @@ ay_npt_breakintocurvesv(ay_object *o, int apply_trafo,
 
 
 /** ay_npt_breakintocurvestcmd:
- *  Split the selected NURBS surfaces to curves.
+ *  Break the selected NURBS surfaces into curves.
  *  Tcl interface for breakintocurvesu() and breakintocurvesv() above
  *
  *  Implements the \a breakNP scripting interface command.
@@ -9433,9 +9433,9 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       stride = 4;
       knots = patch->uknotv;
 
-      if((u <= knots[0/*patch->uorder...?*/]) || (u >= knots[patch->width]))
+      if((u <= knots[patch->uorder-1]) || (u >= knots[patch->width]))
 	return ay_error_reportdrange(fname, "\"u\"",
-				     knots[0], knots[patch->width]);
+			      knots[patch->uorder-1], knots[patch->width]);
 
       k = 0;
 
@@ -9642,9 +9642,9 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       stride = 4;
       knots = patch->vknotv;
 
-      if((v <= knots[0/*patch->vorder...?*/]) || (v >= knots[patch->height]))
+      if((v <= knots[patch->vorder-1]) || (v >= knots[patch->height]))
 	return ay_error_reportdrange(fname, "\"v\"",
-				     knots[0], knots[patch->height]);
+			     knots[patch->vorder-1], knots[patch->height]);
 
       k = ay_nb_FindSpanMult(patch->height-1, patch->vorder-1, v,
 			     knots, &s);
