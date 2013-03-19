@@ -607,7 +607,7 @@ ay_extrnc_notifycb(ay_object *o)
       else
 	{
 	  stride = 9;
-	  ay_pv_add(ncurve, ay_prefs.normalname, "varying", 2,
+	  ay_pv_add(ncurve, ay_prefs.normalname, "varying", "n",
 		    ((ay_nurbcurve_object *)(ncurve->refine))->length,
 		    stride, (void*)pvnt);
 	}
