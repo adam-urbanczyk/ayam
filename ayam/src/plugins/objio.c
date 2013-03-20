@@ -1699,7 +1699,7 @@ int objio_readvertex(char *str);
 
 int objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex);
 
-int objio_readskip(char **b);
+void objio_readskip(char **b);
 
 int objio_readface(char *str, int lastlinewasface);
 
@@ -1719,7 +1719,7 @@ int objio_addtrim(ay_object *o);
 
 int objio_gettrim(unsigned int index, ay_object **t);
 
-int objio_freetrims(void);
+void objio_freetrims(void);
 
 int objio_readtrim(char *str, int hole);
 
@@ -2141,7 +2141,7 @@ objio_readvindex(char *c, int *gvindex, int *tvindex, int *nvindex)
  *  skip over a number
  *  !Modifies argument <b>!
  */
-int
+void
 objio_readskip(char **b)
 {
  char *c = *b, *d;
@@ -2149,7 +2149,7 @@ objio_readskip(char **b)
   while((isspace(*c)) && (*c != '\0'))
     c++;
   if(*c == '\0')
-    return AY_OK;
+    return;
   while(!(isspace(*c)) && (*c != '\0'))
     c++;
 
@@ -2162,14 +2162,14 @@ objio_readskip(char **b)
       if(*d == '\0')
 	{
 	  *b = d;
-	  return AY_OK;
+	  return;
 	} /* if */
     } /* if */
 
   /* return result */
   *b = c;
 
- return AY_OK;
+ return;
 } /* objio_readskip */
 
 
@@ -2372,7 +2372,7 @@ objio_readface(char *str, int lastlinewasface)
 	  if(degen)
 	    {
 	      /* skip to next vindex */
-	      ay_status = objio_readskip(&c);
+	      objio_readskip(&c);
 	      break;
 	    } /* if */
 	} /* if */
@@ -2395,7 +2395,7 @@ objio_readface(char *str, int lastlinewasface)
       nverts++;
 
       /* skip to next vindex */
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
     } /* while */
 
   if(nverts >= 3 && !degen)
@@ -2616,7 +2616,7 @@ objio_readpolyline(char *str)
 	} /* if */
 
       /* skip to next vindex */
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
     } /* while */
 
   if(length < 2)
@@ -2749,8 +2749,8 @@ objio_readcurv(char *str)
   if(vtype == 1)
     {
       sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-      ay_status = objio_readskip(&c);
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
+      objio_readskip(&c);
     }
 
   /* read (and resolve) control point indices */
@@ -2809,7 +2809,7 @@ objio_readcurv(char *str)
 	} /* if */
 
       /* skip to next vindex */
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
     } /* while */
 
 cleanup:
@@ -2838,13 +2838,13 @@ objio_readsurf(char *str)
 
   /* read umin/umax */
   sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-  ay_status = objio_readskip(&c);
-  ay_status = objio_readskip(&c);
+  objio_readskip(&c);
+  objio_readskip(&c);
 
   /* read vmin/vmax */
   sscanf(c, " %lg %lg", &objio_vmin, &objio_vmax);
-  ay_status = objio_readskip(&c);
-  ay_status = objio_readskip(&c);
+  objio_readskip(&c);
+  objio_readskip(&c);
 
   /* read (and resolve) control point indices */
   while(*c != '\0')
@@ -2918,7 +2918,7 @@ objio_readsurf(char *str)
 	} /* if */
 
       /* skip to next vindex */
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
     } /* while */
 
   objio_curvtrimsurf = 3;
@@ -2953,7 +2953,7 @@ objio_readparm(char *str)
       readu = AY_TRUE;
     }
 
-  ay_status = objio_readskip(&c);
+  objio_readskip(&c);
 
   while(*c != '\0')
     {
@@ -2968,7 +2968,7 @@ objio_readparm(char *str)
 	} /* if */
 
       /* skip to next knot */
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
     } /* while */
 
   if(readu)
@@ -3092,7 +3092,7 @@ objio_gettrim(unsigned int index, ay_object **t)
 /* objio_freetrims:
  *  free trim curve buffer
  */
-int
+void
 objio_freetrims(void)
 {
  int ay_status = AY_OK;
@@ -3105,7 +3105,7 @@ objio_freetrims(void)
       while(tt)
 	{
 	  t = tt->prev;
-	  ay_object_delete(tt->c);
+	  (void)ay_object_delete(tt->c);
 	  free(tt);
 	  tt = t;
 	} /* while */
@@ -3115,7 +3115,7 @@ objio_freetrims(void)
   /* clear cached "current" pointers in objio_gettrim() */
   ay_status = objio_gettrim(0, NULL);
 
- return AY_OK;
+ return;
 } /* objio_freetrims */
 
 
@@ -3145,8 +3145,8 @@ objio_readtrim(char *str, int hole)
     {
       /* read umin/umax */
       sscanf(c, " %lg %lg", &objio_umin, &objio_umax);
-      ay_status = objio_readskip(&c);
-      ay_status = objio_readskip(&c);
+      objio_readskip(&c);
+      objio_readskip(&c);
 
       tindex = 0;
       if(sscanf(c, "%d", &tindex))
@@ -3206,8 +3206,7 @@ objio_readtrim(char *str, int hole)
 	} /* if */
 
       /* skip to next trim */
-      ay_status = objio_readskip(&c);
-
+      objio_readskip(&c);
     } /* while */
 
   /* repair nexttrim pointer? */
@@ -3843,6 +3842,7 @@ objio_readscene(char *filename)
   /* clean up */
   if(objio_uknotv)
     free(objio_uknotv);
+
   if(objio_vknotv)
     free(objio_vknotv);
 
@@ -3863,7 +3863,7 @@ objio_readscene(char *filename)
   objio_nexttrim = &(objio_trims);
 
   /* clean up trims buffer */
-  ay_status = objio_freetrims();
+  objio_freetrims();
 
   /* reset lastlinewasface state in objio_readline() */
   objio_readline(NULL);
