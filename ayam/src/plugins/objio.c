@@ -2146,9 +2146,6 @@ objio_readskip(char **b)
 {
  char *c = *b, *d;
 
-  if(!b)
-    return AY_ENULL;
-
   while((isspace(*c)) && (*c != '\0'))
     c++;
   if(*c == '\0')

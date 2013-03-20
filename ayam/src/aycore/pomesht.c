@@ -489,17 +489,17 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
     }
   if(!(npm->nverts = calloc(total_loops, sizeof(unsigned int))))
     {
-      free(no); free(npm); free(npm->nloops); return AY_EOMEM;
+      free(no); free(npm->nloops); free(npm); return AY_EOMEM;
     }
   if(!(npm->verts = calloc(total_verts, sizeof(unsigned int))))
     {
-      free(no); free(npm); free(npm->nloops); free(npm->nverts);
+      free(no); free(npm->nloops); free(npm->nverts); free(npm);
       return AY_EOMEM;
     }
   if(!(npm->controlv = calloc(stride * total_controls, sizeof(double))))
     {
-      free(no); free(npm); free(npm->nloops); free(npm->nverts);
-      free(npm->verts); return AY_EOMEM;
+      free(no); free(npm->nloops); free(npm->nverts);
+      free(npm->verts); free(npm); return AY_EOMEM;
     }
 
   /* now we fill the new object with the values from all meshes to merge */

@@ -1842,8 +1842,8 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
 	}
       free(pomesh->controlv);
       pomesh->controlv = expandedcontrols;
+      expandedcontrols = NULL;
       pomesh->ncontrols = totalverts;
-
     }
   else
     {
@@ -1959,6 +1959,9 @@ x3dio_readnct(scew_element *element, ay_object *o, unsigned int totalverts)
     } /* if */
 
 cleanup:
+
+  if(expandedcontrols)
+    free(expandedcontrols);
 
  return;
 } /* x3dio_readnct */
@@ -9092,6 +9095,9 @@ cleanup:
 
   if(weighted_normals)
     free(weighted_normals);
+
+  if(offset_cv)
+    free(offset_cv);
 
  return ay_status;
 } /* x3dio_writepomeshwire */

@@ -252,7 +252,10 @@ ay_pmt_bicubiccltonpatch(ay_pamesh_object *pamesh, ay_object **result)
 	{
 	  /* create new object */
 	  if(!(o = calloc(1, sizeof(ay_object))))
-	    return AY_EOMEM;
+	    {
+	      free(ncv);
+	      return AY_EOMEM;
+	    }
 	  ay_object_defaults(o);
 	  o->type = AY_IDNPATCH;
 
