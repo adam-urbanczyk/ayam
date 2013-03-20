@@ -258,7 +258,6 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
  int ay_status = AY_OK;
  ay_select_object *select = NULL;
  int tmpi;
- int read = 0;
  char *buf = NULL;
 
   if(!o)
@@ -271,7 +270,7 @@ ay_select_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.16 */
       fscanf(fileptr, "%d", &tmpi);
-      read = fgetc(fileptr);
+      fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(select->indices));
       if(ay_status)

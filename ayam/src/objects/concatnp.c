@@ -489,7 +489,6 @@ int
 ay_concatnp_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- int read = 0;
  ay_concatnp_object *concatnp = NULL;
 
   if(!o)
@@ -514,7 +513,7 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
       /* Since Ayam 1.20: */
       fscanf(fileptr, "%d\n", &concatnp->order);
       fscanf(fileptr, "%lg", &concatnp->ftlength);
-      read = fgetc(fileptr);
+      (void)fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(concatnp->uv_select));
       if(ay_status)
