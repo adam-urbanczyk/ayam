@@ -418,7 +418,6 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
 {
  ay_text_object *text = NULL;
  int ay_status = AY_OK;
- int read = 0;
  ay_tag tag = {0}, *stag = NULL, *etag = NULL;
  char vbuf[128], nbuf[3] = "BP";
  int has_startb = AY_FALSE, has_startb2 = AY_FALSE;
@@ -433,7 +432,7 @@ ay_text_readcb(FILE *fileptr, ay_object *o)
     { return AY_EOMEM; }
 
   fscanf(fileptr, "%lg", &text->height);
-  read = fgetc(fileptr);
+  (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(text->fontname));
   if(ay_status)

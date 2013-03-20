@@ -755,7 +755,7 @@ int
 ay_view_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
- int width, height, read = 0, viewnum;
+ int width, height, viewnum;
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object vtemp = {0}, *v;
@@ -806,7 +806,7 @@ ay_view_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n", &vtemp.rotx);
   fscanf(fileptr,"%lg\n", &vtemp.roty);
   fscanf(fileptr,"%lg", &vtemp.rotz);
-  read = fgetc(fileptr);
+  (void)fgetc(fileptr);
 
   if(ay_read_version >= 2)
     {

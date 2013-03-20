@@ -547,7 +547,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_root_object *root = NULL;
- int read, itemp = 0, has_atmosphere = 0, has_imager = 0;
+ int itemp = 0, has_atmosphere = 0, has_imager = 0;
  int fwtemp = 0, fhtemp = 0;
  ay_riopt *riopt = NULL;
 
@@ -610,7 +610,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
   riopt->PRManSpec = itemp;
   fscanf(fileptr,"%d\n",&riopt->RadSteps);
   fscanf(fileptr,"%d",&riopt->PatchSamples);
-  read = fgetc(fileptr);
+  (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riopt->textures));
   if(ay_status)
@@ -681,7 +681,7 @@ ay_root_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.6 */
       fscanf(fileptr,"%d", &riopt->use_std_display);
-      read = fgetc(fileptr);
+      fgetc(fileptr);
 
       ay_status = ay_read_string(fileptr, &(riopt->procedurals));
       if(ay_status)

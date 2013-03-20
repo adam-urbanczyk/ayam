@@ -329,10 +329,9 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_riproc_object *riproc = NULL;
- int read = 0;
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(!(riproc = calloc(1, sizeof(ay_riproc_object))))
     { return AY_EOMEM; }
@@ -343,7 +342,7 @@ ay_riproc_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&riproc->maxy);
   fscanf(fileptr,"%lg\n",&riproc->minz);
   fscanf(fileptr,"%lg",&riproc->maxz);
-  read = fgetc(fileptr);
+  (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riproc->file));
   if(ay_status)

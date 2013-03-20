@@ -282,10 +282,9 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  ay_riinc_object *riinc = NULL;
- int read = 0;
 
- if(!o)
-   return AY_ENULL;
+  if(!o)
+    return AY_ENULL;
 
   if(!(riinc = calloc(1, sizeof(ay_riinc_object))))
     { return AY_EOMEM; }
@@ -293,7 +292,7 @@ ay_riinc_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%lg\n",&riinc->width);
   fscanf(fileptr,"%lg\n",&riinc->length);
   fscanf(fileptr,"%lg",&riinc->height);
-  read = fgetc(fileptr);
+  (void)fgetc(fileptr);
 
   ay_status = ay_read_string(fileptr, &(riinc->file));
   if(ay_status)
