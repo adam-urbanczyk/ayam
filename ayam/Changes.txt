@@ -1,4 +1,4 @@
-[10. Mar 2013] CVS-Head:
+[23. Mar 2013] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -48,9 +48,10 @@ o if the mark is set by clicking into a view, the respective z coordinate of
   the mark is no longer set to zero (when the preference option "GlobalMark"
   is activated); this allows to set a 3D mark using two clicks in two views
 o improved face normal generation for PolyMesh and SDMesh objects through
-  application of the Newell normal algorithm
+  application of the Newell normal calculation algorithm
 o caching the face normals for PolyMesh and SDMesh objects leads to much
   faster redraw of these objects
+o added smooth normal generation for PolyMesh objects
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -113,12 +114,17 @@ o the "breakNP" command options now need a "-" and the command now supports
   "-a" for "apply transformations"
 o added support for another PV tag data type ('d'), that stores RGBA
   colors and is expanded properly to Cs _and_ Os upon RIB export
+o added commands to generate face and smooth PolyMesh normals:
+  "genfnPo" and "gensnPo"
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
-  into a XHTML template file
+  into a XHTML template file (new export option "WriteX3dom")
 o X3D export of NURBS surfaces and PolyMesh objects now support the export
-  of a wireframe
+  of a wireframe (new export options "WriteNPWires", "WritePoWires")
+o X3D export of PolyMesh objects with face normals
+o X3D export now creates simple material nodes
+  (new export option "WriteMaterials")
 o X3D export of NURBS curves of order 2 now creates Polyline primitives
 
 Plugins:
