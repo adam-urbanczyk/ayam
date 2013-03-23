@@ -346,7 +346,7 @@ ay_instt_wribiarchives(char *file, ay_object *o)
  int down_is_prim = AY_FALSE;
  ay_object *down = NULL;
  ay_tag *tag = NULL;
- char *iafilename = NULL;
+ char *iafilename = NULL, *ext = NULL;
  ay_voidfp *arr = NULL;
  ay_wribcb *cb = NULL;
  ay_level_object *l = NULL;
@@ -354,7 +354,6 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 
   while(o->next)
     {
-
       arr = ay_wribcbt.arr;
       cb = (ay_wribcb *)(arr[o->type]);
 
@@ -374,12 +373,24 @@ ay_instt_wribiarchives(char *file, ay_object *o)
 		    }
 		  else
 		    {
-		      if(!(iafilename = calloc(1,
-			   strlen(tag->val)+strlen(file)+2)))
+		      if(!(iafilename = malloc((strlen(tag->val)+
+						strlen(file)+2)*sizeof(char))))
 			return AY_EOMEM;
-		      strcpy(iafilename,file);
-		      iafilename[strlen(file)] = '-';
-		      strcpy(&(iafilename[strlen(file)+1]),tag->val);
+		      strcpy(iafilename, file);
+		      ext = strrchr(iafilename, '.');
+		      if(ext)
+			{
+			  *ext = '-';
+			  ext++;
+			  strcpy(ext, tag->val);
+			  ext += strlen(tag->val);
+			  strcpy(ext, ".rib");
+			}
+		      else
+			{
+			  free(iafilename);
+			  return AY_ERROR;
+			}
 
 		      RiBegin(iafilename);
 

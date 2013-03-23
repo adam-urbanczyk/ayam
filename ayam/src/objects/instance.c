@@ -439,14 +439,14 @@ ay_instance_wribcb(char *file, ay_object *o)
 		    }
 		  else
 		    {
-		      if(!(iafilename = calloc(1,
-					   strlen(tag->val)+strlen(file)+2)))
-			return AY_EOMEM;
-		      strcpy(iafilename,file);
-		      iafilename[strlen(file)] = '-';
-		      strcpy(&(iafilename[strlen(file)+1]),tag->val);
-		      RiReadArchive(iafilename,(RtVoid*)RI_NULL,RI_NULL);
-		      free(iafilename);
+		      iafilename = ay_wrib_geniafilename(file, tag->val);
+		      if(iafilename)
+			{
+			  RiReadArchive(iafilename,(RtVoid*)RI_NULL,RI_NULL);
+			  free(iafilename);
+			}
+		      else
+			return AY_ERROR;
 		    }
 		  found = AY_TRUE;
 		}
