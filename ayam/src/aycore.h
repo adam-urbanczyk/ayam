@@ -1766,6 +1766,10 @@ int ay_wrib_object(char *file, ay_object *o);
  */
 int ay_wrib_toolobject(char *file, ay_object *o, ay_object *t);
 
+/** generate instance archive file name
+ */
+char *ay_wrib_geniafilename(char *base, char *oi);
+
 /** export a referenced object to a RIB file
  */
 int ay_wrib_refobject(char *file, ay_object *o);

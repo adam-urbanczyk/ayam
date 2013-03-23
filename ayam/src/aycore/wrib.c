@@ -489,6 +489,35 @@ ay_wrib_trafos(ay_object *o)
 } /* ay_wrib_trafos */
 
 
+/* ay_wrib_geniafilename:
+ *  generate instance archive file name
+ */
+char *
+ay_wrib_geniafilename(char *base, char *oi)
+{
+ char *iafilename = NULL, *ext = NULL;
+
+  if(!(iafilename = malloc((strlen(base)+strlen(oi)+2)*sizeof(char))))
+    return NULL;
+  strcpy(iafilename, base);
+  ext = strrchr(iafilename, '.');
+  if(ext)
+    {
+      *ext = '-';
+      ext++;
+      strcpy(ext, oi);
+      ext += strlen(oi);
+      strcpy(ext, ".rib");
+    }
+  else
+    {
+      free(iafilename);
+      return NULL;
+    }
+  return iafilename;
+} /* ay_wrib_geniafilename */
+
+
 /* ay_wrib_refobject:
  *  wrib referenced object (a master)
  */
@@ -506,27 +535,28 @@ ay_wrib_refobject(char *file, ay_object *o)
       if(tag->type == ay_oi_tagtype)
 	{
 	  RiTransformBegin();
-	  ay_status = ay_wrib_trafos(o);
+	   ay_status = ay_wrib_trafos(o);
 
-	  if(!file)
-	    {
-	      RiReadArchive(tag->val, (RtVoid*)RI_NULL, RI_NULL);
-	    }
-	  else
-	    {
-	      if(!(iafilename = calloc(1, strlen(tag->val)+strlen(file)+2)))
-		return AY_EOMEM;
-	      strcpy(iafilename,file);
-	      iafilename[strlen(file)] = '-';
-	      strcpy(&(iafilename[strlen(file)+1]), tag->val);
-	      RiReadArchive(iafilename, (RtVoid*)RI_NULL, RI_NULL);
-	      free(iafilename);
-	    }
+	   if(!file)
+	     {
+	       RiReadArchive(tag->val, (RtVoid*)RI_NULL, RI_NULL);
+	     }
+	   else
+	     {
+	       iafilename = ay_wrib_geniafilename(file, tag->val);
+	       if(iafilename)
+		 {
+		   RiReadArchive(iafilename, (RtVoid*)RI_NULL, RI_NULL);
+		   free(iafilename);
+		 }
+	       else
+		 return AY_ERROR;
+	     }
 	  RiTransformEnd();
 	  found = AY_TRUE;
 	}
       tag = tag->next;
-    }
+    } /* while */
 
   if(!found)
     return AY_ERROR; /* This should never happen! */
