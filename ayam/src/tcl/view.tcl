@@ -202,13 +202,13 @@ proc viewRender { w type } {
     set togl $w.f3D.togl
 
     if { $ayprefs(ShadowMaps) < 1 } {
-	tmpGet $ayprefs(TmpDir) tmpfile
+	tmpGet $ayprefs(TmpDir) tmpfile .rib
 
 	if { $tcl_platform(platform) == "windows" } {
 	    # Windows sucks big time!
 	    regsub -all {\\} $tmpfile {/} tmpfile
 	}
-	set imagename ${tmpfile}.tif
+	set imagename [file rootname ${tmpfile}].tif
 	if { $type < 2 } {
 	    if { $ayprefs(RenderMode) == 0 } {
 		$togl wrib -file $tmpfile -image $imagename -temp
