@@ -22,6 +22,9 @@ code example of 6 lines text (needs another 2 for the upper/lower lines)
 4) for references in sections (not references to sections!),
    prepend the label statement with
 <#if out=latex><x/phantomsection/</#if>
+
+5) for convenience, <newline> translates into <br> in HTML and \\ in LaTeX
+   output
 .
  -->
 <article>
@@ -355,16 +358,15 @@ using the keyboard alone:<label id="treesc">
 or next object.
 
 <item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
-selection, but rather extend it in the respective direction.
-<footnote>Since 1.7.</footnote>
+selection, but rather extend it in the respective
+direction.<footnote>Since 1.7.</footnote>
 
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 
 <item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/
 extend the selection to the first or last object in the current
-level respectively.
-<footnote>Since 1.11.</footnote>
+level respectively.<footnote>Since 1.11.</footnote>
 
 The Root object, however, will always be omitted.
 
@@ -380,14 +382,13 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 selected object(s).
 
 <item><tt/&lt;Shift+Space&gt;/ toggles display of all sub-levels of the
-selected object(s).
-<footnote>Since 1.18.</footnote>
+selected object(s).<footnote>Since 1.18.</footnote>
 
 <item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
-selected for up-movement or the last object for down-movement.
-<footnote>Since 1.21.</footnote>
+selected for up-movement or the last object for
+down-movement.<footnote>Since 1.21.</footnote>
 
 </itemize>
 <p>
@@ -403,8 +404,7 @@ away to the main window or object selection window.
 
 Pressing <tt/&lt;Esc&gt;/ twice in a view window
 will also reset the focus to the main window/object selection
-window.
-<footnote>Since 1.15.</footnote>
+window.<footnote>Since 1.15.</footnote>
 Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
 removal of the currently displayed property GUI) and change the
@@ -461,15 +461,15 @@ using the keyboard alone:<label id="olbsc">
 or next object.
 
 <item><tt/&lt;Shift-Up&gt;/ and <tt/&lt;Shift-Down&gt;/ will not move the
-selection, but rather extend it in the respective direction.
-<footnote>Since 1.7.</footnote>
+selection, but rather extend it in the respective
+direction.<footnote>Since 1.7.</footnote>
 
 <item><tt/&lt;Home&gt;/ and <tt/&lt;End&gt;/ select the first
 or last object in the current level,
 
 <item><tt/&lt;Shift+Home&gt;/ and <tt/&lt;Shift+End&gt;/ extend the selection
-to the first or last object in the current level respectively.
-<footnote>Since 1.11.</footnote>
+to the first or last object in the current level
+respectively.<footnote>Since 1.11.</footnote>
 
 The Root object, however, will always be omitted.
 
@@ -484,8 +484,8 @@ the Root object will not be selected by <tt/&lt;Ctrl+a&gt;/.
 <item><tt/&lt;Alt+Up&gt;/ and <tt/&lt;Alt+Down&gt;/ move the
 selected objects in the current level in the respective direction,
 unless the root object is selected and unless the first object is
-selected for up-movement or the last object for down-movement.
-<footnote>Since 1.21.</footnote>
+selected for up-movement or the last object for
+down-movement.<footnote>Since 1.21.</footnote>
 
 </itemize>
 <p>
@@ -501,8 +501,7 @@ away to the main window or object selection window.
 
 Pressing <tt/&lt;Esc&gt;/ twice in a view window
 will also reset the focus to the main window/object selection
-window.
-<footnote>Since 1.15.</footnote>
+window.<footnote>Since 1.15.</footnote><newline>
 Pressing <tt/&lt;Esc&gt;/ twice in the object selection
 window will additionally clear the selection (this implies
 removal of the currently displayed property GUI) and change the
@@ -535,8 +534,7 @@ just press one of the <tt/&lt;0&gt;-&lt;9&gt;/ keys (most comfortably
 using the numeric keypad). <tt/&lt;0&gt;/ always selects the last and
 often the only object type specific property, whereas <tt/&lt;1&gt;/
 selects the first property, which often contains the standard
-transformations.
-<footnote>Since 1.8</footnote>
+transformations.<footnote>Since 1.8</footnote>
 <p>
 All property GUIs use more or less standardized GUI elements that are
 organized in list form. The lists may be scrolled if they get too long
@@ -571,8 +569,7 @@ will normally not be applied to the selected object until the
 Holding down the <tt/"Shift"/ button while
 interacting with the property GUI or pressing <tt/"Return"/
 when entry widgets have the keyboard input focus will also lead
-to an instant apply.
-<footnote>Since 1.8.3.</footnote>
+to an instant apply.<footnote>Since 1.8.3.</footnote>
 <p>
 You can undo all changes to the arguments of a property that have been
 made after the last <tt/"Apply"/ operation with the <tt/"Reset"/-button.
@@ -759,8 +756,7 @@ for a more detailed discussion.<newline>
 This operation cannot be undone!
 <p>
 Also files supported by any of the import plugins
-may be imported using this route.
-<footnote>Since 1.13.</footnote>
+may be imported using this route.<footnote>Since 1.13.</footnote><newline>
 Note that this only works if the selected file has a file name extension.
 The appropriate plugin will
 be loaded automatically (from the list of plugin directories in the
@@ -784,8 +780,8 @@ for a more detailed discussion.<newline>
 This operation cannot be undone!
 <p>
 Also files supported by any of the import plugins
-may be imported using this route. See above (<tt/"Open"/).
-<footnote>Since 1.13.</footnote>
+may be imported using this route. See above
+(<tt/"Open"/).<footnote>Since 1.13.</footnote>
 
 <item><tt/"Save as"/, saves the current scene asking for a new file name.
 
@@ -799,8 +795,7 @@ for a more detailed discussion.
 <p>
 Also files supported by any of the export plugins
 may be exported using this route. Just pick a file name with the
-desired extension (see above, <tt/"Open"/).
-<footnote>Since 1.13.</footnote>
+desired extension (see above, <tt/"Open"/).<footnote>Since 1.13.</footnote>
 
 <item><tt/"Save"/, saves the scene. If the scene has not been saved before
 (the scene file name is "unnamed") Ayam will ask for a file name first.
@@ -987,8 +982,7 @@ also section <ref id="ncurveobj" name="NCurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb NCurve"/ command, as outlined in section
-<ref id="sccrtnc" name="Creating Objects">.
-<footnote>Since 1.19.</footnote>
+<ref id="sccrtnc" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"ICurve"/, create a new interpolating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
@@ -996,8 +990,7 @@ also section <ref id="icurveobj" name="ICurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb ICurve"/ command, as outlined in section
-<ref id="sccrtic" name="Creating Objects">.
-<footnote>Since 1.19.</footnote>
+<ref id="sccrtic" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"ACurve"/, create a new approximating curve. A small dialog box will
 pop up, where you may specify the length of the new curve. See
@@ -1005,8 +998,7 @@ also section <ref id="acurveobj" name="ACurve Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb ACurve"/ command, as outlined in section
-<ref id="sccrtac" name="Creating Objects">.
-<footnote>Since 1.19.</footnote>
+<ref id="sccrtac" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"NCircle"/, create a new NURBS circle. See
 also section <ref id="ncircleobj" name="NCircle Object">.
@@ -1017,8 +1009,7 @@ also section <ref id="npatchobj" name="NPatch Object">.
 This dialog also contains a <tt/"AddArgs"/ entry
 field where you may specify additional command line arguments to
 the <tt/"crtOb NPatch"/ command, as outlined in section
-<ref id="sccrtnp" name="Creating Objects">.
-<footnote>Since 1.19.</footnote>
+<ref id="sccrtnp" name="Creating Objects">.<footnote>Since 1.19.</footnote>
 
 <item><tt/"IPatch"/, create a new interpolating patch.
 <footnote>Since 1.20.</footnote>
@@ -1104,8 +1095,8 @@ in section <ref id="scexpdiag" name="Expression Support in Dialog Entries">.
 The entries of the <tt/"Tools"/ menu are:
 <itemize>
 <item><tt/"Last (None)"/, this menu entry allows quick access to the
-last used entry/tool in the <tt/"Tools"/ menu hierarchy.
-<footnote>Since 1.13.</footnote>
+last used entry/tool in the <tt/"Tools"/ menu
+hierarchy.<footnote>Since 1.13.</footnote>
 
 The label of the entry will be changed appropriately
 when a tool was started, e.g.~to <tt/"Last (Revert U)"/ after the
@@ -1152,6 +1143,23 @@ Removing multiply used control points using the <tt/"Optimize"/-tool
 may decrease the memory consumption of the control points
 by a factor of about six, depending on the connectivity of the original
 mesh.
+
+<item><tt/"Gen. Face Normals"/: Generates face normals for the selected
+PolyMesh object(s) using the robust Newell algorithm. The generated
+normals will be stored in a PV tag.
+
+<item><tt/"Gen. Smooth Normals"/: Generates smooth vertex normals for
+the selected PolyMesh object(s), averaging the surrounding face normals
+of each vertex. The face normals will be weighted by the vertex
+face-centroid distance, which takes both, face area and face shape,
+into account.
+Vertices of hole loops will just get the respective face normal.
+<p><p>
+Already existing vertex normals will be destroyed.
+<p>
+If face normals already exist, they will be used, otherwise, new face
+normals will be generated using the same algorithm as implemented in the
+<tt/"Gen. Face Normals"/ tool above.
 </itemize>
 
 <item><tt/"Points"/: sub-menu for tools that work on points:
@@ -1755,8 +1763,8 @@ zooms in and moving the mouse down zooms out.
 
 <item>Zooming the view into a rectangular region
 defined through a mouse drag is also possible in any
-modelling mode, by holding down the <tt/&lt;Shift&gt;/-key.
-<footnote>Since 1.7.</footnote>
+modelling mode, by holding down the
+<tt/&lt;Shift&gt;/-key.<footnote>Since 1.7.</footnote>
 </itemize>
 See also the table below.
 <p>
@@ -1788,12 +1796,10 @@ Mouse4 and Mouse5 button events, Ayam will zoom the view
 when you turn the wheel.
 <p>
 <tt/&lt;PgUp&gt;/ and <tt/&lt;PgDown&gt;/ allow to cycle through the view
-types.
-<footnote>Since 1.15.</footnote>
+types.<footnote>Since 1.15.</footnote>
 <p>
 <tt/&lt;Ctrl+PgUp&gt;/ and <tt/&lt;Ctrl+PgDown&gt;/
-cycle through the drawing modes.
-<footnote>Since 1.16.</footnote>
+cycle through the drawing modes.<footnote>Since 1.16.</footnote>
 <p>
 Using the menu entry <tt/"Zoom to Object"/ or the corresponding
 shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
@@ -1811,8 +1817,7 @@ XY-plane that has been rotated around the Y-axis).
 See also section <ref id="editlocal" name="Editing in Local Spaces">.
 <p>
 It is also possible to move through the scene hierarchy and
-change the selection directly in view windows:
-<footnote>Since 1.18.</footnote>
+change the selection directly in view windows:<footnote>Since 1.18.</footnote>
 
 <itemize>
 <item><tt/&lt;Ctrl+4&gt;/, <tt/&lt;Ctrl+6&gt;/ (on the numeric keypad!)
@@ -2038,8 +2043,8 @@ The <tt/"Main"/ section contains the most important application setup
 related preference settings.
 <p>
 Note that unused settings will not be shown, e.g.~on the
-Win32 platform, the <tt/"TwmCompat"/ setting will be hidden.
-<footnote>Since 1.14.</footnote>
+Win32 platform, the <tt/"TwmCompat"/ setting will be
+hidden.<footnote>Since 1.14.</footnote>
 <itemize>
 <item><tt/"Shaders"/ contains a number of paths (separated by a colon
 <tt/":"/ on Unix and by a semicolon <tt/";"/ on Win32) where Ayam looks
@@ -2048,8 +2053,7 @@ have been compiled with slc from BMRT). Using the <tt/"Add"/ button
 one may easily add paths with a directory chooser dialog.
 After changes to this setting (also after <tt/"Revert"/!),
 use the <tt/"Scan for Shaders!"/ button below.
-
-<p>
+<p><p>
 Note that the environment variable SHADERS will be adapted to match
 the contents of this preference setting, so that renderers started
 by Ayam see exactly the same set of shaders as Ayam.
@@ -2072,8 +2076,7 @@ settings.<label id="prefgui">
 <itemize>
 <item><tt/"Locale"/, sets a language for the balloon help texts,
 the default value menu shows all currently available locales.
-
-<p>
+<p><p>
 The value will have no effect until Ayam is restarted!
 
 <item><tt/"SingleWindow"/ toggles, whether Ayam should create just
@@ -2084,8 +2087,7 @@ by default.
 <item><tt/"AutoResize"/ toggles, whether the main window
 should be resized horizontally according to the property GUI whenever
 a new GUI is displayed.
-
-<p>
+<p><p>
 This option is not available in the single window GUI mode.
 
 <item><tt/"AutoFocus"/ controls whether Ayam should automatically
@@ -2095,11 +2097,9 @@ or their settings, this may only work correctly, when a window
 of Ayam already has the focus. On some operating systems or window
 managers AutoFocus might not work at all. Furthermore, note that moving
 the focus to a toplevel window might also raise it.
-
-<p>
+<p><p>
 In single window GUI mode, AutoFocus additionally manages the input
 focus of the internal views, tree view, property GUI, and console.
-
 <p>
 While the preference editor is open, AutoFocus is temporarily
 turned off and changes to the <tt/"AutoFocus"/ preference setting will
@@ -2110,8 +2110,7 @@ new geometries of windows. This option has to be toggled if Ayam
 fails to correctly remember the geometry of the main window between
 two invocations or if the main window jumps downward when properties
 are selected.
-
-<p>
+<p><p>
 This option is not available on the Win32 platform and on MacOSX Aqua.
 
 <item><tt/"AutoSavePrefs"/, if this is switched on, Ayam will write
@@ -2138,19 +2137,21 @@ See also section <ref id="hidprefs" name="Hidden Preference Settings">.
 
 <item><tt/"Scripts"/ is a list of Tcl script files that will
 be executed on startup. The scripts do <em>not</em>
-have to be specified with full path and filename.
-<footnote>Since 1.16.</footnote>
+have to be specified with full path and
+filename.<footnote>Since 1.16.</footnote>
 Furthermore, the scripts and plugins directories (as specified using the
-<tt/"Plugins"/ option below) are automatically searched, and the tcl
+<tt/"Plugins"/ option below) are automatically searched, and the <tt/".tcl"/
 file name extension is automatically added, so that a setting
 of <tt/"colfocus;loadayslx"/
-would load the colfocus script from the scripts directory and the
-ayslx shader parsing plugin from the plugins directory.
-If non absolute paths are used they are relative
+would load the <tt/"colfocus.tcl"/ script from the scripts directory and the
+ayslx shader parsing plugin (via the <tt/"loadayslx.tcl"/ script) from the
+plugins directory.<newline>
+If non-absolute paths are used, they are considered to be relative
 to the current directory of Ayam on application startup (which is typically
 the directory where the Ayam executable resides).
+<newline>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and by
-a semicolon (<tt/";"/) on Win32.
+a semicolon (<tt/";"/) on Win32.<newline>
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
 
 <item><tt/"Plugins"/ is a list of directories that contain custom
@@ -2158,8 +2159,8 @@ objects or plugins. Those directories will e.g.~be searched for
 custom objects when unknown object types are encountered while reading
 Ayam scene files. If a matching custom object is found, it will be
 automatically loaded into Ayam, so that scene loading may proceed without
-an error. If non absolute paths are used they are relative
-to the directory where the Ayam executable resides.
+an error. If non-absolute paths are used they are considered to be relative
+to the directory where the Ayam executable resides.<newline>
 Thus, the default value "plugins" leads to Ayam searching for plugins
 in the directory "plugins" located in the directory, where the Ayam
 executable resides:
@@ -2169,7 +2170,7 @@ executable resides:
 .../ayam/bin/plugins/ayslx.dll
 </verb></tscreen>
 Multiple entries have to be separated by a colon (<tt/":"/) on Unix and
-by a semicolon (<tt/";"/) on Win32.
+by a semicolon (<tt/";"/) on Win32.<newline>
 If unsure about the correct syntax, just use the <tt/"Add"/ button.
 
 <item><tt/"Docs"/ is an URL that points to the documentation in
@@ -2198,8 +2199,7 @@ The value of <tt/"PickEpsilon"/ should be positive and is expressed
 in terms of object coordinates, however, also the view zoom factor modifies
 the effective <tt/"PickEpsilon"/ value in a way that for zoomed-in views
 a smaller value will be used (and vice versa).
-
-<p>
+<p><p>
 In older versions of Ayam (prior to 1.8), a value of 0.0 was
 allowed and default. This is no longer the case, the new default
 value is 0.05.
@@ -2209,8 +2209,7 @@ occur on all mouse movements or just on release of the mouse button,
 for the interactive modelling actions.
 This option may also be toggled easily using the keyboard shortcut
 <tt>&lt;F6&gt;</tt>.
-
-<p>
+<p><p>
 Notification is the mechanism used to inform objects that rely
 on certain child objects (e.g.~the Revolve tool object) about
 changes of their child objects, so that the parent can adapt
@@ -2257,8 +2256,8 @@ immediately lead to a global mark set in all windows, one rather
 needs to set a new mark that will then become global.
 
 <item><tt/"CreateAtMark"/ controls whether or not new objects
-are to be created at the current mark position (default: yes).
-<footnote>Since 1.21.</footnote>
+are to be created at the current mark position
+(default: yes).<footnote>Since 1.21.</footnote>
 
 <item><tt/"DefaultAction"/ determines the modelling action
 that will be active after a press of the <tt/&lt;Esc&gt;/ key
@@ -2285,8 +2284,7 @@ Smaller tolerance settings lead to higher quality. Useful values
 range from 1 to 100.
 This setting has no effect for objects that override it
 using a local tolerance setting different from 0.
-
-<p>
+<p><p>
 Using the keyboard shortcuts <tt>&lt;F2&gt;</tt> and <tt>&lt;F3&gt;</tt>
 the GLU tolerance may also be set easily.
 
@@ -2294,14 +2292,11 @@ the GLU tolerance may also be set easily.
 Either the control hull (or control polygon) is drawn (ControlHull), or
 just the outlines of the polygons created by the tesselation
 (OutlinePoly), or just the outlines of the patch (OutlinePatch).
-
-<p>
+<p><p>
 Note that this setting does not affect shaded patches.
-
 <p>
 Note also, that this setting has no effect for objects that override it
 using a local DisplayMode setting different from <tt/"Global"/.
-
 <p>
 Toggling between drawing of hulls and outlines may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
@@ -2309,15 +2304,12 @@ done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 <item><tt/"NCDisplayMode"/ sets the display mode for NURBS curves,
 The control hull (control polygon) or the curve or a
 combination of both may be displayed.
-
-<p>
+<p><p>
 Note that this setting has no effect for objects that override it
 using a local DisplayMode setting different from <tt/"Global"/.
-
 <p>
 Toggling between drawing of hulls and curves may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
-
 
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
@@ -2336,7 +2328,7 @@ affect how RIBs are created.
 <item><tt/"RIBFile"/ allows to set the file Ayam is exporting
 RenderMan Interface Bytestreams (RIBs) to. Note that some
 filenames have special meaning:
-<p>
+<p><p>
 If you set <tt/"RIBFile"/ to <tt/"Scene"/ (this is the default)
 the RIB file name will be derived from the name of
 the currently loaded scene with the last extension replaced by
@@ -2377,7 +2369,7 @@ files that are named as the exported RIB file (with the last
 file extension replaced by <tt/".tif"/). Again, setting
 it to <tt/"Ask"/ will cause a dialog box to appear,
 each time you export to a RIB file.
-<p>
+<p><p>
 Note that in contrast to the <tt/"RIBFile"/ option leaving the field
 totally empty is not equal to entering <tt/"Ask"/ but generates
 RIB files that will be set up to render to the display.
@@ -2620,8 +2612,8 @@ Smaller values lead to better quality and more tesselated polygons.
 
 <sect>Modelling Actions<label id="iac">
 <p>
-Before invoking any modelling action you should select one or more
-objects using the object hierarchy in the main window, the pick action,
+Before invoking any modelling action one or more objects should be
+selected using the object hierarchy in the main window, the pick action,
 or selection manipulating keyboard shortcuts.
 <p>
 Every action can be started with a key press (a shortcut) when
@@ -2790,8 +2782,8 @@ implicitly by the point selection: if points were selected, they would
 be transformed instead of the object.
 <p>
 There are now two keyboard shortcuts (<tt/&lt;o&gt;/ and <tt/&lt;p&gt;/)
-that let the user control this behaviour directly per view:
-<footnote>Since 1.18.</footnote>
+that let the user control this behaviour directly per
+view:<footnote>Since 1.18.</footnote>
 <tt/&lt;o&gt;/ switches to object transformations and <tt/&lt;p&gt;/ to
 point transformations.
 These shortcuts can be used anytime, even in the middle of any other
@@ -2911,8 +2903,7 @@ It is also possible to use a double click in the list of selection
 candidates to select an object and immediately close the dialog
 window. Moreover, as the list of candidates immediately gets the
 keyboard focus, one can also use the cursor keys and <tt/&lt;Enter&gt;/ to
-select the object.
-<footnote>Since 1.11.</footnote>
+select the object.<footnote>Since 1.11.</footnote>
 <p>
 Notes:
 <itemize>
@@ -2943,8 +2934,7 @@ for Top-views only, no matter how the view is rotated.
 <p>
 The move action may be restricted to a certain
 axis, by pressing <tt/&lt;x&gt;/, <tt/&lt;y&gt;/, or <tt/&lt;z&gt;/
-right after the <tt/&lt;m&gt;/.
-<footnote>Since 1.17.</footnote>
+right after the <tt/&lt;m&gt;/.<footnote>Since 1.17.</footnote>
 <p>
 For an overview of the move actions see also the table below.
 <p>
@@ -3328,8 +3318,8 @@ with any other active modelling actions.
 <p>
 Note that the list of selected points is not copied, if the object
 is copied using the clipboard. The selection is also not saved to
-Ayam scene files. But selected points survive undo/redo.
-<footnote>Since 1.16.</footnote>
+Ayam scene files. But selected points survive
+undo/redo.<footnote>Since 1.16.</footnote>
 <p>
 Furthermore, the selection action iself is not an operation
 recorded in the undo buffer, thus cannot directly be undone.
@@ -3352,8 +3342,8 @@ single points.
 <p>
 Holding down the <tt/&lt;Ctrl&gt;/-key while
 dragging the mouse removes all selected points within the rectangular
-region defined by the drag from the selection.
-<footnote>Since 1.16.1.</footnote>
+region defined by the drag from the
+selection.<footnote>Since 1.16.1.</footnote>
 <p>
 The exact behaviour of picking multiple points of a NURBS curve or surface
 depends on the attribute <tt/"CreateMP"/:<newline>
@@ -3473,8 +3463,7 @@ determine whether editing takes place in local/object space or
 global/world space.
 <p>
 This modelling action may affect multiple points of multiple selected
-objects.
-<footnote>Since 1.18.</footnote>
+objects.<footnote>Since 1.18.</footnote>
 <p>
 Snapping points of different objects together is now possible too:
 Just select two objects, start numeric point editing (press <tt/&lt;E&gt;/),
@@ -3485,12 +3474,11 @@ selection as this would also load new coordinates) and press apply.
 <p>
 The numeric point editing action also supports read only
 points, their coordinates may be retrieved, but applying any values
-will have no effect.
-<footnote>Since 1.18.</footnote>
+will have no effect.<footnote>Since 1.18.</footnote>
 <p>
 Single coordinate entry fields may be empty to
-prevent a change of the corresponding coordinate value.
-<footnote>Since 1.20.</footnote>
+prevent a change of the corresponding coordinate
+value.<footnote>Since 1.20.</footnote>
 <p>
 If a multiple point is edited, this action modifies all single
 points that make up the multiple point, i.e.~you can not move
@@ -3499,8 +3487,7 @@ edit action. Temporarily disable the <tt/"CreateMP"/ property or
 explode the multiple point to do that.
 <p>
 Notice that the numeric point editing dialog may stay
-open all the time.
-<footnote>Since 1.4.</footnote>
+open all the time.<footnote>Since 1.4.</footnote>
 <p>
 Furthermore, it is not necessary that the original
 object stays selected while working with the numeric point edit dialog,
@@ -3529,8 +3516,7 @@ section <ref id="prefmisc" name="Miscellaneous Preferences">).
 </figure>
 <p>
 There are two actions available for snapping points to the current
-grid of a view.
-<footnote>Since 1.11.</footnote>
+grid of a view.<footnote>Since 1.11.</footnote>
 <p>
 The actions are initiated using the shortcuts <tt/&lt;g&gt;/
 and <tt/&lt;G&gt;/. If an object has selected (tagged)
@@ -3553,8 +3539,7 @@ This action can be used without affecting other active actions.
 </figure>
 <p>
 The snap points to mark action moves all selected points to
-the current mark.
-<footnote>Since 1.18.</footnote>
+the current mark.<footnote>Since 1.18.</footnote>
 <p>
 This action is initiated using the shortcut <tt/&lt;M&gt;/.
 All selected editable points of the selected objects are snapped to
@@ -3567,8 +3552,7 @@ See also the image above.
 <sect1>Snapping Objects to the Mark<label id="snapomac">
 <p>
 The snap objects to mark action moves all selected objects to
-the current mark.
-<footnote>Since 1.18.</footnote>
+the current mark.<footnote>Since 1.18.</footnote>
 <p>
 This action is initiated using the shortcut <tt/&lt;K&gt;/.
 All selected objects are snapped to the current
@@ -3624,8 +3608,8 @@ Delete Points|<tt/&lt;d&gt;/|
 </figure>
 <p>
 To manipulate the multiplicity of selected NURBS curve control
-points there are two modelling actions available.
-<footnote>Since 1.20.</footnote>
+points there are two modelling actions
+available.<footnote>Since 1.20.</footnote>
 <p>
 The actions are initiated using the shortcuts <tt>&lt;*&gt;</tt>
 (to increase the multiplicity) and <tt>&lt;/&gt;</tt>
@@ -4193,8 +4177,7 @@ The type of the view, additionally, determines the so called input plane
 of the view. Interactive modelling actions in a view are limited to that
 input plane (unless the view is switched to local modelling;
 see also section
-<ref id="editlocal" name="Editing in Local Spaces">).
-<footnote>Since 1.4.</footnote>
+<ref id="editlocal" name="Editing in Local Spaces">).<footnote>Since 1.4.</footnote>
 <p>
 The standard input planes are as following: Front &ndash; XY-plane,
 Side &ndash; ZY-plane, Top &ndash; XZ-plane, Trim &ndash; XY-plane.
@@ -4228,8 +4211,8 @@ It is also possible, to directly drag objects from the
 tree view to a view window: for geometric objects, the view then
 performs a zoom to object operation, for cameras and light sources
 the views camera will be changed as if the object was dropped
-onto a view object in the tree view (see the above description).
-<footnote>Since 1.8.</footnote>
+onto a view object in the tree view (see the above
+description).<footnote>Since 1.8.</footnote>
 <p>
 The following table briefly lists some capabilities of the View object.
 <p>
@@ -5052,8 +5035,7 @@ do not affect the first clone.
 <p>
 The transformation attributes are also in effect if a trajectory
 curve is present, they will be applied after moving of the
-instance to the trajectory and rotating it.
-<footnote>Since 1.13.</footnote>
+instance to the trajectory and rotating it.<footnote>Since 1.13.</footnote>
 
 </itemize>
 The following table summarizes which transformation attributes are used
@@ -5097,8 +5079,8 @@ if the Clone is in trajectory mode.
 </figure>
 <p>
 The Mirror object allows to easily create and control an arbitrary
-number of mirrored instances of a number of objects.
-<footnote>Since 1.20.</footnote>
+number of mirrored instances of a number of
+objects.<footnote>Since 1.20.</footnote>
 <p>
 The original object(s)
 <em>and</em> their mirrored counterparts will be
@@ -5245,8 +5227,7 @@ an own set of transformation attributes (to ease hierarchy building
 with e.g.~<tt>"ExtrNC"</tt>/<tt>"ExtrNP"</tt> objects, where only
 pointers to already existing objects are required and where it is
 expected, that the instance reflects the master exactly, including
-its transformation attributes).
-<footnote>Since 1.16.</footnote>
+its transformation attributes).<footnote>Since 1.16.</footnote>
 <p>
 The extract curve/surface tools automatically add such a tag to the
 instances they create.
@@ -5321,11 +5302,11 @@ add info about file names
 <sect1>Select Object<label id="selectobj">
 <p>
 The Select object may be used in hierarchies
-of tool objects to select one object from a list of provided objects.
-<footnote>Since 1.14.</footnote>
+of tool objects to select one object from a list of provided
+objects.<footnote>Since 1.14.</footnote><newline>
 Also multiple objects and ranges (even decreasing
-ranges that lead to reversed orders) may be selected.
-<footnote>Since 1.16.</footnote>
+ranges that lead to reversed orders) may be
+selected.<footnote>Since 1.16.</footnote>
 <p>
 In the following example hierarchy, a single patch from multiple provided
 patches of the Sweep object (the swept surface, a bevel, or a cap)
@@ -5480,8 +5461,8 @@ direction of the Y axis of the objects coordinate system).
 <sect2>Conversion Support
 <p>
 A box object may be converted to three NURBS patches
-using the main menu entry <tt>"Tools/Convert"</tt>.
-<footnote>Since 1.8.2.</footnote>
+using the main menu entry
+<tt>"Tools/Convert"</tt>.<footnote>Since 1.8.2.</footnote>
 
 <sect2>RIB Export
 <p>
@@ -5525,8 +5506,7 @@ is 360.
 <p>
 A sphere object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the sphere.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the sphere.<footnote>Since 1.8.2.</footnote>
 <p>
 If the sphere is closed, an enclosing Level object will be
 created and the caps follow the sphere in the following order:
@@ -5575,8 +5555,7 @@ default is 360.
 <p>
 A disk object may be converted to a NURBS patch
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the disk.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the disk.<footnote>Since 1.8.2.</footnote>
 
 <sect2>RIB Export
 <p>
@@ -5621,8 +5600,7 @@ default is 360.
 <p>
 A cone object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the cone.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the cone.<footnote>Since 1.8.2.</footnote>
 <p>
 If the cone is closed, an enclosing Level object will be
 created and the caps follow the cone in the following order:
@@ -5675,8 +5653,7 @@ default is 360.
 <p>
 A cylinder object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the cylinder.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the cylinder.<footnote>Since 1.8.2.</footnote>
 <p>
 If the cylinder is closed, an enclosing Level object will be
 created and the caps follow the cylinder in the following order:
@@ -5736,8 +5713,7 @@ default is 360.
 <p>
 A torus object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the torus.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the torus.<footnote>Since 1.8.2.</footnote>
 <p>
 If the torus is closed, an enclosing Level object will be
 created and the caps follow the torus in the following order:
@@ -5793,8 +5769,7 @@ default is 360.
 <p>
 A paraboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the paraboloid.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the paraboloid.<footnote>Since 1.8.2.</footnote>
 <p>
 If the paraboloid is closed, an enclosing Level object will be
 created and the caps follow the paraboloid in the following order:
@@ -5851,8 +5826,7 @@ default is 360.
 <p>
 A hyperboloid object may be converted to NURBS patches
 using the main menu entry <tt>"Tools/Convert"</tt>. This conversion
-obeys all parameters of the hyperboloid.
-<footnote>Since 1.8.2.</footnote>
+obeys all parameters of the hyperboloid.<footnote>Since 1.8.2.</footnote>
 <p>
 If the hyperboloid is closed, an enclosing Level object will be
 created and the caps follow the hyperboloid in the following order:
@@ -6034,8 +6008,8 @@ created for this curve. See also the discussion in
 section <ref id="ncurvemp" name="Multiple Points">.
 
 <item><tt/"IsRat"/ informs you, whether the curve
-is rational (uses weight values different from 1.0).
-<footnote>Since 1.9.</footnote>
+is rational (uses weight values different from
+1.0).<footnote>Since 1.9.</footnote>
 </itemize>
 
 The GLU-parameters control the appearance of the curve when
@@ -6083,8 +6057,8 @@ it will be changed to <tt/"B-Spline"/ automatically.
 When changing the order of a periodic curve (and not
 touching the length) Ayam will automatically add or remove control
 points to/from the curve so that the shape of the curve remains
-largely intact and the periodic extensions plausible.
-<footnote>Since 1.18.</footnote>
+largely intact and the periodic extensions
+plausible.<footnote>Since 1.18.</footnote>
 
 <sect2>Multiple Points<label id="ncurvemp">
 <p>
@@ -6254,8 +6228,8 @@ curve).
 </figure>
 <p>
 The ACurve object creates an approximating NURBS curve with m control
-points from n 3D non-rational ordered data points (see image above).
-<footnote>Since 1.15.</footnote>
+points from n 3D non-rational ordered data points (see image
+above).<footnote>Since 1.15.</footnote>
 <p>
 The number of data points must be higher than or equal to the number of
 control points used. The approximation algorithm used is of the least
@@ -6356,13 +6330,11 @@ curve).
 <p>
 The NCircle object creates a circular NURBS curve or a circular arc in
 the XY plane centered at the origin with designated radius and start/end
-angles (see image above).
-<footnote>Since 1.12.</footnote>
+angles (see image above).<footnote>Since 1.12.</footnote>
 <p>
 In order to revert the created NURBS curve
 the start/end angles may be used, e.g.~<tt/"TMin"/ 0.0,
-<tt/"TMax"/ -360.0 for a reverse full circle.
-<footnote>Since 1.15.</footnote>
+<tt/"TMax"/ -360.0 for a reverse full circle.<footnote>Since 1.15.</footnote>
 <p>
 The following table briefly lists some capabilities of the NCircle object.
 <p>
@@ -6582,8 +6554,7 @@ and move it to the newly created ExtrNC object.
 <p>
 As the geometry of the extracted curve is completely defined by
 the master surface, ExtrNC objects do not support own transformation
-attributes.
-<footnote>Since 1.19.</footnote>
+attributes.<footnote>Since 1.19.</footnote>
 <p>
 Note that the extraction of any curves currently completely ignores
 potentially present trimming information of the NPatch object.
@@ -6613,14 +6584,13 @@ boundary curve (along width);
 boundary curve (along height);
 <item> <tt/"U"/, <tt/"V"/
 extract curve along width and height respectively at specified parametric
-value (see below).
-<footnote>Since 1.8.1.</footnote>
-<item><tt/"Boundary"/: extract the complete boundary curve of the patch.
-<footnote>Since 1.13.</footnote>
+value (see below).<footnote>Since 1.8.1.</footnote>
+<item><tt/"Boundary"/: extract the complete boundary curve of the
+patch.<footnote>Since 1.13.</footnote>
 <item><tt/"Middle_U"/, <tt/"Middle_V"/: create a curve from the patch
 data that is the "middle axis" (simply the medium of all control points
-of a patch in the designated dimension).
-<footnote>Since 1.15.</footnote><newline>
+of a patch in the designated
+dimension).<footnote>Since 1.15.</footnote><newline>
 This option is useful to re-engineer swept surfaces, delivered
 as simple patches.
 </itemize>
@@ -6642,8 +6612,7 @@ on the knot vectors of the NURBS patch.
 be interpreted in a relative way. If enabled, a parametric value of 0.5
 always extracts from the middle of the knot vector, regardless of the
 actual knot values, and the valid range for <tt/"Parameter"/ is
-then consequently 0.0-1.0.
-<footnote>Since 1.15.</footnote>
+then consequently 0.0-1.0.<footnote>Since 1.15.</footnote>
 
 <item><tt/"Revert"/ immediately reverts the extracted curve.
 
@@ -6686,8 +6655,7 @@ curve).
 </figure>
 <p>
 The OffsetNC object creates offset curves from planar NURBS curves using
-four different algorithms.
-<footnote>Since 1.14.</footnote><newline>
+four different algorithms.<footnote>Since 1.14.</footnote><newline>
 The offset curve will always match the original curve in type, length, order,
 and knots. See also the image above.
 <p>
@@ -6710,8 +6678,8 @@ from the original curve at sharp convex or concave features
 <bf/<tt/Hybrid//<newline>
 this algorithm offsets the curve two times using the Point and Section
 algorithms and then mixes the results so that the bad
-features of the two algorithms cancel out each other,
-<footnote>Since 1.19.</footnote>
+features of the two algorithms cancel out each
+other,<footnote>Since 1.19.</footnote>
 
 <bf/<tt/3DPVN//<newline>
 Since Ayam 1.18 there is a fourth offsetting algorithm available, that
@@ -6722,8 +6690,7 @@ e.g.~when extracting curves from surfaces using the <tt/"ExtrNC"/ object.
 <p>
 As the geometry of the offset curve is completely defined by
 the master curve, OffsetNC objects do not support own transformation
-attributes.
-<footnote>Since 1.19.</footnote>
+attributes.<footnote>Since 1.19.</footnote>
 <p>
 The <tt/"Bevel3D"/ offset algorithm has been removed since Ayam 1.19.
 <p>
@@ -6790,8 +6757,7 @@ a small arrow. Note that the arrow points in the V direction (height).
 <p>
 NPatch objects also support the concept of multiple points, see section
 <ref id="ncurvemp" name="Multiple Points">
-for more information regarding this.
-<footnote>Since 1.10.</footnote>
+for more information regarding this.<footnote>Since 1.10.</footnote>
 <p>
 The following table briefly lists some capabilities of the NPatch object.
 <p>
@@ -6824,12 +6790,12 @@ please see section <ref id="ncattr" name="NCurveAttr">.
 
 <item><tt/"CreateMP"/ toggles, whether multiple points should be
 created for this surface. See also the discussion in
-section <ref id="ncurvemp" name="Multiple Points">.
-<footnote>Since 1.10.</footnote>
+section
+<ref id="ncurvemp" name="Multiple Points">.<footnote>Since 1.10.</footnote>
 
 <item><tt/"IsRat"/ informs you, whether the patch
-is rational (uses weight values different from 1.0).
-<footnote>Since 1.9.</footnote>
+is rational (uses weight values different from
+1.0).<footnote>Since 1.9.</footnote>
 </itemize>
 
 The next parameters control the appearance of the patch for display
@@ -6911,8 +6877,8 @@ aforementioned rules. When in doubt or while heavy modelling,
 switch to wireframe drawing and switch off shading temporarily
 and you will be on the safe side.
 <p>
-NURBS curve providing objects are also supported as trim curves.
-<footnote>Since 1.5.</footnote>
+NURBS curve providing objects are also supported as trim
+curves.<footnote>Since 1.5.</footnote>
 
 <sect2>Conversion Support
 <p>
@@ -6941,7 +6907,7 @@ PV tags are supported and also trim curves may appear.
 <caption>Interpolating surface (blue) from data points (white)</caption>
 </figure>
 <p>
-A IPatch forms a surface defined by interpolating a regular grid
+An IPatch forms a surface defined by interpolating a regular grid
 of three dimensional and non rational data points (see also the
 image above).
 <p>
@@ -7224,9 +7190,9 @@ else it is 0.
 <sect2>Conversion Support
 <p>
 PolyMesh objects may be converted to SDMesh
-objects using the main menu entry <tt>"Tools/Convert"</tt>.
-<footnote>Since 1.11.</footnote>
-
+objects using the main menu entry
+<tt>"Tools/Convert"</tt>.<footnote>Since 1.11.</footnote>
+<p>
 Note that no verification of the usability of the
 mesh as base mesh for a subdivision surface is carried out.
 Usually, such meshes have to be manifold and may not contain
@@ -7295,8 +7261,7 @@ The SDMeshAttr GUI just displays some information about the
 SDMesh object:
 <itemize>
 <item><tt/"Scheme"/, is the subdivision scheme, currently available
-schemes are Catmull-Clark and Loop.
-<footnote>Since 1.11.</footnote>
+schemes are Catmull-Clark and Loop.<footnote>Since 1.11.</footnote>
 <item><tt/"Level"/ is the number of subdivision steps that should
 be carried out when subdividing the mesh for preview. This subdivision
 needs the <tt/"subdiv"/ plugin.
@@ -7309,9 +7274,9 @@ defined.
 
 <sect2>Conversion Support
 <p>
-SDMesh objects may be converted to PolyMesh objects.
-<footnote>Since 1.11.</footnote>
-
+SDMesh objects may be converted to PolyMesh
+objects.<footnote>Since 1.11.</footnote>
+<p>
 Note however that only the original, unrefined, control
 polygon (i.e.~the base mesh) will be converted unless the <tt/"Level"/
 attribute is not zero <em>and</em> the <tt/"subdiv"/ plugin is loaded.
@@ -7361,8 +7326,8 @@ RenderMan quadric primitive.
 <p>
 The Revolve object also supports a B-Spline mode
 that may be enabled by setting the parameter <tt/"Sections"/
-to a value higher than 0.
-<footnote>Since 1.8.</footnote>
+to a value higher than 0.<footnote>Since 1.8.</footnote>
+<p>
 In this mode, a circular B-Spline is
 used as basis for the surface of revolution instead of the
 standard NURBS circle. Depending on the number of sections
@@ -7372,8 +7337,7 @@ after a possible conversion to an ordinary NURBS patch object,
 because the control points will not be rational if the revolved
 curve is also not rational.<newline>
 Note that also the B-Spline mode can realize arbitrary
-<tt/"ThetaMax"/ values.
-<footnote>Since 1.18.</footnote>
+<tt/"ThetaMax"/ values.<footnote>Since 1.18.</footnote>
 <p>
 In addition to the number of sections, in B-Spline mode it is
 possible to control the order of the surface of revolution
@@ -7417,8 +7381,7 @@ If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7567,8 +7530,7 @@ NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7582,8 +7544,8 @@ the same set of tags.
 <p>
 The Swing object forms a surface that results from rotating a NURBS curve
 (cross section or profile) around an axis while
-scaling it according to a second NURBS curve (trajectory or path).
-<footnote>Since 1.14.</footnote><newline>
+scaling it according to a second NURBS curve (trajectory or
+path).<footnote>Since 1.14.</footnote><newline>
 This process is sometimes also called <em>rotational sweep</em>.
 <p>
 The swing object has the generating NURBS curves as child objects
@@ -7654,8 +7616,7 @@ If caps are present, those follow as trimmed NURBS patch primitives
 in the following order: upper, lower, start, end.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7707,8 +7668,7 @@ scale factor that is applied to the cross section in Y-direction.
 If any sample point of the scaling function has a Z-component different
 from zero, the Z-component will be used to independently scale the
 cross section in X-direction, otherwise the Y-component will be used
-to also scale the cross section in X-direction.
-<footnote>Since 1.13.</footnote>
+to also scale the cross section in X-direction.<footnote>Since 1.13.</footnote>
 <p>
 This implies, that e.g.~a scaling function that does nothing should be
 a linear curve from (0,1,1) to (1,1,1).
@@ -7757,8 +7717,7 @@ Sweep|NCurve<f/<sup/&lowast;//|Yes|NPatch<f/<sup/+//|No*<#if out=latex>@<hline><
 <p>
 The <tt/"Type"/ attribute controls whether the
 swept surface should be open, closed, or periodic in the direction
-of the trajectory curve.
-<footnote>Since 1.10.</footnote>
+of the trajectory curve.<footnote>Since 1.10.</footnote>
 <p>
 If <tt/"Interpolation"/ is enabled, an additional interpolation
 will be run on the swept surface in U direction so that all section
@@ -7781,8 +7740,7 @@ points in U direction for open and closed sweeps whereas
 sections+order control points will be created for periodic sweeps.
 <newline>
 Zero is a valid setting for the <tt/"Sections"/ parameter and used as
-default value.
-<footnote>Since 1.13.</footnote>
+default value.<footnote>Since 1.13.</footnote>
 In this case the number of sections is directly derived from the length
 of the trajectory curve plus one (except for trajectory curves of length
 2, where the number of sections is 1).
@@ -7808,8 +7766,7 @@ Sweep on both ends.
 Note that this works properly only if the cross section
 curve is closed and planar (defined in the XY plane).
 <p>
-Also bevels are available for sweeps.
-<footnote>Since 1.10.</footnote>
+Also bevels are available for sweeps.<footnote>Since 1.10.</footnote>
 They are accessible through the command entries <tt/"Add Start Bevel!"/
 and <tt/"Add End Bevel!"/ respectively. If one of those entries is used,
 a corresponding bevel parameter tag is created and more options will be
@@ -7863,8 +7820,7 @@ NURBS patch primitives in the following order: start bevel, start cap,
 end bevel, end cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -7938,8 +7894,8 @@ birailed NURBS patch. The birailed NURBS patch always has sections+1 control
 points in U direction.
 <newline>
 Also zero is a valid setting for
-the <tt/"Sections"/ parameter and used as default value.
-<footnote>Since 1.13.</footnote>
+the <tt/"Sections"/ parameter and used as default
+value.<footnote>Since 1.13.</footnote>
 <newline>
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
@@ -8012,8 +7968,7 @@ NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8077,8 +8032,7 @@ to the standard linear interpolation that would be carried out if no
 interpolation control curve were present. Note, however, that the
 interpolation control curve has no influence on the first and last
 copy of the respective cross section curve, unless the <tt/"InterpolCtrl"/
-option is used.
-<footnote>Since 1.10.</footnote>
+option is used.<footnote>Since 1.10.</footnote>
 <p>
 The Birail2 object watches the child objects and adapts to them
 automatically via the notification mechanism.
@@ -8102,8 +8056,8 @@ should be used, when generating the birailed NURBS patch. The birailed
 NURBS patch always has sections+1 control points in U direction.
 <newline>
 Also zero is a valid setting for
-the <tt/"Sections"/ parameter and used as default value.
-<footnote>Since 1.13.</footnote>
+the <tt/"Sections"/ parameter and used as default
+value.<footnote>Since 1.13.</footnote>
 <newline>
 If <tt/"Sections"/ is zero the number of sections is directly derived from
 the length of the first rail curve plus one (except for curves of length 2,
@@ -8180,8 +8134,7 @@ NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8327,8 +8280,7 @@ NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8490,8 +8442,7 @@ Gordon objects will be exported as NURBS patch primitives:
 </tscreen>
 
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8569,8 +8520,7 @@ the rules layed out above for the second parameter curve.
  </itemize>
 
 Note that the bevel types <tt/"RoundCapped"/ and <tt/"LinearCapped"/
-are no longer available
-<footnote>Since Ayam 1.21.</footnote>,
+are no longer available<footnote>Since Ayam 1.21.</footnote>,
 use the <tt/"Caps"/ property to create caps.
 
 <item><tt/"BevelRadius"/ controls the size of the bevelled surface when seen
@@ -8605,8 +8555,7 @@ Bevel objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
-PV tags are supported.
-<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8702,8 +8651,7 @@ Cap objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
-PV tags are supported.
-<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8717,15 +8665,13 @@ PV tags are supported.
 <p>
 The ConcatNP object concatenates all child objects, which should be NURBS
 patches or provide NURBS patches to a single NURBS patch (see also the
-image above).
-<footnote>Since 1.16.</footnote>
+image above).<footnote>Since 1.16.</footnote>
 
 The concatenation simply breaks all surfaces into curves, makes
 the curves compatible, and joins them to the concatenated surface.
 
 Also NURBS curves or objects that provide NURBS curves can be used
-as parameter objects.
-<footnote>Since 1.20.</footnote>
+as parameter objects.<footnote>Since 1.20.</footnote>
 
 Since the ConcatNP object also
 provides a NURBS patch, it is possible to use it as child object for
@@ -8848,8 +8794,7 @@ ConcatNP objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
-PV tags are supported.
-<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8863,8 +8808,7 @@ PV tags are supported.
 <p>
 The ExtrNP object extracts a NURBS patch from
 another NURBS patch object, for use as parameter object for other tool
-objects (see image above).
-<footnote>Since 1.14.</footnote>
+objects (see image above).<footnote>Since 1.14.</footnote>
 <p>
 It also works with NURBS patch providing objects, so that the following
 example hierarchy is valid:
@@ -8883,8 +8827,7 @@ and move it to the newly created ExtrNP object.
 <p>
 As the geometry of the extracted surface is completely defined by
 the master surface, ExtrNP objects do not support own transformation
-attributes.
-<footnote>Since 1.19.</footnote>
+attributes.<footnote>Since 1.19.</footnote>
 <p>
 Also note that eventually present trim curves will <em>not</em> be honored
 properly.
@@ -8910,8 +8853,7 @@ is to be extracted. The valid range of parameter values depends
 on the knot vectors of the original surface.
 
 <item><tt/"Relative"/ controls whether the parametric values should
-be interpreted in a relative way.
-<footnote>Since 1.15.</footnote>
+be interpreted in a relative way.<footnote>Since 1.15.</footnote>
 If enabled, a parametric value of 0.5
 always extracts from the middle of the knot vector, regardless of the
 actual knot values, and the valid range for the parametric values is
@@ -8943,8 +8885,7 @@ ExtrNP objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
-PV tags are supported.
-<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -8957,11 +8898,9 @@ PV tags are supported.
 </figure>
 <p>
 The OffsetNP object creates offset surfaces from
-NURBS surfaces using a simple algorithm.
-<footnote>Since 1.17.</footnote>
+NURBS surfaces using a simple algorithm.<footnote>Since 1.17.</footnote>
 The offsetting also works for closed and periodic surfaces in any
-possible combinations in the two dimensions.
-<footnote>Since 1.19.</footnote>
+possible combinations in the two dimensions.<footnote>Since 1.19.</footnote>
 However, note that degenerate and rational surfaces are still not supported.
 <p>
 The offset surface will always match the original surface in width/height,
@@ -8971,8 +8910,7 @@ offset surface.
 <p>
 As the geometry of the offset surface is completely defined by
 the master surface, OffsetNP objects do not support own transformation
-attributes.
-<footnote>Since 1.19.</footnote>
+attributes.<footnote>Since 1.19.</footnote>
 <p>
 The following table briefly lists some capabilities of the OffsetNP object.
 <p>
@@ -9012,8 +8950,7 @@ OffsetNP objects will be exported as NURBS patch primitives:
 <tt>RiNuPatch(...);</tt>
 </tscreen>
 
-PV tags are supported.
-<footnote>Since 1.20.</footnote>
+PV tags are supported.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9127,8 +9064,7 @@ NURBS patch primitives in the following order: end bevel, end cap,
 start bevel, start cap.
 <p>
 PV tags are supported but all NURBS patch primitives will get
-the same set of tags.
-<footnote>Since 1.20.</footnote>
+the same set of tags.<footnote>Since 1.20.</footnote>
 
 <#if out=latex><x/newpage/</#if>
 
@@ -9136,8 +9072,9 @@ the same set of tags.
 <p>
 The Trim object may be used in hierarchies
 of tool objects to trim NURBS patch providing objects otherwise
-unavailable to trimming like e.g.~a Revolve object.
-<footnote>Since 1.16.</footnote>
+unavailable to trimming like e.g.~a Revolve
+object.<footnote>Since 1.16.</footnote>
+<p>
 The first child of the Trim object is the NURBS patch providing object
 and the second object is the trim curve (defined in the parametric
 space of the NURBS surface). More curves and loops may follow.
@@ -9207,8 +9144,7 @@ the Tcl scripting interface of Ayam
 Script objects may also use arbitrary, plugin provided,
 scripting languages, like JavaScript, provided by the
 <tt/"jsinterp"/ plugin (see also:
-<ref id="jsinterp" name="JavaScript Scripting Interface">).
-<footnote>Since 1.18.</footnote>
+<ref id="jsinterp" name="JavaScript Scripting Interface">).<footnote>Since 1.18.</footnote>
 
 <sect2>Safe Interpreter<label id="safeinterp">
 <p>
@@ -9273,19 +9209,16 @@ procedures and commands should <em>not</em> be used: uS, uCR, uCL,
 selOb, plb_update, undo!
 <p>
 Script objects may also create their own property
-GUIs for e.g.~script parameters.
-<footnote>Since 1.8.2.</footnote>
+GUIs for e.g.~script parameters.<footnote>Since 1.8.2.</footnote>
 This may be accomplished by adding tags of type <tt>"NP"</tt> with the
 name of the new property as value to the script object (menu entry
 <tt>"Special/Tags/Add Property"</tt>).
 The script itself is responsible for data
 management and property GUI creation.
-
 <p>
 The parameters set via a such a property GUI may be
 comfortably saved with scene files by just adding the following
-comment as first line to the script:
-<footnote>Since 1.9.</footnote>
+comment as first line to the script:<footnote>Since 1.9.</footnote>
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
@@ -9298,15 +9231,14 @@ script object developers fine grained control over what actually goes
 to the Ayam scene file.
 <p>
 There is also a tag type to remove properties
-(<tt>"RP"</tt>).
-<footnote>Since 1.12.</footnote>
+(<tt>"RP"</tt>).<footnote>Since 1.12.</footnote>
 Using this tag, one can e.g.~hide the actual script
 code and block users from unintentionally changing it.
 <p>
 Script objects can have individual sets of parameters,
 so that multiple copies of a script object can be used (without individual
-parameters all copies would share the same parameter values).
-<footnote>Since 1.15.</footnote>
+parameters all copies would share the same parameter
+values).<footnote>Since 1.15.</footnote>
 For this, the new variable <tt>"SP"</tt> in the script data array
 contains a list of parameter names in that array that are individual
 (not shared by all copies of the script object).
@@ -9319,8 +9251,7 @@ respective script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished.
 <p>
 Script objects may also use arbitrary, plugin provided,
-scripting languages.
-<footnote>Since 1.18.</footnote>
+scripting languages.<footnote>Since 1.18.</footnote>
 To switch to a different language, the first line
 of the script must be a comment (in the syntax of the other language)
 with the word <tt>"use:"</tt> followed by the language name, as
@@ -10535,8 +10466,8 @@ in Ayam 1.17.
 Not all geometric objects currently honour PV tags
 on RIB export. The geometric objects currently supporting PV tags
 are: SDMesh, PolyMesh, PatchMesh, NPatch, and BPatch.
-Most tool objects that internally create NPatch objects also support PV tags.
-<footnote>Since 1.20.</footnote>
+Most tool objects that internally create NPatch objects also support PV
+tags.<footnote>Since 1.20.</footnote>
 Mind that the same set of tags
 will be used for all surfaces that make up the tool object, e.g.
 the swept surface, the bevels, and the caps.
@@ -13109,8 +13040,7 @@ and third point of the same curve may be selected using <tt/"selPnts 0 2"/.
 <sect2>Manipulating Properties<label id="sciprop">
 <p>
 These procedures allow easy access to object properties from the
-scripting interface:
-<footnote>Since 1.9.</footnote>
+scripting interface:<footnote>Since 1.9.</footnote>
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
@@ -13123,8 +13053,7 @@ getProperty &ndash; get single property value
 named elemname from the property named propname of the currently
 selected object and writes the result into the variable named varname.
 Multiple selected objects are supported and lead to a list of values
-produced in the output variable.
-<footnote>Since 1.21.</footnote>
+produced in the output variable.<footnote>Since 1.21.</footnote>
  <item>Notes: This procedure runs more slowly than calling the appropriate
 get-procedure and accessing the data array that is associated with the
 property in question directly, especially if multiple values are to be
@@ -13156,8 +13085,7 @@ setProperty &ndash; set single property value
  <item>Description: This procedure sets a single property element
 named elemname of the property named propname for the currently
 selected object to the new value given in value.
-Multiple selected objects are supported.
-<footnote>Since 1.21.</footnote>
+Multiple selected objects are supported.<footnote>Since 1.21.</footnote>
  <item>Notes: This procedure runs more slowly than accessing the data array
 that is associated with a property and calling the appropriate set-procedure
 directly, especially if multiple values are to be set.
@@ -14139,23 +14067,26 @@ interpuNP &ndash; interpolate NURBS surface in U direction:
  <item>Synopsis: <tt/"interpuNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
-in u direction with desired order and parameterisation type.
+in U direction with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
 The parameterisation type must be one of 0 &ndash; Chordal,
 1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
 The interpolation can create a closed surface but this will also increase
 the width of the resulting NURBS surface (the default is to
 create an open surface).
+<p><p>
 Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
 to 0.0) the length of automatically created start/end derivatives
 can be adjusted. If any of these is not 0.0, a different interpolation
 algorithm will be used, which increases the width of the resulting NURBS
 surface.
+<p>
 The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
-points will not be interpolated by the surface. The surface will
+points will <em/not/ be interpolated by the surface. The surface will
 interpolate the old control point positions.
+<p>
 The u knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 </itemize>
 
@@ -14168,23 +14099,26 @@ interpvNP &ndash; interpolate NURBS surface in V direction:
  <item>Synopsis: <tt/"interpvNP [-order order | -ktype type | -closed (0|1) | -sdlen length | -edlen length]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Interpolate the selected NURBS surfaces
-in v direction with desired order and parameterisation type.
+in V direction with desired order and parameterisation type.
 Order defaults to 4 and must be higher than 2.
 The parameterisation type must be one of 0 &ndash; Chordal,
 1 &ndash; Centripetal, or 2 &ndash; Uniform, default is Chordal.
 The interpolation can create a closed surface but this will also increase
 the height of the resulting NURBS surface (the default is to
 create an open surface).
+<p><p>
 Using the options <tt/"-sdlen"/ and <tt/"-edlen"/ (which both default
 to 0.0) the length of automatically created start/end derivatives
 can be adjusted. If any of these is not 0.0, a different interpolation
 algorithm will be used, which increases the height of the resulting NURBS
 surface.
+<p>
 The surface will interpolate all current control points after the
 interpolation and the position of certain control points will be
 changed in this process so that, after interpolation, the new control
-points will not be interpolated by the surface. The surface will
+points will <em/not/ be interpolated by the surface. The surface will
 interpolate the old control point positions.
+<p>
 The v knot type of the interpolated surfaces will be changed to <tt/"Custom"/.
 </itemize>
 
@@ -14248,8 +14182,8 @@ genfnPo &ndash; generate face normals:
 <itemize>
  <item>Synopsis: <tt/"genfnPo"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Generate face normals for a PolyMesh object using
-the robust Newell algorithm.
+ <item>Description: Generate face normals for the selected PolyMesh object(s)
+using the robust Newell algorithm.
 <p><p>
 The generated normals will be stored in a PV tag.
 </itemize>
@@ -14262,20 +14196,18 @@ gensnPo &ndash; generate smooth normals:
 <itemize>
  <item>Synopsis: <tt/"gensnPo"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: Generate smooth vertex normals for a PolyMesh object,
-averaging the surrounding face normals of each vertex. The face normals
-will be weighted by the vertex face-centroid distance, which takes both,
-face area and face shape, into account.
+ <item>Description: Generate smooth vertex normals for the selected
+PolyMesh object(s), averaging the surrounding face normals of each vertex.
+The face normals will be weighted by the vertex face-centroid distance,
+which takes both, face area and face shape, into account.
+Vertices of hole loops will just get the respective face normal.
 <p><p>
 Already existing vertex normals will be destroyed.
 <p>
 If face normals already exist, they will be used, otherwise, new face
 normals will be generated using the same algorithm as implemented in the
 <tt/"genfnPo"/ command above.
-<p>
-Vertices of hole loops will get the respective face normal.
 </itemize>
-
 
 
 <sect2>Manipulating Points<label id="scipoints">
@@ -15106,8 +15038,7 @@ Adding buttons with just text is a little bit more involved,
 as the sizes of the new buttons often do not fit well in the
 icon button scheme with its constant button size. However,
 the procedure <tt/"toolbox_add"/ can be of
-considerable help.
-<footnote>Since 1.14.</footnote>
+considerable help.<footnote>Since 1.14.</footnote>
 <p>
 See also the script <tt>"scripts/topoly.tcl"</tt>
 for an example.
@@ -15146,8 +15077,8 @@ bgconvert.tcl).
 <p>
 The external Tcl script <tt>"repairAyam.tcl"</tt>
 may be used to repair the application state of Ayam,
-should it be stuck e.g.~in an endless loop of Tcl error messages.
-<footnote>Since 1.8.2.</footnote>
+should it be stuck e.g.~in an endless loop of Tcl error
+messages.<footnote>Since 1.8.2.</footnote>
 <p>
 On Unix systems <tt>"repairAyam"</tt> may be started from any
 shell simply by typing
@@ -15182,8 +15113,7 @@ main window widgets.
 <p>
 Furthermore, the script will also clear the console and
 try to break potential endless loops running e.g.~in the console or
-in script objects.
-<footnote>Since 1.9.</footnote>
+in script objects.<footnote>Since 1.9.</footnote>
 <p>
 After running <tt>"repairAyam.tcl"</tt> the scene (or the most
 important objects currently worked on) should be immediately
@@ -15199,8 +15129,7 @@ should be avoided because views were possibly deleted.
 <p>
 The script <tt>"topoly.tcl"</tt>
 recursively browses through the scene and converts everything
-to a polygonal representation.
-<footnote>Since 1.13.</footnote>
+to a polygonal representation.<footnote>Since 1.13.</footnote>
 <p>
 After running the script, there is a new button in the toolbox
 named <tt>"ToPolyMesh"</tt>. Additionally, there is a corresponding
@@ -15222,8 +15151,7 @@ section <ref id="tesst" name="Tesselation Tool">.
 The script <tt>"tonpatch.tcl"</tt>
 recursively browses through the scene and converts everything
 to a NURBS patch representation effectively flattening the tool object
-hierarchy.
-<footnote>Since 1.14.</footnote>
+hierarchy.<footnote>Since 1.14.</footnote>
 <p>
 After running the script, there is a new button in the toolbox
 named <tt>"ToNPatch"</tt>. Additionally, there is a corresponding
@@ -15309,8 +15237,8 @@ counts.
 <p>
 Selecting all points via the keyboard shortcut <tt/&lt;A&gt;/
 will switch to point modelling and de-selecting all points via
-<tt/&lt;N&gt;/ will switch to object modelling.
-<footnote>Since 1.21.</footnote>
+<tt/&lt;N&gt;/ will switch to object
+modelling.<footnote>Since 1.21.</footnote>
 <p>
 It is also still possible to switch back to object modelling anytime
 via the keyboard shortcut <tt/&lt;o&gt;/.
@@ -15335,8 +15263,8 @@ type to <tt/"Perspective"/.
 <p>
 The external Tcl script <tt>"bgconvert.tcl"</tt>
 converts scene files from one 3D file format to another,
-with the help of Ayam which is running in the background.
-<footnote>Since 1.15.</footnote>
+with the help of Ayam which is running in the
+background.<footnote>Since 1.15.</footnote>
 <p>
 In the most simple form, bgconvert may be used from a Unix command line
 (or shell script) like this:
@@ -15789,8 +15717,7 @@ radius, zmin, and zmax value.
 <p>
 This sections contains the documentation of the Lua scripting
 interface which is available after loading of the <tt>"luainterp"</tt>
-plugin.
-<footnote>Since 1.21.</footnote>
+plugin.<footnote>Since 1.21.</footnote>
 <p>
 Upon loading, the <tt>"luainterp"</tt> plugin creates <em>one</em> Lua
 context that lives (with all variables and objects defined therein)
@@ -16103,8 +16030,7 @@ setting),
 Implicit loading means one can simply use the main menu entries
 <tt>"File/Open"</tt> and <tt>"File/Save as"</tt> (or the corresponding
 keyboard shortcuts) and specify a filename with the appropriate
-extension (e.g.~<tt/".dxf"/).
-<footnote>Since 1.13.</footnote>
+extension (e.g.~<tt/".dxf"/).<footnote>Since 1.13.</footnote>
 Ayam will automatically load the matching plugin
 (<tt/"dxfio"/) and open the import (or export) options dialog with
 the <tt/"FileName"/ option already set to the filename chosen before.
@@ -16235,11 +16161,9 @@ archives, light sources (including area-lights), arbitrary linear
 transformations (except shear transformations), arbitrary
 RiOptions and RiAttributes, shaders (except transformation
 shaders and without array arguments), arbitrary primitive variables
-(e.g.~varying or vertex)
-<footnote>Since 1.7.</footnote>
-, and procedural objects and delayed read archives
-<footnote>Since 1.9.</footnote>
-.
+(e.g.~varying or vertex)<footnote>Since 1.7.</footnote>
+, and procedural objects and delayed read
+archives<footnote>Since 1.9.</footnote>.<newline>
 Texture coordinates will import as TC tags
 (see also section <ref id="tctag" name="TC (Texture Coordinates) Tag">).
 <p>
@@ -16254,8 +16178,7 @@ Also note that for NURBS patches and bicubic patch meshes, points of type
 by the plugin. Trimming of NURBS patches by clamping
 the knot ranges is also not supported (however, UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values).
-<footnote>Since 1.9.</footnote>
+values).<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Furthermore, objects of type (general) polygon and polygon mesh will
@@ -16569,8 +16492,7 @@ points (e.g.~curve on surface) is currently not supported. Furthermore,
 trimming of freeform curves and surfaces by clamping their knot ranges
 is not supported (however, proper UMM/VMM
 tags will be created, that contain the new knot minimum and maximum
-values).
-<footnote>Since 1.9.</footnote>
+values).<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 No material and grouping information will be imported.
 Unsupported statements will be silently ignored.
@@ -16658,12 +16580,10 @@ as if combined by the union operator.
 The Wavefront OBJ export, currently, ignores all material information.
 Only the pure geometry information is written to the OBJ file.
 However, texture coordinates from primitive variable
-tags can be exported.
-<footnote>Since 1.8.3.</footnote>
+tags can be exported.<footnote>Since 1.8.3.</footnote>
 <p>
 UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.
-<footnote>Since 1.9.</footnote>
+exported NURBS objects.<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Light sources, as well as Cameras, and Views will not be exported.
@@ -16984,12 +16904,10 @@ surfaces) in the OpenNURBS toolkit. A coarse
 polygonal 3D representation of the 2D trim curves will be
 created automatically, so that general trimmed NURBS patches
 may be exported, albeit with lower quality and bigger file size
-as would be necessary.
-<footnote>Since 1.9.</footnote>
+as would be necessary.<footnote>Since 1.9.</footnote>
 <p>
 UMM/VMM tags are used to trim the knot vectors of
-exported NURBS objects.
-<footnote>Since 1.9.</footnote>
+exported NURBS objects.<footnote>Since 1.9.</footnote>
 See also section <ref id="ummtag" name="UMM/VMM (U/V Min Max) Tag">.
 <p>
 Since the Rhino 3DM file format does not support hierarchy and
@@ -17217,8 +17135,8 @@ Note however, that if normals are specified explicitly, e.g.~for an
 <p>
 Furthermore, if normals, colors, or texture coordinates
 are provided to an element that imports as a PolyMesh (IndexedFaceSet
-and the likes) proper PV (primitive variable) tags will be created.
-<footnote>Since 1.17.</footnote>
+and the likes) proper PV (primitive variable) tags will be
+created.<footnote>Since 1.17.</footnote>
 <p>
 Moreover, of there is an index provided to the normals, colors, or
 texture coordinates, the relevant affected data (e.g.~the vertex
@@ -17381,8 +17299,8 @@ undo operation can also always be undone using redo.
 <p>
 The changes that would be undone or redone are shown in abbreviated form
 in the default prompt of the Ayam console and also in
-the main menu entries <tt>"Edit/Undo"</tt> and <tt>"Edit/Redo"</tt>.
-<footnote>Since 1.14.</footnote>
+the main menu entries <tt>"Edit/Undo"</tt> and
+<tt>"Edit/Redo"</tt>.<footnote>Since 1.14.</footnote>
 <p>
 Several actions will completely clear the undo buffer (no undo is
 possible after those actions):
@@ -17608,9 +17526,9 @@ with that name registered; this material can <em>only</em> be in the
 clipboard, as all other objects were deleted before opening the file),
 the material object read will be renamed by appending a number, and the
 registration is attempted again, those steps will be repeated until
-successful; prior to version 1.21,
+successful (prior to version 1.21
 Ayam did not attempt to rename the material and other objects were
-then connected to the already existing material,
+then connected to the already existing material),
 <item> if loading of an object fails, Ayam skips to the next object
 and continues to read from the file.
 </enum>
@@ -18050,7 +17968,7 @@ string using <tt>"s"</tt> and provided with a list of default values:
 <tt>"{ "silent" "normal" "stats" "debug" }"</tt>.
 
 To add another option to this section, say the option <tt>"op"</tt>
-which shall be an integer value you have to change the aforementioned
+which shall be an integer value, you have to change the aforementioned
 snippet to:
 <code>
 set riopt(runtime) {
@@ -18139,14 +18057,11 @@ object (see section <ref id="sdmeshobj" name="SDMesh Object">).
 <sect1>Shader Parsing Plugins<label id="spplugins">
 <p>
 The following plugins are provided to allow
-parsing of shaders
-<footnote>Since 1.3.</footnote>
-: <tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
+parsing of shaders:<footnote>Since 1.3.</footnote>
+<tt/"ayslb"/ for Air, <tt/"ayslx"/ for Aqsis,
 <tt/"ayso"/ for RDC, <tt/"ayslo"/ for PRMan, <tt/"ayslo3d"/ for 3Delight,
-<tt/"aysdr"/ for Pixie
-<footnote>Since 1.6.</footnote>
-, and <tt/"aygso"/ for Gelato.
-<footnote>Since 1.11.</footnote>
+<tt/"aysdr"/ for Pixie<footnote>Since 1.6.</footnote>
+, and <tt/"aygso"/ for Gelato<footnote>Since 1.11.</footnote>.
 <p>
 After loading of one of the aforementioned plugins, Ayam will
 be able to parse shaders compiled with the shader compiler
@@ -18217,9 +18132,8 @@ Note that before the automatic instantiation starts, all currently
 existing instances will be resolved.<newline>
 After instantiation some statistics will be displayed in the console.
 <p>
-Also note that the instantiation obeys the object selection:
-<footnote>Since 1.14.</footnote>
-<newline>
+Also note that the instantiation obeys the object
+selection:<footnote>Since 1.14.</footnote><newline>
 instances are only created from the selected objects.
 If no objects are selected, instances are created from all objects
 in the current level and below.

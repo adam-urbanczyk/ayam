@@ -137,8 +137,8 @@
 <ncite>			"[<I>[NOTE] ([ID])</I>]"
 </ncite>
 
-<footnote>	+	"<SMALL TITLE=\""
-</footnote>		"\">*</SMALL>"		+
+<footnote>		"<SMALL TITLE=\""
+</footnote>		"\">*</SMALL>"
 
 <sq>			"\""
 </sq>			"\""
