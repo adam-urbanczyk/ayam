@@ -14236,6 +14236,47 @@ buildNP &ndash; build NURBS patch:
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
 
+<sect2>Manipulating PolyMesh Objects<label id="scipomesh">
+<p>
+These are more specialized commands to change PolyMesh
+properties:
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scgenfnPo">
+genfnPo &ndash; generate face normals:
+<itemize>
+ <item>Synopsis: <tt/"genfnPo"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Generate face normals for a PolyMesh object using
+the robust Newell algorithm.
+<p><p>
+The generated normals will be stored in a PV tag.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scgensnPo">
+gensnPo &ndash; generate smooth normals:
+<itemize>
+ <item>Synopsis: <tt/"gensnPo"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Generate smooth vertex normals for a PolyMesh object,
+averaging the surrounding face normals of each vertex. The face normals
+will be weighted by the vertex face-centroid distance, which takes both,
+face area and face shape, into account.
+<p><p>
+Already existing vertex normals will be destroyed.
+<p>
+If face normals already exist, they will be used, otherwise, new face
+normals will be generated using the same algorithm as implemented in the
+<tt/"genfnPo"/ command above.
+<p>
+Vertices of hole loops will get the respective face normal.
+</itemize>
+
+
 
 <sect2>Manipulating Points<label id="scipoints">
 <p>
@@ -14699,10 +14740,11 @@ if the objects are not named (NPatch, NCurve, Sphere, etc.).
 <label id="sctmpget">
 tmpGet:
 <itemize>
- <item>Synopsis: <tt>"tmpGet tmpdir varname"</tt>
+ <item>Synopsis: <tt>"tmpGet tmpdir varname [ext]"</tt>
  <item>Background: Yes, Undo: No, Safe: No
  <item>Description: This command calculates a name for a temporary
-file in tmpdir and puts the complete name into varname.
+file in tmpdir and puts the complete name (with the optionally present
+extension appended) into the variable designated by varname.
 </itemize>
 
 <p>
@@ -18399,7 +18441,7 @@ See also:
 Image-Based CSG", in: Skala V. (ed.): Journal of WSCG'04, 221-228,
 ISSN 1213-6972</it>
 
-<sect1>Increasing drawing speed<label id="incds">
+<sect1>Increasing Drawing Speed<label id="incds">
 <p>
 In case of sluggish response of the user interface of Ayam
 (not accounting for long tree update operations) several
@@ -18480,7 +18522,7 @@ titles well, and they are not to be seen in the single window GUI
 mode at all.
 </itemize>
 
-<sect1>How to join the fun<label id="fun">
+<sect1>How to Join the Fun<label id="fun">
 <p>
 Helping to make Ayam even better will spice up your life too.
 Here is how to do it:
@@ -19090,6 +19132,8 @@ Index:
 
 <label id="indexg"><tt/<bf/G//
 <list>
+<item>genfnPo: <ref id="scgenfnPo" name="scripting interface command">
+<item>gensnPo: <ref id="scgensnPo" name="scripting interface command">
 <item>getPnt: <ref id="scgetpnt" name="scripting interface command">
 <item>getPrefs: <ref id="scgetprefs" name="scripting interface command">
 <item>getProperty: <ref id="scgetproperty" name="scripting interface command">
