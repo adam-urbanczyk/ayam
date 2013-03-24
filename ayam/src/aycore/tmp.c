@@ -12,10 +12,14 @@
 
 #include "ayam.h"
 
-/* tmp.c - temporary files */
+/** \file tmp.c \brief temporary file name management */
 
-/* ay_tmp_gettcmd:
- *  create a temporary filename
+/** ay_tmp_gettcmd:
+ *  Create a temporary filename.
+ *  Implements the \a tmpGet scripting interface command.
+ *  See also the corresponding section in the \ayd{sctmpget}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
@@ -27,7 +31,7 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "tmpdir varname");
+      ay_error(AY_EARGS, argv[0], "tmpdir varname [extension]");
       return TCL_OK;
     }
 
@@ -60,7 +64,7 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
       to = Tcl_NewStringObj(tmpname,-1);
     }
 
-  Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG);
 
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 

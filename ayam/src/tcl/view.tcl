@@ -197,7 +197,7 @@ proc viewCycleDrawMode { w dir } {
 ##############################
 # viewRender:
 proc viewRender { w type } {
-    global env ayprefs ay tcl_platform tmpfile
+    global env ayprefs ay tcl_platform
 
     set togl $w.f3D.togl
 
