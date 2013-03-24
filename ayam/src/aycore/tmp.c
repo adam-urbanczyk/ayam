@@ -39,7 +39,7 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
   if(!(tmpname = tempnam(argv[1], "ayam")))
     {
       ay_error(AY_ERROR, argv[0], "cannot create tempname");
-       return TCL_OK;
+      return TCL_OK;
     }
 #else
   if(!(tmpname = tmpnam(argv[1])))
@@ -49,19 +49,19 @@ ay_tmp_gettcmd(ClientData clientData, Tcl_Interp *interp,
     }
 #endif
 
-  ton = Tcl_NewStringObj(argv[2],-1);
+  ton = Tcl_NewStringObj(argv[2], -1);
 
   if(argc > 3)
     {
       Tcl_DStringInit(&ds);
       Tcl_DStringAppend(&ds, tmpname, -1);
       Tcl_DStringAppend(&ds, argv[3], -1);
-      to = Tcl_NewStringObj(Tcl_DStringValue(&ds),-1);
+      to = Tcl_NewStringObj(Tcl_DStringValue(&ds), -1);
       Tcl_DStringFree(&ds);
     }
   else
     {
-      to = Tcl_NewStringObj(tmpname,-1);
+      to = Tcl_NewStringObj(tmpname, -1);
     }
 
   Tcl_ObjSetVar2(interp, ton, NULL, to, TCL_LEAVE_ERR_MSG);
