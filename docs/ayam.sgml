@@ -14514,7 +14514,8 @@ comparison, so that it is legal to use forAllT e.g.~this way:
  <item>Deficiencies:
  <itemize>
   <item>The command will not have access to global arrays unless
-e.g.~one of the following constructs is in use:<p>
+e.g.~one of the following constructs is in use:
+<p><p>
 <tt>"forAllT ncurve 0 &lcub;uplevel &num;0 &lcub;commands&rcub; &rcub;"</tt><p>
 <tt>"forAllT ncurve 0 &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
@@ -16102,6 +16103,7 @@ CSG|Yes|No|No|No|No|No<#if out=latex>@<hline></#if>
 <f><sup>d</sup></f>&thinsp;: some quadrics are converted to NURBS (refer to plugin documentation)<newline>
 <f><sup>e</sup></f>&thinsp;: some parametrics are converted to NURBS (refer to plugin documentation)<newline>
 </quote>
+
 Note that a successful export of a 3D scene to a different application
 not only depends on Ayam but also on the importing
 application. For instance, many applications claim to read files in the
@@ -16231,8 +16233,8 @@ Be careful with this option (i.e.~use it only if reading of a RIB fails),
 as it switches reading of all types of objects on, regardless of
 the RIB structure.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported if they are
-the only trim curves.
+run along the border of a NURBS patch and actually do not trim the surface)
+will be imported if they are the only trim curves.
 <item><tt/"RescaleKnots"/ allows to rescale the knot vectors of
 NURBS patches and trim curves so that the distances between different
 knots are not smaller than the given value. Using a value of 1.0e-04 leads
@@ -16382,10 +16384,10 @@ The DXF import may be controlled via different options:
 be imported.
 <item><tt/"ScaleFactor"/: allows to apply a scaling factor to all
 imported objects.
-<item><tt/"ReadLayers"/: By default, all entities from all layers will be
-imported.
-Using the <tt/"ReadLayers"/: import option, a single layer or a range
-of layers may be selected for import.
+<item><tt/"ReadLayers"/: 
+Using the <tt/"ReadLayers"/: using this import option, a single layer or
+a range of layers may be selected for import.
+By default, all entities from all layers will be imported.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of imported
 NURBS curves so that the distances between different knots are not smaller
 than the given value. A <tt/"RescaleKnots"/ value of 1.0e-04 leads to NURBS
@@ -16522,8 +16524,8 @@ merging (see above).
 be imported. This option does <em>not</em> influence the import of trim
 curves.
 <item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported if they are the
-only trim curves.
+run along the border of a NURBS patch and actually do not trim the surface)
+will be imported if they are the only trim curves.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -16681,8 +16683,8 @@ scaling factor to all imported objects.
 If the <tt/"ReadCurves"/: import option is switched off, no curves will be
 imported. This option does <em>not</em> influence the import of trim curves.
 <item><tt/"ReadSTrim"/ if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported if they are the
-only trim curves.
+run along the border of a NURBS patch and actually do not trim the surface)
+will be imported if they are the only trim curves.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -16848,17 +16850,16 @@ mostly used for conversion operations to the NURBS form.
 <item><tt/"ReadCurves"/: If this option is
 switched off, no curves will be imported. This option does <em>not</em>
 influence the import of trim curves.
-<item><tt/"ReadLayers"/: By default, all objects from all layers will be
-imported.
-Using the <tt/"ReadLayers"/ import option, a single layer or a range
+<item><tt/"ReadLayers"/: Using this import option, a single layer or a range
 of layers may be selected for import.
+By default, all objects from all layers will be imported.
 <item><tt/"ReadSTrim"/: This option helps to ignore single bounding
 trim loops of NURBS surfaces.
 Importing this single bounding trim loop would just make the Ayam scene
 more complex than needed in many cases.
 If <tt/"ReadSTrim"/ is switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported if they are the
-only trim curves.
+run along the border of a NURBS patch and actually do not trim the surface)
+will be imported if they are the only trim curves.<newline>
 This option replaces the <tt/"IgnoreFirstTrim"/ import option
 available before Ayam 1.13 with slightly different semantics.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
@@ -17006,7 +17007,6 @@ attribute of the Ayam object is set according to the cap information of
 the X3D element.
 <p>
 ElevationGrids are imported as bilinear patch meshes.
-<p><p>
 
 <item><bf/Geometry2D:/
 Arc2D, ArcClosed2D, Circle2D, Disk2D, Polyline2D.
@@ -17015,7 +17015,6 @@ Arcs and Circles are imported as NCircle objects.
 Closed arcs and Polylines are imported as NURBS curves.
 Disks with an inner radius > 0.0 are imported as flat Hyperboloids
 (otherwise as Disks).
-<p><p>
 
 <item><bf/NURBS:/
 NurbsCurve, NurbsCurve2D, NurbsPatchsurface,
@@ -17023,14 +17022,12 @@ TrimmedNurbsPatchsurface, Contour2D, ContourPolyline2D,
 NurbsSweptSurface, NurbsSwungSurface, NurbsSet.
 <p><p>
 All NURBS elements are fully supported.
-<p><p>
 
 <item><bf/CAD:/
 QuadSet, IndexedQuadSet, CADLayer, CADAssembly, CADPart, CADFace.
 <p><p>
 CADLayer objects will be imported as top level level objects.
 CADAssembly and CADPart objects will be imported as level objects.
-<p><p>
 
 <item><bf/Light sources:/
 DirectionalLight, PointLight, SpotLight.
@@ -17040,7 +17037,6 @@ light sources distant, point, and spot, respectively.
 Therefore, the <tt>"radius"</tt> and the <tt>"attenuation"</tt> attributes
 of point and spotlights are not supported. However, point and spotlights
 still have a quadratic falloff with distance.
-<p><p>
 
 <item><bf/Navigation:/
 Viewpoint.
@@ -17048,7 +17044,6 @@ Viewpoint.
 Viewpoint elements will be imported as view objects (with corresponding
 view window) or camera objects depending on the <tt>"ReadViewpoints"</tt>
 import option.
-<p><p>
 
 <item><bf>Non geometric/Scene structure:</bf>
 Transformation, Shape, Group, Inline.
@@ -17070,7 +17065,6 @@ to the inlining file or from the inlining file to the inlined file.
 <p>
 Also note: Inline URLs that do not point to the file system are not
 supported.
-
 </itemize>
 
 Unsupported X3D elements will be silently ignored. Prototyping and
@@ -17160,8 +17154,8 @@ curves.
 <item><tt>"ReadViewpoints"</tt>: controls whether viewpoints should
 be read as view, camera, or not at all.
 <item><tt/"ReadSTrim"/: if switched off, no simple trims (trims that only
-run along the border of a NURBS patch) will be imported if they are the
-only trim curves.
+run along the border of a NURBS patch and actually do not trim the surface)
+will be imported if they are the only trim curves.
 <item><tt/"RescaleKnots"/: allows to rescale the knot vectors of
 NURBS curves, patches, and trim curves so that the distances between different
 knots are not smaller than the given value. A <tt/"RescaleKnots"/ value of
@@ -17234,14 +17228,11 @@ exported objects;
 <item><tt>"ObeyNoExport"</tt>: toggles export of objects with <tt/"NoExport"/
 tags;
 <item><tt>"IgnoreHidden"</tt>: toggles export of hidden objects;
-<item><tt>"TessPoMesh"</tt>: automatically tesselates all PolyMesh objects
-to triangles for export;
 <item><tt>"WriteCurves"</tt>: toggles writing of NURBS curves and
 NURBS curve providing objects to the exported file (This option does
 <em>not</em> influence the export of trim curves.);
 <item><tt>"WriteViews"</tt>: controls whether views should be exported as
 view points;
-
 <item><tt>"WriteParametrics"</tt>: toggles writing of the following
 tool objects as plain NURBS surface or the following higher level
 primitives:
@@ -17251,6 +17242,12 @@ primitives:
  <item>Sweep as NurbsSweptSurface,
  <item>Extrude as NurbsSweptSurface;
  </itemize>
+<item><tt>"WritePoWires"</tt>: controls whether PoMesh objects should be,
+additionally, exported as wireframe;
+<item><tt>"WriteNpWires"</tt>: controls whether NURBS patch objects should be,
+exported as wireframe;
+<item><tt>"WriteMaterials"</tt>: controls whether appearance and
+material nodes should be exported for each shape;
 <item><tt>"ResolveInstances"</tt>: controls whether instance objects should
 be resolved to normal objects or exported as DEF/USE pairs, note that no
 attempt is made to detect whether the master objects (the DEFs) will be
@@ -17258,9 +17255,21 @@ exported for all exported instances (USE); this may happen especially in
 conjunction with the X3D export options <tt>"WriteSelected"</tt> or
 <tt>"IgnoreHidden"</tt>, incomplete/erroneous X3D files may result unless the
 <tt>"ResolveInstances"</tt> option is switched on;
-
 <item><tt>"TopLevelLayers"</tt>: arranges for all child objects of top level
 objects in the Ayam scene to be put in CADLayer nodes;
+<item><tt>"WriteX3dom"</tt>: toggles X3DOM-export mode. If this option is
+enabled,
+<enum>
+<item>the X3D export will first read a XHTML template file (named
+<tt/"x3dom-template.xhtml"/),
+<item>then inject the scene to be exported into the
+X3D <tt/"&lt;Scene&gt;"/-tag (already present child elements of this tag
+will be preserved),
+<item>add width and height of the view window that was exported last
+as attributes to the <tt/"&lt;X3D&gt;"/-tag,
+<item>and finally write the XHTML document to the file
+specified via the <tt>"FileName"</tt> export option.
+</enum>
 <item><tt/"Progress"/: displays the progress of the export;
 from 0 to 50 percent, the x3dio plugin is creating a XML document
 in memory and from 50 to 100 percent this XML document will be written
@@ -18663,8 +18672,8 @@ Index:
 <item>About: <ref id="mmhelp" name="main menu entry">
 <item>Accuracy:
 <itemize>
-<item><ref id="imprhino" name="3DM (Rhino) import option">,
-<item><ref id="exprhino" name="3DM (Rhino) export option">
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">,
+<item><ref id="exp3dmopt" name="3DM (Rhino) export option">
 </itemize>
 <item>ACurve: <ref id="acurveobj" name="ACurve object">
 <item>Action: <ref id="iac" name="interactive actions">
@@ -19111,8 +19120,8 @@ Index:
 <item>IconGamma: <ref id="hidprefs" name="hidden preference setting">
 <item>ICurve: <ref id="icurveobj" name="ICurve object">
 <item>IDR: <ref id="idr" name="IDR plugin">
-<item>IgnoreFirstTrim: <ref id="imprhino" name="3DM (Rhino) import option">
-<item>IgnoreHidden: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>IgnoreFirstTrim: <ref id="imp3dmopt" name="3DM (Rhino) import option">
+<item>IgnoreHidden: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>IgnoreNormals: <ref id="mmtools" name="Optimize PolyMesh tool option">
 <item>Image: <ref id="prefrib" name="preference setting">
 <item>Imager: <ref id="imager" name="property">
@@ -19342,7 +19351,7 @@ Index:
 
 <label id="indexo"><tt/<bf/O//
 <list>
-<item>ObeyNoExport: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>ObeyNoExport: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>OBJ:
 <itemize>
 <item><ref id="impwav" name="Wavefront OBJ import">,
@@ -19446,7 +19455,7 @@ Index:
 
 <label id="indexq"><tt/<bf/Q//
 <list>
-<item>QuadAsBRep: <ref id="exprhino" name="3DM (Rhino) export option">
+<item>QuadAsBRep: <ref id="exp3dmopt" name="3DM (Rhino) export option">
 <item>QRender: <ref id="prefrib" name="preference setting">
 <item>QRenderPT, QRenderUI: <ref id="prefrib" name="preference setting">
 <item>Quat: <ref id="trap" name="transformations property">
@@ -19478,7 +19487,7 @@ Index:
 <item><ref id="impdxfopt" name="DXF import option">,
 <item><ref id="imp3dmfopt" name="3DMF (Apple) import option">,
 <item><ref id="impwav" name="Wavefront OBJ import/export option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">,
 <item><ref id="impx3dopt" name="X3D import option">
 </itemize>
 <item>ReadFrame, ReadCamera, ReadOptions, ReadLights, ReadMaterial,
@@ -19486,12 +19495,12 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>ReadLayers:
 <itemize>
 <item><ref id="impdxfopt" name="DXF import option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">
 </itemize>
 <item>ReadSTrim:
 <itemize>
 <item><ref id="impwav" name="Wavefront OBJ import option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">,
 <item><ref id="rribopt" name="RIB import option">,
 <item><ref id="impx3dopt" name="X3D import option">
 </itemize>
@@ -19556,7 +19565,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>RescaleKnots:
 <itemize>
 <item><ref id="impdxfopt" name="DXF import option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">,
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">,
 <item><ref id="imprib" name="RIB import option">,
 <item><ref id="impwav" name="Wavefront OBJ import option">
 </itemize>
@@ -19661,8 +19670,8 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <itemize>
 <item><ref id="impdxfopt" name="DXF import option">,
 <item><ref id="expdxfopt" name="DXF export option">,
-<item><ref id="imprhino" name="3DM (Rhino) import option">,
-<item><ref id="exprhino" name="3DM (Rhino) export option">,
+<item><ref id="imp3dmopt" name="3DM (Rhino) import option">,
+<item><ref id="exp3dmopt" name="3DM (Rhino) export option">,
 <item><ref id="impwav" name="Wavefront OBJ import option">,
 <item><ref id="expwav" name="Wavefront OBJ export option">,
 <item><ref id="rribopt" name="RIB import option">
@@ -19994,16 +20003,21 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>WriteCurves:
 <itemize>
 <item><ref id="impwav" name="Wavefront OBJ import/export option">,
-<item><ref id="exprhino" name="3DM (Rhino) export option">
+<item><ref id="exp3dmopt" name="3DM (Rhino) export option">,
+<item><ref id="expx3dopt" name="X3D (Web3D) export option">
 </itemize>
+<item>WriteMaterials<ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>WriteNpWires<ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>WritePoWires<ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteParametrics: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected:
 <itemize>
-<item><ref id="exprhino" name="3DM (Rhino) export option">,
+<item><ref id="exp3dmopt" name="3DM (Rhino) export option">,
 <item><ref id="expwav" name="Wavefront OBJ export option">
 </itemize>
 <item>WriteViews: <ref id="expx3dopt" name="X3D (Web3D) export option">
+<item>WriteX3dom<ref id="expx3dopt" name="X3D (Web3D) export option">
 </list>
 
 <#if out=latex><x/phantomsection/</#if>
