@@ -693,6 +693,15 @@ ay_object_copy(ay_object *src, ay_object **dst)
   /* copy tags */
   ay_status = ay_tags_copyall(src, new);
 
+  if(ay_status)
+    {
+      ay_error(AY_ERROR, fname, "copy tags failed");
+      if(new->name)
+	free(new->name);
+      free(new);
+      return AY_ERROR;
+    }
+
   /* increase material objects refcount */
   if(new->mat)
     {
