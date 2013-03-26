@@ -156,6 +156,11 @@ ay_tags_copyall(ay_object *src, ay_object *dst)
 	      newtagptr = &((*newtagptr)->next);
 	      *newtagptr = NULL;
 	    }
+	  else
+	    {
+	      ay_tags_delall(dst);
+	      return ay_status;
+	    }
 	}
       tag = tag->next;
     }
@@ -235,6 +240,10 @@ ay_tags_register(Tcl_Interp *interp, char *name, char **result)
 
 /* ay_tags_settcmd:
  *  set new tags of selected object(s), after removing all old tags
+ *  Implements the \a setTags scripting interface command.
+ *  See also the corresponding section in the \ayd{scsettags}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tags_settcmd(ClientData clientData, Tcl_Interp *interp,
@@ -589,6 +598,10 @@ ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* ay_tags_gettcmd:
  *  return all tags of the (first) selected object
+ *  Implements the \a getTags scripting interface command.
+ *  See also the corresponding section in the \ayd{scgettags}.
+ *
+ *  \returns TCL_OK in any case.
  */
 int
 ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
@@ -627,7 +640,7 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
       tag = tag->next;
     } /* while */
 
-  return TCL_OK;
+ return TCL_OK;
 } /* ay_tags_gettcmd */
 
 
@@ -738,7 +751,7 @@ ay_tags_deletetcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  return TCL_OK;
+ return TCL_OK;
 } /* ay_tags_deletetcmd */
 
 
