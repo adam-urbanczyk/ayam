@@ -71,7 +71,7 @@ int onio_transposetm(double *m1, double *m2);
 
 int onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m);
 
-int onio_writename(ay_object *o, ONX_Model_Object& p_mo);
+void onio_writename(ay_object *o, ONX_Model_Object& p_mo);
 
 int onio_prependname(ay_object *o, ONX_Model_Object& p_mo);
 
@@ -306,18 +306,18 @@ onio_getnurbsurfobj(ay_object *o, ON_NurbsSurface **pp_n, double *m)
 
 // onio_writename:
 //
-int
+void
 onio_writename(ay_object *o, ONX_Model_Object& p_mo)
 {
 
   if(!o->name || (strlen(o->name) == 0))
-    return AY_OK;
+    return;
 
   ON_wString *p_name = new ON_wString(o->name);
   p_mo.m_attributes.m_name = *p_name;
   delete p_name;
 
- return AY_OK;
+ return;
 } // onio_writename
 
 
@@ -375,7 +375,6 @@ onio_writenpatch(ay_object *o, ONX_Model *p_m, double *m)
 
       onio_writename(o, mo);
     } // if
-
 
   /* write the caps and bevels */
   np = (ay_nurbpatch_object *)o->refine;
@@ -946,13 +945,11 @@ onio_writenpconvertible(ay_object *o, ONX_Model *p_m, double *m)
 	  t = t->next;
 	} // while
 
-      ay_status = ay_object_deletemulti(p);
+      (void)ay_object_deletemulti(p);
 
       int last = p_m->m_object_table.Count();
       for(int i = first; i < last; i++)
 	onio_writename(o, p_m->m_object_table[i]);
-
-      return AY_OK;
     } // if
 
  return ay_status;
@@ -1078,13 +1075,19 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
  ay_list_object *li = NULL, **nextli = NULL, *lihead = NULL;
  ay_pomesh_object *pm;
  int stride = 3;
- unsigned int mystlen = 0, fnlen = 0;
- double *mystarr = NULL, *fnarr = NULL;
+ unsigned int tclen = 0, fnlen = 0, vclen = 0;
+ double *tcarr = NULL;
+ float *fnarr = NULL;
+ float *vcarr = NULL;
  ay_tag *tag;
  ON_Mesh *p_mesh = NULL;
  char *tcname = ay_prefs.texcoordname;
+ char *fnname = ay_prefs.normalname;
+ char *vcname = ay_prefs.colorname;
  BOOL has_texcoords = false;
  BOOL has_vnormals = false;
+ BOOL has_vcolors = false;
+ BOOL has_vcalpha = false;
  BOOL has_fnormals = false;
  unsigned int a, b, f = 0, i, j, k, p = 0, q = 0, r = 0;
 
@@ -1096,7 +1099,6 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
   // append to object table
   ONX_Model_Object& mo = p_m->m_object_table.AppendNew();
 
-
   if(pm->has_normals)
     has_vnormals = TRUE;
 
@@ -1107,29 +1109,54 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	{
 	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 	    {
-	      has_texcoords = TRUE;
-
+	      if(tcarr)
+		free(tcarr);
+	      has_texcoords = FALSE;
 	      ay_status = ay_pv_convert(tag, 0,
-					&mystlen, (void**)(void*)&mystarr);
-	      if(ay_status)
-		goto cleanup;
-	      break;
+					&tclen, (void**)(void*)&tcarr);
+	      if(!ay_status && tcarr)
+		{
+		  has_texcoords = TRUE;
+		}
+	      continue;
 	    }
-#if 0
-	  if(!has_vnormals &&
-	     (ay_pv_checkndt(tag, "N", "varying", "v") ||
-	      ay_pv_checkndt(tag, "N", "varying", "n") ) )
-	    {
-	      has_fnormals = TRUE;
 
-	      // XXXX check
-	      ay_status = ay_pv_convert(tag, 3,
-					&fnlen, (void**)(void*)&fnarr);
-	      if(ay_status)
-		goto cleanup;
-	      break;
+	  if(ay_pv_checkndt(tag, vcname, "varying", "c")||
+	     ay_pv_checkndt(tag, vcname, "varying", "d"))
+	    {
+	      if(vcarr)
+		free(vcarr);
+	      has_vcolors = FALSE;
+	      ay_status = ay_pv_convert(tag, 0,
+					&vclen, (void**)(void*)&vcarr);
+	      if(!ay_status && vcarr)
+		{
+		  if(ay_pv_checkndt(tag, tcname, "varying", "d"))
+		    has_vcalpha = TRUE;
+		  else
+		    has_vcalpha = FALSE;
+		  has_vcolors = TRUE;
+		}
+	      continue;
 	    }
-#endif
+
+	  if(!has_vnormals &&
+	     (ay_pv_checkndt(tag, fnname, "uniform", "v") ||
+	      ay_pv_checkndt(tag, fnname, "uniform", "n") ) )
+	    {
+	      if(fnarr)
+		free(fnarr);
+	      has_fnormals = FALSE;
+
+	      ay_status = ay_pv_convert(tag, 1,
+					&fnlen, (void**)(void*)&fnarr);
+	      if(!ay_status && fnarr)
+		{
+		  has_fnormals = TRUE;
+		}
+	      continue;
+	    }
+
 	  tag = tag->next;
 	} // while
     } // if
@@ -1160,12 +1187,50 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 
       if(has_texcoords)
 	{
-	  p_mesh->SetTextureCoord(i, mystarr[b], mystarr[b+1]);
+	  p_mesh->SetTextureCoord(i, tcarr[b], tcarr[b+1]);
 	  b += 2;
 	}
 
       a += stride;
     } // for
+
+  // set vertex colors
+  if(has_vcolors)
+    {
+      p_mesh->m_C.SetCapacity((int)pm->ncontrols);
+      a = 0;
+      for(i = 0; i < pm->ncontrols; i++)
+	{
+	  ON_Color col;
+	  if(has_vcalpha)
+	    {
+	      col.SetFractionalRGBA(vcarr[a],vcarr[a+1],vcarr[a+2],vcarr[a+3]);
+	      a += 4;
+	    }
+	  else
+	    {
+	      col.SetFractionalRGB(vcarr[a],vcarr[a+1],vcarr[a+2]);
+	      a += 3;
+	    }
+	  p_mesh->m_C.Append(col);
+	}
+    }
+
+  // set face normals
+  if(has_fnormals)
+    {
+      p_mesh->m_FN.SetCapacity((int)pm->npolys);
+      a = 0;
+      for(i = 0; i < pm->npolys; i++)
+	{	  
+	  ON_3fVector ve;
+	  ve.x = fnarr[a];
+	  ve.y = fnarr[a+1];
+	  ve.z = fnarr[a+2];
+	  p_mesh->m_FN.Append(ve);
+	  a += 3;
+	}
+    }
 
   // set faces
   for(i = 0; i < pm->npolys; i++)
@@ -1183,8 +1248,6 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 				      pm->verts[r+2]);
 		  f++;
 		  r += 3;
-
-		  // XXXX add face normal
 		} // if
 	      if(pm->nverts[q] == 4)
 		{
@@ -1193,8 +1256,6 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 				  pm->verts[r+2], pm->verts[r+3]);
 		  f++;
 		  r += 4;
-
-		  // XXXX add face normal
 		} // if
 	      if(pm->nverts[q] > 4)
 		{
@@ -1315,9 +1376,6 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
 	onio_writepomesh(lihead->object, p_m, m);
     } // if
 
-
-cleanup:
-
   if(p_mesh)
     {
       delete p_mesh;
@@ -1331,8 +1389,11 @@ cleanup:
       lihead = li;
     } // while
 
-  if(mystarr)
-    free(mystarr);
+  if(tcarr)
+    free(tcarr);
+
+  if(vcarr)
+    free(vcarr);
 
   if(fnarr)
     free(fnarr);
@@ -2387,7 +2448,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
     { free(controlv); free(uknotv); free(vknotv); return ay_status; }
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
-    { free(controlv); free(uknotv); free(vknotv); return AY_EOMEM; }
+    { ay_npt_destroy(patch); return AY_EOMEM; }
 
   ay_object_defaults(newo);
 
@@ -2530,7 +2591,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
     { free(controlv); free(knotv); return ay_status; }
 
   if(!(newo = (ay_object*)calloc(1, sizeof(ay_object))))
-    { free(controlv); free(knotv); return AY_EOMEM; }
+    { ay_nct_destroy(curve); return AY_EOMEM; }
 
   ay_object_defaults(newo);
 
@@ -3575,7 +3636,6 @@ onio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_status = onio_readlayer(model, slayer, accuracy);
 	} // if
     } // if
-
 
   // destroy this model
   model.Destroy();
