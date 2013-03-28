@@ -22,7 +22,7 @@ static char aye_lmsg1[] = "Last message repeated ", aye_lmsg2[] = " times.";
 
 
 /* prototypes of functions local to this module: */
-void ay_error_wlog(char *message);
+void ay_error_wlog(const char *message);
 
 /* functions: */
 
@@ -30,7 +30,7 @@ void ay_error_wlog(char *message);
  *
  */
 void
-ay_error_wlog(char *message)
+ay_error_wlog(const char *message)
 {
  FILE *log = NULL;
  static int warned = AY_FALSE;
@@ -80,7 +80,7 @@ ay_error_wlog(char *message)
  *  what (more exact specification of error, or additional info)
  */
 void
-ay_error(int code, char *where, char *what)
+ay_error(int code, const char *where, const char *what)
 {
  Tcl_Interp *interp = ay_interp;
  Tcl_DString ds, dsl;

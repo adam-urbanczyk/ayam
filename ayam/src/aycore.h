@@ -213,7 +213,7 @@ int ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id);
 
 /** report an error to the user
  */
-void ay_error(int code, char *where, char *what);
+void ay_error(int code, const char *where, const char *what);
 
 /** Tcl command to report an error to the user.
  */
@@ -874,7 +874,8 @@ int ay_pv_filltokpar(ay_object *o, int declare, int start,
 
 /** add PV tag to an object
  */
-int ay_pv_add(ay_object *o, char *name, char *detail, char *type,
+int ay_pv_add(ay_object *o,
+	      const char *name, const char *detail, const char *type,
 	      int datalen, int stride, void *data);
 
 /** merge two PV tags into one

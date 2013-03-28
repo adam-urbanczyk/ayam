@@ -341,7 +341,8 @@ ay_pv_filltokpar(ay_object *o, int declare, int start,
  *  add a PV tag to object <o>
  */
 int
-ay_pv_add(ay_object *o, char *name, char *detail, char *type,
+ay_pv_add(ay_object *o,
+	  const char *name, const char *detail, const char *type,
 	  int datalen, int stride, void *data)
 {
  ay_tag *tag = NULL, **nexttag;
