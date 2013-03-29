@@ -1107,56 +1107,63 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, tcname, "varying", "g"))
+	  if(tag->type == ay_pv_tagtype)
 	    {
-	      if(tcarr)
-		free(tcarr);
-	      has_texcoords = FALSE;
-	      ay_status = ay_pv_convert(tag, 0,
-					&tclen, (void**)(void*)&tcarr);
-	      if(!ay_status && tcarr)
+	      if(ay_pv_checkndt(tag, tcname, "varying", "g"))
 		{
-		  has_texcoords = TRUE;
+		  if(tcarr)
+		    {
+		      free(tcarr);
+		      tcarr = NULL;
+		    }
+		  has_texcoords = FALSE;
+		  ay_status = ay_pv_convert(tag, 0,
+					    &tclen, (void**)(void*)&tcarr);
+		  if(!ay_status && tcarr && (tclen == pm->ncontrols))
+		    {
+		      has_texcoords = TRUE;
+		    }
 		}
-	      continue;
-	    }
-
-	  if(ay_pv_checkndt(tag, vcname, "varying", "c")||
-	     ay_pv_checkndt(tag, vcname, "varying", "d"))
-	    {
-	      if(vcarr)
-		free(vcarr);
-	      has_vcolors = FALSE;
-	      ay_status = ay_pv_convert(tag, 0,
-					&vclen, (void**)(void*)&vcarr);
-	      if(!ay_status && vcarr)
+	      else
+	      if(ay_pv_checkndt(tag, vcname, "varying", "c")||
+		 ay_pv_checkndt(tag, vcname, "varying", "d"))
 		{
-		  if(ay_pv_checkndt(tag, tcname, "varying", "d"))
-		    has_vcalpha = TRUE;
-		  else
-		    has_vcalpha = FALSE;
-		  has_vcolors = TRUE;
+		  if(vcarr)
+		    {
+		      free(vcarr);
+		      vcarr = NULL;
+		    }
+		  has_vcolors = FALSE;
+		  ay_status = ay_pv_convert(tag, 1,
+					    &vclen, (void**)(void*)&vcarr);
+		  if(!ay_status && vcarr && (vclen == pm->ncontrols))
+		    {
+		      if(ay_pv_checkndt(tag, tcname, "varying", "d"))
+			has_vcalpha = TRUE;
+		      else
+			has_vcalpha = FALSE;
+		      has_vcolors = TRUE;
+		    }
 		}
-	      continue;
-	    }
-
-	  if(!has_vnormals &&
-	     (ay_pv_checkndt(tag, fnname, "uniform", "v") ||
-	      ay_pv_checkndt(tag, fnname, "uniform", "n") ) )
-	    {
-	      if(fnarr)
-		free(fnarr);
-	      has_fnormals = FALSE;
-
-	      ay_status = ay_pv_convert(tag, 1,
-					&fnlen, (void**)(void*)&fnarr);
-	      if(!ay_status && fnarr)
-		{
-		  has_fnormals = TRUE;
-		}
-	      continue;
-	    }
-
+		else
+		if(!has_vnormals &&
+		   (ay_pv_checkndt(tag, fnname, "uniform", "v") ||
+		    ay_pv_checkndt(tag, fnname, "uniform", "n") ) )
+		  {
+		    if(fnarr)
+		      {
+			free(fnarr);
+			fnarr = NULL;
+		      }
+		    has_fnormals = FALSE;
+		    ay_status = ay_pv_convert(tag, 1,
+					      &fnlen, (void**)(void*)&fnarr);
+		    if(!ay_status && fnarr && (fnlen == pm->npolys))
+		      {
+			has_fnormals = TRUE;
+		      }
+		  }
+	    } // if
 	  tag = tag->next;
 	} // while
     } // if

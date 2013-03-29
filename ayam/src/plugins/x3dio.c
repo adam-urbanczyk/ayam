@@ -8537,14 +8537,18 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
  unsigned int stride;
  unsigned int i, j, k, p = 0, q = 0, r = 0;
  int have_texcoords = AY_FALSE, have_facenormals = AY_FALSE;
+ int have_vcolors = AY_FALSE, have_fcolors = AY_FALSE;
+ int have_alpha = AY_FALSE;
  int idxsize = 0;
  char *texcoordstring = NULL, *normalstring = NULL;
+ char *colorstring = NULL;
  ay_tag *tag;
  scew_element *transform_element = NULL;
  scew_element *shape_element = NULL;
  scew_element *ifs_element = NULL;
  scew_element *coord_element = NULL;
  scew_element *normal_element = NULL;
+ scew_element *color_element = NULL;
  scew_element *texcoord_element = NULL;
  char buf[256];
  char *attr = NULL, *nattr = NULL, *tmp;
@@ -8576,34 +8580,61 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
       tag = o->tags;
       while(tag)
 	{
-	  if(ay_pv_checkndt(tag, ay_prefs.texcoordname, "varying", "g"))
+	  if(tag->type == ay_pv_tagtype)
 	    {
-	      ay_status = x3dio_copypv(tag, &texcoordstring);
-	      if(ay_status == AY_OK)
+	      if(ay_pv_checkndt(tag, ay_prefs.texcoordname, "varying", "g"))
 		{
-		  have_texcoords = AY_TRUE;
+		  ay_status = x3dio_copypv(tag, &texcoordstring);
+		  if(ay_status == AY_OK)
+		    {
+		      have_texcoords = AY_TRUE;
+		    }
 		}
 	      else
+	      if((ay_pv_checkndt(tag, ay_prefs.colorname, "varying", "c")) ||
+		 (ay_pv_checkndt(tag, ay_prefs.colorname, "varying", "d")))
 		{
-		  /* XXXX report error (PV format error)? */
-		}
-	    }
-	  if(ay_pv_checkndt(tag, ay_prefs.normalname, "uniform", "n"))
-	    {
-	      ay_status = x3dio_copypv(tag, &normalstring);
-	      if(ay_status == AY_OK)
-		{
-		  have_facenormals = AY_TRUE;
+		  ay_status = x3dio_copypv(tag, &colorstring);
+		  if(ay_status == AY_OK)
+		    {
+		      have_vcolors = AY_TRUE;
+		      have_fcolors = AY_FALSE;
+		      if(ay_pv_checkndt(tag, ay_prefs.colorname,
+					"varying", "d"))
+			have_alpha = AY_TRUE;
+		      else
+			have_alpha = AY_FALSE;
+		    }
 		}
 	      else
+	      if((ay_pv_checkndt(tag, ay_prefs.colorname, "uniform", "c")) ||
+		 (ay_pv_checkndt(tag, ay_prefs.colorname, "uniform", "d")))
 		{
-		  /* XXXX report error (PV format error)? */
+		  ay_status = x3dio_copypv(tag, &colorstring);
+		  if(ay_status == AY_OK)
+		    {
+		      have_vcolors = AY_FALSE;
+		      have_fcolors = AY_TRUE;
+		      if(ay_pv_checkndt(tag, ay_prefs.colorname,
+					"uniform", "d"))
+			have_alpha = AY_TRUE;
+		      else
+			have_alpha = AY_FALSE;
+		    }
 		}
-	    }
+	      else
+	      if(ay_pv_checkndt(tag, ay_prefs.normalname, "uniform", "n"))
+		{
+		  ay_status = x3dio_copypv(tag, &normalstring);
+		  if(ay_status == AY_OK)
+		    {
+		      have_facenormals = AY_TRUE;
+		    }
+		}
+	    } /* if */
 
 	  tag = tag->next;
 	} /* while */
-
     } /* if */
 
   /* write faces */
@@ -8753,7 +8784,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	  if(have_facenormals)
 	    {
 	      scew_element_add_attr_pair(ifs_element, "normalPerVertex",
-					     x3dio_falsestring);
+					 x3dio_falsestring);
 
 	      idxsize = sprintf(buf, " %d", po->npolys);
 	      if(!(nattr = malloc((idxsize*po->npolys+10)*sizeof(char))))
@@ -8772,6 +8803,25 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 					 normalstring);
 	    } /* if */
 	} /* if */
+
+      /* write colors */
+      if(have_vcolors || have_fcolors)
+	{
+	  if(have_alpha)
+	    color_element = scew_element_add(ifs_element, "ColorRGBA");
+	  else
+	    color_element = scew_element_add(ifs_element, "Color");
+	  
+	  scew_element_add_attr_pair(color_element, "color",
+				     colorstring);
+
+	  if(have_vcolors)
+	    scew_element_add_attr_pair(ifs_element, "colorPerVertex",
+				       x3dio_truestring);
+	  else
+	    scew_element_add_attr_pair(ifs_element, "colorPerVertex",
+				       x3dio_falsestring);
+	}
 
       /* write texture coordinates */
       if(have_texcoords)
@@ -8827,6 +8877,9 @@ cleanup:
 
   if(texcoordstring)
     free(texcoordstring);
+
+  if(colorstring)
+    free(colorstring);
 
   if(normalstring)
     free(normalstring);
@@ -10202,7 +10255,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
   if(x3dio_writeviews)
     {
       /* reset view number */
-      x3dio_writeview(NULL, NULL);
+      (void)x3dio_writeview(NULL, NULL);
       /* loop through the view level */
       o = ay_root->down;
       while(o)
@@ -10337,7 +10390,6 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 	ay_error(AY_EOPENFILE, fname, filename);
       ay_status = AY_EOPENFILE;
     }
-
 
 cleanup:
 
