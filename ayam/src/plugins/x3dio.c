@@ -4405,7 +4405,8 @@ x3dio_readpolyline2d(scew_element *element, int contour)
 
   if(contour)
     {
-      ay_status = x3dio_readfloatpoints(element, "point", 2, &len, &cv2d);
+      ay_status = x3dio_readfloatpoints(element, "controlPoint", 2,
+					&len, &cv2d);
     }
   else
     {
@@ -4766,7 +4767,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	  np.vknot_type = AY_KTBSPLINE;
 	}
 
-      if(!has_uknots || !has_uknots)
+      if(!has_uknots || !has_vknots)
 	{
 	  ay_status = ay_knots_createnp(&np);
 	}
@@ -4794,7 +4795,6 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 	{
 	  ay_status = ay_pv_add(x3dio_lrobject, tcname, "varying", "g",
 				tclen, 2, tc);
-
 	} /* if */
 
       /* read trim curves? */
@@ -4825,7 +4825,7 @@ x3dio_readnurbspatchsurface(scew_element *element, int is_trimmed)
 		}
 	    } /* while */
 
-	  /* reset old transformation state */
+	  /* reset the transformation state */
 	  x3dio_ctrafos = old_state;
 
 	  /* check for simple trim, if it is the only trim */
@@ -5012,9 +5012,12 @@ x3dio_readnurbssweptsurface(scew_element *element)
 	}
     } /* while */
 
-  /* reset old transformation state */
+  /* reset the transformation state */
   x3dio_ctrafos = old_state;
+
   *ay_next = ay_endlevel;
+
+  /* continue import in current level */
   ay_next = old_aynext;
   ay_object_link(o);
 
@@ -5245,10 +5248,10 @@ x3dio_readviewpoint(scew_element *element)
  int ay_status = AY_OK;
  int width = 400, height = 300;
  float position[3] = {0.0f, 0.0f, 10.0f};
- float fvtemp[4] = {0.0f, 0.0f, 1.0f, 0.0f};
+ float orient[4] = {0.0f, 0.0f, 1.0f, 0.0f};
  float fov = (float)AY_PI/4.0f;
  double m[16];
- double to[3], up[3] = {0.0, 1.0, 0.0};
+ double from[3], to[3], up[3] = {0.0, 1.0, 0.0};
  char command[255] = {0}, update_cmd[] = "update";
  ay_object *root = ay_root, *down, *last;
  ay_view_object *v = NULL;
@@ -5258,30 +5261,42 @@ x3dio_readviewpoint(scew_element *element)
   if(!element)
     return AY_ENULL;
 
-  memset(&c, 0, sizeof(ay_camera_object));
-
   ay_status = x3dio_readfloatvec(element, "position", 3, position);
 
-  to[0] = (double)position[0];
-  to[1] = (double)position[1];
-  to[2] = (double)position[2]-10.0;
-
-  ay_status = x3dio_readfloatvec(element, "orientation", 4, fvtemp);
+  from[0] = (double)position[0];
+  from[1] = (double)position[1];
+  from[2] = (double)position[2];
 
   ay_trafo_identitymatrix(m);
-
-  if(fabs(fvtemp[3]) > AY_EPSILON)
-    {
-      ay_trafo_rotatematrix(fvtemp[3], fvtemp[0], fvtemp[1], fvtemp[2], m);
-      ay_trafo_apply3(to, m);
-      ay_trafo_apply3(up, m);
-    }
 
   trafo = x3dio_ctrafos;
   while(trafo)
     {
       ay_trafo_multmatrix4(m, trafo->m);
       trafo = trafo->next;
+    }
+  ay_trafo_apply3(from, m);
+
+  to[0] = from[0];
+  to[1] = from[1];
+  to[2] = from[2]-10.0;
+
+  ay_status = x3dio_readfloatvec(element, "orientation", 4, orient);
+
+  if(fabs(orient[3]) > AY_EPSILON)
+    {
+      ay_trafo_identitymatrix(m);
+      ay_trafo_translatematrix(from[0], from[1], from[2], m);
+      ay_trafo_rotatematrix(AY_R2D(orient[3]), orient[0], orient[1], orient[2],
+			    m);
+      ay_trafo_translatematrix(-from[0], -from[1], -from[2], m);
+      ay_trafo_apply3(to, m);
+
+      /* up is relative, need no translation component */
+      ay_trafo_identitymatrix(m);
+      ay_trafo_rotatematrix(AY_R2D(orient[3]), orient[0], orient[1], orient[2],
+			    m);
+      ay_trafo_apply3(up, m);
     }
 
   ay_status = x3dio_readfloat(element, "fieldOfView", &fov);
@@ -5304,18 +5319,9 @@ x3dio_readviewpoint(scew_element *element)
 	}
 
       v = (ay_view_object *)last->refine;
-
-      v->from[0] = (double)position[0];
-      v->from[1] = (double)position[1];
-      v->from[2] = (double)position[2];
-
-      v->to[0] = (double)to[0];
-      v->to[1] = (double)to[1];
-      v->to[2] = (double)to[2];
-
-      v->up[0] = (double)up[0];
-      v->up[1] = (double)up[1];
-      v->up[2] = (double)up[2];
+      memcpy(v->from, from, 3*sizeof(double));
+      memcpy(v->to, to, 3*sizeof(double));
+      memcpy(v->up, up, 3*sizeof(double));
 
       v->type = AY_VTPERSP;
 
@@ -5339,17 +5345,11 @@ x3dio_readviewpoint(scew_element *element)
     }
   else
     {
-      c.from[0] = (double)position[0];
-      c.from[1] = (double)position[1];
-      c.from[2] = (double)position[2];
+      memset(&c, 0, sizeof(ay_camera_object));
 
-      c.to[0] = (double)to[0];
-      c.to[1] = (double)to[1];
-      c.to[2] = (double)to[2];
-
-      c.up[0] = (double)up[0];
-      c.up[1] = (double)up[1];
-      c.up[2] = (double)up[2];
+      memcpy(c.from, from, 3*sizeof(double));
+      memcpy(c.to, to, 3*sizeof(double));
+      memcpy(c.up, up, 3*sizeof(double));
 
       c.zoom = fabs(tan((double)fov/2.0));
 
@@ -5730,7 +5730,7 @@ x3dio_readtransform(scew_element *element)
      we need to create a level object with the current trafos */
   while((child = scew_element_next(element, child)) != NULL)
     {
-      element_name = scew_element_name(element);
+      element_name = scew_element_name(child);
       if(!strcmp(element_name, "Transform"))
 	{
 	  need_level = AY_TRUE;
@@ -6171,12 +6171,12 @@ x3dio_readelement(scew_element *element)
       if(!strcmp(element_name, "ContourPolyline2D"))
 	{
 	  ay_status = x3dio_readpolyline2d(element, AY_TRUE);
-	  handled_elements = 0;
+	  handled_elements = 1;
 	}
       if(!strcmp(element_name, "Contour2D"))
 	{
 	  ay_status = x3dio_readshape(element);
-	  handled_elements = 0;
+	  handled_elements = 1;
 	}
       break;
     case 'D':
@@ -8811,7 +8811,7 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
 	    color_element = scew_element_add(ifs_element, "ColorRGBA");
 	  else
 	    color_element = scew_element_add(ifs_element, "Color");
-	  
+
 	  scew_element_add_attr_pair(color_element, "color",
 				     colorstring);
 
