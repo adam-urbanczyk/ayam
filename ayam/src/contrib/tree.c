@@ -430,7 +430,7 @@ ay_tree_selecttcmd(ClientData clientData, Tcl_Interp *interp,
 	  o = ay_tree_getobject(argv[i]);
 	  if(o)
 	    {
-	      ay_sel_add(o);
+	      ay_sel_add(o, AY_TRUE);
 	    }
 	  i++;
 	}

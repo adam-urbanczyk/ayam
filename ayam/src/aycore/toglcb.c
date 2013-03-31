@@ -111,6 +111,8 @@ ay_toglcb_create(struct Togl *togl)
 	}
     }
 
+  view->display_list = glGenLists(1);
+
  return;
 } /* ay_toglcb_create */
 
@@ -137,6 +139,9 @@ ay_toglcb_destroy(struct Togl *togl)
       }
     }
 #endif
+
+  if(view->display_list != 0)
+    glDeleteLists(view->display_list, 1);
 
   /* unlink from selection */
   lsel = &(ay_selection);
@@ -282,8 +287,7 @@ ay_toglcb_display(struct Togl *togl)
       if(view->shade)
 	ay_shade_view(togl);
       else
-	ay_draw_view(togl, AY_FALSE);
-
+	ay_draw_view(togl, /*draw_offset=*/AY_FALSE);
 
       /* XXXX is this really necessary? */
       /*  glFlush();*/

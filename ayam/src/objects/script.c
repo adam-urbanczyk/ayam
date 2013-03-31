@@ -1397,7 +1397,7 @@ ay_script_notifycb(ay_object *o)
 		  ay_notify_object(*nexto);
 
 		  if(down->next)
-		    ay_sel_add(*nexto);
+		    ay_sel_add(*nexto, AY_FALSE);
 
 		  nexto = &((*nexto)->next);
 		}
@@ -1420,7 +1420,7 @@ ay_script_notifycb(ay_object *o)
 
 			  ay_notify_object(*nexto);
 
-			  ay_sel_add(*nexto);
+			  ay_sel_add(*nexto, AY_FALSE);
 
 			  nexto = &((*nexto)->next);
 			  ddown = ddown->next;

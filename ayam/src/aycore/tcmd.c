@@ -1584,7 +1584,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* found the object with right index =>
 	     fake a single object selection */
 	  ay_selection = NULL;
-	  ay_status = ay_sel_add(l->object);
+	  ay_status = ay_sel_add(l->object, AY_FALSE);
 	  if(!ay_status)
 	    {
 	      /* execute the command */

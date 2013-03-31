@@ -1046,7 +1046,7 @@ void ay_sel_free(int clear_selflag);
 
 /** add object to selection
  */
-int ay_sel_add(ay_object *o);
+int ay_sel_add(ay_object *o, int set_selflag);
 
 /** Tcl command to set the selection.
  */

@@ -136,7 +136,7 @@ ay_ns_execute(ay_object *o, char *script)
   old_sel = ay_selection;
   ay_selection = NULL;
 
-  ay_status = ay_sel_add(o);
+  ay_status = ay_sel_add(o, AY_FALSE);
   if(ay_status)
     {
       goto cleanup;

@@ -398,6 +398,7 @@ array set ayviewshortcuts {
     Align2 "L"
     ZoomTO "Ctrl-o"
     ZoomTO2 "O"
+    ZoomAll "BackSpace"
 
     PanM "period"
 
