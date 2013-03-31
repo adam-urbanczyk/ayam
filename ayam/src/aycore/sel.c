@@ -45,7 +45,7 @@ ay_sel_free(int clear_selflag)
  *  additionally marks object o as selected
  */
 int
-ay_sel_add(ay_object *o)
+ay_sel_add(ay_object *o, int set_selflag)
 {
  ay_list_object *new_sel = NULL;
  static ay_list_object *last_sel = NULL;
@@ -54,7 +54,8 @@ ay_sel_add(ay_object *o)
     return AY_EOMEM;
 
   new_sel->object = o;
-  o->selected = AY_TRUE;
+  if(set_selflag)
+    o->selected = AY_TRUE;
 
   if(ay_selection && last_sel)
     last_sel->next = new_sel;
@@ -112,7 +113,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(o == ay_root)
 	    {
-	      ay_status = ay_sel_add(o);
+	      ay_status = ay_sel_add(o, AY_TRUE);
 	      if(ay_status)
 		{
 		  ay_error(ay_status, argv[0], NULL);
@@ -148,7 +149,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* found a selected object -> add to the list */
 	  if(o && o->next)
 	    {
-	      ay_status = ay_sel_add(o);
+	      ay_status = ay_sel_add(o, AY_TRUE);
 	      if(ay_status)
 		{
 		  ay_error(ay_status, argv[0], NULL);
@@ -273,7 +274,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
       if(o)
 	{
 	  ay_sel_free(AY_FALSE);
-	  ay_sel_add(o);
+	  ay_sel_add(o, AY_TRUE);
 	} /* while */
     }
   else
@@ -294,7 +295,7 @@ ay_sel_hsltcmd(ClientData clientData, Tcl_Interp *interp,
 	  tnum--;
 	  if(tnum <= 0)
 	    {
-	      ay_sel_add(l);
+	      ay_sel_add(l, AY_TRUE);
 	    }
 	  l = l->next;
 	} /* while */

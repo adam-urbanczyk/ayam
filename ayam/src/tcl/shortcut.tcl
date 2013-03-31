@@ -483,6 +483,11 @@ proc shortcut_view { w } {
     bind $w <[repctrl $ayviewshortcuts(ZoomTO2)]> "$m invoke 22;break"
     bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 23;break"
 
+    bind $w <[repctrl $ayviewshortcuts(ZoomAll)]>\
+	"global ay;\
+	undo save ZoomAll;\
+	$w.f3D.togl mc; $w.f3D.togl zoomob -all; \$ay(currentView) mc"
+
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	bind $w <[repctrl $ayviewshortcuts(Local)]> "viewCyleMMode $w;break"
     }

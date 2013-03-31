@@ -389,7 +389,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = NULL;
- ay_list_object *sel = ay_selection;
+ ay_list_object *sel, *oldsel = ay_selection;
+ int zoomtoall = AY_FALSE, revert_selection = AY_FALSE;
  double bb[24] = {0};
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
@@ -397,8 +398,23 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
  int i, a, have_bb = AY_FALSE;
  GLdouble m[16] = {0}, mt[16] = {0};
 
-  if(sel)
+  if((argc > 2) && !strcmp(argv[2], "-all"))
     {
+      ay_selection = NULL;
+      o = ay_root->next;
+      while(o && o->next)
+	{
+	  ay_sel_add(o, AY_FALSE);
+	  o = o->next;
+	}
+
+      zoomtoall = AY_TRUE;
+      revert_selection = AY_TRUE;
+   }
+
+  if(ay_selection)
+    {
+      sel = ay_selection;
       while(sel)
 	{
 	  o = sel->object;
@@ -443,13 +459,13 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 
       if(!have_bb)
 	{
-	  return TCL_OK;
+	  goto cleanup;
 	}
 
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       if(ay_currentlevel->next)
+       if(!zoomtoall && ay_currentlevel->next)
 	 {
 	   ay_trafo_getall(ay_currentlevel->next);
 	 }
@@ -460,7 +476,9 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       cog[0] = xmin+((fabs(xmax-xmin))/2.0);
       cog[1] = ymin+((fabs(ymax-ymin))/2.0);
       cog[2] = zmin+((fabs(zmax-zmin))/2.0);
-
+      /*
+      printf("BB X:%g,%g,  Y:%g,%g, Z:%g,%g\n",xmin,xmax,ymin,ymax,zmin,zmax);
+      */
       ay_trafo_apply3(cog, mt);
 
       dt[0] = view->to[0] - cog[0];
@@ -478,7 +496,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_reshape(togl);
 
       /* calc new zoom factor */
-      glMatrixMode (GL_MODELVIEW);
+      glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
        glRotated(view->rotx, 1.0, 0.0, 0.0);
@@ -502,11 +520,11 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       ly = fabs(dt[1]-dt2[1]);
       lz = fabs(dt[2]-dt2[2]);
 
-      if(ly>lx)
+      if(ly > lx)
 	l = ly;
       else
 	l = lx;
-      if(l<lz)
+      if(l < lz)
 	l = lz;
 
       if(l < 1E-6 || l > 1E6)
@@ -531,23 +549,31 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  view->zoom = 3.0;
 	}
 
+      if(zoomtoall)
+	{
+	  ay_sel_free(AY_FALSE);
+	  ay_selection = oldsel;
+	}
+
       Togl_MakeCurrent(togl);
-
       ay_toglcb_reshape(togl);
-
       if(view->drawmark)
 	{
 	  ay_viewt_updatemark(togl, AY_TRUE);
 	}
-
-      if(argc)
-	{
-	  ay_toglcb_display(togl);
-	}
-
+      ay_toglcb_display(togl);
       ay_viewt_uprop(view);
 
+      revert_selection = AY_FALSE;
     } /* if (sel) */
+
+cleanup:
+
+  if(revert_selection && zoomtoall)
+    {
+      ay_sel_free(AY_FALSE);
+      ay_selection = oldsel;
+    }
 
  return TCL_OK;
 } /* ay_viewt_zoomtoobj */
