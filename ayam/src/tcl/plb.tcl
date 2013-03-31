@@ -76,10 +76,6 @@ bind $f.li <<ListboxSelect>> {
     # resize main window
     plb_resize
 
-    if { [$ay(pca) cget -height] < $ } {
-
-    }
-
     # manage property clipboard
     if { [array exists pclip_omit] } {
 	unset pclip_omit
@@ -394,17 +390,7 @@ proc plb_update { } {
     }
 
     if { $index == "" } {
-	if { $ay(lb) == 1 } {
-	    set w $ay(olb)
-	} else {
-	    set w $ay(tree)
-	}
-	if { $ayprefs(SingleWindow) == 1 } {
-	    bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
-	} else {
-	    bind $w <Key-Tab> "focus .fl.con.console;break"
-	}
-	$ay(pca) configure -takefocus 0
+	plb_bindtab
     }
 
     # avoid leaving the focus on an empty property canvas
@@ -495,21 +481,21 @@ proc plb_update { } {
 	# if
 
 	# re-create old propgui?
-	if { $oldsel != "" && $oldsel <= [$lb index end] } {
-	    $lb selection set $oldsel
-	    set tmp [$lb curselection]
-	    if { $tmp != "" } {
-		event generate $lb <<ListboxSelect>>
+	if { $oldsel != ""} {
+	    if { $oldsel <= [$lb index end] } {
+		$lb selection set $oldsel
+		set tmp [$lb curselection]
+		if { $tmp != "" } {
+		    event generate $lb <<ListboxSelect>>
+		}
+	    } else {
+		# avoid leaving the focus on an empty property canvas
+		resetFocus
 	    }
-	    # if
+	} else {
+	    plb_bindtab
 	}
 	# if
-
-	# avoid leaving the focus on an empty property canvas
-	if { $oldsel != "" && ( $oldsel > [$lb index end] ) } {
-	    resetFocus
-	}
-
     }
     # if
 
@@ -517,7 +503,7 @@ proc plb_update { } {
 
     set ay(plblock) 0
 
-    return;
+ return;
 }
 # plb_update
 
@@ -811,3 +797,24 @@ proc plb_addremprop { {rem 0} } {
  return;
 }
 # plb_addremprop
+
+
+# plb_bindtab:
+# bind <Tab>-key to skip the focus over an empty property canvas
+#
+proc plb_bindtab { } {
+    global ay ayprefs
+    if { $ay(lb) == 1 } {
+	set w $ay(olb)
+    } else {
+	set w $ay(tree)
+    }
+    if { $ayprefs(SingleWindow) == 1 } {
+	bind $w <Key-Tab> "focus .fu.fMain.fview3;break"
+    } else {
+	bind $w <Key-Tab> "focus .fl.con.console;break"
+    }
+    $ay(pca) configure -takefocus 0
+ return;
+}
+# plb_bindtab
