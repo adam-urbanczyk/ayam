@@ -63,9 +63,9 @@ ay_viewt_setupprojection(struct Togl *togl)
  int width = Togl_Width(togl);
  int height = Togl_Height(togl);
  GLdouble aspect = ((GLdouble)width) / ((GLdouble)height);
- GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 1.0f};
- GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 1.0f};
- GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 1.0f};
+ GLfloat light_posf[4] = { 0.0f,  0.0f, 1000.0f, 0.0f};
+ GLfloat light_poss[4] = {1000.0f,  0.0f,  0.0f, 0.0f};
+ GLfloat light_post[4] = { 0.0f, 1000.0f,  0.0f, 0.0f};
  GLdouble nearp = view->nearp, farp = view->farp;
 
   glViewport(0, 0, width, height);
@@ -78,7 +78,7 @@ ay_viewt_setupprojection(struct Togl *togl)
     {
       if(view->nearp <= 0.0)
 	{
-	  nearp = 1.0;
+	  nearp = 0.1;
 	}
 
       if((view->farp == 0.0) || (view->farp <= nearp))
@@ -86,8 +86,8 @@ ay_viewt_setupprojection(struct Togl *togl)
 	  farp = 1000.0;
 	}
 
-      glFrustum(-aspect*view->zoom, aspect*view->zoom,
-		-1.0*view->zoom, 1.0*view->zoom,
+      glFrustum(-aspect*view->zoom*nearp, aspect*view->zoom*nearp,
+		-1.0*view->zoom*nearp, 1.0*view->zoom*nearp,
 		nearp, farp);
     }
   else
@@ -120,18 +120,29 @@ ay_viewt_setupprojection(struct Togl *togl)
 
   glMatrixMode(GL_MODELVIEW);
 
-
   /* XXXX set light0 at cam-pos? */
   glPushMatrix();
    glRotated(view->rotz, 0.0, 0.0, 1.0);
    glRotated(view->roty, 0.0, 1.0, 0.0);
    glRotated(view->rotx, 1.0, 0.0, 0.0);
    if((view->type == AY_VTPERSP) || (view->type == AY_VTFRONT))
-     glLightfv(GL_LIGHT0, GL_POSITION, light_posf);
+     {
+       if(view->farp > 1000.0)
+	 light_posf[2] = view->farp*2;
+       glLightfv(GL_LIGHT0, GL_POSITION, light_posf);
+     }
    if(view->type == AY_VTSIDE)
-     glLightfv(GL_LIGHT0, GL_POSITION, light_poss);
+     {
+       if(view->farp > 1000.0)
+	 light_poss[0] = view->farp*2;
+       glLightfv(GL_LIGHT0, GL_POSITION, light_poss);
+     }
    if(view->type == AY_VTTOP)
-     glLightfv(GL_LIGHT0, GL_POSITION, light_post);
+     {
+       if(view->farp > 1000.0)
+	 light_post[1] = view->farp*2;
+       glLightfv(GL_LIGHT0, GL_POSITION, light_post);
+     }
   glPopMatrix();
 
  return;
@@ -246,7 +257,7 @@ ay_viewt_wintoobj(struct Togl *togl, ay_object *o,
    gluUnProject(winx, winy, (GLdouble)winz, modelMatrix, projMatrix, viewport,
 		objX, objY, objZ);
 
-   /*  fprintf(stderr,"ObjX:%g; ObjY:%g; ObjZ:%g\n",*objX, *objY, *objZ); */
+   /* fprintf(stderr,"ObjX:%g; ObjY:%g; ObjZ:%g\n",*objX, *objY, *objZ); */
 
   glPopMatrix();
 
@@ -395,8 +406,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
  double cog[3] = {0}, dt[3] = {0}, dt2[3] = {0}, l, lx, ly, lz;
- int i, a, have_bb = AY_FALSE;
- GLdouble m[16] = {0}, mt[16] = {0};
+ int i, a, have_bb = AY_FALSE, set_far = AY_FALSE;
+ GLdouble mt[16] = {0};
 
   if((argc > 2) && !strcmp(argv[2], "-all"))
     {
@@ -493,18 +504,6 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       view->from[1] -= dt[1];
       view->from[2] -= dt[2];
 
-      ay_toglcb_reshape(togl);
-
-      /* calc new zoom factor */
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-       glLoadIdentity();
-       glRotated(view->rotx, 1.0, 0.0, 0.0);
-       glRotated(view->roty, 0.0, 1.0, 0.0);
-       glRotated(view->rotz, 0.0, 0.0, 1.0);
-       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-      glPopMatrix();
-
       dt[0] = xmin;
       dt[1] = ymin;
       dt[2] = zmin;
@@ -527,27 +526,69 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       if(l < lz)
 	l = lz;
 
-      if(l < 1E-6 || l > 1E6)
-	l = 3.0;
-
-      view->zoom = l*0.9;
-
-      if(view->type == AY_VTPERSP)
+      if(view->type != AY_VTPERSP)
 	{
-	  view->zoom /= 12;
-	  /* normalize */
-	  /*
-	  dt[0] = view->from[0] - view->to[0];
-	  dt[1] = view->from[1] - view->to[1];
-	  dt[2] = view->from[2] - view->to[2];
-	  l = AY_V3LEN(dt);
-	  */
-	} /* if */
+	  /* parallel view */
 
-      if(view->zoom < 1E-6 || view->zoom > 1E6)
-	{
-	  view->zoom = 3.0;
+	  /* calc new zoom factor */
+	  view->zoom = l*0.9;
+
+	  if(view->zoom < 1E-6 || view->zoom > 1E6)
+	    {
+	      view->zoom = 3.0;
+	    }
+
+	  /* adjust clipping planes */
+	  if(view->nearp != 0.0)
+	    lx = fabs(view->nearp);
+	  else
+	    lx = 100.0;
+	  if(l > lx)
+	    view->nearp = -l*1.1;
+
+	  if(view->farp != 0.0)
+	    lx = view->farp;
+	  else
+	    lx = 100.0;
+	  if(l > lx)
+	    view->farp = l*1.1;
 	}
+      else
+	{
+	  /* perspective view */
+
+	  /* offset the view along eye vector, keeping the zoom as it is */
+	  AY_V3SUB(dt, view->from, view->to);
+	  lx = AY_V3LEN(dt);
+	  ly = ((l/2.0)/tan(view->zoom))/lx*2.1;
+	  AY_V3SCAL(dt, ly);
+	  AY_V3ADD(view->from, view->to, dt);
+
+	  /* adjust clipping planes */
+	  AY_V3SUB(dt, view->from, view->to);
+	  lx = AY_V3LEN(dt);
+
+	  if(view->nearp != 0.0)
+	    ly = view->nearp;
+	  else
+	    ly = 0.1;
+	  if(lx < ly)
+	    {
+	      set_far = AY_TRUE;
+	      view->nearp = lx*0.1;
+	    }
+
+	  if(view->farp != 0.0)
+	    ly = view->farp;
+	  else
+	    ly = 1000.0;
+	  if(((l+lx) > ly) || set_far)
+	    {
+	      view->farp = (l+lx)*1.1;
+	      if(!set_far)
+		view->nearp = 0.1;
+	    }
+	} /* if */
 
       if(zoomtoall)
 	{
@@ -555,11 +596,12 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  ay_selection = oldsel;
 	}
 
+      /* realize camera changes */
       Togl_MakeCurrent(togl);
       ay_toglcb_reshape(togl);
       if(view->drawmark)
 	{
-	  ay_viewt_updatemark(togl, AY_TRUE);
+	  ay_viewt_updatemark(togl, /*local=*/AY_TRUE);
 	}
       ay_toglcb_display(togl);
       ay_viewt_uprop(view);
@@ -886,6 +928,9 @@ ay_viewt_changetype(ay_view_object *view, int newtype)
       if(view->type == AY_VTPERSP)
 	{
 	  view->zoom *= 12.0;
+
+	  view->nearp = 0.0;
+	  view->farp = 0.0;
 	}
       else
 	{
@@ -902,7 +947,7 @@ ay_viewt_changetype(ay_view_object *view, int newtype)
 
   if(view->drawmark)
     {
-      ay_viewt_updatemark(view->togl, AY_TRUE);
+      ay_viewt_updatemark(view->togl, /*local=*/AY_TRUE);
     }
 
  return;
@@ -1757,7 +1802,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
   if((view->drawmark && need_updatemark) ||
      (need_updatemark && ay_prefs.globalmark))
     {
-      ay_viewt_updatemark(togl, AY_FALSE);
+      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
     }
 
   if(need_redraw)
@@ -1870,7 +1915,7 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 	      memcpy(v->markworld, view->markworld, 3*sizeof(double));
 	      v->drawmark = view->drawmark;
 	      Togl_MakeCurrent(v->togl);
-	      ay_viewt_updatemark(v->togl, AY_TRUE);
+	      ay_viewt_updatemark(v->togl, /*local=*/AY_TRUE);
 	      ay_toglcb_display(v->togl);
 	    }
 	}
