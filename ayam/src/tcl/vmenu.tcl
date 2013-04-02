@@ -10,7 +10,7 @@
 # vmenu.tcl - the view menu
 
 proc vmenu_open { w } {
-global ay ayprefs AYWITHAQUA
+global ay ayprefs aymainshortcuts AYWITHAQUA
 
 if { (! $AYWITHAQUA) || ([winfo toplevel $w] != $w) } {
     set menubar 0
@@ -375,6 +375,9 @@ if { (! $AYWITHAQUA ) || ([winfo toplevel $w] != $w) } {
 	    -padx 0 -pady 0 -borderwidth 0
     balloon_set $w.fMenu.g "change gridsize"
     set m [menu $w.fMenu.g.m -tearoff 0]
+    if { [winfo toplevel $w] == $w } {
+	bind ayview <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
+    }
 } else {
     set m [menu $mb.mgrid -tearoff 0]
     $mb add cascade -label Grid -menu $m
