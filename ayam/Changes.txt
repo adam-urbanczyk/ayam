@@ -1,5 +1,5 @@
-[23. Mar 2013] CVS-Head:
-========================
+[2. Apr 2013] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -52,6 +52,11 @@ o improved face normal generation for PolyMesh and SDMesh objects through
 o caching the face normals for PolyMesh and SDMesh objects leads to much
   faster redraw of these objects
 o added smooth normal generation for PolyMesh objects
+o added view action to zoom out to the whole scene, the action is bound
+  to the backspace-key
+o improved the "zoom to object" view action to properly adjust the clipping
+  planes, light positions, and the camera position for perspective views,
+  therefore, modelling with very small or very large objects gets a bit easier
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -84,6 +89,7 @@ o in property GUIs and dialogs, <F10> now opens the default value
   option menu of the current element
 o the help keyboard binding (<F1>) now also works in all property GUI
   and dialog entry fields and other user interface elements
+o added mnemonic handling to internal view menus and grid menu
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -126,6 +132,8 @@ o X3D export of PolyMesh objects with face normals
 o X3D export now creates simple material nodes
   (new export option "WriteMaterials")
 o X3D export of NURBS curves of order 2 now creates Polyline primitives
+o X3D import of viewpoints now creates correct camera attributes
+o improved temporary and archive RIB file names for direct rendering with Gelato
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
