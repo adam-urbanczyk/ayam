@@ -622,7 +622,7 @@ proc viewOpen { width height {establish_bindings 1} {internal_view 0} } {
 	bindtags $w [list all Frame $w]
     } else {
 	set ayclass [lindex [bindtags $w] 1]
-	bindtags $w [list all $ayclass $w]
+	bindtags $w [list ayview all $ayclass $w]
 	bindtags $w.f3D.togl [list all $w.f3D.togl Togl $w]
     }
 
@@ -650,6 +650,42 @@ proc viewDrop { w tree dropx dropy currentoperation datatype data } {
  return;
 }
 # viewDrop
+
+
+##############################
+# viewPostMenu:
+# helper that posts a view menu, taking care
+# of the focus (as ::tk::TraverseToMenu does)
+proc viewPostMenu { m } {
+    set p [winfo parent $m]
+    $m post [winfo rootx $p] [expr [winfo rooty $p]+[winfo height $p]]
+    set w [winfo parent [winfo parent $p]]
+    bind $m <Unmap> "focus $w"
+    focus $m
+}
+# viewPostMenu
+
+
+##############################
+# viewBindMenus:
+#  bind the menus of an internal view window
+proc viewBindMenus { w } {
+    global aymainshortcuts
+    # arrange for our bindings to override the all-tag bindings
+    bindtags $w [list $w all Frame]
+    # bind View-menu
+    bind $w <$aymainshortcuts(MenuMod)-v> "viewPostMenu %W.fMenu.v.m"
+    $w.fMenu.v conf -underline 0
+    # bind Type-menu
+    bind $w <$aymainshortcuts(MenuMod)-y> "viewPostMenu %W.fMenu.t.m"
+    $w.fMenu.t conf -underline 1
+    # bind Configure-menu
+    bind $w <$aymainshortcuts(MenuMod)-o> "viewPostMenu %W.fMenu.c.m"
+    $w.fMenu.c conf -underline 1
+    # bind Grid-menu
+    bind $w <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
+}
+# viewBindMenus
 
 
 ##############################
@@ -754,6 +790,11 @@ proc viewBind { w } {
 
     # bind default action
     actionClear $w.f3D.togl
+
+    # bind menus
+    if { [string first ".view" $w] != 0 } {
+	viewBindMenus $w
+    }
 
     $w configure -cursor {}
     $w.f3D.togl configure -cursor {}
