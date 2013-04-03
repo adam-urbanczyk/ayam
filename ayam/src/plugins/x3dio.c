@@ -67,8 +67,6 @@ int x3dio_mergeinlinedefs = AY_TRUE;
 
 int x3dio_tesspomesh = AY_FALSE;
 int x3dio_writecurves = AY_TRUE;
-int x3dio_writepowires = AY_FALSE;
-int x3dio_writenpwires = AY_FALSE;
 int x3dio_writeviews = AY_TRUE;
 int x3dio_writeparam = AY_FALSE;
 int x3dio_writemat = AY_FALSE;
@@ -5108,9 +5106,12 @@ x3dio_readnurbsswungsurface(scew_element *element)
 	}
     } /* while */
 
-  /* reset old transformation state */
+  /* reset the transformation state */
   x3dio_ctrafos = old_state;
+
   *ay_next = ay_endlevel;
+
+  /* continue import in current level */
   ay_next = old_aynext;
   ay_object_link(o);
 
@@ -7447,7 +7448,7 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
-  if(x3dio_writenpwires)
+  if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
     return x3dio_writenpwire(element, o);
 
   /* decode potentially present PV tags */
@@ -8557,6 +8558,9 @@ x3dio_writepomeshobj(scew_element *element, ay_object *o)
   if(!element || !o)
    return AY_ENULL;
 
+  if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
+    return x3dio_writepomeshwire(element, o);
+
   po = (ay_pomesh_object *)o->refine;
 
   /* write transform */
@@ -8883,9 +8887,6 @@ cleanup:
 
   if(normalstring)
     free(normalstring);
-
-  if(x3dio_writepowires)
-    ay_status = x3dio_writepomeshwire(element, o);
 
  return ay_status;
 } /* x3dio_writepomeshobj */
@@ -10433,8 +10434,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writecurves = AY_TRUE;
   x3dio_writeviews = AY_TRUE;
   x3dio_writeparam = AY_FALSE;
-  x3dio_writenpwires = AY_FALSE;
-  x3dio_writepowires = AY_FALSE;
   x3dio_writemat = AY_FALSE;
   x3dio_writex3dom = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
@@ -10488,16 +10487,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
       if(!strcmp(argv[i], "-r"))
 	{
 	  sscanf(argv[i+1], "%d", &x3dio_resolveinstances);
-	}
-      else
-      if(!strcmp(argv[i], "-wp"))
-	{
-	  sscanf(argv[i+1], "%d", &x3dio_writepowires);
-	}
-      else
-      if(!strcmp(argv[i], "-wn"))
-	{
-	  sscanf(argv[i+1], "%d", &x3dio_writenpwires);
 	}
       else
       if(!strcmp(argv[i], "-x"))
