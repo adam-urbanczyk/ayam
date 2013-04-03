@@ -1717,6 +1717,8 @@ extern char *ay_nm_tagtype;
 extern char *ay_nm_tagname;
 extern char *ay_nt_tagtype;
 extern char *ay_nt_tagname;
+extern char *ay_aswire_tagtype;
+extern char *ay_aswire_tagname;
 /*@}*/
 
 /** \name Generic Error Message Strings */

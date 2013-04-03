@@ -207,8 +207,6 @@ proc x3dio_export { } {
     addCheck $f x3dio_options WriteCurves
     addCheck $f x3dio_options WriteViews
     addCheck $f x3dio_options WriteParametrics
-    addCheck $f x3dio_options WritePoWires
-    addCheck $f x3dio_options WriteNpWires
     addCheck $f x3dio_options WriteMaterials
     addCheck $f x3dio_options ResolveInstances
     addCheck $f x3dio_options TopLevelLayers
@@ -236,8 +234,6 @@ proc x3dio_export { } {
 	    -m $x3dio_options(WriteMaterials)\
 	    -f $x3dio_options(ScaleFactor)\
 	    -p $x3dio_options(WriteParametrics)\
-	    -wp $x3dio_options(WritePoWires)\
-	    -wn $x3dio_options(WriteNpWires)\
 	    -x $x3dio_options(WriteX3dom)\
 
 	cd $oldcd

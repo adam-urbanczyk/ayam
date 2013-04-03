@@ -644,8 +644,39 @@ ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tags_gettcmd */
 
 
+/** ay_tags_hastag:
+ *  check for existence of a tag given a tag name or type
+ */
+int
+ay_tags_hastag(const ay_object *o, const char *tagname, const char *tagtype)
+{
+ ay_tag *tag;
+
+  if(!o)
+    return AY_FALSE;
+
+  tag = o->tags;
+  if(tagname)
+    while(tag)
+      {
+	if(!ay_comp_strcase(tag->name, tagname))
+	  return AY_TRUE;
+	tag = tag->next;
+      }
+  else
+    while(tag)
+      {
+	if(tag->type == tagtype)
+	  return AY_TRUE;
+	tag = tag->next;
+      }
+
+ return AY_FALSE;
+} /* ay_tags_hastag */
+
+
 /** ay_tags_hastcmd:
- * check for existence of a tag
+ *  check for existence of a tag
  *  Implements the \a hasTag scripting interface command.
  *  See also the corresponding section in the \ayd{schastag}.
  *

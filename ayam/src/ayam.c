@@ -198,6 +198,9 @@ char *ay_nt_tagtype;
 
 char *ay_nt_tagname = "NT";
 
+char *ay_aswire_tagtype;
+
+char *ay_aswire_tagname = "AsWire";
 
 static char *ay_log = "/tmp/ay.log";
 
@@ -520,6 +523,12 @@ ay_init(Tcl_Interp *interp)
 
   /* register NM (Notify Master) tag type */
   ay_tags_register(interp, ay_nm_tagname, &ay_nm_tagtype);
+
+  /* register NT (Normals&Tangents) tag type */
+  ay_tags_register(interp, ay_nt_tagname, &ay_nt_tagtype);
+
+  /* register AsWire tag type */
+  ay_tags_register(interp, ay_aswire_tagname, &ay_aswire_tagtype);
 
   /* create root object */
   if((ay_status = ay_object_create(AY_IDROOT, &ay_root)))

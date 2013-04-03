@@ -125,7 +125,7 @@ int ay_comp_trim(ay_object *o1, ay_object *o2);
  *  ay_comp_strcase(s1, "lowercase_string");
  */
 int
-ay_comp_strcase(char *s1, char *s2)
+ay_comp_strcase(const char *s1, const char *s2)
 {
 
   if(!s1 || !s2)

@@ -119,7 +119,7 @@ int ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** compare two strings
  */
-int ay_comp_strcase(char *s1, char *s2);
+int ay_comp_strcase(const char *s1, const char *s2);
 
 /** register a comparison callback
  */
@@ -1245,6 +1245,11 @@ int ay_tags_addtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 int ay_tags_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[]);
+
+/** check for existence of a tag
+ */
+int ay_tags_hastag(const ay_object *o, const char *tagname,
+		   const char *tagtype);
 
 /** Tcl command to check for existence of a tag
  */
