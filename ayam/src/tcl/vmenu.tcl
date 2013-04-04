@@ -271,6 +271,11 @@ $m add command -label "Zoom to Object" -command "\
 	undo save ZoomToObj;\
 	$w.f3D.togl mc; $w.f3D.togl zoomob; \$ay(currentView) mc"
 
+$m add command -label "Zoom to All" -command "\
+	global ay;\
+	undo save ZoomToAll;\
+	$w.f3D.togl mc; $w.f3D.togl zoomob -all; \$ay(currentView) mc"
+
 $m add command -label "Align to Object" -command "\
 	global ay;\
 	undo save AlignToObj;\

@@ -472,21 +472,19 @@ proc shortcut_view { w } {
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(ZoomTO)]
 	bind $w <[repctrl $ayviewshortcuts(ZoomTO)]> "$m invoke 22;break"
-
-	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Align)]
-	bind $w <[repctrl $ayviewshortcuts(Align)]> "$m invoke 23;break"
+	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(ZoomAll)]
+	bind $w <[repctrl $ayviewshortcuts(ZoomAll)]> "$m invoke 23;break"
+	$m entryconfigure 24 -accelerator [remkpkr $ayviewshortcuts(Align)]
+	bind $w <[repctrl $ayviewshortcuts(Align)]> "$m invoke 24;break"
     } else {
 	$m entryconfigure 22 -accelerator [remkpkr $ayviewshortcuts(ZoomTO2)]
-	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(Align2)]
+	$m entryconfigure 23 -accelerator [remkpkr $ayviewshortcuts(ZoomAll)]
+	$m entryconfigure 24 -accelerator [remkpkr $ayviewshortcuts(Align2)]
     }
 
     bind $w <[repctrl $ayviewshortcuts(ZoomTO2)]> "$m invoke 22;break"
-    bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 23;break"
-
-    bind $w <[repctrl $ayviewshortcuts(ZoomAll)]>\
-	"global ay;\
-	undo save ZoomAll;\
-	$w.f3D.togl mc; $w.f3D.togl zoomob -all; \$ay(currentView) mc"
+    bind $w <[repctrl $ayviewshortcuts(ZoomAll)]> "$m invoke 23;break"
+    bind $w <[repctrl $ayviewshortcuts(Align2)]> "$m invoke 24;break"
 
     if { ([winfo toplevel $w] == $w) || $ayprefs(BindInternalViews) } {
 	bind $w <[repctrl $ayviewshortcuts(Local)]> "viewCyleMMode $w;break"
