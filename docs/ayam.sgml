@@ -1730,7 +1730,8 @@ with the view window, are:
 <item><tt/&lt;Shift+Left&gt;/, <tt/&lt;Shift+Up&gt;/, <tt/&lt;Shift+Right&gt;/,
 <tt/&lt;Shift+Down&gt;/ pan the view.
 
-<item><tt/&lt;+&gt;/, <tt/&lt;-&gt;/, or <tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/ (on the numeric keypad) zoom the view.
+<item><tt/&lt;+&gt;/, <tt/&lt;-&gt;/, or <tt/&lt;Add&gt;/, <tt/&lt;Sub&gt;/
+(on the numeric keypad) zoom the view.
 
 <item><tt/&lt;Ctrl+5&gt;/ (on the numeric keypad!) resets the views
 camera (From and To) to the view type dependend default values.
@@ -1758,8 +1759,8 @@ camera around the point it is looking to.
 <item>Rotating the view is also possible in any
 modelling mode, by holding down the <tt/&lt;Alt&gt;/-key.
 
-<item><tt/&lt;o&gt;/ starts zooming the view. Moving the mouse up
-zooms in and moving the mouse down zooms out.
+<item><tt/&lt;o&gt;/ starts zooming the view. Dragging the mouse up
+zooms in and dragging the mouse down zooms out.
 
 <item>Zooming the view into a rectangular region
 defined through a mouse drag is also possible in any
@@ -1784,7 +1785,7 @@ Rotate View|<tt/&lt;R&gt;/|
 <#if out=html><img src="pics/rotatevac.gif"></#if>
 <#if out=latex>@<hline></#if>
 </tabular>
-<caption>View Actions Overview</caption>
+<caption>Interactive View Actions Overview</caption>
 </table>
 <p>
 You may also pan/move the view by dragging with the rightmost mouse
@@ -1806,6 +1807,17 @@ shortcut <tt/&lt;Ctrl+o&gt;/ (<tt/&lt;O&gt;/ for internal views)
 one can change the views camera settings so that the selected
 objects will be displayed centered in the view window. This is handy
 to search for objects or if the user is simply lost in space.
+<p>
+Closely related to the latter is the <tt/"Zoom to All"/ action,
+bound to the <tt/&lt;BackSpace&gt;/ key. This action adjusts
+the camera settings so that all objects in the scene will be
+visible, regardless of current level and object selection.
+<p>
+Note that both, zoom to object and zoom to all, adjust the
+clipping planes to the extents of the affected objects and
+also adapt the position of the light source used for
+shading.<footnote>Since 1.21.</footnote>
+This facilitates working with very large and very tiny objects.
 <p>
 Using the menu entry <tt/"Align to Object"/ or the shortcut
 <tt/&lt;Ctrl+a&gt;/ (<tt/&lt;L&gt;/ for internal views)
@@ -10528,6 +10540,16 @@ file <tt/"imagez.tif"/ could look like this:
 The name will be automatically changed to <tt/"+name"/ on RIB export
 if it does not already start with a plus.
 
+<sect2>AsWire Tag<label id="aswiretag">
+<p>
+<bf/Description/
+<p>
+The tag type <tt/"AsWire"/ switches export of certain objects
+from surface to wireframe mode.
+The value string of this tag is ignored. All
+that counts is the presence of the tag.
+Note that only X3D export honours this tag.
+
 <sect2>NoExport Tag<label id="noexporttag">
 <p>
 <bf/Description/
@@ -10788,6 +10810,12 @@ the objects they are assigned to.
 These tags are internal binary tags that transport the notification
 across the scene.
 
+<item>NT Tag<label id="nttt">
+<p>
+
+This tag is an internal binary tag that carries normals and tangents
+for curves extracted from surfaces .
+
 </itemize>
 
 <sect2>List of Known Tags
@@ -10795,9 +10823,10 @@ across the scene.
 This section contains a compact list of tag names, that are
 known in Ayam and in all accompanying extensions (plugins).
 <p>
-<tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "NoExport", "TC",
+<tt>"RiAttribute", "RiOption", "RiHider", "RiDisplay", "AsWire", "NoExport",
+"TC",
 "PV", "SaveMainGeom", "SavePaneLayout", "TP", "MI", "OI", "DC", "TM", "NP",
-"RP", "BNS", "DBNS", "ANS", "DANS", "NO", "NM",
+"RP", "BNS", "DBNS", "ANS", "DANS", "NO", "NM", "NT",
 "UMM", "VMM", "BP", "IDR", "IIDR", "RIDR", "R3IDR", "CIDR", "CCIDR"</tt>
 <p>
 Documentation on all those tags can be found in the previous sections.
@@ -16109,8 +16138,8 @@ not only depends on Ayam but also on the importing
 application. For instance, many applications claim to read files in the
 Wavefront OBJ format but only import polygonal data or, even worse, only
 triangles from such files. By default, Ayam tries to preserve as much
-information as possible in the respective export format leading e.g. to the
-use of NURBS in Wavefront OBJ files.
+information/design intent as possible in the respective export format
+leading e.g. to the use of NURBS in Wavefront OBJ files.
 Consequently, to successfully transfer an Ayam scene to a different
 application, in some cases, manual conversion of the NURBS objects in
 the Ayam scene to polygonal geometry may be necessary.
@@ -16171,7 +16200,7 @@ Texture coordinates will import as TC tags
 <p>
 The RRIB plugin does not support reading of curves, implicit surfaces
 (blobby models) and calls to the RenderMan Interface that are not
-so much useful for a RIB import like e.g.~RiMakeTexture.
+so much useful for a RIB import like e.g.~RiMakeTexture.<newline>
 Unsupported geometric primitives and other calls to the RenderMan Interface
 are silently ignored.
 <p>
@@ -16555,34 +16584,32 @@ The Wavefront export currently supports the following
 objects:
 <itemize>
 <item>NCurve and objects that may be converted to NCurve
-objects (ICurve, ConcatNC, ExtrNC)
+objects (e.g. ICurve, ConcatNC, ExtrNC),
 <item>NPatch (with trim curves) and objects that may be converted
-to NPatch objects (BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
+to NPatch objects (e.g. BPatch, PatchMesh, Revolve, Sweep, Extrude, Skin,
 Cap, Gordon, Birail1, Birail2, Text); since Ayam 1.8.3 also Quadrics
-will be automatically converted to NURBS surfaces and exported
+will be automatically converted to NURBS surfaces and exported,
 <item>PolyMesh and objects that may be converted to PolyMesh objects
 (MetaObj), faces with holes are not supported by the Wavefront OBJ
-format and will be tesselated to triangles for export automatically
-<item>Box
+format and will be tesselated to triangles for export automatically,
+<item>Box,
 <item>Instance, Clone; both will be resolved to normal objects for export
-as Wavefront OBJ does not support referenced geometry
-<item>Level, CSG operations are not supported and will be written
-as normal Level objects, transformations will be delegated
-to the child objects
+as Wavefront OBJ does not support referenced geometry.
 </itemize>
-
 Since the Wavefront OBJ format does not support separate transformation
 attributes, all transformation attributes will be used to transform the
 coordinate values (the control points) of the exported objects.
-The hierarchy of the Ayam scene will be squashed.
+<p>
+The hierarchy of the Ayam scene will be squashed to one level,
+transformations will be properly delegated to the child objects.
 <p>
 CSG operations are fully ignored, all objects will be written
 as if combined by the union operator.
 <p>
 The Wavefront OBJ export, currently, ignores all material information.
-Only the pure geometry information is written to the OBJ file.
+Only geometry information is written to the OBJ file.
 However, texture coordinates from primitive variable
-tags can be exported.<footnote>Since 1.8.3.</footnote>
+tags will be exported.<footnote>Since 1.8.3.</footnote>
 <p>
 UMM/VMM tags are used to trim the knot vectors of
 exported NURBS objects.<footnote>Since 1.9.</footnote>
@@ -16769,7 +16796,7 @@ or attributes for the trim curve elements).
 </enum>
 <p>
 The Ayam 3DMF import expects the trim curves to be delivered in this
-manner and can then indeed read them accurately.
+manner and can then indeed read them back accurately.
 
 <sect2>3DMF Export Options<label id="exp3dmfopt">
 <p>
@@ -17217,6 +17244,14 @@ Object names will be converted to DEF attributes.
 <p>
 Instances can be resolved or exported as USE/DEF pairs.
 
+<sect2>Wireframe Support
+<p>
+The X3D export allows to export wireframes instead of surfaces for
+NPatch and PoMesh objects.
+<p>
+To switch an object to wireframe export, just add a tag <tt/"AsWire"/
+to the object.
+
 <sect2>X3D Export Options<label id="expx3dopt">
 <p>
 The following parameters, additionally, control the X3D (Web3D) export:
@@ -17242,10 +17277,6 @@ primitives:
  <item>Sweep as NurbsSweptSurface,
  <item>Extrude as NurbsSweptSurface;
  </itemize>
-<item><tt>"WritePoWires"</tt>: controls whether PoMesh objects should be,
-additionally, exported as wireframe;
-<item><tt>"WriteNpWires"</tt>: controls whether NURBS patch objects should be,
-exported as wireframe;
 <item><tt>"WriteMaterials"</tt>: controls whether appearance and
 material nodes should be exported for each shape;
 <item><tt>"ResolveInstances"</tt>: controls whether instance objects should
@@ -17263,8 +17294,8 @@ enabled,
 <item>the X3D export will first read a XHTML template file (named
 <tt/"x3dom-template.xhtml"/),
 <item>then inject the scene to be exported into the
-X3D <tt/"&lt;Scene&gt;"/-tag (already present child elements of this tag
-will be preserved),
+X3D <tt/"&lt;Scene&gt;"/-tag of the template (already present child
+elements of this tag will be preserved),
 <item>add width and height of the view window that was exported last
 as attributes to the <tt/"&lt;X3D&gt;"/-tag,
 <item>and finally write the XHTML document to the file
@@ -17275,6 +17306,7 @@ from 0 to 50 percent, the x3dio plugin is creating a XML document
 in memory and from 50 to 100 percent this XML document will be written
 to the X3D file.
 </itemize>
+
 
 <sect>Miscellaneous
 <p>
@@ -20007,8 +20039,6 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="expx3dopt" name="X3D (Web3D) export option">
 </itemize>
 <item>WriteMaterials<ref id="expx3dopt" name="X3D (Web3D) export option">
-<item>WriteNpWires<ref id="expx3dopt" name="X3D (Web3D) export option">
-<item>WritePoWires<ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteParametrics: <ref id="expx3dopt" name="X3D (Web3D) export option">
 <item>WriteIdent: <ref id="prefrib" name="preference setting">
 <item>WriteSelected:
