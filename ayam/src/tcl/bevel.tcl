@@ -89,7 +89,7 @@ proc bevel_setTags { bnames {bids ""} } {
 	} else {
 	    set j $i
 	}
-	if { $BevelTags(Bevel${j}) } {
+	if { $BevelTags(Bevel${i}) } {
 	    lappend newtags BP
 	    set type $BevelTags(${bname}Type)
 	    set l [expr [llength $ay(bevelmodes)] - 1]
@@ -119,7 +119,7 @@ proc bevel_setTags { bnames {bids ""} } {
 # bevel_setTags
 
 
-proc bevel_add { bplace arr } {
+proc bevel_add { bplace arr bids } {
     global ay BevelTags $arr
 
     eval set bnames \$${arr}(BoundaryNames)
@@ -135,7 +135,7 @@ proc bevel_add { bplace arr } {
     set BevelTags(${bname}Force3D) 0
 
     # create tags
-    bevel_setTags $bnames
+    bevel_setTags $bnames $bids
 
     # apply changes to object
     if { $ay(shiftcommand) == 1 } {
@@ -166,7 +166,7 @@ proc bevel_add { bplace arr } {
 # bevel_add
 
 
-proc bevel_rem { bplace arr } {
+proc bevel_rem { bplace arr bids } {
     global ay BevelTags $arr
 
     eval set bnames \$${arr}(BoundaryNames)
@@ -175,7 +175,7 @@ proc bevel_rem { bplace arr } {
     set BevelTags(Bevel${bplace}) 0
 
     # create tags
-    bevel_setTags $bnames
+    bevel_setTags $bnames $bids
 
     # apply changes to object?
     if { $ay(shiftcommand) == 1 } {
@@ -339,6 +339,7 @@ proc bevel_getBevels { } {
 		set cmd "bevel_rem "
 		append cmd $i
 		append cmd " ${type}AttrData"
+		append cmd " {$bids}"
 		addCommand $w c$i $str $cmd
 		addMenu $w BevelTags ${bname}Type $ay(bevelmodeswc)
 		addParam $w BevelTags ${bname}Radius
@@ -352,6 +353,7 @@ proc bevel_getBevels { } {
 		set cmd "bevel_add "
 		append cmd $i
 		append cmd " ${type}AttrData"
+		append cmd " {$bids}"
 		addCommand $w c$i $str $cmd
 	    }
 
