@@ -1072,9 +1072,9 @@ View Actions (View Windows):
  Zoom out View       <$svsc(ZoomO)>
  ZoomViewAnytime     <Mouse-$svsc(ZoomVButton)>
 
- ZoomRegion View     <$svsc(ZoomRModKey)+Mouse-1
-
+ ZoomRegion          <$svsc(ZoomRModKey)+Mouse-1
  ZoomToObject        <$svsc(ZoomTO)> / <$svsc(ZoomTO2)>
+ ZoomToAll           <$svsc(ZoomAll)>
 
  Cycle View Type     <$svsc(TypeUp)> / <$svsc(TypeDown)>
 
@@ -1105,7 +1105,7 @@ bind $w.ftext.text <ButtonPress-5>\
 set filler "                                                        "
 set i 2
 set on 0
-while {$i < 82} {
+while {$i < 85} {
     set line [$w.ftext.text get ${i}.0 ${i}.end]
     if { [string length $line] > 0 } {
 	if { $on } {
