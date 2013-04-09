@@ -401,7 +401,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *o = NULL;
  ay_list_object *sel, *oldsel = ay_selection;
- int zoomtoall = AY_FALSE, revert_selection = AY_FALSE;
+ int zoom_to_all = AY_FALSE, restore_selection = AY_FALSE;
  double bb[24] = {0};
  double xmin = DBL_MAX, xmax = -DBL_MAX, ymin = DBL_MAX;
  double ymax = -DBL_MAX, zmin = DBL_MAX, zmax = -DBL_MAX;
@@ -419,8 +419,8 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	  o = o->next;
 	}
 
-      zoomtoall = AY_TRUE;
-      revert_selection = AY_TRUE;
+      zoom_to_all = AY_TRUE;
+      restore_selection = AY_TRUE;
    }
 
   if(ay_selection)
@@ -476,7 +476,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       if(!zoomtoall && ay_currentlevel->next)
+       if(!zoom_to_all && ay_currentlevel->next)
 	 {
 	   ay_trafo_getall(ay_currentlevel->next);
 	 }
@@ -492,17 +492,11 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       */
       ay_trafo_apply3(cog, mt);
 
-      dt[0] = view->to[0] - cog[0];
-      dt[1] = view->to[1] - cog[1];
-      dt[2] = view->to[2] - cog[2];
+      AY_V3SUB(dt, view->to, cog);
 
       /* let the view point to objects COG */
-      view->to[0] -= dt[0];
-      view->to[1] -= dt[1];
-      view->to[2] -= dt[2];
-      view->from[0] -= dt[0];
-      view->from[1] -= dt[1];
-      view->from[2] -= dt[2];
+      AY_V3SUB(view->to, view->to, dt);
+      AY_V3SUB(view->from, view->from, dt);
 
       dt[0] = xmin;
       dt[1] = ymin;
@@ -590,7 +584,7 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
 	    }
 	} /* if */
 
-      if(zoomtoall)
+      if(zoom_to_all)
 	{
 	  ay_sel_free(AY_FALSE);
 	  ay_selection = oldsel;
@@ -606,12 +600,12 @@ ay_viewt_zoomtoobj(struct Togl *togl, int argc, char *argv[])
       ay_toglcb_display(togl);
       ay_viewt_uprop(view);
 
-      revert_selection = AY_FALSE;
+      restore_selection = AY_FALSE;
     } /* if (sel) */
 
 cleanup:
 
-  if(revert_selection && zoomtoall)
+  if(restore_selection && zoom_to_all)
     {
       ay_sel_free(AY_FALSE);
       ay_selection = oldsel;

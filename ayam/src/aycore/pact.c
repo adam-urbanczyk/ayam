@@ -416,7 +416,6 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  int penumber = 0, *tmpi;
  unsigned int *peindices = NULL, *tmpu;
 
-
   Togl_MakeCurrent(togl);
 
   if(pact_numcpo)
