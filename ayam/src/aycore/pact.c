@@ -405,17 +405,17 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
  int ay_status = AY_OK;
  char fname[] = "pointEdit";
  Tcl_Interp *interp = Togl_Interp(togl);
+ ay_list_object *sel = ay_selection;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ ay_object **tmpo = NULL, *o = NULL;
  double winX = 0.0, winY = 0.0;
  double obj[3] = {0};
- ay_list_object *sel = ay_selection;
+ double **pecoords = NULL, **tmp = NULL, oldpickepsilon;
+ double minlevelscale, minobjscale;
+ GLdouble m[16];
  int penumber = 0, *tmpi;
  unsigned int *peindices = NULL, *tmpu;
- double **pecoords = NULL, **tmp = NULL, oldpickepsilon, mins;
- ay_object **tmpo = NULL, *o = NULL;
- GLdouble m[16];
- static ay_list_object *lastlevel = NULL;
- static double lscal = 1.0;
+
 
   Togl_MakeCurrent(togl);
 
@@ -438,25 +438,20 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
   Tcl_GetDouble(interp, argv[2], &winX);
   Tcl_GetDouble(interp, argv[3], &winY);
 
-  if(lastlevel != ay_currentlevel)
-    {
-      glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-       glLoadIdentity();
-       if(ay_currentlevel->object != ay_root)
-	 {
-	   ay_trafo_getalls(ay_currentlevel->next);
-	 }
-       glGetDoublev(GL_MODELVIEW_MATRIX, m);
-       lscal = fabs(m[0]);
-       if(fabs(m[5]) < lscal)
-	 lscal = fabs(m[5]);
-       if(fabs(m[10]) < lscal)
-	 lscal = fabs(m[10]);
-      glPopMatrix();
-
-      lastlevel = ay_currentlevel;
-    } /* if */
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+   glLoadIdentity();
+   if(ay_currentlevel->object != ay_root)
+     {
+       ay_trafo_getalls(ay_currentlevel->next);
+     }
+   glGetDoublev(GL_MODELVIEW_MATRIX, m);
+   minlevelscale = fabs(m[0]);
+   if(fabs(m[5]) < minlevelscale)
+     minlevelscale = fabs(m[5]);
+   if(fabs(m[10]) < minlevelscale)
+     minlevelscale = fabs(m[10]);
+  glPopMatrix();
 
   oldpickepsilon = ay_prefs.pick_epsilon;
 
@@ -468,15 +463,15 @@ ay_pact_startpetcb(struct Togl *togl, int argc, char *argv[])
 			&(obj[0]), &(obj[1]), &(obj[2]));
 
       /* adapt pick epsilon to view zoom, level and object scale */
-      mins = fabs(o->scalx);
+      minobjscale = fabs(o->scalx);
 
-      if(fabs(o->scaly) < mins)
-	mins = o->scaly;
+      if(fabs(o->scaly) < minobjscale)
+	minobjscale = o->scaly;
 
-      if(fabs(o->scalz) < mins)
-	mins = o->scalz;
+      if(fabs(o->scalz) < minobjscale)
+	minobjscale = o->scalz;
 
-      ay_prefs.pick_epsilon = oldpickepsilon * lscal * mins *
+      ay_prefs.pick_epsilon = oldpickepsilon / minlevelscale / minobjscale *
 	250 * view->conv_x;
 
       /* now try to pick points on object o */
