@@ -928,37 +928,80 @@ ay_npatch_drawglu(ay_object *o)
 int
 ay_npatch_drawch(ay_nurbpatch_object *npatch)
 {
- double *cv;
+ double *dcv;
+ float *fcv;
  int i, j, a, width, height;
 
   width = npatch->width;
   height = npatch->height;
 
-  cv = npatch->controlv;
-  a = 0;
-  for(i = 0; i < width; i++)
+  if(npatch->is_rat)
     {
-      glBegin(GL_LINE_STRIP);
-	for(j = 0; j < height; j++)
-	  {
-	    glVertex3dv((GLdouble *)&cv[a]);
-	    a += 4;
-	  }
-      glEnd();
+      if(!npatch->fltcv)
+	{
+	  ay_npatch_cacheflt(npatch);
+	}
+
+      if(!npatch->fltcv)
+	{
+	  return AY_ERROR;
+	}
+
+      fcv = &(npatch->fltcv[width+height+npatch->uorder+npatch->vorder]);
+      a = 0;
+      for(i = 0; i < width; i++)
+	{
+	  glBegin(GL_LINE_STRIP);
+	  for(j = 0; j < height; j++)
+	    {
+	      glVertex3fv((GLfloat *)&fcv[a]);
+	      a += 4;
+	    }
+	  glEnd();
+	}
+
+      for(j = 0; j < height; j++)
+	{
+	  a = j * 4;
+
+	  glBegin(GL_LINE_STRIP);
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3fv((GLfloat *)&fcv[a]);
+
+	      a += (4 * height);
+	    }
+	  glEnd();
+	}
     }
-
-  for(j = 0; j < height; j++)
+  else
     {
-      a = j * 4;
+      dcv = npatch->controlv;
+      a = 0;
+      for(i = 0; i < width; i++)
+	{
+	  glBegin(GL_LINE_STRIP);
+	  for(j = 0; j < height; j++)
+	    {
+	      glVertex3dv((GLdouble *)&dcv[a]);
+	      a += 4;
+	    }
+	  glEnd();
+	}
 
-      glBegin(GL_LINE_STRIP);
-	for(i = 0; i < width; i++)
-	  {
-	    glVertex3dv((GLdouble *)&cv[a]);
+      for(j = 0; j < height; j++)
+	{
+	  a = j * 4;
 
-	    a += (4 * height);
-	  }
-      glEnd();
+	  glBegin(GL_LINE_STRIP);
+	  for(i = 0; i < width; i++)
+	    {
+	      glVertex3dv((GLdouble *)&dcv[a]);
+
+	      a += (4 * height);
+	    }
+	  glEnd();
+	}
     }
 
  return AY_OK;
@@ -1025,6 +1068,7 @@ int
 ay_npatch_shadech(ay_nurbpatch_object *npatch)
 {
  int a, b, c, d, i, j;
+ float *fcv;
 
   if(npatch->stess && npatch->stess->tessw != -1)
     ay_stess_destroy(npatch);
@@ -1041,27 +1085,64 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
       npatch->stess->tessw = -1;
     } /* if */
 
-  for(i = 0; i < npatch->width-1; i++)
+  if(npatch->is_rat)
     {
-      a = i*npatch->height*4;
-      b = a+(npatch->height*4);
-      c = i*npatch->height*3;
-      d = c+(npatch->height*3);
-      glBegin(GL_QUAD_STRIP);
-       for(j = 0; j < npatch->height; j++)
-	 {
-	   glNormal3dv(&(npatch->stess->tessv[c]));
-	   glVertex3dv(&(npatch->controlv[a]));
-	   glNormal3dv(&(npatch->stess->tessv[d]));
-	   glVertex3dv(&(npatch->controlv[b]));
-	   a += 4;
-	   b += 4;
-	   c += 3;
-	   d += 3;
-	 } /* for */
-      glEnd();
-    } /* for */
+      if(!npatch->fltcv)
+	{
+	  ay_npatch_cacheflt(npatch);
+	}
 
+      if(!npatch->fltcv)
+	{
+	  return AY_ERROR;
+	}
+
+      fcv = &(npatch->fltcv[npatch->width+npatch->height+
+			    npatch->uorder+npatch->vorder]);
+      for(i = 0; i < npatch->width-1; i++)
+	{
+	  a = i*npatch->height*4;
+	  b = a+(npatch->height*4);
+	  c = i*npatch->height*3;
+	  d = c+(npatch->height*3);
+	  glBegin(GL_QUAD_STRIP);
+	  for(j = 0; j < npatch->height; j++)
+	    {
+	      glNormal3dv(&(npatch->stess->tessv[c]));
+	      glVertex3fv(&(fcv[a]));
+	      glNormal3dv(&(npatch->stess->tessv[d]));
+	      glVertex3fv(&(fcv[b]));
+	      a += 4;
+	      b += 4;
+	      c += 3;
+	      d += 3;
+	    } /* for */
+	  glEnd();
+	} /* for */
+    }
+  else
+    {
+      for(i = 0; i < npatch->width-1; i++)
+	{
+	  a = i*npatch->height*4;
+	  b = a+(npatch->height*4);
+	  c = i*npatch->height*3;
+	  d = c+(npatch->height*3);
+	  glBegin(GL_QUAD_STRIP);
+	  for(j = 0; j < npatch->height; j++)
+	    {
+	      glNormal3dv(&(npatch->stess->tessv[c]));
+	      glVertex3dv(&(npatch->controlv[a]));
+	      glNormal3dv(&(npatch->stess->tessv[d]));
+	      glVertex3dv(&(npatch->controlv[b]));
+	      a += 4;
+	      b += 4;
+	      c += 3;
+	      d += 3;
+	    } /* for */
+	  glEnd();
+	} /* for */
+    }
  return AY_OK;
 } /* ay_npatch_shadech */
 
@@ -2217,6 +2298,7 @@ ay_npatch_wribtrimcurves(ay_object *o)
  double m[16];
  double x, y, z, w2;
  int valid_loop;
+
   if(!o)
     return AY_OK;
 
@@ -2830,7 +2912,6 @@ ay_npatch_providecb(ay_object *o, unsigned int type, ay_object **result)
       ay_status = ay_tess_npatch(o, smethod, sparamu, sparamv,
 				 use_tc, NULL, use_vc, NULL, use_vn, NULL,
 				 result);
-
 
       if(*result)
 	{
