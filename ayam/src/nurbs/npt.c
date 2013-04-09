@@ -791,8 +791,11 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
 
       if(sel->object->modified)
-	if(sel->object->selp)
-	  ay_selp_clear(sel->object);
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+	  ay_notify_object(sel->object);
+	}
 
       sel = sel->next;
     } /* while */
@@ -910,8 +913,11 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
 
       if(sel->object->modified)
-	if(sel->object->selp)
-	  ay_selp_clear(sel->object);
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+	  ay_notify_object(sel->object);
+	}
 
       sel = sel->next;
     } /* while */
@@ -5945,8 +5951,12 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* switch */
 
       if(sel->object->modified)
-	if(sel->object->selp)
-	  ay_selp_clear(sel->object);
+	{
+	  if(sel->object->selp)
+	    ay_selp_clear(sel->object);
+
+	  ay_notify_object(sel->object);
+	}
 
       sel = sel->next;
     } /* while */
@@ -9135,6 +9145,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 		}
 	      src->modified = AY_TRUE;
 	    } /* if */
+	  ay_notify_object(src);
 	} /* if */
       sel = sel->next;
     } /* while */
