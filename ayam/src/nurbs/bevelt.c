@@ -44,7 +44,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, is_planar = AY_TRUE, side = 0;
+ int i, is_planar = AY_TRUE, winding = 0, side = 0, revert = AY_FALSE;
  double param = 0.0, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
@@ -127,6 +127,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      continue;
 	    }
 
+	  winding = ay_nct_getwinding(curve.refine, normals, 9);
+
 	  bevel = NULL;
 	  ay_status = ay_npt_createnpatchobject(&bevel);
 	  if(ay_status || !bevel)
@@ -148,13 +150,62 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  if(is_planar)
 	    {
 	      /* 2D bevel */
-	      if(i == 0 || i == 2)
+	      switch(i)
 		{
-		  bparams->dirs[i] = !bparams->dirs[i];
-		  bparams->radii[i] = -bparams->radii[i];
-		}
+		case 0:
+		  if(winding > 0)
+		    {
+		      revert = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  else
+		    {
+		      revert = bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  break;
+		case 1:
+		  if(winding > 0)
+		    {
+		      revert = bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  else
+		    {
+		      revert = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  break;
+		case 2:
+		  if(winding > 0)
+		    {
+		      revert = bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  else
+		    {
+		      revert = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  break;
+		case 3:
+		  if(winding > 0)
+		    {
+		      revert = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  else
+		    {
+		      revert = bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  break;
+		default:
+		  revert = AY_FALSE;
+		  break;
+		} /* switch */
 
-	      if(bparams->dirs[i])
+	      if(revert)
 		{
 		  ay_nct_revert((ay_nurbcurve_object *)alignedcurve->refine);
 		}

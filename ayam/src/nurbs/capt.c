@@ -347,7 +347,7 @@ ay_capt_crttrimcap(ay_object *c, ay_object **cap)
 	  ay_nct_applytrafo(c);
 	} /* if */
 
-      ay_nct_getorientation(nc, 4, &angle);
+      ay_nct_getorientation(nc, 4, 1, 0, &angle);
 
       if(first)
 	{

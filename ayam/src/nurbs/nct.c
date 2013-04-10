@@ -3459,9 +3459,10 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  *  this time with support from Paul Bourke
  */
 int
-ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
+ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
+		      int report, int plane, double *orient)
 {
- int i, j, k;
+  int i, j, k, l;
  double *cv = NULL, A = 0.0;
  char fname[] = "nct_getorientation";
 
@@ -3471,18 +3472,44 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
   cv = curve->controlv;
   if(curve->length <= 2)
     {
-      ay_error(AY_EWARN, fname, "Need more than 2 control points.");
+      if(report)
+	ay_error(AY_EWARN, fname, "Need more than 2 control points.");
       return AY_ERROR;
     }
 
-  j = 0;
-  k = stride;
+  switch(plane)
+    {
+    case 0:
+      /* XY - Front */
+      j = 0;
+      k = stride;
+      l = 1;
+      break;
+    case 1:
+      /* XZ - Top */
+      j = 0;
+      k = stride;
+      l = 2;
+      break;
+    case 2:
+      /* YZ - Side */
+      j = 1;
+      k = stride+1;
+      l = 1;
+      break;
+    default:
+      if(report)
+	ay_error(AY_EWARN, fname, "Plane must be 0, 1, or 2.");
+      return AY_ERROR;
+      break;
+    }
+
   for(i = 0; i < curve->length-1; i++)
     {
       if((fabs(cv[j]-cv[k]) > AY_EPSILON) ||
-	 (fabs(cv[j+1]-cv[k+1]) > AY_EPSILON))
+	 (fabs(cv[j+l]-cv[k+l]) > AY_EPSILON))
 	{
-	  A += cv[j]*cv[k+1]-cv[k]*cv[j+1];
+	  A += cv[j]*cv[k+l]-cv[k]*cv[j+l];
 	}
       j += stride;
       k += stride;
@@ -3490,7 +3517,8 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
 
   if(fabs(A) < AY_EPSILON)
     {
-      ay_error(AY_ERROR, fname, "Could not determine orientation.");
+      if(report)
+	ay_error(AY_ERROR, fname, "Could not determine orientation.");
       return AY_ERROR;
     }
 
@@ -3498,6 +3526,102 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride, double *orient)
 
  return AY_OK;
 } /* ay_nct_getorientation */
+
+
+/** Calculate orientation of NURBS curve.
+ */
+int
+ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
+			int report, double *orient)
+{
+ int ay_status;
+ double A = 0.0;
+
+  *orient = 0.0;
+
+  ay_status = ay_nct_getorientation(curve, stride, AY_FALSE,
+				    /*plane=*/0, &A);
+  if(!ay_status)
+    {
+      if(fabs(A) > 0.0)
+	*orient = A;
+    }
+  ay_status = ay_nct_getorientation(curve, stride, AY_FALSE,
+				    /*plane=*/1, &A);
+  if(!ay_status)
+    {
+      if(fabs(A) > fabs(*orient))
+	*orient = A;
+    }
+
+  ay_status = ay_nct_getorientation(curve, stride, AY_FALSE,
+				    /*plane=*/2, &A);
+  if(!ay_status)
+    {
+      if(fabs(A) > fabs(*orient))
+	*orient = A;
+    }
+
+  if(*orient == 0.0)
+    return AY_ERROR;
+
+ return AY_OK;
+} /* ay_nct_getorientation3d */
+
+
+/** Calculate winding of arbitrary (3D) NURBS curve.
+ */
+int
+ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
+		  int normalstride)
+{
+ double *cv, *p1, *p2;
+ double V1[3], V2[3];
+ double l, l1 = 0.0, l2 = 0.0;
+ int i, stride = 4;
+ int a = 0, b = stride, c = 0, d = normalstride;
+
+  if(nc && normals)
+    {
+      cv = nc->controlv;
+      for(i = 0; i < nc->length-1; i++)
+	{
+	  p1 = &(cv[a]);
+	  p2 = &(cv[b]);
+	  if(!AY_V3COMP(p1, p2))
+	    {
+	      AY_V3SUB(V1, p2, p1);
+	      l = AY_V3LEN(V1);
+	      l1 += l;
+	      memcpy(V1, &(normals[c]), 3*sizeof(double));
+	      if(l < 1.0)
+		AY_V3SCAL(V1, l);
+	      AY_V3SUB(V1, V1, p1);
+	      memcpy(V2, &(normals[d]), 3*sizeof(double));
+	      if(l < 1.0)
+		AY_V3SCAL(V2, l);
+	      AY_V3SUB(V2, V2, p2);
+	      AY_V3SUB(V1, V2, V1);
+	      l2 += AY_V3LEN(V1);
+	    } /* if */
+
+	  a += stride;
+	  b += stride;
+	  c += normalstride;
+	  d += normalstride;
+	} /* for */
+    } /* if */
+
+  if(l1 != 0.0)
+    {
+      if(l1 < l2)
+	return -1;
+      else
+	return 1;
+    }
+
+ return 0;
+} /* ay_nct_getwinding */
 
 
 /** ay_nct_isclosed:
@@ -4390,13 +4514,13 @@ ay_nct_getcurvature(ay_nurbcurve_object *c, double t)
   if(c->order < 3)
     return 0.0;
 
-  ay_nb_ComputeFirstDer4D(c->length, c->order-1, c->knotv, c->controlv, t,
+  ay_nb_ComputeFirstDer4D(c->length-1, c->order-1, c->knotv, c->controlv, t,
 			  vel);
   velsqrlen = (vel[0]*vel[0])+(vel[1]*vel[1])+(vel[2]*vel[2]);
 
   if(velsqrlen > AY_EPSILON)
     {
-      ay_nb_ComputeSecDer4D(c->length, c->order-1, c->knotv, c->controlv, t,
+      ay_nb_ComputeSecDer4D(c->length-1, c->order-1, c->knotv, c->controlv, t,
 			    acc);
       AY_V3CROSS(cross, vel, acc);
       numer = AY_V3LEN(cross);

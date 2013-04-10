@@ -1039,7 +1039,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 	      l.length = tls[i];
 	      l.controlv = tts[i];
 	      angle = 0.0;
-	      ay_nct_getorientation(&l, 2, &angle);
+	      ay_nct_getorientation(&l, 2, 1, 0, &angle);
 	      if(angle < 0.0)
 		tds[i] = 1;
 
@@ -1087,7 +1087,7 @@ ay_stess_TessTrimCurves(ay_object *o, int qf, int *nt, double ***tt,
 
 	  /* get orientation of trimloop */
 	  angle = 0.0;
-	  ay_nct_getorientation(c, 4, &angle);
+	  ay_nct_getorientation(c, 4, 1, 0, &angle);
 	  if(angle < 0.0)
 	    tds[i] = 1;
 
