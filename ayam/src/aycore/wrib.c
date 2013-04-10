@@ -491,6 +491,9 @@ ay_wrib_trafos(ay_object *o)
 
 /* ay_wrib_geniafilename:
  *  generate instance archive file name
+ *  from base file name and object id
+ *  A ".rib" extension must be present in base!
+ *  Returns NULL on error.
  */
 char *
 ay_wrib_geniafilename(char *base, char *oi)
@@ -514,7 +517,8 @@ ay_wrib_geniafilename(char *base, char *oi)
       free(iafilename);
       return NULL;
     }
-  return iafilename;
+
+ return iafilename;
 } /* ay_wrib_geniafilename */
 
 
