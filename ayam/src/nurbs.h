@@ -657,10 +657,22 @@ int ay_nct_crtcircbsp(int sections, double radius, double arc, int order,
 int ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 			    int argc, char *argv[]);
 
-/** Calculate orientation of NURBS curve.
+/** Calculate orientation of planar aligned NURBS curve.
  */
 int ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
-			  double *oangle);
+			  int report, int plane, double *oangle);
+
+/** Calculate orientation of NURBS curve.
+ */
+int
+ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
+			int report, double *orient);
+
+/** Calculate winding of arbitrary (3D) NURBS curve.
+ */
+int
+ay_nct_getwinding(ay_nurbcurve_object *curve, double *normals,
+		  int normalstride);
 
 /** Check NURBS curve closeness.
  */
