@@ -4313,19 +4313,26 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
     }
 
   stride = 4;
+  tr = (ay_nurbcurve_object *)(t->refine);
 
   /* apply all transformations to trajectory curves controlv */
-  tr = (ay_nurbcurve_object *)(t->refine);
-  if(!(trcv = malloc(tr->length*stride*sizeof(double))))
-    { return AY_EOMEM; }
-  memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
-
-  ay_trafo_creatematrix(t, mtr);
-  a = 0;
-  for(i = 0; i < tr->length; i++)
+  if(AY_ISTRAFO(t))
     {
-      ay_trafo_apply4(&(trcv[a]), mtr);
-      a += stride;
+      if(!(trcv = malloc(tr->length*stride*sizeof(double))))
+	{ return AY_EOMEM; }
+      memcpy(trcv, tr->controlv, tr->length*stride*sizeof(double));
+
+      ay_trafo_creatematrix(t, mtr);
+      a = 0;
+      for(i = 0; i < tr->length; i++)
+	{
+	  ay_trafo_apply4(&(trcv[a]), mtr);
+	  a += stride;
+	}
+    }
+  else
+    {
+      trcv = tr->controlv;
     }
 
   plen = fabs(tr->knotv[tr->length] - tr->knotv[tr->order-1]);
@@ -4339,7 +4346,14 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 
   while(o)
     {
-      u = tr->knotv[tr->order-1]+(((double)i/n)*plen);
+      if(tr->type == AY_CTOPEN)
+	{
+	  u = tr->knotv[tr->order-1]+(((double)i/(n-1))*plen);
+	}
+      else
+	{
+	  u = tr->knotv[tr->order-1]+(((double)i/n)*plen);
+	}
 
       /* calculate new translation */
       ay_nb_CurvePoint4D(tr->length-1, tr->order-1, tr->knotv, trcv,
@@ -4392,7 +4406,6 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
 	    } /* if */
 
 	  memcpy(T0, T1, 3*sizeof(double));
-
 	} /* if rotate */
 
       i++;
@@ -4400,9 +4413,9 @@ ay_nct_arrange(ay_object *o, ay_object *t, int rotate)
       o = o->next;
     } /* while */
 
-
   /* clean up */
-  free(trcv);
+  if(trcv != tr->controlv)
+    free(trcv);
 
  return ay_status;
 } /* ay_nct_arrange */
