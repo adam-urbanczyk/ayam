@@ -37,7 +37,7 @@ int objio_writencurve(FILE *fileptr, ay_object *o, double *m);
 
 int objio_writetcurve(FILE *fileptr, ay_object *o, double *m);
 
-int objio_writetrim(FILE *fileptr, ay_object *o);
+int objio_writetrims(FILE *fileptr, ay_object *o);
 
 int objio_writetrimids(FILE *fileptr, ay_object *o);
 
@@ -390,11 +390,11 @@ objio_writetcurve(FILE *fileptr, ay_object *o, double *m)
 } /* objio_writetcurve */
 
 
-/* objio_writetrim:
+/* objio_writetrims:
  *  write all trim curves pointed to by <o>
  */
 int
-objio_writetrim(FILE *fileptr, ay_object *o)
+objio_writetrims(FILE *fileptr, ay_object *o)
 {
  int ay_status = AY_OK;
  double mi[16] = {0};
@@ -445,7 +445,7 @@ objio_writetrim(FILE *fileptr, ay_object *o)
     } /* while */
 
  return AY_OK;
-} /* objio_writetrim */
+} /* objio_writetrims */
 
 
 /* objio_writetrimids:
@@ -530,7 +530,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-		  ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
+		  ay_status = ay_nct_getorientation(nc, 4, 0, 0, &orient);
 		  if(ay_status)
 		    {
 		      /* failed to detect orientation, maybe the curve
@@ -580,7 +580,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	  if(down->type == AY_IDNCURVE)
 	    {
 	      nc = (ay_nurbcurve_object *)down->refine;
-	      ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
+	      ay_status = ay_nct_getorientation(nc, 4, 0, 0, &orient);
 	      if(ay_status)
 		{
 		  /* failed to detect orientation, maybe the curve
@@ -657,7 +657,7 @@ objio_writenpatch(FILE *fileptr, ay_object *o, double *m)
   /* first, check for and write the trim curves */
   if(o->down && o->down->next)
     {
-      ay_status = objio_writetrim(fileptr, o->down);
+      ay_status = objio_writetrims(fileptr, o->down);
     }
 
   np = (ay_nurbpatch_object *)o->refine;
@@ -1364,11 +1364,7 @@ objio_writeobject(FILE *fileptr, ay_object *o, int writeend, int count)
 	  if(o->name && (strlen(o->name)>1))
 	    fprintf(fileptr, "o %s\n", o->name);
 
-	  if((o->movx != 0.0) || (o->movy != 0.0) || (o->movz != 0.0) ||
-	     (o->rotx != 0.0) || (o->roty != 0.0) || (o->rotz != 0.0) ||
-	     (o->scalx != 1.0) || (o->scaly != 1.0) || (o->scalz != 1.0) ||
-	     (o->quat[0] != 0.0) || (o->quat[1] != 0.0) ||
-	     (o->quat[2] != 0.0) || (o->quat[3] != 1.0))
+	  if(AY_ISTRAFO(o))
 	    {
 	      ay_trafo_creatematrix(o, m1);
 	      memcpy(m2, tm, 16*sizeof(double));
