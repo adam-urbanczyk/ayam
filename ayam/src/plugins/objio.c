@@ -508,7 +508,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	{
 	case AY_IDNCURVE:
 	  nc = (ay_nurbcurve_object *)o->refine;
-	  ay_status = ay_nct_getorientation(nc, 4, &orient);
+	  ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
 	  if(orient < 0.0)
 	    hole = AY_TRUE;
 	  else
@@ -530,7 +530,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	      if(down->type == AY_IDNCURVE)
 		{
 		  nc = (ay_nurbcurve_object *)down->refine;
-		  ay_status = ay_nct_getorientation(nc, 4, &orient);
+		  ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
 		  if(ay_status)
 		    {
 		      /* failed to detect orientation, maybe the curve
@@ -540,7 +540,8 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		      if(cnc)
 			{
 			  nc = (ay_nurbcurve_object *)cnc->refine;
-			  ay_status = ay_nct_getorientation(nc, 4, &orient);
+			  ay_status = ay_nct_getorientation(nc, 4,
+							    1, 0, &orient);
 			  ay_object_delete(cnc);
 			  cnc = NULL;
 			}
@@ -579,7 +580,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 	  if(down->type == AY_IDNCURVE)
 	    {
 	      nc = (ay_nurbcurve_object *)down->refine;
-	      ay_status = ay_nct_getorientation(nc, 4, &orient);
+	      ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
 	      if(ay_status)
 		{
 		  /* failed to detect orientation, maybe the curve
@@ -589,7 +590,7 @@ objio_writetrimids(FILE *fileptr, ay_object *o)
 		  if(cnc)
 		    {
 		      nc = (ay_nurbcurve_object *)cnc->refine;
-		      ay_status = ay_nct_getorientation(nc, 4, &orient);
+		      ay_status = ay_nct_getorientation(nc, 4, 1, 0, &orient);
 		      ay_object_delete(cnc);
 		      cnc = NULL;
 		    }
