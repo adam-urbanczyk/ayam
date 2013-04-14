@@ -7342,6 +7342,11 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
   if(o->type != AY_IDNCURVE)
     {
       ay_status = ay_provide_object(o, AY_IDNCURVE, &c);
+      if(c && c->next)
+	{
+	  ay_status = x3dio_writetrimloop(element, c);
+	  goto cleanup;
+	}
     }
   else
     {
@@ -7386,6 +7391,8 @@ x3dio_writetrimcurve(scew_element *element, ay_object *o)
       x3dio_writedoublepoints(coord_element, "point", 2, nc->length, 4,
 			      nc->controlv);
     }
+
+cleanup:
 
   if(c)
     {
