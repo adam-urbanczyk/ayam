@@ -88,9 +88,6 @@ int dxfio_elayer = -1;
 
 int dxfio_currentlayer = 0;
 
-// 0: silence, 1: errors, 2: warnings, 3: all
-int dxfio_errorlevel = 1;
-
 // rescale knots to min dist, if <= 0.0: no scaling
 double dxfio_rescaleknots = 0.0;
 
@@ -1545,16 +1542,13 @@ dxfio_readentitydcb(const class dimeState *state,
       ay_status = dxfio_readtrace(state, (dimeTrace*)entity, clientdata);
       break;
     case dimeBase::dimeUnknownEntityType:
-      if(dxfio_errorlevel > 1)
-	{
-	  ay_error(AY_EWARN, fname, "Skipping entity of unknown type.");
-	}
+      ay_error(AY_EWARN, fname, "Skipping entity of unknown type.");
       break;
     default:
       break;
     } // switch
 
-  if(ay_status && (dxfio_errorlevel > 0))
+  if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error converting entity.");
     }
@@ -1580,11 +1574,8 @@ dxfio_readentitydcb(const class dimeState *state,
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  /*if(dxfio_errorlevel > 1)*/
-	    {
-	      ay_error(AY_EOUTPUT, fname,
-		     "Import cancelled! Not all objects may have been read!");
-	    }
+	  ay_error(AY_EOUTPUT, fname,
+		   "Import cancelled! Not all objects may have been read!");
 	  return false;
 	} // if
     } // if
@@ -1630,8 +1621,7 @@ dxfio_readprogressdcb(float progress, void *clientdata)
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  /*if(dxfio_errorlevel > 1)*/
-	    ay_error(AY_EOUTPUT, fname,
+	  ay_error(AY_EOUTPUT, fname,
 		   "Import cancelled! Not all objects may have been read!");
 	  return 0;
 	}
@@ -1700,13 +1690,10 @@ dxfio_countentities(dimeModel *model)
 	} // for
     } // if
 
-  if(dxfio_errorlevel > 2)
-    {
-      char fname[] = "dxfio_countentities";
-      char message[64];
-      sprintf(message, "%d entities to convert.\n", dxfio_totalents);
-      ay_error(AY_EOUTPUT, fname, message);
-    } // if
+  char fname[] = "dxfio_countentities";
+  char message[64];
+  sprintf(message, "%d entities to convert.\n", dxfio_totalents);
+  ay_error(AY_EOUTPUT, fname, message);
 
  return AY_OK;
 } // dxfio_countentities
@@ -1729,8 +1716,6 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   dxfio_scalefactor = 1.0;
   dxfio_slayer = -1;
   dxfio_elayer = -1;
-
-  dxfio_errorlevel = ay_prefs.errorlevel;
 
   // reset internal progress counter
   dxfio_readprogressdcb(0.0f, (void*)1);
@@ -1815,8 +1800,7 @@ dxfio_readtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       int line = in.getFilePosition();
       sprintf(lineerrstr, "DXF read error in line: %d", line);
-      if(dxfio_errorlevel > 0)
-	ay_error(AY_ERROR, argv[0], lineerrstr);
+      ay_error(AY_ERROR, argv[0], lineerrstr);
       return TCL_OK;
     }
 
@@ -2741,10 +2725,9 @@ dxfio_writeprogressdcb(float progress, void *clientdata)
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
       if(val && val[0] == '1')
 	{
-	  /*if(dxfio_errorlevel > 1)*/
-	    ay_error(AY_EOUTPUT, fname,
+	  ay_error(AY_EOUTPUT, fname,
 		   "Export cancelled! Not all objects may have been written!");
-	    dxfio_cancelled = AY_TRUE;
+	  dxfio_cancelled = AY_TRUE;
 	  return 0;
 	}
     } // if
