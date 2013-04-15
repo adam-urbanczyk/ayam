@@ -195,7 +195,6 @@ static int ay_rrib_readmaterial; /* read material and attributes */
 static int ay_rrib_readmateriali; /* read material and attributes (internal) */
 static int ay_rrib_readpartial; /* read partial RIB (e.g. without
 				   WorldBegin/End) */
-static int ay_rrib_errorlevel; /* 0: silence, 1: errors, 2: warnings, 3: all */
 static int ay_rrib_readstrim; /* 0: skip simple trim, 1: read simple trim */
 static double rrib_rescaleknots; /* rescale knots to min dist,
 				    if <= 0.0: no scaling */
@@ -5560,18 +5559,15 @@ ay_rrib_printerror(RIB_HANDLE rib, int code, int severity, PRIB_ERROR error)
     {
     case 0:
       /* info */
-      if(ay_rrib_errorlevel > 2)
 	ay_error(AY_EOUTPUT, fname, buf);
       break;
     case 1:
       /* warning */
-      if(ay_rrib_errorlevel > 1)
-	ay_error(AY_EWARN, fname, buf);
+      ay_error(AY_EWARN, fname, buf);
       break;
     case 2:
       /* error */
-      if(ay_rrib_errorlevel > 0)
-	ay_error(AY_ERROR, fname, buf);
+      ay_error(AY_ERROR, fname, buf);
       break;
     case 3:
       /* severe */
@@ -5615,7 +5611,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_lastriobject = NULL;
   ay_rrib_lastmaterialnum = 0;
   ay_rrib_readmateriali = 0;
-  ay_rrib_errorlevel = 1;
   ay_rrib_readstrim = 1;
 
   /* default fov */
@@ -5638,7 +5633,6 @@ ay_rrib_readrib(char *filename, int frame, int read_camera, int read_options,
   ay_rrib_readlights = read_lights;
   ay_rrib_readmaterial = read_material;
   ay_rrib_readpartial = read_partial;
-  ay_rrib_errorlevel = ay_prefs.errorlevel;
   ay_rrib_readstrim = read_strim;
 
   gRibNopRITable[kRIB_FRAMEBEGIN] = (PRIB_RIPROC)ay_rrib_RiFrameBegin;
