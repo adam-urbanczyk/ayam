@@ -80,12 +80,8 @@ int x3dio_x3domheight = 0;
 unsigned int x3dio_allobjcnt = 0;
 unsigned int x3dio_curobjcnt = 0;
 
-
-static double tm[16] = {0}; /* current transformation matrix */
-
-
-/* 0: silence, 1: errors, 2: warnings, 3: all */
-int x3dio_errorlevel = 1;
+/* current transformation matrix */
+static double tm[16] = {0};
 
 /* rescale knots to min dist, if <= 0.0: no scaling */
 double x3dio_rescaleknots = 0.0;
@@ -378,8 +374,7 @@ x3dio_pushtrafo(void)
 
   if(!(newstate = calloc(1, sizeof(x3dio_trafostate))))
     {
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_EOMEM, fname, NULL);
+      ay_error(AY_EOMEM, fname, NULL);
       return;
     }
 
@@ -407,8 +402,7 @@ x3dio_poptrafo(void)
 
   if(!x3dio_ctrafos)
     {
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_ERROR, fname, "No states left!");
+      ay_error(AY_ERROR, fname, "No states left!");
       return;
     }
 
@@ -1091,9 +1085,7 @@ x3dio_processuse(scew_element **element)
 	}
       else
 	{
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname,
-		     "malformed USE attribute encountered");
+	  ay_error(AY_ERROR, fname, "malformed USE attribute encountered");
 	} /* if str */
     } /* if attr */
 
@@ -5542,11 +5534,8 @@ x3dio_readinline(scew_element *element)
 		}
 	    }
 
-	  if(x3dio_errorlevel > 2)
-	    {
-	      ay_error(AY_EOUTPUT, fname, "Inlining file:");
-	      ay_error(AY_EOUTPUT, fname, filename);
-	    }
+	  ay_error(AY_EOUTPUT, fname, "Inlining file:");
+	  ay_error(AY_EOUTPUT, fname, filename);
 
 	  /* initialize XML parser */
 	  parser = scew_parser_create();
@@ -5560,8 +5549,7 @@ x3dio_readinline(scew_element *element)
 	      sprintf(errstr, "Unable to load file (error #%d: %s)\n",
 		      errcode,
 		      scew_error_string(errcode));
-	      if(x3dio_errorlevel > 0)
-		ay_error(AY_ERROR, fname, errstr);
+	      ay_error(AY_ERROR, fname, errstr);
 	      if(errcode == scew_error_expat)
 		{
 		  expat_code = scew_error_expat_code(parser);
@@ -5570,8 +5558,7 @@ x3dio_readinline(scew_element *element)
 			  scew_error_expat_line(parser),
 			  scew_error_expat_column(parser),
 			  scew_error_expat_string(expat_code));
-		  if(x3dio_errorlevel > 0)
-		    ay_error(AY_ERROR, fname, errstr);
+		  ay_error(AY_ERROR, fname, errstr);
 		}
 	      ay_status = AY_ERROR;
 	      goto cleanup;
@@ -6062,8 +6049,7 @@ x3dio_readelement(scew_element *element)
 	}
       else
 	{
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, "malformed DEF attribute encountered");
+	  ay_error(AY_ERROR, fname, "malformed DEF attribute encountered");
 	}
     }
 
@@ -6079,14 +6065,12 @@ x3dio_readelement(scew_element *element)
 	      if(!(errstr = calloc(strlen(errfmt) + strlen(str) + 2,
 				   sizeof(char))))
 		{
-		  if(x3dio_errorlevel > 0)
-		    ay_error(AY_ERROR, fname, NULL);
+		  ay_error(AY_ERROR, fname, NULL);
 		}
 	      else
 		{
 		  sprintf(errstr, errfmt, str);
-		  if(x3dio_errorlevel > 0)
-		    ay_error(AY_ERROR, fname, errstr);
+		  ay_error(AY_ERROR, fname, errstr);
 		}
 	      return AY_ERROR;
 	    } /* if */
@@ -6095,8 +6079,7 @@ x3dio_readelement(scew_element *element)
 	}
       else
 	{
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, "malformed USE attribute encountered");
+	  ay_error(AY_ERROR, fname, "malformed USE attribute encountered");
 	} /* if */
     } /* if */
 
@@ -6503,6 +6486,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
  enum XML_Error expat_code;
  scew_element *element = NULL, *child = NULL;
 
+
   /* set default import options and reset global counters */
   x3dio_importcurves = AY_TRUE;
   x3dio_readstrim = AY_TRUE;
@@ -6510,8 +6494,6 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_rescaleknots = 0.0;
   x3dio_scalefactor = 1.0;
   x3dio_mergeinlinedefs = AY_FALSE;
-  x3dio_errorlevel = ay_prefs.errorlevel;
-
   x3dio_totalelements = 0;
   x3dio_handledelements = 0;
   x3dio_progress = 0.0f;
@@ -6520,9 +6502,8 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc < 2)
     {
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_EARGS, argv[0], "filename");
-      return TCL_OK;
+      ay_error(AY_EARGS, argv[0], "filename");
+      goto cleanup;
     }
 
   /* parse args */
@@ -6581,10 +6562,9 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 			}
 		      else
 			{
-			  if(x3dio_errorlevel > 0)
-			    ay_error(AY_ERROR, argv[0],
+			  ay_error(AY_ERROR, argv[0],
 	    "could not parse layer range, specify it as: startindex-endindex");
-			  return TCL_OK;
+			  goto cleanup;
 			} /* if */
 		    } /* if */
 		} /* if */
@@ -6595,7 +6575,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* create and initialize hashtable for DEFs */
   if(!(x3dio_defs_ht = calloc(1, sizeof(Tcl_HashTable))))
-    return TCL_OK;
+    goto cleanup;
   Tcl_InitHashTable(x3dio_defs_ht, TCL_STRING_KEYS);
 
   /* initialize transformation stack */
@@ -6613,8 +6593,7 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
       sprintf(errstr, "Unable to load file (error #%d: %s)\n",
 	      errcode,
 	      scew_error_string(errcode));
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_ERROR, argv[0], errstr);
+      ay_error(AY_ERROR, argv[0], errstr);
       if(errcode == scew_error_expat)
         {
 	  expat_code = scew_error_expat_code(parser);
@@ -6623,10 +6602,9 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
 		  scew_error_expat_line(parser),
 		  scew_error_expat_column(parser),
 		  scew_error_expat_string(expat_code));
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, argv[0], errstr);
+	  ay_error(AY_ERROR, argv[0], errstr);
         }
-      return TCL_OK;
+      goto cleanup;
     } /* if */
 
   tree = scew_parser_tree(parser);
@@ -6648,11 +6626,8 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   ay_status = x3dio_readtree(tree);
   if(ay_status == AY_EDONOTLINK)
     {
-      /*if(x3dio_errorlevel > 1)*/
-	{
-	  ay_error(AY_EOUTPUT, argv[0],
-		   "Import cancelled! Not all objects may have been read!");
-	}
+      ay_error(AY_EOUTPUT, argv[0],
+	       "Import cancelled! Not all objects may have been read!");
     }
 
   /* set progress */
@@ -6661,13 +6636,18 @@ x3dio_readtcmd(ClientData clientData, Tcl_Interp *interp,
   while(Tcl_DoOneEvent(TCL_DONT_WAIT)){};
 
   /* clean up */
+cleanup:
+
   x3dio_cleartrafo();
 
-  scew_tree_free(tree);
+  if(tree)
+    scew_tree_free(tree);
 
-  scew_parser_free(parser);
+  if(parser)
+    scew_parser_free(parser);
 
-  Tcl_DeleteHashTable(x3dio_defs_ht);
+  if(x3dio_defs_ht)
+    Tcl_DeleteHashTable(x3dio_defs_ht);
 
  return TCL_OK;
 } /* x3dio_readtcmd */
@@ -9282,7 +9262,6 @@ x3dio_writeview(scew_element *element, ay_object *o)
       /*
 	else
 	{
-	if(x3dio_errorlevel > 0)
 	  ay_error();
 	}
       */
@@ -10050,8 +10029,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 	  ay_status = cb(element, o);
 	  if(ay_status)
 	    {
-	      if(x3dio_errorlevel > 0)
-		ay_error(AY_ERROR, fname, "Error exporting object.");
+	      ay_error(AY_ERROR, fname, "Error exporting object.");
 	      ay_status = AY_OK;
 	    }
 
@@ -10078,8 +10056,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 				TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	      if(val && val[0] == '1')
 		{
-		  /*if(x3dio_errorlevel > 1)*/
-		    ay_error(AY_EOUTPUT, fname,
+		  ay_error(AY_EOUTPUT, fname,
 		   "Export cancelled! Not all objects may have been written!");
 		  return AY_EDONOTLINK;
 		}
@@ -10115,8 +10092,7 @@ x3dio_writeobject(scew_element *element, ay_object *o, int count)
 	{
 	  sprintf(err, "Cannot export objects of type: %s.",
 		  ay_object_gettypename(o->type));
-	  if(x3dio_errorlevel > 1)
-	    ay_error(AY_EWARN, fname, err);
+	  ay_error(AY_EWARN, fname, err);
 	}
     } /* if */
 
@@ -10221,8 +10197,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 	  sprintf(buf, "Unable to load file (error #%d: %s)\n",
 		  errcode,
 		  scew_error_string(errcode));
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, buf);
+	  ay_error(AY_ERROR, fname, buf);
 	  if(errcode == scew_error_expat)
 	    {
 	      expat_code = scew_error_expat_code(parser);
@@ -10231,8 +10206,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 		      scew_error_expat_line(parser),
 		      scew_error_expat_column(parser),
 		      scew_error_expat_string(expat_code));
-	      if(x3dio_errorlevel > 0)
-		ay_error(AY_ERROR, fname, buf);
+	      ay_error(AY_ERROR, fname, buf);
 	    }
 	  ay_status = AY_ERROR;
 	  goto cleanup;
@@ -10243,8 +10217,7 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
       scene_element = x3dio_findelement(root, "Scene");
       if(!scene_element)
 	{
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, "Could not find the <Scene> element.");
+	  ay_error(AY_ERROR, fname, "Could not find the <Scene> element.");
 	  ay_status = AY_ERROR;
 	  goto cleanup;
 	}
@@ -10386,16 +10359,14 @@ x3dio_writescene(char *filename, int selected, int toplevellayers)
 	}
       else
 	{
-	  if(x3dio_errorlevel > 0)
-	    ay_error(AY_ERROR, fname, "Could not find the <X3D> element.");
+	  ay_error(AY_ERROR, fname, "Could not find the <X3D> element.");
 	}
     }
 
   /* write out the in-memory XML tree */
   if(!scew_writer_tree_file(tree, filename))
     {
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_EOPENFILE, fname, filename);
+      ay_error(AY_EOPENFILE, fname, filename);
       ay_status = AY_EOPENFILE;
     }
 
@@ -10431,8 +10402,7 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   /* check args */
   if(argc < 2)
     {
-      if(x3dio_errorlevel > 0)
-	ay_error(AY_EARGS, argv[0], "filename");
+      ay_error(AY_EARGS, argv[0], "filename");
       return TCL_OK;
     }
 
@@ -10445,7 +10415,6 @@ x3dio_writetcmd(ClientData clientData, Tcl_Interp *interp,
   x3dio_writex3dom = AY_FALSE;
   x3dio_resolveinstances = AY_FALSE;
   x3dio_scalefactor = 1.0;
-  x3dio_errorlevel = ay_prefs.errorlevel;
   x3dio_x3domwidth = 0;
   x3dio_x3domheight = 0;
 
