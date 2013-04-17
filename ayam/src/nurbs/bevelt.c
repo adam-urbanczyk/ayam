@@ -229,19 +229,64 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		tangents = &(normals[3]);
 	      else
 		tangents = &(normals[6]);
-	      if(i == 0)
+
+	      switch(i)
 		{
-		  bparams->dirs[i] = !bparams->dirs[i];
-		  bparams->radii[i] = -bparams->radii[i];
-		}
-	      if(i == 1)
-		{
-		  bparams->radii[i] = -bparams->radii[i];
-		}
-	      if(i == 2)
-		{
-		  bparams->dirs[i] = !bparams->dirs[i];
-		}
+		case 0:
+		  if(winding > 0)
+		    {
+		      bparams->dirs[i] = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  /*
+		  else
+		    {
+		      bparams->dirs[i] = bparams->dirs[i];
+		      bparams->radii[i] = bparams->radii[i];
+		    }
+		  */
+		  break;
+		case 1:
+		  if(winding > 0)
+		    {
+		      //bparams->dirs[i] = bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  else
+		    {
+		      bparams->dirs[i] = !bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  break;
+		case 2:
+		  if(winding > 0)
+		    {
+		      //bparams->dirs[i] = bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  else
+		    {
+		      bparams->dirs[i] = !bparams->dirs[i];
+		      //bparams->radii[i] = bparams->radii[i];
+		    }
+		  break;
+		case 3:
+		  if(winding > 0)
+		    {
+		      bparams->dirs[i] = !bparams->dirs[i];
+		      bparams->radii[i] = -bparams->radii[i];
+		    }
+		  /*
+		  else
+		    {
+		      bparams->dirs[i] = bparams->dirs[i];
+		      bparams->radii[i] = bparams->radii[i];
+		    }
+		  */
+		  break;
+		default:
+		  break;
+		} /* switch */
 
 	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
 					      bparams->dirs[i],
