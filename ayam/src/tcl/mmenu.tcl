@@ -671,7 +671,7 @@ $m.pm add command -label "Split" -command { pomesh_split } -underline 0
 $m.pm add command -label "Optimize" -command { pomesh_optimize } -underline 0
 $m.pm add separator
 $m.pm add command -label "Gen. Face Normals" -command { genfnPo }\
-    -underline 0
+    -underline 5
 $m.pm add command -label "Gen. Smooth Normals" -command { gensnPo }\
     -underline 0
 
@@ -850,12 +850,12 @@ $sm add command -label "Paste (Move)" -command {pasOb -move; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
 $sm add command -label "Replace" -command {repOb; cS;
 global ay; set ay(ul) $ay(CurrentLevel); uS; rV; set ay(sc) 1} -underline 0
-$sm add command -label "Copy (Add)" -command {copOb -add}
-$sm add command -label "Cut (Add)" -command {cutOb -add}
-$sm add command -label "Clear" -command "clearClip"
+$sm add command -label "Copy (Add)" -command {copOb -add} -underline 1
+$sm add command -label "Cut (Add)" -command {cutOb -add} -underline 1
+$sm add command -label "Clear" -command "clearClip" -underline 1
 $sm add separator
 $sm add command -label "Paste Property to Selected"\
-    -command "pclip_pastetosel; notifyOb; rV"
+    -command "pclip_pastetosel; notifyOb; rV" -underline 18
 
 $m add cascade -menu $m.ins -label "Instances" -underline 0
 set sm [menu $m.ins -tearoff 0]
