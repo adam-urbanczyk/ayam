@@ -9480,6 +9480,7 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
 {
  scew_element *appearance_element = NULL;
  scew_element *material_element = NULL;
+ char buf[128];
 
   if(!shape_element || !o)
     return AY_ENULL;
@@ -9490,7 +9491,16 @@ x3dio_writematerial(scew_element *shape_element, ay_object *o)
   /* write material */
   material_element = scew_element_add(appearance_element, "Material");
 
-  scew_element_add_attr_pair(material_element, "diffuseColor", "1 1 1");
+  if(o->mat)
+    {
+      sprintf(buf, "%g %g %g",
+	      o->mat->colr/255.0, o->mat->colg/255.0, o->mat->colb/255.0);
+      scew_element_add_attr_pair(material_element, "diffuseColor", buf);
+    }
+  else
+    {
+      scew_element_add_attr_pair(material_element, "diffuseColor", "1 1 1");
+    }
 
  return AY_OK;
 } /* x3dio_writematerial */
