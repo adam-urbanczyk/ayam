@@ -173,27 +173,68 @@ ay_comp_trafos(ay_object *o1, ay_object *o2)
 int
 ay_comp_tag(ay_tag *t1, ay_tag *t2)
 {
-  if(((t1->name != t2->name) && ((t1->name != NULL) || (t2->name != NULL)) &&
-      (strcmp(t1->name, t2->name))))
-    return AY_FALSE;
-  if(((t1->type != t2->type) && ((t1->type != NULL) || (t2->type != NULL)) &&
-      (strcmp(t1->type, t2->type))))
-    return AY_FALSE;
+ ay_btval *bv1, *bv2;
+
+  if(t1->name && t2->name)
+    {
+      if(strcmp(t1->name, t2->name))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(t1->name != t2->name)
+	return AY_FALSE;
+    }
+
+  if(t1->type && t2->type)
+    {
+      if(strcmp(t1->type, t2->type))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(t1->type != t2->type)
+	return AY_FALSE;
+    }
+
   if(t1->is_binary != t2->is_binary)
     return AY_FALSE;
 
   if(!t1->is_binary)
     {
       /* compare string vals */
-      if(((t1->val != t2->val) && ((t1->val != NULL) || (t2->val != NULL)) &&
-	  (strcmp(t1->val, t2->val))))
-	return AY_FALSE;
+      if(t1->val && t2->val)
+	{
+	  if(strcmp(t1->val, t2->val))
+	    return AY_FALSE;
+	}
+      else
+	{
+	  if(t1->val != t2->val)
+	    return AY_FALSE;
+	}
     }
   else
     {
-      /* XXXX ToDo: compare binary vals */
-      return AY_FALSE;
-    }
+      /* compare binary vals */
+      bv1 = (ay_btval *)t1->val;
+      bv2 = (ay_btval *)t2->val;
+
+      if(bv1->size != bv2->size)
+	return AY_FALSE;
+
+      if(bv1->size == 0)
+	{
+	  /* payload is just a pointer */
+	  if(bv1->payload != bv2->payload)
+	    return AY_FALSE;
+	}
+      else
+	{
+	  if(memcmp(bv1, bv2, bv1->size))
+	    return AY_FALSE;
+	}
+    } /* if string or binary */
 
  return AY_TRUE;
 } /* ay_comp_tag */
@@ -510,7 +551,7 @@ ay_comp_camera(ay_object *o1, ay_object *o2)
 int
 ay_comp_riinc(ay_object *o1, ay_object *o2)
 {
-  ay_riinc_object *r1, *r2;
+ ay_riinc_object *r1, *r2;
 
   r1 = (ay_riinc_object *)o1->refine;
   r2 = (ay_riinc_object *)o2->refine;
@@ -533,7 +574,7 @@ ay_comp_riinc(ay_object *o1, ay_object *o2)
 int
 ay_comp_riproc(ay_object *o1, ay_object *o2)
 {
-  ay_riproc_object *r1, *r2;
+ ay_riproc_object *r1, *r2;
 
   r1 = (ay_riproc_object *)o1->refine;
   r2 = (ay_riproc_object *)o2->refine;
@@ -776,7 +817,7 @@ ay_comp_npatch(ay_object *o1, ay_object *o2)
 int
 ay_comp_extrude(ay_object *o1, ay_object *o2)
 {
-  ay_extrude_object *e1, *e2;
+ ay_extrude_object *e1, *e2;
 
   e1 = (ay_extrude_object *)o1->refine;
   e2 = (ay_extrude_object *)o2->refine;
@@ -796,7 +837,7 @@ ay_comp_extrude(ay_object *o1, ay_object *o2)
 int
 ay_comp_revolve(ay_object *o1, ay_object *o2)
 {
-  ay_revolve_object *r1, *r2;
+ ay_revolve_object *r1, *r2;
 
   r1 = (ay_revolve_object *)o1->refine;
   r2 = (ay_revolve_object *)o2->refine;
@@ -820,7 +861,7 @@ ay_comp_revolve(ay_object *o1, ay_object *o2)
 int
 ay_comp_sweep(ay_object *o1, ay_object *o2)
 {
-  ay_sweep_object *s1, *s2;
+ ay_sweep_object *s1, *s2;
 
   s1 = (ay_sweep_object *)o1->refine;
   s2 = (ay_sweep_object *)o2->refine;
@@ -830,7 +871,9 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
      (s1->close != s2->close) ||
      (s1->sections != s2->sections) ||
      (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap)
+     (s1->has_end_cap != s2->has_end_cap) ||
+     (s1->has_left_cap != s2->has_left_cap) ||
+     (s1->has_right_cap != s2->has_right_cap)
      )
     return AY_FALSE;
 
@@ -844,7 +887,7 @@ ay_comp_sweep(ay_object *o1, ay_object *o2)
 int
 ay_comp_swing(ay_object *o1, ay_object *o2)
 {
-  ay_swing_object *s1, *s2;
+ ay_swing_object *s1, *s2;
 
   s1 = (ay_swing_object *)o1->refine;
   s2 = (ay_swing_object *)o2->refine;
@@ -866,7 +909,7 @@ ay_comp_swing(ay_object *o1, ay_object *o2)
 int
 ay_comp_skin(ay_object *o1, ay_object *o2)
 {
-  ay_skin_object *s1, *s2;
+ ay_skin_object *s1, *s2;
 
   s1 = (ay_skin_object *)o1->refine;
   s2 = (ay_skin_object *)o2->refine;
@@ -875,7 +918,10 @@ ay_comp_skin(ay_object *o1, ay_object *o2)
      (s1->uorder != s2->uorder) ||
      (s1->uknot_type != s2->uknot_type) ||
      (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap))
+     (s1->has_end_cap != s2->has_end_cap) ||
+     (s1->has_left_cap != s2->has_left_cap) ||
+     (s1->has_right_cap != s2->has_right_cap)
+     )
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1080,18 +1126,42 @@ ay_comp_concatnp(ay_object *o1, ay_object *o2)
   if(p1->type != p2->type)
     return AY_FALSE;
 
+  if(p1->order != p2->order)
+    return AY_FALSE;
+
   if(p1->revert != p2->revert)
     return AY_FALSE;
 
   if(p1->knot_type != p2->knot_type)
     return AY_FALSE;
-  /*
+  
   if(p1->fillgaps != p2->fillgaps)
     return AY_FALSE;
 
   if(p1->ftlength != p2->ftlength)
     return AY_FALSE;
-  */
+
+  if(p1->compat != p2->compat)
+    return AY_FALSE;
+
+  if(p1->uv_select && p2->uv_select)
+    {
+      if(strcmp(p1->uv_select, p2->uv_select))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(p1->uv_select != p2->uv_select)
+	return AY_FALSE;
+    }
+
+  if((p1->has_u0_cap != p2->has_u0_cap) ||
+     (p1->has_u1_cap != p2->has_u1_cap) ||
+     (p1->has_v0_cap != p2->has_v0_cap) ||
+     (p1->has_v1_cap != p2->has_v1_cap)
+     )
+    return AY_FALSE;
+
  return AY_TRUE;
 } /* ay_comp_concatnp */
 
@@ -1207,6 +1277,18 @@ ay_comp_pomesh(ay_object *o1, ay_object *o2)
   if(!memcmp(p1->verts, p2->verts, sizeof(total_verts*sizeof(unsigned int))))
     return AY_FALSE;
 
+  if(p1->face_normals && p2->face_normals)
+    {
+      if(!memcmp(p1->face_normals, p2->face_normals,
+		 sizeof(p1->ncontrols *3* sizeof(double))))
+	return AY_FALSE;
+    }
+  else
+    {
+      if(p1->face_normals != p2->face_normals)
+	return AY_FALSE;
+    }
+
  return AY_TRUE;
 } /* ay_comp_pomesh */
 
@@ -1246,6 +1328,8 @@ ay_comp_sdmesh(ay_object *o1, ay_object *o2)
   if(!memcmp(p1->verts, p2->verts,
 	     sizeof(total_verts * sizeof(unsigned int))))
     return AY_FALSE;
+
+  /* XXXX compare the tags */
 
  return AY_TRUE;
 } /* ay_comp_sdmesh */
@@ -1333,7 +1417,10 @@ ay_comp_birail1(ay_object *o1, ay_object *o2)
   if((s1->type != s2->type) ||
      (s1->sections != s2->sections) ||
      (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap))
+     (s1->has_end_cap != s2->has_end_cap) ||
+     (s1->has_r1_cap != s2->has_r1_cap) ||
+     (s1->has_r2_cap != s2->has_r2_cap)
+     )
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1354,7 +1441,10 @@ ay_comp_birail2(ay_object *o1, ay_object *o2)
   if((s1->close != s2->close) ||
      (s1->sections != s2->sections) ||
      (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap))
+     (s1->has_end_cap != s2->has_end_cap) ||
+     (s1->has_r1_cap != s2->has_r1_cap) ||
+     (s1->has_r2_cap != s2->has_r2_cap)
+     )
     return AY_FALSE;
 
  return AY_TRUE;
