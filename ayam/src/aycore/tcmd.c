@@ -1166,7 +1166,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
  double m[16], mi[16];
  char args[] =
    "[-world] (index [indexv] (x y z [w] | -vn varname) | -all varname)";
- char cargs[] = "index x y z [w]", sargs[] = "index x y z [w]";
 
   if(argc <= 1)
     {
@@ -1234,11 +1233,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
       switch(o->type)
 	{
 	case AY_IDNCURVE:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], cargs);
-	      goto cleanup;
-	    }
+	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_nct_getpntfromindex((ay_nurbcurve_object*)(o->refine),
@@ -1247,11 +1242,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	  break;
 	case AY_IDACURVE:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], cargs);
-	      goto cleanup;
-	    }
+	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
@@ -1259,11 +1250,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	  break;
 	case AY_IDICURVE:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], cargs);
-	      goto cleanup;
-	    }
+	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
@@ -1271,11 +1258,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	  break;
 	case AY_IDNPATCH:
-	  if(remargc < 6)
-	    {
-	      ay_error(AY_EARGS, argv[0], sargs);
-	      goto cleanup;
-	    }
+	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -1286,11 +1269,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i += 2;
 	  break;
 	case AY_IDIPATCH:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], sargs);
-	      goto cleanup;
-	    }
+	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -1300,11 +1279,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i += 2;
 	  break;
 	case AY_IDBPATCH:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], cargs);
-	      goto cleanup;
-	    }
+	  remargc--;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_tcmd_getbppntfromindex((ay_bpatch_object*)(o->refine),
@@ -1312,11 +1287,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i++;
 	  break;
 	case AY_IDPAMESH:
-	  if(remargc < 5)
-	    {
-	      ay_error(AY_EARGS, argv[0], sargs);
-	      goto cleanup;
-	    }
+	  remargc -= 2;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -1327,11 +1298,6 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  i += 2;
 	  break;
 	default:
-	  if(remargc < 4)
-	    {
-	      ay_error(AY_EARGS, argv[0], cargs);
-	      goto cleanup;
-	    }
 	  handled = AY_FALSE;
 	  arr = ay_getpntcbt.arr;
 	  cb = (ay_getpntcb *)(arr[o->type]);
@@ -1378,6 +1344,11 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  if(!from_var)
 	    {
+	      if(remargc < 4)
+		{
+		  ay_error(AY_EARGS, argv[0], args);
+		  goto cleanup;
+		}
 	      tcl_status = Tcl_GetDouble(interp, argv[i], &dtemp);
 	      AY_CHTCLERRGOT(tcl_status, argv[0], interp);
 	      p[0] = dtemp;
@@ -1392,7 +1363,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	      if(rational)
 		{
-		  if(remargc > i+3)
+		  if(remargc > 4)
 		    {
 		      tcl_status = Tcl_GetDouble(interp, argv[i+3],
 						 &dtemp);
@@ -1424,13 +1395,13 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(from_world)
 	    {
 	      glPushMatrix();
-	      glTranslated(o->movx, o->movy, o->movz);
-	      ay_quat_torotmatrix(o->quat, m);
-	      glMultMatrixd(m);
-	      glScaled(o->scalx, o->scaly, o->scalz);
+	       glTranslated(o->movx, o->movy, o->movz);
+	       ay_quat_torotmatrix(o->quat, m);
+	       glMultMatrixd(m);
+	       glScaled(o->scalx, o->scaly, o->scalz);
 
-	      glGetDoublev(GL_MODELVIEW_MATRIX, m);
-	      ay_trafo_invmatrix4(m, mi);
+	       glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	       ay_trafo_invmatrix4(m, mi);
 	      glPopMatrix();
 
 	      ay_trafo_apply3(p, mi);
