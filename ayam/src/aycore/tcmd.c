@@ -1293,7 +1293,7 @@ ay_tcmd_setpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
-	  tcl_status = Tcl_GetInt(interp, argv[i], &indexv);
+	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_ipt_getpntfromindex((ay_ipatch_object*)(o->refine),
 				 indexu, indexv, &p);
