@@ -1,4 +1,4 @@
-[13. Apr 2013] CVS-Head:
+[24. Apr 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -16,6 +16,7 @@ o X3D export of fieldOfView viewpoint attribute (SF 3604133)
 o X3D export of PolyMesh normals (SF 3604132)
 o X3D element misses mandatory profile specification (SF 3604137)
 o X3D export of tool objects caps and bevels (SF 3604907)
+o getPnt/setPnt for IPatch (SF 488)
 
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
@@ -30,6 +31,7 @@ o Caps and Bevels are now available for many more object types,
   e.g. IPatch, NPatch, ConcatNP, Birail1, Birail2, Skin...
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
+o Bevel orientations are now consistent
 o added C1 fillets based on global interpolation with end derivatives to
   the ConcatNC object (C1 mode is activated by setting the FTLength parameter
   to 0.0)
