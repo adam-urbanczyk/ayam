@@ -1134,7 +1134,7 @@ ay_comp_concatnp(ay_object *o1, ay_object *o2)
 
   if(p1->knot_type != p2->knot_type)
     return AY_FALSE;
-  
+
   if(p1->fillgaps != p2->fillgaps)
     return AY_FALSE;
 
@@ -1177,10 +1177,12 @@ ay_comp_offnp(ay_object *o1, ay_object *o2)
   p1 = (ay_offnp_object *)o1->refine;
   p2 = (ay_offnp_object *)o2->refine;
 
-  if(p1->mode != p2->mode)
-    return AY_FALSE;
-
-  if(p1->offset != p2->offset)
+  if((p1->mode != p2->mode) ||
+     (p1->offset != p2->offset) ||
+     (p1->has_u0_cap != p2->has_u0_cap) ||
+     (p1->has_u1_cap != p2->has_u1_cap) ||
+     (p1->has_v0_cap != p2->has_v0_cap) ||
+     (p1->has_v1_cap != p2->has_v1_cap))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1207,17 +1209,11 @@ ay_comp_clone(ay_object *o1, ay_object *o2)
   if(p1->mirror != p2->mirror)
     return AY_FALSE;
 
-  if((p1->movx == p2->movx) && (p1->movy == p2->movy) &&
-     (p1->movz == p2->movz) && (p1->scalx == p2->scalx) &&
-     (p1->scaly == p2->scaly) && (p1->scalz == p2->scalz) &&
-     (!memcmp(p1->quat, p2->quat, sizeof(4*sizeof(double)))))
-    {
-      return AY_TRUE;
-    }
-  else
-    {
-      return AY_FALSE;
-    }
+  if((p1->movx != p2->movx) || (p1->movy != p2->movy) ||
+     (p1->movz != p2->movz) || (p1->scalx != p2->scalx) ||
+     (p1->scaly != p2->scaly) || (p1->scalz != p2->scalz) ||
+     (memcmp(p1->quat, p2->quat, sizeof(4*sizeof(double)))))
+    return AY_FALSE;
 
  return AY_TRUE;
 } /* ay_comp_clone */
@@ -1494,6 +1490,8 @@ ay_comp_bevel(ay_object *o1, ay_object *o2)
   if((s1->has_start_cap != s2->has_start_cap) &&
      (s1->has_end_cap != s2->has_end_cap))
     return AY_FALSE;
+
+  /* bevel parameters are stored and compared via the tags */
 
  return AY_TRUE;
 } /* ay_comp_bevel */
