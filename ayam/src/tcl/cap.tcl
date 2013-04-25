@@ -32,7 +32,7 @@ NPInfoBall "n/a"
 # create CapAttr-UI
 set w [frame $ay(pca).$CapAttr(w)]
 
-addMenu $w CapAttrData Type {Trim Simple Gordon}
+addMenu $w CapAttrData Type {Trim Gordon Simple}
 addParam $w CapAttrData Tolerance
 addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
 
