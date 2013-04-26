@@ -413,7 +413,8 @@ ay_tcmd_getbppntfromindex(ay_bpatch_object *patch, int index,
 
 
 /* ay_tcmd_getallpoints:
- *
+ *  helper for ay_tcmd_getpointtcmd() below
+ *  get all points of selected objects
  */
 int
 ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
@@ -429,7 +430,7 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
    TCL_PARSE_PART1;
  Tcl_Obj *to = NULL, *ton = NULL;
 
- ton = Tcl_NewStringObj(vn, -1);
+  ton = Tcl_NewStringObj(vn, -1);
 
   if(apply_trafo == 2)
     {
@@ -447,11 +448,11 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
       if(apply_trafo == 1)
 	{
 	  glPushMatrix();
-	  glTranslated(o->movx, o->movy, o->movz);
-	  ay_quat_torotmatrix(o->quat, m);
-	  glMultMatrixd(m);
-	  glScaled(o->scalx, o->scaly, o->scalz);
-	  glGetDoublev(GL_MODELVIEW_MATRIX, m);
+	   glTranslated(o->movx, o->movy, o->movz);
+	   ay_quat_torotmatrix(o->quat, m);
+	   glMultMatrixd(m);
+	   glScaled(o->scalx, o->scaly, o->scalz);
+	   glGetDoublev(GL_MODELVIEW_MATRIX, m);
 	  glPopMatrix();
 	} /* if */
 
@@ -475,7 +476,6 @@ ay_tcmd_getallpoints(Tcl_Interp *interp, char *fname, char *vn,
 	      to = Tcl_NewDoubleObj(pe.coords[i][3]);
 	      Tcl_ObjSetVar2(interp, ton, NULL, to, flags);
 	    } /* if */
-
 	} /* for */
 
       ay_pact_clearpointedit(&pe);
@@ -517,7 +517,6 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int rational = AY_FALSE, apply_trafo = AY_FALSE;
  int to_world = AY_FALSE, eval = AY_FALSE, vn = AY_FALSE;
  int handled = AY_FALSE, freepo = AY_FALSE;
- int clear_selp = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
  char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)| -all varname)";
@@ -770,7 +769,6 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	  rational = AY_FALSE;
 	  j = i+2;
 	  break;
-
 	case AY_IDBPATCH:
 	  if(!vn && (argc2 < 5))
 	    {
@@ -816,16 +814,20 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		    }
 		  old_selp = o->selp;
 		  o->selp = selp;
-		  clear_selp = AY_TRUE;
 		  ay_status = ay_tcmd_getuint(argv[i], &selp->index);
 		  if(ay_status)
 		    {
+		      o->selp = old_selp;
+		      free(selp);
+		      selp = NULL;
 		      goto cleanup;
 		    }
-		  selp->index = (unsigned int)indexu;
 		  ay_status = cb(3, o, NULL, NULL);
 		  if(ay_status || (!o->selp))
 		    {
+		      o->selp = old_selp;
+		      free(selp);
+		      selp = NULL;
 		      ay_error(AY_ERROR, argv[0], "getpntcb failed");
 		      goto cleanup;
 		    }
@@ -833,11 +835,10 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		  rational = selp->rational;
 		  free(selp);
 		  o->selp = old_selp;
-		  clear_selp = AY_FALSE;
 		  handled = AY_TRUE;
 		  j = i+1;
-		}
-	    }
+		} /* if */
+	    } /* if */
 
 	  if(!handled)
 	    {
@@ -914,6 +915,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		    } /* if */
 		} /* if */
 	    } /* if */
+
 	  if(!handled)
 	    {
 	      ay_error(AY_EWARN, argv[0],
@@ -1020,11 +1022,6 @@ cleanup:
       if(po)
 	(void)ay_object_deletemulti(po);
     } /* if */
-
-  if(clear_selp)
-    {
-      o->selp = old_selp;
-    }
 
  return TCL_OK;
 } /* ay_tcmd_getpointtcmd */
