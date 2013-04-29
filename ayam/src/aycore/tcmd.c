@@ -665,6 +665,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
+	  if(eval)
+	    goto eval_provided;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_act_getpntfromindex((ay_acurve_object*)(o->refine),
@@ -678,6 +680,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
+	  if(eval)
+	    goto eval_provided;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  ay_ict_getpntfromindex((ay_icurve_object*)(o->refine),
@@ -760,6 +764,8 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_error(AY_EARGS, argv[0], fargs);
 	      return TCL_OK;
 	    }
+	  if(eval)
+	    goto eval_provided;
 	  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	  tcl_status = Tcl_GetInt(interp, argv[i+1], &indexv);
@@ -842,14 +848,15 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!handled)
 	    {
-	      if(argc2 < 7)
+eval_provided:
+	      if((!vn && argc2 < 7) || (vn && argc2 < 5))
 		{
 		  po = NULL;
 		  ay_provide_object(o, AY_IDNCURVE, &po);
 		  if(po)
 		    {
 		      freepo = AY_TRUE;
-		      if(argc2 < 6)
+		      if(!vn && (argc2+eval < 6))
 			{
 			  ay_error(AY_EARGS, argv[0], fargs);
 			  goto cleanup;
@@ -876,15 +883,19 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 		      j = i+1;
 		      handled = AY_TRUE;
 		    } /* if */
-		} /* if */
-
-	      if(argc2 == 7)
+		}
+	      else
 		{
 		  po = NULL;
 		  ay_provide_object(o, AY_IDNPATCH, &po);
 		  if(po)
 		    {
 		      freepo = AY_TRUE;
+		      if(!vn && (argc2+eval < 7))
+			{
+			  ay_error(AY_EARGS, argv[0], fargs);
+			  goto cleanup;
+			}
 		      if(!eval)
 			{
 			  tcl_status = Tcl_GetInt(interp, argv[i], &indexu);
