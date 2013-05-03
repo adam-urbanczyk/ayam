@@ -118,7 +118,9 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"goDown", jsinterp_wraptcmd, 0, 0, 0},
   {"getLevel", jsinterp_wraptcmdargs, 0, 0, 0},
   {"resolveIn", jsinterp_wraptcmd, 0, 0, 0},
-  {"nameOb", jsinterp_wraptcmd, 0, 0, 0},
+  {"nameOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"showOb", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"hideOb", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"mergePo", jsinterp_wraptcmd, 0, 0, 0},
   {"optiPo", jsinterp_wraptcmd, 0, 0, 0},

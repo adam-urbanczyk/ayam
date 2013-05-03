@@ -161,38 +161,42 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
 } /* ay_tcmd_reverttcmd */
 
 
-/* ay_tcmd_showall:
+/* ay_tcmd_showhideall:
  *  _recursively_ set the hidden flag of all children of object
- *  <o> and <o> to false (show the objects)
+ *  <o> and <o> to <val> (show/hide the objects)
  */
 void
-ay_tcmd_showall(ay_object *o)
+ay_tcmd_showhideall(ay_object *o, int val)
 {
  ay_object *down;
 
   if(!o)
    return;
 
-  if(o->down)
+  if(o->down && o->down->next)
     {
       down = o->down;
-      while(down)
+      while(down->next)
 	{
-	  ay_tcmd_showall(down);
+	  ay_tcmd_showhideall(down, val);
 	  down = down->next;
 	}
     }
 
-  o->hide = AY_FALSE;
+  if(val == -1)
+    o->hide = !o->hide;
+  else
+    o->hide = val;
 
  return;
-} /* ay_tcmd_showall */
+} /* ay_tcmd_showhideall */
 
 
-/** ay_tcmd_showtcmd:
- *  show (unhide) selected (or all) objects
+/* ay_tcmd_showtcmd:
+ *  show/hide selected (or all) objects
  *  Implements the \a showOb scripting interface command.
- *  See also the corresponding section in the \ayd{scshowob}.
+ *  Implements the \a hideOb scripting interface command.
+ *  See also the corresponding section in the \ayd{schideob}.
  *
  *  \returns TCL_OK in any case.
  */
@@ -203,123 +207,55 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
   /*
  int ay_status = AY_OK;
   */
- ay_list_object *sel = ay_selection;
- ay_object *o = NULL;
-
-  if(argc > 1)
-    {
-      if(!strcmp(argv[1], "-all"))
-	{
-	  o = ay_root;
-	  while(o)
-	    {
-	      ay_tcmd_showall(o);
-	      o = o->next;
-	    }
-	  return TCL_OK;
-	}
-    }
-
-  while(sel)
-    {
-      o = sel->object;
-
-      o->hide = AY_FALSE;
-
-      sel = sel->next;
-    } /* while */
-
- return TCL_OK;
-} /* ay_tcmd_showtcmd */
-
-
-/* ay_tcmd_hideall:
- *  _recursively_ set the hidden flag of all children of object
- *  <o> and <o> to true (hide the objects)
- */
-void
-ay_tcmd_hideall(ay_object *o)
-{
- ay_object *down;
-
-  if(!o)
-   return;
-
-  if(o->down)
-    {
-      down = o->down;
-      while(down)
-	{
-	  ay_tcmd_hideall(down);
-	  down = down->next;
-	}
-    }
-
-  o->hide = AY_TRUE;
-
- return;
-} /* ay_tcmd_hideall */
-
-
-/* ay_tcmd_hidetcmd:
- *  hide selected (or all) objects
- *  Implements the \a hideOb scripting interface command.
- *  See also the corresponding section in the \ayd{schideob}.
- *
- *  \returns TCL_OK in any case.
- */
-int
-ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp * interp,
-		 int argc, char *argv[])
-{
-  /*
- int ay_status = AY_OK;
-  */
  int toggle = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ int i = 1, all = AY_FALSE, val = AY_TRUE;
+
+  if(argv[0][0] == 's')
+    val = AY_FALSE;
 
   if(argc > 1)
     {
-      if(!strcmp(argv[1],"-toggle"))
+      while(i < argc)
 	{
-	  toggle = AY_TRUE;
-	}
-
-      if(!strcmp(argv[1], "-all"))
-	{
-	  o = ay_root;
-	  while(o)
+	  if(!strcmp(argv[i], "-toggle"))
 	    {
-	      ay_tcmd_hideall(o);
-	      o = o->next;
+	      toggle = AY_TRUE;
+	      val = -1;
 	    }
-	  return TCL_OK;
-	}
+
+	  if(!strcmp(argv[i], "-all"))
+	    {
+	      all = AY_TRUE;
+	    }
+	  i++;
+	} /* while */
     } /* if */
 
-  while(sel)
+  if(all)
     {
-      o = sel->object;
-
-      if(toggle)
+      o = ay_root->next;
+      while(o->next)
 	{
-	  if(o->hide)
-	    {
-	      o->hide = AY_FALSE;
-	    }
+	  ay_tcmd_showhideall(o, val);
+	  o = o->next;
+	}
+    }
+  else
+    {
+      while(sel)
+	{
+	  o = sel->object;
+
+	  if(val == -1)
+	    o->hide = !o->hide;
 	  else
-	    {
-	      o->hide = AY_TRUE;
-	    }
-	}
-      else
-	{
-	  o->hide = AY_TRUE;
-	}
+	    o->hide = val;
 
-      sel = sel->next;
-    } /* while */
+	  sel = sel->next;
+	} /* while */
+    } /* if */
 
  return TCL_OK;
 } /* ay_tcmd_hidetcmd */
@@ -519,7 +455,7 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
  int handled = AY_FALSE, freepo = AY_FALSE;
  double *p = NULL, *tp = NULL, tmp[4] = {0}, utmp[4] = {0};
  double m[16], u = 0.0, v = 0.0;
- char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)| -all varname)";
+ char fargs[] = "[-trafo|-world|-eval] (index | indexu indexv | u | u v (varx vary varz [varw] | -vn varname)|-all varname)";
  Tcl_Obj *to = NULL, *ton = NULL;
  int lflags =  TCL_LEAVE_ERR_MSG | TCL_APPEND_VALUE | TCL_LIST_ELEMENT |
    TCL_PARSE_PART1;

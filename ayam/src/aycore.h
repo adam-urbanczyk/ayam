@@ -1309,22 +1309,13 @@ int ay_tcmd_convdlist(char *vname, int *dllen, double **dl);
 int ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
-/** show all objects below o
+/** show/hide all objects below o
  */
-void ay_tcmd_showall(ay_object *o);
+void ay_tcmd_showhideall(ay_object *o, int val);
 
 /** Tcl command to show (un-hide) all objects
  */
 int ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
-		     int argc, char *argv[]);
-
-/** hide all objects below o
- */
-void ay_tcmd_hideall(ay_object *o);
-
-/** Tcl command to hide all objects
- */
-int ay_tcmd_hidetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[]);
 
 /** Tcl command to get the Ayam version
