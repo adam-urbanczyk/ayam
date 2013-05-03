@@ -861,7 +861,7 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "showOb", ay_tcmd_showtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_hidetcmd,
+  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_showtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,
@@ -1487,7 +1487,7 @@ ay_safeinit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "showOb", ay_tcmd_showtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
-  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_hidetcmd,
+  Tcl_CreateCommand(interp, "hideOb", ay_tcmd_showtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "getVersion", ay_tcmd_getvertcmd,

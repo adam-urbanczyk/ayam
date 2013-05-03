@@ -98,6 +98,8 @@ static const struct luaL_Reg luainterplib [] = {
       {"getLevel", luainterp_wraptclcmd},
       {"resolveIn", luainterp_wraptclcmd},
       {"nameOb", luainterp_wraptclcmd},
+      {"showOb", luainterp_wraptclcmd},
+      {"hideOb", luainterp_wraptclcmd},
 
       {"mergePo", luainterp_wraptclcmd},
       {"optiPo", luainterp_wraptclcmd},
