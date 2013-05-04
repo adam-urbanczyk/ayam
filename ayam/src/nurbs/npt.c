@@ -2003,7 +2003,8 @@ cleanup:
 
 /** ay_npt_fillgap:
  *  fill the gap between the patches \a o1 and \a o2
- *  with another NURBS patch (fillet)
+ *  with another NURBS patch (fillet); no fillet will be created
+ *  if the respective border curves match
  *
  * \param[in] o1 first NURBS patch object
  * \param[in] o2 second NURBS patch object
@@ -2011,9 +2012,10 @@ cleanup:
  *  of the distance between last point in c1 and first point in c2
  * \param[in] uv specification of which sides of the patches to connect
  *  may be NULL, in which case the patches are connected via un(o1)-u0(o2)
- * \param[in,out] result fillet patch
+ * \param[in,out] result fillet patch (unless the respective border
+ *  curves match)
  *
- * @return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_fillgap(ay_object *o1, ay_object *o2,
@@ -2043,6 +2045,15 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 
   if(uv)
     {
+      if(uv[0] == 'U')
+	{
+	  ay_status = ay_object_copy(o1, &of1);
+	  if(ay_status || !of1)
+	    goto cleanup;
+	  np1 = (ay_nurbpatch_object *)of1->refine;
+	  ay_npt_revertu(np1);
+	}
+      else
       if(uv[0] == 'v' || uv[0] == 'V')
 	{
 	  ay_status = ay_object_copy(o1, &of1);
@@ -2055,6 +2066,15 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 
 	  ay_npt_swapuv(np1);
 	}
+      if(uv[0] != '\0' && uv[1] == 'U')
+	{
+	  ay_status = ay_object_copy(o2, &of2);
+	  if(ay_status || !of2)
+	    goto cleanup;
+	  np2 = (ay_nurbpatch_object *)of2->refine;
+	  ay_npt_revertu(np2);
+	}
+      else
       if(uv[0] != '\0' && (uv[1] == 'v' || uv[1] == 'V'))
 	{
 	  ay_object_copy(o2, &of2);
@@ -2234,13 +2254,24 @@ cleanup:
       ay_npt_destroy(new);
     }
 
-  return ay_status;
+ return ay_status;
 } /* ay_npt_fillgap */
 
 
-/* ay_npt_fillgaps:
- *  fill all the gaps between the patches in <o>
- *  with another NURBS patch
+/** ay_npt_fillgaps:
+ *  fill all the gaps between the patches in \a o
+ *  with another NURBS patch; the fillets will be marked as selected
+ *  to tell them apart from the original patches
+ *
+ * \param[in,out] o a number of NURBS patch objects (NURBS curves can
+ *  be mixed in), the resulting fillets will be inserted in this list
+ * \param[in] type if AY_TRUE an additional fillet between the last
+ *  and the first patch will be created
+ * \param[in] fillet_type
+ * \param[in] ftlen fillet tangent length
+ * \param[in] uv controls which sides of the patches to connect
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
@@ -2274,18 +2305,20 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	      /* adjust o for next iteration */
 	      o = fillet->next;
 	    }
-	  if(fuv)
-	    {
-	      if(*fuv != '\0')
-		{
-		  fuv++;
-		}
-	      else
-		{
-		  fuv = NULL;
-		}
-	    }
 	} /* if */
+
+      if(fuv)
+	{
+	  if(*fuv != '\0')
+	    {
+	      fuv++;
+	    }
+	  else
+	    {
+	      fuv = NULL;
+	    }
+	}
+
       if(!fillet)
 	o = o->next;
     } /* while */
@@ -2327,7 +2360,8 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	fuv = uv2;
 
       /* create the fillet */
-      ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
+      if(last->type == AY_IDNPATCH && first->type == AY_IDNPATCH)
+	ay_status = ay_npt_fillgap(last, first, ftlen, fuv, &fillet);
 
       if(ay_status)
 	return ay_status;
@@ -11222,7 +11256,7 @@ cleanup:
  *  avlens[0] is the average distance of column0 to column1
  *  avlens[1] the average distance of column1 to column2...
  *
- * @return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_avglensu(double *cv, int width, int height, int stride,
@@ -11280,7 +11314,7 @@ ay_npt_avglensu(double *cv, int width, int height, int stride,
  *  avlens[0] is the average distance of row0 to row1
  *  avlens[1] the average distance of row1 to row2...
  *
- * @return AY_OK on success, error code otherwise.
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_avglensv(double *cv, int width, int height, int stride,
