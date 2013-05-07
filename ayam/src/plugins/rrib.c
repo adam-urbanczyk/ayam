@@ -2566,7 +2566,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 {
  int ay_status = AY_OK;
  ay_pamesh_object pm;
- int i = 0, j = 0, stride = 4, detail = 0;
+ int i = 0, j = 0, stride = 4;
  double *p = NULL;
  RtPointer tokensfound[PPWTBL_LAST];
  RtFloat *pp = NULL, *pw = NULL;
@@ -2663,7 +2663,7 @@ ay_rrib_RiPatchMesh(RtToken type, RtInt nu, RtToken uwrap,
 	} /* for */
     } /* for */
 
-    if(!ay_pmt_valid(&pm, &detail))
+    if(!ay_pmt_valid(&pm))
       {
 	ay_status = ay_pmt_tonpatch(&pm, &(pm.npatch));
       }

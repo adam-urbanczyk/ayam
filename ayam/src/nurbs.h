@@ -1306,7 +1306,7 @@ int ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result);
 
 /** Check patchmesh for errors.
  */
-int ay_pmt_valid(ay_pamesh_object *pamesh, int *detail);
+int ay_pmt_valid(ay_pamesh_object *pamesh);
 
 /** Get control point from index.
  */
