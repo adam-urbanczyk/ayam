@@ -1210,7 +1210,6 @@ ay_pamesh_notifycb(ay_object *o)
  ay_object *p = NULL;
  ay_pamesh_object *pamesh = NULL;
  ay_nurbpatch_object *np = NULL;
- int detail;
 
   if(!o)
     return AY_ENULL;
@@ -1223,7 +1222,7 @@ ay_pamesh_notifycb(ay_object *o)
       pamesh->npatch = NULL;
     }
 
-  if(ay_pmt_valid(pamesh, &detail))
+  if(ay_pmt_valid(pamesh))
     {
       return AY_OK;
     }

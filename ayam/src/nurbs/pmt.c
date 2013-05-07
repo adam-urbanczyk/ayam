@@ -12,7 +12,7 @@
 
 #include "ayam.h"
 
-/* pmt.c PatchMesh tools */
+/** \file pmt.c \brief PatchMesh tools */
 
 
 /* prototypes of functions local to this module: */
@@ -491,10 +491,14 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
 } /* ay_pmt_tonpatch */
 
 
-/* ay_pmt_valid:
- *   check PatchMesh pamesh for validity
- *   returns AY_OK (0) if mesh is valid
+/** ay_pmt_valid:
+ *  check patch mesh for validity
+ *
+ * \param[in] patch patch mesh object to process
+ *
+ * \returns AY_OK (0) if mesh is valid
  *   else:
+ *  -1: NULL pointer delivered
  *   1: too few control points (need atleast 4 by 4)
  *   2: stepsize too small
  *   3: u-basistype width mismatch
@@ -502,9 +506,12 @@ ay_pmt_tonpatch(ay_pamesh_object *pamesh, ay_object **result)
  *
  */
 int
-ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
+ay_pmt_valid(ay_pamesh_object *pamesh)
 {
  int stepu = 0, stepv = 0;
+
+  if(!pamesh)
+    return -1;
 
   if(pamesh->type == AY_PTBILINEAR)
     { /* bilinear patch mesh */
@@ -551,7 +558,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 	  if(fabs(fmod((double)pamesh->width-4+(4-stepu), stepu)) >
 	     AY_EPSILON)
 	    {
-	      /**detail =*/
 	      return 3;
 	    }
 	}
@@ -559,7 +565,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 	{ /* non periodic patch */
 	  if(fabs(fmod((double)pamesh->width-4, stepu)) > AY_EPSILON)
 	    {
-	      /**detail =*/
 	      return 3;
 	    }
 	}
@@ -596,7 +601,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 	  if(fabs(fmod((double)pamesh->height-4+(4-stepv), stepv)) >
 	     AY_EPSILON)
 	    {
-	      /**detail =*/
 	      return 4;
 	    }
 	}
@@ -604,7 +608,6 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 	{ /* non periodic patch */
 	  if(fabs(fmod((double)pamesh->height-4, stepv)) > AY_EPSILON)
 	    {
-	      /**detail =*/
 	      return 4;
 	    }
 	}
@@ -615,8 +618,15 @@ ay_pmt_valid(ay_pamesh_object *pamesh, int *detail)
 
 
 /* ay_pmt_getpntfromindex:
+ *  get address of a single control point from its indices
+ *  (performing bounds checking)
  *
+ * \param[in] patch patch mesh object to process
+ * \param[in] indexu index of desired control point in U dimension (width)
+ * \param[in] indexv index of desired control point in V dimension (height)
+ * \param[in,out] p pointer to pointer where to store the resulting address
  *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
@@ -641,10 +651,9 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
 
 
 /** ay_pmt_swapuv:
- *
  * swap U and V dimensions of a patch mesh
  *
- * \param[in,out] ip patch mesh object to process
+ * \param[in,out] pm patch mesh object to process
  *
  * \returns AY_OK on success, error code otherwise.
  *
@@ -687,7 +696,7 @@ ay_pmt_swapuv(ay_pamesh_object *pm)
 /* ay_pmt_revertu:
  * revert patch mesh along U (width)
  *
- * \param[in,out] ip patch mesh object to revert
+ * \param[in,out] pm patch mesh object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -718,7 +727,7 @@ ay_pmt_revertu(ay_pamesh_object *pm)
 /** ay_pmt_revertv:
  * revert patch mesh along V (height)
  *
- * \param[in,out] ip patch mesh object to revert
+ * \param[in,out] pm patch mesh object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
