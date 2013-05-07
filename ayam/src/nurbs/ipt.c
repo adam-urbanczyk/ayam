@@ -19,10 +19,10 @@
  * get address of a single control point from its indices
  * (performing bounds checking)
  *
- * @param[in] patch IPatch object to process
- * @param[in] indexu index of desired control point in U dimension (width)
- * @param[in] indexv index of desired control point in V dimension (height)
- * @param[in,out] p pointer to pointer where to store the resulting address
+ * \param[in] patch IPatch object to process
+ * \param[in] indexu index of desired control point in U dimension (width)
+ * \param[in] indexv index of desired control point in V dimension (height)
+ * \param[in,out] p pointer to pointer where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -51,7 +51,7 @@ ay_ipt_getpntfromindex(ay_ipatch_object *patch, int indexu, int indexv,
 /** ay_ipt_swapuv:
  * swap U and V dimensions of a IPatch
  *
- * @param[in,out] ip IPatch object to process
+ * \param[in,out] ip IPatch object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -113,7 +113,7 @@ ay_ipt_swapuv(ay_ipatch_object *ip)
 /** ay_ipt_revertu:
  * revert IPatch along U (width)
  *
- * @param[in,out] ip IPatch object to revert
+ * \param[in,out] ip IPatch object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -168,7 +168,7 @@ ay_ipt_revertu(ay_ipatch_object *ip)
 /** ay_ipt_revertv:
  * revert IPatch along V (height)
  *
- * @param[in,out] ip IPatch object to revert
+ * \param[in,out] ip IPatch object to revert
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -226,9 +226,9 @@ ay_ipt_revertv(ay_ipatch_object *ip)
 /** ay_ipt_interpolateu:
  * interpolate NURBS patch along U (width)
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
  *
  * \returns AY_OK on success, error code otherwise.
@@ -395,15 +395,15 @@ ay_ipt_interpolateu(ay_nurbpatch_object *np, int order, int ktype)
 /** ay_ipt_interpolateud:
  * interpolate NURBS patch along U (width) with end derivatives
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
- * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
- * @param[in] sdlen length of automatically generated start derivatives
- * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives (may be NULL if dmode is 0)
- * @param[in] ed end derivatives (may be NULL if dmode is 0)
+ * \param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * \param[in] sdlen length of automatically generated start derivatives
+ * \param[in] edlen length of automatically generated end derivatives
+ * \param[in] sd start derivatives (may be NULL if dmode is 0)
+ * \param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -647,15 +647,15 @@ cleanup:
  * interpolate NURBS patch along U (width) with end derivatives
  * creates a closed surface (in U)
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
- * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
- * @param[in] sdlen length of automatically generated start derivatives
- * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives (may be NULL if dmode is 0)
- * @param[in] ed end derivatives (may be NULL if dmode is 0)
+ * \param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * \param[in] sdlen length of automatically generated start derivatives
+ * \param[in] edlen length of automatically generated end derivatives
+ * \param[in] sd start derivatives (may be NULL if dmode is 0)
+ * \param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -927,9 +927,9 @@ cleanup:
 /** ay_ipt_interpolatev:
  * interpolate NURBS patch along V (height)
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
  *
  * \returns AY_OK on success, error code otherwise.
@@ -1075,15 +1075,15 @@ ay_ipt_interpolatev(ay_nurbpatch_object *np, int order, int ktype)
 /** ay_ipt_interpolatevd:
  * interpolate NURBS patch along V (height) with end derivatives
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
- * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
- * @param[in] sdlen length of automatically generated start derivatives
- * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives (may be NULL if dmode is 0)
- * @param[in] ed end derivatives (may be NULL if dmode is 0)
+ * \param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * \param[in] sdlen length of automatically generated start derivatives
+ * \param[in] edlen length of automatically generated end derivatives
+ * \param[in] sd start derivatives (may be NULL if dmode is 0)
+ * \param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1308,15 +1308,15 @@ cleanup:
  * interpolate NURBS patch along V (height) with end derivatives
  * creates a closed surface (in V)
  *
- * @param[in,out] np NURBS patch object to interpolate
- * @param[in] order desired interpolation order
- * @param[in] ktype parameterization type (AY_KTCHORDAL,
+ * \param[in,out] np NURBS patch object to interpolate
+ * \param[in] order desired interpolation order
+ * \param[in] ktype parameterization type (AY_KTCHORDAL,
  *            AY_KTCENTRI, or AY_KTUNIFORM)
- * @param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
- * @param[in] sdlen length of automatically generated start derivatives
- * @param[in] edlen length of automatically generated end derivatives
- * @param[in] sd start derivatives (may be NULL if dmode is 0)
- * @param[in] ed end derivatives (may be NULL if dmode is 0)
+ * \param[in] dmode derivative calculation mode (0 - automatic, 1 - manual)
+ * \param[in] sdlen length of automatically generated start derivatives
+ * \param[in] edlen length of automatically generated end derivatives
+ * \param[in] sd start derivatives (may be NULL if dmode is 0)
+ * \param[in] ed end derivatives (may be NULL if dmode is 0)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -1727,8 +1727,8 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
  * create default derivative vectors (from data points and
  * sdlen/edlen parameters)
  *
- * @param[in] mode designates which vector to create
- * @param[in,out] ip IPatch object to process
+ * \param[in] mode designates which vector to create
+ * \param[in,out] ip IPatch object to process
  *
  * \returns AY_OK on success, error code otherwise.
  */

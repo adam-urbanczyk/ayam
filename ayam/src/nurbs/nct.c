@@ -3453,10 +3453,18 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_crtclosedbsptcmd */
 
 
-/* ay_nct_getorientation:
+/** ay_nct_getorientation:
  *  return a negative value if curve is ccw (or cw? :)
  *  this is my fourth attempt on (and a complete rewrite of) this routine
  *  this time with support from Paul Bourke
+ * 
+ * \param curve NURBS curve to interrogate
+ * \param stride 
+ * \param report 
+ * \param plane 
+ * \param orient 
+ * 
+ * \return 
  */
 int
 ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
@@ -3502,7 +3510,7 @@ ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
 	ay_error(AY_EWARN, fname, "Plane must be 0, 1, or 2.");
       return AY_ERROR;
       break;
-    }
+    } /* switch */
 
   for(i = 0; i < curve->length-1; i++)
     {
@@ -3569,7 +3577,15 @@ ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
 } /* ay_nct_getorientation3d */
 
 
-/** Calculate winding of arbitrary (3D) NURBS curve.
+/** ay_nct_getwinding:
+ *  Calculate winding of arbitrary (3D) NURBS curve.
+ * 
+ * \param nc NURBS curve to interrogate
+ * \param normals a vector of normals at control point positions
+ * \param normalstride stride in normals array
+ * 
+ * \returns -1 if curve winding is negative, 1 if it is positive, 0
+ *  if the curve is degenerate
  */
 int
 ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
@@ -3736,12 +3752,11 @@ ay_nct_applytrafo(ay_object *c)
 
 
 /** ay_nct_getpntfromindex:
- *  get address of a single control point from its indices
+ *  get address of a single control point from its index
  *  (performing bounds checking)
  *
- * \param[in] patch NCurve object to process
- * \param[in] indexu index of desired control point in U dimension (width)
- * \param[in] indexv index of desired control point in V dimension (height)
+ * \param[in] curve NCurve object to process
+ * \param[in] index index of desired control point
  * \param[in,out] p pointer to pointer where to store the resulting address
  *
  * \returns AY_OK on success, error code otherwise.
@@ -4014,12 +4029,12 @@ ay_nct_concatmultiple(int closed, int knot_type, int fillgaps,
 
 
 /** ay_nct_fillgap:
- *  create a fillet curve between the last point of curve <c1>
- *  and the first point of curve <c2>; if <order> is 2, a simple linear
+ *  create a fillet curve between the last point of curve \a c1
+ *  and the first point of curve \a c2; if \a order is 2, a simple linear
  *  curve will be created, else if tanlen is != 0.0 the fillet
  *  will be a four point NURBS curve with internal points matching the
  *  tangents of the endpoints of the curves c1/c2 (the tangents will
- *  be scaled additionally by <tanlen> before placing the internal
+ *  be scaled additionally by \a tanlen before placing the internal
  *  control points), resulting in a G1 continous fillet;
  *  if tanlen is 0.0, global interpolation will be used to create
  *  a fillet curve with exactly matching tangents, resulting in a C1
