@@ -634,7 +634,7 @@ ay_pmt_getpntfromindex(ay_pamesh_object *patch, int indexu, int indexv,
   if(indexv >= patch->height || indexv < 0)
     return ay_error_reportirange(fname, "\"indexv\"", 0, patch->height-1);
 
-  *p = &(patch->controlv[(indexu*patch->width+indexv)*stride]);
+  *p = &(patch->controlv[(indexu*patch->height+indexv)*stride]);
 
  return AY_OK;
 } /* ay_pmt_getpntfromindex */
