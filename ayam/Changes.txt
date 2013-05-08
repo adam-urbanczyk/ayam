@@ -1,4 +1,4 @@
-[24. Apr 2013] CVS-Head:
+[8. May 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -125,6 +125,8 @@ o added support for another PV tag data type ('d'), that stores RGBA
   colors and is expanded properly to Cs _and_ Os upon RIB export
 o added commands to generate face and smooth PolyMesh normals:
   "genfnPo" and "gensnPo"
+o the "getPnt" command now supports evaluation for objects that provide
+  NURBS curves/surfaces
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
