@@ -144,7 +144,7 @@ typedef struct ay_tag_s
 typedef struct ay_btval_s
 {
   size_t size; /**< size of payload (may be 0!) */
-  void *payload; /**< binary tag value of size size */
+  void *payload; /**< binary tag value of size \a size */
 } ay_btval;
 
 
@@ -1216,8 +1216,8 @@ typedef struct ay_offnp_object_s
 typedef struct ay_ncircle_object_s
 {
   double radius; /**< radius of circle/arc */
-  double tmin; /**< start angle of circle/arc */
-  double tmax; /**< end angle of circle/arc */
+  double tmin; /**< start angle of circle/arc (degrees) */
+  double tmax; /**< end angle of circle/arc (degrees) */
 
   /** cached NURBS curve representation */
   ay_object *ncurve;
