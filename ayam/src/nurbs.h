@@ -495,6 +495,10 @@ int ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw,
 			  double tol,
 			  int r, int s, int num, double *Vbar, double *Qw);
 
+/** Unclamp a NURBS curve.
+ */
+void ay_nb_unclamp(int n, int p, double *U, double *Pw);
+
 
 /* nct.c */
 
@@ -840,6 +844,9 @@ int ay_nct_homtoeuc(ay_nurbcurve_object *nc);
 */
 void ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar);
 
+
+int ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /* npt.c */
 

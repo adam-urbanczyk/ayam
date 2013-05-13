@@ -3952,3 +3952,53 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
 
  return ay_status;
 } /* ay_nb_RemoveKnotSurfV */
+
+
+void
+ay_nb_unclamp(int n, int p, double *U, double *Pw)
+{
+ int ay_status = AY_OK;
+ int i, j, k, j1, j2, stride = 4;
+ double alpha;
+
+  for(i = 0; i <= p-2; i++)
+    {
+      U[p-i-1] = U[p-i] - (U[n-i+1]-U[n-i]);
+      k = p-1;
+      for(j = i; j >= 0; j--)
+	{
+	  alpha = (U[p]-U[k])/(U[p+j+1]-U[k]);
+	  j1 = j*stride;
+	  j2 = j1+stride;
+	  Pw[j1]   = (Pw[j1]  -alpha*Pw[j2])/(1.0-alpha);
+	  Pw[j1+1] = (Pw[j1+1]-alpha*Pw[j2+1])/(1.0-alpha);
+	  Pw[j1+2] = (Pw[j1+2]-alpha*Pw[j2+2])/(1.0-alpha);
+	  Pw[j1+3] = (Pw[j1+3]-alpha*Pw[j2+3])/(1.0-alpha);
+
+	  k--;
+	}
+    }
+
+  /* set first knot */
+  U[0] = U[1] - (U[n-p+2]-U[n-p+1]);
+
+  for(i = 0; i <= p-2; i++)
+    {
+      U[n+i+2] = U[n+i+1] + (U[p+i+1]-U[p+i]);
+      for(j = i; j >= 0; j--)
+	{
+	  alpha = (U[n+1]-U[n-j])/(U[n-j+i+2]-U[n-j]);
+	  j1 = (n-j)*stride;
+	  j2 = j1-stride;
+	  Pw[j1]   = (Pw[j1]  -(1.0-alpha)*Pw[j2])/alpha;
+	  Pw[j1+1] = (Pw[j1+1]-(1.0-alpha)*Pw[j2+1])/alpha;
+	  Pw[j1+2] = (Pw[j1+2]-(1.0-alpha)*Pw[j2+2])/alpha;
+	  Pw[j1+3] = (Pw[j1+3]-(1.0-alpha)*Pw[j2+3])/alpha;
+	}
+    }
+
+  /* set last knot */
+  U[n+p+1] = U[n+p] + (U[2*p]-U[2*p-1]);
+
+ return;
+} /* ay_nb_unclamp */
