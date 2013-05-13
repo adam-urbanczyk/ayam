@@ -844,7 +844,8 @@ int ay_nct_homtoeuc(ay_nurbcurve_object *nc);
 */
 void ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar);
 
-
+/** Tcl command to unclamp the selected NURBS curves.
+ */
 int ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
