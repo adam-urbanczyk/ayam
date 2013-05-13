@@ -1126,6 +1126,9 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "reparamNC", ay_nct_reparamtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "unclampNC", ay_nct_unclamptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   /* nurbs/npt.c */
   Tcl_CreateCommand(interp, "crtNSphere", ay_npt_crtnspheretcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);

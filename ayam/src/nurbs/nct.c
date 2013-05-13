@@ -3457,14 +3457,14 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
  *  return a negative value if curve is ccw (or cw? :)
  *  this is my fourth attempt on (and a complete rewrite of) this routine
  *  this time with support from Paul Bourke
- * 
+ *
  * \param curve NURBS curve to interrogate
- * \param stride 
- * \param report 
- * \param plane 
- * \param orient 
- * 
- * \return 
+ * \param stride
+ * \param report
+ * \param plane
+ * \param orient
+ *
+ * \return
  */
 int
 ay_nct_getorientation(ay_nurbcurve_object *curve, int stride,
@@ -3579,11 +3579,11 @@ ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
 
 /** ay_nct_getwinding:
  *  Calculate winding of arbitrary (3D) NURBS curve.
- * 
+ *
  * \param nc NURBS curve to interrogate
  * \param normals a vector of normals at control point positions
  * \param normalstride stride in normals array
- * 
+ *
  * \returns -1 if curve winding is negative, 1 if it is positive, 0
  *  if the curve is degenerate
  */
@@ -5346,10 +5346,14 @@ ay_nct_getplane(int cvlen, int cvstride, double *cv)
 
 
 /* ay_nct_toxy:
- *  modify the planar curve <c>, so that it is defined in the XY plane
+ *  modify the planar curve \a c, so that it is defined in the XY plane
  *  by detecting the current orientation, adding the relevant rotation
  *  information to the transformation attributes and rotating the control
  *  points of the planar curve to the XY plane
+ *
+ * \param[in,out] c curve object to process
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_nct_toxy(ay_object *c)
@@ -7217,13 +7221,13 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
       curve = (ay_nurbcurve_object *)po->refine;
     }
 
-  /* get len */
+  /* get length */
   ay_status = ay_nct_estlen(curve, &len);
 
   if(ay_status)
     goto cleanup;
 
-  /* put len into Tcl context */
+  /* put result into Tcl context */
   to = Tcl_NewDoubleObj(len);
   Tcl_ObjSetVar2(interp,ton,NULL,to,TCL_LEAVE_ERR_MSG);
 
@@ -7345,6 +7349,19 @@ cleanup:
  return TCL_OK;
 } /* ay_nct_reparamtcmd */
 
+
+/** ay_nct_isplanar:
+ *  Check a curve for planarity by rotating a copy of
+ *  the curve to the XY-plane and testing if any
+ *  Z-coordinates are different (to each other).
+ *
+ * \param c NURBS curve to check
+ * \param cp pointer where to store the curve rotated to XY, may be NULL
+ * \param is_planar pointer where to store the result (AY_TRUE if the
+ *  curve is planar, AY_FALSE, else);
+ *  in case of an error and for straight/linear curves, is_planar will
+ *  _not_ be changed
+ */
 void
 ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
 {
@@ -7357,20 +7374,17 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
   if(!c || !is_planar)
     return;
 
-  /* to check the planarity we rotate a copy of
-     the curve to the xy-plane and see if any
-     z-coordinates are different */
   ay_status = ay_object_copy(c, &tmp);
 
   if(ay_status || !tmp)
     return;
 
-  *is_planar = AY_TRUE;
-
   ay_status = ay_nct_toxy(tmp);
 
   if(!ay_status)
     {
+      *is_planar = AY_TRUE;
+
       nc = (ay_nurbcurve_object *)tmp->refine;
       cv = nc->controlv;
       for(i = 0; i < nc->length-1; i++)
@@ -7381,13 +7395,9 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
 	      break;
 	    }
 	}
-    }
-  else
-    {
-      /* ay_nct_toxy() failed, maybe it is a linear curve,
-	 in any case, it is not planar... */
-      is_planar = AY_FALSE;
-    }
+    } /* if */
+
+  /* if ay_nct_toxy() failed, maybe it is a linear curve... */
 
   if(cp)
     *cp = tmp;
@@ -7396,6 +7406,62 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
 
  return;
 } /* ay_nct_isplanar */
+
+
+/* ay_nct_unclamptcmd:
+ *  Unclamp the selected NURBS curves.
+ *  Implements the \a unclampNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scunclampnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  ay_nb_unclamp(curve->length-1, curve->order-1, curve->knotv,
+			curve->controlv);
+
+	  /* clean up */
+	  ay_nct_recreatemp(curve);
+
+	  /* show ay_notify_parent() the changed objects */
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_object(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_unclamptcmd */
+
 
 /* templates */
 #if 0
@@ -7446,7 +7512,7 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 	  /* do magic */
 
 	  /* clean up */
-	  ay_status = ay_nct_recreatemp(curve);
+	  ay_nct_recreatemp(curve);
 	  ay_selp_clear(o);
 
 	  /* show ay_notify_parent() the changed objects */
