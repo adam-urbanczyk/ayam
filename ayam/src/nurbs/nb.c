@@ -3954,10 +3954,15 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
 } /* ay_nb_RemoveKnotSurfV */
 
 
+/*
+ * ay_nb_UnclampCurve:
+ * unclamp the knot vector of the curve (n, p, U[], Pw[])
+ * on both sides (s == 0), the start (s == 1), or the end (s == 2),
+ * resulting in new knots and control points calculated in place
+ */
 void
-ay_nb_unclamp(int n, int p, int s, double *U, double *Pw)
+ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
 {
- int ay_status = AY_OK;
  int i, j, k, j1, j2, stride = 4;
  double alpha;
 
