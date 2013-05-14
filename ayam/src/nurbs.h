@@ -497,7 +497,7 @@ int ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw,
 
 /** Unclamp a NURBS curve.
  */
-void ay_nb_unclamp(int n, int p, double *U, double *Pw);
+void ay_nb_unclamp(int n, int p, int s, double *U, double *Pw);
 
 
 /* nct.c */
