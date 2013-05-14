@@ -7425,7 +7425,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_object *o = NULL;
 
   /* parse args */
-  if(argc>1)
+  if(argc > 1)
    {
      if((argv[1][0] == '-') && (argv[1][1] == 's'))
        side = 1;
@@ -7455,8 +7455,8 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(curve->is_rat)
 	    ay_nct_euctohom(curve);
 
-	  ay_nb_unclamp(curve->length-1, curve->order-1, side,
-			curve->knotv, curve->controlv);
+	  ay_nb_UnclampCurve(curve->length-1, curve->order-1, side,
+			     curve->knotv, curve->controlv);
 
 	  if(curve->is_rat)
 	    ay_nct_homtoeuc(curve);
