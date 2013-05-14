@@ -7419,11 +7419,22 @@ int
 ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int tcl_status = TCL_OK, ay_status = AY_OK;
+ int side = 0;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
 
+  /* parse args */
+  if(argc>1)
+   {
+     if((argv[1][0] == '-') && (argv[1][1] == 's'))
+       side = 1;
+
+     if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+       side = 2;
+   }
+
+  /* check selection */
   if(!sel)
     {
       ay_error(AY_ENOSEL, argv[0], NULL);
@@ -7441,8 +7452,14 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
 
-	  ay_nb_unclamp(curve->length-1, curve->order-1, curve->knotv,
-			curve->controlv);
+	  if(curve->is_rat)
+	    ay_nct_euctohom(curve);
+
+	  ay_nb_unclamp(curve->length-1, curve->order-1, side,
+			curve->knotv, curve->controlv);
+
+	  if(curve->is_rat)
+	    ay_nct_homtoeuc(curve);
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
