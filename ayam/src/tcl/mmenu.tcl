@@ -399,6 +399,10 @@ $m.nct add command -label "Refine Knots with" -command {
 
 $m.nct add command -label "Clamp" -command { undo save ClampNC; clampNC;
                                              plb_update; rV }
+
+$m.nct add command -label "Unclamp" -command { undo save UnclampNC; unclampNC;
+                                             plb_update; rV }
+
 $m.nct add command -label "Elevate" -command {
     runTool ay(elevd) {"Elevate by:"}\
 	"undo save Elevate; elevateNC %0; plb_update; rV"\
