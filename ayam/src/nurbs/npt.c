@@ -2267,7 +2267,7 @@ cleanup:
  *  be mixed in), the resulting fillets will be inserted in this list
  * \param[in] type if AY_TRUE an additional fillet between the last
  *  and the first patch will be created
- * \param[in] fillet_type
+ * \param[in] fillet_type unused
  * \param[in] ftlen fillet tangent length
  * \param[in] uv controls which sides of the patches to connect
  *
@@ -2386,11 +2386,30 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 } /* ay_npt_fillgaps */
 
 
-/* ay_npt_concat:
- *  concatenate the patches in <o> by breaking them to
+/** ay_npt_concat:
+ *  concatenate the patches in \a o by breaking them into
  *  curves, making the curves compatible, and building a
- *  new patch from the compatible curves
- *  returns resulting patch object in <result>
+ *  new patch from the compatible curves;
+ *  returns resulting patch object in \a result
+ *
+ * \param[in,out] o a number of NURBS patch objects (NURBS curves can
+ *  be mixed in), the selected attribute should be cleared
+ * \param[in] type if AY_CTCLOSED or AY_CTPERIODIC the new patch will
+ *  be closed or periodic in U
+ * \param[in] order desired order of the concatenated patch in U
+ * \param[in] knot_type desired knot type of the concatenated patch in U;
+ *  if knot_type is AY_KTCUSTOM, a special knot vector will be created,
+ *  that makes the concatenated surface 'interpolate' all input surfaces,
+ *  however, this comes at the cost of multiple internal knots
+ * \param[in] fillet_type if AY_TRUE, fillets are created for all gaps
+ *  in the list of provided patches prior to concatenation
+ * \param[in] ftlen fillet tangent length
+ * \param[in] compatible if AY_TRUE, the patches and curves are considered
+ *  compatible, and no clamping/elevating along V will take place
+ * \param[in] uv controls which sides of the patches to connect
+ * \param[in,out] result pointer where the resulting patch will be stored
+ * 
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_concat(ay_object *o, int type, int order,
@@ -2403,7 +2422,7 @@ ay_npt_concat(ay_object *o, int type, int order,
  ay_list_object *curvelist = NULL, **nextlist = NULL, *rem;
  ay_nurbpatch_object *np = NULL;
  int a = 0, i = 0, j = 0, k = 0, l = 0, ncurves = 0, uvlen = 0;
- double *newknotv = NULL;
+ double *newknotv = NULL, u;
  int max_order = 0;
 
   if(!o || !result)
@@ -2654,6 +2673,8 @@ ay_npt_concat(ay_object *o, int type, int order,
 		 uvlen > 0 && uvlen > i && (uv[i] == 'v' || uv[i] == 'V'))
 		{
 		  k = np->vorder;
+		  u = np->vknotv[k]+j;
+		  //swapuv = AY_TRUE;
 		  for(l = k; l < np->height+np->vorder; l++)
 		    {
 		      newknotv[a] = np->vknotv[l]+j;
@@ -2663,12 +2684,21 @@ ay_npt_concat(ay_object *o, int type, int order,
 	      else
 		{
 		  k = np->uorder;
+		  u = np->uknotv[k]+j;
+		  //swapuv = AY_FALSE;
 		  for(l = k; l < np->width+np->uorder; l++)
 		    {
 		      newknotv[a] = np->uknotv[l]+j;
 		      a++;
 		    }
 		}
+#if 0
+	      if(!o->selected && o->down && o->down->next)
+		{
+
+		  ay_npt_copytrims(o, u, swapuv, i, new);
+		}
+#endif
 	      if(!o->selected)
 		i++;
 	      j++;
