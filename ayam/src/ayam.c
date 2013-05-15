@@ -1211,6 +1211,12 @@ Tcl_AppInit(Tcl_Interp *interp)
   Tcl_CreateCommand(interp, "interpvNP", ay_ipt_interpuvtcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
+  Tcl_CreateCommand(interp, "unclampuNP", ay_npt_unclamptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "unclampvNP", ay_npt_unclamptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
   Togl_CreateCommand("finduvac", ay_npt_finduvcb);
 
 
@@ -1699,6 +1705,12 @@ ay_safeinit(Tcl_Interp *interp)
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
   Tcl_CreateCommand(interp, "interpvNP", ay_ipt_interpuvtcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "unclampuNP", ay_npt_unclamptcmd,
+		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
+
+  Tcl_CreateCommand(interp, "unclampvNP", ay_npt_unclamptcmd,
 		    (ClientData) NULL, (Tcl_CmdDeleteProc *) NULL);
 
  return ay_status;

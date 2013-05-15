@@ -499,6 +499,10 @@ int ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw,
  */
 void ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw);
 
+/** Unclamp a NURBS surface.
+ */
+void ay_nb_UnclampSurfaceU(int w, int h, int p, int s, double *U, double *Pw);
+
 
 /* nct.c */
 
@@ -1305,6 +1309,10 @@ int ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
  */
 void ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n);
 
+/** Tcl command to unclamp the knot vectors of the selected surfaces.
+ */
+int ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
+		       int argc, char *argv[]);
 
 /* pmt.c */
 
