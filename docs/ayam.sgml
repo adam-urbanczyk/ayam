@@ -71,7 +71,7 @@ Again: this manual has a rather large index, please use it
 This document is organized in the following way:
 <p>
 After this first introductory section, the user interface of Ayam is
-introduced and basic handling instructions for the application are
+explained and basic handling instructions for the application are
 given in the second section.<newline>
 In the third section all interactive modelling actions are documented.<newline>
 The fourth section details all object types and object properties,
@@ -1647,6 +1647,10 @@ working for perspective views, of course.
 
 <item><tt/"Zoom to Object"/, adapt the camera settings, so that
 the currently selected objects are centered in the view.
+
+<item><tt/"Zoom to All"/, adapt the camera settings, so that
+all objects are centered in the view, regardless of current
+level and selected objects.
 
 <item><tt/"Align to Object"/, align the view to the coordinate
 system of the currently selected object or to the parent
@@ -17159,12 +17163,13 @@ are provided to an element that imports as a PolyMesh (IndexedFaceSet
 and the likes) proper PV (primitive variable) tags will be
 created.<footnote>Since 1.17.</footnote>
 <p>
-Moreover, of there is an index provided to the normals, colors, or
+Moreover, if there is an index provided to the normals, colors, or
 texture coordinates, the relevant affected data (e.g.~the vertex
 coordinates) will be expanded properly (as RenderMan does not support
 multiple different indices on the vertex related data).
 Note that currently the mere presence of an index will lead to this expansion,
-the index is not checked for, whether it is identical to the vertex coordinate
+the potential normal, color, or texture coordinate index is not checked for,
+whether it is identical to the vertex coordinate
 index (and thus no expansion would be necessary).
 <p>
 The <tt>"DEF"</tt> attributes will be converted to object names
@@ -20086,6 +20091,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Zoom:
 <itemize>
 <item><ref id="camp" name="camera property">,
+<item><ref id="vwsc" name="view action">
+</itemize>
+<item>Zoom to All:
+<itemize>
+<item><ref id="vmconf" name="view menu entry">,
 <item><ref id="vwsc" name="view action">
 </itemize>
 <item>Zoom to Object:
