@@ -3967,7 +3967,7 @@ ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
  double alpha;
 
   /* process start */
-  if(s == 0 || s == 1)
+  if((s == 0) || (s == 1))
     {
       for(i = 0; i <= p-2; i++)
 	{
@@ -3984,15 +3984,15 @@ ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
 	      Pw[j1+3] = (Pw[j1+3]-alpha*Pw[j2+3])/(1.0-alpha);
 
 	      k--;
-	    }
-	}
+	    } /* for */
+	} /* for */
 
       /* set first knot */
       U[0] = U[1] - (U[n-p+2]-U[n-p+1]);
-    }
+    } /* if start */
 
   /* process end */
-  if((s==0)||(s==2))
+  if((s == 0) || (s == 2))
     {
       for(i = 0; i <= p-2; i++)
 	{
@@ -4006,12 +4006,81 @@ ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
 	      Pw[j1+1] = (Pw[j1+1]-(1.0-alpha)*Pw[j2+1])/alpha;
 	      Pw[j1+2] = (Pw[j1+2]-(1.0-alpha)*Pw[j2+2])/alpha;
 	      Pw[j1+3] = (Pw[j1+3]-(1.0-alpha)*Pw[j2+3])/alpha;
-	    }
-	}
+	    } /* for */
+	} /* for */
 
       /* set last knot */
       U[n+p+1] = U[n+p] + (U[2*p]-U[2*p-1]);
-    }
+    } /* if end */
 
  return;
-} /* ay_nb_unclamp */
+} /* ay_nb_UnclampCurve */
+
+
+/*
+ * ay_nb_UnclampSurfaceU:
+ * unclamp the U knot vector of the surface (w, h, p, U[], Pw[])
+ * on both sides (s == 0), the start (s == 1), or the end (s == 2),
+ * resulting in new knots and control points calculated in place
+ */
+void
+ay_nb_UnclampSurfaceU(int w, int h, int p, int s, double *U, double *Pw)
+{
+ int h1=h+1, l, i, j, k, j1, j2, stride = 4;
+ double alpha;
+
+  /* process start */
+  if((s == 0) || (s == 1))
+    {
+      for(l = 0; l < h1; l++)
+	{
+	  for(i = 0; i <= p-2; i++)
+	    {
+	      U[p-i-1] = U[p-i] - (U[w-i+1]-U[w-i]);
+	      k = p-1;
+	      for(j = i; j >= 0; j--)
+		{
+		  alpha = (U[p]-U[k])/(U[p+j+1]-U[k]);
+		  j1 = (j*h1+l)*stride;
+		  j2 = ((j+1)*h1+l)*stride;
+		  Pw[j1]   = (Pw[j1]  -alpha*Pw[j2])/(1.0-alpha);
+		  Pw[j1+1] = (Pw[j1+1]-alpha*Pw[j2+1])/(1.0-alpha);
+		  Pw[j1+2] = (Pw[j1+2]-alpha*Pw[j2+2])/(1.0-alpha);
+		  Pw[j1+3] = (Pw[j1+3]-alpha*Pw[j2+3])/(1.0-alpha);
+
+		  k--;
+		} /* for */
+	    } /* for */
+	} /* for */
+
+      /* set first knot */
+      U[0] = U[1] - (U[w-p+2]-U[w-p+1]);
+    } /* if start */
+
+  /* process end */
+  if((s == 0) || (s == 2))
+    {
+      for(l = 0; l < h1; l++)
+	{
+	  for(i = 0; i <= p-2; i++)
+	    {
+	      U[w+i+2] = U[w+i+1] + (U[p+i+1]-U[p+i]);
+	      for(j = i; j >= 0; j--)
+		{
+		  alpha = (U[w+1]-U[w-j])/(U[w-j+i+2]-U[w-j]);
+		  j1 = ((w-j)*h1+l)*stride;
+		  j2 = ((w-j-1)*h1+l)*stride;
+		  Pw[j1]   = (Pw[j1]  -(1.0-alpha)*Pw[j2])/alpha;
+		  Pw[j1+1] = (Pw[j1+1]-(1.0-alpha)*Pw[j2+1])/alpha;
+		  Pw[j1+2] = (Pw[j1+2]-(1.0-alpha)*Pw[j2+2])/alpha;
+		  Pw[j1+3] = (Pw[j1+3]-(1.0-alpha)*Pw[j2+3])/alpha;
+		} /* for */
+	    } /* for */
+	} /* for */
+
+      /* set last knot */
+      U[w+p+1] = U[w+p] + (U[2*p]-U[2*p-1]);
+    } /* if end */
+
+ return;
+} /* ay_nb_UnclampSurfaceU */

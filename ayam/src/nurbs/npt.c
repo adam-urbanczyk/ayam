@@ -2408,7 +2408,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
  *  compatible, and no clamping/elevating along V will take place
  * \param[in] uv controls which sides of the patches to connect
  * \param[in,out] result pointer where the resulting patch will be stored
- * 
+ *
  * \returns AY_OK on success, error code otherwise.
  */
 int
@@ -12291,6 +12291,83 @@ ay_npt_getcvnormals(ay_nurbpatch_object *np, double *n)
 
  return;
 } /* ay_npt_getcvnormals */
+
+
+/* ay_npt_unclamptcmd:
+ *  Unclamp the selected NURBS surfaces.
+ *  Implements the \a unclampuNP scripting interface command.
+ *  Also implements the \a unclampvNP scripting interface command.
+ *  See also the corresponding section in the \ayd{scunclampnp}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
+		   int argc, char *argv[])
+{
+ int unclampv = AY_FALSE, side = 0;
+ ay_nurbpatch_object *patch;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+
+  /* parse args */
+  if(argc > 1)
+   {
+     if((argv[1][0] == '-') && (argv[1][1] == 's'))
+       side = 1;
+
+     if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+       side = 2;
+   }
+
+  if(!strcmp(argv[0], "unclampvNP"))
+    unclampv = AY_TRUE;
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNPATCH)
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	}
+      else
+	{
+	  patch = (ay_nurbpatch_object *)o->refine;
+
+	  if(patch->is_rat)
+	    ay_npt_euctohom(patch);
+
+	  ay_nb_UnclampSurfaceU(patch->width-1, patch->height-1,
+				patch->uorder-1, side,
+				patch->uknotv, patch->controlv);
+
+	  if(patch->is_rat)
+	    ay_npt_homtoeuc(patch);
+
+	  /* clean up */
+	  ay_npt_recreatemp(patch);
+
+	  /* show ay_notify_parent() the changed objects */
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of patch */
+	  ay_notify_object(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_npt_unclamptcmd */
 
 
 /* templates */
