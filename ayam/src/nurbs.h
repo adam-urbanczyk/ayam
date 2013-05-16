@@ -853,6 +853,15 @@ void ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar);
 int ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		       int argc, char *argv[]);
 
+/** Extend NURBS curve to a point.
+ */
+int ay_nct_extend(ay_nurbcurve_object *curve, double *p);
+
+/** Tcl command to extend the selected NURBS curves.
+ */
+int ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
+		      int argc, char *argv[]);
+
 /* npt.c */
 
 /** Create NURBS patch object.

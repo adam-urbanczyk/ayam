@@ -7480,6 +7480,174 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_nct_unclamptcmd */
 
 
+/** ay_nct_extend:
+ *  extend NURBS curve to a point
+ *
+ * \param[in,out] nc NURBS curve object
+ * \param[in] p point to extend the curve to
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_nct_extend(ay_nurbcurve_object *curve, double *p)
+{
+ double tl = 0.0, l = 0.0, *newcv = NULL, *newkv = NULL;
+ double u, v[3];
+ int i, a, stride = 4;
+
+  if(!curve || !p)
+    return AY_ENULL;
+
+  if(!(newcv = malloc((curve->length+1)*stride*sizeof(double))))
+    return AY_EOMEM;
+
+  memcpy(newcv, curve->controlv, curve->length*stride*sizeof(double));
+
+  memcpy(&(newcv[curve->length*stride]), p, stride*sizeof(double));
+
+  a = 0;
+  for(i = 0; i < curve->length-1; i++)
+    {
+      v[0] = newcv[a+stride]   - newcv[a];
+      v[1] = newcv[a+stride+1] - newcv[a+1];
+      v[2] = newcv[a+stride+2] - newcv[a+2];
+      if(fabs(v[0]) > AY_EPSILON ||
+	 fabs(v[1]) > AY_EPSILON ||
+	 fabs(v[2]) > AY_EPSILON)
+	tl += AY_V3LEN(v);
+    }
+
+  if(tl < AY_EPSILON)
+    {
+      free(newcv);
+      return AY_ERROR;
+    }
+
+  a = (curve->length-1)*stride;
+  v[0] = p[0]-newcv[a];
+  v[1] = p[1]-newcv[a+1];
+  v[2] = p[2]-newcv[a+2];
+  if(fabs(v[0]) > AY_EPSILON ||
+     fabs(v[1]) > AY_EPSILON ||
+     fabs(v[2]) > AY_EPSILON)
+    {
+      l = AY_V3LEN(v);
+    }
+  else
+    {
+      free(newcv);
+      return AY_ERROR;
+    }
+
+  u = 1.0 + l/tl;
+
+  if(!(newkv = malloc((curve->length+1+curve->order)*sizeof(double))))
+    {
+      free(newcv);
+      return AY_EOMEM;
+    }
+
+  memcpy(newkv, curve->knotv, (curve->length+1)*sizeof(double));
+
+  for(i = curve->length+1; i < curve->length+curve->order; i++)
+    newkv[i] = u;
+
+  ay_nb_UnclampCurve(curve->length-1, curve->order-1, 2,
+		     newkv, newcv);
+
+  curve->length++;
+  curve->knot_type = AY_KTCUSTOM;
+
+  for(i = curve->order; i < curve->length; i++)
+    newkv[i] /= u;
+
+  for(i = curve->length; i < curve->length+curve->order; i++)
+    newkv[i] = 1.0;
+
+  free(curve->controlv);
+  curve->controlv = newcv;
+
+  free(curve->knotv);
+  curve->knotv = newkv;
+
+ return AY_OK;
+} /* ay_nct_extend */
+
+
+/* ay_nct_extendtcmd:
+ *  Extend the selected NURBS curves to a point.
+ *  Implements the \a extendNC scripting interface command.
+ *  See also the corresponding section in the \ayd{scextendnc}.
+ *
+ *  \returns TCL_OK in any case.
+ */
+int
+ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
+		  int argc, char *argv[])
+{
+ int tcl_status = TCL_OK, ay_status = AY_OK;
+ ay_nurbcurve_object *curve;
+ ay_list_object *sel = ay_selection;
+ ay_object *o = NULL;
+ int i;
+ double p[4];
+
+  /* parse args */
+  if(argc > 1)
+   {
+     for(i = 0; i < 3; i++)
+       {
+	 tcl_status = Tcl_GetDouble(interp, argv[i+1], &p[i]);
+	 AY_CHTCLERRRET(tcl_status, argv[0], interp);
+       } /* for */
+     p[3] = 1.0;
+   }
+
+  /* check selection */
+  if(!sel)
+    {
+      ay_error(AY_ENOSEL, argv[0], NULL);
+      return TCL_OK;
+    }
+
+  while(sel)
+    {
+      o = sel->object;
+      if(o->type != AY_IDNCURVE)
+	{
+	  ay_error(AY_EWARN, argv[0], ay_error_igntype);
+	}
+      else
+	{
+	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  if(curve->is_rat)
+	    ay_nct_euctohom(curve);
+
+	  ay_status = ay_nct_extend(curve, p);
+
+	  if(curve->is_rat)
+	    ay_nct_homtoeuc(curve);
+
+	  /* clean up */
+	  ay_nct_recreatemp(curve);
+
+	  /* show ay_notify_parent() the changed objects */
+	  o->modified = AY_TRUE;
+
+	  /* re-create tesselation of curve */
+	  ay_notify_object(sel->object);
+	} /* if */
+
+      sel = sel->next;
+    } /* while */
+
+  ay_notify_parent();
+
+ return TCL_OK;
+} /* ay_nct_extendtcmd */
+
+
 /* templates */
 #if 0
 
