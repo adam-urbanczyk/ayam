@@ -165,6 +165,7 @@ static const struct luaL_Reg luainterplib [] = {
       {"trimNC", luainterp_wraptclcmd},
       {"estlenNC", luainterp_wraptclcmd},
       {"reparamNC", luainterp_wraptclcmd},
+      {"extendNC", luainterp_wraptclcmd},
 
       {"crtNSphere", luainterp_wraptclcmd},
       {"crtNSphere2", luainterp_wraptclcmd},

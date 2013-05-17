@@ -186,6 +186,7 @@ static JSFunctionSpec jsinterp_global_functions[] = {
   {"trimNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"estlenNC", jsinterp_wraptcmdargs, 0, 0, 0},
   {"reparamNC", jsinterp_wraptcmdargs, 0, 0, 0},
+  {"extendNC", jsinterp_wraptcmdargs, 0, 0, 0},
 
   {"crtNSphere", jsinterp_wraptcmd, 0, 0, 0},
   {"crtNSphere2", jsinterp_wraptcmd, 0, 0, 0},
