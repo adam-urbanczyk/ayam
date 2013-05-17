@@ -12341,15 +12341,10 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  patch = (ay_nurbpatch_object *)o->refine;
 
-	  if(patch->is_rat)
-	    ay_npt_euctohom(patch);
-
-	  ay_nb_UnclampSurfaceU(patch->width-1, patch->height-1,
+	  ay_nb_UnclampSurfaceU(patch->is_rat,
+				patch->width-1, patch->height-1,
 				patch->uorder-1, side,
 				patch->uknotv, patch->controlv);
-
-	  if(patch->is_rat)
-	    ay_npt_homtoeuc(patch);
 
 	  /* clean up */
 	  ay_npt_recreatemp(patch);
