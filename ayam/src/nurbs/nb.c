@@ -3961,10 +3961,23 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
  * resulting in new knots and control points calculated in place
  */
 void
-ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
+ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
 {
- int i, j, k, j1, j2, stride = 4;
+ int a, i, j, k, j1, j2, stride = 4;
  double alpha;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i <= n; i++)
+	{
+	  Pw[a]   *= Pw[a+3];
+	  Pw[a+1] *= Pw[a+3];
+	  Pw[a+2] *= Pw[a+3];
+	  a += stride;
+	}
+   }
 
   /* process start */
   if((s == 0) || (s == 1))
@@ -4013,6 +4026,19 @@ ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
       U[n+p+1] = U[n+p] + (U[2*p]-U[2*p-1]);
     } /* if end */
 
+  /* convert rational coordinates from homogeneous to euclidean style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i <= n; i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
+	  a += stride;
+	}
+    }
+
  return;
 } /* ay_nb_UnclampCurve */
 
@@ -4024,10 +4050,24 @@ ay_nb_UnclampCurve(int n, int p, int s, double *U, double *Pw)
  * resulting in new knots and control points calculated in place
  */
 void
-ay_nb_UnclampSurfaceU(int w, int h, int p, int s, double *U, double *Pw)
+ay_nb_UnclampSurfaceU(int israt, int w, int h, int p, int s,
+		      double *U, double *Pw)
 {
- int h1=h+1, l, i, j, k, j1, j2, stride = 4;
+ int w1 = w+1, h1=h+1, a, l, i, j, k, j1, j2, stride = 4;
  double alpha;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i < w1*h1; i++)
+	{
+	  Pw[a]   *= Pw[a+3];
+	  Pw[a+1] *= Pw[a+3];
+	  Pw[a+2] *= Pw[a+3];
+	  a += stride;
+	}
+   }
 
   /* process start */
   if((s == 0) || (s == 1))
@@ -4081,6 +4121,19 @@ ay_nb_UnclampSurfaceU(int w, int h, int p, int s, double *U, double *Pw)
       /* set last knot */
       U[w+p+1] = U[w+p] + (U[2*p]-U[2*p-1]);
     } /* if end */
+
+  /* convert rational coordinates from homogeneous to euclidean style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i < w1*h1; i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
+	  a += stride;
+	}
+    }
 
  return;
 } /* ay_nb_UnclampSurfaceU */

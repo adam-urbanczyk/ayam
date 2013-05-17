@@ -7452,14 +7452,9 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
 
-	  if(curve->is_rat)
-	    ay_nct_euctohom(curve);
-
-	  ay_nb_UnclampCurve(curve->length-1, curve->order-1, side,
+	  ay_nb_UnclampCurve(curve->is_rat,
+			     curve->length-1, curve->order-1, side,
 			     curve->knotv, curve->controlv);
-
-	  if(curve->is_rat)
-	    ay_nct_homtoeuc(curve);
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
@@ -7552,7 +7547,7 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
   for(i = curve->length+1; i < curve->length+curve->order; i++)
     newkv[i] = u;
 
-  ay_nb_UnclampCurve(curve->length-1, curve->order-1, 2,
+  ay_nb_UnclampCurve(curve->is_rat, curve->length-1, curve->order-1, 2,
 		     newkv, newcv);
 
   curve->length++;
@@ -7621,13 +7616,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
 
-	  if(curve->is_rat)
-	    ay_nct_euctohom(curve);
-
 	  ay_status = ay_nct_extend(curve, p);
-
-	  if(curve->is_rat)
-	    ay_nct_homtoeuc(curve);
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
