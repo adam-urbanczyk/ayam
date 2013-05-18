@@ -7355,9 +7355,10 @@ cleanup:
  *  the curve to the XY-plane and testing if any
  *  Z-coordinates are different (to each other).
  *
- * \param c NURBS curve to check
- * \param cp pointer where to store the curve rotated to XY, may be NULL
- * \param is_planar pointer where to store the result (AY_TRUE if the
+ * \param[in] c NURBS curve to check
+ * \param[in,out] cp pointer where to store the curve rotated to XY,
+    may be NULL
+ * \param[in,out] is_planar pointer where to store the result (AY_TRUE if the
  *  curve is planar, AY_FALSE, else);
  *  in case of an error and for straight/linear curves, is_planar will
  *  _not_ be changed
@@ -7402,7 +7403,7 @@ ay_nct_isplanar(ay_object *c, ay_object **cp, int *is_planar)
   if(cp)
     *cp = tmp;
   else
-    ay_object_delete(tmp);
+    (void)ay_object_delete(tmp);
 
  return;
 } /* ay_nct_isplanar */
@@ -7534,7 +7535,7 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
       return AY_ERROR;
     }
 
-  u = 1.0 + l/tl;
+  u = 1.0 + (l/tl);
 
   if(!(newkv = malloc((curve->length+1+curve->order)*sizeof(double))))
     {
@@ -7556,6 +7557,9 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
   for(i = curve->order; i < curve->length; i++)
     newkv[i] /= u;
 
+  newkv[curve->length-1] =
+    newkv[curve->length-2]+(1.0-newkv[curve->length-2])*0.5;
+
   for(i = curve->length; i < curve->length+curve->order; i++)
     newkv[i] = 1.0;
 
@@ -7564,6 +7568,8 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
 
   free(curve->knotv);
   curve->knotv = newkv;
+
+  curve->type = AY_CTOPEN;
 
  return AY_OK;
 } /* ay_nct_extend */
@@ -7584,19 +7590,35 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int i;
- double p[4];
+ int i = 0;
+ double p[4] = {0}, *c;
 
   /* parse args */
   if(argc > 1)
-   {
-     for(i = 0; i < 3; i++)
-       {
-	 tcl_status = Tcl_GetDouble(interp, argv[i+1], &p[i]);
-	 AY_CHTCLERRRET(tcl_status, argv[0], interp);
-       } /* for */
-     p[3] = 1.0;
-   }
+    {
+      p[3] = 1.0;
+      if(argv[1][0] == '-' && argv[1][0] == 'v')
+	{
+	  tcl_status = ay_tcmd_convdlist(argv[2], &i, &c);
+	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	  if(i > 4)
+	    i = 4;
+	  memcpy(p, c, i*sizeof(double));
+	}
+      else
+	{
+	  for(i = 0; i < argc-1; i++)
+	    {
+	      tcl_status = Tcl_GetDouble(interp, argv[i+1], &p[i]);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    } /* for */
+	}
+    }
+  else
+    {
+      ay_error(AY_EARGS, argv[0], "(x y z (w)|-vn varname)");
+      return TCL_OK;
+    }
 
   /* check selection */
   if(!sel)
@@ -7618,6 +7640,12 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_status = ay_nct_extend(curve, p);
 
+	  if(ay_status)
+	    {
+	      ay_error(AY_ERROR, argv[0], "Extend operation failed.");
+	      break;
+	    }
+
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
 
@@ -7625,7 +7653,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	  o->modified = AY_TRUE;
 
 	  /* re-create tesselation of curve */
-	  ay_notify_object(sel->object);
+	  ay_notify_object(o);
 	} /* if */
 
       sel = sel->next;
