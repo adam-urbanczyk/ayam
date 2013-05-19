@@ -872,7 +872,7 @@ if { $tcl_platform(platform) == "windows" } {
 	# X11 specific settings:
 	# improve dialog box appearance
 	if { [option get . Ayam Font] == "" } {
-	    option add *Dialog.msg.font {Times 12}
+	    option add *Dialog.msg.font {Helvetica 10}
 	}
 	option add *Dialog.msg.wrapLength 6i
     }
@@ -1551,7 +1551,6 @@ if { $ay(failsafe) == 0 } {
 } else {
     puts stdout "Not sourcing ayamrc in fail safe mode..."
 }
-
 
 # make (new) preference settings known to C-context
 prefs_set
