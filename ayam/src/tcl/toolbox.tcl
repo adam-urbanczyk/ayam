@@ -469,7 +469,14 @@ proc toolbox_open { {w .tbw} } {
 	    button $f.bclamp -image ay_Clamp_img -padx 0 -pady 0 -command {
 		undo save ClampNC; clampNC; plb_update; rV
 	    }
-	    balloon_set $f.bclamp "clamp curve"
+	    bind $f.bclamp <Shift-ButtonPress-1> {
+		global  ay
+		%W configure -relief sunken
+		undo save UnclampNC; unclampNC; plb_update; rV
+		after 100 "%W configure -relief raised"
+		break;
+	    }
+	    balloon_set $f.bclamp "clamp curve\nShift: unclamp curve"
 
 	}
 	##################
