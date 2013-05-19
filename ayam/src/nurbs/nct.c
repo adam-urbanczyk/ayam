@@ -1217,7 +1217,7 @@ cleanup:
 /** ay_nct_clamp:
  *  clamp NURBS curve, it is safe to call this with half clamped curves
  *
- * \param[in] curve NURBS curve object to clamp
+ * \param[in,out] curve NURBS curve object to clamp
  * \param[in] side side to clamp:
  *             - 0: clamp both sides
  *             - 1: clamp only start
@@ -7487,12 +7487,33 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 int
 ay_nct_extend(ay_nurbcurve_object *curve, double *p)
 {
+ int ay_status = AY_OK;
+ int i, a, stride = 4;
  double tl = 0.0, l = 0.0, *newcv = NULL, *newkv = NULL;
  double u, v[3];
- int i, a, stride = 4;
 
+  /* sanity check */
   if(!curve || !p)
     return AY_ENULL;
+
+  /* can only unclamp completely clamped end... */
+  if(!ay_knots_isclamped(/*side=*/2, curve->order, curve->knotv,
+			 curve->length+curve->order, AY_EPSILON))
+    {
+      ay_status = ay_nct_clamp(curve, /*side=*/2);
+      if(ay_status)
+	return ay_status;
+    }
+
+  /* rescale knots to proper range (0-1) */
+  if((curve->knotv[0] != 0.0) ||
+     (curve->knotv[curve->length+curve->order-1] != 1.0))
+    {
+      ay_status = ay_knots_rescaletorange(curve->length+curve->order,
+					  curve->knotv, 0.0, 1.0);
+      if(ay_status)
+	return ay_status;
+    }
 
   if(!(newcv = malloc((curve->length+1)*stride*sizeof(double))))
     return AY_EOMEM;
@@ -7554,7 +7575,7 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
   curve->length++;
   curve->knot_type = AY_KTCUSTOM;
 
-  for(i = curve->order; i < curve->length; i++)
+  for(i = 0; i < curve->length; i++)
     newkv[i] /= u;
 
   newkv[curve->length-1] =
@@ -7569,7 +7590,8 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
   free(curve->knotv);
   curve->knotv = newkv;
 
-  curve->type = AY_CTOPEN;
+  /* the type of the curve likely changed, recompute... */
+  ay_nct_settype(curve);
 
  return AY_OK;
 } /* ay_nct_extend */
@@ -7597,7 +7619,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 1)
     {
       p[3] = 1.0;
-      if(argv[1][0] == '-' && argv[1][0] == 'v')
+      if(argv[1][0] == '-' && argv[1][1] == 'v')
 	{
 	  tcl_status = ay_tcmd_convdlist(argv[2], &i, &c);
 	  AY_CHTCLERRRET(tcl_status, argv[0], interp);
