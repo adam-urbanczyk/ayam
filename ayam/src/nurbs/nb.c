@@ -3977,7 +3977,7 @@ ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
 	  Pw[a+2] *= Pw[a+3];
 	  a += stride;
 	}
-   }
+    }
 
   /* process start */
   if((s == 0) || (s == 1))
@@ -4137,3 +4137,99 @@ ay_nb_UnclampSurfaceU(int israt, int w, int h, int p, int s,
 
  return;
 } /* ay_nb_UnclampSurfaceU */
+
+
+/*
+ * ay_nb_UnclampSurfaceV:
+ * unclamp the V knot vector of the surface (w, h, q, V[], Pw[])
+ * on both sides (s == 0), the start (s == 1), or the end (s == 2),
+ * resulting in new knots and control points calculated in place
+ */
+void
+ay_nb_UnclampSurfaceV(int israt, int w, int h, int q, int s,
+		      double *V, double *Pw)
+{
+ int w1 = w+1, h1=h+1, a, l, i, j, k, j1, j2, stride = 4;
+ double alpha;
+
+  /* convert rational coordinates from euclidean to homogeneous style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i < w1*h1; i++)
+	{
+	  Pw[a]   *= Pw[a+3];
+	  Pw[a+1] *= Pw[a+3];
+	  Pw[a+2] *= Pw[a+3];
+	  a += stride;
+	}
+   }
+
+  /* process start */
+  if((s == 0) || (s == 1))
+    {
+      for(l = 0; l < w1; l++)
+	{
+	  for(i = 0; i <= q-2; i++)
+	    {
+	      V[q-i-1] = V[q-i] - (V[h-i+1]-V[h-i]);
+	      k = q-1;
+	      for(j = i; j >= 0; j--)
+		{
+		  alpha = (V[q]-V[k])/(V[q+j+1]-V[k]);
+		  j1 = (l*h1+j)*stride;
+		  j2 = j1+stride;
+		  Pw[j1]   = (Pw[j1]  -alpha*Pw[j2])/(1.0-alpha);
+		  Pw[j1+1] = (Pw[j1+1]-alpha*Pw[j2+1])/(1.0-alpha);
+		  Pw[j1+2] = (Pw[j1+2]-alpha*Pw[j2+2])/(1.0-alpha);
+		  Pw[j1+3] = (Pw[j1+3]-alpha*Pw[j2+3])/(1.0-alpha);
+
+		  k--;
+		} /* for */
+	    } /* for */
+	} /* for */
+
+      /* set first knot */
+      V[0] = V[1] - (V[h-q+2]-V[h-q+1]);
+    } /* if start */
+
+  /* process end */
+  if((s == 0) || (s == 2))
+    {
+      for(l = 0; l < w1; l++)
+	{
+	  for(i = 0; i <= q-2; i++)
+	    {
+	      V[h+i+2] = V[h+i+1] + (V[q+i+1]-V[q+i]);
+	      for(j = i; j >= 0; j--)
+		{
+		  alpha = (V[h+1]-V[h-j])/(V[h-j+i+2]-V[h-j]);
+		  j1 = (l*h1+(h-j))*stride;
+		  j2 = j1-stride;
+		  Pw[j1]   = (Pw[j1]  -(1.0-alpha)*Pw[j2])/alpha;
+		  Pw[j1+1] = (Pw[j1+1]-(1.0-alpha)*Pw[j2+1])/alpha;
+		  Pw[j1+2] = (Pw[j1+2]-(1.0-alpha)*Pw[j2+2])/alpha;
+		  Pw[j1+3] = (Pw[j1+3]-(1.0-alpha)*Pw[j2+3])/alpha;
+		} /* for */
+	    } /* for */
+	} /* for */
+
+      /* set last knot */
+      V[h+q+1] = V[h+q] + (V[2*q]-V[2*q-1]);
+    } /* if end */
+
+  /* convert rational coordinates from homogeneous to euclidean style */
+  if(israt)
+    {
+      a = 0;
+      for(i = 0; i < w1*h1; i++)
+	{
+	  Pw[a]   /= Pw[a+3];
+	  Pw[a+1] /= Pw[a+3];
+	  Pw[a+2] /= Pw[a+3];
+	  a += stride;
+	}
+    }
+
+ return;
+} /* ay_nb_UnclampSurfaceV */
