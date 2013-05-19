@@ -1,4 +1,4 @@
-[8. May 2013] CVS-Head:
+[19. May 2013] CVS-Head:
 =======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -60,6 +60,8 @@ o improved the "zoom to object" view action to properly adjust the clipping
   planes, light positions, and the camera position for perspective views,
   therefore, modelling with very small or very large objects gets a bit easier
 o improved clone placement on open trajectory curves
+o added unclamping facility for NURBS curves and surfaces
+o added curve extension (to a point) modelling tool
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
