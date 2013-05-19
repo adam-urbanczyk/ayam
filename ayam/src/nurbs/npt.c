@@ -12341,10 +12341,16 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  patch = (ay_nurbpatch_object *)o->refine;
 
-	  ay_nb_UnclampSurfaceU(patch->is_rat,
-				patch->width-1, patch->height-1,
-				patch->uorder-1, side,
-				patch->uknotv, patch->controlv);
+	  if(!unclampv)
+	    ay_nb_UnclampSurfaceU(patch->is_rat,
+				  patch->width-1, patch->height-1,
+				  patch->uorder-1, side,
+				  patch->uknotv, patch->controlv);
+	  else
+	    ay_nb_UnclampSurfaceV(patch->is_rat,
+				  patch->width-1, patch->height-1,
+				  patch->vorder-1, side,
+				  patch->vknotv, patch->controlv);
 
 	  /* clean up */
 	  ay_npt_recreatemp(patch);
