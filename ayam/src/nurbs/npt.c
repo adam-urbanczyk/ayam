@@ -12342,15 +12342,29 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch = (ay_nurbpatch_object *)o->refine;
 
 	  if(!unclampv)
-	    ay_nb_UnclampSurfaceU(patch->is_rat,
-				  patch->width-1, patch->height-1,
-				  patch->uorder-1, side,
-				  patch->uknotv, patch->controlv);
+	    {
+	      ay_nb_UnclampSurfaceU(patch->is_rat,
+				    patch->width-1, patch->height-1,
+				    patch->uorder-1, side,
+				    patch->uknotv, patch->controlv);
+	    
+	      patch->uknot_type = ay_knots_classify(patch->uorder,patch->uknotv,
+						    patch->uorder+patch->width,
+						    AY_EPSILON);
+	    }
 	  else
-	    ay_nb_UnclampSurfaceV(patch->is_rat,
-				  patch->width-1, patch->height-1,
-				  patch->vorder-1, side,
-				  patch->vknotv, patch->controlv);
+	    {
+	      ay_nb_UnclampSurfaceV(patch->is_rat,
+				    patch->width-1, patch->height-1,
+				    patch->vorder-1, side,
+				    patch->vknotv, patch->controlv);
+
+	      patch->vknot_type = ay_knots_classify(patch->vorder,patch->vknotv,
+						  patch->vorder+patch->height,
+						  AY_EPSILON);
+	    }
+
+	  ay_npt_setuvtypes(patch);
 
 	  /* clean up */
 	  ay_npt_recreatemp(patch);
