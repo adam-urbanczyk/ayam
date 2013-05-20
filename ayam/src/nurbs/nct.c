@@ -3680,16 +3680,15 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
  *
  * \param[in,out] nc object of type NCurve to process
  *
- * \returns AY_OK on success, error code otherwise.
  */
-int
+void
 ay_nct_settype(ay_nurbcurve_object *nc)
 {
  int i, stride = 4;
  double *s, *e;
 
   if(!nc)
-    return AY_ENULL;
+    return;
 
   if(!ay_nct_isclosed(nc))
     {
@@ -3718,7 +3717,7 @@ ay_nct_settype(ay_nurbcurve_object *nc)
 	} /* if */
     } /* if */
 
- return AY_OK;
+ return;
 } /* ay_nct_settype */
 
 

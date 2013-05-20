@@ -693,7 +693,7 @@ int ay_nct_isclosed(ay_nurbcurve_object *nc);
 
 /** Set NURBS curve type.
  */
-int ay_nct_settype(ay_nurbcurve_object *nc);
+void ay_nct_settype(ay_nurbcurve_object *nc);
 
 /** Apply transformations to all control points.
  */
