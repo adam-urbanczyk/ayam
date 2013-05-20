@@ -3580,9 +3580,9 @@ ay_nct_getorientation3d(ay_nurbcurve_object *curve, int stride,
 /** ay_nct_getwinding:
  *  Calculate winding of arbitrary (3D) NURBS curve.
  *
- * \param nc NURBS curve to interrogate
- * \param normals a vector of normals at control point positions
- * \param normalstride stride in normals array
+ * \param[in] nc NURBS curve to interrogate
+ * \param[in] normals a vector of normals at control point positions
+ * \param[in] normalstride stride in normals array
  *
  * \returns -1 if curve winding is negative, 1 if it is positive, 0
  *  if the curve is degenerate
@@ -3644,7 +3644,7 @@ ay_nct_getwinding(ay_nurbcurve_object *nc, double *normals,
  *  Check whether or not a NURBS curve is closed by computing and
  *  and comparing the end points.
  *
- * \param[in,out] nc object of type NCurve to process
+ * \param[in] nc object of type NCurve to process
  *
  * \returns AY_TRUE if the curve is closed, AY_FALSE if not (and in error)
  */
@@ -3685,7 +3685,7 @@ ay_nct_isclosed(ay_nurbcurve_object *nc)
 int
 ay_nct_settype(ay_nurbcurve_object *nc)
 {
- int stride = 4;
+ int i, stride = 4;
  double *s, *e;
 
   if(!nc)
@@ -3702,7 +3702,20 @@ ay_nct_settype(ay_nurbcurve_object *nc)
       if(AY_V4COMP(s, e))
 	nc->type = AY_CTCLOSED;
       else
-	nc->type = AY_CTPERIODIC;
+	{
+	  nc->type = AY_CTPERIODIC;
+	  e = s + ((nc->length-1-(nc->order-2))*stride);
+	  for(i = 0; i < nc->order-1; i++)
+	    {
+	      if(!AY_V4COMP(s, e))
+		{
+		  nc->type = AY_CTOPEN;
+		  break;
+		}
+	      s += stride;
+	      e += stride;
+	    } /* for */
+	} /* if */
     } /* if */
 
  return AY_OK;
@@ -7456,6 +7469,12 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_nb_UnclampCurve(curve->is_rat,
 			     curve->length-1, curve->order-1, side,
 			     curve->knotv, curve->controlv);
+
+	  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+					       curve->order+curve->length,
+					       AY_EPSILON);
+
+	  ay_nct_settype(curve);
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
