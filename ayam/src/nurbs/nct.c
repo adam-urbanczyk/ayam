@@ -3690,31 +3690,28 @@ ay_nct_settype(ay_nurbcurve_object *nc)
   if(!nc)
     return;
 
-  if(!ay_nct_isclosed(nc))
+  nc->type = AY_CTOPEN;
+
+  s = nc->controlv;
+  e = s + ((nc->length-1)*stride);
+  if(AY_V4COMP(s, e))
     {
-      nc->type = AY_CTOPEN;
+      nc->type = AY_CTCLOSED;
     }
   else
     {
-      s = nc->controlv;
-      e = s + ((nc->length-1)*stride);
-      if(AY_V4COMP(s, e))
-	nc->type = AY_CTCLOSED;
-      else
+      nc->type = AY_CTPERIODIC;
+      e = s + ((nc->length-1-(nc->order-2))*stride);
+      for(i = 0; i < nc->order-1; i++)
 	{
-	  nc->type = AY_CTPERIODIC;
-	  e = s + ((nc->length-1-(nc->order-2))*stride);
-	  for(i = 0; i < nc->order-1; i++)
+	  if(!AY_V4COMP(s, e))
 	    {
-	      if(!AY_V4COMP(s, e))
-		{
-		  nc->type = AY_CTOPEN;
-		  break;
-		}
-	      s += stride;
-	      e += stride;
-	    } /* for */
-	} /* if */
+	      nc->type = AY_CTOPEN;
+	      break;
+	    }
+	  s += stride;
+	  e += stride;
+	} /* for */
     } /* if */
 
  return;
