@@ -518,7 +518,7 @@ $m.npt add command -label "Split V" -command {
 }
 
 
-$m.npt add cascade -menu $m.npt.cl -label "Clamp" -underline 0
+$m.npt add cascade -menu $m.npt.cl -label "Clamp/Unclamp" -underline 0
 menu $m.npt.cl -tearoff 0
 
 $m.npt.cl add command -label "Clamp U" -command {
@@ -529,6 +529,16 @@ $m.npt.cl add command -label "Clamp V" -command {
 }
 $m.npt.cl add command -label "Clamp Both" -command {
     undo save ClampNP; clampuNP; clampvNP; plb_update; rV
+}
+
+$m.npt.cl add command -label "Unclamp U" -command {
+    undo save UnclampUNP; unclampuNP; plb_update; rV
+}
+$m.npt.cl add command -label "Unclamp V" -command {
+    undo save UnclampVNP; unclampvNP; plb_update; rV
+}
+$m.npt.cl add command -label "Unclamp Both" -command {
+    undo save UnclampNP; unclampuNP; unclampvNP; plb_update; rV
 }
 
 
