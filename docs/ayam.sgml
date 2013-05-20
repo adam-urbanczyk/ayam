@@ -4266,7 +4266,7 @@ Note that the up vector is not checked for erroneous values
 (e.g.~pointing in the direction of from-to) when applying the changes
 of the <tt/"Camera"/ property.
 
-<sect2>ViewAttrib Property<label id="vat"><label id="viewattribprop">
+<sect2>ViewAttrib Property<label id="vat"><label id="viewattrprop">
 <p>
 This section describes the elements of the <tt/"ViewAttrib"/ property:
 <itemize>
@@ -5351,7 +5351,7 @@ Select|Any<f/<sup/+//|No|N/A&thinsp;/&thinsp;Children<f/<sup/+//|No<#if out=late
 <caption>Select Object Capabilities</caption>
 </table>
 
-<sect2>SelectAttrib Property<label id="selectp"><label id="selectattribprop">
+<sect2>SelectAttrib Property<label id="selectp"><label id="selectattrprop">
 <p>
 <itemize>
 <item><tt/"Indices"/ designates the object(s) to select. The index values
@@ -5463,7 +5463,7 @@ Box|No|Yes|NPatch<f/<sup/&lowast;//|No*<#if out=latex>@<hline></#if>
 <p>
 The following parameters further control the shape of a box:
 
-<sect2>BoxAttrib Property<label id="bxp"><label id="boxattribprop">
+<sect2>BoxAttrib Property<label id="bxp"><label id="boxattrprop">
 <p>
 <itemize>
 <item><tt/"Width"/ is the width of the box (size of the box in
@@ -9123,7 +9123,7 @@ Trim|NPatch/NCurve<f/<sup/+///Level<f/<sup/+//|Yes|NPatch|No<#if out=latex>@<hli
 <p>
 The following parameters further control the trimming process:
 
-<sect2>TrimAttrib Property<label id="trimp"><label id="trimattribprop">
+<sect2>TrimAttrib Property<label id="trimp"><label id="trimattrprop">
 <p>
 <itemize>
 <item><tt/"PatchNum"/ allows to select a patch, should the NURBS
@@ -11372,6 +11372,26 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scclampnc" name="clampNC">.
 </descrip>
 
+<sect1>Unclamp Tool<label id="unclat">
+<p>
+<figure loc="ht">
+<eps file="pics/unclampnc.ps" height="5cm">
+<img src="pics/unclampnc.gif">
+<caption>Unclamp Tool (left: original curve, right: unclamped curve)</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The unclamp tool takes a number of NURBS curves from
+the selection.
+<tag/Operation/ The knot vectors of the selected NURBS curves will be
+changed so that there are no multiple knots at the respective ends
+of the knot vectors. The shape of the curve will not change but the
+position of some control points will. The knot type of the curve can
+be changed to type <tt/"Custom"/.
+<tag/Notes/
+See also the documentation of the corresponding
+scripting interface command <ref id="scunclampnc" name="unclampNC">.
+</descrip>
+
 <sect1>Insert Knot Tool<label id="insknt">
 <p>
 <figure loc="ht">
@@ -11703,6 +11723,31 @@ V direction only.
 See also the documentation of the corresponding scripting interface commands
 <ref id="scclampunp" name="clampuNP"> and
 <ref id="scclampvnp" name="clampvNP">.
+</descrip>
+
+<sect1>Patch Unclamp Tool<label id="unclanpt">
+<p>
+<figure loc="ht">
+<eps file="pics/unclampnp.ps" height="5cm">
+<img src="pics/unclampnp.gif">
+<caption>Patch Unclamp Tool (left: Original Patch, right: Unclamped Patch)</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The patch unclamp tool takes a number of NURBS patches from
+the selection.
+<tag/Operation/ The knot vectors of a selected NURBS patch will be
+changed so that there are no multiple knots at the respective ends
+of the knot vectors. The shape of the patch will not change but the
+position of some control points will. The knot types of the patch can
+be changed to type <tt/"Custom"/.
+
+<tag/Notes/
+There are also tools available that unclamp a patch in U or
+V direction only.
+
+See also the documentation of the corresponding scripting interface commands
+<ref id="scunclampunp" name="unclampuNP"> and
+<ref id="scunclampvnp" name="unclampvNP">.
 </descrip>
 
 <sect1>Patch Rescale Knots to Range Tool<label id="resckrnpt">
@@ -13557,6 +13602,24 @@ See also section <ref id="clat" name="Clamp Tool">.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
+<label id="scunclampnc">
+<itemize>
+ <item>Synopsis: <tt/"unclampNC [-s|-e]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Unclamp the knot vector of the selected NURBS curves
+without changing the shape of the curves.
+The knot type of the clamped curve will be changed to <tt/"Custom"/.
+<p><p>
+If the side parameter is omitted, both sides
+are unclamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
+See also section <ref id="unclat" name="Unclamp Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
 <label id="scelevatenc">
 elevateNC &ndash; elevate NURBS curve:
 <itemize>
@@ -13875,6 +13938,46 @@ clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
 See also section <ref id="clanpt" name="Patch Clamp Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scunclampunp">
+unclampuNP &ndash; unclamp NURBS patch in U direction:
+<itemize>
+ <item>Synopsis: <tt/"unclampuNP [-s|-e]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Unclamp the U direction knot vector of the selected NURBS
+patches without changing the shape of the patches.
+The knot type will be changed to <tt/"Custom"/.
+<p><p>
+If the side parameter is omitted or 0, both sides
+are unclamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
+<p>
+See also section <ref id="unclanpt" name="Patch Unclamp Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scunclampvnp">
+unclampvNP &ndash; unclamp NURBS patch in V direction:
+<itemize>
+ <item>Synopsis: <tt/"unclampvNP [-s|-e]"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Unclamp the V direction knot vector of the selected NURBS
+patches without changing the shape of the patches.
+The knot type will be changed to <tt/"Custom"/.
+<p><p>
+If the side parameter is omitted or 0, both sides
+are unclamped.
+If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
+only the end is unclamped.
+<p>
+See also section <ref id="unclanpt" name="Patch Unclamp Tool">.
 </itemize>
 
 <p>
@@ -19970,6 +20073,9 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>uCL: <ref id="scucl" name="scripting interface command">
 <item>uCR: <ref id="scucr" name="scripting interface command">
 <item>UMM: <ref id="ummtag" name="tag type">
+<item>unclampNC: <ref id="scunclampnc" name="scripting interface command">
+<item>unclampuNP: <ref id="scunclampunp" name="scripting interface command">
+<item>unclampvNP: <ref id="scunclampvnp" name="scripting interface command">
 <item>Undo:
 <itemize>
 <item><ref id="undos" name="The Undo System">,
