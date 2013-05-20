@@ -1166,7 +1166,7 @@ int ay_npt_isclosedv(ay_nurbpatch_object *np);
 
 /** Set the NURBS patch utype and vtype attributes.
  */
-int ay_npt_setuvtypes(ay_nurbpatch_object *np);
+void ay_npt_setuvtypes(ay_nurbpatch_object *np);
 
 /** Remove multiple points from patch \a np.
  */
