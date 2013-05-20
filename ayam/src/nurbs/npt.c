@@ -7994,65 +7994,116 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
  *  set the utype and vtype (closedness) attributes according to
  *  the actual configuration of the NURBS patch <np>
  */
-int
+void
 ay_npt_setuvtypes(ay_nurbpatch_object *np)
 {
  int stride = 4;
- int i;
+ int i, j, is_closed;
  double *s, *e;
 
   if(!np)
-    return AY_ENULL;
+    return;
 
-  if(!ay_npt_isclosedu(np))
+  /* U */
+
+  np->utype = AY_CTOPEN;
+  is_closed = AY_TRUE;
+  for(i = 0; i < np->height; i++)
     {
-      np->utype = AY_CTOPEN;
+      s = &(np->controlv[i*stride]);
+      e = s+((np->width-1)*np->height*stride);
+
+      if(!AY_V4COMP(s, e))
+	{
+	  is_closed = AY_FALSE;
+	  break;
+	}
+    }
+
+  if(is_closed == AY_TRUE)
+    {
+      np->utype = AY_CTCLOSED;
     }
   else
     {
-      np->utype = AY_CTOPEN;
+      is_closed = AY_FALSE;
       for(i = 0; i < np->height; i++)
 	{
 	  s = &(np->controlv[i*stride]);
-	  e = s+((np->width-1)*np->height*stride);
+	  e = s+((np->width-1-(np->uorder-2))*np->height*stride);
 
-	  if(!AY_V4COMP(s, e))
+	  for(j = 0; j < np->uorder-1; j++)
+	    {
+	      if(!AY_V4COMP(s, e))
+		{
+		  is_closed = AY_FALSE;
+		  break;
+		}
+	      s += np->height*stride;
+	      e += np->height*stride;
+	    }
+	  if(is_closed == AY_TRUE)
 	    {
 	      np->utype = AY_CTPERIODIC;
+	    }
+	  else
+	    {
+	      np->utype = AY_CTOPEN;
 	      break;
 	    }
-	}
-      if(np->utype == AY_CTOPEN)
-	{
-	  np->utype = AY_CTCLOSED;
-	}
+	} /* for */
     } /* if */
 
-  if(!ay_npt_isclosedv(np))
+  /* V */
+
+  np->vtype = AY_CTOPEN;
+  is_closed = AY_TRUE;
+  for(i = 0; i < np->width; i++)
     {
-      np->vtype = AY_CTOPEN;
+      s = &(np->controlv[i*np->height*stride]);
+      e = s+((np->height-1)*stride);
+
+      if(!AY_V4COMP(s, e))
+	{
+	  is_closed = AY_FALSE;
+	  break;
+	}
+    }
+  if(is_closed == AY_TRUE)
+    {
+      np->vtype = AY_CTCLOSED;
     }
   else
     {
-      np->vtype = AY_CTOPEN;
-      for(i = 0; i < np->width; i++)
+      is_closed = AY_FALSE;
+      for(i = 0; i < np->height; i++)
 	{
 	  s = &(np->controlv[i*np->height*stride]);
-	  e = s+((np->height-1)*stride);
+	  e = s+((np->height-1-(np->vorder-2))*stride);
 
-	  if(!AY_V4COMP(s, e))
+	  for(j = 0; j < np->vorder-1; j++)
+	    {
+	      if(!AY_V4COMP(s, e))
+		{
+		  is_closed = AY_FALSE;
+		  break;
+		}
+	      s += stride;
+	      e += stride;
+	    }
+	  if(is_closed == AY_TRUE)
 	    {
 	      np->vtype = AY_CTPERIODIC;
+	    }
+	  else
+	    {
+	      np->vtype = AY_CTOPEN;
 	      break;
 	    }
-	}
-      if(np->vtype == AY_CTOPEN)
-	{
-	  np->vtype = AY_CTCLOSED;
-	}
+	} /* for */
     } /* if */
 
- return AY_OK;
+ return;
 } /* ay_npt_setuvtypes */
 
 
