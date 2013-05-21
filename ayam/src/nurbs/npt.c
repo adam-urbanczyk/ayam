@@ -12356,7 +12356,7 @@ int
 ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int unclampv = AY_FALSE, side = 0;
+ int ay_status = AY_OK, unclampv = AY_FALSE, side = 0;
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -12394,6 +12394,16 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(!unclampv)
 	    {
+	      /* unclamping only works correctly on completely clamped
+		 knot vectors... */
+	      if(!ay_knots_isclamped(side, patch->uorder, patch->uknotv,
+				     patch->width+patch->uorder, AY_EPSILON))
+		{
+		  ay_status = ay_npt_clampu(patch, side);
+		  if(ay_status)
+		    break;
+		}
+
 	      ay_nb_UnclampSurfaceU(patch->is_rat,
 				    patch->width-1, patch->height-1,
 				    patch->uorder-1, side,
@@ -12405,6 +12415,16 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
+	      /* unclamping only works correctly on completely clamped
+		 knot vectors... */
+	      if(!ay_knots_isclamped(side, patch->vorder, patch->vknotv,
+				     patch->height+patch->vorder, AY_EPSILON))
+		{
+		  ay_status = ay_npt_clampv(patch, side);
+		  if(ay_status)
+		    break;
+		}
+
 	      ay_nb_UnclampSurfaceV(patch->is_rat,
 				    patch->width-1, patch->height-1,
 				    patch->vorder-1, side,
