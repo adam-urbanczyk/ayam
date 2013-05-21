@@ -3961,7 +3961,8 @@ ay_nb_RemoveKnotSurfV(int w, int h, int q, double *V, double *Pw, double tol,
  * resulting in new knots and control points calculated in place
  */
 void
-ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
+ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw,
+		   int updateknots)
 {
  int a, i, j, k, j1, j2, stride = 4;
  double alpha;
@@ -3984,7 +3985,8 @@ ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
     {
       for(i = 0; i <= p-2; i++)
 	{
-	  U[p-i-1] = U[p-i] - (U[n-i+1]-U[n-i]);
+	  if(updateknots)
+	    U[p-i-1] = U[p-i] - (U[n-i+1]-U[n-i]);
 	  k = p-1;
 	  for(j = i; j >= 0; j--)
 	    {
@@ -4001,7 +4003,8 @@ ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
 	} /* for */
 
       /* set first knot */
-      U[0] = U[1] - (U[n-p+2]-U[n-p+1]);
+      if(updateknots)
+	U[0] = U[1] - (U[n-p+2]-U[n-p+1]);
     } /* if start */
 
   /* process end */
@@ -4009,7 +4012,8 @@ ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
     {
       for(i = 0; i <= p-2; i++)
 	{
-	  U[n+i+2] = U[n+i+1] + (U[p+i+1]-U[p+i]);
+	  if(updateknots)
+	    U[n+i+2] = U[n+i+1] + (U[p+i+1]-U[p+i])/2.0;
 	  for(j = i; j >= 0; j--)
 	    {
 	      alpha = (U[n+1]-U[n-j])/(U[n-j+i+2]-U[n-j]);
@@ -4023,7 +4027,8 @@ ay_nb_UnclampCurve(int israt, int n, int p, int s, double *U, double *Pw)
 	} /* for */
 
       /* set last knot */
-      U[n+p+1] = U[n+p] + (U[2*p]-U[2*p-1]);
+      if(updateknots)
+	U[n+p+1] = U[n+p] + (U[2*p]-U[2*p-1]);
     } /* if end */
 
   /* convert rational coordinates from homogeneous to euclidean style */

@@ -1501,7 +1501,13 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      tcl_status = Tcl_GetInt(interp, argv[1], &side);
+      if((argv[1][0] == '-') && (argv[1][1] == 's'))
+	side = 1;
+      else
+	if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+	  side = 2;
+	else
+	  tcl_status = Tcl_GetInt(interp, argv[1], &side);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
@@ -7429,7 +7435,7 @@ int
 ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK, side = 0;
+ int ay_status = AY_OK, tcl_status = TCL_OK, side = 0;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -7439,9 +7445,12 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
    {
      if((argv[1][0] == '-') && (argv[1][1] == 's'))
        side = 1;
-
-     if((argv[1][0] == '-') && (argv[1][1] == 'e'))
-       side = 2;
+     else
+       if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+	 side = 2;
+       else
+	 tcl_status = Tcl_GetInt(interp, argv[1], &side);
+     AY_CHTCLERRRET(tcl_status, argv[0], interp);
    }
 
   /* check selection */
@@ -7472,7 +7481,8 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_nb_UnclampCurve(curve->is_rat,
 			     curve->length-1, curve->order-1, side,
-			     curve->knotv, curve->controlv);
+			     curve->knotv, curve->controlv,
+			     /*updateknots=*/AY_TRUE);
 
 	  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
 					       curve->order+curve->length,
@@ -7593,16 +7603,13 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
     newkv[i] = u;
 
   ay_nb_UnclampCurve(curve->is_rat, curve->length-1, curve->order-1, 2,
-		     newkv, newcv);
+		     newkv, newcv, AY_FALSE);
 
   curve->length++;
   curve->knot_type = AY_KTCUSTOM;
 
   for(i = 0; i < curve->length; i++)
     newkv[i] /= u;
-
-  newkv[curve->length-1] =
-    newkv[curve->length-2]+(1.0-newkv[curve->length-2])*0.5;
 
   for(i = curve->length; i < curve->length+curve->order; i++)
     newkv[i] = 1.0;
