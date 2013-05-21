@@ -11261,6 +11261,30 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">.
 </descrip>
 
+<sect1>Extend Tool<label id="extendt">
+<p>
+<figure loc="ht">
+<eps file="pics/extendnc.ps" height="4cm">
+<img src="pics/extendnc.gif">
+<caption>Extend Tool Example (Original Curve (upper), Original Curve and Extended Curve Superimposed (lower))</caption>
+</figure>
+<descrip>
+<tag/Arguments/ The extend tool takes a number of NURBS curves from
+the selection and additionally requests a point in space.
+<tag/Operation/ The selected NURBS curves will be extended to the
+specified point in space without changing the shape of the curve
+all too much.
+<p>
+If the knot vector of the curve is not clamped at the end, it
+will be clamped automatically. The knot type of the curve can be
+changed to custom. A new control point will be added and the position
+of old control points may be changed in the progress.
+
+<tag/Notes/
+See also the documentation of the corresponding
+scripting interface command <ref id="scextendnc" name="extendNC">.
+</descrip>
+
 <sect1>Refine Tool<label id="refit">
 <p>
 <figure loc="ht">
@@ -13608,13 +13632,26 @@ See also section <ref id="clat" name="Clamp Tool">.
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
-The knot type of the clamped curve will be changed to <tt/"Custom"/.
+The knot type of the clamped curve can be changed to <tt/"Custom"/.
 <p><p>
 If the side parameter is omitted, both sides
 are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
 See also section <ref id="unclat" name="Unclamp Tool">.
+</itemize>
+
+<p>
+<#if out=latex><x/phantomsection/</#if>
+
+<label id="scextendnc">
+extendNC &ndash; extend NURBS curve:
+<itemize>
+ <item>Synopsis: <tt/"extendNC (x y z (w)|-vn varname)"/
+ <item>Background: Yes, Undo: Yes, Safe: Yes
+ <item>Description: Extend the selected NURBS curves to a given
+point.
+See also section <ref id="extendt" name="Extend Tool">.
 </itemize>
 
 <p>
@@ -13950,9 +13987,9 @@ unclampuNP &ndash; unclamp NURBS patch in U direction:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
-The knot type will be changed to <tt/"Custom"/.
+The knot type can be changed to <tt/"Custom"/.
 <p><p>
-If the side parameter is omitted or 0, both sides
+If the side parameter is omitted both sides
 are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
@@ -13970,9 +14007,9 @@ unclampvNP &ndash; unclamp NURBS patch in V direction:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
-The knot type will be changed to <tt/"Custom"/.
+The knot type can be changed to <tt/"Custom"/.
 <p><p>
-If the side parameter is omitted or 0, both sides
+If the side parameter is omitted both sides
 are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
@@ -19124,6 +19161,8 @@ Index:
 </itemize>
 <item>Export RIB: <ref id="mmfile" name="main menu entry">
 <item>Expression: <ref id="mcattr" name="MetaComp attribute">
+<item>extendNC: <ref id="scextendnc" name="scripting interface command">
+<item>Extend: <ref id="extendt" name="extend curve tool">
 <item>Exterior: <ref id="matshader" name="shader">
 <item>ExtrNC:
 <itemize>
