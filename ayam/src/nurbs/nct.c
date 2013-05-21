@@ -7684,6 +7684,14 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  /* clean up */
+	  if(o->selp)
+	    {
+	      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+	      if(ay_status)
+		ay_selp_clear(o);
+	      ay_status = AY_OK;
+	    }
+
 	  ay_nct_recreatemp(curve);
 
 	  /* show ay_notify_parent() the changed objects */
@@ -7752,6 +7760,15 @@ ay_nct_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
+
+	  if(o->selp)
+	    {
+	      ay_status = ay_pact_getpoint(3, o, NULL, NULL);
+	      if(ay_status)
+		ay_selp_clear(o);
+	      ay_status = AY_OK;
+	    }
+	  /* or */
 	  ay_selp_clear(o);
 
 	  /* show ay_notify_parent() the changed objects */
