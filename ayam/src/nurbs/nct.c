@@ -7429,7 +7429,7 @@ int
 ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int side = 0;
+ int ay_status = AY_OK, side = 0;
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -7461,6 +7461,14 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
       else
 	{
 	  curve = (ay_nurbcurve_object *)o->refine;
+
+	  if(!ay_knots_isclamped(side, curve->order, curve->knotv,
+				 curve->length+curve->order, AY_EPSILON))
+	    {
+	      ay_status = ay_nct_clamp(curve, side);
+	      if(ay_status)
+		break;
+	    }
 
 	  ay_nb_UnclampCurve(curve->is_rat,
 			     curve->length-1, curve->order-1, side,
