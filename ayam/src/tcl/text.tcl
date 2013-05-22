@@ -39,21 +39,25 @@ proc text_getAttr { } {
     addCheck $w TextAttrData LowerCap
 
     if { $BevelTags(Bevel0) } {
-	addCommand $w c1 "Remove Lower Bevel!" "bevel_rem 0 TextAttrData"
+	addCommand $w c1 "Remove Lower Bevel!"\
+	"bevel_rem 0 TextAttrData {$TextAttrData(BoundaryIDs)}"
 	addMenu $w BevelTags LowerType $ay(bevelmodes)
 	addParam $w BevelTags LowerRadius
 	addCheck $w BevelTags LowerRevert
     } else {
-	addCommand $w c1 "Add Lower Bevel!" "bevel_add 0 TextAttrData"
+	addCommand $w c1 "Add Lower Bevel!"\
+	    "bevel_add 0 TextAttrData {$TextAttrData(BoundaryIDs)}"
     }
 
     if { $BevelTags(Bevel1) } {
-	addCommand $w c2 "Remove Upper Bevel!" "bevel_rem 1 TextAttrData"
+	addCommand $w c2 "Remove Upper Bevel!"\
+	    "bevel_rem 1 TextAttrData {$TextAttrData(BoundaryIDs)}"
 	addMenu $w BevelTags UpperType $ay(bevelmodes)
 	addParam $w BevelTags UpperRadius
 	addCheck $w BevelTags UpperRevert
     } else {
-	addCommand $w c2 "Add Upper Bevel!" "bevel_add 1 TextAttrData"
+	addCommand $w c2 "Add Upper Bevel!"\
+	    "bevel_add 1 TextAttrData {$TextAttrData(BoundaryIDs)}"
     }
 
     addParam $w TextAttrData Tolerance
@@ -91,6 +95,5 @@ array set TextAttrData {
     DisplayMode 1
     BevelType 0
     BoundaryNames { "Lower" "Upper" }
+    BoundaryIDs { 0 1 }
 }
-
-
