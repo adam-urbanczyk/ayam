@@ -97,6 +97,10 @@ install:
 	-$(INSTALL) plugins/loadsubdiv.tcl $(LIBDIR)
 	-$(INSTALL) plugins/jsinterp.so $(LIBDIR)
 	-$(INSTALL) plugins/loadjsinterp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/luainterp.so $(LIBDIR)
+	-$(INSTALL) plugins/loadluainterp.tcl $(LIBDIR)
+	-$(INSTALL) plugins/sfcurve.so $(LIBDIR)
+	-$(INSTALL) plugins/loadsfcurve.tcl $(LIBDIR)
 	$(MKDIR) $(DOCDIR)
 	$(INSTALL) $(DOCFILES) $(DOCDIR)
 	$(MKDIR) $(DOCDIR)/html
