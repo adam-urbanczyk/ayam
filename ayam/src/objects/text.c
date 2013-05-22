@@ -1083,7 +1083,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 	}
       else
 	{
-	  ay_object_replace(o, new);
+	  ay_object_replace(new, o);
 	}
     } /* if */
 
