@@ -8908,7 +8908,13 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc >= 2)
     {
-      tcl_status = Tcl_GetInt(interp, argv[1], &side);
+     if((argv[1][0] == '-') && (argv[1][1] == 's'))
+       side = 1;
+     else
+     if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+       side = 2;
+     else
+       tcl_status = Tcl_GetInt(interp, argv[1], &side);
       AY_CHTCLERRRET(tcl_status, argv[0], interp);
     }
 
@@ -12356,7 +12362,7 @@ int
 ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
- int ay_status = AY_OK, unclampv = AY_FALSE, side = 0;
+ int ay_status = AY_OK, tcl_status = TCL_OK, unclampv = AY_FALSE, side = 0;
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
@@ -12366,9 +12372,12 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
    {
      if((argv[1][0] == '-') && (argv[1][1] == 's'))
        side = 1;
-
-     if((argv[1][0] == '-') && (argv[1][1] == 'e'))
-       side = 2;
+     else
+       if((argv[1][0] == '-') && (argv[1][1] == 'e'))
+	 side = 2;
+       else
+	 tcl_status = Tcl_GetInt(interp, argv[1], &side);
+     AY_CHTCLERRRET(tcl_status, argv[0], interp);
    }
 
   if(!strcmp(argv[0], "unclampvNP"))
@@ -12408,7 +12417,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 				    patch->width-1, patch->height-1,
 				    patch->uorder-1, side,
 				    patch->uknotv, patch->controlv);
-	    
+
 	      patch->uknot_type = ay_knots_classify(patch->uorder,patch->uknotv,
 						    patch->uorder+patch->width,
 						    AY_EPSILON);
