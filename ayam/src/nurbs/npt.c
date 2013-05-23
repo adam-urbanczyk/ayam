@@ -5026,8 +5026,6 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
 	      o = o2;
 	      c1 = c2;
 	    } /* for */
-	  if(d[i] < AY_EPSILON)
-	    {ay_status = AY_ERROR; goto cleanup;}
 	} /* for */
 
       o = curves;
@@ -5041,10 +5039,13 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
 	  ind = 0;
 	  for(i = 0; i < N; i++)
 	    {
- 	      v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
-	      v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
-	      v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
-	      uk[k] += AY_V3LEN(v);
+	      if(d[i] > AY_EPSILON)
+		{
+		  v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
+		  v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
+		  v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
+		  uk[k] += AY_V3LEN(v);
+		}
 	      ind += stride;
 	    } /* for */
 	  uk[k] /= N;
@@ -5068,6 +5069,9 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
       for(i = K; i <= K+degU; i++)
 	U[i] = 1.0;
     } /* if */
+
+  if(ay_knots_check(order, numcurves, order+numcurves, U))
+    {ay_status = AY_ERROR; goto cleanup;}
 
   /* construct patch */
   o = curves;
@@ -5201,8 +5205,6 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 	      o = o2;
 	      c1 = c2;
 	    } /* for */
-	  if(d[i] < AY_EPSILON)
-	    {ay_status = AY_ERROR; goto cleanup;}
 	} /* for */
 
       o = curves;
@@ -5216,10 +5218,13 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 	  ind = 0;
 	  for(i = 0; i < N; i++)
 	    {
- 	      v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
-	      v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
-	      v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
-	      vk[k] += AY_V3LEN(v);
+	      if(d[i] > AY_EPSILON)
+		{
+		  v[0] = (c2->controlv[ind]   - c1->controlv[ind])/d[i];
+		  v[1] = (c2->controlv[ind+1] - c1->controlv[ind+1])/d[i];
+		  v[2] = (c2->controlv[ind+2] - c1->controlv[ind+2])/d[i];
+		  vk[k] += AY_V3LEN(v);
+		}
 	      ind += stride;
 	    } /* for */
 	  vk[k] /= N;
@@ -5243,6 +5248,9 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
       for(i = K; i <= K+degV; i++)
 	V[i] = 1.0;
     } /* if */
+
+  if(ay_knots_check(order, numcurves, order+numcurves, V))
+    {ay_status = AY_ERROR; goto cleanup;}
 
   /* construct patch */
   o = curves;
