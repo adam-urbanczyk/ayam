@@ -5070,7 +5070,7 @@ ay_npt_skinu(ay_object *curves, int order, int knot_type,
 	U[i] = 1.0;
     } /* if */
 
-  if(ay_knots_check(order, numcurves, order+numcurves, U))
+  if(U && ay_knots_check(order, numcurves, order+numcurves, U))
     {ay_status = AY_ERROR; goto cleanup;}
 
   /* construct patch */
@@ -5249,7 +5249,7 @@ ay_npt_skinv(ay_object *curves, int order, int knot_type,
 	V[i] = 1.0;
     } /* if */
 
-  if(ay_knots_check(order, numcurves, order+numcurves, V))
+  if(V && ay_knots_check(order, numcurves, order+numcurves, V))
     {ay_status = AY_ERROR; goto cleanup;}
 
   /* construct patch */
