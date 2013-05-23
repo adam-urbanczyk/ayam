@@ -1032,7 +1032,7 @@ ay_text_convertcb(ay_object *o, int in_place)
 		  ay_npt_resetdisplay(*next);
 		}
 
-	      ay_trafo_copy(o, *next);
+	      ay_trafo_add(o, *next);
 
 	      (*next)->hide_children = AY_TRUE;
 	      (*next)->parent = AY_TRUE;
