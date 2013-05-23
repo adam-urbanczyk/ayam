@@ -636,6 +636,11 @@ typedef struct ay_gordon_object_s {
   int uorder; /**< desired order for U dimension */
   int vorder; /**< desired order for V dimension */
 
+  int u0cap;
+  int u1cap;
+  int v0cap;
+  int v1cap;
+
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
 
