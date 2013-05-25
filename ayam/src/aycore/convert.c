@@ -51,7 +51,7 @@ ay_convert_force(ay_object *o, int in_place)
       if(ay_status)
 	{
 	  ay_error(AY_ERROR, fname,
-		   "Can not remove children, conversion failed!");
+		   "Can not remove children, conversion aborted!");
 	  return AY_ERROR;
 	}
     }
@@ -85,16 +85,15 @@ ay_convert_force(ay_object *o, int in_place)
  *  \returns TCL_OK in any case.
  */
 int
-ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, in_place = AY_FALSE, notify_parent = AY_FALSE;
  ay_list_object *sel = ay_selection;
- int in_place = AY_FALSE, notify_parent = AY_FALSE;
 
   if(argc > 1)
     {
-      if(!strcmp(argv[1], "-inplace"))
+      if((argv[1][0] == '-') && (argv[1][1] == 'i'))
 	{
 	  in_place = AY_TRUE;
 	}
@@ -103,11 +102,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
   while(sel)
     {
       ay_status = ay_convert_force(sel->object, in_place);
-      if(ay_status)
-	{
-	  ay_error(AY_ERROR, argv[0], NULL);
-	}
-      else
+      if(!ay_status)
 	{
 	  sel->object->modified = AY_TRUE;
 	  notify_parent = AY_TRUE;
@@ -117,7 +112,7 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp * interp,
 
   if(notify_parent)
     {
-      ay_status = ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;
