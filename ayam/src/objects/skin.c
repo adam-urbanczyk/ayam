@@ -625,13 +625,11 @@ ay_skin_notifycb(ay_object *o)
 
   if(ay_status)
     {
+      free(newo);
       goto cleanup;
     }
 
   skin->npatch = newo;
-
-  /* prevent cleanup code from doing something harmful */
-  newo = NULL;
 
   /* get bevel parameters */
   memset(&bparams, 0, sizeof(ay_bparam));
