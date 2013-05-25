@@ -595,7 +595,7 @@ ay_gordon_notifycb(ay_object *o)
   nextcb = &(gordon->caps_and_bevels);
 
   /* get parameter curves */
-  if(!o->down)
+  if(!o->down || !o->down->next)
     goto cleanup;
 
   if(gordon->wcc)
@@ -700,7 +700,7 @@ ay_gordon_notifycb(ay_object *o)
 		    } /* if */
 		} /* if */
 	    } /* if */
-	} /* if */
+	} /* if get inpatch */
 
       down = down->next;
     } /* while */
@@ -732,9 +732,10 @@ ay_gordon_notifycb(ay_object *o)
       goto cleanup;
     }
 
-  /* copy sampling tolerance/mode over to new object */
+  /* save result */
   gordon->npatch = npatch;
 
+  /* copy sampling tolerance/mode over to new object */
   ((ay_nurbpatch_object *)npatch->refine)->glu_sampling_tolerance =
     tolerance;
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
@@ -759,7 +760,7 @@ ay_gordon_notifycb(ay_object *o)
 
   /* create/add bevels */
   if(bparams.has_bevels)
-    {      
+    {
       ay_status = ay_bevelt_addbevels(&bparams, caps, gordon->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
