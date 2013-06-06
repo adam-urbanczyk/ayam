@@ -39,24 +39,24 @@ proc extrude_getAttr { } {
 
     if { $BevelTags(Bevel0) } {
 	addCommand $w c1 "Remove Start Bevel!"\
-	    "bevel_rem 0 ExtrudeAttrData $ExtrudeAttrData(BoundaryIDs)"
+	    "bevel_rem 0 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
 	addMenu $w BevelTags StartType $ay(bevelmodes)
 	addParam $w BevelTags StartRadius
 	addCheck $w BevelTags StartRevert
     } else {
 	addCommand $w c1 "Add Start Bevel!"\
-	    "bevel_add 0 ExtrudeAttrData $ExtrudeAttrData(BoundaryIDs)"
+	    "bevel_add 0 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
     }
 
     if { $BevelTags(Bevel1) } {
 	addCommand $w c2 "Remove End Bevel!"\
-	    "bevel_rem 1 ExtrudeAttrData $ExtrudeAttrData(BoundaryIDs)"
+	    "bevel_rem 1 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
 	addMenu $w BevelTags EndType $ay(bevelmodes)
 	addParam $w BevelTags EndRadius
 	addCheck $w BevelTags EndRevert
     } else {
 	addCommand $w c2 "Add End Bevel!"\
-	    "bevel_add 1 ExtrudeAttrData $ExtrudeAttrData(BoundaryIDs)"
+	    "bevel_add 1 ExtrudeAttrData \{$ExtrudeAttrData(BoundaryIDs)\}"
     }
 
     addParam $w ExtrudeAttrData Tolerance
