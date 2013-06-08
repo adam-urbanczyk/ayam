@@ -225,6 +225,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  else
 	    {
 	      /* 3D bevel */
+
+	      /* pick the correct tangents */
 	      if(i < 2)
 		tangents = &(normals[3]);
 	      else
@@ -293,7 +295,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 					      &curve, bevelcurve,
 					      normals, 9, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
-	    }
+	    } /* if 2D or 3D */
 
 	  ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
 	  curve.refine = NULL;
@@ -376,9 +378,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	      if(nextcap)
 		nextcap = &((*nextcap)->next);
-	    } /* if */
-	} /* if */
-    } /* for */
+	    } /* if integrate */
+	} /* if bevel on this side */
+    } /* for all sides */
 
   *next = allcaps;
 
@@ -723,13 +725,15 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
 
 /** ay_bevelt_createc:
- * Create a bevel.
+ * Create a (2D) bevel.
  *
  * \param[in] radius width/height of the bevel (may be negative)
  * \param[in] o1 curve on which the bevel is constructed (usually
- *  a border extracted from a surface)
- * \param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
- * \param[in,out] b resulting bevel object
+ *  a border extracted from a surface), should be planar and defined
+ *  in the XY plane
+ * \param[in] o2 bevel cross section curve (should be planar in XY
+ *  and run from 0,0 to 1,1)
+ * \param[in,out] bevel resulting bevel object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -816,6 +820,16 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
   if(ay_status)
     goto cleanup;
 
+  if(curve->type == AY_CTCLOSED)
+    {
+      ay_npt_closev(*bevel, 2);
+    }
+
+  if(curve->type == AY_CTPERIODIC)
+    {
+      ay_npt_closev(*bevel, 3);
+    }
+
   /* prevent cleanup code from doing something harmful */
   controlv = NULL;
   uknotv = NULL;
@@ -846,12 +860,13 @@ cleanup:
  * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
  * \param[in] o1 curve on which the bevel is constructed (usually
  *  a border extracted from a surface)
- * \param[in] o2 bevel cross section curve (should run from 0,0 to 1,1)
+ * \param[in] o2 bevel cross section curve (should be planar in XY
+ *  and run from 0,0 to 1,1)
  * \param[in] n array of normals
  * \param[in] nstride stride in normals array
  * \param[in] t array of tangents
  * \param[in] tstride stride in tangents array
- * \param[in,out] b resulting bevel object
+ * \param[in,out] bevel resulting bevel object
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -966,6 +981,16 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
   if(ay_status)
     goto cleanup;
 
+  if(curve->type == AY_CTCLOSED)
+    {
+      ay_npt_closev(*bevel, 2);
+    }
+
+  if(curve->type == AY_CTPERIODIC)
+    {
+      ay_npt_closev(*bevel, 5);
+    }
+
   /* prevent cleanup code from doing something harmful */
   controlv = NULL;
   uknotv = NULL;
@@ -1060,7 +1085,6 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
   if(side == 2)
     ay_npt_revertu(o->refine);
 
-
   /* replace old patch with new */
   ay_npt_destroy(s->refine);
   s->refine = o->refine;
@@ -1127,11 +1151,11 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 		  j++;
 		  o = o->next;
 		} /* while */
-	    } /* if */
+	    } /* if level is "Bevels" */
 	  if(o)
 	    o = o->next;
 	} /* while */
-    } /* if */
+    } /* if index */
 
  return ay_status;
 } /* ay_bevelt_findbevelcurve */
@@ -1139,7 +1163,7 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 
 /** ay_bevelt_createbevelcurve:
  * Create a standard bevel cross section curve (fills the
- * curve object into the global array ay_bevelt_curves).
+ * curve object into the global array \a ay_bevelt_curves).
  *
  * \param[in] index type of bevel curve to create:
  *  0 - round, 1 - linear, 2 - ridge
