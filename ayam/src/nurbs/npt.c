@@ -3650,7 +3650,7 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   new->is_rat = ay_npt_israt(new);
 
-  ay_status = ay_npt_closeu(new);
+  ay_status = ay_npt_closeu(new, 3);
 
   ay_npt_setuvtypes(new);
 
@@ -4320,7 +4320,7 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 
   new->is_rat = ay_npt_israt(new);
 
-  ay_status = ay_npt_closeu(new);
+  ay_status = ay_npt_closeu(new, 3);
 
   ay_npt_setuvtypes(new);
 
@@ -7554,38 +7554,146 @@ ay_npt_istrimmed(ay_object *o, int mode)
 
 
 /* ay_npt_closeu:
- *  close NURBS patch <np> by copying the first p control point
- *  lines (in v direction) over to the last p control point lines
- *  (where p is the degree of the NURBS surface in u direction
+ *  close NURBS patch \a np in u direction according to \a mode:
+ *  0:
+ *  by copying the first control point line to the last,
+ *  1:
+ *  by copying the last control point line to the first,
+ *  2:
+ *  by copying the mean of the first and last control point line
+ *  to the first and last control point line,
+ *  3:
+ *  by copying the first p control point
+ *  lines over to the last p control point lines,
+ *  4:
+ *  by copying the last p control point
+ *  lines over to the first p control point lines,
+ *  5:
+ *  by copying the mean of the first p and last p control point
+ *  lines over to the first p and last p control point lines
+ *  respectively;
+ *
+ *  where p is the degree of the NURBS surface in u direction,
+ *  and the lines run in v direction.
+ *
  *  Note: this does not guarantee a closed surface unless the u knot
- *  vector is e.g. of type AY_KTBSPLINE
- *  (this function should rather be named ay_npt_makeperiodicu())
+ *  vector is of the correct configuration or type e.g. of type AY_KTBSPLINE
+ *  for the modes 3-5.
+ *
+ * \param[in,out] np NURBS patch to process
+ * \param[in] mode operation mode, see above
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_closeu(ay_nurbpatch_object *np)
+ay_npt_closeu(ay_nurbpatch_object *np, int mode)
 {
- double *controlv, *end;
- int stride = 4;
- /* int i; */
+ double *controlv, *start, *end, mean[3];
+ int stride = 4, lstride;
+ int i, j;
 
-  if(np->width >= ((np->uorder-1)*2))
+  controlv = np->controlv;
+
+  switch(mode)
     {
-      controlv = np->controlv;
-      end = &(controlv[np->height*(np->width-(np->uorder-1))*stride]);
-
-      memcpy(end, controlv, (np->uorder-1)*np->height*stride*sizeof(double));
-      /*
-      for(i = 0; i < (np->uorder-1); i++)
+    case 0:
+      for(i = 0; i < np->height; i++)
 	{
-	  memcpy(end, controlv, np->height*stride*sizeof(double));
-	  controlv += np->height*stride;
-	  end += np->height*stride;
+	  start = &(controlv[i*stride]);
+	  end = start+(np->width-1)*np->height*stride;
+	  memcpy(end, start, stride*sizeof(double));
 	}
-      */
-    }
-  else
-    {
-      return AY_ERROR;
+      break;
+    case 1:
+      for(i = 0; i < np->height; i++)
+	{
+	  start = &(controlv[i*stride]);
+	  end = start+(np->width-1)*np->height*stride;
+	  memcpy(start, end, stride*sizeof(double));
+	}
+      break;
+    case 2:
+      for(i = 0; i < np->height; i++)
+	{
+	  start = &(controlv[i*stride]);
+	  end = start+(np->width-1)*np->height*stride;
+	  mean[0] = start[0]+((end[0]-start[0])/2.0);
+	  mean[1] = start[1]+((end[1]-start[1])/2.0);
+	  mean[2] = start[2]+((end[2]-start[2])/2.0);
+
+	  memcpy(start, mean, stride*sizeof(double));
+	  memcpy(end, mean, stride*sizeof(double));
+	}
+      break;
+    case 3:
+      if(np->width >= ((np->uorder-1)*2))
+	{
+	  start = controlv;
+	  end = &(controlv[np->height*(np->width-(np->uorder-1))*stride]);
+	  memcpy(end, start, (np->uorder-1)*np->height*stride*sizeof(double));
+	  /*
+	    for(i = 0; i < (np->uorder-1); i++)
+	    {
+	    memcpy(end, controlv, np->height*stride*sizeof(double));
+	    controlv += np->height*stride;
+	    end += np->height*stride;
+	    }
+	  */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    case 4:
+      if(np->width >= ((np->uorder-1)*2))
+	{
+	  start = controlv;
+	  end = &(controlv[np->height*(np->width-(np->uorder-1))*stride]);
+	  memcpy(start, end, (np->uorder-1)*np->height*stride*sizeof(double));
+	  /*
+	    for(i = 0; i < (np->uorder-1); i++)
+	    {
+	    memcpy(end, controlv, np->height*stride*sizeof(double));
+	    controlv += np->height*stride;
+	    end += np->height*stride;
+	    }
+	  */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    case 5:
+      if(np->width >= ((np->uorder-1)*2))
+	{
+	  lstride = np->height*stride;
+	  for(i = 0; i < np->height; i++)
+	    {
+	      start = &(controlv[i*np->height*stride]);
+	      end = start+(np->width-(np->uorder-1)*lstride);
+	      for(j = 0; j < np->uorder-1; j++)
+		{
+		  mean[0] = start[j*lstride] +
+		    ((end[j*lstride]-start[j*lstride])/2.0);
+		  mean[1] = start[j*lstride+1] +
+		    ((end[j*lstride+1]-start[j*lstride+1])/2.0);
+		  mean[2] = start[j*lstride+2] +
+		    ((end[j*lstride+2]-start[j*lstride+2])/2.0);
+
+		  memcpy(&(start[j*lstride]), mean, 3*sizeof(double));
+		  memcpy(&(end[j*lstride]), mean, 3*sizeof(double));
+		} /* for */
+	    } /* for */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    default:
+      break;
     } /* if */
 
  return AY_OK;
@@ -7604,7 +7712,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int stride = 4;
+ int mode = 3, stride = 4;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
@@ -7657,7 +7765,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	  free(np->vknotv);
 	  np->vknotv = tknotv;
 
-	  ay_status = ay_npt_closeu(np);
+	  ay_status = ay_npt_closeu(np, mode);
 
 	  if(ay_status)
 	    {
@@ -7685,33 +7793,137 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_npt_closev:
- *  close NURBS patch <np> by copying the first q control point
- *  lines (in u direction) over to the last q control point lines
- *  (where q is the degree of the NURBS surface in v direction
+ *  close NURBS patch \a np in v direction according to \a mode:
+ *  0:
+ *  by copying the first control point line to the last,
+ *  1:
+ *  by copying the last control point line to the first,
+ *  2:
+ *  by copying the mean of the first and the last control point line
+ *  to the first and last control point line,
+ *  3:
+ *  by copying the first q control point
+ *  lines over to the last q control point lines,
+ *  4:
+ *  by copying the last q control point
+ *  lines over to the first q control point lines,
+ *  5:
+ *  by copying the mean of the first q and last q control point
+ *  lines over to the first q and last q control point lines
+ *  respectively;
+ *
+ *  where q is the degree of the NURBS surface in v direction,
+ *  and the lines run in u direction.
+ *
  *  Note: this does not guarantee a closed surface unless the v knot
- *  vector is e.g. of type AY_KTBSPLINE
- *  (this function should rather be named ay_npt_makeperiodicv())
+ *  vector is of the correct configuration or type e.g. of type AY_KTBSPLINE
+ *  for the modes 3-5.
+ *
+ * \param[in,out] np NURBS patch to process
+ * \param[in] mode operation mode, see above
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_npt_closev(ay_nurbpatch_object *np)
+ay_npt_closev(ay_nurbpatch_object *np, int mode)
 {
- double *controlv, *a, *b;
- int i, stride = 4;
+ double *controlv, *start, *end, mean[3];
+ int stride = 4;
+ int i, j;
 
-  if(np->height >= ((np->vorder-1)*2))
+  controlv = np->controlv;
+
+  switch(mode)
     {
-      controlv = np->controlv;
+    case 0:
       for(i = 0; i < np->width; i++)
 	{
-	  b = &(controlv[i*np->height*stride]);
-	  a = b+((np->height-(np->vorder-1))*stride);
+	  start = &(controlv[i*np->height*stride]);
+	  end = start+(np->height-1)*stride;
+	  memcpy(end, start, stride*sizeof(double));
+	}
+      break;
+    case 1:
+      for(i = 0; i < np->width; i++)
+	{
+	  start = &(controlv[i*np->height*stride]);
+	  end = start+(np->height-1)*stride;
+	  memcpy(start, end, stride*sizeof(double));
+	}
+      break;
+    case 2:
+      for(i = 0; i < np->width; i++)
+	{
+	  start = &(controlv[i*np->height*stride]);
+	  end = start+(np->height-1)*stride;
+	  mean[0] = start[0]+((end[0]-start[0])/2.0);
+	  mean[1] = start[1]+((end[1]-start[1])/2.0);
+	  mean[2] = start[2]+((end[2]-start[2])/2.0);
 
-	  memcpy(a, b, (np->vorder-1)*stride*sizeof(double));
-	} /* for */
-    }
-  else
-    {
-      return AY_ERROR;
+	  memcpy(start, mean, 3*sizeof(double));
+	  memcpy(end, mean, 3*sizeof(double));
+	}
+      break;
+    case 3:
+      if(np->height >= ((np->vorder-1)*2))
+	{
+	  for(i = 0; i < np->width; i++)
+	    {
+	      start = &(controlv[i*np->height*stride]);
+	      end = start+((np->height-(np->vorder-1))*stride);
+
+	      memcpy(end, start, (np->vorder-1)*stride*sizeof(double));
+	    } /* for */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    case 4:
+      if(np->height >= ((np->vorder-1)*2))
+	{
+	  for(i = 0; i < np->width; i++)
+	    {
+	      start = &(controlv[i*np->height*stride]);
+	      end = start+((np->height-(np->vorder-1))*stride);
+
+	      memcpy(start, end, (np->vorder-1)*stride*sizeof(double));
+	    } /* for */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    case 5:
+      if(np->height >= ((np->vorder-1)*2))
+	{
+	  for(i = 0; i < np->width; i++)
+	    {
+	      start = &(controlv[i*np->height*stride]);
+	      end = start+((np->height-(np->vorder-1))*stride);
+	      for(j = 0; j < np->vorder-1; j++)
+		{
+		  mean[0] = start[j*stride] +
+		    ((end[j*stride]-start[j*stride])/2.0);
+		  mean[1] = start[j*stride+1] +
+		    ((end[j*stride+1]-start[j*stride+1])/2.0);
+		  mean[2] = start[j*stride+2] +
+		    ((end[j*stride+2]-start[j*stride+2])/2.0);
+
+		  memcpy(&(start[j*stride]), mean, 3*sizeof(double));
+		  memcpy(&(end[j*stride]), mean, 3*sizeof(double));
+		} /* for */
+	    } /* for */
+	}
+      else
+	{
+	  return AY_ERROR;
+	} /* if */
+      break;
+    default:
+      break;
     } /* if */
 
  return AY_OK;
@@ -7730,7 +7942,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  int ay_status = AY_OK;
- int stride = 4, i;
+ int mode = 3, stride = 4, i;
  double *a, *b;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
@@ -7775,7 +7987,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 	  free(np->uknotv);
 	  np->uknotv = tknotv;
 
-	  ay_status = ay_npt_closev(np);
+	  ay_status = ay_npt_closev(np, mode);
 
 	  if(ay_status)
 	    {
@@ -9576,8 +9788,6 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       if((u <= knots[patch->uorder-1]) || (u >= knots[patch->width]))
 	return ay_error_reportdrange(fname, "\"u\"",
 			      knots[patch->uorder-1], knots[patch->width]);
-
-      k = 0;
 
       k = ay_nb_FindSpanMult(patch->width-1, patch->uorder-1, u,
 			     knots, &s);

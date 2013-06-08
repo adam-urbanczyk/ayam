@@ -1141,7 +1141,7 @@ int ay_npt_istrimmed(ay_object *o, int mode);
 
 /** Close NURBS patch in U direction.
  */
-int ay_npt_closeu(ay_nurbpatch_object *np);
+int ay_npt_closeu(ay_nurbpatch_object *np, int mode);
 
 /** Tcl command to close selected NURBS patches in U direction.
  */
@@ -1150,7 +1150,7 @@ int ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** Close NURBS patch in V direction.
  */
-int ay_npt_closev(ay_nurbpatch_object *np);
+int ay_npt_closev(ay_nurbpatch_object *np, int mode);
 
 /** Tcl command to close selected NURBS patches in V direction.
  */
