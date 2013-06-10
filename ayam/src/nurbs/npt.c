@@ -7711,11 +7711,38 @@ int
 ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
- int mode = 3, stride = 4;
+ int tcl_status, ay_status = AY_OK;
+ int i = 1, mode = 3, extend = AY_TRUE, knots = -1, stride = 4;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(argv[i][0] == '-' && argv[i][0] == 'm')
+	    {
+	      /* -mode */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &mode);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(argv[i][0] == '-' && argv[i][0] == 'e')
+	    {
+	      /* -extend */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &extend);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(argv[i][0] == '-' && argv[i][0] == 'k')
+	    {
+	      /* -knottype */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	}
+      i += 2;
+    }
 
   while(sel)
     {
@@ -7727,43 +7754,61 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  if(!(newcontrolv = malloc((np->width + (np->uorder-1)) *
-				    np->height * stride *
-				    sizeof(double))))
+	  if(mode < 3)
 	    {
-	      ay_error(AY_EOMEM, argv[0], NULL);
-	      return TCL_OK;
+	      if(extend)
+		{
+
+		}
 	    }
-
-	  memcpy(newcontrolv, np->controlv, np->width * np->height * stride *
-		 sizeof(double));
-
-	  free(np->controlv);
-	  np->controlv = newcontrolv;
-
-	  np->width += (np->uorder-1);
-	  /*
-	  if(!(newknotv = calloc(np->width + np->uorder + (np->uorder-1),
-				 sizeof(double))))
+	  else
 	    {
-	      ay_error(AY_EOMEM, argv[0], NULL);
-	      return TCL_OK;
+	      /* mode > 3 => make periodic*/
+	      if(extend)
+		{
+		  if(!(newcontrolv = malloc((np->width + (np->uorder-1)) *
+					    np->height * stride *
+					    sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      return TCL_OK;
+		    }
+
+		  memcpy(newcontrolv, np->controlv,
+			 np->width * np->height * stride *
+			 sizeof(double));
+
+		  free(np->controlv);
+		  np->controlv = newcontrolv;
+
+		  np->width += (np->uorder-1);
+		  /*
+		    if(!(newknotv = calloc(np->width + np->uorder +
+                         (np->uorder-1),
+			 sizeof(double))))
+			 {
+			 ay_error(AY_EOMEM, argv[0], NULL);
+			 return TCL_OK;
+			 }
+
+			 memcpy(newknotv, np->uknotv, (np->width + np->uorder +
+			 (np->uorder-1)) *
+			 sizeof(double));
+
+			 free(np->uknotv);
+			 np->uknotv = newknotv;
+		  */
+		}
+	      if(knots > -1)
+		{
+		  tknotv = np->vknotv;
+		  np->vknotv = NULL;
+		  np->uknot_type = knots;
+		  ay_status = ay_knots_createnp(np);
+		  free(np->vknotv);
+		  np->vknotv = tknotv;
+		}
 	    }
-
-	  memcpy(newknotv, np->uknotv, (np->width + np->uorder +
-					(np->uorder-1)) *
-		 sizeof(double));
-
-	  free(np->uknotv);
-	  np->uknotv = newknotv;
-	  */
-
-	  tknotv = np->vknotv;
-	  np->vknotv = NULL;
-	  np->uknot_type = AY_KTBSPLINE;
-	  ay_status = ay_knots_createnp(np);
-	  free(np->vknotv);
-	  np->vknotv = tknotv;
 
 	  ay_status = ay_npt_closeu(np, mode);
 
@@ -7941,12 +7986,39 @@ int
 ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
- int ay_status = AY_OK;
- int mode = 3, stride = 4, i;
+ int tcl_status, ay_status = AY_OK;
+ int i = 1, mode = 3, extend = AY_TRUE, knots = -1, stride = 4;
  double *a, *b;
  double *newcontrolv = NULL, *tknotv;
  ay_list_object *sel = ay_selection;
  ay_nurbpatch_object *np = NULL;
+
+  /* parse args */
+  if(argc > 2)
+    {
+      while(i+1 < argc)
+	{
+	  if(argv[i][0] == '-' && argv[i][0] == 'm')
+	    {
+	      /* -mode */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &mode);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(argv[i][0] == '-' && argv[i][0] == 'e')
+	    {
+	      /* -extend */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &extend);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	  if(argv[i][0] == '-' && argv[i][0] == 'k')
+	    {
+	      /* -knottype */
+	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
+	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
+	    }
+	}
+      i += 2;
+    }
 
   while(sel)
     {
@@ -7958,34 +8030,80 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  np = (ay_nurbpatch_object *)sel->object->refine;
 
-	  if(!(newcontrolv = malloc(np->width *
-				    (np->height + (np->vorder-1)) * stride *
-				     sizeof(double))))
+	  if(mode < 3)
 	    {
-	      ay_error(AY_EOMEM, argv[0], NULL);
-	      return TCL_OK;
-	    }
+	      if(extend)
+		{
+		  if(!(newcontrolv = malloc(np->width *
+					    (np->height + 1) * stride *
+					    sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      return TCL_OK;
+		    }
 
-	  a = &(newcontrolv[0]);
-	  b = &(np->controlv[0]);
-	  for(i = 0; i < np->width; i++)
+		  a = &(newcontrolv[0]);
+		  b = &(np->controlv[0]);
+		  for(i = 0; i < np->width; i++)
+		    {
+		      memcpy(a, b, np->height * stride * sizeof(double));
+		      a += (np->height + 1) * stride;
+		      b += np->height * stride;
+		    }
+
+		  free(np->controlv);
+		  np->controlv = newcontrolv;
+
+		  np->height++;
+		}
+
+	      if(knots >- 1)
+		{
+		  tknotv = np->uknotv;
+		  np->uknotv = NULL;
+		  np->vknot_type = knots;
+		  ay_status = ay_knots_createnp(np);
+		  free(np->uknotv);
+		  np->uknotv = tknotv;
+		}
+	    }
+	  else
 	    {
-	      memcpy(a, b, np->height * stride * sizeof(double));
-	      a += (np->height + (np->vorder-1)) * stride;
-	      b += np->height * stride;
-	    }
+	      /* mode > 3 => make periodic*/
+	      if(extend)
+		{
+		  if(!(newcontrolv = malloc(np->width * (np->height +
+					    (np->vorder-1)) * stride *
+					    sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      return TCL_OK;
+		    }
 
-	  free(np->controlv);
-	  np->controlv = newcontrolv;
+		  a = &(newcontrolv[0]);
+		  b = &(np->controlv[0]);
+		  for(i = 0; i < np->width; i++)
+		    {
+		      memcpy(a, b, np->height * stride * sizeof(double));
+		      a += (np->height + (np->vorder-1)) * stride;
+		      b += np->height * stride;
+		    }
 
-	  np->height += (np->vorder-1);
+		  free(np->controlv);
+		  np->controlv = newcontrolv;
+		  np->height += (np->vorder-1);
+		}
 
-	  tknotv = np->uknotv;
-	  np->uknotv = NULL;
-	  np->vknot_type = AY_KTBSPLINE;
-	  ay_status = ay_knots_createnp(np);
-	  free(np->uknotv);
-	  np->uknotv = tknotv;
+	      if(knots > -1)
+		{
+		  tknotv = np->uknotv;
+		  np->uknotv = NULL;
+		  np->vknot_type = knots;
+		  ay_status = ay_knots_createnp(np);
+		  free(np->uknotv);
+		  np->uknotv = tknotv;
+		}
+	    } /* if */
 
 	  ay_status = ay_npt_closev(np, mode);
 
