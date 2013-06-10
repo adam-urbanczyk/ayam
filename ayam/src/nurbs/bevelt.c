@@ -827,7 +827,7 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 
   if(curve->type == AY_CTPERIODIC)
     {
-      ay_npt_closev(*bevel, 3);
+      ay_npt_closev(*bevel, 5);
     }
 
   /* prevent cleanup code from doing something harmful */
