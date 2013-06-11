@@ -1,5 +1,5 @@
-[19. May 2013] CVS-Head:
-=======================
+[11. Jun 2013] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
