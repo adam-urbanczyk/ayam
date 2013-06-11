@@ -32,6 +32,8 @@ o Caps and Bevels are now available for many more object types,
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
 o Bevel orientations are now consistent
+o Bevels from simple closed or periodic curves are now also guaranteed
+  to be closed or periodic, respectively
 o added C1 fillets based on global interpolation with end derivatives to
   the ConcatNC object (C1 mode is activated by setting the FTLength parameter
   to 0.0)
@@ -62,6 +64,8 @@ o improved the "zoom to object" view action to properly adjust the clipping
 o improved clone placement on open trajectory curves
 o added unclamping facility for NURBS curves and surfaces
 o added curve extension (to a point) modelling tool
+o NURBS curve/surface type detection is now faster and more robust
+o skinning curves that touch at their endpoints with custom knots now works
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
