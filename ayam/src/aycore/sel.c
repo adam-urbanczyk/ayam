@@ -100,7 +100,7 @@ ay_sel_selobtcmd(ClientData clientData, Tcl_Interp *interp,
   if(argc > 1)
     {
       /* work with listbox indices? */
-      if(!strcmp(argv[1],"-lb"))
+      if(!strcmp(argv[1], "-lb"))
 	{
 	  if(argc < 3)
 	    goto cleanup;

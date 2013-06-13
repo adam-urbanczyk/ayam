@@ -2056,7 +2056,7 @@ ay_wrib_cb(struct Togl *togl, int argc, char *argv[])
  *
  */
 int
-ay_wrib_tcmd(ClientData clientData, Tcl_Interp * interp,
+ay_wrib_tcmd(ClientData clientData, Tcl_Interp *interp,
 	     int argc, char *argv[])
 {
  int ay_status = AY_OK;

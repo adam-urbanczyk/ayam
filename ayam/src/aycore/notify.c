@@ -310,7 +310,7 @@ cleanup:
  *  \returns TCL_OK in any case.
  */
 int
-ay_notify_objecttcmd(ClientData clientData, Tcl_Interp * interp,
+ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 		     int argc, char *argv[])
 {
  int ay_status = AY_OK;
