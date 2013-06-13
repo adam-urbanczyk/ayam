@@ -7722,27 +7722,27 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(i+1 < argc)
 	{
-	  if(argv[i][0] == '-' && argv[i][0] == 'm')
+	  if(argv[i][0] == '-' && argv[i][1] == 'm')
 	    {
 	      /* -mode */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &mode);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(argv[i][0] == '-' && argv[i][0] == 'e')
+	  if(argv[i][0] == '-' && argv[i][1] == 'e')
 	    {
 	      /* -extend */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &extend);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(argv[i][0] == '-' && argv[i][0] == 'k')
+	  if(argv[i][0] == '-' && argv[i][1] == 'k')
 	    {
 	      /* -knottype */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	}
-      i += 2;
-    }
+	  i += 2;
+	} /* while */
+    } /* if */
 
   while(sel)
     {
@@ -7998,27 +7998,27 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(i+1 < argc)
 	{
-	  if(argv[i][0] == '-' && argv[i][0] == 'm')
+	  if(argv[i][0] == '-' && argv[i][1] == 'm')
 	    {
 	      /* -mode */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &mode);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(argv[i][0] == '-' && argv[i][0] == 'e')
+	  if(argv[i][0] == '-' && argv[i][1] == 'e')
 	    {
 	      /* -extend */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &extend);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	  if(argv[i][0] == '-' && argv[i][0] == 'k')
+	  if(argv[i][0] == '-' && argv[i][1] == 'k')
 	    {
 	      /* -knottype */
 	      tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
 	      AY_CHTCLERRRET(tcl_status, argv[0], interp);
 	    }
-	}
-      i += 2;
-    }
+	  i += 2;
+	} /* while */
+    } /* if */
 
   while(sel)
     {
