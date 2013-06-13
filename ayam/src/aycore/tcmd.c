@@ -89,7 +89,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
  *  \returns TCL_OK in any case.
  */
 int
-ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -201,7 +201,7 @@ ay_tcmd_showhideall(ay_object *o, int val)
  *  \returns TCL_OK in any case.
  */
 int
-ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
   /*
@@ -265,7 +265,7 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp * interp,
  *  get all version information from the current OpenGL/GLU and Ayam
  */
 int
-ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp * interp,
+ay_tcmd_getvertcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  char *glver = NULL, *glven = NULL, *glren = NULL, *gluver = NULL,

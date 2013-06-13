@@ -838,7 +838,7 @@ ay_read_scene(Tcl_Interp *interp, char *filename, int insert)
  *
  */
 int
-ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
+ay_read_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 		    int argc, char *argv[])
 {
  int ay_status = AY_OK;
@@ -875,7 +875,7 @@ ay_read_replacetcmd(ClientData clientData, Tcl_Interp * interp,
  *
  */
 int
-ay_read_inserttcmd(ClientData clientData, Tcl_Interp * interp,
+ay_read_inserttcmd(ClientData clientData, Tcl_Interp *interp,
 		   int argc, char *argv[])
 {
  int ay_status = AY_OK;

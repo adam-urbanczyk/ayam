@@ -542,12 +542,10 @@ ay_shader_free(ay_shader *shader)
 	    {
 	      free(arg->val.string);
 	    }
-
 	  free(arg);
 	  arg = argtmp;
-	}
-
-    }
+	} /* while */
+    } /* if */
 
   if(shader->name)
     free(shader->name);
@@ -775,7 +773,7 @@ ay_shader_wrib(ay_shader *shader, int type, RtLightHandle *light_handle)
  *  C -> Tcl
  */
 int
-ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
+ay_shader_gettcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  ay_object *o = NULL;
@@ -1094,7 +1092,7 @@ ay_shader_gettcmd(ClientData clientData, Tcl_Interp * interp,
  *  Tcl -> C
  */
 int
-ay_shader_settcmd(ClientData clientData, Tcl_Interp * interp,
+ay_shader_settcmd(ClientData clientData, Tcl_Interp *interp,
 		  int argc, char *argv[])
 {
  ay_object *o = NULL;
