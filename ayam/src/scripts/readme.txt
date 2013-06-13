@@ -1,4 +1,4 @@
-[readme.txt - 3. Apr 2011]
+[readme.txt - 13. Jun 2013]
 
 This directory contains a collection of various scripts for Ayam.
 
@@ -69,12 +69,14 @@ To make use of any of these, add the script code to a Script object
 of the designated type (see the script).
 
 addmyst.tcl - add chordal parameterized texture coordinates (as PV tag)
- to a NURBS patch object
+ to a NURBS patch object (type: Modify)
 bendcur.tcl - bend a curve according to the shape of a second curve
+ (type: Modify)
 conscir.tcl - create a circular B-Spline whose control points are
- confined to a radial configuration
-crtlinegui.tcl - create line, with GUI
-crtspiral.tcl - create spirals
-crtspiralgui.tcl - create spirals with GUI
+ confined to a radial configuration (type: Run)
+crtlinegui.tcl - create line, with GUI (type: Create)
+crtspiral.tcl - create spirals (type: Create)
+crtspiralgui.tcl - create spirals with GUI (type: Create)
 polyhedron.js - create polyhedrons from Conway notation
-                (needs jsinterp plugin!)
+                (needs jsinterp plugin!) (type: Create)
+tcone.tcl - truncated cone primitive with GUI (type: Create)
