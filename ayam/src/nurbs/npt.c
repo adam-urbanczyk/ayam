@@ -7758,7 +7758,31 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      if(extend)
 		{
+		  if(!(newcontrolv = malloc((np->width+1) *
+					    np->height * stride *
+					    sizeof(double))))
+		    {
+		      ay_error(AY_EOMEM, argv[0], NULL);
+		      return TCL_OK;
+		    }
 
+		  memcpy(newcontrolv, np->controlv,
+			 np->width * np->height * stride *
+			 sizeof(double));
+
+		  free(np->controlv);
+		  np->controlv = newcontrolv;
+
+		  np->width++;
+		}
+	      if(knots > -1 || extend)
+		{
+		  tknotv = np->vknotv;
+		  np->vknotv = NULL;
+		  np->uknot_type = knots;
+		  ay_status = ay_knots_createnp(np);
+		  free(np->vknotv);
+		  np->vknotv = tknotv;
 		}
 	    }
 	  else
@@ -7799,7 +7823,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 			 np->uknotv = newknotv;
 		  */
 		}
-	      if(knots > -1)
+	      if(knots > -1 || extend)
 		{
 		  tknotv = np->vknotv;
 		  np->vknotv = NULL;
@@ -8057,7 +8081,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  np->height++;
 		}
 
-	      if(knots >- 1)
+	      if(knots >- 1 || extend)
 		{
 		  tknotv = np->uknotv;
 		  np->uknotv = NULL;
@@ -8094,7 +8118,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 		  np->height += (np->vorder-1);
 		}
 
-	      if(knots > -1)
+	      if(knots > -1 || extend)
 		{
 		  tknotv = np->uknotv;
 		  np->uknotv = NULL;
