@@ -1,4 +1,4 @@
-[Ayam-codingstyle.txt, 8. Jan 2008]
+[Ayam-codingstyle.txt, 15. Jun 2013]
 This file contains some guidelines about how C code in the Ayam project
 should be formatted and commented.
 
@@ -26,6 +26,7 @@ o function naming convention: ay_<modulename>_getblurb<type>
 o all functions end with "} /* <function_name> */",
 o long if/while/for/switch-statements end with "} /* if */", "} /* while */",
 o no use of C++ comments,
+o functions and arguments are documented for Doxygen in \-style (not @)
 o no trailing white space at the end of a line,
 o no DOS line endings (not CRLF but just LF),
 o no ISO-C (C99) extensions,
@@ -36,16 +37,14 @@ o try to follow the GNU coding standards:
 Example:
 
 -snip-
-/*
- * ay_ayam_init:
- *   initialize the application by creating the root object, filling
- *   callback tables and initializing vital global variables
- *  In:
- *   interp: the Tcl interpreter
- *  Out:
- *   returns AY_OK on success, error code on failure
- *  Side effects:
- *   writes to the global variables ay_interp, ay_root
+/** ay_ayam_init:
+ *  initialize the application by creating the root object, filling
+ *  callback tables and initializing vital global variables (ay_interp,
+ *  ay_root)
+ *
+ *  \param[in] interp the Tcl interpreter
+ *
+ *  \returns AY_OK on success, error code on failure
  */
 int
 ay_ayam_init(Tcl_Interp *interp)
