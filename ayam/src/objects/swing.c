@@ -1084,14 +1084,10 @@ ay_swing_notifycb(ay_object *o)
 
   /* swing */
   phase = 1;
-  if(!(npatch = calloc(1, sizeof(ay_object))))
-    {
-      ay_status =  AY_EOMEM;
-      goto cleanup;
-    }
+  ay_status = ay_npt_createnpatchobject(&npatch);
 
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
+  if(ay_status)
+    goto cleanup;
 
   ay_status = ay_npt_swing(cs, tr,
 			  (ay_nurbpatch_object **)(void*)&(npatch->refine));

@@ -713,14 +713,10 @@ ay_gordon_notifycb(ay_object *o)
     }
 
   /* create Gordon surface */
-  if(!(npatch = calloc(1, sizeof(ay_object))))
+  if((ay_status = ay_npt_createnpatchobject(&npatch)))
     {
-      ay_status =  AY_EOMEM;
       goto cleanup;
     }
-
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
 
   ay_status = ay_npt_gordon(hcurves, vcurves, inpatch,
 			    gordon->uorder, gordon->vorder,
