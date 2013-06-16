@@ -606,14 +606,19 @@ ay_offnp_notifycb(ay_object *o)
     } /* if */
 
   /* create new object */
-  ay_npt_createnpatchobject(&newo);
+  ay_status = ay_npt_createnpatchobject(&newo);
+  if(ay_status)
+    {
+      goto cleanup;
+    }
 
-  /* create the offset */
+  /* create the offset surface */
   ay_status = ay_npt_offset(npatch, offnp->mode, offnp->offset,
 			    (ay_nurbpatch_object **)(void*)&(newo->refine));
-
   if(ay_status || !newo->refine)
-    goto cleanup;
+    {
+      goto cleanup;
+    }
 
   /* link new object to offnp object */
   offnp->npatch = newo;

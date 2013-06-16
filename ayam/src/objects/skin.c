@@ -591,14 +591,11 @@ ay_skin_notifycb(ay_object *o)
     }
 
   /* do the skin */
-  if(!(newo = calloc(1, sizeof(ay_object))))
+  ay_status = ay_npt_createnpatchobject(&newo);
+  if(ay_status)
     {
-      ay_status = AY_EOMEM;
       goto cleanup;
     }
-
-  ay_object_defaults(newo);
-  newo->type = AY_IDNPATCH;
 
   c = all_curves;
   while(c)

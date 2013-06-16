@@ -545,16 +545,10 @@ ay_bevel_notifycb(ay_object *o)
     }
 
   /* create bevel */
-  if(!(npatch = calloc(1, sizeof(ay_object))))
+  if((ay_status = ay_npt_createnpatchobject(&npatch)))
     {
-      ay_status = AY_EOMEM;
       goto cleanup;
     }
-
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
-  npatch->parent = AY_TRUE;
-  npatch->inherit_trafos = AY_FALSE;
 
   if(!bcurve)
     {

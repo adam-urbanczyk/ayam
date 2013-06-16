@@ -1160,14 +1160,10 @@ ay_revolve_notifycb(ay_object *o)
 
   /* revolve */
   phase = 1;
-  if(!(npatch = calloc(1, sizeof(ay_object))))
-    {
-      ay_status = AY_EOMEM;
-      goto cleanup;
-    }
+  ay_status = ay_npt_createnpatchobject(&npatch);
 
-  ay_object_defaults(npatch);
-  npatch->type = AY_IDNPATCH;
+  if(ay_status)
+    goto cleanup;
 
   ay_status = ay_npt_revolve(curve, revolve->thetamax, revolve->sections,
 			     revolve->order,
