@@ -161,9 +161,10 @@ ay_tcmd_reverttcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_tcmd_reverttcmd */
 
 
-/* ay_tcmd_showhideall:
+/** ay_tcmd_showhideall:
  *  _recursively_ set the hidden flag of all children of object
- *  <o> and <o> to <val> (show/hide the objects)
+ *  \a o and \a o to \a val (showing/hiding the objects)
+ *  if \a val is -1, the hide state of the objects is toggled
  */
 void
 ay_tcmd_showhideall(ay_object *o, int val)
@@ -192,7 +193,7 @@ ay_tcmd_showhideall(ay_object *o, int val)
 } /* ay_tcmd_showhideall */
 
 
-/* ay_tcmd_showtcmd:
+/** ay_tcmd_showtcmd:
  *  show/hide selected (or all) objects
  *  Implements the \a showOb scripting interface command.
  *  Implements the \a hideOb scripting interface command.
@@ -207,7 +208,6 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
   /*
  int ay_status = AY_OK;
   */
- int toggle = AY_FALSE;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
  int i = 1, all = AY_FALSE, val = AY_TRUE;
@@ -219,13 +219,14 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       while(i < argc)
 	{
-	  if(!strcmp(argv[i], "-toggle"))
+	  /* -toggle */
+	  if(argv[i][0] == '-' && argv[i][1] == 't')
 	    {
-	      toggle = AY_TRUE;
 	      val = -1;
 	    }
 
-	  if(!strcmp(argv[i], "-all"))
+	  /* -all */
+	  if(argv[i][0] == '-' && argv[i][1] == 'a')
 	    {
 	      all = AY_TRUE;
 	    }
