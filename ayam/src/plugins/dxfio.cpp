@@ -799,8 +799,6 @@ dxfio_getpolyline(const class dimeState *state,
 		  void *clientdata, ay_object *newo)
 {
  int ay_status = AY_OK;
-
-
  int len = 0, i = 0, a = 0, stride = 4;
  double *newcv = NULL;
  dimeVertex *vert = NULL;
@@ -810,6 +808,11 @@ dxfio_getpolyline(const class dimeState *state,
 
   if(len == 0)
     return AY_ERROR;
+
+  if(polyline->getFlags() & dimePolyline::CLOSED)
+    {
+      len++;
+    }
 
   if(!(newcv = (double*)calloc(len*stride, sizeof(double))))
     { free(newo); return AY_EOMEM; }
@@ -832,10 +835,15 @@ dxfio_getpolyline(const class dimeState *state,
 	      cv = polyline->getElevation();
 	      newcv[a+2] = cv[2];
 	    }
-	} // if
+	} // if vert
       newcv[a+3] = 1.0;
       a += stride;
     } // for
+
+  if(polyline->getFlags() & dimePolyline::CLOSED)
+    {
+      memcpy(&(newcv[(len-2)*stride]), newcv, stride*sizeof(double));
+    }
 
   ay_nct_create(2, len, AY_KTNURB, newcv, NULL,
 		(ay_nurbcurve_object**)(void*)&(newo->refine));
