@@ -2217,7 +2217,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 	  if(cb)
 	    {
 	      ay_status = cb(v);
-	      if(ay_status)
+	      if((ay_status != AY_OK) && (ay_status != AY_EDONOTLINK))
 		{
 		  ay_error(AY_ERROR, fname, "Drop callback failed!");
 		}

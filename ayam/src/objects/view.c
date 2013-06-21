@@ -1395,6 +1395,7 @@ ay_view_dropcb(ay_object *o)
  ay_view_object *view = NULL;
  ay_camera_object *camera = NULL;
  ay_light_object *light = NULL;
+ int has_from = AY_FALSE, has_to = AY_FALSE;
  int width, height;
  double aspect;
  double from[3], to[3], mr[16];
@@ -1421,11 +1422,14 @@ ay_view_dropcb(ay_object *o)
 	{
 	case AY_IDLIGHT:
 	  light = (ay_light_object *)s->refine;
-	  if(light->type == AY_LITSPOT)
+
+	  ay_light_getfromto(light, from, to, &has_from, &has_to);
+
+	  if(has_from && has_to)
 	    {
 	      /* undo save */
-	      /* no need to fake a selection here, because all view
-		 objects are saved by each undo operation anyway */
+	      /* no need to fake a selection for "undo save", because all view
+		 objects are saved by each undo save operation anyway */
 	      argv[1] = arg1;
 	      argv[2] = arg2;
 	      (void)ay_undo_undotcmd(NULL, ay_interp, 3, argv);
@@ -1463,17 +1467,20 @@ ay_view_dropcb(ay_object *o)
 	      view->up[1] = 1.0;
 	      view->up[2] = 0.0;
 
-	      if(width < height)
+	      if(light->type == AY_LITSPOT)
 		{
-		  aspect = ((double)width) / ((double)height);
-		  view->zoom = fabs(tan(light->cone_angle)/aspect);
-		}
-	      else
-		{
-		  view->zoom = fabs(tan(light->cone_angle));
-		}
+		  if(width < height)
+		    {
+		      aspect = ((double)width) / ((double)height);
+		      view->zoom = fabs(tan(light->cone_angle)/aspect);
+		    }
+		  else
+		    {
+		      view->zoom = fabs(tan(light->cone_angle));
+		    }
 
-	      /* XXXX multiply zoom to accomodate parallel view types? */
+		  /* XXXX multiply zoom to accomodate parallel view types? */
+		}
 
 	      ay_toglcb_reshape(view->togl);
 	      ay_toglcb_display(view->togl);
@@ -1485,8 +1492,8 @@ ay_view_dropcb(ay_object *o)
 	  camera = (ay_camera_object *)s->refine;
 
 	  /* undo save */
-	  /* no need to fake a selection here, because all view
-	     objects are saved by each undo operation anyway */
+	  /* no need to fake a selection "undo save", because all view
+	     objects are saved by each undo save operation anyway */
 	  argv[1] = arg1;
 	  argv[2] = arg2;
 	  (void)ay_undo_undotcmd(NULL, ay_interp, 3, argv);
