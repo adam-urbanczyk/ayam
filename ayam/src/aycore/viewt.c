@@ -643,7 +643,7 @@ ay_viewt_align(struct Togl *togl, int argc, char *argv[])
    }
 
   /* get parent objects transformation */
-  glMatrixMode (GL_MODELVIEW);
+  glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
    glLoadIdentity();
    if(ay_currentlevel->object != ay_root)

@@ -410,7 +410,7 @@ ay_view_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ay_toglcb_display(view->togl);
 
-  return AY_OK;
+ return AY_OK;
 } /* ay_view_setpropcb */
 
 
@@ -1378,7 +1378,7 @@ cleanup:
   if(p)
     ay_object_delete(p);
 
-  return ay_status;
+ return ay_status;
 } /* ay_view_notifycb */
 
 
@@ -1439,7 +1439,7 @@ ay_view_dropcb(ay_object *o)
 	      memcpy(from, light->tfrom, 3*sizeof(double));
 	      memcpy(to, light->tto, 3*sizeof(double));
 
-	      glMatrixMode (GL_MODELVIEW);
+	      glMatrixMode(GL_MODELVIEW);
 	      glPushMatrix();
 	       glLoadIdentity();
 
@@ -1492,7 +1492,7 @@ ay_view_dropcb(ay_object *o)
 	  camera = (ay_camera_object *)s->refine;
 
 	  /* undo save */
-	  /* no need to fake a selection "undo save", because all view
+	  /* no need to fake a selection for "undo save", because all view
 	     objects are saved by each undo save operation anyway */
 	  argv[1] = arg1;
 	  argv[2] = arg2;
