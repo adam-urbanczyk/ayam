@@ -18,8 +18,6 @@ static char *ay_light_name = "Light";
 
 /* prototypes of functions local to this module */
 
-void ay_light_getfromto(ay_light_object *light, double *from, double *to,
-			int *has_from, int *has_to);
 /* functions: */
 
 /* ay_light_createcb:

@@ -84,6 +84,9 @@ int ay_ipatch_init(Tcl_Interp *interp);
 int ay_level_init(Tcl_Interp *interp);
 
 /* light.c */
+void ay_light_getfromto(ay_light_object *light, double *from, double *to,
+			int *has_from, int *has_to);
+
 int ay_light_init(Tcl_Interp *interp);
 
 /* material.c */
