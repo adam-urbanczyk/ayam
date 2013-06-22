@@ -575,7 +575,6 @@ proc tgui_open { } {
 	tguiCmd ca; focus .; destroy .tguiw;
 	tgui_addtag;
 	uCL cl {1 1}; plb_update;
-	rV;
     }
     # button
 
