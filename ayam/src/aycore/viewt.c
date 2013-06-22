@@ -2211,7 +2211,7 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 	      break;
 	  v = v->next;
 	}
-      if(v)
+      if(v && (v->type == AY_IDVIEW) && (v->refine == view))
 	{
 	  /* call drop callback */
 	  if(cb)
@@ -2223,11 +2223,15 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 		}
 	    }
 	}
+      else
+	{
+	  ay_error(AY_ERROR, fname, "Could not find view object!");
+	}
       break;
     default:
       ay_viewt_zoomtoobj(togl, argc, argv);
       break;
-    }
+    } /* switch */
 
  return TCL_OK;
 } /* ay_viewt_droptcb */
