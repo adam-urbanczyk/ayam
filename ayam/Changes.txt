@@ -1,4 +1,4 @@
-[11. Jun 2013] CVS-Head:
+[22. Jun 2013] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -66,6 +66,7 @@ o added unclamping facility for NURBS curves and surfaces
 o added curve extension (to a point) modelling tool
 o NURBS curve/surface type detection is now faster and more robust
 o skinning curves that touch at their endpoints with custom knots now works
+o improved closing of surfaces
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -146,6 +147,7 @@ o X3D export of NURBS curves of order 2 now creates Polyline primitives
 o X3D import of viewpoints now creates correct camera attributes
 o improved temporary and archive RIB file names for direct rendering with Gelato
 o Rhino 3DM export of PoMesh objects now supports face normals and colors
+o improved import of closed polylines from DXF
 
 Plugins:
 o added plugin "sfcurve" that creates superformula curves
