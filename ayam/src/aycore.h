@@ -1660,6 +1660,10 @@ int ay_viewt_updatemark(struct Togl *togl, int local);
  */
 int ay_viewt_updateglobalmark(struct Togl *togl);
 
+/** get the global mark
+ */
+void ay_viewt_getglobalmark(double **m);
+
 /** copy from/to/up from the selected camera object to view togl
  */
 int ay_viewt_fromcamtcb(struct Togl *togl, int argc, char *argv[]);
