@@ -1922,6 +1922,30 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 } /* ay_viewt_updateglobalmark */
 
 
+/* ay_viewt_getglobalmark:
+ *  get the global mark
+ */
+void
+ay_viewt_getglobalmark(double **m)
+{
+ ay_object *o = ay_root->down;
+ ay_view_object *v = NULL;
+
+  while(o && o->next)
+    {
+      if(o->type == AY_IDVIEW)
+	{
+	  v = (ay_view_object *)o->refine;
+	  *m = v->markworld;
+	  break;
+	}
+      o = o->next;
+    } /* while */
+
+ return;
+} /* ay_viewt_getglobalmark */
+
+
 /* ay_viewt_fromcamtcb:
  *  copy from/to/up from the selected camera object to view <togl>
  */
