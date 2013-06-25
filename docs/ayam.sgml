@@ -1100,7 +1100,7 @@ hierarchy.<footnote>Since 1.13.</footnote>
 
 The label of the entry will be changed appropriately
 when a tool was started, e.g.~to <tt/"Last (Revert U)"/ after the
-<tt/"Tools/Surface/Revert U"/-tool was used.
+<tt>"Tools/Surface/Revert U"</tt> menu entry/tool was used.
 The corresponding keyboard shortcut is <tt/&lt;Ctrl+t&gt;/. To repeat
 the last used tool with the same set of parameters (and without opening
 the parameter dialog window again) the shortcut <tt/&lt;Ctrl+T&gt;/ can
@@ -1116,11 +1116,11 @@ and modelling tools, that are explained in depth in section
 <item><tt/"Merge"/: merges all currently selected PolyMesh objects into
 a single PolyMesh object, without checking for doubly used points,
 loops, or faces. The currently selected PolyMesh objects will not
-be changed by this tool. But you may let the merge-tool delete them
-immediately after the merging operation, by enabling the
-<tt/"RemoveMerged"/-option.
+be changed by this tool. But the merge-tool can delete them
+immediately after the merging operation, when the<tt/"RemoveMerged"/ option
+is enabled.
 If the <tt/"OptimizeNew"/-option is enabled, the <tt/"Optimize"/-tool
-(see below) will be started after the merge operation with the
+(see below) will be started right after the merge operation with the
 newly created merged object as argument.
 
 <item><tt/"Split"/: splits the faces from the selected PolyMesh objects
@@ -1157,9 +1157,9 @@ Vertices of hole loops will just get the respective face normal.
 <p><p>
 Already existing vertex normals will be destroyed.
 <p>
-If face normals already exist, they will be used, otherwise, new face
-normals will be generated using the same algorithm as implemented in the
-<tt/"Gen. Face Normals"/ tool above.
+If face normals exist, they will be used, otherwise, new face
+normals will be generated automatically using the same algorithm
+as implemented in the <tt/"Gen. Face Normals"/ tool above.
 </itemize>
 
 <item><tt/"Points"/: sub-menu for tools that work on points:
@@ -1969,6 +1969,9 @@ for example
 <tt>hasChild</tt>
 </tscreen>
 finds all objects that have children.
+<tscreen>
+<tt>proc findNT {n t} {getName name;getType type; return [expr {$type == $t && $name == $n}]}</tt>
+</tscreen>
 </descrip>
 
 The default value menu of the <tt/"Expression"/ entry is pre-seeded with
@@ -10681,10 +10684,11 @@ see the script (code), just a clean parameter GUI.
 <bf/Description/
 <p>
 The tag type <tt/"BNS"/ (before notify script) may be used to add scripts
-to an object, that will be run <em/before/ the notification callback of
-that object completed.
-The notification, in turn, will be executed because e.g.~one of the children
-of the object changed.
+to an object, that will be run <em/before/ the notification of
+that object starts.
+A notification, in turn, will be executed because e.g.~one of the children
+of the object changed (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 <p>
 <bf/Example/
 <p>
@@ -10703,9 +10707,9 @@ onto the network, or confuse the application state, see also section
 Consequently, the warning dialog that appeared when files with
 BNS tags were loaded is also gone.
 <p>
-You can still re-enable the old functionality by recompiling Ayam.
+One can still re-enable the original functionality by recompiling Ayam.
 If you do so, for security reasons, if scene files containing BNS
-tags are loaded, Ayam will again raise the warning offering to
+tags are loaded, Ayam will again raise a warning dialog, offering to
 temporarily disable all such tags that will be read.
 To disable a BNS tag, Ayam simply changes its type from <tt/"BNS"/
 to <tt/"DBNS"/ (disabled before notify script).
@@ -10719,10 +10723,11 @@ or by using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 <bf/Description/
 <p>
 The tag type <tt/"ANS"/ (after notify script) may be used to add scripts
-to an object, that will be run <em/after/ the notification callback of
+to an object, that will be run <em/after/ the notification of
 that object completed.
 The notification, in turn, will be executed because e.g.~one of the children
-of the object changed.
+of the object changed (see also section
+<ref id="toolobj" name="The Modelling Concept Tool-Objects">).
 <p>
 <bf/Example/
 <p>
@@ -10741,9 +10746,9 @@ onto the network, or confuse the application state, see also section
 Consequently, the warning dialog that appeared when files with
 ANS tags were loaded is also gone.
 <p>
-You can still re-enable the old functionality by recompiling Ayam.
+One can still re-enable the original functionality by recompiling Ayam.
 If you do so, for security reasons, if scene files containing ANS
-tags are loaded, Ayam will again raise the warning offering to
+tags are loaded, Ayam will again raise a warning dialog, offering to
 temporarily disable all such tags that will be read.
 To disable a ANS tag, Ayam simply changes its type from <tt/"ANS"/
 to <tt/"DANS"/ (disabled before notify script).
@@ -11272,8 +11277,7 @@ scripting interface command <ref id="scelevatenc" name="elevateNC">.
 <tag/Arguments/ The extend tool takes a number of NURBS curves from
 the selection and additionally requests a point in space.
 <tag/Operation/ The selected NURBS curves will be extended to the
-specified point in space without changing the shape of the curve
-all too much.
+specified point in space without changing the shape of the curve.
 <p>
 If the knot vector of the curve is not clamped at the end, it
 will be clamped automatically. The knot type of the curve can be
@@ -11281,6 +11285,11 @@ changed to custom. A new control point will be added and the position
 of old control points may be changed in the progress.
 
 <tag/Notes/
+Due to the constraints that only one control point will be added
+to the curve and the current shape must be maintained, the new curve
+may form unusual/unwanted big arcs if the new point deviates too
+much from the tangent in the endpoint of the original curve.
+<p>
 See also the documentation of the corresponding
 scripting interface command <ref id="scextendnc" name="extendNC">.
 </descrip>
@@ -13647,10 +13656,11 @@ See also section <ref id="unclat" name="Unclamp Tool">.
 <label id="scextendnc">
 extendNC &ndash; extend NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"extendNC (x y z (w)|-vn varname)"/
+ <item>Synopsis: <tt/"extendNC (x y z (w)|-vn varname|-m)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Extend the selected NURBS curves to a given
-point.
+point or to the mark without changing the current shape of
+the curve.
 See also section <ref id="extendt" name="Extend Tool">.
 </itemize>
 
@@ -15237,6 +15247,8 @@ button $f.b2 -width 5 -text "Expl." -command { explMP; rV; }
 pack $f.b1 $f.b2 -side left -fill x -expand yes
 </code>
 
+<#if out=latex><x/newpage/</#if>
+
 <sect1>Helper Scripts
 <p>
 This sections contains the documentation of some helper scripts
@@ -15422,7 +15434,7 @@ shortcut <tt/&lt;F12&gt;/ can be used.
 
 <sect2>Revert Cursor Key Behavior<label id="rctcl">
 <p>
-The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/cursor) may be
+The script <tt>"rc.tcl"</tt> (for <bf/r/evert <bf/c/ursor) may be
 used to get more useful cursor key behavior in primary modelling
 views (parallel views).
 <p>
@@ -15449,7 +15461,7 @@ In the most simple form, bgconvert may be used from a Unix command line
 The above command would load the X3D file <tt>"infile.x3d"</tt>
 into Ayam and export the scene as DXF file to <tt>"outfile.dxf"</tt>.
 <p>
-For a successfull conversion Ayam has to run and the plugins required
+For a successful conversion Ayam has to run and the plugins required
 for the import and export processes need to be available and properly
 configured (check the <tt>"Plugins"</tt> preference setting).
 The plugins necessary for the conversion will be loaded automatically.
@@ -15886,6 +15898,8 @@ by an <tt/"if"/ statement.
 Following the GUI, a sphere object is created and parameterized
 according to the data in the property GUI, which is used as
 radius, zmin, and zmax value.
+
+<#if out=latex><x/newpage/</#if>
 
 <sect1>Lua Scripting Interface<label id="luainterp">
 <p>
