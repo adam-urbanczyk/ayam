@@ -321,7 +321,7 @@ proc shortcut_main { w } {
     bind $w <[repctrl $aymainshortcuts(SProp99)]> "plb_showprop 9"
 
     bind $w <[repctrl $aymainshortcuts(ContextMenu)]> \
-	"if { \$ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)}"
+	"if { \$ay(lb) == 1 } {olb_openPopup \$ay(olb)} else {tree_openPopup \$ay(tree)};break"
 
     # on Aqua, <Command-q> quits the application
     if { $AYWITHAQUA == 1 } {
