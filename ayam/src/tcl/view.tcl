@@ -674,16 +674,16 @@ proc viewBindMenus { w } {
     # arrange for our bindings to override the all-tag bindings
     bindtags $w [list $w all Frame]
     # bind View-menu
-    bind $w <$aymainshortcuts(MenuMod)-v> "viewPostMenu %W.fMenu.v.m"
+    bind $w <$aymainshortcuts(MenuMod)-v> "viewPostMenu %W.fMenu.v.m;break"
     $w.fMenu.v conf -underline 0
     # bind Type-menu
-    bind $w <$aymainshortcuts(MenuMod)-y> "viewPostMenu %W.fMenu.t.m"
+    bind $w <$aymainshortcuts(MenuMod)-y> "viewPostMenu %W.fMenu.t.m;break"
     $w.fMenu.t conf -underline 1
     # bind Configure-menu
-    bind $w <$aymainshortcuts(MenuMod)-o> "viewPostMenu %W.fMenu.c.m"
+    bind $w <$aymainshortcuts(MenuMod)-o> "viewPostMenu %W.fMenu.c.m;break"
     $w.fMenu.c conf -underline 1
     # bind Grid-menu
-    bind $w <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m"
+    bind $w <$aymainshortcuts(MenuMod)-g> "viewPostMenu %W.fMenu.g.m;break"
 }
 # viewBindMenus
 
