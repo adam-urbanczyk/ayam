@@ -106,25 +106,26 @@ ay_ns_restrictall(ClientData clientData,
 int
 ay_ns_execute(ay_object *o, char *script)
 {
+ static int lock = 0;
  int ay_status = AY_OK, result = TCL_OK;
  char fname[] = "ns_execute";
- static int sema = 0;
- ay_list_object *l = NULL, *old_sel = NULL;
+ ay_list_object *l = NULL, *old_selection = NULL;
+ ay_list_object *old_currentlevel;
  ClientData old_restrictcd;
  Tcl_Interp *interp = NULL;
 
   if(!o || !script)
     return AY_ENULL;
 
-  /* this semaphor protects ourselves from running in an endless
+  /* this lock protects ourselves from running in an endless
      recursive loop should the script modify our child objects */
-  if(sema)
+  if(lock)
     {
       return AY_OK;
     }
   else
     {
-      sema = 1;
+      lock = 1;
     } /* if */
 
 #ifdef AYNOSAFEINTERP
@@ -133,7 +134,7 @@ ay_ns_execute(ay_object *o, char *script)
   interp = ay_safeinterp;
 #endif
 
-  old_sel = ay_selection;
+  old_selection = ay_selection;
   ay_selection = NULL;
 
   ay_status = ay_sel_add(o, AY_FALSE);
@@ -141,6 +142,12 @@ ay_ns_execute(ay_object *o, char *script)
     {
       goto cleanup;
     }
+
+  old_currentlevel = ay_currentlevel;
+  ay_currentlevel = NULL;
+  ay_status = ay_clevel_add(ay_root);
+  ay_status = ay_clevel_add(o);
+  ay_status = ay_clevel_add(o->down);
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
   result = Tcl_GlobalEval(interp, script);
@@ -151,7 +158,13 @@ ay_ns_execute(ay_object *o, char *script)
       ay_error(AY_ERROR, fname, "Script failed!");
     }
 
-  /* restore old selection */
+cleanup:
+  /* restore current level */
+  ay_clevel_delall();
+  free(ay_currentlevel);
+  ay_currentlevel = old_currentlevel;
+
+  /* restore selection */
   while(ay_selection)
     {
       l = ay_selection->next;
@@ -163,18 +176,16 @@ ay_ns_execute(ay_object *o, char *script)
       ay_selection = l;
     } /* while */
 
-cleanup:
+  ay_selection = old_selection;
 
-  ay_selection = old_sel;
-
-  sema = 0;
+  lock = 0;
 
  return AY_OK;
 } /* ay_ns_execute */
 
 
 /* ay_ns_init:
- *  initialize ns module by registering the NS tag type
+ *  initialize ns module by registering the ANS/BNS/DANS/DBNS tag types
  */
 void
 ay_ns_init(Tcl_Interp *interp)
