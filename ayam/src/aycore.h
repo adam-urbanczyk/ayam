@@ -1658,7 +1658,7 @@ int ay_viewt_updatemark(struct Togl *togl, int local);
 
 /** manage the global mark after change in view togl
  */
-int ay_viewt_updateglobalmark(struct Togl *togl);
+void ay_viewt_updateglobalmark(struct Togl *togl);
 
 /** get the global mark
  */

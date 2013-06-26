@@ -37,7 +37,7 @@ static char *ay_nc_tagname = "NC";
  *  objects of type type_id
  */
 int
-ay_notify_register(ay_notifycb  *notcb, unsigned int type_id)
+ay_notify_register(ay_notifycb *notcb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
@@ -302,7 +302,7 @@ cleanup:
 } /* ay_notify_parentof */
 
 
-/* ay_notify_objecttcmd:
+/** ay_notify_objecttcmd:
  *  Enforce notification of selected objects or all objects
  *  in the scene (if selection is empty).
  *  Implements the \a notifyOb scripting interface command.
