@@ -1888,11 +1888,11 @@ ay_viewt_updatemark(struct Togl *togl, int local)
 } /* ay_viewt_updatemark */
 
 
-/* ay_viewt_updateglobalmark:
- *  manage the global mark after change in view togl
- *  (copy the mark from the view <togl> to all other views)
+/** ay_viewt_updateglobalmark:
+ *  manage the global mark after change in view \a togl
+ *  (copy the mark from the view to all other views)
  */
-int
+void
 ay_viewt_updateglobalmark(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -1918,12 +1918,14 @@ ay_viewt_updateglobalmark(struct Togl *togl)
 
   Togl_MakeCurrent(togl);
 
- return AY_OK;
+ return;
 } /* ay_viewt_updateglobalmark */
 
 
-/* ay_viewt_getglobalmark:
+/** ay_viewt_getglobalmark:
  *  get the global mark
+ *
+ * \param[in,out] m pointer where to store the address of the mark
  */
 void
 ay_viewt_getglobalmark(double **m)
