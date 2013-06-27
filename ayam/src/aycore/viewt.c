@@ -1089,6 +1089,10 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
       /* XXXX this code assumes, every argument is atleast 2 chars long! */
       switch(argv[i][1])
 	{
+	case 'a':
+	  /*if(!strcmp(argv[i], "-action"))*/
+	  Tcl_GetInt(interp, argv[i+1], &(view->action_state));
+	  break;
 	case 'b':
 	  /*if(!strcmp(argv[i], "-bgimage"))*/
 	    {

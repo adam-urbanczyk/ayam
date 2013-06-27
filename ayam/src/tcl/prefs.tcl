@@ -212,6 +212,14 @@ proc prefs_open {} {
     addMenuB $fw ayprefse NPDisplayMode [ms ayprefse_NPDisplayMode] $l
     set l [lrange $ay(ncdisplaymodes) 1 end]
     addMenuB $fw ayprefse NCDisplayMode [ms ayprefse_NCDisplayMode] $l
+
+    addParamB $fw ayprefse ToleranceA [ms ayprefse_ToleranceA]\
+	    { 5 10 25 50 75 90 }
+    set l [lrange $ay(npdisplaymodes) 1 end]
+    addMenuB $fw ayprefse NPDisplayModeA [ms ayprefse_NPDisplayModeA] $l
+    set l [lrange $ay(ncdisplaymodes) 1 end]
+    addMenuB $fw ayprefse NCDisplayModeA [ms ayprefse_NCDisplayModeA] $l
+
     addCheckB $fw ayprefse UseMatColor [ms ayprefse_UseMatColor]
     addColorB $fw ayprefse Background [ms ayprefse_Background]
     addColorB $fw ayprefse Object [ms ayprefse_Object]

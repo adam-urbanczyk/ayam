@@ -72,12 +72,24 @@ ay_prefs_gettcmd(ClientData clientData, Tcl_Interp *interp,
   to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton, "ToleranceA", -1);
+  to = Tcl_NewDoubleObj(ay_prefs.glu_sampling_tolerance_a);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton, "NPDisplayMode", -1);
   to = Tcl_NewIntObj(ay_prefs.np_display_mode);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "NCDisplayMode", -1);
   to = Tcl_NewIntObj(ay_prefs.nc_display_mode);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "NPDisplayModeA", -1);
+  to = Tcl_NewIntObj(ay_prefs.np_display_mode_a);
+  Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+
+  Tcl_SetStringObj(ton, "NCDisplayModeA", -1);
+  to = Tcl_NewIntObj(ay_prefs.nc_display_mode_a);
   Tcl_ObjSetVar2(interp, toa, ton, to, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton, "UseMatColor", -1);
@@ -430,6 +442,17 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
     }
   ay_prefs.stess_qf = qf;
 
+  Tcl_SetStringObj(ton, "ToleranceA", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp, to, &ay_prefs.glu_sampling_tolerance_a);
+
+  qf = ay_stess_GetQF(ay_prefs.glu_sampling_tolerance_a);
+
+  if(qf < 1)
+    {
+      qf = 1;
+    }
+  ay_prefs.stess_qf_a = qf;
 
   Tcl_SetStringObj(ton, "NPDisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -438,6 +461,14 @@ ay_prefs_settcmd(ClientData clientData, Tcl_Interp *interp,
   Tcl_SetStringObj(ton, "NCDisplayMode", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &ay_prefs.nc_display_mode);
+
+  Tcl_SetStringObj(ton, "NPDisplayModeA", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.np_display_mode_a);
+
+  Tcl_SetStringObj(ton, "NCDisplayModeA", -1);
+  to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp, to, &ay_prefs.nc_display_mode_a);
 
   Tcl_SetStringObj(ton, "UseMatColor", -1);
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
