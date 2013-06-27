@@ -539,7 +539,7 @@ ay_draw_viewdl(struct Togl *togl, int draw_offset)
 	{
 	  ay_draw_grid(togl);
 	}
-
+#if 0
       if(view->display_list != 0)
 	{
 	  if(view->action_state == 1)
@@ -551,6 +551,7 @@ ay_draw_viewdl(struct Togl *togl, int draw_offset)
 		return AY_OK;
 	      }
 	}
+#endif
     }
 
   /* draw bounds of parametric space of current NURBS patch */
@@ -800,7 +801,7 @@ ay_draw_viewdl(struct Togl *togl, int draw_offset)
       glDisable(GL_BLEND);
       glDisable(GL_LINE_SMOOTH);
     }
-
+#if 0
   if(view->display_list != 0)
     {
       if(view->action_state == 1)
@@ -809,7 +810,7 @@ ay_draw_viewdl(struct Togl *togl, int draw_offset)
 	  glCallList(view->display_list);
 	}
     }
-
+#endif
  return AY_OK;
 } /* ay_draw_viewdl */
 

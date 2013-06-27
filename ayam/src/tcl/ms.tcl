@@ -122,6 +122,12 @@ ms_set en ayprefse_NPDisplayMode "Determine how surfaces should be drawn\
 \nSurface objects may override this setting locally."
 ms_set en ayprefse_NCDisplayMode "Determine how curves should be drawn\
 \nCurve objects may override this setting locally."
+ms_set en ayprefse_ToleranceA "Sampling tolerance used for tesselating\
+NURBS curves or surfaces\nwhen an action is active."
+ms_set en ayprefse_NPDisplayModeA "Determine how surfaces should be drawn\
+\nwhen an action is active."
+ms_set en ayprefse_NCDisplayModeA "Determine how curves should be drawn\
+\nwhen an action is active."
 ms_set en ayprefse_UseMatColor "Use color of material for shaded views?"
 ms_set en ayprefse_Background "Color to use for the background."
 ms_set en ayprefse_Object "Color to use for unselected objects."
@@ -310,6 +316,13 @@ ms_set de ayprefse_NPDisplayMode "Darstellungsmodus von Flächen.\
 \nFlächen können den Darstellungsmodus lokal anpassen."
 ms_set de ayprefse_NCDisplayMode "Darstellungsmodus von Kurven.\
 \nKurven können den Darstellungsmodus lokal anpassen."
+ms_set de ayprefse_ToleranceA "Bestimmt die Darstellungsqualität von NURBS\
+Kurven und Flächen\nwährend Modellieraktionen."
+ms_set de ayprefse_NPDisplayModeA "Darstellungsmodus von Flächen\
+\nwährend Modellieraktionen."
+ms_set de ayprefse_NCDisplayModeA "Darstellungsmodus von Kurven\
+\nwährend Modellieraktionen."
+
 ms_set de ayprefse_UseMatColor "Soll die Materialfarbe für schattierte\
 \nObjekte benutzt werden?"
 ms_set de ayprefse_Background "Farbe des Hintergrundes."
@@ -512,6 +525,13 @@ configuration."
 ms_set fr ayprefse_NCDisplayMode "Détermine comment les courbes seront\
 tracées\nLes objets Courbe objects peuvent outrepasser localement\
 cette configuration."
+ms_set fr ayprefse_ToleranceA "Sampling tolerance used for tesselating\
+NURBS curves or surfaces\nwhen an action is active."
+ms_set fr ayprefse_NPDisplayModeA "Determine how surfaces should be drawn\
+\nwhen an action is active."
+ms_set fr ayprefse_NCDisplayModeA "Determine how curves should be drawn\
+\nwhen an action is active."
+
 ms_set fr ayprefse_UseMatColor "Utiliser les couleurs du matériau pour\
 les vue ombrées?"
 ms_set fr ayprefse_Background "Couleur de fond."
@@ -576,7 +596,7 @@ TCL vers la console?"
 ms_set fr ayprefse_Logging "Sauvegarder tous les message dans un fichier?"
 ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des\
 messages?"
-ms_set en ayprefse_ErrorLevel "Which messages should go to the console?\
+ms_set fr ayprefse_ErrorLevel "Which messages should go to the console?\
 \nSilence - None\
 \nErrors - Only Errors\
 \nWarnings - Warnings and Errors\

@@ -110,9 +110,9 @@ ay_toglcb_create(struct Togl *togl)
 	  return;
 	}
     }
-
+#if 0
   view->display_list = glGenLists(1);
-
+#endif
  return;
 } /* ay_toglcb_create */
 
@@ -139,10 +139,10 @@ ay_toglcb_destroy(struct Togl *togl)
       }
     }
 #endif
-
+#if 0
   if(view->display_list != 0)
     glDeleteLists(view->display_list, 1);
-
+#endif
   /* unlink from selection */
   lsel = &(ay_selection);
   while(sel)
@@ -267,6 +267,8 @@ void
 ay_toglcb_display(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int npdm, ncdm;
+ double tol;
 
   if(!view->redraw)
     {
@@ -283,6 +285,16 @@ ay_toglcb_display(struct Togl *togl)
 		   (GLfloat)ay_prefs.bgb, (GLfloat)1.0);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      if(view->action_state)
+	{
+	  npdm = ay_prefs.np_display_mode;
+	  ncdm = ay_prefs.nc_display_mode;
+	  tol = ay_prefs.glu_sampling_tolerance;
+	  ay_prefs.np_display_mode = ay_prefs.np_display_mode_a;
+	  ay_prefs.nc_display_mode = ay_prefs.nc_display_mode_a;
+	  ay_prefs.glu_sampling_tolerance = ay_prefs.glu_sampling_tolerance_a;
+	}
+
       /* draw */
       if(view->shade)
 	ay_shade_view(togl);
@@ -293,7 +305,15 @@ ay_toglcb_display(struct Togl *togl)
       /*  glFlush();*/
 
       Togl_SwapBuffers(togl);
-   }
+
+      if(view->action_state)
+	{
+	  ay_prefs.np_display_mode = npdm;
+	  ay_prefs.nc_display_mode = ncdm;
+	  ay_prefs.glu_sampling_tolerance = tol;
+	}
+
+    } /* if altdisp */
 
 #ifdef AYENABLEPPREV
   /* redraw permanent preview window? */

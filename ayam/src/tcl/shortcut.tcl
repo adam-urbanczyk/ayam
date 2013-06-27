@@ -693,10 +693,12 @@ proc shortcut_viewactions { w } {
 	$w configure -cursor {}
     }
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonPress-${i}> {
+	%W setconf -a 1
 	set oldx %x
 	set oldy %y
     }
     bind $w.f3D.togl <${ayviewshortcuts(RotMod)}-ButtonRelease-${i}> {
+	%W setconf -a 0
 	focus %W
 	break
     }
@@ -755,6 +757,7 @@ proc shortcut_viewactions { w } {
 	if { $ay(cVUndo) } {
 	    undo save ZoomView
 	}
+	%W setconf -a 1
 	%W zoomvac -start %y
 	update
     }
@@ -765,6 +768,7 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w.f3D.togl <ButtonRelease-${i}> {
+	%W setconf -a 0
 	focus %W
     }
 
@@ -775,6 +779,7 @@ proc shortcut_viewactions { w } {
 	if { $ay(cVUndo) } {
 	    undo save MoveView
 	}
+	%W setconf -a 1
 	%W movevac -start %x %y
 	update
     }
@@ -785,6 +790,7 @@ proc shortcut_viewactions { w } {
     }
 
     bind $w.f3D.togl <ButtonRelease-${i}> {
+	%W setconf -a 0
 	focus %W
     }
 

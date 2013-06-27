@@ -39,6 +39,10 @@ array set ayprefs {
  NPDisplayMode 2
  NCDisplayMode 2
 
+ ToleranceA 80.0
+ NPDisplayModeA 2
+ NCDisplayModeA 2
+
  Background_R 127
  Background_G 127
  Background_B 127
