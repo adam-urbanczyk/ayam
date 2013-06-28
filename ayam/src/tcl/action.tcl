@@ -26,6 +26,9 @@ proc actionEnd { n1 n2 op } {
 	# this also avoids unneeded lengthy notification runs in
 	# view actions (view-rotate, view-move etc.)
 	notifyOb -mod
+	$ay(currentView) setconf -a 0
+    } else {
+	$ay(currentView) setconf -a 1
     }
 
  return;
@@ -1187,7 +1190,7 @@ proc editPointDialog { } {
     winDialog $w $t
 
     if { $ayprefs(FixDialogTitles) == 1 } {
-	pack [frame $w.fl] -in $w -side top   
+	pack [frame $w.fl] -in $w -side top
 	pack [label $w.fl.l -text $t] -in $w.fl -side left -fill x -expand yes
     }
 
