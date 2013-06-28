@@ -290,8 +290,10 @@ ay_toglcb_display(struct Togl *togl)
 	  npdm = ay_prefs.np_display_mode;
 	  ncdm = ay_prefs.nc_display_mode;
 	  tol = ay_prefs.glu_sampling_tolerance;
-	  ay_prefs.np_display_mode = ay_prefs.np_display_mode_a;
-	  ay_prefs.nc_display_mode = ay_prefs.nc_display_mode_a;
+	  if(ay_prefs.np_display_mode_a > 0)
+	    ay_prefs.np_display_mode = ay_prefs.np_display_mode_a-1;
+	  if(ay_prefs.nc_display_mode_a > 0)
+	    ay_prefs.nc_display_mode = ay_prefs.nc_display_mode_a-1;
 	  ay_prefs.glu_sampling_tolerance = ay_prefs.glu_sampling_tolerance_a;
 	}
 
