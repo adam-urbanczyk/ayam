@@ -16,9 +16,9 @@
 
 void ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_drawstess(ay_nurbcurve_object *ncurve);
+int ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
-int ay_ncurve_drawglu(ay_nurbcurve_object *ncurve);
+int ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve);
 
 int ay_ncurve_drawch(ay_nurbcurve_object *ncurve);
 
@@ -515,7 +515,7 @@ cleanup:
  *  draw the curve using STESS
  */
 int
-ay_ncurve_drawstess(ay_nurbcurve_object *ncurve)
+ay_ncurve_drawstess(ay_view_object *view, ay_nurbcurve_object *ncurve)
 {
  int ay_status = AY_OK;
  int a = 0, i, tesslen, tstride;
@@ -530,7 +530,7 @@ ay_ncurve_drawstess(ay_nurbcurve_object *ncurve)
     }
   else
     {
-      if(ncurve->glu_sampling_tolerance > 0.0)
+      if((ncurve->glu_sampling_tolerance > 0.0) && !view->action_state)
 	{
 	  qf = ay_stess_GetQF(ncurve->glu_sampling_tolerance);
 	}
@@ -643,12 +643,12 @@ ay_ncurve_cacheflt(ay_nurbcurve_object *ncurve)
  *  draw the curve using GLU
  */
 int
-ay_ncurve_drawglu(ay_nurbcurve_object *ncurve)
+ay_ncurve_drawglu(ay_view_object *view, ay_nurbcurve_object *ncurve)
 {
  int knot_count;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
 
-  if(ncurve->glu_sampling_tolerance > 0.0)
+ if((ncurve->glu_sampling_tolerance > 0.0) && !view->action_state)
     sampling_tolerance = ncurve->glu_sampling_tolerance;
 
   knot_count = ncurve->length + ncurve->order;
@@ -735,6 +735,7 @@ ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.nc_display_mode;
  ay_nurbcurve_object *ncurve = NULL;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
 
   if(!o)
     return AY_ENULL;
@@ -744,7 +745,8 @@ ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
   if(!ncurve)
     return AY_ENULL;
 
-  if(ncurve->display_mode != 0)
+  /* object local mode override */
+  if((ncurve->display_mode != 0) && !view->action_state)
     {
       display_mode = ncurve->display_mode-1;
     }
@@ -756,17 +758,17 @@ ay_ncurve_drawcb(struct Togl *togl, ay_object *o)
       break;
     case 1: /* CurveAndHull (GLU) */
       ay_ncurve_drawch(ncurve);
-      ay_ncurve_drawglu(ncurve);
+      ay_ncurve_drawglu(view, ncurve);
       break;
     case 2: /* Curve (GLU) */
-      ay_ncurve_drawglu(ncurve);
+      ay_ncurve_drawglu(view, ncurve);
       break;
     case 3: /* CurveAndHull (STESS) */
       ay_ncurve_drawch(ncurve);
-      ay_ncurve_drawstess(ncurve);
+      ay_ncurve_drawstess(view, ncurve);
       break;
     case 4: /* Curve (STESS) */
-      ay_ncurve_drawstess(ncurve);
+      ay_ncurve_drawstess(view, ncurve);
       break;
     } /* switch */
 

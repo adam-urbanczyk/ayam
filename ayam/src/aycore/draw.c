@@ -368,6 +368,9 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 } /* ay_draw_view */
 
 
+/* ay_draw_annos:
+ *  draw the annotations (coordinate systems, handles, the mark)
+ */
 void
 ay_draw_annos(struct Togl *togl, int draw_offset)
 {

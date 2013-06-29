@@ -295,6 +295,7 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_pamesh_object *pamesh = NULL;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *p = NULL;
 
   if(!o)
@@ -302,7 +303,7 @@ ay_pamesh_drawcb(struct Togl *togl, ay_object *o)
 
   pamesh = (ay_pamesh_object *)o->refine;
 
-  if(pamesh->display_mode != 0)
+  if((pamesh->display_mode != 0) && !view->action_state)
     {
       display_mode = pamesh->display_mode-1;
     }
