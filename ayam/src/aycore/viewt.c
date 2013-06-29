@@ -1403,7 +1403,11 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 		      break;
 		    } /* switch */
 
-		  need_updatemark = AY_TRUE;
+		  if(view->drawmark || ay_prefs.globalmark)
+		    {
+		      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
+		      need_updatemark = AY_FALSE;
+		    }
 		} /* if */
 	    } /* if */
 	  break;
@@ -1588,6 +1592,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	      Tcl_GetDouble(interp, argv[i+3], &(view->markworld[2]));
 	      view->drawmark = AY_TRUE;
 	      need_updatemark = AY_TRUE;
+
 	    }
 	  break;
 	case 't':
@@ -1660,7 +1665,6 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
 	    }
 	  if(!strcmp(argv[i], "-updroty"))
 	    {
-	      printf("UPDROTY\n");
 	      /* reset rotx,rotz; recalc roty */
 	      view->rotx = 0.0;
 	      view->roty = 0.0;
@@ -1800,7 +1804,7 @@ ay_viewt_setconftcb(struct Togl *togl, int argc, char *argv[])
   if((view->drawmark && need_updatemark) ||
      (need_updatemark && ay_prefs.globalmark))
     {
-      ay_viewt_updatemark(togl, /*local=*/AY_FALSE);
+      ay_viewt_updatemark(togl, /*local=*/AY_TRUE);
     }
 
   if(need_redraw)

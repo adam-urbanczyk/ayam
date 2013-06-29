@@ -20,15 +20,15 @@ static char *ay_npatch_name = "NPatch";
 
 void ay_npatch_cacheflt(ay_nurbpatch_object *npatch);
 
-int ay_npatch_drawstess(ay_object *o);
+int ay_npatch_drawstess(ay_view_object *view, ay_object *o);
 
-int ay_npatch_drawglu(ay_object *o);
+int ay_npatch_drawglu(ay_view_object *view, ay_object *o);
 
 int ay_npatch_drawch(ay_nurbpatch_object *npatch);
 
-int ay_npatch_shadestess(ay_object *o);
+int ay_npatch_shadestess(ay_view_object *view, ay_object *o);
 
-int ay_npatch_shadeglu(ay_object *o);
+int ay_npatch_shadeglu(ay_view_object *view, ay_object *o);
 
 int ay_npatch_shadech(ay_nurbpatch_object *npatch);
 
@@ -679,7 +679,7 @@ cleanup:
  *  draw the patch using STESS
  */
 int
-ay_npatch_drawstess(ay_object *o)
+ay_npatch_drawstess(ay_view_object *view, ay_object *o)
 {
  int ay_status = AY_OK;
  /*char fname[] = "npatch_drawstesscb";*/
@@ -688,7 +688,7 @@ ay_npatch_drawstess(ay_object *o)
  int qf = ay_prefs.stess_qf;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
-  if(npatch->glu_sampling_tolerance != 0.0)
+  if((npatch->glu_sampling_tolerance != 0.0) && !view->action_state)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
@@ -828,7 +828,7 @@ ay_npatch_cacheflt(ay_nurbpatch_object *npatch)
  *  draw the patch using GLU
  */
 int
-ay_npatch_drawglu(ay_object *o)
+ay_npatch_drawglu(ay_view_object *view, ay_object *o)
 {
  int ay_status = AY_OK;
  int uorder, vorder, width, height, uknot_count, vknot_count;
@@ -854,10 +854,10 @@ ay_npatch_drawglu(ay_object *o)
       return AY_ERROR;
     }
 
-  if(npatch->glu_sampling_tolerance > 0.0)
+  if((npatch->glu_sampling_tolerance > 0.0) && !view->action_state)
     sampling_tolerance = npatch->glu_sampling_tolerance;
 
-  if(npatch->display_mode != 0)
+  if((npatch->display_mode != 0) && !view->action_state)
     display_mode = npatch->display_mode-1;
 
 #ifdef AYWITHAQUA
@@ -1016,6 +1016,7 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *npatch;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *b;
 
   if(!o)
@@ -1026,7 +1027,7 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(npatch->display_mode != 0)
+  if((npatch->display_mode != 0) && !view->action_state)
     {
       display_mode = npatch->display_mode-1;
     }
@@ -1037,13 +1038,13 @@ ay_npatch_drawcb(struct Togl *togl, ay_object *o)
       ay_npatch_drawch(npatch);
       break;
     case 1: /* OutlinePolygon (GLU) */
-      ay_npatch_drawglu(o);
+      ay_npatch_drawglu(view, o);
       break;
     case 2: /* OutlinePatch (GLU) */
-      ay_npatch_drawglu(o);
+      ay_npatch_drawglu(view, o);
       break;
     case 3: /* OutlinePatch (STESS) */
-      ay_npatch_drawstess(o);
+      ay_npatch_drawstess(view, o);
       break;
     default:
       break;
@@ -1152,7 +1153,7 @@ ay_npatch_shadech(ay_nurbpatch_object *npatch)
  *  shade the patch using STESS
  */
 int
-ay_npatch_shadestess(ay_object *o)
+ay_npatch_shadestess(ay_view_object *view, ay_object *o)
 {
  int ay_status = AY_OK;
  int qf = ay_prefs.stess_qf;
@@ -1160,7 +1161,7 @@ ay_npatch_shadestess(ay_object *o)
  double *tessv = NULL;
  ay_nurbpatch_object *npatch = (ay_nurbpatch_object *)o->refine;
 
-  if(npatch->glu_sampling_tolerance != 0.0)
+  if((npatch->glu_sampling_tolerance != 0.0) && !view->action_state)
     {
       qf = ay_stess_GetQF(npatch->glu_sampling_tolerance);
     }
@@ -1218,7 +1219,7 @@ ay_npatch_shadestess(ay_object *o)
  *  shade the patch using GLU
  */
 int
-ay_npatch_shadeglu(ay_object *o)
+ay_npatch_shadeglu(ay_view_object *view, ay_object *o)
 {
  int ay_status = AY_OK;
  int uorder, vorder, width, height, uknot_count, vknot_count;
@@ -1243,7 +1244,7 @@ ay_npatch_shadeglu(ay_object *o)
   uknot_count = width + uorder;
   vknot_count = height + vorder;
 
-  if(npatch->glu_sampling_tolerance > 0.0)
+  if((npatch->glu_sampling_tolerance > 0.0) && !view->action_state)
     sampling_tolerance = npatch->glu_sampling_tolerance;
 
 #ifndef AYWITHAQUA
@@ -1304,6 +1305,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
 {
  int display_mode = ay_prefs.np_display_mode;
  ay_nurbpatch_object *npatch;
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_object *b;
 
   if(!o)
@@ -1314,7 +1316,7 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
   if(!npatch)
     return AY_ENULL;
 
-  if(npatch->display_mode != 0)
+  if((npatch->display_mode != 0) && !view->action_state)
     {
       display_mode = npatch->display_mode-1;
     }
@@ -1325,13 +1327,13 @@ ay_npatch_shadecb(struct Togl *togl, ay_object *o)
       ay_npatch_shadech(npatch);
       break;
     case 1: /* OutlinePolygon (GLU) */
-      ay_npatch_shadeglu(o);
+      ay_npatch_shadeglu(view, o);
       break;
     case 2: /* OutlinePatch (GLU) */
-      ay_npatch_shadeglu(o);
+      ay_npatch_shadeglu(view, o);
       break;
     case 3: /* OutlinePatch (STESS) */
-      ay_npatch_shadestess(o);
+      ay_npatch_shadestess(view, o);
       break;
     default:
       break;
