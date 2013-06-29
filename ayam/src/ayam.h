@@ -1354,7 +1354,7 @@ typedef struct ay_view_object_s
       over drawing (e.g.\ AyCSG) */
   Togl_Callback *altdispcb;
 
-  int action_state;
+  int action_state;  /**< is an action active in this view? (0 no, 1 yes) */
   
 } ay_view_object;
 
@@ -1471,8 +1471,6 @@ typedef struct ay_preferences_s
   int glu_cache_float; /**< unused */
 
   int stess_qf; /**< quality factor derived from GLU sampling tolerance */
-
-  int stess_qf_a; /**< quality factor derived from GLU sampling tolerance */
 
   /** default sampling mode/quality for NURBS -> PolyMesh conversion */
   int smethod;
