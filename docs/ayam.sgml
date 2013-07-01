@@ -2330,6 +2330,24 @@ using a local DisplayMode setting different from <tt/"Global"/.
 Toggling between drawing of hulls and curves may also be
 done easily using the keyboard shortcut <tt>&lt;F4&gt;</tt>.
 
+<item><tt/"ToleranceA"/ is the GLU sampling tolerance that is
+used for display of NURBS curves or patches in all interactive
+actions. The value 0.0 means no change from the <tt/"Tolerance"/ setting.
+In contrast to the <tt/"Tolerance"/ setting above, objects can
+<em>not</em> override this setting locally.
+
+<item><tt/"NPDisplayModeA"/ controls the display mode of NURBS
+patches for all interactive actions.
+The first and default value (<tt/"NPDisplayMode"/) means: no change.
+In contrast to the <tt/"NPDisplayMode"/ setting above, objects can
+<em>not</em> override this setting locally.
+
+<item><tt/"NCDisplayModeA"/ controls the display mode of NURBS
+curves for all interactive actions.
+The first and default value (<tt/"NCDisplayMode"/) means: no change.
+In contrast to the <tt/"NCDisplayMode"/ setting above, objects can
+<em>not</em> override this setting locally.
+
 <item><tt/"UseMatColor"/ determines, whether the shaded representation
 uses the color defined by the material of an object for
 rendering.
@@ -9233,34 +9251,14 @@ This may be accomplished by adding tags of type <tt>"NP"</tt> with the
 name of the new property as value to the script object (menu entry
 <tt>"Special/Tags/Add Property"</tt>).
 The script itself is responsible for data
-management and property GUI creation.
-<p>
-The parameters set via a such a property GUI may be
-comfortably saved with scene files by just adding the following
-comment as first line to the script:<footnote>Since 1.9.</footnote>
-<code>
-# Ayam, save array: &lt;arrayname&gt;
-</code>
-where arrayname designates the name of the global Tcl array
-the property GUI elements operate with.
-Note that with the introduction of individual parameters in Ayam
-1.15 not all members of the arrays will be saved. Only members
-from the <tt>"SP"</tt> list (see below) will be considered, which gives
-script object developers fine grained control over what actually goes
-to the Ayam scene file.
+management and property GUI creation (see section
+<ref id="scriptattr" name="ScriptAttr Property">
+below).
 <p>
 There is also a tag type to remove properties
 (<tt>"RP"</tt>).<footnote>Since 1.12.</footnote>
 Using this tag, one can e.g.~hide the actual script
 code and block users from unintentionally changing it.
-<p>
-Script objects can have individual sets of parameters,
-so that multiple copies of a script object can be used (without individual
-parameters all copies would share the same parameter
-values).<footnote>Since 1.15.</footnote>
-For this, the new variable <tt>"SP"</tt> in the script data array
-contains a list of parameter names in that array that are individual
-(not shared by all copies of the script object).
 <p>
 Starting with Ayam 1.16, the environment for running script objects scripts
 has been refined to allow more complex scripts (that traverse the scene or
@@ -9268,22 +9266,6 @@ use the clipboard) to be written:
 When a script is running, the current level is the child level of the
 respective script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished.
-<p>
-Script objects may also use arbitrary, plugin provided,
-scripting languages.<footnote>Since 1.18.</footnote>
-To switch to a different language, the first line
-of the script must be a comment (in the syntax of the other language)
-with the word <tt>"use:"</tt> followed by the language name, as
-provided by the corresponding plugin, e.g.~for JavaScript the first line
-should look like this:
-<code>
-/* Ayam, use: JavaScript */
-</code>
-The special comments for saving of array items and language switching
-can be used in conjunction like this:
-<code>
-/* Ayam, use: JavaScript, save array: MyArr */
-</code>
 <p>
 The binary and source distributions of Ayam contain several example
 scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
@@ -9364,7 +9346,6 @@ of the first child object of the script object.
 If the script object has e.g.~a NCurve object as first child, the
 script object may be used as parameter object of a tool object that
 needs a NCurve, e.g.~a Sweep:
-<#if out=latex><x/needspace 6/</#if>
 <tscreen><verb>
 +-Sweep
  +-Cross_Section(Script)
@@ -9402,6 +9383,23 @@ Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
 of a script object must share the same set of individual vs. shared
 parameters. If objects need to store differing/individual amounts of
 parameter data, lists can be used as individual parameters.
+<p>
+Script objects may also use arbitrary, plugin provided,
+scripting languages.<footnote>Since 1.18.</footnote>
+To switch to a different language, the first line
+of the script must be a comment (in the syntax of the other language)
+with the word <tt>"use:"</tt> followed by the language name, as
+provided by the corresponding plugin, e.g.~for JavaScript the first line
+should look like this:
+<code>
+/* Ayam, use: JavaScript */
+</code>
+The special comments for saving of array items and language switching
+can be used in conjunction like this:
+<code>
+/* Ayam, use: JavaScript, save array: MyArr */
+</code>
+
 </itemize>
 
 <sect2>Script Object Examples<label id="scriptobjex">
@@ -9434,7 +9432,7 @@ A complete, easy to use, and safe GUI for the length parameter
 can be added by changing the script code
 (<tt>&quot;&num; &circ;&circ;&circ;&quot;</tt> lines designate changed
 or added code):
-<#if out=latex><x/needspace 18/</#if>
+<#if out=latex><x/newpage/</#if>
 <code>
 # Ayam, save array: LineAttrData
 if { ![info exists ::LineAttrData] } {
@@ -10180,7 +10178,7 @@ created surface.
 <p>
 The exact names of the attributes available in this property are
 object type specific as each object types boundary names are different:
-the boundary names of a Skin object are e.g. <tt/"Left"/, <tt/"Right"/,
+the boundary names of a Skin object are e.g.~<tt/"Left"/, <tt/"Right"/,
 <tt/"Start"/, and <tt/"End"/, whereas the boundary names of a NPatch object
 are <tt/"U0"/, <tt/"U1"/, <tt/"V0"/, and <tt/"V1"/.
 <p>
@@ -10860,7 +10858,7 @@ will warn if the selection contains objects of unsuitable type,
 but processing will continue.
 <p>
 In case of an error, however, the processing of multiple selected
-objects immediately stops possibly leaving modified <em>and</em>
+objects immediately stops, possibly leaving modified <em>and</em>
 unmodified objects behind.
 <p>
 If an operation executed successfully on an object, the selected
@@ -11280,7 +11278,7 @@ the selection and additionally requests a point in space.
 specified point in space without changing the shape of the curve.
 <p>
 If the knot vector of the curve is not clamped at the end, it
-will be clamped automatically. The knot type of the curve can be
+will be clamped automatically. The knot type of the curve will be
 changed to custom. A new control point will be added and the position
 of old control points may be changed in the progress.
 
@@ -11535,11 +11533,12 @@ scripting interface command <ref id="scshiftc" name="shiftC">.
 </figure>
 <descrip>
 <tag/Arguments/ The To XY tool takes a number of
-NURBS curves from the selection. The NURBS curves should be planar.
+NCurve, ACurve, or ICurve objects from the selection. The curves should be
+planar.
 <tag/Operation/ The control points of the curve(s) will be rotated,
 so that they are in the XY plane of the respective object space defined by
-the NURBS curve object(s). Additionally, the rotation attributes of
-the NURBS curve object(s) will be changed so that the curve does not
+the curve object(s). Additionally, the rotation attributes of
+the curve object(s) will be changed so that the curve does not
 change its orientation with regard to other objects or the world space.
 See also the image above, where the left curve, planar but not defined
 in the XY plane will be changed, so that it is defined in the XY plane
@@ -13860,12 +13859,12 @@ See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="sctoxyc"><label id="sctoxync">
-toXYC &ndash; move NURBS curve to XY plane
+toXYC &ndash; move curve to XY plane
 <itemize>
  <item>Synopsis: <tt/"toXYC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
- <item>Description: moves the control points of the selected NURBS curve
-objects to its XY plane.
+ <item>Description: moves the control points of the selected NCurve,
+ACurve, and ICurve objects to their respective XY plane.
 See also section <ref id="toxyt" name="To XY Tool">.
 </itemize>
 
@@ -19518,6 +19517,7 @@ Index:
 <label id="indexn"><tt/<bf/N//
 <list>
 <item>NCDisplayMode: <ref id="prefdraw" name="preference setting">
+<item>NCDisplayModeA: <ref id="prefdraw" name="preference setting">
 <item>NCircle: <ref id="ncircleobj" name="NCircle object">
 <item>NCurve: <ref id="ncurveobj" name="NCurve object">
 <item>Near: <ref id="camp" name="camera property">
@@ -19531,6 +19531,7 @@ Index:
 <item>NP: <ref id="nptag" name="tag type">
 <item>NPatch: <ref id="npatchobj" name="NPatch object">
 <item>NPDisplayMode: <ref id="prefdraw" name="preference setting">
+<item>NPDisplayModeA: <ref id="prefdraw" name="preference setting">
 <item>NumClones: <ref id="cloneattr" name="Clone attribute">
 <item>NumSamples: <ref id="moattr" name="MetaObj attribute">
 <item>NURBCircle: <ref id="ncirct" name="NURBS circle tool">
@@ -20073,6 +20074,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="ncattr" name="NCurve attribute">,
 <item><ref id="npattr" name="NPatch attribute">
 </itemize>
+<item>ToleranceA: <ref id="prefdraw" name="preference setting">
 <item>tonpatch.tcl: <ref id="tonpatchtcl" name="example/helper script">
 <item>Tool Objects: <ref id="toolobj" name="modelling concept">
 <item>Toolbox: <ref id="toolb" name="toolbox window">
