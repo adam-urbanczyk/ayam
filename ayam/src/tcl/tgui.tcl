@@ -495,9 +495,9 @@ proc tgui_open { } {
 
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
-	-highlightthickness 0
+	-highlightthickness 1
 
-    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
+    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1;focus %W"
     bind $f.s <ButtonRelease-1> {
 	set tgui_tessparam(MB1Down) 0;
 	if { $tgui_tessparam(LazyUpdate) } {
@@ -523,8 +523,8 @@ proc tgui_open { } {
 
     label $f.ll -text "0"
     scale $f.s -showvalue 0 -orient h -from 0 -to 100\
-	-highlightthickness 0
-    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1"
+	-highlightthickness 1
+    bind $f.s <ButtonPress-1> "set tgui_tessparam(MB1Down) 1;focus %W"
     bind $f.s <ButtonRelease-1> {
 	set tgui_tessparam(MB1Down) 0;
 	if { $tgui_tessparam(LazyUpdate) } {
