@@ -115,14 +115,21 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
 
   t = &(new);
 
-  /* copy surface */
-  ay_status = ay_object_copy(npatch, t);
-  if(ay_status)
+  /* copy surface(s) */
+  p = npatch;
+  while(p)
     {
-      return AY_ERROR;
-    }
-  ay_trafo_copy(o, *t);
-  t = &((*t)->next);
+      ay_status = ay_object_copy(p, t);
+      if(ay_status)
+	{
+	  ay_object_deletemulti(new);
+	  return AY_ERROR;
+	}
+      ay_trafo_copy(o, *t);
+
+      t = &((*t)->next);
+      p = p->next;
+    } /* while */
 
   /* copy caps and bevels */
   p = cb;
@@ -142,7 +149,7 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
       p = p->next;
     } /* while */
 
-      /* copy eventually present TP tags */
+  /* copy eventually present TP tags */
   ay_npt_copytptag(o, new);
 
   *result = new;
