@@ -999,95 +999,14 @@ cleanup:
 int
 ay_text_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_text_object *t = NULL;
- ay_level_object *level = NULL;
- ay_object *npatch, *new = NULL, **next = NULL;
+ ay_text_object *text = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  t = (ay_text_object *) o->refine;
+  text = (ay_text_object *) o->refine;
 
-  npatch = t->npatch;
-  if(npatch && npatch->next)
-    {
-      ay_status = ay_object_create(AY_IDLEVEL, &new);
-      if(ay_status)
-	{ return AY_ERROR; }
-      new->parent = AY_TRUE;
-      level = (ay_level_object *)(new->refine);
-      level->type = AY_LTLEVEL;
-
-      next = &(new->down);
-      while(npatch)
-	{
-	  ay_status = ay_object_copy(npatch, next);
-	  if(*next)
-	    {
-	      /* reset display mode and sampling tolerance
-		 of new patch to "global"? */
-	      if(!in_place && ay_prefs.conv_reset_display)
-		{
-		  ay_npt_resetdisplay(*next);
-		}
-
-	      ay_trafo_add(o, *next);
-
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      (*next)->down = ay_endlevel;
-
-	      next = &((*next)->next);
-	    } /* if */
-	  npatch = npatch->next;
-	} /* while */
-
-      /* terminate level */
-      *next = ay_endlevel;
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-
-    }
-  else
-    {
-
-      ay_status = ay_object_copy(npatch, &new);
-      if(!ay_status && new)
-	{
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(!in_place && ay_prefs.conv_reset_display)
-	    {
-	      ay_npt_resetdisplay(new);
-	    }
-
-	  ay_trafo_copy(o, new);
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-
-	  new->hide_children = AY_TRUE;
-	  new->parent = AY_TRUE;
-	  if(!new->down)
-	    new->down = ay_endlevel;
-	} /* if */
-    } /* if */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	}
-    } /* if */
-
- return AY_OK;
+ return ay_convert_nptoolobj(o, text->npatch, NULL, in_place);
 } /* ay_text_convertcb */
 
 
@@ -1097,58 +1016,14 @@ ay_text_convertcb(ay_object *o, int in_place)
 int
 ay_text_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
  ay_text_object *text = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL, *tmp = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
-
   text = (ay_text_object *) o->refine;
 
-  if(type == AY_IDNPATCH)
-    {
-      t = &(tmp);
-
-      if(!text->npatch)
-	return AY_ERROR;
-
-      p = text->npatch;
-      while(p)
-	{
-	  new = NULL;
-	  ay_status = ay_object_copy(p, &new);
-	  if(!ay_status && new)
-	    {
-	      ay_trafo_copy(o, new);
-
-	      new->hide_children = AY_TRUE;
-	      new->parent = AY_TRUE;
-	      if(!new->down)
-		{
-		  new->down = ay_endlevel;
-		}
-	      *t = new;
-	      t = &(new->next);
-	    } /* if */
-	  p = p->next;
-	} /* while */
-    } /* if */
-
-  /* copy eventually present TP tags */
-  ay_npt_copytptag(o, tmp);
-
-  *result = tmp;
-
- return AY_OK;
+ return ay_provide_nptoolobj(o, type, text->npatch, NULL, result);
 } /* ay_text_providecb */
 
 
