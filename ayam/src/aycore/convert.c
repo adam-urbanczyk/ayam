@@ -134,7 +134,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
   if(!o || !p)
     return AY_ENULL;
 
-  if(cb)
+  if(p->next || cb)
     {
       if(!(new = calloc(1, sizeof(ay_object))))
 	{ return AY_EOMEM; }
@@ -202,46 +202,50 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
     }
   else
     {
-      next = &new;
-      b = p;
-      while(b)
+      ay_status = ay_object_copy(p, &new);
+      if(ay_status)
 	{
-	  ay_status = ay_object_copy(b, next);
-	  if(ay_status)
-	    {
-	      ay_object_deletemulti(new);
-	      return AY_ERROR;
-	    }
-	  if(*next)
-	    {
-	      ay_trafo_copy(o, *next);
-	      (*next)->hide_children = AY_TRUE;
-	      (*next)->parent = AY_TRUE;
-	      if(!(*next)->down)
-		(*next)->down = ay_endlevel;
-
-	      next = &((*next)->next);
-	    }
-	  b = b->next;
-	} /* while */
+	  ay_object_deletemulti(new);
+	  return AY_ERROR;
+	}
+      if(new)
+	{
+	  ay_trafo_copy(o, new);
+	  new->hide_children = AY_TRUE;
+	  new->parent = AY_TRUE;
+	  if(!new->down)
+	    new->down = ay_endlevel;
+	} /* if */
     } /* if */
 
   if(new)
     {
-      /* reset display mode and sampling tolerance
-	 of new patch to "global"? */
-      if(!in_place && ay_prefs.conv_reset_display)
+      if(p->next || cb)
 	{
-	  ay_npt_resetdisplay(new);
+	  b = new->down;
 	}
+      else
+	{
+	  b = new;
+	}
+      while(b)
+	{
+	  /* reset display mode and sampling tolerance
+	     of new patch to "global"? */
+	  if(!in_place && ay_prefs.conv_reset_display)
+	    {
+	      ay_npt_resetdisplay(b);
+	    }
 
-      /* immediately create and show the multiple points */
-      if(new->type == AY_IDNPATCH)
-	{
-	  np = (ay_nurbpatch_object *)new->refine;
-	  np->createmp = AY_TRUE;
-	  ay_npt_recreatemp(np);
-	}
+	  /* immediately create and show the multiple points */
+	  if(b->type == AY_IDNPATCH)
+	    {
+	      np = (ay_nurbpatch_object *)b->refine;
+	      np->createmp = AY_TRUE;
+	      ay_npt_recreatemp(np);
+	    }
+	  b = b->next;
+	} /* while */
 
       /* link the new object(s) to the scene */
       if(!in_place)
