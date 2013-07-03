@@ -235,7 +235,7 @@ ay_npt_resetdisplay(ay_object *o)
 {
  ay_nurbpatch_object *patch;
 
-  if(!o || !o->type == AY_IDNPATCH)
+  if(!o || (o->type != AY_IDNPATCH))
     return;
 
   patch = (ay_nurbpatch_object *)o->refine;
@@ -6054,7 +6054,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
  char fname[] = "npt_gordon";
  int stride = 4;
  ay_object *c;
- ay_object *lcu = NULL/*, *lcv = NULL*/; /* last cu/cv curve */
+ ay_object *lcu = NULL, *lcv = NULL; /* last cu/cv curve */
  ay_nurbcurve_object *nc = NULL;
  ay_nurbpatch_object *interpatch = NULL, *skinu = NULL, *skinv = NULL;
  int uo, vo;
@@ -6062,7 +6062,7 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
  int need_interpol = AY_FALSE;
  double *intersections = NULL; /* matrix of intersection points */
  double *unifiedU = NULL, *unifiedV = NULL;
- int uUlen, uVlen;
+ int uUlen, uVlen/*, closeu = AY_FALSE, closev = AY_FALSE*/;
 
   if(!cu || !cv || !gordon)
     return AY_ENULL;
@@ -6081,10 +6081,22 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
   while(c)
     {
       numcv++;
-      /*lcv = c;*/
+      lcv = c;
       c = c->next;
     }
+#if 0
+  if((((ay_nurbcurve_object *)cu->refine)->type == AY_CTCLOSED ||
+     ((ay_nurbcurve_object *)cu->refine)->type == AY_CTPERIODIC) &&
+     (((ay_nurbcurve_object *)lcu->refine)->type == AY_CTCLOSED ||
+      ((ay_nurbcurve_object *)lcu->refine)->type == AY_CTPERIODIC))
+    closev = AY_TRUE;
 
+  if((((ay_nurbcurve_object *)cv->refine)->type == AY_CTCLOSED ||
+     ((ay_nurbcurve_object *)cv->refine)->type == AY_CTPERIODIC) &&
+     (((ay_nurbcurve_object *)lcv->refine)->type == AY_CTCLOSED ||
+      ((ay_nurbcurve_object *)lcv->refine)->type == AY_CTPERIODIC))
+    closeu = AY_TRUE;
+#endif
   /* assume, we always get enough parameter curves (>=2 in each dimension) */
 
   /* check and adapt desired orders */
@@ -6340,6 +6352,23 @@ ay_npt_gordon(ay_object *cu, ay_object *cv, ay_object *in,
 	  k += stride;
 	} /* for */
     } /* for */
+#if 0
+  if(closeu)
+    {
+      memcpy(&(skinu->controlv[0]),
+	     &(skinu->controlv[skinu->height*4]), 4*sizeof(double));
+      memcpy(&(skinu->controlv[(skinu->width*skinu->width-skinu->height)*4]),
+	     &(skinu->controlv[skinu->width*skinu->height*4]), 4*sizeof(double));
+    }
+
+  if(closev)
+    {
+      memcpy(&(skinu->controlv[(skinu->width*skinu->width-skinu->height)*4]),
+	     &(skinu->controlv[0]), 4*sizeof(double));
+      memcpy(&(skinu->controlv[skinu->width*skinu->height*4]),
+	     &(skinu->controlv[skinu->height*4]), 4*sizeof(double));
+    }
+#endif
 
   /* return result */
   *gordon = skinu;
@@ -7775,6 +7804,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 
 		  np->width++;
 		}
+
 	      if(knots > -1 || extend)
 		{
 		  tknotv = np->vknotv;
@@ -7823,6 +7853,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 			 np->uknotv = newknotv;
 		  */
 		}
+
 	      if(knots > -1 || extend)
 		{
 		  tknotv = np->vknotv;
@@ -7832,7 +7863,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
 		  free(np->vknotv);
 		  np->vknotv = tknotv;
 		}
-	    }
+	    } /* if */
 
 	  ay_status = ay_npt_closeu(np, mode);
 
@@ -8156,13 +8187,16 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_closevtcmd */
 
 
-/* ay_npt_isclosedu:
- *  check whether NURBS patch <np> is closed in u direction
+/** ay_npt_isclosedu:
+ *  check whether NURBS patch \a np is closed in u direction
  *  by sampling the surface at the respective borders at parametric
  *  values defined by the knot vector (plus one intermediate value
  *  for each knot interval) and check the surface points at those
  *  parametric values for equality
- *  returns:
+ *
+ *  \param[in] np NURBS patch to check
+ *
+ *  \returns
  *   AY_TRUE - surface is closed in u
  *   AY_FALSE - surface is open in u
  */
@@ -8254,13 +8288,16 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
 } /* ay_npt_isclosedu */
 
 
-/* ay_npt_isclosedv:
- *  check whether NURBS patch <np> is closed in v direction
+/** ay_npt_isclosedv:
+ *  check whether NURBS patch \a np is closed in v direction
  *  by sampling the surface at the respective borders at parametric
  *  values defined by the knot vector (plus one intermediate value
  *  for each knot interval) and check the surface points at those
  *  parametric values for equality
- *  returns:
+ *
+ *  \param[in] np NURBS patch to check
+ *
+ *  \returns
  *   AY_TRUE - surface is closed in v
  *   AY_FALSE - surface is open in v
  */
