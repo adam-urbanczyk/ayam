@@ -125,6 +125,8 @@ ay_provide_nptoolobj(ay_object *o, unsigned int type,
 	  ay_object_deletemulti(new);
 	  return AY_ERROR;
 	}
+
+      ay_npt_applytrafo(*t);
       ay_trafo_copy(o, *t);
 
       t = &((*t)->next);
