@@ -1188,14 +1188,14 @@ cleanup:
 int
 ay_swing_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- ay_birail1_object *b = NULL;
+ ay_swing_object *s = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  b = (ay_birail1_object *) o->refine;
+  s = (ay_swing_object *) o->refine;
 
- return ay_provide_nptoolobj(o, type, b->npatch, b->caps_and_bevels, result);
+ return ay_provide_nptoolobj(o, type, s->npatch, s->caps_and_bevels, result);
 } /* ay_swing_providecb */
 
 
