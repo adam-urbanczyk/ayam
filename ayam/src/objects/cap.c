@@ -509,48 +509,14 @@ cleanup:
 int
 ay_cap_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_cap_object *cap = NULL;
- ay_object *new = NULL;
+ ay_cap_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  cap = (ay_cap_object *) o->refine;
+  c = (ay_cap_object *) o->refine;
 
-  if(cap->npatch)
-    {
-      ay_status = ay_object_copy(cap->npatch, &new);
-
-      if(new)
-	{
-	  /* reset display mode and sampling tolerance
-	     of new patch to "global"? */
-	  if(!in_place && ay_prefs.conv_reset_display)
-	    {
-	      ay_npt_resetdisplay(new);
-	    }
-
-	  /* copy eventually present TP tags */
-	  ay_npt_copytptag(o, new);
-
-	  ay_trafo_add(o, new);
-
-	  if(!new->down)
-	    new->down = ay_endlevel;
-
-	  if(!in_place)
-	    {
-	      ay_status = ay_object_link(new);
-	    }
-	  else
-	    {
-	      ay_status = ay_object_replace(new, o);
-	    } /* if */
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, c->npatch, NULL, in_place);
 } /* ay_cap_convertcb */
 
 
@@ -560,42 +526,14 @@ ay_cap_convertcb(ay_object *o, int in_place)
 int
 ay_cap_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- ay_cap_object *cap = NULL;
+ ay_cap_object *c = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
+  c = (ay_cap_object *) o->refine;
 
-  cap = (ay_cap_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      if(cap->npatch)
-	{
-	  ay_status = ay_object_copy(cap->npatch, result);
-	  if(*result)
-	    {
-	      ay_trafo_add(o, *result);
-
-	      /* copy eventually present TP tags */
-	      ay_npt_copytptag(o, *result);
-	    } /* if */
-	}
-      else
-	{
-	  return AY_ERROR;
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, c->npatch, NULL, result);
 } /* ay_cap_providecb */
 
 
