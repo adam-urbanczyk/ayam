@@ -415,52 +415,14 @@ ay_trim_notifycb(ay_object *o)
 int
 ay_trim_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "trim_providecb";
- ay_trim_object *trim = NULL;
- ay_object *new = NULL, **t = NULL, *p = NULL;
+ ay_trim_object *t = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    }
+  t = (ay_trim_object *) o->refine;
 
-  trim = (ay_trim_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!trim->npatch)
-	return AY_ERROR;
-
-      /* copy patch(es) */
-      p = trim->npatch;
-      while(p)
-	{
-	  ay_status = ay_object_copy(p, t);
-	  if(ay_status)
-	    {
-	      ay_error(ay_status, fname, NULL);
-	      return AY_ERROR;
-	    }
-	  t = &((*t)->next);
-	  p = p->next;
-	} /* while */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, t->npatch, NULL, result);
 } /* ay_trim_providecb */
 
 
@@ -470,77 +432,14 @@ ay_trim_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_trim_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_trim_object *trim = NULL;
- ay_object *new = NULL, **next = NULL;
- ay_object *b;
+ ay_trim_object *t = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
+  t = (ay_trim_object *) o->refine;
 
-  trim = (ay_trim_object *) o->refine;
-
-  if(trim->npatch)
-    {
-      if(!(new = calloc(1, sizeof(ay_object))))
-	{ return AY_EOMEM; }
-
-      ay_object_defaults(new);
-      new->type = AY_IDLEVEL;
-      new->parent = AY_TRUE;
-      new->inherit_trafos = AY_TRUE;
-      ay_trafo_copy(o, new);
-
-      if(!(new->refine = calloc(1, sizeof(ay_level_object))))
-	{ free(new); return AY_EOMEM; }
-
-      ((ay_level_object *)(new->refine))->type = AY_LTLEVEL;
-
-      next = &(new->down);
-
-      if(trim->npatch)
-	{
-	  b = trim->npatch;
-	  while(b)
-	    {
-	      ay_status = ay_object_copy(b, next);
-	      if(*next)
-		{
-		  /* reset display mode and sampling tolerance
-		     of new patch to "global"? */
-		  if(!in_place && ay_prefs.conv_reset_display)
-		    {
-		      ay_npt_resetdisplay(*next);
-		    }
-
-		  next = &((*next)->next);
-		}
-	      b = b->next;
-	    } /* while */
-	} /* if */
-
-      /* copy eventually present TP tags */
-      ay_npt_copytptag(o, new->down);
-      *next = ay_endlevel;
-    }
-
-  /* second, link new objects, or replace old objects with them */
-
-  if(new)
-    {
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, t->npatch, NULL, in_place);
 } /* ay_trim_convertcb */
 
 
