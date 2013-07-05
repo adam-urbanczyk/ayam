@@ -379,10 +379,10 @@ ay_trim_notifycb(ay_object *o)
 	{
 	  down = down->next;
 
-	  /* copy new trim curves to patch object */
+	  /* append new trim curves to patch objects old ones */
 	  next = &(npatch->down);
 
-	  while((*next)->next)
+	  while(*next && (*next)->next)
 	    {
 	      next = &((*next)->next);
 	    }
@@ -391,7 +391,11 @@ ay_trim_notifycb(ay_object *o)
 	    {
 	      ncurve = NULL;
 	      ay_status = ay_object_copy(down, &ncurve);
-	      if(ncurve)
+	      if(ay_status || !ncurve)
+		{
+		  return AY_ERROR;
+		}
+	      else
 		{
 		  *next = ncurve;
 		  next = &(ncurve->next);
