@@ -372,6 +372,7 @@ ay_trim_notifycb(ay_object *o)
 
       while(npatch && (i < trim->patchnum))
 	{
+	  i++;
 	  npatch = npatch->next;
 	}
 
