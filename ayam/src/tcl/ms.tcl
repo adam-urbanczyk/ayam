@@ -200,7 +200,7 @@ ms_set en ayprefse_SMFileType "Type of shadow map.\
 \nz: normal shadow map (RenderMan, Gelato)\
 \navgz: Woo shadow map (Gelato only!)\
 \nshadowvol: volume shadow map (Gelato only!)"
-ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\\
+ms_set en ayprefse_SMChangeShaders "Change shader names (prepend\
  \"shadow\")\nwhen rendering with shadow maps?"
 
 ms_set en ayprefse_PPRender "Renderer to use for the permanent preview feature."
@@ -395,6 +395,7 @@ ms_set de ayprefse_SMRenderPT "Beschreibung der Ausgabe des\
 Rendering-Fortschritts durch den ShadowMap-Renderer\
 \n\"%d\" ist die Position des prozentualen Fortschrittswertes,\
 \nder dann im Rendering-Fenster angezeigt wird."
+
 ms_set de ayprefse_PPRender "Renderer, der für die permanente Vorschau\
 verwendet werden soll."
 
@@ -525,12 +526,12 @@ configuration."
 ms_set fr ayprefse_NCDisplayMode "Détermine comment les courbes seront\
 tracées\nLes objets Courbe objects peuvent outrepasser localement\
 cette configuration."
-ms_set fr ayprefse_ToleranceA "Sampling tolerance used for tesselating\
-NURBS curves or surfaces\nwhen an action is active."
-ms_set fr ayprefse_NPDisplayModeA "Determine how surfaces should be drawn\
-\nwhen an action is active."
-ms_set fr ayprefse_NCDisplayModeA "Determine how curves should be drawn\
-\nwhen an action is active."
+#ms_set fr ayprefse_ToleranceA "Sampling tolerance used for tesselating\
+#NURBS curves or surfaces\nwhen an action is active."
+#ms_set fr ayprefse_NPDisplayModeA "Determine how surfaces should be drawn\
+#\nwhen an action is active."
+#ms_set fr ayprefse_NCDisplayModeA "Determine how curves should be drawn\
+#\nwhen an action is active."
 
 ms_set fr ayprefse_UseMatColor "Utiliser les couleurs du matériau pour\
 les vue ombrées?"
@@ -580,15 +581,33 @@ ms_set fr ayprefse_RenderUI "Activer l'interface utilisateur lors le rendu."
 ms_set fr ayprefse_RenderPT "Modèle pour la progression à partir de la\
 sortie du moteur de rendu.\n\"%d\" montre la position du numéro de\
 progression dans la sortie."
+#ms_set fr ayprefse_FRender "Name and parameters of the renderer to use for\
+#rendering to a file.\n\"%s\" will be replaced by the filename\
+#of the RIB."
+#ms_set en ayprefse_FRenderUI "Enable user interface for rendering to a file."
+#ms_set fr ayprefse_FRenderPT "A template that helps to pick the progress\
+#from the output of the renderer.\n\"%d\" denotes the position of\
+#the progress number in the output."
 ms_set fr ayprefse_SMRender "Nom et paramètres du moteur de rendu à utiliser\
 pour les shadow maps.\n\"%s\" sera remplacé par le nom du fichier du\
 RIB."
-ms_set fr ayprefse_SMRenderUI "Enable user interface for shadow map rendering."
+ms_set fr ayprefse_SMRenderUI "Activer l'interface utilisateur lors le\
+rendu shadow maps."
 ms_set fr ayprefse_SMRenderPT "Modèle pour la progression à partir de la\
 sortie du moteur de rendu.\n\"%d\" montre la position du numéro de\
 progression dans la sortie."
+#ms_set fr ayprefse_SMFileFormat "File format of shadow map.\
+#\nRenderMan: zfile\nGelato: shadow"
+#ms_set fr ayprefse_SMFileType "Type of shadow map.\
+#\nz: normal shadow map (RenderMan, Gelato)\
+#\navgz: Woo shadow map (Gelato only!)\
+#\nshadowvol: volume shadow map (Gelato only!)"
+#ms_set fr ayprefse_SMChangeShaders "Change shader names (prepend\
+# \"shadow\")\nwhen rendering with shadow maps?"
+
 ms_set fr ayprefse_PPRender "Moteur de rendu à utiliser pour l'aperçu\
 permanent."
+
 
 # Misc
 ms_set fr ayprefse_RedirectTcl "Rediriger tous les messages d'erreur\
@@ -596,11 +615,11 @@ TCL vers la console?"
 ms_set fr ayprefse_Logging "Sauvegarder tous les message dans un fichier?"
 ms_set fr ayprefse_LogFile "Chemin et nom du fichier de sauvegarde des\
 messages?"
-ms_set fr ayprefse_ErrorLevel "Which messages should go to the console?\
-\nSilence - None\
-\nErrors - Only Errors\
-\nWarnings - Warnings and Errors\
-\nAll - Warnings, Errors, and Informative Messages"
+#ms_set fr ayprefse_ErrorLevel "Which messages should go to the console?\
+#\nSilence - None\
+#\nErrors - Only Errors\
+#\nWarnings - Warnings and Errors\
+#\nAll - Warnings, Errors, and Informative Messages"
 ms_set fr ayprefse_SaveAddsMRU "Ajouter le nom des scène sauvegardées à\
 l'entrée de menu\nMost-Recently-Used files?"
 ms_set fr ayprefse_ToolBoxTrans "Rendre la fenêtre Boîte-à-Outils transient?"
