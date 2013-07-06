@@ -1050,7 +1050,7 @@ also section <ref id="viewobj" name="View Object">.
 object, see section <ref id="instanceobj" name="Instance Object">
 for more information regarding instances.
 
-<item><tt/"Clone"/, create a clone object, see
+<item><tt/"Clone"/, create a Clone object, see
 section <ref id="cloneobj" name="Clone Object">
 
 <item><tt/"Mirror"/, create a Mirror object, see
@@ -1069,16 +1069,16 @@ may be used to include objects into your scenes
 that just exist as a piece of RIB, see
 also section <ref id="riincobj" name="RiInc Object">.
 
-<item><tt/"RiProc"/, create a new procedural object, see
+<item><tt/"RiProc"/, create a new RI procedural object, see
 also section <ref id="riprocobj" name="RiProc Object">.
 
-<item><tt/"Script"/, create a new script object, see
+<item><tt/"Script"/, create a new Script object, see
 also section <ref id="scriptobj" name="Script Object">.
 
-<item><tt/"Select"/, create a new select object, see
+<item><tt/"Select"/, create a new Select object, see
 also section <ref id="selectobj" name="Select Object">.
 
-<item><tt/"Text"/, create a new text object, see
+<item><tt/"Text"/, create a new Text object, see
 also section <ref id="textobj" name="Text Object">.
 </itemize>
 
@@ -9221,21 +9221,21 @@ With the help of scripts, that run in the Ayam interpreter, more commands
 may be transfered to or made available in the safe interpreter.
 But this may, of course, open security holes again.
 <p>
-You can also still re-enable full access from script objects to the
+You can also still re-enable full access from Script objects to the
 complete scripting interface by recompiling Ayam.
-If you do so, for security reasons, if scene files containing script
+If you do so, for security reasons, if scene files containing Script
 objects are loaded, Ayam will raise a warning dialog, offering to
-temporarily disable all script objects that will be read. The script
-objects will be disabled using the <tt/"Active"/ script object property
+temporarily disable all Script objects that will be read. The Script
+objects will be disabled using the <tt/"Active"/ Script object property
 and may be enabled again after careful inspection of the script code
 manually or using the main menu entry <tt>"Special/Enable Scripts"</tt>.
 
 <sect2>Script Object Usage
 <p>
-The script of a script object will be run each time the script is
-modified and each time the notification callback of the script object
-is called (e.g.~because one of the children of the script object changed).
-As long as the script of a script object is executed, Ayam will
+The script of a Script object will be run each time the script is
+modified and each time the notification callback of the Script object
+is called (e.g.~because one of the children of the Script object changed).
+As long as the script of a Script object is executed, Ayam will
 not process any events except for checking whether the script emergency
 hotkey <tt/&lt;Ctrl+C&gt;/, that may also be used to
 escape from infinite loops in the Ayam console, is pressed.
@@ -9248,7 +9248,7 @@ selOb, plb_update, undo!
 Script objects may also create their own property
 GUIs for e.g.~script parameters.<footnote>Since 1.8.2.</footnote>
 This may be accomplished by adding tags of type <tt>"NP"</tt> with the
-name of the new property as value to the script object (menu entry
+name of the new property as value to the Script object (menu entry
 <tt>"Special/Tags/Add Property"</tt>).
 The script itself is responsible for data
 management and property GUI creation (see section
@@ -9260,17 +9260,17 @@ There is also a tag type to remove properties
 Using this tag, one can e.g.~hide the actual script
 code and block users from unintentionally changing it.
 <p>
-Starting with Ayam 1.16, the environment for running script objects scripts
+Starting with Ayam 1.16, the environment for running Script objects scripts
 has been refined to allow more complex scripts (that traverse the scene or
 use the clipboard) to be written:
 When a script is running, the current level is the child level of the
-respective script object. Furthermore, the object clipboard is saved
+respective Script object. Furthermore, the object clipboard is saved
 for running the script and re-established after the script finished.
 <p>
 The binary and source distributions of Ayam contain several example
-scripts for script objects in the <tt>"ayam/bin/scripts"</tt> and
+scripts for Script objects in the <tt>"ayam/bin/scripts"</tt> and
 <tt>"ayam/src/scripts"</tt> directories, respectively. In addition,
-there are example scene files using script objects in the
+there are example scene files using Script objects in the
 <tt>"ayam/scn/scripts"</tt> directory.
 <p>
 The following table briefly lists some capabilities of the Script object.
@@ -9283,7 +9283,7 @@ Script|Any<f/<sup/+//|No|Any<f/<sup/+//|No*<#if out=latex>@<hline></#if>
 <caption>Script Object Capabilities</caption>
 </table>
 <p>
-The next section discusses the available script object types and
+The next section discusses the available Script object types and
 additional controlling parameters.
 
 <sect2>ScriptAttr Property<label id="scriptattr"><label id="scriptattrprop">
@@ -9291,8 +9291,8 @@ additional controlling parameters.
 <itemize>
 <item>If <tt/"Active"/ is disabled, the script will not be run.
 
-<item><tt/"Type"/ is the type of the script object.
-Three types of script objects are currently available:
+<item><tt/"Type"/ is the type of the Script object.
+Three types of Script objects are currently available:
  <itemize>
  <item><tt/"Run"/, the script will be run and no special action will
 take place.
@@ -9300,9 +9300,9 @@ take place.
  <item><tt/"Create"/, the script will be run and will create and
 parameterise new objects. After running the script, the newly
 created object(s) will automatically be moved into the internal data
-structure of the script object. The script object will look like
+structure of the Script object. The Script object will look like
 and act as an object of the type that the script created.
-If the script creates e.g.~a NCurve object, the script object may
+If the script creates e.g.~a NCurve object, the Script object may
 be used as parameter object of a tool object that needs a NCurve,
 e.g.~a Sweep:
 <tscreen><verb>
@@ -9314,7 +9314,7 @@ If the newly created object has to be selected by the script code
 for further parameterisation purposes, the selection should be done
 using the scripting interface command <tt/"sL"/ (which performs
 a hidden selection in the safe interpreter context).
-Consequently, the most simple example script for a script object
+Consequently, the most simple example script for a Script object
 of type <tt/"Create"/ looks like this:
 <tscreen><verb>
 crtOb NCurve
@@ -9326,25 +9326,25 @@ sL
 setProperty NCurveAttr(Order) 2
 </verb></tscreen>
 
- <item><tt/"Modify"/, if the script object has child objects,
+ <item><tt/"Modify"/, if the Script object has child objects,
 these child objects will be temporarily moved into the internal data
-structure of the script object. A copy of all child objects will be
-created as new children of the script object. A selection of the
+structure of the Script object. A copy of all child objects will be
+created as new children of the Script object. A selection of the
 new child objects will be established, then the script will be run.
 Usually, the script modifies one of the selected objects (moves control
 points, adds tags, or does something similar). Afterwards, the two sets
 of objects will be exchanged, the modified objects will be moved to
-the internal data structure of the script object while
+the internal data structure of the Script object while
 the unmodified original child objects will again be child objects of the
-script object. The modified objects will be provided upstream to
+Script object. The modified objects will be provided upstream to
 potential parents.
 If certain actions in the script shall be restricted to
-one of the child objects of the script object, the
+one of the child objects of the Script object, the
 <tt/"withOb"/ command may be used to accomplish this easily.
-The script object will look like and act as an object of the type
-of the first child object of the script object.
-If the script object has e.g.~a NCurve object as first child, the
-script object may be used as parameter object of a tool object that
+The Script object will look like and act as an object of the type
+of the first child object of the Script object.
+If the Script object has e.g.~a NCurve object as first child, the
+Script object may be used as parameter object of a tool object that
 needs a NCurve, e.g.~a Sweep:
 <tscreen><verb>
 +-Sweep
@@ -9352,7 +9352,7 @@ needs a NCurve, e.g.~a Sweep:
  |\ NCurve
  \ Path(NCurve)
 </verb></tscreen>
-A simple example script for a script object of type <tt/"Modify"/ that
+A simple example script for a Script object of type <tt/"Modify"/ that
 needs a single NURBS curve as child object may look like this:
 <tscreen><verb>
 revertC
@@ -9368,19 +9368,19 @@ convOb -inplace; revertC
 <item><tt/"Script"/ is the script code. The corresponding widget
 is a standard Tcl text widget that allows to directly edit the code.
 It is also possible to edit the code in an external editor and
-copy it to the script object using the operating system clipboard
+copy it to the Script object using the operating system clipboard
 and the <tt/"Paste (Replace)"/ context menu entry of the text widget.
 If the first line of the script is a comment like
 <code>
 # Ayam, save array: &lt;arrayname&gt;
 </code>
 then the global Tcl array <tt>&lt;arrayname&gt;</tt> will be saved with
-the script object to Ayam scene files.
+the Script object to Ayam scene files.
 The array must contain an entry <tt/"SP"/ that lists all individual
-parameters of the script object. Note that only parameters from this
+parameters of the Script object. Note that only parameters from this
 list will be saved to Ayam scene files.
 Note also, that <tt/"SP"/ must <em/never/ contain <tt/"SP"/. All copies
-of a script object must share the same set of individual vs. shared
+of a Script object must share the same set of individual vs. shared
 parameters. If objects need to store differing/individual amounts of
 parameter data, lists can be used as individual parameters.
 <p>
@@ -9404,13 +9404,13 @@ can be used in conjunction like this:
 
 <sect2>Script Object Examples<label id="scriptobjex">
 <p>
-This section illustrates the development of a script object for parametric
+This section illustrates the development of a Script object for parametric
 lines, otherwise unavailable in Ayam.
 <p>
 We start with a simple version, that first creates a NURBS curve object with
 two control points and then places the control points each at +/- half the
 desired line length on the x axis. Just copy the following code to the
-Script property of a script object of type <tt/"Create"/, and activate it.
+Script property of a Script object of type <tt/"Create"/, and activate it.
 <code>
 set length 1
 crtOb NCurve -length 2
@@ -9452,7 +9452,7 @@ sL
 setPnt 0 [expr {-$length/2.0}] 0.0 0.0 1.0
 setPnt 1 [expr {$length/2.0}] 0.0 0.0 1.0
 </code>
-and by adding a <tt>"NP"</tt> (new property) tag to the script object
+and by adding a <tt>"NP"</tt> (new property) tag to the Script object
 with the value <tt>"LineAttr"</tt>, resulting in a new clickable
 graphical user interface as can be seen in the following image:
 <p>
@@ -9480,19 +9480,19 @@ Finally, to enable saving of the parameter value in the new property
 <tt>"LineAttr"</tt> to scene files, a comment must be prepended to the
 script (<tt>"Ayam, save array: LineAttrData"</tt>), and to enable
 multiple and individually parameterised copies of this
-script object, a <tt/"SP"/ entry needs to be added to the
+Script object, a <tt/"SP"/ entry needs to be added to the
 <tt>"LineAttrData"</tt> array as well.
 <p>
 The complete script is also available as example script file
 <tt>"scripts/crtlinegui.tcl"</tt> in the Ayam distribution.
 <p>
 In addition, a second example demonstrates the scene traversal and
-hierarchy building capabilities available to script objects since
+hierarchy building capabilities available to Script objects since
 Ayam 1.16.
 
-Create a script object, and add two children to it, a box and a
+Create a Script object, and add two children to it, a box and a
 NURBS curve (order 2, knot type: chordal works best). Then add the following
-script to the script object:
+script to the Script object:
 <code>
 # this script needs object type "Modify" and two children:
 # a box/sphere and a curve
@@ -11056,6 +11056,25 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
+<sect2>Bevel Tool<label id="bevt">
+<p>
+<descrip>
+<tag/Arguments/ The bevel tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Bevel object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve             +-Bevel
+|-NCurve     ==>      |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="bevelobj" name="Bevel Object">
+for more information regarding the Bevel object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
 <sect2>Cap Tool<label id="capt">
 <p>
 <descrip>
@@ -12132,7 +12151,7 @@ script code sent via the Tk <tt/"send"/ command or the AppleScript
 <p>
 In contrast to other modelling environments, in Ayam there is
 another way to run scripts. In Ayam, scripts may also be attached
-to script objects and run when the notification mechanism updates
+to Script objects and run when the notification mechanism updates
 the scene. See also section
 <ref id="scriptobj" name="Script object">.
 Even normal objects can trigger scripts upon notification using
@@ -15326,7 +15345,7 @@ main window widgets.
 <p>
 Furthermore, the script will also clear the console and
 try to break potential endless loops running e.g.~in the console or
-in script objects.<footnote>Since 1.9.</footnote>
+in Script objects.<footnote>Since 1.9.</footnote>
 <p>
 After running <tt>"repairAyam.tcl"</tt> the scene (or the most
 important objects currently worked on) should be immediately
@@ -15574,7 +15593,7 @@ George W. Hart:<newline>
 <p>
 This script must be used in a Script object of type <tt/"Create"/.
 For convenience, there is also a property GUI; one must add a <tt/"NP"/ tag
-of value <tt/"PolyhedronAttr"/ to the script object to see it.
+of value <tt/"PolyhedronAttr"/ to the Script object to see it.
 <p>
 The Conway notation defines a set of operations executed consecutively
 on a seed/basic shape.
@@ -17654,7 +17673,7 @@ to nearly full tool object capabilities through the employment of the concept
 of scripting objects
 (see section <ref id="scriptobj" name="Script Object">).
 <p>
-This can be done easily by e.g.~creating script objects of type <tt/"Modify"/
+This can be done easily by e.g.~creating Script objects of type <tt/"Modify"/
 that call those tools from their script (after possible conversion of the
 provided object(s) to a proper type, the tool may need to operate on).
 Even property GUIs to let the user adjust tool parameters as they know it
@@ -17666,7 +17685,7 @@ But let us see a simple example first:
  +-Script
   \ ExtrNC
 </verb></tscreen>
-In the scene hierarchy above, the script object could be simply reverting the
+In the scene hierarchy above, the Script object could be simply reverting the
 extracted curve with code like this:
 <code>
 convOb -inplace; revertC
@@ -17934,8 +17953,8 @@ moved to the new position of points snapped to the grid while editing
 (default: 1 &ndash; yes).
 
 <item><tt/"AskScriptDisable"/ controls the warning dialog that
-appears if scenes with script objects or tags are loaded. The default
-value is 1 &ndash; yes, warn about script objects and tags.
+appears if scenes with Script objects or tags are loaded. The default
+value is 1 &ndash; yes, warn about Script objects and tags.
 
 <item><tt/"AUCommands"/, commands that will be run in the console
 when <tt/&lt;Shift+Return&gt;/ is used instead of <tt/&lt;Return&gt;/.
@@ -18954,6 +18973,7 @@ Index:
 <item>Bevel:
 <itemize>
 <item><ref id="bevelobj" name="Bevel object">,
+<item><ref id="bevt" name="Bevel tool">,
 <item><ref id="bevelsprop" name="Bevels Property">,
 <item><ref id="handb" name="using bevels">,
 <item><ref id="offsetncp" name="offset mode">
