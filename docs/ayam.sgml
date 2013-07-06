@@ -11145,7 +11145,8 @@ the selected objects to it.
 <tscreen><verb>
 |-NCurve             +-Gordon
 |-NCurve              |-NCurve
-|-NCurve     ==>      |-NCurve
+|-Level               |-NCurve
+|-NCurve     ==>      |-Level
 |-NCurve              |-NCurve
                       \-NCurve
 </verb></tscreen>
@@ -11171,6 +11172,26 @@ the selected objects to it.
 </verb></tscreen>
 <tag/Notes/ See section <ref id="skinobj" name="Skin Object">
 for more information regarding the Skin object.
+
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Trim Tool<label id="trimt">
+<p>
+<descrip>
+<tag/Arguments/ The trim tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Trim object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NPatch             +-Trim
+|-NCurve     ==>      |-NPatch
+|-NCurve              |-NCurve
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="trimobj" name="Trim Object">
+for more information regarding the Trim object.
 
 This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
@@ -11263,7 +11284,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnc" name="splitNC">.
 </descrip>
 
-<sect2>Trim Tool<label id="trimt">
+<sect2>Curve Trim Tool<label id="ctrimt">
 <p>
 <figure loc="ht">
 <eps file="pics/trimnc.ps" height="4cm">
@@ -13925,7 +13946,7 @@ trimNC &ndash; trim NURBS curve
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
-See also section <ref id="trimt" name="Trim Tool">.
+See also section <ref id="ctrimt" name="Curve Trim Tool">.
 </itemize>
 
 <p>
@@ -20151,6 +20172,7 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item>Trim:
 <itemize>
 <item><ref id="trimobj" name="Trim object">,
+<item><ref id="trimt" name="Trim tool">,
 <item><ref id="vmtype" name="view menu entry">
 </itemize>
 <item>Trim Curve: <ref id="trim" name="using trim curves">
