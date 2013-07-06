@@ -10866,7 +10866,9 @@ points may be removed from the object. Then the notification
 of the object will be run. The notification of the parent object(s)
 will be run after processing of all selected objects finished.
 
-<sect1>Circular B-Spline Tool<label id="cbspt">
+<sect1>Curve Creation Tools
+
+<sect2>Circular B-Spline Tool<label id="cbspt">
 <p>
 <figure loc="ht">
 <eps file="pics/cbsps.ps" height="5cm">
@@ -10906,7 +10908,7 @@ points unless the order is 2 (see the right curve in the image above,
 which was created with an arc value of 180.0, 10 sections, and order 4).
 </descrip>
 
-<sect1>NURBCircle Tool<label id="ncirct">
+<sect2>NURBCircle Tool<label id="ncirct">
 <p>
 <figure loc="ht">
 <eps file="pics/ncircle.ps" height="5cm">
@@ -10937,7 +10939,7 @@ The amount of movement determines the radius of the torus, whereas
 the radius of the circle determines the thickness.
 </descrip>
 
-<sect1>TrimRect Tool<label id="trrt">
+<sect2>TrimRect Tool<label id="trrt">
 <p>
 <descrip>
 <tag/Arguments/ None
@@ -10963,7 +10965,8 @@ discussion of trim curves and how to use the rectangular curve created
 by the TrimRect tool.
 </descrip>
 
-<sect1>NURBSphere Tool<label id="nspt">
+<sect1>Surface Creation Tools
+<sect2>NURBSphere Tool<label id="nspt">
 <p>
 <descrip>
 <tag/Arguments/ None.
@@ -10972,7 +10975,7 @@ and revolves it about the Y axis thus forming a sphere of radius 1.
 <tag/Notes/ The NURBS curve is deleted afterwards.
 </descrip>
 
-<sect1>NURBSphere2 Tool<label id="nsp2t">
+<sect2>NURBSphere2 Tool<label id="nsp2t">
 <p>
 <descrip>
 <tag/Arguments/ None.
@@ -10981,7 +10984,7 @@ consisting of six NURBS patches.
 <tag/Notes/ The NURBS patches are of high order (5).
 </descrip>
 
-<sect1>Revolve Tool<label id="revt">
+<sect2>Revolve Tool<label id="revt">
 <p>
 <descrip>
 <tag/Arguments/ The revolve tool takes the selected objects from
@@ -10999,7 +11002,24 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Extrude Tool<label id="extt">
+<sect2>Swing Tool<label id="swint">
+<p>
+<descrip>
+<tag/Arguments/ The swing tool takes the selected objects from
+the selection.
+<tag/Operation/ The tool creates a Swing object, and moves
+the selected objects to it.
+<tscreen><verb>
+|-NCurve     ==>     +-Swing
+                      \-NCurve
+</verb></tscreen>
+<tag/Notes/ See section <ref id="swingobj" name="Swing Object">
+for more information regarding the Swing object.
+This tool uses the object clipboard to move the objects so that the
+original clipboard contents are lost when this tool finishes.
+</descrip>
+
+<sect2>Extrude Tool<label id="extt">
 <p>
 <descrip>
 <tag/Arguments/ The extrude tool takes the selected objects from
@@ -11018,7 +11038,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Sweep Tool<label id="swpt">
+<sect2>Sweep Tool<label id="swpt">
 <p>
 <descrip>
 <tag/Arguments/ The sweep tool takes the selected objects from
@@ -11036,7 +11056,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Cap Tool<label id="capt">
+<sect2>Cap Tool<label id="capt">
 <p>
 <descrip>
 <tag/Arguments/ The cap tool takes the selected objects from
@@ -11055,7 +11075,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Birail1 Tool<label id="bi1t">
+<sect2>Birail1 Tool<label id="bi1t">
 <p>
 <descrip>
 <tag/Arguments/ The birail1 tool takes the selected objects from
@@ -11075,7 +11095,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Birail2 Tool<label id="bi2t">
+<sect2>Birail2 Tool<label id="bi2t">
 <p>
 <descrip>
 <tag/Arguments/ The birail2 tool takes the selected objects from
@@ -11096,7 +11116,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Gordon Tool<label id="gort">
+<sect2>Gordon Tool<label id="gort">
 <p>
 <descrip>
 <tag/Arguments/ The gordon tool takes the selected objects from
@@ -11117,7 +11137,7 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Skin Tool<label id="skit">
+<sect2>Skin Tool<label id="skit">
 <p>
 <descrip>
 <tag/Arguments/ The skin tool takes the selected objects from
@@ -11137,7 +11157,9 @@ This tool uses the object clipboard to move the objects so that the
 original clipboard contents are lost when this tool finishes.
 </descrip>
 
-<sect1>Revert Tool<label id="revertt">
+<sect1>Curve Modification Tools
+
+<sect2>Revert Tool<label id="revertt">
 <p>
 <descrip>
 <tag/Arguments/ The revert tool takes all NCurve,
@@ -11167,7 +11189,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screvert" name="revertC">.
 </descrip>
 
-<sect1>Concat Tool<label id="conct">
+<sect2>Concat Tool<label id="conct">
 <p>
 <descrip>
 <tag/Arguments/ The concat tool takes two NURBS curves from
@@ -11195,7 +11217,7 @@ scripting interface command <ref id="scconcatnc" name="concatNC">.
 -->
 </descrip>
 
-<sect1>Split Tool<label id="splitt">
+<sect2>Split Tool<label id="splitt">
 <p>
 <figure loc="ht">
 <eps file="pics/splitnc.ps" height="4cm">
@@ -11222,7 +11244,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnc" name="splitNC">.
 </descrip>
 
-<sect1>Trim Tool<label id="trimt">
+<sect2>Trim Tool<label id="trimt">
 <p>
 <figure loc="ht">
 <eps file="pics/trimnc.ps" height="4cm">
@@ -11242,7 +11264,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctrimnc" name="trimNC">.
 </descrip>
 
-<sect1>Elevate Tool<label id="elevt">
+<sect2>Elevate Tool<label id="elevt">
 <p>
 <figure loc="ht">
 <eps file="pics/elevate.ps" height="4cm">
@@ -11264,7 +11286,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">.
 </descrip>
 
-<sect1>Extend Tool<label id="extendt">
+<sect2>Extend Tool<label id="extendt">
 <p>
 <figure loc="ht">
 <eps file="pics/extendnc.ps" height="4cm">
@@ -11292,7 +11314,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scextendnc" name="extendNC">.
 </descrip>
 
-<sect1>Refine Tool<label id="refit">
+<sect2>Refine Tool<label id="refit">
 <p>
 <figure loc="ht">
 <eps file="pics/refinecv.ps" height="4cm">
@@ -11326,7 +11348,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
 </descrip>
 
-<sect1>Refine Knots Tool<label id="refknit">
+<sect2>Refine Knots Tool<label id="refknit">
 <p>
 <figure loc="ht">
 <eps file="pics/refine.ps" height="4cm">
@@ -11350,7 +11372,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
 </descrip>
 
-<sect1>Coarsen Tool<label id="coart">
+<sect2>Coarsen Tool<label id="coart">
 <p>
 <figure loc="ht">
 <eps file="pics/coarsen.ps" height="4cm">
@@ -11375,7 +11397,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
 </descrip>
 
-<sect1>Clamp Tool<label id="clat">
+<sect2>Clamp Tool<label id="clat">
 <p>
 <figure loc="ht">
 <eps file="pics/clampnc.ps" height="4cm">
@@ -11403,7 +11425,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scclampnc" name="clampNC">.
 </descrip>
 
-<sect1>Unclamp Tool<label id="unclat">
+<sect2>Unclamp Tool<label id="unclat">
 <p>
 <figure loc="ht">
 <eps file="pics/unclampnc.ps" height="5cm">
@@ -11423,7 +11445,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scunclampnc" name="unclampNC">.
 </descrip>
 
-<sect1>Insert Knot Tool<label id="insknt">
+<sect2>Insert Knot Tool<label id="insknt">
 <p>
 <figure loc="ht">
 <eps file="pics/inskn.ps" height="4cm">
@@ -11446,7 +11468,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scinsknnc" name="insknNC">.
 </descrip>
 
-<sect1>Remove Knot Tool<label id="remknt">
+<sect2>Remove Knot Tool<label id="remknt">
 <p>
 <figure loc="ht">
 <eps file="pics/remkn.ps" height="4cm">
@@ -11478,7 +11500,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scremknnc" name="remknNC">.
 </descrip>
 
-<sect1>Plot Curvature Tool<label id="plotcurt">
+<sect2>Plot Curvature Tool<label id="plotcurt">
 <p>
 <figure loc="ht">
 <eps file="pics/plotcur.ps" height="4cm">
@@ -11496,7 +11518,7 @@ number of data points and will be scaled to the specified width
 and by the specified height value. See also the image above.
 </descrip>
 
-<sect1>Shift Closed Curve Tool<label id="shiftclc">
+<sect2>Shift Closed Curve Tool<label id="shiftclc">
 <p>
 <figure loc="ht">
 <eps file="pics/shiftclsbsp.ps" height="4cm">
@@ -11524,7 +11546,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scshiftc" name="shiftC">.
 </descrip>
 
-<sect1>To XY Tool<label id="toxyt">
+<sect2>To XY Tool<label id="toxyt">
 <p>
 <figure loc="ht">
 <eps file="pics/toxy.ps" height="5cm">
@@ -11534,12 +11556,14 @@ scripting interface command <ref id="scshiftc" name="shiftC">.
 <descrip>
 <tag/Arguments/ The To XY tool takes a number of
 NCurve, ACurve, or ICurve objects from the selection. The curves should be
-planar.
+planar. Curves that form a single straight line are not supported.
 <tag/Operation/ The control points of the curve(s) will be rotated,
 so that they are in the XY plane of the respective object space defined by
 the curve object(s). Additionally, the rotation attributes of
 the curve object(s) will be changed so that the curve does not
 change its orientation with regard to other objects or the world space.
+The scale attributes will be reset to 1.0.
+<p>
 See also the image above, where the left curve, planar but not defined
 in the XY plane will be changed, so that it is defined in the XY plane
 (mind the two different object coordinate systems in conjunction with
@@ -11551,7 +11575,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="sctoxyc" name="toXYC">.
 </descrip>
 
-<sect1>Make Compatible Tool<label id="makecompt">
+<sect2>Make Compatible Tool<label id="makecompt">
 <p>
 <figure loc="ht">
 <eps file="pics/makecomp.ps" height="4cm">
@@ -11574,7 +11598,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scmakecompnc" name="makeCompNC">.
 </descrip>
 
-<sect1>Rescale Knots to Range Tool<label id="resckrt">
+<sect2>Rescale Knots to Range Tool<label id="resckrt">
 <p>
 <descrip>
 <tag/Arguments/ The rescale knots to range tool takes a number of
@@ -11591,7 +11615,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </descrip>
 
-<sect1>Rescale Knots to Mindist Tool<label id="resckmt">
+<sect2>Rescale Knots to Mindist Tool<label id="resckmt">
 <p>
 <descrip>
 <tag/Arguments/ The rescale knots to mindist tool takes a number of
@@ -11609,7 +11633,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnc" name="rescaleknNC">.
 </descrip>
 
-<sect1>Collapse Points Tool<label id="collt">
+<sect2>Collapse Points Tool<label id="collt">
 <p>
 <descrip>
 <tag/Arguments/ The collapse tool expects a selected NURBS curve
@@ -11624,7 +11648,7 @@ of the last tagged point.
 The point selection will be removed from the original objects.
 </descrip>
 
-<sect1>Explode Points Tool<label id="explt">
+<sect2>Explode Points Tool<label id="explt">
 <p>
 <descrip>
 <tag/Arguments/ The explode tool expects a selected NURBS curve
@@ -11644,7 +11668,9 @@ points of the multiple point(s) still have identical coordinate values
 The point selection will be removed from the original objects.
 </descrip>
 
-<sect1>Swap UV Tool<label id="swapuvt">
+<sect1>Surface Modification Tools
+
+<sect2>Swap UV Tool<label id="swapuvt">
 <p>
 <descrip>
 <tag/Arguments/ The swap uv tool takes a number of NURBS patches,
@@ -11659,7 +11685,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scswapuvs" name="swapuvS">.
 </descrip>
 
-<sect1>Elevate UV Tool<label id="elevuvt">
+<sect2>Elevate UV Tool<label id="elevuvt">
 <p>
 <descrip>
 <tag/Arguments/ The elevate uv tool takes a number of NURBS patches from
@@ -11678,7 +11704,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scelevatevnp" name="elevatevNP">.
 </descrip>
 
-<sect1>Refine Surface Tool<label id="refinest">
+<sect2>Refine Surface Tool<label id="refinest">
 <p>
 <figure loc="ht">
 <eps file="pics/refinenp.ps" height="4cm">
@@ -11702,7 +11728,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="screfinevnp" name="refinevNP">.
 </descrip>
 
-<sect1>Revert U Tool<label id="revertut">
+<sect2>Revert U Tool<label id="revertut">
 <p>
 <descrip>
 <tag/Arguments/ The revert u tool takes a number of NURBS patches
@@ -11715,7 +11741,7 @@ of the corresponding knot vector.
 scripting interface command <ref id="screvertus" name="revertuS">.
 </descrip>
 
-<sect1>Revert V Tool<label id="revertvt">
+<sect2>Revert V Tool<label id="revertvt">
 <p>
 <descrip>
 <tag/Arguments/ The revert v tool takes a number of NURBS patches
@@ -11728,7 +11754,7 @@ of the corresponding knot vector.
 scripting interface command <ref id="screvertvs" name="revertvS">.
 </descrip>
 
-<sect1>Patch Clamp Tool<label id="clanpt">
+<sect2>Patch Clamp Tool<label id="clanpt">
 <p>
 <figure loc="ht">
 <eps file="pics/clampnp.ps" height="4cm">
@@ -11757,7 +11783,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scclampvnp" name="clampvNP">.
 </descrip>
 
-<sect1>Patch Unclamp Tool<label id="unclanpt">
+<sect2>Patch Unclamp Tool<label id="unclanpt">
 <p>
 <figure loc="ht">
 <eps file="pics/unclampnp.ps" height="5cm">
@@ -11782,7 +11808,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampvnp" name="unclampvNP">.
 </descrip>
 
-<sect1>Patch Rescale Knots to Range Tool<label id="resckrnpt">
+<sect2>Patch Rescale Knots to Range Tool<label id="resckrnpt">
 <p>
 <descrip>
 <tag/Arguments/ The patch rescale knots to range tool takes a number of
@@ -11800,7 +11826,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </descrip>
 
-<sect1>Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
+<sect2>Patch Rescale Knots to Mindist Tool<label id="resckmnpt">
 <p>
 <descrip>
 <tag/Arguments/ The rescale knots to mindist tool takes a number of
@@ -11819,7 +11845,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="screscaleknnp" name="rescaleknNP">.
 </descrip>
 
-<sect1>Patch Insert Knot Tool<label id="insknnpt">
+<sect2>Patch Insert Knot Tool<label id="insknnpt">
 <p>
 <figure loc="ht">
 <eps file="pics/insknnp.ps" height="5cm">
@@ -11845,7 +11871,7 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scinsknvnp" name="insknvNP">.
 </descrip>
 
-<sect1>Patch Remove Knot Tool<label id="remknts">
+<sect2>Patch Remove Knot Tool<label id="remknts">
 <p>
 <figure loc="ht">
 <eps file="pics/remknnp.ps" height="5cm">
@@ -11879,7 +11905,7 @@ See also the documentation of the corresponding scripting interface commands
 </descrip>
 
 
-<sect1>Patch Split Tools<label id="splitnpt">
+<sect2>Patch Split Tools<label id="splitnpt">
 <p>
 <descrip>
 <tag/Arguments/ The patch split tools take a number of NURBS patches from
@@ -11904,7 +11930,9 @@ See also the documentation of the corresponding scripting interface commands
 <ref id="scsplitvnp" name="splitvNP">.
 </descrip>
 
-<sect1>Extract Curve Tool<label id="extnct">
+<sect1>Conversion Tools
+
+<sect2>Extract Curve Tool<label id="extnct">
 <p>
 <descrip>
 <tag/Arguments/ The extract curve tool takes the first of the selected
@@ -11926,7 +11954,7 @@ See section <ref id="extrncobj" name="ExtrNC Object">
 for more information regarding the ExtrNC object.
 </descrip>
 
-<sect1>Extract Patch Tool<label id="extrnpt">
+<sect2>Extract Patch Tool<label id="extrnpt">
 <p>
 <descrip>
 <tag/Arguments/ The extract patch tool takes the first of the selected
@@ -11952,7 +11980,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scextrnp" name="extrNP">.
 </descrip>
 
-<sect1>Patch Break into Curves Tool<label id="breaknpt">
+<sect2>Patch Break into Curves Tool<label id="breaknpt">
 <p>
 <descrip>
 <tag/Arguments/ The break into curves tool takes all NURBS patches from
@@ -11975,7 +12003,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scbreaknp" name="breakNP">.
 </descrip>
 
-<sect1>Build from Curves Tool<label id="buildnpt">
+<sect2>Build from Curves Tool<label id="buildnpt">
 <p>
 <descrip>
 <tag/Arguments/ The build from curves tool takes a number of NURBS
@@ -12003,7 +12031,7 @@ See also the documentation of the corresponding
 scripting interface command <ref id="scbuildnp" name="buildNP">.
 </descrip>
 
-<sect1>Tesselation Tool<label id="tesst">
+<sect2>Tesselation Tool<label id="tesst">
 <p>
 <figure loc="ht">
 <eps file="pics/tgui.ps" height="3cm">
@@ -20006,7 +20034,11 @@ ReadPartial: <ref id="rribopt" name="RIB import option">
 <item><ref id="sweepobj" name="Sweep object">,
 <item><ref id="swpt" name="Sweep tool">
 </itemize>
-<item>Swing: <ref id="swingobj" name="Swing object">
+<item>Swing:
+<itemize>
+<item><ref id="swingobj" name="Swing object">,
+<item><ref id="swint" name="Swing tool">
+</itemize>
 <item>Symmetric: <ref id="acp" name="ACurve attribute">
 </list>
 
