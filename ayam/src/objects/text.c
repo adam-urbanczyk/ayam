@@ -921,7 +921,7 @@ ay_text_notifycb(ay_object *o)
 	     using realloc()) */
 	  while(patch)
 	    {
-	      if(patch->down && patch->down != ay_endlevel)
+	      if(patch->down == NULL || patch->down == ay_endlevel)
 		{
 		  ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
 
