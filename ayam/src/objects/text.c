@@ -218,7 +218,7 @@ ay_text_drawhcb(struct Togl *togl, ay_object *o)
       glBegin(GL_POINTS);
        for(i = 0; i < text->pntslen; i++)
 	 {
-	   glVertex3dv((GLdouble *)text->pnts);
+	   glVertex3dv((GLdouble *)pnts);
 	   pnts += 4;
 	 }
       glEnd();
@@ -810,7 +810,6 @@ ay_text_notifycb(ay_object *o)
 		    } /* if(curve */
 
 		  curve = newcurve;
-
 		}
 	      else
 		{
@@ -922,50 +921,51 @@ ay_text_notifycb(ay_object *o)
 	     using realloc()) */
 	  while(patch)
 	    {
-	      ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
-
-	      if(!ay_status && pe.num)
+	      if(patch->down && patch->down != ay_endlevel)
 		{
+		  ay_status = ay_pact_getpoint(0, patch, dummy, &pe);
 
-		  text->pntslen += pe.num;
-
-		  p1 = realloc(text->pnts,
-			       text->pntslen*4*sizeof(double));
-
-		  if(p1)
+		  if(!ay_status && pe.num)
 		    {
-		      text->pnts = p1;
+		      text->pntslen += pe.num;
 
-		      ay_trafo_creatematrix(patch, m);
+		      p1 = realloc(text->pnts,
+				   text->pntslen*4*sizeof(double));
 
-		      for(j = 0; j < pe.num; j++)
+		      if(p1)
 			{
-			  p1 = &(text->pnts[a]);
-			  p2 = pe.coords[j];
-			  AY_APTRAN3(p1, p2, m);
-			  if(pe.rational)
+			  text->pnts = p1;
+
+			  ay_trafo_creatematrix(patch, m);
+
+			  for(j = 0; j < pe.num; j++)
 			    {
-			      p1[3] = pe.coords[j][3];
-			    }
-			  else
-			    {
-			      p1[3] = 1.0;
-			    }
-			  a += 4;
-			} /* for */
-		    }
-		  else
-		    {
-		      /* realloc() failed! */
-		      ay_pact_clearpointedit(&pe);
-		      free(text->pnts);
-		      text->pnts = NULL;
-		      break;
+			      p1 = &(text->pnts[a]);
+			      p2 = pe.coords[j];
+			      AY_APTRAN3(p1, p2, m);
+			      if(pe.rational)
+				{
+				  p1[3] = pe.coords[j][3];
+				}
+			      else
+				{
+				  p1[3] = 1.0;
+				}
+			      a += 4;
+			    } /* for */
+			}
+		      else
+			{
+			  /* realloc() failed! */
+			  ay_pact_clearpointedit(&pe);
+			  free(text->pnts);
+			  text->pnts = NULL;
+			  break;
+			} /* if */
 		    } /* if */
 
+		  ay_pact_clearpointedit(&pe);
 		} /* if */
-
-	      ay_pact_clearpointedit(&pe);
 
 	      patch = patch->next;
 	    } /* while */
