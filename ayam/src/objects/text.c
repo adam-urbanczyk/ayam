@@ -176,7 +176,7 @@ ay_text_shadecb(struct Togl *togl, ay_object *o)
 
   while(npatch)
     {
-      ay_shade_object(togl, npatch, AY_TRUE);
+      ay_shade_object(togl, npatch, AY_FALSE);
       npatch = npatch->next;
     }
 
