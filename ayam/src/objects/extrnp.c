@@ -142,7 +142,7 @@ ay_extrnp_shadecb(struct Togl *togl, ay_object *o)
     return AY_ENULL;
 
   if(extrnp->npatch)
-    ay_shade_object(togl, extrnp->npatch, AY_TRUE);
+    ay_shade_object(togl, extrnp->npatch, AY_FALSE);
 
  return AY_OK;
 } /* ay_extrnp_shadecb */

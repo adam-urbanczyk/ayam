@@ -136,7 +136,7 @@ ay_trim_shadecb(struct Togl *togl, ay_object *o)
   p = trim->npatch;
   while(p)
     {
-      ay_shade_object(togl, p, AY_TRUE);
+      ay_shade_object(togl, p, AY_FALSE);
 
       p = p->next;
     } /* while */
