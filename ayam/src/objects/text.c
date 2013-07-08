@@ -124,6 +124,9 @@ ay_text_copycb(void *src, void **dst)
 
       memcpy(tdst->unistring, tsrc->unistring,
 	     Tcl_UniCharLen(tsrc->unistring)*sizeof(Tcl_UniChar));
+
+      memset(&(tdst->unistring[Tcl_UniCharLen(tsrc->unistring)]),0,
+			       sizeof(Tcl_UniChar));
     }
 
   *dst = tdst;
