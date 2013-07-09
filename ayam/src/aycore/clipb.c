@@ -255,6 +255,11 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  ay_status = ay_object_link(clip);
 
+	  if(!ay_status)
+	    {
+	      (void)ay_notify_object(clip);
+	    }
+
 	  clip = tmp;
 	}
       else
@@ -267,6 +272,11 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  ay_status = ay_object_link(tmp);
+
+	  if(!ay_status)
+	    {
+	      (void)ay_notify_object(tmp);
+	    }
 
 	  clip = clip->next;
 	} /* if */
@@ -281,7 +291,6 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  return TCL_OK;
 	} /* if */
-
     } /* while */
 
   if(move)
@@ -401,6 +410,15 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
   clipend->next = selend->next;
   selend->next = NULL;
 
+  /* notify new objects */
+  clip = *presel;
+  while(clip && clip != clipend)
+    {
+      (void)ay_notify_object(clip);
+	    
+      clip = clip->next;
+    } /* while */
+
   /* clear selected flags of replaced objects */
   clip = ay_clipboard;
   while(clip)
@@ -411,6 +429,7 @@ ay_clipb_replacetcmd(ClientData clientData, Tcl_Interp *interp,
 
   /* free selection */
   ay_sel_free(/*clear_selflag=*/AY_TRUE);
+
 
   /* notify parent object about changes */
   if(ay_currentlevel->next && ay_currentlevel->next->object)
