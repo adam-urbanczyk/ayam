@@ -603,47 +603,14 @@ cleanup:
 int
 ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 {
- int ay_status = AY_OK;
- char fname[] = "extrnp_providecb";
- ay_extrnp_object *s = NULL;
- ay_object *new = NULL, **t = NULL;
+ ay_extrnp_object *e = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  if(!result)
-    {
-      if(type == AY_IDNPATCH)
-	return AY_OK;
-      else
-	return AY_ERROR;
-    } /* if */
+  e = (ay_extrnp_object *) o->refine;
 
-  s = (ay_extrnp_object *) o->refine;
-
-  if(type == AY_IDNPATCH)
-    {
-      t = &(new);
-
-      if(!s->npatch)
-	return AY_ERROR;
-
-      /* copy extracted npatch */
-      ay_status = ay_object_copy(s->npatch, t);
-      if(ay_status)
-	{
-	  ay_error(ay_status, fname, NULL);
-	  return AY_ERROR;
-	}
-
-      ay_trafo_copy(o, *t);
-
-      t = &((*t)->next);
-
-      *result = new;
-    } /* if */
-
- return ay_status;
+ return ay_provide_nptoolobj(o, type, e->npatch, NULL, result);
 } /* ay_extrnp_providecb */
 
 
@@ -653,44 +620,14 @@ ay_extrnp_providecb(ay_object *o, unsigned int type, ay_object **result)
 int
 ay_extrnp_convertcb(ay_object *o, int in_place)
 {
- int ay_status = AY_OK;
- ay_extrnp_object *r = NULL;
- ay_object *new = NULL;
+ ay_extrnp_object *e = NULL;
 
   if(!o)
     return AY_ENULL;
 
-  /* first, create new objects */
-  r = (ay_extrnp_object *) o->refine;
+  e = (ay_extrnp_object *) o->refine;
 
-  if(r->npatch)
-    {
-      ay_status = ay_object_copy(r->npatch, &new);
-    } /* if */
-
-  /* second, link new object, or replace old object with it */
-  if(new)
-    {
-      /* reset display mode and sampling tolerance
-	 of new patch to "global"? */
-      if(!in_place && ay_prefs.conv_reset_display)
-	{
-	  ay_npt_resetdisplay(new);
-	}
-
-      ay_trafo_copy(o, new);
-
-      if(!in_place)
-	{
-	  ay_status = ay_object_link(new);
-	}
-      else
-	{
-	  ay_object_replace(new, o);
-	} /* if */
-    } /* if */
-
- return ay_status;
+ return ay_convert_nptoolobj(o, e->npatch, NULL, in_place);
 } /* ay_extrnp_convertcb */
 
 

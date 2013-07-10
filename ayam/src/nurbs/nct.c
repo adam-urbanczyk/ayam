@@ -7510,10 +7510,12 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /** ay_nct_extend:
- *  extend NURBS curve to a point
+ *  extend a NURBS curve to a given point not changing the
+ *  current shape of the curve
  *
  * \param[in,out] curve NURBS curve object to extend
- * \param[in] p point to extend the curve to
+ * \param[in] p point to extend the curve to (must be different
+ *  from the last control point in \a curve
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -7577,9 +7579,9 @@ ay_nct_extend(ay_nurbcurve_object *curve, double *p)
 
   /* get length of new last segment */
   a = (curve->length-1)*stride;
-  v[0] = p[0]-newcv[a];
-  v[1] = p[1]-newcv[a+1];
-  v[2] = p[2]-newcv[a+2];
+  v[0] = p[0] - newcv[a];
+  v[1] = p[1] - newcv[a+1];
+  v[2] = p[2] - newcv[a+2];
   if(fabs(v[0]) > AY_EPSILON ||
      fabs(v[1]) > AY_EPSILON ||
      fabs(v[2]) > AY_EPSILON)
@@ -7646,7 +7648,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
- int mark = AY_FALSE, i = 0;
+ int to_mark = AY_FALSE, i = 0;
  double p[4] = {0}, m[3], *c = NULL;
 
   /* parse args */
@@ -7655,7 +7657,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
       p[3] = 1.0;
       if(argv[1][0] == '-' && argv[1][1] == 'm')
 	{
-	  mark = AY_TRUE;
+	  to_mark = AY_TRUE;
 	  ay_viewt_getglobalmark(&c);
 	  if(!c)
 	    {
@@ -7685,7 +7687,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
     {
       ay_error(AY_EARGS, argv[0], "(x y z (w)|-vn varname|-m)");
       return TCL_OK;
-    }
+    } /* if */
 
   /* check selection */
   if(!sel)
@@ -7703,7 +7705,7 @@ ay_nct_extendtcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  if(mark)
+	  if(to_mark)
 	    {
 	      memcpy(p, m, 3*sizeof(double));
 	      /* convert world coordinates to object space */
