@@ -33,6 +33,11 @@ proc aytest_handleLBS { w } {
 	    $tw.fu.fr.l1 insert end $item
 	}
 	$tw.fu.fr.l1 selection set 0
+	bind $tw.fu.fr.l1 <<ListboxSelect>> {
+	    if {[llength [%W curselection]] > 1 } {
+		%W selection clear 0
+	    }
+	}
     } else {
 	# clear listbox
 	$tw.fu.fr.l1 delete 0 end
@@ -40,6 +45,7 @@ proc aytest_handleLBS { w } {
 	$tw.fu.fr.l1 selection set 0
 	# disallow further selection
 	$tw.fu.fr.l1 conf -state disabled
+	bind $tw.fu.fr.l1 <<ListboxSelect>> ""
     }
  return;
 }
@@ -66,7 +72,7 @@ proc aytest_selectGUI { } {
     }
 
     set f [frame $w.fu]
-    pack $f -in $w -side top -fill x
+    pack $f -in $w -side top -fill both -expand yes
 
     set ay(bca) $w.fl.bca
     set ay(bok) $w.fl.bok
@@ -96,22 +102,22 @@ proc aytest_selectGUI { } {
     addCheck $f aytestprefs KeepObjects
     addCheck $f aytestprefs KeepFiles
 
-    pack $w.fp -side top -fill x -expand yes
+    pack $w.fp -side top -fill x -expand no
     pack $w.fu.fl -side left -fill both -expand yes
 
     set f [frame $w.fu.fr]
 
     # listbox for test item selection
     addText $f e0 "Select Item:"
-
-    set lb [listbox $f.l1 -exportselection 0\
+    set lb [listbox $f.l1 -exportselection 0 -yscrollcommand "$f.sc set"\
 		-selectmode multiple -activestyle none]
-
     $lb insert end "All"
     $lb selection set 0
     $lb conf -state disabled
+    pack $f.l1 -side left -fill both -expand yes
 
-    pack $f.l1 -side top -fill both -expand yes
+    scrollbar $f.sc -command "$lb yview" -takefocus 0
+    pack $f.sc -side right -fill y -expand no
 
     pack $w.fu.fr -side left -fill both -expand yes
 
@@ -1885,6 +1891,7 @@ proc aytest_runTests { tests items } {
 
     set test [lindex $tests 0]
     incr test
+
     if { [lindex $items 0] == 0 } {
 	eval set items \$::aytest_${test}items
     } else {
@@ -1893,29 +1900,37 @@ proc aytest_runTests { tests items } {
 	    incr item -1
 	    lappend newitems [lindex $allitems $item]
 	}
-	set items $newitems
+	if { [info exists newitems ] } {
+	    catch {set items $newitems}
+	} else {
+	    set items ""
+	}
     }
 
-    foreach test $tests {
-	set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
+    if { [llength $items] } {
+	foreach test $tests {
+	    set ::scratchfile [file join $ayprefs(TmpDir) aytestscratchfile.ay]
 
-	set ::logfile [file join $ayprefs(TmpDir) aytestlog]
-	set ::log [open $::logfile a]
+	    set ::logfile [file join $ayprefs(TmpDir) aytestlog]
+	    set ::log [open $::logfile a]
 
-	newScene
-	selOb
+	    newScene
+	    selOb
 
-	incr test
+	    incr test
 
-	puts "Running Test $test..."
+	    puts "Running Test $test..."
 
-	catch {aytest_$test $items}
+	    catch {aytest_$test $items}
 
-	close $::log
+	    close $::log
 
-	puts "\nFinished Test $test..."
+	    puts "\nFinished Test $test..."
+	}
+	# foreach
+    } else {
+	ayError 2 "Test Ayam" "No items selected!"
     }
-    # foreach
 
     . configure -cursor {}
     if { [winfo exists .testGUI] } {
