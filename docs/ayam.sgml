@@ -11280,6 +11280,8 @@ get a custom knot vector.
 form the first of the two new curves, so you may want to keep a copy
 of it somewhere.
 
+The point selection will be removed from the original curve.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scsplitnc" name="splitNC">.
 </descrip>
@@ -11299,6 +11301,8 @@ the selection and additionally requests two parametric values, umin and umax.
 designated parametric range (umin, umax).
 <tag/Notes/ The trimming process involves the application of knot insertion
 so that the curves will get a custom knot vector.
+
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="sctrimnc" name="trimNC">.
@@ -11321,6 +11325,8 @@ by the specified integer value without changing the shape of the curve.
 will be clamped automatically. The knot type of the curve will
 be changed to custom. New control points will be added and the position
 of old control points may be changed in the progress.
+
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="scelevatenc" name="elevateNC">.
@@ -11349,7 +11355,9 @@ Due to the constraints that only one control point will be added
 to the curve and the current shape must be maintained, the new curve
 may form unusual/unwanted big arcs if the new point deviates too
 much from the tangent in the endpoint of the original curve.
-<p>
+
+The point selection will be removed from the original objects.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scextendnc" name="extendNC">.
 </descrip>
@@ -11384,6 +11392,8 @@ and the last selected point are refined, see also the image below.
 <caption>Refining a Selected Region</caption>
 </figure>
 <tag/Notes/
+The point selection will be removed from the original objects.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
 </descrip>
@@ -11407,6 +11417,8 @@ not change in type. See the image above for an example of a
 successive refinement of a simple NURBS curve. Note that the shape
 of the curve does not change, but the position of
 certain control points does.
+
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="screfinenc" name="refineNC">.
@@ -11432,6 +11444,8 @@ For closed curves, the coarsen tool will not remove the last point.
 
 The coarsen tool will also remove knot values from curves with
 custom knot vectors.
+
+The point selection will be removed from the original objects.
 
 See also the documentation of the corresponding
 scripting interface command <ref id="sccoarsennc" name="coarsenNC">.
@@ -11481,6 +11495,8 @@ of the knot vectors. The shape of the curve will not change but the
 position of some control points will. The knot type of the curve can
 be changed to type <tt/"Custom"/.
 <tag/Notes/
+The point selection will be removed from the original objects.
+
 See also the documentation of the corresponding
 scripting interface command <ref id="scunclampnc" name="unclampNC">.
 </descrip>
@@ -11842,6 +11858,8 @@ be changed to type <tt/"Custom"/.
 <tag/Notes/
 There are also tools available that unclamp a patch in U or
 V direction only.
+
+The point selection will be removed from the original object.
 
 See also the documentation of the corresponding scripting interface commands
 <ref id="scunclampunp" name="unclampuNP"> and
