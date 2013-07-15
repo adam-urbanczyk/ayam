@@ -566,13 +566,13 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
   if(!caps || !bparams || !o || !dst)
     return AY_ENULL;
 
-  if(o->type != AY_IDNPATCH)
-   return AY_ERROR;
-
-  np = (ay_nurbpatch_object*)o->refine;
-
   for(i = 0; i < 4; i++)
     {
+      if(o->type != AY_IDNPATCH)
+	return AY_ERROR;
+
+      np = (ay_nurbpatch_object*)o->refine;
+
       if(caps[i] && !bparams->states[i])
 	{
 	  cap = NULL;
