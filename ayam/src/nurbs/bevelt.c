@@ -55,13 +55,13 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
   if(!bparams || !o || !dst)
     return AY_ENULL;
 
-  if(o->type != AY_IDNPATCH)
-    return AY_ERROR;
-
-  np = (ay_nurbpatch_object*)o->refine;
-
   for(i = 0; i < 4; i++)
     {
+      if(o->type != AY_IDNPATCH)
+	return AY_ERROR;
+
+      np = (ay_nurbpatch_object*)o->refine;
+
       if(bparams->states[i])
 	{
 	  is_planar = AY_TRUE;
@@ -326,7 +326,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    }
 
 	  /* create cap from bevel */
-	  if(caps[i] && !bparams->integrate[i])
+	  if(caps[i])
 	    {
 	      if(!(extrcurve = calloc(1, sizeof(ay_object))))
 		{
@@ -335,11 +335,21 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		}
 	      ay_object_defaults(extrcurve);
 	      extrcurve->type = AY_IDNCURVE;
-
-	      ay_status = ay_npt_extractnc(bevel, 3, 0.0, AY_FALSE, AY_FALSE,
-					   AY_FALSE, NULL,
+	      if(bparams->integrate[i])
+		{
+		  ay_status = ay_npt_extractnc(o, side, param,
+					       AY_FALSE, AY_FALSE,
+					       AY_FALSE, NULL,
+			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
+		}
+	      else
+		{
+		  ay_status = ay_npt_extractnc(bevel, 3, 0.0,
+					       AY_FALSE, AY_FALSE,
+					       AY_FALSE, NULL,
 			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
 
+		}
 	      if(ay_status)
 		goto cleanup;
 
@@ -359,7 +369,14 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
 		  break;
 		case 3:
-		  ay_status = ay_capt_crtsimplecapint(extrcurve, 3, bevel);
+		  if(bparams->integrate[i])
+		    {
+		      ay_status = ay_capt_crtsimplecapint(extrcurve, i, o);
+		    }
+		  else
+		    {
+		      ay_status = ay_capt_crtsimplecapint(extrcurve, 3, bevel);
+		    }
 		  break;
 		case 4:
 		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
@@ -376,7 +393,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
-	      if(nextcap)
+	      if((caps[i] != 3) && nextcap)
 		nextcap = &((*nextcap)->next);
 	    } /* if integrate */
 	} /* if bevel on this side */

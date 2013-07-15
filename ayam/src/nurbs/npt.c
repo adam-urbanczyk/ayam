@@ -8208,6 +8208,9 @@ ay_npt_isclosedu(ay_nurbpatch_object *np)
  double u1, u2, v;
  double p1[4], p2[4];
 
+  if(np->width <= 2)
+    return AY_FALSE;
+
   u1 = np->uknotv[np->uorder-1];
   u2 = np->uknotv[np->width];
 
@@ -8309,6 +8312,9 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
  double u, v1, v2;
  double p1[4], p2[4];
 
+  if(np->height <= 2)
+    return AY_FALSE;
+
   v1 = np->vknotv[np->vorder-1];
   v2 = np->vknotv[np->height];
 
@@ -8406,100 +8412,106 @@ ay_npt_setuvtypes(ay_nurbpatch_object *np)
   /* U */
 
   np->utype = AY_CTOPEN;
-  is_closed = AY_TRUE;
-  for(i = 0; i < np->height; i++)
+  if(np->width > 2)
     {
-      s = &(np->controlv[i*stride]);
-      e = s+((np->width-1)*np->height*stride);
-
-      if(!AY_V4COMP(s, e))
-	{
-	  is_closed = AY_FALSE;
-	  break;
-	}
-    }
-
-  if(is_closed == AY_TRUE)
-    {
-      np->utype = AY_CTCLOSED;
-    }
-  else
-    {
-      is_closed = AY_FALSE;
+      is_closed = AY_TRUE;
       for(i = 0; i < np->height; i++)
 	{
 	  s = &(np->controlv[i*stride]);
-	  e = s+((np->width-1-(np->uorder-2))*np->height*stride);
+	  e = s+((np->width-1)*np->height*stride);
 
-	  for(j = 0; j < np->uorder-1; j++)
+	  if(!AY_V4COMP(s, e))
 	    {
-	      if(!AY_V4COMP(s, e))
-		{
-		  is_closed = AY_FALSE;
-		  break;
-		}
-	      s += np->height*stride;
-	      e += np->height*stride;
-	    }
-	  if(is_closed == AY_TRUE)
-	    {
-	      np->utype = AY_CTPERIODIC;
-	    }
-	  else
-	    {
-	      np->utype = AY_CTOPEN;
+	      is_closed = AY_FALSE;
 	      break;
 	    }
-	} /* for */
+	}
+
+      if(is_closed == AY_TRUE)
+	{
+	  np->utype = AY_CTCLOSED;
+	}
+      else
+	{
+	  is_closed = AY_FALSE;
+	  for(i = 0; i < np->height; i++)
+	    {
+	      s = &(np->controlv[i*stride]);
+	      e = s+((np->width-1-(np->uorder-2))*np->height*stride);
+
+	      for(j = 0; j < np->uorder-1; j++)
+		{
+		  if(!AY_V4COMP(s, e))
+		    {
+		      is_closed = AY_FALSE;
+		      break;
+		    }
+		  s += np->height*stride;
+		  e += np->height*stride;
+		}
+	      if(is_closed == AY_TRUE)
+		{
+		  np->utype = AY_CTPERIODIC;
+		}
+	      else
+		{
+		  np->utype = AY_CTOPEN;
+		  break;
+		}
+	    } /* for */
+	} /* if */
     } /* if */
 
   /* V */
 
   np->vtype = AY_CTOPEN;
-  is_closed = AY_TRUE;
-  for(i = 0; i < np->width; i++)
+  if(np->height > 2)
     {
-      s = &(np->controlv[i*np->height*stride]);
-      e = s+((np->height-1)*stride);
-
-      if(!AY_V4COMP(s, e))
-	{
-	  is_closed = AY_FALSE;
-	  break;
-	}
-    }
-  if(is_closed == AY_TRUE)
-    {
-      np->vtype = AY_CTCLOSED;
-    }
-  else
-    {
-      is_closed = AY_FALSE;
-      for(i = 0; i < np->height; i++)
+      is_closed = AY_TRUE;
+      for(i = 0; i < np->width; i++)
 	{
 	  s = &(np->controlv[i*np->height*stride]);
-	  e = s+((np->height-1-(np->vorder-2))*stride);
+	  e = s+((np->height-1)*stride);
 
-	  for(j = 0; j < np->vorder-1; j++)
+	  if(!AY_V4COMP(s, e))
 	    {
-	      if(!AY_V4COMP(s, e))
-		{
-		  is_closed = AY_FALSE;
-		  break;
-		}
-	      s += stride;
-	      e += stride;
-	    }
-	  if(is_closed == AY_TRUE)
-	    {
-	      np->vtype = AY_CTPERIODIC;
-	    }
-	  else
-	    {
-	      np->vtype = AY_CTOPEN;
+	      is_closed = AY_FALSE;
 	      break;
 	    }
-	} /* for */
+	}
+      if(is_closed == AY_TRUE)
+	{
+	  np->vtype = AY_CTCLOSED;
+	}
+      else
+	{
+	  is_closed = AY_FALSE;
+	  for(i = 0; i < np->height; i++)
+	    {
+	      s = &(np->controlv[i*np->height*stride]);
+	      e = s+((np->height-1-(np->vorder-2))*stride);
+
+	      for(j = 0; j < np->vorder-1; j++)
+		{
+		  if(!AY_V4COMP(s, e))
+		    {
+		      is_closed = AY_FALSE;
+		      break;
+		    }
+		  s += stride;
+		  e += stride;
+		}
+	      if(is_closed == AY_TRUE)
+		{
+		  np->vtype = AY_CTPERIODIC;
+		}
+	      else
+		{
+		  np->vtype = AY_CTOPEN;
+		  break;
+		}
+	    } /* for */
+	} /* if */
     } /* if */
 
  return;
@@ -10625,12 +10637,12 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
       while(AY_V4COMP(p, p2))
 	{
 	  p2 += offset;
+	  i++;
 	  if(i == np->width-1)
 	    {
 	      *dp = NULL;
 	      return;
 	    }
-	  i++;
 	}
     }
   else
@@ -10655,12 +10667,12 @@ ay_npt_gndu(char dir, ay_nurbpatch_object *np, int i, double *p,
       while(AY_V4COMP(p, p2))
 	{
 	  p2 += offset;
+	  i--;
 	  if(i == 0)
 	    {
 	      *dp = NULL;
 	      return;
 	    }
-	  i--;
 	}
     } /* if */
 
@@ -10708,12 +10720,12 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
       while(AY_V4COMP(p, p2))
 	{
 	  p2 += offset;
+	  j--;
 	  if(j == 0)
 	    {
 	      *dp = NULL;
 	      return;
 	    }
-	  j--;
 	} /* while */
     }
   else
@@ -10738,12 +10750,12 @@ ay_npt_gndv(char dir, ay_nurbpatch_object *np, int j, double *p,
       while(AY_V4COMP(p, p2))
 	{
 	  p2 += offset;
+	  j++;
 	  if(j == np->height-1)
 	    {
 	      *dp = NULL;
 	      return;
 	    }
-	  j++;
 	} /* while */
     } /* if */
 
