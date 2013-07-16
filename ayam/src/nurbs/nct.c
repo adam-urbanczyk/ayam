@@ -2426,7 +2426,7 @@ cleanup:
 
   if(pobject)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
     }
 
  return TCL_OK;
@@ -2622,10 +2622,10 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc1->length = nc1len;
 
       if(!(newcontrolv = malloc(nc1->length*stride*sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); return AY_EOMEM; }
 
       if(!(newknotv = malloc((nc1->length+nc1->order)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
       memcpy(newcontrolv,nc1->controlv,nc1->length*stride*sizeof(double));
 
@@ -2641,11 +2641,11 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       nc2->knotv = NULL;
 
       if(!(nc2->controlv = malloc((nc2->length*stride)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  return AY_EOMEM; }
 
       if(!(nc2->knotv = malloc((nc2->length+nc2->order)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  free(nc2->controlv); return AY_EOMEM; }
 
       memcpy(nc2->controlv,&(nc1->controlv[(nc1->length-1)*stride]),
@@ -4664,7 +4664,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      free(o); free(controlv);
 	      if(freepo)
-		ay_object_deletemulti(po);
+		(void)ay_object_deletemulti(po);
 	      sel = sel->next;
 	      continue;
 	    }
@@ -4687,7 +4687,7 @@ ay_nct_curvplottcmd(ClientData clientData, Tcl_Interp *interp,
 
       if(freepo)
 	{
-	  ay_object_deletemulti(po);
+	  (void)ay_object_deletemulti(po);
 	}
 
       sel = sel->next;
@@ -5787,7 +5787,7 @@ ay_nct_makecomptcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
   if(src)
-    (void) ay_object_deletemulti(src);
+    (void)ay_object_deletemulti(src);
 
  return TCL_OK;
 } /* ay_nct_makecomptcmd */
@@ -6265,7 +6265,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
       t = t2->refine;
       t2->refine = t1.refine;
       t1.refine = t;
-      ay_object_delete(t2);
+      (void)ay_object_delete(t2);
       t2 = NULL;
     } /* if */
 
@@ -6277,7 +6277,7 @@ ay_nct_trim(ay_nurbcurve_object **curve, double umin, double umax)
 	return ay_status;
 
       /* remove superfluous curve */
-      ay_object_delete(t2);
+      (void)ay_object_delete(t2);
       t2 = NULL;
     } /* if */
 
@@ -7250,7 +7250,7 @@ ay_nct_estlentcmd(ClientData clientData, Tcl_Interp *interp,
 cleanup:
   if(po)
     {
-      ay_object_deletemulti(po);
+      (void)ay_object_deletemulti(po);
     }
 
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);

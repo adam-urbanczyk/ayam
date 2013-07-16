@@ -1294,7 +1294,7 @@ ay_npt_crtnsphere(double radius, ay_nurbpatch_object **nsphere)
   /* second, we revolve the half circle around the Y axis */
   ay_status = ay_npt_revolve(newc, 360.0, 0, 0, nsphere);
 
-  ay_object_delete(newc);
+  (void)ay_object_delete(newc);
 
  return ay_status;
 } /* ay_npt_crtnsphere */
@@ -1350,7 +1350,7 @@ ay_npt_crtnspheretcmd(ClientData clientData, Tcl_Interp *interp,
 				(ay_nurbpatch_object **)(void*)&(o->refine));
   if(ay_status)
     {
-      ay_object_delete(o);
+      (void)ay_object_delete(o);
       ay_error(ay_status, argv[0], NULL);
       return TCL_OK;
     }
@@ -1405,7 +1405,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 			(ay_nurbpatch_object **)(void*)&(new->refine));
       if(ay_status)
 	{
-	  ay_object_delete(new);
+	  (void)ay_object_delete(new);
 	  ay_error(AY_ERROR, argv[0], NULL);
 	  return TCL_OK;
 	}
@@ -1431,7 +1431,7 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
       ay_status = ay_object_link(new);
       if(ay_status)
 	{
-	  ay_object_delete(new);
+	  (void)ay_object_delete(new);
 	  ay_error(AY_ERROR, argv[0], NULL);
 	  return TCL_OK;
 	}
@@ -2244,10 +2244,10 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 cleanup:
 
   if(of1)
-    ay_object_delete(of1);
+    (void)ay_object_delete(of1);
 
   if(of2)
-    ay_object_delete(of2);
+    (void)ay_object_delete(of2);
 
   if(new)
     {
@@ -2377,7 +2377,7 @@ ay_npt_fillgaps(ay_object *o, int type, int fillet_type,
 	    }
 	  else
 	    {
-	      ay_object_delete(fillet);
+	      (void)ay_object_delete(fillet);
 	    }
 	} /* if */
     } /* if */
@@ -2729,7 +2729,7 @@ ay_npt_concat(ay_object *o, int type, int order,
 
 cleanup:
 
-  ay_object_deletemulti(allcurves);
+  (void)ay_object_deletemulti(allcurves);
 
   /* delete list */
   while(curvelist)
@@ -4424,13 +4424,13 @@ ay_npt_birail2(ay_object *o1, ay_object *o2, ay_object *o3, ay_object *o4,
       ay_status = ay_object_copy(o4, &(curve->next));
       if(ay_status)
 	{
-	  ay_object_delete(curve);
+	  (void)ay_object_delete(curve);
 	  return ay_status;
 	}
       ay_status = ay_nct_makecompatible(curve);
       if(ay_status)
 	{
-	  ay_object_deletemulti(curve);
+	  (void)ay_object_deletemulti(curve);
 	  return ay_status;
 	}
       o1 = curve;
@@ -4935,8 +4935,8 @@ cleanup:
 
   if(incompatible)
     {
-      ay_status = ay_object_delete(o1);
-      ay_status = ay_object_delete(o4);
+      (void)ay_object_delete(o1);
+      (void)ay_object_delete(o4);
     }
 
  return ay_status;
@@ -7490,7 +7490,7 @@ ay_npt_isboundcurve(ay_object *o, double b1, double b2, double b3, double b4,
 cleanup:
 
   if(c)
-    ay_object_deletemulti(c);
+    (void)ay_object_deletemulti(c);
 
   if(tcv)
     free(tcv);
@@ -10027,10 +10027,10 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if(!(newcontrolv = malloc(np1->width*np1->height*stride*
 				sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); return AY_EOMEM; }
 
       if(!(newknotv = malloc((np1->width+np1->uorder)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
       memcpy(newcontrolv, np1->controlv,
 	     np1->width*np1->height*stride*sizeof(double));
@@ -10044,11 +10044,11 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if(!(np2->controlv = malloc(np2->width*np2->height*stride*
 				  sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  return AY_EOMEM; }
 
       if(!(np2->uknotv = malloc((np2->width+np2->uorder)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  free(np2->controlv); return AY_EOMEM; }
 
       memcpy(np2->controlv,
@@ -10235,10 +10235,10 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if(!(newcontrolv = malloc(np1->width*np1->height*stride*
 				sizeof(double))))
-	{ ay_object_delete(new); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); return AY_EOMEM; }
 
       if(!(newknotv = malloc((np1->height+np1->vorder)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
+	{ (void)ay_object_delete(new); free(newcontrolv); return AY_EOMEM; }
 
       a = 0;
       b = 0;
@@ -10259,11 +10259,11 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if(!(np2->controlv = malloc(np2->width*np2->height*stride*
 				  sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  return AY_EOMEM; }
 
       if(!(np2->vknotv = malloc((np2->height+np2->vorder)*sizeof(double))))
-	{ ay_object_delete(new); free(newcontrolv); free(newknotv);
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
 	  free(np2->controlv); return AY_EOMEM; }
 
       a = 0;
@@ -10460,7 +10460,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	    {
 	      np2 = copy;
 	      copy = np1;
-	      ay_object_delete(np2);
+	      (void)ay_object_delete(np2);
 	      np1 = NULL;
 	      patch = (ay_nurbpatch_object*)copy->refine;
 	    }
@@ -10477,7 +10477,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	     => remove <np1> */
 	  if(np1)
 	    {
-	      ay_object_delete(np1);
+	      (void)ay_object_delete(np1);
 	      np1 = NULL;
 	    }
 	}
@@ -10495,7 +10495,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	    {
 	      np2 = copy;
 	      copy = np1;
-	      ay_object_delete(np2);
+	      (void)ay_object_delete(np2);
 	      np1 = NULL;
 	      patch = (ay_nurbpatch_object*)copy->refine;
 	    }
@@ -10512,7 +10512,7 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
 	     => remove <np1> */
 	  if(np1)
 	    {
-	      ay_object_delete(np1);
+	      (void)ay_object_delete(np1);
 	      np1 = NULL;
 	    }
 	}
@@ -11734,7 +11734,7 @@ cleanup:
 
   if(pobject)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
     }
 
  return TCL_OK;
@@ -12023,11 +12023,11 @@ ay_npt_concatstcmd(ClientData clientData, Tcl_Interp *interp,
       ay_object_link(newo);
     } /* if */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
 cleanup:
   /* free list of temporary patches/curves */
-  ay_object_deletemulti(patches);
+  (void)ay_object_deletemulti(patches);
 
  return TCL_OK;
 } /* ay_npt_concatstcmd */

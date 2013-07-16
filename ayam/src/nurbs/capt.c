@@ -103,7 +103,7 @@ cleanup:
       if(npatch->refine)
 	ay_npt_destroy(npatch->refine);
 
-      ay_object_delete(npatch);
+      (void)ay_object_delete(npatch);
     }
 
  return ay_status;
@@ -211,7 +211,7 @@ ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s)
   ay_npt_destroy(s->refine);
   s->refine = o->refine;
   o->refine = NULL;
-  ay_object_delete(o);
+  (void)ay_object_delete(o);
 
   s->next = oldnext;
 
@@ -220,7 +220,7 @@ ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s)
 cleanup:
 
   if(cap)
-    ay_object_delete(cap);
+    (void)ay_object_delete(cap);
 
  return ay_status;
 } /* ay_capt_crtsimplecapint */
@@ -412,7 +412,7 @@ cleanup:
       /* prevent curves from being deleted here */
       npatch->down = NULL;
 
-      ay_object_delete(npatch);
+      (void)ay_object_delete(npatch);
     }
 
  return ay_status;
@@ -455,11 +455,16 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   curve = (ay_nurbcurve_object*)c1->refine;
 
   /* split curve in half */
-  ay_nct_clamp(curve, 0);
+  ay_status =  ay_nct_clamp(curve, 0);
+  if(ay_status)
+    goto cleanup;
+
   ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
 				      0.0, 1.0);
+  if(ay_status)
+    goto cleanup;
+
   i = 0;
-  ay_status = AY_OK;
   while((!c3 || ay_status) && (i < numhknots))
     {
       ay_status = ay_nct_split(c1, hknots[i], &c3);
@@ -527,15 +532,15 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
 cleanup:
 
   if(new)
-    ay_object_delete(new);
+    (void)ay_object_delete(new);
 
   /* c1 deleted outside... */
   if(c2)
-    ay_object_delete(c2);
+    (void)ay_object_delete(c2);
   if(c3)
-    ay_object_delete(c3);
+    (void)ay_object_delete(c3);
   if(c4)
-    ay_object_delete(c4);
+    (void)ay_object_delete(c4);
 
  return ay_status;
 } /* ay_capt_crtgordoncap */
@@ -639,7 +644,7 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 
 	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)extrcurve->refine))
 	    {
-	      ay_object_delete(extrcurve);
+	      (void)ay_object_delete(extrcurve);
 	      continue;
 	    }
 
@@ -664,7 +669,7 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	    } /* switch */
 
 	  if(caps[i] != 1)
-	    ay_object_delete(extrcurve);
+	    (void)ay_object_delete(extrcurve);
 
 	  if(ay_status)
 	    goto cleanup;
