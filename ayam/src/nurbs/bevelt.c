@@ -301,7 +301,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	  curve.refine = NULL;
 
 	  if(alignedcurve)
-	    ay_object_delete(alignedcurve);
+	    (void)ay_object_delete(alignedcurve);
 	  alignedcurve = NULL;
 
 	  if(normals)
@@ -310,14 +310,14 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	  if(ay_status || !bevel->refine)
 	    {
-	      ay_object_delete(bevel);
+	      (void)ay_object_delete(bevel);
 	      goto cleanup;
 	    }
 
 	  if(bparams->integrate[i])
 	    {
 	      ay_bevelt_integrate(i, o, bevel);
-	      ay_object_delete(bevel);
+	      (void)ay_object_delete(bevel);
 	    }
 	  else
 	    {
@@ -356,7 +356,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_nct_isdegen(
 			    (ay_nurbcurve_object*)(void*)extrcurve->refine))
 		{
-		  ay_object_delete(extrcurve);
+		  (void)ay_object_delete(extrcurve);
 		  continue;
 		}
 
@@ -387,7 +387,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 
 	      if(caps[i] != 1)
 		{
-		  ay_object_delete(extrcurve);
+		  (void)ay_object_delete(extrcurve);
 		}
 
 	      if(ay_status)
@@ -839,12 +839,12 @@ ay_bevelt_createc(double radius, ay_object *o1, ay_object *o2,
 
   if(curve->type == AY_CTCLOSED)
     {
-      ay_npt_closev(*bevel, 2);
+      (void)ay_npt_closev(*bevel, /*mode=*/2);
     }
 
   if(curve->type == AY_CTPERIODIC)
     {
-      ay_npt_closev(*bevel, 5);
+      (void)ay_npt_closev(*bevel, /*mode=*/5);
     }
 
   /* prevent cleanup code from doing something harmful */
@@ -1000,12 +1000,12 @@ ay_bevelt_createc3d(double radius, int revert, ay_object *o1, ay_object *o2,
 
   if(curve->type == AY_CTCLOSED)
     {
-      ay_npt_closev(*bevel, 2);
+      (void)ay_npt_closev(*bevel, /*mode=*/2);
     }
 
   if(curve->type == AY_CTPERIODIC)
     {
-      ay_npt_closev(*bevel, 5);
+      (void)ay_npt_closev(*bevel, /*mode=*/5);
     }
 
   /* prevent cleanup code from doing something harmful */
@@ -1086,7 +1086,9 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
 
   knottype = AY_KTCUSTOM;
 
-  ay_status = ay_npt_concat(sb, 0, order, knottype, 0, 0.0, AY_TRUE, uv,
+  ay_status = ay_npt_concat(sb, /*type=*/0, order, knottype,
+			    /*fillet_type=*/0, /*ftlen=*/0.0,
+			    /*compatible=*/AY_TRUE, uv,
 			    &o);
 
   if(ay_status)
@@ -1094,19 +1096,19 @@ ay_bevelt_integrate(int side, ay_object *s, ay_object *b)
 
   /* correct orientation of concatenated surface */
   if(side < 2)
-    ay_npt_swapuv(o->refine);
+    (void)ay_npt_swapuv(o->refine);
 
   if(side == 0)
-    ay_npt_revertv(o->refine);
+    (void)ay_npt_revertv(o->refine);
 
   if(side == 2)
-    ay_npt_revertu(o->refine);
+    (void)ay_npt_revertu(o->refine);
 
   /* replace old patch with new */
   ay_npt_destroy(s->refine);
   s->refine = o->refine;
   o->refine = NULL;
-  ay_object_delete(o);
+  (void)ay_object_delete(o);
 
   s->next = oldnext;
 
@@ -1146,7 +1148,10 @@ ay_bevelt_findbevelcurve(int index, ay_object **c)
 	  ay_bevelt_createbevelcurve(abs(index));
 	}
       *c = ay_bevelt_curves[abs(index)];
-      ay_status = AY_OK;
+      if(!*c)
+	ay_status = AY_ERROR;
+      else
+	ay_status = AY_OK;
     }
   else
     {
@@ -1219,6 +1224,8 @@ ay_bevelt_createbevelcurve(int index)
       controlv[9] = 1.0;
       controlv[11] = 1.0;
       ay_status = ay_nct_create(3, 3, AY_KTNURB, controlv, NULL, &nc);
+      if(ay_status)
+	goto cleanup;
       break;
     case 1:
       /* linear */
@@ -1276,7 +1283,7 @@ ay_bevelt_createbevelcurve(int index)
 cleanup:
 
   if(o)
-    ay_object_delete(o);
+    (void)ay_object_delete(o);
 
   if(controlv)
     free(controlv);
