@@ -1,4 +1,4 @@
-[22. Jun 2013] CVS-Head:
+[17. Jul 2013] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -66,7 +66,11 @@ o added unclamping facility for NURBS curves and surfaces
 o added curve extension (to a point) modelling tool
 o NURBS curve/surface type detection is now faster and more robust
 o skinning curves that touch at their endpoints with custom knots now works
+o many NURBS curve/surface tools no longer unconditionally set the
+  respective knot type to custom but rather infer a proper new type
 o improved closing of surfaces
+o added a second set of drawing/display parameters that is in effect
+  when interactive modelling or view actions are active
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
@@ -134,6 +138,7 @@ o added commands to generate face and smooth PolyMesh normals:
   "genfnPo" and "gensnPo"
 o the "getPnt" command now supports evaluation for objects that provide
   NURBS curves/surfaces
+o added example Script object script "tcone.tcl" that creates truncated cones
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
