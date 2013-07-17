@@ -9368,21 +9368,35 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(AY_ERROR, argv[0], "Error clamping object.");
 	    }
-
-	  np->uknot_type = AY_KTCUSTOM;
-
-	  /* remove all selected points */
-	  if(o->selp)
+	  else
 	    {
-	      ay_selp_clear(o);
-	    }
+	      if(clampv)
+		{
+		  np->vknot_type = ay_knots_classify(np->vorder, np->vknotv,
+						     np->vorder+np->height,
+						     AY_EPSILON);
 
-	  ay_npt_recreatemp(np);
+		}
+	      else
+		{
+		  np->uknot_type = ay_knots_classify(np->uorder, np->uknotv,
+						     np->uorder+np->width,
+						     AY_EPSILON);
+		}
 
-	  o->modified = AY_TRUE;
+	      /* remove all selected points */
+	      if(o->selp)
+		{
+		  ay_selp_clear(o);
+		}
 
-	  /* re-create tesselation of patch */
-	  ay_notify_object(o);
+	      ay_npt_recreatemp(np);
+
+	      o->modified = AY_TRUE;
+
+	      /* re-create tesselation of patch */
+	      ay_notify_object(o);
+	    } /* if */
 	}
       else
 	{
@@ -12188,7 +12202,9 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
 
-	  patch->vknot_type = AY_KTCUSTOM;
+	  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
+						patch->vorder+patch->height,
+						AY_EPSILON);
 
 	  ay_npt_recreatemp(patch);
 
@@ -12372,7 +12388,9 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
 	  patch->controlv = newcontrolv;
 	  patch->vknotv = newknotv;
 
-	  patch->vknot_type = AY_KTCUSTOM;
+	  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
+						patch->vorder+patch->height,
+						AY_EPSILON);
 
 	  ay_npt_recreatemp(patch);
 
@@ -12493,15 +12511,10 @@ ay_npt_refineu(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   patch->width += count;
-  if(newknotvlen > 0)
-    {
-      patch->uknot_type = AY_KTCUSTOM;
-    }
-  else
-    {
-      if(patch->uknot_type == AY_KTBEZIER)
-	patch->uknot_type = AY_KTNURB;
-    }
+
+  patch->uknot_type = ay_knots_classify(patch->uorder, patch->uknotv,
+				       patch->uorder+patch->width,
+				       AY_EPSILON);
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -12606,15 +12619,10 @@ ay_npt_refinev(ay_nurbpatch_object *patch, double *newknotv, int newknotvlen)
     }
 
   patch->height += count;
-  if(newknotvlen > 0)
-    {
-      patch->vknot_type = AY_KTCUSTOM;
-    }
-  else
-    {
-      if(patch->vknot_type == AY_KTBEZIER)
-	patch->vknot_type = AY_KTNURB;
-    }
+
+  patch->vknot_type = ay_knots_classify(patch->vorder, patch->vknotv,
+				       patch->vorder+patch->height,
+				       AY_EPSILON);
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -12775,6 +12783,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbpatch_object *patch;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ int free_selp = AY_FALSE;
 
   /* parse args */
   if(argc > 1)
@@ -12820,6 +12829,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_npt_clampu(patch, side);
 		  if(ay_status)
 		    break;
+		  free_selp = AY_TRUE;
 		}
 
 	      ay_nb_UnclampSurfaceU(patch->is_rat,
@@ -12841,6 +12851,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 		  ay_status = ay_npt_clampv(patch, side);
 		  if(ay_status)
 		    break;
+		  free_selp = AY_TRUE;
 		}
 
 	      ay_nb_UnclampSurfaceV(patch->is_rat,
@@ -12854,6 +12865,11 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 
 	  ay_npt_setuvtypes(patch);
+
+	  if(free_selp)
+	    {
+	      ay_selp_clear(sel->object);
+	    }
 
 	  /* clean up */
 	  ay_npt_recreatemp(patch);
