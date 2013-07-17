@@ -741,6 +741,7 @@ ay_nct_revertarr(double *cv, int cvlen, int stride)
  *  thus not changing the shape of the curve;
  *  if newknotv is NULL, a knot is inserted into every possible
  *  place in the knot vector (multiple knots will not be changed)
+ *  The knot type may change in the process.
  *
  * \param[in,out] curve NURBS curve object to refine
  * \param[in] newknotv vector of new knot values (may be NULL)
@@ -843,15 +844,10 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
     }
 
   curve->length += count;
-  if(newknotvlen > 0)
-    {
-      curve->knot_type = AY_KTCUSTOM;
-    }
-  else
-    {
-      if(curve->knot_type == AY_KTBEZIER)
-	curve->knot_type = AY_KTNURB;
-    }
+
+  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+				       curve->order+curve->length,
+				       AY_EPSILON);
 
   /* since we do not create new multiple points
      we only need to re-create them if there were
@@ -866,6 +862,7 @@ ay_nct_refinekn(ay_nurbcurve_object *curve, double *newknotv, int newknotvlen)
 /** ay_nct_refinecv:
  *  refine a NURBS curve by inserting control points at the right places,
  *  changing the shape of the curve
+ *  The knot type does not change, but new knots will be generated.
  *
  * \param[in,out] curve NURBS curve object to refine
  * \param[in,out] selp selected points that define a (single) region to refine
@@ -1541,7 +1538,9 @@ ay_nct_clamptcmd(ClientData clientData, Tcl_Interp *interp,
 	    }
 	  else
 	    {
-	      curve->knot_type = AY_KTCUSTOM;
+	      curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+						   curve->order+curve->length,
+						   AY_EPSILON);
 
 	      /* update pointers to controlv */
 	      ay_nct_recreatemp(curve);
@@ -3697,27 +3696,29 @@ ay_nct_settype(ay_nurbcurve_object *nc)
     return;
 
   nc->type = AY_CTOPEN;
-
-  s = nc->controlv;
-  e = s + ((nc->length-1)*stride);
-  if(AY_V4COMP(s, e))
+  if(nc->length > 2)
     {
-      nc->type = AY_CTCLOSED;
-    }
-  else
-    {
-      nc->type = AY_CTPERIODIC;
-      e = s + ((nc->length-1-(nc->order-2))*stride);
-      for(i = 0; i < nc->order-1; i++)
+      s = nc->controlv;
+      e = s + ((nc->length-1)*stride);
+      if(AY_V4COMP(s, e))
 	{
-	  if(!AY_V4COMP(s, e))
+	  nc->type = AY_CTCLOSED;
+	}
+      else
+	{
+	  nc->type = AY_CTPERIODIC;
+	  e = s + ((nc->length-1-(nc->order-2))*stride);
+	  for(i = 0; i < nc->order-1; i++)
 	    {
-	      nc->type = AY_CTOPEN;
-	      break;
-	    }
-	  s += stride;
-	  e += stride;
-	} /* for */
+	      if(!AY_V4COMP(s, e))
+		{
+		  nc->type = AY_CTOPEN;
+		  break;
+		}
+	      s += stride;
+	      e += stride;
+	    } /* for */
+	} /* if */
     } /* if */
 
  return;
@@ -5902,6 +5903,8 @@ ay_nct_coarsen(ay_nurbcurve_object *curve)
     }
   else
     {
+      /* open and closed curves */
+
       /* calc number of points to remove */
       t = (curve->length-2)/2;
       newlength = curve->length-t;
@@ -6199,7 +6202,9 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 	  free(newknotv);
 	  newknotv = NULL;
 
-	  curve->knot_type = AY_KTCUSTOM;
+	  curve->knot_type = ay_knots_classify(curve->order, curve->knotv,
+					       curve->order+curve->length,
+					       AY_EPSILON);
 
 	  ay_nct_recreatemp(curve);
 
@@ -6227,7 +6232,7 @@ ay_nct_removekntcmd(ClientData clientData, Tcl_Interp *interp,
 /** ay_nct_trim:
  *  trim NURBS curve (cut off pieces at start and/or end)
  *
- * \param[in] curve NURBS curve to trim
+ * \param[in,out] curve NURBS curve to trim
  * \param[in] umin new minimum knot value
  * \param[in] umax new maximum knot value
  *
@@ -7439,6 +7444,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *curve;
  ay_list_object *sel = ay_selection;
  ay_object *o = NULL;
+ int free_selp = AY_FALSE;
 
   /* parse args */
   if(argc > 1)
@@ -7477,6 +7483,7 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 	      ay_status = ay_nct_clamp(curve, side);
 	      if(ay_status)
 		break;
+	      free_selp = AY_TRUE;
 	    }
 
 	  ay_nb_UnclampCurve(curve->is_rat,
@@ -7489,6 +7496,11 @@ ay_nct_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
 					       AY_EPSILON);
 
 	  ay_nct_settype(curve);
+
+	  if(free_selp)
+	    {
+	      ay_selp_clear(o);
+	    }
 
 	  /* clean up */
 	  ay_nct_recreatemp(curve);
