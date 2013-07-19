@@ -27,12 +27,14 @@ array set RevolveAttrData {
 DisplayMode 1
 NPInfoBall "n/a"
 }
+
 # create RevolveAttr-UI
 set w [frame $ay(pca).$RevolveAttr(w)]
 addVSpace $w s1 2
 addParam $w RevolveAttrData ThetaMax
 addParam $w RevolveAttrData Sections
 addParam $w RevolveAttrData Order
+
 addCheck $w RevolveAttrData UpperCap
 addCheck $w RevolveAttrData LowerCap
 addCheck $w RevolveAttrData StartCap

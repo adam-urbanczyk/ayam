@@ -14,7 +14,7 @@ set Birail1 1
 proc init_Birail1 { } {
 global ay Birail1_props Birail1Attr Birail1AttrData
 
-set Birail1_props { Transformations Attributes Material Tags Caps Bevels Birail1Attr }
+set Birail1_props { Transformations Attributes Material Tags Bevels Caps Birail1Attr }
 
 array set Birail1Attr {
 arr   Birail1AttrData

@@ -9,7 +9,7 @@
 
 # gordon.tcl - Gordon objects Tcl code
 
-set Gordon_props { Transformations Attributes Material Tags Caps Bevels GordonAttr }
+set Gordon_props { Transformations Attributes Material Tags Bevels Caps GordonAttr }
 
 array set GordonAttr {
     arr   GordonAttrData

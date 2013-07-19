@@ -14,7 +14,7 @@ set OffsetNP 1
 proc init_OffsetNP { } {
 global ay OffsetNP_props OffsetNPAttr OffsetNPAttrData
 
-set OffsetNP_props { Attributes Material Tags Caps Bevels OffsetNPAttr }
+set OffsetNP_props { Attributes Material Tags Bevels Caps OffsetNPAttr }
 
 array set OffsetNPAttr {
 arr   OffsetNPAttrData
