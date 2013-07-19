@@ -59,9 +59,7 @@ ay_trim_deletecb(void *c)
   trim = (ay_trim_object *)(c);
 
   if(trim->npatch)
-    {
-      ay_object_deletemulti(trim->npatch);
-    }
+    (void)ay_object_deletemulti(trim->npatch);
 
   free(trim);
 

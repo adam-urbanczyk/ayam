@@ -64,7 +64,7 @@ ay_extrnp_deletecb(void *c)
   extrnp = (ay_extrnp_object *)(c);
 
   if(extrnp->npatch)
-    ay_object_delete(extrnp->npatch);
+    (void)ay_object_delete(extrnp->npatch);
 
   free(extrnp);
 
@@ -90,11 +90,7 @@ ay_extrnp_copycb(void *src, void **dst)
 
   memcpy(extrnp, src, sizeof(ay_extrnp_object));
 
-  /* copy npatch */
-  if(extrnpsrc->npatch)
-    {
-      ay_object_copy(extrnpsrc->npatch, &(extrnp->npatch));
-    }
+  extrnp->npatch = NULL;
 
   *dst = (void *)extrnp;
 

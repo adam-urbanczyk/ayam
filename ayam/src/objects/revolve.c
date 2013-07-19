@@ -61,19 +61,19 @@ ay_revolve_deletecb(void *c)
   revolve = (ay_revolve_object *)(c);
 
   if(revolve->npatch)
-    ay_object_delete(revolve->npatch);
+    (void)ay_object_delete(revolve->npatch);
 
   if(revolve->upper_cap)
-    ay_object_delete(revolve->upper_cap);
+    (void)ay_object_delete(revolve->upper_cap);
 
   if(revolve->lower_cap)
-    ay_object_delete(revolve->lower_cap);
+    (void)ay_object_delete(revolve->lower_cap);
 
   if(revolve->start_cap)
-    ay_object_delete(revolve->start_cap);
+    (void)ay_object_delete(revolve->start_cap);
 
   if(revolve->end_cap)
-    ay_object_delete(revolve->end_cap);
+    (void)ay_object_delete(revolve->end_cap);
 
   free(revolve);
 
@@ -99,20 +99,11 @@ ay_revolve_copycb(void *src, void **dst)
 
   memcpy(revolve, src, sizeof(ay_revolve_object));
 
-  /* copy npatch */
-  ay_object_copy(revolvesrc->npatch, &(revolve->npatch));
-
-  /* copy upper cap */
-  ay_object_copy(revolvesrc->upper_cap, &(revolve->upper_cap));
-
-  /* copy lower cap */
-  ay_object_copy(revolvesrc->lower_cap, &(revolve->lower_cap));
-
-  /* copy start cap */
-  ay_object_copy(revolvesrc->start_cap, &(revolve->start_cap));
-
-  /* copy end cap */
-  ay_object_copy(revolvesrc->end_cap, &(revolve->end_cap));
+  revolve->npatch = NULL;
+  revolve->upper_cap = NULL;
+  revolve->lower_cap = NULL;
+  revolve->start_cap = NULL;
+  revolve->end_cap = NULL;
 
   *dst = (void *)revolve;
 

@@ -62,7 +62,7 @@ ay_offnc_deletecb(void *c)
   offnc = (ay_offnc_object *)(c);
 
   if(offnc->ncurve)
-    ay_object_delete(offnc->ncurve);
+    (void)ay_object_delete(offnc->ncurve);
 
   free(offnc);
 
@@ -88,11 +88,7 @@ ay_offnc_copycb(void *src, void **dst)
 
   memcpy(offnc, src, sizeof(ay_offnc_object));
 
-  /* copy ncurve */
-  if(offncsrc->ncurve)
-    {
-      ay_object_copy(offncsrc->ncurve, &(offnc->ncurve));
-    }
+  offnc->ncurve = NULL;
 
   *dst = (void *)offnc;
 

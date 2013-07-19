@@ -59,13 +59,10 @@ ay_swing_deletecb(void *c)
   swing = (ay_swing_object *)(c);
 
   if(swing->npatch)
-    ay_object_delete(swing->npatch);
+    (void)ay_object_delete(swing->npatch);
 
   if(swing->caps_and_bevels)
-    {
-      ay_object_deletemulti(swing->caps_and_bevels);
-      swing->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(swing->caps_and_bevels);
 
   free(swing);
 
@@ -91,15 +88,8 @@ ay_swing_copycb(void *src, void **dst)
 
   memcpy(swing, src, sizeof(ay_swing_object));
 
-  /* copy npatch */
-  ay_object_copy(swingsrc->npatch, &(swing->npatch));
-
-  /* copy caps and bevels */
+  swing->npatch = NULL;
   swing->caps_and_bevels = NULL;
-
-  if(swingsrc->caps_and_bevels)
-    ay_object_copymulti(swingsrc->caps_and_bevels,
-			&(swing->caps_and_bevels));
 
   *dst = (void *)swing;
 

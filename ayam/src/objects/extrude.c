@@ -61,13 +61,10 @@ ay_extrude_deletecb(void *c)
   extrude = (ay_extrude_object *)(c);
 
   if(extrude->npatch)
-    ay_object_deletemulti(extrude->npatch);
+    (void)ay_object_deletemulti(extrude->npatch);
 
   if(extrude->caps_and_bevels)
-    {
-      ay_object_deletemulti(extrude->caps_and_bevels);
-      extrude->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(extrude->caps_and_bevels);
 
   free(extrude);
 
@@ -94,12 +91,7 @@ ay_extrude_copycb(void *src, void **dst)
   memcpy(extrude, src, sizeof(ay_extrude_object));
 
   extrude->npatch = NULL;
-
   extrude->caps_and_bevels = NULL;
-
-  if(extrudesrc->caps_and_bevels)
-    ay_object_copymulti(extrudesrc->caps_and_bevels,
-			&(extrude->caps_and_bevels));
 
   *dst = (void *)extrude;
 

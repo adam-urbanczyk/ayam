@@ -58,7 +58,7 @@ ay_cap_deletecb(void *c)
 
   cap = (ay_cap_object *)(c);
 
-  ay_object_delete(cap->npatch);
+  (void)ay_object_delete(cap->npatch);
 
   free(cap);
 
@@ -85,10 +85,6 @@ ay_cap_copycb(void *src, void **dst)
   memcpy(cap, src, sizeof(ay_cap_object));
 
   cap->npatch = NULL;
-
-  /* copy npatch */
-  if(capsrc->npatch)
-    ay_object_copy(capsrc->npatch, &(cap->npatch));
 
   *dst = (void *)cap;
 

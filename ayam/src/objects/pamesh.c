@@ -188,11 +188,7 @@ ay_pamesh_copycb(void *src, void **dst)
       memcpy(pamesh->vbasis, pameshsrc->vbasis, 16 * sizeof(double));
     }
 
-  /* copy NURBS patch(es) */
-  if(pameshsrc->npatch)
-    {
-      ay_object_copymulti(pameshsrc->npatch, &(pamesh->npatch));
-    }
+  pamesh->npatch = NULL;
 
   *dst = (void *)pamesh;
 

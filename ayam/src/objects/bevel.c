@@ -70,13 +70,10 @@ ay_bevel_deletecb(void *c)
   bevel = (ay_bevel_object *)(c);
 
   if(bevel->npatch)
-    ay_object_delete(bevel->npatch);
+    (void)ay_object_delete(bevel->npatch);
 
   if(bevel->caps)
-    {
-      ay_object_deletemulti(bevel->caps);
-      bevel->caps = NULL;
-    }
+    (void)ay_object_deletemulti(bevel->caps);
 
   free(bevel);
 
@@ -103,14 +100,7 @@ ay_bevel_copycb(void *src, void **dst)
   memcpy(bevel, src, sizeof(ay_bevel_object));
 
   bevel->npatch = NULL;
-
-  if(bevelsrc->npatch)
-    ay_object_copymulti(bevelsrc->npatch, &(bevel->npatch));
-
   bevel->caps = NULL;
-
-  if(bevelsrc->caps)
-    ay_object_copymulti(bevelsrc->caps, &(bevel->caps));
 
   *dst = (void *)bevel;
 

@@ -63,13 +63,10 @@ ay_gordon_deletecb(void *c)
   gordon = (ay_gordon_object *)(c);
 
   if(gordon->npatch)
-    ay_object_delete(gordon->npatch);
+    (void)ay_object_delete(gordon->npatch);
 
   if(gordon->caps_and_bevels)
-    {
-      ay_object_deletemulti(gordon->caps_and_bevels);
-      gordon->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(gordon->caps_and_bevels);
 
   free(gordon);
 
@@ -95,14 +92,8 @@ ay_gordon_copycb(void *src, void **dst)
 
   memcpy(gordon, src, sizeof(ay_gordon_object));
 
-  /* copy npatch */
-  ay_object_copy(gordonsrc->npatch, &(gordon->npatch));
-
+  gordon->npatch = NULL;
   gordon->caps_and_bevels = NULL;
-
-  if(gordonsrc->caps_and_bevels)
-    ay_object_copymulti(gordonsrc->caps_and_bevels,
-			&(gordon->caps_and_bevels));
 
   *dst = (void *)gordon;
 

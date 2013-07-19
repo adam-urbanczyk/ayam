@@ -60,7 +60,8 @@ ay_concatnc_deletecb(void *c)
 
   concatnc = (ay_concatnc_object *)(c);
 
-  ay_object_delete(concatnc->ncurve);
+  if(concatnc->ncurve)
+    (void)ay_object_delete(concatnc->ncurve);
 
   free(concatnc);
 
@@ -86,8 +87,7 @@ ay_concatnc_copycb(void *src, void **dst)
 
   memcpy(concatnc, src, sizeof(ay_concatnc_object));
 
-  /* copy ncurve */
-  ay_object_copy(concatncsrc->ncurve, &(concatnc->ncurve));
+  concatnc->ncurve = NULL;
 
   *dst = (void *)concatnc;
 

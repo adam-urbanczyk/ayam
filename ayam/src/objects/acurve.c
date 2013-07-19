@@ -330,7 +330,8 @@ ay_acurve_deletecb(void *c)
   if(acurve->controlv)
     free(acurve->controlv);
 
-  ay_object_delete(acurve->ncurve);
+  if(acurve->ncurve)
+    (void)ay_object_delete(acurve->ncurve);
 
   free(acurve);
 
@@ -365,8 +366,7 @@ ay_acurve_copycb(void *src, void **dst)
   memcpy(acurve->controlv, acurvesrc->controlv,
 	 3 * acurve->length * sizeof(double));
 
-  /* copy ncurve */
-  ay_object_copy(acurvesrc->ncurve, &(acurve->ncurve));
+  acurve->ncurve = NULL;
 
   *dst = (void *)acurve;
 

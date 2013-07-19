@@ -60,7 +60,7 @@ ay_extrnc_deletecb(void *c)
   extrnc = (ay_extrnc_object *)(c);
 
   if(extrnc->ncurve)
-    ay_object_delete(extrnc->ncurve);
+    (void)ay_object_delete(extrnc->ncurve);
 
   free(extrnc);
 
@@ -86,11 +86,7 @@ ay_extrnc_copycb(void *src, void **dst)
 
   memcpy(extrnc, src, sizeof(ay_extrnc_object));
 
-  /* copy ncurve */
-  if(extrncsrc->ncurve)
-    {
-      ay_object_copy(extrncsrc->ncurve, &(extrnc->ncurve));
-    }
+  extrnc->ncurve = NULL;
 
   *dst = (void *)extrnc;
 

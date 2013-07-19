@@ -108,7 +108,7 @@ ay_script_deletecb(void *c)
     free(sc->script);
 
   if(sc->cm_objects)
-    ay_object_deletemulti(sc->cm_objects);
+    (void)ay_object_deletemulti(sc->cm_objects);
 
   /* free saved parameters */
   if(sc->params)
