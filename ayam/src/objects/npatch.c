@@ -647,10 +647,6 @@ ay_npatch_copycb(void *src, void **dst)
 
   npatch->caps_and_bevels = NULL;
 
-  if(npatchsrc->caps_and_bevels)
-    ay_object_copymulti(npatchsrc->caps_and_bevels,
-			&(npatch->caps_and_bevels));
-
   /* return result */
   *dst = (void *)npatch;
 

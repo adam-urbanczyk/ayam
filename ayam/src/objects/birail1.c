@@ -61,13 +61,10 @@ ay_birail1_deletecb(void *c)
   birail1 = (ay_birail1_object *)(c);
 
   if(birail1->npatch)
-    ay_object_delete(birail1->npatch);
+    (void)ay_object_delete(birail1->npatch);
 
   if(birail1->caps_and_bevels)
-    {
-      ay_object_deletemulti(birail1->caps_and_bevels);
-      birail1->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(birail1->caps_and_bevels);
 
   free(birail1);
 
@@ -93,14 +90,8 @@ ay_birail1_copycb(void *src, void **dst)
 
   memcpy(birail1, src, sizeof(ay_birail1_object));
 
-  /* copy npatch */
-  ay_object_copy(birail1src->npatch, &(birail1->npatch));
-
+  birail1->npatch = NULL;
   birail1->caps_and_bevels = NULL;
-
-  if(birail1src->caps_and_bevels)
-    ay_object_copymulti(birail1src->caps_and_bevels,
-			&(birail1->caps_and_bevels));
 
   *dst = (void *)birail1;
 

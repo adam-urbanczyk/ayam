@@ -139,7 +139,7 @@ ay_ncircle_deletecb(void *c)
   ncircle = (ay_ncircle_object *)(c);
 
   if(ncircle->ncurve)
-    ay_object_delete(ncircle->ncurve);
+    (void)ay_object_delete(ncircle->ncurve);
 
   ncircle->ncurve = NULL;
 
@@ -167,8 +167,7 @@ ay_ncircle_copycb(void *src, void **dst)
 
   memcpy(ncircle, src, sizeof(ay_ncircle_object));
 
-  /* copy ncurve */
-  ay_object_copy(ncirclesrc->ncurve, &(ncircle->ncurve));
+  ncircle->ncurve = NULL;
 
   *dst = (void *)ncircle;
 

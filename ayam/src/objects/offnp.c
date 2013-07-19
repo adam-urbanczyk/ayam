@@ -62,13 +62,10 @@ ay_offnp_deletecb(void *c)
   offnp = (ay_offnp_object *)(c);
 
   if(offnp->npatch)
-    ay_object_delete(offnp->npatch);
+    (void)ay_object_delete(offnp->npatch);
 
   if(offnp->caps_and_bevels)
-    {
-      ay_object_deletemulti(offnp->caps_and_bevels);
-      offnp->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(offnp->caps_and_bevels);
 
   free(offnp);
 
@@ -94,16 +91,8 @@ ay_offnp_copycb(void *src, void **dst)
 
   memcpy(offnp, src, sizeof(ay_offnp_object));
 
-  /* copy npatch */
-  if(offnpsrc->npatch)
-    {
-      ay_object_copy(offnpsrc->npatch, &(offnp->npatch));
-    }
-
+  offnp->npatch = NULL;
   offnp->caps_and_bevels = NULL;
-
-  if(offnpsrc->caps_and_bevels)
-    ay_object_copymulti(offnpsrc->caps_and_bevels, &(offnp->caps_and_bevels));
 
   *dst = (void *)offnp;
 

@@ -442,7 +442,8 @@ ay_icurve_deletecb(void *c)
     free(icurve->controlv);
 
   /* free cached ncurve */
-  ay_object_delete(icurve->ncurve);
+  if(icurve->ncurve)
+    (void)ay_object_delete(icurve->ncurve);
 
   free(icurve);
 
@@ -477,8 +478,7 @@ ay_icurve_copycb(void *src, void **dst)
   memcpy(icurve->controlv, icurvesrc->controlv,
 	 3 * icurve->length * sizeof(double));
 
-  /* copy ncurve */
-  ay_object_copy(icurvesrc->ncurve, &(icurve->ncurve));
+  icurve->ncurve = NULL;
 
   *dst = (void *)icurve;
 

@@ -61,13 +61,10 @@ ay_skin_deletecb(void *c)
   skin = (ay_skin_object *)(c);
 
   if(skin->npatch)
-    ay_object_delete(skin->npatch);
+    (void)ay_object_delete(skin->npatch);
 
   if(skin->caps_and_bevels)
-    {
-      ay_object_deletemulti(skin->caps_and_bevels);
-      skin->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(skin->caps_and_bevels);
 
   free(skin);
 
@@ -93,13 +90,8 @@ ay_skin_copycb(void *src, void **dst)
 
   memcpy(skin, src, sizeof(ay_skin_object));
 
-  /* copy npatch */
-  ay_object_copy(skinsrc->npatch, &(skin->npatch));
-
+  skin->npatch = NULL;
   skin->caps_and_bevels = NULL;
-
-  if(skinsrc->caps_and_bevels)
-    ay_object_copymulti(skinsrc->caps_and_bevels, &(skin->caps_and_bevels));
 
   *dst = (void *)skin;
 

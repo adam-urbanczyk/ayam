@@ -60,7 +60,7 @@ ay_text_deletecb(void *c)
   text = (ay_text_object *)(c);
 
   if(text->npatch)
-    ay_object_deletemulti(text->npatch);
+    (void)ay_object_deletemulti(text->npatch);
 
   if(text->fontname)
     free(text->fontname);

@@ -62,16 +62,14 @@ ay_concatnp_deletecb(void *c)
 
   concatnp = (ay_concatnp_object *)(c);
 
-  ay_object_delete(concatnp->npatch);
-
   if(concatnp->uv_select)
     free(concatnp->uv_select);
 
+  if(concatnp->npatch)
+    (void)ay_object_delete(concatnp->npatch);
+
   if(concatnp->caps_and_bevels)
-    {
-      ay_object_deletemulti(concatnp->caps_and_bevels);
-      concatnp->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(concatnp->caps_and_bevels);
 
   free(concatnp);
 
@@ -106,14 +104,8 @@ ay_concatnp_copycb(void *src, void **dst)
       strcpy(concatnp->uv_select, concatnpsrc->uv_select);
     }
 
-  /* copy npatch */
-  ay_object_copy(concatnpsrc->npatch, &(concatnp->npatch));
-
+  concatnp->npatch = NULL;
   concatnp->caps_and_bevels = NULL;
-
-  if(concatnpsrc->caps_and_bevels)
-    ay_object_copymulti(concatnpsrc->caps_and_bevels,
-			&(concatnp->caps_and_bevels));
 
   *dst = (void *)concatnp;
 

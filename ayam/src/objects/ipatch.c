@@ -620,13 +620,10 @@ ay_ipatch_deletecb(void *c)
 
   /* free NURBS patch(es) */
   if(ipatch->npatch)
-    ay_object_deletemulti(ipatch->npatch);
+    (void)ay_object_deletemulti(ipatch->npatch);
 
   if(ipatch->caps_and_bevels)
-    {
-      ay_object_deletemulti(ipatch->caps_and_bevels);
-      ipatch->caps_and_bevels = NULL;
-    }
+    (void)ay_object_deletemulti(ipatch->caps_and_bevels);
 
   free(ipatch);
 
@@ -718,17 +715,8 @@ ay_ipatch_copycb(void *src, void **dst)
       ipatch->ederiv_v = NULL;
     }
 
-  /* copy NURBS patch(es) */
-  if(ipatchsrc->npatch)
-    {
-      ay_object_copymulti(ipatchsrc->npatch, &(ipatch->npatch));
-    }
-
+  ipatch->npatch = NULL;
   ipatch->caps_and_bevels = NULL;
-
-  if(ipatchsrc->caps_and_bevels)
-    ay_object_copymulti(ipatchsrc->caps_and_bevels,
-			&(ipatch->caps_and_bevels));
 
   *dst = (void *)ipatch;
 
