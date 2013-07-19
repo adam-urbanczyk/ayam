@@ -74,7 +74,7 @@ proc ipatch_getAttr { } {
 proc init_IPatch { } {
     global ay IPatch_props IPatchAttr IPatchAttrData
 
-    set IPatch_props { Transformations Attributes Material Tags Caps Bevels IPatchAttr }
+    set IPatch_props { Transformations Attributes Material Tags Bevels Caps IPatchAttr }
 
     array set IPatchAttr {
 	arr   IPatchAttrData

@@ -27,6 +27,7 @@ array set SwingAttrData {
 DisplayMode 1
 NPInfoBall "n/a"
 }
+
 # create SwingAttr-UI
 set w [frame $ay(pca).$SwingAttr(w)]
 addVSpace $w s1 2

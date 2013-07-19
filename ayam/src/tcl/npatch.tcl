@@ -9,7 +9,7 @@
 
 # npatch.tcl - NURBS patchs objects Tcl code
 
-set NPatch_props { Transformations Attributes Material Tags Caps Bevels NPatchAttr }
+set NPatch_props { Transformations Attributes Material Tags Bevels Caps NPatchAttr }
 
 array set NPatchAttr {
 arr   NPatchAttrData

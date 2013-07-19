@@ -9,7 +9,7 @@
 
 # skin.tcl - Skin objects Tcl code
 
-set Skin_props { Transformations Attributes Material Tags Caps Bevels SkinAttr }
+set Skin_props { Transformations Attributes Material Tags Bevels Caps SkinAttr }
 
 array set SkinAttr {
 arr   SkinAttrData
