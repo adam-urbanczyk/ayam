@@ -440,8 +440,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
  ay_object *c1 = NULL, *c2 = NULL, *c3 = NULL, *c4 = NULL, *new = NULL;
  ay_nurbcurve_object *curve = NULL;
  int i = 0, numhknots = 5;
- double hknots[5] = {0.5, 0.495, 0.496, 0.504, 0.53333};
- /*double u12, u14, u34;*/
+ double hknots[5] = {0.5, 0.495, 0.496, 0.504, 0.5111};
 
   c1 = c;
 
@@ -473,11 +472,16 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   if(!c3 || ay_status)
     goto cleanup;
 
+
   /* split first half in first and second quarter */
-  ay_nct_clamp(curve, 1);
+  ay_status = ay_nct_clamp(curve, 1);
+  if(ay_status)
+    goto cleanup;
   ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
 				      0.0, 1.0);
-  i = 0;
+  if(ay_status)
+    goto cleanup;
+  i = 1;
   ay_status = AY_OK;
   while((!c2 || ay_status) && (i < numhknots))
     {
@@ -487,12 +491,19 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   if(!c2 || ay_status)
     goto cleanup;
 
+
   /* split second half in third and fourth quarter */
   curve = (ay_nurbcurve_object*)c3->refine;
-  ay_nct_clamp(curve, 2);
+  ay_status = ay_nct_clamp(curve, 2);
+
+  if(ay_status)
+    goto cleanup;
   ay_status = ay_knots_rescaletorange(curve->length+curve->order, curve->knotv,
 				      0.0, 1.0);
-  i = 0;
+  if(ay_status)
+    goto cleanup;
+
+  i = 1;
   ay_status = AY_OK;
   while((!c4 || ay_status) && (i < numhknots))
     {
