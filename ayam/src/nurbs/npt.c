@@ -1428,14 +1428,8 @@ ay_npt_crtnsphere2tcmd(ClientData clientData, Tcl_Interp *interp,
 	  ay_quat_axistoquat(zaxis, AY_D2R(rot[i*3+2]), quat);
 	  ay_quat_add(quat, new->quat, new->quat);
 	}
-      ay_status = ay_object_link(new);
-      if(ay_status)
-	{
-	  (void)ay_object_delete(new);
-	  ay_error(AY_ERROR, argv[0], NULL);
-	  return TCL_OK;
-	}
 
+      ay_object_link(new);
     } /* for */
 
  return TCL_OK;
@@ -1733,9 +1727,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      next = curves->next;
 	      if(!apply_trafo)
 		ay_trafo_copy(src, curves);
-	      ay_status = ay_object_link(curves);
-	      if(ay_status)
-		(void)ay_object_delete(curves);
+	      ay_object_link(curves);
 	      curves = next;
 	    }
 	} /* if */
@@ -10146,12 +10138,12 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of original patch */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	}
       else
 	{
@@ -10368,12 +10360,12 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of original patch */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	}
       else
 	{
@@ -10598,7 +10590,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 	}
       else
 	{
