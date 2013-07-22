@@ -28,7 +28,8 @@ static ay_object *ay_bevelt_curves[3] = {0};
 /* functions: */
 
 /** ay_bevelt_addbevels:
- * Add bevel surfaces to the sides of a NURBS surface.
+ * Add bevel surfaces to the sides of a NURBS surface, also
+ * creates the caps on the bevels.
  *
  * \param[in] bparams bevel creation parameters
  * \param[in] caps cap creation parameters
@@ -44,7 +45,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, is_planar = AY_TRUE, winding = 0, side = 0, revert = AY_FALSE;
+ int i, is_planar = AY_TRUE, is_roundtocap = AY_FALSE;
+ int winding = 0, side = 0, revert = AY_FALSE;
  double param = 0.0, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
@@ -135,17 +137,25 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    goto cleanup;
 
 	  bevelcurve = NULL;
-	  ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
-					       &bevelcurve);
+	  if(bparams->types[i] < 3)
+	    {
+	      ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
+						   &bevelcurve);
+	      
+	      if(ay_status || !bevelcurve)
+		goto cleanup;
 
-	  if(ay_status || !bevelcurve)
-	    goto cleanup;
-
-	  alignedcurve = NULL;
-	  if(bparams->force3d[i])
-	    is_planar = AY_FALSE;
+	      alignedcurve = NULL;
+	      if(bparams->force3d[i])
+		is_planar = AY_FALSE;
+	      else
+		ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+	    }
 	  else
-	    ay_nct_isplanar(&curve, &alignedcurve, &is_planar);
+	    {
+	      is_planar = AY_FALSE;
+	      is_roundtocap = AY_TRUE;
+	    }
 
 	  if(is_planar)
 	    {
@@ -227,10 +237,20 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      /* 3D bevel */
 
 	      /* pick the correct tangents */
-	      if(i < 2)
-		tangents = &(normals[3]);
+	      if(is_roundtocap)
+		{
+		  if(i < 2)
+		    tangents = &(normals[6]);
+		  else
+		    tangents = &(normals[3]);
+		}
 	      else
-		tangents = &(normals[6]);
+		{
+		  if(i < 2)
+		    tangents = &(normals[3]);
+		  else
+		    tangents = &(normals[6]);
+		}
 
 	      switch(i)
 		{
@@ -290,11 +310,21 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  break;
 		} /* switch */
 
-	      ay_status = ay_bevelt_createc3d(bparams->radii[i],
-					      bparams->dirs[i],
-					      &curve, bevelcurve,
-					      normals, 9, tangents, 9,
+	      if(is_roundtocap)
+		{
+		  ay_status = ay_bevelt_createroundtocap(bparams->radii[i],
+							 bparams->dirs[i],
+							 &curve, tangents, 9,
 			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+		}
+	      else
+		{
+		  ay_status = ay_bevelt_createc3d(bparams->radii[i],
+						  bparams->dirs[i],
+						  &curve, bevelcurve,
+						  normals, 9, tangents, 9,
+			     (ay_nurbpatch_object**)(void*)&(bevel->refine));
+		}
 	    } /* if 2D or 3D */
 
 	  ay_nct_destroy((ay_nurbcurve_object*)curve.refine);
@@ -348,7 +378,6 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 					       AY_FALSE, AY_FALSE,
 					       AY_FALSE, NULL,
 			 (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
-
 		}
 	      if(ay_status)
 		goto cleanup;
@@ -1025,6 +1054,184 @@ cleanup:
 
  return ay_status;
 } /* ay_bevelt_createc3d */
+
+
+/** ay_bevelt_createroundtocap:
+ * Create a 3D bevel that rounds to a cap.
+ *
+ * \param[in] radius width/height of the bevel (may be negative)
+ * \param[in] revert direction of bevel (0 - inwards, 1 - outwards)
+ * \param[in] o1 curve on which the bevel is constructed (usually
+ *  a border extracted from a surface)
+ * \param[in] t array of tangents
+ * \param[in] tstride stride in tangents array
+ * \param[in,out] bevel resulting bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_bevelt_createroundtocap(double radius, int revert,
+			   ay_object *o1, double *t, int tstride,
+			   ay_nurbpatch_object **bevel)
+{
+ int ay_status = AY_OK;
+ ay_nurbcurve_object *curve = NULL;
+ double *uknotv = NULL, *vknotv = NULL, *controlv = NULL;
+ int stride = 4, i = 0, j = 0, a = 0, b = 0;
+ double len, v1[3] = {0}, v2[3] = {0}, *p;
+ double minmax[6];
+
+  if(!o1 || !t || !bevel)
+    return AY_ENULL;
+
+  if(o1->type != AY_IDNCURVE)
+    return AY_ERROR;
+
+  curve = (ay_nurbcurve_object *)o1->refine;
+
+  if(!(controlv = calloc(3*curve->length*stride, sizeof(double))))
+    { ay_status = AY_EOMEM; goto cleanup; }
+
+  if(curve->knot_type == AY_KTCUSTOM)
+    {
+      if(!(vknotv = malloc((curve->length+curve->order) * sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+      memcpy(vknotv, curve->knotv,
+	     (curve->length+curve->order)*sizeof(double));
+    }
+
+  memcpy(controlv, curve->controlv, curve->length*stride*sizeof(double));
+
+  a = curve->length*stride;
+  b = 0;
+  for(j = 0; j < curve->length; j++)
+    {
+      memcpy(v1, &(t[j*tstride]), 3*sizeof(double));
+
+      /* normalize and (possibly) flip tangent vector */
+      len = AY_V3LEN(v1);
+      if(len > AY_EPSILON)
+	{
+	  if(revert)
+	    {
+	      AY_V3SCAL(v1, -1.0/len);
+	    }
+	  else
+	    {
+	      AY_V3SCAL(v1, 1.0/len);
+	    }
+	}
+      else
+	{
+	  memset(v1, 0, 3*sizeof(double));
+	}
+      /* offset along scaled tangent vector */
+      controlv[a]   = curve->controlv[b]   - v1[0]*radius;
+      controlv[a+1] = curve->controlv[b+1] - v1[1]*radius;
+      controlv[a+2] = curve->controlv[b+2] - v1[2]*radius;
+      controlv[a+3] = curve->controlv[b+3];
+      a += stride;
+      b += stride;
+    } /* for */
+
+  /* calculate middle of offset curve */
+  a = curve->length*stride;
+  p = &(controlv[a]);
+  minmax[0] = DBL_MAX;
+  minmax[1] = -DBL_MAX;
+  minmax[2] = DBL_MAX;
+  minmax[3] = -DBL_MAX;
+  minmax[4] = DBL_MAX;
+  minmax[5] = -DBL_MAX;
+
+  for(i = 0; i < curve->length; i++)
+    {
+      if(p[0] < minmax[0])
+	minmax[0] = p[0];
+      if(p[0] > minmax[1])
+	minmax[1] = p[0];
+
+      if(p[1] < minmax[2])
+	minmax[2] = p[1];
+      if(p[1] > minmax[3])
+	minmax[3] = p[1];
+
+      if(p[2] < minmax[4])
+	minmax[4] = p[2];
+      if(p[2] > minmax[5])
+	minmax[5] = p[2];
+
+      p += stride;
+    } /* for */
+
+  v1[0] = minmax[0]+((minmax[1]-minmax[0])*0.5);
+  v1[1] = minmax[2]+((minmax[3]-minmax[2])*0.5);
+  v1[2] = minmax[4]+((minmax[5]-minmax[4])*0.5);
+
+  /* offset a second time, in the direction to the middle point */
+  a = curve->length*stride;
+  b = a+curve->length*stride;
+  p = &(controlv[a]);
+  for(j = 0; j < curve->length; j++)
+    {
+      AY_V3SUB(v2, v1, p);
+
+      /* normalize offset vector */
+      len = AY_V3LEN(v2);
+      if(len > AY_EPSILON)
+	{
+	  AY_V3SCAL(v2, 1.0/len);
+	}
+      else
+	{
+	  memset(v2, 0, 3*sizeof(double));
+	}
+
+      controlv[b]   = controlv[a]   - v2[0]*radius;
+      controlv[b+1] = controlv[a+1] - v2[1]*radius;
+      controlv[b+2] = controlv[a+2] - v2[2]*radius;
+      controlv[b+3] = controlv[a+3];
+      p += stride;
+      a += stride;
+      b += stride;
+    } /* for */
+
+  ay_status = ay_npt_create(3, curve->order,
+			    3, curve->length,
+			    AY_KTNURB, curve->knot_type,
+			    controlv, uknotv, vknotv,
+			    bevel);
+
+  if(ay_status)
+    goto cleanup;
+
+  if(curve->type == AY_CTCLOSED)
+    {
+      (void)ay_npt_closev(*bevel, /*mode=*/2);
+    }
+
+  if(curve->type == AY_CTPERIODIC)
+    {
+      (void)ay_npt_closev(*bevel, /*mode=*/5);
+    }
+
+  /* prevent cleanup code from doing something harmful */
+  controlv = NULL;
+  uknotv = NULL;
+  vknotv = NULL;
+
+cleanup:
+
+  /* clean-up */
+  if(controlv)
+    free(controlv);
+  if(uknotv)
+    free(uknotv);
+  if(vknotv)
+    free(vknotv);
+
+ return ay_status;
+} /* ay_bevelt_createroundtocap */
 
 
 /** ay_bevelt_integrate:

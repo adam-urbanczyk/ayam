@@ -68,6 +68,12 @@ int ay_bevelt_createc3d(double radius, int revert,
 			double *t, int tstride,
 			ay_nurbpatch_object **bevel);
 
+/** Create bevel surface from 3D curve that rounds to the cap.
+ */
+int ay_bevelt_createroundtocap(double radius, int revert,
+			       ay_object *o1, double *t, int tstride,
+			       ay_nurbpatch_object **bevel);
+
 /** Find cross section bevel curve.
  */
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
