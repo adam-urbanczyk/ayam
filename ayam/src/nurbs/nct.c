@@ -2634,6 +2634,14 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       newknotv[curve->length+curve->order-1] =
 	newknotv[curve->length+curve->order-2];
 
+      /* check new knots for validity */
+      if(ay_knots_check(nc1->length, nc1->order,
+			nc1->length+nc1->order,	newknotv))
+	{
+	  free(newcontrolv); free(newknotv);
+	  return AY_ERROR;
+	}
+
       free(nc2->controlv);
       nc2->controlv = NULL;
       free(nc2->knotv);
@@ -2652,8 +2660,18 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       memcpy(nc2->knotv,&(nc1->knotv[nc1->length-1]),
 	     (nc2->length+nc2->order)*sizeof(double));
+
       /* improve phantom knot */
       nc2->knotv[0] = nc2->knotv[1];
+
+      /* check new knots for validity */
+      if(ay_knots_check(nc2->length, nc2->order,
+			nc2->length+nc2->order,	nc2->knotv))
+	{
+	  free(newcontrolv); free(newknotv);
+	  (void)ay_object_delete(new);
+	  return AY_ERROR;
+	}
 
       free(nc1->controlv);
       nc1->controlv = newcontrolv;
@@ -2671,7 +2689,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       *result = new;
     } /* if */
 
- return AY_OK;
+ return ay_status;
 } /* ay_nct_split */
 
 
@@ -2708,20 +2726,17 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 
   while(sel)
     {
-
       if(sel->object->type == AY_IDNCURVE)
 	{
 	  new = NULL;
 
-	  ay_status = ay_nct_split(sel->object, u, &new);
-
-	  if(ay_status)
+	  if((ay_status = ay_nct_split(sel->object, u, &new)))
 	    {
 	      ay_error(ay_status, argv[0], NULL);
 	      return TCL_OK;
 	    } /* if */
 
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 
 	  /* remove all selected points */
 	  if(sel->object->selp)
@@ -2732,7 +2747,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
 	  sel->object->modified = AY_TRUE;
 
 	  /* re-create tesselation of original curve */
-	  ay_notify_object(sel->object);
+	  (void)ay_notify_object(sel->object);
 	}
       else
 	{
@@ -2742,7 +2757,7 @@ ay_nct_splittcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_splittcmd */
@@ -2856,13 +2871,15 @@ ay_nct_concattcmd(ClientData clientData, Tcl_Interp *interp,
       return TCL_OK;
     }
 
+  ay_nct_recreatemp((ay_nurbcurve_object *)o->refine);
+
   ay_object_link(o);
 
-  ay_nct_recreatemp((ay_nurbcurve_object *)o->refine);
+  (void)ay_notify_object(o);
 
   o->modified = AY_TRUE;
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_concattcmd */
@@ -3107,6 +3124,10 @@ ay_nct_crtncircletcmd(ClientData clientData, Tcl_Interp *interp,
 
   ay_object_link(o);
 
+  (void)ay_notify_object(o);
+
+  (void)ay_notify_parent();
+
  return TCL_OK;
 } /* ay_nct_crtncircletcmd */
 
@@ -3265,6 +3286,10 @@ ay_nct_crtrecttcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* if */
 	} /* if */
     } /* if */
+
+  (void)ay_notify_object(o);
+
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_crtrecttcmd */
@@ -3453,6 +3478,10 @@ ay_nct_crtclosedbsptcmd(ClientData clientData, Tcl_Interp *interp,
   ay_nct_recreatemp(curve);
 
   ay_object_link(o);
+
+  (void)ay_notify_object(o);
+
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_nct_crtclosedbsptcmd */
@@ -4528,6 +4557,9 @@ ay_nct_rescaleknvtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      ay_error(ay_status, argv[0], "Could not rescale knots.");
 	    }
+
+	  (void)ay_notify_object(src);
+
 	  src->modified = AY_TRUE;
 	} /* if */
 
