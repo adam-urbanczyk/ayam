@@ -16,6 +16,21 @@
 
 /* clevel.c - functions for current level management */
 
+/* ay_clevel_set:
+ *  set list object on top of current level stack
+ *  pointing to <o>
+ */
+void
+ay_clevel_set(ay_object *o)
+{
+
+  if(ay_currentlevel)
+    ay_currentlevel->object = o;
+
+ return;
+} /* ay_clevel_set */
+
+
 /* ay_clevel_find:
  *  _recursively_ search through all objects beneath and below <c>
  *  for object <o> and build a stack of list objects pointing from the

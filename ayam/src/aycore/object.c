@@ -439,14 +439,13 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
 
 /* ay_object_link:
- *  link object <o> to scene structure
- *  uses ay_next
+ *  link single object <o> to scene structure;
+ *  uses ay_next;
  *  properly maintains ay_next and ay_currentlevel
  */
-int
+void
 ay_object_link(ay_object *o)
 {
- int ay_status = AY_OK;
 
   if(ay_next)
     {
@@ -460,13 +459,13 @@ ay_object_link(ay_object *o)
   /* just in case that we are linking the very first object to
      an empty sub-level (ay_currentlevel points to the end-level object)
      we need to correct ay_currentlevel to point to the new object instead */
-  if(ay_currentlevel->object != ay_root)
+  if(ay_currentlevel && ay_currentlevel->object != ay_root)
     {
-      ay_clevel_del();
-      ay_clevel_add(ay_currentlevel->object->down);
+      if(ay_currentlevel->next && ay_currentlevel->next->object)
+	ay_clevel_set(ay_currentlevel->next->object->down);
     }
 
- return ay_status;
+ return;
 } /* ay_object_link */
 
 
@@ -494,8 +493,7 @@ ay_object_unlink(ay_object *o)
 	  /* repair ay_next */
 	  ay_next = &(p1->down);
 	}
-      ay_clevel_del();
-      ay_clevel_add(o->next);
+      ay_clevel_set(o->next);
     }
   else
     { /* no */

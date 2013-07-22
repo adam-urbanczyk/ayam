@@ -1229,7 +1229,7 @@ onio_writepomesh(ay_object *o, ONX_Model *p_m, double *m)
       p_mesh->m_FN.SetCapacity((int)pm->npolys);
       a = 0;
       for(i = 0; i < pm->npolys; i++)
-	{	  
+	{
 	  ON_3fVector ve;
 	  ve.x = fnarr[a];
 	  ve.y = fnarr[a+1];
@@ -2467,7 +2467,7 @@ onio_readnurbssurface(ON_NurbsSurface *p_s, bool from_brep)
   newo->down = ay_endlevel;
 
   // link the new patch into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     ay_status = ay_object_delete(newo);
@@ -2606,7 +2606,7 @@ onio_readnurbscurve(ON_NurbsCurve *p_c)
   newo->refine = curve;
 
   // link the new curve into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     ay_status = ay_object_delete(newo);
@@ -2735,7 +2735,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
       olo->inherit_trafos = AY_TRUE;
       olo->down = ay_endlevel;
 
-      ay_status = ay_object_link(olo);
+      ay_object_link(olo);
 
       ay_next = &(olo->down);
     } // if
@@ -2824,7 +2824,7 @@ onio_readbrep(ON_Brep *p_b, double accuracy)
 	      lo->inherit_trafos = AY_TRUE;
 	      lo->down = ay_endlevel;
 
-	      ay_status = ay_object_link(lo);
+	      ay_object_link(lo);
 
 	      ay_next = &(lo->down);
 	    } // if
@@ -3161,7 +3161,7 @@ onio_readmesh(ON_Mesh *p_m, double accuracy)
     }
 
   // link the new PolyMesh into the scene hierarchy
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     ay_status = ay_object_delete(newo);
@@ -3376,7 +3376,7 @@ onio_readlayer(ONX_Model &model, int li, double accuracy)
   newo->refine = newlevel;
   newo->down = ay_endlevel;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   ay_next = &(newo->down);
 

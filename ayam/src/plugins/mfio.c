@@ -302,7 +302,7 @@ ay_mfio_readnurbpatch(MF3DVoidObjPtr object)
 
   MF3DSeekPosition(ay_mfio_fileptr, oldpos);
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -410,7 +410,7 @@ ay_mfio_readnurbcurve(MF3DVoidObjPtr object)
   newo->type = AY_IDNCURVE;
   newo->refine = curve;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -490,7 +490,7 @@ ay_mfio_readnurbcurve2d(MF3DVoidObjPtr object)
   newo->type = AY_IDNCURVE;
   newo->refine = curve;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -562,7 +562,7 @@ ay_mfio_readpolyline(MF3DVoidObjPtr object)
   newo->type = AY_IDNCURVE;
   newo->refine = curve;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -654,7 +654,7 @@ ay_mfio_readgeneralpolygon(MF3DVoidObjPtr object)
   newo->type = AY_IDPOMESH;
   newo->refine = pomesh;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -724,7 +724,7 @@ ay_mfio_readpolygon(MF3DVoidObjPtr object)
   newo->type = AY_IDPOMESH;
   newo->refine = pomesh;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -796,7 +796,7 @@ ay_mfio_readtriangle(MF3DVoidObjPtr object)
   newo->type = AY_IDPOMESH;
   newo->refine = pomesh;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -924,7 +924,7 @@ ay_mfio_readtrigrid(MF3DVoidObjPtr object)
   newo->type = AY_IDPOMESH;
   newo->refine = pomesh;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -963,7 +963,7 @@ ay_mfio_readbox(MF3DVoidObjPtr object)
   newo->type = AY_IDBOX;
   newo->refine = box;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1021,7 +1021,7 @@ ay_mfio_readellipsoid(MF3DVoidObjPtr object)
   newo->type = AY_IDSPHERE;
   newo->refine = sphere;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1075,7 +1075,7 @@ ay_mfio_readcylinder(MF3DVoidObjPtr object)
   newo->type = AY_IDCYLINDER;
   newo->refine = cylinder;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1128,7 +1128,7 @@ ay_mfio_readcone(MF3DVoidObjPtr object)
   newo->type = AY_IDCONE;
   newo->refine = cone;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1180,7 +1180,7 @@ ay_mfio_readdisk(MF3DVoidObjPtr object)
   newo->type = AY_IDDISK;
   newo->refine = disk;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1235,7 +1235,7 @@ ay_mfio_readtorus(MF3DVoidObjPtr object)
   newo->type = AY_IDTORUS;
   newo->refine = torus;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   if(ay_status)
     {
@@ -1484,7 +1484,7 @@ ay_mfio_readcntr(MF3DVoidObjPtr object)
 
   ay_mfio_lastreadobject = newo;
 
-  ay_status = ay_object_link(newo);
+  ay_object_link(newo);
 
   ay_clevel_add(newo);
 

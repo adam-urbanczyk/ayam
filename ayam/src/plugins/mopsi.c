@@ -616,7 +616,7 @@ mopsi_level(FILE *fileptr, ay_object **optr)
 
   /*  ay_status = ay_object_defaults(o);*/
   o->parent = AY_TRUE;
-  ay_status = ay_object_link(o);
+  ay_object_link(o);
   ay_clevel_add(o);
   ay_clevel_add(o->down);
   ay_next = &(o->down);
@@ -1977,7 +1977,7 @@ mopsi_object(FILE *fileptr)
 
  if(o)
    {
-     ay_status = ay_object_link(o);
+     ay_object_link(o);
      mopsi_lastread = o;
    }
 

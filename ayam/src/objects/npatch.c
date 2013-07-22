@@ -2986,7 +2986,7 @@ ay_npatch_convertcb(ay_object *o, int in_place)
       if(!in_place)
 	{
 	  ay_trafo_copy(o, new);
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 	}
       else
 	{

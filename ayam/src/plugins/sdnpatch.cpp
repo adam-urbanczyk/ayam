@@ -3655,7 +3655,7 @@ sdnpatch_convertcb(ay_object *o, int in_place)
     {
       if(!in_place)
 	{
-	  ay_status = ay_object_link(newo);
+	  ay_object_link(newo);
 	}
       else
 	{
@@ -4671,7 +4671,7 @@ sdnpatch_impplytcmd(ClientData clientData, Tcl_Interp *interp,
   o->modified = AY_TRUE;
   ay_notify_object(o);
 
-  ay_status = ay_object_link(o);
+  ay_object_link(o);
 
   ay_notify_parent();
 

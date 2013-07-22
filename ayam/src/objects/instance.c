@@ -839,7 +839,7 @@ ay_instance_convertcb(ay_object *i, int in_place)
 	    {
 	      ay_trafo_copy(i, new);
 	    }
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 	} /* if */
     } /* if */
 

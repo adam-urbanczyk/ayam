@@ -714,7 +714,7 @@ ay_read_object(FILE *fileptr)
       o->down = ay_endlevel;
     }
 
-  ay_status = ay_object_link(o);
+  ay_object_link(o);
 
   if(ay_read_version == 0)
     {

@@ -2488,7 +2488,7 @@ objio_readface(char *str, int lastlinewasface)
 	  if(ay_status)
 	    goto cleanup;
 
-	  ay_status = ay_object_link(o);
+	  ay_object_link(o);
 
 	  objio_lastface = o;
 	} /* if */
@@ -3379,7 +3379,7 @@ objio_readend(void)
 	 (objio_umax < objio_uknotv[objio_ncurve.length]))
 	ay_knots_setuminmax(o, objio_umin, objio_umax);
 
-      ay_status = ay_object_link(o);
+      ay_object_link(o);
 
       break;
     case 2:
@@ -3528,7 +3528,7 @@ objio_readend(void)
 	 (objio_vmax < objio_vknotv[objio_npatch.height]))
 	ay_knots_setvminmax(o, objio_vmin, objio_vmax);
 
-      ay_status = ay_object_link(o);
+      ay_object_link(o);
 
     default:
       /* read a superfluous end? */
