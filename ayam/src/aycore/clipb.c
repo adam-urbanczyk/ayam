@@ -253,12 +253,9 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  tmp = clip->next;
 
-	  ay_status = ay_object_link(clip);
+	  ay_object_link(clip);
 
-	  if(!ay_status)
-	    {
-	      (void)ay_notify_object(clip);
-	    }
+	  (void)ay_notify_object(clip);
 
 	  clip = tmp;
 	}
@@ -271,12 +268,9 @@ ay_clipb_pastetcmd(ClientData clientData, Tcl_Interp *interp,
 	      return TCL_OK;
 	    }
 
-	  ay_status = ay_object_link(tmp);
+	  ay_object_link(tmp);
 
-	  if(!ay_status)
-	    {
-	      (void)ay_notify_object(tmp);
-	    }
+	  (void)ay_notify_object(tmp);
 
 	  clip = clip->next;
 	} /* if */

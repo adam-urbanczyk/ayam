@@ -1475,7 +1475,9 @@ dxfio_linkobject(ay_object *o)
 
   dxfio_lrobject = o;
 
-  return ay_object_link(o);
+  ay_object_link(o);
+
+  return AY_OK;
 } // dxfio_linkobject
 
 

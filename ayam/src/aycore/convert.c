@@ -250,7 +250,7 @@ ay_convert_nptoolobj(ay_object *o, ay_object *p, ay_object *cb, int in_place)
       /* link the new object(s) to the scene */
       if(!in_place)
 	{
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 	}
       else
 	{

@@ -40,6 +40,10 @@ int ay_clear_scenetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /* clevel.c */
 
+/** set object on top of current level stack
+ */
+void ay_clevel_set(ay_object *o);
+
 /** find object o in the hierarchy beneath object c
  */
 int ay_clevel_find(ay_object *c, ay_object *o, int *found);
@@ -512,7 +516,7 @@ int ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 
 /** link object to the scene hierarchy
  */
-int ay_object_link(ay_object *o);
+void ay_object_link(ay_object *o);
 
 /** unlink object from the scene hierarchy
  */

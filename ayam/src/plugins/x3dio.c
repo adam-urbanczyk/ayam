@@ -1357,7 +1357,7 @@ x3dio_linkobject(scew_element *element, unsigned int type, void *sobj)
   ay_status = x3dio_readname(element, "DEF", new);
 
   /* link the object to the scene */
-  ay_status = ay_object_link(new);
+  ay_object_link(new);
 
   x3dio_lrobject = new;
 

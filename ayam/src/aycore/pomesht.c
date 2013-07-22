@@ -509,16 +509,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
       o = lo->object;
       if(o->type == AY_IDPOMESH)
 	{
-	  if((fabs(o->movx) > AY_EPSILON) ||
-	     (fabs(o->movy) > AY_EPSILON) ||
-	     (fabs(o->movz) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scalx) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scaly) > AY_EPSILON) ||
-	     (fabs(1.0 - o->scalz) > AY_EPSILON) ||
-	     (fabs(o->quat[0]) > AY_EPSILON) ||
-	     (fabs(o->quat[1]) > AY_EPSILON) ||
-	     (fabs(o->quat[2]) > AY_EPSILON) ||
-	     (fabs(1.0 - o->quat[3]) > AY_EPSILON))
+	  if(AY_ISTRAFO(o))
 	    {
 	      have_trafo = AY_TRUE;
 	    }
@@ -710,7 +701,7 @@ ay_pomesht_mergetcmd(ClientData clientData, Tcl_Interp *interp,
     }
   else
     { /* link the new PolyMesh to the scene */
-      ay_status = ay_object_link(no);
+      ay_object_link(no);
     }
 
  return TCL_OK;
@@ -1254,8 +1245,6 @@ ay_pomesht_splitface(ay_pomesh_object *pomesh, unsigned int f,
       for(n = 0; n < pomesh->nverts[l]; n++)
 	{
 	  target->verts[oldtotalverts + n] = target->ncontrols + n;
-	  if(pomesh->verts[m + n]>pomesh->ncontrols)
-	    printf("gotcha!\n");
 	  memcpy(&(target->controlv[(target->ncontrols + n)*stride]),
 		 &(pomesh->controlv[(pomesh->verts[m + n])*stride]),
 		 stride*sizeof(double));

@@ -1730,7 +1730,7 @@ ay_script_convertcb(ay_object *o, int in_place)
 		  ay_status = ay_object_copy(cmo, &new);
 		  if(ay_status == AY_OK && new)
 		    {
-		      ay_status = ay_object_link(new);
+		      ay_object_link(new);
 		    } /* if */
 		  cmo = cmo->next;
 		} /* while */

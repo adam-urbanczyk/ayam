@@ -918,7 +918,7 @@ ay_bpatch_convertcb(ay_object *o, int in_place)
     {
       if(!in_place)
 	{
-	  ay_status = ay_object_link(new);
+	  ay_object_link(new);
 	}
       else
 	{

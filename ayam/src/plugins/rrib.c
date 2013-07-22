@@ -1233,7 +1233,7 @@ ay_rrib_RiLightSource(RtToken name,
 
   ay_rrib_readpvs(n, tokens, parms, 0, NULL, &(o->tags));
 
-  ay_status = ay_object_link(o);
+  ay_object_link(o);
   ay_rrib_lrobject = o;
   ay_rrib_co.parent = AY_FALSE;
   ay_object_delete(ay_rrib_co.down);
@@ -5313,7 +5313,7 @@ ay_rrib_linkmaterial(ay_object *o)
 	{
 	  old_aynext = ay_next;
 	  ay_next = &(ay_root->next->down);
-	  ay_status = ay_object_link(m);
+	  ay_object_link(m);
 	  ay_next = old_aynext;
 	}
       else
@@ -5477,7 +5477,7 @@ ay_rrib_linkobject(void *object, int type)
     {
       return;
     }
-  ay_status = ay_object_link(o);
+  ay_object_link(o);
 
   if(type == AY_IDNPATCH)
     {
