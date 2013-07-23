@@ -417,6 +417,13 @@ ay_read_tags(FILE *fileptr, ay_object *o)
       if(ay_status)
 	{ free(tag->name); free(tag); return ay_status; }
 
+      /* avoid null value */
+      if(!tag->val)
+	{
+	  if(!(tag->val = calloc(1, sizeof(char))))
+	    { free(tag->name); free(tag); return AY_EOMEM; }
+	}
+
      if(!o->tags)
        {
 	 o->tags = tag;
