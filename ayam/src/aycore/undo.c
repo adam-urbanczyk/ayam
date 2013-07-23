@@ -1119,10 +1119,10 @@ ay_undo_save(int save_children)
        * of the undo buffer is empty again
        */
 
-      /* clear */
+      /* clear oldest state */
       uo = &(undo_buffer[0]);
       ay_undo_clearuo(uo);
-      /* shift */
+      /* shift all states down */
       for(i = 0; i < undo_buffer_size-1; i++)
 	{
 	  uo = &(undo_buffer[i]);
@@ -1135,8 +1135,6 @@ ay_undo_save(int save_children)
       uo = &(undo_buffer[undo_buffer_size-1]);
       uo->objects = NULL;
       uo->references = NULL;
-      /* link name of saved modelling operation to this undo object */
-      uo->operation = undo_saved_op;
     }
   else
     {
@@ -1156,20 +1154,22 @@ ay_undo_save(int save_children)
 	      uo = &(undo_buffer[i]);
 	      ay_undo_clearuo(uo);
 	    }
-	  uo = &(undo_buffer[undo_current]);
-	  /* link name of saved modelling operation to this undo object */
-	  uo->operation = undo_saved_op;
 	}
       else
 	{
 	  undo_current++;
-	  uo = &(undo_buffer[undo_current]);
-	  /* link name of saved modelling operation to this undo object */
-	  uo->operation = undo_saved_op;
 	} /* if */
     } /* if */
 
   uo = &(undo_buffer[undo_current]);
+
+  if(!uo)
+    return AY_ENULL;
+
+  /* link name of saved modelling operation to this undo object */
+  uo->operation = undo_saved_op;
+  /* avoid alias */
+  undo_saved_op = NULL;
 
   /* check, whether the current undo slot contains saved objects */
   if(uo->objects)
@@ -1641,8 +1641,11 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  ay_error(AY_ERROR, argv[0], "undo save failed");
 	  ay_undo_clearuo(&(undo_buffer[uc]));
-	  free(undo_saved_op);
-	  undo_saved_op = NULL;
+	  if(undo_saved_op)
+	    {
+	      free(undo_saved_op);
+	      undo_saved_op = NULL;
+	    }
 	  return TCL_OK;
 	}
       else
