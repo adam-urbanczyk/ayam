@@ -172,7 +172,6 @@ proc x3dio_export { } {
 
     set x3dio_options(oldfocus) [focus]
 
-    cS; plb_update
     update
 
     set ay_error ""
@@ -218,8 +217,13 @@ proc x3dio_export { } {
 	global x3dio_options;
 
 	# append extension
-	set x3dio_options(FileName) [io_appext $x3dio_options(FileName) ".x3d"]
-
+	if { $x3dio_options(WriteX3dom) == 0 } {
+	    set x3dio_options(FileName) \
+		[io_appext $x3dio_options(FileName) ".x3d"]
+	} else {
+	    set x3dio_options(FileName) \
+		[io_appext $x3dio_options(FileName) ".xhtml"]
+	}
 	set x3dio_options(filename) $x3dio_options(FileName)
 	set oldcd [pwd]
 	cd [file dirname $x3dio_options(FileName)]
