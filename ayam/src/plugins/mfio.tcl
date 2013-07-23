@@ -148,7 +148,6 @@ proc mfio_export { } {
 
     set mfio_options(oldfocus) [focus]
 
-    cS; plb_update
     update
 
     set ay_error ""

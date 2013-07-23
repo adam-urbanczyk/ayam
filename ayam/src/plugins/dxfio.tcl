@@ -150,7 +150,6 @@ proc dxfio_export { } {
 
     set dxfio_options(oldfocus) [focus]
 
-    cS; plb_update
     update
 
     set ay_error ""

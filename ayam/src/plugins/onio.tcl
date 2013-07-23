@@ -155,7 +155,6 @@ proc onio_export { } {
 
     set onio_options(oldfocus) [focus]
 
-    cS; plb_update
     update
 
     set ay_error ""
