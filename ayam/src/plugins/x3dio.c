@@ -7435,8 +7435,23 @@ x3dio_writenpatchobj(scew_element *element, ay_object *o)
   if(!element || !o || !o->refine)
     return AY_ENULL;
 
+  /* write this patch (and its caps and bevels) as wire frame? */
   if(ay_tags_hastag(o, NULL, ay_aswire_tagtype))
-    return x3dio_writenpwire(element, o);
+    {
+      /* yes */
+      np = (ay_nurbpatch_object *)o->refine;
+
+      ay_status = x3dio_writetransform(element, o, &transform_element);
+
+      down = np->caps_and_bevels;
+      while(down)
+	{
+	  x3dio_writenpwire(transform_element, down);
+	  down = down->next;
+	}
+
+      return x3dio_writenpwire(element, o);
+    } /* if wire */
 
   /* decode potentially present PV tags */
   if(o->tags)
