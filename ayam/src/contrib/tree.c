@@ -822,7 +822,7 @@ ay_tree_dndtcmd(ClientData clientData, Tcl_Interp *interp,
       /* sanity check */
       if((*t != o) && (t != &(o->next)))
 	{
-	  ay_status = ay_object_unlink(o);
+	  ay_object_unlink(o);
 	  o->next = *t;
 	  *t = o;
 	  t = &(o->next);

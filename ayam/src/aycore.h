@@ -520,7 +520,7 @@ void ay_object_link(ay_object *o);
 
 /** unlink object from the scene hierarchy
  */
-int ay_object_unlink(ay_object *o);
+void ay_object_unlink(ay_object *o);
 
 /** get type name
  */

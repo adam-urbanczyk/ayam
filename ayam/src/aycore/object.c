@@ -380,7 +380,7 @@ ay_object_deletetcmd(ClientData clientData, Tcl_Interp *interp,
 	}
       else
 	{
-	  ay_status = ay_object_unlink(o);
+	  ay_object_unlink(o);
 
 	  ay_undo_clearobj(o);
 
@@ -473,10 +473,9 @@ ay_object_link(ay_object *o)
  *  unlink object o from scene, without deleting it!
  *  properly maintains ay_next and ay_currentlevel
  */
-int
+void
 ay_object_unlink(ay_object *o)
 {
- int ay_status = AY_OK;
  int done;
  ay_list_object *clevel = ay_currentlevel;
  ay_object *clevelobj = NULL, *p1, *p2;
@@ -518,7 +517,7 @@ ay_object_unlink(ay_object *o)
 	} /* while */
     } /* if */
 
- return ay_status;
+ return;
 } /* ay_object_unlink */
 
 
