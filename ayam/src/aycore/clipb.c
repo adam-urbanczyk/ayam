@@ -134,7 +134,6 @@ int
 ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
 		 int argc, char *argv[])
 {
- int ay_status = AY_OK;
  ay_list_object *sel = ay_selection;
  ay_object **next = NULL, *t = NULL;
  int append = AY_FALSE;
@@ -187,14 +186,12 @@ ay_clipb_cuttcmd(ClientData clientData, Tcl_Interp *interp,
   /* cut objects to clipboard */
   while(sel)
     {
-      ay_status = ay_object_unlink(sel->object);
-      if(!ay_status)
-	{
-	  *next = sel->object;
-	  next = &((*next)->next);
-	  /* terminate clipboard hierarchy properly */
-	  *next = NULL;
-	}
+      ay_object_unlink(sel->object);
+
+      *next = sel->object;
+      next = &((*next)->next);
+      /* terminate clipboard hierarchy properly */
+      *next = NULL;
 
       sel = sel->next;
     } /* while */
