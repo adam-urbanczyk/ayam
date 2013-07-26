@@ -1,4 +1,4 @@
-[17. Jul 2013] CVS-Head:
+[26. Jul 2013] CVS-Head:
 ========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
@@ -31,6 +31,7 @@ o Caps and Bevels are now available for many more object types,
   e.g. IPatch, NPatch, ConcatNP, Birail1, Birail2, Skin...
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
+o added bevel mode that rounds to the cap also using tangent information
 o Bevel orientations are now consistent
 o Bevels from simple closed or periodic curves are now also guaranteed
   to be closed or periodic, respectively
@@ -71,6 +72,7 @@ o many NURBS curve/surface tools no longer unconditionally set the
 o improved closing of surfaces
 o added a second set of drawing/display parameters that is in effect
   when interactive modelling or view actions are active
+o improved robustness of Gordon caps
 
 GUI:
 o the default value menu buttons of property GUI elements now display a
