@@ -1811,6 +1811,39 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
 } /* ay_knots_insert */
 
 
+/** ay_knots_match:
+ * See if there is already a matching knot in the knot vector.
+ * If yes, return that knot instead of the delivered knot.
+ *
+ * \param[in] nc NURBS curve to check
+ * \param[in] eps maximum allowed distance for the match
+ * \param[in,out] u knot
+ *
+ */
+void
+ay_knots_match(ay_nurbcurve_object *nc, double eps, double *u)
+{
+ int i;
+ double *p;
+
+  if(!nc || !u)
+    return;
+
+  p = nc->knotv;
+  for(i = 0; i < nc->length+nc->order; i++)
+    {
+      if(fabs(*p-*u)<eps)
+	{
+	  *u = *p;
+	  return;
+	}
+      p++;
+    }
+
+ return;
+} /* ay_knots_match */
+
+
 /** ay_knots_init:
  *  initialize the knots module
  * \returns AY_OK on success, error code otherwise.
