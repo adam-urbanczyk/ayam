@@ -318,6 +318,10 @@ int ay_knots_remove(unsigned int index, int order, int length, double **U);
  */
 int ay_knots_insert(unsigned int index, int order, int length, double **U);
 
+/** Find matching knot.
+ */
+void ay_knots_match(ay_nurbcurve_object *nc, double eps, double *u);
+
 /** Initialize the knots module.
  */
 int ay_knots_init(Tcl_Interp *interp);

@@ -440,7 +440,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
  ay_object *c1 = NULL, *c2 = NULL, *c3 = NULL, *c4 = NULL, *new = NULL;
  ay_nurbcurve_object *curve = NULL;
  int i = 0, numhknots = 5;
- double hknots[5] = {0.5, 0.495, 0.496, 0.504, 0.5111};
+ double u, hknots[5] = {0.5, 0.495, 0.496, 0.504, 0.5111};
 
   c1 = c;
 
@@ -466,7 +466,9 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   i = 0;
   while((!c3 || ay_status) && (i < numhknots))
     {
-      ay_status = ay_nct_split(c1, hknots[i], &c3);
+      u = hknots[i];
+      ay_knots_match((ay_nurbcurve_object*)c1->refine, AY_EPSILON, &u);
+      ay_status = ay_nct_split(c1, u, &c3);
       i++;
     }
   if(!c3 || ay_status)
@@ -481,11 +483,13 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
 				      0.0, 1.0);
   if(ay_status)
     goto cleanup;
-  i = 1;
+  i = 0;
   ay_status = AY_OK;
   while((!c2 || ay_status) && (i < numhknots))
     {
-      ay_status = ay_nct_split(c1, hknots[i], &c2);
+      u = hknots[i];
+      ay_knots_match((ay_nurbcurve_object*)c1->refine, AY_EPSILON, &u);
+      ay_status = ay_nct_split(c1, u, &c2);
       i++;
     }
   if(!c2 || ay_status)
@@ -503,11 +507,13 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   if(ay_status)
     goto cleanup;
 
-  i = 1;
+  i = 0;
   ay_status = AY_OK;
   while((!c4 || ay_status) && (i < numhknots))
     {
-      ay_status = ay_nct_split(c3, hknots[i], &c4);
+      u = hknots[i];
+      ay_knots_match((ay_nurbcurve_object*)c3->refine, AY_EPSILON, &u);
+      ay_status = ay_nct_split(c3, u, &c4);
       i++;
     }
   if(!c4 || ay_status)
