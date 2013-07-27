@@ -166,11 +166,19 @@ button $f.bnon -text "None" -padx 0 -pady 0 -command {
 } -takefocus 0 -highlightthickness 0
 
 button $f.bup -text "Up" -padx 0 -pady 0  -command {
+    global ay;
     cS
     goUp
     olb_update
-    if { $ay(need_redraw) == 1 } {
-	rV
+    if { [info exists ay(lastdown)] && ([llength $ay(lastdown)] > 0) } {
+	set lb $ay(olb)
+	$lb selection set [lindex $ay(lastdown) end]
+	set ay(lastdown) [lreplace $ay(lastdown) end end]
+	olb_select
+    } else {
+	if { $ay(need_redraw) == 1 } {
+	    rV
+	}
     }
 } -takefocus 0 -highlightthickness 0
 
@@ -215,8 +223,7 @@ frame $f.f3
 set f $f.f3
 
 button $f.binv -text "Inv" -padx 0 -pady 0 -command {
-    global ay
-    
+    global ay    
     set selected [$ay(olb) curselection]
     $ay(olb) selection set 0 end
     foreach element $selected {
@@ -228,6 +235,7 @@ button $f.binv -text "Inv" -padx 0 -pady 0 -command {
 button $f.bdwn -text "Down" -padx 0 -pady 0  -command {
     global ay
     set list [$ay(olb) curselection]
+    lappend ay(lastdown) [lindex $list 0]
     eval [subst "goDown $list"]
     cS
     olb_update
