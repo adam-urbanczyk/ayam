@@ -10043,6 +10043,19 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       memcpy(newknotv, np1->uknotv, (np1->width+np1->uorder)*sizeof(double));
 
+      /* improve phantom knot */
+      newknotv[patch->width+patch->uorder-1] =
+	newknotv[patch->width+patch->uorder-2];
+
+      /* check new knots for validity */
+      if(ay_knots_check(np1->width, np1->uorder,
+			np1->width+np1->uorder, newknotv))
+	{
+	  (void)ay_object_delete(new);
+	  free(newcontrolv); free(newknotv);
+	  return AY_ERROR;
+	}
+
       free(np2->controlv);
       np2->controlv = NULL;
       free(np2->uknotv);
@@ -10055,7 +10068,7 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       if(!(np2->uknotv = malloc((np2->width+np2->uorder)*sizeof(double))))
 	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
-	  free(np2->controlv); return AY_EOMEM; }
+	  return AY_EOMEM; }
 
       memcpy(np2->controlv,
 	     &(np1->controlv[((np1->width-1)*np2->height)*stride]),
@@ -10063,6 +10076,15 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 
       memcpy(np2->uknotv, &(np1->uknotv[np1->width-1]),
 	     (np2->width+np2->uorder)*sizeof(double));
+
+      /* improve phantom knot */
+      np2->uknotv[0] = np2->uknotv[1];
+
+      /* check new knots for validity */
+      if(ay_knots_check(np2->width, np2->uorder,
+			np2->width+np2->uorder,	np2->uknotv))
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR; }
 
       free(np1->controlv);
       np1->controlv = newcontrolv;
@@ -10258,6 +10280,16 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       memcpy(newknotv, np1->vknotv, (np1->height+np1->vorder)*sizeof(double));
 
+      /* improve phantom knot */
+      newknotv[patch->height+patch->vorder-1] =
+	newknotv[patch->height+patch->vorder-2];
+
+      /* check new knots for validity */
+      if(ay_knots_check(np1->height, np1->vorder,
+			np1->height+np1->vorder, newknotv))
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR; }
+
       free(np2->controlv);
       np2->controlv = NULL;
       free(np2->vknotv);
@@ -10270,7 +10302,7 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       if(!(np2->vknotv = malloc((np2->height+np2->vorder)*sizeof(double))))
 	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
-	  free(np2->controlv); return AY_EOMEM; }
+	  return AY_EOMEM; }
 
       a = 0;
       b = (np1->height-1)*stride;
@@ -10284,6 +10316,15 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 
       memcpy(np2->vknotv, &(np1->vknotv[np1->height-1]),
 	     (np2->height+np2->vorder)*sizeof(double));
+
+      /* improve phantom knot */
+      np2->vknotv[0] = np2->vknotv[1];
+
+      /* check new knots for validity */
+      if(ay_knots_check(np2->height, np2->vorder,
+			np2->height+np2->vorder, np2->vknotv))
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR; }
 
       free(np1->controlv);
       np1->controlv = newcontrolv;

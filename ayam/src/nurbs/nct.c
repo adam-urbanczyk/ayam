@@ -2637,10 +2637,8 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       /* check new knots for validity */
       if(ay_knots_check(nc1->length, nc1->order,
 			nc1->length+nc1->order,	newknotv))
-	{
-	  free(newcontrolv); free(newknotv);
-	  return AY_ERROR;
-	}
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR; }
 
       free(nc2->controlv);
       nc2->controlv = NULL;
@@ -2667,11 +2665,8 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
       /* check new knots for validity */
       if(ay_knots_check(nc2->length, nc2->order,
 			nc2->length+nc2->order,	nc2->knotv))
-	{
-	  free(newcontrolv); free(newknotv);
-	  (void)ay_object_delete(new);
-	  return AY_ERROR;
-	}
+	{ (void)ay_object_delete(new); free(newcontrolv); free(newknotv);
+	  return AY_ERROR; }
 
       free(nc1->controlv);
       nc1->controlv = newcontrolv;
