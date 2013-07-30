@@ -111,3 +111,161 @@ ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n)
 
  return;
 } /* ay_geom_calcnfrom3 */
+
+
+/* ay_geom_extractmiddlepoint:
+ */
+int
+ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
+			  double **tcv, double *result)
+{
+ int ay_status = AY_OK;
+ int stride = 4, a, i, j;
+ double *p = NULL, *t = NULL;
+ double minmax[6];
+
+  if(!result)
+    return AY_ENULL;
+
+  memset(result, 0, 4*sizeof(double));
+
+  if(mode == 0)
+    {
+      minmax[0] = DBL_MAX;
+      minmax[1] = -DBL_MAX;
+      minmax[2] = DBL_MAX;
+      minmax[3] = -DBL_MAX;
+      minmax[4] = DBL_MAX;
+      minmax[5] = -DBL_MAX;
+      p = cv;
+      for(i = 0; i < cvlen; i++)
+	{
+	  if(p[0] < minmax[0])
+	    minmax[0] = p[0];
+	  if(p[0] > minmax[1])
+	    minmax[1] = p[0];
+
+	  if(p[1] < minmax[2])
+	    minmax[2] = p[1];
+	  if(p[1] > minmax[3])
+	    minmax[3] = p[1];
+
+	  if(p[2] < minmax[4])
+	    minmax[4] = p[2];
+	  if(p[2] > minmax[5])
+	    minmax[5] = p[2];
+
+	  p += cvstride;
+	} /* for */
+
+      result[0] = minmax[0]+((minmax[1]-minmax[0])*0.5);
+      result[1] = minmax[2]+((minmax[3]-minmax[2])*0.5);
+      result[2] = minmax[4]+((minmax[5]-minmax[4])*0.5);
+    }
+  else
+    {
+      /* mode != 0 */
+      if(!tcv)
+	return AY_ENULL;
+
+      if(!*tcv)
+	if(!(*tcv = malloc(cvlen*stride*sizeof(double))))
+	  return AY_EOMEM;
+      t = *tcv;
+      p = cv;
+      for(i = 0; i < cvlen; i++)
+	{
+	  memcpy(&(t[i*stride]), p, stride*sizeof(double));
+	  p += cvstride;
+	}
+
+      qsort(t, cvlen, stride*sizeof(double), ay_nct_cmppnt);
+
+      a = 0;
+      i = 0;
+      j = cvlen;
+      while(i < cvlen)
+	{
+	  result[0] += t[a];
+	  result[1] += t[a+1];
+	  result[2] += t[a+2];
+	  result[3] += t[a+3];
+
+	  /* skip over sequence of equal points */
+	  if((i < (cvlen-1)) &&
+	     !ay_nct_cmppnt((void*)(&(t[a])),(void*)(&(t[a+stride]))))
+	    {
+	      do
+		{
+		  i++;
+		  a += stride;
+		  j--;
+		}
+	      while((i < (cvlen-1)) &&
+		!ay_nct_cmppnt((void*)(&(t[a])),(void*)(&(t[a+stride]))));
+	    }
+
+	  i++;
+	  a += stride;
+	} /* while */
+
+      result[0] /= j;
+      result[1] /= j;
+      result[2] /= j;
+      result[3] /= j;
+    } /* if */
+
+ return ay_status;
+} /* ay_geom_extractmiddlepoint */
+
+
+/* ay_geom_extractmeannormal:
+ */
+int
+ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
+			  double *result)
+{
+ int ay_status = AY_OK;
+ int i, snlen = 0;
+ double m[4] = {0}, *p1, *p2, *psn;
+ double *sn = NULL;
+
+  ay_status = ay_geom_extractmiddlepoint(0, cv, cvlen,
+					 cvstride, NULL, m);
+
+  if(ay_status)
+    return ay_status;
+
+  if(!(sn = malloc(cvlen*3*sizeof(double))))
+    return AY_EOMEM;
+
+  psn = sn;
+  p1 = cv;
+  p2 = p1+cvstride;
+
+  for(i = 0; i < cvlen-1; i++)
+    {
+      if((!AY_V3COMP(p1,p2)) && (!AY_V3COMP(m,p1)) && (!AY_V3COMP(m,p2)))
+	{
+	  ay_geom_calcnfrom3(m, p1, p2, psn);
+	  snlen++;
+	  psn += 3;
+	}
+
+      p1 = p2;
+      p2 += cvstride;
+    }
+
+  psn = sn;
+  for(i = 0; i < snlen; i++)
+    {
+      result[0] += psn[0]/snlen;
+      result[1] += psn[1]/snlen;
+      result[2] += psn[2]/snlen;
+      psn += 3;
+    }
+
+  free(sn);
+
+ return ay_status;
+} /* ay_geom_extractmeannormal */

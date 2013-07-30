@@ -311,13 +311,13 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
   if(!(cap = calloc(1, sizeof(ay_cap_object))))
     { return AY_EOMEM; }
 
-  fscanf(fileptr,"%lg\n",&cap->glu_sampling_tolerance);
-  fscanf(fileptr,"%d\n",&cap->display_mode);
+  fscanf(fileptr, "%lg\n", &cap->glu_sampling_tolerance);
+  fscanf(fileptr, "%d\n", &cap->display_mode);
 
   if(ay_read_version >= 10)
     {
       /* since 1.13 */
-      fscanf(fileptr,"%d\n",&cap->type);
+      fscanf(fileptr, "%d\n", &cap->type);
     }
 
   o->refine = cap;
@@ -464,7 +464,10 @@ ay_cap_notifycb(ay_object *o)
       ay_status = ay_capt_crtgordoncap(pobject, &(cap->npatch));
       break;
     case 2:
-      ay_status = ay_capt_crtsimplecap(pobject, &(cap->npatch));
+      ay_status = ay_capt_crtsimplecap(0, pobject, &(cap->npatch));
+      break;
+    case 3:
+      ay_status = ay_capt_crtsimplecap(1, pobject, &(cap->npatch));
       break;
     default:
       ay_status = AY_ERROR;

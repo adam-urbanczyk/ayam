@@ -141,7 +141,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    {
 	      ay_status = ay_bevelt_findbevelcurve(-bparams->types[i],
 						   &bevelcurve);
-	      
+
 	      if(ay_status || !bevelcurve)
 		goto cleanup;
 
@@ -395,20 +395,35 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
 		  break;
 		case 2:
-		  ay_status = ay_capt_crtsimplecap(extrcurve, nextcap);
+		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
 		  break;
 		case 3:
+		  ay_status = ay_capt_crtsimplecap(0, extrcurve, nextcap);
+		  break;
+		case 4:
 		  if(bparams->integrate[i])
 		    {
-		      ay_status = ay_capt_crtsimplecapint(extrcurve, i, o);
+		      ay_status = ay_capt_crtsimplecapint(0, extrcurve, i, o);
 		    }
 		  else
 		    {
-		      ay_status = ay_capt_crtsimplecapint(extrcurve, 3, bevel);
+		      ay_status = ay_capt_crtsimplecapint(0, extrcurve, 3,
+							  bevel);
 		    }
 		  break;
-		case 4:
-		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
+		case 5:
+		  ay_status = ay_capt_crtsimplecap(1, extrcurve, nextcap);
+		  break;
+		case 6:
+		  if(bparams->integrate[i])
+		    {
+		      ay_status = ay_capt_crtsimplecapint(1, extrcurve, i, o);
+		    }
+		  else
+		    {
+		      ay_status = ay_capt_crtsimplecapint(1, extrcurve, 3,
+							  bevel);
+		    }
 		  break;
 		default:
 		  ay_status = AY_ERROR;

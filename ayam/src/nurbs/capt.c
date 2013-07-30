@@ -17,21 +17,24 @@
 /** ay_capt_crtsimplecap:
  *  create a simple cap surface from a single NURBS curve
  *
+ * \param[in] mode 0 - 2D, 1 - 3D
  * \param[in] c NURBS curve object
  * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
+ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *npatch = NULL;
- ay_nurbcurve_object *nc = NULL;
+ ay_nurbcurve_object *nc = NULL, *rnc = NULL;
  ay_nurbpatch_object *np = NULL;
- double knotv[4] = {0.0,0.0,1.0,1.0};
+ double knotv0[4] = {0.0,0.0,1.0,1.0}, knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
  int a, i = 0, stride = 4;
- double m[4] = {0};
+ double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
+ double angle, rm[16], rotaxis[3], *circcv = NULL;
+ ay_object *rc;
 
   if(!c || !cap)
     return AY_ENULL;
@@ -52,9 +55,17 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
     { ay_status = AY_EOMEM; goto cleanup; }
   npatch->refine = np;
 
-  np->width = 2;
+  if(mode)
+    {
+      np->width = 3;
+      np->uorder = 3;
+    }
+  else
+    {
+      np->width = 2;
+      np->uorder = 2;
+    }
   np->height = nc->length;
-  np->uorder = 2;
   np->vorder = nc->order;
 
   np->uknot_type = AY_KTNURB;
@@ -62,29 +73,119 @@ ay_capt_crtsimplecap(ay_object *c, ay_object **cap)
 
   if(!(np->vknotv = malloc((nc->length+nc->order) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
-  if(!(np->uknotv = malloc(4 * sizeof(double))))
+  if(!(np->uknotv = malloc((np->width+np->uorder) * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
   if(!(np->controlv = malloc(np->width*np->height*stride * sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
 
-  memcpy(np->uknotv, knotv, 4*sizeof(double));
   memcpy(np->vknotv, nc->knotv, (nc->length+nc->order)*sizeof(double));
+  if(mode)
+    {
+      memcpy(np->uknotv, knotv1, (np->width+np->uorder)*sizeof(double));
+    }
+  else
+    {
+      memcpy(np->uknotv, knotv0, (np->width+np->uorder)*sizeof(double));
+    }
 
   memcpy(np->controlv, nc->controlv, nc->length*stride*sizeof(double));
 
-  ay_status = ay_npt_extractmiddlepoint(0, nc->controlv, nc->length,
-					stride, NULL, m);
+  ay_status = ay_geom_extractmiddlepoint(0, nc->controlv, nc->length,
+					 stride, NULL, m);
 
   if(ay_status)
     goto cleanup;
 
-  a = nc->length*stride;
-  for(i = 0; i < nc->length; i++)
+  if(mode)
     {
-      memcpy(&(np->controlv[a]), m, 3*sizeof(double));
-      np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
-      a += stride;
+
+      if(!(circcv = malloc(nc->length*stride * sizeof(double))))
+	{ ay_status = AY_EOMEM; goto cleanup; }
+
+      r = 0.2;
+
+      /* create middle curve */
+      ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
+				      /*radius=*/r, /*arc=*/360.0, nc->order,
+				      &circcv);
+#if 0
+      ay_object_copy(c,&rc);
+      ay_nct_toxy(rc);
+
+      rnc = (ay_nurbcurve_object *)(rc->refine);
+      if(fabs(rnc->controlv[1])>AY_EPSILON)
+	{
+
+	  r = sqrt(rnc->controlv[0]*rnc->controlv[0]+
+		   rnc->controlv[1]*rnc->controlv[1]);
+	  angle = AY_R2D(acos(rnc->controlv[1]/r));
+
+	  printf("rotate in plane about %lg deg\n",angle);
+
+	  ay_trafo_identitymatrix(rm);
+
+	  ay_trafo_rotatematrix(angle, 0, 0, 1, rm);
+
+	  a = 0;
+	  for(i = 0; i < nc->length; i++)
+	    {
+	      ay_trafo_apply3(&(circcv[a]), rm);
+	      a += stride;
+	    }
+	}
+#endif
+
+      /* rotate middle curve */
+      ay_trafo_identitymatrix(rm);
+
+      /* place middle curve */
+      ay_trafo_translatematrix(m[0], m[1], m[2], rm);
+
+      ay_status = ay_geom_extractmeannormal(nc->controlv,
+					    nc->length-(nc->order-1), stride,
+					    n);
+
+      angle = AY_R2D(acos(AY_V3DOT(n, z)));
+      printf("%lg,%lg,%lg, a: %lg\n",n[0],n[1],n[2],angle);
+      if((fabs(angle) > AY_EPSILON) /*&& (fabs(angle - 180.0) > AY_EPSILON)*/)
+	{
+	  printf("rotatin\n");
+	  AY_V3CROSS(rotaxis, n, z);
+	  r = AY_V3LEN(rotaxis);
+	  AY_V3SCAL(rotaxis, (1.0/r));
+	  ay_trafo_rotatematrix(-angle, rotaxis[0], rotaxis[1], rotaxis[2], rm);
+	}
+
+
+      a = 0;
+      for(i = 0; i < nc->length; i++)
+	{
+	  ay_trafo_apply3(&(circcv[a]), rm);
+	  a += stride;
+	}
+      memcpy(&(np->controlv[nc->length*stride]), circcv,
+	     nc->length*stride*sizeof(double));
+
+      /* set middle point */
+      a = (nc->length*2)*stride;
+      for(i = 0; i < nc->length; i++)
+	{
+	  memcpy(&(np->controlv[a]), m, 3*sizeof(double));
+	  np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
+	  a += stride;
+	}
+      free(circcv);
     }
+  else
+    {
+      a = nc->length*stride;
+      for(i = 0; i < nc->length; i++)
+	{
+	  memcpy(&(np->controlv[a]), m, 3*sizeof(double));
+	  np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
+	  a += stride;
+	}
+    } /* if mode */
 
   np->is_rat = nc->is_rat;
 
@@ -121,7 +222,7 @@ cleanup:
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s)
+ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s)
 {
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
@@ -137,7 +238,7 @@ ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s)
 
   np = (ay_nurbpatch_object*)s->refine;
 
-  ay_status = ay_capt_crtsimplecap(c, &cap);
+  ay_status = ay_capt_crtsimplecap(mode, c, &cap);
 
   if(ay_status)
     goto cleanup;
@@ -671,15 +772,23 @@ ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
 	      ay_status = ay_capt_crttrimcap(extrcurve, &cap);
 	      break;
 	    case 2:
-	      ay_status = ay_capt_crtsimplecap(extrcurve, &cap);
+	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
+	      break;
+	    case 3:
+	      ay_status = ay_capt_crtsimplecap(0, extrcurve, &cap);
 	      if(!ay_status && (i > 1))
 		ay_status = ay_npt_swapuv(cap->refine);
 	      break;
-	    case 3:
-	      ay_status = ay_capt_crtsimplecapint(extrcurve, i, o);
-	      break;
 	    case 4:
-	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
+	      ay_status = ay_capt_crtsimplecapint(0, extrcurve, i, o);
+	      break;
+	    case 5:
+	      ay_status = ay_capt_crtsimplecap(1, extrcurve, &cap);
+	      if(!ay_status && (i > 1))
+		ay_status = ay_npt_swapuv(cap->refine);
+	      break;
+	    case 6:
+	      ay_status = ay_capt_crtsimplecapint(1, extrcurve, i, o);
 	      break;
 	    default:
 	      ay_status = AY_ERROR;
