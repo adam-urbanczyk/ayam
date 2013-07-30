@@ -82,11 +82,11 @@ int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
 /** Create simple cap from (convex) curve.
  */
-int ay_capt_crtsimplecap(ay_object *c, ay_object **cap);
+int ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap);
 
 /** Create simple cap from (convex) curve and integrate it into the surface.
  */
-int ay_capt_crtsimplecapint(ay_object *c, int side, ay_object *s);
+int ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s);
 
 /** Create trim cap from (planar) curve(s).
  */
@@ -1122,11 +1122,6 @@ int ay_npt_gordonwc(ay_object *g);
  */
 int ay_npt_extractboundary(ay_object *o, int apply_trafo,
 			   ay_nurbcurve_object **result);
-
-/** Extract middle point.
- */
-int ay_npt_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
-			      double **tcv, double *result);
 
 /** Extract curve from patch.
  */

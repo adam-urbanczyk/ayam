@@ -2682,7 +2682,7 @@ ay_nct_split(ay_object *src, double u, ay_object **result)
 
       /* return result */
       *result = new;
-    } /* if */
+    } /* if ncurve */
 
  return ay_status;
 } /* ay_nct_split */

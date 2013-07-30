@@ -260,6 +260,16 @@ int ay_geom_intersectlines2D(double *p1, double *t1,
  */
 void ay_geom_calcnfrom3(double *p1, double *p2, double *p3, double *n);
 
+/** Extract middle point.
+ */
+int ay_geom_extractmiddlepoint(int mode, double *cv, int cvlen, int cvstride,
+			       double **tcv, double *result);
+
+/** Extract mean normal.
+ */
+int ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
+			      double *result);
+
 
 /* instt.c */
 
