@@ -492,16 +492,16 @@ $m.npt add command -label "Close V" -command {
     undo save CloseVNP; closevNP; plb_update; rV
 }
 
-$m.npt add cascade -menu $m.npt.re -label "Refine" -underline 0
+$m.npt add cascade -menu $m.npt.re -label "Refine Knots" -underline 0
 menu $m.npt.re -tearoff 0
 
-$m.npt.re add command -label "Refine U" -command {
+$m.npt.re add command -label "Refine Knots U" -command {
     undo save RefineUNP; refineuNP; plb_update; rV
 }
-$m.npt.re add command -label "Refine V" -command {
+$m.npt.re add command -label "Refine Knots V" -command {
     undo save RefineVNP; refinevNP; plb_update; rV
 }
-$m.npt.re add command -label "Refine Both" -command {
+$m.npt.re add command -label "Refine Knots Both" -command {
     undo save RefineNP; refineuNP; refinevNP; plb_update; rV
 }
 
