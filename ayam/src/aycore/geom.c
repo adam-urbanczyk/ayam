@@ -228,7 +228,7 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
  int ay_status = AY_OK;
  int i, snlen = 0;
  double m[4] = {0}, *p1, *p2, *psn;
- double *sn = NULL;
+ double len, *sn = NULL;
 
   ay_status = ay_geom_extractmiddlepoint(0, cv, cvlen,
 					 cvstride, NULL, m);
@@ -248,6 +248,9 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
       if((!AY_V3COMP(p1,p2)) && (!AY_V3COMP(m,p1)) && (!AY_V3COMP(m,p2)))
 	{
 	  ay_geom_calcnfrom3(m, p1, p2, psn);
+	  len = AY_V3LEN(psn);
+	  if(fabs(len) > AY_EPSILON)
+	    AY_V3SCAL(psn,1.0/len);
 	  snlen++;
 	  psn += 3;
 	}
@@ -264,6 +267,10 @@ ay_geom_extractmeannormal(double *cv, int cvlen, int cvstride,
       result[2] += psn[2]/snlen;
       psn += 3;
     }
+
+  len = AY_V3LEN(result);
+  if(fabs(len) > AY_EPSILON)
+    AY_V3SCAL(result,1.0/len);
 
   free(sn);
 
