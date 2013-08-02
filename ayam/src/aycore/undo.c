@@ -1652,8 +1652,8 @@ ay_undo_undotcmd(ClientData clientData, Tcl_Interp *interp,
 	{
 	  uc++;
 	  /* set undo prompt */
-	  if(undo_saved_op)
-	    Tcl_SetVar2(interp, a, n3, undo_saved_op,
+	  if((undo_buffer[undo_current]).operation)
+	    Tcl_SetVar2(interp, a, n3, (undo_buffer[undo_current]).operation,
 			TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 	  Tcl_SetVar2(interp, a, n4, vnone, TCL_LEAVE_ERR_MSG |
 		      TCL_GLOBAL_ONLY);
