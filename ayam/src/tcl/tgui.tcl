@@ -35,7 +35,7 @@ uplevel #0 { array set tgui_tessparam {
     SParamV5 1
 
     MB1Down 0
-    SaveToTag 0
+
     UseTexCoords 0
     UseVertColors 0
     UseVertNormals 0
@@ -365,31 +365,27 @@ proc tgui_recalcslider { slider val } {
 proc tgui_addtag { } {
     global tgui_tessparam
 
-    if { $tgui_tessparam(SaveToTag) == 1 } {
+    undo save AddTPTag
 
-	undo save AddTPTag
-
-	forAll 0 {
-	    global tgui_tessparam
-	    set val [format "%d,%g,%g"\
-			 [expr $tgui_tessparam(SMethod) + 1]\
-			 $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
-	    set tagnames ""
-	    set tagvals ""
-	    getTags tagnames tagvals
-	    if { ($tagnames == "" ) || ([lsearch $tagnames "TP"] == -1) } {
-		# no tags, or TP tag not present already => just add a new tag
-		addTag "TP" $val
-	    } else {
-		# we have already a TP tag => change its value
-		set index [lsearch $tagnames "TP"]
-		setTags -index $index "TP" $val
-	    }
-	    # if
+    forAll 0 {
+	global tgui_tessparam
+	set val [format "%d,%g,%g"\
+		     [expr $tgui_tessparam(SMethod) + 1]\
+		     $tgui_tessparam(SParamU) $tgui_tessparam(SParamV)]
+	set tagnames ""
+	set tagvals ""
+	getTags tagnames tagvals
+	if { ($tagnames == "" ) || ([lsearch $tagnames "TP"] == -1) } {
+	    # no tags, or TP tag not present already => just add a new tag
+	    addTag "TP" $val
+	} else {
+	    # we have already a TP tag => change its value
+	    set index [lsearch $tagnames "TP"]
+	    setTags -index $index "TP" $val
 	}
-	# forAll
+	# if
     }
-    # if
+    # forAll
 
  return;
 }
@@ -477,12 +473,11 @@ proc tgui_open { } {
 	addText $f tgui_tessparam $t
     }
 
-    addInfo $f tgui_tessparam NumTriangles
     addCheck $f tgui_tessparam LazyUpdate
-    addCheck $f tgui_tessparam SaveToTag
     addCheck $f tgui_tessparam UseTexCoords
     addCheck $f tgui_tessparam UseVertColors
     addCheck $f tgui_tessparam UseVertNormals
+    addInfo $f tgui_tessparam NumTriangles
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
@@ -571,14 +566,22 @@ proc tgui_open { } {
     }
     # button
 
-    button $f.bca -text "Cancel" -width 5 -command {
+    button $f.bsa -text "Save" -width 5 -command {
 	tguiCmd ca; focus .; destroy .tguiw;
+	undo rewind;
 	tgui_addtag;
 	uCL cl {1 1}; plb_update;
     }
     # button
 
-    pack $f.bok $f.bca -in $f -side left -fill x -expand yes
+    button $f.bca -text "Cancel" -width 5 -command {
+	tguiCmd ca; focus .; destroy .tguiw;
+	undo rewind;
+	uCL cl {1 1}; plb_update;
+    }
+    # button
+
+    pack $f.bok $f.bsa $f.bca -in $f -side left -fill x -expand yes
     pack $f -in $w -side bottom -fill x
 
     # Esc-key && close via window decoration == Cancel button
