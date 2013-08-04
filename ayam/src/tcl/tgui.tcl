@@ -219,7 +219,8 @@ proc tgui_update args {
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
-	pack forget .tguiw.f1.fSParamV
+	.tguiw.f1.fSParamV.s conf -state disabled
+	.tguiw.f1.fSParamV.e conf -state disabled
     }
 
     if { $tgui_tessparam(SMethod) == 1 } {
@@ -234,7 +235,8 @@ proc tgui_update args {
 	    .tguiw.f1.fSParamU.s conf -from 0 -to 100
 	    .tguiw.f1.fSParamU.s conf -resolution 1
 	}
-	pack forget .tguiw.f1.fSParamV
+	.tguiw.f1.fSParamV.s conf -state disabled
+	.tguiw.f1.fSParamV.e conf -state disabled
     }
 
     if { ($tgui_tessparam(SMethod) > 1) } {
@@ -266,7 +268,8 @@ proc tgui_update args {
 	    .tguiw.f1.fSParamU.s conf -resolution 0.1
 	    .tguiw.f1.fSParamV.s conf -resolution 0.1
 	}
-	pack .tguiw.f1.fSParamV -in .tguiw.f1 -side top -fill x -expand yes
+	.tguiw.f1.fSParamV.s conf -state normal
+	.tguiw.f1.fSParamV.e conf -state normal
     }
 
     set tgui_tessparam(OldSMethod) $tgui_tessparam(SMethod)
@@ -458,7 +461,7 @@ proc tgui_open { } {
     undo save Tesselate
 
     set w .tguiw
-    set t "Tesselation Parameters"
+    set t "Tesselation"
     winDialog $w $t
 
     set ay(bca) $w.f2.bca
@@ -469,15 +472,11 @@ proc tgui_open { } {
 
     set tgui_tessparam(LazyUpdate) $ayprefs(LazyNotify)
 
-    if { $ayprefs(FixDialogTitles) == 1 } {
-	addText $f tgui_tessparam $t
-    }
-
+    addText $f t1 "Tesselation Parameters"
     addCheck $f tgui_tessparam LazyUpdate
     addCheck $f tgui_tessparam UseTexCoords
     addCheck $f tgui_tessparam UseVertColors
     addCheck $f tgui_tessparam UseVertNormals
-    addInfo $f tgui_tessparam NumTriangles
 
     # SMethod
     addMenu $f tgui_tessparam SMethod $ay(smethods)
@@ -537,6 +536,10 @@ proc tgui_open { } {
     pack $f.e -in $f -side right -fill x -expand yes -padx 2
 
     pack $f -in $w.f1 -side top -fill x -expand yes
+
+    set f $w.f1
+    addText $f t2 "Tesselation Results"
+    addInfo $f tgui_tessparam NumTriangles
 
     # set up undo system
     set ::ay(need_undo_clear) 0
