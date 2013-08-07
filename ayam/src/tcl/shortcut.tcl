@@ -162,12 +162,12 @@ proc shortcut_main { w } {
     $m entryconfigure 14 -accelerator [remkpkr $aymainshortcuts(Show)]
 
     bind $w <[repctrl $aymainshortcuts(Convert)]>\
-	"$m invoke 17;break"
-    $m entryconfigure 17 -accelerator [remkpkr $aymainshortcuts(Convert)]
+	"$m invoke 16;break"
+    $m entryconfigure 16 -accelerator [remkpkr $aymainshortcuts(Convert)]
 
     bind $w <[repctrl $aymainshortcuts(ConvertP)]>\
-	"$m invoke 18;break"
-    $m entryconfigure 18 -accelerator [remkpkr $aymainshortcuts(ConvertP)]
+	"$m invoke 17;break"
+    $m entryconfigure 17 -accelerator [remkpkr $aymainshortcuts(ConvertP)]
 
     set m $ay(helpmenu)
     bind $w <[repctrl $aymainshortcuts(Help)]> "$m invoke 0;break"
