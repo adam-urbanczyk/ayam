@@ -793,20 +793,14 @@ $m.nc add command -label "Trim" -command "level_crt Trim;" -underline 3
 
 $m add separator
 
-$m add command -label "Hide" -command {
+$m add command -label "Hide/Show" -command {
     global ay
-    undo save Hide
-    hideOb
+    undo save HideShow
+    hideOb -t
     set ay(ul) $ay(CurrentLevel); uS 1 1; rV
 } -underline 0
 $m add command -label "Hide All" -command "hideOb -all; uS 1 1; rV" \
     -underline 1
-$m add command -label "Show" -command {
-    global ay
-    undo save Show
-    showOb
-    set ay(ul) $ay(CurrentLevel); uS 1 1; rV
-} -underline 2
 $m add command -label "Show All" -command "showOb -all; uS 1 1; rV" \
     -underline 3
 $m add separator
