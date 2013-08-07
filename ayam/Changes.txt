@@ -1,5 +1,5 @@
-[26. Jul 2013] CVS-Head:
-========================
+[7. Aug 2013] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -32,7 +32,7 @@ o Caps and Bevels are now available for many more object types,
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
 o added bevel mode that rounds to the cap also using tangent information
-o Bevel orientations are now consistent
+o Bevel orientations are now consistent (independent from curve winding)
 o Bevels from simple closed or periodic curves are now also guaranteed
   to be closed or periodic, respectively
 o added C1 fillets based on global interpolation with end derivatives to
@@ -106,6 +106,11 @@ o in property GUIs and dialogs, <F10> now opens the default value
 o the help keyboard binding (<F1>) now also works in all property GUI
   and dialog entry fields and other user interface elements
 o added mnemonic handling to internal view menus and grid menu
+o walking up in the object hierarchy via the object listbox now selects
+  the proper object
+o the UI of the tesselation tool has been improved (the SaveToTag option
+  is now a major "Save" button)
+o <Ctrl+h> now toggles the hide attribute (instead of just setting it)
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
