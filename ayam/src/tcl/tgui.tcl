@@ -557,7 +557,7 @@ proc tgui_open { } {
     tguiCmd in
     if { $ay_error > 1 } {
 	# no objects copied => nothing to tesselate => bail out
-	undo; focus .; destroy .tguiw;
+	undo rewind; focus .; destroy .tguiw;
 	return;
     }
 
