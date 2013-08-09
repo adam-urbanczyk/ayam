@@ -89,7 +89,6 @@ ay_instt_createoidht(ay_object *o)
 void
 ay_instt_connect(ay_object *o, ay_object **last)
 {
- int ay_status = AY_OK;
  char fname[] = "instt_connect", errmsg[] = "Could not re-connect instance!";
  int found = AY_FALSE, removed = AY_FALSE;
  Tcl_HashEntry *entry = NULL;
@@ -116,7 +115,7 @@ ay_instt_connect(ay_object *o, ay_object **last)
 		      /* OID not registered? */
 		      ay_error(AY_ERROR, fname, errmsg);
 		      *last = o->next;
-		      ay_status = ay_object_delete(o);
+		      (void)ay_object_delete(o);
 		      removed = AY_TRUE;
 		      o = *last;
 		    }
@@ -138,7 +137,7 @@ ay_instt_connect(ay_object *o, ay_object **last)
 	      /* instance without OID tag? */
 	      ay_error(AY_ERROR, fname, errmsg);
 	      *last = o->next;
-	      ay_status = ay_object_delete(o);
+	      (void)ay_object_delete(o);
 	      removed = AY_TRUE;
 	      o = *last;
 	    }
