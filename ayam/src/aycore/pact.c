@@ -880,7 +880,8 @@ ay_pact_pentcb(struct Togl *togl, int argc, char *argv[])
 	    } /* if */
 	  sel = sel->next;
 	} /* while */
-      ay_status = ay_notify_parentof(o, AY_FALSE);
+
+      (void)ay_notify_parentof(o, AY_FALSE);
 
       Tcl_IncrRefCount(toa); Tcl_DecrRefCount(toa);
       Tcl_IncrRefCount(ton); Tcl_DecrRefCount(ton);
@@ -1511,7 +1512,7 @@ ay_pact_insertptcb(struct Togl *togl, int argc, char *argv[])
 
   if(notify_parent)
     {
-      ay_status = ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;
@@ -1833,7 +1834,7 @@ ay_pact_deleteptcb(struct Togl *togl, int argc, char *argv[])
 
   if(notify_parent)
     {
-      ay_status = ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;
@@ -2297,7 +2298,7 @@ ay_pact_wrtcb(struct Togl *togl, int argc, char *argv[])
    } /* while */
 
   if(notify_parent)
-    ay_status = ay_notify_parent();
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_wrtcb */
@@ -2437,7 +2438,7 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 
   if(notify_parent)
     {
-      ay_status = ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;
@@ -2451,7 +2452,6 @@ ay_pact_snaptogridcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
 {
- int ay_status = AY_OK;
  char fname[] = "snap_to_mark";
  Tcl_Interp *interp = Togl_Interp(togl);
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
@@ -2553,7 +2553,7 @@ ay_pact_snaptomarkcb(struct Togl *togl, int argc, char *argv[])
   glPopMatrix();
 
   if(notify_parent && (argc != -1))
-    ay_status = ay_notify_parent();
+    (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_pact_snaptomarkcb */
@@ -2660,7 +2660,7 @@ ay_pact_multiptcb(struct Togl *togl, int argc, char *argv[])
 
   if(notify_parent)
     {
-      ay_status = ay_notify_parent();
+      (void)ay_notify_parent();
     }
 
  return TCL_OK;

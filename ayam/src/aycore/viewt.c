@@ -715,9 +715,9 @@ ay_viewt_alignlocal(void)
 	  view = (ay_view_object *)o->refine;
 	  if(view->local == 2)
 	    {
-	      ay_viewt_makecurtcb(view->togl, 0, NULL);
-	      ay_viewt_align(view->togl, 0, NULL);
-	      ay_viewt_zoomtoobj(view->togl, 0, NULL);
+	      (void)ay_viewt_makecurtcb(view->togl, 0, NULL);
+	      (void)ay_viewt_align(view->togl, 0, NULL);
+	      (void)ay_viewt_zoomtoobj(view->togl, 0, NULL);
 	    }
 	}
       o = o->next;
@@ -2278,7 +2278,6 @@ ay_viewt_droptcb(struct Togl *togl, int argc, char *argv[])
 int
 ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
 {
- int ay_status = AY_OK;
  struct Togl *togl;
  Togl_Callback *altdispcb;
  ay_view_object *view = NULL;
@@ -2313,9 +2312,9 @@ ay_viewt_setupintview(int viewnum, ay_object *o, ay_view_object *vtemp)
     }
 
   /* notify also includes reshape() and additionally loads the BGImage */
-  ay_status = ay_notify_object(o);
+  (void)ay_notify_object(o);
 
-  ay_status = ay_viewt_makecurtcb(view->togl, 0, NULL);
+  (void)ay_viewt_makecurtcb(view->togl, 0, NULL);
 
   /* set various view menu icons */
   sprintf(command,
@@ -2460,7 +2459,6 @@ ay_viewt_markfromsel(struct Togl *togl)
 int
 ay_viewt_markfromselp(struct Togl *togl, int mode)
 {
- int ay_status = AY_OK;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  ay_list_object *sel = NULL;
  ay_object *o = NULL;
@@ -2490,7 +2488,7 @@ ay_viewt_markfromselp(struct Togl *togl, int mode)
       o = sel->object;
       if(o->selp)
 	{
-	  ay_status = ay_selp_getcenter(o->selp, mode, tcog);
+	  (void)ay_selp_getcenter(o->selp, mode, tcog);
 	  if(AY_ISTRAFO(o))
 	    {
 	      ay_trafo_creatematrix(o, mm);

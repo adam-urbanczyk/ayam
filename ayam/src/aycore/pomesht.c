@@ -389,7 +389,6 @@ ay_pomesht_tesselate(ay_pomesh_object *pomesh)
 int
 ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 {
- int ay_status = AY_OK;
  char fname[] = "mergePo";
  ay_list_object *lo = list;
  ay_object *o = NULL, *no = NULL;
@@ -615,7 +614,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			    }
 			  tag1 = tag1->next;
 			} /* while */
-		      ay_status = ay_tags_copyall(o, no);
+		      (void)ay_tags_copyall(o, no);
 		    } /* if */
 		}
 	      else
@@ -635,7 +634,7 @@ ay_pomesht_merge(int merge_pv_tags, ay_list_object *list, ay_object **result)
 			      mtag = NULL;
 			      if((tag2->type == ay_pv_tagtype) &&
 				 ay_pv_cmpndt(tag1, tag2))
-				ay_status = ay_pv_merge(tag1, tag2, &mtag);
+				(void)ay_pv_merge(tag1, tag2, &mtag);
 			      if(mtag)
 				{
 				  /* swap value strings tag1<>mtag */
@@ -1579,7 +1578,7 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
 {
  int ay_status = AY_OK;
  unsigned int a, b, i, j, k, l = 0, m = 0, n = 0;
- double *newcv, *centroids, cd[3], cw;
+ double *newcv = NULL, *centroids = NULL, cd[3], cw;
  double len, *fn = NULL, *normal;
 
   if(!po)
