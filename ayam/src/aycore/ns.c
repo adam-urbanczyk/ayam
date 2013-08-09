@@ -134,20 +134,20 @@ ay_ns_execute(ay_object *o, char *script)
   interp = ay_safeinterp;
 #endif
 
+  old_currentlevel = ay_currentlevel;
   old_selection = ay_selection;
   ay_selection = NULL;
 
-  ay_status = ay_sel_add(o, AY_FALSE);
-  if(ay_status)
-    {
-      goto cleanup;
-    }
+  if((ay_status = ay_sel_add(o, AY_FALSE)))
+    goto cleanup;
 
-  old_currentlevel = ay_currentlevel;
   ay_currentlevel = NULL;
-  ay_status = ay_clevel_add(ay_root);
-  ay_status = ay_clevel_add(o);
-  ay_status = ay_clevel_add(o->down);
+  if((ay_status = ay_clevel_add(ay_root)))
+    goto cleanup;
+  if((ay_status = ay_clevel_add(o)))
+    goto cleanup;
+  if((ay_status = ay_clevel_add(o->down)))
+    goto cleanup;
 
   Tk_RestrictEvents(ay_ns_restrictall, NULL, &old_restrictcd);
   result = Tcl_GlobalEval(interp, script);
@@ -160,8 +160,9 @@ ay_ns_execute(ay_object *o, char *script)
 
 cleanup:
   /* restore current level */
-  ay_clevel_delall();
-  free(ay_currentlevel);
+  (void)ay_clevel_delall();
+  if(ay_currentlevel)
+    free(ay_currentlevel);
   ay_currentlevel = old_currentlevel;
 
   /* restore selection */

@@ -1210,23 +1210,29 @@ ay_script_notifycb(ay_object *o)
   interp = ay_safeinterp;
 #endif
 
-  /* set up a clean environment */
-  old_clipboard = ay_clipboard;
-  ay_clipboard = NULL;
-
-  old_currentlevel = ay_currentlevel;
-  ay_currentlevel = NULL;
-  ay_status = ay_clevel_add(ay_root);
-  ay_status = ay_clevel_add(o);
-  ay_status = ay_clevel_add(o->down);
-  old_aynext = ay_next;
-  ay_next = &(o->down);
-
+  /* avoid automatic redraws */
   if(ay_currentview)
     {
       old_rdmode = ay_currentview->redraw;
       ay_currentview->redraw = AY_FALSE;
     }
+
+  /* set up a clean environment */
+  old_clipboard = ay_clipboard;
+  old_aynext = ay_next;
+  old_currentlevel = ay_currentlevel;
+
+  ay_clipboard = NULL;
+
+  ay_next = &(o->down);
+
+  ay_currentlevel = NULL;
+  if((ay_status = ay_clevel_add(ay_root)))
+    goto resenv;
+  if((ay_status = ay_clevel_add(o)))
+    goto resenv;
+  if((ay_status = ay_clevel_add(o->down)))
+    goto resenv;
 
   /* clean transformation attributes if no NP Transformations
      tag is present */
@@ -1487,13 +1493,14 @@ resenv:
     }
 
   /* restore the environment */
-  ay_clevel_delall();
-  free(ay_currentlevel);
+  (void)ay_clevel_delall();
+  if(ay_currentlevel)
+    free(ay_currentlevel);
   ay_currentlevel = old_currentlevel;
 
   if(ay_clipboard)
     {
-      ay_object_deletemulti(ay_clipboard);
+      (void)ay_object_deletemulti(ay_clipboard);
     }
 
   ay_clipboard = old_clipboard;
