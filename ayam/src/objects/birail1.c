@@ -497,6 +497,7 @@ ay_birail1_notifycb(ay_object *o)
  ay_object *npatch = NULL, **nextcb;
  ay_object *bevel = NULL;
  ay_bparam bparams;
+ ay_cparam cparams;
  int ay_status = AY_OK;
  int is_provided[3] = {0}, mode = 0;
  double tolerance;
@@ -614,8 +615,8 @@ ay_birail1_notifycb(ay_object *o)
   caps[1] = birail1->has_r2_cap;
   caps[2] = birail1->has_start_cap;
   caps[3] = birail1->has_end_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, birail1->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, birail1->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -625,7 +626,7 @@ ay_birail1_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      ay_status = ay_bevelt_addbevels(&bparams, caps, birail1->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, birail1->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

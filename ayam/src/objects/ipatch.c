@@ -2272,6 +2272,7 @@ ay_ipatch_notifycb(ay_object *o)
  ay_nurbpatch_object *np = NULL;
  ay_object *bevel = NULL, **nextcb;
  ay_bparam bparams;
+ ay_cparam cparams;
  double tolerance, *cv = NULL;
 
   if(!o)
@@ -2431,8 +2432,8 @@ ay_ipatch_notifycb(ay_object *o)
   caps[1] = ip->has_u1_cap;
   caps[2] = ip->has_v0_cap;
   caps[3] = ip->has_v1_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, ip->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, ip->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -2446,7 +2447,7 @@ ay_ipatch_notifycb(ay_object *o)
       bparams.dirs[2] = !bparams.dirs[2];
       bparams.radii[2] = -bparams.radii[2];
 
-      ay_status = ay_bevelt_addbevels(&bparams, caps, ip->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, ip->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

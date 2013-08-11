@@ -519,6 +519,7 @@ ay_sweep_notifycb(ay_object *o)
  ay_nurbpatch_object *np = NULL;
  int is_provided[3] = {0}, mode = 0, caps[4] = {0};
  ay_bparam bparams;
+ ay_cparam cparams;
  double tolerance;
 
   if(!o)
@@ -650,8 +651,8 @@ ay_sweep_notifycb(ay_object *o)
   caps[1] = sweep->has_right_cap;
   caps[2] = sweep->has_start_cap;
   caps[3] = sweep->has_end_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, sweep->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, sweep->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -661,7 +662,7 @@ ay_sweep_notifycb(ay_object *o)
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      ay_status = ay_bevelt_addbevels(&bparams, caps, sweep->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, sweep->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

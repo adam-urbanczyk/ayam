@@ -510,6 +510,7 @@ ay_skin_notifycb(ay_object *o)
  ay_object *newo = NULL, **nextcb;
  ay_object *bevel = NULL;
  ay_bparam bparams;
+ ay_cparam cparams;
  int mode = 0, count = 0, i, a;
  int caps[4] = {0};
  double m[16] = {0}, tolerance;
@@ -632,8 +633,8 @@ ay_skin_notifycb(ay_object *o)
   caps[1] = skin->has_right_cap;
   caps[2] = skin->has_start_cap;
   caps[3] = skin->has_end_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, skin->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, skin->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -642,8 +643,8 @@ ay_skin_notifycb(ay_object *o)
 
   /* create/add bevels */
   if(bparams.has_bevels)
-    {      
-      ay_status = ay_bevelt_addbevels(&bparams, caps, skin->npatch, nextcb);
+    {
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, skin->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

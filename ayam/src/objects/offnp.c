@@ -547,6 +547,7 @@ ay_offnp_notifycb(ay_object *o)
  ay_object *down = NULL, *npatch = NULL, *newo = NULL;
  ay_object *bevel = NULL, **nextcb;
  ay_bparam bparams;
+ ay_cparam cparams;
  int mode, provided = AY_FALSE;
  int caps[4] = {0};
  double tolerance;
@@ -648,8 +649,8 @@ ay_offnp_notifycb(ay_object *o)
   caps[1] = offnp->has_u1_cap;
   caps[2] = offnp->has_v0_cap;
   caps[3] = offnp->has_v1_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, offnp->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, offnp->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -661,7 +662,7 @@ ay_offnp_notifycb(ay_object *o)
     {
       bparams.dirs[2] = !bparams.dirs[2];
 
-      ay_status = ay_bevelt_addbevels(&bparams, caps, offnp->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, offnp->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

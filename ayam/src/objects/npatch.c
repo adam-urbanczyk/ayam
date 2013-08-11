@@ -3008,6 +3008,7 @@ ay_npatch_notifycb(ay_object *o)
  ay_nurbpatch_object *npatch = NULL;
  ay_object *bevel = NULL, **nextcb;
  ay_bparam bparams;
+ ay_cparam cparams;
  int display_mode = ay_prefs.np_display_mode, mode, caps[4] = {0};
  int i, qf = ay_prefs.stess_qf;
  double tolerance;
@@ -3041,7 +3042,7 @@ ay_npatch_notifycb(ay_object *o)
 
       /* silently avoid bevel integration */
       for(i = 0; i < 4; i++)
-	bparams.integrate[i] = 0;
+	bparams.integrate[i] = AY_FALSE;
     }
 
   /* create/add caps */
@@ -3050,13 +3051,14 @@ ay_npatch_notifycb(ay_object *o)
   caps[2] = npatch->has_v0_cap;
   caps[3] = npatch->has_v1_cap;
 
+  ay_capt_fillcparams(caps, &cparams);
+
   /* silently avoid cap integration */
   for(i = 0; i < 4; i++)
-    if(caps[i] == 3)
-      caps[i] = 2;
+    cparams.integrate[i] = AY_FALSE;
 
   nextcb = &(npatch->caps_and_bevels);
-  ay_status = ay_capt_addcaps(caps, &bparams, o, nextcb);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, o, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -3068,7 +3070,7 @@ ay_npatch_notifycb(ay_object *o)
       while(*nextcb)
 	nextcb = &((*nextcb)->next);
 
-      ay_status = ay_bevelt_addbevels(&bparams, caps, o, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, o, nextcb);
       if(ay_status)
 	goto cleanup;
     }
