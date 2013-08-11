@@ -899,7 +899,9 @@ typedef struct ay_offnc_object_s
 /** Cap surface object */
 typedef struct ay_cap_object_s
 {
-  int type; /**< cap type (0 - trim, 1 - gordon, 2 - simple) */
+  int type; /**< cap type (0 - trim, 1 - gordon, 2 - simple, 3 - simple 3D) */
+
+  double fraction; /** where to place inner loop in simple 3D mode */
 
   /** cached NURBS patch representation */
   ay_object *npatch;

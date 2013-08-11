@@ -33,6 +33,7 @@ NPInfoBall "n/a"
 set w [frame $ay(pca).$CapAttr(w)]
 
 addMenu $w CapAttrData Type {Trim Gordon Simple Simple3D}
+addParam $w CapAttrData Fraction
 addParam $w CapAttrData Tolerance
 addMenu $w CapAttrData DisplayMode $ay(npdisplaymodes)
 
