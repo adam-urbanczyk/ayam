@@ -464,10 +464,10 @@ ay_cap_notifycb(ay_object *o)
       ay_status = ay_capt_crtgordoncap(pobject, &(cap->npatch));
       break;
     case 2:
-      ay_status = ay_capt_crtsimplecap(0, pobject, &(cap->npatch));
+      ay_status = ay_capt_crtsimplecap(pobject, 0, 0.5, &(cap->npatch));
       break;
     case 3:
-      ay_status = ay_capt_crtsimplecap(1, pobject, &(cap->npatch));
+      ay_status = ay_capt_crtsimplecap(pobject, 1, 0.5, &(cap->npatch));
       break;
     default:
       ay_status = AY_ERROR;

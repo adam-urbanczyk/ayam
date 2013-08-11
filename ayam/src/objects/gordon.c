@@ -559,6 +559,7 @@ ay_gordon_notifycb(ay_object *o)
  ay_object *hcurves = NULL, *vcurves = NULL, *inpatch = NULL;
  ay_object *npatch = NULL, **nextcb;
  ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  int getvcurves = AY_FALSE, getinpatch = AY_FALSE, hcount = 0, vcount = 0;
  int mode = 0, a, i;
  int caps[4] = {0};
@@ -740,15 +741,15 @@ ay_gordon_notifycb(ay_object *o)
   caps[1] = gordon->u1cap;
   caps[2] = gordon->v0cap;
   caps[3] = gordon->v1cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      ay_status = ay_bevelt_addbevels(&bparams, caps, gordon->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, gordon->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

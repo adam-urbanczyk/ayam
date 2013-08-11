@@ -451,6 +451,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_object *alignedcurve = NULL;
  ay_object *pobject1 = NULL, *pobject2 = NULL, **nextcb;
  ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  ay_tag *tag = NULL;
  int is_planar = AY_TRUE, has_b = AY_FALSE;
  int b_type, b_sense, force3d = AY_FALSE;
@@ -617,7 +618,9 @@ ay_bevel_notifycb(ay_object *o)
   caps[2] = bevel->has_start_cap;
   caps[3] = bevel->has_end_cap;
 
-  ay_status = ay_capt_addcaps(caps, &bparams, npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+
+  ay_status = ay_capt_addcaps(&cparams, &bparams, npatch, nextcb);
   if(ay_status)
     goto cleanup;
 

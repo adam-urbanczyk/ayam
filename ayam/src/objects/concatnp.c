@@ -626,6 +626,7 @@ ay_concatnp_notifycb(ay_object *o)
  ay_nurbpatch_object *np = NULL;
  ay_object *bevel = NULL, **nextcb;
  ay_bparam bparams;
+ ay_cparam cparams;
  int mode, caps[4] = {0};
  double tolerance;
 
@@ -742,8 +743,8 @@ ay_concatnp_notifycb(ay_object *o)
   caps[1] = concatnp->has_u1_cap;
   caps[2] = concatnp->has_v0_cap;
   caps[3] = concatnp->has_v1_cap;
-
-  ay_status = ay_capt_addcaps(caps, &bparams, concatnp->npatch, nextcb);
+  ay_capt_fillcparams(caps, &cparams);
+  ay_status = ay_capt_addcaps(&cparams, &bparams, concatnp->npatch, nextcb);
   if(ay_status)
     goto cleanup;
 
@@ -757,7 +758,7 @@ ay_concatnp_notifycb(ay_object *o)
       bparams.dirs[2] = !bparams.dirs[2];
       bparams.radii[2] = -bparams.radii[2];
 
-      ay_status = ay_bevelt_addbevels(&bparams, caps, concatnp->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, concatnp->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }
