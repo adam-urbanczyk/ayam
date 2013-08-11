@@ -287,6 +287,8 @@ ay_toglcb_display(struct Togl *togl)
 
       if(view->action_state)
 	{
+	  /* in action => swap in the second set of draw/display
+	     parameters */
 	  npdm = ay_prefs.np_display_mode;
 	  ncdm = ay_prefs.nc_display_mode;
 	  tol = ay_prefs.glu_sampling_tolerance;
@@ -322,8 +324,7 @@ ay_toglcb_display(struct Togl *togl)
 	  ay_prefs.glu_sampling_tolerance = tol;
 	  ay_prefs.stess_qf = stqf;
 	}
-
-    } /* if altdisp */
+    } /* if !altdisp */
 
 #ifdef AYENABLEPPREV
   /* redraw permanent preview window? */
