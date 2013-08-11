@@ -161,6 +161,17 @@ typedef struct ay_bparam_s
 } ay_bparam;
 
 
+/** cap parameter helper */
+typedef struct ay_cparam_s
+{
+  int has_caps; /**< is any of the states != 0? */
+  int states[4]; /**< state of each boundaries cap (0 - off, 1 - on) */
+  int types[4]; /**< type of cap (0 - trim, 1 - gordon, 2 - simple, 3 - s3d) */
+  int integrate[4]; /**< integrate cap into surface (0 - no, 1 - yes)? */
+  double frac[4]; /**< simple 3D fraction parameter (0.0 - 1.0)? */
+} ay_cparam;
+
+
 /** transformation attributes */
 typedef struct ay_trafo_s
 {
@@ -1355,7 +1366,7 @@ typedef struct ay_view_object_s
   Togl_Callback *altdispcb;
 
   int action_state;  /**< is an action active in this view? (0 no, 1 yes) */
-  
+
 } ay_view_object;
 
 
@@ -1712,6 +1723,8 @@ extern char *ay_vmm_tagtype;
 extern char *ay_vmm_tagname;
 extern char *ay_bp_tagtype;
 extern char *ay_bp_tagname;
+extern char *ay_cp_tagtype;
+extern char *ay_cp_tagname;
 extern char *ay_np_tagtype;
 extern char *ay_np_tagname;
 extern char *ay_rp_tagtype;

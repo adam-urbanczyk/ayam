@@ -14,17 +14,176 @@
 
 /** \file capt.c \brief cap creation tools */
 
+/** ay_capt_addcaps:
+ * Create cap surfaces for a NURBS surface.
+ *
+ * \param[in] cparams designates which caps to create (and their types)
+ * \param[in] bparams bevel parameters, if a bevel is to be created
+ *  at the corresponding boundary, we do not create the cap here but
+ *  later when creating the bevel
+ * \param[in] o NURBS patch object
+ * \param[in,out] cap list of new NURBS patch objects (the caps)
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
+		ay_object *o, ay_object **dst)
+{
+ int ay_status = AY_OK;
+ int i, side;
+ double param = 0.0;
+ ay_object *extrcurve = NULL;
+ ay_object *cap = NULL, **nextcap = dst;
+ ay_nurbpatch_object *np = NULL;
+
+  if(!cparams || !bparams || !o || !dst)
+    return AY_ENULL;
+
+  for(i = 0; i < 4; i++)
+    {
+      if(o->type != AY_IDNPATCH)
+	return AY_ERROR;
+
+      np = (ay_nurbpatch_object*)o->refine;
+
+      if(cparams->states[i] && !bparams->states[i])
+	{
+	  cap = NULL;
+
+	  if(!(extrcurve = calloc(1, sizeof(ay_object))))
+	    {
+	      ay_status = AY_EOMEM;
+	      goto cleanup;
+	    }
+	  ay_object_defaults(extrcurve);
+	  extrcurve->type = AY_IDNCURVE;
+	  param = 0.0;
+	  switch(i)
+	    {
+	    case 0:
+	      if(ay_knots_isclamped(/*side=*/1, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 0;
+	      else
+		side = 4;
+	      break;
+	    case 1:
+	      if(ay_knots_isclamped(/*side=*/2, np->vorder, np->vknotv,
+				    np->vorder+np->height, AY_EPSILON))
+		side = 1;
+	      else
+		{
+		  side = 4;
+		  param = 1.0;
+		}
+	      break;
+	    case 2:
+	      if(ay_knots_isclamped(/*side=*/1, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 2;
+	      else
+		side = 5;
+	      break;
+	    case 3:
+	      if(ay_knots_isclamped(/*side=*/2, np->uorder, np->uknotv,
+				    np->uorder+np->width, AY_EPSILON))
+		side = 3;
+	      else
+		{
+		  side = 5;
+		  param = 1.0;
+		}
+	      break;
+	    default:
+	      break;
+	    } /* switch */
+
+	  ay_status = ay_npt_extractnc(o, side, param,
+				       /*relative=*/AY_TRUE,
+				       /*apply_trafo=*/AY_FALSE,
+				       /*extractnt=*/AY_FALSE, NULL,
+			  (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
+
+	  if(ay_status)
+	    {
+	      free(extrcurve);
+	      goto cleanup;
+	    }
+
+	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)extrcurve->refine))
+	    {
+	      (void)ay_object_delete(extrcurve);
+	      continue;
+	    }
+
+	  switch(cparams->types[i])
+	    {
+	    case 0:
+	      ay_status = ay_capt_crttrimcap(extrcurve, &cap);
+	      break;
+	    case 1:
+	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
+	      break;
+	    case 2:
+	      ay_status = ay_capt_crtsimplecap(extrcurve, 0, cparams->frac[i],
+					       &cap);
+	      if(!ay_status && (i > 1))
+		ay_status = ay_npt_swapuv(cap->refine);
+	      break;
+	    case 3:
+	      ay_status = ay_capt_crtsimplecap(extrcurve, 1, cparams->frac[i],
+					       &cap);
+	      if(!ay_status && (i > 1))
+		ay_status = ay_npt_swapuv(cap->refine);
+	      break;
+	    default:
+	      ay_status = AY_ERROR;
+	    } /* switch */
+
+	  if(cparams->types[i] != 0)
+	    (void)ay_object_delete(extrcurve);
+
+	  if(ay_status)
+	    goto cleanup;
+
+	  if(cparams->integrate[i])
+	    {
+	      ay_status = ay_capt_integrate(cap, i, o);
+	      if(ay_status)
+		{
+		  (void)ay_object_delete(cap);
+		  cap = NULL;
+		  goto cleanup;
+		}
+	    }
+
+	  if(cap)
+	    {
+	      *nextcap = cap;
+	      nextcap = &(cap->next);
+	    }
+	} /* if */
+    } /* for */
+
+cleanup:
+
+ return ay_status;
+} /* ay_capt_addcaps */
+
+
 /** ay_capt_crtsimplecap:
  *  create a simple cap surface from a single NURBS curve
  *
- * \param[in] mode 0 - 2D, 1 - 3D
  * \param[in] c NURBS curve object
+ * \param[in] mode 0 - 2D, 1 - 3D
+ * \param[in] frac fraction parameter for 3D mode
  * \param[in,out] cap new NURBS patch object
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap)
+ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 {
  int ay_status = AY_OK;
  ay_object *npatch = NULL;
@@ -102,7 +261,7 @@ ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap)
       if(!(circcv = malloc(nc->length*stride * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      r = 0.2;
+      r = frac;
 
       /* create middle curve */
       ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
@@ -141,15 +300,19 @@ ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap)
       /* place middle curve */
       ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 
-      ay_status = ay_geom_extractmeannormal(nc->controlv,
-					    nc->length-(nc->order-1), stride,
+      if(nc->type == AY_CTPERIODIC)
+	ay_status = ay_geom_extractmeannormal(nc->controlv,
+					    (nc->length-(nc->order-2)), stride,
 					    n);
+      else
+	ay_status = ay_geom_extractmeannormal(nc->controlv,
+					      nc->length, stride,
+					      n);
 
       angle = AY_R2D(acos(AY_V3DOT(n, z)));
-      printf("%lg,%lg,%lg, a: %lg\n",n[0],n[1],n[2],angle);
+
       if((fabs(angle) > AY_EPSILON) /*&& (fabs(angle - 180.0) > AY_EPSILON)*/)
 	{
-	  printf("rotatin\n");
 	  AY_V3CROSS(rotaxis, n, z);
 	  r = AY_V3LEN(rotaxis);
 	  AY_V3SCAL(rotaxis, (1.0/r));
@@ -211,18 +374,18 @@ cleanup:
 } /* ay_capt_crtsimplecap */
 
 
-/** ay_capt_crtsimplecapint:
+/** ay_capt_integrate:
  *  create a simple cap surface from a single NURBS curve
  *  and integrate it into the NURBS surface
  *
- * \param[in] c NURBS curve object
+ * \param[in,out] cap cap object
  * \param[in] side integration place
  * \param[in,out] s NURBS surface object for integration
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s)
+ay_capt_integrate(ay_object *c, int side, ay_object *s)
 {
  int ay_status = AY_OK;
  ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
@@ -230,18 +393,13 @@ ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s)
  char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
  int knottype = AY_KTCUSTOM, order = 0;
 
-  if(!s || !c)
+  if(!c || !s)
     return AY_ENULL;
 
-  if(!s->type == AY_IDNPATCH)
+  if(c->type != AY_IDNPATCH || s->type != AY_IDNPATCH)
     return AY_ERROR;
 
   np = (ay_nurbpatch_object*)s->refine;
-
-  ay_status = ay_capt_crtsimplecap(mode, c, &cap);
-
-  if(ay_status)
-    goto cleanup;
 
   uv = uvs[side];
 
@@ -273,21 +431,6 @@ ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s)
 
   if(ay_status)
     goto cleanup;
-
-#if 0
-  switch(knottype)
-    {
-    AY_KTBEZIER:
-      break;
-    AY_KTBSPLINE:
-      break;
-    AY_KTNURB:
-      break;
-
-    default:
-      break;
-    }
-#endif
 
   knottype = AY_KTCUSTOM;
 
@@ -324,7 +467,7 @@ cleanup:
     (void)ay_object_delete(cap);
 
  return ay_status;
-} /* ay_capt_crtsimplecapint */
+} /* ay_capt_integrate */
 
 
 /** ay_capt_crttrimcap:
@@ -664,151 +807,68 @@ cleanup:
 } /* ay_capt_crtgordoncap */
 
 
-/** ay_capt_addcaps:
- * Create cap surfaces for a NURBS surface.
+/** ay_capt_parsetags:
+ * Parse all "CP" tags into a ay_cparam (cap parameter) struct.
  *
- * \param[in] caps designates which caps to create (and their types)
- * \param[in] bparams bevel parameters, if a bevel is to be created
- *  at the corresponding boundary, we do not create the cap here but
- *  later when creating the bevel
- * \param[in] o NURBS patch object
- * \param[in,out] cap list of new NURBS patch objects (the caps)
- *
- * \returns AY_OK on success, error code otherwise.
+ * \param[in] tag list of tags to parse
+ * \param[in,out] params pointer to cap parameter struct
  */
-int
-ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o, ay_object **dst)
+void
+ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 {
- int ay_status = AY_OK;
- int i, side;
- double param = 0.0;
- ay_object *extrcurve = NULL;
- ay_object *cap = NULL, **nextcap = dst;
- ay_nurbpatch_object *np = NULL;
+ int where, type, integrate;
+ double frac;
 
-  if(!caps || !bparams || !o || !dst)
-    return AY_ENULL;
+  if(!params)
+    return;
+
+  while(tag)
+    {
+      if(tag->type == ay_cp_tagtype)
+	{
+	  if(tag->val)
+	    {
+	      params->has_caps = AY_TRUE;
+	      where = -1;
+	      type = 0;
+	      frac = 0.5;
+	      integrate = 0;
+	      sscanf(tag->val, "%d,%d,%d,%lg", &where, &type, &integrate,&frac);
+	      if(where >= 0 && where < 4)
+		{
+		  params->states[where] = 1;
+		  params->types[where] = type;
+		  params->integrate[where] = integrate;
+		  params->frac[where] = frac;
+		}
+	    } /* if val */
+	} /* if */
+      tag = tag->next;
+    } /* while */
+
+ return;
+} /* ay_capt_parsetags */
+
+
+void
+ay_capt_fillcparams(int *caps, ay_cparam *cp)
+{
+ int i;
+
+  if(!caps || !cp)
+    return;
+
+  memset(cp,0,sizeof(ay_cparam));
 
   for(i = 0; i < 4; i++)
     {
-      if(o->type != AY_IDNPATCH)
-	return AY_ERROR;
-
-      np = (ay_nurbpatch_object*)o->refine;
-
-      if(caps[i] && !bparams->states[i])
+      if(caps[i]>0)
 	{
-	  cap = NULL;
+	  cp->states[i] = 1;
+	  cp->types[i] = caps[i]-1;
+	  cp->frac[i] = 0.5;
+	}
+    }
 
-	  if(!(extrcurve = calloc(1, sizeof(ay_object))))
-	    {
-	      ay_status = AY_EOMEM;
-	      goto cleanup;
-	    }
-	  ay_object_defaults(extrcurve);
-	  extrcurve->type = AY_IDNCURVE;
-	  param = 0.0;
-	  switch(i)
-	    {
-	    case 0:
-	      if(ay_knots_isclamped(/*side=*/1, np->vorder, np->vknotv,
-				    np->vorder+np->height, AY_EPSILON))
-		side = 0;
-	      else
-		side = 4;
-	      break;
-	    case 1:
-	      if(ay_knots_isclamped(/*side=*/2, np->vorder, np->vknotv,
-				    np->vorder+np->height, AY_EPSILON))
-		side = 1;
-	      else
-		{
-		  side = 4;
-		  param = 1.0;
-		}
-	      break;
-	    case 2:
-	      if(ay_knots_isclamped(/*side=*/1, np->uorder, np->uknotv,
-				    np->uorder+np->width, AY_EPSILON))
-		side = 2;
-	      else
-		side = 5;
-	      break;
-	    case 3:
-	      if(ay_knots_isclamped(/*side=*/2, np->uorder, np->uknotv,
-				    np->uorder+np->width, AY_EPSILON))
-		side = 3;
-	      else
-		{
-		  side = 5;
-		  param = 1.0;
-		}
-	      break;
-	    default:
-	      break;
-	    } /* switch */
-
-	  ay_status = ay_npt_extractnc(o, side, param,
-				       /*relative=*/AY_TRUE,
-				       /*apply_trafo=*/AY_FALSE,
-				       /*extractnt=*/AY_FALSE, NULL,
-			  (ay_nurbcurve_object**)(void*)&(extrcurve->refine));
-
-	  if(ay_status)
-	    {
-	      free(extrcurve);
-	      goto cleanup;
-	    }
-
-	  if(ay_nct_isdegen((ay_nurbcurve_object*)(void*)extrcurve->refine))
-	    {
-	      (void)ay_object_delete(extrcurve);
-	      continue;
-	    }
-
-	  switch(caps[i])
-	    {
-	    case 1:
-	      ay_status = ay_capt_crttrimcap(extrcurve, &cap);
-	      break;
-	    case 2:
-	      ay_status = ay_capt_crtgordoncap(extrcurve, &cap);
-	      break;
-	    case 3:
-	      ay_status = ay_capt_crtsimplecap(0, extrcurve, &cap);
-	      if(!ay_status && (i > 1))
-		ay_status = ay_npt_swapuv(cap->refine);
-	      break;
-	    case 4:
-	      ay_status = ay_capt_crtsimplecapint(0, extrcurve, i, o);
-	      break;
-	    case 5:
-	      ay_status = ay_capt_crtsimplecap(1, extrcurve, &cap);
-	      if(!ay_status && (i > 1))
-		ay_status = ay_npt_swapuv(cap->refine);
-	      break;
-	    case 6:
-	      ay_status = ay_capt_crtsimplecapint(1, extrcurve, i, o);
-	      break;
-	    default:
-	      ay_status = AY_ERROR;
-	    } /* switch */
-
-	  if(caps[i] != 1)
-	    (void)ay_object_delete(extrcurve);
-
-	  if(ay_status)
-	    goto cleanup;
-
-	  if(cap)
-	    {
-	      *nextcap = cap;
-	      nextcap = &(cap->next);
-	    }
-	} /* if */
-    } /* for */
-
-cleanup:
-
- return ay_status;
-} /* ay_capt_addcaps */
+ return;
+}
