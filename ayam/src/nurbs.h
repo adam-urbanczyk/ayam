@@ -47,7 +47,7 @@ void ay_bevelt_parsetags(ay_tag *tag, ay_bparam *params);
 
 /** Add bevels to a surface object.
  */
-int ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
+int ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 			ay_object **dst);
 
 /** Create bevel surface.
@@ -78,15 +78,23 @@ int ay_bevelt_createroundtocap(double radius, int revert,
  */
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
+
 /* capt.c */
+
+/** Create all caps for a surface.
+ */
+int ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams, ay_object *o,
+		    ay_object **dst);
+
+void ay_capt_fillcparams(int *caps, ay_cparam *cp);
 
 /** Create simple cap from (convex) curve.
  */
-int ay_capt_crtsimplecap(int mode, ay_object *c, ay_object **cap);
+int ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap);
 
-/** Create simple cap from (convex) curve and integrate it into the surface.
+/** Integrate cap into the progenitor surface.
  */
-int ay_capt_crtsimplecapint(int mode, ay_object *c, int side, ay_object *s);
+int ay_capt_integrate(ay_object *c, int side, ay_object *s);
 
 /** Create trim cap from (planar) curve(s).
  */
@@ -96,10 +104,9 @@ int ay_capt_crttrimcap(ay_object *c, ay_object **cap);
  */
 int ay_capt_crtgordoncap(ay_object *c, ay_object **cap);
 
-/** Create all caps for a surface.
+/** Parse CP (CapParameter) tags.
  */
-int ay_capt_addcaps(int *caps, ay_bparam *bparams, ay_object *o,
-		    ay_object **dst);
+void ay_capt_parsetags(ay_tag *tag, ay_cparam *params);
 
 
 /* ict.c */

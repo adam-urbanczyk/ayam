@@ -32,7 +32,7 @@ static ay_object *ay_bevelt_curves[3] = {0};
  * creates the caps on the bevels.
  *
  * \param[in] bparams bevel creation parameters
- * \param[in] caps cap creation parameters
+ * \param[in] cparams cap creation parameters
  * \param[in,out] o NURBS surface object (may be modified
  *  if the integrate parameter of a bevel is set)
  * \param[in,out] dst resulting bevel and cap NURBS surface objects
@@ -41,7 +41,7 @@ static ay_object *ay_bevelt_curves[3] = {0};
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
+ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
@@ -356,7 +356,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	    }
 
 	  /* create cap from bevel */
-	  if(caps[i])
+	  if(cparams->states[i])
 	    {
 	      if(!(extrcurve = calloc(1, sizeof(ay_object))))
 		{
@@ -389,47 +389,27 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 		  continue;
 		}
 
-	      switch(caps[i])
+	      switch(cparams->types[i])
 		{
-		case 1:
+		case 0:
 		  ay_status = ay_capt_crttrimcap(extrcurve, nextcap);
 		  break;
-		case 2:
+		case 1:
 		  ay_status = ay_capt_crtgordoncap(extrcurve, nextcap);
 		  break;
+		case 2:
+		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
+						   cparams->frac[i], nextcap);
+		  break;
 		case 3:
-		  ay_status = ay_capt_crtsimplecap(0, extrcurve, nextcap);
-		  break;
-		case 4:
-		  if(bparams->integrate[i])
-		    {
-		      ay_status = ay_capt_crtsimplecapint(0, extrcurve, i, o);
-		    }
-		  else
-		    {
-		      ay_status = ay_capt_crtsimplecapint(0, extrcurve, 3,
-							  bevel);
-		    }
-		  break;
-		case 5:
-		  ay_status = ay_capt_crtsimplecap(1, extrcurve, nextcap);
-		  break;
-		case 6:
-		  if(bparams->integrate[i])
-		    {
-		      ay_status = ay_capt_crtsimplecapint(1, extrcurve, i, o);
-		    }
-		  else
-		    {
-		      ay_status = ay_capt_crtsimplecapint(1, extrcurve, 3,
-							  bevel);
-		    }
+		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
+						   cparams->frac[i], nextcap);
 		  break;
 		default:
 		  ay_status = AY_ERROR;
 		} /* switch */
 
-	      if(caps[i] != 1)
+	      if(cparams->types[i] != 0)
 		{
 		  (void)ay_object_delete(extrcurve);
 		}
@@ -437,8 +417,25 @@ ay_bevelt_addbevels(ay_bparam *bparams, int *caps, ay_object *o,
 	      if(ay_status)
 		goto cleanup;
 
-	      if((caps[i] != 3) && nextcap)
-		nextcap = &((*nextcap)->next);
+	      if(cparams->integrate[i])
+		{
+		  if(bparams->integrate[i])
+		    {
+		      ay_status = ay_capt_integrate(*nextcap, i, o);
+		    }
+		  else
+		    {
+		      ay_status = ay_capt_integrate(*nextcap, 3, bevel);
+		    }
+
+		  if(ay_status)
+		    goto cleanup;
+		}
+	      else
+		{
+		  if(nextcap)
+		    nextcap = &((*nextcap)->next);
+		}
 	    } /* if integrate */
 	} /* if bevel on this side */
     } /* for all sides */

@@ -182,6 +182,10 @@ char *ay_bp_tagtype;
 
 char *ay_bp_tagname = "BP";
 
+char *ay_cp_tagtype;
+
+char *ay_cp_tagname = "CP";
+
 char *ay_hc_tagtype;
 
 char *ay_hc_tagname = "HC";
@@ -514,6 +518,9 @@ ay_init(Tcl_Interp *interp)
 
   /* register BP (Bevel Parameters) tag type */
   ay_tags_register(interp, ay_bp_tagname, &ay_bp_tagtype);
+
+  /* register CP (Cap Parameters) tag type */
+  ay_tags_register(interp, ay_cp_tagname, &ay_cp_tagtype);
 
   /* register HC (Has Child) tag type */
   ay_tags_register(interp, ay_hc_tagname, &ay_hc_tagtype);
