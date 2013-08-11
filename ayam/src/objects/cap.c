@@ -38,6 +38,8 @@ ay_cap_createcb(int argc, char *argv[], ay_object *o)
       return AY_ERROR;
     }
 
+  new->fraction = 0.5;
+
   o->refine = new;
   o->parent = AY_TRUE;
 
@@ -226,6 +228,10 @@ ay_cap_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(cap->type));
 
+  Tcl_SetStringObj(ton,"Fraction",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetDoubleFromObj(interp,to, &(cap->fraction));
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(cap->glu_sampling_tolerance));
@@ -278,6 +284,11 @@ ay_cap_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
+  Tcl_SetStringObj(ton,"Fraction",-1);
+  to = Tcl_NewDoubleObj(cap->fraction);
+  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
+		 TCL_GLOBAL_ONLY);
+
   Tcl_SetStringObj(ton,"Tolerance",-1);
   to = Tcl_NewDoubleObj(cap->glu_sampling_tolerance);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -311,6 +322,8 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
   if(!(cap = calloc(1, sizeof(ay_cap_object))))
     { return AY_EOMEM; }
 
+  cap->fraction = 0.5;
+
   fscanf(fileptr, "%lg\n", &cap->glu_sampling_tolerance);
   fscanf(fileptr, "%d\n", &cap->display_mode);
 
@@ -318,6 +331,7 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.13 */
       fscanf(fileptr, "%d\n", &cap->type);
+      fscanf(fileptr, "%lg\n", &cap->fraction);
     }
 
   o->refine = cap;
@@ -342,6 +356,7 @@ ay_cap_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%g\n", cap->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", cap->display_mode);
   fprintf(fileptr, "%d\n", cap->type);
+  fprintf(fileptr, "%g\n", cap->fraction);
 
  return AY_OK;
 } /* ay_cap_writecb */
@@ -464,10 +479,12 @@ ay_cap_notifycb(ay_object *o)
       ay_status = ay_capt_crtgordoncap(pobject, &(cap->npatch));
       break;
     case 2:
-      ay_status = ay_capt_crtsimplecap(pobject, 0, 0.5, &(cap->npatch));
+      ay_status = ay_capt_crtsimplecap(pobject, 0, cap->fraction,
+				       &(cap->npatch));
       break;
     case 3:
-      ay_status = ay_capt_crtsimplecap(pobject, 1, 0.5, &(cap->npatch));
+      ay_status = ay_capt_crtsimplecap(pobject, 1, cap->fraction,
+				       &(cap->npatch));
       break;
     default:
       ay_status = AY_ERROR;
