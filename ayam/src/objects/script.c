@@ -1217,6 +1217,8 @@ ay_script_notifycb(ay_object *o)
       ay_currentview->redraw = AY_FALSE;
     }
 
+  ay_notify_block(1, 1);
+
   /* set up a clean environment */
   old_clipboard = ay_clipboard;
   old_aynext = ay_next;
@@ -1486,6 +1488,8 @@ ay_script_notifycb(ay_object *o)
   Tk_RestrictEvents(NULL, NULL, &old_restrictcd);
 
 resenv:
+
+  ay_notify_block(1, 0);
 
   if(ay_currentview)
     {

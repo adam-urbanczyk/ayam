@@ -30,6 +30,10 @@ static char *ay_nc_tagtype = NULL;
 
 static char *ay_nc_tagname = "NC";
 
+static int ay_notify_blockparent = 0;
+
+static int ay_notify_blockobject = 0;
+
 /* functions: */
 
 /* ay_notify_register:
@@ -63,6 +67,9 @@ ay_notify_parent(void)
  ay_notifycb *cb = NULL;
  ay_tag *tag = NULL;
  int did_notify = AY_FALSE;
+
+  if(ay_notify_blockparent)
+    return AY_OK;
 
   /* always do complete notify? */
   if(ay_prefs.completenotify == 1)
@@ -152,7 +159,6 @@ ay_notify_parent(void)
 		ay_ns_execute(o, tag->val);
 	      tag = tag->next;
 	    }
-
 	} /* if */
 
       lev = lev->next;
@@ -178,6 +184,9 @@ ay_notify_object(ay_object *o)
  ay_voidfp *arr = NULL;
  ay_notifycb *cb = NULL;
  ay_tag *tag = NULL;
+
+  if(ay_notify_blockobject)
+    return AY_OK;
 
   /* call notification callbacks of children first */
   if(o->down && o->down->next)
@@ -322,7 +331,8 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(!strcmp(argv[0], "forceNot"))
     {
-      ay_error(AY_EWARN, argv[0], "Command is deprecated, please use notifyOb instead.");
+      ay_error(AY_EWARN, argv[0],
+	       "forceNot command is deprecated, please use notifyOb instead.");
     }
 
   /* parse args (if any) */
@@ -335,6 +345,24 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	    case 'a':
 	      /* -all */
 	      notify_all = AY_TRUE;
+	      break;
+	    case 'b':
+	      /* -block */
+	      if(argc > 3)
+		{
+		  if(argv[2][0]=='o')
+		    {
+		      ay_notify_blockobject = AY_TRUE;
+		    }
+		  else
+		    {
+		      ay_notify_blockparent = AY_TRUE;
+		    }
+		}
+	      else
+		{
+		  ay_error(AY_EARGS, "", NULL);
+		}
 	      break;
 	    case 'm':
 	      /* -modified */
@@ -350,6 +378,9 @@ ay_notify_objecttcmd(ClientData clientData, Tcl_Interp *interp,
 	    } /* switch */
 	} /* if */
     } /* if */
+
+  ay_notify_blockobject = AY_FALSE;
+  ay_notify_blockparent = AY_FALSE;
 
   if(notify_parent)
     {
@@ -642,6 +673,25 @@ ay_notify_complete(ay_object *r)
 
  return AY_OK;
 } /* ay_notify_complete */
+
+
+/* ay_notify_block:
+ *
+ */
+void
+ay_notify_block(int scope, int block)
+{
+  if(scope)
+    {
+      ay_notify_blockparent = block;
+    }
+  else
+    {
+      ay_notify_blockobject = block;
+    }
+
+ return;
+} /* ay_notify_block */
 
 
 /* ay_notify_init:

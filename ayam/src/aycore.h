@@ -397,6 +397,10 @@ int ay_notify_findparents(ay_object *o, ay_object *r,
  */
 int ay_notify_complete(ay_object *r);
 
+/** manage blocking of automatic notifications
+ */
+void ay_notify_block(int scope, int block);
+
 /** initialize notification module
  */
 int ay_notify_init(Tcl_Interp *interp);
