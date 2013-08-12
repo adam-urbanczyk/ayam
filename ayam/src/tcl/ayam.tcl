@@ -680,6 +680,7 @@ array set ay {
  uc 0
  undoo None
  redoo None
+ repo None
  smethods { ParametricError PathLength DomainDistance NormalizedDomainDistance AdaptiveDomainDistance }
  prefsgeom ""
  defactions { None Pick }
@@ -1428,7 +1429,7 @@ if { [winfo exists .fl.con] == 1 } { .fl.con clear }
 # console prompt == tail of current dir
 if { [winfo exists .fl.con] == 1 } {
     set .fl.con(-prompt)\
-	    {\[Undo:$ay(undoo)/Redo:$ay(redoo)\].../[file tail [pwd]]>}
+	{\[Undo:$ay(undoo)/Redo:$ay(redoo)\]\[Repeat:$ay(repo)\].../[file tail [pwd]]>}
     Console:prompt .fl.con
 }
 
