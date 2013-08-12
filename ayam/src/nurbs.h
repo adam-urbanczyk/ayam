@@ -86,8 +86,6 @@ int ay_bevelt_findbevelcurve(int index, ay_object **c);
 int ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams, ay_object *o,
 		    ay_object **dst);
 
-void ay_capt_fillcparams(int *caps, ay_cparam *cp);
-
 /** Create simple cap from (convex) curve.
  */
 int ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap);
@@ -108,6 +106,11 @@ int ay_capt_crtgordoncap(ay_object *c, ay_object **cap);
  */
 void ay_capt_parsetags(ay_tag *tag, ay_cparam *params);
 
+/** Create CP (CapParameter) tags.
+ */
+void ay_capt_createtags(ay_object *o, int *caps);
+
+void ay_capt_fillcparams(int *caps, ay_cparam *cp);
 
 /* ict.c */
 

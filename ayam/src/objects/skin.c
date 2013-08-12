@@ -264,21 +264,6 @@ ay_skin_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(skin->uknot_type));
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->has_start_cap));
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->has_end_cap));
-
-  Tcl_SetStringObj(ton,"LeftCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->has_left_cap));
-
-  Tcl_SetStringObj(ton,"RightCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(skin->has_right_cap));
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -335,25 +320,6 @@ ay_skin_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_NewIntObj(skin->has_start_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_NewIntObj(skin->has_end_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LeftCap",-1);
-  to = Tcl_NewIntObj(skin->has_left_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"RightCap",-1);
-  to = Tcl_NewIntObj(skin->has_right_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
 
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(skin->display_mode);
@@ -381,6 +347,7 @@ int
 ay_skin_readcb(FILE *fileptr, ay_object *o)
 {
  ay_skin_object *skin = NULL;
+ int caps[4] = {0};
 
  if(!o)
    return AY_ENULL;
@@ -388,20 +355,18 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
   if(!(skin = calloc(1, sizeof(ay_skin_object))))
     { return AY_EOMEM; }
 
-
   fscanf(fileptr,"%d\n",&skin->interpolate);
   fscanf(fileptr,"%d\n",&skin->uorder);
   fscanf(fileptr,"%d\n",&skin->uknot_type);
-  fscanf(fileptr,"%d\n",&skin->has_start_cap);
-  fscanf(fileptr,"%d\n",&skin->has_end_cap);
+  fscanf(fileptr,"%d\n",&caps[0]);
+  fscanf(fileptr,"%d\n",&caps[1]);
   fscanf(fileptr,"%d\n",&skin->display_mode);
   fscanf(fileptr,"%lg\n",&skin->glu_sampling_tolerance);
 
-  if(ay_read_version >= 16)
+  if(ay_read_version < 16)
     {
-      /* Since Ayam 1.21 */
-      fscanf(fileptr,"%d\n",&skin->has_left_cap);
-      fscanf(fileptr,"%d\n",&skin->has_right_cap);
+      /* Before Ayam 1.21 */
+      ay_capt_createtags(o, caps);
     }
 
   o->refine = skin;
@@ -417,22 +382,31 @@ int
 ay_skin_writecb(FILE *fileptr, ay_object *o)
 {
  ay_skin_object *skin = NULL;
+ ay_cparam cparams = {0};
+ int caps[2] = {0};
 
   if(!o)
     return AY_ENULL;
 
   skin = (ay_skin_object *)(o->refine);
 
+  if(o->tags)
+    {
+      /* for backwards compatibility wrt. caps */
+      ay_capt_parsetags(o->tags, &cparams);
+      if(cparams.states[0])
+	caps[0] = cparams.types[0]+1;
+      if(cparams.states[1])
+	caps[1] = cparams.types[1]+1;
+    }
+
   fprintf(fileptr, "%d\n", skin->interpolate);
   fprintf(fileptr, "%d\n", skin->uorder);
   fprintf(fileptr, "%d\n", skin->uknot_type);
-  fprintf(fileptr, "%d\n", skin->has_start_cap);
-  fprintf(fileptr, "%d\n", skin->has_end_cap);
+  fprintf(fileptr, "%d\n", caps[0]);
+  fprintf(fileptr, "%d\n", caps[1]);
   fprintf(fileptr, "%d\n", skin->display_mode);
   fprintf(fileptr, "%g\n", skin->glu_sampling_tolerance);
-
-  fprintf(fileptr, "%d\n", skin->has_left_cap);
-  fprintf(fileptr, "%d\n", skin->has_right_cap);
 
  return AY_OK;
 } /* ay_skin_writecb */
@@ -507,13 +481,12 @@ ay_skin_notifycb(ay_object *o)
  ay_nurbcurve_object *curve = NULL;
  ay_skin_object *skin = NULL;
  ay_object *down = NULL, *c = NULL, *last = NULL, *all_curves = NULL;
- ay_object *newo = NULL, **nextcb;
+ ay_object *newo = NULL, **nextcb = NULL;
  ay_object *bevel = NULL;
- ay_bparam bparams;
- ay_cparam cparams;
- int mode = 0, count = 0, i, a;
- int caps[4] = {0};
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  double m[16] = {0}, tolerance;
+ int mode = 0, count = 0, i, a;
 
   if(!o)
     return AY_ENULL;
@@ -622,18 +595,13 @@ ay_skin_notifycb(ay_object *o)
   skin->npatch = newo;
 
   /* get bevel parameters */
-  memset(&bparams, 0, sizeof(ay_bparam));
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
     }
 
   /* create/add caps */
-  caps[0] = skin->has_left_cap;
-  caps[1] = skin->has_right_cap;
-  caps[2] = skin->has_start_cap;
-  caps[3] = skin->has_end_cap;
-  ay_capt_fillcparams(caps, &cparams);
   ay_status = ay_capt_addcaps(&cparams, &bparams, skin->npatch, nextcb);
   if(ay_status)
     goto cleanup;
