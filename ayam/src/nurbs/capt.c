@@ -833,7 +833,8 @@ ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 	      type = 0;
 	      frac = 0.5;
 	      integrate = 0;
-	      sscanf(tag->val, "%d,%d,%d,%lg", &where, &type, &integrate,&frac);
+	      sscanf(tag->val, "%d,%d,%d,%lg", &where, &type, &integrate,
+		     &frac);
 	      if(where >= 0 && where < 4)
 		{
 		  params->states[where] = 1;
@@ -848,6 +849,49 @@ ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 
  return;
 } /* ay_capt_parsetags */
+
+
+/** ay_capt_createtags:
+ * Create all "CP" tags from old (pre 1.21) style cap type array.
+ * No attempt is made to check for already existing tags! The only
+ * safe usage scenario is therefore to call this with objects just
+ * read from a pre 1.21 scene file.
+ *
+ * \param[in,out] o object to add the tags to
+ * \param[in] caps cap types
+ */
+void
+ay_capt_createtags(ay_object *o, int *caps)
+{
+ ay_tag *tag = NULL, *new = NULL;
+ int i, l;
+ char buf[3*TCL_INTEGER_SPACE+TCL_DOUBLE_SPACE+4];
+
+  if(!o || !caps)
+    return;
+
+  for(i = 0; i < 4; i++)
+    {
+      if(caps[i])
+	{
+	  l = sprintf(buf, "%d,%d,%d,%g", i, caps[i]-1, 0, 0.5);
+
+	  if(!(new = calloc(1, sizeof(tag))))
+	    return;
+	  if(!(new->name = calloc(3, sizeof(char))))
+	    { free(new); return; }
+	  strcpy(new->name, ay_cp_tagname);
+	  new->type = ay_cp_tagtype;
+	  if(!(new->val = calloc(l, sizeof(char))))
+	    { free(new->name); free(new); return; }
+	  strcpy(new->val,buf);
+	  new->next = o->tags;
+	  o->tags = new;
+	} /* if */
+    } /* for */
+
+ return;
+} /* ay_capt_createtags */
 
 
 void
