@@ -370,10 +370,11 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	  if(do_integrate)
 	    {
 	      ay_status = ay_bevelt_integrate(i, o, bevel);
-	      if(ay_status)
-		goto cleanup;
 
 	      (void)ay_object_delete(bevel);
+
+	      if(ay_status)
+		goto cleanup;
 	    }
 	  else
 	    {
@@ -461,10 +462,11 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  if(bparams->integrate[i])
 		    {
 		      ay_status = ay_bevelt_integrate(i, o, bevel);
-		      if(ay_status)
-			goto cleanup;
 
 		      (void) ay_object_delete(bevel);
+
+		      if(ay_status)
+			goto cleanup;
 		    }
 		  else
 		    {
@@ -483,6 +485,9 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    {
 		      ay_status = ay_capt_integrate(*nextcap, 3, bevel);
 		    }
+
+		  (void) ay_object_delete(*nextcap);
+		  *nextcap = NULL;
 
 		  if(ay_status)
 		    goto cleanup;

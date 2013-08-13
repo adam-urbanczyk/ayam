@@ -150,12 +150,10 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 	  if(cparams->integrate[i])
 	    {
 	      ay_status = ay_capt_integrate(cap, i, o);
+	      (void)ay_object_delete(cap);
+	      cap = NULL;
 	      if(ay_status)
-		{
-		  (void)ay_object_delete(cap);
-		  cap = NULL;
-		  goto cleanup;
-		}
+		goto cleanup;
 	    }
 
 	  if(cap)
@@ -378,7 +376,7 @@ cleanup:
  *  create a simple cap surface from a single NURBS curve
  *  and integrate it into the NURBS surface
  *
- * \param[in,out] cap cap object
+ * \param[in,out] c cap object
  * \param[in] side integration place
  * \param[in,out] s NURBS surface object for integration
  *
@@ -398,6 +396,8 @@ ay_capt_integrate(ay_object *c, int side, ay_object *s)
 
   if(c->type != AY_IDNPATCH || s->type != AY_IDNPATCH)
     return AY_ERROR;
+
+  cap = c;
 
   np = (ay_nurbpatch_object*)s->refine;
 
@@ -462,9 +462,6 @@ ay_capt_integrate(ay_object *c, int side, ay_object *s)
   /* copy transformations/tags? */
 
 cleanup:
-
-  if(cap)
-    (void)ay_object_delete(cap);
 
  return ay_status;
 } /* ay_capt_integrate */
