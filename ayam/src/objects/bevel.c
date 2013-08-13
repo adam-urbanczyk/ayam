@@ -263,14 +263,6 @@ ay_bevel_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetDoubleFromObj(interp,to, &(bevel->glu_sampling_tolerance));
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(bevel->has_start_cap));
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(bevel->has_end_cap));
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -312,16 +304,6 @@ ay_bevel_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_NewIntObj(bevel->has_start_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_NewIntObj(bevel->has_end_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -346,13 +328,6 @@ ay_bevel_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&bevel->display_mode);
   fscanf(fileptr,"%lg\n",&bevel->glu_sampling_tolerance);
 
-  if(ay_read_version >= 16)
-    {
-      /* Since Ayam 1.21 */
-      fscanf(fileptr,"%d\n",&bevel->has_start_cap);
-      fscanf(fileptr,"%d\n",&bevel->has_end_cap);
-    }
-
   o->refine = bevel;
 
  return AY_OK;
@@ -374,9 +349,6 @@ ay_bevel_writecb(FILE *fileptr, ay_object *o)
 
   fprintf(fileptr, "%d\n", bevel->display_mode);
   fprintf(fileptr, "%g\n", bevel->glu_sampling_tolerance);
-
-  fprintf(fileptr, "%d\n", bevel->has_start_cap);
-  fprintf(fileptr, "%d\n", bevel->has_end_cap);
 
  return AY_OK;
 } /* ay_bevel_writecb */
@@ -455,7 +427,7 @@ ay_bevel_notifycb(ay_object *o)
  ay_tag *tag = NULL;
  int is_planar = AY_TRUE, has_b = AY_FALSE;
  int b_type, b_sense, force3d = AY_FALSE;
- int caps[4] = {0}, nstride, tstride, freen = AY_FALSE, freet = AY_FALSE;
+ int nstride, tstride, freen = AY_FALSE, freet = AY_FALSE;
  double b_radius, tolerance;
  double *normals = NULL, *tangents = NULL;
 
@@ -615,11 +587,10 @@ ay_bevel_notifycb(ay_object *o)
     }
 
   /* create/add caps */
-  caps[2] = bevel->has_start_cap;
-  caps[3] = bevel->has_end_cap;
-
-  ay_capt_fillcparams(caps, &cparams);
-
+  if(o->tags)
+    {
+      ay_capt_parsetags(o->tags, &cparams);
+    }
   ay_status = ay_capt_addcaps(&cparams, &bparams, npatch, nextcb);
   if(ay_status)
     goto cleanup;

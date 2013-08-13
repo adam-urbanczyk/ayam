@@ -270,22 +270,6 @@ ay_sweep_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->sections));
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(sweep->has_start_cap));
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(sweep->has_end_cap));
-
-  Tcl_SetStringObj(ton,"LeftCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(sweep->has_left_cap));
-
-  Tcl_SetStringObj(ton,"RightCap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(sweep->has_right_cap));
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(sweep->display_mode));
@@ -346,26 +330,6 @@ ay_sweep_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"StartCap",-1);
-  to = Tcl_NewIntObj(sweep->has_start_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"EndCap",-1);
-  to = Tcl_NewIntObj(sweep->has_end_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"LeftCap",-1);
-  to = Tcl_NewIntObj(sweep->has_left_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"RightCap",-1);
-  to = Tcl_NewIntObj(sweep->has_right_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(sweep->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -392,6 +356,7 @@ int
 ay_sweep_readcb(FILE *fileptr, ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
+ int caps[4] = {0};
 
  if(!o)
    return AY_ENULL;
@@ -402,8 +367,8 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&sweep->rotate);
   fscanf(fileptr,"%d\n",&sweep->interpolate);
   fscanf(fileptr,"%d\n",&sweep->sections);
-  fscanf(fileptr,"%d\n",&sweep->has_start_cap);
-  fscanf(fileptr,"%d\n",&sweep->has_end_cap);
+  fscanf(fileptr,"%d\n",&caps[0]);
+  fscanf(fileptr,"%d\n",&caps[1]);
   fscanf(fileptr,"%d\n",&sweep->display_mode);
   fscanf(fileptr,"%lg\n",&sweep->glu_sampling_tolerance);
 
@@ -411,6 +376,12 @@ ay_sweep_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.4 */
       fscanf(fileptr,"%d\n",&sweep->close);
+    }
+
+  if(ay_read_version < 16)
+    {
+      /* before Ayam 1.21 */
+      ay_capt_createtags(o, caps);
     }
 
   o->refine = sweep;
@@ -426,17 +397,29 @@ int
 ay_sweep_writecb(FILE *fileptr, ay_object *o)
 {
  ay_sweep_object *sweep = NULL;
+ ay_cparam cparams = {0};
+ int caps[2] = {0};
 
   if(!o)
     return AY_ENULL;
 
   sweep = (ay_sweep_object *)(o->refine);
 
+  if(o->tags)
+    {
+      /* for backwards compatibility wrt. caps */
+      ay_capt_parsetags(o->tags, &cparams);
+      if(cparams.states[0])
+	caps[0] = cparams.types[0]+1;
+      if(cparams.states[1])
+	caps[1] = cparams.types[1]+1;
+    }
+
   fprintf(fileptr, "%d\n", sweep->rotate);
   fprintf(fileptr, "%d\n", sweep->interpolate);
   fprintf(fileptr, "%d\n", sweep->sections);
-  fprintf(fileptr, "%d\n", sweep->has_start_cap);
-  fprintf(fileptr, "%d\n", sweep->has_end_cap);
+  fprintf(fileptr, "%d\n", caps[0]);
+  fprintf(fileptr, "%d\n", caps[1]);
   fprintf(fileptr, "%d\n", sweep->display_mode);
   fprintf(fileptr, "%g\n", sweep->glu_sampling_tolerance);
   fprintf(fileptr, "%d\n", sweep->close);
@@ -517,9 +500,9 @@ ay_sweep_notifycb(ay_object *o)
  ay_object *npatch = NULL, *bevel = NULL;
  ay_object **nextcb;
  ay_nurbpatch_object *np = NULL;
- int is_provided[3] = {0}, mode = 0, caps[4] = {0};
- ay_bparam bparams;
- ay_cparam cparams;
+ int is_provided[3] = {0}, mode = 0;
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
  double tolerance;
 
   if(!o)
@@ -597,13 +580,6 @@ ay_sweep_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
-  /* get bevel parameters */
-  memset(&bparams, 0, sizeof(ay_bparam));
-  if(o->tags)
-    {
-      ay_bevelt_parsetags(o->tags, &bparams);
-    }
-
   /* sweep */
   if((ay_status = ay_npt_createnpatchobject(&npatch)))
     {
@@ -646,23 +622,29 @@ ay_sweep_notifycb(ay_object *o)
   /* prevent cleanup code from doing something harmful */
   npatch = NULL;
 
-  /* create/add caps */
-  caps[0] = sweep->has_left_cap;
-  caps[1] = sweep->has_right_cap;
-  caps[2] = sweep->has_start_cap;
-  caps[3] = sweep->has_end_cap;
-  ay_capt_fillcparams(caps, &cparams);
-  ay_status = ay_capt_addcaps(&cparams, &bparams, sweep->npatch, nextcb);
-  if(ay_status)
-    goto cleanup;
+  /* get bevel and cap parameters */
+  if(o->tags)
+    {
+      ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
+    }
 
-  while(*nextcb)
-    nextcb = &((*nextcb)->next);
+  /* create/add caps */
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, sweep->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      ay_status = ay_bevelt_addbevels(&bparams, &cparams, sweep->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, sweep->npatch,
+				      nextcb);
       if(ay_status)
 	goto cleanup;
     }

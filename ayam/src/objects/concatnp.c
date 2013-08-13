@@ -323,22 +323,6 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(concatnp->compat));
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->has_u0_cap));
-
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->has_u1_cap));
-
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->has_v0_cap));
-
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(concatnp->has_v1_cap));
-
   Tcl_SetStringObj(ton,"UVSelect",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   string = Tcl_GetStringFromObj(to, &stringlen);
@@ -445,26 +429,6 @@ ay_concatnp_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_NewIntObj(concatnp->has_u0_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_NewIntObj(concatnp->has_u1_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_NewIntObj(concatnp->has_v0_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_NewIntObj(concatnp->has_v1_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   ay_prop_getnpinfo(interp, n1, concatnp->npatch);
 
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
@@ -519,10 +483,6 @@ ay_concatnp_readcb(FILE *fileptr, ay_object *o)
     {
       /* Since Ayam 1.21: */
       fscanf(fileptr, "%d\n", &concatnp->compat);
-      fscanf(fileptr,"%d\n",&concatnp->has_u0_cap);
-      fscanf(fileptr,"%d\n",&concatnp->has_u1_cap);
-      fscanf(fileptr,"%d\n",&concatnp->has_v0_cap);
-      fscanf(fileptr,"%d\n",&concatnp->has_v1_cap);
     }
 
   o->refine = concatnp;
@@ -558,11 +518,6 @@ ay_concatnp_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "\n");
 
   fprintf(fileptr, "%d\n", concatnp->compat);
-
-  fprintf(fileptr, "%d\n", concatnp->has_u0_cap);
-  fprintf(fileptr, "%d\n", concatnp->has_u1_cap);
-  fprintf(fileptr, "%d\n", concatnp->has_v0_cap);
-  fprintf(fileptr, "%d\n", concatnp->has_v1_cap);
 
  return AY_OK;
 } /* ay_concatnp_writecb */
@@ -625,9 +580,9 @@ ay_concatnp_notifycb(ay_object *o)
  ay_object *down = NULL, *patches = NULL, **next = NULL;
  ay_nurbpatch_object *np = NULL;
  ay_object *bevel = NULL, **nextcb;
- ay_bparam bparams;
- ay_cparam cparams;
- int mode, caps[4] = {0};
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
+ int mode;
  double tolerance;
 
   if(!o)
@@ -731,25 +686,23 @@ ay_concatnp_notifycb(ay_object *o)
 	} /* if */
     } /* if */
 
-  /* get bevel parameters */
-  memset(&bparams, 0, sizeof(ay_bparam));
+  /* get bevel and cap parameters */
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
     }
 
   /* create/add caps */
-  caps[0] = concatnp->has_u0_cap;
-  caps[1] = concatnp->has_u1_cap;
-  caps[2] = concatnp->has_v0_cap;
-  caps[3] = concatnp->has_v1_cap;
-  ay_capt_fillcparams(caps, &cparams);
-  ay_status = ay_capt_addcaps(&cparams, &bparams, concatnp->npatch, nextcb);
-  if(ay_status)
-    goto cleanup;
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, concatnp->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
 
-  while(*nextcb)
-    nextcb = &((*nextcb)->next);
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
   /* create/add bevels */
   if(bparams.has_bevels)

@@ -271,22 +271,6 @@ ay_gordon_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(gordon->vorder));
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->u0cap));
-
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->u1cap));
-
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->v0cap));
-
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &(gordon->v1cap));
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &(gordon->display_mode));
@@ -384,26 +368,6 @@ ay_gordon_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_NewIntObj(gordon->u0cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_NewIntObj(gordon->u1cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_NewIntObj(gordon->v0cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_NewIntObj(gordon->v1cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_SetStringObj(ton,"DisplayMode",-1);
   to = Tcl_NewIntObj(gordon->display_mode);
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
@@ -443,15 +407,6 @@ ay_gordon_readcb(FILE *fileptr, ay_object *o)
   fscanf(fileptr,"%d\n",&gordon->display_mode);
   fscanf(fileptr,"%lg\n",&gordon->glu_sampling_tolerance);
 
-  if(ay_read_version >= 16)
-    {
-      /* Since Ayam 1.21 */
-      fscanf(fileptr,"%d\n",&gordon->u0cap);
-      fscanf(fileptr,"%d\n",&gordon->u1cap);
-      fscanf(fileptr,"%d\n",&gordon->v0cap);
-      fscanf(fileptr,"%d\n",&gordon->v1cap);
-    }
-
   o->refine = gordon;
 
  return AY_OK;
@@ -476,11 +431,6 @@ ay_gordon_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", gordon->vorder);
   fprintf(fileptr, "%d\n", gordon->display_mode);
   fprintf(fileptr, "%g\n", gordon->glu_sampling_tolerance);
-
-  fprintf(fileptr, "%d\n", gordon->u0cap);
-  fprintf(fileptr, "%d\n", gordon->u1cap);
-  fprintf(fileptr, "%d\n", gordon->v0cap);
-  fprintf(fileptr, "%d\n", gordon->v1cap);
 
  return AY_OK;
 } /* ay_gordon_writecb */
@@ -562,7 +512,6 @@ ay_gordon_notifycb(ay_object *o)
  ay_cparam cparams = {0};
  int getvcurves = AY_FALSE, getinpatch = AY_FALSE, hcount = 0, vcount = 0;
  int mode = 0, a, i;
- int caps[4] = {0};
  double tolerance, m[16] = {0};
 
   if(!o)
@@ -729,27 +678,28 @@ ay_gordon_notifycb(ay_object *o)
   ((ay_nurbpatch_object *)npatch->refine)->display_mode =
     mode;
 
-  /* get bevel parameters */
-  memset(&bparams, 0, sizeof(ay_bparam));
+  /* get bevel and cap parameters */
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
+      ay_capt_parsetags(o->tags, &cparams);
     }
 
   /* create/add caps */
-  caps[0] = gordon->u0cap;
-  caps[1] = gordon->u1cap;
-  caps[2] = gordon->v0cap;
-  caps[3] = gordon->v1cap;
-  ay_capt_fillcparams(caps, &cparams);
-  ay_status = ay_capt_addcaps(&cparams, &bparams, npatch, nextcb);
-  if(ay_status)
-    goto cleanup;
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      ay_status = ay_bevelt_addbevels(&bparams, &cparams, gordon->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams, npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }

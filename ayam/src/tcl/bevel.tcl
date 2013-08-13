@@ -359,6 +359,7 @@ proc bevel_getBevels { } {
 
 	    incr i
 	}
+	set ${type}AttrData(BevelsChanged) 0
     } else {
 	addText $w e1 "Not supported here!"
     }

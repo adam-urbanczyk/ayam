@@ -916,11 +916,7 @@ ay_comp_skin(ay_object *o1, ay_object *o2)
 
   if((s1->interpolate != s2->interpolate) ||
      (s1->uorder != s2->uorder) ||
-     (s1->uknot_type != s2->uknot_type) ||
-     (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap) ||
-     (s1->has_left_cap != s2->has_left_cap) ||
-     (s1->has_right_cap != s2->has_right_cap)
+     (s1->uknot_type != s2->uknot_type)
      )
     return AY_FALSE;
 
@@ -1155,13 +1151,6 @@ ay_comp_concatnp(ay_object *o1, ay_object *o2)
 	return AY_FALSE;
     }
 
-  if((p1->has_u0_cap != p2->has_u0_cap) ||
-     (p1->has_u1_cap != p2->has_u1_cap) ||
-     (p1->has_v0_cap != p2->has_v0_cap) ||
-     (p1->has_v1_cap != p2->has_v1_cap)
-     )
-    return AY_FALSE;
-
  return AY_TRUE;
 } /* ay_comp_concatnp */
 
@@ -1178,11 +1167,7 @@ ay_comp_offnp(ay_object *o1, ay_object *o2)
   p2 = (ay_offnp_object *)o2->refine;
 
   if((p1->mode != p2->mode) ||
-     (p1->offset != p2->offset) ||
-     (p1->has_u0_cap != p2->has_u0_cap) ||
-     (p1->has_u1_cap != p2->has_u1_cap) ||
-     (p1->has_v0_cap != p2->has_v0_cap) ||
-     (p1->has_v1_cap != p2->has_v1_cap))
+     (p1->offset != p2->offset))
     return AY_FALSE;
 
  return AY_TRUE;
@@ -1411,11 +1396,7 @@ ay_comp_birail1(ay_object *o1, ay_object *o2)
   s2 = (ay_birail1_object *)o2->refine;
 
   if((s1->type != s2->type) ||
-     (s1->sections != s2->sections) ||
-     (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap) ||
-     (s1->has_r1_cap != s2->has_r1_cap) ||
-     (s1->has_r2_cap != s2->has_r2_cap)
+     (s1->sections != s2->sections)
      )
     return AY_FALSE;
 
@@ -1435,11 +1416,7 @@ ay_comp_birail2(ay_object *o1, ay_object *o2)
   s2 = (ay_birail2_object *)o2->refine;
 
   if((s1->close != s2->close) ||
-     (s1->sections != s2->sections) ||
-     (s1->has_start_cap != s2->has_start_cap) ||
-     (s1->has_end_cap != s2->has_end_cap) ||
-     (s1->has_r1_cap != s2->has_r1_cap) ||
-     (s1->has_r2_cap != s2->has_r2_cap)
+     (s1->sections != s2->sections)
      )
     return AY_FALSE;
 

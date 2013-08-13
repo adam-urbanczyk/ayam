@@ -1660,39 +1660,18 @@ ay_npatch_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   to = Tcl_ObjGetVar2(interp, toa, ton, TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp, to, &vknots_modified);
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(npatch->has_u0_cap != i)
-    {
-      npatch->has_u0_cap = i;
-      update = AY_TRUE;
-    }
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(npatch->has_u1_cap != i)
-    {
-      npatch->has_u1_cap = i;
-      update = AY_TRUE;
-    }
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(npatch->has_v0_cap != i)
-    {
-      npatch->has_v0_cap = i;
-      update = AY_TRUE;
-    }
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-  Tcl_GetIntFromObj(interp,to, &i);
-  if(npatch->has_v1_cap != i)
-    {
-      npatch->has_v1_cap = i;
-      update = AY_TRUE;
-    }
   Tcl_SetStringObj(ton,"BevelsChanged",-1);
+  to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+  Tcl_GetIntFromObj(interp,to, &i);
+  if(i)
+    {
+      update = AY_TRUE;
+
+      to = Tcl_NewIntObj(0);
+      Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+    }
+
+  Tcl_SetStringObj(ton,"CapsChanged",-1);
   to = Tcl_ObjGetVar2(interp,toa,ton,TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
   Tcl_GetIntFromObj(interp,to, &i);
   if(i)
@@ -2083,26 +2062,6 @@ ay_npatch_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
 		 TCL_GLOBAL_ONLY);
 
-  Tcl_SetStringObj(ton,"U0Cap",-1);
-  to = Tcl_NewIntObj(npatch->has_u0_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"U1Cap",-1);
-  to = Tcl_NewIntObj(npatch->has_u1_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V0Cap",-1);
-  to = Tcl_NewIntObj(npatch->has_v0_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
-  Tcl_SetStringObj(ton,"V1Cap",-1);
-  to = Tcl_NewIntObj(npatch->has_v1_cap);
-  Tcl_ObjSetVar2(interp,toa,ton,to,TCL_LEAVE_ERR_MSG |
-		 TCL_GLOBAL_ONLY);
-
   Tcl_IncrRefCount(toa);Tcl_DecrRefCount(toa);
   Tcl_IncrRefCount(ton);Tcl_DecrRefCount(ton);
 
@@ -2192,15 +2151,6 @@ ay_npatch_readcb(FILE *fileptr, ay_object *o)
 
   ay_npt_recreatemp(npatch);
 
-  if(ay_read_version >= 15)
-    {
-      /* Since Ayam 1.21: */
-      fscanf(fileptr,"%d\n",&npatch->has_u0_cap);
-      fscanf(fileptr,"%d\n",&npatch->has_u1_cap);
-      fscanf(fileptr,"%d\n",&npatch->has_v0_cap);
-      fscanf(fileptr,"%d\n",&npatch->has_v1_cap);
-    }
-
   npatch->is_rat = ay_npt_israt(npatch);
 
   /* Prior to 1.19 Ayam used pre-multiplied rational coordinates... */
@@ -2269,11 +2219,6 @@ ay_npatch_writecb(FILE *fileptr, ay_object *o)
   fprintf(fileptr, "%d\n", npatch->display_mode);
 
   fprintf(fileptr, "%d\n", npatch->createmp);
-
-  fprintf(fileptr, "%d\n", npatch->has_u0_cap);
-  fprintf(fileptr, "%d\n", npatch->has_u1_cap);
-  fprintf(fileptr, "%d\n", npatch->has_v0_cap);
-  fprintf(fileptr, "%d\n", npatch->has_v1_cap);
 
  return AY_OK;
 } /* ay_npatch_writecb */
@@ -3007,9 +2952,9 @@ ay_npatch_notifycb(ay_object *o)
  int ay_status = AY_OK;
  ay_nurbpatch_object *npatch = NULL;
  ay_object *bevel = NULL, **nextcb;
- ay_bparam bparams;
- ay_cparam cparams;
- int display_mode = ay_prefs.np_display_mode, mode, caps[4] = {0};
+ ay_bparam bparams = {0};
+ ay_cparam cparams = {0};
+ int display_mode = ay_prefs.np_display_mode, mode;
  int i, qf = ay_prefs.stess_qf;
  double tolerance;
 
@@ -3034,8 +2979,7 @@ ay_npatch_notifycb(ay_object *o)
 
   ay_npt_setuvtypes(npatch);
 
-  /* get bevel parameters */
-  memset(&bparams, 0, sizeof(ay_bparam));
+  /* get bevel and caps parameters */
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
@@ -3043,33 +2987,30 @@ ay_npatch_notifycb(ay_object *o)
       /* silently avoid bevel integration */
       for(i = 0; i < 4; i++)
 	bparams.integrate[i] = AY_FALSE;
+
+      ay_capt_parsetags(o->tags, &cparams);
+
+      /* silently avoid cap integration */
+      for(i = 0; i < 4; i++)
+	cparams.integrate[i] = AY_FALSE;
     }
 
-  /* create/add caps */
-  caps[0] = npatch->has_u0_cap;
-  caps[1] = npatch->has_u1_cap;
-  caps[2] = npatch->has_v0_cap;
-  caps[3] = npatch->has_v1_cap;
-
-  ay_capt_fillcparams(caps, &cparams);
-
-  /* silently avoid cap integration */
-  for(i = 0; i < 4; i++)
-    cparams.integrate[i] = AY_FALSE;
-
   nextcb = &(npatch->caps_and_bevels);
-  ay_status = ay_capt_addcaps(&cparams, &bparams, o, nextcb);
-  if(ay_status)
-    goto cleanup;
+
+  /* create/add caps */
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, o, nextcb);
+      if(ay_status)
+	goto cleanup;
+
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
   /* create/add bevels */
   if(bparams.has_bevels)
     {
-      nextcb = &(npatch->caps_and_bevels);
-
-      while(*nextcb)
-	nextcb = &((*nextcb)->next);
-
       ay_status = ay_bevelt_addbevels(&bparams, &cparams, o, nextcb);
       if(ay_status)
 	goto cleanup;

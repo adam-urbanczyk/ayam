@@ -89,6 +89,8 @@ proc init_IPatch { } {
 	DisplayMode 1
 	NPInfoBall "n/a"
 	BoundaryNames { "U0" "U1" "V0" "V1" }
+	BevelsChanged 0
+	CapsChanged 0
     }
 
  return;
