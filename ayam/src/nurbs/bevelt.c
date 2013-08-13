@@ -45,7 +45,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		    ay_object **dst)
 {
  int ay_status = AY_OK;
- int i, is_planar = AY_TRUE, is_roundtocap = AY_FALSE;
+ int i, is_planar, is_roundtocap, do_integrate;
  int winding = 0, side = 0, revert = AY_FALSE;
  double param = 0.0, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
@@ -67,6 +67,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
       if(bparams->states[i])
 	{
 	  is_planar = AY_TRUE;
+	  is_roundtocap = AY_FALSE;
+	  do_integrate = AY_FALSE;
 	  ay_object_defaults(&curve);
 	  ay_trafo_defaults(&curve);
 	  curve.type = AY_IDNCURVE;
@@ -155,6 +157,27 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	    {
 	      is_planar = AY_FALSE;
 	      is_roundtocap = AY_TRUE;
+	    }
+
+	  if(bparams->integrate[i])
+	    {
+	      do_integrate = AY_TRUE;
+	    }
+
+	  if(do_integrate && is_roundtocap)
+	    {
+	      if(bparams->force3d[i])
+		{
+		  do_integrate = AY_FALSE;
+		}
+	      else
+		{
+		  ay_nct_isplanar(&curve, NULL, &do_integrate);
+		  if(do_integrate)
+		    do_integrate = AY_FALSE;
+		  else
+		    do_integrate = AY_TRUE;
+		}
 	    }
 
 	  if(is_planar)
@@ -344,15 +367,21 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	      goto cleanup;
 	    }
 
-	  if(bparams->integrate[i])
+	  if(do_integrate)
 	    {
-	      ay_bevelt_integrate(i, o, bevel);
+	      ay_status = ay_bevelt_integrate(i, o, bevel);
+	      if(ay_status)
+		goto cleanup;
+
 	      (void)ay_object_delete(bevel);
 	    }
 	  else
 	    {
-	      *next = bevel;
-	      next = &(bevel->next);
+	      if(!is_roundtocap)
+		{
+		  *next = bevel;
+		  next = &(bevel->next);
+		}
 	    }
 
 	  /* create cap from bevel */
@@ -402,7 +431,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 						   cparams->frac[i], nextcap);
 		  break;
 		case 3:
-		  ay_status = ay_capt_crtsimplecap(extrcurve, 0,
+		  ay_status = ay_capt_crtsimplecap(extrcurve, 1,
 						   cparams->frac[i], nextcap);
 		  break;
 		default:
@@ -411,11 +440,38 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	      if(cparams->types[i] != 0)
 		{
-		  (void)ay_object_delete(extrcurve);
+		  (void) ay_object_delete(extrcurve);
 		}
 
 	      if(ay_status)
 		goto cleanup;
+
+	      /* in round to cap mode on 3D curves, create the bevel via
+		 concatenation of surface and cap (but only if we have
+		 a cap) */
+	      if(is_roundtocap && !do_integrate && *nextcap)
+		{
+		  (void) ay_object_delete(bevel);
+		  bevel = NULL;
+
+		  ay_status = ay_bevelt_createconcat(i, o, *nextcap, &bevel);
+		  if(ay_status)
+		    goto cleanup;
+
+		  if(bparams->integrate[i])
+		    {
+		      ay_status = ay_bevelt_integrate(i, o, bevel);
+		      if(ay_status)
+			goto cleanup;
+
+		      (void) ay_object_delete(bevel);
+		    }
+		  else
+		    {
+		      *next = bevel;
+		      next = &(bevel->next);
+		    }
+		}
 
 	      if(cparams->integrate[i])
 		{
@@ -436,7 +492,8 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  if(nextcap)
 		    nextcap = &((*nextcap)->next);
 		}
-	    } /* if integrate */
+
+	    } /* if cap on this side */
 	} /* if bevel on this side */
     } /* for all sides */
 
@@ -780,6 +837,32 @@ ay_bevelt_create(int type, double radius, int align, ay_object *o,
 
  return ay_status;
 } /* ay_bevelt_create */
+
+
+/** ay_bevelt_createconcat:
+ * Create a (3D) bevel by the concatenation fillet creation algorithm.
+ *
+ * \param[in] side boundary on which to create the bevel
+ * \param[in] o surface to be beveled
+ * \param[in] c cap surface
+ * \param[in,out] bevel resulting bevel object
+ *
+ * \returns AY_OK on success, error code otherwise.
+ */
+int
+ay_bevelt_createconcat(int side, ay_object *o, ay_object *c, ay_object **bevel)
+{
+ int ay_status = AY_OK;
+ char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
+
+  if(!o || !c || !bevel)
+    return AY_ENULL;
+
+  uv = uvs[side];
+  ay_status = ay_npt_fillgap(o, c, -0.33, uv, bevel);
+
+ return ay_status;
+} /* ay_bevelt_createconcat */
 
 
 /** ay_bevelt_createc:
