@@ -78,6 +78,9 @@ int ay_bevelt_createroundtocap(double radius, int revert,
  */
 int ay_bevelt_findbevelcurve(int index, ay_object **c);
 
+int ay_bevelt_createconcat(int side, ay_object *o, ay_object *c,
+			   ay_object **bevel);
+
 
 /* capt.c */
 
@@ -1007,6 +1010,11 @@ int ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
  */
 int ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			       int argc, char *argv[]);
+
+/** Create fillet patch.
+ */
+int ay_npt_fillgap(ay_object *o1, ay_object *o2,
+		   double tanlen, char *uv, ay_object **result);
 
 /** Concatenate NURBS patches.
  */
