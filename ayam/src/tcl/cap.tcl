@@ -295,6 +295,7 @@ proc cap_getCaps { } {
 
 	    incr i
 	}
+	set ${type}AttrData(CapsChanged) 0
     } else {
 	addText $w e1 "Not supported here!"
     }

@@ -365,7 +365,7 @@ ay_skin_readcb(FILE *fileptr, ay_object *o)
 
   if(ay_read_version < 16)
     {
-      /* Before Ayam 1.21 */
+      /* before Ayam 1.21 */
       ay_capt_createtags(o, caps);
     }
 
@@ -594,7 +594,7 @@ ay_skin_notifycb(ay_object *o)
 
   skin->npatch = newo;
 
-  /* get bevel parameters */
+  /* get bevel and cap parameters */
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
@@ -602,12 +602,15 @@ ay_skin_notifycb(ay_object *o)
     }
 
   /* create/add caps */
-  ay_status = ay_capt_addcaps(&cparams, &bparams, skin->npatch, nextcb);
-  if(ay_status)
-    goto cleanup;
+  if(cparams.has_caps)
+    {
+      ay_status = ay_capt_addcaps(&cparams, &bparams, skin->npatch, nextcb);
+      if(ay_status)
+	goto cleanup;
 
-  while(*nextcb)
-    nextcb = &((*nextcb)->next);
+      while(*nextcb)
+	nextcb = &((*nextcb)->next);
+    }
 
   /* create/add bevels */
   if(bparams.has_bevels)

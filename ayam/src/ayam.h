@@ -508,11 +508,6 @@ typedef struct ay_nurbpatch_object_s
   double *vknotv; /**< v knot vector [height + vorder]*/
   /*double *texv;*/ /* unused */
 
-  int has_u0_cap; /**< create cap at u start? */
-  int has_u1_cap; /**< create cap at u end? */
-  int has_v0_cap; /**< create cap at v start? */
-  int has_v1_cap; /**< create cap at v end? */
-
   GLUnurbsObj *no; /**< GLU NURBS object */
   float *fltcv; /**< cached float data for GLU */
 
@@ -558,11 +553,6 @@ typedef struct ay_ipatch_object_s {
   int derivs_v; /**< end derivative mode (V) */
   double *sderiv_v; /**< start derivatives [width * 3] */
   double *ederiv_v; /**< end derivatives [width * 3] */
-
-  int has_u0_cap; /**< create cap at u start? */
-  int has_u1_cap; /**< create cap at u end? */
-  int has_v0_cap; /**< create cap at v start? */
-  int has_v1_cap; /**< create cap at v end? */
 
   /** cached NURBS patch representation */
   ay_object *npatch;
@@ -646,11 +636,6 @@ typedef struct ay_gordon_object_s {
   int wcc; /**< watch (and automatically correct) parameter curves? */
   int uorder; /**< desired order for U dimension */
   int vorder; /**< desired order for V dimension */
-
-  int u0cap;
-  int u1cap;
-  int v0cap;
-  int v1cap;
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1081,10 +1066,6 @@ typedef struct ay_birail1_object_s
 {
   int type; /**< create open (0), closed (1), or periodic (2) surface? */
   int sections; /**< number of sections in the birailed surface (U) */
-  int has_start_cap; /**< create start cap? */
-  int has_end_cap; /**< create end cap? */
-  int has_r1_cap; /**< create cap at rail1? */
-  int has_r2_cap; /**< create cap at rail2? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1103,10 +1084,6 @@ typedef struct ay_birail2_object_s
   int close; /**< unused */
   int sections; /**< number of sections in the birailed surface (U) */
   int interpolctrl;  /**< use interpolation control curve? */
-  int has_start_cap; /**< create start cap? */
-  int has_end_cap; /**< create end cap? */
-  int has_r1_cap; /**< create cap at rail1? */
-  int has_r2_cap; /**< create cap at rail2? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1126,10 +1103,6 @@ typedef struct ay_skin_object_s
   int uorder; /**< desired order in U direction */
   int uknot_type; /**< desired knot type in U direction */
   double uknotv; /**< desired knot vector in U direction */
-  int has_start_cap; /**< create start cap? */
-  int has_end_cap; /**< create end cap? */
-  int has_left_cap; /**< create left cap? */
-  int has_right_cap; /**< create right cap? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
@@ -1192,11 +1165,6 @@ typedef struct ay_concatnp_object_s
   int compat; /**< are the parameter surfaces compatible already? */
   char *uv_select; /**< select direction for each parameter patch */
 
-  int has_u0_cap; /**< create cap at u start? */
-  int has_u1_cap; /**< create cap at u end? */
-  int has_v0_cap; /**< create cap at v start? */
-  int has_v1_cap; /**< create cap at v end? */
-
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
 
@@ -1213,11 +1181,6 @@ typedef struct ay_offnp_object_s
 {
   int mode; /**< unused */
   double offset; /**< offset/distance value */
-
-  int has_u0_cap; /**< create cap at u start? */
-  int has_u1_cap; /**< create cap at u end? */
-  int has_v0_cap; /**< create cap at v start? */
-  int has_v1_cap; /**< create cap at v end? */
 
   /** cached caps and bevel objects */
   ay_object *caps_and_bevels;
