@@ -113,7 +113,6 @@ void ay_capt_parsetags(ay_tag *tag, ay_cparam *params);
  */
 void ay_capt_createtags(ay_object *o, int *caps);
 
-void ay_capt_fillcparams(int *caps, ay_cparam *cp);
 
 /* ict.c */
 

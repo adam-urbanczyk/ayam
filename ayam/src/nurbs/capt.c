@@ -889,27 +889,3 @@ ay_capt_createtags(ay_object *o, int *caps)
 
  return;
 } /* ay_capt_createtags */
-
-
-void
-ay_capt_fillcparams(int *caps, ay_cparam *cp)
-{
- int i;
-
-  if(!caps || !cp)
-    return;
-
-  memset(cp,0,sizeof(ay_cparam));
-
-  for(i = 0; i < 4; i++)
-    {
-      if(caps[i]>0)
-	{
-	  cp->states[i] = 1;
-	  cp->types[i] = caps[i]-1;
-	  cp->frac[i] = 0.5;
-	}
-    }
-
- return;
-}
