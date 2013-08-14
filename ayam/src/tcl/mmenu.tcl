@@ -1095,7 +1095,7 @@ proc mmenu_addlume { m } {
 	    append newlabel ")"
 	    set cmd "$ay(toolsmenu) entryconfigure 0 -label \"$newlabel\" \
                      -command \{[$m entrycget $i -command]\};"
-	    append cmd "set ay(repo) [$m entrycget $i -label];"
+	    append cmd "set ay(repo) \{[$m entrycget $i -label]\};"
 	    append cmd [$m entrycget $i -command]
 	    $m entryconfigure $i -command $cmd
 	}
