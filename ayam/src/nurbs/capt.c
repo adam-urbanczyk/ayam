@@ -188,9 +188,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
  ay_nurbcurve_object *nc = NULL, *rnc = NULL;
  ay_nurbpatch_object *np = NULL;
  double knotv0[4] = {0.0,0.0,1.0,1.0}, knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
- int a, i = 0, stride = 4;
+ int a, b = 0, i = 0, stride = 4;
  double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
- double angle, rm[16], rotaxis[3], *circcv = NULL;
+ double *p, angle, len, rm[16], rotaxis[3], *circcv = NULL;
  ay_object *rc;
 
   if(!c || !cap)
@@ -259,14 +259,32 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       if(!(circcv = malloc(nc->length*stride * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
-      r = frac;
+      a = 0;
+      for(i = 0; i < nc->length; i++)
+	{
+	  p = &(nc->controlv[a]);
+	  if(!AY_V3COMP(m,p))
+	    {
+	      n[0] = p[0]-m[0];
+	      n[1] = p[1]-m[1];
+	      n[2] = p[2]-m[2];
+	      len = AY_V3LEN(n);
+	      r += len;
+	      b++;
+	    }
+	  a += stride;
+	}
+
+      r /= b;
+      r *= frac;
 
       /* create middle curve */
       ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
 				      /*radius=*/r, /*arc=*/360.0, nc->order,
 				      &circcv);
+
 #if 0
-      ay_object_copy(c,&rc);
+      ay_object_copy(c, &rc);
       ay_nct_toxy(rc);
 
       rnc = (ay_nurbcurve_object *)(rc->refine);
@@ -275,9 +293,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
 	  r = sqrt(rnc->controlv[0]*rnc->controlv[0]+
 		   rnc->controlv[1]*rnc->controlv[1]);
-	  angle = AY_R2D(acos(rnc->controlv[1]/r));
+	  angle = 180-AY_R2D(acos(rnc->controlv[1]/r));
 
-	  printf("rotate in plane about %lg deg\n",angle);
+	  printf("rotate in plane about %lg deg\n", angle);
 
 	  ay_trafo_identitymatrix(rm);
 
@@ -297,6 +315,8 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
       /* place middle curve */
       ay_trafo_translatematrix(m[0], m[1], m[2], rm);
+
+      memset(n,0,3*sizeof(double));
 
       if(nc->type == AY_CTPERIODIC)
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
