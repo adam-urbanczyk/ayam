@@ -255,8 +255,8 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
   if(mode)
     {
-
-      if(!(circcv = malloc(nc->length*stride * sizeof(double))))
+      /* 3D mode */
+      if(!(circcv = malloc(nc->length * stride * sizeof(double))))
 	{ ay_status = AY_EOMEM; goto cleanup; }
 
       a = 0;
@@ -279,9 +279,37 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       r *= frac;
 
       /* create middle curve */
-      ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
-				      /*radius=*/r, /*arc=*/360.0, nc->order,
-				      &circcv);
+      if(nc->type == AY_CTPERIODIC)
+	{
+	  ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
+					 /*radius=*/r, /*arc=*/360.0, nc->order,
+					 &circcv);
+	}
+      else
+	{
+	  ay_trafo_identitymatrix(rm);
+	  p = circcv;
+	  p[0] = r;
+	  p[1] = 0.0;
+	  p[2] = 0.0;
+	  p[3] = 1.0;
+	  p = &(circcv[stride]);
+	  angle = 360.0/(nc->length-1);
+	  for(i = 1; i < nc->length-1; i++)
+	    {
+	      p[0] = r;
+	      p[1] = 0.0;
+	      p[2] = 0.0;
+	      p[3] = 1.0;
+	      ay_trafo_rotatematrix(angle, 0.0, 0.0, 1.0, rm);
+	      ay_trafo_apply3(p, rm);
+	      p += stride;
+	    } /* for */
+	  p[0] = r;
+	  p[1] = 0.0;
+	  p[2] = 0.0;
+	  p[3] = 1.0;
+	} /* if */
 
 #if 0
       ay_object_copy(c, &rc);
@@ -316,7 +344,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       /* place middle curve */
       ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 
-      memset(n,0,3*sizeof(double));
+      memset(n, 0, 3*sizeof(double));
 
       if(nc->type == AY_CTPERIODIC)
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
@@ -324,7 +352,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 					    n);
       else
 	ay_status = ay_geom_extractmeannormal(nc->controlv,
-					      nc->length, stride,
+					      nc->length-1, stride,
 					      n);
 
       angle = AY_R2D(acos(AY_V3DOT(n, z)));
