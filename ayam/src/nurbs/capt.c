@@ -191,7 +191,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
  int a, b = 0, i = 0, stride = 4;
  double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
  double *p, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
- ay_object *rc;
+ ay_object *rc = NULL;
 
   if(!c || !cap)
     return AY_ENULL;
@@ -200,6 +200,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
     { ay_status = AY_ERROR; goto cleanup; }
 
   nc = (ay_nurbcurve_object *)(c->refine);
+
+  if(nc->length < 3)
+    { ay_status = AY_ERROR; goto cleanup; }
 
   ay_status = ay_npt_createnpatchobject(&npatch);
   if(ay_status)
@@ -284,6 +287,8 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
 					 /*radius=*/r, /*arc=*/360.0, nc->order,
 					 &circcv);
+	  if(ay_status)
+	    goto cleanup;
 	}
       else
 	{
@@ -312,8 +317,11 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	} /* if */
 
       /* rotate middle curve in its plane */
-      ay_object_copy(c, &rc);
-      ay_nct_toxy(rc);
+      (void)ay_object_copy(c, &rc);
+      if(!rc)
+	goto cleanup;
+
+      (void)ay_nct_toxy(rc);
 
       rnc = (ay_nurbcurve_object *)(rc->refine);
       if(fabs(rnc->controlv[0]) > AY_EPSILON || fabs(circcv[0]) > AY_EPSILON)
@@ -349,7 +357,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	      ay_trafo_apply3(&(circcv[a]), rm);
 	      a += stride;
 	    }
-	}
+	} /* if */
 
       (void)ay_object_delete(rc);
 
@@ -398,6 +406,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  a += stride;
 	}
       free(circcv);
+      circcv = NULL;
     }
   else
     {
@@ -421,6 +430,9 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
   npatch = NULL;
 
 cleanup:
+
+  if(circcv)
+    free(circcv);
 
   if(npatch)
     {
@@ -750,11 +762,14 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
   if(c1->type != AY_IDNCURVE)
     return AY_ERROR;
 
+  curve = (ay_nurbcurve_object*)c1->refine;
+
+  if(curve->length < 3)
+    return AY_ERROR;
+
   ay_status = ay_npt_createnpatchobject(&new);
   if(ay_status)
     goto cleanup;
-
-  curve = (ay_nurbcurve_object*)c1->refine;
 
   /* split curve in half */
   ay_status =  ay_nct_clamp(curve, 0);
