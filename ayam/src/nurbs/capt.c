@@ -190,7 +190,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
  double knotv0[4] = {0.0,0.0,1.0,1.0}, knotv1[6] = {0.0,0.0,0.0,1.0,1.0,1.0};
  int a, b = 0, i = 0, stride = 4;
  double r = 0.0, m[4] = {0}, n[3] = {0}, z[3] = {0.0,0.0,1.0};
- double *p, angle, len, rm[16], rotaxis[3], *circcv = NULL;
+ double *p, angle, anglem, len, rm[16], rotaxis[3], *circcv = NULL;
  ay_object *rc;
 
   if(!c || !cap)
@@ -311,23 +311,37 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  p[3] = 1.0;
 	} /* if */
 
-#if 0
+      /* rotate middle curve in its plane */
       ay_object_copy(c, &rc);
       ay_nct_toxy(rc);
 
       rnc = (ay_nurbcurve_object *)(rc->refine);
-      if(fabs(rnc->controlv[1])>AY_EPSILON)
+      if(fabs(rnc->controlv[0]) > AY_EPSILON || fabs(circcv[0]) > AY_EPSILON)
 	{
+	  if(fabs(rnc->controlv[0]) > AY_EPSILON)
+	    {
+	      r = sqrt(rnc->controlv[0]*rnc->controlv[0] +
+		       rnc->controlv[1]*rnc->controlv[1]);
+	      angle = AY_R2D(acos(rnc->controlv[0]/r));
+	      if(rnc->controlv[1] < 0.0)
+		angle = 360.0-angle;
+	    }
+	  else
+	    angle = 0;
 
-	  r = sqrt(rnc->controlv[0]*rnc->controlv[0]+
-		   rnc->controlv[1]*rnc->controlv[1]);
-	  angle = 180-AY_R2D(acos(rnc->controlv[1]/r));
-
-	  printf("rotate in plane about %lg deg\n", angle);
+	  if(fabs(circcv[0]) > AY_EPSILON)
+	    {
+	      r = sqrt(circcv[0]*circcv[0]+circcv[1]*circcv[1]);
+	      anglem = AY_R2D(acos(circcv[0]/r));
+	      if(circcv[1] < 0.0)
+		anglem = 360.0 - anglem;
+	    }
+	  else
+	    anglem = 0;
 
 	  ay_trafo_identitymatrix(rm);
 
-	  ay_trafo_rotatematrix(angle, 0, 0, 1, rm);
+	  ay_trafo_rotatematrix(angle-anglem, 0, 0, 1, rm);
 
 	  a = 0;
 	  for(i = 0; i < nc->length; i++)
@@ -336,12 +350,12 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	      a += stride;
 	    }
 	}
-#endif
 
-      /* rotate middle curve */
+      (void)ay_object_delete(rc);
+
+      /* place and orient middle curve wrt. middle point and boundary*/
       ay_trafo_identitymatrix(rm);
 
-      /* place middle curve */
       ay_trafo_translatematrix(m[0], m[1], m[2], rm);
 
       memset(n, 0, 3*sizeof(double));
