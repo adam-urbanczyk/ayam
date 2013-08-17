@@ -378,7 +378,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 	    }
 	  else
 	    {
-	      if(!is_roundtocap)
+	      if(!is_roundtocap || !cparams->states[i])
 		{
 		  *next = bevel;
 		  next = &(bevel->next);
@@ -469,6 +469,14 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 			goto cleanup;
 		    }
 		  else
+		    {
+		      *next = bevel;
+		      next = &(bevel->next);
+		    }
+		}
+	      else
+		{
+		  if(is_roundtocap && !do_integrate)
 		    {
 		      *next = bevel;
 		      next = &(bevel->next);
