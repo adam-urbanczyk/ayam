@@ -250,7 +250,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 
   memcpy(np->controlv, nc->controlv, nc->length*stride*sizeof(double));
 
-  ay_status = ay_geom_extractmiddlepoint(0, nc->controlv, nc->length,
+  ay_status = ay_geom_extractmiddlepoint(/*mode=*/0, nc->controlv, nc->length,
 					 stride, NULL, m);
 
   if(ay_status)
@@ -387,7 +387,6 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  ay_trafo_rotatematrix(-angle, rotaxis[0], rotaxis[1], rotaxis[2], rm);
 	}
 
-
       a = 0;
       for(i = 0; i < nc->length; i++)
 	{
@@ -405,8 +404,6 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	  np->controlv[a+3] = 1.0;/*nc->controlv[b+3];*/
 	  a += stride;
 	}
-      free(circcv);
-      circcv = NULL;
     }
   else
     {
