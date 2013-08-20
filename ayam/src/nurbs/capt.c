@@ -21,8 +21,10 @@
  * \param[in] bparams bevel parameters, if a bevel is to be created
  *  at the corresponding boundary, we do not create the cap here but
  *  later when creating the bevel
- * \param[in] o NURBS patch object
- * \param[in,out] cap list of new NURBS patch objects (the caps)
+ * \param[in,out] o NURBS patch object (may be modified
+ *  if the integrate parameter of a cap is set)
+ * \param[in,out] cap list of new NURBS patch objects,
+ *  (may stay empty if all bevels are integrated into the surface)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -171,7 +173,7 @@ cleanup:
 
 
 /** ay_capt_crtsimplecap:
- *  create a simple cap surface from a single NURBS curve
+ * Create a simple cap surface from a single NURBS curve.
  *
  * \param[in] c NURBS curve object
  * \param[in] mode 0 - 2D, 1 - 3D
@@ -444,8 +446,8 @@ cleanup:
 
 
 /** ay_capt_integrate:
- *  create a simple cap surface from a single NURBS curve
- *  and integrate it into the NURBS surface
+ * create a simple cap surface from a single NURBS curve
+ * and integrate it into the NURBS surface
  *
  * \param[in,out] c cap object
  * \param[in] side integration place
@@ -539,8 +541,8 @@ cleanup:
 
 
 /** ay_capt_crttrimcap:
- *  create a cap surface from planar NURBS curves; the curve objects
- *  will be transformed and moved to the new NURBS patch as trim curves
+ * Create a cap surface from planar NURBS curves; the curve objects
+ * will be transformed and moved to the new NURBS patch as trim curves.
  *
  * \param[in,out] c NURBS curve object(s); multiple objects may
  *  be provided as list of connected objects; the first curve
@@ -769,7 +771,7 @@ ay_capt_crtgordoncap(ay_object *c, ay_object **cap)
     goto cleanup;
 
   /* split curve in half */
-  ay_status =  ay_nct_clamp(curve, 0);
+  ay_status = ay_nct_clamp(curve, 0);
   if(ay_status)
     goto cleanup;
 
