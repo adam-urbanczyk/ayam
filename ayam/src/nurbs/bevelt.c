@@ -36,7 +36,7 @@ static ay_object *ay_bevelt_curves[3] = {0};
  * \param[in,out] o NURBS surface object (may be modified
  *  if the integrate parameter of a bevel is set)
  * \param[in,out] dst resulting bevel and cap NURBS surface objects
- *  (may be empty if all bevels are integrated into the surface)
+ *  (may stay empty if all bevels are integrated into the surface)
  *
  * \returns AY_OK on success, error code otherwise.
  */
@@ -505,7 +505,6 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 		  if(nextcap)
 		    nextcap = &((*nextcap)->next);
 		}
-
 	    } /* if cap on this side */
 	} /* if bevel on this side */
     } /* for all sides */
