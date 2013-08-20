@@ -131,7 +131,7 @@ proc cap_setTags { bnames {bids ""} } {
 	if { $CapTags(Cap${i}) } {
 	    lappend newtags CP
 
-	    lappend newtags [format "%d,%d,%d,%f" $j\
+	    lappend newtags [format "%d,%d,%d,%g" $j\
 				 $CapTags(${bname}Type)\
 				 $CapTags(${bname}Integrate)\
 				 $CapTags(${bname}Fraction)]

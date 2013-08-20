@@ -97,7 +97,7 @@ proc bevel_setTags { bnames {bids ""} } {
 		set type [expr $l - $type]
 	    }
 
-	    lappend newtags [format "%d,%d,%f,%d,%d,%d" $j\
+	    lappend newtags [format "%d,%d,%g,%d,%d,%d" $j\
 				 $type\
 				 $BevelTags(${bname}Radius)\
 				 $BevelTags(${bname}Revert)\
