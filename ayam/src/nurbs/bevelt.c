@@ -47,6 +47,7 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
  int ay_status = AY_OK;
  int i, is_planar, is_roundtocap, do_integrate;
  int winding = 0, side = 0, revert = AY_FALSE;
+ int capintknottype = AY_KTCUSTOM;
  double param = 0.0, *normals = NULL, *tangents = NULL;
  ay_object curve = {0}, *alignedcurve = NULL;
  ay_object *bevel = NULL, *bevelcurve = NULL;
@@ -485,13 +486,20 @@ ay_bevelt_addbevels(ay_bparam *bparams, ay_cparam *cparams, ay_object *o,
 
 	      if(cparams->integrate[i])
 		{
+		  if(is_roundtocap)
+		    {
+		      capintknottype = AY_KTNURB;
+		    }
+
 		  if(bparams->integrate[i])
 		    {
-		      ay_status = ay_capt_integrate(*nextcap, i, o);
+		      ay_status = ay_capt_integrate(*nextcap, i,
+						    capintknottype, o);
 		    }
 		  else
 		    {
-		      ay_status = ay_capt_integrate(*nextcap, 3, bevel);
+		      ay_status = ay_capt_integrate(*nextcap, 3,
+						    capintknottype, bevel);
 		    }
 
 		  (void) ay_object_delete(*nextcap);

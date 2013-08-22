@@ -95,7 +95,7 @@ int ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap);
 
 /** Integrate cap into the progenitor surface.
  */
-int ay_capt_integrate(ay_object *c, int side, ay_object *s);
+int ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s);
 
 /** Create trim cap from (planar) curve(s).
  */

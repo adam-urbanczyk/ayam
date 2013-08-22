@@ -151,7 +151,7 @@ ay_capt_addcaps(ay_cparam *cparams, ay_bparam *bparams,
 
 	  if(cparams->integrate[i])
 	    {
-	      ay_status = ay_capt_integrate(cap, i, o);
+	      ay_status = ay_capt_integrate(cap, i, AY_KTCUSTOM, o);
 	      (void)ay_object_delete(cap);
 	      cap = NULL;
 	      if(ay_status)
@@ -286,6 +286,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
       /* create middle curve */
       if(nc->type == AY_CTPERIODIC)
 	{
+	  /* periodic curve */
 	  ay_status = ay_nct_crtcircbspcv(/*sections=*/nc->length-(nc->order-1),
 					 /*radius=*/r, /*arc=*/360.0, nc->order,
 					 &circcv);
@@ -294,6 +295,7 @@ ay_capt_crtsimplecap(ay_object *c, int mode, double frac, ay_object **cap)
 	}
       else
 	{
+	  /* simple closed curve */
 	  ay_trafo_identitymatrix(rm);
 	  p = circcv;
 	  p[0] = r;
@@ -446,23 +448,25 @@ cleanup:
 
 
 /** ay_capt_integrate:
- * create a simple cap surface from a single NURBS curve
- * and integrate it into the NURBS surface
+ * Integrate a cap into the progenitor NURBS surface by
+ * surface concatenation.
  *
  * \param[in,out] c cap object
- * \param[in] side integration place
+ * \param[in] side integration place in surface \a s
+ * \param[in] knottype knot type for concatenation
  * \param[in,out] s NURBS surface object for integration
  *
  * \returns AY_OK on success, error code otherwise.
  */
 int
-ay_capt_integrate(ay_object *c, int side, ay_object *s)
+ay_capt_integrate(ay_object *c, int side, int knottype, ay_object *s)
 {
  int ay_status = AY_OK;
- ay_object *cc = NULL, *cap = NULL, *o = NULL, *oldnext;
- ay_nurbpatch_object *np = NULL;
+ ay_object *cc = NULL, *o = NULL, *oldnext;
+ ay_nurbpatch_object *npc = NULL;
+ ay_nurbpatch_object *nps = NULL;
  char *uv = NULL, uvs[][4] = {"Vu","vu","Uu","uu"};
- int knottype = AY_KTCUSTOM, order = 0;
+ int order = 0;
 
   if(!c || !s)
     return AY_ENULL;
@@ -470,42 +474,37 @@ ay_capt_integrate(ay_object *c, int side, ay_object *s)
   if(c->type != AY_IDNPATCH || s->type != AY_IDNPATCH)
     return AY_ERROR;
 
-  cap = c;
-
-  np = (ay_nurbpatch_object*)s->refine;
+  nps = (ay_nurbpatch_object*)s->refine;
+  npc = (ay_nurbpatch_object*)c->refine;
 
   uv = uvs[side];
 
   oldnext = s->next;
   cc = s;
-  s->next = cap;
+  s->next = c;
 
   switch(side)
     {
     case 0:
     case 1:
-      if(np->vorder != 2)
+      if(nps->vorder > npc->uorder)
 	{
-	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
-				      np->vorder-2);
+	  ay_status = ay_npt_elevateu(npc, nps->vorder-npc->uorder);
 	}
-      order = np->vorder;
+      order = nps->vorder;
       break;
     case 2:
     case 3:
-      if(np->uorder != 2)
+      if(nps->uorder > npc->uorder)
 	{
-	  ay_status = ay_npt_elevateu((ay_nurbpatch_object*)cap->refine,
-				      np->uorder-2);
+	  ay_status = ay_npt_elevateu(npc, nps->uorder-npc->uorder);
 	}
-      order = np->uorder;
+      order = nps->uorder;
       break;
     } /* switch */
 
   if(ay_status)
     goto cleanup;
-
-  knottype = AY_KTCUSTOM;
 
   ay_status = ay_npt_concat(cc, 0, order, knottype, 0, 0.0, AY_TRUE, uv,
 			    &o);
