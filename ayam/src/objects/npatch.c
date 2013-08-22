@@ -2983,16 +2983,18 @@ ay_npatch_notifycb(ay_object *o)
   if(o->tags)
     {
       ay_bevelt_parsetags(o->tags, &bparams);
-
-      /* silently avoid bevel integration */
-      for(i = 0; i < 4; i++)
-	bparams.integrate[i] = AY_FALSE;
-
       ay_capt_parsetags(o->tags, &cparams);
 
-      /* silently avoid cap integration */
+      /* silently avoid bevel & cap integration */
       for(i = 0; i < 4; i++)
-	cparams.integrate[i] = AY_FALSE;
+	{
+	  bparams.integrate[i] = AY_FALSE;
+	  /* still allow integration of a cap into a bevel surface */
+	  if(!bparams.states[i])
+	    {
+	      cparams.integrate[i] = AY_FALSE;
+	    }
+	}
     }
 
   nextcb = &(npatch->caps_and_bevels);
