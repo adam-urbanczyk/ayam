@@ -1696,8 +1696,11 @@ ay_pomesht_gensmoothnormals(ay_pomesh_object *po, double **result)
     }
   else
     {
-      free(po->controlv);
-      po->controlv = newcv;
+      if(po->controlv != newcv)
+	{
+	  free(po->controlv);
+	  po->controlv = newcv;
+	}
       po->has_normals = AY_TRUE;
     }
 
