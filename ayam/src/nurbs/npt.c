@@ -1719,7 +1719,8 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 
 	  if(ay_status || !curves)
 	    {
-	      ay_error(AY_ERROR, argv[0], "Break failed.");
+	      ay_error(AY_ERROR, argv[0], "Break into curves failed.");
+	      break;
 	    }
 
 	  while(curves)
@@ -2149,7 +2150,7 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  dist = AY_V3LEN(v1);
 	  if(dist > AY_EPSILON)
 	    {
-	      AY_V3SCAL(v1, 1/dist);
+	      AY_V3SCAL(v1, 1.0/dist);
 
 	      if(tanlen > 0)
 		{
@@ -2186,10 +2187,11 @@ ay_npt_fillgap(ay_object *o1, ay_object *o2,
 	  v1[0] = (cv2[c]-cv2[b]);
 	  v1[1] = (cv2[c+1]-cv2[b+1]);
 	  v1[2] = (cv2[c+2]-cv2[b+2]);
+
 	  dist = AY_V3LEN(v1);
 	  if(dist > AY_EPSILON)
 	    {
-	      AY_V3SCAL(v1, 1/dist);
+	      AY_V3SCAL(v1, 1.0/dist);
 
 	      if(tanlen > 0)
 		{
@@ -6843,7 +6845,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       nc->length = np->height;
       break;
     case 4:
-      nc->order =  np->uorder;
+      nc->order = np->uorder;
       nc->knot_type = np->uknot_type;
       nc->length = np->width;
       break;
@@ -6853,7 +6855,7 @@ ay_npt_extractnc(ay_object *o, int side, double param, int relative,
       nc->length = np->height;
       break;
     case 7:
-      nc->order =  np->uorder;
+      nc->order = np->uorder;
       nc->knot_type = np->uknot_type;
       nc->length = np->width;
       break;
@@ -8281,9 +8283,11 @@ ay_npt_isclosedv(ay_nurbpatch_object *np)
 } /* ay_npt_isclosedv */
 
 
-/* ay_npt_setuvtypes:
+/** ay_npt_setuvtypes:
  *  set the utype and vtype (closedness) attributes according to
- *  the actual configuration of the NURBS patch <np>
+ *  the actual configuration of a NURBS patch
+ *
+ *  \param[in] np NURBS patch to process
  */
 void
 ay_npt_setuvtypes(ay_nurbpatch_object *np)
@@ -9901,6 +9905,13 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
 		        patch->uorder-1, patch->uknotv, patch->controlv, u, k,
 		        s, r, newknotv, newcontrolv);
 
+	  if(ay_status)
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
+
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
 
@@ -10129,6 +10140,13 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
 			patch->width-1, patch->height-r-1,
 		        patch->vorder-1, patch->vknotv, patch->controlv, v, k,
 		        s, r, newknotv, newcontrolv);
+
+	  if(ay_status)
+	    {
+	      free(newknotv);
+	      free(newcontrolv);
+	      return ay_status;
+	    }
 
 	  free(patch->controlv);
 	  patch->controlv = newcontrolv;
