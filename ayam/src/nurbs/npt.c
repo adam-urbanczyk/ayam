@@ -1945,7 +1945,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
  ay_nurbcurve_object *nc = NULL;
  int i = 1, length = 0, ncurves = 0;
  int order = 0, knots = AY_KTNURB, type = AY_CTOPEN;
- int apply_trafo = AY_FALSE;
+ int apply_trafo = AY_TRUE;
 
   sel = ay_selection;
 
@@ -1965,7 +1965,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      switch(argv[i][1])
 		{
 		case 'a':
-		  apply_trafo = AY_TRUE;
+		  apply_trafo = AY_FALSE;
 		  i--;
 		  break;
 		case 'o':
