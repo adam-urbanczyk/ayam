@@ -1740,9 +1740,32 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 } /* ay_npt_breakintocurvestcmd */
 
 
-/* ay_npt_buildfromcurves:
+/** ay_npt_buildfromcurves:
  *  build a new patch from a number of (compatible) curves
  *
+ * \param[in] curves a list of compatible NURBS curve objects;
+ *  atleast two curves are required
+ * \param[in] ncurves number of curves in \a curves, also the
+ *  width of the new patch (if \a type is open)
+ * \param[in] type desired surface type (AY_CTOPEN, AY_CTCLOSED,
+ *  or AY_CTPERIODIC);
+ *  if the type is closed or periodic the first n curves will be copied
+ *  multiple times and the width of the new patch will be adapted
+ *  accordingly
+ * \param[in] order desired order of new patch in U; may be 0, in
+ *  which case a default value of 4 will be used;
+ *  will also be silently corrected to width, if the width is smaller than
+ *  the provided/chosen order
+ * \param[in] knot_type desired knot type of new patch in U;
+ *  if AY_KTCUSTOM is provided, the resulting patch will not have knots
+ *  for U and the caller must correct this
+ * \param[in] apply_trafo if AY_TRUE, the transformation attributes
+ *  of the curves will be applied to the respective control points;
+ *  otherwise the transformation atributes will be ignored and the
+ *  control points will be copied verbatim
+ * \param[in,out] patch new patch
+ *
+ * \returns AY_OK on success, error code otherwise.
  */
 int
 ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
@@ -1780,26 +1803,23 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
 
   if(order == 0)
     {
-      if(newwidth < 4)
-	newuorder = newwidth;
-      else
-	newuorder = 4;
+      newuorder = 4;
     }
   else
     {
-      if(order > newwidth)
-	newuorder = newwidth;
-      else
-	newuorder = order;
+      newuorder = order;
     }
-
-  newuknot_type = knot_type;
 
   if(type == AY_CTCLOSED)
     newwidth++;
 
   if(type == AY_CTPERIODIC)
     newwidth += newuorder-1;
+
+  if(newuorder > newwidth)
+    newuorder = newwidth;
+
+  newuknot_type = knot_type;
 
   newheight = nc->length;
   newvorder = nc->order;
@@ -1837,25 +1857,29 @@ ay_npt_buildfromcurves(ay_list_object *curves, int ncurves, int type,
   while(curve)
     {
       c = curve->object;
-      nc = (ay_nurbcurve_object*)c->refine;
-
-      memcpy(&(newcontrolv[i]), nc->controlv, newheight*stride*sizeof(double));
-
-      if(apply_trafo && AY_ISTRAFO(c))
+      if(c->type == AY_IDNCURVE)
 	{
-	  /* get curves transformation-matrix */
-	  ay_trafo_creatematrix(c, m);
-	  /* apply curves transformation-matrix */
-	  for(j = 0; j < newheight; j++)
+	  nc = (ay_nurbcurve_object*)c->refine;
+
+	  memcpy(&(newcontrolv[i]), nc->controlv,
+		 newheight*stride*sizeof(double));
+
+	  if(apply_trafo && AY_ISTRAFO(c))
 	    {
-	      ay_trafo_apply3(&(newcontrolv[i]), m);
-	      i += stride;
-	    } /* for */
-	}
-      else
-	{
-	  i += newheight*stride;
-	}
+	      /* get curves transformation-matrix */
+	      ay_trafo_creatematrix(c, m);
+	      /* apply curves transformation-matrix */
+	      for(j = 0; j < newheight; j++)
+		{
+		  ay_trafo_apply3(&(newcontrolv[i]), m);
+		  i += stride;
+		} /* for */
+	    }
+	  else
+	    {
+	      i += newheight*stride;
+	    }
+	} /* if */
 
       curve = curve->next;
     } /* while */
@@ -1915,11 +1939,13 @@ int
 ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 			   int argc, char *argv[])
 {
- int ay_status = AY_OK;
+ int ay_status = AY_OK, tcl_status = TCL_OK;
  ay_list_object *sel = NULL, *curves = NULL, *new = NULL, **next = NULL;
  ay_object *o = NULL, *patch = NULL;
  ay_nurbcurve_object *nc = NULL;
- int length = 0, ncurves = 0, order = 0;
+ int i = 1, length = 0, ncurves = 0;
+ int order = 0, knots = AY_KTNURB, type = AY_CTOPEN;
+ int apply_trafo = AY_FALSE;
 
   sel = ay_selection;
 
@@ -1930,6 +1956,37 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
     }
 
   /* parse args */
+  if(argc > 1)
+    {
+      while(i < argc)
+	{
+	  if(argv[i] && argv[i][0] == '-')
+	    {
+	      switch(argv[i][1])
+		{
+		case 'a':
+		  apply_trafo = AY_TRUE;
+		  i--;
+		  break;
+		case 'o':
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  break;
+		case 'k':
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &knots);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  break;
+		case 't':
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &type);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
+		  break;
+		default:
+		  break;
+		} /* switch */
+	    } /* if */
+	  i+=2;
+	} /* while */
+    } /* if */
 
   /* parse selection */
   while(sel)
@@ -1963,13 +2020,13 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      next = &(new->next);
 
 	      ncurves++;
-	    }
+	    } /* if */
 	} /* if */
       sel = sel->next;
     } /* while */
 
-  ay_status = ay_npt_buildfromcurves(curves, ncurves, AY_CTOPEN, order,
-				     AY_KTNURB, AY_TRUE, &patch);
+  ay_status = ay_npt_buildfromcurves(curves, ncurves, type, order,
+				     knots, apply_trafo, &patch);
 
   if(ay_status || !patch)
     {
@@ -9925,6 +9982,10 @@ ay_npt_splitu(ay_object *src, double u, ay_object **result)
       np1 = patch;
       np1->utype = AY_CTOPEN;
       ay_status = ay_object_copy(src, &new);
+      if(ay_status || !new)
+	{
+	  return ay_status;
+	}
 
       if(r != 0)
 	np1len = k - (np1->uorder-1) + 1 + (patch->uorder-1-s+r-1)/2 + 1;
@@ -10161,6 +10222,10 @@ ay_npt_splitv(ay_object *src, double v, ay_object **result)
       np1 = patch;
       np1->vtype = AY_CTOPEN;
       ay_status = ay_object_copy(src, &new);
+      if(ay_status || !new)
+	{
+	  return ay_status;
+	}
 
       if(r != 0)
 	np1len = k - (np1->vorder-1) + 1 + (patch->vorder-1-s+r-1)/2 + 1;
@@ -10366,7 +10431,9 @@ ay_npt_extractnp(ay_object *src, double umin, double umax,
     {
       ay_status = ay_object_copy(src, &copy);
       if(ay_status || !copy)
-	return AY_ERROR;
+	{
+	  return AY_ERROR;
+	}
       patch = (ay_nurbpatch_object*)copy->refine;
 
       if(relative)
