@@ -141,9 +141,9 @@ ay_convert_forcetcmd(ClientData clientData, Tcl_Interp *interp,
 	      sel->object->modified = AY_TRUE;
 	      notify_parent = AY_TRUE;
 	    }
-	}
+	} /* if check or convert */
       sel = sel->next;
-    }
+    } /* while */
 
   if(notify_parent)
     {
