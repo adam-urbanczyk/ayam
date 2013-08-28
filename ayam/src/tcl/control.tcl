@@ -12,7 +12,7 @@
 # forAll_tree:
 #
 #
-proc forAll_tree { recursive command } {
+proc forAll_tree { recursive type command } {
     global ay i
 
     set tree $ay(tree)
@@ -40,7 +40,7 @@ proc forAll_tree { recursive command } {
 
 	# go down?
 	if { $recursive } {
-	    if { [hasChild] == 1} {
+	    if { [hasChild] == 1 } {
 		set index [$tree index $sel]
 		goDown $index
 		$tree selection clear
@@ -62,7 +62,13 @@ proc forAll_tree { recursive command } {
 		plb_update
 	    }
 	}
-
+	if { $type != "" } {
+	    set otype ""
+	    getType otype
+	    if { [string co -nocase $type $otype] } {
+		continue;
+	    }
+	}
 	catch {eval $command} retCode
 	if { $retCode == -1 } {
 	    return -1;
@@ -77,7 +83,7 @@ proc forAll_tree { recursive command } {
 # forAll_lb
 #
 #
-proc forAll_lb { recursive command } {
+proc forAll_lb { recursive type command } {
     global ay i
 
     set lb $ay(olb)
@@ -101,7 +107,7 @@ proc forAll_lb { recursive command } {
 
 	# go down?
 	if { $recursive } {
-	    if { [hasChild] == 1} {
+	    if { [hasChild] == 1 } {
 		set templevel $ay(CurrentLevel)
 		append ay(CurrentLevel) ":$sel"
 		goDown $sel
@@ -128,11 +134,19 @@ proc forAll_lb { recursive command } {
 	$lb selection set $sel
 	selOb -lb $sel
 	plb_update
+	if { $type != "" } {
+	    set otype ""
+	    getType otype
+	    if { [string co -nocase $type $otype] } {
+		continue;
+	    }
+	}
 	catch {eval $command} retCode
 	if { $retCode == -1 } {
 	    return -1;
 	}
     }
+    # foreach
 
     uS
     plb_update
@@ -145,8 +159,24 @@ proc forAll_lb { recursive command } {
 # forAll:
 #
 #
-proc forAll { recursive command } {
+proc forAll { args } {
     global ay
+
+    if { [llength $args] < 1 } { return }
+
+    set command [lindex $args end]
+    set recursive 1
+    set type ""
+    foreach {key val} $args {
+	switch -- $key {
+	    -recursive {
+		set recursive $val
+	    }
+	    -type {
+		set type $val
+	    }
+	}
+    }
 
     if { $ay(lb) == 0 } {
 	set tree $ay(tree)
@@ -157,7 +187,7 @@ proc forAll { recursive command } {
 	set sel [$tree selection get]
 
 	# now call commands
-	catch {forAll_tree $recursive $command}
+	catch {forAll_tree $recursive $type $command}
 
 	# recover state of tree widget
 	eval [subst "$tree selection set $sel"]
@@ -170,192 +200,13 @@ proc forAll { recursive command } {
 	# redraw all views
 	rV
     } else {
-	forAll_lb $recursive $command
+	forAll_lb $recursive $type $command
     }
 
  return;
 }
 # forAll
 
-
-# forAllT_tree:
-#
-#
-proc forAllT_tree { type recursive command } {
-    global ay i
-
-    set tree $ay(tree)
-
-    set selection [$tree selection get]
-
-    if { $selection == "" } {
-	set sel [$tree nodes $ay(CurrentLevel)]
-	$tree selection set $sel
-	treeSelect $sel
-	set selection $sel
-    }
-
-    $tree selection clear
-    treeSelect ""
-    set i 0
-    foreach sel $selection {
-
-	incr i
-
-	$tree selection clear
-	$tree selection set $sel
-	treeSelect $sel
-	plb_update
-
-	# go down?
-	if { $recursive } {
-	    if { [hasChild] == 1} {
-		set index [$tree index $sel]
-		goDown $index
-		$tree selection clear
-		treeSelect ""
-		set oldclevel $ay(CurrentLevel)
-		set ay(CurrentLevel) $sel
-		set oldi $i
-		update
-		catch { forAllT_tree $type $recursive $command } retCode
-		if { $retCode == -1 } {
-		    return -1;
-		}
-		set i $oldi
-		goUp
-		set ay(CurrentLevel) $oldclevel
-		$tree selection clear
-		$tree selection set $sel
-		treeSelect $sel
-		plb_update
-	    }
-	}
-	global otype
-        set otype ""
-        getType otype
-        if { [string tolower $type] == [string tolower $otype] } {
-	    catch { eval $command } retCode
-	    if { $retCode == -1 } {
-		    return -1;
-	    }
-        }
-    }
-
- return;
-}
-# forAllT_tree
-
-
-# forAllT_lb:
-#
-#
-proc forAllT_lb { type recursive command } {
-    global ay i
-
-    set lb $ay(olb)
-
-    set selection [$lb curselection]
-
-    if { $selection == "" } {
-	$lb selection set 1 end
-	set selection [$lb curselection]
-    }
-    $lb selection clear 0 end
-    selOb
-    set i 0
-    foreach sel $selection {
-
-	incr i
-	$lb selection clear 0 end
-	$lb selection set $sel
-	selOb -lb $sel
-	plb_update
-
-	# go down?
-	if { $recursive } {
-	    if { [hasChild] == 1} {
-		set templevel $ay(CurrentLevel)
-		append ay(CurrentLevel) ":$sel"
-
-		goDown $sel
-		uS
-		$lb selection clear 0 end
-		selOb
-		set oldi $i
-		update
-		catch {forAllT_lb $type $recursive $command} retCode
-		if { $retCode == -1 } {
-		    return -1;
-		}
-		set i $oldi
-		goUp
-		uS
-		$lb selection set $sel
-		selOb -lb $sel
-		plb_update
-		set ay(CurrentLevel) $templevel
-	    }
-	}
-
-	$lb selection clear 0 end
-	$lb selection set $sel
-	selOb -lb $sel
-	plb_update
-
-	global otype
-        set otype ""
-        getType otype
-        if { [string tolower $type] == [string tolower $otype] } {
-            catch {eval $command} retCode
-	    if { $retCode == -1 } {
-		return -1;
-	    }
-        }
-    }
-
-    uS
-    plb_update
-
- return;
-}
-# forAllT_lb
-
-
-# forAllT:
-#
-#
-proc forAllT { type recursive command } {
-    global ay
-
-    if { $ay(lb) == 0 } {
-	set tree $ay(tree)
-
-	# save current state of tree widget
-	set clevel $ay(CurrentLevel)
-	set slevel $ay(SelectedLevel)
-	set sel [$tree selection get]
-
-	# now call commands
-	catch {forAllT_tree $type $recursive $command}
-
-	# recover state of tree widget
-	eval [subst "$tree selection set $sel"]
-	eval [subst "treeSelect $sel"]
-	plb_update
-	set ay(CurrentLevel) $clevel
-	set ay(SelectedLevel) $slevel
-	set ay(DropActive) 0
-
-	# redraw all views
-	rV
-    } else {
-	forAllT_lb $type $recursive $command
-    }
-
- return;
-}
-# forAllT
 
 # allow cancelling of user Tcl-scripts in the console
 
@@ -625,8 +476,9 @@ proc selAdd { ud } {
 	# if
     }
     # if tree or lb
-  break;
+    break;
   }
+  # while 1
  set ay(sellock) 0
  return;
 }
@@ -765,7 +617,6 @@ proc selNPFL { npfl } {
 	    # if
 	}
 	# if
-
     }
     # if
 

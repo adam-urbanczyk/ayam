@@ -102,7 +102,7 @@ proc pclip_paste { } {
 
 	undo save "PasteProp"
 
-	forAll 0 {
+	forAll -recursive 0 {
 	    global ay pclip_prop curtypes
 	    if { $ay(lb) == 1 } {
 		set olb $ay(olb)

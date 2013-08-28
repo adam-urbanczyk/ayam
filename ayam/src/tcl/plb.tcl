@@ -705,7 +705,7 @@ proc plb_addremprop { {rem 0} } {
 	# remove operation, compile list of
 	# candidates for removal
 	array set AllProps {}
-	forAll 0 {
+	forAll -recursive 0 {
 	    global AllProps
 	    getType type
 
@@ -734,7 +734,7 @@ proc plb_addremprop { {rem 0} } {
 	# add operation, compile list of
 	# candidates for addition
 	array set AllProps { Caps 1 Bevels 1}
-	forAll 0 {
+	forAll -recursive 0 {
 	    global AllProps
 	    set tagnames ""
 	    set tagvalues ""

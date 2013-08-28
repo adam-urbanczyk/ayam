@@ -509,7 +509,7 @@ proc prop_addrem { } {
     global AddRemProp
 
     if { $AddRemProp(Property) != "" } {
-	forAll 0 {
+	forAll -recursive 0 {
 	    global AddRemProp
 
 	    set tagnames ""
