@@ -1,5 +1,5 @@
-[7. Aug 2013] CVS-Head:
-=======================
+[28. Aug 2013] CVS-Head:
+========================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -21,20 +21,21 @@ o getPnt/setPnt for IPatch (SF 488)
 Modelling:
 o added "Compatible" option to ConcatNP objects, to prevent unwanted
   modifications by clamping for already compatible parameter surfaces
-o added cap type "Simple"
-o added cap type "SimpleInt" for simple caps that integrate into the surface
-  to be capped
+o Cap and Bevel options are now controlled via own property GUIs
+o added cap types "Simple" and "Simple3D" that both create a simple
+  surface that runs towards the center point of the surface
 o added bevel option "Integrate" to combine the bevel with the surface
   to be beveled
-o Cap and Bevel options are now controlled via own property GUIs
+o added cap option "Integrate" to combine the cap with the surface
+  to be capped (or the respective bevel, if there is one in between)
 o Caps and Bevels are now available for many more object types,
   e.g. IPatch, NPatch, ConcatNP, Birail1, Birail2, Skin...
 o added 3D bevel mode controlled via normals and tangents e.g. extracted
   from a surface by an ExtrNC object
 o added bevel mode that rounds to the cap also using tangent information
 o Bevel orientations are now consistent (independent from curve winding)
-o Bevels from simple closed or periodic curves are now also guaranteed
-  to be closed or periodic, respectively
+o Bevels from simple closed or periodic curves are now guaranteed to be
+  closed or periodic also
 o added C1 fillets based on global interpolation with end derivatives to
   the ConcatNC object (C1 mode is activated by setting the FTLength parameter
   to 0.0)
@@ -111,6 +112,8 @@ o walking up in the object hierarchy via the object listbox now selects
 o the UI of the tesselation tool has been improved (the SaveToTag option
   is now a major "Save" button)
 o <Ctrl+h> now toggles the hide attribute (instead of just setting it)
+o the standard console prompt now also displays the name of the modelling
+  action that can be repeated (via menu "Tools/Repeat", <Ctrl-t>)
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -146,6 +149,15 @@ o added commands to generate face and smooth PolyMesh normals:
 o the "getPnt" command now supports evaluation for objects that provide
   NURBS curves/surfaces
 o added example Script object script "tcone.tcl" that creates truncated cones
+o improved the notification mechanism for Script object scripts
+o added "-check" option to convOb allowing to test beforehand whether a
+  conversion to a given type would be successful
+o improved options of "forAll" procedure, they are now more easy to
+  recognize
+o removed forAllT procedure, use forAll with "-type" option instead
+o tonpatch.tcl/topoly.tcl now work with more object types (e.g. Script, Mirror)
+o added options to "buildNP" that allow to control order, knot type, and
+  surface type
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
