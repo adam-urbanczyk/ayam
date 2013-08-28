@@ -693,7 +693,7 @@ Another simple demonstration of the consoles capabilities:
 <item>Select all ten boxes.
 <item>Go to the console by clicking into it.
 <item>Enter the following:
-<tt>forAll 0 &lcub;movOb &dollar;i 0 0; rotOb &lsqb;expr &dollar;i*10&rsqb; 0 0&rcub;</tt>
+<tt>forAll &lcub;movOb &dollar;i 0 0; rotOb &lsqb;expr &dollar;i*10&rsqb; 0 0&rcub;</tt>
 </itemize>
 <p>
 This example uses three procedures:
@@ -9941,8 +9941,8 @@ object from the world origin in X (Y, Z) direction.
 
 <item><tt/"Rotate_X (_Y, _Z)"/ is the angle (in degrees)
 of the rotation of the object around the X (Y, Z) axis.
-Read the next section for more information on how to use these
-entries. Read it!
+See below for more information on how to use these
+entries.
 <item><tt/"Quaternion"/ the quaternion that is used to determine
 the orientation of the object in space.
 
@@ -9956,8 +9956,8 @@ Scale, Rotation, Translation.
 How to use the rotation attributes?<label id="gimb">
 <p>
 The orientation of an object in space may be expressed using
-so called Euler angles. This notation (simply three angles
-determining a rotation about the axes of the coordinate system)
+so called Euler angles. This notation (simply three angles determining
+a rotation about the principal axes of the coordinate system)
 suffers from a phenomenon called gimbal lock.
 <p>
 To avoid gimbal locks, Ayam internally holds the orientation
@@ -9968,24 +9968,20 @@ but also about the order in which partial rotations occured.
 It is important to know, that the values of the angles of
 the rotation property must not be read in a way that
 the object will first be rotated around X by x-angle degrees
-then around Y y-angle degrees then around Z z-angle degrees.
+then around Y by y-angle degrees then around Z by z-angle degrees.
 In fact, no information about the order in which partial
 rotations occured may be derived from that three values.
-This implies, that e.g.~the values 0 0 45 may denote
-a different orientation than the very same values
-0 0 45 (no joke)!
-<p>
-But how do you get the three entries to do what you want?
-You either want to rotate the object around an axis by a given
-amount or you want to undo a rotation or undo all rotations.
+This implies, that e.g.~the values 0 0 45 may actually denote
+a different orientation than the very same values 0 0 45.
 <p>
 Rotating an object is easy, simply <em>add</em> the amount about
-which you want to rotate the object to the value currently
-displayed in the appropriate entry. If you want to rotate
-about 45 degrees about X and the x-angle entry displays a 30,
-enter 75.
+which the object shall be rotated to the value currently
+displayed in the appropriate entry.
+<p>
+For example, if an object is to be rotated 45 degrees about X and the
+x-angle entry displays a 30, enter 75.
 Then press the apply button.<newline>
-If you change multiple entries the rotations made will be
+If multiple entries are changed the rotations made will be
 in the order X (if changed) then Y (if changed) then Z (if changed).
 Do not change more than one entry at once unless you exactly
 know what you are doing.
@@ -9993,16 +9989,17 @@ know what you are doing.
 Undoing a single rotation works in the same way, just use a subtraction
 instead of an addition.
 <p>
-Undoing all rotations (resetting the object to its original state)
+Undoing all rotations (resetting the object to its original orientation)
 is simple too: enter 0 for all three entries at once,
 then press apply.
 <p>
-If you want to copy just the orientation of an object to other objects
-using the property clipboard, mark/select all Translate and Scale
-property elements, then use <tt>"Edit/Copy Property"</tt>.
+To copy just the orientation of an object to other objects
+using the property clipboard, all Translate and Scale
+property elements should be marked/selected via double clicks,
+then <tt>"Edit/Copy Property"</tt> can be used.
 Just marking the Rotate elements and then using
 <tt>"Edit/Copy Marked Prop"</tt>
-will <em>not</em> work, because the quaternion will not be copied
+will <em>not</em> work, because then the quaternion will not be copied
 properly.
 
 <sect2>Attributes Property<label id="attrs"><label id="attributesprop">
@@ -13152,21 +13149,6 @@ the first two objects in the current level.
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scwithob">
-withOb &ndash; execute a command on certain selected object(s):
-<itemize>
- <item>Synopsis: <tt/"withOb index [do] command"/
- <item>Background: depends on command, Undo: depends on command, Safe: Yes
- <item>Description: Use this command to execute command on a
-single object (designated by index) from a multiple selection
-without changing the selection state of any objects.
- <item>Example: <tt>"withOb 2 {movOb 0 1 0}"</tt> moves the third
-object from multiple selected objects. All objects stay selected.
-</itemize>
-
-<p>
-<#if out=latex><x/phantomsection/</#if>
-
 <label id="scsl">
 sL &ndash; select last object:
 <itemize>
@@ -13718,6 +13700,7 @@ In Ayam versions prior to 1.18 it was an error if the curve was already
 clamped at either side, this is no longer the case.
 Furthermore, curves with multiple knots in the end region(s) could not be
 clamped, this works ok now.
+<p>
 See also section <ref id="clat" name="Clamp Tool">.
 </itemize>
 
@@ -13726,7 +13709,7 @@ See also section <ref id="clat" name="Clamp Tool">.
 
 <label id="scunclampnc">
 <itemize>
- <item>Synopsis: <tt/"unclampNC [-s|-e]"/
+ <item>Synopsis: <tt/"unclampNC [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the knot vector of the selected NURBS curves
 without changing the shape of the curves.
@@ -13736,6 +13719,7 @@ If the side parameter is omitted, both sides
 are unclamped.
 If the side parameter is <tt/"-s"/ only the start, and if it is <tt/"-e"/
 only the end is unclamped.
+<p>
 See also section <ref id="unclat" name="Unclamp Tool">.
 </itemize>
 
@@ -13745,11 +13729,12 @@ See also section <ref id="unclat" name="Unclamp Tool">.
 <label id="scextendnc">
 extendNC &ndash; extend NURBS curve:
 <itemize>
- <item>Synopsis: <tt/"extendNC (x y z (w)|-vn varname|-m)"/
+ <item>Synopsis: <tt/"extendNC (x y z (w) | -vn varname | -m)"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Extend the selected NURBS curves to a given
 point or to the mark without changing the current shape of
 the curve.
+<p><p>
 See also section <ref id="extendt" name="Extend Tool">.
 </itemize>
 
@@ -13764,6 +13749,7 @@ elevateNC &ndash; elevate NURBS curve:
  <item>Description: Elevate the order of the selected NURBS curves
 without changing the shape of the curves by n.
 The knot type of the elevated curves will be changed to <tt/"Custom"/.
+<p><p>
 See also section <ref id="elevt" name="Elevate Tool">.
 </itemize>
 
@@ -13782,6 +13768,7 @@ the current knot vector U as follows: <tt/U[p] <= u <= U[n]/, where
 p is the degree (order-1) of the curve and n is the length of the curve.
 The knot type of the curves will always be changed to custom but
 the shape of the curves will not change.
+<p>
 See also section <ref id="insknt" name="Insert Knot Tool">.
 </itemize>
 
@@ -13806,6 +13793,7 @@ tol is specified. If tol is specified the new curve does not deviate
 from the original curve more than tol in any point on the curve.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original curve is left unchanged.
+<p>
 See also section <ref id="remknt" name="Remove Knot Tool">.
 </itemize>
 
@@ -13822,6 +13810,7 @@ without changing the shape of the curve with n new knots {u1 u2 un}
 or refine the control vector (if <tt/"-cv"/ option is given).
 If no list of new knots is given a new knot is inserted into each interval
 in the old knot vector.
+<p><p>
 See also section <ref id="refit" name="Refine Tool">.
 </itemize>
 
@@ -13835,6 +13824,7 @@ coarsenNC &ndash; coarsen NURBS curve:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Remove every second control point from the
 selected NURBS curves.
+<p><p>
 See also section <ref id="coart" name="Coarsen Tool">.
 </itemize>
 
@@ -13848,6 +13838,7 @@ revertC &ndash; revert curves:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected NURBS,
 interpolating, and approximating curves.
+<p><p>
 See also section <ref id="revertt" name="Revert Tool">.
 </itemize>
 
@@ -13861,6 +13852,7 @@ revertuS &ndash; revert surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the u parametric dimension.
+<p><p>
 See also section <ref id="revertut" name="Revert U Tool">.
 </itemize>
 
@@ -13874,6 +13866,7 @@ revertvS &ndash; revert surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Revert the direction of the selected surfaces in
 the v parametric dimension.
+<p><p>
 See also section <ref id="revertvt" name="Revert V Tool">.
 </itemize>
 
@@ -13887,6 +13880,7 @@ swapuvS &ndash; swap dimensions of surfaces:
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Swap the dimensions of the selected surfaces, thus
 exchanging width and height (without altering the shape of the surfaces).
+<p><p>
 See also section <ref id="swapuvt" name="Swap UV Tool">.
 </itemize>
 
@@ -13910,6 +13904,7 @@ not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 <p>
 This operation does not change the shape of the curve.
+<p>
 See also section <ref id="resckrt" name="Rescale Knots to Range Tool">.
 </itemize>
 
@@ -13924,6 +13919,7 @@ splitNC &ndash; split NURBS curve
  <item>Description: splits the selected NURBS curve at designated parametric
 value into two curves, creating one new curve and
 <em>modifying the original</em> selected curve.
+<p><p>
 See also section <ref id="splitt" name="Split Tool">.
 </itemize>
 
@@ -13942,6 +13938,7 @@ For a simple closed curve, shifting with i=1, the first control point will get
 the coordinates of the former last control point. This means, positive shifts
 occur in the direction of the curve. Note that for closed and periodic
 NURBS curves, the multiple points will be managed correctly.
+<p><p>
 See also section <ref id="shiftclc" name="Shift Closed Curve Tool">.
 </itemize>
 
@@ -13954,7 +13951,9 @@ toXYC &ndash; move curve to XY plane
  <item>Synopsis: <tt/"toXYC"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: moves the control points of the selected NCurve,
-ACurve, and ICurve objects to their respective XY plane.
+ACurve, and ICurve objects to their respective XY plane, modifying
+the transformation attributes accordingly.
+<p><p>
 See also section <ref id="toxyt" name="To XY Tool">.
 </itemize>
 
@@ -13968,6 +13967,7 @@ trimNC &ndash; trim NURBS curve
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: trims the selected NURBS curve to the designated
 parametric range (umin-umax), modifying the original selected curve.
+<p><p>
 See also section <ref id="ctrimt" name="Curve Trim Tool">.
 </itemize>
 
@@ -14021,6 +14021,7 @@ makeCompNC &ndash; make NURBS curves compatible
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: makes the selected NURBS curves compatible
 i.e.~of the same order and defined on the same knot vector.
+<p><p>
 See also section <ref id="makecompt" name="Make Compatible Tool">.
 </itemize>
 
@@ -14047,6 +14048,7 @@ In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
+<p>
 See also section <ref id="clanpt" name="Patch Clamp Tool">.
 </itemize>
 
@@ -14073,6 +14075,7 @@ In Ayam versions prior to 1.18 it was an error if the patch was already
 clamped at either side, this is no longer the case.
 Furthermore, patches with multiple knots in the end region(s) could not be
 clamped, this works ok now.
+<p>
 See also section <ref id="clanpt" name="Patch Clamp Tool">.
 </itemize>
 
@@ -14082,7 +14085,7 @@ See also section <ref id="clanpt" name="Patch Clamp Tool">.
 <label id="scunclampunp">
 unclampuNP &ndash; unclamp NURBS patch in U direction:
 <itemize>
- <item>Synopsis: <tt/"unclampuNP [-s|-e]"/
+ <item>Synopsis: <tt/"unclampuNP [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the U direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -14102,7 +14105,7 @@ See also section <ref id="unclanpt" name="Patch Unclamp Tool">.
 <label id="scunclampvnp">
 unclampvNP &ndash; unclamp NURBS patch in V direction:
 <itemize>
- <item>Synopsis: <tt/"unclampvNP [-s|-e]"/
+ <item>Synopsis: <tt/"unclampvNP [-s | -e]"/
  <item>Background: Yes, Undo: Yes, Safe: Yes
  <item>Description: Unclamp the V direction knot vector of the selected NURBS
 patches without changing the shape of the patches.
@@ -14136,6 +14139,7 @@ Since Ayam 1.20 the knot type of the curve does
 not have to be <tt/"Custom"/ anymore. Furthermore, rescaling the knots
 does not change the knot type.
 This operation does not change the shape of the patch.
+<p><p>
 See also sections
 <ref id="resckrnpt" name="Patch Rescale Knots to Range Tool">
 and
@@ -14160,6 +14164,7 @@ p is the degree (order-1) of the patch in U direction and n is the
 width of the patch.
 The u knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
+<p><p>
 See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
@@ -14179,6 +14184,7 @@ p is the degree (order-1) of the patch in V direction and n is the
 height of the patch.
 The v knot type of the patches will always be changed to <tt/"Custom"/ but
 the shape of the patches will not change.
+<p><p>
 See also section <ref id="insknnpt" name="Patch Insert Knot Tool">.
 </itemize>
 
@@ -14201,6 +14207,7 @@ tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
+<p><p>
 See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 </itemize>
 
@@ -14223,6 +14230,7 @@ tol is specified. If tol is specified, the new surface does not deviate
 from the original surface more than tol in any point.
 If the knot can not be removed r times due to the tolerance, an
 error is reported and the original surface is left unchanged.
+<p><p>
 See also section <ref id="remknts" name="Patch Remove Knot Tool">.
 </itemize>
 
@@ -14237,6 +14245,7 @@ refineuNP &ndash; refine NURBS surface in U direction:
  <item>Description: Refine the selected NURBS surfaces in u direction
 without changing their shape.
 The u knot type of the refined surfaces may be changed to <tt/"Custom"/.
+<p><p>
 See also section <ref id="refinest" name="Refine Surface Tool">.
 </itemize>
 
@@ -14251,6 +14260,7 @@ refinevNP &ndash; refine NURBS surface in V direction:
  <item>Description: Refine the selected NURBS surfaces in v direction
 without changing their shape.
 The v knot type of the refined surfaces may be changed to <tt/"Custom"/.
+<p><p>
 See also section <ref id="refinest" name="Refine Surface Tool">.
 </itemize>
 
@@ -14265,6 +14275,7 @@ elevateuNP &ndash; elevate NURBS surface in U direction:
  <item>Description: Elevate the u order of the selected NURBS surfaces
 without changing the shape of the surfaces by n.
 The u knot type of the elevated surfaces will be changed to <tt/"Custom"/.
+<p><p>
 See also section <ref id="elevuvt" name="Elevate UV Tool">.
 </itemize>
 
@@ -14279,6 +14290,7 @@ elevatevNP &ndash; elevate NURBS surface in V direction:
  <item>Description: Elevate the v order of the selected NURBS surfaces
 without changing the shape of the surfaces by n.
 The v knot type of the elevated surfaces will be changed to <tt/"Custom"/.
+<p><p>
 See also section <ref id="elevuvt" name="Elevate UV Tool">.
 </itemize>
 
@@ -14295,6 +14307,7 @@ at parametric value u.
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
+<p><p>
 See also section <ref id="splitnpt" name="Patch Split Tools">.
 </itemize>
 
@@ -14311,6 +14324,7 @@ at parametric value v.
 The selected NPatch will be modified and a new NPatch object will
 be created and appended as new object to the
 current level of the scene.
+<p><p>
 See also section <ref id="splitnpt" name="Patch Split Tools">.
 </itemize>
 
@@ -14327,6 +14341,7 @@ objects. The extracted patch will be appended as new object to the
 current level of the scene. The sub-patch to be extracted is specified
 by the parametric values umin, umax,
 vmin, and vmax which have to be in the respective valid knot range.
+<p><p>
 See also section <ref id="extrnpt" name="Extract Patch Tool">.
 </itemize>
 
@@ -14407,7 +14422,7 @@ single NURBS patch. The option <tt/"-o"/ determines the desired order
 of the surface in U direction. The option <tt/"-t"/ allows to set a
 surface type
 (0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
-<tt/"-k"/ allows to set a knot type (default 1 - NURB).
+<tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
 Finally, the <tt/"-u"/ option allows to specify the uv-select-string.
 See also section <ref id="concatnpp" name="ConcatNPAttr Property">
 for more information on these options.
@@ -14419,14 +14434,18 @@ for more information on these options.
 <label id="scbreaknp">
 breakNP &ndash; break NURBS patch into curves:
 <itemize>
- <item>Synopsis: <tt/"breakNP [-a|-u|-v]"/
+ <item>Synopsis: <tt/"breakNP [-a | (-u | -v)]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Breaks the selected NPatch objects into NURBS curves,
-along parametric dimension U or V. If the option <tt/"-a"/ is given,
-the transformations of the NPatch objects will be applied to the
-control points and the NCurve objects will be created with default
-transformation attributes, otherwise the NCurve objects will get the
-transformation attributes of the respective NPatch.
+along parametric dimension U or V (depending on whether the option
+<tt/"-u"/ or <tt/"-v"/ is specified, default is u).
+<p><p>
+If the option <tt/"-a"/ is omitted, the transformations of the NPatch
+objects will be applied to the control points and the NCurve objects
+will be created with default transformation attributes, otherwise the
+control points will be copied verbatim and the NCurve objects will get
+the transformation attributes of the respective NPatch.
+<p>
 See also section <ref id="breaknpt" name="Break into Curves Tool">.
 </itemize>
 
@@ -14434,11 +14453,25 @@ See also section <ref id="breaknpt" name="Break into Curves Tool">.
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scbuildnp">
-buildNP &ndash; build NURBS patch:
+buildNP &ndash; build NURBS patch from curves:
 <itemize>
- <item>Synopsis: <tt/"buildNP"/
+ <item>Synopsis: <tt/"buildNP [-a (0|1) | -o order | -t type | -k knottype]"/
  <item>Background: Yes, Undo: No, Safe: Yes
  <item>Description: Builds a NURBS patch from the selected NURBS curves.
+The width of the new patch depends on the number of provided curves
+and the surface type.
+<p><p>
+The option <tt/"-a"/ controls, whether the transformation attributes
+of the NURBS curves shall be applied to the respective control points
+before building the patch (default 1 &ndash; yes).
+<p>
+The option <tt/"-o"/ determines the desired order of the surface in U
+direction (default <f/min(4,width)/).
+<p>
+The option <tt/"-t"/ allows to set a surface type
+(0 &ndash; open, 1 &ndash; closed, 3 &ndash; periodic; default 0), and
+the option <tt/"-k"/ allows to set a knot type (default 1 &ndash; NURB).
+<p>
 See also section <ref id="buildnpt" name="Build from Curves Tool">.
 </itemize>
 
@@ -14731,70 +14764,62 @@ Ayam.
 
 <sect2>Applying Commands to a Number of Objects<label id="scifall">
 <p>
-There are two procedures that help to apply arbitrary commands
-to a number of objects, forAll and forAllT:
+These procedures and commands help to apply arbitrary commands
+to a number of selected objects.
+
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
 <label id="scforall">
 forAll:
 <itemize>
- <item>Synopsis: <tt>"forAll recursive command"</tt>
+ <item>Synopsis: <tt>"forAll [-recursive r | -type t] command"</tt>
  <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
  <item>Description: The forAll procedure executes command for all
 objects that have been selected currently, or for every object
-of the current level if nothing has been selected. If recursive
-is 1 then forAll will recurse into every object (if it has child objects)
-before the execution of command. Note that forAll will run
-slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g.~the property context menu first.
+of the current level if nothing has been selected.
+<p><p>
+If recursive is 1 (this is the default) then forAll will recurse into
+every object (if it has child objects) before the execution of command.
+<p>
+If the <tt/"-type"/ option is given, only objects of the specified type
+will be processed.
+<p>
+Note that forAll will run slowly if a property GUI is displayed.
+By de-selecting the property using e.g.~the property context menu first,
+it will run much faster.
+<p>
+Since Ayam 1.9 forAll correctly maintains the current selection.
  <item>Deficiencies:
  <itemize>
   <item>A recursive forAll will
 e.g.~also descend into NURBS patches (if they have trim curves) and apply
 the command to the trim curves, which might not exactly be what you
-want. Use <tt>"forAllT"</tt> in this case.
+want. Use the <tt/"-type"/ option in this case.
   <item>The command will not have access to global arrays unless
 e.g.~one of the following constructs is in use:
 <p><p>
-<tt>"forAll 0 &lcub; uplevel &num;0 &lcub; commands &rcub; &rcub;"</tt><p>
-<tt>"forAll 0 &lcub; global arrayname; commands &rcub;"</tt><p>
+<tt>"forAll &lcub; uplevel &num;0 &lcub; commands &rcub; &rcub;"</tt><p>
+<tt>"forAll &lcub; global arrayname; commands &rcub;"</tt><p>
   <item>It is not possible to use commands that change the object
 hierarchy (e.g.~deleting or inserting objects). The commands
-may just modify existing objects. Since Ayam 1.9 <tt>"forAll"</tt>
-correctly maintains the current selection.
+may just modify existing objects.
  </itemize>
 </itemize>
 
 <p>
 <#if out=latex><x/phantomsection/</#if>
 
-<label id="scforallt">
-forAllT:
+<label id="scwithob">
+withOb &ndash; execute a command on certain selected object(s):
 <itemize>
- <item>Synopsis: <tt>"forAllT type recursive command"</tt>
- <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
- <item>Description: forAllT works the same way as forAll, with an
-additional type check. The command will not be executed if the type of the
-current object does not match the argument type. Note that forAllT will run
-slowly if a property GUI is displayed. You can make it run faster
-by de-selecting the property using e.g.~the property context menu first.
-<p><p>
-Note that the type strings will be converted to lowercase before
-comparison, so that it is legal to use forAllT e.g.~this way:
-<p><tt>"forAllT ncurve 0 &lcub;puts $i&rcub;"</tt><p>
- <item>Deficiencies:
- <itemize>
-  <item>The command will not have access to global arrays unless
-e.g.~one of the following constructs is in use:
-<p><p>
-<tt>"forAllT ncurve 0 &lcub;uplevel &num;0 &lcub;commands&rcub; &rcub;"</tt><p>
-<tt>"forAllT ncurve 0 &lcub; global arrayname; commands &rcub;"</tt><p>
-  <item>It is not possible to use commands that change the object
-hierarchy (e.g.~deleting or inserting objects). The commands
-may just modify existing objects. Since Ayam 1.9 <tt>"forAllT"</tt>
-correctly maintains the current selection.
- </itemize>
+ <item>Synopsis: <tt/"withOb index [do] command"/
+ <item>Background: depends on command, Undo: depends on command, Safe: Yes
+ <item>Description: Use this command to execute command on a
+single object (designated by index) from a multiple selection
+without changing the selection state of any objects.
+ <item>Example: <tt>"withOb 2 {movOb 0 1 0}"</tt> moves the third
+object from multiple selected objects. All objects stay selected.
 </itemize>
 
 
@@ -15016,11 +15041,18 @@ if { $ay_error > 1 } {
 <label id="scconvob">
 convOb:
 <itemize>
- <item>Synopsis: <tt>"convOb [-inplace]"</tt>
+ <item>Synopsis: <tt>"convOb [-inplace | -check type]"</tt>
  <item>Background: Yes, Undo: depends (if -inplace: Yes), Safe: Yes
  <item>Description: This command calls the registered converter
-for the selected object(s). If the option <tt>"-inplace"</tt> is
+for the selected object(s).
+<p><p>
+If the option <tt>"-inplace"</tt> is
 used, the new object(s) will replace the old object(s).
+<p>
+If the option <tt>"-check"</tt> is given, the convOb command does not
+convert but check, whether a conversion to a given object type would be
+successful, the result of the check will be returned as 0 &ndash; no,
+or 1 &ndash; yes.
 </itemize>
 
 <p>
@@ -15142,7 +15174,7 @@ proc placeOb { x y z } {
 In order to move all selected objects to 1 1 1 you may enter the
 following into the console:
 <code>
-forAll 0 {placeOb 1 1 1}
+forAll -recursive 0 {placeOb 1 1 1}
 </code>
 But perhaps you would rather like a small GUI for that?
 No problem, the following snippet adds an entry to the custom
@@ -15151,7 +15183,7 @@ calls the <tt/"placeOb"/ procedure (defined above) with them:
 <code>
 global ay
 $ay(cm) add command -label "Place Object" -command {
- runTool {x y z} {"X:" "Y:" "Z:"} "forAll 0 {placeOb %0 %1 %2}"
+ runTool {x y z} {"X:" "Y:" "Z:"} "forAll -recursive 0 {placeOb %0 %1 %2}"
  plb_update; rV
 }
 </code>
@@ -19313,7 +19345,7 @@ Index:
 <item>FlashPoints: <ref id="prefmodel" name="preference setting">
 <item>Flatness: <ref id="moattr" name="MetaObj attributes">
 <item>FontName: <ref id="textattr" name="Text attribute">
-<item>forAll, forAllT: <ref id="scforall" name="scripting interface command">
+<item>forAll: <ref id="scforall" name="scripting interface command">
 <item>Force Notification: <ref id="mmtools" name="main menu entry">
 <item>Formula: <ref id="mcattr" name="MetaComp attribute">
 <item>From:
