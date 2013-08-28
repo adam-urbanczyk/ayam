@@ -23,7 +23,7 @@ proc toNPatch { } {
 	}
 
 	tk_messageBox -title $t -type ok -icon warning -message $m
-	
+
 	return;
     }
     # if
@@ -31,18 +31,13 @@ proc toNPatch { } {
     $ay(plb) selection clear 0 end
     update
 
-    ayError 4 "toNPatch" "Starting conversion. Please wait."
+    ayError 4 "toNPatch" "Starting conversion, please wait."
 
     # block the UI
     tgui_block "Interaction restricted, please wait..."
 
     # do a "toNPatch"
-    set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
-		BPatch PatchMesh Revolve Extrude Sweep Birail1 Birail2 Skin \
-		Gordon Cap Bevel Text Swing }
-    foreach type $types {
-	forAllT $type 1 { convOb -inplace }
-    }
+    forAll { if { [convOb -check NPatch ] } { convOb -inplace } }
 
     # update scene structure
     uS
