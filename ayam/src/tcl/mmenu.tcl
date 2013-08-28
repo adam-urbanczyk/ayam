@@ -813,7 +813,7 @@ $m add command -label "Convert" -command {
 $m add command -label "Convert (In Place)" -command {
     global ay
     set ay(need_undo_clear) 0
-    forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
+    forAll -recursive 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
     if { $ay(need_undo_clear) == 0 } { undo save Convert }
     convOb -inplace; update
     if { $ay(need_undo_clear) } { undo clear }

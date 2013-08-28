@@ -370,7 +370,7 @@ proc tgui_addtag { } {
 
     undo save AddTPTag
 
-    forAll 0 {
+    forAll -recursive 0 {
 	global tgui_tessparam
 	set val [format "%d,%g,%g"\
 		     [expr $tgui_tessparam(SMethod) + 1]\
@@ -400,7 +400,7 @@ proc tgui_addtag { } {
 #
 proc tgui_remtag { } {
 
-    forAll 0 {
+    forAll -recursive 0 {
 	delTags "TP"
     }
     # forAll
@@ -543,7 +543,7 @@ proc tgui_open { } {
 
     # set up undo system
     set ::ay(need_undo_clear) 0
-    forAll 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
+    forAll -recursive 0 { if { [hasChild] } { set ::ay(need_undo_clear) 1 } }
 
     # read preferences from eventually present TP tag
     tgui_readtag

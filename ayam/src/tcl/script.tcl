@@ -238,14 +238,14 @@ cS
 plb_update
 
 # activate all script object scripts
-forAllT script 1 {
+forAll -type script {
     getScriptp
     set ::ScriptAttrData(Active) 1
     setScriptp
 }
 
 # activate script tags by renaming all DBNS/DANS tags to BNS/ANS tags
-forAll 1 {
+forAll {
     set tagnames ""; set tagvals ""
     getTags tagnames tagvals
     if { $tagnames != "" } {
