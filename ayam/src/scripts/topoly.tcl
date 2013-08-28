@@ -23,7 +23,7 @@ proc toPoly { } {
 	}
 
 	tk_messageBox -title $t -type ok -icon warning -message $m
-	
+
 	return;
     }
     # if
@@ -31,27 +31,22 @@ proc toPoly { } {
     $ay(plb) selection clear 0 end
     update
 
-    ayError 4 "toPoly" "Starting conversion. Please wait."
+    ayError 4 "toPoly" "Starting conversion, please wait."
 
     # block the UI
     tgui_block "Interaction restricted, please wait..."
 
     # do a "toNPatch"
-    set types { Box Sphere Cylinder Cone Disk Hyperboloid Torus Paraboloid \
-		BPatch PatchMesh Revolve Extrude Sweep Birail1 Birail2 Skin \
-		Gordon Cap Bevel Text Swing }
-    foreach type $types {
-	forAllT $type 1 { convOb -inplace }
-    }
+    forAll { if { [convOb -check NPatch ] } { convOb -inplace } }
 
     # update scene structure
     uS
 
-    # now convert to PolyMesh
-    forAllT NPatch 1 { convOb -inplace }
+    # now convert all NPatch objects to PolyMeshes
+    forAll -type NPatch 1 { convOb -inplace }
 
     # now convert MetaBalls to PolyMeshes
-    forAllT MetaObj 1 { convOb -inplace }
+    forAll -type MetaObj 1 { convOb -inplace }
 
     # unblock the UI
     tgui_unblock
