@@ -1685,7 +1685,7 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		  u = 1;
 		  break;
 		case 'v':
-		  u = 2;
+		  u = 0;
 		  break;
 		default:
 		  break;
@@ -1709,12 +1709,12 @@ ay_npt_breakintocurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	  if(u)
 	    {
 	      ay_status = ay_npt_breakintocurvesu(src, apply_trafo,
-						&curves, NULL);
+						  &curves, NULL);
 	    }
 	  else
 	    {
 	      ay_status = ay_npt_breakintocurvesv(src, apply_trafo,
-						&curves, NULL);
+						  &curves, NULL);
 	    } /* if */
 
 	  if(ay_status || !curves)
@@ -1965,8 +1965,8 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 	      switch(argv[i][1])
 		{
 		case 'a':
-		  apply_trafo = AY_FALSE;
-		  i--;
+		  tcl_status = Tcl_GetInt(interp, argv[i+1], &apply_trafo);
+		  AY_CHTCLERRRET(tcl_status, argv[0], interp);
 		  break;
 		case 'o':
 		  tcl_status = Tcl_GetInt(interp, argv[i+1], &order);
@@ -1984,7 +1984,7 @@ ay_npt_buildfromcurvestcmd(ClientData clientData, Tcl_Interp *interp,
 		  break;
 		} /* switch */
 	    } /* if */
-	  i+=2;
+	  i += 2;
 	} /* while */
     } /* if */
 
@@ -2617,7 +2617,10 @@ ay_npt_concat(ay_object *o, int type, int order,
 	    {
 	      /* this is a fillet patch => do not consume
 		 a character from uvselect */
-	      ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+	      ay_status = ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve,
+						  &nextcurve);
+	      if(ay_status)
+		goto cleanup;
 	    }
 	  else
 	    {
@@ -2634,7 +2637,10 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      order = np->vorder;
 		    }
 
-		  ay_npt_breakintocurvesv(o, AY_TRUE, nextcurve, &nextcurve);
+		  ay_status = ay_npt_breakintocurvesv(o, AY_TRUE, nextcurve,
+						      &nextcurve);
+		  if(ay_status)
+		    goto cleanup;
 		}
 	      else
 		{
@@ -2649,7 +2655,10 @@ ay_npt_concat(ay_object *o, int type, int order,
 		      order = np->uorder;
 		    }
 
-		  ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve, &nextcurve);
+		  ay_status = ay_npt_breakintocurvesu(o, AY_TRUE, nextcurve,
+						      &nextcurve);
+		  if(ay_status)
+		    goto cleanup;
 		} /* if */
 	      i++;
 	    } /* if */
