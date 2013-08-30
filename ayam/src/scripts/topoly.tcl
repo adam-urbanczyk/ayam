@@ -37,7 +37,7 @@ proc toPoly { } {
     tgui_block "Interaction restricted, please wait..."
 
     # do a "toNPatch"
-    forAll { if { [convOb -check NPatch ] } { convOb -inplace } }
+    forAll -r 2 { if { [convOb -check NPatch ] } { convOb -inplace } }
 
     # update scene structure
     uS
