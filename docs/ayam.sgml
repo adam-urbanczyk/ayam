@@ -14740,8 +14740,8 @@ setPrefs &ndash; set preferences data:
  <item>Synopsis: <tt/"setPrefs"/
  <item>Background: No, Undo: No, Safe: No
  <item>Description: Copy preferences data from the Tcl to the C context.
-This is necessary after a change to the global ayprefs Tcl array to let
-the changes take effect.
+This is necessary after a change to the global Tcl array <tt/"ayprefs"/
+to let all changes take effect.
 </itemize>
 
 
@@ -14753,7 +14753,7 @@ loadPlugin &ndash; load custom:
 <itemize>
  <item>Synopsis: <tt/"loadPlugin name"/
  <item>Background: No, Undo: No, Safe: No, Type: Procedure
- <item>Description: Load a custom object (plugin). If name is a complete
+ <item>Description: Load a custom object (plugin). If <tt/name/ is a complete
 filename and the designated file exists, it will be loaded directly.
 Otherwise, the file to load will be searched for in the list of configured
 plugin directories (see <tt/"Plugins"/ preference setting).
@@ -14773,17 +14773,19 @@ to a number of selected objects.
 <label id="scforall">
 forAll:
 <itemize>
- <item>Synopsis: <tt>"forAll [-recursive r | -type t] command"</tt>
+ <item>Synopsis: <tt>"forAll [(-recursive|-r) r | (-type|-t) t] command"</tt>
  <item>Background: depends, Undo: depends, Safe: No, Type: Procedure
  <item>Description: The forAll procedure executes command for all
 objects that have been selected currently, or for every object
 of the current level if nothing has been selected.
 <p><p>
-If recursive is 1 (this is the default) then forAll will recurse into
+If <tt/r/ is 1 (this is the default) then forAll will recurse into
 every object (if it has child objects) before the execution of command.
+If <tt/r/ is 2, the recursion will happen after the execution of command.
+If <tt/r/ is 0, only objects from the current level will be processed.
 <p>
 If the <tt/"-type"/ option is given, only objects of the specified type
-will be processed.
+<tt/t/ will be processed.
 <p>
 Note that forAll will run slowly if a property GUI is displayed.
 By de-selecting the property using e.g.~the property context menu first,
