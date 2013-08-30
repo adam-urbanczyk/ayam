@@ -9,8 +9,30 @@
 
 # control.tcl - new control structures
 
-# forAll_tree:
+# forAll_callcmd:
+#  helper for forAll
 #
+proc forAll_callcmd { cmd type } {
+
+    if { $type != "" } {
+	set otype ""
+	getType otype
+	if { [string co -nocase $type $otype] } {
+	    return 0;
+	}
+    }
+    catch {eval $cmd} retCode
+    if { $retCode == -1 } {
+	return -1;
+    }
+
+ return 0;
+}
+# forAll_callcmd
+
+
+# forAll_tree:
+#  helper for forAll
 #
 proc forAll_tree { recursive type command } {
     global ay i
@@ -38,6 +60,12 @@ proc forAll_tree { recursive type command } {
 	treeSelect $sel
 	plb_update
 
+	if { $recursive == 2 } {
+	    if { [forAll_callcmd $command $type] == -1 } {
+		return -1;
+	    }
+	}
+
 	# go down?
 	if { $recursive } {
 	    if { [hasChild] == 1 } {
@@ -49,7 +77,7 @@ proc forAll_tree { recursive type command } {
 		set ay(CurrentLevel) $sel
 		set oldi $i
 		update
-		catch {forAll_tree 1 $command} retCode
+		catch {forAll_tree $recursive $type $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
@@ -62,26 +90,22 @@ proc forAll_tree { recursive type command } {
 		plb_update
 	    }
 	}
-	if { $type != "" } {
-	    set otype ""
-	    getType otype
-	    if { [string co -nocase $type $otype] } {
-		continue;
+
+	if { $recursive != 2 } {
+	    if { [forAll_callcmd $command $type] == -1 } {
+		return -1;
 	    }
-	}
-	catch {eval $command} retCode
-	if { $retCode == -1 } {
-	    return -1;
 	}
     }
     # foreach
- return;
+
+ return 0;
 }
 # forAll_tree
 
 
 # forAll_lb
-#
+#  helper for forAll
 #
 proc forAll_lb { recursive type command } {
     global ay i
@@ -94,6 +118,7 @@ proc forAll_lb { recursive type command } {
 	$lb selection set 1 end
 	set selection [$lb curselection]
     }
+
     $lb selection clear 0 end
     selOb
     set i 0
@@ -104,6 +129,12 @@ proc forAll_lb { recursive type command } {
 	$lb selection set $sel
 	selOb -lb $sel
 	plb_update
+
+	if { $recursive == 2 } {
+	    if { [forAll_callcmd $command $type] == -1 } {
+		return -1;
+	    }
+	}
 
 	# go down?
 	if { $recursive } {
@@ -116,13 +147,14 @@ proc forAll_lb { recursive type command } {
 		selOb
 		set oldi $i
 		update
-		catch {forAll_lb 1 $command} retCode
+		catch {forAll_lb $recursive $type $command} retCode
 		if { $retCode == -1 } {
 		    return -1;
 		}
 		set i $oldi
 		goUp
 		uS
+		$lb selection clear 0 end
 		$lb selection set $sel
 		selOb -lb $sel
 		plb_update
@@ -130,20 +162,10 @@ proc forAll_lb { recursive type command } {
 	    }
 	}
 
-	$lb selection clear 0 end
-	$lb selection set $sel
-	selOb -lb $sel
-	plb_update
-	if { $type != "" } {
-	    set otype ""
-	    getType otype
-	    if { [string co -nocase $type $otype] } {
-		continue;
+	if { $recursive != 2 } {
+	    if { [forAll_callcmd $command $type] == -1 } {
+		return -1;
 	    }
-	}
-	catch {eval $command} retCode
-	if { $retCode == -1 } {
-	    return -1;
 	}
     }
     # foreach
@@ -151,27 +173,29 @@ proc forAll_lb { recursive type command } {
     uS
     plb_update
 
- return;
+ return 0;
 }
 # forAll_lb
 
 
 # forAll:
-#
+#  (recursively) call command for all (selected) objects
 #
 proc forAll { args } {
     global ay
 
-    if { [llength $args] < 1 } { return }
+    if { [llength $args] < 1 } { return; }
 
     set command [lindex $args end]
     set recursive 1
     set type ""
     foreach {key val} $args {
 	switch -- $key {
+	    -r -
 	    -recursive {
 		set recursive $val
 	    }
+	    -t -
 	    -type {
 		set type $val
 	    }
