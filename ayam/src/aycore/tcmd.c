@@ -63,7 +63,7 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
       return TCL_ERROR;
     }
 
-  if(!(*dl = calloc(*dllen, sizeof(double))))
+  if(!(*dl = malloc(*dllen*sizeof(double))))
     {
       return TCL_ERROR;
     }
@@ -73,6 +73,8 @@ ay_tcmd_convdlist(char *vname, int *dllen, double **dl)
       tcl_status = Tcl_GetDoubleFromObj(ay_interp, elemvPtr[i], &((*dl)[i]));
       if(tcl_status != TCL_OK)
 	{
+	  free(*dl);
+	  *dl = NULL;
 	  return TCL_ERROR;
 	}
     }
@@ -224,7 +226,6 @@ ay_tcmd_showtcmd(ClientData clientData, Tcl_Interp *interp,
 	    {
 	      val = -1;
 	    }
-
 	  /* -all */
 	  if(argv[i][0] == '-' && argv[i][1] == 'a')
 	    {
@@ -1461,6 +1462,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
  int tcl_status = TCL_OK, ay_status = AY_OK;
  ay_list_object *oldsel = ay_selection, *l = NULL;
  int i = 0, index = 0, commandindex = 3;
+ char args[] = "index [do] command";
 
   if(!oldsel)
     {
@@ -1470,7 +1472,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(argc < 3)
     {
-      ay_error(AY_EARGS, argv[0], "index [do] command");
+      ay_error(AY_EARGS, argv[0], args);
       return TCL_OK;
     }
 
@@ -1479,7 +1481,7 @@ ay_tcmd_withobtcmd(ClientData clientData, Tcl_Interp *interp,
 
   if(commandindex >= argc)
     {
-      ay_error(AY_EARGS, argv[0], "index [do] command");
+      ay_error(AY_EARGS, argv[0], args);
       return TCL_OK;
     }
 
