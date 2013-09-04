@@ -157,6 +157,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glEnable(GL_BLEND);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_LINE_SMOOTH);
+      glDepthMask(GL_FALSE);
     }
 
   if(view->drawlevel || view->type == AY_VTTRIM)
@@ -242,6 +243,11 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  if(view->type != AY_VTPERSP)
 	    {
 	      glClear(GL_DEPTH_BUFFER_BIT);
+	    }
+
+	  if(view->antialiaslines)
+	    {
+	      glDepthMask(GL_TRUE);
 	    }
 
 	  /* set size of points */
@@ -362,6 +368,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
     {
       glDisable(GL_BLEND);
       glDisable(GL_LINE_SMOOTH);
+      glDepthMask(GL_TRUE);
     }
 
  return AY_OK;
