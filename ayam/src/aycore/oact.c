@@ -14,6 +14,7 @@
 
 /* oact.c - object related interactive actions */
 
+static char ay_oact_lostmarkmsg[] = "Lost mark. Please restart this action!";
 
 /* ay_oact_parseargs:
  *  helper for all actions; check view type, check object selection,
@@ -559,8 +560,7 @@ ay_oact_rotatcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -1829,8 +1829,7 @@ ay_oact_sc1DXAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -2060,8 +2059,7 @@ ay_oact_sc1DYAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -2291,8 +2289,7 @@ ay_oact_sc1DZAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -2516,8 +2513,7 @@ ay_oact_sc2DAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -2708,8 +2704,7 @@ ay_oact_str2DAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
@@ -2759,8 +2754,7 @@ ay_oact_sc3DAcb(struct Togl *togl, int argc, char *argv[])
       /* if view->drawmark is not enabled some other action
 	 changed view trafos so that the point is not valid
 	 anymore and we should request a new point */
-      ay_error(AY_ERROR, fname,
-	       "Lost mark. Please restart this action!");
+      ay_error(AY_ERROR, fname, ay_oact_lostmarkmsg);
       return TCL_OK;
     }
 
