@@ -237,6 +237,9 @@ ay_ict_interpolateC2C(int length, double sdlen, double edlen, int param_type,
   ay_status = ay_nb_SolveTridiagonal(length-1, controlv, knotv,
 				     ncontrolv);
 
+  if(ay_status)
+    goto cleanup;
+
   /* copy results to 4D controlv */
   if(!(ncv4D = calloc(nlength*4, sizeof(double))))
     { ay_status = AY_EOMEM; goto cleanup; }
@@ -444,6 +447,8 @@ ay_ict_interpolateC2CClosed(int length, double sdlen, double edlen,
   /* solve the equation system */
   ay_status = ay_nb_SolveTridiagonal(length, ccontrolv, knotv, ncontrolv);
 
+  if(ay_status)
+    goto cleanup;
 
   /* copy results to 4D controlv */
   if(!(ncv4D = calloc(nlength*4, sizeof(double))))
