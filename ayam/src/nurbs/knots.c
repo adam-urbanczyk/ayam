@@ -75,9 +75,9 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
   switch(patch->uknot_type)
     {
     case AY_KTBEZIER:
-      for(i=0; i<uknot_count/2; i++)
+      for(i = 0; i < uknot_count/2; i++)
 	(patch->uknotv)[i] = 0.0;
-      for(i=uknot_count/2; i<uknot_count; i++)
+      for(i = uknot_count/2; i < uknot_count; i++)
 	(patch->uknotv)[i] = 1.0;
       break;
 
@@ -101,13 +101,13 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       break;
 
     case AY_KTNURB:
-      for(i=0; i<uorder; i++)
+      for(i = 0; i < uorder; i++)
 	(patch->uknotv)[i] = 0.0;
-      j=1;
+      j = 1;
       kts = 1 + uknot_count - (uorder*2);
-      for(i=uorder; i<=uknot_count-uorder; i++)
+      for(i = uorder; i <= uknot_count-uorder; i++)
 	(patch->uknotv)[i] = j++/(double)kts;
-      for(i=uknot_count-uorder; i<uknot_count; i++)
+      for(i = uknot_count-uorder; i < uknot_count; i++)
 	(patch->uknotv)[i] = 1.0;
       break;
 
@@ -132,7 +132,10 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	  j = 1;
 	  kts = 1 + uknot_count - (uorder*2);
 	  for(i = uorder; i <= uknot_count - uorder; i++)
-	    U[i] = j++/((double)kts);
+	    {
+	      U[i] = j/((double)kts);
+	      j++;
+	    }
 	  for(i = uknot_count - uorder; i < uknot_count; i++)
 	    U[i] = 1.0;
 	  break;
@@ -180,9 +183,9 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
   switch(patch->vknot_type)
     {
     case AY_KTBEZIER:
-      for(i=0; i<vknot_count/2; i++)
+      for(i = 0; i < vknot_count/2; i++)
 	(patch->vknotv)[i] = 0.0;
-      for(i=vknot_count/2; i<vknot_count; i++)
+      for(i = vknot_count/2; i < vknot_count; i++)
 	(patch->vknotv)[i] = 1.0;
       break;
 
@@ -206,13 +209,13 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
       break;
 
     case AY_KTNURB:
-      for(i=0; i<vorder; i++)
+      for(i = 0; i < vorder; i++)
 	(patch->vknotv)[i] = 0.0;
-      j=1;
+      j = 1;
       kts = 1 + vknot_count - (vorder*2);
-      for(i=vorder; i<=vknot_count-vorder; i++)
+      for(i = vorder; i <= vknot_count-vorder; i++)
 	(patch->vknotv)[i] = j++/((double)kts);
-      for(i=vknot_count-vorder; i<vknot_count; i++)
+      for(i = vknot_count-vorder; i < vknot_count; i++)
 	(patch->vknotv)[i] = 1.0;
       break;
 
@@ -237,7 +240,10 @@ ay_knots_createnp(ay_nurbpatch_object *patch)
 	  j = 1;
 	  kts = 1 + vknot_count - (vorder*2);
 	  for(i = vorder; i <= vknot_count - vorder; i++)
-	    V[i] = j++/((double)kts);
+	    {
+	      V[i] = j/((double)kts);
+	      j++;
+	    }
 	  for(i = vknot_count - vorder; i < vknot_count; i++)
 	    V[i] = 1.0;
 	  break;
@@ -382,7 +388,10 @@ ay_knots_createnc(ay_nurbcurve_object *curve)
 	  j = 1;
 	  kts = 1 + knot_count - (order*2);
 	  for(i = order; i <= knot_count - order; i++)
-	    U[i] = j++/((double)kts);
+	    {
+	      U[i] = j/((double)kts);
+	      j++;
+	    }
 	  for(i = knot_count - order; i < knot_count; i++)
 	    U[i] = 1.0;
 	  return AY_ERROR;
