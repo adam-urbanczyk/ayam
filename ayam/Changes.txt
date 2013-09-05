@@ -1,5 +1,5 @@
-[28. Aug 2013] CVS-Head:
-========================
+[5. Sep 2013] CVS-Head:
+=======================
 Bug Fixes:
 o "Reset Transformation" does not clear the Quaternion display (SF 3514199)
 o crash when removing wrong trim curves from patches (SF 3514206)
@@ -114,6 +114,7 @@ o the UI of the tesselation tool has been improved (the SaveToTag option
 o <Ctrl+h> now toggles the hide attribute (instead of just setting it)
 o the standard console prompt now also displays the name of the modelling
   action that can be repeated (via menu "Tools/Repeat", <Ctrl-t>)
+o improved drawing quality of antialiased NURBS
 
 Scripts/Scripting Interface:
 o added luainterp plugin to support the Lua scripting language
@@ -142,11 +143,13 @@ o renamed "splitNP" command to "breakNP" to avoid confusion with the real
   surface splitting commands "splituNP" and "splitvNP"
 o the "breakNP" command options now need a "-" and the command now supports
   "-a" for "apply transformations"
+o added options to "buildNP" that allow to control order, knot type, and
+  surface type
 o added support for another PV tag data type ('d'), that stores RGBA
   colors and is expanded properly to Cs _and_ Os upon RIB export
 o added commands to generate face and smooth PolyMesh normals:
   "genfnPo" and "gensnPo"
-o the "getPnt" command now supports evaluation for objects that provide
+o the "getPnt" command now supports NURBS evaluation for objects that provide
   NURBS curves/surfaces
 o added example Script object script "tcone.tcl" that creates truncated cones
 o improved the notification mechanism for Script object scripts
@@ -154,10 +157,9 @@ o added "-check" option to convOb allowing to test beforehand whether a
   conversion to a given type would be successful
 o improved options of "forAll" procedure, they are now more easy to
   recognize
-o removed forAllT procedure, use forAll with "-type" option instead
+o "forAll" can now also recurse after the command has been called
+o removed "forAllT" procedure, use "forAll" with "-type" option instead
 o tonpatch.tcl/topoly.tcl now work with more object types (e.g. Script, Mirror)
-o added options to "buildNP" that allow to control order, knot type, and
-  surface type
 
 Import/Export:
 o X3D export now has a special mode to inject the exported X3D scene
