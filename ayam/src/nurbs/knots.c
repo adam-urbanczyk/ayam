@@ -1204,8 +1204,6 @@ ay_knots_chordparam(double *Q, int Qlen, int stride, double **U)
       t += lens[j]/totallen;
       vk[i] = t;
 
-      /*printf("vk[%d]:%f\n",i,t);*/
-
       j++;
     }
   vk[Qlen-1] = 1.0;
@@ -1289,8 +1287,6 @@ ay_knots_centriparam(double *Q, int Qlen, int stride, double **U)
     {
       t += lens[j]/totallen;
       vk[i] = t;
-
-      /*printf("vk[%d]:%f\n",i,t);*/
 
       j++;
     }
@@ -1556,6 +1552,7 @@ ay_knots_classify(unsigned int order, double *U, unsigned int Ulen,
     return AY_KTCUSTOM;
 
   d = U[1]-U[0];
+
   /* check all knot intervals */
   for(i = 1; i < (Ulen-1); i++)
     {
@@ -1812,7 +1809,8 @@ ay_knots_insert(unsigned int index, int order, int length, double **U)
 
 
 /** ay_knots_match:
- * See if there is already a matching knot in the knot vector.
+ * See if there is a matching (defined by epsilon distance) knot in the
+ * knot vector.
  * If yes, return that knot instead of the delivered knot.
  *
  * \param[in] nc NURBS curve to check
