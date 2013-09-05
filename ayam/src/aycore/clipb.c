@@ -73,7 +73,7 @@ ay_clipb_copytcmd(ClientData clientData, Tcl_Interp *interp,
 
    if(!strcmp(argv[0], "clearClip"))
      {
-       ay_status = ay_clipb_clear();
+       (void)ay_clipb_clear();
        return TCL_OK;
      }
 
@@ -541,7 +541,7 @@ ay_clipb_hmovtcmd(ClientData clientData, Tcl_Interp *interp,
 		      l = l->next;
 		      sel = sel->next;
 		    }
-		  if(l->next == ay_endlevel)
+		  if(l->next == ay_endlevel || l->next == NULL)
 		    break;
 		  /* swap l->next and l (move down s1-s2 one object)*/
 		  if(s1 == ay_currentlevel->object)
