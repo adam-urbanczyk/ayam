@@ -1216,10 +1216,12 @@ ay_draw_rectangle(int winwidth, int winheight,
 void
 ay_draw_cs(struct Togl *togl, int mode)
 {
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
  GLdouble mvm[16], pm[16];
  GLdouble win1x, win1y, win1z, win2x, win2y, win2z, win3x, win3y, win3z;
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  GLint vp[4];
+ int e = 4;
 
  if(mode == 0)
    {
@@ -1242,6 +1244,11 @@ ay_draw_cs(struct Togl *togl, int mode)
    }
  else
    {
+     if(view->antialiaslines)
+       {
+	 e = 3;
+       }
+
      glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
      glGetDoublev(GL_PROJECTION_MATRIX, pm);
      glGetIntegerv(GL_VIEWPORT, vp);
@@ -1272,45 +1279,38 @@ ay_draw_cs(struct Togl *togl, int mode)
       glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
        glLoadIdentity();
-       glTranslated(((int)win1x)+6+0.375, ((int)win1y)+0.375, 0.0);
+       glTranslated(((int)win1x)+6+0.5, ((int)win1y)+0.5, 0.0);
        /* draw X */
-       glBegin(GL_LINE_STRIP);
+       glBegin(GL_LINES);
         glVertex2i(-3, -3);
+	glVertex2i(e, e);
+	glVertex2i(-3, 3);
+	glVertex2i(e, -e);
+       glEnd();
+       glLoadIdentity();
+       glTranslated(((int)win2x)+6+0.5, ((int)win2y)+0.5, 0.0);
+       /* draw Y */
+       glBegin(GL_LINES);
+        glVertex2i(-3, 3);
 	glVertex2i(0, 0);
-	glVertex2i(-4, 4);
        glEnd();
        glBegin(GL_LINE_STRIP);
         glVertex2i(3, 3);
 	glVertex2i(0, 0);
-	glVertex2i(4, -4);
+	glVertex2i(0, -e);
        glEnd();
        glLoadIdentity();
-       glTranslated(((int)win2x)+6+0.375, ((int)win2y)+0.375, 0.0);
-       /* draw Y */
-       glBegin(GL_LINES);
-        glVertex2i(0, 0);
-	glVertex2i(-4, 4);
-	glVertex2i(0, 0);
-	glVertex2i(4, 4);
-	glVertex2i(0, 0);
-	glVertex2i(-4, -4);
-       glEnd();
-       glLoadIdentity();
-       glTranslated(((int)win3x)+6+0.375, ((int)win3y)+0.375, 0.0);
+       glTranslated(((int)win3x)+6+0.5, ((int)win3y)+0.5, 0.0);
        /* draw Z */
        glBegin(GL_LINE_STRIP);
-        glVertex2i(0, 0);
-	glVertex2i(-3, -3);
-	glVertex2i(4, -3);
-       glEnd();
-       glBegin(GL_LINE_STRIP);
-        glVertex2i(0, 0);
+        glVertex2i(-3, 3);
 	glVertex2i(3, 3);
-	glVertex2i(-4, 3);
+	glVertex2i(-3, -3);
+	glVertex2i(e, -3);
        glEnd();
-      glPopMatrix();
+       glPopMatrix();
       glMatrixMode(GL_PROJECTION);
-     glPopMatrix();
+      glPopMatrix();
      glMatrixMode(GL_MODELVIEW);
    } /* if */
 
