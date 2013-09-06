@@ -6416,13 +6416,29 @@ ay_nct_isdegen(ay_nurbcurve_object *curve)
   if(!curve)
     return AY_FALSE;
 
-  for(i = 0; i < curve->length-1; i++)
+  p1 = curve->controlv;
+  p2 = p1+stride;
+
+  if(curve->is_rat)
     {
-      p1 = &(curve->controlv[i*stride]);
-      p2 = &(curve->controlv[(i+1)*stride]);
-      if(!AY_V3COMP(p1, p2))
-	return AY_FALSE;
-    } /* for */
+      for(i = 0; i < curve->length-1; i++)
+	{
+	  if(!AY_V4COMP(p1, p2))
+	    return AY_FALSE;
+	  p1 += stride;
+	  p2 += stride;
+	} /* for */
+    }
+  else
+    {
+      for(i = 0; i < curve->length-1; i++)
+	{
+	  if(!AY_V3COMP(p1, p2))
+	    return AY_FALSE;
+	  p1 += stride;
+	  p2 += stride;
+	} /* for */
+    }
 
  return AY_TRUE;
 } /* ay_nct_isdegen */
