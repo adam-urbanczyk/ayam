@@ -1265,13 +1265,13 @@ ay_icurve_notifycb(ay_object *o)
 	    } /* for */
 
 	  /* delete child */
-	  ay_status = ay_object_deletemulti(o->down);
+	  (void)ay_object_deletemulti(o->down);
 	  o->down = NULL;
 	} /* if */
     } /* if */
 
   /* create new interpolated curve */
-  ay_object_delete(icurve->ncurve);
+  (void)ay_object_delete(icurve->ncurve);
   icurve->ncurve = NULL;
 
   if(!(ncurve = calloc(1, sizeof(ay_object))))
