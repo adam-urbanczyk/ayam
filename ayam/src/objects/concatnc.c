@@ -445,7 +445,7 @@ ay_concatnc_notifycb(ay_object *o)
 
   concatnc = (ay_concatnc_object *)(o->refine);
   if(concatnc->ncurve)
-    ay_object_delete(concatnc->ncurve);
+    (void)ay_object_delete(concatnc->ncurve);
   concatnc->ncurve = NULL;
 
   /* get child objects */
@@ -560,7 +560,7 @@ ay_concatnc_notifycb(ay_object *o)
 cleanup:
 
   /* free list of temporary curves */
-  ay_object_deletemulti(curves);
+  (void)ay_object_deletemulti(curves);
 
   /* recover selected points */
   if(o->selp)

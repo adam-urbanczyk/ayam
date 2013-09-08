@@ -498,7 +498,7 @@ ay_extrnc_notifycb(ay_object *o)
 
   /* remove old objects */
   if(extrnc->ncurve)
-    ay_object_delete(extrnc->ncurve);
+    (void)ay_object_delete(extrnc->ncurve);
   extrnc->ncurve = NULL;
 
   /* get patch to extract the ncurve from */
@@ -636,13 +636,13 @@ cleanup:
 
   if(ncurve)
     {
-      ay_object_delete(ncurve);
+      (void)ay_object_delete(ncurve);
     }
 
   /* remove provided object(s) */
   if(provided)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
     }
 
   /* recover selected points */

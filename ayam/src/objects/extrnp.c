@@ -502,7 +502,7 @@ ay_extrnp_notifycb(ay_object *o)
 
   /* remove old objects */
   if(extrnp->npatch)
-    ay_object_delete(extrnp->npatch);
+    (void)ay_object_delete(extrnp->npatch);
   extrnp->npatch = NULL;
 
   /* get patch to extract the npatch from */
@@ -577,7 +577,7 @@ cleanup:
   /* remove provided object(s) */
   if(provided)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
     }
 
   /* recover selected points */

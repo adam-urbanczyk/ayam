@@ -524,12 +524,12 @@ ay_gordon_notifycb(ay_object *o)
 
   /* remove old objects */
   if(gordon->npatch)
-    ay_object_delete(gordon->npatch);
+    (void)ay_object_delete(gordon->npatch);
   gordon->npatch = NULL;
 
   if(gordon->caps_and_bevels)
     {
-      ay_object_deletemulti(gordon->caps_and_bevels);
+      (void)ay_object_deletemulti(gordon->caps_and_bevels);
       gordon->caps_and_bevels = NULL;
     }
 
