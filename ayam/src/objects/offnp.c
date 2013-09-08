@@ -513,12 +513,12 @@ ay_offnp_notifycb(ay_object *o)
 
   /* remove old objects */
   if(offnp->npatch)
-    ay_object_delete(offnp->npatch);
+    (void)ay_object_delete(offnp->npatch);
   offnp->npatch = NULL;
 
   if(offnp->caps_and_bevels)
     {
-      ay_object_deletemulti(offnp->caps_and_bevels);
+      (void)ay_object_deletemulti(offnp->caps_and_bevels);
       offnp->caps_and_bevels = NULL;
     }
 
@@ -570,7 +570,12 @@ ay_offnp_notifycb(ay_object *o)
   /* copy trim curve(s) */
   if(npatch->down && npatch->down->next)
     {
-      ay_object_copymulti(npatch->down, &(newo->down));
+      ay_status = ay_object_copymulti(npatch->down, &(newo->down));
+      if(ay_status)
+	{
+	  (void)ay_object_deletemulti(o->down);
+	  o->down = NULL;
+	}
     }
   else
     {
@@ -631,12 +636,12 @@ ay_offnp_notifycb(ay_object *o)
 cleanup:
 
   if(newo)
-    ay_object_delete(newo);
+    (void)ay_object_delete(newo);
 
   /* remove provided object(s) */
   if(provided)
     {
-      ay_object_deletemulti(npatch);
+      (void)ay_object_deletemulti(npatch);
     }
 
   /* recover selected points */

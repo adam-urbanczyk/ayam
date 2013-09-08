@@ -738,7 +738,7 @@ cleanup:
 
   if(cap)
     {
-      ay_object_deletemulti(cap);
+      (void)ay_object_deletemulti(cap);
     }
 
   if(controlv)
@@ -776,7 +776,7 @@ ay_revolve_crtside(ay_revolve_object *revolve, ay_object *curve, double th,
        {
 	 ay_npt_clampv((ay_nurbpatch_object *)(rc->refine), 0);
 	 ay_npt_extractnc(rc, 0, 0.0, AY_FALSE, AY_FALSE, AY_FALSE, NULL, &nc);
-	 ay_object_delete(rc);
+	 (void)ay_object_delete(rc);
 	 if(!(curve = calloc(1, sizeof(ay_object))))
 	   {
 	     ay_status = AY_EOMEM;
@@ -1068,7 +1068,7 @@ cleanup:
 
   if(cap)
     {
-      ay_object_deletemulti(cap);
+      (void)ay_object_deletemulti(cap);
     }
 
   if(controlv)
@@ -1079,7 +1079,7 @@ cleanup:
   if(revolve->sections != 0)
    {
      if(curve)
-       ay_object_delete(curve);
+       (void)ay_object_delete(curve);
    }
 
  return ay_status;
@@ -1110,23 +1110,23 @@ ay_revolve_notifycb(ay_object *o)
 
   /* remove old objects */
   if(revolve->npatch)
-    ay_object_delete(revolve->npatch);
+    (void)ay_object_delete(revolve->npatch);
   revolve->npatch = NULL;
 
   if(revolve->upper_cap)
-    ay_object_delete(revolve->upper_cap);
+    (void)ay_object_delete(revolve->upper_cap);
   revolve->upper_cap = NULL;
 
   if(revolve->lower_cap)
-    ay_object_delete(revolve->lower_cap);
+    (void)ay_object_delete(revolve->lower_cap);
   revolve->lower_cap = NULL;
 
   if(revolve->start_cap)
-    ay_object_delete(revolve->start_cap);
+    (void)ay_object_delete(revolve->start_cap);
   revolve->start_cap = NULL;
 
   if(revolve->end_cap)
-    ay_object_delete(revolve->end_cap);
+    (void)ay_object_delete(revolve->end_cap);
   revolve->end_cap = NULL;
 
   /* get curve to revolve */
@@ -1215,7 +1215,7 @@ cleanup:
   /* remove provided object(s) */
   if(is_provided)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
     }
 
   /* recover selected points */
