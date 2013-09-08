@@ -3710,7 +3710,7 @@ ay_npt_sweepperiodic(ay_object *o1, ay_object *o2, ay_object *o3, int sections,
 
   new->is_rat = ay_npt_israt(new);
 
-  ay_status = ay_npt_closeu(new, 3);
+  (void) ay_npt_closeu(new, 3);
 
   ay_npt_setuvtypes(new);
 
@@ -4380,7 +4380,7 @@ ay_npt_birail1periodic(ay_object *o1, ay_object *o2, ay_object *o3,
 
   new->is_rat = ay_npt_israt(new);
 
-  ay_status = ay_npt_closeu(new, 3);
+  (void) ay_npt_closeu(new, 3);
 
   ay_npt_setuvtypes(new);
 
@@ -7475,9 +7475,7 @@ ay_npt_istrimmed(ay_object *o, int mode)
     return AY_FALSE;
 
   if(o->type != AY_IDNPATCH)
-    {
-      return AY_EWTYPE;
-    }
+    return AY_FALSE;
 
   npatch = (ay_nurbpatch_object *)o->refine;
 
@@ -8580,6 +8578,7 @@ ay_npt_recreatemp(ay_nurbpatch_object *np)
 
 	      new->next = np->mpoints;
 	      np->mpoints = new;
+	      /* prevent cleanup code from doing something harmful */
 	      new = NULL;
 	    } /* if */
 	} /* if */
