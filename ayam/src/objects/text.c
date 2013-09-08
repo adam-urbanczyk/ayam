@@ -802,11 +802,11 @@ ay_text_notifycb(ay_object *o)
 			{
 			  curve->next = NULL;
 			  *nexthole = NULL;
-			  ay_object_deletemulti(holes);
+			  (void)ay_object_deletemulti(holes);
 			  holes = NULL;
 			  nexthole = &(holes);
 			}
-		      ay_object_delete(curve);
+		      (void)ay_object_delete(curve);
 		    } /* if(curve */
 
 		  curve = newcurve;
@@ -867,12 +867,12 @@ ay_text_notifycb(ay_object *o)
 		    {
 		      curve->next = NULL;
 		      *nexthole = NULL;
-		      ay_object_deletemulti(holes);
+		      (void)ay_object_deletemulti(holes);
 		      holes = NULL;
 		      nexthole = &(holes);
 		    }
 
-		  ay_object_delete(curve);
+		  (void)ay_object_delete(curve);
 		  curve = NULL;
 		} /* if */
 
@@ -884,7 +884,7 @@ ay_text_notifycb(ay_object *o)
 		     user?) */
 		  ay_error(AY_EWARN, fname,
 		     "Could not convert all outlines, please try Revert.");
-		  ay_object_deletemulti(holes);
+		  (void)ay_object_deletemulti(holes);
 		  holes = NULL;
 		  nexthole = &(holes);
 		}

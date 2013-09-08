@@ -656,23 +656,23 @@ cleanup:
   if(cap)
     {
       cap->down = NULL;
-      ay_object_delete(cap);
+      (void)ay_object_delete(cap);
     }
 
   if(curve)
     {
-      ay_object_delete(curve);
+      (void)ay_object_delete(curve);
     }
 
   if(tloop)
     {
       tloop->down = NULL;
-      ay_object_deletemulti(tloop);
+      (void)ay_object_deletemulti(tloop);
     }
 
   if(trim)
     {
-      ay_object_delete(trim);
+      (void)ay_object_delete(trim);
     }
 
  return ay_status;
@@ -981,23 +981,23 @@ cleanup:
   if(cap)
     {
       cap->down = NULL;
-      ay_object_delete(cap);
+      (void)ay_object_delete(cap);
     }
 
   if(curve)
     {
-      ay_object_delete(curve);
+      (void)ay_object_delete(curve);
     }
 
   if(tloop)
     {
       tloop->down = NULL;
-      ay_object_deletemulti(tloop);
+      (void)ay_object_deletemulti(tloop);
     }
 
   if(trim)
     {
-      ay_object_delete(trim);
+      (void)ay_object_delete(trim);
     }
 
  return ay_status;
@@ -1030,12 +1030,12 @@ ay_swing_notifycb(ay_object *o)
 
   /* remove old objects */
   if(swing->npatch)
-    ay_object_delete(swing->npatch);
+    (void)ay_object_delete(swing->npatch);
   swing->npatch = NULL;
 
   if(swing->caps_and_bevels)
     {
-      ay_object_deletemulti(swing->caps_and_bevels);
+      (void)ay_object_deletemulti(swing->caps_and_bevels);
       swing->caps_and_bevels = NULL;
     }
 
@@ -1136,11 +1136,11 @@ cleanup:
   /* remove provided object(s) */
   if(provided_cs && cs)
     {
-      ay_object_deletemulti(cs);
+      (void)ay_object_deletemulti(cs);
     }
   if(provided_tr && tr)
     {
-      ay_object_deletemulti(tr);
+      (void)ay_object_deletemulti(tr);
     }
 
   /* recover selected points */
