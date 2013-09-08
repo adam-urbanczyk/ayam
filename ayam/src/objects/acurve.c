@@ -966,7 +966,7 @@ ay_acurve_notifycb(ay_object *o)
 
   acurve = (ay_acurve_object *)(o->refine);
 
-  ay_object_delete(acurve->ncurve);
+  (void)ay_object_delete(acurve->ncurve);
   acurve->ncurve = NULL;
 
   /* create new approximating curve */
