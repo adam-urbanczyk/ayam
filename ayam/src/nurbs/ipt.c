@@ -1717,7 +1717,7 @@ ay_ipt_interpuvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_ipt_interpuvtcmd */
