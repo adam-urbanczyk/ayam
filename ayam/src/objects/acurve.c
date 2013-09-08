@@ -440,7 +440,7 @@ ay_acurve_drawcb(struct Togl *togl, ay_object *o)
     } /* switch */
 
   if(drawch)
-    {      
+    {
       a = 0;
       glBegin(GL_LINE_STRIP);
       for(i = 0; i < acurve->length; i++)
@@ -972,7 +972,7 @@ ay_acurve_notifycb(ay_object *o)
   /* create new approximating curve */
   if(!(ncurve = calloc(1, sizeof(ay_object))))
     {
-      return AY_ERROR;
+      return AY_EOMEM;
     }
 
   ay_object_defaults(ncurve);
@@ -998,9 +998,7 @@ ay_acurve_notifycb(ay_object *o)
 
   if(ay_status)
     {
-      /* XXXX free knotv? controlv? */
-      free(ncurve);
-      return ay_status;
+      goto cleanup;
     }
 
   if(acurve->symmetric && !acurve->closed)
@@ -1009,8 +1007,8 @@ ay_acurve_notifycb(ay_object *o)
       dlen = acurve->length;
       if(!(controlvr = calloc(dlen*3, sizeof(double))))
 	{
-	  free(ncurve);
-	  return AY_ERROR;
+	  ay_status = AY_EOMEM;
+	  goto cleanup;
 	}
 
       memcpy(controlvr, acurve->controlv, dlen*3*sizeof(double));
@@ -1075,6 +1073,11 @@ ay_acurve_notifycb(ay_object *o)
 
       if(controlv2)
         free(controlv2);
+
+      if(ay_status)
+	{
+	  goto cleanup;
+	}
     } /* if(symmetric */
 
   ay_status = ay_nct_create(acurve->order, aclen, AY_KTCUSTOM,
@@ -1083,9 +1086,7 @@ ay_acurve_notifycb(ay_object *o)
 
   if(ay_status)
     {
-      /* XXXX free knotv? controlv? */
-      free(ncurve);
-      return ay_status;
+      goto cleanup;
     }
 
   nc = (ay_nurbcurve_object *)ncurve->refine;
@@ -1098,11 +1099,23 @@ ay_acurve_notifycb(ay_object *o)
     {
       for(i = 0; i < nc->length-(nc->order); i++)
 	{
-	  ay_nct_shiftarr(1, 4, nc->length, nc->controlv);
+	  ay_status = ay_nct_shiftarr(1, 4, nc->length, nc->controlv);
+	  if(ay_status)
+	    goto cleanup;
 	}
     }
 
- return AY_OK;
+  /* prevent cleanup code from doing something harmful */
+  ncurve = NULL;
+
+cleanup:
+
+  if(ncurve)
+    {
+      (void)ay_object_delete(ncurve);
+    }
+
+ return ay_status;
 } /* ay_acurve_notifycb */
 
 

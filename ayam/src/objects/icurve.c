@@ -615,7 +615,7 @@ ay_icurve_drawacb(struct Togl *togl, ay_object *o)
   else
     ay_draw_arrow(togl, &(ver[icurve->length*3-6]),
 		  &(ver[icurve->length*3-3]));
-  
+
   /* draw deriv arrows? */
  return AY_OK;
 } /* ay_icurve_drawacb */
@@ -1351,7 +1351,7 @@ cleanup:
 
   if(ncurve)
     {
-      ay_object_delete(ncurve);
+      (void)ay_object_delete(ncurve);
     }
 
  return ay_status;
