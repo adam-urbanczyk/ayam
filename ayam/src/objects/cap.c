@@ -432,7 +432,7 @@ ay_cap_notifycb(ay_object *o)
 
   /* first, delete old cap */
   if(cap->npatch)
-    ay_object_delete(cap->npatch);
+    (void)ay_object_delete(cap->npatch);
   cap->npatch = NULL;
 
   /* get parameter curve(s) */
@@ -493,7 +493,7 @@ ay_cap_notifycb(ay_object *o)
 
   if(ay_status)
     {
-      ay_object_deletemulti(pobject);
+      (void)ay_object_deletemulti(pobject);
       goto cleanup;
     }
 
