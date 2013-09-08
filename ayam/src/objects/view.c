@@ -1331,12 +1331,12 @@ ay_view_notifycb(ay_object *o)
 	      ay_status = AY_EOMEM;
 	      goto cleanup;
 	    }
-	  for(i=0;i<np->width+np->uorder;i++)
+	  for(i = 0; i < np->width+np->uorder; i++)
 	    {
 	      view->bgknotv[i] = (float)np->uknotv[i];
 	    }
 	  j = i;
-	  for(i=0;i<np->height+np->vorder;i++)
+	  for(i = 0; i < np->height+np->vorder; i++)
 	    {
 	      view->bgknotv[j] = (float)np->vknotv[i];
 	      j++;
@@ -1376,7 +1376,7 @@ ay_view_notifycb(ay_object *o)
 cleanup:
 
   if(p)
-    ay_object_delete(p);
+    (void)ay_object_delete(p);
 
  return ay_status;
 } /* ay_view_notifycb */
