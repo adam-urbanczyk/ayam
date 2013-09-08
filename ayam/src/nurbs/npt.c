@@ -385,7 +385,6 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
       b = 0;
       for(k = 0; k < (width-1); k++)
 	{
-
 	  memcpy(&(ncontrolv[b]), &(controlv[a]),
 		 height*stride*sizeof(double));
 
@@ -413,9 +412,7 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 
 		  a += stride;
 		  b += stride;
-
 		} /* for i */
-
 	    } /* for j */
 
 	  if(newpersec[k] == 0)
@@ -428,7 +425,6 @@ ay_npt_resizearrayw(double **controlvptr, int stride,
 	     height*stride*sizeof(double));
 
       free(newpersec);
-
     } /* if */
 
   free(controlv);
@@ -533,7 +529,7 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 	    {
 	      memcpy(&ncontrolv[b], &(controlv[a]),
 		     stride*sizeof(double));
-	      b+=stride;
+	      b += stride;
 
 	      for(j = 1; j <= newpersec[i]; j++)
 		{
@@ -551,11 +547,9 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 		  ncontrolv[b+2] = controlv[a+2]+v[2];
 		  ncontrolv[b+3] = 1.0;
 
-		  b+=stride;
+		  b += stride;
 		} /* for */
-
-	      a+=stride;
-
+	      a += stride;
 	    } /* for */
 
 	  memcpy(&ncontrolv[b/*+(new_height-1)*stride*/],
@@ -567,7 +561,6 @@ ay_npt_resizearrayh(double **controlvptr, int stride,
 	} /* for */
 
       free(newpersec);
-
     } /* if */
 
   free(controlv);
@@ -800,7 +793,7 @@ ay_npt_revertutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertutcmd */
@@ -922,7 +915,7 @@ ay_npt_revertvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_revertvtcmd */
@@ -6015,7 +6008,7 @@ ay_npt_elevateuvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_elevateuvtcmd */
@@ -6093,7 +6086,7 @@ ay_npt_swapuvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_swapuvtcmd */
@@ -7838,7 +7831,7 @@ ay_npt_closeutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closeutcmd */
@@ -8133,7 +8126,7 @@ ay_npt_closevtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_closevtcmd */
@@ -9359,7 +9352,7 @@ ay_npt_clampuvtcmd(ClientData clientData, Tcl_Interp *interp,
 	} /* if */
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_clampuvtcmd */
@@ -9651,7 +9644,7 @@ ay_npt_rescaleknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_rescaleknvnptcmd */
@@ -9780,7 +9773,7 @@ ay_npt_insertknutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_insertknutcmd */
@@ -9910,7 +9903,7 @@ ay_npt_insertknvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_insertknvtcmd */
@@ -10148,7 +10141,7 @@ ay_npt_splitutcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_splitutcmd */
@@ -10399,7 +10392,7 @@ ay_npt_splitvtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_splitvtcmd */
@@ -10625,7 +10618,7 @@ ay_npt_extractnptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_extractnptcmd */
@@ -12247,7 +12240,7 @@ ay_npt_remknunptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_remknunptcmd */
@@ -12430,7 +12423,7 @@ ay_npt_remknvnptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_remknvnptcmd */
@@ -12736,7 +12729,7 @@ ay_npt_refineuvtcmd(ClientData clientData, Tcl_Interp *interp,
 
 cleanup:
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
   if(X)
     {
@@ -12902,7 +12895,7 @@ ay_npt_unclamptcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_unclamptcmd */
@@ -12991,7 +12984,7 @@ ay_npt_xxxxtcmd(ClientData clientData, Tcl_Interp *interp,
       sel = sel->next;
     } /* while */
 
-  ay_notify_parent();
+  (void)ay_notify_parent();
 
  return TCL_OK;
 } /* ay_npt_xxxxtcmd */
