@@ -121,7 +121,7 @@ ay_pamesh_deletecb(void *c)
 
   /* free NURBS patch(es) */
   if(pamesh->npatch)
-    ay_object_deletemulti(pamesh->npatch);
+    (void)ay_object_deletemulti(pamesh->npatch);
 
   free(pamesh);
 
@@ -1215,7 +1215,7 @@ ay_pamesh_notifycb(ay_object *o)
 
   if(pamesh->npatch)
     {
-      ay_object_deletemulti(pamesh->npatch);
+      (void)ay_object_deletemulti(pamesh->npatch);
       pamesh->npatch = NULL;
     }
 
@@ -1350,7 +1350,7 @@ ay_pamesh_convertcb(ay_object *o, int in_place)
 
 	  if(!new->down)
 	    {
-	      ay_object_delete(new);
+	      (void)ay_object_delete(new);
 	      new = NULL;
 	      ay_status = AY_ERROR;
 	    }

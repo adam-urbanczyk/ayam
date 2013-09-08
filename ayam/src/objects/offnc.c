@@ -465,7 +465,7 @@ ay_offnc_notifycb(ay_object *o)
 
   /* remove old objects */
   if(offnc->ncurve)
-    ay_object_delete(offnc->ncurve);
+    (void)ay_object_delete(offnc->ncurve);
   offnc->ncurve = NULL;
 
   /* get ncurve to offset */
@@ -539,12 +539,12 @@ ay_offnc_notifycb(ay_object *o)
 cleanup:
 
   if(newo)
-    ay_object_delete(newo);
+    (void)ay_object_delete(newo);
 
   /* remove provided object(s) */
   if(provided)
     {
-      ay_object_deletemulti(ncurve);
+      (void)ay_object_deletemulti(ncurve);
     }
 
   /* recover selected points */

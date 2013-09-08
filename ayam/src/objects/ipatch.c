@@ -2252,13 +2252,13 @@ ay_ipatch_notifycb(ay_object *o)
 
   if(ip->npatch)
     {
-      ay_object_deletemulti(ip->npatch);
+      (void)ay_object_deletemulti(ip->npatch);
       ip->npatch = NULL;
     }
 
   if(ip->caps_and_bevels)
     {
-      ay_object_deletemulti(ip->caps_and_bevels);
+      (void)ay_object_deletemulti(ip->caps_and_bevels);
       ip->caps_and_bevels = NULL;
     }
 
@@ -2431,7 +2431,7 @@ ay_ipatch_notifycb(ay_object *o)
 cleanup:
 
   if(p)
-    ay_object_deletemulti(p);
+    (void)ay_object_deletemulti(p);
 
  return ay_status;
 } /* ay_ipatch_notifycb */

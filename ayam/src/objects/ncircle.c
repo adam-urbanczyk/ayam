@@ -523,7 +523,7 @@ ay_ncircle_notifycb(ay_object *o)
   ncircle = (ay_ncircle_object *)(o->refine);
 
   if(ncircle->ncurve)
-    ay_object_delete(ncircle->ncurve);
+    (void)ay_object_delete(ncircle->ncurve);
 
   ncircle->ncurve = NULL;
 
