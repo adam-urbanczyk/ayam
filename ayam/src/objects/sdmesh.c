@@ -566,7 +566,7 @@ ay_sdmesh_deletecb(void *c)
     free(sdmesh->face_normals);
 
   if(sdmesh->pomesh)
-    ay_object_delete(sdmesh->pomesh);
+    (void)ay_object_delete(sdmesh->pomesh);
 
   free(sdmesh);
 
