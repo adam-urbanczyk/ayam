@@ -331,9 +331,12 @@ ay_cap_readcb(FILE *fileptr, ay_object *o)
     {
       /* since 1.13 */
       fscanf(fileptr, "%d\n", &cap->type);
+    }
+  if(ay_read_version >= 16)
+    {
+      /* since 1.21 */
       fscanf(fileptr, "%lg\n", &cap->fraction);
     }
-
   o->refine = cap;
 
  return AY_OK;
