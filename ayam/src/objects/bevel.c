@@ -443,12 +443,12 @@ ay_bevel_notifycb(ay_object *o)
 
   /* remove old objects */
   if(bevel->npatch)
-    ay_object_delete(bevel->npatch);
+    (void)ay_object_delete(bevel->npatch);
   bevel->npatch = NULL;
 
   if(bevel->caps)
     {
-      ay_object_deletemulti(bevel->caps);
+      (void)ay_object_deletemulti(bevel->caps);
       bevel->caps = NULL;
     }
 
@@ -576,7 +576,7 @@ ay_bevel_notifycb(ay_object *o)
 	}
 
       if(alignedcurve)
-	ay_object_delete(alignedcurve);
+	(void)ay_object_delete(alignedcurve);
 
       if(ay_status)
 	goto cleanup;
@@ -610,21 +610,21 @@ cleanup:
   /* remove provided objects */
   if(pobject1)
     {
-      ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1);
     }
   if(pobject2)
     {
-      ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2);
     }
 
   if(t)
     {
-      ay_object_delete(t);
+      (void)ay_object_delete(t);
     }
 
   if(npatch)
     {
-      ay_object_delete(npatch);
+      (void)ay_object_delete(npatch);
     }
 
   if(normals && freen)

@@ -486,12 +486,12 @@ ay_birail1_notifycb(ay_object *o)
 
   /* remove old objects */
   if(birail1->npatch)
-    ay_object_delete(birail1->npatch);
+    (void)ay_object_delete(birail1->npatch);
   birail1->npatch = NULL;
 
   if(birail1->caps_and_bevels)
     {
-      ay_object_deletemulti(birail1->caps_and_bevels);
+      (void)ay_object_deletemulti(birail1->caps_and_bevels);
       birail1->caps_and_bevels = NULL;
     }
 
@@ -626,22 +626,22 @@ cleanup:
   /* remove provided objects */
   if(is_provided[0])
     {
-      ay_object_deletemulti(pobject1);
+      (void)ay_object_deletemulti(pobject1);
     }
 
   if(is_provided[1])
     {
-      ay_object_deletemulti(pobject2);
+      (void)ay_object_deletemulti(pobject2);
     }
 
   if(is_provided[2])
     {
-      ay_object_deletemulti(pobject3);
+      (void)ay_object_deletemulti(pobject3);
     }
 
   if(npatch)
     {
-      ay_object_delete(npatch);
+      (void)ay_object_delete(npatch);
     }
 
   /* recover selected points */

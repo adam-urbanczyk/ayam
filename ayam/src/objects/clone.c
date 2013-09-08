@@ -853,7 +853,7 @@ ay_clone_notifycb(ay_object *o)
 		{
 		  if(tr_iscopy)
 		    {
-		      ay_object_deletemulti(tr);
+		      (void)ay_object_deletemulti(tr);
 		    }
 		  ay_status = AY_EOMEM;
 		  goto cleanup;
@@ -912,7 +912,7 @@ ay_clone_notifycb(ay_object *o)
 
 	  if(tr_iscopy)
 	    {
-	      ay_object_deletemulti(tr);
+	      (void)ay_object_deletemulti(tr);
 	    }
 	}
       else
