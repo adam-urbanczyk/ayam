@@ -1429,11 +1429,11 @@ ay_sphere_init(Tcl_Interp *interp)
 				    ay_sphere_bbccb,
 				    AY_IDSPHERE);
 
-  ay_status = ay_notify_register(ay_sphere_notifycb, AY_IDSPHERE);
+  ay_status += ay_notify_register(ay_sphere_notifycb, AY_IDSPHERE);
 
-  ay_status = ay_convert_register(ay_sphere_convertcb, AY_IDSPHERE);
+  ay_status += ay_convert_register(ay_sphere_convertcb, AY_IDSPHERE);
 
-  ay_status = ay_provide_register(ay_sphere_providecb, AY_IDSPHERE);
+  ay_status += ay_provide_register(ay_sphere_providecb, AY_IDSPHERE);
 
  return ay_status;
 } /* ay_sphere_init */

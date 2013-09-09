@@ -787,11 +787,11 @@ ay_gordon_init(Tcl_Interp *interp)
 				    AY_IDGORDON);
 
 
-  ay_status = ay_notify_register(ay_gordon_notifycb, AY_IDGORDON);
+  ay_status += ay_notify_register(ay_gordon_notifycb, AY_IDGORDON);
 
-  ay_status = ay_convert_register(ay_gordon_convertcb, AY_IDGORDON);
+  ay_status += ay_convert_register(ay_gordon_convertcb, AY_IDGORDON);
 
-  ay_status = ay_provide_register(ay_gordon_providecb, AY_IDGORDON);
+  ay_status += ay_provide_register(ay_gordon_providecb, AY_IDGORDON);
 
  return ay_status;
 } /* ay_gordon_init */

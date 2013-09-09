@@ -1231,11 +1231,11 @@ ay_swing_init(Tcl_Interp *interp)
 				    AY_IDSWING);
 
 
-  ay_status = ay_notify_register(ay_swing_notifycb, AY_IDSWING);
+  ay_status += ay_notify_register(ay_swing_notifycb, AY_IDSWING);
 
-  ay_status = ay_convert_register(ay_swing_convertcb, AY_IDSWING);
+  ay_status += ay_convert_register(ay_swing_convertcb, AY_IDSWING);
 
-  ay_status = ay_provide_register(ay_swing_providecb, AY_IDSWING);
+  ay_status += ay_provide_register(ay_swing_providecb, AY_IDSWING);
 
  return ay_status;
 } /* ay_swing_init */

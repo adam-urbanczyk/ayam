@@ -3109,13 +3109,13 @@ ay_npatch_init(Tcl_Interp *interp)
 				    ay_npatch_bbccb,
 				    AY_IDNPATCH);
 
-  ay_status = ay_draw_registerdacb(ay_npatch_drawacb, AY_IDNPATCH);
+  ay_status += ay_draw_registerdacb(ay_npatch_drawacb, AY_IDNPATCH);
 
-  ay_status = ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
+  ay_status += ay_provide_register(ay_npatch_providecb, AY_IDNPATCH);
 
-  ay_status = ay_convert_register(ay_npatch_convertcb, AY_IDNPATCH);
+  ay_status += ay_convert_register(ay_npatch_convertcb, AY_IDNPATCH);
 
-  ay_status = ay_notify_register(ay_npatch_notifycb, AY_IDNPATCH);
+  ay_status += ay_notify_register(ay_npatch_notifycb, AY_IDNPATCH);
 
  return ay_status;
 } /* ay_npatch_init */

@@ -707,13 +707,13 @@ ay_ncircle_init(Tcl_Interp *interp)
 				    AY_IDNCIRCLE);
 
 
-  ay_status = ay_draw_registerdacb(ay_ncircle_drawacb, AY_IDNCIRCLE);
+  ay_status += ay_draw_registerdacb(ay_ncircle_drawacb, AY_IDNCIRCLE);
 
-  ay_status = ay_notify_register(ay_ncircle_notifycb, AY_IDNCIRCLE);
+  ay_status += ay_notify_register(ay_ncircle_notifycb, AY_IDNCIRCLE);
 
-  ay_status = ay_convert_register(ay_ncircle_convertcb, AY_IDNCIRCLE);
+  ay_status += ay_convert_register(ay_ncircle_convertcb, AY_IDNCIRCLE);
 
-  ay_status = ay_provide_register(ay_ncircle_providecb, AY_IDNCIRCLE);
+  ay_status += ay_provide_register(ay_ncircle_providecb, AY_IDNCIRCLE);
 
   /* ncircles may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCIRCLE);

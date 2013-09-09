@@ -982,11 +982,11 @@ ay_instance_init(Tcl_Interp *interp)
 				    AY_IDINSTANCE);
 
 
-  ay_status = ay_notify_register(ay_instance_notifycb, AY_IDINSTANCE);
+  ay_status += ay_notify_register(ay_instance_notifycb, AY_IDINSTANCE);
 
-  ay_status = ay_convert_register(ay_instance_convertcb, AY_IDINSTANCE);
+  ay_status += ay_convert_register(ay_instance_convertcb, AY_IDINSTANCE);
 
-  ay_status = ay_provide_register(ay_instance_providecb, AY_IDINSTANCE);
+  ay_status += ay_provide_register(ay_instance_providecb, AY_IDINSTANCE);
 
   /* instances may not be associated with materials */
   ay_matt_nomaterial(AY_IDINSTANCE);

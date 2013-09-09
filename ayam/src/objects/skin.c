@@ -715,11 +715,11 @@ ay_skin_init(Tcl_Interp *interp)
 				    AY_IDSKIN);
 
 
-  ay_status = ay_notify_register(ay_skin_notifycb, AY_IDSKIN);
+  ay_status += ay_notify_register(ay_skin_notifycb, AY_IDSKIN);
 
-  ay_status = ay_convert_register(ay_skin_convertcb, AY_IDSKIN);
+  ay_status += ay_convert_register(ay_skin_convertcb, AY_IDSKIN);
 
-  ay_status = ay_provide_register(ay_skin_providecb, AY_IDSKIN);
+  ay_status += ay_provide_register(ay_skin_providecb, AY_IDSKIN);
 
  return ay_status;
 } /* ay_skin_init */

@@ -765,11 +765,11 @@ ay_box_init(Tcl_Interp *interp)
 				    ay_box_bbccb,
 				    AY_IDBOX);
 
-  ay_status = ay_notify_register(ay_box_notifycb, AY_IDBOX);
+  ay_status += ay_notify_register(ay_box_notifycb, AY_IDBOX);
 
-  ay_status = ay_convert_register(ay_box_convertcb, AY_IDBOX);
+  ay_status += ay_convert_register(ay_box_convertcb, AY_IDBOX);
 
-  ay_status = ay_provide_register(ay_box_providecb, AY_IDBOX);
+  ay_status += ay_provide_register(ay_box_providecb, AY_IDBOX);
 
  return ay_status;
 } /* ay_box_init */

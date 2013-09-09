@@ -1421,8 +1421,8 @@ ay_pomesh_init(Tcl_Interp *interp)
   /*
     ay_status = ay_notify_register(ay_pomesh_notifycb, AY_IDPOMESH);
   */
-    ay_status = ay_convert_register(ay_pomesh_convertcb, AY_IDPOMESH);
 
+  ay_status += ay_convert_register(ay_pomesh_convertcb, AY_IDPOMESH);
 
  return ay_status;
 } /* ay_pomesh_init */

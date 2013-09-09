@@ -1138,11 +1138,11 @@ ay_cylinder_init(Tcl_Interp *interp)
 				    ay_cylinder_bbccb,
 				    AY_IDCYLINDER);
 
-  ay_status = ay_notify_register(ay_cylinder_notifycb, AY_IDCYLINDER);
+  ay_status += ay_notify_register(ay_cylinder_notifycb, AY_IDCYLINDER);
 
-  ay_status = ay_convert_register(ay_cylinder_convertcb, AY_IDCYLINDER);
+  ay_status += ay_convert_register(ay_cylinder_convertcb, AY_IDCYLINDER);
 
-  ay_status = ay_provide_register(ay_cylinder_providecb, AY_IDCYLINDER);
+  ay_status += ay_provide_register(ay_cylinder_providecb, AY_IDCYLINDER);
 
  return ay_status;
 } /* ay_cylinder_init */

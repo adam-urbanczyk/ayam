@@ -1609,7 +1609,7 @@ ay_sdmesh_init(Tcl_Interp *interp)
 				    ay_sdmesh_bbccb,
 				    AY_IDSDMESH);
 
-    ay_status = ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
+  ay_status += ay_convert_register(ay_sdmesh_convertcb, AY_IDSDMESH);
 
  return ay_status;
 } /* ay_sdmesh_init */

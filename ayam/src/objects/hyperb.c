@@ -1158,11 +1158,11 @@ ay_hyperb_init(Tcl_Interp *interp)
 				    ay_hyperb_bbccb,
 				    AY_IDHYPERBOLOID);
 
-  ay_status = ay_notify_register(ay_hyperboloid_notifycb, AY_IDHYPERBOLOID);
+  ay_status += ay_notify_register(ay_hyperboloid_notifycb, AY_IDHYPERBOLOID);
 
-  ay_status = ay_convert_register(ay_hyperboloid_convertcb, AY_IDHYPERBOLOID);
+  ay_status += ay_convert_register(ay_hyperboloid_convertcb, AY_IDHYPERBOLOID);
 
-  ay_status = ay_provide_register(ay_hyperboloid_providecb, AY_IDHYPERBOLOID);
+  ay_status += ay_provide_register(ay_hyperboloid_providecb, AY_IDHYPERBOLOID);
 
  return ay_status;
 } /* ay_hyperb_init */

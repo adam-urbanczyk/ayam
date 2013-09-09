@@ -693,13 +693,13 @@ ay_concatnc_init(Tcl_Interp *interp)
 				    ay_concatnc_bbccb,
 				    AY_IDCONCATNC);
 
-  ay_status = ay_draw_registerdacb(ay_concatnc_drawacb, AY_IDCONCATNC);
+  ay_status += ay_draw_registerdacb(ay_concatnc_drawacb, AY_IDCONCATNC);
 
-  ay_status = ay_notify_register(ay_concatnc_notifycb, AY_IDCONCATNC);
+  ay_status += ay_notify_register(ay_concatnc_notifycb, AY_IDCONCATNC);
 
-  ay_status = ay_convert_register(ay_concatnc_convertcb, AY_IDCONCATNC);
+  ay_status += ay_convert_register(ay_concatnc_convertcb, AY_IDCONCATNC);
 
-  ay_status = ay_provide_register(ay_concatnc_providecb, AY_IDCONCATNC);
+  ay_status += ay_provide_register(ay_concatnc_providecb, AY_IDCONCATNC);
 
   /* concatnc objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDCONCATNC);

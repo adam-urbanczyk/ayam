@@ -1197,9 +1197,9 @@ ay_light_init(Tcl_Interp *interp)
 				    ay_light_bbccb,
 				    AY_IDLIGHT);
 
-  ay_status = ay_draw_registerdacb(ay_light_drawacb, AY_IDLIGHT);
+  ay_status += ay_draw_registerdacb(ay_light_drawacb, AY_IDLIGHT);
 
-  ay_status = ay_notify_register(ay_light_notifycb, AY_IDLIGHT);
+  ay_status += ay_notify_register(ay_light_notifycb, AY_IDLIGHT);
 
   ay_matt_nomaterial(AY_IDLIGHT);
 

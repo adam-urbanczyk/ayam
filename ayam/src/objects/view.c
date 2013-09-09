@@ -1556,12 +1556,12 @@ ay_view_init(Tcl_Interp *interp)
   Tcl_SetVar(interp, "propertyList", "ViewAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
-  ay_status = ay_draw_registerdacb(ay_view_drawacb, AY_IDVIEW);
+  ay_status += ay_draw_registerdacb(ay_view_drawacb, AY_IDVIEW);
 
-  ay_status = ay_notify_register(ay_view_notifycb, AY_IDVIEW);
+  ay_status += ay_notify_register(ay_view_notifycb, AY_IDVIEW);
 
   /* register drop callback */
-  ay_status = ay_tree_registerdrop(ay_view_dropcb, AY_IDVIEW);
+  ay_status += ay_tree_registerdrop(ay_view_dropcb, AY_IDVIEW);
 
   /* view objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDVIEW);

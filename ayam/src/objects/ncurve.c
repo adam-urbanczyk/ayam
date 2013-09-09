@@ -1674,11 +1674,11 @@ ay_ncurve_init(Tcl_Interp *interp)
 				    ay_ncurve_bbccb,
 				    AY_IDNCURVE);
 
-  ay_status = ay_draw_registerdacb(ay_ncurve_drawacb, AY_IDNCURVE);
+  ay_status += ay_draw_registerdacb(ay_ncurve_drawacb, AY_IDNCURVE);
 
-  ay_status = ay_convert_register(ay_ncurve_convertcb, AY_IDNCURVE);
+  ay_status += ay_convert_register(ay_ncurve_convertcb, AY_IDNCURVE);
 
-  ay_status = ay_notify_register(ay_ncurve_notifycb, AY_IDNCURVE);
+  ay_status += ay_notify_register(ay_ncurve_notifycb, AY_IDNCURVE);
 
   /* ncurve objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDNCURVE);

@@ -1562,11 +1562,11 @@ ay_revolve_init(Tcl_Interp *interp)
 				    AY_IDREVOLVE);
 
 
-  ay_status = ay_notify_register(ay_revolve_notifycb, AY_IDREVOLVE);
+  ay_status += ay_notify_register(ay_revolve_notifycb, AY_IDREVOLVE);
 
-  ay_status = ay_convert_register(ay_revolve_convertcb, AY_IDREVOLVE);
+  ay_status += ay_convert_register(ay_revolve_convertcb, AY_IDREVOLVE);
 
-  ay_status = ay_provide_register(ay_revolve_providecb, AY_IDREVOLVE);
+  ay_status += ay_provide_register(ay_revolve_providecb, AY_IDREVOLVE);
 
  return ay_status;
 } /* ay_revolve_init */

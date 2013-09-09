@@ -765,11 +765,11 @@ ay_sweep_init(Tcl_Interp *interp)
 				    AY_IDSWEEP);
 
 
-  ay_status = ay_notify_register(ay_sweep_notifycb, AY_IDSWEEP);
+  ay_status += ay_notify_register(ay_sweep_notifycb, AY_IDSWEEP);
 
-  ay_status = ay_convert_register(ay_sweep_convertcb, AY_IDSWEEP);
+  ay_status += ay_convert_register(ay_sweep_convertcb, AY_IDSWEEP);
 
-  ay_status = ay_provide_register(ay_sweep_providecb, AY_IDSWEEP);
+  ay_status += ay_provide_register(ay_sweep_providecb, AY_IDSWEEP);
 
  return ay_status;
 } /* ay_sweep_init */

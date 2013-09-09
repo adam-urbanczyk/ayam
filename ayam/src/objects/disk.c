@@ -743,11 +743,11 @@ ay_disk_init(Tcl_Interp *interp)
 				    ay_disk_bbccb,
 				    AY_IDDISK);
 
-  ay_status = ay_notify_register(ay_disk_notifycb, AY_IDDISK);
+  ay_status += ay_notify_register(ay_disk_notifycb, AY_IDDISK);
 
-  ay_status = ay_convert_register(ay_disk_convertcb, AY_IDDISK);
+  ay_status += ay_convert_register(ay_disk_convertcb, AY_IDDISK);
 
-  ay_status = ay_provide_register(ay_disk_providecb, AY_IDDISK);
+  ay_status += ay_provide_register(ay_disk_providecb, AY_IDDISK);
 
  return ay_status;
 } /* ay_disk_init */

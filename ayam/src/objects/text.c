@@ -1055,11 +1055,11 @@ ay_text_init(Tcl_Interp *interp)
 				   AY_IDTEXT);
 
 
-  ay_status = ay_notify_register(ay_text_notifycb, AY_IDTEXT);
+  ay_status += ay_notify_register(ay_text_notifycb, AY_IDTEXT);
 
-  ay_status = ay_convert_register(ay_text_convertcb, AY_IDTEXT);
+  ay_status += ay_convert_register(ay_text_convertcb, AY_IDTEXT);
 
-  ay_status = ay_provide_register(ay_text_providecb, AY_IDTEXT);
+  ay_status += ay_provide_register(ay_text_providecb, AY_IDTEXT);
 
  return ay_status;
 } /* ay_text_init */

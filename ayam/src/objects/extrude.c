@@ -1030,11 +1030,11 @@ ay_extrude_init(Tcl_Interp *interp)
 				    AY_IDEXTRUDE);
 
 
-  ay_status = ay_notify_register(ay_extrude_notifycb, AY_IDEXTRUDE);
+  ay_status += ay_notify_register(ay_extrude_notifycb, AY_IDEXTRUDE);
 
-  ay_status = ay_convert_register(ay_extrude_convertcb, AY_IDEXTRUDE);
+  ay_status += ay_convert_register(ay_extrude_convertcb, AY_IDEXTRUDE);
 
-  ay_status = ay_provide_register(ay_extrude_providecb, AY_IDEXTRUDE);
+  ay_status += ay_provide_register(ay_extrude_providecb, AY_IDEXTRUDE);
 
  return ay_status;
 } /* ay_extrude_init */

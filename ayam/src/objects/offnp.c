@@ -715,13 +715,13 @@ ay_offnp_init(Tcl_Interp *interp)
 				    ay_offnp_bbccb,
 				    AY_IDOFFNP);
 
-  ay_status = ay_draw_registerdacb(ay_offnp_drawacb, AY_IDOFFNP);
+  ay_status += ay_draw_registerdacb(ay_offnp_drawacb, AY_IDOFFNP);
 
-  ay_status = ay_notify_register(ay_offnp_notifycb, AY_IDOFFNP);
+  ay_status += ay_notify_register(ay_offnp_notifycb, AY_IDOFFNP);
 
-  ay_status = ay_convert_register(ay_offnp_convertcb, AY_IDOFFNP);
+  ay_status += ay_convert_register(ay_offnp_convertcb, AY_IDOFFNP);
 
-  ay_status = ay_provide_register(ay_offnp_providecb, AY_IDOFFNP);
+  ay_status += ay_provide_register(ay_offnp_providecb, AY_IDOFFNP);
 
  return ay_status;
 } /* ay_offnp_init */

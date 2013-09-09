@@ -1113,11 +1113,11 @@ ay_torus_init(Tcl_Interp *interp)
 				    ay_torus_bbccb,
 				    AY_IDTORUS);
 
-  ay_status = ay_notify_register(ay_torus_notifycb, AY_IDTORUS);
+  ay_status += ay_notify_register(ay_torus_notifycb, AY_IDTORUS);
 
-  ay_status = ay_convert_register(ay_torus_convertcb, AY_IDTORUS);
+  ay_status += ay_convert_register(ay_torus_convertcb, AY_IDTORUS);
 
-  ay_status = ay_provide_register(ay_torus_providecb, AY_IDTORUS);
+  ay_status += ay_provide_register(ay_torus_providecb, AY_IDTORUS);
 
  return ay_status;
 } /* ay_torus_init */

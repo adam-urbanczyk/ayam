@@ -716,11 +716,11 @@ ay_birail1_init(Tcl_Interp *interp)
 				    AY_IDBIRAIL1);
 
 
-  ay_status = ay_notify_register(ay_birail1_notifycb, AY_IDBIRAIL1);
+  ay_status += ay_notify_register(ay_birail1_notifycb, AY_IDBIRAIL1);
 
-  ay_status = ay_convert_register(ay_birail1_convertcb, AY_IDBIRAIL1);
+  ay_status += ay_convert_register(ay_birail1_convertcb, AY_IDBIRAIL1);
 
-  ay_status = ay_provide_register(ay_birail1_providecb, AY_IDBIRAIL1);
+  ay_status += ay_provide_register(ay_birail1_providecb, AY_IDBIRAIL1);
 
  return ay_status;
 } /* ay_birail1_init */

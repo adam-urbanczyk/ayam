@@ -1234,11 +1234,11 @@ ay_parab_init(Tcl_Interp *interp)
 				    ay_parab_bbccb,
 				    AY_IDPARABOLOID);
 
-  ay_status = ay_notify_register(ay_paraboloid_notifycb, AY_IDPARABOLOID);
+  ay_status += ay_notify_register(ay_paraboloid_notifycb, AY_IDPARABOLOID);
 
-  ay_status = ay_convert_register(ay_paraboloid_convertcb, AY_IDPARABOLOID);
+  ay_status += ay_convert_register(ay_paraboloid_convertcb, AY_IDPARABOLOID);
 
-  ay_status = ay_provide_register(ay_paraboloid_providecb, AY_IDPARABOLOID);
+  ay_status += ay_provide_register(ay_paraboloid_providecb, AY_IDPARABOLOID);
 
  return ay_status;
 } /* ay_parab_init */

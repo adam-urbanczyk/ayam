@@ -349,7 +349,7 @@ ay_trim_notifycb(ay_object *o)
   /* remove old objects */
   if(trim->npatch)
     {
-      ay_status = ay_object_deletemulti(trim->npatch);
+      (void)ay_object_deletemulti(trim->npatch);
     }
   trim->npatch = NULL;
 
@@ -471,11 +471,11 @@ ay_trim_init(Tcl_Interp *interp)
 				    AY_IDTRIM);
 
 
-  ay_status = ay_notify_register(ay_trim_notifycb, AY_IDTRIM);
+  ay_status += ay_notify_register(ay_trim_notifycb, AY_IDTRIM);
 
-  ay_status = ay_convert_register(ay_trim_convertcb, AY_IDTRIM);
+  ay_status += ay_convert_register(ay_trim_convertcb, AY_IDTRIM);
 
-  ay_status = ay_provide_register(ay_trim_providecb, AY_IDTRIM);
+  ay_status += ay_provide_register(ay_trim_providecb, AY_IDTRIM);
 
  return ay_status;
 } /* ay_trim_init */
