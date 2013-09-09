@@ -581,11 +581,11 @@ ay_cap_init(Tcl_Interp *interp)
 				    AY_IDCAP);
 
 
-  ay_status = ay_notify_register(ay_cap_notifycb, AY_IDCAP);
+  ay_status += ay_notify_register(ay_cap_notifycb, AY_IDCAP);
 
-  ay_status = ay_convert_register(ay_cap_convertcb, AY_IDCAP);
+  ay_status += ay_convert_register(ay_cap_convertcb, AY_IDCAP);
 
-  ay_status = ay_provide_register(ay_cap_providecb, AY_IDCAP);
+  ay_status += ay_provide_register(ay_cap_providecb, AY_IDCAP);
 
  return ay_status;
 } /* ay_cap_init */

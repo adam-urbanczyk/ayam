@@ -782,13 +782,13 @@ ay_extrnc_init(Tcl_Interp *interp)
 				    ay_extrnc_bbccb,
 				    AY_IDEXTRNC);
 
-  ay_status = ay_draw_registerdacb(ay_extrnc_drawacb, AY_IDEXTRNC);
+  ay_status += ay_draw_registerdacb(ay_extrnc_drawacb, AY_IDEXTRNC);
 
-  ay_status = ay_notify_register(ay_extrnc_notifycb, AY_IDEXTRNC);
+  ay_status += ay_notify_register(ay_extrnc_notifycb, AY_IDEXTRNC);
 
-  ay_status = ay_convert_register(ay_extrnc_convertcb, AY_IDEXTRNC);
+  ay_status += ay_convert_register(ay_extrnc_convertcb, AY_IDEXTRNC);
 
-  ay_status = ay_provide_register(ay_extrnc_providecb, AY_IDEXTRNC);
+  ay_status += ay_provide_register(ay_extrnc_providecb, AY_IDEXTRNC);
 
   /* extrnc objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDEXTRNC);

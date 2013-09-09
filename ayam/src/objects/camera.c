@@ -739,10 +739,10 @@ ay_camera_init(Tcl_Interp *interp)
 				    ay_camera_bbccb,
 				    AY_IDCAMERA);
 
-  ay_status = ay_draw_registerdacb(ay_camera_drawacb, AY_IDCAMERA);
+  ay_status += ay_draw_registerdacb(ay_camera_drawacb, AY_IDCAMERA);
 
   /* register drop callback */
-  ay_status = ay_tree_registerdrop(ay_camera_dropcb, AY_IDCAMERA);
+  ay_status += ay_tree_registerdrop(ay_camera_dropcb, AY_IDCAMERA);
 
   /* camera objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDCAMERA);

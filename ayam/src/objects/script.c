@@ -1906,11 +1906,11 @@ ay_script_init(Tcl_Interp *interp)
 				    AY_IDSCRIPT);
 
 
-  ay_status = ay_notify_register(ay_script_notifycb, AY_IDSCRIPT);
+  ay_status += ay_notify_register(ay_script_notifycb, AY_IDSCRIPT);
 
-  ay_status = ay_convert_register(ay_script_convertcb, AY_IDSCRIPT);
+  ay_status += ay_convert_register(ay_script_convertcb, AY_IDSCRIPT);
 
-  ay_status = ay_provide_register(ay_script_providecb, AY_IDSCRIPT);
+  ay_status += ay_provide_register(ay_script_providecb, AY_IDSCRIPT);
 
   /* script objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDSCRIPT);

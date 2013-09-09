@@ -684,13 +684,13 @@ ay_offnc_init(Tcl_Interp *interp)
 				    ay_offnc_bbccb,
 				    AY_IDOFFNC);
 
-  ay_status = ay_draw_registerdacb(ay_offnc_drawacb, AY_IDOFFNC);
+  ay_status += ay_draw_registerdacb(ay_offnc_drawacb, AY_IDOFFNC);
 
-  ay_status = ay_notify_register(ay_offnc_notifycb, AY_IDOFFNC);
+  ay_status += ay_notify_register(ay_offnc_notifycb, AY_IDOFFNC);
 
-  ay_status = ay_convert_register(ay_offnc_convertcb, AY_IDOFFNC);
+  ay_status += ay_convert_register(ay_offnc_convertcb, AY_IDOFFNC);
 
-  ay_status = ay_provide_register(ay_offnc_providecb, AY_IDOFFNC);
+  ay_status += ay_provide_register(ay_offnc_providecb, AY_IDOFFNC);
 
   /* offnc objects may not be associated with materials */
   ay_matt_nomaterial(AY_IDOFFNC);

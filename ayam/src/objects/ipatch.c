@@ -2495,13 +2495,13 @@ ay_ipatch_init(Tcl_Interp *interp)
 				    ay_ipatch_bbccb,
 				    AY_IDIPATCH);
 
-  ay_status = ay_draw_registerdacb(ay_ipatch_drawacb, AY_IDIPATCH);
+  ay_status += ay_draw_registerdacb(ay_ipatch_drawacb, AY_IDIPATCH);
 
-  ay_status = ay_notify_register(ay_ipatch_notifycb, AY_IDIPATCH);
+  ay_status += ay_notify_register(ay_ipatch_notifycb, AY_IDIPATCH);
 
-  ay_status = ay_convert_register(ay_ipatch_convertcb, AY_IDIPATCH);
+  ay_status += ay_convert_register(ay_ipatch_convertcb, AY_IDIPATCH);
 
-  ay_status = ay_provide_register(ay_ipatch_providecb, AY_IDIPATCH);
+  ay_status += ay_provide_register(ay_ipatch_providecb, AY_IDIPATCH);
 
  return ay_status;
 } /* ay_ipatch_init */

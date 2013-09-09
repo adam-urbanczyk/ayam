@@ -775,11 +775,11 @@ ay_birail2_init(Tcl_Interp *interp)
 				    AY_IDBIRAIL2);
 
 
-  ay_status = ay_notify_register(ay_birail2_notifycb, AY_IDBIRAIL2);
+  ay_status += ay_notify_register(ay_birail2_notifycb, AY_IDBIRAIL2);
 
-  ay_status = ay_convert_register(ay_birail2_convertcb, AY_IDBIRAIL2);
+  ay_status += ay_convert_register(ay_birail2_convertcb, AY_IDBIRAIL2);
 
-  ay_status = ay_provide_register(ay_birail2_providecb, AY_IDBIRAIL2);
+  ay_status += ay_provide_register(ay_birail2_providecb, AY_IDBIRAIL2);
 
  return ay_status;
 } /* ay_birail2_init */

@@ -705,11 +705,11 @@ ay_bevel_init(Tcl_Interp *interp)
 				    AY_IDBEVEL);
 
 
-  ay_status = ay_notify_register(ay_bevel_notifycb, AY_IDBEVEL);
+  ay_status += ay_notify_register(ay_bevel_notifycb, AY_IDBEVEL);
 
-  ay_status = ay_convert_register(ay_bevel_convertcb, AY_IDBEVEL);
+  ay_status += ay_convert_register(ay_bevel_convertcb, AY_IDBEVEL);
 
-  ay_status = ay_provide_register(ay_bevel_providecb, AY_IDBEVEL);
+  ay_status += ay_provide_register(ay_bevel_providecb, AY_IDBEVEL);
 
  return ay_status;
 } /* ay_bevel_init */

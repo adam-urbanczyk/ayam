@@ -807,13 +807,13 @@ ay_concatnp_init(Tcl_Interp *interp)
 				    AY_IDCONCATNP);
 
 
-  ay_status = ay_draw_registerdacb(ay_concatnp_drawacb, AY_IDCONCATNP);
+  ay_status += ay_draw_registerdacb(ay_concatnp_drawacb, AY_IDCONCATNP);
 
-  ay_status = ay_notify_register(ay_concatnp_notifycb, AY_IDCONCATNP);
+  ay_status += ay_notify_register(ay_concatnp_notifycb, AY_IDCONCATNP);
 
-  ay_status = ay_convert_register(ay_concatnp_convertcb, AY_IDCONCATNP);
+  ay_status += ay_convert_register(ay_concatnp_convertcb, AY_IDCONCATNP);
 
-  ay_status = ay_provide_register(ay_concatnp_providecb, AY_IDCONCATNP);
+  ay_status += ay_provide_register(ay_concatnp_providecb, AY_IDCONCATNP);
 
  return ay_status;
 } /* ay_concatnp_init */

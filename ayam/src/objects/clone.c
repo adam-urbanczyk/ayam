@@ -1561,34 +1561,34 @@ ay_clone_init(Tcl_Interp *interp)
 				    ay_clone_bbccb,
 				    AY_IDCLONE);
 
-  ay_status = ay_notify_register(ay_clone_notifycb, AY_IDCLONE);
+  ay_status += ay_notify_register(ay_clone_notifycb, AY_IDCLONE);
 
-  ay_status = ay_convert_register(ay_clone_convertcb, AY_IDCLONE);
+  ay_status += ay_convert_register(ay_clone_convertcb, AY_IDCLONE);
 
-  ay_status = ay_provide_register(ay_clone_providecb, AY_IDCLONE);
+  ay_status += ay_provide_register(ay_clone_providecb, AY_IDCLONE);
 
   /* now register the Mirror object as a Clone in disguise */
-  ay_status = ay_otype_registercore(ay_mirror_name,
-				    ay_clone_createcb,
-				    ay_clone_deletecb,
-				    ay_clone_copycb,
-				    ay_clone_drawcb,
-				    ay_clone_drawhcb,
-				    ay_clone_shadecb,
-				    ay_clone_setpropcb,
-				    ay_clone_getpropcb,
-				    ay_clone_getpntcb,
-				    ay_clone_readcb,
-				    ay_clone_writecb,
-				    ay_clone_wribcb,
-				    ay_clone_bbccb,
-				    AY_IDMIRROR);
+  ay_status += ay_otype_registercore(ay_mirror_name,
+				     ay_clone_createcb,
+				     ay_clone_deletecb,
+				     ay_clone_copycb,
+				     ay_clone_drawcb,
+				     ay_clone_drawhcb,
+				     ay_clone_shadecb,
+				     ay_clone_setpropcb,
+				     ay_clone_getpropcb,
+				     ay_clone_getpntcb,
+				     ay_clone_readcb,
+				     ay_clone_writecb,
+				     ay_clone_wribcb,
+				     ay_clone_bbccb,
+				     AY_IDMIRROR);
 
-  ay_status = ay_notify_register(ay_clone_notifycb, AY_IDMIRROR);
+  ay_status += ay_notify_register(ay_clone_notifycb, AY_IDMIRROR);
 
-  ay_status = ay_convert_register(ay_clone_convertcb, AY_IDMIRROR);
+  ay_status += ay_convert_register(ay_clone_convertcb, AY_IDMIRROR);
 
-  ay_status = ay_provide_register(ay_clone_providecb, AY_IDMIRROR);
+  ay_status += ay_provide_register(ay_clone_providecb, AY_IDMIRROR);
 
  return ay_status;
 } /* ay_clone_init */

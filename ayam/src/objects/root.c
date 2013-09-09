@@ -1025,7 +1025,7 @@ ay_root_init(Tcl_Interp *interp)
 				    ay_root_bbccb,
 				    AY_IDROOT);
 
-  ay_status = ay_draw_registerdacb(ay_root_drawacb, AY_IDROOT);
+  ay_status = +ay_draw_registerdacb(ay_root_drawacb, AY_IDROOT);
 
   Tcl_SetVar(interp, "propertyList", "RootAttr", TCL_APPEND_VALUE |
 	     TCL_LIST_ELEMENT | TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);

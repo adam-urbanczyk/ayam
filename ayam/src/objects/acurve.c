@@ -1240,13 +1240,13 @@ ay_acurve_init(Tcl_Interp *interp)
 				    ay_acurve_bbccb,
 				    AY_IDACURVE);
 
-  ay_status = ay_draw_registerdacb(ay_acurve_drawacb, AY_IDACURVE);
+  ay_status += ay_draw_registerdacb(ay_acurve_drawacb, AY_IDACURVE);
 
-  ay_status = ay_notify_register(ay_acurve_notifycb, AY_IDACURVE);
+  ay_status += ay_notify_register(ay_acurve_notifycb, AY_IDACURVE);
 
-  ay_status = ay_convert_register(ay_acurve_convertcb, AY_IDACURVE);
+  ay_status += ay_convert_register(ay_acurve_convertcb, AY_IDACURVE);
 
-  ay_status = ay_provide_register(ay_acurve_providecb, AY_IDACURVE);
+  ay_status += ay_provide_register(ay_acurve_providecb, AY_IDACURVE);
 
   /* acurves may not be associated with materials */
   ay_matt_nomaterial(AY_IDACURVE);

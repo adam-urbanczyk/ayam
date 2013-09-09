@@ -680,9 +680,9 @@ ay_select_init(Tcl_Interp *interp)
 				    ay_select_bbccb,
 				    AY_IDSELECT);
 
-  ay_status = ay_provide_register(ay_select_providecb, AY_IDSELECT);
+  ay_status += ay_provide_register(ay_select_providecb, AY_IDSELECT);
 
-  ay_status = ay_notify_register(ay_select_notifycb, AY_IDSELECT);
+  ay_status += ay_notify_register(ay_select_notifycb, AY_IDSELECT);
 
  return ay_status;
 } /* ay_select_init */

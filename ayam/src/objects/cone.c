@@ -1010,11 +1010,11 @@ ay_cone_init(Tcl_Interp *interp)
 				    ay_cone_bbccb,
 				    AY_IDCONE);
 
-  ay_status = ay_notify_register(ay_cone_notifycb, AY_IDCONE);
+  ay_status += ay_notify_register(ay_cone_notifycb, AY_IDCONE);
 
-  ay_status = ay_convert_register(ay_cone_convertcb, AY_IDCONE);
+  ay_status += ay_convert_register(ay_cone_convertcb, AY_IDCONE);
 
-  ay_status = ay_provide_register(ay_cone_providecb, AY_IDCONE);
+  ay_status += ay_provide_register(ay_cone_providecb, AY_IDCONE);
 
  return ay_status;
 } /* ay_cone_init */

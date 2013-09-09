@@ -1421,13 +1421,13 @@ ay_pamesh_init(Tcl_Interp *interp)
 				    ay_pamesh_bbccb,
 				    AY_IDPAMESH);
 
-  ay_status = ay_draw_registerdacb(ay_pamesh_drawacb, AY_IDPAMESH);
+  ay_status += ay_draw_registerdacb(ay_pamesh_drawacb, AY_IDPAMESH);
 
-  ay_status = ay_notify_register(ay_pamesh_notifycb, AY_IDPAMESH);
+  ay_status += ay_notify_register(ay_pamesh_notifycb, AY_IDPAMESH);
 
-  ay_status = ay_convert_register(ay_pamesh_convertcb, AY_IDPAMESH);
+  ay_status += ay_convert_register(ay_pamesh_convertcb, AY_IDPAMESH);
 
-  ay_status = ay_provide_register(ay_pamesh_providecb, AY_IDPAMESH);
+  ay_status += ay_provide_register(ay_pamesh_providecb, AY_IDPAMESH);
 
  return ay_status;
 } /* ay_pamesh_init */

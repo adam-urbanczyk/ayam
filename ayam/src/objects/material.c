@@ -891,7 +891,7 @@ ay_material_init(Tcl_Interp *interp)
 				    AY_IDMATERIAL);
 
   /* register drop callback */
-  ay_status = ay_tree_registerdrop(ay_material_dropcb, AY_IDMATERIAL);
+  ay_status += ay_tree_registerdrop(ay_material_dropcb, AY_IDMATERIAL);
 
   /* materials may not be associated with materials */
   ay_matt_nomaterial(AY_IDMATERIAL);

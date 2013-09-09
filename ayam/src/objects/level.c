@@ -410,7 +410,7 @@ ay_level_init(Tcl_Interp *interp)
 				    ay_level_bbccb,
 				    AY_IDLEVEL);
 
-  ay_status = ay_provide_register(ay_level_providecb, AY_IDLEVEL);
+  ay_status += ay_provide_register(ay_level_providecb, AY_IDLEVEL);
 
  return ay_status;
 } /* ay_level_init */
