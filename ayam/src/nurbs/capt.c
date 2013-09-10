@@ -935,7 +935,7 @@ ay_capt_parsetags(ay_tag *tag, ay_cparam *params)
 void
 ay_capt_createtags(ay_object *o, int *caps)
 {
- ay_tag *tag = NULL, *new = NULL;
+ ay_tag *new = NULL;
  int i, l;
  char buf[3*TCL_INTEGER_SPACE+TCL_DOUBLE_SPACE+4];
 
@@ -948,7 +948,7 @@ ay_capt_createtags(ay_object *o, int *caps)
 	{
 	  l = sprintf(buf, "%d,%d,%d,%g", i, caps[i]-1, 0, 0.5);
 
-	  if(!(new = calloc(1, sizeof(tag))))
+	  if(!(new = calloc(1, sizeof(ay_tag))))
 	    return;
 	  if(!(new->name = calloc(3, sizeof(char))))
 	    { free(new); return; }
