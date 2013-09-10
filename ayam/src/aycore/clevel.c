@@ -590,7 +590,10 @@ ay_clevel_dup(ay_list_object *src)
  int ay_status = AY_OK;
 
   if(src->next)
-    ay_status = ay_clevel_dup(src->next);
+    {
+      if((ay_status = ay_clevel_dup(src->next)))
+	return ay_status;
+    }
 
   ay_status = ay_clevel_add(src->object);
 

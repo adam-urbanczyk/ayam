@@ -1665,58 +1665,57 @@ ay_comp_init()
   if((ay_status = ay_table_init(&ay_comparecbt)))
     { ay_error(ay_status, fname, NULL); return AY_ERROR; }
 
+  ay_status += ay_comp_register(ay_comp_box, AY_IDBOX);
+  ay_status += ay_comp_register(ay_comp_bpatch, AY_IDBPATCH);
 
-  ay_status = ay_comp_register(ay_comp_box, AY_IDBOX);
-  ay_status = ay_comp_register(ay_comp_bpatch, AY_IDBPATCH);
+  ay_status += ay_comp_register(ay_comp_sphere, AY_IDSPHERE);
+  ay_status += ay_comp_register(ay_comp_disk, AY_IDDISK);
+  ay_status += ay_comp_register(ay_comp_cylinder, AY_IDCYLINDER);
+  ay_status += ay_comp_register(ay_comp_cone, AY_IDCONE);
+  ay_status += ay_comp_register(ay_comp_torus, AY_IDTORUS);
+  ay_status += ay_comp_register(ay_comp_hyperb, AY_IDHYPERBOLOID);
+  ay_status += ay_comp_register(ay_comp_parab, AY_IDPARABOLOID);
 
-  ay_status = ay_comp_register(ay_comp_sphere, AY_IDSPHERE);
-  ay_status = ay_comp_register(ay_comp_disk, AY_IDDISK);
-  ay_status = ay_comp_register(ay_comp_cylinder, AY_IDCYLINDER);
-  ay_status = ay_comp_register(ay_comp_cone, AY_IDCONE);
-  ay_status = ay_comp_register(ay_comp_torus, AY_IDTORUS);
-  ay_status = ay_comp_register(ay_comp_hyperb, AY_IDHYPERBOLOID);
-  ay_status = ay_comp_register(ay_comp_parab, AY_IDPARABOLOID);
+  ay_status += ay_comp_register(ay_comp_ncurve, AY_IDNCURVE);
+  ay_status += ay_comp_register(ay_comp_icurve, AY_IDICURVE);
+  ay_status += ay_comp_register(ay_comp_acurve, AY_IDACURVE);
+  ay_status += ay_comp_register(ay_comp_npatch, AY_IDNPATCH);
 
-  ay_status = ay_comp_register(ay_comp_ncurve, AY_IDNCURVE);
-  ay_status = ay_comp_register(ay_comp_icurve, AY_IDICURVE);
-  ay_status = ay_comp_register(ay_comp_acurve, AY_IDACURVE);
-  ay_status = ay_comp_register(ay_comp_npatch, AY_IDNPATCH);
+  ay_status += ay_comp_register(ay_comp_riinc, AY_IDRIINC);
+  ay_status += ay_comp_register(ay_comp_riproc, AY_IDRIPROC);
+  ay_status += ay_comp_register(ay_comp_level, AY_IDLEVEL);
 
-  ay_status = ay_comp_register(ay_comp_riinc, AY_IDRIINC);
-  ay_status = ay_comp_register(ay_comp_riproc, AY_IDRIPROC);
-  ay_status = ay_comp_register(ay_comp_level, AY_IDLEVEL);
+  ay_status += ay_comp_register(ay_comp_light, AY_IDLIGHT);
+  ay_status += ay_comp_register(ay_comp_camera, AY_IDCAMERA);
+  ay_status += ay_comp_register(ay_comp_material, AY_IDMATERIAL);
 
-  ay_status = ay_comp_register(ay_comp_light, AY_IDLIGHT);
-  ay_status = ay_comp_register(ay_comp_camera, AY_IDCAMERA);
-  ay_status = ay_comp_register(ay_comp_material, AY_IDMATERIAL);
-
-  ay_status = ay_comp_register(ay_comp_revolve, AY_IDREVOLVE);
-  ay_status = ay_comp_register(ay_comp_extrude, AY_IDEXTRUDE);
-  ay_status = ay_comp_register(ay_comp_sweep, AY_IDSWEEP);
-  ay_status = ay_comp_register(ay_comp_swing, AY_IDSWING);
-  ay_status = ay_comp_register(ay_comp_skin, AY_IDSKIN);
-  ay_status = ay_comp_register(ay_comp_pamesh, AY_IDPAMESH);
-  ay_status = ay_comp_register(ay_comp_cap, AY_IDCAP);
-  ay_status = ay_comp_register(ay_comp_concatnc, AY_IDCONCATNC);
-  ay_status = ay_comp_register(ay_comp_clone, AY_IDCLONE);
-  ay_status = ay_comp_register(ay_comp_clone, AY_IDMIRROR);
-  ay_status = ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
-  ay_status = ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
-  ay_status = ay_comp_register(ay_comp_gordon, AY_IDGORDON);
-  ay_status = ay_comp_register(ay_comp_text, AY_IDTEXT);
-  ay_status = ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
-  ay_status = ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
-  ay_status = ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
-  ay_status = ay_comp_register(ay_comp_extrnp, AY_IDEXTRNP);
-  ay_status = ay_comp_register(ay_comp_ncircle, AY_IDNCIRCLE);
-  ay_status = ay_comp_register(ay_comp_script, AY_IDSCRIPT);
-  ay_status = ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
-  ay_status = ay_comp_register(ay_comp_select, AY_IDSELECT);
-  ay_status = ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
-  ay_status = ay_comp_register(ay_comp_trim, AY_IDTRIM);
-  ay_status = ay_comp_register(ay_comp_concatnp, AY_IDCONCATNP);
-  ay_status = ay_comp_register(ay_comp_offnp, AY_IDOFFNP);
-  ay_status = ay_comp_register(ay_comp_ipatch, AY_IDIPATCH);
+  ay_status += ay_comp_register(ay_comp_revolve, AY_IDREVOLVE);
+  ay_status += ay_comp_register(ay_comp_extrude, AY_IDEXTRUDE);
+  ay_status += ay_comp_register(ay_comp_sweep, AY_IDSWEEP);
+  ay_status += ay_comp_register(ay_comp_swing, AY_IDSWING);
+  ay_status += ay_comp_register(ay_comp_skin, AY_IDSKIN);
+  ay_status += ay_comp_register(ay_comp_pamesh, AY_IDPAMESH);
+  ay_status += ay_comp_register(ay_comp_cap, AY_IDCAP);
+  ay_status += ay_comp_register(ay_comp_concatnc, AY_IDCONCATNC);
+  ay_status += ay_comp_register(ay_comp_clone, AY_IDCLONE);
+  ay_status += ay_comp_register(ay_comp_clone, AY_IDMIRROR);
+  ay_status += ay_comp_register(ay_comp_pomesh, AY_IDPOMESH);
+  ay_status += ay_comp_register(ay_comp_sdmesh, AY_IDSDMESH);
+  ay_status += ay_comp_register(ay_comp_gordon, AY_IDGORDON);
+  ay_status += ay_comp_register(ay_comp_text, AY_IDTEXT);
+  ay_status += ay_comp_register(ay_comp_birail1, AY_IDBIRAIL1);
+  ay_status += ay_comp_register(ay_comp_birail2, AY_IDBIRAIL2);
+  ay_status += ay_comp_register(ay_comp_extrnc, AY_IDEXTRNC);
+  ay_status += ay_comp_register(ay_comp_extrnp, AY_IDEXTRNP);
+  ay_status += ay_comp_register(ay_comp_ncircle, AY_IDNCIRCLE);
+  ay_status += ay_comp_register(ay_comp_script, AY_IDSCRIPT);
+  ay_status += ay_comp_register(ay_comp_bevel, AY_IDBEVEL);
+  ay_status += ay_comp_register(ay_comp_select, AY_IDSELECT);
+  ay_status += ay_comp_register(ay_comp_offnc, AY_IDOFFNC);
+  ay_status += ay_comp_register(ay_comp_trim, AY_IDTRIM);
+  ay_status += ay_comp_register(ay_comp_concatnp, AY_IDCONCATNP);
+  ay_status += ay_comp_register(ay_comp_offnp, AY_IDOFFNP);
+  ay_status += ay_comp_register(ay_comp_ipatch, AY_IDIPATCH);
 
  return ay_status;
 } /* ay_comp_init */

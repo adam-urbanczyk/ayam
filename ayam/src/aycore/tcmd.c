@@ -568,9 +568,9 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < nc->knotv[nc->order-1]) ||
 		 (u > nc->knotv[nc->length]))
 		{
-		  ay_status = ay_error_reportdrange(argv[0], "\"u\"",
-						    nc->knotv[nc->order-1],
-						    nc->knotv[nc->length]);
+		  (void)ay_error_reportdrange(argv[0], "\"u\"",
+					      nc->knotv[nc->order-1],
+					      nc->knotv[nc->length]);
 		  goto cleanup;
 		}
 
@@ -656,18 +656,18 @@ ay_tcmd_getpointtcmd(ClientData clientData, Tcl_Interp *interp,
 	      if((u < np->uknotv[np->uorder-1]) ||
 		 (u > np->uknotv[np->width]))
 		{
-		  ay_status = ay_error_reportdrange(argv[0], "\"u\"",
-						    np->uknotv[np->uorder-1],
-						    np->uknotv[np->width]);
+		  (void)ay_error_reportdrange(argv[0], "\"u\"",
+					      np->uknotv[np->uorder-1],
+					      np->uknotv[np->width]);
 		  goto cleanup;
 		}
 
 	      if((v < np->vknotv[np->vorder-1]) ||
 		 (v > np->vknotv[np->height]))
 		{
-		  ay_status = ay_error_reportdrange(argv[0], "\"v\"",
-						    np->vknotv[np->vorder-1],
-						    np->vknotv[np->height]);
+		  (void)ay_error_reportdrange(argv[0], "\"v\"",
+					      np->vknotv[np->vorder-1],
+					      np->vknotv[np->height]);
 		  goto cleanup;
 		}
 
