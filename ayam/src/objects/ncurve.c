@@ -1317,6 +1317,14 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
 
   ncurve = (ay_nurbcurve_object *)(o->refine);
 
+  if(argc > 1 && argv[1][0] == '-' && argv[1][1] == 'i')
+    {
+      to = Tcl_NewIntObj(ay_nct_isdegen(ncurve));
+      Tcl_ObjSetVar2(interp, arrobj, isdegenobj, to,
+		     TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
+      return AY_OK;
+    }
+
   to = Tcl_NewIntObj(ncurve->length);
   Tcl_ObjSetVar2(interp, arrobj, lengthobj, to,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
@@ -1363,10 +1371,6 @@ ay_ncurve_getpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
   else
     to = Tcl_NewStringObj("no", -1);
   Tcl_ObjSetVar2(interp, arrobj, isratobj, to,
-		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
-
-  to = Tcl_NewIntObj(ay_nct_isdegen(ncurve));
-  Tcl_ObjSetVar2(interp, arrobj, isdegenobj, to,
 		 TCL_LEAVE_ERR_MSG | TCL_GLOBAL_ONLY);
 
   to = Tcl_NewIntObj(0);
