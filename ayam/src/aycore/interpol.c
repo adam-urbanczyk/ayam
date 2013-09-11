@@ -167,12 +167,16 @@ ay_interpol_ncurves(double p, ay_object *c1, ay_object *c2, ay_object **ta)
 
   ay_status = ay_interpol_1DA4D(p, nc1->length, nc1->controlv, nc2->controlv,
 				newcontrolv);
+  if(ay_status)
+    goto cleanup;
 
   /* knot types are believed to be equal */
 
   ay_status = ay_interpol_1DA1D(p, nc1->length+nc1->order,
 				nc1->knotv, nc2->knotv,
 				newknotv);
+  if(ay_status)
+    goto cleanup;
 
   memcpy(newnc, nc1, sizeof(ay_nurbcurve_object));
 
