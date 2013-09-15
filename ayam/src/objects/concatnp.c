@@ -336,19 +336,16 @@ ay_concatnp_setpropcb(Tcl_Interp *interp, int argc, char *argv[], ay_object *o)
     {
       free(concatnp->uv_select);
       concatnp->uv_select = NULL;
-      o->modified = AY_TRUE;
     }
 
   if(stringlen > 0)
     {
-      if(!(concatnp->uv_select = calloc(stringlen+1, sizeof(char))))
+      if(!(concatnp->uv_select = malloc((stringlen+1)*sizeof(char))))
 	{
 	  ay_error(AY_EOMEM, fname, NULL);
 	  goto cleanup;
 	}
       strcpy(concatnp->uv_select, string);
-
-      o->modified = AY_TRUE;
     }
 
 cleanup:
@@ -711,7 +708,8 @@ ay_concatnp_notifycb(ay_object *o)
       bparams.dirs[2] = !bparams.dirs[2];
       bparams.radii[2] = -bparams.radii[2];
 
-      ay_status = ay_bevelt_addbevels(&bparams, &cparams, concatnp->npatch, nextcb);
+      ay_status = ay_bevelt_addbevels(&bparams, &cparams,
+				      concatnp->npatch, nextcb);
       if(ay_status)
 	goto cleanup;
     }
@@ -744,7 +742,7 @@ cleanup:
 	ay_selp_clear(o);
     }
 
- return AY_OK;
+ return ay_status;
 } /* ay_concatnp_notifycb */
 
 
