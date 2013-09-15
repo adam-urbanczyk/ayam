@@ -749,17 +749,17 @@ Sfcurve_Init(Tcl_Interp *interp)
 				sfcurve_bbccb,
 				&sfcurve_id);
 
+  ay_status += ay_notify_register(sfcurve_notifycb, sfcurve_id);
+
+  ay_status += ay_convert_register(sfcurve_convertcb, sfcurve_id);
+
+  ay_status += ay_provide_register(sfcurve_providecb, sfcurve_id);
+
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
-
-  ay_status = ay_notify_register(sfcurve_notifycb, sfcurve_id);
-
-  ay_status = ay_convert_register(sfcurve_convertcb, sfcurve_id);
-
-  ay_status = ay_provide_register(sfcurve_providecb, sfcurve_id);
 
   /* sfcurve objects may not be associated with materials */
   ay_matt_nomaterial(sfcurve_id);

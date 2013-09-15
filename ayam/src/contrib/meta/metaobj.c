@@ -1091,17 +1091,17 @@ Metaobj_Init (Tcl_Interp * interp)
 				 metaobj_bbccb,
 				 &metaobj_id);
 
+  ay_status += ay_notify_register (metaobj_notifycb, metaobj_id);
+
+  ay_status += ay_convert_register(metaobj_convertcb, metaobj_id);
+
+  ay_status += ay_provide_register(metaobj_providecb, metaobj_id);
+
   if (ay_status)
     {
       ay_error (AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
-
-  ay_status = ay_notify_register (metaobj_notifycb, metaobj_id);
-
-  ay_status = ay_convert_register(metaobj_convertcb, metaobj_id);
-
-  ay_status = ay_provide_register(metaobj_providecb, metaobj_id);
 
   /* first Metacomp init */
   Metacomp_Init (interp);
