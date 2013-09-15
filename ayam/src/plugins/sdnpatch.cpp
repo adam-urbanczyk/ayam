@@ -5512,18 +5512,17 @@ Sdnpatch_Init(Tcl_Interp *interp)
 				sdnpatch_bbccb,
 				&sdnpatch_id);
 
+  ay_status += ay_notify_register(sdnpatch_notifycb, sdnpatch_id);
+
+  ay_status += ay_convert_register(sdnpatch_convertcb, sdnpatch_id);
+
+  ay_status += ay_provide_register(sdnpatch_providecb, sdnpatch_id);
+
   if(ay_status)
     {
       ay_error(AY_ERROR, fname, "Error registering custom object!");
       return TCL_OK;
     }
-
-  ay_status = ay_notify_register(sdnpatch_notifycb, sdnpatch_id);
-
-  ay_status = ay_convert_register(sdnpatch_convertcb, sdnpatch_id);
-
-  ay_status = ay_provide_register(sdnpatch_providecb, sdnpatch_id);
-
 
   // create new Tcl commands to interface with the plugin
   Tcl_CreateCommand(interp, "sdnconvertNP", (Tcl_CmdProc*) sdnpatch_convnptcmd,
