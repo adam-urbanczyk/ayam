@@ -461,6 +461,7 @@ ay_concatnc_notifycb(ay_object *o)
 	    highest_order = nc->order;
 	  ay_object_copy(down, next);
 	  next = &((*next)->next);
+	  numcurves++;
 	}
       else
 	{
@@ -471,13 +472,14 @@ ay_concatnc_notifycb(ay_object *o)
 	      if(nc->order > highest_order)
 		highest_order = nc->order;
 	      next = &((*next)->next);
+	      numcurves++;
 	    }
 	}
 
       down = down->next;
     } /* while */
 
-  if(!curves)
+  if(!curves || numcurves < 2)
     {
       goto cleanup;
     }
@@ -485,10 +487,12 @@ ay_concatnc_notifycb(ay_object *o)
   ncurve = curves;
   while(ncurve)
     {
-      ay_nct_applytrafo(ncurve);
+      (void)ay_nct_applytrafo(ncurve);
       ay_status = ay_nct_elevate((ay_nurbcurve_object *)(ncurve->refine),
 				 highest_order);
-      ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine, 0);
+      ay_status += ay_nct_clamp((ay_nurbcurve_object *)ncurve->refine, 0);
+      if(ay_status)
+	goto cleanup;
       ncurve = ncurve->next;
     } /* while */
 
@@ -516,45 +520,34 @@ ay_concatnc_notifycb(ay_object *o)
 	}
     }
 
-  /* count curves */
-  ncurve = curves;
-  while(ncurve)
+  ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
+				    concatnc->fillgaps, curves,
+				    &concatnc->ncurve);
+
+  if(ay_status)
     {
-      numcurves++;
-      ncurve = ncurve->next;
+      ay_error(AY_ERROR, fname, "Failed to concat curves!");
     }
-
-  if(numcurves > 1)
+  else
     {
-      ay_status = ay_nct_concatmultiple(concatnc->closed, concatnc->knot_type,
-					concatnc->fillgaps, curves,
-					&concatnc->ncurve);
-
-      if(ay_status)
+      nc = (ay_nurbcurve_object*)concatnc->ncurve->refine;
+      if(concatnc->revert)
 	{
-	  ay_error(AY_ERROR, fname, "Failed to concat curves!");
+	  ay_status = ay_nct_revert(nc);
+	  if(ay_status)
+	    {
+	      ay_error(ay_status, fname, "Could not revert curve!");
+	    }
 	}
-      else
-	{
-	  nc = (ay_nurbcurve_object*)concatnc->ncurve->refine;
-	  if(concatnc->revert)
-	    {
-	      ay_status = ay_nct_revert(nc);
-	      if(ay_status)
-		{
-		  ay_error(ay_status, fname, "Could not revert curve!");
-		}
-	    }
 
-	  if(concatnc->closed && (!concatnc->fillgaps))
+      if(concatnc->closed && (!concatnc->fillgaps))
+	{
+	  ay_status = ay_nct_close(nc);
+	  if(ay_status)
 	    {
-	      ay_status = ay_nct_close(nc);
-	      if(ay_status)
-		{
-		  ay_error(ay_status, fname, "Could not close curve!");
-		}
+	      ay_error(ay_status, fname, "Could not close curve!");
 	    }
-	} /* if */
+	}
     } /* if */
 
 cleanup:
