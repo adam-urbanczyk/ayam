@@ -77,6 +77,9 @@ array set ayprefs {
 
  LineWidth 1.0
  SelLineWidth 1.0
+ AALineWidth 1.3
+ AASelLineWidth 1.3
+ AAFudge 1.0
 
  RIBFile "Scene"
  Image "RIB"
