@@ -158,6 +158,13 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glEnable(GL_LINE_SMOOTH);
       glDepthMask(GL_FALSE);
+      if(ay_prefs.aalinewidth != 1.0)
+	glLineWidth((GLfloat)ay_prefs.aalinewidth);
+    }
+  else
+    {
+      if(ay_prefs.linewidth != 1.0)
+	glLineWidth((GLfloat)ay_prefs.linewidth);
     }
 
   if(view->drawlevel || view->type == AY_VTTRIM)
@@ -173,9 +180,6 @@ ay_draw_view(struct Togl *togl, int draw_offset)
   /* set color for deselected objects */
   glColor3f((GLfloat)ay_prefs.obr, (GLfloat)ay_prefs.obg,
 	    (GLfloat)ay_prefs.obb);
-
-  if(ay_prefs.linewidth != 1.0)
-    glLineWidth((GLfloat)ay_prefs.linewidth);
 
   /* draw unselected objects */
   if(!view->drawsel)
@@ -194,8 +198,16 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glColor3f((GLfloat)ay_prefs.ser, (GLfloat)ay_prefs.seg,
 		(GLfloat)ay_prefs.seb);
 
-      if(ay_prefs.sellinewidth != 1.0)
-	glLineWidth((GLfloat)ay_prefs.sellinewidth/*1.6f*/);
+      if(view->antialiaslines)
+	{
+	  if(ay_prefs.aasellinewidth != 1.0)
+	    glLineWidth((GLfloat)ay_prefs.aasellinewidth);
+	}
+      else
+	{
+	  if(ay_prefs.sellinewidth != 1.0)
+	    glLineWidth((GLfloat)ay_prefs.sellinewidth);
+	}
 
       glPushMatrix();
       if(!view->drawlevel)
@@ -205,6 +217,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	      ay_trafo_getall(ay_currentlevel->next);
 	    }
 	}
+
       /* let selected objects appear "on top" of current drawing */
       if(!draw_offset)
 	{
@@ -231,8 +244,6 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 	  glDepthRange(0.0, 1.0);
 	  glDepthFunc(GL_LESS);
 	} /* if */
-
-      glLineWidth((GLfloat)ay_prefs.linewidth/*1.0f*/);
 
       /* draw handles of selected objects */
       if(view->drawhandles)
@@ -353,10 +364,27 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glPopMatrix();
     } /* if */
 
+  if(view->antialiaslines)
+    {
+      if(ay_prefs.aalinewidth != 1.0)
+	glLineWidth((GLfloat)ay_prefs.aalinewidth);
+      else
+	glLineWidth((GLfloat)1.0f);
+    }
+  else
+    {
+      if(ay_prefs.linewidth != 1.0)
+	glLineWidth((GLfloat)ay_prefs.linewidth);
+      else
+	glLineWidth((GLfloat)1.0f);
+    }
+
   ay_draw_annos(togl, draw_offset);
 
   if(draw_offset)
-    glDepthRange(0.0, 1.0);
+    {
+      glDepthRange(0.0, 1.0);
+    }
 
   if(view->drawlevel || view->type == AY_VTTRIM)
     {
@@ -370,6 +398,8 @@ ay_draw_view(struct Togl *togl, int draw_offset)
       glDisable(GL_LINE_SMOOTH);
       glDepthMask(GL_TRUE);
     }
+
+  glLineWidth((GLfloat)1.0f);
 
  return AY_OK;
 } /* ay_draw_view */
@@ -1246,7 +1276,7 @@ ay_draw_cs(struct Togl *togl, int mode)
    {
      if(view->antialiaslines)
        {
-	 e = 3;
+	 e -= ay_prefs.aafudge;
        }
 
      glGetDoublev(GL_MODELVIEW_MATRIX, mvm);
