@@ -511,29 +511,7 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
     {
       if(view->drawmark)
 	{
-	  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
-		    (GLfloat)ay_prefs.tpb);
-	  glDisable(GL_DEPTH_TEST);
-	  glMatrixMode(GL_PROJECTION);
-	  glPushMatrix();
-	   glLoadIdentity();
-	   glOrtho(0, width, 0, height, 0.0, 1.0);
-	   glMatrixMode(GL_MODELVIEW);
-	   glPushMatrix();
-	    glLoadIdentity();
-	    glTranslated(((int)view->markx)+0.375,
-			 (height-((int)view->marky))+0.375,
-			 0.0);
-	    glBegin(GL_LINES);
-	     glVertex2i(-4, 0);
-	     glVertex2i(5, 0);
-	     glVertex2i(0, -4);
-	     glVertex2i(0, 5);
-	    glEnd();
-	   glPopMatrix();
-	   glMatrixMode(GL_PROJECTION);
-	  glPopMatrix();
-	  glEnable(GL_DEPTH_TEST);
+	  ay_draw_mark(togl);
 	} /* if */
     } /* if */
 
@@ -1348,6 +1326,48 @@ ay_draw_cs(struct Togl *togl, int mode)
 } /* ay_draw_cs */
 
 
+/* ay_draw_mark:
+ *  draw marked point in space as simple red + symbol
+ */
+void
+ay_draw_mark(struct Togl *togl)
+{
+ ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
+ int e = 5;
+
+  if(view->antialiaslines)
+    {
+      e -= ay_prefs.aafudge;
+    }
+  glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
+	    (GLfloat)ay_prefs.tpb);
+  glDisable(GL_DEPTH_TEST);
+
+  glMatrixMode(GL_PROJECTION);
+  glPushMatrix();
+   glLoadIdentity();
+   glOrtho(0, Togl_Width(togl), 0, Togl_Height(togl), -100.0, 100.0);
+   glMatrixMode(GL_MODELVIEW);
+   glPushMatrix();
+    glLoadIdentity();
+    glTranslated(((int)view->markx)+0.5,
+		 (Togl_Height(togl)-(int)view->marky)+0.5, 0.0);
+    glBegin(GL_LINES);
+     glVertex2i(-4, 0);
+     glVertex2i(e, 0);
+     glVertex2i(0, -4);
+     glVertex2i(0, e);
+    glEnd();
+   glPopMatrix();
+  glMatrixMode(GL_PROJECTION);
+  glPopMatrix();
+
+  glEnable(GL_DEPTH_TEST);
+
+ return;
+} /* ay_draw_mark */
+
+
 /* ay_draw_registerdacb:
  *  register the draw annotation callback dacb for
  *  objects of type type_id
@@ -1357,7 +1377,7 @@ ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id)
 {
  int ay_status = AY_OK;
 
-  /* register notify callback */
+  /* register draw annotation callback */
   ay_status = ay_table_additem(&ay_drawacbt, (ay_voidfp)dacb, type_id);
 
  return ay_status;

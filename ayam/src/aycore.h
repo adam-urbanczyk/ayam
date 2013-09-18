@@ -208,6 +208,10 @@ void ay_draw_rectangle(int winwidth, int winheight,
  */
 void ay_draw_cs(struct Togl *togl, int mode);
 
+/** draw the mark
+ */
+void ay_draw_mark(struct Togl *togl);
+
 /** register draw annotations callback
  */
 int ay_draw_registerdacb(ay_drawcb  *dacb, unsigned int type_id);
