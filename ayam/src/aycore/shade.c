@@ -176,7 +176,6 @@ ay_shade_view(struct Togl *togl)
  int ay_status = AY_OK;
  char fname[] = "shade_view";
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int width = Togl_Width(togl), height = Togl_Height(togl);
  ay_list_object *sel = ay_selection;
  ay_object *o = ay_root;
  ay_voidfp *arr = NULL;
@@ -205,8 +204,8 @@ ay_shade_view(struct Togl *togl)
       ay_draw_grid(togl);
     }
 
-  /* when drawing mode is shade+draw, set back the shaded
-     surfaces a bit so that we can draw on top later */
+  /* when drawing mode is shade+draw, "set back" the shaded
+     surfaces a bit so that we can draw on top of them later */
   if(view->shade > 1)
     {
 #ifdef GL_VERSION_1_1
@@ -399,30 +398,12 @@ ay_shade_view(struct Togl *togl)
     } /* if */
 
   glDisable(GL_LIGHTING);
+  glDisable(GL_DITHER);
 
   /* draw marked point in space */
   if(view->drawmark)
     {
-      glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
-		(GLfloat)ay_prefs.tpb);
-      glDisable(GL_DEPTH_TEST);
-      glMatrixMode(GL_PROJECTION);
-      glPushMatrix();
-       glLoadIdentity();
-       glOrtho(0, width, 0, height, -100.0, 100.0);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-        glLoadIdentity();
-        glBegin(GL_LINES);
-	 glVertex3d(view->markx-3.0, height-view->marky, 0.0);
-	 glVertex3d(view->markx+4.0, height-view->marky, 0.0);
-	 glVertex3d(view->markx, height-view->marky+3.0, 0.0);
-	 glVertex3d(view->markx, height-view->marky-4.0, 0.0);
-	glEnd();
-       glPopMatrix();
-       glMatrixMode(GL_PROJECTION);
-      glPopMatrix();
-      glEnable(GL_DEPTH_TEST);
+      ay_draw_mark(togl);
     } /* if */
 
   if(view->drawlevel)
@@ -430,8 +411,6 @@ ay_shade_view(struct Togl *togl)
       glMatrixMode(GL_MODELVIEW);
       glPopMatrix();
     }
-
-  glDisable(GL_DITHER);
 
   /* shade and draw? */
   if(view->shade > 1)
