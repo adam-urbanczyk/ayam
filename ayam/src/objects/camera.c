@@ -352,7 +352,8 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
  double min_dist = ay_prefs.pick_epsilon, dist = 0.0;
  ay_point *pnt = NULL, **lastpnt = NULL;
  double *pecoord = NULL, **pecoords = NULL, **ctmp, *c;
- int a;
+ int a, peindex = 0;
+ unsigned int *peindices = NULL, *itmp;
 
   if(!o || ((mode != 3) && (!p || !pe)))
     return AY_ENULL;
@@ -366,11 +367,14 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
     {
     case 0:
       /* select all points */
-      if(!(pe->coords = calloc(2, sizeof(double*))))
+      if(!(pe->coords = malloc(2*sizeof(double*))))
 	return AY_EOMEM;
-
       pe->coords[0] = camera->from;
       pe->coords[1] = camera->to;
+      if(!(pe->indices = malloc(2*sizeof(unsigned int))))
+	return AY_EOMEM;
+      pe->indices[0] = 0;
+      pe->indices[1] = 1;
       pe->rational = AY_FALSE;
       pe->num = 2;
       break;
@@ -383,6 +387,7 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = camera->from;
+	  peindex = 0;
 	  min_dist = dist;
 	}
 
@@ -393,16 +398,21 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
       if(dist < min_dist)
 	{
 	  pecoord = camera->to;
+	  peindex = 1;
 	  /*min_dist = dist;*/
 	}
 
       if(!pecoord)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      if(!(pe->coords = calloc(1, sizeof(double*))))
+      if(!(pe->coords = malloc(1*sizeof(double*))))
+	return AY_EOMEM;
+
+      if(!(pe->indices = malloc(1*sizeof(unsigned int))))
 	return AY_EOMEM;
 
       pe->coords[0] = pecoord;
+      pe->indices[0] = peindex;
       pe->rational = AY_FALSE;
       pe->num = 1;
       break;
@@ -416,11 +426,15 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	{
-
 	  if(!(ctmp = realloc(pecoords, (a+1)*sizeof(double *))))
 	    return AY_EOMEM;
 	  pecoords = ctmp;
 	  pecoords[a] = c;
+
+	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+	    return AY_EOMEM;
+	  peindices = itmp;
+	  peindices[a] = 0;
 	  a++;
 	} /* if */
 
@@ -431,7 +445,6 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	 ((p[8]*c[0] + p[9]*c[1] + p[10]*c[2] + p[11]) < 0.0) &&
 	 ((p[12]*c[0] + p[13]*c[1] + p[14]*c[2] + p[15]) < 0.0))
 	{
-
 	  if(!(ctmp = realloc(pecoords, (a+1)*sizeof(double *))))
 	    {
 	      if(pecoords)
@@ -440,16 +453,25 @@ ay_camera_getpntcb(int mode, ay_object *o, double *p, ay_pointedit *pe)
 	    }
 	  pecoords = ctmp;
 	  pecoords[a] = c;
+
+	  if(!(itmp = realloc(peindices, (a+1)*sizeof(unsigned int))))
+	    {
+	      if(peindices)
+		free(peindices);
+	      return AY_EOMEM;
+	    }
+	  peindices = itmp;
+	  peindices[a] = 1;
 	  a++;
 	} /* if */
 
       if(!pecoords)
 	return AY_OK; /* XXXX should this return a 'AY_EPICK' ? */
 
-      pe->rational = AY_FALSE;
       pe->coords = pecoords;
+      pe->indices = peindices;
       pe->num = a;
-
+      pe->rational = AY_FALSE;
       break;
     case 3:
       pnt = o->selp;
