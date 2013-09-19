@@ -621,7 +621,9 @@ ay_pomesh_drawcb(struct Togl *togl, ay_object *o)
  int stride = 0;
  unsigned int i = 0, j = 0, k = 0, l = 0, m = 0, n = 0;
  unsigned int a;
+#if 0
  double p[3];
+#endif
 
   if(!o)
     return AY_ENULL;
