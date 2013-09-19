@@ -406,7 +406,7 @@ ay_draw_view(struct Togl *togl, int draw_offset)
 
 
 /* ay_draw_annos:
- *  draw the annotations (coordinate systems, handles, the mark)
+ *  draw the annotations (coordinate systems, handles, and the mark)
  */
 void
 ay_draw_annos(struct Togl *togl, int draw_offset)
@@ -418,7 +418,6 @@ ay_draw_annos(struct Togl *togl, int draw_offset)
  ay_object *o;
  ay_list_object *sel;
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- int width = Togl_Width(togl), height = Togl_Height(togl);
  int draw_root = AY_TRUE;
  double m[16];
 
@@ -614,6 +613,8 @@ ay_draw_grid(struct Togl *togl)
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
 
+      glDisable(GL_DEPTH_TEST);
+
       glMatrixMode(GL_PROJECTION);
       glPushMatrix();
        glLoadIdentity();
@@ -647,6 +648,8 @@ ay_draw_grid(struct Togl *togl)
        glMatrixMode(GL_PROJECTION);
       glPopMatrix();
       glMatrixMode(GL_MODELVIEW);
+
+      glEnable(GL_DEPTH_TEST);
     }
   else
     {
@@ -678,7 +681,7 @@ ay_draw_grid(struct Togl *togl)
 	case AY_VTSIDE:
 	  if(aspect > 1.0)
 	    {
-	      minwinx =  ((-aspect * view->zoom) + view->from[2]) - grid;
+	      minwinx = ((-aspect * view->zoom) + view->from[2]) - grid;
 	      minwiny = ((-view->zoom) + view->from[1]) - grid;
 	    }
 	  else
@@ -714,6 +717,8 @@ ay_draw_grid(struct Togl *togl)
 
       glColor3f((GLfloat)ay_prefs.grr, (GLfloat)ay_prefs.grg,
 		(GLfloat)ay_prefs.grb);
+
+      glDisable(GL_DEPTH_TEST);
 
       glBegin(GL_LINES);
 
@@ -814,9 +819,9 @@ ay_draw_grid(struct Togl *togl)
 	}
 
       glEnd();
-    } /* if */
 
-  glClear(GL_DEPTH_BUFFER_BIT);
+      glEnable(GL_DEPTH_TEST);
+    } /* if */
 
  return;
 } /* ay_draw_grid */
@@ -872,6 +877,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
     }
 
   glDisable(GL_DEPTH_TEST);
+
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
    glLoadIdentity();
@@ -893,6 +899,7 @@ ay_draw_arrow(struct Togl *togl, double *from, double *to)
    glMatrixMode(GL_PROJECTION);
    glPopMatrix();
   glMatrixMode(GL_MODELVIEW);
+
   glEnable(GL_DEPTH_TEST);
 
  return;
@@ -906,7 +913,7 @@ void
 ay_draw_bgimage(struct Togl *togl)
 {
  ay_view_object *view = (ay_view_object *)Togl_GetClientData(togl);
- GLint w = Togl_Width(togl),h = Togl_Height(togl);
+ GLint w = Togl_Width(togl), h = Togl_Height(togl);
  GLfloat color[4] = {0.0f,0.0f,0.0f,0.0f};
  GLUnurbsObj *no;
  GLdouble sampling_tolerance = ay_prefs.glu_sampling_tolerance;
@@ -914,15 +921,15 @@ ay_draw_bgimage(struct Togl *togl)
 
   if(view->bgimage)
     {
+      glDisable(GL_DEPTH_TEST);
+      glEnable(GL_TEXTURE_2D);
+      glEnable(GL_BLEND);
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
       if(view->bgknotv && view->bgcv)
 	{
 	  /* map the image onto a NURBS patch */
-	  glDisable(GL_DEPTH_TEST);
-	  glEnable(GL_TEXTURE_2D);
-	  glEnable(GL_BLEND);
-	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-
 	  glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
 		    (GLfloat)ay_prefs.bgb);
 
@@ -937,82 +944,76 @@ ay_draw_bgimage(struct Togl *togl)
 
 	  gluBeginSurface(no);
 
-	  gluNurbsProperty(no, GLU_SAMPLING_TOLERANCE,
-			   (GLfloat)sampling_tolerance);
+	   gluNurbsProperty(no, GLU_SAMPLING_TOLERANCE,
+			    (GLfloat)sampling_tolerance);
 
-	  gluNurbsProperty(no, GLU_DISPLAY_MODE, GLU_FILL);
-	  gluNurbsProperty(no, GLU_CULLING, GL_TRUE);
+	   gluNurbsProperty(no, GLU_DISPLAY_MODE, GLU_FILL);
+	   gluNurbsProperty(no, GLU_CULLING, GL_TRUE);
 
-	  uknot_count = view->bgwidth+view->bguorder;
-	  vknot_count = view->bgheight+view->bgvorder;
+	   uknot_count = view->bgwidth+view->bguorder;
+	   vknot_count = view->bgheight+view->bgvorder;
 
-	  gluNurbsSurface(no, uknot_count, view->bgknotv,
-			  vknot_count, &(view->bgknotv[uknot_count]),
-			  (GLint)view->bgheight*6, (GLint)6, &(view->bgcv[4]),
-			  (GLint)view->bguorder, (GLint)view->bgvorder,
-			  GL_MAP2_TEXTURE_COORD_2);
+	   /* specify the texture coordinates */
+	   gluNurbsSurface(no, uknot_count, view->bgknotv,
+			   vknot_count, &(view->bgknotv[uknot_count]),
+			   (GLint)view->bgheight*6, (GLint)6, &(view->bgcv[4]),
+			   (GLint)view->bguorder, (GLint)view->bgvorder,
+			   GL_MAP2_TEXTURE_COORD_2);
 
-	  gluNurbsSurface(no, uknot_count, view->bgknotv,
-			  vknot_count,  &(view->bgknotv[uknot_count]),
-			  (GLint)view->bgheight*6, (GLint)6, view->bgcv,
-			  (GLint)view->bguorder, (GLint)view->bgvorder,
-			  GL_MAP2_VERTEX_4);
+	   /* specify the surface */
+	   gluNurbsSurface(no, uknot_count, view->bgknotv,
+			   vknot_count, &(view->bgknotv[uknot_count]),
+			   (GLint)view->bgheight*6, (GLint)6, view->bgcv,
+			   (GLint)view->bguorder, (GLint)view->bgvorder,
+			   GL_MAP2_VERTEX_4);
 
 	  gluEndSurface(no);
 
 	  gluDeleteNurbsRenderer(no);
-
-	  glDisable(GL_BLEND);
-	  glEnable(GL_DEPTH_TEST);
-	  glDisable(GL_TEXTURE_2D);
 	}
       else
 	{
 	  /* fill the complete view window */
-	  glDisable(GL_DEPTH_TEST);
-	  glEnable(GL_TEXTURE_2D);
-	  glEnable(GL_BLEND);
-	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	  glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
 	  glMatrixMode(GL_PROJECTION);
 	  glPushMatrix();
-	  glLoadIdentity();
-	  glOrtho(0.0, (GLdouble) w, 0.0, (GLdouble) h, -1.0, 1.0);
+	   glLoadIdentity();
+	   glOrtho(0.0, (GLdouble) w, 0.0, (GLdouble) h, -1.0, 1.0);
 
-	  glMatrixMode(GL_MODELVIEW);
-	  glPushMatrix();
-	  glLoadIdentity();
+	   glMatrixMode(GL_MODELVIEW);
+	   glPushMatrix();
+	    glLoadIdentity();
 
-	  glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
-		    (GLfloat)ay_prefs.bgb);
+	    glColor3f((GLfloat)ay_prefs.bgr, (GLfloat)ay_prefs.bgg,
+		      (GLfloat)ay_prefs.bgb);
 
-	  color[0] = (GLfloat)ay_prefs.bgr;
-	  color[1] = (GLfloat)ay_prefs.bgg;
-	  color[2] = (GLfloat)ay_prefs.bgb;
-	  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
+	    color[0] = (GLfloat)ay_prefs.bgr;
+	    color[1] = (GLfloat)ay_prefs.bgg;
+	    color[2] = (GLfloat)ay_prefs.bgb;
+	    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, color);
 
-	  glBegin(GL_QUADS);
-	  glTexCoord2i(0, 0);
-	  glVertex3i(0, 0, 0);
+	    glBegin(GL_QUADS);
+	     glTexCoord2i(0, 0);
+	     glVertex3i(0, 0, 0);
 
-	  glTexCoord2i(0, 1);
-	  glVertex3i(0, h, 0);
+	     glTexCoord2i(0, 1);
+	     glVertex3i(0, h, 0);
 
-	  glTexCoord2i(1, 1);
-	  glVertex3i(w, h, 0);
+	     glTexCoord2i(1, 1);
+	     glVertex3i(w, h, 0);
 
-	  glTexCoord2i(1, 0);
-	  glVertex3i(w, 0, 0);
-	  glEnd();
+	     glTexCoord2i(1, 0);
+	     glVertex3i(w, 0, 0);
+	    glEnd();
 
+	   glPopMatrix();
+	   glMatrixMode(GL_PROJECTION);
 	  glPopMatrix();
-	  glMatrixMode(GL_PROJECTION);
-	  glPopMatrix();
 	  glMatrixMode(GL_MODELVIEW);
-	  glDisable(GL_BLEND);
-	  glEnable(GL_DEPTH_TEST);
-	  glDisable(GL_TEXTURE_2D);
 	} /* if */
+
+      glDisable(GL_BLEND);
+      glEnable(GL_DEPTH_TEST);
+      glDisable(GL_TEXTURE_2D);
     } /* if */
 
  return;
@@ -1195,6 +1196,7 @@ ay_draw_rectangle(int winwidth, int winheight,
 {
 
   glDisable(GL_DEPTH_TEST);
+
   glMatrixMode(GL_PROJECTION);
   glPushMatrix();
    glLoadIdentity();
@@ -1211,6 +1213,7 @@ ay_draw_rectangle(int winwidth, int winheight,
    glPopMatrix();
    glMatrixMode(GL_PROJECTION);
   glPopMatrix();
+
   glEnable(GL_DEPTH_TEST);
 
  return;
@@ -1339,8 +1342,10 @@ ay_draw_mark(struct Togl *togl)
     {
       e -= ay_prefs.aafudge;
     }
+
   glColor3f((GLfloat)ay_prefs.tpr, (GLfloat)ay_prefs.tpg,
 	    (GLfloat)ay_prefs.tpb);
+
   glDisable(GL_DEPTH_TEST);
 
   glMatrixMode(GL_PROJECTION);
